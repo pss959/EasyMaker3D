@@ -1,6 +1,6 @@
 from brief import Brief
 
-Import('brief', 'build_dir', 'optimize', 'platform_env')
+Import('brief', 'build_dir', 'mode', 'platform_env')
 
 src_dir = Dir('.').srcnode().abspath
 
@@ -118,14 +118,8 @@ common_flags = [
     '-Wno-array-bounds',       # Disable warning in tracinghelper.cc.
 ]
 
-# Specialize for debug or optimized modes.
-if optimize:
-    env.Append(
-        CXXFLAGS   = common_flags + ['-O3'],
-        LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
-        CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
-    )
-else:
+# Specialize for debug or optimized/release modes.
+if mode == 'dbg':
     env.Append(
         CXXFLAGS   = common_flags + ['-g'],
         LINKFLAGS  = common_flags + ['-g'],
@@ -134,6 +128,12 @@ else:
             ('DEBUG', '1'),
             ('ION_DEBUG', '1'),
         ],
+    )
+else:
+    env.Append(
+        CXXFLAGS   = common_flags + ['-O3'],
+        LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+        CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
     )
 
 package_str = ' '.join(packages)

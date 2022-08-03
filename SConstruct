@@ -6,21 +6,21 @@ from os    import environ
 # -----------------------------------------------------------------------------
 
 AddOption('--mode', dest='mode', type='string', nargs=1, action='store',
-          default='dbg', metavar='dbg|opt', help='optimized/debug mode')
+          default='dbg', metavar='dbg|opt|rel',
+          help='optimized/debug/release mode')
 AddOption('--brief', dest='brief', action='store_true',
           default='True', help='Shortened vs. full output')
 AddOption('--nobrief', dest='brief', action='store_false',
           default='True', help='Shortened vs. full output')
 
 # Set this to True or False to build debug or optimized.
-optimize = GetOption('mode') == 'opt'
+mode  = GetOption('mode')
 
 # Set this to True or False for brief output.
 brief = GetOption('brief')
 
 # All build products go into this directory.
-opt_or_dbg = 'opt' if optimize else 'dbg'
-build_dir = f'build/{opt_or_dbg}'
+build_dir = f'build/{mode}'
 
 # Documentation is not mode-dependent, so it just goes under build.
 doc_build_dir = 'build'
@@ -400,7 +400,7 @@ openvr_lib_sources = [
 ]
 
 # Add debug-only sources.
-if not optimize:
+if mode == 'dbg':
     lib_sources += [
         'Debug/Dump3dv.cpp',
         'Panels/TestPanel.cpp',
@@ -492,6 +492,8 @@ elif platform == 'linux':
 platform_env.Replace(
     PLATFORM        = platform,
     OPENVR_PLATFORM = openvr_platform,
+    OPENVR_DIR      ='#/submodules/openvr/lib/$OPENVR_PLATFORM',
+    OPENVR_LIB      = '$OPENVR_DIR/${SHLIBPREFIX}openvr_api${SHLIBSUFFIX}',
 )
 
 # -----------------------------------------------------------------------------
@@ -523,7 +525,6 @@ base_env.Replace(
         '#/submodules/openvr/headers',
     ],
     CPPDEFINES = [
-        ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
         ('TEST_DATA_DIR', QuoteDef(Dir('#/src/Tests/Data').abspath)),
 
         # Required for Ion.
@@ -534,11 +535,11 @@ base_env.Replace(
     ],
     LIBPATH = [
         '$BUILD_DIR',
-        '#/submodules/openvr/lib/$OPENVR_PLATFORM',
+        '$OPENVR_DIR',
     ],
     RPATH = [
         Dir('$BUILD_DIR').abspath,
-        Dir('submodules/openvr/lib/$OPENVR_PLATFORM').abspath,
+        Dir('$OPENVR_DIR').abspath,
     ],
     LIBS = [
         'openvr_api',
@@ -613,18 +614,10 @@ openvr_cflags = ['-Wno-old-style-cast']  # openvr.h violates this a lot.
 # Mode-specific environment setup.
 # -----------------------------------------------------------------------------
 
-# Specialize for debug or optimized modes.
-opt_env = base_env.Clone()
+# Specialize for debug, optimized, or release modes.
 dbg_env = base_env.Clone()
-opt_env.Append(
-    CXXFLAGS   = common_flags + ['-O3'],
-    LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
-    CPPDEFINES = [
-        ('CHECK_GL_ERRORS',    'false'),
-        ('ENABLE_LOGGING',     'true'),   # Remove this for release.
-        ('ENABLE_DEBUG_PRINT', 'true'),   # Remove this for release.
-    ],
-)
+opt_env = base_env.Clone()
+rel_env = base_env.Clone()
 dbg_env.Append(
     CXXFLAGS   = common_flags + ['-g'],
     LINKFLAGS  = common_flags + ['-g'],
@@ -640,10 +633,36 @@ dbg_env.Append(
         # This allows valgrind to work on the debug executables.
         'CGAL_DISABLE_ROUNDING_MATH_CHECK',
         # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
+        ('RESOURCE_DIR',       QuoteDef(Dir('#/resources').abspath)),
     ],
 )
+opt_env.Append(
+    CXXFLAGS   = common_flags + ['-O3'],
+    LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+    CPPDEFINES = [
+        ('CHECK_GL_ERRORS',    'false'),
+        ('ENABLE_LOGGING',     'true'),
+        ('ENABLE_DEBUG_PRINT', 'true'),
+        ('RESOURCE_DIR',       QuoteDef(Dir('#/resources').abspath)),
+    ],
+)
+rel_env.Append(
+    CXXFLAGS   = common_flags + ['-O3'],
+    LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+    CPPDEFINES = [
+        ('CHECK_GL_ERRORS',    'false'),
+        ('RESOURCE_DIR',       QuoteDef('./resources')),
+    ],
+)
+# The release executable always runs from its own directory.
+rel_env.Replace(RPATH = ['.'])
 
-mode_env = opt_env if optimize else dbg_env
+mode_envs = {
+    'opt' : opt_env,
+    'dbg' : dbg_env,
+    'rel' : rel_env
+}
+mode_env = mode_envs[mode]
 
 packages = [
     'freetype2',
@@ -860,7 +879,7 @@ env.Alias('Coverage', gen_coverage)
 # Include Ion, submodule, resources, and doc build files.
 # -----------------------------------------------------------------------------
 
-Export('brief', 'build_dir', 'doc_build_dir', 'optimize', 'platform_env')
+Export('brief', 'build_dir', 'doc_build_dir', 'mode', 'platform_env')
 
 # Icons are built only on Linux. Building on different platforms creates
 # slightly different image files, causing git thrashing. No need for that once
@@ -872,9 +891,43 @@ if platform == 'linux':
 
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
-ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
-                 duplicate=False)
+ion_lib = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
+                     duplicate=False)
 
+# -----------------------------------------------------------------------------
+# Building the release as a Zip file.
+# -----------------------------------------------------------------------------
+
+# NOTE: The 'Zip()' builder in SCons claims to allow the command to be modified
+# with the 'ZIP', 'ZIPFLAGS', and other construction variables. However, they
+# are actually not used in the SCons.Tool.zip source file. So do everything
+# manually here.
+
+def BuildZipFile(target, source, env):
+    from os      import walk
+    from os.path import basename, dirname, isfile, join, relpath
+    from zipfile import ZipFile
+    zf = ZipFile(str(target[0]), 'w')
+    for src in source:
+        name = str(src)
+        # Walk through directories.
+        if src.isdir():
+            basedir = dirname(name)
+            for root, dirs, files in walk(name):
+                for f in files:
+                    path = join(root, f)
+                    if isfile(path):
+                        zf.write(path, relpath(path, basedir))
+        else:  # Regular file.
+            zf.write(name, basename(name))
+
+# Zip the executable, all 3 shared libraries, and the resources dir.
+zip_input  = [imakervr, reg_lib, ion_lib, '$OPENVR_LIB', 'resources']
+zip_name   = platform.capitalize()
+zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
+
+rel = rel_env.Command(zip_output, zip_input, BuildZipFile)
+rel_env.Alias('Release', rel)
 
 # -----------------------------------------------------------------------------
 # Other Aliases.
@@ -882,4 +935,4 @@ ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
 
 reg_env.Alias('Doc', [doc])
 reg_env.Alias('All', [app, 'Doc'])
-reg_env.Alias('Ion', ion)
+reg_env.Alias('Ion', ion_lib)
