@@ -22,9 +22,11 @@ class AnimationManager {
     /// while the animation is still running and false when it is done.
     void StartAnimation(const AnimationFunc &func);
 
-    /// Updates any running animations. Returns true if anything is currently
-    /// animating. This should be called every frame.
-    bool ProcessUpdate();
+    /// Updates any running animations. This should be called every frame.
+    void ProcessUpdate();
+
+    /// Returns true if anything is currently animating.
+    bool IsAnimating() const { return ! anim_data_.empty(); }
 
   private:
     /// This struct maintains info about a running animation.

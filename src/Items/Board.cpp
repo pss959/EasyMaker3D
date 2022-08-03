@@ -31,7 +31,8 @@ class Board::Impl_ {
         path_to_root_node_ = path_to_root_node;
     }
     void InitCanvas();
-    void SetPanel(const PanelPtr &panel);
+    void SetPanel(const PanelPtr &panel,
+                  const PanelHelper::ResultFunc &result_func);
     void PushPanel(const PanelPtr &panel,
                    const PanelHelper::ResultFunc &result_func);
     bool PopPanel(const std::string &result);
@@ -165,11 +166,16 @@ void Board::Impl_::InitCanvas() {
     canvas_->SetBaseColor(SG::ColorMap::SGetColor("BoardCanvasColor"));
 }
 
-void Board::Impl_::SetPanel(const PanelPtr &panel) {
+void Board::Impl_::SetPanel(const PanelPtr &panel,
+                            const PanelHelper::ResultFunc &result_func) {
+    if (! panel_stack_.empty())
+        std::cerr << "XXXX PANEL STACK HAS "
+                  << panel_stack_.top().panel->GetDesc() << "\n";
+
     ASSERT(panel);
     ASSERT(panel_stack_.empty());
     KLOG('g', root_node_.GetDesc() << " SetPanel to " << panel->GetDesc());
-    PushPanelInfo_(panel, nullptr);
+    PushPanelInfo_(panel, result_func);
     ReplacePanel_(nullptr, panel);
 }
 
@@ -718,8 +724,9 @@ void Board::CreationDone() {
         impl_.reset(new Impl_(*this));
 }
 
-void Board::SetPanel(const PanelPtr &panel) {
-    impl_->SetPanel(panel);
+void Board::SetPanel(const PanelPtr &panel,
+                     const PanelHelper::ResultFunc &result_func) {
+    impl_->SetPanel(panel, result_func);
 }
 
 void Board::PushPanel(const PanelPtr &panel,

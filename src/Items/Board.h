@@ -50,9 +50,11 @@ class Board : public Grippable, public Touchable {
     /// \name Panel Management
     ///@{
 
-    /// Sets a Panel to display in the board. This asserts if the Board already
+    /// Sets a Panel to display in the board. If the ResultFunc is not null, it
+    /// is invoked when the Panel is closed. This asserts if the Board already
     /// has a Panel set.
-    void SetPanel(const PanelPtr &panel);
+    void SetPanel(const PanelPtr &panel,
+                  const PanelHelper::ResultFunc &result_func = nullptr);
 
     /// Pushes a Panel to display in the board. The ResultFunc is invoked when
     /// the Panel is closed (popped). This asserts if the Board is not already

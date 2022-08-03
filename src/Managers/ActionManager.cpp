@@ -179,6 +179,7 @@ class ActionManager::Impl_ {
 
     void Reset();
     void UpdateFromSessionState(const SessionState &state);
+    void SetQuitFunc(const QuitFunc &func) { quit_func_ = func; }
     void SetReloadFunc(const ReloadFunc &func) { reload_func_ = func; }
     void ProcessUpdate();
     std::string GetHelpTooltip(Action action);
@@ -186,12 +187,11 @@ class ActionManager::Impl_ {
     bool CanApplyAction(Action action) const;
     void ApplyAction(Action action);
     bool GetToggleState(Action action) const { return GetToggleState_(action); }
-    bool ShouldQuit() const { return should_quit_; }
 
   private:
     ContextPtr            context_;
-    bool                  should_quit_ = false;
-    std::function<void()> reload_func_;
+    QuitFunc              quit_func_;
+    ReloadFunc            reload_func_;
 
     /// Tooltip string for each Action that does not change by context.
     std::vector<std::string> tooltip_strings_;
@@ -364,7 +364,8 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         context_->command_manager->Redo();
         break;
       case Action::kQuit:
-        should_quit_ = true;
+        if (quit_func_)
+            quit_func_();
         break;
 
       case Action::kOpenSessionPanel:
@@ -1200,6 +1201,10 @@ void ActionManager::UpdateFromSessionState(const SessionState &state) {
     impl_->UpdateFromSessionState(state);
 }
 
+void ActionManager::SetQuitFunc(const QuitFunc &func) {
+    impl_->SetQuitFunc(func);
+}
+
 void ActionManager::SetReloadFunc(const ReloadFunc &func) {
     impl_->SetReloadFunc(func);
 }
@@ -1223,8 +1228,4 @@ void ActionManager::ApplyAction(Action action) {
 
 bool ActionManager::GetToggleState(Action action) const {
     return impl_->GetToggleState(action);
-}
-
-bool ActionManager::ShouldQuit() const {
-    return impl_->ShouldQuit();
 }

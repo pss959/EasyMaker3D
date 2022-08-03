@@ -234,7 +234,11 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
         event.device = Event::Device::kMouse;
         event.flags.Set(Event::Flag::kExit);
         events.push_back(event);
+
+        // Reset the flag; the event will end the app if the user wants it.
+        glfwSetWindowShouldClose(window_, GLFW_FALSE);
     }
+
     // Add pending events.
     events.insert(events.end(), pending_events_.begin(), pending_events_.end());
     pending_events_.clear();

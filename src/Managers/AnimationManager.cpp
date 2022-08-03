@@ -14,10 +14,8 @@ void AnimationManager::StartAnimation(const AnimationFunc &func) {
     anim_data_.push_back(data);
 }
 
-bool AnimationManager::ProcessUpdate() {
-    bool animating = ! anim_data_.empty();
-
-    if (animating) {
+void AnimationManager::ProcessUpdate() {
+    if (IsAnimating()) {
         UTime now = UTime::Now();
 
         for (auto &data: anim_data_) {
@@ -31,5 +29,4 @@ bool AnimationManager::ProcessUpdate() {
         Util::EraseIf(anim_data_,
                       [](const AnimData_ &d){ return d.is_finished; });
     }
-    return animating;
 }

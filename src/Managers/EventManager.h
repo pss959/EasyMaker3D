@@ -25,7 +25,7 @@ class EventManager {
 
     /// Processes the given vector of events. A flag indicating whether
     /// alternate mode should be set in each event is supplied. Returns false
-    /// if the event indicates that the application should exit. If the given
+    /// if an event indicates that the application should exit. If the given
     /// max_time (in seconds) is positive and is exceeded during event
     /// processing, unhandled events are pushed onto a queue to be processed
     /// before new ones in the next call. The HasPendingEvents() call will

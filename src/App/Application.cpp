@@ -52,6 +52,7 @@
 #include "Math/Intersection.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
+#include "Panels/DialogPanel.h"
 #include "Panels/KeyboardPanel.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
@@ -199,6 +200,9 @@ class  Application::Impl_ {
     /// Set to true when anything in the scene changes.
     bool                       scene_changed_ = true;
 
+    /// Stays true until the user confirms application exit.
+    bool                       keep_running_ = true;
+
     /// \name One-time Initialization
     /// Each of these functions sets up items that are needed by the
     /// application. They are called one time only.
@@ -280,9 +284,14 @@ class  Application::Impl_ {
     /// Updates global uniforms in the RootModel.
     void UpdateGlobalUniforms_();
 
-    /// Handles all of the given events. Returns true if the application should
+    /// If there are changes to the session, this opens a DialogPanel to ask
+    /// the user whether to quit or not. Sets the keep_running_ flag to false
+    /// if no changes were made or if the user confirms.
+    void TryQuit_();
+
+    /// Emits and handles all events. Returns true if the application should
     /// keep running.
-    bool HandleEvents_(std::vector<Event> &events, bool is_alternate_mode);
+    bool ProcessEvents_(bool is_alternate_mode);
 
     /// Processes a click on something in the scene.
     void ProcessClick_(const ClickInfo &info);
@@ -415,15 +424,17 @@ bool Application::Impl_::Init(const Application::Options &options) {
 }
 
 void Application::Impl_::MainLoop() {
-    std::vector<Event> events;
-    bool is_alternate_mode = false;
-    bool keep_running = true;
-    size_t render_count = 0;
-    while (keep_running) {
+    keep_running_        = true;
+    size_t render_count  = 0;
+
+    // Tell the ActionManager how to quit.
+    action_manager_->SetQuitFunc([&]{ TryQuit_(); });
+
+    while (keep_running_) {
         KLogger::SetRenderCount(render_count++);
         renderer_->BeginFrame();
 
-        is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
+        const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
@@ -440,7 +451,7 @@ void Application::Impl_::MainLoop() {
 
         // Process any animations. Do this after updating the MainHandler
         // because a click timeout may start an animation.
-        const bool is_animating = animation_manager_->ProcessUpdate();
+        animation_manager_->ProcessUpdate();
 
         // Enable or disable all icon widgets and update tooltips.
         UpdateIcons_();
@@ -457,28 +468,10 @@ void Application::Impl_::MainLoop() {
         scene_context_->left_controller->SetTouchMode(in_touch_mode);
         scene_context_->right_controller->SetTouchMode(in_touch_mode);
 
-        // Always check for finished delayed threads.
-        const bool is_any_delaying = Util::IsAnyDelaying();
-
-        // Let the GLFWViewer know whether to poll events or wait for events.
-        // If VR is active, it needs to continuously poll events to track the
-        // headset and controllers properly. This means that the GLFWViewer
-        // also needs to poll events (rather than wait for them) so as not to
-        // block anything. The same is true if the MainHandler is in the middle
-        // of handling something (not just waiting for events), if there is an
-        // animation running, if something is being delayed, if something
-        // changed in the scene, or if the user quit the app.
-        const bool have_to_poll =
-            IsVREnabled() || is_animating || is_any_delaying ||
-            scene_changed_ || ! main_handler_->IsWaiting() ||
-            action_manager_->ShouldQuit();
-        glfw_viewer_->SetPollEventsFlag(have_to_poll);
-
-        // Collect and handle all incoming events.
-        events.clear();
-        for (auto &viewer: viewers_)
-            viewer->EmitEvents(events);
-        keep_running = HandleEvents_(events, is_alternate_mode);
+        // Emit and process Events. This returns false if the application
+        // should quit because the window was closed.
+        if (! ProcessEvents_(is_alternate_mode))
+            TryQuit_();
 
         // Update the TreePanel.
         scene_context_->tree_panel->SetSessionString(
@@ -1129,12 +1122,50 @@ void Application::Impl_::UpdateGlobalUniforms_() {
     scene_context_->root_model->UpdateGlobalUniforms(wsm, bv_size);
 }
 
-bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
-                                       bool is_alternate_mode) {
-    // Also check for action resulting in quitting.
+void Application::Impl_::TryQuit_() {
+    // If the session has changes, open a DialogPanel to verify that the user
+    // wants to quit.
+    if (session_manager_->CanSaveSession()) {
+        auto func = [&](const std::string &s){ keep_running_ = s != "Yes"; };
+        auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
+        dp->SetMessage("There are unsaved changes.\n"
+                       "Do you really want to quit?");
+        dp->SetChoiceResponse("No", "Yes");
+        scene_context_->app_board->SetPanel(dp, func);
+        board_manager_->ShowBoard(scene_context_->app_board, true);
+    }
+    else {
+        // No need to save - just quit.
+        keep_running_ = false;
+    }
+}
+
+bool Application::Impl_::ProcessEvents_(bool is_alternate_mode) {
+    // Always check for running animations and finished delayed threads.
+    const bool is_animating    = animation_manager_->IsAnimating();
+    const bool is_any_delaying = Util::IsAnyDelaying();
+
+    // Let the GLFWViewer know whether to poll events or wait for events.  If
+    // VR is active, it needs to continuously poll events to track the headset
+    // and controllers properly. This means that the GLFWViewer also needs to
+    // poll events (rather than wait for them) so as not to block anything. The
+    // same is true if the MainHandler is in the middle of handling something
+    // (not just waiting for events), if there is an animation running, if
+    // something is being delayed, or if something changed in the scene.
+    const bool have_to_poll =
+        IsVREnabled() || is_animating || is_any_delaying ||
+        scene_changed_ || ! main_handler_->IsWaiting();
+    glfw_viewer_->SetPollEventsFlag(have_to_poll);
+
+    // Collect all incoming events.
+    std::vector<Event> events;
+    for (auto &viewer: viewers_)
+        viewer->EmitEvents(events);
+
+    // Check for an event resulting in quitting. Note that an action that
+    // results in quitting invokes the ActionManager's QuitFunc.
     return event_manager_->HandleEvents(events, is_alternate_mode,
-                                        TK::kMaxEventHandlingTime) &&
-        ! action_manager_->ShouldQuit();
+                                        TK::kMaxEventHandlingTime);
 }
 
 void Application::Impl_::ProcessClick_(const ClickInfo &info) {

@@ -25,6 +25,7 @@ DECL_SHARED_PTR(ToolManager);
 /// \ingroup Managers
 class ActionManager {
   public:
+    typedef std::function<void()> QuitFunc;
     typedef std::function<void()> ReloadFunc;
 
     /// The ActionManager::Context stores everything the ActionManager needs to
@@ -52,7 +53,8 @@ class ActionManager {
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
-    /// Initializes the ActionManager with a Context.
+    /// Initializes the ActionManager with a Context and a function to call
+    /// when the user tries to quit.
     ActionManager(const ContextPtr &context);
 
     ~ActionManager();
@@ -62,6 +64,9 @@ class ActionManager {
 
     /// Updates from the given SessionState instance.
     void UpdateFromSessionState(const SessionState &state);
+
+    /// Sets a function to call when the user tries to quit.
+    void SetQuitFunc(const QuitFunc &func);
 
     /// Sets a function to call to reload the scene (works only in debug build).
     void SetReloadFunc(const ReloadFunc &func);
@@ -83,9 +88,6 @@ class ActionManager {
     /// Returns the current state of the given Action, which must represent a
     /// toggle of some sort.
     bool GetToggleState(Action action) const;
-
-    /// Returns true if the application should exit.
-    bool ShouldQuit() const;
 
   private:
     class Impl_;
