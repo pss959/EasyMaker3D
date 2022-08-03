@@ -179,13 +179,19 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     const std::string title =
         std::string(TK::kApplicationName) + " " + TK::kVersionString;
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
-                               fullscreen ? glfwGetPrimaryMonitor() : nullptr,
-                               nullptr);
+                               nullptr, nullptr);
     if (! window_) {
         std::cerr << "*** GLFW window creation failed!\n";
         return false;
     }
+
     glfwSetWindowPos(window_, 600, 100);
+
+    // Fullscreen is just a maximized window. This allows the user to
+    // unmaximize it and move it around if they want. True fullscreen mode is
+    // kind of annoying in that respect.
+    if (fullscreen)
+        glfwMaximizeWindow(window_);
 
     glfwSetCharCallback(window_,        CharCallback_);
     glfwSetKeyCallback(window_,         KeyCallback_);
