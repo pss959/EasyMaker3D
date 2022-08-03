@@ -89,6 +89,11 @@ int main(int argc, const char *argv[]) {
     options.ignore_vr     = args.GetBool("--novr");
     options.set_up_touch  = args.GetBool("--touch");
 
+#if RELEASE_BUILD
+    // Release version is always run fullscreen.
+    options.fullscreen = true;
+#endif
+
     const int height = TK::kWindowHeight;
     const int width  = static_cast<int>(TK::kWindowAspectRatio * height);
     options.window_size.Set(width, height);

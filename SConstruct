@@ -492,7 +492,7 @@ elif platform == 'linux':
 platform_env.Replace(
     PLATFORM        = platform,
     OPENVR_PLATFORM = openvr_platform,
-    OPENVR_DIR      ='#/submodules/openvr/lib/$OPENVR_PLATFORM',
+    OPENVR_DIR      = 'submodules/openvr/lib/$OPENVR_PLATFORM',
     OPENVR_LIB      = '$OPENVR_DIR/${SHLIBPREFIX}openvr_api${SHLIBSUFFIX}',
 )
 
@@ -651,6 +651,7 @@ rel_env.Append(
     LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
     CPPDEFINES = [
         ('CHECK_GL_ERRORS',    'false'),
+        ('RELEASE_BUILD',      'true'),
         ('RESOURCE_DIR',       QuoteDef('./resources')),
     ],
 )

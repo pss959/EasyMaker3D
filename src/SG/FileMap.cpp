@@ -102,9 +102,7 @@ FileMap::~FileMap() {
 }
 
 void FileMap::AddString(const FilePath &path, const std::string &s) {
-    if (! path.IsAbsolute())
-        throw Exception("Relative path passed to FileMap: '" +
-                        path.ToString() + "'");
+    CheckAbsolute_(path);
     KLOG('A', "Adding string " << &s << " with size " << s.size()
          << " for path '" << path.ToString() << "'");
     string_map_[path] = s;
@@ -112,9 +110,7 @@ void FileMap::AddString(const FilePath &path, const std::string &s) {
 }
 
 void FileMap::AddImage(const FilePath &path, const ion::gfx::ImagePtr &image) {
-    if (! path.IsAbsolute())
-        throw Exception("Relative path passed to FileMap: '" +
-                        path.ToString() + "'");
+    CheckAbsolute_(path);
     KLOG('A', "Adding Image " << image.Get() << " for path '"
          << path.ToString() << "'");
     image_map_[path] = image;
@@ -138,6 +134,14 @@ void FileMap::AddDependency(const FilePath &owner_path,
 
 bool FileMap::IsPathStillValid_(const FilePath &path) {
     return dep_map_->IsValid(path);
+}
+
+void FileMap::CheckAbsolute_(const FilePath &path) {
+#if ! RELEASE_BUILD
+    if (! path.IsAbsolute())
+        throw Exception("Relative path passed to FileMap: '" +
+                        path.ToString() + "'");
+#endif
 }
 
 }  // namespace SG

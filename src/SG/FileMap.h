@@ -12,9 +12,10 @@ namespace SG {
 
 DECL_SHARED_PTR(FileMap);
 
-/// The FileMap class stores associations between (absolute) file paths and
-/// data read from those files. It can be used to guarantee that a file is read
-/// only once unless the file has been modified since last read.
+/// The FileMap class stores associations between file paths and data read from
+/// those files. It can be used to guarantee that a file is read only once
+/// unless the file has been modified since last read. Note that all file paths
+/// must be absolute except for a release build.
 ///
 /// \ingroup SG
 class FileMap {
@@ -24,8 +25,8 @@ class FileMap {
 
     /// \name Adding Tracked Resources
     /// Each of these functions adds data of a specific type to the FileMap,
-    /// associating it with its (absolute) file path. This sets the load time
-    /// for the data to the current time.
+    /// associating it with its file path. This sets the load time for the data
+    /// to the current time.
     ///@{
     void AddString(const FilePath &path, const std::string &s);
     void AddImage(const FilePath &path,  const ion::gfx::ImagePtr &image);
@@ -74,6 +75,10 @@ class FileMap {
     /// Returns true if the given path is still valid with respect to all
     /// dependencies and load times.
     bool IsPathStillValid_(const FilePath &path);
+
+    /// Checks that a path is absolute (except in a release build), throwing an
+    /// exception if it isn't.
+    static void CheckAbsolute_(const FilePath &path);
 };
 
 }  // namespace SG
