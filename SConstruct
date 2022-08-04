@@ -909,6 +909,8 @@ def BuildZipFile(target, source, env):
     from os.path import basename, dirname, isfile, join, relpath
     from zipfile import ZipFile
     zf = ZipFile(str(target[0]), 'w')
+    def AddFile(f, rel_path):
+        zf.write(f, f'IMakerVR/{rel_path}')
     for src in source:
         name = str(src)
         # Walk through directories.
@@ -918,9 +920,9 @@ def BuildZipFile(target, source, env):
                 for f in files:
                     path = join(root, f)
                     if isfile(path):
-                        zf.write(path, relpath(path, basedir))
+                        AddFile(path, relpath(path, basedir))
         else:  # Regular file.
-            zf.write(name, basename(name))
+            AddFile(name, basename(name))
 
 # Zip the executable, all 3 shared libraries, and the resources dir.
 zip_input  = [imakervr, reg_lib, ion_lib, '$OPENVR_LIB', 'resources']
