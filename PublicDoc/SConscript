@@ -15,14 +15,16 @@ env = Environment(
 )
 
 # Set up environment variables for Doxyfile to access.
+output_dir = env.subst('$OUTPUT_DIR') + '/site/' + VERSION_STRING
+
 env.Append(
     ENV = {
         'APP_NAME'         : APP_NAME,
         'VERSION_STRING'   : VERSION_STRING,
-        'OUTPUT_DIRECTORY' : env.subst('$OUTPUT_DIR'),
+        'INPUT_DIRECTORY'  : 'docs',
+        'OUTPUT_DIRECTORY' : output_dir,
     }
 )
-
 # Doc depends on everything under the 'docs' directory. This returns paths to
 # all files under the given root directory.
 def GetAllFiles(root_dir):
@@ -38,6 +40,6 @@ def GetAllFiles(root_dir):
 
 sources = GetAllFiles('docs')
 doc = env.Command('$OUTPUT_DIR/site/$VERSION_STRING/index.html', sources,
-                  'mkdocs build -d site/$VERSION_STRING', chdir='PublicDoc')
+                  'mkdocs build', chdir='PublicDoc')
 
 Return('doc')
