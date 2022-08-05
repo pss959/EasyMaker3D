@@ -1,0 +1,187 @@
+/* -----------------------------------------------------------------------------
+ * Variables.
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --sec-hue: 221;  /* Hue value for section headings. */
+}
+
+/* -----------------------------------------------------------------------------
+ * Overall background.
+ * -------------------------------------------------------------------------- */
+
+body {
+    background-color: #f4f4f2;
+}
+
+/* Border around main text area. */
+div[role=main] {
+    border: 1px solid #888888;
+}
+
+/* -----------------------------------------------------------------------------
+ * Navigation bar (at the top).
+ * -------------------------------------------------------------------------- */
+
+.navbar-default {
+    background-color: #7194e5;
+    border-bottom:    4px #999999 solid;
+    font-weight:      500;
+}
+.navbar-default .navbar-nav>.active>a {
+    background-color: #224daf;
+}
+.navbar-default .navbar-nav>.active>a:hover,
+.navbar-default .navbar-nav>li>a:hover {
+    background-color: #2369ef;
+}
+
+/* -----------------------------------------------------------------------------
+ * Table of contents.
+ * -------------------------------------------------------------------------- */
+
+.bs-sidenav {
+    padding: 4px;
+}
+
+/* Make the table of contents scrollable and turn off wrapping. */
+.bs-sidebar {
+    background-color: #d8dbdb;
+    overflow-y:       auto;
+    max-height:       100%;
+    border:           1px solid #888888;
+    white-space:      nowrap;
+}
+
+/* Highlight the currently viewed section in the TOC. */
+.bs-sidebar .nav > .active > a,
+.bs-sidebar .nav > .active:hover > a,
+.bs-sidebar .nav > .active:focus > a {
+    background-color: #d2dbef;
+    font-weight:      500;
+}
+
+/* Set indentation for 3 levels of TOC. */
+.bs-sidebar .nav > li.first-level  { margin-left:  0px; }
+.bs-sidebar .nav > li.second-level { margin-left:  6px; }
+.bs-sidebar .nav > li.third-level  { margin-left: 12px; }
+
+/* Draw a line after each first-level header. */
+.bs-sidebar .nav > li.first-level > a {
+    padding-top: 8px;
+    display:     flex;
+}
+.bs-sidebar .nav > li.first-level > a:after {
+    content:       "";
+    border-bottom: 1px solid #224daf;
+    flex:          1;
+    height:        1em;
+    margin-left:   4px;
+}
+
+/* Regular and hovered colors. */
+.bs-sidebar .nav > li > a {
+    color:    #224daf;
+    padding:  0px 2px;
+}
+.bs-sidebar .nav > li > a:hover {
+    background-color: #e3e0f0;
+    color:            #111155;
+}
+
+/* -----------------------------------------------------------------------------
+ * Sections.
+ * -------------------------------------------------------------------------- */
+
+/* The custom pss_outline extension adds section wrappers around all headers
+   and their following content to allow this customization to work. */
+
+.section1 { margin-left:  0px; /* background-color: hsl(0,0%,100%); */ }
+.section2 { margin-left: 20px; /* background-color: hsl(0,0%,98%); */ }
+.section3 { margin-left: 40px; /* background-color: hsl(0,0%,96%); */ }
+.section4 { margin-left: 60px; /* background-color: hsl(0,0%,94%); */ }
+.section5 { margin-left: 80px; /* background-color: hsl(0,0%,92%); */ }
+
+/* -----------------------------------------------------------------------------
+ * Title and headers.
+ * -------------------------------------------------------------------------- */
+
+/* Special looks for title. */
+.title {
+    color:            #14464B;
+    background-color: #e8ebeb;
+    text-align:       center;
+    padding:          8px;
+    border:           4px solid #14464B;
+    font-size:        28px;
+    font-weight:      700;
+}
+
+/* Other header lines */
+h1, h2, h3, h4, h5 {
+    color:            #14464B;
+    padding-top:      4px;
+    padding-bottom:   2px;
+    font-variant:     normal;  /* Override small-caps in cinder */
+    font-style:       normal;  /* Override italics in cinder    */
+}
+
+h1 {
+    background-color: hsl(var(--sec-hue),86%,83%);
+    font-size:        28px;
+    font-weight:      700;
+}
+h2 {
+    background-color: hsl(var(--sec-hue),86%,88%);
+    font-size:        24px;
+    font-weight:      600;
+}
+h3 {
+    background-color: hsl(var(--sec-hue),86%,92%);
+    font-size:        20px;
+    font-weight:      550;
+}
+h4 {
+    background-color: hsl(var(--sec-hue),86%,95%);
+    font-size:        16px;
+    font-weight:      500;
+}
+h5 {
+    background-color: hsl(var(--sec-hue),86%,98%);
+    font-size:        14px;
+    font-weight:      450;
+}
+
+h3, h4, h5 { font-style: italic; }
+
+/* -----------------------------------------------------------------------------
+ * Links.
+ * -------------------------------------------------------------------------- */
+
+a         { color: #423eef; }
+a:visited { color: #9a3eef;  }
+
+/* -----------------------------------------------------------------------------
+ * Custom spans.
+ * -------------------------------------------------------------------------- */
+
+/* Introducing a new term. */
+.term {
+    color:      red;
+    font-style: italic;
+}
+
+/* Tiny text that is hard to read on purpose. */
+.tiny {
+    font-size: 7pt;
+}
+
+/* -----------------------------------------------------------------------------
+ * Custom table divs.
+ * -------------------------------------------------------------------------- */
+
+/* Center the table listing tools. */
+.tool-table {
+    margin: auto;
+    width:  80%;
+}

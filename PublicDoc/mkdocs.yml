@@ -1,0 +1,47 @@
+# TODO: Need to pass in app name, current version, and URL stuff. XXXX
+
+site_name:   MakerVR
+site_author: Paul S. Strauss
+copyright:   Copyright &copy; 2021-2022 Paul S. Strauss
+docs_dir:    docs
+site_dir:    site
+strict:      true
+
+site_url: https://pss959.github.io/MakerVR-dist
+repo_url: https://github.com/pss959/MakerVR-dist
+edit_uri: https://github.com/pss959/MakerVR/edit/master/MakerVR/PublicDoc/docs/
+
+nav:
+  - 'Home':          README.md
+  - 'User Guide':    UserGuide.md
+  - 'Cheat Sheet':   CheatSheet.md
+  - 'Release Notes': ReleaseNotes.md
+
+theme:
+  name: cinder
+
+markdown_extensions:
+  - attr_list               # Allows images to be styled.
+  - md_in_html              # Allows markdown to be wrapped in HTML blocks.
+  - pss_outline             # Wraps sections in <section> tags.
+
+extra_css:
+  - css/custom.css
+  - css/version-selector.css
+
+extra_javascript:
+  - js/versions.js          # Generated file: describes all versions.
+  - js/version-selector.js  # Adds drop-down to select a version.
+
+plugins:
+  - exclude:                # Keeps UserGuide subdir from creating extra HTML.
+      glob:
+        - "UserGuide/*.md"
+        - "*.meta"
+  - include-markdown        # Allows markdown files to be included.
+  - macros                  # Allows variable substitution.
+  - search                  # Sets up search index and button.
+
+extra: {                    # Simple variables for macros package.
+  "icondir": "./img/MenuIcons",
+}

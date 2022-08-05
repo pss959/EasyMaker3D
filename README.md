@@ -30,6 +30,20 @@ TODO: Fill this in
 Unfortunately (as of 6/1/22), this was not enough to work around the bug;
 moving the JSON file was still required.
 
+Need doxygen and mkdocs for internal doc and public doc, respectively.
+
++ Make sure `mkdocs` and all of its dependencies are installed with
+
+``` bash
+pip install -U \
+    mkdocs \
+    mkdocs-exclude \
+    mkdocs-include-markdown-plugin \
+    mkdocs_bootstrap \
+    mkdocs_cinder \
+    mkdocs_macros_plugin
+```
+
 ### Windows
 
 TODO: Clean this up

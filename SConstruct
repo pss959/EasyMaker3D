@@ -887,7 +887,7 @@ gen_coverage = cov_test_env.Command(
 env.Alias('Coverage', gen_coverage)
 
 # -----------------------------------------------------------------------------
-# Include Ion, submodule, resources, and doc build files.
+# Include Ion, submodule, resources, internal doc, and public doc build files.
 # -----------------------------------------------------------------------------
 
 Export('brief', 'build_dir', 'doc_build_dir', 'mode', 'platform_env',
@@ -902,9 +902,10 @@ if platform == 'linux':
     reg_env.Depends('Apps', 'Icons')
 
 SConscript('submodules/SConscript')
-doc = SConscript('InternalDoc/SConscript')
-ion_lib = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
-                     duplicate=False)
+internal_doc = SConscript('InternalDoc/SConscript')
+public_doc   = SConscript('PublicDoc/SConscript')
+ion_lib      = SConscript('ionsrc/Ion/SConscript',
+                          variant_dir=f'{build_dir}/Ion', duplicate=False)
 
 # -----------------------------------------------------------------------------
 # Building the release as a Zip file.
@@ -973,6 +974,7 @@ rel_env.Alias('Release', rel)
 # Other Aliases.
 # -----------------------------------------------------------------------------
 
-reg_env.Alias('Doc', [doc])
-reg_env.Alias('All', [app, 'Doc'])
+reg_env.Alias('InternalDoc', [internal_doc])
+reg_env.Alias('PublicDoc',   [public_doc])
+reg_env.Alias('All', [app, 'InternalDoc', 'PublicDoc'])
 reg_env.Alias('Ion', ion_lib)
