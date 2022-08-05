@@ -5,8 +5,9 @@ from os    import environ
 # Configuration.
 # -----------------------------------------------------------------------------
 
-APP_NAME       = 'MakerVR'
-VERSION_STRING = '0.0.1'
+APP_NAME            = 'MakerVR'
+VERSION_STRING      = '0.0.1'
+PUBLIC_DOC_BASE_URL = 'https://pss959.github.io/MakerVR-dist/'
 
 AddOption('--mode', dest='mode', type='string', nargs=1, action='store',
           default='dbg', metavar='dbg|opt|rel',
@@ -739,8 +740,9 @@ def BuildObject(env, source):
     defs += env['CPPDEFINES']
     if source == 'Base/Tuning.cpp':
         defs += [
-            ('APP_NAME',       QuoteDef(APP_NAME)),
-            ('VERSION_STRING', QuoteDef(VERSION_STRING)),
+            ('APP_NAME',            QuoteDef(APP_NAME)),
+            ('VERSION_STRING',      QuoteDef(VERSION_STRING)),
+            ('PUBLIC_DOC_BASE_URL', QuoteDef(PUBLIC_DOC_BASE_URL)),
         ]
 
     return env.SharedObject(source=f'$BUILD_DIR/{source}',

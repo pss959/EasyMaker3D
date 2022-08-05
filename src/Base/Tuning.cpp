@@ -5,6 +5,7 @@ namespace TK {
 // Application Settings (values passed in from SCons)
 const char *   kApplicationName                  = APP_NAME;
 const char *   kVersionString                    = VERSION_STRING;
+const char *   kPublicDocBaseURL                 = PUBLIC_DOC_BASE_URL;
 
 // Boards and Panels
 const float    kAppBoardHeight                   = 14;

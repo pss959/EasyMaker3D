@@ -26,6 +26,9 @@ extern const char *   kApplicationName;
 /// Application version as a string.
 extern const char *   kVersionString;
 
+/// Base URL of public documentation.
+extern const char *   kPublicDocBaseURL;
+
 ///@}
 
 /// \name Boards and Panels
