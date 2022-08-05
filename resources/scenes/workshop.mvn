@@ -1,4 +1,4 @@
-# Workshop scene for IMakerVR.
+# Workshop scene: the main scene for the application.
 
 Scene "WorkshopScene" {
   CONSTANTS: [

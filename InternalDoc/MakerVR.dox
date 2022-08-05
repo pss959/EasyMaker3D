@@ -1,15 +1,15 @@
 /// Copyright 2021 Paul S. Strauss
 
 // -----------------------------------------------------------------------------
-// This file contains documentation for the main internal IMakerVR Doxygen page.
+// This file contains documentation for the main internal Doxygen page.
 // -----------------------------------------------------------------------------
 
-/** \mainpage IMakerVR Internal Documentation
+/** \mainpage $(APP_NAME) Internal Documentation: Version $(VERSION_STRING)
 
 <hr> <!-- ------------------------------------------------------------------ -->
 \section Intro Introduction
 
-IMakerVR is a VR-enabled application for building models for 3D printing.
+$(APP_NAME) is a VR-enabled application for building models for 3D printing.
 
 This is internal Doxygen-generated documentation for developers.
 

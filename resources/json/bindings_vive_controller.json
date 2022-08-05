@@ -97,6 +97,6 @@
     }
   },
   "controller_type" : "vive_controller",
-  "description" : "Default bindings for IMakerVR for the Vive controller",
-  "name" : "IMakerVR bindings for Vive Controller"
+  "description" : "Default bindings for MakerVR for the Vive controller",
+  "name" : "MakerVR bindings for Vive Controller"
 }

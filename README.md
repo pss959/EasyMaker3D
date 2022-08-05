@@ -1,6 +1,7 @@
-# IMakerVR
+# MakerVR
 
-A test for implementing MakerVR using the Ion library + OpenXR.
+Source for MakerVR: a VR-enabled application for building models for 3D
+printing.
 
 ## Setup
 

@@ -98,6 +98,6 @@
     }
   },
   "controller_type" : "generic",
-  "description" : "Default bindings for IMakerVR for a generic controller",
-  "name" : "IMakerVR bindings for a generic controller"
+  "description" : "Default bindings for MakerVR for a generic controller",
+  "name" : "MakerVR bindings for a generic controller"
 }

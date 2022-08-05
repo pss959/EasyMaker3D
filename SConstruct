@@ -888,7 +888,8 @@ env.Alias('Coverage', gen_coverage)
 # Include Ion, submodule, resources, and doc build files.
 # -----------------------------------------------------------------------------
 
-Export('brief', 'build_dir', 'doc_build_dir', 'mode', 'platform_env')
+Export('brief', 'build_dir', 'doc_build_dir', 'mode', 'platform_env',
+       'APP_NAME', 'VERSION_STRING')
 
 # Icons are built only on Linux. Building on different platforms creates
 # slightly different image files, causing git thrashing. No need for that once
