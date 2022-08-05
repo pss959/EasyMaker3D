@@ -492,7 +492,7 @@ elif platform == 'linux':
 platform_env.Replace(
     PLATFORM        = platform,
     OPENVR_PLATFORM = openvr_platform,
-    OPENVR_DIR      = 'submodules/openvr/lib/$OPENVR_PLATFORM',
+    OPENVR_DIR      = 'submodules/openvr/bin/$OPENVR_PLATFORM',
     OPENVR_LIB      = '$OPENVR_DIR/${SHLIBPREFIX}openvr_api${SHLIBSUFFIX}',
 )
 
@@ -582,7 +582,7 @@ if platform == 'windows':
     # Note: the "-O1" keeps big files from choking on Windows ("string table
     # overflow", "file too big").
     big_cflags = ['-O1']
-    run_program = f'bin\\runprogram.bat {opt_or_dbg}'
+    run_program = f'bin\\runprogram.bat {mode}'
 
 elif platform == 'linux':
     base_env.Append(
@@ -757,6 +757,11 @@ app_env.Append(
     LIBPATH = ['$BUILD_DIR/docopt.cpp'],
     LIBS = ['imakervr', 'docopt'],
 )
+
+# Avoid opening a cmd window with the application on Windows.
+if platform == 'windows':
+    app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
+
 imakervr=None
 for app_name in apps:
     app = app_env.Program(
@@ -928,6 +933,32 @@ def BuildZipFile(target, source, env):
 zip_input  = [imakervr, reg_lib, ion_lib, '$OPENVR_LIB', 'resources']
 zip_name   = platform.capitalize()
 zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
+
+# Windows requires all dependent libraries to be present.
+zip_win_libs = [
+    'glfw3',
+    'libbrotlicommon',
+    'libbrotlidec',
+    'libbz2-1',
+    'libfreetype-6',
+    'libgcc_s_seh-1',
+    'libglib-2.0-0',
+    'libgmp-10',
+    'libgraphite2',
+    'libharfbuzz-0',
+    'libiconv-2',
+    'libintl-8',
+    'libpcre-1',
+    'libpng16-16',
+    'libstdc++-6',
+    'libwinpthread-1',
+    'zlib1',
+]
+if platform == 'windows':
+    from os import popen
+    mingw_dir = popen('cygpath -m /mingw64/bin').read().replace('\n', '')
+    rel_env.Replace(MINGW_DIR = mingw_dir)
+    zip_input += [f'$MINGW_DIR/{lib}.dll' for lib in zip_win_libs]
 
 rel = rel_env.Command(zip_output, zip_input, BuildZipFile)
 rel_env.Alias('Release', rel)
