@@ -34,7 +34,6 @@ class SettingsManager {
     ChangeFunc  change_func_;
     SettingsPtr settings_;
 
-    SettingsPtr     ReadSettings_(const FilePath &path);
-    void            WriteSettings_(const FilePath &path);
-    static FilePath GetSettingsFilePath_();
+    SettingsPtr ReadSettings_(const FilePath &path);
+    void        WriteSettings_();
 };

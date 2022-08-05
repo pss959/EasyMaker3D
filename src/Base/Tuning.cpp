@@ -2,9 +2,9 @@
 
 namespace TK {
 
-// Application Settings
-const char *   kApplicationName                  = "IMakerVR";
-const char *   kVersionString                    = "0.2.1";
+// Application Settings (values passed in from SCons)
+const char *   kApplicationName                  = APP_NAME;
+const char *   kVersionString                    = VERSION_STRING;
 
 // Boards and Panels
 const float    kAppBoardHeight                   = 14;

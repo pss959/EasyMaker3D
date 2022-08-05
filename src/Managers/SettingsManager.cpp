@@ -12,7 +12,8 @@
 
 SettingsManager::SettingsManager() {
     // See if there is a file with settings.
-    const FilePath path = GetSettingsFilePath_();
+    const FilePath path = FilePath::Join(FilePath::GetSettingsDirPath(),
+                                         "settings.mvr");
     if (path.Exists())
         settings_ = ReadSettings_(path);
     if (! settings_)
@@ -21,7 +22,7 @@ SettingsManager::SettingsManager() {
 
 void SettingsManager::SetSettings(const Settings &new_settings) {
     settings_->CopyFrom(new_settings);
-    WriteSettings_(GetSettingsFilePath_());
+    WriteSettings_();
     if (change_func_)
         change_func_(new_settings);
 }
@@ -45,7 +46,16 @@ SettingsPtr SettingsManager::ReadSettings_(const FilePath &path) {
     return settings;
 }
 
-void SettingsManager::WriteSettings_(const FilePath &path) {
+void SettingsManager::WriteSettings_() {
+    // Make sure the directory path exists.
+    FilePath path = FilePath::GetSettingsDirPath();
+    if (! path.CreateDirectories()) {
+        std::cerr << "*** Unable to create settings directory '"
+                  << path.ToString() << "'\n";
+        return;
+    }
+
+    path = FilePath::Join(path, "settings.mvr");
     std::ofstream out(path.ToNativeString());
     if (out.fail()) {
         std::cerr << "*** Unable to write settings to '"
@@ -55,8 +65,4 @@ void SettingsManager::WriteSettings_(const FilePath &path) {
 
     Parser::Writer writer(out);
     writer.WriteObject(*settings_);
-}
-
-FilePath SettingsManager::GetSettingsFilePath_() {
-    return FilePath("settings.mvr");
 }

@@ -8,6 +8,7 @@
 
 #include <ion/port/environment.h>
 
+#include "Base/Tuning.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
@@ -156,6 +157,14 @@ void FilePath::Remove() {
     std::filesystem::remove(*this);
 }
 
+bool FilePath::CreateDirectories() {
+    std::error_code ec;
+    bool ret = std::filesystem::create_directories(*this, ec);
+    // Failure or the result is a directory.
+    ASSERT(! ret || IsDirectory());
+    return ret;
+}
+
 FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
     ASSERT(! p1.IsAbsolute());
     FilePath result = p0;
@@ -191,14 +200,12 @@ FilePath FilePath::GetHomeDirPath() {
 
 FilePath FilePath::GetSettingsDirPath() {
 #if defined(ION_PLATFORM_WINDOWS)
-    FilePath dir = GetEnvVar_("APPDATA");
+    FilePath path = GetEnvVar_("APPDATA");
 #else
-    FilePath dir = GetEnvVar_("HOME");
+    FilePath path = Join(FilePath(GetEnvVar_("HOME")), FilePath(".config"));
 #endif
-    ASSERT(std::filesystem::is_directory(dir));
-
-    dir /= "imakervr";
-    return dir;
+    ASSERT(std::filesystem::is_directory(path));
+    return Join(path, FilePath(TK::kApplicationName));
 }
 
 FilePath FilePath::GetTestDataPath() {

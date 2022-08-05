@@ -65,10 +65,9 @@ static bool MainLoop_(const Application::Options &options) {
 }
 
 static const char kUsageString[] =
-R"(imakervr: A VR-enabled application for creating models for 3D printing.
+R"(<NAME>: A VR-enabled application for creating models for 3D printing.
     Usage:
-      imakervr [--fullscreen] [--klog=<klog_string>] [--novr]
-               [--remote] [--touch]
+      <NAME> [--fullscreen] [--klog=<klog_string>] [--novr] [--remote] [--touch]
 
     Debug-only Options:
       --fullscreen    Start with a full-screen window.
@@ -79,7 +78,9 @@ R"(imakervr: A VR-enabled application for creating models for 3D printing.
 )";
 
 int main(int argc, const char *argv[]) {
-    Args args(argc, argv, kUsageString);
+    const std::string usage = Util::ReplaceString(kUsageString, "<NAME>",
+                                                  TK::kApplicationName);
+    Args args(argc, argv, usage);
 
     Application::Options options;
 

@@ -1,6 +1,6 @@
 CommandList {
   app_info: AppInfo {
-    app_name: "IMakerVR",
+    app_name: "MakerVR",
     version: "0.2.1",
     session_state: SessionState {
     },

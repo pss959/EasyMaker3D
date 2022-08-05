@@ -5,6 +5,9 @@ from os    import environ
 # Configuration.
 # -----------------------------------------------------------------------------
 
+APP_NAME       = 'MakerVR'
+VERSION_STRING = '0.0.1'
+
 AddOption('--mode', dest='mode', type='string', nargs=1, action='store',
           default='dbg', metavar='dbg|opt|rel',
           help='optimized/debug/release mode')
@@ -717,52 +720,66 @@ if platform == 'windows':
     reg_env['SPAWN'] = winspawn
 
 # -----------------------------------------------------------------------------
-# Building IMakerVR library so tests can link against it. It has to be a shared
+# Building main library so tests can link against it. It has to be a shared
 # library so that it can link against other shared libraries.
 # -----------------------------------------------------------------------------
 
 def BuildObject(env, source):
+    flags = []
+    defs  = []
     if source in slow_lib_sources:
-        flags = opt_env['CXXFLAGS']  # Always use optimized version
+        flags += opt_env['CXXFLAGS']  # Always use optimized version
     else:
-        flags = env['CXXFLAGS']
+        flags += env['CXXFLAGS']
         if source in big_lib_sources:
             flags += big_cflags
         if source in openvr_lib_sources:
             flags += openvr_cflags
-    return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=flags)
+    # Special case for Tuning.cpp, which needs to have these defined.
+    defs += env['CPPDEFINES']
+    if source == 'Base/Tuning.cpp':
+        defs += [
+            ('APP_NAME',       QuoteDef(APP_NAME)),
+            ('VERSION_STRING', QuoteDef(VERSION_STRING)),
+        ]
+
+    return env.SharedObject(source=f'$BUILD_DIR/{source}',
+                            CXXFLAGS=flags, CPPDEFINES=defs)
+
+main_lib = APP_NAME
 
 # Build regular and coverage-enabled object files.
 reg_lib_objects = [BuildObject(reg_env, source) for source in lib_sources]
 cov_lib_objects = [BuildObject(cov_env, source) for source in lib_sources]
 
-reg_lib = reg_env.SharedLibrary('$BUILD_DIR/imakervr', reg_lib_objects)
-cov_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_cov',
-                                   cov_lib_objects)
+reg_lib = reg_env.SharedLibrary(f'$BUILD_DIR/{main_lib}',     reg_lib_objects)
+cov_lib = cov_env.SharedLibrary(f'$BUILD_DIR/{main_lib}_cov', cov_lib_objects)
 
 reg_env.Alias('Libs', reg_lib)
 
 # -----------------------------------------------------------------------------
-# Building IMakerVR and related applications. No need for a coverage-enabled
+# Building main and related applications. No need for a coverage-enabled
 # version.
 # -----------------------------------------------------------------------------
 
+main_app_name = APP_NAME
+
 # Build the applications.
-apps = ['imakervr', 'printtypes', 'nodeviewer']
+apps = [main_app_name, 'nodeviewer', 'printtypes']
 
 apps_extra_sources = ['$BUILD_DIR/App/Args.cpp']
 
 app_env = reg_env.Clone()
 app_env.Append(
     LIBPATH = ['$BUILD_DIR/docopt.cpp'],
-    LIBS = ['imakervr', 'docopt'],
+    LIBS    = [main_lib, 'docopt'],
 )
 
 # Avoid opening a cmd window with the application on Windows.
 if platform == 'windows':
     app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
 
-imakervr=None
+main_app = None
 for app_name in apps:
     app = app_env.Program(
         f'$BUILD_DIR/Apps/{app_name}',
@@ -771,22 +788,8 @@ for app_name in apps:
     app_env.Alias('Apps', app)
 
     # Main app is special
-    if app_name == 'imakervr':
-        imakervr = app
-
-# -----------------------------------------------------------------------------
-# Running IMakerVR application.
-# -----------------------------------------------------------------------------
-
-# Create an execution environment that has all the regular environment
-# variables so that the X11 display works.
-exec_env = reg_env.Clone(ENV = environ)
-
-exec_env.Alias('RunApp', imakervr,
-               f'{run_program} $SOURCE ')  # End space seems to be required.
-
-# Make sure run target is always considered out of date.
-exec_env.AlwaysBuild('RunApp')
+    if app_name == main_app_name:
+        main_app = app
 
 # -----------------------------------------------------------------------------
 # Building tests.
@@ -796,9 +799,9 @@ exec_env.AlwaysBuild('RunApp')
 reg_test_env = reg_env.Clone(ENV = environ)
 cov_test_env = cov_env.Clone(ENV = environ)
 
-# Add the regular or coverage-enabled IMakerVR library.
-reg_test_env.Append(LIBS = ['imakervr'])
-cov_test_env.Append(LIBS = ['imakervr_cov'])
+# Add the regular or coverage-enabled main library.
+reg_test_env.Append(LIBS = [main_lib])
+cov_test_env.Append(LIBS = [f'{main_lib}_cov'])
 
 # Add necessary testing infrastructure.
 for env in [reg_test_env, cov_test_env]:
@@ -915,7 +918,7 @@ def BuildZipFile(target, source, env):
     from zipfile import ZipFile
     zf = ZipFile(str(target[0]), 'w')
     def AddFile(f, rel_path):
-        zf.write(f, f'IMakerVR/{rel_path}')
+        zf.write(f, f'{APP_NAME}/{rel_path}')
     for src in source:
         name = str(src)
         # Walk through directories.
@@ -930,8 +933,8 @@ def BuildZipFile(target, source, env):
             AddFile(name, basename(name))
 
 # Zip the executable, all 3 shared libraries, and the resources dir.
-zip_input  = [imakervr, reg_lib, ion_lib, '$OPENVR_LIB', 'resources']
-zip_name   = platform.capitalize()
+zip_input  = [main_app, reg_lib, ion_lib, '$OPENVR_LIB', 'resources']
+zip_name   = f'{APP_NAME}-{VERSION_STRING}-{platform.capitalize()}'
 zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
 
 # Windows requires all dependent libraries to be present.

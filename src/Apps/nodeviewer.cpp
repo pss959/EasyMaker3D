@@ -496,7 +496,7 @@ void Application_::IntersectCenterRay_() {
 // ----------------------------------------------------------------------------
 
 static const char kUsageString[] =
-R"(nodeviewer: a test program for viewing IMakerVR nodes
+R"(nodeviewer: a test program for viewing nodes
 
     Usage:
       nodeviewer [--klog=<klog_string>] [--add=<node_name>] [--fixed_camera]

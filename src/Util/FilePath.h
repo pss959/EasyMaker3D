@@ -91,6 +91,11 @@ class FilePath : private std::filesystem::path {
     /// files for testing.
     void Remove();
 
+    /// Creates all directories that do not already exist in this path. This
+    /// should be called only on a directory path.  Returns false if anything
+    /// fails.
+    bool CreateDirectories();
+
     /// Joins two paths, returning the result. The second path must be relative.
     static FilePath Join(const FilePath &p0, const FilePath &p1);
 
@@ -114,8 +119,7 @@ class FilePath : private std::filesystem::path {
     /// Returns a path to the user's home directory, which is OS-dependent.
     static FilePath GetHomeDirPath();
 
-    /// Returns a path to the directory that contains the user's settings
-    /// file, which is OS-dependent.
+    /// Returns a path to the settings directory, which is OS-dependent.
     static FilePath GetSettingsDirPath();
 
     /// Returns a path to the test data directory, which comes from the
