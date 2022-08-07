@@ -11,6 +11,7 @@
 #include "Base/Tuning.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -153,11 +154,13 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
 }
 
 void FilePath::Remove() {
+    KLOG('f', "Removing path \"" << ToString() << "\n");
     ASSERT(Exists());
     std::filesystem::remove(*this);
 }
 
 bool FilePath::CreateDirectories() {
+    KLOG('f', "Creating directories for path \"" << ToString() << "\"");
     std::error_code ec;
     bool ret = std::filesystem::create_directories(*this, ec);
     // Failure or the result is a directory.
@@ -204,7 +207,6 @@ FilePath FilePath::GetSettingsDirPath() {
 #else
     FilePath path = Join(FilePath(GetEnvVar_("HOME")), FilePath(".config"));
 #endif
-    ASSERT(std::filesystem::is_directory(path));
     return Join(path, FilePath(TK::kApplicationName));
 }
 

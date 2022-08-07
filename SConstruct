@@ -529,6 +529,7 @@ base_env.Replace(
         '#/submodules/openvr/headers',
     ],
     CPPDEFINES = [
+        ('RESOURCE_DIR',  QuoteDef('./resources')),
         ('TEST_DATA_DIR', QuoteDef(Dir('#/src/Tests/Data').abspath)),
 
         # Required for Ion.
@@ -581,7 +582,6 @@ if platform == 'windows':
             ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
-            ('RESOURCE_DIR', QuoteDef('./resources')),
         ],
     )
     # Note: the "-O1" keeps big files from choking on Windows ("string table
