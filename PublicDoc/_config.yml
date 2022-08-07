@@ -1,0 +1,17 @@
+title: My First Jekyll Test
+email: pss@acm.org
+description: This is the description in _config.yml
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://pss959.github.io/"
+github_username:  pss959
+
+# Input and output directories
+source:      docs
+destination: site
+
+remote_theme: just-the-docs/just-the-docs
+
+exclude:
+  - .jekyll-cache/
+  - Gemfile
+  - Gemfile.lock
