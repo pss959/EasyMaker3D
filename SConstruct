@@ -581,6 +581,7 @@ if platform == 'windows':
             ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
+            ('RESOURCE_DIR', QuoteDef('./resources')),
         ],
     )
     # Note: the "-O1" keeps big files from choking on Windows ("string table
@@ -637,7 +638,6 @@ dbg_env.Append(
         # This allows valgrind to work on the debug executables.
         'CGAL_DISABLE_ROUNDING_MATH_CHECK',
         # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
-        ('RESOURCE_DIR',       QuoteDef(Dir('#/resources').abspath)),
     ],
 )
 opt_env.Append(
@@ -647,7 +647,6 @@ opt_env.Append(
         ('CHECK_GL_ERRORS',    'false'),
         ('ENABLE_LOGGING',     'true'),
         ('ENABLE_DEBUG_PRINT', 'true'),
-        ('RESOURCE_DIR',       QuoteDef(Dir('#/resources').abspath)),
     ],
 )
 rel_env.Append(
@@ -656,7 +655,6 @@ rel_env.Append(
     CPPDEFINES = [
         ('CHECK_GL_ERRORS',    'false'),
         ('RELEASE_BUILD',      'true'),
-        ('RESOURCE_DIR',       QuoteDef('./resources')),
     ],
 )
 # The release executable always runs from its own directory.
@@ -777,8 +775,9 @@ app_env.Append(
     LIBS    = [main_lib, 'docopt'],
 )
 
-# Avoid opening a cmd window with the application on Windows.
-if platform == 'windows':
+# Avoid opening a cmd window with the application on Windows (Release only -
+# otherwise no logging output can appear!)
+if platform == 'windows' and mode == "rel":
     app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
 
 main_app = None

@@ -75,10 +75,6 @@ class FileMap {
     /// Returns true if the given path is still valid with respect to all
     /// dependencies and load times.
     bool IsPathStillValid_(const FilePath &path);
-
-    /// Checks that a path is absolute (except in a release build), throwing an
-    /// exception if it isn't.
-    static void CheckAbsolute_(const FilePath &path);
 };
 
 }  // namespace SG
