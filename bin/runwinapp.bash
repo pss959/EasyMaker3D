@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
 mode=rel
-if [[ $# -eq 1 ]] ; then mode=$1 ; fi
+if [[ $# -gt 0 ]] ; then
+   mode=$1
+   shift
+fi
 
 bin_dir="./build/$mode"
 ovr_dir="./submodules/openvr/bin/win64"
 
-env PATH="$PATH:$bin_dir:$ovr_dir" $bin_dir/Apps/MakerVR.exe
+env PATH="$PATH:$bin_dir:$ovr_dir" $bin_dir/Apps/MakerVR.exe $*
