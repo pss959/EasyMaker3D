@@ -11,6 +11,7 @@
 #include "Base/Tuning.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -153,15 +154,24 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
 }
 
 void FilePath::Remove() {
+    KLOG('f', "Removing path \"" << ToString() << "\n");
     ASSERT(Exists());
     std::filesystem::remove(*this);
 }
 
 bool FilePath::CreateDirectories() {
+    KLOG('f', "Creating directories for path \"" << ToString() << "\"");
     std::error_code ec;
     bool ret = std::filesystem::create_directories(*this, ec);
-    // Failure or the result is a directory.
+
+    // Windows has a bug in create_directories(); it returns false with an
+    // error code of 0 if the directory already exists.
+    if (! ret && ec.value() == 0)
+        ret = true;
+
+    // Must be an actual failure or the result is a directory.
     ASSERT(! ret || IsDirectory());
+
     return ret;
 }
 
@@ -193,7 +203,12 @@ FilePath FilePath::GetFullResourcePath(const std::string &subdir,
 }
 
 FilePath FilePath::GetHomeDirPath() {
-    const FilePath dir = GetEnvVar_("HOME");
+#if defined(ION_PLATFORM_WINDOWS)
+    const std::string kVarName = "HOMEPATH";
+#else
+    const std::string kVarName = "HOME";
+#endif
+    const FilePath dir = GetEnvVar_(kVarName);
     ASSERT(dir.Exists());
     return dir;
 }
@@ -204,7 +219,6 @@ FilePath FilePath::GetSettingsDirPath() {
 #else
     FilePath path = Join(FilePath(GetEnvVar_("HOME")), FilePath(".config"));
 #endif
-    ASSERT(std::filesystem::is_directory(path));
     return Join(path, FilePath(TK::kApplicationName));
 }
 

@@ -9,6 +9,7 @@
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 SettingsManager::SettingsManager() {
     // See if there is a file with settings.
@@ -28,6 +29,7 @@ void SettingsManager::SetSettings(const Settings &new_settings) {
 }
 
 SettingsPtr SettingsManager::ReadSettings_(const FilePath &path) {
+    KLOG('f', "Reading settings from \"" << path.ToString() << "\"");
     SettingsPtr settings;
     try {
         Parser::Parser parser;
@@ -56,6 +58,7 @@ void SettingsManager::WriteSettings_() {
     }
 
     path = FilePath::Join(path, "settings.mvr");
+    KLOG('f', "Writing settings to \"" << path.ToString() << "\"");
     std::ofstream out(path.ToNativeString());
     if (out.fail()) {
         std::cerr << "*** Unable to write settings to '"

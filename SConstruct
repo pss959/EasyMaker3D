@@ -529,6 +529,7 @@ base_env.Replace(
         '#/submodules/openvr/headers',
     ],
     CPPDEFINES = [
+        ('RESOURCE_DIR',  QuoteDef('./resources')),
         ('TEST_DATA_DIR', QuoteDef(Dir('#/src/Tests/Data').abspath)),
 
         # Required for Ion.
@@ -637,7 +638,6 @@ dbg_env.Append(
         # This allows valgrind to work on the debug executables.
         'CGAL_DISABLE_ROUNDING_MATH_CHECK',
         # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
-        ('RESOURCE_DIR',       QuoteDef(Dir('#/resources').abspath)),
     ],
 )
 opt_env.Append(
@@ -647,7 +647,6 @@ opt_env.Append(
         ('CHECK_GL_ERRORS',    'false'),
         ('ENABLE_LOGGING',     'true'),
         ('ENABLE_DEBUG_PRINT', 'true'),
-        ('RESOURCE_DIR',       QuoteDef(Dir('#/resources').abspath)),
     ],
 )
 rel_env.Append(
@@ -656,7 +655,6 @@ rel_env.Append(
     CPPDEFINES = [
         ('CHECK_GL_ERRORS',    'false'),
         ('RELEASE_BUILD',      'true'),
-        ('RESOURCE_DIR',       QuoteDef('./resources')),
     ],
 )
 # The release executable always runs from its own directory.
@@ -777,8 +775,9 @@ app_env.Append(
     LIBS    = [main_lib, 'docopt'],
 )
 
-# Avoid opening a cmd window with the application on Windows.
-if platform == 'windows':
+# Avoid opening a cmd window with the application on Windows (Release only -
+# otherwise no logging output can appear!)
+if platform == 'windows' and mode == "rel":
     app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
 
 main_app = None
@@ -942,7 +941,7 @@ zip_name   = f'{APP_NAME}-{VERSION_STRING}-{platform.capitalize()}'
 zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
 
 # Windows requires all dependent libraries to be present.
-zip_win_libs = [
+zip_win_mingw_libs = [
     'glfw3',
     'libbrotlicommon',
     'libbrotlidec',
@@ -964,8 +963,7 @@ zip_win_libs = [
 if platform == 'windows':
     from os import popen
     mingw_dir = popen('cygpath -m /mingw64/bin').read().replace('\n', '')
-    rel_env.Replace(MINGW_DIR = mingw_dir)
-    zip_input += [f'$MINGW_DIR/{lib}.dll' for lib in zip_win_libs]
+    zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
 
 rel = rel_env.Command(zip_output, zip_input, BuildZipFile)
 rel_env.Alias('Release', rel)

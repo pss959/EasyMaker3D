@@ -8,7 +8,7 @@ set _input=%*
 call set params=%%_input:%1 =%%
 
 :: Make sure built DLLs are accessible
-set "PATH=%PATH%;c:\Install\msys64\mingw64\bin;build\%mode%"
+set "PATH=%PATH%;c:\Install\msys64\mingw64\bin;submodules\openvr\bin\win64;build\%mode%"
 
 echo === Running %params%
 %params%

@@ -6,6 +6,7 @@
 #include <ion/image/conversionutils.h>
 #include <ion/port/fileutils.h>
 
+#include "Util/KLog.h"
 #include "Util/String.h"
 
 namespace Util {
@@ -117,9 +118,15 @@ ion::gfx::ShapePtr ReadShape(const FilePath &path,
         spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
 
         // Open the file.
-        std::ifstream in(path.ToNativeString());
-        if (! in.fail())
+        const std::string native_path = path.ToNativeString();
+        KLOG('f', "Reading Shape from \"" << native_path << "\"");
+        std::ifstream in(native_path);
+        if (in.fail()) {
+            KLOG('f', "Failed to open \"" << native_path << "\"");
+        }
+        else {
             shape = ion::gfxutils::LoadExternalShape(spec, in);
+        }
     }
     return shape;
 }

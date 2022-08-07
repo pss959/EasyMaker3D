@@ -1,8 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <istream>
-#include <functional>
 #include <string>
 #include <typeindex>
 #include <typeinfo>
