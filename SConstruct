@@ -941,7 +941,7 @@ zip_name   = f'{APP_NAME}-{VERSION_STRING}-{platform.capitalize()}'
 zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
 
 # Windows requires all dependent libraries to be present.
-zip_win_libs = [
+zip_win_mingw_libs = [
     'glfw3',
     'libbrotlicommon',
     'libbrotlidec',
@@ -963,8 +963,7 @@ zip_win_libs = [
 if platform == 'windows':
     from os import popen
     mingw_dir = popen('cygpath -m /mingw64/bin').read().replace('\n', '')
-    rel_env.Replace(MINGW_DIR = mingw_dir)
-    zip_input += [f'$MINGW_DIR/{lib}.dll' for lib in zip_win_libs]
+    zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
 
 rel = rel_env.Command(zip_output, zip_input, BuildZipFile)
 rel_env.Alias('Release', rel)
