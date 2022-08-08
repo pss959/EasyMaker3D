@@ -1,11 +1,11 @@
 source "https://rubygems.org"
 
-# This allows remote_theme to be used in addition to setting up github pages.
-gem "github-pages", group: :jekyll_plugins
+gem "jekyll", group: :jekyll_plugins
 
 group :jekyll_plugins do
-  # gem "jekyll-remote-theme"
+  gem "just-the-docs"  # Theme.
   gem "jekyll-environment-variables"
+  gem "jekyll-liquify"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data
