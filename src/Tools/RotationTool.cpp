@@ -249,7 +249,8 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
     command_->SetRotation(rot);
     context.command_manager->SimulateDo(command_);
 
-    UpdateFeedback_(dim, new_angle, is_snapped);
+    const float kTextOffset = 2;
+    UpdateFeedback_(dim, new_angle, is_snapped, kTextOffset);
 }
 
 void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
@@ -281,7 +282,8 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
     new_rot.GetRollPitchYaw(&angles[2], &angles[0], &angles[1]);
     for (int dim = 0; dim < 3; ++dim) {
         // Offset the text by a different amount per dimension.
-        const float text_offset = 2 * dim;
+        const float kTextOffsetPerDim = 2;
+        const float text_offset = kTextOffsetPerDim * dim;
         UpdateFeedback_(dim, angles[dim], dim == snapped_dim, text_offset);
     }
 }

@@ -22,10 +22,10 @@ class Feedback : public SG::Node {
         scene_bounds_func_ = func;
     }
 
-    /// Sets a rotation to use to make text face forward. This rotates text
-    /// facing along Z in stage coordinates to do the same in world
-    /// coordinates.
-    void SetTextRotation(const Rotationf &rot) {
+    /// Sets a uniform scale and a rotation to use to make text a reasonable
+    /// size and to face forward.
+    void SetTextScaleAndRotation(float scale, const Rotationf &rot) {
+        text_scale_    = scale;
         text_rotation_ = rot;
     }
 
@@ -53,11 +53,16 @@ class Feedback : public SG::Node {
         return scene_bounds_func_();
     }
 
+    /// Returns a uniform scale factor to apply to text to make it a reasonable
+    /// size in world coordinates.
+    float GetTextScale() const { return text_scale_; }
+
     /// Returns a rotation to apply to text that is facing +Z in stage
     /// coordinates so that it faces +Z in world coordinates.
     const Rotationf & GetTextRotation() const { return text_rotation_; }
 
   private:
     SceneBoundsFunc scene_bounds_func_;
+    float           text_scale_ = 1;
     Rotationf       text_rotation_;
 };
