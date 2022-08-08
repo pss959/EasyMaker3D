@@ -17,19 +17,14 @@ class UnitConversion : public Parser::Object {
     /// Supported units to convert among.
     enum class Units {
         // Metric.
-        kCentimeters,     /// Default units.
-        kMillimeters,
+        kCentimeters,     ///< Default working units.
+        kMillimeters,     ///< Default STL export units.
         kMeters,
 
         // Imperial.
         kInches,
         kFeet,
     };
-
-    /// Creates an instance with default values.
-    static UnitConversionPtr CreateDefault() {
-        return CreateWithUnits(Units::kCentimeters, Units::kCentimeters);
-    }
 
     /// Creates an instance with the given units
     static UnitConversionPtr CreateWithUnits(Units from_units, Units to_units);
