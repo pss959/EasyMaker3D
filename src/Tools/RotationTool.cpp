@@ -152,9 +152,17 @@ void RotationTool::UpdateGeometry_() {
 
     // Determine the proper outer radius for the axis-rotation DiscWidget rings
     // based on the Model bounds, then use it to update the Torus fields.
+    // Adjust the inner radius as well.
+    const float kInnerRadiusFraction = .1f;  // Relative to outer_radius.
+    const float kMinInnerRadius      = .1f;
+    const float kMaxInnerRadius      = .4f;
     const float outer_radius = GetOuterRadius_();
-    for (int dim = 0; dim < 3; ++dim )
+    const float inner_radius = Clamp(kInnerRadiusFraction * outer_radius,
+                                     kMinInnerRadius, kMaxInnerRadius);
+    for (int dim = 0; dim < 3; ++dim ) {
         parts_->axis_rings[dim]->SetOuterRadius(outer_radius);
+        parts_->axis_rings[dim]->SetInnerRadius(inner_radius);
+    }
 
     // Update the scale of the free rotator sphere.
     const float kSphereRadiusScale = .9f;
