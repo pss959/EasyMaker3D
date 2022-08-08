@@ -170,17 +170,6 @@ const float    kSnapDirectionTolerance           = 15;
 const float    kSnapLengthTolerance              = 1;
 const float    kSnapPointTolerance               = 1;
 
-// Tools
-const float    kClipToolArrowScale               = 1.6f;  // Must be > sqrt(2).
-const float    kClipToolPlaneScale               = 1.5f;
-const float    kClipToolRotatorScale             = 1.1f;
-const float    kColorToolMarkerRadius            = .06f;
-const float    kMirrorToolPlaneOpacity           = .2f;
-const float    kMirrorToolPlaneScale             = 1.8f;
-const float    kRotationToolRadiusScale          = .51f;
-const float    kRotationToolSphereRadiusScale    = .9f;
-const float    kTranslationToolExtraStickLength  = .4f;
-
 // Tooltips
 const float    kTooltipDelay                     = 1;
 const float    kTooltipDistance                  = 2;

@@ -121,24 +121,42 @@ void TranslationTool::UpdateGeometry_() {
     const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
     SetTranslation(lsm * model.GetTranslation());
 
-    // Determine the size to use for the sliders.
+    // Determine the size of the Model in stage coordinates. If aligned to
+    // axes, use the axis-aligned box size.
     model_size_ = model.GetScaledBounds().GetSize();
     if (! is_aligned) {
         for (int i = 0; i < 3; ++i)
             model_size_[i] *= lsm[i][i];
     }
 
-    // Move the min/max faces and scale the stick.
+    // Choose a good size for the min/max face handles and stick.
+    const float kHandleSizeFraction = .25f;
+    const float kMinHandleScale     = .2f;
+    const float kMaxHandleScale     = .8f;
+    const float kExtraStickLength   = .4f;
+
+    const float handle_scale = Clamp(
+        kHandleSizeFraction * model_size_[GetMinElementIndex(model_size_)],
+        kMinHandleScale, kMaxHandleScale);
+    const float thickness_scale = .8f * handle_scale;
+
     for (int i = 0; i < 3; ++i) {
-        Parts_::DimParts &dp = parts_->dim_parts[i];
+        auto &dp = parts_->dim_parts[i];
         const float sz = .5f * model_size_[i];
+
+        // Scale and move the min/max faces.
+        const Vector3f face_scale(handle_scale, handle_scale, thickness_scale);
+        dp.min_face->SetScale(face_scale);
+        dp.max_face->SetScale(face_scale);
         dp.min_face->SetTranslation(Vector3f(-sz, 0, 0));
         dp.max_face->SetTranslation(Vector3f( sz, 0, 0));
-        Vector3f scale = dp.stick->GetScale();
-        scale[0] = model_size_[i] + TK::kTranslationToolExtraStickLength;
-        dp.stick->SetScale(scale);
-        // Temporarily disable the observer so that it does not try to update
-        // the tool.
+
+        // Scale the stick.
+        dp.stick->SetScale(Vector3f(model_size_[i] + kExtraStickLength,
+                                    thickness_scale, thickness_scale));
+
+        // Reset the slider to 0. Temporarily disable the observer so that it
+        // does not try to update the tool.
         dp.slider->GetValueChanged().EnableObserver(this, false);
         dp.slider->SetValue(0);
         dp.slider->GetValueChanged().EnableObserver(this, true);

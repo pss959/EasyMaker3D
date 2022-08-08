@@ -157,7 +157,8 @@ void RotationTool::UpdateGeometry_() {
         parts_->axis_rings[dim]->SetOuterRadius(outer_radius);
 
     // Update the scale of the free rotator sphere.
-    const float free_radius = TK::kRotationToolSphereRadiusScale * outer_radius;
+    const float kSphereRadiusScale = .9f;
+    const float free_radius = kSphereRadiusScale * outer_radius;
     parts_->free_sphere->SetUniformScale(free_radius);
 
     // And the axes used when doing free rotation.
@@ -403,7 +404,8 @@ void RotationTool::UpdateFeedback_(int dim, const Anglef &angle,
 }
 
 float RotationTool::GetOuterRadius_() const {
-    return TK::kRotationToolRadiusScale * ion::math::Length(model_size_);
+    const float kRadiusScale = .51f;
+    return kRadiusScale * ion::math::Length(model_size_);
 }
 
 Rotationf RotationTool::ComposeRotations_(const Rotationf &r0,
