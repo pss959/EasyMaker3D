@@ -115,6 +115,13 @@ class  Application::Impl_ {
     void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
 
   private:
+    /// Run states for the main loop.
+    enum class RunState_ {
+        kRunning,        ///< Running (normal state).
+        kQuitRequested,  ///< Processing a request to quit the app.
+        kQuitting,       ///< Actually quitting the app.
+    };
+
     /// Saves Options passed to Init().
     Application::Options options_;
 
@@ -200,8 +207,8 @@ class  Application::Impl_ {
     /// Set to true when anything in the scene changes.
     bool                       scene_changed_ = true;
 
-    /// Stays true until the user confirms application exit.
-    bool                       keep_running_ = true;
+    /// Current state of running the application.
+    RunState_                  run_state_ = RunState_::kRunning;
 
     /// \name One-time Initialization
     /// Each of these functions sets up items that are needed by the
@@ -285,8 +292,7 @@ class  Application::Impl_ {
     void UpdateGlobalUniforms_();
 
     /// If there are changes to the session, this opens a DialogPanel to ask
-    /// the user whether to quit or not. Sets the keep_running_ flag to false
-    /// if no changes were made or if the user confirms.
+    /// the user whether to quit or not. Sets run_state_ appropriately.
     void TryQuit_();
 
     /// Emits and handles all events. Returns true if the application should
@@ -424,13 +430,13 @@ bool Application::Impl_::Init(const Application::Options &options) {
 }
 
 void Application::Impl_::MainLoop() {
-    keep_running_        = true;
+    run_state_           = RunState_::kRunning;
     size_t render_count  = 0;
 
     // Tell the ActionManager how to quit.
     action_manager_->SetQuitFunc([&]{ TryQuit_(); });
 
-    while (keep_running_) {
+    while (run_state_ != RunState_::kQuitting) {
         KLogger::SetRenderCount(render_count++);
         renderer_->BeginFrame();
 
@@ -1123,21 +1129,28 @@ void Application::Impl_::UpdateGlobalUniforms_() {
 }
 
 void Application::Impl_::TryQuit_() {
-    // If the session has changes, open a DialogPanel to verify that the user
-    // wants to quit.
-    if (session_manager_->CanSaveSession()) {
-        auto func = [&](const std::string &s){ keep_running_ = s != "Yes"; };
-        auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
-        dp->SetMessage("There are unsaved changes.\n"
-                       "Do you really want to quit?");
-        dp->SetChoiceResponse("No", "Yes");
-        scene_context_->app_board->SetPanel(dp, func);
-        board_manager_->ShowBoard(scene_context_->app_board, true);
+    // Do nothing if already trying to quit.
+    if (run_state_ != RunState_::kRunning)
+        return;
+
+    // If there are no changes to the session, just quit.
+    if (! session_manager_->CanSaveSession()) {
+        run_state_ = RunState_::kQuitting;
+        return;
     }
-    else {
-        // No need to save - just quit.
-        keep_running_ = false;
-    }
+
+    // Remember that a quit was requested.
+    run_state_ = RunState_::kQuitRequested;
+
+    // Open a DialogPanel to verify that the user wants to quit.
+    auto func = [&](const std::string &s){
+        run_state_ = s == "Yes" ? RunState_::kQuitting : RunState_::kRunning;
+    };
+    auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
+    dp->SetMessage("There are unsaved changes.\nDo you really want to quit?");
+    dp->SetChoiceResponse("No", "Yes");
+    scene_context_->app_board->SetPanel(dp, func);
+    board_manager_->ShowBoard(scene_context_->app_board, true);
 }
 
 bool Application::Impl_::ProcessEvents_(bool is_alternate_mode) {
