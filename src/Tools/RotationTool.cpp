@@ -155,7 +155,7 @@ void RotationTool::UpdateGeometry_() {
     // Adjust the inner radius as well.
     const float kInnerRadiusFraction = .1f;  // Relative to outer_radius.
     const float kMinInnerRadius      = .1f;
-    const float kMaxInnerRadius      = .4f;
+    const float kMaxInnerRadius      = .2f;
     const float outer_radius = GetOuterRadius_();
     const float inner_radius = Clamp(kInnerRadiusFraction * outer_radius,
                                      kMinInnerRadius, kMaxInnerRadius);
