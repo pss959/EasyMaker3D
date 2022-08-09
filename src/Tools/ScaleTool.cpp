@@ -274,8 +274,11 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     if (! command_) {
         command_ = CreateCommand<ScaleCommand>();
         command_->SetFromSelection(GetSelection());
-        command_->SetIsSymmetric(scaler.widget->GetMode() ==
-                                 ScaleWidget::Mode::kSymmetric);
+        // XXXX Check if Model intersects Y=0.
+        command_->SetMode(
+            scaler.widget->GetMode() == ScaleWidget::Mode::kSymmetric ?
+            ScaleCommand::Mode::kCenterSymmetric :
+            ScaleCommand::Mode::kAsymmetric);
         GetDragStarted().Notify(*this);
 
         // Turn on feedback in all active dimensions.
@@ -286,7 +289,7 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     // ScaleCommand.
     Dimensionality snapped_dims;
     Vector3f ratios = ComputeRatios_(index, snapped_dims);
-    if (! command_->IsSymmetric()) {
+    if (command_->GetMode() == ScaleCommand::Mode::kAsymmetric) {
         // For asymmetric scales, set the ratio signs to indicate which side is
         // fixed.
         const Vector3f sign_vec = is_max ? scaler.vector : -scaler.vector;

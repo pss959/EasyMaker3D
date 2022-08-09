@@ -412,6 +412,7 @@ if mode == 'dbg':
 
 # These are relative to 'src/tests' subdirectory.
 test_sources = [
+    'AppTestBase.cpp',
     'AssertTest.cpp',
     'BeveledModelTest.cpp',
     'BevelerTest.cpp',
@@ -458,6 +459,8 @@ test_sources = [
     'UTimeTest.cpp',
     'UtilTest.cpp',
     'WriteSTLTest.cpp',
+
+    'ScaleCommandTest.cpp',  # XXXX
 
     # Session tests:
     'SessionTests/EmptySessionTest.cpp',

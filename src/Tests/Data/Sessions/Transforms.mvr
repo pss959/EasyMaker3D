@@ -21,7 +21,7 @@ CommandList {
     },
     ScaleCommand {
       ratios: 1 2.5 1,
-      is_symmetric: False,
+      mode: "kAsymmetric",
       model_names: ["Box_1"],
     },
     CreatePrimitiveModelCommand {
@@ -58,7 +58,7 @@ CommandList {
     },
     ScaleCommand {
       ratios: 2.5 1 1,
-      is_symmetric: False,
+      mode: "kAsymmetric",
       model_names: ["Box_4"],
     },
     TranslateCommand {

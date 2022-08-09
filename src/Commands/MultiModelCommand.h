@@ -11,6 +11,11 @@
 /// \ingroup Commands
 class MultiModelCommand : public Command {
   public:
+    /// Sets the Model names.
+    void SetModelNames(const std::vector<std::string> &names) {
+        model_names_ = names;
+    }
+
     /// Sets the Model names from all Models in the given selection.
     void SetFromSelection(const Selection &sel);
 
