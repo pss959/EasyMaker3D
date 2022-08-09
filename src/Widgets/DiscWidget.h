@@ -52,7 +52,7 @@ class DiscWidget : public DraggableWidget {
     const Vector2f & GetScaleRange() const { return scale_range_; }
 
     /// Applies a relative change to the scale of the DiscWidget.
-    void ApplyScaleChange(float delta);
+    virtual void ApplyScaleChange(float delta);
 
     /// Sets the rotation angle. This can be called at any time, including
     /// during a rotation drag to modify the rotation (to apply precision or

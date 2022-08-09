@@ -49,15 +49,28 @@ void StageWidget::SetStageRadius(float radius) {
     const float scale = geom_radius / radius;
     radius_scaler_->SetUniformScale(scale);
 
-    // Scale the stage geometry to compensate for the change in scale due to
-    // the new radius; the geometry should stay the same regardless of working
-    // radius. (The interactive scale should apply to the geometry, so it is
-    // not factored in here.)
-    geom_->SetUniformScale(1.f / scale);
+    // Scale the stage geometry in X and Z to compensate for the change in
+    // scale due to the new radius; the geometry should stay the same
+    // regardless of working radius. (The interactive scale should apply to the
+    // geometry, so it is not factored in here.)
+    Vector3f geom_scale = geom_->GetScale();
+    geom_scale[0] = geom_scale[2] = 1.f / scale;
+    geom_->SetScale(geom_scale);
+
+    // Adjust the Y scale in the geometry to maintain a constant size.
+    FixGeometryYScale_();
 
     // Regenerate the grid image.
     ASSERT(grid_image_);
     grid_image_->RegenerateImage();
+}
+
+void StageWidget::ApplyScaleChange(float delta) {
+    // Let the DiscWidget update the scale.
+    DiscWidget::ApplyScaleChange(delta);
+
+    // Adjust the Y scale in the geometry to maintain a constant size.
+    FixGeometryYScale_();
 }
 
 void StageWidget::PlacePointTarget(const DragInfo &info,
@@ -74,6 +87,16 @@ void StageWidget::PlaceEdgeTarget(const DragInfo &info, float current_length,
     Vector3f direction;
     GetTargetPlacement_(info, position0, direction);
     position1 = position0 + current_length * direction;
+}
+
+void StageWidget::FixGeometryYScale_() {
+    // Apply the inverse of the scale in Y to the geometry to maintain a
+    // constant size of 1. Note that the scale includes both the StageWidget
+    // scale and the radius scale.
+    const float stage_y_scale = GetScale()[1] * radius_scaler_->GetScale()[1];
+    Vector3f geom_scale = geom_->GetScale();
+    geom_scale[1] = 1.f / stage_y_scale;
+    geom_->SetScale(geom_scale);
 }
 
 void StageWidget::GetTargetPlacement_(const DragInfo &info,
