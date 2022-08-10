@@ -153,6 +153,7 @@ const float    kModelAnimationDuration           = 1.2f;
 const float    kModelAnimationHeight             = 80;
 
 // Tolerances and Precision
+const float    kCloseToStageForScaling           = .01f;
 const float    kMaxBevelAngle                    = 120;
 const Anglef   kMaxDiscWidgetScaleAngle          = Anglef::FromDegrees(10);
 const Anglef   kMaxGripHoverDirAngle             = Anglef::FromDegrees(20);

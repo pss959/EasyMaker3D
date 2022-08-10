@@ -12,6 +12,7 @@
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "SG/Search.h"
@@ -267,6 +268,26 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
     }
 }
 
+ScaleCommand::Mode ScaleTool::GetMode_(const Scaler_ &scaler) const {
+    ScaleCommand::Mode mode;
+
+    // For symmetric scales, check if the Model bounds lie on, intersect, or
+    // are very close to the Y=0 plane. If so, use the kBaseSymmetric mode.
+    if (scaler.widget->GetMode() == ScaleWidget::Mode::kSymmetric) {
+        const Bounds bounds = TransformBounds(
+            GetModelAttachedTo()->GetBounds(),
+            GetStageCoordConv().GetObjectToRootMatrix());
+        if (bounds.GetMinPoint()[1] <= TK::kCloseToStageForScaling)
+            mode = ScaleCommand::Mode::kBaseSymmetric;
+        else
+            mode = ScaleCommand::Mode::kCenterSymmetric;
+    }
+    else {
+        mode = ScaleCommand::Mode::kAsymmetric;
+    }
+    return mode;
+}
+
 void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     const Scaler_ &scaler = parts_->scalers[index];
 
@@ -274,11 +295,7 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     if (! command_) {
         command_ = CreateCommand<ScaleCommand>();
         command_->SetFromSelection(GetSelection());
-        // XXXX Check if Model intersects Y=0.
-        command_->SetMode(
-            scaler.widget->GetMode() == ScaleWidget::Mode::kSymmetric ?
-            ScaleCommand::Mode::kCenterSymmetric :
-            ScaleCommand::Mode::kAsymmetric);
+        command_->SetMode(GetMode_(scaler));
         GetDragStarted().Notify(*this);
 
         // Turn on feedback in all active dimensions.

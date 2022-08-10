@@ -1,5 +1,7 @@
 #include "Executors/ScaleExecutor.h"
 
+#include <ion/math/vectorutils.h>
+
 #include "Commands/ScaleCommand.h"
 #include "Managers/SelectionManager.h"
 #include "Util/Assert.h"
@@ -101,8 +103,14 @@ void ScaleExecutor::AdjustTranslation_(const Vector3f &ratios,
 void ScaleExecutor::AdjustBaseTranslation_(ExecData_::PerModel &pm) {
     auto &model = *pm.path_to_model.GetModel();
 
-    // Translate the center of the Model's bounds to the Y=0 plane.
+    // To compute the new height, transform the Y axis into Model coordinates
+    // and determine how its length changes proportionally with the old and new
+    // scales. Apply the same ratio to the Y translation.
+    const Vector3f model_y    = -model.GetRotation() * Vector3f::AxisY();
+    const float    old_length = ion::math::Length(pm.old_scale * model_y);
+    const float    new_length = ion::math::Length(pm.new_scale * model_y);
+    const float    ratio      = new_length / old_length;
     pm.new_translation = pm.old_translation;
-    pm.new_translation[1] = -model.GetBounds().GetCenter()[1];
+    pm.new_translation[1] *= ratio;
     model.SetTranslation(pm.new_translation);
 }

@@ -469,6 +469,10 @@ extern const float    kModelAnimationHeight;
 /// \name Tolerances and Precision
 ///@{
 
+/// Maximum distance above the stage for a Model for scaling to keep it at the
+/// same relative height.
+extern const float    kCloseToStageForScaling;
+
 /// Maximum angle for applying a bevel Profile to an edge.
 extern const float    kMaxBevelAngle;
 

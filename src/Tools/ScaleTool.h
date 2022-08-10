@@ -62,6 +62,9 @@ class ScaleTool : public Tool {
     /// any, were snapped.
     Vector3f ComputeRatios_(size_t index, Dimensionality &snapped_dims);
 
+    /// Returns the ScaleCommand::Mode to use for scaling.
+    ScaleCommand::Mode GetMode_(const Scaler_ &scaler) const;
+
     /// Shows or hides feedback in the given dimension(s).
     void EnableFeedback_(const Dimensionality &dims, bool show);
 
