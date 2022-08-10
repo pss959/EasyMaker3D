@@ -124,6 +124,13 @@ void ScaleTool::FindParts_() {
     InitScaler_(11, "XYZ3Scaler", Vector3f(1,   1, -1));
     InitScaler_(12, "XYZ4Scaler", Vector3f(1,   1,  1));
 
+    // Set colors for 1D scalers.
+    for (int dim = 0; dim < 3; ++dim) {
+        const Color color = SG::ColorMap::SGetColorForDimension(dim);
+        parts_->scalers[dim].widget->GetMinSlider()->SetInactiveColor(color);
+        parts_->scalers[dim].widget->GetMaxSlider()->SetInactiveColor(color);
+    }
+
     // The feedback is stored when activated.
 }
 
@@ -165,8 +172,11 @@ void ScaleTool::UpdateGeometry_() {
     model_bounds_ = model.GetBounds();
 
     // These factors are used to scale vector lengths based on a Scaler_'s
-    // Dimensionality.
-    const Vector3f dim_scales(1, std::sqrt(2), std::sqrt(3));
+    // Dimensionality. They are a little larger than they need to be so that
+    // they are visible when attached to a Box.
+    const float kLengthScale = 1.1f;
+    const Vector3f dim_scales =
+        kLengthScale * Vector3f(1, std::sqrt(2), std::sqrt(3));
 
     // Compute a reasonable base scale for the handles based on the size of the
     // Model.
@@ -182,18 +192,25 @@ void ScaleTool::UpdateGeometry_() {
     for (auto &scaler: parts_->scalers) {
         // Each scaler is originally aligned with the +X axis. Determine the
         // correct direction vector and rotate to match it. For 2D and 3D
-        // vectors, the direction is affected by the scale.
+        // vectors, the direction is affected by the Model's size proportions.
         const Vector3f scaled_vec = model_size * scaler.vector;
         const Vector3f dir = .5f * ion::math::Normalized(scaled_vec);
         const Rotationf rot = Rotationf::RotateInto(Vector3f(1, 0, 0), dir);
         scaler.widget->SetRotation(rot);
 
-        // Inversely rotate the widget handles so they remain aligned with the
-        // local axes of the Model.
+        // Scale the handles based on the Model size.
         scaler.min_handle->SetUniformScale(handle_scale);
         scaler.max_handle->SetUniformScale(handle_scale);
-        scaler.min_handle->SetRotation(-rot);
-        scaler.max_handle->SetRotation(-rot);
+
+        // Fix the orientations of the XY and YZ 2D slider handles.
+        if (scaler.dims.GetCount() == 2 && scaler.dims.HasDimension(1)) {
+            const int other_dim = scaler.dims.HasDimension(0) ? 0 : 2;
+            const Rotationf orient =
+                -rot * Rotationf::FromAxisAndAngle(GetAxis(other_dim),
+                                                   Anglef::FromDegrees(90));
+            scaler.min_handle->SetRotation(orient);
+            scaler.max_handle->SetRotation(orient);
+        }
 
         // Scale the stick thickness. Note that the length of the stick is set
         // by the ScaleWidget, so make sure to leave it as is.

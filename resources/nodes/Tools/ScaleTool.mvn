@@ -1,14 +1,18 @@
 ScaleTool "ScaleTool" {
-  CONSTANTS: [ HS1: ".8", HS2: "1.2" ],  # Handle sizes.
-
   TEMPLATES: [
-    Slider1DWidget "T_Slider" {
+    Slider1DWidget "T_Handle" {
       is_precision_based: True,
       hover_scale:        1 1.1 1.1,
     }
-    CLONE "T_Slider" "T_Slider1D" { shapes: [ Box { size: $HS2 $HS1 $HS1 } ] },
-    CLONE "T_Slider" "T_Slider2D" { shapes: [ Box { size: $HS2 $HS2 $HS1 } ] },
-    CLONE "T_Slider" "T_Slider3D" { shapes: [ Box { size: $HS2 $HS2 $HS2 } ] },
+    CLONE "T_Handle" "T_Handle1D" {   # 1D slider has an elongated box.
+      shapes: [ Box { size: 1.2 .6 .6 } ]
+    },
+    CLONE "T_Handle" "T_Handle2D" {   # 2D slider has an aligned cylinder.
+      shapes: [ Cylinder { top_radius: .4, bottom_radius: .4, height: 1.2 } ]
+    },
+    CLONE "T_Handle" "T_Handle3D" {   # 3D (uniform) slider has a sphere.
+      shapes: [ Ellipsoid { size: 1.2 1.2 1.2 } ]
+    },
     Node "T_Stick" {
       disabled_flags: "kIntersectAll",
       shapes: [ Box { size: 1 .6 .6 } ],
@@ -24,24 +28,24 @@ ScaleTool "ScaleTool" {
     ScaleWidget "T_Scaler1D" {
       use_alt_mode: True,
       children: [
-        CLONE "T_Slider1D" "MinSlider" {},
-        CLONE "T_Slider1D" "MaxSlider" {},
+        CLONE "T_Handle1D"     "MinSlider" {},
+        CLONE "T_Handle1D"     "MaxSlider" {},
         # Stick is added per dimension to set up colors.
       ]
     },
     ScaleWidget "T_Scaler2D" {
       use_alt_mode: True,
       children: [
-        CLONE "T_Slider2D"     "MinSlider" {},
-        CLONE "T_Slider2D"     "MaxSlider" {},
+        CLONE "T_Handle2D"     "MinSlider" {},
+        CLONE "T_Handle2D"     "MaxSlider" {},
         CLONE "T_NeutralStick" "Stick"     {},
       ]
     },
     ScaleWidget "T_Scaler3D" {
       use_alt_mode: True,
       children: [
-        CLONE "T_Slider3D"     "MinSlider" {},
-        CLONE "T_Slider3D"     "MaxSlider" {},
+        CLONE "T_Handle3D"     "MinSlider" {},
+        CLONE "T_Handle3D"     "MaxSlider" {},
         CLONE "T_NeutralStick" "Stick"     {},
       ]
     },
