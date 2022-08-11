@@ -21,8 +21,8 @@ class ScaleCommandTest : public AppTestBase {
         const auto &rm = *context.scene_context->root_model;
         EXPECT_LE(1U, rm.GetChildModelCount());
         const auto box = rm.GetChildModel(rm.GetChildModelCount() - 1);
-        EXPECT_EQ(Vector3f(4, 4, 4), box->GetScale());
-        EXPECT_EQ(Vector3f(0, 4, 0), box->GetTranslation());
+        EXPECT_EQ(Vector3f(MS, MS, MS), box->GetScale());
+        EXPECT_EQ(Vector3f(0,  MS,  0), box->GetTranslation());
         return box;
     }
 
@@ -36,9 +36,9 @@ class ScaleCommandTest : public AppTestBase {
         const auto &rm = *context.scene_context->root_model;
         EXPECT_LE(1U, rm.GetChildModelCount());
         const auto torus = rm.GetChildModel(rm.GetChildModelCount() - 1);
-        const float half_height = 4 * TK::kTorusInnerRadius;
-        EXPECT_EQ(Vector3f(4, 4, 4), torus->GetScale());
-        EXPECT_EQ(Vector3f(0, half_height, 0), torus->GetTranslation());
+        const float hh = MS * TK::kTorusInnerRadius;
+        EXPECT_EQ(Vector3f(MS, MS, MS), torus->GetScale());
+        EXPECT_EQ(Vector3f(0,  hh,  0), torus->GetTranslation());
         return torus;
     }
 
@@ -70,17 +70,17 @@ TEST_F(ScaleCommandTest, CenterSymmetric) {
     // Apply a symmetric scale about the center.
     ApplyScaleCommand(box, ScaleCommand::Mode::kCenterSymmetric,
                       Vector3f(2, 3, 4));
-    EXPECT_EQ(Vector3f(8, 12, 16), box.GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0),   box.GetTranslation());
+    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
+    EXPECT_EQ(Vector3f(0, MS, 0),               box.GetTranslation());
 
     // Rotate 90 degrees around Z and apply another scale.
     ApplyRotateCommand(box);
-    EXPECT_EQ(Vector3f(8, 12, 16), box.GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0),   box.GetTranslation());
+    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
+    EXPECT_EQ(Vector3f(0, MS, 0),   box.GetTranslation());
     ApplyScaleCommand(box, ScaleCommand::Mode::kCenterSymmetric,
                       Vector3f(10, 20, 30));
-    EXPECT_EQ(Vector3f(80, 240, 480), box.GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0),      box.GetTranslation());
+    EXPECT_EQ(Vector3f(20 * MS, 60 * MS, 120 * MS), box.GetScale());
+    EXPECT_EQ(Vector3f(0, MS, 0),                   box.GetTranslation());
 }
 
 TEST_F(ScaleCommandTest, BaseSymmetric) {
@@ -89,15 +89,15 @@ TEST_F(ScaleCommandTest, BaseSymmetric) {
     const auto &box = *CreateBox();
     ApplyScaleCommand(box, ScaleCommand::Mode::kBaseSymmetric,
                       Vector3f(2, 3, 4));
-    EXPECT_EQ(Vector3f(8, 12, 16), box.GetScale());
-    EXPECT_EQ(Vector3f(0, 12, 0),  box.GetTranslation());
+    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
+    EXPECT_EQ(Vector3f(0,      3 * MS, 0),      box.GetTranslation());
 
     // Try the same thing with a Torus.
     const auto &torus = *CreateTorus();
     ApplyScaleCommand(torus, ScaleCommand::Mode::kBaseSymmetric,
                       Vector3f(2, 3, 4));
-    EXPECT_EQ(Vector3f(8, 12, 16), torus.GetScale());
-    EXPECT_EQ(Vector3f(0, 12 * TK::kTorusInnerRadius, 0),
+    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
+    EXPECT_EQ(Vector3f(0, 3 * MS * TK::kTorusInnerRadius, 0),
               torus.GetTranslation());
 }
 
@@ -108,12 +108,12 @@ TEST_F(ScaleCommandTest, BaseSymmetricRotated) {
     // Rotate 90 degrees around Z and then apply the scale. The translation
     // should accommodate the change in X size (which is now along the Y axis).
     ApplyRotateCommand(box);
-    EXPECT_EQ(Vector3f(4, 4, 4), box.GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0),  box.GetTranslation());
+    EXPECT_EQ(Vector3f(MS, MS, MS), box.GetScale());
+    EXPECT_EQ(Vector3f(0, MS, 0),  box.GetTranslation());
     ApplyScaleCommand(box, ScaleCommand::Mode::kBaseSymmetric,
                       Vector3f(10, 20, 30));
-    EXPECT_EQ(Vector3f(40, 80, 120), box.GetScale());
-    EXPECT_EQ(Vector3f(0,  40, 0),   box.GetTranslation());
+    EXPECT_EQ(Vector3f(10 * MS, 20 * MS, 30 * MS), box.GetScale());
+    EXPECT_EQ(Vector3f(0,       10 * MS, 0),       box.GetTranslation());
 }
 
 TEST_F(ScaleCommandTest, Asymmetric) {
@@ -123,15 +123,16 @@ TEST_F(ScaleCommandTest, Asymmetric) {
     // Apply an asymmetric scale relative to the minimum side in X (-2) and Y
     // (0) and the maximum side (2) in Z.
     ApplyScaleCommand(box, ScaleCommand::Mode::kAsymmetric, Vector3f(2, 3, -4));
-    EXPECT_EQ(Vector3f(8, 12,  16), box.GetScale());
-    EXPECT_EQ(Vector3f(4, 12, -12), box.GetTranslation());
+    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS),  box.GetScale());
+    EXPECT_EQ(Vector3f(MS,     3 * MS, -3 * MS), box.GetTranslation());
 
     // Rotate 90 degrees around Z and apply another scale.
     ApplyRotateCommand(box);
-    EXPECT_EQ(Vector3f(8, 12, 16),  box.GetScale());
-    EXPECT_EQ(Vector3f(4, 12, -12), box.GetTranslation());
+    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS),  box.GetScale());
+    EXPECT_EQ(Vector3f(MS,     3 * MS, -3 * MS), box.GetTranslation());
     ApplyScaleCommand(box, ScaleCommand::Mode::kAsymmetric,
                       Vector3f(10, 20, 30));
-    EXPECT_EQ(Vector3f(80, 240, 480),          box.GetScale());
-    EXPECT_VECS_CLOSE(Vector3f(-224, 84, 452), box.GetTranslation());
+    EXPECT_EQ(Vector3f(20 * MS,  60 * MS, 120 * MS), box.GetScale());
+    EXPECT_VECS_CLOSE(Vector3f(-56 * MS, 21 * MS, 113 * MS),
+                      box.GetTranslation());
 }

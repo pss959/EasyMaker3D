@@ -71,7 +71,7 @@ const float    kDiscWidgetMaxScale               = 1000;
 const float    kDiscWidgetMinScale               = .01f;
 const float    kExtrudedTextLength               = 2;
 const float    kFlatThickness                    = .001f;
-const float    kInitialModelScale                = 4;
+const float    kInitialModelScale                = 2;
 const float    kMaxCylinderRadius                = 30;
 const float    kMaxTorusInnerRadius              = 10;
 const float    kMaxTorusOuterRadius              = 20;
@@ -151,7 +151,7 @@ const float    kMaxStageAngleChangePerSecond     = 90;
 const float    kMaxStageScaleChangePerSecond     = 4;
 const float    kMaxViewAngleChangePerSecond      = 90.f;
 const float    kModelAnimationDuration           = 1.2f;
-const float    kModelAnimationHeight             = 80;
+const float    kModelAnimationHeight             = 60;
 
 // Tolerances and Precision
 const float    kCloseToStageForScaling           = .01f;

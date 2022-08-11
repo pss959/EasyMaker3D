@@ -1,5 +1,6 @@
 #include "Executors/CreatePrimitiveExecutor.h"
 
+#include "Base/Tuning.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Models/BoxModel.h"
 #include "Models/CylinderModel.h"
@@ -35,7 +36,7 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
       default:
         ASSERTM(false, "Bad Primitive type");
     }
-    InitModelTransform(*pm, 4, cc);
+    InitModelTransform(*pm, TK::kInitialModelScale, cc);
     AddModelInteraction(*pm);
     SetRandomModelColor(*pm);
 

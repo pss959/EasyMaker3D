@@ -1,6 +1,7 @@
 #include "SceneTestBase.h"
 
 #include "App/RegisterTypes.h"
+#include "Base/Tuning.h"
 #include "SG/FileMap.h"
 
 const std::string SceneTestBase::str1 =
@@ -11,6 +12,7 @@ const std::string SceneTestBase::str1 =
     " root_node: Node \"Root\" {";
 
 const std::string SceneTestBase::str2 = "}}";
+const float       SceneTestBase::MS   = TK::kInitialModelScale;
 
 SceneTestBase::SceneTestBase() {
     RegisterTypes();
