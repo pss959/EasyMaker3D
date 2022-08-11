@@ -202,10 +202,11 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
 void CylinderTool::UpdateFeedback_(float radius, bool is_snapped) {
     // Convert canonical points on the cylinder from object coordinates to
     // stage coordinates. Note that the radius is already in stage coordinates.
-    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    const Point3f  p0  = osm * Point3f(0, 1, 0);
-    const Vector3f dir = ion::math::Normalized(osm * Vector3f(1, 0, 0));
-    const Point3f  p1  = p0 + radius * dir;
+    const Matrix4f osm    = GetStageCoordConv().GetObjectToRootMatrix();
+    const Point3f  center = osm * Point3f(0, 1, 0);
+    const Vector3f dir    = ion::math::Normalized(osm * Vector3f(1, 0, 0));
+    const Point3f  p0     = center - radius * dir;
+    const Point3f  p1     = center + radius * dir;
 
     // Use SpanLength() here instead of SpanPoints() because the length can
     // be zero.
