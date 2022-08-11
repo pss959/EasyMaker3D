@@ -2,6 +2,8 @@
 
 #include <ion/math/angleutils.h>
 
+#include "Math/Linear.h"
+
 std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise) {
     std::vector<Point2f> points;
     points.resize(n);
@@ -12,6 +14,23 @@ std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise) {
         if (is_clockwise)
             points[i][1] = -points[i][1];
     }
+
+    // Make sure the bounds of the circle are as close as possible to the
+    // desired diameter.
+    Range2f bounds;
+    for (const auto &p: points)
+        bounds.ExtendByPoint(p);
+    const Vector2f size        = bounds.GetSize();
+    const float    target_size = 2 * radius;
+    if (! AreClose(size[0], target_size) || ! AreClose(size[1], target_size)) {
+        const float sx = target_size / size[0];
+        const float sy = target_size / size[1];
+        for (auto &p: points) {
+            p[0] *= sx;
+            p[1] *= sy;
+        }
+    }
+
     return points;
 }
 
