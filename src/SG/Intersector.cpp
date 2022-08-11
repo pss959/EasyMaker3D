@@ -122,14 +122,18 @@ bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &obj_ray,
     const NodePtr &node = path.back();
     const Bounds bounds = node->GetBounds();
 
-    // Note that it is ok if the only intersection is exiting the box.
     Bounds::Face face;
     bool         is_entry;
     if (RayBoundsIntersectFace(obj_ray, bounds, distance, face, is_entry)) {
         KLOG('i', Util::Spaces(2 * path.size())
              << "Hit bounds of " << node->GetDesc()
-             << " at " << distance << " z=" << obj_ray.GetPoint(distance)[2]);
-        if (distance > min_distance_)
+             << " at " << distance << " z="
+             << obj_ray.GetPoint(distance)[2]
+             << " entry=" << is_entry);
+        // If the only intersection is exiting the box, consider this a valid
+        // intersection, but do not compare the distances, as that would not
+        // make sense.
+        if (is_entry && distance > min_distance_)
             return false;
     }
     else {

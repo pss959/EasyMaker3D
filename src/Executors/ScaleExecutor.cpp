@@ -1,5 +1,7 @@
 #include "Executors/ScaleExecutor.h"
 
+#include <ion/math/vectorutils.h>
+
 #include "Commands/ScaleCommand.h"
 #include "Managers/SelectionManager.h"
 #include "Util/Assert.h"
@@ -60,37 +62,55 @@ void ScaleExecutor::ScaleModels_(const ScaleCommand &sc, ExecData_ &data) {
         pm.new_scale = abs_ratios * pm.old_scale;
         pm.path_to_model.GetModel()->SetScale(pm.new_scale);
 
-        // Asymmetric scaling may also have to modify the position to
-        // compensate for the motion due to scaling about a different point.
-        if (! sc.IsSymmetric())
+        // Scaling may also have to modify the position to compensate for the
+        // motion due to scaling about a different point.
+        switch (sc.GetMode()) {
+          case ScaleCommand::Mode::kAsymmetric:
             AdjustTranslation_(sc.GetRatios(), pm);
+            break;
+          case ScaleCommand::Mode::kCenterSymmetric:
+            // No adjustment necessary.
+            break;
+          case ScaleCommand::Mode::kBaseSymmetric:
+            AdjustBaseTranslation_(pm);
+            break;
+        }
     }
 }
 
 void ScaleExecutor::AdjustTranslation_(const Vector3f &ratios,
                                        ExecData_::PerModel &pm) {
-    const Vector3f change = ComputeSizeChange_(pm, ratios);
+    // Compute the change in size in all 3 dimensions.
     auto &model = *pm.path_to_model.GetModel();
-    pm.new_translation = pm.old_translation + (model.GetRotation() * change);
-    model.SetTranslation(pm.new_translation);
-}
-
-Vector3f ScaleExecutor::ComputeSizeChange_(const ExecData_::PerModel &pm,
-                                           const Vector3f &ratios) {
-    auto model = pm.path_to_model.GetModel();
-    const Bounds bounds = model->GetBounds();
+    const Bounds bounds = model.GetBounds();
     Vector3f change(0, 0, 0);
     for (int dim = 0; dim < 3; ++dim) {
         // A negative ratio indicates that the maximum side is fixed.
         ASSERT(ratios[dim] != 0);
         const bool is_max_fixed = ratios[dim] < 0;
 
-        // Transform the side that should be fixed in place by the old and new
-        // scale values. Use the difference between the two to determine how
-        // much to move.
+        // Use the difference between the old and new scale values to determine
+        // how much to move.
         change[dim] = (pm.old_scale[dim] - pm.new_scale[dim]) *
             (is_max_fixed ? bounds.GetMaxPoint()[dim] :
              bounds.GetMinPoint()[dim]);
     }
-    return change;
+
+    pm.new_translation = pm.old_translation + (model.GetRotation() * change);
+    model.SetTranslation(pm.new_translation);
+}
+
+void ScaleExecutor::AdjustBaseTranslation_(ExecData_::PerModel &pm) {
+    auto &model = *pm.path_to_model.GetModel();
+
+    // To compute the new height, transform the Y axis into Model coordinates
+    // and determine how its length changes proportionally with the old and new
+    // scales. Apply the same ratio to the Y translation.
+    const Vector3f model_y    = -model.GetRotation() * Vector3f::AxisY();
+    const float    old_length = ion::math::Length(pm.old_scale * model_y);
+    const float    new_length = ion::math::Length(pm.new_scale * model_y);
+    const float    ratio      = new_length / old_length;
+    pm.new_translation = pm.old_translation;
+    pm.new_translation[1] *= ratio;
+    model.SetTranslation(pm.new_translation);
 }

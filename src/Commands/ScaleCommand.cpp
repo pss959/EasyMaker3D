@@ -2,7 +2,7 @@
 
 void ScaleCommand::AddFields() {
     AddField(ratios_.Init("ratios", Vector3f(1, 1, 1)));
-    AddField(is_symmetric_.Init("is_symmetric", false));
+    AddField(mode_.Init("mode",     Mode::kAsymmetric));
 
     MultiModelCommand::AddFields();
 }
@@ -15,7 +15,8 @@ bool ScaleCommand::IsValid(std::string &details) {
         details = "Invalid scale by zero";
         return false;
     }
-    if (IsSymmetric() && (ratios[0] <= 0 || ratios[1] < 0 || ratios[2] <= 0)) {
+    if (GetMode() != Mode::kAsymmetric &&
+        (ratios[0] <= 0 || ratios[1] < 0 || ratios[2] <= 0)) {
         details = "Invalid negative asymmetric scale";
         return false;
     }
@@ -23,6 +24,9 @@ bool ScaleCommand::IsValid(std::string &details) {
 }
 
 std::string ScaleCommand::GetDescription() const {
+    const Mode mode = GetMode();
     return "Scaled " + GetModelsDesc(GetModelNames()) +
-        (IsSymmetric() ? " symmetrically " : " asymmetrically ");
+        (mode == Mode::kAsymmetric ? " asymmetrically " :
+         mode == Mode::kCenterSymmetric ? " symmetrically about the center " :
+         " symmetrically about the base center ");
 }

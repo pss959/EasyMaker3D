@@ -9,6 +9,7 @@
 #include "Managers/PrecisionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
+#include "Math/Linear.h"
 #include "Models/Model.h"
 #include "Models/RootModel.h"
 #include "SG/ColorMap.h"
@@ -121,6 +122,13 @@ Point3f Tool::GetPositionAboveModel(float distance) const {
 
     // Convert to stage coordinates and add the height distance.
     return GetStageCoordConv().ObjectToRoot(pos) + Vector3f(0, distance, 0);
+}
+
+float Tool::ComputePartScale(const Vector3f &model_size, float fraction,
+                             float min_size, float max_size) {
+    // Average the sizes.
+    const float avg_size = (model_size[0] + model_size[1] + model_size[2]) / 3;
+    return Clamp(fraction * avg_size, min_size, max_size);
 }
 
 Color Tool::GetSnappedFeedbackColor() {

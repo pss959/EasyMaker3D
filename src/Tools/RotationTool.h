@@ -80,7 +80,7 @@ class RotationTool : public Tool {
     /// around an axis. The text_up_offset is used when multiple dimensions are
     /// shown to keep the text displays from overlapping.
     void UpdateFeedback_(int dim, const Anglef &angle, bool is_snapped,
-                         float text_up_offset = 0);
+                         float text_up_offset);
 
     /// Returns a reasonable outer radius to use for a rotator widget based on
     /// the Model size.

@@ -152,12 +152,21 @@ void RotationTool::UpdateGeometry_() {
 
     // Determine the proper outer radius for the axis-rotation DiscWidget rings
     // based on the Model bounds, then use it to update the Torus fields.
+    // Adjust the inner radius as well.
+    const float kInnerRadiusFraction = .1f;  // Relative to outer_radius.
+    const float kMinInnerRadius      = .1f;
+    const float kMaxInnerRadius      = .2f;
     const float outer_radius = GetOuterRadius_();
-    for (int dim = 0; dim < 3; ++dim )
+    const float inner_radius = Clamp(kInnerRadiusFraction * outer_radius,
+                                     kMinInnerRadius, kMaxInnerRadius);
+    for (int dim = 0; dim < 3; ++dim ) {
         parts_->axis_rings[dim]->SetOuterRadius(outer_radius);
+        parts_->axis_rings[dim]->SetInnerRadius(inner_radius);
+    }
 
     // Update the scale of the free rotator sphere.
-    const float free_radius = TK::kRotationToolSphereRadiusScale * outer_radius;
+    const float kSphereRadiusScale = .9f;
+    const float free_radius = kSphereRadiusScale * outer_radius;
     parts_->free_sphere->SetUniformScale(free_radius);
 
     // And the axes used when doing free rotation.
@@ -240,7 +249,8 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
     command_->SetRotation(rot);
     context.command_manager->SimulateDo(command_);
 
-    UpdateFeedback_(dim, new_angle, is_snapped);
+    const float kTextOffset = 2;
+    UpdateFeedback_(dim, new_angle, is_snapped, kTextOffset);
 }
 
 void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
@@ -272,7 +282,8 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
     new_rot.GetRollPitchYaw(&angles[2], &angles[0], &angles[1]);
     for (int dim = 0; dim < 3; ++dim) {
         // Offset the text by a different amount per dimension.
-        const float text_offset = 2 * dim;
+        const float kTextOffsetPerDim = 2;
+        const float text_offset = kTextOffsetPerDim * dim;
         UpdateFeedback_(dim, angles[dim], dim == snapped_dim, text_offset);
     }
 }
@@ -403,7 +414,8 @@ void RotationTool::UpdateFeedback_(int dim, const Anglef &angle,
 }
 
 float RotationTool::GetOuterRadius_() const {
-    return TK::kRotationToolRadiusScale * ion::math::Length(model_size_);
+    const float kRadiusScale = .51f;
+    return kRadiusScale * ion::math::Length(model_size_);
 }
 
 Rotationf RotationTool::ComposeRotations_(const Rotationf &r0,

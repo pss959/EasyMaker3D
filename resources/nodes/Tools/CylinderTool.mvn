@@ -1,7 +1,7 @@
 CylinderTool "CylinderTool" {
   TEMPLATES: [
     Slider1DWidget "T_Slider" {
-      shapes: [ Cylinder { top_radius: .8, bottom_radius: .8, height: 1.6 } ]
+      shapes: [ Cylinder { top_radius: .8, bottom_radius: .8, height: 1.8 } ]
     },
     ScaleWidget "T_Scaler" {
       children: [

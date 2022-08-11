@@ -319,6 +319,9 @@ extern const int      kRLWRingMaxSectorCount;
 /// Minimum inner radius for the RadialLayoutWidget ring.
 extern const float    kRLWRingMinInnerRadius;
 
+/// Minimum outer radius for the RadialLayoutWidget ring.
+extern const float    kRLWRingMinOuterRadius;
+
 /// Minimum number of sectors to use for the RadialLayoutWidget ring.
 extern const int      kRLWRingMinSectorCount;
 
@@ -469,6 +472,10 @@ extern const float    kModelAnimationHeight;
 /// \name Tolerances and Precision
 ///@{
 
+/// Maximum distance above the stage for a Model for scaling to keep it at the
+/// same relative height.
+extern const float    kCloseToStageForScaling;
+
 /// Maximum angle for applying a bevel Profile to an edge.
 extern const float    kMaxBevelAngle;
 
@@ -524,40 +531,6 @@ extern const float    kSnapLengthTolerance;
 
 /// How close points need to be to be snapped to (in stage coordinates).
 extern const float    kSnapPointTolerance;
-
-///@}
-
-/// \name Tools
-///@{
-
-/// Scale factor for ClipTool arrow slider.
-extern const float    kClipToolArrowScale;
-
-/// Scale factor for clickable ClipTool plane.
-extern const float    kClipToolPlaneScale;
-
-/// Scale factor for ClipTool rotator sphere.
-extern const float    kClipToolRotatorScale;
-
-/// Radius of the marker circle in the ColorTool.
-extern const float    kColorToolMarkerRadius;
-
-/// Opacity of clickable planes in MirrorTool.
-extern const float    kMirrorToolPlaneOpacity;
-
-/// Scale of MirrorTool planes with respect to the attached Model.
-extern const float    kMirrorToolPlaneScale;
-
-/// Scale factor (relative to Model bounds diagonal length) for the radius of a
-/// RotationTool.
-extern const float    kRotationToolRadiusScale;
-
-/// Scale factor for the RotationTool free rotation sphere relative to the axis
-/// rotator radii.
-extern const float    kRotationToolSphereRadiusScale;
-
-/// Extra length to add to the scaler stick in a TranslationTool.
-extern const float    kTranslationToolExtraStickLength;
 
 ///@}
 

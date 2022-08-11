@@ -4,8 +4,10 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/CoordConv.h"
+#include "Base/Tuning.h"
 #include "Commands/ChangeTorusCommand.h"
 #include "Managers/SelectionManager.h"
+#include "Math/Linear.h"
 #include "Models/TorusModel.h"
 
 void ChangeTorusExecutor::Execute(Command &command, Command::Op operation) {
@@ -15,6 +17,7 @@ void ChangeTorusExecutor::Execute(Command &command, Command::Op operation) {
 
     for (auto &pm: data.per_model) {
         TorusModel &torus = GetTypedModel<TorusModel>(pm.path_to_model);
+
         if (operation == Command::Op::kDo) {
             // Convert the radius from stage coordinates into object coordinates
             // of the TorusModel. This is not perfect, but is reasonable.
@@ -31,6 +34,11 @@ void ChangeTorusExecutor::Execute(Command &command, Command::Op operation) {
                 torus.SetInnerRadius(pm.old_radius);
             else
                 torus.SetOuterRadius(pm.old_radius);
+        }
+        if (pm.do_translate) {
+            Vector3f trans = torus.GetTranslation();
+            trans[1] = torus.GetScale()[1] * torus.GetInnerRadius();
+            torus.SetTranslation(trans);
         }
     }
 
@@ -56,8 +64,27 @@ ChangeTorusExecutor::ExecData_ & ChangeTorusExecutor::GetExecData_(
             TorusModel &torus = GetTypedModel<TorusModel>(pm.path_to_model);
             pm.old_radius = ccc.IsInnerRadius() ?
                 torus.GetInnerRadius() : torus.GetOuterRadius();
+
+            // If the inner radius is changing and the torus is resting on the
+            // Stage, translate it to match the inner radius.
+            pm.do_translate = ccc.IsInnerRadius() && IsOnStage_(pm);
         }
         command.SetExecData(data);
     }
     return *static_cast<ExecData_ *>(command.GetExecData());
+}
+
+bool ChangeTorusExecutor::IsOnStage_(const ExecData_::PerModel &pm) const {
+    using ion::math::Normalized;
+
+    const TorusModel &torus = GetTypedModel<TorusModel>(pm.path_to_model);
+    const CoordConv cc(pm.path_to_model);
+
+    // The torus has to have its axis of symmetry very close to the Y axis.
+    // and its bottom very close to Y=0.
+    const Vector3f y_axis = Vector3f::AxisY();
+    const Vector3f t_axis = Normalized(cc.ObjectToRoot(Vector3f::AxisY()));
+    const Point3f  bottom(0, -torus.GetInnerRadius(), 0);
+    return AreDirectionsClose(y_axis, t_axis, Anglef::FromDegrees(.01f)) &&
+        std::abs(cc.ObjectToRoot(bottom)[1]) <= TK::kCloseToStageForScaling;
 }

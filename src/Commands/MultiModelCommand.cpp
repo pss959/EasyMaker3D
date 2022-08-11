@@ -2,6 +2,7 @@
 
 #include "Models/Model.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 void MultiModelCommand::AddFields() {
     AddField(model_names_.Init("model_names"));
@@ -28,10 +29,8 @@ bool MultiModelCommand::IsValid(std::string &details) {
 
 void MultiModelCommand::SetFromSelection(const Selection &sel) {
     ASSERT(sel.HasAny());
-    const auto &paths = sel.GetPaths();
-    std::vector<std::string> names;
-    names.reserve(paths.size());
-    for (const auto &path: paths)
-        names.push_back(path.GetModel()->GetName());
-    model_names_ = names;
+    SetModelNames(
+        Util::ConvertVector<std::string, SelPath>(
+            sel.GetPaths(),
+            [](const SelPath &path){ return path.GetModel()->GetName(); }));
 }

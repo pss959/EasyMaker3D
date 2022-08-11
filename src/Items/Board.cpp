@@ -168,10 +168,6 @@ void Board::Impl_::InitCanvas() {
 
 void Board::Impl_::SetPanel(const PanelPtr &panel,
                             const PanelHelper::ResultFunc &result_func) {
-    if (! panel_stack_.empty())
-        std::cerr << "XXXX PANEL STACK HAS "
-                  << panel_stack_.top().panel->GetDesc() << "\n";
-
     ASSERT(panel);
     ASSERT(panel_stack_.empty());
     KLOG('g', root_node_.GetDesc() << " SetPanel to " << panel->GetDesc());

@@ -24,6 +24,7 @@ class ChangeTorusExecutor : public Executor {
         struct PerModel {
             SelPath  path_to_model;
             float    old_radius;
+            bool     do_translate;
         };
         std::vector<PerModel> per_model;
     };
@@ -31,4 +32,8 @@ class ChangeTorusExecutor : public Executor {
     /// Creates and stores a ExecData_ in the given command if necessary,
     /// returning it either way.
     ExecData_ & GetExecData_(Command &command);
+
+    /// Returns true if the torus in the given PerModel data is resting on the
+    /// stage and should be translated up or down if the inner radius changes.
+    bool IsOnStage_(const ExecData_::PerModel &pm) const;
 };

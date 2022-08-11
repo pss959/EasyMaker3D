@@ -45,8 +45,8 @@ BoxPane "TreePane" {
     },
 
     # Button used to show the Model name and select it. Note that this is not a
-    # clone of T_ButtonPane because it has no border and a different
-    # inactive_color setting.
+    # clone of T_ButtonPane because it has no border and a different inactive
+    # color.
     ButtonPane "T_ModelButton" {
       resize_width:  True,
       resize_height: True,
@@ -59,8 +59,8 @@ BoxPane "TreePane" {
       ],
       children: [
         PushButtonWidget "Button" {
-          inactive_color: "#777777",
-          hover_color:    "#444422",
+          inactive_color: "#bbbbaa",
+          hover_color:    "#552222",
           shapes: [ Rectangle {} ],
         }
       ],

@@ -44,8 +44,7 @@ class ScaleExecutor : public Executor {
     /// Compensates for a change in translation caused by asymmetric scaling.
     void AdjustTranslation_(const Vector3f &ratios, ExecData_::PerModel &pm);
 
-    /// Used during asymmetric scale operations to figure out how much to move
-    /// the object to keep the opposite side in the same place.
-    Vector3f ComputeSizeChange_(const ExecData_::PerModel &pm,
-                                const Vector3f &ratios);
+    /// Compensates for a change in translation caused by symmetric scaling
+    /// about the Model base center..
+    void AdjustBaseTranslation_(ExecData_::PerModel &pm);
 };

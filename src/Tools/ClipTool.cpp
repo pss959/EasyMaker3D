@@ -167,13 +167,17 @@ void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
     model_ = model;
     stage_path_ = stage_path;
 
+    const float kArrowScale   = 1.6f;  // Must be > sqrt(2).
+    const float kPlaneScale   = 1.5f;
+    const float kRotatorScale = 1.1f;
+
     // Update sizes based on the model size.
     const float radius = .5f * ion::math::Length(model_size);
-    plane_->SetUniformScale(TK::kClipToolPlaneScale * radius);
-    rotator_->SetUniformScale(TK::kClipToolRotatorScale * radius);
+    plane_->SetUniformScale(kPlaneScale * radius);
+    rotator_->SetUniformScale(kRotatorScale * radius);
 
     // Scale the arrow shaft and position the cone at the end.
-    const float arrow_scale = TK::kClipToolArrowScale * radius;
+    const float arrow_scale = kArrowScale * radius;
     arrow_shaft_->SetScale(Vector3f(1, arrow_scale, 1));
     arrow_cone_->SetTranslation(Vector3f(0, arrow_scale, 0));
 

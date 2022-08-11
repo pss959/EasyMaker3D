@@ -16,6 +16,16 @@ DECL_SHARED_PTR(ScaleCommand);
 /// \ingroup Commands
 class ScaleCommand : public MultiModelCommand {
   public:
+    enum class Mode {
+        /// Scale about the opposite side, edge, or corner of the Model.
+        kAsymmetric,
+        /// Scale symmetrically about the center point of the Model.
+        kCenterSymmetric,
+        /// Scale symmetrically about the center point of the Model in the Y=0
+        /// plane (top of the Stage).
+        kBaseSymmetric,
+    };
+
     virtual std::string GetDescription() const override;
 
     /// Returns the change in scale factors, expressed as ratios applied to the
@@ -28,11 +38,11 @@ class ScaleCommand : public MultiModelCommand {
     /// Sets the scale ratios.
     void SetRatios(const Vector3f &ratios) { ratios_ = ratios; }
 
-    /// Returns true if the scale is symmetric; the default is false.
-    bool IsSymmetric() const { return is_symmetric_; }
+    /// Returns the scale mode; the default is Mode::kAsymmetric.
+    Mode GetMode() const { return mode_; }
 
-    /// Sets whether the scale is symmetric; the default is false.
-    void SetIsSymmetric(bool is_symmetric) { is_symmetric_ = is_symmetric; }
+    /// Sets the scale Mode.
+    void SetMode(Mode mode) { mode_ = mode; }
 
   protected:
     ScaleCommand() {}
@@ -44,7 +54,7 @@ class ScaleCommand : public MultiModelCommand {
     /// \name Parsed Fields
     ///@{
     Parser::TField<Vector3f> ratios_;
-    Parser::TField<bool>     is_symmetric_;
+    Parser::EnumField<Mode>  mode_;
     ///@}
 
     friend class Parser::Registry;

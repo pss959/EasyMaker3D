@@ -91,8 +91,12 @@ void Settings::SetToDefaults_() {
     import_directory_  = home;
     export_directory_  = home;
     tooltip_delay_     = TK::kTooltipDelay;
-    import_units_      = Parser::Registry::CreateObject<UnitConversion>();
-    export_units_      = Parser::Registry::CreateObject<UnitConversion>();
+    import_units_      = UnitConversion::CreateWithUnits(
+        UnitConversion::Units::kCentimeters,
+        UnitConversion::Units::kCentimeters);
+    export_units_      = UnitConversion::CreateWithUnits(
+        UnitConversion::Units::kCentimeters,
+        UnitConversion::Units::kMillimeters);
     build_volume_size_ = TK::kBuildVolumeSize;
     left_radial_menu_  = Parser::Registry::CreateObject<RadialMenuInfo>();
     right_radial_menu_ = Parser::Registry::CreateObject<RadialMenuInfo>();

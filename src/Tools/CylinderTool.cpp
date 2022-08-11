@@ -82,7 +82,7 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
 
 void CylinderTool::UpdateScalers_() {
     ASSERT(cylinder_model_);
-    const Vector3f size = MatchModelAndGetSize(false);
+    const Vector3f model_size = MatchModelAndGetSize(false);
 
     // Update the radius scalers based on the current radii. Note that the
     // radii need to be converted from object coordinates to stage coordinates.
@@ -95,12 +95,35 @@ void CylinderTool::UpdateScalers_() {
     bottom_scaler_->SetMinValue(-bottom_radius);
     bottom_scaler_->SetMaxValue( bottom_radius);
 
+    // Scale the handles and sticks based on the Model size.
+    ScaleScaler_(*top_scaler_,    model_size);
+    ScaleScaler_(*bottom_scaler_, model_size);
+
     // Position the scalers.
     Vector3f center_point(0, 0, 0);
-    center_point[1] =  .5f * size[1];
+    center_point[1] =  .5f * model_size[1];
     top_scaler_->SetTranslation(center_point);
-    center_point[1] = -.5f * size[1];
+    center_point[1] = -.5f * model_size[1];
     bottom_scaler_->SetTranslation(center_point);
+}
+
+void CylinderTool::ScaleScaler_(ScaleWidget &scaler,
+                                const Vector3f &model_size) {
+    const float kHandleSizeFraction = .25f;
+    const float kMinHandleScale     = .1f;
+    const float kMaxHandleScale     = .6f;
+    const float handle_scale = ComputePartScale(
+        model_size, kHandleSizeFraction, kMinHandleScale, kMaxHandleScale);
+
+    // Scale the slider handles.
+    SG::FindNodeUnderNode(scaler, "MinSlider")->SetUniformScale(handle_scale);
+    SG::FindNodeUnderNode(scaler, "MaxSlider")->SetUniformScale(handle_scale);
+
+    // Scale the stick (even though it is probably not visible).
+    auto stick = SG::FindNodeUnderNode(scaler, "Stick");
+    const float thickness_scale = .4f * handle_scale;
+    stick->SetScale(Vector3f(stick->GetScale()[0],
+                             thickness_scale, thickness_scale));
 }
 
 void CylinderTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
@@ -178,10 +201,11 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
 void CylinderTool::UpdateFeedback_(float radius, bool is_snapped) {
     // Convert canonical points on the cylinder from object coordinates to
     // stage coordinates. Note that the radius is already in stage coordinates.
-    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    const Point3f  p0  = osm * Point3f(0, 1, 0);
-    const Vector3f dir = ion::math::Normalized(osm * Vector3f(1, 0, 0));
-    const Point3f  p1  = p0 + radius * dir;
+    const Matrix4f osm    = GetStageCoordConv().GetObjectToRootMatrix();
+    const Point3f  center = osm * Point3f(0, 1, 0);
+    const Vector3f dir    = ion::math::Normalized(osm * Vector3f(1, 0, 0));
+    const Point3f  p0     = center - radius * dir;
+    const Point3f  p1     = center + radius * dir;
 
     // Use SpanLength() here instead of SpanPoints() because the length can
     // be zero.

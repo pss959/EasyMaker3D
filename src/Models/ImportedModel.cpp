@@ -7,7 +7,9 @@
 #include "Math/MeshUtils.h"
 
 ImportedModel::ImportedModel() :
-    unit_conversion_(UnitConversion::CreateDefault()) {
+    unit_conversion_(UnitConversion::CreateWithUnits(
+                         UnitConversion::Units::kCentimeters,
+                         UnitConversion::Units::kCentimeters)) {
 }
 
 void ImportedModel::AddFields() {

@@ -71,13 +71,13 @@ const float    kDiscWidgetMaxScale               = 1000;
 const float    kDiscWidgetMinScale               = .01f;
 const float    kExtrudedTextLength               = 2;
 const float    kFlatThickness                    = .001f;
-const float    kInitialModelScale                = 4;
+const float    kInitialModelScale                = 2;
 const float    kMaxCylinderRadius                = 30;
 const float    kMaxTorusInnerRadius              = 10;
 const float    kMaxTorusOuterRadius              = 20;
-const float    kMinCylinderRadius                = .01;
-const float    kMinTorusHoleRadius               = .01f;
-const float    kMinTorusInnerRadius              = .01f;
+const float    kMinCylinderRadius                = .05f;
+const float    kMinTorusHoleRadius               = .05f;
+const float    kMinTorusInnerRadius              = .05f;
 const float    kScaleWidgetMaxLimit              = 100;
 const float    kScaleWidgetMinLimit              = .01f;
 const float    kTextHeight                       = 4;
@@ -103,6 +103,7 @@ const float    kRLWRadiusTextYOffset             = 1;
 const float    kRLWRingMaxInnerRadius            = .3f;
 const int      kRLWRingMaxSectorCount            = 72;
 const float    kRLWRingMinInnerRadius            = .2f;
+const float    kRLWRingMinOuterRadius            = 1;
 const int      kRLWRingMinSectorCount            = 36;
 const int      kRLWRingRingCount                 =  8;
 const float    kRLWSpokeScale                    = 1.1f;  // Relative to radius.
@@ -150,9 +151,10 @@ const float    kMaxStageAngleChangePerSecond     = 90;
 const float    kMaxStageScaleChangePerSecond     = 4;
 const float    kMaxViewAngleChangePerSecond      = 90.f;
 const float    kModelAnimationDuration           = 1.2f;
-const float    kModelAnimationHeight             = 80;
+const float    kModelAnimationHeight             = 60;
 
 // Tolerances and Precision
+const float    kCloseToStageForScaling           = .01f;
 const float    kMaxBevelAngle                    = 120;
 const Anglef   kMaxDiscWidgetScaleAngle          = Anglef::FromDegrees(10);
 const Anglef   kMaxGripHoverDirAngle             = Anglef::FromDegrees(20);
@@ -169,17 +171,6 @@ const float    kSTLPrecision                     = .0001f;
 const float    kSnapDirectionTolerance           = 15;
 const float    kSnapLengthTolerance              = 1;
 const float    kSnapPointTolerance               = 1;
-
-// Tools
-const float    kClipToolArrowScale               = 1.6f;  // Must be > sqrt(2).
-const float    kClipToolPlaneScale               = 1.5f;
-const float    kClipToolRotatorScale             = 1.1f;
-const float    kColorToolMarkerRadius            = .06f;
-const float    kMirrorToolPlaneOpacity           = .2f;
-const float    kMirrorToolPlaneScale             = 1.8f;
-const float    kRotationToolRadiusScale          = .51f;
-const float    kRotationToolSphereRadiusScale    = .9f;
-const float    kTranslationToolExtraStickLength  = .4f;
 
 // Tooltips
 const float    kTooltipDelay                     = 1;

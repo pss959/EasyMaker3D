@@ -13,6 +13,10 @@
 // string.
 class SceneTestBase : public TestBase {
  protected:
+    // Default PrimitiveModel base scale. This is a shorthand convenience since
+    // this value is used in lots of tests.
+    static const float MS;
+
     // ShaderManager for creating shaders.
     ion::gfxutils::ShaderManagerPtr shader_manager;
 

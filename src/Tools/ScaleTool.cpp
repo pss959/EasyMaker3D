@@ -26,9 +26,12 @@
 
 /// This struct stores information about a 1D, 2D, or 3D scaler.
 struct ScaleTool::Scaler_ {
-    ScaleWidgetPtr widget;  ///< ScaleWidget for the scaler.
-    Vector3f       vector;  ///< Vector along which the scaler operates.
-    Dimensionality dims;    ///< Which dimensions the scaler affects.
+    ScaleWidgetPtr widget;       ///< ScaleWidget for the scaler.
+    Vector3f       vector;       ///< Vector along which the scaler operates.
+    Dimensionality dims;         ///< Which dimensions the scaler affects.
+    SG::NodePtr    min_handle;   ///< Geometry for the minimum side handle.
+    SG::NodePtr    max_handle;   ///< Geometry for the maximum side handle.
+    SG::NodePtr    stick;        ///< Geometry for the stick joining handles.
 };
 
 // ----------------------------------------------------------------------------
@@ -120,6 +123,13 @@ void ScaleTool::FindParts_() {
     InitScaler_(11, "XYZ3Scaler", Vector3f(1,   1, -1));
     InitScaler_(12, "XYZ4Scaler", Vector3f(1,   1,  1));
 
+    // Set colors for 1D scalers.
+    for (int dim = 0; dim < 3; ++dim) {
+        const Color color = SG::ColorMap::SGetColorForDimension(dim);
+        parts_->scalers[dim].widget->GetMinSlider()->SetInactiveColor(color);
+        parts_->scalers[dim].widget->GetMaxSlider()->SetInactiveColor(color);
+    }
+
     // The feedback is stored when activated.
 }
 
@@ -128,8 +138,11 @@ void ScaleTool::InitScaler_(size_t index, const std::string &name,
     ASSERT(parts_);
     auto &scaler = parts_->scalers[index];
 
-    scaler.widget = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
-    scaler.vector = ion::math::Normalized(vec);
+    scaler.widget     = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
+    scaler.vector     = ion::math::Normalized(vec);
+    scaler.min_handle = SG::FindNodeUnderNode(*scaler.widget, "MinSlider");
+    scaler.max_handle = SG::FindNodeUnderNode(*scaler.widget, "MaxSlider");
+    scaler.stick      = SG::FindNodeUnderNode(*scaler.widget, "Stick");
 
     // Set up dims: add each dimension that is not 0 in the vector.
     for (int i = 0; i < 3; ++i)
@@ -148,7 +161,9 @@ void ScaleTool::InitScaler_(size_t index, const std::string &name,
 
 void ScaleTool::UpdateGeometry_() {
     ASSERT(parts_);
-    const Vector3f size = MatchModelAndGetSize(false);
+
+    // Rotate to match the Model. The scale tool always aligns with local axes.
+    const Vector3f model_size = MatchModelAndGetSize(false);
 
     // Save the unscaled object bounds.
     ASSERT(GetModelAttachedTo());
@@ -156,33 +171,60 @@ void ScaleTool::UpdateGeometry_() {
     model_bounds_ = model.GetBounds();
 
     // These factors are used to scale vector lengths based on a Scaler_'s
-    // Dimensionality. Note that 1D scalers are relatively larger to make them
-    // easier to access.
-    const Vector3f dim_scales(1.4f, std::sqrt(2), std::sqrt(3));
+    // Dimensionality. They are a little larger than they need to be so that
+    // they are visible when attached to a Box.
+    const float kLengthScale = 1.1f;
+    const Vector3f dim_scales =
+        kLengthScale * Vector3f(1, std::sqrt(2), std::sqrt(3));
+
+    // Compute a reasonable scale for the handles based on the Model size.
+    const float kHandleSizeFraction  = .25f;
+    const float kMinHandleScale      = .2f;
+    const float kMaxHandleScale      = .8f;
+    const float k1DScalerExtraLength = 1;
+    const float handle_scale = ComputePartScale(
+        model_size, kHandleSizeFraction, kMinHandleScale, kMaxHandleScale);
+    const float thickness_scale = .4f * handle_scale;
 
     for (auto &scaler: parts_->scalers) {
         // Each scaler is originally aligned with the +X axis. Determine the
         // correct direction vector and rotate to match it. For 2D and 3D
-        // vectors, the direction is affected by the scale.
-        const Vector3f scaled_vec = size * scaler.vector;
+        // vectors, the direction is affected by the Model's size proportions.
+        const Vector3f scaled_vec = model_size * scaler.vector;
         const Vector3f dir = .5f * ion::math::Normalized(scaled_vec);
         const Rotationf rot = Rotationf::RotateInto(Vector3f(1, 0, 0), dir);
         scaler.widget->SetRotation(rot);
 
-        // Inversely rotate the widget handles so they remain aligned with the
-        // local axes of the Model.
-        auto min = SG::FindNodeUnderNode(*scaler.widget, "MinSlider");
-        auto max = SG::FindNodeUnderNode(*scaler.widget, "MaxSlider");
-        min->SetRotation(-rot);
-        max->SetRotation(-rot);
+        // Scale the handles based on the Model size.
+        scaler.min_handle->SetUniformScale(handle_scale);
+        scaler.max_handle->SetUniformScale(handle_scale);
+
+        // Fix the orientations of the XY and YZ 2D slider handles.
+        if (scaler.dims.GetCount() == 2 && scaler.dims.HasDimension(1)) {
+            const int other_dim = scaler.dims.HasDimension(0) ? 0 : 2;
+            const Rotationf orient =
+                -rot * Rotationf::FromAxisAndAngle(GetAxis(other_dim),
+                                                   Anglef::FromDegrees(90));
+            scaler.min_handle->SetRotation(orient);
+            scaler.max_handle->SetRotation(orient);
+        }
+
+        // Scale the stick thickness. Note that the length of the stick is set
+        // by the ScaleWidget, so make sure to leave it as is.
+        const Vector3f stick_scale = scaler.stick->GetScale();
+        scaler.stick->SetScale(Vector3f(stick_scale[0],
+                                        thickness_scale, thickness_scale));
 
         // Determine the min and max ScaleWidget values based on the size in
-        // the direction of the vector. Note that 2D and 3D scalers have to
-        // compensate for their diagonal length.
-        const float dim_scale = dim_scales[scaler.dims.GetCount() - 1];
+        // the direction of the vector. Note that 2D and 3D scalers use
+        // dim_scales to compensate for their diagonal length.
+        const int dim_count = scaler.dims.GetCount();
+        const float dim_scale = dim_scales[dim_count - 1];
         const float half_size = .5f * ion::math::Length(scaled_vec) * dim_scale;
-        scaler.widget->SetMinValue(-half_size);
-        scaler.widget->SetMaxValue( half_size);
+        // Add a little extra length to 1D scalers to make them stand out.
+        const float extra_length = dim_count == 1 ? k1DScalerExtraLength : 0;
+        scaler.widget->SetMinValue(-half_size - extra_length);
+        scaler.widget->SetMaxValue( half_size + extra_length);
     }
 }
 
@@ -240,6 +282,26 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
     }
 }
 
+ScaleCommand::Mode ScaleTool::GetMode_(const Scaler_ &scaler) const {
+    ScaleCommand::Mode mode;
+
+    // For symmetric scales, check if the Model bounds lie on, intersect, or
+    // are very close to the Y=0 plane. If so, use the kBaseSymmetric mode.
+    if (scaler.widget->GetMode() == ScaleWidget::Mode::kSymmetric) {
+        const Bounds bounds = TransformBounds(
+            GetModelAttachedTo()->GetBounds(),
+            GetStageCoordConv().GetObjectToRootMatrix());
+        if (bounds.GetMinPoint()[1] <= TK::kCloseToStageForScaling)
+            mode = ScaleCommand::Mode::kBaseSymmetric;
+        else
+            mode = ScaleCommand::Mode::kCenterSymmetric;
+    }
+    else {
+        mode = ScaleCommand::Mode::kAsymmetric;
+    }
+    return mode;
+}
+
 void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     const Scaler_ &scaler = parts_->scalers[index];
 
@@ -247,8 +309,7 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     if (! command_) {
         command_ = CreateCommand<ScaleCommand>();
         command_->SetFromSelection(GetSelection());
-        command_->SetIsSymmetric(scaler.widget->GetMode() ==
-                                 ScaleWidget::Mode::kSymmetric);
+        command_->SetMode(GetMode_(scaler));
         GetDragStarted().Notify(*this);
 
         // Turn on feedback in all active dimensions.
@@ -259,7 +320,7 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     // ScaleCommand.
     Dimensionality snapped_dims;
     Vector3f ratios = ComputeRatios_(index, snapped_dims);
-    if (! command_->IsSymmetric()) {
+    if (command_->GetMode() == ScaleCommand::Mode::kAsymmetric) {
         // For asymmetric scales, set the ratio signs to indicate which side is
         // fixed.
         const Vector3f sign_vec = is_max ? scaler.vector : -scaler.vector;
