@@ -119,7 +119,7 @@ void TorusTool::UpdateScalers_() {
 void TorusTool::ScaleScaler_(ScaleWidget &scaler, const Vector3f &model_size) {
     const float kHandleSizeFraction = .25f;
     const float kMinHandleScale     = .2f;
-    const float kMaxHandleScale     = .6f;
+    const float kMaxHandleScale     = .8f;
     const float handle_scale = Clamp(
         kHandleSizeFraction * model_size[GetMinElementIndex(model_size)],
         kMinHandleScale, kMaxHandleScale);
@@ -225,17 +225,31 @@ void TorusTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
             torus_model_->SetOuterRadius(r);
     }
 
-    // Update the feedback using the motion vector.
-    UpdateFeedback_(radius, is_snapped);
+    // Update the feedback.
+    UpdateFeedback_(*torus_model_, is_inner, is_snapped);
 }
 
-void TorusTool::UpdateFeedback_(float radius, bool is_snapped) {
-    // Convert canonical points on the torus from object coordinates to
-    // stage coordinates. Note that the radius is already in stage coordinates.
+void TorusTool::UpdateFeedback_(const TorusModel &model,
+                                bool is_inner, bool is_snapped) {
+    // Convert canonical points from object coordinates to stage
+    // coordinates.
+    float    radius;
+    Vector3f axis;
+    Point3f  center;
+    if (is_inner) {
+        radius = model.GetInnerRadius();
+        axis   = Vector3f::AxisY();
+        center.Set(model.GetOuterRadius(), 0, 0);
+    }
+    else {
+        radius = model.GetOuterRadius();
+        axis   = Vector3f::AxisX();
+        center.Set(0, 1, 0);
+    }
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    const Point3f  p0  = osm * Point3f(0, 1, 0);
-    const Vector3f dir = ion::math::Normalized(osm * Vector3f(1, 0, 0));
-    const Point3f  p1  = p0 + radius * dir;
+    const Point3f  p0  = osm * (center - radius * axis);
+    const Point3f  p1  = osm * (center + radius * axis);
+    const Vector3f dir = ion::math::Normalized(osm * axis);
 
     // Use SpanLength() here instead of SpanPoints() because the length can
     // be zero.

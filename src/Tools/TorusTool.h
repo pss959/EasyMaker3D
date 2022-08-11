@@ -62,7 +62,8 @@ class TorusTool : public Tool {
     void ScalerActivated_(const ScaleWidgetPtr &scaler, bool is_activation);
     void ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max);
 
-    void UpdateFeedback_(float radius, bool is_snapped);
+    void UpdateFeedback_(const TorusModel &model,
+                         bool is_inner, bool is_snapped);
 
     friend class Parser::Registry;
 };
