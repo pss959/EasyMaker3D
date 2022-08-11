@@ -103,6 +103,7 @@ const float    kRLWRadiusTextYOffset             = 1;
 const float    kRLWRingMaxInnerRadius            = .3f;
 const int      kRLWRingMaxSectorCount            = 72;
 const float    kRLWRingMinInnerRadius            = .2f;
+const float    kRLWRingMinOuterRadius            = 1;
 const int      kRLWRingMinSectorCount            = 36;
 const int      kRLWRingRingCount                 =  8;
 const float    kRLWSpokeScale                    = 1.1f;  // Relative to radius.

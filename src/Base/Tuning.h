@@ -319,6 +319,9 @@ extern const int      kRLWRingMaxSectorCount;
 /// Minimum inner radius for the RadialLayoutWidget ring.
 extern const float    kRLWRingMinInnerRadius;
 
+/// Minimum outer radius for the RadialLayoutWidget ring.
+extern const float    kRLWRingMinOuterRadius;
+
 /// Minimum number of sectors to use for the RadialLayoutWidget ring.
 extern const int      kRLWRingMinSectorCount;
 

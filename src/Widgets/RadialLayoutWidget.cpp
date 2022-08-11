@@ -1,5 +1,7 @@
 #include "Widgets/RadialLayoutWidget.h"
 
+#include <algorithm>
+
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/PolyLine.h"
@@ -99,7 +101,8 @@ void RadialLayoutWidget::RadiusActivated_(bool is_activation) {
 }
 
 void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
-    radius_ = RoundToPrecision(start_radius_ * change, precision);
+    radius_ = std::max(RoundToPrecision(start_radius_ * change, precision),
+                       TK::kRLWRingMinOuterRadius);
     UpdateRing_();
     UpdateSpokes_();
     UpdateArc_();
