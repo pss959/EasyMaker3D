@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ion/gfx/graphicsmanager.h>
 #include <ion/gfxutils/shadermanager.h>
 
 #include "Base/Memory.h"
@@ -56,6 +55,10 @@ class Renderer {
     /// Given an FBTarget, this returns the OpenGL ID of the resolved
     /// framebuffer texture. Returns 0 on error.
     uint32 GetResolvedTextureID(const FBTarget &fb_target);
+
+    /// Reads a rectangle of pixels from the GLFWViewer window and returns them
+    /// in RGB format (8 bits each).
+    std::vector<uint8> ReadPixels(int x, int y, int width, int height);
 
   private:
     class Impl_; // This class does most of the work.

@@ -7,6 +7,7 @@ DECL_SHARED_PTR(SessionManager);
 
 class Controller;
 class LogHandler;
+class Renderer;
 struct TestContext;
 
 /// The Application class manages the entire application.
@@ -56,6 +57,9 @@ class Application {
 
     /// Fills in a TestContext.
     void GetTestContext(TestContext &tc);
+
+    /// Returns the Renderer.
+    Renderer & GetRenderer();
 
   private:
     class  Loader_;

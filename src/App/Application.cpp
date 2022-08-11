@@ -95,8 +95,6 @@ class  Application::Impl_ {
     Impl_();
     ~Impl_();
 
-    void SetTestingFlag() { is_testing_ = true; }
-
     bool Init(const Application::Options &options);
 
     /// Returns true if VR is enabled (after Init() is called).
@@ -108,10 +106,11 @@ class  Application::Impl_ {
 
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
-
-    void GetTestContext(TestContext &tc);
-
     void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
+
+    void SetTestingFlag() { is_testing_ = true; }
+    void GetTestContext(TestContext &tc);
+    Renderer & GetRenderer() { return *renderer_; }
 
   private:
     /// Run states for the main loop.
@@ -1390,4 +1389,8 @@ void Application::SetTestingFlag() {
 
 void Application::GetTestContext(TestContext &tc) {
     impl_->GetTestContext(tc);
+}
+
+Renderer & Application::GetRenderer() {
+    return impl_->GetRenderer();
 }
