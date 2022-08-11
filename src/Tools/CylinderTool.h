@@ -52,6 +52,9 @@ class CylinderTool : public Tool {
     /// Updates both scalers based on the attached CylinderModel.
     void UpdateScalers_();
 
+    /// Scales the handles and stick of a ScaleWidget based on the Model size.
+    void ScaleScaler_(ScaleWidget &scaler, const Vector3f &model_size);
+
     void ScalerActivated_(const ScaleWidgetPtr &scaler, bool is_activation);
     void ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max);
 

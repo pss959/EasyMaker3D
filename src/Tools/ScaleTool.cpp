@@ -187,7 +187,7 @@ void ScaleTool::UpdateGeometry_() {
     const float handle_scale = Clamp(
         kHandleSizeFraction * model_size[GetMinElementIndex(model_size)],
         kMinHandleScale, kMaxHandleScale);
-    const float thickness_scale = .6f * handle_scale;
+    const float thickness_scale = .4f * handle_scale;
 
     for (auto &scaler: parts_->scalers) {
         // Each scaler is originally aligned with the +X axis. Determine the

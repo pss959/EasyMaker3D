@@ -92,7 +92,7 @@ ScaleWidgetPtr TorusTool::InitScaler_(const std::string &name, bool is_inner) {
 
 void TorusTool::UpdateScalers_() {
     ASSERT(torus_model_);
-    const Vector3f size = MatchModelAndGetSize(false);
+    const Vector3f model_size = MatchModelAndGetSize(false);
 
     // Update the radius scalers based on the current radii. Note that the
     // radii need to be converted from object coordinates to stage coordinates.
@@ -105,10 +105,34 @@ void TorusTool::UpdateScalers_() {
     outer_scaler_->SetMinValue(-outer_radius);
     outer_scaler_->SetMaxValue( outer_radius);
 
+    // Scale the handles and sticks based on the Model size.
+    ScaleScaler_(*inner_scaler_, model_size);
+    ScaleScaler_(*outer_scaler_, model_size);
+
     // Position the inner radius scaler. The outer radius scaler remains
     // centered on the center of the TorusModel. The inner radius scaler is
     // centered on the circular cross-section at the +X end.
-    inner_scaler_->SetTranslation(Vector3f(.5f * size[0] - inner_radius, 0, 0));
+    inner_scaler_->SetTranslation(Vector3f(.5f * model_size[0] - inner_radius,
+                                           0, 0));
+}
+
+void TorusTool::ScaleScaler_(ScaleWidget &scaler, const Vector3f &model_size) {
+    const float kHandleSizeFraction = .25f;
+    const float kMinHandleScale     = .1f;
+    const float kMaxHandleScale     = .6f;
+    const float handle_scale = Clamp(
+        kHandleSizeFraction * model_size[GetMinElementIndex(model_size)],
+        kMinHandleScale, kMaxHandleScale);
+
+    // Scale the slider handles.
+    SG::FindNodeUnderNode(scaler, "MinSlider")->SetUniformScale(handle_scale);
+    SG::FindNodeUnderNode(scaler, "MaxSlider")->SetUniformScale(handle_scale);
+
+    // Scale the stick (even though it is probably not visible).
+    auto stick = SG::FindNodeUnderNode(scaler, "Stick");
+    const float thickness_scale = .4f * handle_scale;
+    stick->SetScale(Vector3f(stick->GetScale()[0],
+                             thickness_scale, thickness_scale));
 }
 
 void TorusTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
