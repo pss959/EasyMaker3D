@@ -117,12 +117,11 @@ void TorusTool::UpdateScalers_() {
 }
 
 void TorusTool::ScaleScaler_(ScaleWidget &scaler, const Vector3f &model_size) {
-    const float kHandleSizeFraction = .25f;
+    const float kHandleSizeFraction = .2f;
     const float kMinHandleScale     = .2f;
     const float kMaxHandleScale     = .8f;
-    const float handle_scale = Clamp(
-        kHandleSizeFraction * model_size[GetMinElementIndex(model_size)],
-        kMinHandleScale, kMaxHandleScale);
+    const float handle_scale = ComputePartScale(
+        model_size, kHandleSizeFraction, kMinHandleScale, kMaxHandleScale);
 
     // Scale the slider handles.
     SG::FindNodeUnderNode(scaler, "MinSlider")->SetUniformScale(handle_scale);

@@ -130,22 +130,21 @@ void TranslationTool::UpdateGeometry_() {
     }
 
     // Choose a good size for the min/max face handles and stick.
-    const float kHandleSizeFraction = .25f;
+    const float kHandleSizeFraction = .1f;
     const float kMinHandleScale     = .2f;
     const float kMaxHandleScale     = .8f;
     const float kExtraStickLength   = .4f;
-
-    const float handle_scale = Clamp(
-        kHandleSizeFraction * model_size_[GetMinElementIndex(model_size_)],
-        kMinHandleScale, kMaxHandleScale);
-    const float thickness_scale = .8f * handle_scale;
+    const float handle_scale = ComputePartScale(
+        model_size_, kHandleSizeFraction, kMinHandleScale, kMaxHandleScale);
+    const float thickness_scale = .4f * handle_scale;
 
     for (int i = 0; i < 3; ++i) {
         auto &dp = parts_->dim_parts[i];
         const float sz = .5f * model_size_[i];
 
         // Scale and move the min/max faces.
-        const Vector3f face_scale(handle_scale, handle_scale, thickness_scale);
+        const Vector3f face_scale(handle_scale, handle_scale,
+                                  2 * thickness_scale);
         dp.min_face->SetScale(face_scale);
         dp.max_face->SetScale(face_scale);
         dp.min_face->SetTranslation(Vector3f(-sz, 0, 0));

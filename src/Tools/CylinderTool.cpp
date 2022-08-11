@@ -112,9 +112,8 @@ void CylinderTool::ScaleScaler_(ScaleWidget &scaler,
     const float kHandleSizeFraction = .25f;
     const float kMinHandleScale     = .1f;
     const float kMaxHandleScale     = .6f;
-    const float handle_scale = Clamp(
-        kHandleSizeFraction * model_size[GetMinElementIndex(model_size)],
-        kMinHandleScale, kMaxHandleScale);
+    const float handle_scale = ComputePartScale(
+        model_size, kHandleSizeFraction, kMinHandleScale, kMaxHandleScale);
 
     // Scale the slider handles.
     SG::FindNodeUnderNode(scaler, "MinSlider")->SetUniformScale(handle_scale);

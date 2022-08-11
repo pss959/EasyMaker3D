@@ -12,7 +12,6 @@
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
-#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "SG/Search.h"
@@ -178,15 +177,13 @@ void ScaleTool::UpdateGeometry_() {
     const Vector3f dim_scales =
         kLengthScale * Vector3f(1, std::sqrt(2), std::sqrt(3));
 
-    // Compute a reasonable base scale for the handles based on the size of the
-    // Model.
+    // Compute a reasonable scale for the handles based on the Model size.
     const float kHandleSizeFraction  = .25f;
     const float kMinHandleScale      = .2f;
     const float kMaxHandleScale      = .8f;
     const float k1DScalerExtraLength = 1;
-    const float handle_scale = Clamp(
-        kHandleSizeFraction * model_size[GetMinElementIndex(model_size)],
-        kMinHandleScale, kMaxHandleScale);
+    const float handle_scale = ComputePartScale(
+        model_size, kHandleSizeFraction, kMinHandleScale, kMaxHandleScale);
     const float thickness_scale = .4f * handle_scale;
 
     for (auto &scaler: parts_->scalers) {

@@ -192,6 +192,13 @@ class Tool : public Grippable {
     /// the given distance above the top front center of the attached Model.
     Point3f GetPositionAboveModel(float distance) const;
 
+    /// This can be used to help compute a reasonable scale for parts of a
+    /// Tool's geometry. It returns a size computed as the product of the given
+    /// fraction and the average of the sizes in the model_size vector, clamped
+    /// to the given min and max values.
+    static float ComputePartScale(const Vector3f &model_size, float fraction,
+                                  float min_size, float max_size);
+
     /// Returns the color to use for snapped feedback.
     static Color GetSnappedFeedbackColor();
 
