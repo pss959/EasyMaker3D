@@ -32,6 +32,10 @@ class Application {
     /// Enters the main loop.
     void MainLoop();
 
+    /// Processes a single frame during the main loop. Returns false if the
+    /// main loop should exit.
+    virtual bool ProcessFrame(size_t render_count);
+
     /// Reloads the scene.
     void ReloadScene();
 

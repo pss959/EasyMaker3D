@@ -104,8 +104,7 @@ class  Application::Impl_ {
 
     LogHandler & GetLogHandler() const { return *log_handler_; }
 
-    /// Enters the main loop for the application.
-    void MainLoop();
+    bool ProcessFrame(size_t render_count);
 
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
@@ -426,78 +425,74 @@ bool Application::Impl_::Init(const Application::Options &options) {
     ConnectSceneInteraction_();
     ShowInitialPanel_();
 
-    return true;
-}
-
-void Application::Impl_::MainLoop() {
-    run_state_           = RunState_::kRunning;
-    size_t render_count  = 0;
-
     // Tell the ActionManager how to quit.
     action_manager_->SetQuitFunc([&]{ TryQuit_(); });
 
-    while (run_state_ != RunState_::kQuitting) {
-        KLogger::SetRenderCount(render_count++);
-        renderer_->BeginFrame();
+    return true;
+}
 
-        const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
+bool Application::Impl_::ProcessFrame(size_t render_count) {
+    ASSERT(run_state_ != RunState_::kQuitting);
 
-        // Update the frustum used for intersection testing.
-        scene_context_->frustum = glfw_viewer_->GetFrustum();
+    KLogger::SetRenderCount(render_count++);
+    renderer_->BeginFrame();
 
-        // Update global uniforms in the RootModel.
-        UpdateGlobalUniforms_();
+    const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
-        // Update everything that needs it.
-        main_handler_->SetTouchable(board_manager_->GetCurrentBoard());
-        main_handler_->ProcessUpdate(is_alternate_mode);
-        tool_context_->is_alternate_mode = is_alternate_mode;
+    // Update the frustum used for intersection testing.
+    scene_context_->frustum = glfw_viewer_->GetFrustum();
 
-        action_manager_->ProcessUpdate();
+    // Update global uniforms in the RootModel.
+    UpdateGlobalUniforms_();
 
-        // Process any animations. Do this after updating the MainHandler
-        // because a click timeout may start an animation.
-        animation_manager_->ProcessUpdate();
+    // Update everything that needs it.
+    main_handler_->SetTouchable(board_manager_->GetCurrentBoard());
+    main_handler_->ProcessUpdate(is_alternate_mode);
+    tool_context_->is_alternate_mode = is_alternate_mode;
 
-        // Enable or disable all icon widgets and update tooltips.
-        UpdateIcons_();
+    action_manager_->ProcessUpdate();
 
-        // Hide all the Models, Tools, etc. under certain conditions.
-        scene_context_->work_hider->SetEnabled(ShouldShowModels_());
+    // Process any animations. Do this after updating the MainHandler
+    // because a click timeout may start an animation.
+    animation_manager_->ProcessUpdate();
 
-        // Put controllers in touch mode if the AppBoard, KeyBoard, or
-        // ToolBoard is active.
-        const bool in_touch_mode =
-            scene_context_->app_board->IsShown() ||
-            scene_context_->key_board->IsShown() ||
-            scene_context_->tool_board->IsShown();
-        scene_context_->left_controller->SetTouchMode(in_touch_mode);
-        scene_context_->right_controller->SetTouchMode(in_touch_mode);
+    // Enable or disable all icon widgets and update tooltips.
+    UpdateIcons_();
 
-        // Emit and process Events. This returns false if the application
-        // should quit because the window was closed.
-        if (! ProcessEvents_(is_alternate_mode))
-            TryQuit_();
+    // Hide all the Models, Tools, etc. under certain conditions.
+    scene_context_->work_hider->SetEnabled(ShouldShowModels_());
 
-        // Update the TreePanel.
-        scene_context_->tree_panel->SetSessionString(
-            session_manager_->GetSessionString());
+    // Put controllers in touch mode if the AppBoard, KeyBoard, or
+    // ToolBoard is active.
+    const bool in_touch_mode =
+        scene_context_->app_board->IsShown() ||
+        scene_context_->key_board->IsShown() ||
+        scene_context_->tool_board->IsShown();
+    scene_context_->left_controller->SetTouchMode(in_touch_mode);
+    scene_context_->right_controller->SetTouchMode(in_touch_mode);
 
-        // Clear this flag before rendering. Rendering might cause some changes
-        // to occur, and those may need to be detected.
-        scene_changed_ = false;
+    // Emit and process Events. This returns false if the application
+    // should quit because the window was closed.
+    if (! ProcessEvents_(is_alternate_mode))
+        TryQuit_();
 
-        // Render to all viewers.
-        for (auto &viewer: viewers_) {
-            KLOG('R', "Render to " << Util::Demangle(typeid(*viewer).name()));
-            viewer->Render(*scene_context_->scene, *renderer_);
-        }
+    // Update the TreePanel.
+    scene_context_->tree_panel->SetSessionString(
+        session_manager_->GetSessionString());
 
-        renderer_->EndFrame();
+    // Clear this flag before rendering. Rendering might cause some changes
+    // to occur, and those may need to be detected.
+    scene_changed_ = false;
+
+    // Render to all viewers.
+    for (auto &viewer: viewers_) {
+        KLOG('R', "Render to " << Util::Demangle(typeid(*viewer).name()));
+        viewer->Render(*scene_context_->scene, *renderer_);
     }
 
-    // No longer running; exit VR.
-    Shutdown();
+    renderer_->EndFrame();
+
+    return run_state_ != RunState_::kQuitting;
 }
 
 void Application::Impl_::ReloadScene() {
@@ -1361,7 +1356,16 @@ bool Application::Init(const Options &options) {
 }
 
 void Application::MainLoop() {
-    impl_->MainLoop();
+    size_t render_count  = 0;
+
+    while (ProcessFrame(render_count))
+        ++render_count;
+
+    Shutdown();
+}
+
+bool Application::ProcessFrame(size_t render_count) {
+    return impl_->ProcessFrame(render_count);
 }
 
 void Application::ReloadScene() {

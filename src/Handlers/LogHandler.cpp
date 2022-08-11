@@ -4,6 +4,7 @@
 #include "Util/General.h"
 
 LogHandler::LogHandler() {
+    SetEnabled(false);
 }
 
 LogHandler::~LogHandler() {
