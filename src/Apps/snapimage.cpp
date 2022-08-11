@@ -1,8 +1,8 @@
+#include <stblib/stb_image_write.h>
+
 #include "App/Application.h"
 #include "App/Args.h"
 #include "App/Renderer.h"
-
-#include <../../ionsrc/Ion/third_party/stblib/stb_image_write.h>  // XXXX
 
 // ----------------------------------------------------------------------------
 // Derived Application class that adds snapshot processing.
@@ -21,7 +21,7 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
     const bool ret = Application::ProcessFrame(render_count);
     if (ret) {
         // XXXX
-        std::vector<uint8> pixels = GetRenderer().ReadPixels(200, 300, 128, 64);
+        std::vector<uint8> pixels = GetRenderer().ReadPixels(600, 300, 128, 64);
         SaveImage_(128, 64, pixels, "TEST");
         return false;
     }
@@ -54,6 +54,7 @@ int main(int argc, const char *argv[]) {
 
     Application::Options options;
     options.window_size.Set(1066, 600);
+    options.show_session_panel = false;
 
     SnapshotApp_ app;
     if (! app.Init(options))

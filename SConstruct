@@ -774,6 +774,7 @@ apps_extra_sources = ['$BUILD_DIR/App/Args.cpp']
 
 app_env = reg_env.Clone()
 app_env.Append(
+    CPPPATH = ['#ionsrc/Ion/third_party'],  # For stblib in snapimage.cpp.
     LIBPATH = ['$BUILD_DIR/docopt.cpp'],
     LIBS    = [main_lib, 'docopt'],
 )

@@ -422,7 +422,8 @@ bool Application::Impl_::Init(const Application::Options &options) {
     shortcut_handler_->SetActionManager(action_manager_);
 
     ConnectSceneInteraction_();
-    ShowInitialPanel_();
+    if (options.show_session_panel)
+        ShowInitialPanel_();
 
     // Tell the ActionManager how to quit.
     action_manager_->SetQuitFunc([&]{ TryQuit_(); });
