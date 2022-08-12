@@ -7,7 +7,10 @@
 #include "App/Args.h"
 #include "App/Renderer.h"
 #include "App/SnapScript.h"
+#include "Base/Tuning.h"
 #include "Math/Types.h"
+#include "Util/Assert.h"
+#include "Util/FilePath.h"
 
 // ----------------------------------------------------------------------------
 // Derived Application class that adds snapshot processing. Reads a SnapScript
@@ -22,29 +25,82 @@ class SnapshotApp_ : public Application {
 
   private:
     SnapScript script_;
+    size_t     cur_instruction_ = 0;
 
-    void SaveImage_(int width, int height, const std::vector<uint8> &pixels,
-                    const std::string &file_name);
+    bool LoadSession_(const std::string &file_name);
+    bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
 };
 
 bool SnapshotApp_::ProcessFrame(size_t render_count) {
-    const bool ret = Application::ProcessFrame(render_count);
-    if (ret) {
-        // XXXX
-        std::vector<uint8> pixels = GetRenderer().ReadPixels(600, 300, 128, 64);
-        SaveImage_(128, 64, pixels, "TEST");
+    if (! Application::ProcessFrame(render_count))
         return false;
+
+    // Process instructions in the script.
+    const size_t instr_count = script_.GetInstructions().size();
+    bool keep_going   = true;
+    bool render_again = false;
+    while (keep_going && ! render_again) {
+        const auto &instr = script_.GetInstructions()[cur_instruction_];
+
+        std::cerr << "XXXX Processing " << cur_instruction_
+                  << "  " << instr.type << " of " << instr_count << "\n";
+
+        if (instr.type == "load") {
+            if (! LoadSession_(instr.file_name))
+                return false;
+            // After loading a session, wait until the next frame to continue.
+            render_again = true;
+        }
+        else if (instr.type == "snap") {
+            if (! TakeSnapshot_(instr.rect, instr.file_name))
+                return false;
+        }
+        else {
+            std::cerr << "XXXX SKIPPING " << instr.type << "\n";
+        }
+        if (++cur_instruction_ == instr_count)
+            keep_going = false;
     }
-    return ret;
+    return keep_going;
 }
 
-void SnapshotApp_::SaveImage_(int width, int height,
-                              const std::vector<uint8> &pixels,
-                              const std::string &file_name) {
-    const std::string &fn = file_name + ".jpg";
+bool SnapshotApp_::LoadSession_(const std::string &file_name) {
+    std::string error;
+    const FilePath path("PublicDoc/snaps/sessions/" + file_name);
+
+    if (! LoadSession(path, error)) {
+        std::cerr << "*** Error loading session from '"
+                  << path.ToString() << "'\n";
+        return false;
+    }
+    std::cerr << "=== Loaded session from '" << path.ToString() << "'\n";
+    return true;
+}
+
+bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
+                                 const std::string &file_name) {
+    const size_t wh = TK::kWindowHeight;
+    const size_t ww = static_cast<size_t>(TK::kWindowAspectRatio * wh);
+
+    const auto &minp = rect.GetMinPoint();
+    const auto  size = rect.GetSize();
+
+    const size_t x = static_cast<size_t>(minp[0] * ww);
+    const size_t y = static_cast<size_t>(minp[1] * wh);
+    const size_t w = static_cast<size_t>(size[0] * ww);
+    const size_t h = static_cast<size_t>(size[1] * wh);
+
+    const auto pixels = GetRenderer().ReadPixels(x, y, w, h);
+
+    const FilePath path("PublicDoc/snaps/images/" + file_name);
     const void *pp = reinterpret_cast<const void *>(&pixels[0]);
-    stbi_write_jpg(fn.c_str(), width, height, 3, pp, 100);
-    std::cerr << "=== Wrote image to = " << fn << "\n";
+    if (! stbi_write_jpg(path.ToString().c_str(), w, h, 3, pp, 100)) {
+        std::cerr << "*** Error saving snap image to = '"
+                  << path.ToString() << "'\n";
+        return false;
+    }
+    std::cerr << "=== Saved snap image to = '" << path.ToString() << "'\n";
+    return true;
 }
 
 // ----------------------------------------------------------------------------

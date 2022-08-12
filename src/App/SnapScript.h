@@ -52,6 +52,8 @@ class SnapScript {
     std::vector<Instruction>  instructions_;
 
     bool ProcessLine_(const std::string &line);
-
     bool Error_(const std::string &message);
+
+    static bool ParseFloat01_(const std::string &s, float &f);
+    static bool ParseN_(const std::string &s, size_t &n);
 };
