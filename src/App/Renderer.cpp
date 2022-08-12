@@ -53,7 +53,7 @@ class Renderer::Impl_ {
     void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                      const FBTarget *fb_target = nullptr);
     uint32 GetResolvedTextureID(const FBTarget &fb_target);
-    std::vector<uint8> ReadPixels(int x, int y, int width, int height);
+    ion::gfx::ImagePtr ReadImage(const Range2i &rect);
 
   private:
     ion::gfx::RendererPtr           renderer_;
@@ -157,17 +157,10 @@ uint32 Renderer::Impl_::GetResolvedTextureID(const FBTarget &fb_target) {
     return renderer_->GetResourceGlId(ca.GetTexture().Get());
 }
 
-std::vector<uint8> Renderer::Impl_::ReadPixels(int x, int y,
-                                               int width, int height) {
+ion::gfx::ImagePtr Renderer::Impl_::ReadImage(const Range2i &rect) {
   ASSERT(renderer_);
-  ASSERT(renderer_->GetGraphicsManager());
-  auto &gm = *renderer_->GetGraphicsManager().Get();
-
-  std::vector<uint8> pixels(3 * width * height, 0);
-  gm.PixelStorei(GL_PACK_ALIGNMENT, 1);
-  gm.ReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, &pixels[0]);
-
-  return pixels;
+  return renderer_->ReadImage(rect, ion::gfx::Image::Format::kRgb888,
+                              ion::base::AllocatorPtr());
 }
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
@@ -247,6 +240,6 @@ uint32 Renderer::GetResolvedTextureID(const FBTarget &fb_target) {
     return impl_->GetResolvedTextureID(fb_target);
 }
 
-std::vector<uint8> Renderer::ReadPixels(int x, int y, int width, int height) {
-    return impl_->ReadPixels(x, y, width, height);
+ion::gfx::ImagePtr Renderer::ReadImage(const Range2i &rect) {
+    return impl_->ReadImage(rect);
 }

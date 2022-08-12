@@ -1,8 +1,10 @@
 #pragma once
 
+#include <ion/gfx/image.h>
 #include <ion/gfxutils/shadermanager.h>
 
 #include "Base/Memory.h"
+#include "Math/Types.h"
 
 DECL_SHARED_PTR(Renderer);
 
@@ -57,8 +59,8 @@ class Renderer {
     uint32 GetResolvedTextureID(const FBTarget &fb_target);
 
     /// Reads a rectangle of pixels from the GLFWViewer window and returns them
-    /// in RGB format (8 bits each).
-    std::vector<uint8> ReadPixels(int x, int y, int width, int height);
+    /// in an Ion Image in kRGB888 format.
+    ion::gfx::ImagePtr ReadImage(const Range2i &rect);
 
   private:
     class Impl_; // This class does most of the work.

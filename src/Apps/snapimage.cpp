@@ -3,6 +3,9 @@
 
 #include <stblib/stb_image_write.h>
 
+#include <ion/gfx/image.h>
+#include <ion/image/conversionutils.h>
+
 #include "App/Application.h"
 #include "App/Args.h"
 #include "App/Renderer.h"
@@ -85,15 +88,19 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
     const auto &minp = rect.GetMinPoint();
     const auto  size = rect.GetSize();
 
-    const size_t x = static_cast<size_t>(minp[0] * ww);
-    const size_t y = static_cast<size_t>(minp[1] * wh);
-    const size_t w = static_cast<size_t>(size[0] * ww);
-    const size_t h = static_cast<size_t>(size[1] * wh);
+    const int x = static_cast<int>(minp[0] * ww);
+    const int y = static_cast<int>(minp[1] * wh);
+    const int w = static_cast<int>(size[0] * ww);
+    const int h = static_cast<int>(size[1] * wh);
 
-    const auto pixels = GetRenderer().ReadPixels(x, y, w, h);
+    const auto recti = Range2i::BuildWithSize(Point2i(x, y), Vector2i(w, h));
+    const auto image = GetRenderer().ReadImage(recti);
+    // Rows of image need to be inverted (GL vs stblib).
+    ion::image::FlipImage(image);
 
     const FilePath path("PublicDoc/snaps/images/" + file_name);
-    const void *pp = reinterpret_cast<const void *>(&pixels[0]);
+    const void *pp =
+        reinterpret_cast<const void *>(image->GetData()->GetData<uint8>());
     if (! stbi_write_jpg(path.ToString().c_str(), w, h, 3, pp, 100)) {
         std::cerr << "*** Error saving snap image to = '"
                   << path.ToString() << "'\n";
