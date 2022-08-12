@@ -30,7 +30,7 @@ class Application {
     ~Application();
 
     /// Initializes the application.
-    bool Init(const Options &options);
+    virtual bool Init(const Options &options);
 
     /// Enters the main loop.
     void MainLoop();
@@ -62,11 +62,6 @@ class Application {
 
     /// Returns the Renderer.
     Renderer & GetRenderer();
-
-    /// Uses the SessionManager to load an existing session from the given
-    /// path. Returns false and sets error to an informative string if anything
-    /// fails.
-    bool LoadSession(const FilePath &path, std::string &error);
 
   private:
     class  Loader_;

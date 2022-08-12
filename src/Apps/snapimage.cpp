@@ -10,8 +10,10 @@
 #include "App/Args.h"
 #include "App/Renderer.h"
 #include "App/SnapScript.h"
-#include "Base/Tuning.h"
+#include "Managers/CommandManager.h"
+#include "Managers/SessionManager.h"
 #include "Math/Types.h"
+#include "Tests/TestContext.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 
@@ -22,17 +24,29 @@
 
 class SnapshotApp_ : public Application {
   public:
+    virtual bool Init(const Options &options) override;
     void SetScript(const SnapScript &script) { script_ = script; }
 
     virtual bool ProcessFrame(size_t render_count) override;
 
   private:
-    SnapScript script_;
-    size_t     cur_instruction_ = 0;
+    Vector2i    window_size_;    // From Options.
+    TestContext test_context_;   // For accessing managers.
+    SnapScript  script_;
+    size_t      cur_instruction_ = 0;
 
     bool LoadSession_(const std::string &file_name);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
 };
+
+bool SnapshotApp_::Init(const Options &options) {
+    if (! Application::Init(options))
+        return false;
+
+    window_size_ = options.window_size;
+    GetTestContext(test_context_);
+    return true;
+}
 
 bool SnapshotApp_::ProcessFrame(size_t render_count) {
     if (! Application::ProcessFrame(render_count))
@@ -45,8 +59,8 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
     while (keep_going && ! render_again) {
         const auto &instr = script_.GetInstructions()[cur_instruction_];
 
-        std::cerr << "XXXX Processing " << cur_instruction_
-                  << "  " << instr.type << " of " << instr_count << "\n";
+        std::cout << "=== Processing " << instr.type << " (instruction "
+                  << (cur_instruction_ + 1) << " of " << instr_count << ")\n";
 
         if (instr.type == "load") {
             if (! LoadSession_(instr.file_name))
@@ -58,8 +72,16 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
             if (! TakeSnapshot_(instr.rect, instr.file_name))
                 return false;
         }
+        else if (instr.type == "undo") {
+            for (size_t i = 0; i < instr.count; ++i)
+                test_context_.command_manager->Undo();
+        }
+        else if (instr.type == "redo") {
+            for (size_t i = 0; i < instr.count; ++i)
+                test_context_.command_manager->Redo();
+        }
         else {
-            std::cerr << "XXXX SKIPPING " << instr.type << "\n";
+            ASSERTM(false, "Unknown instruction type: " + instr.type);
         }
         if (++cur_instruction_ == instr_count)
             keep_going = false;
@@ -68,30 +90,27 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
 }
 
 bool SnapshotApp_::LoadSession_(const std::string &file_name) {
-    std::string error;
     const FilePath path("PublicDoc/snaps/sessions/" + file_name);
 
-    if (! LoadSession(path, error)) {
+    std::string error;
+    if (! test_context_.session_manager->LoadSession(path, error)) {
         std::cerr << "*** Error loading session from '"
                   << path.ToString() << "'\n";
         return false;
     }
-    std::cerr << "=== Loaded session from '" << path.ToString() << "'\n";
+    std::cout << "  Loaded session from '" << path.ToString() << "'\n";
     return true;
 }
 
 bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
                                  const std::string &file_name) {
-    const size_t wh = TK::kWindowHeight;
-    const size_t ww = static_cast<size_t>(TK::kWindowAspectRatio * wh);
-
     const auto &minp = rect.GetMinPoint();
     const auto  size = rect.GetSize();
 
-    const int x = static_cast<int>(minp[0] * ww);
-    const int y = static_cast<int>(minp[1] * wh);
-    const int w = static_cast<int>(size[0] * ww);
-    const int h = static_cast<int>(size[1] * wh);
+    const int x = static_cast<int>(minp[0] * window_size_[0]);
+    const int y = static_cast<int>(minp[1] * window_size_[1]);
+    const int w = static_cast<int>(size[0] * window_size_[0]);
+    const int h = static_cast<int>(size[1] * window_size_[1]);
 
     const auto recti = Range2i::BuildWithSize(Point2i(x, y), Vector2i(w, h));
     const auto image = GetRenderer().ReadImage(recti);
@@ -106,7 +125,7 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
                   << path.ToString() << "'\n";
         return false;
     }
-    std::cerr << "=== Saved snap image to = '" << path.ToString() << "'\n";
+    std::cout << "  Saved snap image to = '" << path.ToString() << "'\n";
     return true;
 }
 

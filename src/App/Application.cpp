@@ -111,10 +111,6 @@ class  Application::Impl_ {
     void SetTestingFlag() { is_testing_ = true; }
     void GetTestContext(TestContext &tc);
     Renderer & GetRenderer() { return *renderer_; }
-    bool LoadSession(const FilePath &path, std::string &error) {
-        ASSERT(session_manager_);
-        return session_manager_->LoadSession(path, error);
-    }
 
   private:
     /// Run states for the main loop.
@@ -1398,8 +1394,4 @@ void Application::GetTestContext(TestContext &tc) {
 
 Renderer & Application::GetRenderer() {
     return impl_->GetRenderer();
-}
-
-bool Application::LoadSession(const FilePath &path, std::string &error) {
-    return impl_->LoadSession(path, error);
 }
