@@ -1,18 +1,28 @@
+#include <string>
+#include <vector>
+
 #include <stblib/stb_image_write.h>
 
 #include "App/Application.h"
 #include "App/Args.h"
 #include "App/Renderer.h"
+#include "App/SnapScript.h"
+#include "Math/Types.h"
 
 // ----------------------------------------------------------------------------
-// Derived Application class that adds snapshot processing.
+// Derived Application class that adds snapshot processing. Reads a SnapScript
+// that specifies what to do.
 // ----------------------------------------------------------------------------
 
 class SnapshotApp_ : public Application {
   public:
+    void SetScript(const SnapScript &script) { script_ = script; }
+
     virtual bool ProcessFrame(size_t render_count) override;
 
   private:
+    SnapScript script_;
+
     void SaveImage_(int width, int height, const std::vector<uint8> &pixels,
                     const std::string &file_name);
 };
@@ -42,15 +52,21 @@ void SnapshotApp_::SaveImage_(int width, int height,
 // ----------------------------------------------------------------------------
 
 static const char kUsageString[] =
-R"(snapimage: Optionally loads a session and takes a snapshot
+R"(snapimage: Reads a script with instructions on how to create snapshot images
+ for public documentation. See SnapScript.h for script details.
     Usage:
-      snapimage X Y WIDTH HEIGHT [--session=<session_file>]
+      snapimage SCRIPT
 
-    Window size is 1066x600. Session files are relative to PublicDoc/sessions/.
+    Script files are relative to PublicDoc/snaps/scripts.
 )";
 
 int main(int argc, const char *argv[]) {
     Args args(argc, argv, kUsageString);
+
+    SnapScript script;
+    if (! script.ReadScript("PublicDoc/snaps/scripts/" +
+                            args.GetString("SCRIPT")))
+        return -1;
 
     Application::Options options;
     options.window_size.Set(1066, 600);
@@ -60,6 +76,7 @@ int main(int argc, const char *argv[]) {
     if (! app.Init(options))
         return -1;
 
+    app.SetScript(script);
     app.MainLoop();
 
     return 0;

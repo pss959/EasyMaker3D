@@ -770,7 +770,10 @@ main_app_name = APP_NAME
 # Build the applications.
 apps = [main_app_name, 'nodeviewer', 'printtypes', 'snapimage']
 
-apps_extra_sources = ['$BUILD_DIR/App/Args.cpp']
+apps_extra_sources = [
+    '$BUILD_DIR/App/Args.cpp',
+    '$BUILD_DIR/App/SnapScript.cpp',
+]
 
 app_env = reg_env.Clone()
 app_env.Append(

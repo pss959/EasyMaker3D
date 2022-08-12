@@ -25,4 +25,6 @@ class Args {
 
   private:
     std::map<std::string, docopt::value> args_;
+
+    const docopt::value & GetArg_(const std::string &name) const;
 };

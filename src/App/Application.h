@@ -6,6 +6,7 @@
 DECL_SHARED_PTR(SessionManager);
 
 class Controller;
+class FilePath;
 class LogHandler;
 class Renderer;
 struct TestContext;
@@ -61,6 +62,11 @@ class Application {
 
     /// Returns the Renderer.
     Renderer & GetRenderer();
+
+    /// Uses the SessionManager to load an existing session from the given
+    /// path. Returns false and sets error to an informative string if anything
+    /// fails.
+    bool LoadSession(const FilePath &path, std::string &error);
 
   private:
     class  Loader_;

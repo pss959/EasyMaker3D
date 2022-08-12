@@ -1,6 +1,7 @@
 #include "App/Args.h"
 
 #include "Base/Tuning.h"
+#include "Util/Assert.h"
 
 Args::Args(int argc, const char **argv, const std::string &usage) :
     args_(docopt::docopt(usage, { argv + 1, argv + argc },
@@ -9,7 +10,7 @@ Args::Args(int argc, const char **argv, const std::string &usage) :
 }
 
 std::string Args::GetString(const std::string &name) const {
-    const auto &arg = args_.at(name);
+    const auto &arg = GetArg_(name);
     if (arg && arg.isString())
         return arg.asString();
     else
@@ -17,9 +18,14 @@ std::string Args::GetString(const std::string &name) const {
 }
 
 bool Args::GetBool(const std::string &name) const {
-    const auto &arg = args_.at(name);
+    const auto &arg = GetArg_(name);
     if (arg && arg.isBool())
         return arg.asBool();
     else
         return false;
+}
+
+const docopt::value & Args::GetArg_(const std::string &name) const {
+    ASSERTM(args_.find(name) != args_.end(), name);
+    return args_.at(name);
 }
