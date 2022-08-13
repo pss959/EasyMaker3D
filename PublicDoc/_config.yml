@@ -17,11 +17,15 @@ exclude:
   - Gemfile
   - Gemfile.lock
 
-# Theme configuration.
+# -----------------------------------------------------------------------------
+
+# just-the-docs theme configuration.
 search_enabled: true
 aux_links:  # Shown in upper right
   "MakerVR on GitHub":
     - "//github.com/pss959/MakerVR"
+  "MakerVR Downloads":
+    - "https://drive.google.com/drive/folders/1Tgb-bgtroVWNLfKsqY-z6v12n8Gk077H"
 aux_links_new_tab: true
 heading_anchors: true
 
@@ -29,4 +33,5 @@ heading_anchors: true
 # -----------------------------------------------------------------------------
 
 # Variables used in content.
-app_name: MakerVR
+app_name:      MakerVR
+download_site: "https://drive.google.com/drive/folders/1Tgb-bgtroVWNLfKsqY-z6v12n8Gk077H"

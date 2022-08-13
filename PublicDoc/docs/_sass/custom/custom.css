@@ -1,0 +1,9 @@
+/* Table of Contents uses a smaller font. */
+#markdown-toc {
+    font-size: smaller;
+}
+
+/* Use smaller line spacing. */
+p {
+   line-height: 1.4;
+}

@@ -1,7 +1,7 @@
 module Jekyll
   class AppNameTag < Liquid::Tag
     def render(context)
-      "MakerVR"
+      "<i>MakerVR</i>"
     end
   end
 end

@@ -1,26 +1,29 @@
 ---
-title:     "MakerVR Quickstart"
+title:     MakerVR Quickstart
 layout:    default
 nav_order: 2
 ---
 
-# {% appname %} Quickstart
+# {%appname%} Quickstart
 
-## Installing {% appname %}
+## Installing and Running {%appname%}
 
-TBD
+Open the [{%appname%} Download site]({{site.download_site}}) (on Google Drive)
+in a browser and download the Zip file for your operating system. Extract all
+files wherever you like; this will create a {%appname%} folder. In this folder
+there is a {%appname%} executable that you can click on to run the application.
 
 ## A Simple Example (Non-VR)
 
-This example will use {% appname %} in non-VR mode to create a simple doorstop
+This example will use {%appname%} in non-VR mode to create a simple doorstop
 model and output it as an STL file.
 
-### Starting the Application
+### Start the Application
 
-Just click on the {% appname %} icon. It should open a maximized window that
-you can interact with using the keyboard and mouse. The first thing you should
-see is a panel that lets you interact with {% appname %} sessions. Click on the
-"Start new session" button to start a new session (or just hit the escape key).
+Starting the application should open a maximized window that you can interact
+with using the keyboard and mouse. The first thing you should see is a panel
+that lets you interact with {%appname%} sessions. Click on the `Start new
+session` button to start a new session (or just hit the escape key).
 
 ### Create and Position a Torus
 
