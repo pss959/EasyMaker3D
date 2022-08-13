@@ -15,6 +15,8 @@
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
+#include "SG/ShadowPass.h"
+#include "SG/Scene.h"
 #include "SG/TextNode.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
@@ -58,6 +60,13 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
     if (! is_full_scene)
         return;
+
+    // Access the ShadowPass from the Scene.
+    for (const auto &rp: sc.GetRenderPasses()) {
+        if ((shadow_pass = Util::CastToDerived<SG::ShadowPass>(rp)))
+            break;
+    }
+    ASSERT(shadow_pass);
 
     // Find all of the other important nodes.
     app_board         = FindTyped_<Board>(sc,          "AppBoard");

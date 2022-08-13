@@ -28,6 +28,7 @@
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
+#include "SG/ShadowPass.h"
 #include "SG/Shape.h"
 #include "SG/TextNode.h"
 #include "Util/Assert.h"
@@ -567,15 +568,18 @@ Debugging printing help shortcuts:
    Alt-n: Nodes and shapes (skeleton) in scene.
    Alt-N: Nodes and shapes (skeleton) in current path.
    Alt-o: Models.
-   Alt-s: Full nodes in scene.
-   Alt-S: Full nodes in current path.
+   Alt-p: Full nodes in scene.
+   Alt-P: Full nodes in current path.
    Alt-t: Transforms for all nodes in scene.
    Alt-T: Transforms for all nodes in current path.
    Alt-v: Viewing information.
    Alt-w: Pane tree (brief) in WallBoard.
    Alt-W: Pane tree (full)  in WallBoard.
+
  Non-printing shortcuts:
    Alt-l: Toggle event logging.
+   Alt-r: Reload the scene.
+   Alt-s: Toggle shadows.
    Alt-D: Toggle debug sphere display for mouse intersection.
 -----------------------------------------------------
 )";
@@ -630,11 +634,15 @@ Debugging printing help shortcuts:
     else if (key_string == "<Alt>o") {
         PrintModels(*scene_context_->root_model);
     }
-    else if (key_string == "<Alt>s") {
+    else if (key_string == "<Alt>p") {
         PrintScene(*scene_context_->scene);
     }
-    else if (key_string == "<Alt>S") {
+    else if (key_string == "<Alt>P") {
         PrintNodeGraph(root, true);
+    }
+    else if (key_string == "<Alt>s") {
+        auto &sp = *scene_context_->shadow_pass;
+        sp.SetShadowsEnabled(! sp.AreShadowsEnabled());
     }
     else if (key_string == "<Alt>t") {
         PrintNodeTransforms(root, false);

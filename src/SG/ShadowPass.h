@@ -21,6 +21,14 @@ DECL_SHARED_PTR(ShadowPass);
 /// \ingroup SG
 class ShadowPass : public RenderPass {
   public:
+    /// Sets a flag indicating whether shadows are enabled for the scene. The
+    /// default is true.
+    void SetShadowsEnabled(bool enabled) { are_shadows_enabled_ = enabled; }
+
+    /// Returns a flag indicating whether shadows are enabled for the
+    /// scene. The default is true.
+    bool AreShadowsEnabled() const { return are_shadows_enabled_; }
+
     virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) override;
 
@@ -41,6 +49,9 @@ class ShadowPass : public RenderPass {
 
     /// This lets the ShadowPass know if it has set up global uniforms.
     bool were_uniforms_created_ = false;
+
+    /// Whether shadows are enabled.
+    bool are_shadows_enabled_ = true;
 
     /// Creates the PerLight_ data for the indexed light in the RenderData.
     void CreatePerLightData_(RenderData &data, size_t index);

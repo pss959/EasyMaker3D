@@ -53,7 +53,8 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
 
         // Set uniforms that change for each light pass.
         ion_block.SetUniformByName("uLightMatrix", ldata.light_matrix);
-        ion_block.SetUniformByName("uCastShadows", ldata.casts_shadows);
+        ion_block.SetUniformByName("uCastShadows",
+                                   are_shadows_enabled_ && ldata.casts_shadows);
 
         renderer.BindFramebuffer(per_light_[i].fbo);
         renderer.DrawScene(data.root_node->GetIonNode());

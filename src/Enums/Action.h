@@ -106,8 +106,7 @@ enum class Action {
     kToggleLeftRadialMenu,
     kToggleRightRadialMenu,
 
-#if defined DEBUG
-    // Debugging only.
+#if ! RELEASE_BUILD  // Actions defined to help with debugging.
     kReloadScene,
 #endif
 };

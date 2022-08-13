@@ -527,7 +527,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         context_->scene_context->root_model->ShowAllModels();
         break;
 
-#if defined DEBUG
+#if ! RELEASE_BUILD
       case Action::kReloadScene:
         ASSERT(reload_func_);
         reload_func_();

@@ -52,9 +52,6 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("z",           Action::kDecreasePrecision);
     add_shortcut("{",           Action::kMovePrevious);
     add_shortcut("}",           Action::kMoveNext);
-#if DEBUG
-    add_shortcut("<Alt>r",      Action::kReloadScene);
-#endif
 
     // Controller buttons.
     add_shortcut("L:Menu",      Action::kToggleLeftRadialMenu);
@@ -69,6 +66,10 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("R:Left",      Action::kSwitchToPreviousTool);
     add_shortcut("L:Right",     Action::kSwitchToNextTool);
     add_shortcut("R:Right",     Action::kSwitchToNextTool);
+
+#if ! RELEASE_BUILD
+    add_shortcut("<Alt>r",      Action::kReloadScene);
+#endif
 }
 
 bool ShortcutHandler::HandleEvent(const Event &event) {

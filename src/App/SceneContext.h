@@ -21,6 +21,7 @@ DECL_SHARED_PTR(Gantry);
 DECL_SHARED_PTR(Line);
 DECL_SHARED_PTR(Node);
 DECL_SHARED_PTR(Scene);
+DECL_SHARED_PTR(ShadowPass);
 DECL_SHARED_PTR(TextNode);
 DECL_SHARED_PTR(VRCamera);
 DECL_SHARED_PTR(WindowCamera);
@@ -43,6 +44,7 @@ struct SceneContext {
     SG::WindowCameraPtr window_camera;
 
     // Other important nodes in the scene.
+    SG::ShadowPassPtr   shadow_pass;
     BoardPtr            app_board;
     BoardPtr            key_board;
     BoardPtr            tool_board;
