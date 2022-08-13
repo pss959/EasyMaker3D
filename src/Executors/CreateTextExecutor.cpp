@@ -13,10 +13,11 @@ ModelPtr CreateTextExecutor::CreateModel(Command &command) {
         ctc.SetResultName(name);
     }
 
-    // Create and initialize the Model.
+    // Create and initialize the Model. Leave the initial scale at its default
+    // value (1).
     TextModelPtr tm = Model::CreateModel<TextModel>(name);
     tm->SetTextString(ctc.GetText());
-    InitModelTransform(*tm, 1, ctc);
+    InitModelTransform(*tm, ctc);
     AddModelInteraction(*tm);
     SetRandomModelColor(*tm);
 

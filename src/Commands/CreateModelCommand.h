@@ -23,6 +23,14 @@ class CreateModelCommand : public Command {
     /// Sets the name of the resulting Model.
     void SetResultName(const std::string &name);
 
+    /// Returns the initial (uniform) scale applied to the new Model. This is 1
+    /// by default.
+    float GetInitialScale() const { return initial_scale_; }
+
+    /// Sets the initial (uniform) scale for the new Model. This is 1 by
+    /// default.
+    void SetInitialScale(float scale) { initial_scale_ = scale; }
+
     /// Returns the target position (in stage coordinates) for the new
     /// Model. This is the origin by default unless the PointTarget is active.
     const Point3f & GetTargetPosition() const { return target_position_; }
@@ -49,6 +57,7 @@ class CreateModelCommand : public Command {
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string> result_name_;
+    Parser::TField<float>       initial_scale_;
     Parser::TField<Point3f>     target_position_;
     Parser::TField<Vector3f>    target_direction_;
     ///@}

@@ -25,8 +25,7 @@ class ModelExecutorBase : public Executor {
     /// target position and direction are taken from the given
     /// CreateModelCommand. Otherwise, it uses the point target's info if it is
     /// visible and sets the target position and direction in the command.
-    void InitModelTransform(Model &model, float default_scale,
-                            CreateModelCommand &command);
+    void InitModelTransform(Model &model, CreateModelCommand &command);
 
     /// Animates dropping the given Model to its position.
     void AnimateModelPlacement(Model &model);

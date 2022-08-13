@@ -15,12 +15,13 @@ ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
         cic.SetResultName(name);
     }
 
-    // Create and initialize the Model.
+    // Create and initialize the Model. Leave the initial scale at its default
+    // value (1).
     ImportedModelPtr im = Model::CreateModel<ImportedModel>(name);
     const auto &settings = GetContext().settings_manager->GetSettings();
     im->SetUnitConversion(settings.GetImportUnitsConversion());
 
-    InitModelTransform(*im, 1, cic);
+    InitModelTransform(*im, cic);
     AddModelInteraction(*im);
     SetRandomModelColor(*im);
 

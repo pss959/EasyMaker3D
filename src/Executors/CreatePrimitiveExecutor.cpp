@@ -18,6 +18,8 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
         cc.SetResultName(name);
     }
 
+    cc.SetInitialScale(TK::kInitialModelScale);
+
     // Create and initialize the Model.
     PrimitiveModelPtr pm;
     switch (cc.GetType()) {
@@ -36,7 +38,7 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
       default:
         ASSERTM(false, "Bad Primitive type");
     }
-    InitModelTransform(*pm, TK::kInitialModelScale, cc);
+    InitModelTransform(*pm, cc);
     AddModelInteraction(*pm);
     SetRandomModelColor(*pm);
 

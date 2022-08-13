@@ -34,15 +34,15 @@ void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
     context.selection_manager->ChangeSelection(sel);
 }
 
-void ModelExecutorBase::InitModelTransform(Model &model, float default_scale,
+void ModelExecutorBase::InitModelTransform(Model &model,
                                            CreateModelCommand &command) {
     // Make sure the model has an updated mesh, since it is used for computing
     // bounds.
     model.GetMesh();
 
-    // Scale the model by the default uniform scaling factor.
-    if (default_scale != 1)
-        model.SetUniformScale(default_scale);
+    // Scale the model by the initial uniform scaling factor.
+    if (command.GetInitialScale() != 1)
+        model.SetUniformScale(command.GetInitialScale());
 
     // If the CommandManager is in the middle of validating commands (while
     // loading a session), use the information in the command.

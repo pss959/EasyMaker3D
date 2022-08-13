@@ -5,6 +5,8 @@
 
 void CreateModelCommand::AddFields() {
     AddField(result_name_.Init("result_name"));
+
+    AddField(initial_scale_.Init("initial_scale", 1));
     AddField(target_position_.Init("target_position", Point3f::Zero()));
     AddField(target_direction_.Init("target_direction", Vector3f::AxisY()));
 

@@ -1,5 +1,6 @@
 #include "Executors/CreateRevSurfExecutor.h"
 
+#include "Base/Tuning.h"
 #include "Commands/CreateRevSurfModelCommand.h"
 #include "Models/RevSurfModel.h"
 
@@ -13,10 +14,12 @@ ModelPtr CreateRevSurfExecutor::CreateModel(Command &command) {
         crc.SetResultName(name);
     }
 
+    crc.SetInitialScale(TK::kInitialModelScale);
+
     // Create and initialize the Model.
     RevSurfModelPtr rsm = Model::CreateModel<RevSurfModel>(name);
 
-    InitModelTransform(*rsm, 8, crc);
+    InitModelTransform(*rsm, crc);
     AddModelInteraction(*rsm);
     SetRandomModelColor(*rsm);
 
