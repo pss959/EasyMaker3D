@@ -20,8 +20,11 @@ void CSGToolPanel::InitInterface() {
 
     // Detect changes to the operation.
     auto set_op = [&](size_t index){
-        operation_ = static_cast<CSGOperation>(index);
-        ReportChange("Operation", InteractionType::kImmediate);
+        const CSGOperation new_operation = static_cast<CSGOperation>(index);
+        if (new_operation != operation_) {
+            operation_ = new_operation;
+            ReportChange("Operation", InteractionType::kImmediate);
+        }
     };
     for (auto &but: buts)
         but->GetStateChanged().AddObserver(this, set_op);
