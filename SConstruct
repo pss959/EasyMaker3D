@@ -464,6 +464,7 @@ test_sources = [
 
     # Session tests:
     'SessionTests/EmptySessionTest.cpp',
+    'SessionTests/PasteSessionTest.cpp',
     'SessionTests/SessionTestBase.cpp',
     'SessionTests/TransformSessionTest.cpp',
     'SessionTests/UndoSessionTest.cpp',

@@ -1,0 +1,25 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    ChangeNameCommand {
+      new_name: "Renamed",
+      model_name: "Cylinder_1",
+    },
+    CopyCommand {
+      model_names: ["Renamed"],
+    },
+    PasteCommand {
+    },
+  ],
+  current_index: 4,
+}

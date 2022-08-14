@@ -69,10 +69,11 @@ PasteExecutor::ExecData_ & PasteExecutor::GetExecData_(Command &command) {
 void PasteExecutor::SetUpPastedModel_(Model &model) {
     const auto &context = GetContext();
 
-    // Assign a unique name.
+    // Assign a unique name. Pass true for is_user_edit so that the unique name
+    // is always used.
     const std::string new_name =
         context.name_manager->CreateClone(model.GetBaseName());
-    model.ChangeModelName(new_name, false);
+    model.ChangeModelName(new_name, true);
     context.name_manager->Add(new_name);
 
     // Set up click.
