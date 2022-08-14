@@ -42,6 +42,14 @@ inline Rotationf ComposeRotations(const Rotationf &r0, const Rotationf &r1) {
     return r1 * r0;
 }
 
+/// Given a vector of 2D points and a target size, this scales all points if
+/// necessary so that the bounds has the given size.
+void ScalePointsToSize(const Vector2f &target, std::vector<Point2f> &points);
+
+/// Given a vector of 3D points and a target size, this scales all points if
+/// necessary so that the bounds has the given size.
+void ScalePointsToSize(const Vector3f &target, std::vector<Point3f> &points);
+
 /// Converts a point from application coordinates (RHS with +Y-up) to 3D
 /// printing coordinates (RHS with +Z-up).
 Point3f ToPrintCoords(const Point3f &p);

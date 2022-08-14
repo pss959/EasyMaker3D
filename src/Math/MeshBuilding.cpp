@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Math/Curves.h"
+#include "Math/Linear.h"
 #include "Math/MeshCombining.h"
 #include "Math/MeshUtils.h"
 #include "Math/Polygon.h"
@@ -427,6 +428,10 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
     helper.AddFan(bottom_index, bottom_index - num_sectors, num_sectors,
                   true, true);
     ASSERT(mesh.indices.size() == index_count);
+
+    // Make sure the bounds of the sphere are as close as possible to the
+    // desired diameter.
+    ScalePointsToSize(2 * radius * Vector3f(1, 1, 1), mesh.points);
 
     CleanMesh(mesh);
     return mesh;

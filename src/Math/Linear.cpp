@@ -48,6 +48,40 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
     return result;
 }
 
+void ScalePointsToSize(const Vector2f &target, std::vector<Point2f> &points) {
+    Range2f bounds;
+    for (const auto &p: points)
+        bounds.ExtendByPoint(p);
+    const Vector2f size = bounds.GetSize();
+    if (! AreClose(size[0], target[0]) || ! AreClose(size[1], target[1])) {
+        const float sx = target[0] / size[0];
+        const float sy = target[1] / size[1];
+        for (auto &p: points) {
+            p[0] *= sx;
+            p[1] *= sy;
+        }
+    }
+}
+
+void ScalePointsToSize(const Vector3f &target, std::vector<Point3f> &points) {
+    Range3f bounds;
+    for (const auto &p: points)
+        bounds.ExtendByPoint(p);
+    const Vector3f size = bounds.GetSize();
+    if (! AreClose(size[0], target[0]) ||
+        ! AreClose(size[1], target[1]) ||
+        ! AreClose(size[2], target[2])) {
+        const float sx = target[0] / size[0];
+        const float sy = target[1] / size[1];
+        const float sz = target[2] / size[2];
+        for (auto &p: points) {
+            p[0] *= sx;
+            p[1] *= sy;
+            p[2] *= sz;
+        }
+    }
+}
+
 Point3f ToPrintCoords(const Point3f &p) {
     // Be careful not to negate 0.
     return Point3f(p[0], p[2] ? -p[2] : 0, p[1]);

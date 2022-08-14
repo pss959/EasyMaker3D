@@ -17,19 +17,7 @@ std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise) {
 
     // Make sure the bounds of the circle are as close as possible to the
     // desired diameter.
-    Range2f bounds;
-    for (const auto &p: points)
-        bounds.ExtendByPoint(p);
-    const Vector2f size        = bounds.GetSize();
-    const float    target_size = 2 * radius;
-    if (! AreClose(size[0], target_size) || ! AreClose(size[1], target_size)) {
-        const float sx = target_size / size[0];
-        const float sy = target_size / size[1];
-        for (auto &p: points) {
-            p[0] *= sx;
-            p[1] *= sy;
-        }
-    }
+    ScalePointsToSize(2 * radius * Vector2f(1, 1), points);
 
     return points;
 }
