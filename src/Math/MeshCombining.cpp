@@ -3,6 +3,7 @@
 #include "Math/CGALInternal.h"
 
 #include "Util/Assert.h"
+#include "Util/Enum.h"
 #include "Util/General.h"
 
 // Set this to 1 to enable CNefPolyhedron validation.
@@ -21,7 +22,10 @@ static CPoint3 ToCPoint3(const Point3f &p) {
 
 static CNefPolyhedron BuildNefPolyhedron_(const TriMesh &mesh) {
     CPolyhedron poly = BuildCGALPolyhedron(mesh);
-    return CNefPolyhedron(poly);
+    CNefPolyhedron nef_poly(poly);
+    ASSERT(nef_poly.is_valid());
+    ASSERT(nef_poly.is_simple());
+    return nef_poly;
 }
 
 static TriMesh ConvertToTriMesh_(const CPolyhedron &poly) {
@@ -64,10 +68,12 @@ static TriMesh ConvertToTriMesh_(const CPolyhedron &poly) {
 // This can be used to validate a CNefPolyhedron if errors occur.
 static void
 CheckNef_(CNefPolyhedron &nef, std::string what) {
-    if (! nef.is_valid(true, 1))
+    if (! nef.is_valid(false, 1))
         std::cerr << "*** CNefPolyhedron " << what << " is NOT valid\n";
+    else if (! nef.is_simple())
+        std::cerr << "*** CNefPolyhedron " << what << " is NOT simple\n";
     else
-        std::cerr << "*** CNefPolyhedron " << what << " is valid\n";
+        std::cerr << "*** CNefPolyhedron " << what << " is valid and simple\n";
 }
 #  define CHECK_NEF_(nef, what) CheckNef_(nef, what)
 #else
@@ -129,13 +135,20 @@ static TriMesh ApplyCSG_(const std::vector<TriMesh> &meshes,
             nef *= nef2;
         else  // kCSGDifference.
             nef -= nef2;
-        CHECK_NEF_(nef, "Result Polyhedron " + std::to_string(i));
+        CHECK_NEF_(nef, Util::EnumName(operation) + " Polyhedron " +
+                   std::to_string(i));
     }
 
     // Convert the result back to a Polyhedron and then to a TriMesh.
-    CPolyhedron poly;
-    nef.convert_to_polyhedron(poly);
-    return ConvertToTriMesh_(poly);
+    try {
+        CPolyhedron poly;
+        nef.convert_to_polyhedron(poly);
+        return ConvertToTriMesh_(poly);
+    }
+    catch (std::exception &ex) {
+        Util::PrintStackTrace();
+        throw ex;
+    }
 }
 
 // Applies a convex hull operation.
@@ -179,9 +192,15 @@ static TriMesh ApplyMinkowskiSum_(const std::vector<TriMesh> &meshes) {
     CHECK_NEF_(result, "Result Minkowski Polyhedron");
 
     // Convert the result back to a Polyhedron and then to a TriMesh.
-    CPolyhedron poly;
-    result.convert_to_polyhedron(poly);
-    return ConvertToTriMesh_(poly);
+    try {
+        CPolyhedron poly;
+        result.convert_to_polyhedron(poly);
+        return ConvertToTriMesh_(poly);
+    }
+    catch (std::exception &ex) {
+        Util::PrintStackTrace();
+        throw ex;
+    }
 }
 
 }  // anonymous namespace
