@@ -1,6 +1,11 @@
 #include "Math/MeshCombining.h"
 
 #include "Math/CGALInternal.h"
+#include <CGAL/Nef_polyhedron_3.h>
+#include <CGAL/Polygon_mesh_processing/corefinement.h>
+#include <CGAL/Polyhedron_incremental_builder_3.h>
+#include <CGAL/convex_hull_3.h>
+#include <CGAL/minkowski_sum_3.h>
 
 #include "Util/Assert.h"
 #include "Util/Enum.h"
@@ -10,6 +15,8 @@
 #define DO_NEF_CHECK 0
 
 namespace {
+
+typedef CGAL::Nef_polyhedron_3<CKernel> CNefPolyhedron;
 
 // ----------------------------------------------------------------------------
 // CGAL conversion functions.
@@ -117,38 +124,28 @@ static TriMesh ApplyCSG_(const std::vector<TriMesh> &meshes,
     const size_t mesh_count = meshes.size();
     ASSERT(mesh_count >= 2);
 
-    std::vector<CNefPolyhedron> nefs;
-    nefs.reserve(mesh_count);
+    std::vector<CPolyhedron> polys;
+    polys.reserve(mesh_count);
 
-    // Create a CNefPolyhedron for the first mesh.
-    CNefPolyhedron nef = BuildNefPolyhedron_(meshes[0]);
-    CHECK_NEF_(nef, "Polyhedron 0");
+    // Create a CPolyhedron for the first mesh.
+    CPolyhedron poly = BuildCGALPolyhedron(meshes[0]);
 
-    // Apply the operation to a CNefPolyhedron for the remaining meshes.
+    // Apply the operation to a CPolyhedron for the remaining meshes.
     for (size_t i = 1; i < mesh_count; ++i) {
-        CNefPolyhedron nef2 = BuildNefPolyhedron_(meshes[i]);
-        CHECK_NEF_(nef, "Polyhedron " + std::to_string(i));
-
+        CPolyhedron poly2 = BuildCGALPolyhedron(meshes[i]);
         if (operation == MeshCombiningOperation::kCSGUnion)
-            nef += nef2;
+            CGAL::Polygon_mesh_processing::corefine_and_compute_union(
+                poly, poly2, poly);
         else if (operation == MeshCombiningOperation::kCSGIntersection)
-            nef *= nef2;
+            CGAL::Polygon_mesh_processing::corefine_and_compute_intersection(
+                poly, poly2, poly);
         else  // kCSGDifference.
-            nef -= nef2;
-        CHECK_NEF_(nef, Util::EnumName(operation) + " Polyhedron " +
-                   std::to_string(i));
+            CGAL::Polygon_mesh_processing::corefine_and_compute_difference(
+                poly, poly2, poly);
     }
 
-    // Convert the result back to a Polyhedron and then to a TriMesh.
-    try {
-        CPolyhedron poly;
-        nef.convert_to_polyhedron(poly);
-        return ConvertToTriMesh_(poly);
-    }
-    catch (std::exception &ex) {
-        Util::PrintStackTrace();
-        throw ex;
-    }
+    // Convert the result back to a TriMesh.
+    return ConvertToTriMesh_(poly);
 }
 
 // Applies a convex hull operation.

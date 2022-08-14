@@ -12,21 +12,16 @@
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_mesh_processing/clip.h>
 #include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #include <CGAL/Polyhedron_3.h>
-#include <CGAL/Polyhedron_incremental_builder_3.h>
-#include <CGAL/convex_hull_3.h>
-#include <CGAL/minkowski_sum_3.h>
 
 // ----------------------------------------------------------------------------
 // CGAL types.
 // ----------------------------------------------------------------------------
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel   CKernel;
-typedef CGAL::Nef_polyhedron_3<CKernel>                     CNefPolyhedron;
 typedef CGAL::Polyhedron_3<CKernel>                         CPolyhedron;
 typedef CKernel::Plane_3                                    CPlane3;
 typedef CKernel::Point_2                                    CPoint2;
