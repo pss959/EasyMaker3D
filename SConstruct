@@ -1,5 +1,4 @@
 from brief import Brief
-from os    import environ
 
 # -----------------------------------------------------------------------------
 # Configuration.
@@ -410,68 +409,6 @@ if mode == 'dbg':
         'Panels/TestPanel.cpp',
     ]
 
-# These are relative to 'src/tests' subdirectory.
-test_sources = [
-    'AppTestBase.cpp',
-    'AssertTest.cpp',
-    'BeveledModelTest.cpp',
-    'BevelerTest.cpp',
-    'BoundsTest.cpp',
-    'ClipboardTest.cpp',
-    'ClippedModelTest.cpp',
-    'CloneTest.cpp',
-    'ColorTest.cpp',
-    'CommandListTest.cpp',
-    'CoordConvTest.cpp',
-    'DelayTest.cpp',
-    'DimensionalityTest.cpp',
-    'EnumTest.cpp',
-    'EventTest.cpp',
-    'FeedbackManagerTest.cpp',
-    'FilePathTest.cpp',
-    'FlagsTest.cpp',
-    'FrustumTest.cpp',
-    'HandTest.cpp',
-    'IntersectorTest.cpp',
-    'LinearTest.cpp',
-    'MeshBuildingTest.cpp',
-    'MeshCombiningTest.cpp',
-    'MeshUtilsTest.cpp',
-    'ModelTest.cpp',
-    'NameManagerTest.cpp',
-    'NodePathTest.cpp',
-    'NodeTest.cpp',
-    'PaneTest.cpp',
-    'ParserTest.cpp',
-    'PlaneTest.cpp',
-    'PolyMeshTest.cpp',
-    'PolygonTest.cpp',
-    'ReadFileTest.cpp',
-    'ReadSTLTest.cpp',
-    'ReaderTest.cpp',
-    'RegistryTest.cpp',
-    'ScaleCommandTest.cpp',
-    'SceneTestBase.cpp',
-    'SearchTest.cpp',
-    'StringTest.cpp',
-    'TestBase.cpp',
-    'TextUtilsTest.cpp',
-    'TimingTest.cpp',
-    'TriangulationTest.cpp',
-    'UTimeTest.cpp',
-    'UtilTest.cpp',
-    'WriteSTLTest.cpp',
-
-    # Session tests:
-    'SessionTests/EmptySessionTest.cpp',
-    'SessionTests/PasteSessionTest.cpp',
-    'SessionTests/SessionTestBase.cpp',
-    'SessionTests/TransformSessionTest.cpp',
-    'SessionTests/UndoSessionTest.cpp',
-
-    'TestMain.cpp',  # main() function that runs all tests.
-]
-
 # -----------------------------------------------------------------------------
 # Platform-specific environment setup.
 # -----------------------------------------------------------------------------
@@ -500,7 +437,7 @@ elif platform == 'linux':
 platform_env.Replace(
     PLATFORM        = platform,
     OPENVR_PLATFORM = openvr_platform,
-    OPENVR_DIR      = 'submodules/openvr/bin/$OPENVR_PLATFORM',
+    OPENVR_DIR      = '#submodules/openvr/bin/$OPENVR_PLATFORM',
     OPENVR_LIB      = '$OPENVR_DIR/${SHLIBPREFIX}openvr_api${SHLIBSUFFIX}',
 )
 
@@ -517,9 +454,13 @@ VariantDir(build_dir, 'src', duplicate=False)
 
 base_env = platform_env.Clone()
 
+# Set up directories for use below.
 base_env.Replace(
-    BUILD_DIR = build_dir,
-    ION_DIR = '#/ionsrc/Ion',
+    BUILD_DIR = f'#{build_dir}',
+    ION_DIR   = '#ionsrc/Ion',
+)
+
+base_env.Replace(
     CPPPATH = [
         '#/src',
         '$ION_DIR',
@@ -547,8 +488,8 @@ base_env.Replace(
         '$OPENVR_DIR',
     ],
     RPATH = [
-        Dir('$BUILD_DIR').abspath,
-        Dir('$OPENVR_DIR').abspath,
+        Dir(base_env.subst('$BUILD_DIR')).abspath,
+        Dir(base_env.subst('$OPENVR_DIR')).abspath,
     ],
     LIBS = [
         'openvr_api',
@@ -801,104 +742,9 @@ for app_name in apps:
         main_app = app
 
 # -----------------------------------------------------------------------------
-# Building tests.
+# Include Ion, submodule, resources, test, internal doc, and public doc build
+# files.
 # -----------------------------------------------------------------------------
-
-# Create two test environments with all the regular environment variables.
-reg_test_env = reg_env.Clone(ENV = environ)
-cov_test_env = cov_env.Clone(ENV = environ)
-
-# Add the regular or coverage-enabled main library.
-reg_test_env.Append(LIBS = [main_lib])
-cov_test_env.Append(LIBS = [f'{main_lib}_cov'])
-
-# Add necessary testing infrastructure.
-for env in [reg_test_env, cov_test_env]:
-    env.Append(
-        CPPPATH = ['#submodules/googletest/googletest/include'],
-        LIBPATH = [
-            '$BUILD_DIR',
-            '$BUILD_DIR/googletest',
-            '$BUILD_DIR/docopt.cpp',
-        ],
-        LIBS    = ['docopt', 'gtest', 'pthread'],
-        RPATH   = [Dir('$BUILD_DIR/googletest').abspath],
-    )
-
-# Build test object files for both environments.
-def BuildTests(env, test_app_name):
-    defines = env['CPPDEFINES'] + [('IN_UNIT_TEST', 1)]
-    cpppaths = env['CPPPATH'] + ['#/src/Tests/']
-    placed_sources = [f'$BUILD_DIR/Tests/{source}' for source in test_sources]
-    objects = [env.SharedObject(source=source, CPPDEFINES=defines,
-                                CPPPATH=cpppaths)
-               for source in placed_sources]
-
-    # Build all unit tests into a single program.
-    return (objects, env.Program(f'$BUILD_DIR/Tests/{test_app_name}', objects))
-
-(reg_test_objects, reg_test) = BuildTests(reg_test_env, 'RegUnitTest')
-(cov_test_objects, cov_test) = BuildTests(cov_test_env, 'CovUnitTest')
-
-reg_env.Alias('RegTests', reg_test)
-cov_env.Alias('CovTests', cov_test)
-
-# -----------------------------------------------------------------------------
-# Running tests.
-# -----------------------------------------------------------------------------
-
-test_filter = ARGUMENTS.get('TESTFILTER')
-test_args = ('--gtest_filter="%s"' % test_filter) if test_filter else ''
-
-reg_env.Alias('RunRegTests', reg_test, f'{run_program} $SOURCE {test_args}')
-cov_env.Alias('RunCovTests', cov_test, f'{run_program} $SOURCE {test_args}')
-
-# Make sure test run targets are always considered out of date.
-reg_test_env.AlwaysBuild('RunRegTests')
-cov_test_env.AlwaysBuild('RunCovTests')
-
-# -----------------------------------------------------------------------------
-# Generating coverage results.
-# -----------------------------------------------------------------------------
-
-# Use all coverage-enabled object files.
-cov_objects = cov_lib_objects + cov_test_objects
-cov_object_str = ' '.join([obj[0].path for obj in cov_objects])
-
-# Patterns to remove from coverage results.
-rm_patterns  =  '"/usr/include/*" "/local/inst/ion/*" "*/submodules/*"'
-
-# Files for original lcov output and filtered output.
-lcov_file1   =  'coverage/coverage.info'
-lcov_file2   =  'coverage/coverage_filtered.info'
-
-# Arguments to lcov to capture results and to filter them.
-lcov_args1   = f'--capture --directory .. --output-file {lcov_file1}'
-lcov_args2   = f'--remove {lcov_file1} {rm_patterns} --output-file {lcov_file2}'
-
-# Arguments to genhtml to produce the HTML results.
-genhtml_args = f'--output-directory coverage/html {lcov_file2}'
-
-gen_coverage = cov_test_env.Command(
-    '$BUILD_DIR/coverage/index.html', cov_test,
-    [   # Run the test.
-        f'$SOURCE {test_args}',
-        # Generate coverage .
-        'mkdir -p $BUILD_DIR/coverage',
-        f'cd $BUILD_DIR ; lcov {lcov_args1} ; lcov {lcov_args2}',
-        # Generate HTML from the results .
-        f'cd $BUILD_DIR ; genhtml {genhtml_args}',
-        ('echo === Coverage results in ' +
-         Dir('$BUILD_DIR/coverage/html/index.html').abspath)])
-
-env.Alias('Coverage', gen_coverage)
-
-# -----------------------------------------------------------------------------
-# Include Ion, submodule, resources, internal doc, and public doc build files.
-# -----------------------------------------------------------------------------
-
-Export('brief', 'build_dir', 'doc_build_dir', 'mode', 'platform_env',
-       'APP_NAME', 'VERSION_STRING')
 
 # Icons are built only on Linux. Building on different platforms creates
 # slightly different image files, causing git thrashing. No need for that once
@@ -908,10 +754,22 @@ if platform == 'linux':
     # Applications depend on the icons.
     reg_env.Depends('Apps', 'Icons')
 
-SConscript('submodules/SConscript')
-internal_doc = SConscript('InternalDoc/SConscript')
-public_doc   = SConscript('PublicDoc/SConscript')
-ion_lib      = SConscript('ionsrc/Ion/SConscript',
+exports = {
+    'submodules'   : ['brief', 'build_dir', 'platform_env'],
+    'tests'        : ['reg_env', 'cov_env', 'main_lib', 'run_program',
+                      'cov_lib_objects'],
+    'internal_doc' : ['doc_build_dir', 'APP_NAME', 'VERSION_STRING'],
+    'public_doc'   : [],
+    'ion_lib'      : ['brief', 'build_dir', 'mode', 'platform_env'],
+}
+
+SConscript('submodules/SConscript', exports['submodules'])
+SConscript('src/Tests/SConscript',  exports['tests'],
+           variant_dir=f'{build_dir}/Tests')
+
+internal_doc = SConscript('InternalDoc/SConscript', exports['internal_doc'])
+public_doc   = SConscript('PublicDoc/SConscript',   exports['public_doc'])
+ion_lib      = SConscript('ionsrc/Ion/SConscript',  exports['ion_lib'],
                           variant_dir=f'{build_dir}/Ion', duplicate=False)
 
 # -----------------------------------------------------------------------------
