@@ -24,51 +24,47 @@ void SessionPanel::UpdateInterface() {
 
     // The Continue button is the most complicated. The possible versions of
     // this button are:
-    //  (1) "(No previous session)"  [button disabled]
+
+    //  (1) "(No previous session)"  (button disabled)
     //      This is shown when the application first starts if there is no
-    //      session path saved in settings from a previous run.
+    //      previous session name.
     //  (2) "Continue previous session [name]"
     //      This is shown when the application first starts and there is a
-    //      session path saved in settings from a previous run.
-    //  (3) "Continue current session"
-    //      This is shown when there is no session path saved in settings and
-    //      the user has made changes in the current session.
-    //  (4) "Continue current session [name]"
-    //      This is shown when there is a session path saved in settings and
-    //      the user has made changes in the current session.
-    const FilePath &session_path    = GetSettings().GetLastSessionPath();
-    const bool  changes_made        = session_manager.CanSaveSession();
-    bool        continue_enabled    = true;
+    //      previous session name.
+    //  (3) "Continue current session [name]"
+    //      This is shown when the current session has a name.
+    bool        have_name = false;
     std::string continue_text;
 
-    if (! session_path) {
-        if (changes_made) {
-            continue_text = "Continue current session";
-        }
-        else {
-            continue_text = "(No previous session)";
-            continue_enabled = false;
-        }
+    const auto &prev_name = session_manager.GetPreviousSessionName();
+    const auto &cur_name  = session_manager.GetCurrentSessionName();
+
+    // Have a current or previous session name.
+    auto add_name = [](const std::string &msg, const std::string &name){
+        return msg  + " [" + name + "]";
+    };
+    if (! cur_name.empty()) {
+        continue_text = add_name("Continue current session", cur_name);
+        have_name = true;
+    }
+    else if (! prev_name.empty()) {
+        continue_text = add_name("Continue previous session", prev_name);
+        have_name = true;
     }
     else {
-        const std::string &session_name = session_manager.GetSessionName();
-        ASSERT(! session_name.empty());
-        continue_text = changes_made ?
-            "Continue current session" : "Continue previous session";
-        continue_text += " [" + session_name + "]";
+        continue_text = "(No previous session)";
     }
-
-    const bool can_save = changes_made && session_path;
     SetButtonText("Continue", continue_text);
-    EnableButton("Continue",  continue_enabled);
+    EnableButton("Continue",  have_name);
+
     EnableButton("Load",      true);
-    EnableButton("Save",      can_save);
+    EnableButton("Save",      have_name && session_manager.CanSaveSession());
     EnableButton("Export",    session_manager.CanExport());
 
     // Move the focus to a button that is enabled unless there is already a
     // focused pane.
     if (! GetFocusedPane())
-        SetFocus(continue_enabled ? "Continue" : "New");
+        SetFocus(have_name ? "Continue" : "New");
 }
 
 void SessionPanel::Close(const std::string &result) {
@@ -94,12 +90,19 @@ void SessionPanel::OpenSettings_() {
 
 void SessionPanel::ContinueSession_() {
     // The only time something needs to be done here is when the application
-    // first starts and the user continued a previous session. In this case,
-    // load the previous session file.
+    // first starts (i.e., there is no current session name) and the user
+    // continued a previous session. In this case, load the previous session
+    // file.
     auto &session_manager    = *GetContext().session_manager;
-    const bool  changes_made = session_manager.CanSaveSession();
+    const bool changes_made  = session_manager.CanSaveSession();
     const auto &session_path = GetSettings().GetLastSessionPath();
-    if (session_path && ! changes_made) {
+    std::cerr << "XXXX cur name = '"
+              << session_manager.GetCurrentSessionName() << "'\n";
+    std::cerr << "XXXX changes_made = " << changes_made << "\n";
+    std::cerr << "XXXX session_path = '" << session_path.ToString() << "'\n";
+
+    if (session_manager.GetCurrentSessionName().empty() && session_path &&
+        ! changes_made) {
         std::string error;
         if (session_manager.LoadSession(session_path, error))
             Close("Done");

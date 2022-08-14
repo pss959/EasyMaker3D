@@ -72,8 +72,15 @@ class SessionManager {
     bool Export(const FilePath &path, FileFormat format,
                 const UnitConversion &conv);
 
-    /// Returns the name of current session, which may be empty.
-    const std::string & GetSessionName() const { return session_name_; }
+    /// Returns the name of the previous session, which may be empty.
+    const std::string & GetPreviousSessionName() const {
+        return previous_session_name_;
+    }
+
+    /// Returns the name of the current session, which may be empty.
+    const std::string & GetCurrentSessionName() const {
+        return current_session_name_;
+    }
 
     /// Returns a string representing the current session: the name of the
     /// session and characters representing the current modifications.
@@ -83,7 +90,8 @@ class SessionManager {
     ActionManagerPtr    action_manager_;
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
-    std::string         session_name_;
+    std::string         previous_session_name_;  ///< From previous run.
+    std::string         current_session_name_;   ///< After load or save.
 
     /// This saves the original SessionState. The current state is compared to
     /// this to determine if a change was made, allowing the session to be
@@ -104,10 +112,9 @@ class SessionManager {
     /// just throws the exception.
     bool LoadSessionSafe_(const FilePath &path, std::string *error);
 
-    /// Sets the current session path and updates anything else in the app that
-    /// depends on it.
-    void SetSessionPath_(const FilePath &path);
-
     /// Changes the original session state to the current session state.
     void SaveOriginalSessionState_();
+
+    /// Returns the name of a session from a FilePath.
+    static std::string GetSessionNameFromPath_(const FilePath &path);
 };

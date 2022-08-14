@@ -27,7 +27,7 @@ SessionManager::SessionManager(const ActionManagerPtr &action_manager,
 
     original_session_state_ = Parser::Registry::CreateObject<SessionState>();
 
-    SetSessionPath_(previous_path);
+    previous_session_name_ = GetSessionNameFromPath_(previous_path);
 }
 
 bool SessionManager::CanSaveSession() const {
@@ -49,7 +49,7 @@ SessionManager::GetModifications() const {
 }
 
 bool SessionManager::SessionStarted() const {
-    return ! session_name_.empty() || GetModifications().HasAny();
+    return ! current_session_name_.empty() || GetModifications().HasAny();
 }
 
 void SessionManager::NewSession() {
@@ -75,25 +75,27 @@ bool SessionManager::Export(const FilePath &path, FileFormat format,
 }
 
 std::string SessionManager::GetSessionString() const {
-    std::string s =
-        session_name_.empty() ? "<Untitled Session>" : session_name_;
+    std::string session_string = ! current_session_name_.empty() ?
+        current_session_name_ : "<Untitled Session>";
+
     const auto mods = GetModifications();
     if (mods.HasAny()) {
-        s += " [";
+        session_string += " [";
         if (mods.Has(Modification::kScene))
-            s += "*";
+            session_string += "*";
         if (mods.Has(Modification::kSessionState))
-            s += "!";
+            session_string += "!";
         if (mods.Has(Modification::kCommands))
-            s += "+";
-        s += "]";
+            session_string += "+";
+        session_string += "]";
     }
-    return s;
+    return session_string;
 }
 
 void SessionManager::ResetSession_() {
-    // Do NOT clear the session_name_ field; it should still appear in the
-    // SessionPanel menu as an option.
+    previous_session_name_.clear();
+    current_session_name_.clear();
+
     action_manager_->Reset();
     Model::ResetColors();
     SaveOriginalSessionState_();
@@ -115,8 +117,9 @@ bool SessionManager::SaveSessionWithComments_(
     auto &command_list = *command_manager_->GetCommandList();
     writer.WriteObject(command_list);
 
+    current_session_name_ = GetSessionNameFromPath_(path);
+
     command_list.ClearChanges();
-    SetSessionPath_(path);
     SaveOriginalSessionState_();
     return true;
 }
@@ -143,17 +146,17 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
         return false;
     }
     command_manager_->GetCommandList()->ClearChanges();
-    SetSessionPath_(path);
+    current_session_name_ = GetSessionNameFromPath_(path);
     action_manager_->UpdateFromSessionState(
         *command_manager_->GetSessionState());
     SaveOriginalSessionState_();
     return true;
 }
 
-void SessionManager::SetSessionPath_(const FilePath &path) {
-    session_name_ = path.GetFileName(true);  // Removes extension.
-}
-
 void SessionManager::SaveOriginalSessionState_() {
     original_session_state_->CopyFrom(*command_manager_->GetSessionState());
+}
+
+std::string SessionManager::GetSessionNameFromPath_(const FilePath &path) {
+    return path.GetFileName(true);  // Removes extension.
 }
