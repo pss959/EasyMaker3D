@@ -66,18 +66,19 @@ class CommandList : public Parser::Object {
 
     /// Marks the list as having had no changes, meaning that there is nothing
     /// to save.
-    void ClearChanges() { index_at_clear_ = current_index_; }
-
-    /// Returns true if any commands have been added since the last call to
-    /// ClearChanges().
-    bool WasAnyCommandAdded() const {
-        return index_at_clear_ < GetCommandCount();
+    void ClearChanges() {
+        index_at_clear_      = current_index_;
+        did_commands_change_ = false;
     }
 
-    /// Returns true if any changes have been made since the last call to
-    // ClearChanges().
+    /// Returns true if any commands have been added or removed since the last
+    /// call to ClearChanges().
+    bool DidCommandsChange() const { return did_commands_change_; }
+
+    /// Returns true if any changes have been made (including undo or redo)
+    // since the last call to ClearChanges().
     bool AreAnyChanges() const {
-        return current_index_ > 0 && index_at_clear_ != current_index_;
+        return did_commands_change_ || current_index_ != index_at_clear_;
     }
 
     /// Removes all orphaned Commands (Commands after the current one) from the
@@ -97,6 +98,10 @@ class CommandList : public Parser::Object {
     Parser::ObjectListField<Command> commands_;
     Parser::TField<unsigned int>     current_index_;
     ///@}
+
+    /// This is used to determine if any commands were added or removed since
+    /// the last call to ClearChanges().
+    bool did_commands_change_ = false;
 
     /// This is used to determine what changes were made since the last call to
     /// ClearChanges(). It saves the value of current_index when ClearChanges()

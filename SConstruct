@@ -421,6 +421,7 @@ test_sources = [
     'ClippedModelTest.cpp',
     'CloneTest.cpp',
     'ColorTest.cpp',
+    'CommandListTest.cpp',
     'CoordConvTest.cpp',
     'DelayTest.cpp',
     'DimensionalityTest.cpp',
@@ -449,6 +450,7 @@ test_sources = [
     'ReadSTLTest.cpp',
     'ReaderTest.cpp',
     'RegistryTest.cpp',
+    'ScaleCommandTest.cpp',
     'SceneTestBase.cpp',
     'SearchTest.cpp',
     'StringTest.cpp',
@@ -459,8 +461,6 @@ test_sources = [
     'UTimeTest.cpp',
     'UtilTest.cpp',
     'WriteSTLTest.cpp',
-
-    'ScaleCommandTest.cpp',  # XXXX
 
     # Session tests:
     'SessionTests/EmptySessionTest.cpp',

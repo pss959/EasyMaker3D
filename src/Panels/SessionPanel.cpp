@@ -96,10 +96,6 @@ void SessionPanel::ContinueSession_() {
     auto &session_manager    = *GetContext().session_manager;
     const bool changes_made  = session_manager.CanSaveSession();
     const auto &session_path = GetSettings().GetLastSessionPath();
-    std::cerr << "XXXX cur name = '"
-              << session_manager.GetCurrentSessionName() << "'\n";
-    std::cerr << "XXXX changes_made = " << changes_made << "\n";
-    std::cerr << "XXXX session_path = '" << session_path.ToString() << "'\n";
 
     if (session_manager.GetCurrentSessionName().empty() && session_path &&
         ! changes_made) {

@@ -40,7 +40,7 @@ SessionManager::GetModifications() const {
     const auto &command_list = *command_manager_->GetCommandList();
     if (command_list.AreAnyChanges())
         mods.Set(Modification::kScene);
-    if (command_list.WasAnyCommandAdded())
+    if (command_list.DidCommandsChange())
         mods.Set(Modification::kCommands);
     if (! command_manager_->GetSessionState()->IsSameAs(
             *original_session_state_))
@@ -49,7 +49,7 @@ SessionManager::GetModifications() const {
 }
 
 bool SessionManager::SessionStarted() const {
-    return ! current_session_name_.empty() || GetModifications().HasAny();
+    return ! current_session_name_.empty();
 }
 
 void SessionManager::NewSession() {

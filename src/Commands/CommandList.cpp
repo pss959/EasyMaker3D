@@ -45,6 +45,7 @@ void CommandList::AddCommand(const CommandPtr &command) {
     }
     commands_.Add(command);
     current_index_ = GetCommandCount();
+    did_commands_change_ = true;
 }
 
 const CommandPtr & CommandList::GetCommand(size_t index) const {
@@ -77,7 +78,12 @@ const CommandPtr & CommandList::ProcessRedo() {
 }
 
 void CommandList::RemoveLastCommand() {
-    commands_.Remove(GetCommandCount() - 1);
+    const size_t count = GetCommandCount();
+    ASSERT(count > 0);
+    commands_.Remove(count - 1);
+    if (current_index_ >= count)
+        current_index_ = count - 1;
+    did_commands_change_ = true;
 }
 
 void CommandList::ClearOrphanedCommands() {
