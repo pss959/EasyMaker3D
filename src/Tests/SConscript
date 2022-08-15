@@ -78,6 +78,8 @@ cov_test_env.Append(LIBS = [f'{main_lib}_cov'])
 
 # Add necessary testing infrastructure.
 for env in [reg_test_env, cov_test_env]:
+    # Make the build relative to the top directory.
+    env.Replace(BUILD_DIR = env.subst('#$BUILD_DIR'))
     env.Append(
         CPPPATH = ['#submodules/googletest/googletest/include'],
         LIBPATH = [
