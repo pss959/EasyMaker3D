@@ -1144,8 +1144,17 @@ void Application::Impl_::TryQuit_() {
     auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage("There are unsaved changes.\nDo you really want to quit?");
     dp->SetChoiceResponse("No", "Yes");
-    scene_context_->app_board->SetPanel(dp, func);
-    board_manager_->ShowBoard(scene_context_->app_board, true);
+
+    // If the AppBoard is already visible, replace its Panel. Otherwise, just
+    // show it with the new Panel.
+    const auto &board = scene_context_->app_board;
+    if (board->IsShown()) {
+        board->PushPanel(dp, func);
+    }
+    else {
+        board->SetPanel(dp, func);
+        board_manager_->ShowBoard(board, true);
+    }
 }
 
 bool Application::Impl_::ProcessEvents_(bool is_alternate_mode) {
