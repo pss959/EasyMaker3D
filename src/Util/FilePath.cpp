@@ -117,6 +117,11 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
     return FromPath_(lexically_proximate(base_path));
 }
 
+FilePath FilePath::GetAbsolute() const {
+    return IsAbsolute() ? *this :
+        FilePath(std::filesystem::current_path() / *this);
+}
+
 UTime FilePath::GetModTime() const {
     ASSERT(Exists());
     return UTime(std::filesystem::last_write_time(*this));

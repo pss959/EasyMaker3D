@@ -133,8 +133,8 @@ class VRContext::Impl_ {
     bool CheckForHMD_();
     bool InitVR_();
     void InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye);
-    void InitInput_();
-    void LoadActions_();
+    bool InitInput_();
+    bool LoadActions_();
     void InitActionSet_();
     void InitActions_();
     vr::VRActionHandle_t GetHandAction_(Hand hand, const std::string &name,
@@ -172,9 +172,7 @@ bool VRContext::Impl_::InitSystem() {
     InitEye_(vr::Eye_Right, r_eye_);
 
     // Set up input.
-    InitInput_();
-
-    return true;
+    return InitInput_();
 }
 
 bool VRContext::Impl_::LoadControllerModel(Hand hand,
@@ -337,7 +335,7 @@ void VRContext::Impl_::InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye) {
     eye.orientation = Rotationf::Identity();
 }
 
-void VRContext::Impl_::InitInput_() {
+bool VRContext::Impl_::InitInput_() {
     auto &vin = *vr::VRInput();
 
     // Set up controller data.
@@ -354,24 +352,32 @@ void VRContext::Impl_::InitInput_() {
     vin.GetInputSourceHandle("/user/hand/right", &r_controller.handle);
 
     // Load the actions manifest.
-    LoadActions_();
+    if (! LoadActions_())
+        return false;
 
     // Access the default action set.
     InitActionSet_();
 
     // Initialize all actions.
     InitActions_();
+
+    return true;
 }
 
-void VRContext::Impl_::LoadActions_() {
+bool VRContext::Impl_::LoadActions_() {
     auto &vin = *vr::VRInput();
-    const auto path = FilePath::GetResourcePath("json", "actions.json");
+    // Note: SteamVR seems to require an absolute path for this.
+    const auto path =
+        FilePath::GetResourcePath("json", "actions.json").GetAbsolute();
     const auto err = vin.SetActionManifestPath(path.ToString().c_str());
     if (err != vr::VRInputError_None) {
-        KLOG('v', "***Error setting manifest path: " << Util::EnumName(err));
+        KLOG('v', "***Error setting manifest path to '" << path.ToString()
+             << "': " << Util::EnumName(err));
+        return false;
     }
     else {
         KLOG('v', "Set manifest path to '" << path.ToString() << "'");
+        return true;
     }
 }
 

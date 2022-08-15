@@ -72,6 +72,11 @@ class FilePath : private std::filesystem::path {
     /// the given base FilePath.
     FilePath MakeRelativeTo(const FilePath &base_path) const;
 
+    /// If the given FilePath is absolute, this returns it. Otherwise, it
+    /// returns an absolute path, assuming the given path is relative to the
+    /// current directory.
+    FilePath GetAbsolute() const;
+
     /// Returns a UTime instance representing the last modification time of the
     /// file, which must exist.
     UTime GetModTime() const;

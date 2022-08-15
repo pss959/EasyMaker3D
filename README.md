@@ -13,8 +13,8 @@ TODO: Fill this in
 
   `cd /usr/share/vulkan/icd.d ; sudo mv intel_icd.x86_64.json intel_icd.x86_64.json.disabled`
 
-> Note that this must be done each time after the `mesa-vulkan-drivers` package
-> is installed or updated.
+> **Note that this must be done each time after the `mesa-vulkan-drivers`
+> package is installed or updated.**
 
 > Trying this version instead:
 
@@ -29,6 +29,14 @@ TODO: Fill this in
 
 Unfortunately (as of 6/1/22), this was not enough to work around the bug;
 moving the JSON file was still required.
+
+SteamVR produced this error:
+
+```
+MESA-INTEL: warning: Performance support disabled, consider sysctl dev.i915.perf_stream_paranoid=0
+```
+
+So `sudo sysctl dev.i915.perf_stream_paranoid=0`
 
 Need doxygen and mkdocs for internal doc and public doc, respectively.
 
