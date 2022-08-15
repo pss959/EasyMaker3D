@@ -456,7 +456,7 @@ base_env = platform_env.Clone()
 
 # Set up directories for use below.
 base_env.Replace(
-    BUILD_DIR = f'#{build_dir}',
+    BUILD_DIR = build_dir,
     ION_DIR   = '#ionsrc/Ion',
 )
 
