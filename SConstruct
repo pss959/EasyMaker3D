@@ -710,7 +710,9 @@ reg_env.Alias('Libs', reg_lib)
 main_app_name = APP_NAME
 
 # Build the applications.
-apps = [main_app_name, 'nodeviewer', 'printtypes', 'snapimage']
+apps = [main_app_name, 'nodeviewer', 'printtypes']
+if platform == 'linux':
+    apps == ['snapimage']
 
 apps_extra_sources = [
     '$BUILD_DIR/App/Args.cpp',
