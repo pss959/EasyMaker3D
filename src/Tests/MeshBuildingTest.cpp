@@ -29,9 +29,9 @@ TEST_F(MeshBuildingTest, Box) {
 }
 
 TEST_F(MeshBuildingTest, Cylinder) {
-    const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
+    const TriMesh mesh   = BuildCylinderMesh(4, 8, 20, 20);
+    const Bounds  bounds = ComputeMeshBounds(mesh);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
-    Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds.GetSize());
 
@@ -46,6 +46,22 @@ TEST_F(MeshBuildingTest, Cylinder) {
         const Vector3f vec = ion::math::Normalized(p0 - Point3f::Zero());
         EXPECT_GT(ion::math::Dot(norm, vec), 0);
     }
+}
+
+TEST_F(MeshBuildingTest, CylinderCone) {
+    // A radius of 0 creates a cone.
+    const TriMesh mesh1   = BuildCylinderMesh(0, 8, 20, 20);
+    const Bounds  bounds1 = ComputeMeshBounds(mesh1);
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh1));
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds1.GetCenter());
+    EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds1.GetSize());
+
+    // Same, but upside down.
+    const TriMesh mesh2   = BuildCylinderMesh(8, 0, 20, 20);
+    const Bounds  bounds2 = ComputeMeshBounds(mesh2);
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh2));
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds2.GetCenter());
+    EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds2.GetSize());
 }
 
 TEST_F(MeshBuildingTest, Sphere) {

@@ -350,28 +350,41 @@ TriMesh BuildBoxMesh(const Vector3f &size) {
 
 TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
                           float height, int num_sides) {
-    const float h = .5f * height;
+    // Either radius can be 0, but not both.
+    ASSERT(top_radius > 0 || bottom_radius > 0);
 
     TriMesh mesh;
-
-    // There is 1 point at the top center, 1 at the bottom center, and
-    // 2*num_sides forming the top and bottom edge rings.
-    const size_t point_count = 2 + 2 * num_sides;
     const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1, true);
+
+    const bool add_top_ring    = top_radius    > 0;
+    const bool add_bottom_ring = bottom_radius > 0;
+    const int  ring_count = (add_top_ring ? 1 : 0) + (add_bottom_ring ? 1 : 0);
+
+    // There is 1 point at the top apex or top center, 1 at the bottom apex or
+    // bottom center, and num_sides for each of the top and bottom edge rings
+    // (if needed).
+    const size_t point_count = 2 + ring_count * num_sides;
+    const float h = .5f * height;
     mesh.points.push_back(Point3f(0, h, 0));
-    AddArcPoints_(ring_pts,    top_radius,  h, mesh.points);
-    AddArcPoints_(ring_pts, bottom_radius, -h, mesh.points);
+    if (add_top_ring)
+        AddArcPoints_(ring_pts,    top_radius,  h, mesh.points);
+    if (add_bottom_ring)
+        AddArcPoints_(ring_pts, bottom_radius, -h, mesh.points);
     mesh.points.push_back(Point3f(0, -h, 0));
     ASSERT(mesh.points.size() == point_count);
 
-    // There are num_sides triangles each in the top and bottom fans and
-    // 2*num_sides triangles around the sides.
-    const size_t index_count = 3 * (4 * num_sides);
+    // If this is a cone (i.e., either ring is not used), there are num_sides
+    // triangles forming the sides (as a fan) and another num_sides for the top
+    // or bottom fan. If this is a true cylinder, there are num_sides triangles
+    // in each of the top and bottom fans and 2*num_sides triangles around the
+    // sides. So there are 2*num_sides triangles for each ring.
+    const size_t index_count = 3 * 2 * ring_count * num_sides;
     TriHelper_ helper(mesh.indices, index_count);
     const GIndex top_index    = 0;
     const GIndex bottom_index = mesh.points.size() - 1;
     helper.AddFan(top_index, top_index + 1, num_sides, true);
-    helper.AddGrid(top_index + 1, 1, num_sides, true);
+    if (ring_count == 2)
+        helper.AddGrid(top_index + 1, 1, num_sides, true);
     helper.AddFan(bottom_index, bottom_index - num_sides, num_sides,
                   true, true);
     ASSERT(mesh.indices.size() == index_count);
