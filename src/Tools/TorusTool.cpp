@@ -1,5 +1,7 @@
 #include "Tools/TorusTool.h"
 
+#include <algorithm>
+
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -193,21 +195,25 @@ void TorusTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     }
 
     // Try snapping both the stage-space radius and diameter to the current
-    // target length. If that does not work, apply precision to the radius.
-    float radius = .5f * scaler->GetLength();
+    // target length. If that does not work, apply precision to the diameter.
+    const float diameter = scaler->GetLength();
+    float radius         = .5f * diameter;
 
     auto &target_manager = *GetContext().target_manager;
     bool is_snapped;
-    if (target_manager.SnapToLength(radius)) {             // Radius snapped.
+    if (target_manager.SnapToLength(radius)) {
         radius = target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
     }
-    else if (target_manager.SnapToLength(2 * radius)) {  // Diameter snapped.
+    else if (target_manager.SnapToLength(diameter)) {
         radius = .5f * target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
     }
     else {
-        radius = GetContext().precision_manager->Apply(radius);
+        // Do not let the diameter get below the current precision.
+        const auto &precision_manager = *GetContext().precision_manager;
+        radius = .5f * std::max(precision_manager.GetLinearPrecision(),
+                                precision_manager.Apply(diameter));
         is_snapped = false;
     }
 

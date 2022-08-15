@@ -234,9 +234,6 @@ extern const float    kMaxTorusInnerRadius;
 /// Maximum outer radius of a TorusModel (for the TorusTool).
 extern const float    kMaxTorusOuterRadius;
 
-/// Minimum allowable radius for a CylinderModel.
-extern const float    kMinCylinderRadius;
-
 /// Minimum radius of the hole of a TorusModel.
 extern const float    kMinTorusHoleRadius;
 

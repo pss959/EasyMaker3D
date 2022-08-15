@@ -1,5 +1,7 @@
 #include "Tools/CylinderTool.h"
 
+#include <algorithm>
+
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -66,8 +68,7 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
     scaler->GetMaxSlider()->SetIsPrecisionBased(true);
 
     // Scaler limits are for the full diameter.
-    scaler->SetLimits(Vector2f(2 * TK::kMinCylinderRadius,
-                               2 * TK::kMaxCylinderRadius));
+    scaler->SetLimits(Vector2f(0, 2 * TK::kMaxCylinderRadius));
 
     scaler->GetActivation().AddObserver(
         this, [&, scaler](Widget &, bool is_activation){
@@ -172,21 +173,30 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     }
 
     // Try snapping both the stage-space radius and diameter to the current
-    // target length. If that does not work, apply precision to the radius.
-    float radius = .5f * scaler->GetLength();
+    // target length. If that does not work, apply precision to the diameter.
+    const float diameter = scaler->GetLength();
+    float radius         = .5f * diameter;
 
     auto &target_manager = *GetContext().target_manager;
     bool is_snapped;
-    if (target_manager.SnapToLength(radius)) {             // Radius snapped.
+    if (target_manager.SnapToLength(radius)) {
         radius = target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
     }
-    else if (target_manager.SnapToLength(2 * radius)) {  // Diameter snapped.
+    else if (target_manager.SnapToLength(diameter)) {
         radius = .5f * target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
     }
     else {
-        radius = GetContext().precision_manager->Apply(radius);
+        // Do not let the diameter get below the current precision if the other
+        // radius is 0.
+        const auto &precision_manager = *GetContext().precision_manager;
+        const auto &other_scaler =
+            scaler == top_scaler_ ? *bottom_scaler_ : *top_scaler_;
+        const float min_diameter = other_scaler.GetLength() > 0 ? 0 :
+            precision_manager.GetLinearPrecision();
+        radius = .5f * std::max(min_diameter,
+                                precision_manager.Apply(diameter));
         is_snapped = false;
     }
 

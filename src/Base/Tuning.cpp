@@ -75,7 +75,6 @@ const float    kInitialModelScale                = 2;
 const float    kMaxCylinderRadius                = 30;
 const float    kMaxTorusInnerRadius              = 10;
 const float    kMaxTorusOuterRadius              = 20;
-const float    kMinCylinderRadius                = .05f;
 const float    kMinTorusHoleRadius               = .05f;
 const float    kMinTorusInnerRadius              = .05f;
 const float    kScaleWidgetMaxLimit              = 100;

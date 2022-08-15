@@ -24,12 +24,12 @@ bool CylinderModel::IsValid(std::string &details) {
 }
 
 void CylinderModel::SetTopRadius(float radius) {
-    top_radius_ = std::max(radius, TK::kMinCylinderRadius);
+    top_radius_ = radius;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
 void CylinderModel::SetBottomRadius(float radius) {
-    bottom_radius_ = std::max(radius, TK::kMinCylinderRadius);
+    bottom_radius_ = radius;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 

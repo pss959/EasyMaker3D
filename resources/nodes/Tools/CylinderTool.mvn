@@ -5,8 +5,16 @@ CylinderTool "CylinderTool" {
     },
     ScaleWidget "T_Scaler" {
       children: [
-        CLONE "T_Slider" "MinSlider" {},
-        CLONE "T_Slider" "MaxSlider" {},
+        # A cylinder radius can legally be 0, so make sure the handles cannot
+        # overlap completely by offsetting them a little bit.
+        Node {
+          translation: -.06 0 0,
+          children: [CLONE "T_Slider" "MinSlider" {}],
+        },
+        Node {
+          translation:  .06 0 0,
+          children: [CLONE "T_Slider" "MaxSlider" {}],
+        },
         Node "Stick" {
           disabled_flags: "kIntersectAll",
           blocks: [
