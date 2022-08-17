@@ -81,19 +81,21 @@ for env in [reg_test_env, cov_test_env]:
     env.Append(
         CPPPATH = ['#submodules/googletest/googletest/include'],
         LIBPATH = [
-            '$BUILD_DIR',
-            '$BUILD_DIR/googletest',
-            '$BUILD_DIR/docopt.cpp',
+            '#$BUILD_DIR',
+            '#$BUILD_DIR/googletest',
+            '#$BUILD_DIR/docopt.cpp',
         ],
         LIBS    = ['docopt', 'gtest', 'pthread'],
         RPATH   = [Dir(env.subst('$BUILD_DIR/googletest')).abspath],
     )
+    # Restore the original spawn function so test output is visible.
+    env['SPAWN'] = env['ORIG_SPAWN']
 
 # Build test object files for both environments.
 def BuildTests(env, test_app_name):
     defines  = env['CPPDEFINES'] + [('IN_UNIT_TEST', 1)]
     cpppaths = env['CPPPATH'] + ['#/src/Tests/']
-    sources  = [f'$BUILD_DIR/Tests/{source}' for source in test_sources]
+    sources  = [f'#$BUILD_DIR/Tests/{source}' for source in test_sources]
     objects  = [env.SharedObject(source=source, CPPDEFINES=defines,
                                  CPPPATH=cpppaths)
                 for source in sources]
@@ -115,8 +117,8 @@ cov_env.Alias('CovTests', cov_test)
 test_filter = ARGUMENTS.get('TESTFILTER')
 test_args = ('--gtest_filter="%s"' % test_filter) if test_filter else ''
 
-reg_env.Alias('RunRegTests', reg_test, f'{run_program} $SOURCE {test_args}')
-cov_env.Alias('RunCovTests', cov_test, f'{run_program} $SOURCE {test_args}')
+reg_test_env.Alias('RunRegTests', reg_test, f'{run_program} $SOURCE {test_args}')
+cov_test_env.Alias('RunCovTests', cov_test, f'{run_program} $SOURCE {test_args}')
 
 # Make sure test run targets are always considered out of date.
 reg_test_env.AlwaysBuild('RunRegTests')

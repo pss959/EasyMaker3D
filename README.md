@@ -56,18 +56,16 @@ pip install -U \
 
 TODO: Clean this up
 
-Using MinGW toolchain on Windows. Install MinGW on your system and set the
-`MINGW_PATH` environment variable to the location of the installed MinGW
-directory.
+Using MinGW toolchain on Windows. Install MSYS2 on your system (best if in
+`c:\msys64` so that `scons` can find it easily).
 
-Install `msys2` and use pacman to install:
+Then use `pacman` to install:
 
 git
 mingw-w64-x86_64-gcc
 mingw-w64-x86_64-scons
-mingw-w64-x86_64-pk-conf
 
-+ Dependencies listed below:
++ Dependencies listed below: XXXX Check these...
 
 mingw-w64-x86_64-brotli
 mingw-w64-x86_64-bzip2
@@ -84,20 +82,16 @@ mingw-w64-x86_64-minizip
 mingw-w64-x86_64-openxr-sdk
 mingw-w64-x86_64-tinyxml2
 
-XXXX Need to do this???
-cp /mingw64/lib/libopenxr_loader.dll.a /mingw64/lib/libopenxr_loader.a
-
 mingw-w64-x86_64-gdb  For debugging
 
 For python:
 mingw-w64-x86_64-python3
-mingw-w64-x86_64-python3-pip
 mingw-w64-x86_64-python3-setuptools
 
 #### NOTE
 
-pacman's version of stb did not have an `stb.pc` file, so create one with these
-contents:
+pacman's version of stb did not have an `stb.pc` file, so create
+`/mingw64/lib/pkgconfig/stb.pc` with these contents:
 
 ```
 prefix=/mingw64
@@ -108,8 +102,6 @@ Description: single-file public domain (or MIT licensed) libraries for C/C++
 Version: r1943.c9064e3-2
 ```
 
-and copy it to `/mingw64/lib/pkgconfig/stb.pc`
-
 ### Dependencies
 
 #### Submodules
@@ -117,6 +109,7 @@ and copy it to `/mingw64/lib/pkgconfig/stb.pc`
 + `docopt.cpp`
 + `googletest`
 + `magic_enum`
+XXXX openvr
 
 #### Libraries
 
@@ -132,8 +125,8 @@ and copy it to `/mingw64/lib/pkgconfig/stb.pc`
 
 On a Linux system, install the following packages:
 
-`libfreetype-dev libglfw3-dev libjsoncpp-dev libjpeg-dev libminizip-dev libopenx
-r-dev libstb-dev libtinyxml2-dev libz-dev`
+`libfreetype-dev libglfw3-dev libjsoncpp-dev libjpeg-dev libminizip-dev
+libstb-dev libtinyxml2-dev libz-dev`
 
 The `libboost-dev` packages are required to run the unit tests.
 
@@ -182,6 +175,8 @@ A comma after the last field or sub-object is ignored.
 Comments begin with the `'#'` character and continue until the end of the line.
 
 ### Constants
+
+XXXX Fix this...
 
 If the first non-whitespace character in an object is a `'['`, the
 bracket-enclosed contents define constants that can be used within the rest of

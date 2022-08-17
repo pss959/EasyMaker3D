@@ -1,4 +1,5 @@
 from brief import Brief
+from os    import environ
 
 # -----------------------------------------------------------------------------
 # Configuration.
@@ -456,7 +457,7 @@ base_env = platform_env.Clone()
 
 # Set up directories for use below.
 base_env.Replace(
-    BUILD_DIR = f'#{build_dir}',
+    BUILD_DIR = build_dir,
     ION_DIR   = '#ionsrc/Ion',
 )
 
@@ -528,11 +529,13 @@ if platform == 'windows':
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
         ],
+        # Make sure the MSYS2 commands (such as cygpath) are available.
+        ENV = {'PATH' : environ['PATH']},
     )
     # Note: the "-O1" keeps big files from choking on Windows ("string table
     # overflow", "file too big").
     big_cflags = ['-O1']
-    run_program = f'bin\\runprogram.bat {mode}'
+    run_program = f'c:/msys64/usr/bin/bash.exe bin/runwinprogram.bash {mode}'
 
 elif platform == 'linux':
     base_env.Append(
@@ -557,6 +560,9 @@ common_flags = [
     '-Wno-unused-parameter',    # This causes problems in Ion headers:
     '-Wno-strict-aliasing',     # Ion has issues with this.
 ]
+
+if platform == 'windows':
+    common_flags.append('-Wno-maybe-uninitialized')  # CGAL needs this.
 
 openvr_cflags = ['-Wno-old-style-cast']  # openvr.h violates this a lot.
 
@@ -661,7 +667,9 @@ if platform == 'windows':
         if rv:
             print(err)
         return rv
-    reg_env['SPAWN'] = winspawn
+    for env in [reg_env, cov_env]:
+        env['ORIG_SPAWN'] = env['SPAWN']  # Save for tests to use.
+        env['SPAWN']      = winspawn
 
 # -----------------------------------------------------------------------------
 # Building main library so tests can link against it. It has to be a shared
