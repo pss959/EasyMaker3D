@@ -464,6 +464,7 @@ base_env.Replace(
 base_env.Replace(
     CPPPATH = [
         '#/src',
+        '$BUILD_DIR/include',  # Generated headers.
         '$ION_DIR',
         '$ION_DIR/ion/port/override',
         '$ION_DIR/third_party/google',
@@ -536,6 +537,10 @@ if platform == 'windows':
     # overflow", "file too big").
     big_cflags = ['-O1']
     run_program = f'c:/msys64/usr/bin/bash.exe bin/runwinprogram.bash {mode}'
+    # Create the special version of openvr.h for Windows.
+    base_env.Command(target='$BUILD_DIR/include/openvr.h',
+                     source='#submodules/openvr/headers/openvr.h',
+                     action='bin/fix-openvr-header.py $SOURCES $TARGET')
 
 elif platform == 'linux':
     base_env.Append(

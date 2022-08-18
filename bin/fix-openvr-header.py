@@ -1,4 +1,13 @@
-#! python3
+#!/usr/bin/env python3
+
+# -----------------------------------------------------------------------------
+# This script creates a fixed version of the <openvr.h> header file so that the
+# SteamVR client does not crash on Windows (in mingw64). It came from here:
+#    https://gist.github.com/tunabrain/1fc7a4964914d61b5ae751d0c84f2382
+#
+# The only modifications to the original script are to take the names of the
+# source and destination files on the command line.
+# -----------------------------------------------------------------------------
 
 # Copyright 2020 Benedikt Bitterli
 #
@@ -25,7 +34,14 @@ import sys
 import re
 import io
 
-header = open('openvr.h', newline='\n').read()
+if len(sys.argv) != 3:
+    print(f'*** usage: {argv[0]} <input_header_file> <output_header_file>')
+    sys.exit(1)
+
+input_header_file  = sys.argv[1]
+output_header_file = sys.argv[2]
+
+header = open(input_header_file, newline='\n').read()
 
 annoyingMacroPattern = re.compile(r'#define\s+(\w+).*VR_CLANG_ATTR.*')
 fullClassPattern = re.compile(r'^([^\S\n]*)class\s+(\w+).*?\{.*?\};', re.MULTILINE | re.DOTALL)
@@ -79,4 +95,4 @@ for match in fullClassPattern.finditer(header):
 
     newHeader = newHeader.replace(fullClass, table + newClass)
 
-open('openvr_mingw.hpp', 'w', newline='\n').write(newHeader)
+open(output_header_file, 'w', newline='\n').write(newHeader)
