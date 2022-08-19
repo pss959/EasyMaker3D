@@ -540,7 +540,7 @@ if platform == 'windows':
     # Create the special version of openvr.h for Windows.
     base_env.Command(target='$BUILD_DIR/include/openvr.h',
                      source='#submodules/openvr/headers/openvr.h',
-                     action='bin/fix-openvr-header.py $SOURCES $TARGET')
+                     action='python bin/fix-openvr-header.py $SOURCES $TARGET')
 
 elif platform == 'linux':
     base_env.Append(
