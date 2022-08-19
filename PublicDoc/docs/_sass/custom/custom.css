@@ -7,3 +7,9 @@
 p {
    line-height: 1.4;
 }
+
+.footer {
+    color:      #888888;
+    text-size:  smaller;
+    text-align: center;
+}

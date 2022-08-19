@@ -35,3 +35,4 @@ heading_anchors: true
 # Variables used in content.
 app_name:      MakerVR
 download_site: "https://drive.google.com/drive/folders/1Tgb-bgtroVWNLfKsqY-z6v12n8Gk077H"
+env test:  {{ site.env.HOME }}

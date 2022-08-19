@@ -774,7 +774,7 @@ exports = {
     'tests'        : ['reg_env', 'cov_env', 'main_lib', 'run_program',
                       'cov_lib_objects'],
     'internal_doc' : ['doc_build_dir', 'APP_NAME', 'VERSION_STRING'],
-    'public_doc'   : [],
+    'public_doc'   : ['doc_build_dir', 'APP_NAME', 'VERSION_STRING'],
     'ion_lib'      : ['brief', 'build_dir', 'mode', 'platform_env'],
 }
 

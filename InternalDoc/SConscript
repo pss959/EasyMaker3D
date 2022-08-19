@@ -1,9 +1,8 @@
 # -----------------------------------------------------------------------------
 # scons configuration for internal documentation using Doxygen.
 #
-# Targets:
-#    - Doc [DEFAULT]
-#          Generates internal Doxygen documentation in "doxygen" directory.
+# Generates internal Doxygen documentation in the "InternalDoc/html"
+# subdirectory of the build directory.
 # -----------------------------------------------------------------------------
 
 Import('doc_build_dir', 'APP_NAME', 'VERSION_STRING')
@@ -40,6 +39,6 @@ src_files = FindSources('../src', ['*.h', '*.cpp'])
 doxygen_sources = ['Doxyfile'] + dox_files + src_files
 
 doc = env.Command('$OUTPUT_DIR/html/index.html', doxygen_sources,
-                  ['echo === Building doc for version: $VERSION_STRING',
+                  ['echo = Building internal doc for version: $VERSION_STRING',
                    '$DOXYGEN InternalDoc/Doxyfile'])
 Return('doc')

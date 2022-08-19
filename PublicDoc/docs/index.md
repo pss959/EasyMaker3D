@@ -33,5 +33,5 @@ site.url: {{ site.url }}
 site.source: {{ site.source }}
 site.destination: {{ site.destination }}
 site.remote_theme: {{ site.remote_theme }}
+env test: {{ site.env }}
 ```
-
