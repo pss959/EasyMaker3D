@@ -9,7 +9,7 @@ in vec2 aTexCoords;
 
 // Hack to shut up warnings about unused attributes.
 float Unused(vec3 a, vec2 b) {
-  return a.x * b.x - b.x * a.x;
+  return 100 * length(a) < .0001 ? b[0] : 0;
 }
 
 void main() {
