@@ -1,6 +1,6 @@
 #include "Debug/Print.h"
 
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
 
 #include <iostream>
 #include <stack>

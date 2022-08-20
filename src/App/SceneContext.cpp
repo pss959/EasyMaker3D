@@ -90,7 +90,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
     tree_panel->SetRootModel(root_model);
 
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
     // Debugging helpers.
     debug_sphere   = FindNamed_(sc, "DebugSphere");
     debug_text     = FindTyped_<SG::TextNode>(sc, "DebugText");

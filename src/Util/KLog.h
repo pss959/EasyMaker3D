@@ -57,7 +57,7 @@ class KLogger : public std::ostream {
 
 /// The KLOG macro logs the streamed message if logging is enabled and the
 /// given key is part of the current key string.
-#if ENABLE_LOGGING
+#if ENABLE_DEBUG_FEATURES
 #  define KLOG(key, msg) KLogger(key).GetStream() << msg << "\n"
 #else
 #  define KLOG(key, msg)

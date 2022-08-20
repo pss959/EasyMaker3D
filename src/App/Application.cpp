@@ -341,7 +341,7 @@ Application::Impl_::~Impl_() {
     viewers_.clear();
 
     // Instances must be destroyed in a particular order.
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
     Debug::ShutDown();
 #endif
     view_handler_.reset();
@@ -367,7 +367,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
     if (! scene)
         return false;
     scene_context_->FillFromScene(scene, true);
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
     Debug::SetSceneContext(scene_context_);
 #endif
 
@@ -570,7 +570,7 @@ void Application::Impl_::InitHandlers_() {
     view_handler_.reset(new ViewHandler());
     main_handler_.reset(new MainHandler(IsVREnabled()));
 
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
     Debug::SetLogHandler(log_handler_);
 #endif
 }
@@ -614,7 +614,7 @@ void Application::Impl_::InitManagers_() {
     event_manager_->AddHandler(view_handler_);
     event_manager_->AddHandler(main_handler_);
 
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
     Debug::SetLogHandler(log_handler_);
 #endif
 
@@ -640,7 +640,7 @@ void Application::Impl_::InitManagers_() {
     session_manager_.reset(new SessionManager(action_manager_, command_manager_,
                                               selection_manager_, path));
 
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
     Debug::SetCommandList(command_manager_->GetCommandList());
 #endif
 }

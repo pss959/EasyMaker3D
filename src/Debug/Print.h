@@ -1,6 +1,6 @@
 #pragma once
 
-#if ENABLE_DEBUG_PRINT
+#if ENABLE_DEBUG_FEATURES
 
 #include <string>
 

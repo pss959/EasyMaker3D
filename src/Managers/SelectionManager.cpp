@@ -242,7 +242,7 @@ bool SelectionManager::GetSelectionInDirection_(Direction dir,
 }
 
 void SelectionManager::SelectionChanged_(Operation op) {
-#if ENABLE_LOGGING
+#if ENABLE_DEBUG_FEATURES
     auto sel_string = [&](){
         std::string s;
         for (const auto &sel_path: selection_.GetPaths()) {
@@ -254,8 +254,7 @@ void SelectionManager::SelectionChanged_(Operation op) {
         }
         return " { " + s + " }";
     };
-#endif
-
     KLOG('S', "Selection change: " << Util::EnumName(op) << sel_string());
+#endif
     selection_changed_.Notify(selection_, op);
 }

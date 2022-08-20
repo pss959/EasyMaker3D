@@ -576,9 +576,9 @@ openvr_cflags = ['-Wno-old-style-cast']  # openvr.h violates this a lot.
 # -----------------------------------------------------------------------------
 
 # Specialize for debug, optimized, or release modes.
-dbg_env = base_env.Clone()
-opt_env = base_env.Clone()
-rel_env = base_env.Clone()
+dbg_env = base_env.Clone(ENABLE_DEBUG_FEATURES = True)
+opt_env = base_env.Clone(ENABLE_DEBUG_FEATURES = True)
+rel_env = base_env.Clone(ENABLE_DEBUG_FEATURES = False)
 dbg_env.Append(
     CXXFLAGS   = common_flags + ['-g'],
     LINKFLAGS  = common_flags + ['-g'],
@@ -586,9 +586,6 @@ dbg_env.Append(
         ('CHECK_GL_ERRORS',    'true'),
         ('DEBUG',              'true'),
         ('ENABLE_DASSERT',     'true'),
-        ('ENABLE_DEBUG_PRINT', 'true'),
-        ('ENABLE_ION_REMOTE',  'true'),
-        ('ENABLE_LOGGING',     'true'),
         ('ION_DEBUG',          'true'),
         '_DEBUG',
         # This allows valgrind to work on the debug executables.
@@ -601,8 +598,6 @@ opt_env.Append(
     LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
     CPPDEFINES = [
         ('CHECK_GL_ERRORS',    'false'),
-        ('ENABLE_LOGGING',     'true'),
-        ('ENABLE_DEBUG_PRINT', 'true'),
     ],
 )
 rel_env.Append(
@@ -622,6 +617,10 @@ mode_envs = {
     'rel' : rel_env
 }
 mode_env = mode_envs[mode]
+
+mode_env.Append(
+    CPPDEFINES = [('ENABLE_DEBUG_FEATURES',
+                   1 if mode_env["ENABLE_DEBUG_FEATURES"] else 0)])
 
 packages = [
     'freetype2',

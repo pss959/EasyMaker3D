@@ -28,6 +28,8 @@ be due to specific hardware limitations.
 
 ## Site Variables
 
+XXXX Remove this for release
+
 ```
 site.url: {{ site.url }}
 site.source: {{ site.source }}
