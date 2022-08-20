@@ -28,6 +28,16 @@
 // Static helper functions.
 // ----------------------------------------------------------------------------
 
+/// Stores modifiers in an Event.
+static void AddModifiers_(int mods, Event &event) {
+    if (mods & GLFW_MOD_SHIFT)
+        event.modifiers.Set(Event::ModifierKey::kShift);
+    if (mods & GLFW_MOD_CONTROL)
+        event.modifiers.Set(Event::ModifierKey::kControl);
+    if (mods & GLFW_MOD_ALT)
+        event.modifiers.Set(Event::ModifierKey::kAlt);
+}
+
 /// Returns true if the given key event should be ignored.
 static bool IgnoreKeyEvent_(int key) {
     switch (key) {
@@ -137,12 +147,7 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
                     Event::Flag::kKeyRelease);
 
     // Store the modifiers first.
-    if (mods & GLFW_MOD_SHIFT)
-        event.modifiers.Set(Event::ModifierKey::kShift);
-    if (mods & GLFW_MOD_CONTROL)
-        event.modifiers.Set(Event::ModifierKey::kControl);
-    if (mods & GLFW_MOD_ALT)
-        event.modifiers.Set(Event::ModifierKey::kAlt);
+    AddModifiers_(mods, event);
 
     // Set the name of the key.
     SetKeyName_(key, event);
@@ -323,6 +328,9 @@ void GLFWViewer::ProcessButton_(int button, int action, int mods) {
             event.button = Event::Button::kOther;
             break;
         }
+
+        // Add modifiers.
+        AddModifiers_(mods, event);
 
         // Also store the current position.
         double xpos, ypos;

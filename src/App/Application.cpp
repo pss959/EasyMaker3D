@@ -20,6 +20,7 @@
 #include "Feedback/TooltipFeedback.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/ControllerHandler.h"
+#include "Handlers/DragRectHandler.h"
 #include "Handlers/InspectorHandler.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
@@ -602,6 +603,11 @@ void Application::Impl_::InitManagers_() {
     // important, since Handlers are passed events in this order.
     // LogHandler has to be first so it can log all events.
     event_manager_->AddHandler(log_handler_);
+#if ENABLE_DEBUG_FEATURES
+    // This is for dragging out rectangles for snapshots.
+    DragRectHandlerPtr drag_rect_handler(new DragRectHandler);
+    event_manager_->AddHandler(drag_rect_handler);
+#endif
     // ControllerHandler just updates controller position, so it needs all
     // controller events.
     if (IsVREnabled())

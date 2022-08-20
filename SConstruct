@@ -138,6 +138,7 @@ lib_sources = [
 
     'Handlers/BoardHandler.cpp',
     'Handlers/ControllerHandler.cpp',
+    'Handlers/DragRectHandler.cpp',
     'Handlers/InspectorHandler.cpp',
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',

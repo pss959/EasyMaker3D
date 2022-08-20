@@ -54,5 +54,8 @@ std::string Event::ToString() const {
         flags.Has(Event::Flag::kKeyRelease))
         s += " key='" + GetKeyString() + "'";
 
+    if (modifiers.HasAny())
+        s += " mods=" + modifiers.ToString();
+
     return s;
 }
