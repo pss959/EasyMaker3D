@@ -68,6 +68,7 @@ struct SceneContext {
 
     // Nodes and shapes that help with debugging.
     SG::TextNodePtr     debug_text;
+    SG::NodePtr         debug_rect;
     SG::NodePtr         debug_sphere;
     SG::LinePtr         debug_line;
 

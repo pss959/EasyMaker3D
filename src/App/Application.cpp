@@ -158,6 +158,9 @@ class  Application::Impl_ {
     ///@{
     BoardHandlerPtr      board_handler_;
     ControllerHandlerPtr controller_handler_;
+#if ENABLE_DEBUG_FEATURES
+    DragRectHandlerPtr   drag_rect_handler_;
+#endif
     InspectorHandlerPtr  inspector_handler_;
     LogHandlerPtr        log_handler_;
     MainHandlerPtr       main_handler_;
@@ -572,6 +575,7 @@ void Application::Impl_::InitHandlers_() {
     main_handler_.reset(new MainHandler(IsVREnabled()));
 
 #if ENABLE_DEBUG_FEATURES
+    drag_rect_handler_.reset(new DragRectHandler);
     Debug::SetLogHandler(log_handler_);
 #endif
 }
@@ -604,9 +608,7 @@ void Application::Impl_::InitManagers_() {
     // LogHandler has to be first so it can log all events.
     event_manager_->AddHandler(log_handler_);
 #if ENABLE_DEBUG_FEATURES
-    // This is for dragging out rectangles for snapshots.
-    DragRectHandlerPtr drag_rect_handler(new DragRectHandler);
-    event_manager_->AddHandler(drag_rect_handler);
+    event_manager_->AddHandler(drag_rect_handler_);
 #endif
     // ControllerHandler just updates controller position, so it needs all
     // controller events.
@@ -749,6 +751,9 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     inspector_handler_->SetInspector(scene_context_->inspector);
 
+#if ENABLE_DEBUG_FEATURES
+    drag_rect_handler_->SetSceneContext(scene_context_);
+#endif
     board_handler_->AddBoard(scene_context_->key_board);
     board_handler_->AddBoard(scene_context_->app_board);
     board_handler_->AddBoard(scene_context_->tool_board);
