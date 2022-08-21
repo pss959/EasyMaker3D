@@ -1,0 +1,104 @@
+{
+  "bindings" : {
+    "/actions/default" : {
+      "haptics": [
+        {
+          "output": "/actions/default/out/LHaptic",
+          "path": "/user/hand/left/output/haptic"
+        },
+        {
+          "output": "/actions/default/out/RHaptic",
+          "path": "/user/hand/right/output/haptic"
+        }
+      ],
+      "poses" : [
+        {
+          "output" : "/actions/default/in/LPose",
+          "path" : "/user/hand/left/pose/raw"
+        },
+        {
+          "output" : "/actions/default/in/RPose",
+          "path" : "/user/hand/right/pose/raw"
+        }
+      ],
+      "sources" : [
+        {
+          "path" : "/user/hand/left/input/trigger",
+          "mode" : "button",
+          "inputs" : { "click" : { "output" : "/actions/default/in/LPinch" } }
+        },
+        {
+          "path" : "/user/hand/left/input/grip",
+          "mode" : "button",
+          "inputs" : { "click" : { "output" : "/actions/default/in/LGrip" } }
+        },
+        {
+          "path" : "/user/hand/left/input/y",
+          "mode" : "button",
+          "inputs" : { "click" : { "output" : "/actions/default/in/LMenu" } }
+        },
+        {
+          "path": "/user/hand/left/input/joystick",
+          "mode": "dpad",
+          "parameters" : { "sub_mode" : "click" },
+          "inputs": {
+            "center": { "output": "/actions/default/in/LCenter" },
+            "east":   { "output": "/actions/default/in/LRight"  },
+            "north":  { "output": "/actions/default/in/LUp"     },
+            "south":  { "output": "/actions/default/in/LDown"   },
+            "west":   { "output": "/actions/default/in/LLeft"   }
+          }
+        },
+        {
+          "path": "/user/hand/left/input/joystick",
+          "mode": "joystick",
+          "inputs": {
+            "position": {
+              "output": "/actions/default/in/LThumbPosition"
+            }
+          }
+        },
+
+        {
+          "path" : "/user/hand/right/input/trigger",
+          "mode" : "button",
+          "inputs" : { "click" : { "output" : "/actions/default/in/RPinch" } }
+        },
+        {
+          "path" : "/user/hand/right/input/grip",
+          "mode" : "button",
+          "inputs" : { "click" : { "output" : "/actions/default/in/RGrip" } }
+        },
+        {
+          "path" : "/user/hand/right/input/b",
+          "mode" : "button",
+          "inputs" : { "click" : { "output" : "/actions/default/in/RMenu" } }
+        },
+        {
+          "path": "/user/hand/right/input/joystick",
+          "mode": "dpad",
+          "parameters" : { "sub_mode" : "click" },
+          "inputs": {
+            "center": { "output": "/actions/default/in/RCenter" },
+            "east":   { "output": "/actions/default/in/RRight"  },
+            "north":  { "output": "/actions/default/in/RUp"     },
+            "south":  { "output": "/actions/default/in/RDown"   },
+            "west":   { "output": "/actions/default/in/RLeft"   }
+          }
+        },
+        {
+          "path": "/user/hand/right/input/joystick",
+          "mode": "joystick",
+          "inputs": {
+            "position": {
+              "output": "/actions/default/in/RThumbPosition"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "controller_type" : "oculus_touch",
+  "description" : "Default bindings for MakerVR for the Oculus Touch controller",
+  "name" : "MakerVR bindings for Oculus Touch Controller"
+}
