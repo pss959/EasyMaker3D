@@ -127,7 +127,7 @@ ActionMap::ActionMap_ ActionMap::BuildActionMap_(
             action_map[action] = pair.first;
     }
 
-#if DEBUG
+#if ENABLE_DEBUG_FEATURES
     // Ensure that every action has a category.
     for (const Action action: Util::EnumValues<Action>()) {
         if (action == Action::kReloadScene)

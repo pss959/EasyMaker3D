@@ -297,7 +297,7 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(RevSurfToolPanel);
     ADD_TYPE_(SessionPanel);
     ADD_TYPE_(SettingsPanel);
-#if DEBUG
+#if ENABLE_DEBUG_FEATURES
     ADD_TYPE_(TestPanel);
 #endif
     ADD_TYPE_(TextToolPanel);

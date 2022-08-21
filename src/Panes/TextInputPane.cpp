@@ -164,7 +164,7 @@ TextInputPane::State_::GetModifiedSelectionRange(bool to_left,
 }
 
 void TextInputPane::State_::Validate() const {
-#if DEBUG
+#if ENABLE_DEBUG_FEATURES
     ASSERT(cursor_pos_ <= GetCharCount());
 
     // The selection range must either be empty (start/end 0) or in order.
@@ -263,7 +263,7 @@ bool TextInputPane::Stack_::Redo() {
 }
 
 void TextInputPane::Stack_::Validate() const {
-#if DEBUG
+#if ENABLE_DEBUG_FEATURES
     ASSERT(! stack_.empty());
     for (const auto &state: stack_)
         state.Validate();
@@ -271,7 +271,7 @@ void TextInputPane::Stack_::Validate() const {
 }
 
 void TextInputPane::Stack_::Dump() const {
-#if DEBUG
+#if ENABLE_DEBUG_FEATURES
     ASSERT(! stack_.empty());
     std::cerr << "--- Stack_ with size " << stack_.size()
               << " and index " << index_ << ":\n";

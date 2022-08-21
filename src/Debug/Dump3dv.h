@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef DEBUG  // Don't include this in release builds.
+#if ENABLE_DEBUG_FEATURES
 
 #include <string>
 

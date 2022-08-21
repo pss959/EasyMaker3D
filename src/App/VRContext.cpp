@@ -445,7 +445,7 @@ vr::VRActionHandle_t VRContext::Impl_::GetAction_(const std::string &path) {
 
 void VRContext::Impl_::ReportBindings_(const std::string &path,
                                        const vr::VRActionHandle_t &action) {
-#if DEBUG
+#if ENABLE_DEBUG_FEATURES
     auto &vin = *vr::VRInput();
 
     vr::InputBindingInfo_t info[20];
@@ -664,6 +664,16 @@ void VRContext::Impl_::AddHandPoseToEvent_(Hand hand,
 
         rot = RotationFromMatrix(m);
     }
+    /* XXXX
+    else if (hand == Hand::kRight) { // XXXX
+        if (err != vr::VRInputError_None)
+            std::cerr << "XXXX No pose: err=" << Util::EnumName(err) << "\n";
+        else if (! data.bActive)
+            std::cerr << "XXXX No pose: data not active\n";
+        else if (! data.pose.bPoseIsValid)
+            std::cerr << "XXXX No pose: pose not valid\n";
+    }
+    */
 
     event.flags.Set(Event::Flag::kPosition3D);
     event.position3D = pos;

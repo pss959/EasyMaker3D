@@ -14,7 +14,7 @@ class BevelerTest : public TestBase {
                    const std::string &prefix);
 };
 
-#if defined(DEBUG)
+#if ENABLE_DEBUG_FEATURES
 void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
                             const std::string &prefix) {
     using namespace Debug;

@@ -29,6 +29,9 @@ void ControllerHandler::UpdateController_(const Event &event) {
     Controller &controller = event.device == Event::Device::kLeftController ?
         *l_controller_ : *r_controller_;
 
+    //if (event.device == Event::Device::kRightController)
+    // std::cerr << "XXXX POS = " << event.position3D << "\n";
+
     // If the position is the origin, the controller is not active, so
     // hide the model.
     const bool is_active = event.position3D != Point3f::Zero();

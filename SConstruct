@@ -404,8 +404,8 @@ openvr_lib_sources = [
     'App/VRModelLoader.cpp',
 ]
 
-# Add debug-only sources.
-if mode == 'dbg':
+# Add non-release sources.
+if mode != 'rel':
     lib_sources += [
         'Debug/Dump3dv.cpp',
         'Panels/TestPanel.cpp',
