@@ -52,6 +52,25 @@ pip install -U \
     mkdocs_macros_plugin
 ```
 
+### Linux Device Setup
+
+For Oculus Quest 2, install ALVR (XXXX) and set it up.
+
+Unfortunately, ALVR does a bad job of cleaning up after itself to allow SteamVR
+to use a different device. Need to:
+
++ Rename the ALVR server directory so SteamVR does not access its drivers
+  first.
++ Fix SteamVR's `vrcompositor` link:
+   + `cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/`
+   + First time after using ALVR: `mv vrcompositor vrcompositor.alvr`
+   + `ln -s vrcompositor.real vrcompositor`
++ To use ALVR again:
+  + Move the server to its original name
+  + Use ALVR's `vrcompositor`:
+    + `cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/`
+    + `ln -s vrcompositor.alvr vrcompositor`
+
 ### Windows
 
 TODO: Clean this up
