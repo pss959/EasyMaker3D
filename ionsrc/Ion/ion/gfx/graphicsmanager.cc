@@ -882,7 +882,7 @@ void GraphicsManager::CheckForErrors(const std::string& func_call) {
                     << helper.ToString("GLenum", error) << "\n";
     if (!tracing_stream_.IsLogging()) {
       LOG(ERROR) << "*** GL error after call to "
-                 << func_call << ": " << ErrorString(error) << "\n";
+                 << func_call << ": " << ErrorString(error);
     }
     if (last_error_code_ == GL_NO_ERROR)
       last_error_code_ = error;
