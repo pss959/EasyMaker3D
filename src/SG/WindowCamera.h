@@ -30,12 +30,6 @@ class WindowCamera : public Camera {
     float             GetNear()        const { return near_;        }
     float             GetFar()         const { return far_;         }
 
-    /// Returns the 3D offset to use to make VR controllers visible in the
-    /// scene.
-    const Vector3f & GetControllerOffset() const {
-        return controller_offset_;
-    }
-
     /// Sets the position.
     void SetPosition(const Point3f &pos) { position_ = pos; }
 
@@ -68,7 +62,6 @@ class WindowCamera : public Camera {
     Parser::TField<Anglef>    fov_;
     Parser::TField<float>     near_;
     Parser::TField<float>     far_;
-    Parser::TField<Vector3f>  controller_offset_;
     ///@}
 
     friend class Parser::Registry;

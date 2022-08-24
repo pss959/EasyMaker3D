@@ -184,5 +184,6 @@ const float    kVRFarDistance                    = 300;
 const float    kVRNearDistance                   = .1f;
 const float    kWindowAspectRatio                = 16.f / 9.f;  // HD ratio.
 const int      kWindowHeight                     = 600;
+const float    kHeadsetOffControllerYOffset      = .9f;
 
 }  // namespace TK

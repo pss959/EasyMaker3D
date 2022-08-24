@@ -41,9 +41,6 @@ static Matrix4f ConvertMatrix_(const vr::HmdMatrix34_t &m) {
 /// This class does most of the work for the VRContext.
 class VRContext::Impl_ {
   public:
-    void SetNonVRControllerOffset(const Vector3f &offset) {
-        non_vr_controller_offset_ = offset;
-    }
     bool InitSystem();
     bool LoadControllerModel(Hand hand, Controller::CustomModel &model);
     void SetControllers(const ControllerPtr &l_controller,
@@ -106,10 +103,6 @@ class VRContext::Impl_ {
         /// that the motion can be computed.
         Point3f prev_position{0, 0, 0};
     };
-
-    /// 3D offset to use to make controllers visible in the scene when the
-    /// headset is not on.
-    Vector3f non_vr_controller_offset_{0, 0, 0};
 
     // Rendering.
     Vector2ui window_size_;
@@ -436,10 +429,6 @@ vr::VRActionHandle_t VRContext::Impl_::GetAction_(const std::string &path) {
     }
     ASSERT(action != vr::k_ulInvalidActionHandle);
 
-    // Extra reporting.
-    if (KLogger::HasKeyCharacter('V'))
-        ReportBindings_(path, action);
-
     return action;
 };
 
@@ -648,32 +637,23 @@ void VRContext::Impl_::AddHandPoseToEvent_(Hand hand,
     Point3f   pos{0, 0, 0};
     Rotationf rot;
     if (got_pose) {
-        // The hand position matrix is relative to the default headset
-        // position. If the headset is currently on, add the head position so
-        // that the controller is viewed as relative to it. Otherwise, move it
-        // so it is visible in the GLFWViewer screen window.
+        // This matrix defines the hand position relative to the default
+        // headset position.
         const Matrix4f m = ConvertMatrix_(data.pose.mDeviceToAbsoluteTracking);
-        const Point3f offset = is_headset_on_ ? head_pos_ :
-            base_position + non_vr_controller_offset_;
-        pos = m * Point3f::Zero() + offset;
+        const Point3f  rel_hand_pos = m * Point3f::Zero();
 
-        // If the headset is on, make the controller position relative to the
-        // frustum height.
-        if (is_headset_on_)
-            pos[1] -= head_y_offset_;
+        // Make the controller position relative to the base camera position.
+        pos = base_position + rel_hand_pos;
 
+        // If the headset is on, make the height relative to the headset
+        // height. If the headset is not on, subtract the Y offset designed to
+        // make the position consistent with the VR view.
+        pos[1] -= is_headset_on_ ? head_pos_[1] - base_position[1] :
+            TK::kHeadsetOffControllerYOffset;
+
+        // Copy the rotation.
         rot = RotationFromMatrix(m);
     }
-    /* XXXX
-    else if (hand == Hand::kRight) { // XXXX
-        if (err != vr::VRInputError_None)
-            std::cerr << "XXXX No pose: err=" << Util::EnumName(err) << "\n";
-        else if (! data.bActive)
-            std::cerr << "XXXX No pose: data not active\n";
-        else if (! data.pose.bPoseIsValid)
-            std::cerr << "XXXX No pose: pose not valid\n";
-    }
-    */
 
     event.flags.Set(Event::Flag::kPosition3D);
     event.position3D = pos;
@@ -744,10 +724,6 @@ VRContext::VRContext() : impl_(new Impl_) {
 }
 
 VRContext::~VRContext() {
-}
-
-void VRContext::SetNonVRControllerOffset(const Vector3f &offset) {
-    impl_->SetNonVRControllerOffset(offset);
 }
 
 bool VRContext::InitSystem() {

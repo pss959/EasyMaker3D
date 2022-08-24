@@ -571,6 +571,10 @@ extern const float    kWindowAspectRatio;
 /// Height to use for the main application window.
 extern const int      kWindowHeight;
 
+/// Change in controller height when the headset is off to approximate the same
+/// position as the controller in the VR view.
+extern const float    kHeadsetOffControllerYOffset;
+
 ///@}
 
 }  // namespace TK
