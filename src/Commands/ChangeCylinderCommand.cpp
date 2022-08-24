@@ -1,6 +1,5 @@
 #include "Commands/ChangeCylinderCommand.h"
 
-#include "Base/Tuning.h"
 #include "Models/CylinderModel.h"
 #include "Parser/Registry.h"
 
