@@ -2,6 +2,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Base/Tuning.h"
 #include "Math/ToString.h"
 #include "Panes/IPaneInteractor.h"
 #include "Util/Assert.h"
@@ -24,8 +25,11 @@ void Pane::CreationDone() {
     if (! IsTemplate()) {
         if (auto &background = background_.GetValue())
             GetAuxParent().AddChild(background);
-        if (auto border = border_.GetValue())
+        if (auto border = border_.GetValue()) {
             GetAuxParent().AddChild(border);
+            // Offset the border to avoid Z-fighting
+            border->SetTranslation(Vector3f(0, 0, TK::kPaneZOffset));
+        }
 
         // Assume the base size needs to be computed at least once.
         BaseSizeChanged();

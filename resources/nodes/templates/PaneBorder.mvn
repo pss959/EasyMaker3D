@@ -5,7 +5,6 @@ PaneBorder "T_PaneBorder" {
   state_table: StateTable {
     line_width: 1,
   },
-  translation: 0 0 .1,  # Move forward to reduce z-fighting.
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,
