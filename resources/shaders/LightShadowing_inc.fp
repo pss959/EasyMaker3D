@@ -1,6 +1,6 @@
 // This can be included in a fragment shader to compute shadow visibility.
 
-// XXXX
+// XXXX Improve this?
 vec2 poissonDisk[16] = vec2[](
    vec2( -0.94201624, -0.39906216 ),
    vec2( 0.94558609, -0.76890725 ),
