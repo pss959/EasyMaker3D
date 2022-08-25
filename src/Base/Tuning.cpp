@@ -13,7 +13,7 @@ const float    kBoardTouchDistance               = .6f;
 const float    kBoardTouchScale                  = .4f;
 const float    kFloatingBoardYOffset             = 4;
 const float    kMinBoardCanvasSize               = 4;
-const float    kPaneZOffset                      = .02f;
+const float    kPaneZOffset                      = .08f;
 const float    kPanelToWorldScale                = .06f;
 const float    kTextInputPaneCursorWidth         = 40;
 const float    kToolBoardHeight                  = 14;
@@ -146,7 +146,7 @@ const int      kInfoPanelLabelWidth              = 16;
 const int      kParserWriterIndent               = 2;
 
 // Time and Animation
-const float    kGripClickTimeout                 = .5f;
+const float    kGripClickTimeout                 = .4f;
 const float    kLongPressTime                    = .6f;
 const float    kMaxHeightChangePerSecond         = .4f;
 const float    kMaxStageAngleChangePerSecond     = 90;
@@ -155,7 +155,7 @@ const float    kMaxViewAngleChangePerSecond      = 90.f;
 const float    kModelAnimationDuration           = 1.2f;
 const float    kModelAnimationHeight             = 60;
 const float    kMouseClickTimeout                = .25f;
-const float    kPinchClickTimeout                = .5f;
+const float    kPinchClickTimeout                = .4f;
 
 // Tolerances and Precision
 const Anglef   kMaxDiscWidgetScaleAngle          = Anglef::FromDegrees(10);
