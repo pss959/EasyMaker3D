@@ -177,9 +177,10 @@ void Controller::Vibrate(float seconds) {
 
 void Controller::AttachObject(const SG::NodePtr &object, float size_fraction,
                               const Vector3f &offset) {
-    const Vector3f trans = guide_parent_->GetTranslation() +
-        (hand_ == Hand::kLeft ? offset : -offset);
-    object->SetTranslation(trans);
+    Vector3f trans = offset;
+    if (hand_ == Hand::kRight)
+        trans[0] = -trans[0];
+    object->SetTranslation(guide_parent_->GetTranslation() + trans);
 
     const auto &model       = *SG::FindNodeUnderNode(*this, "Model");
     const auto object_scale = object->GetScale();
