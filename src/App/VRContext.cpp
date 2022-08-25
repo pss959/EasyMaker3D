@@ -172,7 +172,7 @@ bool VRContext::Impl_::LoadControllerModel(Hand hand,
                                            Controller::CustomModel &model) {
     auto &controller = controllers_[Util::EnumInt(hand)];
     const auto handle = controller.handle;
-    return VRModelLoader::LoadControllerModel(handle, model);
+    return VRModelLoader::LoadControllerModel(handle, hand, model);
 }
 
 void VRContext::Impl_::SetControllers(const ControllerPtr &l_controller,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Memory.h"
+#include "Enums/Hand.h"
 #include "Items/Controller.h"
 
 namespace SG { DECL_SHARED_PTR(Node); }
@@ -14,6 +15,7 @@ class VRModelLoader {
     /// Loads the SteamVR controller model with the given handle and stores the
     /// resulting data in the Controller::CustomModel instance. Returns true if
     /// successful. This assumes that OpenVR has been initialized successfully.
-    static bool LoadControllerModel(uint64_t handle,
+    /// The Hand is supplied for setting up connection points.
+    static bool LoadControllerModel(uint64_t handle, Hand hand,
                                     Controller::CustomModel &custom_model);
 };

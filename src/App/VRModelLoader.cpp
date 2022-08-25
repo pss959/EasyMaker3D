@@ -2,12 +2,14 @@
 
 #include <openvr.h>
 
+#include <cmath>
 #include <string>
 
 #include <ion/base/datacontainer.h>
 #include <ion/gfx/image.h>
 #include <ion/math/vectorutils.h>
 
+#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "SG/MutableTriMeshShape.h"
@@ -176,23 +178,43 @@ static ion::gfx::ImagePtr BuildIonImage_(
     return image;
 }
 
-/// Finds the extreme points in the given TriMesh and sets the corresponding
-/// values in the Controller::CustomModel.
-static void FindExtremePoints_(const TriMesh &mesh,
-                               Controller::CustomModel &custom_model) {
-    custom_model.min_x = custom_model.max_x = custom_model.min_z =
-        mesh.points[0];
+/// Finds the points in the given TriMesh that should be used to connect
+/// affordances and and sets the corresponding values in the
+/// Controller::CustomModel.
+static void FindConnectionPoints_(Hand hand, const TriMesh &mesh,
+                                  Controller::CustomModel &custom_model) {
+    // Attach the laser pointer to the point that is close to the center in X
+    // and is farthest forward (smallest Z).
+    custom_model.pointer_pos = Point3f(0, 0, 100000);
+
+    // Attach the grip guide to the point furthest to the palm side.
+    custom_model.grip_pos = mesh.points[0];
+
+    // Find the center in X.
+    float center_x = 0;
+    for (const auto &p: mesh.points)
+        center_x += p[0];
+    center_x /= mesh.points.size();
 
     for (const auto &p: mesh.points) {
-        if (p[0] < custom_model.min_x[0])
-            custom_model.min_x = p;
-        if (p[0] > custom_model.max_x[0])
-            custom_model.max_x = p;
-        if (p[1] < custom_model.min_y[1])
-            custom_model.min_y = p;
-        if (p[2] < custom_model.min_z[2])
-            custom_model.min_z = p;
+        if (std::abs(p[0] - center_x) < .001f &&
+            p[2] < custom_model.pointer_pos[2])
+            custom_model.pointer_pos = p;
+
+        if (hand == Hand::kLeft) {
+            if (p[0] > custom_model.grip_pos[0])
+                custom_model.grip_pos = p;
+        }
+        else {
+            if (p[0] < custom_model.grip_pos[0])
+                custom_model.grip_pos = p;
+        }
     }
+
+    // Attach the touch affordance to the same point as the laser pointer but a
+    // little below it.
+    custom_model.touch_pos = custom_model.pointer_pos;
+    custom_model.touch_pos[1] -= TK::kControllerTouchYOffset;
 }
 
 }  // anonymous namespace
@@ -201,7 +223,7 @@ static void FindExtremePoints_(const TriMesh &mesh,
 // VRModelLoader functions.
 // ----------------------------------------------------------------------------
 
-bool VRModelLoader::LoadControllerModel(uint64_t handle,
+bool VRModelLoader::LoadControllerModel(uint64_t handle, Hand hand,
                                         Controller::CustomModel &custom_model) {
     auto &vmod   = *vr::VRRenderModels();
     bool success = false;
@@ -214,8 +236,7 @@ bool VRModelLoader::LoadControllerModel(uint64_t handle,
                 auto shape = BuildShape_(name, *model);
                 custom_model.shape         = shape;
                 custom_model.texture_image = BuildIonImage_(*tex);
-                // Find the extreme points.
-                FindExtremePoints_(shape->GetMesh(), custom_model);
+                FindConnectionPoints_(hand, shape->GetMesh(), custom_model);
                 success = true;
                 vmod.FreeTexture(tex);
             }

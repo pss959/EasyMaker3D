@@ -117,6 +117,9 @@ const float    kShadowPassLightNear              = -20;
 const int      kStageImageSize                   = 1024;
 const int      kVRSampleCount                    = 4;
 
+// Other Geometry
+const float    kControllerTouchYOffset           = .003f;
+
 // Radial Menus
 const Vector3f kControllerRadialMenuOffset       = Vector3f(0, .06f, -.1f);
 const float    kControllerRadialMenuScale        = .5f;

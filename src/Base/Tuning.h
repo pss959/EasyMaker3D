@@ -361,6 +361,14 @@ extern const int      kVRSampleCount;
 
 ///@}
 
+/// \name Other Geometry
+///@{
+
+/// Y offset of the Controller touch affordance below the laser pointer.
+extern const float    kControllerTouchYOffset;
+
+///@}
+
 /// \name Radial Menus
 ///@{
 

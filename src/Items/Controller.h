@@ -32,15 +32,16 @@ class Controller : public SG::Node {
         SG::ShapePtr       shape;          ///< Shape with controller geometry.
         ion::gfx::ImagePtr texture_image;  ///< Texture image applied to shape.
 
-        /// \name Extreme points
-        /// Each of these is the position of a vertex that is the extreme in a
-        /// specific direction. They are used for attaching affordances.
+        /// \name Connection points
+        /// Each of these is the position of a vertex that is used to attach
+        /// a corresponding affordance.
         ///@{
-        Point3f min_x;
-        Point3f max_x;
-        Point3f min_y;
-        Point3f min_z;
-        ///@?
+        Point3f pointer_pos;  ///< Starting point of laser pointer.
+        Point3f grip_pos;     ///< Attachment point of grip guide affordance.
+        Point3f touch_pos;    ///< Attachment point of touch affordance.
+        ///@}
+
+        CustomModel() { pointer_pos = grip_pos = touch_pos = Point3f::Zero(); }
     };
 
     /// Sets the hand this controller is for. Assumes Hand::kRight by default.

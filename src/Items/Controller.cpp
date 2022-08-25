@@ -54,10 +54,9 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     proc_image->RegenerateImage();
 
     // Adjust positioning of feedback based on the model.
-    pointer_start_point_ = custom_model.min_y;
-    guide_parent_->SetTranslation(hand_ == Hand::kLeft ?
-                                  custom_model.max_x : custom_model.min_x);
-    touch_node_->SetTranslation(custom_model.min_z);
+    pointer_start_point_ = custom_model.pointer_pos;
+    guide_parent_->SetTranslation(custom_model.grip_pos);
+    touch_node_->SetTranslation(custom_model.touch_pos);
 
     // Recompute values that depend on the geometry.
     UpdateForGeometry_();
