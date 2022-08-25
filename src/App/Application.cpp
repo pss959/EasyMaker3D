@@ -382,7 +382,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
             return false;
 
         // Set up the renderer.
-        const bool use_ion_remote = ! IsVREnabled() && options_.do_ion_remote;
+        const bool use_ion_remote = options_.do_ion_remote;
         renderer_.reset(
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);

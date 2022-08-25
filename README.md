@@ -56,17 +56,27 @@ pip install -U \
 
 For Oculus Quest 2, install ALVR (XXXX) and set it up.
 
+First time:
+
++ Before running ALVR:
+   + `cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/`
+   + `cp vrcompositor vrcompositor.real`
++ Install the ALVR client on the Quest with SideQuest.
++ Run the ALVR server
++ Follow the instructions and run the client on the Quest.
+
 Unfortunately, ALVR does a bad job of cleaning up after itself to allow SteamVR
-to use a different device. Need to:
+to use a different device. To switch to a different device:
 
 + Rename the ALVR server directory so SteamVR does not access its drivers
-  first.
+  first. (Really, if it finds this server it will run it despite having other
+  devices to use.)
 + Fix SteamVR's `vrcompositor` link:
    + `cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/`
    + First time after using ALVR: `mv vrcompositor vrcompositor.alvr`
    + `ln -s vrcompositor.real vrcompositor`
 + To use ALVR again:
-  + Move the server to its original name
+  + Restore the server directory to its original name.
   + Use ALVR's `vrcompositor`:
     + `cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/`
     + `ln -s vrcompositor.alvr vrcompositor`

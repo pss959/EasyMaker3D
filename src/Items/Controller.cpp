@@ -38,7 +38,7 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     cust->SetTranslation(def_bounds.GetCenter() - cust_bounds.GetCenter());
 
     // Access the ProceduralImage from the Texture from the UniformBlock and
-    // set its function to install the given image This is the easiest way to
+    // set its function to install the given image. This is the easiest way to
     // install a custom Image.
     ASSERT(! cust->GetUniformBlocks().empty());
     const auto &block = cust->GetUniformBlocks()[0];

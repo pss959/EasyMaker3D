@@ -9,6 +9,10 @@
       "binding_url" : "bindings_vive_controller.json"
     },
     {
+      "controller_type" : "oculus_touch",
+      "binding_url" : "bindings_oculus_touch.json"
+    },
+    {
       "controller_type" : "generic",
       "binding_url" : "bindings_generic.json"
     }

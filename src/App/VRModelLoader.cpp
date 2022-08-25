@@ -6,6 +6,7 @@
 
 #include <ion/base/datacontainer.h>
 #include <ion/gfx/image.h>
+#include <ion/math/vectorutils.h>
 
 #include "Math/Types.h"
 #include "Parser/Registry.h"
@@ -33,20 +34,23 @@ static std::string GetStringProperty_(vr::TrackedDeviceIndex_t device,
     return name;
 }
 
-/// Loads the SteamVR model with the given handle, returning a handle to it.
-static vr::RenderModel_t * LoadModel_(vr::VRInputValueHandle_t handle) {
-    auto &vin  = *vr::VRInput();
+/// Returns the name of the SteamVR model with the given handle.
+static std::string GetModelName_(vr::VRInputValueHandle_t handle) {
+    auto &vin = *vr::VRInput();
+    std::string name;
+    vr::InputOriginInfo_t info;
+    if (vin.GetOriginTrackedDeviceInfo(handle, &info, sizeof(info)) ==
+        vr::VRInputError_None) {
+        name = GetStringProperty_(info.trackedDeviceIndex,
+                                  vr::Prop_RenderModelName_String);
+    }
+    return name;
+}
+
+/// Loads the named SteamVR model, returning a handle to it.
+static vr::RenderModel_t * LoadModel_(const std::string &name) {
     auto &vmod = *vr::VRRenderModels();
 
-    vr::InputOriginInfo_t info;
-    if (vin.GetOriginTrackedDeviceInfo(handle, &info, sizeof(info)) !=
-        vr::VRInputError_None) {
-        KLOG('v', "*** Unable to find model origin for loading");
-        return nullptr;
-    }
-
-    const std::string name = GetStringProperty_(
-        info.trackedDeviceIndex, vr::Prop_RenderModelName_String);
     KLOG('v', "Loading controller model with name '" << name << "'");
 
     vr::RenderModel_t       *model = nullptr;
@@ -54,15 +58,23 @@ static vr::RenderModel_t * LoadModel_(vr::VRInputValueHandle_t handle) {
     do {
         error = vmod.LoadRenderModel_Async(name.c_str(), &model);
     } while (error == vr::VRRenderModelError_Loading);
-
     if (error == vr::VRRenderModelError_None) {
-        KLOG('v', "Loaded controller model '" << name << "'");
         ASSERT(model);
     }
-    else {
-        KLOG('v', "*** Unable to load controller model '" << name << "'");
-    }
     return model;
+}
+
+/// Reports successful loading of the named model.
+static void ReportModelLoad_(const std::string &name) {
+    auto &vmod = *vr::VRRenderModels();
+    const size_t comp_count = vmod.GetComponentCount(name.c_str());
+    KLOG('v', "Loaded controller model '" << name << "' with "
+         << comp_count << " component(s):");
+    for (size_t i = 0; i < comp_count; ++i) {
+        char comp_name[2048];
+        vmod.GetComponentName(name.c_str(), i, comp_name, 2048);
+        KLOG('v', "  Component [" << i << "] = '" << comp_name << "'");
+    }
 }
 
 /// Loads the SteamVR texture with the given ID.
@@ -82,7 +94,8 @@ static vr::RenderModel_TextureMap_t * LoadTexture_(vr::TextureID_t id) {
 }
 
 /// Builds and returns a MutableTriMeshShape from the given SteamVR model.
-static SG::ShapePtr BuildShape_(vr::RenderModel_t &model) {
+static SG::ShapePtr BuildShape_(const std::string &name,
+                                vr::RenderModel_t &model) {
     auto to_point3 = [](const vr::HmdVector3_t &p){
         return Point3f(p.v[0], p.v[1], p.v[2]);
     };
@@ -93,16 +106,31 @@ static SG::ShapePtr BuildShape_(vr::RenderModel_t &model) {
     mesh.points.resize(model.unVertexCount);
     std::vector<Vector3f> normals(model.unVertexCount);
     std::vector<Point2f>  tex_coords(model.unVertexCount);
+    /// \todo Figure out why some SteamVR models end up with bad normals.
+    bool fix_normals = false;
     for (size_t i = 0; i < mesh.points.size(); ++i) {
         const auto &vert = model.rVertexData[i];
         mesh.points[i] = to_point3(vert.vPosition);
         normals[i]     = Vector3f(to_point3(vert.vNormal));
         tex_coords[i]  = Point2f(vert.rfTextureCoord[0],
                                  vert.rfTextureCoord[1]);
+
+        if (normals[i] == Vector3f::Zero())
+            fix_normals = true;
     }
     mesh.indices.resize(3 * model.unTriangleCount);
     for (size_t i = 0; i < mesh.indices.size(); ++i)
         mesh.indices[i] = model.rIndexData[i];
+
+    if (fix_normals) {
+        KLOG('v', "Fixing zero-length normals for model '" << name << "'");
+        Point3f center(0, 0, 0);
+        for (const auto &p: mesh.points)
+            center += p;
+        center /= mesh.points.size();
+        for (size_t i = 0; i < mesh.points.size(); ++i)
+            normals[i] = ion::math::Normalized(mesh.points[i] - center);
+    }
 
     // Create a MutableTriMeshShape with texture coordinates.
     auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
@@ -136,15 +164,25 @@ bool VRModelLoader::LoadControllerModel(uint64_t handle,
     auto &vmod = *vr::VRRenderModels();
 
     bool success = false;
-    if (vr::RenderModel_t *model = LoadModel_(handle)) {
+
+    const std::string name = GetModelName_(handle);
+    if (name.empty()) {
+        KLOG('v', "*** Unable to find model for loading");
+    }
+    else if (vr::RenderModel_t *model = LoadModel_(name)) {
+        if (KLogger::HasKeyCharacter('v'))
+            ReportModelLoad_(name);
         if (vr::RenderModel_TextureMap_t *tex =
             LoadTexture_(model->diffuseTextureId)) {
-            custom_model.shape         = BuildShape_(*model);
+            custom_model.shape         = BuildShape_(name, *model);
             custom_model.texture_image = BuildIonImage_(*tex);
             success = true;
             vmod.FreeTexture(tex);
         }
         vmod.FreeRenderModel(model);
+    }
+    else {
+        KLOG('v', "*** Unable to load controller model '" << name << "'");
     }
     return success;
 }
