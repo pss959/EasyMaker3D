@@ -20,6 +20,14 @@
 
 namespace {
 
+/// Struct storing everything needed to build a MutableTriMeshShape from a
+/// loaded model.
+struct ModelData_ {
+    TriMesh               mesh;    ///< Stores vertices and triangle indices.
+    std::vector<Vector3f> normals;
+    std::vector<Point2f>  tex_coords;
+};
+
 /// Returns a string property from OpenVR.
 static std::string GetStringProperty_(vr::TrackedDeviceIndex_t device,
                                       vr::TrackedDeviceProperty prop) {
@@ -93,6 +101,23 @@ static vr::RenderModel_TextureMap_t * LoadTexture_(vr::TextureID_t id) {
     return tex;
 }
 
+/// Stores reasonable normals in a ModelData_ instance when normals are found
+/// to be bad.
+/// \todo Figure out why some SteamVR models end up with bad normals.
+static void FixNormals_(ModelData_ &mdata) {
+    Point3f center(0, 0, 0);
+
+    const auto &points = mdata.mesh.points;
+    for (const auto &p: points)
+        center += p;
+
+    center /= points.size();
+
+    // Set the normal to the direction from the center point to the point.
+    for (size_t i = 0; i < points.size(); ++i)
+        mdata.normals[i] = ion::math::Normalized(points[i] - center);
+}
+
 /// Builds and returns a MutableTriMeshShape from the given SteamVR model.
 static SG::ShapePtr BuildShape_(const std::string &name,
                                 vr::RenderModel_t &model) {
@@ -100,41 +125,33 @@ static SG::ShapePtr BuildShape_(const std::string &name,
         return Point3f(p.v[0], p.v[1], p.v[2]);
     };
 
-    // Create a TriMesh with all vertices and triangles. Also store vertex
-    // normals and texture coordinates.
-    TriMesh mesh;
-    mesh.points.resize(model.unVertexCount);
-    std::vector<Vector3f> normals(model.unVertexCount);
-    std::vector<Point2f>  tex_coords(model.unVertexCount);
-    /// \todo Figure out why some SteamVR models end up with bad normals.
-    bool fix_normals = false;
-    for (size_t i = 0; i < mesh.points.size(); ++i) {
-        const auto &vert = model.rVertexData[i];
-        mesh.points[i] = to_point3(vert.vPosition);
-        normals[i]     = Vector3f(to_point3(vert.vNormal));
-        tex_coords[i]  = Point2f(vert.rfTextureCoord[0],
-                                 vert.rfTextureCoord[1]);
+    ModelData_ mdata;
+    mdata.mesh.points.resize(model.unVertexCount);
+    mdata.normals.resize(model.unVertexCount);
+    mdata.tex_coords.resize(model.unVertexCount);
 
-        if (normals[i] == Vector3f::Zero())
+    bool fix_normals = false;
+    for (size_t i = 0; i < mdata.mesh.points.size(); ++i) {
+        const auto &vert = model.rVertexData[i];
+        mdata.mesh.points[i] = to_point3(vert.vPosition);
+        mdata.normals[i]     = Vector3f(to_point3(vert.vNormal));
+        mdata.tex_coords[i].Set(vert.rfTextureCoord[0], vert.rfTextureCoord[1]);
+        if (mdata.normals[i] == Vector3f::Zero())
             fix_normals = true;
     }
-    mesh.indices.resize(3 * model.unTriangleCount);
-    for (size_t i = 0; i < mesh.indices.size(); ++i)
-        mesh.indices[i] = model.rIndexData[i];
+    mdata.mesh.indices.resize(3 * model.unTriangleCount);
+    for (size_t i = 0; i < mdata.mesh.indices.size(); ++i)
+        mdata.mesh.indices[i] = model.rIndexData[i];
 
     if (fix_normals) {
         KLOG('v', "Fixing zero-length normals for model '" << name << "'");
-        Point3f center(0, 0, 0);
-        for (const auto &p: mesh.points)
-            center += p;
-        center /= mesh.points.size();
-        for (size_t i = 0; i < mesh.points.size(); ++i)
-            normals[i] = ion::math::Normalized(mesh.points[i] - center);
+        FixNormals_(mdata);
     }
 
     // Create a MutableTriMeshShape with texture coordinates.
     auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
-    shape->ChangeMeshWithVertexData(mesh, normals, tex_coords);
+    shape->ChangeMeshWithVertexData(mdata.mesh,
+                                    mdata.normals, mdata.tex_coords);
 
     return shape;
 }
