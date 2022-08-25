@@ -24,20 +24,14 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     ASSERT(custom_model.shape);
     ASSERT(custom_model.texture_image);
 
-    // Get the size of the default model and disable it.
+    // Disable the default model.
     auto def = SG::FindNodeUnderNode(*this, "DefaultModel");
-    // XXXX const Bounds def_bounds = def->GetBounds();
     def->SetEnabled(false);
 
     // Add the shape to the custom model and enable it.
     auto cust = SG::FindNodeUnderNode(*this, "CustomModel");
     cust->AddShape(custom_model.shape);
     cust->SetEnabled(true);
-
-    // Scale and translate the custom model to match the default model.
-    // XXXX const Bounds cust_bounds = cust->GetBounds();
-    // XXXX cust->SetUniformScale(def_bounds.GetSize()[2] / cust_bounds.GetSize()[2]);
-    // XXXX cust->SetTranslation(def_bounds.GetCenter() - cust_bounds.GetCenter());
 
     // Access the ProceduralImage from the Texture from the UniformBlock and
     // set its function to install the given image. This is the easiest way to
