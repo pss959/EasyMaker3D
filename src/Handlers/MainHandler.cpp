@@ -440,9 +440,6 @@ void MainHandler::Impl_::ProcessActivation_() {
         tracker->StopHovering();
 
     const Actuator actuator = cur_tracker_->GetActuator();
-    KLOG('h', "MainHandler kActivated by " << Util::EnumName(actuator)
-         << " on " << (active_widget_ ? active_widget_->GetDesc() :
-                       "<NO WIDGET>"));
 
     // If the click alarm is currently running and this is the same button,
     // this is a multiple click.
@@ -451,10 +448,15 @@ void MainHandler::Impl_::ProcessActivation_() {
     else
         click_state_.count = 1;
 
+    KLOG('h', "MainHandler kActivated by " << Util::EnumName(actuator)
+         << " on " << (active_widget_ ? active_widget_->GetDesc() :
+                       "<NO WIDGET>")
+         << " click count = " << click_state_.count);
+
     // Set a timeout only if the click is on a Widget that is draggable.
     // Otherwise, just process the click immediately.
-    const float timeout =
-        IsDraggableWidget_(active_widget_) ? TK::kClickTimeout : 0;
+    const float timeout = IsDraggableWidget_(active_widget_) ?
+        cur_tracker_->GetClickTimeout() : 0;
 
     start_time_ = UTime::Now();
     click_state_.actuator = actuator;

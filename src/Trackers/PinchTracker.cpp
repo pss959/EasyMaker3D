@@ -1,6 +1,7 @@
 #include "Trackers/PinchTracker.h"
 
 #include "App/CoordConv.h"
+#include "Base/Tuning.h"
 #include "App/SceneContext.h"
 #include "Items/Controller.h"
 #include "SG/Search.h"
@@ -41,6 +42,10 @@ bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     return false;
 }
 
+float PinchTracker::GetClickTimeout() const {
+    return TK::kPinchClickTimeout;
+}
+
 bool PinchTracker::GetRay(const Event &event, Ray &ray) {
     if (event.device == GetDevice() &&
         event.flags.Has(Event::Flag::kPosition3D) &&
@@ -49,6 +54,10 @@ bool PinchTracker::GetRay(const Event &event, Ray &ray) {
         return true;
     }
     return false;
+}
+
+Anglef PinchTracker::GetMinRayAngleChange() const {
+    return TK::kMinPinchRayAngleChange;
 }
 
 void PinchTracker::ProcessCurrentHit(const SG::Hit &hit) {

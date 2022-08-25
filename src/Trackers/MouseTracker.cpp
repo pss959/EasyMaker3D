@@ -1,6 +1,7 @@
 #include "Trackers/MouseTracker.h"
 
 #include "App/SceneContext.h"
+#include "Base/Tuning.h"
 #include "Debug/Print.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
@@ -33,6 +34,10 @@ bool MouseTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     return false;
 }
 
+float MouseTracker::GetClickTimeout() const {
+    return TK::kMouseClickTimeout;
+}
+
 bool MouseTracker::GetRay(const Event &event, Ray &ray) {
     if (event.device == Event::Device::kMouse &&
         event.flags.Has(Event::Flag::kPosition2D)) {
@@ -40,6 +45,10 @@ bool MouseTracker::GetRay(const Event &event, Ray &ray) {
         return true;
     }
     return false;
+}
+
+Anglef MouseTracker::GetMinRayAngleChange() const {
+    return TK::kMinMouseRayAngleChange;
 }
 
 void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {

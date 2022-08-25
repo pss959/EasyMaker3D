@@ -77,6 +77,10 @@ bool GripTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     return false;
 }
 
+float GripTracker::GetClickTimeout() const {
+    return TK::kGripClickTimeout;
+}
+
 bool GripTracker::MovedEnoughForDrag(const Event &event) {
     // Get the grip data; no need for GripInfo.
     Data_ data;

@@ -11,8 +11,10 @@ class MouseTracker : public PointerTracker {
     virtual Event::Device GetDevice() const override;
     virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
     virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
+    virtual float GetClickTimeout() const override;
 
   protected:
     virtual bool GetRay(const Event &event, Ray &ray) override;
+    virtual Anglef GetMinRayAngleChange() const override;
     virtual void ProcessCurrentHit(const SG::Hit &hit) override;
 };

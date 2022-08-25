@@ -143,7 +143,7 @@ const int      kInfoPanelLabelWidth              = 16;
 const int      kParserWriterIndent               = 2;
 
 // Time and Animation
-const float    kClickTimeout                     = .25f;
+const float    kGripClickTimeout                 = .5f;
 const float    kLongPressTime                    = .6f;
 const float    kMaxHeightChangePerSecond         = .4f;
 const float    kMaxStageAngleChangePerSecond     = 90;
@@ -151,18 +151,21 @@ const float    kMaxStageScaleChangePerSecond     = 4;
 const float    kMaxViewAngleChangePerSecond      = 90.f;
 const float    kModelAnimationDuration           = 1.2f;
 const float    kModelAnimationHeight             = 60;
+const float    kMouseClickTimeout                = .25f;
+const float    kPinchClickTimeout                = .5f;
 
 // Tolerances and Precision
-const float    kCloseToStageForScaling           = .01f;
-const float    kMaxBevelAngle                    = 120;
 const Anglef   kMaxDiscWidgetScaleAngle          = Anglef::FromDegrees(10);
 const Anglef   kMaxGripHoverDirAngle             = Anglef::FromDegrees(20);
+const Anglef   kMinGripOrientationAngleChange    = Anglef::FromDegrees(10);
+const Anglef   kMinMouseRayAngleChange           = Anglef::FromDegrees(1);
+const Anglef   kMinPinchRayAngleChange           = Anglef::FromDegrees(4);
+const float    kCloseToStageForScaling           = .01f;
+const float    kMaxBevelAngle                    = 120;
 const float    kMeshCleanTolerance               = 1.e-5f;
 const float    kMinClippedSize                   = .01f;
 const float    kMinDiscWidgetMotion              = .01f;
 const float    kMinGripControllerDistance        = .04f;
-const Anglef   kMinGripOrientationAngleChange    = Anglef::FromDegrees(10);
-const Anglef   kMinRayAngleChange                = Anglef::FromDegrees(1);
 const float    kMinTouchControllerDistance       = .025f;
 const float    kMinTouchZMotion                  = .02f;
 const float    kProfilePanePointTolerance        = .04f;

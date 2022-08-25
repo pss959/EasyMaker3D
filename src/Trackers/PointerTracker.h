@@ -33,6 +33,10 @@ class PointerTracker : public Tracker {
     /// given Event contains information for the appropriate actuator.
     virtual bool GetRay(const Event &event, Ray &ray) = 0;
 
+    /// Returns the minimum change in the ray angle for MovedEnoughForDrag() to
+    /// return true.
+    virtual Anglef GetMinRayAngleChange() const = 0;
+
     /// Once an intersection is found with the current Ray, this is called to
     /// let derived classes update state based on the SG::Hit. This class
     /// defines it to do nothing.

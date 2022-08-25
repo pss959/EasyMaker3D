@@ -64,6 +64,10 @@ class Tracker {
     /// \name Clicking and Dragging
     ///@{
 
+    /// Returns a time (in seconds) to wait for multiple button clicks.
+    /// Different devices may not be as easy to click quickly.
+    virtual float GetClickTimeout() const = 0;
+
     /// Returns true if the given Event represents enough motion to consider
     /// this a drag. This should be called only after SetActive(true) is
     /// called.

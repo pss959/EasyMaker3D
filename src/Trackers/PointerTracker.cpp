@@ -3,7 +3,6 @@
 #include "App/ClickInfo.h"
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
-#include "Base/Tuning.h"
 #include "SG/Intersector.h"
 #include "Util/General.h"
 #include "Widgets/ClickableWidget.h"
@@ -24,16 +23,17 @@ void PointerTracker::StopHovering() {
 }
 
 bool PointerTracker::MovedEnoughForDrag(const Event &event) {
+    using ion::math::Normalized;
+    using ion::math::AngleBetween;
+
     // Compute the current ray from the event.
     if (! GetRay(event, current_ray_))
         return false;
 
     // Check the ray direction change.
-    const float motion_scale = GetMotionScale(current_widget_);
-    const Vector3f d0 = ion::math::Normalized(activation_ray_.direction);
-    const Vector3f d1 = ion::math::Normalized(current_ray_.direction);
-    return motion_scale * ion::math::AngleBetween(d0, d1) >
-        TK::kMinRayAngleChange;
+    const Vector3f d0 = Normalized(activation_ray_.direction);
+    const Vector3f d1 = Normalized(current_ray_.direction);
+    return AngleBetween(d0, d1) > GetMinRayAngleChange();
 }
 
 void PointerTracker::FillActivationDragInfo(DragInfo &info) {

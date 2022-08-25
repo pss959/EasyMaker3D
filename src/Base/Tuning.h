@@ -438,8 +438,8 @@ extern const int      kParserWriterIndent;
 /// \name Time and Animation
 ///@{
 
-/// Time in seconds to wait for multiple button clicks.
-extern const float    kClickTimeout;
+/// Time in seconds to wait for multiple button clicks with a grip button.
+extern const float    kGripClickTimeout;
 
 /// Minimum time in seconds for a button press to be considered a long press.
 extern const float    kLongPressTime;
@@ -463,6 +463,12 @@ extern const float    kModelAnimationDuration;
 
 /// Height at which Model placement animation starts.
 extern const float    kModelAnimationHeight;
+
+/// Time in seconds to wait for multiple button clicks with a mouse button.
+extern const float    kMouseClickTimeout;
+
+/// Time in seconds to wait for multiple button clicks with a pinch button.
+extern const float    kPinchClickTimeout;
 
 ///@}
 
@@ -503,9 +509,13 @@ extern const float    kMinGripControllerDistance;
 /// considered enough for a grip drag.
 extern const Anglef   kMinGripOrientationAngleChange;
 
-/// Minimum angle between two ray directions to be considered enough for a
-/// pointer-based drag.
-extern const Anglef   kMinRayAngleChange;
+/// Minimum angle between two mouse ray directions to be considered enough for
+/// a pointer-based drag.
+extern const Anglef   kMinMouseRayAngleChange;
+
+/// Minimum angle between two pinch ray directions to be considered enough for
+/// a pointer-based drag.
+extern const Anglef   kMinPinchRayAngleChange;
 
 /// Minimum world-space distance for a controller to move in X or Y to be
 /// considered a potential touch drag operation.
