@@ -31,6 +31,16 @@ class Controller : public SG::Node {
     struct CustomModel {
         SG::ShapePtr       shape;          ///< Shape with controller geometry.
         ion::gfx::ImagePtr texture_image;  ///< Texture image applied to shape.
+
+        /// \name Extreme points
+        /// Each of these is the position of a vertex that is the extreme in a
+        /// specific direction. They are used for attaching affordances.
+        ///@{
+        Point3f min_x;
+        Point3f max_x;
+        Point3f min_y;
+        Point3f min_z;
+        ///@?
     };
 
     /// Sets the hand this controller is for. Assumes Hand::kRight by default.
@@ -180,6 +190,9 @@ class Controller : public SG::Node {
     /// Line shape in the node used to display grip hover highlights.
     SG::LinePtr grip_hover_line_;
 
+    /// Starting point of laser pointer.
+    Point3f     pointer_start_point_{0, 0, 0};
+
     /// Offset from the controller position to the tip of the touch affordance
     /// position.
     Vector3f    touch_offset_{0, 0, 0};
@@ -198,6 +211,10 @@ class Controller : public SG::Node {
 
     /// Rotates the guides for the left controller.
     void RotateGuides_();
+
+    /// Updates items that depend on geometry. This is called for the default
+    /// model and again if a custom model is loaded.
+    void UpdateForGeometry_();
 
     friend class Parser::Registry;
 };

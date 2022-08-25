@@ -52,24 +52,10 @@ static std::string GetModelName_(vr::VRInputValueHandle_t handle) {
         name = GetStringProperty_(info.trackedDeviceIndex,
                                   vr::Prop_RenderModelName_String);
     }
-    return name;
-}
-
-/// Loads the named SteamVR model, returning a handle to it.
-static vr::RenderModel_t * LoadModel_(const std::string &name) {
-    auto &vmod = *vr::VRRenderModels();
-
-    KLOG('v', "Loading controller model with name '" << name << "'");
-
-    vr::RenderModel_t       *model = nullptr;
-    vr::EVRRenderModelError  error;
-    do {
-        error = vmod.LoadRenderModel_Async(name.c_str(), &model);
-    } while (error == vr::VRRenderModelError_Loading);
-    if (error == vr::VRRenderModelError_None) {
-        ASSERT(model);
+    else {
+        KLOG('v', "*** Unable to find model for loading");
     }
-    return model;
+    return name;
 }
 
 /// Reports successful loading of the named model.
@@ -83,6 +69,26 @@ static void ReportModelLoad_(const std::string &name) {
         vmod.GetComponentName(name.c_str(), i, comp_name, 2048);
         KLOG('v', "  Component [" << i << "] = '" << comp_name << "'");
     }
+}
+
+/// Loads the named SteamVR model, returning a handle to it.
+static vr::RenderModel_t * LoadModel_(const std::string &name) {
+    auto &vmod = *vr::VRRenderModels();
+
+    vr::RenderModel_t       *model = nullptr;
+    vr::EVRRenderModelError  error;
+    do {
+        error = vmod.LoadRenderModel_Async(name.c_str(), &model);
+    } while (error == vr::VRRenderModelError_Loading);
+    if (error == vr::VRRenderModelError_None) {
+        ASSERT(model);
+        if (KLogger::HasKeyCharacter('v'))
+            ReportModelLoad_(name);
+    }
+    else {
+        KLOG('v', "*** Unable to load controller model '" << name << "'");
+    }
+    return model;
 }
 
 /// Loads the SteamVR texture with the given ID.
@@ -119,8 +125,8 @@ static void FixNormals_(ModelData_ &mdata) {
 }
 
 /// Builds and returns a MutableTriMeshShape from the given SteamVR model.
-static SG::ShapePtr BuildShape_(const std::string &name,
-                                vr::RenderModel_t &model) {
+static SG::MutableTriMeshShapePtr BuildShape_(const std::string &name,
+                                              vr::RenderModel_t &model) {
     auto to_point3 = [](const vr::HmdVector3_t &p){
         return Point3f(p.v[0], p.v[1], p.v[2]);
     };
@@ -170,6 +176,25 @@ static ion::gfx::ImagePtr BuildIonImage_(
     return image;
 }
 
+/// Finds the extreme points in the given TriMesh and sets the corresponding
+/// values in the Controller::CustomModel.
+static void FindExtremePoints_(const TriMesh &mesh,
+                               Controller::CustomModel &custom_model) {
+    custom_model.min_x = custom_model.max_x = custom_model.min_z =
+        mesh.points[0];
+
+    for (const auto &p: mesh.points) {
+        if (p[0] < custom_model.min_x[0])
+            custom_model.min_x = p;
+        if (p[0] > custom_model.max_x[0])
+            custom_model.max_x = p;
+        if (p[1] < custom_model.min_y[1])
+            custom_model.min_y = p;
+        if (p[2] < custom_model.min_z[2])
+            custom_model.min_z = p;
+    }
+}
+
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -178,28 +203,24 @@ static ion::gfx::ImagePtr BuildIonImage_(
 
 bool VRModelLoader::LoadControllerModel(uint64_t handle,
                                         Controller::CustomModel &custom_model) {
-    auto &vmod = *vr::VRRenderModels();
-
+    auto &vmod   = *vr::VRRenderModels();
     bool success = false;
 
     const std::string name = GetModelName_(handle);
-    if (name.empty()) {
-        KLOG('v', "*** Unable to find model for loading");
-    }
-    else if (vr::RenderModel_t *model = LoadModel_(name)) {
-        if (KLogger::HasKeyCharacter('v'))
-            ReportModelLoad_(name);
-        if (vr::RenderModel_TextureMap_t *tex =
-            LoadTexture_(model->diffuseTextureId)) {
-            custom_model.shape         = BuildShape_(name, *model);
-            custom_model.texture_image = BuildIonImage_(*tex);
-            success = true;
-            vmod.FreeTexture(tex);
+    if (! name.empty()) {
+        if (vr::RenderModel_t *model = LoadModel_(name)) {
+            if (vr::RenderModel_TextureMap_t *tex =
+                LoadTexture_(model->diffuseTextureId)) {
+                auto shape = BuildShape_(name, *model);
+                custom_model.shape         = shape;
+                custom_model.texture_image = BuildIonImage_(*tex);
+                // Find the extreme points.
+                FindExtremePoints_(shape->GetMesh(), custom_model);
+                success = true;
+                vmod.FreeTexture(tex);
+            }
+            vmod.FreeRenderModel(model);
         }
-        vmod.FreeRenderModel(model);
-    }
-    else {
-        KLOG('v', "*** Unable to load controller model '" << name << "'");
     }
     return success;
 }

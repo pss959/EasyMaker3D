@@ -1,5 +1,7 @@
 #include "Items/Controller.h"
 
+#include <ion/math/transformutils.h>
+
 #include "App/CoordConv.h"
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
@@ -24,7 +26,7 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
 
     // Get the size of the default model and disable it.
     auto def = SG::FindNodeUnderNode(*this, "DefaultModel");
-    const Bounds def_bounds = def->GetBounds();
+    // XXXX const Bounds def_bounds = def->GetBounds();
     def->SetEnabled(false);
 
     // Add the shape to the custom model and enable it.
@@ -33,9 +35,9 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     cust->SetEnabled(true);
 
     // Scale and translate the custom model to match the default model.
-    const Bounds cust_bounds = cust->GetBounds();
-    cust->SetUniformScale(def_bounds.GetSize()[2] / cust_bounds.GetSize()[2]);
-    cust->SetTranslation(def_bounds.GetCenter() - cust_bounds.GetCenter());
+    // XXXX const Bounds cust_bounds = cust->GetBounds();
+    // XXXX cust->SetUniformScale(def_bounds.GetSize()[2] / cust_bounds.GetSize()[2]);
+    // XXXX cust->SetTranslation(def_bounds.GetCenter() - cust_bounds.GetCenter());
 
     // Access the ProceduralImage from the Texture from the UniformBlock and
     // set its function to install the given image. This is the easiest way to
@@ -50,6 +52,15 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     ASSERT(proc_image);
     proc_image->SetFunction([&](){ return custom_model.texture_image; });
     proc_image->RegenerateImage();
+
+    // Adjust positioning of feedback based on the model.
+    pointer_start_point_ = custom_model.min_y;
+    guide_parent_->SetTranslation(hand_ == Hand::kLeft ?
+                                  custom_model.max_x : custom_model.min_x);
+    touch_node_->SetTranslation(custom_model.min_z);
+
+    // Recompute values that depend on the geometry.
+    UpdateForGeometry_();
 }
 
 void Controller::SetGripGuideType(GripGuideType type) {
@@ -123,22 +134,23 @@ void Controller::SetTriggerMode(Trigger trigger, bool is_triggered) {
 void Controller::ShowPointerHover(bool show, const Point3f &pt) {
     if (pointer_hover_node_) {
         pointer_hover_node_->SetEnabled(show);
+        Point3f end_pt;
         if (show) {
             // Scale based on distance from controller to maintain a reasonable
             // size. The scale is 1 at a distance of 1 unit.
-            const float distance = ion::math::Distance(Point3f::Zero(), pt);
+            const float distance = ion::math::Distance(pointer_start_point_, pt);
             const float scale = 1 + (distance - 1) * TK::kPinchHoverScale;
             pointer_hover_node_->SetUniformScale(scale);
             pointer_hover_node_->SetTranslation(pt);
 
             // Make the pointer end at the sphere.
-            pointer_hover_line_->SetEndpoints(Point3f::Zero(), pt);
+            end_pt = pt;
         }
         else {
             // Use a long laser pointer line.
-            pointer_hover_line_->SetEndpoints(Point3f::Zero(),
-                                              Point3f(0, 0, -10000));
+            end_pt.Set(0, 0, -10000);
         }
+        pointer_hover_line_->SetEndpoints(pointer_start_point_, end_pt);
     }
 }
 
@@ -147,10 +159,11 @@ void Controller::ShowGripHover(bool show, const Point3f &pt,
     if (grip_hover_node_) {
         grip_hover_node_->SetEnabled(show);
         if (show) {
-            // Flip X for left hand.
             Point3f guide_pt = cur_guide_->GetHoverPoint();
+            // Flip X for left hand.
             if (hand_ == Hand::kLeft)
                 guide_pt[0] = -guide_pt[0];
+            guide_pt += guide_parent_->GetTranslation();
             grip_hover_node_->SetBaseColor(color);
             grip_hover_line_->SetEndpoints(guide_pt, pt);
         }
@@ -197,20 +210,12 @@ void Controller::PostSetUpIon() {
     grip_node_          = SG::FindNodeUnderNode(*this, "Grip");
     pointer_hover_node_ = SG::FindNodeUnderNode(*this, "PointerHoverHighlight");
     grip_hover_node_    = SG::FindNodeUnderNode(*this, "GripHoverHighlight");
+    touch_tip_node_     = SG::FindNodeUnderNode(*this, "TouchTip");
 
-    // Set up the touch math. This has to be done while the touch geometry is
-    // enabled.
-    const auto touch_path = SG::FindNodePathUnderNode(touch_node_, "TouchTip");
-    touch_tip_node_       = touch_path.back();
-    const CoordConv touch_cc(touch_path);
-    touch_offset_ = Vector3f(touch_cc.ObjectToRoot(Point3f::Zero()));
+    UpdateForGeometry_();
+
     touch_tip_node_->SetBaseColor(
         SG::ColorMap::SGetColor("TouchInactiveColor"));
-
-    // Also compute the touch radius.
-    const Bounds touch_bounds = TransformBounds(
-        touch_tip_node_->GetBounds(), touch_cc.GetObjectToRootMatrix());
-    touch_radius_ = .5f * touch_bounds.GetSize()[0];
 
     // Access the laser pointer Line shape.
     pointer_hover_line_ =
@@ -257,4 +262,25 @@ void Controller::RotateGuides_() {
     guide_parent_->SetRotation(
         Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
                                     Anglef::FromDegrees(180)));
+}
+
+void Controller::UpdateForGeometry_() {
+    // Set up the touch geometry and math. The touch geometry must be enabled
+    // for the coordinate conversion to work.
+    const bool was_enabled = touch_node_->IsEnabled();
+    touch_node_->SetEnabled(true);
+
+    const auto touch_path =
+        SG::FindNodePathUnderNode(touch_node_, *touch_tip_node_);
+    const CoordConv touch_cc(touch_path);
+    const Matrix4f  touch_m = touch_cc.GetObjectToRootMatrix();
+
+    touch_offset_ = Vector3f(touch_m * Point3f::Zero());
+
+    // Also compute the touch radius.
+    const Bounds touch_bounds =
+        TransformBounds(touch_tip_node_->GetBounds(), touch_m);
+    touch_radius_ = .5f * touch_bounds.GetSize()[0];
+
+    touch_node_->SetEnabled(was_enabled);
 }
