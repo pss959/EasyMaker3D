@@ -37,10 +37,14 @@ class CrashHandler_ {
         HandleCrash_("Received signal " + Util::ToString(signal),
                      Util::GetStackTrace());
     }
+
+#if ! defined(RELEASE_BUILD)
     void HandleAssertion(const AssertException &ex) {
         HandleCrash_(std::string("Caught assertion: ") + ex.what(),
                      ex.GetStackTrace());
     }
+#endif
+
     void HandleException(const std::exception &ex) {
         HandleCrash_(std::string("Caught exception: ") + ex.what(),
                      StackTrace_());
@@ -122,10 +126,12 @@ static bool RunApp_(const Application::Options &options) {
 
         app.MainLoop();
     }
+#if ! defined(RELEASE_BUILD)
     catch (AssertException &ex) {
         ch.HandleAssertion(ex);
         return false;
     }
+#endif
     catch (std::exception &ex) {
         ch.HandleException(ex);
         return false;
