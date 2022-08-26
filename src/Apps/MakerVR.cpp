@@ -11,6 +11,7 @@
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
+#include "Util/FilePath.h"
 #include "Util/Flags.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
@@ -33,36 +34,42 @@ class CrashHandler_ {
     CrashHandler_(Application &app) : app_(app) {}
     void HandleSignal(int signal) {
         std::signal(signal, nullptr);
-        HandleCrash_("Received signal " + Util::ToString(signal));
+        HandleCrash_("Received signal " + Util::ToString(signal),
+                     Util::GetStackTrace());
     }
     void HandleAssertion(const AssertException &ex) {
-        HandleCrash_(std::string("Caught assertion: ") + ex.what());
+        HandleCrash_(std::string("Caught assertion: ") + ex.what(),
+                     ex.GetStackTrace());
     }
     void HandleException(const std::exception &ex) {
-        HandleCrash_(std::string("Caught exception: ") + ex.what());
+        HandleCrash_(std::string("Caught exception: ") + ex.what(),
+                     StackTrace_());
     }
 
   private:
+    typedef std::vector<std::string> StackTrace_;  ///< Shorthand.
+
     Application &app_;
 
-    /// Handles a crash of any type - the cause is passed in.
-    void HandleCrash_(const std::string &cause);
+    /// Handles a crash of any type - the cause and stack trace (if available)
+    /// are passed in.
+    void HandleCrash_(const std::string &cause, const StackTrace_ &stack);
 
-    /// Returns the name of a file to save to.
-    static std::string GetCrashFileName_();
+    /// Returns a path to a file to save the crash data to.
+    static FilePath GetCrashFilePath_();
 };
 
-void CrashHandler_::HandleCrash_(const std::string &cause) {
-    std::cerr << "XXXX Crash: " << cause << "\n";
-    std::cerr << "XXXX Crash file= '" << GetCrashFileName_() << "'\n";
+void CrashHandler_::HandleCrash_(const std::string &cause,
+                                 const StackTrace_ &stack) {
+    app_.SaveCrashSession(GetCrashFilePath_(), cause, stack);
     app_.Shutdown();
 }
 
-std::string CrashHandler_::GetCrashFileName_() {
+FilePath CrashHandler_::GetCrashFilePath_() {
     const std::time_t now = std::time(nullptr);
     char buf[100];
     std::strftime(buf, sizeof(buf), "%Y-%m-%d-%H-%M-%S", std::localtime(&now));
-    return std::string(TK::kApplicationName) + "_" + buf + ".mvr";
+    return std::string(TK::kApplicationName) + "_crash_" + buf + ".mvr";
 }
 
 }  // anonymous namespace

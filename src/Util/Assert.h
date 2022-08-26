@@ -9,9 +9,7 @@
 
 #include <exception>
 #include <string>
-
-#include "Util/StackTrace.h"
-#include "Util/String.h"
+#include <vector>
 
 // ============================================================================
 #if defined NDEBUG
@@ -28,18 +26,12 @@
 class AssertException : public std::exception {
   public:
     AssertException(const std::string &expr, const std::string &file,
-                    int line, const std::string &msg) {
-        msg_ = file + ":" + Util::ToString(line) +
-            ": Assertion failed: " + expr;
-        if (! msg.empty())
-            msg_ += ": " + msg;
-        msg_ += "\nStack trace:\n" + Util::GetStackTrace();
-    }
-    const char * what() const throw() override {
-        return msg_.c_str();
-    }
+                    int line, const std::string &msg);
+    const char * what() const throw() override;
+    const std::vector<std::string> & GetStackTrace() const;
   private:
-    std::string msg_;
+    std::string              msg_;
+    std::vector<std::string> stack_trace_;
 };
 
    /// Additional Assert macro that takes an optional message.

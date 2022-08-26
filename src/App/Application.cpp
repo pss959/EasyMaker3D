@@ -107,6 +107,10 @@ class  Application::Impl_ {
 
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
+
+    void SaveCrashSession(const FilePath &path, const std::string &message,
+                          const std::vector<std::string> &stack);
+
     void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
 
     void SetTestingFlag() { is_testing_ = true; }
@@ -528,6 +532,20 @@ void Application::Impl_::ReloadScene() {
         std::cerr << "*** Caught exception reloading scene:\n"
                   << ex.what() << "\n";
     }
+}
+
+void Application::Impl_::SaveCrashSession(
+    const FilePath &path, const std::string &message,
+    const std::vector<std::string> &stack) {
+    std::vector<std::string> comments;
+    comments.reserve(stack.size() + 2);
+    comments.push_back(message);
+    comments.push_back("---- Stack Trace:");
+    Util::AppendVector(stack, comments);
+
+    session_manager_->SaveSessionWithComments(path, comments);
+
+    std::cerr << "*** Saved crash session to " << path.ToString() << "\n";
 }
 
 void Application::Impl_::GetTestContext(TestContext &tc) {
@@ -1392,6 +1410,12 @@ LogHandler & Application::GetLogHandler() const {
 
 bool Application::IsVREnabled() const {
     return impl_->IsVREnabled();
+}
+
+void Application::SaveCrashSession(const FilePath &path,
+                                   const std::string &message,
+                                   const std::vector<std::string> &stack) {
+    impl_->SaveCrashSession(path, message, stack);
 }
 
 void Application::Shutdown() {

@@ -3,8 +3,6 @@
 #include "Base/Memory.h"
 #include "Math/Types.h"
 
-DECL_SHARED_PTR(SessionManager);
-
 class Controller;
 class FilePath;
 class LogHandler;
@@ -48,6 +46,11 @@ class Application {
     /// Returns true if virtual reality is active, meaning that a headset is
     /// connected.
     bool IsVREnabled() const;
+
+    /// Tells the SessionManager to save the current session to the given file
+    /// with the given crash message and stack trace.
+    void SaveCrashSession(const FilePath &path, const std::string &message,
+                          const std::vector<std::string> &stack);
 
     /// Shuts down (especially VR which does not like to be crashed out of.
     void Shutdown();

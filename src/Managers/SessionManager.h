@@ -86,6 +86,12 @@ class SessionManager {
     /// session and characters representing the current modifications.
     std::string GetSessionString() const;
 
+    /// Saves the current session to the file specified by path. The given
+    /// vector of strings, if any, is written as header comments. Returns true
+    /// if all went well.
+    bool SaveSessionWithComments(const FilePath &path,
+                                 const std::vector<std::string> &comments);
+
   private:
     ActionManagerPtr    action_manager_;
     CommandManagerPtr   command_manager_;
@@ -100,12 +106,6 @@ class SessionManager {
 
     /// Resets the current session.
     void ResetSession_();
-
-    /// Saves the current session to the file specified by path. The given
-    /// vector of strings, if any, is written as header comments. Returns true
-    /// if all went well.
-    bool SaveSessionWithComments_(const FilePath &path,
-                                  const std::vector<std::string> &comments);
 
     /// Loads a session from a path. If error is not null, this stores an error
     /// message in at and returns false if anything went wrong. Otherwise, it

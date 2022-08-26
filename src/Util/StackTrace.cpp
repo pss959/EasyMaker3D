@@ -29,9 +29,7 @@ std::string GetStackTrace(size_t count) {
 
 namespace Util {
 
-/// Returns a vector of strings for the lines of the stack trace. The lines end
-/// in newlines.
-static std::vector<std::string> GetStackTraceLines_(size_t count) {
+std::vector<std::string> GetStackTrace(size_t count) {
     void *array[count];
     size_t size;
 
@@ -52,18 +50,14 @@ static std::vector<std::string> GetStackTraceLines_(size_t count) {
             const std::string name = sym.substr(open + 1, plus - open - 1);
             sym = Util::ReplaceString(sym, name, Util::Demangle(name));
         }
-        lines.push_back("[" + Util::ToString(i) + "]: " + sym + "\n");
+        lines.push_back("[" + Util::ToString(i) + "]: " + sym);
     }
     return lines;
 }
 
 void PrintStackTrace(size_t count) {
-    for (const auto &line: GetStackTraceLines_(count))
-        fprintf(stderr, "%s", line.c_str());
-}
-
-std::string GetStackTrace(size_t count) {
-    return Util::JoinStrings(GetStackTraceLines_(count), "");
+    for (const auto &line: GetStackTrace(count))
+        fprintf(stderr, "%s\n", line.c_str());
 }
 
 }  // namespace Util

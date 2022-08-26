@@ -189,15 +189,9 @@ static TriMesh ApplyMinkowskiSum_(const std::vector<TriMesh> &meshes) {
     CHECK_NEF_(result, "Result Minkowski Polyhedron");
 
     // Convert the result back to a Polyhedron and then to a TriMesh.
-    try {
-        CPolyhedron poly;
-        result.convert_to_polyhedron(poly);
-        return ConvertToTriMesh_(poly);
-    }
-    catch (std::exception &ex) {
-        Util::PrintStackTrace();
-        throw ex;
-    }
+    CPolyhedron poly;
+    result.convert_to_polyhedron(poly);
+    return ConvertToTriMesh_(poly);
 }
 
 }  // anonymous namespace

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 /// \file
 /// This file contains utility functions for printing and accessing stack
@@ -10,10 +11,11 @@
 
 namespace Util {
 
+/// Returns a vector of strings representing the stack trace. Lines do not end
+/// with newlines.
+std::vector<std::string> GetStackTrace(size_t count = 20);
+
 /// Prints a stack trace to stderr.
 void PrintStackTrace(size_t count = 20);
-
-/// Returns a string containing a stack trace.
-std::string GetStackTrace(size_t count = 20);
 
 }  // namespace Util

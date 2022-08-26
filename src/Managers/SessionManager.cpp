@@ -57,7 +57,7 @@ void SessionManager::NewSession() {
 }
 
 bool SessionManager::SaveSession(const FilePath &path) {
-    return SaveSessionWithComments_(path, std::vector<std::string>());
+    return SaveSessionWithComments(path, std::vector<std::string>());
 }
 
 bool SessionManager::LoadSession(const FilePath &path, std::string &error) {
@@ -92,16 +92,7 @@ std::string SessionManager::GetSessionString() const {
     return session_string;
 }
 
-void SessionManager::ResetSession_() {
-    previous_session_name_.clear();
-    current_session_name_.clear();
-
-    action_manager_->Reset();
-    Model::ResetColors();
-    SaveOriginalSessionState_();
-}
-
-bool SessionManager::SaveSessionWithComments_(
+bool SessionManager::SaveSessionWithComments(
     const FilePath &path, const std::vector<std::string> &comments) {
 
     KLOG('w', "Saving session to '" << path.ToNativeString() << "'");
@@ -122,6 +113,15 @@ bool SessionManager::SaveSessionWithComments_(
     command_list.ClearChanges();
     SaveOriginalSessionState_();
     return true;
+}
+
+void SessionManager::ResetSession_() {
+    previous_session_name_.clear();
+    current_session_name_.clear();
+
+    action_manager_->Reset();
+    Model::ResetColors();
+    SaveOriginalSessionState_();
 }
 
 bool SessionManager::LoadSessionSafe_(const FilePath &path,

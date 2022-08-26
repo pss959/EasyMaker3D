@@ -353,6 +353,7 @@ lib_sources = [
     'Trackers/TouchTracker.cpp',
     'Trackers/Tracker.cpp',
 
+    'Util/Assert.cpp',
     'Util/Delay.cpp',
     'Util/FilePath.cpp',
     'Util/General.cpp',
