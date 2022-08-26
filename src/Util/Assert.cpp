@@ -1,6 +1,6 @@
 #include "Util/Assert.h"
 
-#if ! defined NDEBUG
+#if ! defined(RELEASE_BUILD)
 
 #include "Util/StackTrace.h"
 #include "Util/String.h"

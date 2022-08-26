@@ -12,8 +12,8 @@
 #include <vector>
 
 // ============================================================================
-#if defined NDEBUG
-   // Assertions are turned off if NDEBUG is defined.
+// Assertions are turned off in release builds.
+#if defined(RELEASE_BUILD)
 #  define ASSERT(expr) assert(expr)
 #  define ASSERTM(expr, msg) assert(expr)
 

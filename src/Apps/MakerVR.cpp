@@ -61,6 +61,14 @@ class CrashHandler_ {
 
 void CrashHandler_::HandleCrash_(const std::string &cause,
                                  const StackTrace_ &stack) {
+#if ! defined(RELEASE_BUILD)
+    // Non-release version also prints to stderr.
+    std::cerr << "*** " << cause << "\n";
+    std::cerr << "*** STACK:\n";
+    for (const auto &s: stack)
+        std::cerr << "  " << s << "\n";
+#endif
+
     app_.SaveCrashSession(GetCrashFilePath_(), cause, stack);
     app_.Shutdown();
 }

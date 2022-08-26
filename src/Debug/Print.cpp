@@ -660,6 +660,21 @@ Debugging printing help shortcuts:
         PrintPaneTree(*board->GetCurrentPanel()->GetPane(),
                       key_string == "<Alt>w");
     }
+#if 1 // XXXX
+    else if (key_string == "<Alt>z") { // XXXX
+        // Create a signal crash.
+        int *foo = nullptr;
+        *foo = 12;
+    }
+    else if (key_string == "<Alt>Z") { // XXXX
+        // Create an assertion failure.
+        ASSERTM(false, "Testing assertion catching");
+    }
+    else if (key_string == "<Alt>x") { // XXXX
+        // Create an exception failure.
+        throw Parser::Exception("Testing exception catching");
+    }
+#endif
     else {
         return false;
     }
