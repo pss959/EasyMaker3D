@@ -24,20 +24,23 @@ void SessionPanel::UpdateInterface() {
 
     // The Continue button is the most complicated. The possible versions of
     // this button are:
-
     //  (1) "(No previous session)"  (button disabled)
     //      This is shown when the application first starts if there is no
     //      previous session name.
     //  (2) "Continue previous session [name]"
     //      This is shown when the application first starts and there is a
     //      previous session name.
-    //  (3) "Continue current session [name]"
+    //  (3) "Continue current session"
+    //      This is shown when the current session is not yet named but has
+    //      changes.
+    //  (4) "Continue current session [name]"
     //      This is shown when the current session has a name.
     bool        have_name = false;
     std::string continue_text;
 
-    const auto &prev_name = session_manager.GetPreviousSessionName();
-    const auto &cur_name  = session_manager.GetCurrentSessionName();
+    const auto &prev_name  = session_manager.GetPreviousSessionName();
+    const auto &cur_name   = session_manager.GetCurrentSessionName();
+    const bool has_changes = session_manager.CanSaveSession();
 
     // Have a current or previous session name.
     auto add_name = [](const std::string &msg, const std::string &name){
@@ -51,14 +54,17 @@ void SessionPanel::UpdateInterface() {
         continue_text = add_name("Continue previous session", prev_name);
         have_name = true;
     }
+    else if (has_changes) {
+        continue_text = "Continue current session";
+    }
     else {
         continue_text = "(No previous session)";
     }
     SetButtonText("Continue", continue_text);
-    EnableButton("Continue",  have_name);
+    EnableButton("Continue",  have_name || has_changes);
 
     EnableButton("Load",      true);
-    EnableButton("Save",      have_name && session_manager.CanSaveSession());
+    EnableButton("Save",      have_name && has_changes);
     EnableButton("Export",    session_manager.CanExport());
 
     // Move the focus to a button that is enabled unless there is already a
