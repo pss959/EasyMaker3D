@@ -1376,8 +1376,6 @@ void Application::MainLoop() {
 
     while (ProcessFrame(render_count))
         ++render_count;
-
-    Shutdown();
 }
 
 bool Application::ProcessFrame(size_t render_count) {

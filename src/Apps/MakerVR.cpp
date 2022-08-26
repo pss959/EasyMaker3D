@@ -1,3 +1,6 @@
+#include <csignal>
+#include <ctime>
+#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -11,6 +14,62 @@
 #include "Util/Flags.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
+#include "Util/UTime.h"
+
+namespace {
+
+// This global variable is necessary because std::signal() requires a function
+// pointer, not an std::function or lambda.
+static std::function<void(int)> s_signal_handler;
+
+// ----------------------------------------------------------------------------
+// CrashHandler_ class.
+// ----------------------------------------------------------------------------
+
+/// A CrashHandler_ is used to save a session when a signal or exception is
+/// detected.
+class CrashHandler_ {
+  public:
+    CrashHandler_(Application &app) : app_(app) {}
+    void HandleSignal(int signal) {
+        std::signal(signal, nullptr);
+        HandleCrash_("Received signal " + Util::ToString(signal));
+    }
+    void HandleAssertion(const AssertException &ex) {
+        HandleCrash_(std::string("Caught assertion: ") + ex.what());
+    }
+    void HandleException(const std::exception &ex) {
+        HandleCrash_(std::string("Caught exception: ") + ex.what());
+    }
+
+  private:
+    Application &app_;
+
+    /// Handles a crash of any type - the cause is passed in.
+    void HandleCrash_(const std::string &cause);
+
+    /// Returns the name of a file to save to.
+    static std::string GetCrashFileName_();
+};
+
+void CrashHandler_::HandleCrash_(const std::string &cause) {
+    std::cerr << "XXXX Crash: " << cause << "\n";
+    std::cerr << "XXXX Crash file= '" << GetCrashFileName_() << "'\n";
+    app_.Shutdown();
+}
+
+std::string CrashHandler_::GetCrashFileName_() {
+    const std::time_t now = std::time(nullptr);
+    char buf[100];
+    std::strftime(buf, sizeof(buf), "%Y-%m-%d-%H-%M-%S", std::localtime(&now));
+    return std::string(TK::kApplicationName) + "_" + buf + ".mvr";
+}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
 
 static void InitLogging_(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));
@@ -29,17 +88,16 @@ static void InitLogging_(LogHandler &lh) {
     */
 }
 
-static void PrintStack_(int sig) {
-    if (sig != 0)
-        fprintf(stderr, "*** Error: signal %d:\n", sig);
-    Util::PrintStackTrace();
-    exit(1);
-}
-
-static bool MainLoop_(const Application::Options &options) {
+static bool RunApp_(const Application::Options &options) {
     Application app;
 
-    // Do the same for exceptions.
+    // Saves session when a signal or exception is detected.
+    CrashHandler_ ch(app);
+
+    // Detect signals and catch assertions and other exceptions.
+    s_signal_handler = [&ch](int signal){ ch.HandleSignal(signal); };
+    std::signal(SIGSEGV, [](int signal){ s_signal_handler(signal); });
+
     try {
         if (! app.Init(options))
             return false;
@@ -50,19 +108,20 @@ static bool MainLoop_(const Application::Options &options) {
         app.MainLoop();
     }
     catch (AssertException &ex) {
-        std::cerr << "*** Caught assertion exception:\n" << ex.what() << "\n";
-        app.Shutdown();
-        throw;   // Rethrow; no use printing a stack for this.
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
-        PrintStack_(0);
-        app.Shutdown();
+        ch.HandleAssertion(ex);
         return false;
     }
-
+    catch (std::exception &ex) {
+        ch.HandleException(ex);
+        return false;
+    }
+    app.Shutdown();
     return true;
 }
+
+// ----------------------------------------------------------------------------
+// Mainline.
+// ----------------------------------------------------------------------------
 
 static const char kUsageString[] =
 R"(<NAME>: A VR-enabled application for creating models for 3D printing.
@@ -99,5 +158,5 @@ int main(int argc, const char *argv[]) {
     const int width  = static_cast<int>(TK::kWindowAspectRatio * height);
     options.window_size.Set(width, height);
 
-    return MainLoop_(options) ? 0 : -1;
+    return RunApp_(options) ? 0 : -1;
 }
