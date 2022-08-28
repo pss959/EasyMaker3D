@@ -1,13 +1,11 @@
 #include "Util/String.h"
 
+#include <cxxabi.h>  // For demangling.
+
 #include <algorithm>
 #include <cctype>
 
 #include <ion/base/stringutils.h>
-
-#ifdef __GNUG__
-#include <cxxabi.h>  // For demangling.
-#endif
 
 namespace Util {
 
@@ -99,7 +97,6 @@ std::string SplitCamelCase(const std::string &s, bool remove_first) {
 }
 
 std::string Demangle(const std::string &mangled_name) {
-#ifdef __GNUG__
     int status = 0 ;
     char *demangled = __cxxabiv1::__cxa_demangle(
         mangled_name.c_str(), nullptr, nullptr, &status);
@@ -108,9 +105,6 @@ std::string Demangle(const std::string &mangled_name) {
     std::string ret(demangled);
     free(demangled);
     return ret;
-#else
-    return mangled_name;
-#endif
 }
 
 }  // namespace Util

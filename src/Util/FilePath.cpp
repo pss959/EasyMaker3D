@@ -12,6 +12,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Util/String.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

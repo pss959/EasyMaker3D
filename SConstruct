@@ -534,6 +534,8 @@ if platform == 'windows':
         ],
         # Make sure the MSYS2 commands (such as cygpath) are available.
         ENV = {'PATH' : environ['PATH']},
+        # This is needed for stack traces.
+        LIBS = ['DbgHelp'],
     )
     # Note: the "-O1" keeps big files from choking on Windows ("string table
     # overflow", "file too big").
