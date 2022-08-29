@@ -522,8 +522,14 @@ int main(int argc, const char** argv)
             return 1;
         app.MainLoop();
     }
+#if defined(RELEASE_BUILD)
+    catch (std::exception &ex) {
+        std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
+    }
+#else
     catch (AssertException &ex) {
         std::cerr << "*** Caught assertion exception:\n" << ex.what() << "\n";
     }
+#endif
     return 0;
 }

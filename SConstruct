@@ -605,7 +605,12 @@ opt_env.Append(
     ],
 )
 rel_env.Append(
-    CXXFLAGS   = common_flags + ['-O3'],
+    CXXFLAGS   = common_flags + [
+        '-O3',
+        # Work around a GCC bug with some inlined code; see
+        #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=56456
+        '-Wno-array-bounds',
+    ],
     LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
     CPPDEFINES = [
         ('CHECK_GL_ERRORS',    'false'),
