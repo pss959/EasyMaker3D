@@ -1,12 +1,13 @@
 module Jekyll
   class AppNameTag < Liquid::Tag
     def render(context)
-      "<i>" + ENV["APP_NAME"] + "</i>"
+      app_name = ENV.has_key?("APP_NAME") ? ENV["APP_NAME"] : "MakerVR"
+      "<i>" + app_name + "</i>"
     end
   end
   class VersionTag < Liquid::Tag
     def render(context)
-      ENV["VERSION_STRING"]
+      ENV.has_key?("VERSION_STRING") ? ENV["VERSION_STRING"] : "<Version>"
     end
   end
 end
