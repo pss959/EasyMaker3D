@@ -43,11 +43,15 @@ p {
 
 /* Put borders on and margins around all images. */
 img {
-  border: 3px solid #333333;
-  margin: 4px;
+    border: 3px solid #333333;
+    margin: 4px;
 }
 
 /* Highlight the top bar background. */
 .main-header, #search-input {
     background: $header-footer-bg-color;
+}
+
+.main-content p {
+    margin-left: 10px;
 }
