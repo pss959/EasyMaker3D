@@ -34,6 +34,6 @@ sources = ['_config.yml', 'Gemfile'] + FindAllSources('docs')
 
 doc = env.Command('$OUTPUT_DIR/index.html', sources,
                   ['echo = Building public doc for version: $VERSION_STRING',
-                   'bundle exec jekyll build'],
+                   'bundle exec jekyll build --baseurl "///home/pss/git/MakerVR/build/PublicDoc/site/"'],
                   chdir='PublicDoc')
 Return('doc')

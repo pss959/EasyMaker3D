@@ -6,7 +6,7 @@ nav_order: 1
 
 # Welcome to {%appname%}
 
-![{%appname%} Logo](/images/logo.jpg){:width="50%"}{:style="float: right"}
+![{%appname%} Logo](images/logo.jpg){:width="400px"}{:style="float: right"}
 
 {%appname%} is a VR-enabled application for creating 3D-printable models.
 "VR-enabled" means that it can be used in VR, but also works in a standard

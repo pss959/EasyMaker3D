@@ -2,8 +2,8 @@ title: MakerVR
 email: pss@acm.org
 description: >
   MakerVR is a VR-enabled application for creating 3D-printable models.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://pss959.github.io/"
+
+# url: "https://pss959.github.io/"
 github_username:  pss959
 
 # Input and output directories
@@ -23,12 +23,11 @@ exclude:
 search_enabled: true
 aux_links:  # Shown in upper right
   "MakerVR on GitHub":
-    - "//github.com/pss959/MakerVR"
+    - "https://github.com/pss959/MakerVR"
   "MakerVR Downloads":
     - "https://drive.google.com/drive/folders/1Tgb-bgtroVWNLfKsqY-z6v12n8Gk077H"
 aux_links_new_tab: true
 heading_anchors: true
-
 
 # -----------------------------------------------------------------------------
 

@@ -7,7 +7,7 @@ module Jekyll
   end
   class VersionTag < Liquid::Tag
     def render(context)
-      ENV.has_key?("VERSION_STRING") ? ENV["VERSION_STRING"] : "<Version>"
+      ENV.has_key?("VERSION_STRING") ? ENV["VERSION_STRING"] : "X.Y.Z"
     end
   end
 end
