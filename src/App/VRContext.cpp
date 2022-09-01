@@ -110,9 +110,15 @@ class VRContext::Impl_ {
     Eye_      r_eye_;
 
     // HMD.
-    Point3f   head_pos_;               ///< Current HMD position.
-    float     head_y_offset_;          ///< HMD height offset of head.
-    bool      is_headset_on_ = false;  ///< True if HMD is being worn.
+    vr::TrackedDeviceIndex_t hmd_index_;      ///< HMD device index.
+    Point3f                  head_pos_;       ///< Current HMD position.
+    float                    head_y_offset_;  ///< HMD height offset of head.
+    bool             is_headset_on_ = false;  ///< True if HMD is being worn.
+
+    /// This is set to true if there is a binding for the headset button,
+    /// meaning that it can be tracked via normal means. Otherwise, a different
+    /// method is used.
+    bool             has_headset_button_ = false;
 
     // Devices.
     vr::VRInputValueHandle_t headset_handle_ = vr::k_ulInvalidInputValueHandle;
@@ -133,8 +139,7 @@ class VRContext::Impl_ {
     vr::VRActionHandle_t GetHandAction_(Hand hand, const std::string &name,
                                         bool is_input);
     vr::VRActionHandle_t GetAction_(const std::string &path);
-    void ReportBindings_(const std::string &path,
-                         const vr::VRActionHandle_t &action);
+    bool WereBindingsLoadedSuccessfully_();
     void InitEyeRendering_(Renderer &renderer, Eye_ &eye);
     void UpdateEyes_(const Point3f &base_position);
     void RenderEye_(Eye_ &eye, const SG::Scene &scene, Renderer &renderer);
@@ -145,7 +150,15 @@ class VRContext::Impl_ {
     void AddThumbPosToEvent_(Hand hand, Event &event);
     Event CreateEventForHand_(Hand hand);
     bool GetButtonState_(const vr::VRActionHandle_t &action);
+    bool HasHeadsetButton_();
+    bool IsHeadsetOn_();
     static Event::Button GetEventButton_(Button_ but);
+
+#if ENABLE_DEBUG_FEATURES
+    void ReportAllBindings_();
+    void ReportBindings_(const std::string &path,
+                         const vr::VRActionHandle_t &action);
+#endif
 };
 
 // ----------------------------------------------------------------------------
@@ -209,6 +222,16 @@ void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
     // Render each eye into textures.
     RenderEye_(l_eye_, scene, renderer);
     RenderEye_(r_eye_, scene, renderer);
+
+    // Apparently an OpenVR render has to occur before bindings are accessible.
+    if (renderer.GetFrameCount() == 0) {
+        // Determine if the headset button is bound. If not, use the HMD device
+        // activity level to detect headset changes.
+        has_headset_button_ = HasHeadsetButton_();
+#if ENABLE_DEBUG_FEATURES
+        ReportAllBindings_();
+#endif
+    }
 }
 
 void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
@@ -228,7 +251,7 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
     // the hand poses can be processed properly. If the state changed, create a
     // button event for it.
     const bool was_headset_on = is_headset_on_;
-    is_headset_on_ = GetButtonState_(headset_action_);
+    is_headset_on_ = IsHeadsetOn_();
     if (is_headset_on_ != was_headset_on) {
         Event event;
         event.device = Event::Device::kHeadset;
@@ -329,6 +352,7 @@ void VRContext::Impl_::InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye) {
 }
 
 bool VRContext::Impl_::InitInput_() {
+    auto &sys = *vr::VRSystem();
     auto &vin = *vr::VRInput();
 
     // Set up controller data.
@@ -338,6 +362,11 @@ bool VRContext::Impl_::InitInput_() {
     r_controller.hand = Hand::kRight;
     l_controller.device = Event::Device::kLeftController;
     r_controller.device = Event::Device::kRightController;
+
+    // Access the HMD device in case it is needed.
+    const uint32_t count = sys.GetSortedTrackedDeviceIndicesOfClass(
+        vr::TrackedDeviceClass_HMD, &hmd_index_, 1);
+    ASSERT(count == 1U);
 
     // Access HMD and controller handles.
     vin.GetInputSourceHandle("/user/head",       &headset_handle_);
@@ -353,6 +382,10 @@ bool VRContext::Impl_::InitInput_() {
 
     // Initialize all actions.
     InitActions_();
+
+    // Wait for bindings to be loaded.
+    if (! WereBindingsLoadedSuccessfully_())
+        return false;
 
     return true;
 }
@@ -432,33 +465,29 @@ vr::VRActionHandle_t VRContext::Impl_::GetAction_(const std::string &path) {
     return action;
 };
 
-void VRContext::Impl_::ReportBindings_(const std::string &path,
-                                       const vr::VRActionHandle_t &action) {
-#if ENABLE_DEBUG_FEATURES
-    auto &vin = *vr::VRInput();
+bool VRContext::Impl_::WereBindingsLoadedSuccessfully_() {
+    auto &sys = *vr::VRSystem();
+    vr::VREvent_t vr_event;
 
-    vr::InputBindingInfo_t info[20];
-    uint32_t               count;
-    const auto err =
-        vin.GetActionBindingInfo(action, info, sizeof(info[0]), 20, &count);
-    if (err != vr::VRInputError_None) {
-        KLOG('V', "*** Error accessing binding info for '" << path << "': "
-             << Util::EnumName(err));
-    }
-    else {
-        KLOG('V', "Binding info for '" << path
-             << "'; count = " << count << ":");
-        for (uint32_t i = 0; i < count; ++i) {
-            const auto &bi = info[i];
-            KLOG('V', " Binding " << i << ":");
-            KLOG('V', "  Device path = '" << bi.rchDevicePathName  << "'");
-            KLOG('V', "  Input path  = '" << bi.rchInputPathName   << "'");
-            KLOG('V', "  Mode        = '" << bi.rchModeName        << "'");
-            KLOG('V', "  Slot        = '" << bi.rchSlotName        << "'");
-            KLOG('V', "  Source type = '" << bi.rchInputSourceType << "'");
+    // The bindings should be loaded fairly quickly.
+    for (int i = 0; i < 100; ++i) {
+        if (sys.PollNextEvent(&vr_event, sizeof(vr_event))) {
+            const vr::EVREventType type =
+                static_cast<vr::EVREventType>(vr_event.eventType);
+            if (type == vr::VREvent_Input_BindingLoadSuccessful) {
+                KLOG('v', "Bindings loaded successfully");
+                return true;
+            }
+            else if (type == vr::VREvent_Input_BindingLoadFailed) {
+                KLOG('v', "***Loading bindings failed");
+                return false;
+            }
         }
     }
-#endif
+
+    // This shouldn't happen.
+    KLOG('v', "***Bindings never loaded!");
+    return false;
 }
 
 void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
@@ -701,6 +730,30 @@ bool VRContext::Impl_::GetButtonState_(const vr::VRActionHandle_t &action) {
     return err == vr::VRInputError_None && data.bActive && data.bState;
 }
 
+bool VRContext::Impl_::HasHeadsetButton_() {
+    auto &vin = *vr::VRInput();
+    vr::InputBindingInfo_t info[20];
+    uint32_t               count;
+    const auto err = vin.GetActionBindingInfo(headset_action_, info,
+                                              sizeof(info[0]), 20, &count);
+    return err == vr::VRInputError_None && count > 0;
+}
+
+bool VRContext::Impl_::IsHeadsetOn_() {
+    bool is_on = false;
+    if (has_headset_button_) {
+        // If the proximity sensor button is bound, get its state.
+        is_on = GetButtonState_(headset_action_);
+    }
+    else {
+        // Otherwise, check the HMD activity level.
+        auto &sys = *vr::VRSystem();
+        const auto level = sys.GetTrackedDeviceActivityLevel(hmd_index_);
+        is_on = level == vr::k_EDeviceActivityLevel_UserInteraction;
+    }
+    return is_on;
+}
+
 Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {
     switch (but) {
       case Button_::kPinch:         return Event::Button::kPinch;
@@ -715,6 +768,50 @@ Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {
     ASSERTM(false, "Unknown button!");
     return Event::Button::kPinch;
 }
+
+#if ENABLE_DEBUG_FEATURES
+void VRContext::Impl_::ReportAllBindings_() {
+    if (KLogger::HasKeyCharacter('V')) {
+        ReportBindings_("/actions/default/in/HeadsetOnHead", headset_action_);
+
+        const auto &lh = hand_data_[Util::EnumInt(Hand::kLeft)];
+        const auto &rh = hand_data_[Util::EnumInt(Hand::kRight)];
+        for (auto but: Util::EnumValues<Button_>()) {
+            ReportBindings_("/actions/default/in/L" + Util::EnumToWord(but),
+                            lh.buttons[Util::EnumInt(but)]);
+            ReportBindings_("/actions/default/in/R" + Util::EnumToWord(but),
+                            rh.buttons[Util::EnumInt(but)]);
+        }
+    }
+}
+
+void VRContext::Impl_::ReportBindings_(const std::string &path,
+                                       const vr::VRActionHandle_t &action) {
+    auto &vin = *vr::VRInput();
+
+    vr::InputBindingInfo_t info[20];
+    uint32_t               count;
+    const auto err =
+        vin.GetActionBindingInfo(action, info, sizeof(info[0]), 20, &count);
+    if (err != vr::VRInputError_None) {
+        KLOG('V', "*** Error accessing binding info for '" << path << "': "
+             << Util::EnumName(err));
+    }
+    else {
+        KLOG('V', "Binding info for '" << path
+             << "'; count = " << count << ":");
+        for (uint32_t i = 0; i < count; ++i) {
+            const auto &bi = info[i];
+            KLOG('V', " Binding " << i << ":");
+            KLOG('V', "  Device path = '" << bi.rchDevicePathName  << "'");
+            KLOG('V', "  Input path  = '" << bi.rchInputPathName   << "'");
+            KLOG('V', "  Mode        = '" << bi.rchModeName        << "'");
+            KLOG('V', "  Slot        = '" << bi.rchSlotName        << "'");
+            KLOG('V', "  Source type = '" << bi.rchInputSourceType << "'");
+        }
+    }
+}
+#endif
 
 // ----------------------------------------------------------------------------
 // VRContext functions.
