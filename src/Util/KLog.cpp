@@ -18,6 +18,7 @@
 //   i:   Intersection testing in the scene.
 //   I:   Ion setup for SG nodes.
 //   k:   Clicks on objects.
+//   K:   VirtualKeyboard state changes.
 //   m:   Changes to matrices in SG Nodes.
 //   M:   Model structure and visibility changes.
 //   n:   Initial notification trigger.
