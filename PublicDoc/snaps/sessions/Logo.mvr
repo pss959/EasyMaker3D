@@ -1,0 +1,165 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+      point_target_visible: False,
+      edges_shown: False,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 5 1 5,
+      mode: "kBaseSymmetric",
+      model_names: ["Cylinder_1"],
+    },
+    ScaleCommand {
+      ratios: 1 0.25 1,
+      mode: "kAsymmetric",
+      model_names: ["Cylinder_1"],
+    },
+    ChangeComplexityCommand {
+      new_complexity: 0.865156,
+      model_names: ["Cylinder_1"],
+    },
+    ChangeNameCommand {
+      new_name: "Base",
+      model_name: "Cylinder_1",
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_2",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 0.25 1 0.25,
+      mode: "kBaseSymmetric",
+      model_names: ["Cylinder_2"],
+    },
+    TranslateCommand {
+      translation: 0 -1 0,
+      model_names: ["Cylinder_2"],
+    },
+    ChangeNameCommand {
+      new_name: "Hole",
+      model_name: "Cylinder_2",
+    },
+    CopyCommand {
+      model_names: ["Hole"],
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        direction: 0 1 0,
+        radius: 8,
+        arc: 0 360,
+      },
+    },
+    RadialLayoutCommand {
+      center: 0 0 0,
+      normal: 0 1 0,
+      radius: 8,
+      arc: 0 360,
+      model_names: ["Hole", "Hole_A", "Hole_B", "Hole_C", "Hole_D", "Hole_E", "Hole_F", "Hole_G", "Hole_H", "Hole_I", "Hole_J", "Hole_K", "Hole_L", "Hole_M", "Hole_N"],
+    },
+    CreateCSGModelCommand {
+      operation: "kDifference",
+      result_name: "Difference_1",
+      model_names: ["Base", "Hole", "Hole_A", "Hole_B", "Hole_C", "Hole_D", "Hole_E", "Hole_F", "Hole_G", "Hole_H", "Hole_I", "Hole_J", "Hole_K", "Hole_L", "Hole_M", "Hole_N"],
+    },
+    CreateRevSurfModelCommand {
+      result_name: "RevSurf_1",
+      initial_scale: 2,
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.492023 0.34444, 0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.152911 0.339474, 0.492023 0.34444, 0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.152911 0.759492, 0.152911 0.339474, 0.492023 0.34444, 0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.356377 0.754492, 0.152911 0.759492, 0.152911 0.339474, 0.492023 0.34444, 0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.360367 1, 0.356377 0.754492, 0.152911 0.759492, 0.152911 0.339474, 0.492023 0.34444, 0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.360367 1, 0.360367 0.759492, 0.152911 0.759492, 0.152911 0.339474, 0.492023 0.34444, 0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.360367 1, 0.360367 0.759492, 0.152911 0.759492, 0.148921 0.344474, 0.492023 0.34444, 0.492025 0.000126123],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeComplexityCommand {
+      new_complexity: 0.410314,
+      model_names: ["RevSurf_1"],
+    },
+    ScaleCommand {
+      ratios: 2.5 2.5 2.5,
+      mode: "kBaseSymmetric",
+      model_names: ["RevSurf_1"],
+    },
+    CreateCSGModelCommand {
+      operation: "kUnion",
+      result_name: "Union_1",
+      model_names: ["RevSurf_1", "Difference_1"],
+    },
+  ],
+  current_index: 39,
+}

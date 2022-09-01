@@ -733,7 +733,7 @@ main_app_name = APP_NAME
 # Build the applications.
 apps = [main_app_name, 'nodeviewer', 'printtypes']
 if platform == 'linux':
-    apps == ['snapimage']
+    apps += ['snapimage']
 
 apps_extra_sources = [
     '$BUILD_DIR/App/Args.cpp',

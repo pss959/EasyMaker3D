@@ -61,6 +61,9 @@ bool SnapScript::ProcessLine_(const std::string &line) {
         if (! ParseN_(words[1], instr.count))
             return Error_("Invalid count for redo instruction");
     }
+    else if (instr.type == "select") {
+        instr.names.insert(instr.names.begin(), words.begin() + 1, words.end());
+    }
     else {
         return Error_("Unknown instruction type '" + instr.type + "'");
     }

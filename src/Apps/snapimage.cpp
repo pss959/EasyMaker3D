@@ -9,10 +9,15 @@
 #include "App/Application.h"
 #include "App/Args.h"
 #include "App/Renderer.h"
+#include "App/SceneContext.h"
+#include "App/Selection.h"
 #include "App/SnapScript.h"
 #include "Managers/CommandManager.h"
+#include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Math/Types.h"
+#include "Models/RootModel.h"
+#include "SG/Search.h"
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
@@ -37,6 +42,7 @@ class SnapshotApp_ : public Application {
 
     bool LoadSession_(const std::string &file_name);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
+    Selection BuildSelection_(const std::vector<std::string> &names);
 };
 
 bool SnapshotApp_::Init(const Options &options) {
@@ -79,6 +85,12 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
         else if (instr.type == "redo") {
             for (size_t i = 0; i < instr.count; ++i)
                 test_context_.command_manager->Redo();
+        }
+        else if (instr.type == "select") {
+            test_context_.selection_manager->ChangeSelection(
+                BuildSelection_(instr.names));
+            // Selection change requires another render.
+            render_again = true;
         }
         else {
             ASSERTM(false, "Unknown instruction type: " + instr.type);
@@ -127,6 +139,16 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
     }
     std::cout << "  Saved snap image to = '" << path.ToString() << "'\n";
     return true;
+}
+
+Selection SnapshotApp_::BuildSelection_(const std::vector<std::string> &names) {
+    const auto &root_model = test_context_.scene_context->root_model;
+    Selection sel;
+    for (const auto &name: names) {
+        SelPath path(SG::FindNodePathUnderNode(root_model, name, false));
+        sel.Add(path);
+    }
+    return sel;
 }
 
 // ----------------------------------------------------------------------------
