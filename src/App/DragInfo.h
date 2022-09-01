@@ -69,6 +69,7 @@ struct DragInfo {
     /// These fields are available only when trigger is Trigger::kTouch.
     ///@{
 
+    /// Touch position in world coordinates.
     Point3f       touch_position;
 
     // ------------------------------------

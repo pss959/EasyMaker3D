@@ -771,7 +771,8 @@ void TextInputPane::Impl_::SetSelectionRange_(const Range_ &range) {
         const float x0 = CharPosToX_(range.start);
         const float x1 = CharPosToX_(range.end);
         selection_->SetScale(Vector3f(x1 - x0, 1, 1));
-        selection_->SetTranslation(Vector3f(.5f * (x0 + x1), 0, 0));
+        selection_->SetTranslation(Vector3f(.5f * (x0 + x1), 0,
+                                            TK::kPaneZOffset));
         selection_->SetEnabled(true);
     }
 }
@@ -862,9 +863,24 @@ void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
     // Drags affect selection only when active. Note that info is null when the
     // drag ends.
     if (is_active_ && info) {
-        /// \todo Handle touch drags
-        ASSERT(info->trigger == Trigger::kPointer);
-        const size_t pos = XToCharPos_(info->hit.point[0]);
+        // Compute the X coordinate of the drag point in object coordinates of
+        // the TextInputPane.
+        float x;
+        if (info->trigger == Trigger::kPointer) {
+            // The SG::Hit point is already in the correct coordinates.
+            x = info->hit.point[0];
+        }
+        else {
+            // The touch point needs to be converted from world coordinates.
+            ASSERT(info->trigger == Trigger::kTouch);
+            const CoordConv cc(info->path_to_widget);
+            const Point3f pane_pt = cc.RootToObject(info->touch_position);
+            x = pane_pt[0];
+        }
+
+        // Convert the X coordinate to a character position and process the
+        // selection change.
+        const size_t pos = XToCharPos_(x);
         if (is_start) {
             ClearSelection_();
             drag_sel_start_ = pos;
