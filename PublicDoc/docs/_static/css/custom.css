@@ -1,0 +1,111 @@
+/* -----------------------------------------------------------------------------
+ * CSS variables.
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --indent-size:        3px;
+  --section1-color:     #fefefe;
+  --section-color-diff: 911111;
+}
+
+/* -----------------------------------------------------------------------------
+ * Backgrounds and other colors.
+ * -------------------------------------------------------------------------- */
+
+/* Top-left background is set in conf.py (style_nav_header_background). */
+
+/* Navigation sidebar. */
+.wy-nav-side {
+    background: #dddddd;
+}
+
+/* Navigation headings. */
+.wy-menu-vertical li.toctree-l1 a,
+.wy-menu-vertical li.toctree-l2 a,
+.wy-menu-vertical li.toctree-l3 a {
+    background: #cccccc;
+    color: #333333;
+}
+
+.wy-menu-vertical li.toctree-l1.current a,
+.wy-menu-vertical li.toctree-l2.current a,
+.wy-menu-vertical li.toctree-l3.current a {
+    background: #bbbbbb;
+    color: #111166;
+}
+
+/* Main content area. */
+.wy-nav-content {
+    background: #eeeeee;
+}
+
+/* Nested sections. Each level is slightly darker than the one above it. */
+.wy-nav-content section {
+    background: #fefefe;
+}
+.wy-nav-content section section {
+    filter: brightness(0.97);
+}
+
+.wy-side-nav-search div.version {
+    color: #eeeeee;
+}
+
+.caption-text {
+    color: black;
+}
+
+/* -----------------------------------------------------------------------------
+ * Sizing and indentation.
+ * -------------------------------------------------------------------------- */
+
+/* Main content area. */
+.wy-nav-content {
+    max-width: 100%;
+}
+
+/* Section headers. */
+.wy-nav-content section {
+    margin-left:   calc(var(--indent-size) * 1);
+    margin-bottom: 2px;
+    padding: 6px;
+    border: 1px solid #aaaaaa;
+    max-width: 100%;
+}
+.wy-nav-content section section {
+    margin-left: calc(var(--indent-size) * 3);
+}
+.wy-nav-content section section section {
+    margin-left: calc(var(--indent-size) * 5);
+}
+.wy-nav-content section section section section {
+    margin-left: calc(var(--indent-size) * 7);
+}
+
+/* Section content paragraphs. */
+.wy-nav-content section p {
+    margin-left: calc(var(--indent-size) * 2);
+}
+.wy-nav-content section section p {
+    margin-left: calc(var(--indent-size) * 4);
+}
+.wy-nav-content section section section p {
+    margin-left: calc(var(--indent-size) * 6);
+}
+.wy-nav-content section section section section p {
+    margin-left: calc(var(--indent-size) * 8);
+}
+
+/* -----------------------------------------------------------------------------
+ * Miscellaneous.
+ * -------------------------------------------------------------------------- */
+
+/* Special class assigned to an item after an image so it does not
+ * overlap. Note that Sphinx adds an empty paragraph after this for some
+ * reason, so the "+ p" also has to be shrunk. */
+.after-image, .after-image + p {
+    clear: right;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+}

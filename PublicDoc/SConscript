@@ -1,0 +1,48 @@
+# -----------------------------------------------------------------------------
+# scons configuration for public documentation using Sphinx.
+#
+# Generates public documentation using Jekyll in the "PublicDoc/site"
+# subdirectory of the build directory.
+# -----------------------------------------------------------------------------
+
+Import('doc_build_dir', 'APP_NAME', 'VERSION_STRING')
+
+# Recursive function to find all files under a root directory.
+def FindAllSources(root_dir):
+    from os      import walk
+    from os.path import join
+    sources = []
+    for root, dirnames, filenames in walk(root_dir, topdown=True):
+        # Skip directories beginning with '.'.
+        [dirnames.remove(d) for d in list(dirnames) if d.startswith('.')]
+        sources += [join(root, fn) for fn in filenames]
+    return sources
+
+# -----------------------------------------------------------------------------
+# Environment and command.
+# -----------------------------------------------------------------------------
+
+env = Environment(
+    OUTPUT_DIR = f'#{doc_build_dir}/PublicDoc',
+
+    # Pass values through to sphinx-build via environment variables.
+    ENV = {
+        'PROJECT' : APP_NAME,
+        'VERSION' : VERSION_STRING,
+    },
+)
+
+sources = FindAllSources('docs')
+output_dir = env.Dir('$OUTPUT_DIR').abspath
+
+sphinx_args = ' '.join([
+    '-W',    # Treat warnings as errors,
+    '-E',    # Rebuild if anything changes (no environment cache).
+    '-a',    # Write all files.
+])
+
+doc = env.Command('$OUTPUT_DIR/index.html', sources,
+                  ['echo = Building public doc for version: $VERSION_STRING',
+                   f'sphinx-build {sphinx_args} docs {output_dir}'],
+                  chdir='PublicDoc')
+Return('doc')

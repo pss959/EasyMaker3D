@@ -1,0 +1,13 @@
+..
+.. This file is included in the rst_prolog to set up substitutions.
+..
+
+.. ----------------------------------------------------------------------------
+
+.. Makes sure the next text does not overlap the previous floating image.
+.. |after-image| raw:: html
+
+   <p class="after-image">&nbsp</p>
+
+.. ----------------------------------------------------------------------------
+
