@@ -90,7 +90,6 @@ lib_sources = [
     'Commands/SingleModelCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
-    'Debug/Print.cpp',
     'Debug/Timer.cpp',
 
     'Executors/ChangeBevelExecutor.cpp',
@@ -409,6 +408,8 @@ openvr_lib_sources = [
 if mode != 'rel':
     lib_sources += [
         'Debug/Dump3dv.cpp',
+        'Debug/Print.cpp',
+        'Debug/Shortcuts.cpp',
         'Panels/TestPanel.cpp',
     ]
 

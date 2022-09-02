@@ -1,7 +1,7 @@
 #include "Handlers/ShortcutHandler.h"
 
 #include "Base/Event.h"
-#include "Debug/Print.h"
+#include "Debug/Shortcuts.h"
 #include "Managers/ActionManager.h"
 #include "Util/KLog.h"
 
@@ -99,12 +99,8 @@ bool ShortcutHandler::HandleShortcutString_(const std::string &str) {
 
 #if ENABLE_DEBUG_FEATURES
     // Special cases for debugging shortcuts.
-    if (Debug::ProcessPrintShortcut(str))
+    if (Debug::HandleShortcut(str))
         return true;
-    if (str == "<Alt>!") {
-        KLogger::ToggleLogging();
-        return true;
-    }
 #endif
 
     return false;

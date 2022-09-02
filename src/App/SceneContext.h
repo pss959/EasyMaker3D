@@ -48,6 +48,7 @@ struct SceneContext {
     BoardPtr            app_board;
     BoardPtr            key_board;
     BoardPtr            tool_board;
+    BoardPtr            wall_board;
     TreePanelPtr        tree_panel;
     KeyboardPanelPtr    keyboard_panel;
     Slider1DWidgetPtr   height_slider;

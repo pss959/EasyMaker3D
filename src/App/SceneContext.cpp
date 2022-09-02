@@ -72,6 +72,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     app_board         = FindTyped_<Board>(sc,          "AppBoard");
     key_board         = FindTyped_<Board>(sc,          "KeyBoard");
     tool_board        = FindTyped_<Board>(sc,          "ToolBoard");
+    wall_board        = FindTyped_<Board>(sc,          "WallBoard");
     tree_panel        = FindTyped_<TreePanel>(sc,      "TreePanel");
     keyboard_panel    = FindTyped_<KeyboardPanel>(sc,  "KeyboardPanel");
     height_slider     = FindTyped_<Slider1DWidget>(sc, "HeightSlider");

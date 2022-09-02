@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stack>
 #include <unordered_set>
+#include <vector>
 
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniform.h>
@@ -40,13 +41,12 @@ typedef std::vector<const IonNode_ *> IonPath_;
 namespace {
 
 // ----------------------------------------------------------------------------
-// Helper classes.
+// Helper types and classes.
 // ----------------------------------------------------------------------------
 
-
-// The PathLimiter_ class is used to track a path to limit printing to. It
-// returns true if the given Node should be printed, meaning it is either on
-// the path or below the last Node in it.
+/// The PathLimiter_ class is used to track a path to limit printing to. It
+/// returns true if the given Node should be printed, meaning it is either on
+/// the path or below the last Node in it.
 class PathLimiter_ {
   public:
     explicit PathLimiter_(const SG::NodePath &path) : path_(path) {}
@@ -339,6 +339,22 @@ static void PrintModelTree_(const Model &model) {
     }
 }
 
+#if XXXX
+// Returns the Board to use for printing, depending on what is visible in the
+// scene.
+const Board & GetBoard_(const SceneContext &sc) {
+    // These are checked in a specific order.
+    if (sc.key_board->IsShown())
+        return *sc.key_board;
+    else if (sc.app_board->IsShown())
+        return *sc.app_board;
+    else if (sc.tool_board->IsShown())
+        return *sc.tool_board;
+    else
+        return *sc.wall_board;
+}
+#endif
+
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -559,8 +575,8 @@ Debugging printing help shortcuts:
    Alt-B: Bounds for all nodes in current path.
    Alt-c: Command list.
    Alt-d: Debug sphere location (in world coordinates).
-   Alt-f: Pane tree (brief) in AppBoard.
-   Alt-F: Pane tree (full)  in AppBoard.
+   Alt-g: Full node graph in scene.
+   Alt-G: Full node graph in current path.
    Alt-h: This help.
    Alt-I: Ion matrices in all nodes in current path.
    Alt-m: Matrices for all nodes in scene.
@@ -568,19 +584,19 @@ Debugging printing help shortcuts:
    Alt-n: Nodes and shapes (skeleton) in scene.
    Alt-N: Nodes and shapes (skeleton) in current path.
    Alt-o: Models.
-   Alt-p: Full nodes in scene.
-   Alt-P: Full nodes in current path.
+   Alt-p: Pane tree (brief) in current visible Board.
+   Alt-P: Pane tree (full)  in current visible Board.
    Alt-t: Transforms for all nodes in scene.
    Alt-T: Transforms for all nodes in current path.
    Alt-v: Viewing information.
-   Alt-w: Pane tree (brief) in WallBoard.
-   Alt-W: Pane tree (full)  in WallBoard.
+   Alt-w: Widget intersected by simulating touch at mouse point.
 
  Non-printing shortcuts:
+   Alt-!: Toggle logging.
+   Alt-D: Toggle debug sphere display for mouse intersection.
    Alt-l: Toggle event logging.
    Alt-r: Reload the scene.
    Alt-s: Toggle shadows.
-   Alt-D: Toggle debug sphere display for mouse intersection.
 -----------------------------------------------------
 )";
 
@@ -601,11 +617,24 @@ Debugging printing help shortcuts:
         ds.SetFlagEnabled(SG::Node::Flag::kRender,
                           ! ds.IsFlagEnabled(SG::Node::Flag::kRender));
     }
+    else if (key_string == "<Alt>e") {
+        /* XXXX
+        const auto &board = GetBoard_(*scene_context_);
+        const auto &p = scene_context_->debug_sphere->GetTranslation();
+        // XXXX
+        */
+    }
     else if (key_string == "<Alt>f" || key_string == "<Alt>F") {
-        const auto board = SG::FindTypedNodeUnderNode<Board>(root, "AppBoard");
-        ASSERT(board->GetCurrentPanel());
-        PrintPaneTree(*board->GetCurrentPanel()->GetPane(),
+        const auto &board = *scene_context_->app_board;
+        ASSERT(board.GetCurrentPanel());
+        PrintPaneTree(*board.GetCurrentPanel()->GetPane(),
                       key_string == "<Alt>f");
+    }
+    else if (key_string == "<Alt>g") {
+        PrintScene(*scene_context_->scene);
+    }
+    else if (key_string == "<Alt>G") {
+        PrintNodeGraph(root, true);
     }
     else if (key_string == "<Alt>h") {
         std::cout << kHelp;
@@ -633,12 +662,6 @@ Debugging printing help shortcuts:
     }
     else if (key_string == "<Alt>o") {
         PrintModels(*scene_context_->root_model);
-    }
-    else if (key_string == "<Alt>p") {
-        PrintScene(*scene_context_->scene);
-    }
-    else if (key_string == "<Alt>P") {
-        PrintNodeGraph(root, true);
     }
     else if (key_string == "<Alt>s") {
         auto &sp = *scene_context_->shadow_pass;
