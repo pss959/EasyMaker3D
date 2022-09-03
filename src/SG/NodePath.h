@@ -35,8 +35,9 @@ struct NodePath : public std::vector<NodePtr> {
     /// the same as the first node in p1.
     static NodePath Stitch(const NodePath &p0, const NodePath &p1);
 
-    /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    /// Converts to a string to help with debugging. If add_types is true, the
+    /// path includes the type of each Node.
+    std::string ToString(bool add_types = false) const;
 
     /// \name Path Searching
     ///@{

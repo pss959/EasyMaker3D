@@ -44,18 +44,21 @@ NodePath NodePath::Stitch(const NodePath &p0, const NodePath &p1) {
     return stitched;
 }
 
-std::string NodePath::ToString() const {
+std::string NodePath::ToString(bool add_types) const {
     if (empty())
         return "<EMPTY>";
     std::string s = "<";
     for (size_t i = 0; i < size(); ++i) {
+        const auto &node = *(*this)[i];
+        const std::string &name = node.GetName();
         if (i > 0)
             s += '/';
-        const std::string &name = (*this)[i]->GetName();
         if (name.empty())
             s += '*';
         else
             s += name;
+        if (add_types)
+            s += "(" + node.GetTypeName() + ")";
     }
     s += '>';
     return s;
