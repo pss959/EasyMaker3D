@@ -11,6 +11,7 @@
 #include "Debug/Print.h"
 #include "Handlers/LogHandler.h"
 #include "Items/Board.h"
+#include "Items/Controller.h"
 #include "Models/RootModel.h"
 #include "Panels/Panel.h"
 #include "SG/Node.h"
@@ -196,24 +197,24 @@ static SG::NodePath    limit_path_;
 
 /// Returns the Board to use for handling shortcuts, depending on what is
 /// visible in the scene.
-const Board & GetBoard_() {
+const BoardPtr & GetBoard_() {
     ASSERT(scene_context_);
     const SceneContext &sc = *scene_context_;
 
     // These are checked in a specific order.
     if (sc.key_board->IsShown())
-        return *sc.key_board;
+        return sc.key_board;
     else if (sc.app_board->IsShown())
-        return *sc.app_board;
+        return sc.app_board;
     else if (sc.tool_board->IsShown())
-        return *sc.tool_board;
+        return sc.tool_board;
     else
-        return *sc.wall_board;
+        return sc.wall_board;
 }
 
 /// Returns the top Pane in the current Board.
 const Pane & GetBoardPane_() {
-    return *GetBoard_().GetCurrentPanel()->GetPane();
+    return *GetBoard_()->GetCurrentPanel()->GetPane();
 }
 
 /// Returns a matrix to convert from world to stage coordinates.
@@ -221,6 +222,22 @@ static Matrix4f GetWorldToStageMatrix_() {
     ASSERT(scene_context_);
     ASSERT(! scene_context_->path_to_stage.empty());
     return CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
+}
+
+/// Handles the ShortcutMap_::Action::kPrintWidget case.
+static void PrintTouchedWidget_() {
+    const auto &board = GetBoard_();
+    ASSERT(board);
+    const Point3f pos = Point3f(scene_context_->debug_sphere->GetTranslation());
+    const float   rad = scene_context_->left_controller->GetTouchRadius();
+    const auto widget = board->GetTouchedWidget(pos, rad);
+    if (widget) {
+        const auto path = SG::FindNodePathUnderNode(board, *widget);
+        std::cout << "Widget path = " << path.ToString() << "\n";
+    }
+    else {
+        std::cout << "NO WIDGET\n";
+    }
 }
 
 /// Does all of the work for HandleShortcut().
@@ -289,7 +306,7 @@ static bool HandleShortcut_(const std::string &str) {
         Debug::PrintViewInfo(scene_context_->frustum);
         break;
       case SAction::kPrintWidget:
-        // XXXX Add this
+        PrintTouchedWidget_();
         break;
       case SAction::kReloadScene:
         ASSERTM(false, "Should have handled reload-scene shortcut elsewhere");
@@ -302,15 +319,15 @@ static bool HandleShortcut_(const std::string &str) {
         KLogger::ToggleLogging();
         break;
       case SAction::kToggleShadows: {
-        auto &sp = *scene_context_->shadow_pass;
-        sp.SetShadowsEnabled(! sp.AreShadowsEnabled());
-        break;
+          auto &sp = *scene_context_->shadow_pass;
+          sp.SetShadowsEnabled(! sp.AreShadowsEnabled());
+          break;
       }
       case SAction::kToggleSphere: {
-        auto &ds = *scene_context_->debug_sphere;
-        const auto flag = SG::Node::Flag::kRender;
-        ds.SetFlagEnabled(flag, ! ds.IsFlagEnabled(flag));
-        break;
+          auto &ds = *scene_context_->debug_sphere;
+          const auto flag = SG::Node::Flag::kRender;
+          ds.SetFlagEnabled(flag, ! ds.IsFlagEnabled(flag));
+          break;
       }
     }
 
