@@ -13,7 +13,7 @@
 #include "App/SceneLoader.h"
 #include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
-#include "Debug/Print.h"
+#include "Debug/Shortcuts.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/InitExecutors.h"
 #include "Feedback/FindFeedback.h"

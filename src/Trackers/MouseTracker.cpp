@@ -2,7 +2,7 @@
 
 #include "App/SceneContext.h"
 #include "Base/Tuning.h"
-#include "Debug/Print.h"
+#include "Debug/Shortcuts.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
 
@@ -58,10 +58,10 @@ void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
         if (hit.IsValid()) {
             ds.SetTranslation(hit.GetWorldPoint());
             ds.SetEnabled(true);
-            Debug::DisplayText(hit.path.ToString());
+            Debug::DisplayDebugText(hit.path.ToString());
         }
         else {
-            Debug::DisplayText("");
+            Debug::DisplayDebugText("");
             ds.SetEnabled(false);
         }
     }

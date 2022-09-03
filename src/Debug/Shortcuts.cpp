@@ -6,8 +6,22 @@
 #include <unordered_map>
 #include <vector>
 
+#include "App/SceneContext.h"
+#include "Commands/CommandList.h"
+#include "Debug/Print.h"
+#include "Handlers/LogHandler.h"
+#include "Items/Board.h"
+#include "Models/RootModel.h"
+#include "Panels/Panel.h"
+#include "SG/Node.h"
+#include "SG/NodePath.h"
+#include "SG/Scene.h"
+#include "SG/Search.h"
+#include "SG/ShadowPass.h"
+#include "SG/TextNode.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
-#include "Util/Enum.h" // XXXX
+#include "Util/KLog.h"
 
 namespace {
 
@@ -30,7 +44,6 @@ class ShortcutMap_ {
         kPrintGraph,
         kPrintGraphOnPath,
         kPrintHelp,
-        kPrintIonMatricesOnPath,
         kPrintMatrices,
         kPrintMatricesOnPath,
         kPrintModels,
@@ -114,8 +127,6 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print the full node graph for current path" },
         { "<Alt>h", Action::kPrintHelp,
           "Print this help" },
-        { "<Alt>I", Action::kPrintIonMatricesOnPath,
-          "Print Ion matrices for all nodes in the current path" },
         { "<Alt>l", Action::kToggleEventLogging,
           "Toggle event logging" },
         { "<Alt>m", Action::kPrintMatrices,
@@ -169,7 +180,142 @@ void ShortcutMap_::InitHelpString_(const std::vector<ActionData_> &data) {
     help_string_ += "-----------------------------------------------------\n\n";
 };
 
-static ShortcutMap_ shortcut_map_;
+// ----------------------------------------------------------------------------
+// Global state.
+// ----------------------------------------------------------------------------
+
+static ShortcutMap_    shortcut_map_;
+static LogHandlerPtr   log_handler_;
+static CommandListPtr  command_list_;
+static SceneContextPtr scene_context_;
+static SG::NodePath    limit_path_;
+
+// ----------------------------------------------------------------------------
+// Main shortcut-handling functions.
+// ----------------------------------------------------------------------------
+
+/// Returns the Board to use for handling shortcuts, depending on what is
+/// visible in the scene.
+const Board & GetBoard_() {
+    ASSERT(scene_context_);
+    const SceneContext &sc = *scene_context_;
+
+    // These are checked in a specific order.
+    if (sc.key_board->IsShown())
+        return *sc.key_board;
+    else if (sc.app_board->IsShown())
+        return *sc.app_board;
+    else if (sc.tool_board->IsShown())
+        return *sc.tool_board;
+    else
+        return *sc.wall_board;
+}
+
+/// Returns the top Pane in the current Board.
+const Pane & GetBoardPane_() {
+    return *GetBoard_().GetCurrentPanel()->GetPane();
+}
+
+/// Returns a matrix to convert from world to stage coordinates.
+static Matrix4f GetWorldToStageMatrix_() {
+    ASSERT(scene_context_);
+    ASSERT(! scene_context_->path_to_stage.empty());
+    return CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
+}
+
+/// Does all of the work for HandleShortcut().
+static bool HandleShortcut_(const std::string &str) {
+    typedef ShortcutMap_::Action SAction;   // Shorthand.
+
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+    const SG::Node &root = *scene_context_->scene->GetRootNode();
+
+    const auto action = shortcut_map_.GetAction(str);
+    switch (action) {
+      case SAction::kNone:
+        break;
+      case SAction::kPrintBounds:
+        Debug::PrintBounds(root, GetWorldToStageMatrix_());
+        break;
+      case SAction::kPrintBoundsOnPath:
+        Debug::PrintBoundsOnPath(limit_path_, GetWorldToStageMatrix_());
+        break;
+      case SAction::kPrintCommands:
+        ASSERT(command_list_);
+        Debug::PrintCommands(*command_list_);
+        break;
+      case SAction::kPrintGraph:
+        Debug::PrintGraph(root);
+        break;
+      case SAction::kPrintGraphOnPath:
+        Debug::PrintGraphOnPath(limit_path_);
+        break;
+      case SAction::kPrintHelp:
+        std::cout << shortcut_map_.GetHelpString();
+        break;
+      case SAction::kPrintMatrices:
+        Debug::PrintMatrices(root);
+        break;
+      case SAction::kPrintMatricesOnPath:
+        Debug::PrintMatricesOnPath(limit_path_);
+        break;
+      case SAction::kPrintModels:
+        Debug::PrintModels(*scene_context_->root_model);
+        break;
+      case SAction::kPrintPaneTreeBrief:
+        Debug::PrintPaneTree(GetBoardPane_(), true);
+        break;
+      case SAction::kPrintPaneTreeFull:
+        Debug::PrintPaneTree(GetBoardPane_(), false);
+        break;
+      case SAction::kPrintPosition:
+        std::cout << "Sphere at "
+                  << scene_context_->debug_sphere->GetTranslation() << "\n";
+        break;
+      case SAction::kPrintSkeleton:
+        Debug::PrintNodesAndShapes(root);
+        break;
+      case SAction::kPrintSkeletonOnPath:
+        Debug::PrintNodesAndShapesOnPath(limit_path_);
+        break;
+      case SAction::kPrintTransforms:
+        Debug::PrintTransforms(root);
+        break;
+      case SAction::kPrintTransformsOnPath:
+        Debug::PrintTransformsOnPath(limit_path_);
+        break;
+      case SAction::kPrintView:
+        Debug::PrintViewInfo(scene_context_->frustum);
+        break;
+      case SAction::kPrintWidget:
+        // XXXX Add this
+        break;
+      case SAction::kReloadScene:
+        ASSERTM(false, "Should have handled reload-scene shortcut elsewhere");
+        break;
+      case SAction::kToggleEventLogging:
+        if (log_handler_)
+            log_handler_->SetEnabled(! log_handler_->IsEnabled());
+        break;
+      case SAction::kToggleLogging:
+        KLogger::ToggleLogging();
+        break;
+      case SAction::kToggleShadows: {
+        auto &sp = *scene_context_->shadow_pass;
+        sp.SetShadowsEnabled(! sp.AreShadowsEnabled());
+        break;
+      }
+      case SAction::kToggleSphere: {
+        auto &ds = *scene_context_->debug_sphere;
+        const auto flag = SG::Node::Flag::kRender;
+        ds.SetFlagEnabled(flag, ! ds.IsFlagEnabled(flag));
+        break;
+      }
+    }
+
+    return action != SAction::kNone;
+}
 
 }  // anonymous namespace
 
@@ -179,22 +325,39 @@ static ShortcutMap_ shortcut_map_;
 
 namespace Debug {
 
+void SetLogHandler(const LogHandlerPtr &log_handler) {
+    ASSERT(log_handler);
+    log_handler_ = log_handler;
+}
+
+void SetCommandList(const CommandListPtr &command_list) {
+    ASSERT(command_list);
+    command_list_ = command_list;
+}
+
+void SetSceneContext(const SceneContextPtr &scene_context) {
+    ASSERT(scene_context);
+    scene_context_ = scene_context;
+}
+
+void SetLimitPath(const SG::NodePath &path) {
+    limit_path_ = path;
+}
+
+void ShutDown() {
+    command_list_.reset();
+    scene_context_.reset();
+    limit_path_.clear();
+}
+
 bool HandleShortcut(const std::string &str) {
-    const auto action = shortcut_map_.GetAction(str);
-    if (action != ShortcutMap_::Action::kNone) {
-        std::cerr << "XXXX Got action " << Util::EnumName(action) << "\n";
-        if (action == ShortcutMap_::Action::kPrintHelp) { // XXXX
-            std::cout << shortcut_map_.GetHelpString();
-        }
-        return true;
-    }
-    /* XXXX
-    if (str == "<Alt>!") {
-        KLogger::ToggleLogging();
-        return true;
-    }
-    */
-    return false;
+    return HandleShortcut_(str);
+}
+
+void DisplayDebugText(const std::string &text) {
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->debug_text);
+    scene_context_->debug_text->SetText(text);
 }
 
 }  // namespace Debug

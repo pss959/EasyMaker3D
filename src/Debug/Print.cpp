@@ -4,22 +4,13 @@
 
 #include <iostream>
 #include <stack>
+#include <string>
 #include <unordered_set>
-#include <vector>
 
-#include <ion/gfx/shaderinputregistry.h>
-#include <ion/gfx/uniform.h>
-#include <ion/gfx/uniformblock.h>
-
-#include "App/SceneContext.h"
 #include "Commands/CommandList.h"
-#include "Handlers/LogHandler.h"
-#include "Items/Board.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
-#include "Math/Types.h"
-#include "Models/RootModel.h"
-#include "Panels/Panel.h"
+#include "Models/ParentModel.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/Pane.h"
@@ -28,15 +19,8 @@
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
-#include "SG/Search.h"
-#include "SG/ShadowPass.h"
 #include "SG/Shape.h"
-#include "SG/TextNode.h"
 #include "Util/Assert.h"
-
-using IonNode_ = ion::gfx::Node;
-
-typedef std::vector<const IonNode_ *> IonPath_;
 
 namespace {
 
@@ -83,14 +67,20 @@ void PathLimiter_::Pop() {
     nodes_.pop();
 }
 
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
+/// The Surrounder_ class surrounds scoped text with horizontal lines.
+class Surrounder_ {
+  public:
+    Surrounder_()  { PrintLines_(); }
+    ~Surrounder_() { PrintLines_(); }
+  private:
+    static void PrintLines_() {
+        std::cout << "--------------------------------------------------\n";
+    }
+};
 
-static LogHandlerPtr   log_handler_;
-static CommandListPtr  command_list_;
-static SceneContextPtr scene_context_;
-static SG::NodePath    limit_path_;
+// ----------------------------------------------------------------------------
+// Generic helper functions.
+// ----------------------------------------------------------------------------
 
 static std::string Indent_(int level, bool add_horiz = true) {
     std::string s;
@@ -114,20 +104,26 @@ static std::string GetDesc_(const SG::Object &obj) {
     return s;
 }
 
-/// Returns a CoordConv to convert to and from stage coordinates.
-static CoordConv GetStageCoordConv() {
-    ASSERT(scene_context_);
-    ASSERT(! scene_context_->path_to_stage.empty());
-    return CoordConv(scene_context_->path_to_stage);
+// ----------------------------------------------------------------------------
+// Printing helper functions.
+// ----------------------------------------------------------------------------
+
+/// Prints an SG::NodePath, returning true if it is not empty.
+static bool PrintPath_(const SG::NodePath &path) {
+    if (path.empty()) {
+        std::cout << "<EMPTY PATH>\n";
+        return false;
+    }
+    else {
+        std::cout << "PATH = '" << path.ToString() << "'\n";
+        return true;
+    }
 }
 
-static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
-                                 const Matrix4f &start_matrix) {
+static Matrix4f PrintBounds_(const SG::Node &node, const Matrix4f &wsm,
+                             int level, const Matrix4f &start_matrix) {
     std::string indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
-    const Matrix4f wsm =
-        scene_context_ ? GetStageCoordConv().GetRootToObjectMatrix() :
-        Matrix4f::Identity();
 
     auto print_bounds = [indent, ctm, wsm](const SG::Object &obj,
                                            const Bounds &bounds,
@@ -149,15 +145,15 @@ static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
     return ctm;
 }
 
-static void PrintNodeBoundsRecursive_(const SG::Node &node, int level,
-                                      const Matrix4f &start_matrix) {
-    const Matrix4f ctm = PrintNodeBounds_(node, level, start_matrix);
+static void PrintBoundsRecursive_(const SG::Node &node, const Matrix4f &wsm,
+                                  int level, const Matrix4f &start_matrix) {
+    const Matrix4f ctm = PrintBounds_(node, wsm, level, start_matrix);
     for (const auto &child: node.GetAllChildren())
-        PrintNodeBoundsRecursive_(*child, level + 1, ctm);
+        PrintBoundsRecursive_(*child, wsm, level + 1, ctm);
 }
 
-static Matrix4f PrintNodeMatrices_(const SG::Node &node, int level,
-                                   const Matrix4f &start_matrix) {
+static Matrix4f PrintMatrices_(const SG::Node &node, int level,
+                               const Matrix4f &start_matrix) {
     const Matrix4f mm  = node.GetModelMatrix();
     const Matrix4f ctm = start_matrix * mm;
 
@@ -168,14 +164,14 @@ static Matrix4f PrintNodeMatrices_(const SG::Node &node, int level,
     return ctm;
 }
 
-static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
-                                        const Matrix4f &start_matrix) {
-    const Matrix4f ctm = PrintNodeMatrices_(node, level, start_matrix);
+static void PrintMatricesRecursive_(const SG::Node &node, int level,
+                                    const Matrix4f &start_matrix) {
+    const Matrix4f ctm = PrintMatrices_(node, level, start_matrix);
     for (const auto &child: node.GetAllChildren())
-        PrintNodeMatricesRecursive_(*child, level + 1, ctm);
+        PrintMatricesRecursive_(*child, level + 1, ctm);
 }
 
-static void PrintJustNodeTransforms_(const SG::Node &node, int level) {
+static void PrintTransformFields_(const SG::Node &node, int level) {
     const std::string ind = Indent_(level + 1);
     if (node.GetScale() != Vector3f(1, 1, 1))
         std::cout << ind << "scale:       " << node.GetScale() << "\n";
@@ -185,15 +181,15 @@ static void PrintJustNodeTransforms_(const SG::Node &node, int level) {
         std::cout << ind << "translation: " << node.GetTranslation() << "\n";
 }
 
-static void PrintNodeTransforms_(const SG::Node &node, int level) {
+static void PrintTransforms_(const SG::Node &node, int level) {
     std::cout << Indent_(level) << GetDesc_(node) << "\n";
-    PrintJustNodeTransforms_(node, level);
+    PrintTransformFields_(node, level);
 }
 
-static void PrintNodeTransformsRecursive_(const SG::Node &node, int level) {
-    PrintNodeTransforms_(node, level);
+static void PrintTransformsRecursive_(const SG::Node &node, int level) {
+    PrintTransforms_(node, level);
     for (const auto &child: node.GetAllChildren())
-        PrintNodeTransformsRecursive_(*child, level + 1);
+        PrintTransformsRecursive_(*child, level + 1);
 }
 
 static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
@@ -235,82 +231,6 @@ static void PrintNodesAndShapesRecursive_(
     }
 }
 
-static void PrintIonNode_(const IonNode_ &node) {
-    std::cout << (node.GetLabel().empty() ? "*" : node.GetLabel());
-}
-
-static Matrix4f FindIonMatrix_(const IonNode_ &node) {
-    // Look through Ion UniformBlocks for the uModelMatrix uniform.
-    for (const auto &block: node.GetUniformBlocks()) {
-        for (const auto &uni: block->GetUniforms()) {
-            const auto &specs = uni.GetRegistry().GetSpecs<ion::gfx::Uniform>();
-            if (specs[uni.GetIndexInRegistry()].name == "uModelMatrix") {
-                return uni.GetValue<Matrix4f>();
-            }
-        }
-    }
-    // Not found.
-    return Matrix4f::Identity();
-}
-
-static Matrix4f PrintIonMatrix_(const IonNode_ &node, int level,
-                                const Matrix4f &start_matrix) {
-    const Matrix4f mm = FindIonMatrix_(node);
-    const Matrix4f ctm = start_matrix * mm;
-
-    std::cout << Indent_(level);
-    PrintIonNode_(node);
-    std::cout << "\n"
-              << Indent_(level, false) << "   L" << mm  << "\n"
-              << Indent_(level, false) << "   W" << ctm << "\n";
-
-    return ctm;
-}
-
-static void PrintIonMatrixRecursive_(const IonNode_ &node, int level,
-                                     const Matrix4f &start_matrix) {
-    const Matrix4f ctm = PrintIonMatrix_(node, level, start_matrix);
-    for (const auto &child: node.GetChildren())
-        PrintIonMatrixRecursive_(*child, level + 1, ctm);
-}
-
-static void PrintIonMatricesOnPath_(const IonPath_ &path) {
-    ASSERT(! path.empty());
-    std::cout << "Found Ion path: ";
-    for (const auto &node: path) {
-        if (node != path.front())
-            std::cout << "/";
-        PrintIonNode_(*node);
-    }
-    std::cout << "\n";
-
-    int level = 0;
-    Matrix4f ctm = Matrix4f::Identity();
-    for (const auto &node: path) {
-        if (node == path.back())
-            PrintIonMatrixRecursive_(*node, level, ctm);
-        else
-            ctm = PrintIonMatrix_(*node, level++, ctm);
-    }
-}
-
-static void PrintIonPathMatrices_(const IonPath_ &path,
-                                  const IonNode_ &target) {
-    ASSERT(! path.empty());
-    const IonNode_ *node = path.back();
-
-    if (node == &target)
-        PrintIonMatricesOnPath_(path);
-
-    // Recurse.
-    IonPath_ new_path = path;
-    for (const auto &child: node->GetChildren()) {
-        new_path.push_back(child.Get());
-        PrintIonPathMatrices_(new_path, target);
-        new_path.pop_back();
-    }
-}
-
 static void PrintPaneTree_(const Pane &pane, int level, bool is_brief) {
     std::cout << Indent_(level) << pane.ToString(is_brief) << "\n";
 
@@ -330,7 +250,7 @@ static void PrintModelTree_(const Model &model) {
               << " " << Util::EnumName(model.GetStatus()) << "\n";
     std::cout << Indent_(level + 1) << "mesh bounds: "
               << ComputeMeshBounds(model.GetMesh()).ToString() << "\n";
-    PrintJustNodeTransforms_(model, level);
+    PrintTransformFields_(model, level);
 
     // Recurse on ParentModels.
     if (const auto *parent = dynamic_cast<const ParentModel *>(&model)) {
@@ -338,22 +258,6 @@ static void PrintModelTree_(const Model &model) {
             PrintModelTree_(*parent->GetChildModel(i));
     }
 }
-
-#if XXXX
-// Returns the Board to use for printing, depending on what is visible in the
-// scene.
-const Board & GetBoard_(const SceneContext &sc) {
-    // These are checked in a specific order.
-    if (sc.key_board->IsShown())
-        return *sc.key_board;
-    else if (sc.app_board->IsShown())
-        return *sc.app_board;
-    else if (sc.tool_board->IsShown())
-        return *sc.tool_board;
-    else
-        return *sc.wall_board;
-}
-#endif
 
 }  // anonymous namespace
 
@@ -363,61 +267,35 @@ const Board & GetBoard_(const SceneContext &sc) {
 
 namespace Debug {
 
-void SetLogHandler(const LogHandlerPtr &log_handler) {
-    ASSERT(log_handler);
-    log_handler_ = log_handler;
-}
-
-void SetCommandList(const CommandListPtr &command_list) {
-    ASSERT(command_list);
-    command_list_ = command_list;
-}
-
-void SetSceneContext(const SceneContextPtr &scene_context) {
-    ASSERT(scene_context);
-    scene_context_ = scene_context;
-}
-
-void SetLimitPath(const SG::NodePath &path) {
-    limit_path_ = path;
-}
-
-void ShutDown() {
-    command_list_.reset();
-    scene_context_.reset();
-    limit_path_.clear();
-}
-
 void PrintObject(const Parser::Object &obj) {
     Parser::Writer writer(std::cout);
     writer.SetAddressFlag(true);
     writer.WriteObject(obj);
 }
 
-void PrintCommands() {
-    ASSERT(command_list_);
-    std::cout << "--------------------------------------------------\n";
-    PrintObject(*command_list_);
-    std::cout << "--------------------------------------------------\n";
+void PrintCommands(const CommandList &command_list) {
+    Surrounder_ surrounder;
+    PrintObject(command_list);
 }
 
 void PrintScene(const SG::Scene &scene) {
-    std::cout << "--------------------------------------------------\n";
+    Surrounder_ surrounder;
     PrintObject(scene);
-    std::cout << "--------------------------------------------------\n";
 }
 
-void PrintNodeGraph(const SG::Node &root, bool use_path) {
-    std::cout << "--------------------------------------------------\n";
+void PrintGraph(const SG::Node &root) {
+    Surrounder_ surrounder;
     Parser::Writer writer(std::cout);
     writer.SetAddressFlag(true);
-    if (use_path) {
-        if (limit_path_.empty()) {
-            std::cout << "<EMPTY PATH>\n";
-            return;
-        }
-        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
-        PathLimiter_ pl(limit_path_);
+    writer.WriteObject(root);
+}
+
+void PrintGraphOnPath(const SG::NodePath &path) {
+    Surrounder_ surrounder;
+    Parser::Writer writer(std::cout);
+    writer.SetAddressFlag(true);
+    if (PrintPath_(path)) {
+        PathLimiter_ pl(path);
         auto write_it = [&](const Parser::Object &obj, bool enter){
             const SG::Node *node = dynamic_cast<const SG::Node *>(&obj);
             bool ret = true;
@@ -429,285 +307,101 @@ void PrintNodeGraph(const SG::Node &root, bool use_path) {
             }
             return ret;
         };
-        writer.WriteObjectConditional(*limit_path_.front(), write_it);
+        writer.WriteObjectConditional(*path.front(), write_it);
     }
-    else {
-        writer.WriteObject(root);
-    }
-    std::cout << "--------------------------------------------------\n";
 }
 
-void PrintNodeBounds(const SG::Node &root, bool use_path) {
-    std::cout << "--------------------------------------------------\n";
-    if (use_path) {
-        if (limit_path_.empty()) {
-            std::cout << "<EMPTY PATH>\n";
-            return;
-        }
-        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
+void PrintBounds(const SG::Node &root, const Matrix4f &wsm) {
+    Surrounder_ surrounder;
+    PrintBoundsRecursive_(root, wsm, 0, Matrix4f::Identity());
+}
+
+void PrintBoundsOnPath(const SG::NodePath &path, const Matrix4f &wsm) {
+    Surrounder_ surrounder;
+    if (PrintPath_(path)) {
         int level = 0;
         Matrix4f ctm = Matrix4f::Identity();
-        for (auto &node: limit_path_) {
-            if (node == limit_path_.back())
-                PrintNodeBoundsRecursive_(*node, level, ctm);
+        for (auto &node: path) {
+            if (node == path.back())
+                PrintBoundsRecursive_(*node, wsm, level, ctm);
             else
-                ctm = PrintNodeBounds_(*node, level++, ctm);
+                ctm = PrintBounds_(*node, wsm, level++, ctm);
         }
     }
-    else {
-        PrintNodeBoundsRecursive_(root, 0, Matrix4f::Identity());
-    }
-    std::cout << "--------------------------------------------------\n";
 }
 
-void PrintNodeMatrices(const SG::Node &root, bool use_path) {
-    std::cout << "--------------------------------------------------\n";
-    if (use_path) {
-        if (limit_path_.empty()) {
-            std::cout << "<EMPTY PATH>\n";
-            return;
-        }
-        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
+void PrintMatrices(const SG::Node &root) {
+    Surrounder_ surrounder;
+    PrintMatricesRecursive_(root, 0, Matrix4f::Identity());
+}
+
+void PrintMatricesOnPath(const SG::NodePath &path) {
+    Surrounder_ surrounder;
+    if (PrintPath_(path)) {
         int level = 0;
         Matrix4f ctm = Matrix4f::Identity();
-        for (auto &node: limit_path_) {
-            if (node == limit_path_.back())
-                PrintNodeMatricesRecursive_(*node, level, ctm);
+        for (auto &node: path) {
+            if (node == path.back())
+                PrintMatricesRecursive_(*node, level, ctm);
             else
-                ctm = PrintNodeMatrices_(*node, level++, ctm);
+                ctm = PrintMatrices_(*node, level++, ctm);
         }
     }
-    else {
-        PrintNodeMatricesRecursive_(root, 0, Matrix4f::Identity());
-    }
-    std::cout << "--------------------------------------------------\n";
 }
 
-void PrintNodeTransforms(const SG::Node &root, bool use_path) {
-    std::cout << "--------------------------------------------------\n";
-    if (use_path) {
-        if (limit_path_.empty()) {
-            std::cout << "<EMPTY PATH>\n";
-            return;
-        }
-        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
+void PrintTransforms(const SG::Node &root) {
+    Surrounder_ surrounder;
+    PrintTransformsRecursive_(root, 0);
+}
+
+void PrintTransformsOnPath(const SG::NodePath &path) {
+    Surrounder_ surrounder;
+    if (PrintPath_(path)) {
         int level = 0;
-        for (auto &node: limit_path_) {
-            if (node == limit_path_.back())
-                PrintNodeTransformsRecursive_(*node, level);
+        for (auto &node: path) {
+            if (node == path.back())
+                PrintTransformsRecursive_(*node, level);
             else
-                PrintNodeTransforms_(*node, level++);
+                PrintTransforms_(*node, level++);
         }
     }
-    else {
-        PrintNodeTransformsRecursive_(root, 0);
-    }
-    std::cout << "--------------------------------------------------\n";
 }
 
-void PrintNodesAndShapes(const SG::Node &root, bool use_path) {
-    std::cout << "--------------------------------------------------\n";
+void PrintNodesAndShapes(const SG::Node &root) {
+    Surrounder_ surrounder;
     std::unordered_set<const SG::Object *> done;
-    if (use_path) {
-        if (limit_path_.empty()) {
-            std::cout << "<EMPTY PATH>\n";
-            return;
-        }
-        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
+    PrintNodesAndShapesRecursive_(root, 0, false, done);
+}
+
+void PrintNodesAndShapesOnPath(const SG::NodePath &path) {
+    Surrounder_ surrounder;
+    if (PrintPath_(path)) {
+        std::unordered_set<const SG::Object *> done;
         int level = 0;
-        for (auto &node: limit_path_) {
-            if (node == limit_path_.back())
+        for (auto &node: path) {
+            if (node == path.back())
                 PrintNodesAndShapesRecursive_(*node, level, false, done);
             else
                 PrintNodesAndShapes_(*node, level++, false, done);
         }
     }
-    else {
-        PrintNodesAndShapesRecursive_(root, 0, false, done);
-    }
-    std::cout << "--------------------------------------------------\n";
-}
-
-void PrintIonMatrices(const IonNode_ &root, const IonNode_ &target) {
-    std::cout << "--------------------------------------------------\n";
-    // Search for the target node, printing each path found.
-    IonPath_ path;
-    path.push_back(&root);
-    PrintIonPathMatrices_(path, target);
-    std::cout << "--------------------------------------------------\n";
 }
 
 void PrintPaneTree(const Pane &root, bool is_brief) {
-    std::cout << "--------------------------------------------------\n";
+    Surrounder_ surrounder;
     PrintPaneTree_(root, 0, is_brief);
-    std::cout << "--------------------------------------------------\n";
 }
 
-void PrintModels(const Model &model) {
-    std::cout << "--------------------------------------------------\n";
-    PrintModelTree_(model);
-    std::cout << "--------------------------------------------------\n";
+void PrintModels(const Model &root) {
+    Surrounder_ surrounder;
+    PrintModelTree_(root);
 }
 
 void PrintViewInfo(const Frustum &frustum) {
-    std::cout << "--------------------------------------------------\n";
+    Surrounder_ surrounder;
     std::cout << "Frustum:\n" << frustum.ToString() << "\n";
     std::cout << "Proj: " << GetProjectionMatrix(frustum) << "\n";
     std::cout << "View: " << GetViewMatrix(frustum) << "\n";
-    std::cout << "--------------------------------------------------\n";
-}
-
-void PrintDebugSphereLocation() {
-    auto &ds = *scene_context_->debug_sphere;
-    std::cout << "Sphere at " << ds.GetTranslation() << "\n";
-}
-
-bool ProcessPrintShortcut(const std::string &key_string) {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
-    const SG::Node &root = *scene_context_->scene->GetRootNode();
-
-    const std::string kHelp =
-R"(-----------------------------------------------------
-Debugging printing help shortcuts:
-(Current path is defined by node under mouse cursor.)
-   Alt-b: Bounds for all nodes in scene.
-   Alt-B: Bounds for all nodes in current path.
-   Alt-c: Command list.
-   Alt-d: Debug sphere location (in world coordinates).
-   Alt-g: Full node graph in scene.
-   Alt-G: Full node graph in current path.
-   Alt-h: This help.
-   Alt-I: Ion matrices in all nodes in current path.
-   Alt-m: Matrices for all nodes in scene.
-   Alt-M: Matrices for all nodes in current path.
-   Alt-n: Nodes and shapes (skeleton) in scene.
-   Alt-N: Nodes and shapes (skeleton) in current path.
-   Alt-o: Models.
-   Alt-p: Pane tree (brief) in current visible Board.
-   Alt-P: Pane tree (full)  in current visible Board.
-   Alt-t: Transforms for all nodes in scene.
-   Alt-T: Transforms for all nodes in current path.
-   Alt-v: Viewing information.
-   Alt-w: Widget intersected by simulating touch at mouse point.
-
- Non-printing shortcuts:
-   Alt-!: Toggle logging.
-   Alt-D: Toggle debug sphere display for mouse intersection.
-   Alt-l: Toggle event logging.
-   Alt-r: Reload the scene.
-   Alt-s: Toggle shadows.
------------------------------------------------------
-)";
-
-    if      (key_string == "<Alt>b") {
-        PrintNodeBounds(root, false);
-    }
-    else if (key_string == "<Alt>B") {
-        PrintNodeBounds(root, true);
-    }
-    else if (key_string == "<Alt>c") {
-        PrintCommands();
-    }
-    else if (key_string == "<Alt>d") {
-        PrintDebugSphereLocation();
-    }
-    else if (key_string == "<Alt>D") {
-        auto &ds = *scene_context_->debug_sphere;
-        ds.SetFlagEnabled(SG::Node::Flag::kRender,
-                          ! ds.IsFlagEnabled(SG::Node::Flag::kRender));
-    }
-    else if (key_string == "<Alt>e") {
-        /* XXXX
-        const auto &board = GetBoard_(*scene_context_);
-        const auto &p = scene_context_->debug_sphere->GetTranslation();
-        // XXXX
-        */
-    }
-    else if (key_string == "<Alt>f" || key_string == "<Alt>F") {
-        const auto &board = *scene_context_->app_board;
-        ASSERT(board.GetCurrentPanel());
-        PrintPaneTree(*board.GetCurrentPanel()->GetPane(),
-                      key_string == "<Alt>f");
-    }
-    else if (key_string == "<Alt>g") {
-        PrintScene(*scene_context_->scene);
-    }
-    else if (key_string == "<Alt>G") {
-        PrintNodeGraph(root, true);
-    }
-    else if (key_string == "<Alt>h") {
-        std::cout << kHelp;
-    }
-    else if (key_string == "<Alt>I") {
-        if (! limit_path_.empty())
-            PrintIonMatrices(*root.GetIonNode(),
-                             *limit_path_.back()->GetIonNode());
-    }
-    else if (key_string == "<Alt>l") {
-        if (log_handler_)
-            log_handler_->SetEnabled(! log_handler_->IsEnabled());
-    }
-    else if (key_string == "<Alt>m") {
-        PrintNodeMatrices(root, false);
-    }
-    else if (key_string == "<Alt>M") {
-        PrintNodeMatrices(root, true);
-    }
-    else if (key_string == "<Alt>n") {
-        PrintNodesAndShapes(root, false);
-    }
-    else if (key_string == "<Alt>N") {
-        PrintNodesAndShapes(root, true);
-    }
-    else if (key_string == "<Alt>o") {
-        PrintModels(*scene_context_->root_model);
-    }
-    else if (key_string == "<Alt>s") {
-        auto &sp = *scene_context_->shadow_pass;
-        sp.SetShadowsEnabled(! sp.AreShadowsEnabled());
-    }
-    else if (key_string == "<Alt>t") {
-        PrintNodeTransforms(root, false);
-    }
-    else if (key_string == "<Alt>T") {
-        PrintNodeTransforms(root, true);
-    }
-    else if (key_string == "<Alt>v") {
-        PrintViewInfo(scene_context_->frustum);
-    }
-    else if (key_string == "<Alt>w" || key_string == "<Alt>W") {
-        const auto board =
-            SG::FindTypedNodeUnderNode<Board>(root, "WallBoard");
-        ASSERT(board->GetCurrentPanel());
-        PrintPaneTree(*board->GetCurrentPanel()->GetPane(),
-                      key_string == "<Alt>w");
-    }
-#if 1 // XXXX
-    else if (key_string == "<Alt>z") { // XXXX
-        // Create a signal crash.
-        int *foo = nullptr;
-        *foo = 12;
-    }
-    else if (key_string == "<Alt>Z") { // XXXX
-        // Create an assertion failure.
-        ASSERTM(false, "Testing assertion catching");
-    }
-    else if (key_string == "<Alt>x") { // XXXX
-        // Create an exception failure.
-        throw Parser::Exception("Testing exception catching");
-    }
-#endif
-    else {
-        return false;
-    }
-    return true;
-}
-
-void DisplayText(const std::string &text) {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->debug_text);
-    scene_context_->debug_text->SetText(text);
 }
 
 }  // namespace Debug
