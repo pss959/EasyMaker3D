@@ -194,13 +194,31 @@ void Panel::SetIsShown(bool is_shown) {
 
 WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
                                           const Matrix4f &panel_to_world) {
+    // XXXX Intersection func.
+    const Pane::IntersectionFunc intersect_func = [&](const SG::Node &node,
+                                                      float &dist){
+        const CoordConv cc = GetCoordConv_(node);
+        const Matrix4f p2w = panel_to_world * cc.GetObjectToRootMatrix();
+        const auto bounds = TransformBounds(node.GetBounds(), p2w);
+        return SphereBoundsIntersect(pos, radius, bounds, dist);
+    };
+
+    // Recurse on all Panes.
+    float closest_dist = std::numeric_limits<float>::max();
+    return GetPane()->GetIntersectedWidget(intersect_func, closest_dist);
+
+#if 0 // XXXX
     // Get all enabled Widgets from all Panes that can be focused.
     std::vector<WidgetPtr> widgets;
     for (auto &pane: interactive_panes_) {
         const auto &interactor = *pane->GetInteractor();
-        if (interactor.CanFocus())
+        if (interactor.CanFocus()) {
+            std::cerr << "XXXX Calling AddEnabledWidgets on "
+                      << pane->GetDesc() << "\n";
             interactor.AddEnabledWidgets(widgets);
+        }
     }
+    std::cerr << "XXXX Widget count = " << widgets.size() << "\n";
 
     // Look for the best one.
     WidgetPtr best_widget;
@@ -218,6 +236,7 @@ WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
         }
     }
     return best_widget;
+#endif
 }
 
 void Panel::PostSetUpIon() {

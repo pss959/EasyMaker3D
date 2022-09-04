@@ -93,6 +93,20 @@ void ContainerPane::SetLayoutSize(const Vector2f &size) {
     }
 }
 
+WidgetPtr ContainerPane::GetIntersectedWidget(const IntersectionFunc &func,
+                                              float &closest_distance) {
+    // Let the base class test this Pane.
+    WidgetPtr best_widget = Pane::GetIntersectedWidget(func, closest_distance);
+
+    // Try contained Panes as well.
+    for (auto &pane: GetPanes()) {
+        if (WidgetPtr widget =
+            pane->GetIntersectedWidget(func, closest_distance))
+            best_widget = widget;
+    }
+    return best_widget;
+}
+
 void ContainerPane::PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
                                     bool offset_forward) {
     const Vector2f &ctr_pane_size = GetLayoutSize();

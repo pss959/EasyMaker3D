@@ -59,6 +59,10 @@ class ContainerPane : public Pane {
         return GetPanes();
     }
 
+    /// XXXX
+    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
+                                           float &closest_distance) override;
+
   protected:
     ContainerPane() {}
 

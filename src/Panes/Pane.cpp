@@ -8,6 +8,7 @@
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 #include "Util/String.h"
+#include "Widgets/ClickableWidget.h"
 
 void Pane::AddFields() {
     AddField(min_size_.Init("min_size",           Vector2f(1, 1)));
@@ -102,6 +103,21 @@ void Pane::SetMinSize(const Vector2f &size) {
         min_size_ = size;
         BaseSizeChanged();
     }
+}
+
+WidgetPtr Pane::GetIntersectedWidget(const IntersectionFunc &func,
+                                     float &closest_distance) {
+    WidgetPtr intersected_widget;
+    if (auto interactor = GetInteractor()) {
+        if (auto widget = interactor->GetActivationWidget()) {
+            float dist;
+            if (func(*widget, dist) && dist < closest_distance) {
+                closest_distance = dist;
+                intersected_widget = widget;
+            }
+        }
+    }
+    return intersected_widget;
 }
 
 void Pane::BaseSizeChanged() {

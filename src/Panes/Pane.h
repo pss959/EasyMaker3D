@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <string>
 
 #include "Base/Memory.h"
 #include "Items/PaneBackground.h"
@@ -12,6 +13,7 @@
 class  IPaneInteractor;
 struct Event;
 DECL_SHARED_PTR(Pane);
+DECL_SHARED_PTR(Widget);
 
 /// Pane is an abstract base class for a rectangular 2D element that lives
 /// inside a Panel. The Pane class manages automatic sizing and placement.
@@ -24,6 +26,9 @@ DECL_SHARED_PTR(Pane);
 /// \ingroup Panes
 class Pane : public SG::Node {
   public:
+    /// XXXX Function passed to Pane::GetIntersectedWidget().
+    typedef std::function<bool(const SG::Node &, float &)> IntersectionFunc;
+
     /// \name Size-related functions
     ///@{
 
@@ -74,6 +79,10 @@ class Pane : public SG::Node {
     /// Pane. The base class defines this to return null, meaning that the Pane
     /// is not interactive.
     virtual IPaneInteractor * GetInteractor() { return nullptr; }
+
+    /// XXXX
+    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
+                                           float &closest_distance);
 
     /// Returns true if the Pane has a background set.
     bool HasBackground() const { return background_.GetValue().get(); }

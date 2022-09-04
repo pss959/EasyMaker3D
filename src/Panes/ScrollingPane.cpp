@@ -104,6 +104,10 @@ bool ScrollingPane::HandleEvent(const Event &event) {
 }
 
 void ScrollingPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    // Do not add widgets that are clipped away.
+    std::cerr << "XXXX In ScrollingPane::AddEnabledWidgets for "
+              << GetDesc() << "\n";
+
     // XXXX Call contents to add all widgets?
 }
 

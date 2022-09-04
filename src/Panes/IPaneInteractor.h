@@ -57,5 +57,6 @@ class IPaneInteractor {
     /// Adds all enabled interactive Widgets belonging to the Pane to the given
     /// vector. This is used to find the best Widget to touch for touch
     /// interaction. The default is to do nothing.
+    // XXXX Get rid of this!
     virtual void AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {};
 };
