@@ -1,19 +1,7 @@
 #include "Widgets/Slider2DWidget.h"
 
-#include <ion/math/vectorutils.h>
-
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
-
-/// Convenience to convert a Vector3f to a Vector2f in the X/Y plane.
-static Vector2f ToVector2f(const Vector3f &v) {
-    return ion::math::WithoutDimension(v, 2);
-}
-
-/// Convenience to convert a Point3f to a Point2f in the X/Y plane.
-static Point2f ToPoint2f(const Point3f &v) {
-    return ion::math::WithoutDimension(v, 2);
-}
 
 Vector2f Slider2DWidget::GetInterpolated() const {
     return Lerp(GetValue(), GetMinValue(), GetMaxValue());

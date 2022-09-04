@@ -11,6 +11,19 @@
 /// \ingroup Math
 
 // ----------------------------------------------------------------------------
+// Dimension conversion functions.
+// ----------------------------------------------------------------------------
+
+/// Convenience to convert a Vector3f to a Vector2f in the X/Y plane.
+Vector2f ToVector2f(const Vector3f &v);
+
+/// Convenience to convert a Point3f to a Point2f in the X/Y plane.
+Point2f ToPoint2f(const Point3f &p);
+
+/// Convenience to convert a Range3f to a Range2f in the X/Y plane.
+Range2f ToRange2f(const Range3f &r);
+
+// ----------------------------------------------------------------------------
 // Transformation functions.
 // ----------------------------------------------------------------------------
 

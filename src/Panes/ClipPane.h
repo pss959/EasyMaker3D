@@ -22,6 +22,10 @@ class ClipPane : public BoxPane {
     /// Returns the current offset of the clipped contents.
     Vector2f GetContentsOffset() const;
 
+    /// XXXX
+    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
+                                           float &closest_distance) override;
+
   protected:
     ClipPane() {}
 

@@ -2,8 +2,25 @@
 
 #include <ion/math/angleutils.h>
 #include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
 
 #include <algorithm>
+
+// ----------------------------------------------------------------------------
+// Dimension conversion functions.
+// ----------------------------------------------------------------------------
+
+Vector2f ToVector2f(const Vector3f &v) {
+    return ion::math::WithoutDimension(v, 2);
+}
+
+Point2f ToPoint2f(const Point3f &p) {
+    return ion::math::WithoutDimension(p, 2);
+}
+
+Range2f ToRange2f(const Range3f &r) {
+    return Range2f(ToPoint2f(r.GetMinPoint()), ToPoint2f(r.GetMaxPoint()));
+}
 
 // ----------------------------------------------------------------------------
 // Transformation functions.
