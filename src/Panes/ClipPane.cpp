@@ -37,6 +37,8 @@ WidgetPtr ClipPane::GetIntersectedWidget(const IntersectionFunc &func,
     const Range2f &clip_rect = ToRange2f(GetBounds());
     const Vector2f offset = GetContentsOffset();
     for (auto &pane: GetPanes()) {
+        if (! pane->IsEnabled())
+            continue;
         Range2f pane_rect = ToRange2f(TransformBounds(pane->GetBounds(),
                                                       pane->GetModelMatrix()));
         pane_rect.Set(pane_rect.GetMinPoint() + offset,

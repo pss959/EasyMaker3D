@@ -57,8 +57,6 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     virtual void Deactivate() override;
     virtual bool IsActive() const override;
     virtual bool HandleEvent(const Event &event) override;
-    virtual void AddEnabledWidgets(
-        std::vector<WidgetPtr> &widgets) const override;
 
     /// Redefines this to return an empty vector, since nothing inside the
     /// DropdownPane should be focused individually.

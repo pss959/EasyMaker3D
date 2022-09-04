@@ -18,8 +18,6 @@ class TouchWrapperPane : public BoxPane, public IPaneInteractor {
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual bool CanFocus() const override;
-    virtual void AddEnabledWidgets(
-        std::vector<WidgetPtr> &widgets) const override;
 
   protected:
     TouchWrapperPane() {}

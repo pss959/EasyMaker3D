@@ -47,8 +47,6 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
 
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual bool CanFocus() const override { return true; }
-    virtual void AddEnabledWidgets(
-        std::vector<WidgetPtr> &widgets) const override;
 
   protected:
     ProfilePane();

@@ -306,8 +306,6 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     virtual void Deactivate() override;
     virtual bool IsActive() const override { return is_active_; }
     virtual bool HandleEvent(const Event &event) override;
-    virtual void AddEnabledWidgets(
-        std::vector<WidgetPtr> &widgets) const override;
 
     /// This is called when it is known that the pane's width has changed.
     void UpdateForWidthChange() {
@@ -517,13 +515,6 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
     }
 
     return ret;
-}
-
-void TextInputPane::Impl_::AddEnabledWidgets(
-    std::vector<WidgetPtr> &widgets) const {
-    const auto widget = GetActivationWidget();
-    if (widget->IsInteractionEnabled())
-        widgets.push_back(widget);
 }
 
 void TextInputPane::Impl_::InitActionMap_() {

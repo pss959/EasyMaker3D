@@ -98,11 +98,13 @@ WidgetPtr ContainerPane::GetIntersectedWidget(const IntersectionFunc &func,
     // Let the base class test this Pane.
     WidgetPtr best_widget = Pane::GetIntersectedWidget(func, closest_distance);
 
-    // Try contained Panes as well.
+    // Try enabled contained Panes as well.
     for (auto &pane: GetPanes()) {
-        if (WidgetPtr widget =
-            pane->GetIntersectedWidget(func, closest_distance))
-            best_widget = widget;
+        if (pane->IsEnabled()) {
+            if (WidgetPtr widget =
+                pane->GetIntersectedWidget(func, closest_distance))
+                best_widget = widget;
+        }
     }
     return best_widget;
 }

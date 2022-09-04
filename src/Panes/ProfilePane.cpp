@@ -34,7 +34,6 @@ class ProfilePane::Impl_ {
     const Profile & GetProfile() const { return profile_; }
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
-    void AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const;
 
   private:
     SG::Node     &root_node_;
@@ -208,14 +207,6 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     }
 
     return widget;
-}
-
-void ProfilePane::Impl_::AddEnabledWidgets(
-    std::vector<WidgetPtr> &widgets) const {
-    const size_t point_count = profile_.GetPoints().size();
-    for (size_t i = 0; i < point_count; ++i)
-        widgets.push_back(GetMovableSlider_(i));
-    widgets.push_back(area_widget_);
 }
 
 void ProfilePane::Impl_::PositionFixedPoints_() {
@@ -579,8 +570,4 @@ void ProfilePane::SetLayoutSize(const Vector2f &size) {
 
 ClickableWidgetPtr ProfilePane::GetGripWidget(const Point2f &p) {
     return impl_->GetGripWidget(p);
-}
-
-void ProfilePane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
-    impl_->AddEnabledWidgets(widgets);
 }

@@ -53,10 +53,4 @@ class IPaneInteractor {
     /// Possibly handles the given Event, returning true if it was handled. The
     /// default is to just return false.
     virtual bool HandleEvent(const Event &event) { return false; }
-
-    /// Adds all enabled interactive Widgets belonging to the Pane to the given
-    /// vector. This is used to find the best Widget to touch for touch
-    /// interaction. The default is to do nothing.
-    // XXXX Get rid of this!
-    virtual void AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {};
 };

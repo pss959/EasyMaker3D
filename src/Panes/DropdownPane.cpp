@@ -181,23 +181,6 @@ bool DropdownPane::HandleEvent(const Event &event) {
     return handled;
 }
 
-void DropdownPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
-    // If the menu is visible, add all of its enabled buttons.
-    if (IsActive()) {
-        for (auto &pane: menu_pane_->GetContentsPane()->GetPanes()) {
-            ASSERT(pane->GetInteractor());
-            pane->GetInteractor()->AddEnabledWidgets(widgets);
-        }
-    }
-
-    // Otherwise, just add the button that opens the choice menu.
-    else {
-        auto but = GetActivationWidget();
-        if (but->IsInteractionEnabled())
-            widgets.push_back(but);
-    }
-}
-
 Vector2f DropdownPane::ComputeBaseSize() const {
     return Vector2f(menu_pane_->GetMinSize()[0],
                     BoxPane::ComputeBaseSize()[1]);

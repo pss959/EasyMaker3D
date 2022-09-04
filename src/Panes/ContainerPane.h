@@ -59,7 +59,7 @@ class ContainerPane : public Pane {
         return GetPanes();
     }
 
-    /// XXXX
+    /// Redefines this to also test child Panes.
     virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
                                            float &closest_distance) override;
 

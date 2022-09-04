@@ -26,7 +26,11 @@ DECL_SHARED_PTR(Widget);
 /// \ingroup Panes
 class Pane : public SG::Node {
   public:
-    /// XXXX Function passed to Pane::GetIntersectedWidget().
+    /// Typedef for an intersection function passed to
+    /// Pane::GetIntersectedWidget(). This takes a Node to test and a distance
+    /// (by reference); If there is an intersection with the touch sphere and
+    /// the intersection distance is less than the current distance, this
+    /// returns true and modifies the distance.
     typedef std::function<bool(const SG::Node &, float &)> IntersectionFunc;
 
     /// \name Size-related functions
@@ -80,7 +84,9 @@ class Pane : public SG::Node {
     /// is not interactive.
     virtual IPaneInteractor * GetInteractor() { return nullptr; }
 
-    /// XXXX
+    /// This is used for touch interaction to find the best Widget (if any)
+    /// intersected by a touch sphere. The given IntersectionFunc can be used
+    /// to test a Widget (or any other Node) to see if it is intersected.
     virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
                                            float &closest_distance);
 

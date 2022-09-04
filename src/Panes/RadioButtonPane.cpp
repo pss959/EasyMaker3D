@@ -85,11 +85,6 @@ void RadioButtonPane::Activate() {
     Toggle_();
 }
 
-void RadioButtonPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
-    if (button_->IsInteractionEnabled())
-        widgets.push_back(button_);
-}
-
 void RadioButtonPane::Toggle_() {
     if (group_) {
         // If this button is part of a group, toggle it only if it is off.

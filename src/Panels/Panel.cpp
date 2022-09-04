@@ -194,7 +194,9 @@ void Panel::SetIsShown(bool is_shown) {
 
 WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
                                           const Matrix4f &panel_to_world) {
-    // XXXX Intersection func.
+    // This intersection function is used by Panes to see if the touch sphere
+    // intersects a Node (typically a Widget). It converts the Node's bounds
+    // into world coordinates, which is where the touch sphere is defined.
     const Pane::IntersectionFunc intersect_func = [&](const SG::Node &node,
                                                       float &dist){
         const CoordConv cc = GetCoordConv_(node);
@@ -206,37 +208,6 @@ WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
     // Recurse on all Panes.
     float closest_dist = std::numeric_limits<float>::max();
     return GetPane()->GetIntersectedWidget(intersect_func, closest_dist);
-
-#if 0 // XXXX
-    // Get all enabled Widgets from all Panes that can be focused.
-    std::vector<WidgetPtr> widgets;
-    for (auto &pane: interactive_panes_) {
-        const auto &interactor = *pane->GetInteractor();
-        if (interactor.CanFocus()) {
-            std::cerr << "XXXX Calling AddEnabledWidgets on "
-                      << pane->GetDesc() << "\n";
-            interactor.AddEnabledWidgets(widgets);
-        }
-    }
-    std::cerr << "XXXX Widget count = " << widgets.size() << "\n";
-
-    // Look for the best one.
-    WidgetPtr best_widget;
-    float closest_dist = std::numeric_limits<float>::max();
-    for (auto &widget: widgets) {
-        float dist;
-        // Convert the Widget bounds into world coordinates.
-        const CoordConv cc = GetCoordConv_(*widget);
-        const Matrix4f p2w = panel_to_world * cc.GetObjectToRootMatrix();
-        const auto bounds = TransformBounds(widget->GetBounds(), p2w);
-        if (SphereBoundsIntersect(pos, radius, bounds, dist) &&
-            dist < closest_dist) {
-            closest_dist = dist;
-            best_widget = widget;
-        }
-    }
-    return best_widget;
-#endif
 }
 
 void Panel::PostSetUpIon() {
