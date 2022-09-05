@@ -24,7 +24,6 @@ class CheckboxPane : public LeafPane, public IPaneInteractor {
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;
     virtual bool CanFocus() const override;
-    virtual void Activate() override;
 
   protected:
     CheckboxPane() {}

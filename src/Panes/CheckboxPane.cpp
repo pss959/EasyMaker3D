@@ -43,11 +43,6 @@ bool CheckboxPane::CanFocus() const {
     return true;
 }
 
-void CheckboxPane::Activate() {
-    // Activation is equivalent to clicking the checkbox.
-    Toggle_();
-}
-
 void CheckboxPane::Toggle_() {
     SetState(! state_.GetValue());
 }
