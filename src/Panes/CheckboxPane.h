@@ -14,6 +14,9 @@ DECL_SHARED_PTR(PushButtonWidget);
 /// \ingroup Panes
 class CheckboxPane : public LeafPane, public IPaneInteractor {
   public:
+    /// Returns a Notifier that is invoked when the button changes state.
+    Util::Notifier<> & GetStateChanged() { return state_changed_; }
+
     /// Returns the current state of the checkbox.
     bool GetState() const { return state_; }
 
@@ -36,6 +39,9 @@ class CheckboxPane : public LeafPane, public IPaneInteractor {
     ///@{
     Parser::TField<bool> state_;
     ///@}
+
+    /// Notifies when the button state changes.
+    Util::Notifier<> state_changed_;
 
     PushButtonWidgetPtr button_;
 

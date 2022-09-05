@@ -301,6 +301,10 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
 
+    // Update the file list when the user toggles "Show Hidden Files".
+    hidden_files_pane_->GetStateChanged().AddObserver(
+        this, [&](){ UpdateFiles_(true); });
+
     // Remove the FileButton from the list of Panes so it does not show up.
     root_pane.RemovePane(file_button_pane_);
 
@@ -445,11 +449,16 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     ASSERT(file_list_pane_->GetContentsPane());
     file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 
-    // Scroll to the highlighted file, if any. Otherwise, reset the scroll.
-    if (scroll_to_highlighted_file && highlighted_index_ >= 0)
+    // Scroll to and focus on the highlighted file, if any. Otherwise, reset
+    // the scroll.
+    if (scroll_to_highlighted_file && highlighted_index_ >= 0) {
         ScrollToViewFileButton_(highlighted_index_);
-    else
+        FocusFileButton_();
+    }
+    else {
         file_list_pane_->ScrollTo(0);
+        focus_func_(cancel_button_pane_);
+    }
 }
 
 int FilePanel::Impl_::CreateFileButtons_(
@@ -511,7 +520,9 @@ void FilePanel::Impl_::FocusFileButton_() {
     // button.
     const size_t index = highlighted_index_ < 0 ? 0 :
         static_cast<size_t>(highlighted_index_);
-    focus_func_(file_list_pane_->GetContentsPane()->GetPanes()[index]);
+    const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
+    ASSERT(index < panes.size());
+    focus_func_(panes[index]);
 }
 
 void FilePanel::Impl_::ScrollToViewFileButton_(size_t index) {

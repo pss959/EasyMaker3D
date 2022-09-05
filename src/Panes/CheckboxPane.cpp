@@ -45,6 +45,7 @@ bool CheckboxPane::CanFocus() const {
 
 void CheckboxPane::Toggle_() {
     SetState(! state_.GetValue());
+    state_changed_.Notify();
 }
 
 void CheckboxPane::UpdateState_() {
