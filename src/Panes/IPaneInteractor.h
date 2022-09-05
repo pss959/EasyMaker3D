@@ -7,7 +7,6 @@
 struct Event;
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(VirtualKeyboard);
-DECL_SHARED_PTR(Widget);
 
 /// IPaneInteractor is an interface class for Pane classes that can respond to
 /// input events. Any interactive Pane must supply a non-null IPaneInteractor
