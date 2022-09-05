@@ -144,7 +144,6 @@ BoxPane "TreePane" {
   # translated in the code to match the ScrollingPane size.
   children: [
     Node "RectSelect" {
-      translation: 0 0 $PANE_Z_OFFSET,
       children: [
         GenericWidget "Widget" {
           disabled_flags: "kRender",  # Invisible.

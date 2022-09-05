@@ -20,8 +20,6 @@ class CheckboxPane : public LeafPane, public IPaneInteractor {
     /// Sets the state of the checkbox.
     void SetState(bool new_state);
 
-    virtual void PostSetUpIon() override;
-
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;
@@ -31,6 +29,7 @@ class CheckboxPane : public LeafPane, public IPaneInteractor {
   protected:
     CheckboxPane() {}
 
+    virtual void CreationDone() override;
     virtual void AddFields() override;
 
   private:

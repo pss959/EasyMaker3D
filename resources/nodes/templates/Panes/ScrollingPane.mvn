@@ -26,7 +26,6 @@ ScrollingPane "T_ScrollingPane" {
                   hover_scale: 1.2 1.2 1,
                   children: [
                     Node "Thumb" {
-                      translation: 0 0 $PANE_Z_OFFSET,  # In front of track
                       shapes: [ Rectangle { size: 14 14 } ]
                     },
                   ]

@@ -35,6 +35,10 @@ void ScrollingPane::CreationDone() {
         slider_pane_ = FindTypedPane<SliderPane>("Slider");
         slider_pane_->GetValueChanged().AddObserver(
             this, [&](float val){ ScrollTo(1 - val); });
+
+        // Find and offset the thumb in Z.
+        thumb_ = SG::FindNodeUnderNode(*this, "Thumb");
+        thumb_->SetTranslation(Vector3f(0, 0, TK::kPaneZOffset));
     }
 }
 
@@ -58,8 +62,7 @@ void ScrollingPane::SetLayoutSize(const Vector2f &size) {
     scroll_factor_ = size_diff / clip_size;
 
     // Update the range of the thumb to fit the new size.
-    const float thumb_height =
-        SG::FindNodeUnderNode(*this, "Thumb")->GetBounds().GetSize()[1];
+    const float thumb_height = thumb_->GetBounds().GetSize()[1];
     const float half_size = .5f - thumb_height / size[1];
     slider_pane_->SetNormalizedSliderRange(Vector2f(-half_size, half_size));
 

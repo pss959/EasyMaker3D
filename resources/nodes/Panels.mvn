@@ -9,10 +9,6 @@ Node "Panels" {
     # Other shorthand.
     CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",
     RESIZE_WH:   "resize_width: True, resize_height: True",
-
-    # Pane Z offsets to reduce Z-fighting.
-    PANE_Z_OFFSET:  ".1",
-    PANE_Z_OFFSET2: ".2",
   ],
 
   TEMPLATES: [

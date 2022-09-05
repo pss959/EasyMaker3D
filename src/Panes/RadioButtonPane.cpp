@@ -1,6 +1,7 @@
 #include "Panes/RadioButtonPane.h"
 
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -16,8 +17,14 @@ void RadioButtonPane::CreationDone() {
     LeafPane::CreationDone();
 
     if (! IsTemplate()) {
+        // Offset in Z for button and checkmark.
+        const Vector3f z_offset(0, 0, TK::kPaneZOffset);
+
         button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
         check_  = SG::FindNodeUnderNode(*this, "Check");
+
+        check_->SetTranslation(z_offset);
+        button_->SetTranslation(2 * z_offset);
     }
 }
 

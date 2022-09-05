@@ -1,6 +1,7 @@
 #include "Panes/CheckboxPane.h"
 
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Widgets/PushButtonWidget.h"
@@ -16,13 +17,22 @@ void CheckboxPane::SetState(bool new_state) {
     UpdateState_();
 }
 
-void CheckboxPane::PostSetUpIon() {
-    Pane::PostSetUpIon();
+void CheckboxPane::CreationDone() {
+    LeafPane::CreationDone();
 
-    // Set up the PushButtonWidget.
-    button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
-    button_->GetClicked().AddObserver(
-        this, [this](const ClickInfo &){ Toggle_(); });
+    if (! IsTemplate()) {
+        // Offset in Z for button and checkmark.
+        const Vector3f z_offset(0, 0, TK::kPaneZOffset);
+
+        // Set up the check geometry.
+        SG::FindNodeUnderNode(*this, "Check")->SetTranslation(z_offset);
+
+        // Set up the PushButtonWidget.
+        button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
+        button_->SetTranslation(2 * z_offset);
+        button_->GetClicked().AddObserver(
+            this, [this](const ClickInfo &){ Toggle_(); });
+    }
 }
 
 ClickableWidgetPtr CheckboxPane::GetActivationWidget() const {

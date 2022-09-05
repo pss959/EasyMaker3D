@@ -58,6 +58,7 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     ///@}
 
     SliderPanePtr slider_pane_;
+    SG::NodePtr   thumb_;
 
     /// Current position of the scrolled area. 0 is at the top, 1 is at the
     /// bottom.
