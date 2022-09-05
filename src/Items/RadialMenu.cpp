@@ -9,6 +9,7 @@
 #include "SG/Search.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
+#include "Util/String.h"
 #include "Widgets/PushButtonWidget.h"
 
 namespace {
@@ -127,7 +128,8 @@ void RadialMenu::InitCircle_(const std::string &name, float radius) {
 
 void RadialMenu::InitButton_(size_t count, size_t index, Button_ &button) {
     // Create a clone of the button template.
-    auto but = button_->CloneTyped<PushButtonWidget>(true);
+    const std::string name = "Button_" + Util::ToString(index);
+    auto but = button_->CloneTyped<PushButtonWidget>(true, name);
 
     // Set up the geometry.
     Point2f center;

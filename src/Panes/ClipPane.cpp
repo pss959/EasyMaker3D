@@ -28,7 +28,8 @@ Vector2f ClipPane::GetContentsOffset() const {
 WidgetPtr ClipPane::GetIntersectedWidget(const IntersectionFunc &func,
                                          float &closest_distance) {
     // Let the base class test this Pane.
-    WidgetPtr best_widget = Pane::GetIntersectedWidget(func, closest_distance);
+    WidgetPtr best_widget = BoxPane::GetIntersectedWidget(func,
+                                                          closest_distance);
 
     // Try unclipped contained Panes as well. This is the same as in the
     // ContainerPane version, except that this skips contained Panes that do
