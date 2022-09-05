@@ -64,8 +64,9 @@ bool SessionManager::LoadSession(const FilePath &path, std::string &error) {
     return LoadSessionSafe_(path, &error);
 }
 
-bool SessionManager::CanExport() const {
-    return selection_manager_->GetSelection().HasAny();
+std::string SessionManager::GetModelNameForExport() const {
+    const auto &sel = selection_manager_->GetSelection();
+    return sel.HasAny() ? sel.GetPrimary().GetModel()->GetName() : "";
 }
 
 bool SessionManager::Export(const FilePath &path, FileFormat format,

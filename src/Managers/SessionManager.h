@@ -64,8 +64,9 @@ class SessionManager {
     /// error to an informative string if anything fails.
     bool LoadSession(const FilePath &path, std::string &error);
 
-    /// Returns true if there is a current Model that can be exported.
-    bool CanExport() const;
+    /// Returns the name of the Model that can be exported, or an empty string
+    /// if there is none.
+    std::string GetModelNameForExport() const;
 
     /// Exports the current Model to the given path in the given format using
     /// the given ConversionInfo.  Returns true if all went well.

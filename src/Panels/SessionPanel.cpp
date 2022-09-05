@@ -1,6 +1,7 @@
 #include "Panels/SessionPanel.h"
 
 #include "Items/Settings.h"
+#include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
@@ -63,9 +64,9 @@ void SessionPanel::UpdateInterface() {
     SetButtonText("Continue", continue_text);
     EnableButton("Continue",  have_name || has_changes);
 
-    EnableButton("Load",      true);
-    EnableButton("Save",      have_name && has_changes);
-    EnableButton("Export",    session_manager.CanExport());
+    EnableButton("Load",   true);
+    EnableButton("Save",   have_name && has_changes);
+    EnableButton("Export", ! session_manager.GetModelNameForExport().empty());
 
     // Move the focus to a button that is enabled unless there is already a
     // focused pane.
@@ -209,15 +210,13 @@ void SessionPanel::ExportSelection_() {
 }
 
 FilePath SessionPanel::GetInitialExportPath_() {
-    // If the current session file is named "Foo.mvr", assume the STL target
-    // file is "Foo.stl". Otherwise, leave the name blank.
-    const auto &settings = GetSettings();
-    const FilePath &session_path = settings.GetLastSessionPath();
+    // Get the name of the selected Model and use it for the path.
+    const std::string model_name =
+        GetContext().session_manager->GetModelNameForExport();
+    ASSERT(! model_name.empty());
 
-    const std::string file_name = ! session_path ? "" :
-        Util::ReplaceString(session_path.GetFileName(), ".mvr", ".stl");
-
-    return FilePath::Join(settings.GetExportDirectory(), file_name);
+    return FilePath::Join(GetSettings().GetExportDirectory(),
+                          model_name + ".stl");
 }
 
 void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
