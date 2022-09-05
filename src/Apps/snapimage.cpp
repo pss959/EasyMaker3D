@@ -129,7 +129,7 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
     // Rows of image need to be inverted (GL vs stblib).
     ion::image::FlipImage(image);
 
-    const FilePath path("PublicDoc/snaps/images/" + file_name);
+    const FilePath path("PublicDoc/docs/images/" + file_name);
     const void *pp =
         reinterpret_cast<const void *>(image->GetData()->GetData<uint8>());
     if (! stbi_write_jpg(path.ToString().c_str(), w, h, 3, pp, 100)) {
@@ -162,6 +162,7 @@ R"(snapimage: Reads a script with instructions on how to create snapshot images
       snapimage SCRIPT
 
     Script files are relative to PublicDoc/snaps/scripts.
+    Image files are placed in PublicDoc/docs/images.
 )";
 
 int main(int argc, const char *argv[]) {

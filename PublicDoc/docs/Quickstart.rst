@@ -15,6 +15,12 @@ A Simple Example (Non-VR)
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.
 
+.. figure:: /images/Doorstop.jpg
+   :width: 300px
+   :align: center
+
+|after-image|
+
 Start the Application
 .....................
 

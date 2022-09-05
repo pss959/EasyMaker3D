@@ -753,7 +753,8 @@ app_env.Append(
 if platform == 'windows' and mode == "rel":
     app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
 
-main_app = None
+main_app  = None
+snapimage = None
 for app_name in apps:
     app = app_env.Program(
         f'$BUILD_DIR/Apps/{app_name}',
@@ -763,38 +764,43 @@ for app_name in apps:
 
     # Main app is special
     if app_name == main_app_name:
-        main_app = app
+        main_app = app[0]
+    elif app_name == 'snapimage':
+        snapimage = app[0]
 
 # -----------------------------------------------------------------------------
 # Include Ion, submodule, resources, test, internal doc, and public doc build
 # files.
 # -----------------------------------------------------------------------------
 
-# Icons are built only on Linux. Building on different platforms creates
-# slightly different image files, causing git thrashing. No need for that once
-# everything is built.
-if platform == 'linux':
-    reg_env.Alias('Icons', SConscript('resources/SConscript'))
-    # Applications depend on the icons.
-    reg_env.Depends('Apps', 'Icons')
-
 exports = {
     'submodules'   : ['brief', 'build_dir', 'platform_env'],
     'tests'        : ['reg_env', 'cov_env', 'main_lib', 'run_program',
                       'cov_lib_objects'],
     'internal_doc' : ['doc_build_dir', 'APP_NAME', 'VERSION_STRING'],
-    'public_doc'   : ['doc_build_dir', 'APP_NAME', 'VERSION_STRING'],
+    'public_doc'   : ['doc_build_dir', 'snapimage',
+                      'APP_NAME', 'VERSION_STRING'],
     'ion_lib'      : ['brief', 'build_dir', 'mode', 'platform_env'],
 }
 
-SConscript('submodules/SConscript', exports['submodules'])
-SConscript('src/Tests/SConscript',  exports['tests'],
-           variant_dir=f'{build_dir}/Tests')
+# Build Ion on all platforms.
+ion_lib = SConscript('ionsrc/Ion/SConscript',  exports['ion_lib'],
+                     variant_dir=f'{build_dir}/Ion', duplicate=False)
 
-internal_doc = SConscript('InternalDoc/SConscript', exports['internal_doc'])
-public_doc   = SConscript('PublicDoc/SConscript',   exports['public_doc'])
-ion_lib      = SConscript('ionsrc/Ion/SConscript',  exports['ion_lib'],
-                          variant_dir=f'{build_dir}/Ion', duplicate=False)
+# Documentation and menu icons are built only on Linux. Building on different
+# platforms creates slightly different image files, causing git thrashing. No
+# need for that once everything is built.
+if platform == 'linux':
+    reg_env.Alias('Icons', SConscript('resources/SConscript'))
+    # Applications depend on the icons.
+    reg_env.Depends('Apps', 'Icons')
+
+    SConscript('submodules/SConscript', exports['submodules'])
+    SConscript('src/Tests/SConscript',  exports['tests'],
+               variant_dir=f'{build_dir}/Tests')
+
+    internal_doc = SConscript('InternalDoc/SConscript', exports['internal_doc'])
+    public_doc   = SConscript('PublicDoc/SConscript',   exports['public_doc'])
 
 # -----------------------------------------------------------------------------
 # Building the release as a Zip file.
