@@ -108,8 +108,7 @@ void Pane::SetMinSize(const Vector2f &size) {
 WidgetPtr Pane::GetIntersectedWidget(const IntersectionFunc &func,
                                      float &closest_distance) {
     WidgetPtr intersected_widget;
-    const auto interactor = GetInteractor();
-    if (interactor && interactor->CanFocus()) {
+    if (const auto interactor = GetInteractor()) {
         const auto widget = interactor->GetActivationWidget();
         if (widget && widget->IsInteractionEnabled()) {
             float dist;
