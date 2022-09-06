@@ -97,12 +97,21 @@
 }
 
 /* -----------------------------------------------------------------------------
- * Miscellaneous.
+ * Figures/images.
  * -------------------------------------------------------------------------- */
 
 /* Put a border around all images. */
 img {
     border: 1px solid #444444;
+}
+
+.large-centered-image {
+    width: 500px;
+}
+
+.caption {
+    margin-top: 10px;
+    text-align: center;
 }
 
 /* Special class assigned to an item after an image so it does not
@@ -114,6 +123,10 @@ img {
     margin: 0;
     padding: 0;
 }
+
+/* -----------------------------------------------------------------------------
+ * Miscellaneous.
+ * -------------------------------------------------------------------------- */
 
 /* Style used for the application name. */
 .appname {

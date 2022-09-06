@@ -1,6 +1,0 @@
-# Generate the model used in the logo.
-#
-
-load Logo.mvr
-select
-snap 0 0 1 1 Logo.jpg

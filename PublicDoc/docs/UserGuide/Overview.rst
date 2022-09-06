@@ -7,47 +7,72 @@ is designed to be relatively simple to use, even for someone with little to no
 of 3D modelers like `Blender <https://www.blender.org/>`_, you might find
 |appname| useful.
 
-|appname| is inspired somewhat by [OpenSCAD](http://openscad.org/) (my favorite
-program for creating 3D models). OpenSCAD is great if you don't mind typing in
-numbers for everything and have a reasonable amount of 3D graphics
+|appname| is inspired somewhat by `OpenSCAD <http://openscad.org/>`_ (my
+favorite program for creating 3D models). OpenSCAD is great if you don't mind
+typing in numbers for everything and have a reasonable amount of 3D graphics
 experience. |appname| is designed to have a similar amount of power while still
 being useful to beginners.
 
-Workflow
-........
+Jump Right In?
+..............
+
+|appname| is designed to be reasonably intuitive to use, but there are a few
+things that may need explanation before you can dive into using it. Here are
+some sections you may want to refer to:
+
+ * :ref:`workflow`: describes basic use of the application to create models for
+   3D printing.
+ * :ref:`the-work-area`: describes the various interactive parts of the work
+   area and what they do.
+
+ * :ref:`vr-modes`: describes how to use the application with VR equipment if
+   you have some.
+
+.. _workflow:
+
+Typical Workflow
+................
 
 Typical use of |appname| to create models for 3D printing involves the following
 steps:
 
-+ Create one or more models of different types or import existing models in
-  [STL format](https://en.wikipedia.org/wiki/STL_(file_format)).
-+ Edit the models and/or combine them in different ways to create new models.
-+ Export any of the resulting models to STL files to send to a 3D printer.
+ * Create one or more basic models of different types or import existing models
+   in `STL format <https://en.wikipedia.org/wiki/STL_(file_format)>`_.
+ * Edit the models and/or combine them in different ways to create new models.
+ * Export any of the resulting models to STL files to send to a 3D printer.
 
 Because precision is extremely important when 3D printing, |appname| has several
 features that allow you to create models with exact dimensions, orientations,
 and positions. See the section on [precision][Precision] for details.
 
+.. _the-work-area:
+
 The Work Area
 .............
 
-![The (empty) |appname| work area][ImgWorkArea]
+.. figure:: /images/WorkArea.jpg
+   :align: center
+   :figclass: large-centered-image
+
+.. rst-class:: caption
+
+The (empty) |appname| work area.
 
 The work area in |appname| is based conceptually on a virtual workshop. You may
 notice the following elements:
 
-+ Four walls, a floor, and a ceiling. They just provide scene context.
-+ An exit sign. Clicking on this exits the application. If you haven't saved
+* Four walls, a floor, and a ceiling. They just provide scene context.
+* An exit sign. Clicking on this exits the application. If you haven't saved
   your session, you will be asked to do so.
-+ A large disc in the middle of the floor with a grid on it. This is the
+* A large disc in the middle of the floor with a grid on it. This is the
   [stage][Stage] on which models are built.
-+ A pole on the right with a ring around it. The ring is a {{term('height
+* A pole on the right with a ring around it. The ring is a {{term('height
   slider')}} that can be used to [change the view height][Viewing].
-+ Several shelves with 3D icons on them. Each icon represents an
+* Several shelves with 3D icons on them. Each icon represents an
   [action][Actions] that makes a change to the scene or program state.
-+ A caliper to the right of the exit sign with text that shows the current
+* A caliper to the right of the exit sign with text that shows the current
   [precision level][Precision], along with buttons to increase or decrease it.
-+ A large framed panel on the right of the back wall. This is the [Tree
+* A large framed panel on the right of the back wall. This is the [Tree
   Panel][TreePanel] that shows your models in tree form and provides various
   ways to interact with them.
 
@@ -89,8 +114,8 @@ ridiculous left-handed coordinate system bother you.')}}
 |appname| is essentially unit-independent. The only places where units are
 considered are:
 
-+ When models are imported or exported from or to STL files.
-+ When the 3D printer [build volume][BuildVolume] is shown.
+* When models are imported or exported from or to STL files.
+* When the 3D printer [build volume][BuildVolume] is shown.
 
 The [Settings Panel][SettingsPanel] allows you to specify [how to convert
 units][UnitConversion] when importing and exporting, and also how large the

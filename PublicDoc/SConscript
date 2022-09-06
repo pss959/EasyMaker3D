@@ -48,6 +48,7 @@ image_dir  = './docs/images'
 image_names = [
     'Doorstop',
     'Logo',
+    'WorkArea',
 ]
 
 scripts      = Glob(f'{script_dir}/*', strings=True)
