@@ -19,7 +19,7 @@ model and output it as an STL file.
    :width: 300px
    :align: center
 
-|after-image|
+|block-image|
 
 Start the Application
 .....................

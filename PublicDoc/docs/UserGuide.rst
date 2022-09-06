@@ -2,7 +2,9 @@
 ====================
 
 .. figure:: /images/Logo.jpg
-   :width: 200px
-   :align: right
+   :width: 400px
+   :align: center
+
+|block-image|
 
 .. include:: UserGuide/Overview.rst

@@ -5,7 +5,8 @@
 .. ----------------------------------------------------------------------------
 
 .. Makes sure the next text does not overlap the previous floating image.
-.. |after-image| raw:: html
+
+.. |block-image| raw:: html
 
    <p class="after-image">&nbsp</p>
 
