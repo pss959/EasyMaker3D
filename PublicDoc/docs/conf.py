@@ -34,7 +34,7 @@ exclude_patterns = [
 # Prolog includes a file with reStructuredText substitutions. Define some
 # configuration subsitutions here first.
 rst_prolog = f"""
-.. |appname|       replace:: *{project}*
+.. |project|       replace:: {project}
 .. |version|       replace:: {release}
 .. _download_site: {download_site}
 .. include:: /init.rst-inc

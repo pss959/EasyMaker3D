@@ -1,10 +1,11 @@
 Overview
 --------
 
-|appname| helps you create models that you can then send to a 3D printer.  It is
-designed to be relatively simple to use, even for someone with little to no 3D
-modeling experience. If you are intimidated by 3D modelers like
-[Blender](https://www.blender.org/), you might find |appname| useful.
+|appname| helps you create models that you can then send to a 3D printer.  It
+is designed to be relatively simple to use, even for someone with little to no
+3D modeling experience. If you don't want to deal with the steep learning curve
+of 3D modelers like `Blender <https://www.blender.org/>`_, you might find
+|appname| useful.
 
 |appname| is inspired somewhat by [OpenSCAD](http://openscad.org/) (my favorite
 program for creating 3D models). OpenSCAD is great if you don't mind typing in

@@ -114,3 +114,11 @@ img {
     margin: 0;
     padding: 0;
 }
+
+/* Style used for the application name. */
+.appname {
+    color:        #174971;
+    font-family:  sans-serif;
+    font-style:   italic;
+    /* font-variant: small-caps; */
+}
