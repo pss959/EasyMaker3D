@@ -23,7 +23,15 @@
 
 .. |block-image| raw:: html
 
-   <p class="after-image">&nbsp</p>
+   <p class="after-image">&nbsp;</p>
+
+.. ----------------------------------------------------------------------------
+
+.. nbsp: Inserts a non-blocking space character.
+
+.. |nbsp| raw:: html
+
+   &nbsp;
 
 .. ----------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@ release = version
 
 # External links.
 download_site = (
-    'https://drive.google.com/drive/folders/1Tgb-bgtroVWNLfKsqY-z6v12n8Gk077H')
+    'https://drive.google.com/drive/folders/1Z-ri3U1eGfifelhi-wnCQR6fk42etpde')
 
 # -----------------------------------------------------------------------------
 # Project information
