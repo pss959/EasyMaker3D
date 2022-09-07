@@ -50,13 +50,15 @@ and positions. See the section on [precision][Precision] for details.
 The Work Area
 .............
 
-.. figure:: /images/WorkArea.jpg
-   :align: center
-   :figclass: large-centered-image
+.. incimage:: /images/WorkArea.jpg 500px center
+   :caption:  The (empty) |appname| work area.
+   :block:
 
-.. rst-class:: caption
+XXXXXXXXX Just a palate cleanser.....
 
-The (empty) |appname| work area.
+.. incimage:: /images/Doorstop.jpg 200px center
+   :caption: A doorstop example
+   :block:
 
 The work area in |appname| is based conceptually on a virtual workshop. You may
 notice the following elements:

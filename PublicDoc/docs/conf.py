@@ -4,7 +4,9 @@
 # outside with the "-D" option, but that does not seem to work at all.
 # -----------------------------------------------------------------------------
 
-from os import environ
+from os      import environ
+from os.path import abspath
+from sys     import path as sys_path
 
 project = environ.get('PROJECT', '<Unknown Project>')
 version = environ.get('VERSION', '<Unknown Version>')
@@ -24,6 +26,13 @@ author    = 'Paul S. Strauss'
 # -----------------------------------------------------------------------------
 # General configuration.
 # -----------------------------------------------------------------------------
+
+# Add path to extensions.
+sys_path.append(abspath("./_ext"))
+
+extensions = [
+  'incimage',
+]
 
 # Ignore included files.
 exclude_patterns = [
