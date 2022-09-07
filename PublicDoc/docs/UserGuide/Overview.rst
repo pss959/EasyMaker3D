@@ -50,14 +50,8 @@ and positions. See the section on [precision][Precision] for details.
 The Work Area
 .............
 
-.. incimage:: /images/WorkArea.jpg 500px center
+.. incimage:: /images/WorkArea.jpg 600px center
    :caption:  The (empty) |appname| work area.
-   :block:
-
-XXXXXXXXX Just a palate cleanser.....
-
-.. incimage:: /images/Doorstop.jpg 200px center
-   :caption: A doorstop example
    :block:
 
 The work area in |appname| is based conceptually on a virtual workshop. You may

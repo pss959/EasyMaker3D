@@ -1,6 +1,10 @@
 from docutils             import nodes, statemachine
 from docutils.parsers.rst import Directive, directives
 
+# -----------------------------------------------------------------------------
+# IncImage directive class.
+# -----------------------------------------------------------------------------
+
 class IncImage(Directive):
   """IncImage includes an image.
   Required arguments: uri width align
@@ -16,29 +20,42 @@ class IncImage(Directive):
   }
 
   def run(self):
-    uri   = self.arguments[0]
-    width = self.arguments[1]
-    align = self.arguments[2]
+    (uri, width, align) = self.arguments
     caption = self.options.get('caption', None)
     block   = 'block' in self.options
-    image_node = nodes.image(uri=uri, width=width)
-    figure_node = nodes.figure()
-    figure_node.set_class(f'align-{align}')
-    figure_node.append(image_node)
-    node_list = [figure_node]
+    node_list = [self.BuildFigure_(uri, width, align)]
     if caption:
-      caption_node = nodes.paragraph()
-      # Handle substitutions in the caption text.
-      self.state.nested_parse(statemachine.ViewList([caption], 'caption'),
-                              0, caption_node)
-      caption_node.set_class(f'caption-{align}')
-      node_list.append(caption_node)
+      node_list.append(self.BuildCaption_(caption, align))
     if block:
-      block_node = nodes.paragraph(text='')
-      block_node.set_class('after-image')
-      node_list.append(block_node)
-    print(f'XXXX Returning node_list: {node_list}')
+      node_list.append(self.BuildBlock_())
     return node_list
+
+  def BuildFigure_(self, uri, width, align):
+    image_node  = nodes.image(uri=uri, width=width)
+    figure_node = nodes.figure('', image_node)
+    figure_node['align'] = align
+    figure_node['classes'] = [f'align-{align}']
+    return figure_node
+
+  def BuildCaption_(self, caption, align):
+    caption_node = nodes.paragraph()
+    # Handle substitutions in the caption text.
+    self.state.nested_parse(statemachine.ViewList([caption], 'caption'),
+                            0, caption_node)
+    # For some reason, the nested_parse() call adds the substituted text as an
+    # extra level.
+    caption_node = caption_node[0]
+    caption_node['classes'] = [f'caption-{align}']
+    return caption_node
+
+  def BuildBlock_(self):
+    block_node = nodes.paragraph(text=u'\u00a0')  # NBSP
+    block_node['classes'] = ['after-image']
+    return block_node
+
+# -----------------------------------------------------------------------------
+# Extension setup.
+# -----------------------------------------------------------------------------
 
 def setup(app):
   app.add_directive("incimage", IncImage)

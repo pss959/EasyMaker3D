@@ -109,22 +109,24 @@ img {
     width: 500px;
 }
 
+/* Captions */
+.caption-left, .caption-center, .caption-right {
+    margin-top: 8px;
+    font-style: italic;
+}
 .caption-left {
-    margin-top: 10px;
     text-align: left;
 }
 .caption-center {
-    margin-top: 10px;
     text-align: center;
 }
 .caption-right {
-    margin-top: 10px;
     text-align: right;
 }
 
 /* Special class assigned to an item after an image so it does not overlap. */
 .after-image {
-    clear:       right;
+    clear:       both;
     line-height: 0;
     margin:      0;
     padding:     0;
