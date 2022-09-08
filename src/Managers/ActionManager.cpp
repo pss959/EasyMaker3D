@@ -8,6 +8,7 @@
 #include "App/SceneContext.h"
 #include "App/SelPath.h"
 #include "App/Selection.h"
+#include "Base/HelpMap.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Commands/CommandList.h"
@@ -193,8 +194,8 @@ class ActionManager::Impl_ {
     QuitFunc              quit_func_;
     ReloadFunc            reload_func_;
 
-    /// Tooltip string for each Action that does not change by context.
-    std::vector<std::string> tooltip_strings_;
+    /// Stores a tooltip help strings for each Action.
+    HelpMap               help_map_;
 
     /// Flag for each Action that indicates whether it can be applied.
     std::vector<bool>        is_action_enabled_;
@@ -207,9 +208,6 @@ class ActionManager::Impl_ {
 
     /// Changes the current state for a toggle Action.
     void SetToggleState_(Action action, bool state);
-
-    /// Sets all tooltip strings that do not change by context.
-    void SetConstantTooltipStrings_();
 
     /// Returns a tooltip string for an Action that requires context to set up.
     std::string GetUpdatedTooltip_(Action action);
@@ -294,11 +292,8 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context->tool_manager);
     ASSERT(context->main_handler);
 
-    const size_t action_count = Util::EnumCount<Action>();
-    tooltip_strings_.resize(action_count);
-    SetConstantTooltipStrings_();
-
     // Assume all actions are enabled unless disabled in ProcessUpdate().
+    const size_t action_count = Util::EnumCount<Action>();
     is_action_enabled_.assign(action_count, true);
     is_action_enabled_[Util::EnumInt(Action::kNone)] = false;  // Except this.
 }
@@ -326,16 +321,15 @@ void ActionManager::Impl_::ProcessUpdate() {
 }
 
 std::string ActionManager::Impl_::GetHelpTooltip(Action action) {
-    // Always use the constant version of the tooltip for help.
-    return tooltip_strings_[Util::EnumInt(action)];
+    return help_map_.GetHelpString(action);
 }
 
 std::string ActionManager::Impl_::GetRegularTooltip(Action action) {
     // If there is a context-sensitive version of the tooltip, use it.
-    // Otherwise, use the constant one.
+    // Otherwise, use the help string.
     std::string str = GetUpdatedTooltip_(action);
     if (str.empty())
-        str = tooltip_strings_[Util::EnumInt(action)];
+        str = GetHelpTooltip(action);
 
     // Only Action::kNone is allowed to not have a tooltip.
     ASSERTM(! str.empty() || action == Action::kNone,
@@ -646,129 +640,6 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
     }
 }
 
-void ActionManager::Impl_::SetConstantTooltipStrings_() {
-    auto set_tt = [&](Action action, const std::string &str){
-        tooltip_strings_[Util::EnumInt(action)] = str;
-    };
-
-    set_tt(Action::kQuit, "Exit the application");
-    set_tt(Action::kUndo, "Undo the last command");
-    set_tt(Action::kRedo, "Redo the last undone command");
-
-    set_tt(Action::kOpenSessionPanel,
-           "Open the panel to save or open session files");
-    set_tt(Action::kOpenSettingsPanel, "Edit application settings");
-    set_tt(Action::kOpenInfoPanel,
-           "Open the panel to show information about selected models");
-    set_tt(Action::kOpenHelpPanel, "Open the panel to access help");
-
-    set_tt(Action::kCreateBox,           "Create a primitive Box model");
-    set_tt(Action::kCreateCylinder,      "Create a primitive Cylinder model");
-    set_tt(Action::kCreateImportedModel, "Import a model from a file");
-    set_tt(Action::kCreateRevSurf,
-           "Create a model that is a surface of revolution");
-    set_tt(Action::kCreateSphere,        "Create a primitive Sphere model");
-    set_tt(Action::kCreateText,          "Create a 3D Text model");
-    set_tt(Action::kCreateTorus,         "Create a primitive Torus model");
-
-    set_tt(Action::kConvertBevel, "Convert selected models to beveled models");
-    set_tt(Action::kConvertClip,  "Convert selected models to clipped models");
-    set_tt(Action::kConvertMirror,
-           "Convert selected models to mirrored models");
-
-    set_tt(Action::kCombineCSGDifference,
-           "Create a CSG Difference from selected objects");
-    set_tt(Action::kCombineCSGIntersection,
-           "Create a CSG Intersection from selected objects");
-    set_tt(Action::kCombineCSGUnion,
-           "Create a CSG Union from selected objects");
-    set_tt(Action::kCombineHull,
-           "Create a model that is the convex hull of selected models");
-
-    set_tt(Action::kColorTool,
-           "Edit the color of the selected models");
-    set_tt(Action::kComplexityTool,
-           "Edit the complexity of the selected models");
-    set_tt(Action::kNameTool,
-           "Edit the name of the selected model");
-    set_tt(Action::kRotationTool,
-           "Rotate the selected models (Alt for in-place)");
-    set_tt(Action::kScaleTool,
-           "Change the size of the selected models (Alt for symmetric)");
-    set_tt(Action::kTranslationTool,
-           "Change the position of the selected models");
-
-    set_tt(Action::kSwitchToPreviousTool,
-           "Switch to the previous general tool");
-    set_tt(Action::kSwitchToNextTool,
-           "Switch to the next general tool");
-
-    set_tt(Action::kToggleSpecializedTool,
-           "TOGGLE: Switch between the current general tool and the"
-           " specialized tool for the selected models");
-
-    set_tt(Action::kDecreaseComplexity,
-           "Decrease the complexity of the selected models by .05");
-    set_tt(Action::kIncreaseComplexity,
-           "Increase the complexity of the selected models by .05");
-
-    set_tt(Action::kDecreasePrecision, "Decrease the current precision");
-    set_tt(Action::kIncreasePrecision, "Increase the current precision");
-
-    set_tt(Action::kMoveToOrigin, "Move the primary selection to the origin");
-
-    set_tt(Action::kSelectAll,    "Select all top-level models");
-    set_tt(Action::kSelectNone,   "Deselect all selected models");
-    set_tt(Action::kSelectParent, "Select the parent of the primary selection");
-    set_tt(Action::kSelectFirstChild,
-           "Select the first child of the primary selection");
-    set_tt(Action::kSelectPreviousSibling,
-           "Select the previous sibling of the primary selection");
-    set_tt(Action::kSelectNextSibling,
-           "Select the next sibling of the primary selection");
-
-    set_tt(Action::kDelete, "Delete all selected models");
-    set_tt(Action::kCut,    "Cut all selected models to the clipboard");
-    set_tt(Action::kCopy,   "Copy all selected models to the clipboard");
-    set_tt(Action::kPaste,  "Paste all models from the clipboard");
-    set_tt(Action::kPasteInto,
-           "Paste all models from the clipboard as children of"
-           " the selected model");
-
-    set_tt(Action::kTogglePointTarget,
-           "TOGGLE: Activate or deactivate the point target");
-    set_tt(Action::kToggleEdgeTarget,
-           "TOGGLE: Activate or deactivate the edge target");
-
-    set_tt(Action::kLinearLayout,
-           "Lay out the centers of the selected models along a\n"
-           "line using the edge target");
-    set_tt(Action::kRadialLayout,
-           "Lay out selected models along a circular arc");
-
-    set_tt(Action::kToggleAxisAligned,
-           "TOGGLE: Transform models in local or global coordinates");
-
-    set_tt(Action::kMovePrevious, "Move the selected model up in the order");
-    set_tt(Action::kMoveNext,     "Move the selected model down in the order");
-
-    set_tt(Action::kToggleInspector,
-           "TOGGLE: Open or close the Inspector for the"
-           " current primary selection");
-    set_tt(Action::kToggleBuildVolume,
-           "TOGGLE: Show or hide the translucent build volume");
-    set_tt(Action::kToggleShowEdges,
-           "TOGGLE: Show or hide edges on all models");
-
-    set_tt(Action::kHideSelected, "Hide selected top-level models");
-    set_tt(Action::kShowAll,      "Show all hidden top-level models");
-
-    set_tt(Action::kToggleLeftRadialMenu,
-           "TOGGLE: Show or hide the left radial menu");
-    set_tt(Action::kToggleRightRadialMenu,
-           "TOGGLE: Show or hide the right radial menu");
-}
-
 std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
     // Helper string when needed.
     std::string s;
@@ -838,7 +709,7 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
         return s + " the right radial menu";
 
       default:
-        // Everything else will use the constant version.
+        // Everything else will use the help string.
         return "";
     }
 }
