@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from sys import argv
 
 class ImageAnnotator(object):
   def __init__(self, image):
-    self._image     = image
-    self._draw      = ImageDraw.Draw(self._image)
-    self._color     = "white"
-    self._font      = 'arial'
-    self._font_size = 10
+    self._image = image
+    self._draw  = ImageDraw.Draw(self._image)
+    self._color = "white"
+    self._font  = ImageFont.truetype('arialbd.ttf', 10)
 
   def SetColor(self, color):
     self._color = color
+
+  def SetFont(self, font, size):
+    self._font = ImageFont.truetype(font + '.ttf', size)
 
   def DrawRectangle(self, line_width, x, y, w, h):
     self._draw.rectangle([self.ToImageCoords_(x, y),
                           self.ToImageCoords_(x+w, y+h)],
                          outline = self._color, width=int(line_width))
+
+  def DrawText(self, x, y, align, text):
+    self._draw.text(self.ToImageCoords_(x, y),
+                    text, fill=self._color, font=self._font,
+                    align=align, anchor='mm')
 
   def Save(self, image_file):
     try:
@@ -61,9 +68,7 @@ def ProcessFont(ia, args):
   if len(args) != 2:
     print(f'*** Invalid font arguments: {args}')
     return False
-  # XXXX
-  current_font      = args[0]
-  current_font_size = args[1]
+  ia.SetFont(args[0], int(args[1]))
   return True
 
 # Takes 5 arguments: line_width, x, y, w, h
@@ -75,7 +80,12 @@ def ProcessRect(ia, args):
   ia.DrawRectangle(floats[0], floats[1], floats[2], floats[3], floats[4])
   return True
 
+# Takes 4+ arguments: x y align text...
 def ProcessText(ia, args):
+  if len(args) < 4:
+    print(f'*** Invalid text arguments: {args}')
+    return False
+  ia.DrawText(float(args[0]), float(args[1]), args[2], ' '.join(args[3:]))
   return True
 
 def ProcessCommand(ia, command):

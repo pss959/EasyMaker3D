@@ -1,6 +1,6 @@
 # This is a test
 color red
-font  Verdana 10
+font  Verdana 20
 text .3 .4 center Some Label
 
 #  Another comment...
