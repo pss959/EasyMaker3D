@@ -12,6 +12,7 @@
 #include "Base/Event.h"
 #include "Base/Tuning.h"
 #include "Debug/Print.h"
+#include "Debug/Shortcuts.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
@@ -213,7 +214,7 @@ bool Application_::HandleEvent_(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
 #if ENABLE_DEBUG_FEATURES
-        if (Debug::ProcessPrintShortcut(key_string))
+        if (Debug::HandleShortcut(key_string))
             return true;
         if (key_string == "<Alt>!")  // From ShortcutHandler.
             KLogger::ToggleLogging();
@@ -236,7 +237,7 @@ bool Application_::HandleEvent_(const Event &event) {
         }
 #if ENABLE_DEBUG_FEATURES
         else if (key_string == "<Ctrl>p") {
-            Debug::PrintNodeGraph(*path_to_node_.back(), false);
+            Debug::PrintGraph(*path_to_node_.back());
             return true;
         }
 #endif
