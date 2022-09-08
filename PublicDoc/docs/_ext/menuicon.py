@@ -1,5 +1,5 @@
-from docutils             import nodes, statemachine
-from docutils.parsers.rst import Directive, directives
+from docutils             import nodes
+from docutils.parsers.rst import Directive
 
 # -----------------------------------------------------------------------------
 # MenuIcon directive class.
@@ -14,7 +14,7 @@ class MenuIcon(Directive):
   def run(self):
     icon_name  = self.arguments[0]
     image_node = nodes.image(uri=f'/images/MenuIcons/MI{icon_name}.png',
-                             width='32px')
+                             width='28px')
     return [image_node]
 
 # -----------------------------------------------------------------------------

@@ -40,6 +40,21 @@ static void WriteHeader_() {
     std::cout << kHeaderString;
 }
 
+static std::string WrapShortcut_(const std::string &str) {
+    std::string new_str = str;
+
+    if (! new_str.empty()) {
+        // Replace space so it is visible.
+        if (new_str == " ")
+            new_str = "SPACE";
+
+        // Non-empty shortcuts must be wrapped with the role.
+        new_str = ":shortcut:`" + new_str + "`";
+    }
+
+    return new_str;
+}
+
 static void WriteAction_(ActionCategory cat, Action action,
                          const ShortcutHandler &sh, const HelpMap &hm) {
     const std::string category_name = Util::EnumToWords(cat);
@@ -47,19 +62,22 @@ static void WriteAction_(ActionCategory cat, Action action,
     const std::string icon_name     = Util::EnumToWord(action);
     const std::string ref = Util::ReplaceString(
         Util::ToLowerCase(Util::EnumToWords(action)), " ", "-");
-    const std::string &desc = hm.GetHelpString(action);
+    const std::string desc =
+        Util::ReplaceString(hm.GetHelpString(action), "\n", " ");
 
     // Get the shortcuts from the ShortcutHandler.
-    std::string kbd_short, contr_short;
-    sh.GetShortcutStrings(action, kbd_short, contr_short);
+    std::string ks, cs;
+    sh.GetShortcutStrings(action, ks, cs);
+    ks = WrapShortcut_(ks);
+    cs = WrapShortcut_(cs);
 
     std::cout
         << "   * - " << category_name << "\n"
         << "     - :ref:`" << action_name << " <ug-" << ref << ">`\n"
         << "     - .. menuicon:: " << icon_name << "\n"
         << "     - " << desc << "\n"
-        << "     - " << kbd_short << "\n"
-        << "     - " << contr_short << "\n";
+        << "     - " << ks << "\n"
+        << "     - " << cs << "\n";
 }
 
 static void WriteContents_() {

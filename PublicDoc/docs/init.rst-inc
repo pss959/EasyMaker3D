@@ -1,6 +1,11 @@
 ..
-.. This file is included in the rst_prolog to set up substitutions.
+.. This file is included in the rst_prolog to set up roles and substitutions.
 ..
+
+.. ----------------------------------------------------------------------------
+.. shortcut: A role used for shortcut text.
+
+.. role:: shortcut
 
 .. ----------------------------------------------------------------------------
 .. appname: Replaced with the application name in appropriate style.

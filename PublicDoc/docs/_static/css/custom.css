@@ -136,6 +136,10 @@ img {
  * Cheat Sheet.
  * -------------------------------------------------------------------------- */
 
+#cheat-sheet, #cheat-sheet * {
+    background: #fafaf2;
+}
+
 /* Line-blocks inside tables create undesired vertical space. */
 .cheat-sheet-table .line-block {
     text-align:    center;
@@ -148,11 +152,26 @@ img {
     text-align:     center;
     vertical-align: middle;
 }
-         
+
+/* Icon images are centered. */
 .cheat-sheet-table img {
     display:      block;
     margin-left:  auto;
     margin-right: auto;    
+}
+
+/* Description text should wrap. */
+.cheat-sheet-table tbody td:nth-child(4) {
+    max-width:   30%;
+    word-break:  normal;
+    white-space: normal;
+}
+
+/* Shortcuts use monospace text. */
+.shortcut {
+    color:       #1e8a81;
+    font-family: monospace;
+    font-size:   80%;
 }
 
 /* -----------------------------------------------------------------------------
