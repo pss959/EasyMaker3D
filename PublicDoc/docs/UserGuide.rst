@@ -15,9 +15,9 @@
 .. _ug-vr-modes:
 
 .. _ug-color-tool:
-.. _ug-combine-csgdifference:
-.. _ug-combine-csgintersection:
-.. _ug-combine-csgunion:
+.. _ug-combine-csg-difference:
+.. _ug-combine-csg-intersection:
+.. _ug-combine-csg-union:
 .. _ug-combine-hull:
 .. _ug-complexity-tool:
 .. _ug-convert-bevel:

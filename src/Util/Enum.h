@@ -38,9 +38,10 @@ int EnumInt(EnumType e) {
     return static_cast<int>(magic_enum::enum_integer<EnumType>(e));
 }
 
-/// Converts an enum value from an int. Note that this asserts on error.
+/// Converts an enum value from an index into the enums (not the actual value).
+/// Note that this asserts on error.
 template <typename EnumType>
-EnumType EnumFromInt(int value) {
+EnumType EnumFromIndex(int value) {
     return magic_enum::enum_value<EnumType>(value);
 }
 

@@ -79,17 +79,28 @@ std::string RemoveFirstN(const std::string &s, size_t n) {
 std::string SplitCamelCase(const std::string &s, bool remove_first) {
     std::string ss;
 
+    // A string of 2 or more upper-case letters followed by a lower-case letter
+    // also represents a split. For example, "CSGUnion" -> "CSG Union".
+
     const size_t count = s.size();
     bool was_lower = false;
+    int  upper_count = 0;
     for (size_t i = remove_first ? 1 : 0; i < count; ++i) {
         const char c = s[i];
         if (isupper(c)) {
             if (was_lower)
-                ss += " ";
+                ss += ' ';
             was_lower = false;
+            ++upper_count;
         }
         else {
+            if (upper_count > 1) {  // Case described above.
+                const char l = ss.back();
+                ss.back() = ' ';
+                ss += l;
+            }
             was_lower = true;
+            upper_count = 0;
         }
         ss += c;
     }

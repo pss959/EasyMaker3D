@@ -157,8 +157,8 @@ void RadialMenuPanel::AcceptEdits_() {
     new_settings->CopyFrom(GetSettings());
 
     // Update mode and RadialMenuInfo for each hand.
-    new_settings->SetRadialMenusMode(Util::
-                                     EnumFromInt<RadialMenusMode>(mode_index_));
+    new_settings->SetRadialMenusMode(
+        Util::EnumFromIndex<RadialMenusMode>(mode_index_));
     new_settings->SetLeftRadialMenuInfo(*left_info_);
     new_settings->SetRightRadialMenuInfo(*right_info_);
 
