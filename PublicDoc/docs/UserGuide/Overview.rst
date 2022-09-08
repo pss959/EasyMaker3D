@@ -20,15 +20,15 @@ Jump Right In?
 things that may need explanation before you can dive into using it. Here are
 some sections you may want to refer to:
 
- * :ref:`workflow`: describes basic use of the application to create models for
-   3D printing.
- * :ref:`the-work-area`: describes the various interactive parts of the work
+ * :ref:`ug-workflow`: describes basic use of the application to create models
+   for 3D printing.
+ * :ref:`ug-work-area`: describes the various interactive parts of the work
    area and what they do.
-
- * :ref:`vr-modes`: describes how to use the application with VR equipment if
+ * :ref:`ug-vr-modes`: describes how to use the application with VR equipment if
    you have some.
+ * XXXX
 
-.. _workflow:
+.. _ug-workflow:
 
 Typical Workflow
 ................
@@ -45,7 +45,7 @@ Because precision is extremely important when 3D printing, |appname| has several
 features that allow you to create models with exact dimensions, orientations,
 and positions. See the section on [precision][Precision] for details.
 
-.. _the-work-area:
+.. _ug-work-area:
 
 The Work Area
 .............

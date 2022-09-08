@@ -22,6 +22,14 @@ class ShortcutHandler : public Handler {
         action_manager_ = action_manager;
     }
 
+    /// Sets the string parameters to the keyboard and controller shortcut(s)
+    /// for the given Action or to an empty string if there are none. If there
+    /// are multiple shortcuts of either type, they are set as one
+    /// comma-separated string. This is used to create the cheat sheet.
+    void GetShortcutStrings(Action action,
+                            std::string &keyboard_string,
+                            std::string &controller_string) const;
+
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------

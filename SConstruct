@@ -47,6 +47,7 @@ lib_sources = [
 
     'Base/ActionMap.cpp',
     'Base/Event.cpp',
+    'Base/HelpMap.cpp',
     'Base/Procedural.cpp',
     'Base/Tuning.cpp',
     'Base/VirtualKeyboard.cpp',
@@ -734,7 +735,7 @@ main_app_name = APP_NAME
 # Build the applications.
 apps = [main_app_name, 'nodeviewer', 'printtypes']
 if platform == 'linux':
-    apps += ['snapimage']
+    apps += ['createcheatsheet', 'snapimage']
 
 apps_extra_sources = [
     '$BUILD_DIR/App/Args.cpp',

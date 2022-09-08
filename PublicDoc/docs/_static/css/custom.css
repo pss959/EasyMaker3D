@@ -133,6 +133,29 @@ img {
 }
 
 /* -----------------------------------------------------------------------------
+ * Cheat Sheet.
+ * -------------------------------------------------------------------------- */
+
+/* Line-blocks inside tables create undesired vertical space. */
+.cheat-sheet-table .line-block {
+    text-align:    center;
+    margin-bottom: 0;
+    line-height:   1.4;
+}
+
+/* Center heading text vertically. */
+.cheat-sheet-table thead th {
+    text-align:     center;
+    vertical-align: middle;
+}
+         
+.cheat-sheet-table img {
+    display:      block;
+    margin-left:  auto;
+    margin-right: auto;    
+}
+
+/* -----------------------------------------------------------------------------
  * Miscellaneous.
  * -------------------------------------------------------------------------- */
 

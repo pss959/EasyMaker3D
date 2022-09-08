@@ -32,6 +32,7 @@ sys_path.append(abspath("./_ext"))
 
 extensions = [
   'incimage',
+  'menuicon',
 ]
 
 # Ignore included files.

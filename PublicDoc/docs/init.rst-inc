@@ -3,7 +3,6 @@
 ..
 
 .. ----------------------------------------------------------------------------
-
 .. appname: Replaced with the application name in appropriate style.
 
 .. |appname0| raw:: html
@@ -17,7 +16,6 @@
 .. |appname| replace:: |appname0|\ |project|\ |appname1|
 
 .. ----------------------------------------------------------------------------
-
 .. block-image: Makes sure the next text does not overlap the previous floating
    image.
 
@@ -26,12 +24,8 @@
    <p class="after-image">&nbsp;</p>
 
 .. ----------------------------------------------------------------------------
-
 .. nbsp: Inserts a non-blocking space character.
 
 .. |nbsp| raw:: html
 
    &nbsp;
-
-.. ----------------------------------------------------------------------------
-
