@@ -31,6 +31,10 @@ author    = 'Paul S. Strauss'
 sys_path.append(abspath("./_ext"))
 
 extensions = [
+  # Official extensions:
+  'sphinx.ext.todo',
+
+  # Local extensions:
   'incimage',
   'menuicon',
 ]
@@ -49,6 +53,8 @@ rst_prolog = f"""
 .. _download_site: {download_site}
 .. include:: /init.rst-inc
 """
+
+todo_include_todos = True
 
 # -----------------------------------------------------------------------------
 # HTML output options.

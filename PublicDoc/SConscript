@@ -53,6 +53,9 @@ env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 script_dir = './snaps/scripts'
 image_dir  = './docs/images'
 
+def ImageFile(name):
+  return join(image_dir, name + '.jpg')
+
 image_names = [
     'Doorstop',
     'Logo',
@@ -61,12 +64,21 @@ image_names = [
 
 scripts      = Glob(f'{script_dir}/*', strings=True)
 script_files = [basename(script) for script in scripts]
-image_files  = [join(image_dir, name + '.jpg') for name in image_names]
+image_files  = [ImageFile(name) for name in image_names]
 
 snaps = env.Command(image_files, [snapimage] + scripts,
                     [(snapimage.abspath + ' ' + sf) for sf in script_files])
 
 env.Alias('Snaps', snaps)
+
+# -----------------------------------------------------------------------------
+# Image annotations.
+# -----------------------------------------------------------------------------
+
+annotations = env.Command(
+  ImageFile('AnnotatedWorkArea'), ImageFile('WorkArea'),
+  'convert $SOURCE -gravity south -stroke red -strokewidth 2 -annotate 0' +
+  ' "Something" -stroke  none -fill red -annotate 0 "Something" $TARGET')
 
 # -----------------------------------------------------------------------------
 # Documentation generation.
@@ -81,7 +93,7 @@ sphinx_args = ' '.join([
     '-a',    # Write all files.
 ])
 
-doc = env.Command('$OUTPUT_DIR/index.html', sources + snaps,
+doc = env.Command('$OUTPUT_DIR/index.html', sources + snaps + annotations,
                   ['echo = Building public doc for version: $VERSION_STRING',
                    f'sphinx-build {sphinx_args} docs {output_dir}'],
                   chdir='PublicDoc')

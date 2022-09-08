@@ -374,8 +374,15 @@ bool HandleShortcut(const std::string &str) {
 
 void DisplayDebugText(const std::string &text) {
     ASSERT(scene_context_);
-    ASSERT(scene_context_->debug_text);
-    scene_context_->debug_text->SetText(text);
+    const auto &dt = scene_context_->debug_text;
+    ASSERT(dt);
+    if (text.empty()) {
+        dt->SetEnabled(false);
+    }
+    else {
+        dt->SetText(text);
+        dt->SetEnabled(true);
+    }
 }
 
 }  // namespace Debug

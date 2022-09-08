@@ -37,7 +37,8 @@ void ShutDown();
 /// Potentially handles a debugging shortcut, returning true if handled.
 bool HandleShortcut(const std::string &str);
 
-/// Displays the given text string in the debug text area.
+/// Displays the given text string in the debug text area. If the text string
+/// is empty, this turns off the text string.
 void DisplayDebugText(const std::string &text);
 
 }  // namespace Debug

@@ -1,6 +1,8 @@
 Overview
 --------
 
+.. incimage:: /images/Logo.jpg 400px right
+
 |appname| helps you create models that you can then send to a 3D printer.  It
 is designed to be relatively simple to use, even for someone with little to no
 3D modeling experience. If you don't want to deal with the steep learning curve
@@ -13,20 +15,7 @@ typing in numbers for everything and have a reasonable amount of 3D graphics
 experience. |appname| is designed to have a similar amount of power while still
 being useful to beginners.
 
-Jump Right In?
-..............
-
-|appname| is designed to be reasonably intuitive to use, but there are a few
-things that may need explanation before you can dive into using it. Here are
-some sections you may want to refer to:
-
- * :ref:`ug-workflow`: describes basic use of the application to create models
-   for 3D printing.
- * :ref:`ug-work-area`: describes the various interactive parts of the work
-   area and what they do.
- * :ref:`ug-vr-modes`: describes how to use the application with VR equipment if
-   you have some.
- * XXXX
+|
 
 .. _ug-workflow:
 
@@ -50,8 +39,8 @@ and positions. See the section on [precision][Precision] for details.
 The Work Area
 .............
 
-.. incimage:: /images/WorkArea.jpg 600px center
-   :caption:  The (empty) |appname| work area.
+.. incimage:: /images/WorkAreaAnnotated.jpg 800px center
+   :caption:  Features of the |appname| work area.
    :block:
 
 The work area in |appname| is based conceptually on a virtual workshop. You may

@@ -28,6 +28,9 @@ system and extract the |appname| folder from it. Open the folder and execute
 the |appname| executable file. Note that the application must be run from
 inside this folder.
 
+.. todo::
+   Add directions to set up VR.
+
 Next Steps
 ----------
 

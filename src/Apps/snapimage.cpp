@@ -12,6 +12,7 @@
 #include "App/SceneContext.h"
 #include "App/Selection.h"
 #include "App/SnapScript.h"
+#include "Debug/Shortcuts.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -51,6 +52,10 @@ bool SnapshotApp_::Init(const Options &options) {
 
     window_size_ = options.window_size;
     GetTestContext(test_context_);
+
+    // Make sure there is no debug text visible.
+    Debug::DisplayDebugText("");
+
     return true;
 }
 
