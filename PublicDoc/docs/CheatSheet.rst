@@ -150,30 +150,6 @@
      - Create a primitive Torus model
      - 
      - 
-   * - File
-     - :ref:`Open Help Panel <ug-open-help-panel>`
-     - .. menuicon:: OpenHelpPanel
-     - Open the panel to access help
-     - :shortcut:`F1, ?`
-     - 
-   * - File
-     - :ref:`Open Info Panel <ug-open-info-panel>`
-     - .. menuicon:: OpenInfoPanel
-     - Open the panel to show information about selected models
-     - :shortcut:`<Ctrl>I`
-     - 
-   * - File
-     - :ref:`Open Session Panel <ug-open-session-panel>`
-     - .. menuicon:: OpenSessionPanel
-     - Open the panel to save or open session files
-     - :shortcut:`<Ctrl>s`
-     - 
-   * - File
-     - :ref:`Open Settings Panel <ug-open-settings-panel>`
-     - .. menuicon:: OpenSettingsPanel
-     - Edit application settings
-     - :shortcut:`<Ctrl>,`
-     - 
    * - Layout
      - :ref:`Linear Layout <ug-linear-layout>`
      - .. menuicon:: LinearLayout
@@ -299,6 +275,30 @@
      - .. menuicon:: SelectPreviousSibling
      - Select the previous sibling of the primary selection
      - :shortcut:`<Ctrl>Left`
+     - 
+   * - Session
+     - :ref:`Open Help Panel <ug-open-help-panel>`
+     - .. menuicon:: OpenHelpPanel
+     - Open the panel to access help
+     - :shortcut:`F1, ?`
+     - 
+   * - Session
+     - :ref:`Open Info Panel <ug-open-info-panel>`
+     - .. menuicon:: OpenInfoPanel
+     - Open the panel to show information about selected models
+     - :shortcut:`<Ctrl>I`
+     - 
+   * - Session
+     - :ref:`Open Session Panel <ug-open-session-panel>`
+     - .. menuicon:: OpenSessionPanel
+     - Open the panel to save or open session files
+     - :shortcut:`<Ctrl>s`
+     - 
+   * - Session
+     - :ref:`Open Settings Panel <ug-open-settings-panel>`
+     - .. menuicon:: OpenSettingsPanel
+     - Edit application settings
+     - :shortcut:`<Ctrl>,`
      - 
    * - Specialized
      - :ref:`Toggle Specialized Tool <ug-toggle-specialized-tool>`

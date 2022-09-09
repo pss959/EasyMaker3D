@@ -178,6 +178,12 @@ img {
  * Miscellaneous.
  * -------------------------------------------------------------------------- */
 
+/* Style used for the 'newterm' role. */
+.newterm {
+    color:      green;
+    font-style: italic;
+}
+
 /* Style used for the application name. */
 .appname {
     color:        #174971;

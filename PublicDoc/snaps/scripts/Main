@@ -1,6 +1,11 @@
 # Work area.
 snap 0 0 1 1 WorkArea.jpg
 
+# Build volume
+load BuildVolume.mvr
+stage .52 34 
+snap 0.322702 0.133333 0.37242 0.713333 BuildVolume.jpg
+
 # Generate the model used in the logo.
 load Logo.mvr
 select

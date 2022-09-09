@@ -4,7 +4,7 @@ color white
 text 0.84 0.93         left   Viewing Shelf
 text 0.458724 0.758333 center Basic Operations Shelf
 text 0.5 0.643333      center Layout Shelf
-text 0.474672 0.45     center File Shelf
+text 0.474672 0.45     center Session Shelf
 text 0.190432 0.38     center Model Creation Shelf
 text 0.19137 0.553333  center General Tools Shelf
 text 0.212008 0.658333 center Model Conversion Shelf

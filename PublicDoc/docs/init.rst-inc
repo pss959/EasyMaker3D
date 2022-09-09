@@ -3,9 +3,17 @@
 ..
 
 .. ----------------------------------------------------------------------------
-.. shortcut: A role used for shortcut text.
+.. ROLES:
 
+.. shortcut: A role used for shortcut text.
 .. role:: shortcut
+
+.. newterm: A role used when introducing a new term.
+.. role:: newterm
+
+.. raw-html: Used to insert raw HTML.
+.. role:: raw-html(raw)
+   :format: html
 
 .. ----------------------------------------------------------------------------
 .. appname: Replaced with the application name in appropriate style.

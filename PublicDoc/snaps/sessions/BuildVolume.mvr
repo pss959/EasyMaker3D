@@ -1,0 +1,10 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+      build_volume_visible: True,
+    },
+  },
+  current_index: 0,
+}

@@ -10,6 +10,7 @@ from sys     import path as sys_path
 
 project = environ.get('PROJECT', '<Unknown Project>')
 version = environ.get('VERSION', '<Unknown Version>')
+suffix  = environ.get('SUFFIX',  '<Unknown Suffix>')  # For session files.
 release = version
 
 # External links.
@@ -48,8 +49,9 @@ exclude_patterns = [
 # Prolog includes a file with reStructuredText substitutions. Define some
 # configuration subsitutions here first.
 rst_prolog = f"""
-.. |project|       replace:: {project}
-.. |version|       replace:: {release}
+.. |project| replace:: {project}
+.. |version| replace:: {release}
+.. |suffix|  replace:: {suffix}
 .. _download_site: {download_site}
 .. include:: /init.rst-inc
 """
