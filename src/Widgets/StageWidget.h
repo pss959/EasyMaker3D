@@ -30,6 +30,10 @@ class StageWidget : public DiscWidget {
     /// coordinates.
     virtual void ApplyScaleChange(float delta) override;
 
+    /// Sets the uniform stage scale factor and rotation angle. This is used to
+    /// restore previous state.
+    void SetScaleAndRotation(float scale, const Anglef &angle);
+
     // ------------------------------------------------------------------------
     // Target Interface.
     // ------------------------------------------------------------------------

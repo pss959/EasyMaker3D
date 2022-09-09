@@ -10,6 +10,7 @@
 #include "Commands/CommandList.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "Math/ToString.h"
 #include "Models/ParentModel.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/DropdownPane.h"
@@ -397,11 +398,13 @@ void PrintModels(const Model &root) {
     PrintModelTree_(root);
 }
 
-void PrintViewInfo(const Frustum &frustum) {
+void PrintViewInfo(const Frustum &frustum, const SG::Node &stage) {
     Surrounder_ surrounder;
     std::cout << "Frustum:\n" << frustum.ToString() << "\n";
     std::cout << "Proj: " << GetProjectionMatrix(frustum) << "\n";
     std::cout << "View: " << GetViewMatrix(frustum) << "\n";
+    std::cout << "Stage: scale=" << Util::ToString(stage.GetScale(), .001f)
+              << " rot=" << Util::ToString(stage.GetRotation()) << "\n";
 }
 
 }  // namespace Debug

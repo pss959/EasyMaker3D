@@ -76,8 +76,8 @@ void PrintPaneTree(const Pane &root, bool is_brief);
 /// Prints an indented tree of Models starting with the given root.
 void PrintModels(const Model &root);
 
-/// Prints viewing information for the given Frustum.
-void PrintViewInfo(const Frustum &frustum);
+/// Prints viewing information for the given Frustum and Stage.
+void PrintViewInfo(const Frustum &frustum, const SG::Node &stage);
 
 ///@}
 

@@ -41,6 +41,15 @@ bool SnapScript::ProcessLine_(const std::string &line) {
             return Error_("Bad syntax for load instruction");
         instr.file_name = words[1];
     }
+    else if (instr.type == "stage") {
+        if (words.size() != 3U)
+            return Error_("Bad syntax for stage instruction");
+        float scale, angle;
+        if (! ParseFloat_(words[1], scale) || ! ParseFloat_(words[2], angle))
+            return Error_("Invalid scale/rotation data for stage instruction");
+        instr.stage_scale = scale;
+        instr.stage_angle = Anglef::FromDegrees(angle);
+    }
     else if (instr.type == "snap") {
         if (words.size() != 6U)
             return Error_("Bad syntax for snap instruction");
@@ -77,18 +86,22 @@ bool SnapScript::Error_(const std::string &message) {
     return false;
 }
 
-bool SnapScript::ParseFloat01_(const std::string &s, float &f) {
+bool SnapScript::ParseFloat_(const std::string &s, float &f) {
     try {
         size_t chars_processed;
         f = std::stof(s, &chars_processed);
 
-        // Make sure there are no extra characters at the end and the number is
-        // in range.
-        return chars_processed == s.size() && f >= 0.f && f <= 1.f;
+        // Make sure there are no extra characters at the end.
+        return chars_processed == s.size();
     }
     catch (std::exception &) {
         return false;
     }
+}
+
+bool SnapScript::ParseFloat01_(const std::string &s, float &f) {
+    // Make sure the number is in range.
+    return ParseFloat_(s, f) && f >= 0.f && f <= 1.f;
 }
 
 bool SnapScript::ParseN_(const std::string &s, size_t &n) {

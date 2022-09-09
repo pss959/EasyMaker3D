@@ -73,6 +73,12 @@ void StageWidget::ApplyScaleChange(float delta) {
     FixGeometryYScale_();
 }
 
+void StageWidget::SetScaleAndRotation(float scale, const Anglef &angle) {
+    SetUniformScale(scale);
+    SetRotationAngle(angle);
+    FixGeometryYScale_();
+}
+
 void StageWidget::PlacePointTarget(const DragInfo &info,
                                    Point3f &position, Vector3f &direction,
                                    Dimensionality &snapped_dims) {

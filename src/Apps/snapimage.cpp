@@ -22,6 +22,7 @@
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+#include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------
 // Derived Application class that adds snapshot processing. Reads a SnapScript
@@ -77,6 +78,12 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
             if (! LoadSession_(instr.file_name))
                 return false;
             // After loading a session, wait until the next frame to continue.
+            render_again = true;
+        }
+        else if (instr.type == "stage") {
+            auto &stage = *test_context_.scene_context->stage;
+            stage.SetScaleAndRotation(instr.stage_scale, instr.stage_angle);
+            // Need to render to see the new stage.
             render_again = true;
         }
         else if (instr.type == "snap") {

@@ -92,7 +92,7 @@ void Settings::SetToDefaults_() {
     export_directory_  = home;
     tooltip_delay_     = TK::kTooltipDelay;
     import_units_      = UnitConversion::CreateWithUnits(
-        UnitConversion::Units::kCentimeters,
+        UnitConversion::Units::kMillimeters,
         UnitConversion::Units::kCentimeters);
     export_units_      = UnitConversion::CreateWithUnits(
         UnitConversion::Units::kCentimeters,

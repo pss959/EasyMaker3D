@@ -16,6 +16,7 @@
 ///  [whitespace]                         | Blank lines are ignored.
 ///  <b>\#</b> ...                        | Comment (ignored).
 ///  **load** *file_name*                 | Loads a session.
+///  **stage** *scale* *rot_angle*        | Scales and rotates the stage.
 ///  **snap** *x* *y* *w* *h* *file_name* | Saves a snapshot to a file.
 ///  **undo** *n*                         | Undoes the last n commands.
 ///  **redo** *n*                         | Redoes n commands.
@@ -32,11 +33,13 @@
 class SnapScript {
   public:
     struct Instruction {
-        std::string              type;       ///< Type of instruction.
-        std::string              file_name;  ///< For "load" or "snap".
-        Range2f                  rect;       ///< For "snap".
-        size_t                   count;      ///< For "undo" or "redo".
-        std::vector<std::string> names;      ///< For "select".
+        std::string              type;         ///< Type of instruction.
+        std::string              file_name;    ///< For "load" or "snap".
+        float                    stage_scale;  ///< For "stage".
+        Anglef                   stage_angle;  ///< For "stage".
+        Range2f                  rect;         ///< For "snap".
+        size_t                   count;        ///< For "undo" or "redo".
+        std::vector<std::string> names;        ///< For "select".
     };
 
     /// Reads a script from a file relative to the PublicDoc/snaps/scripts
@@ -56,6 +59,7 @@ class SnapScript {
     bool ProcessLine_(const std::string &line);
     bool Error_(const std::string &message);
 
+    static bool ParseFloat_(const std::string &s, float &f);
     static bool ParseFloat01_(const std::string &s, float &f);
     static bool ParseN_(const std::string &s, size_t &n);
 };
