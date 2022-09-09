@@ -23,6 +23,9 @@ namespace TK {
 /// Name of the application.
 extern const char *   kApplicationName;
 
+/// Suffix to use for session files (including the dot).
+extern const char *   kSessionFileSuffix;
+
 /// Application version as a string.
 extern const char *   kVersionString;
 

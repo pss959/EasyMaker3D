@@ -6,6 +6,7 @@ from os    import environ
 # -----------------------------------------------------------------------------
 
 APP_NAME            = 'MakerVR'
+SESSION_SUFFIX      = '.mvr'
 VERSION_STRING      = '0.0.1'
 PUBLIC_DOC_BASE_URL = 'https://pss959.github.io/MakerVR-dist/'
 
@@ -707,6 +708,7 @@ def BuildObject(env, source):
     if source == 'Base/Tuning.cpp':
         defs += [
             ('APP_NAME',            QuoteDef(APP_NAME)),
+            ('SESSION_SUFFIX',      QuoteDef(SESSION_SUFFIX)),
             ('VERSION_STRING',      QuoteDef(VERSION_STRING)),
             ('PUBLIC_DOC_BASE_URL', QuoteDef(PUBLIC_DOC_BASE_URL)),
         ]
@@ -780,7 +782,7 @@ exports = {
                       'cov_lib_objects'],
     'internal_doc' : ['doc_build_dir', 'APP_NAME', 'VERSION_STRING'],
     'public_doc'   : ['doc_build_dir', 'snapimage',
-                      'APP_NAME', 'VERSION_STRING'],
+                      'APP_NAME', 'SESSION_SUFFIX', 'VERSION_STRING'],
     'ion_lib'      : ['brief', 'build_dir', 'mode', 'platform_env'],
 }
 

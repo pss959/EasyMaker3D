@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "Base/Tuning.h"
 #include "Items/Settings.h"
 #include "Parser/Exception.h"
 #include "Parser/Parser.h"
@@ -13,8 +14,7 @@
 
 SettingsManager::SettingsManager() {
     // See if there is a file with settings.
-    const FilePath path = FilePath::Join(FilePath::GetSettingsDirPath(),
-                                         "settings.mvr");
+    const auto path = GetSettingsFilePath_(FilePath::GetSettingsDirPath());
     if (path.Exists())
         settings_ = ReadSettings_(path);
     if (! settings_)
@@ -50,14 +50,14 @@ SettingsPtr SettingsManager::ReadSettings_(const FilePath &path) {
 
 void SettingsManager::WriteSettings_() {
     // Make sure the directory path exists.
-    FilePath path = FilePath::GetSettingsDirPath();
-    if (! path.CreateDirectories()) {
+    const auto dir_path = FilePath::GetSettingsDirPath();
+    if (! dir_path.CreateDirectories()) {
         std::cerr << "*** Unable to create settings directory '"
-                  << path.ToString() << "'\n";
+                  << dir_path.ToString() << "'\n";
         return;
     }
 
-    path = FilePath::Join(path, "settings.mvr");
+    const auto path = GetSettingsFilePath_(dir_path);
     KLOG('f', "Writing settings to \"" << path.ToString() << "\"");
     std::ofstream out(path.ToNativeString());
     if (out.fail()) {
@@ -68,4 +68,9 @@ void SettingsManager::WriteSettings_() {
 
     Parser::Writer writer(out);
     writer.WriteObject(*settings_);
+}
+
+FilePath SettingsManager::GetSettingsFilePath_(const FilePath &dir_path) {
+    return FilePath::Join(dir_path,
+                          std::string("settings") + TK::kSessionFileSuffix);
 }

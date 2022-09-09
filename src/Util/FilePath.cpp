@@ -159,13 +159,13 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
     std::sort(files.begin(),   files.end());
 }
 
-void FilePath::Remove() {
+void FilePath::Remove() const {
     KLOG('f', "Removing path \"" << ToString() << "\n");
     ASSERT(Exists());
     std::filesystem::remove(*this);
 }
 
-bool FilePath::CreateDirectories() {
+bool FilePath::CreateDirectories() const {
     KLOG('f', "Creating directories for path \"" << ToString() << "\"");
     std::error_code ec;
     bool ret = std::filesystem::create_directories(*this, ec);

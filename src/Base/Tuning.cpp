@@ -4,6 +4,7 @@ namespace TK {
 
 // Application Settings (values passed in from SCons)
 const char *   kApplicationName                  = APP_NAME;
+const char *   kSessionFileSuffix                = SESSION_SUFFIX;
 const char *   kVersionString                    = VERSION_STRING;
 const char *   kPublicDocBaseURL                 = PUBLIC_DOC_BASE_URL;
 

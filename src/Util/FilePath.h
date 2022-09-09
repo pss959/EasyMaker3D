@@ -94,12 +94,12 @@ class FilePath : private std::filesystem::path {
 
     /// Removes the file with the path. Used primarily for removing temporary
     /// files for testing.
-    void Remove();
+    void Remove() const;
 
     /// Creates all directories that do not already exist in this path. This
     /// should be called only on a directory path.  Returns false if anything
     /// fails.
-    bool CreateDirectories();
+    bool CreateDirectories() const;
 
     /// Joins two paths, returning the result. The second path must be relative.
     static FilePath Join(const FilePath &p0, const FilePath &p1);

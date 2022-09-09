@@ -33,6 +33,9 @@ class SessionPanel : public Panel {
         kExport,
     };
 
+    /// Stores the session file suffix for convenience.
+    std::string suffix_;
+
     void OpenHelp_();
     void OpenSettings_();
     void ContinueSession_();

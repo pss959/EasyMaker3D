@@ -1,5 +1,6 @@
 #include "Panels/SessionPanel.h"
 
+#include "Base/Tuning.h"
 #include "Items/Settings.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -10,6 +11,8 @@
 #include "Util/String.h"
 
 void SessionPanel::InitInterface() {
+    suffix_ = TK::kSessionFileSuffix;
+
     AddButtonFunc("Help",     [this](){ OpenHelp_();         });
     AddButtonFunc("Settings", [this](){ OpenSettings_();     });
     AddButtonFunc("Continue", [this](){ ContinueSession_();  });
@@ -124,10 +127,10 @@ void SessionPanel::LoadSession_() {
     auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
     const auto &settings = GetSettings();
     fp->Reset();
-    fp->SetTitle("Select a session file (.mvr) to load");
+    fp->SetTitle("Select a session file (" + suffix_ + ") to load");
     fp->SetInitialPath(settings.GetSessionDirectory());
     fp->SetTargetType(FilePanel::TargetType::kExistingFile);
-    fp->SetExtension(".mvr");
+    fp->SetExtension(suffix_);
     fp->SetHighlightPath(settings.GetLastSessionPath(), " [CURRENT SESSION]");
 
     auto result_func = [&, fp](const std::string &result){
@@ -168,10 +171,10 @@ void SessionPanel::SaveSession_(bool use_current_file) {
         auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
         const auto &settings = GetSettings();
         fp->Reset();
-        fp->SetTitle("Enter a session file (.mvr) to save to");
+        fp->SetTitle("Enter a session file (" + suffix_ + ") to save to");
         fp->SetInitialPath(settings.GetSessionDirectory());
         fp->SetTargetType(FilePanel::TargetType::kNewFile);
-        fp->SetExtension(".mvr");
+        fp->SetExtension(suffix_);
         fp->SetHighlightPath(settings.GetLastSessionPath(),
                             " [CURRENT SESSION]");
 

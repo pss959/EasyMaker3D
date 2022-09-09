@@ -8,7 +8,8 @@
 from os      import environ, walk
 from os.path import basename, join
 
-Import('snapimage', 'doc_build_dir', 'APP_NAME', 'VERSION_STRING')
+Import('snapimage', 'doc_build_dir',
+       'APP_NAME', 'SESSION_SUFFIX', 'VERSION_STRING')
 
 # Recursive function to find all files under a root directory.
 def FindAllSources(root_dir):
@@ -35,6 +36,7 @@ env.Append(
     ENV = {
         'PROJECT' : APP_NAME,
         'VERSION' : VERSION_STRING,
+        'SUFFIX'  : SESSION_SUFFIX,
     },
 )
 
@@ -108,7 +110,8 @@ sphinx_args = ' '.join([
     '-a',    # Write all files.
 ])
 
-doc = env.Command('$OUTPUT_DIR/index.html', sources + snaps + annotations,
+doc = env.Command('$OUTPUT_DIR/index.html',
+                  sources + [cs_output] + snaps + annotations,
                   ['echo = Building public doc for version: $VERSION_STRING',
                    f'sphinx-build {sphinx_args} docs {output_dir}'],
                   chdir='PublicDoc')

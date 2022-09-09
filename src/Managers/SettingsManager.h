@@ -36,4 +36,8 @@ class SettingsManager {
 
     SettingsPtr ReadSettings_(const FilePath &path);
     void        WriteSettings_();
+
+    /// Returns the path to the settings file in the directory with the given
+    /// path.
+    static FilePath GetSettingsFilePath_(const FilePath &dir_path);
 };
