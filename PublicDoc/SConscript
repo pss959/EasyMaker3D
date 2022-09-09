@@ -50,8 +50,8 @@ env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 # Snapshot Image generation.
 # -----------------------------------------------------------------------------
 
-script_dir      = './snaps/scripts'
-image_dir       = './docs/images'
+script_dir = './snaps/scripts'
+image_dir  = './docs/images'
 
 def ImageFile(name):
   return join(image_dir, name + '.jpg')
@@ -67,7 +67,7 @@ script_files = [basename(script) for script in scripts]
 image_files  = [ImageFile(name) for name in image_names]
 
 snaps = env.Command(image_files, [snapimage] + scripts,
-                    [(snapimage.abspath + ' ' + sf) for sf in script_files])
+                    [f'{snapimage.abspath} {sf}' for sf in script_files])
 
 env.Alias('Snaps', snaps)
 
@@ -75,14 +75,25 @@ env.Alias('Snaps', snaps)
 # Image annotations.
 # -----------------------------------------------------------------------------
 
-annotations_dir = './snaps/annotations'
-annotator       = env.File('#/bin/annotate.py').abspath
+ann_script_dir = './snaps/annotations'
+annotator      = env.File('#/bin/annotate.py').abspath
 
-annotations = env.Command(
-  ImageFile('WorkAreaAnnotated'),
-  [ImageFile('WorkArea'), annotator, f'{annotations_dir}/WorkArea'],
-  f'{annotator} {ImageFile("WorkArea")} {annotations_dir}/WorkArea',
-  chdir='PublicDoc')
+# Returns a triple: (script_file, input_image_file, output_image_file) based on
+# the script file.
+def GetAnnotationData(script_file):
+  name = basename(script_file)
+  return (script_file, ImageFile(name), ImageFile(name + 'Annotated'))
+
+ann_scripts       = Glob(f'{ann_script_dir}/*', strings=True)
+ann_data          = [GetAnnotationData(sf) for sf in ann_scripts]
+ann_input_images  = [data[1] for data in ann_data]
+ann_output_images = [data[2] for data in ann_data]
+
+annotations = env.Command(ann_output_images,
+                          [annotator] + ann_scripts + ann_input_images,
+                          [f'{annotator} {data[1]} {data[0]} {data[2]}'
+                           for data in ann_data],
+                          chdir='PublicDoc')
 
 # -----------------------------------------------------------------------------
 # Documentation generation.

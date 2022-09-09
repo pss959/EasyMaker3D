@@ -131,46 +131,50 @@ def ReadScript(script_file):
 # -----------------------------------------------------------------------------
 
 usage = f"""
-*** Usage: {argv[0]} <input_image> <script>
-    Reads an image file and an annotation script and produces an annotated
-    version of the image. If the image is named "Apple.jpg", the output image
-    will be "AppleAnnotated.jpg" in the same directory.
+*** Usage: {argv[0]} <input_image> <script> <output_image>
 
-    XXXX annotation script syntax...
+Reads an image file and an annotation script and produces an annotated version
+of the image.
+
+An annotation script may contain any number of lines with one of the following:
+
+  [whitespace]            => Blank lines are ignored.
+  # ...                   => Comment (ignored).
+  color <color>           => Sets the color for text and rectangles.
+  font name size          => Sets the font to use for text.
+  rect line_width x y w h => Draws a rectangle.
+  text x y align <text>   => Draws text. align is one of (left, center, right).
 """
 
 def main():
-  if len(argv) != 3:
+  if len(argv) != 4:
     print(usage)
     return 1
 
-  input_image = argv[1]
-  script_file = argv[2]
+  input_image  = argv[1]
+  script_file  = argv[2]
+  output_image = argv[3]
 
   # Read the input image.
   image = ReadImage(input_image)
   if not image:
     return False
-  print(f'XXXX Read image from {input_image}')
 
   # Read the script and process the image.
   commands = ReadScript(script_file)
   if not commands:
     return False
-  print(f'XXXX Read script from {script_file}')
 
+  # Process the commands.
   ia = ImageAnnotator(image)
-
   for command in commands:
     if not ProcessCommand(ia, command):
       return False
 
   # Write out the resulting image.
-  output_file = input_image.replace('.jpg', 'Annotated.jpg')
-  if not ia.Save(output_file):
-    print(f'*** Unable to write image to file "{output_file}"')
+  if not ia.Save(output_image):
+    print(f'*** Unable to write image to file "{output_image}"')
     return False
-  print(f'XXXX Wrote image to {output_file}')
 
   return True
 
