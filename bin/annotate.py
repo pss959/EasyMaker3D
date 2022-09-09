@@ -25,6 +25,8 @@ class ImageAnnotator(object):
     self._draw.text(self.ToImageCoords_(x, y),
                     text, fill=self._color, font=self._font,
                     align=align, anchor='mm')
+                    # Draw outline in white.
+                    #stroke_width=1, stroke_fill='#ffffff')
 
   def Save(self, image_file):
     try:

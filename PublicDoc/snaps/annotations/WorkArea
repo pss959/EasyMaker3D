@@ -1,9 +1,24 @@
-# This is a test
-color red
-font  Verdana 20
-text .3 .4 center Some Label
+font Verdana_Italic 20
 
-#  Another comment...
-color #03f98b
-rect 3  .5 .6 .2 .1
+color white
+text 0.84 0.93         left   Viewing Shelf
+text 0.458724 0.758333 center Basic Operations Shelf
+text 0.5 0.643333      center Layout Shelf
+text 0.474672 0.45     center File Shelf
+text 0.190432 0.38     center Model Creation Shelf
+text 0.19137 0.553333  center General Tools Shelf
+text 0.212008 0.658333 center Model Conversion Shelf
+text 0.208255 0.78     center Model Combination Shelf
+text 0.15 0.9          right  Specialized
+text 0.15 0.86         right  Tool Shelf
 
+color white
+rect 2 0.363039 0.798333 0.141651 0.1
+text 0.43152 0.923333  center Precision Control
+rect 2 0.806754 0.53 0.0666041 0.0916667
+text .91 .57 left Height
+text .91 .53 left Slider
+
+color black
+text 0.710131 0.626667 center Tree Panel
+text .56 .22           center Stage

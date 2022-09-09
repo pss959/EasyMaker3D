@@ -39,7 +39,7 @@ and positions. See the section on [precision][Precision] for details.
 The Work Area
 .............
 
-.. incimage:: /images/WorkAreaAnnotated.jpg 800px center
+.. incimage:: /images/WorkAreaAnnotated.jpg 1024px center
    :caption:  Features of the |appname| work area.
    :block:
 

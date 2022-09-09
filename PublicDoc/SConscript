@@ -50,8 +50,8 @@ env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 # Snapshot Image generation.
 # -----------------------------------------------------------------------------
 
-script_dir = './snaps/scripts'
-image_dir  = './docs/images'
+script_dir      = './snaps/scripts'
+image_dir       = './docs/images'
 
 def ImageFile(name):
   return join(image_dir, name + '.jpg')
@@ -75,10 +75,14 @@ env.Alias('Snaps', snaps)
 # Image annotations.
 # -----------------------------------------------------------------------------
 
+annotations_dir = './snaps/annotations'
+annotator       = env.File('#/bin/annotate.py').abspath
+
 annotations = env.Command(
-  ImageFile('AnnotatedWorkArea'), ImageFile('WorkArea'),
-  'convert $SOURCE -gravity south -stroke red -strokewidth 2 -annotate 0' +
-  ' "Something" -stroke  none -fill red -annotate 0 "Something" $TARGET')
+  ImageFile('WorkAreaAnnotated'),
+  [ImageFile('WorkArea'), annotator, f'{annotations_dir}/WorkArea'],
+  f'{annotator} {ImageFile("WorkArea")} {annotations_dir}/WorkArea',
+  chdir='PublicDoc')
 
 # -----------------------------------------------------------------------------
 # Documentation generation.
