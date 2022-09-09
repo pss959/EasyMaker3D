@@ -254,7 +254,7 @@ Node "Shelves" {
       ]
     },
 
-    CLONE "Shelf" "FileShelf" {
+    CLONE "Shelf" "SessionShelf" {
       translation: $BACK_X 13 $BACK_Z,
       icons: [
         CLONE "T_IconWidget" "OpenSessionPanelIcon" {

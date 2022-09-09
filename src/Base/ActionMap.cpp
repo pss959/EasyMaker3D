@@ -54,12 +54,6 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kCreateText,
             Action::kCreateTorus }
         },
-        { ActionCategory::kFile,
-          { Action::kOpenHelpPanel,
-            Action::kOpenInfoPanel,
-            Action::kOpenSessionPanel,
-            Action::kOpenSettingsPanel }
-        },
         { ActionCategory::kLayout,
           { Action::kLinearLayout,
             Action::kRadialLayout,
@@ -92,6 +86,12 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kSelectNone,
             Action::kSelectParent,
             Action::kSelectPreviousSibling }
+        },
+        { ActionCategory::kSession,
+          { Action::kOpenHelpPanel,
+            Action::kOpenInfoPanel,
+            Action::kOpenSessionPanel,
+            Action::kOpenSettingsPanel }
         },
         { ActionCategory::kSpecialized,
           { Action::kToggleSpecializedTool }
