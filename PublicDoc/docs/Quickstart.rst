@@ -9,8 +9,8 @@ and download the Zip file for your operating system. Extract all files wherever
 you like; this will create a |appname| folder. In this folder there is a
 |appname| executable that you can click on to run the application.
 
-A Simple Example (Non-VR)
--------------------------
+A Simple Doorstop Example (Non-VR)
+----------------------------------
 
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.
@@ -49,7 +49,34 @@ you the direction and distance you have moved.
 Create a Cylinder and Change Its Size
 .....................................
 
-TBD
+.. todo::
+   TBD with images.
 
-Model Creation Example
-----------------------
+.. _qs-vr:
+
+Setting up VR
+-------------
+
+Feel free to skip these section if you do not have a VR headset or you just
+don't want to use it.
+
+Some VR experiences allow you or force you to walk around while using them.
+That wouldn't make sense for this application, so it is designed to make
+everything useful from one spot. If you're planning to use the VR mode, set it
+up for a comfortable, fixed standing or seated position. Note that the scene
+view is set up for sitting, so you may need to adjust your VR positioning for a
+different height if you prefer to stand.
+
+|appname| was developed using an HTC Vive and Oculus Quest 2 (since that's what
+I have), but should work with any standard VR controllers supported by `SteamVR
+<https://www.steamvr.com>`_. If not, `contact the author
+<https://github.com/pss959>`_ for help.
+
+.. todo::
+   TBD finish this
+
+The Doorstop Example in VR
+--------------------------
+
+.. todo::
+   TBD with images

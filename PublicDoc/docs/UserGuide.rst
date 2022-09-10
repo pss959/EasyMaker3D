@@ -2,6 +2,7 @@
 ====================
 
 .. include:: UserGuide/Overview.rst
+.. include:: UserGuide/Interaction.rst
 
 .. These are all of the undefined reference targets so far:
 
@@ -80,7 +81,6 @@
 .. _ug-unit-conversion:
 .. _ug-viewing:
 .. _ug-viewing-shelf:
-.. _ug-vr-modes:
 
 TBD
 ---

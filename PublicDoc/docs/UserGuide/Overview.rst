@@ -162,3 +162,33 @@ rendered in :ref:`a special color <ug-model-colors>` to warn you of potential
 printing problems.
 
 |
+
+.. _ug-vr:
+
+VR and Non-VR Modes
+-------------------
+
+Since most people do not have a VR setup, |appname| can operate without one,
+using the mouse and keyboard exclusively. This is referred to below as
+:newterm:`conventional mode`.
+
+If you do happen to have a VR headset, you can set it up as explained in the
+:ref:`Quickstart <qs-vr>`. There are two ways to use it with the application:
+
+- :newterm:`VR mode` refers to using the VR system with the headset on and
+  controllers in your hand.
+- :newterm:`Hybrid mode` is halfway between the other two: you have the VR
+  system connected, but you are not wearing the headset. In this mode you can
+  still use one or both controllers for interaction in the conventional window
+  view.
+
+Some VR experiences allow you or force you to walk around while using them.
+That wouldn't make sense for this application, so it is designed to make
+everything useful from one spot. If you're planning to use the VR mode, set it
+up for a comfortable, fixed standing or seated position. Note that the scene
+view is set up for sitting, so you may need to adjust your VR positioning for a
+different height if you prefer to stand.
+
+|appname| was developed using an HTC Vive (since that's what I have), but should
+(!) work with any standard VR controllers supported by
+[SteamVR](https://valvesoftware.github.io/steamvr_unity_plugin/).
