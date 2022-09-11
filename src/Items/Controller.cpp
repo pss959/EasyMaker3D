@@ -9,6 +9,7 @@
 #include "SG/Line.h"
 #include "SG/NodePath.h"
 #include "SG/ProceduralImage.h"
+#include "Parser/Registry.h"
 #include "SG/Search.h"
 #include "SG/Texture.h"
 #include "SG/MutableTriMeshShape.h"
@@ -23,16 +24,22 @@ void Controller::SetHand(Hand hand) {
 }
 
 void Controller::UseCustomModel(const CustomModel &custom_model) {
-    ASSERT(custom_model.shape);
     ASSERT(custom_model.texture_image);
+
+    // Save the CustomModel data.
+    custom_model_ = custom_model;
 
     // Disable the default model.
     auto def = SG::FindNodeUnderNode(*this, "DefaultModel");
     def->SetEnabled(false);
 
+    // Build a MutableTriMeshShape from the ModelMesh.
+    auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
+    shape->ChangeModelMesh(custom_model.mesh);
+
     // Add the shape to the custom model and enable it.
     auto cust = SG::FindNodeUnderNode(*this, "CustomModel");
-    cust->AddShape(custom_model.shape);
+    cust->AddShape(shape);
     cust->SetEnabled(true);
 
     // Access the ProceduralImage from the Texture from the UniformBlock and
@@ -241,27 +248,14 @@ void Controller::PostSetUpIon() {
     SetTriggerMode(Trigger::kPointer, false);
 }
 
-bool Controller::GetCustomModelData(TriMesh &mesh,
+bool Controller::GetCustomModelData(ModelMesh &mesh,
                                     ion::gfx::ImagePtr &image) const {
-    auto cust = SG::FindNodeUnderNode(*this, "CustomModel");
-    if (! cust->IsEnabled())
-        return false;
-
-    ASSERT(cust->GetShapes().size() == 1U);
-    auto mtms =
-        Util::CastToDerived<SG::MutableTriMeshShape>(cust->GetShapes()[0]);
-    ASSERT(mtms);
-    mesh = mtms->GetMesh();
-
-    ASSERT(! cust->GetUniformBlocks().empty());
-    const auto &block = cust->GetUniformBlocks()[0];
-    ASSERT(block);
-    ASSERT(! block->GetTextures().empty());
-    const auto &tex = block->GetTextures()[0];
-    ASSERT(tex);
-    image = tex->GetImage()->GetIonImage();
-
-    return true;
+    if (! custom_model_.mesh.points.empty()) {
+        mesh  = custom_model_.mesh;
+        image = custom_model_.texture_image;
+        return true;
+    }
+    return false;
 }
 
 void Controller::ShowAffordance_(Trigger trigger, bool is_shown) {

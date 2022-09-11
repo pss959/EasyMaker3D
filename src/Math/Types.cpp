@@ -391,3 +391,85 @@ bool TriMesh::FromBinaryString(const std::string &str) {
 
     return true;
 }
+
+// ----------------------------------------------------------------------------
+// ModelMesh functions.
+// ----------------------------------------------------------------------------
+
+std::string ModelMesh::ToBinaryString() const {
+    const size_t pc = points.size();
+    const size_t tc = GetTriangleCount();
+
+    ASSERT(normals.size()    == pc);
+    ASSERT(tex_coords.size() == pc);
+
+    ion::base::BufferBuilder bb;
+    bb.Append(static_cast<uint32>(pc));
+    bb.Append(static_cast<uint32>(tc));
+    bb.AppendArray(&points[0],     points.size());
+    bb.AppendArray(&indices[0],    indices.size());
+    bb.AppendArray(&normals[0],    normals.size());
+    bb.AppendArray(&tex_coords[0], tex_coords.size());
+    return bb.Build();
+}
+
+bool ModelMesh::FromBinaryString(const std::string &str) {
+    points.clear();
+    indices.clear();
+    normals.clear();
+    tex_coords.clear();
+
+    const uint8 *bp = reinterpret_cast<const uint8 *>(str.c_str());
+
+    // Point and triangle counts.
+    size_t bytes_left = str.size();
+    uint32 pc, tc;
+    if (bytes_left < 2 * sizeof(pc))
+        return false;
+    pc = ParseBinary_<uint32>(bp);
+    tc = ParseBinary_<uint32>(bp);
+    bytes_left -= 2 * sizeof(pc);
+
+    points.reserve(pc);
+    indices.reserve(3 * tc);
+
+    // Points.
+    if (bytes_left < pc * 3 * sizeof(float))
+        return false;
+    for (size_t i = 0; i < pc; ++i) {
+        const float x = ParseBinary_<float>(bp);
+        const float y = ParseBinary_<float>(bp);
+        const float z = ParseBinary_<float>(bp);
+        points.push_back(Point3f(x, y, z));
+    }
+    bytes_left -= pc * 3 * sizeof(float);
+
+    // Normals.
+    if (bytes_left < pc * 3 * sizeof(float))
+        return false;
+    for (size_t i = 0; i < pc; ++i) {
+        const float nx = ParseBinary_<float>(bp);
+        const float ny = ParseBinary_<float>(bp);
+        const float nz = ParseBinary_<float>(bp);
+        normals.push_back(Vector3f(nx, ny, nz));
+    }
+    bytes_left -= pc * 3 * sizeof(float);
+
+    // Texture coordinates.
+    if (bytes_left < pc * 2 * sizeof(float))
+        return false;
+    for (size_t i = 0; i < pc; ++i) {
+        const float u = ParseBinary_<float>(bp);
+        const float v = ParseBinary_<float>(bp);
+        tex_coords.push_back(Point2f(u, v));
+    }
+    bytes_left -= pc * 2 * sizeof(float);
+
+    // Indices.
+    if (bytes_left < tc * 3 * sizeof(GIndex))
+        return false;
+    for (size_t i = 0; i < 3 * tc; ++i)
+        indices.push_back(ParseBinary_<GIndex>(bp));
+
+    return true;
+}

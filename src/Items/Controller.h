@@ -11,10 +11,7 @@
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
-namespace SG {
-DECL_SHARED_PTR(Line);
-DECL_SHARED_PTR(Shape);
-}
+namespace SG { DECL_SHARED_PTR(Line); }
 
 DECL_SHARED_PTR(Controller);
 
@@ -29,8 +26,8 @@ class Controller : public SG::Node {
     /// This struct represents the data necessary for replacing the default
     /// controller model with a custom one.
     struct CustomModel {
-        SG::ShapePtr       shape;          ///< Shape with controller geometry.
-        ion::gfx::ImagePtr texture_image;  ///< Texture image applied to shape.
+        ModelMesh          mesh;           ///< Mesh with controller model.
+        ion::gfx::ImagePtr texture_image;  ///< Texture image applied to mesh.
 
         /// \name Connection points
         /// Each of these is the position of a vertex that is used to attach
@@ -151,7 +148,7 @@ class Controller : public SG::Node {
     /// If this is using a CustomModel, sets the given TriMesh and image to
     /// the mesh and texture image fields for the CustomModel and returns true.
     /// Otherwise, just returns false.
-    bool GetCustomModelData(TriMesh &mesh, ion::gfx::ImagePtr &image) const;
+    bool GetCustomModelData(ModelMesh &mesh, ion::gfx::ImagePtr &image) const;
 
   protected:
     Controller() {}
@@ -162,6 +159,9 @@ class Controller : public SG::Node {
 
     /// Function used for haptic vibration.
     VibrateFunc vibrate_func_;
+
+    /// CustomModel; will have an empty mesh if not set.
+    CustomModel custom_model_;
 
     /// All GripGuide children.
     std::vector<GripGuidePtr> guides_;

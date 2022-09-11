@@ -13,24 +13,17 @@ void MutableTriMeshShape::ChangeMesh(const TriMesh &mesh) {
     UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
 }
 
-void MutableTriMeshShape::ChangeMeshWithVertexData(
-    const TriMesh &mesh, const std::vector<Vector3f> &normals,
-    const std::vector<Point2f> &tex_coords) {
+void MutableTriMeshShape::ChangeModelMesh(const ModelMesh &mesh) {
     if (! GetIonShape())
         SetUpIon();
-
-    const bool has_normals    = ! normals.empty();
-    const bool has_tex_coords = ! tex_coords.empty();
 
     InstallMesh(mesh);
     if (! GetIonShape())
         SetUpIon();
     auto &shape = *GetIonShape();
-    UpdateIonShapeFromTriMesh(mesh, shape, has_normals, has_tex_coords);
-    if (has_normals)
-        SetVertexNormals(normals, shape);
-    if (has_tex_coords)
-        SetTextureCoords(tex_coords, shape);
+    UpdateIonShapeFromTriMesh(mesh, shape, true, true);
+    SetVertexNormals(mesh.normals, shape);
+    SetTextureCoords(mesh.tex_coords, shape);
 }
 
 void MutableTriMeshShape::CopyFrom(const MutableTriMeshShape &from) {

@@ -229,9 +229,9 @@ static Matrix4f GetWorldToStageMatrix_() {
     return CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
 }
 
-/// Dumps TriMesh and texture image data for the given Controller to files.
+/// Dumps mesh and texture image data for the given Controller to files.
 static void DumpControllerModel_(const Controller &controller) {
-    TriMesh            mesh;
+    ModelMesh          mesh;
     ion::gfx::ImagePtr image;
     if (! controller.GetCustomModelData(mesh, image))
         return;

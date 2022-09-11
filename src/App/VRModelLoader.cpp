@@ -11,8 +11,6 @@
 
 #include "Base/Tuning.h"
 #include "Math/Types.h"
-#include "Parser/Registry.h"
-#include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 
@@ -21,14 +19,6 @@
 // ----------------------------------------------------------------------------
 
 namespace {
-
-/// Struct storing everything needed to build a MutableTriMeshShape from a
-/// loaded model.
-struct ModelData_ {
-    TriMesh               mesh;    ///< Stores vertices and triangle indices.
-    std::vector<Vector3f> normals;
-    std::vector<Point2f>  tex_coords;
-};
 
 /// Returns a string property from OpenVR.
 static std::string GetStringProperty_(vr::TrackedDeviceIndex_t device,
@@ -109,59 +99,51 @@ static vr::RenderModel_TextureMap_t * LoadTexture_(vr::TextureID_t id) {
     return tex;
 }
 
-/// Stores reasonable normals in a ModelData_ instance when normals are found
-/// to be bad.
+/// Stores reasonable normals in a ModelMesh when normals are found to be bad.
 /// \todo Figure out why some SteamVR models end up with bad normals.
-static void FixNormals_(ModelData_ &mdata) {
+static void FixNormals_(ModelMesh &mmesh) {
     Point3f center(0, 0, 0);
 
-    const auto &points = mdata.mesh.points;
-    for (const auto &p: points)
+    for (const auto &p: mmesh.points)
         center += p;
 
-    center /= points.size();
+    center /= mmesh.points.size();
 
     // Set the normal to the direction from the center point to the point.
-    for (size_t i = 0; i < points.size(); ++i)
-        mdata.normals[i] = ion::math::Normalized(points[i] - center);
+    for (size_t i = 0; i < mmesh.points.size(); ++i)
+        mmesh.normals[i] = ion::math::Normalized(mmesh.points[i] - center);
 }
 
-/// Builds and returns a MutableTriMeshShape from the given SteamVR model.
-static SG::MutableTriMeshShapePtr BuildShape_(const std::string &name,
-                                              vr::RenderModel_t &model) {
+/// Builds and returns a ModelMesh from the given SteamVR model.
+static ModelMesh BuildMesh_(const std::string &name, vr::RenderModel_t &model) {
     auto to_point3 = [](const vr::HmdVector3_t &p){
         return Point3f(p.v[0], p.v[1], p.v[2]);
     };
 
-    ModelData_ mdata;
-    mdata.mesh.points.resize(model.unVertexCount);
-    mdata.normals.resize(model.unVertexCount);
-    mdata.tex_coords.resize(model.unVertexCount);
+    ModelMesh mmesh;
+    mmesh.points.resize(model.unVertexCount);
+    mmesh.normals.resize(model.unVertexCount);
+    mmesh.tex_coords.resize(model.unVertexCount);
 
     bool fix_normals = false;
-    for (size_t i = 0; i < mdata.mesh.points.size(); ++i) {
+    for (size_t i = 0; i < mmesh.points.size(); ++i) {
         const auto &vert = model.rVertexData[i];
-        mdata.mesh.points[i] = to_point3(vert.vPosition);
-        mdata.normals[i]     = Vector3f(to_point3(vert.vNormal));
-        mdata.tex_coords[i].Set(vert.rfTextureCoord[0], vert.rfTextureCoord[1]);
-        if (mdata.normals[i] == Vector3f::Zero())
+        mmesh.points[i] = to_point3(vert.vPosition);
+        mmesh.normals[i]     = Vector3f(to_point3(vert.vNormal));
+        mmesh.tex_coords[i].Set(vert.rfTextureCoord[0], vert.rfTextureCoord[1]);
+        if (mmesh.normals[i] == Vector3f::Zero())
             fix_normals = true;
     }
-    mdata.mesh.indices.resize(3 * model.unTriangleCount);
-    for (size_t i = 0; i < mdata.mesh.indices.size(); ++i)
-        mdata.mesh.indices[i] = model.rIndexData[i];
+    mmesh.indices.resize(3 * model.unTriangleCount);
+    for (size_t i = 0; i < mmesh.indices.size(); ++i)
+        mmesh.indices[i] = model.rIndexData[i];
 
     if (fix_normals) {
         KLOG('v', "Fixing zero-length normals for model '" << name << "'");
-        FixNormals_(mdata);
+        FixNormals_(mmesh);
     }
 
-    // Create a MutableTriMeshShape with texture coordinates.
-    auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
-    shape->ChangeMeshWithVertexData(mdata.mesh,
-                                    mdata.normals, mdata.tex_coords);
-
-    return shape;
+    return mmesh;
 }
 
 /// Creates an Ion Image from a SteamVR texture map.
@@ -178,25 +160,26 @@ static ion::gfx::ImagePtr BuildIonImage_(
     return image;
 }
 
-/// Finds the points in the given TriMesh that should be used to connect
-/// affordances and and sets the corresponding values in the
-/// Controller::CustomModel.
-static void FindConnectionPoints_(Hand hand, const TriMesh &mesh,
+/// Finds the points in the ModelMesh of the given Controller::CustomModel that
+/// should be used to connect affordances and and sets the corresponding
+/// values.
+static void FindConnectionPoints_(Hand hand,
                                   Controller::CustomModel &custom_model) {
     // Attach the laser pointer to the point that is close to the center in X
     // and is farthest forward (smallest Z).
     custom_model.pointer_pos = Point3f(0, 0, 100000);
 
     // Attach the grip guide to the point furthest to the palm side.
-    custom_model.grip_pos = mesh.points[0];
+    const auto &points = custom_model.mesh.points;
+    custom_model.grip_pos = points[0];
 
     // Find the center in X.
     float center_x = 0;
-    for (const auto &p: mesh.points)
+    for (const auto &p: points)
         center_x += p[0];
-    center_x /= mesh.points.size();
+    center_x /= points.size();
 
-    for (const auto &p: mesh.points) {
+    for (const auto &p: points) {
         if (std::abs(p[0] - center_x) < .001f &&
             p[2] < custom_model.pointer_pos[2])
             custom_model.pointer_pos = p;
@@ -233,10 +216,9 @@ bool VRModelLoader::LoadControllerModel(uint64_t handle, Hand hand,
         if (vr::RenderModel_t *model = LoadModel_(name)) {
             if (vr::RenderModel_TextureMap_t *tex =
                 LoadTexture_(model->diffuseTextureId)) {
-                auto shape = BuildShape_(name, *model);
-                custom_model.shape         = shape;
+                custom_model.mesh          = BuildMesh_(name, *model);
                 custom_model.texture_image = BuildIonImage_(*tex);
-                FindConnectionPoints_(hand, shape->GetMesh(), custom_model);
+                FindConnectionPoints_(hand, custom_model);
                 success = true;
                 vmod.FreeTexture(tex);
             }

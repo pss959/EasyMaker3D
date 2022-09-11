@@ -21,13 +21,9 @@ class MutableTriMeshShape : public TriMeshShape {
     /// should not be called before Ion is set up.
     void ChangeMesh(const TriMesh &mesh);
 
-    /// Same as ChangeMesh(), but also allows normals and texture coordinates
-    /// to be added to the Ion shape. If either vector is not empty, the
-    /// supplied values are stored in the shape; there must be one value per
-    /// vertex supplied.
-    void ChangeMeshWithVertexData(const TriMesh &mesh,
-                                  const std::vector<Vector3f> &normals,
-                                  const std::vector<Point2f> &tex_coords);
+    /// Same as ChangeMesh() but takes a ModelMesh with normals and texture
+    /// coordinates to be added to the Ion shape.
+    void ChangeModelMesh(const ModelMesh &mesh);
 
     /// Returns the current TriMesh.
     const TriMesh & GetMesh() const { return GetTriMesh(); }
