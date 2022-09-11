@@ -163,7 +163,7 @@ printing problems.
 
 |
 
-.. _ug-vr:
+.. _ug-vr-modes:
 
 VR and Non-VR Modes
 -------------------
