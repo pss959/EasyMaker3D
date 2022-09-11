@@ -364,6 +364,7 @@ lib_sources = [
     'Util/String.cpp',
     'Util/URL.cpp',
     'Util/UTime.cpp',
+    'Util/Write.cpp',
 
     'Viewers/GLFWViewer.cpp',
     'Viewers/VRViewer.cpp',
@@ -472,6 +473,7 @@ base_env.Replace(
         '$BUILD_DIR/include',  # Generated headers.
         '$ION_DIR',
         '$ION_DIR/ion/port/override',
+        '$ION_DIR/third_party',         # For stblib.
         '$ION_DIR/third_party/google',
         '$ION_DIR/third_party/absl',
         '$ION_DIR/third_party/google',
@@ -746,7 +748,6 @@ apps_extra_sources = [
 
 app_env = reg_env.Clone()
 app_env.Append(
-    CPPPATH = ['#ionsrc/Ion/third_party'],  # For stblib in snapimage.cpp.
     LIBPATH = ['$BUILD_DIR/docopt.cpp'],
     LIBS    = [main_lib, 'docopt'],
 )
