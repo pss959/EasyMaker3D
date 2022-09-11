@@ -3,6 +3,7 @@
 #include <cctype>
 #include <cmath>
 
+#include <ion/base/bufferbuilder.h>
 #include <ion/math/angleutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -40,6 +41,13 @@ template <> std::string ToString_(const Rotationf &r) {
     Anglef   angle;
     r.GetAxisAndAngle(&axis, &angle);
     return "R[" + ToString_(axis) + ", " + ToString_(angle) + "]";
+}
+
+/// This is used by TriMesh::FromBinaryString() to parse binary data.
+template <typename T> T ParseBinary_(const uint8 *&bp) {
+    const T val = *reinterpret_cast<const T *>(bp);
+    bp += sizeof(val);
+    return val;
 }
 
 }  // anonymous namespace
@@ -332,4 +340,54 @@ std::string TriMesh::ToString() const {
             i2s(3 * i + 1) + " " +
             i2s(3 * i + 2) + "]\n";
     return s;
+}
+
+std::string TriMesh::ToBinaryString() const {
+    const size_t pc = points.size();
+    const size_t tc = GetTriangleCount();
+
+    ion::base::BufferBuilder bb;
+    bb.Append(static_cast<uint32>(pc));
+    bb.Append(static_cast<uint32>(tc));
+    bb.AppendArray(&points[0],  points.size());
+    bb.AppendArray(&indices[0], indices.size());
+    return bb.Build();
+}
+
+bool TriMesh::FromBinaryString(const std::string &str) {
+    points.clear();
+    indices.clear();
+
+    const uint8 *bp = reinterpret_cast<const uint8 *>(str.c_str());
+
+    // Point and triangle counts.
+    size_t bytes_left = str.size();
+    uint32 pc, tc;
+    if (bytes_left < 2 * sizeof(pc))
+        return false;
+    pc = ParseBinary_<uint32>(bp);
+    tc = ParseBinary_<uint32>(bp);
+    bytes_left -= 2 * sizeof(pc);
+
+    points.reserve(pc);
+    indices.reserve(3 * tc);
+
+    // Points.
+    if (bytes_left < pc * 3 * sizeof(float))
+        return false;
+    for (size_t i = 0; i < pc; ++i) {
+        const float x = ParseBinary_<float>(bp);
+        const float y = ParseBinary_<float>(bp);
+        const float z = ParseBinary_<float>(bp);
+        points.push_back(Point3f(x, y, z));
+    }
+    bytes_left -= pc * 3 * sizeof(float);
+
+    // Indices.
+    if (bytes_left < tc * 3 * sizeof(GIndex))
+        return false;
+    for (size_t i = 0; i < 3 * tc; ++i)
+        indices.push_back(ParseBinary_<GIndex>(bp));
+
+    return true;
 }

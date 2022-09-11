@@ -49,6 +49,7 @@ test_sources = [
     'TestBase.cpp',
     'TextUtilsTest.cpp',
     'TimingTest.cpp',
+    'TriMeshBinaryTest.cpp',
     'TriangulationTest.cpp',
     'UTimeTest.cpp',
     'UtilTest.cpp',
