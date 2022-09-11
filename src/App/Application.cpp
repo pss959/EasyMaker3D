@@ -116,6 +116,7 @@ class  Application::Impl_ {
     void SetTestingFlag() { is_testing_ = true; }
     void GetTestContext(TestContext &tc);
     Renderer & GetRenderer() { return *renderer_; }
+    void ForceTouchMode() { force_touch_mode_on_ = true; }
 
   private:
     /// Run states for the main loop.
@@ -215,6 +216,9 @@ class  Application::Impl_ {
 
     /// Current state of running the application.
     RunState_                  run_state_ = RunState_::kRunning;
+
+    /// When true, touch mode is always on.
+    bool                       force_touch_mode_on_ = false;
 
     /// \name One-time Initialization
     /// Each of these functions sets up items that are needed by the
@@ -473,6 +477,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count) {
     // Put controllers in touch mode if the AppBoard, KeyBoard, or
     // ToolBoard is active.
     const bool in_touch_mode =
+        force_touch_mode_on_ ||
         scene_context_->app_board->IsShown() ||
         scene_context_->key_board->IsShown() ||
         scene_context_->tool_board->IsShown();
@@ -1433,4 +1438,8 @@ void Application::GetTestContext(TestContext &tc) {
 
 Renderer & Application::GetRenderer() {
     return impl_->GetRenderer();
+}
+
+void Application::ForceTouchMode() {
+    impl_->ForceTouchMode();
 }

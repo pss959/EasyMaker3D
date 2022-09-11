@@ -66,6 +66,9 @@ class Application {
     /// Returns the Renderer.
     Renderer & GetRenderer();
 
+    /// Allows derived classes to force touch mode to be on.
+    void ForceTouchMode();
+
   private:
     class  Loader_;
     class  Impl_;
