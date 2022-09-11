@@ -108,8 +108,8 @@ TEST(String, RemoveFirstN) {
 }
 
 TEST(String, SplitCamelCase) {
-    EXPECT_EQ("Hello There", Util::SplitCamelCase("HelloThere",  false));
-    EXPECT_EQ("hello There", Util::SplitCamelCase("helloThere",  false));
-    EXPECT_EQ("Abc Def GHi", Util::SplitCamelCase("AbcDefGHi",   false));
-    EXPECT_EQ("Hello There", Util::SplitCamelCase("kHelloThere", true));
+    EXPECT_EQ("Hello There",   Util::SplitCamelCase("HelloThere",  false));
+    EXPECT_EQ("hello There",   Util::SplitCamelCase("helloThere",  false));
+    EXPECT_EQ("Abc Def GH Ij", Util::SplitCamelCase("AbcDefGHIj",  false));
+    EXPECT_EQ("Hello There",   Util::SplitCamelCase("kHelloThere", true));
 }
