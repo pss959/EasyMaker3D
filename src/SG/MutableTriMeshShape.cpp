@@ -14,9 +14,6 @@ void MutableTriMeshShape::ChangeMesh(const TriMesh &mesh) {
 }
 
 void MutableTriMeshShape::ChangeModelMesh(const ModelMesh &mesh) {
-    if (! GetIonShape())
-        SetUpIon();
-
     InstallMesh(mesh);
     if (! GetIonShape())
         SetUpIon();

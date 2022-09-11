@@ -141,7 +141,7 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
     ion::image::FlipImage(image);
 
     const FilePath path("PublicDoc/docs/images/" + file_name);
-    if (! Util::WriteImage(path, *image)) {
+    if (! Util::WriteImage(path, *image, false)) {
         std::cerr << "*** Error saving snap image to = '"
                   << path.ToString() << "'\n";
         return false;

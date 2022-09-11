@@ -27,8 +27,9 @@ bool ReadFile(const FilePath &path, std::string &s,
 
 /// Reads the contents of an image file with the given path and returns an Ion
 /// Image representing it. Returns a null pointer if the file could not be
-/// read.
-ion::gfx::ImagePtr ReadImage(const FilePath &path);
+/// read. If flip_vertically is true, the resulting image is flipped
+/// vertically.
+ion::gfx::ImagePtr ReadImage(const FilePath &path, bool flip_vertically);
 
 /// Reads the contents of a shape file with the given path and returns an Ion
 /// Shape representing it. Returns a null pointer if the file could not be

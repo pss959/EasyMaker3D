@@ -241,7 +241,7 @@ static void DumpControllerModel_(const Controller &controller) {
     const std::string mfn = name + "_mesh.tri";
     const std::string tfn = name + "_tex.jpg";
     if (! Util::WriteString(mfn, mesh.ToBinaryString()) ||
-        ! Util::WriteImage(tfn, *image)) {
+        ! Util::WriteImage(tfn, *image, true)) {
         std::cerr << "*** Unable to dump" << name
                   << " mesh and texture image to " << mfn << " / "
                   << tfn << "\n";

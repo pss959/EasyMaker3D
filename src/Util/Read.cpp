@@ -63,11 +63,10 @@ bool ReadFile(const FilePath &path, std::string &s, bool allow_includes) {
     return ok;
 }
 
-ion::gfx::ImagePtr ReadImage(const FilePath &path) {
+ion::gfx::ImagePtr ReadImage(const FilePath &path, bool flip_vertically) {
     std::string data;
     ion::gfx::ImagePtr image;
     if (ReadFile(path, data)) {
-        const bool flip_vertically = true;
         image = ion::image::ConvertFromExternalImageData(
             data.data(), data.size(), flip_vertically, false,
             ion::base::AllocatorPtr());

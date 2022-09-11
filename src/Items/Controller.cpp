@@ -25,6 +25,11 @@ void Controller::SetHand(Hand hand) {
 
 void Controller::UseCustomModel(const CustomModel &custom_model) {
     ASSERT(custom_model.texture_image);
+    ASSERT(! custom_model.mesh.points.empty());
+    ASSERT(custom_model.mesh.points.size() ==
+           custom_model.mesh.normals.size());
+    ASSERT(custom_model.mesh.points.size() ==
+           custom_model.mesh.tex_coords.size());
 
     // Save the CustomModel data.
     custom_model_ = custom_model;

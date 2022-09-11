@@ -407,9 +407,9 @@ std::string ModelMesh::ToBinaryString() const {
     bb.Append(static_cast<uint32>(pc));
     bb.Append(static_cast<uint32>(tc));
     bb.AppendArray(&points[0],     points.size());
-    bb.AppendArray(&indices[0],    indices.size());
     bb.AppendArray(&normals[0],    normals.size());
     bb.AppendArray(&tex_coords[0], tex_coords.size());
+    bb.AppendArray(&indices[0],    indices.size());
     return bb.Build();
 }
 

@@ -27,7 +27,7 @@ ion::gfx::ImagePtr FileImage::CreateIonImage(FileMap &file_map) {
         // Check the FileMap first to see if the Image was already loaded.
         image = file_map.FindImage(path);
         if (! image) {
-            image = Util::ReadImage(path);
+            image = Util::ReadImage(path, true);  // Flip vertically.
             if (! image)
                 throw Exception("Unable to open or read image file '" +
                                 path.ToString() + "'");

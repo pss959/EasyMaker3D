@@ -18,7 +18,9 @@ namespace Util {
 bool WriteString(const FilePath &path, const std::string &s);
 
 /// Writes an Ion Image to file with the given path. Returns false if the file
-/// could not be written.
-bool WriteImage(const FilePath &path, const ion::gfx::Image &image);
+/// could not be written. If flip_vertically is true, the written image is
+/// flipped vertically.
+bool WriteImage(const FilePath &path, const ion::gfx::Image &image,
+                bool flip_vertically);
 
 }  // namespace Util
