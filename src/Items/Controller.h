@@ -148,6 +148,11 @@ class Controller : public SG::Node {
 
     virtual void PostSetUpIon() override;
 
+    /// If this is using a CustomModel, sets the given TriMesh and image to
+    /// the mesh and texture image fields for the CustomModel and returns true.
+    /// Otherwise, just returns false.
+    bool GetCustomModelData(TriMesh &mesh, ion::gfx::ImagePtr &image) const;
+
   protected:
     Controller() {}
 

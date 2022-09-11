@@ -23,6 +23,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Util/Write.h"
 #include "Widgets/StageWidget.h"
 
 namespace {
@@ -40,6 +41,7 @@ class ShortcutMap_ {
     /// applications.
     enum class Action {
         kNone,
+        kDumpControllerModels,
         kPrintBounds,
         kPrintBoundsOnPath,
         kPrintCommands,
@@ -129,6 +131,8 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print the full node graph for current path" },
         { "<Alt>h", Action::kPrintHelp,
           "Print this help" },
+        { "<Alt>k", Action::kDumpControllerModels,
+          "Dump the custom controller models to files" },
         { "<Alt>l", Action::kToggleEventLogging,
           "Toggle event logging" },
         { "<Alt>m", Action::kPrintMatrices,
@@ -225,6 +229,29 @@ static Matrix4f GetWorldToStageMatrix_() {
     return CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
 }
 
+/// Dumps TriMesh and texture image data for the given Controller to files.
+static void DumpControllerModel_(const Controller &controller) {
+    TriMesh            mesh;
+    ion::gfx::ImagePtr image;
+    if (! controller.GetCustomModelData(mesh, image))
+        return;
+
+    const std::string name = Util::EnumToWord(controller.GetHand());
+
+    const std::string mfn = name + "_mesh.tri";
+    const std::string tfn = name + "_tex.jpg";
+    if (! Util::WriteString(mfn, mesh.ToBinaryString()) ||
+        ! Util::WriteImage(tfn, *image)) {
+        std::cerr << "*** Unable to dump" << name
+                  << " mesh and texture image to " << mfn << " / "
+                  << tfn << "\n";
+    }
+    else {
+        std::cerr << "=== Dumped " << name << " mesh and texture image to "
+                  << mfn << " / " << tfn << "\n";
+    }
+}
+
 /// Handles the ShortcutMap_::Action::kPrintWidget case.
 static void PrintTouchedWidget_() {
     const auto &board = GetBoard_();
@@ -253,6 +280,10 @@ static bool HandleShortcut_(const std::string &str) {
     const auto action = shortcut_map_.GetAction(str);
     switch (action) {
       case SAction::kNone:
+        break;
+      case SAction::kDumpControllerModels:
+        DumpControllerModel_(*scene_context_->left_controller);
+        DumpControllerModel_(*scene_context_->right_controller);
         break;
       case SAction::kPrintBounds:
         Debug::PrintBounds(root, GetWorldToStageMatrix_());

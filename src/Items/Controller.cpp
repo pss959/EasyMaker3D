@@ -10,6 +10,8 @@
 #include "SG/NodePath.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
+#include "SG/Texture.h"
+#include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
@@ -237,6 +239,29 @@ void Controller::PostSetUpIon() {
 
     // Set to the inactive state.
     SetTriggerMode(Trigger::kPointer, false);
+}
+
+bool Controller::GetCustomModelData(TriMesh &mesh,
+                                    ion::gfx::ImagePtr &image) const {
+    auto cust = SG::FindNodeUnderNode(*this, "CustomModel");
+    if (! cust->IsEnabled())
+        return false;
+
+    ASSERT(cust->GetShapes().size() == 1U);
+    auto mtms =
+        Util::CastToDerived<SG::MutableTriMeshShape>(cust->GetShapes()[0]);
+    ASSERT(mtms);
+    mesh = mtms->GetMesh();
+
+    ASSERT(! cust->GetUniformBlocks().empty());
+    const auto &block = cust->GetUniformBlocks()[0];
+    ASSERT(block);
+    ASSERT(! block->GetTextures().empty());
+    const auto &tex = block->GetTextures()[0];
+    ASSERT(tex);
+    image = tex->GetImage()->GetIonImage();
+
+    return true;
 }
 
 void Controller::ShowAffordance_(Trigger trigger, bool is_shown) {
