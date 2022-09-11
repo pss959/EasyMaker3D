@@ -1,8 +1,6 @@
 #include <string>
 #include <vector>
 
-#include <stblib/stb_image_write.h>
-
 #include <ion/gfx/image.h>
 #include <ion/image/conversionutils.h>
 
@@ -22,6 +20,7 @@
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+#include "Util/Write.h"
 #include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------
@@ -142,9 +141,7 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
     ion::image::FlipImage(image);
 
     const FilePath path("PublicDoc/docs/images/" + file_name);
-    const void *pp =
-        reinterpret_cast<const void *>(image->GetData()->GetData<uint8>());
-    if (! stbi_write_jpg(path.ToString().c_str(), w, h, 3, pp, 100)) {
+    if (! Util::WriteImage(path, *image)) {
         std::cerr << "*** Error saving snap image to = '"
                   << path.ToString() << "'\n";
         return false;
