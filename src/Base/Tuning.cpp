@@ -8,6 +8,13 @@ const char *   kSessionFileSuffix                = SESSION_SUFFIX;
 const char *   kVersionString                    = VERSION_STRING;
 const char *   kPublicDocBaseURL                 = PUBLIC_DOC_BASE_URL;
 
+// Save Ion data except in release mode.
+#if ENABLE_DEBUG_FEATURES
+const bool     kSaveIonData                      = true;
+#else
+const bool     kSaveIonData                      = false;
+#endif
+
 // Boards and Panels
 const float    kAppBoardHeight                   = 14;
 const float    kBoardTouchDistance               = .6f;

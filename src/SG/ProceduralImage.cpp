@@ -1,5 +1,6 @@
 #include "SG/ProceduralImage.h"
 
+#include "Base/Tuning.h"
 #include "SG/Exception.h"
 
 namespace SG {
@@ -22,7 +23,7 @@ ion::gfx::ImagePtr ProceduralImage::GenerateImage_() {
         ion::gfx::ImagePtr image(new ion::gfx::Image);
         image->Set(ion::gfx::Image::kRgb888, 1, 1,
                    ion::base::DataContainer::CreateAndCopy(
-                       pix, 4, true, ion::base::AllocatorPtr()));
+                       pix, 4, ! TK::kSaveIonData, ion::base::AllocatorPtr()));
         return image;
     }
 }

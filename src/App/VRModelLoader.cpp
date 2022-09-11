@@ -174,7 +174,7 @@ static ion::gfx::ImagePtr BuildIonImage_(
     image->Set(ion::gfx::Image::kRgba8888, w, h,
                ion::base::DataContainer::CreateAndCopy(
                    texture.rubTextureMapData,
-                   4 * w * h, true, ion::base::AllocatorPtr()));
+                   4 * w * h, ! TK::kSaveIonData, ion::base::AllocatorPtr()));
     return image;
 }
 
