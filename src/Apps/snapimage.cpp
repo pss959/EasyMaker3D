@@ -176,6 +176,7 @@ bool SnapshotApp_::AddHand_(const SnapScript::Instruction &instr) {
     controller.SetTouchMode(true);
     controller.SetGripGuideType(GripGuideType::kBasic);
     controller.ShowAll(true);
+    controller.ShowGripHover(false, Point3f::Zero(), Color::White());
     controller.SetTranslation(instr.hand_pos);
     controller.SetRotation(Rotationf::RotateInto(Vector3f(0, 0, -1),
                                                  instr.hand_dir));
