@@ -1,14 +1,4 @@
 /* -----------------------------------------------------------------------------
- * CSS variables.
- * -------------------------------------------------------------------------- */
-
-:root {
-  --indent-size:        3px;
-  --section1-color:     #fefefe;
-  --section-color-diff: 911111;
-}
-
-/* -----------------------------------------------------------------------------
  * Backgrounds and other colors.
  * -------------------------------------------------------------------------- */
 
@@ -66,34 +56,25 @@
 
 /* Section headers. */
 .wy-nav-content section {
-    margin-left:   calc(var(--indent-size) * 1);
+    margin-left:   3px;
     margin-bottom: 2px;
-    padding: 6px;
-    border: 1px solid #aaaaaa;
-    max-width: 100%;
+    padding:       6px;
+    border:        1px solid #aaaaaa;
+    max-width:     100%;
 }
 .wy-nav-content section section {
-    margin-left: calc(var(--indent-size) * 3);
-}
-.wy-nav-content section section section {
-    margin-left: calc(var(--indent-size) * 5);
-}
-.wy-nav-content section section section section {
-    margin-left: calc(var(--indent-size) * 7);
+    margin-left: 2%;
 }
 
 /* Section content paragraphs. */
 .wy-nav-content section p {
-    margin-left: calc(var(--indent-size) * 2);
+    margin-left: 1%;
 }
-.wy-nav-content section section p {
-    margin-left: calc(var(--indent-size) * 4);
-}
-.wy-nav-content section section section p {
-    margin-left: calc(var(--indent-size) * 6);
-}
-.wy-nav-content section section section section p {
-    margin-left: calc(var(--indent-size) * 8);
+
+/* VR-only sections. */
+.admonition-vr-only {
+    margin-left:  2%;
+    margin-right: 2%;
 }
 
 /* -----------------------------------------------------------------------------

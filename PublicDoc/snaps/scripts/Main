@@ -9,4 +9,5 @@ snap 0.322702 0.133333 0.37242 0.713333 BuildVolume.jpg
 # Generate the model used in the logo.
 load Logo.mvr
 select
+stage 1 0 
 snap 0 0 1 1 Logo.jpg

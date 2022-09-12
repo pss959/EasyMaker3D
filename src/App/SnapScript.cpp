@@ -65,7 +65,7 @@ bool SnapScript::ProcessHand_(const Words_ &words, Instruction &instr) {
     else
         return Error_("Invalid hand (L/R) for hand instruction");
 
-    if (words[2] == "Oculus_Touch" || words[2] == "Vive")
+    if (words[2] == "Oculus_Touch" || words[2] == "Vive" || words[2] == "None")
         instr.hand_type = words[2];
     else
         return Error_("Invalid controller type for hand instruction");

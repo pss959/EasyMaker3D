@@ -149,6 +149,11 @@ bool SnapshotApp_::AddHand_(const SnapScript::Instruction &instr) {
         *test_context_.scene_context->left_controller :
         *test_context_.scene_context->right_controller;
 
+    if (instr.hand_type == "None") {
+        controller.SetEnabled(false);
+        return true;
+    }
+
     const std::string file_start = "models/controllers/" + instr.hand_type +
         "_" + Util::EnumToWord(instr.hand);
 

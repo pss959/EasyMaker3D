@@ -1,0 +1,8 @@
+# Controller models.
+
+hand R Oculus_Touch  .06 14 59.6  -.6 2 -1
+snap 0.355535 0.0533333 0.380863 0.873333 OculusTouch.jpg
+hand R None 0 0 0 0 0 0
+
+hand L Vive          .04 14 59.6  .5 1 -1
+snap 0.398687 0.0116667 0.402439 0.791667 Vive.jpg

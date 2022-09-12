@@ -59,8 +59,10 @@ def ImageFile(name):
   return join(image_dir, name + '.jpg')
 
 image_names = [
+    'OculusTouch',
     'Doorstop',
     'Logo',
+    'Vive',
     'WorkArea',
 ]
 

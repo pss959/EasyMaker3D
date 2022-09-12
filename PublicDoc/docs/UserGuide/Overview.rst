@@ -189,6 +189,8 @@ up for a comfortable, fixed standing or seated position. Note that the scene
 view is set up for sitting, so you may need to adjust your VR positioning for a
 different height if you prefer to stand.
 
-|appname| was developed using an HTC Vive (since that's what I have), but should
-(!) work with any standard VR controllers supported by
-[SteamVR](https://valvesoftware.github.io/steamvr_unity_plugin/).
+.. admonition:: VR Only
+
+   Note: any information in the rest of this guide that applies only to either
+   of the two VR modes will be formatted like this paragraph. If you are not
+   using a VR system, feel free to skip over these.
