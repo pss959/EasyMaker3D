@@ -43,6 +43,7 @@
 .. _ug-open-info-panel:
 .. _ug-open-session-panel:
 .. _ug-open-settings-panel:
+.. _ug-panels:
 .. _ug-paste-into:
 .. _ug-paste:
 .. _ug-precision:

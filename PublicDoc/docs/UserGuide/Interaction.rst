@@ -18,34 +18,47 @@ VR/non-VR modes <ug-vr-modes>`. Note that the left mouse button is used for all
 click and drag actions. The right mouse button is used to :ref:`change the view
 orientation <ug-viewing>`.
 
-In either of the VR modes, controller use is as follows:
+.. admonition:: VR Only
 
-![Controller feedback with laser pointer and hover
-guide][ImgControllerVR]{{rightimage(200)}}
+   .. incimage:: /images/OculusTouch.jpg 200px right
+   .. incimage:: /images/Vive.jpg        200px right
 
-+ The controllers appear in the VR scene as hands that react to interaction,
-  courtesy of [SteamVR](https://valvesoftware.github.io/steamvr_unity_plugin/).
+   In either of the VR modes, the controllers appear in the VR scene as in
+   these images (one showing a Vive controller and the other showing an Oculus
+   Touch controller).
 
-+ A cyan laser pointer emanates from the forward direction of each controller.
-  the {{term('pinch')}} action (usually the trigger button) activates whatever
-  the laser is pointing to, if it is interactive. The pinch action is used for
-  the controller equivalent of clicking and dragging with the mouse.
+   Controller use is as follows:
 
-+ Some [tools][Tools] allow you to use a controller's {{term('grip button')}}
-  to interact. In this case, a tool will attach a {{term('hover guide')}} to
-  the hands to help indicate what the grip action will affect. When active, the
-  hover guide will show a connection to the interactive element that will be
-  activated when the grip button is pressed. There are different types of hover
-  guides; see the descriptions of the individual tools for details on grip
-  dragging. The connection and guide are usually [color-coded][Colors].
+   - A cyan laser pointer emanates from the forward direction of each
+     controller.  the :newterm:`pinch action` (usually the trigger button)
+     activates whatever the laser hits, if it is interactive. The pinch action
+     is used for the controller equivalent of clicking and dragging with the
+     mouse.
 
-Note that in [hybrid mode][VRModes], some behind-the-scenes nonsense takes
-place so that you can see the hands, guides, and pointers in the (non-VR)
-window.
+   - Some interactive elements allow you to use a controller's :newterm:`grip
+     button` to push or pull some affordance. In this case, a :newterm:`grip
+     hover guide` will be visible as in these images. The hover guide will have
+     a line connected to the interactive item that will be activated when the
+     grip button is pressed, if any. See the sections on the specific items
+     that support grip dragging for more details.
 
 Panel Touch Mode
-----------------
+................
 
+.. admonition:: VR Only
+
+   .. incimage:: /images/TouchMode.jpg 180px right
+
+   Panel touch mode allows for a more natural style of 2D interaction in VR.
+   When in VR and any of the 2D :ref:`Panels <ug-panels>` is visible for active
+   use, a :newterm:`touch affordance` is added to each controller, as in this
+   image. The touch affordance is like a virtual finger that can be used to
+   interact with the Panel. Touching the tip of this affordance to an
+   interactive Panel element (such as a button or slider thumb) activates that
+   element. The controller will vibrate briefly when this happens for feedback.
+
+   |
+   |
 
 
 Radial Menus
