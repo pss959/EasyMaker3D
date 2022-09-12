@@ -62,8 +62,6 @@ bool SnapshotApp_::Init(const Options &options) {
     // Make sure there is no debug text visible.
     Debug::DisplayDebugText("");
 
-    ForceTouchMode();
-
     return true;
 }
 
@@ -110,6 +108,13 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
             auto &stage = *test_context_.scene_context->stage;
             stage.SetScaleAndRotation(instr.stage_scale, instr.stage_angle);
             // Need to render to see the new stage.
+            render_again = true;
+        }
+        else if (instr.type == "touch") {
+            auto &sc = *test_context_.scene_context;
+            sc.left_controller->SetTouchMode(instr.touch_on);
+            sc.right_controller->SetTouchMode(instr.touch_on);
+            ForceTouchMode(instr.touch_on);
             render_again = true;
         }
         else if (instr.type == "undo") {
@@ -178,7 +183,6 @@ bool SnapshotApp_::AddHand_(const SnapScript::Instruction &instr) {
 
     controller.UseCustomModel(cm);
     controller.SetEnabled(true);
-    controller.SetTouchMode(true);
     controller.SetGripGuideType(GripGuideType::kBasic);
     controller.ShowAll(true);
     controller.ShowGripHover(false, Point3f::Zero(), Color::White());

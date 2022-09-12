@@ -116,7 +116,7 @@ class  Application::Impl_ {
     void SetTestingFlag() { is_testing_ = true; }
     void GetTestContext(TestContext &tc);
     Renderer & GetRenderer() { return *renderer_; }
-    void ForceTouchMode() { force_touch_mode_on_ = true; }
+    void ForceTouchMode(bool is_on) { force_touch_mode_on_ = is_on; }
 
   private:
     /// Run states for the main loop.
@@ -1440,6 +1440,6 @@ Renderer & Application::GetRenderer() {
     return impl_->GetRenderer();
 }
 
-void Application::ForceTouchMode() {
-    impl_->ForceTouchMode();
+void Application::ForceTouchMode(bool is_on) {
+    impl_->ForceTouchMode(is_on);
 }

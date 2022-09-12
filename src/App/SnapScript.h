@@ -22,6 +22,7 @@
 ///  **select** [*name* ...]              | Selects named models (or none).
 ///  **snap** *x* *y* *w* *h* *file_name* | Saves a snapshot to a file.
 ///  **stage** *scale* *rot_angle*        | Scales and rotates the stage.
+///  **touch** *on/off*                   | Enables or disables touch mode.
 ///  **undo** *n*                         | Undoes the last n commands.
 ///  **view** *dir*                       | Views along the given direction.
 ///
@@ -51,6 +52,7 @@ class SnapScript {
         std::string              hand_type;    ///< For "hand".
         Point3f                  hand_pos;     ///< For "hand".
         Vector3f                 hand_dir;     ///< For "hand".
+        bool                     touch_on;     ///< For "touch".
     };
 
     /// Reads a script from a file relative to the PublicDoc/snaps/scripts
@@ -77,6 +79,7 @@ class SnapScript {
     bool ProcessSelect_(const Words_ &words, Instruction &instr);
     bool ProcessSnap_(const Words_ &words, Instruction &instr);
     bool ProcessStage_(const Words_ &words, Instruction &instr);
+    bool ProcessTouch_(const Words_ &words, Instruction &instr);
     bool ProcessUndo_(const Words_ &words, Instruction &instr);
     bool ProcessView_(const Words_ &words, Instruction &instr);
 

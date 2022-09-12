@@ -44,6 +44,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     else if (instr.type == "select") ok = ProcessSelect_(words,  instr);
     else if (instr.type == "snap")   ok = ProcessSnap_(words,    instr);
     else if (instr.type == "stage")  ok = ProcessStage_(words,   instr);
+    else if (instr.type == "touch")  ok = ProcessTouch_(words,   instr);
     else if (instr.type == "undo")   ok = ProcessUndo_(words,    instr);
     else if (instr.type == "view")   ok = ProcessView_(words,    instr);
     else ok = Error_("Unknown instruction type '" + instr.type + "'");
@@ -132,6 +133,14 @@ bool SnapScript::ProcessStage_(const Words_ &words, Instruction &instr) {
 
     instr.stage_scale = scale;
     instr.stage_angle = Anglef::FromDegrees(angle);
+    return true;
+}
+
+bool SnapScript::ProcessTouch_(const Words_ &words, Instruction &instr) {
+    if (words.size() != 2U || (words[1] != "on" && words[1] != "off"))
+        return Error_("Bad syntax for touch instruction");
+
+    instr.touch_on = words[1] == "on";
     return true;
 }
 
