@@ -25,10 +25,10 @@ Typical Workflow
 Typical use of |appname| to create models for 3D printing involves the
 following steps:
 
-- Create one or more basic models of different types or import existing models
-  in `STL format <https://en.wikipedia.org/wiki/STL_(file_format)>`_.
-- Edit the models and/or combine them in different ways to create new models.
-- Export any of the resulting models to STL files to send to a 3D printer.
+ - Create one or more basic models of different types or import existing models
+   in `STL format <https://en.wikipedia.org/wiki/STL_(file_format)>`_.
+ - Edit the models and/or combine them in different ways to create new models.
+ - Export any of the resulting models to STL files to send to a 3D printer.
 
 Because precision is extremely important when 3D printing, |appname| has
 several features that allow you to create models with exact dimensions,
@@ -51,22 +51,23 @@ Instead, it uses a fully 3D interface (with some 2D panels embedded in it).
 The work area in |appname| is based conceptually on a virtual workshop
 containing these elements:
 
-- Four walls, a floor, and a ceiling, to provide context for the room.
-- An exit sign. Clicking on this exits the application. If you have made any
-  changes, you will be asked if you want to :ref:`save your session
-  <ug-sessions>` first.
-- A large disc in the middle of the floor with a grid on it. This is the
-  :newterm:`Stage` on which models are built. It provides :ref:`interaction for
-  viewing the models <ug-stage>`.
-- A pole on the right with a :newterm:`Height Slider` that can be used to
-  :ref:`change or reset the view height <ug-viewing>`.
-- Several 3D icons organized into shelves. Each icon represents an
-  :newterm:`action` that :ref:`makes some change to models or to the session
-  state <ug-actions>`.
-- A :newterm:`Precision Control` that shows the current interactive
-  :ref:`precision level <ug-precision>` with buttons to increase or decrease it.
-- The :newterm:`Tree Panel` on the back wall that :ref:`displays all
-  models in tree form and allows you to interact with them <ug-tree-panel>`.
+ - Four walls, a floor, and a ceiling, just to provide context for the room.
+ - An exit sign. Clicking on this exits the application. If you have made any
+   changes, you will be asked if you want to :ref:`save your session
+   <ug-sessions>` first.
+ - A large disc in the middle of the floor with a grid on it. This is the
+   :newterm:`Stage` on which models are built. It provides :ref:`interaction
+   for viewing the models <ug-stage>`.
+ - A pole on the right with a :newterm:`Height Slider` that can be used to
+   :ref:`change or reset the view height <ug-viewing>`.
+ - Several 3D icons organized into shelves. Each icon represents an
+   :newterm:`action` that :ref:`makes some change to models or to the session
+   state <ug-actions>`.
+ - A :newterm:`Precision Control` that shows the current interactive
+   :ref:`precision level <ug-precision>` with buttons to increase or decrease
+   it.
+ - The :newterm:`Tree Panel` on the back wall that :ref:`displays all models in
+   tree form and allows you to interact with them <ug-tree-panel>`.
 
 Some interaction requires a more conventional interface; :newterm:`panels` are
 used in these circumstances. A panel is a 2D rectangle that appears in the
@@ -118,9 +119,9 @@ All dimensions in |appname| are essentially unitless, so you can consider them
 to be whatever is most convenient. The only times actual units are considered
 are:
 
-- When models are imported or exported from or to STL files.
-- When the 3D printer :ref:`build volume <ug-build-volume>` is defined to
-  show the extents of your 3D printer.
+ - When models are imported or exported from or to STL files.
+ - When the 3D printer :ref:`build volume <ug-build-volume>` is defined to
+   show the extents of your 3D printer.
 
 The :ref:`Settings Panel <ug-settings-panel>` allows you to specify :ref:`how
 to convert units <ug-unit-conversion>` when importing and exporting, and also
@@ -162,6 +163,7 @@ rendered in :ref:`a special color <ug-model-colors>` to warn you of potential
 printing problems.
 
 |
+|
 
 .. _ug-vr-modes:
 
@@ -175,12 +177,12 @@ using the mouse and keyboard exclusively. This is referred to below as
 If you do happen to have a VR headset, you can set it up as explained in the
 :ref:`Quickstart <qs-vr>`. There are two ways to use it with the application:
 
-- :newterm:`VR mode` refers to using the VR system with the headset on and
-  controllers in your hand.
-- :newterm:`Hybrid mode` is halfway between the other two: you have the VR
-  system connected, but you are not wearing the headset. In this mode you can
-  still use one or both controllers for interaction in the conventional window
-  view.
+ - :newterm:`VR mode` refers to using the VR system with the headset on and
+   controllers in your hand.
+ - :newterm:`Hybrid mode` is halfway between the other two: you have the VR
+   system connected, but you are not wearing the headset. In this mode you can
+   still use one or both controllers for interaction in the conventional window
+   view.
 
 Some VR experiences allow you or force you to walk around while using them.
 That wouldn't make sense for this application, so it is designed to make
