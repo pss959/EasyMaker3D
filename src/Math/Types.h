@@ -305,10 +305,11 @@ struct TriMesh {
     std::string ToString() const;
 
     /// Converts to a binary data string for compact output. The format is:
-    ///   - vertex_count   : uint32
-    ///   - triangle_count : uint32
-    ///   - <vertices>     : 3 x float each
-    ///   - <indices>      : uint32 each
+    ///   - *vertex_count*   : uint32
+    ///   - *triangle_count* : uint32
+    ///   - [*vertices*]     : 3 x float each
+    ///   - [*indices*]      : uint32 each
+    ///
     /// The endianness of the host computer is used.
     std::string ToBinaryString() const;
 
@@ -332,12 +333,13 @@ struct ModelMesh : public TriMesh {
     std::vector<Point2f>  tex_coords;
 
     /// Converts to a binary data string for compact output. The format is:
-    ///   - vertex_count   : uint32
-    ///   - triangle_count : uint32
-    ///   - <vertices>     : 3 x float each
-    ///   - <normals>      : 3 x float each
-    ///   - <tex_coords>   : 2 x float each
-    ///   - <indices>      : uint32 each
+    ///   - *vertex_count*   : uint32
+    ///   - *triangle_count* : uint32
+    ///   - [*vertices*]     : 3 x float each
+    ///   - [*normals*]      : 3 x float each
+    ///   - [*tex_coords*]   : 2 x float each
+    ///   - [*indices*]      : uint32 each
+    ///
     /// The endianness of the host computer is used.
     std::string ToBinaryString() const;
 
