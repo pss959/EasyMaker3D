@@ -3,6 +3,7 @@
 #include <ion/base/stringutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "Util/Enum.h"
 #include "Util/FilePath.h"
 #include "Util/Read.h"
 
@@ -38,7 +39,8 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     instr.type = words[0];
 
     bool ok;
-    if      (instr.type == "hand")   ok = ProcessHand_(words,    instr);
+    if      (instr.type == "action") ok = ProcessAction_(words,  instr);
+    else if (instr.type == "hand")   ok = ProcessHand_(words,    instr);
     else if (instr.type == "load")   ok = ProcessLoad_(words,    instr);
     else if (instr.type == "redo")   ok = ProcessRedo_(words,    instr);
     else if (instr.type == "select") ok = ProcessSelect_(words,  instr);
@@ -52,6 +54,16 @@ bool SnapScript::ProcessLine_(const std::string &line) {
         return false;
 
     instructions_.push_back(instr);
+    return true;
+}
+
+bool SnapScript::ProcessAction_(const Words_ &words, Instruction &instr) {
+    if (words.size() != 2U)
+        return Error_("Bad syntax for action instruction");
+
+    if (! Util::EnumFromString(words[1], instr.action))
+        return Error_("Unknown action name for action instruction");
+
     return true;
 }
 

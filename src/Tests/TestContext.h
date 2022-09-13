@@ -2,6 +2,7 @@
 
 #include "Base/Memory.h"
 
+DECL_SHARED_PTR(ActionManager);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(SelectionManager);
@@ -12,6 +13,7 @@ DECL_SHARED_PTR(SessionManager);
 /// demand.
 struct TestContext {
     // Managers
+    ActionManagerPtr    action_manager;
     CommandManagerPtr   command_manager;
     SelectionManagerPtr selection_manager;
     SessionManagerPtr   session_manager;

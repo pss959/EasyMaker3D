@@ -557,6 +557,7 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
     // This should not be called before Init().
     ASSERT(session_manager_);
     ASSERT(scene_context_);
+    tc.action_manager    = action_manager_;
     tc.command_manager   = command_manager_;
     tc.selection_manager = selection_manager_;
     tc.session_manager   = session_manager_;

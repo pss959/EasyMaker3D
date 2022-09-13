@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "Enums/Action.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
 
@@ -16,6 +17,7 @@
 ///  -------------------------------------|-------
 ///  [whitespace]                         | Blank lines are ignored.
 ///  <b>\#</b> ...                        | Comment (ignored).
+///  **action** *name*                    | Applies the named action.
 ///  **hand** *L/R* *type* *pos* *dir*    | Shows controller for the given hand.
 ///  **load** *file_name*                 | Loads a session file.
 ///  **redo** *n*                         | Redoes n commands.
@@ -42,6 +44,7 @@ class SnapScript {
     struct Instruction {
         std::string              type;         ///< Type of instruction.
         std::string              file_name;    ///< For "load" or "snap".
+        Action                   action;       ///< For "action".
         float                    stage_scale;  ///< For "stage".
         Anglef                   stage_angle;  ///< For "stage".
         Range2f                  rect;         ///< For "snap".
@@ -73,6 +76,7 @@ class SnapScript {
 
     bool ProcessLine_(const std::string &line);
 
+    bool ProcessAction_(const Words_ &words, Instruction &instr);
     bool ProcessHand_(const Words_ &words, Instruction &instr);
     bool ProcessLoad_(const Words_ &words, Instruction &instr);
     bool ProcessRedo_(const Words_ &words, Instruction &instr);

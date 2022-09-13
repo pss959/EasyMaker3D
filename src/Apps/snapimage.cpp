@@ -12,6 +12,7 @@
 #include "App/SnapScript.h"
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"
+#include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -79,7 +80,12 @@ bool SnapshotApp_::ProcessFrame(size_t render_count) {
         std::cout << "=== Processing " << instr.type << " (instruction "
                   << (cur_instruction_ + 1) << " of " << instr_count << ")\n";
 
-        if (instr.type == "hand") {
+        if (instr.type == "action") {
+            ASSERT(test_context_.action_manager->CanApplyAction(instr.action));
+            test_context_.action_manager->ApplyAction(instr.action);
+            render_again = true;
+        }
+        else if (instr.type == "hand") {
             if (! AddHand_(instr))
                 return false;
             render_again = true;
