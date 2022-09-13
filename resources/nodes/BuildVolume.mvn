@@ -1,11 +1,36 @@
 BuildVolume "BuildVolume" {
   disabled_flags: "kTraversal|kIntersectAll",  # Off by default.
   $NO_CAST_SHADOWS,
-  blocks: [
-    UniformBlock {
-      pass_name: $LIGHTING_PASS,
-      uniforms: [ Uniform "uBaseColor" { vec4f_val: "#eeeeff10" } ],
-    }
-  ],
-  shapes: [ Box {} ],
+  children: [
+    Node "Edges" {
+      shader_names: ["BaseColor"],
+      state_table: StateTable { line_width: 1 },
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#dddddd" } ],
+        }
+      ],
+      shapes: [
+        PolyLine {
+          points: [-.5 -.5 -.5, .5 -.5 -.5, .5 -.5 .5, -.5 -.5 .5,
+                   -.5 -.5 -.5,
+                   -.5 .5 -.5, .5 .5 -.5, .5 .5 .5, -.5 .5 .5,
+                   -.5 .5 -.5]
+        },
+        Line { end0: -.5 -.5  .5, end1: -.5 .5  .5 },
+        Line { end0:  .5 -.5 -.5, end1:  .5 .5 -.5 },
+        Line { end0:  .5 -.5  .5, end1:  .5 .5  .5 },
+      ]
+    },
+    Node "Box" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#f3f3ff10" } ],
+        }
+      ],
+      shapes: [ Box {} ],
+    },
+  ]
 }

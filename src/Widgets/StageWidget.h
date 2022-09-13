@@ -34,6 +34,10 @@ class StageWidget : public DiscWidget {
     /// restore previous state.
     void SetScaleAndRotation(float scale, const Anglef &angle);
 
+    /// Returns a scale factor that is used to scale the StageWidget radius to
+    /// the correct size.
+    float GetRadiusScale() const { return radius_scaler_->GetScale()[0]; }
+
     // ------------------------------------------------------------------------
     // Target Interface.
     // ------------------------------------------------------------------------
