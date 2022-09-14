@@ -10,7 +10,7 @@ Import('doc_build_dir', 'APP_NAME', 'VERSION_STRING')
 env = Environment(
     ABS_BUILD_DIR = Dir(f'#{doc_build_dir}').abspath,
     OUTPUT_DIR    = '$ABS_BUILD_DIR/InternalDoc',
-    DOXYGEN       = '/local/inst/doxygen-1.9.3/bin/doxygen',
+    DOXYGEN       = '/local/inst/doxygen-1.9.5/bin/doxygen',
 )
 
 # Set up environment variables for Doxyfile to access.

@@ -12,4 +12,4 @@
 /// Declares the given class and a typedef for an std::shared_ptr to the class.
 ///
 /// \ingroup Base
-#define DECL_SHARED_PTR(CL) class CL; typedef std::shared_ptr<CL> CL ## Ptr
+#define DECL_SHARED_PTR(CL) class CL; using CL ## Ptr = std::shared_ptr<CL>
