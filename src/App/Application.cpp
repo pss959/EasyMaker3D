@@ -729,14 +729,6 @@ void Application::Impl_::InitInteraction_() {
     selection_manager_->GetSelectionChanged().AddObserver(
         this, [&](const Selection &sel, SelectionManager::Operation op){
             SelectionChanged_(sel, op); });
-
-    // Set up other clicks.
-    scene_context_->stage->GetClicked().AddObserver(
-        this, [&](const ClickInfo &info){
-            StartResetStage_(info.is_alternate_mode); });
-    scene_context_->height_slider->GetClicked().AddObserver(
-        this, [&](const ClickInfo &info){
-            StartResetHeight_(info.is_alternate_mode); });
 }
 
 void Application::Impl_::ConnectSceneInteraction_() {
@@ -817,12 +809,6 @@ void Application::Impl_::ConnectSceneInteraction_() {
         ReplaceControllerModel_(Hand::kRight);
     }
 
-    // Hook up the height slider.
-    scene_context_->height_slider->GetValueChanged().AddObserver(
-        this, [&](Widget &w, const float &val){
-            scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
-    InitTooltip_(*scene_context_->height_slider);
-
     // Detect changes in the scene.
     scene.GetRootNode()->GetChanged().AddObserver(
         this, [this](SG::Change change, const SG::Object &obj){
@@ -877,6 +863,23 @@ void Application::Impl_::ConnectSceneInteraction_() {
         scene_context_->key_board->SetUpForTouch(cam_pos);
     }
 
+    // Set up the stage.
+    scene_context_->stage->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){
+            StartResetStage_(info.is_alternate_mode); });
+
+    // Set up the height pole and slider.
+    scene_context_->height_pole->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){
+            StartResetHeight_(info.is_alternate_mode); });
+    scene_context_->height_slider->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){
+            StartResetHeight_(info.is_alternate_mode); });
+    scene_context_->height_slider->GetValueChanged().AddObserver(
+        this, [&](Widget &w, const float &val){
+            scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
+    InitTooltip_(*scene_context_->height_pole);
+    InitTooltip_(*scene_context_->height_slider);
     // Set up the radial menus.
     InitRadialMenus_();
 

@@ -10,6 +10,7 @@ DECL_SHARED_PTR(BuildVolume);
 DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(Inspector);
 DECL_SHARED_PTR(KeyboardPanel);
+DECL_SHARED_PTR(PushButtonWidget);
 DECL_SHARED_PTR(RadialMenu);
 DECL_SHARED_PTR(RootModel);
 DECL_SHARED_PTR(TreePanel);
@@ -51,6 +52,7 @@ struct SceneContext {
     BoardPtr            wall_board;
     TreePanelPtr        tree_panel;
     KeyboardPanelPtr    keyboard_panel;
+    PushButtonWidgetPtr height_pole;
     Slider1DWidgetPtr   height_slider;
     ControllerPtr       left_controller;
     ControllerPtr       right_controller;

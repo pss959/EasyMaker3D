@@ -21,6 +21,7 @@
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
 #include "Util/General.h"
+#include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/StageWidget.h"
 
@@ -69,23 +70,24 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     ASSERT(shadow_pass);
 
     // Find all of the other important nodes.
-    app_board         = FindTyped_<Board>(sc,          "AppBoard");
-    key_board         = FindTyped_<Board>(sc,          "KeyBoard");
-    tool_board        = FindTyped_<Board>(sc,          "ToolBoard");
-    wall_board        = FindTyped_<Board>(sc,          "WallBoard");
-    tree_panel        = FindTyped_<TreePanel>(sc,      "TreePanel");
-    keyboard_panel    = FindTyped_<KeyboardPanel>(sc,  "KeyboardPanel");
-    height_slider     = FindTyped_<Slider1DWidget>(sc, "HeightSlider");
-    left_controller   = FindTyped_<Controller>(sc,     "LeftController");
-    right_controller  = FindTyped_<Controller>(sc,     "RightController");
-    inspector         = FindTyped_<Inspector>(sc,      "Inspector");
-    left_radial_menu  = FindTyped_<RadialMenu>(sc,     "LeftRadialMenu");
-    right_radial_menu = FindTyped_<RadialMenu>(sc,     "RightRadialMenu");
-    room              = FindNamed_(sc,                 "Room");
-    work_hider        = FindNamed_(sc,                 "WorkHider");
-    root_model        = FindTyped_<RootModel>(sc,      "ModelRoot");
-    stage             = FindTyped_<StageWidget>(sc,    "Stage");
-    build_volume      = FindTyped_<BuildVolume>(sc,    "BuildVolume");
+    app_board         = FindTyped_<Board>(sc,            "AppBoard");
+    key_board         = FindTyped_<Board>(sc,            "KeyBoard");
+    tool_board        = FindTyped_<Board>(sc,            "ToolBoard");
+    wall_board        = FindTyped_<Board>(sc,            "WallBoard");
+    tree_panel        = FindTyped_<TreePanel>(sc,        "TreePanel");
+    keyboard_panel    = FindTyped_<KeyboardPanel>(sc,    "KeyboardPanel");
+    height_pole       = FindTyped_<PushButtonWidget>(sc, "HeightPole");
+    height_slider     = FindTyped_<Slider1DWidget>(sc,   "HeightSlider");
+    left_controller   = FindTyped_<Controller>(sc,       "LeftController");
+    right_controller  = FindTyped_<Controller>(sc,       "RightController");
+    inspector         = FindTyped_<Inspector>(sc,        "Inspector");
+    left_radial_menu  = FindTyped_<RadialMenu>(sc,       "LeftRadialMenu");
+    right_radial_menu = FindTyped_<RadialMenu>(sc,       "RightRadialMenu");
+    room              = FindNamed_(sc,                   "Room");
+    work_hider        = FindNamed_(sc,                   "WorkHider");
+    root_model        = FindTyped_<RootModel>(sc,        "ModelRoot");
+    stage             = FindTyped_<StageWidget>(sc,      "Stage");
+    build_volume      = FindTyped_<BuildVolume>(sc,      "BuildVolume");
 
     path_to_stage = SG::FindNodePathInScene(sc, *stage);
 

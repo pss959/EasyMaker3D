@@ -453,10 +453,8 @@ void MainHandler::Impl_::ProcessActivation_() {
                        "<NO WIDGET>")
          << " click count = " << click_state_.count);
 
-    // Set a timeout only if the click is on a Widget that is draggable.
-    // Otherwise, just process the click immediately.
-    const float timeout = IsDraggableWidget_(active_widget_) ?
-        cur_tracker_->GetClickTimeout() : 0;
+    // Set a timeout to distinguish from drags and to detect a double click.
+    const float timeout = cur_tracker_->GetClickTimeout();
 
     start_time_ = UTime::Now();
     click_state_.actuator = actuator;
