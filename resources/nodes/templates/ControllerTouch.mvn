@@ -1,0 +1,54 @@
+Node "Touch" {
+  scale:       .01 .01 .01,
+  rotation:    1 0 0 80,
+  translation: 0 -.015 -.08,
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [Uniform "uBaseColor" { vec4f_val: "#eddccb" } ],
+    }
+  ],
+  children: [
+    Node {
+      translation: 0 -4 0,
+      shapes: [
+        Cylinder {
+          top_radius:    .4,
+          bottom_radius: .4,
+          height:        10,
+        },
+      ],
+      children: [
+        Node {
+          rotation:    1 0 0 -40,
+          translation: 0 -5 0,
+          shapes: [ Ellipsoid { size: 1 1 1, } ],
+          children: [
+            Node {
+              translation: 0 -4 0,
+              shapes: [
+                Cylinder {
+                  top_radius:    .4,
+                  bottom_radius: .4,
+                  height:        8,
+                },
+              ],
+              children: [
+                Node "TouchTip" {
+                  translation: 0 -4.2 0,
+                  shapes: [
+                    Ellipsoid {
+                      size: $TOUCH_DIAMETER $TOUCH_DIAMETER $TOUCH_DIAMETER,
+                      sector_count: 32,
+                      band_count:   32,
+                    },
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+}

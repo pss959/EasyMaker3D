@@ -34,8 +34,9 @@ class Application {
     void MainLoop();
 
     /// Processes a single frame during the main loop. Returns false if the
-    /// main loop should exit.
-    virtual bool ProcessFrame(size_t render_count);
+    /// main loop should exit. If the force_poll flag is true, this forces the
+    /// event-checking code to poll instead of waiting for the next event.
+    virtual bool ProcessFrame(size_t render_count, bool force_poll);
 
     /// Reloads the scene.
     void ReloadScene();

@@ -1,0 +1,37 @@
+Node "Model" {
+  children: [
+    # Default model; disabled if a real model is loaded.
+    Node "DefaultModel" {
+      shapes: [
+        Ellipsoid {
+          band_count:   20,
+          sector_count: 22,
+          size:         .05 .1 .2,
+        }
+      ],
+    },
+
+    # Loaded custom model. If loaded, will have a real image and shape added.
+    Node "CustomModel" {
+      disabled_flags: "kTraversal",
+      shader_names: ["FixedLighting"],
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          textures: [
+            Texture "Controller Texture" {
+              uniform_name: "uTexture",
+              image:   ProceduralImage {},
+              sampler: Sampler {
+                auto_mipmaps: True,
+                min_filter:   "kLinearMipmapLinear",
+                mag_filter:   "kLinear",
+              }
+            },
+          ],
+          uniforms: [Uniform "uShowTexture" { int_val: 1 }],
+        }
+      ],
+    },
+  ]
+}

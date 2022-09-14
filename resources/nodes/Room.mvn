@@ -7,13 +7,14 @@ Node "Room" {
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
 
     Node "RadialMenus" {
-      translation:  0 10 40,
       children: [
-        CLONE "T_RadialMenu" "LeftRadialMenu" {
-          translation: -6 0 0,
+        Node {
+          translation: -6 10 40,
+          children: [CLONE "T_RadialMenu" "LeftRadialMenu" {}],
         },
-        CLONE "T_RadialMenu" "RightRadialMenu" {
-          translation:  6 0 0,
+        Node {
+          translation:  6 10 40,
+          children: [CLONE "T_RadialMenu" "RightRadialMenu" {}],
         }
       ]
     },

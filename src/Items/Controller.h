@@ -14,6 +14,7 @@ namespace Parser { class Registry; }
 namespace SG { DECL_SHARED_PTR(Line); }
 
 DECL_SHARED_PTR(Controller);
+DECL_SHARED_PTR(RadialMenu);
 
 /// The Controller class represents a VR controller, providing an interface to
 /// interaction and feedback.
@@ -140,6 +141,9 @@ class Controller : public SG::Node {
 
     /// Detaches an attached object. Asserts if it is not currently attached.
     void DetachObject(const SG::NodePtr &object);
+
+    /// Attaches the given RadialMenu.
+    void AttachRadialMenu(const RadialMenuPtr &menu);
 
     ///@}
 

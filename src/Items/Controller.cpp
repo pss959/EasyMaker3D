@@ -4,6 +4,7 @@
 
 #include "App/CoordConv.h"
 #include "Base/Tuning.h"
+#include "Items/RadialMenu.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
@@ -208,6 +209,17 @@ void Controller::AttachObject(const SG::NodePtr &object, float size_fraction,
 
 void Controller::DetachObject(const SG::NodePtr &object) {
     RemoveChild(object);
+}
+
+void Controller::AttachRadialMenu(const RadialMenuPtr &menu) {
+    auto &parent = *SG::FindNodeUnderNode(*this, "RadialMenuParent");
+    // Flip the translation in X for the left hand.
+    if (hand_ == Hand::kLeft) {
+        Vector3f trans = parent.GetTranslation();
+        trans[0] = -trans[0];
+        parent.SetTranslation(trans);
+    }
+    parent.AddChild(menu);
 }
 
 void Controller::PostSetUpIon() {

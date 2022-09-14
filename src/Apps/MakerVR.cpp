@@ -152,7 +152,7 @@ R"(<NAME>: A VR-enabled application for creating models for 3D printing.
 
     Debug-only Options:
       --fullscreen    Start with a full-screen window.
-      --klog=<string> Extra string to pass to KLogger::SetKeyString().
+      --klog=<string> String to pass to KLogger::SetKeyString().
       --novr          Simulate non-VR setup when VR is available.
       --remote        Enable Ion remote debugging (but URLs fail to open).
       --touch         Simulate VR setup for testing touch interaction.

@@ -129,8 +129,6 @@ const int      kVRSampleCount                    = 4;
 const float    kControllerTouchYOffset           = .003f;
 
 // Radial Menus
-const Vector3f kControllerRadialMenuOffset       = Vector3f(.06f, .03f, 0);
-const float    kControllerRadialMenuScale        = .5f;
 const int      kRadialMenuCirclePointCount       = 72;
 const float    kRadialMenuInnerAngleMargin       = 8;
 const float    kRadialMenuInnerRadius            = 1;

@@ -103,7 +103,7 @@ class  Application::Impl_ {
 
     LogHandler & GetLogHandler() const { return *log_handler_; }
 
-    bool ProcessFrame(size_t render_count);
+    bool ProcessFrame(size_t render_count, bool force_poll);
 
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
@@ -307,7 +307,7 @@ class  Application::Impl_ {
 
     /// Emits and handles all events. Returns true if the application should
     /// keep running.
-    bool ProcessEvents_(bool is_alternate_mode);
+    bool ProcessEvents_(bool is_alternate_mode, bool force_poll);
 
     /// Processes a click on something in the scene.
     void ProcessClick_(const ClickInfo &info);
@@ -394,10 +394,9 @@ bool Application::Impl_::Init(const Application::Options &options) {
         renderer_.reset(
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);
-        if (IsVREnabled()) {
+        if (IsVREnabled())
             vr_context_->InitRendering(*renderer_);
-            virtual_keyboard_.reset(new VirtualKeyboard);
-        }
+        virtual_keyboard_.reset(new VirtualKeyboard);
     }
 
     // This needs to exist for the ActionManager.
@@ -443,7 +442,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
     return true;
 }
 
-bool Application::Impl_::ProcessFrame(size_t render_count) {
+bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     ASSERT(run_state_ != RunState_::kQuitting);
 
     KLogger::SetRenderCount(render_count++);
@@ -486,7 +485,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count) {
 
     // Emit and process Events. This returns false if the application
     // should quit because the window was closed.
-    if (! ProcessEvents_(is_alternate_mode))
+    if (! ProcessEvents_(is_alternate_mode, force_poll))
         TryQuit_();
 
     // Update the TreePanel.
@@ -769,9 +768,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     scene_context_->tree_panel->SetContext(panel_context_);
 
     // Set up the VirtualKeyboard so that it can make itself visible.
-    if (virtual_keyboard_)
-        virtual_keyboard_->SetShowHideFunc(
-            [&](bool is_shown){
+    virtual_keyboard_->SetShowHideFunc(
+        [&](bool is_shown){
             board_manager_->ShowBoard(scene_context_->key_board, is_shown); });
 
     inspector_handler_->SetInspector(scene_context_->inspector);
@@ -1029,6 +1027,7 @@ void Application::Impl_::AddGrippables_() {
 }
 
 void Application::Impl_::InitRadialMenus_() {
+    // This is called when a RadialMenu button is clicked.
     auto apply = [&](size_t index, Action action){
         if (action_manager_->CanApplyAction(action))
             action_manager_->ApplyAction(action);
@@ -1037,24 +1036,18 @@ void Application::Impl_::InitRadialMenus_() {
     const auto &rrmenu = scene_context_->right_radial_menu;
     lrmenu->GetButtonClicked().AddObserver(this, apply);
     rrmenu->GetButtonClicked().AddObserver(this, apply);
+
+    // Attach the RadialMenu instances to the controllers in case they become
+    // visible.
+    scene_context_->left_controller->AttachRadialMenu(lrmenu);
+    scene_context_->right_controller->AttachRadialMenu(rrmenu);
+
+    // If in VR, turn off the RadialMenu parent in the room, since the menus
+    // will be attached to the controllers.
     if (IsVREnabled()) {
-        const auto rm_parent =
+        const auto parent =
             SG::FindNodeInScene(*scene_context_->scene, "RadialMenus");
-        // Rotation to align a menu with a controller.
-        const Rotationf rot = Rotationf::FromAxisAndAngle(
-            Vector3f::AxisX(), Anglef::FromDegrees(-90));
-
-        auto init_menu = [&](Controller &controller, const RadialMenuPtr &menu){
-            // Rotate the menu to align with the controller.
-            menu->SetRotation(rot);
-
-            // Reparent the menu from the RadialMenus node to the controllers.
-            controller.AttachObject(menu, TK::kControllerRadialMenuScale,
-                                    TK::kControllerRadialMenuOffset);
-            rm_parent->RemoveChild(menu);
-        };
-        init_menu(*scene_context_->left_controller,  lrmenu);
-        init_menu(*scene_context_->right_controller, rrmenu);
+        parent->SetEnabled(false);
     }
 
     controller_handler_->SetRadialMenus(lrmenu, rrmenu);
@@ -1192,7 +1185,8 @@ void Application::Impl_::TryQuit_() {
     }
 }
 
-bool Application::Impl_::ProcessEvents_(bool is_alternate_mode) {
+bool Application::Impl_::ProcessEvents_(bool is_alternate_mode,
+                                        bool force_poll) {
     // Always check for running animations and finished delayed threads.
     const bool is_animating    = animation_manager_->IsAnimating();
     const bool is_any_delaying = Util::IsAnyDelaying();
@@ -1205,7 +1199,7 @@ bool Application::Impl_::ProcessEvents_(bool is_alternate_mode) {
     // (not just waiting for events), if there is an animation running, if
     // something is being delayed, or if something changed in the scene.
     const bool have_to_poll =
-        IsVREnabled() || is_animating || is_any_delaying ||
+        force_poll || IsVREnabled() || is_animating || is_any_delaying ||
         scene_changed_ || ! main_handler_->IsWaiting();
     glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
@@ -1402,12 +1396,12 @@ bool Application::Init(const Options &options) {
 void Application::MainLoop() {
     size_t render_count  = 0;
 
-    while (ProcessFrame(render_count))
+    while (ProcessFrame(render_count, false))
         ++render_count;
 }
 
-bool Application::ProcessFrame(size_t render_count) {
-    return impl_->ProcessFrame(render_count);
+bool Application::ProcessFrame(size_t render_count, bool force_poll) {
+    return impl_->ProcessFrame(render_count, force_poll);
 }
 
 void Application::ReloadScene() {

@@ -378,12 +378,6 @@ extern const float    kControllerTouchYOffset;
 /// \name Radial Menus
 ///@{
 
-/// Offset to apply to RadialMenu instances to attach to Controllers.
-extern const Vector3f kControllerRadialMenuOffset;
-
-/// Scale factor to apply to RadialMenu instances to attach to Controllers.
-extern const float    kControllerRadialMenuScale;
-
 /// Number of points to use for each RadialMenu circle.
 extern const int      kRadialMenuCirclePointCount;
 

@@ -23,6 +23,7 @@
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+#include "Util/KLog.h"
 #include "Util/Read.h"
 #include "Util/Write.h"
 #include "Widgets/StageWidget.h"
@@ -38,7 +39,7 @@ class SnapshotApp_ : public Application {
     void SetRemain(bool remain) { remain_ = remain; }
     void SetScript(const SnapScript &script) { script_ = script; }
 
-    virtual bool ProcessFrame(size_t render_count) override;
+    virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
 
   private:
     Vector2i    window_size_;    // From Options.
@@ -47,6 +48,7 @@ class SnapshotApp_ : public Application {
     size_t      cur_instruction_ = 0;
     bool        remain_ = false;
 
+    bool ProcessInstruction_(const SnapScript::Instruction &instr);
     bool LoadSession_(const std::string &file_name);
     bool AddHand_(const SnapScript::Instruction &instr);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
@@ -66,80 +68,83 @@ bool SnapshotApp_::Init(const Options &options) {
     return true;
 }
 
-bool SnapshotApp_::ProcessFrame(size_t render_count) {
-    if (! Application::ProcessFrame(render_count))
-        return false;
-
-    // Process instructions in the script.
+bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     const size_t instr_count = script_.GetInstructions().size();
-    bool keep_going   = cur_instruction_ < instr_count;
-    bool render_again = false;
-    while (keep_going && ! render_again) {
-        const auto &instr = script_.GetInstructions()[cur_instruction_];
+    const bool are_more_instructions = cur_instruction_ < instr_count;
+    bool keep_going;
 
-        std::cout << "=== Processing " << instr.type << " (instruction "
-                  << (cur_instruction_ + 1) << " of " << instr_count << ")\n";
-
-        if (instr.type == "action") {
-            ASSERT(test_context_.action_manager->CanApplyAction(instr.action));
-            test_context_.action_manager->ApplyAction(instr.action);
-            render_again = true;
-        }
-        else if (instr.type == "hand") {
-            if (! AddHand_(instr))
-                return false;
-            render_again = true;
-        }
-        else if (instr.type == "load") {
-            if (! LoadSession_(instr.file_name))
-                return false;
-            // After loading a session, wait until the next frame to continue.
-            render_again = true;
-        }
-        else if (instr.type == "redo") {
-            for (size_t i = 0; i < instr.count; ++i)
-                test_context_.command_manager->Redo();
-        }
-        else if (instr.type == "select") {
-            test_context_.selection_manager->ChangeSelection(
-                BuildSelection_(instr.names));
-            // Selection change requires another render.
-            render_again = true;
-        }
-        else if (instr.type == "snap") {
-            if (! TakeSnapshot_(instr.rect, instr.file_name))
-                return false;
-        }
-        else if (instr.type == "stage") {
-            auto &stage = *test_context_.scene_context->stage;
-            stage.SetScaleAndRotation(instr.stage_scale, instr.stage_angle);
-            // Need to render to see the new stage.
-            render_again = true;
-        }
-        else if (instr.type == "touch") {
-            auto &sc = *test_context_.scene_context;
-            sc.left_controller->SetTouchMode(instr.touch_on);
-            sc.right_controller->SetTouchMode(instr.touch_on);
-            ForceTouchMode(instr.touch_on);
-            render_again = true;
-        }
-        else if (instr.type == "undo") {
-            for (size_t i = 0; i < instr.count; ++i)
-                test_context_.command_manager->Undo();
-        }
-        else if (instr.type == "view") {
-            test_context_.scene_context->window_camera->SetOrientation(
-                Rotationf::RotateInto(-Vector3f::AxisZ(), instr.view_dir));
-            // View change requires another render.
-            render_again = true;
-        }
-        else {
-            ASSERTM(false, "Unknown instruction type: " + instr.type);
-        }
-        if (++cur_instruction_ == instr_count)
-            keep_going = false;
+    // Let the base class check for exit. Force it to poll for events if there
+    // are instructions left to process or if the window is supposed to go
+    // away; don't want to wait for an event to come along.
+    if (! Application::ProcessFrame(render_count,
+                                    are_more_instructions || ! remain_)) {
+        keep_going = false;
     }
-    return keep_going || remain_;
+    // Process the next instruction, if any.
+    else if (are_more_instructions) {
+        const auto &instr = script_.GetInstructions()[cur_instruction_];
+        keep_going = ProcessInstruction_(instr);
+        ++cur_instruction_;
+    }
+    else {
+        // No instructions left - stop unless the remain flag is set.
+        keep_going = remain_;
+    }
+    return keep_going;
+}
+
+bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instruction &instr) {
+    const size_t instr_count = script_.GetInstructions().size();
+    std::cout << "=== Processing " << instr.type << " (instruction "
+              << (cur_instruction_ + 1) << " of " << instr_count << ")\n";
+
+    if (instr.type == "action") {
+        ASSERT(test_context_.action_manager->CanApplyAction(instr.action));
+        test_context_.action_manager->ApplyAction(instr.action);
+    }
+    else if (instr.type == "hand") {
+        if (! AddHand_(instr))
+            return false;
+    }
+    else if (instr.type == "load") {
+        if (! LoadSession_(instr.file_name))
+            return false;
+    }
+    else if (instr.type == "redo") {
+        for (size_t i = 0; i < instr.count; ++i)
+            test_context_.command_manager->Redo();
+    }
+    else if (instr.type == "select") {
+        test_context_.selection_manager->ChangeSelection(
+            BuildSelection_(instr.names));
+    }
+    else if (instr.type == "snap") {
+        if (! TakeSnapshot_(instr.rect, instr.file_name))
+            return false;
+    }
+    else if (instr.type == "stage") {
+        auto &stage = *test_context_.scene_context->stage;
+        stage.SetScaleAndRotation(instr.stage_scale, instr.stage_angle);
+    }
+    else if (instr.type == "touch") {
+        auto &sc = *test_context_.scene_context;
+        sc.left_controller->SetTouchMode(instr.touch_on);
+        sc.right_controller->SetTouchMode(instr.touch_on);
+        ForceTouchMode(instr.touch_on);
+    }
+    else if (instr.type == "undo") {
+        for (size_t i = 0; i < instr.count; ++i)
+            test_context_.command_manager->Undo();
+    }
+    else if (instr.type == "view") {
+        test_context_.scene_context->window_camera->SetOrientation(
+            Rotationf::RotateInto(-Vector3f::AxisZ(), instr.view_dir));
+    }
+    else {
+        ASSERTM(false, "Unknown instruction type: " + instr.type);
+        return false;
+    }
+    return true;
 }
 
 bool SnapshotApp_::LoadSession_(const std::string &file_name) {
@@ -156,9 +161,9 @@ bool SnapshotApp_::LoadSession_(const std::string &file_name) {
 }
 
 bool SnapshotApp_::AddHand_(const SnapScript::Instruction &instr) {
+    const auto &sc = *test_context_.scene_context;
     auto &controller = instr.hand == Hand::kLeft ?
-        *test_context_.scene_context->left_controller :
-        *test_context_.scene_context->right_controller;
+        *sc.left_controller : *sc.right_controller;
 
     if (instr.hand_type == "None") {
         controller.SetEnabled(false);
@@ -195,6 +200,12 @@ bool SnapshotApp_::AddHand_(const SnapScript::Instruction &instr) {
     controller.SetTranslation(instr.hand_pos);
     controller.SetRotation(Rotationf::RotateInto(Vector3f(0, 0, -1),
                                                  instr.hand_dir));
+
+    // Since at least one controller is in use, turn off the RadialMenu parent
+    // in the room, since the menus will be attached to the controllers.
+    const auto parent = SG::FindNodeInScene(*sc.scene, "RadialMenus");
+    parent->SetEnabled(false);
+
     return true;
 }
 
@@ -241,10 +252,11 @@ static const char kUsageString[] =
 R"(snapimage: Reads a script with instructions on how to create snapshot images
  for public documentation. See SnapScript.h for script details.
     Usage:
-      snapimage [--remain] SCRIPT
+      snapimage [--klog=<klog_string>] [--remain] SCRIPT
 
     Options:
-      --remain     Keep the window alive after script processing
+      --klog=<string> String to pass to KLogger::SetKeyString().
+      --remain        Keep the window alive after script processing
 
     Script files are relative to PublicDoc/snaps/scripts.
     Image files are placed in PublicDoc/docs/images.
@@ -262,6 +274,7 @@ int main(int argc, const char *argv[]) {
     options.window_size.Set(1066, 600);
     options.show_session_panel = false;
     options.do_ion_remote      = true;
+    KLogger::SetKeyString(args.GetString("--klog"));
 
     SnapshotApp_ app;
     if (! app.Init(options))
