@@ -71,7 +71,7 @@ html_show_sourcelink = False
 html_theme_options = {
     'display_version':             True,
     'logo_only':                   False,
-    'prev_next_buttons_location':  'top',
+    'prev_next_buttons_location':  'both',
     'style_external_links':        False,
     'style_nav_header_background': '#78a5e9',
 

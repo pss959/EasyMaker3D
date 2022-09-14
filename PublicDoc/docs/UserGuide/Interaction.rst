@@ -4,12 +4,6 @@ Interaction
 While MakerVR is designed to be reasonably intuitive, there are a few things
 that may need explanation before you can use it effectively.
 
-Keyboard Shortcuts
-..................
-
-All keyboard shortcuts are listed in the :doc:`Cheat Sheet <CheatSheet>`. In
-the future, there may be a way for users to change them.
-
 Clicking and Dragging
 .....................
 
@@ -42,6 +36,39 @@ orientation <ug-viewing>`.
      grip button is pressed, if any. See the sections on the specific items
      that support grip dragging for more details.
 
+.. _ug-modified-mode:
+
+Modified Interaction Mode
+.........................
+
+Some interactive objects have two different modes of operation, regular and
+what is referred to as :newterm:`modified mode`. This can apply to clicking a
+button ("modified-click"), dragging ("modified-drag"), or selection
+("modified-select").
+
+Modified mode is activated by either of these:
+
+  - Holding down the shift key on the keyboard
+  - Double-clicking with the mouse, pinch, or grip button. Note that this works
+    both for modified-clicking and for modified-dragging
+    (press-release-press-drag).
+
+For example, when clicking on a model to select it, the modified version is to
+add the model to the current selection or to deselect it if it is already
+selected. When dragging a handle in the :ref:`Scale Tool <ug-scale-tool>`, the
+modified version performs a symmetric scale about the model's center point
+instead of an asymmetric scale. Other uses are described elsewhere in this
+guide.
+
+Keyboard Shortcuts
+..................
+
+All keyboard shortcuts are listed in the :doc:`Cheat Sheet <CheatSheet>`. In
+the future, there may be a way for users to customize them. Note that the
+shortcuts are available in all three application modes.
+
+.. _ug-touch-mode:
+
 Panel Touch Mode
 ................
 
@@ -57,129 +84,98 @@ Panel Touch Mode
    interactive Panel element (such as a button or slider thumb) activates that
    element. The controller will vibrate briefly when this happens for feedback.
 
-   |
-   |
+   |block-image|
 
+.. _ug-radial-menus:
 
 Radial Menus
 ............
 
-![Radial menu in VR][ImgRadialMenuVR]{{rightimage(200)}}
+.. admonition:: VR Only
 
-In [VR or hybrid mode][VRModes], pressing the {{term('menu')}} button on a
-controller activates a {{term('radial menu')}} attached to the corresponding
-hand in the scene. Each button in a radial menu is a shortcut to some
-action. Slide your thumb around the trackpad or move the joystick (depending on
-the controller) to highlight the desired item and press the trackpad or
-joystick button to activate it. The menu is dismissed when you activate any
-radial menu button, if you press the *menu* button again, or if you press any
-keyboard key.
+   .. incimage:: /images/AttachedRadialMenu.jpg 180px right
 
-Note that radial menus are also available for use with the mouse in
-conventional mode via [keyboard shortcuts][CheatSheet]. In this mode, the menu
-appears in a fixed position on the appropriate side of the window for
-interaction with the mouse. You can configure the radial menu for each hand in
-the [Radial Menu Editor Panel][RadialMenuEditorPanel].
+   In either VR mode, pressing the :newterm:`menu button` on a controller
+   activates a :newterm:'radial menu' attached to the corresponding controller
+   in the scene. Each button in a radial menu is a shortcut to some
+   :ref:`application action <ug-actions>`. Note that the menu button on an
+   Oculus Touch controller is "Y" or "B".
 
-## Alternate Interaction Mode
+   Depending on the specific type of controller, you can move your thumb on the
+   trackpad or push the joystick to highlight the desired button and then press
+   the trackpad or joystick button to activate it. The menu is dismissed when
+   you press the menu button again.
 
-Some interactive objects have two different modes of operation, regular and
-what is referred to as {{term('Alternate Mode')}}. The term {{term('"Alt"')}}
-is also used to refer to this mode within this guide, such as in "Alt-click",
-"Alt-drag", or "Alt-select". {{tiny('Please do not confuse this with the "Alt"
-key.')}}
+   |block-image|
 
-Alternate mode is activated by either of these:
+.. incimage:: /images/FixedRadialMenu.jpg 200px right
 
-+ Holding down the shift key on the keyboard
-+ Double-clicking with the mouse, pinch, or grip action. Note that this works
-  both for Alt-clicking and for Alt-dragging (press-release-press-drag).
+Radial menus are also available for use with the mouse in conventional mode via
+:doc:`keyboard shortcuts <CheatSheet>`. In this mode, the menu appears in a
+fixed position on the appropriate side of the window for interaction with the
+mouse, as shown in this image.
 
-For example, when clicking on a model to select it, the Alt version is to
-multi-select the model or deselect it if it is already selected. When dragging
-a handle in the [Scale Tool][ScaleTool], the Alt version performs a symmetric
-scale about the model's center point instead of a asymmetric scale. Other uses
-are described elsewhere in this guide.
+The :ref:`Settings Panel <ug-settings-panel>` allows you to change the number
+of buttons in each radial menu and to define the actions associated with each
+button. Almost anything you can do in the application can be assigned to a
+radial menu button.
 
-## The Stage
+|block-image|
 
-The {{term('stage')}} is the large disc on the floor of the work area. Models
-are placed on the stage by default when they are created.
+.. _ug-inspector-mode:
 
-The stage can be manipulated to change your view of the models:
+Inspector Mode
+..............
 
-+ Drag it in a circular arc to rotate it along with the models on it.
-+ Drag toward or away from the stage center to scale the stage and models on it
-  up or down.
-+ In conventional mode, the mouse wheel also scales the stage.
-+ [Alt-clicking][AltMode] anywhere on the stage resets it to its default size
-  and rotation.
+|appname| provides a special :newterm:`inspector mode` that lets you easily
+examine a model from all directions. To inspect a model, first :ref:`select it
+as the primary selection <ug-selection>`, and then click on the :ref:`inspector
+action <ug-toggle-inspector>` icon. Alternatively, you can long-press (more
+than a half-second or so) either the left mouse button or a VR pinch action on
+a model, whether selected or not. There is also a :doc:`keyboard shortcut
+<CheatSheet>`.
 
-Rotating and scaling the stage is a fairly easy way to get a different
-perspective on your models without modifying the models themselves. Another
-option is to use [inspector mode][InspectorMode].
-
-## Viewing
-
-|appname| is designed to be maintain a relatively stable viewpoint. However,
-there may be times when you want to change the view of your scene (in addition
-to manipulating the [stage][Stage] or using [inspector mode][InspectorMode]).
-
-In VR mode, you can turn your head to see the room from different angles, if
-you wish. In [conventional or hybrid mode][VRModes], you can use the right
-mouse button to rotate the view. Additionally, the height slider on the pole on
-the right side of [the work area][WorkArea] can be dragged up and down to raise
-and lower your view of the room. Clicking on the ring brings you back to the
-default height.  [Alt-clicking][AltMode] on the ring also resets the view
-direction to the default, unless you are in VR mode (where the view always
-aligns with your head, of course).
-
-## Inspector Mode
-
-|appname| provides a special {{term('inspector mode')}} that lets you easily
-examine a model from all directions. To inspect a model, [select it as the
-primary selection][Selection], and click on the [Inspector
-action][InspectorAction] icon.  A shortcut to this mode is to long-press (more
-than a half-second or so) either the mouse button or laser pointer/pinch action
-on a model, whether selected or not. There is also a [keyboard
-shortcut][CheatSheet].
-
-When in [VR mode][VRModes] with the headset on, the model will be attached to
-the controller in the hand that initiated  inspection. You can move and turn
-your hand around to see the model from all angles.
-
-When in [conventional mode or hybrid mode][VRModes], the model will be enlarged
-and placed in the middle of the application window. In conventional mode,
-moving the mouse (no need to click) rotates the model. In hybrid mode,
-interaction depends on whether inspector mode was initiated with the mouse. If
-so, it is the same as conventional mode. If inspector mode was initiated with a
-controller, that controller rotates the model as in VR mode.
+When the mouse or keyboard shortcut is used to enter inspector mode, the
+selected model will be shown in the middle of the application window at an
+appropriate size. Moving the mouse (without pressing any buttons) rotates the
+model.
 
 Any key press, mouse click, or controller button press exits inspector mode.
 
-## Tooltips
+.. admonition:: VR Only
 
-Anything in the application that is interactive responds to hovering with the
+   If inspector mode is initiated with either controller, the selected model
+   will be attached to that controller in the scene. You can move and turn the
+   controller in your hand to see the model from all angles.
+
+.. _ug-tooltips:
+
+Tooltips
+........
+
+Everything in the application that is interactive responds to hovering with the
 mouse or laser pointer by highlighting in some way. For most items, if you
 hover long enough, a tooltip will appear with information about the
 interaction. For example, hovering over a tool icon gives information about
 what the tool does, while hovering over any model in the scene shows the name
 of the model.
 
-The delay for showing tooltips is a setting that can be edited in the [Settings
-Panel][SettingsPanel]. Setting the delay to 0 turns off tooltips completely.
+The delay for showing tooltips is a setting that can be edited in the
+:ref:`Settings Panel <ug-settings-panel>`. Setting the delay to 0 turns off
+tooltips completely.
 
-## Text Input
+.. _ug-text-input:
 
-Some parts of the application require text input, such as editing the name of a
-model or entering the name of a new file. Using the keyboard is always an
-option for text. If you have the headset on in VR mode, you might not want to
-take it off or put the controllers down just to edit text. You're in luck; text
-editing in VR mode is available using
-[VRKeys](https://github.com/campfireunion/VRKeys).  It provides a virtual
-keyboard with a xylophone-like interface for editing text. It's pretty cool.
+Text Input
+..........
 
-Attached to the front of the virtual keyboard is a bar that can be used to
-reposition the keyboard. Grip-dragging this bar with either controller allows
-you to move the bar and keyboard in all three dimensions to make it easier to
-access.
+Some of the :ref:`2D Panels <ug-panels>` require text input, such as editing
+the name of a model or entering the name of a new file. Using the mouse and
+keyboard is always an option for entering and editing text.
+
+.. admonition:: VR Only
+
+   If you are wearing the VR headset and activate a text input field, a
+   :ref:`virtual keyboard <ug-virtual-keyboard-panel>` will appear as a new
+   Panel in the scene. This keyboard allows you to use :ref:`panel touch mode
+   <ug-touch-mode>` to enter and edit text.

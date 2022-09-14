@@ -1,7 +1,7 @@
 Welcome to |appname|
 ====================
 
-.. incimage:: /images/Logo.jpg 600px right
+.. incimage:: /images/Logo.jpg 500 right
 
 |appname| is a VR-enabled application for creating 3D-printable models.
 "VR-enabled" means that it can be used in VR, but also works in a standard
@@ -16,8 +16,7 @@ MakerVR is available for Windows and Linux. There is also a Mac version, but it
 may or not work in VR due to the `lack of official SteamVR support
 <https://store.steampowered.com/news/app/250820/view/2216278054495230717>`_.
 
-|
-|
+|block-image|
 
 Installing and Running |appname|
 --------------------------------

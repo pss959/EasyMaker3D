@@ -12,12 +12,10 @@ you like; this will create a |appname| folder. In this folder there is a
 A Simple Doorstop Example (Non-VR)
 ----------------------------------
 
+.. incimage:: /images/Doorstop.jpg 300px right
+
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.
-
-.. figure:: /images/Doorstop.jpg
-   :width: 300px
-   :align: center
 
 |block-image|
 

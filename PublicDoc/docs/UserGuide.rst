@@ -58,6 +58,7 @@
 .. _ug-select-none:
 .. _ug-select-parent:
 .. _ug-select-previous-sibling:
+.. _ug-selection:
 .. _ug-session-name:
 .. _ug-session-panel:
 .. _ug-settings-panel:
@@ -82,9 +83,12 @@
 .. _ug-unit-conversion:
 .. _ug-viewing:
 .. _ug-viewing-shelf:
+.. _ug-virtual-keyboard-panel:
 
 TBD
 ---
 
 .. todo::
    Add sections for all of the above targets.
+
+.. incimage:: /images/Missing.jpg 200px center

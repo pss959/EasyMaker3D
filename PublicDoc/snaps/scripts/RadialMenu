@@ -1,0 +1,10 @@
+# Right radial menu not in VR.
+action kToggleRightRadialMenu
+snap 0.516886 0.0283333 0.325516 0.525 FixedRadialMenu.jpg
+
+# Do not show touch affordance
+touch off
+
+# Turn on right Oculus Touch - should show menu attached to controller.
+hand R Oculus_Touch  .06 14 59.6  -.1 2 -.2
+snap 0.356473 0.0716667 0.389306 0.698333 AttachedRadialMenu.jpg

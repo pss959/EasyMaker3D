@@ -162,8 +162,7 @@ When the build volume is visible, parts of models that lie outside it are
 rendered in :ref:`a special color <ug-model-colors>` to warn you of potential
 printing problems.
 
-|
-|
+|block-image|
 
 .. _ug-vr-modes:
 
