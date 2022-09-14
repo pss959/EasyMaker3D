@@ -67,6 +67,51 @@ All keyboard shortcuts are listed in the :doc:`Cheat Sheet <CheatSheet>`. In
 the future, there may be a way for users to customize them. Note that the
 shortcuts are available in all three application modes.
 
+.. _ug-stage:
+
+The Stage
+.........
+
+The stage is the large disc on the floor of the :ref:`work area
+<ug-work-area>`. Models are placed at the center of the stage by default when
+they are created.
+
+The stage can be manipulated as follows to change your view of the models. Any
+rotation or scale change to the stage applies to the models on it as well.
+
+ - Drag it in a circular arc to rotate it.
+ - Drag toward or away from the stage center to scale the stage up or down.
+ - A mouse scroll wheel can also be used to scale the stage.
+ - :ref:`Modified-clicking <ug-modified-mode>` anywhere on the stage resets it
+   to its default size and rotation.
+
+Rotating and scaling the stage is a fairly easy way to get a different
+perspective on your models without modifying the models themselves. Another
+option is to use :ref:`inspector mode <ug-inspector-mode>`.
+
+.. _ug-viewing:
+
+Viewing
+.......
+
+MakerVR is designed to be maintain a relatively stable viewpoint. However,
+there may be times when you want to change the view of the entire scene (in
+addition to manipulating the :ref:`stage <ug-stage>` or using :ref:`inspector
+mode <ug-inspector-mode>`).
+
+.. admonition:: VR Only
+
+   In full VR mode, you can turn your head to see the room from different
+   angles, if you wish.
+
+Dragging with the right mouse button rotates the view in the application
+window. Additionally, the height slider on the pole on the right side of
+:ref:`the work area <ug-work-area>` can be dragged up and down to raise and
+lower your view of the room. Clicking on the pole or the slider brings you back
+to the default height. :ref:`Modified-clicking <ug-modified-mode>` on the pole
+or slider also resets the view direction in the window in addition to the
+height.
+
 .. _ug-touch-mode:
 
 Panel Touch Mode
@@ -152,15 +197,15 @@ Any key press, mouse click, or controller button press exits inspector mode.
 
 .. _ug-tooltips:
 
-Tooltips
-........
+Highlighting and Tooltips
+.........................
 
 Everything in the application that is interactive responds to hovering with the
 mouse or laser pointer by highlighting in some way. For most items, if you
 hover long enough, a tooltip will appear with information about the
-interaction. For example, hovering over a tool icon gives information about
-what the tool does, while hovering over any model in the scene shows the name
-of the model.
+interaction. For example, hovering on a 3D icon gives information about what
+the icon does when pressed, and hovering on any model in the scene shows the
+name of the model.
 
 The delay for showing tooltips is a setting that can be edited in the
 :ref:`Settings Panel <ug-settings-panel>`. Setting the delay to 0 turns off

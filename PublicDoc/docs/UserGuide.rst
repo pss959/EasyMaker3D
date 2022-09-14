@@ -43,7 +43,6 @@
 .. _ug-open-info-panel:
 .. _ug-open-session-panel:
 .. _ug-open-settings-panel:
-.. _ug-panels:
 .. _ug-paste-into:
 .. _ug-paste:
 .. _ug-precision:
@@ -63,7 +62,6 @@
 .. _ug-session-panel:
 .. _ug-settings-panel:
 .. _ug-show-all:
-.. _ug-stage:
 .. _ug-switch-to-next-tool:
 .. _ug-switch-to-previous-tool:
 .. _ug-targets:
@@ -81,7 +79,6 @@
 .. _ug-tree-panel:
 .. _ug-undo:
 .. _ug-unit-conversion:
-.. _ug-viewing:
 .. _ug-viewing-shelf:
 .. _ug-virtual-keyboard-panel:
 

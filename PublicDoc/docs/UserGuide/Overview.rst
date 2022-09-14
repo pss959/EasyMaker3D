@@ -69,6 +69,11 @@ containing these elements:
  - The :newterm:`Tree Panel` on the back wall that :ref:`displays all models in
    tree form and allows you to interact with them <ug-tree-panel>`.
 
+.. _ug-panels:
+
+Panels
+......
+
 Some interaction requires a more conventional interface; :newterm:`panels` are
 used in these circumstances. A panel is a 2D rectangle that appears in the
 scene with various text inputs, sliders, and so forth. For example, when the
