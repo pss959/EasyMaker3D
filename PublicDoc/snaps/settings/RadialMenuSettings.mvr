@@ -1,0 +1,7 @@
+Settings {
+  right_radial_menu: RadialMenuInfo {
+    count: "kCount8",
+    actions: ["kScaleTool", "kCreateCylinder", "kRotationTool", "kTranslationTool", "kUndo", "kSelectAll", "kSelectNone", "kRedo"],
+  },
+  radial_menus_mode: "kIndependent",
+}

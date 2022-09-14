@@ -1,3 +1,9 @@
+# Load settings with reasonable menu buttons.
+settings RadialMenuSettings.mvr
+
+# Session with a model so more actions are enabled.
+load RadialMenu.mvr
+
 # Right radial menu not in VR.
 action kToggleRightRadialMenu
 snap 0.516886 0.0283333 0.325516 0.525 FixedRadialMenu.jpg
