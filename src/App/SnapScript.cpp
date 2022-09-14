@@ -39,16 +39,17 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     instr.type = words[0];
 
     bool ok;
-    if      (instr.type == "action") ok = ProcessAction_(words,  instr);
-    else if (instr.type == "hand")   ok = ProcessHand_(words,    instr);
-    else if (instr.type == "load")   ok = ProcessLoad_(words,    instr);
-    else if (instr.type == "redo")   ok = ProcessRedo_(words,    instr);
-    else if (instr.type == "select") ok = ProcessSelect_(words,  instr);
-    else if (instr.type == "snap")   ok = ProcessSnap_(words,    instr);
-    else if (instr.type == "stage")  ok = ProcessStage_(words,   instr);
-    else if (instr.type == "touch")  ok = ProcessTouch_(words,   instr);
-    else if (instr.type == "undo")   ok = ProcessUndo_(words,    instr);
-    else if (instr.type == "view")   ok = ProcessView_(words,    instr);
+    if      (instr.type == "action")   ok = ProcessAction_(words,  instr);
+    else if (instr.type == "hand")     ok = ProcessHand_(words,    instr);
+    else if (instr.type == "load")     ok = ProcessLoad_(words,    instr);
+    else if (instr.type == "redo")     ok = ProcessRedo_(words,    instr);
+    else if (instr.type == "select")   ok = ProcessSelect_(words,  instr);
+    else if (instr.type == "settings") ok = ProcessSettings_(words,  instr);
+    else if (instr.type == "snap")     ok = ProcessSnap_(words,    instr);
+    else if (instr.type == "stage")    ok = ProcessStage_(words,   instr);
+    else if (instr.type == "touch")    ok = ProcessTouch_(words,   instr);
+    else if (instr.type == "undo")     ok = ProcessUndo_(words,    instr);
+    else if (instr.type == "view")     ok = ProcessView_(words,    instr);
     else ok = Error_("Unknown instruction type '" + instr.type + "'");
     if (! ok)
         return false;
@@ -57,7 +58,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     return true;
 }
 
-bool SnapScript::ProcessAction_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessAction_(const Words &words, Instruction &instr) {
     if (words.size() != 2U)
         return Error_("Bad syntax for action instruction");
 
@@ -67,7 +68,7 @@ bool SnapScript::ProcessAction_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessHand_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessHand_(const Words &words, Instruction &instr) {
     if (words.size() != 9U)
         return Error_("Bad syntax for hand instruction");
 
@@ -94,7 +95,7 @@ bool SnapScript::ProcessHand_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessLoad_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessLoad_(const Words &words, Instruction &instr) {
     if (words.size() != 2U)
         return Error_("Bad syntax for load instruction");
 
@@ -102,7 +103,7 @@ bool SnapScript::ProcessLoad_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessRedo_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessRedo_(const Words &words, Instruction &instr) {
     if (words.size() != 2U)
         return Error_("Bad syntax for redo instruction");
 
@@ -112,13 +113,21 @@ bool SnapScript::ProcessRedo_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessSelect_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessSelect_(const Words &words, Instruction &instr) {
     // No names is a valid selection (deselects all).
     instr.names.insert(instr.names.begin(), words.begin() + 1, words.end());
     return true;
 }
 
-bool SnapScript::ProcessSnap_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessSettings_(const Words &words, Instruction &instr) {
+    if (words.size() != 2U)
+        return Error_("Bad syntax for settings instruction");
+
+    instr.file_name = words[1];
+    return true;
+}
+
+bool SnapScript::ProcessSnap_(const Words &words, Instruction &instr) {
     if (words.size() != 6U)
         return Error_("Bad syntax for snap instruction");
 
@@ -135,7 +144,7 @@ bool SnapScript::ProcessSnap_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessStage_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessStage_(const Words &words, Instruction &instr) {
     if (words.size() != 3U)
         return Error_("Bad syntax for stage instruction");
 
@@ -148,7 +157,7 @@ bool SnapScript::ProcessStage_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessTouch_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessTouch_(const Words &words, Instruction &instr) {
     if (words.size() != 2U || (words[1] != "on" && words[1] != "off"))
         return Error_("Bad syntax for touch instruction");
 
@@ -156,7 +165,7 @@ bool SnapScript::ProcessTouch_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessUndo_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessUndo_(const Words &words, Instruction &instr) {
     if (words.size() != 2U)
         return Error_("Bad syntax for undo instruction");
 
@@ -166,7 +175,7 @@ bool SnapScript::ProcessUndo_(const Words_ &words, Instruction &instr) {
     return true;
 }
 
-bool SnapScript::ProcessView_(const Words_ &words, Instruction &instr) {
+bool SnapScript::ProcessView_(const Words &words, Instruction &instr) {
     if (words.size() != 4U)
         return Error_("Bad syntax for view instruction");
 
@@ -183,7 +192,7 @@ bool SnapScript::Error_(const std::string &message) {
     return false;
 }
 
-bool SnapScript::ParseVector3f_(const Words_ &words, size_t index,
+bool SnapScript::ParseVector3f_(const Words &words, size_t index,
                                 Vector3f &v) {
     return (ParseFloat_(words[index + 0], v[0]) &&
             ParseFloat_(words[index + 1], v[1]) &&

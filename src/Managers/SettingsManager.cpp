@@ -28,6 +28,19 @@ void SettingsManager::SetSettings(const Settings &new_settings) {
         change_func_(new_settings);
 }
 
+bool SettingsManager::ReplaceSettings(const FilePath &path) {
+    if (! path.Exists()) {
+        std::cerr << "*** Unable to read settings from '"
+                  << path.ToString() << "': no such file\n";
+        return false;
+    }
+    if (SettingsPtr new_settings = ReadSettings_(path)) {
+        settings_ = new_settings;
+        return true;
+    }
+    return false;
+}
+
 SettingsPtr SettingsManager::ReadSettings_(const FilePath &path) {
     KLOG('f', "Reading settings from \"" << path.ToString() << "\"");
     SettingsPtr settings;

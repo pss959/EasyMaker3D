@@ -560,6 +560,7 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
     tc.command_manager   = command_manager_;
     tc.selection_manager = selection_manager_;
     tc.session_manager   = session_manager_;
+    tc.settings_manager  = settings_manager_;
     tc.scene_context     = scene_context_;
 }
 

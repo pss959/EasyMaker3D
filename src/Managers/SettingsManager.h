@@ -30,6 +30,10 @@ class SettingsManager {
     /// any. Writes out the new settings.
     void SetSettings(const Settings &new_settings);
 
+    /// Replaces current settings with those read from the given file. Returns
+    /// false on any error.
+    bool ReplaceSettings(const FilePath &path);
+
  private:
     ChangeFunc  change_func_;
     SettingsPtr settings_;

@@ -23,7 +23,7 @@ RadialMenu "T_RadialMenu" {
     },
     PushButtonWidget "Button" {
       disabled_flags: "kTraversal",
-      inactive_color: "#eeeeee",
+      inactive_color: "#f8f8f8",
       children: [
         Node "Area" { shapes: [ Polygon "Polygon" {} ] },
         Node "Border" {

@@ -16,6 +16,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
+#include "Managers/SettingsManager.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "SG/Search.h"
@@ -118,6 +119,11 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instruction &instr) {
         test_context_.selection_manager->ChangeSelection(
             BuildSelection_(instr.names));
     }
+    else if (instr.type == "settings") {
+        const FilePath path("PublicDoc/snaps/settings/" + instr.file_name);
+        if (! test_context_.settings_manager->ReplaceSettings(path))
+            return false;
+    }
     else if (instr.type == "snap") {
         if (! TakeSnapshot_(instr.rect, instr.file_name))
             return false;
@@ -153,7 +159,7 @@ bool SnapshotApp_::LoadSession_(const std::string &file_name) {
     std::string error;
     if (! test_context_.session_manager->LoadSession(path, error)) {
         std::cerr << "*** Error loading session from '"
-                  << path.ToString() << "'\n";
+                  << path.ToString() << "':" << error << "\n";
         return false;
     }
     std::cout << "  Loaded session from '" << path.ToString() << "'\n";
