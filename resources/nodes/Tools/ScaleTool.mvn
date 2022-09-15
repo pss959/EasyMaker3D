@@ -26,7 +26,7 @@ ScaleTool "ScaleTool" {
       ],
     }
     ScaleWidget "T_Scaler1D" {
-      use_alt_mode: True,
+      use_modified_mode: True,
       children: [
         CLONE "T_Handle1D"     "MinSlider" {},
         CLONE "T_Handle1D"     "MaxSlider" {},
@@ -34,7 +34,7 @@ ScaleTool "ScaleTool" {
       ]
     },
     ScaleWidget "T_Scaler2D" {
-      use_alt_mode: True,
+      use_modified_mode: True,
       children: [
         CLONE "T_Handle2D"     "MinSlider" {},
         CLONE "T_Handle2D"     "MaxSlider" {},
@@ -42,7 +42,7 @@ ScaleTool "ScaleTool" {
       ]
     },
     ScaleWidget "T_Scaler3D" {
-      use_alt_mode: True,
+      use_modified_mode: True,
       children: [
         CLONE "T_Handle3D"     "MinSlider" {},
         CLONE "T_Handle3D"     "MaxSlider" {},
