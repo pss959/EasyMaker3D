@@ -17,6 +17,10 @@ namespace Util {
 /// initialized to false and is set to true at the beginning of unit tests.
 extern bool is_in_unit_test;
 
+/// Flag indicating whether code is running inside the main application. It is
+/// initialized to false and is set to true at the beginning of the main app.
+extern bool is_in_main_app;
+
 /// Convenience to cast an std::shared_ptr of a derived class to an
 /// std::shared_ptr of a base class.
 template <typename Base, typename Derived>

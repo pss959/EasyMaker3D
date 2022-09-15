@@ -13,6 +13,7 @@
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
+#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
 #include "Util/UTime.h"
@@ -159,6 +160,9 @@ R"(<NAME>: A VR-enabled application for creating models for 3D printing.
 )";
 
 int main(int argc, const char *argv[]) {
+    // This is the main application.
+    Util::is_in_main_app = true;
+
     const std::string usage = Util::ReplaceString(kUsageString, "<NAME>",
                                                   TK::kApplicationName);
     Args args(argc, argv, usage);

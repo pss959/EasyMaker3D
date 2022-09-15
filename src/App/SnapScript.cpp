@@ -35,155 +35,206 @@ bool SnapScript::ProcessLine_(const std::string &line) {
         return true;
 
     const auto words = ion::base::SplitString(line, " \t");
-    Instruction instr;
-    instr.type = words[0];
+    Instr::Type type;
+    if (! GetInstructionType_(words[0], type))
+        return Error_("Unknown instruction type '" + words[0] + "'");
 
-    bool ok;
-    if      (instr.type == "action")   ok = ProcessAction_(words,  instr);
-    else if (instr.type == "hand")     ok = ProcessHand_(words,    instr);
-    else if (instr.type == "load")     ok = ProcessLoad_(words,    instr);
-    else if (instr.type == "redo")     ok = ProcessRedo_(words,    instr);
-    else if (instr.type == "select")   ok = ProcessSelect_(words,  instr);
-    else if (instr.type == "settings") ok = ProcessSettings_(words,  instr);
-    else if (instr.type == "snap")     ok = ProcessSnap_(words,    instr);
-    else if (instr.type == "stage")    ok = ProcessStage_(words,   instr);
-    else if (instr.type == "touch")    ok = ProcessTouch_(words,   instr);
-    else if (instr.type == "undo")     ok = ProcessUndo_(words,    instr);
-    else if (instr.type == "view")     ok = ProcessView_(words,    instr);
-    else ok = Error_("Unknown instruction type '" + instr.type + "'");
-    if (! ok)
+    InstrPtr instr;
+    switch (type) {
+      case Instr::Type::kAction:   instr = ProcessAction_(words);   break;
+      case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
+      case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
+      case Instr::Type::kLoad:     instr = ProcessLoad_(words);     break;
+      case Instr::Type::kSelect:   instr = ProcessSelect_(words);   break;
+      case Instr::Type::kSettings: instr = ProcessSettings_(words); break;
+      case Instr::Type::kSnap:     instr = ProcessSnap_(words);     break;
+      case Instr::Type::kStage:    instr = ProcessStage_(words);    break;
+      case Instr::Type::kTouch:    instr = ProcessTouch_(words);    break;
+      case Instr::Type::kView:     instr = ProcessView_(words);     break;
+    }
+    if (! instr)
         return false;
 
+    instr->type = type;
     instructions_.push_back(instr);
     return true;
 }
 
-bool SnapScript::ProcessAction_(const Words &words, Instruction &instr) {
-    if (words.size() != 2U)
-        return Error_("Bad syntax for action instruction");
-
-    if (! Util::EnumFromString(words[1], instr.action))
-        return Error_("Unknown action name for action instruction");
-
-    return true;
+bool SnapScript::GetInstructionType_(const std::string &word,
+                                     Instr::Type &type) {
+    for (auto t: Util::EnumValues<Instr::Type>()) {
+        if (Util::ToLowerCase(Util::EnumToWord(t)) == word) {
+            type = t;
+            return true;
+        }
+    }
+    return false;
 }
 
-bool SnapScript::ProcessHand_(const Words &words, Instruction &instr) {
-    if (words.size() != 9U)
-        return Error_("Bad syntax for hand instruction");
-
-    if (words[1] == "L")
-        instr.hand = Hand::kLeft;
-    else if (words[1] == "R")
-        instr.hand = Hand::kRight;
-    else
-        return Error_("Invalid hand (L/R) for hand instruction");
-
-    if (words[2] == "Oculus_Touch" || words[2] == "Vive" || words[2] == "None")
-        instr.hand_type = words[2];
-    else
-        return Error_("Invalid controller type for hand instruction");
-
-    Vector3f v;
-    if (! ParseVector3f_(words, 3, v))
-        return Error_("Invalid position floats for hand instruction");
-    instr.hand_pos = Point3f(v);
-
-    if (! ParseVector3f_(words, 6, instr.hand_dir))
-        return Error_("Invalid direction floats for hand instruction");
-
-    return true;
+SnapScript::InstrPtr SnapScript::ProcessAction_(const Words &words) {
+    ActionInstrPtr ainst;
+    Action         action;
+    if (words.size() != 2U) {
+        Error_("Bad syntax for action instruction");
+    }
+    else if (! Util::EnumFromString(words[1], action)) {
+        Error_("Unknown action name for action instruction");
+    }
+    else {
+        ainst.reset(new ActionInstr);
+        ainst->action = action;
+    }
+    return ainst;
 }
 
-bool SnapScript::ProcessLoad_(const Words &words, Instruction &instr) {
-    if (words.size() != 2U)
-        return Error_("Bad syntax for load instruction");
-
-    instr.file_name = words[1];
-    return true;
+SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
+    DragInstrPtr dinst;
+    float x, y;
+    if (words.size() != 4U) {
+        Error_("Bad syntax for drag instruction");
+    }
+    else if (words[1] != "start" &&
+             words[1] != "continue" &&
+             words[1] != "end") {
+        Error_("Invalid context (start/continue/end) for drag instruction");
+    }
+    else if (! ParseFloat01_(words[2], x) || ! ParseFloat01_(words[3], y)) {
+        Error_("Invalid x or y floats for drag instruction");
+    }
+    else {
+        dinst.reset(new DragInstr);
+        dinst->context = words[1];
+        dinst->pos.Set(x, y);
+    }
+    return dinst;
 }
 
-bool SnapScript::ProcessRedo_(const Words &words, Instruction &instr) {
-    if (words.size() != 2U)
-        return Error_("Bad syntax for redo instruction");
-
-    if (! ParseN_(words[1], instr.count))
-        return Error_("Invalid count for redo instruction");
-
-    return true;
+SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
+    HandInstrPtr hinst;
+    Vector3f     pos, dir;
+    if (words.size() != 9U) {
+         Error_("Bad syntax for hand instruction");
+    }
+    else if (words[1] != "L" && words[1] != "R") {
+        Error_("Invalid hand (L/R) for hand instruction");
+    }
+    else if (words[2] != "Oculus_Touch" &&
+             words[2] != "Vive" &&
+             words[2] != "None") {
+        Error_("Invalid controller type for hand instruction");
+    }
+    else if (! ParseVector3f_(words, 3, pos)) {
+        Error_("Invalid position floats for hand instruction");
+    }
+    else if (! ParseVector3f_(words, 6, dir)) {
+        Error_("Invalid direction floats for hand instruction");
+    }
+    else {
+        hinst.reset(new HandInstr);
+        hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
+        hinst->controller = words[2];
+        hinst->pos = Point3f(pos);
+        hinst->dir = dir;
+    }
+    return hinst;
 }
 
-bool SnapScript::ProcessSelect_(const Words &words, Instruction &instr) {
+SnapScript::InstrPtr SnapScript::ProcessLoad_(const Words &words) {
+    LoadInstrPtr linst;
+    if (words.size() != 2U) {
+        Error_("Bad syntax for load instruction");
+    }
+    else {
+        linst.reset(new LoadInstr);
+        linst->file_name = words[1];
+    }
+    return linst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessSelect_(const Words &words) {
     // No names is a valid selection (deselects all).
-    instr.names.insert(instr.names.begin(), words.begin() + 1, words.end());
-    return true;
+    SelectInstrPtr sinst(new SelectInstr);
+    sinst->names.insert(sinst->names.begin(), words.begin() + 1, words.end());
+    return sinst;
 }
 
-bool SnapScript::ProcessSettings_(const Words &words, Instruction &instr) {
-    if (words.size() != 2U)
-        return Error_("Bad syntax for settings instruction");
-
-    instr.file_name = words[1];
-    return true;
+SnapScript::InstrPtr SnapScript::ProcessSettings_(const Words &words) {
+    SettingsInstrPtr sinst;
+    if (words.size() != 2U) {
+        Error_("Bad syntax for settings instruction");
+    }
+    else {
+        sinst.reset(new SettingsInstr);
+        sinst->file_name = words[1];
+    }
+    return sinst;
 }
 
-bool SnapScript::ProcessSnap_(const Words &words, Instruction &instr) {
-    if (words.size() != 6U)
-        return Error_("Bad syntax for snap instruction");
-
+SnapScript::InstrPtr SnapScript::ProcessSnap_(const Words &words) {
+    SnapInstrPtr sinst;
     float x, y, w, h;
-    if (! ParseFloat01_(words[1], x) || ! ParseFloat01_(words[2], y) ||
-        ! ParseFloat01_(words[3], w) || ! ParseFloat01_(words[4], h))
-        return Error_("Invalid rectangle floats for snap instruction");
-
-    if (x + w > 1.f || y + h > 1.f)
-        return Error_("Rectangle is out of bounds for snap instruction");
-
-    instr.rect.SetWithSize(Point2f(x, y), Vector2f(w, h));
-    instr.file_name = words[5];
-    return true;
+    if (words.size() != 6U) {
+        Error_("Bad syntax for snap instruction");
+    }
+    else if (! ParseFloat01_(words[1], x) || ! ParseFloat01_(words[2], y) ||
+             ! ParseFloat01_(words[3], w) || ! ParseFloat01_(words[4], h)) {
+        Error_("Invalid rectangle floats for snap instruction");
+    }
+    else if (x + w > 1.f || y + h > 1.f) {
+        Error_("Rectangle is out of bounds for snap instruction");
+    }
+    else {
+        sinst.reset(new SnapInstr);
+        sinst->rect.SetWithSize(Point2f(x, y), Vector2f(w, h));
+        sinst->file_name = words[5];
+    }
+    return sinst;
 }
 
-bool SnapScript::ProcessStage_(const Words &words, Instruction &instr) {
-    if (words.size() != 3U)
-        return Error_("Bad syntax for stage instruction");
-
+SnapScript::InstrPtr SnapScript::ProcessStage_(const Words &words) {
+    StageInstrPtr sinst;
     float scale, angle;
-    if (! ParseFloat_(words[1], scale) || ! ParseFloat_(words[2], angle))
-        return Error_("Invalid scale/rotation data for stage instruction");
-
-    instr.stage_scale = scale;
-    instr.stage_angle = Anglef::FromDegrees(angle);
-    return true;
+    if (words.size() != 3U) {
+        Error_("Bad syntax for stage instruction");
+    }
+    else if (! ParseFloat_(words[1], scale) || ! ParseFloat_(words[2], angle)) {
+        Error_("Invalid scale/rotation data for stage instruction");
+    }
+    else {
+        sinst.reset(new StageInstr);
+        sinst->scale = scale;
+        sinst->angle = Anglef::FromDegrees(angle);
+    }
+    return sinst;
 }
 
-bool SnapScript::ProcessTouch_(const Words &words, Instruction &instr) {
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off"))
-        return Error_("Bad syntax for touch instruction");
-
-    instr.touch_on = words[1] == "on";
-    return true;
+SnapScript::InstrPtr SnapScript::ProcessTouch_(const Words &words) {
+    TouchInstrPtr tinst;
+    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
+        Error_("Bad syntax for touch instruction");
+    }
+    else {
+        tinst.reset(new TouchInstr);
+        tinst->is_on = words[1] == "on";
+    }
+    return tinst;
 }
 
-bool SnapScript::ProcessUndo_(const Words &words, Instruction &instr) {
-    if (words.size() != 2U)
-        return Error_("Bad syntax for undo instruction");
-
-    if (! ParseN_(words[1], instr.count))
-        return Error_("Invalid count for undo instruction");
-
-    return true;
-}
-
-bool SnapScript::ProcessView_(const Words &words, Instruction &instr) {
-    if (words.size() != 4U)
-        return Error_("Bad syntax for view instruction");
-
-    if (! ParseVector3f_(words, 1, instr.view_dir))
-        return Error_("Invalid direction floats for view instruction");
-
-    ion::math::Normalize(&instr.view_dir);
-    return true;
+SnapScript::InstrPtr SnapScript::ProcessView_(const Words &words) {
+    ViewInstrPtr vinst;
+    Vector3f     dir;
+    if (words.size() != 4U) {
+        Error_("Bad syntax for view instruction");
+    }
+    else if (! ParseVector3f_(words, 1, dir)) {
+        Error_("Invalid direction floats for view instruction");
+    }
+    else {
+        ion::math::Normalize(&dir);
+        vinst.reset(new ViewInstr);
+        vinst->dir = dir;
+    }
+    return vinst;
 }
 
 bool SnapScript::Error_(const std::string &message) {

@@ -1,3 +1,4 @@
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -10,7 +11,9 @@
 #include "App/SceneContext.h"
 #include "App/Selection.h"
 #include "App/SnapScript.h"
+#include "Base/IEmitter.h"
 #include "Debug/Shortcuts.h"
+#include "Handlers/Handler.h"
 #include "Items/Controller.h"
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
@@ -30,10 +33,90 @@
 #include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------
-// Derived Application class that adds snapshot processing. Reads a SnapScript
-// that specifies what to do.
+// DragEmitter_ class.
 // ----------------------------------------------------------------------------
 
+/// DragEmitter_ is a derived IEmitter class used to create events to simulate
+/// mouse drags.
+class DragEmitter_ : public IEmitter {
+  public:
+    /// Starts a mouse drag at the given point.
+    void StartMouseDrag(const Point2f &p);
+
+    /// Continues a mouse drag to the given point.
+    void ContinueMouseDrag(const Point2f &p);
+
+    /// Ends the current mouse drag.
+    void EndMouseDrag();
+
+    /// Returns true if there are events left to process.
+    bool HasPendingEvents() const { return ! points_.empty(); }
+
+    virtual void EmitEvents(std::vector<Event> &events) override;
+    virtual void FlushPendingEvents() {}
+
+  private:
+    /// Points left in the current drag operation.
+    std::deque<Point2f> points_;
+    /// Set to true in the middle of a drag.
+    bool in_drag_ = false;
+};
+
+void DragEmitter_::StartMouseDrag(const Point2f &p) {
+    ASSERT(! in_drag_);
+    points_.push_back(p);
+}
+
+void DragEmitter_::ContinueMouseDrag(const Point2f &p) {
+    ASSERT(in_drag_);
+    points_.push_back(p);
+}
+
+void DragEmitter_::EndMouseDrag() {
+    ASSERT(in_drag_);
+}
+
+void DragEmitter_::EmitEvents(std::vector<Event> &events) {
+    // If not in a drag and there are points, start one.
+    if (! in_drag_ && ! points_.empty()) {
+        Event event;
+        event.device = Event::Device::kMouse;
+        event.flags.Set(Event::Flag::kButtonPress);
+        event.flags.Set(Event::Flag::kPosition2D);
+        event.button = Event::Button::kMouse1;
+        event.position2D = points_.front();
+        events.push_back(event);
+        points_.pop_front();
+        in_drag_ = true;
+    }
+    // If in a drag and there are points, continue.
+    else if (in_drag_ && ! points_.empty()) {
+        Event event;
+        event.device = Event::Device::kMouse;
+        event.flags.Set(Event::Flag::kPosition2D);
+        event.position2D = points_.front();
+        events.push_back(event);
+        points_.pop_front();
+    }
+    // If in a drag and no more points, end the drag.
+    else if (in_drag_ && points_.empty()) {
+        Event event;
+        event.device = Event::Device::kMouse;
+        event.flags.Set(Event::Flag::kButtonRelease);
+        event.button = Event::Button::kMouse1;
+        events.push_back(event);
+        in_drag_ = false;
+    }
+}
+
+DECL_SHARED_PTR(DragEmitter_);
+
+// ----------------------------------------------------------------------------
+/// SnapshotApp_ class.
+// ----------------------------------------------------------------------------
+
+/// Derived Application class that adds snapshot processing. Reads a SnapScript
+/// that specifies what to do.
 class SnapshotApp_ : public Application {
   public:
     virtual bool Init(const Options &options) override;
@@ -43,22 +126,32 @@ class SnapshotApp_ : public Application {
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
 
   private:
-    Vector2i    window_size_;    // From Options.
-    TestContext test_context_;   // For accessing managers.
-    SnapScript  script_;
-    size_t      cur_instruction_ = 0;
-    bool        remain_ = false;
+    Vector2i        window_size_;   // From Options.
+    DragEmitter_Ptr drag_emitter_;  // To simulate mouse drags.
+    TestContext     test_context_;  // For accessing managers.
+    SnapScript      script_;
+    size_t          cur_instruction_ = 0;
+    bool            remain_ = false;
 
-    bool ProcessInstruction_(const SnapScript::Instruction &instr);
+    bool ProcessInstruction_(const SnapScript::Instr &instr);
     bool LoadSession_(const std::string &file_name);
-    bool AddHand_(const SnapScript::Instruction &instr);
+    bool AddHand_(Hand hand, const std::string &controller_type,
+                  const Point3f &pos, const Vector3f &dir);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
     Selection BuildSelection_(const std::vector<std::string> &names);
+
+    template <typename T>
+    const T & GetTypedInstr_(const SnapScript::Instr &instr) {
+        return static_cast<const T &>(instr);
+    }
 };
 
 bool SnapshotApp_::Init(const Options &options) {
     if (! Application::Init(options))
         return false;
+
+    drag_emitter_.reset(new DragEmitter_);
+    AddEmitter(drag_emitter_);
 
     window_size_ = options.window_size;
     GetTestContext(test_context_);
@@ -81,9 +174,14 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
                                     are_more_instructions || ! remain_)) {
         keep_going = false;
     }
+    // If there are events pending, process them before doing any more
+    // instructions.
+    else if (drag_emitter_->HasPendingEvents()) {
+        keep_going = true;
+    }
     // Process the next instruction, if any.
     else if (are_more_instructions) {
-        const auto &instr = script_.GetInstructions()[cur_instruction_];
+        const auto &instr = *script_.GetInstructions()[cur_instruction_];
         keep_going = ProcessInstruction_(instr);
         ++cur_instruction_;
     }
@@ -94,60 +192,85 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     return keep_going;
 }
 
-bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instruction &instr) {
-    const size_t instr_count = script_.GetInstructions().size();
-    std::cout << "=== Processing " << instr.type << " (instruction "
-              << (cur_instruction_ + 1) << " of " << instr_count << ")\n";
+bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
+    using SIType = SnapScript::Instr::Type;
 
-    if (instr.type == "action") {
-        ASSERT(test_context_.action_manager->CanApplyAction(instr.action));
-        test_context_.action_manager->ApplyAction(instr.action);
-    }
-    else if (instr.type == "hand") {
-        if (! AddHand_(instr))
-            return false;
-    }
-    else if (instr.type == "load") {
-        if (! LoadSession_(instr.file_name))
-            return false;
-    }
-    else if (instr.type == "redo") {
-        for (size_t i = 0; i < instr.count; ++i)
-            test_context_.command_manager->Redo();
-    }
-    else if (instr.type == "select") {
-        test_context_.selection_manager->ChangeSelection(
-            BuildSelection_(instr.names));
-    }
-    else if (instr.type == "settings") {
-        const FilePath path("PublicDoc/snaps/settings/" + instr.file_name);
-        if (! test_context_.settings_manager->ReplaceSettings(path))
-            return false;
-    }
-    else if (instr.type == "snap") {
-        if (! TakeSnapshot_(instr.rect, instr.file_name))
-            return false;
-    }
-    else if (instr.type == "stage") {
-        auto &stage = *test_context_.scene_context->stage;
-        stage.SetScaleAndRotation(instr.stage_scale, instr.stage_angle);
-    }
-    else if (instr.type == "touch") {
-        auto &sc = *test_context_.scene_context;
-        sc.left_controller->SetTouchMode(instr.touch_on);
-        sc.right_controller->SetTouchMode(instr.touch_on);
-        ForceTouchMode(instr.touch_on);
-    }
-    else if (instr.type == "undo") {
-        for (size_t i = 0; i < instr.count; ++i)
-            test_context_.command_manager->Undo();
-    }
-    else if (instr.type == "view") {
-        test_context_.scene_context->window_camera->SetOrientation(
-            Rotationf::RotateInto(-Vector3f::AxisZ(), instr.view_dir));
-    }
-    else {
-        ASSERTM(false, "Unknown instruction type: " + instr.type);
+    const size_t instr_count = script_.GetInstructions().size();
+    std::cout << "=== Processing " << Util::EnumToWords(instr.type)
+              << " (instruction " << (cur_instruction_ + 1)
+              << " of " << instr_count << ")\n";
+
+    switch (instr.type) {
+      case SIType::kAction: {
+          const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
+          ASSERT(test_context_.action_manager->CanApplyAction(ainst.action));
+          test_context_.action_manager->ApplyAction(ainst.action);
+          break;
+      }
+      case SIType::kDrag: {
+          const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
+          if (dinst.context == "start")
+              drag_emitter_->StartMouseDrag(dinst.pos);
+          else if (dinst.context == "continue")
+              drag_emitter_->ContinueMouseDrag(dinst.pos);
+          else    // "end"
+              drag_emitter_->EndMouseDrag();
+          break;
+      }
+      case SIType::kHand: {
+          const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
+          if (! AddHand_(hinst.hand, hinst.controller, hinst.pos, hinst.dir))
+              return false;
+          break;
+      }
+      case SIType::kLoad: {
+          const auto &linst = GetTypedInstr_<SnapScript::LoadInstr>(instr);
+          if (! LoadSession_(linst.file_name))
+              return false;
+          break;
+      }
+      case SIType::kSelect: {
+          const auto &sinst = GetTypedInstr_<SnapScript::SelectInstr>(instr);
+          test_context_.selection_manager->ChangeSelection(
+              BuildSelection_(sinst.names));
+          break;
+      }
+      case SIType::kSettings: {
+          const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
+          const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name);
+          if (! test_context_.settings_manager->ReplaceSettings(path))
+              return false;
+          break;
+      }
+      case SIType::kSnap: {
+          const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
+          if (! TakeSnapshot_(sinst.rect, sinst.file_name))
+              return false;
+          break;
+      }
+      case SIType::kStage: {
+          const auto &sinst = GetTypedInstr_<SnapScript::StageInstr>(instr);
+          auto &stage = *test_context_.scene_context->stage;
+          stage.SetScaleAndRotation(sinst.scale, sinst.angle);
+          break;
+      }
+      case SIType::kTouch: {
+          const auto &sinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
+          auto &sc = *test_context_.scene_context;
+          sc.left_controller->SetTouchMode(sinst.is_on);
+          sc.right_controller->SetTouchMode(sinst.is_on);
+          ForceTouchMode(sinst.is_on);
+          break;
+      }
+      case SIType::kView: {
+          const auto &vinst = GetTypedInstr_<SnapScript::ViewInstr>(instr);
+          test_context_.scene_context->window_camera->SetOrientation(
+              Rotationf::RotateInto(-Vector3f::AxisZ(), vinst.dir));
+          break;
+      }
+      default:
+        ASSERTM(false, "Unknown instruction type: " +
+                Util::ToString(Util::EnumInt(instr.type)));
         return false;
     }
     return true;
@@ -166,18 +289,19 @@ bool SnapshotApp_::LoadSession_(const std::string &file_name) {
     return true;
 }
 
-bool SnapshotApp_::AddHand_(const SnapScript::Instruction &instr) {
+bool SnapshotApp_::AddHand_(Hand hand, const std::string &controller_type,
+                            const Point3f &pos, const Vector3f &dir) {
     const auto &sc = *test_context_.scene_context;
-    auto &controller = instr.hand == Hand::kLeft ?
+    auto &controller = hand == Hand::kLeft ?
         *sc.left_controller : *sc.right_controller;
 
-    if (instr.hand_type == "None") {
+    if (controller_type == "None") {
         controller.SetEnabled(false);
         return true;
     }
 
-    const std::string file_start = "models/controllers/" + instr.hand_type +
-        "_" + Util::EnumToWord(instr.hand);
+    const std::string file_start = "models/controllers/" + controller_type +
+        "_" + Util::EnumToWord(hand);
 
     const std::string mesh_file = file_start + ".tri";
     const std::string tex_file  = file_start + ".jpg";
@@ -203,9 +327,8 @@ bool SnapshotApp_::AddHand_(const SnapScript::Instruction &instr) {
     controller.SetGripGuideType(GripGuideType::kBasic);
     controller.ShowAll(true);
     controller.ShowGripHover(false, Point3f::Zero(), Color::White());
-    controller.SetTranslation(instr.hand_pos);
-    controller.SetRotation(Rotationf::RotateInto(Vector3f(0, 0, -1),
-                                                 instr.hand_dir));
+    controller.SetTranslation(pos);
+    controller.SetRotation(Rotationf::RotateInto(Vector3f(0, 0, -1), dir));
 
     // Since at least one controller is in use, turn off the RadialMenu parent
     // in the room, since the menus will be attached to the controllers.

@@ -69,8 +69,8 @@ void ModelExecutorBase::InitModelTransform(Model &model,
 }
 
 void ModelExecutorBase::AnimateModelPlacement(Model &model) {
-    // Don't animate inside unit tests!
-    if (Util::is_in_unit_test)
+    // Don't animate if not in the main application.
+    if (! Util::is_in_main_app)
         return;
 
     // Save the current translation as the end point of the animation.

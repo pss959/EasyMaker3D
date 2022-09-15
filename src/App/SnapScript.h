@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
@@ -13,32 +14,84 @@
 /// A script contains any number of lines with one of the following
 /// instructions:
 ///
-///  Text                                 | Result
-///  -------------------------------------|-------
-///  [whitespace]                         | Blank lines are ignored.
-///  <b>\#</b> ...                        | Comment (ignored).
-///  **action** *name*                    | Applies the named action.
-///  **hand** *L/R* *type* *pos* *dir*    | Shows controller for the given hand.
-///  **load** *file_name*                 | Loads a session file.
-///  **redo** *n*                         | Redoes n commands.
-///  **select** [*name* ...]              | Selects named models (or none).
-///  **settings** *file_name*             | Reads settings from a file.
-///  **snap** *x* *y* *w* *h* *file_name* | Saves a snapshot to a file.
-///  **stage** *scale* *rot_angle*        | Scales and rotates the stage.
-///  **touch** *on/off*                   | Enables or disables touch mode.
-///  **undo** *n*                         | Undoes the last n commands.
-///  **view** *dir*                       | Views along the given direction.
-///
-/// Notes:
-/// \li All whitespace is ignored.
-/// \li Session files are relative to \c PublicDoc/snaps/sessions.
-/// \li Settings files are relative to \c PublicDoc/snaps/settings.
-/// \li Saved snapshot files are relative to \c PublicDoc/snaps/images.
-/// \li Snap coordinates are floating point fractions in the range (0,1) in
-///     both dimensions.
-/// \li All *pos* and *dir* arguments are 3D points or vectors.
-/// \li The *type* for the **hand** instruction is one of "Oculus_Touch" or
-///     "Vive"
+/// <table>
+///   <tr>
+///     <th>Command</th>
+///     <th>Arguments</th>
+///     <th>Effect</th>
+///   </tr>
+///   <tr>
+///     <td>[whitespace]</td>
+///     <td></td>
+///     <td>Blank lines are ignored.</td>
+///   </tr>
+///   <tr>
+///     <td><b>#</b></td>
+///     <td>...</td>
+///     <td>Comments are ignored.</td>
+///   </tr>
+///   <tr>
+///     <td><b>action</b></td>
+///     <td><i>name</i></td>
+///     <td>Applies the named action.</td>
+///   </tr>
+///   <tr>
+///     <td><b>drag</b></td>
+///     <td><code>start</code>|<code>continue</code>|<code>end</code> <i>x
+///     y</i></td>
+///     <td>Simulates a mouse drag at the given point in normalized window
+///     coordinates. The x and y arguments are ignored for the drag end.</td>
+///   </tr>
+///   <tr>
+///     <td><b>hand</b></td>
+///     <td><code>L</code>|<code>R</code> <i>type posx posy posz dirx diry
+///     dirz</i></td>
+///     <td>Shows a controller for the given hand at the given position and
+///     pointing along the given direction. *type* is one of
+///     {<code>Oculus_Touch</code>, <code>Vive</code>, or <code>None</code>}.
+///   </tr>
+///   <tr>
+///     <td><b>load</b></td>
+///     <td><i>file_name</i></td>
+///     <td>Loads a session from the named file. Session files are relative
+///     to <code>PublicDoc/snaps/sessions</code>.</td>
+///   </tr>
+///   <tr>
+///     <td><b>select</b></td>
+///     <td>[<i>name</i>, ...]</td>
+///     <td>Selects the named models. If no names are given, deselects all
+///     models.</td>
+///   </tr>
+///   <tr>
+///     <td><b>settings</b></td>
+///     <td><i>file_name</i></td>
+///     <td>Loads settings from the named file. Settings files are relative
+///     to <code>PublicDoc/snaps/settings</code>.</td>
+///   </tr>
+///   <tr>
+///     <td><b>snap</b></td>
+///     <td><i>x y w h file_name</i></td>
+///     <td>Saves a snapshot image of the area of size <i>w</i>X<i>h</i> with
+///     (<i>x</i>,<i>y</i>) at the lower left to the named file. All values are
+///     in normalized window coordinates. Images are saved
+///     in <code>PublicDoc/docs/images</code>.</td>
+///   </tr>
+///   <tr>
+///     <td><b>stage</b></td>
+///     <td><i>scale rot_angle</i></td>
+///     <td>Scales and rotates the stage by the given values.</td>
+///   </tr>
+///   <tr>
+///     <td><b>touch</b></td>
+///     <td><code>on</code>|<code>off</code></td>
+///     <td>Turns panel touch mode on or off.</td>
+///   </tr>
+///   <tr>
+///     <td><b>view</b></td>
+///     <td><i>dirx diry dirz</i></td>
+///     <td>Changes the view to look along the given direction.</td>
+///   </tr>
+/// </table>
 ///
 /// \ingroup App
 class SnapScript {
@@ -46,50 +99,101 @@ class SnapScript {
     /// Handy typedef for multiple words or names.
     typedef std::vector<std::string> Words;
 
-   struct Instruction {
-        std::string type;         ///< Type of instruction.
-        std::string file_name;    ///< For "load", "snap", or "settings".
-        Action      action;       ///< For "action".
-        float       stage_scale;  ///< For "stage".
-        Anglef      stage_angle;  ///< For "stage".
-        Range2f     rect;         ///< For "snap".
-        Vector3f    view_dir;     ///< For "view".
-        size_t      count;        ///< For "undo" or "redo".
-        Words       names;        ///< For "select".
-        Hand        hand;         ///< For "hand".
-        std::string hand_type;    ///< For "hand".
-        Point3f     hand_pos;     ///< For "hand".
-        Vector3f    hand_dir;     ///< For "hand".
-        bool        touch_on;     ///< For "touch".
+    /// Base Instruction struct.
+    struct Instr {
+        /// Types of instructions.
+        enum class Type {
+            kAction,
+            kDrag,
+            kHand,
+            kLoad,
+            kSelect,
+            kSettings,
+            kSnap,
+            kStage,
+            kTouch,
+            kView,
+        };
+
+        Type type;
+        virtual ~Instr() {}   // Makes deletion work properly.
     };
+    struct ActionInstr : public Instr {
+        Action action;
+    };
+    struct DragInstr : public Instr {
+        std::string context;
+        Point2f     pos;
+    };
+    struct HandInstr : public Instr {
+        Hand        hand;
+        std::string controller;
+        Point3f     pos;
+        Vector3f    dir;
+    };
+    struct LoadInstr : public Instr {
+        std::string file_name;
+    };
+    struct SelectInstr : public Instr {
+        Words names;
+    };
+    struct SettingsInstr : public Instr {
+        std::string file_name;
+    };
+    struct SnapInstr : public Instr {
+        Range2f     rect;
+        std::string file_name;
+    };
+    struct StageInstr : public Instr {
+        float  scale;
+        Anglef angle;
+    };
+    struct TouchInstr : public Instr {
+        bool is_on;
+    };
+    struct ViewInstr : public Instr {
+        Vector3f dir;
+    };
+
+    DECL_SHARED_PTR(Instr);
+    DECL_SHARED_PTR(ActionInstr);
+    DECL_SHARED_PTR(DragInstr);
+    DECL_SHARED_PTR(HandInstr);
+    DECL_SHARED_PTR(LoadInstr);
+    DECL_SHARED_PTR(SelectInstr);
+    DECL_SHARED_PTR(SettingsInstr);
+    DECL_SHARED_PTR(SnapInstr);
+    DECL_SHARED_PTR(StageInstr);
+    DECL_SHARED_PTR(TouchInstr);
+    DECL_SHARED_PTR(ViewInstr);
 
     /// Reads a script from a file relative to the PublicDoc/snaps/scripts
     /// directory to fill in instructions. Returns false on error.
     bool ReadScript(const std::string &file_name);
 
     /// Returns the instructions in the script.
-    const std::vector<Instruction> & GetInstructions() const {
+    const std::vector<InstrPtr> & GetInstructions() const {
         return instructions_;
     }
 
   private:
-    std::string               file_name_;
-    size_t                    line_number_;
-    std::vector<Instruction>  instructions_;
+    std::string           file_name_;
+    size_t                line_number_;
+    std::vector<InstrPtr> instructions_;
 
     bool ProcessLine_(const std::string &line);
+    bool GetInstructionType_(const std::string &word, Instr::Type &type);
 
-    bool ProcessAction_(const Words &words, Instruction &instr);
-    bool ProcessHand_(const Words &words, Instruction &instr);
-    bool ProcessLoad_(const Words &words, Instruction &instr);
-    bool ProcessRedo_(const Words &words, Instruction &instr);
-    bool ProcessSelect_(const Words &words, Instruction &instr);
-    bool ProcessSettings_(const Words &words, Instruction &instr);
-    bool ProcessSnap_(const Words &words, Instruction &instr);
-    bool ProcessStage_(const Words &words, Instruction &instr);
-    bool ProcessTouch_(const Words &words, Instruction &instr);
-    bool ProcessUndo_(const Words &words, Instruction &instr);
-    bool ProcessView_(const Words &words, Instruction &instr);
+    InstrPtr ProcessAction_(const Words &words);
+    InstrPtr ProcessDrag_(const Words &words);
+    InstrPtr ProcessHand_(const Words &words);
+    InstrPtr ProcessLoad_(const Words &words);
+    InstrPtr ProcessSelect_(const Words &words);
+    InstrPtr ProcessSettings_(const Words &words);
+    InstrPtr ProcessSnap_(const Words &words);
+    InstrPtr ProcessStage_(const Words &words);
+    InstrPtr ProcessTouch_(const Words &words);
+    InstrPtr ProcessView_(const Words &words);
 
     bool Error_(const std::string &message);
 
