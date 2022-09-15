@@ -548,11 +548,9 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
              << " (" << drag_info_.path_to_widget.ToString() << ")");
     }
 
-    // Continuing a current drag operation.
-    else {
-        cur_tracker_->FillEventDragInfo(event, drag_info_);
-        draggable->ContinueDrag(drag_info_);
-    }
+    // Starting or continuing a current drag operation. Use the current info.
+    cur_tracker_->FillEventDragInfo(event, drag_info_);
+    draggable->ContinueDrag(drag_info_);
 }
 
 void MainHandler::Impl_::ProcessClick_(Actuator actuator,

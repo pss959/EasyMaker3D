@@ -16,8 +16,10 @@ DECL_SHARED_PTR(Tracker);
 DECL_SHARED_PTR(Widget);
 
 /// Tracker is an abstract base class for actuator trackers used by the
-/// MainHandler. Derived classes are implemented to hide details of each type
-/// of actuator and its corresponding device.
+/// MainHandler. A Tracker is responsible for responding to Event instances to
+/// activate, update, and deactivate interactive Widgets. Derived classes are
+/// implemented to hide details of each type of actuator and its corresponding
+/// device.
 ///
 /// \ingroup Trackers
 class Tracker {

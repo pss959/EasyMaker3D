@@ -40,72 +40,57 @@
 /// mouse drags.
 class DragEmitter_ : public IEmitter {
   public:
-    /// Starts a mouse drag at the given point.
-    void StartMouseDrag(const Point2f &p);
+    using DIPhase = SnapScript::DragInstr::Phase;
 
-    /// Continues a mouse drag to the given point.
-    void ContinueMouseDrag(const Point2f &p);
+    /// Adds a point to emit.
+    void AddPoint(DIPhase phase, const Point2f &pos) {
+        points_.push_back(Point_(phase, pos));
+    }
 
-    /// Ends the current mouse drag.
-    void EndMouseDrag();
-
-    /// Returns true if there are events left to process.
+    /// Returns true if there are points left to process.
     bool HasPendingEvents() const { return ! points_.empty(); }
 
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() {}
 
   private:
+    /// Struct representing a point to process.
+    struct Point_ {
+        const DIPhase phase;
+        const Point2f pos;
+        Point_(DIPhase phase_in, const Point2f &pos_in) :
+            phase(phase_in), pos(pos_in) {}
+    };
+
     /// Points left in the current drag operation.
-    std::deque<Point2f> points_;
-    /// Set to true in the middle of a drag.
+    std::deque<Point_> points_;
+
+    /// Set to true while the middle of a drag.
     bool in_drag_ = false;
 };
 
-void DragEmitter_::StartMouseDrag(const Point2f &p) {
-    ASSERT(! in_drag_);
-    points_.push_back(p);
-}
-
-void DragEmitter_::ContinueMouseDrag(const Point2f &p) {
-    ASSERT(in_drag_);
-    points_.push_back(p);
-}
-
-void DragEmitter_::EndMouseDrag() {
-    ASSERT(in_drag_);
-}
-
 void DragEmitter_::EmitEvents(std::vector<Event> &events) {
-    // If not in a drag and there are points, start one.
-    if (! in_drag_ && ! points_.empty()) {
+    // XXXX Figure out how to ignore mouse events from GLFWViewer while
+    // XXXX dragging. Maybe add "source" field to Event.
+
+    if (! points_.empty()) {
+        const auto &pt = points_.front();
+ 
         Event event;
         event.device = Event::Device::kMouse;
-        event.flags.Set(Event::Flag::kButtonPress);
+        if (pt.phase == DIPhase::kStart) {
+            event.flags.Set(Event::Flag::kButtonPress);
+            event.button = Event::Button::kMouse1;
+        }
+        else if (pt.phase == DIPhase::kEnd) {
+            event.flags.Set(Event::Flag::kButtonRelease);
+            event.button = Event::Button::kMouse1;
+        }
         event.flags.Set(Event::Flag::kPosition2D);
-        event.button = Event::Button::kMouse1;
-        event.position2D = points_.front();
+        event.position2D = pt.pos;
         events.push_back(event);
+
         points_.pop_front();
-        in_drag_ = true;
-    }
-    // If in a drag and there are points, continue.
-    else if (in_drag_ && ! points_.empty()) {
-        Event event;
-        event.device = Event::Device::kMouse;
-        event.flags.Set(Event::Flag::kPosition2D);
-        event.position2D = points_.front();
-        events.push_back(event);
-        points_.pop_front();
-    }
-    // If in a drag and no more points, end the drag.
-    else if (in_drag_ && points_.empty()) {
-        Event event;
-        event.device = Event::Device::kMouse;
-        event.flags.Set(Event::Flag::kButtonRelease);
-        event.button = Event::Button::kMouse1;
-        events.push_back(event);
-        in_drag_ = false;
     }
 }
 
@@ -209,12 +194,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kDrag: {
           const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
-          if (dinst.context == "start")
-              drag_emitter_->StartMouseDrag(dinst.pos);
-          else if (dinst.context == "continue")
-              drag_emitter_->ContinueMouseDrag(dinst.pos);
-          else    // "end"
-              drag_emitter_->EndMouseDrag();
+          drag_emitter_->AddPoint(dinst.phase, dinst.pos);
           break;
       }
       case SIType::kHand: {

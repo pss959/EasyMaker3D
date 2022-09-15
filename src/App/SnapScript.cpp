@@ -88,6 +88,8 @@ SnapScript::InstrPtr SnapScript::ProcessAction_(const Words &words) {
 }
 
 SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
+    using DIPhase = DragInstr::Phase;
+
     DragInstrPtr dinst;
     float x, y;
     if (words.size() != 4U) {
@@ -96,14 +98,15 @@ SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
     else if (words[1] != "start" &&
              words[1] != "continue" &&
              words[1] != "end") {
-        Error_("Invalid context (start/continue/end) for drag instruction");
+        Error_("Invalid phase (start/continue/end) for drag instruction");
     }
     else if (! ParseFloat01_(words[2], x) || ! ParseFloat01_(words[3], y)) {
         Error_("Invalid x or y floats for drag instruction");
     }
     else {
         dinst.reset(new DragInstr);
-        dinst->context = words[1];
+        dinst->phase = words[1] == "start" ? DIPhase::kStart :
+            words[1] == "continue" ? DIPhase::kContinue : DIPhase::kEnd;
         dinst->pos.Set(x, y);
     }
     return dinst;

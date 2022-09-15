@@ -122,7 +122,8 @@ class SnapScript {
         Action action;
     };
     struct DragInstr : public Instr {
-        std::string context;
+        enum class Phase { kStart, kContinue, kEnd };
+        Phase       phase;
         Point2f     pos;
     };
     struct HandInstr : public Instr {
