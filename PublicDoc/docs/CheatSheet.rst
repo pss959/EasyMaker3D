@@ -327,13 +327,13 @@
    * - Tools
      - :ref:`Rotation Tool <ug-rotation-tool>`
      - .. menuicon:: RotationTool
-     - Rotate the selected models (Alt for in-place)
+     - Rotate the selected models (Modified for in-place)
      - 
      - 
    * - Tools
      - :ref:`Scale Tool <ug-scale-tool>`
      - .. menuicon:: ScaleTool
-     - Change the size of the selected models (Alt for symmetric)
+     - Change the size of the selected models (Modified for symmetric)
      - 
      - 
    * - Tools
