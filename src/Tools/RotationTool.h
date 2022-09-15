@@ -41,7 +41,7 @@ class RotationTool : public Tool {
     /// Rotation at the start of the drag.
     Rotationf start_rot_;
 
-    /// Set to true for in-place rotation (alternate mode).
+    /// Set to true for in-place rotation (modified mode).
     bool is_in_place_ = false;
 
     /// Command used to modify all affected Models.

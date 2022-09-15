@@ -7,7 +7,7 @@
 
 void ScaleWidget::AddFields() {
     AddField(mode_.Init("mode",                 Mode::kAsymmetric));
-    AddField(use_alt_mode_.Init("use_alt_mode", false));
+    AddField(use_modified_mode_.Init("use_modified_mode", false));
     AddField(limits_.Init("limits", Vector2f(TK::kScaleWidgetMinLimit,
                                              TK::kScaleWidgetMaxLimit)));
 
@@ -85,10 +85,10 @@ void ScaleWidget::SliderActivated_(const Slider1DWidgetPtr &slider,
 }
 
 void ScaleWidget::SliderChanged_(const Slider1DWidgetPtr &slider) {
-    // If use_alt_mode_ is true, set the mode based on the flag when the drag
-    // started.
-    if (IsUsingAltMode()) {
-        SetMode(slider->GetStartDragInfo().is_alternate_mode ?
+    // If use_modified_mode_ is true, set the mode based on the flag when the
+    // drag started.
+    if (IsUsingModifiedMode()) {
+        SetMode(slider->GetStartDragInfo().is_modified_mode ?
                 Mode::kSymmetric : Mode::kAsymmetric);
     }
 

@@ -171,18 +171,18 @@ void Application_::MainLoop() {
     std::vector<Event> events;
     while (! should_quit_) {
         renderer_->BeginFrame();
-        const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
+        const bool is_modified_mode = glfw_viewer_->IsShiftKeyPressed();
 
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
 
-        main_handler_->ProcessUpdate(is_alternate_mode);
+        main_handler_->ProcessUpdate(is_modified_mode);
 
         events.clear();
         glfw_viewer_->SetPollEventsFlag(need_render_ ||
                                         ! main_handler_->IsWaiting());
         glfw_viewer_->EmitEvents(events);
-        if (! event_manager_->HandleEvents(events, is_alternate_mode,
+        if (! event_manager_->HandleEvents(events, is_modified_mode,
                                            TK::kMaxEventHandlingTime))
             should_quit_ = true;
 
@@ -270,7 +270,7 @@ bool Application_::HandleEvent_(const Event &event) {
 
 void Application_::ProcessClick_(const ClickInfo &info) {
     KLOG('k', "Click on widget "
-         << info.widget << " is_alt = " << info.is_alternate_mode
+         << info.widget << " is_alt = " << info.is_modified_mode
          << " is_long = " << info.is_long_press);
     if (info.widget && info.widget->IsInteractionEnabled())
         info.widget->Click(info);

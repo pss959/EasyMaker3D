@@ -276,7 +276,7 @@ void ClipTool::Impl_::Rotate_() {
     // Snap if requested.
     bool snapped_to_target = false;
     int  snapped_dim = -1;
-    if (! context_.is_alternate_mode)
+    if (! context_.is_modified_mode)
         SnapRotation_(rot, snapped_to_target, snapped_dim);
 
     arrow_->SetInactiveColor(
@@ -315,7 +315,7 @@ void ClipTool::Impl_::Translate_() {
 
     // Snap if requested.
     bool is_snapped = false;
-    if (! context_.is_alternate_mode)
+    if (! context_.is_modified_mode)
         SnapTranslation_(distance, is_snapped);
 
     const Color color = is_snapped ? GetSnappedFeedbackColor() :

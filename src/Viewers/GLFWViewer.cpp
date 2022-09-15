@@ -282,7 +282,7 @@ void GLFWViewer::ProcessChar_(unsigned int codepoint) {
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {
-    // Keep track of shift press/release separately for alternate mode. Cannot
+    // Keep track of shift press/release separately for modified mode. Cannot
     // rely on mods to be set correctly when shift keys are pressed/released.
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_LEFT_SHIFT)

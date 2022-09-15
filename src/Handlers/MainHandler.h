@@ -75,7 +75,7 @@ class MainHandler : public Handler {
 
     /// This should be called explicitly each frame to check for click
     /// timeouts.
-    void ProcessUpdate(bool is_alternate_mode);
+    void ProcessUpdate(bool is_modified_mode);
 
     // ------------------------------------------------------------------------
     // Handler interface.

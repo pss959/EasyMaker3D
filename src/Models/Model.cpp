@@ -259,7 +259,7 @@ void Model::PlacePointTarget(const DragInfo &info,
     position  = osm * info.hit.point;
     direction = ion::math::Normalized(osm * info.hit.normal);
 
-    if (info.is_alternate_mode)
+    if (info.is_modified_mode)
         PlacePointTargetOnBounds_(info, position, direction, snapped_dims);
     else
         PlacePointTargetOnMesh_(info, position, direction, snapped_dims);
@@ -267,7 +267,7 @@ void Model::PlacePointTarget(const DragInfo &info,
 
 void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
                             Point3f &position0, Point3f &position1) {
-    if (info.is_alternate_mode)
+    if (info.is_modified_mode)
         PlaceEdgeTargetOnBounds_(info, position0, position1);
     else
         PlaceEdgeTargetOnMesh_(info, position0, position1);

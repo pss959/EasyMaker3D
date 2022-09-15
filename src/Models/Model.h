@@ -206,8 +206,8 @@ class Model : public ClickableWidget {
     virtual bool CanReceiveTarget() const override { return true; }
 
     /// Redefines this to place the point target on the surface of the Model or
-    /// on the bounds if in alternate mode. This checks for snapping if close
-    /// to a mesh vertex or important bounds point.
+    /// on the bounds if in modified mode. This checks for snapping if close to
+    /// a mesh vertex or important bounds point.
     virtual void PlacePointTarget(const DragInfo &info,
                                   Point3f &position, Vector3f &direction,
                                   Dimensionality &snapped_dims) override;

@@ -21,8 +21,8 @@ struct ClickInfo {
     /// True if considered a long press.
     bool            is_long_press = false;
 
-    /// True if in alternate input mode.
-    bool            is_alternate_mode = false;
+    /// True if in modified input mode.
+    bool            is_modified_mode = false;
 
     /// Widget the click is on (may be null);
     ClickableWidget *widget;

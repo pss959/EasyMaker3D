@@ -102,7 +102,7 @@ void SelectionManager::SelectInDirection(Direction dir) {
 void SelectionManager::AttachClickToModel(Model &model) {
     auto func = [this, &model](const ClickInfo &info){
         ChangeModelSelection(SelPath(info.hit.path.GetSubPath(model)),
-                             info.is_alternate_mode);
+                             info.is_modified_mode);
     };
     model.GetClicked().AddObserver(this, func);
 }

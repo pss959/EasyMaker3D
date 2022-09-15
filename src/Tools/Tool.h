@@ -46,8 +46,8 @@ class Tool : public Grippable {
         /// Flag indicating how to transform Models.
         bool                is_axis_aligned = false;
 
-        /// Flag indicating whether the app is in alternate input mode.
-        bool                is_alternate_mode = false;
+        /// Flag indicating whether the app is in modified input mode.
+        bool                is_modified_mode = false;
 
         /// Path to the parent node of the Tool; this is used for coordinate
         /// conversions.

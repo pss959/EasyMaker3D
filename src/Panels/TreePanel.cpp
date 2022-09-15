@@ -145,7 +145,7 @@ class TreePanel::Impl_::ModelRow_ {
     void SetExpandCollapseFunc(const RowFunc &func);
 
     /// Attaches the given callback to the model name button. The callback is
-    /// passed the ModelRow_ and a flag that indicates whether alternate mode
+    /// passed the ModelRow_ and a flag that indicates whether modified mode
     /// is in effect.
     void SetModelFunc(const RowFunc &func);
 
@@ -196,7 +196,7 @@ class TreePanel::Impl_::ModelRow_ {
 // ----------------------------------------------------------------------------
 
 /// The RectSelect_ class manages a GenericWidget used to drag out a rectangle
-/// in the TreePanel for modifying the selection. If in alternate mode, the
+/// in the TreePanel for modifying the selection. If in modified mode, the
 /// intersected Model names have their selection status toggled. Otherwise, the
 /// Models replace the current selection.
 class TreePanel::Impl_::RectSelect_ {
@@ -245,7 +245,7 @@ class TreePanel::Impl_::RectSelect_ {
     Range1f          y_range_;      ///< Starting/ending Y values for drag.
     Point3f          start_point_;  ///< Starting intersection point.
 
-    bool             is_alternate_mode_ = false;
+    bool             is_modified_mode_ = false;
 
     /// \name GenericWidget drag callbacks.
     ///@{
@@ -316,7 +316,7 @@ void TreePanel::Impl_::RectSelect_::ContinueDrag_(const DragInfo &info) {
 
     UpdateLines_(true, start_point_, info.hit.point);
 
-    is_alternate_mode_ = info.is_alternate_mode;
+    is_modified_mode_ = info.is_modified_mode;
 }
 
 void TreePanel::Impl_::RectSelect_::FinishDrag_() {
@@ -332,7 +332,7 @@ void TreePanel::Impl_::RectSelect_::FinishDrag_() {
 
     // Process the selection change if any.
     if (sel.HasAny()) {
-        if (is_alternate_mode_) {
+        if (is_modified_mode_) {
             for (const auto &sel_path: sel.GetPaths())
                 selection_manager_->ChangeModelSelection(sel_path, true);
         }
@@ -545,7 +545,7 @@ void TreePanel::Impl_::ExpandOrCollapse_(ModelRow_ &row, bool expand) {
 void TreePanel::Impl_::ModelClicked_(ModelRow_ &row, bool is_alt) {
     const SelPath &sel_path = row.GetSelPath();
 
-    // Toggle selection if in alternate mode.
+    // Toggle selection if in modified mode.
     if (is_alt)
         selection_manager_->ChangeModelSelection(sel_path, true);
 
@@ -626,7 +626,7 @@ void TreePanel::Impl_::ModelRow_::SetModelFunc(const RowFunc &func) {
     model_func_ = func;
     button_pane_->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
-            model_func_(*this, info.is_alternate_mode); });
+            model_func_(*this, info.is_modified_mode); });
 }
 
 void TreePanel::Impl_::ModelRow_::UpdateVisibility() {

@@ -89,7 +89,7 @@ class MainHandler::Impl_ {
         return state_ == State_::kWaiting && ! click_state_.alarm.IsRunning();
     }
     void SetPathFilter(const PathFilter &filter);
-    void ProcessUpdate(bool is_alternate_mode);
+    void ProcessUpdate(bool is_modified_mode);
     bool HandleEvent(const Event &event);
     void Reset();
 
@@ -190,7 +190,7 @@ class MainHandler::Impl_ {
     /// Processes deactivation using the current Tracker. The is_on_same_widget
     /// indicates whether the deactivation Event is over the same Widget that
     /// was used for activation. (If they differ, it cannot be a click.)
-    void ProcessDeactivation_(bool is_alternate_mode, bool is_on_same_widget);
+    void ProcessDeactivation_(bool is_modified_mode, bool is_on_same_widget);
 
     /// This is called when the handler is activated or dragging. It checks the
     /// given event for both the start of a new drag or continuation of a
@@ -199,10 +199,10 @@ class MainHandler::Impl_ {
 
     /// Starts or continues a drag operation.
     void ProcessDrag_(const Event &event, bool is_start,
-                      bool is_alternate_mode);
+                      bool is_modified_mode);
 
     /// Processes a click using the given actuator.
-    void ProcessClick_(Actuator actuator, bool is_alternate_mode);
+    void ProcessClick_(Actuator actuator, bool is_modified_mode);
 
     /// Resets everything after it is known that a click has finished: the
     /// alarm is no longer running.
@@ -248,7 +248,7 @@ void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
     }
 }
 
-void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
+void MainHandler::Impl_::ProcessUpdate(bool is_modified_mode) {
     // Always call UpdateGrippable_() in case the grip guide changed.
     UpdateGrippable_();
 
@@ -257,7 +257,7 @@ void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
     if (click_state_.alarm.IsFinished()) {
         if (IsWaiting()) {
             if (click_state_.count > 0)
-                ProcessClick_(click_state_.actuator, is_alternate_mode);
+                ProcessClick_(click_state_.actuator, is_modified_mode);
             ResetClick_();
         }
     }
@@ -423,7 +423,7 @@ bool MainHandler::Impl_::Deactivate_(const Event &event) {
     // Ask the current Tracker if the event causes deactivation.
     WidgetPtr widget;
     if (cur_tracker_->IsDeactivation(event, widget)) {
-        ProcessDeactivation_(event.is_alternate_mode, widget == active_widget_);
+        ProcessDeactivation_(event.is_modified_mode, widget == active_widget_);
         cur_tracker_.reset();
         active_widget_.reset();
         state_ = State_::kWaiting;
@@ -461,7 +461,7 @@ void MainHandler::Impl_::ProcessActivation_() {
     click_state_.alarm.Start(timeout);
 }
 
-void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode,
+void MainHandler::Impl_::ProcessDeactivation_(bool is_modified_mode,
                                               bool is_on_same_widget) {
     ASSERT(cur_tracker_);
 
@@ -487,7 +487,7 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode,
         // If the alarm is not running, process the click if it is one, and
         // always reset everything.
         if (is_click)
-            ProcessClick_(cur_tracker_->GetActuator(), is_alternate_mode);
+            ProcessClick_(cur_tracker_->GetActuator(), is_modified_mode);
         ResetClick_();
     }
 }
@@ -512,20 +512,20 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
 
     if (is_drag_start || state_ == State_::kDragging) {
         state_ = State_::kDragging;
-        ProcessDrag_(event, is_drag_start, event.is_alternate_mode);
+        ProcessDrag_(event, is_drag_start, event.is_modified_mode);
         return true;
     }
     return false;
 }
 
 void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
-                                      bool is_alternate_mode) {
+                                      bool is_modified_mode) {
     ASSERT(state_ == State_::kDragging);
     ASSERT(moved_enough_for_drag_);
     ASSERT(cur_tracker_);
 
     // Set common items in DragInfo.
-    drag_info_.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
+    drag_info_.is_modified_mode = is_modified_mode || click_state_.count > 1;
     drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
     drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
 
@@ -554,13 +554,13 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
 }
 
 void MainHandler::Impl_::ProcessClick_(Actuator actuator,
-                                       bool is_alternate_mode) {
+                                       bool is_modified_mode) {
     ASSERT(actuator != Actuator::kNone);
     const auto &tracker = GetTracker_(actuator);
 
     ClickInfo info;
     const auto duration = UTime::Now().SecondsSince(start_time_);
-    info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
+    info.is_modified_mode = is_modified_mode || click_state_.count > 1;
     info.is_long_press     = duration > TK::kLongPressTime;
 
     tracker->FillClickInfo(info);
@@ -625,8 +625,8 @@ void MainHandler::SetPathFilter(const PathFilter &filter) {
     impl_->SetPathFilter(filter);
 }
 
-void MainHandler::ProcessUpdate(bool is_alternate_mode) {
-    impl_->ProcessUpdate(is_alternate_mode);
+void MainHandler::ProcessUpdate(bool is_modified_mode) {
+    impl_->ProcessUpdate(is_modified_mode);
 }
 
 bool MainHandler::HandleEvent(const Event &event) {

@@ -312,16 +312,16 @@ class  Application::Impl_ {
 
     /// Emits and handles all events. Returns true if the application should
     /// keep running.
-    bool ProcessEvents_(bool is_alternate_mode, bool force_poll);
+    bool ProcessEvents_(bool is_modified_mode, bool force_poll);
 
     /// Processes a click on something in the scene.
     void ProcessClick_(const ClickInfo &info);
 
     /// Initiates animation to reset the stage.
-    void StartResetStage_(bool is_alternate_mode);
+    void StartResetStage_(bool is_modified_mode);
 
     /// Initiates animation to reset the height slider.
-    void StartResetHeight_(bool is_alternate_mode);
+    void StartResetHeight_(bool is_modified_mode);
 
     /// Animation callback function to reset the stage.
     bool ResetStage_(const Vector3f &start_scale,
@@ -454,7 +454,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     KLogger::SetRenderCount(render_count++);
     renderer_->BeginFrame();
 
-    const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
+    const bool is_modified_mode = glfw_viewer_->IsShiftKeyPressed();
 
     // Update the frustum used for intersection testing.
     scene_context_->frustum = glfw_viewer_->GetFrustum();
@@ -464,8 +464,8 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
 
     // Update everything that needs it.
     main_handler_->SetTouchable(board_manager_->GetCurrentBoard());
-    main_handler_->ProcessUpdate(is_alternate_mode);
-    tool_context_->is_alternate_mode = is_alternate_mode;
+    main_handler_->ProcessUpdate(is_modified_mode);
+    tool_context_->is_modified_mode = is_modified_mode;
 
     action_manager_->ProcessUpdate();
 
@@ -491,7 +491,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
 
     // Emit and process Events. This returns false if the application
     // should quit because the window was closed.
-    if (! ProcessEvents_(is_alternate_mode, force_poll))
+    if (! ProcessEvents_(is_modified_mode, force_poll))
         TryQuit_();
 
     // Update the TreePanel.
@@ -773,9 +773,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
     scene_context_->tree_panel->SetContext(panel_context_);
 
     // Set up the VirtualKeyboard so that it can make itself visible.
-    virtual_keyboard_->SetShowHideFunc(
-        [&](bool is_shown){
-            board_manager_->ShowBoard(scene_context_->key_board, is_shown); });
+    if (virtual_keyboard_)
+        virtual_keyboard_->SetShowHideFunc([&](bool is_shown){
+            board_manager_->ShowBoard(scene_context_->key_board, is_shown);
+        });
 
     inspector_handler_->SetInspector(scene_context_->inspector);
 
@@ -878,15 +879,15 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Set up the stage.
     scene_context_->stage->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
-            StartResetStage_(info.is_alternate_mode); });
+            StartResetStage_(info.is_modified_mode); });
 
     // Set up the height pole and slider.
     scene_context_->height_pole->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
-            StartResetHeight_(info.is_alternate_mode); });
+            StartResetHeight_(info.is_modified_mode); });
     scene_context_->height_slider->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
-            StartResetHeight_(info.is_alternate_mode); });
+            StartResetHeight_(info.is_modified_mode); });
     scene_context_->height_slider->GetValueChanged().AddObserver(
         this, [&](Widget &w, const float &val){
             scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
@@ -1201,7 +1202,7 @@ void Application::Impl_::TryQuit_() {
     }
 }
 
-bool Application::Impl_::ProcessEvents_(bool is_alternate_mode,
+bool Application::Impl_::ProcessEvents_(bool is_modified_mode,
                                         bool force_poll) {
     // Always check for running animations and finished delayed threads.
     const bool is_animating    = animation_manager_->IsAnimating();
@@ -1226,7 +1227,7 @@ bool Application::Impl_::ProcessEvents_(bool is_alternate_mode,
 
     // Check for an event resulting in quitting. Note that an action that
     // results in quitting invokes the ActionManager's QuitFunc.
-    return event_manager_->HandleEvents(events, is_alternate_mode,
+    return event_manager_->HandleEvents(events, is_modified_mode,
                                         TK::kMaxEventHandlingTime);
 }
 
@@ -1239,7 +1240,7 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
 
     KLOG('k', "Click on widget "
          << (info.widget ? info.widget->GetDesc() : "NULL")
-         << " is_alt = " << info.is_alternate_mode
+         << " is_alt = " << info.is_modified_mode
          << " is_long = " << info.is_long_press);
     if (info.widget) {
         if (info.widget->IsInteractionEnabled()) {
@@ -1261,7 +1262,7 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     // it were a click on the attached Model.
     else if (ToolPtr tool = info.hit.path.FindNodeUpwards<Tool>()) {
         ASSERT(tool->GetModelAttachedTo());
-        select_model(*tool->GetModelAttachedTo(), info.is_alternate_mode);
+        select_model(*tool->GetModelAttachedTo(), info.is_modified_mode);
     }
 
     // If the intersected object is part of a Board, ignore the click.
@@ -1275,9 +1276,9 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     }
 }
 
-void Application::Impl_::StartResetStage_(bool is_alternate_mode) {
+void Application::Impl_::StartResetStage_(bool is_modified_mode) {
     // Reset the stage only if alt-clicked.
-    if (is_alternate_mode) {
+    if (is_modified_mode) {
         const Vector3f  scale = scene_context_->stage->GetScale();
         const Rotationf rot   = scene_context_->stage->GetRotation();
         animation_manager_->StartAnimation(
@@ -1285,10 +1286,10 @@ void Application::Impl_::StartResetStage_(bool is_alternate_mode) {
     }
 }
 
-void Application::Impl_::StartResetHeight_(bool is_alternate_mode) {
+void Application::Impl_::StartResetHeight_(bool is_modified_mode) {
     const float     height = scene_context_->height_slider->GetValue();
     const Rotationf orient = scene_context_->window_camera->GetOrientation();
-    const bool      reset_view = is_alternate_mode;
+    const bool      reset_view = is_modified_mode;
     animation_manager_->StartAnimation(
         [&, height, orient, reset_view](float t){
         return ResetHeightAndView_(height, orient, reset_view, t); });

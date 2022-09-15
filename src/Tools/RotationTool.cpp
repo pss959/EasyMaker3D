@@ -290,7 +290,7 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
 
 void RotationTool::Activate_(const Dimensionality &dims, int dim) {
     start_rot_   = GetRotation();
-    is_in_place_ = GetContext().is_alternate_mode;
+    is_in_place_ = GetContext().is_modified_mode;
 
     // Turn off all the other widgets.
     for (int i = 0; i < 3; ++i) {

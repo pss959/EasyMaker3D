@@ -103,8 +103,8 @@ struct Event {
     /// active.
     Rotationf         orientation;
 
-    /// Flag indicating whether alternate mode is active.
-    bool              is_alternate_mode = false;
+    /// Flag indicating whether modified mode is active.
+    bool              is_modified_mode = false;
 
     /// Convenience that returns true if the given Button represents a trackpad
     /// button.

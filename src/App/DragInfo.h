@@ -20,8 +20,8 @@ struct DragInfo {
     /// Trigger for drag in progress.
     Trigger      trigger = Trigger::kPointer;
 
-    /// True if currently in alternate input mode.
-    bool         is_alternate_mode = false;
+    /// True if currently in modified input mode.
+    bool         is_modified_mode = false;
 
     /// Linear precision to use for the drag (if the Widget uses it).
     float        linear_precision = 0;

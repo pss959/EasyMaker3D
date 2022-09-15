@@ -24,13 +24,13 @@ class EventManager {
     void ClearHandlers() { handlers_.clear(); }
 
     /// Processes the given vector of events. A flag indicating whether
-    /// alternate mode should be set in each event is supplied. Returns false
-    /// if an event indicates that the application should exit. If the given
+    /// modified mode should be set in each event is supplied. Returns false if
+    /// an event indicates that the application should exit. If the given
     /// max_time (in seconds) is positive and is exceeded during event
     /// processing, unhandled events are pushed onto a queue to be processed
     /// before new ones in the next call. The HasPendingEvents() call will
     /// return true when this happens.
-    bool HandleEvents(std::vector<Event> &events, bool is_alternate_mode,
+    bool HandleEvents(std::vector<Event> &events, bool is_modified_mode,
                       double max_time);
 
     /// Returns true if there are events pending due to timeout from the last
@@ -53,7 +53,7 @@ class EventManager {
 
     /// Does most of the work of HandleEvents(); the passed vector should
     /// contain pending events if there were any.
-    bool HandleEvents_(std::vector<Event> &events, bool is_alternate_mode,
+    bool HandleEvents_(std::vector<Event> &events, bool is_modified_mode,
                        double max_time);
 
     /// Asks Handlers to handle the given Event. Returns true if the

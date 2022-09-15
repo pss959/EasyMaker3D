@@ -37,7 +37,7 @@ static std::string ID_(const std::string &prefix, int index) {
     return prefix + Util::ToString(index);
 }
 
-/// Outputs alternate colors depending on an index.
+/// Outputs alternating colors depending on an index.
 static void AltColors_(std::ostream &out, size_t i) {
     out << "c " << ((i & 1) == 0 ? ".6 .8 1" : "1 .6 .6") << "\n";
 }
