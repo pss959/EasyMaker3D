@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/IEmitter.h"
 #include "Base/Memory.h"
 #include "Viewers/Viewer.h"
 
@@ -8,11 +9,11 @@ class VRContext;
 DECL_SHARED_PTR(VRViewer);
 namespace SG { DECL_SHARED_PTR(VRCamera); }
 
-/// VRViewer is a derived Viewer that uses a VRContext to view in VR and
-/// produce events from VR devices.
+/// VRViewer is a derived Viewer and IEmitter that uses a VRContext to
+/// view in VR and produce events from VR devices.
 ///
 /// \ingroup Viewers
-class VRViewer : public Viewer {
+class VRViewer : public Viewer, public IEmitter {
   public:
     /// The constructor is passed a VRContext that is used to interact with
     /// the VR system.
@@ -23,7 +24,9 @@ class VRViewer : public Viewer {
     void SetCamera(const SG::VRCameraPtr &camera) { camera_ = camera; }
 
     virtual void Render(const SG::Scene &scene, Renderer &renderer) override;
+
     virtual void EmitEvents(std::vector<Event> &events) override;
+    virtual void FlushPendingEvents() override {}
 
   private:
     /// Context managing VR rendering and input.

@@ -8,6 +8,7 @@ class FilePath;
 class LogHandler;
 class Renderer;
 struct TestContext;
+DECL_SHARED_PTR(IEmitter);
 
 /// The Application class manages the entire application.
 ///
@@ -63,6 +64,9 @@ class Application {
 
     /// Fills in a TestContext.
     void GetTestContext(TestContext &tc);
+
+    /// Adds an event IEmitter to the list of emitters.
+    void AddEmitter(const IEmitterPtr &emitter);
 
     /// Returns the Renderer.
     Renderer & GetRenderer();

@@ -11,6 +11,7 @@
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
+#include "Base/IEmitter.h"
 #include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
 #include "Debug/Shortcuts.h"
@@ -115,6 +116,7 @@ class  Application::Impl_ {
 
     void SetTestingFlag() { is_testing_ = true; }
     void GetTestContext(TestContext &tc);
+    void AddEmitter(const IEmitterPtr &emitter);
     Renderer & GetRenderer() { return *renderer_; }
     void ForceTouchMode(bool is_on) { force_touch_mode_on_ = is_on; }
 
@@ -182,8 +184,11 @@ class  Application::Impl_ {
     /// The renderer.
     RendererPtr      renderer_;
 
-    /// All Viewers.
+    /// All viewers.
     std::vector<ViewerPtr>     viewers_;
+
+    /// All event emitters.
+    std::vector<IEmitterPtr>   emitters_;
 
     /// Registered Executor instances. These instances have to be held on to in
     /// this vector.
@@ -351,6 +356,7 @@ Application::Impl_::Impl_() : loader_(new SceneLoader) {
 Application::Impl_::~Impl_() {
     event_manager_->ClearHandlers();
     viewers_.clear();
+    emitters_.clear();
 
     // Instances must be destroyed in a particular order.
 #if ENABLE_DEBUG_FEATURES
@@ -519,9 +525,9 @@ void Application::Impl_::ReloadScene() {
     tool_manager_->ClearTools();
     Model::ResetColors();
 
-    // Wipe out any events that may be pending in viewers.
-    for (auto &viewer: viewers_)
-        viewer->FlushPendingEvents();
+    // Wipe out any events that may be pending in emitters.
+    for (auto &emitter: emitters_)
+        emitter->FlushPendingEvents();
 
     try {
         SG::ScenePtr scene =
@@ -564,6 +570,10 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
     tc.scene_context     = scene_context_;
 }
 
+void Application::Impl_::AddEmitter(const IEmitterPtr &emitter) {
+    emitters_.push_back(emitter);
+}
+
 void Application::Impl_::InitTypes_() {
     // Register all known concrete types with the Parser::Registry.
     RegisterTypes();
@@ -577,12 +587,14 @@ bool Application::Impl_::InitViewers_() {
         return false;
     }
     viewers_.push_back(glfw_viewer_);
+    emitters_.push_back(glfw_viewer_);
 
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
     if (! options_.ignore_vr && vr_context_->InitSystem()) {
         vr_viewer_.reset(new VRViewer(*vr_context_));
         viewers_.push_back(vr_viewer_);
+        emitters_.push_back(vr_viewer_);
     }
     else {
         vr_context_.reset();
@@ -1209,8 +1221,8 @@ bool Application::Impl_::ProcessEvents_(bool is_alternate_mode,
 
     // Collect all incoming events.
     std::vector<Event> events;
-    for (auto &viewer: viewers_)
-        viewer->EmitEvents(events);
+    for (auto &emitter: emitters_)
+        emitter->EmitEvents(events);
 
     // Check for an event resulting in quitting. Note that an action that
     // results in quitting invokes the ActionManager's QuitFunc.
@@ -1436,6 +1448,10 @@ void Application::SetTestingFlag() {
 
 void Application::GetTestContext(TestContext &tc) {
     impl_->GetTestContext(tc);
+}
+
+void Application::AddEmitter(const IEmitterPtr &emitter) {
+    impl_->AddEmitter(emitter);
 }
 
 Renderer & Application::GetRenderer() {

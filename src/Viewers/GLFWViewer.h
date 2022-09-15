@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/IEmitter.h"
 #include "Base/Memory.h"
 #include "Math/Types.h"
 #include "Viewers/Viewer.h"
@@ -9,11 +10,11 @@ class GLFWwindow;
 DECL_SHARED_PTR(GLFWViewer);
 namespace SG { DECL_SHARED_PTR(WindowCamera); }
 
-/// GLFWViewer is a derived Viewer that uses the GLFW library to do windowing
-/// and input.
+/// GLFWViewer is a derived Viewer and IEmitter that uses the GLFW library
+/// to do windowing and input.
 ///
 /// \ingroup Viewers
-class GLFWViewer : public Viewer {
+class GLFWViewer : public Viewer, public IEmitter {
   public:
     GLFWViewer();
     virtual ~GLFWViewer();
@@ -43,6 +44,7 @@ class GLFWViewer : public Viewer {
     }
 
     virtual void Render(const SG::Scene &scene, Renderer &renderer);
+
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override;
 
