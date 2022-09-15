@@ -51,6 +51,13 @@
 ///     {<code>Oculus_Touch</code>, <code>Vive</code>, or <code>None</code>}.
 ///   </tr>
 ///   <tr>
+///     <td><b>key</b></td>
+///     <td><i>key [modifiers]</i></td>
+///     <td>Simulates a keyboard key press and release for the given
+///     string. The <i>modifiers</i> are either <code>ctrl</code> or
+///     <code>alt</code>.
+///   </tr>
+///   <tr>
 ///     <td><b>load</b></td>
 ///     <td><i>file_name</i></td>
 ///     <td>Loads a session from the named file. Session files are relative
@@ -106,6 +113,7 @@ class SnapScript {
             kAction,
             kDrag,
             kHand,
+            kKey,
             kLoad,
             kSelect,
             kSettings,
@@ -131,6 +139,11 @@ class SnapScript {
         std::string controller;
         Point3f     pos;
         Vector3f    dir;
+    };
+    struct KeyInstr : public Instr {
+        std::string key;
+        bool        is_ctrl_on;
+        bool        is_alt_on;
     };
     struct LoadInstr : public Instr {
         std::string file_name;
@@ -160,6 +173,7 @@ class SnapScript {
     DECL_SHARED_PTR(ActionInstr);
     DECL_SHARED_PTR(DragInstr);
     DECL_SHARED_PTR(HandInstr);
+    DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
     DECL_SHARED_PTR(SelectInstr);
     DECL_SHARED_PTR(SettingsInstr);
@@ -188,6 +202,7 @@ class SnapScript {
     InstrPtr ProcessAction_(const Words &words);
     InstrPtr ProcessDrag_(const Words &words);
     InstrPtr ProcessHand_(const Words &words);
+    InstrPtr ProcessKey_(const Words &words);
     InstrPtr ProcessLoad_(const Words &words);
     InstrPtr ProcessSelect_(const Words &words);
     InstrPtr ProcessSettings_(const Words &words);

@@ -33,28 +33,37 @@
 #include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------
-// DragEmitter_ class.
+// Emitter_ class.
 // ----------------------------------------------------------------------------
 
-/// DragEmitter_ is a derived IEmitter class used to create events to simulate
-/// mouse drags.
-class DragEmitter_ : public IEmitter {
+/// Emitter_ is a derived IEmitter class used to create events to simulate
+/// mouse clicks, mouse drags and key presses.
+class Emitter_ : public IEmitter {
   public:
     using DIPhase = SnapScript::DragInstr::Phase;
+    using KMods   = Util::Flags<Event::ModifierKey>;
 
-    /// Adds a point to emit.
+    /// Adds a click or drag point to emit.
     void AddPoint(DIPhase phase, const Point2f &pos) {
         points_.push_back(Point_(phase, pos));
     }
 
-    /// Returns true if there are points left to process.
-    bool HasPendingEvents() const { return ! points_.empty(); }
+    /// Adds a key press/release to simulate.
+    void AddKey(const std::string &key, const KMods &mods) {
+        keys_.push_back(Key_(key, mods, true));   // Press.
+        keys_.push_back(Key_(key, mods, false));  // Release.
+    }
+
+    /// Returns true if there are events left to process.
+    bool HasPendingEvents() const {
+        return ! points_.empty() || ! keys_.empty();
+    }
 
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() {}
 
   private:
-    /// Struct representing a point to process.
+    /// Struct representing a point to process for a click or drag.
     struct Point_ {
         const DIPhase phase;
         const Point2f pos;
@@ -62,20 +71,29 @@ class DragEmitter_ : public IEmitter {
             phase(phase_in), pos(pos_in) {}
     };
 
-    /// Points left in the current drag operation.
+    /// Struct representing a key to process.
+    struct Key_ {
+        const std::string  key_name;
+        const KMods        modifiers;
+        bool               is_press;
+        Key_(const std::string &key, const KMods &mods, bool press) :
+            key_name(key), modifiers(mods), is_press(press) {}
+    };
+
+    /// Points left in the current click or drag operation.
     std::deque<Point_> points_;
 
-    /// Set to true while the middle of a drag.
-    bool in_drag_ = false;
+    /// Keys left to simulate.
+    std::deque<Key_>   keys_;
 };
 
-void DragEmitter_::EmitEvents(std::vector<Event> &events) {
-    // XXXX Figure out how to ignore mouse events from GLFWViewer while
-    // XXXX dragging. Maybe add "source" field to Event.
+void Emitter_::EmitEvents(std::vector<Event> &events) {
+    // XXXX Figure out how to ignore accidental mouse events from GLFWViewer
+    // while dragging. Maybe add "source" field to Event.
 
     if (! points_.empty()) {
         const auto &pt = points_.front();
- 
+
         Event event;
         event.device = Event::Device::kMouse;
         if (pt.phase == DIPhase::kStart) {
@@ -92,9 +110,23 @@ void DragEmitter_::EmitEvents(std::vector<Event> &events) {
 
         points_.pop_front();
     }
+
+    if (! keys_.empty()) {
+        const auto &key = keys_.front();
+
+        Event event;
+        event.device = Event::Device::kKeyboard;
+        event.flags.Set(key.is_press ?
+                        Event::Flag::kKeyPress : Event::Flag::kKeyRelease);
+        event.key_name  = key.key_name;
+        event.modifiers = key.modifiers;
+        events.push_back(event);
+
+        keys_.pop_front();
+    }
 }
 
-DECL_SHARED_PTR(DragEmitter_);
+DECL_SHARED_PTR(Emitter_);
 
 // ----------------------------------------------------------------------------
 /// SnapshotApp_ class.
@@ -112,7 +144,7 @@ class SnapshotApp_ : public Application {
 
   private:
     Vector2i        window_size_;   // From Options.
-    DragEmitter_Ptr drag_emitter_;  // To simulate mouse drags.
+    Emitter_Ptr     emitter_;       // To simulate mouse clicks/drags and keys.
     TestContext     test_context_;  // For accessing managers.
     SnapScript      script_;
     size_t          cur_instruction_ = 0;
@@ -135,8 +167,8 @@ bool SnapshotApp_::Init(const Options &options) {
     if (! Application::Init(options))
         return false;
 
-    drag_emitter_.reset(new DragEmitter_);
-    AddEmitter(drag_emitter_);
+    emitter_.reset(new Emitter_);
+    AddEmitter(emitter_);
 
     window_size_ = options.window_size;
     GetTestContext(test_context_);
@@ -161,7 +193,7 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     }
     // If there are events pending, process them before doing any more
     // instructions.
-    else if (drag_emitter_->HasPendingEvents()) {
+    else if (emitter_->HasPendingEvents()) {
         keep_going = true;
     }
     // Process the next instruction, if any.
@@ -194,13 +226,23 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kDrag: {
           const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
-          drag_emitter_->AddPoint(dinst.phase, dinst.pos);
+          emitter_->AddPoint(dinst.phase, dinst.pos);
           break;
       }
       case SIType::kHand: {
           const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
           if (! AddHand_(hinst.hand, hinst.controller, hinst.pos, hinst.dir))
               return false;
+          break;
+      }
+      case SIType::kKey: {
+          const auto &kinst = GetTypedInstr_<SnapScript::KeyInstr>(instr);
+          Emitter_::KMods mods;
+          if (kinst.is_ctrl_on)
+              mods.Set(Event::ModifierKey::kControl);
+          if (kinst.is_alt_on)
+              mods.Set(Event::ModifierKey::kAlt);
+          emitter_->AddKey(kinst.key, mods);
           break;
       }
       case SIType::kLoad: {

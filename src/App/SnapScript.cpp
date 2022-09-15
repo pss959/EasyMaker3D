@@ -44,6 +44,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kAction:   instr = ProcessAction_(words);   break;
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
+      case Instr::Type::kKey:      instr = ProcessKey_(words);     break;
       case Instr::Type::kLoad:     instr = ProcessLoad_(words);     break;
       case Instr::Type::kSelect:   instr = ProcessSelect_(words);   break;
       case Instr::Type::kSettings: instr = ProcessSettings_(words); break;
@@ -140,6 +141,36 @@ SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
         hinst->dir = dir;
     }
     return hinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessKey_(const Words &words) {
+    KeyInstrPtr kinst;
+    if (words.size() < 2U) {
+        Error_("Bad syntax for key instruction");
+    }
+    else {
+        // words[1] is the key name. All the rest are modifiers.
+        bool ok = true;
+        for (size_t i = 2U; i < words.size(); ++i) {
+            if (words[i] != "ctrl" &&
+                words[i] != "alt") {
+                Error_("Bad modifier for key instruction");
+                ok = false;
+            }
+        }
+        if (ok) {
+            kinst.reset(new KeyInstr);
+            kinst->key = words[1];
+            kinst->is_ctrl_on = kinst->is_alt_on = false;
+            for (size_t i = 2U; i < words.size(); ++i) {
+                if (words[i] == "ctrl")
+                    kinst->is_ctrl_on = true;
+                else
+                    kinst->is_alt_on = true;
+            }
+        }
+    }
+    return kinst;
 }
 
 SnapScript::InstrPtr SnapScript::ProcessLoad_(const Words &words) {
