@@ -88,4 +88,4 @@ TBD
 .. todo::
    Add sections for all of the above targets.
 
-.. incimage:: /images/Missing.jpg 200px center
+.. incimage:: /images/static/Missing.jpg 200px center

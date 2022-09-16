@@ -114,7 +114,7 @@ modified <ug-session-name>`.
 Coordinate System and Units
 ...........................
 
-.. incimage:: /images/CoordSystem.jpg 200px right
+.. incimage:: /images/static/CoordSystem.jpg 200px right
 
 |appname| uses the same coordinate system that most 3D printing software uses:
 right-handed, with +X to the right, +Y away from the viewer, and +Z up. The top

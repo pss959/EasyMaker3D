@@ -187,6 +187,13 @@ img {
     font-style: italic;
 }
 
+/* Style used for the 'dnote' role. */
+.dnote {
+    background: none;
+    color:      #882233;
+    font-style: italic;
+}
+
 /* Style used for the application name. */
 .appname {
     color:        #174971;

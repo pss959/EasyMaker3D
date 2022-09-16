@@ -1,0 +1,44 @@
+# Generates images for the Quickstart.
+
+action kOpenSessionPanel
+snap 0.342402 0.226667 0.318949 0.53 SessionPanel.jpg
+
+# action kCreateTorus
+# action kToggleSpecializedTool
+
+# # Drag the torus 5 units in +X.
+# drag start    0.540338 0.258333
+# drag continue 0.629167 0.258333
+# snap 0 0 1 1 DRAGTEST1.jpg
+# drag end      0.629167 0.258333
+
+# action kCreateCylinder
+# action kToggleSpecializedTool
+
+# # Drag to scale - need Modified mode!
+
+# select Torus_1 Cylinder_1
+# action kCombineHull
+# snap 0 0 1 1 DRAGTEST2.jpg
+
+# action kNameTool
+
+# # Click on the name tool name input to activate it.
+# drag start 0.469043 0.518333
+# drag end   0.469043 0.518333
+# key a ctrl
+# key D
+# key o
+# key o
+# key r
+# key s
+# key t
+# key o
+# key p
+# key Enter
+# snap 0 0 1 1 DRAGTEST3.jpg
+
+# # Click the Apply button.
+# drag start 0.660413 0.458333
+# drag end   0.660413 0.458333
+# snap 0 0 1 1 DRAGTEST4.jpg

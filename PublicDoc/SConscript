@@ -54,24 +54,31 @@ env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 
 script_dir = './snaps/scripts'
 image_dir  = './docs/images'
+root_dir   = env.Dir('#').abspath   # Work around SCons issue.
 
 def ImageFile(name):
   return join(image_dir, name + '.jpg')
+def ScriptFile(name):
+  return join(script_dir, name)
 
-image_names = [
-    'OculusTouch',
-    'Doorstop',
-    'Logo',
-    'Vive',
-    'WorkArea',
-]
+# This maps snapimage script files to the images they generate.
+snap_map = {
+  'Controller' : { 'Vive', 'OculusTouch', 'TouchMode' },
+  'Doorstop'   : { 'Doorstop' },
+  'Main'       : { 'WorkArea', 'BuildVolume', 'Logo' },
+  'Quickstart' : { 'SessionPanel' },
+  'RadialMenu' : { 'FixedRadialMenu', 'AttachedRadialMenu' },
+}
 
-scripts      = Glob(f'{script_dir}/*', strings=True)
-script_files = [basename(script) for script in scripts]
-image_files  = [ImageFile(name) for name in image_names]
-
-snaps = env.Command(image_files, [snapimage] + scripts,
-                    [f'{snapimage.abspath} {sf}' for sf in script_files])
+snaps = []
+for (script, images) in snap_map.items():
+  snap = env.Command([ImageFile(image) for image in images],
+                     [snapimage, ScriptFile(script)],
+                     f'{snapimage.abspath} --fullscreen {script}',
+                     chdir=root_dir)
+  # This prevents snapimage from running in parallel.
+  env.SideEffect('dummy', snap)
+  snaps.append(snap)
 
 env.Alias('Snaps', snaps)
 
@@ -97,7 +104,7 @@ annotations = env.Command(ann_output_images,
                           [annotator] + ann_scripts + ann_input_images,
                           [f'{annotator} {data[1]} {data[0]} {data[2]}'
                            for data in ann_data],
-                          chdir='PublicDoc')
+                          chdir=f'{root_dir}/PublicDoc')
 
 # -----------------------------------------------------------------------------
 # Documentation generation.
@@ -116,5 +123,5 @@ doc = env.Command('$OUTPUT_DIR/index.html',
                   sources + [cs_output] + snaps + annotations,
                   ['echo = Building public doc for version: $VERSION_STRING',
                    f'sphinx-build {sphinx_args} docs {output_dir}'],
-                  chdir='PublicDoc')
+                  chdir=f'{root_dir}/PublicDoc')
 Return('doc')

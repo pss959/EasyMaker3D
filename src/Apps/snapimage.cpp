@@ -170,7 +170,7 @@ bool SnapshotApp_::Init(const Options &options) {
     emitter_.reset(new Emitter_);
     AddEmitter(emitter_);
 
-    window_size_ = options.window_size;
+    window_size_ = GetWindowSize();
     GetTestContext(test_context_);
 
     // Make sure there is no debug text visible.
@@ -213,7 +213,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
     using SIType = SnapScript::Instr::Type;
 
     const size_t instr_count = script_.GetInstructions().size();
-    std::cout << "=== Processing " << Util::EnumToWords(instr.type)
+    std::cout << "  Processing " << Util::EnumToWords(instr.type)
               << " (instruction " << (cur_instruction_ + 1)
               << " of " << instr_count << ")\n";
 
@@ -307,7 +307,7 @@ bool SnapshotApp_::LoadSession_(const std::string &file_name) {
                   << path.ToString() << "':" << error << "\n";
         return false;
     }
-    std::cout << "  Loaded session from '" << path.ToString() << "'\n";
+    std::cout << "    Loaded session from '" << path.ToString() << "'\n";
     return true;
 }
 
@@ -381,7 +381,7 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
                   << path.ToString() << "'\n";
         return false;
     }
-    std::cout << "  Saved snap image to = '" << path.ToString() << "'\n";
+    std::cout << "    Saved snap image to = '" << path.ToString() << "'\n";
     return true;
 }
 
@@ -403,9 +403,10 @@ static const char kUsageString[] =
 R"(snapimage: Reads a script with instructions on how to create snapshot images
  for public documentation. See SnapScript.h for script details.
     Usage:
-      snapimage [--klog=<klog_string>] [--remain] SCRIPT
+      snapimage [--fullscreen] [--klog=<klog_string>] [--remain] SCRIPT
 
     Options:
+      --fullscreen    Start with a full-screen window.
       --klog=<string> String to pass to KLogger::SetKeyString().
       --remain        Keep the window alive after script processing
 
@@ -417,15 +418,18 @@ int main(int argc, const char *argv[]) {
     Args args(argc, argv, kUsageString);
 
     SnapScript script;
-    if (! script.ReadScript("PublicDoc/snaps/scripts/" +
-                            args.GetString("SCRIPT")))
+    const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
+    if (! script.ReadScript(path))
         return -1;
 
-    Application::Options options;
-    options.window_size.Set(1066, 600);
-    options.show_session_panel = false;
-    options.do_ion_remote      = true;
+    std::cout << "======= Processing Script file " << path.ToString() << "\n";
+
     KLogger::SetKeyString(args.GetString("--klog"));
+    Application::Options options;
+    options.do_ion_remote      = true;
+    options.fullscreen         = args.GetBool("--fullscreen");
+    options.show_session_panel = false;
+    options.window_size.Set(1066, 600);
 
     SnapshotApp_ app;
     if (! app.Init(options))

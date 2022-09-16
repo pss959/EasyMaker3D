@@ -4,19 +4,21 @@
 #include <ion/math/vectorutils.h>
 
 #include "Util/Enum.h"
-#include "Util/FilePath.h"
 #include "Util/Read.h"
 
-bool SnapScript::ReadScript(const std::string &file_name) {
+bool SnapScript::ReadScript(const FilePath &path) {
     instructions_.clear();
 
     std::string contents;
-    if (! Util::ReadFile(FilePath(file_name), contents)) {
-        std::cerr << "*** Unable to read script file '" << file_name << "'\n";
+    if (! Util::ReadFile(path, contents)) {
+        std::cerr << "*** Unable to read script file '"
+                  << path.ToString() << "'\n";
+        if (! path.Exists())
+            std::cerr << "XXXX path does not exist!!!\n";
         return false;
     }
 
-    file_name_   = file_name;
+    file_path_   = path;
     line_number_ = 1;
 
     // Split the input into lines and process each one.
@@ -273,7 +275,7 @@ SnapScript::InstrPtr SnapScript::ProcessView_(const Words &words) {
 
 bool SnapScript::Error_(const std::string &message) {
     std::cerr << "*** " << message << " on line " << line_number_
-              << " in '" << file_name_ << "'\n";
+              << " in '" << file_path_.ToString() << "'\n";
     return false;
 }
 

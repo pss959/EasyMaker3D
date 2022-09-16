@@ -11,6 +11,9 @@
 .. newterm: A role used when introducing a new term.
 .. role:: newterm
 
+.. dnote: An important(?) note.
+.. role:: dnote
+
 .. raw-html: Used to insert raw HTML.
 .. role:: raw-html(raw)
    :format: html

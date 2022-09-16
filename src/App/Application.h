@@ -68,6 +68,10 @@ class Application {
     /// Adds an event IEmitter to the list of emitters.
     void AddEmitter(const IEmitterPtr &emitter);
 
+    /// Returns the current size of the application window, taking the
+    /// fullscreen option into account.
+    Vector2i GetWindowSize() const;
+
     /// Returns the Renderer.
     Renderer & GetRenderer();
 

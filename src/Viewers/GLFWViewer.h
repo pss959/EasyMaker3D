@@ -43,6 +43,10 @@ class GLFWViewer : public Viewer, public IEmitter {
         return is_l_shift_pressed_ || is_r_shift_pressed_;
     }
 
+    /// Returns the current size of the window, taking the fullscreen option
+    /// into account.
+    Vector2i GetWindowSize() const { return GetSize_(); }
+
     virtual void Render(const SG::Scene &scene, Renderer &renderer);
 
     virtual void EmitEvents(std::vector<Event> &events) override;

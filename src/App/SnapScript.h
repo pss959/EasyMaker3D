@@ -7,6 +7,7 @@
 #include "Enums/Action.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
+#include "Util/FilePath.h"
 
 /// The SnapScript class is used by the snapimage application to read and store
 /// a script of instructions used to generate images for public documentation.
@@ -182,9 +183,9 @@ class SnapScript {
     DECL_SHARED_PTR(TouchInstr);
     DECL_SHARED_PTR(ViewInstr);
 
-    /// Reads a script from a file relative to the PublicDoc/snaps/scripts
-    /// directory to fill in instructions. Returns false on error.
-    bool ReadScript(const std::string &file_name);
+    /// Reads instructions from the script at the given FilePath. Returns false
+    /// on error.
+    bool ReadScript(const FilePath &path);
 
     /// Returns the instructions in the script.
     const std::vector<InstrPtr> & GetInstructions() const {
@@ -192,7 +193,7 @@ class SnapScript {
     }
 
   private:
-    std::string           file_name_;
+    FilePath              file_path_;
     size_t                line_number_;
     std::vector<InstrPtr> instructions_;
 

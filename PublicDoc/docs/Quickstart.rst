@@ -9,10 +9,13 @@ and download the Zip file for your operating system. Extract all files wherever
 you like; this will create a |appname| folder. In this folder there is a
 |appname| executable that you can click on to run the application.
 
+:dnote:`Clicking on any of these images will show an enlarged version.`
+
+
 A Simple Doorstop Example (Non-VR)
 ----------------------------------
 
-.. incimage:: /images/Doorstop.jpg 300px right
+.. incimage:: /images/Doorstop.jpg 240px right
 
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.
@@ -22,10 +25,15 @@ model and output it as an STL file.
 Start the Application
 .....................
 
+.. incimage:: /images/SessionPanel.jpg 240px right
+
 Starting the application should open a maximized window that you can interact
-with using the keyboard and mouse. The first thing you should see is a panel
-that lets you interact with |appname| sessions. Click on the `Start new
-session` button to start a new session (or just hit the escape key).
+with using the keyboard and mouse. The first thing you should see is :ref:`this
+panel that lets you interact with |appname| sessions <ug-session-panel>`. Click
+on the `Start new session` button to start a new session (or just hit the
+escape key).
+
+|block-image|
 
 Create and Position a Torus
 ...........................

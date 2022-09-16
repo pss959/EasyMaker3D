@@ -117,6 +117,7 @@ class  Application::Impl_ {
     void SetTestingFlag() { is_testing_ = true; }
     void GetTestContext(TestContext &tc);
     void AddEmitter(const IEmitterPtr &emitter);
+    Vector2i GetWindowSize() const;
     Renderer & GetRenderer() { return *renderer_; }
     void ForceTouchMode(bool is_on) { force_touch_mode_on_ = is_on; }
 
@@ -572,6 +573,10 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
 
 void Application::Impl_::AddEmitter(const IEmitterPtr &emitter) {
     emitters_.push_back(emitter);
+}
+
+Vector2i Application::Impl_::GetWindowSize() const {
+    return glfw_viewer_->GetWindowSize();
 }
 
 void Application::Impl_::InitTypes_() {
@@ -1453,6 +1458,10 @@ void Application::GetTestContext(TestContext &tc) {
 
 void Application::AddEmitter(const IEmitterPtr &emitter) {
     impl_->AddEmitter(emitter);
+}
+
+Vector2i Application::GetWindowSize() const {
+    return impl_->GetWindowSize();
 }
 
 Renderer & Application::GetRenderer() {
