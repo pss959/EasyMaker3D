@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 
 from os      import environ, walk
-from os.path import basename, join
+from os.path import basename, join, splitext
 
 Import('snapimage', 'doc_build_dir',
        'APP_NAME', 'SESSION_SUFFIX', 'VERSION_STRING')
@@ -59,7 +59,7 @@ root_dir   = env.Dir('#').abspath   # Work around SCons issue.
 def ImageFile(name):
   return join(image_dir, name + '.jpg')
 def ScriptFile(name):
-  return join(script_dir, name)
+  return join(script_dir, name + '.conf')
 
 # This maps snapimage script files to the images they generate.
 snap_map = {
@@ -92,7 +92,7 @@ annotator      = env.File('#/bin/annotate.py').abspath
 # Returns a triple: (script_file, input_image_file, output_image_file) based on
 # the script file.
 def GetAnnotationData(script_file):
-  name = basename(script_file)
+  name = splitext(basename(script_file))[0]
   return (script_file, ImageFile(name), ImageFile(name + 'Annotated'))
 
 ann_scripts       = Glob(f'{ann_script_dir}/*', strings=True)

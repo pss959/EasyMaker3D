@@ -9,8 +9,6 @@ and download the Zip file for your operating system. Extract all files wherever
 you like; this will create a |appname| folder. In this folder there is a
 |appname| executable that you can click on to run the application.
 
-:dnote:`Clicking on any of these images will show an enlarged version.`
-
 
 A Simple Doorstop Example (Non-VR)
 ----------------------------------
@@ -19,6 +17,8 @@ A Simple Doorstop Example (Non-VR)
 
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.
+
+:dnote:`Clicking on any of these images will show an enlarged version.`
 
 |block-image|
 
