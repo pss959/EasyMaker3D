@@ -12,6 +12,7 @@
 #include "App/Selection.h"
 #include "App/SnapScript.h"
 #include "Base/IEmitter.h"
+#include "Base/Tuning.h"
 #include "Debug/Shortcuts.h"
 #include "Handlers/Handler.h"
 #include "Items/Controller.h"
@@ -26,6 +27,7 @@
 #include "SG/WindowCamera.h"
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
+#include "Util/Delay.h"
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
 #include "Util/Read.h"
@@ -43,9 +45,15 @@ class Emitter_ : public IEmitter {
     using DIPhase = SnapScript::DragInstr::Phase;
     using KMods   = Util::Flags<Event::ModifierKey>;
 
-    /// Adds a click or drag point to emit.
-    void AddPoint(DIPhase phase, const Point2f &pos) {
-        points_.push_back(Point_(phase, pos));
+    /// Adds a click to emit.
+    void AddClick(const Point2f &pos) {
+        points_.push_back(Point_(true, DIPhase::kStart, pos));
+        points_.push_back(Point_(true, DIPhase::kEnd,   pos));
+    }
+
+    /// Adds a drag point to emit.
+    void AddDragPoint(DIPhase phase, const Point2f &pos) {
+        points_.push_back(Point_(false, phase, pos));
     }
 
     /// Adds a key press/release to simulate.
@@ -65,10 +73,11 @@ class Emitter_ : public IEmitter {
   private:
     /// Struct representing a point to process for a click or drag.
     struct Point_ {
+        bool          is_click;
         const DIPhase phase;
         const Point2f pos;
-        Point_(DIPhase phase_in, const Point2f &pos_in) :
-            phase(phase_in), pos(pos_in) {}
+        Point_(bool is_click_in, DIPhase phase_in, const Point2f &pos_in) :
+            is_click(is_click_in), phase(phase_in), pos(pos_in) {}
     };
 
     /// Struct representing a key to process.
@@ -85,6 +94,9 @@ class Emitter_ : public IEmitter {
 
     /// Keys left to simulate.
     std::deque<Key_>   keys_;
+
+    /// Set to true while waiting for a click to be processed after a timeout.
+    bool               is_waiting_for_click_ = false;
 };
 
 void Emitter_::EmitEvents(std::vector<Event> &events) {
@@ -93,6 +105,20 @@ void Emitter_::EmitEvents(std::vector<Event> &events) {
 
     if (! points_.empty()) {
         const auto &pt = points_.front();
+
+        // If this is the end of a click, make sure the click timeout is
+        // reached so that it is processed during the next frame and wait until
+        // then. Use the is_waiting_for_click_ flag to do this once.
+        if (pt.is_click && pt.phase == DIPhase::kEnd) {
+            if (! is_waiting_for_click_) {
+                is_waiting_for_click_ = true;
+                Util::DelayThread(TK::kMouseClickTimeout);
+                return;
+            }
+            else {
+                is_waiting_for_click_ = false;
+            }
+        }
 
         Event event;
         event.device = Event::Device::kMouse;
@@ -224,9 +250,14 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
           test_context_.action_manager->ApplyAction(ainst.action);
           break;
       }
+      case SIType::kClick: {
+          const auto &cinst = GetTypedInstr_<SnapScript::ClickInstr>(instr);
+          emitter_->AddClick(cinst.pos);
+          break;
+      }
       case SIType::kDrag: {
           const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
-          emitter_->AddPoint(dinst.phase, dinst.pos);
+          emitter_->AddDragPoint(dinst.phase, dinst.pos);
           break;
       }
       case SIType::kHand: {
@@ -429,7 +460,8 @@ int main(int argc, const char *argv[]) {
     options.do_ion_remote      = true;
     options.fullscreen         = args.GetBool("--fullscreen");
     options.show_session_panel = false;
-    options.window_size.Set(1066, 600);
+    // Note that this must have the same aspect ratio as fullscreen.
+    options.window_size.Set(1024, 552);
 
     SnapshotApp_ app;
     if (! app.Init(options))

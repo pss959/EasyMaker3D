@@ -199,6 +199,10 @@ static ThreadManager_ s_thread_manager_;
 
 namespace Util {
 
+void DelayThread(float seconds) {
+    std::this_thread::sleep_for(std::chrono::duration<float>(seconds));
+}
+
 int RunDelayed(float seconds, const ExecFunc_ &func) {
     return s_thread_manager_.Create(seconds, func);
 }

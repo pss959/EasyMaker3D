@@ -9,6 +9,10 @@
 
 namespace Util {
 
+/// Delays the current thread for the given number of seconds, blocking all
+/// execution.
+void DelayThread(float seconds);
+
 /// Executes a function after a given delay (specified in seconds). This
 /// operates asynchronously so that the main thread does not block. Returns an
 /// integer ID that can be used to cancel with CancelDelayed().

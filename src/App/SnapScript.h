@@ -37,11 +37,17 @@
 ///     <td>Applies the named action.</td>
 ///   </tr>
 ///   <tr>
+///     <td><b>click</b></td>
+///     <td><i>x y</i></td>
+///     <td>Simulates a mouse click at the given point in normalized window
+///     coordinates.</td>
+///   </tr>
+///   <tr>
 ///     <td><b>drag</b></td>
 ///     <td><code>start</code>|<code>continue</code>|<code>end</code> <i>x
 ///     y</i></td>
 ///     <td>Simulates a mouse drag at the given point in normalized window
-///     coordinates. The x and y arguments are ignored for the drag end.</td>
+///     coordinates.</td>
 ///   </tr>
 ///   <tr>
 ///     <td><b>hand</b></td>
@@ -112,6 +118,7 @@ class SnapScript {
         /// Types of instructions.
         enum class Type {
             kAction,
+            kClick,
             kDrag,
             kHand,
             kKey,
@@ -129,6 +136,9 @@ class SnapScript {
     };
     struct ActionInstr : public Instr {
         Action action;
+    };
+    struct ClickInstr : public Instr {
+        Point2f     pos;
     };
     struct DragInstr : public Instr {
         enum class Phase { kStart, kContinue, kEnd };
@@ -172,6 +182,7 @@ class SnapScript {
 
     DECL_SHARED_PTR(Instr);
     DECL_SHARED_PTR(ActionInstr);
+    DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(DragInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(KeyInstr);
@@ -201,6 +212,7 @@ class SnapScript {
     bool GetInstructionType_(const std::string &word, Instr::Type &type);
 
     InstrPtr ProcessAction_(const Words &words);
+    InstrPtr ProcessClick_(const Words &words);
     InstrPtr ProcessDrag_(const Words &words);
     InstrPtr ProcessHand_(const Words &words);
     InstrPtr ProcessKey_(const Words &words);

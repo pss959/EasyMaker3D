@@ -412,6 +412,7 @@ void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
 
 void FilePanel::Impl_::SelectFile_(const FilePath &path) {
     input_pane_->SetInitialText(path.ToString());
+    UpdateFiles_(true);
     UpdateButtons_(GetPathStatus_(path));
 
     // Set the focus on the Accept button.

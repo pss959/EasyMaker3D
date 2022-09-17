@@ -13,8 +13,6 @@ bool SnapScript::ReadScript(const FilePath &path) {
     if (! Util::ReadFile(path, contents)) {
         std::cerr << "*** Unable to read script file '"
                   << path.ToString() << "'\n";
-        if (! path.Exists())
-            std::cerr << "XXXX path does not exist!!!\n";
         return false;
     }
 
@@ -44,6 +42,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     InstrPtr instr;
     switch (type) {
       case Instr::Type::kAction:   instr = ProcessAction_(words);   break;
+      case Instr::Type::kClick:    instr = ProcessClick_(words);     break;
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
       case Instr::Type::kKey:      instr = ProcessKey_(words);     break;
@@ -88,6 +87,22 @@ SnapScript::InstrPtr SnapScript::ProcessAction_(const Words &words) {
         ainst->action = action;
     }
     return ainst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessClick_(const Words &words) {
+    ClickInstrPtr cinst;
+    float x, y;
+    if (words.size() != 3U) {
+        Error_("Bad syntax for click instruction");
+    }
+    else if (! ParseFloat01_(words[1], x) || ! ParseFloat01_(words[2], y)) {
+        Error_("Invalid x or y floats for click instruction");
+    }
+    else {
+        cinst.reset(new ClickInstr);
+        cinst->pos.Set(x, y);
+    }
+    return cinst;
 }
 
 SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
