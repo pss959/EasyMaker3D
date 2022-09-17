@@ -29,8 +29,8 @@ Start the Application
 
 Starting the application should open a maximized window that you can interact
 with using the keyboard and mouse. The first thing you should see is :ref:`this
-panel that lets you interact with |appname| sessions <ug-session-panel>`. Click
-on the `Start new session` button to start a new session (or just hit the
+panel that lets you interact with sessions <ug-session-panel>`. Click on the
+`Start new session` button to start a new session (or just hit the
 :shortcut:`Escape` key).
 
 |block-image|
