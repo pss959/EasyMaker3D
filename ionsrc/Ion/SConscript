@@ -63,7 +63,7 @@ if platform == 'windows':
             ('ION_API', '__declspec(dllexport)'),
             ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
-            ('OS_WINDOWS' 'OS_WINDOWS'),
+            ('OS_WINDOWS', 'OS_WINDOWS'),
         ],
         LINKFLAGS = ['-static'],   # Use static versions when possible.
         LIBS = [

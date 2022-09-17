@@ -30,7 +30,7 @@ namespace base {
 
 // This class incrementally builds a byte buffer, returning it in the form of an
 // std::string when Build() is called.
-class BufferBuilder {
+class ION_API BufferBuilder {
  public:
   BufferBuilder();
   BufferBuilder(const BufferBuilder& other);

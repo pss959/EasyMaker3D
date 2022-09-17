@@ -535,7 +535,6 @@ if platform == 'windows':
             ('ION_API', ''),
             ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
-            ('OS_WINDOWS' 'OS_WINDOWS'),
         ],
         # Make sure the MSYS2 commands (such as cygpath) are available.
         ENV = {'PATH' : environ['PATH']},
@@ -791,6 +790,11 @@ exports = {
 ion_lib = SConscript('ionsrc/Ion/SConscript',  exports['ion_lib'],
                      variant_dir=f'{build_dir}/Ion', duplicate=False)
 
+# Build submodules and tests on all platforms.
+SConscript('submodules/SConscript', exports['submodules'])
+SConscript('src/Tests/SConscript',  exports['tests'],
+           variant_dir=f'{build_dir}/Tests')
+
 # Documentation and menu icons are built only on Linux. Building on different
 # platforms creates slightly different image files, causing git thrashing. No
 # need for that once everything is built.
@@ -799,12 +803,10 @@ if platform == 'linux':
     # Applications depend on the icons.
     reg_env.Depends('Apps', 'Icons')
 
-    SConscript('submodules/SConscript', exports['submodules'])
-    SConscript('src/Tests/SConscript',  exports['tests'],
-               variant_dir=f'{build_dir}/Tests')
-
     internal_doc = SConscript('InternalDoc/SConscript', exports['internal_doc'])
     public_doc   = SConscript('PublicDoc/SConscript',   exports['public_doc'])
+    reg_env.Alias('InternalDoc', [internal_doc])
+    reg_env.Alias('PublicDoc',   [public_doc])
 
 # -----------------------------------------------------------------------------
 # Building the release as a Zip file.
@@ -862,7 +864,8 @@ zip_win_mingw_libs = [
 ]
 if platform == 'windows':
     from os import popen
-    mingw_dir = popen('cygpath -m /mingw64/bin').read().replace('\n', '')
+    run_cygpath = f'c:/msys64/usr/bin/bash.exe -c "cygpath -m /mingw64/bin"'
+    mingw_dir = popen(run_cygpath).read().replace('\n', '')
     zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
 
 rel = rel_env.Command(zip_output, zip_input, BuildZipFile)
@@ -872,7 +875,5 @@ rel_env.Alias('Release', rel)
 # Other Aliases.
 # -----------------------------------------------------------------------------
 
-reg_env.Alias('InternalDoc', [internal_doc])
-reg_env.Alias('PublicDoc',   [public_doc])
-reg_env.Alias('All', [app, 'InternalDoc', 'PublicDoc'])
 reg_env.Alias('Ion', ion_lib)
+
