@@ -172,27 +172,16 @@ img {
 
 /* Shortcuts use monospace text. */
 .shortcut {
+    padding:     2px;
+    border:      1px solid #1e8a81;
     color:       #1e8a81;
     font-family: monospace;
-    font-size:   90%;
+    font-size:   80%;
 }
 
 /* -----------------------------------------------------------------------------
- * Miscellaneous.
+ * Role styles.
  * -------------------------------------------------------------------------- */
-
-/* Style used for the 'newterm' role. */
-.newterm {
-    color:      green;
-    font-style: italic;
-}
-
-/* Style used for the 'dnote' role. */
-.dnote {
-    background: none;
-    color:      #882233;
-    font-style: italic;
-}
 
 /* Style used for the application name. */
 .appname {
@@ -200,4 +189,23 @@ img {
     font-family:  sans-serif;
     font-style:   italic;
     /* font-variant: small-caps; */
+}
+
+/* Style used for the 'dnote' role. */
+.dnote {
+    color:      #882233;
+    font-style: italic;
+}
+
+/* Style used for the 'model' role. */
+.model {
+    color:       #6d5435;
+    font-family: monospace;
+    font-size:   90%;
+}
+
+/* Style used for the 'newterm' role. */
+.newterm {
+    color:      green;
+    font-style: italic;
 }

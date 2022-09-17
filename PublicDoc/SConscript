@@ -49,62 +49,68 @@ cs_generator = '#build/opt/Apps/createcheatsheet'
 env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 
 # -----------------------------------------------------------------------------
-# Snapshot Image generation.
+# Snapshot Image generation and annotation.
 # -----------------------------------------------------------------------------
 
-script_dir = './snaps/scripts'
-image_dir  = './docs/images'
 root_dir   = env.Dir('#').abspath   # Work around SCons issue.
-
-def ImageFile(name):
-  return join(image_dir, name + '.jpg')
-def ScriptFile(name):
-  return join(script_dir, name + '.conf')
+image_dir  = './docs/images'
+script_dir = './snaps/scripts'
+ann_dir    = './snaps/annotations'
+annotator  = env.File('#/bin/annotate.py').abspath
 
 # This maps snapimage script files to the images they generate.
 snap_map = {
-  'Controller' : { 'Vive', 'OculusTouch', 'TouchMode' },
-  'Doorstop'   : { 'Doorstop' },
-  'Main'       : { 'WorkArea', 'BuildVolume', 'Logo' },
-  'Quickstart' : { 'SessionPanel' },
-  'RadialMenu' : { 'FixedRadialMenu', 'AttachedRadialMenu' },
+  'Controller' : [ 'Vive', 'OculusTouch', 'TouchMode' ],
+  'Doorstop'   : [ 'Doorstop' ],
+  'Main'       : [ 'WorkArea', 'BuildVolume', 'Logo' ],
+  'Quickstart' : [ 'SessionPanel', 'QuickstartTorus', 'QuickstartScale',
+                   'QuickstartCylinder', 'QuickstartSelected',
+                   'QuickstartHull', 'QuickstartRenamed', 'QuickstartExport' ],
+  'RadialMenu' : [ 'FixedRadialMenu', 'AttachedRadialMenu' ],
 }
 
+# This maps annotation script files to the images they read and write.
+ann_map = {
+  'Icons'    : (['WorkArea'],
+                [
+                  'CombineHullIcon',
+                  'CreateCylinderIcon',
+                  'CreateTorusIcon',
+                  'NameToolIcon',
+                  'ScaleToolIcon',
+                  'SessionPanelIcon',
+                 ]),
+  'WorkArea' : (['WorkArea'], ['WorkAreaAnnotated']),
+}
+
+def ImageFile(name):
+  return join(image_dir, name + '.jpg')
+
+# Snapshot script processing.
 snaps = []
 for (script, images) in snap_map.items():
+  script_file = script + '.conf'
   snap = env.Command([ImageFile(image) for image in images],
-                     [snapimage, ScriptFile(script)],
-                     f'{snapimage.abspath} --fullscreen {script}',
+                     [snapimage, join(script_dir, script_file)],
+                     f'{snapimage.abspath} --fullscreen {script_file}',
                      chdir=root_dir)
   # This prevents snapimage from running in parallel.
   env.SideEffect('dummy', snap)
   snaps.append(snap)
 
+# Annotation processing.
+anns = []
+for (script, (input_images, output_images)) in ann_map.items():
+  script_file = script + '.conf'
+  ann = env.Command([ImageFile(image) for image in output_images],
+                    [annotator, join(ann_dir, script_file)] +
+                    [ImageFile(image) for image in input_images],
+                    f'{annotator} {script_file}',
+                    chdir=root_dir)
+  anns.append(ann)
+
 env.Alias('Snaps', snaps)
-
-# -----------------------------------------------------------------------------
-# Image annotations.
-# -----------------------------------------------------------------------------
-
-ann_script_dir = './snaps/annotations'
-annotator      = env.File('#/bin/annotate.py').abspath
-
-# Returns a triple: (script_file, input_image_file, output_image_file) based on
-# the script file.
-def GetAnnotationData(script_file):
-  name = splitext(basename(script_file))[0]
-  return (script_file, ImageFile(name), ImageFile(name + 'Annotated'))
-
-ann_scripts       = Glob(f'{ann_script_dir}/*', strings=True)
-ann_data          = [GetAnnotationData(sf) for sf in ann_scripts]
-ann_input_images  = [data[1] for data in ann_data]
-ann_output_images = [data[2] for data in ann_data]
-
-annotations = env.Command(ann_output_images,
-                          [annotator] + ann_scripts + ann_input_images,
-                          [f'{annotator} {data[1]} {data[0]} {data[2]}'
-                           for data in ann_data],
-                          chdir=f'{root_dir}/PublicDoc')
+env.Alias('Images', [snaps, anns])
 
 # -----------------------------------------------------------------------------
 # Documentation generation.
@@ -120,7 +126,7 @@ sphinx_args = ' '.join([
 ])
 
 doc = env.Command('$OUTPUT_DIR/index.html',
-                  sources + [cs_output] + snaps + annotations,
+                  sources + [cs_output] + snaps + anns,
                   ['echo = Building public doc for version: $VERSION_STRING',
                    f'sphinx-build {sphinx_args} docs {output_dir}'],
                   chdir=f'{root_dir}/PublicDoc')

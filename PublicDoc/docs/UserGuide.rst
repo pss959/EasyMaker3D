@@ -29,6 +29,7 @@
 .. _ug-decrease-precision:
 .. _ug-delete:
 .. _ug-feedback:
+.. _ug-file-panel:
 .. _ug-hide-selected:
 .. _ug-increase-complexity:
 .. _ug-increase-precision:
