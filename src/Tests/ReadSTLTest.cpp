@@ -50,3 +50,11 @@ TEST_F(ReadSTLTest, BinaryBoxConversion) {
     const TriMesh mesh = LoadTriMesh("binarybox.stl", *conv);
     EXPECT_EQ(Bounds(Vector3f(10000, 10000, 10000)), ComputeMeshBounds(mesh));
 }
+
+TEST_F(ReadSTLTest, BinaryBoxSolid) {
+    // Reads a file that is binary but that starts with "solid" to test that it
+    // is recognized properly as binary.
+    const TriMesh mesh = LoadTriMesh("binaryboxsolid.stl", *GetDefaultUC());
+    EXPECT_EQ(Bounds(Vector3f(10, 10, 10)), ComputeMeshBounds(mesh));
+}
+

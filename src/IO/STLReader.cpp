@@ -30,11 +30,25 @@ class STLException_ : public ExceptionBase {
 // General STL reading functions.
 // ----------------------------------------------------------------------------
 
+/// Converts a data pointer to a uint32_t.
+static uint32_t ToUint32_(const unsigned char *p) {
+    return (p[3] << 24 |
+            p[2] << 16 |
+            p[1] <<  8 |
+            p[0]);
+}
+
+/// Converts a data pointer to a uint32_t.
+static uint32_t ToUint32_(const char *p) {
+    return ToUint32_(reinterpret_cast<const unsigned char *>(p));
+}
+
 /// Returns true if the data in the given string most likely represents text
 /// STL.
 static bool IsTextSTL_(const std::string &data) {
     // An STL text file must start with the word "solid" after optional
-    // whitespace.
+    // whitespace. However, some binary files also start with "solid" (see
+    // Thingiverse, for example). So do a more comprehensive test.
     size_t start = data.size();
     for (size_t i = 0; i < data.size(); ++i) {
         if (! isspace(data[i])) {
@@ -42,12 +56,28 @@ static bool IsTextSTL_(const std::string &data) {
             break;
         }
     }
-    return start + 5U < data.size() &&
-        data[start + 0] == 's' &&
-        data[start + 1] == 'o' &&
-        data[start + 2] == 'l' &&
-        data[start + 3] == 'i' &&
-        data[start + 4] == 'd';
+
+    // Check for "solid" to start. If not, definitely not text.
+    if (start + 5U < data.size() &&
+        data.compare(0, 5, "solid") != 0)
+        return false;
+
+    // See if there are enough bytes to support binary: at least an 80-byte
+    // header and the number of triangular facets (4 bytes). If so, and the
+    // file size (the size of the data string) is exactly equal to the size of
+    // a binary file for the number of triangles, assume it is binary.
+    if (data.size() >= 84U) {
+        const uint32_t facet_count = ToUint32_(&data[80]);
+        const size_t kNormalSize = 1 * 3 * sizeof(float);
+        const size_t kVertexSize = 3 * 3 * sizeof(float);
+        const size_t kAttrSize   = 2;
+        const size_t kSizePerTri = kNormalSize + kVertexSize + kAttrSize;
+        if (data.size() == 80 + 4 + kSizePerTri * facet_count)
+            return false;
+    }
+
+    // Otherwise, assume text.
+    return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -119,11 +149,7 @@ class BinarySTLReader_ : public STLReaderBase_ {
 
     uint32_t ScanUint32_() {
         Require_(4);
-        uint32_t n;
-        n = (data_[offset_ + 3] << 24 |
-             data_[offset_ + 2] << 16 |
-             data_[offset_ + 1] <<  8 |
-             data_[offset_ + 0]);
+        const uint32_t n = ToUint32_(&data_[offset_]);
         offset_ += 4;
         return n;
     }
