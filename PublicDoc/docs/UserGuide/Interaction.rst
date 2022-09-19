@@ -1,7 +1,7 @@
 Interaction
 -----------
 
-While MakerVR is designed to be reasonably intuitive, there are a few things
+While |appname| is designed to be reasonably intuitive, there are a few things
 that may need explanation before you can use it effectively.
 
 Clicking and Dragging
@@ -94,7 +94,7 @@ option is to use :ref:`inspector mode <ug-inspector-mode>`.
 Viewing
 .......
 
-MakerVR is designed to be maintain a relatively stable viewpoint. However,
+|appname| is designed to be maintain a relatively stable viewpoint. However,
 there may be times when you want to change the view of the entire scene (in
 addition to manipulating the :ref:`stage <ug-stage>` or using :ref:`inspector
 mode <ug-inspector-mode>`).

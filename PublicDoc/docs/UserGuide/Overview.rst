@@ -15,7 +15,7 @@ typing in numbers for everything and have a reasonable amount of 3D graphics
 experience. |appname| is designed to have a similar amount of power while still
 being useful to beginners.
 
-|
+|block-image|
 
 .. _ug-workflow:
 

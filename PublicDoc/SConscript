@@ -60,9 +60,15 @@ annotator  = env.File('#/bin/annotate.py').abspath
 
 # This maps snapimage script files to the images they generate.
 snap_map = {
+  'CSG'        : [ 'CSGOperands', 'CSGUnion',
+                   'CSGIntersection', 'CSGDifference' ],
   'Controller' : [ 'Vive', 'OculusTouch', 'TouchMode' ],
   'Doorstop'   : [ 'Doorstop' ],
+  'Hull'       : [ 'HullSpheres', 'HullCapsule', 'HullTorus', 'HullDisk' ],
   'Main'       : [ 'WorkArea', 'BuildVolume', 'Logo' ],
+  'Primitives' : [ 'PrimitiveBox', 'PrimitiveCylinder', 'PrimitiveSphere',
+                   'PrimitiveTorus', 'PrimitiveRevSurf', 'PrimitiveText',
+                   'PrimitiveImported' ],
   'Quickstart' : [ 'SessionPanel', 'QuickstartTorus', 'QuickstartScale',
                    'QuickstartCylinder', 'QuickstartSelected',
                    'QuickstartHull', 'QuickstartRenamed', 'QuickstartExport' ],

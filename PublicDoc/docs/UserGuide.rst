@@ -1,12 +1,18 @@
 |appname| User Guide
 ====================
 
+.. todo::
+   Add a paragraph about the organization of the User Guide
+
 .. include:: UserGuide/Overview.rst
 .. include:: UserGuide/Interaction.rst
+.. include:: UserGuide/CreatingModels.rst
 
 .. These are all of the undefined reference targets so far:
 
 .. _ug-actions:
+.. _ug-bevel-tool:
+.. _ug-clip-tool:
 .. _ug-color-tool:
 .. _ug-combine-csg-difference:
 .. _ug-combine-csg-intersection:
@@ -24,16 +30,20 @@
 .. _ug-create-sphere:
 .. _ug-create-text:
 .. _ug-create-torus:
+.. _ug-cylinder-tool:
 .. _ug-cut:
 .. _ug-decrease-complexity:
 .. _ug-decrease-precision:
 .. _ug-delete:
 .. _ug-feedback:
 .. _ug-file-panel:
+.. _ug-general-tools:
 .. _ug-hide-selected:
+.. _ug-import-tool:
 .. _ug-increase-complexity:
 .. _ug-increase-precision:
 .. _ug-linear-layout:
+.. _ug-mirror-tool:
 .. _ug-model-colors:
 .. _ug-move-next:
 .. _ug-move-previous:
@@ -50,6 +60,7 @@
 .. _ug-quit:
 .. _ug-radial-layout:
 .. _ug-redo:
+.. _ug-rev-surf-tool:
 .. _ug-rotation-tool:
 .. _ug-scale-tool:
 .. _ug-select-all:
@@ -63,9 +74,11 @@
 .. _ug-session-panel:
 .. _ug-settings-panel:
 .. _ug-show-all:
+.. _ug-specialized-tools:
 .. _ug-switch-to-next-tool:
 .. _ug-switch-to-previous-tool:
 .. _ug-targets:
+.. _ug-text-tool:
 .. _ug-toggle-axis-aligned:
 .. _ug-toggle-build-volume:
 .. _ug-toggle-edge-target:
@@ -76,6 +89,7 @@
 .. _ug-toggle-show-edges:
 .. _ug-toggle-specialized-tool:
 .. _ug-tools:
+.. _ug-torus-tool:
 .. _ug-translation-tool:
 .. _ug-tree-panel:
 .. _ug-undo:
