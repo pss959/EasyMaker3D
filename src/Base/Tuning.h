@@ -246,6 +246,9 @@ extern const float    kMinTorusHoleRadius;
 /// Minimum inner radius of a TorusModel.
 extern const float    kMinTorusInnerRadius;
 
+/// Default height for a RevSurfModel.
+extern const float    kRevSurfHeight;
+
 /// Maximum allowable scale factor produced by a ScaleWidget.
 extern const float    kScaleWidgetMaxLimit;
 

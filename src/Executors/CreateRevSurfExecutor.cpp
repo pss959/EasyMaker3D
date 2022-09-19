@@ -14,7 +14,7 @@ ModelPtr CreateRevSurfExecutor::CreateModel(Command &command) {
         crc.SetResultName(name);
     }
 
-    crc.SetInitialScale(TK::kInitialModelScale);
+    crc.SetInitialScale(TK::kRevSurfHeight);
 
     // Create and initialize the Model.
     RevSurfModelPtr rsm = Model::CreateModel<RevSurfModel>(name);

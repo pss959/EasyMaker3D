@@ -246,7 +246,8 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
     switch (instr.type) {
       case SIType::kAction: {
           const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
-          ASSERT(test_context_.action_manager->CanApplyAction(ainst.action));
+          ASSERTM(test_context_.action_manager->CanApplyAction(ainst.action),
+                  Util::EnumName(ainst.action));
           test_context_.action_manager->ApplyAction(ainst.action);
           break;
       }

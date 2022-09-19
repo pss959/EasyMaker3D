@@ -85,6 +85,7 @@ const float    kMaxTorusInnerRadius              = 10;
 const float    kMaxTorusOuterRadius              = 20;
 const float    kMinTorusHoleRadius               = .05f;
 const float    kMinTorusInnerRadius              = .05f;
+const float    kRevSurfHeight                    = 4;
 const float    kScaleWidgetMaxLimit              = 100;
 const float    kScaleWidgetMinLimit              = .01f;
 const float    kTextHeight                       = 4;
