@@ -19,6 +19,7 @@ ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
     // value (1).
     ImportedModelPtr im = Model::CreateModel<ImportedModel>(name);
     const auto &settings = GetContext().settings_manager->GetSettings();
+    im->SetPath(cic.GetPath());
     im->SetUnitConversion(settings.GetImportUnitsConversion());
 
     InitModelTransform(*im, cic);

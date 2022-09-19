@@ -57,4 +57,3 @@ TEST_F(ReadSTLTest, BinaryBoxSolid) {
     const TriMesh mesh = LoadTriMesh("binaryboxsolid.stl", *GetDefaultUC());
     EXPECT_EQ(Bounds(Vector3f(10, 10, 10)), ComputeMeshBounds(mesh));
 }
-
