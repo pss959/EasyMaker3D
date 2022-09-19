@@ -40,7 +40,7 @@
 
 .. |block-image| raw:: html
 
-   <p class="after-image">&nbsp;</p>
+   <p class="after-image"></p>
 
 .. ----------------------------------------------------------------------------
 .. nbsp: Inserts a non-blocking space character.

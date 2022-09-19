@@ -172,7 +172,7 @@ printing problems.
 .. _ug-vr-modes:
 
 VR and Non-VR Modes
--------------------
+...................
 
 Since most people do not have a VR setup, |appname| can operate without one,
 using the mouse and keyboard exclusively. This is referred to below as

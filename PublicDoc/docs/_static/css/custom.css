@@ -28,10 +28,18 @@
     color: #eeeeee;
 }
 
-
 /* -----------------------------------------------------------------------------
  * Reduce main content vertical space.
  * -------------------------------------------------------------------------- */
+
+/* Limit width of main text area. */
+.rst-content {
+    max-width: 1000px;
+}
+
+.wy-nav-content {
+    padding: 10px 3.236em;
+}
 
 .wy-nav-content p {
     margin-block-start: 8px;
@@ -49,6 +57,23 @@
     margin-bottom:      8px;
 }
     
+.rst-breadcrumbs-buttons {
+    margin-top: 6px;
+}
+
+.rst-content .align-right {
+    margin-bottom: 8px;
+}
+
+div[role=navigation] hr {
+    margin: 4px 0;
+}
+
+/* Sphinx inserts empty paragraphs for no reason. */
+p:empty {
+    margin: 0;
+}
+
 /* -----------------------------------------------------------------------------
  * Main content section colors. 
  * -------------------------------------------------------------------------- */
