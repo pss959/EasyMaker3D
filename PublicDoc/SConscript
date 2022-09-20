@@ -76,6 +76,7 @@ snap_map = {
                        'QuickstartHull', 'QuickstartRenamed',
                        'QuickstartExport' ],
   'RadialMenu'     : [ 'FixedRadialMenu', 'AttachedRadialMenu' ],
+  'Selection'      : [ 'Selection' ],
 }
 
 # This maps annotation script files to the images they read and write.

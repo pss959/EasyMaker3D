@@ -60,6 +60,8 @@ modified version performs a symmetric scale about the model's center point
 instead of an asymmetric scale. Other uses are described elsewhere in this
 guide.
 
+.. _ug-keyboard-shortcuts:
+
 Keyboard Shortcuts
 ..................
 

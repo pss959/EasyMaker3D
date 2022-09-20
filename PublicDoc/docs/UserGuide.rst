@@ -7,6 +7,7 @@
 .. include:: UserGuide/Overview.rst
 .. include:: UserGuide/Interaction.rst
 .. include:: UserGuide/CreatingModels.rst
+.. include:: UserGuide/Selection.rst
 
 .. These are all of the undefined reference targets so far:
 
@@ -70,7 +71,6 @@
 .. _ug-select-none:
 .. _ug-select-parent:
 .. _ug-select-previous-sibling:
-.. _ug-selection:
 .. _ug-session-name:
 .. _ug-session-panel:
 .. _ug-settings-panel:

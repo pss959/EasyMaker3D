@@ -13,7 +13,7 @@ PassiveTool "PassiveTool" {
           uniforms: [Uniform "uBaseColor" { vec4f_val: "#7e7e7e" } ],
         }
       ],
-      shapes: [ Box { size: .6 .6 .6 } ]
+      shapes: [ Box { size: .4 .4 .4 } ]
     },
     # An instance of the Edge is created, scaled, and translated for each of
     # the 12 edges.
