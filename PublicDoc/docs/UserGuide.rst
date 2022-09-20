@@ -35,6 +35,7 @@
 .. _ug-decrease-complexity:
 .. _ug-decrease-precision:
 .. _ug-delete:
+.. _ug-edge-target:
 .. _ug-feedback:
 .. _ug-file-panel:
 .. _ug-general-tools:
@@ -44,7 +45,6 @@
 .. _ug-increase-precision:
 .. _ug-linear-layout:
 .. _ug-mirror-tool:
-.. _ug-model-colors:
 .. _ug-move-next:
 .. _ug-move-previous:
 .. _ug-move-to-origin:
@@ -56,6 +56,7 @@
 .. _ug-open-settings-panel:
 .. _ug-paste-into:
 .. _ug-paste:
+.. _ug-point-target:
 .. _ug-precision:
 .. _ug-quit:
 .. _ug-radial-layout:

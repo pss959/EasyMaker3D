@@ -1,0 +1,33 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 0 2 0,
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand {
+      translation: 0 0 2,
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand {
+      translation: 1 0 0,
+      model_names: ["Cylinder_1"],
+    },
+  ],
+  current_index: 5,
+}

@@ -1,0 +1,44 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+      edges_shown: False,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand {
+      type: "kSphere",
+      result_name: "Sphere_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 0 0 1,
+      model_names: ["Sphere_1"],
+    },
+    TranslateCommand {
+      translation: 0 2 0,
+      model_names: ["Sphere_1"],
+    },
+    ScaleCommand {
+      ratios: 0.75 0.75 0.75,
+      mode: "kCenterSymmetric",
+      model_names: ["Sphere_1"],
+    },
+    CreateCSGModelCommand {
+      operation: "kDifference",
+      result_name: "Difference_1",
+      model_names: ["Cylinder_1", "Sphere_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.928096 0.845799 0.565692 1,
+      model_names: ["Difference_1"],
+    },
+  ],
+  current_index: 7,
+}

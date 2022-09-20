@@ -147,9 +147,9 @@ the resulting models, as listed below.
 Note that this two-step process (converting, then editing) makes it clear that
 a new type of model must be created in order to apply the editing operation.
 The converted model becomes a parent of the original model in the hierarchy (as
-shown in the :ref:`Tree Panel <ug-tree-panel>`). This scheme also simplifies the
-interface and also allows the original objects to be edited even after the
-conversion operation has been applied.
+shown in the :ref:`Tree Panel <ug-tree-panel>`). This scheme also simplifies
+the interface and also allows the original objects to be modified even after
+the conversion operation has been applied.
 
   - A :newterm:`Beveled model` applies a bevel or other profile to edges of a
     model. The :ref:`Convert to Bevel action <ug-convert-bevel>` is used to
@@ -169,25 +169,33 @@ conversion operation has been applied.
 Model Names
 ...........
 
-.. todo::
-   Ended here...
-
 When |appname| creates a model of any type, a unique name is assigned to it
 automatically by affixing an underscore and a number to its base model type,
-such as `"Sphere_1"` or `"Imported_13"`. Names can be seen and changed in the
-[Tree Panel][TreePanel].
+such as `"Sphere_1"` or `"Imported_13"`. Model names can be seen in the
+:ref:`Tree Panel <ug-tree-panel>` and edited with the :ref:`Name Tool
+<ug-name-tool>`.
 
-## Model Colors
+.. _ug-model-colors:
 
-![][ImgSpecialMeshColors]{{rightimage(200)}}
+Model Colors
+............
+
+.. incimage:: /images/InvalidColors.jpg 200px right
 
 Reasonable colors are chosen automatically for new models created in the
-scene. The [Color Tool][ColorTool] allows you to change them for aesthetic
-reasons; the colors have no effect on the 3D-printed model.
+scene. The :ref:`Color Tool <ug-color-tool>` allows you to change the color of
+any model for aesthetic reasons. (The colors have no effect on the 3D-printed
+model.)
 
-Two special colors are used for models that have invalid meshes (bright red) or
-that at least partly lie outside the current [build volume][BuildVolume]
-(bright cyan) if the build volume is visible, as shown here.
+Two special model colors are outside the normal range as shown here:
+
+  - Any model with an invalid mesh is colored like the model on the left to
+    indicate that it will probably not print successfully. A mesh is invalid if
+    it is not closed, has weird connectivity, or self-intersects.
+  - If the :ref:`build volume <ug-build-volume>` is visible, any part of any
+    model that lies outside of it will be colored as shown on the right in the
+    image. This indicates that the model will likely not be printed
+    successfully.
 
 When an invalid mesh is detected, it will retain the invalid mesh color until
 the problem is fixed. Changes made to such a model with the Color Tool will
@@ -195,16 +203,17 @@ still take effect, but you will not be able to see them while the model is
 invalid. Also, some tools will be disabled when an invalid model is selected to
 avoid compounding the problem.
 
-## Model Edge Display
+.. _ug-show-edges:
 
-![][ImgEdges]{{rightimage(140)}}
+Model Edge Display
+..................
 
-Clicking The [Show Edges Toggle][ShowEdgesToggle] icon lets you display edges
-of your models as visible lines or hide them.  Showing them can help you see
-how your models are tessellated into triangles for 3D printing or to help place
-the [Edge Target][EdgeTarget].
+.. incimage:: /images/ModelEdges.jpg   200px right
+.. incimage:: /images/ModelNoEdges.jpg 200px right
 
-Note that this feature is not available on OSX, due to [shader
-limitations](https://docs.unity3d.com/Manual/Metal.html); it is always disabled
-on that platform.
+Clicking The :ref:`Show Edges Toggle <ug-toggle-show-edges>` icon lets you
+display edges of your models as visible lines or hide them.  Showing them can
+help you see how your models are tessellated into triangles for 3D printing or
+to help place the :ref:`Edge Target <ug-edge-target>`.
 
+|block-image|

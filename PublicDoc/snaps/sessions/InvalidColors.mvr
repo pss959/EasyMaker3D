@@ -1,0 +1,79 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+      build_volume_visible: True,
+    },
+  },
+  commands: [
+    CreateRevSurfModelCommand {
+      result_name: "RevSurf_1",
+      initial_scale: 4,
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.38058 0.905142, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.38058 0.905142, 0.22649 0.562343, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.38058 0.905142, 0.22649 0.562343, 0.5 0.5, 0.342058 0.151949],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.38058 0.905142, 0.5 0.5, 0.342058 0.151949],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.203377 0.383701, 0.5 0.5, 0.342058 0.151949],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.203377 0.383701, 0.488402 0.437913, 0.342058 0.151949],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.330695 0.814064, 0.488402 0.437913, 0.342058 0.151949],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.330695 0.814064, 0.187491 0.0554744, 0.488402 0.437913, 0.342058 0.151949],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ScaleCommand {
+      ratios: 1.75 1.75 1.75,
+      mode: "kAsymmetric",
+      model_names: ["RevSurf_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 11 0 0,
+      model_names: ["Cylinder_1"],
+    },
+    ScaleCommand {
+      ratios: 1.5 1.5 1.5,
+      mode: "kAsymmetric",
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand {
+      translation: -2 0 0,
+      model_names: ["RevSurf_1", "Cylinder_1"],
+    },
+  ],
+  current_index: 14,
+}

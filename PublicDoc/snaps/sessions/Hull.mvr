@@ -1,0 +1,54 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kSphere",
+      result_name: "Sphere_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 5 0 0,
+      model_names: ["Sphere_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kSphere",
+      result_name: "Sphere_2",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: -5 0 0,
+      model_names: ["Sphere_2"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kTorus",
+      result_name: "Torus_1",
+      initial_scale: 2,
+    },
+    ChangeTorusCommand {
+      is_inner_radius: False,
+      new_radius: 3,
+      model_names: ["Torus_1"],
+    },
+    ChangeTorusCommand {
+      is_inner_radius: True,
+      new_radius: 1,
+      model_names: ["Torus_1"],
+    },
+    ChangeTorusCommand {
+      is_inner_radius: True,
+      new_radius: 1,
+      model_names: ["Torus_1"],
+    },
+    ChangeTorusCommand {
+      is_inner_radius: False,
+      new_radius: 5,
+      model_names: ["Torus_1"],
+    },
+  ],
+  current_index: 9,
+}
