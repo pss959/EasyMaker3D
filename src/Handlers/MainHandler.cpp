@@ -408,6 +408,9 @@ bool MainHandler::Impl_::Activate_(const Event event) {
             active_widget_ = widget;
             KLOG('h', "MainHandler active widget = " << widget.get()
                  << " from " << Util::EnumName(tracker->GetActuator()));
+            if (event.device == Event::Device::kMouse) {
+                KLOG('d', "Mouse activation at " << event.position2D);
+            }
             ProcessActivation_();
             state_ = State_::kActivated;
             moved_enough_for_drag_ = false;
@@ -427,6 +430,9 @@ bool MainHandler::Impl_::Deactivate_(const Event &event) {
         cur_tracker_.reset();
         active_widget_.reset();
         state_ = State_::kWaiting;
+        if (event.device == Event::Device::kMouse) {
+            KLOG('d', "Mouse deactivation at " << event.position2D);
+        }
         return true;
     }
     return false;
@@ -546,11 +552,17 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
         draggable->StartDrag(drag_info_);
         KLOG('h', "MainHandler kDragging with " << draggable->GetDesc()
              << " (" << drag_info_.path_to_widget.ToString() << ")");
+        if (event.device == Event::Device::kMouse) {
+            KLOG('d', "Mouse drag start at " << event.position2D);
+        }
     }
 
     // Starting or continuing a current drag operation. Use the current info.
     cur_tracker_->FillEventDragInfo(event, drag_info_);
     draggable->ContinueDrag(drag_info_);
+    if (event.device == Event::Device::kMouse) {
+        KLOG('d', "Mouse drag at " << event.position2D);
+    }
 }
 
 void MainHandler::Impl_::ProcessClick_(Actuator actuator,

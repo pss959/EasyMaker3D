@@ -25,7 +25,7 @@ void FeedbackManager::SetSceneBoundsFunc(const SceneBoundsFunc &func) {
 
 void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
     ASSERT(instance);
-    KLOG('d', "Activating instance " << instance->GetDesc());
+    KLOG('D', "Activating instance " << instance->GetDesc());
     instance->Activate();
     instance->SetSceneBoundsFunc(scene_bounds_func_);
 
@@ -41,7 +41,7 @@ void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
 
 void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
     ASSERT(instance);
-    KLOG('d', "Deactivating instance " << instance->GetDesc());
+    KLOG('D', "Deactivating instance " << instance->GetDesc());
     instance->Deactivate();
 
     if (instance->IsInWorldCoordinates())
@@ -53,7 +53,7 @@ void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
 void FeedbackManager::AddActiveInstance_(const std::string &key,
                                          const FeedbackPtr &instance) {
     ASSERTM(! Util::MapContains(active_instances_, key), key);
-    KLOG('d', "Adding active instance " << instance->GetDesc()
+    KLOG('D', "Adding active instance " << instance->GetDesc()
          << " with key " << key);
     active_instances_[key] = instance;
 }
@@ -61,7 +61,7 @@ void FeedbackManager::AddActiveInstance_(const std::string &key,
 void FeedbackManager::RemoveActiveInstance_(const std::string &key,
                                             const FeedbackPtr &instance) {
     ASSERTM(Util::MapContains(active_instances_, key), key);
-    KLOG('d', "Removing active instance " << instance->GetDesc()
+    KLOG('D', "Removing active instance " << instance->GetDesc()
          << " with key " << key);
     active_instances_.erase(key);
 }

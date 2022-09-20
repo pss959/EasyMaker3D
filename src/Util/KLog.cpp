@@ -8,7 +8,8 @@
 //   b:   Scene graph bounds computation.
 //   B:   Model mesh building and invalidation.
 //   c:   Scene graph object construction and destruction.
-//   d:   Feedback activation and deactivation.
+//   d:   Mouse drag positions.
+//   D:   Feedback activation and deactivation.
 //   e:   Events and event handling.
 //   E:   Event compression and deferring.
 // + f:   File reading/parsing [Should be set before parsing scene file!].
@@ -17,6 +18,7 @@
 //   h:   MainHandler state changes.
 //   i:   Intersection testing in the scene.
 //   I:   Ion setup for SG nodes.
+//   j:   ActionManager action processing.
 //   k:   Clicks on objects.
 //   K:   VirtualKeyboard state changes.
 //   m:   Changes to matrices in SG Nodes.

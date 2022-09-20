@@ -61,6 +61,7 @@
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 // ----------------------------------------------------------------------------
 // Convenient helper functions.
@@ -343,6 +344,8 @@ bool ActionManager::Impl_::CanApplyAction(Action action) const {
 
 void ActionManager::Impl_::ApplyAction(Action action) {
     ASSERTM(CanApplyAction(action), Util::EnumName(action));
+
+    KLOG('j', "Applying action " << Util::EnumName(action));
 
     // Handle toggles specially.
     if (IsToggleAction(action)) {
