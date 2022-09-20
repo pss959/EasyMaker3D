@@ -22,13 +22,13 @@
      - :ref:`Copy <ug-copy>`
      - .. menuicon:: Copy
      - Copy all selected models to the clipboard
-     - :shortcut:`<Ctrl>c`
+     - :shortcut:`Ctrl-c`
      - 
    * - Basics
      - :ref:`Cut <ug-cut>`
      - .. menuicon:: Cut
      - Cut all selected models to the clipboard
-     - :shortcut:`<Ctrl>x`
+     - :shortcut:`Ctrl-x`
      - 
    * - Basics
      - :ref:`Delete <ug-delete>`
@@ -40,31 +40,31 @@
      - :ref:`Paste <ug-paste>`
      - .. menuicon:: Paste
      - Paste all models from the clipboard
-     - :shortcut:`<Ctrl>v`
+     - :shortcut:`Ctrl-v`
      - 
    * - Basics
      - :ref:`Paste Into <ug-paste-into>`
      - .. menuicon:: PasteInto
      - Paste all models from the clipboard as children of the selected model
-     - :shortcut:`<Ctrl>V`
+     - :shortcut:`Shift-Ctrl-v`
      - 
    * - Basics
      - :ref:`Quit <ug-quit>`
      - .. menuicon:: Quit
      - Exit the application
-     - :shortcut:`<Ctrl>q`
+     - :shortcut:`Ctrl-q`
      - 
    * - Basics
      - :ref:`Redo <ug-redo>`
      - .. menuicon:: Redo
      - Redo the last undone command
-     - :shortcut:`<Ctrl>Z`
+     - :shortcut:`Shift-Ctrl-z`
      - 
    * - Basics
      - :ref:`Undo <ug-undo>`
      - .. menuicon:: Undo
      - Undo the last command
-     - :shortcut:`<Ctrl>z`
+     - :shortcut:`Ctrl-z`
      - 
    * - Combination
      - :ref:`Combine CSG Difference <ug-combine-csg-difference>`
@@ -124,7 +124,7 @@
      - :ref:`Create Imported Model <ug-create-imported-model>`
      - .. menuicon:: CreateImportedModel
      - Import a model from a file
-     - :shortcut:`<Ctrl>i`
+     - :shortcut:`Ctrl-i`
      - 
    * - Creation
      - :ref:`Create Rev Surf <ug-create-rev-surf>`
@@ -172,13 +172,13 @@
      - :ref:`Toggle Edge Target <ug-toggle-edge-target>`
      - .. menuicon:: ToggleEdgeTarget
      - TOGGLE: Activate or deactivate the edge target
-     - :shortcut:`<Ctrl>E`
+     - :shortcut:`Shift-Ctrl-e`
      - 
    * - Layout
      - :ref:`Toggle Point Target <ug-toggle-point-target>`
      - .. menuicon:: TogglePointTarget
      - TOGGLE: Activate or deactivate the point target
-     - :shortcut:`<Ctrl>P`
+     - :shortcut:`Shift-Ctrl-p`
      - 
    * - Modification
      - :ref:`Decrease Complexity <ug-decrease-complexity>`
@@ -232,49 +232,49 @@
      - :ref:`Toggle Left Radial Menu <ug-toggle-left-radial-menu>`
      - .. menuicon:: ToggleLeftRadialMenu
      - TOGGLE: Show or hide the left radial menu
-     - :shortcut:`<Ctrl>l`
+     - :shortcut:`Ctrl-l`
      - :shortcut:`L:Menu`
    * - Radial Menu
      - :ref:`Toggle Right Radial Menu <ug-toggle-right-radial-menu>`
      - .. menuicon:: ToggleRightRadialMenu
      - TOGGLE: Show or hide the right radial menu
-     - :shortcut:`<Ctrl>r`
+     - :shortcut:`Ctrl-r`
      - :shortcut:`R:Menu`
    * - Selection
      - :ref:`Select All <ug-select-all>`
      - .. menuicon:: SelectAll
      - Select all top-level models
-     - :shortcut:`<Ctrl>a`
+     - :shortcut:`Ctrl-a`
      - 
    * - Selection
      - :ref:`Select First Child <ug-select-first-child>`
      - .. menuicon:: SelectFirstChild
      - Select the first child of the primary selection
-     - :shortcut:`<Ctrl>Down`
+     - :shortcut:`Ctrl-Down`
      - 
    * - Selection
      - :ref:`Select Next Sibling <ug-select-next-sibling>`
      - .. menuicon:: SelectNextSibling
      - Select the next sibling of the primary selection
-     - :shortcut:`<Ctrl>Right`
+     - :shortcut:`Ctrl-Right`
      - 
    * - Selection
      - :ref:`Select None <ug-select-none>`
      - .. menuicon:: SelectNone
      - Deselect all selected models
-     - :shortcut:`<Ctrl>A`
+     - :shortcut:`Shift-Ctrl-a`
      - 
    * - Selection
      - :ref:`Select Parent <ug-select-parent>`
      - .. menuicon:: SelectParent
      - Select the parent of the primary selection
-     - :shortcut:`<Ctrl>Up`
+     - :shortcut:`Ctrl-Up`
      - 
    * - Selection
      - :ref:`Select Previous Sibling <ug-select-previous-sibling>`
      - .. menuicon:: SelectPreviousSibling
      - Select the previous sibling of the primary selection
-     - :shortcut:`<Ctrl>Left`
+     - :shortcut:`Ctrl-Left`
      - 
    * - Session
      - :ref:`Open Help Panel <ug-open-help-panel>`
@@ -286,19 +286,19 @@
      - :ref:`Open Info Panel <ug-open-info-panel>`
      - .. menuicon:: OpenInfoPanel
      - Open the panel to show information about selected models
-     - :shortcut:`<Ctrl>I`
+     - :shortcut:`Shift-Ctrl-i`
      - 
    * - Session
      - :ref:`Open Session Panel <ug-open-session-panel>`
      - .. menuicon:: OpenSessionPanel
      - Open the panel to save or open session files
-     - :shortcut:`<Ctrl>s`
+     - :shortcut:`Ctrl-s`
      - 
    * - Session
      - :ref:`Open Settings Panel <ug-open-settings-panel>`
      - .. menuicon:: OpenSettingsPanel
      - Edit application settings
-     - :shortcut:`<Ctrl>,`
+     - :shortcut:`Ctrl-,`
      - 
    * - Specialized
      - :ref:`Toggle Specialized Tool <ug-toggle-specialized-tool>`
@@ -322,7 +322,7 @@
      - :ref:`Name Tool <ug-name-tool>`
      - .. menuicon:: NameTool
      - Edit the name of the selected model
-     - :shortcut:`<Ctrl>n`
+     - :shortcut:`Ctrl-n`
      - 
    * - Tools
      - :ref:`Rotation Tool <ug-rotation-tool>`
@@ -358,29 +358,29 @@
      - :ref:`Hide Selected <ug-hide-selected>`
      - .. menuicon:: HideSelected
      - Hide selected top-level models
-     - :shortcut:`<Ctrl>h`
+     - :shortcut:`Ctrl-h`
      - 
    * - Viewing
      - :ref:`Show All <ug-show-all>`
      - .. menuicon:: ShowAll
      - Show all hidden top-level models
-     - :shortcut:`<Ctrl>H`
+     - :shortcut:`Shift-Ctrl-h`
      - 
    * - Viewing
      - :ref:`Toggle Build Volume <ug-toggle-build-volume>`
      - .. menuicon:: ToggleBuildVolume
      - TOGGLE: Show or hide the translucent build volume
-     - :shortcut:`<Ctrl>b`
+     - :shortcut:`Ctrl-b`
      - 
    * - Viewing
      - :ref:`Toggle Inspector <ug-toggle-inspector>`
      - .. menuicon:: ToggleInspector
      - TOGGLE: Open or close the Inspector for the current primary selection
-     - :shortcut:`<Ctrl>t`
+     - :shortcut:`Ctrl-t`
      - 
    * - Viewing
      - :ref:`Toggle Show Edges <ug-toggle-show-edges>`
      - .. menuicon:: ToggleShowEdges
      - TOGGLE: Show or hide edges on all models
-     - :shortcut:`<Ctrl>e`
+     - :shortcut:`Ctrl-e`
      - 

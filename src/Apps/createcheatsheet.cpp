@@ -1,5 +1,8 @@
+#include <cctype>
 #include <iostream>
 #include <string>
+
+#include <ion/base/stringutils.h>
 
 #include "Base/ActionMap.h"
 #include "Base/HelpMap.h"
@@ -55,6 +58,35 @@ static std::string WrapShortcut_(const std::string &str) {
     return new_str;
 }
 
+// Changes a keyboard shortcut if necessary to show shift modifier if the
+// shortcut is upper case and to change "<Ctrl>" to "Ctrl-".
+static std::string FixKeyboardShortcut_(const std::string &str) {
+    using ion::base::StartsWith;
+
+    std::string new_str;
+
+    // Single upper-case letter.
+    if (str.size() == 1U && std::isupper(str[0])) {
+        new_str = "Shift-";
+        new_str += std::tolower(str[0]);
+    }
+
+    // "<Ctrl>*" where "*" is an upper-case letter.
+    else if (StartsWith(str, "<Ctrl>")) {
+        if (str.size() == 7 && std::isupper(str[6])) {
+            new_str = "Shift-Ctrl-";
+            new_str += std::tolower(str[6]);
+        }
+        else {
+            new_str = "Ctrl-" + str.substr(6);
+        }
+    }
+    else {
+        new_str = str;
+    }
+    return new_str;
+}
+
 static void WriteAction_(ActionCategory cat, Action action,
                          const ShortcutHandler &sh, const HelpMap &hm) {
     const std::string category_name = Util::EnumToWords(cat);
@@ -68,7 +100,7 @@ static void WriteAction_(ActionCategory cat, Action action,
     // Get the shortcuts from the ShortcutHandler.
     std::string ks, cs;
     sh.GetShortcutStrings(action, ks, cs);
-    ks = WrapShortcut_(ks);
+    ks = WrapShortcut_(FixKeyboardShortcut_(ks));
     cs = WrapShortcut_(cs);
 
     std::cout
