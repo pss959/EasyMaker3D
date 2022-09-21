@@ -38,7 +38,7 @@ void PrintScene(const SG::Scene &scene);
 void PrintGraph(const SG::Node &root);
 
 /// Prints nodes on the given path.
-void PrintGraphOnPath(const SG::NodePath &path);
+void PrintGraphOnPath(const SG::NodePath &path, bool print_below = true);
 
 /// Prints an indented tree of bounds of all nodes starting with the given one.
 /// A matrix used to convert from world to stage coordinates is supplied.
@@ -46,27 +46,29 @@ void PrintBounds(const SG::Node &root, const Matrix4f &wsm);
 
 /// Prints an indented tree of bounds of all nodes on the given path.  A matrix
 /// used to convert from world to stage coordinates is supplied.
-void PrintBoundsOnPath(const SG::NodePath &path, const Matrix4f &wsm);
+void PrintBoundsOnPath(const SG::NodePath &path, const Matrix4f &wsm,
+                       bool print_below = true);
 
 /// Prints an indented tree of nodes with their local and cumulative matrices.
 void PrintMatrices(const SG::Node &root);
 
 /// Prints an indented tree of nodes with their local and cumulative matrices.
-void PrintMatricesOnPath(const SG::NodePath &path);
+void PrintMatricesOnPath(const SG::NodePath &path, bool print_below = true);
 
 /// Prints an indented tree of nodes with all modified transform fields.
 void PrintTransforms(const SG::Node &root);
 
 /// Prints an indented tree of nodes on the given path with all modified
 /// transform fields.
-void PrintTransformsOnPath(const SG::NodePath &path);
+void PrintTransformsOnPath(const SG::NodePath &path, bool print_below = true);
 
 /// Prints an indented tree of names and types of nodes and shapes.
 void PrintNodesAndShapes(const SG::Node &root);
 
 /// Prints an indented tree of names and types of nodes and shapes on the given
 /// path.
-void PrintNodesAndShapesOnPath(const SG::NodePath &path);
+void PrintNodesAndShapesOnPath(const SG::NodePath &path,
+                               bool print_below = true);
 
 /// Prints an indented tree of Panes starting with the given root Pane. If
 /// is_brief is true, this just prints the Panes with their name and current

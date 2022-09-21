@@ -31,16 +31,20 @@ namespace {
 
 /// The PathLimiter_ class is used to track a path to limit printing to. It
 /// returns true if the given Node should be printed, meaning it is either on
-/// the path or below the last Node in it.
+/// the path or below the last Node in it if print_below is true.
 class PathLimiter_ {
   public:
-    explicit PathLimiter_(const SG::NodePath &path) : path_(path) {}
+    explicit PathLimiter_(const SG::NodePath &path, bool print_below) :
+        path_(path),
+        print_below_(print_below) {}
+
     /// Returns true if the given Node should be printed.
     bool Push(const SG::Node &node);
     void Pop();
 
   private:
     const SG::NodePath          path_;
+    const bool                  print_below_;
     bool                        is_under_path_ = false;
     std::stack<const SG::Node*> nodes_;
 
@@ -53,13 +57,14 @@ class PathLimiter_ {
 };
 
 bool PathLimiter_::Push(const SG::Node &node) {
+    const bool is_tail = ! path_.empty() && &node == path_.back().get();
     if (IsInPath_(node)) {
         nodes_.push(&node);
-        if (&node == path_.back().get())
+        if (is_tail)
             is_under_path_ = true;
         return true;
     }
-    return is_under_path_;
+    return is_under_path_ && (! is_tail || print_below_);
 }
 
 void PathLimiter_::Pop() {
@@ -291,12 +296,12 @@ void PrintGraph(const SG::Node &root) {
     writer.WriteObject(root);
 }
 
-void PrintGraphOnPath(const SG::NodePath &path) {
+void PrintGraphOnPath(const SG::NodePath &path, bool print_below) {
     Surrounder_ surrounder;
     Parser::Writer writer(std::cout);
     writer.SetAddressFlag(true);
     if (PrintPath_(path)) {
-        PathLimiter_ pl(path);
+        PathLimiter_ pl(path, print_below);
         auto write_it = [&](const Parser::Object &obj, bool enter){
             const SG::Node *node = dynamic_cast<const SG::Node *>(&obj);
             bool ret = true;
@@ -317,13 +322,14 @@ void PrintBounds(const SG::Node &root, const Matrix4f &wsm) {
     PrintBoundsRecursive_(root, wsm, 0, Matrix4f::Identity());
 }
 
-void PrintBoundsOnPath(const SG::NodePath &path, const Matrix4f &wsm) {
+void PrintBoundsOnPath(const SG::NodePath &path, const Matrix4f &wsm,
+                       bool print_below) {
     Surrounder_ surrounder;
     if (PrintPath_(path)) {
         int level = 0;
         Matrix4f ctm = Matrix4f::Identity();
         for (auto &node: path) {
-            if (node == path.back())
+            if (node == path.back() && print_below)
                 PrintBoundsRecursive_(*node, wsm, level, ctm);
             else
                 ctm = PrintBounds_(*node, wsm, level++, ctm);
@@ -336,13 +342,13 @@ void PrintMatrices(const SG::Node &root) {
     PrintMatricesRecursive_(root, 0, Matrix4f::Identity());
 }
 
-void PrintMatricesOnPath(const SG::NodePath &path) {
+void PrintMatricesOnPath(const SG::NodePath &path, bool print_below) {
     Surrounder_ surrounder;
     if (PrintPath_(path)) {
         int level = 0;
         Matrix4f ctm = Matrix4f::Identity();
         for (auto &node: path) {
-            if (node == path.back())
+            if (node == path.back() && print_below)
                 PrintMatricesRecursive_(*node, level, ctm);
             else
                 ctm = PrintMatrices_(*node, level++, ctm);
@@ -355,12 +361,12 @@ void PrintTransforms(const SG::Node &root) {
     PrintTransformsRecursive_(root, 0);
 }
 
-void PrintTransformsOnPath(const SG::NodePath &path) {
+void PrintTransformsOnPath(const SG::NodePath &path, bool print_below) {
     Surrounder_ surrounder;
     if (PrintPath_(path)) {
         int level = 0;
         for (auto &node: path) {
-            if (node == path.back())
+            if (node == path.back() && print_below)
                 PrintTransformsRecursive_(*node, level);
             else
                 PrintTransforms_(*node, level++);
@@ -374,13 +380,13 @@ void PrintNodesAndShapes(const SG::Node &root) {
     PrintNodesAndShapesRecursive_(root, 0, false, done);
 }
 
-void PrintNodesAndShapesOnPath(const SG::NodePath &path) {
+void PrintNodesAndShapesOnPath(const SG::NodePath &path, bool print_below) {
     Surrounder_ surrounder;
     if (PrintPath_(path)) {
         std::unordered_set<const SG::Object *> done;
         int level = 0;
         for (auto &node: path) {
-            if (node == path.back())
+            if (node == path.back() && print_below)
                 PrintNodesAndShapesRecursive_(*node, level, false, done);
             else
                 PrintNodesAndShapes_(*node, level++, false, done);
