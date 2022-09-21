@@ -89,7 +89,10 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     stage             = FindTyped_<StageWidget>(sc,      "Stage");
     build_volume      = FindTyped_<BuildVolume>(sc,      "BuildVolume");
 
-    path_to_stage = SG::FindNodePathInScene(sc, *stage);
+    // The path_to_stage converts between world coordinates and stage
+    // coordinates. Include the node in the StageWidget that scales based on
+    // the radius.
+    path_to_stage = SG::FindNodePathInScene(sc, *stage->GetStageScaleNode());
 
     tree_panel->SetRootModel(root_model);
 

@@ -253,11 +253,11 @@ void Model::UpdateForRenderPass(const std::string &pass_name) {
 void Model::PlacePointTarget(const DragInfo &info,
                              Point3f &position, Vector3f &direction,
                              Dimensionality &snapped_dims) {
-    // Convert the hit into stage coordinates. All target work is done in stage
-    // coordinates because the precision is defined in those coordinates.
-    const Matrix4f osm = info.GetObjectToStageMatrix();
-    position  = osm * info.hit.point;
-    direction = ion::math::Normalized(osm * info.hit.normal);
+    // Convert the hit point into stage coordinates. All target work is done in
+    // stage coordinates because the precision is defined in those coordinates.
+    const Matrix4f wsm = info.GetWorldToStageMatrix();
+    position  = wsm * info.hit.GetWorldPoint();
+    direction = ion::math::Normalized(wsm * info.hit.GetWorldNormal());
 
     if (info.is_modified_mode)
         PlacePointTargetOnBounds_(info, position, direction, snapped_dims);

@@ -38,6 +38,12 @@ class StageWidget : public DiscWidget {
     /// the correct size.
     float GetRadiusScale() const { return radius_scaler_->GetScale()[0]; }
 
+    /// Returns the node used to scale the stage based on the radius
+    /// scale. This node should be included in stage-to-world transformations.
+    const SG::NodePtr & GetStageScaleNode() const {
+        return radius_scaler_;
+    }
+
     // ------------------------------------------------------------------------
     // Target Interface.
     // ------------------------------------------------------------------------

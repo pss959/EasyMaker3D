@@ -74,6 +74,12 @@ struct DragInfo {
 
     // ------------------------------------
 
+    /// Convenience function that returns a matrix converting from world
+    /// coordinates to stage coordinates.
+    Matrix4f GetWorldToStageMatrix() const {
+        return CoordConv(path_to_stage).GetRootToObjectMatrix();
+    }
+
     /// Convenience function that returns a matrix converting from object
     /// coordinates of the hit object to stage coordinates. This works only for
     /// pointer-based drags.
