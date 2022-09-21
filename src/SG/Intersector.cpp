@@ -43,6 +43,12 @@ class Intersector::Visitor_  {
     void IntersectSubgraph_(const Ray &world_ray, const NodePath &path,
                             const Matrix4f &matrix);
 
+
+    /// Intersects the node at the tail of the given NodePath, adding a Hit if
+    /// appropriate. Returns the cumulative matrix.
+    Matrix4f IntersectNode_(const Ray &world_ray, const NodePath &path,
+                            const Matrix4f &matrix);
+
     /// If the given ray (in object coordinates) intersects the bounds of the
     /// Node at the tail of the given path before the current min_distance_,
     /// this returns true and sets distance to the new distance. Otherwise, it
@@ -68,15 +74,33 @@ Hit Intersector::Visitor_::IntersectScene(const Ray &world_ray,
 void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
                                                const NodePath &path,
                                                const Matrix4f &matrix) {
-    const NodePtr &node = path.back();
+    const Node &node = *path.back();
 
     // Skip the entire subgraph if either of these flags is set.
-    if (! node->IsFlagEnabled(Node::Flag::kTraversal) ||
-        ! node->IsFlagEnabled(Node::Flag::kIntersectAll))
+    if (! node.IsFlagEnabled(Node::Flag::kTraversal) ||
+        ! node.IsFlagEnabled(Node::Flag::kIntersectAll))
         return;
 
+    // If the kIntersect flag is disabled, do not update the matrix or test
+    // bounds - just continue on to children.
+    const Matrix4f cur_matrix = node.IsFlagEnabled(Node::Flag::kIntersect) ?
+        IntersectNode_(world_ray, path, matrix) : matrix;
+
+    // Intersect children.
+    for (const auto &child: node.GetAllChildren()) {
+        NodePath child_path = path;
+        child_path.push_back(child);
+        IntersectSubgraph_(world_ray, child_path, cur_matrix);
+    }
+}
+
+Matrix4f Intersector::Visitor_::IntersectNode_(const Ray &world_ray,
+                                               const NodePath &path,
+                                               const Matrix4f &matrix) {
+    const Node &node = *path.back();
+
     // Accumulate the matrix for this node.
-    const Matrix4f cur_matrix = matrix * node->GetModelMatrix();
+    const Matrix4f cur_matrix = matrix * node.GetModelMatrix();
 
     // Transform the ray into object coordinates for this Node.
     const Ray obj_ray = TransformRay(world_ray, ion::math::Inverse(cur_matrix));
@@ -88,7 +112,7 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
         // If the node is using its bounds as an intersection proxy, return the
         // hit on the bounds. Since this should never be used for exact
         // intersections, the shape, point, and normal do not really matter.
-        if (node->ShouldUseBoundsProxy()) {
+        if (node.ShouldUseBoundsProxy()) {
             result_hit_.path         = path;
             result_hit_.world_ray    = world_ray;
             result_hit_.distance     = distance;
@@ -97,36 +121,26 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
             result_hit_.bounds_point = result_hit_.point;
         }
 
-        // If not using the proxy, intersect with shapes in this Node, but only
-        // if the kIntersect flag is enabled. If a shape is intersected, also
-        // store the bounds intersection point.
-        else {
-            if (node->IsFlagEnabled(Node::Flag::kIntersect) &&
-                IntersectShapes_(world_ray, obj_ray, path, cur_matrix)) {
-                result_hit_.bounds_point = obj_ray.GetPoint(distance);
-            }
-        }
-
-        // Continue to children.
-        for (const auto &child: node->GetAllChildren()) {
-            NodePath child_path = path;
-            child_path.push_back(child);
-            IntersectSubgraph_(world_ray, child_path, cur_matrix);
+        // If not using the proxy, intersect with shapes in this Node. If a
+        // shape is intersected, also store the bounds intersection point.
+        else if (IntersectShapes_(world_ray, obj_ray, path, cur_matrix)) {
+            result_hit_.bounds_point = obj_ray.GetPoint(distance);
         }
     }
+    return cur_matrix;
 }
 
 bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &obj_ray,
                                                  const NodePath &path,
                                                  float &distance) {
-    const NodePtr &node = path.back();
-    const Bounds bounds = node->GetBounds();
+    const Node   &node  = *path.back();
+    const Bounds bounds = node.GetBounds();
 
     Bounds::Face face;
     bool         is_entry;
     if (RayBoundsIntersectFace(obj_ray, bounds, distance, face, is_entry)) {
         KLOG('i', Util::Spaces(2 * path.size())
-             << "Hit bounds of " << node->GetDesc()
+             << "Hit bounds of " << node.GetDesc()
              << " at " << distance << " z="
              << obj_ray.GetPoint(distance)[2]
              << " entry=" << is_entry);
@@ -138,7 +152,7 @@ bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &obj_ray,
     }
     else {
         KLOG('i', Util::Spaces(2 * path.size())
-             << "Missed bounds of " << node->GetDesc());
+             << "Missed bounds of " << node.GetDesc());
         return false;
     }
     return true;
@@ -149,8 +163,7 @@ bool Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
                                              const NodePath &path,
                                              const Matrix4f &matrix) {
     // Intersect each shape and get the closest intersection, if any.
-    const NodePtr &node = path.back();
-    const auto &shapes = node->GetShapes();
+    const auto &shapes = path.back()->GetShapes();
     bool any_hit = false;
     if (! shapes.empty()) {
         Hit shape_hit;

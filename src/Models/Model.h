@@ -179,6 +179,10 @@ class Model : public ClickableWidget {
     /// visible, as it may not be a valid mesh.
     const TriMesh & GetMesh() const;
 
+    /// Returns the current mesh, even if it is stale. This should be used only
+    /// for debugging, as a stale mesh is not very useful.
+    const TriMesh & GetCurrentMesh() const;
+
     /// Returns true if the Mesh in the Model is valid. If not, the reason
     /// string will be set to the reason it is not considered valid.
     bool IsMeshValid(std::string &reason) const;

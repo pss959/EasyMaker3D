@@ -229,6 +229,10 @@ const TriMesh & Model::GetMesh() const {
     return shape_->GetMesh();
 }
 
+const TriMesh & Model::GetCurrentMesh() const {
+    return shape_->GetMesh();
+}
+
 bool Model::IsMeshValid(std::string &reason) const {
     // Make sure the mesh is up to date.
     RebuildMeshIfStaleAndShown_(true);

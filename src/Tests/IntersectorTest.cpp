@@ -117,3 +117,24 @@ TEST_F(IntersectorTest, Rectangles) {
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_EQ("Bottom", hit.path.back()->GetName());
 }
+
+TEST_F(IntersectorTest, HiddenParent) {
+    std::string input = ReadDataFile("Shapes.mvn");
+
+    // The parent Ellipsoid is large and encompasses the two child Ellipsoids.
+    // The parent should not be intersected, and its translation should not be
+    // applied to the children - if it were, the rays would miss them.
+
+    // Child sphere on the left.
+    SG::Hit hit = IntersectScene(input, Ray(Point3f(-2, 0, 0),
+                                            Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_EQ("Child0", hit.path.back()->GetName());
+
+    // Child sphere on the right.
+    hit = IntersectScene(input, Ray(Point3f(2, 0, 0), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_EQ("Child1", hit.path.back()->GetName());
+}

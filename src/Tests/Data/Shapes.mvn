@@ -35,6 +35,23 @@ Scene {
           },
         ],
       },
+      Node "HiddenParent" {
+        disabled_flags: "kIntersect",
+        translation: 10 0 0,
+        shapes: [
+          Ellipsoid "Sphere" { size: 10 10 10 },  # Should not be hit.
+        ],
+        children: [
+          Node "Child0" {
+            translation: -2 0 0,
+            shapes: [ Ellipsoid "Sphere" { size: 4 4 4 } ]
+          },
+          Node "Child1" {
+            translation:  2 0 0,
+            shapes: [ Ellipsoid "Sphere" { size: 4 4 4 } ]
+          },
+        ],
+      },
     ],
   },
 },

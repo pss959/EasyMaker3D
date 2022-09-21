@@ -255,7 +255,7 @@ static void PrintModelTree_(const Model &model) {
     std::cout << Indent_(level) << GetDesc_(model)
               << " " << Util::EnumName(model.GetStatus()) << "\n";
     std::cout << Indent_(level + 1) << "mesh bounds: "
-              << ComputeMeshBounds(model.GetMesh()).ToString() << "\n";
+              << ComputeMeshBounds(model.GetCurrentMesh()).ToString() << "\n";
     PrintTransformFields_(model, level);
 
     // Recurse on ParentModels.
