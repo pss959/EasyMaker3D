@@ -214,45 +214,15 @@ bool Application_::HandleEvent_(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
 #if ENABLE_DEBUG_FEATURES
-        if (Debug::HandleShortcut(key_string))
-            return true;
-        if (key_string == "<Alt>!")  // From ShortcutHandler.
-            KLogger::ToggleLogging();
-#endif
-        if (key_string == "<Ctrl>b") {
-            PrintBounds_();
-            return true;
-        }
-        else if (key_string == "<Ctrl>c") {
-            PrintCamera_();
-            return true;
-        }
-        else if (key_string == "<Ctrl>i") {
-            PrintIntersection_();
-            return true;
-        }
-        else if (key_string == "<Ctrl>I") {
-            PrintIonGraph_();
-            return true;
-        }
-#if ENABLE_DEBUG_FEATURES
-        else if (key_string == "<Ctrl>p") {
-            Debug::PrintGraph(*path_to_node_.back());
-            return true;
-        }
-#endif
-        else if (key_string == "<Ctrl>q") {
-            should_quit_ = true;
-            return true;
-        }
-        else if (key_string == "<Ctrl>r") {
+        if (key_string == "<Alt>r") {
             ReloadScene_();
             return true;
         }
-        else if (key_string == "<Ctrl>s") {
-            intersection_sphere_->SetFlagEnabled(
-                SG::Node::Flag::kRender,
-                ! intersection_sphere_->IsFlagEnabled(SG::Node::Flag::kRender));
+        else if (Debug::HandleShortcut(key_string))
+            return true;
+#endif
+        else if (key_string == "<Ctrl>q") {
+            should_quit_ = true;
             return true;
         }
         else if (key_string == "<Ctrl>v") {

@@ -44,7 +44,7 @@ following effects:
   - Changes the precision of the current operation (position, size, etc.).
   - Changes the precision of the :ref:`visual feedback <ug-feedback>` for the
     current operation.
-  - :emphasis:`Changes the relative amount of drag motion.` This may be
+  - :strong:`Changes the relative amount of drag motion.` This may be
     startling at first, but makes sense when you try it out. For example, if
     you want to move an object exactly 5.45 units to the right, you start out
     with 1 unit precision and drag it 5 units. While still dragging, increase
@@ -82,12 +82,96 @@ target color.
 Targets
 .......
 
+.. incimage:: /images/EdgeTarget.jpg   200px right
+.. incimage:: /images/PointTarget.jpg  200px right
+
+Precise interactive placement can be tedious, so |appname| offers extra help
+for some operations using :newterm:`targets`. A target is a 3D object that you
+can place in the scene to affect future operations. There are two targets
+available in the application:
+
+  - The :newterm:`Point Target` represents a :emphasis:`position` (the base
+    sphere) and a :emphasis:`direction` (the arrow).
+  - The :newterm:`Edge Target` represents a :emphasis:`length` and a
+    :emphasis:`direction`.
+
+The ring on the Point Target is used for :ref:`radial layout
+<ug-radial-layout>`.
+
+Targets must be active (visible) to have any effect. To activate or deactivate
+the Point Target, click on the :ref:`Toggle Point Target
+<ug-toggle-point-target>` icon.  To activate or deactivate the Edge Target,
+click on the :ref:`Toggle Edge Target <ug-toggle-edge-target>` icon.
+
+Each target appears initially in the center of the :ref:`stage <ug-stage>`. If
+a target is obscured by models, you can use the :ref:`Tree Panel
+<ug-tree-panel>` to hide those models temporarily.
+
+Positioning Targets
+,,,,,,,,,,,,,,,,,,,
+
+Targets are positioned by dragging or :ref:`modified-dragging
+<ug-modified-mode>` them. Targets can be placed either on the :ref:`stage
+<ug-stage>` or any model in the scene. When dragging a target on the stage, the
+target will snap to grid locations based on the current :ref:`precision level
+<ug-precision-level>`.
+
+.. todo::
+   [IMAGE OF SNAP INDICATOR]
+
+The Point Target can be dragged by any part (except the ring). When dragging
+over a model's surface, the target location will snap to vertices of the
+model's triangular mesh when close enough, based on the current :ref:`precision
+level <ug-precision-level>`. When this occurs, a :newterm:`snap indicator`
+(sphere at the tip of the target's arrow) will appear.
+
+Similarly, the Edge Target snaps to the closest edge of the model's mesh,
+matching the length of that edge. (You may find it helpful to :ref:`show model
+edges <ug-show-edges>`.) If the Edge Target is dragged from a model to the
+:ref:`stage <ug-stage>`, it retains the length of the last edge it snapped to.
+Clicking on the Edge Target reverses its direction, which can be useful when
+performing :ref:`linear layout <ug-linear-layout>`.
+
+.. todo::
+   [IMAGE OF POINT TARGET SNAPPED TO BOUNDS]
+   [IMAGE OF EDGE TARGET SNAPPED TO BOUNDS]
+
+:ref:`Modified-dragging <ug-modified-mode>` either target over a model uses the
+rectangular bounds of the model instead of its mesh. The Point Target will snap
+to the minimum, maximum, and center values of the bounds in each dimension. You
+can use this feature to more easily attach the point target to important points
+on objects with asymmetric meshes. Similarly, the Edge Target snaps to edges of
+the of the model instead of its mesh; the target will snap to the nearest edge
+of the bounds. You can use this feature to easily set the edge target length to
+any dimension of a model's bounds.
+
+When modified-dragging the Point Target, the snap indicator sphere will appear
+when any snapping occurs, and is :ref:`color-coded by dimension
+<ug-coordinate-system>`. If snapping occurs in two or three dimensions, the
+color will be the sum of the respective dimensions' colors.
+
 .. todo::
    Ended here.
 
-Interactive placement can sometimes be tedious, so |appname| offers extra help
-for some operations using {{term('targets')}}. There are two targets available
-in the application, the {{term('point target')}} and {{term('edge target')}}.
+Effects
+,,,,,,,
+
+When the Point Target is active, most position-based drag operations (such as
+translation) will snap to the target's position in all affected dimensions when
+the .
+When snapping occurs during one of these operations, both the [visual
+feedback][Feedback] and target change to the active target color.
+
+The point target can also be used for instantly positioning a model, and it has
+other features that let it be used be used for radial layout; see [Radial
+Layout][RadialLayout] below for details.
+
+#### Positioning on Models or the Stage
+
+
+
+
+
 
 To activate or deactivate a target, click on the corresponding toggle icon, as
 described below. When activated, a visual representation of the target appears,
@@ -98,52 +182,6 @@ temporarily.
 Targets can be [dragged][ClickDrag] to other locations, as described
 below. While a target is being dragged, its color changes from the standard
 target color (cyan) to the active target color (orange).
-
-When dragging a target on the stage, the target will snap to grid locations
-based on the current [precision level][PrecisionLevel].
-
-### Point Target
-
-![The point target][ImgPointTarget]{{rightimage(200)}}
-
-The point target indicates a position (shown by the sphere at the base) and
-orientation (shown by the arrow) in the scene. To activate or deactivate the
-point target, click on the [Point Target Toggle][PointTargetToggle].
-
-#### Effects
-
-When the point target is active, most position-based drag operations (such as
-translation) will snap to the target's position in all affected dimensions.
-When snapping occurs during one of these operations, both the [visual
-feedback][Feedback] and target change to the active target color.
-
-The point target can also be used for instantly positioning a model, and it has
-other features that let it be used be used for radial layout; see [Radial
-Layout][RadialLayout] below for details.
-
-#### Positioning on Models or the Stage
-
-The point target can be dragged by any part (except the ring) to any point on a
-model or on the [stage][Stage]. When dragging over a model's surface, the
-target location will snap to vertices of the model's triangular mesh when close
-enough to them, based on the current [precision level][PrecisionLevel]. When
-this occurs, a {{term('snap indicator')}} (sphere at the tip of the target's
-arrow) will appear.
-
-[Alt-dragging][AltMode] the point target on a model uses the rectangular bounds
-of the model instead of its mesh. The target will snap to the minimum, maximum,
-and center values of the bounds in each dimension. You can use this feature to
-more easily attach the point target to important points on objects with
-asymmetric meshes.
-
-When alt-dragging the point target, the snap indicator sphere will appear when
-any snapping occurs, and is [color-coded by dimension][Colors]. If snapping
-occurs in two dimensions, the color will be the sum of the two dimensions'
-color. For example, if alt-dragging the point target on the front (-Y) face of
-a model's bounds, the indicator will be red (X) when snapping to the left edge,
-center, or right edge of the face. It will be blue (Z) when snapping to the
-bottom edge, center, or top edge of the face. It will be magenta (red + blue)
-when snapping to both at the same time.
 
 ### Edge Target
 
@@ -164,19 +202,6 @@ The edge target can also be used for immediate linear layout. See [Linear
 Layout][LinearLayout] below for details.
 
 #### Positioning on Models or the Stage
-
-When dragged over the surface of a model, the edge target snaps to the closest
-edge of the model's mesh. (To see model edges more clearly, you can [show the
-edges][ShowEdges].) If the edge target is dragged from a model to the
-[stage][Stage], it retains the length of the last edge it snapped to.
-
-[Alt-dragging][AltMode] the edge target on a model uses the rectangular bounds
-of the model instead of its mesh; the target will snap to the nearest edge of
-the bounds. You can use this feature to easily set the edge target length to
-any dimension of a model's bounds.
-
-Clicking on the edge target reverses its direction, which is useful when
-performing [linear layout][LinearLayout].
 
 ## Layout
 

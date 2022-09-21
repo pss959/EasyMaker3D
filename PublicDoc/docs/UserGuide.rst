@@ -37,7 +37,6 @@
 .. _ug-decrease-complexity:
 .. _ug-decrease-precision:
 .. _ug-delete:
-.. _ug-edge-target:
 .. _ug-file-panel:
 .. _ug-general-tools:
 .. _ug-hide-selected:
@@ -57,7 +56,6 @@
 .. _ug-open-settings-panel:
 .. _ug-paste-into:
 .. _ug-paste:
-.. _ug-point-target:
 .. _ug-precision:
 .. _ug-quit:
 .. _ug-radial-layout:

@@ -10,29 +10,26 @@ EdgeTargetWidget "EdgeTarget" {
     Node "End0" {
       shapes: [
         Box {
-          size:        1.1 1.1 1.1,
-          translation: 0 .55 0,  # Flush with bottom.
+          size:        .6 .6 .6,
+          translation: 0 .3 0,  # Flush with bottom.
         }
       ],
     }
     Node "End1" {
-      translation: 0 4 0,
       shapes: [
         Cylinder {    # Cone.
           top_radius:    0,
-          bottom_radius: .6,
+          bottom_radius: .3,
           height:        1.2,
           sector_count:  20,
         },
       ]
     }
     Node "Edge" { # Connecting shaft.
-      scale:       1 4 1,
-      translation: 0 2 0,
       shapes: [
         Cylinder {
-          top_radius:    .25,
-          bottom_radius: .25,
+          top_radius:    .15,
+          bottom_radius: .15,
         }
       ]
     },

@@ -222,8 +222,7 @@ img {
 }
 
 .emphasis {
-    font-weight: bold;
-    font-style:  italic;
+    font-style: italic;
 }
 
 .model {
@@ -235,4 +234,9 @@ img {
 .newterm {
     color:      green;
     font-style: italic;
+}
+
+.strong {
+    font-weight: bold;
+    font-style:  italic;
 }

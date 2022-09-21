@@ -24,6 +24,9 @@
 .. shortcut: A role used for shortcut text.
 .. role:: shortcut
 
+.. strong: Strongly highlighted text
+.. role:: strong
+
 .. ----------------------------------------------------------------------------
 .. appname: Replaced with the application name in appropriate style.
 
@@ -51,6 +54,7 @@
 .. |degree| raw:: html
 
    &deg;
+
 .. ----------------------------------------------------------------------------
 .. nbsp: Inserts a non-blocking space character.
 

@@ -70,8 +70,8 @@ Primitive Models
     import from.
 
 New primitive models are placed at the center of the :ref:`stage <ug-stage>`
-unless the :ref:`point target <ug-point-target>` is active, in which case the
-new model is placed to align with it.
+unless the :ref:`Point Target <ug-targets>` is active, in which case the new
+model is placed to align with it.
 
 .. _ug-combined-models:
 
@@ -218,6 +218,6 @@ Model Edge Display
 Clicking The :ref:`Show Edges Toggle <ug-toggle-show-edges>` icon lets you
 display edges of your models as visible lines or hide them.  Showing them can
 help you see how your models are tessellated into triangles for 3D printing or
-to help place the :ref:`Edge Target <ug-edge-target>`.
+to help place the :ref:`Edge Target <ug-targets>`.
 
 |block-image|

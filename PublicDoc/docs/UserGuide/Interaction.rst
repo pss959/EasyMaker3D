@@ -43,8 +43,9 @@ Modified Interaction Mode
 
 Some interactive objects have two different modes of operation, regular and
 what is referred to as :newterm:`modified mode`. This can apply to clicking a
-button ("modified-click"), dragging ("modified-drag"), or selection
-("modified-select").
+button (":newterm:`modified-clicking`"), dragging
+(":newterm:`modified-dragging`"), or selection
+(":newterm:`modified-selecting`").
 
 Modified mode is activated by either of these:
 

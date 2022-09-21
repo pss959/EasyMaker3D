@@ -4,7 +4,7 @@
 
 void EdgeTarget::AddFields() {
     AddField(position0_.Init("position0", Point3f::Zero()));
-    AddField(position1_.Init("position1", Point3f(0, 10, 0)));
+    AddField(position1_.Init("position1", Point3f(0, 4, 0)));
 
     Parser::Object::AddFields();
 }

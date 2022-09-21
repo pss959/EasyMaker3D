@@ -78,6 +78,7 @@ snap_map = {
                        'QuickstartExport' ],
   'RadialMenu'     : [ 'FixedRadialMenu', 'AttachedRadialMenu' ],
   'Selection'      : [ 'Selection' ],
+  'Targets'        : [ 'PointTarget', 'EdgeTarget' ],
 }
 
 # This maps annotation script files to the images they read and write.
