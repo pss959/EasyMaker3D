@@ -69,6 +69,10 @@ Primitive Models
     :ref:`Import Tool <ug-import-tool>` is used to select or change the file to
     import from.
 
+New primitive models are placed at the center of the :ref:`stage <ug-stage>`
+unless the :ref:`point target <ug-point-target>` is active, in which case the
+new model is placed to align with it.
+
 .. _ug-combined-models:
 
 Combined Models

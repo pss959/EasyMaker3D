@@ -8,6 +8,9 @@
 .. dnote: An important(?) note.
 .. role:: dnote
 
+.. emphasis: Highlighted text
+.. role:: emphasis
+
 .. model: A role used for model names.
 .. role:: model
 
@@ -42,6 +45,12 @@
 
    <p class="after-image"></p>
 
+.. ----------------------------------------------------------------------------
+.. degree: Inserts a degree character.
+
+.. |degree| raw:: html
+
+   &deg;
 .. ----------------------------------------------------------------------------
 .. nbsp: Inserts a non-blocking space character.
 

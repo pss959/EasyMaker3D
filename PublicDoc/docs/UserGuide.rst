@@ -8,6 +8,7 @@
 .. include:: UserGuide/Interaction.rst
 .. include:: UserGuide/CreatingModels.rst
 .. include:: UserGuide/Selection.rst
+.. include:: UserGuide/Precision.rst
 
 .. These are all of the undefined reference targets so far:
 
@@ -37,7 +38,6 @@
 .. _ug-decrease-precision:
 .. _ug-delete:
 .. _ug-edge-target:
-.. _ug-feedback:
 .. _ug-file-panel:
 .. _ug-general-tools:
 .. _ug-hide-selected:
@@ -78,7 +78,6 @@
 .. _ug-specialized-tools:
 .. _ug-switch-to-next-tool:
 .. _ug-switch-to-previous-tool:
-.. _ug-targets:
 .. _ug-text-tool:
 .. _ug-toggle-axis-aligned:
 .. _ug-toggle-build-volume:

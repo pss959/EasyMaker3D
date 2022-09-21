@@ -216,20 +216,22 @@ img {
     /* font-variant: small-caps; */
 }
 
-/* Style used for the 'dnote' role. */
 .dnote {
     color:      #882233;
     font-style: italic;
 }
 
-/* Style used for the 'model' role. */
+.emphasis {
+    font-weight: bold;
+    font-style:  italic;
+}
+
 .model {
     color:       #6d5435;
     font-family: monospace;
     font-size:   90%;
 }
 
-/* Style used for the 'newterm' role. */
 .newterm {
     color:      green;
     font-style: italic;

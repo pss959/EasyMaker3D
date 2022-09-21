@@ -109,7 +109,8 @@ The name of the current session file, if any, is displayed at the top of the
 followed by :ref:`a string indicating whether the scene or settings have been
 modified <ug-session-name>`.
 
-.. ug-coordinate-system:
+.. _ug-coordinate-system:
+.. _ug-units:
 
 Coordinate System and Units
 ...........................
