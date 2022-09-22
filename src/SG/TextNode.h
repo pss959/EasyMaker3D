@@ -52,6 +52,9 @@ class TextNode : public Node {
     /// Updates the text string.
     void SetText(const std::string &new_text);
 
+    /// Updates the text color.
+    void SetTextColor(const Color &color);
+
     /// Updates the text string and sets it to the given color.
     void SetTextWithColor(const std::string &new_text, const Color &color);
 

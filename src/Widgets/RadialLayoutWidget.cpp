@@ -113,12 +113,15 @@ void RadialLayoutWidget::SetColors_() {
     const Color end    = get_color("RadialLayoutEndSpokeColor");
     const Color arc    = get_color("RadialLayoutArcColor");
 
+    // Various geometry.
     start_spoke_->SetInactiveColor(start);
     end_spoke_->SetInactiveColor(end);
     arc_line_->SetBaseColor(arc);
-    radius_text_->SetBaseColor(active);
-    start_angle_text_->SetBaseColor(start);
-    arc_angle_text_->SetBaseColor(arc);
+
+    // Text.
+    radius_text_->SetTextColor(active);
+    start_angle_text_->SetTextColor(start);
+    arc_angle_text_->SetTextColor(arc);
 }
 
 void RadialLayoutWidget::RadiusActivated_(bool is_activation) {

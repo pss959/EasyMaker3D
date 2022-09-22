@@ -34,9 +34,12 @@ class TargetWidgetBase : public DraggableWidget {
     /// to place the target according to the DragInfo.
     virtual void PlaceTarget(Widget &widget, const DragInfo &info) = 0;
 
-    /// Indicates that interactive target placement is done. Derived classes
-    /// can use this to turn off any interactive feedback they may have. The
-    /// base class implements it to do nothing.
+    /// Indicates that interactive target placement is starting. The base class
+    /// implements it to do nothing.
+    virtual void StartTargetPlacement() {}
+
+    /// Indicates that interactive target placement is done. The base class
+    /// implements it to do nothing.
     virtual void EndTargetPlacement() {}
 
     /// Derived classes may override this to show or hide any extra feedback to

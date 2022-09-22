@@ -66,8 +66,17 @@ void PointTargetWidget::PlaceTarget(Widget &widget, const DragInfo &info) {
     SetSnapIndicator_(snapped_dims);
 }
 
+void PointTargetWidget::StartTargetPlacement() {
+    // Turn off the RadialLayoutWidget to avoid confusion.
+    layout_widget_->SetEnabled(false);
+}
+
 void PointTargetWidget::EndTargetPlacement() {
+    // Make sure the snap indicator is off.
     snap_indicator_->SetEnabled(false);
+
+    // Turn the RadialLayoutWidget back on.
+    layout_widget_->SetEnabled(true);
 }
 
 void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &stage_cc,

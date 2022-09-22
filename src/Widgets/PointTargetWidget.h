@@ -38,6 +38,7 @@ class PointTargetWidget : public TargetWidgetBase {
     virtual void CreationDone() override;
 
     virtual void PlaceTarget(Widget &widget, const DragInfo &info) override;
+    virtual void StartTargetPlacement() override;
     virtual void EndTargetPlacement() override;
     virtual void ShowExtraSnapFeedback(const CoordConv &stage_cc,
                                        bool is_snapping) override;

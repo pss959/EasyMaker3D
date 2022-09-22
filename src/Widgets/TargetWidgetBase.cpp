@@ -17,6 +17,9 @@ void TargetWidgetBase::StartDrag(const DragInfo &info) {
     SetFlagEnabled(Flag::kIntersectAll, false);
 
     SetActive(true);
+
+    // Let the derived class update anything it needs to.
+    StartTargetPlacement();
 }
 
 void TargetWidgetBase::ContinueDrag(const DragInfo &info) {
@@ -31,7 +34,7 @@ void TargetWidgetBase::ContinueDrag(const DragInfo &info) {
 }
 
 void TargetWidgetBase::EndDrag() {
-    // Let the derived class turn anything off it needs to.
+    // Let the derived class update anything it needs to.
     EndTargetPlacement();
 
     SetActive(false);

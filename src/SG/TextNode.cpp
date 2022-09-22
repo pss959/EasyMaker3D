@@ -100,6 +100,11 @@ void TextNode::SetText(const std::string &new_text) {
     needs_rebuild_ = true;
 }
 
+void TextNode::SetTextColor(const Color &color) {
+    color_ = color;
+    needs_rebuild_ = true;
+}
+
 void TextNode::SetTextWithColor(const std::string &new_text,
                                 const Color &color) {
     ASSERT(! new_text.empty());

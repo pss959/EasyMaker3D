@@ -53,7 +53,7 @@ RadialLayoutWidget "RadialLayoutWidget" {
           disabled_flags: "kIntersectAll",
           pass_name: $LIGHTING_PASS,
           shader_names: ["BaseColor"],
-          state_table: StateTable { line_width: 3 },
+          state_table: StateTable { line_width: 4 },
           rotation: 1 0 0 -90,  # Rotate into XZ-plane.
           shapes: [ PolyLine "Line" {} ]
         },
@@ -62,7 +62,7 @@ RadialLayoutWidget "RadialLayoutWidget" {
 
     # Text for numeric feedback.
     Node "Text" {
-      CONSTANTS: [SCALE: "scale: 1.5 1.5 1.5"],
+      CONSTANTS: [SCALE: "scale: .8 .8 .8"],
       children: [
         TextNode "RadiusText"     { $SCALE },
         TextNode "StartAngleText" { $SCALE },
