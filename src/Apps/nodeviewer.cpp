@@ -42,6 +42,28 @@
 #include "Panels/SettingsPanel.h"
 
 // ----------------------------------------------------------------------------
+// Exception handling.
+// ----------------------------------------------------------------------------
+
+static void HandleEx_(const std::string &when, const std::exception &ex) {
+#if defined(RELEASE_BUILD)
+    std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
+#else
+    if (const auto *aex = dynamic_cast<const AssertException *>(&ex)) {
+        std::cerr << "*** Caught assertion exception " << when << ":\n"
+                  << ex.what() << "\n";
+        std::cerr << "*** STACK:\n";
+        for (const auto &s: aex->GetStackTrace())
+            std::cerr << "  " << s << "\n";
+    }
+    else {
+        std::cerr << "*** Caught exception " << when << ":\n"
+                  << ex.what() << "\n";
+    }
+#endif
+}
+
+// ----------------------------------------------------------------------------
 // EventHandler_ class.
 // ----------------------------------------------------------------------------
 
@@ -258,8 +280,7 @@ void Application_::ReloadScene_() {
         ResetView_();
     }
     catch (std::exception &ex) {
-        std::cerr << "*** Caught exception reloading scene:\n"
-                  << ex.what() << "\n";
+        HandleEx_("reloading scene", ex);
     }
 }
 
@@ -493,14 +514,8 @@ int main(int argc, const char** argv)
             return 1;
         app.MainLoop();
     }
-#if defined(RELEASE_BUILD)
     catch (std::exception &ex) {
-        std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
+        HandleEx_("in app", ex);
     }
-#else
-    catch (AssertException &ex) {
-        std::cerr << "*** Caught assertion exception:\n" << ex.what() << "\n";
-    }
-#endif
     return 0;
 }
