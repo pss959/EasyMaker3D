@@ -64,6 +64,9 @@ class RadialLayoutWidget : public Widget {
     /// Resets all values to their defaults.
     void Reset();
 
+    /// Redefines this to set up colors.
+    virtual void PostSetUpIon() override;
+
   protected:
     RadialLayoutWidget() {}
 
@@ -73,35 +76,38 @@ class RadialLayoutWidget : public Widget {
     /// Notifies when the widget is dragged in any way.
     Util::Notifier<> changed_;
 
-    float      radius_ = 1;   ///< Outer radius of ring.
-    CircleArc  arc_;          ///< Arc defined by spokes.
+    float            radius_ = 1;   ///< Outer radius of ring.
+    CircleArc        arc_;          ///< Arc defined by spokes.
 
     /// Radius at the start of a drag.
-    float start_radius_;
+    float            start_radius_;
 
     /// \name Interactive Parts.
     ///@{
-    DiscWidgetPtr   ring_;         ///< Torus to resize radius.
-    DiscWidgetPtr   start_spoke_;  ///< Spoke to change start angle.
-    DiscWidgetPtr   end_spoke_;    ///< Spoke to change arc angle.
+    DiscWidgetPtr    ring_;         ///< Torus to resize radius.
+    DiscWidgetPtr    start_spoke_;  ///< Spoke to change start angle.
+    DiscWidgetPtr    end_spoke_;    ///< Spoke to change arc angle.
     ///@}
 
     /// \name Feedback Parts.
     ///@{
-    SG::NodePtr     arc_line_;          ///< Shows layout arc as a line.
-    SG::TextNodePtr radius_text_;       ///< Shows current radius.
-    SG::TextNodePtr start_angle_text_;  ///< Shows start angle
-    SG::TextNodePtr arc_angle_text_;    ///< Shows arc angle
+    SG::NodePtr      arc_line_;          ///< Shows layout arc as a line.
+    SG::TextNodePtr  radius_text_;       ///< Shows current radius.
+    SG::TextNodePtr  start_angle_text_;  ///< Shows start angle
+    SG::TextNodePtr  arc_angle_text_;    ///< Shows arc angle
     ///@}
 
     /// \name Other Parts.
     ///@{
-    SG::NodePtr     layout_;       ///< Root of layout UI.
-    SG::NodePtr     spoke_geom_;   ///< Spoke geometry for sizing.
+    SG::NodePtr      layout_;       ///< Root of layout UI.
+    SG::NodePtr      spoke_geom_;   ///< Spoke geometry for sizing.
     ///@}
 
     /// Saves the angle at the start of a spoke rotation.
-    Anglef start_rot_angle_;
+    Anglef           start_rot_angle_;
+
+    /// Sets the colors for various parts.
+    void SetColors_();
 
     // Sub-widget callbacks.
     void RadiusActivated_(bool is_activation);

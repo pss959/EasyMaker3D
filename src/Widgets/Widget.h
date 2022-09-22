@@ -100,7 +100,8 @@ class Widget : public SG::Node {
     const Color & GetActiveColor() const { return active_color_; }
 
     /// Sets a prefix string to use for all special color names accessed from
-    /// the ColorMap. The base class defines this as "Widget".
+    /// the ColorMap. The base class defines this as "Widget". This should be
+    /// called before PostSetUpIon() is called for the instance.
     void SetColorNamePrefix(const std::string &prefix) {
         color_name_prefix_ = prefix;
     }

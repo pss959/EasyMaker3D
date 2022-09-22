@@ -14,7 +14,6 @@ RadialLayoutWidget "RadialLayoutWidget" {
     DiscWidget "Ring" {
       mode: "kScaleOnly",
       apply_to_widget: False,   # Code responds to scale changes.
-      inactive_color: $TARGET_COLOR,
       shapes: [
         Torus "Torus" {
           inner_radius: .2, # Changed in code.
@@ -31,7 +30,6 @@ RadialLayoutWidget "RadialLayoutWidget" {
         # Rotatable start angle spoke.
         DiscWidget "StartSpoke" {
           mode: "kRotationOnly",
-          inactive_color: "#22f022",
           children: [
             Node {
               translation: 0 0 .2,  # Offset from end spoke.
@@ -40,7 +38,6 @@ RadialLayoutWidget "RadialLayoutWidget" {
             # Rotatable end angle spoke.
             DiscWidget "EndSpoke" {
               mode: "kRotationOnly",
-              inactive_color: "#f02222",
               children: [
                 Node {
                   translation: 0 0 -.4,  # Offset from start spoke.
@@ -53,22 +50,11 @@ RadialLayoutWidget "RadialLayoutWidget" {
 
         # Arc showing current angle.
         Node "Arc" {
-          # Use the BaseColor shader.
+          disabled_flags: "kIntersectAll",
           pass_name: $LIGHTING_PASS,
           shader_names: ["BaseColor"],
-
           state_table: StateTable { line_width: 3 },
           rotation: 1 0 0 -90,  # Rotate into XZ-plane.
-
-          # Disable intersections.
-          disabled_flags: "kIntersectAll",
-
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ddaadd" } ],
-            }
-          ],
           shapes: [ PolyLine "Line" {} ]
         },
       ]
@@ -78,9 +64,9 @@ RadialLayoutWidget "RadialLayoutWidget" {
     Node "Text" {
       CONSTANTS: [SCALE: "scale: 1.5 1.5 1.5"],
       children: [
-        TextNode "RadiusText"     { $SCALE, color: $TARGET_COLOR },
-        TextNode "StartAngleText" { $SCALE, color: "#22f022" },
-        TextNode "ArcAngleText"   { $SCALE, color: $TARGET_COLOR },
+        TextNode "RadiusText"     { $SCALE },
+        TextNode "StartAngleText" { $SCALE },
+        TextNode "ArcAngleText"   { $SCALE },
       ]
     }
   ]

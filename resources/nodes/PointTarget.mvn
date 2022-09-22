@@ -1,10 +1,4 @@
 PointTargetWidget "PointTarget" {
-  blocks: [
-    UniformBlock {
-      pass_name: $LIGHTING_PASS,
-      uniforms: [ Uniform "uBaseColor" { vec4f_val: $TARGET_COLOR } ],
-    }
-  ],
   shapes: [
     Ellipsoid {   # Base sphere.
       size:             .8 .8 .8,
@@ -36,8 +30,8 @@ PointTargetWidget "PointTarget" {
     # color.
     Node "SnapIndicator" {
       disabled_flags: "kTraversal",
-      translation: 0 5.2 0,
-      shapes: [ Ellipsoid { size: 1 1 1 } ],
+      translation: 0 4.8 0,
+      shapes: [ Ellipsoid { size: .8 .8 .8 } ],
     },
     # Node with line feedback that can be turned on and off.
     Node "Feedback" {

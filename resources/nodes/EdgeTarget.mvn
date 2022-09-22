@@ -1,10 +1,4 @@
 EdgeTargetWidget "EdgeTarget" {
-  blocks: [
-    UniformBlock {
-      pass_name: $LIGHTING_PASS,
-      uniforms: [ Uniform "uBaseColor" { vec4f_val: $TARGET_COLOR } ],
-    }
-  ],
   # Each part is a separate Node so it can be transformed independently.
   children: [
     Node "End0" {

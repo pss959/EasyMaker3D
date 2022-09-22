@@ -4,6 +4,7 @@
 
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
+#include "SG/ColorMap.h"
 #include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
@@ -66,6 +67,10 @@ void RadialLayoutWidget::CreationDone() {
         start_angle_text_->SetEnabled(false);
         arc_angle_text_->SetEnabled(false);
 
+        // This sets the colors for the main widget parts.
+        SetColorNamePrefix("Target");
+        ring_->SetColorNamePrefix("Target");
+
         Reset();
     }
 }
@@ -91,6 +96,29 @@ void RadialLayoutWidget::Reset() {
     UpdateRing_();
     UpdateSpokes_();
     UpdateArc_();
+}
+
+void RadialLayoutWidget::PostSetUpIon() {
+    Widget::PostSetUpIon();
+    SetColors_();
+}
+
+void RadialLayoutWidget::SetColors_() {
+    auto get_color = [](const std::string &name){
+        return SG::ColorMap::SGetColor(name);
+    };
+
+    const Color active = get_color("TargetActiveColor");
+    const Color start  = get_color("RadialLayoutStartSpokeColor");
+    const Color end    = get_color("RadialLayoutEndSpokeColor");
+    const Color arc    = get_color("RadialLayoutArcColor");
+
+    start_spoke_->SetInactiveColor(start);
+    end_spoke_->SetInactiveColor(end);
+    arc_line_->SetBaseColor(arc);
+    radius_text_->SetBaseColor(active);
+    start_angle_text_->SetBaseColor(start);
+    arc_angle_text_->SetBaseColor(arc);
 }
 
 void RadialLayoutWidget::RadiusActivated_(bool is_activation) {
