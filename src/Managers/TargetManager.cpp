@@ -166,6 +166,10 @@ void TargetManager::PointActivated_(bool is_activation) {
     target_activation_.Notify(is_activation);
 
     if (is_activation) {
+        // Update the object-to-world matrix.
+        const Matrix4f owm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
+        point_target_widget_->SetObjectToWorldMatrix(owm);
+
         // Create the command to move the target.
         ASSERT(! point_command_);
         point_command_ =
@@ -194,6 +198,10 @@ void TargetManager::EdgeActivated_(bool is_activation) {
     target_activation_.Notify(is_activation);
 
     if (is_activation) {
+        // Update the object-to-world matrix.
+        const Matrix4f owm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
+        edge_target_widget_->SetObjectToWorldMatrix(owm);
+
         // Create the command to move the target.
         ASSERT(! edge_command_);
         edge_command_ =
@@ -243,5 +251,5 @@ bool TargetManager::SnapToLengthWithDiff_(float length, float &diff) {
 
 void TargetManager::ShowSnapFeedback_(TargetWidgetBase &widget,
                                       bool is_snapped) {
-    widget.ShowSnapFeedback(CoordConv(path_to_stage_), is_snapped);
+    widget.ShowSnapFeedback(is_snapped);
 }

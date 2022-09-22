@@ -346,6 +346,9 @@ extern const float    kRLWSpokeScale;
 /// Y offset of start angle text feedback in the RadialLayoutWidget.
 extern const float    kRLWStartAngleTextYOffset;
 
+/// Base scale factor for RadialLayoutWidget feedback text.
+extern const float    kRLWTextScale;
+
 ///@}
 
 /// \name Lighting and Rendering

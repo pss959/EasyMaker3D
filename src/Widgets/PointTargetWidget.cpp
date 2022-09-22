@@ -1,5 +1,7 @@
 #include "Widgets/PointTargetWidget.h"
 
+#include <ion/math/transformutils.h>
+
 #include "App/CoordConv.h"
 #include "SG/Line.h"
 #include "SG/Search.h"
@@ -79,15 +81,14 @@ void PointTargetWidget::EndTargetPlacement() {
     layout_widget_->SetEnabled(true);
 }
 
-void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &stage_cc,
-                                              bool is_snapping) {
+void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {
     if (is_snapping) {
         feedback_->SetBaseColor(GetActiveColor());
         // Convert the end point from stage coordinates to object coordinates
         // of this Widget.
         PointTargetWidgetPtr ptw = Util::CreateTemporarySharedPtr(this);
         const Point3f p = CoordConv(SG::NodePath(ptw)).RootToObject(
-            stage_cc.ObjectToRoot(line_end_pt_));
+            GetObjectToWorldMatrix() * line_end_pt_);
         feedback_line_->SetEndpoints(Point3f::Zero(), p);
     }
     feedback_->SetEnabled(is_snapping);
@@ -122,8 +123,16 @@ void PointTargetWidget::UpdateLayoutWidget_() {
 }
 
 void PointTargetWidget::LayoutWidgetActivated_(bool is_activation) {
-    // Pass the activation along.
+    // Pass the activation along. This will update the object-to-world matrix
+    // in this instance, which can then be passed to the RadialLayoutWidget.
     GetActivation().Notify(*this, is_activation);
+
+    if (is_activation) {
+        // Pass the RadialLayoutWidget a matrix to convert from object to world
+        // coordinates and its current rotation. These are used to orient text.
+        layout_widget_->SetTextOrientation(GetObjectToWorldMatrix(),
+                                           GetRotation());
+    }
 }
 
 void PointTargetWidget::LayoutWidgetChanged_() {

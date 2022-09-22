@@ -118,6 +118,7 @@ const int      kRLWRingMinSectorCount            = 36;
 const int      kRLWRingRingCount                 =  8;
 const float    kRLWSpokeScale                    = 1.1f;  // Relative to radius.
 const float    kRLWStartAngleTextYOffset         = 1;
+const float    kRLWTextScale                     = 2;
 
 // Lighting and Rendering
 const int      kColorRingImageSize               = 256;

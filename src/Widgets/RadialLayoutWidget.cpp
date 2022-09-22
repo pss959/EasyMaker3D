@@ -199,6 +199,8 @@ void RadialLayoutWidget::UpdateRing_() {
                       TK::kRLWRingRingCount, sector_count);
 
     // Update the radius text.
+    radius_text_->SetWorldScaleAndRotation(
+        text_matrix_, TK::kLinearFeedbackTextScale, text_rotation_);
     radius_text_->SetTranslation(Vector3f(.9f * radius_,
                                           TK::kRLWRadiusTextYOffset, 0));
     radius_text_->SetText(Util::ToString(radius_));
@@ -234,6 +236,10 @@ void RadialLayoutWidget::UpdateArc_() {
     };
     const Anglef &sa = arc_.start_angle;
     const Anglef &aa = arc_.arc_angle;
+    start_angle_text_->SetWorldScaleAndRotation(text_matrix_, TK::kRLWTextScale,
+                                                text_rotation_);
+    arc_angle_text_->SetWorldScaleAndRotation(text_matrix_, TK::kRLWTextScale,
+                                              text_rotation_);
     start_angle_text_->SetTranslation(tpos(sa, TK::kRLWStartAngleTextYOffset));
     arc_angle_text_->SetTranslation(tpos(sa + .5f * aa,
                                          TK::kRLWArcAngleTextYOffset));

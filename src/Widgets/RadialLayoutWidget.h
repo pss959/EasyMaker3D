@@ -61,6 +61,13 @@ class RadialLayoutWidget : public Widget {
     /// Returns the current arc.
     const CircleArc & GetArc() const { return arc_; }
 
+    /// Sets a matrix converting from object to world coordinates and the
+    /// rotation applied to the widget. These are used to orient text.
+    void SetTextOrientation(const Matrix4f &owm, const Rotationf &rot) {
+        text_matrix_   = owm;
+        text_rotation_ = rot;
+    }
+
     /// Resets all values to their defaults.
     void Reset();
 
@@ -105,6 +112,9 @@ class RadialLayoutWidget : public Widget {
 
     /// Saves the angle at the start of a spoke rotation.
     Anglef           start_rot_angle_;
+
+    Matrix4f  text_matrix_ = Matrix4f::Identity();
+    Rotationf text_rotation_;
 
     /// Sets the colors for various parts.
     void SetColors_();

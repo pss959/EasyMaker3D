@@ -1,6 +1,5 @@
 #include "Widgets/TargetWidgetBase.h"
 
-#include "App/CoordConv.h"
 #include "SG/ColorMap.h"
 
 void TargetWidgetBase::CreationDone() {
@@ -41,7 +40,7 @@ void TargetWidgetBase::EndDrag() {
     SetFlagEnabled(Flag::kIntersectAll, true);
 }
 
-void TargetWidgetBase::ShowSnapFeedback(const CoordConv &cc, bool is_snapping) {
+void TargetWidgetBase::ShowSnapFeedback(bool is_snapping) {
     if (is_snapping == snap_feedback_active_)
         return;
 
@@ -50,7 +49,7 @@ void TargetWidgetBase::ShowSnapFeedback(const CoordConv &cc, bool is_snapping) {
     SetActive(is_snapping, false);
 
     // Let the derived class do anything extra it needs to do.
-    ShowExtraSnapFeedback(cc, is_snapping);
+    ShowExtraSnapFeedback(is_snapping);
 
     snap_feedback_active_ = is_snapping;
 }
