@@ -101,8 +101,4 @@ class FeedbackManager : public InstanceManager {
     /// Returns the active instance with the given key, or a null pointer if
     /// there is none.
     FeedbackPtr FindActiveInstance_(const std::string &key);
-
-    /// Sets the scale and rotation for the text in the given instance so it
-    /// faces the camera and is a reasonable size.
-    void SetTextScaleAndRotation_(Feedback &instance);
 };

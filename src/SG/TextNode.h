@@ -83,6 +83,13 @@ class TextNode : public Node {
     /// Redefines this to also rebuild the text if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
+    /// Sets the scale and rotation fields so the text faces the positive Z
+    /// axis and is a reasonable size. This is passed a matrix used to convert
+    /// from object to world coordinates, a base scale factor, and the current
+    /// object-space rotation.
+    void SetWorldScaleAndRotation(const Matrix4f &owm, float base_scale,
+                                  const Rotationf &current_rotation);
+
   protected:
     TextNode() {}
 

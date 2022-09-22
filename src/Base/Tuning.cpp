@@ -32,11 +32,13 @@ const float    kTreePanelRectSelectZOffset       = .5f;
 const float    kAngularFeedbackArcRadius         = 10;
 const float    kAngularFeedbackDegreesPerSegment = 4;
 const float    kAngularFeedbackLineLength        = 24;
+const float    kAngularFeedbackTextScale         = 2;
 const float    kLinearFeedbackExtraHeight        = .5f;
-const float    kLinearFeedbackExtraUprightLength = 2.f;
+const float    kLinearFeedbackExtraUprightLength = 2;
 const float    kLinearFeedbackHeightScale        = 1.1f;
-const float    kLinearFeedbackMinTextY           = 1.f;
-const float    kLinearFeedbackTextYOffset        = 3.f;
+const float    kLinearFeedbackMinTextY           = 1;
+const float    kLinearFeedbackTextScale          = 2;
+const float    kLinearFeedbackTextYOffset        = 3;
 const float    kVibrationAmplitude               = .3f;
 const float    kVibrationFrequency               = 20;
 

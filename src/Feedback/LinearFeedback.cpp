@@ -24,8 +24,7 @@ class LinearFeedback::Impl_ {
     void InitParts();
     void SetColor(const Color &color) { color_ = color; }
     void SpanLength(const Point3f &pt, const Vector3f &dir, float length,
-                    const Bounds &scene_bounds,
-                    float text_scale, const Rotationf &text_rotation);
+                    const Bounds &scene_bounds, const Matrix4f &owm);
 
   private:
     struct Frame_;
@@ -91,8 +90,7 @@ void LinearFeedback::Impl_::InitParts() {
 void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
                                        float length,
                                        const Bounds &scene_bounds,
-                                       float text_scale,
-                                       const Rotationf &text_rotation) {
+                                       const Matrix4f &owm) {
     Frame_ frame;
     ComputeFrame_(pt, dir, length, scene_bounds, frame);
     const Vector3f upright_vec = frame.upright_length * frame.up_direction;
@@ -106,12 +104,14 @@ void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
     parts_.crossbar->SetEndpoints(frame.p0 + crossbar_up,
                                   frame.p1 + crossbar_up);
 
+    // Set the scale and rotation for the text to face the camera.
+    parts_.text->SetWorldScaleAndRotation(owm, TK::kLinearFeedbackTextScale,
+                                          root_node_.GetRotation());
+
     // Update the text. Do not let it go below the minimum.
     Point3f text_pos = frame.p1 + frame.text_height * frame.up_direction;
     text_pos[1] = std::max(text_pos[1], TK::kLinearFeedbackMinTextY);
-    parts_.text->SetUniformScale(text_scale);
     parts_.text->SetTranslation(text_pos);
-    parts_.text->SetRotation(text_rotation);
     parts_.text->SetTextWithColor(
         Util::ToString(std::roundf(100 * frame.length) / 100), color_);
 
@@ -172,5 +172,5 @@ void LinearFeedback::SpanPoints(const Point3f &p0, const Point3f &p1) {
 void LinearFeedback::SpanLength(const Point3f &pt, const Vector3f &dir,
                                 float length) {
     impl_->SpanLength(pt, dir, length, GetSceneBounds(),
-                      GetTextScale(), -GetRotation() * GetTextRotation());
+                      GetObjectToWorldMatrix());
 }

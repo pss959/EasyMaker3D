@@ -22,8 +22,7 @@ class AngularFeedback::Impl_ {
     void InitParts();
     void SetColor(const Color &color) { color_ = color; }
     void SubtendArc(const Point3f &center, float up_offset,
-                    float text_up_offset, float text_scale,
-                    const Rotationf &text_rotation,
+                    float text_up_offset, const Matrix4f &owm,
                     const Vector3f &axis, const CircleArc &arc);
 
   private:
@@ -45,8 +44,7 @@ class AngularFeedback::Impl_ {
     void FindParts_();
     void UpdateLines_(const CircleArc &arc);
     void UpdateArc_(const CircleArc &arc);
-    void UpdateText_(const Anglef &arc_angle, float up_offset, float scale,
-                     const Rotationf &rotation);
+    void UpdateText_(const Anglef &angle, float up_offset, const Matrix4f &owm);
 };
 
 // ----------------------------------------------------------------------------
@@ -71,8 +69,7 @@ void AngularFeedback::Impl_::InitParts() {
 
 void AngularFeedback::Impl_::SubtendArc(const Point3f &center,
                                         float up_offset, float text_up_offset,
-                                        float text_scale,
-                                        const Rotationf &text_rotation,
+                                        const Matrix4f &owm,
                                         const Vector3f &axis,
                                         const CircleArc &arc) {
     // Rotate the feedback so that it is perpendicular to the axis.
@@ -91,8 +88,7 @@ void AngularFeedback::Impl_::SubtendArc(const Point3f &center,
     // Update the parts.
     UpdateLines_(adjusted_arc);
     UpdateArc_(adjusted_arc);
-    UpdateText_(adjusted_arc.arc_angle, text_up_offset,
-                text_scale, text_rotation);
+    UpdateText_(adjusted_arc.arc_angle, text_up_offset, owm);
 
     root_node_.SetBaseColor(color_);
 }
@@ -116,12 +112,13 @@ void AngularFeedback::Impl_::UpdateArc_(const CircleArc &arc) {
 }
 
 void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset,
-                                         float scale,
-                                         const Rotationf &rotation) {
+                                         const Matrix4f &owm) {
     auto &text = *parts_.text;
-    text.SetUniformScale(scale);
-    text.SetTranslation(Vector3f(4, up_offset, 0));
-    text.SetRotation(rotation);
+
+    // Set the scale and rotation for the text to face the camera.
+    parts_.text->SetWorldScaleAndRotation(owm, TK::kAngularFeedbackTextScale,
+                                          root_node_.GetRotation());
+    text.SetTranslation(Vector3f(4, parts_.text->GetScale()[1] * up_offset, 0));
     text.SetTextWithColor(Util::ToString(angle.Degrees()), color_);
 }
 
@@ -145,7 +142,6 @@ void AngularFeedback::SetColor(const Color &color) {
 void AngularFeedback::SubtendArc(const Point3f &center, float up_offset,
                                  float text_up_offset, const Vector3f &axis,
                                  const CircleArc &arc) {
-    const float scale = GetTextScale();
-    impl_->SubtendArc(center, up_offset, scale * text_up_offset, scale,
-                      -GetRotation() * GetTextRotation(), axis, arc);
+    impl_->SubtendArc(center, up_offset, text_up_offset,
+                      GetObjectToWorldMatrix(), axis, arc);
 }

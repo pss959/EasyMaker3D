@@ -22,12 +22,8 @@ class Feedback : public SG::Node {
         scene_bounds_func_ = func;
     }
 
-    /// Sets a uniform scale and a rotation to use to make text a reasonable
-    /// size and to face forward.
-    void SetTextScaleAndRotation(float scale, const Rotationf &rot) {
-        text_scale_    = scale;
-        text_rotation_ = rot;
-    }
+    /// Sets a matrix converting from object to world coordinates.
+    void SetObjectToWorldMatrix(const Matrix4f &owm) { object_to_world_ = owm; }
 
     /// Returns true if the derived Feedback type is displayed in world
     /// coordinates as opposed to stage coordinates. The base class defines
@@ -53,16 +49,10 @@ class Feedback : public SG::Node {
         return scene_bounds_func_();
     }
 
-    /// Returns a uniform scale factor to apply to text to make it a reasonable
-    /// size in world coordinates.
-    float GetTextScale() const { return text_scale_; }
-
-    /// Returns a rotation to apply to text that is facing +Z in stage
-    /// coordinates so that it faces +Z in world coordinates.
-    const Rotationf & GetTextRotation() const { return text_rotation_; }
+    /// Returns a matrix converting from object to world coordinates.
+    const Matrix4f & GetObjectToWorldMatrix() const { return object_to_world_; }
 
   private:
     SceneBoundsFunc scene_bounds_func_;
-    float           text_scale_ = 1;
-    Rotationf       text_rotation_;
+    Matrix4f        object_to_world_ = Matrix4f::Identity();
 };

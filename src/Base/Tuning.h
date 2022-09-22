@@ -90,6 +90,9 @@ extern const float    kAngularFeedbackDegreesPerSegment;
 /// Length of the lines used for AngularFeedback.
 extern const float    kAngularFeedbackLineLength;
 
+/// Base scale factor for AngularFeedback text.
+extern const float    kAngularFeedbackTextScale;
+
 /// Extra height added to the crossbar used for LinearFeedback.
 extern const float    kLinearFeedbackExtraHeight;
 
@@ -102,6 +105,9 @@ extern const float    kLinearFeedbackHeightScale;
 
 /// Minimum Y value for text display for LinearFeedback.
 extern const float    kLinearFeedbackMinTextY;
+
+/// Base scale factor for LinearFeedback text.
+extern const float    kLinearFeedbackTextScale;
 
 /// Y Offset above the crossbar for the text displayed for LinearFeedback.
 extern const float    kLinearFeedbackTextYOffset;

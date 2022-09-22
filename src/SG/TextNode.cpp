@@ -1,6 +1,8 @@
 #include "SG/TextNode.h"
 
 #include <ion/base/serialize.h>
+#include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
 #include <ion/text/layout.h>
 
 #include "Base/Tuning.h"
@@ -173,6 +175,21 @@ void TextNode::UpdateForRenderPass(const std::string &pass_name) {
     Node::UpdateForRenderPass(pass_name);
     if (needs_rebuild_)
         BuildText_();
+}
+
+void TextNode::SetWorldScaleAndRotation(const Matrix4f &owm, float base_scale,
+                                        const Rotationf &current_rotation) {
+    using ion::math::Length;
+    using ion::math::Normalized;
+
+    // Compute a relative size in world coordinates and scale.
+    const float size = Length(owm * Normalized(Vector3f(1, 1, 1)));
+    SetUniformScale(base_scale / size);
+
+    // Rotate to the world Z axis.
+    const Rotationf rot = Rotationf::RotateInto(owm * Vector3f::AxisZ(),
+                                                Vector3f::AxisZ());
+    SetRotation(-current_rotation * rot);
 }
 
 Bounds TextNode::UpdateBounds() const {
