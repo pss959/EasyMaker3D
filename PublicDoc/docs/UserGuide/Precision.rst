@@ -87,8 +87,11 @@ Targets
 
 Precise interactive placement can be tedious, so |appname| offers extra help
 for some operations using :newterm:`targets`. A target is a 3D object that you
-can place in the scene to affect future operations. There are two targets
-available in the application:
+can place in the scene to affect future operations. Targets can be used to
+transfer information from one object to another, such as position, orientation,
+or size. This can be very useful, for example, to align objects precisely.
+
+There are two targets available in the application:
 
   - The :newterm:`Point Target` represents a :emphasis:`position` (the base
     sphere) and a :emphasis:`direction` (the arrow).
@@ -111,13 +114,14 @@ Positioning Targets
 ,,,,,,,,,,,,,,,,,,,
 
 Targets are positioned by dragging or :ref:`modified-dragging
-<ug-modified-mode>` them. Targets can be placed either on the :ref:`stage
-<ug-stage>` or any model in the scene. When dragging a target on the stage, the
-target will snap to grid locations based on the current :ref:`precision level
+<ug-modified-mode>` them; they change to the active target color while the drag
+is in process. Targets can be placed either on the :ref:`stage <ug-stage>` or
+any model in the scene. When dragging a target on the stage, the target will
+snap to grid locations based on the current :ref:`precision level
 <ug-precision-level>`.
 
-.. todo::
-   [IMAGE OF SNAP INDICATOR]
+.. incimage:: /images/EdgeTargetSnapped.jpg  200px right
+.. incimage:: /images/PointTargetSnapped.jpg 240px right
 
 The Point Target can be dragged by any part (except the ring). When dragging
 over a model's surface, the target location will snap to vertices of the
@@ -132,9 +136,9 @@ edges <ug-show-edges>`.) If the Edge Target is dragged from a model to the
 Clicking on the Edge Target reverses its direction, which can be useful when
 performing :ref:`linear layout <ug-linear-layout>`.
 
-.. todo::
-   [IMAGE OF POINT TARGET SNAPPED TO BOUNDS]
-   [IMAGE OF EDGE TARGET SNAPPED TO BOUNDS]
+.. incimage:: /images/EdgeTargetModSnapped.jpg   200px right
+.. incimage:: /images/PointTargetModSnapped2.jpg 200px right
+.. incimage:: /images/PointTargetModSnapped.jpg  240px right
 
 :ref:`Modified-dragging <ug-modified-mode>` either target over a model uses the
 rectangular bounds of the model instead of its mesh. The Point Target will snap
@@ -143,12 +147,18 @@ can use this feature to more easily attach the point target to important points
 on objects with asymmetric meshes. Similarly, the Edge Target snaps to edges of
 the of the model instead of its mesh; the target will snap to the nearest edge
 of the bounds. You can use this feature to easily set the edge target length to
-any dimension of a model's bounds.
+any dimension of a model's bounds, such as the width of the cylinder shown
+here.
 
 When modified-dragging the Point Target, the snap indicator sphere will appear
 when any snapping occurs, and is :ref:`color-coded by dimension
 <ug-coordinate-system>`. If snapping occurs in two or three dimensions, the
-color will be the sum of the respective dimensions' colors.
+color will be the sum of the respective dimensions' colors. In the above left
+image, the Point Target is snapped to the center of the front-right edge of the
+cylinder's bounds. In the center image, the :ref:`precision level
+<ug-precision-level>` has been increased to keep the target from always
+snapping to a bounds edge, and the target is on the center line of the front
+face of the bounds, but is not snapped in the Z (up) dimension.
 
 .. todo::
    Ended here.
