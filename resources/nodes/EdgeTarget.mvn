@@ -8,17 +8,17 @@ EdgeTargetWidget "EdgeTarget" {
           translation: 0 .3 0,  # Flush with bottom.
         }
       ],
-    }
+    },
     Node "End1" {
       shapes: [
         Cylinder {    # Cone.
           top_radius:    0,
           bottom_radius: .3,
-          height:        1.2,
+          height:        1,
           sector_count:  20,
         },
       ]
-    }
+    },
     Node "Edge" { # Connecting shaft.
       shapes: [
         Cylinder {
