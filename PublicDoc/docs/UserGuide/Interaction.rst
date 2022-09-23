@@ -144,7 +144,7 @@ Radial Menus
    .. incimage:: /images/AttachedRadialMenu.jpg 180px right
 
    In either VR mode, pressing the :newterm:`menu button` on a controller
-   activates a :newterm:'radial menu' attached to the corresponding controller
+   activates a :newterm:`radial menu` attached to the corresponding controller
    in the scene. Each button in a radial menu is a shortcut to some
    :ref:`application action <ug-actions>`. Note that the menu button on an
    Oculus Touch controller is "Y" or "B".

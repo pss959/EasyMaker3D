@@ -33,8 +33,8 @@ Here is how to change the current precision level:
 
   .. admonition:: VR Only
 
-     You can also click the Up or Down buttons on the VR controller trackpad or
-     joystick to increase or decrease the current precision.
+     You can also click the Up or Down buttons on either VR controller trackpad
+     or joystick to increase or decrease the current precision.
 
 Note that the keyboard and controller shortcuts work even during drag and VR
 grip drag operations. Modifying the precision setting during a drag has the
