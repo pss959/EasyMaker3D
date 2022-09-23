@@ -57,14 +57,22 @@ class PathLimiter_ {
 };
 
 bool PathLimiter_::Push(const SG::Node &node) {
-    const bool is_tail = ! path_.empty() && &node == path_.back().get();
+    bool add_node = false;
+
     if (IsInPath_(node)) {
-        nodes_.push(&node);
-        if (is_tail)
+        // If this is the tail of the path, set the flag for future nodes.
+        if (&node == path_.back().get())
             is_under_path_ = true;
-        return true;
+        add_node = true;
     }
-    return is_under_path_ && (! is_tail || print_below_);
+    // A node not on the path is printed only if it is under the tail node and
+    // print_below_ is set.
+    else if (is_under_path_ && print_below_) {
+        add_node = true;
+    }
+    if (add_node)
+        nodes_.push(&node);
+    return add_node;
 }
 
 void PathLimiter_::Pop() {
