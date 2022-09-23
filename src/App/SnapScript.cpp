@@ -42,11 +42,12 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     InstrPtr instr;
     switch (type) {
       case Instr::Type::kAction:   instr = ProcessAction_(words);   break;
-      case Instr::Type::kClick:    instr = ProcessClick_(words);     break;
+      case Instr::Type::kClick:    instr = ProcessClick_(words);    break;
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
-      case Instr::Type::kKey:      instr = ProcessKey_(words);     break;
+      case Instr::Type::kKey:      instr = ProcessKey_(words);      break;
       case Instr::Type::kLoad:     instr = ProcessLoad_(words);     break;
+      case Instr::Type::kMod:      instr = ProcessMod_(words);      break;
       case Instr::Type::kSelect:   instr = ProcessSelect_(words);   break;
       case Instr::Type::kSettings: instr = ProcessSettings_(words); break;
       case Instr::Type::kSnap:     instr = ProcessSnap_(words);     break;
@@ -200,6 +201,18 @@ SnapScript::InstrPtr SnapScript::ProcessLoad_(const Words &words) {
         linst->file_name = words[1];
     }
     return linst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessMod_(const Words &words) {
+    ModInstrPtr minst;
+    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
+        Error_("Bad syntax for mod instruction");
+    }
+    else {
+        minst.reset(new ModInstr);
+        minst->is_on = words[1] == "on";
+    }
+    return minst;
 }
 
 SnapScript::InstrPtr SnapScript::ProcessSelect_(const Words &words) {

@@ -409,7 +409,8 @@ bool MainHandler::Impl_::Activate_(const Event event) {
             KLOG('h', "MainHandler active widget = " << widget.get()
                  << " from " << Util::EnumName(tracker->GetActuator()));
             if (event.device == Event::Device::kMouse) {
-                KLOG('d', "Mouse activation at " << event.position2D);
+                KLOG('d', "Mouse activation at " << event.position2D
+                     << (event.is_modified_mode ? " (MOD)" : ""));
             }
             ProcessActivation_();
             state_ = State_::kActivated;
@@ -431,7 +432,8 @@ bool MainHandler::Impl_::Deactivate_(const Event &event) {
         active_widget_.reset();
         state_ = State_::kWaiting;
         if (event.device == Event::Device::kMouse) {
-            KLOG('d', "Mouse deactivation at " << event.position2D);
+            KLOG('d', "Mouse deactivation at " << event.position2D
+                     << (event.is_modified_mode ? " (MOD)" : ""));
         }
         return true;
     }
@@ -554,7 +556,8 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
         KLOG('h', "MainHandler kDragging with " << draggable->GetDesc()
              << " (" << drag_info_.path_to_widget.ToString() << ")");
         if (event.device == Event::Device::kMouse) {
-            KLOG('d', "Mouse drag start at " << event.position2D);
+            KLOG('d', "Mouse drag start at " << event.position2D
+                 << (event.is_modified_mode ? " (MOD)" : ""));
         }
     }
 
@@ -562,7 +565,8 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
     cur_tracker_->FillEventDragInfo(event, drag_info_);
     draggable->ContinueDrag(drag_info_);
     if (event.device == Event::Device::kMouse) {
-        KLOG('d', "Mouse drag at " << event.position2D);
+        KLOG('d', "Mouse drag at " << event.position2D
+             << (event.is_modified_mode ? " (MOD)" : ""));
     }
 }
 

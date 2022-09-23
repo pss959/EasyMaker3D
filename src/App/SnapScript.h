@@ -71,6 +71,11 @@
 ///     to <code>PublicDoc/snaps/sessions</code>.</td>
 ///   </tr>
 ///   <tr>
+///     <td><b>mod</b></td>
+///     <td><code>on</code>|<code>off</code></td>
+///     <td>Turns modified interaction mode on or off.</td>
+///   </tr>
+///   <tr>
 ///     <td><b>select</b></td>
 ///     <td>[<i>name</i>, ...]</td>
 ///     <td>Selects the named models. If no names are given, deselects all
@@ -123,6 +128,7 @@ class SnapScript {
             kHand,
             kKey,
             kLoad,
+            kMod,
             kSelect,
             kSettings,
             kSnap,
@@ -159,6 +165,9 @@ class SnapScript {
     struct LoadInstr : public Instr {
         std::string file_name;
     };
+    struct ModInstr : public Instr {
+        bool is_on;
+    };
     struct SelectInstr : public Instr {
         Words names;
     };
@@ -187,6 +196,7 @@ class SnapScript {
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
+    DECL_SHARED_PTR(ModInstr);
     DECL_SHARED_PTR(SelectInstr);
     DECL_SHARED_PTR(SettingsInstr);
     DECL_SHARED_PTR(SnapInstr);
@@ -217,6 +227,7 @@ class SnapScript {
     InstrPtr ProcessHand_(const Words &words);
     InstrPtr ProcessKey_(const Words &words);
     InstrPtr ProcessLoad_(const Words &words);
+    InstrPtr ProcessMod_(const Words &words);
     InstrPtr ProcessSelect_(const Words &words);
     InstrPtr ProcessSettings_(const Words &words);
     InstrPtr ProcessSnap_(const Words &words);

@@ -38,7 +38,11 @@ bool EventManager::HandleEvents_(std::vector<Event> &events,
     for (size_t i = 0; i < event_count; ++i) {
         Event &event = events[i];
         event.serial            = next_serial_++;
-        event.is_modified_mode = is_modified_mode;
+
+        // If is_modified_mode is already set, leave it alone.
+        if (! event.is_modified_mode)
+            event.is_modified_mode = is_modified_mode;
+
         if (HandleEvent_(event)) {
             keep_going = false;
             break;

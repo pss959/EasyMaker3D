@@ -46,6 +46,9 @@ std::string Event::ToString() const {
         "] dev=" + Util::EnumName(device) +
         " flags=" + flags.ToString();
 
+    if (is_modified_mode)
+        s += " MOD";
+
     if (flags.Has(Event::Flag::kButtonPress) ||
         flags.Has(Event::Flag::kButtonRelease))
         s += " but=" + Util::EnumName(button);

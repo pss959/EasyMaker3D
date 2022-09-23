@@ -45,15 +45,19 @@ class Emitter_ : public IEmitter {
     using DIPhase = SnapScript::DragInstr::Phase;
     using KMods   = Util::Flags<Event::ModifierKey>;
 
+    /// Sets modified mode for subsequent clicks and drags. It is off by
+    /// default.
+    void SetModifiedMode(bool is_on) { is_mod_ = is_on; }
+
     /// Adds a click to emit.
     void AddClick(const Point2f &pos) {
-        points_.push_back(Point_(true, DIPhase::kStart, pos));
-        points_.push_back(Point_(true, DIPhase::kEnd,   pos));
+        points_.push_back(Point_(is_mod_, true, DIPhase::kStart, pos));
+        points_.push_back(Point_(is_mod_, true, DIPhase::kEnd,   pos));
     }
 
     /// Adds a drag point to emit.
     void AddDragPoint(DIPhase phase, const Point2f &pos) {
-        points_.push_back(Point_(false, phase, pos));
+        points_.push_back(Point_(is_mod_, false, phase, pos));
     }
 
     /// Adds a key press/release to simulate.
@@ -73,11 +77,12 @@ class Emitter_ : public IEmitter {
   private:
     /// Struct representing a point to process for a click or drag.
     struct Point_ {
+        bool          is_mod;
         bool          is_click;
         const DIPhase phase;
         const Point2f pos;
-        Point_(bool is_click_in, DIPhase phase_in, const Point2f &pos_in) :
-            is_click(is_click_in), phase(phase_in), pos(pos_in) {}
+        Point_(bool mod, bool cl, DIPhase ph, const Point2f &ps) :
+            is_mod(mod), is_click(cl), phase(ph), pos(ps) {}
     };
 
     /// Struct representing a key to process.
@@ -88,6 +93,9 @@ class Emitter_ : public IEmitter {
         Key_(const std::string &key, const KMods &mods, bool press) :
             key_name(key), modifiers(mods), is_press(press) {}
     };
+
+    /// Whether modified mode is on.
+    bool               is_mod_ = false;
 
     /// Points left in the current click or drag operation.
     std::deque<Point_> points_;
@@ -121,6 +129,7 @@ void Emitter_::EmitEvents(std::vector<Event> &events) {
         }
 
         Event event;
+        event.is_modified_mode = pt.is_mod;
         event.device = Event::Device::kMouse;
         if (pt.phase == DIPhase::kStart) {
             event.flags.Set(Event::Flag::kButtonPress);
@@ -283,6 +292,11 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
               return false;
           break;
       }
+      case SIType::kMod: {
+          const auto &minst = GetTypedInstr_<SnapScript::ModInstr>(instr);
+          emitter_->SetModifiedMode(minst.is_on);
+          break;
+      }
       case SIType::kSelect: {
           const auto &sinst = GetTypedInstr_<SnapScript::SelectInstr>(instr);
           test_context_.selection_manager->ChangeSelection(
@@ -309,11 +323,11 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
           break;
       }
       case SIType::kTouch: {
-          const auto &sinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
+          const auto &tinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
           auto &sc = *test_context_.scene_context;
-          sc.left_controller->SetTouchMode(sinst.is_on);
-          sc.right_controller->SetTouchMode(sinst.is_on);
-          ForceTouchMode(sinst.is_on);
+          sc.left_controller->SetTouchMode(tinst.is_on);
+          sc.right_controller->SetTouchMode(tinst.is_on);
+          ForceTouchMode(tinst.is_on);
           break;
       }
       case SIType::kView: {
