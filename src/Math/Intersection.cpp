@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <limits>
 
+#include <ion/math/vectorutils.h>
+
 #include "Math/Linear.h"
 #include "Util/String.h"
 
@@ -229,8 +231,8 @@ bool RaySphereIntersect(const Ray &ray, float radius, float &distance) {
 
 bool RayCylinderIntersect(const Ray &ray, float radius, float &distance) {
     // First, rule out rays that are close to the Y axis.
-    const float dot = ion::math::Dot(ray.direction, Vector3f::AxisY());
-    if (std::abs(dot) < 1e-5f)
+    if (AreDirectionsClose(ion::math::Normalized(ray.direction),
+                           Vector3f::AxisY(), Anglef::FromDegrees(.01f)))
         return false;
 
     // Now ignore the Y coordinate for the rest of this and do the math in 2D.

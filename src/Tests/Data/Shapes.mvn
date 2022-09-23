@@ -52,6 +52,25 @@ Scene {
           },
         ],
       },
+      Node "TranslatedShapes" {
+        translation: 300 0 0,
+        shapes: [
+          Box "TranslatedBox" {
+            size:          10 10 10,
+            translation:   4 0 0,   # Center is at (304, 0, 0).
+          },
+          Cylinder "TranslatedCylinder" {
+            top_radius:    5,
+            bottom_radius: 5,
+            height:        10,
+            translation:   24 0 0,  # Center is at (324, 0, 0).
+          },
+          Ellipsoid "TranslatedSphere" {
+            size:          10 10 10,
+            translation:   44 0 0,  # Center is at (344, 0, 0).
+          },
+        ],
+      },
     ],
   },
 },

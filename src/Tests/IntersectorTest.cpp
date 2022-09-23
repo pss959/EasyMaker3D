@@ -138,3 +138,46 @@ TEST_F(IntersectorTest, HiddenParent) {
     EXPECT_FALSE(hit.path.empty());
     EXPECT_EQ("Child1", hit.path.back()->GetName());
 }
+
+TEST_F(IntersectorTest, TranslatedShapes) {
+    // Tests intersection with a shape with translation field set.
+
+    std::string input = ReadDataFile("Shapes.mvn");
+
+    // Intersect from front:
+    //   Box      is at (304,0,0).
+    //   Cylinder is at (324,0,0).
+    //   Sphere   is at (344,0,0).
+
+    SG::Hit hit;
+
+    hit = IntersectScene(input, Ray(Point3f(304, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_NOT_NULL(hit.shape);
+    EXPECT_EQ("TranslatedBox", hit.shape->GetName());
+    EXPECT_NEAR(15.f, hit.distance, kClose);  // Box has size 10.
+    EXPECT_PTS_CLOSE(Point3f(4, 0, 5),   hit.point);
+    EXPECT_PTS_CLOSE(Point3f(304, 0, 5), hit.GetWorldPoint());
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.normal);
+
+    hit = IntersectScene(input, Ray(Point3f(324, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_NOT_NULL(hit.shape);
+    EXPECT_EQ("TranslatedCylinder", hit.shape->GetName());
+    EXPECT_NEAR(15.f, hit.distance, kClose);  // Cylinder has radius 5.
+    EXPECT_PTS_CLOSE(Point3f(24, 0, 5),  hit.point);
+    EXPECT_PTS_CLOSE(Point3f(324, 0, 5), hit.GetWorldPoint());
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.normal);
+
+    hit = IntersectScene(input, Ray(Point3f(344, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_NOT_NULL(hit.shape);
+    EXPECT_EQ("TranslatedSphere", hit.shape->GetName());
+    EXPECT_NEAR(15.f, hit.distance, kClose);  // Sphere has radius 5.
+    EXPECT_PTS_CLOSE(Point3f(44, 0, 5),  hit.point);
+    EXPECT_PTS_CLOSE(Point3f(344, 0, 5), hit.GetWorldPoint());
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.normal);
+}
