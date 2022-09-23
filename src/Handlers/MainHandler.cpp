@@ -478,6 +478,7 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_modified_mode,
         auto draggable = Util::CastToDerived<DraggableWidget>(active_widget_);
         ASSERT(draggable);
         draggable->EndDrag();
+        click_state_.count = 0;
     }
 
     // If the click alarm is not already running, process the event.
