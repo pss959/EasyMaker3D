@@ -28,11 +28,7 @@ Node "NodeViewerRoot" {
     # CLONE "T_Board" "ToolBoard" {}
     # CLONE "T_Board" "KeyBoard" {}
 
-    Node {
-      translation: -4 0 0,
-      children: [<"nodes/PointTarget.mvn">],
-    },
-    <"nodes/EdgeTarget.mvn">
+    <"../XXXX.mvn">,
   ]
 }
 
