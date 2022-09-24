@@ -8,32 +8,36 @@ Scene {
   ],
   root_node: Node "Root" {
     children: [
-      Node "Sphere" {
-        translation: -100 0 0,
-        shapes: [
-          Ellipsoid "Sphere" { size: 10 10 10 },
-        ],
-      },
-      Node "Cone" {
-        translation: 100 0 0,
-        shapes: [
-          Cylinder "Cone" {
-            has_top_cap:    False,
-            has_bottom_cap: False,
-            top_radius:     10,
-            bottom_radius:  20,
-            height:         10,
+      Node "Primitives" {
+        children: [
+          Node "Sphere" {
+            translation: -100 0 0,
+            shapes: [
+              Ellipsoid "Sphere" { size: 10 10 10 },
+            ],
           },
-        ],
-      },
-      Node "Torus" {
-        translation: 0 0 0,
-        shapes: [
-          Torus "Torus" {
-            inner_radius: .2,
-            outer_radius: 1.2,
+          Node "Cone" {
+            translation: 100 0 0,
+            shapes: [
+              Cylinder "Cone" {
+                has_top_cap:    False,
+                has_bottom_cap: False,
+                top_radius:     10,
+                bottom_radius:  20,
+                height:         10,
+              },
+            ],
           },
-        ],
+          Node "Torus" {
+            translation: 0 0 0,
+            shapes: [
+              Torus "Torus" {
+                inner_radius: .2,
+                outer_radius: 1.2,
+              },
+            ],
+          },
+        ]
       },
       Node "HiddenParent" {
         disabled_flags: "kIntersect",
@@ -52,25 +56,46 @@ Scene {
           },
         ],
       },
+      # This is tested in isolation, so it is at the origin. Separate nodes so
+      # that bounds are tested first.
       Node "TranslatedShapes" {
-        translation: 300 0 0,
-        shapes: [
-          Box "TranslatedBox" {
-            size:          10 10 10,
-            translation:   4 0 0,   # Center is at (304, 0, 0).
+        children: [
+          Node {
+            shapes: [
+              Box "TranslatedBox" {
+                size:          10 10 10,
+                translation:   4 0 0,
+              },
+            ]
           },
-          Cylinder "TranslatedCylinder" {
-            top_radius:    5,
-            bottom_radius: 5,
-            height:        10,
-            translation:   24 0 0,  # Center is at (324, 0, 0).
+          Node {
+            shapes: [
+              Cylinder "TranslatedCylinder" {
+                top_radius:    5,
+                bottom_radius: 5,
+                height:        10,
+                translation:   24 0 0,
+              },
+            ]
           },
-          Ellipsoid "TranslatedSphere" {
-            size:          10 10 10,
-            translation:   44 0 0,  # Center is at (344, 0, 0).
+          Node {
+            shapes: [
+              Ellipsoid "TranslatedSphere" {
+                size:          10 10 10,
+                translation:   44 0 0,
+              },
+            ],
+          },
+          Node "ExtraTest" {
+            shapes: [
+              Box "TranslatedBox2" {
+                size: 10 10 10,
+                translation: 0 1 0,
+              },
+            ],
           },
         ],
       },
-    ],
+    ]
   },
-},
+}

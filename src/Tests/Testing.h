@@ -15,6 +15,9 @@
 /// Macro for testing against null for clarity.
 #define EXPECT_NOT_NULL(PTR) EXPECT_TRUE((PTR) != nullptr)
 
+/// Macro for testing against null for clarity.
+#define ASSERT_NOT_NULL(PTR) ASSERT_TRUE((PTR) != nullptr)
+
 /// Macro for testing near-equality for vectors.
 #define EXPECT_VECS_CLOSE(EXP, V) EXPECT_PRED2(VectorsClose, EXP, V)
 

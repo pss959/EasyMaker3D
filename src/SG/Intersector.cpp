@@ -207,4 +207,13 @@ Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
     return hit;
 }
 
+Hit Intersector::IntersectGraph(const SG::NodePtr &root, const Ray &ray) {
+    ASSERT(root);
+    Visitor_ visitor;
+    KLOG('i', "Intersecting graph rooted by " << root->GetDesc());
+    const Hit hit = visitor.IntersectScene(ray, root);
+    KLOG('i', "Intersection on " << hit.path.ToString());
+    return hit;
+}
+
 }  // namespace SG

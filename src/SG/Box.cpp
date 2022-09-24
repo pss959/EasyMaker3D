@@ -21,7 +21,7 @@ bool Box::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
     float        distance;
     Bounds::Face face;
     bool         is_entry;
-    if (RayBoundsIntersectFace(ray, ComputeBounds(), distance,
+    if (RayBoundsIntersectFace(ray, GetUntransformedBounds(), distance,
                                face, is_entry) && is_entry) {
         hit.distance = distance;
         hit.point    = ray.GetPoint(distance);
