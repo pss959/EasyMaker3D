@@ -1161,13 +1161,9 @@ void Application::Impl_::UpdateGlobalUniforms_() {
         CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
 
     // Get the build volume size. Note that an inactive build volume is
-    // indicated by a zero size. The uniform for the active build volume size
-    // has to be scaled to match the stage.
+    // indicated by a zero size.
     const auto &bv = *scene_context_->build_volume;
     Vector3f bv_size = bv.IsActive() ? bv.GetSize() : Vector3f::Zero();
-
-    // Scale the build volume size to match the stage radius.
-    bv_size *= scene_context_->stage->GetRadiusScale();
 
     // Update the uniforms.
     scene_context_->root_model->UpdateGlobalUniforms(wsm, bv_size);
