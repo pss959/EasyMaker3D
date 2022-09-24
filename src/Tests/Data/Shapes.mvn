@@ -86,16 +86,32 @@ Scene {
               },
             ],
           },
-          Node "ExtraTest" {
-            shapes: [
-              Box "TranslatedBox2" {
-                size: 10 10 10,
-                translation: 0 1 0,
-              },
-            ],
+        ]
+      },
+      Node "ExtraBoxTest" {
+        shapes: [
+          Box "TranslatedBox2" {
+            size: 10 10 10,
+            translation: 0 1 0,
           },
         ],
       },
-    ]
+      Node "ConeTest" {
+        scale: 2 2 2,
+        children: [
+          Node {
+            translation: 0 4 0,
+            shapes: [
+              Cylinder "Cone" {
+                bottom_radius: .3,
+                top_radius:    0,
+                height:        1,
+                sector_count:  20,
+              }
+            ]
+          }
+        ]
+      },
+    ],
   },
-}
+},

@@ -201,7 +201,7 @@ bool Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
 
 Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
     Visitor_ visitor;
-    KLOG('i', "Intersecting scene");
+    KLOG('i', "Intersecting scene with " << ray.ToString());
     const Hit hit = visitor.IntersectScene(ray, scene.GetRootNode());
     KLOG('i', "Intersection on " << hit.path.ToString());
     return hit;
@@ -210,7 +210,8 @@ Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
 Hit Intersector::IntersectGraph(const SG::NodePtr &root, const Ray &ray) {
     ASSERT(root);
     Visitor_ visitor;
-    KLOG('i', "Intersecting graph rooted by " << root->GetDesc());
+    KLOG('i', "Intersecting graph rooted by " << root->GetDesc()
+         << " with " << ray.ToString());
     const Hit hit = visitor.IntersectScene(ray, root);
     KLOG('i', "Intersection on " << hit.path.ToString());
     return hit;

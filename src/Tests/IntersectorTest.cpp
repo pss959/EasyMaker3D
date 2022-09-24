@@ -197,7 +197,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
 
     // This case was failing due to Box checking transformed bounds instead of
     // untransformed bounds.
-    hit = IntersectGraph(input, "ExtraTest",
+    hit = IntersectGraph(input, "ExtraBoxTest",
                          Ray(Point3f(0, -3.5f,  20), -Vector3f::AxisZ()));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
@@ -207,4 +207,20 @@ TEST_F(IntersectorTest, TranslatedShapes) {
     EXPECT_PTS_CLOSE(Point3f(0, -3.5f, 5),   hit.point);
     EXPECT_PTS_CLOSE(Point3f(0, -3.5f, 5), hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.normal);
+}
+
+TEST_F(IntersectorTest, Cone2) {
+    std::string input = ReadDataFile("Shapes.mvn");
+    SG::Hit hit;
+    hit = IntersectGraph(input, "ConeTest",
+                         Ray(Point3f(0, 8, 20), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Cone", hit.shape->GetName());
+
+    // The ray should hit the center of the cone, so the Z value is the average
+    // of the top and bottom radii (.15).
+    EXPECT_PTS_CLOSE(Point3f(0, 0, .15f), hit.point);
+    EXPECT_PTS_CLOSE(Point3f(0, 8, .3f),  hit.GetWorldPoint());
 }

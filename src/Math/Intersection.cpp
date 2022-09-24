@@ -288,24 +288,34 @@ bool RayConeIntersect(const Ray &ray, const Point3f &apex,
     //   C + P + t * D   AND   (C - A) . V / ||C - A|| = cos(h)
     //     square the second equation:
     //   C + P + t * D   AND   [(C - A) .V]^2 / (C - A).(C - A) . V = cos^2(h)
-    //      expand and refactor to get a quadratic equation:
+    //     expand and refactor to get a quadratic equation:
     //   where
     //         a = (D.V)^2 - cos^2(h)
-    //         b = 2 * [(D.V)(AP.V)-D.AP cos^2(h)
-    //         c = (AP.V)-AP.AP cos^2(h)
+    //         b = 2 * [(D.V)(AP.V)-D.AP cos^2(h)]
+    //         c = (AP.V)^2 - AP.AP cos^2(h)
 
     using ion::math::Dot;
+    using ion::math::Length;
+    using ion::math::Normalized;
     using ion::math::Square;
 
-    const float    cos2 = Square(ion::math::Cosine(half_angle));
-    const Vector3f pa   = ray.origin - apex;
-    const float    da   = Dot(ray.direction, axis);
-    const float    pv   = Dot(pa, axis);
+    // Normalize the direction vector to unit length to make the math work.
+    const Vector3f norm_dir = Normalized(ray.direction);
+
+    const float    cos2 = Square(ion::math::Cosine(half_angle));  // cos^2(h)
+    const Vector3f pa   = ray.origin - apex;                      // AP
+    const float    da   = Dot(norm_dir, axis);                    // D.V
+    const float    pv   = Dot(pa, axis);                          // AP.V
 
     const float a = Square(da) - cos2;
-    const float b = 2.f * (da * pv - Dot(ray.direction, pa) * cos2);
+    const float b = 2.f * (da * pv - Dot(norm_dir, pa) * cos2);
     const float c = Square(pv) - Dot(pa, pa) * cos2;
-    return SolveQuadratic_(a, b, c, distance);
+    if (SolveQuadratic_(a, b, c, distance)) {
+        // Scale the distance by the inverse of the ray direction length,
+        distance /= Length(ray.direction);
+        return true;
+    }
+    return false;
 }
 
 bool SphereBoundsIntersect(const Point3f &center, float radius,
