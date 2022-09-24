@@ -33,6 +33,7 @@
 #include "Items/Board.h"
 #include "Items/BuildVolume.h"
 #include "Items/Inspector.h"
+#include "Items/PrecisionControl.h"
 #include "Items/RadialMenu.h"
 #include "Items/SessionState.h"
 #include "Items/Settings.h"
@@ -448,11 +449,16 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         break;
 
       case Action::kDecreasePrecision:
-        context_->precision_manager->Decrease();
-        break;
-      case Action::kIncreasePrecision:
-        context_->precision_manager->Increase();
-        break;
+      case Action::kIncreasePrecision: {
+          auto &pm = *context_->precision_manager;
+          if (action == Action::kIncreasePrecision)
+              pm.Increase();
+          else
+              pm.Decrease();
+          context_->scene_context->precision_control->Update(
+              pm.GetLinearPrecision(), pm.GetAngularPrecision());
+          break;
+      }
 
       case Action::kMoveToOrigin:
         MoveSelectionToOrigin_();

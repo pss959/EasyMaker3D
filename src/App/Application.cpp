@@ -1015,9 +1015,7 @@ void Application::Impl_::AddIcons_() {
     }
 
     // PrecisionControl is a special case.
-    auto prec_control =
-        SG::FindTypedNodeInScene<PrecisionControl>(scene, "PrecisionControl");
-    Util::AppendVector(prec_control->GetIcons(), icons_);
+    Util::AppendVector(scene_context_->precision_control->GetIcons(), icons_);
 
     // Set up actions and tooltips for all icons.
     for (const auto &icon: icons_) {

@@ -5,6 +5,7 @@
 #include "Items/BuildVolume.h"
 #include "Items/Controller.h"
 #include "Items/Inspector.h"
+#include "Items/PrecisionControl.h"
 #include "Items/RadialMenu.h"
 #include "Models/RootModel.h"
 #include "Panels/KeyboardPanel.h"
@@ -76,6 +77,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     wall_board        = FindTyped_<Board>(sc,            "WallBoard");
     tree_panel        = FindTyped_<TreePanel>(sc,        "TreePanel");
     keyboard_panel    = FindTyped_<KeyboardPanel>(sc,    "KeyboardPanel");
+    precision_control = FindTyped_<PrecisionControl>(sc, "PrecisionControl");
     height_pole       = FindTyped_<PushButtonWidget>(sc, "HeightPole");
     height_slider     = FindTyped_<Slider1DWidget>(sc,   "HeightSlider");
     left_controller   = FindTyped_<Controller>(sc,       "LeftController");
