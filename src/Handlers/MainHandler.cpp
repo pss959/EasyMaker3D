@@ -414,6 +414,7 @@ bool MainHandler::Impl_::Activate_(const Event event) {
             }
             ProcessActivation_();
             state_ = State_::kActivated;
+            KLOG('h', "MainHandler now kActivated");
             moved_enough_for_drag_ = false;
             return true;
         }
@@ -431,6 +432,7 @@ bool MainHandler::Impl_::Deactivate_(const Event &event) {
         cur_tracker_.reset();
         active_widget_.reset();
         state_ = State_::kWaiting;
+        KLOG('d', "MainHandler now kWaiting");
         if (event.device == Event::Device::kMouse) {
             KLOG('d', "Mouse deactivation at " << event.position2D
                      << (event.is_modified_mode ? " (MOD)" : ""));
@@ -449,17 +451,17 @@ void MainHandler::Impl_::ProcessActivation_() {
 
     const Actuator actuator = cur_tracker_->GetActuator();
 
+    KLOG('h', "MainHandler kActivated by " << Util::EnumName(actuator)
+         << " on " << (active_widget_ ? active_widget_->GetDesc() :
+                       "<NO WIDGET>"));
+
     // If the click alarm is currently running and this is the same button,
     // this is a multiple click.
     if (click_state_.IsMultipleClick(actuator))
         ++click_state_.count;
     else
         click_state_.count = 1;
-
-    KLOG('h', "MainHandler kActivated by " << Util::EnumName(actuator)
-         << " on " << (active_widget_ ? active_widget_->GetDesc() :
-                       "<NO WIDGET>")
-         << " click count = " << click_state_.count);
+    KLOG('h', "MainHandler click count = " << click_state_.count);
 
     // Set a timeout to distinguish from drags and to detect a double click.
     const float timeout = cur_tracker_->GetClickTimeout();
@@ -472,15 +474,16 @@ void MainHandler::Impl_::ProcessActivation_() {
 void MainHandler::Impl_::ProcessDeactivation_(bool is_modified_mode,
                                               bool is_on_same_widget) {
     ASSERT(cur_tracker_);
-
-    KLOG('h', "MainHandler kWaiting after deactivation by "
-         << Util::EnumName(cur_tracker_->GetActuator()));
+    KLOG('h', "MainHandler processing deactivation by "
+         << Util::EnumName(cur_tracker_->GetActuator())
+         << " state = " << Util::EnumName(state_));
 
     if (state_ == State_::kDragging) {
         auto draggable = Util::CastToDerived<DraggableWidget>(active_widget_);
         ASSERT(draggable);
         draggable->EndDrag();
         click_state_.count = 0;
+        KLOG('h', "MainHandler click count = " << click_state_.count);
     }
 
     // If the click alarm is not already running, process the event.
@@ -521,6 +524,7 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
 
     if (is_drag_start || state_ == State_::kDragging) {
         state_ = State_::kDragging;
+        KLOG('d', "MainHandler now kDragging");
         ProcessDrag_(event, is_drag_start, event.is_modified_mode);
         return true;
     }
@@ -593,6 +597,7 @@ void MainHandler::Impl_::ResetClick_() {
     ASSERT(! click_state_.alarm.IsRunning());
     cur_tracker_.reset();
     click_state_.Reset();
+    KLOG('h', "MainHandler Reset click count to " << click_state_.count);
 }
 
 // ----------------------------------------------------------------------------
