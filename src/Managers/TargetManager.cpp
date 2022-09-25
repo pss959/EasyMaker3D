@@ -92,7 +92,6 @@ void TargetManager::StartSnapping() {
 }
 
 void TargetManager::EndSnapping() {
-    CoordConv stage_cc(path_to_stage_);
     ShowSnapFeedback_(*point_target_widget_, false);
     ShowSnapFeedback_(*edge_target_widget_,  false);
 }
@@ -166,9 +165,9 @@ void TargetManager::PointActivated_(bool is_activation) {
     target_activation_.Notify(is_activation);
 
     if (is_activation) {
-        // Update the object-to-world matrix.
-        const Matrix4f owm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
-        point_target_widget_->SetObjectToWorldMatrix(owm);
+        // Update the stage-to-world matrix.
+        const Matrix4f swm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
+        point_target_widget_->SetStageToWorldMatrix(swm);
 
         // Create the command to move the target.
         ASSERT(! point_command_);
@@ -198,9 +197,9 @@ void TargetManager::EdgeActivated_(bool is_activation) {
     target_activation_.Notify(is_activation);
 
     if (is_activation) {
-        // Update the object-to-world matrix.
-        const Matrix4f owm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
-        edge_target_widget_->SetObjectToWorldMatrix(owm);
+        // Update the stage-to-world matrix.
+        const Matrix4f swm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
+        edge_target_widget_->SetStageToWorldMatrix(swm);
 
         // Create the command to move the target.
         ASSERT(! edge_command_);

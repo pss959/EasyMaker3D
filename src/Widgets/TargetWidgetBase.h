@@ -18,8 +18,8 @@ class TargetWidgetBase : public DraggableWidget {
     /// widget to change it. It is passed the widget.
     Util::Notifier<Widget &> & GetChanged() { return changed_; }
 
-    /// Sets a matrix converting from object to world coordinates.
-    void SetObjectToWorldMatrix(const Matrix4f &owm) { object_to_world_ = owm; }
+    /// Sets a matrix converting from stage to world coordinates.
+    void SetStageToWorldMatrix(const Matrix4f &swm) { stage_to_world_ = swm; }
 
     /// Sets a flag telling the widget whether to indicate that it is actively
     /// snapping or not.
@@ -32,8 +32,8 @@ class TargetWidgetBase : public DraggableWidget {
   protected:
     virtual void CreationDone() override;
 
-    /// Returns a matrix converting from object to world coordinates.
-    const Matrix4f & GetObjectToWorldMatrix() const { return object_to_world_; }
+    /// Returns a matrix converting from stage to world coordinates.
+    const Matrix4f & GetStageToWorldMatrix() const { return stage_to_world_; }
 
     /// Derived classes must implement this to tell the given receiver Widget
     /// to place the target according to the DragInfo.
@@ -61,7 +61,7 @@ class TargetWidgetBase : public DraggableWidget {
     /// Notifies when the widget is changed interactively.
     Util::Notifier<Widget &> changed_;
 
-    Matrix4f object_to_world_ = Matrix4f::Identity();
+    Matrix4f stage_to_world_ = Matrix4f::Identity();
 
     /// Whether snap feedback is showing or not.
     bool snap_feedback_active_ = false;
