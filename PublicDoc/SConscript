@@ -81,6 +81,7 @@ snap_map = {
   'Targets'        : [ 'PointTarget', 'EdgeTarget', 'PointTargetSnapped',
                        'EdgeTargetSnapped', 'PointTargetModSnapped',
                        'PointTargetModSnapped2', 'EdgeTargetModSnapped' ],
+  'TargetSnap'     : [ 'SnappedToPointTarget' ],
 }
 
 # This maps annotation script files to the images they read and write.

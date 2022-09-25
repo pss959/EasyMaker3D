@@ -171,10 +171,12 @@ feedback<ug-feedback>` change to the active target color.  See the
 documentation for the individual tools for specific details of how they handle
 snapping.
 
+.. incimage:: /images/SnappedToPointTarget.jpg 240px right
+
 When the Point Target is active, interactions that involve position (such as
 the :ref:`Translation Tool <ug-translation-tool>`) or orientation (such as the
 :ref:`Rotation Tool <ug-rotation-tool>`) snap to the target's position and
-direction. 
+direction as shown here.
 
 Similarly, when the Edge Target is active, interactions that involve size (such
 as the :ref:`Scale Tool <ug-scale-tool>`) snap to the target's length.
