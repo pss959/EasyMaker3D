@@ -94,7 +94,8 @@ or size. This can be very useful, for example, to align objects precisely.
 There are two targets available in the application:
 
   - The :newterm:`Point Target` represents a :emphasis:`position` (the base
-    sphere) and a :emphasis:`direction` (the arrow).
+    sphere) and a :emphasis:`direction` (the arrow). It also has a ring used
+    for :ref:`radial layout <ug-radial-layout>`.
   - The :newterm:`Edge Target` represents a :emphasis:`length` and a
     :emphasis:`direction`.
 
@@ -114,10 +115,10 @@ Positioning Targets
 ,,,,,,,,,,,,,,,,,,,
 
 Targets are positioned by dragging or :ref:`modified-dragging
-<ug-modified-mode>` them; they change to the active target color while the drag
-is in process. Targets can be placed either on the :ref:`stage <ug-stage>` or
-any model in the scene. When dragging a target on the stage, the target will
-snap to grid locations based on the current :ref:`precision level
+<ug-modified-mode>` them; they change to the :newterm"`active target color`
+while the drag is in process. Targets can be placed either on the :ref:`stage
+<ug-stage>` or any model in the scene. When dragging a target on the stage, the
+target will snap to grid locations based on the current :ref:`precision level
 <ug-precision-level>`.
 
 .. incimage:: /images/EdgeTargetSnapped.jpg  200px right
@@ -160,58 +161,30 @@ cylinder's bounds. In the center image, the :ref:`precision level
 snapping to a bounds edge, and the target is on the center line of the front
 face of the bounds, but is not snapped in the Z (up) dimension.
 
-.. todo::
-   Ended here.
-
 Effects
 ,,,,,,,
 
-When the Point Target is active, most position-based drag operations (such as
-translation) will snap to the target's position in all affected dimensions when
-the .
-When snapping occurs during one of these operations, both the [visual
-feedback][Feedback] and target change to the active target color.
+When active, the Point Target and Edge Target affect certain drag operations,
+causing them to snap to the target values when specific conditions are met.
+When snapping occurs, both the target and the :ref:`visual
+feedback<ug-feedback>` change to the active target color.  See the
+documentation for the individual tools for specific details of how they handle
+snapping.
 
-The point target can also be used for instantly positioning a model, and it has
-other features that let it be used be used for radial layout; see [Radial
-Layout][RadialLayout] below for details.
+When the Point Target is active, interactions that involve position (such as
+the :ref:`Translation Tool <ug-translation-tool>`) or orientation (such as the
+:ref:`Rotation Tool <ug-rotation-tool>`) snap to the target's position and
+direction. 
 
-#### Positioning on Models or the Stage
+Similarly, when the Edge Target is active, interactions that involve size (such
+as the :ref:`Scale Tool <ug-scale-tool>`) snap to the target's length.
 
+The Point Target can also be used for instantly positioning a model and has
+other features that let it be used be used for radial layout, described
+below. The Edge Target can be used for linear layout, also described below.
 
-
-
-
-
-To activate or deactivate a target, click on the corresponding toggle icon, as
-described below. When activated, a visual representation of the target appears,
-initially in the center of the [stage][Stage]. If the target is obscured by
-models, you can use the [Tree Panel][TreePanel] to hide those models
-temporarily.
-
-Targets can be [dragged][ClickDrag] to other locations, as described
-below. While a target is being dragged, its color changes from the standard
-target color (cyan) to the active target color (orange).
-
-### Edge Target
-
-![The edge target][ImgEdgeTarget]{{rightimage(200)}}
-
-The edge target indicates a length and orientation in the scene. To activate or
-deactivate the edge target, click on the [Edge Target
-Toggle][EdgeTargetToggle].
-
-#### Effects
-
-When the edge target is active, dragging during a size-based operation (such as
-scaling a model or changing a cylinder or torus diameter) snaps to the target
-length. When snapping occurs during one of these operations, both the
-[feedback][Feedback] and the target change to the active target color.
-
-The edge target can also be used for immediate linear layout. See [Linear
-Layout][LinearLayout] below for details.
-
-#### Positioning on Models or the Stage
+.. todo::
+   Ended here.
 
 ## Layout
 
