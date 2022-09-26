@@ -250,7 +250,8 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
     const size_t instr_count = script_.GetInstructions().size();
     std::cout << "  Processing " << Util::EnumToWords(instr.type)
               << " (instruction " << (cur_instruction_ + 1)
-              << " of " << instr_count << ")\n";
+              << " of " << instr_count << ") on line "
+              << instr.line_number << "\n";
 
     switch (instr.type) {
       case SIType::kAction: {

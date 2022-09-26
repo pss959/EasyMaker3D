@@ -313,7 +313,7 @@ extern const float    kRLWArcDegreesPerSegment;
 /// Width of lines in the RadialLayoutWidget.
 extern const float    kRLWArcLineWidth;
 
-/// Scale (relative to the radius) of the arc in the RadialLayoutWidget.
+/// Scale applied to ring radius to use for the arc line.
 extern const float    kRLWArcRadiusScale;
 
 /// Minimum radius needed to show the spokes and arc in the RadialLayoutWidget.
@@ -343,8 +343,11 @@ extern const int      kRLWRingRingCount;
 /// Scale (relative to the radius) to apply to spokes in the RadialLayoutWidget.
 extern const float    kRLWSpokeScale;
 
-/// Y offset of start angle text feedback in the RadialLayoutWidget.
-extern const float    kRLWStartAngleTextYOffset;
+/// Scale applied to arc radius to use for start/end angle text feedback.
+extern const float    kRLWStartEndAngleTextRadiusScale;
+
+/// Y offset of start/end angle text feedback in the RadialLayoutWidget.
+extern const float    kRLWStartEndAngleTextYOffset;
 
 /// Base scale factor for RadialLayoutWidget feedback text.
 extern const float    kRLWTextScale;

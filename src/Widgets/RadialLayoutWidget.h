@@ -101,6 +101,7 @@ class RadialLayoutWidget : public Widget {
     SG::NodePtr      arc_line_;          ///< Shows layout arc as a line.
     SG::TextNodePtr  radius_text_;       ///< Shows current radius.
     SG::TextNodePtr  start_angle_text_;  ///< Shows start angle
+    SG::TextNodePtr  end_angle_text_;    ///< Shows end angle
     SG::TextNodePtr  arc_angle_text_;    ///< Shows arc angle
     ///@}
 

@@ -59,6 +59,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
         return false;
 
     instr->type = type;
+    instr->line_number = line_number_;
     instructions_.push_back(instr);
     return true;
 }

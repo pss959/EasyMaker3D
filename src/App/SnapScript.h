@@ -138,6 +138,7 @@ class SnapScript {
         };
 
         Type type;
+        int  line_number = 0;
         virtual ~Instr() {}   // Makes deletion work properly.
     };
     struct ActionInstr : public Instr {

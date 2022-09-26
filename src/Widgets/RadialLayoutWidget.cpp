@@ -33,6 +33,7 @@ void RadialLayoutWidget::CreationDone() {
         arc_line_         = SG::FindNodeUnderNode(*this, "Arc");
         radius_text_      = get_text("RadiusText");
         start_angle_text_ = get_text("StartAngleText");
+        end_angle_text_   = get_text("EndAngleText");
         arc_angle_text_   = get_text("ArcAngleText");
 
         // Set up callbacks.
@@ -65,6 +66,7 @@ void RadialLayoutWidget::CreationDone() {
         // Feedback is off until Widgets are activated.
         radius_text_->SetEnabled(false);
         start_angle_text_->SetEnabled(false);
+        end_angle_text_->SetEnabled(false);
         arc_angle_text_->SetEnabled(false);
 
         // This sets the colors for the main widget parts.
@@ -121,6 +123,7 @@ void RadialLayoutWidget::SetColors_() {
     // Text.
     radius_text_->SetTextColor(active);
     start_angle_text_->SetTextColor(start);
+    end_angle_text_->SetTextColor(end);
     arc_angle_text_->SetTextColor(arc);
 }
 
@@ -144,6 +147,7 @@ void RadialLayoutWidget::SpokeActivated_(bool is_activation, bool is_start) {
     if (is_activation)
         start_rot_angle_ = is_start ? arc_.start_angle : arc_.arc_angle;
     start_angle_text_->SetEnabled(is_activation);
+    end_angle_text_->SetEnabled(is_activation);
     arc_angle_text_->SetEnabled(is_activation);
     GetActivation().Notify(*this, is_activation);
 }
@@ -229,22 +233,35 @@ void RadialLayoutWidget::UpdateArc_() {
     line.SetArcPoints(arc_, TK::kRLWArcRadiusScale * radius_,
                       TK::kRLWArcDegreesPerSegment);
 
-    // Update the angle text.
-    auto tpos = [&](const Anglef &angle, float y_off){
-        const Point3f pos(.5f * radius_, y_off, 0);
+    // Text position helper.
+    auto tpos = [&](const Anglef &angle, float radius_fraction, float y_off){
+        const Point3f pos(radius_fraction * radius_, y_off, 0);
         return BuildRotation_(angle) * pos;
     };
+
+    // Update the scale, rotation, translation, and text.
+    auto update_angle = [&](SG::TextNode &text_node, const Anglef &angle,
+                            const Point3f &pos) {
+        text_node.SetWorldScaleAndRotation(text_matrix_, TK::kRLWTextScale,
+                                           text_rotation_);
+        text_node.SetTranslation(pos);
+        text_node.SetText(GetAngleText_(angle));
+    };
+
     const Anglef &sa = arc_.start_angle;
     const Anglef &aa = arc_.arc_angle;
-    start_angle_text_->SetWorldScaleAndRotation(text_matrix_, TK::kRLWTextScale,
-                                                text_rotation_);
-    arc_angle_text_->SetWorldScaleAndRotation(text_matrix_, TK::kRLWTextScale,
-                                              text_rotation_);
-    start_angle_text_->SetTranslation(tpos(sa, TK::kRLWStartAngleTextYOffset));
-    arc_angle_text_->SetTranslation(tpos(sa + .5f * aa,
-                                         TK::kRLWArcAngleTextYOffset));
-    start_angle_text_->SetText(GetAngleText_(sa));
-    arc_angle_text_->SetText(GetAngleText_(aa));
+    const Anglef  ea = NormalizedAngle(sa + aa);
+
+    const Point3f sa_pos = tpos(sa, TK::kRLWStartEndAngleTextRadiusScale,
+                                TK::kRLWStartEndAngleTextYOffset);
+    const Point3f ea_pos = tpos(ea, TK::kRLWStartEndAngleTextRadiusScale,
+                                TK::kRLWStartEndAngleTextYOffset);
+    const Point3f aa_pos = tpos(sa + .5f * aa, TK::kRLWArcRadiusScale,
+                                TK::kRLWArcAngleTextYOffset);
+
+    update_angle(*start_angle_text_, sa, sa_pos);
+    update_angle(*end_angle_text_,   ea, ea_pos);
+    update_angle(*arc_angle_text_,   aa, aa_pos);
 }
 
 std::string RadialLayoutWidget::GetAngleText_(const Anglef &angle) {
