@@ -111,13 +111,15 @@ void RadialLayoutWidget::SetColors_() {
     };
 
     const Color active = get_color("TargetActiveColor");
-    const Color start  = get_color("RadialLayoutStartSpokeColor");
-    const Color end    = get_color("RadialLayoutEndSpokeColor");
-    const Color arc    = get_color("RadialLayoutArcColor");
+    const Color start  = get_color("RLWStartSpokeColor");
+    const Color end    = get_color("RLWEndSpokeColor");
+    const Color arc    = get_color("RLWArcColor");
 
     // Various geometry.
     start_spoke_->SetInactiveColor(start);
+    start_spoke_->SetActiveColor(get_color("RLWStartSpokeActiveColor"));
     end_spoke_->SetInactiveColor(end);
+    end_spoke_->SetActiveColor(get_color("RLWEndSpokeActiveColor"));
     arc_line_->SetBaseColor(arc);
 
     // Text.

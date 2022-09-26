@@ -66,6 +66,7 @@ RadialLayoutWidget "RadialLayoutWidget" {
       children: [
         TextNode "RadiusText"     { $SCALE },
         TextNode "StartAngleText" { $SCALE },
+        TextNode "EndAngleText"   { $SCALE },
         TextNode "ArcAngleText"   { $SCALE },
       ]
     }
