@@ -59,6 +59,10 @@ class DiscWidget : public DraggableWidget {
     /// snapping, for example). This does not invoke callbacks.
     void SetRotationAngle(const Anglef &angle);
 
+    /// Returns the current rotation angle. This can be called at any time,
+    /// including during a rotation drag.
+    Anglef GetRotationAngle() const;
+
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
@@ -110,6 +114,9 @@ class DiscWidget : public DraggableWidget {
     /// Starting scale.
     Vector3f   start_scale_;
 
+    /// Change in rotation angle from the previous drag.
+    Anglef     prev_rot_angle_;
+
     /// Notifies when the widget is rotated.
     Util::Notifier<Widget&, const Anglef &> rotation_changed_;
 
@@ -147,8 +154,13 @@ class DiscWidget : public DraggableWidget {
     /// orientations (for grip drags).
     Anglef ComputeRotation_(const Rotationf &rot0, const Rotationf &rot1);
 
-    /// Updates the rotation based on the given rotation angle, then notifies.
-    void UpdateRotation_(const Anglef &rot_angle, bool notify);
+    /// Updates the rotation based on the given change in rotation angle and
+    /// notifies.
+    void UpdateRotation_(const Anglef &rot_angle);
+
+    /// Sets the rotation in the widget to the given angle if apply_to_widget_
+    /// is true.
+    void ApplyRotationToWidget_(const Anglef &new_angle);
 
     /// Computes a new scale factor based on start end points, then updates the
     /// scale and notifies.

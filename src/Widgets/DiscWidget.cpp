@@ -47,7 +47,11 @@ void DiscWidget::ApplyScaleChange(float delta) {
 }
 
 void DiscWidget::SetRotationAngle(const Anglef &angle) {
-    UpdateRotation_(angle, false);
+    ApplyRotationToWidget_(angle);
+}
+
+Anglef DiscWidget::GetRotationAngle() const {
+    return RotationAngle(GetRotation());
 }
 
 void DiscWidget::StartDrag(const DragInfo &info) {
@@ -100,7 +104,8 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
         const Ray local_ray = WorldToWidget(info.ray);
 
         if (cur_action_ == Action_::kEdgeOnRotation) {
-            UpdateRotation_(ComputeEdgeOnRotationAngle_(local_ray), true);
+            const Anglef angle = ComputeEdgeOnRotationAngle_(local_ray);
+            UpdateRotation_(angle);
         }
         else {
             // Intersect the local ray with the plane to get the current point.
@@ -112,8 +117,8 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
 
             // Process the correct action.
             if (cur_action_ == Action_::kRotation) {
-                UpdateRotation_(ComputeRotation_(start_point_, end_point_),
-                                true);
+                const Anglef angle = ComputeRotation_(start_point_, end_point_);
+                UpdateRotation_(angle);
             }
             else if (cur_action_ == Action_::kScale) {
                 UpdateScale_(start_point_, end_point_);
@@ -123,13 +128,15 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
     else {
         ASSERT(info.trigger == Trigger::kGrip);
         ASSERT(cur_action_ == Action_::kRotation);
-        UpdateRotation_(
-            ComputeRotation_(start_orientation_, info.grip_orientation), true);
+        const Anglef angle = ComputeRotation_(start_orientation_,
+                                              info.grip_orientation);
+        UpdateRotation_(angle);
     }
 }
 
 void DiscWidget::EndDrag() {
     SetActive(false);
+    prev_rot_angle_ = start_angle_ = Anglef::FromDegrees(0);
 }
 
 Point3f DiscWidget::GetRayPoint_(const Ray &local_ray) {
@@ -232,15 +239,33 @@ Anglef DiscWidget::ComputeRotation_(const Rotationf &rot0,
     return GetRotationAngle_(rot);
 }
 
-void DiscWidget::UpdateRotation_(const Anglef &rot_angle, bool notify) {
-    // Update our rotation.
-    if (apply_to_widget_)
-        SetRotation(Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
-                                                start_angle_ + rot_angle));
+void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {
+    using ion::math::AngleBetween;
 
-    // Invoke the callback.
-    if (notify)
-        rotation_changed_.Notify(*this, rot_angle);
+    Anglef angle = rot_angle;
+
+    // If the new angle is more than 180 degrees from the previous angle,
+    // switch direction for consistency.
+    const float prev_deg = prev_rot_angle_.Degrees();
+    const float cur_deg  = rot_angle.Degrees();
+    if (std::abs(cur_deg - prev_deg) > 180) {
+        float new_deg = cur_deg;
+        if (prev_deg < 0 && cur_deg > 0)
+            new_deg -= 360;
+        else if (prev_deg > 0 && cur_deg < 0)
+            new_deg += 360;
+        angle = Anglef::FromDegrees(new_deg);
+    }
+
+    ApplyRotationToWidget_(start_angle_ + angle);
+    rotation_changed_.Notify(*this, angle);
+
+    prev_rot_angle_ = angle;
+}
+
+void DiscWidget::ApplyRotationToWidget_(const Anglef &new_angle) {
+    if (apply_to_widget_)
+        SetRotation(Rotationf::FromAxisAndAngle(Vector3f::AxisY(), new_angle));
 }
 
 void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
