@@ -95,12 +95,11 @@ There are two targets available in the application:
 
   - The :newterm:`Point Target` represents a :emphasis:`position` (the base
     sphere) and a :emphasis:`direction` (the arrow). It also has a ring used
-    for :ref:`radial layout <ug-radial-layout>`.
+    for :ref:`radial layout <ug-layout>`.
   - The :newterm:`Edge Target` represents a :emphasis:`length` and a
     :emphasis:`direction`.
 
-The ring on the Point Target is used for :ref:`radial layout
-<ug-radial-layout>`.
+The ring on the Point Target is used for :ref:`radial layout <ug-layout>`.
 
 Targets must be active (visible) to have any effect. To activate or deactivate
 the Point Target, click on the :ref:`Toggle Point Target
@@ -134,8 +133,9 @@ Similarly, the Edge Target snaps to the closest edge of the model's mesh,
 matching the length of that edge. (You may find it helpful to :ref:`show model
 edges <ug-show-edges>`.) If the Edge Target is dragged from a model to the
 :ref:`stage <ug-stage>`, it retains the length of the last edge it snapped to.
+
 Clicking on the Edge Target reverses its direction, which can be useful when
-performing :ref:`linear layout <ug-linear-layout>`.
+performing :ref:`linear layout <ug-layout>`.
 
 .. incimage:: /images/EdgeTargetModSnapped.jpg   200px right
 .. incimage:: /images/PointTargetModSnapped2.jpg 200px right
@@ -185,6 +185,8 @@ The Point Target can also be used for instantly positioning a model and has
 other features that let it be used be used for radial layout, described
 below. The Edge Target can be used for linear layout, also described below.
 
+.. _ug-layout:
+
 Layout
 ......
 
@@ -217,6 +219,9 @@ desired direction. As you drag either spoke, color-coded feedback shows the
 spoke angles and the subtended arc angle.  The spoke angles also adhere to the
 current :ref:`precision level <ug-precision-level>`
 
+.. incimage:: /images/RadialLayoutSingle.jpg   300px right
+.. incimage:: /images/RadialLayoutMultiple.jpg 300px right
+
 When the radius and spokes are correct, click on the :ref:`Radial Layout icon
 <ug-radial-layout>` to lay out the selected models. The primary selection will
 be moved to the point where the green starting spoke intersects the ring, and
@@ -230,31 +235,31 @@ the arrow, as shown in the right image. This is true even if the radial layout
 features of the Point Target are not visible; this is an easy way to align
 objects.
 
-.. incimage:: /images/RadialLayoutSingle.jpg   300px right
-.. incimage:: /images/RadialLayoutMultiple.jpg 300px right
+Linear Layout
+,,,,,,,,,,,,,
 
-.. todo::
-   Ended here.
+.. incimage:: /images/LinearLayout.jpg 300px right
 
-### Linear Layout
+The Edge Target can be used to lay out two or more models along a line. The
+length and direction of the Edge Target determine the offset between
+models.
 
-The edge target can be used to lay out two or more models along a line. The
-direction and length of the target determine the offset between models. The
-[primary selection][Selection] will not move. The center of the first secondary
-selection will be placed at the offset from the primary model's center, and so
-on for subsequent selected models, in selection order.
+When two or more models are selected, clicking the :ref:`Linear Layout icon
+<ug-linear-layout>` lays out all of the models along a line. The :ref:`primary
+selection <ug-selection>` is left in its original position. The center of the
+first secondary selection will be placed at the offset from the primary model's
+center, and so on for subsequent selected models, in selection order.
 
-It may be useful to create a temporary model with the correct size as a layout
-aid. For example, suppose you want to lay out 3 models along the X direction
-with 6 units between their centers:
+It may sometimes be useful to create a temporary model with the correct size as
+a layout aid. For example, suppose you want to lay out 3 models along the X
+direction with 6 units between their centers as in this image:
 
-+ Create a box and scale it so that it is 6 units in size in X (using 1 unit
-  [precision][PrecisionLevel].
-+ Activate the edge target and drag it onto one of the box edges in the X
-  direction. The target will then be exactly 6 units in length and lie along
-  the X axis. Click on the edge target to flip it if it is pointing in the
-  wrong direction.
-+ [Delete][DeleteAction] the box if you no longer need it.
-+ Select the primary selection - the one that will not move.
-+ [Alt-select][Selection] the other models you want to lay out, in order.
-+ Click on the [Linear Layout icon][LinearLayoutAction] to lay them out.
+ - Create a box and scale it so that it is 6 units in size in X (using 1 unit
+   :ref:`precision level <ug-precision-level>`).
+ - Activate the Edge Target and drag it onto one of the box edges in the X
+   direction. Click on the Edge Target to reverse it if it is pointing in the
+   opposite direction. The target should then be exactly 6 units in length and
+   pointing in the correct direction.
+ - :ref:`Delete <ug-delete>` the box if you no longer need it.
+ - Select the models you want to lay out in the correct order.
+ - Click on the Linear Layout icon to lay them out.

@@ -1,0 +1,77 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: True,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 1.5 1 1,
+      mode: "kBaseSymmetric",
+      model_names: ["Box_1"],
+    },
+    ScaleCommand {
+      ratios: 1 1.5 1,
+      mode: "kAsymmetric",
+      model_names: ["Box_1"],
+    },
+    TranslateCommand {
+      translation: 0 0 -10,
+      model_names: ["Box_1"],
+    },
+    ChangeEdgeTargetCommand {
+      old_target: EdgeTarget {
+      },
+      new_target: EdgeTarget {
+        position0: 3 6 -8,
+        position1: -3 6 -8,
+      },
+    },
+    ChangeEdgeTargetCommand {
+      old_target: EdgeTarget {
+      },
+      new_target: EdgeTarget {
+        position0: -3 6 -8,
+        position1: 3 6 -8,
+      },
+    },
+    DeleteCommand {
+      model_names: ["Box_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_2",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand {
+      type: "kSphere",
+      result_name: "Sphere_1",
+      initial_scale: 2,
+    },
+    LinearLayoutCommand {
+      offset: 6 0 0,
+      model_names: ["Box_2", "Cylinder_1", "Sphere_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.479496 0.528496 0.948941 1,
+      model_names: ["Box_2"],
+    },
+  ],
+  current_index: 12,
+}

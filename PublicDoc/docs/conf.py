@@ -76,7 +76,7 @@ html_theme_options = {
     'style_nav_header_background': '#78a5e9',
 
     # -- Toc options
-    'collapse_navigation':         True,
+    'collapse_navigation':         False,
     'includehidden':               True,
     'navigation_depth':            4,
     'sticky_navigation':           True,

@@ -67,6 +67,7 @@ snap_map = {
   'Feedback'       : [ 'LinearFeedback', 'AngularFeedback' ],
   'Hull'           : [ 'HullSpheres', 'HullCapsule', 'HullTorus', 'HullDisk' ],
   'InvalidColors'  : [ 'InvalidColors' ],
+  'LinearLayout'   : [ 'LinearLayout' ],
   'Main'           : [ 'WorkArea', 'PrecisionControl', 'BuildVolume', 'Logo' ],
   'ModelEdges'     : [ 'ModelNoEdges', 'ModelEdges' ],
   'Primitives'     : [ 'PrimitiveBox', 'PrimitiveCylinder', 'PrimitiveSphere',
@@ -96,7 +97,7 @@ ann_map = {
                   'NameToolIcon',
                   'ScaleToolIcon',
                   'SessionPanelIcon',
-                 ]),
+                ]),
   'WorkArea' : (['WorkArea'], ['WorkAreaAnnotated']),
 }
 
