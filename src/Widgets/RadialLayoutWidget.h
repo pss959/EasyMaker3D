@@ -127,6 +127,11 @@ class RadialLayoutWidget : public Widget {
     void SpokeActivated_(bool is_activation, bool is_start);
     void SpokeChanged_(const Anglef &angle, bool is_start, float precision);
 
+    /// This is called when the end spoke is rotated. If the end spoke crossed
+    /// over the start spoke, this returns the new signed angle between them.
+    /// Otherwise it returns a zero angle.
+    Anglef GetCrossoverAngle_(const Anglef &new_end_angle);
+
     /// Updates the ring to reflect the current radius.
     void UpdateRing_();
 

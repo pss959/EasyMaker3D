@@ -175,56 +175,51 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
     }
     // When the end spoke is moved, only it rotates.
     else {
-        // Returns the smaller signed angle between two angles.
-        const auto deg_diff = [](const Anglef &from_angle,
-                                 const Anglef &to_angle){
-            float deg = (to_angle - from_angle).Degrees();
-            return deg > 180 ? deg - 360 : deg < -180 ? deg + 360 : deg;
-        };
+        // Compute the new arc angle. Check first for the end spoke crossing
+        // over the start spoke. This will return 0 if no crossover.
+        Anglef new_arc_angle = GetCrossoverAngle_(new_angle);
 
-        // Determine the angle between the start and end spokes previously and
-        // now.
-        const float prev_diff_deg = deg_diff(arc_.start_angle, end_angle_);
-        const float  new_diff_deg = deg_diff(arc_.start_angle, new_angle);
-
-        // The sign can change near 0 or near 180. Ignore changes near 180.
-        Anglef new_arc_angle;
-        if (std::abs(new_diff_deg) < 90 &&
-            ((prev_diff_deg <= 0 && new_diff_deg > 0) ||
-             (prev_diff_deg >= 0 && new_diff_deg < 0))) {
-            // If the sign changed, this is a cross-over. Use the small signed
-            // angle.
-            new_arc_angle = Anglef::FromDegrees(new_diff_deg);
-        }
-        else {
-            // Not a crossover - keep going in the same direction, and don't
-            // allow 0 degrees.
-            if (arc_.arc_angle.Radians() == 0) {
-                // No previous arc - go in the new direction.
-                new_arc_angle = Anglef::FromDegrees(new_diff_deg);
-            }
-            else if (arc_.arc_angle.Radians() >= 0) {
-                // Counterclockwise.
-                new_arc_angle = NormalizedAngle(new_angle - arc_.start_angle);
-                if (new_arc_angle.Radians() == 0)
-                    new_arc_angle = Anglef::FromDegrees(360);
-            }
-            else {
-                // Clockwise.
-                new_arc_angle =
-                    NormalizedAngle(new_angle - arc_.start_angle) -
-                    Anglef::FromDegrees(360);
-                if (new_arc_angle.Radians() == 0)
-                    new_arc_angle = Anglef::FromDegrees(-360);
-            }
+        // If there was no crossover, keep going in the same direction.
+        if (new_arc_angle.Radians() == 0) {
+            const bool is_ccw = arc_.arc_angle.Radians() >= 0;
+            new_arc_angle = NormalizedAngle(new_angle - arc_.start_angle) -
+                Anglef::FromDegrees(is_ccw ? 0 : 360);
+            // Don't allow 0 degrees.
+            if (new_arc_angle.Radians() == 0)
+                new_arc_angle = Anglef::FromDegrees(is_ccw ? 360 : -360);
         }
         arc_.arc_angle = new_arc_angle;
         end_angle_ = new_angle;
         end_spoke_->SetRotationAngle(end_angle_);
     }
-
     UpdateArc_();
     changed_.Notify();
+}
+
+Anglef RadialLayoutWidget::GetCrossoverAngle_(const Anglef &new_end_angle) {
+    // Returns the smaller signed angle between two angles.
+    const auto deg_diff = [](const Anglef &from_angle, const Anglef &to_angle){
+        float deg = (to_angle - from_angle).Degrees();
+        return deg > 180 ? deg - 360 : deg < -180 ? deg + 360 : deg;
+    };
+
+    // Determine the angle between the start and end spokes previously and now.
+    const float prev_diff_deg = deg_diff(arc_.start_angle, end_angle_);
+    const float  new_diff_deg = deg_diff(arc_.start_angle, new_end_angle);
+
+    bool use_angle = false;
+
+    // If there is no current arc, treat this as a crossover.
+    if (arc_.arc_angle.Radians() == 0)
+        use_angle = true;
+
+    // Check for a sign change in the subtended angles. The sign can change
+    // near 0 or near 180. Ignore changes near 180.
+    else use_angle = (std::abs(new_diff_deg) < 90 &&
+                      ((prev_diff_deg <= 0 && new_diff_deg > 0) ||
+                       (prev_diff_deg >= 0 && new_diff_deg < 0)));
+
+    return use_angle ? Anglef::FromDegrees(new_diff_deg) : Anglef();
 }
 
 void RadialLayoutWidget::UpdateRing_() {
