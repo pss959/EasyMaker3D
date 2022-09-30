@@ -86,14 +86,16 @@ void RadialLayoutWidget::SetRadius(float radius) {
 
 void RadialLayoutWidget::SetArc(const CircleArc &arc) {
     arc_ = arc;
-    start_spoke_->SetRotation(BuildRotation_(arc.start_angle));
-    end_spoke_->SetRotation(BuildRotation_(arc.arc_angle));
+    end_angle_ = NormalizedAngle(arc_.start_angle + arc_.arc_angle);
+    start_spoke_->SetRotationAngle(arc_.start_angle);
+    end_spoke_->SetRotationAngle(end_angle_);
     UpdateArc_();
 }
 
 void RadialLayoutWidget::Reset() {
-    radius_      = 1;
+    radius_ = 1;
     arc_ = CircleArc(Anglef(), Anglef::FromDegrees(-360));
+    end_angle_ = Anglef();
 
     UpdateRing_();
     UpdateSpokes_();
@@ -147,7 +149,7 @@ void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
 
 void RadialLayoutWidget::SpokeActivated_(bool is_activation, bool is_start) {
     if (is_activation)
-        start_rot_angle_ = is_start ? arc_.start_angle : arc_.arc_angle;
+        start_rot_angle_ = is_start ? arc_.start_angle : end_angle_;
     start_angle_text_->SetEnabled(is_activation);
     end_angle_text_->SetEnabled(is_activation);
     arc_angle_text_->SetEnabled(is_activation);
@@ -161,31 +163,66 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
         RoundToPrecision(
             NormalizedAngle(start_rot_angle_ + angle).Degrees(),
             precision));
+    if (new_angle.Degrees() == 360)
+        new_angle = Anglef::FromDegrees(0);
 
+    // When the start spoke is moved, both spokes rotate together.
     if (is_start) {
-        if (new_angle.Degrees() == 360)
-            new_angle = Anglef::FromDegrees(0);
-        start_spoke_->SetRotationAngle(new_angle - start_rot_angle_);
+        start_spoke_->SetRotationAngle(new_angle);
         arc_.start_angle = new_angle;
+        end_angle_ = NormalizedAngle(arc_.start_angle + arc_.arc_angle);
+        end_spoke_->SetRotationAngle(end_angle_);
     }
+    // When the end spoke is moved, only it rotates.
     else {
-        if (new_angle.Degrees() == 0)
-            new_angle = Anglef::FromDegrees(360);
+        // Returns the smaller signed angle between two angles.
+        const auto deg_diff = [](const Anglef &from_angle,
+                                 const Anglef &to_angle){
+            float deg = (to_angle - from_angle).Degrees();
+            return deg > 180 ? deg - 360 : deg < -180 ? deg + 360 : deg;
+        };
 
-        // Check for the end spoke crossing over the start spoke to change
-        // direction.
-        const float cur_d = arc_.arc_angle.Degrees();
-        const float new_d = new_angle.Degrees();
-        // If switched to full 360 negative before but now slightly positive.
-        if (cur_d == -360 && new_d < 180)
-            new_angle = Anglef::FromDegrees(new_d);
-        // Switching from positive to negative.
-        else if (std::abs(cur_d - new_d) > 180 && new_d > cur_d)
-            new_angle = Anglef::FromDegrees(new_d == 360 ? -360 : new_d - 360);
+        // Determine the angle between the start and end spokes previously and
+        // now.
+        const float prev_diff_deg = deg_diff(arc_.start_angle, end_angle_);
+        const float  new_diff_deg = deg_diff(arc_.start_angle, new_angle);
 
-        arc_.arc_angle = new_angle;
-        end_spoke_->SetRotationAngle(new_angle - start_rot_angle_);
+        // The sign can change near 0 or near 180. Ignore changes near 180.
+        Anglef new_arc_angle;
+        if (std::abs(new_diff_deg) < 90 &&
+            ((prev_diff_deg <= 0 && new_diff_deg > 0) ||
+             (prev_diff_deg >= 0 && new_diff_deg < 0))) {
+            // If the sign changed, this is a cross-over. Use the small signed
+            // angle.
+            new_arc_angle = Anglef::FromDegrees(new_diff_deg);
+        }
+        else {
+            // Not a crossover - keep going in the same direction, and don't
+            // allow 0 degrees.
+            if (arc_.arc_angle.Radians() == 0) {
+                // No previous arc - go in the new direction.
+                new_arc_angle = Anglef::FromDegrees(new_diff_deg);
+            }
+            else if (arc_.arc_angle.Radians() >= 0) {
+                // Counterclockwise.
+                new_arc_angle = NormalizedAngle(new_angle - arc_.start_angle);
+                if (new_arc_angle.Radians() == 0)
+                    new_arc_angle = Anglef::FromDegrees(360);
+            }
+            else {
+                // Clockwise.
+                new_arc_angle =
+                    NormalizedAngle(new_angle - arc_.start_angle) -
+                    Anglef::FromDegrees(360);
+                if (new_arc_angle.Radians() == 0)
+                    new_arc_angle = Anglef::FromDegrees(-360);
+            }
+        }
+        arc_.arc_angle = new_arc_angle;
+        end_angle_ = new_angle;
+        end_spoke_->SetRotationAngle(end_angle_);
     }
+
     UpdateArc_();
     changed_.Notify();
 }
@@ -252,7 +289,7 @@ void RadialLayoutWidget::UpdateArc_() {
 
     const Anglef &sa = arc_.start_angle;
     const Anglef &aa = arc_.arc_angle;
-    const Anglef  ea = NormalizedAngle(sa + aa);
+    const Anglef  ea = end_spoke_->GetRotationAngle();
 
     const Point3f sa_pos = tpos(sa, TK::kRLWStartEndAngleTextRadiusScale,
                                 TK::kRLWStartEndAngleTextYOffset);

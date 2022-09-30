@@ -85,6 +85,7 @@ class RadialLayoutWidget : public Widget {
 
     float            radius_ = 1;   ///< Outer radius of ring.
     CircleArc        arc_;          ///< Arc defined by spokes.
+    Anglef           end_angle_;    ///< Saves the current end angle.
 
     /// Radius at the start of a drag.
     float            start_radius_;
