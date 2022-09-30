@@ -185,56 +185,56 @@ The Point Target can also be used for instantly positioning a model and has
 other features that let it be used be used for radial layout, described
 below. The Edge Target can be used for linear layout, also described below.
 
+Layout
+......
+
+The Point Target can be used to lay out objects along a circular arc
+(:newterm:`radial layout`), and the Edge Target can be used to lay out objects
+along a line (:newterm:`linear layout`).
+
+Radial Layout
+,,,,,,,,,,,,,
+
+The Point Target can also be used to lay out :ref:`selected models
+<ug-selection>` in a circle or along a circular arc. All of the parameters of
+the layout are specified using the features of the target.
+
+.. incimage:: /images/RadialLayoutArc.jpg    300px right
+.. incimage:: /images/RadialLayoutRadius.jpg 300px right
+
+The radius of the circle or arc is specified by dragging the ring around the
+Point Target to the desired size. The radius adheres to the current
+:ref:`precision level <ug-precision-level>`. You can drag the ring close to the
+target again to disable the radial layout features.
+
+When the ring radius is large enough, two spokes appear to let you specify the
+starting and ending points on the circle. The green spoke defines the starting
+point of the circle or arc, and the red spoke defines the end. If you drag the
+green spoke, both spokes rotate around the circle. If you drag the red spoke,
+only it moves, allowing you to change the arc used for the layout. If you want
+to reverse the layout direction, drag the red spoke past the green one in the
+desired direction. As you drag either spoke, color-coded feedback shows the
+spoke angles and the subtended arc angle.  The spoke angles also adhere to the
+current :ref:`precision level <ug-precision-level>`
+
+When the radius and spokes are correct, click on the :ref:`Radial Layout icon
+<ug-radial-layout>` to lay out the selected models. The primary selection will
+be moved to the point where the green starting spoke intersects the ring, and
+the secondary selections will be evenly spaced along the ring up to the red
+ending spoke, as shown here on the left. All selected models will have their
+"up" directions aligned with the Point Target direction.
+
+As a special case, if exactly one model is selected, clicking on the Radial
+Layout icon will move the model to the Point Target location and align it with
+the arrow, as shown in the right image. This is true even if the radial layout
+features of the Point Target are not visible; this is an easy way to align
+objects.
+
+.. incimage:: /images/RadialLayoutSingle.jpg   300px right
+.. incimage:: /images/RadialLayoutMultiple.jpg 300px right
+
 .. todo::
    Ended here.
-
-## Layout
-
-The point and edge targets can also be used to perform radial and linear
-layout, respectively.
-
-### Radial Layout
-
-The point target can also be used to lay out [selected models][Selection] along
-a circle or circular arc. All of the parameters of the layout are specified
-using the features of the target. When they are all set, click on the [Radial
-Layout icon][RadialLayoutAction] to lay out the selected models.
-
-If exactly one model is selected and the Radial Layout icon is clicked, the
-bottom center of the model will be moved to the point target's location and the
-model's "up" (+Z) direction will be aligned with the point target's direction.
-
-![][ImgPointTargetRadius]{{rightimage(140)}}
-
-If two or more models are selected, clicking on the Radial Layout icon will lay
-them out along a circle or arc. To set this up, you can use some extra features
-of the point target. To use them, drag the ring of the target to make it
-larger. As you do this, you will see [feedback][Feedback] above the arrow
-showing the diameter of the ring, which will be the diameter of the circle or
-arc for your layout. The radius follows the current [precision
-level][PrecisionLevel].
-
-![][ImgPointTargetRadiusActive]{{rightimage(140)}}
-
-Intersecting the ring are two spokes, one green and one red. These are used to
-modify the starting and ending angles for layout, respectively. If you drag the
-green (starting) spoke, both spokes rotate around the circle. If you drag the
-red (ending) spoke, only the red spoke moves. The arc connecting the spokes
-shows the direction of the layout (green to red). If you want to reverse the
-direction, drag the red spoke past the green one in the desired direction. As
-you drag either spoke, color-coded feedback shows the angle of each spoke and
-the subtended layout angle.  Note that the spoke angles also follow the current
-[precision level][PrecisionLevel].
-
-Once you have set up the point target with the correct position, orientation,
-radius, and angles, clicking on the [Radial Layout icon][RadialLayoutAction]
-will position all selected models with their bottom centers along the circle or
-arc (without changing their orientations). The selection order determines the
-order in which they are laid out: the [primary selection][Selection] will be at
-the start angle, and the last-selected model will be at the end angle.
-
-The point target retains the radial settings (diameter and angles) until you
-reset it by dragging the ring back to its tiny state.
 
 ### Linear Layout
 

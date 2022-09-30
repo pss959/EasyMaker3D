@@ -4,7 +4,7 @@ RadialLayoutWidget "RadialLayoutWidget" {
       disabled_flags: "kTraversal",
       children: [
         Node "SpokeGeom" {
-          scale: 1 .6 .4,  # X scale is changed in code.
+          scale: 1 .8 .2,  # X scale is changed in code.
           shapes: [ Box {} ]
         }
       ]
@@ -32,19 +32,19 @@ RadialLayoutWidget "RadialLayoutWidget" {
           mode: "kRotationOnly",
           children: [
             Node {
-              translation: 0 0 .2,  # Offset from end spoke.
-              children: [ USE "SpokeGeom" ],
-            },
-            # Rotatable end angle spoke.
-            DiscWidget "EndSpoke" {
-              mode: "kRotationOnly",
-              children: [
-                Node {
-                  translation: 0 0 -.4,  # Offset from start spoke.
-                  children: [ USE "SpokeGeom" ],
-                },
-              ]
-            },
+              rotation: 1 0 0 45,
+              children: [USE "SpokeGeom"]
+            }
+          ],
+        },
+        # Rotatable end angle spoke.
+        DiscWidget "EndSpoke" {
+          mode: "kRotationOnly",
+          children: [
+            Node {
+              rotation: 1 0 0 -45,
+              children: [USE "SpokeGeom"]
+            }
           ],
         },
 

@@ -76,6 +76,8 @@ snap_map = {
                        'QuickstartCylinder', 'QuickstartSelected',
                        'QuickstartHull', 'QuickstartRenamed',
                        'QuickstartExport' ],
+  'RadialLayout'   : [ 'RadialLayoutRadius', 'RadialLayoutArc',
+                       'RadialLayoutSingle', 'RadialLayoutMultiple' ],
   'RadialMenu'     : [ 'FixedRadialMenu', 'AttachedRadialMenu' ],
   'Selection'      : [ 'Selection' ],
   'Targets'        : [ 'PointTarget', 'EdgeTarget', 'PointTargetSnapped',
