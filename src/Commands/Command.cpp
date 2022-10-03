@@ -1,5 +1,6 @@
 #include "Commands/Command.h"
 
+#include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/String.h"
 
@@ -16,3 +17,9 @@ std::string Command::GetModelsDesc(
     return model_names.size() == 1 ? GetModelDesc(model_names[0]) :
         Util::ToString(model_names.size()) + " Models";
 }
+
+std::string Command::FixPath(const std::string &path_string) {
+    const FilePath path(path_string);
+    return path.IsAbsolute() ? path_string : path.GetAbsolute().ToString();
+}
+

@@ -6,6 +6,12 @@ void ChangeImportedModelCommand::AddFields() {
     SingleModelCommand::AddFields();
 }
 
+void ChangeImportedModelCommand::CreationDone() {
+    SingleModelCommand::CreationDone();
+    if (new_path_.WasSet())
+        new_path_ = FixPath(GetNewPath());
+}
+
 std::string ChangeImportedModelCommand::GetDescription() const {
     return "Changed the import path in " + GetModelDesc(GetModelName());
 }

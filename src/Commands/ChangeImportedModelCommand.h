@@ -16,7 +16,7 @@ class ChangeImportedModelCommand : public SingleModelCommand {
     virtual std::string GetDescription() const override;
 
     /// Sets the new path for the ImportedModel as a string.
-    void SetNewPath(const std::string &path) { new_path_ = path; }
+    void SetNewPath(const std::string &path) { new_path_ = FixPath(path); }
 
     /// Returns the new path for the ImportedModel as a string.
     const std::string & GetNewPath() const { return new_path_; }
@@ -25,6 +25,7 @@ class ChangeImportedModelCommand : public SingleModelCommand {
     ChangeImportedModelCommand() {}
 
     virtual void AddFields() override;
+    virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields

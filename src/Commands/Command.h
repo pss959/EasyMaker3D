@@ -122,6 +122,11 @@ class Command : public Parser::Object {
     static std::string GetModelsDesc(
         const std::vector<std::string> &model_names);
 
+    /// "Fixes" a path if necessary to make it absolute. This is a hedge
+    /// against someone editing a session file and using a relative path and is
+    /// also needed for the snapimage application to allow for relative import.
+    static std::string FixPath(const std::string &path_string);
+
   private:
     /// True when the Command is finalized after interaction.
     bool is_finalized_  = false;

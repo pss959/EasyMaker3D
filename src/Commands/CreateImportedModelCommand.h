@@ -17,7 +17,7 @@ class CreateImportedModelCommand : public CreateModelCommand {
     virtual std::string GetDescription() const override;
 
     /// Sets the path for the ImportedModel as a string.
-    void SetPath(const std::string &path) { path_ = path; }
+    void SetPath(const std::string &path) { path_ = FixPath(path); }
 
     /// Returns the path for the ImportedModel as a string.
     const std::string & GetPath() const { return path_; }
@@ -26,6 +26,7 @@ class CreateImportedModelCommand : public CreateModelCommand {
     CreateImportedModelCommand() {}
 
     virtual void AddFields() override;
+    virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields

@@ -287,6 +287,10 @@ TriMesh ReadSTLFile(const FilePath &path, float conversion_factor,
                 mesh = BinarySTLReader_().ReadMesh(path, data,
                                                    conversion_factor);
         }
+        else {
+            error_message =
+                "Unable to open '" + path.ToString() + "' for reading STL";
+        }
     }
     catch (STLException_ &ex) {
         error_message = ex.what();
