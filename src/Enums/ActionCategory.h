@@ -17,6 +17,6 @@ enum class ActionCategory {
     kSelection,
     kSession,
     kSpecialized,
-    kTools,
+    kTool,
     kViewing,
 };

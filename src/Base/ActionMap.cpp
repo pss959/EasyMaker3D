@@ -96,7 +96,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
         { ActionCategory::kSpecialized,
           { Action::kToggleSpecializedTool }
         },
-        { ActionCategory::kTools,
+        { ActionCategory::kTool,
           { Action::kColorTool,
             Action::kComplexityTool,
             Action::kNameTool,
