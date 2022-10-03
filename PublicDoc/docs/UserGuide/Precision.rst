@@ -1,9 +1,12 @@
+.. _ug-precision:
+
 Precision
 ---------
 
 |appname| offers several features to help you create 3D models with precise
 dimensions and placement.
 
+.. _ug-precision-control:
 .. _ug-precision-level:
 
 Precision Level

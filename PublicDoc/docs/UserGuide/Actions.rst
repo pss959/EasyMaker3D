@@ -1,6 +1,6 @@
 .. _ug-actions:
 
-Shelves, 3D Icons, and Actions
+Actions, 3D Icons, and Shelves
 ------------------------------
 
 Most of the interaction in |appname| is initiated by clicking on one of the 3D
@@ -39,6 +39,69 @@ the "on" state and regular woodgrain when in the "off" state.
 The following sections detail what each action does in the application, divided
 by category.
 
+.. _ug-copy:
+.. _ug-cut:
+.. _ug-delete:
+.. _ug-paste-into:
+.. _ug-paste:
+.. _ug-quit:
+.. _ug-redo:
+.. _ug-undo:
+
+Basic Actions
+.............
+
+.. incimage:: /images/BasicsShelf.jpg 300px right
+
+|appname| provides most of the basic operations you would expect in an
+interactive application. Each of these is available by clicking on a 3D icon on
+the Basic Operations shelf on the top of the back wall in the :ref:`work area
+<ug-work-area>`. From left to right, these are:
+
+  - The :action:`Undo` action undoes the last operation performed that modified
+    the scene in some way.
+  - The :action:`Redo` action redoes the last undone action.
+  - The :action:`Delete` action deletes all selected models from the
+    scene. They are gone forever, unless you undo.
+  - The :action:`Cut` action copies all selected models from the scene to the
+    clipboard and removes them from the scene.
+  - The :action:`Copy` action copies all selected models from the scene into
+    the clipboard.
+  - The :action:`Paste` action pastes all models from the clipboard into the
+    scene as top-level models at their previous 3D locations.
+  - The :action:`Paste Into` action can be used to paste models from the
+    clipboard as children of the :ref:`primary selection <ug-selection>` model,
+    as long as that model is one that can have children. For example, if you
+    have a :ref:`CSG union model <ug-combined-models>` and you want to add a
+    Box model to it, you can cut or copy the box in its correct position,
+    select the CSG model, and click the Paste Into icon. The box will be added
+    as a child of the union and therefore become part of the CSG operation.
+
+In addition, the :action:`Quit` action (avalable via shortcut or radial menu)
+exits the program after checking for unsaved changes. This is equivalent to
+clicking on the exit sign in the :ref:`work area <ug-work-area>`.
+
+Note that Undo and Redo actions apply to these operations:
+
+  - Any change to a model or models.
+  - Changing the position or any other aspect of either of the :ref:`targets
+    <ug-targets>`.
+
+Actions that are :emphasis:`not` considered changes and are therefore not
+undoable include:
+
+  - Changing the view.
+  - Changing the orientation or size of the :ref:`stage <ug-stage>`.
+  - :ref:`Selecting or deselecting models <ug-selection>`. (However, undoing or
+    redoing other actions may affect the current selection.)
+  - Toggling any program state, such as target or edge visibility.
+  - Applying the Copy action, since it has no visible effect except to update
+    the clipboard. Note that you may be able to :ref:`use this to your
+    advantage <ug-copy-quirk>`.
+
+Hovering over the Undo or Redo icon (when enabled) shows a :ref:`tooltip
+<ug-tooltips>` describing what operation will be undone or redone.
+
 .. _ug-create-box:
 .. _ug-create-cylinder:
 .. _ug-create-imported-model:
@@ -47,8 +110,67 @@ by category.
 .. _ug-create-text:
 .. _ug-create-torus:
 
-Model Creation Actions
-......................
+.. _ug-combine-csg-difference:
+.. _ug-combine-csg-intersection:
+.. _ug-combine-csg-union:
+.. _ug-combine-hull:
+
+Combination Actions
+...................
+
+.. incimage:: /images/ModelCombinationShelf.jpg 240px right
+
+Actions to create a :ref:`combined model <ug-combined-models>` from the
+:ref:`selected models <ug-selection>` are available as 3D icons on the second
+shelf from the top on the left wall in the :ref:`work area
+<ug-work-area>`. From left to right, they are:
+
+  - The :action:`Combine CSG Difference` action applies the :ref:`CSG
+    difference <ug-csg>` operation to all selected models and attaches the
+    :ref:`CSG Tool <ug-csg-tool>` to the resulting CSG model. Note that this
+    operation is not symmetric, so it depends on the selection order.
+  - The :action:`Combine CSG Intersection` action applies the :ref:`CSG
+    intersection <ug-csg>` operation to all selected models and attaches the
+    :ref:`CSG Tool <ug-csg-tool>` to the resulting CSG model.
+  - The :action:`Combine CSG Union` action applies the :ref:`CSG union
+    <ug-csg>` operation to all selected models and attaches the :ref:`CSG Tool
+    <ug-csg-tool>` to the resulting CSG model.
+  - The :action:`Combine Hull` action applies the :ref:`convex hull <ug-hull>`
+    operation to all selected models. There is no specialized tool for a hull
+    model, so the current :ref:`general tool <ug-general-tools>` is attached to
+    the resulting model.
+
+The CSG actions require at least two models to be selected, but the convex hull
+action can be applied to a single model.
+
+.. _ug-convert-bevel:
+.. _ug-convert-clip:
+.. _ug-convert-mirror:
+
+Conversion Actions
+..................
+
+.. incimage:: /images/ModelConversionShelf.jpg 200px right
+
+The center shelf on the left wall of the :ref:`work area <ug-work-area>` has 3D
+icons that apply actions to create :ref:`converted models
+<ug-converted-models>` from the :ref:`selected models <ug-selection>`. Applying
+any of these actions converts all selected models to a specific type and then
+attaches the corresponding :ref:`specialized tool <ug-specialized-tools>` to
+the primary selection.  From left to right, they are:
+
+  - The :action:`Convert Bevel` action converts all selected models to Beveled
+    models and attaches the :ref:`Bevel Tool <ug-bevel-tool>` to the primary
+    selection.
+  - The :action:`Convert Clip` action converts all selected models to Clipped
+    models and attaches the :ref:`Clip Tool <ug-clip-tool>` to the primary
+    selection.
+  - The :action:`Convert Mirror` action converts all selected models to
+    Mirrored models and attaches the :ref:`Mirror Tool <ug-mirror-tool>` to the
+    primary selection.
+
+Creation Actions
+................
 
 .. incimage:: /images/ModelCreationShelf.jpg 300px right
 
@@ -78,98 +200,152 @@ The new model automatically becomes the :ref:`primary selection
 attached to it. Otherwise, the :ref:`current general tool <ug-general-tools>`
 will be attached.
 
-General Tool Actions
+.. _ug-linear-layout:
+.. _ug-move-to-origin:
+.. _ug-radial-layout:
+.. _ug-toggle-axis-aligned:
+.. _ug-toggle-edge-target:
+.. _ug-toggle-point-target:
+
+Layout Actions
+..............
+
+.. incimage:: /images/LayoutShelf.jpg 300px right
+
+The following actions are available as 3D icons on the Layout shelf, which is
+the middle shelf on the back wall. From left to right:
+
+  - The :action:`Toggle Point Target` action changes the visibility of the
+    :ref:`Point Target <ug-targets>`.
+  - The :action:`Toggle Edge Target` action changes the visibility of the
+    :ref:`Edge Target <ug-targets>`.
+  - The :action:`Linear Layout` action uses the :ref:`Edge Target <ug-targets>`
+    to lay out selected models along a line. See the section on :ref:`linear
+    layout <ug-layout>` for details.
+  - The :action:`Radial Layout` action uses the :ref:`Point Target
+    <ug-targets>` to lay out multiple selected models along a circular arc or
+    to move a single model to the target. See the section on :ref:`radial
+    layout <ug-layout>` for details.
+  - The :action:`Toggle Axis Aligned` action changes whether certain
+    :ref:`tools <ug-tools>` operate in the selected model's local coordinates
+    or in :ref:`stage <ug-stage>` coordinates. For example, if a model has been
+    rotated to an arbitrary orientation and you want to move it 5 units to the
+    right in the scene, you can turn this toggle on and the :ref:`Translation
+    Tool <ug-translation-tool>` will then align its geometry and motion with the
+    stage axes, not the model's local axes. This toggle affects the :ref:`Clip
+    Tool <ug-clip-tool>`, :ref:`Mirror Tool <ug-mirror-tool>`, :ref:`Rotation
+    Tool <ug-rotation-tool>`, and :ref:`Translation Tool <ug-translation-tool>`.
+
+One other layout-related action is available only via a :ref:`keyboard shortcut
+<ug-keyboard-shortcuts>` or :ref:`radial menu <ug-radial-menus>`:
+
+  - The :action:`Move To Origin` action translates the :ref:`primary selection
+    <ug-selection>` so that its bottom center is at the origin (center of the
+    :ref:`stage <ug-stage>`) without rotating. Any secondary selections are
+    moved by the same amount.
+
+.. _ug-decrease-complexity:
+.. _ug-increase-complexity:
+.. _ug-move-next:
+.. _ug-move-previous:
+
+Modification Actions
 ....................
 
-.. incimage:: /images/GeneralToolShelf.jpg 300px right
+Certain actions that immediately modify the currently selected models are
+available only via :ref:`keyboard shortcuts <ug-keyboard-shortcuts>` or
+:ref:`radial menus <ug-radial-menus>`:
 
-Actions to choose the current :ref:`general tool <ug-general-tools>` are
-available as 3D icons on the shelf above the Model Creation shelf.  Clicking on
-any of these icons attaches the corresponding tool to the :ref:`primary
-selection <ug-selection>`. Note that most of these tools affect all selected
-models.
+  - The :action:`Increase Complexity` and :action:`Decrease Complexity` actions
+    increase or decrease the complexity of :ref:`all selected models
+    <ug-selection>` by .05 (within the 0-1 range). This can be a quicker way to
+    modify complexity than by using the :ref:`Complexity Tool
+    <ug-complexity-tool>`.
+  - The :action:`Move Next` and :action:`Move Previous` actions can be used to
+    change the order of top-level models or child models within the same parent
+    model. These actions are also available with buttons in the :ref:`Tree
+    Panel <ug-tree-panel>`.
 
-From left to right the general tool icons are:
+.. _ug-decrease-precision:
+.. _ug-increase-precision:
 
-  - The :action:`Name Tool` action attaches the `Name Tool <ug-name-tool>` to
-    edit the name of the primary selection.
-  - The :action:`Color Tool` action attaches the :ref:`Color Tool
-    <ug-color-tool>` to change the color of all selected models.
-  - The :action:`Complexity Tool` action attaches the:ref:`Complexity Tool
-    <ug-complexity-tool>` to change the tessellation of all selected
-    model(s). (Note that only cylinder, sphere, torus, surface of revolution,
-    and text models respond to complexity changes; the action is disabled if
-    only other types of models are selected.)
-  - The :action:`Rotation Tool` action attaches the :ref:`Rotation Tool
-    <ug-rotation-tool>` to rotate all selected models.
-  - The :action:`Scale Tool` action attaches the:ref:`Scale Tool
-    <ug-scale-tool>` to change the size of all selected models.
-  - The :action:`Translation Tool` action attaches the :ref:`Translation Tool
-    <ug-translation-tool>` to change the position of all selected models.
+Precision Actions
+.................
 
-.. _ug-convert-bevel:
-.. _ug-convert-clip:
-.. _ug-convert-mirror:
+The current :ref:`precision level <ug-precision-level>` can be changed with the
+:action:`Increase Precision` and :action:`Decrease Precision` actions. These
+are available via :ref:`keyboard shortcuts <ug-keyboard-shortcuts>`,
+:ref:`radial menus <ug-radial-menus>`, or by using the :ref:`Precision Control
+<ug-precision-control>` on the back wall of the :ref:`work area
+<ug-work-area>`.
 
-Model Conversion Actions
-........................
+.. _ug-toggle-left-radial-menu:
+.. _ug-toggle-right-radial-menu:
 
-.. incimage:: /images/ModelConversionShelf.jpg 200px right
+Radial Menu Actions
+...................
 
-The center shelf on the left wall has 3D icons that apply actions to create
-:ref:`converted models <ug-converted-models>` from the :ref:`selected models
-<ug-selection>`. Applying any of these actions converts all selected models to
-a specific type and then attaches the corresponding :ref:`specialized tool
-<ug-specialized-tools>` to the primary selection.  From left to right, they
-are:
+The :action:`Toggle Left Radial Menu` and :action:`Toggle Right Radial Menu`
+actions are available from via :ref:`keyboard and controller shortcuts
+<ug-keyboard-shortcuts>`. They show or hide the :ref:`radial menu
+<ug-radial-menus>` for the corresponding hand.
 
-  - The :action:`Convert Bevel` action converts all selected models to Beveled
-    models and attaches the :ref:`Bevel Tool <ug-bevel-tool>` to the primary
-    selection.
-  - The :action:`Convert Clip` action converts all selected models to Clipped
-    models and attaches the :ref:`Clip Tool <ug-clip-tool>` to the primary
-    selection.
-  - The :action:`Convert Mirror` action converts all selected models to
-    Mirrored models and attaches the :ref:`Mirror Tool <ug-mirror-tool>` to the
-    primary selection.
+.. _ug-select-all:
+.. _ug-select-first-child:
+.. _ug-select-next-sibling:
+.. _ug-select-none:
+.. _ug-select-parent:
+.. _ug-select-previous-sibling:
 
-.. _ug-combine-csg-difference:
-.. _ug-combine-csg-intersection:
-.. _ug-combine-csg-union:
-.. _ug-combine-hull:
+Selection Actions
+.................
 
-Model Combination Actions
-.........................
+The following actions that modify the :ref:`current selection <ug-selection>`
+are available only via :ref:`keyboard shortcuts <ug-keyboard-shortcuts>` or
+:ref:`radial menus <ug-radial-menus>`.
 
-.. incimage:: /images/ModelCombinationShelf.jpg 240px right
+  - The :action:`Select All` action selects all top-level models (in order). If
+    any models are already selected, they remain selected and all unselected
+    top-level models are added as additional secondary selections.
+  - The :action:`Select None` action deselects all selected models.
+  - The :action:`Select First Child`, :action:`Select Next Sibling`,
+    :action:`Select Previous Sibling`, and :action:`Select Parent`, actions can
+    be used to :ref:`change selections through model hierarchies
+    <ug-select-hierarchy>`.
 
-Actions to create a :ref:`combined model <ug-combined-models>` from the
-:ref:`selected models <ug-selection>` are available as 3D icons on the shelf
-above the Model Conversion shelf on the left wall. From left to right, they
-are:
+Note that the :ref:`Tree Panel <ug-tree-panel>` can be used to view and change
+the current selection, especially in a model hierarchy.
 
-  - The :action:`Combine CSG Difference` action applies the :ref:`CSG
-    difference <ug-csg>` operation to all selected models and attaches the
-    :ref:`CSG Tool <ug-csg-tool>` to the resulting CSG model. Note that this
-    operation is not symmetric, so it depends on the selection order.
-  - The :action:`Combine CSG Intersection` action applies the :ref:`CSG
-    intersection <ug-csg>` operation to all selected models and attaches the
-    :ref:`CSG Tool <ug-csg-tool>` to the resulting CSG model.
-  - The :action:`Combine CSG Union` action applies the :ref:`CSG union
-    <ug-csg>` operation to all selected models and attaches the :ref:`CSG Tool
-    <ug-csg-tool>` to the resulting CSG model.
-  - The :action:`Combine Hull` action applies the :ref:`convex hull <ug-hull>`
-    operation to all selected models. There is no specialized tool for a hull
-    model, so the current :ref:`general tool <ug-general-tools>` is attached to
-    the resulting model.
+.. _ug-open-help-panel:
+.. _ug-open-info-panel:
+.. _ug-open-session-panel:
+.. _ug-open-settings-panel:
 
-The CSG actions require at least two models to be selected, but the convex hull
-action can be applied to a single model.
+Session Actions
+...............
+
+.. incimage:: /images/SessionShelf.jpg 240px right
+
+The following four actions are available as 3D icons on the Session shelf,
+which is the bottom shelf on the back wall. From left to right:
+
+  - The :action:`Open Session Panel` action displays the :ref:`Session Panel
+    <ug-session-panel>`, which allows you to save your session, load a new
+    session, and so on.
+  - The :action:`Open Settings Panel` action displays the :ref:`Settings Panel
+    <ug-settings-panel>`, which allows you to edit application settings.
+  - The :action:`Open Info Panel` action displays the :ref:`Info Panel
+    <ug-info-panel>`, which shows information about currently selected
+    models and the targets.
+  - The :action:`Open Help Panel` action displays the :ref:`Help Panel
+    <ug-help-panel>`, which displays the application version and has buttons to
+    open this guide or the :doc:`Cheat Sheet <CheatSheet>` in your default
+    browser.
 
 .. _ug-toggle-specialized-tool:
 
-Specialized Tool Action
-.......................
+Specialized Action
+..................
 
 Each :ref:`specialized tool <ug-specialized-tools>` can be attached only to a
 specific type of model. When a model of that type is created, the corresponding
@@ -226,180 +402,74 @@ when toggled back to a general tool.
 Note that the :shortcut:`Space` shortcut is an easy way to toggle between
 general and specialized tools when enabled.
 
-.. _ug-copy:
-.. _ug-cut:
-.. _ug-delete:
-.. _ug-paste-into:
-.. _ug-paste:
-.. _ug-redo:
-.. _ug-undo:
+.. _ug-switch-to-next-tool:
+.. _ug-switch-to-previous-tool:
 
-Basic Actions
-.............
+Tool Actions
+............
 
-.. incimage:: /images/BasicsShelf.jpg 300px right
+.. incimage:: /images/GeneralToolShelf.jpg 300px right
 
-|appname| provides most of the basic operations you would expect in an
-interactive application. Each of these is available by clicking on a 3D icon on
-the Basic Operations shelf on the top of the back wall in the :ref:`work area
-<ug-work-area>`. From left to right, these are:
+Actions to choose the current :ref:`general tool <ug-general-tools>` are
+available as 3D icons on the second shelf from the bottom on the left wall of
+the :ref:`work area <ug-work-area>`. Clicking on any of these icons attaches
+the corresponding general tool to the :ref:`primary selection
+<ug-selection>`. Note that most of these tools affect all secondary selections
+in addition to the primary model.
 
-  - The :action:`Undo` action undoes the last operation performed that modified
-    the scene in some way.
-  - The :action:`Redo` action redoes the last undone action.
-  - The :action:`Delete` action deletes all selected models from the
-    scene. They are gone forever, unless you undo.
-  - The :action:`Cut` action copies all selected models from the scene to the
-    clipboard and removes them from the scene.
-  - The :action:`Copy` action copies all selected models from the scene into
-    the clipboard.
-  - The :action:`Paste` action pastes all models from the clipboard into the
-    scene as top-level models at their previous 3D locations.
-  - The :action:`Paste Into` action can be used to paste models from the
-    clipboard as children of the :ref:`primary selection <ug-selection>` model,
-    as long as that model is one that can have children. For example, if you
-    have a :ref:`CSG union model <ug-combined-models>` and you want to add a
-    Box model to it, you can cut or copy the box in its correct position,
-    select the CSG model, and click the Paste Into icon. The box will be added
-    as a child of the union and therefore become part of the CSG operation.
+From left to right the tool icons are:
 
-Note that Undo and Redo actions apply to these operations:
+  - The :action:`Name Tool` action attaches the `Name Tool <ug-name-tool>` to
+    edit the name of the primary selection.
+  - The :action:`Color Tool` action attaches the :ref:`Color Tool
+    <ug-color-tool>` to change the color of all selected models.
+  - The :action:`Complexity Tool` action attaches the :ref:`Complexity Tool
+    <ug-complexity-tool>` to change the tessellation of all selected
+    model(s). (Note that only cylinder, sphere, torus, surface of revolution,
+    and text models respond to complexity changes; the action is disabled if
+    only other types of models are selected.)
+  - The :action:`Rotation Tool` action attaches the :ref:`Rotation Tool
+    <ug-rotation-tool>` to rotate all selected models.
+  - The :action:`Scale Tool` action attaches the :ref:`Scale Tool
+    <ug-scale-tool>` to change the size of all selected models.
+  - The :action:`Translation Tool` action attaches the :ref:`Translation Tool
+    <ug-translation-tool>` to change the position of all selected models.
 
-  - Any change to a model or models.
-  - Changing the position or any other aspect of either of the :ref:`targets
-    <ug-targets>`.
+In addition, the :action:`Switch To Next Tool` and :action:`Switch To Previous
+Tool` actions are available via :ref:`keyboard and controller shortcuts
+<ug-keyboard-shortcuts>` to quickly cycle through the available general tools
+for the current selection.
 
-Actions that are :emphasis:`not` considered changes and are therefore not
-undoable include:
+.. _ug-hide-selected:
+.. _ug-show-all:
+.. _ug-toggle-build-volume:
+.. _ug-toggle-inspector:
+.. _ug-toggle-show-edges:
 
-  - Changing the view.
-  - Changing the orientation or size of the:ref:`stage <ug-stage>`.
-  - :ref:`Selecting or deselecting models <ug-selection>`. (However, undoing or
-    redoing other actions may affect the current selection.)
-  - Toggling any program state, such as target or edge visibility.
-  - Applying the Copy action, since it has no visible effect except to update
-    the clipboard. Note that you may be able to :ref:`use this to your
-    advantage <ug-copy-quirk>`.
+Viewing Actions
+...............
 
-Hovering over the Undo or Redo icon (when enabled) shows a :ref:`tooltip
-<ug-tooltips>` describing what operation will be undone or redone.
+.. incimage:: /images/ViewingShelf.jpg 200px right
 
-.. _ug-linear-layout:
-.. _ug-move-to-origin:
-.. _ug-radial-layout:
-.. _ug-toggle-axis-aligned:
-.. _ug-toggle-edge-target:
-.. _ug-toggle-point-target:
+The 3D icons on the Viewing shelf (above the :ref:`Tree Panel <ug-tree-panel>`
+on the back wall) apply actions that deal with viewing models. From left to
+right:
 
-Layout Actions
-..............
+  - The :action:`Toggle Show Edges` action lets you show or hide :ref:`model
+    edges <ug-show-edges>` as visible lines.
+  - The :action:`Toggle Build Volume` action lets you show or hide the
+    translucent representation of your 3D printer's :ref:`build volume
+    <ug-build-volume>`.
+  - The :action:`Toggle Inspector` action lets you turn on :ref:`inspector mode
+    <ug-inspector-mode>` for the current :ref:`primary selection
+    <ug-selection>`.
 
-.. incimage:: /images/LayoutShelf.jpg 300px right
+Other viewing actions are available only via :ref:`keyboard shortcuts
+<ug-keyboard-shortcuts>` or :ref:`radial menus <ug-radial-menus>`:
 
-The following actions are available as 3D icons on the Layout shelf, which is
-just below the Basic Operations shelf on the back wall. From left to right:
+  - The :action:`Hide Selected` action makes all currently selected top-level
+    models temporarily invisible.
+  - The :action:`Show All` action makes all top-level models visible again.
 
-  - The :action:`Toggle Point Target` action changes the visibility of the
-    :ref:`Point Target <ug-targets>`.
-  - The :action:`Toggle Edge Target` action changes the visibility of the
-    :ref:`Edge Target <ug-targets>`.
-  - The :action:`Linear Layout` action uses the :ref:`Edge Target <ug-targets>`
-    to lay out selected models along a line. See the section on :ref:`linear
-    layout <ug-layout>` for details.
-  - The :action:`Radial Layout` action uses the :ref:`Point Target
-    <ug-targets>` to lay out multiple selected models along a circular arc or
-    to move a single model to the target. See the section on :ref:`radial
-    layout <ug-layout>` for details.
-  - The :action:`Toggle Axis Aligned` action changes whether certain
-    :ref:`tools <ug-tools>` operate in the selected model's local coordinates
-    or in :ref:`stage <ug-stage>` coordinates. For example, if a model has been
-    rotated to an arbitrary orientation and you want to move it 5 units to the
-    right in the scene, you can turn this toggle on and the :ref:`Translation
-    Tool <ug-translation-tool>` will then align its geometry and motion with the
-    stage axes, not the model's local axes. This toggle affects the :ref:`Clip
-    Tool <ug-clip-tool>`, :ref:`Mirror Tool <ug-mirror-tool>`, :ref:`Rotation
-    Tool <ug-rotation-tool>`, and :ref:`Translation Tool <ug-translation-tool>`.
-
-One other layout-related action is available only via a :ref:`keyboard shortcut
-<ug-keyboard-shortcuts>` or :ref:`radial menu <ug-radial-menus>`:
-
-  - The :action:`Move To Origin` action translates the :ref:`primary selection
-    <ug-selection>` so that its bottom center is at the origin (center of the
-    :ref:`stage <ug-stage>`) without rotating. Any secondary selections are
-    moved by the same amount.
-
-.. todo::
-   Ended here.
-
-### File Shelf
-![][ImgFileShelf]{{rightimage(80)}}
-
-The file shelf has four icons, each of which brings up a specific [GUI
-Panel][GUIPanels]. From left to right, they are:
-
-+ {{anchor('session-panel-action')}}The {{term('Session-Panel')}} action brings
-  up the [Session Panel][SessionPanel], which allows you to save your session,
-  load a new session, and so on.
-+ {{anchor('settings-panel-action')}}The {{term('Settings-Panel')}} action
-  brings up the [Settings Panel][SettingsPanel], which allows you to edit
-  application settings.
-+ {{anchor('info-panel-action')}}The {{term('Info-Panel')}} action brings up
-  the [Info Panel][InfoPanel], which shows information about currently selected
-  models.
-+ {{anchor('help-panel-action')}}The {{term('Help-Panel')}} action brings up
-  the [Help Panel][HelpPanel], which displays the application version and has
-  buttons to open this guide or the [Cheat Sheet][CheatSheet] in a browser.
-
-## Viewing Shelf
-![][ImgViewingShelf]{{rightimage(80)}}
-
-The viewing shelf is alone above the [Tree Panel][TreePanel] on the back
-wall. It has icons for tools that deal with viewing models. From left to right:
-
-+ {{anchor('inspector-action')}}The {{term('Inspector')}} action shows the
-  current primary selection in [inspector mode][InspectorMode].
-+ {{anchor('build-volume-toggle')}}The {{term('Build-Volume')}} toggle action
-  shows or hides a representation of your 3D printer's [build
-  volume][BuildVolume].
-+ {{anchor('show-edges-toggle')}}The {{term('Show-Edges')}} toggle action lets
-  you [show or hide model edges][ShowEdges] as visible lines.
-
-## Other Actions
-
-There are other actions available through other parts of the work area or only
-through [radial menus][RadialMenus] and keyboard shortcuts; see the [Cheat
-Sheet][CheatSheet] for details. They are:
-
-+ {{anchor('edit-name-action')}}The {{term('Edit-Name')}} action is the same as
-  using the [Tree Panel][TreePanel] to [edit the name][EditName] of the primary
-  selection.
-+ {{anchors(['hide-selected-action','show-all-action'])}}The
-  {{term('Hide-Selected')}} action hides all selected top-level models, and the
-  {{term('Show-All')}} action shows all hidden top-level models.
-+ {{anchors(['increase-complexity-action','decrease-complexity-action'])}}The
-  {{term('Increase-Complexity')}} and {{term('Decrease-Complexity')}} actions
-  increase or decrease the complexity of selected models by .05 (within the 0-1
-  range). This can be a quicker way to modify complexity than by using the
-  [Complexity Tool][ComplexityTool].
-+ {{anchors(['increase-precision-action','decrease-precision-action'])}}The
-  {{term('Increase-Precision')}} and {{term('Decrease-Precision')}} actions are
-  equivalent to clicking the corresponding buttons on the [precision
-  control][PrecisionLevel].
-+ {{anchors(['left-radial-menu-toggle','right-radial-menu-toggle'])}}The
-  {{term('Left-Radial-Menu')}} and {{term('Right-Radial-Menu')}} toggle actions
-  show or hide the [radial menu][RadialMenus] for the corresponding hand.
-+ {{anchors(['move-previous-action','move-next-action'])}}The
-  {{term('Move-Previous')}} and {{term('Move-Next')}} actions are the same as
-  using the [Tree Panel][TreePanel] to [change the order of
-  models][ReorderingModels] within a parent model or at the top level.
-+ {{anchors(['select-all-action','select-none-action'])}}The
-  {{term('Select-All')}} action selects all top-level models, and the
-  {{term('Select-None')}} action deselects all selected models.
-+ {{anchors(['select-first-child-action', 'select-previous-sibling-action',
-  'select-next-sibling-action', 'select-parent-action'])}}The
-  {{term('Select-First-Child')}}, {{term('Select-Previous-Sibling')}},
-  {{term('Select-Next-Sibling')}}, and {{term('Select-Parent')}} actions are
-  used to [select through model hierarchies][SelectInHierarchy].
-+ {{anchors(['switch-to-previous-tool-action','switch-to-next-tool-action'])}}The
-  {{term('Switch-to-Previous-Tool')}} and {{term('Switch-to-Next-Tool')}}
-  actions [change which is the current general tool][ToolSwitching].
+Note that the :ref:`Tree Panel <ug-tree-panel>` can also be used to hide or
+show models.

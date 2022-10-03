@@ -134,6 +134,7 @@ Panel Touch Mode
 
    |block-image|
 
+.. _ug-none:
 .. _ug-radial-menus:
 
 Radial Menus
@@ -166,9 +167,11 @@ mouse, as shown in this image.
 The :ref:`Settings Panel <ug-settings-panel>` allows you to change the number
 of buttons in each radial menu and to define the actions associated with each
 button. Almost anything you can do in the application can be assigned to a
-radial menu button; the icons associated with each action are listed in the
-:doc:`Cheat Sheet <CheatSheet>`. If any action cannot be applied at the current
-time, the corresponding button will be disabled (gray).
+radial menu button; the icons associated with each :ref:`action <ug-actions>`
+are listed in the :doc:`Cheat Sheet <CheatSheet>`. If any action cannot be
+applied at the current time, the corresponding button will be disabled
+(gray). By default, all buttons are set to the :action:`None` action (null sign
+icon), which is always disabled and has no corresponding effect.
 
 |block-image|
 

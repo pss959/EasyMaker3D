@@ -306,49 +306,49 @@
      - TOGGLE: Switch between the current general tool and the specialized tool for the selected models
      - :shortcut:`SPACE`
      - :shortcut:`R:Center, L:Center`
-   * - Tools
+   * - Tool
      - :ref:`Color Tool <ug-color-tool>`
      - .. menuicon:: ColorTool
      - Edit the color of the selected models
      - 
      - 
-   * - Tools
+   * - Tool
      - :ref:`Complexity Tool <ug-complexity-tool>`
      - .. menuicon:: ComplexityTool
      - Edit the complexity of the selected models
      - 
      - 
-   * - Tools
+   * - Tool
      - :ref:`Name Tool <ug-name-tool>`
      - .. menuicon:: NameTool
      - Edit the name of the selected model
      - :shortcut:`Ctrl-n`
      - 
-   * - Tools
+   * - Tool
      - :ref:`Rotation Tool <ug-rotation-tool>`
      - .. menuicon:: RotationTool
      - Rotate the selected models (Modified for in-place)
      - 
      - 
-   * - Tools
+   * - Tool
      - :ref:`Scale Tool <ug-scale-tool>`
      - .. menuicon:: ScaleTool
      - Change the size of the selected models (Modified for symmetric)
      - 
      - 
-   * - Tools
+   * - Tool
      - :ref:`Switch To Next Tool <ug-switch-to-next-tool>`
      - .. menuicon:: SwitchToNextTool
      - Switch to the next general tool
      - :shortcut:`]`
      - :shortcut:`R:Right, L:Right`
-   * - Tools
+   * - Tool
      - :ref:`Switch To Previous Tool <ug-switch-to-previous-tool>`
      - .. menuicon:: SwitchToPreviousTool
      - Switch to the previous general tool
      - :shortcut:`[`
      - :shortcut:`R:Left, L:Left`
-   * - Tools
+   * - Tool
      - :ref:`Translation Tool <ug-translation-tool>`
      - .. menuicon:: TranslationTool
      - Change the position of the selected models

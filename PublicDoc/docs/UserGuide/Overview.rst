@@ -64,8 +64,8 @@ containing these elements:
    :newterm:`action` that :ref:`makes some change to models or to the session
    state <ug-actions>`.
  - A :newterm:`Precision Control` that shows the current interactive
-   :ref:`precision level <ug-precision>` with buttons to increase or decrease
-   it.
+   :ref:`precision level <ug-precision-level>` with buttons to increase or
+   decrease it.
  - The :newterm:`Tree Panel` on the back wall that :ref:`displays all models in
    tree form and allows you to interact with them <ug-tree-panel>`.
 
