@@ -190,15 +190,6 @@ void ToolManager::DetachTools(const Selection &sel) {
         DetachToolFromModel_(*path.GetModel());
 }
 
-void ToolManager::DetachAllTools() {
-    // Save pointers to all attached Models from the map; the detaching code
-    // removes entries from the map.
-    const auto models = Util::GetKeys(active_tool_map_);
-
-    for (auto &model: models)
-        DetachToolFromModel_(*model);
-}
-
 void ToolManager::ReattachTools() {
     ASSERT(! is_tool_dragging_);
 

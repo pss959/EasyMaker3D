@@ -19,6 +19,9 @@ class PanelTool : public Tool {
     /// Defines this to detach the Panel and close the Board.
     virtual void Detach() override;
 
+    // Redefines this to just update the position.
+    virtual void ReattachToSelection() override;
+
     /// Convenience that returns the attached Panel as the given type. Asserts
     /// if the PanelTool is not currently attached or if the type is wrong.
     template <typename T> T & GetTypedPanel() const {
@@ -45,4 +48,7 @@ class PanelTool : public Tool {
     ToolPanelPtr panel_;  ///< Panel interacting with. (Null when not attached.)
 
     bool is_dragging_ = false;  ///< Set to true during a drag interaction.
+
+    /// Updates the position of the Board based on the Model's position.
+    void UpdateBoardPosition_();
 };

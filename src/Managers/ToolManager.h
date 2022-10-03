@@ -112,9 +112,6 @@ class ToolManager : public Grippable {
     /// Detaches all tools from the given Selection.
     void DetachTools(const Selection &sel);
 
-    /// Detaches all attached tools.
-    void DetachAllTools();
-
     /// Reattaches all currently attached tools.
     void ReattachTools();
 
