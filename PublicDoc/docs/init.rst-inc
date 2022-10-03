@@ -5,6 +5,9 @@
 .. ----------------------------------------------------------------------------
 .. ROLES:
 
+.. action: The name of an application action.
+.. role:: action
+
 .. dnote: An important(?) note.
 .. role:: dnote
 

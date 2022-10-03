@@ -67,7 +67,9 @@ Primitive Models
     allows you to change the text string, font, and character spacing.
   - An :newterm:`Imported model` is read from an STL file. The specialized
     :ref:`Import Tool <ug-import-tool>` is used to select or change the file to
-    import from.
+    import from. Note that a newly-created Imported model will be displayed as
+    a dummy tetrahedron with an :ref:`invalid color <ug-model-colors>` until a
+    valid STL file has been selected with the Import Tool.
 
 New primitive models are placed at the center of the :ref:`stage <ug-stage>`
 unless the :ref:`Point Target <ug-targets>` is active, in which case the new

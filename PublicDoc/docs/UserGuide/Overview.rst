@@ -160,7 +160,7 @@ The Build Volume
 If you want to make sure that your models will fit within your 3D printer's
 build volume, you can choose to display the build volume on the stage by
 clicking on the :ref:`Build Volume Toggle <ug-toggle-build-volume>` icon on the
-:ref:`Viewing Shelf <ug-viewing-shelf>`. The build volume is rendered as a
+:ref:`Viewing Shelf <ug-work-area>`. The build volume is rendered as a
 translucent box. You can specify the size of the build volume for your specific
 printer in the ref:`Settings Panel <ug-settings-panel>`.
 

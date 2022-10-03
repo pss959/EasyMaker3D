@@ -1,0 +1,15 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreateImportedModelCommand {
+      path: "src/Tests/Data/box.stl",
+      result_name: "Imported_1",
+    },
+  ],
+  current_index: 1,
+}

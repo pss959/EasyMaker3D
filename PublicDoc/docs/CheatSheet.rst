@@ -9,8 +9,8 @@
    :class: cheat-sheet-table
 
    * - Category
-     - | Name / User
-       | Guide Link
+     - | Action Name /
+       | User Guide Link
      - | Radial Menu
        | Icon
      - Description
@@ -157,6 +157,12 @@
      - 
      - 
    * - Layout
+     - :ref:`Move To Origin <ug-move-to-origin>`
+     - .. menuicon:: MoveToOrigin
+     - Move the primary selection to the origin
+     - :shortcut:`=`
+     - 
+   * - Layout
      - :ref:`Radial Layout <ug-radial-layout>`
      - .. menuicon:: RadialLayout
      - Lay out selected models along a circular arc
@@ -203,12 +209,6 @@
      - .. menuicon:: MovePrevious
      - Move the selected model up in the order
      - :shortcut:`{`
-     - 
-   * - Modification
-     - :ref:`Move To Origin <ug-move-to-origin>`
-     - .. menuicon:: MoveToOrigin
-     - Move the primary selection to the origin
-     - :shortcut:`=`
      - 
    * - None
      - :ref:`None <ug-none>`

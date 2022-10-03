@@ -63,6 +63,8 @@
 
 .rst-content .align-right {
     margin-bottom: 8px;
+    margin-left:   4px;
+    margin-right:  4px;
 }
 
 div[role=navigation] hr {
@@ -214,6 +216,11 @@ img {
     font-family:  sans-serif;
     font-style:   italic;
     /* font-variant: small-caps; */
+}
+
+.action {
+    color:      #c86200;
+    font-style: italic;
 }
 
 .dnote {

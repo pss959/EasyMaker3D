@@ -1,0 +1,32 @@
+CommandList { # 0x55e6231a1290
+  app_info: AppInfo { # 0x55e62326a6e0
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState { # 0x55e62326a880
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand { # 0x55e61f829050
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    CopyCommand { # 0x55e6260a2170
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand { # 0x55e62605e460
+      translation: 7 0 0,
+      model_names: ["Cylinder_1"],
+    },
+    CreateHullModelCommand { # 0x55e62608c840
+      result_name: "Hull_1",
+      model_names: ["Cylinder_1"],
+    },
+    CreatePrimitiveModelCommand { # 0x55e62381eb50
+      type: "kSphere",
+      result_name: "Sphere_1",
+      initial_scale: 2,
+    },
+  ],
+  current_index: 4,
+}
