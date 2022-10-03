@@ -28,8 +28,8 @@ R"(|appname| Cheat Sheet
    :class: cheat-sheet-table
 
    * - Category
-     - | Name / User
-       | Guide Link
+     - | Action Name /
+       | User Guide Link
      - | Radial Menu
        | Icon
      - Description
