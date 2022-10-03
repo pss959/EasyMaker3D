@@ -56,6 +56,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
         },
         { ActionCategory::kLayout,
           { Action::kLinearLayout,
+            Action::kMoveToOrigin,
             Action::kRadialLayout,
             Action::kToggleAxisAligned,
             Action::kToggleEdgeTarget,
@@ -65,8 +66,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
           { Action::kDecreaseComplexity,
             Action::kIncreaseComplexity,
             Action::kMoveNext,
-            Action::kMovePrevious,
-            Action::kMoveToOrigin }
+            Action::kMovePrevious }
         },
         { ActionCategory::kNone,
           { Action::kNone }
