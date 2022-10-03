@@ -7,25 +7,24 @@ Node "Shelves" {
   ],
 
   TEMPLATES: [
-    IconWidget "T_IconWidget" {
-      hover_scale: 1.1 1.1 1.1,
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uShowTexture" { int_val: 1 }],
-          textures: [
-            Texture "3D Icon Texture" {
-              uniform_name: "uTexture",
-              image:   FileImage { path: "Icon.jpg" },
-              sampler: USE "DefaultSampler",
-            },
-          ],
+    UniformBlock "IconUniforms" {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uShowTexture" { int_val: 1 }],
+      textures: [
+        Texture "3D Icon Texture" {
+          uniform_name: "uTexture",
+          image:   FileImage { path: "Icon.jpg" },
+          sampler: USE "DefaultSampler",
         },
       ],
+    },
+    IconWidget "T_IconWidget" {
+      hover_scale: 1.1 1.1 1.1,
+      blocks: [USE "IconUniforms"],
     }
     IconSwitcherWidget "T_IconSwitcherWidget" {
-      hover_color: "#440000",
       hover_scale: 1.1 1.1 1.1,
+      blocks: [USE "IconUniforms"],
     }
   ],
 
