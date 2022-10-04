@@ -9,23 +9,35 @@
     background: #dddddd;
 }
 
-/* Navigation headings. */
-.wy-menu-vertical li.toctree-l1 a,
-.wy-menu-vertical li.toctree-l2 a,
-.wy-menu-vertical li.toctree-l3 a {
-    background: #cccccc;
-    color: #333333;
+/* Top-level navigation headings. */
+.wy-menu-vertical li.toctree-l1 > a {
+    font-size:  100%;
+    background: #bbbbbb;
+    color:      black;
+}
+.wy-menu-vertical li.toctree-l1.current > a {
+    font-size:  100%;
+    background: #78a5e9;
+    color:      black;
 }
 
-.wy-menu-vertical li.toctree-l1.current a,
+/* Other navigation headings. */
+.wy-menu-vertical li.toctree-l2 a,
+.wy-menu-vertical li.toctree-l3 a,
+.wy-menu-vertical li.toctree-l4 a {
+    background: #cccccc;
+    color:      #333333;
+}
+
 .wy-menu-vertical li.toctree-l2.current a,
-.wy-menu-vertical li.toctree-l3.current a {
+.wy-menu-vertical li.toctree-l3.current a,
+.wy-menu-vertical li.toctree-l4.current a {
     background: #bbbbbb;
-    color: #111166;
+    color:      #111166;
 }
 
 .wy-side-nav-search div.version {
-    color: #eeeeee;
+    color:      #eeeeee;
 }
 
 /* -----------------------------------------------------------------------------
@@ -90,7 +102,7 @@ p:empty {
     background: #fefefe;
 }
 .wy-nav-content section section {
-    filter: brightness(0.99);
+    filter: brightness(0.98);
 }
 
 /* -----------------------------------------------------------------------------

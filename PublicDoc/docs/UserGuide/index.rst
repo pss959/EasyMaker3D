@@ -1,15 +1,23 @@
 |appname| User Guide
 ====================
 
+.. toctree::
+   :maxdepth: 1
+
+   Overview
+   Interaction
+   CreatingModels
+   Selection
+   Precision
+   Actions
+   Tools
+
 .. todo::
    Add a paragraph about the organization of the User Guide
 
-.. include:: UserGuide/Overview.rst
-.. include:: UserGuide/Interaction.rst
-.. include:: UserGuide/CreatingModels.rst
-.. include:: UserGuide/Selection.rst
-.. include:: UserGuide/Precision.rst
-.. include:: UserGuide/Actions.rst
+.. Panels
+.. TreePanel
+.. Quirks
 
 .. These are all of the undefined reference targets so far:
 

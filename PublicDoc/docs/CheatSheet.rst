@@ -1,3 +1,5 @@
+.. _cheat-sheet:
+
 |appname| Cheat Sheet
 =====================
 

@@ -42,18 +42,19 @@ extensions = [
 
 # Ignore included files.
 exclude_patterns = [
-    'init.rst-inc',
-    'UserGuide/*.rst',
+    'init.rst',
+    #'UserGuide/*.rst',
 ]
 
 # Prolog includes a file with reStructuredText substitutions. Define some
-# configuration subsitutions here first.
+# configuration subsitutions here first and include the init file that sets up
+# roles and substitutions.
 rst_prolog = f"""
 .. |project| replace:: {project}
 .. |version| replace:: {release}
 .. |suffix|  replace:: {suffix}
 .. _download_site: {download_site}
-.. include:: /init.rst-inc
+.. include:: /init.rst
 """
 
 todo_include_todos = True
@@ -62,13 +63,13 @@ todo_include_todos = True
 # HTML output options.
 # -----------------------------------------------------------------------------
 
-html_theme       = 'sphinx_rtd_theme'  # Read the Docs.
-html_static_path = ['_static']
-html_css_files   = ['css/custom.css']
-html_favicon     = 'images/static/favicon.ico'
-# html_logo        = 'images/logo.jpg'
+html_theme           = 'sphinx_rtd_theme'  # Read the Docs.
+html_static_path     = ['_static']
+html_css_files       = ['css/custom.css']
+html_favicon         = 'images/static/favicon.ico'
+# html_logo          = 'images/logo.jpg'
 html_show_sourcelink = False
-html_theme_options = {
+html_theme_options   = {
     'display_version':             True,
     'logo_only':                   False,
     'prev_next_buttons_location':  'both',

@@ -24,7 +24,7 @@ general types:
 
 All actions can be applied from a :ref:`radial menu <ug-radial-menus>`, and
 many have corresponding :ref:`keyboard shortcuts <ug-keyboard-shortcuts>`. The
-:doc:`Cheat Sheet <CheatSheet>` lists all supported actions along with their
+:ref:`Cheat Sheet <cheat-sheet>` lists all supported actions along with their
 names, radial menu icons, and keyboard/controller shortcuts. The actions are
 divided into categories, some of which correspond to shelves in the work area.
 Note that some actions do not have corresponding 3D icons; they can be
@@ -339,7 +339,7 @@ which is the bottom shelf on the back wall. From left to right:
     models and the targets.
   - The :action:`Open Help Panel` action displays the :ref:`Help Panel
     <ug-help-panel>`, which displays the application version and has buttons to
-    open this guide or the :doc:`Cheat Sheet <CheatSheet>` in your default
+    open this guide or the :ref:`Cheat Sheet <cheat-sheet>` in your default
     browser.
 
 .. _ug-toggle-specialized-tool:

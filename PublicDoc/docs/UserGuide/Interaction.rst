@@ -66,7 +66,7 @@ guide.
 Keyboard Shortcuts
 ..................
 
-All keyboard shortcuts are listed in the :doc:`Cheat Sheet <CheatSheet>`. In
+All keyboard shortcuts are listed in the :ref:`Cheat Sheet <cheat-sheet>`. In
 the future, there may be a way for users to customize them. Note that the
 shortcuts are available in all three application modes.
 
@@ -160,15 +160,15 @@ Radial Menus
 .. incimage:: /images/FixedRadialMenu.jpg 200px right
 
 Radial menus are also available for use with the mouse in conventional mode via
-:doc:`keyboard shortcuts <CheatSheet>`. In this mode, the menu appears in a
-fixed position on the appropriate side of the window for interaction with the
-mouse, as shown in this image.
+:ref:`keyboard shortcuts <ug-keyboard-shortcuts>`. In this mode, the menu
+appears in a fixed position on the appropriate side of the window for
+interaction with the mouse, as shown in this image.
 
 The :ref:`Settings Panel <ug-settings-panel>` allows you to change the number
 of buttons in each radial menu and to define the actions associated with each
 button. Almost anything you can do in the application can be assigned to a
 radial menu button; the icons associated with each :ref:`action <ug-actions>`
-are listed in the :doc:`Cheat Sheet <CheatSheet>`. If any action cannot be
+are listed in the :ref:`Cheat Sheet <cheat-sheet>`. If any action cannot be
 applied at the current time, the corresponding button will be disabled
 (gray). By default, all buttons are set to the :action:`None` action (null sign
 icon), which is always disabled and has no corresponding effect.
@@ -185,8 +185,8 @@ examine a model from all directions. To inspect a model, first :ref:`select it
 as the primary selection <ug-selection>`, and then click on the :ref:`inspector
 action <ug-toggle-inspector>` icon. Alternatively, you can long-press (more
 than a half-second or so) either the left mouse button or a VR pinch action on
-a model, whether selected or not. There is also a :doc:`keyboard shortcut
-<CheatSheet>`.
+a model, whether selected or not. There is also a :ref:`keyboard shortcut
+<ug-keyboard-shortcuts>`.
 
 When the mouse or keyboard shortcut is used to enter inspector mode, the
 selected model will be shown in the middle of the application window at an
