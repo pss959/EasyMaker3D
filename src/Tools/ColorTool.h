@@ -44,11 +44,17 @@ class ColorTool : public Tool {
 
     void FindParts_();
 
+    /// GenericWidget click callback.
+    void Clicked_(const ClickInfo &info);
+
     /// GenericWidget drag callback.
     void Dragged_(const DragInfo *info, bool is_start);
 
     /// Moves the marker to the current color and updates the central disc
     void UpdateColor_();
+
+    /// Returns the color to use for the given point on the ring.
+    static Color GetRingColor_(const Point3f &ring_point);
 
     friend class Parser::Registry;
 };

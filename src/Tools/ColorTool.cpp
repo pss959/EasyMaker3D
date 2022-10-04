@@ -2,6 +2,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "App/ClickInfo.h"
 #include "Base/Procedural.h"
 #include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
@@ -61,6 +62,8 @@ void ColorTool::FindParts_() {
     auto line = SG::FindTypedShapeInNode<SG::PolyLine>(*marker_, "Line");
     line->SetPoints(points);
 
+    widget_->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){ Clicked_(info); });
     widget_->GetDragged().AddObserver(
         this,
         [&](const DragInfo *info, bool is_start){ Dragged_(info, is_start); });
@@ -77,6 +80,16 @@ void ColorTool::FindParts_() {
         Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
     ASSERT(proc_im);
     proc_im->SetFunction([](){ return GenerateColorRingImage(); });
+}
+
+void ColorTool::Clicked_(const ClickInfo &info) {
+    ASSERT(! command_);
+    command_ = CreateCommand<ChangeColorCommand>();
+    command_->SetFromSelection(GetSelection());
+    command_->SetNewColor(GetRingColor_(info.hit.point));
+    GetContext().command_manager->AddAndDo(command_);
+    command_.reset();
+    UpdateColor_();
 }
 
 void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
@@ -108,9 +121,7 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
         }
         ASSERT(command_);
         if (got_pos) {
-            const Color color = ColorRing::GetColorForPoint(
-                ion::math::WithoutDimension(ring_pt, 2));
-            command_->SetNewColor(color);
+            command_->SetNewColor(GetRingColor_(ring_pt));
             GetContext().command_manager->SimulateDo(command_);
         }
     }
@@ -134,4 +145,9 @@ void ColorTool::UpdateColor_() {
 
     // Change the color of the central disc.
     disc_->SetBaseColor(color);
+}
+
+Color ColorTool::GetRingColor_(const Point3f &ring_point) {
+    return ColorRing::GetColorForPoint(
+        ion::math::WithoutDimension(ring_point, 2));
 }
