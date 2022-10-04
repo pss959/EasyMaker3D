@@ -120,6 +120,9 @@ class  Application::Impl_ {
     Vector2i GetWindowSize() const;
     Renderer & GetRenderer() { return *renderer_; }
     void ForceTouchMode(bool is_on) { force_touch_mode_on_ = is_on; }
+    void EnableMouseMotionEvents(bool enable) {
+        glfw_viewer_->EnableMouseMotionEvents(enable);
+    }
 
   private:
     /// Run states for the main loop.
@@ -1464,4 +1467,8 @@ Renderer & Application::GetRenderer() {
 
 void Application::ForceTouchMode(bool is_on) {
     impl_->ForceTouchMode(is_on);
+}
+
+void Application::EnableMouseMotionEvents(bool enable) {
+    impl_->EnableMouseMotionEvents(enable);
 }

@@ -52,6 +52,14 @@ class GLFWViewer : public Viewer, public IEmitter {
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override;
 
+    /// This can be used to temporarily ignore mouse motion events produced by
+    /// GLFW. It is used by the snapimage application to avoid spurious events
+    /// caused by accidental mouse motion during processing. They are enabled
+    /// by default.
+    void EnableMouseMotionEvents(bool enable) {
+        is_mouse_motion_enabled_ = enable;
+    }
+
   private:
     GLFWwindow *window_ = nullptr;
 
@@ -72,6 +80,9 @@ class GLFWViewer : public Viewer, public IEmitter {
     bool is_l_shift_pressed_ = false;
     /// Stores whether the right shift key is pressed.
     bool is_r_shift_pressed_ = false;
+
+    /// Used for temporarily ignoring mouse motion.
+    bool is_mouse_motion_enabled_ = true;
 
     /// Updates the Frustum based on the current state.
     void UpdateFrustum_();

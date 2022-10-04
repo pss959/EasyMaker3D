@@ -360,13 +360,16 @@ void GLFWViewer::ProcessScroll_(double xoffset, double yoffset) {
 }
 
 void GLFWViewer::StoreCursorPos_(double xpos, double ypos, Event &event) {
-    // Normalize the position into the (0,1) range with (0,0) at the
-    // lower-left. GLFW puts (0,0) at the upper-left.
-    const Vector2i size = GetSize_();
-    Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
+    // Do NOT do this if ignoring mouse motion.
+    if (is_mouse_motion_enabled_) {
+        // Normalize the position into the (0,1) range with (0,0) at the
+        // lower-left. GLFW puts (0,0) at the upper-left.
+        const Vector2i size = GetSize_();
+        Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
 
-    event.flags.Set(Event::Flag::kPosition2D);
-    event.position2D = norm_pos;
+        event.flags.Set(Event::Flag::kPosition2D);
+        event.position2D = norm_pos;
+    }
 }
 
 void GLFWViewer::CompressEvents_(std::vector<Event> &events) {

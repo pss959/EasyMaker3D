@@ -108,9 +108,6 @@ class Emitter_ : public IEmitter {
 };
 
 void Emitter_::EmitEvents(std::vector<Event> &events) {
-    // XXXX Figure out how to ignore accidental mouse events from GLFWViewer
-    // while dragging. Maybe add "source" field to Event.
-
     if (! points_.empty()) {
         const auto &pt = points_.front();
 
@@ -211,6 +208,10 @@ bool SnapshotApp_::Init(const Options &options) {
     // Make sure there is no debug text visible.
     Debug::DisplayDebugText("");
 
+    // Ignore mouse events from GLFWViewer so they do not interfere with the
+    // click and drag events.
+    EnableMouseMotionEvents(false);
+
     return true;
 }
 
@@ -238,7 +239,9 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
         ++cur_instruction_;
     }
     else {
-        // No instructions left - stop unless the remain flag is set.
+        // No instructions left: stop ignoring mouse events from GLFWViewer and
+        // exit unless the remain flag is set.
+        EnableMouseMotionEvents(true);
         keep_going = remain_;
     }
     return keep_going;

@@ -78,6 +78,10 @@ class Application {
     /// Allows derived classes to force touch mode to be on.
     void ForceTouchMode(bool is_on);
 
+    /// Allows derived classes to temporarily ignore mouse motion events
+    /// produced by GLFW.
+    void EnableMouseMotionEvents(bool enable);
+
   private:
     class  Loader_;
     class  Impl_;
