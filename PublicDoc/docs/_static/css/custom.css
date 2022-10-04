@@ -9,35 +9,43 @@
     background: #dddddd;
 }
 
-/* Top-level navigation headings. */
+/* Non-current top-level navigation headings have a gray background. */
 .wy-menu-vertical li.toctree-l1 > a {
     font-size:  100%;
     background: #bbbbbb;
     color:      black;
 }
+
+/* Use lighter theme color for current top-level navigation heading. */
 .wy-menu-vertical li.toctree-l1.current > a {
     font-size:  100%;
-    background: #78a5e9;
+    background: #9ebce9;
     color:      black;
 }
 
 /* Other navigation headings. */
-.wy-menu-vertical li.toctree-l2 a,
-.wy-menu-vertical li.toctree-l3 a,
-.wy-menu-vertical li.toctree-l4 a {
-    background: #cccccc;
+.wy-menu-vertical li.toctree-l2 > a,
+.wy-menu-vertical li.toctree-l3 > a,
+.wy-menu-vertical li.toctree-l4 > a {
     color:      #333333;
 }
 
-.wy-menu-vertical li.toctree-l2.current a,
-.wy-menu-vertical li.toctree-l3.current a,
-.wy-menu-vertical li.toctree-l4.current a {
-    background: #bbbbbb;
+/* Use dark blue color for current navigation heading text. */
+.wy-menu-vertical li.toctree-l2.current > a,
+.wy-menu-vertical li.toctree-l3.current > a,
+.wy-menu-vertical li.toctree-l4.current > a {
     color:      #111166;
 }
 
+/* Use even lighter theme color for current nested navigation headings. */
+.wy-menu-vertical li.toctree-l1.current li.toctree-l2.current a {
+    background: #c7d4e9;
+}
+
+/* Version text at top. */
 .wy-side-nav-search div.version {
     color:      #eeeeee;
+    font-style: italic;
 }
 
 /* -----------------------------------------------------------------------------
