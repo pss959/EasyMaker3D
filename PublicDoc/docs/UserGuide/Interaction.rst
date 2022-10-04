@@ -4,6 +4,8 @@ Interaction
 While |appname| is designed to be reasonably intuitive, there are a few things
 that may need explanation before you can use it effectively.
 
+.. _ug-grip-dragging:
+
 Clicking and Dragging
 .....................
 
@@ -30,11 +32,13 @@ orientation <ug-viewing>`.
      mouse.
 
    - Some interactive elements allow you to use a controller's :newterm:`grip
-     button` to push or pull some affordance. In this case, a :newterm:`grip
-     hover guide` will be visible as in these images. The hover guide will have
-     a line connected to the interactive item that will be activated when the
-     grip button is pressed, if any. See the sections on the specific items
-     that support grip dragging for more details.
+     button` to push or pull some affordance; this is called :newterm:`grip
+     dragging`. In this case, a :newterm:`grip hover guide` will be visible as
+     in these images. The hover guide will have a line connected to the
+     interactive item that will be activated when the grip button is pressed,
+     if any. See the sections on the specific items that support grip dragging
+     for more details. Grip dragging can be much easier to control than
+     dragging with the laser pointer.
 
 .. _ug-modified-mode:
 

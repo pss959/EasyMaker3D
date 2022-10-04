@@ -24,11 +24,8 @@
 .. TOOLS -------------
 .. _ug-bevel-tool:
 .. _ug-clip-tool:
-.. _ug-color-tool:
-.. _ug-complexity-tool:
 .. _ug-csg-tool:
 .. _ug-cylinder-tool:
-.. _ug-general-tools:
 .. _ug-import-tool:
 .. _ug-mirror-tool:
 .. _ug-name-tool:
@@ -37,7 +34,6 @@
 .. _ug-scale-tool:
 .. _ug-specialized-tools:
 .. _ug-text-tool:
-.. _ug-tools:
 .. _ug-torus-tool:
 .. _ug-translation-tool:
 

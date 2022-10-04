@@ -1,3 +1,5 @@
+.. _ug-model-creation:
+
 Creating Models
 ---------------
 

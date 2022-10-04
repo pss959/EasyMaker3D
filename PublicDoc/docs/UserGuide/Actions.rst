@@ -404,6 +404,7 @@ general and specialized tools when enabled.
 
 .. _ug-switch-to-next-tool:
 .. _ug-switch-to-previous-tool:
+.. _ug-tool-actions:
 
 Tool Actions
 ............
@@ -425,9 +426,9 @@ From left to right the tool icons are:
     <ug-color-tool>` to change the color of all selected models.
   - The :action:`Complexity Tool` action attaches the :ref:`Complexity Tool
     <ug-complexity-tool>` to change the tessellation of all selected
-    model(s). (Note that only cylinder, sphere, torus, surface of revolution,
-    and text models respond to complexity changes; the action is disabled if
-    only other types of models are selected.)
+    model(s). (Note that only Cylinder, Sphere, Torus, RevSurf, and text models
+    respond to complexity changes; the action is disabled if only other types
+    of models are selected.)
   - The :action:`Rotation Tool` action attaches the :ref:`Rotation Tool
     <ug-rotation-tool>` to rotate all selected models.
   - The :action:`Scale Tool` action attaches the :ref:`Scale Tool
