@@ -168,9 +168,14 @@ DECL_SHARED_PTR(Emitter_);
 /// that specifies what to do.
 class SnapshotApp_ : public Application {
   public:
-    virtual bool Init(const Options &options) override;
-    void SetRemain(bool remain) { remain_ = remain; }
-    void SetScript(const SnapScript &script) { script_ = script; }
+    /// This struct adds some additional options.
+    struct Options : public Application::Options {
+        SnapScript script;
+        bool       nosnap = false;
+        bool       remain = false;
+    };
+
+    bool Init(const Options &options);
 
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
 
@@ -181,11 +186,12 @@ class SnapshotApp_ : public Application {
     SnapScript      script_;
     size_t          cur_instruction_ = 0;
     bool            remain_ = false;
+    bool            nosnap_ = false;
 
     bool ProcessInstruction_(const SnapScript::Instr &instr);
     bool LoadSession_(const std::string &file_name);
-    bool AddHand_(Hand hand, const std::string &controller_type,
-                  const Point3f &pos, const Vector3f &dir);
+    bool SetHand_(Hand hand, const std::string &controller_type);
+    bool ChangeHandPos_(Hand hand, const Point3f &pos, const Rotationf &rot);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
     Selection BuildSelection_(const std::vector<std::string> &names);
 
@@ -198,6 +204,10 @@ class SnapshotApp_ : public Application {
 bool SnapshotApp_::Init(const Options &options) {
     if (! Application::Init(options))
         return false;
+
+    nosnap_ = options.nosnap;
+    remain_ = options.remain;
+    script_ = options.script;
 
     emitter_.reset(new Emitter_);
     AddEmitter(emitter_);
@@ -276,7 +286,13 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kHand: {
           const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
-          if (! AddHand_(hinst.hand, hinst.controller, hinst.pos, hinst.dir))
+          if (! SetHand_(hinst.hand, hinst.controller))
+              return false;
+          break;
+      }
+      case SIType::kHandPos: {
+          const auto &hinst = GetTypedInstr_<SnapScript::HandPosInstr>(instr);
+          if (! ChangeHandPos_(hinst.hand, hinst.pos, hinst.rot))
               return false;
           break;
       }
@@ -315,9 +331,11 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
           break;
       }
       case SIType::kSnap: {
-          const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
-          if (! TakeSnapshot_(sinst.rect, sinst.file_name))
-              return false;
+          if (! nosnap_) {
+              const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
+              if (! TakeSnapshot_(sinst.rect, sinst.file_name))
+                  return false;
+          }
           break;
       }
       case SIType::kStage: {
@@ -361,8 +379,7 @@ bool SnapshotApp_::LoadSession_(const std::string &file_name) {
     return true;
 }
 
-bool SnapshotApp_::AddHand_(Hand hand, const std::string &controller_type,
-                            const Point3f &pos, const Vector3f &dir) {
+bool SnapshotApp_::SetHand_(Hand hand, const std::string &controller_type) {
     const auto &sc = *test_context_.scene_context;
     auto &controller = hand == Hand::kLeft ?
         *sc.left_controller : *sc.right_controller;
@@ -399,8 +416,23 @@ bool SnapshotApp_::AddHand_(Hand hand, const std::string &controller_type,
     controller.SetGripGuideType(GripGuideType::kBasic);
     controller.ShowAll(true);
     controller.ShowGripHover(false, Point3f::Zero(), Color::White());
+
+    // Since at least one controller is in use, turn off the RadialMenu parent
+    // in the room, since the menus will be attached to the controllers.
+    const auto parent = SG::FindNodeInScene(*sc.scene, "RadialMenus");
+    parent->SetEnabled(false);
+
+    return true;
+}
+
+bool SnapshotApp_::ChangeHandPos_(Hand hand, const Point3f &pos,
+                                  const Rotationf &rot) {
+    const auto &sc = *test_context_.scene_context;
+    auto &controller = hand == Hand::kLeft ?
+        *sc.left_controller : *sc.right_controller;
+
     controller.SetTranslation(pos);
-    controller.SetRotation(Rotationf::RotateInto(Vector3f(0, 0, -1), dir));
+    controller.SetRotation(rot);
 
     // Since at least one controller is in use, turn off the RadialMenu parent
     // in the room, since the menus will be attached to the controllers.
@@ -453,12 +485,14 @@ static const char kUsageString[] =
 R"(snapimage: Reads a script with instructions on how to create snapshot images
  for public documentation. See SnapScript.h for script details.
     Usage:
-      snapimage [--fullscreen] [--klog=<klog_string>] [--remain] SCRIPT
+      snapimage [--fullscreen] [--klog=<klog_string>]
+                [--remain] [--nosnap] SCRIPT
 
     Options:
       --fullscreen    Start with a full-screen window.
       --klog=<string> String to pass to KLogger::SetKeyString().
-      --remain        Keep the window alive after script processing
+      --nosnap        Ignore snap commands (useful for testing).
+      --remain        Keep the window alive after script processing.
 
     Script files are relative to PublicDoc/snaps/scripts.
     Image files are placed in PublicDoc/docs/images.
@@ -467,18 +501,21 @@ R"(snapimage: Reads a script with instructions on how to create snapshot images
 int main(int argc, const char *argv[]) {
     Args args(argc, argv, kUsageString);
 
-    SnapScript script;
+    SnapshotApp_::Options options;
+
     const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
-    if (! script.ReadScript(path))
+    if (! options.script.ReadScript(path))
         return -1;
 
     std::cout << "======= Processing Script file " << path.ToString() << "\n";
 
     KLogger::SetKeyString(args.GetString("--klog"));
-    Application::Options options;
     options.do_ion_remote      = true;
     options.fullscreen         = args.GetBool("--fullscreen");
+    options.nosnap             = args.GetBool("--nosnap");
+    options.remain             = args.GetBool("--remain");
     options.show_session_panel = false;
+
     // Note that this must have the same aspect ratio as fullscreen.
     options.window_size.Set(1024, 552);
 
@@ -486,8 +523,6 @@ int main(int argc, const char *argv[]) {
     if (! app.Init(options))
         return -1;
 
-    app.SetRemain(args.GetBool("--remain"));
-    app.SetScript(script);
     app.MainLoop();
 
     return 0;

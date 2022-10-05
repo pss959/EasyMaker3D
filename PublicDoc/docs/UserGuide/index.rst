@@ -21,22 +21,6 @@
 
 .. These are all of the undefined reference targets so far:
 
-.. TOOLS -------------
-.. _ug-bevel-tool:
-.. _ug-clip-tool:
-.. _ug-csg-tool:
-.. _ug-cylinder-tool:
-.. _ug-import-tool:
-.. _ug-mirror-tool:
-.. _ug-name-tool:
-.. _ug-rev-surf-tool:
-.. _ug-rotation-tool:
-.. _ug-scale-tool:
-.. _ug-specialized-tools:
-.. _ug-text-tool:
-.. _ug-torus-tool:
-.. _ug-translation-tool:
-
 .. PANELS ------------
 .. _ug-file-panel:
 .. _ug-help-panel:

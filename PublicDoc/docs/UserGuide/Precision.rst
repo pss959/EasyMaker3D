@@ -76,7 +76,7 @@ affected dimensions. The precision of the feedback matches the current
 :ref:`precision level <ug-precision-level>`.
 
 Feedback is colored according to the :ref:`coordinate system convention
-<ug-coordinate-system>` for the appropriate dimension(s). When a drag operation
+<ug-dimension-colors>` for the appropriate dimension(s). When a drag operation
 is snapped to a :ref:`target <ug-targets>`, feedback is displayed in the active
 target color.
 
@@ -156,7 +156,7 @@ here.
 
 When modified-dragging the Point Target, the snap indicator sphere will appear
 when any snapping occurs, and is :ref:`color-coded by dimension
-<ug-coordinate-system>`. If snapping occurs in two or three dimensions, the
+<ug-dimension-colors>`. If snapping occurs in two or three dimensions, the
 color will be the sum of the respective dimensions' colors. In the above left
 image, the Point Target is snapped to the center of the front-right edge of the
 cylinder's bounds. In the center image, the :ref:`precision level

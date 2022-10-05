@@ -1,0 +1,100 @@
+<table class="doxtable">
+  <tr>
+    <th>Command</th>
+    <th>Arguments</th>
+    <th>Effect</th>
+  </tr>
+  <tr>
+    <td>[whitespace]</td>
+    <td></td>
+    <td>Blank lines are ignored.</td>
+  </tr>
+  <tr>
+    <td><b>#</b></td>
+    <td>...</td>
+    <td>Comments are ignored.</td>
+  </tr>
+  <tr>
+    <td><b>action</b></td>
+    <td><i>name</i></td>
+    <td>Applies the named action.</td>
+  </tr>
+  <tr>
+    <td><b>click</b></td>
+    <td><i>x y</i></td>
+    <td>Simulates a mouse click at the given point in normalized window
+      coordinates.</td>
+  </tr>
+  <tr>
+    <td><b>drag</b></td>
+    <td><code>start</code>|<code>continue</code>|<code>end</code> <i>x
+        y</i></td>
+    <td>Simulates a mouse drag at the given point in normalized window
+      coordinates.</td>
+  </tr>
+  <tr>
+    <td><b>hand</b></td>
+    <td><code>L</code>|<code>R</code> <i>type</i></td>
+    <td>Defines a controller model for the given hand. *type* is one of
+      {<code>Oculus_Touch</code>, <code>Vive</code>, or <code>None</code>}.
+  </tr>
+  <tr>
+    <td><b>handpos</b></td>
+    <td><code>L</code>|<code>R</code> <i>posx posy posz rotx roty rotz</i></td>
+    <td>Moves the controller for the given hand to the given position and
+      applies the given Euler angle rotations (in Z/X/Y order, in degrees).
+  </tr>
+  <tr>
+    <td><b>key</b></td>
+    <td><i>key [modifiers]</i></td>
+    <td>Simulates a keyboard key press and release for the given
+      string. The <i>modifiers</i> are either <code>ctrl</code> or
+      <code>alt</code>.
+  </tr>
+  <tr>
+    <td><b>load</b></td>
+    <td><i>file_name</i></td>
+    <td>Loads a session from the named file. Session files are relative
+      to <code>PublicDoc/snaps/sessions</code>.</td>
+  </tr>
+  <tr>
+    <td><b>mod</b></td>
+    <td><code>on</code>|<code>off</code></td>
+    <td>Turns modified interaction mode on or off.</td>
+  </tr>
+  <tr>
+    <td><b>select</b></td>
+    <td>[<i>name</i>, ...]</td>
+    <td>Selects the named models. If no names are given, deselects all
+      models.</td>
+  </tr>
+  <tr>
+    <td><b>settings</b></td>
+    <td><i>file_name</i></td>
+    <td>Loads settings from the named file. Settings files are relative
+      to <code>PublicDoc/snaps/settings</code>.</td>
+  </tr>
+  <tr>
+    <td><b>snap</b></td>
+    <td><i>x y w h file_name</i></td>
+    <td>Saves a snapshot image of the area of size <i>w</i>X<i>h</i> with
+      (<i>x</i>,<i>y</i>) at the lower left to the named file. All values are
+      in normalized window coordinates. Images are saved
+      in <code>PublicDoc/docs/images</code>.</td>
+  </tr>
+  <tr>
+    <td><b>stage</b></td>
+    <td><i>scale rot_angle</i></td>
+    <td>Scales and rotates the stage by the given values.</td>
+  </tr>
+  <tr>
+    <td><b>touch</b></td>
+    <td><code>on</code>|<code>off</code></td>
+    <td>Turns panel touch mode on or off.</td>
+  </tr>
+  <tr>
+    <td><b>view</b></td>
+    <td><i>dirx diry dirz</i></td>
+    <td>Changes the view to look along the given direction.</td>
+  </tr>
+</table>

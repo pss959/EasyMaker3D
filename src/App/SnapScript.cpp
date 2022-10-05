@@ -45,6 +45,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kClick:    instr = ProcessClick_(words);    break;
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
+      case Instr::Type::kHandPos:  instr = ProcessHandPos_(words);  break;
       case Instr::Type::kKey:      instr = ProcessKey_(words);      break;
       case Instr::Type::kLoad:     instr = ProcessLoad_(words);     break;
       case Instr::Type::kMod:      instr = ProcessMod_(words);      break;
@@ -135,7 +136,7 @@ SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
 SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
     HandInstrPtr hinst;
     Vector3f     pos, dir;
-    if (words.size() != 9U) {
+    if (words.size() != 3U) {
          Error_("Bad syntax for hand instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
@@ -146,18 +147,38 @@ SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
              words[2] != "None") {
         Error_("Invalid controller type for hand instruction");
     }
-    else if (! ParseVector3f_(words, 3, pos)) {
-        Error_("Invalid position floats for hand instruction");
-    }
-    else if (! ParseVector3f_(words, 6, dir)) {
-        Error_("Invalid direction floats for hand instruction");
-    }
     else {
         hinst.reset(new HandInstr);
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->controller = words[2];
+    }
+    return hinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessHandPos_(const Words &words) {
+    HandPosInstrPtr hinst;
+    Vector3f        pos;
+    Vector3f        angles;
+    if (words.size() != 8U) {
+         Error_("Bad syntax for handpos instruction");
+    }
+    else if (words[1] != "L" && words[1] != "R") {
+        Error_("Invalid hand (L/R) for handpos instruction");
+    }
+    else if (! ParseVector3f_(words, 2, pos)) {
+        Error_("Invalid position floats for handpos instruction");
+    }
+    else if (! ParseVector3f_(words, 5, angles)) {
+        Error_("Invalid rotation angle floats for handpos instruction");
+    }
+    else {
+        hinst.reset(new HandPosInstr);
+        hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->pos = Point3f(pos);
-        hinst->dir = dir;
+        hinst->rot = Rotationf::FromRollPitchYaw(
+            Anglef::FromDegrees(angles[2]),
+            Anglef::FromDegrees(angles[0]),
+            Anglef::FromDegrees(angles[1]));
     }
     return hinst;
 }

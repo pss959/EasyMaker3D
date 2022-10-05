@@ -118,47 +118,71 @@ Some notes about this tool:
    :ref:`Grip dragging <ug-grip-dragging>` also works; the relative position of
    the controller moves the handle.
 
+.. _ug-rotation-tool:
+
+Rotation Tool
+.............
+
+.. incimage:: /images/RotationTool.jpg 200px right
+
+The :newterm:`Rotation Tool` lets you rotate selected models. It has three
+:ref:`color-coded <ug-dimension-colors>` rings for rotating about the principal
+axes and a translucent central sphere for applying free spherical rotation. The
+rotation angle is snapped to the current :ref:`precision level setting
+<ug-precision-level>` and snaps to the current :ref:`Point Target direction
+<ug-targets>` if the target is visible.
+
+Color-coded :ref:`angular feedback <ug-feedback>` shows the current rotation
+angle or angles during an interactive drag with the tool.
+
+The :ref:`primary selection <ug-selection>` is always rotated about its center
+point. If multiple models are selected, secondary selections are also rotated
+around the the center of the primary selection. However,
+:ref:`modified-dragging <ug-modified-mode>` the Rotation Tool causes each model
+to be rotated in place about its own center.
+
+The :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` affects how the
+Rotation Tool is attached to the primary selection. If the toggle is not
+active, the rings of the tool will align with the principal axes of the
+selected model. If the toggle is active, the rings will align instead with the
+principal axes of the :ref:`stage <ug-stage>`.
+
+.. admonition:: VR Only
+
+   .. incimage:: /images/RotationToolVR.jpg 200px right
+
+   :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
+   controller to define the rotation. A special rotation grip hover guide will
+   be used for each controller.
+
+   When the ring on the guide is close to aligning with any of the axis rings
+   on the Rotation Tool, the guide will show a :ref:`color-coded connection
+   <ug-dimension-colors>` to that ring.  In the image here, the ring is close
+   to aligning with the red X-axis rotation ring of the Rotation Tool, so a red
+   connection appears. In any other orientation, the guide will show a
+   neutral-color connection to the center sphere.
+
+   If a ring is hovered, grip dragging by rotating the controller parallel to
+   the ring rotates the model(s) in the same direction. When no ring is
+   selected, grip dragging will rotate the model(s) by the free controller
+   orientation.
+
 .. todo::
    Ended here.
 
-### Rotation Tool
-
-The Rotation Tool lets you rotate selected models. It has 3 color-coded rings
-for rotating about the principal axes and a central sphere for doing free
-spherical rotation. The rotation angle follows the current [precision
-level][PrecisionLevel] setting and snaps to the current [point target
-direction][PointTarget] if the target is active.
-
-Color-coded [feedback][Feedback] shows the current rotation angle or angles
-during an interactive drag.
-
-![][ImgRotationToolActive]{{rightimage(140)}}
-
-The [primary selection][Selection] is always rotated about its center point.
-If multiple models are selected, secondary selections are rotated around the
-same point, meaning that they revolve around the primary selection. However,
-[alt-dragging][AltMode] the Rotation Tool causes all models to be rotated in
-place about their own centers.
-
-The [Axis-Aligned toggle][AxisAlignedToggle] affects how the Rotation Tool is
-attached to the primary selection. If the toggle is active, then the rings will
-always be aligned with the principal axes of the [stage][Stage], rather than
-with the principal axes of the primary selection's local coordinates.
-
-![][ImgRotationToolActiveVR]{{rightimage(180)}}
-
-Grip dragging uses the orientation of the VR controller to define the
-rotation. A [hover guide][ClickDrag] attached to each controller hand indicates
-what action will be performed. Note that the hover guide for rotation points
-forward from the hand, unlike most other hover guides.  When the ring on the
-guide is close to aligning with any of the axis rings on the Rotation Tool, the
-guide will show a [color-coded connection][Colors] to that ring. (In the
-picture here, the ring is close to aligning with the red X-axis rotation ring
-of the Rotation Tool.) In any other orientation, the guide will show a
-neutral-color connection to the center sphere. If a ring is hovered, pressing
-the grip button and rotating the controller ring around the guide axis will
-rotate the model(s) the same way. When no ring is selected, the model(s) will
-be free rotated to match the controller orientation.
+.. _ug-bevel-tool:
+.. _ug-clip-tool:
+.. _ug-csg-tool:
+.. _ug-cylinder-tool:
+.. _ug-import-tool:
+.. _ug-mirror-tool:
+.. _ug-name-tool:
+.. _ug-rev-surf-tool:
+.. _ug-scale-tool:
+.. _ug-specialized-tools:
+.. _ug-text-tool:
+.. _ug-torus-tool:
+.. _ug-translation-tool:
 
 ### Scale Tool
 

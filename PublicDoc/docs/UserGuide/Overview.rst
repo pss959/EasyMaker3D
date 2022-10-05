@@ -110,6 +110,7 @@ followed by :ref:`a string indicating whether the scene or settings have been
 modified <ug-session-name>`.
 
 .. _ug-coordinate-system:
+.. _ug-dimension-colors:
 .. _ug-units:
 
 Coordinate System and Units

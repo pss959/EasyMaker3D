@@ -18,7 +18,7 @@ Node "Grip" {
         Cylinder "T_Post" {
           top_radius:    .4,
           bottom_radius: .4,
-          height:        12,
+          height:         8,
         },
       ],
       blocks: [
@@ -41,7 +41,7 @@ Node "Grip" {
           shapes: [
             CLONE "T_Post" {},
             Ellipsoid {
-              translation: 0 6 0,
+              translation: 0 4 0,
               size:        2 2 2,
             }
           ],
@@ -49,14 +49,14 @@ Node "Grip" {
         GripGuide "Rotation" {
           guide_type:  "kRotation",
           hover_point: -.12 0 0,
-          scale:    .01 .01 .01,
-          rotation: 0 0 1 90,
+          scale:       .01 .01 .01,
+          rotation:    0 0 1 90,
           shapes: [
             CLONE "T_Post" {},
           ],
           children: [
             Node {
-              translation: 0 5.2 0,
+              translation: 0 3.8 0,
               shapes: [
                 Torus {
                   outer_radius: 1.6,
