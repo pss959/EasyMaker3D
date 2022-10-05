@@ -74,6 +74,10 @@ class Emitter_ : public IEmitter {
     /// Events left to emit.
     std::deque<Event>  events_;
 
+    /// Set to true if the previous event was a button press. This is used to
+    /// detect clicks to handle timeout correctly.
+    bool               prev_was_button_press_ = false;
+
     /// Set to true while waiting for a click to be processed after a timeout.
     bool               waited_for_click_ = false;
 };
@@ -151,9 +155,11 @@ void Emitter_::EmitEvents(std::vector<Event> &events) {
     if (! events_.empty()) {
         const Event &event = events_.front();
 
-        // If this is potentially the end of a click, delay until after the
-        // click timeout. Set a flag so the next time will not delay.
-        if (event.flags.Has(Event::Flag::kButtonRelease)) {
+        // If this is the end of a click (release just after press), delay
+        // until after the click timeout. Set a flag so the next time will not
+        // delay.
+        if (prev_was_button_press_ &&
+            event.flags.Has(Event::Flag::kButtonRelease)) {
             if (! waited_for_click_) {
                 Util::DelayThread(TK::kMouseClickTimeout);
                 waited_for_click_ = true;
@@ -161,6 +167,8 @@ void Emitter_::EmitEvents(std::vector<Event> &events) {
             }
             waited_for_click_ = false;
         }
+
+        prev_was_button_press_ = event.flags.Has(Event::Flag::kButtonPress);
 
         events.push_back(event);
         events_.pop_front();
@@ -222,6 +230,10 @@ bool SnapshotApp_::Init(const Options &options) {
 
     window_size_ = GetWindowSize();
     GetTestContext(test_context_);
+
+    // Turn off controllers until they are specifically added.
+    test_context_.scene_context->left_controller->SetEnabled(false);
+    test_context_.scene_context->right_controller->SetEnabled(false);
 
     // Make sure there is no debug text visible.
     Debug::DisplayDebugText("");
