@@ -87,14 +87,8 @@ void Controller::SetGripGuideType(GripGuideType type) {
 }
 
 Vector3f Controller::GetGuideDirection() const {
-    // The Rotation guide points forward when not grip dragging.
-    if (! is_grip_dragging_ &&
-        cur_guide_->GetGripGuideType() == GripGuideType::kRotation)
-        return -Vector3f::AxisZ();
-
-    // All other cases: point away from the palm.
-    else
-        return hand_ == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX();
+    // Point away from the palm.
+    return hand_ == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX();
 }
 
 void Controller::SetTouchMode(bool in_touch_mode) {
@@ -167,6 +161,7 @@ void Controller::ShowGripHover(bool show, const Point3f &pt,
     if (grip_hover_node_) {
         grip_hover_node_->SetEnabled(show);
         if (show) {
+            ASSERT(cur_guide_->GetGripGuideType() != GripGuideType::kNone);
             Point3f guide_pt = cur_guide_->GetHoverPoint();
             // Flip X for left hand.
             if (hand_ == Hand::kLeft)
