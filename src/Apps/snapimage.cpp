@@ -42,119 +42,110 @@
 /// mouse clicks, mouse drags and key presses.
 class Emitter_ : public IEmitter {
   public:
-    using DIPhase = SnapScript::DragInstr::Phase;
-    using KMods   = Util::Flags<Event::ModifierKey>;
+    using DIPhase    = SnapScript::DragInstr::Phase;
+    using KModifiers = Util::Flags<Event::ModifierKey>;
 
     /// Sets modified mode for subsequent clicks and drags. It is off by
     /// default.
     void SetModifiedMode(bool is_on) { is_mod_ = is_on; }
 
     /// Adds a click to emit.
-    void AddClick(const Point2f &pos) {
-        points_.push_back(Point_(is_mod_, true, DIPhase::kStart, pos));
-        points_.push_back(Point_(is_mod_, true, DIPhase::kEnd,   pos));
-    }
+    void AddClick(const Point2f &pos);
 
     /// Adds a drag point to emit.
-    void AddDragPoint(DIPhase phase, const Point2f &pos) {
-        points_.push_back(Point_(is_mod_, false, phase, pos));
-    }
+    void AddDragPoint(DIPhase phase, const Point2f &pos);
 
     /// Adds a key press/release to simulate.
-    void AddKey(const std::string &key, const KMods &mods) {
-        keys_.push_back(Key_(key, mods, true));   // Press.
-        keys_.push_back(Key_(key, mods, false));  // Release.
-    }
+    void AddKey(const std::string &key, const KModifiers &modifiers);
 
     /// Returns true if there are events left to process.
-    bool HasPendingEvents() const {
-        return ! points_.empty() || ! keys_.empty();
-    }
+    bool HasPendingEvents() const { return ! events_.empty(); }
 
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() {}
 
   private:
-    /// Struct representing a point to process for a click or drag.
-    struct Point_ {
-        bool          is_mod;
-        bool          is_click;
-        const DIPhase phase;
-        const Point2f pos;
-        Point_(bool mod, bool cl, DIPhase ph, const Point2f &ps) :
-            is_mod(mod), is_click(cl), phase(ph), pos(ps) {}
-    };
-
-    /// Struct representing a key to process.
-    struct Key_ {
-        const std::string  key_name;
-        const KMods        modifiers;
-        bool               is_press;
-        Key_(const std::string &key, const KMods &mods, bool press) :
-            key_name(key), modifiers(mods), is_press(press) {}
-    };
-
     /// Whether modified mode is on.
     bool               is_mod_ = false;
 
-    /// Points left in the current click or drag operation.
-    std::deque<Point_> points_;
-
-    /// Keys left to simulate.
-    std::deque<Key_>   keys_;
+    /// Events left to emit.
+    std::deque<Event>  events_;
 
     /// Set to true while waiting for a click to be processed after a timeout.
-    bool               is_waiting_for_click_ = false;
+    bool               waited_for_click_ = false;
 };
 
-void Emitter_::EmitEvents(std::vector<Event> &events) {
-    if (! points_.empty()) {
-        const auto &pt = points_.front();
+void Emitter_::AddClick(const Point2f &pos) {
+    Event event;
+    event.is_modified_mode = is_mod_;
+    event.device           = Event::Device::kMouse;
+    event.button           = Event::Button::kMouse1;
+    event.position2D       = pos;
+    event.flags.Set(Event::Flag::kPosition2D);
 
-        // If this is the end of a click, make sure the click timeout is
-        // reached so that it is processed during the next frame and wait until
-        // then. Use the is_waiting_for_click_ flag to do this once.
-        if (pt.is_click && pt.phase == DIPhase::kEnd) {
-            if (! is_waiting_for_click_) {
-                is_waiting_for_click_ = true;
-                Util::DelayThread(TK::kMouseClickTimeout);
-                return;
-            }
-            else {
-                is_waiting_for_click_ = false;
-            }
-        }
+    // Press.
+    event.flags.Set(Event::Flag::kButtonPress);
+    events_.push_back(event);
 
-        Event event;
-        event.is_modified_mode = pt.is_mod;
-        event.device = Event::Device::kMouse;
-        if (pt.phase == DIPhase::kStart) {
-            event.flags.Set(Event::Flag::kButtonPress);
-            event.button = Event::Button::kMouse1;
-        }
-        else if (pt.phase == DIPhase::kEnd) {
-            event.flags.Set(Event::Flag::kButtonRelease);
-            event.button = Event::Button::kMouse1;
-        }
-        event.flags.Set(Event::Flag::kPosition2D);
-        event.position2D = pt.pos;
-        events.push_back(event);
+    // Release.
+    event.flags.Reset(Event::Flag::kButtonPress);
+    event.flags.Set(Event::Flag::kButtonRelease);
+    events_.push_back(event);
+}
 
-        points_.pop_front();
+void Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
+    Event event;
+    event.is_modified_mode = is_mod_;
+    event.device           = Event::Device::kMouse;
+    event.position2D       = pos;
+    event.flags.Set(Event::Flag::kPosition2D);
+
+    if (phase == DIPhase::kStart) {
+        event.flags.Set(Event::Flag::kButtonPress);
+        event.button = Event::Button::kMouse1;
+    }
+    else if (phase == DIPhase::kEnd) {
+        event.flags.Set(Event::Flag::kButtonRelease);
+        event.button = Event::Button::kMouse1;
     }
 
-    if (! keys_.empty()) {
-        const auto &key = keys_.front();
+    events_.push_back(event);
+}
 
-        Event event;
-        event.device = Event::Device::kKeyboard;
-        event.flags.Set(key.is_press ?
-                        Event::Flag::kKeyPress : Event::Flag::kKeyRelease);
-        event.key_name  = key.key_name;
-        event.modifiers = key.modifiers;
+void Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
+    Event event;
+    event.device    = Event::Device::kKeyboard;
+    event.key_name  = key;
+    event.modifiers = modifiers;
+
+    // Press.
+    event.flags.Set(Event::Flag::kKeyPress);
+    events_.push_back(event);
+
+    // Release.
+    event.flags.Reset(Event::Flag::kKeyPress);
+    event.flags.Set(Event::Flag::kKeyRelease);
+    events_.push_back(event);
+}
+
+void Emitter_::EmitEvents(std::vector<Event> &events) {
+    // Emit the first event, if any.
+    if (! events_.empty()) {
+        const Event &event = events_.front();
+
+        // If this is potentially the end of a click, delay until after the
+        // click timeout. Set a flag so the next time will not delay.
+        if (event.flags.Has(Event::Flag::kButtonRelease)) {
+            if (! waited_for_click_) {
+                Util::DelayThread(TK::kMouseClickTimeout);
+                waited_for_click_ = true;
+                return;
+            }
+            waited_for_click_ = false;
+        }
+
         events.push_back(event);
-
-        keys_.pop_front();
+        events_.pop_front();
     }
 }
 
@@ -298,12 +289,12 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kKey: {
           const auto &kinst = GetTypedInstr_<SnapScript::KeyInstr>(instr);
-          Emitter_::KMods mods;
+          Emitter_::KModifiers modifiers;
           if (kinst.is_ctrl_on)
-              mods.Set(Event::ModifierKey::kControl);
+              modifiers.Set(Event::ModifierKey::kControl);
           if (kinst.is_alt_on)
-              mods.Set(Event::ModifierKey::kAlt);
-          emitter_->AddKey(kinst.key, mods);
+              modifiers.Set(Event::ModifierKey::kAlt);
+          emitter_->AddKey(kinst.key, modifiers);
           break;
       }
       case SIType::kLoad: {

@@ -61,6 +61,7 @@ bool EventManager::HandleEvents_(std::vector<Event> &events,
 }
 
 bool EventManager::HandleEvent_(const Event &event) {
+    KLOG('e', event.ToString());
     for (auto &handler: handlers_) {
         if (handler->IsEnabled() && handler->HandleEvent(event)) {
             KLOG('e', "Event handled by "
