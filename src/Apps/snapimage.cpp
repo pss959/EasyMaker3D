@@ -58,6 +58,9 @@ class Emitter_ : public IEmitter {
     /// Adds a key press/release to simulate.
     void AddKey(const std::string &key, const KModifiers &modifiers);
 
+    /// Adds a controller position.
+    void AddControllerPos(Hand hand, const Point3f &pos, const Rotationf &rot);
+
     /// Returns true if there are events left to process.
     bool HasPendingEvents() const { return ! events_.empty(); }
 
@@ -128,6 +131,21 @@ void Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
     events_.push_back(event);
 }
 
+void Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
+                                const Rotationf &rot) {
+    Event event;
+    event.device    = hand == Hand::kLeft ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+
+    event.flags.Set(Event::Flag::kPosition3D);
+    event.position3D = pos;
+
+    event.flags.Set(Event::Flag::kOrientation);
+    event.orientation = rot;
+
+    events_.push_back(event);
+}
+
 void Emitter_::EmitEvents(std::vector<Event> &events) {
     // Emit the first event, if any.
     if (! events_.empty()) {
@@ -182,7 +200,6 @@ class SnapshotApp_ : public Application {
     bool ProcessInstruction_(const SnapScript::Instr &instr);
     bool LoadSession_(const std::string &file_name);
     bool SetHand_(Hand hand, const std::string &controller_type);
-    bool ChangeHandPos_(Hand hand, const Point3f &pos, const Rotationf &rot);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
     Selection BuildSelection_(const std::vector<std::string> &names);
 
@@ -283,8 +300,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kHandPos: {
           const auto &hinst = GetTypedInstr_<SnapScript::HandPosInstr>(instr);
-          if (! ChangeHandPos_(hinst.hand, hinst.pos, hinst.rot))
-              return false;
+          emitter_->AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
           break;
       }
       case SIType::kKey: {
@@ -416,23 +432,6 @@ bool SnapshotApp_::SetHand_(Hand hand, const std::string &controller_type) {
     return true;
 }
 
-bool SnapshotApp_::ChangeHandPos_(Hand hand, const Point3f &pos,
-                                  const Rotationf &rot) {
-    const auto &sc = *test_context_.scene_context;
-    auto &controller = hand == Hand::kLeft ?
-        *sc.left_controller : *sc.right_controller;
-
-    controller.SetTranslation(pos);
-    controller.SetRotation(rot);
-
-    // Since at least one controller is in use, turn off the RadialMenu parent
-    // in the room, since the menus will be attached to the controllers.
-    const auto parent = SG::FindNodeInScene(*sc.scene, "RadialMenus");
-    parent->SetEnabled(false);
-
-    return true;
-}
-
 bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
                                  const std::string &file_name) {
     const auto &minp = rect.GetMinPoint();
@@ -502,6 +501,7 @@ int main(int argc, const char *argv[]) {
 
     KLogger::SetKeyString(args.GetString("--klog"));
     options.do_ion_remote      = true;
+    options.enable_vr          = true;   // So controllers work properly.
     options.fullscreen         = args.GetBool("--fullscreen");
     options.nosnap             = args.GetBool("--nosnap");
     options.remain             = args.GetBool("--remain");

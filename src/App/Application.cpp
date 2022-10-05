@@ -617,7 +617,7 @@ void Application::Impl_::InitHandlers_() {
     log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler);
     view_handler_.reset(new ViewHandler());
-    main_handler_.reset(new MainHandler(IsVREnabled()));
+    main_handler_.reset(new MainHandler(IsVREnabled() || options_.enable_vr));
 
 #if ENABLE_DEBUG_FEATURES
     drag_rect_handler_.reset(new DragRectHandler);
@@ -657,7 +657,7 @@ void Application::Impl_::InitManagers_() {
 #endif
     // ControllerHandler just updates controller position, so it needs all
     // controller events.
-    if (IsVREnabled())
+    if (IsVREnabled() || options_.enable_vr)
         event_manager_->AddHandler(controller_handler_);
     // InspectorHandler traps most events when active.
     event_manager_->AddHandler(inspector_handler_);
@@ -821,8 +821,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
         vr_context_->SetControllers(lc, rc);
 
     // Enable or disable controllers.
-    lc->SetEnabled(IsVREnabled());
-    rc->SetEnabled(IsVREnabled());
+    lc->SetEnabled(IsVREnabled() || options_.enable_vr);
+    rc->SetEnabled(IsVREnabled() || options_.enable_vr);
 
     // Try to use the correct controller models if VR is enabled.
     if (IsVREnabled()) {
