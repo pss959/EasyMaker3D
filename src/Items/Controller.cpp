@@ -6,22 +6,22 @@
 #include "Base/Tuning.h"
 #include "Items/RadialMenu.h"
 #include "Math/Linear.h"
+#include "Parser/Registry.h"
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
+#include "SG/MutableTriMeshShape.h"
 #include "SG/NodePath.h"
 #include "SG/ProceduralImage.h"
-#include "Parser/Registry.h"
 #include "SG/Search.h"
 #include "SG/Texture.h"
-#include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
 
 void Controller::SetHand(Hand hand) {
     hand_ = hand;
-    if (hand == Hand::kLeft && guide_parent_)
-        RotateGuides_();
+    if (hand_ == Hand::kLeft)
+        RotateLeftGuides_();
 }
 
 void Controller::UseCustomModel(const CustomModel &custom_model) {
@@ -197,10 +197,9 @@ void Controller::AttachObject(const SG::NodePtr &object, float size_fraction,
         trans[0] = -trans[0];
     object->SetTranslation(guide_parent_->GetTranslation() + trans);
 
-    const auto &model       = *SG::FindNodeUnderNode(*this, "Model");
     const auto object_scale = object->GetScale();
     const auto object_size  = object->GetScaledBounds().GetSize();
-    const auto model_size   = model.GetScaledBounds().GetSize();
+    const auto model_size   = model_node_->GetScaledBounds().GetSize();
     const float obj_max = object_size[GetMaxElementIndex(object_size)];
     object->SetScale(object_scale * (size_fraction * model_size[2] / obj_max));
 
@@ -224,14 +223,13 @@ void Controller::AttachRadialMenu(const RadialMenuPtr &menu) {
 
 void Controller::PostSetUpIon() {
     // Access the important nodes.
+    model_node_         = SG::FindNodeUnderNode(*this, "Model");
     touch_node_         = SG::FindNodeUnderNode(*this, "Touch");
     pointer_node_       = SG::FindNodeUnderNode(*this, "LaserPointer");
     grip_node_          = SG::FindNodeUnderNode(*this, "Grip");
     pointer_hover_node_ = SG::FindNodeUnderNode(*this, "PointerHoverHighlight");
     grip_hover_node_    = SG::FindNodeUnderNode(*this, "GripHoverHighlight");
     touch_tip_node_     = SG::FindNodeUnderNode(*this, "TouchTip");
-
-    UpdateForGeometry_();
 
     touch_tip_node_->SetBaseColor(
         SG::ColorMap::SGetColor("TouchInactiveColor"));
@@ -247,8 +245,6 @@ void Controller::PostSetUpIon() {
 
     // Access the GripGuides parent node and rotate for the left controller.
     guide_parent_ = SG::FindNodeUnderNode(*grip_node_, "GripGuides");
-    if (GetHand() == Hand::kLeft)
-        RotateGuides_();
 
     // Add each of its children as a guide.
     for (auto &child: guide_parent_->GetChildren()) {
@@ -260,6 +256,8 @@ void Controller::PostSetUpIon() {
 
     // Start with no guide (the kNone version).
     cur_guide_ = guides_[0];
+
+    UpdateForGeometry_();
 
     // Set to the inactive state.
     SetTriggerMode(Trigger::kPointer, false);
@@ -286,16 +284,58 @@ void Controller::ShowAffordance_(Trigger trigger, bool is_shown) {
     node->SetEnabled(is_shown);
 }
 
-void Controller::RotateGuides_() {
+void Controller::RotateLeftGuides_() {
     ASSERT(guide_parent_);
-    guide_parent_->SetRotation(
+    const Rotationf flip =
         Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
-                                    Anglef::FromDegrees(180)));
+                                    Anglef::FromDegrees(180));
+    guide_parent_->SetRotation(flip * guide_parent_->GetRotation());
 }
 
 void Controller::UpdateForGeometry_() {
-    // Set up the touch geometry and math. The touch geometry must be enabled
-    // for the coordinate conversion to work.
+    // Translate the guides to touch a good point on the controller model.
+    PositionGuides_();
+
+    // Set up the touch geometry and math.
+    SetUpForTouch_();
+}
+
+void Controller::PositionGuides_() {
+    const bool is_left = hand_ == Hand::kLeft;
+
+    // Find the mesh point that is the maximum to the left (for the right hand)
+    // or to the right (for the left hand).
+    Point3f target_point;
+    const auto cust = SG::FindNodeUnderNode(*this, "CustomModel");
+    if (cust->IsEnabled()) {
+        ASSERT(! cust->GetShapes().empty());
+        const auto shape =
+            Util::CastToDerived<SG::MutableTriMeshShape>(cust->GetShapes()[0]);
+        ASSERT(shape);
+        const auto &mesh = shape->GetMesh();
+        target_point = mesh.points[0];
+        for (const auto &pt: mesh.points) {
+            if (is_left ? (pt[0] > target_point[0]) : (pt[0] < target_point[0]))
+                target_point = pt;
+        }
+    }
+    else {
+        // No custom model. Use a fixed point on the Ellipsoid.
+        target_point = Point3f(is_left ? .025 : -.025, 0, 0);
+    }
+
+    // Position the guide parent. Always use the right side of the guide since
+    // it is rotated for the left controller.
+    const auto guide_bounds = guide_parent_->GetScaledBounds();
+    Point3f guide_pt = guide_bounds.GetFaceCenter(Bounds::Face::kRight);
+    if (is_left)
+        guide_pt[0] = -guide_pt[0];
+    const Vector3f trans = target_point - guide_pt;
+    guide_parent_->SetTranslation(trans);
+}
+
+void Controller::SetUpForTouch_() {
+    // The touch geometry must be enabled for coordinate conversion to work.
     const bool was_enabled = touch_node_->IsEnabled();
     touch_node_->SetEnabled(true);
 

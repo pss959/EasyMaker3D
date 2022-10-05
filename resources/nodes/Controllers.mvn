@@ -1,5 +1,5 @@
 Node "Controllers" {
-  #disabled_flags: "kIntersectAll",
+  disabled_flags: "kIntersectAll",
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,

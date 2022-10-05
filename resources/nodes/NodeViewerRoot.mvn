@@ -13,6 +13,7 @@ Node "NodeViewerRoot" {
     #<"nodes/ModelRoot.mvn">
     #<"nodes/PointTarget.mvn">
     #<"nodes/Tools/ScaleTool.mvn">
+    <"nodes/templates/Controller.mvn">
     #<"nodes/templates/RadialMenu.mvn">
     #<"nodes/tests/AtlasTest.mvn">
     #<"nodes/tests/BlendTest.mvn">
@@ -27,8 +28,6 @@ Node "NodeViewerRoot" {
     # CLONE "T_Board" "AppBoard" {}
     # CLONE "T_Board" "ToolBoard" {}
     # CLONE "T_Board" "KeyBoard" {}
-
-    <"../XXXX.mvn">,
   ]
 }
 

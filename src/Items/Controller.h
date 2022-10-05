@@ -176,6 +176,9 @@ class Controller : public SG::Node {
     /// Current Guide displayed.
     GripGuidePtr cur_guide_;
 
+    /// Node representing the Controller model geometry.
+    SG::NodePtr model_node_;
+
     /// Node used to show the touch affordance.
     SG::NodePtr touch_node_;
 
@@ -220,11 +223,18 @@ class Controller : public SG::Node {
     void ShowAffordance_(Trigger trigger, bool is_shown);
 
     /// Rotates the guides for the left controller.
-    void RotateGuides_();
+    void RotateLeftGuides_();
 
     /// Updates items that depend on geometry. This is called for the default
     /// model and again if a custom model is loaded.
     void UpdateForGeometry_();
+
+    /// Positions the hover guides to connect to a reasonable spot on the
+    /// controller model. Rotates if this is the left controller.
+    void PositionGuides_();
+
+    /// Sets up the touch geometry.
+    void SetUpForTouch_();
 
     friend class Parser::Registry;
 };
