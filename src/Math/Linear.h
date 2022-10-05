@@ -113,6 +113,10 @@ inline float RoundToPrecision(float value, float precision) {
 /// tolerance.
 bool AreClose(float a, float b, float tolerance = .0001f);
 
+/// Returns true if two values are close enough to each other within a
+/// tolerance.
+bool AreClose(double a, double b, double tolerance = .0001);
+
 /// Returns true if two vectors are close enough to each other within a
 /// tolerance, which is the square of the distance.
 bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance = .0001f);
