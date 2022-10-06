@@ -672,8 +672,7 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
 void Board::Impl_::UpdateGripHover_(const GripState_ &state, GripInfo &info) {
     ASSERT(state.hovered_slider);
     info.widget = state.hovered_slider;
-    info.color  = SG::ColorMap::SGetColor(
-        state.is_active ? "GripActiveColor" : "GripDefaultColor");
+    info.color = state.is_active ? GetActiveGripColor() : GetNeutralGripColor();
 
     // Set the target point based on the active slider.
     Point3f local_pt;

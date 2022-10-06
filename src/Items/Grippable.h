@@ -63,7 +63,7 @@ class Grippable : public SG::Node {
 
         /// Color to use for the grip hover feedback. This is ignored if widget
         /// is null.
-        Color              color = SG::ColorMap::SGetColor("GripDefaultColor");
+        Color              color = SG::ColorMap::SGetColor("GripNeutralColor");
 
         ///@}
     };
@@ -117,6 +117,16 @@ class Grippable : public SG::Node {
     // Special case of GetBestDirIndex() that uses the 3 principal axes.
     static int GetBestAxis(const Vector3f &dir, const Anglef &max_angle,
                            bool &is_opposite);
+
+    /// Returns the color to use for a neutral grip hover connection.
+    static Color GetNeutralGripColor() {
+        return SG::ColorMap::SGetColor("GripNeutralColor");
+    }
+
+    /// Returns the color to use for an active grip hover connection.
+    static Color GetActiveGripColor() {
+        return SG::ColorMap::SGetColor("GripActiveColor");
+    }
 
   private:
     /// Path from the root of the scene to the Grippable.

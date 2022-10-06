@@ -77,7 +77,7 @@ void RotationTool::UpdateGripInfo(GripInfo &info) {
     else {
         // Not close to any dimension. Use the free rotator.
         info.widget = parts_->free_rotator;
-        info.color  = Color::White();
+        info.color  = GetNeutralGripColor();
     }
 
     // Always point to the center of the widget. Nothing looks much better.

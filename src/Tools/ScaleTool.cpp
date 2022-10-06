@@ -81,8 +81,8 @@ void ScaleTool::UpdateGripInfo(GripInfo &info) {
         info.widget = is_opposite ?
             scaler.widget->GetMaxSlider() : scaler.widget->GetMinSlider();
         const int dim = scaler.dims.GetIndex();
-        if (dim >= 0)
-            info.color = GetFeedbackColor(dim, false);
+        info.color =
+            dim >= 0 ? GetFeedbackColor(dim, false) : GetNeutralGripColor();
         info.target_point = ToWorld(info.widget, Point3f::Zero());
     }
     else {
@@ -180,7 +180,7 @@ void ScaleTool::UpdateGeometry_() {
     // Compute a reasonable scale for the handles based on the Model size.
     const float kHandleSizeFraction  = .25f;
     const float kMinHandleScale      = .2f;
-    const float kMaxHandleScale      = .8f;
+    const float kMaxHandleScale      = .6f;
     const float k1DScalerExtraLength = 1;
     const float handle_scale = ComputePartScale(
         model_size, kHandleSizeFraction, kMinHandleScale, kMaxHandleScale);
