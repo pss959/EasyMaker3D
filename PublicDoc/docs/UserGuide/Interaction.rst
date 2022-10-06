@@ -222,6 +222,7 @@ The delay for showing tooltips is a setting that can be edited in the
 tooltips completely.
 
 .. _ug-text-input:
+.. _ug-virtual-keyboard:
 
 Text Input
 ..........

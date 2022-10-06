@@ -9,13 +9,12 @@ adding interaction to perform a specific type of editing.
 Tools are divided into two categories:
 
   - A :newterm:`general tool` can be attached to any model, regardless of its
-    type (except for the :ref:`Complexity Tool <ug-complexity-tool>`). Every
-    general tool adds some interactive 3D handles around or above the primary
-    selection.
+    type (except for the :ref:`Complexity Tool <ug-complexity-tool>`).
   - A :newterm:`specialized tool` can be applied only to a model of a specific
     type. It is used to modify unique editable features of that type of model.
-    Some specialized tools add interactive 3D handles; others use 2D
-    :ref:`panels <ug-panels>` for editing.
+
+Some tools add interactive 3D handles around or above the primary selection;
+others use 2D :ref:`panels <ug-panels>` for editing.
 
 Attaching and Switching Tools
 .............................
@@ -58,7 +57,7 @@ the following general tools can be attached to all selected models.
 .. _ug-color-tool:
 
 Color Tool
-..........
+,,,,,,,,,,
 
 .. incimage:: /images/ColorTool.jpg 200px right
 
@@ -81,7 +80,7 @@ distinguish different parts while editing. Or just to make things look nicer.
 .. _ug-complexity-tool:
 
 Complexity Tool
-...............
+,,,,,,,,,,,,,,,
 
 .. incimage:: /images/ComplexityToolHigh.jpg 200px right
 .. incimage:: /images/ComplexityToolLow.jpg  200px right
@@ -118,10 +117,35 @@ Some notes about this tool:
    :ref:`Grip dragging <ug-grip-dragging>` also works; the relative position of
    the controller moves the handle.
 
+.. _ug-name-tool:
+
+Name Tool
+,,,,,,,,,
+
+.. incimage:: /images/NameTool.jpg 200px right
+
+The :newterm:`Name Tool` lets you edit the name of the model that is the
+primary selection. A model's name can help ypu distinguish its purpose or role,
+and is used as the default file name for :ref:`STL export <ug-export>`.  Model
+names can be seen in the :ref:`Tree Panel <ug-tree-panel>`.
+
+The Name Tool is a panel-based tool that appears above the model. It has a text
+input field that responds to the mouse and keyboard to edit the name along with
+an "Apply" button that applies the changed name to the model. It will not let
+you apply an invalid name (empty or with leading or trailing whitespace) or a
+name that is already used by another model.
+
+.. admonition:: VR Only
+
+   If you are using the application in VR with the headset on, activating the
+   text input field will bring up :ref:`a panel with the virtual keyboard
+   <ug-virtual-keyboard-panel>` to allow text to be edited with the
+   controllers.
+
 .. _ug-rotation-tool:
 
 Rotation Tool
-.............
+,,,,,,,,,,,,,
 
 .. incimage:: /images/RotationTool.jpg 200px right
 
@@ -149,7 +173,9 @@ principal axes of the :ref:`stage <ug-stage>`.
 
 .. admonition:: VR Only
 
-   .. incimage:: /images/RotationToolVR.jpg 200px right
+   .. incimage:: /images/RotationToolVRSphere.jpg 200px right
+   .. incimage:: /images/RotationToolVRY.jpg      200px right
+   .. incimage:: /images/RotationToolVRX.jpg      200px right
 
    :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
    controller to define the rotation. A special rotation grip hover guide will
@@ -157,10 +183,11 @@ principal axes of the :ref:`stage <ug-stage>`.
 
    When the ring on the guide is close to aligning with any of the axis rings
    on the Rotation Tool, the guide will show a :ref:`color-coded connection
-   <ug-dimension-colors>` to that ring.  In the image here, the ring is close
-   to aligning with the red X-axis rotation ring of the Rotation Tool, so a red
-   connection appears. In any other orientation, the guide will show a
-   neutral-color connection to the center sphere.
+   <ug-dimension-colors>` to that ring.  In the left image here, the ring is
+   close to aligning with the red X-axis rotation ring of the Rotation Tool, so
+   a red connection appears. In the center image, it is close to aligning with
+   the green Y-axis ring. In any other orientation, the guide will show a
+   neutral-color connection to the center sphere as in the right image.
 
    If a ring is hovered, grip dragging by rotating the controller parallel to
    the ring rotates the model(s) in the same direction. When no ring is
@@ -176,7 +203,6 @@ principal axes of the :ref:`stage <ug-stage>`.
 .. _ug-cylinder-tool:
 .. _ug-import-tool:
 .. _ug-mirror-tool:
-.. _ug-name-tool:
 .. _ug-rev-surf-tool:
 .. _ug-scale-tool:
 .. _ug-specialized-tools:
