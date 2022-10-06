@@ -113,8 +113,8 @@ modified <ug-session-name>`.
 .. _ug-dimension-colors:
 .. _ug-units:
 
-Coordinate System and Units
-...........................
+Coordinate System, Units, and Dimension Colors
+..............................................
 
 .. incimage:: /images/static/CoordSystem.jpg 200px right
 

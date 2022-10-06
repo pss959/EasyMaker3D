@@ -179,7 +179,8 @@ principal axes of the :ref:`stage <ug-stage>`.
 
    :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
    controller to define the rotation. A special rotation grip hover guide will
-   be used for each controller.
+   be used for each controller to show which part of the Rotation Tool will be
+   activated for a grip drag, as follows.
 
    When the ring on the guide is close to aligning with any of the axis rings
    on the Rotation Tool, the guide will show a :ref:`color-coded connection
@@ -194,6 +195,69 @@ principal axes of the :ref:`stage <ug-stage>`.
    selected, grip dragging will rotate the model(s) by the free controller
    orientation.
 
+.. _ug-scale-tool:
+
+Scale Tool
+,,,,,,,,,,
+
+.. incimage:: /images/ScaleTool.jpg 200px right
+
+The :newterm:`Scale Tool` lets you change the size of selected models. It has
+fifteen 3D :newterm:`scalers`, each of which is a resizable stick with an
+interactive handle at each end. The handles are shaped to help indicate how
+they scale the model:
+
+  - Three :ref:`color-coded <ug-dimension-colors>` scalers are aligned with the
+    coordinate axes of the model. These scale (nonuniformly) in a single
+    dimension. Each handle of these scalers is a rectangular box that is longer
+    in the dimension that will be scaled.
+  - Eight scalers cross diagonally through the centers of edges. These scale
+    nonuniformly in two dimensions. The handles of these scalers are cylinders
+    that are aligned with the two scaled dimensions.
+  - Four scalers pass diagonally through the corners of the model's
+    bounds. These scale uniformly in all three dimensions. The handles of these
+    scalers are spheres to indicate the uniform scale.
+
+Any dimension being scaled follows the current :ref:`precision level
+<ug-precision-level>` and snaps to the current :ref:`Edge Target length
+<ug-targets>` if the target is active. Color-coded :ref:`linear feedback
+<ug-feedback>` shows the current relevant dimension(s) of the primary selection
+during a drag.
+
+There are two scaling modes:
+
+  - :newterm:`Asymmetric scaling` resizes the model about the opposite
+    point. That is, when you drag a scaler handle, the handle on the other end
+    stays fixed. This is the default scaling mode when dragging a handle.
+  - :newterm:`Symmetric scaling` resizes the model about its center. When
+    dragging a scaler handle in this mode, the handle on the opposite side
+    moves the same amount in the other direction. :ref:`modified-dragging
+    <ug-modified-mode>` a scaler handle performs symmetric scaling.
+
+Keep in mind that scaling a model's height symmetrically can cause it to extend
+under the :ref:`stage <ug-stage>`.
+
+If multiple models are selected, all secondary selections are scaled in place
+in their local orientations by the same ratio applied to the primary
+selection. The :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` has no
+effect on the Scale Tool, since using different axes might cause confusing
+shearing to occur.
+
+.. admonition:: VR Only
+
+   .. incimage:: /images/ScaleToolVRUniform.jpg 200px right
+   .. incimage:: /images/ScaleToolVRX.jpg       240px right
+
+   :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
+   controller to select a scaler handle to activate. The hover guide for each
+   controller will show a :ref:`color-coded <ug-dimension-colors>` connection
+   to the handle closest to the guide's orientation, if any.
+
+   In the left image, the hover guide is close to being aligned with the red X
+   dimension scaler, so grip dragging will activate that scaler. In the right
+   image, the guide is close to aligned with a diagonal uniform scaler, so it
+   will be activated for grip dragging.
+
 .. todo::
    Ended here.
 
@@ -204,57 +268,10 @@ principal axes of the :ref:`stage <ug-stage>`.
 .. _ug-import-tool:
 .. _ug-mirror-tool:
 .. _ug-rev-surf-tool:
-.. _ug-scale-tool:
 .. _ug-specialized-tools:
 .. _ug-text-tool:
 .. _ug-torus-tool:
 .. _ug-translation-tool:
-
-### Scale Tool
-
-![][ImgScaleToolActive]{{rightimage(160)}}
-
-The Scale Tool lets you change the size of selected models. It has several
-double-ended sliders:
-
-+ Three sliders aligned with the coordinate axes of the model. These scale
-  nonuniformly in one dimension.
-+ Eight sliders passing diagonally through edge centers. These scale
-  nonuniformly in two dimensions.
-+ Four sliders passing diagonally through the corners of the model's
-  bounds. These scale uniformly in all three dimensions.
-
-Any dimension being scaled follows the current [precision
-level][PrecisionLevel] and snaps to the current [edge target
-length][EdgeTarget] if the edge target is active. Color-coded
-[feedback][Feedback] shows the current relevant dimension(s) of the primary
-selection during a drag.
-
-There are two scaling modes:
-
-+ {{term('Asymmetric scaling')}} resizes the model about the opposite
-  point. That is, when you drag a slider handle, the handle on the other end
-  stays fixed. This is the default scaling mode when dragging a handle.
-+ {{term('Symmetric scaling')}} resizes the model about its center. When
-  dragging a slider handle in this mode, the handle on the opposite side moves
-  the same amount in the other direction. [Alt-dragging][AltMode] a slider
-  handle performs symmetric scaling.
-
-If multiple models are selected, all secondary selections are scaled in place
-in their local orientations by corresponding ratios. Note that the
-[Axis-Aligned toggle][AxisAlignedToggle] has no effect on the Scale Tool, since
-using different axes might cause confusing shearing to occur.
-
-![][ImgScaleToolActiveVR]{{rightimage(200)}}
-
-Grip dragging uses the orientation of a VR controller to select a slider handle
-to activate. A [hover guide][ClickDrag] attached to each controller hand shows
-the direction that needs to align with the slider to activate its handle. When
-the guide is close enough to being aligned with a slider, the guide will show a
-[color-coded connection][Colors] (neutral if not a 1-dimensional slider) to the
-closest handle of that slider. When a handle is highlighted in this manner,
-pressing the grip button and moving the controller along the slider direction
-scales the model(s).
 
 ### Translation Tool
 

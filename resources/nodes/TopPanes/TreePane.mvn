@@ -5,8 +5,8 @@ BoxPane "TreePane" {
     ACTION_BUTTON_SIZE: "min_size: 10 10",
     # The background uses BaseColor shader, so it is a little brighter to match
     # the (lit) button colors better.
-    PANE_BG_COLOR:      "\"#d0d0d0\"",
-    BUTTON_BG_COLOR:    "\"#b0b0b0\"",
+    PANE_BG_COLOR:      "\"#c0c0c0\"",
+    BUTTON_BG_COLOR:    "\"#a0a0a0\"",
   ],
 
   TEMPLATES: [

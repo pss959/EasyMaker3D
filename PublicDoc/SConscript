@@ -94,7 +94,8 @@ snap_map = {
   'TargetSnap'     : [ 'SnappedToPointTarget' ],
   'Tools'          : [ 'ColorTool', 'ComplexityToolLow', 'ComplexityToolHigh',
                        'NameTool', 'RotationTool', 'RotationToolVRX',
-                       'RotationToolVRY', 'RotationToolVRSphere' ],
+                       'RotationToolVRY', 'RotationToolVRSphere', 'ScaleTool',
+                       'ScaleToolVRX', 'ScaleToolVRUniform' ],
 }
 
 # This maps annotation script files to the images they read and write.
