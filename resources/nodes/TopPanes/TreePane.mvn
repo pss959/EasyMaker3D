@@ -3,7 +3,10 @@ BoxPane "TreePane" {
     ICON:               "CLONE \"T_IconPane\" \"Icon\"",
     VIEW_BUTTON_VALS:   "$RESIZE_WH",
     ACTION_BUTTON_SIZE: "min_size: 10 10",
-    BG_COLOR:           "\"#e4e4e4\"",
+    # The background uses BaseColor shader, so it is a little brighter to match
+    # the (lit) button colors better.
+    PANE_BG_COLOR:      "\"#d0d0d0\"",
+    BUTTON_BG_COLOR:    "\"#b0b0b0\"",
   ],
 
   TEMPLATES: [
@@ -60,7 +63,7 @@ BoxPane "TreePane" {
       ],
       children: [
         PushButtonWidget "Button" {
-          inactive_color: $BG_COLOR,
+          inactive_color: $BUTTON_BG_COLOR,
           hover_color:    "#552222",
           shapes: [ Rectangle {} ],
         }
@@ -68,7 +71,7 @@ BoxPane "TreePane" {
     },
   ],
 
-  background: $BG { color: $BG_COLOR },
+  background: $BG { color: $PANE_BG_COLOR },
   min_size: 150 200,
   padding: 2,
   spacing: 2,
