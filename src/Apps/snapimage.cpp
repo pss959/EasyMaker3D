@@ -242,6 +242,9 @@ bool SnapshotApp_::Init(const Options &options) {
     // click and drag events.
     EnableMouseMotionEvents(false);
 
+    // No need to ask before quitting this app.
+    SetAskBeforeQuitting(false);
+
     return true;
 }
 

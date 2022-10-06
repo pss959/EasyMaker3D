@@ -63,6 +63,10 @@ class Application {
     /// testing.
     void SetTestingFlag();
 
+    /// Sets a flag indicating whether the application should ask about saving
+    /// before quitting a session. The default is true.
+    void SetAskBeforeQuitting(bool ask);
+
     /// Fills in a TestContext.
     void GetTestContext(TestContext &tc);
 

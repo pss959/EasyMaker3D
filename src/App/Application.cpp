@@ -116,6 +116,7 @@ class  Application::Impl_ {
 
     void SetTestingFlag() { is_testing_ = true; }
     void GetTestContext(TestContext &tc);
+    void SetAskBeforeQuitting(bool ask) { ask_before_quitting_ = ask; }
     void AddEmitter(const IEmitterPtr &emitter);
     Vector2i GetWindowSize() const;
     Renderer & GetRenderer() { return *renderer_; }
@@ -135,7 +136,8 @@ class  Application::Impl_ {
     /// Saves Options passed to Init().
     Application::Options options_;
 
-    bool is_testing_ = false;
+    bool is_testing_          = false;
+    bool ask_before_quitting_ = true;
 
     std::unique_ptr<SceneLoader> loader_;
 
@@ -1175,8 +1177,9 @@ void Application::Impl_::TryQuit_() {
     if (run_state_ != RunState_::kRunning)
         return;
 
-    // If there are no changes to the session, just quit.
-    if (! session_manager_->CanSaveSession()) {
+    // If there are no changes to the session or the application should not ask
+    // the user, just quit.
+    if (! session_manager_->CanSaveSession() || ! ask_before_quitting_) {
         run_state_ = RunState_::kQuitting;
         return;
     }
@@ -1447,6 +1450,10 @@ void Application::Shutdown() {
 
 void Application::SetTestingFlag() {
     impl_->SetTestingFlag();
+}
+
+void Application::SetAskBeforeQuitting(bool ask) {
+    impl_->SetAskBeforeQuitting(ask);
 }
 
 void Application::GetTestContext(TestContext &tc) {
