@@ -151,13 +151,13 @@ Rotation Tool
 
 The :newterm:`Rotation Tool` lets you rotate selected models. It has three
 :ref:`color-coded <ug-dimension-colors>` rings for rotating about the principal
-axes and a translucent central sphere for applying free spherical rotation. The
-rotation angle is snapped to the current :ref:`precision level setting
-<ug-precision-level>` and snaps to the current :ref:`Point Target direction
-<ug-targets>` if the target is visible.
+axes and a translucent central sphere for applying free spherical rotation.
 
 Color-coded :ref:`angular feedback <ug-feedback>` shows the current rotation
-angle or angles during an interactive drag with the tool.
+angle or angles during an interactive drag with the tool.  The rotation angle
+is snapped to the current :ref:`precision level setting <ug-precision-level>`
+and snaps to the current :ref:`Point Target direction <ug-targets>` if the
+target is visible.
 
 The :ref:`primary selection <ug-selection>` is always rotated about its center
 point. If multiple models are selected, secondary selections are also rotated
@@ -174,7 +174,7 @@ principal axes of the :ref:`stage <ug-stage>`.
 .. admonition:: VR Only
 
    .. incimage:: /images/RotationToolVRSphere.jpg 200px right
-   .. incimage:: /images/RotationToolVRY.jpg      200px right
+   .. incimage:: /images/RotationToolVRZ.jpg      200px right
    .. incimage:: /images/RotationToolVRX.jpg      200px right
 
    :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
@@ -187,7 +187,7 @@ principal axes of the :ref:`stage <ug-stage>`.
    <ug-dimension-colors>` to that ring.  In the left image here, the ring is
    close to aligning with the red X-axis rotation ring of the Rotation Tool, so
    a red connection appears. In the center image, it is close to aligning with
-   the green Y-axis ring. In any other orientation, the guide will show a
+   the blue Z-axis ring. In any other orientation, the guide will show a
    neutral-color connection to the center sphere as in the right image.
 
    If a ring is hovered, grip dragging by rotating the controller parallel to
@@ -258,6 +258,42 @@ shearing to occur.
    image, the guide is close to aligned with a diagonal uniform scaler, so it
    will be activated for grip dragging.
 
+.. _ug-translation-tool:
+
+Translation Tool
+,,,,,,,,,,,,,,,,
+
+.. incimage:: /images/TranslationTool.jpg 200px right
+
+The :newterm:`Translation Tool` lets you change the position of selected
+models. It has three :ref:`color-coded <ug-dimension-colors>` double-ended 3D
+sliders along each of the principal axes. Dragging the handle at either end
+translates all selected models along the corresponding axis.
+
+Color-coded :ref:`linear feedback <ug-feedback>` shows the current translation
+distance during a drag.  Translation distances follow the current
+:ref:`precision level <ug-precision-level>` setting. Translation also snaps to
+the current :ref:`Point Target position <ug-targets>` if the target is
+active. Snapping is done when the minimum, center, or maximum value of the
+primary model's bounds in the translated dimension is aligned with the target's
+position.
+
+The :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` affects how the
+Translation Tool is attached to the primary selection. If the toggle is not
+active, then the sliders will always be aligned with the principal axes of the
+primary model. If the toggle is acive, the sliders will align instead with the
+principal axes of the :ref:`stage <ug-stage>`.
+
+.. admonition:: VR Only
+
+   .. incimage:: /images/TranslationToolVRZ.jpg 200px right
+   .. incimage:: /images/TranslationToolVRX.jpg 200px right
+
+   :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
+   controller to choose a translation axis. The hover guide for each controller
+   will show a :ref:`color-coded <ug-dimension-colors>` connection to the
+   handle closest to the guide's orientation, if any, as shown in the images.
+
 .. todo::
    Ended here.
 
@@ -271,37 +307,6 @@ shearing to occur.
 .. _ug-specialized-tools:
 .. _ug-text-tool:
 .. _ug-torus-tool:
-.. _ug-translation-tool:
-
-### Translation Tool
-
-![][ImgTranslationToolActive]{{rightimage(160)}}
-
-The Translation Tool lets you change the position of selected models. It adds a
-double-ended slider along each of the principal axes. Dragging the handle at
-either end translates all selected models along the corresponding axis.
-Translation offsets follow the current [precision level][PrecisionLevel]
-setting. It also snaps to the current [point target location][PointTarget] if
-the target is active; snapping is done when the minimum, center, or maximum
-value of the primary model's bounds in the translated dimension is aligned with
-the target's position. Color-coded [feedback][Feedback] shows the current
-translation amount during a drag.
-
-The [Axis-Aligned toggle][AxisAlignedToggle] affects how the Translation Tool
-is attached to the primary selection. If the toggle is active, then the sliders
-will always be aligned with the principal axes of the [stage][Stage], rather
-than with the local coordinates of the primary selection.
-
-![][ImgTranslationToolActiveVR]{{rightimage(200)}}
-
-Grip dragging uses the orientation of the VR controller to select a slider
-handle to activate. A [hover guide][ClickDrag] attached to each controller hand
-shows the direction that needs to align with the slider to activate its
-handle. When the guide is close enough to being aligned with a slider, the
-guide will show a [color-coded][Colors] connection to the closest handle of
-that slider. When a handle is highlighted in this manner, pressing the grip
-button and moving the controller along the slider direction translates the
-model(s) along the axis in either direction (pull or push).
 
 ## Specialized Tools
 
