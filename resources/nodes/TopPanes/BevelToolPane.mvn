@@ -17,7 +17,6 @@ GridPane "BevelToolPane" {
     # Max angle slider on the right.
     BoxPane {
       resize_height: True,
-      border: $BORDER { width: 2, color: "#ff0000" },
       panes: [
         CLONE "T_TextPane" {
           font_size: 12,

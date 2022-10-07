@@ -124,16 +124,18 @@ Name Tool
 
 .. incimage:: /images/NameTool.jpg 200px right
 
-The :newterm:`Name Tool` lets you edit the name of the model that is the
-primary selection. A model's name can help ypu distinguish its purpose or role,
-and is used as the default file name for :ref:`STL export <ug-export>`.  Model
-names can be seen in the :ref:`Tree Panel <ug-tree-panel>`.
+The :newterm:`Name Tool` is a panel-based tool that lets you edit the name of
+the model that is the primary selection. A model's name can help ypu
+distinguish its purpose or role, and is used as the default file name for
+:ref:`STL export <ug-export>`.  Model names can be seen in the :ref:`Tree Panel
+<ug-tree-panel>`.
 
-The Name Tool is a panel-based tool that appears above the model. It has a text
-input field that responds to the mouse and keyboard to edit the name along with
-an "Apply" button that applies the changed name to the model. It will not let
-you apply an invalid name (empty or with leading or trailing whitespace) or a
-name that is already used by another model.
+When attached to a model, the Name Tool displays a :ref:`Name Tool Panel
+<ug-name-tool-panel>` above the model. This panel has a text input field that
+responds to the mouse and keyboard to edit the name along with an "Apply"
+button that applies the changed name to the model. It will not let you apply an
+invalid name (empty or with leading or trailing whitespace) or a name that is
+already used by another model.
 
 .. admonition:: VR Only
 
@@ -294,26 +296,36 @@ principal axes of the :ref:`stage <ug-stage>`.
    will show a :ref:`color-coded <ug-dimension-colors>` connection to the
    handle closest to the guide's orientation, if any, as shown in the images.
 
+.. _ug-specialized-tools:
+
+Specialized Tools
+.................
+
+The following sections describe the various specialized tools that are used to
+edit :ref:`specific types of models <ug-model-types>`.
+
+.. _ug-bevel-tool:
+
+.. incimage:: /images/BevelTool.jpg 200px right
+
+The specialized :newterm:`Bevel Tool` is a panel-based tool used to edit the
+bevel profile for a :ref:`Beveled Model <ug-converted-models>`. A Beveled Model
+can be created from another model by applying the :ref:`Convert Bevel action
+<ug-convert-bevel>`. Attaching the Bevel Tool displays a :ref:`Bevel Tool Panel
+<ug-bevel-tool-panel>` above the primary selection. See the documentation for
+that panel for information about how to use this tool.
+
 .. todo::
    Ended here.
 
-.. _ug-bevel-tool:
 .. _ug-clip-tool:
 .. _ug-csg-tool:
 .. _ug-cylinder-tool:
 .. _ug-import-tool:
 .. _ug-mirror-tool:
 .. _ug-rev-surf-tool:
-.. _ug-specialized-tools:
 .. _ug-text-tool:
 .. _ug-torus-tool:
-
-## Specialized Tools
-
-The following sections describe the various specialized tools. The 3D
-specialized tools are listed first; the tools that use [2D GUI
-panels][GUIPanels] for interaction are grouped together at the end of this
-section.
 
 ### Clip Tool
 

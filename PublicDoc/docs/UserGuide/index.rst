@@ -22,9 +22,11 @@
 .. These are all of the undefined reference targets so far:
 
 .. PANELS ------------
+.. _ug-bevel-tool-panel:
 .. _ug-file-panel:
 .. _ug-help-panel:
 .. _ug-info-panel:
+.. _ug-name-tool-panel:
 .. _ug-session-name:
 .. _ug-session-panel:
 .. _ug-settings-panel:
