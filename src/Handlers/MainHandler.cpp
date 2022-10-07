@@ -42,6 +42,7 @@ struct ClickState_ {
     ClickState_() { Reset(); }
 
     void Reset() {
+        alarm.Stop();
         count    = 0;
         actuator = Actuator::kNone;
     }
@@ -482,7 +483,7 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_modified_mode,
         auto draggable = Util::CastToDerived<DraggableWidget>(active_widget_);
         ASSERT(draggable);
         draggable->EndDrag();
-        click_state_.count = 0;
+        click_state_.Reset();
         KLOG('h', "MainHandler click count = " << click_state_.count);
     }
 

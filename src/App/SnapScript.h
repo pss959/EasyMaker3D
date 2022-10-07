@@ -32,6 +32,7 @@ class SnapScript {
             kDrag,
             kHand,
             kHandPos,
+            kHover,
             kKey,
             kLoad,
             kMod,
@@ -66,6 +67,9 @@ class SnapScript {
         Hand        hand;
         Point3f     pos;
         Rotationf   rot;
+    };
+    struct HoverInstr : public Instr {
+        Point2f     pos;
     };
     struct KeyInstr : public Instr {
         std::string key;
@@ -105,6 +109,7 @@ class SnapScript {
     DECL_SHARED_PTR(DragInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(HandPosInstr);
+    DECL_SHARED_PTR(HoverInstr);
     DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
     DECL_SHARED_PTR(ModInstr);
@@ -137,6 +142,7 @@ class SnapScript {
     InstrPtr ProcessDrag_(const Words &words);
     InstrPtr ProcessHand_(const Words &words);
     InstrPtr ProcessHandPos_(const Words &words);
+    InstrPtr ProcessHover_(const Words &words);
     InstrPtr ProcessKey_(const Words &words);
     InstrPtr ProcessLoad_(const Words &words);
     InstrPtr ProcessMod_(const Words &words);

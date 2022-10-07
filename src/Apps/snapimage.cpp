@@ -52,6 +52,9 @@ class Emitter_ : public IEmitter {
     /// Adds a click to emit.
     void AddClick(const Point2f &pos);
 
+    /// Adds an event to simulate a mouse hover at a given position.
+    void AddHoverPoint(const Point2f &pos);
+
     /// Adds a drag point to emit.
     void AddDragPoint(DIPhase phase, const Point2f &pos);
 
@@ -97,6 +100,15 @@ void Emitter_::AddClick(const Point2f &pos) {
     // Release.
     event.flags.Reset(Event::Flag::kButtonPress);
     event.flags.Set(Event::Flag::kButtonRelease);
+    events_.push_back(event);
+}
+
+void Emitter_::AddHoverPoint(const Point2f &pos) {
+    Event event;
+    event.is_modified_mode = is_mod_;
+    event.device           = Event::Device::kMouse;
+    event.position2D       = pos;
+    event.flags.Set(Event::Flag::kPosition2D);
     events_.push_back(event);
 }
 
@@ -316,6 +328,11 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       case SIType::kHandPos: {
           const auto &hinst = GetTypedInstr_<SnapScript::HandPosInstr>(instr);
           emitter_->AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
+          break;
+      }
+      case SIType::kHover: {
+          const auto &hinst = GetTypedInstr_<SnapScript::HoverInstr>(instr);
+          emitter_->AddHoverPoint(hinst.pos);
           break;
       }
       case SIType::kKey: {

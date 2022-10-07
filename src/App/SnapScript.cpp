@@ -46,6 +46,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
       case Instr::Type::kHandPos:  instr = ProcessHandPos_(words);  break;
+      case Instr::Type::kHover:    instr = ProcessHover_(words);      break;
       case Instr::Type::kKey:      instr = ProcessKey_(words);      break;
       case Instr::Type::kLoad:     instr = ProcessLoad_(words);     break;
       case Instr::Type::kMod:      instr = ProcessMod_(words);      break;
@@ -179,6 +180,22 @@ SnapScript::InstrPtr SnapScript::ProcessHandPos_(const Words &words) {
             Anglef::FromDegrees(angles[2]),
             Anglef::FromDegrees(angles[0]),
             Anglef::FromDegrees(angles[1]));
+    }
+    return hinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessHover_(const Words &words) {
+    HoverInstrPtr hinst;
+    float x, y;
+    if (words.size() != 3U) {
+        Error_("Bad syntax for hover instruction");
+    }
+    else if (! ParseFloat01_(words[1], x) || ! ParseFloat01_(words[2], y)) {
+        Error_("Invalid x or y floats for hover instruction");
+    }
+    else {
+        hinst.reset(new HoverInstr);
+        hinst->pos.Set(x, y);
     }
     return hinst;
 }
