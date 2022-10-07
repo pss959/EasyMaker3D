@@ -46,15 +46,21 @@ TranslationTool "TranslationTool" {
     # Note: Each Slider must have a unique Node for each part (2 faces and
     # stick) so they can be transformed individually.
     Node "X" {
-      children: [ CLONE "T_TranslationSlider" "XSlider" {} ]
+      children: [
+        CLONE "T_TranslationSlider" "XSlider" { inactive_color: $DIM_COLOR_X }
+      ]
     },
     Node "Y" {
       rotation: 0 0 1 90,
-      children: [ CLONE "T_TranslationSlider" "YSlider" {} ]
+      children: [
+        CLONE "T_TranslationSlider" "YSlider" { inactive_color: $DIM_COLOR_Y }
+      ]
     },
     Node "Z" {
       rotation: 0 1 0 -90,
-      children: [ CLONE "T_TranslationSlider" "ZSlider" {} ]
+      children: [
+        CLONE "T_TranslationSlider" "ZSlider" { inactive_color: $DIM_COLOR_Z }
+      ]
     },
   ]
 }

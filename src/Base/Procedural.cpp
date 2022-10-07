@@ -137,8 +137,8 @@ ion::gfx::ImagePtr GenerateGridImage(float radius,
     grid_func(10 * ppu, 1, ImageStore_::Pixel(0,   0,   0));
 
     // Add X/Y axis lines through the center. Do this last so they are on top.
-    store.AddXLine(center, 5, ImageStore_::Pixel(x_color));
-    store.AddYLine(center, 5, ImageStore_::Pixel(y_color));
+    store.AddXLine(center, 5, ImageStore_::Pixel(y_color));
+    store.AddYLine(center, 5, ImageStore_::Pixel(x_color));
 
     return store.GetIonImage();
 }

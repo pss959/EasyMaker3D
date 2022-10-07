@@ -21,8 +21,9 @@ void StageWidget::CreationDone() {
 
         // Set up the function to draw the grid.
         auto gen_grid = [&](){
+            // Use X/Z indices here to get the correct colors.
             const Color x_color = SG::ColorMap::SGetColorForDimension(0);
-            const Color y_color = SG::ColorMap::SGetColorForDimension(1);
+            const Color y_color = SG::ColorMap::SGetColorForDimension(2);
             return GenerateGridImage(radius_, x_color, y_color);
         };
 
