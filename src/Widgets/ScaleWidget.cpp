@@ -101,10 +101,14 @@ void ScaleWidget::SliderChanged_(const Slider1DWidgetPtr &slider) {
         // Modify the other end of the range to match the dragged slider. Note
         // that the undragged slider's observer is not active, so no need to
         // disable notifications.
-        if (slider == min_slider_)
-            max_slider_->SetValue(2 * starting_center_value_ - min_value_);
-        else
-            min_slider_->SetValue(2 * starting_center_value_ - max_value_);
+        if (slider == min_slider_) {
+            max_value_ = 2 * starting_center_value_ - min_value_;
+            max_slider_->SetValue(max_value_);
+        }
+        else {
+            min_value_ = 2 * starting_center_value_ - max_value_;
+            min_slider_->SetValue(min_value_);
+        }
     }
 
     // In Asymmetric mode, only the dragged handle needs to move, so no
