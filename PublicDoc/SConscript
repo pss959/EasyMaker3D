@@ -169,6 +169,10 @@ snap_map = {
   ],
   'SpecializedTools' : [
     'BevelTool',
+    'ClipTool',
+    'ClipToolActive',
+    'ClipToolClipped',
+    'CSGTool',
   ],
   'Targets' : [
     'EdgeTarget',

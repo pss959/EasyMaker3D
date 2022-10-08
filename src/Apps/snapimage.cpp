@@ -406,15 +406,22 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
 }
 
 bool SnapshotApp_::LoadSession_(const std::string &file_name) {
-    const FilePath path("PublicDoc/snaps/sessions/" + file_name);
-
-    std::string error;
-    if (! test_context_.session_manager->LoadSession(path, error)) {
-        std::cerr << "*** Error loading session from '"
-                  << path.ToString() << "':" << error << "\n";
-        return false;
+    // Empty file name means start a new session.
+    if (file_name.empty()) {
+        test_context_.session_manager->NewSession();
+        std::cout << "    Started new session\n";
     }
-    std::cout << "    Loaded session from '" << path.ToString() << "'\n";
+    else {
+        const FilePath path("PublicDoc/snaps/sessions/" + file_name);
+
+        std::string error;
+        if (! test_context_.session_manager->LoadSession(path, error)) {
+            std::cerr << "*** Error loading session from '"
+                      << path.ToString() << "':" << error << "\n";
+            return false;
+        }
+        std::cout << "    Loaded session from '" << path.ToString() << "'\n";
+    }
     return true;
 }
 

@@ -302,82 +302,119 @@ Specialized Tools
 .................
 
 The following sections describe the various specialized tools that are used to
-edit :ref:`specific types of models <ug-model-types>`.
+edit :ref:`specific types of models <ug-model-types>`. Each specialized tool
+can be attached to the :ref:`current selection <ug-selection>` only if all
+selected models are of the correct type for that tool.
+
+For more information about each specialized tool that uses a :ref:`panel
+<ug-panels>` for its interface, see the corresponding panel documentation.
 
 .. _ug-bevel-tool:
+
+Bevel Tool
+,,,,,,,,,,
 
 .. incimage:: /images/BevelTool.jpg 200px right
 
 The specialized :newterm:`Bevel Tool` is a panel-based tool used to edit the
-bevel profile for a :ref:`Beveled Model <ug-converted-models>`. A Beveled Model
-can be created from another model by applying the :ref:`Convert Bevel action
-<ug-convert-bevel>`. Attaching the Bevel Tool displays a :ref:`Bevel Tool Panel
-<ug-bevel-tool-panel>` above the primary selection. See the documentation for
-that panel for information about how to use this tool.
+bevel profile for one or more :ref:`Beveled models <ug-converted-models>`. A
+Beveled model can be created from another model by applying the :ref:`Convert
+Bevel action <ug-convert-bevel>`. Attaching the Bevel Tool displays a
+:ref:`Bevel Tool Panel <ug-bevel-tool-panel>` above the primary selection.
+Changes to the bevel profile in the panel are applied to all selected Beveled
+models.
+
+|block-image|
+
+.. _ug-clip-tool:
+
+Clip Tool
+,,,,,,,,,
+
+.. incimage:: /images/ClipTool.jpg 200px right
+
+The specialized :newterm:`Clip Tool` allows you to slice away parts of selected
+models by using one or more clipping planes. It is enabled when all of the
+selected models are :ref:`Clipped models <ug-converted-models>`. You can
+convert any model to a Clipped model with the :ref:`Convert Clip action
+<ug-convert-clip>`.
+
+Any number of clipping planes can be applied to the same Clipped model. When
+the Clip Tool is attached, it aligns itself with the most recent clipping plane
+applied to the primary model, if it has any.
+
+This tool has three interactive parts:
+
+  - A translucent quadrilateral representing the clipping plane that will be
+    applied to selected models. Clicking this quadrilateral adds the displayed
+    clipping plane to all selected Clipped models.
+  - A translucent sphere that can be rotated to change the orientation of the
+    clipping plane that will be added.
+  - An arrow indicating the normal to the clipping plane. The part of the
+    selected model(s) on the side of the plane with the normal is what will be
+    clipped away when the plane is clicked. Dragging the arrow lets you
+    translate the plane along the normal.
+
+.. incimage:: /images/ClipToolClipped.jpg 200px right
+.. incimage:: /images/ClipToolActive.jpg  200px right
+
+All selected Clipped models will be clipped in real time by the current plane
+while you drag the sphere or arrow to rotate or translate the plane, as shown
+in the left image. Clicking on the plane clips the models for real, as shown on
+the right.  Note that the interactive clipping does not fill in the clipped
+parts of models, but the real clipping operation does.
+
+Translating the plane by dragging the arrow is limited by the extents of the
+primary model; it will not let you move the plane completely off this model.
+The plane will snap to the :ref:`Point Target position <ug-targets>` if the
+target is active and also to the center of the primary selection. The plane
+will change color to the active target color when it is snapped to either
+point. :ref:`Modified-dragging <ug-modified-mode>` the arrow deactivates any
+snapping.
+   
+When rotating the plane by dragging the sphere, the plane normal will snap to
+the :ref:`Point Target direction <ug-targets>` if the target is active or to
+any of the principal axes. If the :ref:`Axis-Aligned toggle
+<ug-toggle-axis-aligned>` is active, the principal axes of the :ref:`stage
+<ug-stage>` are used; otherwise, the local axes of the primary model are
+used. The plane changes color when snapped to either the target color or the
+:ref:`color corresponding to a principal axis <ug-dimension-colors>`.
+:ref:`Modified-dragging <ug-modified-mode>` the sphere deactivates any
+snapping.
+
+.. admonition:: VR Only
+
+   :ref:`Grip-dragging <ug-grip-dragging>` works for both translation and
+   rotation. If the controller is oriented so that the hover guide is nearly
+   parallel to the plane normal arrow, grip dragging will translate the plane
+   along the normal based on the controller position. Otherwise, grip dragging
+   will rotate the sphere and plane based on the controller orientation.
+   Snapping occurs as above unless :ref:`modified-dragging <ug-modified-mode>`.
+
+.. _ug-csg-tool:
+
+CSG Tool
+,,,,,,,,
+
+.. incimage:: /images/CSGTool.jpg 200px right
+
+The specialized :newterm:`CSG Tool` is a panel-based tool used to change the
+CSG operation applied to one or more :ref:`CSG models
+<ug-combined-models>`. Attaching the CSG Tool displays a :ref:`CSG Tool Panel
+<ug-csg-tool-panel>` above the primary selection. Changes to the CSG operation
+in the panel are applied to all selected CSG models.
+
+|block-image|
 
 .. todo::
    Ended here.
 
-.. _ug-clip-tool:
-.. _ug-csg-tool:
 .. _ug-cylinder-tool:
 .. _ug-import-tool:
 .. _ug-mirror-tool:
 .. _ug-rev-surf-tool:
 .. _ug-text-tool:
 .. _ug-torus-tool:
-
-### Clip Tool
-
-The Clip Tool that allows you to remove parts of models with one or more
-clipping planes. It is enabled when all of the selected models are Clipped
-models. You can convert any model to a Clipped model with the
-[Convert-to-Clipped action][ConvertToClippedAction].
-
-This tool has three interactive parts:
-
-![][ImgClipToolInactive]{{rightimage(180)}}
-
-+ An arrow indicating the normal to the clipping plane. The part of the
-  selected model(s) on the side of the plane with the normal is what will be
-  clipped away when the plane is clicked. Dragging the arrow lets you
-  reposition the plane along the normal.
-+ A translucent sphere that can be rotated to change the orientation of the
-  clipping plane.
-+ A translucent quadrilateral representing the clipping plane. Clicking this
-  quadrilateral adds a clipping plane to all selected Clipped models.
-
-![][ImgClipToolClipped]{{rightimage(180)}}
-
-Translating the plane by dragging the arrow is limited by the extents of the
-primary model; it will not let you move the plane completely off this model.
-The plane will snap to the [point target location][PointTarget] if the target
-is active or to the center of the primary selection. The plane will change
-color to the target color when it is snapped to either point.
-[Alt-dragging][AltMode] the arrow deactivates any snapping.
-
-When rotating the plane by dragging the sphere, the plane normal will snap to
-the [point target direction][PointTarget] if the target is active or to any of
-the principal axes. If the [Axis-Aligned toggle][AxisAlignedToggle] is active,
-the principal axes of the [stage][Stage] are used; otherwise, the local axes of
-the primary model are used. The plane will change color when snapped to either
-the target color or the [color corresponding to a principal axis][Colors].
-[Alt-dragging][AltMode] the sphere deactivates any snapping.
-
-During interaction (translating or rotating), all selected objects will be
-clipped in real time to show what will happen if the plane is clicked. The
-real-time clipping stops when interaction ends.
-
-Grip dragging works for both translation and rotation. If the controller is
-oriented so that the [hover guide][ClickDrag] attached to the controller is
-nearly parallel to the plane normal arrow, grip dragging will translate the
-plane along the normal based on the controller position. Otherwise,
-grip dragging will rotate the sphere and plane based on the controller
-orientation.  Snapping occurs as above unless [alt-dragging][AltMode].
-
-Any number of clipping planes can be applied to the same clipped model. When
-the Clip Tool is attached to a clipped model, it aligns itself with the most
-recent clipping plane applied to that model, if any.
 
 ### Cylinder Tool
 

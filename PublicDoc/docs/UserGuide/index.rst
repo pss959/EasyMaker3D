@@ -23,6 +23,7 @@
 
 .. PANELS ------------
 .. _ug-bevel-tool-panel:
+.. _ug-csg-tool-panel:
 .. _ug-file-panel:
 .. _ug-help-panel:
 .. _ug-info-panel:

@@ -11,8 +11,8 @@ ClipTool "ClipTool" {
             Node "Shaft" {
               shapes: [
                 Cylinder {
-                  top_radius:    .4,
-                  bottom_radius: .4,
+                  top_radius:    .3,
+                  bottom_radius: .3,
                   height:        2,
                 },
               ]

@@ -232,12 +232,13 @@ SnapScript::InstrPtr SnapScript::ProcessKey_(const Words &words) {
 
 SnapScript::InstrPtr SnapScript::ProcessLoad_(const Words &words) {
     LoadInstrPtr linst;
-    if (words.size() != 2U) {
+    if (words.size() > 2U) {
         Error_("Bad syntax for load instruction");
     }
     else {
         linst.reset(new LoadInstr);
-        linst->file_name = words[1];
+        if (words.size() == 2U)
+            linst->file_name = words[1];
     }
     return linst;
 }
