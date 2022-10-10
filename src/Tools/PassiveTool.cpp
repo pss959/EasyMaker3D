@@ -14,6 +14,10 @@ void PassiveTool::Attach() {
     ASSERT(GetModelAttachedTo());
     const Model &model = *GetModelAttachedTo();
 
+    // Make sure the Model's bounds are up to date. This will also ensure that
+    // its offset translation is updated if necessary.
+    model.GetBounds();
+
     // Rotate and position to match the Model in stage coordinates.
     const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
     SetRotation(model.GetRotation());
