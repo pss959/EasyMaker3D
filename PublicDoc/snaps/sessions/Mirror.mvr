@@ -1,0 +1,70 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 0 2 0,
+      model_names: ["Cylinder_1"],
+    },
+    ScaleCommand {
+      ratios: 1 1 1.5,
+      mode: "kCenterSymmetric",
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand {
+      translation: 1 0 0,
+      model_names: ["Cylinder_1"],
+    },
+    CreateCSGModelCommand {
+      operation: "kDifference",
+      result_name: "Difference_1",
+      model_names: ["Box_1", "Cylinder_1"],
+    },
+    ConvertMirrorCommand {
+      model_names: ["Difference_1"],
+    },
+    CopyCommand {
+      model_names: ["Mirrored_1"],
+    },
+    PasteCommand {
+    },
+    TranslateCommand {
+      translation: 8 0 0,
+      model_names: ["Mirrored_1_A"],
+    },
+    ChangeColorCommand {
+      new_color: 0.919292 0.600792 0.651628 1,
+      model_names: ["Mirrored_1_A"],
+    },
+    ChangeColorCommand {
+      new_color: 0.926738 0.571157 0.658397 1,
+      model_names: ["Mirrored_1_A"],
+    },
+    RotateCommand {
+      rotation: -0 -1 -0 45,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Mirrored_1_A"],
+    },
+  ],
+  current_index: 13,
+}

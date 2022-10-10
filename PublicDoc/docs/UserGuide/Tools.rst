@@ -406,102 +406,160 @@ in the panel are applied to all selected CSG models.
 
 |block-image|
 
-.. todo::
-   Ended here.
-
 .. _ug-cylinder-tool:
+
+Cylinder Tool
+,,,,,,,,,,,,,
+
+.. incimage:: /images/CylinderTool.jpg 200px right
+
+The specialized :newterm:`Cylinder Tool` is enabled when all of the selected
+models are :ref:`Cylinder models <ug-primitive-models>`. It allows you to
+change the top and bottom diameters of all selected Cylinder models to create
+cones or truncated cones.
+
+The Cylinder Tool has two :newterm:`scalers`, each of which is a resizable
+stick with an interactive handle at each end. The handles work symmetrically;
+dragging either handle changes the corresponding diameter of the selected
+Cylinder models.
+
+|block-image|
+
+.. incimage:: /images/CylinderToolActive.jpg 200px right
+
+The diameter being modified follows the current :ref:`precision level
+<ug-precision-level>` setting and also snaps to the current :ref:`Edge Target
+length <ug-targets>` if the target is active. :ref:`Linear feedback
+<ug-feedback>` shows the current size of the diameter during a drag as shown
+here.
+
+.. admonition:: VR Only
+
+   :ref:`Grip-dragging <ug-grip-dragging>` also works with the scalers. The
+   relative vertical position of a controller chooses the top or bottom scaler.
+
 .. _ug-import-tool:
+
+Import Tool
+,,,,,,,,,,,
+
+.. incimage:: /images/ImportTool.jpg 200px right
+
+The specialized :newterm:`Import Tool` is a panel-based tool that is enabled if
+there is exactly one :ref:`Imported model <ug-primitive-models>` selected. It
+has three basic uses:
+
+  - Choosing the initial file to import the model data from, right after
+    creating the Imported model with the :ref:`Create Imported Model
+    <ug-create-imported-model>` action.
+  - Re-importing the model data from the same file.
+  - Changing the file to import the model data from.
+
+The Import Tool displays a :ref:`Import Tool Panel <ug-import-tool-panel>`
+above the selected model. Accepting the same file for an Imported model will
+re-import the data. Choosing a different file will load the data from that
+file. Any errors during data import will be displayed in a :ref:`Dialog Panel
+<ug-dialog-panel>`.
+
+|block-image|
+
 .. _ug-mirror-tool:
-.. _ug-rev-surf-tool:
-.. _ug-text-tool:
-.. _ug-torus-tool:
 
-### Cylinder Tool
+Mirror Tool
+,,,,,,,,,,,
 
-The Cylinder Tool is enabled when all selected models are Cylinder models. It
-allows the top and bottom radii of all selected Cylinder models to be changed
-to create cones or truncated cones.
+.. todo::
+   Update this when code is fixed (Clip Tool as well).
 
-![][ImgCylinderToolActive]{{rightimage(180)}}
+.. incimage:: /images/MirrorToolTwoAfter.jpg  200px right
+.. incimage:: /images/MirrorToolTwoBefore.jpg 200px right
+.. incimage:: /images/MirrorTool.jpg          200px right
 
-The tool consists of two double-ended sliders, one at the top and one at the
-bottom. The pair of handles on each slider always work symmetrically. The
-radius being modified follows the current [precision level][PrecisionLevel]
-setting and also snaps to the current [edge target length][EdgeTarget] if the
-target is active.  [Feedback][Feedback] shows the length of the current radius
-during a drag.
+The specialized :newterm:`Mirror Tool` is enabled when all of the selected
+models are :ref:`Mirrored models <ug-converted-models>`. You can convert any
+model to a Mirrored model with the :ref:`Convert Mirror action
+<ug-convert-mirror>`.
 
-Grip dragging also works with the radius sliders. A [hover guide][ClickDrag]
-attached to each controller shows which slider handle will be activated when
-the grip button is pressed. The relative vertical position of the controller
-chooses the top or bottom radius.
-
-### Mirror Tool
-
-The Mirror Tool is enabled when all selected models are [Mirrored
-models][ConvertedModels]. It mirrors the models across one or more principal
-planes. When the tool is active, it adds 3 color-coded orthogonal planes to the
-primary selection.  Clicking on any of the planes mirrors the model across it.
-
-![][ImgMirrorToolActive]{{rightimage(180)}}
-
-The mirroring planes always pass through the center of the primary selection.
-If multiple Mirrored models are selected, all secondary selections are mirrored
-across the same planes, meaning that they will move to the opposite side of the
-plane if they are not also bisected by the plane, in addition to being
-mirrored. However, [alt-clicking][AltMode] on a mirroring plane causes each
+When the Mirror Tool is active, it adds 3 color-coded orthogonal planes through
+the center of the primary selection. Clicking on any of the planes mirrors the
+model across it.  If multiple Mirrored models are selected, all secondary
+selections are mirrored across the same planes, meaning that they will move to
+the opposite side of the plane if they are not also bisected by the plane, in
+addition to being mirrored, as shown in the center and right images. However,
+:ref:`modified-clicking <ug-modified-mode>` on a mirroring plane causes each
 Mirrored model to be mirrored in place as if the plane passed through its local
 center.
 
-The [Axis-Aligned toggle][AxisAlignedToggle] affects how the Mirror Tool is
-attached to the primary selection when the primary selection has been
-rotated. If the toggle is active, then the mirroring planes will always be
-aligned with the principal planes of the [stage][Stage] rather than with the
-local coordinates of the primary selection.
+If the :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` is active, the
+mirroring planes will be aligned with the principal planes of the :ref:`stage
+<ug-stage>` instead of the local coordinates of the primary selection.
 
-### Torus Tool
+.. _ug-rev-surf-tool:
 
-The Torus Tool is enabled when all selected models are Torus models. It allows
-the inner and outer diameters of the selected Torus models to be changed.
+RevSurf Tool
+,,,,,,,,,,,,
 
-![][ImgTorusToolActive]{{rightimage(180)}}
+.. incimage:: /images/RevSurfTool.jpg 200px right
 
-The tool consists of two double-ended sliders, one horizontal and one
-vertical. The horizontal slider changes the outer diameter, and the vertical
-slider changes the inner diameter. The handles always operate symmetrically.
-The diameter being modified follows the current [precision
-level][PrecisionLevel] setting and also snaps to the current [edge target
-length][EdgeTarget] if the target is active. [Feedback][Feedback] shows the
-length of both diameters during a drag of either slider.
+The specialized :newterm:`RevSurf Tool` is a panel-based tool used to edit the
+revolved profile for one or more :ref:`RevSurf models <ug-primitive-models>`.
+Attaching the RevSurf Tool displays a :ref:`RevSurf Tool Panel
+<ug-revsurf-tool-panel>` above the primary selection.  Changes to the revolved
+profile in the panel are applied to all selected RevSurf models.
 
-Note that if the inner diameter is increased too much, the outer diameter will
-be increased as well to keep the torus from intersecting itself. Reducing the
+|block-image|
+
+.. _ug-torus-tool:
+
+Torus Tool
+,,,,,,,,,,,,,
+
+.. incimage:: /images/TorusTool.jpg 200px right
+
+The specialized :newterm:`Torus Tool` is enabled when all of the selected
+models are :ref:`Torus models <ug-primitive-models>`. It allows you to change
+the inner and outer diameters of all selected Torus models.
+
+The Torus Tool has two :newterm:`scalers`, each of which is a resizable stick
+with an interactive handle at each end. The handles work symmetrically;
+dragging either handle changes the corresponding diameter of the selected Torus
+models. The scaler for the outer diameter is aligned horizontally with the X
+axis, and the scaler for the inner diameter is aligned vertically with the Z
+axis.
+
+|block-image|
+
+.. incimage:: /images/TorusToolActive.jpg 200px right
+
+The diameter being modified follows the current :ref:`precision level
+<ug-precision-level>` setting and also snaps to the current :ref:`Edge Target
+length <ug-targets>` if the target is active. :ref:`Linear feedback
+<ug-feedback>` shows the current size of the diameter during a drag as shown
+here.
+
+If the inner diameter is increased sufficiently, the outer diameter will be
+increased as well to keep the torus from intersecting itself. Reducing the
 inner diameter during the same drag operation will reduce the outer diameter as
 well up to its previous size.
 
-Grip dragging also may be used to modify either diameter. A [hover
-guide][ClickDrag] attached to each controller shows which slider handle will be
-activated when the grip button is pressed. The relative orientation (closer to
-horizontal or vertical) of the controller and guide chooses the outer or inner
-diameter slider.
+.. admonition:: VR Only
 
-### GUI Panel Tools
+   :ref:`Grip-dragging <ug-grip-dragging>` also works with the scalers. The
+   relative orientation of the grip hover guide on the controller (closer to
+   horizontal or vertical) chooses the outer or inner diameter scaler.
 
-Each of these specialized tools is a [2D GUI Panel][GUIPanels] that appears in
-the scene above the primary selection (although it may be moved). The details
-of all panel interactions are described in the GUI Panel section.
+.. _ug-text-tool:
 
-The following table shows the model type each of these specialized tools is
-associated with; the tool is enabled only when all selected models are of that
-type. The third column names the 2D GUI Panel used to implement its
-interaction. Sharp readers will notice a pattern in the table.
+Text Tool
+,,,,,,,,,
 
-<div class="tool-table" markdown="1">
-Tool Name | Model Type | 2D GUI Panel
---------- | ---------- | ------------
-{{anchor('bevel-tool')}}Bevel Tool | Beveled model | [Bevel Tool Panel][BevelToolPanel]
-{{anchor('csg-tool')}}CSG Tool | CSG model | [CSG Tool Panel][CSGToolPanel]
-{{anchor('import-tool')}}Import Tool | Imported model | [Import Tool Panel][ImportToolPanel]
-{{anchor('rev-surf-tool')}}RevSurf Tool | RevSurf model | [RevSurf Tool Panel][RevSurfToolPanel]
-{{anchor('text-tool')}}Text Tool | Text model | [Text Tool Panel][TextToolPanel]
-</div>
+.. incimage:: /images/TextTool.jpg 200px right
+
+The specialized :newterm:`Text Tool` is a panel-based tool used to edit one or
+more :ref:`RevSurf models <ug-primitive-models>`.  Attaching the Text Tool
+displays a :ref:`Text Tool Panel <ug-revsurf-tool-panel>` above the primary
+selection. The panel lets you change the text string, font, and character
+spacing.  Clicking the "Apply" button in the panel applies all changes to all
+selected Text models.
+
+|block-image|
