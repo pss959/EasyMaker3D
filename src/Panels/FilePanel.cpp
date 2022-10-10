@@ -226,6 +226,10 @@ class FilePanel::Impl_ {
     void    UpdateButtons_(PathStatus_ path_status);
     void    FocusFileButton_();
     void    ScrollToViewFileButton_(size_t index);
+
+    /// If the given Pane is a file button, this sets index to its index and
+    /// returns true. Otherwise, returns false.
+    bool    GetFileButtonIndex_(const Pane &pane, size_t &index) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -343,19 +347,9 @@ void FilePanel::Impl_::UpdateInterface() {
 
 void FilePanel::Impl_::UpdateFocus(const PanePtr &pane) {
     // Scroll to view a file button if necessary.
-    if (pane->GetName() == "FileButton") {
-        // Find the index of the pane.
-        const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
-        size_t index = panes.size();
-        for (size_t i = 0; i < panes.size(); ++i) {
-            if (panes[i] == pane) {
-                index = i;
-                break;
-            }
-        }
-        ASSERT(index != panes.size());
+    size_t index;
+    if (GetFileButtonIndex_(*pane, index))
         ScrollToViewFileButton_(index);
-    }
 }
 
 FilePanel::Impl_::PathStatus_
@@ -531,6 +525,18 @@ void FilePanel::Impl_::ScrollToViewFileButton_(size_t index) {
         file_list_pane_->GetContentsPane()->GetPanes().size();
     const float scroll_pos = static_cast<float>(index) / file_count;
     file_list_pane_->ScrollTo(scroll_pos);
+}
+
+bool FilePanel::Impl_::GetFileButtonIndex_(const Pane &pane,
+                                           size_t &index) const {
+    const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
+    for (size_t i = 0; i < panes.size(); ++i) {
+        if (panes[i].get() == &pane) {
+            index = i;
+            return true;
+        }
+    }
+    return false;
 }
 
 // ----------------------------------------------------------------------------
