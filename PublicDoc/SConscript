@@ -116,6 +116,10 @@ snap_map = {
     'ModelEdges',
     'ModelNoEdges',
   ],
+  'Panels' : [
+    'GripPanelBar',
+    'SettingsPanel',
+  ],
   'Primitives' : [
     'PrimitiveBox',
     'PrimitiveCylinder',

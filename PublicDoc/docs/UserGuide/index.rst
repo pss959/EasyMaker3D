@@ -11,6 +11,7 @@
    Precision
    Actions
    Tools
+   Panels
 
 .. todo::
    Add a paragraph about the organization of the User Guide

@@ -4,6 +4,7 @@ Interaction
 While |appname| is designed to be reasonably intuitive, there are a few things
 that may need explanation before you can use it effectively.
 
+.. _ug-pinch:
 .. _ug-grip-dragging:
 
 Clicking and Dragging

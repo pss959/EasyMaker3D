@@ -42,7 +42,8 @@ The Work Area
 
 Because |appname| is designed to be used in VR as well as in a conventional
 mouse+keyboard environment, it cannot rely on typical menu-based interaction.
-Instead, it uses a fully 3D interface (with some 2D panels embedded in it).
+Instead, it uses a fully 3D interface (with some :ref:`2D panels
+<ug-panel-overview>` embedded in it).
 
 .. incimage:: /images/WorkAreaAnnotated.jpg 1024px center
    :caption:  Elements of the |appname| work area.
@@ -69,7 +70,7 @@ containing these elements:
  - The :newterm:`Tree Panel` on the back wall that :ref:`displays all models in
    tree form and allows you to interact with them <ug-tree-panel>`.
 
-.. _ug-panels:
+.. _ug-panel-overview:
 
 Panels
 ......
@@ -80,6 +81,9 @@ scene with various text inputs, sliders, and so forth. For example, when the
 application starts, the :ref:`Session Panel <ug-session-panel>` appears to let
 you choose a session to start or continue. You can interact with panels with
 the mouse, keyboard, or VR controllers, just like the rest of the work area.
+
+See :ref:`the section on panels <ug-panels>` for specifics on :ref:`interacting
+with panels <ug-panel-interaction>`.
 
 .. _ug-sessions:
 
