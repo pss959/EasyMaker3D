@@ -1,6 +1,7 @@
 #include "Math/Linear.h"
 
 #include <ion/math/angleutils.h>
+#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -37,8 +38,34 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m) {
 }
 
 Plane TransformPlane(const Plane &plane, const Matrix4f &m) {
-    // Transform a point on the plane.
-    return Plane(m * Point3f(plane.distance * plane.normal), m * plane.normal);
+    using ion::math::Inverse;
+    using ion::math::Normalized;
+    using ion::math::Transpose;
+
+    // Transform a point on the plane and the normal.
+    const Point3f p = m * Point3f(plane.distance * plane.normal);
+    Vector3f      n = Normalized(Transpose(Inverse(m)) * plane.normal);
+
+    // Compute the distance of the point and Adjust it if it is close to the
+    // origin.
+    float d = SignedDistance(p, n);
+    if (AreClose(d, 0))
+        d = 0;
+
+    // Adjust a unit normal close to a principal axis.
+    if      (AreClose(n[0], -1.f))
+        n = -Vector3f::AxisX();
+    else if (AreClose(n[0],  1.f))
+        n =  Vector3f::AxisX();
+    else if (AreClose(n[1], -1.f))
+        n = -Vector3f::AxisY();
+    else if (AreClose(n[1],  1.f))
+        n =  Vector3f::AxisY();
+    else if (AreClose(n[2], -1.f))
+        n = -Vector3f::AxisZ();
+    else if (AreClose(n[2],  1.f))
+        n =  Vector3f::AxisZ();
+    return Plane(d, n);
 }
 
 Bounds ScaleBounds(const Bounds &bounds, const Vector3f &scale) {
@@ -148,11 +175,11 @@ Matrix4f GetViewMatrix(const Frustum &frustum) {
 // ----------------------------------------------------------------------------
 
 bool AreClose(float a, float b, float tolerance) {
-    return std::abs(a -b) <= tolerance;
+    return std::abs(b - a) <= tolerance;
 }
 
 bool AreClose(double a, double b, double tolerance) {
-    return std::abs(a -b) <= tolerance;
+    return std::abs(b - a) <= tolerance;
 }
 
 bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance) {
