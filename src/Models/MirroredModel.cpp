@@ -9,9 +9,9 @@ void MirroredModel::AddFields() {
     ConvertedModel::AddFields();
 }
 
-void MirroredModel::AddPlane(const Plane &plane) {
+void MirroredModel::AddPlane(const Plane &local_plane) {
     auto &planes = planes_.GetValue();
-    planes.push_back(plane);
+    planes.push_back(local_plane);
     planes_ = planes;
     ProcessChange(SG::Change::kGeometry, *this);
 }

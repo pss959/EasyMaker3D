@@ -14,8 +14,8 @@ DECL_SHARED_PTR(MirroredModel);
 /// \ingroup Models
 class MirroredModel : public ConvertedModel {
   public:
-    /// Adds a Plane (specified in object coordinates) to mirror across.
-    void AddPlane(const Plane &plane);
+    /// Adds a Plane (specified in local coordinates) to mirror across.
+    void AddPlane(const Plane &local_plane);
 
     /// Removes the last Plane added. This should not be called if there is
     /// only one Plane.

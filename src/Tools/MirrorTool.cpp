@@ -63,5 +63,6 @@ void MirrorTool::PlaneClicked_(int dim) {
     auto command = CreateCommand<ChangeMirrorCommand>();
     command->SetFromSelection(GetSelection());
     command->SetPlane(stage_plane);
+    command->SetInPlace(context.is_modified_mode);
     context.command_manager->AddAndDo(command);
 }
