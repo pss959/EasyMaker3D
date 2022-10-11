@@ -1,6 +1,7 @@
 ﻿#include "Testing.h"
 #include "Models/BoxModel.h"
 #include "Models/ClippedModel.h"
+#include "Models/CylinderModel.h"
 #include "SceneTestBase.h"
 
 class ClippedModelTest : public SceneTestBase {
@@ -60,4 +61,22 @@ TEST_F(ClippedModelTest, TwoPlanes) {
     EXPECT_EQ(Point3f(0, 0, 0),   bounds.GetCenter());
     EXPECT_EQ(Vector3f(1, 1, 1),  clipped->GetScale());
     EXPECT_EQ(Vector3f(-3, 2, 0), clipped->GetTranslation());
+}
+
+TEST_F(ClippedModelTest, Cylinder) {
+    // This was causing CGAL self-intersections before adding code to
+    // TransformPlane to clean up the normal and distance.
+    ModelPtr cyl = Model::CreateModel<CylinderModel>();
+    cyl->SetUniformScale(2);
+    cyl->SetTranslation(Vector3f(10, 0, 0));
+    cyl->SetComplexity(0.0864977f);
+
+    ClippedModelPtr clipped = Model::CreateModel<ClippedModel>();
+    clipped->SetOriginalModel(cyl);
+    clipped->AddPlane(Plane(1.33878e-09f,
+                            Vector3f(5.96047e-08f, 1, 1.19209e-07f)));
+    clipped->SetStatus(Model::Status::kUnselected);
+
+    std::string reason;
+    EXPECT_TRUE(clipped->IsMeshValid(reason));
 }

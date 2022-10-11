@@ -10,9 +10,9 @@ void ClippedModel::AddFields() {
     ConvertedModel::AddFields();
 }
 
-void ClippedModel::AddPlane(const Plane &plane) {
+void ClippedModel::AddPlane(const Plane &local_plane) {
     auto &planes = planes_.GetValue();
-    planes.push_back(plane);
+    planes.push_back(local_plane);
     planes_ = planes;
     ProcessChange(SG::Change::kGeometry, *this);
 }

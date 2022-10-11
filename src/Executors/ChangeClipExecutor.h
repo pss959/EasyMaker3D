@@ -20,7 +20,12 @@ class ChangeClipExecutor : public Executor {
     /// Derived Command::ExecData class that stores everything needed to undo
     /// and redo a ChangeClipCommand.
     struct ExecData_ : public Command::ExecData {
-        std::vector<SelPath> paths_to_models;
+        /// Data per Model to operate on.
+        struct PerModel {
+            SelPath path_to_model;
+            Plane   local_plane;
+        };
+        std::vector<PerModel> per_model;
     };
 
     /// Creates and stores a ExecData_ in the given command if necessary,
