@@ -1,0 +1,38 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 6 0 0,
+      model_names: ["Cylinder_1"],
+    },
+    ConvertClipCommand {
+      model_names: ["Box_1", "Cylinder_1"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Clipped_2"],
+    },
+    ChangeClipCommand {
+      plane: -4.5402e-09 5.96047e-08 1 1.19209e-07,
+      model_names: ["Clipped_1", "Clipped_2"],
+    },
+  ],
+  current_index: 6,
+}
