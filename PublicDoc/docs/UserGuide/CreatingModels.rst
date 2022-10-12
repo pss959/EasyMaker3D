@@ -172,6 +172,27 @@ the conversion operation has been applied.
     to convert the models and the specialized :ref:`Mirror Tool
     <ug-mirror-tool>` is used to specify how to mirror.
 
+Note that transformations (scale, rotation, and translation) applied to a
+converted model are applied :strong:`after` all conversion operations. In most
+cases this does exactly what you would expect, but there are some situations
+that may be slightly confusing. For example, suppose you do the following:
+
+  #. Create two primitive models, called :model:`A` and :model:`B` here.
+  #. Select :model:`A` and :model:`B` and convert both to Clipped models with
+     the :ref:`Convert to Clipped action <ug-convert-clip>` action. Let's call
+     the resulting Clipped models :model:`Clipped_A` and :model:`Clipped_B`.
+  #. Rotate the :model:`Clipped_B` model.
+  #. Select both Clipped models and switch to the :ref:`Clip Tool
+     <ug-clip-tool>`.
+  #. Use the Clip Tool to clip both with some plane.
+
+In this case, you might expect the clip plane to be applied to the rotated
+:model:`Clipped_B` model. However, that is not what happens, because the
+rotation is applied :strong:`after` the clipping. So the unrotated model
+:model:`B` is clipped and then rotated by the rotation from step 3. If you want
+the clip plane to be applied after the rotation, you need to rotate model
+:model:`B` instead of :model:`Clipped_B`.
+
 .. _ug-model-names:
 
 Model Names
