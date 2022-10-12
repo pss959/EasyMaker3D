@@ -1,0 +1,53 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_2",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 5 0 0,
+      model_names: ["Cylinder_2"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_3",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 10 0 0,
+      model_names: ["Cylinder_3"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Cylinder_2"],
+    },
+    ConvertMirrorCommand {
+      model_names: ["Cylinder_1", "Cylinder_2", "Cylinder_3"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Mirrored_3"],
+    },
+    ChangeMirrorCommand {
+      plane: 1 0 0 0,
+      model_names: ["Mirrored_1", "Mirrored_2", "Mirrored_3"],
+    },
+  ],
+  current_index: 9,
+}
