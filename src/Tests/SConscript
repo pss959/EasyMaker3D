@@ -59,6 +59,7 @@ test_sources = [
     # Session tests:
     'SessionTests/ClipSessionTest.cpp',
     'SessionTests/EmptySessionTest.cpp',
+    'SessionTests/MirrorSessionTest.cpp',
     'SessionTests/PasteSessionTest.cpp',
     'SessionTests/SessionTestBase.cpp',
     'SessionTests/TransformSessionTest.cpp',

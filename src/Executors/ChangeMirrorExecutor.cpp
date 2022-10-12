@@ -40,13 +40,15 @@ ChangeMirrorExecutor::ExecData_ & ChangeMirrorExecutor::GetExecData_(
             const SelPath path = FindPathToModel(model_names[i]);
             pm.path_to_model = path;
 
-            // If operating in-place, use the local center of each Model for
-            // the local plane. Otherwise, convert the plane from stage to
-            // local coordinates.
             const Matrix4f slm = CoordConv(path).GetRootToLocalMatrix();
             pm.local_plane = TransformPlane(cmc.GetPlane(), slm);
+
+            // If operating in-place, compute the translation to compensate for
+            // the change in offset for translation applied to original model
+            // and translate the plane by it.
             if (cmc.IsInPlace())
-                pm.local_plane.distance = 0;
+                pm.local_plane.distance += pm.local_plane.GetDistanceToPoint(
+                    Point3f(path.GetModel()->GetTranslation()));
         }
         command.SetExecData(data);
     }

@@ -7,8 +7,6 @@
 #include "Testing.h"
 #include "Util/General.h"
 
-#include "Debug/Print.h" // XXXX
-
 TEST_F(SessionTestBase, ClipSessionTest) {
     // This has 3 cylinders converted to ClippedModels:
     //  - Cylinder_1 / Clipped_1 is untransformed. It should have the front
