@@ -1030,10 +1030,17 @@ void ActionManager::Impl_::ShowInspector_(bool show) {
         else if (dev == Event::Device::kRightController)
             controller = context_->scene_context->right_controller;
 
+        // Deselect everything after saving the selection.
         saved_selection_for_inspector_ = GetSelection();
         context_->selection_manager->DeselectAll();
-        inspector.Activate(
-            saved_selection_for_inspector_.GetPrimary().GetModel(), controller);
+
+        // Make sure the selected Model is visible. (This is needed in case it
+        // is a child Model.)
+        const auto &primary =
+            saved_selection_for_inspector_.GetPrimary().GetModel();
+        primary->SetEnabled(true);
+
+        inspector.Activate(primary, controller);
         inspector.SetDeactivationFunc([&](){ ShowInspector_(false); });
     }
     else {
