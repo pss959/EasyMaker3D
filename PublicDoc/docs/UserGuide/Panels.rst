@@ -101,89 +101,122 @@ true for long dropdown lists.
    the :ref:`hover guide <ug-grip-dragging>` is close enough to perpendicular
    to the panel, it will highlight the element that it will interact with.
 
-.. todo::
-   Ended here
+Application Panels
+..................
 
-## Application Panels
+.. _ug-session-panel:
 
-### Session Panel
+Session Panel
+,,,,,,,,,,,,,
 
-![][ImgSessionPanel]{{rightimage(200)}}
+.. incimage:: /images/SessionPanel.jpg 240px right
 
-The Session Panel is shown when the application starts and can also be brought
-up at any time by clicking on the [Session Panel action][SessionPanelAction]
-icon.  This panel is used to start, save, and load [sessions][Sessions].
-Sessions are saved as text files with an `".mvr"` (MakerVR) extension. Feel
-free to look at and edit the session files if that's your thing.
+The :newterm:`Session Panel` is shown when the application starts and can also
+be brought up at any time with the :ref:`Open Session Panel
+<ug-open-session-panel>` action. This panel is used to start, save, and load
+:ref:`sessions <ug-sessions>`. Sessions are saved as text files with an
+|session-extension| extension.
 
 The Session Panel has the following buttons:
 
-+ `Continue previous/current session`. When the application starts, this choice
-  will be enabled if your previous session was saved with a name (which will
-  appear here in parentheses). Click this to resume working in that session. If
-  the panel is invoked during a session, clicking this button will act as if
-  nothing happened.
-+ `Load session file`. This can be used to load a different session file with
-  the [File Panel][FilePanel]; you will be informed if you made any changes to
-  the current session (if any) that you might want to save.
-+ `Start new session`. This resets everything to empty and starts a new,
-  unnamed session. If you do this during a session, you will be informed if you
-  made any changes that you might want to save.
-+ `Save session`. If your session is already named, this will be enabled to
-  save it again if you made any changes.
-+ `Save session as`. This lets you save your session with a different name
-  using the [File Panel][FilePanel].
-+ `Export Selection`. This lets you export the selected model(s) to a file,
-  using a [File Panel][FilePanel] that also contains a dropdown that allows you
-  to select the desired format (text or binary STL).
-+ `Help` (question mark icon at top left). Brings up the [Help
-  Panel][HelpPanel]. Dismissing the Help Panel returns to the Session Panel.
-+ `Settings` (gear icon at top right). Brings up the [Settings
-  Panel][SettingsPanel]. Dismissing the Settings Panel returns to the Session
-  Panel.
+  - ``Continue previous/current session``. When the application starts, this
+    choice will be enabled if your previous session was saved with a name,
+    which will appear in brackets in the button text. Click this to resume
+    working in that session. If the panel is invoked during a session, clicking
+    this button will act as if nothing happened. If there was no previous
+    session when the application starts, this button will say ``No previous
+    session`` and will be disabled as in the image.
+  - ``Load session file``. This can be used to load a different session file
+    using the :ref:`File Panel <ug-file-panel>`; you will be asked if you made
+    any changes to the current session that you might want to save.
+  - ``Start new session``. This resets everything to empty and starts a new,
+    unnamed session. If you do this during a session, you will be asked if you
+    made any changes that you might want to save.
+  - ``Save session``. If your session is already named, this will be enabled to
+    save it again if you made any changes.
+  - ``Save session as``. This lets you save your session with a different name
+    using the :ref:`File Panel <ug-file-panel>`.
+  - ``Export Selection``. This lets you export the :ref:`selected model(s)
+    <ug-selection>` to a file, using a :ref:`File Panel <ug-file-panel>`. The
+    File Panel has a dropdown that allows you to select the desired format
+    (text or binary STL).
+  - ``Help`` (Question mark icon at top left). Opens the :ref:`Help Panel
+    <ug-help-panel>`. Dismissing the Help Panel returns to the Session Panel.
+  - ``Settings`` (Gear icon at top right). Brings up the :ref:`Settings Panel
+    <ug-settings-panel>`. Dismissing the Settings Panel returns to the Session
+    Panel.
 
-The default directories for session files and STL files are both stored as user
-settings and can be modified with the [Settings Panel][SettingsPanel].
+The default directories in which to find or save session files and STL files
+are both stored as user settings and can be modified with the :ref:`Settings
+Panel <ug-settings-panel>`.
 
-### Settings Panel
+.. _ug-settings-panel:
 
-![][ImgSettingsPanel]{{rightimage(240)}}
+Settings Panel
+,,,,,,,,,,,,,,
 
-The Settings Panel lets you modify application settings that are saved between
-sessions. The location of the saved settings is defined by [Unity
-PlayerPrefs](https://docs.unity3d.com/ScriptReference/PlayerPrefs.html).
+.. incimage:: /images/SettingsPanel.jpg 300px right
 
-#### Default Directories
+The :newterm:`Settings Panel` lets you modify application settings that are
+saved between sessions. The location of the saved settings is
+``$HOME/.config/{appname}`` on Linux and Mac, and ``%APPDATA%\{appname}`` on
+Windows.
 
-The first three settings are the default directories for saving and loading
-sessions, STL model import, and STL model export. Each of these lets you [enter
-text][TextInput] for the directory name or click on the `Browse` button to open
-a [File Panel][FilePanel] for that item.
+Each item in this panel has two buttons to the right:
 
-#### Tooltip Delay
+ - The ``Default`` button resets the item to its default value.
+ - The ``Current`` button sets the item to its current (saved) value. You can
+   use this if you accidentally change a value and want to undo that without
+   having to cancel all other changes.
 
-Next is a slider to adjust the time it takes for [tooltips][Tooltips] to appear
-when hovering the mouse or laser pointer over an interactive object.  Values
-are in seconds, from 0 at the left to 5 at the right. Setting this to 0
-disables tooltips completely.
+The ``Accept`` button at the bottom of the panel will be enabled if you make
+any changes to the current settings. Clicking it applies the new settings and
+saves them to the settings file. The ``Cancel`` button leaves all settings at
+their previous values. Either button makes the panel go away. The
+:shortcut:`Escape` key also cancels the panel.
 
-#### Build Volume Size
+The items in this panel are, from top down:
 
-Next are three text input fields that allow you to specify the size of the
-[build volume][BuildVolume] in all three dimensions, using the current
-[units][Units].
+ - :newterm:`Default Directories`: The first three settings are the default
+   directories for saving and loading sessions, STL model export, and STL model
+   import. Each of these has a :ref:`text input field <ug-text-input>` for the
+   directory name and a ``Browse`` button that opens a :ref:`File Panel
+   <ug-file-panel>` to choose a directory for that item.
+ - :newterm:`Tooltip Delay`: This is a horizontal slider you can use to adjust
+   the time it takes for :ref:`tooltips <ug-tooltips>` to appear when hovering
+   the mouse or laser pointer over an interactive object.  Values are in
+   seconds, from 0 at the left to 10 at the right. Setting this to 0 disables
+   tooltips completely.
+ - :newterm:`Build Volume Size`: This consists of three :ref:`text input fields
+   <ug-text-input>` for the width, depth, and height of the :ref:`build volume
+   <ug-build-volume>`, specified in the current :ref:`units <ug-units>`. You
+   can set these to match the approximate size of your 3D printer's build area
+   for reference.
+ - :newterm:`Unit Conversion`: There are two pairs of dropdowns allowing
+   conversion of units on :ref:`model import <ug-primitive-models>` and
+   :ref:`model export <ug-session-panel>`. The use of these settings are
+   explained in more detail in the :ref:`Overview <ug-units>`.
+ - :newterm:`Radial Menus`: The last button brings up the :ref:`Radial Menu
+   Editor Panel <ug-radial-menu-panel>`, which allows you to edit which buttons
+   appear in :ref:`radial menus <ug-radial-menus>`.
 
-#### Unit Conversion
+.. todo::
+   Ended here
 
-Next are two pairs of dropdowns allowing conversion of units on model import
-and export. These are explained further in the section on [Coordinate System
-and Units][Units].
-
-#### Radial Menus
-
-The last button brings up the [Radial Menu Editor
-Panel][RadialMenuEditorPanel], which allows you to edit which buttons appear in
-[radial menus][RadialMenus].
+.. PANELS ------------
+.. _ug-bevel-tool-panel:
+.. _ug-csg-tool-panel:
+.. _ug-dialog-panel:
+.. _ug-file-panel:
+.. _ug-help-panel:
+.. _ug-import-tool-panel:
+.. _ug-info-panel:
+.. _ug-name-tool-panel:
+.. _ug-radial-menu-panel:
+.. _ug-revsurf-tool-panel:
+.. _ug-session-name:
+.. _ug-tree-panel:
+.. _ug-virtual-keyboard-panel:
 
 ### Info Panel
 

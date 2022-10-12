@@ -59,8 +59,6 @@
    &deg;
 
 .. ----------------------------------------------------------------------------
-.. nbsp: Inserts a non-blocking space character.
+.. session-extension: Replaced with the session extension.
 
-.. |nbsp| raw:: html
-
-   &nbsp;
+.. |session-extension| replace:: ``.mvr``

@@ -36,6 +36,7 @@ extensions = [
   'sphinx.ext.todo',
 
   # Local extensions:
+  'fixreplace',
   'incimage',
   'menuicon',
 ]
@@ -59,6 +60,11 @@ rst_prolog = f"""
 
 todo_include_todos = True
 
+# Substitutions that can be used inside code blocks and other directives:
+fixreplace_dict = {
+    "{appname}" : f'{project}',
+}
+
 # -----------------------------------------------------------------------------
 # HTML output options.
 # -----------------------------------------------------------------------------
@@ -77,9 +83,9 @@ html_theme_options   = {
     'style_nav_header_background': '#78a5e9',
 
     # -- Toc options
-    'collapse_navigation':         False,
+    'collapse_navigation':         True,
     'includehidden':               True,
-    'navigation_depth':            4,
+    'navigation_depth':            -1,
     'sticky_navigation':           True,
     'titles_only':                 False,
 }
