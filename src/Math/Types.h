@@ -111,12 +111,7 @@ struct Bounds : public Range3f {
 
     /// Returns the center point of the min or max bounds face in the given
     /// dimension.
-    Point3f GetFaceCenter(Face face) const {
-        Point3f center = GetCenter();
-        const int dim = GetFaceDim(face);
-        center[dim] = IsFaceMax(face) ? GetMaxPoint()[dim] : GetMinPoint()[dim];
-        return center;
-    }
+    Point3f GetFaceCenter(Face face) const;
 
     /// Returns the dimension for a Face.
     static int GetFaceDim(Face face) { return static_cast<int>(face) / 2; }

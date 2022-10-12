@@ -240,9 +240,10 @@ One other layout-related action is available only via a :ref:`keyboard shortcut
 <ug-keyboard-shortcuts>` or :ref:`radial menu <ug-radial-menus>`:
 
   - The :action:`Move To Origin` action translates the :ref:`primary selection
-    <ug-selection>` so that its bottom center is at the origin (center of the
-    :ref:`stage <ug-stage>`) without rotating. Any secondary selections are
-    moved by the same amount.
+    <ug-selection>` so that the center of its bounds is centered over the
+    origin (center of the :ref:`stage <ug-stage>`) without rotating and the
+    lowest point of its bounds is resting on the stage.  Any secondary
+    selections are moved by the same amount.
 
 .. _ug-decrease-complexity:
 .. _ug-increase-complexity:

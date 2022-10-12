@@ -988,23 +988,24 @@ void ActionManager::Impl_::ChangeComplexity_(float delta) {
 void ActionManager::Impl_::MoveSelectionToOrigin_() {
     const Selection &sel = GetSelection();
     ASSERT(sel.HasAny());
-
-    // Get the bottom center of the primary selection in stage coordinates.
     const Model &primary = *sel.GetPrimary().GetModel();
-    const Matrix4f owm = CoordConv(sel.GetPrimary()).GetObjectToRootMatrix();
-    const Matrix4f wsm = CoordConv(
-        context_->scene_context->path_to_stage).GetRootToObjectMatrix();
-    const Point3f bottom_center =
-        (owm * wsm) * primary.GetBounds().GetFaceCenter(Bounds::Face::kBottom);
 
-    // Get the vector from the bottom center to the origin.
-    const Vector3f vec = Point3f::Zero() - bottom_center;
+    // Compute the bounds in stage coordinates.
+    const Matrix4f osm = CoordConv(sel.GetPrimary()).GetObjectToRootMatrix();
+    const Bounds stage_bounds = TransformBounds(primary.GetBounds(), osm);
+
+    // Compute the translation to put the bounds center at 0 in X and Z and to
+    // put the lowest point on the bounds on the stage.
+    const Point3f stage_center = stage_bounds.GetCenter();
+    const Vector3f trans(-stage_center[0],
+                         -stage_bounds.GetMinPoint()[1],
+                         -stage_center[2]);
 
     // Already at the origin? Do nothing.
-    if (ion::math::Length(vec) >= .00001f) {
+    if (ion::math::Length(trans) >= .00001f) {
         auto tc = CreateCommand_<TranslateCommand>();
         tc->SetFromSelection(sel);
-        tc->SetTranslation(vec);
+        tc->SetTranslation(trans);
         context_->command_manager->AddAndDo(tc);
     }
 }

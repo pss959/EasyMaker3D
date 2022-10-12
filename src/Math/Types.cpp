@@ -140,6 +140,13 @@ bool Color::FromHexString(const std::string &str) {
 // Bounds functions.
 // ----------------------------------------------------------------------------
 
+Point3f Bounds::GetFaceCenter(Face face) const {
+    Point3f center = GetCenter();
+    const int dim = GetFaceDim(face);
+    center[dim] = IsFaceMax(face) ? GetMaxPoint()[dim] : GetMinPoint()[dim];
+    return center;
+}
+
 Bounds::Face Bounds::GetFace(int dim, bool is_max) {
     // Face enum values are ordered to make this work.
     ASSERT(dim >= 0 && dim <= 2);
