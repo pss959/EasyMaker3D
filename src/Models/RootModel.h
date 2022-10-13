@@ -49,10 +49,6 @@ class RootModel : public ParentModel {
     /// Returns true if Model edges are currently shown.
     bool AreEdgesShown() const { return are_edges_shown_; }
 
-    /// Enables or disables real-time clipping of all selected Models using the
-    /// given Plane (in stage coordinates).
-    void EnableClipping(bool enable, const Plane &plane);
-
     /// \name Model Hiding and Showing.
     ///@{
 

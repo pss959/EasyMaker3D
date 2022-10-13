@@ -166,6 +166,11 @@ class Model : public ClickableWidget {
     /// Sets the color for the Model to the new value.
     void SetColor(const Color &new_color);
 
+    /// XXXX
+    /// Enables or disables real-time clipping of all selected Models using the
+    /// given Plane (in stage coordinates).
+    void EnableClipping(bool enable, const Plane &plane);
+
     // ------------------------------------------------------------------------
     // Mesh query.
     // ------------------------------------------------------------------------

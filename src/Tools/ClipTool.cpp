@@ -3,10 +3,12 @@
 #include <algorithm>
 #include <functional>
 #include <limits>
+#include <vector>
 
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "App/CoordConv.h"
 #include "Base/Tuning.h"
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
@@ -32,32 +34,23 @@
 
 class ClipTool::Impl_ {
   public:
-    typedef std::function<void(const Plane &obj_plane)> ClipFunc;
-    typedef std::function<void(bool enable, const Plane &obj_plane)> RTClipFunc;
-
     Impl_(const Tool::Context &context, const SG::Node &root_node);
-    void AttachToClippedModel(const ClippedModelPtr &model,
-                              const Vector3f &model_size,
-                              const SG::NodePath &stage_path);
+
+    void AttachToSelection(const Selection &sel, const Vector3f &model_size);
+    void Detach();
 
     /// Implements UpdateGripInfo() for the ClipTool. Returns a Node that
     /// should be used to compute the target point.
     SG::NodePtr UpdateGripInfo(GripInfo &info, const Vector3f &guide_dir);
 
-    /// Sets a function to invoke when the plane button is clicked to add a
-    /// clipping plane. It is passed the clipping plane in object coordinates.
-    void SetClipFunc(const ClipFunc &func) { clip_func_ = func; }
-
-    /// Sets a function to invoke to enable or disable real-time clipping to
-    /// the given plane in object coordinates.
-    void SetRealTimeClipFunc(const RTClipFunc &func) { rt_clip_func_ = func; }
-
   private:
     const Tool::Context &context_;
-    ClippedModelPtr      model_;
+
+    /// This stores all selected ClippedModel instances.
+    std::vector<ClippedModelPtr> clipped_models_;
+
+    /// NodePath used to convert to stage coordinates.
     SG::NodePath         stage_path_;
-    ClipFunc             clip_func_;
-    RTClipFunc           rt_clip_func_;
 
     /// Node containing both the arrow and the plane. This is rotated to match
     /// the current plane, including during SphereWidget interaction.
@@ -128,6 +121,9 @@ class ClipTool::Impl_ {
 
     /// Returns the current clipping plane in object coordinates.
     Plane GetObjPlane_() const;
+
+    /// Returns the current clipping plane in stage coordinates.
+    Plane GetStagePlane_() const;
 };
 
 ClipTool::Impl_::Impl_(const Tool::Context &context,
@@ -160,18 +156,25 @@ ClipTool::Impl_::Impl_(const Tool::Context &context,
     arrow_inactive_color_ = arrow_->GetInactiveColor();
 }
 
-void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
-                                           const Vector3f &model_size,
-                                           const SG::NodePath &stage_path) {
-    ASSERT(model);
-    model_ = model;
-    stage_path_ = stage_path;
+void ClipTool::Impl_::AttachToSelection(const Selection &sel,
+                                        const Vector3f &model_size) {
+    // Store all the ClippedModel instances from the selection, in order.
+    ASSERT(clipped_models_.empty());
+    for (const auto &path: sel.GetPaths()) {
+        const auto cm = Util::CastToDerived<ClippedModel>(path.GetModel());
+        ASSERT(cm);
+        clipped_models_.push_back(cm);
+    }
+    ASSERT(! clipped_models_.empty());
 
+    // Save the NodePath used to convert to stage coordinates.
+    stage_path_ = sel.GetPrimary();
+
+    // Update sizes based on the model size.
     const float kArrowScale   = 1.6f;  // Must be > sqrt(2).
     const float kPlaneScale   = 1.5f;
     const float kRotatorScale = 1.1f;
 
-    // Update sizes based on the model size.
     const float radius = .5f * ion::math::Length(model_size);
     plane_->SetUniformScale(kPlaneScale * radius);
     rotator_->SetUniformScale(kRotatorScale * radius);
@@ -183,10 +186,15 @@ void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
 
     // Match the last Plane in the ClippedModel if it has any. Otherwise, use
     // the XZ plane in object coordinates.
-    if (! model_->GetPlanes().empty())
-        MatchPlane_(model_->GetPlanes().back());
+    const auto &primary = *clipped_models_[0];
+    if (! primary.GetPlanes().empty())
+        MatchPlane_(primary.GetPlanes().back());
     else
         MatchPlane_(Plane(0, Vector3f::AxisY()));
+}
+
+void ClipTool::Impl_::Detach() {
+    clipped_models_.clear();
 }
 
 SG::NodePtr ClipTool::Impl_::UpdateGripInfo(GripInfo &info,
@@ -206,6 +214,8 @@ SG::NodePtr ClipTool::Impl_::UpdateGripInfo(GripInfo &info,
 }
 
 void ClipTool::Impl_::MatchPlane_(const Plane &plane) {
+    // XXXX BUG: need to fix this.
+
     // This uses the plane in the ClippedModel's object coordinates, since the
     // ClipTool's transformation is set to match it.
 
@@ -231,12 +241,13 @@ void ClipTool::Impl_::MatchPlane_(const Plane &plane) {
 }
 
 void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
-    ASSERT(model_);
+    ASSERT(! clipped_models_.empty());
+    const auto &model = *clipped_models_[0];
 
     // Compute the min/max signed distances in object coordinates of any mesh
     // vertex along the dir vector. This assumes that the Model's mesh is
     // centered on the origin, so that the center point is at a distance of 0.
-    const auto &mesh = model_->GetMesh();
+    const auto &mesh = model.GetMesh();
     float min_dist =  std::numeric_limits<float>::max();
     float max_dist = -std::numeric_limits<float>::max();
     for (const Point3f &p: mesh.points) {
@@ -247,7 +258,7 @@ void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
 
     // Set the range, making sure not to clip away all of the mesh. Restrict
     // the maximum only if this is the first clipping plane in the Model.
-    const bool limit_max = model_->GetPlanes().empty();
+    const bool limit_max = model.GetPlanes().empty();
     arrow_->SetRange(min_dist + TK::kMinClippedSize,
                      max_dist - (limit_max ? TK::kMinClippedSize : 0));
 }
@@ -330,8 +341,15 @@ void ClipTool::Impl_::Translate_() {
 }
 
 void ClipTool::Impl_::PlaneClicked_() {
-    if (clip_func_)
-        clip_func_(GetObjPlane_());
+    // Gather all model names.
+    std::vector<std::string> names;
+    for (const auto &cm: clipped_models_)
+        names.push_back(cm->GetName());
+
+    auto command = CreateCommand<ChangeClipCommand>();
+    command->SetModelNames(names);
+    command->SetPlane(GetStagePlane_());
+    context_.command_manager->AddAndDo(command);
 }
 
 void ClipTool::Impl_::SnapRotation_(Rotationf &rot, bool &snapped_to_target,
@@ -423,8 +441,8 @@ void ClipTool::Impl_::UpdateTranslationFeedback_(const Color &color) {
 }
 
 void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
-    if (rt_clip_func_)
-        rt_clip_func_(enable, GetObjPlane_());
+    for (const auto &cm: clipped_models_)
+        cm->EnableClipping(enable, GetStagePlane_());
 }
 
 Plane ClipTool::Impl_::GetObjPlane_() const {
@@ -433,6 +451,11 @@ Plane ClipTool::Impl_::GetObjPlane_() const {
     const Vector3f normal = arrow_and_plane_->GetRotation() * Vector3f::AxisY();
     const float    distance = plane_->GetTranslation()[1];
     return Plane(distance, normal);
+}
+
+Plane ClipTool::Impl_::GetStagePlane_() const {
+    const CoordConv cc(stage_path_);
+    return TransformPlane(GetObjPlane_(), cc.GetObjectToRootMatrix());
 }
 
 // ----------------------------------------------------------------------------
@@ -456,37 +479,15 @@ bool ClipTool::CanAttach(const Selection &sel) const {
 void ClipTool::Attach() {
     ASSERT(Util::IsA<ClippedModel>(GetModelAttachedTo()));
 
-    if (! impl_) {
+    if (! impl_)
         impl_.reset(new Impl_(GetContext(), *this));
-        impl_->SetClipFunc(
-            [&](const Plane &obj_plane){ AddPlane_(obj_plane); });
-        impl_->SetRealTimeClipFunc(
-            [&](bool enable, const Plane &obj_plane){
-            GetContext().root_model->EnableClipping(
-                enable, GetStagePlane_(obj_plane)); });
-    }
 
     // Match the ClippedModel's transform and pass the size of the Model for
     // scaling. Note: no need to use is_axis_aligned here, since that affects
     // only snapping.
-    const Vector3f model_size = MatchModelAndGetSize(true);
-    impl_->AttachToClippedModel(
-        Util::CastToDerived<ClippedModel>(GetModelAttachedTo()), model_size,
-        GetSelection().GetPrimary());
+    impl_->AttachToSelection(GetSelection(), MatchModelAndGetSize(true));
 }
 
 void ClipTool::Detach() {
-    // Nothing to do here.
-}
-
-void ClipTool::AddPlane_(const Plane &obj_plane) {
-    auto command = CreateCommand<ChangeClipCommand>();
-    command->SetFromSelection(GetSelection());
-    command->SetPlane(GetStagePlane_(obj_plane));
-    GetContext().command_manager->AddAndDo(command);
-}
-
-Plane ClipTool::GetStagePlane_(const Plane &obj_plane) {
-    return TransformPlane(obj_plane,
-                          GetStageCoordConv().GetObjectToRootMatrix());
+    impl_->Detach();
 }

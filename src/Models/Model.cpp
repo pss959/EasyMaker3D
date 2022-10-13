@@ -223,6 +223,13 @@ void Model::SetColor(const Color &new_color) {
     ProcessChange(SG::Change::kAppearance, *this);
 }
 
+void Model::EnableClipping(bool enable, const Plane &plane) {
+    auto &block = GetUniformBlockForPass("Lighting");
+    block.SetIntUniformValue("uDoClip", enable);
+    if (enable)
+        block.SetVector4fUniformValue("uClipPlaneEq", plane.GetCoefficients());
+}
+
 const TriMesh & Model::GetMesh() const {
     ASSERT(status_ != Status::kDescendantShown);
     RebuildMeshIfStaleAndShown_(true);
@@ -244,9 +251,14 @@ void Model::PostSetUpIon() {
     ClickableWidget::PostSetUpIon();
     UpdateColor_();
 
-    // Create a uniform for the uIsSelected value.
-    GetUniformBlockForPass("Lighting").CreateAndAddUniform("uIsSelected",
-                                                           "int_val");
+    // Create and initialize uniforms for real-time clipping.
+    auto &block = GetUniformBlockForPass("Lighting");
+    block.CreateAndAddUniform("uIsSelected",  "int_val");
+    block.CreateAndAddUniform("uDoClip",      "int_val");
+    block.CreateAndAddUniform("uClipPlaneEq", "vec4f_val");
+    block.SetIntUniformValue("uIsSelected",       0);
+    block.SetIntUniformValue("uDoClip",           0);
+    block.SetVector4fUniformValue("uClipPlaneEq", Vector4f(0, 0, 0, 0));
 }
 
 void Model::UpdateForRenderPass(const std::string &pass_name) {

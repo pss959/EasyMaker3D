@@ -32,8 +32,5 @@ class ClipTool : public Tool {
     struct Impl_;
     std::unique_ptr<Impl_> impl_;
 
-    void AddPlane_(const Plane &obj_plane);
-    Plane GetStagePlane_(const Plane &obj_plane);
-
     friend class Parser::Registry;
 };
