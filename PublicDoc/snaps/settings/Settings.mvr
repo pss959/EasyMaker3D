@@ -1,0 +1,25 @@
+Settings {
+  last_session_path: "/projects/makervr/Hinge.mvr",
+  session_directory: "/projects/makervr/",
+  import_directory:  "/projects/makervr/stl/",
+  export_directory:  "/projects/makervr/stl/",
+  tooltip_delay: 2,
+  import_units: UnitConversion {
+    from_units: "kMillimeters",
+    to_units: "kCentimeters",
+  },
+  export_units: UnitConversion {
+    from_units: "kCentimeters",
+    to_units: "kMillimeters",
+  },
+  build_volume_size: 26 32 26,
+  left_radial_menu: RadialMenuInfo {
+    count: "kCount4",
+    actions: ["kHideSelected", "kShowAll", "kTogglePointTarget", "kToggleEdgeTarget"],
+  },
+  right_radial_menu: RadialMenuInfo {
+    count: "kCount8",
+    actions: ["kScaleTool", "kCreateCylinder", "kRotationTool", "kTranslationTool", "kUndo", "kSelectAll", "kSelectNone", "kRedo"],
+  },
+  radial_menus_mode: "kIndependent",
+}

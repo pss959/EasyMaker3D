@@ -59,6 +59,11 @@
    &deg;
 
 .. ----------------------------------------------------------------------------
+.. noneicon: Inserts a the icon for the "None" action.
+
+.. |noneicon| menuicon:: None
+
+.. ----------------------------------------------------------------------------
 .. session-extension: Replaced with the session extension.
 
 .. |session-extension| replace:: ``.mvr``

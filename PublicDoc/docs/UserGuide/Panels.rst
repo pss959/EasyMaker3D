@@ -197,77 +197,92 @@ The items in this panel are, from top down:
    :ref:`model export <ug-session-panel>`. The use of these settings are
    explained in more detail in the :ref:`Overview <ug-units>`.
  - :newterm:`Radial Menus`: The last button brings up the :ref:`Radial Menu
-   Editor Panel <ug-radial-menu-panel>`, which allows you to edit which buttons
-   appear in :ref:`radial menus <ug-radial-menus>`.
+   Panel <ug-radial-menu-panel>`, which allows you to edit which buttons appear
+   in :ref:`radial menus <ug-radial-menus>`.
+
+.. _ug-info-panel:
+
+Info Panel
+,,,,,,,,,,
+
+.. incimage:: /images/InfoPanel.jpg 240px right
+
+The :newterm:`Info Panel` shows information about all selected models,
+including the number of vertices, number of triangles, and size in all three
+dimensions. If any model has an :ref:`invalid mesh <ug-model-colors>`, this is
+noted, along with the reason it is considered invalid.
+
+If either the :ref:`Point or Edge Target <ug-targets>` is active, the relevant
+information about it will also be shown in the Info Panel.
+
+The Info Panel is resizable using the corner handles. If the text does not all
+fit vertically in the info area, the thumb in the scroll bar will appear to let
+you scroll up and down.
+
+The ``Done`` button or the :shortcut:`Escape` key closes the Info Panel.
+
+|block-image|
+
+Help Panel
+,,,,,,,,,,
+
+.. incimage:: /images/HelpPanel.jpg 240px right
+
+The :newterm:`Help Panel` shows text with the current application version along
+with two buttons that open this :ref:`User Guide <ug>` and the :ref:`Cheat
+Sheet <cheat-sheet>` in your default browser.
+
+The ``Done`` button or the :shortcut:`Escape` key closes the Info Panel.
+
+|block-image|
+
+.. _ug-radial-menu-panel:
+
+Radial Menu Panel
+,,,,,,,,,,,,,,,,,
+
+.. incimage:: /images/RadialMenuPanel.jpg 300px right
+
+The :newterm:`Radial Menu Panel` can be opened from the :ref:`Settings Panel
+<ug-settings-panel>` to let you edit which buttons appear in the :ref:`left and
+right radial menus <ug-radial-menus>`. The radio buttons in the box at the top
+let you choose one of the following options:
+
+  - ``Use Independent Settings``: Editing areas for both left and right menus
+    appear to let you edit buttons for each side independently as shown in the
+    image.
+  - ``Use Left Settings for Both``: Only the area for the left menu is shown;
+    the buttons defined in there are used for both menus.
+  - ``Use Right Settings for Both``: Only the area for the right menu is shown;
+    the buttons defined in there are used for both menus.
+  - ``Disable Radial Menus``: Both areas are hidden and radial menus are not
+    available.
+
+You can set the number of buttons to use in a radial menu to 2, 4, or 8. The
+menu diagram updates to reflect the current number. Clicking on any button in
+the diagram brings up the :ref:`Action Panel <ug-action-panel>` that lets you
+choose the :ref:`action <ug-actions>` attached to that button. Each type of
+action is represented by a horribly-designed 2D icon that is displayed in the
+radial menu diagram and in the actual radial menu as well. The |noneicon| null
+icon is shown when no action is bound to a button. All actions and icons are
+shown in the :ref:`Cheat Sheet <cheat-sheet>`.
 
 .. todo::
    Ended here
 
 .. PANELS ------------
+.. _ug-action-panel:
 .. _ug-bevel-tool-panel:
 .. _ug-csg-tool-panel:
 .. _ug-dialog-panel:
 .. _ug-file-panel:
 .. _ug-help-panel:
 .. _ug-import-tool-panel:
-.. _ug-info-panel:
 .. _ug-name-tool-panel:
-.. _ug-radial-menu-panel:
 .. _ug-revsurf-tool-panel:
 .. _ug-session-name:
 .. _ug-tree-panel:
 .. _ug-virtual-keyboard-panel:
-
-### Info Panel
-
-![][ImgInfoPanel]{{rightimage(200)}}
-
-The Info Panel shows information about all selected models, including the
-number of vertices, number of triangles, and size in all three dimensions. If
-any model has an invalid mesh, this is noted, along with the reason it is
-considered invalid.
-
-The info area in the panel will contain scroll bars if there is more text than
-will fit. Also note that the Info Panel has resize handles (spheres) in the
-corners to change its size.
-
-### Help Panel
-
-![][ImgHelpPanel]{{rightimage(180)}}
-
-The Help Panel shows text with the current application version. There are two
-buttons below the text. The first one brings up this user guide in your default
-browser. The second one shows the [Cheat Sheet][CheatSheet] in the browser.
-
-{{verticalspace(3)}}
-
-### Radial Menu Editor Panel
-
-![][ImgRadialMenuEditorPanel]{{rightimage(256)}}
-
-This panel can be opened from the [Settings Panel][SettingsPanel] to edit the
-[radial menus][RadialMenus]. The radio buttons in the box at the top let you
-choose one of the following options:
-
-+ `Use Independent Settings`: The buttons defined for each controller are used
-  for that controller.
-+ `Use Left Settings for Both`: The buttons defined for the left controller are
-  used for both controllers.
-+ `Use Right Settings for Both`: The buttons defined for the right controller
-  are used for both controllers.
-
-You can set the number of buttons to use on a controller to 1, 2, 4, or 8. The
-menu diagram updates to reflect the current number. Clicking on any button in
-the diagram brings up the [Action Panel][ActionPanel] to let you choose the
-[action][Actions] attached to that button. Each action is indicated by a
-horribly-designed 2D icon that will show up in the radial menu diagram and in
-the actual radial menu as well. The null icon
-(![][ImgMINone]{{inlineimage(32)}}) is shown when no real action is bound to a
-button.
-
-In [VR and hybrid modes][VRModes] you can activate a radial menu by pressing
-the menu button on a controller.  Radial menus are also available in
-conventional mode via [keyboard shortcuts][Shortcuts] for use with the mouse.
 
 ### Action Panel
 

@@ -118,6 +118,8 @@ snap_map = {
   ],
   'Panels' : [
     'GripPanelBar',
+    'HelpPanel',
+    'InfoPanel',
     'SettingsPanel',
   ],
   'Primitives' : [
