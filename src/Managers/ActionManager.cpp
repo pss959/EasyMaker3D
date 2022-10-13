@@ -628,7 +628,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
           auto &menu = context_->scene_context->left_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
-              menu->UpdateFromInfo(settings.GetLeftRadialMenuInfo());
+              menu->UpdateFromInfo(settings.GetRadialMenuInfo(Hand::kLeft));
           }
           menu->SetEnabled(state);
         break;
@@ -637,7 +637,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
           auto &menu = context_->scene_context->right_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
-              menu->UpdateFromInfo(settings.GetRightRadialMenuInfo());
+              menu->UpdateFromInfo(settings.GetRadialMenuInfo(Hand::kRight));
           }
           menu->SetEnabled(state);
         break;
@@ -849,6 +849,12 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 
     set_enabled(Action::kHideSelected, any_selected && all_top);
     set_enabled(Action::kShowAll,      root_model->GetHiddenModelCount() > 0);
+
+    const bool menus_enabled =
+        context_->settings_manager->GetSettings().GetRadialMenusMode() !=
+        RadialMenusMode::kDisabled;
+    set_enabled(Action::kToggleLeftRadialMenu,  menus_enabled);
+    set_enabled(Action::kToggleRightRadialMenu, menus_enabled);
 }
 
 void ActionManager::Impl_::OpenInfoPanel_() {
@@ -1063,9 +1069,7 @@ void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {
     }
     else {
         const Settings &settings = context_->settings_manager->GetSettings();
-        menu->UpdateFromInfo(hand == Hand::kLeft ?
-                             settings.GetLeftRadialMenuInfo() :
-                             settings.GetRightRadialMenuInfo());
+        menu->UpdateFromInfo(settings.GetRadialMenuInfo(hand));
         menu->SetEnabled(true);
     }
 }

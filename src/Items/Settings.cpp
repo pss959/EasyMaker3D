@@ -4,6 +4,7 @@
 
 #include "Base/Tuning.h"
 #include "Parser/Registry.h"
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 
 void Settings::AddFields() {
@@ -26,6 +27,16 @@ SettingsPtr Settings::CreateDefault() {
     SettingsPtr settings = Parser::Registry::CreateObject<Settings>();
     settings->SetToDefaults_();
     return settings;
+}
+
+const RadialMenuInfo & Settings::GetRadialMenuInfo(Hand hand) const {
+    const auto mode = GetRadialMenusMode();
+    ASSERT(mode != RadialMenusMode::kDisabled);
+    const Hand hand_to_use =
+        mode == RadialMenusMode::kLeftForBoth  ? Hand::kLeft  :
+        mode == RadialMenusMode::kRightForBoth ? Hand::kRight : hand;
+    return hand_to_use == Hand::kLeft ?
+        GetLeftRadialMenuInfo() : GetRightRadialMenuInfo();
 }
 
 void Settings::SetLastSessionPath(const FilePath &path) {

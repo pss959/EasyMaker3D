@@ -78,11 +78,10 @@ class Settings : public Parser::Object {
         return *right_radial_menu_.GetValue();
     }
 
-    /// Convenience to get the RadialMenuInfo for a given Hand.
-    const RadialMenuInfo & GetRadialMenuInfo(Hand hand) {
-        return hand == Hand::kLeft ?
-            GetLeftRadialMenuInfo() : GetRightRadialMenuInfo();
-    }
+    /// Convenience to get the RadialMenuInfo for a given Hand. This takes the
+    /// current RadialMenusMode into account. This should not be called if
+    /// radial menus are disabled.
+    const RadialMenuInfo & GetRadialMenuInfo(Hand hand) const;
 
     /// Returns the mode for radial menus.
     RadialMenusMode GetRadialMenusMode() const { return radial_menus_mode_; }
