@@ -25,25 +25,32 @@ class Settings : public Parser::Object {
     /// Creates an instance with default values.
     static SettingsPtr CreateDefault();
 
+    /// \name Path Settings
+    /// Each of these returns a FilePath of some sort. The FilePath is not
+    /// guaranteed to be valid; the caller should check.
+    ///@{
+
     /// Returns the FilePath containing the current session file.
     FilePath GetLastSessionPath() const {
-        return ToPath_(last_session_path_, false);
+        return FilePath(last_session_path_);
     }
 
     /// Returns the FilePath for the directory to use for session files.
     FilePath GetSessionDirectory() const {
-        return ToPath_(session_directory_, true);
+        return FilePath(session_directory_);
     }
 
     /// Returns the FilePath for the directory to use to import models.
     FilePath GetImportDirectory() const {
-        return ToPath_(import_directory_, true);
+        return FilePath(import_directory_);
     }
 
     /// Returns the FilePath for the directory to use to export models.
     FilePath GetExportDirectory() const {
-        return ToPath_(export_directory_, true);
+        return FilePath(export_directory_);
     }
+
+    ///@}
 
     /// Returns the delay in seconds for tooltip display.
     float GetTooltipDelay() const { return tooltip_delay_; }
@@ -122,11 +129,6 @@ class Settings : public Parser::Object {
     RadialMenuField_                   right_radial_menu_;
     Parser::EnumField<RadialMenusMode> radial_menus_mode_;
     ///@}
-
-    /// Converts a string from a PathField_ to a FilePath. If the path does not
-    /// exist or if is_dir is true and the path is not a directory, this
-    /// returns an empty path.
-    static FilePath ToPath_(const std::string &path_string, bool is_dir);
 
     /// Sets this instance to all default values.
     void SetToDefaults_();

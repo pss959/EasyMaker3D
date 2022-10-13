@@ -76,13 +76,6 @@ void Settings::SetRadialMenusMode(RadialMenusMode mode) {
     radial_menus_mode_ = mode;
 }
 
-FilePath Settings::ToPath_(const std::string &path_string, bool is_dir) {
-    FilePath path(path_string);
-    if (! path.Exists() || (is_dir && ! path.IsDirectory()))
-        path = FilePath();
-    return path;
-}
-
 void Settings::SetToDefaults_() {
     const std::string home = FilePath::GetHomeDirPath().ToString();
 

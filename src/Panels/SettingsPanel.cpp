@@ -204,6 +204,8 @@ void SettingsPanel::UpdateFromSettings_(const Settings &settings,
     if (name == "SessionDir") {
         session_pane_->SetInitialText(
             settings.GetSessionDirectory().ToString());
+        std::cerr << "XXXX SESSION DIR = '"
+                  << settings.GetSessionDirectory().ToString() << "'\n";
     }
     else if (name == "ExportDir") {
         export_pane_->SetInitialText(settings.GetExportDirectory().ToString());
