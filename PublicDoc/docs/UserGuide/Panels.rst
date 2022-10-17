@@ -267,11 +267,25 @@ radial menu diagram and in the actual radial menu as well. The |noneicon| null
 icon is shown when no action is bound to a button. All actions and icons are
 shown in the :ref:`Cheat Sheet <cheat-sheet>`.
 
+.. _ug-action-panel:
+
+Action Panel
+,,,,,,,,,,,,
+
+.. incimage:: /images/ActionPanel.jpg 300px right
+
+The Action Panel is used by the :ref:`Radial Menu Panel <ug-radial-menu-panel>`
+to select the :ref:`action <ug-actions>` attached to a radial menu button. It
+presents a scrolling list of actions to choose from, organized by category. The
+action that is currently bound to the button being modified is highlighted.
+
+See the :ref:`Cheat Sheet <cheat-sheet>` for a list of all actions and their
+associated icons.
+
 .. todo::
    Ended here
 
 .. PANELS ------------
-.. _ug-action-panel:
 .. _ug-bevel-tool-panel:
 .. _ug-csg-tool-panel:
 .. _ug-dialog-panel:
@@ -283,21 +297,6 @@ shown in the :ref:`Cheat Sheet <cheat-sheet>`.
 .. _ug-session-name:
 .. _ug-tree-panel:
 .. _ug-virtual-keyboard-panel:
-
-### Action Panel
-
-![][ImgActionPanel]{{rightimage(256)}}
-
-The Action Panel is used by the [Radial Menu Editor
-Panel][RadialMenuEditorPanel] to select the [action][Actions] associated with a
-radial menu button. It presents a scrolling list of actions to choose from,
-organized by category. The action that is currently bound to the button being
-modified is marked as `[CURRENT]`.
-
-See the [Cheat Sheet][CheatSheet] for a list of all actions and their
-associated icons.
-
-{{verticalspace(2)}}
 
 ### File Panel
 
