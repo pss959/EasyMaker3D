@@ -11,6 +11,8 @@
 /// \ingroup Utility
 class FilePathList {
   public:
+    virtual ~FilePathList() {}
+
     /// Directions for switching paths.
     enum class Direction { kUp, kForward, kBack, kHome };
 
@@ -30,6 +32,13 @@ class FilePathList {
     /// Adds a new path. If the path is not absolute, it is first made absolute
     /// by joining it to the current path. Returns the absolute path.
     const FilePath & AddPath(const FilePath &path);
+
+    /// Uses FilePath::GetContents() on the current path if it is a directory
+    /// or its parent directory otherwise.
+    virtual void GetContents(std::vector<std::string> &subdirs,
+                             std::vector<std::string> &files,
+                             const std::string &extension,
+                             bool include_hidden) const;
 
     /// Dumps current state for help with debugging.
     void Dump();

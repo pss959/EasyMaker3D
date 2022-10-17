@@ -62,6 +62,19 @@ const FilePath & FilePathList::AddPath(const FilePath &path) {
     return GetCurrent();
 }
 
+void FilePathList::GetContents(std::vector<std::string> &subdirs,
+                               std::vector<std::string> &files,
+                               const std::string &extension,
+                               bool include_hidden) const {
+    // If the current path is a directory, use it. Otherwise, use its parent.
+    FilePath dir = GetCurrent();
+    if (! dir.IsDirectory())
+        dir = dir.GetParentDirectory();
+
+    // Get sorted lists of directories and files in the current directory.
+    dir.GetContents(subdirs, files, extension, include_hidden);
+}
+
 FilePath FilePathList::MakeAbsolute_(const FilePath &path) {
     if (path.IsAbsolute())
         return path;

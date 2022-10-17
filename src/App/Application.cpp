@@ -570,6 +570,7 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
     ASSERT(scene_context_);
     tc.action_manager    = action_manager_;
     tc.command_manager   = command_manager_;
+    tc.panel_manager     = panel_manager_;
     tc.selection_manager = selection_manager_;
     tc.session_manager   = session_manager_;
     tc.settings_manager  = settings_manager_;

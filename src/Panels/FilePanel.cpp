@@ -26,6 +26,15 @@ class FilePanel::Impl_ {
   public:
     typedef std::function<void(const PanePtr &)> FocusFunc;
 
+    Impl_();
+
+    /// Sets a FilePathList instance to use instead of a default FilePathList.
+    /// This can be called to use a mock version to simulate a file system.
+    void SetFilePathList(FilePathList *list) {
+        ASSERT(list);
+        path_list_.reset(list);
+    }
+
     /// Sets a function used to set focus.
     void SetFocusFunc(const FocusFunc &focus_func) { focus_func_ = focus_func; }
 
@@ -91,7 +100,7 @@ class FilePanel::Impl_ {
     FilePath                result_path_;
     FileFormat              file_format_;
 
-    FilePathList               paths_;
+    std::shared_ptr<FilePathList> path_list_;
 
     // Various parts.
     TextPanePtr      title_pane_;
@@ -129,6 +138,9 @@ class FilePanel::Impl_ {
 // FilePanel::Impl_ functions.
 // ----------------------------------------------------------------------------
 
+FilePanel::Impl_::Impl_() :  path_list_ (new FilePathList) {
+}
+
 void FilePanel::Impl_::Reset() {
     target_type_ = TargetType::kDirectory;
     initial_path_ = FilePath::GetHomeDirPath();
@@ -143,13 +155,13 @@ void FilePanel::Impl_::Reset() {
 }
 
 void FilePanel::Impl_::GoInDirection(FilePathList::Direction dir) {
-    OpenPath_(paths_.GoInDirection(dir));
+    OpenPath_(path_list_->GoInDirection(dir));
 }
 
 bool FilePanel::Impl_::AcceptPath() {
     // Set the result path. If the TextInputPane has a different path and it is
     // valid, use it. Otherwise, use the current path.
-    result_path_ = paths_.GetCurrent();
+    result_path_ = path_list_->GetCurrent();
     FilePath input_path(input_pane_->GetText());
     if (! extension_.empty() && input_path.GetExtension() != extension_)
         input_path.AddExtension(extension_);
@@ -230,12 +242,12 @@ void FilePanel::Impl_::UpdateInterface() {
         format_pane_->SetEnabled(true);
     }
 
-    paths_.Init(initial_path_);
+    path_list_->Init(initial_path_);
 
     // Open the initial path to set up the file area.
     OpenPath_(initial_path_);
 
-    UpdateButtons_(GetPathStatus_(paths_.GetCurrent()));
+    UpdateButtons_(GetPathStatus_(path_list_->GetCurrent()));
 }
 
 void FilePanel::Impl_::UpdateForPaneSizeChange(const PanePtr &focused_pane) {
@@ -316,16 +328,11 @@ void FilePanel::Impl_::SelectFile_(const FilePath &path) {
 }
 
 void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
-    // If the current path is a directory, use it. Otherwise, use its parent.
-    FilePath dir = paths_.GetCurrent();
-    if (! dir.IsDirectory())
-        dir = dir.GetParentDirectory();
-
     // Get sorted lists of directories and files in the current directory.
     const bool include_hidden = hidden_files_pane_->GetState();
     std::vector<std::string> subdirs;
     std::vector<std::string> files;
-    dir.GetContents(subdirs, files, extension_, include_hidden);
+    path_list_->GetContents(subdirs, files, extension_, include_hidden);
 
     // Ignore files if target must be a directory.
     if (target_type_ == TargetType::kDirectory)
@@ -364,7 +371,7 @@ int FilePanel::Impl_::CreateFileButtons_(
 
     auto is_highlighted_path = [&](const std::string &name){
         return highlight_path_ &&
-            FilePath::Join(paths_.GetCurrent(), name) == highlight_path_;
+            FilePath::Join(path_list_->GetCurrent(), name) == highlight_path_;
     };
 
     size_t cur_index         = 0;
@@ -394,8 +401,9 @@ PanePtr FilePanel::Impl_::CreateFileButton_(size_t index,
     text->SetColor(SG::ColorMap::SGetColor(color_name));
 
     but->GetButton().GetClicked().AddObserver(
-        this,
-        [this, name](const ClickInfo &){ OpenPath_(paths_.AddPath(name)); });
+        this, [this, name](const ClickInfo &){
+            OpenPath_(path_list_->AddPath(name));
+        });
     but->SetEnabled(true);
 
     return but;
@@ -407,7 +415,7 @@ void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
 
     for (auto dir: Util::EnumValues<FilePathList::Direction>()) {
         auto &but = dir_button_panes_[Util::EnumInt(dir)]->GetButton();
-        but.SetInteractionEnabled(paths_.CanGoInDirection(dir));
+        but.SetInteractionEnabled(path_list_->CanGoInDirection(dir));
     }
 }
 
@@ -455,6 +463,10 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
 }
 
 FilePanel::~FilePanel() {
+}
+
+void FilePanel::SetFilePathList(FilePathList *list) {
+    impl_->SetFilePathList(list);
 }
 
 void FilePanel::Reset() {

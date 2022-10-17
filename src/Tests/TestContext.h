@@ -4,6 +4,7 @@
 
 DECL_SHARED_PTR(ActionManager);
 DECL_SHARED_PTR(CommandManager);
+DECL_SHARED_PTR(PanelManager);
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SessionManager);
@@ -16,6 +17,7 @@ struct TestContext {
     // Managers
     ActionManagerPtr    action_manager;
     CommandManagerPtr   command_manager;
+    PanelManagerPtr     panel_manager;
     SelectionManagerPtr selection_manager;
     SessionManagerPtr   session_manager;
     SettingsManagerPtr  settings_manager;
