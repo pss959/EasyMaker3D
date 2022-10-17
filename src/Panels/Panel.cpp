@@ -127,6 +127,9 @@ Vector2f Panel::UpdateSize() {
     if (focused_index_ >= 0)
         update_focus_highlight_ = true;
 
+    // Let the derived class know the Pane size may have changed.
+    UpdateForPaneSizeChange();
+
     size_may_have_changed_ = false;
 
     return size;

@@ -14,7 +14,7 @@ DECL_SHARED_PTR(ClipPane);
 class ClipPane : public BoxPane {
   public:
     /// Returns the size of the contents if no clipping were applied.
-    Vector2f GetUnclippedSize();
+    Vector2f GetUnclippedSize() const;
 
     /// Moves the clipped contents to the given offset.
     void SetContentsOffset(const Vector2f &offset);

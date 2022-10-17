@@ -151,6 +151,12 @@ class Panel : public SG::Node {
     /// Redefines this to update the focus if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
+    /// This is called when the size of the contained Pane may have changed,
+    /// allowing derived classes to update anything that is
+    /// size-dependent. THis will be called at least once when the original
+    /// Pane size is determined. The base class defines this to do nothing.
+    virtual void UpdateForPaneSizeChange() {}
+
     /// Convenience that returns the current application Settings.
     const Settings & GetSettings() const;
 
