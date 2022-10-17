@@ -1,5 +1,6 @@
 #include "Panes/ScrollingPane.h"
 
+#include "App/CoordConv.h"
 #include "Base/Event.h"
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
@@ -49,16 +50,14 @@ float ScrollingPane::GetScrollBarWidth() const {
 void ScrollingPane::SetLayoutSize(const Vector2f &size) {
     BoxPane::SetLayoutSize(size);
 
-    // Compute the scroll factor.  If the unclipped size of the contents is not
+    // Compute the scroll factor. If the unclipped size of the contents is not
     // larger than the size of the clip rectangle, then there is no
     // scrolling. Otherwise, it can scroll from 0 (with the top aligned with
     // the top of the clip rectangle) to 1 (with the bottom aligned with the
     // bottom of the clip rectangle). The distance to translate in the latter
     // case is the difference in sizes.
-    auto &contents = GetContentsPane();
     const float clip_size = size[1];
-    const float size_diff =
-        std::max(0.f, contents->GetUnclippedSize()[1] - clip_size);
+    const float size_diff = std::max(0.f, GetContentsHeight_() - clip_size);
     scroll_factor_ = size_diff / clip_size;
 
     // Update the range of the thumb to fit the new size.
@@ -120,6 +119,17 @@ void ScrollingPane::ScrollBy(float amount) {
     UpdateScroll_();
 }
 
+void ScrollingPane::ScrollToShowSubPane(const Pane &sub_pane) {
+    // Get the relative height of the sub-pane within the contents and convert
+    // to a 0-1 fraction.
+    const float pane_y = sub_pane.GetRelativePositionInParent()[1];
+    const float fraction = -pane_y / GetContentsHeight_();
+
+    // Try to put the pane in the middle.
+    const float min = GetLayoutSize()[1] / GetContentsHeight_();
+    ScrollTo(fraction <= min ? 0 : fraction >= 1 - min ? 1 : fraction);
+}
+
 void ScrollingPane::UpdateScroll_() {
     auto &contents = GetContentsPane();
     Vector2f trans = contents->GetContentsOffset();
@@ -128,4 +138,11 @@ void ScrollingPane::UpdateScroll_() {
     // Note that this does not notify observers, so it is safe to call even if
     // the slider was dragged.
     slider_pane_->SetValue(1 - scroll_pos_);
+}
+
+float ScrollingPane::GetContentsHeight_() const {
+    // Remove padding from ScrollingPane and Contents Panes.
+    const auto &contents = *GetContentsPane();
+    return contents.GetUnclippedSize()[1] -
+        2 * (GetPadding() + contents.GetPadding());
 }

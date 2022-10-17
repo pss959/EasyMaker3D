@@ -89,6 +89,7 @@ void GridPane::LayOutSubPanes() {
 
             pane.SetLayoutSize(pane_size);
             PositionSubPane(pane, upper_left + offset);
+            pane.SetRelativePositionInParent(upper_left - grid_upper_left);
 
             upper_left[0] += cell_size[0] + column_spacing_;
         }

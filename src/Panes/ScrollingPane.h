@@ -44,6 +44,10 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     /// Scrolls by the given (signed) amount.
     void ScrollBy(float amount);
 
+    /// Scrolls so that the given Pane (which must be contained within this
+    /// ScrollingPane) is visible.
+    void ScrollToShowSubPane(const Pane &sub_pane);
+
   protected:
     ScrollingPane() {}
 
@@ -69,6 +73,9 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
 
     /// Updates the scroll translation based on scroll_pos_.
     void UpdateScroll_();
+
+    /// Returns the height of the scrolling area (minus all padding).
+    float GetContentsHeight_() const;
 
     friend class Parser::Registry;
 };

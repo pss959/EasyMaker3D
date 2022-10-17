@@ -83,6 +83,8 @@ void BoxPane::LayOutSubPanes() {
         pane->SetLayoutSize(pane_size);
         PositionSubPane(*pane, upper_left);
 
+        pane->SetRelativePositionInParent(upper_left - box_upper_left);
+
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
     }
 }

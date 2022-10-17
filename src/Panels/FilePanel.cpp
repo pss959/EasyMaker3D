@@ -168,6 +168,7 @@ class FilePanel::Impl_ {
     bool HandleEvent(const Event &event, const PanePtr &focused_pane);
     void InitInterface(ContainerPane &root_pane);
     void UpdateInterface();
+    void UpdateForPaneSizeChange(const PanePtr &focused_pane);
 
     /// Makes sure that the focused Pane is in view. If the Pane is a file
     /// button and is out of view in the ScrollingPane, scrolls to view it.
@@ -343,6 +344,15 @@ void FilePanel::Impl_::UpdateInterface() {
     OpenPath_(initial_path_);
 
     UpdateButtons_(GetPathStatus_(paths_.GetCurrent()));
+}
+
+void FilePanel::Impl_::UpdateForPaneSizeChange(const PanePtr &focused_pane) {
+    // Now that file button placement is known, scroll to the focused or
+    // highlighted button, if any.
+    if (focused_pane)
+        UpdateFocus(focused_pane);
+    else if (highlighted_index_ >= 0)
+        ScrollToViewFileButton_(highlighted_index_);
 }
 
 void FilePanel::Impl_::UpdateFocus(const PanePtr &pane) {
@@ -521,10 +531,8 @@ void FilePanel::Impl_::FocusFileButton_() {
 }
 
 void FilePanel::Impl_::ScrollToViewFileButton_(size_t index) {
-    const size_t file_count =
-        file_list_pane_->GetContentsPane()->GetPanes().size();
-    const float scroll_pos = static_cast<float>(index) / file_count;
-    file_list_pane_->ScrollTo(scroll_pos);
+    const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
+    file_list_pane_->ScrollToShowSubPane(*panes[index]);
 }
 
 bool FilePanel::Impl_::GetFileButtonIndex_(const Pane &pane,
@@ -620,6 +628,10 @@ const FilePath & FilePanel::GetPath() const {
 
 FileFormat FilePanel::GetFileFormat() const {
     return impl_->GetFileFormat();
+}
+
+void FilePanel::UpdateForPaneSizeChange() {
+    impl_->UpdateForPaneSizeChange(GetFocusedPane());
 }
 
 void FilePanel::ProcessResult(const std::string &result) {

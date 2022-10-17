@@ -10,7 +10,7 @@ void ClipPane::CreationDone() {
         clip_node_ = SG::FindNodeUnderNode(*this, "ClipNode");
 }
 
-Vector2f ClipPane::GetUnclippedSize() {
+Vector2f ClipPane::GetUnclippedSize() const {
     return BoxPane::ComputeBaseSize();
 }
 

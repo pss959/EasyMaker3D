@@ -79,6 +79,17 @@ class Pane : public SG::Node {
 
     ///@}
 
+    /// Sets the relative position (0-1) of this Pane within its parent. This
+    /// is used for scrolling.
+    void SetRelativePositionInParent(const Vector2f &pos) {
+        rel_pos_in_parent_ = pos;
+    }
+
+    /// Returns the relative position (0-1) of this Pane within its parent.
+    const Vector2f & GetRelativePositionInParent() const {
+        return rel_pos_in_parent_;
+    }
+
     /// Returns an IPaneInteractor instance to handle interaction for this
     /// Pane. The base class defines this to return null, meaning that the Pane
     /// is not interactive.
@@ -148,4 +159,7 @@ class Pane : public SG::Node {
 
     /// Current layout size of this pane.
     Vector2f         layout_size_{0, 0};
+
+    /// Relative position (0-1) of the upper-left corner in the parent Pane.
+    Vector2f         rel_pos_in_parent_{0, 0};
 };

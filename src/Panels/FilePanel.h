@@ -80,6 +80,9 @@ class FilePanel : public ToolPanel {
     virtual void InitInterface()   override;
     virtual void UpdateInterface() override;
 
+    /// Redefines this to scroll to the focused pane, if any.
+    virtual void UpdateForPaneSizeChange();
+
     /// This is called when a response button is clicked. The base class
     /// defines this to Call ReportChange() with the given result and close the
     /// FilePanel with the result.
