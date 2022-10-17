@@ -114,7 +114,7 @@ class FilePanel::Impl_ {
     ButtonPanePtr    cancel_button_pane_;
 
     // Directional buttons.
-    ButtonPanePtr    dir_button_panes_[Util::EnumCount<FilePathList::Direction>()];
+    ButtonPanePtr dir_button_panes_[Util::EnumCount<FilePathList::Direction>()];
 
     PathStatus_ GetPathStatus_(const FilePath &path);
     void    OpenPath_(const FilePath &path);
