@@ -18,17 +18,20 @@
 #include "Items/Controller.h"
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
+#include "Managers/PanelManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
+#include "Panels/FilePanel.h"
 #include "SG/Search.h"
 #include "SG/WindowCamera.h"
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
 #include "Util/Delay.h"
 #include "Util/FilePath.h"
+#include "Util/FilePathList.h"
 #include "Util/KLog.h"
 #include "Util/Read.h"
 #include "Util/Write.h"
@@ -190,6 +193,32 @@ void Emitter_::EmitEvents(std::vector<Event> &events) {
 DECL_SHARED_PTR(Emitter_);
 
 // ----------------------------------------------------------------------------
+// MockFilePathList_ class.
+// ----------------------------------------------------------------------------
+
+/// Derived FilePathList class that simulates a file system.
+class MockFilePathList_ : public FilePathList {
+    /// Redefines this to simulate files.
+    virtual void GetContents(std::vector<std::string> &subdirs,
+                             std::vector<std::string> &files,
+                             const std::string &extension,
+                             bool include_hidden) const override;
+};
+
+void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,
+                                    std::vector<std::string> &files,
+                                    const std::string &extension,
+                                    bool include_hidden) const {
+    subdirs.push_back("Dir0");
+    subdirs.push_back("Dir1");
+    files.push_back("FileA" + extension);
+    files.push_back("FileB" + extension);
+    files.push_back("FileC" + extension);
+    files.push_back("FileD" + extension);
+    files.push_back("FileE" + extension);
+}
+
+// ----------------------------------------------------------------------------
 /// SnapshotApp_ class.
 // ----------------------------------------------------------------------------
 
@@ -256,6 +285,11 @@ bool SnapshotApp_::Init(const Options &options) {
 
     // No need to ask before quitting this app.
     SetAskBeforeQuitting(false);
+
+    // Use the MockFilePathList_ for the FilePanel.
+    auto file_panel =
+        test_context_.panel_manager->GetTypedPanel<FilePanel>("FilePanel");
+    file_panel->SetFilePathList(new MockFilePathList_);
 
     return true;
 }

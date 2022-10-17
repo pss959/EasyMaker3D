@@ -8,6 +8,7 @@
 #include "Panels/ToolPanel.h"
 #include "Util/FilePath.h"
 
+class FilePathList;
 DECL_SHARED_PTR(FilePanel);
 
 namespace Parser { class Registry; }
@@ -26,6 +27,10 @@ class FilePanel : public ToolPanel {
     };
 
     virtual ~FilePanel();
+
+    /// Sets a FilePathList instance to use instead of a default FilePathList.
+    /// This can be called to use a mock version to simulate a file system.
+    void SetFilePathList(FilePathList *list);
 
     /// Resets all user-defined options and the results to their default
     /// values. This should be called if the caller is not sure of the current
@@ -89,7 +94,6 @@ class FilePanel : public ToolPanel {
     virtual void ProcessResult(const std::string &result);
 
   private:
-    class PathList_;
     class Impl_;
     std::unique_ptr<Impl_> impl_;  /// Implementation instance.
 

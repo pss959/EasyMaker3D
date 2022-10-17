@@ -13,118 +13,10 @@
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Enum.h"
+#include "Util/FilePathList.h"
 #include "Util/General.h"
 #include "Util/String.h"
 #include "Widgets/PushButtonWidget.h"
-
-// ----------------------------------------------------------------------------
-// FilePanel::PathList_ class definition.
-// ----------------------------------------------------------------------------
-
-class FilePanel::PathList_ {
-  public:
-    enum class Direction { kUp, kForward, kBack, kHome };
-
-    /// Sets up with the initial absolute path to use.
-    void Init(const FilePath &initial_path);
-
-    /// Returns the current path.
-    const FilePath & GetCurrent() const { return paths_[cur_index_]; }
-
-    /// Returns true if it is possible to go in the given direction.
-    bool CanGoInDirection(Direction dir) const;
-
-    /// Goes to the new path in the given direction. Returns the new path.
-    const FilePath & GoInDirection(Direction dir);
-
-    /// Goes to a new path. If the path is not absolute, it is first made
-    /// absolute by joining it to the current path. Returns the absolute path.
-    const FilePath & GoToPath(const FilePath &path);
-
-    /// Dumps current state for help with debugging.
-    void Dump();
-
-  private:
-    std::vector<FilePath> paths_;
-    size_t                cur_index_ = 0;
-
-    /// If the given path is not absolute, this makes it absolute using the
-    /// current path.
-    FilePath MakeAbsolute_(const FilePath &path);
-};
-
-void FilePanel::PathList_::Init(const FilePath &initial_path) {
-    ASSERT(initial_path.IsAbsolute());
-    paths_.clear();
-    paths_.push_back(initial_path);
-    cur_index_ = 0;
-}
-
-bool FilePanel::PathList_::CanGoInDirection(Direction dir) const {
-    switch (dir) {
-      case Direction::kUp:
-        return GetCurrent().GetParentDirectory().IsDirectory();
-      case Direction::kForward:
-        return cur_index_ + 1 < paths_.size();
-      case Direction::kBack:
-        return cur_index_ > 0;
-      case Direction::kHome:
-        return GetCurrent() != FilePath::GetHomeDirPath();
-    }
-    ASSERT(false);
-    return false;
-}
-
-const FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
-    ASSERT(CanGoInDirection(dir));
-    switch (dir) {
-      case Direction::kUp:
-        GoToPath(GetCurrent().GetParentDirectory());
-        break;
-      case Direction::kForward:
-        ++cur_index_;
-        break;
-      case Direction::kBack:
-        --cur_index_;
-        break;
-      case Direction::kHome:
-        GoToPath(FilePath::GetHomeDirPath());
-        break;
-      default:
-        ASSERT(false);
-    }
-    return GetCurrent();
-}
-
-const FilePath & FilePanel::PathList_::GoToPath(const FilePath &path) {
-    ASSERT(! paths_.empty());
-
-    const FilePath full_path = MakeAbsolute_(path);
-
-    if (full_path != paths_.back()) {
-        // Remove anything after the current path. This gets rid of old history
-        // when the user just went back to a previous path.
-        paths_.erase(paths_.begin() + cur_index_ + 1, paths_.end());
-        cur_index_ = paths_.size();
-        paths_.push_back(full_path);
-    }
-    return GetCurrent();
-}
-
-FilePath FilePanel::PathList_::MakeAbsolute_(const FilePath &path) {
-    if (path.IsAbsolute())
-        return path;
-    FilePath dir = GetCurrent();
-    if (! dir.IsDirectory())
-        dir = dir.GetParentDirectory();
-    return FilePath::Join(dir, path);
-}
-
-void FilePanel::PathList_::Dump() {
-    for (size_t i = 0; i < paths_.size(); ++i)
-        std::cout << "[" << i << "] " << paths_[i].ToString()
-                  << (i == cur_index_ ? " [CURRENT]\n" : "\n");
-}
 
 // ----------------------------------------------------------------------------
 // FilePanel::Impl_ class definition.
@@ -133,6 +25,15 @@ void FilePanel::PathList_::Dump() {
 class FilePanel::Impl_ {
   public:
     typedef std::function<void(const PanePtr &)> FocusFunc;
+
+    Impl_();
+
+    /// Sets a FilePathList instance to use instead of a default FilePathList.
+    /// This can be called to use a mock version to simulate a file system.
+    void SetFilePathList(FilePathList *list) {
+        ASSERT(list);
+        path_list_.reset(list);
+    }
 
     /// Sets a function used to set focus.
     void SetFocusFunc(const FocusFunc &focus_func) { focus_func_ = focus_func; }
@@ -161,7 +62,7 @@ class FilePanel::Impl_ {
 
     /// \name Button response functions.
     ///@{
-    void GoInDirection(PathList_::Direction dir);
+    void GoInDirection(FilePathList::Direction dir);
     bool AcceptPath();
     ///@}
 
@@ -199,7 +100,7 @@ class FilePanel::Impl_ {
     FilePath                result_path_;
     FileFormat              file_format_;
 
-    PathList_               paths_;
+    std::shared_ptr<FilePathList> path_list_;
 
     // Various parts.
     TextPanePtr      title_pane_;
@@ -213,7 +114,7 @@ class FilePanel::Impl_ {
     ButtonPanePtr    cancel_button_pane_;
 
     // Directional buttons.
-    ButtonPanePtr    dir_button_panes_[Util::EnumCount<PathList_::Direction>()];
+    ButtonPanePtr dir_button_panes_[Util::EnumCount<FilePathList::Direction>()];
 
     PathStatus_ GetPathStatus_(const FilePath &path);
     void    OpenPath_(const FilePath &path);
@@ -237,6 +138,9 @@ class FilePanel::Impl_ {
 // FilePanel::Impl_ functions.
 // ----------------------------------------------------------------------------
 
+FilePanel::Impl_::Impl_() :  path_list_ (new FilePathList) {
+}
+
 void FilePanel::Impl_::Reset() {
     target_type_ = TargetType::kDirectory;
     initial_path_ = FilePath::GetHomeDirPath();
@@ -250,14 +154,14 @@ void FilePanel::Impl_::Reset() {
     file_format_ = FileFormat::kUnknown;
 }
 
-void FilePanel::Impl_::GoInDirection(PathList_::Direction dir) {
-    OpenPath_(paths_.GoInDirection(dir));
+void FilePanel::Impl_::GoInDirection(FilePathList::Direction dir) {
+    OpenPath_(path_list_->GoInDirection(dir));
 }
 
 bool FilePanel::Impl_::AcceptPath() {
     // Set the result path. If the TextInputPane has a different path and it is
     // valid, use it. Otherwise, use the current path.
-    result_path_ = paths_.GetCurrent();
+    result_path_ = path_list_->GetCurrent();
     FilePath input_path(input_pane_->GetText());
     if (! extension_.empty() && input_path.GetExtension() != extension_)
         input_path.AddExtension(extension_);
@@ -300,7 +204,7 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     format_pane_        = root_pane.FindTypedPane<DropdownPane>("Format");
 
     // Access and set up the direction buttons.
-    for (auto dir: Util::EnumValues<PathList_::Direction>()) {
+    for (auto dir: Util::EnumValues<FilePathList::Direction>()) {
         const std::string name = Util::EnumToWords(dir);
         auto but = root_pane.FindTypedPane<ButtonPane>(name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
@@ -338,12 +242,12 @@ void FilePanel::Impl_::UpdateInterface() {
         format_pane_->SetEnabled(true);
     }
 
-    paths_.Init(initial_path_);
+    path_list_->Init(initial_path_);
 
     // Open the initial path to set up the file area.
     OpenPath_(initial_path_);
 
-    UpdateButtons_(GetPathStatus_(paths_.GetCurrent()));
+    UpdateButtons_(GetPathStatus_(path_list_->GetCurrent()));
 }
 
 void FilePanel::Impl_::UpdateForPaneSizeChange(const PanePtr &focused_pane) {
@@ -424,16 +328,11 @@ void FilePanel::Impl_::SelectFile_(const FilePath &path) {
 }
 
 void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
-    // If the current path is a directory, use it. Otherwise, use its parent.
-    FilePath dir = paths_.GetCurrent();
-    if (! dir.IsDirectory())
-        dir = dir.GetParentDirectory();
-
     // Get sorted lists of directories and files in the current directory.
     const bool include_hidden = hidden_files_pane_->GetState();
     std::vector<std::string> subdirs;
     std::vector<std::string> files;
-    dir.GetContents(subdirs, files, extension_, include_hidden);
+    path_list_->GetContents(subdirs, files, extension_, include_hidden);
 
     // Ignore files if target must be a directory.
     if (target_type_ == TargetType::kDirectory)
@@ -472,7 +371,7 @@ int FilePanel::Impl_::CreateFileButtons_(
 
     auto is_highlighted_path = [&](const std::string &name){
         return highlight_path_ &&
-            FilePath::Join(paths_.GetCurrent(), name) == highlight_path_;
+            FilePath::Join(path_list_->GetCurrent(), name) == highlight_path_;
     };
 
     size_t cur_index         = 0;
@@ -503,7 +402,7 @@ PanePtr FilePanel::Impl_::CreateFileButton_(size_t index,
 
     but->GetButton().GetClicked().AddObserver(
         this, [this, name](const ClickInfo &){
-            OpenPath_(paths_.GoToPath(name));
+            OpenPath_(path_list_->AddPath(name));
         });
     but->SetEnabled(true);
 
@@ -514,9 +413,9 @@ void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
     accept_button_pane_->GetButton().SetInteractionEnabled(
         path_status == PathStatus_::kAcceptable);
 
-    for (auto dir: Util::EnumValues<PathList_::Direction>()) {
+    for (auto dir: Util::EnumValues<FilePathList::Direction>()) {
         auto &but = dir_button_panes_[Util::EnumInt(dir)]->GetButton();
-        but.SetInteractionEnabled(paths_.CanGoInDirection(dir));
+        but.SetInteractionEnabled(path_list_->CanGoInDirection(dir));
     }
 }
 
@@ -566,6 +465,10 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
 FilePanel::~FilePanel() {
 }
 
+void FilePanel::SetFilePathList(FilePathList *list) {
+    impl_->SetFilePathList(list);
+}
+
 void FilePanel::Reset() {
     impl_->Reset();
 }
@@ -584,7 +487,7 @@ void FilePanel::InitInterface() {
 
     // The Impl_ class cannot call protected functions, so these need to be
     // done here.
-    for (auto dir: Util::EnumValues<PathList_::Direction>()) {
+    for (auto dir: Util::EnumValues<FilePathList::Direction>()) {
         const std::string name = Util::EnumToWords(dir);
         AddButtonFunc(name, [this, dir](){ impl_->GoInDirection(dir); });
     }
