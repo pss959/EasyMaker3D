@@ -357,6 +357,7 @@ lib_sources = [
     'Util/Assert.cpp',
     'Util/Delay.cpp',
     'Util/FilePath.cpp',
+    'Util/FilePathList.cpp',
     'Util/General.cpp',
     'Util/KLog.cpp',
     'Util/Read.cpp',
