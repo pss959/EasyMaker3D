@@ -117,9 +117,12 @@ snap_map = {
     'ModelNoEdges',
   ],
   'Panels' : [
+    'ActionPanel',
+    'FilePanel',
     'GripPanelBar',
     'HelpPanel',
     'InfoPanel',
+    'RadialMenuPanel',
     'SettingsPanel',
   ],
   'Primitives' : [

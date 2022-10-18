@@ -274,13 +274,41 @@ Action Panel
 
 .. incimage:: /images/ActionPanel.jpg 300px right
 
-The Action Panel is used by the :ref:`Radial Menu Panel <ug-radial-menu-panel>`
-to select the :ref:`action <ug-actions>` attached to a radial menu button. It
-presents a scrolling list of actions to choose from, organized by category. The
-action that is currently bound to the button being modified is highlighted.
+The :newterm:`Action Panel` is used by the :ref:`Radial Menu Panel
+<ug-radial-menu-panel>` to select the :ref:`action <ug-actions>` attached to a
+radial menu button. It presents a scrolling list of actions to choose from,
+organized by category. The action that is currently bound to the button being
+modified is highlighted.
 
 See the :ref:`Cheat Sheet <cheat-sheet>` for a list of all actions and their
 associated icons.
+
+|block-image|
+
+.. _ug-file-panel:
+
+File Panel
+,,,,,,,,,,
+
+.. incimage:: /images/FilePanel.jpg 300px right
+
+The :newterm:`File Panel` is used by the :ref:`Session Panel
+<ug-session-panel>` and the :ref:`Settings Panel <ug-settings-panel>` when a
+directory or file needs to be chosen. In addition, the :ref:`Import Tool Panel
+<ug-import-tool-panel>` is essentially a File Panel.
+
+This panel works pretty much like a standard file browser. The four buttons at
+the top go to the previous directory (if any), the next directory (if you went
+to the previous one), one directory up, or your home directory. A button at the
+bottom lets you see (operating-system-specific) hidden files and directories.
+
+The scrolling list is color coded for directories and files, with directories
+listed first.
+
+When using a File Panel for :ref:`exporting models <ug-session-panel>`, a File
+Format dropdown appears at the top right for selecting a format.
+
+|block-image|
 
 .. todo::
    Ended here
@@ -289,7 +317,6 @@ associated icons.
 .. _ug-bevel-tool-panel:
 .. _ug-csg-tool-panel:
 .. _ug-dialog-panel:
-.. _ug-file-panel:
 .. _ug-help-panel:
 .. _ug-import-tool-panel:
 .. _ug-name-tool-panel:
@@ -297,25 +324,6 @@ associated icons.
 .. _ug-session-name:
 .. _ug-tree-panel:
 .. _ug-virtual-keyboard-panel:
-
-### File Panel
-
-![][ImgFilePanel]{{rightimage(256)}}
-
-The File Panel is used by the [Session Panel][SessionPanel] and the [Settings
-Panel][SettingsPanel] when a directory or file needs to be chosen. In addition,
-the [Import Tool Panel][ImportToolPanel] is essentially a File Panel.
-
-This panel works pretty much like a standard file browser. The four buttons at
-the top go to the previous directory (if any), the next directory (if you went
-to the previous one), one directory up, or your home directory. A button at the
-bottom lets you see hidden files and directories (operating-system-specific).
-
-The scrolling list is color coded for directories and files, with directories
-listed first.
-
-The File Format dropdown at the top right is used for selecting a format when
-[exporting models][SessionPanel].
 
 ## Tool Panels
 
