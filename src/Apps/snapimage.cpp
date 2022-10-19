@@ -339,7 +339,7 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     else if (are_more_instructions) {
         const auto &instr = *script_.GetInstructions()[cur_instruction_];
         keep_going = ProcessInstruction_(instr);
-        if (instr.type == SnapScript::Instr::Type::kExit)
+        if (instr.type == SnapScript::Instr::Type::kStop)
             cur_instruction_ = instr_count;
         else
             ++cur_instruction_;
@@ -378,9 +378,6 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       case SIType::kDrag: {
           const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
           emitter_->AddDragPoint(dinst.phase, dinst.pos);
-          break;
-      }
-      case SIType::kExit: {
           break;
       }
       case SIType::kHand: {
@@ -445,6 +442,10 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
           const auto &sinst = GetTypedInstr_<SnapScript::StageInstr>(instr);
           auto &stage = *test_context_.scene_context->stage;
           stage.SetScaleAndRotation(sinst.scale, sinst.angle);
+          break;
+      }
+      case SIType::kStop: {
+          // Handled elsewhere.
           break;
       }
       case SIType::kTouch: {

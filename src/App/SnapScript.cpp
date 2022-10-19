@@ -84,7 +84,6 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kAction:   instr = ProcessAction_(words);   break;
       case Instr::Type::kClick:    instr = ProcessClick_(words);    break;
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
-      case Instr::Type::kExit:     instr = ProcessExit_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
       case Instr::Type::kHandPos:  instr = ProcessHandPos_(words);  break;
       case Instr::Type::kHover:    instr = ProcessHover_(words);      break;
@@ -95,6 +94,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kSettings: instr = ProcessSettings_(words); break;
       case Instr::Type::kSnap:     instr = ProcessSnap_(words);     break;
       case Instr::Type::kStage:    instr = ProcessStage_(words);    break;
+      case Instr::Type::kStop:     instr = ProcessStop_(words);     break;
       case Instr::Type::kTouch:    instr = ProcessTouch_(words);    break;
       case Instr::Type::kView:     instr = ProcessView_(words);     break;
     }
@@ -173,17 +173,6 @@ SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
         dinst->pos.Set(x, y);
     }
     return dinst;
-}
-
-SnapScript::InstrPtr SnapScript::ProcessExit_(const Words &words) {
-    ExitInstrPtr einst;
-    if (words.size() != 1U) {
-        Error_("Bad syntax for exit instruction");
-    }
-    else {
-        einst.reset(new ExitInstr);
-    }
-    return einst;
 }
 
 SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
@@ -361,6 +350,17 @@ SnapScript::InstrPtr SnapScript::ProcessStage_(const Words &words) {
         sinst.reset(new StageInstr);
         sinst->scale = scale;
         sinst->angle = Anglef::FromDegrees(angle);
+    }
+    return sinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessStop_(const Words &words) {
+    StopInstrPtr sinst;
+    if (words.size() != 1U) {
+        Error_("Bad syntax for stop instruction");
+    }
+    else {
+        sinst.reset(new StopInstr);
     }
     return sinst;
 }
