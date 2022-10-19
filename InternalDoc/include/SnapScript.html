@@ -12,7 +12,7 @@
   <tr>
     <td><b>#</b></td>
     <td>...</td>
-    <td>Comments are ignored.</td>
+    <td>Comments are ignored, including inline comments.</td>
   </tr>
   <tr>
     <td><b>action</b></td>
@@ -33,6 +33,11 @@
       coordinates.</td>
   </tr>
   <tr>
+    <td><b>exit</b></td>
+    <td>Stops processing any more instructions. This can be used for testing to
+      easily stop after a given instruction.</td>
+  </tr>
+  <tr>
     <td><b>hand</b></td>
     <td><code>L</code>|<code>R</code> <i>type</i></td>
     <td>Defines a controller model for the given hand. *type* is one of
@@ -46,9 +51,12 @@
   </tr>
   <tr>
     <td><b>handpos</b></td>
-    <td><code>L</code>|<code>R</code> <i>posx posy posz rotx roty rotz</i></td>
-    <td>Moves the controller for the given hand to the given position and
-      applies the given Euler angle rotations (in Z/X/Y order, in degrees).
+    <td><code>L</code>|<code>R</code> <i>posx posy posz laserx lasery laserz
+        guidex guidey guidez</i></td>
+    <td>Moves the controller for the given hand to the given position (relative
+      to the default rest position) and rotates so that the laser pointer and
+      hover guide align with the given vectors. The hover guide direction can
+      be zero if the default is ok.
   </tr>
   <tr>
     <td><b>key</b></td>

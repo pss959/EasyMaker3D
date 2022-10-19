@@ -15,6 +15,7 @@
 #include "Base/Tuning.h"
 #include "Debug/Shortcuts.h"
 #include "Handlers/Handler.h"
+#include "Items/Board.h"
 #include "Items/Controller.h"
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
@@ -26,6 +27,7 @@
 #include "Models/RootModel.h"
 #include "Panels/FilePanel.h"
 #include "SG/Search.h"
+#include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
@@ -267,6 +269,7 @@ class SnapshotApp_ : public Application {
     bool ProcessInstruction_(const SnapScript::Instr &instr);
     bool LoadSession_(const std::string &file_name);
     bool SetHand_(Hand hand, const std::string &controller_type);
+    void SetTouchMode_(bool is_on);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
     Selection BuildSelection_(const std::vector<std::string> &names);
 
@@ -336,7 +339,10 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     else if (are_more_instructions) {
         const auto &instr = *script_.GetInstructions()[cur_instruction_];
         keep_going = ProcessInstruction_(instr);
-        ++cur_instruction_;
+        if (instr.type == SnapScript::Instr::Type::kExit)
+            cur_instruction_ = instr_count;
+        else
+            ++cur_instruction_;
     }
     else {
         // No instructions left: stop ignoring mouse events from GLFWViewer and
@@ -372,6 +378,9 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       case SIType::kDrag: {
           const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
           emitter_->AddDragPoint(dinst.phase, dinst.pos);
+          break;
+      }
+      case SIType::kExit: {
           break;
       }
       case SIType::kHand: {
@@ -440,10 +449,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kTouch: {
           const auto &tinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
-          auto &sc = *test_context_.scene_context;
-          sc.left_controller->SetTouchMode(tinst.is_on);
-          sc.right_controller->SetTouchMode(tinst.is_on);
-          ForceTouchMode(tinst.is_on);
+          SetTouchMode_(tinst.is_on);
           break;
       }
       case SIType::kView: {
@@ -526,6 +532,23 @@ bool SnapshotApp_::SetHand_(Hand hand, const std::string &controller_type) {
     return true;
 }
 
+void SnapshotApp_::SetTouchMode_(bool is_on) {
+    auto &sc = *test_context_.scene_context;
+
+    ForceTouchMode(is_on);
+
+    // Tell the Boards.
+    const Point3f cam_pos = is_on ?
+        sc.vr_camera->GetCurrentPosition() : Point3f::Zero();
+    sc.app_board->SetUpForTouch(cam_pos);
+    sc.tool_board->SetUpForTouch(cam_pos);
+    sc.key_board->SetUpForTouch(cam_pos);
+
+    // Set controller state.
+    sc.left_controller->SetTouchMode(is_on);
+    sc.right_controller->SetTouchMode(is_on);
+}
+
 bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
                                  const std::string &file_name) {
     const auto &minp = rect.GetMinPoint();
@@ -599,7 +622,6 @@ int main(int argc, const char *argv[]) {
     options.fullscreen         = args.GetBool("--fullscreen");
     options.nosnap             = args.GetBool("--nosnap");
     options.remain             = args.GetBool("--remain");
-    options.set_up_touch       = true;
     options.show_session_panel = false;
 
     // Note that this must have the same aspect ratio as fullscreen.

@@ -31,9 +31,12 @@ static Rotationf ComputeHandRotation_(Hand hand, const Vector3f &laser_dir,
                                       const Vector3f &guide_dir) {
     const Rotationf laser_rot =
         Rotationf::RotateInto(-Vector3f::AxisZ(), laser_dir);
-    const Vector3f guide_start = laser_rot *
-        (hand == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX());
-    const Rotationf guide_rot = Rotationf::RotateInto(guide_start, guide_dir);
+    Rotationf guide_rot;
+    if (guide_dir != Vector3f::Zero()) {
+        const Vector3f guide_start = laser_rot *
+            (hand == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX());
+        guide_rot = Rotationf::RotateInto(guide_start, guide_dir);
+    }
     return guide_rot * laser_rot;
 }
 
@@ -81,6 +84,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kAction:   instr = ProcessAction_(words);   break;
       case Instr::Type::kClick:    instr = ProcessClick_(words);    break;
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
+      case Instr::Type::kExit:     instr = ProcessExit_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
       case Instr::Type::kHandPos:  instr = ProcessHandPos_(words);  break;
       case Instr::Type::kHover:    instr = ProcessHover_(words);      break;
@@ -169,6 +173,17 @@ SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
         dinst->pos.Set(x, y);
     }
     return dinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessExit_(const Words &words) {
+    ExitInstrPtr einst;
+    if (words.size() != 1U) {
+        Error_("Bad syntax for exit instruction");
+    }
+    else {
+        einst.reset(new ExitInstr);
+    }
+    return einst;
 }
 
 SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
