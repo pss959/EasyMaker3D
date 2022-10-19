@@ -6,6 +6,43 @@
 #include "Util/Enum.h"
 #include "Util/Read.h"
 
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+namespace {
+
+/// Returns words from the given line, processing in-line comments.
+static std::vector<std::string> GetWords_(const std::string &line) {
+    std::vector<std::string> words = ion::base::SplitString(line, " \t");
+
+    // Check for comments.
+    for (size_t i = 0; i < words.size(); ++i) {
+        if (ion::base::StartsWith(words[i], "#")) {
+            words.resize(i);
+            break;
+        }
+    }
+    return words;
+}
+
+
+static Rotationf ComputeHandRotation_(Hand hand, const Vector3f &laser_dir,
+                                      const Vector3f &guide_dir) {
+    const Rotationf laser_rot =
+        Rotationf::RotateInto(-Vector3f::AxisZ(), laser_dir);
+    const Vector3f guide_start = laser_rot *
+        (hand == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX());
+    const Rotationf guide_rot = Rotationf::RotateInto(guide_start, guide_dir);
+    return guide_rot * laser_rot;
+}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// SnapScript functions.
+// ----------------------------------------------------------------------------
+
 bool SnapScript::ReadScript(const FilePath &path) {
     instructions_.clear();
 
@@ -34,7 +71,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     if (line.empty() || line[0] == '#')
         return true;
 
-    const auto words = ion::base::SplitString(line, " \t");
+    const auto words = GetWords_(line);
     Instr::Type type;
     if (! GetInstructionType_(words[0], type))
         return Error_("Unknown instruction type '" + words[0] + "'");
@@ -159,8 +196,9 @@ SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
 SnapScript::InstrPtr SnapScript::ProcessHandPos_(const Words &words) {
     HandPosInstrPtr hinst;
     Vector3f        pos;
-    Vector3f        angles;
-    if (words.size() != 8U) {
+    Vector3f        laser_dir;
+    Vector3f        guide_dir;
+    if (words.size() != 11U) {
          Error_("Bad syntax for handpos instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
@@ -169,17 +207,17 @@ SnapScript::InstrPtr SnapScript::ProcessHandPos_(const Words &words) {
     else if (! ParseVector3f_(words, 2, pos)) {
         Error_("Invalid position floats for handpos instruction");
     }
-    else if (! ParseVector3f_(words, 5, angles)) {
-        Error_("Invalid rotation angle floats for handpos instruction");
+    else if (! ParseVector3f_(words, 5, laser_dir)) {
+        Error_("Invalid laser direction floats for handpos instruction");
+    }
+    else if (! ParseVector3f_(words, 8, guide_dir)) {
+        Error_("Invalid guide direction floats for handpos instruction");
     }
     else {
         hinst.reset(new HandPosInstr);
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->pos = Point3f(pos);
-        hinst->rot = Rotationf::FromRollPitchYaw(
-            Anglef::FromDegrees(angles[2]),
-            Anglef::FromDegrees(angles[0]),
-            Anglef::FromDegrees(angles[1]));
+        hinst->rot = ComputeHandRotation_(hinst->hand, laser_dir, guide_dir);
     }
     return hinst;
 }

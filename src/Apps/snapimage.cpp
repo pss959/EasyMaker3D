@@ -38,6 +38,22 @@
 #include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------
+// Constants.
+// ----------------------------------------------------------------------------
+
+/// Default rest position for the left controller.
+static Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};
+
+/// Default rest position for the right controller.
+static Point3f kRightControllerPos{.18f, 14.06, 59.5f};
+
+/// Offset to add to left controller position for event position.
+static Vector3f kLeftControllerOffset{0, -.12f, 0};
+
+/// Offset to add to right controller position for event position.
+static Vector3f kRightControllerOffset{0, .12f, 0};
+
+// ----------------------------------------------------------------------------
 // Emitter_ class.
 // ----------------------------------------------------------------------------
 
@@ -153,11 +169,13 @@ void Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
 void Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
                                 const Rotationf &rot) {
     Event event;
-    event.device    = hand == Hand::kLeft ?
+    event.device = hand == Hand::kLeft ?
         Event::Device::kLeftController : Event::Device::kRightController;
 
     event.flags.Set(Event::Flag::kPosition3D);
-    event.position3D = pos;
+    event.position3D = pos + (hand == Hand::kLeft ?
+                              kLeftControllerPos  + kLeftControllerOffset :
+                              kRightControllerPos + kRightControllerOffset);
 
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = rot;
@@ -290,6 +308,9 @@ bool SnapshotApp_::Init(const Options &options) {
     auto file_panel =
         test_context_.panel_manager->GetTypedPanel<FilePanel>("FilePanel");
     file_panel->SetFilePathList(new MockFilePathList_);
+
+    // Set the render offsets for the controllers.
+    SetControllerRenderOffsets(-kLeftControllerOffset, -kRightControllerOffset);
 
     return true;
 }
@@ -578,6 +599,7 @@ int main(int argc, const char *argv[]) {
     options.fullscreen         = args.GetBool("--fullscreen");
     options.nosnap             = args.GetBool("--nosnap");
     options.remain             = args.GetBool("--remain");
+    options.set_up_touch       = true;
     options.show_session_panel = false;
 
     // Note that this must have the same aspect ratio as fullscreen.

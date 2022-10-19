@@ -87,6 +87,11 @@ class Application {
     /// produced by GLFW.
     void EnableMouseMotionEvents(bool enable);
 
+    /// Allows the rendered controller positions to be offset from the
+    /// positions in input events.
+    void SetControllerRenderOffsets(const Vector3f &l_offset,
+                                    const Vector3f &r_offset);
+
   private:
     class  Loader_;
     class  Impl_;
