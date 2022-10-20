@@ -8,9 +8,11 @@ void PanelTool::Attach() {
     ASSERT(! panel_);
     const auto &context = GetContext();
 
-    // Let the derived PanelTool class set up from the ToolPanel.
+    // Set the panel_ member for InitPanel().
     auto &mgr = *context.board_manager;
     panel_ = mgr.GetTypedPanel<ToolPanel>(GetPanelName());
+
+    // Let the derived PanelTool class set up from the ToolPanel.
     InitPanel();
 
     // Attach the PanelChanged callback to Panel interaction.
@@ -39,7 +41,9 @@ void PanelTool::Detach() {
 void PanelTool::ReattachToSelection() {
     // The Tool class defines this to call Detach() and Attach(). For a
     // PanelTool, that would mean closing and reopening the Panel, which is
-    // overkill. Instead, just update the Board's position.
+    // overkill. Instead, just reinitialize the Panel and update the Board's
+    // position.
+    InitPanel();
     UpdateBoardPosition_();
 }
 
