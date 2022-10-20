@@ -229,13 +229,21 @@ void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,
                                     std::vector<std::string> &files,
                                     const std::string &extension,
                                     bool include_hidden) const {
-    subdirs.push_back("Dir0");
-    subdirs.push_back("Dir1");
-    files.push_back("FileA" + extension);
-    files.push_back("FileB" + extension);
-    files.push_back("FileC" + extension);
-    files.push_back("FileD" + extension);
-    files.push_back("FileE" + extension);
+    const FilePath dir = GetCurrent();
+    if (dir.ToString() == "/projects/makervr/stl/") {
+        files.push_back("Airplane.stl");
+        files.push_back("Boat.stl");
+        files.push_back("Car.stl");
+    }
+    else {
+        subdirs.push_back("Dir0");
+        subdirs.push_back("Dir1");
+        files.push_back("FileA" + extension);
+        files.push_back("FileB" + extension);
+        files.push_back("FileC" + extension);
+        files.push_back("FileD" + extension);
+        files.push_back("FileE" + extension);
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -307,10 +315,14 @@ bool SnapshotApp_::Init(const Options &options) {
     // No need to ask before quitting this app.
     SetAskBeforeQuitting(false);
 
-    // Use the MockFilePathList_ for the FilePanel.
-    auto file_panel =
-        test_context_.panel_manager->GetTypedPanel<FilePanel>("FilePanel");
-    file_panel->SetFilePathList(new MockFilePathList_);
+    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
+    const auto set_mock = [&](const std::string &panel_name){
+        auto panel =
+            test_context_.panel_manager->GetTypedPanel<FilePanel>(panel_name);
+        panel->SetFilePathList(new MockFilePathList_);
+    };
+    set_mock("FilePanel");
+    set_mock("ImportToolPanel");
 
     // Set the render offsets for the controllers.
     SetControllerRenderOffsets(-kLeftControllerOffset, -kRightControllerOffset);
