@@ -157,6 +157,10 @@ class Panel : public SG::Node {
     /// Pane size is determined. The base class defines this to do nothing.
     virtual void UpdateForPaneSizeChange() {}
 
+    /// Allows derived classes to reset the Panel size to zero so that the next
+    /// time it is opened the base size is used.
+    void ResetSize();
+
     /// Convenience that returns the current application Settings.
     const Settings & GetSettings() const;
 
@@ -202,7 +206,7 @@ class Panel : public SG::Node {
     /// a "Yes" or "No" result, which is passed to the given function.
     void AskQuestion(const std::string &question, const QuestionFunc &func);
 
-    /// Convenience that calls Close on the PanelHelper. Dervied classes can
+    /// Convenience that calls Close on the PanelHelper. Derived classes can
     /// modify this behavior.
     virtual void Close(const std::string &result);
 

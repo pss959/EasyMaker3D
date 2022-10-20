@@ -243,6 +243,11 @@ void Panel::UpdateForRenderPass(const std::string &pass_name) {
     }
 }
 
+void Panel::ResetSize() {
+    if (auto pane = GetPane())
+        pane->ResetLayoutSize();
+}
+
 const Settings & Panel::GetSettings() const {
     return GetContext().settings_manager->GetSettings();
 }

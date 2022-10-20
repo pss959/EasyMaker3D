@@ -27,6 +27,10 @@ class DialogPanel : public Panel {
     /// Sets up two response buttons with the given text.
     void SetChoiceResponse(const std::string &text0, const std::string &text1);
 
+    /// Redefines this to reset the size so the next invocation uses the proper
+    /// size.
+    virtual void Close(const std::string &result) override;
+
   protected:
     DialogPanel() {}
 
