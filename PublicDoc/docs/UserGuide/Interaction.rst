@@ -174,8 +174,8 @@ of buttons in each radial menu and to define the actions associated with each
 button. Almost anything you can do in the application can be assigned to a
 radial menu button; the icons associated with each :ref:`action <ug-actions>`
 are listed in the :ref:`Cheat Sheet <cheat-sheet>`. If any action cannot be
-applied at the current time, the corresponding button will be disabled
-(gray). By default, all buttons are set to the :action:`None` action (null sign
+applied at the current time, the corresponding button will be disabled (dark
+gray). By default, all buttons are set to the :action:`None` action (null sign
 icon), which is always disabled and has no corresponding effect.
 
 |block-image|
