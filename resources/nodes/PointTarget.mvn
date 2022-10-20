@@ -35,7 +35,7 @@ PointTargetWidget "PointTarget" {
     },
     # Node with line feedback that can be turned on and off.
     Node "Feedback" {
-      # Feedback uses the BaseColor shader.
+      disabled_flags: "kTraversal",
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
       state_table: StateTable { line_width: 4 },
