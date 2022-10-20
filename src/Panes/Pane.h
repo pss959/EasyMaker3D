@@ -74,6 +74,9 @@ class Pane : public SG::Node {
     /// behavior, but should call this one.
     virtual void SetLayoutSize(const Vector2f &size);
 
+    /// Resets the layout size of the Pane to zero.
+    void ResetLayoutSize() { layout_size_.Set(0, 0); }
+
     /// Returns the current layout size of the Pane.
     const Vector2f & GetLayoutSize() const { return layout_size_; }
 

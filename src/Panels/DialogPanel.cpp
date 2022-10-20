@@ -34,3 +34,8 @@ void DialogPanel::InitInterface() {
     AddButtonFunc("Button0", [&](){ Close(text0_->GetText()); });
     AddButtonFunc("Button1", [&](){ Close(text1_->GetText()); });
 }
+
+void DialogPanel::Close(const std::string &result) {
+    Panel::Close(result);
+    ResetSize();
+}

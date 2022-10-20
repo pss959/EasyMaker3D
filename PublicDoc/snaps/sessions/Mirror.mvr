@@ -39,32 +39,28 @@ CommandList {
       result_name: "Difference_1",
       model_names: ["Box_1", "Cylinder_1"],
     },
-    ConvertMirrorCommand {
-      model_names: ["Difference_1"],
-    },
     CopyCommand {
-      model_names: ["Mirrored_1"],
+      model_names: ["Difference_1"],
     },
     PasteCommand {
     },
     TranslateCommand {
-      translation: 8 0 0,
-      model_names: ["Mirrored_1_A"],
+      translation: 9 0 0,
+      model_names: ["Difference_1_A"],
     },
     ChangeColorCommand {
-      new_color: 0.919292 0.600792 0.651628 1,
-      model_names: ["Mirrored_1_A"],
-    },
-    ChangeColorCommand {
-      new_color: 0.926738 0.571157 0.658397 1,
-      model_names: ["Mirrored_1_A"],
+      new_color: 0.666337 0.93105 0.553744 1,
+      model_names: ["Difference_1_A"],
     },
     RotateCommand {
       rotation: -0 -1 -0 45,
       is_in_place: False,
       is_axis_aligned: False,
-      model_names: ["Mirrored_1_A"],
+      model_names: ["Difference_1_A"],
+    },
+    ConvertMirrorCommand {
+      model_names: ["Difference_1", "Difference_1_A"],
     },
   ],
-  current_index: 13,
+  current_index: 12,
 }

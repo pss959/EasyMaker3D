@@ -471,8 +471,8 @@ Mirror Tool
 .. todo::
    Update this when code is fixed (Clip Tool as well).
 
-.. incimage:: /images/MirrorToolTwoAfter.jpg  200px right
-.. incimage:: /images/MirrorToolTwoBefore.jpg 200px right
+.. incimage:: /images/MirrorToolTwoAfter.jpg  240px right
+.. incimage:: /images/MirrorToolTwoBefore.jpg 240px right
 .. incimage:: /images/MirrorTool.jpg          200px right
 
 The specialized :newterm:`Mirror Tool` is enabled when all of the selected
