@@ -199,6 +199,9 @@ class Tool : public Grippable {
     static float ComputePartScale(const Vector3f &model_size, float fraction,
                                   float min_size, float max_size);
 
+    /// Returns the neutral color to use for feedback.
+    static Color GetNeutralFeedbackColor();
+
     /// Returns the color to use for snapped feedback.
     static Color GetSnappedFeedbackColor();
 

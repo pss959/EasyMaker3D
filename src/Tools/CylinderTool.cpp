@@ -134,7 +134,7 @@ void CylinderTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
     if (is_activation) {
         // Starting a drag: activate the feedback.
         feedback_ = GetContext().feedback_manager->Activate<LinearFeedback>();
-        feedback_->SetColor(Color::White());
+        feedback_->SetColor(GetNeutralFeedbackColor());
 
         // Save the starting radius.
         start_radius_ = scaler == top_scaler_ ? cylinder_model_->GetTopRadius() :
@@ -219,6 +219,7 @@ void CylinderTool::UpdateFeedback_(float radius, bool is_snapped) {
 
     // Use SpanLength() here instead of SpanPoints() because the length can
     // be zero.
-    feedback_->SetColor(is_snapped ? GetSnappedFeedbackColor() : Color::White());
+    feedback_->SetColor(is_snapped ? GetSnappedFeedbackColor() :
+                        GetNeutralFeedbackColor());
     feedback_->SpanLength(p0, dir, ion::math::Distance(p0, p1));
 }

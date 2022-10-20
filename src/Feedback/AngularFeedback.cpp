@@ -4,6 +4,7 @@
 
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
+#include "SG/ColorMap.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/PolyLine.h"
@@ -39,7 +40,7 @@ class AngularFeedback::Impl_ {
     SG::Node &root_node_;
     Parts_    parts_;
 
-    Color color_{ Color::White() };
+    Color color_{SG::ColorMap::SGetColor("FeedbackNeutralColor")};
 
     void FindParts_();
     void UpdateLines_(const CircleArc &arc);
