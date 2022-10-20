@@ -101,6 +101,8 @@ true for long dropdown lists.
    the :ref:`hover guide <ug-grip-dragging>` is close enough to perpendicular
    to the panel, it will highlight the element that it will interact with.
 
+.. _ug-application-panels:
+
 Application Panels
 ..................
 
@@ -310,62 +312,127 @@ Format dropdown appears at the top right for selecting a format.
 
 |block-image|
 
+.. _ug-tool-panels:
+
+Tool Panels
+...........
+
+.. _ug-bevel-tool-panel:
+
+Bevel Tool Panel
+,,,,,,,,,,,,,,,,
+
+The :newterm:`Bevel Tool Panel` lets you edit the bevel created for all Beveled
+models once they have been :ref:`converted from other models
+<ug-converted-models>`. The bevel can be any sort of :newterm:`profile` applied
+to model edges to create various effects such as chamfering or rounding.
+
+All interactive changes made to a profile can be undone and redone
+individually.
+
+Profile Area
+::::::::::::
+
+.. incimage:: /images/BevelToolPanel.jpg 300px right
+
+The large area in the panel shows the current profile of the :ref:`primary
+selection <ug-selection>` and lets you edit it. If you make changes, they are
+applied to all selected Beveled models. The models update in real time as the
+profile is edited.
+
+The profile is interpreted as follows:
+
+  - The lower-left corner is where the edge is located, looking along its
+    length.
+  - The upper-left and lower-right points of the profile are at fixed locations
+    and are colored blue to indicate this. You can add new points between them,
+    move those points around, and delete points.
+
+The default profile is just a line connecting the two fixed points, which
+creates a bevel for all edges as in this image.
+
+|block-image|
+
+Adding, Moving, and Deleting Points
+:::::::::::::::::::::::::::::::::::
+
+.. incimage:: /images/BevelToolPanelDelete.jpg 200px right
+.. incimage:: /images/BevelToolPanelHover.jpg  200px right
+
+If you move the mouse close to an existing profile line (but not near an
+existing point), a red square will appear to indicate that a new interior
+profile point can be created there as shown in the left image. Clicking in that
+spot will create a new point. Click-dragging lets you move the new point where
+you want.
+
+Dragging an existing interior point moves it; when you do this, a box with an
+"X" in it appears to allow you to delete the point by dragging it over that
+box, as shown in the right image.
+
+|block-image|
+
+Profile Scaling
+:::::::::::::::
+
+.. incimage:: /images/BevelToolPanelScaleLarge.jpg 200px right
+.. incimage:: /images/BevelToolPanelScaleSmall.jpg 200px right
+
+The slider at the bottom of the panel allows you to change the size of the
+profile as it is applied to edges without having to move any points. For
+example, you can create a rounding profile and change the radius by adjusting
+the slider as shown here.
+
+|block-image|
+
+Adjusting the Maximum Edge Angle
+::::::::::::::::::::::::::::::::
+
+.. incimage:: /images/BevelToolPanelMaxAngle.jpg 200px right
+
+The slider on the right side of the panel allows you to change the
+:newterm:`maximum edge angle`, from 0 to 180 degrees. This setting determines
+which edges of a model will have the bevel profile applied to them.
+
+For example, suppose you want to bevel just the edges along the top and bottom
+faces of a cylinder, as shown here. These edges form 90 degree angles, so as
+long as the maximum angle is at least 90, they will have the bevel profile
+applied. The angles between faces forming the sides are typically greater than
+90 degrees (unless the cylinder has very low :ref:`complexity
+<ug-complexity-tool>`). As long as the maximum angle is smaller than that those
+edges will be left alone. The default is 120 degrees.
+
+Grip Dragging
+:::::::::::::
+
+.. admonition:: VR Only
+
+   .. incimage:: /images/BevelToolPanelGripMidpoint.jpg 200px right
+   .. incimage:: /images/BevelToolPanelGripPoint.jpg    200px right
+
+   In either VR mode, you can use the laser pointer and pinch action to edit
+   the profile and adjust the sliders in the panel. However, it is very hard to
+   make fine adjustments this way. It is much easier to use :ref:`touch mode
+   interaction <ug-touch-mode>` or :ref:`grip-dragging
+   <ug-grip-dragging>`. Touch mode interaction works as you would expect, where
+   the touch affordance acts like the mouse.
+
+   Grip dragging is enabled when the hover guide is pointed approximately
+   towards the panel. The relative position of each controller determines
+   whether it will interact with the main profile area or one of the two
+   sliders. As usual, the hover guide will connect to the active input to
+   indicate what will happen.
+
+   When interacting with the profile area, the relative position of the
+   controller determines whether a grip drag will operate on an existing point
+   or will create a new point. In the left image, the controller position is
+   closer to an existing point, so it highlights it. In the right image, it is
+   not closer to an existing point, so it highlights the midpoint with a red
+   square, indicating that grip-dragging it will create a new point that you
+   can then move around.
+
 .. todo::
    Ended here
 
-.. PANELS ------------
-.. _ug-bevel-tool-panel:
-.. _ug-csg-tool-panel:
-.. _ug-dialog-panel:
-.. _ug-help-panel:
-.. _ug-import-tool-panel:
-.. _ug-name-tool-panel:
-.. _ug-revsurf-tool-panel:
-.. _ug-session-name:
-.. _ug-tree-panel:
-.. _ug-virtual-keyboard-panel:
-
-## Tool Panels
-
-Each of these tool panels is a specialized tool for the corresponding type of
-model. See [this table][GUIPanelTools] for the (obvious) connections.
-
-### Bevel Tool Panel
-
-![][ImgBevelToolPanel]{{rightimage(256)}}
-
-The Bevel Tool Panel lets you edit the bevel created for all Beveled models
-once they have been [created from other models][ConvertToBeveledAction]. The
-bevel can actually be any sort of {{term('profile')}} applied to edges to
-create various effects such as chamfering or rounding.
-
-The panel initially shows the current profile of the [primary
-selection][PrimarySelection]. The edited profile is applied to edges of all
-selected Beveled models; the models update in real time as the profile is
-edited.
-
-The profile is drawn in the profile editing area and interpreted as follows:
-
-+ The upper-right corner is where the edge is located, looking along its
-  length.
-+ The upper-left and lower-right points of the profile are at fixed locations
-  and are colored blue to indicate this. You can add new points between them,
-  move those points around, and delete points.
-
-The default profile is just a line connecting the two fixed points, which
-creates a bevel for all edges.
-
-#### Editing the Profile with Mouse or Pinch
-
-![][ImgBevelDeleteBox]{{rightimage(160)}}
-
-Clicking anywhere on or near the profile line (except very close to an existing
-point) creates a new interior point at that spot. New points are rendered the
-same way as other interactive objects to indicate that they are movable.
-Dragging on or near the line (instead of clicking) creates a new point and
-immediately starts dragging it. Dragging an existing interior point moves it;
-when you do this, a box with an "X" in it appears to allow you to delete the
-point by dragging it over that box, as illustrated here.
 
 #### Editing the Profile with Grip Drag
 
@@ -381,31 +448,17 @@ highlighted, grip dragging creates a new point along that segment and starts
 dragging it. As in the mouse/pinch case, a delete box with an "X" appears to
 allow points to be removed.
 
-#### Profile Scaling
 
-![][ImgBevelScaleLarge]{{rightimage(200)}}
-![][ImgBevelScaleSmall]{{rightimage(200)}}
-
-The slider at the bottom of the panel allows you to scale the size of the
-profile as it is applied to edges without having to readjust any points. For
-example, you can create a rounding profile and change the radius by adjusting
-the slider as shown here.
-
-{{verticalspace(3)}}
-
-#### Maximum Angle
-
-![][ImgBevelMaxAngle]{{rightimage(220)}}
-
-The slider on the right side of the panel allows you to change the maximum edge
-angle, from 0 to 180 degrees. This determines which model edges are beveled.
-For example, suppose you have a cylinder and want to bevel just the edges
-forming the top and bottom faces, as shown here. These edges form 90 degree
-angles, so as long as the maximum angle is at least 90, they will have the
-bevel profile applied. The edges between faces forming the sides are typically
-greater than 90 degrees (unless the cylinder has very low
-[complexity][ComplexityTool]; as long as the maximum angle is smaller than that
-those edges will be left alone.  The default is 120 degrees.
+.. PANELS ------------
+.. _ug-csg-tool-panel:
+.. _ug-dialog-panel:
+.. _ug-help-panel:
+.. _ug-import-tool-panel:
+.. _ug-name-tool-panel:
+.. _ug-revsurf-tool-panel:
+.. _ug-session-name:
+.. _ug-tree-panel:
+.. _ug-virtual-keyboard-panel:
 
 ### CSG Tool Panel
 

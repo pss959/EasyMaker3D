@@ -65,18 +65,9 @@ CommandList {
       result_name: "Text_1",
     },
     CreateImportedModelCommand {
-      path: "/home/pss/data/makervr/stl/Kenji.stl",
+      path: "PublicDoc/snaps/stl/Kenji.stl",
       result_name: "Imported_1",
     },
-    ScaleCommand {
-      ratios: 0.121212 0.121212 0.121212,
-      mode: "kCenterSymmetric",
-      model_names: ["Imported_1"],
-    },
-    TranslateCommand {
-      translation: 0 -13.6515 -4.31997,
-      model_names: ["Imported_1"],
-    },
   ],
-  current_index: 14,
+  current_index: 12,
 }

@@ -1,0 +1,39 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+      point_target_visible: True,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: -5 0 0,
+      model_names: ["Box_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 5 0 0,
+      model_names: ["Cylinder_1"],
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: -5.1675 4 1.43826,
+        direction: 0 1 0,
+      },
+    },
+  ],
+  current_index: 5,
+}
