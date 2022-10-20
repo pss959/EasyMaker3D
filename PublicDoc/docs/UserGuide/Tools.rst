@@ -189,8 +189,8 @@ principal axes of the :ref:`stage <ug-stage>`.
    <ug-dimension-colors>` to that ring.  In the left image here, the ring is
    close to aligning with the red X-axis rotation ring of the Rotation Tool, so
    a red connection appears. In the center image, it is close to aligning with
-   the blue Z-axis ring. In any other orientation, the guide will show a
-   neutral-color connection to the center sphere as in the right image.
+   the blue Z-axis ring. In any other orientation, the guide will show a yellow
+   connection to the center sphere as in the right image.
 
    If a ring is hovered, grip dragging by rotating the controller parallel to
    the ring rotates the model(s) in the same direction. When no ring is

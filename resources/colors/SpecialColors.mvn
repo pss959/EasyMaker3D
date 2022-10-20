@@ -10,7 +10,7 @@ ColorMap {
     NamedColor "FileDirectoryColor"          { color: "#338033" },
     NamedColor "FileHighlightColor"          { color: "#b21b1b" },
     NamedColor "GripActiveColor"             { color: "#e6e61a" },
-    NamedColor "GripNeutralColor"            { color: "#dddddd" },
+    NamedColor "GripNeutralColor"            { color: "#ffff33" },
     NamedColor "IconActiveColor"             { color: "#67f01a" },
     NamedColor "IconDisabledColor"           { color: "#333333" },
     NamedColor "IconHoverColor"              { color: "#222222" },
