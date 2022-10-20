@@ -26,15 +26,16 @@ bool ControllerHandler::HandleEvent(const Event &event) {
 }
 
 void ControllerHandler::UpdateController_(const Event &event) {
-    Controller &controller = event.device == Event::Device::kLeftController ?
-        *l_controller_ : *r_controller_;
+    const bool is_left = event.device == Event::Device::kLeftController;
+    Controller &controller = is_left ? *l_controller_   : *r_controller_;
+    const Vector3f &offset = is_left ? l_render_offset_ : r_render_offset_;
 
     // If the position is the origin, the controller is not active, so
     // hide the model.
     const bool is_active = event.position3D != Point3f::Zero();
     controller.SetEnabled(is_active);
     if (is_active) {
-        controller.SetTranslation(event.position3D);
+        controller.SetTranslation(event.position3D + offset);
         controller.SetRotation(event.orientation);
     }
 }

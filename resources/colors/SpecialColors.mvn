@@ -5,6 +5,7 @@ ColorMap {
     NamedColor "DimensionColorX"             { color: $DIM_COLOR_X },
     NamedColor "DimensionColorY"             { color: $DIM_COLOR_Y },
     NamedColor "DimensionColorZ"             { color: $DIM_COLOR_Z },
+    NamedColor "FeedbackNeutralColor"        { color: "#ffff33" },
     NamedColor "FileColor"                   { color: "#1b1b1b" },
     NamedColor "FileDirectoryColor"          { color: "#338033" },
     NamedColor "FileHighlightColor"          { color: "#b21b1b" },

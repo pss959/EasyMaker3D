@@ -131,6 +131,10 @@ float Tool::ComputePartScale(const Vector3f &model_size, float fraction,
     return Clamp(fraction * avg_size, min_size, max_size);
 }
 
+Color Tool::GetNeutralFeedbackColor() {
+    return SG::ColorMap::SGetColor("FeedbackNeutralColor");
+}
+
 Color Tool::GetSnappedFeedbackColor() {
     return SG::ColorMap::SGetColor("TargetActiveColor");
 }
@@ -139,7 +143,7 @@ Color Tool::GetFeedbackColor(int dim, bool is_snapped) {
     // If snapped, use the snapped color. Otherwise, use a lighter version of
     // the dimension color.
     return is_snapped ? GetSnappedFeedbackColor() :
-        Lerp(.4f, SG::ColorMap::SGetColorForDimension(dim), Color::White());
+        Lerp(.25f, SG::ColorMap::SGetColorForDimension(dim), Color::White());
 }
 
 void Tool::Finish() {

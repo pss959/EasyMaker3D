@@ -95,7 +95,8 @@ class Board : public Grippable, public Touchable {
     /// Sets up the Board for use with controller touches in VR. The position
     /// of the camera is supplied so the Board can scale and position itself
     /// relative to it. Note that the offset returned by GetOffset() is applied
-    /// after positioning.
+    /// after positioning. If the origin is passed in, this disables touch
+    /// processing.
     void SetUpForTouch(const Point3f &cam_pos);
 
     /// Sets the Board's position. This has no effect if the Board is set up

@@ -742,7 +742,7 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kUndo, context_->command_manager->CanUndo());
     set_enabled(Action::kRedo, context_->command_manager->CanRedo());
 
-    // Panels cannot be opened if the AppBoard isalready in use.
+    // Panels cannot be opened if the AppBoard is already in use.
     const bool can_open_app_panel =
         ! context_->scene_context->app_board->IsShown();
     set_enabled(Action::kOpenSessionPanel,  can_open_app_panel);

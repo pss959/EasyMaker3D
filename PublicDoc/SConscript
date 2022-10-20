@@ -60,6 +60,17 @@ annotator  = env.File('#/bin/annotate.py').abspath
 
 # This maps snapimage script files to the images they generate.
 snap_map = {
+  'AppPanels1' : [
+    'ActionPanel',
+    'HelpPanel',
+    'InfoPanel',
+    'RadialMenuPanel',
+    'SettingsPanel',
+  ],
+  'AppPanels2' : [
+    'FilePanel',
+    'GripPanelBar',
+  ],
   'CSG' : [
     'CSGDifference',
     'CSGIntersection',
@@ -111,19 +122,11 @@ snap_map = {
     'Logo',
     'PrecisionControl',
     'WorkArea',
+    'WorkAreaWithSelection',
   ],
   'ModelEdges' : [
     'ModelEdges',
     'ModelNoEdges',
-  ],
-  'Panels' : [
-    'ActionPanel',
-    'FilePanel',
-    'GripPanelBar',
-    'HelpPanel',
-    'InfoPanel',
-    'RadialMenuPanel',
-    'SettingsPanel',
   ],
   'Primitives' : [
     'PrimitiveBox',
@@ -204,11 +207,20 @@ snap_map = {
   'TargetSnap' : [
     'SnappedToPointTarget',
   ],
+  'ToolPanels' : [
+    'BevelToolPanel',
+    'BevelToolPanelDelete',
+    'BevelToolPanelGripMidpoint',
+    'BevelToolPanelHover',
+    'BevelToolPanelMaxAngle',
+    'BevelToolPanelScaleLarge',
+    'BevelToolPanelScaleSmall',
+  ],
 }
 
 # This maps annotation script files to the images they read and write.
 ann_map = {
-  'Icons'    : (['WorkArea'],
+  'Icons'    : (['WorkArea', 'WorkAreaWithSelection'],
                 [
                   'CombineHullIcon',
                   'CreateCylinderIcon',

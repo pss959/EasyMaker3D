@@ -40,6 +40,7 @@ class SnapScript {
             kSettings,
             kSnap,
             kStage,
+            kStop,
             kTouch,
             kView,
         };
@@ -96,6 +97,9 @@ class SnapScript {
         float  scale;
         Anglef angle;
     };
+    struct StopInstr : public Instr {
+        // No data.
+    };
     struct TouchInstr : public Instr {
         bool is_on;
     };
@@ -117,6 +121,7 @@ class SnapScript {
     DECL_SHARED_PTR(SettingsInstr);
     DECL_SHARED_PTR(SnapInstr);
     DECL_SHARED_PTR(StageInstr);
+    DECL_SHARED_PTR(StopInstr);
     DECL_SHARED_PTR(TouchInstr);
     DECL_SHARED_PTR(ViewInstr);
 
@@ -150,6 +155,7 @@ class SnapScript {
     InstrPtr ProcessSettings_(const Words &words);
     InstrPtr ProcessSnap_(const Words &words);
     InstrPtr ProcessStage_(const Words &words);
+    InstrPtr ProcessStop_(const Words &words);
     InstrPtr ProcessTouch_(const Words &words);
     InstrPtr ProcessView_(const Words &words);
 

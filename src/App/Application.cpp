@@ -124,6 +124,10 @@ class  Application::Impl_ {
     void EnableMouseMotionEvents(bool enable) {
         glfw_viewer_->EnableMouseMotionEvents(enable);
     }
+    void SetControllerRenderOffsets(const Vector3f &l_offset,
+                                    const Vector3f &r_offset) {
+        controller_handler_->SetRenderOffsets(l_offset, r_offset);
+    }
 
   private:
     /// Run states for the main loop.
@@ -1479,4 +1483,9 @@ void Application::ForceTouchMode(bool is_on) {
 
 void Application::EnableMouseMotionEvents(bool enable) {
     impl_->EnableMouseMotionEvents(enable);
+}
+
+void Application::SetControllerRenderOffsets(const Vector3f &l_offset,
+                                             const Vector3f &r_offset) {
+    impl_->SetControllerRenderOffsets(l_offset, r_offset);
 }

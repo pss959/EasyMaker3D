@@ -12,7 +12,7 @@ Settings {
     from_units: "kCentimeters",
     to_units: "kMillimeters",
   },
-  build_volume_size: 26 32 26,
+  build_volume_size: 22 30 22,
   left_radial_menu: RadialMenuInfo {
     count: "kCount4",
     actions: ["kHideSelected", "kShowAll", "kTogglePointTarget", "kToggleEdgeTarget"],

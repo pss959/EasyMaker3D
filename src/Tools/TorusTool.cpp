@@ -147,7 +147,7 @@ void TorusTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
     if (is_activation) {
         // Starting a drag: activate the feedback.
         feedback_ = GetContext().feedback_manager->Activate<LinearFeedback>();
-        feedback_->SetColor(Color::White());
+        feedback_->SetColor(GetNeutralFeedbackColor());
 
         // Save the starting radii.
         start_radius_ = is_inner ? torus_model_->GetInnerRadius() :
@@ -254,10 +254,8 @@ void TorusTool::UpdateFeedback_(const TorusModel &model,
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
     const Point3f  p0  = osm * (center - radius * axis);
     const Point3f  p1  = osm * (center + radius * axis);
-    const Vector3f dir = ion::math::Normalized(osm * axis);
 
-    // Use SpanLength() here instead of SpanPoints() because the length can
-    // be zero.
-    feedback_->SetColor(is_snapped ? GetSnappedFeedbackColor() : Color::White());
-    feedback_->SpanLength(p0, dir, ion::math::Distance(p0, p1));
+    feedback_->SetColor(is_snapped ? GetSnappedFeedbackColor() :
+                        GetNeutralFeedbackColor());
+    feedback_->SpanPoints(p0, p1);
 }

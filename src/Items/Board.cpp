@@ -145,7 +145,7 @@ class Board::Impl_ {
     /// to the Board and the current Panel in the board supports grip hovering,
     /// this asks the Panel to update the GripInfo. Returns true if the Panel
     /// was able to do the job.
-    bool UpdatePanelGripInfo(GripInfo &info);
+    bool UpdatePanelGripInfo_(GripInfo &info);
 
     /// Returns the best part to grip hover based on the controller direction.
     void GetBestGripHoverPart_(const Vector3f &guide_direction,
@@ -243,14 +243,24 @@ void Board::Impl_::UpdateSizeIfNecessary() {
 
 void Board::Impl_::SetUpForTouch(const Point3f &cam_pos,
                                  const Vector3f &offset) {
-    ASSERT(cam_pos[2] != 0);
+    // Origin == disable.
+    if (cam_pos == Point3f::Zero()) {
+        is_set_up_for_touch_ = false;
+    }
+    else {
+        ASSERT(cam_pos[2] != 0);
 
-    // Center in X, stay even with the camera in Y, and use the computed Z.
-    // Then add the offset.
-    const Vector3f trans(0, cam_pos[1], cam_pos[2] - TK::kBoardTouchDistance);
-    root_node_.SetTranslation(trans + offset);
+        // Center in X, stay even with the camera in Y, and use the computed Z.
+        // Then add the offset.
+        const Vector3f trans(0, cam_pos[1],
+                             cam_pos[2] - TK::kBoardTouchDistance);
+        root_node_.SetTranslation(trans + offset);
 
-    is_set_up_for_touch_ = true;
+        if (! canvas_->GetBounds().IsEmpty())
+            UpdateScaleForTouch_();
+
+        is_set_up_for_touch_ = true;
+    }
 }
 
 void Board::Impl_::SetPosition(const Point3f &pos) {
@@ -267,7 +277,7 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
     ASSERT(! state.dragged_part);
 
     // Try asking the Panel first.
-    if (UpdatePanelGripInfo(info))
+    if (UpdatePanelGripInfo_(info))
         return;
 
     // Otherwise, use the controller orientation to get the best part to hover.
@@ -586,7 +596,7 @@ void Board::Impl_::SetDraggedPart_(bool use_hovered_part) {
     }
 }
 
-bool Board::Impl_::UpdatePanelGripInfo(GripInfo &info) {
+bool Board::Impl_::UpdatePanelGripInfo_(GripInfo &info) {
     // The controller guide has to be close to perpendicular to the Board and
     // the Board's Panel has to be able to do grip hovering.
     auto panel = GetCurrentPanel();

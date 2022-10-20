@@ -7,6 +7,7 @@
 
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
+#include "SG/ColorMap.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -27,7 +28,26 @@ class LinearFeedback::Impl_ {
                     const Bounds &scene_bounds, const Matrix4f &owm);
 
   private:
-    struct Frame_;
+    /// This struct stores everything needed to draw linear feedback. A
+    /// transient instance is created when necessary to update the parts of the
+    /// feedback.
+    struct Frame_ {
+        /// \name Inputs.
+        ///@{
+        Point3f  p0;               ///< Starting point of feedback.
+        Vector3f direction;        ///< Linear feedback direction.
+        float    length;           ///< Length of feedback.
+        ///@}
+
+        /// \name Computed values.
+        ///@{
+        Point3f  p1;               ///< Ending point of feedback.
+        Vector3f up_direction;     ///< Direction for uprights.
+        float    crossbar_height;  ///< Height of crossbar above points.
+        float    upright_length;   ///< Length of uprights.
+        float    text_height;      ///< Height of text above points.
+        ///@}
+    };
 
     /// This struct stores all of the parts the LinearFeedback needs to operate.
     struct Parts_ {
@@ -40,35 +60,11 @@ class LinearFeedback::Impl_ {
     SG::Node &root_node_;
     Parts_    parts_;
 
-    Color color_{ Color::White() };
+    Color color_{SG::ColorMap::SGetColor("FeedbackNeutralColor")};
 
     void FindParts_();
     void ComputeFrame_(const Point3f &p0, const Vector3f &dir, float length,
                        const Bounds &scene_bounds, Frame_ &frame);
-};
-
-// ----------------------------------------------------------------------------
-// LinearFeedback::Impl_::Frame_ struct.
-// ----------------------------------------------------------------------------
-
-/// This struct stores everything needed to draw linear feedback. A transient
-/// instance is created when necessary to update the parts of the feedback.
-struct LinearFeedback::Impl_::Frame_ {
-    /// \name Inputs.
-    ///@{
-    Point3f  p0;               ///< Starting point of feedback.
-    Vector3f direction;        ///< Linear feedback direction.
-    float    length;           ///< Length of feedback.
-    ///@}
-
-    /// \name Computed values.
-    ///@{
-    Point3f  p1;               ///< Ending point of feedback.
-    Vector3f up_direction;     ///< Direction for uprights.
-    float    crossbar_height;  ///< Height of crossbar above points.
-    float    upright_length;   ///< Length of uprights.
-    float    text_height;      ///< Height of text above points.
-    ///@}
 };
 
 // ----------------------------------------------------------------------------
@@ -137,8 +133,9 @@ void LinearFeedback::Impl_::ComputeFrame_(const Point3f &p0,
 
     // Compute a minimum height in the up direction so the feedback will not
     // intersect anything in the scene, based on the scene bounds.
-    const float min_height = TK::kLinearFeedbackHeightScale *
+    const float min_scene_height = TK::kLinearFeedbackHeightScale *
         (scene_bounds.GetMaxPoint()[up_dim] - p0[up_dim]);
+    const float min_height = std::max(1.f, min_scene_height);
 
     frame.crossbar_height = min_height + TK::kLinearFeedbackExtraHeight;
     frame.upright_length =

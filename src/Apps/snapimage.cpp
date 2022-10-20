@@ -15,6 +15,7 @@
 #include "Base/Tuning.h"
 #include "Debug/Shortcuts.h"
 #include "Handlers/Handler.h"
+#include "Items/Board.h"
 #include "Items/Controller.h"
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
@@ -26,6 +27,7 @@
 #include "Models/RootModel.h"
 #include "Panels/FilePanel.h"
 #include "SG/Search.h"
+#include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
 #include "Tests/TestContext.h"
 #include "Util/Assert.h"
@@ -36,6 +38,22 @@
 #include "Util/Read.h"
 #include "Util/Write.h"
 #include "Widgets/StageWidget.h"
+
+// ----------------------------------------------------------------------------
+// Constants.
+// ----------------------------------------------------------------------------
+
+/// Default rest position for the left controller.
+static Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};
+
+/// Default rest position for the right controller.
+static Point3f kRightControllerPos{.18f, 14.06, 59.5f};
+
+/// Offset to add to left controller position for event position.
+static Vector3f kLeftControllerOffset{0, -.12f, 0};
+
+/// Offset to add to right controller position for event position.
+static Vector3f kRightControllerOffset{0, .12f, 0};
 
 // ----------------------------------------------------------------------------
 // Emitter_ class.
@@ -153,11 +171,13 @@ void Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
 void Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
                                 const Rotationf &rot) {
     Event event;
-    event.device    = hand == Hand::kLeft ?
+    event.device = hand == Hand::kLeft ?
         Event::Device::kLeftController : Event::Device::kRightController;
 
     event.flags.Set(Event::Flag::kPosition3D);
-    event.position3D = pos;
+    event.position3D = pos + (hand == Hand::kLeft ?
+                              kLeftControllerPos  + kLeftControllerOffset :
+                              kRightControllerPos + kRightControllerOffset);
 
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = rot;
@@ -209,13 +229,21 @@ void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,
                                     std::vector<std::string> &files,
                                     const std::string &extension,
                                     bool include_hidden) const {
-    subdirs.push_back("Dir0");
-    subdirs.push_back("Dir1");
-    files.push_back("FileA" + extension);
-    files.push_back("FileB" + extension);
-    files.push_back("FileC" + extension);
-    files.push_back("FileD" + extension);
-    files.push_back("FileE" + extension);
+    const FilePath dir = GetCurrent();
+    if (dir.ToString() == "/projects/makervr/stl/") {
+        files.push_back("Airplane.stl");
+        files.push_back("Boat.stl");
+        files.push_back("Car.stl");
+    }
+    else {
+        subdirs.push_back("Dir0");
+        subdirs.push_back("Dir1");
+        files.push_back("FileA" + extension);
+        files.push_back("FileB" + extension);
+        files.push_back("FileC" + extension);
+        files.push_back("FileD" + extension);
+        files.push_back("FileE" + extension);
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -249,6 +277,7 @@ class SnapshotApp_ : public Application {
     bool ProcessInstruction_(const SnapScript::Instr &instr);
     bool LoadSession_(const std::string &file_name);
     bool SetHand_(Hand hand, const std::string &controller_type);
+    void SetTouchMode_(bool is_on);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
     Selection BuildSelection_(const std::vector<std::string> &names);
 
@@ -286,10 +315,17 @@ bool SnapshotApp_::Init(const Options &options) {
     // No need to ask before quitting this app.
     SetAskBeforeQuitting(false);
 
-    // Use the MockFilePathList_ for the FilePanel.
-    auto file_panel =
-        test_context_.panel_manager->GetTypedPanel<FilePanel>("FilePanel");
-    file_panel->SetFilePathList(new MockFilePathList_);
+    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
+    const auto set_mock = [&](const std::string &panel_name){
+        auto panel =
+            test_context_.panel_manager->GetTypedPanel<FilePanel>(panel_name);
+        panel->SetFilePathList(new MockFilePathList_);
+    };
+    set_mock("FilePanel");
+    set_mock("ImportToolPanel");
+
+    // Set the render offsets for the controllers.
+    SetControllerRenderOffsets(-kLeftControllerOffset, -kRightControllerOffset);
 
     return true;
 }
@@ -315,7 +351,10 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     else if (are_more_instructions) {
         const auto &instr = *script_.GetInstructions()[cur_instruction_];
         keep_going = ProcessInstruction_(instr);
-        ++cur_instruction_;
+        if (instr.type == SnapScript::Instr::Type::kStop)
+            cur_instruction_ = instr_count;
+        else
+            ++cur_instruction_;
     }
     else {
         // No instructions left: stop ignoring mouse events from GLFWViewer and
@@ -417,12 +456,13 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
           stage.SetScaleAndRotation(sinst.scale, sinst.angle);
           break;
       }
+      case SIType::kStop: {
+          // Handled elsewhere.
+          break;
+      }
       case SIType::kTouch: {
           const auto &tinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
-          auto &sc = *test_context_.scene_context;
-          sc.left_controller->SetTouchMode(tinst.is_on);
-          sc.right_controller->SetTouchMode(tinst.is_on);
-          ForceTouchMode(tinst.is_on);
+          SetTouchMode_(tinst.is_on);
           break;
       }
       case SIType::kView: {
@@ -503,6 +543,23 @@ bool SnapshotApp_::SetHand_(Hand hand, const std::string &controller_type) {
     parent->SetEnabled(false);
 
     return true;
+}
+
+void SnapshotApp_::SetTouchMode_(bool is_on) {
+    auto &sc = *test_context_.scene_context;
+
+    ForceTouchMode(is_on);
+
+    // Tell the Boards.
+    const Point3f cam_pos = is_on ?
+        sc.vr_camera->GetCurrentPosition() : Point3f::Zero();
+    sc.app_board->SetUpForTouch(cam_pos);
+    sc.tool_board->SetUpForTouch(cam_pos);
+    sc.key_board->SetUpForTouch(cam_pos);
+
+    // Set controller state.
+    sc.left_controller->SetTouchMode(is_on);
+    sc.right_controller->SetTouchMode(is_on);
 }
 
 bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,

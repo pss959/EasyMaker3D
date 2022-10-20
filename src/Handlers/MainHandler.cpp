@@ -407,7 +407,8 @@ bool MainHandler::Impl_::Activate_(const Event event) {
         if (tracker->IsActivation(event, widget)) {
             cur_tracker_  = tracker;
             active_widget_ = widget;
-            KLOG('h', "MainHandler active widget = " << widget.get()
+            KLOG('h', "MainHandler active widget = "
+                 << (widget ? widget->GetDesc() : "NULL")
                  << " from " << Util::EnumName(tracker->GetActuator()));
             if (event.device == Event::Device::kMouse) {
                 KLOG('d', "Mouse activation at " << event.position2D
