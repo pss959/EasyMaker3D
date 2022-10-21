@@ -225,6 +225,8 @@ The ``Done`` button or the :shortcut:`Escape` key closes the Info Panel.
 
 |block-image|
 
+.. _ug-help-panel:
+
 Help Panel
 ,,,,,,,,,,
 
@@ -430,109 +432,97 @@ Grip Dragging
    square, indicating that grip-dragging it will create a new point that you
    can then move around.
 
-.. todo::
-   Ended here
-
-
-#### Editing the Profile with Grip Drag
-
-![][ImgBevelGripMidpoint]{{rightimage(160)}}
-![][ImgBevelGripPoint]{{rightimage(160)}}
-
-When [grip hovering selects the profile editing area][GUIPanelInteraction], it
-will highlight each movable point and also the midpoint of each profile line
-segment, whichever is closest to the current relative controller position. The
-midpoint is rendered as a blue square, as shown here. When a point is
-highlighted, grip dragging moves that point. When a midpoint square is
-highlighted, grip dragging creates a new point along that segment and starts
-dragging it. As in the mouse/pinch case, a delete box with an "X" appears to
-allow points to be removed.
-
-
-.. PANELS ------------
 .. _ug-csg-tool-panel:
-.. _ug-dialog-panel:
-.. _ug-help-panel:
+
+CSG Tool Panel
+,,,,,,,,,,,,,,
+
+.. incimage:: /images/CSGToolPanel.jpg 200px right
+
+The :newterm:`CSG Tool Panel` is a very simple panel that lets you change the
+:ref:`CSG operation <ug-csg>` applied to all selected :ref:`CSG models
+<ug-combined-models>`. Clicking any of the radio buttons applies the change
+immediately.
+
+|block-image|
+
 .. _ug-import-tool-panel:
-.. _ug-name-tool-panel:
+
+Import Tool Panel
+,,,,,,,,,,,,,,,,,
+
+.. incimage:: /images/ImportToolPanel.jpg 200px right
+
+The :newterm:`Import Tool Panel` is essentially a :ref:`File Panel
+<ug-file-panel>` that lets you specify the file to import or reimport the mesh
+used for an :ref:`Imported model <ug-primitive-models>`. If multiple Imported
+models are selected, all of them will be changed to use the file when the
+``Accept`` button is pressed.
+
+|block-image|
+
 .. _ug-revsurf-tool-panel:
-.. _ug-session-name:
-.. _ug-tree-panel:
-.. _ug-virtual-keyboard-panel:
 
-### CSG Tool Panel
+RevSurf Tool Panel
+,,,,,,,,,,,,,,,,,,
 
-![][ImgCSGToolPanel]{{rightimage(180)}}
+.. incimage:: /images/RevSurfToolPanel.jpg 200px right
 
-The CSG Tool Panel is a very simple panel that lets you change the [CSG
-operation][CSG] applied to all selected CSG models.
+The :newterm:`RevSurf Tool Panel` lets you edit the profile that is revolved
+around the Z (up) axis for all selected :ref:`RevSurf (surface of revolution)
+models <ug-primitive-models>`. The panel initially shows the current profile of
+the :ref:`primary selection <ug-selection>`. Any changes to the profile are
+applied to all selected RevSurf models; the models update in real time as the
+profile is edited.
 
-{{verticalspace(4)}}
+|block-image|
 
-### Import Tool Panel
+Editing the RevSurf Profile
+:::::::::::::::::::::::::::
 
-![][ImgImportToolPanel]{{rightimage(220)}}
+Editing the profile for the RevSurf models is essentially the same as in the
+:ref:`Bevel Tool Panel <ug-bevel-tool-panel>`, except that there must always be
+at least 3 points in the profile; the panel will not let you delete an interior
+profile point if it is the only one left.
 
-The Import Tool Panel is essentially a [File Panel][FilePanel] that lets you
-reimport the mesh used for an [Imported model][PrimitiveModels] or to change
-which file to import it from. If multiple Imported models are selected, all of
-them will be changed to use the new file if one is selected.
+Adjusting the Sweep Angle
+:::::::::::::::::::::::::
 
-{{verticalspace(4)}}
+.. incimage:: /images/RevSurfToolPanelSweep.jpg 200px right
 
-### RevSurf Tool Panel
+By default, a RevSurf model is created by revolving the profile 360 degrees
+around the Z (up) axis. You can change this with the slider at the bottom of
+the panel. Angles less than 360 result in a partial sweep with end cap
+polygons, as shown here.
 
-The RevSurf Tool Panel lets you edit the profile that is revolved around the +Z
-axis for all selected [RevSurf (surface of revolution)
-models][PrimitiveModels]. The panel initially shows the current profile of the
-[primary selection][PrimarySelection]. The edited profile is applied to all
-selected RevSurf models; the models update in real time as the profile is
-edited.
+|block-image|
 
-#### Profile Editing
+.. _ug-text-tool-panel:
 
-![][ImgRevSurfToolPanel]{{rightimage(200)}}
+Text Tool Panel
+,,,,,,,,,,,,,,,
 
-Profile editing is essentially the same as in the [Bevel Tool
-Panel][BevelToolPanel], with two (related) exceptions:
+.. incimage:: /images/TextToolPanel.jpg 200px right
 
-+ The default profile has 3 points as shown here.
-+ There must be at least 3 points in the revolved profile, so the panel will
-  not let you delete a movable point if it is the only one left.
-
-{{verticalspace(2)}}
-
-#### Sweep Angle
-
-![][ImgRevSurfSweep]{{rightimage(256)}}
-
-Below the profile editing area is a slider that lets you set the sweep angle in
-degrees for the surface. The default is 360, meaning that the profile makes a
-complete revolution. Values less than 360 result in a partial sweep with end
-cap polygons, as shown here.
-
-{{verticalspace(4)}}
-
-### Text Tool Panel
-
-![][ImgTextToolPanel]{{rightimage(200)}}
-
-The Text Tool Panel lets you edit the text string and font characteristics used
-to create 3D text for all selected [Text models][PrimitiveModels]. The panel
-initially shows the values for the [primary selection][PrimarySelection]. All
-changes made with the panel affect all selected Text models.
+The :newterm:`Text Tool Panel` lets you edit the text string, font, and
+character spacing for all selected :ref:`Text models <ug-primitive-models>`.
+The panel initially shows the values for the :ref:`primary selection
+<ug-selection>`. Clicking the ``Apply`` button applies all changes made with
+the panel to all selected Text models.
 
 The panel lets you specify the following settings:
 
-+ Text string.
-+ Font family. You can select from the dropdown list containing all available
-  font families.
-+ Font style. This dropdown lets you select from the styles available for the
-  currently-selected family.
-+ Character spacing (slider). This factor multiplies the spacing between
-  individual characters to move them closer together or further apart. The
-  default is 1, which is the spacing defined by the font.
+  - :emphasis:`Text string`.
+  - :emphasis:`Font name`. The dropdown contains all available fonts.
+  - :emphasis:`Character spacing`. The value of this slider multiplies the
+    spacing between individual characters to move them closer together or
+    further apart. The default is 1, which is the standard spacing defined by
+    the font.
 
-Note that the text shown in this image has been rotated to face the camera for
-demonstration purposes, since it is extruded in the +Z direction for 3D
-printing.
+.. todo::
+   Ended here
+
+.. PANELS ------------
+.. _ug-dialog-panel:
+.. _ug-name-tool-panel:
+.. _ug-virtual-keyboard-panel:

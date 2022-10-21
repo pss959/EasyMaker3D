@@ -27,6 +27,8 @@
 .. OTHER -------------
 .. _ug-export:
 .. _ug-copy-quirk:
+.. _ug-session-name:
+.. _ug-tree-panel:
 .. _ug-unit-conversion:
 
 TBD

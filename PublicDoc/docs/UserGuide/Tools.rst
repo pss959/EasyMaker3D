@@ -557,7 +557,7 @@ Text Tool
 
 The specialized :newterm:`Text Tool` is a panel-based tool used to edit one or
 more :ref:`RevSurf models <ug-primitive-models>`.  Attaching the Text Tool
-displays a :ref:`Text Tool Panel <ug-revsurf-tool-panel>` above the primary
+displays a :ref:`Text Tool Panel <ug-text-tool-panel>` above the primary
 selection. The panel lets you change the text string, font, and character
 spacing.  Clicking the "Apply" button in the panel applies all changes to all
 selected Text models.
