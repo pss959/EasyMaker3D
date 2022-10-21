@@ -215,6 +215,11 @@ snap_map = {
     'BevelToolPanelMaxAngle',
     'BevelToolPanelScaleLarge',
     'BevelToolPanelScaleSmall',
+    'CSGToolPanel',
+    'ImportToolPanel',
+    'RevSurfToolPanel',
+    'RevSurfToolPanelSweep',
+    'TextToolPanel',
   ],
 }
 
