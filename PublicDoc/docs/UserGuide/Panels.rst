@@ -225,6 +225,8 @@ The ``Done`` button or the :shortcut:`Escape` key closes the Info Panel.
 
 |block-image|
 
+.. _ug-help-panel:
+
 Help Panel
 ,,,,,,,,,,
 
@@ -522,8 +524,5 @@ The panel lets you specify the following settings:
 
 .. PANELS ------------
 .. _ug-dialog-panel:
-.. _ug-help-panel:
 .. _ug-name-tool-panel:
-.. _ug-session-name:
-.. _ug-tree-panel:
 .. _ug-virtual-keyboard-panel:
