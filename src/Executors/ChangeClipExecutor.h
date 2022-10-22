@@ -22,8 +22,10 @@ class ChangeClipExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.
         struct PerModel {
-            SelPath path_to_model;
-            Plane   local_plane;
+            SelPath  path_to_model;
+            Plane    local_plane;
+            Vector3f old_translation;
+            Vector3f new_translation;
         };
         std::vector<PerModel> per_model;
     };
@@ -31,4 +33,8 @@ class ChangeClipExecutor : public Executor {
     /// Creates and stores a ExecData_ in the given command if necessary,
     /// returning it either way.
     ExecData_ & GetExecData_(Command &command);
+
+    /// Compensates for a change in translation caused by clipping.
+    void AdjustTranslation_(const Vector3f &old_mesh_offset,
+                            ExecData_::PerModel &pm);
 };

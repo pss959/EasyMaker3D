@@ -150,7 +150,7 @@ class Model : public ClickableWidget {
     size_t GetTriangleCount() const { return GetMesh().GetTriangleCount(); }
 
     // ------------------------------------------------------------------------
-    // Color handling.
+    // Color and other uniform handling.
     // ------------------------------------------------------------------------
 
     /// Returns a pseudo-random color to use for the next Model within the
@@ -187,6 +187,10 @@ class Model : public ClickableWidget {
     /// Returns the current mesh, even if it is stale. This should be used only
     /// for debugging, as a stale mesh is not very useful.
     const TriMesh & GetCurrentMesh() const;
+
+    /// Returns the offset applied to the Model to offset the translation
+    /// applied to center the mesh.
+    const Vector3f & GetMeshOffset() const { return mesh_offset_; }
 
     /// Returns true if the Mesh in the Model is valid. If not, the reason
     /// string will be set to the reason it is not considered valid.

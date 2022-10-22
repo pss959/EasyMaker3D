@@ -1,6 +1,7 @@
 #include "Executors/ChangeClipExecutor.h"
 
 #include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
 
 #include "Commands/ChangeClipCommand.h"
 #include "Managers/SelectionManager.h"
@@ -12,10 +13,16 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
 
     for (auto &pm: data.per_model) {
         ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
-        if (operation == Command::Op::kDo)
+        if (operation == Command::Op::kDo) {
+            // Save the current mesh offset.
+            const Vector3f old_offset = cm.GetMeshOffset();
             cm.AddPlane(pm.local_plane);
-        else   // Undo.
+            AdjustTranslation_(old_offset, pm);
+        }
+        else {   // Undo.
             cm.RemoveLastPlane();
+            cm.SetTranslation(pm.old_translation);
+        }
     }
 
     // Reselect if undo or if command is finished being done.
@@ -47,4 +54,21 @@ ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
         command.SetExecData(data);
     }
     return *static_cast<ExecData_ *>(command.GetExecData());
+}
+
+void ChangeClipExecutor::AdjustTranslation_(const Vector3f &old_mesh_offset,
+                                            ExecData_::PerModel &pm) {
+    auto &model = *pm.path_to_model.GetModel();
+
+    // Make sure the mesh and its offset are up to date.
+    model.GetMesh();
+
+    // Since clipping can move the mesh if the ClippedModel itself is scaled or
+    // rotated, compute the offset to negate that.
+    pm.old_translation = model.GetTranslation();
+    const Vector3f offset = old_mesh_offset - pm.old_translation;
+    const Vector3f diff   = model.GetRotation() *
+        (model.GetScale() * offset) - offset;
+    pm.new_translation = pm.old_translation - diff;
+    model.SetTranslation(pm.new_translation);
 }
