@@ -24,8 +24,11 @@ class DialogPanel : public Panel {
     /// Sets up a single response button with the given text.
     void SetSingleResponse(const std::string &text);
 
-    /// Sets up two response buttons with the given text.
-    void SetChoiceResponse(const std::string &text0, const std::string &text1);
+    /// Sets up two response buttons with the given text. The focus_first flag
+    /// indicates whether the first or second button should be focused by
+    /// default.
+    void SetChoiceResponse(const std::string &text0, const std::string &text1,
+                           bool focus_first);
 
     /// Redefines this to reset the size so the next invocation uses the proper
     /// size.

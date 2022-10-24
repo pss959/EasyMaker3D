@@ -152,7 +152,7 @@ void SessionPanel::StartNewSession_() {
                 GetContext().session_manager->NewSession();
             }
         };
-        AskQuestion(msg, func);
+        AskQuestion(msg, func, true);
     }
     else {
         Close("Done");
@@ -234,7 +234,7 @@ void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
             if (answer == "Yes")
                 ReallyLoadSessionFromPath_(path);
         };
-        AskQuestion(msg, func);
+        AskQuestion(msg, func, true);
     }
     else {
         ReallyLoadSessionFromPath_(path);

@@ -13,14 +13,17 @@ void DialogPanel::SetSingleResponse(const std::string &text) {
     text0_->SetText(text);
     button0_->SetEnabled(true);
     button1_->SetEnabled(false);
+    SetFocus(button0_);
 }
 
 void DialogPanel::SetChoiceResponse(const std::string &text0,
-                                    const std::string &text1) {
+                                    const std::string &text1,
+                                    bool focus_first) {
     text0_->SetText(text0);
     text1_->SetText(text1);
     button0_->SetEnabled(true);
     button1_->SetEnabled(true);
+    SetFocus(focus_first ? button0_ : button1_);
 }
 
 void DialogPanel::InitInterface() {

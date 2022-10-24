@@ -203,8 +203,10 @@ class Panel : public SG::Node {
                         const MessageFunc &func);
 
     /// Convenience that opens a DialogPanel to ask the given question and get
-    /// a "Yes" or "No" result, which is passed to the given function.
-    void AskQuestion(const std::string &question, const QuestionFunc &func);
+    /// a "Yes" or "No" result, which is passed to the given function. The
+    /// is_no_default flag indicates which button should be focused by default.
+    void AskQuestion(const std::string &question, const QuestionFunc &func,
+                     bool is_no_default);
 
     /// Convenience that calls Close on the PanelHelper. Derived classes can
     /// modify this behavior.

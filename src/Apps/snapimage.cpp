@@ -223,6 +223,12 @@ class MockFilePathList_ : public FilePathList {
                              std::vector<std::string> &files,
                              const std::string &extension,
                              bool include_hidden) const override;
+    virtual bool IsValidDirectory(const FilePath &path) const {
+        return ion::base::StartsWith(path.GetFileName(), "Dir");
+    }
+    virtual bool IsExistingFile(const FilePath &path) const {
+        return true;
+    }
 };
 
 void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,

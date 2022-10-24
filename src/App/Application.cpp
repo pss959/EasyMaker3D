@@ -1198,7 +1198,7 @@ void Application::Impl_::TryQuit_() {
     };
     auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage("There are unsaved changes.\nDo you really want to quit?");
-    dp->SetChoiceResponse("No", "Yes");
+    dp->SetChoiceResponse("No", "Yes", true);
 
     // If the AppBoard is already visible, replace its Panel. Otherwise, just
     // show it with the new Panel.

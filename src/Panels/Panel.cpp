@@ -305,13 +305,14 @@ void Panel::DisplayMessage(const std::string &message,
     helper.PushPanel(dp, result_func);
 }
 
-void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
+void Panel::AskQuestion(const std::string &question, const QuestionFunc &func,
+                        bool is_no_default) {
     ASSERT(func);
 
     auto &helper = *GetContext().panel_helper;
     auto dp = helper.GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage(question);
-    dp->SetChoiceResponse("No", "Yes");
+    dp->SetChoiceResponse("No", "Yes", is_no_default);
 
     helper.PushPanel(dp, func);
 }

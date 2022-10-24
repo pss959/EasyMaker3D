@@ -75,6 +75,14 @@ void FilePathList::GetContents(std::vector<std::string> &subdirs,
     dir.GetContents(subdirs, files, extension, include_hidden);
 }
 
+bool FilePathList::IsValidDirectory(const FilePath &path) const {
+    return path.IsDirectory();
+}
+
+bool FilePathList::IsExistingFile(const FilePath &path) const {
+    return path.Exists();
+}
+
 FilePath FilePathList::MakeAbsolute_(const FilePath &path) {
     if (path.IsAbsolute())
         return path;

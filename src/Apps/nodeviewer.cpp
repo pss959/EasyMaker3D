@@ -323,7 +323,7 @@ void Application_::SetUpScene_() {
         // Special case for DialogPanel.
         if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {
             dialog_panel->SetMessage("This is a temporary message!");
-            dialog_panel->SetChoiceResponse("No", "Yes");
+            dialog_panel->SetChoiceResponse("No", "Yes", true);
         }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         board->SetPanel(panel);

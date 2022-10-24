@@ -177,7 +177,8 @@ bool FilePanel::Impl_::AcceptPath() {
 
     // If creating a new file and the file exists, return false to let the
     // FilePanel ask the user what to do.
-    return target_type_ != TargetType::kNewFile || ! result_path_.Exists();
+    return target_type_ != TargetType::kNewFile ||
+        ! path_list_->IsExistingFile(result_path_);
 }
 
 bool FilePanel::Impl_::HandleEvent(const Event &event,
@@ -268,7 +269,7 @@ void FilePanel::Impl_::UpdateFocus(const PanePtr &pane) {
 
 FilePanel::Impl_::PathStatus_
 FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
-    const bool is_dir = path.IsDirectory();
+    const bool is_dir = path_list_->IsValidDirectory(path);
     PathStatus_ status;
     switch (target_type_) {
       case TargetType::kDirectory:
@@ -276,7 +277,7 @@ FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
         break;
 
       case TargetType::kExistingFile:
-        status = path.Exists() ?
+        status = path_list_->IsExistingFile(path) ?
             (is_dir ? PathStatus_::kValid : PathStatus_::kAcceptable) :
             PathStatus_::kInvalid;
         break;
@@ -291,7 +292,7 @@ FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
 
 void FilePanel::Impl_::OpenPath_(const FilePath &path) {
     ASSERT(path.IsAbsolute());
-    if (path.IsDirectory())
+    if (path_list_->IsValidDirectory(path))
         OpenDirectory_(path);
     else
         SelectFile_(path);
@@ -555,6 +556,6 @@ void FilePanel::TryAcceptPath_() {
                 ProcessResult("Accept");
             // Otherwise, remain open for more interaction.
         };
-        AskQuestion(msg, func);
+        AskQuestion(msg, func, true);
     }
 }

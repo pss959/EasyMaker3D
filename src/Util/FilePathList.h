@@ -40,6 +40,13 @@ class FilePathList {
                              const std::string &extension,
                              bool include_hidden) const;
 
+    /// Returns true if the given FilePath represents a valid directory.
+    virtual bool IsValidDirectory(const FilePath &path) const;
+
+    /// Returns true if the given FilePath represents an existing file or
+    /// directory.
+    virtual bool IsExistingFile(const FilePath &path) const;
+
     /// Dumps current state for help with debugging.
     void Dump();
 
