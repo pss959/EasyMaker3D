@@ -223,11 +223,13 @@ void Model::SetColor(const Color &new_color) {
     ProcessChange(SG::Change::kAppearance, *this);
 }
 
-void Model::EnableClipping(bool enable, const Plane &plane) {
+void Model::EnableClipping(bool enable, const Plane &local_plane) {
     auto &block = GetUniformBlockForPass("Lighting");
     block.SetIntUniformValue("uDoClip", enable);
-    if (enable)
-        block.SetVector4fUniformValue("uClipPlaneEq", plane.GetCoefficients());
+    if (enable) {
+        block.SetVector4fUniformValue("uClipPlaneEq",
+                                      local_plane.GetCoefficients());
+    }
 }
 
 const TriMesh & Model::GetMesh() const {

@@ -21,7 +21,7 @@ uniform mat4       uWorldToStageMatrix;
 // Uniforms for real-time clipping.
 uniform int        uDoClip;       // True if clipping is enabled.
 uniform int        uIsSelected;   // True if part of a selected Model.
-uniform vec4       uClipPlaneEq;  // Clipping plane equation (object coords).
+uniform vec4       uClipPlaneEq;  // Clipping plane equation in local coords.
 
 // Per-light uniforms:
 uniform vec3       uLightPos[MAX_LIGHTS];     // Position in world coords.
@@ -30,6 +30,7 @@ uniform sampler2D  uLightShadowMap[MAX_LIGHTS];
 
 // Input from geometry shader.
 in GeometryOutput {
+  vec3 obj_pos;                // Position in object coordinates.
   vec3 world_pos;              // Position in world coordinates.
   vec3 world_normal;           // Face normal in world coordinates.
   vec3 barycentric;            // Barycentric coordinates of the vertex.
@@ -41,14 +42,24 @@ out vec4 result_color;
 @include "LightShadowing_inc.fp"
 @include "Lighting_inc.fp"
 
+bool IsClipped_(vec4 plane_eq, vec3 pos) {
+  return dot(plane_eq.xyz, pos) + plane_eq.w >= 0.;
+}
+
 void main(void) {
   vec3 stage_pos = (uWorldToStageMatrix * vec4(frag_input.world_pos, 1)).xyz;
 
-  // Do clipping first if requested. Plug the position in stage coordinates
+  // Do clipping first if requested. Plug the position in object coordinates
   // into the clipping plane equation.
   if (uDoClip != 0 && uIsSelected != 0) {
-    if (dot(uClipPlaneEq.xyz, stage_pos) + uClipPlaneEq.w >= 0.)
+    float d = dot(uClipPlaneEq.xyz, frag_input.obj_pos) + uClipPlaneEq.w;
+    if (d >= 0.)
       discard;
+    // Color fragments close to the clipping plane magenta.
+    if (d > -.1) {
+      result_color = vec4(1, .2, 1, 1);
+      return;
+    }
   }
 
   // Do all lighting computations in world coordinates.

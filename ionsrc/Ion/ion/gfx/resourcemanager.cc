@@ -387,12 +387,17 @@ static void GetGlUniformValue(const GraphicsManagerPtr& gm, GLuint id,
                               T* gl_values) {
   // Retrieve each element of the uniform if it is an array.
   if (uniform->size == 1) {
-    ((*gm).*Getv)(id, uniform->index, gl_values);
+    // XXXX Ignore bad indices...
+    if (uniform->index >= 0)
+      ((*gm).*Getv)(id, uniform->index, gl_values);
   } else {
     uint8* ptr = reinterpret_cast<uint8*>(gl_values);
     for (GLint i = 0; i < uniform->size; ++i) {
-      T* values = reinterpret_cast<T*>(&ptr[i * stride]);
-      ((*gm).*Getv)(id, uniform->array_indices[i], values);
+      // XXXX Ignore bad indices...
+      if (uniform->array_indices[i] >= 0) {
+        T* values = reinterpret_cast<T*>(&ptr[i * stride]);
+        ((*gm).*Getv)(id, uniform->array_indices[i], values);
+      }
     }
   }
 }
