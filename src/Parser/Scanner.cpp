@@ -358,9 +358,12 @@ char Scanner::PeekChar() {
 
 void Scanner::Throw(const std::string &msg) {
     FilePath path;
-    int line = -1;
+    int line = 0;
     input_.GetCurrentPathAndLine(path, line);
-    throw Exception(path, line, msg);
+    if (line >= 1)
+        throw Exception(path, line, msg);
+    else
+        throw Exception(msg);
 }
 
 std::string Scanner::ScanNumericString_() {
