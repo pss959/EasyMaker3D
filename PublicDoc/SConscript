@@ -62,6 +62,8 @@ annotator  = env.File('#/bin/annotate.py').abspath
 snap_map = {
   'AppPanels1' : [
     'ActionPanel',
+    'DialogMessagePanel',
+    'DialogQuestionPanel',
     'HelpPanel',
     'InfoPanel',
     'RadialMenuPanel',

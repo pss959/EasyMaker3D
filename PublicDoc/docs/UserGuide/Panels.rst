@@ -314,7 +314,20 @@ Format dropdown appears at the top right for selecting a format.
 
 |block-image|
 
-.. _ug-tool-panels:
+.. _ug-dialog-panel:
+
+Dialog Panel
+,,,,,,,,,,,,
+
+.. incimage:: /images/DialogMessagePanel.jpg 300px right
+.. incimage:: /images/DialogQuestionPanel.jpg 300px right
+
+A :newterm:`Dialog Panel` is used by other application panels to ask you a
+question or inform you of some other condition. A question dialog will have
+buttons with answer choices. A message dialog will just have one button to
+dismiss it.
+
+|block-image|
 
 Tool Panels
 ...........
@@ -461,6 +474,21 @@ models are selected, all of them will be changed to use the file when the
 
 |block-image|
 
+.. _ug-name-tool-panel:
+
+Name Tool Panel
+,,,,,,,,,,,,,,,
+
+.. incimage:: /images/NameTool.jpg 200px right
+
+The :newterm:`Name Tool Panel` is a very simple panel that is used by the
+:ref:`Name Tool <ug-name-tool>` to edit the name of the :ref:`primary selection
+<ug-selection>`. The tool is activated when you apply the general :ref:`Name
+Tool action <ug-tool-actions>`. The model's name is updated whenever you hit
+the ``Apply`` button.
+
+|block-image|
+
 .. _ug-revsurf-tool-panel:
 
 RevSurf Tool Panel
@@ -518,11 +546,3 @@ The panel lets you specify the following settings:
     spacing between individual characters to move them closer together or
     further apart. The default is 1, which is the standard spacing defined by
     the font.
-
-.. todo::
-   Ended here
-
-.. PANELS ------------
-.. _ug-dialog-panel:
-.. _ug-name-tool-panel:
-.. _ug-virtual-keyboard-panel:

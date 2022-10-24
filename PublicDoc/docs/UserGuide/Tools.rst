@@ -443,7 +443,7 @@ here.
 Import Tool
 ,,,,,,,,,,,
 
-.. incimage:: /images/ImportTool.jpg 200px right
+.. incimage:: /images/ImportToolPanel.jpg 200px right
 
 The specialized :newterm:`Import Tool` is a panel-based tool that is enabled if
 there is exactly one :ref:`Imported model <ug-primitive-models>` selected. It
