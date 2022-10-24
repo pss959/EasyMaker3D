@@ -32,6 +32,7 @@ class SnapScript {
             kDrag,
             kHand,
             kHandPos,
+            kHeadset,
             kHover,
             kKey,
             kLoad,
@@ -50,7 +51,7 @@ class SnapScript {
         virtual ~Instr() {}   // Makes deletion work properly.
     };
     struct ActionInstr : public Instr {
-        Action action;
+        Action      action;
     };
     struct ClickInstr : public Instr {
         Point2f     pos;
@@ -69,6 +70,9 @@ class SnapScript {
         Point3f     pos;
         Rotationf   rot;
     };
+    struct HeadsetInstr : public Instr {
+        bool        is_on;
+    };
     struct HoverInstr : public Instr {
         Point2f     pos;
     };
@@ -81,10 +85,10 @@ class SnapScript {
         std::string file_name;
     };
     struct ModInstr : public Instr {
-        bool is_on;
+        bool        is_on;
     };
     struct SelectInstr : public Instr {
-        Words names;
+        Words       names;
     };
     struct SettingsInstr : public Instr {
         std::string file_name;
@@ -94,17 +98,17 @@ class SnapScript {
         std::string file_name;
     };
     struct StageInstr : public Instr {
-        float  scale;
-        Anglef angle;
+        float       scale;
+        Anglef      angle;
     };
     struct StopInstr : public Instr {
         // No data.
     };
     struct TouchInstr : public Instr {
-        bool is_on;
+        bool        is_on;
     };
     struct ViewInstr : public Instr {
-        Vector3f dir;
+        Vector3f    dir;
     };
 
     DECL_SHARED_PTR(Instr);
@@ -113,6 +117,7 @@ class SnapScript {
     DECL_SHARED_PTR(DragInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(HandPosInstr);
+    DECL_SHARED_PTR(HeadsetInstr);
     DECL_SHARED_PTR(HoverInstr);
     DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
@@ -147,6 +152,7 @@ class SnapScript {
     InstrPtr ProcessDrag_(const Words &words);
     InstrPtr ProcessHand_(const Words &words);
     InstrPtr ProcessHandPos_(const Words &words);
+    InstrPtr ProcessHeadset_(const Words &words);
     InstrPtr ProcessHover_(const Words &words);
     InstrPtr ProcessKey_(const Words &words);
     InstrPtr ProcessLoad_(const Words &words);

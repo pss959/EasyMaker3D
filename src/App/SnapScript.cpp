@@ -86,7 +86,8 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
       case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
       case Instr::Type::kHandPos:  instr = ProcessHandPos_(words);  break;
-      case Instr::Type::kHover:    instr = ProcessHover_(words);      break;
+      case Instr::Type::kHeadset:  instr = ProcessHeadset_(words);  break;
+      case Instr::Type::kHover:    instr = ProcessHover_(words);    break;
       case Instr::Type::kKey:      instr = ProcessKey_(words);      break;
       case Instr::Type::kLoad:     instr = ProcessLoad_(words);     break;
       case Instr::Type::kMod:      instr = ProcessMod_(words);      break;
@@ -222,6 +223,18 @@ SnapScript::InstrPtr SnapScript::ProcessHandPos_(const Words &words) {
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->pos = Point3f(pos);
         hinst->rot = ComputeHandRotation_(hinst->hand, laser_dir, guide_dir);
+    }
+    return hinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessHeadset_(const Words &words) {
+    HeadsetInstrPtr hinst;
+    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
+        Error_("Bad syntax for headset instruction");
+    }
+    else {
+        hinst.reset(new HeadsetInstr);
+        hinst->is_on = words[1] == "on";
     }
     return hinst;
 }

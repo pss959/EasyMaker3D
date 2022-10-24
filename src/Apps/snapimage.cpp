@@ -26,6 +26,7 @@
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "Panels/FilePanel.h"
+#include "Panels/KeyboardPanel.h"
 #include "SG/Search.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
@@ -84,6 +85,9 @@ class Emitter_ : public IEmitter {
 
     /// Adds a controller position.
     void AddControllerPos(Hand hand, const Point3f &pos, const Rotationf &rot);
+
+    /// Adds a VR headset button press or release.
+    void AddHeadsetButton(bool is_press);
 
     /// Returns true if there are events left to process.
     bool HasPendingEvents() const { return ! events_.empty(); }
@@ -181,6 +185,17 @@ void Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
 
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = rot;
+
+    events_.push_back(event);
+}
+
+void Emitter_::AddHeadsetButton(bool is_press) {
+    Event event;
+    event.is_modified_mode = is_mod_;
+    event.device           = Event::Device::kHeadset;
+    event.flags.Set(
+        is_press ? Event::Flag::kButtonPress : Event::Flag::kButtonRelease);
+    event.button = Event::Button::kHeadset;
 
     events_.push_back(event);
 }
@@ -419,6 +434,11 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
           emitter_->AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
           break;
       }
+      case SIType::kHeadset: {
+          const auto &hinst = GetTypedInstr_<SnapScript::HeadsetInstr>(instr);
+          emitter_->AddHeadsetButton(hinst.is_on);
+          break;
+      }
       case SIType::kHover: {
           const auto &hinst = GetTypedInstr_<SnapScript::HoverInstr>(instr);
           emitter_->AddHoverPoint(hinst.pos);
@@ -572,6 +592,9 @@ void SnapshotApp_::SetTouchMode_(bool is_on) {
     sc.app_board->SetUpForTouch(cam_pos);
     sc.tool_board->SetUpForTouch(cam_pos);
     sc.key_board->SetUpForTouch(cam_pos);
+    ASSERT(sc.keyboard_panel);
+    if (! sc.key_board->GetCurrentPanel())
+        sc.key_board->SetPanel(sc.keyboard_panel);
 
     // Set controller state.
     sc.left_controller->SetTouchMode(is_on);
@@ -660,7 +683,20 @@ int main(int argc, const char *argv[]) {
     if (! app.Init(options))
         return -1;
 
-    app.MainLoop();
+    try {
+        app.MainLoop();
+    }
+    catch (AssertException &ex) {
+        std::cerr << "*** Caught Assertion failure: " << ex.what() << "\n";
+        std::cerr << "*** STACK:\n";
+        for (const auto &s: ex.GetStackTrace())
+            std::cerr << "  " << s << "\n";
+        return -1;
+    }
+    catch (std::exception &ex) {
+        std::cerr << "*** Caught exception: " << ex.what() << "\n";
+        return -1;
+    }
 
     return 0;
 }
