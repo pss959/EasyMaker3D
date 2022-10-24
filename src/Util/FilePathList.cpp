@@ -14,7 +14,7 @@ void FilePathList::Init(const FilePath &initial_path) {
 bool FilePathList::CanGoInDirection(Direction dir) const {
     switch (dir) {
       case Direction::kUp:
-        return GetCurrent().GetParentDirectory().IsDirectory();
+        return IsValidDirectory(GetCurrent().GetParentDirectory());
       case Direction::kForward:
         return cur_index_ + 1 < paths_.size();
       case Direction::kBack:

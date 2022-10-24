@@ -224,7 +224,9 @@ class MockFilePathList_ : public FilePathList {
                              const std::string &extension,
                              bool include_hidden) const override;
     virtual bool IsValidDirectory(const FilePath &path) const {
-        return ion::base::StartsWith(path.GetFileName(), "Dir");
+        const std::string fn = path.GetFileName();
+        return ion::base::StartsWith(fn, "Dir") ||
+            fn == "stl" || fn == "makervr";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
         return true;
@@ -332,6 +334,14 @@ bool SnapshotApp_::Init(const Options &options) {
 
     // Set the render offsets for the controllers.
     SetControllerRenderOffsets(-kLeftControllerOffset, -kRightControllerOffset);
+
+    // Use default settings file so that state is deterministic.
+    const FilePath path("PublicDoc/snaps/settings/Settings.mvr");
+    if (! test_context_.settings_manager->ReplaceSettings(path)) {
+        std::cerr << "*** Unable to load default settings from "
+                  << path.ToString() << "\n";
+        return false;
+    }
 
     return true;
 }
