@@ -319,7 +319,7 @@ Format dropdown appears at the top right for selecting a format.
 Dialog Panel
 ,,,,,,,,,,,,
 
-.. incimage:: /images/DialogMessagePanel.jpg 300px right
+.. incimage:: /images/DialogMessagePanel.jpg  300px right
 .. incimage:: /images/DialogQuestionPanel.jpg 300px right
 
 A :newterm:`Dialog Panel` is used by other application panels to ask you a
@@ -328,6 +328,23 @@ buttons with answer choices. A message dialog will just have one button to
 dismiss it.
 
 |block-image|
+
+.. _ug-virtual-keyboard-panel:
+
+Virtual Keyboard Panel
+,,,,,,,,,,,,,,,,,,,,,,
+
+.. admonition:: VR Only
+
+   .. incimage:: /images/VirtualKeyboardPanel.jpg 300px right
+
+   The :newterm:`Virtual Keyboard Panel` is used only in :ref:`full VR mode
+   <ug-vr-modes>` when you are wearing the VR headset and you need to edit text
+   in a panel. It is most easily used by touching the keys with the :ref:`touch
+   affordance <ug-touch-mode>`. (You can also use the laser pointer, but it is
+   more awkward.)
+
+.. _ug-tool-panels:
 
 Tool Panels
 ...........

@@ -72,6 +72,7 @@ snap_map = {
   'AppPanels2' : [
     'FilePanel',
     'GripPanelBar',
+    'VirtualKeyboardPanel',
   ],
   'CSG' : [
     'CSGDifference',
@@ -189,7 +190,6 @@ snap_map = {
     'ClipToolClipped',
     'CylinderTool',
     'CylinderToolActive',
-    'ImportTool',
     'MirrorTool',
     'MirrorToolTwoAfter',
     'MirrorToolTwoBefore',
