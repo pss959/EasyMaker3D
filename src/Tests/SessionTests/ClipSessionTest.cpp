@@ -8,7 +8,64 @@
 #include "Testing.h"
 #include "Util/General.h"
 
-TEST_F(SessionTestBase, ClipSessionTest) {
+// Convenience function
+static Rotationf GetXRot_() {
+    return Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
+                                       Anglef::FromDegrees(90));
+}
+
+TEST_F(SessionTestBase, ClipSessionTest1) {
+    // This has 1 cylinder (Cylinder_1) that is scaled by 2 in height, rotated
+    // by 90 degrees around X, and rtanslated by 5 in X, then converted to a
+    // ClippedModel (Clipped_1). Clipped_1 is then clipped by the XY plane in
+    // stage coordinates.
+    //
+    // Clipped_1 should have its rotated top half (front) clipped away.
+    LoadSession("Clip1.mvr");
+
+    // Do this twice - the second time after undo/redo.
+    for (int i = 0; i < 2; ++i) {
+        SCOPED_TRACE(i == 0 ? "First Iteration" : "Second Iteration");
+
+        const auto &rm = *context.scene_context->root_model;
+        EXPECT_EQ(1U, rm.GetChildModelCount());
+        const auto cm1 = Util::CastToDerived<ClippedModel>(rm.GetChildModel(0));
+        ASSERT_TRUE(cm1);
+        const auto or1 = cm1->GetOriginalModel();
+
+        const Rotationf xrot = GetXRot_();
+
+        // Original (Cylinder) model transform.
+        const float s = TK::kInitialModelScale;
+        EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), or1->GetScale());
+        EXPECT_ROTS_CLOSE(xrot,                  or1->GetRotation());
+        EXPECT_VECS_CLOSE(Vector3f(5,  4, 0),    or1->GetTranslation());
+
+        // Clipping plane. The clip plane is the Z=0 plane in stage
+        // coordinates, with the normal pointing along +Z. The plane in the
+        // ClippedModel is in local coordinates.
+        EXPECT_EQ(1U, cm1->GetPlanes().size());
+        EXPECT_NEAR(0.f, cm1->GetPlanes()[0].distance, kClose);
+        EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm1->GetPlanes()[0].normal);
+
+        // ClippedModel transform. Translation is adjusted to compensate for
+        // the clipped mesh offset.
+        EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm1->GetScale());
+        EXPECT_ROTS_CLOSE(Rotationf::Identity(), cm1->GetRotation());
+        EXPECT_VECS_CLOSE(Vector3f(5,  4, -2),   cm1->GetTranslation());
+
+        // (Object) Bounds.
+        const Bounds b1 = cm1->GetBounds();
+        EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   b1.GetCenter());
+        EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b1.GetSize());
+
+        // Undo and redo the clip change for second iteration.
+        context.command_manager->Undo();
+        context.command_manager->Redo();
+    }
+}
+
+TEST_F(SessionTestBase, ClipSessionTest3) {
     // This has 3 cylinders converted to ClippedModels:
 
     //  - Cylinder_1, Cylinder_2, and Cylinder_3 are all scaled by 2 in
@@ -32,7 +89,7 @@ TEST_F(SessionTestBase, ClipSessionTest) {
     // All resulting ClippedModel remnants should have the same position as
     // before clipping.
 
-    LoadSession("Clip.mvr");
+    LoadSession("Clip3.mvr");
 
     // Do this twice - the second time after undo/redo.
     for (int i = 0; i < 2; ++i) {
@@ -66,9 +123,10 @@ TEST_F(SessionTestBase, ClipSessionTest) {
         EXPECT_VECS_CLOSE(Vector3f(5,  4, 0),    or2->GetTranslation());
         EXPECT_VECS_CLOSE(Vector3f(10, 4, 0),    or3->GetTranslation());
 
-        // Clipping planes. The clip plane is the Z=0 plane in stage coordinates,
-        // with the normal pointing along +Z. The planes in the ClippedModels are
-        // in local coordinates, so they should all be the same.
+        // Clipping planes. The clip plane is the Z=0 plane in stage
+        // coordinates, with the normal pointing along +Z. The planes in the
+        // ClippedModels are in local coordinates, so they should all be the
+        // same.
         EXPECT_EQ(1U, cm1->GetPlanes().size());
         EXPECT_EQ(1U, cm2->GetPlanes().size());
         EXPECT_EQ(1U, cm3->GetPlanes().size());
@@ -79,8 +137,8 @@ TEST_F(SessionTestBase, ClipSessionTest) {
         EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm2->GetPlanes()[0].normal);
         EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm3->GetPlanes()[0].normal);
 
-        // Clipped models transforms. Translations are adjusted to compensate for
-        // the clipped meshes.
+        // Clipped models transforms. Translations are adjusted to compensate
+        // for the clipped mesh offsets.
         EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm1->GetScale());
         EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm2->GetScale());
         EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm3->GetScale());

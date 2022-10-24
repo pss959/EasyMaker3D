@@ -8,8 +8,8 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ClippedModel);
 
-/// ClippedModel is a derived ConvertedModel class that represents a Model
-/// that has been clipped by one or more planes.
+/// ClippedModel is a derived ConvertedModel class that represents a Model that
+/// has been clipped by one or more planes specified in local coordinates.
 ///
 /// \ingroup Models
 class ClippedModel : public ConvertedModel {
