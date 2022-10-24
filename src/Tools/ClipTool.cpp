@@ -83,8 +83,9 @@ class ClipTool::Impl_ {
     /// Color used for the Arrow when inactive.
     Color               arrow_inactive_color_;
 
-    /// Sets up to match the given Plane.
-    void MatchPlane_(const Plane &plane);
+    /// Sets up to match the given Plane in local coordinates of the primary
+    /// selection.
+    void MatchPlane_(const Plane &local_plane);
 
     /// Sets the min/max range for the translation slider based on the Model's
     /// mesh extents along the given direction vector.
@@ -208,27 +209,24 @@ SG::NodePtr ClipTool::Impl_::UpdateGripInfo(GripInfo &info,
     }
 }
 
-void ClipTool::Impl_::MatchPlane_(const Plane &plane) {
+void ClipTool::Impl_::MatchPlane_(const Plane &local_plane) {
     // XXXX BUG: need to fix this.
-
-    // This uses the plane in the ClippedModel's object coordinates, since the
-    // ClipTool's transformation is set to match it.
 
     // Use the plane normal to compute the rotation. The default object arrow
     // direction is the +Y axis.
     const Rotationf rot =
-        Rotationf::RotateInto(Vector3f::AxisY(), plane.normal);
+        Rotationf::RotateInto(Vector3f::AxisY(), local_plane.normal);
     rotator_->SetRotation(rot);
     arrow_and_plane_->SetRotation(rot);
 
     // Update the range of the slider based on the size of the Model and the
     // rotated normal direction.
-    UpdateTranslationRange_(plane.normal);
+    UpdateTranslationRange_(local_plane.normal);
 
     // Use the distance of the plane as the Slider1DWidget value without
     // notifying.
     arrow_->GetValueChanged().EnableObserver(this, false);
-    arrow_->SetValue(plane.distance);
+    arrow_->SetValue(local_plane.distance);
     arrow_->GetValueChanged().EnableObserver(this, true);
 
     // Position the plane at the correct distance.
@@ -238,7 +236,7 @@ void ClipTool::Impl_::MatchPlane_(const Plane &plane) {
 void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
     const auto &model = GetModel_(0);
 
-    // Compute the min/max signed distances in object coordinates of any mesh
+    // Compute the min/max signed distances in local coordinates of any mesh
     // vertex along the dir vector. This assumes that the Model's mesh is
     // centered on the origin, so that the center point is at a distance of 0.
     const auto &mesh = model.GetMesh();
@@ -439,14 +437,12 @@ void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
         // Clip the same way as ClippedModel: use the plane in the local
         // coordinates of the ClippedModel applied to the mesh in object
         // coordinates of the ClippedModel. However, the local plane needs to
-        // be translated to the center of the XXXX.
-        // XXXX Clean up
-        const CoordConv cc(path);
-        Plane local_plane =
-            TransformPlane(stage_plane,
-                           ion::math::TranslationMatrix(-path.GetModel()->GetMeshOffset()) * cc.GetRootToLocalMatrix());
-
+        // be translated to the center of the mesh.
         auto &model = *path.GetModel();
+        const Matrix4f s2l =
+            ion::math::TranslationMatrix(-model.GetMeshOffset()) *
+            CoordConv(path).GetRootToLocalMatrix();
+        const Plane local_plane = TransformPlane(stage_plane, s2l);
         model.EnableClipping(enable, local_plane);
     }
 }
