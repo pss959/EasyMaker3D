@@ -18,14 +18,14 @@
 .. todo::
    Add a paragraph about the organization of the User Guide
 
-.. Panels
 .. TreePanel
-.. Quirks
+
+.. Quirks?
+.. Recipes?
 
 .. These are all of the undefined reference targets so far:
 
 .. OTHER -------------
-.. _ug-export:
 .. _ug-copy-quirk:
 .. _ug-session-name:
 .. _ug-tree-panel:
@@ -35,6 +35,6 @@ TBD
 ---
 
 .. todo::
-   Add sections for all of the above targets.
+   Add sections for all of the missing targets.
 
 .. incimage:: /images/static/Missing.jpg 200px center
