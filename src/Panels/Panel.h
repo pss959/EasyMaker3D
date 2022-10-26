@@ -15,9 +15,9 @@
 class CoordConv;
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(ClickableWidget);
+DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(NameManager);
 DECL_SHARED_PTR(Panel);
-DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SessionManager);
 DECL_SHARED_PTR(Settings);
@@ -39,6 +39,7 @@ class Panel : public SG::Node {
   public:
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
+        CommandManagerPtr   command_manager;
         NameManagerPtr      name_manager;
         SelectionManagerPtr selection_manager;
         SessionManagerPtr   session_manager;

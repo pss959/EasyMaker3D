@@ -38,6 +38,13 @@ class TreePanel : public Panel {
     /// Defines this to update contents if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
+    /// Returns true if the current selection supports moving the primary
+    /// selection up or down.
+    bool CanMoveUpOrDown(bool is_up) const;
+
+    /// Moves the primary selection up or down. Asserts if not possible.
+    void MoveUpOrDown(bool is_up);
+
   protected:
     TreePanel();
 

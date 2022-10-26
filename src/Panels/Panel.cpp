@@ -64,6 +64,7 @@ void Panel::CreationDone() {
 void Panel::SetContext(const ContextPtr &context) {
     ASSERT(! context_);  // Call only once.
     ASSERT(context);
+    ASSERT(context->command_manager);
     ASSERT(context->name_manager);
     ASSERT(context->selection_manager);
     ASSERT(context->session_manager);

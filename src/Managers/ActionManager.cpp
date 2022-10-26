@@ -142,34 +142,6 @@ static bool CanDeleteModels_(const Selection &sel) {
     return true;
 }
 
-/// Returns 2 flags indicating whether the primary selection can be moved in
-/// order to the previous or next position.
-static void GetMoveFlags_(const Selection &sel,
-                          bool &can_move_prev, bool &can_move_next) {
-    can_move_prev = can_move_next = false;
-
-    // Has to be a single Model selected.
-    if (sel.GetCount() != 1U)
-        return;
-
-    // There must be at least the RootModel and the selected Model in the path.
-    const auto &sel_path = sel.GetPrimary();
-    ASSERT(sel_path.size() >= 2U);
-
-    // Get the index of the selected Model within its parent.
-    const auto model  = sel_path.GetModel();
-    const auto parent = sel_path.GetParentModel();
-
-    // The parent has to be a CombinedModel or the RootModel.
-    if (model->IsTopLevel() || Util::IsA<CombinedModel>(parent)) {
-        const int index = parent->GetChildModelIndex(model);
-        ASSERT(index >= 0);
-        can_move_prev = index > 0;
-        can_move_next =
-            static_cast<size_t>(index + 1) < parent->GetChildModelCount();
-    }
-}
-
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -263,10 +235,6 @@ class ActionManager::Impl_ {
     /// Moves the bottom center of the primary Model is at the origin and all
     /// other selected Models by the same amount.
     void MoveSelectionToOrigin_();
-
-    /// Moves the primary selection earlier or later in the list of top-level
-    /// Models or children of its parent.
-    void MovePreviousOrNext_(Action action);
 
     /// Shows or hides the Inspector according to the given flag.
     void ShowInspector_(bool show);
@@ -513,10 +481,10 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         break;
 
       case Action::kMovePrevious:
-        MovePreviousOrNext_(action);
+        context_->scene_context->tree_panel->MoveUpOrDown(true);
         break;
       case Action::kMoveNext:
-        MovePreviousOrNext_(action);
+        context_->scene_context->tree_panel->MoveUpOrDown(false);
         break;
 
       case Action::kHideSelected: {
@@ -737,14 +705,14 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     const size_t     sel_count    = sel.GetCount();
     const bool       all_valid    = AreAllMeshesValid_(sel);
     const bool       all_top      = AreAllTopLevel_(sel);
-    const auto       root_model   = context_->scene_context->root_model;
+    const auto       &sc          = *context_->scene_context;
+    const auto       root_model   = sc.root_model;
 
     set_enabled(Action::kUndo, context_->command_manager->CanUndo());
     set_enabled(Action::kRedo, context_->command_manager->CanRedo());
 
     // Panels cannot be opened if the AppBoard is already in use.
-    const bool can_open_app_panel =
-        ! context_->scene_context->app_board->IsShown();
+    const bool can_open_app_panel = ! sc.app_board->IsShown();
     set_enabled(Action::kOpenSessionPanel,  can_open_app_panel);
     set_enabled(Action::kOpenSettingsPanel, can_open_app_panel);
     set_enabled(Action::kOpenInfoPanel,
@@ -839,11 +807,8 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kRadialLayout, any_selected &&
                 context_->target_manager->IsPointTargetVisible());
 
-    bool can_move_prev;
-    bool can_move_next;
-    GetMoveFlags_(sel, can_move_prev, can_move_next);
-    set_enabled(Action::kMovePrevious, can_move_prev);
-    set_enabled(Action::kMoveNext,     can_move_next);
+    set_enabled(Action::kMovePrevious, sc.tree_panel->CanMoveUpOrDown(true));
+    set_enabled(Action::kMoveNext,     sc.tree_panel->CanMoveUpOrDown(false));
 
     set_enabled(Action::kToggleInspector, any_selected);
 
@@ -1014,15 +979,6 @@ void ActionManager::Impl_::MoveSelectionToOrigin_() {
         tc->SetTranslation(trans);
         context_->command_manager->AddAndDo(tc);
     }
-}
-
-void ActionManager::Impl_::MovePreviousOrNext_(Action action) {
-    const Selection &sel = GetSelection();
-    ASSERT(sel.GetCount() == 1);
-    auto coc = CreateCommand_<ChangeOrderCommand>();
-    coc->SetFromSelection(sel);
-    coc->SetIsPrevious(action == Action::kMovePrevious);
-    context_->command_manager->AddAndDo(coc);
 }
 
 void ActionManager::Impl_::ShowInspector_(bool show) {
