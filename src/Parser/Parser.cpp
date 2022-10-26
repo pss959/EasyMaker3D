@@ -63,7 +63,7 @@ class Parser::Impl_ {
 
     /// Stack of ObjectScope_ instances representing current objects being
     /// parsed. This is implemented as an std::vector (rather than an
-    /// std::stack) hbecause all scopes need to be accessible for constant
+    /// std::stack) because all scopes need to be accessible for constant
     /// searches.
     std::vector<ObjectScope_> scope_stack_;
 
