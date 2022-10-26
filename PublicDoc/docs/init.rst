@@ -30,6 +30,18 @@
 .. strong: Strongly highlighted text
 .. role:: strong
 
+.. tree-primary: Color for primary selection in Tree Panel.
+.. role:: tree-primary
+
+.. tree-secondary: Color for secondary selection in Tree Panel.
+.. role:: tree-secondary
+
+.. tree-invis: Color for model hidden by user in Tree Panel.
+.. role:: tree-hbu
+
+.. tree-hbp: Color for model hidden by ancestor model in Tree Panel.
+.. role:: tree-hbm
+
 .. ----------------------------------------------------------------------------
 .. appname: Replaced with the application name in appropriate style.
 

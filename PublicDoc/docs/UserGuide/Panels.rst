@@ -9,7 +9,7 @@ in :ref:`VR as well as in conventional mode <ug-vr-modes>`, they appear in the
 3D :ref:`work area <ug-work-area>`. Panels are always aligned with the
 XZ-plane.
 
-Panels are divided into two main categories:
+Panels are divided into three categories:
 
   - :newterm:`Application panels` implement various application functions, such
     as loading sessions or modifying program settings.  Application panels
@@ -17,9 +17,8 @@ Panels are divided into two main categories:
   - :newterm:`Tool panels` are used for :ref:`certain specialized tools
     <ug-specialized-tools>`. A tool panel appears initially above the
     :ref:`primary selection <ug-selection>` it is operating on.
-
-The Tree Panel is special; it is always fixed to the back wall and has
-:ref:`its own section in the documentation <ug-tree-panel>`.
+  - The :newterm:`Tree Panel` is special; it is always fixed to the back wall
+    and has :ref:`its own section in this guide <ug-tree-panel>`.
 
 Moving and Resizing Panels
 ..........................
@@ -154,6 +153,7 @@ are both stored as user settings and can be modified with the :ref:`Settings
 Panel <ug-settings-panel>`.
 
 .. _ug-settings-panel:
+.. _ug-unit-conversion:
 
 Settings Panel
 ,,,,,,,,,,,,,,
@@ -564,3 +564,130 @@ The panel lets you specify the following settings:
     spacing between individual characters to move them closer together or
     further apart. The default is 1, which is the standard spacing defined by
     the font.
+
+.. _ug-tree-panel:
+
+Tree Panel
+..........
+
+.. incimage:: /images/TreePanel.jpg 200px right
+
+The :newterm:`Tree Panel` is the framed panel on the back wall. It has multiple
+uses:
+
+  - Displaying a list of all models in the scene, including their tree
+    structure and current status.
+  - Selecting models.
+  - Hiding and showing models.
+  - Changing model order.
+
+As mentioned previously, the Tree Panel is always visible in the same place,
+unlike other (movable) panels.
+
+|block-image|
+
+.. _ug-session-name:
+
+Session Name and Status
+,,,,,,,,,,,,,,,,,,,,,,,
+
+At the top of the Tree Panel is a row showing the current name of the session
+being edited.  If the session was not loaded from a file and has not yet been
+saved with a name, it will show as ``<Untitled Session>``. To the left is a way
+to change the visibility of all models, as described :ref:`below
+<ug-visibility>`.
+
+If the session has been modified since it was loaded or started, there will be
+a string of special characters within square brackets after the session name.
+This string may contain the following characters:
+
+   - An asterisk (``*``) indicates that one or more models has been created or
+     modified and not undone.
+   - An exclamation point (``!``) indicates that the session state (such as
+     :ref:`edge visibility <ug-toggle-show-edges>` or :ref:`build volume
+     visibility <ug-toggle-build-volume>`) has changed.
+   - A plus sign (``+``) indicates that the commands in the session file
+     have changed, usually by being undone.
+
+All three characters are shown for the session in the above image.
+
+Note that a session can only be saved to the same file if at least one of these
+symbols appears. For example, if you make changes to models and then undo back
+to their original state, there will be no asterisk, but the plus sign lets you
+know that the session can still be saved (because the sequence of commands has
+changed). The session state is also saved, so making changes to it allow you to
+save as well.
+
+Model Names and Colors
+,,,,,,,,,,,,,,,,,,,,,,
+
+Every row under the top row of the Tree Panel represents a top-level model in
+the scene along with its indented children, if it has any. If it has children,
+a triangle appears on the left (as shown in the above image) that you can click
+to collapse or expand the children.
+
+The name of each model uses color-coded text to indicate its status:
+
+  - The name of the :tree-primary:`primary selection is bold red`.
+  - The names of all :tree-secondary:`secondary selections are bold blue`.
+  - The names of all :tree-hbu:`models hidden because the visibility was turned
+    off are purple and italic`.
+  - The names of all :tree-hbm:`models hidden because some ancestor or
+    descendent model is visible are gray and italic`.
+  - The names of all other models are black.
+
+.. _ug-visibility:
+
+Changing Model Visibility
+,,,,,,,,,,,,,,,,,,,,,,,,,
+
+To the left of each top-level model name in the Tree Panel is a little eye
+icon. Clicking this icon toggles the visibility of the corresponding model in
+the scene.
+
+There is also an eye icon next to the session name at the top. If any top-level
+model is currently hidden, clicking this will show all top-level models using
+the :ref:`Show All action <ug-show-all>`. Otherwise, it will hide all models.
+
+.. _ug-tree-panel-selection:
+
+Selecting Models
+,,,,,,,,,,,,,,,,
+
+.. incimage:: /images/TreePanelSelect.jpg 200px right
+
+Clicking with the mouse (or pinch) on a model name in the Tree Panel selects
+that model as the primary selection. :ref:`Modified-clicking
+<ug-modified-mode>` on a model name toggles its selection status.
+
+You can also use the mouse (or pinch) to drag out a rectangle withinin the
+panel. All model names intersected by the rectangle will be selected as shown
+here. :ref:`Changing the order of model names <ug-reorder-models>` may help in
+some cases to allow contiguous selections.
+
+Note that you cannot have both a parent and child model in the same hierarchy
+selected at the same time. That would be bad.
+
+|block-image|
+
+.. _ug-reorder-models:
+
+Reordering Models
+,,,,,,,,,,,,,,,,,
+
+.. incimage:: /images/TreePanelUpDown.jpg 200px right
+
+There are some rare cases where the order of models in the Tree Panel matters.
+One is when you want to use :ref:`rectangle selection
+<ug-tree-panel-selection>` to select some set of models and they need to be
+listed consecutively. Another is when the order of children within a parent
+matters, such as within a :ref:`CSG difference <ug-csg>`.
+
+In these cases the two buttons to the right of the session name can be used to
+apply the :ref:`Move Previous <ug-move-previous>` and :ref:`Move Next
+<ug-move-next>` actions, which move the primary selection up and down in the
+list. Note that if the primary selection is not a top-level model, it can only
+be moved up and down within its parent model.
+
+These buttons are enabled only if there is a single model selected and it can
+be moved in the corresponding direction.

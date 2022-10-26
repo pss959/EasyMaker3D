@@ -18,8 +18,6 @@
 .. todo::
    Add a paragraph about the organization of the User Guide
 
-.. TreePanel
-
 .. Quirks?
 .. Recipes?
 
@@ -27,9 +25,6 @@
 
 .. OTHER -------------
 .. _ug-copy-quirk:
-.. _ug-session-name:
-.. _ug-tree-panel:
-.. _ug-unit-conversion:
 
 TBD
 ---

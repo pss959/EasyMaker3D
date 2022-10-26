@@ -223,6 +223,11 @@ snap_map = {
     'RevSurfToolPanelSweep',
     'TextToolPanel',
   ],
+  'TreePanel' : [
+    'TreePanel',
+    'TreePanelSelect',
+    'TreePanelUpDown',
+  ],
 }
 
 # This maps annotation script files to the images they read and write.
