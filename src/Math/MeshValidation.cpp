@@ -22,7 +22,18 @@ static MeshValidityCode IsPolyValid_(const CPolyhedron &poly) {
         return MeshValidityCode::kValid;
 }
 
-MeshValidityCode ValidateTriMesh(TriMesh &mesh) {
+MeshValidityCode ValidateTriMesh(const TriMesh &mesh) {
+    try {
+        CPolyhedron poly = TriMeshToCGALPolyhedron(mesh);
+        return IsPolyValid_(poly);
+    }
+    catch (std::exception &ex) {
+        // This is likely an assertion violation. Consider the mesh inconsisent.
+        return MeshValidityCode::kInconsistent;
+    }
+}
+
+MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh) {
     try {
         CPolyhedron poly = TriMeshToCGALPolyhedron(mesh);
         auto code = IsPolyValid_(poly);

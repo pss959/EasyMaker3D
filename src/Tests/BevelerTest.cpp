@@ -146,9 +146,9 @@ TEST_F(BevelerTest, BevelTextO) {
     EXPECT_EQ(160U, rm.GetTriangleCount());
     ValidateMesh(rm, "Beveled text O");
 
-    // Scale of .8 causes CGAL problems.
+    // Scale of .8 should cause CGAL problems.
     bevel.scale = .8f;
     rm = Beveler::ApplyBevel(m, bevel);
-    const MeshValidityCode ret = IsMeshValid(rm);
+    const auto ret = ValidateTriMesh(rm);
     EXPECT_ENUM_EQ(MeshValidityCode::kInconsistent, ret);
 }

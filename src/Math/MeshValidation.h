@@ -19,8 +19,11 @@ enum class MeshValidityCode {
     kSelfIntersecting,  ///< The mesh contains self-intersections.
 };
 
+/// Returns a code indicating whether the given TriMesh is valid.
+MeshValidityCode ValidateTriMesh(const TriMesh &mesh);
+
 /// Returns a code indicating whether the given TriMesh is valid. If it is not
 /// valid, this attempts to repair it and tests it again if possible.
-MeshValidityCode ValidateTriMesh(TriMesh &mesh);
+MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh);
 
 ///@}
