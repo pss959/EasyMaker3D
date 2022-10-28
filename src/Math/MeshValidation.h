@@ -9,7 +9,7 @@
 /// \ingroup Math
 ///@{
 
-/// Possible return codes from IsMeshValid().
+/// Possible return codes from ValidateTriMesh().
 ///
 /// \ingroup Math
 enum class MeshValidityCode {
@@ -19,7 +19,8 @@ enum class MeshValidityCode {
     kSelfIntersecting,  ///< The mesh contains self-intersections.
 };
 
-/// Returns a code indicating whether the given mesh is valid.
-MeshValidityCode IsMeshValid(const TriMesh &mesh);
+/// Returns a code indicating whether the given TriMesh is valid. If it is not
+/// valid, this attempts to repair it and tests it again if possible.
+MeshValidityCode ValidateTriMesh(TriMesh &mesh);
 
 ///@}

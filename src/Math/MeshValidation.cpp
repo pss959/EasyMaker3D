@@ -2,10 +2,16 @@
 
 #include "Math/CGALInternal.h"
 
+#include "Util/Enum.h" // XXXX
+
+#define REPAIR_SELF_INTERSECTIONS 0
+
+#if REPAIR_SELF_INTERSECTIONS
 static void RemoveSelfIntersections_(CPolyhedron &poly) {
     CGAL::Polygon_mesh_processing::experimental::remove_self_intersections(
         poly, CGAL::parameters::preserve_genus(true));
 }
+#endif
 
 static MeshValidityCode IsPolyValid_(const CPolyhedron &poly) {
     if (! poly.is_valid())
@@ -18,17 +24,25 @@ static MeshValidityCode IsPolyValid_(const CPolyhedron &poly) {
         return MeshValidityCode::kValid;
 }
 
-MeshValidityCode IsMeshValid(const TriMesh &mesh) {
+MeshValidityCode ValidateTriMesh(TriMesh &mesh) {
     try {
-        CPolyhedron poly = BuildCGALPolyhedron(mesh);
+        CPolyhedron poly = TriMeshToCGALPolyhedron(mesh);
         auto code = IsPolyValid_(poly);
         if (code == MeshValidityCode::kValid)
             return code;
 
+        /// \todo It turns out that the CGAL self-intersection repairing code
+        /// throws away lots of vertices and faces, which is bad for this
+        /// purpose. Revisit this if CGAL improves polyhedron repairing.
+#if REPAIR_SELF_INTERSECTIONS
         else if (code == MeshValidityCode::kSelfIntersecting) {
+            // Try to repair and repeat.
             RemoveSelfIntersections_(poly);
             code = IsPolyValid_(poly);
+            if (code == MeshValidityCode::kValid)
+                mesh = CGALPolyhedronToTriMesh(poly);
         }
+#endif
 
         return code;
     }

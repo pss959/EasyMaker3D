@@ -28,47 +28,11 @@ static CPoint3 ToCPoint3(const Point3f &p) {
 }
 
 static CNefPolyhedron BuildNefPolyhedron_(const TriMesh &mesh) {
-    CPolyhedron poly = BuildCGALPolyhedron(mesh);
+    CPolyhedron poly = TriMeshToCGALPolyhedron(mesh);
     CNefPolyhedron nef_poly(poly);
     ASSERT(nef_poly.is_valid());
     ASSERT(nef_poly.is_simple());
     return nef_poly;
-}
-
-static TriMesh ConvertToTriMesh_(const CPolyhedron &poly) {
-    TriMesh mesh;
-
-    const size_t vertex_count = poly.size_of_vertices();
-    const size_t facet_count  = poly.size_of_facets();
-    mesh.points.reserve(vertex_count);
-    mesh.indices.reserve(3 * facet_count);
-
-    // Iterate over vertices and output them. While doing this, construct a
-    // vertex map to speed up the triangle creation code.
-    std::unordered_map<CVI, int> vertex_map(vertex_count);
-    int cur_vertex = 0;
-    for (CVI v = poly.vertices_begin(); v != poly.vertices_end(); ++v) {
-        CPoint3 p = v->point();
-        mesh.points.push_back(Point3f(CGAL::to_double(p.x().exact()),
-                                      CGAL::to_double(p.y().exact()),
-                                      CGAL::to_double(p.z().exact())));
-        vertex_map[v] = cur_vertex++;
-    }
-
-    // Iterate over facets.
-    for (CFI f = poly.facets_begin(); f != poly.facets_end(); ++f) {
-        CHFC h = f->facet_begin();
-        // Facets must be triangles.
-        ASSERT(CGAL::circulator_size(h) == 3);
-        do {
-            assert(vertex_map.find(h->vertex()) != vertex_map.end());
-            mesh.indices.push_back(vertex_map[h->vertex()]);
-        } while (++h != f->facet_begin());
-    }
-
-    ASSERT(mesh.points.size()  == vertex_count);
-    ASSERT(mesh.indices.size() == 3 * facet_count);
-    return mesh;
 }
 
 #if DO_NEF_CHECK
@@ -128,11 +92,11 @@ static TriMesh ApplyCSG_(const std::vector<TriMesh> &meshes,
     polys.reserve(mesh_count);
 
     // Create a CPolyhedron for the first mesh.
-    CPolyhedron poly = BuildCGALPolyhedron(meshes[0]);
+    CPolyhedron poly = TriMeshToCGALPolyhedron(meshes[0]);
 
     // Apply the operation to a CPolyhedron for the remaining meshes.
     for (size_t i = 1; i < mesh_count; ++i) {
-        CPolyhedron poly2 = BuildCGALPolyhedron(meshes[i]);
+        CPolyhedron poly2 = TriMeshToCGALPolyhedron(meshes[i]);
         if (operation == MeshCombiningOperation::kCSGUnion)
             CGAL::Polygon_mesh_processing::corefine_and_compute_union(
                 poly, poly2, poly);
@@ -145,7 +109,7 @@ static TriMesh ApplyCSG_(const std::vector<TriMesh> &meshes,
     }
 
     // Convert the result back to a TriMesh.
-    return ConvertToTriMesh_(poly);
+    return CGALPolyhedronToTriMesh(poly);
 }
 
 // Applies a convex hull operation.
@@ -168,7 +132,7 @@ static TriMesh ApplyConvexHull_(const std::vector<TriMesh> &meshes) {
     }
     CPolyhedron result;
     CGAL::convex_hull_3(points.begin(), points.end(), result);
-    return ConvertToTriMesh_(result);
+    return CGALPolyhedronToTriMesh(result);
 }
 
 // Applies a Minkowski sum operation.
@@ -191,7 +155,7 @@ static TriMesh ApplyMinkowskiSum_(const std::vector<TriMesh> &meshes) {
     // Convert the result back to a Polyhedron and then to a TriMesh.
     CPolyhedron poly;
     result.convert_to_polyhedron(poly);
-    return ConvertToTriMesh_(poly);
+    return CGALPolyhedronToTriMesh(poly);
 }
 
 }  // anonymous namespace
@@ -220,7 +184,7 @@ TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
 }
 
 TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane) {
-    CPolyhedron poly = BuildCGALPolyhedron(mesh);
+    CPolyhedron poly = TriMeshToCGALPolyhedron(mesh);
 
     // Clip it by the plane.
     const Vector4f coeffs = plane.GetCoefficients();
@@ -229,5 +193,5 @@ TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane) {
         poly, CPlane3(coeffs[0], coeffs[1], coeffs[2], coeffs[3]),
         CGAL::parameters::clip_volume(true));
 
-    return ConvertToTriMesh_(poly);
+    return CGALPolyhedronToTriMesh(poly);
 }

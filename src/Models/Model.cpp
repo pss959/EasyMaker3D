@@ -312,10 +312,10 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
     }
 }
 
-bool Model::ValidateMesh(std::string &reason) const {
+bool Model::ValidateMesh(TriMesh &mesh, std::string &reason) {
     ASSERT(shape_);
     bool is_valid = false;
-    switch (::IsMeshValid(shape_->GetMesh())) {
+    switch (ValidateTriMesh(mesh)) {
       case MeshValidityCode::kValid:
         is_valid = true;
         break;
@@ -392,21 +392,27 @@ void Model::RebuildMesh_(bool notify) {
 
     KLOG('B', GetDesc() << " rebuilding mesh");
 
-    // Disable all notification while building the Mesh.
+    // Disable all notification while building and validating the mesh.
     const bool was_notify_enabled = IsNotifyEnabled();
     SetNotifyEnabled(false);
+
+    // Let the derived class build the mesh, then center the result and save
+    // the new offset.
     TriMesh mesh = BuildMesh();
     const Vector3f new_offset = -CenterMesh(mesh);
-    shape_->ChangeMesh(mesh);
-    SetNotifyEnabled(was_notify_enabled);
 
+    // Validate the mesh, repairing it if necessary and possible, and install
+    // the result.
+    reason_for_invalid_mesh_.clear();
+    is_mesh_valid_ = ValidateMesh(mesh, reason_for_invalid_mesh_);
+    shape_->ChangeMesh(mesh);
+
+    // Reenable notification and notify if requested.
+    SetNotifyEnabled(was_notify_enabled);
     if (notify)
         ProcessChange(SG::Change::kGeometry, *this);
-    is_mesh_stale_ = false;
 
-    // Validate the new mesh.
-    reason_for_invalid_mesh_.clear();
-    is_mesh_valid_ = ValidateMesh(reason_for_invalid_mesh_);
+    is_mesh_stale_ = false;
 
     // Undo any previous offset and apply the new one.
     SetTranslation(GetTranslation() - mesh_offset_ + new_offset);

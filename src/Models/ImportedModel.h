@@ -34,7 +34,7 @@ class ImportedModel : public Model {
     virtual TriMesh BuildMesh() override;
 
     /// Redefines this to add import-specific reasons.
-    virtual bool ValidateMesh(std::string &reason) const override;
+    virtual bool ValidateMesh(TriMesh &mesh, std::string &reason) override;
 
   private:
     /// \name Parsed fields.

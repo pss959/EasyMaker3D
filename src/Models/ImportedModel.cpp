@@ -52,11 +52,12 @@ TriMesh ImportedModel::BuildMesh() {
     return mesh;
 }
 
-bool ImportedModel::ValidateMesh(std::string &reason) const {
+bool ImportedModel::ValidateMesh(TriMesh &mesh, std::string &reason) {
     // If there was an import error, return it.
     if (! import_error_.empty()) {
         reason = import_error_;
         return false;
     }
-    return Model::ValidateMesh(reason);
+    // Otherwise, let the base class check.
+    return Model::ValidateMesh(mesh, reason);
 }

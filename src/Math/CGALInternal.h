@@ -39,4 +39,7 @@ typedef CPolyhedron::Vertex_const_iterator                  CVI;
 struct TriMesh;
 
 /// Builds and returns a CGAL CPolyhedron from a TriMesh.
-CPolyhedron BuildCGALPolyhedron(const TriMesh &mesh);
+CPolyhedron TriMeshToCGALPolyhedron(const TriMesh &mesh);
+
+/// Converts a CGAL CPolyhedron to a TriMesh.
+TriMesh CGALPolyhedronToTriMesh(const CPolyhedron &poly);
