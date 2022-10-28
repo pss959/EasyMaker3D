@@ -2,8 +2,6 @@
 
 #include "Math/CGALInternal.h"
 
-#include "Util/Enum.h" // XXXX
-
 #define REPAIR_SELF_INTERSECTIONS 0
 
 #if REPAIR_SELF_INTERSECTIONS
