@@ -3,53 +3,17 @@ CommandList {
     app_name: "MakerVR",
     version: "0.0.1",
     session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
       build_volume_visible: True,
+      axis_aligned: False,
     },
   },
   commands: [
     CreateRevSurfModelCommand {
       result_name: "RevSurf_1",
       initial_scale: 4,
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.38058 0.905142, 0.5 0.5],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.38058 0.905142, 0.22649 0.562343, 0.5 0.5],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.38058 0.905142, 0.22649 0.562343, 0.5 0.5, 0.342058 0.151949],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.38058 0.905142, 0.5 0.5, 0.342058 0.151949],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.203377 0.383701, 0.5 0.5, 0.342058 0.151949],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.203377 0.383701, 0.488402 0.437913, 0.342058 0.151949],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.330695 0.814064, 0.488402 0.437913, 0.342058 0.151949],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.330695 0.814064, 0.187491 0.0554744, 0.488402 0.437913, 0.342058 0.151949],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
     },
     ScaleCommand {
       ratios: 1.75 1.75 1.75,
@@ -74,6 +38,11 @@ CommandList {
       translation: -2 0 0,
       model_names: ["RevSurf_1", "Cylinder_1"],
     },
+    ChangeRevSurfCommand {
+      profile_points: [0.330695 0.814064, 0.333917 0.10354, 0.488402 0.437913],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
   ],
-  current_index: 14,
+  current_index: 7,
 }
