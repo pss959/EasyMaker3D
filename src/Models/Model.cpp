@@ -315,7 +315,7 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
 bool Model::ValidateMesh(TriMesh &mesh, std::string &reason) {
     ASSERT(shape_);
     bool is_valid = false;
-    switch (ValidateTriMesh(mesh)) {
+    switch (ValidateAndRepairTriMesh(mesh)) {
       case MeshValidityCode::kValid:
         is_valid = true;
         break;

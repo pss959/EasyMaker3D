@@ -126,7 +126,7 @@ TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
 }
 
 void TestBase::ValidateMesh(const TriMesh &mesh, string desc) {
-    const MeshValidityCode ret = IsMeshValid(mesh);
+    const MeshValidityCode ret = ValidateTriMesh(mesh);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ret)
         << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
 }
