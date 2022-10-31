@@ -3,7 +3,7 @@
 #include "Base/Memory.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
-#include "Models/Model.h"
+#include "Models/PrimitiveModel.h"
 
 namespace Parser { class Registry; }
 
@@ -12,7 +12,7 @@ DECL_SHARED_PTR(RevSurfModel);
 /// RevSurfModel is a derived Model that represents a surface of revolution.
 ///
 /// \ingroup Models
-class RevSurfModel : public Model {
+class RevSurfModel : public PrimitiveModel {
   public:
     /// Creates and returns a default Profile for a RevSurfModel.
     static Profile CreateDefaultProfile() {

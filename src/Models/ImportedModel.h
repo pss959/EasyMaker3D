@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Base/Memory.h"
-#include "Models/Model.h"
+#include "Models/PrimitiveModel.h"
 
 namespace Parser { class Registry; }
 
@@ -16,7 +16,7 @@ DECL_SHARED_PTR(UnitConversion);
 /// (tetrahedron) and marks it as invalid.
 ///
 /// \ingroup Models
-class ImportedModel : public Model {
+class ImportedModel : public PrimitiveModel {
   public:
     /// Sets the UnitConversion to use when importing STL data.
     void SetUnitConversion(const UnitConversion &conv);

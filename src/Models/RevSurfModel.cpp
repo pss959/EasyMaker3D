@@ -9,11 +9,11 @@ void RevSurfModel::AddFields() {
     AddModelField(profile_points_.Init("profile_points"));
     AddModelField(sweep_angle_.Init("sweep_angle", Anglef::FromDegrees(360)));
 
-    Model::AddFields();
+    PrimitiveModel::AddFields();
 }
 
 bool RevSurfModel::IsValid(std::string &details) {
-    if (! Model::IsValid(details))
+    if (! PrimitiveModel::IsValid(details))
         return false;
 
     // Construct and validate the profile if points were specified.
@@ -35,7 +35,7 @@ bool RevSurfModel::IsValid(std::string &details) {
 }
 
 void RevSurfModel::CreationDone() {
-    Model::CreationDone();
+    PrimitiveModel::CreationDone();
 
     if (! IsTemplate()) {
         if (profile_points_.WasSet()) {

@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Base/Memory.h"
-#include "Models/Model.h"
+#include "Models/PrimitiveModel.h"
 
 namespace Parser { class Registry; }
 
@@ -13,7 +13,7 @@ DECL_SHARED_PTR(TextModel);
 /// the +Y axis with a default height of 2 units.
 ///
 /// \ingroup Models
-class TextModel : public Model {
+class TextModel : public PrimitiveModel {
   public:
     /// Sets the text string to use.
     void SetTextString(const std::string &text);

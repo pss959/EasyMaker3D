@@ -46,11 +46,11 @@ void TextModel::AddFields() {
     AddModelField(char_spacing_.Init("char_spacing", 1));
     AddModelField(height_.Init("height",             TK::kExtrudedTextLength));
 
-    Model::AddFields();
+    PrimitiveModel::AddFields();
 }
 
 bool TextModel::IsValid(std::string &details) {
-    if (! Model::IsValid(details))
+    if (! PrimitiveModel::IsValid(details))
         return false;
 
     if (font_name_.WasSet() && ! IsValidFontName(GetFontName())) {

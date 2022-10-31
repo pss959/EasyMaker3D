@@ -15,7 +15,7 @@ ImportedModel::ImportedModel() :
 void ImportedModel::AddFields() {
     AddModelField(path_.Init("path"));
 
-    Model::AddFields();
+    PrimitiveModel::AddFields();
 }
 
 void ImportedModel::SetUnitConversion(const UnitConversion &conv) {
@@ -59,5 +59,5 @@ bool ImportedModel::ValidateMesh(TriMesh &mesh, std::string &reason) {
         return false;
     }
     // Otherwise, let the base class check.
-    return Model::ValidateMesh(mesh, reason);
+    return PrimitiveModel::ValidateMesh(mesh, reason);
 }
