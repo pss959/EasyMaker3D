@@ -52,8 +52,8 @@ class ClipTool::Impl_ {
     /// the current plane, including during SphereWidget interaction.
     SG::NodePtr         arrow_and_plane_;
 
-    /// Interactive SphereWidget to rotate the clipping plane. The rotation
-    /// in this defines the clipping plane normal.
+    /// Interactive SphereWidget to rotate the clipping plane. Its rotation
+    /// defines the clipping plane normal.
     SphereWidgetPtr     rotator_;
 
     /// Arrow with a Slider1DWidget for translating the clipping plane. The min
@@ -83,9 +83,9 @@ class ClipTool::Impl_ {
     /// Color used for the Arrow when inactive.
     Color               arrow_inactive_color_;
 
-    /// Sets up to match the given Plane in local coordinates of the primary
+    /// Sets up to match the given Plane in object coordinates of the primary
     /// selection.
-    void MatchPlane_(const Plane &local_plane);
+    void MatchPlane_(const Plane &object_plane);
 
     /// Sets the min/max range for the translation slider based on the Model's
     /// mesh extents along the given direction vector.
@@ -432,19 +432,7 @@ void ClipTool::Impl_::UpdateTranslationFeedback_(const Color &color) {
 }
 
 void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
-    const Plane stage_plane = GetStagePlane_();
-    for (const auto &path: selection_.GetPaths()) {
-        // Clip the same way as ClippedModel: use the plane in the local
-        // coordinates of the ClippedModel applied to the mesh in object
-        // coordinates of the ClippedModel. However, the local plane needs to
-        // be translated to the center of the mesh.
-        auto &model = *path.GetModel();
-        const Matrix4f s2l =
-            ion::math::TranslationMatrix(-model.GetMeshOffset()) *
-            CoordConv(path).GetRootToLocalMatrix();
-        const Plane local_plane = TransformPlane(stage_plane, s2l);
-        model.EnableClipping(enable, local_plane);
-    }
+    context_.root_model->EnableClipping(enable, GetStagePlane_());
 }
 
 Plane ClipTool::Impl_::GetObjPlane_() const {

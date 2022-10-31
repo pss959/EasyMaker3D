@@ -11,14 +11,12 @@ layout (triangle_strip, max_vertices = 3) out;
 
 // Input from the vertex program.
 in VertexOutput {
-  vec3 obj_pos;                // Position in object coordinates.
   vec3 world_pos;              // Position in world coordinates.
   vec4 light_pos[MAX_LIGHTS];  // Position relative to each light.
 } geom_input[];
 
 // Output from the geometry shader.
 out GeometryOutput {
-  vec3 obj_pos;                // Position in object coordinates.
   vec3 world_pos;              // Position in world coordinates.
   vec3 world_normal;           // Face normal in world coordinates.
   vec3 barycentric;            // Barycentric coordinates of the vertex.
@@ -37,7 +35,6 @@ void main() {
 
   // Output each vertex of the triangle.
   for (int i = 0; i < 3; ++i) {
-    geom_output.obj_pos      = geom_input[i].obj_pos;
     geom_output.world_pos    = geom_input[i].world_pos;
     geom_output.world_normal = normal;
     geom_output.barycentric  = barycentric[i];
