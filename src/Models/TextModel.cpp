@@ -5,6 +5,7 @@
 #include "Base/Tuning.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshCombining.h"
+#include "Math/MeshUtils.h"
 #include "Math/TextUtils.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
@@ -109,9 +110,12 @@ TriMesh TextModel::BuildMesh() {
     // Extrude each polygon and combine the results.
     const float ht = GetHeight();
     auto extrude = [ht](const Polygon &p){ return BuildExtrudedMesh(p, ht); };
-    return CombineMeshes(
+
+    TriMesh mesh = CombineMeshes(
         Util::ConvertVector<TriMesh, Polygon>(polygons, extrude),
         MeshCombiningOperation::kConcatenate);
+    CenterMesh(mesh);
+    return mesh;
 }
 
 void TextModel::ValidateText_(const std::string &font_name,

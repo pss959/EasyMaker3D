@@ -349,7 +349,6 @@ void Model::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     is_mesh_stale_           = from_model.is_mesh_stale_;
     is_mesh_valid_           = from_model.is_mesh_valid_;
     reason_for_invalid_mesh_ = from_model.reason_for_invalid_mesh_;
-    mesh_offset_             = from_model.mesh_offset_;
     color_                   = from_model.color_;
     is_user_name_            = from_model.is_user_name_;
 
@@ -396,27 +395,22 @@ void Model::RebuildMesh_(bool notify) {
     const bool was_notify_enabled = IsNotifyEnabled();
     SetNotifyEnabled(false);
 
-    // Let the derived class build the mesh, then center the result and save
-    // the new offset.
+    // Let the derived class build the origin-centered mesh.
     TriMesh mesh = BuildMesh();
-    const Vector3f new_offset = -CenterMesh(mesh);
+    ASSERTM(AreClose(ComputeMeshBounds(mesh).GetCenter(), Point3f::Zero()),
+            GetDesc() + " has noncentered mesh");
 
     // Validate the mesh, repairing it if necessary and possible, and install
     // the result.
     reason_for_invalid_mesh_.clear();
     is_mesh_valid_ = ValidateMesh(mesh, reason_for_invalid_mesh_);
     shape_->ChangeMesh(mesh);
+    is_mesh_stale_ = false;
 
     // Reenable notification and notify if requested.
     SetNotifyEnabled(was_notify_enabled);
     if (notify)
         ProcessChange(SG::Change::kGeometry, *this);
-
-    is_mesh_stale_ = false;
-
-    // Undo any previous offset and apply the new one.
-    SetTranslation(GetTranslation() - mesh_offset_ + new_offset);
-    mesh_offset_ = new_offset;
 }
 
 void Model::PlacePointTargetOnBounds_(const DragInfo &info,

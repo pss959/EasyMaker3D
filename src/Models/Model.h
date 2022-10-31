@@ -12,9 +12,13 @@ DECL_SHARED_PTR(Model);
 namespace SG { DECL_SHARED_PTR(MutableTriMeshShape); }
 
 /// Model is an abstract base class for all 3D models created by the
-/// application. A Model contains a single Shape that represents it in the 3D
-/// scene. The Shape's mesh must be watertight, meaning that there are no gaps
-/// at edges. Models are rendered using the Faceted shader.
+/// application. A Model contains a single MutableTriMeshShape that represents
+/// it in the 3D scene. The Shape's mesh must be watertight, meaning that there
+/// are no gaps at edges. Models are rendered using the Faceted shader.
+///
+/// Each derived Model class must implement BuildMesh() to build and return a
+/// TriMesh representing the Model that is stored in the MutableTriMeshShape.
+/// The mesh should be centered on the origin in object coordinates.
 ///
 /// The Model class is derived from ClickableWidget so that clicking a Model
 /// can be used to select or deselect it.
@@ -187,10 +191,6 @@ class Model : public ClickableWidget {
     /// for debugging, as a stale mesh is not very useful.
     const TriMesh & GetCurrentMesh() const;
 
-    /// Returns the offset applied to the Model to offset the translation
-    /// applied to center the mesh.
-    const Vector3f & GetMeshOffset() const { return mesh_offset_; }
-
     /// Returns true if the Mesh in the Model is valid. If not, the reason
     /// string will be set to the reason it is not considered valid.
     bool IsMeshValid(std::string &reason) const;
@@ -304,10 +304,6 @@ class Model : public ClickableWidget {
     /// If the mesh is valid, this is empty. Otherwise, it contains the reason
     /// it is not considered valid.
     std::string reason_for_invalid_mesh_ = "Never built";
-
-    /// Saves the offset currently used for centering the mesh on the
-    /// origin. This is saved so it can be undone when the mesh is updated.
-    Vector3f mesh_offset_{0, 0, 0};
 
     /// Current color of the Model. If the mesh is invalid, the invalid color
     /// is shown temporarily, but this stores the real color.
