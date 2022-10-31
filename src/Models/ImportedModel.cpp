@@ -38,13 +38,11 @@ TriMesh ImportedModel::BuildMesh() {
     // as an error so the dummy tetrahedron mesh is used and is considered
     // invalid. Otherwise, try to import the mesh; it will be empty if there is
     // an error.
-    if (path.empty()) {
+    if (path.empty())
         import_error_ = "Import path was never set";
-    }
-    else {
-        mesh = ReadSTLFile(path, unit_conversion_->GetFactor(), import_error_);
-        CenterMesh(mesh);
-    }
+    else
+        mesh = CenterMesh(ReadSTLFile(path, unit_conversion_->GetFactor(),
+                                      import_error_));
 
     // If there is no mesh for any reason, use a dummy tetrahedron mesh.
     if (mesh.GetTriangleCount() == 0) {

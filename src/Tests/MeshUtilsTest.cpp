@@ -65,9 +65,8 @@ TEST_F(MeshUtilsTest, CenterMesh) {
     const Bounds b1 = ComputeMeshBounds(m);
 
     // Center it.
-    const Vector3f offset = CenterMesh(m);
-    EXPECT_EQ(Vector3f(-trans, 0, 0), offset);
-    const Bounds b2 = ComputeMeshBounds(m);
+    const TriMesh m2 = CenterMesh(m);
+    const Bounds b2 = ComputeMeshBounds(m2);
 
     // Bounds should be the same size, but centered on the origin.
     EXPECT_EQ(b1.GetSize(), b2.GetSize());

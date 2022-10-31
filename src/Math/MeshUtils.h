@@ -23,10 +23,8 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m);
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 
-/// Modifies vertices in a mesh if necessary so that the mesh bounds are
-/// centered on the origin. Returns the offset vector used to do the
-/// recentering.
-Vector3f CenterMesh(TriMesh &mesh);
+/// Returns a new version of a mesh with the bounds centered on the origin.
+TriMesh CenterMesh(const TriMesh &mesh);
 
 /// Modifies vertices in a mesh if necessary so that they are not shared. Each
 /// triangle will have its own 3 unique vertices.

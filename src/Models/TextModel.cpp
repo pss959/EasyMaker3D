@@ -111,11 +111,10 @@ TriMesh TextModel::BuildMesh() {
     const float ht = GetHeight();
     auto extrude = [ht](const Polygon &p){ return BuildExtrudedMesh(p, ht); };
 
-    TriMesh mesh = CombineMeshes(
-        Util::ConvertVector<TriMesh, Polygon>(polygons, extrude),
-        MeshCombiningOperation::kConcatenate);
-    CenterMesh(mesh);
-    return mesh;
+    return CenterMesh(
+        CombineMeshes(
+            Util::ConvertVector<TriMesh, Polygon>(polygons, extrude),
+            MeshCombiningOperation::kConcatenate));
 }
 
 void TextModel::ValidateText_(const std::string &font_name,

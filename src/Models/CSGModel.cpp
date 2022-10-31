@@ -1,6 +1,7 @@
 #include "Models/CSGModel.h"
 
 #include "Math/MeshCombining.h"
+#include "Math/MeshUtils.h"
 
 void CSGModel::AddFields() {
     AddModelField(operation_.Init("operation", CSGOperation::kUnion));
@@ -27,5 +28,5 @@ TriMesh CSGModel::BuildMesh() {
         op = MeshCombiningOperation::kCSGDifference;
         break;
     }
-    return CombineMeshes(GetChildMeshes(), op);
+    return CenterMesh(CombineMeshes(GetChildMeshes(), op));
 }

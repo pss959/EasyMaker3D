@@ -58,14 +58,15 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
         return plane.MirrorPoint(p); }, true);
 }
 
-Vector3f CenterMesh(TriMesh &mesh) {
-    const Bounds bounds = ComputeMeshBounds(mesh);
+TriMesh CenterMesh(const TriMesh &mesh) {
+    TriMesh centered = mesh;
+    const Bounds bounds = ComputeMeshBounds(centered);
     const Vector3f offset = Vector3f(-bounds.GetCenter());
     if (offset != Vector3f::Zero()) {
-        for (auto &p: mesh.points)
+        for (auto &p: centered.points)
             p += offset;
     }
-    return offset;
+    return centered;
 }
 
 void UnshareMeshVertices(TriMesh &mesh) {
