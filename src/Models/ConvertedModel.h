@@ -34,13 +34,18 @@ class ConvertedModel : public ParentModel {
     virtual void ReplaceChildModel(size_t index,
                                    const ModelPtr &new_child) override;
 
+    /// Redefines this to also update the transforms in the ConvertedModel or
+    /// original Model if necessary.
+    virtual void SetStatus(Status status) override;
+
   protected:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
     virtual TriMesh BuildMesh() override;
 
-    /// Derived classes must implement this to convert the original mesh.
+    /// Derived classes must implement this to convert the original,
+    /// untransformed mesh.
     virtual TriMesh ConvertMesh(const TriMesh &original_mesh) = 0;
 
     /// Redefines this to copy the original Model.
@@ -52,8 +57,4 @@ class ConvertedModel : public ParentModel {
     ///@{
     Parser::ObjectField<Model> original_model_;
     ///@}
-
-    /// Stores the original Model in original_model_ and updates transforms
-    /// based on it.
-    void UpdateOriginalModel_(const ModelPtr &model);
 };

@@ -1,7 +1,5 @@
 #include "Models/ConvertedModel.h"
 
-#include "Math/MeshUtils.h"
-
 void ConvertedModel::AddFields() {
     AddModelField(original_model_.Init("original_model"));
 
@@ -37,7 +35,8 @@ void ConvertedModel::SetOriginalModel(const ModelPtr &model) {
     if (GetChildModelCount() > 0)
         ClearChildModels();
     ParentModel::AddChildModel(model);
-    UpdateOriginalModel_(model);
+    original_model_ = model;
+    CopyTransformsFrom(*model);
 }
 
 void ConvertedModel::AddChildModel(const ModelPtr &child) {
@@ -60,12 +59,30 @@ void ConvertedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) 
     ASSERTM(false, "ConvertedModel::ReplaceChildModel() should not be called");
 }
 
+void ConvertedModel::SetStatus(Status status) {
+    const Status prev_status = GetStatus();
+    const bool   was_shown   = IsShown();
+    ParentModel::SetStatus(status);
+
+    // If the child was shown and now the ConvertedModel is, update the
+    // transforms in the ConvertedModel from the original.
+    if (prev_status == Status::kDescendantShown && IsShown()) {
+        CopyTransformsFrom(*GetOriginalModel());
+    }
+
+    // If the ConvertedModel was shown and now the child may be, update the
+    // transforms in the original from the ConvertedModel.
+    else if (was_shown && status == Status::kDescendantShown) {
+        GetOriginalModel()->CopyTransformsFrom(*this);
+    }
+}
+
 TriMesh ConvertedModel::BuildMesh() {
     auto orig = GetOriginalModel();
     ASSERT(orig);
 
-    // Let the derived class convert the transformed chid mesh.
-    return ConvertMesh(TransformMesh(orig->GetMesh(), orig->GetModelMatrix()));
+    // Let the derived class convert the untransformed child mesh.
+    return ConvertMesh(orig->GetMesh());
 }
 
 void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
@@ -75,11 +92,4 @@ void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
     // Clone the original Model.
     const ConvertedModel &from_cm = static_cast<const ConvertedModel &>(from);
     SetOriginalModel(from_cm.GetOriginalModel()->CreateClone());
-}
-
-void ConvertedModel::UpdateOriginalModel_(const ModelPtr &model) {
-    original_model_ = model;
-
-    // Copy the transformation from the original.
-    // XXXX
 }
