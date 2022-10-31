@@ -4,6 +4,7 @@
 
 #include "App/SelPath.h"
 #include "Executors/Executor.h"
+#include "Math/Types.h"
 
 /// ChangeClipExecutor executes the ChangeClipCommand.
 ///
@@ -23,7 +24,7 @@ class ChangeClipExecutor : public Executor {
         /// Data per Model to operate on.
         struct PerModel {
             SelPath  path_to_model;
-            Plane    local_plane;
+            Plane    object_plane;
             Vector3f old_translation;
             Vector3f new_translation;
         };
@@ -35,6 +36,6 @@ class ChangeClipExecutor : public Executor {
     ExecData_ & GetExecData_(Command &command);
 
     /// Compensates for a change in translation caused by clipping.
-    void AdjustTranslation_(const Vector3f &old_mesh_offset,
+    void AdjustTranslation_(const Bounds &unclipped_bounds,
                             ExecData_::PerModel &pm);
 };

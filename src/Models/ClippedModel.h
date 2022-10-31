@@ -9,12 +9,12 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(ClippedModel);
 
 /// ClippedModel is a derived ConvertedModel class that represents a Model that
-/// has been clipped by one or more planes specified in local coordinates.
+/// has been clipped by one or more planes specified in object coordinates.
 ///
 /// \ingroup Models
 class ClippedModel : public ConvertedModel {
   public:
-    /// Adds a Plane (specified in local coordinates) to clip to. The side the
+    /// Adds a Plane (specified in object coordinates) to clip to. The side the
     /// Plane normal points toward is clipped away.
     void AddPlane(const Plane &local_plane);
 
