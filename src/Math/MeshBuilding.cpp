@@ -344,7 +344,7 @@ TriMesh BuildBoxMesh(const Vector3f &size) {
             0, 2, 6,   0, 6, 4,
         });
 
-    // No need to clean this mesh.
+    // No need to clean or center this mesh.
     return mesh;
 }
 
@@ -390,7 +390,8 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
     ASSERT(mesh.indices.size() == index_count);
 
     CleanMesh(mesh);
-    return mesh;
+    // Lower complexities can cause the mesh to be off center.
+    return CenterMesh(mesh);
 }
 
 TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
@@ -401,7 +402,8 @@ TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
         BuildFullRevSurf_(profile, num_sides) :
         BuildPartialRevSurf_(profile, sweep_angle, num_sides);
     CleanMesh(mesh);
-    return mesh;
+    // Lower complexities can cause the mesh to be off center.
+    return CenterMesh(mesh);
 }
 
 TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
@@ -447,7 +449,8 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
     ScalePointsToSize(2 * radius * Vector3f(1, 1, 1), mesh.points);
 
     CleanMesh(mesh);
-    return mesh;
+    // Lower complexities can cause the mesh to be off center.
+    return CenterMesh(mesh);
 }
 
 TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
@@ -496,7 +499,8 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
     ASSERT(mesh.indices.size() == index_count);
 
     CleanMesh(mesh);
-    return mesh;
+    // Lower complexities can cause the mesh to be off center.
+    return CenterMesh(mesh);
 }
 
 TriMesh BuildPolygonMesh(const Polygon &polygon) {

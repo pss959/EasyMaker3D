@@ -16,8 +16,8 @@ static Rotationf GetXRot_() {
 
 TEST_F(SessionTestBase, ClipSessionTest1) {
     // This has 1 cylinder (Cylinder_1) that is scaled by 2 in height, rotated
-    // by 90 degrees around X, and rtanslated by 5 in X, then converted to a
-    // ClippedModel (Clipped_1). Clipped_1 is then clipped by the XY plane in
+    // by 90 degrees around X, and translated by 5 in X, then converted to a
+    // ClippedModel (Clipped_1). Clipped_1 is then clipped by the Z=0 plane in
     // stage coordinates.
     //
     // Clipped_1 should have its rotated top half (front) clipped away.
@@ -43,21 +43,21 @@ TEST_F(SessionTestBase, ClipSessionTest1) {
 
         // Clipping plane. The clip plane is the Z=0 plane in stage
         // coordinates, with the normal pointing along +Z. The plane in the
-        // ClippedModel is in local coordinates.
+        // ClippedModel is in object coordinates, so its normal is +Y.
         EXPECT_EQ(1U, cm1->GetPlanes().size());
         EXPECT_NEAR(0.f, cm1->GetPlanes()[0].distance, kClose);
-        EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm1->GetPlanes()[0].normal);
+        EXPECT_VECS_CLOSE(Vector3f::AxisY(), cm1->GetPlanes()[0].normal);
 
         // ClippedModel transform. Translation is adjusted to compensate for
         // the clipped mesh offset.
-        EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm1->GetScale());
-        EXPECT_ROTS_CLOSE(Rotationf::Identity(), cm1->GetRotation());
-        EXPECT_VECS_CLOSE(Vector3f(5,  4, -2),   cm1->GetTranslation());
+        EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), cm1->GetScale());
+        EXPECT_ROTS_CLOSE(xrot,                  cm1->GetRotation());
+        EXPECT_VECS_CLOSE(Vector3f(5, 4, -2),    cm1->GetTranslation());
 
         // (Object) Bounds.
         const Bounds b1 = cm1->GetBounds();
         EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   b1.GetCenter());
-        EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b1.GetSize());
+        EXPECT_VECS_CLOSE(Vector3f(2, 1, 2), b1.GetSize());
 
         // Undo and redo the clip change for second iteration.
         context.command_manager->Undo();
@@ -78,13 +78,13 @@ TEST_F(SessionTestBase, ClipSessionTest3) {
     //
     //  - Clipped_3 is rotated by 90 degrees around X.
     //
-    //  - All 3 ClippedModels are clipped by the XY plane (in stage
+    //  - All 3 ClippedModels are clipped by the Z=0 plane (in stage
     //    coordinates).
     //
     // Therefore:
     //   - Clipped_1 should have its front half clipped away.
     //   - Clipped_2 should have its rotated top half clipped away.
-    //   - Clipped_3 should have its unrotated front half clipped away.
+    //   - Clipped_3 should have its rotated top half clipped away.
     //
     // All resulting ClippedModel remnants should have the same position as
     // before clipping.
@@ -125,8 +125,7 @@ TEST_F(SessionTestBase, ClipSessionTest3) {
 
         // Clipping planes. The clip plane is the Z=0 plane in stage
         // coordinates, with the normal pointing along +Z. The planes in the
-        // ClippedModels are in local coordinates, so they should all be the
-        // same.
+        // ClippedModels are in object coordinates.
         EXPECT_EQ(1U, cm1->GetPlanes().size());
         EXPECT_EQ(1U, cm2->GetPlanes().size());
         EXPECT_EQ(1U, cm3->GetPlanes().size());
@@ -134,20 +133,20 @@ TEST_F(SessionTestBase, ClipSessionTest3) {
         EXPECT_NEAR(0.f, cm2->GetPlanes()[0].distance, kClose);
         EXPECT_NEAR(0.f, cm3->GetPlanes()[0].distance, kClose);
         EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm1->GetPlanes()[0].normal);
-        EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm2->GetPlanes()[0].normal);
-        EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm3->GetPlanes()[0].normal);
+        EXPECT_VECS_CLOSE(Vector3f::AxisY(), cm2->GetPlanes()[0].normal);
+        EXPECT_VECS_CLOSE(Vector3f::AxisY(), cm3->GetPlanes()[0].normal);
 
         // Clipped models transforms. Translations are adjusted to compensate
         // for the clipped mesh offsets.
-        EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm1->GetScale());
-        EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm2->GetScale());
-        EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     cm3->GetScale());
+        EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), cm1->GetScale());
+        EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), cm2->GetScale());
+        EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), cm3->GetScale());
         EXPECT_ROTS_CLOSE(Rotationf::Identity(), cm1->GetRotation());
-        EXPECT_ROTS_CLOSE(Rotationf::Identity(), cm2->GetRotation());
+        EXPECT_ROTS_CLOSE(xrot,                  cm2->GetRotation());
         EXPECT_ROTS_CLOSE(xrot,                  cm3->GetRotation());
         EXPECT_VECS_CLOSE(Vector3f(0,  4, -1),   cm1->GetTranslation());
         EXPECT_VECS_CLOSE(Vector3f(5,  4, -2),   cm2->GetTranslation());
-        EXPECT_VECS_CLOSE(Vector3f(10, 5,  0),   cm3->GetTranslation());
+        EXPECT_VECS_CLOSE(Vector3f(10, 4, -2),   cm3->GetTranslation());
 
         // (Object) Bounds.
         const Bounds b1 = cm1->GetBounds();
@@ -156,9 +155,9 @@ TEST_F(SessionTestBase, ClipSessionTest3) {
         EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   b1.GetCenter());
         EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   b2.GetCenter());
         EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   b3.GetCenter());
-        EXPECT_VECS_CLOSE(Vector3f(4, 8, 2), b1.GetSize());
-        EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b2.GetSize());
-        EXPECT_VECS_CLOSE(Vector3f(4, 8, 2), b3.GetSize());
+        EXPECT_VECS_CLOSE(Vector3f(2, 2, 1), b1.GetSize());
+        EXPECT_VECS_CLOSE(Vector3f(2, 1, 2), b2.GetSize());
+        EXPECT_VECS_CLOSE(Vector3f(2, 1, 2), b3.GetSize());
 
         // Undo and redo the clip change for second iteration.
         context.command_manager->Undo();
