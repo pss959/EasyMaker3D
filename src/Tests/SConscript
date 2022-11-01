@@ -32,6 +32,7 @@ test_sources = [
     'ModelMeshBinaryTest.cpp',
     'ModelTest.cpp',
     'NameManagerTest.cpp',
+    'NodeBoundsTest.cpp',
     'NodePathTest.cpp',
     'NodeTest.cpp',
     'PaneTest.cpp',
