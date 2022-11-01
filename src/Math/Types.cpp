@@ -169,7 +169,7 @@ Bounds::Face Bounds::GetFaceForPoint(const Point3f &point) const {
 void Bounds::GetCorners(Point3f corners[8]) const {
     const auto &min_pt = GetMinPoint();
     const auto &max_pt = GetMaxPoint();
-    corners[0].Set(min_pt[0], min_pt[1], min_pt[0]);
+    corners[0].Set(min_pt[0], min_pt[1], min_pt[2]);
     corners[1].Set(min_pt[0], min_pt[1], max_pt[2]);
     corners[2].Set(min_pt[0], max_pt[1], min_pt[2]);
     corners[3].Set(min_pt[0], max_pt[1], max_pt[2]);
