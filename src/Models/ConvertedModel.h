@@ -38,6 +38,16 @@ class ConvertedModel : public ParentModel {
     /// original Model if necessary.
     virtual void SetStatus(Status status) override;
 
+    /// Sets an offset in local coordinates of the ConvertedModel relative to
+    /// the original Model. The offset is the zero vector by default. This can
+    /// be used in cases (such as ClippedModel) where the ConvertedModel needs
+    /// to have a different translation than the original.
+    void SetOffset(const Vector3f &offset) { offset_ = offset; }
+
+    /// Returns the offset last set by SetOffset(). This is the zero vector by
+    /// default.
+    const Vector3f & GSetOffset() const { return offset_; }
+
   protected:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
@@ -57,4 +67,8 @@ class ConvertedModel : public ParentModel {
     ///@{
     Parser::ObjectField<Model> original_model_;
     ///@}
+
+    /// Extra offset added to the original Model's translation in object
+    /// coordinates for the ConvertedModel.
+    Vector3f offset_{0, 0, 0};
 };

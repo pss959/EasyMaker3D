@@ -68,12 +68,17 @@ void ConvertedModel::SetStatus(Status status) {
     // transforms in the ConvertedModel from the original.
     if (prev_status == Status::kDescendantShown && IsShown()) {
         CopyTransformsFrom(*GetOriginalModel());
+        if (offset_ != Vector3f::Zero())
+            SetTranslation(GetTranslation() + offset_);
     }
 
     // If the ConvertedModel was shown and now the child may be, update the
     // transforms in the original from the ConvertedModel.
     else if (was_shown && status == Status::kDescendantShown) {
-        GetOriginalModel()->CopyTransformsFrom(*this);
+        Model &orig = *GetOriginalModel();
+        orig.CopyTransformsFrom(*this);
+        if (offset_ != Vector3f::Zero())
+            orig.SetTranslation(orig.GetTranslation() - offset_);
     }
 }
 

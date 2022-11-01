@@ -58,7 +58,7 @@ ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
 
 void ChangeClipExecutor::AdjustTranslation_(const Bounds &unclipped_bounds,
                                             ExecData_::PerModel &pm) {
-    auto &model = *pm.path_to_model.GetModel();
+    ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
 
     // The original mesh and the clipped mesh are both centered on the origin
     // in object coordinates (like all meshes). However, they are different
@@ -71,7 +71,7 @@ void ChangeClipExecutor::AdjustTranslation_(const Bounds &unclipped_bounds,
     // from the plane (also in object coordinates) and see how much it moves in
     // local coordinates, then translate by the opposite.
 
-    const Bounds clipped_bounds = model.GetBounds();
+    const Bounds clipped_bounds = cm.GetBounds();
     Point3f unclipped_corners[8];
     Point3f clipped_corners[8];
     unclipped_bounds.GetCorners(unclipped_corners);
@@ -91,12 +91,13 @@ void ChangeClipExecutor::AdjustTranslation_(const Bounds &unclipped_bounds,
 
     // Convert the corner for both the original and clipped bounds to local
     // coordinates and get the difference.
-    const Matrix4f &mm = model.GetModelMatrix();
-    const Vector3f tr =
-        (mm *   clipped_corners[stable_corner_index]) -
-        (mm * unclipped_corners[stable_corner_index]);
+    const Matrix4f &mm = cm.GetModelMatrix();
+    const Vector3f offset =
+        (mm * unclipped_corners[stable_corner_index]) -
+        (mm *   clipped_corners[stable_corner_index]);
 
-    pm.old_translation = model.GetTranslation();
-    pm.new_translation = pm.old_translation - tr;
-    model.SetTranslation(pm.new_translation);
+    pm.old_translation = cm.GetTranslation();
+    pm.new_translation = pm.old_translation + offset;
+    cm.SetOffset(offset);
+    cm.SetTranslation(pm.new_translation);
 }
