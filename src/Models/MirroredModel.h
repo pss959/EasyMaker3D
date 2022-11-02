@@ -27,7 +27,7 @@ class MirroredModel : public ConvertedModel {
   protected:
     MirroredModel() {}
     virtual void AddFields() override;
-    virtual TriMesh ConvertMesh(const TriMesh &original_mesh) override;
+    virtual TriMesh BuildMesh() override;
 
   private:
     /// \name Parsed fields.

@@ -49,6 +49,13 @@ static TriMesh ModifyVertices_(
 // Public functions.
 // ----------------------------------------------------------------------------
 
+TriMesh ScaleMesh(const TriMesh &mesh, const Vector3f &scale) {
+    const auto scale_pt = [scale](const Point3f &p){
+        return Point3f(scale[0] * p[0], scale[1] * p[1], scale[2] * p[2]);
+    };
+    return ModifyVertices_(mesh, scale_pt);
+}
+
 TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
     return ModifyVertices_(mesh, [m](const Point3f &p){ return m * p; });
 }

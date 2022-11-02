@@ -26,10 +26,25 @@ void ClippedModel::RemoveLastPlane() {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-TriMesh ClippedModel::ConvertMesh(const TriMesh &original_mesh) {
-    TriMesh mesh = original_mesh;
+TriMesh ClippedModel::BuildMesh() {
+    // Clip against the untransformed original mesh.
+    ASSERT(GetOriginalModel());
+    TriMesh mesh = GetOriginalModel()->GetMesh();
+
     for (const auto &plane: GetPlanes())
         mesh = ClipMesh(mesh, plane);
 
     return CenterMesh(mesh);
+}
+
+void ClippedModel::SyncTransformsFromOriginal(const Model &original) {
+    CopyTransformsFrom(original);
+    if (offset_ != Vector3f::Zero())
+        SetTranslation(GetTranslation() + offset_);
+}
+
+void ClippedModel::SyncTransformsToOriginal(Model &original) const {
+    original.CopyTransformsFrom(*this);
+    if (offset_ != Vector3f::Zero())
+        original.SetTranslation(original.GetTranslation() - offset_);
 }

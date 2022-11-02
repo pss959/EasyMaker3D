@@ -52,6 +52,37 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-TriMesh BeveledModel::ConvertMesh(const TriMesh &original_mesh) {
-    return Beveler::ApplyBevel(original_mesh, bevel_);
+TriMesh BeveledModel::BuildMesh() {
+    // Scale the original mesh and then apply the bevel.
+    ASSERT(GetOriginalModel());
+    const Model &orig = *GetOriginalModel();
+    const TriMesh mesh = ScaleMesh(orig.GetMesh(), orig.GetScale());
+    return Beveler::ApplyBevel(mesh, bevel_);
+}
+
+void BeveledModel::SyncTransformsFromOriginal(const Model &original) {
+    // Leave the scale alone.
+    SetRotation(original.GetRotation());
+    SetTranslation(original.GetTranslation());
+}
+
+void BeveledModel::SyncTransformsToOriginal(Model &original) const {
+    // Leave the scale alone.
+    original.SetRotation(GetRotation());
+    original.SetTranslation(GetTranslation());
+}
+
+bool BeveledModel::ProcessChange(SG::Change change, const Object &obj) {
+    if (! ConvertedModel::ProcessChange(change, obj))
+        return false;
+
+    // If the scale in the original changed, need to rebuild the mesh.
+    if (change == SG::Change::kTransform) {
+        const Vector3f new_scale = GetOriginalModel()->GetScale();
+        if (new_scale != original_scale_) {
+            original_scale_ = new_scale;
+            MarkMeshAsStale();
+        }
+    }
+    return true;
 }

@@ -24,8 +24,10 @@ void MirroredModel::RemoveLastPlane() {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-TriMesh MirroredModel::ConvertMesh(const TriMesh &original_mesh) {
-    TriMesh mesh = original_mesh;
+TriMesh MirroredModel::BuildMesh() {
+    // Mirror the untransformed original mesh.
+    ASSERT(GetOriginalModel());
+    TriMesh mesh = GetOriginalModel()->GetMesh();
     for (const auto &plane: GetPlanes())
         mesh = MirrorMesh(mesh, plane);
     return mesh;

@@ -16,6 +16,9 @@
 // Mesh transformations.
 // ----------------------------------------------------------------------------
 
+/// Applies the given scale to a mesh and returns the result.
+TriMesh ScaleMesh(const TriMesh &mesh, const Vector3f &scale);
+
 /// Applies the given Matrix4x4 to a mesh and returns the result. Note that
 /// this does NOT recenter the transformed mesh.
 TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m);

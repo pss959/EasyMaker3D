@@ -31,3 +31,32 @@ TEST_F(BeveledModelTest, DefaultBevel) {
     EXPECT_EQ(Vector3f(1, 1, 1), beveled->GetScale());
     EXPECT_EQ(Vector3f(0, 4, 0), beveled->GetTranslation());
 }
+
+TEST_F(BeveledModelTest, ScaleChanges) {
+    ModelPtr box = Model::CreateModel<BoxModel>();
+    box->SetUniformScale(4);
+    box->SetTranslation(Vector3f(0, 4, 0));
+
+    BeveledModelPtr beveled = Model::CreateModel<BeveledModel>();
+    beveled->SetOriginalModel(box);
+
+    // Make sure the BeveledModel is considered visible.
+    beveled->SetStatus(Model::Status::kUnselected);
+
+    // Change the scale in the BeveledModel.
+    beveled->SetScale(Vector3f(2, 3, 4));
+    EXPECT_EQ(Vector3f(2, 3, 4), beveled->GetScale());
+    EXPECT_EQ(Vector3f(4, 4, 4), box->GetScale());
+    Bounds bounds = beveled->GetBounds();
+    EXPECT_EQ(Vector3f(8, 8, 8), bounds.GetSize());
+    EXPECT_EQ(Point3f(0, 0, 0),    bounds.GetCenter());
+
+    // Change the scale in the original Box. The BeveledModel should rebuild
+    // its mesh.
+    box->SetScale(Vector3f(5, 6, 7));
+    EXPECT_EQ(Vector3f(2, 3, 4), beveled->GetScale());
+    EXPECT_EQ(Vector3f(5, 6, 7), box->GetScale());
+    bounds = beveled->GetBounds();
+    EXPECT_EQ(Vector3f(10, 12, 14), bounds.GetSize());
+    EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
+}

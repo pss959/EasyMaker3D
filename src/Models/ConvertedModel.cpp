@@ -36,7 +36,7 @@ void ConvertedModel::SetOriginalModel(const ModelPtr &model) {
         ClearChildModels();
     ParentModel::AddChildModel(model);
     original_model_ = model;
-    CopyTransformsFrom(*model);
+    SyncTransformsFromOriginal(*model);
 }
 
 void ConvertedModel::AddChildModel(const ModelPtr &child) {
@@ -67,27 +67,14 @@ void ConvertedModel::SetStatus(Status status) {
     // If the child was shown and now the ConvertedModel is, update the
     // transforms in the ConvertedModel from the original.
     if (prev_status == Status::kDescendantShown && IsShown()) {
-        CopyTransformsFrom(*GetOriginalModel());
-        if (offset_ != Vector3f::Zero())
-            SetTranslation(GetTranslation() + offset_);
+        SyncTransformsFromOriginal(*GetOriginalModel());
     }
 
     // If the ConvertedModel was shown and now the child may be, update the
     // transforms in the original from the ConvertedModel.
     else if (was_shown && status == Status::kDescendantShown) {
-        Model &orig = *GetOriginalModel();
-        orig.CopyTransformsFrom(*this);
-        if (offset_ != Vector3f::Zero())
-            orig.SetTranslation(orig.GetTranslation() - offset_);
+        SyncTransformsToOriginal(*GetOriginalModel());
     }
-}
-
-TriMesh ConvertedModel::BuildMesh() {
-    auto orig = GetOriginalModel();
-    ASSERT(orig);
-
-    // Let the derived class convert the untransformed child mesh.
-    return ConvertMesh(orig->GetMesh());
 }
 
 void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
@@ -97,4 +84,12 @@ void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
     // Clone the original Model.
     const ConvertedModel &from_cm = static_cast<const ConvertedModel &>(from);
     SetOriginalModel(from_cm.GetOriginalModel()->CreateClone());
+}
+
+void ConvertedModel::SyncTransformsFromOriginal(const Model &original) {
+    CopyTransformsFrom(original);
+}
+
+void ConvertedModel::SyncTransformsToOriginal(Model &original) const {
+    original.CopyTransformsFrom(*this);
 }
