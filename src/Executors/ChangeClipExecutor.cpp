@@ -1,7 +1,6 @@
 #include "Executors/ChangeClipExecutor.h"
 
 #include <ion/math/transformutils.h>
-#include <ion/math/vectorutils.h>
 
 #include "Commands/ChangeClipCommand.h"
 #include "Managers/SelectionManager.h"
