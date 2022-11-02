@@ -62,6 +62,7 @@ test_sources = [
     'SessionTests/EmptySessionTest.cpp',
     'SessionTests/MirrorSessionTest.cpp',
     'SessionTests/PasteSessionTest.cpp',
+    'SessionTests/RevSurfSessionTest.cpp',
     'SessionTests/SessionTestBase.cpp',
     'SessionTests/TransformSessionTest.cpp',
     'SessionTests/UndoSessionTest.cpp',

@@ -1,7 +1,19 @@
 ﻿#include "Executors/ChangeRevSurfExecutor.h"
 
+#include <ion/math/transformutils.h>
+
 #include "Commands/ChangeRevSurfCommand.h"
 #include "Models/RevSurfModel.h"
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+/// Returns the translation offset (in local coordinates) for the given
+/// RevSurfModel based on its center offset (in object coordinates).
+static Vector3f GetCenterOffset_(const RevSurfModel &rsm) {
+    return rsm.GetModelMatrix() * rsm.GetCenterOffset();
+}
 
 void ChangeRevSurfExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -15,6 +27,8 @@ void ChangeRevSurfExecutor::Execute(Command &command, Command::Op operation) {
             RevSurfModel &rsm = GetTypedModel<RevSurfModel>(pm.path_to_model);
             rsm.SetProfile(new_profile);
             rsm.SetSweepAngle(new_sweep_angle);
+            pm.new_translation = pm.base_translation + GetCenterOffset_(rsm);
+            rsm.SetTranslation(pm.new_translation);
         }
     }
     else {  // Undo.
@@ -22,6 +36,7 @@ void ChangeRevSurfExecutor::Execute(Command &command, Command::Op operation) {
             RevSurfModel &rsm = GetTypedModel<RevSurfModel>(pm.path_to_model);
             rsm.SetProfile(pm.old_profile);
             rsm.SetSweepAngle(pm.old_sweep_angle);
+            rsm.SetTranslation(pm.old_translation);
         }
     }
 
@@ -46,6 +61,11 @@ ChangeRevSurfExecutor::ExecData_ & ChangeRevSurfExecutor::GetExecData_(
             RevSurfModel &rsm = GetTypedModel<RevSurfModel>(pm.path_to_model);
             pm.old_profile     = rsm.GetProfile();
             pm.old_sweep_angle = rsm.GetSweepAngle();
+            pm.old_translation = rsm.GetTranslation();
+            pm.new_translation = pm.old_translation;
+
+            // Compute the base translation, which has no offset.
+            pm.base_translation = pm.old_translation - GetCenterOffset_(rsm);
         }
         command.SetExecData(data);
     }

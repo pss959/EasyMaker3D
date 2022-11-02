@@ -32,7 +32,9 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
 /// Builds and returns a watertight TriMesh representing a surface of
 /// revolution using the given Profile and sweep angle. The Profile is revolved
 /// around the Y axis with the base at Y=0. The num_sides parameter is the
-/// number of sides if the sweep angle were 360 degrees.
+/// number of sides if the sweep angle were 360 degrees. Note that a partial
+/// mesh (sweep angle < 360 degrees) is *not* necessarily centered on the
+/// origin; it is centered on the center of revolution.
 TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
                          int num_sides);
 

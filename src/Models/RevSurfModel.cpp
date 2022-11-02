@@ -3,6 +3,7 @@
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
+#include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 
 void RevSurfModel::AddFields() {
@@ -60,7 +61,15 @@ void RevSurfModel::SetSweepAngle(const Anglef &angle) {
 
 TriMesh RevSurfModel::BuildMesh() {
     // Determine the number of sides based on the complexity.
-    // Determine the number of sides based on the complexity.
     const int num_sides = LerpInt(GetComplexity(), 3, TK::kMaxRevSurfSides);
-    return BuildRevSurfMesh(profile_, sweep_angle_, num_sides);
+    const TriMesh mesh = BuildRevSurfMesh(profile_, sweep_angle_, num_sides);
+
+    // If not a full sweep, center the mesh and save the offset.
+    const float angle = GetSweepAngle().Degrees();
+    if (angle < 360) {
+        center_offset_ = Vector3f(ComputeMeshBounds(mesh).GetCenter());
+        return CenterMesh(mesh);
+    }
+
+    return mesh;
 }

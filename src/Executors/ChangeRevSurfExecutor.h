@@ -24,9 +24,12 @@ class ChangeRevSurfExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.
         struct PerModel {
-            SelPath path_to_model;
-            Profile old_profile;
-            Anglef  old_sweep_angle;
+            SelPath  path_to_model;
+            Profile  old_profile;
+            Anglef   old_sweep_angle;
+            Vector3f old_translation;
+            Vector3f new_translation;
+            Vector3f base_translation;  /// Without any offset.
         };
         std::vector<PerModel> per_model;
     };

@@ -1,0 +1,40 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreateRevSurfModelCommand {
+      result_name: "RevSurf_1",
+      initial_scale: 4,
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.268865 0.866517, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.268865 0.866517, 0.5 0.5, 0.34591 0.219543],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ScaleCommand {
+      ratios: 1 2 1,
+      mode: "kAsymmetric",
+      model_names: ["RevSurf_1"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["RevSurf_1"],
+    },
+    TranslateCommand {
+      translation: 5 0 0,
+      model_names: ["RevSurf_1"],
+    },
+  ],
+  current_index: 6,
+}

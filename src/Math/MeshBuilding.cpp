@@ -402,8 +402,9 @@ TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
         BuildFullRevSurf_(profile, num_sides) :
         BuildPartialRevSurf_(profile, sweep_angle, num_sides);
     CleanMesh(mesh);
-    // Lower complexities can cause the mesh to be off center.
-    return CenterMesh(mesh);
+    // Center the mesh only if a full 360 sweep, since lower complexities can
+    // cause the mesh to be off center.
+    return angle == 360 ? CenterMesh(mesh) : mesh;
 }
 
 TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
