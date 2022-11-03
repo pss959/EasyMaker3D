@@ -32,8 +32,8 @@ Parent and Child Selection
 ..........................
 
 A model that is created from other models adds the original models as children
-and hides them. This is true for both :ref:`Converted Models
-<ug-converted-models>` and :ref:`Combined Models <ug-combined-models>`.
+and hides them. This is true for both :ref:`converted models
+<ug-converted-models>` and :ref:`combined models <ug-combined-models>`.
 
 You can make the child models visible by selecting them, using either the
 :ref:`Tree Panel <ug-tree-panel>` or by using the following :ref:`keyboard

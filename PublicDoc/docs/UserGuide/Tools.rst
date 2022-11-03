@@ -102,7 +102,7 @@ Some notes about this tool:
     revolution), and Text. The tool is disabled if the selection contains only
     models of other types.
   - If you want to change the complexity of a child model of a
-    :ref:`Converted model <ug-converted-models>` or :ref:`Combined model
+    :ref:`converted model <ug-converted-models>` or :ref:`combined model
     <ug-combined-models>` of any type you can :ref:`select the child or
     children <ug-select-hierarchy>` and apply the complexity change. The parent
     model will update appropriately when its children are no longer selected.
