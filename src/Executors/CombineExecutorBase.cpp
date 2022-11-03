@@ -65,12 +65,17 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
             operand_models.push_back(data->paths_to_models.back().GetModel());
         }
 
-        data->combined_model = CreateCombinedModel(command);
-        data->combined_model->SetOperandModels(operand_models);
+        const auto &result = CreateCombinedModel(command);
+        result->SetOperandModels(operand_models);
 
-        AddModelInteraction(*data->combined_model);
-        SetRandomModelColor(*data->combined_model);
+        // Make sure the mesh is up to date to get the correct offset.
+        result->GetMesh();
+        result->SetTranslation(result->GetCenterOffset());
 
+        AddModelInteraction(*result);
+        SetRandomModelColor(*result);
+
+        data->combined_model = result;
         command.SetExecData(data);
     }
     return *static_cast<ExecData_ *>(command.GetExecData());

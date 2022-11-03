@@ -1,9 +1,8 @@
 #include "Models/HullModel.h"
 
 #include "Math/MeshCombining.h"
-#include "Math/MeshUtils.h"
 
-TriMesh HullModel::BuildMesh() {
-    return CenterMesh(CombineMeshes(GetChildMeshes(),
-                                    MeshCombiningOperation::kConvexHull));
+TriMesh HullModel::CombineMeshes(const std::vector<TriMesh> &meshes) {
+    ASSERT(! meshes.empty());
+    return ::CombineMeshes(meshes, MeshCombiningOperation::kConvexHull);
 }

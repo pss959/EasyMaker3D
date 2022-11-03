@@ -25,7 +25,7 @@ class CSGModel : public CombinedModel {
   protected:
     CSGModel() {}
     virtual void AddFields() override;
-    virtual TriMesh BuildMesh() override;
+    virtual TriMesh CombineMeshes(const std::vector<TriMesh> &meshes) override;
 
   private:
     /// \name Parsed fields.

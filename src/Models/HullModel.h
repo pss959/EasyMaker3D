@@ -14,7 +14,7 @@ DECL_SHARED_PTR(HullModel);
 class HullModel : public CombinedModel {
   protected:
     HullModel() {}
-    virtual TriMesh BuildMesh() override;
+    virtual TriMesh CombineMeshes(const std::vector<TriMesh> &meshes) override;
 
   private:
     friend class Parser::Registry;

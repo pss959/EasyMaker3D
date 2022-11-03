@@ -14,7 +14,8 @@ void CSGModel::SetOperation(CSGOperation op) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-TriMesh CSGModel::BuildMesh() {
+TriMesh CSGModel::CombineMeshes(const std::vector<TriMesh> &meshes) {
+    ASSERT(meshes.size() >= 2U);
     MeshCombiningOperation op;
     switch (operation_) {
       case CSGOperation::kUnion:
@@ -28,5 +29,5 @@ TriMesh CSGModel::BuildMesh() {
         op = MeshCombiningOperation::kCSGDifference;
         break;
     }
-    return CenterMesh(CombineMeshes(GetChildMeshes(), op));
+    return ::CombineMeshes(meshes, op);
 }

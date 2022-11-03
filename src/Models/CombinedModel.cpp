@@ -80,3 +80,9 @@ bool CombinedModel::ProcessChange(SG::Change change, const Object &obj) {
         return true;
     }
 }
+
+TriMesh CombinedModel::BuildMesh() {
+    TriMesh mesh = CombineMeshes(GetChildMeshes());
+    center_offset_ = Vector3f(ComputeMeshBounds(mesh).GetCenter());
+    return CenterMesh(mesh);
+}

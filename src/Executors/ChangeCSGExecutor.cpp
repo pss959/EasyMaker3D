@@ -13,12 +13,18 @@ void ChangeCSGExecutor::Execute(Command &command, Command::Op operation) {
     for (auto &pm: data.per_model) {
         CSGModel &csg = GetTypedModel<CSGModel>(pm.path_to_model);
         if (operation == Command::Op::kDo) {
+            const Vector3f old_offset = csg.GetCenterOffset();
             csg.SetOperation(ccc.GetNewOperation());
             csg.ChangeModelName(pm.new_name, false);
+            csg.GetMesh();  // Make sure offset is correct.
+            pm.new_translation =
+                pm.old_translation - old_offset + csg.GetCenterOffset();
+            csg.SetTranslation(pm.new_translation);
         }
         else {  // Undo.
             csg.SetOperation(pm.old_operation);
             csg.ChangeModelName(pm.old_name, false);
+            csg.SetTranslation(pm.old_translation);
         }
     }
     GetContext().selection_manager->ReselectAll();
@@ -52,9 +58,11 @@ ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
             ExecData_::PerModel &pm = data->per_model[i];
             pm.path_to_model   = FindPathToModel(model_names[i]);
             CSGModel &csg = GetTypedModel<CSGModel>(pm.path_to_model);
-            pm.old_operation = csg.GetOperation();
-            pm.old_name      = csg.GetName();
-            pm.new_name      = result_names[i];
+            pm.old_operation   = csg.GetOperation();
+            pm.old_name        = csg.GetName();
+            pm.new_name        = result_names[i];
+            pm.old_translation = csg.GetTranslation();
+            pm.new_translation = pm.old_translation;  // Changed later.
         }
         command.SetExecData(data);
     }
