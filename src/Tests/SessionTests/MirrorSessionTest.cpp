@@ -43,12 +43,13 @@ TEST_F(SessionTestBase, MirrorSessionTest) {
     EXPECT_VECS_CLOSE(Vector3f(5,  2, 0),    or2->GetTranslation());
     EXPECT_VECS_CLOSE(Vector3f(10, 2, 0),    or3->GetTranslation());
 
-    // Mirrored models transforms.
-    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     mm1->GetScale());
-    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     mm2->GetScale());
-    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     mm3->GetScale());
+    // Mirrored models transforms. Translations should be mirrored across the
+    // stage plane.
+    EXPECT_VECS_CLOSE(Vector3f(s, s, s),     mm1->GetScale());
+    EXPECT_VECS_CLOSE(Vector3f(s, s, s),     mm2->GetScale());
+    EXPECT_VECS_CLOSE(Vector3f(s, s, s),     mm3->GetScale());
     EXPECT_ROTS_CLOSE(Rotationf::Identity(), mm1->GetRotation());
-    EXPECT_ROTS_CLOSE(Rotationf::Identity(), mm2->GetRotation());
+    EXPECT_ROTS_CLOSE(xrot,                  mm2->GetRotation());
     EXPECT_ROTS_CLOSE(xrot,                  mm3->GetRotation());
     EXPECT_VECS_CLOSE(Vector3f(0,   2, 0),   mm1->GetTranslation());
     EXPECT_VECS_CLOSE(Vector3f(-5,  2, 0),   mm2->GetTranslation());
@@ -56,16 +57,13 @@ TEST_F(SessionTestBase, MirrorSessionTest) {
 
     // Mirror planes. The mirror plane is the Z=0 plane in stage coordinates,
     // with the normal pointing along +X. The planes in the MirroredModels are
-    // in local coordinates, so they should all be the same.
-    EXPECT_EQ(1U, mm1->GetPlanes().size());
-    EXPECT_EQ(1U, mm2->GetPlanes().size());
-    EXPECT_EQ(1U, mm3->GetPlanes().size());
-    EXPECT_NEAR(0.f, mm1->GetPlanes()[0].distance, kClose);
-    EXPECT_NEAR(0.f, mm2->GetPlanes()[0].distance, kClose);
-    EXPECT_NEAR(0.f, mm3->GetPlanes()[0].distance, kClose);
-    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm1->GetPlanes()[0].normal);
-    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm2->GetPlanes()[0].normal);
-    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm3->GetPlanes()[0].normal);
+    // in object coordinates.
+    EXPECT_EQ(1U, mm1->GetPlaneNormals().size());
+    EXPECT_EQ(1U, mm2->GetPlaneNormals().size());
+    EXPECT_EQ(1U, mm3->GetPlaneNormals().size());
+    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm1->GetPlaneNormals()[0]);
+    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm2->GetPlaneNormals()[0]);
+    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm3->GetPlaneNormals()[0]);
 
     // (Object) Bounds should all be the same.
     const Bounds b1 = mm1->GetBounds();
@@ -74,9 +72,9 @@ TEST_F(SessionTestBase, MirrorSessionTest) {
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),  b1.GetCenter());
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),  b2.GetCenter());
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),  b3.GetCenter());
-    EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b1.GetSize());
-    EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b2.GetSize());
-    EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b3.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(2, 2, 2), b1.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(2, 2, 2), b2.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(2, 2, 2), b3.GetSize());
 }
 
 TEST_F(SessionTestBase, MirrorInPlaceSessionTest) {
@@ -110,30 +108,24 @@ TEST_F(SessionTestBase, MirrorInPlaceSessionTest) {
     EXPECT_VECS_CLOSE(Vector3f(5,  2, 0),    or2->GetTranslation());
     EXPECT_VECS_CLOSE(Vector3f(10, 2, 0),    or3->GetTranslation());
 
-    // Mirrored models transforms.
-    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     mm1->GetScale());
-    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     mm2->GetScale());
-    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),     mm3->GetScale());
+    // Mirrored models transforms. Translations should not change.
+    EXPECT_VECS_CLOSE(Vector3f(s, s, s),     mm1->GetScale());
+    EXPECT_VECS_CLOSE(Vector3f(s, s, s),     mm2->GetScale());
+    EXPECT_VECS_CLOSE(Vector3f(s, s, s),     mm3->GetScale());
     EXPECT_ROTS_CLOSE(Rotationf::Identity(), mm1->GetRotation());
-    EXPECT_ROTS_CLOSE(Rotationf::Identity(), mm2->GetRotation());
+    EXPECT_ROTS_CLOSE(xrot,                  mm2->GetRotation());
     EXPECT_ROTS_CLOSE(xrot,                  mm3->GetRotation());
     EXPECT_VECS_CLOSE(Vector3f(0,  2, 0),    mm1->GetTranslation());
     EXPECT_VECS_CLOSE(Vector3f(5,  2, 0),    mm2->GetTranslation());
     EXPECT_VECS_CLOSE(Vector3f(10, 2, 0),    mm3->GetTranslation());
 
-    // Mirror planes. The mirror plane is the Z=0 plane in stage coordinates,
-    // with the normal pointing along +X. The planes in the MirroredModels are
-    // in local coordinates, so they have to compensate to keep the models in
-    // the same place.
-    EXPECT_EQ(1U, mm1->GetPlanes().size());
-    EXPECT_EQ(1U, mm2->GetPlanes().size());
-    EXPECT_EQ(1U, mm3->GetPlanes().size());
-    EXPECT_NEAR(0.f,  mm1->GetPlanes()[0].distance, kClose);
-    EXPECT_NEAR(5.f,  mm2->GetPlanes()[0].distance, kClose);
-    EXPECT_NEAR(10.f, mm3->GetPlanes()[0].distance, kClose);
-    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm1->GetPlanes()[0].normal);
-    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm2->GetPlanes()[0].normal);
-    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm3->GetPlanes()[0].normal);
+    // Mirror planes in object coordinates,
+    EXPECT_EQ(1U, mm1->GetPlaneNormals().size());
+    EXPECT_EQ(1U, mm2->GetPlaneNormals().size());
+    EXPECT_EQ(1U, mm3->GetPlaneNormals().size());
+    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm1->GetPlaneNormals()[0]);
+    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm2->GetPlaneNormals()[0]);
+    EXPECT_VECS_CLOSE(Vector3f::AxisX(), mm3->GetPlaneNormals()[0]);
 
     // (Object) Bounds should all be the same.
     const Bounds b1 = mm1->GetBounds();
@@ -142,7 +134,7 @@ TEST_F(SessionTestBase, MirrorInPlaceSessionTest) {
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),  b1.GetCenter());
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),  b2.GetCenter());
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),  b3.GetCenter());
-    EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b1.GetSize());
-    EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b2.GetSize());
-    EXPECT_VECS_CLOSE(Vector3f(4, 4, 4), b3.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(2, 2, 2), b1.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(2, 2, 2), b2.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(2, 2, 2), b3.GetSize());
 }

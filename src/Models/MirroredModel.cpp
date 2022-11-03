@@ -1,26 +1,28 @@
 #include "Models/MirroredModel.h"
 
+#include <ion/math/vectorutils.h>
+
 #include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 
 void MirroredModel::AddFields() {
-    AddModelField(planes_.Init("planes"));
+    AddModelField(plane_normals_.Init("plane_normals"));
 
     ConvertedModel::AddFields();
 }
 
-void MirroredModel::AddPlane(const Plane &local_plane) {
-    auto &planes = planes_.GetValue();
-    planes.push_back(local_plane);
-    planes_ = planes;
+void MirroredModel::AddPlaneNormal(const Vector3f &object_normal) {
+    auto &normals = plane_normals_.GetValue();
+    normals.push_back(ion::math::Normalized(object_normal));
+    plane_normals_ = normals;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-void MirroredModel::RemoveLastPlane() {
-    auto &planes = planes_.GetValue();
-    ASSERT(! planes.empty());
-    planes.pop_back();
-    planes_ = planes;
+void MirroredModel::RemoveLastPlaneNormal() {
+    auto &normals = plane_normals_.GetValue();
+    ASSERT(! normals.empty());
+    normals.pop_back();
+    plane_normals_ = normals;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
@@ -28,7 +30,7 @@ TriMesh MirroredModel::BuildMesh() {
     // Mirror the untransformed original mesh.
     ASSERT(GetOriginalModel());
     TriMesh mesh = GetOriginalModel()->GetMesh();
-    for (const auto &plane: GetPlanes())
-        mesh = MirrorMesh(mesh, plane);
+    for (const auto &normal: GetPlaneNormals())
+        mesh = MirrorMesh(mesh, Plane(0, normal));
     return mesh;
 }

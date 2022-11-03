@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ConvertedModel);
 ///
 /// Unlike CombinedModel, a ConvertedModel keeps its coordinate system in sync
 /// with the original Model as much as possible, with some exceptions:
-//   - A derived class (such as BeveledModel) may need to apply scaling to the
+///  - A derived class (such as BeveledModel) may need to apply scaling to the
 ///    original Model's mesh before applying its changes, so its scale will
 ///    differ from the original's.
 ///  - A derived class (such as ClippedModel) may result in an undesired change
@@ -29,10 +29,13 @@ class ConvertedModel : public ParentModel {
     /// Returns the original Model.
     const ModelPtr & GetOriginalModel() const { return original_model_; }
 
-    // Redefine all of these to also update the original_model_ field.
+    /// Redefines this to assert, since it should never be called.
     virtual void AddChildModel(const ModelPtr &child) override;
+    /// Redefines this to assert, since it should never be called.
     virtual void InsertChildModel(size_t index, const ModelPtr &child) override;
+    /// Redefines this to assert, since it should never be called.
     virtual void RemoveChildModel(size_t index) override;
+    /// Redefines this to assert, since it should never be called.
     virtual void ReplaceChildModel(size_t index,
                                    const ModelPtr &new_child) override;
 

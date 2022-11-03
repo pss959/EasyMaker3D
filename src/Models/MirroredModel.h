@@ -9,20 +9,25 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(MirroredModel);
 
 /// MirroredModel is a derived ConvertedModel class that represents a Model
-/// that has been mirrored across one or more planes.
+/// that has been mirrored across one or more planes through its center. Each
+/// plane is specified as a normal vector in object coordinates.
 ///
 /// \ingroup Models
 class MirroredModel : public ConvertedModel {
   public:
-    /// Adds a Plane (specified in local coordinates) to mirror across.
-    void AddPlane(const Plane &local_plane);
+    /// Adds a plane through the center (specified by normal in object
+    /// coordinates) to mirror across. The vector is normalized if necessary.
+    void AddPlaneNormal(const Vector3f &object_normal);
 
-    /// Removes the last Plane added. This should not be called if there is
-    /// only one Plane.
-    void RemoveLastPlane();
+    /// Removes the last plane normal added. This should not be called if there
+    /// is only one.
+    void RemoveLastPlaneNormal();
 
-    /// Returns the current mirroring Planes. This may be an empty vector.
-    const std::vector<Plane> & GetPlanes() const { return planes_; }
+    /// Returns the current mirroring plane normals. This may be an empty
+    /// vector.
+    const std::vector<Vector3f> & GetPlaneNormals() const {
+        return plane_normals_;
+    }
 
   protected:
     MirroredModel() {}
@@ -32,7 +37,7 @@ class MirroredModel : public ConvertedModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Plane> planes_;
+    Parser::VField<Vector3f> plane_normals_;
     ///@}
 
     friend class Parser::Registry;

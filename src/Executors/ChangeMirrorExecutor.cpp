@@ -12,10 +12,14 @@ void ChangeMirrorExecutor::Execute(Command &command, Command::Op operation) {
 
     for (auto &pm: data.per_model) {
         MirroredModel &mm = GetTypedModel<MirroredModel>(pm.path_to_model);
-        if (operation == Command::Op::kDo)
-            mm.AddPlane(pm.local_plane);
-        else   // Undo.
-            mm.RemoveLastPlane();
+        if (operation == Command::Op::kDo) {
+            mm.AddPlaneNormal(pm.object_plane_normal);
+            mm.SetTranslation(pm.new_translation);
+        }
+        else {   // Undo.
+            mm.RemoveLastPlaneNormal();
+            mm.SetTranslation(pm.old_translation);
+        }
     }
 
     // Reselect if undo or if command is finished being done.
@@ -35,20 +39,30 @@ ChangeMirrorExecutor::ExecData_ & ChangeMirrorExecutor::GetExecData_(
         ExecData_ *data = new ExecData_;
         data->per_model.resize(model_names.size());
 
+        const Plane &stage_plane = cmc.GetPlane();
+
         for (size_t i = 0; i < model_names.size(); ++i) {
             ExecData_::PerModel &pm = data->per_model[i];
             const SelPath path = FindPathToModel(model_names[i]);
             pm.path_to_model = path;
 
-            const Matrix4f slm = CoordConv(path).GetRootToLocalMatrix();
-            pm.local_plane = TransformPlane(cmc.GetPlane(), slm);
+            // Convert the plane normal into object coordinates for the
+            // MirroredModel.
+            pm.object_plane_normal =
+                CoordConv(path).RootToObject(stage_plane.normal);
 
-            // If operating in-place, compute the translation to compensate for
-            // the change in offset for translation applied to original model
-            // and translate the plane by it.
-            if (cmc.IsInPlace())
-                pm.local_plane.distance += pm.local_plane.GetDistanceToPoint(
-                    Point3f(path.GetModel()->GetTranslation()));
+            // If operating in-place, there is no need to modify the
+            // translation of the MirroredModel. If not, it needs to be
+            // translated to the other side of the stage plane.
+            pm.old_translation = pm.path_to_model.GetModel()->GetTranslation();
+            if (cmc.IsInPlace()) {
+                pm.new_translation = pm.old_translation;
+            }
+            else {
+                const Point3f mp =
+                    stage_plane.MirrorPoint(Point3f(pm.old_translation));
+                pm.new_translation = Vector3f(mp);
+            }
         }
         command.SetExecData(data);
     }

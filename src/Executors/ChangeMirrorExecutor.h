@@ -23,8 +23,10 @@ class ChangeMirrorExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.
         struct PerModel {
-            SelPath path_to_model;
-            Plane   local_plane;
+            SelPath  path_to_model;
+            Vector3f object_plane_normal;
+            Vector3f old_translation;
+            Vector3f new_translation;
         };
         std::vector<PerModel> per_model;
     };
