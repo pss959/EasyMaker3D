@@ -468,9 +468,6 @@ file. Any errors during data import will be displayed in a :ref:`Dialog Panel
 Mirror Tool
 ,,,,,,,,,,,
 
-.. todo::
-   Update this when code is fixed (Clip Tool as well).
-
 .. incimage:: /images/MirrorToolTwoAfter.jpg  240px right
 .. incimage:: /images/MirrorToolTwoBefore.jpg 240px right
 .. incimage:: /images/MirrorTool.jpg          200px right
@@ -482,7 +479,7 @@ model to a Mirrored model with the :ref:`Convert Mirror action
 
 When the Mirror Tool is active, it adds 3 color-coded orthogonal planes through
 the center of the primary selection. Clicking on any of the planes mirrors the
-model across it.  If multiple Mirrored models are selected, all secondary
+model across it. If multiple Mirrored models are selected, all secondary
 selections are mirrored across the same planes, meaning that they will move to
 the opposite side of the plane if they are not also bisected by the plane, in
 addition to being mirrored, as shown in the center and right images. However,
