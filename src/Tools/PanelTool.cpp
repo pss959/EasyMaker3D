@@ -55,6 +55,6 @@ void PanelTool::UpdateBoardPosition_() {
     const auto &context = GetContext();
     const float board_height = context.board->GetBounds().GetSize()[1];
     context.board->SetPosition(
-        ToWorld(GetPositionAboveModel(0)) +
+        ToWorld(GetPositionAboveModel(1)) +
         Vector3f(0, .5f * board_height + 2, TK::kToolBoardZOffset));
 }

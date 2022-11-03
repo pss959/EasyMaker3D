@@ -113,15 +113,18 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
 }
 
 Point3f Tool::GetPositionAboveModel(float distance) const {
-    ASSERT(GetModelAttachedTo());
+    // Need the path to the Model to convert to stage coordinates.
+    ASSERT(model_sel_index_ >= 0);
+    const auto &path  = selection_.GetPaths()[model_sel_index_];
+    const auto &model = *path.GetModel();
 
-    // Get the point at the top front center of the Model.
-    const Bounds bounds = GetModelAttachedTo()->GetBounds();
-    Point3f pos = bounds.GetFaceCenter(Bounds::Face::kFront);
-    pos[1] = bounds.GetMaxPoint()[1];
-
-    // Convert to stage coordinates and add the height distance.
-    return GetStageCoordConv().ObjectToRoot(pos) + Vector3f(0, distance, 0);
+    // Get the point at the top front center of the Model in stage coordinates.
+    const Bounds stage_bounds =
+        TransformBounds(model.GetBounds(),
+                        path.GetCoordConv().GetObjectToRootMatrix());
+    Point3f pos = stage_bounds.GetFaceCenter(Bounds::Face::kFront);
+    pos[1] = stage_bounds.GetMaxPoint()[1] + distance;
+    return pos;
 }
 
 float Tool::ComputePartScale(const Vector3f &model_size, float fraction,

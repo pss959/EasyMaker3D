@@ -88,7 +88,7 @@ class ClipTool::Impl_ {
     void MatchPlane_(const Plane &object_plane);
 
     /// Sets the min/max range for the translation slider based on the Model's
-    /// mesh extents along the given direction vector.
+    /// mesh extents along the given direction vector (in object coordinates).
     void UpdateTranslationRange_(const Vector3f &dir);
 
     // Widget callbacks.
@@ -209,24 +209,24 @@ SG::NodePtr ClipTool::Impl_::UpdateGripInfo(GripInfo &info,
     }
 }
 
-void ClipTool::Impl_::MatchPlane_(const Plane &local_plane) {
-    // XXXX BUG: need to fix this.
+void ClipTool::Impl_::MatchPlane_(const Plane &object_plane) {
+    /// \todo Fix the math here - it does not take the offset into account.
 
-    // Use the plane normal to compute the rotation. The default object arrow
-    // direction is the +Y axis.
+    // Use the plane normal to compute the rotation. The default
+    // object-coordinate arrow direction is the +Y axis.
     const Rotationf rot =
-        Rotationf::RotateInto(Vector3f::AxisY(), local_plane.normal);
+        Rotationf::RotateInto(Vector3f::AxisY(), object_plane.normal);
     rotator_->SetRotation(rot);
     arrow_and_plane_->SetRotation(rot);
 
     // Update the range of the slider based on the size of the Model and the
     // rotated normal direction.
-    UpdateTranslationRange_(local_plane.normal);
+    UpdateTranslationRange_(object_plane.normal);
 
     // Use the distance of the plane as the Slider1DWidget value without
     // notifying.
     arrow_->GetValueChanged().EnableObserver(this, false);
-    arrow_->SetValue(local_plane.distance);
+    arrow_->SetValue(object_plane.distance);
     arrow_->GetValueChanged().EnableObserver(this, true);
 
     // Position the plane at the correct distance.
