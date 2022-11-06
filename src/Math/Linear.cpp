@@ -115,14 +115,9 @@ void ScalePointsToSize(const Vector3f &target, std::vector<Point3f> &points) {
     if (! AreClose(size[0], target[0]) ||
         ! AreClose(size[1], target[1]) ||
         ! AreClose(size[2], target[2])) {
-        const float sx = target[0] / size[0];
-        const float sy = target[1] / size[1];
-        const float sz = target[2] / size[2];
-        for (auto &p: points) {
-            p[0] *= sx;
-            p[1] *= sy;
-            p[2] *= sz;
-        }
+        const Vector3f scale = target / size;
+        for (auto &p: points)
+            p = ScalePoint(p, scale);
     }
 }
 

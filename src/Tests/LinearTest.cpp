@@ -35,6 +35,16 @@ TEST_F(LinearTest, TransformPlane) {
     const Plane tpl = TransformPlane(pl, tm);
     EXPECT_EQ(Vector3f::AxisZ(), tpl.normal);
     EXPECT_EQ(-13, tpl.GetDistanceToPoint(Point3f::Zero()));
+
+    // Transform a point on the untransformed plane and the point 10 units
+    // along the normal from it. The normalized difference vector between the
+    // resulting points should be the transformed normal.
+    const Point3f p0(0, 0, 10);
+    EXPECT_NEAR(0, pl.GetDistanceToPoint(p0), kClose);
+    const Point3f p1 = p0 + 10 * pl.normal;
+    const Point3f tp0 = tm * p0;
+    const Point3f tp1 = tm * p1;
+    EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
 }
 
 TEST_F(LinearTest, TransformPlane2) {
@@ -43,12 +53,41 @@ TEST_F(LinearTest, TransformPlane2) {
 
     const Rotationf rot = Rotationf:: FromAxisAndAngle(Vector3f::AxisZ(),
                                                        Anglef::FromDegrees(90));
-    const Matrix4f m =
+    const Matrix4f tm =
         ion::math::TranslationMatrix(Vector3f(10, 20, 30)) *
         ion::math::RotationMatrixH(rot);
-    const Plane tpl = TransformPlane(pl, m);
+    const Plane tpl = TransformPlane(pl, tm);
     EXPECT_VECS_CLOSE(Vector3f::AxisY(), tpl.normal);
     EXPECT_NEAR(30.f, tpl.distance, kClose);
+
+    // Do the transformed point test.
+    const Point3f p0(10, 0, 0);
+    EXPECT_NEAR(0, pl.GetDistanceToPoint(p0), kClose);
+    const Point3f p1 = p0 + 10 * pl.normal;
+    const Point3f tp0 = tm * p0;
+    const Point3f tp1 = tm * p1;
+    EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
+}
+
+TEST_F(LinearTest, TransformPlane3) {
+    // Scale, rotate, and translate a plane not at the origin.
+    const Plane pl(10, Vector3f::AxisX());
+
+    const Rotationf rot = Rotationf:: FromAxisAndAngle(Vector3f(1, 2, 3),
+                                                       Anglef::FromDegrees(40));
+    const Matrix4f tm =
+        ion::math::TranslationMatrix(Vector3f(10, 20, 30)) *
+        ion::math::RotationMatrixH(rot) *
+        ion::math::ScaleMatrixH(Vector3f(2, 5, 10));
+    const Plane tpl = TransformPlane(pl, tm);
+
+    // Do the transformed point test.
+    const Point3f p0(10, 0, 0);
+    EXPECT_NEAR(0, pl.GetDistanceToPoint(p0), kClose);
+    const Point3f p1 = p0 + 10 * pl.normal;
+    const Point3f tp0 = tm * p0;
+    const Point3f tp1 = tm * p1;
+    EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
 }
 
 /// \todo Add more from old MakerVR

@@ -55,6 +55,11 @@ inline Rotationf ComposeRotations(const Rotationf &r0, const Rotationf &r1) {
     return r1 * r0;
 }
 
+/// Scales a point by a scale vector.
+inline Point3f ScalePoint(const Point3f &p, const Vector3f &scale) {
+    return Point3f(scale[0] * p[0], scale[1] * p[1], scale[2] * p[2]);
+}
+
 /// Given a vector of 2D points and a target size, this scales all points if
 /// necessary so that the bounds has the given size.
 void ScalePointsToSize(const Vector2f &target, std::vector<Point2f> &points);
