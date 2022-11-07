@@ -1,7 +1,8 @@
 #include "App/SceneContext.h"
 #include "Base/Tuning.h"
-#include "Math/Types.h"
 #include "Managers/CommandManager.h"
+#include "Math/Linear.h"
+#include "Math/Types.h"
 #include "Models/ClippedModel.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
@@ -58,6 +59,9 @@ TEST_F(SessionTestBase, ClipSessionTest1) {
         const Bounds b1 = cm1->GetBounds();
         EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   b1.GetCenter());
         EXPECT_VECS_CLOSE(Vector3f(2, 1, 2), b1.GetSize());
+
+        // ClippedModel offset.
+        EXPECT_VECS_CLOSE(Vector3f(0, -1, 1), cm1->GetOffset());
 
         // Undo and redo the clip change for second iteration.
         context.command_manager->Undo();
@@ -161,6 +165,113 @@ TEST_F(SessionTestBase, ClipSessionTest3) {
 
         // Undo and redo the clip change for second iteration.
         context.command_manager->Undo();
+        context.command_manager->Redo();
+    }
+}
+
+TEST_F(SessionTestBase, ClipSessionTest2Planes) {
+    // This has 1 cylinder (Cylinder_1) converted to a ClippedModel
+    // (Clipped_1). The cylinder is not transformed.
+    //
+    // The cylinder is not transformed, so it should have the default size of
+    // 4x4x4.
+    //
+    // There are two planes applied. The first should clip off the top half of
+    // the cylinder and the second should clip off the front half of the
+    // remaining piece. The resulting ClippedModel should be 4x2x2 and should
+    // be centered on (0,1,-1) so that the front is at the Z=0 plane.
+
+    LoadSession("Clip2Planes.mvr");
+
+    // Do this twice - the second time after undo/redo.
+    for (int i = 0; i < 2; ++i) {
+        SCOPED_TRACE(i == 0 ? "First Iteration" : "Second Iteration");
+
+        const auto &rm = *context.scene_context->root_model;
+        EXPECT_EQ(1U, rm.GetChildModelCount());
+        const auto cm1 = Util::CastToDerived<ClippedModel>(rm.GetChildModel(0));
+        ASSERT_TRUE(cm1);
+        const auto or1 = cm1->GetOriginalModel();
+
+        // Clipping planes. In stage coordinates, the two planes should be:
+        //   1) Y=2 with the normal pointing along +Y.
+        //   2) Z=0 with the normal pointing along +Z.
+        // In object coordinates of the ClippedModel, the two planes should be:
+        //   1) Y=0 with the normal pointing along +Y.
+        //   2) Z=0 with the normal pointing along +Z.
+        EXPECT_EQ(2U, cm1->GetPlanes().size());
+        EXPECT_NEAR(0.f, cm1->GetPlanes()[0].distance, kClose);
+        EXPECT_NEAR(0.f, cm1->GetPlanes()[1].distance, kClose);
+        EXPECT_VECS_CLOSE(Vector3f::AxisY(), cm1->GetPlanes()[0].normal);
+        EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm1->GetPlanes()[1].normal);
+
+        // (Object) Bounds.
+        const Bounds b1 = cm1->GetBounds();
+        EXPECT_PTS_CLOSE(Point3f::Zero(),    b1.GetCenter());
+        EXPECT_VECS_CLOSE(Vector3f(2, 1, 1), b1.GetSize());
+
+        // (Local) Bounds.
+        const Bounds lb1 = TransformBounds(cm1->GetBounds(),
+                                           cm1->GetModelMatrix());
+        EXPECT_PTS_CLOSE(Point3f(0, 1, -1),  lb1.GetCenter());
+        EXPECT_VECS_CLOSE(Vector3f(4, 2, 2), lb1.GetSize());
+
+        // Undo and redo the clip changes for second iteration.
+        context.command_manager->Undo();
+        context.command_manager->Undo();
+        context.command_manager->Redo();
+        context.command_manager->Redo();
+    }
+}
+
+TEST_F(SessionTestBase, ClipSessionTest2PlanesScaled) {
+    // Same as the above test, but the cylinder is scaled by (2,3,4) to the
+    // size 4x6x8 and translated by +5 in Z.
+    //
+    // There are two planes applied. The first should clip off the top half of
+    // the cylinder and the second should clip off the front half of the
+    // remaining piece. The resulting ClippedModel should be 4x3x4 and should
+    // be centered on (0,1.5,3) so that the front is at the Z=5 plane.
+
+    LoadSession("Clip2PlanesScaled.mvr");
+
+    // Do this twice - the second time after undo/redo.
+    for (int i = 0; i < 2; ++i) {
+        SCOPED_TRACE(i == 0 ? "First Iteration" : "Second Iteration");
+
+        const auto &rm = *context.scene_context->root_model;
+        EXPECT_EQ(1U, rm.GetChildModelCount());
+        const auto cm1 = Util::CastToDerived<ClippedModel>(rm.GetChildModel(0));
+        ASSERT_TRUE(cm1);
+        const auto or1 = cm1->GetOriginalModel();
+
+        // Clipping planes. In stage coordinates, the two planes should be:
+        //   1) Y=3 with the normal pointing along +Y.
+        //   2) Z=0 with the normal pointing along +Z.
+        // In object coordinates of the ClippedModel, the two planes should be:
+        //   1) Y=0 with the normal pointing along +Y.
+        //   2) Z=0 with the normal pointing along +Z.
+        EXPECT_EQ(2U, cm1->GetPlanes().size());
+        EXPECT_NEAR(0.f, cm1->GetPlanes()[0].distance, kClose);
+        EXPECT_NEAR(0.f, cm1->GetPlanes()[1].distance, kClose);
+        EXPECT_VECS_CLOSE(Vector3f::AxisY(), cm1->GetPlanes()[0].normal);
+        EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cm1->GetPlanes()[1].normal);
+
+        // (Object) Bounds.
+        const Bounds b1 = cm1->GetBounds();
+        EXPECT_PTS_CLOSE(Point3f::Zero(),    b1.GetCenter());
+        EXPECT_VECS_CLOSE(Vector3f(2, 1, 1), b1.GetSize());
+
+        // (Local) Bounds.
+        const Bounds lb1 = TransformBounds(cm1->GetBounds(),
+                                           cm1->GetModelMatrix());
+        EXPECT_PTS_CLOSE(Point3f(0, 1.5f, 3), lb1.GetCenter());
+        EXPECT_VECS_CLOSE(Vector3f(4, 3, 4),  lb1.GetSize());
+
+        // Undo and redo the clip changes for second iteration.
+        context.command_manager->Undo();
+        context.command_manager->Undo();
+        context.command_manager->Redo();
         context.command_manager->Redo();
     }
 }
