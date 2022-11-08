@@ -4,6 +4,7 @@
 #include <functional>
 #include <limits>
 
+#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -13,7 +14,6 @@
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/ClippedModel.h"
 #include "Models/RootModel.h"
@@ -177,6 +177,7 @@ ClipTool::Impl_::Impl_(const Tool::Context &context,
 
 void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
     using ion::math::Dot;
+    using ion::math::Inverse;
     using ion::math::ScaleMatrixH;
 
     selection_ = sel;
@@ -199,17 +200,22 @@ void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
     // any. Otherwise, use the XZ plane in local coordinates.
     const auto &primary = GetModel_(0);
     if (! primary.GetPlanes().empty()) {
-        // Get the plane in object coordinates of the ClippedModel and account
-        // for the mesh offset.
-        const Plane &obj_plane = primary.GetPlanes().back();
-        const float offset = Dot(primary.GetOffset(), obj_plane.normal);
-        current_plane_ = Plane(obj_plane.distance + offset, obj_plane.normal);
-
-        // The rotation and translation of the ClippedModel have already been
-        // applied to the ClipTool, so just the scale needs to be taken into
-        // account for the plane normal.
-        current_plane_ = TransformPlane(current_plane_,
+        // The plane has to be in the object coordinates of the ClipTool. Start
+        // with the plane in the object coordinates of the ClippedModel and
+        // transform it by the scale: the rotation and translation of the
+        // ClippedModel are applied to the ClipTool, so they are not used here.
+        current_plane_ = TransformPlane(primary.GetPlanes().back(),
                                         ScaleMatrixH(primary.GetScale()));
+
+        // Account for the mesh offset. Note that the offset is in the local
+        // coordinates of the ClippedModel, so it has been scaled and rotated.
+        // Undo that to get the offset in object coordinates.
+        const Vector3f obj_offset =
+            Inverse(root_node_.GetModelMatrix()) * primary.GetOffset();
+
+        // Apply the offset in the normal direction.
+        const float offset = Dot(obj_offset, current_plane_.normal);
+        current_plane_.distance -= offset;
     }
     else {
         current_plane_ = Plane(0, Vector3f::AxisY());
@@ -370,18 +376,18 @@ void ClipTool::Impl_::PlaneClicked_() {
 
 void ClipTool::Impl_::SnapRotation_(Rotationf &rot, bool &snapped_to_target,
                                     int &snapped_dim) {
-#if XXXX
     auto &tm = *context_.target_manager;
 
     ASSERT(selection_.HasAny());
     const CoordConv cc(selection_.GetPrimary());
 
-    // Get the current plane normal in stage coordinates.
-    const Vector3f stage_normal = GetStagePlane_().normal;
+    // Get the rotated plane normal in local and stage coordinates.
+    Vector3f local_normal = rot * Vector3f::AxisY();
+    Vector3f stage_normal =
+        ion::math::Normalized(cc.ObjectToRoot(local_normal));
 
     auto get_local_snap_rot = [&](const Rotationf &rot){
-        return Rotationf::RotateInto(Vector3f::AxisY(),
-                                     rot * current_plane_.normal);
+        return Rotationf::RotateInto(Vector3f::AxisY(), rot * local_normal);
     };
     auto get_stage_snap_rot = [&](const Rotationf &rot){
         return Rotationf::RotateInto(Vector3f::AxisY(),
@@ -411,7 +417,6 @@ void ClipTool::Impl_::SnapRotation_(Rotationf &rot, bool &snapped_to_target,
             }
         }
     }
-#endif
 }
 
 void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
