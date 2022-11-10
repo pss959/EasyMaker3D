@@ -196,8 +196,8 @@ void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
     arrow_shaft_->SetScale(Vector3f(1, arrow_scale, 1));
     arrow_cone_->SetTranslation(Vector3f(0, arrow_scale, 0));
 
-    // Set the current plane to the last Plane in the ClippedModel if it has
-    // any. Otherwise, use the XZ plane in local coordinates.
+    // Set the current plane to match the last Plane in the ClippedModel if it
+    // has any. Otherwise, use the XZ plane in local coordinates.
     const auto &primary = GetModel_(0);
     if (! primary.GetPlanes().empty()) {
         // Access the plane in the object coordinates of the unclipped
@@ -208,21 +208,10 @@ void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
         current_plane_ = TransformPlane(primary.GetPlanes().back(),
                                         ScaleMatrixH(primary.GetScale()));
 
-#if XXXX
-        // The plane in the ClippedModel is specified relative to its center in
-        // object coordinates BEFORE clipping planes are applied. Applying
-        // those planes translates the ClippedModel according to its offset.
-        // Convert that offset from the local coordinates of the ClippedModel
-        // (after scale and rotation have been applied) into the object
-        // coordinates of the ClipTool so the plane is positioned correctly.
+        // Compensate for the mesh offset in the normal direction.
         const Vector3f offset_vec =
-            Inverse(root_node_.GetModelMatrix()) * primary.GetOffset();
-        std::cerr << "XXXX OV = " << offset_vec << "\n";
-
-        // Apply the offset in the normal direction.
+            primary.GetModelMatrix() * -primary.GetMeshOffset();
         current_plane_.distance -= Dot(offset_vec, current_plane_.normal);
-        std::cerr << "XXXX CPLANE  = " << current_plane_.ToString() << "\n";
-#endif
     }
     else {
         current_plane_ = Plane(0, Vector3f::AxisY());
@@ -427,7 +416,6 @@ void ClipTool::Impl_::SnapRotation_(Rotationf &rot, bool &snapped_to_target,
 }
 
 void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
-#if XXXX
     // Get the plane using the given distance in local coordinates.
     const Vector3f local_normal =
         arrow_and_plane_->GetRotation() * Vector3f::AxisY();
@@ -435,7 +423,8 @@ void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
 
     // Convert to stage coordinates.
     const CoordConv cc(selection_.GetPrimary());
-    const Plane stage_plane = ToStagePlane_(local_plane);
+    const Plane stage_plane = TransformPlane(local_plane,
+                                             cc.GetObjectToRootMatrix());
     auto snap_to_pt = [&](const Point3f &pt){
         const float snap_dist = stage_plane.GetDistanceToPoint(pt);
         if (std::abs(snap_dist) <= TK::kSnapPointTolerance) {
@@ -454,7 +443,6 @@ void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
     // the origin in local coordinates.
     if (! is_snapped)
         snap_to_pt(cc.LocalToRoot(Point3f::Zero()));
-#endif
 }
 
 void ClipTool::Impl_::UpdateTranslationFeedback_(const Color &color) {
