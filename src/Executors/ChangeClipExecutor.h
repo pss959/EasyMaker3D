@@ -6,6 +6,8 @@
 #include "Executors/Executor.h"
 #include "Math/Types.h"
 
+class ClippedModel;
+
 /// ChangeClipExecutor executes the ChangeClipCommand.
 ///
 /// \ingroup Executors
@@ -34,5 +36,5 @@ class ChangeClipExecutor : public Executor {
     ExecData_ & GetExecData_(Command &command);
 
     /// Compensates for a change in translation caused by clipping.
-    void AdjustTranslation_(ExecData_::PerModel &pm);
+    void AdjustTranslation_(ClippedModel &cm);
 };
