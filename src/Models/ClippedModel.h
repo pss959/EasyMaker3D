@@ -31,14 +31,14 @@ class ClippedModel : public ConvertedModel {
     /// Returns the current clipping Planes. This may be an empty vector.
     const std::vector<Plane> & GetPlanes() const { return planes_; }
 
-    /// Sets an offset in local coordinates of the ClippedModel relative to the
-    /// original Model. The offset is the zero vector by default. This can be
-    /// used to compensate for a change in translation due to clipping.
-    void SetOffset(const Vector3f &offset) { offset_ = offset; }
-
-    /// Returns the offset last set by SetOffset(). This is the zero vector by
-    /// default.
-    const Vector3f & GetOffset() const { return offset_; }
+    /// Whenever the ClippedModel's mesh is rebuilt, it is recentered to put
+    /// the mesh at the origin in object coordinates. This returns the offset
+    /// used to recenter the mesh (in object coordinates).
+    const Vector3f & GetMeshOffset() const {
+        // Make sure the mesh is up to date first.
+        GetMesh();
+        return mesh_offset_;
+    }
 
   protected:
     ClippedModel() {}
@@ -57,9 +57,8 @@ class ClippedModel : public ConvertedModel {
     Parser::VField<Plane> planes_;
     ///@}
 
-    /// Extra offset added to the original Model's translation in local
-    /// coordinates.
-    Vector3f offset_{0, 0, 0};
+    /// Offset used to center the mesh in object coordinates.
+    Vector3f mesh_offset_{0, 0, 0};
 
     friend class Parser::Registry;
 };

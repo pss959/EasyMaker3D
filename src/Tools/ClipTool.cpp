@@ -200,22 +200,29 @@ void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
     // any. Otherwise, use the XZ plane in local coordinates.
     const auto &primary = GetModel_(0);
     if (! primary.GetPlanes().empty()) {
-        // The plane has to be in the object coordinates of the ClipTool. Start
-        // with the plane in the object coordinates of the ClippedModel and
-        // transform it by the scale: the rotation and translation of the
-        // ClippedModel are applied to the ClipTool, so they are not used here.
+        // Access the plane in the object coordinates of the unclipped
+        // ClippedModel and transform it by the scale: the rotation and
+        // translation of the ClippedModel are also applied to the ClipTool, so
+        // they are not needed to convert the plane into the object coordinates
+        // of the ClipTool.
         current_plane_ = TransformPlane(primary.GetPlanes().back(),
                                         ScaleMatrixH(primary.GetScale()));
 
-        // Account for the mesh offset. Note that the offset is in the local
-        // coordinates of the ClippedModel, so it has been scaled and rotated.
-        // Undo that to get the offset in object coordinates.
-        const Vector3f obj_offset =
+#if XXXX
+        // The plane in the ClippedModel is specified relative to its center in
+        // object coordinates BEFORE clipping planes are applied. Applying
+        // those planes translates the ClippedModel according to its offset.
+        // Convert that offset from the local coordinates of the ClippedModel
+        // (after scale and rotation have been applied) into the object
+        // coordinates of the ClipTool so the plane is positioned correctly.
+        const Vector3f offset_vec =
             Inverse(root_node_.GetModelMatrix()) * primary.GetOffset();
+        std::cerr << "XXXX OV = " << offset_vec << "\n";
 
         // Apply the offset in the normal direction.
-        const float offset = Dot(obj_offset, current_plane_.normal);
-        current_plane_.distance -= offset;
+        current_plane_.distance -= Dot(offset_vec, current_plane_.normal);
+        std::cerr << "XXXX CPLANE  = " << current_plane_.ToString() << "\n";
+#endif
     }
     else {
         current_plane_ = Plane(0, Vector3f::AxisY());

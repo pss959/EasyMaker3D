@@ -23,10 +23,8 @@ class ChangeClipExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.
         struct PerModel {
-            SelPath  path_to_model;
-            Plane    object_plane;
-            Vector3f old_translation;
-            Vector3f new_translation;
+            SelPath path_to_model;
+            Plane   object_plane;
         };
         std::vector<PerModel> per_model;
     };
@@ -36,6 +34,5 @@ class ChangeClipExecutor : public Executor {
     ExecData_ & GetExecData_(Command &command);
 
     /// Compensates for a change in translation caused by clipping.
-    void AdjustTranslation_(const Bounds &unclipped_bounds,
-                            ExecData_::PerModel &pm);
+    void AdjustTranslation_(ExecData_::PerModel &pm);
 };

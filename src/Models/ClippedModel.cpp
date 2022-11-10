@@ -1,5 +1,7 @@
 #include "Models/ClippedModel.h"
 
+#include <ion/math/transformutils.h>
+
 #include "Math/MeshCombining.h"
 #include "Math/MeshUtils.h"
 
@@ -34,17 +36,20 @@ TriMesh ClippedModel::BuildMesh() {
     for (const auto &plane: GetPlanes())
         mesh = ClipMesh(mesh, plane);
 
+    mesh_offset_ = Point3f::Zero() - ComputeMeshBounds(mesh).GetCenter();
+
     return CenterMesh(mesh);
 }
 
 void ClippedModel::SyncTransformsFromOriginal(const Model &original) {
     CopyTransformsFrom(original);
-    if (offset_ != Vector3f::Zero())
-        SetTranslation(GetTranslation() + offset_);
+    if (mesh_offset_ != Vector3f::Zero())
+        SetTranslation(GetTranslation() - GetModelMatrix() * mesh_offset_);
 }
 
 void ClippedModel::SyncTransformsToOriginal(Model &original) const {
     original.CopyTransformsFrom(*this);
-    if (offset_ != Vector3f::Zero())
-        original.SetTranslation(original.GetTranslation() - offset_);
+    if (mesh_offset_ != Vector3f::Zero())
+        original.SetTranslation(original.GetTranslation() +
+                                GetModelMatrix() * mesh_offset_);
 }
