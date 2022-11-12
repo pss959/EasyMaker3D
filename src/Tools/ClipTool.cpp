@@ -327,7 +327,7 @@ void ClipTool::Impl_::Rotate_() {
 
 void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
     if (is_activation) {
-        start_distance_ = plane_->GetTranslation()[0];
+        start_distance_ = current_plane_.distance;
         feedback_ = context_.feedback_manager->Activate<LinearFeedback>();
         context_.target_manager->StartSnapping();
     }
@@ -455,9 +455,13 @@ void ClipTool::Impl_::UpdateTranslationFeedback_(const Color &color) {
     const Point3f  end_pt     = osm * Point3f(current_plane_.distance *
                                               current_plane_.normal);
 
+    // Need signed distance.
+    float distance = ion::math::Distance(start_pt, end_pt);
+    if (start_distance_ > current_plane_.distance)
+        distance = -distance;
+
     feedback_->SetColor(color);
-    feedback_->SpanLength(start_pt, motion_dir,
-                          ion::math::Distance(start_pt, end_pt));
+    feedback_->SpanLength(start_pt, motion_dir, distance);
 }
 
 void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
