@@ -61,7 +61,10 @@ class ClipTool::Impl_ {
     Selection           selection_;
 
     /// Current clipping plane in the object coordinates of the ClipTool.
-    Plane               current_plane_{0, Vector3f::AxisY()};
+    Plane               object_plane_{0, Vector3f::AxisY()};
+
+    /// Current clipping plane in stage coordinates.
+    Plane               stage_plane_{0, Vector3f::AxisY()};
 
     /// Node containing both the arrow and the plane. This is rotated to match
     /// the current plane, including during SphereWidget interaction.
@@ -98,7 +101,7 @@ class ClipTool::Impl_ {
     /// Saves the color used for the Arrow when inactive so it can be changed.
     Color               arrow_inactive_color_;
 
-    /// Updates all geometry to match the current_plane_.
+    /// Updates all geometry to match the object_plane_.
     void MatchPlane_();
 
     /// Sets the min/max range for the translation slider based on the Model's
@@ -112,16 +115,26 @@ class ClipTool::Impl_ {
     void Translate_();
     void PlaneClicked_();
 
-    /// Checks for snapping of the given rotation to the target and principal
-    /// axes. If snapping occurs, this modifies rot and sets snapped_to_target
-    /// or snapped_dim appropriately.
-    void SnapRotation_(Rotationf &rot, bool &snapped_to_target,
-                       int &snapped_dim);
+    /// Checks for snapping of the current plane's normal to the target and
+    /// principal axes. If snapping occurs, this modifies the object and stage
+    /// planes and sets snapped_to_target or snapped_dim appropriately.
+    void SnapRotation_(bool &snapped_to_target, int &snapped_dim);
 
-    /// Checks for snapping of the given plane distance to an important point
-    /// (point target or Model center). If snapping occurs, this modifies
-    /// distance and sets is_snapped to true.
-    void SnapTranslation_(float &distance, bool &is_snapped);
+    /// Checks for snapping of the current plane's distance to an important
+    /// point (point target or Model center). If snapping occurs, this modifies
+    /// the object and stage planes and sets is_snapped to true.
+    void SnapTranslation_(bool &is_snapped);
+
+    /// Returns the rotation of the current plane in object coordinates.
+    Rotationf GetPlaneRotation_() const {
+        return Rotationf::RotateInto(Vector3f::AxisY(), object_plane_.normal);
+    }
+
+    /// Updates stage_plane_ from object_plane_.
+    void UpdateStagePlane_();
+
+    /// Updates object_plane_ from stage_plane_.
+    void UpdateObjectPlane_();
 
     /// Updates feedback for plane translation.
     void UpdateTranslationFeedback_(const Color &color);
@@ -129,9 +142,6 @@ class ClipTool::Impl_ {
     /// Updates the state of the real-time clipping plane implemented in the
     /// Faceted shader.
     void UpdateRealTimeClipPlane_(bool enable);
-
-    /// Returns the current clipping plane in stage coordinates.
-    Plane GetStagePlane_() const;
 
     /// Returns the indexed selected ClippedModel. Asserts if the index is bad
     /// or the Model is the wrong type.
@@ -205,16 +215,16 @@ void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
         // translation of the ClippedModel are also applied to the ClipTool, so
         // they are not needed to convert the plane into the object coordinates
         // of the ClipTool.
-        current_plane_ = TransformPlane(primary.GetPlanes().back(),
+        object_plane_ = TransformPlane(primary.GetPlanes().back(),
                                         ScaleMatrixH(primary.GetScale()));
 
         // Compensate for the mesh offset in the normal direction.
         const Vector3f offset_vec =
             primary.GetModelMatrix() * -primary.GetMeshOffset();
-        current_plane_.distance -= Dot(offset_vec, current_plane_.normal);
+        object_plane_.distance -= Dot(offset_vec, object_plane_.normal);
     }
     else {
-        current_plane_ = Plane(0, Vector3f::AxisY());
+        object_plane_ = Plane(0, Vector3f::AxisY());
     }
 
     MatchPlane_();
@@ -228,7 +238,7 @@ SG::NodePtr ClipTool::Impl_::UpdateGripInfo(GripInfo &info,
                                             const Vector3f &guide_dir) {
     // If the direction is close to the arrow direction (either way), use the
     // translator.
-    const Vector3f &arrow_dir = current_plane_.normal;
+    const Vector3f &arrow_dir = object_plane_.normal;
     if (AreDirectionsClose(guide_dir,  arrow_dir, TK::kMaxGripHoverDirAngle) ||
         AreDirectionsClose(guide_dir, -arrow_dir, TK::kMaxGripHoverDirAngle)) {
         info.widget = arrow_;
@@ -244,7 +254,7 @@ void ClipTool::Impl_::MatchPlane_() {
     // Use the plane normal to compute the rotation. The untransformed arrow
     // direction is the +Y axis.
     const Rotationf rot =
-        Rotationf::RotateInto(Vector3f::AxisY(), current_plane_.normal);
+        Rotationf::RotateInto(Vector3f::AxisY(), object_plane_.normal);
     rotator_->SetRotation(rot);
     arrow_and_plane_->SetRotation(rot);
 
@@ -255,11 +265,11 @@ void ClipTool::Impl_::MatchPlane_() {
     // Use the distance of the plane as the Slider1DWidget value without
     // notifying.
     arrow_->GetValueChanged().EnableObserver(this, false);
-    arrow_->SetValue(current_plane_.distance);
+    arrow_->SetValue(object_plane_.distance);
     arrow_->GetValueChanged().EnableObserver(this, true);
 
     // Position the plane at the correct distance.
-    plane_->SetTranslation(current_plane_.distance * Vector3f::AxisY());
+    plane_->SetTranslation(object_plane_.distance * Vector3f::AxisY());
 }
 
 void ClipTool::Impl_::UpdateTranslationRange_() {
@@ -275,7 +285,7 @@ void ClipTool::Impl_::UpdateTranslationRange_() {
     float          max_dist = -std::numeric_limits<float>::max();
     for (const Point3f &p: mesh.points) {
         const float dist = SignedDistance(ScalePoint(p, scale),
-                                          current_plane_.normal);
+                                          object_plane_.normal);
         min_dist = std::min(min_dist, dist);
         max_dist = std::max(max_dist, dist);
     }
@@ -292,7 +302,7 @@ void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
         // Update the current plane's normal from the arrow+plane rotation,
         // which includes snapping.
         const Rotationf &rot = arrow_and_plane_->GetRotation();
-        current_plane_.normal = rot * Vector3f::AxisY();
+        object_plane_.normal = rot * Vector3f::AxisY();
 
         // Apply the rotation to the SphereWidget.
         rotator_->SetRotation(rot);
@@ -304,30 +314,31 @@ void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
 }
 
 void ClipTool::Impl_::Rotate_() {
-    // Get the current rotation and snap if requested.
-    Rotationf rot = rotator_->GetRotation();
+    // Update the current plane with the current rotation in object and stage
+    // coordinates.
+    object_plane_.normal = rotator_->GetRotation() * Vector3f::AxisY();
+    UpdateStagePlane_();
+
+    // Snap the current plane's rotation if requested.
     bool snapped_to_target = false;
-    int  snapped_dim = -1;
+    int  snapped_dim       = -1;
     if (! context_.is_modified_mode)
-        SnapRotation_(rot, snapped_to_target, snapped_dim);
+        SnapRotation_(snapped_to_target, snapped_dim);
 
     arrow_->SetInactiveColor(
         snapped_to_target ? GetSnappedFeedbackColor() :
         snapped_dim >= 0  ? SG::ColorMap::SGetColorForDimension(snapped_dim) :
         arrow_inactive_color_);
 
-    // Rotate the arrow and plane geometry to match.
-    arrow_and_plane_->SetRotation(rot);
-
-    // Update the current plane.
-    current_plane_.normal = rot * Vector3f::AxisY();
+    // Rotate the arrow and plane geometry to match the current plane.
+    arrow_and_plane_->SetRotation(GetPlaneRotation_());
 
     UpdateRealTimeClipPlane_(true);
 }
 
 void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
     if (is_activation) {
-        start_distance_ = current_plane_.distance;
+        start_distance_ = object_plane_.distance;
         feedback_ = context_.feedback_manager->Activate<LinearFeedback>();
         context_.target_manager->StartSnapping();
     }
@@ -345,19 +356,23 @@ void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
 }
 
 void ClipTool::Impl_::Translate_() {
-    // Get the current signed plane distance and snap if requested.
-    float distance = arrow_->GetValue();
+    // Update the current plane with the current translation in object and
+    // stage coordinates.
+    const float distance = arrow_->GetValue();
+    object_plane_.distance = distance;
+    UpdateStagePlane_();
+
+    // Snap the current plane's translation if requested.
     bool is_snapped = false;
     if (! context_.is_modified_mode)
-        SnapTranslation_(distance, is_snapped);
+        SnapTranslation_(is_snapped);
 
     const Color color = is_snapped ? GetSnappedFeedbackColor() :
         SG::ColorMap::SGetColor("WidgetActiveColor");
     arrow_->SetActiveColor(color);
 
-    // Move the plane to the correct distance.
-    current_plane_.distance = distance;
-    plane_->SetTranslation(distance * Vector3f::AxisY());
+    // Move the plane Widget to the correct distance.
+    plane_->SetTranslation(object_plane_.distance * Vector3f::AxisY());
 
     UpdateTranslationFeedback_(color);
     UpdateRealTimeClipPlane_(true);
@@ -366,98 +381,112 @@ void ClipTool::Impl_::Translate_() {
 void ClipTool::Impl_::PlaneClicked_() {
     auto command = CreateCommand<ChangeClipCommand>();
     command->SetFromSelection(selection_);
-    command->SetPlane(GetStagePlane_());
+    command->SetPlane(stage_plane_);
     context_.command_manager->AddAndDo(command);
 }
 
-void ClipTool::Impl_::SnapRotation_(Rotationf &rot, bool &snapped_to_target,
-                                    int &snapped_dim) {
+void ClipTool::Impl_::SnapRotation_(bool &snapped_to_target, int &snapped_dim) {
     auto &tm = *context_.target_manager;
 
     ASSERT(selection_.HasAny());
     const CoordConv cc(selection_.GetPrimary());
 
-    // Get the rotated plane normal in local and stage coordinates.
-    Vector3f local_normal = rot * Vector3f::AxisY();
-    Vector3f stage_normal =
-        ion::math::Normalized(cc.ObjectToRoot(local_normal));
-
-    auto get_local_snap_rot = [&](const Rotationf &rot){
-        return Rotationf::RotateInto(Vector3f::AxisY(), rot * local_normal);
-    };
-    auto get_stage_snap_rot = [&](const Rotationf &rot){
-        return Rotationf::RotateInto(Vector3f::AxisY(),
-                                     cc.RootToObject(rot * stage_normal));
-    };
-
     // Try to snap to the point target (in stage coordinates) if it is active.
     Rotationf snap_rot;
-    if (tm.SnapToDirection(stage_normal, snap_rot)) {
+    if (tm.SnapToDirection(stage_plane_.normal, snap_rot)) {
+        stage_plane_.normal = tm.GetPointTarget().GetDirection();
+        UpdateObjectPlane_();
         snapped_to_target = true;
-        rot = get_stage_snap_rot(snap_rot);
     }
 
     // Otherwise, try to snap to any of the principal axes. Use stage axes if
-    // is_axis_aligned is true; otherwise, use local axes.
+    // is_axis_aligned is true; otherwise, use object axes.
     else {
-        const bool use_stage = context_.is_axis_aligned;
-        const Vector3f dir = use_stage ? stage_normal : local_normal;
+        // Tests snapping dir to a principal axis.
+        const auto snap_to_axis = [&](const Vector3f &dir,
+                                      const Vector3f &axis, bool is_stage){
+            if (tm.ShouldSnapDirections(dir, axis, snap_rot)) {
+                if (is_stage) {
+                    stage_plane_.normal = axis;
+                    UpdateObjectPlane_();
+                    return true;
+                }
+                else {
+                    object_plane_.normal = axis;
+                    UpdateStagePlane_();
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        const bool is_stage = context_.is_axis_aligned;
+        const Vector3f &dir =
+            is_stage ? stage_plane_.normal : object_plane_.normal;
         for (int dim = 0; dim < 3; ++dim) {
-            Vector3f axis = GetAxis(dim);
-            if (tm.ShouldSnapDirections(dir,  axis, snap_rot) ||
-                tm.ShouldSnapDirections(dir, -axis, snap_rot)) {
+            const Vector3f axis = GetAxis(dim);
+            if (snap_to_axis(dir,  axis, is_stage) ||
+                snap_to_axis(dir, -axis, is_stage)) {
                 snapped_dim = dim;
-                rot = use_stage ? get_stage_snap_rot(snap_rot) :
-                    get_local_snap_rot(snap_rot);
                 break;
             }
         }
     }
 }
 
-void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
-    // Get the plane using the given distance in local coordinates.
-    const Vector3f local_normal =
-        arrow_and_plane_->GetRotation() * Vector3f::AxisY();
-    const Plane local_plane(distance, local_normal);
+void ClipTool::Impl_::SnapTranslation_(bool &is_snapped) {
+    // All snapping has to take place in stage coordinates to use the correct
+    // snap tolerance.
+    auto &tm = *context_.target_manager;
 
-    // Convert to stage coordinates.
-    const CoordConv cc(selection_.GetPrimary());
-    const Plane stage_plane = TransformPlane(local_plane,
-                                             cc.GetObjectToRootMatrix());
+    // Updates stage_plane_ and returns true if stage_plane_ is close to the
+    // given point.
     auto snap_to_pt = [&](const Point3f &pt){
-        const float snap_dist = stage_plane.GetDistanceToPoint(pt);
-        if (std::abs(snap_dist) <= TK::kSnapPointTolerance) {
-            // Need to convert the distance back to local coordinates.
-            distance = SignedDistance(cc.RootToLocal(pt), local_normal);
-            is_snapped = true;
+        const float distance = stage_plane_.GetDistanceToPoint(pt);
+        if (std::abs(distance) <= TK::kSnapPointTolerance) {
+            stage_plane_.distance += distance;
+            return true;
         }
+        return false;
     };
 
-    // Try snapping to the point target (in stage coordinates).
-    auto &tm = *context_.target_manager;
+    // First try snapping to the point target.
     if (tm.IsPointTargetVisible())
-        snap_to_pt(tm.GetPointTarget().GetPosition());
+        is_snapped = snap_to_pt(tm.GetPointTarget().GetPosition());
 
     // If not, try snapping to the center of the Model. Assume the center is
-    // the origin in local coordinates.
-    if (! is_snapped)
-        snap_to_pt(cc.LocalToRoot(Point3f::Zero()));
+    // the origin in object coordinates.
+    if (! is_snapped) {
+        const CoordConv cc(selection_.GetPrimary());
+        is_snapped = snap_to_pt(cc.ObjectToRoot(Point3f::Zero()));
+    }
+
+    if (is_snapped)
+        UpdateObjectPlane_();
+}
+
+void ClipTool::Impl_::UpdateStagePlane_() {
+    stage_plane_ = TransformPlane(object_plane_, root_node_.GetModelMatrix());
+}
+
+void ClipTool::Impl_::UpdateObjectPlane_() {
+    object_plane_ = TransformPlane(
+        stage_plane_, ion::math::Inverse(root_node_.GetModelMatrix()));
 }
 
 void ClipTool::Impl_::UpdateTranslationFeedback_(const Color &color) {
     // Need to use stage coordinates.
     const Matrix4f osm = root_node_.GetModelMatrix();
 
-    const Vector3f motion_dir = osm * current_plane_.normal;
+    const Vector3f motion_dir = osm * object_plane_.normal;
     const Point3f  start_pt   = osm * Point3f(start_distance_ *
-                                              current_plane_.normal);
-    const Point3f  end_pt     = osm * Point3f(current_plane_.distance *
-                                              current_plane_.normal);
+                                              object_plane_.normal);
+    const Point3f  end_pt     = osm * Point3f(object_plane_.distance *
+                                              object_plane_.normal);
 
     // Need signed distance.
     float distance = ion::math::Distance(start_pt, end_pt);
-    if (start_distance_ > current_plane_.distance)
+    if (start_distance_ > object_plane_.distance)
         distance = -distance;
 
     feedback_->SetColor(color);
@@ -465,11 +494,7 @@ void ClipTool::Impl_::UpdateTranslationFeedback_(const Color &color) {
 }
 
 void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
-    context_.root_model->EnableClipping(enable, GetStagePlane_());
-}
-
-Plane ClipTool::Impl_::GetStagePlane_() const {
-    return TransformPlane(current_plane_, root_node_.GetModelMatrix());
+    context_.root_model->EnableClipping(enable, stage_plane_);
 }
 
 // ----------------------------------------------------------------------------
