@@ -131,8 +131,6 @@ bool RayPlaneIntersect(const Ray &ray, const Plane &plane, float &distance) {
 bool RayTriangleIntersect(const Ray &ray, const Point3f &p0,
                           const Point3f &p1, const Point3f &p2,
                           float &distance, Vector3f &barycentric) {
-    using ion::math::WithoutDimension;
-
     // Intersect the plane containing the three points.
     const Plane plane(p0, p1, p2);
     float distance_to_plane;
@@ -143,12 +141,12 @@ bool RayTriangleIntersect(const Ray &ray, const Point3f &p0,
     // projecting everything onto one of the principal coordinate planes.  Use
     // the component of the plane normal with the largest magnitude to find the
     // indices of the best plane to use.
-    const int max_dim = GetMaxAbsElementIndex(plane.normal);
-    const Point2f p0_in_plane = WithoutDimension(p0, max_dim);
-    const Point2f p1_in_plane = WithoutDimension(p1, max_dim);
-    const Point2f p2_in_plane = WithoutDimension(p2, max_dim);
-    const Point3f inter       = ray.GetPoint(distance_to_plane);
-    const Point2f inter_in_plane = WithoutDimension(inter, max_dim);
+    const int max_dim            = GetMaxAbsElementIndex(plane.normal);
+    const Point2f p0_in_plane    = ToPoint2f(p0, max_dim);
+    const Point2f p1_in_plane    = ToPoint2f(p1, max_dim);
+    const Point2f p2_in_plane    = ToPoint2f(p2, max_dim);
+    const Point3f inter          = ray.GetPoint(distance_to_plane);
+    const Point2f inter_in_plane = ToPoint2f(inter, max_dim);
 
     // Compute barycentric coordinates of the point with respect to the
     // triangle. If they indicate that the point is outside the triangle,
@@ -259,8 +257,8 @@ bool RayCylinderIntersect(const Ray &ray, float radius, float &distance) {
     //         a = D . D
     //         b = 2 * (D . P)
     //         c = P . P - r*r
-    Point2f  p = ion::math::WithoutDimension(ray.origin,    1);
-    Vector2f d = ion::math::WithoutDimension(ray.direction, 1);
+    Point2f  p = ToPoint2f(ray.origin,     1);
+    Vector2f d = ToVector2f(ray.direction, 1);
 
     const float a = ion::math::LengthSquared(d);
     const float b = 2.f * ion::math::Dot(d, Vector2f(p));

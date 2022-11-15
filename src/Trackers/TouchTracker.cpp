@@ -84,8 +84,8 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
 
     // Check for sufficient X or Y position change.
     const float motion_scale = GetMotionScale(current_widget_);
-    const Point2f p0 = WithoutDimension(activation_pos_,        2);
-    const Point2f p1 = WithoutDimension(event.touch_position3D, 2);
+    const Point2f p0 = ToPoint2f(activation_pos_);
+    const Point2f p1 = ToPoint2f(event.touch_position3D);
     const float distance = ion::math::Distance(p0, p1);
     return motion_scale * distance > TK::kMinTouchControllerDistance;
 }

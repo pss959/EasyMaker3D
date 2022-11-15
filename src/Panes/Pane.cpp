@@ -1,8 +1,7 @@
 #include "Panes/Pane.h"
 
-#include <ion/math/vectorutils.h>
-
 #include "Base/Tuning.h"
+#include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "Panes/IPaneInteractor.h"
 #include "Util/Assert.h"
@@ -73,11 +72,11 @@ std::string Pane::ToString(bool is_brief) const {
         // Trans + (.5,.5) = (UL + (.5,-.5) * child_size) / parent_size
         // parent_size * (Trans + (.5,.5)) - (.5,-.5) * child_size = UL
 
-        const Vector2f rel_size    = WithoutDimension(GetScale(), 2);
+        const Vector2f rel_size    = ToVector2f(GetScale());
         const Vector2f child_size  = GetLayoutSize();
         const Vector2f parent_size = child_size / rel_size;
 
-        const Vector2f center      = WithoutDimension(GetTranslation(), 2);
+        const Vector2f center      = ToVector2f(GetTranslation());
         const Vector2f upper_left(
             parent_size[0] * (center[0] + .5f) - .5f * child_size[0],
             parent_size[1] * (center[1] + .5f) + .5f * child_size[1]);

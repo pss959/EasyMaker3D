@@ -1,13 +1,12 @@
 #include "Tools/ColorTool.h"
 
-#include <ion/math/vectorutils.h>
-
 #include "App/ClickInfo.h"
 #include "Base/Procedural.h"
 #include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Math/ColorRing.h"
 #include "Math/Curves.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "SG/Node.h"
@@ -148,6 +147,5 @@ void ColorTool::UpdateColor_() {
 }
 
 Color ColorTool::GetRingColor_(const Point3f &ring_point) {
-    return ColorRing::GetColorForPoint(
-        ion::math::WithoutDimension(ring_point, 2));
+    return ColorRing::GetColorForPoint(ToPoint2f(ring_point));
 }

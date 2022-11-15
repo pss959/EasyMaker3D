@@ -105,7 +105,7 @@ class ProfilePane::Impl_ {
     /// Converts a 3D point from the object coordinates of the ProfilePane to
     /// 2D profile coordinates.
     static Point2f ToProfile_(const Point3f &p) {
-        return ToProfile_(ion::math::WithoutDimension(p, 2));
+        return ToProfile_(ToPoint2f(p));
     }
     static Point2f ToProfile_(const Point2f &p) {
         // Convert X and Y from (-.5,.5) to (0,1).

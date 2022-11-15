@@ -607,8 +607,7 @@ bool Board::Impl_::UpdatePanelGripInfo_(GripInfo &info) {
         auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
         const CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
         const Matrix4f w2p = cc.GetRootToObjectMatrix();
-        const Point2f panel_pt =
-            ion::math::WithoutDimension(w2p * info.event.position3D, 2);
+        const Point2f panel_pt = ToPoint2f(w2p * info.event.position3D);
 
         // Ask the Panel for the Widget to hover.
         const auto widget = panel->GetGripWidget(panel_pt);

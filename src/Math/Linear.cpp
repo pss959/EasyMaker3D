@@ -11,16 +11,17 @@
 // Dimension conversion functions.
 // ----------------------------------------------------------------------------
 
-Vector2f ToVector2f(const Vector3f &v) {
-    return ion::math::WithoutDimension(v, 2);
+Vector2f ToVector2f(const Vector3f &v, int dim) {
+    return ion::math::WithoutDimension(v, dim);
 }
 
-Point2f ToPoint2f(const Point3f &p) {
-    return ion::math::WithoutDimension(p, 2);
+Point2f ToPoint2f(const Point3f &p, int dim) {
+    return ion::math::WithoutDimension(p, dim);
 }
 
-Range2f ToRange2f(const Range3f &r) {
-    return Range2f(ToPoint2f(r.GetMinPoint()), ToPoint2f(r.GetMaxPoint()));
+Range2f ToRange2f(const Range3f &r, int dim) {
+    return Range2f(ToPoint2f(r.GetMinPoint(), dim),
+                   ToPoint2f(r.GetMaxPoint(), dim));
 }
 
 // ----------------------------------------------------------------------------
