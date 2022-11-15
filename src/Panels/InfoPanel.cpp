@@ -98,11 +98,15 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
     AddTextPane_(panes, TextType_::kNormal,
                  "Triangle Count", Util::ToString(mesh.GetTriangleCount()));
 
-    const Matrix4f osm = CoordConv(sel_path).GetObjectToRootMatrix();
-    const Vector3f size = TransformBounds(model.GetBounds(), osm).GetSize();
+    const Matrix4f osm    = CoordConv(sel_path).GetObjectToRootMatrix();
+    const Bounds   bounds = TransformBounds(model.GetBounds(), osm);
+    const Point3f  center = bounds.GetCenter();
+    const Vector3f size   = bounds.GetSize();
     AddTextPane_(panes, TextType_::kNormal, "Width",  ToString_(size[0]));
     AddTextPane_(panes, TextType_::kNormal, "Depth",  ToString_(size[2]));
     AddTextPane_(panes, TextType_::kNormal, "Height", ToString_(size[1]));
+    AddTextPane_(panes, TextType_::kNormal, "Center",
+                 ToString_(center[0]) + " " + ToString_(center[2]));
 }
 
 void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
