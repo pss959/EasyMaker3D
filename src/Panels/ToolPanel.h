@@ -56,6 +56,10 @@ class ToolPanel : public Panel {
         interaction_.Notify(key, type);
     }
 
+    /// Redefines this to return false so the stage can be resized even when a
+    /// ToolPanel is active.
+    virtual bool ShouldTrapValuatorEvents() const { return false; }
+
     /// Overrides this to do nothing if IsCloseable() returns false; most
     /// derived ToolPanel classes should never be closed directly.
     virtual void Close(const std::string &result) override {

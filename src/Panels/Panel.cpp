@@ -171,9 +171,10 @@ bool Panel::HandleEvent(const Event &event) {
     if (handled)
         update_focus_highlight_ = true;
 
-    // Handle all valuator events so the MainHandler does not get them. If the
-    // focused Pane is a ScrollingPane, pass the event to it.
-    if (! handled && event.flags.Has(Event::Flag::kPosition1D))
+    // If requested, handle all valuator events so the MainHandler does not get
+    // them.
+    if (! handled && event.flags.Has(Event::Flag::kPosition1D) &&
+        ShouldTrapValuatorEvents())
         handled = true;
 
     return handled;
