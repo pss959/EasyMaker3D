@@ -734,12 +734,11 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kCombineCSGUnion,        can_do_csg);
 
     // Convex hull requires at least 2 models or 1 model that is not already a
-    // HullModel.
+    // HullModel. Note that invalid models can be handled properly.
     set_enabled(Action::kCombineHull,
-                all_valid &&
-                (sel_count >= 2U ||
-                 (sel_count == 1U &&
-                  ! Util::IsA<HullModel>(sel.GetPrimary().GetModel()))));
+                sel_count >= 2U ||
+                (sel_count == 1U &&
+                 ! Util::IsA<HullModel>(sel.GetPrimary().GetModel())));
 
     auto enable_tool = [&](Action action){
         const std::string &name = Util::EnumToWord(action);
