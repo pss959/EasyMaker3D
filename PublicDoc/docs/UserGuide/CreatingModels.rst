@@ -224,6 +224,10 @@ still take effect, but you will not be able to see them while the model is
 invalid. Also, some tools will be disabled when an invalid model is selected to
 avoid compounding the problem.
 
+One exception is the :ref:`convex hull <ug-hull>` operation, which is enabled
+even for invalid meshes. This can be used as a quick way to "fix" an invalid
+mesh if the hull is close to what you want.
+
 .. _ug-show-edges:
 
 Model Edge Display

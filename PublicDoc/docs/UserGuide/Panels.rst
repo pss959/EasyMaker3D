@@ -211,9 +211,10 @@ Info Panel
 .. incimage:: /images/InfoPanel.jpg 240px right
 
 The :newterm:`Info Panel` shows information about all selected models,
-including the number of vertices, number of triangles, and size in all three
-dimensions. If any model has an :ref:`invalid mesh <ug-model-colors>`, this is
-noted, along with the reason it is considered invalid.
+including the number of vertices, number of triangles, size in all three
+dimensions, and the X/Y coordinates of the center of the model. If any model
+has an :ref:`invalid mesh <ug-model-colors>`, this is noted, along with the
+reason it is considered invalid.
 
 If either the :ref:`Point or Edge Target <ug-targets>` is active, the relevant
 information about it will also be shown in the Info Panel.
