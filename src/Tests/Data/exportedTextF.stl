@@ -4,215 +4,251 @@ solid MakerVR_Export
       vertex 10.573 2.8922 10
       vertex -8.1992 2.8922 10
       vertex 10.573 -1.8281 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -8.1992 2.8922 10
       vertex -8.1992 -1.8281 10
       vertex 10.573 -1.8281 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -13.4925 -20 10
       vertex -8.1992 -1.8281 10
       vertex -13.4925 20 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -13.4925 20 10
       vertex -8.1992 -1.8281 10
       vertex -8.1992 2.8922 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -13.4925 20 10
       vertex -8.1992 2.8922 10
       vertex -8.1992 15.2797 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex 13.4925 20 10
       vertex -8.1992 15.2797 10
       vertex 13.4925 15.2797 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -13.4925 20 10
       vertex -8.1992 15.2797 10
       vertex 13.4925 20 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -13.4925 -20 10
       vertex -8.1992 -20 10
       vertex -8.1992 -1.8281 10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex -8.1992 -1.8281 -10
       vertex -8.1992 -20 -10
       vertex -13.4925 -20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex 13.4925 20 -10
       vertex -8.1992 15.2797 -10
       vertex -13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex 13.4925 15.2797 -10
       vertex -8.1992 15.2797 -10
       vertex 13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex -8.1992 15.2797 -10
       vertex -8.1992 2.8922 -10
       vertex -13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex -8.1992 2.8922 -10
       vertex -8.1992 -1.8281 -10
       vertex -13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex -13.4925 20 -10
       vertex -8.1992 -1.8281 -10
       vertex -13.4925 -20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex 10.573 -1.8281 -10
       vertex -8.1992 -1.8281 -10
       vertex -8.1992 2.8922 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex 10.573 -1.8281 -10
       vertex -8.1992 2.8922 -10
       vertex 10.573 2.8922 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex -8.1992 -1.8281 10
       vertex -8.1992 -20 10
       vertex -8.1992 -20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex -8.1992 -1.8281 10
       vertex -8.1992 -20 -10
       vertex -8.1992 -1.8281 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex 10.573 -1.8281 10
       vertex -8.1992 -1.8281 10
       vertex -8.1992 -1.8281 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex 10.573 -1.8281 10
       vertex -8.1992 -1.8281 -10
       vertex 10.573 -1.8281 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex 10.573 2.8922 10
       vertex 10.573 -1.8281 10
       vertex 10.573 -1.8281 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex 10.573 2.8922 10
       vertex 10.573 -1.8281 -10
       vertex 10.573 2.8922 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 1 0
     outer loop
       vertex -8.1992 2.8922 10
       vertex 10.573 2.8922 10
       vertex 10.573 2.8922 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 1 0
     outer loop
       vertex -8.1992 2.8922 10
       vertex 10.573 2.8922 -10
       vertex -8.1992 2.8922 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex -8.1992 15.2797 10
       vertex -8.1992 2.8922 10
       vertex -8.1992 2.8922 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex -8.1992 15.2797 10
       vertex -8.1992 2.8922 -10
       vertex -8.1992 15.2797 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex 13.4925 15.2797 10
       vertex -8.1992 15.2797 10
       vertex -8.1992 15.2797 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex 13.4925 15.2797 10
       vertex -8.1992 15.2797 -10
       vertex 13.4925 15.2797 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex 13.4925 20 10
       vertex 13.4925 15.2797 10
       vertex 13.4925 15.2797 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex 13.4925 20 10
       vertex 13.4925 15.2797 -10
       vertex 13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 1 0
     outer loop
       vertex -13.4925 20 10
       vertex 13.4925 20 10
       vertex 13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 1 0
     outer loop
       vertex -13.4925 20 10
       vertex 13.4925 20 -10
       vertex -13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal -1 0 0
     outer loop
       vertex -13.4925 -20 10
       vertex -13.4925 20 10
       vertex -13.4925 20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal -1 0 0
     outer loop
       vertex -13.4925 -20 10
       vertex -13.4925 20 -10
       vertex -13.4925 -20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex -8.1992 -20 10
       vertex -13.4925 -20 10
       vertex -13.4925 -20 -10
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex -8.1992 -20 10
       vertex -13.4925 -20 -10
       vertex -8.1992 -20 -10
-    endloop  endfacet
+    endloop
+  endfacet
 endsolid MakerVR_Export

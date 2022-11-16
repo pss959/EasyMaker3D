@@ -4,71 +4,83 @@ solid MakerVR_Export
       vertex -2 4 -3
       vertex -2 -4 -3
       vertex -2 4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal -1 0 0
     outer loop
       vertex -2 -4 -3
       vertex -2 -4 3
       vertex -2 4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -2 4 3
       vertex -2 -4 3
       vertex 2 4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex -2 -4 3
       vertex 2 -4 3
       vertex 2 4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex 2 4 -3
       vertex 2 4 3
       vertex 2 -4 -3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 1 0 0
     outer loop
       vertex 2 -4 3
       vertex 2 -4 -3
       vertex 2 4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex -2 4 -3
       vertex 2 4 -3
       vertex 2 -4 -3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 0 -1
     outer loop
       vertex -2 -4 -3
       vertex -2 4 -3
       vertex 2 -4 -3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex -2 -4 -3
       vertex 2 -4 -3
       vertex 2 -4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 -1 0
     outer loop
       vertex -2 -4 -3
       vertex 2 -4 3
       vertex -2 -4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 1 0
     outer loop
       vertex -2 4 -3
       vertex -2 4 3
       vertex 2 4 3
-    endloop  endfacet
+    endloop
+  endfacet
   facet normal 0 1 0
     outer loop
       vertex -2 4 -3
       vertex 2 4 3
       vertex 2 4 -3
-    endloop  endfacet
+    endloop
+  endfacet
 endsolid MakerVR_Export

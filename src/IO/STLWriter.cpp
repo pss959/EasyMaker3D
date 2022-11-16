@@ -153,7 +153,7 @@ void STLTextWriter_::WriteMesh(std::ostream &out, const TriMesh &mesh) {
         out << "      vertex " << p0 << "\n";
         out << "      vertex " << p1 << "\n";
         out << "      vertex " << p2 << "\n";
-        out << "    endloop";
+        out << "    endloop\n";
         out << "  endfacet\n";
     }
 }
