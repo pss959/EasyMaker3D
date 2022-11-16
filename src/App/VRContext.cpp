@@ -368,10 +368,12 @@ bool VRContext::Impl_::InitInput_() {
         vr::TrackedDeviceClass_HMD, &hmd_index_, 1);
     ASSERT(count == 1U);
 
-    // Access HMD and controller handles.
-    vin.GetInputSourceHandle("/user/head",       &headset_handle_);
-    vin.GetInputSourceHandle("/user/hand/left",  &l_controller.handle);
-    vin.GetInputSourceHandle("/user/hand/right", &r_controller.handle);
+    if (count == 1U) {
+        // Access HMD and controller handles.
+        vin.GetInputSourceHandle("/user/head",       &headset_handle_);
+        vin.GetInputSourceHandle("/user/hand/left",  &l_controller.handle);
+        vin.GetInputSourceHandle("/user/hand/right", &r_controller.handle);
+    }
 
     // Load the actions manifest.
     if (! LoadActions_())

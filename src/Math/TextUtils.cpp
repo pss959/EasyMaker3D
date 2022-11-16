@@ -146,8 +146,10 @@ void FontManager_::Init_() {
 
     // Initialize the Freetype2 library.
     FT_Library lib;
-    if (FT_Init_FreeType(&lib) != FT_Err_Ok)
+    if (FT_Init_FreeType(&lib) != FT_Err_Ok) {
         ASSERTM(false, "Unable to initialize FreeType2");
+        return;
+    }
 
     // Access all font files.
     const FilePath dir_path = FilePath::GetResourcePath("fonts", FilePath());

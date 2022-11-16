@@ -57,8 +57,7 @@ CheckNef_(CNefPolyhedron &nef, std::string what) {
 
 /// Combines meshes by just concatenating vertices and indices.
 static TriMesh Concatenate_(const std::vector<TriMesh> &meshes) {
-    const size_t mesh_count = meshes.size();
-    ASSERT(mesh_count > 0);
+    ASSERT(! meshes.empty());
 
     TriMesh combined;
 
@@ -137,8 +136,7 @@ static TriMesh ApplyConvexHull_(const std::vector<TriMesh> &meshes) {
 
 // Applies a Minkowski sum operation.
 static TriMesh ApplyMinkowskiSum_(const std::vector<TriMesh> &meshes) {
-    const size_t mesh_count = meshes.size();
-    ASSERT(mesh_count == 2);
+    ASSERT(meshes.size() == 2U);
 
     // Create a CNefPolyhedron for each mesh.
     std::vector<CNefPolyhedron> nefs;

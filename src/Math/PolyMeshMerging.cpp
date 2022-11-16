@@ -161,12 +161,11 @@ static void MergeFaces_(Edge &common_edge,
                         std::unordered_set<Edge *> &removed_edges) {
     // common_edge is part of to_face and separates it from from_face.
     ASSERT(common_edge.opposite_edge);
-    Face   &to_face = *common_edge.face;
-    Face &from_face = *common_edge.opposite_edge->face;
-    ASSERT(&to_face != &from_face);
+    Face &to_face = *common_edge.face;
+    ASSERT(&to_face != common_edge.opposite_edge->face);
 
-    // Remove common_edge from to_face and insert all of the edges from
-    // from_face except for the opposite edge and any other edge that also
+    // Remove common_edge from to_face and insert all of the edges from the
+    // source face except for the opposite edge and any other edge that also
     // borders to_face; the latter can occur with complex concave polygons.
     const int index = common_edge.index_in_face;
     ASSERT(&common_edge == to_face.outer_edges[index]);

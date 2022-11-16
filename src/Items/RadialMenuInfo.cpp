@@ -44,7 +44,7 @@ Action RadialMenuInfo::GetButtonAction(size_t index) const {
     const auto &actions = actions_.GetValue();
     if (index >= actions.size())
         return Action::kNone;
-    Action action;
+    Action action = Action::kNone;
     ASSERT(Util::EnumFromString(actions[index], action));
     Util::EnumFromString(actions[index], action);
     return action;

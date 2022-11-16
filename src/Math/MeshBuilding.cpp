@@ -365,6 +365,7 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
     // (if needed).
     const size_t point_count = 2 + ring_count * num_sides;
     const float h = .5f * height;
+    mesh.points.reserve(point_count);
     mesh.points.push_back(Point3f(0, h, 0));
     if (add_top_ring)
         AddArcPoints_(ring_pts,    top_radius,  h, mesh.points);
