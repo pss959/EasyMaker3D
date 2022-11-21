@@ -20,43 +20,42 @@ void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
     using namespace Debug;
 
     std::string s, f;
-    const float kFShrink = .2f;
 
     auto report = [&](){
         std::cerr << "*** Dumping " << s << " to '" << f << "'\n";
     };
 
+    Debug::Dump3dv::LabelFlags label_flags;
+    label_flags.SetAll(true);
+
     s = "Original " + prefix + " as TriMesh";
     f = "/tmp/" + prefix + "0.3dv";
     report();
-    Dump3dv::DumpTriMesh(m, s, f, kFShrink, false);
+    Dump3dv::DumpTriMesh(m, s, f, label_flags);
 
     PolyMesh pm(m);
     s = "Original " + prefix + " as PolyMesh";
     f = "/tmp/" + prefix + "1.3dv";
     report();
-    Dump3dv::DumpPolyMesh(pm, s, f, kFShrink,
-                          Dump3dv::kVertexLabels |
-                          //Dump3dv::kEdgeLabels |
-                          Dump3dv::kFaceLabels);
+    Dump3dv::DumpPolyMesh(pm, s, f, label_flags);
 
     MergeCoplanarFaces(pm);
     s = "Merged " + prefix + " PolyMesh";
     f = "/tmp/" + prefix + "2.3dv";
     report();
-    Dump3dv::DumpPolyMesh(pm, s, f, kFShrink, Dump3dv::kVertexLabels);
+    Dump3dv::DumpPolyMesh(pm, s, f, label_flags);
 
     PolyMesh bpm = Beveler::ApplyBevel(pm, bevel);
     s = "Beveled " + prefix + " PolyMesh";
     f = "/tmp/" + prefix + "3.3dv";
     report();
-    Dump3dv::DumpPolyMesh(bpm, s, f, kFShrink, Dump3dv::kVertexLabels);
+    Dump3dv::DumpPolyMesh(bpm, s, f, label_flags);
 
     TriMesh btm = bpm.ToTriMesh();
     s = "Beveled " + prefix + " TriMesh";
     f = "/tmp/" + prefix + "4.3dv";
     report();
-    Dump3dv::DumpTriMesh(btm, s, f, kFShrink);
+    Dump3dv::DumpTriMesh(btm, s, f, label_flags);
 }
 #endif
 
@@ -151,4 +150,18 @@ TEST_F(BevelerTest, BevelTextO) {
     rm = Beveler::ApplyBevel(m, bevel);
     const auto ret = ValidateTriMesh(rm);
     EXPECT_ENUM_EQ(MeshValidityCode::kInconsistent, ret);
+}
+
+TEST_F(BevelerTest, BevelTextA) {
+    TriMesh m = LoadTriMesh("A.stl");
+
+    // This caused and error with the original Beveler.
+    Bevel bevel;
+    bevel.scale = .1f;
+    DumpBevel(m, bevel, "XXXX");
+
+    TriMesh rm = Beveler::ApplyBevel(m, bevel);
+    // XXXX EXPECT_EQ(80U,  rm.points.size());
+    // XXXX EXPECT_EQ(160U, rm.GetTriangleCount());
+    ValidateMesh(rm, "Beveled text A");
 }

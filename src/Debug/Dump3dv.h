@@ -24,13 +24,13 @@ class Dump3dv {
         kFaceLabels   = (1 << 2),
     };
 
-    /// Dumps a TriMesh in 3dv format. If face_shrinkage is >= 0, each face in
-    /// the mesh is shown as a 3dv face, shrunk by the given factor so that
-    /// edges are also visible.
+    typedef Util::Flags<LabelFlag> LabelFlags;
+
+    /// Dumps a TriMesh in 3dv format. Labels are added according to the flags.
     static void DumpTriMesh(const TriMesh &mesh,
                             const std::string &description,
                             const FilePath &path,
-                            float face_shrinkage = -1, bool add_labels = false);
+                            const LabelFlags &label_flags);
 
     /// Dumps a PolyMesh in 3dv format. If face_shrinkage is >= 0, each face in
     /// the mesh is shown as a 3dv face, shrunk by the given factor so that
@@ -38,7 +38,7 @@ class Dump3dv {
     static void DumpPolyMesh(const PolyMesh &poly_mesh,
                              const std::string &description,
                              const FilePath &path,
-                             float face_shrinkage = -1, int label_flags = 0);
+                             const LabelFlags &label_flags);
 };
 
 }  // namespace Debug

@@ -26,10 +26,13 @@ static void DumpVertex_(std::ostream &out,
     out << "v " << id << p << "\n";
 }
 
-/// Dumps a 3dv text statement for a label.
+/// Dumps a 3dv text statement for a label. Labels are pushed forward in Z a
+/// little.
 static void DumpLabel_(std::ostream &out,
                        const Point3f &pos, const std::string &text) {
-    out << "t" << pos << ' ' << text << "\n";
+    static const float kLabelZOffset = .01f;
+    const Point3f label_pos(pos[0], pos[1], pos[2] + kLabelZOffset);
+    out << "t" << label_pos << ' ' << text << "\n";
 }
 
 /// Creates an ID string from a prefix and index.
@@ -37,9 +40,24 @@ static std::string ID_(const std::string &prefix, int index) {
     return prefix + Util::ToString(index);
 }
 
-/// Outputs alternating colors depending on an index.
-static void AltColors_(std::ostream &out, size_t i) {
-    out << "c " << ((i & 1) == 0 ? ".6 .8 1" : "1 .6 .6") << "\n";
+/// Outputs alternating colors for faces depending on an index.
+static void AltFaceColors_(std::ostream &out, size_t i) {
+    // Set up 6 colors spaced out in hue.
+    static const float kSat   = .4f;
+    static const float kVal   = .95;
+    static const float kAlpha = .25f;
+    static const Color colors[6]{
+        Color::FromHSV(0.f / 6, kSat, kVal),
+        Color::FromHSV(2.f / 6, kSat, kVal),
+        Color::FromHSV(4.f / 6, kSat, kVal),
+        Color::FromHSV(1.f / 6, kSat, kVal),
+        Color::FromHSV(3.f / 6, kSat, kVal),
+        Color::FromHSV(5.f / 6, kSat, kVal),
+    };
+
+    const Color &color = colors[i % 6];
+    out << "c " << color[0] << " " << color[1] << " " << color[2]
+        << " " << kAlpha << "\n";
 }
 
 /// Returns the center point of a TriMesh triangle.
@@ -83,7 +101,7 @@ namespace Debug {
 void Dump3dv::DumpTriMesh(const TriMesh &mesh,
                           const std::string &description,
                           const FilePath &path,
-                          float face_shrinkage, bool add_labels) {
+                          const LabelFlags &label_flags) {
     std::ofstream out(path.ToNativeString());
     if (! out) {
         std::cerr << "*** Unable to open " << path.ToNativeString()
@@ -103,7 +121,7 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
 
     // Triangles as edges.
     out << "\n#  " << mesh.GetTriangleCount()
-        << " Triangles as edges:\nc 1 1 0\n";
+        << " Triangles as edges:\n" << "c 1 1 0 1\n";
     for (size_t i = 0; i < inds.size(); i += 3)
         out << "l E" << (i / 3)
             << " V" << inds[i]
@@ -112,39 +130,33 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
             << " V" << inds[i]
             << "\n";
 
-    // Shrunken triangles as faces.
-    if (face_shrinkage >= 0) {
-        out << "\n#  Triangles as faces:\n";
-        for (size_t i = 0; i < inds.size(); i += 3) {
-            Point3f p0 = pts[inds[i]];
-            Point3f p1 = pts[inds[i + 1]];
-            Point3f p2 = pts[inds[i + 2]];
-            const Point3f center = (p0 + p1 + p2) / 3;
-            p0 = Lerp(face_shrinkage, p0, center);
-            p1 = Lerp(face_shrinkage, p1, center);
-            p2 = Lerp(face_shrinkage, p2, center);
-            AltColors_(out, i);
-            const std::string vid0 = ID_("F", i) + "_" + ID_("V", inds[i]);
-            const std::string vid1 = ID_("F", i) + "_" + ID_("V", inds[i + 1]);
-            const std::string vid2 = ID_("F", i) + "_" + ID_("V", inds[i + 2]);
-            DumpVertex_(out, vid0, p0);
-            DumpVertex_(out, vid1, p1);
-            DumpVertex_(out, vid2, p2);
-            out << "f " << ID_("F", i)
-                << ' ' << vid0
-                << ' ' << vid1
-                << ' ' << vid2 << "\n";
-        }
+    // Triangles as translucent faces.
+    out << "\n#  Triangles as faces:\n";
+    for (size_t i = 0; i < inds.size(); i += 3) {
+        const auto i0 = inds[i + 0];
+        const auto i1 = inds[i + 1];
+        const auto i2 = inds[i + 2];
+        AltFaceColors_(out, i);
+        const std::string vid0 = ID_("F", i) + "_" + ID_("V", i0);
+        const std::string vid1 = ID_("F", i) + "_" + ID_("V", i1);
+        const std::string vid2 = ID_("F", i) + "_" + ID_("V", i2);
+        DumpVertex_(out, vid0, pts[i0]);
+        DumpVertex_(out, vid1, pts[i1]);
+        DumpVertex_(out, vid1, pts[i2]);
+        out << "f " << ID_("F", i)
+            << ' ' << vid0
+            << ' ' << vid1
+            << ' ' << vid2 << "\n";
     }
 
-    if (add_labels) {
-        // Vertex labels.
-        out << "\n# Vertex labels:\nc 1 1 1\n";
+    if (label_flags.Has(LabelFlag::kVertexLabels)) {
+        out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
         for (size_t i = 0; i < pts.size(); ++i)
             DumpLabel_(out, pts[i], ID_("V", i));
+    }
 
-        // Face labels.
-        out << "\n# Face labels:\nc .8 .9 .8\n";
+    if (label_flags.Has(LabelFlag::kFaceLabels)) {
+        out << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
         const Point3f mesh_center = ComputeMeshBounds(mesh).GetCenter();
         for (size_t i = 0; i < inds.size() / 3; ++i) {
             const Point3f tri_center = GetTriCenter_(mesh, i);
@@ -157,7 +169,7 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
 void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
                            const std::string &description,
                            const FilePath &path,
-                           float face_shrinkage, int label_flags) {
+                           const LabelFlags &label_flags) {
     std::ofstream out(path.ToNativeString());
     if (! out) {
         std::cerr << "*** Unable to open " << path.ToNativeString()
@@ -172,63 +184,50 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
         DumpVertex_(out, v->id, v->point);
 
     // Edges.
-    out << "\n#  " << poly_mesh.edges.size() << " edges:\nc 1 1 0\n";
+    out << "\n#  " << poly_mesh.edges.size() << " edges:\n" << "c 1 1 0 1\n";
     for (const auto &e:  poly_mesh.edges)
         out << "l " << e->id << ' ' << e->v0->id << ' ' << e->v1->id << "\n";
 
-    // Shrunken faces.
-    if (face_shrinkage >= 0) {
-        out << "\n# " << poly_mesh.faces.size() << " faces:\n";
-        for (size_t i = 0; i < poly_mesh.faces.size(); ++i) {
-            const auto &f = *poly_mesh.faces[i];
-            // Skip faces that have been merged (in case this is called during
-            // the merge operation).
-            if (f.is_merged)
-                continue;
-            // Skip faces with holes: they would be drawn incorrectly.
-            if (! f.hole_edges.empty()) {
-                out << "# Skipping face " << f.id << " with holes:\n";
-                out << "#   Outside:";
-                for (auto &e: f.outer_edges)
-                    out << " " << e->v0->id;
-                out << "\n";
-                for (size_t h = 0; h < f.hole_edges.size(); ++h) {
-                    out << "#   Hole " << h << ":";
-                    for (auto &e: f.hole_edges[h])
-                        out << " " << e->v0->id;
-                    out << "\n";
-                }
+    // Translucent faces.
+    out << "\n# " << poly_mesh.faces.size() << " faces:\n";
+    for (size_t i = 0; i < poly_mesh.faces.size(); ++i) {
+        const auto &f = *poly_mesh.faces[i];
+        // Skip faces that have been merged (in case this is called during
+        // the merge operation).
+        if (f.is_merged)
+            continue;
+        AltFaceColors_(out, i);
+        std::string vids;
+        auto add_face_verts = [&](const PolyMesh::EdgeVec &edges){
+            for (const auto &e: edges) {
+                const std::string vid = f.id + "_" + e->v0->id;
+                DumpVertex_(out, vid, e->v0->point);
+                vids += " " + vid;
             }
-            else {
-                AltColors_(out, i);
-                std::string vids;
-                const Point3f center = GetFaceCenter_(f);
-                for (auto &e: f.outer_edges) {
-                    const Point3f p =
-                        Lerp(e->v0->point, center, face_shrinkage);
-                    const std::string vid = f.id + "_" + e->v0->id;
-                    DumpVertex_(out, vid, p);
-                    vids += " " + vid;
-                }
-                out << "f " << f.id << vids << "\n";
-            }
+        };
+        add_face_verts(f.outer_edges);
+        for (size_t h = 0; h < f.hole_edges.size(); ++h) {
+            // Semicolon separates contours in output.
+            vids += " ;";
+            add_face_verts(f.hole_edges[h]);
         }
+        out << "f " << f.id << vids << "\n";
     }
 
-    out << "\ns 8\n\n";  // Smaller font size
-    if (label_flags & LabelFlag::kVertexLabels) {
-        out << "\n# Vertex labels:\nc 1 1 1\n";
+    out << "\ns 10\n\n";  // Smaller font size
+    if (label_flags.Has(LabelFlag::kVertexLabels)) {
+        out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
         for (const auto &v: poly_mesh.vertices)
             DumpLabel_(out, v->point + Vector3f(0, 0, .1), v->id);
     }
-    if (label_flags & LabelFlag::kEdgeLabels) {
-        out << "\n# Edge labels:\nc 1 1 .5\n";
+    if (label_flags.Has(LabelFlag::kEdgeLabels)) {
+        out << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
         for (auto &e: poly_mesh.edges)
             DumpLabel_(out, GetEdgeLabelPos_(*e), e->id);
     }
-    if (label_flags & LabelFlag::kFaceLabels) {
+    if (label_flags.Has(LabelFlag::kFaceLabels)) {
         const Point3f mesh_center = GetPolyMeshCenter_(poly_mesh);
-        out << "\n# Face labels:\nc .8 .9 .8\n";
+        out << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
         for (auto &f: poly_mesh.faces) {
             if (f->is_merged)
                 continue;
