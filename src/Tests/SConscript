@@ -6,6 +6,7 @@ Import('reg_env', 'cov_env', 'main_lib', 'run_program', 'cov_lib_objects')
 test_sources = [
     'AppTestBase.cpp',
     'AssertTest.cpp',
+    'BeveledMeshTest.cpp',
     'BeveledModelTest.cpp',
     'BevelerTest.cpp',
     'BoundsTest.cpp',

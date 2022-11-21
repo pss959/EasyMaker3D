@@ -187,6 +187,7 @@ lib_sources = [
 
     'Math/Animation.cpp',
     'Math/Bevel.cpp',
+    'Math/BeveledMesh.cpp',
     'Math/Beveler.cpp',
     'Math/CGALInternal.cpp',
     'Math/ColorRing.cpp',
