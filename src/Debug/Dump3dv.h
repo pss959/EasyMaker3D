@@ -2,6 +2,7 @@
 
 #if ENABLE_DEBUG_FEATURES
 
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,7 @@
 
 namespace Debug {
 
-/// (Non-release builds only!) The Dump3dv class has several static methods for
+/// (Non-release builds only!) The Dump3dv class has several functions for
 /// dumping various items in 3dv format to files to aid with debugging.
 ///
 /// \ingroup Debug
@@ -27,30 +28,67 @@ class Dump3dv {
 
     typedef Util::Flags<LabelFlag> LabelFlags;
 
-    /// Dumps a TriMesh in 3dv format. Labels are added according to the flags.
-    static void DumpTriMesh(const TriMesh &mesh,
-                            const std::string &description,
-                            const FilePath &path,
-                            const LabelFlags &label_flags,
-                            float label_font_size = 20);
+    /// The constructor is passed the file to dump to and a string to put in
+    /// the header comment.
+    Dump3dv(const FilePath &path, const std::string &header);
 
-    /// Dumps a PolyMesh in 3dv format. If face_shrinkage is >= 0, each face in
-    /// the mesh is shown as a 3dv face, shrunk by the given factor so that
-    /// edges are also visible.
-    static void DumpPolyMesh(const PolyMesh &poly_mesh,
-                             const std::string &description,
-                             const FilePath &path,
-                             const LabelFlags &label_flags,
-                             float label_font_size = 20);
+    /// The destructor finishes the dumped file.
+    ~Dump3dv();
+
+    /// Sets an extra prefix to add to all ID's in subsequent items.
+    void SetExtraPrefix(const std::string &extra_prefix) {
+        extra_prefix_ = extra_prefix;
+    }
+
+    /// Sets the label flags. The default is all flags true.
+    void SetLabelFlags(const LabelFlags &label_flags) {
+        label_flags_ = label_flags;
+    }
+
+    /// Sets the label font size. The default is 20.
+    void SetLabelFontSize(float label_font_size) {
+        label_font_size_ = label_font_size;
+    }
+
+    /// Sets an extra offset to add to all labels. The default is 0.
+    void SetLabelOffset(const Vector3f &offset) {
+        label_offset_ = offset;
+    }
+
+    /// Dumps a TriMesh.
+    void AddTriMesh(const TriMesh &mesh);
+
+    /// Dumps a PolyMesh.
+    void AddPolyMesh(const PolyMesh &mesh);
 
     /// Dumps a collection of vertices and edges between them. Edges are
     /// denoted by pairs of vertex indices.
-    static void DumpEdges(const std::vector<Point3f> &vertices,
-                          const std::vector<size_t>  &edges,
-                          const std::string &description,
-                          const FilePath &path,
-                          const LabelFlags &label_flags,
-                          float label_font_size = 20);
+    void AddEdges(const std::vector<Point3f> &vertices,
+                  const std::vector<size_t>  &edges);
+
+  private:
+    std::ofstream out_;
+    LabelFlags    label_flags_;
+    float         label_font_size_;
+    Vector3f      label_offset_;
+
+    /// Current extra prefix to add to IDs.
+    std::string   extra_prefix_;
+
+    /// Adds a 3dv vertex statement.
+    void AddVertex_(const std::string &id, const Point3f &p);
+
+    /// Adds a 3dv label statement.
+    void AddLabel_(const Point3f &pos, const std::string &text);
+
+    /// Outputs an alternating color for a face depending on an index.
+    void AltFaceColor_(size_t i);
+
+    /// Creates an ID string from a string, adding the extra prefix.
+    std::string ID_(const std::string &id);
+
+    /// Creates an ID string from a prefix and index, adding the extra prefix.
+    std::string IID_(const std::string &prefix, int index);
 };
 
 }  // namespace Debug

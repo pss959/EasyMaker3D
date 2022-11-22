@@ -62,7 +62,7 @@ void ComputeSkeleton(const Polygon &poly, std::vector<Point2f> &vertices,
     }
     ASSERT(skel);
 
-    const bool do_print = true; // XXXX
+    const bool do_print = false; // XXXX
     if (do_print) {
         // "time": the distance from the vertex point to the lines supporting
         // the defining contour edges.

@@ -33,6 +33,9 @@ void Helper_::AddFace(const PolyMesh::Face &face,
     PolyMesh::VertexVec vertices;
     std::vector<size_t> border_counts;
     PolyMesh::GetFaceVertices(face, vertices, border_counts);
+    std::cerr << "XXXX For face " << face.ToString() << ":\n";
+    for (size_t i = 0; i < vertices.size(); ++i)
+        std::cerr << "XXXX    V [" << i << "] = " << vertices[i]->point << "\n";
 
     // Convert the face to a Polygon by rotating the vertices to the closest
     // principal plane and removing the appropriate dimension.
@@ -75,11 +78,13 @@ void Helper_::AddFace(const PolyMesh::Face &face,
                   << " to " << bisectors[i+1] << "\n";
 
     // Convert the skeleton points back to 3D.
+    const float dist = vertices[0]->point[max_index];
     const auto to_3d = [&](const Point2f &p2){
         Point3f p3;
-        p3[max_index] = 0;
+        p3[max_index] = dist;
         p3[dim0] = p2[0];
         p3[dim1] = p2[1];
+        std::cerr << "XXXX ##### " << p2 << " => " << ((-rot) * p3) << "\n";
         return (-rot) * p3;
     };
 
@@ -111,16 +116,17 @@ BeveledMesh::BeveledMesh(const TriMesh &mesh, const Anglef &max_angle) {
         helper.AddFace(*face, skel_vertices_, skel_edges_);
     }
 
-    Debug::Dump3dv::LabelFlags label_flags;
-    label_flags.SetAll(true);
+    Debug::Dump3dv dump("/tmp/BMESH.3dv", "BeveledMesh");
+    dump.SetLabelFontSize(60);
+    //dump.SetExtraPrefix("T_");
+    //dump.SetLabelOffset(Vector3f(1, 1, .1f));
+    //dump.AddTriMesh(mesh);
+    dump.SetExtraPrefix("M_");
+    dump.AddPolyMesh(poly_mesh);
+    dump.SetExtraPrefix("S_");
+    dump.SetLabelOffset(Vector3f(1, 1, .1f));
+    dump.AddEdges(skel_vertices_, skel_edges_);
 
-    Debug::Dump3dv::DumpPolyMesh(mesh, "BeveledMesh",
-                                 "/tmp/BMESH.3dv", label_flags, 60);
-    Debug::Dump3dv::DumpEdges(skel_vertices_,
-                              skel_edges_,
-                              "BeveledMesh Skeleton",
-                              "/tmp/SKEL.3dv",
-                              label_flags, 60);
     // XXXX Do something!
 
     // Create a PolyMeshBuilder to construct the beveled PolyMesh.

@@ -1,7 +1,5 @@
 #include "Debug/Dump3dv.h"
 
-#include <fstream>
-
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Util/String.h"
@@ -19,46 +17,6 @@ inline std::ostream & operator<<(std::ostream &out, const Point3f &p) {
     return out;
 }
 
-
-/// Dumps a 3dv vertex statement.
-static void DumpVertex_(std::ostream &out,
-                        const std::string &id, const Point3f &p) {
-    out << "v " << id << p << "\n";
-}
-
-/// Dumps a 3dv text statement for a label. Labels are pushed forward in Z a
-/// little.
-static void DumpLabel_(std::ostream &out,
-                       const Point3f &pos, const std::string &text) {
-    static const float kLabelZOffset = .01f;
-    const Point3f label_pos(pos[0], pos[1], pos[2] + kLabelZOffset);
-    out << "t" << label_pos << ' ' << text << "\n";
-}
-
-/// Creates an ID string from a prefix and index.
-static std::string ID_(const std::string &prefix, int index) {
-    return prefix + Util::ToString(index);
-}
-
-/// Outputs alternating colors for faces depending on an index.
-static void AltFaceColors_(std::ostream &out, size_t i) {
-    // Set up 6 colors spaced out in hue.
-    static const float kSat   = .4f;
-    static const float kVal   = .95;
-    static const float kAlpha = .25f;
-    static const Color colors[6]{
-        Color::FromHSV(0.f / 6, kSat, kVal),
-        Color::FromHSV(2.f / 6, kSat, kVal),
-        Color::FromHSV(4.f / 6, kSat, kVal),
-        Color::FromHSV(1.f / 6, kSat, kVal),
-        Color::FromHSV(3.f / 6, kSat, kVal),
-        Color::FromHSV(5.f / 6, kSat, kVal),
-    };
-
-    const Color &color = colors[i % 6];
-    out << "c " << color[0] << " " << color[1] << " " << color[2]
-        << " " << kAlpha << "\n";
-}
 
 /// Returns the center point of a TriMesh triangle.
 static Point3f GetTriCenter_(const TriMesh &mesh, size_t tri_index) {
@@ -98,112 +56,103 @@ static Point3f GetPolyMeshCenter_(const PolyMesh &mesh) {
 
 namespace Debug {
 
-void Dump3dv::DumpTriMesh(const TriMesh &mesh,
-                          const std::string &description,
-                          const FilePath &path,
-                          const LabelFlags &label_flags,
-                          float label_font_size) {
-    std::ofstream out(path.ToNativeString());
-    if (! out) {
-        std::cerr << "*** Unable to open " << path.ToNativeString()
-                  << " for DumpPolyMesh\n";
+Dump3dv::Dump3dv(const FilePath &path, const std::string &header) {
+    out_ = std::ofstream(path.ToNativeString());
+    if (! out_) {
+        std::cerr << "*** Dump3dv unable to open "
+                  << path.ToNativeString() << " for writing\n";
         return;
     }
 
+    out_ << "# " << header << "\n\n";
+
+    label_flags_.SetAll(true);
+    label_font_size_ = 20;
+}
+
+Dump3dv::~Dump3dv() {
+    out_.close();
+}
+
+void Dump3dv::AddTriMesh(const TriMesh &mesh) {
     // Shorthand.
     const auto &pts  = mesh.points;
     const auto &inds = mesh.indices;
 
     // Points.
-    out << "# " << description << " TriMesh with "
-        << pts.size() << " points:\n";
+    out_ << "\n# TriMesh with " << pts.size() << " points:\n";
     for (size_t i = 0; i < pts.size(); ++i)
-        DumpVertex_(out, ID_("V", i), pts[i]);
+        AddVertex_(IID_("V", i), pts[i]);
 
     // Triangles as edges.
-    out << "\n#  " << mesh.GetTriangleCount()
+    out_ << "\n#  " << mesh.GetTriangleCount()
         << " Triangles as edges:\n" << "c 1 1 0 1\n";
     for (size_t i = 0; i < inds.size(); i += 3)
-        out << "l E" << (i / 3)
-            << " V" << inds[i]
-            << " V" << inds[i + 1]
-            << " V" << inds[i + 2]
-            << " V" << inds[i]
-            << "\n";
+        out_ << "l " << extra_prefix_ << "E" << (i / 3)
+             << " " << IID_("V", inds[i])
+             << " " << IID_("V", inds[i + 1])
+             << " " << IID_("V", inds[i + 2])
+             << " " << IID_("V", inds[i])
+             << "\n";
 
     // Triangles as translucent faces.
-    out << "\n#  Triangles as faces:\n";
+    out_ << "\n#  Triangles as faces:\n";
     for (size_t i = 0; i < inds.size(); i += 3) {
-        const auto i0 = inds[i + 0];
-        const auto i1 = inds[i + 1];
-        const auto i2 = inds[i + 2];
-        AltFaceColors_(out, i);
-        const std::string vid0 = ID_("F", i) + "_" + ID_("V", i0);
-        const std::string vid1 = ID_("F", i) + "_" + ID_("V", i1);
-        const std::string vid2 = ID_("F", i) + "_" + ID_("V", i2);
-        DumpVertex_(out, vid0, pts[i0]);
-        DumpVertex_(out, vid1, pts[i1]);
-        DumpVertex_(out, vid1, pts[i2]);
-        out << "f " << ID_("F", i)
-            << ' ' << vid0
-            << ' ' << vid1
-            << ' ' << vid2 << "\n";
+        AltFaceColor_(i);
+        std::string vids;
+        for (int j = 0; j < 3; ++j) {
+            const int vi = inds[i + j];
+            const std::string vid = IID_("F", i) + "_" + IID_("V", vi);
+            AddVertex_(vid, pts[vi]);
+            vids += " " + vid;
+        }
+        out_ << "f " << IID_("F", i) << vids << "\n";
     }
 
-    out << "\ns " << label_font_size << "\n\n";
-    if (label_flags.Has(LabelFlag::kVertexLabels)) {
-        out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
+    out_ << "\ns " << label_font_size_ << "\n\n";
+    if (label_flags_.Has(LabelFlag::kVertexLabels)) {
+        out_ << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
         for (size_t i = 0; i < pts.size(); ++i)
-            DumpLabel_(out, pts[i], ID_("V", i));
+            AddLabel_(pts[i], IID_("V", i));
     }
-    if (label_flags.Has(LabelFlag::kFaceLabels)) {
-        out << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
+    if (label_flags_.Has(LabelFlag::kFaceLabels)) {
+        out_ << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
         const Point3f mesh_center = ComputeMeshBounds(mesh).GetCenter();
         for (size_t i = 0; i < inds.size() / 3; ++i) {
             const Point3f tri_center = GetTriCenter_(mesh, i);
             const Point3f pos = mesh_center + 1.2f * (tri_center - mesh_center);
-            DumpLabel_(out, pos, ID_("F", i));
+            AddLabel_(pos, IID_("F", i));
         }
     }
 }
 
-void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
-                           const std::string &description,
-                           const FilePath &path,
-                           const LabelFlags &label_flags,
-                           float label_font_size) {
-    std::ofstream out(path.ToNativeString());
-    if (! out) {
-        std::cerr << "*** Unable to open " << path.ToNativeString()
-                  << " for DumpPolyMesh\n";
-        return;
-    }
-
+void Dump3dv::AddPolyMesh(const PolyMesh &mesh) {
     // Vertices.
-    out << "# " << description << ": PolyMesh with "
-        << poly_mesh.vertices.size() << " vertices:\n";
-    for (const auto &v: poly_mesh.vertices)
-        DumpVertex_(out, v->id, v->point);
+    out_ << "\n# PolyMesh with " << mesh.vertices.size() << " vertices:\n";
+    for (const auto &v: mesh.vertices)
+        AddVertex_(ID_(v->id), v->point);
 
     // Edges.
-    out << "\n#  " << poly_mesh.edges.size() << " edges:\n" << "c 1 1 0 1\n";
-    for (const auto &e:  poly_mesh.edges)
-        out << "l " << e->id << ' ' << e->v0->id << ' ' << e->v1->id << "\n";
+    out_ << "\n#  " << mesh.edges.size() << " edges:\n" << "c 1 1 0 1\n";
+    for (const auto &e: mesh.edges)
+        out_ << "l " << ID_(e->id)
+             << ' ' << ID_(e->v0->id)
+             << ' ' << ID_(e->v1->id) << "\n";
 
     // Translucent faces.
-    out << "\n# " << poly_mesh.faces.size() << " faces:\n";
-    for (size_t i = 0; i < poly_mesh.faces.size(); ++i) {
-        const auto &f = *poly_mesh.faces[i];
+    out_ << "\n# " << mesh.faces.size() << " faces:\n";
+    for (size_t i = 0; i < mesh.faces.size(); ++i) {
+        const auto &f = *mesh.faces[i];
         // Skip faces that have been merged (in case this is called during
         // the merge operation).
         if (f.is_merged)
             continue;
-        AltFaceColors_(out, i);
+        AltFaceColor_(i);
         std::string vids;
         auto add_face_verts = [&](const PolyMesh::EdgeVec &edges){
             for (const auto &e: edges) {
-                const std::string vid = f.id + "_" + e->v0->id;
-                DumpVertex_(out, vid, e->v0->point);
+                const std::string vid = ID_(f.id) + "_" + ID_(e->v0->id);
+                AddVertex_(vid, e->v0->point);
                 vids += " " + vid;
             }
         };
@@ -213,71 +162,97 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
             vids += " ;";
             add_face_verts(f.hole_edges[h]);
         }
-        out << "f " << f.id << vids << "\n";
+        out_ << "f " << ID_(f.id) << vids << "\n";
     }
 
-    out << "\ns " << label_font_size << "\n\n";
-    if (label_flags.Has(LabelFlag::kVertexLabels)) {
-        out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
-        for (const auto &v: poly_mesh.vertices)
-            DumpLabel_(out, v->point, v->id);
+    out_ << "\ns " << label_font_size_ << "\n\n";
+    if (label_flags_.Has(LabelFlag::kVertexLabels)) {
+        out_ << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
+        for (const auto &v: mesh.vertices)
+            AddLabel_(v->point, ID_(v->id));
     }
-    if (label_flags.Has(LabelFlag::kEdgeLabels)) {
-        out << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
-        for (auto &e: poly_mesh.edges)
-            DumpLabel_(out, GetEdgeLabelPos_(*e), e->id);
+    if (label_flags_.Has(LabelFlag::kEdgeLabels)) {
+        out_ << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
+        for (auto &e: mesh.edges)
+            AddLabel_(GetEdgeLabelPos_(*e), ID_(e->id));
     }
-    if (label_flags.Has(LabelFlag::kFaceLabels)) {
-        const Point3f mesh_center = GetPolyMeshCenter_(poly_mesh);
-        out << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
-        for (auto &f: poly_mesh.faces) {
+    if (label_flags_.Has(LabelFlag::kFaceLabels)) {
+        const Point3f mesh_center = GetPolyMeshCenter_(mesh);
+        out_ << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
+        for (auto &f: mesh.faces) {
             if (f->is_merged)
                 continue;
             const Point3f face_center = GetFaceCenter_(*f);
             const Point3f pos = face_center + .1f * (face_center - mesh_center);
-            DumpLabel_(out, pos, f->id);
+            AddLabel_(pos, ID_(f->id));
         }
     }
 }
 
-void Dump3dv::DumpEdges(const std::vector<Point3f> &vertices,
-                        const std::vector<size_t>  &edges,
-                        const std::string &description,
-                        const FilePath &path,
-                        const LabelFlags &label_flags,
-                        float label_font_size) {
-    std::ofstream out(path.ToNativeString());
-    if (! out) {
-        std::cerr << "*** Unable to open " << path.ToNativeString()
-                  << " for DumpEdges\n";
-        return;
-    }
-
+void Dump3dv::AddEdges(const std::vector<Point3f> &vertices,
+                       const std::vector<size_t>  &edges) {
     // Vertices.
-    out << "# " << description << " with " << vertices.size() << " vertices:\n";
+    out_ << "\n# Edges with " << vertices.size() << " vertices:\n";
     for (size_t i = 0; i < vertices.size(); ++i)
-        DumpVertex_(out, ID_("V", i), vertices[i]);
+        AddVertex_(IID_("V", i), vertices[i]);
 
     // Edges.
-    out << "\n#  " << (edges.size() / 2) << " edges:\n" << "c 1 1 0 1\n";
+    out_ << "\n#  " << (edges.size() / 2) << " edges:\n" << "c 1 1 0 1\n";
     for (size_t i = 0; i < edges.size(); i += 2)
-        out << "l " << ID_("E", i / 2) << ' ' << ID_("V", edges[i])
-            << ' ' << ID_("V", edges[i + 1]) << "\n";
+        out_ << "l " << IID_("E", i / 2) << ' ' << IID_("V", edges[i])
+             << ' ' << IID_("V", edges[i + 1]) << "\n";
 
-    out << "\ns " << label_font_size << "\n\n";
-    if (label_flags.Has(LabelFlag::kVertexLabels)) {
-        out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
+    out_ << "\ns " << label_font_size_ << "\n\n";
+    if (label_flags_.Has(LabelFlag::kVertexLabels)) {
+        out_ << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
         for (size_t i = 0; i < vertices.size(); ++i)
-            DumpLabel_(out, vertices[i], ID_("V", i));
+            AddLabel_(vertices[i], IID_("V", i));
     }
-    if (label_flags.Has(LabelFlag::kEdgeLabels)) {
-        out << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
+    if (label_flags_.Has(LabelFlag::kEdgeLabels)) {
+        out_ << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
         for (size_t i = 0; i < edges.size(); i += 2) {
             const Point3f pos =
                 .5f * (vertices[edges[i]] + vertices[edges[i + 1]]);
-            DumpLabel_(out, pos, ID_("E", i / 2));
+            AddLabel_(pos, IID_("E", i / 2));
         }
     }
+}
+
+void Dump3dv::AddVertex_(const std::string &id, const Point3f &p) {
+    out_ << "v " << id << p << "\n";
+}
+
+void Dump3dv::AddLabel_(const Point3f &pos, const std::string &text) {
+    static const float kLabelZOffset = .01f;
+    const Point3f label_pos(pos[0], pos[1], pos[2] + kLabelZOffset);
+    out_ << "t" << (label_offset_ + label_pos) << ' ' << text << "\n";
+}
+
+void Dump3dv::AltFaceColor_(size_t i) {
+    // Set up 6 colors spaced out in hue.
+    static const float kSat   = .4f;
+    static const float kVal   = .95;
+    static const float kAlpha = .25f;
+    static const Color colors[6]{
+        Color::FromHSV(0.f / 6, kSat, kVal),
+        Color::FromHSV(2.f / 6, kSat, kVal),
+        Color::FromHSV(4.f / 6, kSat, kVal),
+        Color::FromHSV(1.f / 6, kSat, kVal),
+        Color::FromHSV(3.f / 6, kSat, kVal),
+        Color::FromHSV(5.f / 6, kSat, kVal),
+    };
+
+    const Color &color = colors[i % 6];
+    out_ << "c " << color[0] << " " << color[1] << " " << color[2]
+         << " " << kAlpha << "\n";
+}
+
+std::string Dump3dv::ID_(const std::string &id) {
+    return extra_prefix_ + id;
+}
+
+std::string Dump3dv::IID_(const std::string &prefix, int index) {
+    return ID_(prefix + Util::ToString(index));
 }
 
 }  // namespace Debug

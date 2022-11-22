@@ -25,37 +25,54 @@ void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
         std::cerr << "*** Dumping " << s << " to '" << f << "'\n";
     };
 
-    Debug::Dump3dv::LabelFlags label_flags;
-    label_flags.SetAll(true);
-
     s = "Original " + prefix + " as TriMesh";
     f = "/tmp/" + prefix + "0.3dv";
     report();
-    Dump3dv::DumpTriMesh(m, s, f, label_flags);
+    {
+        Debug::Dump3dv dump(f, s);
+        dump.SetLabelFontSize(10);
+        dump.AddTriMesh(m);
+    }
 
     PolyMesh pm(m);
     s = "Original " + prefix + " as PolyMesh";
     f = "/tmp/" + prefix + "1.3dv";
     report();
-    Dump3dv::DumpPolyMesh(pm, s, f, label_flags);
+    {
+        Debug::Dump3dv dump(f, s);
+        dump.SetLabelFontSize(10);
+        dump.AddPolyMesh(pm);
+    }
 
     MergeCoplanarFaces(pm);
     s = "Merged " + prefix + " PolyMesh";
     f = "/tmp/" + prefix + "2.3dv";
     report();
-    Dump3dv::DumpPolyMesh(pm, s, f, label_flags);
+    {
+        Debug::Dump3dv dump(f, s);
+        dump.SetLabelFontSize(10);
+        dump.AddPolyMesh(pm);
+    }
 
     PolyMesh bpm = Beveler::ApplyBevel(pm, bevel);
     s = "Beveled " + prefix + " PolyMesh";
     f = "/tmp/" + prefix + "3.3dv";
     report();
-    Dump3dv::DumpPolyMesh(bpm, s, f, label_flags);
+    {
+        Debug::Dump3dv dump(f, s);
+        dump.SetLabelFontSize(10);
+        dump.AddPolyMesh(bpm);
+    }
 
     TriMesh btm = bpm.ToTriMesh();
     s = "Beveled " + prefix + " TriMesh";
     f = "/tmp/" + prefix + "4.3dv";
     report();
-    Dump3dv::DumpTriMesh(btm, s, f, label_flags);
+    {
+        Debug::Dump3dv dump(f, s);
+        dump.SetLabelFontSize(10);
+        dump.AddTriMesh(btm);
+    }
 }
 #endif
 
