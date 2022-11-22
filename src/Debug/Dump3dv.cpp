@@ -218,7 +218,7 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
     if (label_flags.Has(LabelFlag::kVertexLabels)) {
         out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
         for (const auto &v: poly_mesh.vertices)
-            DumpLabel_(out, v->point + Vector3f(0, 0, .1), v->id);
+            DumpLabel_(out, v->point, v->id);
     }
     if (label_flags.Has(LabelFlag::kEdgeLabels)) {
         out << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
@@ -234,6 +234,46 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
             const Point3f face_center = GetFaceCenter_(*f);
             const Point3f pos = face_center + .1f * (face_center - mesh_center);
             DumpLabel_(out, pos, f->id);
+        }
+    }
+}
+
+void Dump3dv::DumpEdges(const std::vector<Point3f> &vertices,
+                        const std::vector<GIndex>  &edges,
+                        const std::string &description,
+                        const FilePath &path,
+                        const LabelFlags &label_flags,
+                        float label_font_size) {
+    std::ofstream out(path.ToNativeString());
+    if (! out) {
+        std::cerr << "*** Unable to open " << path.ToNativeString()
+                  << " for DumpEdges\n";
+        return;
+    }
+
+    // Vertices.
+    out << "# " << description << " with " << vertices.size() << " vertices:\n";
+    for (size_t i = 0; i < vertices.size(); ++i)
+        DumpVertex_(out, ID_("V", i), vertices[i]);
+
+    // Edges.
+    out << "\n#  " << (edges.size() / 2) << " edges:\n" << "c 1 1 0 1\n";
+    for (size_t i = 0; i < edges.size(); i += 2)
+        out << "l " << ID_("E", i / 2) << ' ' << ID_("V", edges[i])
+            << ' ' << ID_("V", edges[i + 1]) << "\n";
+
+    out << "\ns " << label_font_size << "\n\n";
+    if (label_flags.Has(LabelFlag::kVertexLabels)) {
+        out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
+        for (size_t i = 0; i < vertices.size(); ++i)
+            DumpLabel_(out, vertices[i], ID_("V", i));
+    }
+    if (label_flags.Has(LabelFlag::kEdgeLabels)) {
+        out << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
+        for (size_t i = 0; i < edges.size(); i += 2) {
+            const Point3f pos =
+                .5f * (vertices[edges[i]] + vertices[edges[i + 1]]);
+            DumpLabel_(out, pos, ID_("E", i / 2));
         }
     }
 }

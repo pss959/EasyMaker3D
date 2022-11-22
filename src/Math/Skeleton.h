@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+#include "Math/Types.h"
+
 class Polygon;
 
 /// \file
@@ -7,5 +11,6 @@ class Polygon;
 ///
 /// \ingroup Math
 
-/// Computes the straight skeleton of the given Polygon.
-void ComputeSkeleton(const Polygon &poly);
+/// Computes the straight skeleton of the given Polygon. XXXX
+void ComputeSkeleton(const Polygon &poly, std::vector<Point2f> &vertices,
+                     std::vector<GIndex> &bisectors);

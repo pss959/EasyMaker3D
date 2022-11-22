@@ -1,5 +1,7 @@
 #include "Math/BeveledMesh.h"
 
+#include <algorithm>
+
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
@@ -8,6 +10,9 @@
 #include "Math/PolyMeshBuilder.h"
 #include "Math/PolyMeshMerging.h"
 #include "Math/Skeleton.h"
+#include "Util/General.h"
+
+#include "Debug/Dump3dv.h" // XXXX
 
 // ----------------------------------------------------------------------------
 // Helper_ class.
@@ -36,21 +41,18 @@ void Helper_::AddFace(const PolyMesh::Face &face) {
     if (plane_flipped)
         plane_normal = -plane_normal;
 
-    // Need to reverse coordinates in the following cases:
-    //   - Projecting along -X.
-    //   - Projecting along +Y.
-    //   - Projecting along -Z.
-    const bool reverse_coords =
-        (max_index == 0 &&   plane_flipped) ||
-        (max_index == 1 && ! plane_flipped) ||
-        (max_index == 2 &&   plane_flipped);
+    // Get the two dimensions for projecting.
+    int dim0 = (max_index + 1) % 3;
+    int dim1 = (max_index + 2) % 3;
+    if (plane_flipped)
+        std::swap(dim0, dim1);
 
     const Rotationf rot = Rotationf::RotateInto(normal, plane_normal);
     std::vector<Point2f> points;
     points.reserve(vertices.size());
     for (const auto &v: vertices) {
-        const Point2f p = ToPoint2f(rot * v->point, max_index);
-        points.push_back(reverse_coords ? Point2f(p[1], p[0]) : p);
+        const Point3f p = rot * v->point;
+        points.push_back(Point2f(p[dim0], p[dim1]));
     }
 
     Polygon polygon(points, border_counts);
@@ -58,7 +60,34 @@ void Helper_::AddFace(const PolyMesh::Face &face) {
     polygon.Dump("XXXX " + face.ToString());
 
     // Compute the offset polygon for the face.
-    ComputeSkeleton(polygon);
+    std::vector<Point2f> svertices;
+    std::vector<GIndex>  bisectors;
+    ComputeSkeleton(polygon, svertices, bisectors);
+    std::cerr << "XXXX For face " << face.ToString() << ":\n";
+    for (size_t i = 0; i < svertices.size(); ++i)
+        std::cerr << "XXXX    V [" << i << "] = " << svertices[i] << "\n";
+    for (size_t i = 0; i < bisectors.size(); i += 2)
+        std::cerr << "XXXX    B from " << bisectors[i]
+                  << " to " << bisectors[i+1] << "\n";
+
+    // Convert the skeleton points back to 3D.
+    const auto to_3d = [&](const Point2f &p2){
+        Point3f p3;
+        p3[max_index] = 0;
+        p3[dim0] = p2[0];
+        p3[dim1] = p2[1];
+        return (-rot) * p3;
+    };
+    std::vector<Point3f> skel_vertices =
+        Util::ConvertVector<Point3f, Point2f>(svertices, to_3d);
+
+    Debug::Dump3dv::LabelFlags label_flags;
+    label_flags.SetAll(true);
+    Debug::Dump3dv::DumpEdges(skel_vertices,
+                              bisectors,
+                              "Skeleton for " + face.ToString(),
+                              "/tmp/SKEL.3dv",
+                              label_flags, 60);
 }
 
 // ----------------------------------------------------------------------------

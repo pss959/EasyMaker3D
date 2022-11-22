@@ -1,5 +1,6 @@
 #include "Skeleton.h"
 
+#include <unordered_map>
 #include <vector>
 
 // Skeleton math requires a different kernel.
@@ -24,7 +25,8 @@ static std::string P2S(const CGAL::Point_2<K> &p) {
     return "[" + Util::ToString(p.x()) + " " + Util::ToString(p.y()) + "]";
 }
 
-void ComputeSkeleton(const Polygon &poly) {
+void ComputeSkeleton(const Polygon &poly, std::vector<Point2f> &vertices,
+                     std::vector<GIndex> &bisectors) {
     const auto &border_counts = poly.GetBorderCounts();
     ASSERT(! border_counts.empty());
 
@@ -60,19 +62,39 @@ void ComputeSkeleton(const Polygon &poly) {
     }
     ASSERT(skel);
 
-    const bool do_print = true;  // XXXX poly.GetPoints()[0] == Point2f(-10, -5);
+    const bool do_print = true; // XXXX
     if (do_print) {
+        // "time": the distance from the vertex point to the lines supporting
+        // the defining contour edges.
+        for (auto v = skel->vertices_begin(); v != skel->vertices_end(); ++v) {
+            std::cerr << "XXXX V" << v->id() << " @ " << P2S(v->point())
+                      << " time = " << v->time() << "\n";
+        }
         for (auto e = skel->halfedges_begin(); e != skel->halfedges_end(); ++e) {
             std::cerr << "XXXX "
                       << (e->is_bisector() ? "Bisector" : "Contour")
-                      << " from " << P2S(e->opposite()->vertex()->point())
-                      << " to " << P2S(e->vertex()->point()) << "\n";
+                      << " from V" << e->opposite()->vertex()->id()
+                      << " to V" << e->vertex()->id() << "\n";
         }
-#if XXXX
-        for (auto v = skel->vertices_begin(); v != skel->vertices_end(); ++v) {
-            std::cerr << "XXXX vertex " << P2S(*v)
-                      << " time = " << v->time() << "\n";
+    }
+
+    // Store results, using a map from vertex ID to index into the vertices
+    // vector.
+    std::unordered_map<int, size_t> vertex_map;
+    vertices.reserve(skel->size_of_vertices());
+    for (auto v = skel->vertices_begin(); v != skel->vertices_end(); ++v) {
+        vertex_map[v->id()] = vertices.size();
+        vertices.push_back(Point2f(v->point().x(), v->point().y()));
+    }
+
+    // Add two vertex indices for each bisector, using the vertex map. Add
+    // bisectors in only one direction (first index < second index).
+    bisectors.reserve(skel->size_of_halfedges());
+    for (auto e = skel->halfedges_begin(); e != skel->halfedges_end(); ++e) {
+        if (e->is_bisector() &&
+            e->vertex()->id() < e->opposite()->vertex()->id()) {
+            bisectors.push_back(vertex_map[e->vertex()->id()]);
+            bisectors.push_back(vertex_map[e->opposite()->vertex()->id()]);
         }
-#endif
     }
 }

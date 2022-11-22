@@ -3,6 +3,7 @@
 #if ENABLE_DEBUG_FEATURES
 
 #include <string>
+#include <vector>
 
 #include "Math/PolyMesh.h"
 #include "Math/Types.h"
@@ -39,6 +40,15 @@ class Dump3dv {
                              const std::string &description,
                              const FilePath &path,
                              const LabelFlags &label_flags);
+
+    /// Dumps a collection of vertices and edges between them. Edges are
+    /// denoted by pairs of vertex indices.
+    static void DumpEdges(const std::vector<Point3f> &vertices,
+                          const std::vector<GIndex>  &edges,
+                          const std::string &description,
+                          const FilePath &path,
+                          const LabelFlags &label_flags,
+                          float label_font_size = 20);
 };
 
 }  // namespace Debug
