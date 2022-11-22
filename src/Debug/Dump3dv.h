@@ -31,7 +31,8 @@ class Dump3dv {
     static void DumpTriMesh(const TriMesh &mesh,
                             const std::string &description,
                             const FilePath &path,
-                            const LabelFlags &label_flags);
+                            const LabelFlags &label_flags,
+                            float label_font_size = 20);
 
     /// Dumps a PolyMesh in 3dv format. If face_shrinkage is >= 0, each face in
     /// the mesh is shown as a 3dv face, shrunk by the given factor so that
@@ -39,12 +40,13 @@ class Dump3dv {
     static void DumpPolyMesh(const PolyMesh &poly_mesh,
                              const std::string &description,
                              const FilePath &path,
-                             const LabelFlags &label_flags);
+                             const LabelFlags &label_flags,
+                             float label_font_size = 20);
 
     /// Dumps a collection of vertices and edges between them. Edges are
     /// denoted by pairs of vertex indices.
     static void DumpEdges(const std::vector<Point3f> &vertices,
-                          const std::vector<GIndex>  &edges,
+                          const std::vector<size_t>  &edges,
                           const std::string &description,
                           const FilePath &path,
                           const LabelFlags &label_flags,

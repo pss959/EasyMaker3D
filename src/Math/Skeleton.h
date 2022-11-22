@@ -13,4 +13,4 @@ class Polygon;
 
 /// Computes the straight skeleton of the given Polygon. XXXX
 void ComputeSkeleton(const Polygon &poly, std::vector<Point2f> &vertices,
-                     std::vector<GIndex> &bisectors);
+                     std::vector<size_t> &bisectors);

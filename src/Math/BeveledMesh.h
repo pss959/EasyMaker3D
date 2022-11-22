@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Math/Types.h"
 
 /// A BeveledMesh represents a mesh that contains special information to help
@@ -29,4 +31,11 @@ class BeveledMesh {
     TriMesh original_mesh_;
     Anglef  max_angle_;
     TriMesh result_mesh_;
+
+    /// Vertices of the straight skeleton for the BeveledMesh.
+    std::vector<Point3f> skel_vertices_;
+
+    /// Vertex index pairs forming edges of the straight skeleton for the
+    /// BeveledMesh.
+    std::vector<size_t>  skel_edges_;
 };

@@ -101,7 +101,8 @@ namespace Debug {
 void Dump3dv::DumpTriMesh(const TriMesh &mesh,
                           const std::string &description,
                           const FilePath &path,
-                          const LabelFlags &label_flags) {
+                          const LabelFlags &label_flags,
+                          float label_font_size) {
     std::ofstream out(path.ToNativeString());
     if (! out) {
         std::cerr << "*** Unable to open " << path.ToNativeString()
@@ -149,12 +150,12 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
             << ' ' << vid2 << "\n";
     }
 
+    out << "\ns " << label_font_size << "\n\n";
     if (label_flags.Has(LabelFlag::kVertexLabels)) {
         out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
         for (size_t i = 0; i < pts.size(); ++i)
             DumpLabel_(out, pts[i], ID_("V", i));
     }
-
     if (label_flags.Has(LabelFlag::kFaceLabels)) {
         out << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
         const Point3f mesh_center = ComputeMeshBounds(mesh).GetCenter();
@@ -169,7 +170,8 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
 void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
                            const std::string &description,
                            const FilePath &path,
-                           const LabelFlags &label_flags) {
+                           const LabelFlags &label_flags,
+                           float label_font_size) {
     std::ofstream out(path.ToNativeString());
     if (! out) {
         std::cerr << "*** Unable to open " << path.ToNativeString()
@@ -214,7 +216,7 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
         out << "f " << f.id << vids << "\n";
     }
 
-    out << "\ns 10\n\n";  // Smaller font size
+    out << "\ns " << label_font_size << "\n\n";
     if (label_flags.Has(LabelFlag::kVertexLabels)) {
         out << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
         for (const auto &v: poly_mesh.vertices)
@@ -239,7 +241,7 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
 }
 
 void Dump3dv::DumpEdges(const std::vector<Point3f> &vertices,
-                        const std::vector<GIndex>  &edges,
+                        const std::vector<size_t>  &edges,
                         const std::string &description,
                         const FilePath &path,
                         const LabelFlags &label_flags,

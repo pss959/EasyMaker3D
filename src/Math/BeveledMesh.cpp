@@ -21,10 +21,14 @@
 /// XXXX Class to help build BeveledMesh.
 class Helper_ {
   public:
-    void AddFace(const PolyMesh::Face &face);
+    void AddFace(const PolyMesh::Face &face,
+                 std::vector<Point3f> &skel_vertices,
+                 std::vector<size_t>  &skel_edges);
 };
 
-void Helper_::AddFace(const PolyMesh::Face &face) {
+void Helper_::AddFace(const PolyMesh::Face &face,
+                      std::vector<Point3f> &skel_vertices,
+                      std::vector<size_t>  &skel_edges) {
     // Access all of the vertices and border counts for the face.
     PolyMesh::VertexVec vertices;
     std::vector<size_t> border_counts;
@@ -61,7 +65,7 @@ void Helper_::AddFace(const PolyMesh::Face &face) {
 
     // Compute the offset polygon for the face.
     std::vector<Point2f> svertices;
-    std::vector<GIndex>  bisectors;
+    std::vector<size_t>  bisectors;
     ComputeSkeleton(polygon, svertices, bisectors);
     std::cerr << "XXXX For face " << face.ToString() << ":\n";
     for (size_t i = 0; i < svertices.size(); ++i)
@@ -78,16 +82,15 @@ void Helper_::AddFace(const PolyMesh::Face &face) {
         p3[dim1] = p2[1];
         return (-rot) * p3;
     };
-    std::vector<Point3f> skel_vertices =
-        Util::ConvertVector<Point3f, Point2f>(svertices, to_3d);
 
-    Debug::Dump3dv::LabelFlags label_flags;
-    label_flags.SetAll(true);
-    Debug::Dump3dv::DumpEdges(skel_vertices,
-                              bisectors,
-                              "Skeleton for " + face.ToString(),
-                              "/tmp/SKEL.3dv",
-                              label_flags, 60);
+    // Append the skeleton vertices and edges to the BeveledMesh. Vertex
+    // indices need to be offset.
+    const size_t vertex_offset = skel_vertices.size();
+    Util::AppendVector(Util::ConvertVector<Point3f, Point2f>(svertices, to_3d),
+                       skel_vertices);
+    for (auto &b: bisectors)
+        b += vertex_offset;
+    Util::AppendVector(bisectors, skel_edges);
 }
 
 // ----------------------------------------------------------------------------
@@ -105,9 +108,19 @@ BeveledMesh::BeveledMesh(const TriMesh &mesh, const Anglef &max_angle) {
     Helper_ helper;
 
     for (const auto &face: poly_mesh.faces) {
-        helper.AddFace(*face);
+        helper.AddFace(*face, skel_vertices_, skel_edges_);
     }
 
+    Debug::Dump3dv::LabelFlags label_flags;
+    label_flags.SetAll(true);
+
+    Debug::Dump3dv::DumpPolyMesh(mesh, "BeveledMesh",
+                                 "/tmp/BMESH.3dv", label_flags, 60);
+    Debug::Dump3dv::DumpEdges(skel_vertices_,
+                              skel_edges_,
+                              "BeveledMesh Skeleton",
+                              "/tmp/SKEL.3dv",
+                              label_flags, 60);
     // XXXX Do something!
 
     // Create a PolyMeshBuilder to construct the beveled PolyMesh.

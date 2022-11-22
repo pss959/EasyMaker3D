@@ -26,7 +26,7 @@ static std::string P2S(const CGAL::Point_2<K> &p) {
 }
 
 void ComputeSkeleton(const Polygon &poly, std::vector<Point2f> &vertices,
-                     std::vector<GIndex> &bisectors) {
+                     std::vector<size_t> &bisectors) {
     const auto &border_counts = poly.GetBorderCounts();
     ASSERT(! border_counts.empty());
 
