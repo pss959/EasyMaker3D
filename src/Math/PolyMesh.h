@@ -65,6 +65,12 @@ struct PolyMesh {
 
     ~PolyMesh();
 
+    // Collects vertices from all Face borders into the vertices vector. The
+    // border_counts vector will contain the number of vertices in each border
+    // (outside, followed by holes, if any).
+    static void GetFaceVertices(const Face &face, VertexVec &vertices,
+                                std::vector<size_t> &border_counts);
+
     /// Returns a vector containing all edges meeting at the v0 vertex of the
     /// given edge, starting with the given edge.
     static EdgeVec GetVertexEdges(Edge &start_edge);
@@ -101,7 +107,7 @@ struct PolyMesh::Vertex : public PolyMesh::Feature {
     Vertex(int id, const Point3f &p) : Feature("V", id) { point = p; }
 
     /// Converts to a string for debugging.
-    std::string ToString();
+    std::string ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -140,7 +146,7 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     Edge & PreviousEdgeInFace() const;
 
     /// Converts to a string for debugging.
-    std::string ToString();
+    std::string ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -178,7 +184,7 @@ struct PolyMesh::Face : public PolyMesh::Feature {
     void ReindexEdges();
 
     /// Converts to a string for debugging.
-    std::string ToString(bool on_one_line = true);
+    std::string ToString(bool on_one_line = true) const;
 
   private:
     /// Normal to the face, computed only when necessary.

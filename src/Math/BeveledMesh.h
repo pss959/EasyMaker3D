@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Math/PolyMesh.h"
 #include "Math/Types.h"
 
 /// A BeveledMesh represents a mesh that contains special information to help

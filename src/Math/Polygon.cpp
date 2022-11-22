@@ -75,7 +75,7 @@ void Polygon::Dump(const std::string &when) const {
     for (size_t i = 0; i < points_.size(); ++i)
         std::cout << "  [" << i << "] " << points_[i] << "\n";
     std::cout << "=== ... Outer border size: " << border_counts_[0] << "\n";
-    if (border_counts_.size() > 0) {
+    if (border_counts_.size() > 1U) {
         std::cout << "=== ... Hole border sizes:";
         for (size_t i = 1; i < border_counts_.size(); ++i)
             std::cout << " " << border_counts_[i];

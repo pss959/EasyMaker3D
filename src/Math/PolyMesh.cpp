@@ -10,6 +10,7 @@
 #include "Math/Triangulation.h"
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
+#include "Math/Polygon.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/String.h"
@@ -49,6 +50,23 @@ static std::vector<Point3f> EdgesToPoints_(const EdgeVec &edges) {
 static VertexVec EdgesToVertices_(const EdgeVec &edges) {
     return Util::ConvertVector<Vertex *, Edge *>(
         edges, [](const Edge *e){ return e->v0; });
+}
+
+/// Implements PolyMesh::GetFaceVertices().
+static void GetFaceVertices_(const Face &face, VertexVec &vertices,
+                             std::vector<size_t> &border_counts) {
+    vertices.clear();
+    border_counts.clear();
+
+    // Adds vertices from a border to vertices and the size to border_counts.
+    auto add_border_verts = [&vertices, &border_counts](const EdgeVec &edges){
+        Util::AppendVector(EdgesToVertices_(edges), vertices);
+        border_counts.push_back(edges.size());
+    };
+
+    add_border_verts(face.outer_edges);
+    for (const auto &hole: face.hole_edges)
+        add_border_verts(hole);
 }
 
 /// Sets up a new edge, adding it to its face and connecting it to its opposite
@@ -109,50 +127,48 @@ static std::vector<Point2f> ProjectPoints_(const VertexVec &vertices,
 static VertexVec TriangulateFace_(const Face &face) {
     using ion::math::LengthSquared;
 
-    // Collect vertices from all Face borders into one list. Keep track of
-    // the size of each border added.
-    VertexVec           vertices;
-    std::vector<size_t> border_counts;
+    // Vertex pointers of resulting triangles.
+    VertexVec tri_verts;
 
-    // Adds vertices from one border to vertices and the size to border_counts.
-    auto add_border_verts = [&vertices, &border_counts](const EdgeVec &edges){
-        Util::AppendVector(EdgesToVertices_(edges), vertices);
-        border_counts.push_back(edges.size());
-    };
+    // Convenience.
+    const auto get_v = [&](int index){ return face.outer_edges[index]->v0; };
 
-    add_border_verts(face.outer_edges);
-    for (const auto &hole: face.hole_edges)
-        add_border_verts(hole);
-
-    // Vertex indices of resulting triangles.
-    IndexVec tri_indices;
-
-    // Common triangulation case: no holes, 3 vertices.
-    if (border_counts.size() == 1U && vertices.size() == 3U) {
-        tri_indices.assign({ 0, 1, 2 });
+    // Common triangulation case: no holes, 3 edges.
+    const bool has_holes = ! face.hole_edges.empty();
+    if (! has_holes && face.outer_edges.size() == 3U) {
+        tri_verts.assign({ get_v(0), get_v(1), get_v(2) });
     }
-    // Another common triangulation case: no holes, 4 vertices. Split into two
+    // Another common triangulation case: no holes, 4 edges. Split into two
     // triangles by the shorter diagonal - this should work for all quads, even
     // concave ones.
-    else if (border_counts.size() == 1U && vertices.size() == 4U) {
-        if (LengthSquared(vertices[2]->point - vertices[0]->point) <=
-            LengthSquared(vertices[3]->point - vertices[1]->point))
-            tri_indices.assign({ 0, 1, 2,  0, 2, 3 });
+    else if (! has_holes && face.outer_edges.size() == 4U) {
+        const auto &v0 = get_v(0);
+        const auto &v1 = get_v(1);
+        const auto &v2 = get_v(2);
+        const auto &v3 = get_v(3);
+        if (LengthSquared(v2->point - v0->point) <=
+            LengthSquared(v3->point - v1->point))
+            tri_verts.assign({ v0, v1, v2,  v0, v2, v3 });
         else
-            tri_indices.assign({ 1, 2, 3,  3, 0, 1 });
+            tri_verts.assign({ v1, v2, v3,  v3, v0, v1 });
     }
     // General case: either there are holes or outer boundary has > 4 vertices.
-    // Project all of the points into 2D based on the largest normal
+    // Project all of the points into a 2D polygon based on the largest normal
     // component. Then triangulate using CGAL.
     else {
+        VertexVec           vertices;
+        std::vector<size_t> border_counts;
+        GetFaceVertices_(face, vertices, border_counts);
         const std::vector<Point2f> points2D =
             ProjectPoints_(vertices, face.GetNormal());
-        tri_indices = TriangulatePolygon(Polygon(points2D, border_counts));
+        const auto tri_indices =
+            TriangulatePolygon(Polygon(points2D, border_counts));
+        // Convert the triangulated indices to Vertex pointers.
+        tri_verts = Util::ConvertVector<Vertex *, GIndex>(
+            tri_indices, [&vertices](const GIndex &i){ return vertices[i]; });
     }
 
-    // Convert the indices to Vertex pointers.
-    return Util::ConvertVector<Vertex *, GIndex>(
-        tri_indices, [&vertices](const GIndex &i){ return vertices[i]; });
+    return tri_verts;
 }
 
 /// Returns a list of triangle indices representing all faces of a PolyMesh
@@ -194,7 +210,7 @@ PolyMesh::Feature::Feature(const std::string &prefix, int index) :
 // PolyMesh::Vertex class functions.
 // ----------------------------------------------------------------------------
 
-std::string PolyMesh::Vertex::ToString() {
+std::string PolyMesh::Vertex::ToString() const {
     return id + ": " + Util::ToString(point);
 }
 
@@ -231,7 +247,7 @@ Edge & PolyMesh::Edge::PreviousEdgeInFace() const {
     return *edges[index_in_face > 0 ? index_in_face - 1 : edges.size() - 1];
 }
 
-std::string PolyMesh::Edge::ToString() {
+std::string PolyMesh::Edge::ToString() const {
     return id + " from " + v0->id + " to " + v1->id +
         ", face " + face->id +
         ", opp " + (opposite_edge ? opposite_edge->id : "NULL");
@@ -276,7 +292,7 @@ void PolyMesh::Face::ReindexEdges() {
         reindex(hole_edges[h], h);
 }
 
-std::string PolyMesh::Face::ToString(bool on_one_line) {
+std::string PolyMesh::Face::ToString(bool on_one_line) const {
     auto edge_string = [&](const EdgeVec &ev){
         std::string s = "[";
         for (auto &e: ev)
@@ -350,8 +366,8 @@ PolyMesh::PolyMesh(const std::vector<Point3f> &points,
     EdgeMap_ edge_map;
 
     // Adds edges for a border.
-    auto add_edges = [this, &edge_map](const IndexVec &indices,
-                                       Face &face, int hole_index){
+    const auto add_edges = [this, &edge_map](const IndexVec &indices,
+                                             Face &face, int hole_index){
         for (size_t i = 0; i < indices.size(); ++i) {
             Vertex *v0 = vertices[indices[i]];
             Vertex *v1 = vertices[indices[(i + 1) % indices.size()]];
@@ -398,6 +414,11 @@ PolyMesh::~PolyMesh() {
         delete f;
     for (auto &v: vertices)
         delete v;
+}
+
+void PolyMesh::GetFaceVertices(const Face &face, VertexVec &vertices,
+                               std::vector<size_t> &border_counts) {
+    GetFaceVertices_(face, vertices, border_counts);
 }
 
 PolyMesh::EdgeVec PolyMesh::GetVertexEdges(Edge &start_edge) {

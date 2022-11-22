@@ -10,8 +10,8 @@ class BeveledMeshTest : public TestBase {
 };
 
 TEST_F(BeveledMeshTest, BevelBox) {
-    // Create a box TriMesh.
-    TriMesh m = BuildBoxMesh(Vector3f(10, 10, 10));
+    // Create a 10x20x10 box TriMesh.
+    TriMesh m = BuildBoxMesh(Vector3f(10, 20, 10));
 
     // Create a BeveledMesh applied to all edges.
     BeveledMesh bm(m, Anglef::FromDegrees(180));
