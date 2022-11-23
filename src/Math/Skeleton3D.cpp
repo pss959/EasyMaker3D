@@ -12,6 +12,7 @@
 
 void Skeleton3D::BuildForPolyMesh(const PolyMesh &mesh) {
     points_.clear();
+    distances_.clear();
     edges_.clear();
 
     // Iterate over all faces of the PolyMesh.
@@ -76,15 +77,15 @@ void Skeleton3D::AddFace_(const std::vector<Point3f> &points,
         return (-rot) * p3;
     };
 
-    // Append the 3D skeleton points and edges. Vertex indices need to be
-    // offset.
-    const size_t vertex_offset = points_.size();
+    // Append the 3D skeleton points, distances, and edges. Vertex indices used
+    // for edges need to be offset.
+    const size_t offset = points_.size();
+    const auto add_offset = [offset](size_t i){ return i + offset; };
     Util::AppendVector(
         Util::ConvertVector<Point3f, Point2f>(skel2.GetPoints(), to_3d),
         points_);
+    Util::AppendVector(skel2.GetDistances(), distances_);
     Util::AppendVector(
-        Util::ConvertVector<size_t, size_t>(
-            skel2.GetEdges(),
-            [vertex_offset](size_t i){ return i + vertex_offset; }),
+        Util::ConvertVector<size_t, size_t>(skel2.GetEdges(), add_offset),
         edges_);
 }

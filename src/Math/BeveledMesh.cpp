@@ -35,13 +35,13 @@ BeveledMesh::BeveledMesh(const TriMesh &mesh, const Anglef &max_angle) {
     dump.AddPolyMesh(poly_mesh);
     dump.SetExtraPrefix("S_");
     dump.SetLabelOffset(Vector3f(1, 1, .5f));
-    dump.AddEdges(skel.GetPoints(), skel.GetEdges());
-
-    // XXXX Do something!
+    dump.AddSkeleton3D(skel);
 
     // Create a PolyMeshBuilder to construct the beveled PolyMesh.
     // PolyMeshBuilder pmb;
 
+    // XXXX Do something!
+    
     // Convert back to a TriMesh.
     result_mesh_ = poly_mesh.ToTriMesh();
 }

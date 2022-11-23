@@ -19,6 +19,7 @@ typedef boost::shared_ptr<CGAL::Straight_skeleton_2<CIKernel>> CISkelPtr;
 
 void Skeleton2D::BuildForPolygon(const Polygon &poly) {
     points_.clear();
+    distances_.clear();
     edges_.clear();
 
     // Note that CGAL requires the outer points to be counterclockwise and
@@ -58,9 +59,11 @@ void Skeleton2D::BuildForPolygon(const Polygon &poly) {
     // vector.
     std::unordered_map<int, size_t> vertex_map;
     points_.reserve(skel->size_of_vertices());
+    distances_.reserve(skel->size_of_vertices());
     for (auto v = skel->vertices_begin(); v != skel->vertices_end(); ++v) {
         vertex_map[v->id()] = points_.size();
         points_.push_back(Point2f(v->point().x(), v->point().y()));
+        distances_.push_back(v->time());
     }
 
     // Add two vertex indices to the edges_ vector for each bisector, using the

@@ -2,6 +2,8 @@
 
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "Math/PolyMesh.h"
+#include "Math/Skeleton3D.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -189,12 +191,20 @@ void Dump3dv::AddPolyMesh(const PolyMesh &mesh) {
     }
 }
 
-void Dump3dv::AddEdges(const std::vector<Point3f> &vertices,
-                       const std::vector<size_t>  &edges) {
+void Dump3dv::AddSkeleton3D(const Skeleton3D &skel) {
+    const auto &points    = skel.GetPoints();
+    const auto &distances = skel.GetDistances();
+    const auto &edges     = skel.GetEdges();
+
+    // Building a vertex label, which includes the distance.
+    const auto vlabel = [&](size_t i){
+        return IID_("V", i) + "(" + Util::ToString(distances[i]) + ")";
+    };
+
     // Vertices.
-    out_ << "\n# Edges with " << vertices.size() << " vertices:\n";
-    for (size_t i = 0; i < vertices.size(); ++i)
-        AddVertex_(IID_("V", i), vertices[i]);
+    out_ << "\n# Skeleton3D with " << points.size() << " points:\n";
+    for (size_t i = 0; i < points.size(); ++i)
+        AddVertex_(IID_("V", i), points[i]);
 
     // Edges.
     out_ << "\n#  " << (edges.size() / 2) << " edges:\n" << "c 1 1 0 1\n";
@@ -205,14 +215,13 @@ void Dump3dv::AddEdges(const std::vector<Point3f> &vertices,
     out_ << "\ns " << label_font_size_ << "\n\n";
     if (label_flags_.Has(LabelFlag::kVertexLabels)) {
         out_ << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
-        for (size_t i = 0; i < vertices.size(); ++i)
-            AddLabel_(vertices[i], IID_("V", i));
+        for (size_t i = 0; i < points.size(); ++i)
+            AddLabel_(points[i], vlabel(i));
     }
     if (label_flags_.Has(LabelFlag::kEdgeLabels)) {
         out_ << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
         for (size_t i = 0; i < edges.size(); i += 2) {
-            const Point3f pos =
-                .5f * (vertices[edges[i]] + vertices[edges[i + 1]]);
+            const Point3f pos = .5f * (points[edges[i]] + points[edges[i + 1]]);
             AddLabel_(pos, IID_("E", i / 2));
         }
     }

@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 
-#include "Math/PolyMesh.h"
 #include "Math/Types.h"
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
+
+struct PolyMesh;
+class  Skeleton3D;
 
 namespace Debug {
 
@@ -61,10 +63,8 @@ class Dump3dv {
     /// Dumps a PolyMesh.
     void AddPolyMesh(const PolyMesh &mesh);
 
-    /// Dumps a collection of vertices and edges between them. Edges are
-    /// denoted by pairs of vertex indices.
-    void AddEdges(const std::vector<Point3f> &vertices,
-                  const std::vector<size_t>  &edges);
+    /// Dumps a Skeleton3D.
+    void AddSkeleton3D(const Skeleton3D &skel);
 
   private:
     std::ofstream out_;
