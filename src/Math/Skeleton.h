@@ -22,10 +22,15 @@ template <typename PointType> class Skeleton {
     };
 
     /// One edge of the skeleton. Edges are stored in one direction only, with
-    /// v0_index < v1_index.
+    /// \c v0_index < \c v1_index.  If the edge represents a bisector at a
+    /// source vertex, the \c bisected_index0 and \c bisected_index1 values are
+    /// set to the indices of the vertices at the other ends of the contour
+    /// edges from that source vertex. Otherwise, they are -1.
     struct Edge {
         size_t v0_index;
         size_t v1_index;
+        int    bisected_index0 = -1;
+        int    bisected_index1 = -1;
     };
 
     virtual ~Skeleton() {}

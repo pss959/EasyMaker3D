@@ -96,6 +96,10 @@ Skeleton3D::Helper_::Helper_(const PolyMesh &mesh) {
     for (auto &edge: edges_) {
         edge.v0_index = vertex_index_map[edge.v0_index];
         edge.v1_index = vertex_index_map[edge.v1_index];
+        if (edge.bisected_index0 >= 0)
+            edge.bisected_index0 = vertex_index_map[edge.bisected_index0];
+        if (edge.bisected_index1 >= 0)
+            edge.bisected_index1 = vertex_index_map[edge.bisected_index1];
     }
 }
 
@@ -137,6 +141,10 @@ void Skeleton3D::Helper_::AddFace_(const PolyMesh::Face &face,
         Edge edge3;
         edge3.v0_index = edge2.v0_index + vertex_offset;
         edge3.v1_index = edge2.v1_index + vertex_offset;
+        if (edge2.bisected_index0 >= 0)
+            edge3.bisected_index0 = edge2.bisected_index0 + vertex_offset;
+        if (edge2.bisected_index1 >= 0)
+            edge3.bisected_index1 = edge2.bisected_index1 + vertex_offset;
         edges_.push_back(edge3);
     }
 }

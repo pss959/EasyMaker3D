@@ -11,11 +11,15 @@
 #include "Math/Polygon.h"
 #include "Util/Assert.h"
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel    CIKernel;
-typedef CIKernel::Point_2                                      CIPoint2;
-typedef CGAL::Polygon_2<CIKernel>                              CIPoly2;
-typedef CGAL::Polygon_with_holes_2<CIKernel>                   CIPoly2WithHoles;
-typedef boost::shared_ptr<CGAL::Straight_skeleton_2<CIKernel>> CISkelPtr;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel CIKernel;
+typedef CIKernel::Point_2                                   CIPoint2;
+typedef CGAL::Polygon_2<CIKernel>                           CIPoly2;
+typedef CGAL::Polygon_with_holes_2<CIKernel>                CIPoly2WithHoles;
+typedef CGAL::Straight_skeleton_2<CIKernel>                 CISkel;
+typedef boost::shared_ptr<CISkel>                           CISkelPtr;
+typedef CISkel::Halfedge_const_handle                       CIHE;
+
+typedef std::unordered_map<int, size_t> VertexMap_;
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -57,6 +61,33 @@ static CISkelPtr PolygonToSkeleton_(const Polygon &poly) {
     return skel;
 }
 
+/// Possibly adds an Edge representing the given CGAL halfedge to the edges
+/// vector. The vertex_map is used to get correct vertex indices.
+static void AddEdge_(const CIHE &ce, const VertexMap_ &vertex_map,
+                     std::vector<Skeleton2D::Edge> &edges) {
+    if (! ce->is_bisector())
+        return;
+
+    const auto i0 = vertex_map.at(ce->vertex()->id());
+    const auto i1 = vertex_map.at(ce->opposite()->vertex()->id());
+
+    // Add only in one direction.
+    if (i0 > i1)
+        return;
+
+    Skeleton2D::Edge edge;
+    edge.v0_index = i0;
+    edge.v1_index = i1;
+    if (! ce->is_inner_bisector()) {
+        edge.bisected_index0 = ce->defining_contour_edge()->vertex()->id();
+        edge.bisected_index1 =
+            ce->opposite()->defining_contour_edge()->opposite()->vertex()->id();
+        ASSERT(edge.bisected_index0 <static_cast<int>(vertex_map.size()));
+        ASSERT(edge.bisected_index1 <static_cast<int>(vertex_map.size()));
+    }
+    edges.push_back(edge);
+}
+
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -91,17 +122,7 @@ void Skeleton2D::BuildForPolygon(const Polygon &poly) {
     // index < second index).
     std::vector<Edge> edges;
     edges.reserve(skel->size_of_halfedges() / 2);
-    for (auto e = skel->halfedges_begin(); e != skel->halfedges_end(); ++e) {
-        if (e->is_bisector()) {
-            const auto i0 = vertex_map[e->vertex()->id()];
-            const auto i1 = vertex_map[e->opposite()->vertex()->id()];
-            if (i0 < i1) {
-                Edge edge;
-                edge.v0_index = i0;
-                edge.v1_index = i1;
-                edges.push_back(edge);
-            }
-        }
-    }
+    for (auto e = skel->halfedges_begin(); e != skel->halfedges_end(); ++e)
+        AddEdge_(e, vertex_map, edges);
     SetEdges(edges);
 }
