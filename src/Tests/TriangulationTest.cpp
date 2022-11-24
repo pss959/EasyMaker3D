@@ -6,7 +6,7 @@
 
 class TriangulationTest : public TestBase {
   protected:
-    // Makes sure all result triangles are counter-clockwise.
+    // Makes sure all result triangles are counterclockwise.
     static void ValidateOrientation(const std::vector<Point2f> &points,
                                     const std::vector<GIndex> &indices) {
         EXPECT_EQ(0U, indices.size() % 3U);

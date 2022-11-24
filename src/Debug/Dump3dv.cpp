@@ -59,7 +59,7 @@ static Point3f GetPolyMeshCenter_(const PolyMesh &mesh) {
 namespace Debug {
 
 Dump3dv::Dump3dv(const FilePath &path, const std::string &header) {
-    out_ = std::ofstream(path.ToNativeString());
+    out_.open(path.ToNativeString());
     if (! out_) {
         std::cerr << "*** Dump3dv unable to open "
                   << path.ToNativeString() << " for writing\n";
@@ -192,37 +192,42 @@ void Dump3dv::AddPolyMesh(const PolyMesh &mesh) {
 }
 
 void Dump3dv::AddSkeleton3D(const Skeleton3D &skel) {
-    const auto &points    = skel.GetPoints();
-    const auto &distances = skel.GetDistances();
+    const auto &vertices  = skel.GetVertices();
     const auto &edges     = skel.GetEdges();
 
-    // Building a vertex label, which includes the distance.
+    // Building a vertex label, which includes the source index and distance.
     const auto vlabel = [&](size_t i){
-        return IID_("V", i) + "(" + Util::ToString(distances[i]) + ")";
+        const auto &v = vertices[i];
+        std::string label = IID_("V", i) + "(";
+        if (v.source_index >= 0)
+            label += "s" + Util::ToString(v.source_index) + "/";
+        label += "d" + Util::ToString(v.distance) + ")";
+        return label;
     };
 
     // Vertices.
-    out_ << "\n# Skeleton3D with " << points.size() << " points:\n";
-    for (size_t i = 0; i < points.size(); ++i)
-        AddVertex_(IID_("V", i), points[i]);
+    out_ << "\n# Skeleton3D with " << vertices.size() << " vertices:\n";
+    for (size_t i = 0; i < vertices.size(); ++i)
+        AddVertex_(IID_("V", i), vertices[i].point);
 
     // Edges.
-    out_ << "\n#  " << (edges.size() / 2) << " edges:\n" << "c 1 1 0 1\n";
-    for (size_t i = 0; i < edges.size(); i += 2)
-        out_ << "l " << IID_("E", i / 2) << ' ' << IID_("V", edges[i])
-             << ' ' << IID_("V", edges[i + 1]) << "\n";
+    out_ << "\n#  " << edges.size() << " edges:\n" << "c 1 1 0 1\n";
+    for (size_t i = 0; i < edges.size(); ++i)
+        out_ << "l " << IID_("E", i) << ' ' << IID_("V", edges[i].v0_index)
+             << ' ' << IID_("V", edges[i].v1_index) << "\n";
 
     out_ << "\ns " << label_font_size_ << "\n\n";
     if (label_flags_.Has(LabelFlag::kVertexLabels)) {
         out_ << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
-        for (size_t i = 0; i < points.size(); ++i)
-            AddLabel_(points[i], vlabel(i));
+        for (size_t i = 0; i < vertices.size(); ++i)
+            AddLabel_(vertices[i].point, vlabel(i));
     }
     if (label_flags_.Has(LabelFlag::kEdgeLabels)) {
         out_ << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
-        for (size_t i = 0; i < edges.size(); i += 2) {
-            const Point3f pos = .5f * (points[edges[i]] + points[edges[i + 1]]);
-            AddLabel_(pos, IID_("E", i / 2));
+        for (size_t i = 0; i < edges.size(); ++i) {
+            const auto &p0 = vertices[edges[i].v0_index].point;
+            const auto &p1 = vertices[edges[i].v1_index].point;
+            AddLabel_((p0 + p1) / 2, IID_("E", i));
         }
     }
 }

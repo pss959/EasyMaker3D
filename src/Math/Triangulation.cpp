@@ -63,7 +63,7 @@ class Triangulator_ {
     void AddBorderToTriangulation_(size_t start_index, size_t count,
                                    CCDT &triangulation);
 
-    /// Returns the indices for all result triangles in counter-clockwise order.
+    /// Returns the indices for all result triangles in counterclockwise order.
     std::vector<GIndex> GetTriangleIndices_(CCDT &triangulation);
 
     /// Marks domains for a triangulation. Stolen from CGAL doc.

@@ -9,7 +9,7 @@
 /// vertices and any number of inner borders of vertices forming holes.
 ///
 /// Points are assumed to be in the proper order: border points are
-/// counter-clockwise and hole points are clockwise.
+/// counterclockwise and hole points are clockwise.
 ///
 /// The last point in a border or hole is implicitly connected back to the first
 /// to form a closed loop. There is no need to duplicate the first point at the
@@ -74,7 +74,7 @@ class Polygon {
     void Dump(const std::string &when) const;
 
   private:
-    /// Points are stored in order, with the counter-clockwise outer border
+    /// Points are stored in order, with the counterclockwise outer border
     /// first, followed by clockwise hole borders.
     std::vector<Point2f> points_;
 
