@@ -9,6 +9,8 @@
 class BeveledMeshTest : public TestBase {
 };
 
+// XXXX Fix all of these to test result meshes.
+
 TEST_F(BeveledMeshTest, BevelBox) {
     // Create a 10x20x10 box TriMesh.
     TriMesh m = BuildBoxMesh(Vector3f(10, 20, 10));
@@ -42,4 +44,17 @@ TEST_F(BeveledMeshTest, BevelCyl) {
 
     EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
     ValidateMesh(rm, "Beveled box");
+}
+
+TEST_F(BeveledMeshTest, BevelTextO) {
+    TriMesh m = LoadTriMesh("O.stl");
+
+    // Create a BeveledMesh applied to all edges.
+    BeveledMesh bm(m, Anglef::FromDegrees(180));
+
+    // Access and validate the resulting TriMesh.
+    const TriMesh &rm = bm.GetResultMesh();
+
+    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    ValidateMesh(rm, "Beveled text O");
 }

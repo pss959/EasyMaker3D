@@ -1,6 +1,7 @@
 #include "Math/BeveledMesh.h"
 
 #include <unordered_map>
+#include <unordered_set>
 
 #include "Math/Linear.h"
 #include "Math/PolyMesh.h"
@@ -78,24 +79,12 @@ BeveledMesh::BeveledMesh(const TriMesh &mesh, const Anglef &max_angle) {
     }
     ASSERT(skel_vertex_map.size() == poly_mesh.vertices.size());
 
-#if XXXX
-    // Maps vertex index in skeleton to indices of all opposite vertices.
-    std::unordered_map<size_t, std::vector<size_t>> skel_edge_map;
-    for (const auto &edge: skel.GetEdges()) {
-        skel_edge_map[edge.v0_index].push_back(edge.v1_index);
-        skel_edge_map[edge.v1_index].push_back(edge.v0_index);
-    }
-
-    // Maps PolyMesh::Vertex pointer to all skeleton edges indident to it.
-    std::unordered_map<const PolyMesh::Vertex *, std::vector<size_t>> skel_edge_map;
-    for (const auto &edge: skel.GetEdges()) {
-        skel_edge_map[edge.v0_index].push_back(edge.v1_index);
-        skel_edge_map[edge.v1_index].push_back(edge.v0_index);
-    }
-#endif
-
     // Create a PolyMeshBuilder to construct the beveled PolyMesh.
     PolyMeshBuilder pmb;
+
+    // Maps PolyMesh::Edge pointer to the index of the new vertex created for
+    // it in the PolyMeshBuilder.
+    std::unordered_map<const PolyMesh::Edge *, size_t> edge_vertex_map;
 
     for (const auto &face: poly_mesh.faces) {
         std::vector<GIndex> face_vert_indices;
@@ -115,55 +104,42 @@ BeveledMesh::BeveledMesh(const TriMesh &mesh, const Anglef &max_angle) {
             const size_t skel_vp = skel_vertex_map.at(vp);
             const size_t svi = GetSkelBisectorVertexIndex_(skel, skel_v0,
                                                            skel_vn, skel_vp);
-            std::cerr << "XXXX Found " << svi << " for "
-                      << vp->id << "/" << v0->id << "/" << vn->id
-                      << " ("
-                      << skel_vp << "/" << skel_v0 << "/" << skel_vn
-                      << ") in " << face->id << "\n";
+            // Add the new vertex to the offset face.
+            const size_t new_vertex_index =
+                pmb.AddVertex(Lerp(.2f, v0->point, skel_vertices[svi].point));
+            face_vert_indices.push_back(new_vertex_index);
 
-
-#if XXXX
-            // Get the skeleton vertex at the other end of the bisector
-            // starting at v0 for the face.
-            const std::string key = face->id + "/" + v0->id;
-            const auto &sv1 = skel_bisector_map[key];
-#endif
-
-#if XXXX
-            // Find the skeleton bisector for the starting vertex of the face.
-            const auto &vn = edge->v1;
-            const auto &vp = edge->PreviousEdgeInFace().v0;
-
-            const size_t skel_v0 = skel_vertex_map.at(v0);
-            const size_t skel_vn = skel_vertex_map.at(vn);
-            const size_t skel_vp = skel_vertex_map.at(vp);
-            if (edge->id == "E29") // XXXX
-            std::cerr << "XXXX Edge " << edge->id << " in " << face->id
-                      << ": v0=" << v0->id
-                      << " vp=" << vp->id
-                      << " vn=" << vn->id
-                      << " sv0=" << skel_v0
-                      << " svn=" << skel_vn
-                      << " svp=" << skel_vp
-                      << " edges="
-                      << Util::JoinItems(skel_edge_map.at(skel_v0))
-                      << "\n";
-            //for (const auto &other_v: skel_edge_map.at(skel_v0)) {
-            //}
-#endif
-            
-            face_vert_indices.push_back(
-                pmb.AddVertex(Lerp(.2f, v0->point, skel_vertices[svi].point)));
+            // Store the correspondence from the original edge to the new
+            // vertex.
+            edge_vertex_map[edge] = new_vertex_index;
         }
         pmb.AddPolygon(face_vert_indices);
     }
 
-    const PolyMesh result_poly_mesh = pmb.BuildPolyMesh();
-    dump.SetExtraPrefix("R_");
-    dump.SetLabelOffset(Vector3f(1, 1.5f, .75f));
-    dump.AddPolyMesh(result_poly_mesh);
+    // Add a face joining all offset points around each original vertex. Use a
+    // set to determine which vertices have been processed.
+    std::unordered_set<const PolyMesh::Vertex *> processed_vertices;
+    for (const auto &edge: poly_mesh.edges) {
+        const auto &vertex = edge->v0;
+        if (Util::MapContains(processed_vertices, vertex))
+            continue;
 
-    // XXXX Do something!
+        processed_vertices.insert(vertex);
+
+        // Add all the offset points for each edge around the vertex.
+        pmb.AddPolygon(Util::ConvertVector<GIndex, PolyMesh::Edge *>(
+                           PolyMesh::GetVertexEdges(*edge),
+                           [&](const PolyMesh::Edge *e){
+                               return edge_vertex_map[e]; }));
+    }
+
+    const PolyMesh result_poly_mesh = pmb.BuildPolyMesh();
+
+    {
+        Debug::Dump3dv dump2("/tmp/RMESH.3dv", "Result BeveledMesh");
+        dump2.SetLabelFontSize(30);
+        dump2.AddPolyMesh(result_poly_mesh);
+    }
 
     // Convert back to a TriMesh.
     result_mesh_ = poly_mesh.ToTriMesh();
