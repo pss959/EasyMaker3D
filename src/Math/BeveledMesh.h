@@ -28,14 +28,9 @@ class BeveledMesh {
     const TriMesh & GetResultMesh()   const { return result_mesh_; }
 
   private:
+    class Helper_;
+
     TriMesh original_mesh_;
     Anglef  max_angle_;
     TriMesh result_mesh_;
-
-    /// Vertices of the straight skeleton for the BeveledMesh.
-    std::vector<Point3f> skel_vertices_;
-
-    /// Vertex index pairs forming edges of the straight skeleton for the
-    /// BeveledMesh.
-    std::vector<size_t>  skel_edges_;
 };
