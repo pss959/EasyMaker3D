@@ -26,7 +26,7 @@ class Beveler2Test : public TestBase {
 
 TEST_F(Beveler2Test, BevelBox) {
     // Create a 10x20x10 box TriMesh.
-    TriMesh m = BuildBoxMesh(Vector3f(10, 20, 10));
+    TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
 
     // Apply the bevel.
     const TriMesh rm = Beveler2::ApplyBevel(m, GetDefaultBevel());
@@ -44,7 +44,7 @@ TEST_F(Beveler2Test, BevelBox) {
 
 TEST_F(Beveler2Test, BevelBox3Points) {
     // Create a 10x20x10 box TriMesh.
-    TriMesh m = BuildBoxMesh(Vector3f(10, 20, 10));
+    TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
 
     Bevel bevel;
     bevel.profile.AddPoint(Point2f(.4, .8));
@@ -59,11 +59,11 @@ TEST_F(Beveler2Test, BevelBox3Points) {
 
 TEST_F(Beveler2Test, BevelBox4Points) {
     // Create a 10x20x10 box TriMesh.
-    TriMesh m = BuildBoxMesh(Vector3f(10, 20, 10));
+    TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
 
     Bevel bevel;
     bevel.profile.AddPoint(Point2f(.4, .8));
-    bevel.profile.AddPoint(Point2f(.8, .4));
+    bevel.profile.AddPoint(Point2f(.6, .6));
     bevel.max_angle = Anglef::FromDegrees(180);
     bevel.scale = .25f;
 
@@ -107,10 +107,28 @@ TEST_F(Beveler2Test, BevelTetrahedron) {
 }
 
 TEST_F(Beveler2Test, BevelPyramid) {
+    // Pyramid has 4 faces adjacent to the apex vertex.
     TriMesh m = BuildCylinderMesh(0, 10, 20, 4);
 
     // Apply the bevel.
     const TriMesh rm = Beveler2::ApplyBevel(m, GetDefaultBevel());
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
+    // EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    // XXXX ValidateMesh(rm, "Beveled complex model");
+}
+
+TEST_F(Beveler2Test, BevelPyramid4Points) {
+    // Pyramid has 4 faces adjacent to the apex vertex.
+    TriMesh m = BuildCylinderMesh(0, 10, 20, 4);
+
+    // Apply the bevel.
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.profile.AddPoint(Point2f(.6, .6));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = .25f;
+    const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
 
     EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
     // EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));

@@ -152,7 +152,7 @@ PolyMesh Beveler2_::GetResultPolyMesh() {
     // XXXX
     {
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
-        dump.SetLabelFontSize(40);
+        dump.SetLabelFontSize(32);
         //dump.SetExtraPrefix("M_");
         //dump.AddPolyMesh(mesh);
         //dump.SetExtraPrefix("R_");
@@ -277,15 +277,37 @@ void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
     // Insert interior vertices.
     const size_t count = bevel_.profile.GetPointCount() - 2U;
     if (count > 0U) {
+        size_t i0, i1;
+        if (ep.direction == Direction_::kLeftToRight) {
+            i0 = ep.end0_index;
+            i1 = ep.end1_index;
+        }
+        else {
+            i0 = ep.end1_index;
+            i1 = ep.end0_index;
+        }
         // Store copies of the points here (not references); adding new
         // vertices could screw up references.
-        const auto p0 = pmb_.GetVertex(ep.end0_index);
-        const auto p1 = pmb_.GetVertex(ep.end1_index);
+        const auto p0 = pmb_.GetVertex(i0);
+        const auto p1 = pmb_.GetVertex(i1);
 
+        // Compute the base point, which is the closest point on the original
+        // PolyMesh edge to either p0 or p1.
+        const Point3f base_point =
+            GetClosestPointOnLine(p0, edge.v0->point,
+                                  edge.v1->point - edge.v0->point);
+
+        // Compute the vectors from the base point to p0 and p1.
+        const Vector3f vec0 = p0 - base_point;
+        const Vector3f vec1 = p1 - base_point;
+
+        // Process all internal profile points.
+        const auto &prof_pts = bevel_.profile.GetPoints();
         for (size_t i = 0; i < count; ++i) {
-            // XXXX Do real math here...
-            const float frac = static_cast<float>(i + 1) / (count + 1);
-            const size_t index = pmb_.AddVertex(p0 + frac * (p1 - p0));
+            const auto &pp = prof_pts[i];
+            const Point3f p =
+                base_point + (1 - pp[0]) * vec0 + (1 - pp[1]) * vec1;
+            const size_t index = pmb_.AddVertex(p);
             if (i == 0)
                 ep.interior_index = index;
         }
@@ -337,7 +359,7 @@ void Beveler2_::AddVertexFaces_() {
                 }
             }
 
-            // Connect interior points. Need to reverse them.
+            // Connect interior points.
             std::vector<GIndex> indices = Util::ConvertVector<GIndex, Chain_>(
                 chains, [](const Chain_ c){ return c.interior_index; });
             pmb.AddPolygon(indices);
@@ -379,13 +401,24 @@ void Beveler2_::AddEdgeFaces_() {
 
 std::vector<size_t> Beveler2_::GetEdgeProfileIndices_(
     const EdgeProfile_ &ep) const {
-    const size_t profile_size = bevel_.profile.GetPointCount();
-    ASSERT(profile_size >= 2U);
+    const size_t profile_count = bevel_.profile.GetPointCount();
+    ASSERT(profile_count >= 2U);
+
     std::vector<size_t> indices;
+    indices.reserve(profile_count);
+
     indices.push_back(ep.end0_index);
-    for (size_t i = 0; i < profile_size - 2; ++i)
-        indices.push_back(ep.interior_index + i);
+    const size_t interior_count = profile_count - 2;
+    if (ep.direction == Direction_::kLeftToRight) {
+        for (size_t i = 0; i < interior_count; ++i)
+            indices.push_back(ep.interior_index + i);
+    }
+    else {
+        for (size_t i = 0; i < interior_count; ++i)
+            indices.push_back(ep.interior_index + interior_count - (i + 1));
+    }
     indices.push_back(ep.end1_index);
+
     return indices;
 }
 
