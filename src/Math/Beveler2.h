@@ -11,7 +11,4 @@ class Beveler2 {
   public:
     /// Applies the given Bevel to a TriMesh, returning the beveled TriMesh.
     static TriMesh ApplyBevel(const TriMesh &mesh, const Bevel &bevel);
-
-  private:
-    class Helper_;
 };
