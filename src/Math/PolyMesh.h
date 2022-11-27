@@ -145,6 +145,10 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     /// border, whether it is the outside or a hole.
     Edge & PreviousEdgeInFace() const;
 
+    /// Convenience that returns the Edge after this one incident to the v0
+    /// vertex.
+    Edge & NextEdgeAroundVertex() const;
+
     /// Converts to a string for debugging.
     std::string ToString() const;
 };
