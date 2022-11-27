@@ -31,6 +31,12 @@ enum class Direction_ {
     kRightToLeft,
 };
 
+static Direction_ GetOppositeDirection_(Direction_ dir) {
+    ASSERT(dir != Direction_::kUnknown);
+    return dir == Direction_::kLeftToRight ?
+        Direction_::kRightToLeft : Direction_::kLeftToRight;
+}
+
 /// An EdgeProfile_ stores information about how a Profile is applied to an
 /// edge of the original PolyMesh. The points of the EdgeProfile_ are added as
 /// vertices in a PolyMeshBuilder and the resulting indices are stored in here.
@@ -45,21 +51,6 @@ struct EdgeProfile_ {
     /// Index of the first added interior vertex of the Profile. This is unused
     /// if the Profile is a simple bevel with only 2 points.
     size_t interior_index = 0;
-
-    /// Returns the index of the ith vertex in the Profile assuming there are N
-    /// vertices.
-    size_t GetIndex(size_t i, size_t n) {
-        return i == 0 ? end0_index : i + 1 == n ? end1_index :
-            interior_index + i - 1;
-    }
-};
-
-/// Struct encapsulating data needed for dealing with a Skeleton3D.
-struct SkelData_ {
-    Skeleton3D skeleton;
-
-    /// Maps a PolyMesh::Vertex pointer to a skeleton vertex index.
-    std::unordered_map<const PolyMesh::Vertex *, size_t> vertex_map;
 };
 
 // ----------------------------------------------------------------------------
@@ -68,130 +59,144 @@ struct SkelData_ {
 
 class Beveler2_ {
   public:
-    /// Applies the Bevel and returns the resulting PolyMesh.
-    PolyMesh ApplyBevel(const PolyMesh &mesh, const Bevel &bevel);
+    /// Applies the given Bevel to the given PolyMesh.
+    Beveler2_(const PolyMesh &mesh, const Bevel &bevel);
+
+    /// Returns the resulting beveled PolyMesh.
+    PolyMesh GetResultPolyMesh();
 
   private:
-    /// Maps a PolyMesh::Edge pointer to the PolyMeshBuilder index of the new
-    /// offset vertex created for it.
-    typedef std::unordered_map<const PolyMesh::Edge *, size_t> EVMap_;
+    /// Original PolyMesh to bevel.
+    const PolyMesh                                           &mesh_;
 
-    /// Maps a PolyMesh::Edge pointer to the EdgeProfile__ created for it.
-    typedef std::unordered_map<const PolyMesh::Edge *, EdgeProfile_> EPMap_;
+    /// Bevel to apply.
+    const Bevel                                              &bevel_;
+
+    /// Straight 3D skeleton for the original PolyMesh.
+    Skeleton3D                                               skeleton_;
+
+    /// Maps a PolyMesh::Vertex pointer to a skeleton vertex index.
+    std::unordered_map<const PolyMesh::Vertex *, size_t>     skel_vertex_map_;
+
+    // PolyMeshBuilder used to construct the beveled PolyMesh.
+    PolyMeshBuilder                                          pmb_;
+
+    /// Maps each PolyMesh::Edge pointer to the PolyMeshBuilder index of the
+    /// new offset vertex created for it.
+    std::unordered_map<const PolyMesh::Edge *, size_t>       edge_vertex_map_;
+
+    /// Maps each PolyMesh::Edge pointer to the EdgeProfile_ created for it.
+    std::unordered_map<const PolyMesh::Edge *, EdgeProfile_> edge_profile_map_;
+
 
     /// XXXX
-    void InitSkeleton_(const PolyMesh &mesh, SkelData_ &skel_data);
+    void InitSkeleton_();
 
     /// Returns the index of the skeleton vertex at the other end of the
     /// bisector edge from the starting vertex of the given PolyMesh::Edge
     /// within its face. Asserts if it is not found.
-    size_t GetSkeletonVertex_(const PolyMesh::Edge &edge,
-                              const SkelData_ &skel_data);
+    size_t GetSkeletonVertex_(const PolyMesh::Edge &edge);
 
     /// XXXX
-    void AddOffsetFaceVertices_(const PolyMesh &mesh, float offset,
-                                const SkelData_ &skel_data,
-                                PolyMeshBuilder &pmb,
-                                EVMap_ &edge_vertex_map);
+    void AddOffsetFaces_();
 
     /// XXXX
-    void CreateEdgeProfiles_(const PolyMesh &mesh,
-                             const EVMap_ &edge_vertex_map,
-                             PolyMeshBuilder &pmb,
-                             EPMap_ &edge_profile_map);
+    void CreateEdgeProfiles_();
 
     /// Assigns a direction to an edge of the original PolyMesh and its
     /// opposite edge, moving on to neighbors as well.
-    void AssignEdgeDirection_(const PolyMesh::Edge &edge, Direction_ dir,
-                              EPMap_ &edge_profile_map);
+    void AssignEdgeDirection_(const PolyMesh::Edge &edge, Direction_ dir);
 
     /// XXXX
-    void SetEdgeProfileIndices_(const PolyMesh::Edge &edge,
-                                const EVMap_ &edge_vertex_map,
-                                PolyMeshBuilder &pmb, EdgeProfile_ &ep);
+    void SetEdgeProfileIndices_(const PolyMesh::Edge &edge);
 
     /// Adds faces joining all profile points around each original vertex of
     /// the PolyMesh.
-    void AddVertexFaces_(const PolyMesh &mesh, const EPMap_ &edge_profile_map,
-                         PolyMeshBuilder &pmb);
+    void AddVertexFaces_();
 
     /// Adds faces joining all profile points across each original edge of the
     /// PolyMesh.
-    void AddEdgeFaces_(const PolyMesh &mesh, const EPMap_ &edge_profile_map,
-                       PolyMeshBuilder &pmb);
+    void AddEdgeFaces_();
+
+    /// Returns a vector of EdgeProfile_ indices in the correct direction.
+    std::vector<size_t> GetEdgeProfileIndices_(const EdgeProfile_ &ep) const;
 
     /// XXXX
     void DumpSkeleton_(const PolyMesh &mesh, const Skeleton3D &skeleton);
 };
 
-PolyMesh Beveler2_::ApplyBevel(const PolyMesh &mesh, const Bevel &bevel) {
-    // Set up the Skeleton3D and map for its vertices.
-    SkelData_ skel_data;
-    InitSkeleton_(mesh, skel_data);
+Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel) :
+    mesh_(mesh),
+    bevel_(bevel) {
 
-    // Create a PolyMeshBuilder to construct the beveled PolyMesh.
-    PolyMeshBuilder pmb;
+    // Set up the Skeleton3D and map for its vertices.
+    InitSkeleton_();
 
     // Using the skeleton, create offset vertices for each face of the PolyMesh
     // and add the vertices to the PolyMeshBuilder. Store the resulting indices
-    // in a map keyed by edge pointer.
-    EVMap_ edge_vertex_map;
-    AddOffsetFaceVertices_(mesh, bevel.scale, skel_data, pmb, edge_vertex_map);
+    // in a the edge_vertex_map_ and create faces joining them.
+    AddOffsetFaces_();
 
-    // Set up EdgeProfile_ instances for all PolyMesh edges.
-    EPMap_ edge_profile_map;
-    CreateEdgeProfiles_(mesh, edge_vertex_map, pmb, edge_profile_map);
+    // Set up EdgeProfile_ instances for all PolyMesh edges and store them in
+    // the edge_profile_map_.
+    CreateEdgeProfiles_();
 
     // Add faces joining profile points.
-    AddVertexFaces_(mesh, edge_profile_map, pmb);
-    AddEdgeFaces_(mesh,   edge_profile_map, pmb);
+    AddVertexFaces_();
+    AddEdgeFaces_();
+}
 
-    const PolyMesh result_mesh = pmb.BuildPolyMesh();
+PolyMesh Beveler2_::GetResultPolyMesh() {
+    const PolyMesh result_mesh = pmb_.BuildPolyMesh();
 
     // XXXX
-    Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
-    dump.SetLabelFontSize(40);
-    dump.AddPolyMesh(result_mesh);
+    {
+        Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
+        dump.SetLabelFontSize(40);
+        //dump.SetExtraPrefix("M_");
+        //dump.AddPolyMesh(mesh);
+        //dump.SetExtraPrefix("R_");
+        dump.AddPolyMesh(result_mesh);
+    }
 
     return result_mesh;
 }
 
-void Beveler2_::InitSkeleton_(const PolyMesh &mesh, SkelData_ &skel_data) {
+void Beveler2_::InitSkeleton_() {
     // Build the 3D straight skeleton for the PolyMesh.
-    skel_data.skeleton.BuildForPolyMesh(mesh);
-    DumpSkeleton_(mesh, skel_data.skeleton);  // XXXX
+    skeleton_.BuildForPolyMesh(mesh_);
+    DumpSkeleton_(mesh_, skeleton_);  // XXXX
 
     // Map PolyMesh vertices to skeleton vertices.
-    const auto &skel_vertices = skel_data.skeleton.GetVertices();
+    const auto &skel_vertices = skeleton_.GetVertices();
     for (size_t i = 0; i < skel_vertices.size(); ++i) {
         const int index = skel_vertices[i].source_index;
         // Add only skeleton vertices that correspond to PolyMesh vertices.
         if (index >= 0) {
-            ASSERT(static_cast<size_t>(index) < mesh.vertices.size());
-            const auto &pmv = mesh.vertices[index];
-            ASSERT(! Util::MapContains(skel_data.vertex_map, pmv));
-            skel_data.vertex_map[pmv] = i;
+            ASSERT(static_cast<size_t>(index) < mesh_.vertices.size());
+            const auto &pmv = mesh_.vertices[index];
+            ASSERT(! Util::MapContains(skel_vertex_map_, pmv));
+            skel_vertex_map_[pmv] = i;
         }
     }
-    ASSERT(skel_data.vertex_map.size() == mesh.vertices.size());
+    ASSERT(skel_vertex_map_.size() == mesh_.vertices.size());
 }
 
-size_t Beveler2_::GetSkeletonVertex_(const PolyMesh::Edge &edge,
-                                     const SkelData_ &skel_data) {
+size_t Beveler2_::GetSkeletonVertex_(const PolyMesh::Edge &edge) {
     // Get the starting vertex for the Edge and the previous and next vertices
     // in the same Face.
     const auto &vstart = edge.v0;
     const auto &vnext  = edge.v1;
     const auto &vprev  = edge.PreviousEdgeInFace().v0;
-    const size_t skel_vstart = skel_data.vertex_map.at(vstart);
-    const size_t skel_vnext  = skel_data.vertex_map.at(vnext);
-    const size_t skel_vprev  = skel_data.vertex_map.at(vprev);
+    const size_t skel_vstart = skel_vertex_map_.at(vstart);
+    const size_t skel_vnext  = skel_vertex_map_.at(vnext);
+    const size_t skel_vprev  = skel_vertex_map_.at(vprev);
 
     // Find the skeleton bisector for the starting vertex of the face.
     // XXXX Speed this up?
     const int vni = static_cast<int>(skel_vnext);
     const int vpi = static_cast<int>(skel_vprev);
-    for (const auto &edge: skel_data.skeleton.GetEdges()) {
+    for (const auto &edge: skeleton_.GetEdges()) {
         if ((edge.bisected_index0 == vni && edge.bisected_index1 == vpi) ||
             (edge.bisected_index1 == vni && edge.bisected_index0 == vpi)) {
             if (edge.v0_index == skel_vstart)
@@ -204,91 +209,90 @@ size_t Beveler2_::GetSkeletonVertex_(const PolyMesh::Edge &edge,
     return 0;
 }
 
-void Beveler2_::AddOffsetFaceVertices_(const PolyMesh &mesh, float offset,
-                                       const SkelData_ &skel_data,
-                                       PolyMeshBuilder &pmb,
-                                       EVMap_ &edge_vertex_map) {
+void Beveler2_::AddOffsetFaces_() {
     auto add_border = [&](const PolyMesh::EdgeVec &edges){
         PolyMesh::IndexVec indices;
         for (const auto &edge: edges) {
-            const size_t svi = GetSkeletonVertex_(*edge, skel_data);
+            const size_t svi = GetSkeletonVertex_(*edge);
 
             // Add the new vertex to the offset face.
             const Point3f &p0 = edge->v0->point;
-            const Point3f &p1 = skel_data.skeleton.GetVertices()[svi].point;
-            const size_t index = pmb.AddVertex(p0 + offset * (p1 - p0));
+            const Point3f &p1 = skeleton_.GetVertices()[svi].point;
+            const size_t index = pmb_.AddVertex(p0 + bevel_.scale * (p1 - p0));
             indices.push_back(index);
 
             // Store the correspondence from the original edge to the new
             // vertex.
-            edge_vertex_map[edge] = index;
+            edge_vertex_map_[edge] = index;
         }
-        // Need to reverse the order to maintain orientation.
-        std::reverse(indices.begin(), indices.end());
         return indices;
     };
 
-    for (const auto &face: mesh.faces) {
-        pmb.AddPolygon(add_border(face->outer_edges));
+    for (const auto &face: mesh_.faces) {
+        pmb_.AddPolygon(add_border(face->outer_edges));
         for (auto &hole: face->hole_edges)
-            pmb.AddHole(add_border(hole));
+            pmb_.AddHole(add_border(hole));
     }
 }
 
-void Beveler2_::CreateEdgeProfiles_(const PolyMesh &mesh,
-                                    const EVMap_ &edge_vertex_map,
-                                    PolyMeshBuilder &pmb,
-                                    EPMap_ &edge_profile_map) {
+void Beveler2_::CreateEdgeProfiles_() {
     // Create a default EdgeProfile_ instance for each PolyMesh edge.
-    for (const auto &edge: mesh.edges)
-        edge_profile_map[edge] = EdgeProfile_();
+    for (const auto &edge: mesh_.edges)
+        edge_profile_map_[edge] = EdgeProfile_();
 
     // Assign directions to the EdgeProfile_ instances.
-    for (auto &edge: mesh.edges)
-        AssignEdgeDirection_(*edge, Direction_::kLeftToRight, edge_profile_map);
+    for (auto &edge: mesh_.edges)
+        AssignEdgeDirection_(*edge, Direction_::kLeftToRight);
 
     // Set up the indices in the EdgeProfile_ for each PolyMesh edge, adding
     // interior profile points if necessary.
-    for (auto &edge: mesh.edges)
-        SetEdgeProfileIndices_(*edge, edge_vertex_map, pmb,
-                               edge_profile_map.at(edge));
+    for (auto &edge: mesh_.edges)
+        SetEdgeProfileIndices_(*edge);
 }
 
-void Beveler2_::AssignEdgeDirection_(const PolyMesh::Edge &edge, Direction_ dir,
-                                     EPMap_ &edge_profile_map) {
-    const auto get_opp_dir = [](Direction_ d){
-        return d == Direction_::kLeftToRight ?
-            Direction_::kRightToLeft : Direction_::kLeftToRight;
-    };
-
+void Beveler2_::AssignEdgeDirection_(const PolyMesh::Edge &edge,
+                                     Direction_ dir) {
     // Do nothing if already assigned.
-    EdgeProfile_ &ep = edge_profile_map.at(&edge);
+    EdgeProfile_ &ep = edge_profile_map_.at(&edge);
     if (ep.direction == Direction_::kUnknown) {
-        EdgeProfile_ &opp_ep  = edge_profile_map.at(edge.opposite_edge);
-        Direction_    opp_dir = get_opp_dir(ep.direction);
+        EdgeProfile_ &opp_ep  = edge_profile_map_.at(edge.opposite_edge);
+        Direction_    opp_dir = GetOppositeDirection_(dir);
         ep.direction     = dir;
         opp_ep.direction = opp_dir;
 
         // Go to neighbors and try to apply a consistent direction.
-        AssignEdgeDirection_(edge.NextEdgeInFace(), dir, edge_profile_map);
-        AssignEdgeDirection_(edge.opposite_edge->NextEdgeInFace(),
-                             opp_dir, edge_profile_map);
+        AssignEdgeDirection_(edge.NextEdgeInFace(), dir);
+        AssignEdgeDirection_(edge.opposite_edge->NextEdgeInFace(), opp_dir);
     }
 }
 
-void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge,
-                                       const EVMap_ &edge_vertex_map,
-                                       PolyMeshBuilder &pmb, EdgeProfile_ &ep) {
+void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
+    EdgeProfile_ &ep = edge_profile_map_.at(&edge);
+
     const auto &next_edge = edge.NextEdgeAroundVertex();
 
-    // XXXX Assume just 2-point bevel for now...
-    ep.end0_index = edge_vertex_map.at(&edge);
-    ep.end1_index = edge_vertex_map.at(&next_edge);
+    ep.end0_index = edge_vertex_map_.at(&edge);
+    ep.end1_index = edge_vertex_map_.at(&next_edge);
+
+    // Insert interior vertices.
+    const size_t count = bevel_.profile.GetPointCount() - 2U;
+    if (count > 0U) {
+        // Store copies of the points here (not references); adding new
+        // vertices could screw up references.
+        const auto p0 = pmb_.GetVertex(ep.end0_index);
+        const auto p1 = pmb_.GetVertex(ep.end1_index);
+
+        for (size_t i = 0; i < count; ++i) {
+            // XXXX Do real math here...
+            const float frac = static_cast<float>(i + 1) / (count + 1);
+            const size_t index = pmb_.AddVertex(p0 + frac * (p1 - p0));
+            if (i == 0)
+                ep.interior_index = index;
+        }
+    }
 }
 
-void Beveler2_::AddVertexFaces_(const PolyMesh &mesh,
-                                const EPMap_ &edge_profile_map,
-                                PolyMeshBuilder &pmb) {
+void Beveler2_::AddVertexFaces_() {
 #if XXXX
     // Use a set to determine which vertices have been processed.
     std::unordered_set<const PolyMesh::Vertex *> processed_vertices;
@@ -336,18 +340,53 @@ void Beveler2_::AddVertexFaces_(const PolyMesh &mesh,
             // Connect interior points. Need to reverse them.
             std::vector<GIndex> indices = Util::ConvertVector<GIndex, Chain_>(
                 chains, [](const Chain_ c){ return c.interior_index; });
-            std::reverse(indices.begin(), indices.end());
             pmb.AddPolygon(indices);
-
-            // Connect 
         }
     }
 #endif
 }
 
-void Beveler2_::AddEdgeFaces_(const PolyMesh &mesh,
-                              const EPMap_ &edge_profile_map,
-                              PolyMeshBuilder &pmb) {
+void Beveler2_::AddEdgeFaces_() {
+    // This set is used to keep edges from being processed twice when the
+    // opposite edge is added.
+    std::unordered_set<const PolyMesh::Edge *> processed_edges;
+    for (const auto &edge: mesh_.edges) {
+        if (! Util::MapContains(processed_edges, edge)) {
+            processed_edges.insert(edge);
+            processed_edges.insert(edge->opposite_edge);
+
+            const auto &ep0 = edge_profile_map_.at(edge);
+            const auto &ep1 = edge_profile_map_.at(edge->opposite_edge);
+
+            // Special case for default profile (2 points).
+            if (bevel_.profile.GetPointCount() == 2U) {
+                pmb_.AddQuad(ep0.end0_index, ep0.end1_index,
+                             ep1.end0_index, ep1.end1_index);
+            }
+            else {
+                const auto indices0 = GetEdgeProfileIndices_(ep0);
+                auto indices1       = GetEdgeProfileIndices_(ep1);
+                std::reverse(indices1.begin(), indices1.end());
+                ASSERT(indices0.size() == indices1.size());
+                for (size_t i = 1; i < indices0.size(); ++i) {
+                    pmb_.AddQuad(indices0[i - 1], indices0[i],
+                                 indices1[i],     indices1[i - 1]);
+                }
+            }
+        }
+    }
+}
+
+std::vector<size_t> Beveler2_::GetEdgeProfileIndices_(
+    const EdgeProfile_ &ep) const {
+    const size_t profile_size = bevel_.profile.GetPointCount();
+    ASSERT(profile_size >= 2U);
+    std::vector<size_t> indices;
+    indices.push_back(ep.end0_index);
+    for (size_t i = 0; i < profile_size - 2; ++i)
+        indices.push_back(ep.interior_index + i);
+    indices.push_back(ep.end1_index);
+    return indices;
 }
 
 void Beveler2_::DumpSkeleton_(const PolyMesh &mesh,
@@ -373,6 +412,6 @@ TriMesh Beveler2::ApplyBevel(const TriMesh &mesh, const Bevel &bevel) {
     MergeCoplanarFaces(poly_mesh);
 
     // Use a Beveler2_ to do the rest.
-    Beveler2_ beveler;
-    return beveler.ApplyBevel(poly_mesh, bevel).ToTriMesh();
+    Beveler2_ beveler(poly_mesh, bevel);
+    return beveler.GetResultPolyMesh().ToTriMesh();
 }

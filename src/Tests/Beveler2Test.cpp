@@ -9,16 +9,20 @@
 
 class Beveler2Test : public TestBase {
   protected:
+    // Beveler2Test() { EnableKLog("l"); }  // XXXX For debugging.
+
     /// Returns a default Bevel.
     static Bevel GetDefaultBevel() {
         Bevel bevel;
         // XXXX Bevel all edges for now...
         bevel.max_angle = Anglef::FromDegrees(180);
+        bevel.scale     = .25f;  // XXXX
         return bevel;
     }
 };
 
 // XXXX Fix all of these to test result meshes.
+// XXXX Move common code into base class.
 
 TEST_F(Beveler2Test, BevelBox) {
     // Create a 10x20x10 box TriMesh.
@@ -36,6 +40,37 @@ TEST_F(Beveler2Test, BevelBox) {
     // EXPECT_EQ(44U, rm.GetTriangleCount());
     EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
     // XXXX ValidateMesh(rm, "Beveled box");
+}
+
+TEST_F(Beveler2Test, BevelBox3Points) {
+    // Create a 10x20x10 box TriMesh.
+    TriMesh m = BuildBoxMesh(Vector3f(10, 20, 10));
+
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = .25f;
+
+    // Apply the bevel.
+    const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
+}
+
+TEST_F(Beveler2Test, BevelBox4Points) {
+    // Create a 10x20x10 box TriMesh.
+    TriMesh m = BuildBoxMesh(Vector3f(10, 20, 10));
+
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.profile.AddPoint(Point2f(.8, .4));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = .25f;
+
+    // Apply the bevel.
+    const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
 }
 
 TEST_F(Beveler2Test, BevelCyl) {
@@ -82,7 +117,7 @@ TEST_F(Beveler2Test, BevelPyramid) {
     // XXXX ValidateMesh(rm, "Beveled complex model");
 }
 
-TEST_F(Beveler2Test, BevelComplext) {
+TEST_F(Beveler2Test, BevelComplex) {
     TriMesh m = LoadTriMesh("double_helix.stl");
 
     // Apply the bevel.

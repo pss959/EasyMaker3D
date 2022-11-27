@@ -44,6 +44,7 @@ static Point3f GetEdgeLabelPos_(const PolyMesh::Edge &edge) {
 /// Returns the approximate center point of a PolyMesh.
 static Point3f GetPolyMeshCenter_(const PolyMesh &mesh) {
     Point3f center(0, 0, 0);
+    ASSERT(! mesh.vertices.empty());
     const size_t n = mesh.vertices.size();
     for (size_t i = 0; i < n; ++i)
         center += mesh.vertices[i]->point;
