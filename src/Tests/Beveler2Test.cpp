@@ -118,6 +118,22 @@ TEST_F(Beveler2Test, BevelPyramid) {
     // XXXX ValidateMesh(rm, "Beveled complex model");
 }
 
+TEST_F(Beveler2Test, BevelPyramid3Points) {
+    // Pyramid has 4 faces adjacent to the apex vertex.
+    TriMesh m = BuildCylinderMesh(0, 10, 20, 4);
+
+    // Apply the bevel.
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = .25f;
+    const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
+    // EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    // XXXX ValidateMesh(rm, "Beveled complex model");
+}
+
 TEST_F(Beveler2Test, BevelPyramid4Points) {
     // Pyramid has 4 faces adjacent to the apex vertex.
     TriMesh m = BuildCylinderMesh(0, 10, 20, 4);

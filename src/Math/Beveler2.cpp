@@ -114,12 +114,17 @@ class Beveler2_ {
     /// the PolyMesh.
     void AddVertexFaces_();
 
+    // XXXX
+    void AddVertexFaces_(const std::vector<GIndex> &indices);
+
     /// Adds faces joining all profile points across each original edge of the
     /// PolyMesh.
     void AddEdgeFaces_();
 
-    /// Returns a vector of EdgeProfile_ indices in the correct direction.
-    std::vector<size_t> GetEdgeProfileIndices_(const EdgeProfile_ &ep) const;
+    /// Returns a vector of EdgeProfile_ indices in the correct direction. Does
+    /// not include the first one if skip_first is true.
+    std::vector<GIndex> GetEdgeProfileIndices_(const EdgeProfile_ &ep,
+                                               bool skip_first = false) const;
 
     /// XXXX
     void DumpSkeleton_(const PolyMesh &mesh, const Skeleton3D &skeleton);
@@ -153,6 +158,9 @@ PolyMesh Beveler2_::GetResultPolyMesh() {
     {
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
         dump.SetLabelFontSize(32);
+        Debug::Dump3dv::LabelFlags label_flags;
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+        dump.SetLabelFlags(label_flags);
         //dump.SetExtraPrefix("M_");
         //dump.AddPolyMesh(mesh);
         //dump.SetExtraPrefix("R_");
@@ -315,57 +323,62 @@ void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
 }
 
 void Beveler2_::AddVertexFaces_() {
-#if XXXX
-    // Use a set to determine which vertices have been processed.
+    // Use a set to determine which vertices have been processed, since
+    // multiple edges begin at any PolyMesh vertex.
     std::unordered_set<const PolyMesh::Vertex *> processed_vertices;
 
-    for (const auto &edge: mesh.edges) {
+    for (const auto &edge: mesh_.edges) {
         if (! Util::MapContains(processed_vertices, edge->v0)) {
             processed_vertices.insert(edge->v0);
 
-            // Access all Chain_ instances. Note that index1 in each chain
-            // should be the same as index0 in the next chain.
-            std::vector<Chain_> chains =
-                Util::ConvertVector<Chain_, PolyMesh::Edge *>(
-                    PolyMesh::GetVertexEdges(*edge),
-                    [&](const PolyMesh::Edge *e){ return chain_map.at(e); });
+            // Get EdgeProfile_ instances for all edges around the vertex.
+            std::vector<const EdgeProfile_ *> eps;
+            for (const auto &vertex_edge: PolyMesh::GetVertexEdges(*edge))
+                eps.push_back(& edge_profile_map_.at(vertex_edge));
 
-            // XXXX Assume 3 points in each Chain_.
-            const size_t n = 3;  // XXXX
-
-            // Process all rings and then the innermost polygon). Start on the
-            // outside and work in. This depends on whether N is even or odd:
-            // For example, if N is 4, there are rings between points 0 and 1
-            // and 2 and 3, and the innermost polygon is between points 1 and
-            // 2. If N is 3, there are rings between points 0 and 1, 1 and 2, 
-
-            // Process rings (all but the innermost polygon). Start on the
-            // outside and work in. For example, if N is 4, there are rings
-            // between points 0 and 1 and 1 and 2
-            for (size_t i = 1; i < n; ++i) {
-                // Collect vertices in the outer and 
-                XXXXXXXXXXXX;
-
-                // XXXX Need to assign direction to each edge FIRST.
-
-            // Add the innermost polygon.
-
-
-            // Add triangles between each pair of chain points.
-                // Collect inner and outer chain points.
-                std::vector<GIndex> inner, outer;
-
-                for (size_t c = 0; c < chains.size(); ++c) {
-                }
+            // Collect indices of all PolyMeshBuilder vertices around the
+            // vertex. Since the first vertex of each profile is the same as
+            // the last vertex of the previous one, skip the first vertex for
+            // each, since the vector is reversed at the end.
+            std::vector<GIndex> indices;
+            for (const auto &ep: eps) {
+                Util::AppendVector(GetEdgeProfileIndices_(*ep, true), indices);
             }
+            // Edges are traversed clockwise, so have to reverse indices.
+            std::reverse(indices.begin(), indices.end());
 
-            // Connect interior points.
-            std::vector<GIndex> indices = Util::ConvertVector<GIndex, Chain_>(
-                chains, [](const Chain_ c){ return c.interior_index; });
-            pmb.AddPolygon(indices);
+            AddVertexFaces_(indices);
         }
     }
-#endif
+}
+
+void Beveler2_::AddVertexFaces_(const std::vector<GIndex> &indices) {
+    const size_t profile_size = bevel_.profile.GetPointCount();
+
+    // Special case for default profile.
+    if (profile_size == 2U) {
+        pmb_.AddPolygon(indices);
+    }
+
+    // Special case for only one interior profile point. Add center points as a
+    // polygon and add triangles from vertices to them.
+    else if (profile_size == 3U) {
+        std::vector<GIndex> inner_indices;
+        const size_t index_count = indices.size();
+        for (size_t i = 1; i < index_count; i += 2) {
+            const GIndex i0 = indices[i];
+            const GIndex i1 = indices[(i + 1) % index_count];
+            const GIndex i2 = indices[(i + 2) % index_count];
+            inner_indices.push_back(i0);
+            pmb_.AddTriangle(i0, i1, i2);
+        }
+        pmb_.AddPolygon(inner_indices);
+    }
+
+    // General case: compute inner ring points and recurse.
+    else {
+        // XXXX
+    }
 }
 
 void Beveler2_::AddEdgeFaces_() {
@@ -399,15 +412,16 @@ void Beveler2_::AddEdgeFaces_() {
     }
 }
 
-std::vector<size_t> Beveler2_::GetEdgeProfileIndices_(
-    const EdgeProfile_ &ep) const {
+std::vector<GIndex> Beveler2_::GetEdgeProfileIndices_(const EdgeProfile_ &ep,
+                                                      bool skip_first) const {
     const size_t profile_count = bevel_.profile.GetPointCount();
     ASSERT(profile_count >= 2U);
 
-    std::vector<size_t> indices;
+    std::vector<GIndex> indices;
     indices.reserve(profile_count);
 
-    indices.push_back(ep.end0_index);
+    if (! skip_first)
+        indices.push_back(ep.end0_index);
     const size_t interior_count = profile_count - 2;
     if (ep.direction == Direction_::kLeftToRight) {
         for (size_t i = 0; i < interior_count; ++i)
