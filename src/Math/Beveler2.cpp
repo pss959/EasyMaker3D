@@ -72,6 +72,7 @@ struct EdgeProfile_ {
 /// Each Ring_ created inside another one has 2 fewer points per side.
 struct Ring_ {
     size_t              level;            ///< Ring level (0 == outside).
+    size_t              side_count;       ///< Number of sides in the ring.
     size_t              points_per_side;  ///< Number of vertices per side.
     std::vector<GIndex> indices;          ///< PolyMeshBuilder vertex indices.
 
@@ -79,21 +80,42 @@ struct Ring_ {
     /// been repositioned.
     std::vector<size_t> reposition_counts;
 
-    /// Returns a PolyMeshBuilder vertex index with vector range checking.
-    GIndex GetIndex(int i) const {
-        return indices[i < 0 ? indices.size() + i : (i + 1) % indices.size()];
-    }
+    /// Returns the index of the side before the given one.
+    size_t GetPrevSide(size_t side) const {
+        return (side + side_count - 1) % side_count;
+    };
+
+    /// Returns the index of the side after the given one.
+    size_t GetNextSide(size_t side) const {
+        return (side + 1) % side_count;
+    };
 
     /// Returns the index within the Ring indices of the ith vertex on a side.
-    size_t GetSideIndex(size_t side, size_t i) const {
+    size_t GetIndexOnSide(size_t side, size_t i) const {
         ASSERT(i < points_per_side);
         return side * (points_per_side - 1) + i;
     }
 
+    /// Combines GetPrevSide() and GetIndexOnSide().
+    size_t GetIndexOnPrevSide(size_t side, size_t i) const {
+        return GetIndexOnSide(GetPrevSide(side), i);
+    };
+
+    /// Combines GetNextSide() and GetIndexOnSide().
+    size_t GetIndexOnNextSide(size_t side, size_t i) const {
+        return GetIndexOnSide(GetNextSide(side), i);
+    };
+
     /// Returns the PolyMeshBuilder vertex index of the indexed ring vertex.
     GIndex GetVertexIndex(size_t index) const {
-        ASSERT(index < indices.size());
-        return indices[index];
+        return indices[index % indices.size()];
+    }
+
+    /// Converts to a string for debugging.
+    std::string ToString() const {
+        return std::string("Ring " + Util::ToString(level) + " PPS=" +
+                           Util::ToString(points_per_side) + ": " +
+                           Util::JoinItems(indices));
     }
 };
 
@@ -177,6 +199,9 @@ class Beveler2_ {
     /// XXXX
     void PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings);
 
+    /// XXXX
+    void AddRingPolygons_(const RingVec_ &rings);
+
     /// Applies the bevel profile between the two given endpoints in a plane
     /// perpendicular to the given Edge. Returns the positions of the resulting
     /// internal points.
@@ -219,15 +244,20 @@ PolyMesh Beveler2_::GetResultPolyMesh() {
 
     // XXXX
     {
+        const bool add_orig_mesh = false;
+
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
         dump.SetLabelFontSize(20);
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
         dump.SetLabelFlags(label_flags);
-        //dump.SetExtraPrefix("M_");
-        //dump.AddPolyMesh(mesh);
-        //dump.SetExtraPrefix("R_");
         dump.AddPolyMesh(result_mesh);
+        if (add_orig_mesh) {
+            dump.SetExtraPrefix("M_");
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+            dump.SetLabelFlags(label_flags);
+            dump.AddPolyMesh(mesh_);
+        }
     }
 
     return result_mesh;
@@ -407,7 +437,7 @@ void Beveler2_::AddVertexFaces_() {
             processed_vertices.insert(edge->v0);
 
             // Get all edges around the vertex.
-            const auto vertex_edges = PolyMesh::GetVertexEdges(*edge);
+            auto vertex_edges = PolyMesh::GetVertexEdges(*edge);
 
             // Collect indices of all PolyMeshBuilder vertices around the
             // vertex. Since the first vertex of each profile is the same as
@@ -418,9 +448,13 @@ void Beveler2_::AddVertexFaces_() {
                 const auto &ep = edge_profile_map_.at(vertex_edge);
                 Util::AppendVector(GetEdgeProfileIndices_(ep, true), indices);
             }
-            // Edges are traversed clockwise, so have to reverse indices.
+
+            // Edges are traversed clockwise, so have to reverse everything.
+            std::reverse(vertex_edges.begin(), vertex_edges.end());
             std::reverse(indices.begin(), indices.end());
 
+            std::cerr << "XXXX ########### Faces for vertex "
+                      << edge->v0->id << "\n";
             AddVertexFaces_(vertex_edges, indices);
         }
     }
@@ -459,32 +493,8 @@ void Beveler2_::AddVertexFaces_(const EdgeVec_ &edges,
     else {
         RingVec_ rings = BuildRings_(edge_count, indices);
         PositionRingPoints_(edges, rings);
-
-#if XXXX
-        // Starting from the outside (first ring), connect the vertices between
-        // each pair of rings.
-        // XXXX N quads per edge, where N = NP for inner ring.
-        for (size_t r = 0; r + 1 < rings.size(); ++r) {
-            const Ring_ &outer = rings[r];
-            const Ring_ &inner = rings[r + 1];
-            for (size_t e = 0; e < edge_count; ++e) {
-                const auto ostart = e * (outer.points_per_edge - 1);
-                const auto istart = e * (inner.points_per_edge - 1);
-                for (size_t p = 0; p < inner.points_per_edge; ++p) {
-                    const auto i0 = outer.GetIndex[ostart + p);
-                    const auto i1 = outer.GetIndex(ostart + p - 1);
-                    const auto i2 = inner.GetIndex(istart + p);
-                    const auto i3 = outer.GetIndex(ostart + p + 1);
-                    std::cerr << "XXXX Quad " << i0
-                              << " " << i1
-                              << " " << i2
-                              << " " << i3
-                              << "\n";
-                    //                    pmb_.AddQuad(i0, i1, i2, i3);
-                }
-            }
-        }
-#endif
+        AddRingPolygons_(rings);
+        // XXXX Need to deal with polygons in innermost ring.
     }
 }
 
@@ -502,6 +512,7 @@ Beveler2_::RingVec_ Beveler2_::BuildRings_(size_t edge_count,
     for (size_t r = 0; r < ring_count; ++r) {
         Ring_ &ring = rings[r];
         ring.level = r;
+        ring.side_count = edge_count;
         ring.points_per_side = profile_size - 2 * r;
 
         if (r == 0) {
@@ -514,9 +525,6 @@ Beveler2_::RingVec_ Beveler2_::BuildRings_(size_t edge_count,
             for (size_t i = 0; i < ring.indices.size(); ++i)
                 ring.indices[i] = pmb_.AddVertex(Point3f::Zero());
         }
-        std::cerr << "XXXX Ring level " << ring.level
-                  << " with PPS = " << ring.points_per_side
-                  << " and " << ring.indices.size() << " points\n";
     }
     return rings;
 }
@@ -528,59 +536,104 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
     //
     // Some inner points will be repositioned once, and some twice. Keep track
     // so the resulting points can be averaged if necessary.
-    const size_t edge_count = edges.size();
-
     for (size_t i = 0; i < rings.size(); ++i) {
         Ring_ &ring = rings[i];
         ring.reposition_counts.assign(ring.indices.size(), 0);
     }
 
-    const auto prev_side = [edge_count](size_t side){
-        return (side + edge_count - 1) % edge_count;
-    };
-    const auto next_side = [edge_count](size_t side){
-        return (side + 1) % edge_count;
-    };
+    if (edges[0]->v0->id == "V7") {
+        for (size_t r = 0; r < rings.size(); ++r)
+            std::cerr << "XXXX --- " << rings[r].ToString() << "\n";
+    }
 
     // Work towards the innermost ring.
-    const Ring_  &outer_ring = rings[0];
-    const size_t  outer_pps  = outer_ring.points_per_side;
+    const Ring_  &outer      = rings[0];
+    const size_t  outer_pps  = outer.points_per_side;
     for (size_t r = 1; r < rings.size(); ++r) {
         Ring_ &ring = rings[r];
-        for (size_t side = 0; side < edge_count; ++side) {
+        for (size_t side = 0; side < ring.side_count; ++side) {
             // Get the endpoints from the outermost ring for applying the
             // profile. The first endpoint is the next-to-last point on the
             // previous side.
-            const size_t i0 = outer_ring.GetSideIndex(prev_side(side),
-                                                      outer_pps - 2);
-            const size_t i1 = outer_ring.GetSideIndex(next_side(side), 1);
-            const Point3f &p0 = pmb_.GetVertex(outer_ring.GetVertexIndex(i0));
-            const Point3f &p1 = pmb_.GetVertex(outer_ring.GetVertexIndex(i1));
+            const size_t i0 = outer.GetIndexOnPrevSide(side, outer_pps - 2);
+            const size_t i1 = outer.GetIndexOnNextSide(side, 1);
+            const Point3f &p0 = pmb_.GetVertex(outer.GetVertexIndex(i0));
+            const Point3f &p1 = pmb_.GetVertex(outer.GetVertexIndex(i1));
 
             // Apply the profile to get the interior points.
+            if (edges[0]->v0->id == "V7") {
+                std::cerr << "XXXX Profile for edge " << edges[side]->id
+                          << " from " << i0 << " [" << outer.GetVertexIndex(i0)
+                          << "] (s " << outer.GetPrevSide(side) << " / "
+                          << (outer_pps - 2) << ")"
+                          << " to " << i1 << " [" << outer.GetVertexIndex(i1)
+                          << " (s " << outer.GetNextSide(side) << " / "
+                          << 1 << ")" << "\n";
+            }
             const auto pts = ApplyProfileBetweenPoints_(*edges[side], p0, p1);
 
-            // Store the appropriate points in the ring.
-            for (size_t i = 0; i < ring.points_per_side - 1; ++i) {
-                const Point3f &pos = pts[r + i];
-                const size_t index   = ring.GetSideIndex(side, i);
+            // Store the appropriate points in the inner ring. The pts vector
+            // stores just the interior points.
+            for (size_t i = 0; i < ring.points_per_side; ++i) {
+                const Point3f &pos = pts[r - 1 + i];
+                const size_t index   = i == ring.points_per_side - 1 ?
+                    ring.GetIndexOnNextSide(side, 0) :
+                    ring.GetIndexOnSide(side, i);
                 const size_t v_index = ring.GetVertexIndex(index);
                 size_t &count = ring.reposition_counts[index];
-                std::cerr << "XXXX Ring " << r
-                          << " repos [side=" << side << ", i=" << i
-                          << "] count = " << count
-                          << " index=" << index
-                          << " pos=" << pos
-                          << "\n";
+                if (edges[0]->v0->id == "V7") {
+                    std::cerr << "XXXX R=" << r
+                              << " s=" << side
+                              << " i=" << i
+                              << " ind=" << index
+                              << " =V" << ring.indices[index]
+                              << " ct= " << count
+                              << " opos=" << pmb_.GetVertex(v_index)
+                              << " npos=" << pos
+                              << "\n";
+                }
                 if (count == 0U) {
                     pmb_.MoveVertex(v_index, pos);
                 }
                 else {
                     ASSERT(count == 1U);
-                    pmb_.MoveVertex(v_index,
-                                    .5f * (pos + pmb_.GetVertex(v_index)));
+                    const Point3f &cur_pos = pmb_.GetVertex(v_index);
+                    pmb_.MoveVertex(v_index, .5f * (cur_pos + pos));
                 }
                 ++count;
+            }
+        }
+    }
+}
+
+void Beveler2_::AddRingPolygons_(const RingVec_ &rings) {
+    // Starting from the outside (first ring), connect the vertices between
+    // each pair of rings.
+    // XXXX N quads per edge, where N = NP for inner ring.
+
+    for (size_t r = 0; r + 1 < rings.size(); ++r) {
+        const Ring_ &outer = rings[r];
+        const Ring_ &inner = rings[r + 1];
+        for (size_t side = 0; side < outer.side_count; ++side) {
+            for (size_t i = 0; i < inner.points_per_side; ++i) {
+                const size_t i0 =
+                    outer.GetVertexIndex(outer.GetIndexOnSide(side, i));
+                const size_t i1 =
+                    outer.GetVertexIndex(outer.GetIndexOnSide(side, i + 1));
+                const size_t i2 =
+                    inner.GetVertexIndex(inner.GetIndexOnSide(side, i));
+                // Special case for starting corner.
+                const size_t i3 = i == 0 ?
+                    outer.GetVertexIndex(
+                        outer.GetIndexOnPrevSide(side,
+                                                 outer.points_per_side - 2)) :
+                    inner.GetVertexIndex(inner.GetIndexOnSide(side, i - 1));
+                std::cerr << "XXXX Side " << side << " Quad 0: " << i0
+                      << " " << i1
+                      << " " << i2
+                      << " " << i3
+                      << "\n";
+                pmb_.AddQuad(i0, i1, i2, i3);
             }
         }
     }
