@@ -414,7 +414,9 @@ Profile Scaling
 The slider at the bottom of the panel allows you to change the size of the
 profile as it is applied to edges without having to move any points. For
 example, you can create a rounding profile and change the radius by adjusting
-the slider as shown here.
+the slider as shown here. The value shown for the scale slider is defined as
+the distance of the new bevel edges from the original vertices, measured along
+the original edges.
 
 |block-image|
 
