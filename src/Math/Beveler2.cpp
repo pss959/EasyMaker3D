@@ -53,6 +53,50 @@ struct EdgeProfile_ {
     size_t interior_index = 0;
 };
 
+/// A Ring_ is used to add faces around each vertex of the original PolyMesh
+/// when the bevel Profile has 4 or more points. It stores the indices of some
+/// number of PolyMeshBuilder vertices around the vertex.
+///
+/// Consider an original PolyMesh vertex that has E edges starting at it. Each
+/// of these edges results in a bevel profile in a plane perpendicular to that
+/// edge, offset from the vertex. These profiles are joined to form a ring.  A
+/// Ring_ is divided into "sides", each of which corresponds to one of the
+/// bevel profiles created for an edge.
+///
+/// If P is the number of points in the Profile and E is the number of edges,
+/// the total number of points in the outermost ring will be E * (P - 1),
+/// because the last vertex of each side of the ring is the same as the first
+/// vertex of the next side.
+///
+/// The \c points_per_side value will be the same as P for the outermost ring.
+/// Each Ring_ created inside another one has 2 fewer points per side.
+struct Ring_ {
+    size_t              level;            ///< Ring level (0 == outside).
+    size_t              points_per_side;  ///< Number of vertices per side.
+    std::vector<GIndex> indices;          ///< PolyMeshBuilder vertex indices.
+
+    /// This is used to keep track of how many time each point of the ring has
+    /// been repositioned.
+    std::vector<size_t> reposition_counts;
+
+    /// Returns a PolyMeshBuilder vertex index with vector range checking.
+    GIndex GetIndex(int i) const {
+        return indices[i < 0 ? indices.size() + i : (i + 1) % indices.size()];
+    }
+
+    /// Returns the index within the Ring indices of the ith vertex on a side.
+    size_t GetSideIndex(size_t side, size_t i) const {
+        ASSERT(i < points_per_side);
+        return side * (points_per_side - 1) + i;
+    }
+
+    /// Returns the PolyMeshBuilder vertex index of the indexed ring vertex.
+    GIndex GetVertexIndex(size_t index) const {
+        ASSERT(index < indices.size());
+        return indices[index];
+    }
+};
+
 // ----------------------------------------------------------------------------
 // Beveler2_ class. XXXX
 // ----------------------------------------------------------------------------
@@ -66,6 +110,11 @@ class Beveler2_ {
     PolyMesh GetResultPolyMesh();
 
   private:
+    // Some shorthand.
+    using EdgeVec_  = std::vector<PolyMesh::Edge *>;
+    using IndexVec_ = std::vector<GIndex>;
+    using RingVec_  = std::vector<Ring_>;
+
     /// Original PolyMesh to bevel.
     const PolyMesh                                           &mesh_;
 
@@ -115,16 +164,30 @@ class Beveler2_ {
     void AddVertexFaces_();
 
     // XXXX
-    void AddVertexFaces_(const std::vector<GIndex> &indices);
+    void AddVertexFaces_(const EdgeVec_ &edges, const IndexVec_ &indices);
 
     /// Adds faces joining all profile points across each original edge of the
     /// PolyMesh.
     void AddEdgeFaces_();
 
+    /// XXXX
+    Beveler2_::RingVec_ BuildRings_(size_t edge_count,
+                                    const IndexVec_ &outer_indices);
+
+    /// XXXX
+    void PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings);
+
+    /// Applies the bevel profile between the two given endpoints in a plane
+    /// perpendicular to the given Edge. Returns the positions of the resulting
+    /// internal points.
+    std::vector<Point3f> ApplyProfileBetweenPoints_(const PolyMesh::Edge &edge,
+                                                    const Point3f &p0,
+                                                    const Point3f &p1);
+
     /// Returns a vector of EdgeProfile_ indices in the correct direction. Does
     /// not include the first one if skip_first is true.
-    std::vector<GIndex> GetEdgeProfileIndices_(const EdgeProfile_ &ep,
-                                               bool skip_first = false) const;
+    Beveler2_::IndexVec_ GetEdgeProfileIndices_(const EdgeProfile_ &ep,
+                                                bool skip_first = false) const;
 
     /// XXXX
     void DumpSkeleton_(const PolyMesh &mesh, const Skeleton3D &skeleton);
@@ -157,7 +220,7 @@ PolyMesh Beveler2_::GetResultPolyMesh() {
     // XXXX
     {
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
-        dump.SetLabelFontSize(32);
+        dump.SetLabelFontSize(20);
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
         dump.SetLabelFlags(label_flags);
@@ -299,27 +362,39 @@ void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
         const auto p0 = pmb_.GetVertex(i0);
         const auto p1 = pmb_.GetVertex(i1);
 
-        // Compute the base point, which is the closest point on the original
-        // PolyMesh edge to either p0 or p1.
-        const Point3f base_point =
-            GetClosestPointOnLine(p0, edge.v0->point,
-                                  edge.v1->point - edge.v0->point);
-
-        // Compute the vectors from the base point to p0 and p1.
-        const Vector3f vec0 = p0 - base_point;
-        const Vector3f vec1 = p1 - base_point;
-
-        // Process all internal profile points.
-        const auto &prof_pts = bevel_.profile.GetPoints();
-        for (size_t i = 0; i < count; ++i) {
-            const auto &pp = prof_pts[i];
-            const Point3f p =
-                base_point + (1 - pp[0]) * vec0 + (1 - pp[1]) * vec1;
-            const size_t index = pmb_.AddVertex(p);
+        // Apply the profile and add all internal points.
+        const auto internal_points = ApplyProfileBetweenPoints_(edge, p0, p1);
+        for (size_t i = 0; i < internal_points.size(); ++i) {
+            const size_t index = pmb_.AddVertex(internal_points[i]);
             if (i == 0)
                 ep.interior_index = index;
         }
     }
+}
+
+std::vector<Point3f> Beveler2_::ApplyProfileBetweenPoints_(
+    const PolyMesh::Edge &edge, const Point3f &p0, const Point3f &p1) {
+    // Compute the base point, which is the closest point on the PolyMesh edge
+    // to either p0 or p1.
+    const Point3f base_point =
+        GetClosestPointOnLine(p0, edge.v0->point,
+                              edge.v1->point - edge.v0->point);
+
+    // Compute the vectors from the base point to p0 and p1.
+    const Vector3f vec0 = p0 - base_point;
+    const Vector3f vec1 = p1 - base_point;
+
+    // Create all internal profile points.
+    const auto &prof_pts = bevel_.profile.GetPoints();
+    std::vector<Point3f> result_pts;
+    result_pts.reserve(prof_pts.size());
+    for (const auto &pp: prof_pts) {
+        result_pts.push_back(base_point +
+                             (1 - pp[0]) * vec0 +
+                             (1 - pp[1]) * vec1);
+    }
+
+    return result_pts;
 }
 
 void Beveler2_::AddVertexFaces_() {
@@ -331,29 +406,34 @@ void Beveler2_::AddVertexFaces_() {
         if (! Util::MapContains(processed_vertices, edge->v0)) {
             processed_vertices.insert(edge->v0);
 
-            // Get EdgeProfile_ instances for all edges around the vertex.
-            std::vector<const EdgeProfile_ *> eps;
-            for (const auto &vertex_edge: PolyMesh::GetVertexEdges(*edge))
-                eps.push_back(& edge_profile_map_.at(vertex_edge));
+            // Get all edges around the vertex.
+            const auto vertex_edges = PolyMesh::GetVertexEdges(*edge);
 
             // Collect indices of all PolyMeshBuilder vertices around the
             // vertex. Since the first vertex of each profile is the same as
             // the last vertex of the previous one, skip the first vertex for
             // each, since the vector is reversed at the end.
-            std::vector<GIndex> indices;
-            for (const auto &ep: eps) {
-                Util::AppendVector(GetEdgeProfileIndices_(*ep, true), indices);
+            IndexVec_ indices;
+            for (const auto &vertex_edge: vertex_edges) {
+                const auto &ep = edge_profile_map_.at(vertex_edge);
+                Util::AppendVector(GetEdgeProfileIndices_(ep, true), indices);
             }
             // Edges are traversed clockwise, so have to reverse indices.
             std::reverse(indices.begin(), indices.end());
 
-            AddVertexFaces_(indices);
+            AddVertexFaces_(vertex_edges, indices);
         }
     }
 }
 
-void Beveler2_::AddVertexFaces_(const std::vector<GIndex> &indices) {
+void Beveler2_::AddVertexFaces_(const EdgeVec_ &edges,
+                                const IndexVec_ &indices) {
+    // If NE is the number of edges and NP is the number of profile points,
+    // then the number of points in a ring of vertices around the vertex is:
+    //    NE * (NP - 1).
+    const size_t edge_count   = edges.size();
     const size_t profile_size = bevel_.profile.GetPointCount();
+    ASSERT(indices.size() == edge_count * (profile_size - 1));
 
     // Special case for default profile.
     if (profile_size == 2U) {
@@ -363,7 +443,7 @@ void Beveler2_::AddVertexFaces_(const std::vector<GIndex> &indices) {
     // Special case for only one interior profile point. Add center points as a
     // polygon and add triangles from vertices to them.
     else if (profile_size == 3U) {
-        std::vector<GIndex> inner_indices;
+        IndexVec_ inner_indices;
         const size_t index_count = indices.size();
         for (size_t i = 1; i < index_count; i += 2) {
             const GIndex i0 = indices[i];
@@ -375,9 +455,134 @@ void Beveler2_::AddVertexFaces_(const std::vector<GIndex> &indices) {
         pmb_.AddPolygon(inner_indices);
     }
 
-    // General case: compute inner ring points and recurse.
+    // Larger case: compute inner ring points and recurse.
     else {
-        // XXXX
+        RingVec_ rings = BuildRings_(edge_count, indices);
+        PositionRingPoints_(edges, rings);
+
+#if XXXX
+        // Starting from the outside (first ring), connect the vertices between
+        // each pair of rings.
+        // XXXX N quads per edge, where N = NP for inner ring.
+        for (size_t r = 0; r + 1 < rings.size(); ++r) {
+            const Ring_ &outer = rings[r];
+            const Ring_ &inner = rings[r + 1];
+            for (size_t e = 0; e < edge_count; ++e) {
+                const auto ostart = e * (outer.points_per_edge - 1);
+                const auto istart = e * (inner.points_per_edge - 1);
+                for (size_t p = 0; p < inner.points_per_edge; ++p) {
+                    const auto i0 = outer.GetIndex[ostart + p);
+                    const auto i1 = outer.GetIndex(ostart + p - 1);
+                    const auto i2 = inner.GetIndex(istart + p);
+                    const auto i3 = outer.GetIndex(ostart + p + 1);
+                    std::cerr << "XXXX Quad " << i0
+                              << " " << i1
+                              << " " << i2
+                              << " " << i3
+                              << "\n";
+                    //                    pmb_.AddQuad(i0, i1, i2, i3);
+                }
+            }
+        }
+#endif
+    }
+}
+
+Beveler2_::RingVec_ Beveler2_::BuildRings_(size_t edge_count,
+                                           const IndexVec_ &outer_indices) {
+    // Compute the number of rings that are needed. Each ring has 2 fewer
+    // points per edge than the ring surrounding it.
+    const size_t profile_size = bevel_.profile.GetPointCount();
+    const size_t ring_count   = profile_size / 2;
+    std::cerr << "XXXX ======== NE = " << edge_count
+              << " NP = " << profile_size
+              << " NR = " << ring_count << "\n";
+    RingVec_ rings(ring_count);
+
+    for (size_t r = 0; r < ring_count; ++r) {
+        Ring_ &ring = rings[r];
+        ring.level = r;
+        ring.points_per_side = profile_size - 2 * r;
+
+        if (r == 0) {
+            ring.indices = outer_indices;
+        }
+        else {
+            // Create vertices for all inner rings. Positions are initialized
+            // to zero so they can be accumulated and averaged later.
+            ring.indices.resize(edge_count * (ring.points_per_side - 1));
+            for (size_t i = 0; i < ring.indices.size(); ++i)
+                ring.indices[i] = pmb_.AddVertex(Point3f::Zero());
+        }
+        std::cerr << "XXXX Ring level " << ring.level
+                  << " with PPS = " << ring.points_per_side
+                  << " and " << ring.indices.size() << " points\n";
+    }
+    return rings;
+}
+
+void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
+    // The vertices of the outer ring are in the correct places. For each inner
+    // ring, reposition its points by applying all or part of the bevel profile
+    // to the appropriate end points in the outermost ring (level 0).
+    //
+    // Some inner points will be repositioned once, and some twice. Keep track
+    // so the resulting points can be averaged if necessary.
+    const size_t edge_count = edges.size();
+
+    for (size_t i = 0; i < rings.size(); ++i) {
+        Ring_ &ring = rings[i];
+        ring.reposition_counts.assign(ring.indices.size(), 0);
+    }
+
+    const auto prev_side = [edge_count](size_t side){
+        return (side + edge_count - 1) % edge_count;
+    };
+    const auto next_side = [edge_count](size_t side){
+        return (side + 1) % edge_count;
+    };
+
+    // Work towards the innermost ring.
+    const Ring_  &outer_ring = rings[0];
+    const size_t  outer_pps  = outer_ring.points_per_side;
+    for (size_t r = 1; r < rings.size(); ++r) {
+        Ring_ &ring = rings[r];
+        for (size_t side = 0; side < edge_count; ++side) {
+            // Get the endpoints from the outermost ring for applying the
+            // profile. The first endpoint is the next-to-last point on the
+            // previous side.
+            const size_t i0 = outer_ring.GetSideIndex(prev_side(side),
+                                                      outer_pps - 2);
+            const size_t i1 = outer_ring.GetSideIndex(next_side(side), 1);
+            const Point3f &p0 = pmb_.GetVertex(outer_ring.GetVertexIndex(i0));
+            const Point3f &p1 = pmb_.GetVertex(outer_ring.GetVertexIndex(i1));
+
+            // Apply the profile to get the interior points.
+            const auto pts = ApplyProfileBetweenPoints_(*edges[side], p0, p1);
+
+            // Store the appropriate points in the ring.
+            for (size_t i = 0; i < ring.points_per_side - 1; ++i) {
+                const Point3f &pos = pts[r + i];
+                const size_t index   = ring.GetSideIndex(side, i);
+                const size_t v_index = ring.GetVertexIndex(index);
+                size_t &count = ring.reposition_counts[index];
+                std::cerr << "XXXX Ring " << r
+                          << " repos [side=" << side << ", i=" << i
+                          << "] count = " << count
+                          << " index=" << index
+                          << " pos=" << pos
+                          << "\n";
+                if (count == 0U) {
+                    pmb_.MoveVertex(v_index, pos);
+                }
+                else {
+                    ASSERT(count == 1U);
+                    pmb_.MoveVertex(v_index,
+                                    .5f * (pos + pmb_.GetVertex(v_index)));
+                }
+                ++count;
+            }
+        }
     }
 }
 
@@ -412,12 +617,12 @@ void Beveler2_::AddEdgeFaces_() {
     }
 }
 
-std::vector<GIndex> Beveler2_::GetEdgeProfileIndices_(const EdgeProfile_ &ep,
-                                                      bool skip_first) const {
+ Beveler2_::IndexVec_ Beveler2_::GetEdgeProfileIndices_(const EdgeProfile_ &ep,
+                                                        bool skip_first) const {
     const size_t profile_count = bevel_.profile.GetPointCount();
     ASSERT(profile_count >= 2U);
 
-    std::vector<GIndex> indices;
+    IndexVec_ indices;
     indices.reserve(profile_count);
 
     if (! skip_first)

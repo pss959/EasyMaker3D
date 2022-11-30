@@ -73,6 +73,42 @@ TEST_F(Beveler2Test, BevelBox4Points) {
     EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
 }
 
+TEST_F(Beveler2Test, BevelBox5Points) {
+    // Create a 10x20x10 box TriMesh.
+    TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
+
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.profile.AddPoint(Point2f(.6, .6));
+    bevel.profile.AddPoint(Point2f(.9, .2));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = .25f;
+
+    // Apply the bevel.
+    const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
+}
+
+
+TEST_F(Beveler2Test, BevelBox6Points) {
+    // Create a 10x20x10 box TriMesh.
+    TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
+
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.profile.AddPoint(Point2f(.6, .6));
+    bevel.profile.AddPoint(Point2f(.8, .5));
+    bevel.profile.AddPoint(Point2f(.9, .2));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = .25f;
+
+    // Apply the bevel.
+    const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
+}
+
 TEST_F(Beveler2Test, BevelCyl) {
     // Create a 10x20x10 cylinder TriMesh.
     TriMesh m = BuildCylinderMesh(5, 5, 20, 7);
