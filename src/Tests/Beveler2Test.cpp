@@ -1,5 +1,6 @@
 ﻿#include "Debug/Dump3dv.h"
 #include "Math/Bevel.h"
+#include "Math/Beveler.h" // XXXX
 #include "Math/Beveler2.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
@@ -11,12 +12,15 @@ class Beveler2Test : public TestBase {
   protected:
     // Beveler2Test() { EnableKLog("l"); }  // XXXX For debugging.
 
+    // TEMPORARY!!!
+    static constexpr float kScale = 2;
+
     /// Returns a default Bevel.
     static Bevel GetDefaultBevel() {
         Bevel bevel;
         // XXXX Bevel all edges for now...
         bevel.max_angle = Anglef::FromDegrees(180);
-        bevel.scale     = .25f;  // XXXX
+        bevel.scale     = kScale;  // XXXX
         return bevel;
     }
 };
@@ -49,10 +53,26 @@ TEST_F(Beveler2Test, BevelBox3Points) {
     Bevel bevel;
     bevel.profile.AddPoint(Point2f(.4, .8));
     bevel.max_angle = Anglef::FromDegrees(180);
-    bevel.scale = .25f;
+    bevel.scale = kScale;
 
     // Apply the bevel.
     const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
+}
+
+TEST_F(Beveler2Test, BevelBox4PointsOLD) {  // XXXX
+    // Create a 10x20x10 box TriMesh.
+    TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
+
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.profile.AddPoint(Point2f(.8, .5));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = kScale;
+
+    // Apply the bevel.
+    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
 
     EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
 }
@@ -63,9 +83,9 @@ TEST_F(Beveler2Test, BevelBox4Points) {
 
     Bevel bevel;
     bevel.profile.AddPoint(Point2f(.4, .8));
-    bevel.profile.AddPoint(Point2f(.6, .6));
+    bevel.profile.AddPoint(Point2f(.8, .5));
     bevel.max_angle = Anglef::FromDegrees(180);
-    bevel.scale = .25f;
+    bevel.scale = kScale;
 
     // Apply the bevel.
     const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
@@ -82,7 +102,7 @@ TEST_F(Beveler2Test, BevelBox5Points) {
     bevel.profile.AddPoint(Point2f(.6, .6));
     bevel.profile.AddPoint(Point2f(.9, .2));
     bevel.max_angle = Anglef::FromDegrees(180);
-    bevel.scale = .25f;
+    bevel.scale = kScale;
 
     // Apply the bevel.
     const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
@@ -101,7 +121,7 @@ TEST_F(Beveler2Test, BevelBox6Points) {
     bevel.profile.AddPoint(Point2f(.8, .5));
     bevel.profile.AddPoint(Point2f(.9, .2));
     bevel.max_angle = Anglef::FromDegrees(180);
-    bevel.scale = .25f;
+    bevel.scale = kScale;
 
     // Apply the bevel.
     const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
@@ -162,7 +182,7 @@ TEST_F(Beveler2Test, BevelPyramid3Points) {
     Bevel bevel;
     bevel.profile.AddPoint(Point2f(.4, .8));
     bevel.max_angle = Anglef::FromDegrees(180);
-    bevel.scale = .25f;
+    bevel.scale = kScale;
     const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
 
     EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
@@ -179,8 +199,25 @@ TEST_F(Beveler2Test, BevelPyramid4Points) {
     bevel.profile.AddPoint(Point2f(.4, .8));
     bevel.profile.AddPoint(Point2f(.6, .6));
     bevel.max_angle = Anglef::FromDegrees(180);
-    bevel.scale = .25f;
+    bevel.scale = kScale;
     const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
+
+    EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
+    // EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    // XXXX ValidateMesh(rm, "Beveled complex model");
+}
+
+TEST_F(Beveler2Test, BevelPyramid4PointsOLD) {
+    // Pyramid has 4 faces adjacent to the apex vertex.
+    TriMesh m = BuildCylinderMesh(0, 10, 20, 4);
+
+    // Apply the bevel.
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.profile.AddPoint(Point2f(.6, .6));
+    bevel.max_angle = Anglef::FromDegrees(180);
+    bevel.scale = kScale;
+    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
 
     EXPECT_LT(0U, rm.GetTriangleCount());  // XXXX
     // EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));

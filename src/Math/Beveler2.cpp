@@ -4,8 +4,10 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <ion/math/vectorutils.h>
+
 #include "Math/Bevel.h"
-#include "Math/Linear.h"  // XXXX
+#include "Math/Linear.h"
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshBuilder.h"
 #include "Math/PolyMeshMerging.h"
@@ -14,7 +16,6 @@
 #include "Util/General.h"
 
 #include "Debug/Dump3dv.h" // XXXX
-#include "Util/String.h" // XXXX
 
 namespace {
 
@@ -242,8 +243,7 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel) :
 PolyMesh Beveler2_::GetResultPolyMesh() {
     const PolyMesh result_mesh = pmb_.BuildPolyMesh();
 
-    // XXXX
-    {
+    {  // XXXX
         const bool add_orig_mesh = false;
 
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
@@ -311,15 +311,30 @@ size_t Beveler2_::GetSkeletonVertex_(const PolyMesh::Edge &edge) {
 }
 
 void Beveler2_::AddOffsetFaces_() {
+    using ion::math::AngleBetween;
+    using ion::math::Normalized;
+    using ion::math::Sine;
+
     auto add_border = [&](const PolyMesh::EdgeVec &edges){
         PolyMesh::IndexVec indices;
         for (const auto &edge: edges) {
             const size_t svi = GetSkeletonVertex_(*edge);
 
-            // Add the new vertex to the offset face.
+            // Get the original vertex and the corresponding skeleton vertex.
             const Point3f &p0 = edge->v0->point;
             const Point3f &p1 = skeleton_.GetVertices()[svi].point;
-            const size_t index = pmb_.AddVertex(p0 + bevel_.scale * (p1 - p0));
+
+            // Use trigonometry to find the position P along the skeleton
+            // bisector edge that is S units from either of the original edges,
+            // where S is the bevel scale.
+            const Vector3f edge_vec     = edge->GetUnitVector();
+            const Vector3f bisector_vec = Normalized(p1 - p0);
+            const Anglef   angle        = AngleBetween(edge_vec, bisector_vec);
+            const float    dist         = bevel_.scale / Sine(angle);
+            const Point3f  pos          = p0 + dist * bisector_vec;
+
+            // Add the new vertex to the offset face.
+            const size_t index = pmb_.AddVertex(pos);
             indices.push_back(index);
 
             // Store the correspondence from the original edge to the new
@@ -409,7 +424,6 @@ std::vector<Point3f> Beveler2_::ApplyProfileBetweenPoints_(
     const Point3f base_point =
         GetClosestPointOnLine(p0, edge.v0->point,
                               edge.v1->point - edge.v0->point);
-
     // Compute the vectors from the base point to p0 and p1.
     const Vector3f vec0 = p0 - base_point;
     const Vector3f vec1 = p1 - base_point;
@@ -453,8 +467,6 @@ void Beveler2_::AddVertexFaces_() {
             std::reverse(vertex_edges.begin(), vertex_edges.end());
             std::reverse(indices.begin(), indices.end());
 
-            std::cerr << "XXXX ########### Faces for vertex "
-                      << edge->v0->id << "\n";
             AddVertexFaces_(vertex_edges, indices);
         }
     }
@@ -504,9 +516,6 @@ Beveler2_::RingVec_ Beveler2_::BuildRings_(size_t edge_count,
     // points per edge than the ring surrounding it.
     const size_t profile_size = bevel_.profile.GetPointCount();
     const size_t ring_count   = profile_size / 2;
-    std::cerr << "XXXX ======== NE = " << edge_count
-              << " NP = " << profile_size
-              << " NR = " << ring_count << "\n";
     RingVec_ rings(ring_count);
 
     for (size_t r = 0; r < ring_count; ++r) {
@@ -541,11 +550,6 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
         ring.reposition_counts.assign(ring.indices.size(), 0);
     }
 
-    if (edges[0]->v0->id == "V7") {
-        for (size_t r = 0; r < rings.size(); ++r)
-            std::cerr << "XXXX --- " << rings[r].ToString() << "\n";
-    }
-
     // Work towards the innermost ring.
     const Ring_  &outer      = rings[0];
     const size_t  outer_pps  = outer.points_per_side;
@@ -561,15 +565,6 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
             const Point3f &p1 = pmb_.GetVertex(outer.GetVertexIndex(i1));
 
             // Apply the profile to get the interior points.
-            if (edges[0]->v0->id == "V7") {
-                std::cerr << "XXXX Profile for edge " << edges[side]->id
-                          << " from " << i0 << " [" << outer.GetVertexIndex(i0)
-                          << "] (s " << outer.GetPrevSide(side) << " / "
-                          << (outer_pps - 2) << ")"
-                          << " to " << i1 << " [" << outer.GetVertexIndex(i1)
-                          << " (s " << outer.GetNextSide(side) << " / "
-                          << 1 << ")" << "\n";
-            }
             const auto pts = ApplyProfileBetweenPoints_(*edges[side], p0, p1);
 
             // Store the appropriate points in the inner ring. The pts vector
@@ -581,17 +576,7 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
                     ring.GetIndexOnSide(side, i);
                 const size_t v_index = ring.GetVertexIndex(index);
                 size_t &count = ring.reposition_counts[index];
-                if (edges[0]->v0->id == "V7") {
-                    std::cerr << "XXXX R=" << r
-                              << " s=" << side
-                              << " i=" << i
-                              << " ind=" << index
-                              << " =V" << ring.indices[index]
-                              << " ct= " << count
-                              << " opos=" << pmb_.GetVertex(v_index)
-                              << " npos=" << pos
-                              << "\n";
-                }
+
                 if (count == 0U) {
                     pmb_.MoveVertex(v_index, pos);
                 }
@@ -628,11 +613,6 @@ void Beveler2_::AddRingPolygons_(const RingVec_ &rings) {
                         outer.GetIndexOnPrevSide(side,
                                                  outer.points_per_side - 2)) :
                     inner.GetVertexIndex(inner.GetIndexOnSide(side, i - 1));
-                std::cerr << "XXXX Side " << side << " Quad 0: " << i0
-                      << " " << i1
-                      << " " << i2
-                      << " " << i3
-                      << "\n";
                 pmb_.AddQuad(i0, i1, i2, i3);
             }
         }

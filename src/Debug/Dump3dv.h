@@ -57,14 +57,23 @@ class Dump3dv {
         label_offset_ = offset;
     }
 
-    /// Dumps a TriMesh.
+    /// Adds a TriMesh to dump.
     void AddTriMesh(const TriMesh &mesh);
 
-    /// Dumps a PolyMesh.
+    /// Adds a PolyMesh to dump.
     void AddPolyMesh(const PolyMesh &mesh);
 
-    /// Dumps a Skeleton3D.
+    /// Adds a Skeleton3D to dump.
     void AddSkeleton3D(const Skeleton3D &skel);
+
+    /// Adds a vertex to dump. Also adds a label if the vertex labeling flag is
+    /// set.
+    void AddVertex(const std::string &id, const Point3f &point);
+
+    /// Adds an edge between two vertices to dump. Also adds a label if the
+    /// edge labeling flag is set.
+    void AddEdge(const std::string &id,
+                 const std::string &v0_id, const std::string &v1_id);
 
   private:
     std::ofstream out_;

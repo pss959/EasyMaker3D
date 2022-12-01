@@ -26,6 +26,19 @@ TEST_F(LinearTest, ComputeNormal) {
                                                 Point3f(-10,  10, -10)));
 }
 
+TEST_F(LinearTest, GetClosestPointOnLine) {
+    EXPECT_EQ(Point3f(3, 10, 2), GetClosestPointOnLine(Point3f(3, 20, 2),
+                                                       Point3f(0, 10, 2),
+                                                       Vector3f(1, 0, 0)));
+    EXPECT_EQ(Point3f(3, 10, 2), GetClosestPointOnLine(Point3f(3, 20, 2),
+                                                       Point3f(0, 10, 2),
+                                                       Vector3f(-1, 0, 0)));
+    // Diagonal
+    EXPECT_EQ(Point3f(5, 5, 0), GetClosestPointOnLine(Point3f(-3, -3, 0),
+                                                       Point3f(10, 0, 0),
+                                                       Vector3f(-10, 10, 0)));
+}
+
 TEST_F(LinearTest, TransformPlane) {
     const Plane pl(10, Vector3f::AxisZ());
     EXPECT_EQ(Vector3f::AxisZ(), pl.normal);

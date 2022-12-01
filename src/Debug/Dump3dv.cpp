@@ -244,6 +244,17 @@ void Dump3dv::AddSkeleton3D(const Skeleton3D &skel) {
     }
 }
 
+void Dump3dv::AddVertex(const std::string &id, const Point3f &point) {
+    AddVertex_(id, point);
+    if (label_flags_.Has(LabelFlag::kVertexLabels))
+        AddLabel_(point, id);
+}
+
+void Dump3dv::AddEdge(const std::string &id,
+                      const std::string &v0_id, const std::string &v1_id) {
+    out_ << "l " << id << ' ' << v0_id << ' ' << v1_id << "\n";
+}
+
 void Dump3dv::AddVertex_(const std::string &id, const Point3f &p) {
     out_ << "v " << id << p << "\n";
 }

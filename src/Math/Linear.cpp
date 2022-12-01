@@ -318,10 +318,7 @@ bool ComputeBarycentric(const Point2f &p, const Point2f & a,
 
 Point3f GetClosestPointOnLine(const Point3f &p, const Point3f &line_pt,
                               const Vector3f &line_dir) {
-    const float length_squared = ion::math::LengthSquared(line_dir);
-    ASSERT(length_squared > 0);
-    const float projection = ion::math::Dot((p - line_pt), line_dir);
-    return line_pt + (projection / length_squared) * line_dir;
+    return line_pt + ion::math::Projection(p - line_pt, line_dir);
 }
 
 bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
