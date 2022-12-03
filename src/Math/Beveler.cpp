@@ -328,7 +328,9 @@ VertexRing * Beveler_::BuildVertexRing_(Edge &edge,
                                     bevel_.profile.GetPointCount());
 
     // Position and add all the profile points for each edge around the vertex.
-    for (auto &e: PolyMesh::GetVertexEdges(edge)) {
+    auto edges = PolyMesh::GetVertexEdges(edge);
+    std::reverse(edges.begin(), edges.end());
+    for (auto &e: edges) {
         EdgeFrame_ &frame = *frame_map.at(e);
         ASSERT(frame.closest_l_point_set);
         ASSERT(frame.closest_r_point_set);
