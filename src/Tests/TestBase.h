@@ -45,6 +45,20 @@ class TestBase : public ::testing::Test {
     // Close enough.
     static constexpr float kClose = 1e-4f;
 
+    /// Returns the name of the current test case.
+    std::string GetTestCaseName() const {
+        const auto info =
+            ::testing::UnitTest::GetInstance()->current_test_info();
+        return info->test_case_name();
+    }
+
+    /// Returns the name of the current test.
+    std::string GetTestName() const {
+        const auto info =
+            ::testing::UnitTest::GetInstance()->current_test_info();
+        return info->name();
+    }
+
     // Convenience to create an Object of the templated type.
     template <typename T>
     static std::shared_ptr<T> CreateObject(const std::string &name = "") {
