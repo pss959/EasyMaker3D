@@ -12,13 +12,13 @@
 class PolyMeshBuilder {
   public:
     /// Adds a vertex at the given point, returning its index.
-    size_t AddVertex(const Point3f &point);
+    GIndex AddVertex(const Point3f &point);
 
     /// Changes the position of a vertex.
-    void MoveVertex(size_t index, const Point3f &new_point);
+    void MoveVertex(GIndex index, const Point3f &new_point);
 
     /// Returns the current position of the indexed vertex.
-    const Point3f & GetVertex(size_t index) const;
+    const Point3f & GetVertex(GIndex index) const;
 
     /// Adds a polygon constructed from 3 or more outer border indices.
     void AddPolygon(const std::vector<GIndex> &indices);

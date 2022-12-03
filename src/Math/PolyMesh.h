@@ -72,7 +72,8 @@ struct PolyMesh {
                                 std::vector<size_t> &border_counts);
 
     /// Returns a vector containing all edges meeting at the v0 vertex of the
-    /// given edge, starting with the given edge.
+    /// given edge, starting with the given edge. Edges are returned in
+    /// counterclockwise order.
     static EdgeVec GetVertexEdges(Edge &start_edge);
 
     /// Converts the PolyMesh to a TriMesh and returns it.
@@ -145,9 +146,13 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     /// border, whether it is the outside or a hole.
     Edge & PreviousEdgeInFace() const;
 
-    /// Convenience that returns the Edge after this one incident to the v0
-    /// vertex.
+    /// Convenience that returns the Edge counterclockwise from this one
+    /// incident to the v0 vertex.
     Edge & NextEdgeAroundVertex() const;
+
+    /// Convenience that returns the Edge clockwise from this one incident to
+    /// the v0 vertex.
+    Edge & PreviousEdgeAroundVertex() const;
 
     /// Converts to a string for debugging.
     std::string ToString() const;

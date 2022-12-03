@@ -4,19 +4,19 @@
 #include "Util/KLog.h"
 #include "Util/String.h"
 
-size_t PolyMeshBuilder::AddVertex(const Point3f &point) {
+GIndex PolyMeshBuilder::AddVertex(const Point3f &point) {
     KLOG('l', "PolyMeshBuilder added vertex " << vertices_.size()
          << " at " << point);
     vertices_.push_back(point);
     return vertices_.size() - 1;
 }
 
-const Point3f & PolyMeshBuilder::GetVertex(size_t index) const {
+const Point3f & PolyMeshBuilder::GetVertex(GIndex index) const {
     ASSERT(index < vertices_.size());
     return vertices_[index];
 }
 
-void PolyMeshBuilder::MoveVertex(size_t index, const Point3f &new_point) {
+void PolyMeshBuilder::MoveVertex(GIndex index, const Point3f &new_point) {
     KLOG('l', "PolyMeshBuilder moved vertex " << index << " to " << new_point);
     ASSERT(index < vertices_.size());
     vertices_[index] = new_point;

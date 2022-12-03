@@ -248,6 +248,13 @@ Edge & PolyMesh::Edge::PreviousEdgeInFace() const {
 }
 
 Edge & PolyMesh::Edge::NextEdgeAroundVertex() const {
+    Edge *next_edge = PreviousEdgeInFace().opposite_edge;
+    ASSERT(next_edge);
+    ASSERT(next_edge->v0 == v0);
+    return *next_edge;
+}
+
+Edge & PolyMesh::Edge::PreviousEdgeAroundVertex() const {
     ASSERT(opposite_edge);
     Edge &next_edge = opposite_edge->NextEdgeInFace();
     ASSERT(next_edge.v0 == v0);
@@ -432,7 +439,6 @@ PolyMesh::EdgeVec PolyMesh::GetVertexEdges(Edge &start_edge) {
     EdgeVec edges;
     Edge *edge = &start_edge;
     do {
-        ASSERT(edge->opposite_edge);
         edge = &edge->NextEdgeAroundVertex();
         ASSERT(start_edge.v0 == edge->v0);
         edges.push_back(edge);
