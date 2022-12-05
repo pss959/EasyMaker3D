@@ -55,15 +55,27 @@ struct PolyMesh {
     /// All edges in the PolyMesh.
     EdgeVec   edges;
 
+    /// Constructs an empty PolyMesh.
+    PolyMesh() {}
+
     /// Constructs a PolyMesh from a watertight TriMesh. This assumes all
     /// vertices in the mesh are unique and shared.
     PolyMesh(const TriMesh &mesh);
 
     /// Builds a PolyMesh from vertex points and borders.
     PolyMesh(const std::vector<Point3f> &points,
-             const std::vector<Border> &borders);
+             const std::vector<Border> &borders) {
+        Set(points, borders);
+    }
 
-    ~PolyMesh();
+    ~PolyMesh() { Clear(); }
+
+    /// Clears and deletes the current contents, if any.
+    void Clear();
+
+    /// Replaces the contents using the given vertex points and borders.
+    void Set(const std::vector<Point3f> &points,
+             const std::vector<Border> &borders);
 
     // Collects vertices from all Face borders into the vertices vector. The
     // border_counts vector will contain the number of vertices in each border
@@ -81,6 +93,10 @@ struct PolyMesh {
 
     /// Dumps the PolyMesh to stdout for debugging.
     void Dump(const std::string &when) const;
+
+    /// Do not allow copy construction or assignment; pointers would be wrong.
+    PolyMesh(const PolyMesh &)             = delete;
+    PolyMesh & operator=(const PolyMesh &) = delete;
 };
 
 // ----------------------------------------------------------------------------

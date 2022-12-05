@@ -44,6 +44,6 @@ void PolyMeshBuilder::AddHole(const std::vector<GIndex> &indices) {
     KLOG('l', "PolyMeshBuilder added HOLE " << Util::JoinItems(indices));
 }
 
-PolyMesh PolyMeshBuilder::BuildPolyMesh() const {
-    return PolyMesh(vertices_, borders_);
+void PolyMeshBuilder::BuildPolyMesh(PolyMesh &result_mesh) const {
+    result_mesh.Set(vertices_, borders_);
 }

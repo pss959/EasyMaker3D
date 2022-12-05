@@ -120,7 +120,7 @@ class Beveler_ {
     Beveler_(const Bevel &bevel) : bevel_(bevel) {}
 
     /// Builds and returns a beveled version of the given PolyMesh.
-    PolyMesh ApplyBevel(const PolyMesh &poly_mesh);
+    void ApplyBevel(const PolyMesh &poly_mesh, PolyMesh &result_mesh);
 
   private:
     /// Maps an Edge to its corresponding EdgeFrame_.
@@ -202,7 +202,7 @@ class Beveler_ {
 // Beveler_ implementation.
 // ----------------------------------------------------------------------------
 
-PolyMesh Beveler_::ApplyBevel(const PolyMesh &poly_mesh) {
+void Beveler_::ApplyBevel(const PolyMesh &poly_mesh, PolyMesh &result_mesh) {
     // Create an EdgeFrame_ for each edge.
     FrameMap_ frame_map;
     BuildEdgeFrames_(poly_mesh.edges, frame_map);
@@ -233,7 +233,7 @@ PolyMesh Beveler_::ApplyBevel(const PolyMesh &poly_mesh) {
         delete it.second;
 
     // Build and return a PolyMesh from the results.
-    return builder_.BuildPolyMesh();
+    builder_.BuildPolyMesh(result_mesh);
 }
 
 void Beveler_::BuildEdgeFrames_(const EdgeVec &edges, FrameMap_ &frame_map) {
@@ -535,12 +535,14 @@ TriMesh Beveler::ApplyBevel(const TriMesh &mesh, const Bevel &bevel) {
     MergeCoplanarFaces(poly_mesh);
 
     // Apply the bevel to get a new PolyMesh.
-    PolyMesh beveled = Beveler_(bevel).ApplyBevel(poly_mesh);
+    PolyMesh beveled;
+    Beveler_(bevel).ApplyBevel(poly_mesh, beveled);
 
     // Convert back to a TriMesh.
     return beveled.ToTriMesh();
 }
 
-PolyMesh Beveler::ApplyBevel(const PolyMesh &poly_mesh, const Bevel &bevel) {
-    return Beveler_(bevel).ApplyBevel(poly_mesh);
+void Beveler::ApplyBevel(const PolyMesh &poly_mesh, const Bevel &bevel,
+                          PolyMesh &result_mesh) {
+    return Beveler_(bevel).ApplyBevel(poly_mesh, result_mesh);
 }

@@ -9,6 +9,7 @@
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
 #include "Math/PolyMesh.h"
+#include "Math/PolyMeshBuilder.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
@@ -387,103 +388,59 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
             HoleFinder_(*f).StoreHoleEdges();
 }
 
-void MergeDuplicateFeatures(PolyMesh &poly_mesh) {
+void MergeDuplicateFeatures(const PolyMesh &poly_mesh, PolyMesh &result_mesh) {
+    PolyMeshBuilder pmb;
+
     // Use a Point3fMap with a reasonable tolerance to make sure all vertices
-    // are unique. Create a parallel vector of unique indices for all vertices.
+    // are unique. Add all unique vertices to the PolyMeshBuilder and save a
+    // map from original vertex to vertex index in the PolyMeshBuilder.
     Point3fMap pt_map(.0001f);
-    std::unordered_map<GIndex, Vertex *>         vert_index_map;
-    std::unordered_map<const Vertex *, Vertex *> vert_map;
+    std::unordered_map<GIndex, GIndex>         vert_index_map;
+    std::unordered_map<const Vertex *, GIndex> vert_map;
     for (const auto vert: poly_mesh.vertices) {
         // Add to the Point3fMap and see if the vertex is a duplicate.
-        const GIndex index = pt_map.Add(vert->point);
+        Point3f pos;
+        const GIndex index = pt_map.Add(vert->point, &pos);
         if (Util::MapContains(vert_index_map, index)) {
-            // Duplicate. Map the vertex to the unique vertex at the same pt.
+            // Duplicate. Map the vertex to the index of the unique vertex at
+            // the same pt.
             vert_map[vert] = vert_index_map.at(index);
-            std::cerr << "XXXX " << vert->id
-                      << " @ " << vert->point
-                      << " is DUP of " << vert_map[vert]->id << "\n";
         }
         else {
             // Insert the unique vertex..
-            vert_index_map[index] = vert;
-            vert_map[vert]        = vert;
-            std::cerr << "XXXX " << vert->id
-                      << " @ " << vert->point
-                      << " -> index " << index << "\n";
+            const GIndex new_index = pmb.AddVertex(pos);
+            vert_index_map[index] = new_index;
+            vert_map[vert]        = new_index;
         }
     }
 
-    // Save the first edge that spans each pair of unique vertices, modifying
-    // vertex pointer in edges when necessary. Use a map keyed by the
-    // combination of vertex IDs.
-    const auto is_good_edge = [](const Edge &e){return e.v0 != e.v1; };
-    const auto get_edge_key = [](const Edge &edge){
-        return edge.v0->id + "/" + edge.v1->id;
+    // This is used to get indices for one border of a face.
+    const auto get_border_indices = [&](const EdgeVec &border_edges){
+        std::vector<GIndex> indices;
+        for (const auto edge: border_edges) {
+            const GIndex index = vert_map.at(edge->v0);
+            if (indices.empty() || index != indices.back())
+                indices.push_back(index);
+        }
+        return indices;
     };
-    std::unordered_map<std::string, Edge *> edge_map;
-    for (const auto edge: poly_mesh.edges) {
-        edge->v0 = vert_map.at(edge->v0);
-        edge->v1 = vert_map.at(edge->v1);
-        // Skip zero-length edges.
-        if (is_good_edge(*edge)) {
-            const std::string key = get_edge_key(*edge);
-            if (! Util::MapContains(edge_map, key)) {
-                edge_map[key] = edge;
-                std::cerr << "XXXX Added " << edge->id
-                          << " for key " << key << "\n";
-            }
-        }
-    }
 
-    // Update the opposite edge in each real edge.
-    for (const auto edge: poly_mesh.edges) {
-        if (is_good_edge(*edge))
-            edge->opposite_edge =
-                edge_map.at(get_edge_key(*edge->opposite_edge));
-    }
-
-    // Replace all real edges in all faces with unique ones and ignore
-    // zero-length edges.
+    // Add all faces that end up with any area.
+    std::vector<GIndex> indices;
     for (const auto face: poly_mesh.faces) {
-        EdgeVec good_edges;
-        for (const auto edge: face->outer_edges) {
-            if (is_good_edge(*edge))
-                good_edges.push_back(edge_map.at(get_edge_key(*edge)));
-        }
-        face->outer_edges = good_edges;
-        std::string s; // XXXX
-        for (const auto edge: face->outer_edges)
-            s += " " + edge->id;
-        std::cerr << "XXXX Face " << face->id
-                  << " outer edges =" << s << "\n";
-        for (auto &hole: face->hole_edges) {
-            EdgeVec good_hole_edges;
-            for (const auto edge: hole) {
-                if (is_good_edge(*edge))
-                    good_hole_edges.push_back(edge_map.at(get_edge_key(*edge)));
+        // Have to be at least 3 vertices.
+        indices = get_border_indices(face->outer_edges);
+        if (indices.size() >= 3U) {
+            pmb.AddPolygon(indices);
+
+            // Check for holes.
+            for (auto &hole: face->hole_edges) {
+                indices = get_border_indices(hole);
+                if (indices.size() >= 3U)
+                    pmb.AddHole(indices);
             }
-            hole = good_hole_edges;
         }
     }
 
-    // Remove and delete all unused vertices
-    const size_t xv = poly_mesh.vertices.size();
-    Util::EraseIf(poly_mesh.vertices,
-                  [&](const Vertex *v){ return vert_map.at(v) != v; });
-    std::cerr << "XXXX Vertex count went from " << xv
-              << " to " << poly_mesh.vertices.size() << "\n";
-
-    // Remove and delete all edges that have zero length.
-    const size_t xe = poly_mesh.edges.size();
-    Util::EraseIf(poly_mesh.edges,
-                  [&](const Edge *e){ return ! is_good_edge(*e); });
-    std::cerr << "XXXX Edge count went from " << xe
-              << " to " << poly_mesh.edges.size() << "\n";
-
-    // Remove and delete all faces with zero area.
-    const size_t xf = poly_mesh.faces.size();
-    Util::EraseIf(poly_mesh.faces,
-                  [&](const Face *f){ return f->outer_edges.size() < 3U; });
-    std::cerr << "XXXX Face count went from " << xf
-              << " to " << poly_mesh.faces.size() << "\n";
+    pmb.BuildPolyMesh(result_mesh);
 }

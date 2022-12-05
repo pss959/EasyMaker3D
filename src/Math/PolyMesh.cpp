@@ -77,8 +77,8 @@ static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
     if (it != edge_map.end()) {
         ASSERT(it->second);
         Edge &opp = *it->second;
-        ASSERT(! edge.opposite_edge);
-        ASSERT(! opp.opposite_edge);
+        ASSERTM(! edge.opposite_edge, edge.ToString());
+        ASSERTM(! opp.opposite_edge,  opp.ToString());
         edge.opposite_edge = &opp;
         opp.opposite_edge  = &edge;
     }
@@ -370,8 +370,10 @@ PolyMesh::PolyMesh(const TriMesh &mesh) {
     }
 }
 
-PolyMesh::PolyMesh(const std::vector<Point3f> &points,
+void PolyMesh::Set(const std::vector<Point3f> &points,
                    const std::vector<Border> &borders) {
+    Clear();
+
     // Add vertices.
     for (size_t i = 0; i < points.size(); ++i)
         vertices.push_back(new Vertex(i, points[i]));
@@ -421,13 +423,16 @@ PolyMesh::PolyMesh(const std::vector<Point3f> &points,
     }
 }
 
-PolyMesh::~PolyMesh() {
+void PolyMesh::Clear() {
     for (auto &e: edges)
         delete e;
     for (auto &f: faces)
         delete f;
     for (auto &v: vertices)
         delete v;
+    vertices.clear();
+    edges.clear();
+    faces.clear();
 }
 
 void PolyMesh::GetFaceVertices(const Face &face, VertexVec &vertices,

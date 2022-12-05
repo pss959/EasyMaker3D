@@ -54,7 +54,8 @@ void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
         dump.AddPolyMesh(pm);
     }
 
-    PolyMesh bpm = Beveler::ApplyBevel(pm, bevel);
+    PolyMesh bpm;
+    Beveler::ApplyBevel(pm, bevel, bpm);
     s = "Beveled " + prefix + " PolyMesh";
     f = "/tmp/" + prefix + "3.3dv";
     report();

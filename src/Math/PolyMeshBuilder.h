@@ -38,8 +38,9 @@ class PolyMeshBuilder {
         AddPolygon(std::vector<GIndex>({i0, i1, i2, i3}));
     }
 
-    /// Constructs and returns a PolyMesh from the data.
-    PolyMesh BuildPolyMesh() const;
+    /// Sets \c result_mesh to the PolyMesh built from the data. Any previous
+    /// contents of \c result_mesh are destroyed.
+    void BuildPolyMesh(PolyMesh &result_mesh) const;
 
   private:
     std::vector<Point3f>          vertices_;  ///< Vertex storage.

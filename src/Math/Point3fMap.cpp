@@ -8,7 +8,7 @@
 Point3fMap::Point3fMap(float precision) : precision_(precision) {
 }
 
-GIndex Point3fMap::Add(const Point3f &p) {
+GIndex Point3fMap::Add(const Point3f &p, Point3f *pos) {
     GIndex index;
     const Point3f rp = precision_ > 0 ? Round_(p) : p;
 
@@ -20,6 +20,8 @@ GIndex Point3fMap::Add(const Point3f &p) {
         index = map_.size();
         map_[rp] = index;
     }
+    if (pos)
+        *pos = rp;
     return index;
 }
 

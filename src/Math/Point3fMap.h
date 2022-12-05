@@ -22,8 +22,10 @@ class Point3fMap {
     Point3fMap(float precision);
 
     /// Adds a point if it is not already present. Returns the new index if it
-    /// was added or the old index if it was already in the map.
-    GIndex Add(const Point3f &p);
+    /// was added or the old index if it was already in the map. If the \c pos
+    /// pointer is not null, the position of the new point adjusted by
+    /// precision is returned.
+    GIndex Add(const Point3f &p, Point3f *pos = nullptr);
 
     /// Returns the number of vertices in the map.
     size_t GetCount() const { return map_.size(); }

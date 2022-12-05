@@ -129,10 +129,7 @@ struct Ring_ {
 class Beveler2_ {
   public:
     /// Applies the given Bevel to the given PolyMesh.
-    Beveler2_(const PolyMesh &mesh, const Bevel &bevel);
-
-    /// Returns the resulting beveled PolyMesh.
-    PolyMesh GetResultPolyMesh();
+    Beveler2_(const PolyMesh &mesh, const Bevel &bevel, PolyMesh &result_mesh);
 
   private:
     // Some shorthand.
@@ -224,7 +221,8 @@ class Beveler2_ {
     void DumpSkeleton_(const PolyMesh &mesh, const Skeleton3D &skeleton);
 };
 
-Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel) :
+Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel,
+                     PolyMesh &result_mesh) :
     mesh_(mesh),
     bevel_(bevel) {
 
@@ -255,23 +253,19 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel) :
     // Add faces joining profile points across edges and around vertices.
     AddEdgeFaces_();
     AddVertexFaces_();
-}
 
-PolyMesh Beveler2_::GetResultPolyMesh() {
-    PolyMesh result_mesh = pmb_.BuildPolyMesh();
-
-    // Make sure the resulting PolyMesh has no duplicate features.
-    MergeDuplicateFeatures(result_mesh);
-
+    // Construct the result PolyMesh and make sure the resulting PolyMesh has
+    // no duplicate features.
+    pmb_.BuildPolyMesh(result_mesh);
     {  // XXXX
         const bool add_orig_mesh = false;
 
-        Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
+        Debug::Dump3dv dump("/tmp/DMESH.3dv", "Result Beveler2");
         dump.SetLabelFontSize(40 - 4 * bevel_.profile.GetPointCount());
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
         dump.SetLabelFlags(label_flags);
         dump.AddPolyMesh(result_mesh);
         if (add_orig_mesh) {
@@ -283,7 +277,27 @@ PolyMesh Beveler2_::GetResultPolyMesh() {
         }
     }
 
-    return result_mesh;
+    MergeDuplicateFeatures(result_mesh, result_mesh);
+
+    {  // XXXX
+        const bool add_orig_mesh = false;
+
+        Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
+        dump.SetLabelFontSize(40 - 4 * bevel_.profile.GetPointCount());
+        Debug::Dump3dv::LabelFlags label_flags;
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+        dump.SetLabelFlags(label_flags);
+        dump.AddPolyMesh(result_mesh);
+        if (add_orig_mesh) {
+            dump.SetExtraPrefix("M_");
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+            dump.SetLabelFlags(label_flags);
+            dump.AddPolyMesh(mesh_);
+        }
+    }
 }
 
 void Beveler2_::CreateEdgeProfiles_() {
@@ -715,12 +729,8 @@ TriMesh Beveler2::ApplyBevel(const TriMesh &mesh, const Bevel &bevel) {
     MergeCoplanarFaces(poly_mesh);
 
     // Use a Beveler2_ to do the rest.
-    Beveler2_ beveler(poly_mesh, bevel);
-    const TriMesh tri_mesh = beveler.GetResultPolyMesh().ToTriMesh();
-    {
-        Debug::Dump3dv dump("/tmp/RTMESH.3dv", "Beveler2");
-        dump.SetLabelFontSize(32);
-        dump.AddTriMesh(tri_mesh);
-    }
-    return tri_mesh;
+    PolyMesh result_mesh;
+    Beveler2_ beveler(poly_mesh, bevel, result_mesh);
+
+    return result_mesh.ToTriMesh();
 }
