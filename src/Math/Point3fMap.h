@@ -5,9 +5,9 @@
 
 #include "Math/Types.h"
 
-/// A Point3fMap can be used when constructing a TriMesh to ensure that
-/// vertices are not duplicated. It creates a unique index (starting at 0 and
-/// incrementing by 1) for all Point3f instances in the map.
+/// A Point3fMap can be used when constructing a TriMesh or PolyMesh to ensure
+/// that vertices are not duplicated. It creates a unique index (starting at 0
+/// and incrementing by 1) for all Point3f instances in the map.
 ///
 /// The precision parameter supplied to the constructor is used to optionally
 /// round all coordinate values so that very close points will be considered

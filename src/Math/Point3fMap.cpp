@@ -26,7 +26,7 @@ GIndex Point3fMap::Add(const Point3f &p) {
 Point3f Point3fMap::Round_(const Point3f &p) {
     Point3f rp;
     for (int i = 0; i < 3; ++i)
-        rp[i] = RoundToPrecision(rp[i], precision_);
+        rp[i] = RoundToPrecision(p[i], precision_);
     return rp;
 }
 
