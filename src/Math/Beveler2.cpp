@@ -44,12 +44,15 @@ static Direction_ GetOppositeDirection_(Direction_ dir) {
 }
 
 /// An EdgeProfile_ stores information about how a Profile is applied at the
-/// starting vertex (v0) of an edge of the original PolyMesh. The points of the
-/// EdgeProfile_ are added as vertices in a PolyMeshBuilder and the resulting
-/// indices are stored here.  Profile vertices are always ordered in a
-/// counterclockwise direction around the v0 vertex.
+/// starting vertex (v0) of an edge of the original PolyMesh. The \c direction
+/// field is used to maintain the proper vertex order. The \c angle field is
+/// used to determine whether the edge passes the max-angle test.  The points
+/// of the EdgeProfile_ are added as vertices in a PolyMeshBuilder and the
+/// resulting indices are stored here in the \c indices field. Profile vertices
+/// are always ordered in a counterclockwise direction around the v0 vertex.
 struct EdgeProfile_ {
     Direction_          direction = Direction_::kUnknown;
+    Anglef              angle;
     std::vector<GIndex> indices;
 };
 
@@ -154,11 +157,19 @@ class Beveler2_ {
 
     /// Maps each PolyMesh::Edge pointer to the PolyMeshBuilder index of the
     /// new offset vertex created for it.
-    std::unordered_map<const PolyMesh::Edge *, size_t>       edge_vertex_map_;
+    std::unordered_map<const PolyMesh::Edge *, GIndex>       edge_vertex_map_;
 
     /// Maps each PolyMesh::Edge pointer to the EdgeProfile_ created for it.
     std::unordered_map<const PolyMesh::Edge *, EdgeProfile_> edge_profile_map_;
 
+    /// XXXX
+    void CreateEdgeProfiles_();
+
+    /// Assigns a direction to an edge of the original PolyMesh and its
+    /// opposite edge, moving on to neighbors as well. Also computes and stores
+    /// the angle between the faces adjacent to the edges.
+    void AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
+                                      Direction_ dir);
 
     /// XXXX
     void InitSkeleton_();
@@ -169,17 +180,10 @@ class Beveler2_ {
     size_t GetSkeletonVertex_(const PolyMesh::Edge &edge);
 
     /// XXXX
-    void AddOffsetFaces_();
-
-    /// XXXX
     IndexVec_ AddOffsetFaceBorder_(const EdgeVec_ &border_edges);
 
     /// XXXX
-    void CreateEdgeProfiles_();
-
-    /// Assigns a direction to an edge of the original PolyMesh and its
-    /// opposite edge, moving on to neighbors as well.
-    void AssignEdgeDirection_(const PolyMesh::Edge &edge, Direction_ dir);
+    void CollapseEdgeVertices_();
 
     /// XXXX
     void SetEdgeProfileIndices_(const PolyMesh::Edge &edge);
@@ -224,17 +228,29 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel) :
     mesh_(mesh),
     bevel_(bevel) {
 
+    // Set up EdgeProfile_ instances for all PolyMesh edges and store them in
+    // the edge_profile_map_.
+    CreateEdgeProfiles_();
+
     // Set up the Skeleton3D and map for its vertices.
     InitSkeleton_();
 
     // Using the skeleton, create offset vertices for each face of the PolyMesh
     // and add the vertices to the PolyMeshBuilder. Store the resulting indices
     // in a the edge_vertex_map_ and create faces joining them.
-    AddOffsetFaces_();
+    for (const auto &face: mesh_.faces) {
+        pmb_.AddPolygon(AddOffsetFaceBorder_(face->outer_edges));
+        for (auto &hole: face->hole_edges)
+            pmb_.AddHole(AddOffsetFaceBorder_(hole));
+    }
 
-    // Set up EdgeProfile_ instances for all PolyMesh edges and store them in
-    // the edge_profile_map_.
-    CreateEdgeProfiles_();
+    // Collapse vertices for edges that exceed the maximum bevel angle.
+    CollapseEdgeVertices_();
+
+    // Set the indices in the EdgeProfile_ for each PolyMesh edge, adding
+    // interior profile points to the PolyMeshBuilder if necessary.
+    for (auto &edge: mesh_.edges)
+        SetEdgeProfileIndices_(*edge);
 
     // Add faces joining profile points across edges and around vertices.
     AddEdgeFaces_();
@@ -250,18 +266,57 @@ PolyMesh Beveler2_::GetResultPolyMesh() {
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
         dump.SetLabelFontSize(40 - 4 * bevel_.profile.GetPointCount());
         Debug::Dump3dv::LabelFlags label_flags;
-        //label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
         dump.SetLabelFlags(label_flags);
         dump.AddPolyMesh(result_mesh);
         if (add_orig_mesh) {
             dump.SetExtraPrefix("M_");
             label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
             dump.SetLabelFlags(label_flags);
             dump.AddPolyMesh(mesh_);
         }
     }
 
     return result_mesh;
+}
+
+void Beveler2_::CreateEdgeProfiles_() {
+    // Create a default EdgeProfile_ instance for each PolyMesh edge.
+    for (const auto &edge: mesh_.edges)
+        edge_profile_map_[edge] = EdgeProfile_();
+
+    // Assign directions and angles in the EdgeProfile_ instances, recursively.
+    for (auto &edge: mesh_.edges)
+        AssignEdgeDirectionAndAngle_(*edge, Direction_::kForward);
+}
+
+void Beveler2_::AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
+                                             Direction_ dir) {
+    // Do nothing if already assigned.
+    EdgeProfile_ &ep = edge_profile_map_.at(&edge);
+    if (ep.direction != Direction_::kUnknown)
+        return;
+
+    ASSERT(edge.opposite_edge);
+    const auto      &opp_edge = *edge.opposite_edge;
+    EdgeProfile_    &opp_ep   = edge_profile_map_.at(&opp_edge);
+    const Direction_ opp_dir  = GetOppositeDirection_(dir);
+    ep.direction     = dir;
+    opp_ep.direction = opp_dir;
+
+    // Compute and store the angle formed by the edge's faces.
+    const Vector3f &normal0 = edge.face->GetNormal();
+    const Vector3f &normal1 = edge.opposite_edge->face->GetNormal();
+    ep.angle = opp_ep.angle = Anglef::FromDegrees(180) -
+        ion::math::AngleBetween(normal0, normal1);
+
+    // Go to neighbor edges within the face and try to apply a consistent
+    // direction.
+    AssignEdgeDirectionAndAngle_(edge.NextEdgeInFace(),     dir);
+    AssignEdgeDirectionAndAngle_(opp_edge.NextEdgeInFace(), opp_dir);
 }
 
 void Beveler2_::InitSkeleton_() {
@@ -311,14 +366,6 @@ size_t Beveler2_::GetSkeletonVertex_(const PolyMesh::Edge &edge) {
     return 0;
 }
 
-void Beveler2_::AddOffsetFaces_() {
-    for (const auto &face: mesh_.faces) {
-        pmb_.AddPolygon(AddOffsetFaceBorder_(face->outer_edges));
-        for (auto &hole: face->hole_edges)
-            pmb_.AddHole(AddOffsetFaceBorder_(hole));
-    }
-}
-
 Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
     const EdgeVec_ &border_edges) {
     using ion::math::AngleBetween;
@@ -353,35 +400,26 @@ Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
     return indices;
 }
 
-void Beveler2_::CreateEdgeProfiles_() {
-    // Create a default EdgeProfile_ instance for each PolyMesh edge.
-    for (const auto &edge: mesh_.edges)
-        edge_profile_map_[edge] = EdgeProfile_();
+void Beveler2_::CollapseEdgeVertices_() {
+    for (const auto &edge: mesh_.edges) {
+        const auto &ep = edge_profile_map_.at(edge);
 
-    // Assign directions to the EdgeProfile_ instances.
-    for (auto &edge: mesh_.edges)
-        AssignEdgeDirection_(*edge, Direction_::kForward);
+        if (ep.angle > bevel_.max_angle) {
+            const auto collapse = [&](const PolyMesh::Edge &e){
+                // Move the edge's offset vertex to the closest point on the
+                // collapsed edge.
+                const GIndex index = edge_vertex_map_.at(&e);
+                pmb_.MoveVertex(index, GetClosestPointOnLine(
+                                    pmb_.GetVertex(index),
+                                    edge->v0->point, edge->GetUnitVector()));
+            };
 
-    // Set up the indices in the EdgeProfile_ for each PolyMesh edge, adding
-    // interior profile points to the PolyMeshBuilder if necessary.
-    for (auto &edge: mesh_.edges)
-        SetEdgeProfileIndices_(*edge);
-}
-
-void Beveler2_::AssignEdgeDirection_(const PolyMesh::Edge &edge,
-                                     Direction_ dir) {
-    // Do nothing if already assigned.
-    EdgeProfile_ &ep = edge_profile_map_.at(&edge);
-    if (ep.direction == Direction_::kUnknown) {
-        EdgeProfile_    &opp_ep  = edge_profile_map_.at(edge.opposite_edge);
-        const Direction_ opp_dir = GetOppositeDirection_(dir);
-        ep.direction     = dir;
-        opp_ep.direction = opp_dir;
-
-        // Go to neighbor edges within the face and try to apply a consistent
-        // direction.
-        AssignEdgeDirection_(edge.NextEdgeInFace(), dir);
-        AssignEdgeDirection_(edge.opposite_edge->NextEdgeInFace(), opp_dir);
+            // Collapse the offset vertex created for the given edge and also
+            // the vertex created for the next edge in the face, which is on
+            // the same offset edge.
+            collapse(*edge);
+            collapse(edge->NextEdgeInFace());
+        }
     }
 }
 
@@ -654,7 +692,7 @@ void Beveler2_::AddInterRingFaces_(const RingVec_ &rings) {
 void Beveler2_::DumpSkeleton_(const PolyMesh &mesh,
                               const Skeleton3D &skeleton) {
     Debug::Dump3dv dump("/tmp/BMESH.3dv", "Beveler2");
-    dump.SetLabelFontSize(10);
+    dump.SetLabelFontSize(32);
     dump.SetExtraPrefix("M_");
     dump.AddPolyMesh(mesh);
     dump.SetExtraPrefix("S_");
