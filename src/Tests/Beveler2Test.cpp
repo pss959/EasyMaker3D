@@ -1,6 +1,5 @@
 ﻿#include "Debug/Dump3dv.h"
 #include "Math/Bevel.h"
-#include "Math/Beveler.h" // XXXX
 #include "Math/Beveler2.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
@@ -10,27 +9,24 @@
 
 class Beveler2Test : public TestBase {
   protected:
-    // Beveler2Test() { EnableKLog("l"); }  // XXXX For debugging.
-
-    // Returns a default Bevel.
-    static Bevel GetDefaultBevel(float scale = 1) {
+    // Returns a 2-point Bevel with optional scale and max_angle settings.
+    static Bevel GetDefaultBevel(float scale = 1, float max_angle = 180) {
         Bevel bevel;
-        // XXXX Bevel all edges for now...
-        bevel.max_angle = Anglef::FromDegrees(180);
+        bevel.max_angle = Anglef::FromDegrees(max_angle);
         bevel.scale     = scale;
         return bevel;
     }
 
-    // Returns a Bevel with the given number of point and optional scale.
-    static Bevel GetBevel(size_t np, float scale = 1) {
+    // Returns a Bevel with the given number of points (3-6) and optional scale
+    // and max_angle settings.
+    static Bevel GetBevel(size_t np, float scale = 1, float max_angle = 180) {
         static const Point2f pts[4]{
             { .4f, .8f }, { .5f, .8f }, { .8f, .6f }, { .9f, .2f }
         };
 
-        ASSERT(np <= 6U);
+        ASSERT(np >= 3U && np <= 6U);
         Bevel bevel;
-        // XXXX Bevel all edges for now...
-        bevel.max_angle = Anglef::FromDegrees(180);
+        bevel.max_angle = Anglef::FromDegrees(max_angle);
         bevel.scale = scale;
 
         const auto add_pts = [&](const std::vector<size_t> indices){
@@ -59,6 +55,12 @@ class Beveler2Test : public TestBase {
         EXPECT_EQ(expected_tri_count, rm.GetTriangleCount());
     }
 };
+
+TEST_F(Beveler2Test, TMP) {
+    const TriMesh m = BuildCylinderMesh(5, 5, 12, 8);
+    const TriMesh rm = Beveler2::ApplyBevel(m, GetDefaultBevel(1, 120));
+    ValidateMesh(rm, GetTestName());
+}
 
 TEST_F(Beveler2Test, BevelBox) {
     const TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));

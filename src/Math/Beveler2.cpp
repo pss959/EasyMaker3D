@@ -258,7 +258,10 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel) :
 }
 
 PolyMesh Beveler2_::GetResultPolyMesh() {
-    const PolyMesh result_mesh = pmb_.BuildPolyMesh();
+    PolyMesh result_mesh = pmb_.BuildPolyMesh();
+
+    // Make sure the resulting PolyMesh has no duplicate features.
+    MergeDuplicateFeatures(result_mesh);
 
     {  // XXXX
         const bool add_orig_mesh = false;
@@ -713,5 +716,11 @@ TriMesh Beveler2::ApplyBevel(const TriMesh &mesh, const Bevel &bevel) {
 
     // Use a Beveler2_ to do the rest.
     Beveler2_ beveler(poly_mesh, bevel);
-    return beveler.GetResultPolyMesh().ToTriMesh();
+    const TriMesh tri_mesh = beveler.GetResultPolyMesh().ToTriMesh();
+    {
+        Debug::Dump3dv dump("/tmp/RTMESH.3dv", "Beveler2");
+        dump.SetLabelFontSize(32);
+        dump.AddTriMesh(tri_mesh);
+    }
+    return tri_mesh;
 }

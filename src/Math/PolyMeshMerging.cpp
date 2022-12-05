@@ -7,6 +7,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
+#include "Math/Point3fMap.h"
 #include "Math/PolyMesh.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -35,7 +36,6 @@ struct VertexInfo_ {
 
 /// Maps a Vertex to its VertexInfo_.
 typedef std::unordered_map<Vertex *, VertexInfo_> VertexMap_;
-
 
 /// Helper class for finding holes in a merged Face of a PolyMesh that is known
 /// to have holes and storing them properly in the Face.
@@ -385,4 +385,105 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
     for (auto &f: poly_mesh.faces)
         if (FaceHasHoles_(*f))
             HoleFinder_(*f).StoreHoleEdges();
+}
+
+void MergeDuplicateFeatures(PolyMesh &poly_mesh) {
+    // Use a Point3fMap with a reasonable tolerance to make sure all vertices
+    // are unique. Create a parallel vector of unique indices for all vertices.
+    Point3fMap pt_map(.0001f);
+    std::unordered_map<GIndex, Vertex *>         vert_index_map;
+    std::unordered_map<const Vertex *, Vertex *> vert_map;
+    for (const auto vert: poly_mesh.vertices) {
+        // Add to the Point3fMap and see if the vertex is a duplicate.
+        const GIndex index = pt_map.Add(vert->point);
+        if (Util::MapContains(vert_index_map, index)) {
+            // Duplicate. Map the vertex to the unique vertex at the same pt.
+            vert_map[vert] = vert_index_map.at(index);
+            std::cerr << "XXXX " << vert->id
+                      << " @ " << vert->point
+                      << " is DUP of " << vert_map[vert]->id << "\n";
+        }
+        else {
+            // Insert the unique vertex..
+            vert_index_map[index] = vert;
+            vert_map[vert]        = vert;
+            std::cerr << "XXXX " << vert->id
+                      << " @ " << vert->point
+                      << " -> index " << index << "\n";
+        }
+    }
+
+    // Save the first edge that spans each pair of unique vertices, modifying
+    // vertex pointer in edges when necessary. Use a map keyed by the
+    // combination of vertex IDs.
+    const auto is_good_edge = [](const Edge &e){return e.v0 != e.v1; };
+    const auto get_edge_key = [](const Edge &edge){
+        return edge.v0->id + "/" + edge.v1->id;
+    };
+    std::unordered_map<std::string, Edge *> edge_map;
+    for (const auto edge: poly_mesh.edges) {
+        edge->v0 = vert_map.at(edge->v0);
+        edge->v1 = vert_map.at(edge->v1);
+        // Skip zero-length edges.
+        if (is_good_edge(*edge)) {
+            const std::string key = get_edge_key(*edge);
+            if (! Util::MapContains(edge_map, key)) {
+                edge_map[key] = edge;
+                std::cerr << "XXXX Added " << edge->id
+                          << " for key " << key << "\n";
+            }
+        }
+    }
+
+    // Update the opposite edge in each real edge.
+    for (const auto edge: poly_mesh.edges) {
+        if (is_good_edge(*edge))
+            edge->opposite_edge =
+                edge_map.at(get_edge_key(*edge->opposite_edge));
+    }
+
+    // Replace all real edges in all faces with unique ones and ignore
+    // zero-length edges.
+    for (const auto face: poly_mesh.faces) {
+        EdgeVec good_edges;
+        for (const auto edge: face->outer_edges) {
+            if (is_good_edge(*edge))
+                good_edges.push_back(edge_map.at(get_edge_key(*edge)));
+        }
+        face->outer_edges = good_edges;
+        std::string s; // XXXX
+        for (const auto edge: face->outer_edges)
+            s += " " + edge->id;
+        std::cerr << "XXXX Face " << face->id
+                  << " outer edges =" << s << "\n";
+        for (auto &hole: face->hole_edges) {
+            EdgeVec good_hole_edges;
+            for (const auto edge: hole) {
+                if (is_good_edge(*edge))
+                    good_hole_edges.push_back(edge_map.at(get_edge_key(*edge)));
+            }
+            hole = good_hole_edges;
+        }
+    }
+
+    // Remove and delete all unused vertices
+    const size_t xv = poly_mesh.vertices.size();
+    Util::EraseIf(poly_mesh.vertices,
+                  [&](const Vertex *v){ return vert_map.at(v) != v; });
+    std::cerr << "XXXX Vertex count went from " << xv
+              << " to " << poly_mesh.vertices.size() << "\n";
+
+    // Remove and delete all edges that have zero length.
+    const size_t xe = poly_mesh.edges.size();
+    Util::EraseIf(poly_mesh.edges,
+                  [&](const Edge *e){ return ! is_good_edge(*e); });
+    std::cerr << "XXXX Edge count went from " << xe
+              << " to " << poly_mesh.edges.size() << "\n";
+
+    // Remove and delete all faces with zero area.
+    const size_t xf = poly_mesh.faces.size();
+    Util::EraseIf(poly_mesh.faces,
+                  [&](const Face *f){ return f->outer_edges.size() < 3U; });
+    std::cerr << "XXXX Face count went from " << xf
+              << " to " << poly_mesh.faces.size() << "\n";
 }
