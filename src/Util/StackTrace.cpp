@@ -23,7 +23,8 @@ namespace Util {
 // ----------------------------------------------------------------------------
 // Windows version.
 // ----------------------------------------------------------------------------
-std::vector<std::string> GetStackTrace(size_t count) {
+static std::vector<std::string> GetStackTrace_(size_t count,
+                                               size_t num_to_skip) {
     const auto process = GetCurrentProcess();
     const auto thread  = GetCurrentThread();
 
@@ -45,18 +46,13 @@ std::vector<std::string> GetStackTrace(size_t count) {
     frame.AddrStack.Offset = context.Rsp;
     frame.AddrStack.Mode   = AddrModeFlat;
 
-
     std::vector<std::string> lines;
     lines.reserve(count);
-    for (size_t i = 0; i < count; i++) {
+    for (size_t i = num_to_skip; i < count; i++) {
         // This returns false when the end of the stack is reached.
         if (! StackWalk64(image, process, thread, &frame, &context, NULL,
                           SymFunctionTableAccess64, SymGetModuleBase64, NULL))
             break;
-
-        // Skip the first frame, which is always this function.
-        if (i == 0)
-            continue;
 
         char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
         const PSYMBOL_INFO symbol = reinterpret_cast<PSYMBOL_INFO>(buffer);
@@ -70,7 +66,8 @@ std::vector<std::string> GetStackTrace(size_t count) {
             // Windows, so add it in first.
             sym_name = Util::Demangle(std::string("_") + symbol->Name);
         }
-        lines.push_back("[" + Util::ToString(i) + "]: " + sym_name);
+        lines.push_back("[" + Util::ToString(i - num_to_skip) + "]: " +
+                        sym_name);
     }
 
     SymCleanup(process);
@@ -83,7 +80,8 @@ std::vector<std::string> GetStackTrace(size_t count) {
 // ----------------------------------------------------------------------------
 // Reasonable version.
 // ----------------------------------------------------------------------------
-std::vector<std::string> GetStackTrace(size_t count) {
+static std::vector<std::string> GetStackTrace_(size_t count,
+                                               size_t num_to_skip) {
     void *array[count];
     size_t size;
 
@@ -93,7 +91,7 @@ std::vector<std::string> GetStackTrace(size_t count) {
     char **syms = backtrace_symbols(array, size);
 
     std::vector<std::string> lines;
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = num_to_skip; i < size; ++i) {
         // The symbol from backtrace_symbols() is of this form:
         //   object(name+offset) [address]
         // Demangle the name part.
@@ -104,15 +102,21 @@ std::vector<std::string> GetStackTrace(size_t count) {
             const std::string name = sym.substr(open + 1, plus - open - 1);
             sym = Util::ReplaceString(sym, name, Util::Demangle(name));
         }
-        lines.push_back("[" + Util::ToString(i) + "]: " + sym);
+        lines.push_back("[" + Util::ToString(i - num_to_skip) + "]: " + sym);
     }
     return lines;
 }
 
 #endif
 
+std::vector<std::string> GetStackTrace(size_t count) {
+    // Skip GetStackTrace() and GetStackTrace_() at the top of the stack.
+    return GetStackTrace_(count, 2);
+}
+
 void PrintStackTrace(size_t count) {
-    for (const auto &line: GetStackTrace(count))
+    // Skip PrintStackTrace() and GetStackTrace_() at the top of the stack.
+    for (const auto &line: GetStackTrace_(count, 2))
         fprintf(stderr, "%s\n", line.c_str());
 }
 

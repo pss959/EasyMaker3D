@@ -125,7 +125,10 @@ cov_env.Alias('CovTests', cov_test)
 # -----------------------------------------------------------------------------
 
 test_filter = ARGUMENTS.get('TESTFILTER')
-test_args = ('--gtest_filter="%s"' % test_filter) if test_filter else ''
+test_args = ' '.join([
+  '--gtest_catch_exceptions=0',   # Let exceptions be handled outside gtest.
+  ('--gtest_filter="%s"' % test_filter) if test_filter else '',
+])
 
 reg_test_env.Alias('RunRegTests', reg_test, f'{run_program} $SOURCE {test_args}')
 cov_test_env.Alias('RunCovTests', cov_test, f'{run_program} $SOURCE {test_args}')
