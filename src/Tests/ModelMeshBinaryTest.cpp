@@ -1,7 +1,7 @@
 #include "Math/Linear.h"
 #include "Math/Types.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class ModelMeshBinaryTest : public TestBase {};
 

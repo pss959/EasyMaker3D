@@ -1,5 +1,5 @@
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 #include "Util/FilePath.h"
 #include "Util/Read.h"
 

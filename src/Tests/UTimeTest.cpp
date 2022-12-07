@@ -1,7 +1,7 @@
 #include <chrono>
 #include <thread>
 
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Util/UTime.h"
 
 TEST(UTime, Operators) {

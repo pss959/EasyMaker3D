@@ -4,8 +4,8 @@
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class Beveler2Test : public TestBase {
   protected:
@@ -59,8 +59,9 @@ class Beveler2Test : public TestBase {
 TEST_F(Beveler2Test, TMP) {  // XXXX
     // EnableKLog("l"); // XXXX
     const TriMesh m = BuildCylinderMesh(5, 5, 12, 8);
-    const TriMesh rm = Beveler2::ApplyBevel(m, GetBevel(6, 1, 120));
-    ValidateMesh(rm, GetTestName());
+    //const TriMesh rm = Beveler2::ApplyBevel(m, GetBevel(6, 1, 120));
+    const TriMesh rm = Beveler2::ApplyBevel(m, GetDefaultBevel(1, 0));
+    //ValidateMesh(rm, GetTestName());
 }
 
 TEST_F(Beveler2Test, BevelBox) {

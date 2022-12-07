@@ -1,5 +1,5 @@
 ﻿#include "App/SceneContext.h"
-#include "AppTestBase.h"
+#include "Tests/AppTestBase.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
@@ -7,7 +7,7 @@
 #include "Managers/CommandManager.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 class ScaleCommandTest : public AppTestBase {
   protected:

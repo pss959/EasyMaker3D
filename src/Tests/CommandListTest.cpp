@@ -1,7 +1,7 @@
 ﻿#include "Commands/Command.h"
 #include "Commands/CommandList.h"
 #include "Tests/SceneTestBase.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 DECL_SHARED_PTR(DummyCommand);
 

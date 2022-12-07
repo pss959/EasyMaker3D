@@ -1,8 +1,8 @@
 #include <ion/math/vectorutils.h>
 
 #include "Math/Triangulation.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class TriangulationTest : public TestBase {
   protected:

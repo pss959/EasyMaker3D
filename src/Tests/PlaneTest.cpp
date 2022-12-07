@@ -1,5 +1,5 @@
 #include "Math/Types.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 TEST(PlaneTest, GetDistanceToPoint) {
     // Plane with distance specified.

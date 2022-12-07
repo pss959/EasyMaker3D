@@ -4,8 +4,8 @@
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
 #include "Math/PolyMeshMerging.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class BevelerTest : public TestBase {
   protected:

@@ -1,6 +1,6 @@
 #include "Models/CylinderModel.h"
-#include "SceneTestBase.h"
-#include "Testing.h"
+#include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 // This test can be used in conjunction with valgrind/callgrind to investigate
 // slow parts of the application. These are generally #if-ed out so that they

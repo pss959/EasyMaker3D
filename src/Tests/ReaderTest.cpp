@@ -7,7 +7,7 @@
 #include "Parser/Parser.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 #include "Util/String.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains the

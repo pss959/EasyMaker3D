@@ -1,8 +1,8 @@
 ﻿#include "Base/Tuning.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Models/BoxModel.h"
 #include "Models/CylinderModel.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 
 class ModelTest : public SceneTestBase {
 };

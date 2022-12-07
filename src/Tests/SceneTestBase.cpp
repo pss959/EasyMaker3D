@@ -1,4 +1,4 @@
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 
 #include "App/RegisterTypes.h"
 #include "Base/Tuning.h"

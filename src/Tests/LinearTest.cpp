@@ -1,6 +1,6 @@
 #include "Math/Linear.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 #include <ion/math/transformutils.h>
 

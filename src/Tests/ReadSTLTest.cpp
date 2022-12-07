@@ -1,8 +1,8 @@
 ﻿#include "IO/STLReader.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class ReadSTLTest : public TestBase {
   protected:

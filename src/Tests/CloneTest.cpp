@@ -3,7 +3,7 @@
 #include "Parser/Registry.h"
 #include "SG/Box.h"
 #include "SG/Node.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 #include "Util/General.h"
 
 class CloneTest : public SceneTestBase {};

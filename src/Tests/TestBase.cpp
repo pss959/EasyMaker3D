@@ -1,4 +1,4 @@
-#include "TestBase.h"
+#include "Tests/TestBase.h"
 
 #include <algorithm>
 #include <fstream>
@@ -9,7 +9,7 @@
 #include "App/RegisterTypes.h"
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Read.h"

@@ -3,8 +3,8 @@
 #include "Parser/Registry.h"
 #include "SG/Shape.h"
 #include "SG/TextNode.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 #include "Util/General.h"
 
 class RegistryTest : public TestBase {

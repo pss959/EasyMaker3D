@@ -5,8 +5,8 @@
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "SG/Search.h"
-#include "SceneTestBase.h"
-#include "Testing.h"
+#include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 class PaneTest : public SceneTestBase {
   protected:

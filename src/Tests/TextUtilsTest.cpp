@@ -3,8 +3,8 @@
 #include "Base/Tuning.h"
 #include "Math/TextUtils.h"
 #include "Util/FilePath.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class TextUtilsTest : public TestBase {
   protected:

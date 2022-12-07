@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Parser/Registry.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 #include "TestContext.h"
 
 // This is a base class for any test that requies an Application instance.

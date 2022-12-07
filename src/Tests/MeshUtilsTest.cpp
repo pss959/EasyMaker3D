@@ -2,8 +2,8 @@
 
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class MeshUtilsTest : public TestBase {
   protected:

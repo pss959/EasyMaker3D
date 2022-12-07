@@ -1,7 +1,7 @@
-﻿#include "Testing.h"
+﻿#include "Tests/Testing.h"
 #include "Models/BoxModel.h"
 #include "Models/BeveledModel.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 
 class BeveledModelTest : public SceneTestBase {
 };

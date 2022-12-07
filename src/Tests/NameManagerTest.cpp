@@ -1,5 +1,5 @@
 ﻿#include "Managers/NameManager.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 TEST(NameManager, AddRemove) {
     const std::string n1 = "Hello";

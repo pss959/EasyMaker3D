@@ -6,7 +6,7 @@
 #include "Parser/Exception.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 #include "Util/Assert.h"
 
 class SearchTest : public SceneTestBase {

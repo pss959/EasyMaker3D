@@ -7,8 +7,8 @@
 #include "Math/MeshUtils.h"
 #include "Math/Polygon.h"
 #include "Math/TextUtils.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class MeshBuildingTest : public TestBase {};
 

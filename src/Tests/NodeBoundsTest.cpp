@@ -2,7 +2,7 @@
 
 #include "Math/Types.h"
 #include "SG/Node.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 
 class NodeBoundsTest : public SceneTestBase {
 };

@@ -1,7 +1,7 @@
 #include "Math/MeshBuilding.h"
 #include "Math/Types.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class TriMeshBinaryTest : public TestBase {};
 

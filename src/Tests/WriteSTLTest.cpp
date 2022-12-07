@@ -6,8 +6,8 @@
 #include "Models/BoxModel.h"
 #include "Models/RootModel.h"
 #include "Models/TextModel.h"
-#include "SceneTestBase.h"
-#include "Testing.h"
+#include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 #include "Util/String.h"
 
 class WriteSTLTest : public SceneTestBase {

@@ -1,5 +1,5 @@
 #include "Math/Types.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 TEST(ColorTest, Constructors) {
     EXPECT_EQ(Color(0, 0, 0, 1), Color());

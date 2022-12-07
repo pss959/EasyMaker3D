@@ -4,8 +4,8 @@
 #include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
-#include "TestBase.h"
-#include "Testing.h"
+#include "Tests/TestBase.h"
+#include "Tests/Testing.h"
 
 class NodePathTest : public TestBase {
   public:

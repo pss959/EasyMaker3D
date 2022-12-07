@@ -4,7 +4,7 @@
 #include "SG/Intersector.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 
 class IntersectorTest : public SceneTestBase {
   protected:

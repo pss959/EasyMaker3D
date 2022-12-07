@@ -6,7 +6,7 @@
 #include "IO/Reader.h"
 #include "SG/IonContext.h"
 #include "SG/Scene.h"
-#include "TestBase.h"
+#include "Tests/TestBase.h"
 #include "Testing.h"
 
 // This is a base class for any test that has to read a scene from a file or

@@ -1,6 +1,6 @@
 #include "Math/ToString.h"
 #include "Math/Types.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Util/String.h"
 
 TEST(String, ToString) {

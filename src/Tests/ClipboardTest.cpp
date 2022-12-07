@@ -1,11 +1,11 @@
 ﻿#include <vector>
 
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Managers/ClipboardManager.h"
 #include "Models/BoxModel.h"
 #include "Models/ClippedModel.h"
 #include "Models/CylinderModel.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
 #include "Util/General.h"
 
 class ClipboardTest : public SceneTestBase {
