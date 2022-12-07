@@ -1,5 +1,9 @@
-﻿#include "Math/Polygon.h"
+﻿#include "Math/MeshBuilding.h"
+#include "Math/PolyMesh.h"
+#include "Math/PolyMeshMerging.h"
+#include "Math/Polygon.h"
 #include "Math/Skeleton2D.h"
+#include "Math/Skeleton3D.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
@@ -7,7 +11,8 @@ class SkeletonTest : public TestBase {
   protected:
     // Returns the index of the skeleton vertex with the given point and
     // source_index.
-    static size_t FindIndex(const Skeleton2D &skel, const Point2f &point,
+    template <typename T>
+    static size_t FindIndex(const Skeleton<T> &skel, const T &point,
                             int source_index) {
         for (size_t i = 0; i < skel.GetVertices().size(); ++i) {
             const auto &v = skel.GetVertices()[i];
@@ -20,7 +25,8 @@ class SkeletonTest : public TestBase {
 
     // Returns true if an edge with the given endpoints and bisector indices is
     // found in the skeleton edges.
-    static bool HasEdge(const Skeleton2D &skel,
+    template <typename T>
+    static bool HasEdge(const Skeleton<T> &skel,
                         size_t v0, size_t v1, int bisected0, int bisected1) {
         for (const auto &e: skel.GetEdges())
             if (e.v0_index == v0 &&
@@ -34,13 +40,23 @@ class SkeletonTest : public TestBase {
     // Dumps a skeleton for debugging.
     template <typename T>
     static void DumpSkeleton(const Skeleton<T> &skel) {
-        for (const auto &v: skel.GetVertices())
-            std::cerr << "Vertex @ " << v.point << " source = "
-                      << v.source_index << "\n";
+        const auto &verts = skel.GetVertices();
+        for (size_t i = 0; i < verts.size(); ++i)
+            std::cerr << "Vertex [" << i << "] @ " << verts[i].point
+                      << " source = " << verts[i].source_index << "\n";
         for (const auto &e: skel.GetEdges())
             std::cerr << "Edge from " << e.v0_index << " to " << e.v1_index
-                      << " bisects "  << e.bisected_index0
+                      << " (source "  << verts[e.v0_index].source_index
+                      << " to "       << verts[e.v1_index].source_index
+                      << ") bisects " << e.bisected_index0
                       << " and "      << e.bisected_index1 << "\n";
+    }
+
+    // Dumps indices for debugging.
+    static void DumpIndices(const std::vector<size_t> &indices) {
+        for (size_t i = 0; i < indices.size(); ++i)
+            std::cerr << " Index " << indices[i]
+                      << " in position " << i << "\n";
     }
 };
 
@@ -88,7 +104,7 @@ TEST_F(SkeletonTest, Skeleton2DRect) {
     // 4 original points + 2 points for center bisector.
     EXPECT_EQ(6U, skel.GetVertices().size());
 
-    // Get indices for original point and center point.
+    // Get indices for original points and center point.
     std::vector<size_t> indices;
     for (size_t i = 0; i < points.size(); ++i)
         indices.push_back(FindIndex(skel, points[i], i));
@@ -102,4 +118,60 @@ TEST_F(SkeletonTest, Skeleton2DRect) {
     EXPECT_TRUE(HasEdge(skel, indices[2], indices[5], 3, 1));
     EXPECT_TRUE(HasEdge(skel, indices[3], indices[5], 0, 2));
     EXPECT_TRUE(HasEdge(skel, indices[4], indices[5], -1, -1));
+}
+
+TEST_F(SkeletonTest, Skeleton3DCube) {
+    // 2x2x2 box centered on the origin.
+    PolyMesh pbox(BuildBoxMesh(Vector3f(2, 2, 2)));
+    MergeCoplanarFaces(pbox);
+
+    Skeleton3D skel;
+    skel.BuildForPolyMesh(pbox);
+
+    // 8 original points + 6 center points for bisectors.
+    EXPECT_EQ(14U, skel.GetVertices().size());
+
+    // Get indices for original points and center points.
+    std::vector<size_t> indices;
+    for (size_t i = 0; i < pbox.vertices.size(); ++i)
+        indices.push_back(FindIndex(skel, pbox.vertices[i]->point, i));
+    indices.push_back(FindIndex(skel, Point3f(-1,  0,  0), -1));  // 6
+    indices.push_back(FindIndex(skel, Point3f( 1,  0,  0), -1));  // 7
+    indices.push_back(FindIndex(skel, Point3f( 0, -1,  0), -1));  // 8
+    indices.push_back(FindIndex(skel, Point3f( 0,  1,  0), -1));  // 9
+    indices.push_back(FindIndex(skel, Point3f( 0,  0, -1), -1));  // 10
+    indices.push_back(FindIndex(skel, Point3f( 0,  0,  1), -1));  // 11
+
+    // 4 bisectors per face.
+    EXPECT_EQ(24U, skel.GetEdges().size());
+
+    EXPECT_TRUE(HasEdge(skel, indices[0], indices[8], 1, 3));
+    EXPECT_TRUE(HasEdge(skel, indices[1], indices[8], 2, 0));
+    EXPECT_TRUE(HasEdge(skel, indices[3], indices[8], 3, 1));
+    EXPECT_TRUE(HasEdge(skel, indices[2], indices[8], 0, 2));
+
+    EXPECT_TRUE(HasEdge(skel, indices[2], indices[11], 2, 6));
+    EXPECT_TRUE(HasEdge(skel, indices[3], indices[11], 5, 3));
+    EXPECT_TRUE(HasEdge(skel, indices[7], indices[11], 6, 2));
+    EXPECT_TRUE(HasEdge(skel, indices[6], indices[11], 3, 5));
+
+    EXPECT_TRUE(HasEdge(skel, indices[4], indices[9], 6, 9));
+    EXPECT_TRUE(HasEdge(skel, indices[6], indices[9], 5, 8));
+    EXPECT_TRUE(HasEdge(skel, indices[7], indices[9], 9, 6));
+    EXPECT_TRUE(HasEdge(skel, indices[5], indices[9], 8, 5));
+
+    EXPECT_TRUE(HasEdge(skel, indices[1], indices[10], 0, 9));
+    EXPECT_TRUE(HasEdge(skel, indices[0], indices[10], 8, 1));
+    EXPECT_TRUE(HasEdge(skel, indices[4], indices[10], 9, 0));
+    EXPECT_TRUE(HasEdge(skel, indices[5], indices[10], 1, 8));
+
+    EXPECT_TRUE(HasEdge(skel, indices[3], indices[13], 1, 5));
+    EXPECT_TRUE(HasEdge(skel, indices[1], indices[13], 9, 2));
+    EXPECT_TRUE(HasEdge(skel, indices[5], indices[13], 5, 1));
+    EXPECT_TRUE(HasEdge(skel, indices[7], indices[13], 2, 9));
+
+    EXPECT_TRUE(HasEdge(skel, indices[4], indices[12], 0, 6));
+    EXPECT_TRUE(HasEdge(skel, indices[0], indices[12], 3, 8));
+    EXPECT_TRUE(HasEdge(skel, indices[2], indices[12], 6, 0));
+    EXPECT_TRUE(HasEdge(skel, indices[6], indices[12], 8, 3));
 }
