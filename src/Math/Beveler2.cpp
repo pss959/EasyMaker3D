@@ -22,6 +22,14 @@
 template <typename T>
 static std::string PT(const T &t) { return Math::ToString(t, .01f); }
 
+static bool XXXXI(size_t index) {
+    return index == 275U;
+}
+
+static bool XXXXE(const PolyMesh::Edge &edge) {
+    return edge.id == "E7";
+}
+
 namespace {
 
 // ----------------------------------------------------------------------------
@@ -201,7 +209,7 @@ class Beveler2_ {
                               size_t points_per_side);
 
     /// XXXX
-    Beveler2_::RingVec_ BuildRings_(size_t edge_count,
+    Beveler2_::RingVec_ BuildRings_(const EdgeVec_ &edges,
                                     const IndexVec_ &outer_indices);
 
     /// XXXX
@@ -260,7 +268,7 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel,
     {  // XXXX
         const bool add_orig_mesh = false;
 
-        Debug::Dump3dv dump("/tmp/DMESH.3dv", "Result Beveler2");
+        Debug::Dump3dv dump("/tmp/UMESH.3dv", "Unmerged Beveler2");
         dump.SetLabelFontSize(40 - 4 * bevel_.profile.GetPointCount());
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
@@ -278,6 +286,30 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel,
     }
 
     MergeDuplicateFeatures(result_mesh, result_mesh);
+
+    { // XXXX
+        // Check for vertices not used in edges.
+        std::unordered_set<const PolyMesh::Vertex *> used_verts;
+        for (const auto &edge: result_mesh.edges) {
+            used_verts.insert(edge->v0);
+            used_verts.insert(edge->v1);
+        }
+        for (const auto &vert: result_mesh.vertices) {
+            if (! Util::MapContains(used_verts, vert))
+                std::cerr << "XXXX *** Result " << vert->ToString()
+                          << " not used in any edges\n";
+        }
+
+        // Check for short edges.
+        for (const auto &edge: result_mesh.edges) {
+            const float dist = ion::math::Distance(edge->v0->point,
+                                                   edge->v1->point);
+            if (dist < .1f) {
+                std::cerr << "XXXX *** Result " << edge->ToString()
+                          << " dist = " << dist << "\n";
+            }
+        }
+    }
 
     {  // XXXX
         const bool add_orig_mesh = false;
@@ -330,10 +362,12 @@ void Beveler2_::AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
     ep.angle = opp_ep.angle = Anglef::FromDegrees(180) -
         ion::math::AngleBetween(normal0, normal1);
 
-    // Go to neighbor edges within the face and try to apply a consistent
-    // direction.
-    AssignEdgeDirectionAndAngle_(edge.NextEdgeInFace(),     dir);
-    AssignEdgeDirectionAndAngle_(opp_edge.NextEdgeInFace(), opp_dir);
+    // Collapsed edges do not affect any others. For other edges, go to
+    // neighbors and try to apply a consistent direction.
+    if (ep.angle <= bevel_.max_angle) {
+        AssignEdgeDirectionAndAngle_(edge.NextEdgeInFace(),     dir);
+        AssignEdgeDirectionAndAngle_(opp_edge.NextEdgeInFace(), opp_dir);
+    }
 }
 
 void Beveler2_::InitSkeleton_() {
@@ -408,6 +442,9 @@ Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
 
         // Add the new vertex to the offset face.
         const size_t index = pmb_.AddVertex(pos);
+        if (XXXXI(index))
+            std::cerr << "XXXX Added " << index
+                      << " for " << edge->ToString() << "\n";
         indices.push_back(index);
 
         // Store the correspondence from the original edge to the new
@@ -419,7 +456,7 @@ Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
 
 void Beveler2_::CollapseEdgeVertices_() {
     for (const auto &edge: mesh_.edges) {
-        const auto &ep = edge_profile_map_.at(edge);
+        auto &ep = edge_profile_map_.at(edge);
 
         if (ep.angle > bevel_.max_angle) {
             const auto collapse = [&](const PolyMesh::Edge &e){
@@ -444,22 +481,26 @@ void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
     const size_t i0 = edge_vertex_map_.at(&edge.PreviousEdgeAroundVertex());
     const size_t i1 = edge_vertex_map_.at(&edge);
 
-    const size_t count = bevel_.profile.GetPointCount();
+    const size_t profile_size = bevel_.profile.GetPointCount();
 
     EdgeProfile_ &ep = edge_profile_map_.at(&edge);
-    ep.indices.reserve(count);
+    ep.indices.reserve(profile_size);
 
     // Starting vertex.
     ep.indices.push_back(i0);
 
     // Interior vertices, if any. Reverse if necessary to maintain proper
     // direction.
-    if (count > 2U) {
+    if (profile_size > 2U) {
         const Point3f p0 = pmb_.GetVertex(i0);
         const Point3f p1 = pmb_.GetVertex(i1);
 
         std::vector<Point3f> pts;
-        if (ep.direction == Direction_::kReverse) {
+        // Special case if the endpoints are very close due to collapse.
+        if (AreClose(p0, p1)) {
+            pts.assign(profile_size - 2, p0);
+        }
+        else if (ep.direction == Direction_::kReverse) {
             pts = ApplyProfileBetweenPoints_(edge, p1, p0);
             std::reverse(pts.begin(), pts.end());
         }
@@ -467,8 +508,19 @@ void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
             pts = ApplyProfileBetweenPoints_(edge, p0, p1);
         }
 
-        for (size_t i = 0; i < pts.size(); ++i)
+        for (size_t i = 0; i < pts.size(); ++i) {
             ep.indices.push_back(pmb_.AddVertex(pts[i]));
+            if (XXXXI(ep.indices.back()) || XXXXE(edge))
+                std::cerr << "XXXX Added EPI " << ep.indices.back() << " for "
+                          << edge.id
+                          << " at " << PT(pts[i])
+                          << " i0=" << i0
+                          << " i1=" << i1
+                          << " p0=" << PT(p0)
+                          << " p1=" << PT(p1)
+                          << " same=" << AreClose(p0, p1)
+                          << "\n";
+        }
     }
 
     // Ending vertex.
@@ -482,7 +534,7 @@ std::vector<Point3f> Beveler2_::ApplyProfileBetweenPoints_(
     Point3f c0, c1;
     GetClosestLinePoints(edge.v0->point, edge.GetUnitVector(),
                          p0, ion::math::Normalized(p1 - p0), c0, c1);
-    const Point3f base_point = c0;
+    const Point3f base_point = c1;
 
     // Compute the vectors from the base point to p0 and p1.
     Vector3f vec0 = p0 - base_point;
@@ -496,6 +548,21 @@ std::vector<Point3f> Beveler2_::ApplyProfileBetweenPoints_(
         result_pts.push_back(base_point +
                              (1 - pp[0]) * vec0 +
                              (1 - pp[1]) * vec1);
+    }
+
+    if (edge.id == "E55") {
+        std::cerr << "XXXX APBP for " << edge.id << ":\n";
+        std::cerr << "XXXX    p0   = " << PT(p0) << "\n";
+        std::cerr << "XXXX    p1   = " << PT(p0) << "\n";
+        std::cerr << "XXXX    v0   = " << edge.v0->ToString() << "\n";
+        std::cerr << "XXXX    v1   = " << edge.v1->ToString() << "\n";
+        std::cerr << "XXXX    evec = " << PT(edge.GetUnitVector()) << "\n";
+        std::cerr << "XXXX    c0   = " << PT(c0) << "\n";
+        std::cerr << "XXXX    c1   = " << PT(c1) << "\n";
+        std::cerr << "XXXX    bp   = " << PT(base_point) << "\n";
+        std::cerr << "XXXX    vec0 = " << PT(vec0) << "\n";
+        std::cerr << "XXXX    vec1 = " << PT(vec1) << "\n";
+        std::cerr << "XXXX    pts  = " << Util::JoinItems(result_pts) << "\n";
     }
 
     return result_pts;
@@ -559,7 +626,7 @@ void Beveler2_::AddVertexFaces_(const EdgeVec_ &edges,
 
     // General case: compute points on inner rings and process them.
     if (profile_size > 3U) {
-        RingVec_ rings = BuildRings_(edges.size(), indices);
+        RingVec_ rings = BuildRings_(edges, indices);
         PositionRingPoints_(edges, rings);
         AddInterRingFaces_(rings);
 
@@ -598,13 +665,15 @@ void Beveler2_::AddInnerVertexFaces_(const IndexVec_ &indices,
     }
 }
 
-Beveler2_::RingVec_ Beveler2_::BuildRings_(size_t edge_count,
+Beveler2_::RingVec_ Beveler2_::BuildRings_(const EdgeVec_ &edges,
                                            const IndexVec_ &outer_indices) {
     // Compute the number of rings that are needed. Each ring has 2 fewer
     // points per edge than the ring surrounding it.
     const size_t profile_size = bevel_.profile.GetPointCount();
     const size_t ring_count   = profile_size / 2;
     RingVec_ rings(ring_count);
+
+    const size_t edge_count = edges.size();
 
     for (size_t r = 0; r < ring_count; ++r) {
         Ring_ &ring = rings[r];
@@ -619,8 +688,13 @@ Beveler2_::RingVec_ Beveler2_::BuildRings_(size_t edge_count,
             // Create vertices for all inner rings. Positions are initialized
             // to zero so they can be accumulated and averaged later.
             ring.indices.resize(edge_count * (ring.points_per_side - 1));
-            for (size_t i = 0; i < ring.indices.size(); ++i)
+            for (size_t i = 0; i < ring.indices.size(); ++i) {
                 ring.indices[i] = pmb_.AddVertex(Point3f::Zero());
+                if (XXXXI(ring.indices[i]))
+                    std::cerr << "XXXX Added " << ring.indices[i]
+                              << " for " << edges[i]->id
+                              << " in ring " << r << "\n";
+            }
         }
     }
     return rings;
@@ -638,6 +712,8 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
         ring.reposition_counts.assign(ring.indices.size(), 0);
     }
 
+    const size_t profile_size = bevel_.profile.GetPointCount();
+
     // Work towards the innermost ring.
     const Ring_  &outer      = rings[0];
     const size_t  outer_pps  = outer.points_per_side;
@@ -651,8 +727,17 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
             const Point3f &p0 = pmb_.GetVertex(outer.GetVertexIndex(i0));
             const Point3f &p1 = pmb_.GetVertex(outer.GetVertexIndex(i1));
 
-            // Apply the profile to get the interior points.
-            const auto pts = ApplyProfileBetweenPoints_(*edges[side], p0, p1);
+            std::vector<Point3f> pts;
+            // If the endpoints are very close (due to collapse), just create
+            // copies of the endpoints. Otherwise, apply the profile to get the
+            // interior points.
+            if (AreClose(p0, p1))
+                pts.assign(profile_size - 2, p0);
+            else
+                pts = ApplyProfileBetweenPoints_(*edges[side], p0, p1);
+            if (XXXXE(*edges[side]))
+                std::cerr << "XXXX " << edges[side]->id
+                          << " PRP pts = " << Util::JoinItems(pts) << "\n";
 
             // Store the appropriate points in the inner ring. The pts vector
             // stores just the interior points.
@@ -673,6 +758,9 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
                     pmb_.MoveVertex(v_index, .5f * (cur_pos + pos));
                 }
                 ++count;
+                if (XXXXI(v_index))
+                    std::cerr << "XXXX Moved " << v_index << " to "
+                              << pmb_.GetVertex(v_index) << "\n";
             }
         }
     }
@@ -731,6 +819,12 @@ TriMesh Beveler2::ApplyBevel(const TriMesh &mesh, const Bevel &bevel) {
     // Use a Beveler2_ to do the rest.
     PolyMesh result_mesh;
     Beveler2_ beveler(poly_mesh, bevel, result_mesh);
+
+    {
+        Debug::Dump3dv dump("/tmp/TMESH.3dv", "Beveler2");
+        dump.SetLabelFontSize(32);
+        dump.AddTriMesh(result_mesh.ToTriMesh());
+    }
 
     return result_mesh.ToTriMesh();
 }

@@ -199,6 +199,9 @@ struct PolyMesh::Face : public PolyMesh::Feature {
     /// Returns the normal to the face.
     const Vector3f & GetNormal() const;
 
+    /// Returns the area of the outer border of the Face. (Holes are ignored.)
+    float GetOuterArea() const;
+
     /// Returns the number of holes in the face, which is typically 0.
     size_t GetHoleCount() const { return hole_edges.size(); }
 

@@ -101,7 +101,7 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
     // Triangles as translucent faces.
     out_ << "\n#  Triangles as faces:\n";
     for (size_t i = 0; i < inds.size(); i += 3) {
-        AltFaceColor_(i);
+        AltFaceColor_(i / 3);
         std::string vids;
         for (int j = 0; j < 3; ++j) {
             const int vi = inds[i + j];
@@ -123,7 +123,7 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
         const Point3f mesh_center = ComputeMeshBounds(mesh).GetCenter();
         for (size_t i = 0; i < inds.size() / 3; ++i) {
             const Point3f tri_center = GetTriCenter_(mesh, i);
-            const Point3f pos = mesh_center + 1.2f * (tri_center - mesh_center);
+            const Point3f pos = tri_center + .05f * (tri_center - mesh_center);
             AddLabel_(pos, IID_("F", i));
         }
     }

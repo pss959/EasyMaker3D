@@ -56,10 +56,10 @@ class Beveler2Test : public TestBase {
     }
 };
 
-TEST_F(Beveler2Test, TMP) {
-    EnableKLog("l");
+TEST_F(Beveler2Test, TMP) {  // XXXX
+    // EnableKLog("l"); // XXXX
     const TriMesh m = BuildCylinderMesh(5, 5, 12, 8);
-    const TriMesh rm = Beveler2::ApplyBevel(m, GetBevel(3, 1, 120));
+    const TriMesh rm = Beveler2::ApplyBevel(m, GetBevel(6, 1, 120));
     ValidateMesh(rm, GetTestName());
 }
 

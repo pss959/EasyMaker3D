@@ -185,7 +185,7 @@ static IndexVec GetTriangleIndices_(const PolyMesh &poly_mesh) {
     IndexVec indices;
     for (auto &face: poly_mesh.faces) {
         // Skip faces with zero area.
-        if (ComputeArea(EdgesToPoints_(face->outer_edges)) > .001f) {
+        if (face->GetOuterArea() > .001f) {
             const VertexVec tri_verts = TriangulateFace_(*face);
             IndexVec tri_indices = Util::ConvertVector<GIndex, Vertex *>(
                 tri_verts,
@@ -275,6 +275,10 @@ const Vector3f & PolyMesh::Face::GetNormal() const {
     if (normal_ == Vector3f::Zero() && outer_edges.size() >= 3U)
         normal_ = ComputeNormal(EdgesToPoints_(outer_edges));
     return normal_;
+}
+
+float PolyMesh::Face::GetOuterArea() const {
+    return ComputeArea(EdgesToPoints_(outer_edges));
 }
 
 void PolyMesh::Face::ReplaceEdge(Edge &old_edge, Edge &new_edge) {
