@@ -72,13 +72,25 @@ void BeveledModel::SyncTransformsToOriginal(Model &original) const {
     original.SetTranslation(GetTranslation());
 }
 
+void BeveledModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    // Copy the Bevel and original scale first.
+    const BeveledModel &from_bev = static_cast<const BeveledModel &>(from);
+    bevel_          = from_bev.bevel_;
+    original_scale_ = from_bev.original_scale_;
+
+    ConvertedModel::CopyContentsFrom(from, is_deep);
+}
+
 bool BeveledModel::ProcessChange(SG::Change change, const Object &obj) {
     if (! ConvertedModel::ProcessChange(change, obj))
         return false;
 
-    // If the scale in the original changed, need to rebuild the mesh.
-    if (change == SG::Change::kTransform) {
-        const Vector3f new_scale = GetOriginalModel()->GetScale();
+    // If the scale in the original changed, need to rebuild the mesh. Do NOT
+    // do anything if there is no original model, which can happen during
+    // CopyContentsFrom().
+    const auto &orig = GetOriginalModel();
+    if (orig && change == SG::Change::kTransform) {
+        const Vector3f new_scale = orig->GetScale();
         if (new_scale != original_scale_) {
             original_scale_ = new_scale;
             MarkMeshAsStale();

@@ -32,6 +32,10 @@ class BeveledModel : public ConvertedModel {
     virtual void CreationDone() override;
     virtual TriMesh BuildMesh() override;
 
+    /// Redefines this to also copy the Bevel and original scale.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
     /// Redefines this to also mark the mesh as stale if the original Model's
     /// scale changed.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;

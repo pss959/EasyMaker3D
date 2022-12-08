@@ -1,0 +1,30 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "MakerVR",
+    version: "0.0.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    ConvertBevelCommand {
+      model_names: ["Box_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.29 0.85, 0.69 0.62, 0.91 0.36],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    CopyCommand {
+      model_names: ["Box_1"],
+    },
+    PasteCommand {
+    }
+  ],
+  current_index: 5,
+}
