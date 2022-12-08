@@ -266,8 +266,6 @@ bool TextNode::BuildText_() {
     return true;
 }
 
-// Returns a FontImage to represent the given data. Uses a cached version if it
-// already exists in the FontManager.
 FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
     // See if the FontImage was already cached.
     const std::string &font_name = GetFontName();
