@@ -15,21 +15,6 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-#include "Math/ToString.h" // XXXX
-#include "Debug/Dump3dv.h" // XXXX
-
-// XXXX
-template <typename T>
-static std::string PT(const T &t) { return Math::ToString(t, .01f); }
-
-static bool XXXXI(size_t index) {
-    return index == 275U;
-}
-
-static bool XXXXE(const PolyMesh::Edge &edge) {
-    return edge.id == "E7";
-}
-
 namespace {
 
 // ----------------------------------------------------------------------------
@@ -265,71 +250,7 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel,
     // Construct the result PolyMesh and make sure the resulting PolyMesh has
     // no duplicate features.
     pmb_.BuildPolyMesh(result_mesh);
-    {  // XXXX
-        const bool add_orig_mesh = false;
-
-        Debug::Dump3dv dump("/tmp/UMESH.3dv", "Unmerged Beveler2");
-        dump.SetLabelFontSize(40 - 4 * bevel_.profile.GetPointCount());
-        Debug::Dump3dv::LabelFlags label_flags;
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
-        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
-        //label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
-        dump.SetLabelFlags(label_flags);
-        dump.AddPolyMesh(result_mesh);
-        if (add_orig_mesh) {
-            dump.SetExtraPrefix("M_");
-            label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
-            label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
-            dump.SetLabelFlags(label_flags);
-            dump.AddPolyMesh(mesh_);
-        }
-    }
-
     MergeDuplicateFeatures(result_mesh, result_mesh);
-
-    { // XXXX
-        // Check for vertices not used in edges.
-        std::unordered_set<const PolyMesh::Vertex *> used_verts;
-        for (const auto &edge: result_mesh.edges) {
-            used_verts.insert(edge->v0);
-            used_verts.insert(edge->v1);
-        }
-        for (const auto &vert: result_mesh.vertices) {
-            if (! Util::MapContains(used_verts, vert))
-                std::cerr << "XXXX *** Result " << vert->ToString()
-                          << " not used in any edges\n";
-        }
-
-        // Check for short edges.
-        for (const auto &edge: result_mesh.edges) {
-            const float dist = ion::math::Distance(edge->v0->point,
-                                                   edge->v1->point);
-            if (dist < .1f) {
-                std::cerr << "XXXX *** Result " << edge->ToString()
-                          << " dist = " << dist << "\n";
-            }
-        }
-    }
-
-    {  // XXXX
-        const bool add_orig_mesh = false;
-
-        Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler2");
-        dump.SetLabelFontSize(40 - 4 * bevel_.profile.GetPointCount());
-        Debug::Dump3dv::LabelFlags label_flags;
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
-        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
-        //label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
-        dump.SetLabelFlags(label_flags);
-        dump.AddPolyMesh(result_mesh);
-        if (add_orig_mesh) {
-            dump.SetExtraPrefix("M_");
-            label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
-            label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
-            dump.SetLabelFlags(label_flags);
-            dump.AddPolyMesh(mesh_);
-        }
-    }
 }
 
 void Beveler2_::CreateEdgeProfiles_() {
@@ -373,7 +294,6 @@ void Beveler2_::AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
 void Beveler2_::InitSkeleton_() {
     // Build the 3D straight skeleton for the PolyMesh.
     skeleton_.BuildForPolyMesh(mesh_);
-    DumpSkeleton_(mesh_, skeleton_);  // XXXX
 
     // Create a map from PolyMesh vertices to skeleton vertices.
     const auto &skel_vertices = skeleton_.GetVertices();
@@ -424,32 +344,56 @@ Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
     using ion::math::Sine;
 
     IndexVec_ indices;
-    for (const auto &edge: border_edges) {
-        const size_t svi = GetSkeletonVertex_(*edge);
+    for (size_t i = 0; i < border_edges.size(); ++i) {
+        // Get the two border edges around the current point. They meet at
+        // e0.v1 == e1.v0.
+        const auto &e0 = *border_edges[i];
+        const auto &e1 = *border_edges[(i + 1) % border_edges.size()];
+        const auto &ep0 = edge_profile_map_.at(&e0);
+        const auto &ep1 = edge_profile_map_.at(&e1);
+        ASSERT(e0.v1 == e1.v0);
+        const Point3f p0 = e1.v0->point;
 
-        // Get the original vertex and the corresponding skeleton vertex.
-        const Point3f &p0 = edge->v0->point;
-        const Point3f &p1 = skeleton_.GetVertices()[svi].point;
+        // Determine if the edges should be beveled.
+        const bool is_e0_beveled = ep0.angle <= bevel_.max_angle;
+        const bool is_e1_beveled = ep1.angle <= bevel_.max_angle;
 
-        // Use trigonometry to find the position P along the skeleton
-        // bisector edge that is S units from either of the original edges,
-        // where S is the bevel scale.
-        const Vector3f edge_vec     = edge->GetUnitVector();
-        const Vector3f bisector_vec = Normalized(p1 - p0);
-        const Anglef   angle        = AngleBetween(edge_vec, bisector_vec);
-        const float    dist         = bevel_.scale / Sine(angle);
-        const Point3f  pos          = p0 + dist * bisector_vec;
+        Point3f pos;
+        if (is_e0_beveled && is_e1_beveled) {
+            const size_t svi = GetSkeletonVertex_(e1);
+
+            // Get the corresponding skeleton vertex.
+            const Point3f &p1 = skeleton_.GetVertices()[svi].point;
+
+            // XXXX Get rid of skeleton???? Just use half the angle between the
+            // edges?
+
+            // Use trigonometry to find the position P along the skeleton
+            // bisector edge that is S units from either of the original edges,
+            // where S is the bevel scale.
+            const Vector3f edge_vec     = e1.GetUnitVector();
+            const Vector3f bisector_vec = Normalized(p1 - p0);
+            const Anglef   angle        = AngleBetween(edge_vec, bisector_vec);
+            const float    dist         = bevel_.scale / Sine(angle);
+            pos = p0 + dist * bisector_vec;
+        }
+        else if (is_e0_beveled && ! is_e1_beveled) {
+            pos = p0 - bevel_.scale * e0.GetUnitVector();
+        }
+        else if (! is_e0_beveled && is_e1_beveled) {
+            pos = p0 + bevel_.scale * e1.GetUnitVector();
+        }
+        else {
+            pos = e1.v0->point;
+        }
 
         // Add the new vertex to the offset face.
         const size_t index = pmb_.AddVertex(pos);
-        if (XXXXI(index))
-            std::cerr << "XXXX Added " << index
-                      << " for " << edge->ToString() << "\n";
         indices.push_back(index);
 
         // Store the correspondence from the original edge to the new
         // vertex.
-        edge_vertex_map_[edge] = index;
+        edge_vertex_map_[&e1] = index;
     }
     return indices;
 }
@@ -508,19 +452,8 @@ void Beveler2_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
             pts = ApplyProfileBetweenPoints_(edge, p0, p1);
         }
 
-        for (size_t i = 0; i < pts.size(); ++i) {
+        for (size_t i = 0; i < pts.size(); ++i)
             ep.indices.push_back(pmb_.AddVertex(pts[i]));
-            if (XXXXI(ep.indices.back()) || XXXXE(edge))
-                std::cerr << "XXXX Added EPI " << ep.indices.back() << " for "
-                          << edge.id
-                          << " at " << PT(pts[i])
-                          << " i0=" << i0
-                          << " i1=" << i1
-                          << " p0=" << PT(p0)
-                          << " p1=" << PT(p1)
-                          << " same=" << AreClose(p0, p1)
-                          << "\n";
-        }
     }
 
     // Ending vertex.
@@ -534,7 +467,7 @@ std::vector<Point3f> Beveler2_::ApplyProfileBetweenPoints_(
     Point3f c0, c1;
     GetClosestLinePoints(edge.v0->point, edge.GetUnitVector(),
                          p0, ion::math::Normalized(p1 - p0), c0, c1);
-    const Point3f base_point = c1;
+    const Point3f base_point = c0;
 
     // Compute the vectors from the base point to p0 and p1.
     Vector3f vec0 = p0 - base_point;
@@ -548,21 +481,6 @@ std::vector<Point3f> Beveler2_::ApplyProfileBetweenPoints_(
         result_pts.push_back(base_point +
                              (1 - pp[0]) * vec0 +
                              (1 - pp[1]) * vec1);
-    }
-
-    if (edge.id == "E55") {
-        std::cerr << "XXXX APBP for " << edge.id << ":\n";
-        std::cerr << "XXXX    p0   = " << PT(p0) << "\n";
-        std::cerr << "XXXX    p1   = " << PT(p0) << "\n";
-        std::cerr << "XXXX    v0   = " << edge.v0->ToString() << "\n";
-        std::cerr << "XXXX    v1   = " << edge.v1->ToString() << "\n";
-        std::cerr << "XXXX    evec = " << PT(edge.GetUnitVector()) << "\n";
-        std::cerr << "XXXX    c0   = " << PT(c0) << "\n";
-        std::cerr << "XXXX    c1   = " << PT(c1) << "\n";
-        std::cerr << "XXXX    bp   = " << PT(base_point) << "\n";
-        std::cerr << "XXXX    vec0 = " << PT(vec0) << "\n";
-        std::cerr << "XXXX    vec1 = " << PT(vec1) << "\n";
-        std::cerr << "XXXX    pts  = " << Util::JoinItems(result_pts) << "\n";
     }
 
     return result_pts;
@@ -688,13 +606,8 @@ Beveler2_::RingVec_ Beveler2_::BuildRings_(const EdgeVec_ &edges,
             // Create vertices for all inner rings. Positions are initialized
             // to zero so they can be accumulated and averaged later.
             ring.indices.resize(edge_count * (ring.points_per_side - 1));
-            for (size_t i = 0; i < ring.indices.size(); ++i) {
+            for (size_t i = 0; i < ring.indices.size(); ++i)
                 ring.indices[i] = pmb_.AddVertex(Point3f::Zero());
-                if (XXXXI(ring.indices[i]))
-                    std::cerr << "XXXX Added " << ring.indices[i]
-                              << " for " << edges[i]->id
-                              << " in ring " << r << "\n";
-            }
         }
     }
     return rings;
@@ -735,9 +648,6 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
                 pts.assign(profile_size - 2, p0);
             else
                 pts = ApplyProfileBetweenPoints_(*edges[side], p0, p1);
-            if (XXXXE(*edges[side]))
-                std::cerr << "XXXX " << edges[side]->id
-                          << " PRP pts = " << Util::JoinItems(pts) << "\n";
 
             // Store the appropriate points in the inner ring. The pts vector
             // stores just the interior points.
@@ -758,9 +668,6 @@ void Beveler2_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
                     pmb_.MoveVertex(v_index, .5f * (cur_pos + pos));
                 }
                 ++count;
-                if (XXXXI(v_index))
-                    std::cerr << "XXXX Moved " << v_index << " to "
-                              << pmb_.GetVertex(v_index) << "\n";
             }
         }
     }
@@ -794,17 +701,6 @@ void Beveler2_::AddInterRingFaces_(const RingVec_ &rings) {
     }
 }
 
-void Beveler2_::DumpSkeleton_(const PolyMesh &mesh,
-                              const Skeleton3D &skeleton) {
-    Debug::Dump3dv dump("/tmp/BMESH.3dv", "Beveler2");
-    dump.SetLabelFontSize(32);
-    dump.SetExtraPrefix("M_");
-    dump.AddPolyMesh(mesh);
-    dump.SetExtraPrefix("S_");
-    dump.SetLabelOffset(Vector3f(1, 1, .5f));
-    dump.AddSkeleton3D(skeleton);
-}
-
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -819,12 +715,6 @@ TriMesh Beveler2::ApplyBevel(const TriMesh &mesh, const Bevel &bevel) {
     // Use a Beveler2_ to do the rest.
     PolyMesh result_mesh;
     Beveler2_ beveler(poly_mesh, bevel, result_mesh);
-
-    {
-        Debug::Dump3dv dump("/tmp/TMESH.3dv", "Beveler2");
-        dump.SetLabelFontSize(32);
-        dump.AddTriMesh(result_mesh.ToTriMesh());
-    }
 
     return result_mesh.ToTriMesh();
 }

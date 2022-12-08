@@ -7,6 +7,8 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+#include "Debug/Dump3dv.h" // XXXX
+
 class Beveler2Test : public TestBase {
   protected:
     // Returns a 2-point Bevel with optional scale and max_angle settings.
@@ -49,6 +51,7 @@ class Beveler2Test : public TestBase {
     // expected number of resulting points and triangles are supplied.
     void TestBevel(const TriMesh &m, const Bevel &bevel,
                    size_t expected_point_count, size_t expected_tri_count) {
+        SCOPED_TRACE("Bevel: " + bevel.ToString());
         const TriMesh rm = Beveler2::ApplyBevel(m, bevel);
         ValidateMesh(rm, GetTestName());
         EXPECT_EQ(expected_point_count, rm.points.size());
@@ -62,6 +65,35 @@ TEST_F(Beveler2Test, TMP) {  // XXXX
     //const TriMesh rm = Beveler2::ApplyBevel(m, GetBevel(6, 1, 120));
     const TriMesh rm = Beveler2::ApplyBevel(m, GetDefaultBevel(1, 0));
     //ValidateMesh(rm, GetTestName());
+}
+
+TEST_F(Beveler2Test, TMP2) {  // XXXX
+    // EnableKLog("l"); // XXXX
+    const TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
+    //const TriMesh rm = Beveler2::ApplyBevel(m, GetBevel(6));
+    const TriMesh rm = Beveler2::ApplyBevel(m, GetBevel(4));
+
+    if (false) { // XXXX
+        const bool add_orig_mesh = false;
+        Debug::Dump3dv dump("/tmp/RMESH.3dv", "Beveler2");
+        dump.SetLabelFontSize(20);
+        Debug::Dump3dv::LabelFlags label_flags;
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+        dump.SetLabelFlags(label_flags);
+        dump.AddTriMesh(rm);
+        if (add_orig_mesh) {
+            dump.SetExtraPrefix("M_");
+            label_flags.Reset(Debug::Dump3dv::LabelFlag::kVertexLabels);
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+            dump.SetLabelFlags(label_flags);
+            dump.AddTriMesh(m);
+        }
+    }
+
+    ValidateMesh(rm, GetTestName());
 }
 
 TEST_F(Beveler2Test, BevelBox) {
