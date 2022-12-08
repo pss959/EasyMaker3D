@@ -328,24 +328,27 @@ Point3f Beveler_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
                                          const PolyMesh::Edge &e1,
                                          const Vector3f &normal,
                                          bool is_hole) {
-    using ion::math::AngleBetween;
-    using ion::math::Normalized;
-    using ion::math::Sine;
-
-    // XXXX Comments here...
     const Vector3f e0_vec = -e0.GetUnitVector();
     const Vector3f e1_vec =  e1.GetUnitVector();
 
-    Vector3f bisector = Normalized(e0_vec + e1_vec);
+    Vector3f bisector = ion::math::Normalized(e0_vec + e1_vec);
 
-    // Negate the bisector if the angle is concave.
-    const Vector3f cross = ion::math::Cross(e0_vec, e1_vec);
-    const float    dot   = ion::math::Dot(cross, normal);
-    if (is_hole ? dot < 0 : dot > 0)
+    // Determine if the angle formed by the two edges is > 180 degrees. If the
+    // edges are part of the outer border, the cross product will face in the
+    // same direction as the face normal for an angle > 180. If they are part
+    // of a hole, the cross product will face in the opposite direction as the
+    // normal for an angle > 180.
+    const Vector3f cross       = ion::math::Cross(e0_vec, e1_vec);
+    const float    dot         = ion::math::Dot(cross, normal);
+    const bool     is_over_180 = is_hole ? dot < 0 : dot > 0;
+
+    // Negate the bisector if the angle is > 180.
+    if (is_over_180)
         bisector = -bisector;
 
-    const Anglef angle = AngleBetween(e1_vec, bisector);
-    return e1.v0->point + (bevel_.scale / Sine(angle)) * bisector;
+    // Move along the bisector the correct distance based on the bevel scale.
+    const Anglef angle = ion::math::AngleBetween(e1_vec, bisector);
+    return e1.v0->point + (bevel_.scale / ion::math::Sine(angle)) * bisector;
 }
 
 void Beveler_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {

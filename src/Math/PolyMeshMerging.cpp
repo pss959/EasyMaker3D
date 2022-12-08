@@ -64,6 +64,62 @@ class HoleFinder_ {
     float GetBorderSize_(const EdgeVec &border);
 };
 
+
+/// Helper class for detecting and merging duplicate vertices in a PolyMesh.
+class VertexMerger_ {
+  public:
+    /// The constructor is passed a PolyMeshBuilder instance used to add new
+    /// vertices.
+    explicit VertexMerger_(PolyMeshBuilder &pmb) : pmb_(pmb) {}
+
+    /// Returns a vector of unique indices for all vertices in one border of a
+    /// PolyMesh::Face.
+    std::vector<GIndex> GetBorderIndices(const EdgeVec &border);
+
+  private:
+    PolyMeshBuilder &pmb_;
+    /// Used to find duplicate vertex locations within a reasonable tolerance.
+    Point3fMap                                 point_map_{ .0001f };
+    /// Maps a Point3fMap index to the PolyMeshBuilder vertex index created for
+    /// the point.
+    std::unordered_map<GIndex, GIndex>         index_map_;
+    /// Maps each original vertex to the index of the unique PolyMeshBuilder
+    /// vertex at the same location.
+    std::unordered_map<const Vertex *, GIndex> vertex_map_;
+
+    /// Returns the PolyMeshBuilder index for a vertex.
+    GIndex GetVertexIndex_(const Vertex &vert);
+};
+
+std::vector<GIndex> VertexMerger_::GetBorderIndices(const EdgeVec &border) {
+    std::vector<GIndex> indices;
+    for (const auto edge: border) {
+        const GIndex index = GetVertexIndex_(*edge->v0);
+        // Don't add consecutive duplicate vertices.
+        if (indices.empty() || index != indices.back())
+            indices.push_back(index);
+    }
+    return indices;
+}
+
+GIndex VertexMerger_::GetVertexIndex_(const Vertex &vert) {
+    // Add to the Point3fMap and see if the vertex is a duplicate.
+    Point3f pos;
+    GIndex index = point_map_.Add(vert.point, &pos);
+    if (Util::MapContains(index_map_, index)) {
+        // This is a duplicate. Associate the vertex with the index of the
+        // unique vertex at the same location.
+        vertex_map_[&vert] = index_map_.at(index);
+    }
+    else {
+        // The vertex has a unique location (so far). Insert it.
+        index = pmb_.AddVertex(pos);
+        index_map_[index]  = index;
+        vertex_map_[&vert] = index;
+    }
+    return index;
+}
+
 // ----------------------------------------------------------------------------
 // HoleFinder_ class functions.
 // ----------------------------------------------------------------------------
@@ -389,62 +445,24 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
 }
 
 void MergeDuplicateFeatures(const PolyMesh &poly_mesh, PolyMesh &result_mesh) {
-    // XXXX Clean up/split up.
+    // Use a VertexMerger_ to remove duplicate vertices.
     PolyMeshBuilder pmb;
-
-    // Minimum area for a face to be added.
-    static const float kMinArea = .0001f;
-
-    // Use a Point3fMap with a reasonable tolerance to make sure all result
-    // vertices are unique. While processing faces, add all unique vertices to
-    // the PolyMeshBuilder and save a map from original vertex to vertex index
-    // in the PolyMeshBuilder.
-    Point3fMap pt_map(.0001f);
-    std::unordered_map<GIndex, GIndex>         vert_index_map;
-    std::unordered_map<const Vertex *, GIndex> vert_map;
-
-    // Returns the PolyMeshBuilder index for a vertex.
-    const auto get_vert_index = [&](const Vertex &vert){
-        // Add to the Point3fMap and see if the vertex is a duplicate.
-        Point3f pos;
-        GIndex index = pt_map.Add(vert.point, &pos);
-        if (Util::MapContains(vert_index_map, index)) {
-            // Duplicate. Map the vertex to the index of the unique vertex at
-            // the same pt.
-            vert_map[&vert] = vert_index_map.at(index);
-        }
-        else {
-            // Insert the unique vertex..
-            index = pmb.AddVertex(pos);
-            vert_index_map[index] = index;
-            vert_map[&vert]       = index;
-        }
-        return index;
-    };
-
-    // This is used to get indices for one border of a face.
-    const auto get_border_indices = [&](const EdgeVec &border_edges){
-        std::vector<GIndex> indices;
-        for (const auto edge: border_edges) {
-            const GIndex index = get_vert_index(*edge->v0);
-            // Don't add consecutive duplicate vertices.
-            if (indices.empty() || index != indices.back())
-                indices.push_back(index);
-        }
-        return indices;
-    };
+    VertexMerger_ vertex_merger(pmb);
 
     // Process each face with large enough area in the PolyMesh.
     std::vector<GIndex> indices;
     for (const auto face: poly_mesh.faces) {
+        // Minimum area for a face to be added.
+        static const float kMinArea = .0001f;
+
         if (face->GetOuterArea() >= kMinArea) {
-            indices = get_border_indices(face->outer_edges);
+            indices = vertex_merger.GetBorderIndices(face->outer_edges);
             ASSERT(indices.size() >= 3U);
             pmb.AddPolygon(indices);
 
             // Check for holes.
             for (auto &hole: face->hole_edges) {
-                indices = get_border_indices(hole);
+                indices = vertex_merger.GetBorderIndices(hole);
                 if (indices.size() >= 3U)
                     pmb.AddHole(indices);
             }
