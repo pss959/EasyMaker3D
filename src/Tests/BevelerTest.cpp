@@ -1,185 +1,112 @@
-﻿#include "Debug/Dump3dv.h"
+﻿#include "Math/Bevel.h"
 #include "Math/Beveler.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
-#include "Math/PolyMeshMerging.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
 class BevelerTest : public TestBase {
   protected:
-    // This can be useful to debug problems. It dumps a 3dv file at every step.
-    void DumpBevel(const TriMesh &m, const Bevel &bevel,
-                   const std::string &prefix);
+    // Returns a 2-point Bevel with optional scale and max_angle settings.
+    static Bevel GetDefaultBevel(float scale = 1, float max_angle = 180) {
+        Bevel bevel;
+        bevel.max_angle = Anglef::FromDegrees(max_angle);
+        bevel.scale     = scale;
+        return bevel;
+    }
+
+    // Returns a Bevel with the given number of points (3-6) and optional scale
+    // and max_angle settings.
+    static Bevel GetBevel(size_t np, float scale = 1, float max_angle = 180) {
+        static const Point2f pts[4]{
+            { .4f, .8f }, { .5f, .8f }, { .8f, .6f }, { .9f, .2f }
+        };
+
+        ASSERT(np >= 3U && np <= 6U);
+        Bevel bevel;
+        bevel.max_angle = Anglef::FromDegrees(max_angle);
+        bevel.scale = scale;
+
+        const auto add_pts = [&](const std::vector<size_t> indices){
+            for (const auto i: indices)
+                bevel.profile.AddPoint(pts[i]);
+        };
+        if (np == 3)
+            add_pts(std::vector<size_t>{0});
+        else if (np == 4)
+            add_pts(std::vector<size_t>{0, 3});
+        else if (np == 5)
+            add_pts(std::vector<size_t>{0, 1, 3});
+        else if (np == 6)
+            add_pts(std::vector<size_t>{0, 1, 2, 3});
+
+        return bevel;
+    }
+
+    // Runs a bevel test on the given input TriMesh with the given Bevel. The
+    // expected number of resulting points and triangles are supplied.
+    void TestBevel(const TriMesh &m, const Bevel &bevel,
+                   size_t expected_point_count, size_t expected_tri_count) {
+        SCOPED_TRACE("Bevel: " + bevel.ToString());
+        const TriMesh rm = Beveler::ApplyBevel(m, bevel);
+        ValidateMesh(rm, GetTestName());
+        EXPECT_EQ(expected_point_count, rm.points.size());
+        EXPECT_EQ(expected_tri_count, rm.GetTriangleCount());
+    }
 };
 
-#if ENABLE_DEBUG_FEATURES
-void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
-                            const std::string &prefix) {
-    using namespace Debug;
-
-    std::string s, f;
-
-    auto report = [&](){
-        std::cerr << "*** Dumping " << s << " to '" << f << "'\n";
-    };
-
-    s = "Original " + prefix + " as TriMesh";
-    f = "/tmp/" + prefix + "0.3dv";
-    report();
-    {
-        Debug::Dump3dv dump(f, s);
-        dump.SetLabelFontSize(10);
-        dump.AddTriMesh(m);
-    }
-
-    PolyMesh pm(m);
-    s = "Original " + prefix + " as PolyMesh";
-    f = "/tmp/" + prefix + "1.3dv";
-    report();
-    {
-        Debug::Dump3dv dump(f, s);
-        dump.SetLabelFontSize(10);
-        dump.AddPolyMesh(pm);
-    }
-
-    MergeCoplanarFaces(pm);
-    s = "Merged " + prefix + " PolyMesh";
-    f = "/tmp/" + prefix + "2.3dv";
-    report();
-    {
-        Debug::Dump3dv dump(f, s);
-        dump.SetLabelFontSize(10);
-        dump.AddPolyMesh(pm);
-    }
-
-    PolyMesh bpm;
-    Beveler::ApplyBevel(pm, bevel, bpm);
-    s = "Beveled " + prefix + " PolyMesh";
-    f = "/tmp/" + prefix + "3.3dv";
-    report();
-    {
-        Debug::Dump3dv dump(f, s);
-        dump.SetLabelFontSize(10);
-        dump.AddPolyMesh(bpm);
-    }
-
-    TriMesh btm = bpm.ToTriMesh();
-    s = "Beveled " + prefix + " TriMesh";
-    f = "/tmp/" + prefix + "4.3dv";
-    report();
-    {
-        Debug::Dump3dv dump(f, s);
-        dump.SetLabelFontSize(10);
-        dump.AddTriMesh(btm);
-    }
-}
-#endif
-
 TEST_F(BevelerTest, BevelBox) {
-    TriMesh m = BuildBoxMesh(Vector3f(10, 10, 10));
-
-    // Apply the default Bevel.
-    TriMesh rm = Beveler::ApplyBevel(m, Bevel());
-
-    // Beveling each edge of the cube results in:
-    //    6 new faces with 4 new vertices each      (2 tris per)
-    //   12 new rectangular faces for the edges     (2 tris per)
-    //    8 new triangular  faces for the vertices  (1 tri per)
-    // Total of 6*4=24 vertices and 6*2+12*2+8*1=44 triangles.
-    EXPECT_EQ(24U, rm.points.size());
-    EXPECT_EQ(44U, rm.GetTriangleCount());
-    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
-    ValidateMesh(rm, "Beveled box");
+    const TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
+    TestBevel(m, GetDefaultBevel(),  24,  44);
+    TestBevel(m, GetBevel(3),        48,  92);
+    TestBevel(m, GetBevel(4),        96, 188);
+    TestBevel(m, GetBevel(5),       144, 284);
+    TestBevel(m, GetBevel(6),       216, 428);
 }
 
-TEST_F(BevelerTest, BevelBox2) {
-    TriMesh m = BuildBoxMesh(Vector3f(4, 4, 4));
-
-    // Construct a Bevel with 2 interior points.
-    Bevel bevel;
-    bevel.profile.AddPoint(Point2f(.4, .8));
-    bevel.profile.AddPoint(Point2f(.8, .4));
-
-    // Apply the Bevel.
-    TriMesh rm = Beveler::ApplyBevel(m, bevel);
-
-    EXPECT_EQ(96U,  rm.points.size());
-    EXPECT_EQ(188U, rm.GetTriangleCount());
-    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
-    ValidateMesh(rm, "Beveled box");
-}
-
-TEST_F(BevelerTest, BevelBox3Pts) {
-    Bevel bevel;
-    bevel.profile.AddPoint(Point2f(.5f, .6f));
-    TriMesh m = BuildBoxMesh(Vector3f(10, 10, 10));
-    TriMesh rm = Beveler::ApplyBevel(m, bevel);
-    EXPECT_EQ(48U, rm.points.size());
-    EXPECT_EQ(92U, rm.GetTriangleCount());
-    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
-    ValidateMesh(rm, "Beveled box");
-}
-
-TEST_F(BevelerTest, BevelConcave) {
-    TriMesh m = LoadTriMesh("L.stl");
-    TriMesh rm = Beveler::ApplyBevel(m, Bevel());
-    EXPECT_EQ(36U, rm.points.size());
-    EXPECT_EQ(68U, rm.GetTriangleCount());
-    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
-    ValidateMesh(rm, "Beveled L");
-}
-
-TEST_F(BevelerTest, BevelHole) {
-    // This is a 20x20x20 box with a 10x10 hole from top to bottom.
-    TriMesh m = LoadTriMesh("hole.stl");
-    TriMesh rm = Beveler::ApplyBevel(m, Bevel());
-    EXPECT_EQ(48U, rm.points.size());
-    EXPECT_EQ(96U, rm.GetTriangleCount());
-    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
-    ValidateMesh(rm, "Beveled hole");
-}
-
-TEST_F(BevelerTest, BevelClippedCyl) {
-    TriMesh m = LoadTriMesh("clippedCyl.stl");
-    Bevel bevel;
-    bevel.profile.AddPoint(Point2f(.5f, .6f));
-
-    TriMesh rm = Beveler::ApplyBevel(m, bevel);
-    EXPECT_EQ(42U, rm.points.size());
-    EXPECT_EQ(80U, rm.GetTriangleCount());
-    ValidateMesh(rm, "Beveled clipped cylinder");
+TEST_F(BevelerTest, BevelCyl) {
+    const TriMesh m = BuildCylinderMesh(5, 5, 20, 7);
+    TestBevel(m, GetDefaultBevel(),  42,  80);
+    TestBevel(m, GetBevel(3),        84, 164);
+    TestBevel(m, GetBevel(4),       168, 332);
+    TestBevel(m, GetBevel(5),       252, 500);
+    TestBevel(m, GetBevel(6),       378, 752);
 }
 
 TEST_F(BevelerTest, BevelTextO) {
-    TriMesh m = LoadTriMesh("O.stl");
-
-    // Scale of .6 works properly.
-    Bevel bevel;
-    bevel.scale = .6f;
-    TriMesh rm = Beveler::ApplyBevel(m, bevel);
-    EXPECT_EQ(80U,  rm.points.size());
-    EXPECT_EQ(160U, rm.GetTriangleCount());
-    ValidateMesh(rm, "Beveled text O");
-
-    // Scale of .8 should cause CGAL problems.
-    bevel.scale = .8f;
-    rm = Beveler::ApplyBevel(m, bevel);
-    const auto ret = ValidateTriMesh(rm);
-    EXPECT_ENUM_EQ(MeshValidityCode::kInconsistent, ret);
+    const TriMesh m = LoadTriMesh("O.stl");
+    TestBevel(m, GetDefaultBevel(.25f), 120, 240);
 }
 
 TEST_F(BevelerTest, BevelTextA) {
-    TriMesh m = LoadTriMesh("A.stl");
+    const TriMesh m = LoadTriMesh("A.stl");
+    // Have to use a very small scale for a valid mesh.
+    TestBevel(m, GetDefaultBevel(.05f), 84, 168);
+}
 
-    // This caused and error with the original Beveler.
-    Bevel bevel;
-    bevel.scale = .1f;
-    DumpBevel(m, bevel, "XXXX");
+TEST_F(BevelerTest, BevelTetrahedron) {
+    const TriMesh m = BuildTetrahedronMesh(10);
+    TestBevel(m, GetDefaultBevel(),  12,  20);
+    TestBevel(m, GetBevel(3),        24,  44);
+    TestBevel(m, GetBevel(4),        48,  92);
+    TestBevel(m, GetBevel(5),        72, 140);
+    TestBevel(m, GetBevel(6),       108, 212);
+}
 
-    TriMesh rm = Beveler::ApplyBevel(m, bevel);
-    // XXXX EXPECT_EQ(80U,  rm.points.size());
-    // XXXX EXPECT_EQ(160U, rm.GetTriangleCount());
-    ValidateMesh(rm, "Beveled text A");
+TEST_F(BevelerTest, BevelPyramid) {
+    // Pyramid has 4 faces adjacent to the apex vertex.
+    const TriMesh m = BuildCylinderMesh(0, 10, 20, 4);
+    TestBevel(m, GetDefaultBevel(),  16,  28);
+    TestBevel(m, GetBevel(3),        32,  60);
+    TestBevel(m, GetBevel(4),        64, 124);
+    TestBevel(m, GetBevel(5),        96, 188);
+    TestBevel(m, GetBevel(6),       144, 284);
+}
+
+TEST_F(BevelerTest, BevelHelix) {
+    // A pretty complex STL model.
+    const TriMesh m = LoadTriMesh("double_helix.stl");
+    // Have to use a small scale for a valid mesh.
+    TestBevel(m, GetDefaultBevel(.2f), 2056, 4112);
 }
