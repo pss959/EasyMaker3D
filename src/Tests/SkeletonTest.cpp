@@ -19,7 +19,7 @@ class SkeletonTest : public TestBase {
             if (v.point == point && v.source_index == source_index)
                 return i;
         }
-        EXPECT_TRUE(false);
+        EXPECT_TRUE(false) << "Cannot find point " << point;
         return 0;
     }
 
@@ -174,4 +174,71 @@ TEST_F(SkeletonTest, Skeleton3DCube) {
     EXPECT_TRUE(HasEdge(skel, indices[0], indices[12], 3, 8));
     EXPECT_TRUE(HasEdge(skel, indices[2], indices[12], 6, 0));
     EXPECT_TRUE(HasEdge(skel, indices[6], indices[12], 8, 3));
+}
+
+TEST_F(SkeletonTest, Skeleton3DBox) {
+    // 2x4x2 box centered on the origin.
+    PolyMesh pbox(BuildBoxMesh(Vector3f(2, 4, 2)));
+    MergeCoplanarFaces(pbox);
+
+    Skeleton3D skel;
+    skel.BuildForPolyMesh(pbox);
+
+    // 8 original points + 2 center points for bisectors on each of 4
+    // rectangular sides + 2 on square sides.
+    EXPECT_EQ(18U, skel.GetVertices().size());
+
+    // Get indices for original points and center points.
+    std::vector<size_t> indices;
+    for (size_t i = 0; i < pbox.vertices.size(); ++i)
+        indices.push_back(FindIndex(skel, pbox.vertices[i]->point, i));
+    indices.push_back(FindIndex(skel, Point3f(-1, -1,  0), -1));  // 6
+    indices.push_back(FindIndex(skel, Point3f(-1,  1,  0), -1));  // 7
+    indices.push_back(FindIndex(skel, Point3f( 1, -1,  0), -1));  // 8
+    indices.push_back(FindIndex(skel, Point3f( 1,  1,  0), -1));  // 9
+    indices.push_back(FindIndex(skel, Point3f( 0, -2,  0), -1));  // 10
+    indices.push_back(FindIndex(skel, Point3f( 0,  2,  0), -1));  // 11
+    indices.push_back(FindIndex(skel, Point3f( 0, -1, -1), -1));  // 12
+    indices.push_back(FindIndex(skel, Point3f( 0,  1, -1), -1));  // 13
+    indices.push_back(FindIndex(skel, Point3f( 0, -1,  1), -1));  // 14
+    indices.push_back(FindIndex(skel, Point3f( 0,  1,  1), -1));  // 15
+
+    // 4 bisectors on top and bottom faces; 5 on the others.
+    EXPECT_EQ(28U, skel.GetEdges().size());
+
+    EXPECT_TRUE(HasEdge(skel, indices[0], indices[8], 1, 3));
+    EXPECT_TRUE(HasEdge(skel, indices[1], indices[8], 2, 0));
+    EXPECT_TRUE(HasEdge(skel, indices[3], indices[9], 3, 1));
+    EXPECT_TRUE(HasEdge(skel, indices[2], indices[9], 0, 2));
+
+    EXPECT_TRUE(HasEdge(skel, indices[2], indices[13], 2, 7));
+    EXPECT_TRUE(HasEdge(skel, indices[3], indices[13], 6, 3));
+    EXPECT_TRUE(HasEdge(skel, indices[7], indices[13], 7, 2));
+    EXPECT_TRUE(HasEdge(skel, indices[6], indices[13], 3, 6));
+
+    EXPECT_TRUE(HasEdge(skel, indices[4], indices[10], 7, 10));
+    EXPECT_TRUE(HasEdge(skel, indices[6], indices[11], 6, 9));
+    EXPECT_TRUE(HasEdge(skel, indices[7], indices[11], 10, 7));
+    EXPECT_TRUE(HasEdge(skel, indices[5], indices[10], 9, 6));
+
+    EXPECT_TRUE(HasEdge(skel, indices[1], indices[12], 0, 10));
+    EXPECT_TRUE(HasEdge(skel, indices[0], indices[12], 9, 1));
+    EXPECT_TRUE(HasEdge(skel, indices[4], indices[12], 10, 0));
+    EXPECT_TRUE(HasEdge(skel, indices[5], indices[12], 1, 9));
+
+    EXPECT_TRUE(HasEdge(skel, indices[3], indices[17], 1, 6));
+    EXPECT_TRUE(HasEdge(skel, indices[1], indices[16], 10, 2));
+    EXPECT_TRUE(HasEdge(skel, indices[5], indices[16], 6, 1));
+    EXPECT_TRUE(HasEdge(skel, indices[7], indices[17], 2, 10));
+
+    EXPECT_TRUE(HasEdge(skel, indices[4], indices[14], 0, 7));
+    EXPECT_TRUE(HasEdge(skel, indices[0], indices[14], 3, 9));
+    EXPECT_TRUE(HasEdge(skel, indices[2], indices[15], 7, 0));
+    EXPECT_TRUE(HasEdge(skel, indices[6], indices[15], 9, 3));
+
+    // Internal edges.
+    EXPECT_TRUE(HasEdge(skel, indices[8],  indices[9],  -1, -1));
+    EXPECT_TRUE(HasEdge(skel, indices[10], indices[11], -1, -1));
+    EXPECT_TRUE(HasEdge(skel, indices[17], indices[16], -1, -1));
+    EXPECT_TRUE(HasEdge(skel, indices[14], indices[15], -1, -1));
 }
