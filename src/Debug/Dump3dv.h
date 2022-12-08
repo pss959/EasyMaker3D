@@ -11,7 +11,6 @@
 #include "Util/Flags.h"
 
 struct PolyMesh;
-class  Skeleton3D;
 
 namespace Debug {
 
@@ -62,9 +61,6 @@ class Dump3dv {
 
     /// Adds a PolyMesh to dump.
     void AddPolyMesh(const PolyMesh &mesh);
-
-    /// Adds a Skeleton3D to dump.
-    void AddSkeleton3D(const Skeleton3D &skel);
 
     /// Adds a vertex to dump. Also adds a label if the vertex labeling flag is
     /// set.

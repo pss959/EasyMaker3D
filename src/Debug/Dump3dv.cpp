@@ -3,7 +3,6 @@
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Math/PolyMesh.h"
-#include "Math/Skeleton3D.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -188,58 +187,6 @@ void Dump3dv::AddPolyMesh(const PolyMesh &mesh) {
             const Point3f face_center = GetFaceCenter_(*f);
             const Point3f pos = face_center + .1f * (face_center - mesh_center);
             AddLabel_(pos, ID_(f->id));
-        }
-    }
-}
-
-void Dump3dv::AddSkeleton3D(const Skeleton3D &skel) {
-    const auto &vertices  = skel.GetVertices();
-    const auto &edges     = skel.GetEdges();
-
-    // Building a vertex label, which includes the source index and distance.
-    const auto vlabel = [&](size_t i){
-        const auto &v = vertices[i];
-        std::string label = IID_("V", i) + "(";
-        if (v.source_index >= 0)
-            label += "s" + Util::ToString(v.source_index) + "/";
-        label += "d" + Util::ToString(v.distance) + ")";
-        return label;
-    };
-
-    // Building an edge label, which includes the bisected vertices.
-    const auto elabel = [&](size_t i){
-        const auto &e = edges[i];
-        std::string label = IID_("E", i);
-        if (e.bisected_index0 >= 0)
-            label += "(" + Util::ToString(e.bisected_index0) + "/" +
-                Util::ToString(e.bisected_index1) + ")";
-        return label;
-    };
-
-    // Vertices.
-    out_ << "\n# Skeleton3D with " << vertices.size() << " vertices:\n";
-    for (size_t i = 0; i < vertices.size(); ++i)
-        AddVertex_(IID_("V", i), vertices[i].point);
-
-    // Edges.
-    out_ << "\n#  " << edges.size() << " edges:\n" << "c .4 1 .9 1\n";
-    for (size_t i = 0; i < edges.size(); ++i)
-        out_ << "l " << IID_("E", i) << ' ' << IID_("V", edges[i].v0_index)
-             << ' ' << IID_("V", edges[i].v1_index) << "\n";
-
-    // Labels
-    out_ << "\ns " << label_font_size_ << "\n\n";
-    if (label_flags_.Has(LabelFlag::kVertexLabels)) {
-        out_ << "\n# Vertex labels:\n" << "c .9 .6 .9 1\n";
-        for (size_t i = 0; i < vertices.size(); ++i)
-            AddLabel_(vertices[i].point, vlabel(i));
-    }
-    if (label_flags_.Has(LabelFlag::kEdgeLabels)) {
-        out_ << "\n# Edge labels:\n" << "c .4 1 .9 1\n";
-        for (size_t i = 0; i < edges.size(); ++i) {
-            const auto &p0 = vertices[edges[i].v0_index].point;
-            const auto &p1 = vertices[edges[i].v1_index].point;
-            AddLabel_((p0 + p1) / 2, elabel(i));
         }
     }
 }

@@ -48,7 +48,6 @@ test_sources = [
     'ScaleCommandTest.cpp',
     'SceneTestBase.cpp',
     'SearchTest.cpp',
-    'SkeletonTest.cpp',
     'StringTest.cpp',
     'TestBase.cpp',
     'TextUtilsTest.cpp',

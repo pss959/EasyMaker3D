@@ -205,8 +205,6 @@ lib_sources = [
     'Math/Polygon.cpp',
     'Math/PolygonBuilder.cpp',
     'Math/Profile.cpp',
-    'Math/Skeleton2D.cpp',
-    'Math/Skeleton3D.cpp',
     'Math/TextUtils.cpp',
     'Math/ToString.cpp',
     'Math/Triangulation.cpp',
