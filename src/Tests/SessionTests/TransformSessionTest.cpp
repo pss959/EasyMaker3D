@@ -4,7 +4,7 @@
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 TEST_F(SessionTestBase, TransformSessionTest) {
     LoadSession("Transforms.mvr");

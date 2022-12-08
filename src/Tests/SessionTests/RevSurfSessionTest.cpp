@@ -5,7 +5,7 @@
 #include "Models/RevSurfModel.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Util/General.h"
 
 // Convenience function

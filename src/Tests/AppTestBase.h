@@ -4,7 +4,7 @@
 
 #include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
-#include "TestContext.h"
+#include "Tests/TestContext.h"
 
 // This is a base class for any test that requies an Application instance.
 class AppTestBase : public SceneTestBase {

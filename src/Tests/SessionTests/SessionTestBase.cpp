@@ -1,7 +1,7 @@
 #include "SessionTests/SessionTestBase.h"
 
 #include "Managers/SessionManager.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Util/FilePath.h"
 
 SessionTestBase::SessionTestBase() {

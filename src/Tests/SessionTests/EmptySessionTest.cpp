@@ -3,7 +3,7 @@
 #include "Managers/CommandManager.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 TEST_F(SessionTestBase, EmptySessionTest) {
     EXPECT_TRUE(LoadSession("Empty.mvr"));

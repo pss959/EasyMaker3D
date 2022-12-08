@@ -4,7 +4,7 @@
 #include "Models/MirroredModel.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 #include "Util/General.h"
 
 TEST_F(SessionTestBase, MirrorSessionTest) {

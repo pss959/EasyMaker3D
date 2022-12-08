@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AppTestBase.h"
+#include "Tests/AppTestBase.h"
 
 // This is a base class for any test that loads a session from a file and tests
 // the results.

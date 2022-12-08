@@ -1,7 +1,7 @@
 #include "App/SceneContext.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 TEST_F(SessionTestBase, PasteSessionTest) {
     // This session creates a CylinderModel, copies it, and pastes it.

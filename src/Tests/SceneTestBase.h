@@ -7,7 +7,7 @@
 #include "SG/IonContext.h"
 #include "SG/Scene.h"
 #include "Tests/TestBase.h"
-#include "Testing.h"
+#include "Tests/Testing.h"
 
 // This is a base class for any test that has to read a scene from a file or
 // string.
