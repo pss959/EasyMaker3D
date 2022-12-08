@@ -15,6 +15,9 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
+#include "Math/ToString.h" // XXXX
+#include "Debug/Dump3dv.h" // XXXX
+
 namespace {
 
 // ----------------------------------------------------------------------------
@@ -152,7 +155,7 @@ class Beveler2_ {
     /// Maps each PolyMesh::Edge pointer to the EdgeProfile_ created for it.
     std::unordered_map<const PolyMesh::Edge *, EdgeProfile_> edge_profile_map_;
 
-    /// XXXX
+    /// XXXX Comment all of this...
     void CreateEdgeProfiles_();
 
     /// Assigns a direction to an edge of the original PolyMesh and its
@@ -161,7 +164,6 @@ class Beveler2_ {
     void AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
                                       Direction_ dir);
 
-    /// XXXX
     void InitSkeleton_();
 
     /// Returns the index of the skeleton vertex at the other end of the
@@ -169,13 +171,15 @@ class Beveler2_ {
     /// within its face. Asserts if it is not found.
     size_t GetSkeletonVertex_(const PolyMesh::Edge &edge);
 
-    /// XXXX
-    IndexVec_ AddOffsetFaceBorder_(const EdgeVec_ &border_edges);
+    IndexVec_ AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
+                                   const Vector3f &normal, bool is_hole);
 
-    /// XXXX
+    Point3f ComputeOffsetPosition_(const PolyMesh::Edge &e0,
+                                   const PolyMesh::Edge &e1,
+                                   const Vector3f &normal, bool is_hole);
+
     void CollapseEdgeVertices_();
 
-    /// XXXX
     void SetEdgeProfileIndices_(const PolyMesh::Edge &edge);
 
     /// Adds faces joining all profile points across each original edge of the
@@ -186,21 +190,12 @@ class Beveler2_ {
     /// the PolyMesh.
     void AddVertexFaces_();
 
-    // XXXX
     void AddVertexFaces_(const EdgeVec_ &edges, const IndexVec_ &indices);
-
-    // XXXX
     void AddInnerVertexFaces_(const IndexVec_ &indices,
                               size_t points_per_side);
-
-    /// XXXX
     Beveler2_::RingVec_ BuildRings_(const EdgeVec_ &edges,
                                     const IndexVec_ &outer_indices);
-
-    /// XXXX
     void PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings);
-
-    /// XXXX
     void AddInterRingFaces_(const RingVec_ &rings);
 
     /// Applies the bevel profile between the two given endpoints in a plane
@@ -210,7 +205,6 @@ class Beveler2_ {
                                                     const Point3f &p0,
                                                     const Point3f &p1);
 
-    /// XXXX
     void DumpSkeleton_(const PolyMesh &mesh, const Skeleton3D &skeleton);
 };
 
@@ -230,9 +224,10 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel,
     // and add the vertices to the PolyMeshBuilder. Store the resulting indices
     // in a the edge_vertex_map_ and create faces joining them.
     for (const auto &face: mesh_.faces) {
-        pmb_.AddPolygon(AddOffsetFaceBorder_(face->outer_edges));
+        const Vector3f normal = face->GetNormal();
+        pmb_.AddPolygon(AddOffsetFaceBorder_(face->outer_edges, normal, false));
         for (auto &hole: face->hole_edges)
-            pmb_.AddHole(AddOffsetFaceBorder_(hole));
+            pmb_.AddHole(AddOffsetFaceBorder_(hole, normal, true));
     }
 
     // Collapse vertices for edges that exceed the maximum bevel angle.
@@ -250,6 +245,26 @@ Beveler2_::Beveler2_(const PolyMesh &mesh, const Bevel &bevel,
     // Construct the result PolyMesh and make sure the resulting PolyMesh has
     // no duplicate features.
     pmb_.BuildPolyMesh(result_mesh);
+    {  // XXXX
+        const bool add_orig_mesh = true;
+
+        Debug::Dump3dv dump("/tmp/UMESH.3dv", "Unmerged Beveler2");
+        dump.SetLabelFontSize(8);
+        Debug::Dump3dv::LabelFlags label_flags;
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+        dump.SetLabelFlags(label_flags);
+        //dump.AddPolyMesh(result_mesh);
+        if (add_orig_mesh) {
+            // dump.SetExtraPrefix("M_");
+            label_flags.Reset(Debug::Dump3dv::LabelFlag::kVertexLabels);
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+            label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+            dump.SetLabelFlags(label_flags);
+            dump.AddPolyMesh(mesh_);
+        }
+    }
     MergeDuplicateFeatures(result_mesh, result_mesh);
 }
 
@@ -338,10 +353,7 @@ size_t Beveler2_::GetSkeletonVertex_(const PolyMesh::Edge &edge) {
 }
 
 Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
-    const EdgeVec_ &border_edges) {
-    using ion::math::AngleBetween;
-    using ion::math::Normalized;
-    using ion::math::Sine;
+    const EdgeVec_ &border_edges, const Vector3f &normal, bool is_hole) {
 
     IndexVec_ indices;
     for (size_t i = 0; i < border_edges.size(); ++i) {
@@ -360,22 +372,7 @@ Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
 
         Point3f pos;
         if (is_e0_beveled && is_e1_beveled) {
-            const size_t svi = GetSkeletonVertex_(e1);
-
-            // Get the corresponding skeleton vertex.
-            const Point3f &p1 = skeleton_.GetVertices()[svi].point;
-
-            // XXXX Get rid of skeleton???? Just use half the angle between the
-            // edges?
-
-            // Use trigonometry to find the position P along the skeleton
-            // bisector edge that is S units from either of the original edges,
-            // where S is the bevel scale.
-            const Vector3f edge_vec     = e1.GetUnitVector();
-            const Vector3f bisector_vec = Normalized(p1 - p0);
-            const Anglef   angle        = AngleBetween(edge_vec, bisector_vec);
-            const float    dist         = bevel_.scale / Sine(angle);
-            pos = p0 + dist * bisector_vec;
+            pos = ComputeOffsetPosition_(e0, e1, normal, is_hole);
         }
         else if (is_e0_beveled && ! is_e1_beveled) {
             pos = p0 - bevel_.scale * e0.GetUnitVector();
@@ -396,6 +393,84 @@ Beveler2_::IndexVec_ Beveler2_::AddOffsetFaceBorder_(
         edge_vertex_map_[&e1] = index;
     }
     return indices;
+}
+
+Point3f Beveler2_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
+                                          const PolyMesh::Edge &e1,
+                                          const Vector3f &normal,
+                                          bool is_hole) {
+    using ion::math::AngleBetween;
+    using ion::math::Normalized;
+    using ion::math::Sine;
+
+    const Vector3f e0_vec = -e0.GetUnitVector();
+    const Vector3f e1_vec =  e1.GetUnitVector();
+
+    // Method A:
+
+    // Get the corresponding skeleton vertex.
+    const size_t svi = GetSkeletonVertex_(e1);
+    const Point3f &p0  = e1.v0->point;
+    const Point3f &p1 = skeleton_.GetVertices()[svi].point;
+
+    // Use trigonometry to find the position P along the skeleton bisector edge
+    // that is S units from either of the original edges, where S is the bevel
+    // scale.
+    const Vector3f bisectorA = Normalized(p1 - p0);
+    const Anglef   angleA    = AngleBetween(e1_vec, bisectorA);
+    const float    distA     = bevel_.scale / Sine(angleA);
+    const Point3f  posA      = p0 + distA * bisectorA;
+
+    // Method B:
+
+    const Vector3f cross = ion::math::Cross(e0_vec, e1_vec);
+    const float    dot   = ion::math::Dot(cross, normal);
+    const bool flip = is_hole ? dot < 0 : dot > 0;
+
+    const Vector3f bisectorB = (flip ? -1 : 1) * Normalized(e0_vec + e1_vec);
+    const Anglef   angleB    = AngleBetween(e1_vec, bisectorB);
+    const float    distB     = bevel_.scale / Sine(angleB);
+    const Point3f  posB      = p0 + distB * bisectorB;
+
+    const float diff = ion::math::Distance(posA, posB);
+    if (diff > .001f) {
+        std::cerr << "XXXX For " << e0.id
+                  << " and " << e1.id << ":\n"
+                  << "  e0_vec = " << e0_vec << "\n"
+                  << "  e1_vec = " << e1_vec << "\n"
+                  << "  is_hole=" << is_hole << "\n"
+                  << "  norm   = " << normal << "\n"
+                  << "  cross  = " << cross << "\n"
+                  << "  dot    = " << dot << "\n"
+                  << "  flip   = " << flip << "\n"
+                  << "  bisA   = " << bisectorA << "\n"
+                  << "  bisB   = " << bisectorB << "\n"
+                  << "  angA   = " << angleA.Degrees() << "\n"
+                  << "  angB   = " << angleB.Degrees() << "\n"
+                  << "  e ang  = " << AngleBetween(e0_vec,
+                                                   e1_vec).Degrees() << "\n"
+                  << "  2 angA = " << (2 * angleA.Degrees()) << "\n"
+                  << "  2 angB = " << (2 * angleB.Degrees()) << "\n"
+                  << "  distA  = " << distA << "\n"
+                  << "  distB  = " << distB << "\n"
+                  << "  diff   = " << diff
+                  << "\n";
+    }
+#if XXXX
+    else {
+        std::cerr << "XXXX For " << e0.id
+                  << " and " << e1.id << ":\n"
+                  << "  e0_vec = " << e0_vec << " e1_vec = " << e1_vec
+                  << " is_hole=" << is_hole << "\n"
+                  << "  e ang  = "
+                  << AngleBetween(e0_vec, e1_vec).Degrees() << "\n"
+                  << "  cross  = "
+                  << ion::math::Cross(e0_vec, e1_vec) << "\n";
+    }
+#endif
+
+    // return posB;
+    return posA;
 }
 
 void Beveler2_::CollapseEdgeVertices_() {
