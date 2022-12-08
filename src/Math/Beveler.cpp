@@ -17,35 +17,130 @@
 namespace {
 
 // ----------------------------------------------------------------------------
-// Helper types.
+// Beveler_ class. This does all of the work of applying a bevel to a PolyMesh.
 // ----------------------------------------------------------------------------
 
-/// This determines how the points of a Profile are applied to an edge of the
-/// original PolyMesh. "Forward" and "Reverse" are assigned to make the bevel
-/// profiles consistent as possible across faces.
-enum class Direction_ {
-    kUnknown,
-    kForward,
-    kReverse,
-};
+class Beveler_ {
+  public:
+    /// Applies the given Bevel to the given PolyMesh.
+    Beveler_(const PolyMesh &mesh, const Bevel &bevel, PolyMesh &result_mesh);
 
-static Direction_ GetOppositeDirection_(Direction_ dir) {
-    ASSERT(dir != Direction_::kUnknown);
-    return dir == Direction_::kForward ?
-        Direction_::kReverse : Direction_::kForward;
-}
+  private:
+    /// This determines how the points of a Profile are applied to an edge of
+    /// the original PolyMesh. "Forward" and "Reverse" are assigned to make the
+    /// bevel profiles consistent as possible across faces.
+    enum class Direction_ { kUnknown, kForward, kReverse };
 
-/// An EdgeProfile_ stores information about how a Profile is applied at the
-/// starting vertex (v0) of an edge of the original PolyMesh. The \c direction
-/// field is used to maintain the proper vertex order. The \c angle field is
-/// used to determine whether the edge passes the max-angle test.  The points
-/// of the EdgeProfile_ are added as vertices in a PolyMeshBuilder and the
-/// resulting indices are stored here in the \c indices field. Profile vertices
-/// are always ordered in a counterclockwise direction around the v0 vertex.
-struct EdgeProfile_ {
-    Direction_          direction = Direction_::kUnknown;
-    Anglef              angle;
-    std::vector<GIndex> indices;
+    /// An EdgeProfile_ stores information about how a Profile is applied at
+    /// the starting vertex (v0) of an edge of the original PolyMesh. The \c
+    /// direction field is used to maintain the proper vertex order. The \c
+    /// angle field is used to determine whether the edge passes the max-angle
+    /// test.  The points of the EdgeProfile_ are added as vertices in a
+    /// PolyMeshBuilder and the resulting indices are stored here in the \c
+    /// indices field. Profile vertices are always ordered in a
+    /// counterclockwise direction around the v0 vertex.
+    struct EdgeProfile_ {
+        Direction_          direction = Direction_::kUnknown;
+        Anglef              angle;
+        std::vector<GIndex> indices;
+    };
+
+    struct Ring_;
+
+    // Some shorthand.
+    using EdgeVec_        = std::vector<PolyMesh::Edge *>;
+    using IndexVec_       = std::vector<GIndex>;
+    using RingVec_        = std::vector<Ring_>;
+    using EdgeProfileMap_ = std::unordered_map<const PolyMesh::Edge *,
+                                               EdgeProfile_>;
+    using EdgeVertexMap_  = std::unordered_map<const PolyMesh::Edge *, GIndex>;
+
+
+    /// Original PolyMesh to bevel.
+    const PolyMesh  &mesh_;
+
+    /// Bevel to apply.
+    const Bevel     &bevel_;
+
+    // PolyMeshBuilder used to construct the beveled PolyMesh.
+    PolyMeshBuilder pmb_;
+
+    /// Maps each PolyMesh::Edge pointer to the EdgeProfile_ created for it.
+    EdgeProfileMap_ edge_profile_map_;
+
+    /// Maps each PolyMesh::Edge pointer to the PolyMeshBuilder index of the
+    /// new offset vertex created for it at the v0 vertex end.
+    EdgeVertexMap_  edge_vertex_map_;
+
+    /// Creates an EdgeProfile_ for each edge of the original PolyMesh and
+    /// stores it in the #edge_profile_map_.
+    void CreateEdgeProfiles_();
+
+    /// Assigns a direction to an edge of the original PolyMesh and its
+    /// opposite edge, possibly recursing on neighbor edges as well. Also
+    /// computes and stores the angle between the faces adjacent to the edge.
+    void AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
+                                      Direction_ dir);
+
+    /// Given edges of a border (outer or hole) of a PolyMesh::Face, this adds
+    /// new vertices that are offset from the edges based on the Bevel. The
+    /// face normal and the \p is_hole parameter are used to determine whether
+    /// two edges form a convex or concave angle. This returns the
+    /// PolyMeshBuilder indices of the added vertices, in order.
+    IndexVec_ AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
+                                   const Vector3f &normal, bool is_hole);
+
+    /// Computes and returns the position of the offset vertex for the vertex
+    /// between two beveled edges. The face normal and the \p is_hole parameter
+    /// are used to determine whether two edges form a convex or concave
+    /// angle.
+    Point3f ComputeOffsetPosition_(const PolyMesh::Edge &e0,
+                                   const PolyMesh::Edge &e1,
+                                   const Vector3f &normal, bool is_hole);
+
+    /// Fills in the indices of the EdgeProfile_ for the given edge by applying
+    /// the bevel profile to the endpoints and adding the intermediate points
+    /// to the PolyMeshBuilder.
+    void SetEdgeProfileIndices_(const PolyMesh::Edge &edge);
+
+    /// Adds faces joining all profile points across each original edge of the
+    /// PolyMesh.
+    void AddEdgeFaces_();
+
+    /// Adds faces joining all profile points around each original vertex of
+    /// the PolyMesh.
+    void AddVertexFaces_();
+
+    /// Adds faces joining all profile points for a single vertex. All edges
+    /// starting at the vertex are supplied along with the point indices.
+    void AddFacesForVertex_(const EdgeVec_ &edges, const IndexVec_ &indices);
+
+    /// Adds faces for a vertex for the innermost ring with 2 or 3 points per
+    /// side.
+    void AddInnerVertexFaces_(const IndexVec_ &indices, size_t points_per_side);
+
+    /// Builds and returns a vector of Ring_ instances representing the points
+    /// around a vertex when the number of points per side is more than 3. This
+    /// adds vertices to the PolyMeshBuilder but leaves their positions unset.
+    RingVec_ BuildRings_(const EdgeVec_ &edges, const IndexVec_ &outer_indices);
+
+    /// Sets the positions for the points corresponding to all Ring_ instances
+    /// in the vector.
+    void PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings);
+
+    /// Adds faces to the PolyMeshBuilder to fill the spaces between all pairs
+    /// of Ring_ instances in the vector.
+    void AddInterRingFaces_(const RingVec_ &rings);
+
+    /// Applies the bevel profile between the two given endpoints in a plane
+    /// perpendicular to the given Edge. Returns the positions of the resulting
+    /// interior points.
+    std::vector<Point3f> ApplyProfileBetweenPoints_(const PolyMesh::Edge &edge,
+                                                    const Point3f &p0,
+                                                    const Point3f &p1);
+
+    /// Returns the opposite of the given direction.
+    static Direction_ GetOppositeDirection_(Direction_ dir);
 };
 
 /// A Ring_ is used to add faces around each vertex of the original PolyMesh
@@ -63,9 +158,9 @@ struct EdgeProfile_ {
 /// because the last vertex of each side of the ring is the same as the first
 /// vertex of the next side.
 ///
-/// The \c points_per_side value will be the same as P for the outermost ring.
+/// The #points_per_side value will be the same as P for the outermost ring.
 /// Each Ring_ created inside another one has 2 fewer points per side.
-struct Ring_ {
+struct Beveler_::Ring_ {
     size_t              level;            ///< Ring level (0 == outside).
     size_t              side_count;       ///< Number of sides in the ring.
     size_t              points_per_side;  ///< Number of vertices per side.
@@ -114,81 +209,8 @@ struct Ring_ {
     }
 };
 
-// ----------------------------------------------------------------------------
-// Beveler_ class. XXXX
-// ----------------------------------------------------------------------------
-
-class Beveler_ {
-  public:
-    /// Applies the given Bevel to the given PolyMesh.
-    Beveler_(const PolyMesh &mesh, const Bevel &bevel, PolyMesh &result_mesh);
-
-  private:
-    // Some shorthand.
-    using EdgeVec_  = std::vector<PolyMesh::Edge *>;
-    using IndexVec_ = std::vector<GIndex>;
-    using RingVec_  = std::vector<Ring_>;
-
-    /// Original PolyMesh to bevel.
-    const PolyMesh                                           &mesh_;
-
-    /// Bevel to apply.
-    const Bevel                                              &bevel_;
-
-    // PolyMeshBuilder used to construct the beveled PolyMesh.
-    PolyMeshBuilder                                          pmb_;
-
-    /// Maps each PolyMesh::Edge pointer to the PolyMeshBuilder index of the
-    /// new offset vertex created for it.
-    std::unordered_map<const PolyMesh::Edge *, GIndex>       edge_vertex_map_;
-
-    /// Maps each PolyMesh::Edge pointer to the EdgeProfile_ created for it.
-    std::unordered_map<const PolyMesh::Edge *, EdgeProfile_> edge_profile_map_;
-
-    /// XXXX Comment all of this...
-    void CreateEdgeProfiles_();
-
-    /// Assigns a direction to an edge of the original PolyMesh and its
-    /// opposite edge, moving on to neighbors as well. Also computes and stores
-    /// the angle between the faces adjacent to the edges.
-    void AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
-                                      Direction_ dir);
-
-    IndexVec_ AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
-                                   const Vector3f &normal, bool is_hole);
-
-    Point3f ComputeOffsetPosition_(const PolyMesh::Edge &e0,
-                                   const PolyMesh::Edge &e1,
-                                   const Vector3f &normal, bool is_hole);
-
-    void SetEdgeProfileIndices_(const PolyMesh::Edge &edge);
-
-    /// Adds faces joining all profile points across each original edge of the
-    /// PolyMesh.
-    void AddEdgeFaces_();
-
-    /// Adds faces joining all profile points around each original vertex of
-    /// the PolyMesh.
-    void AddVertexFaces_();
-
-    void AddVertexFaces_(const EdgeVec_ &edges, const IndexVec_ &indices);
-    void AddInnerVertexFaces_(const IndexVec_ &indices,
-                              size_t points_per_side);
-    Beveler_::RingVec_ BuildRings_(const EdgeVec_ &edges,
-                                    const IndexVec_ &outer_indices);
-    void PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings);
-    void AddInterRingFaces_(const RingVec_ &rings);
-
-    /// Applies the bevel profile between the two given endpoints in a plane
-    /// perpendicular to the given Edge. Returns the positions of the resulting
-    /// interior points.
-    std::vector<Point3f> ApplyProfileBetweenPoints_(const PolyMesh::Edge &edge,
-                                                    const Point3f &p0,
-                                                    const Point3f &p1);
-};
-
 Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
-                     PolyMesh &result_mesh) :
+                   PolyMesh &result_mesh) :
     mesh_(mesh),
     bevel_(bevel) {
 
@@ -232,7 +254,7 @@ void Beveler_::CreateEdgeProfiles_() {
 }
 
 void Beveler_::AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
-                                             Direction_ dir) {
+                                            Direction_ dir) {
     // Do nothing if already assigned.
     EdgeProfile_ &ep = edge_profile_map_.at(&edge);
     if (ep.direction != Direction_::kUnknown)
@@ -303,9 +325,9 @@ Beveler_::IndexVec_ Beveler_::AddOffsetFaceBorder_(
 }
 
 Point3f Beveler_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
-                                          const PolyMesh::Edge &e1,
-                                          const Vector3f &normal,
-                                          bool is_hole) {
+                                         const PolyMesh::Edge &e1,
+                                         const Vector3f &normal,
+                                         bool is_hole) {
     using ion::math::AngleBetween;
     using ion::math::Normalized;
     using ion::math::Sine;
@@ -434,13 +456,13 @@ void Beveler_::AddVertexFaces_() {
                 indices.pop_back();
             }
 
-            AddVertexFaces_(vertex_edges, indices);
+            AddFacesForVertex_(vertex_edges, indices);
         }
     }
 }
 
-void Beveler_::AddVertexFaces_(const EdgeVec_ &edges,
-                                const IndexVec_ &indices) {
+void Beveler_::AddFacesForVertex_(const EdgeVec_ &edges,
+                                  const IndexVec_ &indices) {
     // If NE is the number of edges and NP is the number of profile points,
     // then the number of points in a ring of vertices around the vertex is:
     //    NE * (NP - 1).
@@ -465,7 +487,7 @@ void Beveler_::AddVertexFaces_(const EdgeVec_ &edges,
 }
 
 void Beveler_::AddInnerVertexFaces_(const IndexVec_ &indices,
-                                     size_t points_per_side) {
+                                    size_t points_per_side) {
     if (points_per_side == 2U) {
         // Special case for single point per side.
         pmb_.AddPolygon(indices);
@@ -489,7 +511,7 @@ void Beveler_::AddInnerVertexFaces_(const IndexVec_ &indices,
 }
 
 Beveler_::RingVec_ Beveler_::BuildRings_(const EdgeVec_ &edges,
-                                           const IndexVec_ &outer_indices) {
+                                         const IndexVec_ &outer_indices) {
     // Compute the number of rings that are needed. Each ring has 2 fewer
     // points per edge than the ring surrounding it.
     const size_t profile_size = bevel_.profile.GetPointCount();
@@ -580,9 +602,8 @@ void Beveler_::PositionRingPoints_(const EdgeVec_ &edges, RingVec_ &rings) {
 
 void Beveler_::AddInterRingFaces_(const RingVec_ &rings) {
     // Starting from the outside (first ring), connect the vertices between
-    // each pair of rings.
-    // XXXX N quads per edge, where N = NP for inner ring.
-
+    // each pair of rings. This creates N quadrilaterals per edge, where N is
+    // the number of points per side for the inner ring.
     for (size_t r = 0; r + 1 < rings.size(); ++r) {
         const Ring_ &outer = rings[r];
         const Ring_ &inner = rings[r + 1];
@@ -604,6 +625,12 @@ void Beveler_::AddInterRingFaces_(const RingVec_ &rings) {
             }
         }
     }
+}
+
+Beveler_::Direction_ Beveler_::GetOppositeDirection_(Direction_ dir) {
+    ASSERT(dir != Direction_::kUnknown);
+    return dir == Direction_::kForward ?
+        Direction_::kReverse : Direction_::kForward;
 }
 
 }  // anonymous namespace
