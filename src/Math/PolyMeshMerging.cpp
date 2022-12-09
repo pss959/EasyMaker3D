@@ -455,14 +455,15 @@ void MergeDuplicateFeatures(const PolyMesh &poly_mesh, PolyMesh &result_mesh) {
         // Minimum area for a face to be added.
       if (face->GetOuterArea() > 0) {
             indices = vertex_merger.GetBorderIndices(face->outer_edges);
-            ASSERT(indices.size() >= 3U);
-            pmb.AddPolygon(indices);
+            if (indices.size() >= 3U) {
+                pmb.AddPolygon(indices);
 
-            // Check for holes.
-            for (auto &hole: face->hole_edges) {
-                indices = vertex_merger.GetBorderIndices(hole);
-                if (indices.size() >= 3U)
-                    pmb.AddHole(indices);
+                // Check for holes.
+                for (auto &hole: face->hole_edges) {
+                    indices = vertex_merger.GetBorderIndices(hole);
+                    if (indices.size() >= 3U)
+                        pmb.AddHole(indices);
+                }
             }
         }
     }
