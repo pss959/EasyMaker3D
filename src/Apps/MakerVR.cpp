@@ -41,13 +41,13 @@ class CrashHandler_ {
 
 #if ! defined(RELEASE_BUILD)
     void HandleAssertion(const AssertException &ex) {
-        HandleCrash_(std::string("Caught assertion: ") + ex.what(),
+        HandleCrash_(std::string("Caught assertion:\n") + ex.what(),
                      ex.GetStackTrace());
     }
 #endif
 
     void HandleException(const std::exception &ex) {
-        HandleCrash_(std::string("Caught exception: ") + ex.what(),
+        HandleCrash_(std::string("Caught exception:\n") + ex.what(),
                      StackTrace_());
     }
 
