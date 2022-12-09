@@ -185,7 +185,7 @@ static IndexVec GetTriangleIndices_(const PolyMesh &poly_mesh) {
     IndexVec indices;
     for (auto &face: poly_mesh.faces) {
         // Skip faces with zero area.
-        if (face->GetOuterArea() > .001f) {
+        if (face->GetOuterArea() > 0) {
             const VertexVec tri_verts = TriangulateFace_(*face);
             IndexVec tri_indices = Util::ConvertVector<GIndex, Vertex *>(
                 tri_verts,

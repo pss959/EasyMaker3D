@@ -453,9 +453,7 @@ void MergeDuplicateFeatures(const PolyMesh &poly_mesh, PolyMesh &result_mesh) {
     std::vector<GIndex> indices;
     for (const auto face: poly_mesh.faces) {
         // Minimum area for a face to be added.
-        static const float kMinArea = .0001f;
-
-        if (face->GetOuterArea() >= kMinArea) {
+      if (face->GetOuterArea() > 0) {
             indices = vertex_merger.GetBorderIndices(face->outer_edges);
             ASSERT(indices.size() >= 3U);
             pmb.AddPolygon(indices);
