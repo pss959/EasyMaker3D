@@ -42,7 +42,7 @@ GridPane "BevelToolPane" {
         },
         SpacerPane { min_size: 4 1 },
         CLONE "T_LabeledHSliderPane" "ScaleSlider" {
-          range:     .2 4,
+          range:     .02 4,
           precision: .01
         },
       ]
