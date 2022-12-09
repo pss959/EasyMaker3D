@@ -58,7 +58,8 @@ TriMesh BeveledModel::BuildMesh() {
     ASSERT(GetOriginalModel());
     const Model &orig = *GetOriginalModel();
     const TriMesh mesh = ScaleMesh(orig.GetMesh(), orig.GetScale());
-    return Beveler::ApplyBevel(mesh, bevel_);
+    const TriMesh beveled_mesh = Beveler::ApplyBevel(mesh, bevel_);
+    return CenterMesh(beveled_mesh);
 }
 
 void BeveledModel::SyncTransformsFromOriginal(const Model &original) {

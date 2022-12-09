@@ -1,6 +1,7 @@
 ﻿#include "Tests/Testing.h"
 #include "Models/BoxModel.h"
 #include "Models/BeveledModel.h"
+#include "Models/TextModel.h"
 #include "Tests/SceneTestBase.h"
 
 class BeveledModelTest : public SceneTestBase {
@@ -59,4 +60,16 @@ TEST_F(BeveledModelTest, ScaleChanges) {
     bounds = beveled->GetBounds();
     EXPECT_EQ(Vector3f(10, 12, 14), bounds.GetSize());
     EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
+}
+
+TEST_F(BeveledModelTest, Text) {
+    TextModelPtr text = Model::CreateModel<TextModel>();
+    text->SetTextString("ABC");
+
+    // Create a BeveledModel using a default Bevel.
+    BeveledModelPtr beveled = Model::CreateModel<BeveledModel>();
+    beveled->SetOriginalModel(text);
+
+    Bounds bounds = beveled->GetBounds();
+    EXPECT_EQ(Point3f(0, 0, 0), bounds.GetCenter());
 }
