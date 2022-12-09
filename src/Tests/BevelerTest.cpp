@@ -77,6 +77,9 @@ TEST_F(BevelerTest, BevelCyl) {
 TEST_F(BevelerTest, BevelTextO) {
     const TriMesh m = LoadTriMesh("O.stl");
     TestBevel(m, GetDefaultBevel(.25f), 120, 240);
+
+    // Repeat with a small scale - this used to create an unclosed mesh.
+    TestBevel(m, GetDefaultBevel(.02f), 120, 240);
 }
 
 TEST_F(BevelerTest, BevelTextA) {
