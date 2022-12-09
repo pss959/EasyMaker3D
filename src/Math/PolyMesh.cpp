@@ -72,8 +72,23 @@ static void GetFaceVertices_(const Face &face, VertexVec &vertices,
 /// Sets up a new edge, adding it to its face and connecting it to its opposite
 /// edge. The EdgeMap_ is used to access the opposite edge.
 static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
+    // See if there is already an edge between these two vertices in the map.
+    // If so, just add the duplicate edge to maintain closed-surface integrity.
+    // CGAL probably won't like this, but it's better than a hole.
+    const std::string key     = EdgeHashKey_(*edge.v0, *edge.v1);
+    const std::string opp_key = EdgeHashKey_(*edge.v1, *edge.v0);
+    if (Util::MapContains(edge_map, key)) {
+        // Remove the edge and its opposite, if it is there.
+        edge_map.erase(key);
+        if (Util::MapContains(edge_map, opp_key))
+            edge_map.erase(opp_key);
+    }
+
+    // Add the new edge to the map.
+    edge_map[key] = &edge;
+
     // If the opposite edge already exists, connect the two.
-    auto it = edge_map.find(EdgeHashKey_(*edge.v1, *edge.v0));
+    auto it = edge_map.find(opp_key);
     if (it != edge_map.end()) {
         ASSERT(it->second);
         Edge &opp = *it->second;
@@ -82,11 +97,6 @@ static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
         edge.opposite_edge = &opp;
         opp.opposite_edge  = &edge;
     }
-
-    // Add the new edge to the map.
-    const std::string key = EdgeHashKey_(*edge.v0, *edge.v1);
-    ASSERTM(! Util::MapContains(edge_map, key), "Duplicate edge key: " + key);
-    edge_map[key] = &edge;
 
     // Add it to the proper border in its face.
     ASSERT(edge.face);
