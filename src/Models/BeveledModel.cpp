@@ -24,7 +24,7 @@ bool BeveledModel::IsValid(std::string &details) {
     }
 
     // Construct and validate the profile.
-    Profile profile = bevel_.profile;
+    Profile profile;
     profile.AddPoints(profile_points_);
     if (! profile.IsValid(0)) {
         details = "Invalid profile";
@@ -38,6 +38,7 @@ void BeveledModel::CreationDone() {
     ConvertedModel::CreationDone();
 
     if (! IsTemplate()) {
+        ASSERT(bevel_.profile.GetPoints().empty());
         bevel_.profile.AddPoints(profile_points_);
         bevel_.scale     = bevel_scale_;
         bevel_.max_angle = max_angle_;
@@ -73,12 +74,11 @@ void BeveledModel::SyncTransformsToOriginal(Model &original) const {
 }
 
 void BeveledModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    // Copy the Bevel and original scale first.
-    const BeveledModel &from_bev = static_cast<const BeveledModel &>(from);
-    bevel_          = from_bev.bevel_;
-    original_scale_ = from_bev.original_scale_;
-
     ConvertedModel::CopyContentsFrom(from, is_deep);
+
+    // Copy the original scale. The Bevel is set in CreationDone().
+    const BeveledModel &from_bev = static_cast<const BeveledModel &>(from);
+    original_scale_ = from_bev.original_scale_;
 }
 
 bool BeveledModel::ProcessChange(SG::Change change, const Object &obj) {

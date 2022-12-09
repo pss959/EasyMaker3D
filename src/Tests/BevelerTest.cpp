@@ -110,3 +110,4 @@ TEST_F(BevelerTest, BevelHelix) {
     // Have to use a small scale for a valid mesh.
     TestBevel(m, GetDefaultBevel(.2f), 2056, 4112);
 }
+
