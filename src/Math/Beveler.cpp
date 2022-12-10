@@ -84,19 +84,18 @@ class Beveler_ {
 
     /// Given edges of a border (outer or hole) of a PolyMesh::Face, this adds
     /// new vertices that are offset from the edges based on the Bevel. The
-    /// face normal and the \p is_hole parameter are used to determine whether
-    /// two edges form a convex or concave angle. This returns the
-    /// PolyMeshBuilder indices of the added vertices, in order.
+    /// face normal is used to determine whether two edges form a convex or
+    /// concave angle. This returns the PolyMeshBuilder indices of the added
+    /// vertices, in order.
     IndexVec_ AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
-                                   const Vector3f &normal, bool is_hole);
+                                   const Vector3f &normal);
 
     /// Computes and returns the position of the offset vertex for the vertex
-    /// between two beveled edges. The face normal and the \p is_hole parameter
-    /// are used to determine whether two edges form a convex or concave
-    /// angle.
+    /// between two beveled edges. The face normal is used to determine whether
+    /// two edges form a convex or concave angle.
     Point3f ComputeOffsetPosition_(const PolyMesh::Edge &e0,
                                    const PolyMesh::Edge &e1,
-                                   const Vector3f &normal, bool is_hole);
+                                   const Vector3f &normal);
 
     /// Fills in the indices of the EdgeProfile_ for the given edge by applying
     /// the bevel profile to the endpoints and adding the intermediate points
@@ -223,9 +222,9 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
     // edge_vertex_map_ and create faces joining them.
     for (const auto &face: mesh_.faces) {
         const Vector3f normal = face->GetNormal();
-        pmb_.AddPolygon(AddOffsetFaceBorder_(face->outer_edges, normal, false));
+        pmb_.AddPolygon(AddOffsetFaceBorder_(face->outer_edges, normal));
         for (auto &hole: face->hole_edges)
-            pmb_.AddHole(AddOffsetFaceBorder_(hole, normal, true));
+            pmb_.AddHole(AddOffsetFaceBorder_(hole, normal));
     }
 
     // Set the indices in the EdgeProfile_ for each PolyMesh edge, adding
@@ -281,8 +280,8 @@ void Beveler_::AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
     }
 }
 
-Beveler_::IndexVec_ Beveler_::AddOffsetFaceBorder_(
-    const EdgeVec_ &border_edges, const Vector3f &normal, bool is_hole) {
+Beveler_::IndexVec_ Beveler_::AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
+                                                   const Vector3f &normal) {
 
     IndexVec_ indices;
     for (size_t i = 0; i < border_edges.size(); ++i) {
@@ -301,13 +300,13 @@ Beveler_::IndexVec_ Beveler_::AddOffsetFaceBorder_(
 
         Point3f pos;
         if (is_e0_beveled && is_e1_beveled) {
-            pos = ComputeOffsetPosition_(e0, e1, normal, is_hole);
+            pos = ComputeOffsetPosition_(e0, e1, normal);
         }
         else if (is_e0_beveled && ! is_e1_beveled) {
-            pos = p0 - bevel_.scale * e0.GetUnitVector();
+            pos = p0 + bevel_.scale * e1.GetUnitVector();
         }
         else if (! is_e0_beveled && is_e1_beveled) {
-            pos = p0 + bevel_.scale * e1.GetUnitVector();
+            pos = p0 - bevel_.scale * e0.GetUnitVector();
         }
         else {
             pos = e1.v0->point;
@@ -326,21 +325,18 @@ Beveler_::IndexVec_ Beveler_::AddOffsetFaceBorder_(
 
 Point3f Beveler_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
                                          const PolyMesh::Edge &e1,
-                                         const Vector3f &normal,
-                                         bool is_hole) {
+                                         const Vector3f &normal) {
     const Vector3f e0_vec = -e0.GetUnitVector();
     const Vector3f e1_vec =  e1.GetUnitVector();
 
     Vector3f bisector = ion::math::Normalized(e0_vec + e1_vec);
 
-    // Determine if the angle formed by the two edges is > 180 degrees. If the
-    // edges are part of the outer border, the cross product will face in the
-    // same direction as the face normal for an angle > 180. If they are part
-    // of a hole, the cross product will face in the opposite direction as the
-    // normal for an angle > 180.
+    // Determine if the angle formed by the two edges is > 180 degrees. The
+    // cross product will face in the same direction as the face normal for an
+    // angle > 180.
     const Vector3f cross       = ion::math::Cross(e0_vec, e1_vec);
     const float    dot         = ion::math::Dot(cross, normal);
-    const bool     is_over_180 = is_hole ? dot < 0 : dot > 0;
+    const bool     is_over_180 = dot > 0;
 
     // Negate the bisector if the angle is > 180.
     if (is_over_180)

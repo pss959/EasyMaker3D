@@ -9,7 +9,7 @@
 class BevelerTest : public TestBase {
   protected:
     // Returns a 2-point Bevel with optional scale and max_angle settings.
-    static Bevel GetDefaultBevel(float scale = 1, float max_angle = 180) {
+    static Bevel GetDefaultBevel(float scale = 1, float max_angle = 120) {
         Bevel bevel;
         bevel.max_angle = Anglef::FromDegrees(max_angle);
         bevel.scale     = scale;
@@ -18,7 +18,7 @@ class BevelerTest : public TestBase {
 
     // Returns a Bevel with the given number of points (3-6) and optional scale
     // and max_angle settings.
-    static Bevel GetBevel(size_t np, float scale = 1, float max_angle = 180) {
+    static Bevel GetBevel(size_t np, float scale = 1, float max_angle = 120) {
         static const Point2f pts[4]{
             { .4f, .8f }, { .5f, .8f }, { .8f, .6f }, { .9f, .2f }
         };
@@ -48,7 +48,7 @@ class BevelerTest : public TestBase {
     // expected number of resulting points and triangles are supplied.
     void TestBevel(const TriMesh &m, const Bevel &bevel,
                    size_t expected_point_count, size_t expected_tri_count) {
-        SCOPED_TRACE("Bevel: " + bevel.ToString());
+        SCOPED_TRACE(GetTestName() + " " + bevel.ToString());
         const TriMesh rm = Beveler::ApplyBevel(m, bevel);
         ValidateMesh(rm, GetTestName());
         EXPECT_EQ(expected_point_count, rm.points.size());
@@ -67,25 +67,41 @@ TEST_F(BevelerTest, BevelBox) {
 
 TEST_F(BevelerTest, BevelCyl) {
     const TriMesh m = BuildCylinderMesh(5, 5, 20, 7);
-    TestBevel(m, GetDefaultBevel(),  42,  80);
-    TestBevel(m, GetBevel(3),        84, 164);
-    TestBevel(m, GetBevel(4),       168, 332);
-    TestBevel(m, GetBevel(5),       252, 500);
-    TestBevel(m, GetBevel(6),       378, 752);
+    TestBevel(m, GetDefaultBevel(1, 120), 28,  52);
+    TestBevel(m, GetBevel(3, 1, 120),     56, 108);
+    TestBevel(m, GetBevel(4, 1, 120),    126, 248);
+    TestBevel(m, GetBevel(5, 1, 120),    196, 388);
+    TestBevel(m, GetBevel(6, 1, 120),    308, 612);
+}
+
+TEST_F(BevelerTest, BevelCyl2) {
+    // Cylinder with larger number of sides
+    const TriMesh m = BuildCylinderMesh(5, 5, 20, 20);
+    TestBevel(m, GetDefaultBevel(1, 120), 80,  156);
+    TestBevel(m, GetBevel(3, 1, 120),    160,  316);
+    TestBevel(m, GetBevel(4, 1, 120),    360,  716);
+    TestBevel(m, GetBevel(5, 1, 120),    560, 1116);
+    TestBevel(m, GetBevel(6, 1, 120),    880, 1756);
+}
+
+TEST_F(BevelerTest, BevelHole) {
+    // Simple geometry with a hole.
+    const TriMesh m = LoadTriMesh("hole.stl");
+    TestBevel(m, GetDefaultBevel(), 48, 96);
 }
 
 TEST_F(BevelerTest, BevelTextO) {
     const TriMesh m = LoadTriMesh("O.stl");
-    TestBevel(m, GetDefaultBevel(.25f), 120, 240);
+    TestBevel(m, GetDefaultBevel(.25f), 80, 160);
 
     // Repeat with a small scale - this used to create an unclosed mesh.
-    TestBevel(m, GetDefaultBevel(.02f), 120, 240);
+    TestBevel(m, GetDefaultBevel(.02f), 80, 160);
 }
 
 TEST_F(BevelerTest, BevelTextA) {
     const TriMesh m = LoadTriMesh("A.stl");
     // Have to use a very small scale for a valid mesh.
-    TestBevel(m, GetDefaultBevel(.05f), 84, 168);
+    TestBevel(m, GetDefaultBevel(.05f), 78, 156);
 }
 
 TEST_F(BevelerTest, BevelTetrahedron) {
@@ -111,5 +127,5 @@ TEST_F(BevelerTest, BevelHelix) {
     // A pretty complex STL model.
     const TriMesh m = LoadTriMesh("double_helix.stl");
     // Have to use a small scale for a valid mesh.
-    TestBevel(m, GetDefaultBevel(.2f), 2056, 4112);
+    TestBevel(m, GetDefaultBevel(.02f), 1265, 2172);
 }
