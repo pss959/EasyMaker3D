@@ -3,7 +3,7 @@
 #include "Base/Tuning.h"
 #include "Util/String.h"
 
-Bevel::Bevel() : max_angle(Anglef::FromDegrees(TK::kMaxBevelAngle)) {
+Bevel::Bevel() : max_angle(Anglef::FromDegrees(TK::kDefaultMaxBevelAngle)) {
 }
 
 Profile Bevel::CreateDefaultProfile() {

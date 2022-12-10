@@ -502,8 +502,8 @@ extern const float    kPinchClickTimeout;
 /// same relative height.
 extern const float    kCloseToStageForScaling;
 
-/// Maximum angle for applying a bevel Profile to an edge.
-extern const float    kMaxBevelAngle;
+/// Default maximum angle for applying a bevel Profile to an edge.
+extern const float    kDefaultMaxBevelAngle;
 
 /// The angle between a DiscWidget motion vector and the direction to the
 /// center of the widget has to be smaller than this for the motion to be

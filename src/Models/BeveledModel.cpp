@@ -9,8 +9,9 @@
 void BeveledModel::AddFields() {
     AddModelField(profile_points_.Init("profile_points"));
     AddModelField(bevel_scale_.Init("bevel_scale", 1));
-    AddModelField(max_angle_.Init("max_angle",
-                                  Anglef::FromDegrees(TK::kMaxBevelAngle)));
+    AddModelField(max_angle_.Init(
+                      "max_angle",
+                      Anglef::FromDegrees(TK::kDefaultMaxBevelAngle)));
 
     ConvertedModel::AddFields();
 }

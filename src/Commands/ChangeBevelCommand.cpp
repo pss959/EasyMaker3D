@@ -7,7 +7,7 @@ void ChangeBevelCommand::AddFields() {
     AddField(profile_points_.Init("profile_points"));
     AddField(bevel_scale_.Init("bevel_scale", 1));
     AddField(max_angle_.Init("max_angle",
-                             Anglef::FromDegrees(TK::kMaxBevelAngle)));
+                             Anglef::FromDegrees(TK::kDefaultMaxBevelAngle)));
 
     MultiModelCommand::AddFields();
 }
@@ -20,7 +20,7 @@ bool ChangeBevelCommand::IsValid(std::string &details) {
         return false;
     }
     const float max_deg = max_angle_.GetValue().Degrees();
-    if (max_deg < 0 || max_deg > TK::kMaxBevelAngle) {
+    if (max_deg < 0 || max_deg > 180) {
         details = "Maximum angle is out of range";
         return false;
     }
