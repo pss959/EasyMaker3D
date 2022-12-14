@@ -23,25 +23,25 @@ void PolyMeshBuilder::MoveVertex(GIndex index, const Point3f &new_point) {
 }
 
 void PolyMeshBuilder::AddPolygon(const std::vector<GIndex> &indices) {
+    KLOG('l', "PolyMeshBuilder added "
+         << (indices.size() == 3U ? "TRI " :
+             indices.size() == 4U ? "QUAD " : "POLY ")
+         << Util::JoinItems(indices));
     ASSERT(indices.size() >= 3);
     PolyMesh::Border border;
     border.indices = indices;
     border.is_hole = false;
     borders_.push_back(border);
-    KLOG('l', "PolyMeshBuilder added "
-         << (indices.size() == 3U ? "TRI " :
-             indices.size() == 4U ? "QUAD " : "POLY ")
-         << Util::JoinItems(indices));
 }
 
 void PolyMeshBuilder::AddHole(const std::vector<GIndex> &indices) {
+    KLOG('l', "PolyMeshBuilder added HOLE " << Util::JoinItems(indices));
     ASSERT(indices.size() >= 3);
     ASSERT(! borders_.empty());  // Must have outer border to add hole to.
     PolyMesh::Border border;
     border.indices = indices;
     border.is_hole = true;
     borders_.push_back(border);
-    KLOG('l', "PolyMeshBuilder added HOLE " << Util::JoinItems(indices));
 }
 
 void PolyMeshBuilder::BuildPolyMesh(PolyMesh &result_mesh) const {

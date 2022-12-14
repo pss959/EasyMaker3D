@@ -17,6 +17,9 @@ class PolyMeshBuilder {
     /// Changes the position of a vertex.
     void MoveVertex(GIndex index, const Point3f &new_point);
 
+    /// Returns the current number of vertices.
+    size_t GetVertexCount() const { return vertices_.size(); }
+
     /// Returns the current position of the indexed vertex.
     const Point3f & GetVertex(GIndex index) const;
 
