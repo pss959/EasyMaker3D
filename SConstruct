@@ -208,7 +208,6 @@ lib_sources = [
     'Math/ToString.cpp',
     'Math/Triangulation.cpp',
     'Math/Types.cpp',
-    'Math/VertexRing.cpp',
 
     'Models/BeveledModel.cpp',
     'Models/BoxModel.cpp',
