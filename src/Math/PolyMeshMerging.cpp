@@ -24,6 +24,7 @@ typedef PolyMesh::Edge      Edge;
 typedef PolyMesh::EdgeVec   EdgeVec;
 typedef PolyMesh::Face      Face;
 typedef PolyMesh::Vertex    Vertex;
+typedef std::vector<GIndex> IndexVec_;
 
 /// This struct is used to count the number of edges each PolyMesh Vertex is
 // part of, and to store the first two edges. It helps merge the two edges
@@ -74,7 +75,7 @@ class VertexMerger_ {
 
     /// Returns a vector of unique indices for all vertices in one border of a
     /// PolyMesh::Face.
-    std::vector<GIndex> GetBorderIndices(const EdgeVec &border);
+    IndexVec_ GetBorderIndices(const EdgeVec &border);
 
   private:
     PolyMeshBuilder &pmb_;
@@ -91,8 +92,8 @@ class VertexMerger_ {
     GIndex GetVertexIndex_(const Vertex &vert);
 };
 
-std::vector<GIndex> VertexMerger_::GetBorderIndices(const EdgeVec &border) {
-    std::vector<GIndex> indices;
+IndexVec_ VertexMerger_::GetBorderIndices(const EdgeVec &border) {
+    IndexVec_ indices;
     for (const auto edge: border) {
         const GIndex index = GetVertexIndex_(*edge->v0);
         // Don't add consecutive duplicate vertices.
@@ -364,6 +365,65 @@ static bool FaceHasHoles_(Face &f) {
     return false;
 }
 
+/// XXXX
+static std::vector<IndexVec_> SplitIndices_(const IndexVec_ &indices,
+                                            const std::vector<int> &counts) {
+    // Start with the first duplicate index.
+    size_t cur = 0;
+    for (size_t i = 0; i < indices.size(); ++i) {
+        if (counts[indices[i]] > 1) {
+            cur = i;
+            break;
+        }
+    }
+
+    std::vector<IndexVec_> sub_indices;
+    IndexVec_ iv;
+    for (size_t count = 0; count < indices.size(); ++count) {
+        const GIndex index = indices[cur];
+        // Stop when a duplicate is reached.
+        if (count > 0 && counts[index] > 1) {
+            if (iv.size() >= 3U)
+                sub_indices.push_back(iv);
+            iv.clear();
+        }
+        iv.push_back(index);
+        cur = (cur + 1) % indices.size();
+    }
+    if (iv.size() >= 3U)
+        sub_indices.push_back(iv);
+    return sub_indices;
+}
+
+/// Adds a Face of a PolyMesh to a PolyMeshBuilder using a VertexMerger_.
+static void AddFace_(const Face &face, VertexMerger_ &vertex_merger,
+                     PolyMeshBuilder &pmb) {
+    IndexVec_ indices = vertex_merger.GetBorderIndices(face.outer_edges);
+
+    // Keep count of indices.
+    std::vector<int> counts(pmb.GetVertexCount(), 0);
+    bool any_duplicates = false;
+    for (auto index: indices) {
+        if (++counts[index] > 1)
+            any_duplicates = true;
+    }
+    if (any_duplicates) {
+        for (const auto &poly_indices: SplitIndices_(indices, counts))
+            pmb.AddPolygon(poly_indices);
+    }
+    else {
+        // Otherwise, just add all indices as a single polygon.
+        pmb.AddPolygon(indices);
+    }
+
+    // Check for holes.
+    for (auto &hole: face.hole_edges) {
+        indices = vertex_merger.GetBorderIndices(hole);
+        if (indices.size() >= 3U)
+            pmb.AddHole(indices);
+    }
+}
+
 }   // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -450,22 +510,10 @@ void MergeDuplicateFeatures(const PolyMesh &poly_mesh, PolyMesh &result_mesh) {
     VertexMerger_ vertex_merger(pmb);
 
     // Process each face with large enough area in the PolyMesh.
-    std::vector<GIndex> indices;
     for (const auto face: poly_mesh.faces) {
         // Minimum area for a face to be added.
-      if (face->GetOuterArea() > 0) {
-            indices = vertex_merger.GetBorderIndices(face->outer_edges);
-            if (indices.size() >= 3U) {
-                pmb.AddPolygon(indices);
-
-                // Check for holes.
-                for (auto &hole: face->hole_edges) {
-                    indices = vertex_merger.GetBorderIndices(hole);
-                    if (indices.size() >= 3U)
-                        pmb.AddHole(indices);
-                }
-            }
-        }
+        if (face->GetOuterArea() > 0)
+            AddFace_(*face, vertex_merger, pmb);
     }
 
     pmb.BuildPolyMesh(result_mesh);

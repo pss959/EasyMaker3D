@@ -55,7 +55,6 @@ class Beveler_ {
                                                EdgeProfile_>;
     using EdgeVertexMap_  = std::unordered_map<const PolyMesh::Edge *, GIndex>;
 
-
     /// Original PolyMesh to bevel.
     const PolyMesh  &mesh_;
 
@@ -72,6 +71,9 @@ class Beveler_ {
     /// new offset vertex created for it at the v0 vertex end.
     EdgeVertexMap_  edge_vertex_map_;
 
+    /// XXXX
+    std::unordered_set<const PolyMesh::Vertex *> offset_vertices_;
+
     /// Creates an EdgeProfile_ for each edge of the original PolyMesh and
     /// stores it in the #edge_profile_map_.
     void CreateEdgeProfiles_();
@@ -87,8 +89,9 @@ class Beveler_ {
     /// face normal is used to determine whether two edges form a convex or
     /// concave angle. This returns the PolyMeshBuilder indices of the added
     /// vertices, in order.
-    IndexVec_ AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
-                                   const Vector3f &normal);
+    /// XXXX Fix comment.
+    void AddOffsetVerticesForBorder_(const EdgeVec_ &border_edges,
+                                     const Vector3f &normal);
 
     /// Computes and returns the position of the offset vertex for the vertex
     /// between two beveled edges. The face normal is used to determine whether
@@ -96,6 +99,9 @@ class Beveler_ {
     Point3f ComputeOffsetPosition_(const PolyMesh::Edge &e0,
                                    const PolyMesh::Edge &e1,
                                    const Vector3f &normal);
+
+    /// XXXX
+    void AddFaceBorder_(const EdgeVec_ &border_edges, bool is_hole);
 
     /// Fills in the indices of the EdgeProfile_ for the given edge by applying
     /// the bevel profile to the endpoints and adding the intermediate points
@@ -217,14 +223,33 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
     // the edge_profile_map_.
     CreateEdgeProfiles_();
 
-    // Create offset vertices for each face of the PolyMesh and add the
-    // vertices to the PolyMeshBuilder. Store the resulting indices in a the
-    // edge_vertex_map_ and create faces joining them.
+    // Create offset vertices for beveled edges by looking at all face borders.
+    // Store the resulting indices in a the edge_vertex_map_.
     for (const auto &face: mesh_.faces) {
         const Vector3f normal = face->GetNormal();
-        pmb_.AddPolygon(AddOffsetFaceBorder_(face->outer_edges, normal));
+        AddOffsetVerticesForBorder_(face->outer_edges, normal);
         for (auto &hole: face->hole_edges)
-            pmb_.AddHole(AddOffsetFaceBorder_(hole, normal));
+            AddOffsetVerticesForBorder_(hole, normal);
+    }
+
+    // XXXX Handle special cases.
+    for (const auto &edge: mesh_.edges) {
+        const GIndex index = edge_vertex_map_.at(edge);
+        if (edge->v0->point == pmb_.GetVertex(index) &&
+            Util::MapContains(offset_vertices_, edge->v0)) {
+            const auto &e2 = edge->opposite_edge->NextEdgeInFace();
+            if (! Util::MapContains(offset_vertices_, e2.v0)) {
+                const GIndex i2 = edge_vertex_map_.at(&e2);
+                edge_vertex_map_[edge] = i2;
+            }
+        }
+    }
+
+    // Create faces joining the offset vertices for faces.
+    for (const auto &face: mesh_.faces) {
+        AddFaceBorder_(face->outer_edges, false);
+        for (auto &hole: face->hole_edges)
+            AddFaceBorder_(hole, true);
     }
 
     // Set the indices in the EdgeProfile_ for each PolyMesh edge, adding
@@ -280,10 +305,8 @@ void Beveler_::AssignEdgeDirectionAndAngle_(const PolyMesh::Edge &edge,
     }
 }
 
-Beveler_::IndexVec_ Beveler_::AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
-                                                   const Vector3f &normal) {
-
-    IndexVec_ indices;
+void Beveler_::AddOffsetVerticesForBorder_(const EdgeVec_ &border_edges,
+                                           const Vector3f &normal) {
     for (size_t i = 0; i < border_edges.size(); ++i) {
         // Get the two border edges around the current point. They meet at
         // e0.v1 == e1.v0.
@@ -314,13 +337,15 @@ Beveler_::IndexVec_ Beveler_::AddOffsetFaceBorder_(const EdgeVec_ &border_edges,
 
         // Add the new vertex to the offset face.
         const size_t index = pmb_.AddVertex(pos);
-        indices.push_back(index);
 
         // Store the correspondence from the original edge to the new
         // vertex.
         edge_vertex_map_[&e1] = index;
+
+        // XXXX
+        if (is_e0_beveled || is_e1_beveled)
+            offset_vertices_.insert(e1.v0);
     }
-    return indices;
 }
 
 Point3f Beveler_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
@@ -345,6 +370,20 @@ Point3f Beveler_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
     // Move along the bisector the correct distance based on the bevel scale.
     const Anglef angle = ion::math::AngleBetween(e1_vec, bisector);
     return e1.v0->point + (bevel_.scale / ion::math::Sine(angle)) * bisector;
+}
+
+void Beveler_::AddFaceBorder_(const EdgeVec_ &border_edges, bool is_hole) {
+    IndexVec_ indices;
+    for (const auto edge: border_edges) {
+        const GIndex index = edge_vertex_map_.at(edge);
+        indices.push_back(index);
+    }
+    if (indices.size() >= 3U) {
+        if (is_hole)
+            pmb_.AddHole(indices);
+        else
+            pmb_.AddPolygon(indices);
+    }
 }
 
 void Beveler_::SetEdgeProfileIndices_(const PolyMesh::Edge &edge) {
