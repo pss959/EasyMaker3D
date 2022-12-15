@@ -146,7 +146,9 @@ TEST_F(BevelerTest, BevelBend) {
 TEST_F(BevelerTest, TMPA) {
     const TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
     // EnableKLog("l"); // XXXX
-    const TriMesh rm = Beveler::ApplyBevel(m, GetDefaultBevel(1));
+    //const Bevel bevel = GetDefaultBevel(1);
+    const Bevel bevel = GetBevel(4);
+    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
     std::cerr << "XXXX VALIDITY CODE = "
               << Util::EnumName(ValidateTriMesh(rm)) << "\n";
 }
