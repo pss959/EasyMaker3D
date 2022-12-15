@@ -77,16 +77,11 @@ struct PolyMesh {
     void Set(const std::vector<Point3f> &points,
              const std::vector<Border> &borders);
 
-    // Collects vertices from all Face borders into the vertices vector. The
-    // border_counts vector will contain the number of vertices in each border
-    // (outside, followed by holes, if any).
+    // Collects vertices from all borders of the given Face into the vertices
+    // vector. The border_counts vector will contain the number of vertices in
+    // each border (outside, followed by holes, if any).
     static void GetFaceVertices(const Face &face, VertexVec &vertices,
                                 std::vector<size_t> &border_counts);
-
-    /// Returns a vector containing all edges meeting at the v0 vertex of the
-    /// given edge, starting with the given edge. Edges are returned in
-    /// counterclockwise order.
-    static EdgeVec GetVertexEdges(Edge &start_edge);
 
     /// Converts the PolyMesh to a TriMesh and returns it.
     TriMesh ToTriMesh() const;

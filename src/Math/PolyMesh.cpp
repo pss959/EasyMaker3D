@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <unordered_map>
 #include <unordered_set>
 
 #include <ion/math/vectorutils.h>
@@ -452,17 +451,6 @@ void PolyMesh::Clear() {
 void PolyMesh::GetFaceVertices(const Face &face, VertexVec &vertices,
                                std::vector<size_t> &border_counts) {
     GetFaceVertices_(face, vertices, border_counts);
-}
-
-PolyMesh::EdgeVec PolyMesh::GetVertexEdges(Edge &start_edge) {
-    EdgeVec edges;
-    Edge *edge = &start_edge;
-    do {
-        edge = &edge->NextEdgeAroundVertex();
-        ASSERT(start_edge.v0 == edge->v0);
-        edges.push_back(edge);
-    } while (edge != &start_edge);
-    return edges;
 }
 
 TriMesh PolyMesh::ToTriMesh() const {
