@@ -207,9 +207,17 @@ void Dump3dv::AddVertex_(const std::string &id, const Point3f &p) {
 }
 
 void Dump3dv::AddLabel_(const Point3f &pos, const std::string &text) {
-    static const float kLabelZOffset = .01f;
-    const Point3f label_pos(pos[0], pos[1], pos[2] + kLabelZOffset);
-    out_ << "t" << (label_offset_ + label_pos) << ' ' << text << "\n";
+    Point3f label_pos = pos + extra_label_offset_;
+
+    // If there is already a label at this position, keep adding the offset.
+    while (true) {
+        const GIndex index = label_point_map_.Add(label_pos);
+        if (index == label_point_map_.GetCount() - 1)  // It's a new point.
+            break;
+        label_pos += coincident_label_offset_;
+    }
+
+    out_ << "t" << label_pos << ' ' << text << "\n";
 }
 
 void Dump3dv::AltFaceColor_(size_t i) {

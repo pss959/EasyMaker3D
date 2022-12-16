@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "Math/Point3fMap.h"
 #include "Math/Types.h"
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
@@ -51,9 +52,16 @@ class Dump3dv {
         label_font_size_ = label_font_size;
     }
 
+    /// Sets an offset vector to add to any label that occupies the same
+    /// position as another (within a reasonable tolerance). The default is
+    /// (0,0,.1).
+    void SetCoincidentLabelOffset(const Vector3f &offset) {
+        coincident_label_offset_ = offset;
+    }
+
     /// Sets an extra offset to add to all labels. The default is 0.
-    void SetLabelOffset(const Vector3f &offset) {
-        label_offset_ = offset;
+    void SetExtraLabelOffset(const Vector3f &offset) {
+        extra_label_offset_ = offset;
     }
 
     /// Adds a TriMesh to dump.
@@ -75,7 +83,11 @@ class Dump3dv {
     std::ofstream out_;
     LabelFlags    label_flags_;
     float         label_font_size_;
-    Vector3f      label_offset_;
+    Vector3f      coincident_label_offset_{0, 0, .1f};
+    Vector3f      extra_label_offset_{0, 0, 0};
+
+    /// Used to detect coincident labels.
+    Point3fMap    label_point_map_{.001f};
 
     /// Current extra prefix to add to IDs.
     std::string   extra_prefix_;
