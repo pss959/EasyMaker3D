@@ -210,12 +210,9 @@ void Dump3dv::AddLabel_(const Point3f &pos, const std::string &text) {
     Point3f label_pos = pos + extra_label_offset_;
 
     // If there is already a label at this position, keep adding the offset.
-    while (true) {
-        const GIndex index = label_point_map_.Add(label_pos);
-        if (index == label_point_map_.GetCount() - 1)  // It's a new point.
-            break;
+    while (label_point_map_.Contains(label_pos))
         label_pos += coincident_label_offset_;
-    }
+    label_point_map_.Add(label_pos);
 
     out_ << "t" << label_pos << ' ' << text << "\n";
 }

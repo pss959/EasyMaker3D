@@ -27,6 +27,10 @@ class Point3fMap {
     /// precision is returned.
     GIndex Add(const Point3f &p, Point3f *pos = nullptr);
 
+    /// Returns true if the given point is close to one already in the map
+    /// within the precision.
+    bool Contains(const Point3f &p) const;
+
     /// Returns the number of vertices in the map.
     size_t GetCount() const { return map_.size(); }
 
@@ -54,6 +58,6 @@ class Point3fMap {
     /// point; it's much easier to define a comparison function that works.
     std::map<Point3f, GIndex, ComparePoints_> map_;
 
-    /// Rounds by the precision.
-    Point3f Round_(const Point3f &p);
+    /// Rounds by the precision if it is not 0.
+    Point3f Round_(const Point3f &p) const;
 };

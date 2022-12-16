@@ -154,6 +154,15 @@ TEST_F(BevelerTest, TMPA) {
 }
 
 TEST_F(BevelerTest, TMPB) {
+    const TriMesh m = LoadTriMesh("Twist2.stl");
+    // EnableKLog("l"); // XXXX
+    const Bevel bevel = GetDefaultBevel(.4f);
+    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
+    std::cerr << "XXXX VALIDITY CODE = "
+              << Util::EnumName(ValidateTriMesh(rm)) << "\n";
+}
+
+TEST_F(BevelerTest, TMPC) {
     const TriMesh m = LoadTriMesh("Bend.stl");
     // EnableKLog("l"); // XXXX
     const TriMesh rm = Beveler::ApplyBevel(m, GetDefaultBevel(.2f));

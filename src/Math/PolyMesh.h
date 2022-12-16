@@ -143,6 +143,9 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     /// Returns a unit vector from v0 to v1.
     Vector3f GetUnitVector() const;
 
+    /// Returns true if the edge forms part of a hole in a face.
+    bool IsOnHoleBorder() const { return face_hole_index >= 0; }
+
     /// Returns true if the edge is vestigial, meaning that it has the same
     /// face on both sides.
     bool IsVestigial() const { return face == opposite_edge->face; }
