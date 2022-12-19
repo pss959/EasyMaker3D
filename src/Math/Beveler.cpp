@@ -286,9 +286,7 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
 
     // Add faces joining profile points across edges and around vertices.
     AddEdgeFaces_();
-#if XXXX
     AddVertexFaces_();
-#endif
 
     // Construct the result PolyMesh and make sure the resulting PolyMesh has
     // no duplicate features.
@@ -545,7 +543,6 @@ void Beveler_::AddEdgeFaces_() {
     }
 }
 
-#if 0 // XXXX
 void Beveler_::AddVertexFaces_() {
     for (const auto &vertex: mesh_.vertices) {
         // Collect all edges around the vertex in counterclockwise order and
@@ -554,60 +551,19 @@ void Beveler_::AddVertexFaces_() {
         EdgeVec_  vertex_edges;
         IndexVec_ indices;
         PolyMesh::Edge *edge = vertex_edge_map_.at(vertex);
-        const size_t profile_size = bevel_.profile.GetPointCount();
         do {
             vertex_edges.push_back(edge);
             const auto &data = edge_data_map_.at(edge);
 
-            const size_t index_count = data.indices.size();
-            if (index_count <= 2U) {
-                const size_t target_size = profile_size - 1;
-                if (index_count == 2U && target_size == 1U) {
-                    indices.push_back(data.indices.front());
-                }
-                else {
-                    // Add the 1 or 2 indices.
-                    Util::AppendVector(data.indices, indices);
-                    // There have to be the N-1 indices for each edge, so
-                    // duplicate if necessary for unbeveled edges.
-                    if (index_count < target_size)
-                        Util::AppendVector(IndexVec_(target_size - index_count,
-                                                     data.indices.back()),
-                                           indices);
-                }
-            }
-            else {
-                ASSERT(index_count == profile_size);
-                Util::AppendVector(data.indices, indices);
-                // The last index should always refer to the same vertex as the
-                // start of the next one, so remove the last one.
-                indices.pop_back();
-            }
-            PolyMesh::Edge &next_edge = edge->NextEdgeAroundVertex();
-            const auto &next_data = edge_data_map_.at(&next_edge);
-            // XXXX Special case.
-            if (! data.is_beveled && ! next_data.is_beveled) {
-                const auto &opp_data =
-                    edge_data_map_.at(next_edge.opposite_edge);
-#if 1 // XXXX
-                std::cerr << "XXXX ==== Special case for " << edge->id
-                          << "/" << data.indices.back()
-                          << " and " << next_edge.id
-                          << "/" << next_data.indices.front()
-                          << ": TRI " << next_data.indices.front()
-                          << " " << data.indices.back()
-                          << " " << opp_data.indices.front()
-                          << "\n";
-#endif
-                pmb_.AddTriangle(next_data.indices.front(),
-                                 data.indices.back(),
-                                 opp_data.indices.front());
-            }
-            edge = &next_edge;
+            ASSERT(data.indices.size() == bevel_.profile.GetPointCount());
+            Util::AppendVector(data.indices, indices);
+            // The last index should always refer to the same vertex as the
+            // start of the next one, so remove the last one.
+            indices.pop_back();
+
+            edge = &edge->NextEdgeAroundVertex();
         } while (edge != vertex_edges.front());
-        if (XXXX_v(*vertex))
-            std::cerr << "XXXX " << vertex->id << " Indices = "
-                      << Util::JoinItems(indices) << "\n";
+
         AddFacesForVertex_(vertex_edges, indices);
     }
 }
@@ -777,7 +733,6 @@ void Beveler_::AddInterRingFaces_(const RingVec_ &rings) {
         }
     }
 }
-#endif
 
 std::vector<Point3f> Beveler_::ApplyProfileBetweenPoints_(
     const PolyMesh::Edge &edge, const Point3f &p0, const Point3f &p1) {
