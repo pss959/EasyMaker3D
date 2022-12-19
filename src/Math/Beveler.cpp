@@ -20,6 +20,20 @@
 template <typename T> // XXXX
 static std::string PT(const T &t) { return Math::ToString(t, .01f); }
 
+static bool XXXX_v(const PolyMesh::Vertex &vertex) {
+    //return vertex.id == "V7" || vertex.id == "V2";
+    // return vertex.id == "V12";
+    //return true;
+    return false;
+}
+
+#if XXXX
+static bool XXXX_e(const PolyMesh::Edge &edge) {
+    // return edge.id == "E52" || edge.id == "E49";
+    return false;
+}
+#endif
+
 namespace {
 
 // ----------------------------------------------------------------------------
@@ -43,11 +57,12 @@ class Beveler_ {
         /// its adjacent faces and the #max_angle field of the Bevel.
         bool is_beveled = false;
 
-        /// If #is_beveled is true, this stores the indices in the
-        /// PolyMeshBuilder of the profile applied to the edge at its #v0
-        /// vertex, ordered counterclockwise around the vertex.  If #is_beveled
-        /// is false, this stores a single index in the PolyMeshBuilder of the
-        /// starting vertex of the edge.
+        /// Stores the indices of the PolyMeshBuilder vertices created to apply
+        /// the profile to the edge at its #v0 vertex, ordered counterclockwise
+        /// around the vertex. If the bevel profile has N points, there will be
+        /// exactly N indices stored per edge. (This is done for convenience,
+        /// even though the last point is always the same as the first point of
+        /// the next edge around the vertex).
         std::vector<GIndex> indices;
     };
 
@@ -101,13 +116,14 @@ class Beveler_ {
     /// XXXX
     void AddFaceBorder_(const EdgeVec_ &border_edges, bool is_hole);
 
-    /// This applies the profile curve to the offset endpoints of the given
-    /// beveled edge and adds the resulting interior points to the
-    /// PolyMeshBuilder, inserting the indices into the EdgeData_ for the edge.
-    void InsertInteriorPoints_(const PolyMesh::Edge &edge);
+    /// This ensures that the EdgeData_ for the given edge has the proper
+    /// vertex indices. If the profile has interior points, it applies the
+    /// profile curve to the offset endpoints of the given beveled edge and
+    /// adds the resulting interior points.
+    void FillEdgeIndices_(const PolyMesh::Edge &edge);
 
-    /// Adds faces joining all profile points across each original edge of the
-    /// PolyMesh.
+    /// Adds faces joining all profile points across each beveled edge of the
+    /// original PolyMesh.
     void AddEdgeFaces_();
 
     /// Adds faces joining all profile points around each original vertex of
@@ -263,23 +279,16 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
             AddFaceBorder_(hole, true);
     }
 
-    // If the profile has interior points, insert new points into the EdgeData_
-    // for each beveled edge.  If there are no interior points, make sure the 2
-    // indices are ordered properly for each edge.
-    // XXXX Fix???
-    const bool has_interior_points = bevel_.profile.GetPointCount() > 2U;
-    for (auto &edge: mesh_.edges) {
-        auto &data = edge_data_map_.at(edge);
-        if (data.is_beveled) {
-            ASSERT(data.indices.size() == 2U);
-            if (has_interior_points)
-                InsertInteriorPoints_(*edge);
-        }
-    }
+    // XXXX COLLAPSE NOW!
+
+    for (auto &edge: mesh_.edges)
+        FillEdgeIndices_(*edge);
 
     // Add faces joining profile points across edges and around vertices.
     AddEdgeFaces_();
+#if XXXX
     AddVertexFaces_();
+#endif
 
     // Construct the result PolyMesh and make sure the resulting PolyMesh has
     // no duplicate features.
@@ -296,7 +305,7 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
         dump.SetLabelFontSize(20);
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
-        // label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
         label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
         dump.SetLabelFlags(label_flags);
         dump.AddPolyMesh(result_mesh);
@@ -317,7 +326,7 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
         const bool add_orig_mesh = false;
 
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler");
-        dump.SetLabelFontSize(10);
+        dump.SetLabelFontSize(20);
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
         //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
@@ -369,130 +378,23 @@ void Beveler_::InitEdgeData_(const PolyMesh::Edge &edge, bool is_reversed) {
 }
 
 void Beveler_::CreateOffsetVertices_(const PolyMesh::Vertex &vertex) {
-    // Process all edges starting at this vertex in counterclockwise order.
+    // Process all edges starting at this vertex in counterclockwise order.  In
+    // this phase, treat all edges as beveled. For each edge, store the index
+    // of the offset point between the previous edge and this edge in the
+    // EdgeData_.
     const PolyMesh::Edge &start_edge = *vertex_edge_map_.at(&vertex);
-
-    // Compute offset points for all beveled edges.
-    std::vector<const PolyMesh::Edge *> beveled;
     const PolyMesh::Edge *edge = &start_edge;
     do {
         auto &data = edge_data_map_.at(edge);
-        if (data.is_beveled) {
-            ASSERT(data.indices.empty());
-            const auto &prev_edge = edge->PreviousEdgeAroundVertex();
-            const auto &next_edge = edge->NextEdgeAroundVertex();
-            data.indices.push_back(GetOffsetPoint_(prev_edge, *edge));
-            data.indices.push_back(GetOffsetPoint_(*edge, next_edge));
-#if 0 // XXXX
-            if (true || edge->face->id == "F17" ||
-                edge->opposite_edge->face->id == "F17") {
-                std::cerr << "XXXX Added V" << data.indices[0]
-                          << " and V" << data.indices[1]
-                          << " to " << edge->id
-                          << " for " << prev_edge.id
-                          << " and " << next_edge.id
-                          << " rev=" << data.is_reversed
-                          << "\n";
-            }
-#endif
-            beveled.push_back(edge);
-        }
+        ASSERT(data.indices.empty());
+        const auto &prev_edge = edge->PreviousEdgeAroundVertex();
+        data.indices.push_back(GetOffsetPoint_(prev_edge, *edge));
+        if (XXXX_v(vertex))
+            std::cerr << "XXXX Created V" << data.indices.back()
+                      << " for " << edge->id
+                      << " using prev " << prev_edge.id << "\n";
         edge = &edge->NextEdgeAroundVertex();
     } while (edge != &start_edge);
-
-    // If no edges are beveled, use the original vertex for each one.
-    if (beveled.empty()) {
-        const GIndex index = pmb_.AddVertex(edge->v0->point);
-#if 0 // XXXX
-        std::cerr << "XXXX Added V" << index
-                  << " to " << edge->id
-                  << " for " << edge->id << "\n";
-#endif
-        edge = &start_edge;
-        do {
-            auto &data = edge_data_map_.at(edge);
-            ASSERT(data.indices.empty());
-            data.indices.push_back(index);
-            edge = &edge->NextEdgeAroundVertex();
-        } while (edge != &start_edge);
-    }
-
-    // If any edge from this vertex was beveled, have to modify all unbeveled
-    // edges starting at the vertex as well.
-    else {
-        edge = &start_edge;
-        do {
-            auto &data = edge_data_map_.at(edge);
-            if (! data.is_beveled) {
-                // An unbeveled edge adjacent to a beveled edge uses the
-                // corresponding offset vertex as its starting vertex.
-                const auto &prev_edge = edge->PreviousEdgeAroundVertex();
-                const auto &prev_data = edge_data_map_.at(&prev_edge);
-                if (prev_data.is_beveled) {
-                    data.indices.push_back(prev_data.indices.back());
-                }
-                else {
-                    const auto &next_edge = edge->NextEdgeAroundVertex();
-                    const auto &next_data = edge_data_map_.at(&next_edge);
-                    if (next_data.is_beveled)
-                        data.indices.push_back(next_data.indices.front());
-                }
-            }
-            edge = &edge->NextEdgeAroundVertex();
-        } while (edge != &start_edge);
-
-#if 0 // XXXX
-        // An unbeveled edge adjacent to a beveled edge uses the corresponding
-        // offset vertex as its starting vertex.
-        for (const auto bev: beveled) {
-            const auto &prev_edge = bev->PreviousEdgeAroundVertex();
-            const auto &next_edge = bev->NextEdgeAroundVertex();
-
-            const EdgeData_ &bev_data  = edge_data_map_.at(bev);
-            EdgeData_       &prev_data = edge_data_map_.at(&prev_edge);
-            EdgeData_       &next_data = edge_data_map_.at(&next_edge);
-
-            if (! prev_data.is_beveled && prev_data.indices.empty()) {
-                prev_data.indices.push_back(bev_data.indices.front());
-                std::cerr << "XXXX P: Added V" << prev_data.indices.back()
-                          << " to " << prev_edge.id
-                          << " from " << bev->id << "\n";
-            }
-            if (! next_data.is_beveled && next_data.indices.empty()) {
-                next_data.indices.push_back(bev_data.indices.front());
-                std::cerr << "XXXX N: Added V" << next_data.indices.back()
-                          << " to " << next_edge.id
-                          << " from " << bev->id << "\n";
-            }
-        }
-#endif
-
-        // If there are any remaining unbeveled edges, need to compute a new
-        // offset vertex for it from those of its neighbors.
-        edge = &start_edge;
-        do {
-            auto &data = edge_data_map_.at(edge);
-            if (data.indices.empty()) {
-                // Find the nearest neighbor edge in both directions that has
-                // an offset vertex.
-                auto prev_edge = &edge->PreviousEdgeAroundVertex();
-                while (edge_data_map_.at(prev_edge).indices.empty())
-                    prev_edge = &prev_edge->PreviousEdgeAroundVertex();
-                auto next_edge = &edge->NextEdgeAroundVertex();
-                while (edge_data_map_.at(next_edge).indices.empty())
-                    next_edge = &next_edge->PreviousEdgeAroundVertex();
-                data.indices.push_back(
-                    InterpolateOffsetPoints_(*edge, *prev_edge, *next_edge));
-#if 0 // XXXX
-                std::cerr << "XXXX Added V" << data.indices.back()
-                          << " to " << edge->id
-                          << " for " << edge->id << " between " << prev_edge->id
-                          << " and " << next_edge->id << "\n";
-#endif
-            }
-            edge = &edge->NextEdgeAroundVertex();
-        } while (edge != &start_edge);
-    }
 }
 
 GIndex Beveler_::GetOffsetPoint_(const PolyMesh::Edge &e0,
@@ -516,6 +418,7 @@ GIndex Beveler_::GetOffsetPoint_(const PolyMesh::Edge &e0,
     return pmb_.AddVertex(pos);
 }
 
+#if 0 // XXXX
 GIndex Beveler_::InterpolateOffsetPoints_(const PolyMesh::Edge &edge,
                                           const PolyMesh::Edge &prev,
                                           const PolyMesh::Edge &next) {
@@ -534,6 +437,7 @@ GIndex Beveler_::InterpolateOffsetPoints_(const PolyMesh::Edge &edge,
                          pp, ion::math::Normalized(np - pp), c0, c1);
     return pmb_.AddVertex(c0);
 }
+#endif
 
 Point3f Beveler_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
                                          const PolyMesh::Edge &e1) {
@@ -560,20 +464,19 @@ Point3f Beveler_::ComputeOffsetPosition_(const PolyMesh::Edge &e0,
 }
 
 void Beveler_::AddFaceBorder_(const EdgeVec_ &border_edges, bool is_hole) {
+    // The indices in an EdgeData_ are ordered to be counterclockwise around a
+    // vertex, where the first index is between the previous edge and the
+    // EdgeData_'s edge. This means that accessing the correct index for a
+    // border edge requires using the opposite.
+    const auto get_index = [&](const PolyMesh::Edge &e){
+        return edge_data_map_.at(e.opposite_edge).indices.front();
+    };
+
     IndexVec_ indices;
-    for (const auto edge: border_edges) {
-        const auto &data = edge_data_map_.at(edge);
-        indices.push_back(data.indices.back());
-#if 0 // XXXX
-        if (true || edge->face->id == "F17")
-            std::cerr << "XXXX Adding V" << indices.back()
-                      << " from " << edge->id
-                      << " with [" << Util::JoinItems(data.indices)
-                      << "] R=" << data.is_reversed << "\n";
-#endif
-    }
+    for (const auto edge: border_edges)
+        indices.push_back(get_index(*edge));
+
     if (indices.size() >= 3U) {
-        //std::cerr << "XXXX Adding " << Util::JoinItems(indices) << "\n";
         if (is_hole)
             pmb_.AddHole(indices);
         else
@@ -581,36 +484,42 @@ void Beveler_::AddFaceBorder_(const EdgeVec_ &border_edges, bool is_hole) {
     }
 }
 
-void Beveler_::InsertInteriorPoints_(const PolyMesh::Edge &edge) {
+void Beveler_::FillEdgeIndices_(const PolyMesh::Edge &edge) {
+    // The index of the starting vertex should already be stored.
     EdgeData_ &data = edge_data_map_.at(&edge);
-    ASSERT(data.is_beveled);
-
-    const size_t profile_size = bevel_.profile.GetPointCount();
-    ASSERT(profile_size > 2U);
-
-    // Save the end vertex indices and clear the vector.
-    ASSERT(data.indices.size() == 2U);
+    ASSERT(data.indices.size() == 1U);
     const size_t i0 = data.indices.front();
-    const size_t i1 = data.indices.back();
-    data.indices.reserve(profile_size);
-    data.indices.clear();
 
-    // Compute the points.
-    const Point3f &p0 = pmb_.GetVertex(i0);
-    const Point3f &p1 = pmb_.GetVertex(i1);
-    std::vector<Point3f> pts;
-    if (data.is_reversed) {
-        pts = ApplyProfileBetweenPoints_(edge, p1, p0);
-        std::reverse(pts.begin(), pts.end());
-    }
-    else {
-        pts = ApplyProfileBetweenPoints_(edge, p0, p1);
+    // Access the starting vertex for the next edge; this is the same as the
+    // ending vertex for this edge.
+    const PolyMesh::Edge &next_edge = edge.NextEdgeAroundVertex();
+    const EdgeData_      &next_data = edge_data_map_.at(&next_edge);
+    ASSERT(! next_data.indices.empty());
+    const size_t i1 = next_data.indices.front();
+
+    // If the profile has interior points (N > 2), apply the profile.
+    const size_t profile_size = bevel_.profile.GetPointCount();
+    if (profile_size > 2U) {
+        data.indices.reserve(profile_size - 1);
+
+        // Compute the interior profile points.
+        const Point3f &p0 = pmb_.GetVertex(i0);
+        const Point3f &p1 = pmb_.GetVertex(i1);
+        std::vector<Point3f> pts;
+        if (data.is_reversed) {
+            pts = ApplyProfileBetweenPoints_(edge, p1, p0);
+            std::reverse(pts.begin(), pts.end());
+        }
+        else {
+            pts = ApplyProfileBetweenPoints_(edge, p0, p1);
+        }
+
+        // Add the interior vertices and store the indices.
+        for (const auto &pt: pts)
+            data.indices.push_back(pmb_.AddVertex(pt));
     }
 
-    // Construct the vector of indices.
-    data.indices.push_back(i0);
-    for (const auto &pt: pts)
-        data.indices.push_back(pmb_.AddVertex(pt));
+    // Always add the ending index for convenience.
     data.indices.push_back(i1);
 }
 
@@ -618,7 +527,8 @@ void Beveler_::AddEdgeFaces_() {
     // This set is used to keep opposite edges from being processed.
     std::unordered_set<const PolyMesh::Edge *> processed_edges;
     for (const auto &edge: mesh_.edges) {
-        if (! Util::MapContains(processed_edges, edge)) {
+        if (! Util::MapContains(processed_edges, edge) &&
+            IsEdgeBeveled_(*edge)) {
             processed_edges.insert(edge->opposite_edge);
 
             const auto &ei0 = edge_data_map_.at(edge).indices;
@@ -635,6 +545,7 @@ void Beveler_::AddEdgeFaces_() {
     }
 }
 
+#if 0 // XXXX
 void Beveler_::AddVertexFaces_() {
     for (const auto &vertex: mesh_.vertices) {
         // Collect all edges around the vertex in counterclockwise order and
@@ -648,21 +559,55 @@ void Beveler_::AddVertexFaces_() {
             vertex_edges.push_back(edge);
             const auto &data = edge_data_map_.at(edge);
 
-            // There have to be the N indices for each edge, so duplicate if
-            // necessary for unbeveled edges.
-            if (data.indices.size() == 1U) {
-                Util::AppendVector(IndexVec_(profile_size - 1, data.indices[0]),
-                                   indices);
+            const size_t index_count = data.indices.size();
+            if (index_count <= 2U) {
+                const size_t target_size = profile_size - 1;
+                if (index_count == 2U && target_size == 1U) {
+                    indices.push_back(data.indices.front());
+                }
+                else {
+                    // Add the 1 or 2 indices.
+                    Util::AppendVector(data.indices, indices);
+                    // There have to be the N-1 indices for each edge, so
+                    // duplicate if necessary for unbeveled edges.
+                    if (index_count < target_size)
+                        Util::AppendVector(IndexVec_(target_size - index_count,
+                                                     data.indices.back()),
+                                           indices);
+                }
             }
             else {
-                ASSERT(data.indices.size() == profile_size);
+                ASSERT(index_count == profile_size);
                 Util::AppendVector(data.indices, indices);
                 // The last index should always refer to the same vertex as the
                 // start of the next one, so remove the last one.
                 indices.pop_back();
             }
-            edge = &edge->NextEdgeAroundVertex();
+            PolyMesh::Edge &next_edge = edge->NextEdgeAroundVertex();
+            const auto &next_data = edge_data_map_.at(&next_edge);
+            // XXXX Special case.
+            if (! data.is_beveled && ! next_data.is_beveled) {
+                const auto &opp_data =
+                    edge_data_map_.at(next_edge.opposite_edge);
+#if 1 // XXXX
+                std::cerr << "XXXX ==== Special case for " << edge->id
+                          << "/" << data.indices.back()
+                          << " and " << next_edge.id
+                          << "/" << next_data.indices.front()
+                          << ": TRI " << next_data.indices.front()
+                          << " " << data.indices.back()
+                          << " " << opp_data.indices.front()
+                          << "\n";
+#endif
+                pmb_.AddTriangle(next_data.indices.front(),
+                                 data.indices.back(),
+                                 opp_data.indices.front());
+            }
+            edge = &next_edge;
         } while (edge != vertex_edges.front());
+        if (XXXX_v(*vertex))
+            std::cerr << "XXXX " << vertex->id << " Indices = "
+                      << Util::JoinItems(indices) << "\n";
         AddFacesForVertex_(vertex_edges, indices);
     }
 }
@@ -832,6 +777,7 @@ void Beveler_::AddInterRingFaces_(const RingVec_ &rings) {
         }
     }
 }
+#endif
 
 std::vector<Point3f> Beveler_::ApplyProfileBetweenPoints_(
     const PolyMesh::Edge &edge, const Point3f &p0, const Point3f &p1) {

@@ -168,32 +168,6 @@ TEST_F(BevelerTest, TMPC) {
     const TriMesh rm = Beveler::ApplyBevel(m, GetDefaultBevel(.2f));
     std::cerr << "XXXX VALIDITY CODE = "
               << Util::EnumName(ValidateTriMesh(rm)) << "\n";
-
-#if 1 // XXXX
-    {  // XXXX
-        Debug::Dump3dv dump("/tmp/RTMESH.3dv", "Result Beveled TriMesh");
-        dump.SetLabelFontSize(12);
-        Debug::Dump3dv::LabelFlags label_flags;
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
-        //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
-        //label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
-        dump.SetLabelFlags(label_flags);
-        dump.AddTriMesh(rm);
-    }
-#endif
-    /* XXXX
-       In UMESH:
-         Edge from V10/V32/V38/V59 to V12/V13 is bad. (V10 to V12)
-         Edge from V10/V32/V38/V59 to V30/V35 is bad. (V32 to V30)
-         Face F2: V12 V10 V11
-         Face F8: V32 V30 V31
-
-       Border edges in RTMESH.3dv:
-       # V11 (3 0 -4) to V10 (0.3764 0.9604 -0.0294)
-       # V10 (0.3764 0.9604 -0.0294) to V13 (2.8919 0.0396 -3.8364)
-       # V16 (0.3121 0.9812 -0.0601) to V15 (1.2 0.6 -4)
-       # V18 (1.1562 0.6188 -3.8058) to V16 (0.3121 0.9812 -0.0601)
-     */
 }
 
 TEST_F(BevelerTest, BevelHelix) {
