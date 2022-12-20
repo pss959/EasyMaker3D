@@ -70,20 +70,20 @@ TEST_F(BevelerTest, BevelBox) {
 TEST_F(BevelerTest, BevelCyl) {
     const TriMesh m = BuildCylinderMesh(5, 5, 20, 7);
     TestBevel(m, GetDefaultBevel(1, 120), 28,  52);
-    TestBevel(m, GetBevel(3, 1, 120),     56, 108);
-    TestBevel(m, GetBevel(4, 1, 120),    126, 248);
-    TestBevel(m, GetBevel(5, 1, 120),    196, 388);
-    TestBevel(m, GetBevel(6, 1, 120),    308, 612);
+    TestBevel(m, GetBevel(3, 1, 120),     42,  80);
+    TestBevel(m, GetBevel(4, 1, 120),     56, 108);
+    TestBevel(m, GetBevel(5, 1, 120),     70, 136);
+    TestBevel(m, GetBevel(6, 1, 120),     84, 164);
 }
 
 TEST_F(BevelerTest, BevelCyl2) {
     // Cylinder with larger number of sides
     const TriMesh m = BuildCylinderMesh(5, 5, 20, 20);
-    TestBevel(m, GetDefaultBevel(1, 120), 80,  156);
-    TestBevel(m, GetBevel(3, 1, 120),    160,  316);
-    TestBevel(m, GetBevel(4, 1, 120),    360,  716);
-    TestBevel(m, GetBevel(5, 1, 120),    560, 1116);
-    TestBevel(m, GetBevel(6, 1, 120),    880, 1756);
+    TestBevel(m, GetDefaultBevel(1, 120), 80, 156);
+    TestBevel(m, GetBevel(3, 1, 120),    120, 236);
+    TestBevel(m, GetBevel(4, 1, 120),    160, 316);
+    TestBevel(m, GetBevel(5, 1, 120),    200, 396);
+    TestBevel(m, GetBevel(6, 1, 120),    240, 476);
 }
 
 TEST_F(BevelerTest, BevelHole) {
@@ -154,11 +154,12 @@ TEST_F(BevelerTest, TMPA) {
 }
 
 TEST_F(BevelerTest, TMPA2) {
-    //const TriMesh m = BuildCylinderMesh(5, 5, 8, 7);
-    const TriMesh m = LoadTriMesh("SemiCyl.stl");
+    const TriMesh m = BuildCylinderMesh(5, 5, 8, 7);
+    // const TriMesh m = LoadTriMesh("SemiCyl.stl");
     // EnableKLog("l"); // XXXX
-    //const Bevel bevel = GetDefaultBevel(1);
-    const Bevel bevel = GetBevel(6);
+    // const Bevel bevel = GetDefaultBevel(1);
+    // const Bevel bevel = GetBevel(6);
+    const Bevel bevel = GetBevel(4, 1, 120);
     const TriMesh rm = Beveler::ApplyBevel(m, bevel);
     std::cerr << "XXXX VALIDITY CODE = "
               << Util::EnumName(ValidateTriMesh(rm)) << "\n";
