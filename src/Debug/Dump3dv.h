@@ -3,15 +3,15 @@
 #if ENABLE_DEBUG_FEATURES
 
 #include <fstream>
+#include <functional>
 #include <string>
 #include <vector>
 
 #include "Math/Point3fMap.h"
+#include "Math/PolyMesh.h"
 #include "Math/Types.h"
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
-
-struct PolyMesh;
 
 namespace Debug {
 
@@ -29,6 +29,13 @@ class Dump3dv {
     };
 
     typedef Util::Flags<LabelFlag> LabelFlags;
+
+    /// \name Functions used to highlight certain PolyMesh features.
+    ///@{
+    typedef std::function<bool(const PolyMesh::Face   &)> FaceHighlightFunc;
+    typedef std::function<bool(const PolyMesh::Edge   &)> EdgeHighlightFunc;
+    typedef std::function<bool(const PolyMesh::Vertex &)> VertexHighlightFunc;
+    ///@}
 
     /// The constructor is passed the file to dump to and a string to put in
     /// the header comment.
@@ -67,8 +74,12 @@ class Dump3dv {
     /// Adds a TriMesh to dump.
     void AddTriMesh(const TriMesh &mesh);
 
-    /// Adds a PolyMesh to dump.
-    void AddPolyMesh(const PolyMesh &mesh);
+    /// Adds a PolyMesh to dump. The highlight functions, if supplied, are used
+    /// to call out certain features with highlight colors.
+    void AddPolyMesh(const PolyMesh &mesh,
+                     const FaceHighlightFunc &face_highlight_func = nullptr,
+                     const EdgeHighlightFunc &edge_highlight_func = nullptr,
+                     const VertexHighlightFunc &vert_highlight_func = nullptr);
 
     /// Adds a vertex to dump. Also adds a label if the vertex labeling flag is
     /// set.

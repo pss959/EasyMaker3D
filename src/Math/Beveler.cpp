@@ -23,8 +23,8 @@ static std::string PT(const T &t) { return Math::ToString(t, .01f); }
 static bool XXXX_v(const PolyMesh::Vertex &vertex) {
     //return vertex.id == "V7" || vertex.id == "V2";
     // return vertex.id == "V12";
-    //return true;
-    return false;
+    return true;
+    //return false;
 }
 
 static bool XXXX_e(const PolyMesh::Edge &edge) {
@@ -257,19 +257,6 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
 
      */
 
-#if 1 // XXXX
-    {  // XXXX
-        Debug::Dump3dv dump("/tmp/OMESH.3dv", "Original Beveler");
-        dump.SetLabelFontSize(20);
-        Debug::Dump3dv::LabelFlags label_flags;
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
-        label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
-        dump.SetLabelFlags(label_flags);
-        dump.AddPolyMesh(mesh_);
-    }
-#endif
-
     // Store the first edge that starts at each vertex.
     for (const auto edge: mesh_.edges) {
         if (! Util::MapContains(vertex_edge_map_, edge->v0))
@@ -345,12 +332,29 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
     std::cerr << "XXXX result_mesh has " << result_mesh.vertices.size()
               << " verts and " << result_mesh.faces.size() << " faces\n";
 #endif
+
+#if 1 // XXXX
+    {  // XXXX
+        Debug::Dump3dv dump("/tmp/OMESH.3dv", "Original Beveler");
+        dump.SetLabelFontSize(12);
+        Debug::Dump3dv::LabelFlags label_flags;
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+        label_flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+        dump.SetLabelFlags(label_flags);
+        const auto edge_func = [&](const PolyMesh::Edge &e){
+            return edge_data_map_.at(&e).is_beveled;
+        };
+        dump.AddPolyMesh(mesh_, nullptr, edge_func, nullptr);
+    }
+#endif
+
 #if 1 // XXXX
     {  // XXXX
         const bool add_orig_mesh = false;
 
         Debug::Dump3dv dump("/tmp/UMESH.3dv", "Unmerged Beveler");
-        dump.SetLabelFontSize(20);
+        dump.SetLabelFontSize(12);
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
         //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
@@ -374,7 +378,7 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
         const bool add_orig_mesh = false;
 
         Debug::Dump3dv dump("/tmp/RMESH.3dv", "Result Beveler");
-        dump.SetLabelFontSize(20);
+        dump.SetLabelFontSize(12);
         Debug::Dump3dv::LabelFlags label_flags;
         label_flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
         //label_flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);

@@ -2,7 +2,6 @@
 
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
-#include "Math/PolyMesh.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -10,6 +9,18 @@
 // ----------------------------------------------------------------------------
 
 namespace {
+
+/// \name Colors.
+///@{
+static const std::string kEdgeColor{"1 1 0 1"};
+static const std::string kEdgeLabelColor{"1 1 0 1"};
+static const std::string kFaceLabelColor{".7 .9 .8 1"};
+static const std::string kHighlightEdgeColor{"1 0 0 1"};
+static const std::string kHighlightEdgeLabelColor{"1 .8 .8 1"};
+static const std::string kHighlightFaceLabelColor{".7 .9 .8 1"};
+static const std::string kHighlightVertexLabelColor{"1 0 0 1"};
+static const std::string kVertexLabelColor{"1 1 1 1"};
+///@}
 
 /// Outputs a Point3f with rounded precision.
 inline std::ostream & operator<<(std::ostream &out, const Point3f &p) {
@@ -88,7 +99,7 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
 
     // Triangles as edges.
     out_ << "\n#  " << mesh.GetTriangleCount()
-        << " Triangles as edges:\n" << "c 1 1 0 1\n";
+         << " Triangles as edges:\n" << "c " << kEdgeColor << "\n";
     for (size_t i = 0; i < inds.size(); i += 3)
         out_ << "l " << extra_prefix_ << "E" << (i / 3)
              << " " << IID_("V", inds[i])
@@ -113,7 +124,7 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
 
     out_ << "\ns " << label_font_size_ << "\n\n";
     if (label_flags_.Has(LabelFlag::kVertexLabels)) {
-        out_ << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
+        out_ << "\n# Vertex labels:\n" << "c " << kVertexLabelColor << "\n";
         for (size_t i = 0; i < pts.size(); ++i)
             AddLabel_(pts[i], IID_("V", i));
     }
@@ -128,18 +139,32 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
     }
 }
 
-void Dump3dv::AddPolyMesh(const PolyMesh &mesh) {
+void Dump3dv::AddPolyMesh(const PolyMesh &mesh,
+                          const FaceHighlightFunc &face_highlight_func,
+                          const EdgeHighlightFunc &edge_highlight_func,
+                          const VertexHighlightFunc &vert_highlight_func) {
     // Vertices.
     out_ << "\n# PolyMesh with " << mesh.vertices.size() << " vertices:\n";
     for (const auto &v: mesh.vertices)
         AddVertex_(ID_(v->id), v->point);
 
     // Edges.
-    out_ << "\n#  " << mesh.edges.size() << " edges:\n" << "c 1 1 0 1\n";
+    out_ << "\n#  " << mesh.edges.size() << " edges:\n";
+    out_ << "c " << kEdgeColor << "\n";
     for (const auto &e: mesh.edges)
-        out_ << "l " << ID_(e->id)
-             << ' ' << ID_(e->v0->id)
-             << ' ' << ID_(e->v1->id) << "\n";
+        if (! edge_highlight_func || ! edge_highlight_func(*e))
+            out_ << "l " << ID_(e->id)
+                 << ' ' << ID_(e->v0->id)
+                 << ' ' << ID_(e->v1->id) << "\n";
+    // Highlighted edges.
+    if (edge_highlight_func) {
+        out_ << "c " << kHighlightEdgeColor << "\n";
+        for (const auto &e: mesh.edges)
+            if (edge_highlight_func(*e))
+                out_ << "l " << ID_(e->id)
+                     << ' ' << ID_(e->v0->id)
+                     << ' ' << ID_(e->v1->id) << "\n";
+    }
 
     // Translucent faces.
     out_ << "\n# " << mesh.faces.size() << " faces:\n";
@@ -169,24 +194,52 @@ void Dump3dv::AddPolyMesh(const PolyMesh &mesh) {
 
     out_ << "\ns " << label_font_size_ << "\n\n";
     if (label_flags_.Has(LabelFlag::kVertexLabels)) {
-        out_ << "\n# Vertex labels:\n" << "c 1 1 1 1\n";
+        out_ << "\n# Vertex labels:\n" << "c " << kVertexLabelColor << "\n";
         for (const auto &v: mesh.vertices)
-            AddLabel_(v->point, ID_(v->id));
+            if (! vert_highlight_func || ! vert_highlight_func(*v))
+                AddLabel_(v->point, ID_(v->id));
+        // Highlighted labels.
+        if (vert_highlight_func) {
+            out_ << "c " << kHighlightVertexLabelColor << "\n";
+            for (const auto &v: mesh.vertices)
+                if (vert_highlight_func(*v))
+                    AddLabel_(v->point, ID_(v->id));
+        }
     }
     if (label_flags_.Has(LabelFlag::kEdgeLabels)) {
-        out_ << "\n# Edge labels:\n" << "c 1 1 .5 1\n";
+        out_ << "\n# Edge labels:\n" << "c " << kEdgeLabelColor << "\n";
         for (auto &e: mesh.edges)
-            AddLabel_(GetEdgeLabelPos_(*e), ID_(e->id));
+            if (! edge_highlight_func || ! edge_highlight_func(*e))
+                AddLabel_(GetEdgeLabelPos_(*e), ID_(e->id));
+        // Highlighted labels.
+        if (edge_highlight_func) {
+            out_ << "c " << kHighlightEdgeLabelColor << "\n";
+            for (auto &e: mesh.edges)
+                if (edge_highlight_func(*e))
+                    AddLabel_(GetEdgeLabelPos_(*e), ID_(e->id));
+        }
     }
     if (label_flags_.Has(LabelFlag::kFaceLabels)) {
         const Point3f mesh_center = GetPolyMeshCenter_(mesh);
-        out_ << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
+        out_ << "\n# Face labels:\n" << "c " << kFaceLabelColor << "\n";
         for (auto &f: mesh.faces) {
-            if (f->is_merged)
+            if (f->is_merged ||
+                (face_highlight_func && face_highlight_func(*f)))
                 continue;
             const Point3f face_center = GetFaceCenter_(*f);
             const Point3f pos = face_center + .1f * (face_center - mesh_center);
             AddLabel_(pos, ID_(f->id));
+        }
+        // Highlighted labels.
+        if (face_highlight_func) {
+            out_ << "c " << kHighlightFaceLabelColor << "\n";
+            for (auto &f: mesh.faces)
+                if (face_highlight_func(*f)) {
+                    const Point3f face_center = GetFaceCenter_(*f);
+                    const Point3f pos =
+                        face_center + .1f * (face_center - mesh_center);
+                    AddLabel_(pos, ID_(f->id));
+                }
         }
     }
 }
