@@ -70,12 +70,15 @@ struct PolyMesh {
 
     ~PolyMesh() { Clear(); }
 
-    /// Clears and deletes the current contents, if any.
-    void Clear();
-
     /// Replaces the contents using the given vertex points and borders.
     void Set(const std::vector<Point3f> &points,
              const std::vector<Border> &borders);
+
+    /// Clears and deletes the current contents, if any.
+    void Clear();
+
+    /// Changes all ID's in vertices, edges, and faces to be consecutive.
+    void ReindexIDs();
 
     // Collects vertices from all borders of the given Face into the vertices
     // vector. The border_counts vector will contain the number of vertices in
@@ -101,9 +104,9 @@ struct PolyMesh {
 /// Base for Vertex, Edge, and Face. It stores a unique string ID.
 struct PolyMesh::Feature {
     /// String identifier for the feature. This is set at constructon.
-    const std::string id;
+    std::string id;
   protected:
-     Feature(const std::string &prefix, int index);
+    Feature(const std::string &prefix, int index);
 };
 
 // ----------------------------------------------------------------------------

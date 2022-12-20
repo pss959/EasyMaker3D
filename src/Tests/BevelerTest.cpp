@@ -153,6 +153,17 @@ TEST_F(BevelerTest, TMPA) {
               << Util::EnumName(ValidateTriMesh(rm)) << "\n";
 }
 
+TEST_F(BevelerTest, TMPA2) {
+    //const TriMesh m = BuildCylinderMesh(5, 5, 8, 7);
+    const TriMesh m = LoadTriMesh("SemiCyl.stl");
+    // EnableKLog("l"); // XXXX
+    //const Bevel bevel = GetDefaultBevel(1);
+    const Bevel bevel = GetBevel(6);
+    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
+    std::cerr << "XXXX VALIDITY CODE = "
+              << Util::EnumName(ValidateTriMesh(rm)) << "\n";
+}
+
 TEST_F(BevelerTest, TMPB) {
     const TriMesh m = LoadTriMesh("Twist2.stl");
     // EnableKLog("l"); // XXXX

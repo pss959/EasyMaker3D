@@ -399,6 +399,8 @@ static std::vector<IndexVec_> SplitIndices_(const IndexVec_ &indices,
 static void AddFace_(const Face &face, VertexMerger_ &vertex_merger,
                      PolyMeshBuilder &pmb) {
     IndexVec_ indices = vertex_merger.GetBorderIndices(face.outer_edges);
+    if (indices.size() < 3U)
+        return;
 
     // Keep count of indices.
     std::vector<int> counts(pmb.GetVertexCount(), 0);
@@ -408,8 +410,10 @@ static void AddFace_(const Face &face, VertexMerger_ &vertex_merger,
             any_duplicates = true;
     }
     if (any_duplicates) {
-        for (const auto &poly_indices: SplitIndices_(indices, counts))
+        for (const auto &poly_indices: SplitIndices_(indices, counts)) {
+            ASSERT(poly_indices.size() >= 3U);
             pmb.AddPolygon(poly_indices);
+        }
     }
     else {
         // Otherwise, just add all indices as a single polygon.
@@ -502,6 +506,9 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
     for (auto &f: poly_mesh.faces)
         if (FaceHasHoles_(*f))
             HoleFinder_(*f).StoreHoleEdges();
+
+    // Change ID's for all parts.
+    poly_mesh.ReindexIDs();
 }
 
 void MergeDuplicateFeatures(const PolyMesh &poly_mesh, PolyMesh &result_mesh) {

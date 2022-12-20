@@ -448,6 +448,15 @@ void PolyMesh::Clear() {
     faces.clear();
 }
 
+void PolyMesh::ReindexIDs() {
+    for (size_t i = 0; i < vertices.size(); ++i)
+        vertices[i]->id = "V" + Util::ToString(i);
+    for (size_t i = 0; i < edges.size(); ++i)
+        edges[i]->id    = "E" + Util::ToString(i);
+    for (size_t i = 0; i < faces.size(); ++i)
+        faces[i]->id    = "F" + Util::ToString(i);
+}
+
 void PolyMesh::GetFaceVertices(const Face &face, VertexVec &vertices,
                                std::vector<size_t> &border_counts) {
     GetFaceVertices_(face, vertices, border_counts);
