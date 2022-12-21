@@ -106,8 +106,13 @@ class Dump3dv {
     /// Adds a 3dv vertex statement.
     void AddVertex_(const std::string &id, const Point3f &p);
 
-    /// Adds a 3dv label statement.
+    /// Adds a 3dv text statement to show a label.
     void AddLabel_(const Point3f &pos, const std::string &text);
+
+    /// Adds a 3dv rotated text statement to show a label facing in the given
+    /// direction.
+    void AddRotatedLabel_(const Point3f &pos, const Vector3f &dir,
+                          const std::string &text);
 
     /// Outputs an alternating color for a face depending on an index.
     void AltFaceColor_(size_t i);

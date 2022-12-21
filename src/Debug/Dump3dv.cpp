@@ -29,12 +29,24 @@ inline std::ostream & operator<<(std::ostream &out, const Point3f &p) {
     return out;
 }
 
+/// Outputs a Vector3f.
+inline std::ostream & operator<<(std::ostream &out, const Vector3f &v) {
+    out << v[0] << ' ' << v[1] << ' ' << v[2];
+    return out;
+}
 
 /// Returns the center point of a TriMesh triangle.
 static Point3f GetTriCenter_(const TriMesh &mesh, size_t tri_index) {
     return (mesh.points[mesh.indices[3 * tri_index + 0]] +
             mesh.points[mesh.indices[3 * tri_index + 1]] +
             mesh.points[mesh.indices[3 * tri_index + 2]]) / 3.f;
+}
+
+/// Returns the normal to a TriMesh triangle.
+static Vector3f GetTriNormal_(const TriMesh &mesh, size_t tri_index) {
+    return ComputeNormal(mesh.points[mesh.indices[3 * tri_index + 0]],
+                         mesh.points[mesh.indices[3 * tri_index + 1]],
+                         mesh.points[mesh.indices[3 * tri_index + 2]]);
 }
 
 /// Returns the center point of a PolyMesh::Face.
@@ -134,7 +146,7 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
         for (size_t i = 0; i < inds.size() / 3; ++i) {
             const Point3f tri_center = GetTriCenter_(mesh, i);
             const Point3f pos = tri_center + .05f * (tri_center - mesh_center);
-            AddLabel_(pos, IID_("F", i));
+            AddRotatedLabel_(pos, GetTriNormal_(mesh, i), IID_("F", i));
         }
     }
 }
@@ -228,7 +240,7 @@ void Dump3dv::AddPolyMesh(const PolyMesh &mesh,
                 continue;
             const Point3f face_center = GetFaceCenter_(*f);
             const Point3f pos = face_center + .1f * (face_center - mesh_center);
-            AddLabel_(pos, ID_(f->id));
+            AddRotatedLabel_(pos, f->GetNormal(), ID_(f->id));
         }
         // Highlighted labels.
         if (face_highlight_func) {
@@ -268,6 +280,18 @@ void Dump3dv::AddLabel_(const Point3f &pos, const std::string &text) {
     label_point_map_.Add(label_pos);
 
     out_ << "t" << label_pos << ' ' << text << "\n";
+}
+
+void Dump3dv::AddRotatedLabel_(const Point3f &pos, const Vector3f &dir,
+                               const std::string &text) {
+    Point3f label_pos = pos + extra_label_offset_;
+
+    // If there is already a label at this position, keep adding the offset.
+    while (label_point_map_.Contains(label_pos))
+        label_pos += coincident_label_offset_;
+    label_point_map_.Add(label_pos);
+
+    out_ << "T" << label_pos << ' ' << dir << ' ' << text << "\n";
 }
 
 void Dump3dv::AltFaceColor_(size_t i) {
