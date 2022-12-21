@@ -384,6 +384,7 @@ void Model::RebuildMesh_(bool notify) {
 
     // Let the derived class build the origin-centered mesh.
     TriMesh mesh = BuildMesh();
+    CleanMesh(mesh);
     ASSERTM(AreClose(ComputeMeshBounds(mesh).GetCenter(), Point3f::Zero()),
             GetDesc() + " has noncentered mesh");
 

@@ -332,3 +332,17 @@ TEST_F(ClipSessionTest, ClipSessionTest2PlanesScaled) {
         context.command_manager->Redo();
     }
 }
+
+#if false  // XXXX
+// This fails due to a bug in CGAL:
+//   https://github.com/CGAL/cgal/issues/7136
+TEST_F(ClipSessionTest, ClipSemiCylinder) {
+    // A cylinder with 8 sides and the left half clipped away. Creates a
+    // self-intersecting shape according to CGAL.
+    LoadSession("ClipSemiCylinder.mvr");
+    const auto &rm = *context.scene_context->root_model;
+    EXPECT_EQ(1U, rm.GetChildModelCount());
+    const TriMesh &mesh = rm.GetChildModel(0)->GetMesh();
+    ValidateMesh(mesh, "ClipSemiCylinder");
+}
+#endif
