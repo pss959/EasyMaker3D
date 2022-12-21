@@ -140,51 +140,5 @@ TEST_F(BevelerTest, BevelTwist3) {
 TEST_F(BevelerTest, BevelBend) {
     // Extruded pentagon model with a bend.
     const TriMesh m = LoadTriMesh("Bend.stl");
-    TestBevel(m, GetDefaultBevel(.2f), 0, 0);
-}
-
-TEST_F(BevelerTest, TMPA) {
-    const TriMesh m = BuildBoxMesh(Vector3f(10, 14, 10));
-    // EnableKLog("l"); // XXXX
-    //const Bevel bevel = GetDefaultBevel(1);
-    const Bevel bevel = GetBevel(4);
-    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
-    std::cerr << "XXXX VALIDITY CODE = "
-              << Util::EnumName(ValidateTriMesh(rm)) << "\n";
-}
-
-TEST_F(BevelerTest, TMPA2) {
-    const TriMesh m = BuildCylinderMesh(5, 5, 8, 7);
-    // const TriMesh m = LoadTriMesh("SemiCyl.stl");
-    // EnableKLog("l"); // XXXX
-    // const Bevel bevel = GetDefaultBevel(1);
-    // const Bevel bevel = GetBevel(6);
-    const Bevel bevel = GetBevel(4, 1, 120);
-    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
-    std::cerr << "XXXX VALIDITY CODE = "
-              << Util::EnumName(ValidateTriMesh(rm)) << "\n";
-}
-
-TEST_F(BevelerTest, TMPB) {
-    const TriMesh m = LoadTriMesh("Twist2.stl");
-    // EnableKLog("l"); // XXXX
-    const Bevel bevel = GetDefaultBevel(.4f);
-    const TriMesh rm = Beveler::ApplyBevel(m, bevel);
-    std::cerr << "XXXX VALIDITY CODE = "
-              << Util::EnumName(ValidateTriMesh(rm)) << "\n";
-}
-
-TEST_F(BevelerTest, TMPC) {
-    const TriMesh m = LoadTriMesh("Bend.stl");
-    // EnableKLog("l"); // XXXX
-    const TriMesh rm = Beveler::ApplyBevel(m, GetDefaultBevel(.2f));
-    std::cerr << "XXXX VALIDITY CODE = "
-              << Util::EnumName(ValidateTriMesh(rm)) << "\n";
-}
-
-TEST_F(BevelerTest, BevelHelix) {
-    // A pretty complex STL model.
-    const TriMesh m = LoadTriMesh("double_helix.stl");
-    // Have to use a small scale for a valid mesh.
-    TestBevel(m, GetDefaultBevel(.4f), 1265, 2172);
+    TestBevel(m, GetDefaultBevel(.2f), 46, 88);
 }
