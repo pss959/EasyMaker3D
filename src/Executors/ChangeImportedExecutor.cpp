@@ -11,6 +11,10 @@ void ChangeImportedExecutor::Execute(Command &command, Command::Op operation) {
         ChangeImportedModelCommand &cimc =
             GetTypedCommand<ChangeImportedModelCommand>(command);
         data.imported_model->SetPath(cimc.GetNewPath());
+        // If this is the first time a real model is being imported, set the
+        // position of the ImportedModel.
+        if (data.old_path.empty())
+            InitModelPosition(*data.imported_model);
     }
     else {  // Undo.
         data.imported_model->SetPath(data.old_path);

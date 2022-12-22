@@ -47,10 +47,10 @@ class TargetManager {
     Util::Notifier<bool> & GetTargetActivation() { return target_activation_; }
 
     /// Returns true if the point target is currently visible.
-    bool IsPointTargetVisible();
+    bool IsPointTargetVisible() const;
 
     /// Returns true if the edge target is currently visible.
-    bool IsEdgeTargetVisible();
+    bool IsEdgeTargetVisible() const;
 
     // Sets the visibility of the point target.
     void SetPointTargetVisible(bool visible);

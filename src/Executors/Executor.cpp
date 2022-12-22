@@ -8,6 +8,7 @@
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/RootModel.h"
+#include "Targets/PointTarget.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 
@@ -38,6 +39,19 @@ void Executor::AddModelInteraction(Model &model) {
     const auto &context = GetContext();
     context.selection_manager->AttachClickToModel(model);
     model.SetTooltipFunc(context.tooltip_func);
+}
+
+void Executor::InitModelPosition(Model &model) {
+    // Use the point target if it is visible.
+    const auto &target_manager = *GetContext().target_manager;
+    if (target_manager.IsPointTargetVisible()) {
+        const auto &target = target_manager.GetPointTarget();
+        model.MoveBottomCenterTo(target.GetPosition(), target.GetDirection());
+    }
+    // If not, use the origin and Y axis.
+    else {
+        model.MoveBottomCenterTo(Point3f::Zero(), Vector3f::AxisY());
+    }
 }
 
 void Executor::SetRandomModelColor(Model &model) {

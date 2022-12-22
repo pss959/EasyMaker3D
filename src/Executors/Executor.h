@@ -89,6 +89,9 @@ class Executor {
     /// sets up its tooltip.
     void AddModelInteraction(Model &model);
 
+    /// Positions a Model at the current point target or the origin.
+    void InitModelPosition(Model &model);
+
     /// Sets a random color for the Model.
     void SetRandomModelColor(Model &model);
 

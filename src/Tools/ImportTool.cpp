@@ -1,7 +1,6 @@
 #include "Tools/ImportTool.h"
 
 #include "Commands/ChangeImportedModelCommand.h"
-#include "Commands/CreateImportedModelCommand.h"
 #include "Items/Settings.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SettingsManager.h"
@@ -40,21 +39,9 @@ void ImportTool::PanelChanged(const std::string &key,
     auto model = Util::CastToDerived<ImportedModel>(GetModelAttachedTo());
     ASSERT(model);
 
-    // If there is no path in the ImportedModel, then this tool was used to set
-    // up the initial import path.
-    const bool is_initial_import = model->GetPath().empty();
-
     bool is_done = false;
 
     if (key == "Cancel") {
-        // If setting the initial path for the ImportedModel was canceled, the
-        // ImportedModel has to be removed by undoing and removing the command
-        // that created it.
-        if (is_initial_import)
-            context.command_manager->UndoAndPurge();
-
-        // Canceling a change to an existing Model does nothing but close the
-        // ImportToolPanel.
         is_done = true;
     }
 
@@ -62,23 +49,10 @@ void ImportTool::PanelChanged(const std::string &key,
         auto &panel = GetTypedPanel<ImportToolPanel>();
         const std::string &path = panel.GetPath().ToString();
 
-        if (is_initial_import) {
-            // Accepting the initial path means officially creating the
-            // ImportedModel with the correct path. Update the Command and the
-            // ImportedModel.
-            const auto &cimc = Util::CastToDerived<CreateImportedModelCommand>(
-                context.command_manager->GetLastCommand());
-            ASSERT(cimc);
-            cimc->SetPath(path);
-            model->SetPath(path);
-        }
-        else {
-            // This is a change to an existing ImportedModel.
-            auto cimc = CreateCommand<ChangeImportedModelCommand>();
-            cimc->SetFromSelection(GetSelection());
-            cimc->SetNewPath(path);
-            context.command_manager->AddAndDo(cimc);
-        }
+        auto cimc = CreateCommand<ChangeImportedModelCommand>();
+        cimc->SetFromSelection(GetSelection());
+        cimc->SetNewPath(path);
+        context.command_manager->AddAndDo(cimc);
 
         // Report any errors.
         std::string reason;

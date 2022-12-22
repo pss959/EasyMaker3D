@@ -51,12 +51,12 @@ void TargetManager::InitTargets(const PointTargetWidgetPtr &ptw,
     SetEdgeTargetVisible(false);
 }
 
-bool TargetManager::IsPointTargetVisible() {
+bool TargetManager::IsPointTargetVisible() const {
     return point_target_widget_ &&
         point_target_widget_->IsEnabled();
 }
 
-bool TargetManager::IsEdgeTargetVisible() {
+bool TargetManager::IsEdgeTargetVisible() const {
     return edge_target_widget_ &&
         edge_target_widget_->IsEnabled();
 }

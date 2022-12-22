@@ -51,19 +51,15 @@ void ModelExecutorBase::InitModelTransform(Model &model,
                                  command.GetTargetDirection());
     }
     else {
-        // This is a new command. Use the point target if it is visible and
-        // store the values in the command.
-        auto target_manager = GetContext().target_manager;
-        if (target_manager->IsPointTargetVisible()) {
-            const auto &target = target_manager->GetPointTarget();
+        // This is a new command.
+        InitModelPosition(model);
+
+        // Update the command if moving the model to the point target.
+        const auto &target_manager = *GetContext().target_manager;
+        if (target_manager.IsPointTargetVisible()) {
+            const auto &target = target_manager.GetPointTarget();
             command.SetTargetPosition(target.GetPosition());
             command.SetTargetDirection(target.GetDirection());
-            model.MoveBottomCenterTo(target.GetPosition(),
-                                     target.GetDirection());
-        }
-        // If not, use the origin and Y axis and leave the command alone.
-        else {
-            model.MoveBottomCenterTo(Point3f::Zero(), Vector3f::AxisY());
         }
     }
 }
