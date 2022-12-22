@@ -10,17 +10,23 @@ void ChangeImportedExecutor::Execute(Command &command, Command::Op operation) {
     if (operation == Command::Op::kDo) {
         ChangeImportedModelCommand &cimc =
             GetTypedCommand<ChangeImportedModelCommand>(command);
+        const bool was_loaded = data.imported_model->WasLoadedSuccessfully();
         data.imported_model->SetPath(cimc.GetNewPath());
-        // If this is the first time a real model is being imported, set the
-        // position of the ImportedModel.
-        if (data.old_path.empty())
+        // Access the mesh so that errors can be detected.
+        data.imported_model->GetMesh();
+        // If this is the first time a real model was loaded successfully, set
+        // the position of the ImportedModel.
+        if (! was_loaded && data.imported_model->WasLoadedSuccessfully())
             InitModelPosition(*data.imported_model);
     }
     else {  // Undo.
         data.imported_model->SetPath(data.old_path);
     }
 
-    GetContext().selection_manager->ReselectAll();
+    // Do NOT reselect if there is a model error - that would cause the error
+    // message dialog to go away.
+    if (! data.imported_model->GetErrorMessage().empty())
+        GetContext().selection_manager->ReselectAll();
 }
 
 ChangeImportedExecutor::ExecData_ & ChangeImportedExecutor::GetExecData_(

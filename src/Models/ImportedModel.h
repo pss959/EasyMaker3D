@@ -28,6 +28,14 @@ class ImportedModel : public PrimitiveModel {
     /// Returns the path to the STL file as a string.
     const std::string & GetPath() const { return path_; }
 
+    /// Returns true if STL data was ever successfully loaded. This is used to
+    /// tell whether to initialize the ImportedModel's position.
+    bool WasLoadedSuccessfully() const { return was_loaded_successfully_; }
+
+    /// Returns the error message resulting from importing the STL data from
+    /// the current path. This will be empty if the import was successful.
+    const std::string & GetErrorMessage() const { return import_error_; }
+
   protected:
     ImportedModel();
     virtual void AddFields() override;
@@ -44,6 +52,9 @@ class ImportedModel : public PrimitiveModel {
 
     /// UnitConversion used for converting imported STL data.
     UnitConversionPtr unit_conversion_;
+
+    /// Set to true if STL data is ever loaded successfully.
+    bool was_loaded_successfully_ = false;
 
     /// When the ImportedModel is invalid, this stores the reason.
     std::string import_error_;

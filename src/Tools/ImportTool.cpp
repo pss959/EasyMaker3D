@@ -39,13 +39,10 @@ void ImportTool::PanelChanged(const std::string &key,
     auto model = Util::CastToDerived<ImportedModel>(GetModelAttachedTo());
     ASSERT(model);
 
-    bool is_done = false;
+    // Assume the panel is no longer needed.
+    bool is_done = true;
 
-    if (key == "Cancel") {
-        is_done = true;
-    }
-
-    else if (key == "Accept") {
+    if (key == "Accept") {
         auto &panel = GetTypedPanel<ImportToolPanel>();
         const std::string &path = panel.GetPath().ToString();
 
@@ -54,16 +51,13 @@ void ImportTool::PanelChanged(const std::string &key,
         cimc->SetNewPath(path);
         context.command_manager->AddAndDo(cimc);
 
-        // Report any errors.
-        std::string reason;
-        if (! model->IsMeshValid(reason)) {
-            panel.DisplayImportError(reason);
+        // Report any import errors and leave the panel open.
+        if (! model->GetErrorMessage().empty()) {
+            panel.DisplayImportError("Error importing STL data:\n" +
+                                     model->GetErrorMessage());
             is_done = false;
         }
-
-        is_done = true;
     }
-
     else {
         PanelTool::PanelChanged(key, type);
     }

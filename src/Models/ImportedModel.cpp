@@ -49,6 +49,9 @@ TriMesh ImportedModel::BuildMesh() {
         ASSERT(! import_error_.empty());
         mesh = BuildTetrahedronMesh(2 * TK::kInitialModelScale);
     }
+    else {
+        was_loaded_successfully_ = true;
+    }
 
     return mesh;
 }
