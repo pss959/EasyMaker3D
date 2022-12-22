@@ -16,14 +16,27 @@ ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
         cic.SetResultName(name);
     }
 
-    // Create a dummy ImportedModel. Leave the initial scale at its default
+    // Create and initialize the Model. Leave the initial scale at its default
     // value (1).
     ImportedModelPtr im = Model::CreateModel<ImportedModel>(name);
     const auto &settings = GetContext().settings_manager->GetSettings();
+
+    // If the Model was read from a file, the command must have a valid path,
+    // so set the path so the ImportedModel can check it.
+    if (cic.IsValidating()) {
+        im->SetPath(cic.GetPath());
+    }
+    // Otherwise, the path will be empty until the ImportTool is used to select
+    // a real file path, so do not set the path.
+    else {
+        ASSERT(cic.GetPath().empty());
+    }
+
     im->SetUnitConversion(settings.GetImportUnitsConversion());
 
     InitModelTransform(*im, cic);
     AddModelInteraction(*im);
+    SetRandomModelColor(*im);
 
     // If the Model was not read from a file, drop it from above.
     if (! cic.IsValidating())

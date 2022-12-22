@@ -1,6 +1,7 @@
 #include "Tools/ImportTool.h"
 
 #include "Commands/ChangeImportedModelCommand.h"
+#include "Commands/CreateImportedModelCommand.h"
 #include "Items/Settings.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SettingsManager.h"
@@ -42,14 +43,42 @@ void ImportTool::PanelChanged(const std::string &key,
     // Assume the panel is no longer needed.
     bool is_done = true;
 
-    if (key == "Accept") {
+    // If the ImportedModel was never loaded successfully, then this tool was
+    // used to set up the initial import path.
+    const bool is_initial_import = ! model->WasLoadedSuccessfully();
+
+    if (key == "Cancel") {
+        // If setting the initial path for the ImportedModel was canceled, the
+        // ImportedModel has to be removed by undoing and removing the command
+        // that created it.
+        if (is_initial_import)
+            context.command_manager->UndoAndPurge();
+
+        // Canceling a change to an existing Model does nothing but close the
+        // ImportToolPanel.
+    }
+
+    else if (key == "Accept") {
         auto &panel = GetTypedPanel<ImportToolPanel>();
         const std::string &path = panel.GetPath().ToString();
 
-        auto cimc = CreateCommand<ChangeImportedModelCommand>();
-        cimc->SetFromSelection(GetSelection());
-        cimc->SetNewPath(path);
-        context.command_manager->AddAndDo(cimc);
+        if (is_initial_import) {
+            // Accepting the initial path means officially creating the
+            // ImportedModel with the correct path. Update the Command and the
+            // ImportedModel.
+            const auto &cimc = Util::CastToDerived<CreateImportedModelCommand>(
+                context.command_manager->GetLastCommand());
+            ASSERT(cimc);
+            cimc->SetPath(path);
+            model->SetPath(path);
+        }
+        else {
+            // This is a change to an existing ImportedModel.
+            auto cimc = CreateCommand<ChangeImportedModelCommand>();
+            cimc->SetFromSelection(GetSelection());
+            cimc->SetNewPath(path);
+            context.command_manager->AddAndDo(cimc);
+        }
 
         // Report any import errors and leave the panel open.
         if (! model->GetErrorMessage().empty()) {
@@ -58,6 +87,7 @@ void ImportTool::PanelChanged(const std::string &key,
             is_done = false;
         }
     }
+
     else {
         PanelTool::PanelChanged(key, type);
     }

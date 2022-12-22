@@ -16,8 +16,6 @@ bool ToolPanel::ShouldTrapValuatorEvents() const {
 }
 
 void ToolPanel::Close(const std::string &result) {
-    std::cerr << "XXXX Closing " << GetDesc()
-              << " IsCloseable = " << IsCloseable() << "\n";
     if (IsCloseable())
         Panel::Close(result);
 }
