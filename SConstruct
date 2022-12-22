@@ -243,6 +243,7 @@ lib_sources = [
     'Panels/SessionPanel.cpp',
     'Panels/SettingsPanel.cpp',
     'Panels/TextToolPanel.cpp',
+    'Panels/ToolPanel.cpp',
     'Panels/TreePanel.cpp',
 
     'Panes/BoxPane.cpp',

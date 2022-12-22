@@ -23,6 +23,9 @@ class ImportToolPanel : public FilePanel {
   protected:
     ImportToolPanel() {}
 
+    /// Redefines this to return false.
+    virtual bool IsCloseable() const override { return false; }
+
     /// Redefines this to not close the panel.
     virtual void ProcessResult(const std::string &result) override;
 

@@ -40,36 +40,26 @@ class ToolPanel : public Panel {
     }
 
   protected:
-    ToolPanel() {}
-
-    /// Sets a flag indicating that the ToolPanel can be closed. The default is
-    /// false.
-    void SetIsCloseable(bool is_closeable) { is_closeable_ = is_closeable; }
+    ToolPanel();
 
     /// Returns a flag indicating whether the ToolPanel can be closed. The
     /// default is false.
-    bool IsCloseable() const { return is_closeable_; }
+    virtual bool IsCloseable() const;
 
     /// Derived classes should call this when interaction occurs within the
     /// ToolPanel.
-    void ReportChange(const std::string &key, InteractionType type) {
-        interaction_.Notify(key, type);
-    }
+    void ReportChange(const std::string &key, InteractionType type);
 
     /// Redefines this to return false so the stage can be resized even when a
     /// ToolPanel is active.
-    virtual bool ShouldTrapValuatorEvents() const { return false; }
+    virtual bool ShouldTrapValuatorEvents() const;
 
     /// Overrides this to do nothing if IsCloseable() returns false; most
     /// derived ToolPanel classes should never be closed directly.
-    virtual void Close(const std::string &result) override {
-        if (IsCloseable())
-            Panel::Close(result);
-    }
+    virtual void Close(const std::string &result) override;
 
   private:
     Util::Notifier<const std::string &, InteractionType> interaction_;
-    bool is_closeable_ = false;
 
     friend class Parser::Registry;
 };
