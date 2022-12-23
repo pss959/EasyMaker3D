@@ -184,6 +184,9 @@ Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 /// work for concave as well as convex polygons.
 Vector3f ComputeNormal(const std::vector<Point3f> &points);
 
+/// Returns the area of the triangle formed by the given points.
+float ComputeArea(const Point3f &p0, const Point3f &p1, const Point3f &p2);
+
 /// Returns the area of the planar 3D polygon formed by the given points.
 float ComputeArea(const std::vector<Point3f> &points);
 

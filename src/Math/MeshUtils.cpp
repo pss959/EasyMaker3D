@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <numeric>
+#include <unordered_set>
 
 #include <ion/gfx/attributearray.h>
 #include <ion/gfx/bufferobject.h>
@@ -10,6 +11,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Base/Tuning.h"
+#include "Math/Linear.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
@@ -31,7 +33,7 @@ static TriMesh ModifyVertices_(
 
     // Change the orientation of all triangles if requested.
     if (change_orientation) {
-        const size_t tri_count = mesh.indices.size() / 3;
+        const size_t tri_count = mesh.GetTriangleCount();
         new_mesh.indices.resize(3 * tri_count);
         for (size_t i = 0; i < tri_count; ++i) {
             new_mesh.indices[3 * i + 0] = mesh.indices[3 * i + 2];
@@ -43,6 +45,36 @@ static TriMesh ModifyVertices_(
         new_mesh.indices = mesh.indices;
     }
     return new_mesh;
+}
+
+/// Removes any degenerate triangles from the given TriMesh, in place.
+static void RemoveDegenerateTriangles_(TriMesh &mesh) {
+    const size_t tri_count = mesh.GetTriangleCount();
+
+    // Construct a vector of new indices.
+    std::vector<GIndex> new_indices;
+    new_indices.reserve(mesh.indices.size());
+
+    for (size_t i = 0; i < tri_count; ++i) {
+        const auto i0 = mesh.indices[3 * i + 0];
+        const auto i1 = mesh.indices[3 * i + 1];
+        const auto i2 = mesh.indices[3 * i + 2];
+        if (ComputeArea(mesh.points[i0],
+                        mesh.points[i1],
+                        mesh.points[i2]) > 0) {
+            new_indices.push_back(i0);
+            new_indices.push_back(i1);
+            new_indices.push_back(i2);
+        }
+    }
+
+    if (new_indices.size() < mesh.indices.size()) {
+        std::cerr << "XXXX Removed "
+                  << (mesh.indices.size() - new_indices.size()) << " indices\n";
+        mesh.indices = new_indices;
+        /// \todo Consider also removing unused points; have to reindex
+        /// triangles.
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -95,6 +127,8 @@ void CleanMesh(TriMesh &mesh) {
         clean_val(p[1]);
         clean_val(p[2]);
     }
+
+    RemoveDegenerateTriangles_(mesh);
 }
 
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,
@@ -272,7 +306,7 @@ void WriteMeshAsOFF(const TriMesh &mesh, const std::string &description,
                     std::ostream &out) {
     out << "OFF\n";
     out << "# " << description << ":\n";
-    const size_t tri_count = mesh.indices.size() / 3U;
+    const size_t tri_count = mesh.GetTriangleCount();
     out << mesh.points.size() << ' ' << tri_count << " 0\n";
     for (size_t i = 0; i < mesh.points.size(); ++i) {
         const Point3f &p = mesh.points[i];

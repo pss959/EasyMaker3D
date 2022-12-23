@@ -365,7 +365,10 @@ static bool FaceHasHoles_(Face &f) {
     return false;
 }
 
-/// XXXX
+/// Given a vector of vertex indices and a vector of how many times each index
+/// appears in the vector, this returns the indices divided into multiple
+/// vectors so that no vector contains any duplicate indices, maintaining the
+/// original order.
 static std::vector<IndexVec_> SplitIndices_(const IndexVec_ &indices,
                                             const std::vector<int> &counts) {
     // Start with the first duplicate index.

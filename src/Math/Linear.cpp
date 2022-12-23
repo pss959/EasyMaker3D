@@ -279,6 +279,10 @@ Vector3f ComputeNormal(const std::vector<Point3f> &points) {
     }
 }
 
+float ComputeArea(const Point3f &p0, const Point3f &p1, const Point3f &p2) {
+    return ComputeArea(std::vector<Point3f>{p0, p1, p2});
+}
+
 float ComputeArea(const std::vector<Point3f> &points) {
     Vector3f sum(0, 0, 0);
     for (size_t i = 0; i < points.size(); ++i) {
