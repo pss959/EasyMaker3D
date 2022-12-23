@@ -551,7 +551,7 @@ if platform == 'windows':
                      source='#submodules/openvr/headers/openvr.h',
                      action='python bin/fix-openvr-header.py $SOURCES $TARGET')
 
-elif platform == 'linux':
+elif platform == 'linux' or platform == 'mac':
     base_env.Append(
         CPPDEFINES = [
             ('ION_API', ''),
@@ -560,6 +560,10 @@ elif platform == 'linux':
         ],
         LIBS = ['GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm'],
     )
+    if platform == 'linux':
+      base_env.Append(CPPDEFINES = [('ION_PLATFORM_LINUX', '1')])
+    else:
+      base_env.Append(CPPDEFINES = [('ION_PLATFORM_MAC',   '1')])
     big_cflags = []
     run_program = ''
 

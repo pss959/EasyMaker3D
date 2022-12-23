@@ -89,15 +89,18 @@ if platform == 'windows':
         'zlib',
     ]
 
-elif platform == 'linux':
+elif platform == 'linux' or platform == 'mac':
     env.Append(
         CPPDEFINES = [
             ('ION_API', ''),
             ('ION_APIENTRY', ''),
-            ('ION_PLATFORM_LINUX', '1'),
         ],
         LIBS = ['dl', 'pthread'],
     )
+    if platform == 'linux':
+      env.Append(CPPDEFINES = [('ION_PLATFORM_LINUX', '1')])
+    else:
+      env.Append(CPPDEFINES = [('ION_PLATFORM_MAC',   '1')])
     pkg_config_opts = ''
     packages = [
         'freetype2',
