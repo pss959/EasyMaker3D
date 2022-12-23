@@ -131,7 +131,7 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
             AddVertex_(vid, pts[vi]);
             vids += " " + vid;
         }
-        out_ << "f " << IID_("F", i) << vids << "\n";
+        out_ << "f " << IID_("F", i / 3) << vids << "\n";
     }
 
     out_ << "\ns " << label_font_size_ << "\n\n";
