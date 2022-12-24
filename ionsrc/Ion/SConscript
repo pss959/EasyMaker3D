@@ -150,7 +150,7 @@ def MakeTuple(subdir, names=[], headers=[], sources=[], assets=[]):
     return (subdir, names, headers, sources, assets)
 
 # Platform-specific lists:
-if platform == 'linux':
+if platform == 'linux' or platform == 'mac':
     portgfx_names   = []
     portgfx_sources = [ 'glxcontext.cc' ]
 elif platform == 'windows':
