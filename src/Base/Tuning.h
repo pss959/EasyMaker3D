@@ -514,9 +514,9 @@ extern const Anglef   kMaxDiscWidgetScaleAngle;
 /// direction vector for grip hovering to be active.
 extern const Anglef   kMaxGripHoverDirAngle;
 
-/// How close coordinates need to be to zero to be considered zero when
-/// "cleaning" mesh points.
-extern const float    kMeshCleanTolerance;
+/// Precision used to "clean" mesh coordinates that are close to zero or other
+/// integers.
+extern const float    kMeshCleanPrecision;
 
 /// Minimum geometry size the ClipTool must leave along the clip direction.
 extern const float    kMinClippedSize;

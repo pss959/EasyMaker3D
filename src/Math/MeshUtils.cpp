@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <numeric>
-#include <unordered_set>
+#include <unordered_map>
 
 #include <ion/gfx/attributearray.h>
 #include <ion/gfx/bufferobject.h>
@@ -12,6 +12,7 @@
 
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
+#include "Math/Point3fMap.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
@@ -47,34 +48,16 @@ static TriMesh ModifyVertices_(
     return new_mesh;
 }
 
-/// Removes any degenerate triangles from the given TriMesh, in place.
-static void RemoveDegenerateTriangles_(TriMesh &mesh) {
+/// Returns the area of the i'th triangle in a TriMesh.
+static float GetTriangleArea_(const TriMesh &mesh, size_t i) {
     const size_t tri_count = mesh.GetTriangleCount();
+    ASSERT(i < tri_count);
 
-    // Construct a vector of new indices.
-    std::vector<GIndex> new_indices;
-    new_indices.reserve(mesh.indices.size());
+    const auto i0 = mesh.indices[3 * i + 0];
+    const auto i1 = mesh.indices[3 * i + 1];
+    const auto i2 = mesh.indices[3 * i + 2];
 
-    for (size_t i = 0; i < tri_count; ++i) {
-        const auto i0 = mesh.indices[3 * i + 0];
-        const auto i1 = mesh.indices[3 * i + 1];
-        const auto i2 = mesh.indices[3 * i + 2];
-        if (ComputeArea(mesh.points[i0],
-                        mesh.points[i1],
-                        mesh.points[i2]) > 0) {
-            new_indices.push_back(i0);
-            new_indices.push_back(i1);
-            new_indices.push_back(i2);
-        }
-    }
-
-    if (new_indices.size() < mesh.indices.size()) {
-        std::cerr << "XXXX Removed "
-                  << (mesh.indices.size() - new_indices.size()) << " indices\n";
-        mesh.indices = new_indices;
-        /// \todo Consider also removing unused points; have to reindex
-        /// triangles.
-    }
+    return ComputeArea(mesh.points[i0], mesh.points[i1], mesh.points[i2]);
 }
 
 // ----------------------------------------------------------------------------
@@ -118,17 +101,34 @@ void UnshareMeshVertices(TriMesh &mesh) {
 }
 
 void CleanMesh(TriMesh &mesh) {
-    auto clean_val = [](float &val){
-        if (std::abs(val) <= TK::kMeshCleanTolerance)
-            val = 0;
-    };
-    for (auto &p: mesh.points) {
-        clean_val(p[0]);
-        clean_val(p[1]);
-        clean_val(p[2]);
-    }
+    // First, use a Point3fMap to clean and uniquify points. Keep track of how
+    // old indices map to new ones.
+    Point3fMap point_map(TK::kMeshCleanPrecision);
+    std::vector<GIndex> index_map;
+    index_map.reserve(mesh.indices.size());
+    for (const auto &p: mesh.points)
+        index_map.push_back(point_map.Add(p));
 
-    RemoveDegenerateTriangles_(mesh);
+    // Replace the TriMesh contents, replacing the old indices with new ones.
+    mesh.points = point_map.GetPoints();
+    for (auto &index: mesh.indices)
+        index = index_map[index];
+
+    // Next, look for degenerate triangles.  Construct a vector of new indices
+    // without degenerate triangles.
+    const size_t tri_count = mesh.GetTriangleCount();
+    std::vector<GIndex> new_indices;
+    new_indices.reserve(mesh.indices.size());
+    for (size_t i = 0; i < tri_count; ++i) {
+        if (GetTriangleArea_(mesh, i) > 0) {
+            new_indices.push_back(mesh.indices[3 * i + 0]);
+            new_indices.push_back(mesh.indices[3 * i + 1]);
+            new_indices.push_back(mesh.indices[3 * i + 2]);
+        }
+    }
+    if (new_indices.size() < mesh.indices.size()) {
+        mesh.indices = new_indices;
+    }
 }
 
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,

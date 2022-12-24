@@ -6,8 +6,6 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
-#include "Debug/Dump3dv.h" // XXXX
-
 class BevelerTest : public TestBase {
   protected:
     // Returns a 2-point Bevel with optional scale and max_angle settings.

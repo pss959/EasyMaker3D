@@ -34,7 +34,8 @@ TriMesh CenterMesh(const TriMesh &mesh);
 void UnshareMeshVertices(TriMesh &mesh);
 
 /// "Cleans" vertices in a mesh if necessary by rounding values that are close
-/// to 0. This helps CGAL not have issues.
+/// to 0. Also removes degenerate triangles and unused vertex points. This
+/// helps CGAL not have issues.
 void CleanMesh(TriMesh &mesh);
 
 // ----------------------------------------------------------------------------
