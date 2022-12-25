@@ -19,7 +19,10 @@ limitations under the License.
 
 #include "ion/base/datacontainer.h"
 extern "C" {
-#include "third_party/libjpeg_turbo//jpeglib.h"
+// These need to be defined for libjpeg_turbo to compile correctly.
+#define BITS_IN_JSAMPLE 8
+#define JPEG_LIB_VERSION 80
+#include "third_party/libjpeg_turbo/jpeglib.h"
 }
 
 namespace ion {

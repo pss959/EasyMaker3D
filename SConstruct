@@ -437,7 +437,7 @@ else:
 # OpenVR libraries have slightly different subdirectories.
 if platform == 'windows':
     openvr_platform = 'win64'
-elif platform == 'darwin':
+elif platform == 'mac':
     openvr_platform = 'osx32'  # Actually works for both 32- and 64-bit.
 elif platform == 'linux':
     openvr_platform = 'linux64'
@@ -563,7 +563,15 @@ elif platform == 'linux' or platform == 'mac':
     if platform == 'linux':
       base_env.Append(CPPDEFINES = [('ION_PLATFORM_LINUX', '1')])
     else:
-      base_env.Append(CPPDEFINES = [('ION_PLATFORM_MAC',   '1')])
+      base_env.Replace(
+        # Mac needs to use g++ installed with brew.
+        CC  = '/usr/local/bin/gcc-12',
+        CXX = '/usr/local/bin/g++-12',
+      )
+      base_env.Append(
+        CPPDEFINES = [('ION_PLATFORM_MAC', '1')],
+        CPPPATH    = [ '/usr/local/include' ],  # For brew-installed libraries
+      )
     big_cflags = []
     run_program = ''
 
@@ -646,7 +654,7 @@ packages = [
     'jsoncpp',
     'libjpeg',
     'minizip',
-    'stb',
+    # 'stb',
     'tinyxml2',
     'zlib',
 ]

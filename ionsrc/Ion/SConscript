@@ -23,7 +23,6 @@ env.Replace(
     ],
     CPPDEFINES = [
         'ARCH_K8',
-        'HAVE_UNSIGNED_CHAR', 'HAVE_UNSIGNED_SHORT',  # For libjpeg_turbo.
         'OPENCTM_NO_CPP',
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
@@ -95,12 +94,23 @@ elif platform == 'linux' or platform == 'mac':
             ('ION_API', ''),
             ('ION_APIENTRY', ''),
         ],
+        CPPPATH = [ '/usr/local/include' ],  # For brew-installed libraries
         LIBS = ['dl', 'pthread'],
     )
     if platform == 'linux':
       env.Append(CPPDEFINES = [('ION_PLATFORM_LINUX', '1')])
     else:
-      env.Append(CPPDEFINES = [('ION_PLATFORM_MAC',   '1')])
+      env.Replace(
+        # Mac needs to use g++ installed with brew.
+        CC  = '/usr/local/bin/gcc-12',
+        CXX = '/usr/local/bin/g++-12',
+      )
+      env.Append(
+        CPPDEFINES = [
+          ('ION_PLATFORM_MAC',   '1'),
+          ('__has_feature', 'defined'),  # Mac uses some clang-specific stuff.
+        ]
+      )
     pkg_config_opts = ''
     packages = [
         'freetype2',
@@ -135,9 +145,11 @@ if mode == 'dbg':
 else:
     env.Append(
         CXXFLAGS   = common_flags + ['-O3'],
-        LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+        LINKFLAGS  = common_flags + ['-O3'],
         CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
     )
+    if platform != 'mac':
+        env.Append(LINKFLAGS  = ['-Wl,--strip-all'])
 
 package_str = ' '.join(packages)
 env.ParseConfig(f'pkg-config {pkg_config_opts} {package_str} --cflags --libs')
@@ -442,6 +454,9 @@ third_party_sources = [
 third_party_objects = [
     third_party_env.SharedObject(f'third_party/{source}')
     for source in third_party_sources]
+
+third_party_env.ParseConfig(
+  f'pkg-config {pkg_config_opts} {package_str} --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # Building targets.

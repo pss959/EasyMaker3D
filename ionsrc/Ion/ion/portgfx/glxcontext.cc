@@ -238,6 +238,7 @@ class GlxContext : public GlContext {
       return func;
     }
 
+#if ! defined(ION_PLATFORM_MAC)
     // These functions do not appear in core GL until 4.1.
     using std::strcmp;
     if (strcmp(proc_name, "glClearDepthf") == 0) {
@@ -262,6 +263,7 @@ class GlxContext : public GlContext {
         return reinterpret_cast<void*>(+kDepthRangeLambda);
       }
     }
+#endif
     return nullptr;
   }
   void SwapBuffers() override {

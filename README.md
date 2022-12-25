@@ -52,6 +52,16 @@ pip install -U \
     mkdocs_macros_plugin
 ```
 
+### Mac Setup
+
+brew install libjpeg minizip glfw3 jsoncpp stb tinyxml2 gcc boost cgal
+
+cp /usr/local/Cellar/jpeg/9e/lib/pkgconfig/libjpeg.pc /usr/local/lib/pkgconfig
+
+ brew install freeglut to try to get OpenGL to compile - seems to work.
+
+Installed "stats" with brew to get monitoring.
+
 ### Linux Device Setup
 
 For Oculus Quest 2, install ALVR (XXXX) and set it up.

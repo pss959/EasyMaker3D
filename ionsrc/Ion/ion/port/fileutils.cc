@@ -58,6 +58,11 @@ bool MakeSingleDirectory(const std::string& directory) {
   // Don't return false if directory already exists.
   return ::GetLastError() == ERROR_ALREADY_EXISTS;
 #elif !defined(ION_PLATFORM_NACL)
+
+#ifndef PATH_MAX   // Seems to be missing on Mac.
+#  define PATH_MAX 1024
+#endif
+
   if (directory.size() > PATH_MAX) {
     return false;
   }
