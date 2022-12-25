@@ -14,7 +14,6 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_mesh_processing/clip.h>
-#include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #include <CGAL/Polyhedron_3.h>
 
 // ----------------------------------------------------------------------------

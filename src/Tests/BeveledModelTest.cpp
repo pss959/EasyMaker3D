@@ -58,7 +58,7 @@ TEST_F(BeveledModelTest, ScaleChanges) {
     EXPECT_EQ(Vector3f(2, 3, 4), beveled->GetScale());
     EXPECT_EQ(Vector3f(5, 6, 7), box->GetScale());
     bounds = beveled->GetBounds();
-    EXPECT_EQ(Vector3f(10, 12, 14), bounds.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(10, 12, 14), bounds.GetSize());
     EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
 }
 

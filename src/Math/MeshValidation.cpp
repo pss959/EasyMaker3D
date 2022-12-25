@@ -6,6 +6,15 @@
 
 #define REPAIR_SELF_INTERSECTIONS 0
 #define REPORT_SELF_INTERSECTIONS 0
+#define STITCH_BORDERS            0
+
+#if STITCH_BORDERS
+#include <CGAL/Polygon_mesh_processing/stitch_borders.h>
+#endif
+
+#if REPAIR_SELF_INTERSECTIONS || REPORT_SELF_INTERSECTIONS
+#include <CGAL/Polygon_mesh_processing/self_intersections.h>
+#endif
 
 #if REPAIR_SELF_INTERSECTIONS
 static void RemoveSelfIntersections_(CPolyhedron &poly) {
@@ -104,14 +113,25 @@ MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh) {
         if (code == MeshValidityCode::kValid)
             return code;
 
-        /// \todo It turns out that the CGAL self-intersection repairing code
-        /// throws away lots of vertices and faces, which is bad for this
-        /// purpose. Revisit this if CGAL improves polyhedron repairing.
+#if STITCH_BORDERS
+        // See if stitching borders helps. This was needed before CleanMesh()
+        // removed duplicate vertices properly.
+        CGAL::Polygon_mesh_processing::stitch_borders(poly);
+        code = IsPolyValid_(poly);
+        if (code == MeshValidityCode::kValid)
+            return code;
+#endif
+
         else if (code == MeshValidityCode::kSelfIntersecting) {
 #if REPORT_SELF_INTERSECTIONS
             ReportSelfIntersections_(mesh, poly);
 #endif
 #if REPAIR_SELF_INTERSECTIONS
+            /// \todo It turns out that the CGAL self-intersection repairing
+            /// code throws away lots of vertices and faces, which is bad for
+            /// this purpose. Revisit this if CGAL improves polyhedron
+            /// repairing.
+
             // Try to repair and repeat.
             RemoveSelfIntersections_(poly);
             code = IsPolyValid_(poly);
