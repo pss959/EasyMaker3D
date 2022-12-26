@@ -368,7 +368,11 @@ std::unique_ptr<TimelineEvent> TraceRecorder::GetTimelineEvent(
 
   if (wire_id == CallTraceManager::kTimeRangeStartEvent) {
     event_name = GetStringArg(index, 1);
+#if ! defined(ION_PLATFORM_MAC_GCC)
+    // Mac/gcc libjsoncpp has undefined symbols because of some compiler
+    // mismatch.
     std::istringstream(GetStringArg(index, 2)) >> args;
+#endif
     return std::unique_ptr<TimelineEvent>(
         new TimelineRange(event_name, timestamp, 0, args));
   } else if (wire_id == CallTraceManager::kFrameStartEvent) {
@@ -451,8 +455,12 @@ void TraceRecorder::AddTraceToTimelineNode(TimelineNode* root) const {
     } else if (wire_id == CallTraceManager::kScopeAppendDataEvent) {
       const std::string arg_name = GetStringArg(index, 0);
       const std::string arg_value = GetStringArg(index, 1);
+#if ! defined(ION_PLATFORM_MAC_GCC)
+    // Mac/gcc libjsoncpp has undefined symbols because of some compiler
+    // mismatch.
       open_events.top()->GetArgs()[arg_name] = Json::objectValue;
       std::istringstream(arg_value) >> open_events.top()->GetArgs()[arg_name];
+#endif
     }
 
     const int num_args = CallTraceManager::GetNumArgsForEvent(wire_id);

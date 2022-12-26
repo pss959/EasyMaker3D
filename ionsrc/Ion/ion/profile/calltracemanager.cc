@@ -361,6 +361,10 @@ CallTraceManager::EventArgType CallTraceManager::GetArgType(
 }
 
 std::string CallTraceManager::SnapshotCallTraces() const {
+#if defined(ION_PLATFORM_MAC_GCC)
+  // Mac/gcc libjsoncpp has undefined symbols because of some compiler mismatch.
+  return std::string();
+#else
   base::BufferBuilder output;
 
   static const uint32 magic_number = 0xdeadbeef;
@@ -583,6 +587,7 @@ std::string CallTraceManager::SnapshotCallTraces() const {
   trace.AppendToBuffer(1, 0x2, &output);
 
   return output.Build();
+#endif
 }
 
 void CallTraceManager::WriteFile(const std::string& filename) const {

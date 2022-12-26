@@ -107,7 +107,8 @@ elif platform == 'linux' or platform == 'mac':
       )
       env.Append(
         CPPDEFINES = [
-          ('ION_PLATFORM_MAC',   '1'),
+          ('ION_PLATFORM_MAC',     '1'),
+          ('ION_PLATFORM_MAC_GCC', '1'),
           ('__has_feature', 'defined'),  # Mac uses some clang-specific stuff.
         ]
       )
@@ -121,6 +122,8 @@ elif platform == 'linux' or platform == 'mac':
         'tinyxml2',
         'zlib',
     ]
+    if platform == 'mac':
+        packages.append('GL')
 
 common_flags = [
     '--std=c++14',

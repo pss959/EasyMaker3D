@@ -18,7 +18,7 @@ limitations under the License.
 #include "ion/port/break.h"
 
 #if defined(ION_PLATFORM_LINUX) || defined(ION_PLATFORM_ANDROID) || \
-    defined(ION_GOOGLE_INTERNAL)
+    defined(ION_GOOGLE_INTERNAL) || defined (ION_PLATFORM_MAC_GCC)
 #include <fcntl.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -44,7 +44,7 @@ namespace ion {
 namespace port {
 
 #if defined(ION_PLATFORM_LINUX) || defined(ION_PLATFORM_ANDROID) || \
-    defined(ION_GOOGLE_INTERNAL)
+    defined(ION_GOOGLE_INTERNAL) || defined(ION_PLATFORM_MAC_GCC)
 
 bool IsDebuggerAttached() {
   // If current process is being ptrace()d, 'TracerPid' in /proc/self/status
@@ -123,7 +123,7 @@ void Break() {
   if (IsDebuggerAttached()) {
 #if defined(ION_PLATFORM_LINUX) || defined(ION_PLATFORM_ANDROID) || \
     defined(ION_PLATFORM_MAC) || defined(ION_PLATFORM_IOS) || \
-    defined(ION_GOOGLE_INTERNAL)
+    defined(ION_GOOGLE_INTERNAL) || defined(ION_PLATFORM_MAC_GCC)
     raise(SIGINT);
 #elif defined(ION_PLATFORM_WINDOWS)
     __debugbreak();

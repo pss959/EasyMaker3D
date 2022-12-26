@@ -419,6 +419,7 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
     // If position is close to test_pt in the indexed dimension, this updates
     // position in that dimension and updates min_dist with the new distance.
     auto check_val = [&](const Point3f &test_pt, int dim, float &min_dist){
+        ASSERT(dim >= 0 && dim <= 2);
         const float dist = std::fabs(position[dim] - test_pt[dim]);
         if (dist <= info.linear_precision && dist < min_dist) {
             position[dim] = test_pt[dim];

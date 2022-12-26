@@ -558,10 +558,13 @@ elif platform == 'linux' or platform == 'mac':
             ('ION_APIENTRY', ''),
             ('ION_PLATFORM_LINUX', '1'),
         ],
-        LIBS = ['GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm'],
+        LIBS = ['GL', 'dl', 'pthread', 'm'],
     )
     if platform == 'linux':
-      base_env.Append(CPPDEFINES = [('ION_PLATFORM_LINUX', '1')])
+      base_env.Append(
+        CPPDEFINES = [('ION_PLATFORM_LINUX', '1')],
+        LIBS = ['GLX', 'GLU'],
+      )
     else:
       base_env.Replace(
         # Mac needs to use g++ installed with brew.
@@ -587,6 +590,9 @@ common_flags = [
     '-Wno-strict-aliasing',     # Ion has issues with this.
 ]
 
+if platform == 'mac':
+    # CGAL/Boost needs these.
+    common_flags += ['-Wno-old-style-cast', '-Wno-deprecated-copy']
 if platform == 'windows':
     common_flags.append('-Wno-maybe-uninitialized')  # CGAL needs this.
 
@@ -616,7 +622,7 @@ dbg_env.Append(
 )
 opt_env.Append(
     CXXFLAGS   = common_flags + ['-O3'],
-    LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+    LINKFLAGS  = common_flags + ['-O3'],
     CPPDEFINES = [
         ('CHECK_GL_ERRORS',    'false'),
     ],
@@ -628,12 +634,16 @@ rel_env.Append(
         #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=56456
         '-Wno-array-bounds',
     ],
-    LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+    LINKFLAGS  = common_flags + ['-O3'],
     CPPDEFINES = [
         ('CHECK_GL_ERRORS',    'false'),
         ('RELEASE_BUILD',      'true'),
     ],
 )
+if platform != 'mac':
+    opt_env.Append(LINKFLAGS = ['-Wl,--strip-all'])
+    rel_env.Append(LINKFLAGS = ['-Wl,--strip-all'])
+
 # The release executable always runs from its own directory.
 rel_env.Replace(RPATH = ['.'])
 
@@ -650,10 +660,13 @@ mode_env.Append(
 
 packages = [
     'freetype2',
+    'gl',
     'glfw3',
+    'gmp',
     'jsoncpp',
     'libjpeg',
     'minizip',
+    'mpfr',
     # 'stb',
     'tinyxml2',
     'zlib',

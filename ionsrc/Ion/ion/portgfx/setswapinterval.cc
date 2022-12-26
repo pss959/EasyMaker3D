@@ -56,7 +56,7 @@ bool SetSwapInterval(int interval) {
   EGLDisplay display = eglGetCurrentDisplay();
   return display != EGL_NO_DISPLAY &&
       eglSwapInterval(display, interval) == EGL_TRUE;
-#elif defined(ION_PLATFORM_LINUX)
+#elif defined(ION_PLATFORM_LINUX) || defined(ION_PLATFORM_MAC_GCC)
   typedef int (ION_APIENTRY *SwapIntervalProc)(int interval);
   SwapIntervalProc vsync_func = reinterpret_cast<SwapIntervalProc>(
       gl_context->GetProcAddress("glXSwapIntervalSGI", 0));

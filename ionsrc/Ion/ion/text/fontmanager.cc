@@ -19,7 +19,8 @@ limitations under the License.
 
 #include <sstream>
 
-#if defined(ION_PLATFORM_MAC) || defined(ION_PLATFORM_IOS)
+#if (defined(ION_PLATFORM_MAC) && ! defined(ION_PLATFORM_MAC_GCC)) || \
+     defined(ION_PLATFORM_IOS)
 #define ION_FONT_CORE_TEXT
 #else
 #define ION_FONT_FREE_TYPE
