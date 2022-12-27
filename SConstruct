@@ -62,3 +62,11 @@ exports = {
 ion_env = envs['ion']
 ion_lib = SConscript('ionsrc/SConscript_ion', exports=['ion_env'],
                      variant_dir=f'{build_dir}/Ion', duplicate=False)
+
+# Build the application library and applications.
+lib_env = envs['lib']
+app_env = envs['app']
+(app_lib, apps) = SConscript('src/SConscript_src',
+                             exports=['app_env', 'app_dict',
+                                      'ion_lib', 'lib_env'],
+                             variant_dir=build_dir, duplicate=False)

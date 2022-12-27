@@ -57,6 +57,7 @@ else:
 base_env = Environment(
     tools = ['mingw'] if platform == 'windows' else ['default'],
 
+    MODE            = mode,
     PLATFORM        = platform,
     BUILD_DIR       = f'build/{mode}',
     SYS_INCLUDE_DIR = '/usr/include',
@@ -78,7 +79,7 @@ base_env.AddMethod(ParseConfig_, "AddPackages")
 # -----------------------------------------------------------------------------
 
 if platform == 'windows':
-    env.Append(
+    base_env.Append(
         CPPDEFINES = [
             'COMPILER_HAS_RVALUEREF',
             'NOGDI',                # Disables "ERROR" macro.
@@ -207,7 +208,7 @@ ion_env.Append(
 )
 
 # Add dependency packages.
-packages = [
+ion_packages = [
     'freetype2',
     'jsoncpp',
     'libjpeg',
@@ -216,7 +217,7 @@ packages = [
     'tinyxml2',
     'zlib',
 ]
-ion_env.AddPackages(packages)
+ion_env.AddPackages(ion_packages)
 
 # Platform-specific settings.
 if platform == 'windows':
@@ -247,8 +248,10 @@ lib_env = base_env.Clone(
     OPENVR_DIR    = '#submodules/openvr/bin/$OPENVR_SUBDIR',
     OPENVR_LIB    = '$OPENVR_DIR/${SHLIBPREFIX}openvr_api${SHLIBSUFFIX}',
 
-    ION_DIR       = '#ionsrc/Ion',
+    ION_DIR       = '#ionsrc',
+)
 
+lib_env.Append(
     CPPPATH = [
         '#/src',
         '$BUILD_DIR/include',  # Generated headers.
@@ -264,6 +267,7 @@ lib_env = base_env.Clone(
         '#/submodules/openvr/headers',
     ],
     CPPDEFINES = [
+        ('ION_API',       ''),
         ('RESOURCE_DIR',  QuoteDef_('./resources')),
         ('TEST_DATA_DIR', QuoteDef_(Dir('#/src/Tests/Data').abspath)),
     ],
@@ -317,6 +321,18 @@ elif platform == 'mac':
                     '-Wno-deprecated-copy'],
         LIBS = ['dl', 'pthread', 'm'],
     )
+
+# Add dependency packages.
+lib_packages = [
+    'freetype2',
+    'jsoncpp',
+    'libjpeg',
+    'libpng',
+    'minizip',
+    'tinyxml2',
+    'zlib',
+]
+lib_env.AddPackages(lib_packages)
 
 # -----------------------------------------------------------------------------
 # Application environment.
