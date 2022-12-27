@@ -1,6 +1,11 @@
 from os import environ
 
-Import('reg_env', 'cov_env', 'main_lib', 'run_program', 'cov_lib_objects')
+Import('reg_env', 'cov_env', 'main_lib')
+
+# XXXX
+PROGRAM_RUNNER = (
+  f'c:/msys64/usr/bin/bash.exe bin/runwinprogram.bash {mode}')
+
 
 # These are relative to the current ( 'src/tests') subdirectory.
 test_sources = [
@@ -130,8 +135,10 @@ test_args = ' '.join([
   ('--gtest_filter="%s"' % test_filter) if test_filter else '',
 ])
 
-reg_test_env.Alias('RunRegTests', reg_test, f'{run_program} $SOURCE {test_args}')
-cov_test_env.Alias('RunCovTests', cov_test, f'{run_program} $SOURCE {test_args}')
+reg_test_env.Alias('RunRegTests', reg_test,
+                   f'$PROGRAM_RUNNER $SOURCE {test_args}')
+cov_test_env.Alias('RunCovTests', cov_test,
+                   f'$PROGRAM_RUNNER $SOURCE {test_args}')
 
 # Make sure test run targets are always considered out of date.
 reg_test_env.AlwaysBuild('RunRegTests')
@@ -140,6 +147,8 @@ cov_test_env.AlwaysBuild('RunCovTests')
 # -----------------------------------------------------------------------------
 # Generating coverage results.
 # -----------------------------------------------------------------------------
+
+cov_lib_objects = []  # XXXX
 
 # Use all coverage-enabled object files.
 cov_objects = cov_lib_objects + cov_test_objects

@@ -1,0 +1,390 @@
+# =============================================================================
+# Sets up and returns SCons environments in a dictionary named 'envs' with the
+# following keys:
+#   'app':   For building main applications.
+#   'base':  Base environment for all other environments.
+#   'cov':   For building unit tests with coverage enabled.
+#   'ion':   For building ionshared library.
+#   'lib':   For building the main application library.
+#   'test':  For building unit tests.
+#
+# Each environment is set up properly for the platform and the given mode.
+# =============================================================================
+
+Import('mode')
+
+# -----------------------------------------------------------------------------
+# Helper functions.
+# -----------------------------------------------------------------------------
+
+def GetOpenVRSubdir_(platform):
+    openvr_subdirs = {
+        'linux'   : 'linux64',
+        'mac'     : 'osx32',    # Actually works for both 32- and 64-bit.
+        'windows' : 'win64',
+    }
+    return openvr_subdirs[platform]
+
+# Convenience to add double quotes to a CPPDEFINE.
+def QuoteDef_(s):
+    return '"\\"' + s + '\\""'
+
+# Builder that runs ParseConfig().
+def ParseConfig_(env, packages):
+    opts = '--static' if env['PLATFORM'] == 'windows' else ''
+    pkgs = ' '.join(packages)
+    env.ParseConfig(f'pkg-config {opts} {pkgs} --cflags --libs')
+
+# -----------------------------------------------------------------------------
+# Platform setup.
+# -----------------------------------------------------------------------------
+
+# Get the OS platform from SCons.
+os_platform = str(Platform())
+
+# Set the platform and openvr_arch variables.
+if os_platform.startswith('win'):
+    platform = 'windows'
+elif os_platform == 'darwin':
+    platform = 'mac'
+else:
+    platform = 'linux'
+
+# -----------------------------------------------------------------------------
+# Base environment setup.
+# -----------------------------------------------------------------------------
+
+base_env = Environment(
+    tools = ['mingw'] if platform == 'windows' else ['default'],
+
+    PLATFORM        = platform,
+    BUILD_DIR       = f'build/{mode}',
+    SYS_INCLUDE_DIR = '/usr/include',
+
+    CPPDEFINES = [
+        # Stuff for Ion.
+        'ARCH_K8',
+        'OPENCTM_NO_CPP',
+        ('ION_ARCH_X86_64', '1'),
+        ('ION_NO_RTTI',     '0'),
+    ]
+)
+
+# Allow ParseConfig() to be called easily for packages.
+base_env.AddMethod(ParseConfig_, "AddPackages")
+
+# -----------------------------------------------------------------------------
+# Add common platform-specific items to base_env.
+# -----------------------------------------------------------------------------
+
+if platform == 'windows':
+    env.Append(
+        CPPDEFINES = [
+            'COMPILER_HAS_RVALUEREF',
+            'NOGDI',                # Disables "ERROR" macro.
+            'NOMINMAX',
+            'PRAGMA_SUPPORTED',
+            'UNICODE=1',
+            'WIN32_LEAN_AND_MEAN=1',
+            '_CRT_SECURE_NO_DEPRECATE',
+            '_USE_MATH_DEFINES',    # Enables M_PI.
+            '_WIN32',
+            ('ION_APIENTRY', 'APIENTRY'),
+            ('ION_PLATFORM_WINDOWS', '1'),
+            ('OS_WINDOWS', 'OS_WINDOWS'),
+        ],
+        # Make sure MSYS2 commands (such as cygpath) are available.
+        ENV = {'PATH' : environ['PATH']},
+    )
+
+elif platform == 'linux':
+    base_env.Append(
+        CPPDEFINES = [
+            ('ION_APIENTRY',       ''),
+            ('ION_PLATFORM_LINUX', '1')
+        ],
+    )
+
+elif platform == 'mac':
+    # Mac needs to use gcc/g++ installed with brew.
+    base_env.Replace(
+        CC  = '/usr/local/bin/gcc-12',
+        CXX = '/usr/local/bin/g++-12',
+        SYS_INCLUDE_DIR = '/usr/local/include',
+    )
+    base_env.Append(
+        CPPDEFINES = [
+            ('ION_APIENTRY',         ''),
+            ('ION_PLATFORM_MAC',     '1'),
+            ('ION_PLATFORM_MAC_GCC', '1'),
+            ('__has_feature', 'defined'),  # Mac uses some clang-specific stuff.
+        ],
+        CPPPATH = [ '/usr/local/include' ],  # For brew libraries.
+    )
+
+# -----------------------------------------------------------------------------
+# Add mode-specific items to base_env.
+# -----------------------------------------------------------------------------
+
+# Specialize for debug, optimized, or release modes.
+if mode == 'dbg':
+    base_env.Append(
+        CXXFLAGS   = ['-g'],
+        LINKFLAGS  = ['-g'],
+        CPPDEFINES = [
+            ('ION_CHECK_GL_ERRORS',   'true'),
+            ('DEBUG',                 'true'),
+            ('ENABLE_DASSERT',        'true'),
+            ('ENABLE_DEBUG_FEATURES', 'true'),
+            ('ION_DEBUG',             'true'),
+            '_DEBUG',
+            # This allows valgrind to work on the debug executables.
+            'CGAL_DISABLE_ROUNDING_MATH_CHECK',
+        ],
+    )
+
+elif mode == 'opt':
+    base_env.Append(
+        CXXFLAGS   = ['-O3'],
+        LINKFLAGS  = ['-O3'],
+        CPPDEFINES = [
+            ('ION_CHECK_GL_ERRORS',   'false'),
+            ('ENABLE_DEBUG_FEATURES', 'true'),
+        ],
+    )
+    if platform != 'mac':
+        base_env.Append(LINKFLAGS = ['-Wl,--strip-all'])
+
+elif mode == 'rel':
+    base_env.Append(
+        ENABLE_DEBUG_FEATURES = False,
+        CXXFLAGS   = [
+            '-O3',
+            # Works around a GCC bug with some inlined code; see
+            #  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=56456
+            '-Wno-array-bounds',
+        ],
+        LINKFLAGS  = ['-O3'],
+        CPPDEFINES = [
+            ('ION_CHECK_GL_ERRORS',   'false'),
+            ('ENABLE_DEBUG_FEATURES', 'false'),
+            ('RELEASE_BUILD',         'true'),
+        ],
+    )
+    # The release executable always runs from its own directory.
+    base_env.Replace(RPATH = ['.'])
+
+# -----------------------------------------------------------------------------
+# Ion shared library environment.
+# -----------------------------------------------------------------------------
+
+ion_env = base_env.Clone(
+    COMMON_FLAGS = [
+        '--std=c++14',
+        '-Wall',
+        '-Wno-strict-aliasing',    # Ion has issues with this.
+        '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
+        '-Wno-unused-result',      # Disable warnings for fread() calls.
+        '-Wno-array-bounds',       # Disable warning in tracinghelper.cc.
+    ]
+)
+
+ion_env.Append(
+    CPPPATH = [
+        '$SYS_INCLUDE_DIR/jsoncpp',  # Use JSONCPP from system.
+        '#/ionsrc',
+        '#/ionsrc/ion/port/override',
+        '#/ionsrc/third_party/google',
+        '#/ionsrc/third_party/absl',
+        '#/ionsrc/third_party/google',
+        '#/ionsrc/third_party/image_compression',
+    ],
+    CPPDEFINES = [
+        ('JSON_INC', 'jsoncpp/json'),
+    ],
+    CXXFLAGS  = '$COMMON_FLAGS',
+    LINKFLAGS = '$COMMON_FLAGS',
+)
+
+# Add dependency packages.
+packages = [
+    'freetype2',
+    'jsoncpp',
+    'libjpeg',
+    'libpng',
+    'minizip',
+    'tinyxml2',
+    'zlib',
+]
+ion_env.AddPackages(packages)
+
+# Platform-specific settings.
+if platform == 'windows':
+    ion_env.Append(
+        CPPDEFINES = [('ION_API', '__declspec(dllexport)')],
+        LINKFLAGS  = ['-static'],   # Use static versions when possible.
+        LIBS       = ['gdi32', 'imagehlp', 'opengl32', 'user32', 'Ws2_32'],
+        # There is a dependency cycle between freetype2 and harfbuzz.
+        # Apparently people just work around it. Since LIBS has unique names,
+        # can't add anything twice there, so just add freetype again this way:
+        _LIBFLAGS  = ['-lfreetype'],
+    )
+else:
+    ion_env.Append(
+        CPPDEFINES = [('ION_API', '')],
+        LIBS       = ['dl', 'pthread'],
+    )
+    if platform == 'mac':
+        ion_env.AddPackages(['GL'])
+
+# -----------------------------------------------------------------------------
+# Main application library environment.
+# -----------------------------------------------------------------------------
+
+lib_env = base_env.Clone(
+    # OpenVR access.
+    OPENVR_SUBDIR = GetOpenVRSubdir_(platform),
+    OPENVR_DIR    = '#submodules/openvr/bin/$OPENVR_SUBDIR',
+    OPENVR_LIB    = '$OPENVR_DIR/${SHLIBPREFIX}openvr_api${SHLIBSUFFIX}',
+
+    ION_DIR       = '#ionsrc/Ion',
+
+    CPPPATH = [
+        '#/src',
+        '$BUILD_DIR/include',  # Generated headers.
+        '$ION_DIR',
+        '$ION_DIR/ion/port/override',
+        '$ION_DIR/third_party',         # For stblib.
+        '$ION_DIR/third_party/google',
+        '$ION_DIR/third_party/absl',
+        '$ION_DIR/third_party/google',
+        '$ION_DIR/third_party/image_compression',
+        '#/submodules/docopt.cpp',
+        '#/submodules/magic_enum/include',
+        '#/submodules/openvr/headers',
+    ],
+    CPPDEFINES = [
+        ('RESOURCE_DIR',  QuoteDef_('./resources')),
+        ('TEST_DATA_DIR', QuoteDef_(Dir('#/src/Tests/Data').abspath)),
+    ],
+    LIBPATH = [
+        '$BUILD_DIR',
+        '$OPENVR_DIR',
+    ],
+    LIBS = [
+        'openvr_api',
+        'ionshared',
+        'mpfr', 'gmp',   # Required for CGAL.
+    ],
+    COMMON_FLAGS = [
+        '--std=c++17',
+        '-Wall',
+        '-Werror',
+        '-Wextra',
+        '-Wmissing-declarations',
+        '-Wold-style-cast',
+        '-Wuninitialized',
+        '-Wno-unused-parameter',    # This causes problems in Ion headers:
+        '-Wno-strict-aliasing',     # Ion has issues with this.
+    ],
+    CXXFLAGS  = '$COMMON_FLAGS',
+    LINKFLAGS = '$COMMON_FLAGS',
+)
+
+# Add mode-specific items.
+if mode == 'rel':
+    # The release executable always runs from its own directory.
+    lib_env.Replace(RPATH = ['.'])
+else:
+    lib_env.Append(
+        RPATH = [
+            Dir('$BUILD_DIR').abspath,
+            Dir('$OPENVR_DIR').abspath,
+        ],
+    )
+
+# Add platform-specific items.
+if platform == 'windows':
+    lib_env.Append(
+        CXXFLAGS = ['-Wno-maybe-uninitialized'],  # Needed for CGAL.
+        LIBS     = ['DbgHelp'],                   # Needed for stack traces.
+    )
+elif platform == 'linux':
+    lib_env.Append(LIBS = ['GLX', 'GLU', 'GL', 'dl', 'pthread', 'm'])
+elif platform == 'mac':
+    lib_env.Append(
+        CXXFLAGS = ['-Wno-old-style-cast',  # Needed for CGAL.
+                    '-Wno-deprecated-copy'],
+        LIBS = ['dl', 'pthread', 'm'],
+    )
+
+# -----------------------------------------------------------------------------
+# Application environment.
+# -----------------------------------------------------------------------------
+
+app_env = lib_env.Clone()
+
+app_env.Append(
+    LIBPATH = ['$BUILD_DIR/docopt.cpp'],
+    LIBS    = ['docopt'],
+)
+
+# Avoid opening a cmd window with the application on Windows (Release only -
+# otherwise no logging output can appear!)
+if platform == 'windows' and mode == "rel":
+    app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
+
+# -----------------------------------------------------------------------------
+# Unit test environments (with/without coverage).
+# -----------------------------------------------------------------------------
+
+test_env = lib_env.Clone()
+
+cov_env = lib_env.Clone(
+    # Use a different suffix for compiled sources so that they can be in the
+    # same directory as regular compiled sources.
+    SHOBJSUFFIX = '_cov.os',
+)
+
+cov_env.Append(
+    CXXFLAGS  = ['--coverage' ],
+    LINKFLAGS = ['--coverage' ],
+)
+
+# Workaround for Windows: MSYS2 + SCons = some ridiculous length restriction
+# for a command line. This causes library linking to fail.
+# This fix is adapted from:
+#   https://github.com/SCons/scons/wiki/LongCmdLinesOnWin32
+if platform == 'windows':
+    def winspawn(sh, escape, cmd, args, env):
+        from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW, Popen, PIPE
+        newargs = ' '.join(args[1:])
+        cmdline = cmd + " " + newargs
+        startupinfo = STARTUPINFO()
+        startupinfo.dwFlags |= STARTF_USESHOWWINDOW
+        proc = Popen(cmdline, stdin=PIPE, stdout=PIPE,
+                     stderr=PIPE, startupinfo=startupinfo,
+                     shell=False, env=env, text=True)
+        data, err = proc.communicate()
+        rv = proc.wait()
+        if rv:
+            print(err)
+        return rv
+    for env in [test_env, cov_env]:
+        env['ORIG_SPAWN'] = env['SPAWN']  # Save for tests to use.
+        env['SPAWN']      = winspawn
+
+# -----------------------------------------------------------------------------
+# Mode-specific environment setup.
+# -----------------------------------------------------------------------------
+
+envs = {
+    'app'  : app_env,
+    'base' : base_env,
+    'cov'  : cov_env,
+    'ion'  : ion_env,
+    'lib'  : lib_env,
+    'test' : test_env,
+}
+
+Return('envs')

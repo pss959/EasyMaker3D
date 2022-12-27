@@ -1,0 +1,4 @@
+Import('brief', 'build_dir', 'base_env')
+
+SConscript('SConscript_docopt',     ['brief', 'build_dir', 'base_env'])
+SConscript('SConscript_googletest', ['brief', 'build_dir'])

@@ -1,0 +1,339 @@
+Import('ion_env')
+
+# -----------------------------------------------------------------------------
+# Environment setup.
+# -----------------------------------------------------------------------------
+
+src_dir = Dir('.').srcnode().abspath
+
+# Creating source files from asset definition files.
+zipasset_builder = Builder(
+    action = (f'python3 {src_dir}/ion/dev/zipasset_generator.py' +
+              ' $SOURCE . $TARGET'),
+    suffix='.cc', src_suffix='.iad')
+
+ion_env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
+
+# -----------------------------------------------------------------------------
+# Helper functions.
+# -----------------------------------------------------------------------------
+
+# This is used to collect sources more easily.
+def MakeTuple_(subdir, names=[], headers=[], sources=[], assets=[]):
+    return (subdir, names, headers, sources, assets)
+
+# -----------------------------------------------------------------------------
+# Source files. A "name" means there is both a .h header and a .cc source file.
+# -----------------------------------------------------------------------------
+
+# Platform-specific lists:
+if ion_env['PLATFORM'] == 'windows':
+    portgfx_names   = [ 'window_win32' ]
+    portgfx_sources = [ 'wglcontext.cc' ]
+else:
+    portgfx_names   = []
+    portgfx_sources = [ 'glxcontext.cc' ]
+
+# Each entry is a tuple: (subdir, names, headers, sources).
+ion_files = [
+    MakeTuple_(subdir='analytics',
+               names=[
+                   'benchmark',
+                   'benchmarkutils',
+                   'gpuperformance',
+               ],
+               headers=['discrepancy.h']),
+    MakeTuple_(subdir='base',
+               names=[
+                   'allocatable',
+                   'allocationmanager',
+                   'allocator',
+                   'bufferbuilder',
+                   'calllist',
+                   'datacontainer',
+                   'datetime',
+                   'fullallocationtracker',
+                   'invalid',
+                   'logchecker',
+                   'logging',
+                   'memoryzipstream',
+                   'notifier',
+                   'readwritelock',
+                   'setting',
+                   'settingmanager',
+                   'spinmutex',
+                   'staticsafedeclare',
+                   'stringtable',
+                   'stringutils',
+                   'threadspawner',
+                   'utf8iterator',
+                   'workerpool',
+                   'zipassetmanager',
+               ],
+               headers=[
+                   'allocationsizetracker.h',
+                   'allocationtracker.h',
+                   'argcount.h',
+                   'array2.h',
+                   'circularbuffer.h',
+                   'enumhelper.h',
+                   'functioncall.h',
+                   'indexmap.h',
+                   'lockguards.h',
+                   'nulllogentrywriter.h',
+                   'once.h',
+                   'referent.h',
+                   'scalarsequence.h',
+                   'scopedallocation.h',
+                   'serialize.h',
+                   'shareable.h',
+                   'sharedptr.h',
+                   'signal.h',
+                   'static_assert.h',
+                   'threadlocalobject.h',
+                   'type_structs.h',
+                   'variant.h',
+                   'varianttyperesolver.h',
+                   'vectordatacontainer.h',
+                   'weakreferent.h',
+                   'zipassetmanagermacros.h',
+               ]),
+    MakeTuple_(subdir='gfx',
+               names=[
+                   'attribute',
+                   'attributearray',
+                   'bufferobject',
+                   'computeprogram',
+                   'cubemaptexture',
+                   'framebufferobject',
+                   'graphicsmanager',
+                   'image',
+                   'indexbuffer',
+                   'node',
+                   'renderer',
+                   'resourceholder',
+                   'resourcemanager',
+                   'sampler',
+                   'shader',
+                   'shaderinput',
+                   'shaderinputregistry',
+                   'shaderprogram',
+                   'shape',
+                   'statetable',
+                   'texture',
+                   'tracecallextractor',
+                   'tracinghelper',
+                   'tracingstream',
+                   'uniform',
+                   'uniformblock',
+                   'uniformholder',
+                   'updatestatetable',
+               ],
+               headers=[
+                   'glfunctiontypes.h',
+                   'graphicsmanagermacrodefs.h',
+                   'graphicsmanagermacroundefs.h',
+                   'openglobjects.h',
+                   'transformfeedback.h',
+               ],
+               sources=['tracinghelperenums.cc']),
+    MakeTuple_(subdir='gfxprofile',
+               names=['gpuprofiler']),
+    MakeTuple_(subdir='gfxutils',
+               names=[
+                   'buffertoattributebinder',
+                   'frame',
+                   'printer',
+                   'shadermanager',
+                   'shadersourcecomposer',
+                   'shapeutils',
+               ],
+               headers=['resourcecallback.h']),
+    MakeTuple_(subdir='image',
+               names=[
+                   'conversionutils',
+                   'exportjpeg',
+                   'ninepatch',
+                   'renderutils',
+               ]),
+    MakeTuple_(subdir='math',
+               names=[
+                   'matrixutils',
+                   'rotation',
+                   'transformutils',
+               ],
+               headers=[
+                   'angle.h',
+                   'angleutils.h',
+                   'fieldofview.h',
+                   'matrix.h',
+                   'range.h',
+                   'rangeutils.h',
+                   'utils.h',
+                   'vector.h',
+                   'vectorutils.h',
+               ]),
+    MakeTuple_(subdir='port',
+               names=[
+                   'barrier',
+                   'break',
+                   'environment',
+                   'fileutils',
+                   'logging',
+                   'memory',
+                   'memorymappedfile',
+                   'semaphore',
+                   'stacktrace',
+                   'string',
+                   'threadutils',
+                   'timer',
+               ],
+               headers=[
+                   'align.h',
+                   'atomic.h',
+                   'macros.h',
+                   'nullptr.h',
+                   'static_assert.h',
+                   'trace.h',
+                   'useresult.h',
+               ],
+               sources=[
+                   'logging_cerr.cc',
+               ]),
+    MakeTuple_(subdir='portgfx',
+               names=portgfx_names + [
+                   'glcontext',
+                   'isextensionsupported',
+                   'setswapinterval'
+               ],
+               headers=[
+                   'glenums.h',
+                   'glheaders.h'
+               ],
+               sources=portgfx_sources,
+               ),
+    MakeTuple_(subdir='profile',
+               names=[
+                   'calltracemanager',
+                   'profiling',
+                   'timeline',
+                   'timelineevent',
+                   'timelinenode',
+                   'tracerecorder',
+                   'vsyncprofiler',
+               ],
+               headers=[
+                   'timelineframe.h',
+                   'timelinemetric.h',
+                   'timelinerange.h',
+                   'timelinescope.h',
+                   'timelinesearch.h',
+                   'timelinethread.h',
+               ]),
+    MakeTuple_(subdir='remote',
+               names=[
+                   'calltracehandler',
+                   'httpserver',
+                   'nodegraphhandler',
+                   'remoteserver',
+                   'resourcehandler',
+                   'settinghandler',
+                   'shaderhandler',
+                   'tracinghandler',
+               ],
+               assets=[
+                   'res/calltrace.iad',
+                   'res/geturi_cc.iad',
+                   'res/nodegraph.iad',
+                   'res/resources.iad',
+                   'res/root.iad',
+                   'res/settings.iad',
+                   'res/shader_editor.iad',
+                   'res/tracing.iad',
+               ]),
+    MakeTuple_(subdir='text',
+               names=[
+                   'basicbuilder',
+                   'binpacker',
+                   'builder',
+                   'font',
+                   'fontimage',
+                   'fontmanager',
+                   'freetypefont',
+                   'freetypefontutils',
+                   'icuutils',
+                   'layout',
+                   'outlinebuilder',
+                   'sdfutils',
+               ],
+               headers=[
+                   'fontmacros.h',
+               ]),
+]
+
+# Special case for third_party code that is built inside Ion.
+third_party_env = ion_env.Clone(
+    CPPDEFINES = [
+        ('IS_LITTLE_ENDIAN', '1'),
+
+        # For mongoose:
+        'USE_WEBSOCKET',
+        'NO_SSL',
+        'DEBUG_TRACE',
+    ],
+    CPPPATH = [
+        '.',
+        'third_party/absl',
+        'third_party/google',
+        'third_party/image_compression',
+        'third_party/openctm/tools/rply',
+        'third_party/openctm/lib',
+    ],
+)
+third_party_sources = [
+    'lodepng/lodepng.cpp',
+    'mongoose/mongoose.c',
+    'omaha/omaha/base/security/b64.c',
+    'openctm/tools/3ds.cpp',
+    'openctm/tools/common.cpp',
+    'openctm/tools/dae.cpp',
+    'openctm/tools/lwo.cpp',
+    'openctm/tools/mesh.cpp',
+    'openctm/tools/obj.cpp',
+    'openctm/tools/off.cpp',
+    'openctm/tools/ply.cpp',
+    'openctm/tools/rply/rply.c',
+    'openctm/tools/stl.cpp',
+    'unzip/unzip.c',
+    'image_compression/image_compression/internal/compressor4x4_helper.cc',
+    'image_compression/image_compression/internal/dxtc_compressor.cc',
+    'image_compression/image_compression/internal/dxtc_const_color_table.cc',
+    'image_compression/image_compression/internal/dxtc_to_etc_transcoder.cc',
+    'image_compression/image_compression/internal/etc_compressor.cc',
+    'image_compression/image_compression/internal/pixel4x4.cc',
+    'image_compression/image_compression/internal/pvrtc_compressor.cc',
+    '../util/stb_image.c',
+    '../util/stb_image_write.c',
+]
+
+# -----------------------------------------------------------------------------
+# Building targets.
+# -----------------------------------------------------------------------------
+
+third_party_objects = [
+    third_party_env.SharedObject(f'third_party/{source}')
+    for source in third_party_sources]
+
+# Concatenate all source files.
+ion_sources = []
+for (subdir, names, headers, sources, assets) in ion_files:
+    ion_sources += [f'ion/{subdir}/{name}.cc' for name in names]
+    ion_sources += [f'ion/{subdir}/{source}' for source in sources]
+    for asset in assets:
+        source = f'{src_dir}/ion/{subdir}/{asset}'
+        target = f'ion/{subdir}/{asset}'.replace('.iad', '.cc')
+        ion_sources.append(ion_env.ZipAsset(source=source, target=target))
+
+lib = ion_env.SharedLibrary('ionshared', ion_sources + third_party_objects)
+
+Return('lib')

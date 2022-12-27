@@ -3,9 +3,9 @@
 # -----------------------------------------------------------------------------
 
 from brief import Brief
-Import('brief', 'build_dir', 'platform_env')
+Import('brief', 'build_dir', 'base_env')
 
-env = platform_env.Clone()
+env = base_env.Clone()
 
 env.Replace(
     BUILD_DIR = f'#{build_dir}/docopt.cpp',  # Directory for build products.
