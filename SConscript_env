@@ -1,13 +1,11 @@
 # =============================================================================
 # Sets up and returns SCons environments in a dictionary named 'envs' with the
 # following keys:
-#   'base':      Base environment for all other environments.
-#   'ion':       For building ionshared library.
-#   'lib':       For building the main application library (no coverage).
-#   'cov':       For building unit tests with coverage enabled.
-#   'app':       For building main applications.
-#   'reg_test':  For building unit tests without coverage.
-#   'cov_test':  For building unit tests with coverage.
+#   'base':  Base environment for all other environments.
+#   'ion':   For building ionshared library.
+#   'lib':   For building the main application library.
+#   'app':   For building main applications.
+#   'test':  For building unit tests.
 #
 # Each environment is set up properly for the platform and the given mode.
 # =============================================================================
@@ -133,8 +131,8 @@ elif platform == 'mac':
 # Add mode-specific items to base_env.
 # -----------------------------------------------------------------------------
 
-# Specialize for debug, optimized, or release modes.
-if mode == 'dbg':
+# Specialize for debug, coverage, optimized, or release modes.
+if mode in ['cov', 'dbg']:
     base_env.Append(
         CXXFLAGS   = ['-g'],
         LINKFLAGS  = ['-g'],
@@ -149,6 +147,11 @@ if mode == 'dbg':
             'CGAL_DISABLE_ROUNDING_MATH_CHECK',
         ],
     )
+    if mode == 'cov':
+        base_env.Append(
+            CXXFLAGS  = ['--coverage' ],
+            LINKFLAGS = ['--coverage' ],
+        )
 
 elif mode == 'opt':
     base_env.Append(
@@ -342,21 +345,6 @@ lib_packages = [
 lib_env.AddPackages(lib_packages)
 
 # -----------------------------------------------------------------------------
-# Coverage-enabled application library environment.
-# -----------------------------------------------------------------------------
-
-cov_env = lib_env.Clone(
-    # Use a different suffix for compiled sources so that they can be in the
-    # same directory as regular compiled sources.
-    SHOBJSUFFIX = '_cov.os',
-)
-
-cov_env.Append(
-    CXXFLAGS  = ['--coverage' ],
-    LINKFLAGS = ['--coverage' ],
-)
-
-# -----------------------------------------------------------------------------
 # Workaround for Windows: MSYS2 + SCons = some ridiculous length restriction
 # for a command line. This causes library linking to fail.
 # This fix is adapted from:
@@ -378,9 +366,8 @@ if platform == 'windows':
         if rv:
             print(err)
         return rv
-    for env in [lib_env, cov_env]:
-        env['ORIG_SPAWN'] = env['SPAWN']  # Save for tests to use.
-        env['SPAWN']      = winspawn
+    lib_env['ORIG_SPAWN'] = env['SPAWN']  # Save for tests to use.
+    lib_env['SPAWN']      = winspawn
 
 # -----------------------------------------------------------------------------
 # Application environment.
@@ -399,41 +386,37 @@ if platform == 'windows' and mode == "rel":
     app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
 
 # -----------------------------------------------------------------------------
-# Unit test environments (with and without coverage).
+# Unit test environment.
 # -----------------------------------------------------------------------------
 
-reg_test_env = lib_env.Clone()
-cov_test_env = cov_env.Clone()
+test_env = lib_env.Clone()
 
-# Add necessary testing infrastructure.
-for env in [reg_test_env, cov_test_env]:
-    # Make the build relative to the top directory.
-    env.Append(
-        CPPPATH = ['#submodules/googletest/googletest/include'],
-        LIBPATH = [
-            '../Ion',
-            '../googletest',
-            '../docopt.cpp',
-        ],
-        LIBS  = ['docopt', 'gtest', 'pthread'],
-        RPATH = [Dir(env.subst('$BUILD_DIR/googletest')).abspath],
-    )
-    # On Windows, restore the regular spawn function so test output is visible.
-    if 'ORIG_SPAWN' in env:
-        env['SPAWN'] = env['ORIG_SPAWN']
+# Make the build relative to the top directory.
+test_env.Append(
+    CPPPATH = ['#submodules/googletest/googletest/include'],
+    LIBPATH = [
+        '../Ion',
+        '../googletest',
+        '../docopt.cpp',
+    ],
+    LIBS  = ['docopt', 'gtest', 'pthread'],
+    RPATH = [Dir(test_env.subst('$BUILD_DIR/googletest')).abspath],
+)
+
+# On Windows, restore the regular spawn function so test output is visible.
+if platform == 'windows':
+    test_env['SPAWN'] = test_env['ORIG_SPAWN']
 
 # -----------------------------------------------------------------------------
 # Mode-specific environment setup.
 # -----------------------------------------------------------------------------
 
 envs = {
-    'app'      : app_env,
-    'base'     : base_env,
-    'cov'      : cov_env,
-    'cov_test' : cov_test_env,
-    'ion'      : ion_env,
-    'lib'      : lib_env,
-    'reg_test' : reg_test_env,
+    'app'  : app_env,
+    'base' : base_env,
+    'ion'  : ion_env,
+    'lib'  : lib_env,
+    'test' : test_env,
 }
 
 Return('envs')

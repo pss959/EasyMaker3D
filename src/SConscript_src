@@ -1,6 +1,6 @@
 from itertools import chain
 
-Import('app_dict', 'cov_env', 'lib_env')
+Import('app_dict', 'lib_env')
 
 # -----------------------------------------------------------------------------
 # Helper functions.
@@ -452,10 +452,11 @@ if lib_env['MODE'] != 'rel':
         'Panels/TestPanel.cpp',
     ]
 
-# Build regular and coverage-enabled versions of the library.
-lib_objects = [BuildObject_(lib_env, source) for source in lib_sources]
-cov_objects = [BuildObject_(cov_env, source) for source in lib_sources]
-app_lib = lib_env.SharedLibrary('AppLib',     lib_objects)
-cov_lib = lib_env.SharedLibrary('AppLib_cov', cov_objects)
+# -----------------------------------------------------------------------------
+# Building.
+# -----------------------------------------------------------------------------
 
-Return('app_lib', 'cov_lib')
+lib_objects = [BuildObject_(lib_env, source) for source in lib_sources]
+app_lib = lib_env.SharedLibrary('AppLib', lib_objects)
+
+Return('app_lib')
