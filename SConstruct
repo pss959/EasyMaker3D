@@ -11,6 +11,7 @@ app_dict = {
     'VERSION_STRING'      : '0.0.1',
     'PUBLIC_DOC_BASE_URL' : 'https://pss959.github.io/MakerVR-dist/',
 }
+doc_build_dir = 'build'
 
 AddOption('--mode', dest='mode', type='string', nargs=1, action='store',
           default='opt', metavar='dbg|opt|rel|cov',
@@ -72,3 +73,22 @@ test_env.Append(LIBS = [app_lib])
 SConscript('src/Tests/SConscript_tests', exports=['test_env'],
            variant_dir=f'{build_dir}/Tests')
 
+# Build documentation and menu icons only on Linux. (Building on different
+# platforms creates slightly different image files, causing git thrashing. No
+# need for that once everything is built once.)
+if base_env['PLATFORM'] == 'linux':
+    # Applications depend on the icons.
+    app_env.Alias('Icons', SConscript('resources/SConscript_resources'))
+    app_env.Depends('Apps', 'Icons')
+
+    # Internal (Doxygen-generated) web documentation.
+    base_env.Alias('InternalDoc',
+                   SConscript('InternalDoc/SConscript_dox',
+                              exports=['app_dict', 'doc_build_dir']))
+    # Public (Sphinx-generated) web documentation. This requires the
+    # 'snapimage' application.
+    snapimage = apps['snapimage'][0]
+    base_env.Alias('PublicDoc',
+                   SConscript('PublicDoc/SConscript_doc',
+                              exports=['app_dict', 'doc_build_dir',
+                                       'snapimage']))

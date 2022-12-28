@@ -34,7 +34,7 @@ class Beveler_ {
         bool is_reversed = false;
 
         /// Set to true if this edge is beveled, based on the angle formed by
-        /// its adjacent faces and the #max_angle field of the Bevel.
+        /// its adjacent faces and the #Bevel::max_angle field.
         bool is_beveled = false;
 
         /// Set to true if this edge abuts another beveled edge across an
@@ -42,11 +42,11 @@ class Beveler_ {
         bool is_abutting = false;
 
         /// Stores the indices of the PolyMeshBuilder vertices created to apply
-        /// the profile to the edge at its #v0 vertex, ordered counterclockwise
-        /// around the vertex. If the bevel profile has N points, there will be
-        /// exactly N indices stored per edge. (This is done for convenience,
-        /// even though the last point is always the same as the first point of
-        /// the next edge around the vertex).
+        /// the profile to the edge at its #PolyMesh::Edge::v0 vertex, ordered
+        /// counterclockwise around the vertex. If the bevel profile has N
+        /// points, there will be exactly N indices stored per edge. (This is
+        /// done for convenience, even though the last point is always the same
+        /// as the first point of the next edge around the vertex).
         std::vector<GIndex> indices;
     };
 
@@ -100,8 +100,8 @@ class Beveler_ {
     /// edge.
     void CopyStartIndices_();
 
-    /// Sets the #is_abutting member of the EdgeData_ instance for each edge
-    /// that abuts another edge.
+    /// Sets the #EdgeData_::is_abutting member for each edge that abuts
+    /// another edge.
     void MarkAbuttingEdges_();
 
     /// Adds faces joining the given border of a face of the original PolyMesh.

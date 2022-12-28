@@ -1,18 +1,19 @@
 # -----------------------------------------------------------------------------
-# scons configuration for public documentation using Sphinx.
-#
-# Generates public documentation using Jekyll in the "PublicDoc/site"
+# Generates public documentation using Sphinx in the "PublicDoc/site"
 # subdirectory of the build directory.
 # -----------------------------------------------------------------------------
 
 from os      import environ, walk
 from os.path import basename, join, splitext
 
-Import('snapimage', 'doc_build_dir',
-       'APP_NAME', 'SESSION_SUFFIX', 'VERSION_STRING')
+Import('app_dict', 'doc_build_dir', 'snapimage')
+
+# -----------------------------------------------------------------------------
+# Helper functions.
+# -----------------------------------------------------------------------------
 
 # Recursive function to find all files under a root directory.
-def FindAllSources(root_dir):
+def FindAllSources_(root_dir):
     sources = []
     for root, dirnames, filenames in walk(root_dir, topdown=True):
         # Skip directories beginning with '.'.
@@ -34,9 +35,9 @@ env = Environment(
 # Pass values through to sphinx-build via environment variables.
 env.Append(
     ENV = {
-        'PROJECT' : APP_NAME,
-        'VERSION' : VERSION_STRING,
-        'SUFFIX'  : SESSION_SUFFIX,
+        'PROJECT' : app_dict['APP_NAME'],
+        'VERSION' : app_dict['VERSION_STRING'],
+        'SUFFIX'  : app_dict['SESSION_SUFFIX'],
     },
 )
 
@@ -277,7 +278,7 @@ env.Alias('Images', [snaps, anns])
 # Documentation generation.
 # -----------------------------------------------------------------------------
 
-sources = FindAllSources('docs')
+sources    = FindAllSources_('docs')
 output_dir = env.Dir('$OUTPUT_DIR').abspath
 
 sphinx_args = ' '.join([
@@ -288,7 +289,8 @@ sphinx_args = ' '.join([
 
 doc = env.Command('$OUTPUT_DIR/index.html',
                   sources + [cs_output] + snaps + anns,
-                  ['echo = Building public doc for version: $VERSION_STRING',
+                  ['echo = Building public doc for version: ' +
+                   app_dict['VERSION_STRING'],
                    f'sphinx-build {sphinx_args} docs {output_dir}'],
                   chdir=f'{root_dir}/PublicDoc')
 Return('doc')
