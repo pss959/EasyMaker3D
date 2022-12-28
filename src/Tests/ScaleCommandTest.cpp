@@ -38,7 +38,7 @@ class ScaleCommandTest : public AppTestBase {
         const auto torus = rm.GetChildModel(rm.GetChildModelCount() - 1);
         const float hh = MS * TK::kTorusInnerRadius;
         EXPECT_EQ(Vector3f(MS, MS, MS), torus->GetScale());
-        EXPECT_EQ(Vector3f(0,  hh,  0), torus->GetTranslation());
+        EXPECT_VECS_CLOSE(Vector3f(0,  hh,  0), torus->GetTranslation());
         return torus;
     }
 
@@ -97,8 +97,8 @@ TEST_F(ScaleCommandTest, BaseSymmetric) {
     ApplyScaleCommand(torus, ScaleCommand::Mode::kBaseSymmetric,
                       Vector3f(2, 3, 4));
     EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
-    EXPECT_EQ(Vector3f(0, 3 * MS * TK::kTorusInnerRadius, 0),
-              torus.GetTranslation());
+    EXPECT_VECS_CLOSE(Vector3f(0, 3 * MS * TK::kTorusInnerRadius, 0),
+                      torus.GetTranslation());
 }
 
 TEST_F(ScaleCommandTest, BaseSymmetricRotated) {

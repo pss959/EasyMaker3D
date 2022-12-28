@@ -110,6 +110,9 @@ class Object {
     /// Returns true if any field was set since construction.
     bool WasAnyFieldSet() const;
 
+    /// Converts to a string for debugging.
+    std::string ToString() const { return GetDesc(); }
+
   protected:
     /// The constructor is protected to make this abstract.
     Object() {}

@@ -10,6 +10,7 @@
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 // Set this to 1 to enable CNefPolyhedron validation.
 #define DO_NEF_CHECK 0
@@ -96,6 +97,7 @@ static TriMesh ApplyCSG_(const std::vector<TriMesh> &meshes,
     // Apply the operation to a CPolyhedron for the remaining meshes.
     for (size_t i = 1; i < mesh_count; ++i) {
         CPolyhedron poly2 = TriMeshToCGALPolyhedron(meshes[i]);
+        KLOG('C', "  Applying operation to mesh " << i);
         if (operation == MeshCombiningOperation::kCSGUnion)
             CGAL::Polygon_mesh_processing::corefine_and_compute_union(
                 poly, poly2, poly);
@@ -164,6 +166,8 @@ static TriMesh ApplyMinkowskiSum_(const std::vector<TriMesh> &meshes) {
 
 TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
                       MeshCombiningOperation operation) {
+    KLOG('C', "Combining " << meshes.size() << " meshes with "
+         << Util::EnumName(operation));
     switch (operation) {
       case MeshCombiningOperation::kConcatenate:
         return Concatenate_(meshes);
@@ -187,6 +191,7 @@ TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane) {
     // Clip it by the plane.
     const Vector4f coeffs = plane.GetCoefficients();
 
+    KLOG('C', "Clipping TriMesh with " << plane.ToString());
     CGAL::Polygon_mesh_processing::clip(
         poly, CPlane3(coeffs[0], coeffs[1], coeffs[2], coeffs[3]),
         CGAL::parameters::clip_volume(true));

@@ -8,6 +8,7 @@
 //   b:   Scene graph bounds computation.
 //   B:   Model mesh building and invalidation.
 //   c:   Scene graph object construction and destruction.
+//   C:   Mesh combining/clipping.
 //   d:   Mouse drag positions.
 //   D:   Feedback activation and deactivation.
 //   e:   Events and event handling.

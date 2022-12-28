@@ -67,6 +67,7 @@ test_sources = [
     'WriteSTLTest.cpp',
 
     # Session tests:
+    'SessionTests/CSGSessionTest.cpp',
     'SessionTests/ClipSessionTest.cpp',
     'SessionTests/CopyBeveledSessionTest.cpp',
     'SessionTests/EmptySessionTest.cpp',

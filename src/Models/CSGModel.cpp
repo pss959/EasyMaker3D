@@ -2,6 +2,10 @@
 
 #include "Math/MeshCombining.h"
 #include "Math/MeshUtils.h"
+#include "Util/Enum.h"
+#include "Util/General.h"
+#include "Util/KLog.h"
+#include "Util/String.h"
 
 void CSGModel::AddFields() {
     AddModelField(operation_.Init("operation", CSGOperation::kUnion));
@@ -16,6 +20,13 @@ void CSGModel::SetOperation(CSGOperation op) {
 
 TriMesh CSGModel::CombineMeshes(const std::vector<TriMesh> &meshes) {
     ASSERT(meshes.size() >= 2U);
+    KLOG('C', "CSGModel " << GetName() << " applying "
+         << Util::EnumName(operation_.GetValue()) << " to "
+         << Util::JoinItems(
+             Util::ConvertVector<std::string, ModelPtr>(
+                 GetOperandModels(),
+                 [](const ModelPtr &p){ return p->ToString(); })));
+
     MeshCombiningOperation op;
     switch (operation_) {
       case CSGOperation::kUnion:
