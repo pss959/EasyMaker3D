@@ -13,7 +13,7 @@ app_dict = {
 }
 
 AddOption('--mode', dest='mode', type='string', nargs=1, action='store',
-          default='dbg', metavar='dbg|opt|rel',
+          default='opt', metavar='dbg|opt|rel',
           help='optimized/debug/release mode')
 AddOption('--brief', dest='brief', action='store_true',
           default='True', help='Shortened vs. full output')
@@ -56,11 +56,14 @@ ion_lib = SConscript('ionsrc/SConscript_ion', exports=['ion_env'],
 # Build submodules.
 SConscript('submodules/SConscript_submodules', exports=['base_env'])
 
-# Build the application library.
+# Build the application library, regular and coverage-enabled.
 lib_env = envs['lib']
+cov_env = envs['cov']
 lib_env.Append(LIBS = [ion_lib])
-app_lib = SConscript('src/SConscript_src', exports=['app_dict', 'lib_env'],
-                     variant_dir=build_dir, duplicate=False)
+cov_env.Append(LIBS = [ion_lib])
+(app_lib, cov_lib) = SConscript('src/SConscript_src',
+                                exports=['app_dict', 'cov_env', 'lib_env'],
+                                variant_dir=build_dir, duplicate=False)
 
 # Build the applications. 'apps' is a dictionary mapping app name to executable.
 app_env = envs['app']
@@ -69,7 +72,12 @@ apps = SConscript('src/Apps/SConscript_apps', exports=['app_dict', 'app_env'],
                   variant_dir=f'{build_dir}/Apps', duplicate=False)
 app_env.Alias('Apps', apps.values())
 
-# Build tests.
-#SConscript('src/Tests/SConscript',  exports['tests'],
-#           variant_dir=f'{build_dir}/Tests')
+# Build tests with and without coverage enabled.
+reg_test_env = envs['reg_test']
+cov_test_env = envs['cov_test']
+reg_test_env.Append(LIBS = [app_lib])
+cov_test_env.Append(LIBS = [cov_lib])
+SConscript('src/Tests/SConscript_tests',
+           exports=['reg_test_env', 'cov_test_env'],
+           variant_dir=f'{build_dir}/Tests')
 

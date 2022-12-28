@@ -1,13 +1,15 @@
 from os import environ
 
-Import('reg_env', 'cov_env', 'main_lib')
+Import('reg_test_env', 'cov_test_env')
 
-# XXXX
-PROGRAM_RUNNER = (
-  f'c:/msys64/usr/bin/bash.exe bin/runwinprogram.bash {mode}')
+# On Windows, have to use a bash script to run anything (to pick up shared
+# libraries).
+if reg_test_env['PLATFORM'] == 'windows':
+    mode = reg_test_env['MODE']
+    run_program = (f'c:/msys64/usr/bin/bash.exe bin/runwinprogram.bash {mode}')
+else:
+    run_program = ''
 
-
-# These are relative to the current ( 'src/tests') subdirectory.
 test_sources = [
     'AppTestBase.cpp',
     'AssertTest.cpp',
@@ -80,40 +82,13 @@ test_sources = [
 # Building tests.
 # -----------------------------------------------------------------------------
 
-# Create two test environments with all the regular environment variables.
-reg_test_env = reg_env.Clone(ENV = environ)
-cov_test_env = cov_env.Clone(ENV = environ)
-
-# Add the regular or coverage-enabled main library.
-reg_test_env.Append(LIBS = [main_lib])
-cov_test_env.Append(LIBS = [f'{main_lib}_cov'])
-
-# Add necessary testing infrastructure.
-for env in [reg_test_env, cov_test_env]:
-    # Make the build relative to the top directory.
-    env.Replace(BUILD_DIR = env.subst('#$BUILD_DIR'))
-    env.Append(
-        CPPPATH = ['#submodules/googletest/googletest/include'],
-        LIBPATH = [
-            '$BUILD_DIR',
-            '$BUILD_DIR/googletest',
-            '$BUILD_DIR/docopt.cpp',
-        ],
-        LIBS    = ['docopt', 'gtest', 'pthread'],
-        RPATH   = [Dir(env.subst('$BUILD_DIR/googletest')).abspath],
-    )
-    # On Windows, restore the regular spawn function so test output is visible.
-    if 'ORIG_SPAWN' in env:
-        env['SPAWN'] = env['ORIG_SPAWN']
-
 # Build test object files for both environments.
 def BuildTests(env, test_app_name):
     defines  = env['CPPDEFINES'] + [('IN_UNIT_TEST', 1)]
     cpppaths = env['CPPPATH'] + ['#/src/Tests/']
-    sources  = [f'$BUILD_DIR/Tests/{source}' for source in test_sources]
     objects  = [env.SharedObject(source=source, CPPDEFINES=defines,
                                  CPPPATH=cpppaths)
-                for source in sources]
+                for source in test_sources]
 
     # Build all unit tests into a single program.
     return (objects, env.Program(f'$BUILD_DIR/Tests/{test_app_name}',
@@ -122,8 +97,8 @@ def BuildTests(env, test_app_name):
 (reg_test_objects, reg_test) = BuildTests(reg_test_env, 'RegUnitTest')
 (cov_test_objects, cov_test) = BuildTests(cov_test_env, 'CovUnitTest')
 
-reg_env.Alias('RegTests', reg_test)
-cov_env.Alias('CovTests', cov_test)
+reg_test_env.Alias('RegTests', reg_test)
+cov_test_env.Alias('CovTests', cov_test)
 
 # -----------------------------------------------------------------------------
 # Running tests.
@@ -169,8 +144,9 @@ lcov_args2   = f'--remove {lcov_file1} {rm_patterns} --output-file {lcov_file2}'
 genhtml_args = f'--output-directory coverage/html {lcov_file2}'
 
 gen_coverage = cov_test_env.Command(
-    '$BUILD_DIR/coverage/index.html', cov_test,
-    [   # Run the test.
+    'coverage/index.html', cov_test,
+    [
+        # Run the test.
         f'$SOURCE {test_args}',
         # Generate coverage .
         'mkdir -p $BUILD_DIR/coverage',
@@ -178,6 +154,7 @@ gen_coverage = cov_test_env.Command(
         # Generate HTML from the results .
         f'cd $BUILD_DIR ; genhtml {genhtml_args}',
         ('echo === Coverage results in ' +
-         Dir('$BUILD_DIR/coverage/html/index.html').abspath)])
+         Dir('$BUILD_DIR/coverage/html/index.html').abspath)
+    ])
 
-env.Alias('Coverage', gen_coverage)
+cov_test_env.Alias('Coverage', gen_coverage)
