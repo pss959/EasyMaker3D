@@ -1,6 +1,6 @@
 from itertools import chain
 
-Import('app_env', 'app_dict', 'ion_lib', 'lib_env')
+Import('app_dict', 'lib_env')
 
 # -----------------------------------------------------------------------------
 # Helper functions.
@@ -453,8 +453,6 @@ if lib_env['MODE'] != 'rel':
     ]
 
 lib_objects = [BuildObject_(lib_env, source) for source in lib_sources]
-app_lib = lib_env.SharedLibrary('AppLib', lib_objects, LIBS=[ion_lib])
+app_lib = lib_env.SharedLibrary('AppLib', lib_objects)
 
-apps = []  # XXXX
-
-Return('app_lib', 'apps')
+Return('app_lib')

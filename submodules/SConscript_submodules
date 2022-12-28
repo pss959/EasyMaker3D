@@ -1,4 +1,7 @@
-Import('brief', 'build_dir', 'base_env')
+Import('base_env')
 
-SConscript('SConscript_docopt',     ['brief', 'build_dir', 'base_env'])
-SConscript('SConscript_googletest', ['brief', 'build_dir'])
+SConscript('SConscript_docopt', exports=['base_env'],
+           variant_dir=f'#{base_env["BUILD_DIR"]}/docopt.cpp', duplicate=False)
+
+SConscript('SConscript_googletest', exports=['base_env'],
+           variant_dir=f'#{base_env["BUILD_DIR"]}/googletest', duplicate=False)

@@ -29,6 +29,11 @@ def GetOpenVRSubdir_(platform):
 def QuoteDef_(s):
     return '"\\"' + s + '\\""'
 
+# Convenience to get the absolute path for a directory from an SCons
+# environment.
+def AbsPath_(env, path):
+    return Dir(env.subst(path)).abspath
+
 # Builder that runs ParseConfig().
 def ParseConfig_(env, packages):
     opts = '--static' if env['PLATFORM'] == 'windows' else ''
@@ -172,8 +177,6 @@ elif mode == 'rel':
             ('RELEASE_BUILD',         'true'),
         ],
     )
-    # The release executable always runs from its own directory.
-    base_env.Replace(RPATH = ['.'])
 
 # -----------------------------------------------------------------------------
 # Ion shared library environment.
@@ -272,13 +275,12 @@ lib_env.Append(
         ('TEST_DATA_DIR', QuoteDef_(Dir('#/src/Tests/Data').abspath)),
     ],
     LIBPATH = [
-        '$BUILD_DIR',
+        'Ion',
         '$OPENVR_DIR',
     ],
     LIBS = [
         'openvr_api',
         'ionshared',
-        'mpfr', 'gmp',   # Required for CGAL.
     ],
     COMMON_FLAGS = [
         '--std=c++17',
@@ -302,10 +304,12 @@ if mode == 'rel':
 else:
     lib_env.Append(
         RPATH = [
-            Dir('$BUILD_DIR').abspath,
-            Dir('$OPENVR_DIR').abspath,
+            AbsPath_(lib_env, '$BUILD_DIR'),
+            AbsPath_(lib_env, '$BUILD_DIR/Ion'),
+            AbsPath_(lib_env, '$OPENVR_DIR'),
         ],
     )
+    print(f'XXXX RP={lib_env["RPATH"]}')
 
 # Add platform-specific items.
 if platform == 'windows':
@@ -325,10 +329,13 @@ elif platform == 'mac':
 # Add dependency packages.
 lib_packages = [
     'freetype2',
+    'gl',
+    'glfw3',
     'jsoncpp',
     'libjpeg',
     'libpng',
     'minizip',
+    'mpfr',
     'tinyxml2',
     'zlib',
 ]
@@ -341,7 +348,7 @@ lib_env.AddPackages(lib_packages)
 app_env = lib_env.Clone()
 
 app_env.Append(
-    LIBPATH = ['$BUILD_DIR/docopt.cpp'],
+    LIBPATH = ['../Ion', '../docopt.cpp'],
     LIBS    = ['docopt'],
 )
 

@@ -2,11 +2,11 @@
 # Builds the Googletest (GTest) library.
 # -----------------------------------------------------------------------------
 
-from brief import Brief
-Import('brief', 'build_dir')
+Import('base_env')
 
-env = Environment(
-    BUILD_DIR = f'#{build_dir}/googletest',  # Directory for build products.
+env = base_env.Clone()
+
+env.Replace(
     CPPDEFINES = [('GTEST_HAS_PTHREAD', '1')],
     CPPPATH    = [
         '#submodules/googletest/googletest',
@@ -22,13 +22,7 @@ env = Environment(
         '-Wno-missing-field-initializers',
     ],
 )
-if brief:
-    Brief(env)
 
-env.VariantDir("$BUILD_DIR", 'googletest', duplicate = 0)
-
-env.Library('$BUILD_DIR/libgtest',
-            '$BUILD_DIR/googletest/src/gtest-all.cc')
-env.Library('$BUILD_DIR/libgtest_main',
-            '$BUILD_DIR/googletest/src/gtest_main.cc')
+env.Library('libgtest',      'googletest/googletest/src/gtest-all.cc')
+env.Library('libgtest_main', 'googletest/googletest/src/gtest_main.cc')
 

@@ -48,25 +48,28 @@ build_dir = base_env.subst('$BUILD_DIR')
 # Building.
 # -----------------------------------------------------------------------------
 
-# Variables that are exported to various SConscript files.
-exports = {
-    'submodules'   : ['brief', 'build_dir', 'platform_env'],
-    'tests'        : ['reg_env', 'cov_env', 'main_lib', 'run_program',
-                      'cov_lib_objects'],
-    'internal_doc' : ['doc_build_dir', 'APP_NAME', 'VERSION_STRING'],
-    'public_doc'   : ['doc_build_dir', 'snapimage',
-                      'APP_NAME', 'SESSION_SUFFIX', 'VERSION_STRING'],
-}
-
 # Build the Ion library.
 ion_env = envs['ion']
 ion_lib = SConscript('ionsrc/SConscript_ion', exports=['ion_env'],
                      variant_dir=f'{build_dir}/Ion', duplicate=False)
 
-# Build the application library and applications.
+# Build submodules.
+SConscript('submodules/SConscript_submodules', exports=['base_env'])
+
+# Build the application library.
 lib_env = envs['lib']
+lib_env.Append(LIBS = [ion_lib])
+app_lib = SConscript('src/SConscript_src', exports=['app_dict', 'lib_env'],
+                     variant_dir=build_dir, duplicate=False)
+
+# Build the applications. 'apps' is a dictionary mapping app name to executable.
 app_env = envs['app']
-(app_lib, apps) = SConscript('src/SConscript_src',
-                             exports=['app_env', 'app_dict',
-                                      'ion_lib', 'lib_env'],
-                             variant_dir=build_dir, duplicate=False)
+app_env.Append(LIBS = [app_lib, ion_lib])
+apps = SConscript('src/Apps/SConscript_apps', exports=['app_dict', 'app_env'],
+                  variant_dir=f'{build_dir}/Apps', duplicate=False)
+app_env.Alias('Apps', apps.values())
+
+# Build tests.
+#SConscript('src/Tests/SConscript',  exports['tests'],
+#           variant_dir=f'{build_dir}/Tests')
+

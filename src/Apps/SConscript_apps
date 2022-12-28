@@ -1,0 +1,21 @@
+Import('app_dict', 'app_env')
+
+main_app_name = app_dict['APP_NAME']
+
+# Build the applications. The doc-related apps build only on Linux.
+app_names = [main_app_name, 'nodeviewer', 'printtypes']
+if app_env['PLATFORM'] == 'linux':
+    app_names += ['createcheatsheet', 'snapimage']
+
+apps_extra_sources = [
+    '../App/Args.cpp',
+    '../App/SnapScript.cpp',
+]
+
+# Return a dictionary mapping app name to executable.
+apps = {}
+for app_name in app_names:
+    apps[app_name] = app_env.Program(
+        app_name, [f'{app_name}.cpp'] + apps_extra_sources)
+
+Return('apps')
