@@ -23,7 +23,8 @@ SettingsManager::SettingsManager() {
 
 void SettingsManager::SetSettings(const Settings &new_settings) {
     settings_->CopyFrom(new_settings);
-    WriteSettings_();
+    if (write_settings_)
+        WriteSettings_();
     if (change_func_)
         change_func_(new_settings);
 }

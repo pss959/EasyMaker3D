@@ -26,7 +26,10 @@ SessionManager::SessionManager(const ActionManagerPtr &action_manager,
     ASSERT(selection_manager_);
 
     original_session_state_ = Parser::Registry::CreateObject<SessionState>();
+    ChangePreviousPath(previous_path);
+}
 
+void SessionManager::ChangePreviousPath(const FilePath &previous_path) {
     previous_session_name_ = GetSessionNameFromPath_(previous_path);
 }
 

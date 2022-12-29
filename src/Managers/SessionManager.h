@@ -42,6 +42,9 @@ class SessionManager {
                    const SelectionManagerPtr &selection_manager,
                    const FilePath &previous_path);
 
+    /// Changes the path used to display the previous session name.
+    void ChangePreviousPath(const FilePath &previous_path);
+
     /// Returns flags indicating how the current session has been modified.
     Util::Flags<Modification> GetModifications() const;
 

@@ -17,6 +17,7 @@
 #include "Handlers/Handler.h"
 #include "Items/Board.h"
 #include "Items/Controller.h"
+#include "Items/Settings.h"
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/PanelManager.h"
@@ -324,6 +325,9 @@ bool SnapshotApp_::Init(const Options &options) {
     window_size_ = GetWindowSize();
     GetTestContext(test_context_);
 
+    // Do NOT write out settings that change because of a script.
+    test_context_.settings_manager->SetWriteFlag(false);
+
     // Turn off controllers until they are specifically added.
     test_context_.scene_context->left_controller->SetEnabled(false);
     test_context_.scene_context->right_controller->SetEnabled(false);
@@ -357,6 +361,9 @@ bool SnapshotApp_::Init(const Options &options) {
                   << path.ToString() << "\n";
         return false;
     }
+    // Tell the SessionManager to update its previous path.
+    test_context_.session_manager->ChangePreviousPath(
+        test_context_.settings_manager->GetSettings().GetLastSessionPath());
 
     return true;
 }
