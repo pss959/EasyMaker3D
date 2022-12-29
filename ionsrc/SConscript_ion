@@ -290,6 +290,8 @@ third_party_env = ion_env.Clone(
         'third_party/openctm/lib',
     ],
 )
+third_party_env.AddPackages(['tinyxml2'])
+
 third_party_sources = [
     'lodepng/lodepng.cpp',
     'mongoose/mongoose.c',

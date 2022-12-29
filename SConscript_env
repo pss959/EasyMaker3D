@@ -28,16 +28,20 @@ def GetOpenVRSubdir_(platform):
 def QuoteDef_(s):
     return '"\\"' + s + '\\""'
 
-# Convenience to get the absolute path for a directory from an SCons
-# environment.
-def AbsPath_(env, path):
-    return Dir(env.subst(path)).abspath
-
 # Builder that runs ParseConfig().
 def ParseConfig_(env, packages):
     opts = '--static' if env['PLATFORM'] == 'windows' else ''
     pkgs = ' '.join(packages)
     env.ParseConfig(f'pkg-config {opts} {pkgs} --cflags --libs')
+
+# Adds an RPATH directory to the environment. Mac linker has to be different
+# for some reason.
+def AddRpath_(env, path, make_abs=False):
+    full_path = Dir(env.subst(path)).abspath if make_abs else path
+    if env['PLATFORM'] == 'mac':
+        env.Append(LDFLAGS = f'-rpath {full_path}')
+    else:
+        env.Append(RPATH = [full_path])
 
 # -----------------------------------------------------------------------------
 # Platform setup.
@@ -304,15 +308,11 @@ lib_env.Append(
 # Add mode-specific items.
 if mode == 'rel':
     # The release executable always runs from its own directory.
-    lib_env.Replace(RPATH = ['.'])
+    AddRpath_(lib_env, '.')
 else:
-    lib_env.Append(
-        RPATH = [
-            AbsPath_(lib_env, '$BUILD_DIR'),
-            AbsPath_(lib_env, '$BUILD_DIR/Ion'),
-            AbsPath_(lib_env, '$OPENVR_DIR'),
-        ],
-    )
+    AddRpath_(lib_env, '$BUILD_DIR',     make_abs=True)
+    AddRpath_(lib_env, '$BUILD_DIR/Ion', make_abs=True)
+    AddRpath_(lib_env, '$OPENVR_DIR',    make_abs=True)
 
 # Add platform-specific items.
 if platform == 'windows':
@@ -400,8 +400,8 @@ test_env.Append(
         '../docopt.cpp',
     ],
     LIBS  = ['docopt', 'gtest', 'pthread'],
-    RPATH = [Dir(test_env.subst('$BUILD_DIR/googletest')).abspath],
 )
+AddRpath_(test_env, Dir(test_env.subst('$BUILD_DIR/googletest')).abspath)
 
 # On Windows, restore the regular spawn function so test output is visible.
 if platform == 'windows':
