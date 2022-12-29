@@ -34,7 +34,7 @@ TEST(UTime, SecondsSince) {
 
 TEST(UTime, ToString) {
     // The undefined time differs per platform.
-#if defined(ION_PLATFORM_WINDOWS)
+#if defined(ION_PLATFORM_WINDOWS) || defined(ION_PLATFORM_MAC_GCC)
     const std::string ts = UTime().ToString();
     EXPECT_TRUE(ts == "Fri Dec 31 15:59:59 2173" ||
                 ts == "Fri Dec 31 16:00:00 2173");
