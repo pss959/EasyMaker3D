@@ -39,7 +39,8 @@ def ParseConfig_(env, packages):
 def AddRpath_(env, path, make_abs=False):
     full_path = Dir(env.subst(path)).abspath if make_abs else path
     if env['PLATFORM'] == 'mac':
-        env.Append(LDFLAGS = f'-rpath {full_path}')
+        env.Append(LINKFLAGS   = f'-rpath {full_path}')
+        env.Append(SHLINKFLAGS = f'-rpath {full_path}')
     else:
         env.Append(RPATH = [full_path])
 
@@ -334,6 +335,7 @@ lib_packages = [
     'freetype2',
     'gl',
     'glfw3',
+    'gmp',
     'jsoncpp',
     'libjpeg',
     'libpng',
