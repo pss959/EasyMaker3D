@@ -49,7 +49,7 @@ build_dir = base_env.subst('$BUILD_DIR')
 # Build the Ion library.
 ion_env = envs['ion']
 ion_lib = SConscript('ionsrc/SConscript_ion', exports=['ion_env'],
-                     variant_dir=f'{build_dir}/Ion', duplicate=False)
+                     variant_dir=f'{build_dir}/ionsrc', duplicate=False)
 
 # Build submodules.
 SConscript('submodules/SConscript_submodules', exports=['base_env'])

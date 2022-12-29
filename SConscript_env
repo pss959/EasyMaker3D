@@ -67,7 +67,9 @@ base_env = Environment(
 
     MODE            = mode,
     PLATFORM        = platform,
+
     BUILD_DIR       = f'build/{mode}',
+    ION_DIR         = '#/ionsrc',
     SYS_INCLUDE_DIR = '/usr/include',
 
     CPPDEFINES = [
@@ -204,12 +206,12 @@ ion_env = base_env.Clone(
 ion_env.Append(
     CPPPATH = [
         '$SYS_INCLUDE_DIR/jsoncpp',  # Use JSONCPP from system.
-        '#/ionsrc',
-        '#/ionsrc/ion/port/override',
-        '#/ionsrc/third_party/google',
-        '#/ionsrc/third_party/absl',
-        '#/ionsrc/third_party/google',
-        '#/ionsrc/third_party/image_compression',
+        '$ION_DIR',
+        '$ION_DIR/ion/port/override',
+        '$ION_DIR/third_party/google',
+        '$ION_DIR/third_party/absl',
+        '$ION_DIR/third_party/google',
+        '$ION_DIR/third_party/image_compression',
     ],
     CPPDEFINES = [
         ('JSON_INC', 'jsoncpp/json'),
@@ -256,10 +258,8 @@ else:
 lib_env = base_env.Clone(
     # OpenVR access.
     OPENVR_SUBDIR = GetOpenVRSubdir_(platform),
-    OPENVR_DIR    = '#submodules/openvr/bin/$OPENVR_SUBDIR',
+    OPENVR_DIR    = '#/submodules/openvr/bin/$OPENVR_SUBDIR',
     OPENVR_LIB    = '$OPENVR_DIR/${SHLIBPREFIX}openvr_api${SHLIBSUFFIX}',
-
-    ION_DIR       = '#ionsrc',
 )
 
 lib_env.Append(
@@ -283,7 +283,7 @@ lib_env.Append(
         ('TEST_DATA_DIR', QuoteDef_(Dir('#/src/Tests/Data').abspath)),
     ],
     LIBPATH = [
-        'Ion',
+        '#/$BUILD_DIR/ionsrc',
         '$OPENVR_DIR',
     ],
     LIBS = [
@@ -310,9 +310,9 @@ if mode == 'rel':
     # The release executable always runs from its own directory.
     AddRpath_(lib_env, '.')
 else:
-    AddRpath_(lib_env, '$BUILD_DIR',     make_abs=True)
-    AddRpath_(lib_env, '$BUILD_DIR/Ion', make_abs=True)
-    AddRpath_(lib_env, '$OPENVR_DIR',    make_abs=True)
+    AddRpath_(lib_env, '$BUILD_DIR',        make_abs=True)
+    AddRpath_(lib_env, '$BUILD_DIR/ionsrc', make_abs=True)
+    AddRpath_(lib_env, '$OPENVR_DIR',       make_abs=True)
 
 # Add platform-specific items.
 if platform == 'windows':
@@ -376,7 +376,7 @@ if platform == 'windows':
 app_env = lib_env.Clone()
 
 app_env.Append(
-    LIBPATH = ['../Ion', '../docopt.cpp'],
+    LIBPATH = ['#/$BUILD_DIR/docopt.cpp'],
     LIBS    = ['docopt'],
 )
 
@@ -394,11 +394,7 @@ test_env = lib_env.Clone()
 # Make the build relative to the top directory.
 test_env.Append(
     CPPPATH = ['#submodules/googletest/googletest/include'],
-    LIBPATH = [
-        '../Ion',
-        '../googletest',
-        '../docopt.cpp',
-    ],
+    LIBPATH = ['#/$BUILD_DIR/docopt.cpp', '#/$BUILD_DIR/googletest'],
     LIBS  = ['docopt', 'gtest', 'pthread'],
 )
 AddRpath_(test_env, Dir(test_env.subst('$BUILD_DIR/googletest')).abspath)
