@@ -14,6 +14,20 @@ zipasset_builder = Builder(
 
 ion_env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
 
+# Special environment for Mac to compile Objective-C++ files.
+objc_env = Environment(
+    CXX = 'c++',
+    CXXFLAGS = [
+        '--std=c++14',
+        '-Wno-deprecated-declarations',    # All of OpenGL is deprecated. :(
+        '-framework', 'OpenGL',
+    ],
+    LINKFLAGS = [
+        '--std=c++14',
+        '-framework', 'OpenGL',
+    ],
+)
+
 # -----------------------------------------------------------------------------
 # Helper functions.
 # -----------------------------------------------------------------------------
@@ -27,9 +41,15 @@ def MakeTuple_(subdir, names=[], headers=[], sources=[], assets=[]):
 # -----------------------------------------------------------------------------
 
 # Platform-specific lists:
-if ion_env['PLATFORM'] == 'windows':
+platform = ion_env['PLATFORM']
+objc_sources = []
+if platform == 'windows':
     portgfx_names   = [ 'window_win32' ]
     portgfx_sources = [ 'wglcontext.cc' ]
+elif platform == 'mac':
+    portgfx_names   = []
+    portgfx_sources = [ 'maccontext.cc' ]
+    objc_sources    = [ 'ion/portgfx/macfuncs.mm' ]
 else:
     portgfx_names   = []
     portgfx_sources = [ 'glxcontext.cc' ]
@@ -268,7 +288,8 @@ ion_files = [
                ],
                headers=[
                    'fontmacros.h',
-               ]),
+               ] +     ['coretextfont.h']  if platform == 'XXXXmac' else [],
+               sources=['coretextfont.mm'] if platform == 'XXXXmac' else []),
 ]
 
 # Special case for third_party code that is built inside Ion.
@@ -336,6 +357,9 @@ for (subdir, names, headers, sources, assets) in ion_files:
         target = f'ion/{subdir}/{asset}'.replace('.iad', '.cc')
         ion_sources.append(ion_env.ZipAsset(source=source, target=target))
 
-lib = ion_env.SharedLibrary('ionshared', ion_sources + third_party_objects)
+objc_objects = [objc_env.SharedObject(src) for src in objc_sources]
+
+lib = ion_env.SharedLibrary('ionshared',
+                            ion_sources + third_party_objects + objc_objects)
 
 Return('lib')

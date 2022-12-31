@@ -131,7 +131,15 @@ elif platform == 'mac':
             ('ION_PLATFORM_MAC_GCC', '1'),
             ('__has_feature', 'defined'),  # Mac uses some clang-specific stuff.
         ],
-        CPPPATH = [ '/usr/local/include' ],  # For brew libraries.
+        CPPPATH  = [ '/usr/local/include' ],  # For brew libraries.
+        LINKFLAGS = [
+            '-framework', 'OpenGL',
+            '-framework', 'AppKit',
+        ],
+        SHLINKFLAGS = [
+            '-framework', 'OpenGL',
+            '-framework', 'AppKit',
+        ],
     )
 
 # -----------------------------------------------------------------------------

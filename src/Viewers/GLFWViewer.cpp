@@ -5,11 +5,9 @@
 #include <GLFW/glfw3.h>
 
 // Allow access to native types in glfw3.
-#if defined(ION_PLATFORM_LINUX)
+#if   defined(ION_PLATFORM_LINUX)
 #  define GLFW_EXPOSE_NATIVE_GLX
-#  define GLFW_EXPOSE_NATIVE_X11
 #elif defined(ION_PLATFORM_WINDOWS)
-#  define GLFW_EXPOSE_NATIVE_WGL
 #  define GLFW_EXPOSE_NATIVE_WIN32
 #endif
 #include <GLFW/glfw3native.h>
@@ -210,8 +208,8 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     glfwMakeContextCurrent(window_);
 
     // This is required to set up the GL context before other calls are made.
-#if defined(ION_PLATFORM_LINUX)
-    glXGetCurrentContext();
+#if   defined(ION_PLATFORM_LINUX)
+    glfwGetGLXContext(window_);
 #elif defined(ION_PLATFORM_WINDOWS)
     glfwGetWGLContext(window_);
 #endif
