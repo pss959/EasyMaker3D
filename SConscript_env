@@ -386,7 +386,7 @@ if platform == 'windows':
 app_env = lib_env.Clone()
 
 app_env.Append(
-    LIBPATH = ['#/$BUILD_DIR/docopt.cpp'],
+    LIBPATH = ['#/$BUILD_DIR', '#/$BUILD_DIR/docopt.cpp'],
     LIBS    = ['docopt'],
 )
 

@@ -50,8 +50,7 @@ static TriMesh ModifyVertices_(
 
 /// Returns the area of the i'th triangle in a TriMesh.
 static float GetTriangleArea_(const TriMesh &mesh, size_t i) {
-    const size_t tri_count = mesh.GetTriangleCount();
-    ASSERT(i < tri_count);
+    ASSERT(i < mesh.GetTriangleCount());
 
     const auto i0 = mesh.indices[3 * i + 0];
     const auto i1 = mesh.indices[3 * i + 1];

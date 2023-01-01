@@ -39,8 +39,9 @@ if brief:
     for env in envs.values():
         Brief(env)
 
-# Set this for easy access below.
+# Set these for easy access below.
 build_dir = base_env.subst('$BUILD_DIR')
+platform  = base_env['PLATFORM']
 
 # -----------------------------------------------------------------------------
 # Building.
@@ -62,7 +63,7 @@ app_lib = SConscript('src/SConscript_src', exports=['app_dict', 'lib_env'],
 
 # Build the applications. 'apps' is a dictionary mapping app name to executable.
 app_env = envs['app']
-app_env.Append(LIBS = [app_lib, ion_lib])
+app_env.Append(LIBS = ['AppLib', 'ionshared'])
 apps = SConscript('src/Apps/SConscript_apps', exports=['app_dict', 'app_env'],
                   variant_dir=f'{build_dir}/Apps', duplicate=False)
 app_env.Alias('Apps', apps.values())
@@ -76,7 +77,7 @@ SConscript('src/Tests/SConscript_tests', exports=['test_env'],
 # Build documentation and menu icons only on Linux. (Building on different
 # platforms creates slightly different image files, causing git thrashing. No
 # need for that once everything is built once.)
-if base_env['PLATFORM'] == 'linux':
+if platform == 'linux':
     # Applications depend on the icons.
     app_env.Alias('Icons', SConscript('resources/SConscript_resources'))
     app_env.Depends('Apps', 'Icons')
@@ -92,3 +93,68 @@ if base_env['PLATFORM'] == 'linux':
                    SConscript('PublicDoc/SConscript_doc',
                               exports=['app_dict', 'doc_build_dir',
                                        'snapimage']))
+
+# -----------------------------------------------------------------------------
+# Building the release as a Zip file.
+# -----------------------------------------------------------------------------
+
+# NOTE: The 'Zip()' builder in SCons claims to allow the command to be modified
+# with the 'ZIP', 'ZIPFLAGS', and other construction variables. However, they
+# are actually not used in the SCons.Tool.zip source file. So do everything
+# manually here.
+def BuildZipFile_(target, source, env):
+    from os      import walk
+    from os.path import basename, dirname, isfile, join, relpath
+    from zipfile import ZipFile
+    zf = ZipFile(str(target[0]), 'w')
+    def AddFile(f, rel_path):
+        zf.write(f, f'{app_dict["APP_NAME"]}/{rel_path}')
+    for src in source:
+        name = str(src)
+        # Walk through directories.
+        if src.isdir():
+            basedir = dirname(name)
+            for root, dirs, files in walk(name):
+                for f in files:
+                    path = join(root, f)
+                    if isfile(path):
+                        AddFile(path, relpath(path, basedir))
+        else:  # Regular file.
+            AddFile(name, basename(name))
+
+if mode == 'rel':
+    # Zip the executable, all 3 shared libraries, and the resources dir.
+    main_app   = apps[app_dict['APP_NAME']]
+    zip_input  = [main_app, app_lib, ion_lib, '$OPENVR_LIB', 'resources']
+    zip_name   = (f'{app_dict["APP_NAME"]}-{app_dict["VERSION_STRING"]}-' +
+                  f'{platform.capitalize()}')
+    zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
+
+    # Windows requires all dependent libraries to be present.
+    zip_win_mingw_libs = [
+        'glfw3',
+        'libbrotlicommon',
+        'libbrotlidec',
+        'libbz2-1',
+        'libfreetype-6',
+        'libgcc_s_seh-1',
+        'libglib-2.0-0',
+        'libgmp-10',
+        'libgraphite2',
+        'libharfbuzz-0',
+        'libiconv-2',
+        'libintl-8',
+        'libpcre-1',
+        'libpng16-16',
+        'libstdc++-6',
+        'libwinpthread-1',
+        'zlib1',
+    ]
+    if platform == 'windows':
+        from os import popen
+        run_cygpath = f'c:/msys64/usr/bin/bash.exe -c "cygpath -m /mingw64/bin"'
+        mingw_dir = popen(run_cygpath).read().replace('\n', '')
+        zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
+
+    rel = app_env.Command(zip_output, zip_input, BuildZipFile_)
+    app_env.Alias('Release', rel)
