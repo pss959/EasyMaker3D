@@ -21,13 +21,18 @@ def PrintCmdLine_(s, target, source, env):
     from sys import stdout
     action = ''
     if 'BRIEF' in env and env['BRIEF']:
+        def Get_(name):
+            return env.subst(f'${name}')
+        first_target_str = str(target[0])
         target_str = (' '.join(str(t) for t in target) if len(target) > 1
-                      else str(target[0]))
-        if s.startswith(env['CC']) or s.startswith(env['CXX']):
+                      else first_target_str)
+        if (first_target_str.endswith(Get_('OBJSUFFIX')) or
+            first_target_str.endswith(Get_('SHOBJSUFFIX'))):
             action = 'Compiling'
-        elif s.startswith(env['LINK']) or s.startswith(env['SHLINK']):
+        elif (first_target_str.endswith(Get_('LIBSUFFIX')) or
+              first_target_str.endswith(Get_('SHLIBSUFFIX'))):
             action = 'Linking  '
-        elif s.startswith(env['AR']):
+        elif s.startswith(Get_('AR')):
             action = 'Archiving'
         elif 'FixMacReleasePaths_' in s:
             action = 'Fixing paths in '
