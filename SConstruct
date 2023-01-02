@@ -33,7 +33,7 @@ envs = SConscript('SConscript_env', exports=['mode'])
 base_env = envs['base']
 base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')  # For easy cleanup.
 for env in envs.values():
-    env['BRIEF'] = brief
+    env.MakeBrief()
 
 # Set these for easy access below.
 build_dir = base_env.subst('$BUILD_DIR')

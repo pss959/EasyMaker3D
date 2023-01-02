@@ -21,27 +21,34 @@ def PrintCmdLine_(s, target, source, env):
     from sys import stdout
     action = ''
     if 'BRIEF' in env and env['BRIEF']:
-        def Get_(name):
-            return env.subst(f'${name}')
+        if 'FixMacReleasePaths_' in s:
+            action = 'Fixing paths in '
+        elif 'BuildZipFile' in s:
+            action = 'Zipping  '
+    if action:
         first_target_str = str(target[0])
         target_str = (' '.join(str(t) for t in target) if len(target) > 1
                       else first_target_str)
-        if (first_target_str.endswith(Get_('OBJSUFFIX')) or
-            first_target_str.endswith(Get_('SHOBJSUFFIX'))):
-            action = 'Compiling'
-        elif (first_target_str.endswith(Get_('LIBSUFFIX')) or
-              first_target_str.endswith(Get_('SHLIBSUFFIX'))):
-            action = 'Linking  '
-        elif s.startswith(Get_('AR')):
-            action = 'Archiving'
-        elif 'FixMacReleasePaths_' in s:
-            action = 'Fixing paths in '
-        elif 'ZipFile' in s:
-            action = 'Zipping  '
-    if action:
         stdout.write(f'{action} {target_str}\n')
     else:
         stdout.write(s + '\n')
+
+# Sets up an environment for brief output.
+def MakeBrief_(env):
+    env.Replace(
+        BRIEF        = True,
+
+        ARCOMSTR     = "Archiving $TARGET",
+        CCCOMSTR     = "Compiling $SOURCE",
+        CXXCOMSTR    = "Compiling $SOURCE",
+        SHCCCOMSTR   = "Compiling $SOURCE",
+        SHCXXCOMSTR  = "Compiling $SOURCE",
+        LINKCOMSTR   = "Linking   $TARGET",
+        SHLINKCOMSTR = "Linking   $TARGET",
+        ZIPCOMSTR    = "Zipping   $TARGET",
+
+        PRINT_CMD_LINE_FUNC = PrintCmdLine_,
+    )
 
 def GetOpenVRSubdir_(platform):
     openvr_subdirs = {
@@ -143,6 +150,9 @@ base_env = Environment(
         ('ION_NO_RTTI',     '0'),
     ]
 )
+
+# Sets brief output.
+base_env.AddMethod(MakeBrief_, 'MakeBrief')
 
 # Allow ParseConfig() to be called easily for packages.
 base_env.AddMethod(ParseConfig_, 'AddPackages')

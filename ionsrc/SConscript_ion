@@ -311,6 +311,8 @@ third_party_env = ion_env.Clone(
         'third_party/openctm/lib',
     ],
 )
+if 'BRIEF' in ion_env:
+    third_party_env.MakeBrief()
 third_party_env.AddPackages(['tinyxml2'])
 
 third_party_sources = [
