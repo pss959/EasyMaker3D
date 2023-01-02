@@ -16,6 +16,28 @@ Import('mode')
 # Helper functions.
 # -----------------------------------------------------------------------------
 
+# Controls SCons output.
+def PrintCmdLine_(s, target, source, env):
+    from sys import stdout
+    action = ''
+    if 'BRIEF' in env and env['BRIEF']:
+        target_str = (' '.join(str(t) for t in target) if len(target) > 1
+                      else str(target[0]))
+        if s.startswith(env['CC']) or s.startswith(env['CXX']):
+            action = 'Compiling'
+        elif s.startswith(env['LINK']) or s.startswith(env['SHLINK']):
+            action = 'Linking  '
+        elif s.startswith(env['AR']):
+            action = 'Archiving'
+        elif 'FixMacReleasePaths_' in s:
+            action = 'Fixing paths in '
+        elif 'ZipFile' in s:
+            action = 'Zipping  '
+    if action:
+        stdout.write(f'{action} {target_str}\n')
+    else:
+        stdout.write(s + '\n')
+
 def GetOpenVRSubdir_(platform):
     openvr_subdirs = {
         'linux'   : 'linux64',
@@ -34,15 +56,48 @@ def ParseConfig_(env, packages):
     pkgs = ' '.join(packages)
     env.ParseConfig(f'pkg-config {opts} {pkgs} --cflags --libs')
 
-# Adds an RPATH directory to the environment. Mac linker has to be different
-# for some reason.
+# Adds an RPATH directory to the environment, making it absolute if requested.
 def AddRpath_(env, path, make_abs=False):
     full_path = Dir(env.subst(path)).abspath if make_abs else path
-    if env['PLATFORM'] == 'mac':
-        env.Append(LINKFLAGS   = f'-rpath {full_path}')
-        env.Append(SHLINKFLAGS = f'-rpath {full_path}')
-    else:
-        env.Append(RPATH = [full_path])
+    env.Append(RPATH = [full_path])
+
+# This is used on the Mac to make sure all dependencies in a release build are
+# picked up either from system directories or via rpath. Run this on a shared
+# library or executable.
+def FixMacReleasePaths_(env, target, source):
+    from re         import compile, match
+    from subprocess import Popen, PIPE, run
+    target_path = File(target[0]).abspath
+    # Get the results of running "otool -L" on the target.
+    lines = Popen(['otool', '-L', target_path],
+                  stdout=PIPE, text=True).stdout.read().splitlines()
+    prog = compile(r'.*/([^/]+\.dylib)')
+    # List of tuples: (old_lib_path, lib_name)
+    replacements = []
+    # Skip the first line, which is the name of the target.
+    for line in lines[1:]:
+        line = line.strip()
+        # Skip lines that start with '@' or '/System/' they are ok.
+        if line.startswith('@') or line.startswith('/System'):
+            continue
+        # Change the entire directory path to '@rpath/'
+        result = prog.match(line)
+        if result:
+            replacements.append((result.group(), result.groups()[0]))
+    # Run install_name_tool on the target to fix the dependencies.
+    if replacements:
+        cmd = ['install_name_tool']
+        for rep in replacements:
+            cmd.append('-change')
+            cmd.append(rep[0])
+            cmd.append(f'@rpath/{rep[1]}')
+        cmd.append(target_path);
+        run(cmd)
+
+# Allows library paths to be fixed in Mac release builds.
+def FixPaths_(env, target):
+    if env['PLATFORM'] == 'mac' and env['MODE'] == 'rel':
+        env.AddPostAction(target, FixMacReleasePaths_)
 
 # -----------------------------------------------------------------------------
 # Platform setup.
@@ -66,6 +121,8 @@ else:
 base_env = Environment(
     tools = ['mingw'] if platform == 'windows' else ['default'],
 
+    PRINT_CMD_LINE_FUNC = PrintCmdLine_,
+
     MODE            = mode,
     PLATFORM        = platform,
 
@@ -83,7 +140,10 @@ base_env = Environment(
 )
 
 # Allow ParseConfig() to be called easily for packages.
-base_env.AddMethod(ParseConfig_, "AddPackages")
+base_env.AddMethod(ParseConfig_, 'AddPackages')
+
+# Allow library paths to be fixed in Mac release builds.
+base_env.AddMethod(FixPaths_, 'FixPaths')
 
 # -----------------------------------------------------------------------------
 # Add common platform-specific items to base_env.
@@ -123,6 +183,7 @@ elif platform == 'mac':
         CC  = '/usr/local/bin/gcc-12',
         CXX = '/usr/local/bin/g++-12',
         SYS_INCLUDE_DIR = '/usr/local/include',
+        RPATHPREFIX = '-rpath ',
     )
     base_env.Append(
         CPPDEFINES = [
@@ -317,7 +378,7 @@ lib_env.Append(
 # Add mode-specific items.
 if mode == 'rel':
     # The release executable always runs from its own directory.
-    AddRpath_(lib_env, '.')
+    AddRpath_(lib_env, '$ORIGIN')
 else:
     AddRpath_(lib_env, '$BUILD_DIR',        make_abs=True)
     AddRpath_(lib_env, '$BUILD_DIR/ionsrc', make_abs=True)
@@ -365,7 +426,7 @@ if platform == 'windows':
     def winspawn(sh, escape, cmd, args, env):
         from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW, Popen, PIPE
         newargs = ' '.join(args[1:])
-        cmdline = cmd + " " + newargs
+        cmdline = cmd + ' ' + newargs
         startupinfo = STARTUPINFO()
         startupinfo.dwFlags |= STARTF_USESHOWWINDOW
         proc = Popen(cmdline, stdin=PIPE, stdout=PIPE,
@@ -392,7 +453,7 @@ app_env.Append(
 
 # Avoid opening a cmd window with the application on Windows (Release only -
 # otherwise no logging output can appear!)
-if platform == 'windows' and mode == "rel":
+if platform == 'windows' and mode == 'rel':
     app_env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
 
 # -----------------------------------------------------------------------------

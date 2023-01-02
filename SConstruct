@@ -1,4 +1,3 @@
-from brief import Brief
 from os    import environ
 
 # -----------------------------------------------------------------------------
@@ -33,11 +32,8 @@ envs = SConscript('SConscript_env', exports=['mode'])
 
 base_env = envs['base']
 base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')  # For easy cleanup.
-
-# Shorten compile/link lines for clarity.
-if brief:
-    for env in envs.values():
-        Brief(env)
+for env in envs.values():
+    env['BRIEF'] = brief
 
 # Set these for easy access below.
 build_dir = base_env.subst('$BUILD_DIR')
@@ -123,11 +119,13 @@ def BuildZipFile_(target, source, env):
             AddFile(name, basename(name))
 
 if mode == 'rel':
+    # For convenience.
+    app_name = app_dict['APP_NAME']
+    version  = app_dict['VERSION_STRING']
+
     # Zip the executable, all 3 shared libraries, and the resources dir.
-    main_app   = apps[app_dict['APP_NAME']]
-    zip_input  = [main_app, app_lib, ion_lib, '$OPENVR_LIB', 'resources']
-    zip_name   = (f'{app_dict["APP_NAME"]}-{app_dict["VERSION_STRING"]}-' +
-                  f'{platform.capitalize()}')
+    zip_input  = [apps[app_name], app_lib, ion_lib, '$OPENVR_LIB', 'resources']
+    zip_name   = (f'{app_name}-{version}-{platform.capitalize()}')
     zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
 
     # Windows requires all dependent libraries to be present.

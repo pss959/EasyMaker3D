@@ -264,7 +264,7 @@ void ShapeHelper_::GenerateTexCoords(SG::TriMeshShape::TexCoordsType type) {
     ASSERT(tbh_.get());
 
     // Figure out which dimensions to use.
-    int dim0, dim1;
+    int dim0 = -1, dim1 = -1;
     GetTextureDimensions_(type, dim0, dim1);
 
     // Compute min/max point value in each requested dimension.

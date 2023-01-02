@@ -15,7 +15,8 @@ apps_extra_sources = [
 # Return a dictionary mapping app name to executable.
 apps = {}
 for app_name in app_names:
-    apps[app_name] = app_env.Program(
-        app_name, [f'{app_name}.cpp'] + apps_extra_sources)
+    app = app_env.Program(app_name, [f'{app_name}.cpp'] + apps_extra_sources)
+    app_env.FixPaths(app)
+    apps[app_name] = app
 
 Return('apps')

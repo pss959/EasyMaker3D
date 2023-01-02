@@ -361,5 +361,6 @@ objc_objects = [objc_env.SharedObject(src) for src in objc_sources]
 
 lib = ion_env.SharedLibrary('ionshared',
                             ion_sources + third_party_objects + objc_objects)
+ion_env.FixPaths(lib)
 
 Return('lib')
