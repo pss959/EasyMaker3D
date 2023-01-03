@@ -32,8 +32,9 @@ envs = SConscript('SConscript_env', exports=['mode'])
 
 base_env = envs['base']
 base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')  # For easy cleanup.
-for env in envs.values():
-    env.MakeBrief()
+if brief:
+    for env in envs.values():
+        env.MakeBrief()
 
 # Set these for easy access below.
 build_dir = base_env.subst('$BUILD_DIR')
@@ -128,6 +129,21 @@ if mode == 'rel':
     zip_name   = (f'{app_name}-{version}-{platform.capitalize()}')
     zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
 
+    # Mac requires all non-system libraries to be present.
+    zip_mac_libs = [
+        'freetype/lib/libfreetype.6.dylib',
+        'gcc/lib/gcc/current/libgcc_s.1.1.dylib',
+        'gcc/lib/gcc/current/libstdc++.6.dylib',
+        'glfw/lib/libglfw.3.dylib',
+        'gmp/lib/libgmp.10.dylib',
+        'jpeg/lib/libjpeg.9.dylib',
+        'jsoncpp/lib/libjsoncpp.25.dylib',
+        'libpng/lib/libpng16.16.dylib',
+        'mesa/lib/libGL.1.dylib',
+        'minizip/lib/libminizip.1.dylib',
+        'mpfr/lib/libmpfr.6.dylib',
+        'tinyxml2/lib/libtinyxml2.9.dylib',
+    ]
     # Windows requires all dependent libraries to be present.
     zip_win_mingw_libs = [
         'glfw3',
@@ -148,7 +164,13 @@ if mode == 'rel':
         'libwinpthread-1',
         'zlib1',
     ]
-    if platform == 'windows':
+    if platform == 'mac':
+        from os      import popen
+        from os.path import join
+        line = popen('brew config | grep HOMEBREW_PREFIX').read()
+        brew_dir = line.replace('HOMEBREW_PREFIX: ', '').replace('\n', '')
+        zip_input += [f'{brew_dir}/opt/{lib}' for lib in zip_mac_libs]
+    elif platform == 'windows':
         from os import popen
         run_cygpath = f'c:/msys64/usr/bin/bash.exe -c "cygpath -m /mingw64/bin"'
         mingw_dir = popen(run_cygpath).read().replace('\n', '')
