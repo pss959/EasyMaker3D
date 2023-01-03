@@ -95,86 +95,13 @@ if platform == 'linux':
 # Building the release as a Zip file.
 # -----------------------------------------------------------------------------
 
-# NOTE: The 'Zip()' builder in SCons claims to allow the command to be modified
-# with the 'ZIP', 'ZIPFLAGS', and other construction variables. However, they
-# are actually not used in the SCons.Tool.zip source file. So do everything
-# manually here.
-def BuildZipFile_(target, source, env):
-    from os      import walk
-    from os.path import basename, dirname, isfile, join, relpath
-    from zipfile import ZipFile
-    zf = ZipFile(str(target[0]), 'w')
-    def AddFile(f, rel_path):
-        zf.write(f, f'{app_dict["APP_NAME"]}/{rel_path}')
-    for src in source:
-        name = str(src)
-        # Walk through directories.
-        if src.isdir():
-            basedir = dirname(name)
-            for root, dirs, files in walk(name):
-                for f in files:
-                    path = join(root, f)
-                    if isfile(path):
-                        AddFile(path, relpath(path, basedir))
-        else:  # Regular file.
-            AddFile(name, basename(name))
-
 if mode == 'rel':
-    # For convenience.
     app_name = app_dict['APP_NAME']
     version  = app_dict['VERSION_STRING']
+    rel_name = (f'{app_name}-{version}-{platform.capitalize()}')
 
-    # Zip the executable, all 3 shared libraries, and the resources dir.
-    zip_input  = [apps[app_name], app_lib, ion_lib, '$OPENVR_LIB', 'resources']
-    zip_name   = (f'{app_name}-{version}-{platform.capitalize()}')
-    zip_output = f'$BUILD_DIR/Release/{zip_name}.zip'
-
-    # Mac requires all non-system libraries to be present.
-    zip_mac_libs = [
-        'freetype/lib/libfreetype.6.dylib',
-        'gcc/lib/gcc/current/libgcc_s.1.1.dylib',
-        'gcc/lib/gcc/current/libstdc++.6.dylib',
-        'glfw/lib/libglfw.3.dylib',
-        'gmp/lib/libgmp.10.dylib',
-        'jpeg/lib/libjpeg.9.dylib',
-        'jsoncpp/lib/libjsoncpp.25.dylib',
-        'libpng/lib/libpng16.16.dylib',
-        'mesa/lib/libGL.1.dylib',
-        'minizip/lib/libminizip.1.dylib',
-        'mpfr/lib/libmpfr.6.dylib',
-        'tinyxml2/lib/libtinyxml2.9.dylib',
-    ]
-    # Windows requires all dependent libraries to be present.
-    zip_win_mingw_libs = [
-        'glfw3',
-        'libbrotlicommon',
-        'libbrotlidec',
-        'libbz2-1',
-        'libfreetype-6',
-        'libgcc_s_seh-1',
-        'libglib-2.0-0',
-        'libgmp-10',
-        'libgraphite2',
-        'libharfbuzz-0',
-        'libiconv-2',
-        'libintl-8',
-        'libpcre-1',
-        'libpng16-16',
-        'libstdc++-6',
-        'libwinpthread-1',
-        'zlib1',
-    ]
-    if platform == 'mac':
-        from os      import popen
-        from os.path import join
-        line = popen('brew config | grep HOMEBREW_PREFIX').read()
-        brew_dir = line.replace('HOMEBREW_PREFIX: ', '').replace('\n', '')
-        zip_input += [f'{brew_dir}/opt/{lib}' for lib in zip_mac_libs]
-    elif platform == 'windows':
-        from os import popen
-        run_cygpath = f'c:/msys64/usr/bin/bash.exe -c "cygpath -m /mingw64/bin"'
-        mingw_dir = popen(run_cygpath).read().replace('\n', '')
-        zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
-
-    rel = app_env.Command(zip_output, zip_input, BuildZipFile_)
+    # Make a list of main files to include in the release.
+    rel_files = [apps[app_name], app_lib, ion_lib, '$OPENVR_LIB', 'resources']
+    rel = SConscript('SConscript_release',
+                     exports=['app_env', 'app_name', 'rel_files', 'rel_name'])
     app_env.Alias('Release', rel)

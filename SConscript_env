@@ -393,7 +393,7 @@ lib_env.Append(
 # Add mode-specific items.
 if mode == 'rel':
     # The release executable always runs from its own directory.
-    AddRpath_(lib_env, '$ORIGIN')
+    AddRpath_(lib_env, lib_env.Literal('\\$$ORIGIN'))
 else:
     AddRpath_(lib_env, '$BUILD_DIR',        make_abs=True)
     AddRpath_(lib_env, '$BUILD_DIR/ionsrc', make_abs=True)
