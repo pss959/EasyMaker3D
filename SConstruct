@@ -99,9 +99,19 @@ if mode == 'rel':
     app_name = app_dict['APP_NAME']
     version  = app_dict['VERSION_STRING']
     rel_name = (f'{app_name}-{version}-{platform.capitalize()}')
+    app      = apps[app_name]
 
-    # Make a list of main files to include in the release.
-    rel_files = [apps[app_name], app_lib, ion_lib, '$OPENVR_LIB', 'resources']
-    rel = SConscript('SConscript_release',
-                     exports=['app_env', 'app_name', 'rel_files', 'rel_name'])
+    # Make a list of items needed to build the release. These are passed as a
+    # dictionary so that they can be modified if necessary (see Mac).
+    rel_dict = {
+        'app'      : apps[app_name][0],
+        'app_env'  : app_env,
+        'app_lib'  : app_lib,
+        'app_name' : app_name,
+        'ion_lib'  : ion_lib,
+        'ovr_lib'  : '$OPENVR_LIB',
+        'rel_name' : rel_name,
+        'res_dir'  : 'resources',
+    }
+    rel = SConscript('SConscript_release', exports=['rel_dict'])
     app_env.Alias('Release', rel)

@@ -16,7 +16,6 @@ apps_extra_sources = [
 apps = {}
 for app_name in app_names:
     app = app_env.Program(app_name, [f'{app_name}.cpp'] + apps_extra_sources)
-    app_env.FixPaths(app)
     apps[app_name] = app
 
 Return('apps')

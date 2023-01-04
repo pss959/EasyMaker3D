@@ -21,10 +21,14 @@ def PrintCmdLine_(s, target, source, env):
     from sys import stdout
     action = ''
     if 'BRIEF' in env and env['BRIEF']:
-        if 'FixMacReleasePaths_' in s:
-            action = 'Fixing paths in '
+        # Ignore boring Copy and Mkdir commands.
+        if s.startswith('Copy(') or s.startswith('Mkdir('):
+            return
+        elif 'install_name_tool' in s:
+            action = 'Fixing paths in'
         elif 'BuildZipFile' in s:
-            action = 'Zipping  '
+            action = 'Zipping'
+
     if action:
         first_target_str = str(target[0])
         target_str = (' '.join(str(t) for t in target) if len(target) > 1
@@ -73,44 +77,6 @@ def AddRpath_(env, path, make_abs=False):
     full_path = Dir(env.subst(path)).abspath if make_abs else path
     env.Append(RPATH = [full_path])
 
-# This is used on the Mac to make sure all dependencies in a release build are
-# picked up either from system directories or via rpath. Run this on a shared
-# library or executable.
-def FixMacReleasePaths_(env, target, source):
-    from re         import compile, match
-    from subprocess import Popen, PIPE, run
-    target_path = File(target[0]).abspath
-    # Get the results of running "otool -L" on the target.
-    lines = Popen(['otool', '-L', target_path],
-                  stdout=PIPE, text=True).stdout.read().splitlines()
-    prog = compile(r'.*/([^/]+\.dylib)')
-    # List of tuples: (old_lib_path, lib_name)
-    replacements = []
-    # Skip the first line, which is the name of the target.
-    for line in lines[1:]:
-        line = line.strip()
-        # Skip lines that start with '@' or '/System/' they are ok.
-        if line.startswith('@') or line.startswith('/System'):
-            continue
-        # Change the entire directory path to '@rpath/'
-        result = prog.match(line)
-        if result:
-            replacements.append((result.group(), result.groups()[0]))
-    # Run install_name_tool on the target to fix the dependencies.
-    if replacements:
-        cmd = ['install_name_tool']
-        for rep in replacements:
-            cmd.append('-change')
-            cmd.append(rep[0])
-            cmd.append(f'@rpath/{rep[1]}')
-        cmd.append(target_path);
-        run(cmd)
-
-# Allows library paths to be fixed in Mac release builds.
-def FixPaths_(env, target):
-    if env['PLATFORM'] == 'mac' and env['MODE'] == 'rel':
-        env.AddPostAction(target, FixMacReleasePaths_)
-
 # -----------------------------------------------------------------------------
 # Platform setup.
 # -----------------------------------------------------------------------------
@@ -156,9 +122,6 @@ base_env.AddMethod(MakeBrief_, 'MakeBrief')
 
 # Allow ParseConfig() to be called easily for packages.
 base_env.AddMethod(ParseConfig_, 'AddPackages')
-
-# Allow library paths to be fixed in Mac release builds.
-base_env.AddMethod(FixPaths_, 'FixPaths')
 
 # -----------------------------------------------------------------------------
 # Add common platform-specific items to base_env.

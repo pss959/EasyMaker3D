@@ -2,19 +2,26 @@
 # Building the release as a Zip file.
 # -----------------------------------------------------------------------------
 
-Import('app_env', 'app_name', 'rel_files', 'rel_name')
+from re         import compile, match
+from subprocess import Popen, PIPE, run
+from os         import walk
+from os.path    import basename, dirname, isfile, join, relpath
+from zipfile    import ZipFile
 
-# NOTE: The 'Zip()' builder in SCons claims to allow the command to be modified
-# with the 'ZIP', 'ZIPFLAGS', and other construction variables. However, they
-# are actually not used in the SCons.Tool.zip source file. So do everything
-# manually here.
+Import('rel_dict')
+
+# -----------------------------------------------------------------------------
+# General helper functions.
+# -----------------------------------------------------------------------------
+
+# Creates the release Zip file. NOTE: The 'Zip()' builder in SCons claims to
+# allow the command to be modified with the 'ZIP', 'ZIPFLAGS', and other
+# construction variables. However, they are actually not used in the
+# SCons.Tool.zip source file. So do everything manually here.
 def BuildZipFile_(target, source, env):
-    from os      import walk
-    from os.path import basename, dirname, isfile, join, relpath
-    from zipfile import ZipFile
     zf = ZipFile(str(target[0]), 'w')
     def AddFile_(f, rel_path):
-        zf.write(f, f'{app_name}/{rel_path}')
+        zf.write(f, f'{rel_dict["app_name"]}/{rel_path}')
     for src in source:
         name = str(src)
         # Walk through directories.
@@ -25,28 +32,86 @@ def BuildZipFile_(target, source, env):
                     path = join(root, f)
                     if isfile(path):
                         AddFile_(path, relpath(path, basedir))
-        else:  # Regular file.
+        else:  # Regular file - add at the top level.
             AddFile_(name, basename(name))
 
-# Zip the files to include in the release.
-zip_input  = rel_files
-zip_output = f'$BUILD_DIR/Release/{rel_name}.zip'
+# -----------------------------------------------------------------------------
+# Mac-specific helper functions. Need to copy all dependent libraries into the
+# Zip file and change all relative paths to use @rpath.
+# -----------------------------------------------------------------------------
 
-# Mac requires all non-system libraries to be present.
-zip_mac_libs = [
-    'freetype/lib/libfreetype.6.dylib',
-    'gcc/lib/gcc/current/libgcc_s.1.1.dylib',
-    'gcc/lib/gcc/current/libstdc++.6.dylib',
-    'glfw/lib/libglfw.3.dylib',
-    'gmp/lib/libgmp.10.dylib',
-    'jpeg/lib/libjpeg.9.dylib',
-    'jsoncpp/lib/libjsoncpp.25.dylib',
-    'libpng/lib/libpng16.16.dylib',
-    'mesa/lib/libGL.1.dylib',
-    'minizip/lib/libminizip.1.dylib',
-    'mpfr/lib/libmpfr.6.dylib',
-    'tinyxml2/lib/libtinyxml2.9.dylib',
-]
+# Recursively collects dependency libraries for the given target, adding to
+# both replacement_dict and source_dict.
+def CollectMacLibs_(target, replacement_dict, source_dict):
+    # Stop if already handled.
+    if target in replacement_dict:
+        return
+
+    # replacement_dict maps the target (as is) to the base file name.
+    name      = basename(target)
+    replacement_dict[target] = name
+
+    # source_dict maps the name to a valid absolute path to the target. (There
+    # may be multiple locations; any one is ok.)
+    full_path = File(target).abspath
+    source_dict[name] = full_path
+
+    # Handle dependencies: get the results of running "otool -L" on the target.
+    lines = Popen(['otool', '-L', full_path],
+                  stdout=PIPE, text=True).stdout.read().splitlines()
+    prog = compile(r'.*/([^/]+\.dylib)')
+    # Skip the first line, which is the name of the target.
+    for line in lines[1:]:
+        line = line.strip()
+        # Skip lines starting with '@', '/System/', or '/usr/lib'; they are ok.
+        if (line.startswith('@') or
+            line.startswith('/System') or
+            line.startswith('/usr/lib')):
+            continue
+        # Extract the library name and recurse on it.
+        result = prog.match(line)
+        if result:
+            CollectMacLibs_(result.group(), replacement_dict, source_dict)
+
+# For the given target application and each dependent library, this creates a
+# copy in a temporary directory and processes it to change the load path to be
+# relative to @rpath.  This returns a list of paths to add to the Zip file.
+def FixMacFiles_(env, app):
+    # Collect which files to process.
+    replacement_dict = {}
+    source_dict      = {}
+    CollectMacLibs_(str(app), replacement_dict, source_dict)
+
+    # Use the replacement_dict to construct most of a command to replace all
+    # library paths in the dictionary with rpath-relative ones.
+    replace_cmd = 'install_name_tool '
+    for path, name in replacement_dict.items():
+        replace_cmd += f'-change {path} {join("@rpath", name)} '
+
+    # Use the source_dict to create a processed copy of each source.
+    targets = []
+    tmp_dir = '$BUILD_DIR/TMP'
+    for name, source_path in source_dict.items():
+        target = join(tmp_dir, name)
+        env.Command(target, source_path,
+                    ['echo Building $TARGET from $SOURCE',
+                     Mkdir(tmp_dir),
+                     Copy('$TARGET', '$SOURCE', False),  # Copy links as files.
+                     f'{replace_cmd} -id {name} $TARGET'])
+        targets.append(target)
+    return targets
+
+# -----------------------------------------------------------------------------
+# Building the release.
+# -----------------------------------------------------------------------------
+
+app_env = rel_dict['app_env']
+
+# Zip the files to include in the release.
+zip_input  = [rel_dict['app'], rel_dict['app_lib'], rel_dict['ion_lib'],
+              rel_dict['ovr_lib'], rel_dict['res_dir']]
+zip_output = f'$BUILD_DIR/Release/{rel_dict["rel_name"]}.zip'
+
 # Windows requires all dependent libraries to be present.
 zip_win_mingw_libs = [
     'glfw3',
@@ -68,11 +133,9 @@ zip_win_mingw_libs = [
     'zlib1',
 ]
 if app_env['PLATFORM'] == 'mac':
-    from os      import popen
-    from os.path import join
-    line = popen('brew config | grep HOMEBREW_PREFIX').read()
-    brew_dir = line.replace('HOMEBREW_PREFIX: ', '').replace('\n', '')
-    zip_input += [f'{brew_dir}/opt/{lib}' for lib in zip_mac_libs]
+    # Have to replace a few items, so rebuild the input list.
+    zip_input = (FixMacFiles_(app_env, rel_dict['app']) +
+                 [rel_dict['ovr_lib'], rel_dict['res_dir']])
 elif app_env['PLATFORM'] == 'windows':
     from os import popen
     run_cygpath = f'c:/msys64/usr/bin/bash.exe -c "cygpath -m /mingw64/bin"'
