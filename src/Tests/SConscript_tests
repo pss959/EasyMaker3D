@@ -8,7 +8,7 @@ mode     = test_env['MODE']
 # On Windows, have to use a bash script to run anything (to pick up shared
 # libraries).
 if platform == 'windows':
-    run_program = (f'c:/msys64/usr/bin/bash.exe bin/runwinprogram.bash {mode}')
+    run_program = (f'$MSYS2_HOME//usr/bin/bash.exe bin/runwinprogram.bash {mode}')
 else:
     run_program = ''
 

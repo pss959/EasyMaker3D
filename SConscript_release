@@ -126,7 +126,7 @@ zip_win_mingw_libs = [
     'libharfbuzz-0',
     'libiconv-2',
     'libintl-8',
-    'libpcre-1',
+    # 'libpcre2-1', # XXXX Not sure what the new version is...
     'libpng16-16',
     'libstdc++-6',
     'libwinpthread-1',
@@ -137,9 +137,7 @@ if app_env['PLATFORM'] == 'mac':
     zip_input = (FixMacFiles_(app_env, rel_dict['app']) +
                  [rel_dict['ovr_lib'], rel_dict['res_dir']])
 elif app_env['PLATFORM'] == 'windows':
-    from os import popen
-    run_cygpath = f'c:/msys64/usr/bin/bash.exe -c "cygpath -m /mingw64/bin"'
-    mingw_dir = popen(run_cygpath).read().replace('\n', '')
+    mingw_dir = app_env.ConvertPath('/mingw64/bin')
     zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
 
 rel = app_env.Command(zip_output, zip_input, BuildZipFile_)

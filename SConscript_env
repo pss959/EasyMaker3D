@@ -131,6 +131,13 @@ base_env.AddMethod(ParseConfig_, 'AddPackages')
 # -----------------------------------------------------------------------------
 
 if platform == 'windows':
+    # Make sure that the MINGW_HOME environment variable is set, Otherwise,
+    # things will not work properly.
+    if 'MSYS2_HOME' not in environ:
+        print('*** The MSYS2_HOME environment variable is not set.\n' +
+              '    It should be set to the location of the msys2 installation.')
+        Exit(-1)
+    base_env.Replace(MSYS2_HOME = environ['MSYS2_HOME'])
     base_env.Append(
         CPPDEFINES = [
             'COMPILER_HAS_RVALUEREF',
@@ -147,8 +154,16 @@ if platform == 'windows':
             ('OS_WINDOWS', 'OS_WINDOWS'),
         ],
         # Make sure MSYS2 commands (such as cygpath) are available.
-        ENV = {'PATH' : environ['PATH']},
+        ENV = { 'PATH' : environ['PATH'], },
     )
+
+    # Add a method to convert paths.
+    def ConvertPath_(env, path):
+        from os import popen
+        cmd = env.subst('$MSYS2_HOME/usr/bin/bash.exe -c' +
+                        ' "cygpath -m /mingw64/bin"')
+        return popen(cmd).read().replace('\n', '')
+    base_env.AddMethod(ConvertPath_, "ConvertPath")
 
 elif platform == 'linux':
     base_env.Append(
