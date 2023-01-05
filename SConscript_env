@@ -113,6 +113,7 @@ base_env = Environment(
     CPPDEFINES = [
         # Stuff for Ion.
         'ARCH_K8',
+        'HAVE_UNSIGNED_CHAR', 'HAVE_UNSIGNED_SHORT',  # For libjpeg_turbo.
         'OPENCTM_NO_CPP',
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI',     '0'),
@@ -382,7 +383,6 @@ elif platform == 'mac':
 # Add dependency packages.
 lib_packages = [
     'freetype2',
-    'gl',
     'glfw3',
     'gmp',
     'jsoncpp',
@@ -393,6 +393,9 @@ lib_packages = [
     'tinyxml2',
     'zlib',
 ]
+if platform != 'windows':
+    lib_packages += ['gl']
+
 lib_env.AddPackages(lib_packages)
 
 # -----------------------------------------------------------------------------
@@ -417,7 +420,7 @@ if platform == 'windows':
         if rv:
             print(err)
         return rv
-    lib_env['ORIG_SPAWN'] = env['SPAWN']  # Save for tests to use.
+    lib_env['ORIG_SPAWN'] = lib_env['SPAWN']  # Save for tests to use.
     lib_env['SPAWN']      = winspawn
 
 # -----------------------------------------------------------------------------

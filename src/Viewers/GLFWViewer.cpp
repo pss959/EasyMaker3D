@@ -205,11 +205,6 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
 
     glfwMakeContextCurrent(window_);
 
-#if defined(ION_PLATFORM_WINDOWS)
-    // This is required to set up the GL context before other calls are made.
-    glfwGetWGLContext(window_);
-#endif
-
     return true;
 }
 

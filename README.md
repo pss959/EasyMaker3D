@@ -117,8 +117,10 @@ mingw-w64-x86_64-gtest
 mingw-w64-x86_64-harfbuzz
 mingw-w64-x86_64-jsoncpp
 mingw-w64-x86_64-libpng
+mingw-w64-x86_64-libjpeg-turbo
 mingw-w64-x86_64-minizip
 mingw-w64-x86_64-openxr-sdk
+mingw-w64-x86_64-pkgconf
 mingw-w64-x86_64-tinyxml2
 
 mingw-w64-x86_64-gdb  For debugging
