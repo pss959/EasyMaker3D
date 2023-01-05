@@ -10,6 +10,8 @@
 # Each environment is set up properly for the platform and the given mode.
 # =============================================================================
 
+from os import environ
+
 Import('mode')
 
 # -----------------------------------------------------------------------------
