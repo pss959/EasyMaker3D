@@ -52,13 +52,12 @@ SConscript('submodules/SConscript_submodules', exports=['base_env'])
 
 # Build the application library.
 lib_env = envs['lib']
-lib_env.Append(LIBS = [ion_lib])
 app_lib = SConscript('src/SConscript_src', exports=['app_dict', 'lib_env'],
                      variant_dir=build_dir, duplicate=False)
 
 # Build the applications. 'apps' is a dictionary mapping app name to executable.
 app_env = envs['app']
-app_env.Append(LIBS = ['AppLib', 'ionshared'])
+app_env.Append(LIBS = ['$APP_LIB_NAME'])
 apps = SConscript('src/Apps/SConscript_apps', exports=['app_dict', 'app_env'],
                   variant_dir=f'{build_dir}/Apps', duplicate=False)
 app_env.Alias('Apps', apps.values())

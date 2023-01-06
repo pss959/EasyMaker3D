@@ -457,6 +457,6 @@ if lib_env['MODE'] != 'rel':
 # -----------------------------------------------------------------------------
 
 lib_objects = [BuildObject_(lib_env, source) for source in lib_sources]
-app_lib = lib_env.SharedLibrary('AppLib', lib_objects)
+app_lib = lib_env.SharedLibrary(lib_env['APP_LIB_NAME'], lib_objects)
 
 Return('app_lib')

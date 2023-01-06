@@ -361,6 +361,6 @@ for (subdir, names, headers, sources, assets) in ion_files:
 
 objc_objects = [objc_env.SharedObject(src) for src in objc_sources]
 
-lib = ion_env.SharedLibrary('ionshared',
+lib = ion_env.SharedLibrary(ion_env['ION_LIB_NAME'],
                             ion_sources + third_party_objects + objc_objects)
 Return('lib')

@@ -2,7 +2,7 @@
 # Sets up and returns SCons environments in a dictionary named 'envs' with the
 # following keys:
 #   'base':  Base environment for all other environments.
-#   'ion':   For building ionshared library.
+#   'ion':   For building the Ion library.
 #   'lib':   For building the main application library.
 #   'app':   For building main applications.
 #   'test':  For building unit tests.
@@ -103,8 +103,13 @@ base_env = Environment(
 
     PRINT_CMD_LINE_FUNC = PrintCmdLine_,
 
+    # For easy access.
     MODE            = mode,
     PLATFORM        = platform,
+
+    # To keep names consistent.
+    ION_LIB_NAME    = 'IonLib',
+    APP_LIB_NAME    = 'AppLib',
 
     BUILD_DIR       = f'build/{mode}',
     ION_DIR         = '#/ionsrc',
@@ -354,7 +359,7 @@ lib_env.Append(
     ],
     LIBS = [
         'openvr_api',
-        'ionshared',
+        '$ION_LIB_NAME',
     ],
     COMMON_FLAGS = [
         '--std=c++17',
