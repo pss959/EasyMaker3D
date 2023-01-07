@@ -19,7 +19,7 @@ void main(void) {
     result_color.a   = uBaseColor.a;
   }
   else {
-    vec4 tex_color = texture2D(uTexture, vScaledTexCoords);
+    vec4 tex_color = texture(uTexture, vScaledTexCoords);
     result_color.rgb = intensity * tex_color.rgb;
     result_color.a   = tex_color.a * uBaseColor.a;
   }

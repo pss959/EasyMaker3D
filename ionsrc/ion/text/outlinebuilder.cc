@@ -64,14 +64,15 @@ namespace {
 //-----------------------------------------------------------------------------
 
 static const char* kVertexShaderSource =
+    "#version 330 core\n"
     "uniform ivec2 uViewportSize;\n"
     "uniform mat4 uProjectionMatrix;\n"
     "uniform mat4 uModelviewMatrix;\n"
-    "attribute vec3 aVertex;\n"
-    "attribute vec3 aFontPixelVec;\n"
-    "attribute vec2 aTexCoords;\n"
-    "varying vec2 vTexCoords;\n"
-    "varying vec2 vFontPixelSize;\n"
+    "in vec3 aVertex;\n"
+    "in vec3 aFontPixelVec;\n"
+    "in vec2 aTexCoords;\n"
+    "out vec2 vTexCoords;\n"
+    "out vec2 vFontPixelSize;\n"
     "\n"
     "void main(void) {\n"
     "  vTexCoords = aTexCoords;\n"
@@ -86,6 +87,7 @@ static const char* kVertexShaderSource =
     "}\n";
 
 static const char* kFragmentShaderSource =
+    "#version 330 core\n"
     "#ifdef GL_ES\n"
     "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
     "precision highp float;\n"
@@ -99,8 +101,9 @@ static const char* kFragmentShaderSource =
     "uniform vec4 uOutlineColor;\n"
     "uniform float uHalfSmoothWidth;\n"
     "uniform float uOutlineWidth;\n"
-    "varying vec2 vTexCoords;\n"
-    "varying vec2 vFontPixelSize;\n"
+    "in vec2 vTexCoords;\n"
+    "in vec2 vFontPixelSize;\n"
+    "out vec4 result_color;\n"
     "\n"
     "void main(void) {\n"
     "  float half_smooth_width = uHalfSmoothWidth;\n"
@@ -108,7 +111,7 @@ static const char* kFragmentShaderSource =
     "\n"
     "  // Get the signed distance from the edge in font pixels, centered at\n"
     "  // 0, then convert to screen pixels.\n"
-    "  float sdf = texture2D(uSdfSampler, vTexCoords).r;\n"
+    "  float sdf = texture(uSdfSampler, vTexCoords).r;\n"
     "  float dist = uSdfPadding * 2.0 * (sdf - 0.5);\n"
     "  float pixel_scale = mix(vFontPixelSize.x, vFontPixelSize.y, 0.5);\n"
     "  dist *= pixel_scale;\n"
@@ -136,7 +139,7 @@ static const char* kFragmentShaderSource =
     "    float d2 = smoothstep(interior_min, interior_max, dist);\n"
     "    color = mix(uTextColor, color,\n"
     "                smoothstep(interior_min, interior_max, dist));\n"
-    "    gl_FragColor = vec4(color.rgb * color.a, color.a);\n"
+    "    result_color = vec4(color.rgb * color.a, color.a);\n"
     "  }\n"
     "}\n";
 

@@ -43,9 +43,9 @@ class GLFWViewer : public Viewer, public IEmitter {
         return is_l_shift_pressed_ || is_r_shift_pressed_;
     }
 
-    /// Returns the current size of the window, taking the fullscreen option
-    /// into account.
-    Vector2i GetWindowSize() const { return GetSize_(); }
+    /// Returns the current size of the window in pixels, taking the fullscreen
+    /// option into account.
+    Vector2i GetWindowSize() const { return GetWindowSizePixels_(); }
 
     virtual void Render(const SG::Scene &scene, Renderer &renderer);
 
@@ -87,8 +87,11 @@ class GLFWViewer : public Viewer, public IEmitter {
     /// Updates the Frustum based on the current state.
     void UpdateFrustum_();
 
-    /// Returns the current size of the window.
-    Vector2i GetSize_() const;
+    /// Returns the current size of the window in screen coordinates.
+    Vector2i GetWindowSizeScreenCoords_() const;
+
+    /// Returns the current size of the window in pixels.
+    Vector2i GetWindowSizePixels_() const;
 
     /// Processes a text character.
     void ProcessChar_(unsigned int codepoint);

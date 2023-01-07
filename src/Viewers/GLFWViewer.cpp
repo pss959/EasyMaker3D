@@ -174,8 +174,10 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
 
     glfwSetErrorCallback(ErrorCallback_);
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_OPENGL_PROFILE,         GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,  3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,  3);
     glfwWindowHint(GLFW_SAMPLES, 16);
     const std::string title =
         std::string(TK::kApplicationName) + " " + TK::kVersionString;
@@ -247,7 +249,8 @@ void GLFWViewer::FlushPendingEvents() {
 
 void GLFWViewer::UpdateFrustum_() {
     ASSERT(camera_);
-    frustum_.viewport     = Viewport::BuildWithSize(Point2i(0, 0), GetSize_());
+    frustum_.viewport     = Viewport::BuildWithSize(Point2i(0, 0),
+                                                    GetWindowSizePixels_());
     frustum_.position     = camera_->GetPosition();
     frustum_.position[1] += camera_->GetHeight();
     frustum_.orientation  = camera_->GetOrientation();
@@ -259,10 +262,20 @@ void GLFWViewer::UpdateFrustum_() {
                              GetAspectRatio(frustum_.viewport));
 }
 
-Vector2i GLFWViewer::GetSize_() const {
+Vector2i GLFWViewer::GetWindowSizeScreenCoords_() const {
     ASSERT(window_);
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
+    return Vector2i(width, height);
+}
+
+Vector2i GLFWViewer::GetWindowSizePixels_() const {
+    ASSERT(window_);
+    int width, height;
+    // Note: the GLFW window size is measured in screen coordinates, not
+    // pixels. On some displays (ahem, Mac) these are not the same, so use the
+    // framebuffer size here, which is always in pixels.
+    glfwGetFramebufferSize(window_, &width, &height);
     return Vector2i(width, height);
 }
 
@@ -353,7 +366,7 @@ void GLFWViewer::StoreCursorPos_(double xpos, double ypos, Event &event) {
     if (is_mouse_motion_enabled_) {
         // Normalize the position into the (0,1) range with (0,0) at the
         // lower-left. GLFW puts (0,0) at the upper-left.
-        const Vector2i size = GetSize_();
+        const Vector2i size = GetWindowSizeScreenCoords_();
         Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
 
         event.flags.Set(Event::Flag::kPosition2D);

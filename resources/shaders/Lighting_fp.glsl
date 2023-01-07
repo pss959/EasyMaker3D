@@ -35,7 +35,7 @@ void main(void) {
   // Do all lighting computations in world coordinates.
   ldata.is_two_sided = uTwoSidedLighting != 0;
   ldata.base_color = uBaseColor;
-  ldata.tex_color  = uShowTexture != 0 ? texture2D(uTexture, vScaledTexCoords) :
+  ldata.tex_color  = uShowTexture != 0 ? texture(uTexture, vScaledTexCoords) :
     vec4(1, 1, 1, 1);
   ldata.smoothness = uSmoothness;
   ldata.metalness  = uMetalness;
