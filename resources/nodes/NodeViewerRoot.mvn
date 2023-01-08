@@ -13,7 +13,7 @@ Node "NodeViewerRoot" {
     #<"nodes/ModelRoot.mvn">
     #<"nodes/PointTarget.mvn">
     #<"nodes/Tools/ScaleTool.mvn">
-    <"nodes/templates/Controller.mvn">
+    #<"nodes/templates/Controller.mvn">
     #<"nodes/templates/RadialMenu.mvn">
     #<"nodes/tests/AtlasTest.mvn">
     #<"nodes/tests/BlendTest.mvn">
@@ -28,6 +28,27 @@ Node "NodeViewerRoot" {
     # CLONE "T_Board" "AppBoard" {}
     # CLONE "T_Board" "ToolBoard" {}
     # CLONE "T_Board" "KeyBoard" {}
+
+    Node "TestTube1" {
+      shapes: [
+        Tube  {
+          points: [0 -3 0, 0 3 0],
+          diameter: .4,
+          side_count: 5,
+        },
+      ]
+    }
+    Node "TestTube2" {
+      translation: 4 0 0,
+      shapes: [
+        Tube  {
+          points: [0 -3 0,
+                   0 3 0,
+                   3 3 0],
+          diameter: .2,
+          side_count: 3,
+        },
+      ]
+    }
   ]
 }
-

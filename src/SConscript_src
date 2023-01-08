@@ -346,6 +346,7 @@ lib_sources = list(chain(
         'Texture',
         'Torus',
         'TriMeshShape',
+        'Tube',
         'Uniform',
         'UniformBlock',
         'UniformDef',

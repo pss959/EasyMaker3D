@@ -42,8 +42,7 @@ Bounds Torus::ComputeBounds() const {
 }
 
 ion::gfx::ShapePtr Torus::CreateSpecificIonShape() {
-    const TriMesh mesh = BuildTorusMesh(inner_radius_, outer_radius_,
-                                        ring_count_, sector_count_);
+    const TriMesh mesh = BuildMesh_();
     InstallMesh(mesh);
 
     // Allocate space for normals to be generated.

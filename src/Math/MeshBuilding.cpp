@@ -4,6 +4,9 @@
 #include <functional>
 #include <vector>
 
+#include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
+
 #include "Math/Curves.h"
 #include "Math/Linear.h"
 #include "Math/MeshCombining.h"
@@ -503,6 +506,46 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
     CleanMesh(mesh);
     // Lower complexities can cause the mesh to be off center.
     return CenterMesh(mesh);
+}
+
+TriMesh BuildTubeMesh(const std::vector<Point3f> &points, float diameter,
+                      int num_sides) {
+    using ion::math::Distance;
+    using ion::math::Normalized;
+    using ion::math::RotationMatrixH;
+    using ion::math::TranslationMatrix;
+
+    const float radius = .5f * diameter;
+
+    const auto build_segment = [&](const Point3f &p0,
+                                   const Point3f &p1){
+        const float height = Distance(p0, p1);
+        TriMesh seg = BuildCylinderMesh(radius, radius, height, num_sides);
+
+        // Rotate to lie along the segment and translate to the center.
+        const Rotationf rot = Rotationf::RotateInto(Vector3f::AxisY(),
+                                                    Normalized(p1 - p0));
+        const Point3f center = .5f * (p0 + p1);
+        return TransformMesh(seg,
+                             TranslationMatrix(center) * RotationMatrixH(rot));
+    };
+
+    TriMesh mesh;
+    if (points.size() == 2U) {  // Simple cylinder.
+        mesh = build_segment(points[0], points[1]);
+    }
+    else if (points.size() > 2U) {  // Multiple segments.
+        // Construct a mesh for each segment, then combine them and clean the
+        // result.
+        const size_t segment_count = points.size() - 1;
+        std::vector<TriMesh> meshes(segment_count);
+        for (size_t i = 0; i < segment_count; ++i)
+            meshes[i] = build_segment(points[i], points[i + 1]);
+        mesh = CombineMeshes(meshes, MeshCombiningOperation::kConcatenate);
+        CleanMesh(mesh);
+    }
+
+    return mesh;
 }
 
 TriMesh BuildPolygonMesh(const Polygon &polygon) {

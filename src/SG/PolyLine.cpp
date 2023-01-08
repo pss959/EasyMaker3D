@@ -2,6 +2,8 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Util/General.h"
+
 namespace SG {
 
 void PolyLine::AddFields() {
@@ -30,14 +32,9 @@ void PolyLine::SetArcPoints(const CircleArc &arc, float radius,
     const int seg_count = static_cast<int>(std::abs(arc.arc_angle.Degrees()) /
                                            degrees_per_segment);
     if (seg_count) {
-        const Anglef seg_angle = arc.arc_angle / seg_count;
-        const int pt_count = 1 + seg_count;
-        points.resize(pt_count);
-        for (int i = 0; i < pt_count; ++i) {
-            const Anglef angle = arc.start_angle + i * seg_angle;
-            points[i].Set(radius * ion::math::Cosine(angle),
-                          radius * ion::math::Sine(angle), 0);
-        }
+        points = Util::ConvertVector<Point3f, Point2f>(
+            GetCircleArcPoints(1 + seg_count, radius, arc),
+            [](const Point2f &p){ return Point3f(p, 0); });
     }
     SetPoints(points);
 }

@@ -51,6 +51,12 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors);
 TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
                        int num_rings, int num_sectors);
 
+/// Builds and returns a TriMesh representing a tube constructed from a set of
+/// connected segments joining the given points, with the given tube diameter
+/// and number of sides per segment.
+TriMesh BuildTubeMesh(const std::vector<Point3f> &points, float diameter,
+                      int num_sides);
+
 /// Builds and returns a flat TriMesh representing a Polygon. The TriMesh is
 /// defined in the Z=0 plane.
 TriMesh BuildPolygonMesh(const Polygon &polygon);

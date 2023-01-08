@@ -21,6 +21,10 @@ void PaneBorder::PostSetUpIon() {
         SetEnabled(false);
     }
     else {
+        if (width > 1) {
+            std::cerr << "XXXX PaneBorder line width = " << width << "\n";
+            width_ = 1;
+        }
         GetStateTable()->SetLineWidth(width_);
         SetBaseColor(color_);
     }
