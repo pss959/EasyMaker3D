@@ -51,6 +51,8 @@ void Pane::SetLayoutSize(const Vector2f &size) {
     if (layout_size_ != size) {
         layout_size_ = size;
         KLOG('p', "Layout size for " << GetDesc() << " now " << size);
+        if (auto border = border_.GetValue())
+            border->SetSize(size);
     }
 }
 

@@ -56,6 +56,9 @@ extern const float    kFloatingBoardYOffset;
 /// Minimum size for either canvas dimension in a Board.
 extern const float    kMinBoardCanvasSize;
 
+/// Base width for PaneBorder to simulate line width.
+extern const float    kPaneBorderBaseWidth;
+
 /// Amount to offset Pane items in Z to avoid Z-fighting.
 extern const float    kPaneZOffset;
 

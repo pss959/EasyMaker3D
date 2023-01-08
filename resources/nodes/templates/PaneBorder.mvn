@@ -2,18 +2,11 @@
 PaneBorder "T_PaneBorder" {
   pass_name: $LIGHTING_PASS,
   shader_names: ["BaseColor"],
-  state_table: StateTable {
-    line_width: 1,
-  },
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,
       uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
     }
   ],
-  shapes: [
-    PolyLine {
-      points: [-.5 -.5 0, .5 -.5 0, .5 .5 0, -.5 .5 0, -.5 -.5 0]
-    },
-  ]
+  shapes: [ MutableTriMeshShape {} ],
 }
