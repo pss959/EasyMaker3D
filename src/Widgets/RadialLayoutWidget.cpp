@@ -5,10 +5,10 @@
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
-#include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "SG/Torus.h"
+#include "SG/Tube.h"
 #include "Widgets/DiscWidget.h"
 
 #include <ion/math/angleutils.h>
@@ -263,7 +263,7 @@ void RadialLayoutWidget::UpdateSpokes_() {
 
 void RadialLayoutWidget::UpdateArc_() {
     // Update the arc line.
-    auto &line = *SG::FindTypedShapeInNode<SG::PolyLine>(*arc_line_, "Line");
+    auto &line = *SG::FindTypedShapeInNode<SG::Tube>(*arc_line_, "Line");
     line.SetArcPoints(arc_, TK::kRLWArcRadiusScale * radius_,
                       TK::kRLWArcDegreesPerSegment);
 

@@ -4,8 +4,8 @@
 #include <ion/math/transformutils.h>
 
 #include "App/CoordConv.h"
-#include "SG/Line.h"
 #include "SG/Search.h"
+#include "SG/Tube.h"
 #include "Util/Assert.h"
 #include "Widgets/RadialLayoutWidget.h"
 
@@ -34,7 +34,7 @@ void PointTargetWidget::CreationDone() {
             *this, "RadialLayoutWidget");
         snap_indicator_ = SG::FindNodeUnderNode(*this, "SnapIndicator");
         feedback_       = SG::FindNodeUnderNode(*this, "Feedback");
-        feedback_line_  = SG::FindTypedShapeInNode<SG::Line>(*feedback_,
+        feedback_line_  = SG::FindTypedShapeInNode<SG::Tube>(*feedback_,
                                                              "FeedbackLine");
         UpdateFromTarget_(GetPointTarget());
 

@@ -5,7 +5,7 @@
 #include "Widgets/TargetWidgetBase.h"
 
 namespace SG {
-DECL_SHARED_PTR(Line);
+DECL_SHARED_PTR(Tube);
 DECL_SHARED_PTR(Node);
 }
 
@@ -52,7 +52,7 @@ class PointTargetWidget : public TargetWidgetBase {
     RadialLayoutWidgetPtr layout_widget_;
     SG::NodePtr snap_indicator_;  ///< Sphere showing target snapping.
     SG::NodePtr feedback_;        ///< Node with line for showing feedback.
-    SG::LinePtr feedback_line_;   ///< Line for showing feedback.
+    SG::TubePtr feedback_line_;   ///< Line for showing feedback.
 
     /// Other endpoint of the feedback line in stage coordinates.
     Point3f line_end_pt_{0, 0, 0};

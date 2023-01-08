@@ -20,6 +20,12 @@ void Tube::SetPoints(const std::vector<Point3f> &points) {
     ProcessChange(Change::kGeometry, *this);
 }
 
+void Tube::SetEndpoints(const Point3f &p0, const Point3f &p1) {
+    points_ = std::vector<Point3f>{p0, p1};
+    UpdateIonShape_();
+    ProcessChange(Change::kGeometry, *this);
+}
+
 void Tube::SetArcPoints(const CircleArc &arc, float radius,
                             float degrees_per_segment) {
     std::vector<Point3f> points;

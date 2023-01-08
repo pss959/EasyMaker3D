@@ -7,9 +7,9 @@
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
-#include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
+#include "SG/Tube.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -33,7 +33,7 @@ class AngularFeedback::Impl_ {
     struct Parts_ {
         SG::LinePtr     start_line;  ///< Line showing the starting angle.
         SG::LinePtr     end_line;    ///< Line showing the ending angle.
-        SG::PolyLinePtr arc;         ///< Circular arc subtending the angle.
+        SG::TubePtr     arc;         ///< Circular arc subtending the angle.
         SG::TextNodePtr text;        ///< TextNode showing the feedback value.
     };
 
@@ -57,14 +57,14 @@ void AngularFeedback::Impl_::InitParts() {
         SG::NodePtr n = SG::FindNodeUnderNode(root_node_, name);
         return SG::FindTypedShapeInNode<SG::Line>(*n, "Line");
     };
-    auto get_polyline_func = [&](const std::string &name){
+    auto get_tube_func = [&](const std::string &name){
         SG::NodePtr n = SG::FindNodeUnderNode(root_node_, name);
-        return SG::FindTypedShapeInNode<SG::PolyLine>(*n, "Line");
+        return SG::FindTypedShapeInNode<SG::Tube>(*n, "Line");
     };
 
     parts_.start_line = get_line_func("StartLine");
     parts_.end_line   = get_line_func("EndLine");
-    parts_.arc        = get_polyline_func("Arc");
+    parts_.arc        = get_tube_func("Arc");
     parts_.text = SG::FindTypedNodeUnderNode<SG::TextNode>(root_node_, "Text");
 }
 

@@ -12,23 +12,26 @@ Node {
 
   children: [
     AngularFeedback "AngularFeedback" {
-      state_table: StateTable { line_width: 3 },
-
       children: [
-        Node "StartLine" { shapes: [ Line     "Line" {} ] },
-        Node "EndLine"   { shapes: [ Line     "Line" {} ] },
-        Node "Arc"       { shapes: [ PolyLine "Line" {} ] },
+        Node "StartLine" { shapes: [ Line "Line" {} ] },
+        Node "EndLine"   { shapes: [ Line "Line" {} ] },
+        Node "Arc" {
+          shapes: [
+            Tube "Line" {
+              diameter:   .1,
+              side_count: 4,
+            }
+          ]
+        },
         CLONE "T_FeedbackText" "Text" {},
       ]
     },
 
     LinearFeedback "LinearFeedback" {
-      state_table: StateTable { line_width: 2 },
-
       children: [
-        Node "Upright0" { shapes: [ Line "Line" {} ] },
-        Node "Upright1" { shapes: [ Line "Line" {} ] },
-        Node "Crossbar" { shapes: [ Line "Line" {} ] },
+        Node "Upright0" { shapes: [ Tube "Line" { diameter: .1 } ] },
+        Node "Upright1" { shapes: [ Tube "Line" { diameter: .1 } ] },
+        Node "Crossbar" { shapes: [ Tube "Line" { diameter: .1 } ] },
         CLONE "T_FeedbackText" "Text" {},
       ]
     },
@@ -55,7 +58,6 @@ Node {
             },
             Node "Outline" {
               translation: 0 0 -.1,
-              state_table: StateTable { line_width: 2 },
               blocks: [
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,

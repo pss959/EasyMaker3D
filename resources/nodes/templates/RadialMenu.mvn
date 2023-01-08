@@ -15,7 +15,7 @@ RadialMenu "T_RadialMenu" {
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
       blocks: [ USE "T_BorderColor" ],
-      state_table: StateTable { line_width: 3 },
+      state_table: StateTable { line_width: 1 },
       shapes: [
         PolyLine "Outer" {},
         PolyLine "Inner" {},

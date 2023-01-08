@@ -28,6 +28,9 @@ class Tube : public TriMeshShape {
     /// Sets the points forming the backbone of the Tube.
     void SetPoints(const std::vector<Point3f> &points);
 
+    // Sets points to form a single segment between the two given points.
+    void SetEndpoints(const Point3f &p0, const Point3f &p1);
+
     /// Sets points to form an arc. If the arc angle is not large enough, this
     /// clears the points.
     void SetArcPoints(const CircleArc &arc, float radius,

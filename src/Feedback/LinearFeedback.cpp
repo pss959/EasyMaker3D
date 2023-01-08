@@ -8,10 +8,10 @@
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
-#include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
+#include "SG/Tube.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -51,9 +51,9 @@ class LinearFeedback::Impl_ {
 
     /// This struct stores all of the parts the LinearFeedback needs to operate.
     struct Parts_ {
-        SG::LinePtr     upright0;   ///< Upright connected to p0.
-        SG::LinePtr     upright1;   ///< Upright connected to p1.
-        SG::LinePtr     crossbar;   ///< Crossbar connecting the uprights.
+        SG::TubePtr     upright0;   ///< Upright connected to p0.
+        SG::TubePtr     upright1;   ///< Upright connected to p1.
+        SG::TubePtr     crossbar;   ///< Crossbar connecting the uprights.
         SG::TextNodePtr text;       ///< TextNode showing the feedback value.
     };
 
@@ -74,7 +74,7 @@ class LinearFeedback::Impl_ {
 void LinearFeedback::Impl_::InitParts() {
     auto get_line_func = [&](const std::string &name){
         SG::NodePtr n = SG::FindNodeUnderNode(root_node_, name);
-        return SG::FindTypedShapeInNode<SG::Line>(*n, "Line");
+        return SG::FindTypedShapeInNode<SG::Tube>(*n, "Line");
     };
 
     parts_.upright0 = get_line_func("Upright0");
