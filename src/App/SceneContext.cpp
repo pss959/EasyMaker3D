@@ -11,7 +11,6 @@
 #include "Panels/KeyboardPanel.h"
 #include "Panels/TreePanel.h"
 #include "SG/Gantry.h"
-#include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
@@ -103,7 +102,5 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     debug_text     = FindTyped_<SG::TextNode>(sc, "DebugText");
     debug_rect     = FindNamed_(sc, "DebugRect");
     debug_sphere   = FindNamed_(sc, "DebugSphere");
-    auto line_node = FindNamed_(sc, "DebugLine");
-    debug_line     = SG::FindTypedShapeInNode<SG::Line>(*line_node, "Line");
 #endif
 }

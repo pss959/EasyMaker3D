@@ -20,7 +20,6 @@ DECL_SHARED_PTR(Slider1DWidget);
 
 namespace SG {
 DECL_SHARED_PTR(Gantry);
-DECL_SHARED_PTR(Line);
 DECL_SHARED_PTR(Node);
 DECL_SHARED_PTR(Scene);
 DECL_SHARED_PTR(ShadowPass);
@@ -75,7 +74,6 @@ struct SceneContext {
     SG::TextNodePtr     debug_text;
     SG::NodePtr         debug_rect;
     SG::NodePtr         debug_sphere;
-    SG::LinePtr         debug_line;
 
     /// Fills in a SceneContext from a Scene. If is_full_scene is true, this
     /// expects everything to be filled in.

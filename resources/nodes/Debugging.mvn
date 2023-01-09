@@ -57,20 +57,6 @@ Node "Debugging" {
           ],
           shapes: [ Ellipsoid {} ],
         },
-        # A handy yellow line. Disabled by default
-        Node "DebugLine" {
-          disabled_flags: "kTraversal|kRender|kIntersectAll",
-          state_table: StateTable {
-            line_width: 13,
-          },
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 1 0 1 }],
-            }
-          ],
-          shapes: [ Line "Line" { end0: -40 0 -80, end1: 50 50 0 } ],
-        },
       ],
     }
   ]
