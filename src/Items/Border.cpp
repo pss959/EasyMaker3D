@@ -16,22 +16,38 @@ void Border::AddFields() {
 
 void Border::PostSetUpIon() {
     SG::Node::PostSetUpIon();
+    UpdateMesh_();
+}
 
-    const float width = width_;
-    if (width <= 0) {
-        SetEnabled(false);
-    }
-    else {
-        SetBaseColor(color_);
-        UpdateMesh_(width, Vector2f(1, 1));
-    }
+void Border::SetColor(const Color &color) {
+    color_ = color;
+    UpdateMesh_();
+}
+
+void Border::SetWidth(float width) {
+    width_ = width;
+    UpdateMesh_();
 }
 
 void Border::SetSize(const Vector2f &size) {
-    UpdateMesh_(width_, size);
+    size_ = size;
+    UpdateMesh_();
 }
 
-void Border::UpdateMesh_(float width, const Vector2f &size) {
+void Border::UpdateMesh_() {
+    // Don't do anything until Ion is set up.
+    if (! GetIonNode())
+        return;
+
+    const float width = width_;
+
+    if (width <= 0) {
+        SetEnabled(false);
+        return;
+    }
+    SetEnabled(true);
+    SetBaseColor(color_);
+
     // Set up the TriMesh to form a border with the correct width.
     ASSERT(GetShapes().size() == 1U);
     auto mtms = Util::CastToDerived<SG::MutableTriMeshShape>(GetShapes()[0]);
@@ -45,9 +61,9 @@ void Border::UpdateMesh_(float width, const Vector2f &size) {
     // half on each side of the origin.
     const float w = TK::kBorderBaseWidth * width;
     const float xo = .5f;
-    const float xi = .5f * (1 - w / size[0]);
+    const float xi = .5f * (1 - w / size_[0]);
     const float yo = .5f;
-    const float yi = .5f * (1 - w / size[1]);
+    const float yi = .5f * (1 - w / size_[1]);
     mesh.points.resize(8);
     mesh.points[0].Set(-xo, -yo, 0);
     mesh.points[1].Set( xo, -yo, 0);
