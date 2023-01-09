@@ -56,9 +56,6 @@ extern const float    kFloatingBoardYOffset;
 /// Minimum size for either canvas dimension in a Board.
 extern const float    kMinBoardCanvasSize;
 
-/// Base width for PaneBorder to simulate line width.
-extern const float    kPaneBorderBaseWidth;
-
 /// Amount to offset Pane items in Z to avoid Z-fighting.
 extern const float    kPaneZOffset;
 
@@ -387,6 +384,9 @@ extern const int      kVRSampleCount;
 
 /// \name Other Geometry
 ///@{
+
+/// Base width used by the Border class to simulate line width.
+extern const float    kBorderBaseWidth;
 
 /// Y offset of the Controller touch affordance below the laser pointer.
 extern const float    kControllerTouchYOffset;

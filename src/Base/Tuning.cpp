@@ -21,7 +21,6 @@ const float    kBoardTouchDistance               = .6f;
 const float    kBoardTouchScale                  = .4f;
 const float    kFloatingBoardYOffset             = 4;
 const float    kMinBoardCanvasSize               = 4;
-const float    kPaneBorderBaseWidth              = 1.5f;
 const float    kPaneZOffset                      = .08f;
 const float    kPanelToWorldScale                = .06f;
 const float    kTextInputPaneCursorWidth         = 40;
@@ -132,6 +131,7 @@ const int      kStageImageSize                   = 1024;
 const int      kVRSampleCount                    = 4;
 
 // Other Geometry
+const float    kBorderBaseWidth                  = 1.5f;
 const float    kControllerTouchYOffset           = .003f;
 
 // Radial Menus

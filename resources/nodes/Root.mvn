@@ -95,9 +95,9 @@ Node "Root" {
         # Note: order here matters because there are some dependencies.
         <"nodes/templates/Frame.mvn">,
         <"nodes/templates/Board.mvn">,
+        <"nodes/templates/Border.mvn">,
         <"nodes/templates/Controller.mvn">,
         <"nodes/templates/PaneBackground.mvn">,
-        <"nodes/templates/PaneBorder.mvn">,
         <"nodes/templates/RadialMenu.mvn">,
       ],
       children: [

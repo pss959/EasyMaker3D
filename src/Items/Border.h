@@ -6,13 +6,13 @@
 
 namespace Parser { class Registry; }
 
-DECL_SHARED_PTR(PaneBorder);
+DECL_SHARED_PTR(Border);
 
-/// PaneBorder is used to add a colored border to any Pane. It uses polygons to
-/// simulate wide lines.
+/// Border is used to create a colored 2D border. It uses triangles to simulate
+/// wide lines.
 ///
 /// \ingroup Items
-class PaneBorder : public SG::Node {
+class Border : public SG::Node {
   public:
     virtual void PostSetUpIon() override;
 
@@ -21,7 +21,7 @@ class PaneBorder : public SG::Node {
     void SetSize(const Vector2f &size);
 
   protected:
-    PaneBorder();
+    Border();
 
     virtual void AddFields() override;
 

@@ -36,11 +36,11 @@ Scene {
         CONSTANTS: [
           # Shorthand for instantiating pane templates.
           BG:     "CLONE \"T_PaneBackground\" \"Background\"",
-          BORDER: "CLONE \"T_PaneBorder\" \"Border\"",
+          BORDER: "CLONE \"T_Border\" \"Border\"",
         ],
         TEMPLATES: [
           <"nodes/templates/PaneBackground.mvn">,
-          <"nodes/templates/PaneBorder.mvn">,
+          <"nodes/templates/Border.mvn">,
           <"nodes/templates/Panes/ButtonPane.mvn">,
           <"nodes/templates/Panes/ClipPane.mvn">,
           <"nodes/templates/Panes/IconPane.mvn">,

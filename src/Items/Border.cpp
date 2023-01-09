@@ -1,20 +1,20 @@
-#include "Items/PaneBorder.h"
+#include "Items/Border.h"
 
 #include "Base/Tuning.h"
 #include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
 
-PaneBorder::PaneBorder() {
+Border::Border() {
 }
 
-void PaneBorder::AddFields() {
+void Border::AddFields() {
     AddField(color_.Init("color", Color::Black()));
     AddField(width_.Init("width", 1));
 
     SG::Node::AddFields();
 }
 
-void PaneBorder::PostSetUpIon() {
+void Border::PostSetUpIon() {
     SG::Node::PostSetUpIon();
 
     const float width = width_;
@@ -27,11 +27,11 @@ void PaneBorder::PostSetUpIon() {
     }
 }
 
-void PaneBorder::SetSize(const Vector2f &size) {
+void Border::SetSize(const Vector2f &size) {
     UpdateMesh_(width_, size);
 }
 
-void PaneBorder::UpdateMesh_(float width, const Vector2f &size) {
+void Border::UpdateMesh_(float width, const Vector2f &size) {
     // Set up the TriMesh to form a border with the correct width.
     ASSERT(GetShapes().size() == 1U);
     auto mtms = Util::CastToDerived<SG::MutableTriMeshShape>(GetShapes()[0]);
@@ -43,7 +43,7 @@ void PaneBorder::UpdateMesh_(float width, const Vector2f &size) {
     // the border width is W, then the scaled outer border size is S and the
     // inner size is (S-W). In unscaled coordinates, these are 1 and 1-W/S. Use
     // half on each side of the origin.
-    const float w = TK::kPaneBorderBaseWidth * width;
+    const float w = TK::kBorderBaseWidth * width;
     const float xo = .5f;
     const float xi = .5f * (1 - w / size[0]);
     const float yo = .5f;

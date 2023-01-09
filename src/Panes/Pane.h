@@ -4,8 +4,8 @@
 #include <string>
 
 #include "Base/Memory.h"
+#include "Items/Border.h"
 #include "Items/PaneBackground.h"
-#include "Items/PaneBorder.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Util/Notifier.h"
@@ -147,7 +147,7 @@ class Pane : public SG::Node {
     Parser::TField<bool>                resize_width_;
     Parser::TField<bool>                resize_height_;
     Parser::ObjectField<PaneBackground> background_;
-    Parser::ObjectField<PaneBorder>     border_;
+    Parser::ObjectField<Border>         border_;
     ///@}
 
     /// Current base size of the Pane.

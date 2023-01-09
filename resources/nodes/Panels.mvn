@@ -3,7 +3,7 @@ Node "Panels" {
   CONSTANTS: [
     # Shorthand for instantiating pane templates.
     BG:         "CLONE \"T_PaneBackground\" \"Background\"",
-    BORDER:     "CLONE \"T_PaneBorder\" \"Border\"",
+    BORDER:     "CLONE \"T_Border\" \"Border\"",
     BUTTONTEXT: "CLONE \"T_TextPane\" \"ButtonText\"",
 
     # Other shorthand.
