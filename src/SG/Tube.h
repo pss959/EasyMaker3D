@@ -38,6 +38,9 @@ class Tube : public TriMeshShape {
     /// default is 4.
     int   GetSideCount() const { return side_count_; }
 
+    /// Changes the taper value.
+    void SetTaper(float taper);
+
     /// Sets the points forming the backbone of the Tube.
     void SetPoints(const std::vector<Point3f> &points);
 

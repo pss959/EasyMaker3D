@@ -152,7 +152,11 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
             // Use a long laser pointer.
             end_pt.Set(0, 0, -10000);
         }
+        // Change the points of the tube and adjust the taper based on the
+        // distance.
         pointer_hover_tube_->SetEndpoints(pointer_start_point_, end_pt);
+        pointer_hover_tube_->SetTaper(
+            ComputeTaper_(pointer_start_point_, end_pt));
     }
 }
 
@@ -169,6 +173,7 @@ void Controller::ShowGripHover(bool show, const Point3f &pt,
             guide_pt += guide_parent_->GetTranslation();
             grip_hover_node_->SetBaseColor(color);
             grip_hover_tube_->SetEndpoints(guide_pt, pt);
+            grip_hover_tube_->SetTaper(ComputeTaper_(guide_pt, pt));
         }
     }
 }
@@ -347,4 +352,12 @@ void Controller::SetUpForTouch_() {
     touch_radius_ = .5f * touch_bounds.GetSize()[0];
 
     touch_node_->SetEnabled(was_enabled);
+}
+
+float Controller::ComputeTaper_(const Point3f &p0, const Point3f &p1) {
+    // Distance is about .2 for touch on panels and about 60 to something near
+    // the center of the stage and about 120 near the back wall. Want taper to
+    // be about 100 for the back wall and about 1 for panels.
+    const float d = ion::math::Distance(p0, p1);
+    return Lerp(d / 120, 1, 100);
 }

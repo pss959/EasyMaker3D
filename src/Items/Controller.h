@@ -236,5 +236,9 @@ class Controller : public SG::Node {
     /// Sets up the touch geometry.
     void SetUpForTouch_();
 
+    /// Computes a taper value for a laser pointer or grip hover between two
+    /// points.
+    static float ComputeTaper_(const Point3f &p0, const Point3f &p1);
+
     friend class Parser::Registry;
 };

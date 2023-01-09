@@ -15,6 +15,12 @@ void Tube::AddFields() {
     TriMeshShape::AddFields();
 }
 
+void Tube::SetTaper(float taper) {
+    taper_ = taper;
+    UpdateIonShape_();
+    ProcessChange(Change::kGeometry, *this);
+}
+
 void Tube::SetPoints(const std::vector<Point3f> &points) {
     points_ = points;
     UpdateIonShape_();
