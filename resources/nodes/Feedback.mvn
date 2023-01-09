@@ -56,20 +56,10 @@ Node {
               ],
               shapes: [ Rectangle {} ],
             },
-            Node "Outline" {
-              translation: 0 0 -.1,
-              blocks: [
-                UniformBlock {
-                  pass_name: $LIGHTING_PASS,
-                  uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
-                }
-              ],
-              shapes: [
-                PolyLine {
-                  points: [-.5 -.5 0, .5 -.5 0, .5 .5 0, -.5 .5 0, -.5 -.5 0]
-                },
-              ],
-            }
+            CLONE "T_Border" "Border" {
+              width:       .15,
+              translation: 0 0 .1,
+            },
           ]
         },
         TextNode "Text" {

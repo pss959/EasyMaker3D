@@ -5,6 +5,8 @@
 #include <ion/math/vectorutils.h>
 
 #include "Base/Tuning.h"
+#include "Items/Border.h"
+#include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
@@ -30,6 +32,7 @@ class TooltipFeedback::Impl_ {
     SG::Node        &root_node_;
     SG::NodePtr      background_;
     SG::TextNodePtr  text_;
+    BorderPtr        border_;
 
     /// Amount to delay showing any tooltip.
     static float delay_;
@@ -53,6 +56,7 @@ float TooltipFeedback::Impl_::delay_ = TK::kTooltipDelay;
 void TooltipFeedback::Impl_::InitParts() {
     text_       = SG::FindTypedNodeUnderNode<SG::TextNode>(root_node_, "Text");
     background_ = SG::FindNodeUnderNode(root_node_, "Background");
+    border_     = SG::FindTypedNodeUnderNode<Border>(root_node_, "Border");
 }
 
 void TooltipFeedback::Impl_::SetText(const std::string &text) {
@@ -63,7 +67,9 @@ void TooltipFeedback::Impl_::SetText(const std::string &text) {
     const size_t line_count = 1 + std::count(text.begin(), text.end(), '\n');
     text_->SetUniformScale(line_count);
 
-    background_->SetScale(GetTextSize());
+    const Vector3f size = GetTextSize();
+    background_->SetScale(size);
+    border_->SetSize(ToVector2f(size));
 }
 
 Vector3f TooltipFeedback::Impl_::GetTextSize() const {

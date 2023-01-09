@@ -74,5 +74,8 @@ void Border::UpdateMesh_(float width, const Vector2f &size) {
         2, 3, 7, 2, 7, 6,  // Top.
     };
 
+    if (GetName() == "XXXXBorder") // XXXX
+        std::cerr << "XXXX mesh = " << mesh.ToString() << "\n";
+
     mtms->ChangeMesh(mesh);
 }
