@@ -86,7 +86,6 @@ ProfilePane "T_ProfilePane" {
     Node "ProfileLine" {
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
-      state_table: StateTable { line_width: 2 },
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
