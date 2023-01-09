@@ -11,7 +11,7 @@
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
-namespace SG { DECL_SHARED_PTR(Line); }
+namespace SG { DECL_SHARED_PTR(Tube); }
 
 DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(RadialMenu);
@@ -197,11 +197,11 @@ class Controller : public SG::Node {
     /// Node used to display grip hover highlights.
     SG::NodePtr grip_hover_node_;
 
-    /// Line shape in the node for the laser pointer.
-    SG::LinePtr pointer_hover_line_;
+    /// Tube shape in the node for the laser pointer.
+    SG::TubePtr pointer_hover_tube_;
 
-    /// Line shape in the node used to display grip hover highlights.
-    SG::LinePtr grip_hover_line_;
+    /// Tube shape in the node used to display grip hover highlights.
+    SG::TubePtr grip_hover_tube_;
 
     /// Starting point of laser pointer.
     Point3f     pointer_start_point_{0, 0, 0};

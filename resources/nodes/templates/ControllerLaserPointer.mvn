@@ -1,13 +1,7 @@
 Node "LaserPointer" {
   pass_name: $LIGHTING_PASS,
   shader_names: ["BaseColor"],
-  state_table: StateTable { line_width: 3 },
-  shapes: [
-    Line "Line" {
-      end0: 0 0 0,
-      end1: 0 0 -10000,
-    },
-  ],
+  shapes: [ Tube "Tube" { diameter: .005, points: [0 0 0, 0 0 -10000] } ],
   children: [
     Node "PointerHoverHighlight" {
       shapes: [ Ellipsoid { size: .012 .012 .012 } ]  # Scaled by distance.

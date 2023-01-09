@@ -8,12 +8,12 @@
 #include "Math/Linear.h"
 #include "Parser/Registry.h"
 #include "SG/ColorMap.h"
-#include "SG/Line.h"
 #include "SG/MutableTriMeshShape.h"
 #include "SG/NodePath.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
 #include "SG/Texture.h"
+#include "SG/Tube.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
@@ -149,10 +149,10 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
             end_pt = pt;
         }
         else {
-            // Use a long laser pointer line.
+            // Use a long laser pointer.
             end_pt.Set(0, 0, -10000);
         }
-        pointer_hover_line_->SetEndpoints(pointer_start_point_, end_pt);
+        pointer_hover_tube_->SetEndpoints(pointer_start_point_, end_pt);
     }
 }
 
@@ -168,7 +168,7 @@ void Controller::ShowGripHover(bool show, const Point3f &pt,
                 guide_pt[0] = -guide_pt[0];
             guide_pt += guide_parent_->GetTranslation();
             grip_hover_node_->SetBaseColor(color);
-            grip_hover_line_->SetEndpoints(guide_pt, pt);
+            grip_hover_tube_->SetEndpoints(guide_pt, pt);
         }
     }
 }
@@ -229,14 +229,14 @@ void Controller::PostSetUpIon() {
     touch_tip_node_->SetBaseColor(
         SG::ColorMap::SGetColor("TouchInactiveColor"));
 
-    // Access the laser pointer Line shape.
-    pointer_hover_line_ =
-        SG::FindTypedShapeInNode<SG::Line>(*pointer_node_, "Line");
+    // Access the laser pointer Tube shape.
+    pointer_hover_tube_ =
+        SG::FindTypedShapeInNode<SG::Tube>(*pointer_node_, "Tube");
 
-    // Access the Line shape for the grip hover so it can have its endpoints
+    // Access the Tube shape for the grip hover so it can have its endpoints
     // adjusted for feedback.
-    grip_hover_line_ =
-        SG::FindTypedShapeInNode<SG::Line>(*grip_hover_node_, "Line");
+    grip_hover_tube_ =
+        SG::FindTypedShapeInNode<SG::Tube>(*grip_hover_node_, "Tube");
 
     // Access the GripGuides parent node and rotate for the left controller.
     guide_parent_ = SG::FindNodeUnderNode(*grip_node_, "GripGuides");
