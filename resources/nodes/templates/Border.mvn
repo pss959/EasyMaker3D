@@ -1,6 +1,7 @@
 # This is used to add a 2D border to any Pane or other object. It uses the
 # BaseColor shader.
 Border "T_Border" {
+  disabled_flags: "kIntersectAll",   # Never needs to be intersected.
   pass_name: $LIGHTING_PASS,
   shader_names: ["BaseColor"],
   blocks: [

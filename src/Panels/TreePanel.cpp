@@ -9,8 +9,10 @@
 #include "App/Selection.h"
 #include "Base/Tuning.h"
 #include "Commands/ChangeOrderCommand.h"
+#include "Items/Border.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
+#include "Math/Linear.h"
 #include "Models/CombinedModel.h"
 #include "Models/RootModel.h"
 #include "Panes/ButtonPane.h"
@@ -21,7 +23,6 @@
 #include "Panes/TextPane.h"
 #include "Parser/Registry.h"
 #include "SG/ColorMap.h"
-#include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
@@ -87,7 +88,7 @@ class TreePanel::Impl_ {
     typedef std::shared_ptr<ModelRow_>              ModelRowPtr_;
     typedef std::unordered_map<ModelPtr, ExpState_> ExpStateMap_;
 
-    CommandManagerPtr          command_manager_;
+    CommandManagerPtr         command_manager_;
     SelectionManagerPtr       selection_manager_;
     RootModelPtr              root_model_;
     SwitcherPanePtr           session_vis_switcher_pane_;
@@ -255,7 +256,7 @@ class TreePanel::Impl_::RectSelect_ {
 
     SG::NodePtr      root_node_;    ///< Root above Widget and feedback.
     GenericWidgetPtr widget_;       ///< Initiates the selection drag.
-    SG::NodePtr      lines_;        ///< For visible rectangle feedback.
+    BorderPtr        lines_;        ///< For visible rectangle feedback.
     Range1f          y_range_;      ///< Starting/ending Y values for drag.
     Point3f          start_point_;  ///< Starting intersection point.
 
@@ -299,8 +300,8 @@ void TreePanel::Impl_::RectSelect_::SetRootNode(const SG::NodePtr &root_node) {
     widget_ = SG::FindTypedNodeUnderNode<GenericWidget>(*root_node, "Widget");
     widget_->GetDragged().AddObserver(this, drag_func);
 
-    // Access the Node with the PolyLine used to show feedback.
-    lines_ = SG::FindNodeUnderNode(*root_node, "Feedback");
+    // Access the Border used to show feedback.
+    lines_ = SG::FindTypedNodeUnderNode<Border>(*root_node, "Feedback");
 }
 
 void TreePanel::Impl_::RectSelect_::StartDrag_(const DragInfo &info) {
@@ -367,19 +368,13 @@ void TreePanel::Impl_::RectSelect_::FinishDrag_() {
 void TreePanel::Impl_::RectSelect_::UpdateLines_(bool is_visible,
                                                  const Point3f &p0,
                                                  const Point3f &p1) {
-    lines_->SetEnabled(is_visible);
-    if (is_visible) {
-        std::vector<Point3f> points(5);
-        points[0] = points[4] = p0;
-        points[2] = p1;
-        points[1].Set(p1[0], p0[1], 0);
-        points[3].Set(p0[0], p1[1], 0);
-        // Move all points in front of the buttons.
-        for (auto &p: points)
-            p[2] = TK::kTreePanelRectSelectZOffset;
-        auto poly_line =
-            SG::FindTypedShapeInNode<SG::PolyLine>(*lines_, "Lines");
-        poly_line->SetPoints(points);
+    lines_->SetFlagEnabled(SG::Node::Flag::kRender, is_visible);
+    if (is_visible && p0 != p1) {
+        const Vector2f size(Clamp(std::abs(p1[0] - p0[0]), .01f, 1.f),
+                            Clamp(std::abs(p1[1] - p0[1]), .01f, 1.f));
+        lines_->SetTranslation(.5f * (p0 + p1));
+        lines_->SetScale(Vector3f(size, 1));
+        lines_->SetSize(size);
     }
 }
 

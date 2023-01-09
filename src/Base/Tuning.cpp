@@ -26,7 +26,6 @@ const float    kPanelToWorldScale                = .06f;
 const float    kTextInputPaneCursorWidth         = 40;
 const float    kToolBoardHeight                  = 14;
 const float    kToolBoardZOffset                 = 1;
-const float    kTreePanelRectSelectZOffset       = .5f;
 
 // Feedback and Haptics
 const float    kAngularFeedbackArcRadius         = 10;

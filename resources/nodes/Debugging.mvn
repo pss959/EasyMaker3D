@@ -18,10 +18,10 @@ Node "Debugging" {
       ],
       children: [
         TextNode "DebugText" {
-          scale: .8 .8 .8,
+          scale: .8 1 1,
           text: "Debug Text",
           font_name: "Arial-Regular",
-          color: "#ff88fb",
+          color: "#ffffdd",
           #outline_color: "#000000",
           #outline_width: .04,
           layout_options: LayoutOptions { halignment: "kAlignHCenter" },

@@ -73,9 +73,6 @@ extern const float    kToolBoardHeight;
 /// attaching a PanelTool to it (and not in VR).
 extern const float    kToolBoardZOffset;
 
-/// Z offset of the rectangle selection geometry in the TreePanel.
-extern const float    kTreePanelRectSelectZOffset;
-
 ///@}
 
 /// \name Feedback and Haptics

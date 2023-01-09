@@ -80,8 +80,12 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
 
     // Skip the entire subgraph if either of these flags is set.
     if (! node.IsFlagEnabled(Node::Flag::kTraversal) ||
-        ! node.IsFlagEnabled(Node::Flag::kIntersectAll))
+        ! node.IsFlagEnabled(Node::Flag::kIntersectAll)) {
+        KLOG('i', Util::Spaces(2 * path.size())
+             << "Skipping " << node.GetDesc()
+             << ": flags=" << node.GetDisabledFlags().ToString());
         return;
+    }
 
     // If the kIntersect flag is enabled and the Node bounds are not
     // intersected, stop.
