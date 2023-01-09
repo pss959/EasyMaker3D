@@ -53,7 +53,6 @@ ProfilePane "T_ProfilePane" {
               scale:       .3 .3 .3,
               translation: 0 0 .1,
               shader_names: ["BaseColor"],
-              state_table: StateTable { line_width: 2 },
               blocks: [
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
@@ -61,8 +60,8 @@ ProfilePane "T_ProfilePane" {
                 }
               ],
               shapes: [
-                Line { end0: -1 -1 0, end1:  1  1 0 },
-                Line { end0: -1  1 0, end1:  1 -1 0 },
+                Tube { diameter: .4, points: [-1 -1 0, 1  1 0] },
+                Tube { diameter: .4, points: [-1  1 0, 1 -1 0] },
               ]
             }
           ]

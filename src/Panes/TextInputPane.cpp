@@ -784,9 +784,9 @@ void TextInputPane::Impl_::MoveCursorTo_(size_t new_pos) {
     ASSERT(new_pos <= GetState_().GetCharCount());
     GetState_().SetCursorPos(new_pos);
 
-    // Set the cursor position.
+    // Set the cursor position. Move it forward a little.
     const float x = CharPosToX_(new_pos);
-    cursor_->SetTranslation(Vector3f(x, 0, 0));
+    cursor_->SetTranslation(Vector3f(x, 0, .1f));
 }
 
 void TextInputPane::Impl_::UpdateFromState_() {
