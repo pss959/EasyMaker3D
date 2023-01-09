@@ -233,17 +233,13 @@ ion::gfx::NodePtr Node::SetUpIon(
         programs_[info.pass_index] = info.program;
     }
 
-    if (auto &state_table = GetStateTable()) {
-        if (state_table->GetLineWidth() > 1) {
-            std::cerr << "XXXX " << GetDesc() << " line_width = "
-                      << state_table->GetLineWidth() << "\n";
-            state_table->SetLineWidth(1);
-        }
-    }
 
     // Set up StateTable.
-    if (auto &state_table = GetStateTable())
+    if (auto &state_table = GetStateTable()) {
+        // Make sure we are OpenGL-compliant here.
+        ASSERT(state_table->GetLineWidth() <= 1);
         ion_node_->SetStateTable(state_table->SetUpIon());
+    }
 
     // Set up UniformBlocks.
     for (const auto &block: GetUniformBlocks()) {

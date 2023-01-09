@@ -380,10 +380,6 @@ void StateTable::SetHint(HintTarget target, HintMode mode) {
 // Line width state.
 
 void StateTable::SetLineWidth(float width) {
-  if (width > 1) {
-    std::cerr << "XXXX Setting line width of " << width << "  to 1\n";
-    width = 1;
-  }
   data_.line_width = width;
   data_.values_set.set(kLineWidthValue);
 }
