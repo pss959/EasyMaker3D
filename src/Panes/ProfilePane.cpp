@@ -9,8 +9,8 @@
 #include "App/ClickInfo.h"
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
-#include "SG/PolyLine.h"
 #include "SG/Node.h"
+#include "SG/Tube.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -56,7 +56,7 @@ class ProfilePane::Impl_ {
     WidgetPtr         delete_spot_;     ///< Target spot for deleting points.
     GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
     GenericWidgetPtr  new_point_;       ///< Shows location of new point.
-    SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
+    SG::TubePtr       profile_line_;    ///< Line showing Profile.
 
     /// Rectangle representing the drag target area used for deleting points.
     Range2f           delete_rect_;
@@ -136,7 +136,7 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
         root_node, "NewPoint");
 
     auto line = SG::FindNodeUnderNode(root_node, "ProfileLine");
-    profile_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*line, "Line");
+    profile_line_ = SG::FindTypedShapeInNode<SG::Tube>(*line, "Line");
 
     area_widget_->GetHovered().AddObserver(
         this, [&](const Point3f &point){ AreaHovered_(point); });

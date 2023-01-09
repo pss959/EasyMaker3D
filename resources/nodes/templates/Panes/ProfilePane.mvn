@@ -94,8 +94,10 @@ ProfilePane "T_ProfilePane" {
         }
       ],
       shapes: [
-        PolyLine "Line" {
-          points: [ 0 0 0, 1 1 1 ]  # Replaced in code.
+        Tube "Line" {
+          diameter: .008,
+          side_count: 4,
+          points: [ 0 0 0, 1 1 1 ],  # Replaced in code.
         }
       ]
     }
