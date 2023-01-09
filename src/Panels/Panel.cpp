@@ -183,14 +183,19 @@ void Panel::SetIsShown(bool is_shown) {
         // Let the derived class update any UI.
         UpdateInterface();
 
-        if (! interactive_panes_.empty()) {
-            // Use first interactive pane by default.
-            if (focused_index_ < 0) {
-                focused_index_ = 0;
-                KLOG('F', GetDesc() << " focused on "
-                     << interactive_panes_[0]->GetDesc() << " to start");
+        if (focused_index_ < 0) {
+            // Use first focusable interactive pane by default.
+            for (size_t i = 0; i < interactive_panes_.size(); ++i) {
+                if (interactive_panes_[i]->GetInteractor()->CanFocus()) {
+                    focused_index_ = i;
+                    KLOG('F', GetDesc() << " focused on "
+                         << interactive_panes_[0]->GetDesc() << " to start");
+                    update_focus_highlight_ = true;
+                }
             }
-            update_focus_highlight_ = true;
+            // Didn't find one? Turn off focus highlight.
+            if (focused_index_ < 0)
+                highlight_border_->SetEnabled(false);
         }
     }
 }

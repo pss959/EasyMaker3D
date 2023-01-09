@@ -88,13 +88,11 @@ ProfilePane "T_ProfilePane" {
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#552244" } ],
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#221122" } ],
         }
       ],
       shapes: [
-        Tube "Line" {
-          diameter: .008,
-          side_count: 4,
+        PolyLine "Line" {
           points: [ 0 0 0, 1 1 1 ],  # Replaced in code.
         }
       ]
