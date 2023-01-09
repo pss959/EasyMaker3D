@@ -53,9 +53,11 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
 
 /// Builds and returns a TriMesh representing a tube constructed from a set of
 /// connected segments joining the given points, with the given tube diameter
-/// and number of sides per segment.
+/// and number of sides per segment. If taper is not 1, it is multipled by the
+/// diameter to get the ending diameter, with intervening diameters scaled
+/// proportionately.
 TriMesh BuildTubeMesh(const std::vector<Point3f> &points, float diameter,
-                      int num_sides);
+                      float taper, int num_sides);
 
 /// Builds and returns a flat TriMesh representing a Polygon. The TriMesh is
 /// defined in the Z=0 plane.

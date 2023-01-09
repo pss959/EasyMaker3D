@@ -9,6 +9,7 @@ namespace SG {
 void Tube::AddFields() {
     AddField(points_.Init("points"));
     AddField(diameter_.Init("diameter",     1));
+    AddField(taper_.Init("taper",           1));
     AddField(side_count_.Init("side_count", 4));
 
     TriMeshShape::AddFields();
@@ -59,7 +60,7 @@ void Tube::UpdateIonShape_() {
 }
 
 TriMesh Tube::BuildMesh_() const {
-    return BuildTubeMesh(points_, diameter_, side_count_);
+    return BuildTubeMesh(points_, diameter_, taper_, side_count_);
 }
 
 }  // namespace SG

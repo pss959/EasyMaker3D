@@ -4,7 +4,13 @@ Node "Grip" {
       disabled_flags: "kTraversal",
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
-      shapes: [ Tube "Tube" { diameter: .006, points: [0 0 0, 0 0 1] } ],
+      shapes: [
+        Tube "Tube" {
+          diameter: .006,
+          taper:    100,     # Grow with distance to look roughly straight.
+          points: [0 0 0, 0 0 1]
+        }
+      ],
     },
 
     Node "GripGuides" {

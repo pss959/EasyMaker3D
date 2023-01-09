@@ -33,7 +33,8 @@ Node "NodeViewerRoot" {
       shapes: [
         Tube  {
           points: [0 -3 0, 0 3 0],
-          diameter: .4,
+          diameter:  .4,
+          taper:     3,
           side_count: 5,
         },
       ]
@@ -45,8 +46,9 @@ Node "NodeViewerRoot" {
           points: [0 -3 0,
                    0 3 0,
                    3 3 0],
-          diameter: .2,
-          side_count: 3,
+          diameter: 2.2,
+          taper:     0,
+          side_count: 13,
         },
       ]
     }

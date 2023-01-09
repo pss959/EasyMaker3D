@@ -509,18 +509,18 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
 }
 
 TriMesh BuildTubeMesh(const std::vector<Point3f> &points, float diameter,
-                      int num_sides) {
+                      float taper, int num_sides) {
     using ion::math::Distance;
     using ion::math::Normalized;
     using ion::math::RotationMatrixH;
     using ion::math::TranslationMatrix;
 
-    const float radius = .5f * diameter;
+    const float radius0 = .5f * diameter;
 
-    const auto build_segment = [&](const Point3f &p0,
-                                   const Point3f &p1){
+    const auto build_segment = [&](float rad0, float rad1,
+                                   const Point3f &p0, const Point3f &p1){
         const float height = Distance(p0, p1);
-        TriMesh seg = BuildCylinderMesh(radius, radius, height, num_sides);
+        TriMesh seg = BuildCylinderMesh(rad1, rad0, height, num_sides);
 
         // Rotate to lie along the segment and translate to the center.
         const Rotationf rot = Rotationf::RotateInto(Vector3f::AxisY(),
@@ -532,15 +532,21 @@ TriMesh BuildTubeMesh(const std::vector<Point3f> &points, float diameter,
 
     TriMesh mesh;
     if (points.size() == 2U) {  // Simple cylinder.
-        mesh = build_segment(points[0], points[1]);
+        mesh = build_segment(radius0, taper * radius0, points[0], points[1]);
     }
     else if (points.size() > 2U) {  // Multiple segments.
         // Construct a mesh for each segment, then combine them and clean the
         // result.
         const size_t segment_count = points.size() - 1;
         std::vector<TriMesh> meshes(segment_count);
-        for (size_t i = 0; i < segment_count; ++i)
-            meshes[i] = build_segment(points[i], points[i + 1]);
+        const float radiusN = taper * radius0;
+        float r0 = radius0;
+        for (size_t i = 0; i < segment_count; ++i) {
+            const float r1 = Lerp(
+                static_cast<float>(i + 1) / segment_count, radius0, radiusN);
+            meshes[i] = build_segment(r0, r1, points[i], points[i + 1]);
+            r0 = r1;
+        }
         mesh = CombineMeshes(meshes, MeshCombiningOperation::kConcatenate);
         CleanMesh(mesh);
     }

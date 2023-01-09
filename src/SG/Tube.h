@@ -22,7 +22,20 @@ class Tube : public TriMeshShape {
   public:
     const std::vector<Point3f> & GetPoints() const { return points_; }
 
+    /// Returns the diameter used for each tube segment, assuming taper is 1.
+    /// The default is 1.
     float GetDiameter()  const { return diameter_;   }
+
+    /// Returns the fraction to taper the tube as it passes from the first
+    /// point to the last. For example, a taper of .5 means that the ending
+    /// diameter of the last segment will be half the specified diameter, with
+    /// all intervening segments tapered proportionately. A taper > 1 means
+    /// that the diameter of the ending segment will be larger than the
+    /// starting diameter. The default is 1.
+    float GetTaper()     const { return taper_;   }
+
+    /// Returns the number of sides to use for each tubular segment. The
+    /// default is 4.
     int   GetSideCount() const { return side_count_; }
 
     /// Sets the points forming the backbone of the Tube.
@@ -46,6 +59,7 @@ class Tube : public TriMeshShape {
     ///@{
     Parser::VField<Point3f> points_;
     Parser::TField<float>   diameter_;
+    Parser::TField<float>   taper_;
     Parser::TField<int>     side_count_;
     ///@}
 
