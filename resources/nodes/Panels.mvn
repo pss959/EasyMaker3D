@@ -74,17 +74,10 @@ Node "Panels" {
       ]
     },
 
-    # Pane highlight used by all Panels to show focus.
-    Node "T_FocusHighlight" {
-      pass_name: $LIGHTING_PASS,
-      shader_names: ["BaseColor"],
-      state_table: StateTable { line_width: 3 },
-      blocks: [
-        UniformBlock {
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#33b4c5" } ]
-        }
-      ],
-      shapes: [ PolyLine "Lines" { points: [ 0 0 0 ] } ],
+    # Border used by all Panels to show focus.
+    CLONE "T_Border" "T_FocusHighlight" {
+      color: "#33b4c5",
+      width: .015,
     },
   ],
 

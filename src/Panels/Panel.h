@@ -13,6 +13,7 @@
 #include <vector>
 
 class CoordConv;
+DECL_SHARED_PTR(Border);
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(CommandManager);
@@ -24,7 +25,6 @@ DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(VirtualKeyboard);
 DECL_SHARED_PTR(Widget);
-namespace SG { DECL_SHARED_PTR(PolyLine); }
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
 /// It can be attached to a Board to appear in the scene. A Panel wraps a tree
@@ -244,9 +244,9 @@ class Panel : public SG::Node {
     /// -1 if there is none.
     int focused_index_ = -1;
 
-    /// This PolyLine is used to highlight the interactive Pane with keyboard
+    /// This Border is used to highlight the interactive Pane with keyboard
     /// focus.
-    SG::PolyLinePtr highlight_line_;
+    BorderPtr highlight_border_;
 
     /// Finds all interactive Panes under the given one (inclusive) and adds
     /// them to the interactive_panes_ vector.

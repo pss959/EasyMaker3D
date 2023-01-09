@@ -7,6 +7,7 @@
 #include "App/ClickInfo.h"
 #include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
+#include "Items/Border.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -16,7 +17,6 @@
 #include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/TextPane.h"
-#include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
@@ -52,12 +52,10 @@ void Panel::CreationDone() {
         // Add the root Pane as a child.
         AddChild(GetPane());
 
-        // Find the highlight PolyLine.
-        if (! highlight_line_) {
-            auto node = SG::FindNodeUnderNode(*this, "FocusHighlight");
-            highlight_line_ =
-                SG::FindTypedShapeInNode<SG::PolyLine>(*node, "Lines");
-        }
+        // Find the highlight Border.
+        if (! highlight_border_)
+            highlight_border_ =
+                SG::FindTypedNodeUnderNode<Border>(*this, "FocusHighlight");
     }
 }
 
@@ -394,32 +392,21 @@ bool Panel::ProcessKeyPress_(const Event &event) {
 }
 
 void Panel::HighlightFocusedPane_() {
-    ASSERT(highlight_line_);
+    ASSERT(highlight_border_);
 
     ASSERT(static_cast<size_t>(focused_index_) <= interactive_panes_.size());
     auto &pane = interactive_panes_[focused_index_];
 
-    // Set the points of the PolyLine in object coordinates of the Pane.
-    const Bounds bounds = pane->GetBounds();
-    const Point3f min_p = bounds.GetMinPoint();
-    const Point3f max_p = bounds.GetMaxPoint();
-    // Move forward in Z a little.
-    const float z = max_p[2] + TK::kPaneZOffset;
-
-    std::vector<Point3f> pts(5);
-    pts[0].Set(min_p[0], min_p[1], z);
-    pts[1].Set(max_p[0], min_p[1], z);
-    pts[2].Set(max_p[0], max_p[1], z);
-    pts[3].Set(min_p[0], max_p[1], z);
-    pts[4] = pts[0];
-
-    // Convert coordinates from the focused pane to the local coordinates of
-    // the Panel.
+    // Translate the border to the center of the focused pane in the local
+    // coordinates of the panel.
     const CoordConv cc = GetCoordConv_(*pane);
-    for (auto &p: pts)
-        p = cc.ObjectToRoot(p);
+    const Bounds bounds = pane->GetBounds();
+    highlight_border_->SetTranslation(cc.ObjectToRoot(bounds.GetCenter()));
 
-    highlight_line_->SetPoints(pts);
+    // Scale the border and set its size.
+    const Vector3f size = cc.ObjectToRoot(bounds.GetSize());
+    highlight_border_->SetScale(size);
+    highlight_border_->SetSize(ToVector2f(size));
 }
 
 void Panel::ProcessPaneContentsChange_() {
