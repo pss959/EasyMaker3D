@@ -56,6 +56,12 @@ extern const float    kFloatingBoardYOffset;
 /// Minimum size for either canvas dimension in a Board.
 extern const float    kMinBoardCanvasSize;
 
+/// Color to use for focused Pane borders.
+extern const Color    kFocusedPaneBorderColor;
+
+/// Width to use for focused Pane borders.
+extern const float    kFocusedPaneBorderWidth;
+
 /// Amount to offset Pane items in Z to avoid Z-fighting.
 extern const float    kPaneZOffset;
 

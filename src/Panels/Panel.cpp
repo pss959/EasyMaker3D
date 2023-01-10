@@ -17,6 +17,7 @@
 #include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/TextPane.h"
+#include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
@@ -34,16 +35,147 @@ class Panel::Focuser_ {
   public:
     enum class Direction { kUp, kDown, kLeft, kRight };
 
+    /// The constructor is passed a description string to use for log
+    /// messages.
+    explicit Focuser_(const std::string &desc) : desc_(desc) {}
+
+    /// Sets the interactive Pane instances that can potentially be focused.
+    void SetPanes(const std::vector<PanePtr> &panes) { panes_ = panes; }
+
+    /// Initializes focus if there is no Pane focused already.
+    void InitFocus() {
+        if (focused_index_ < 0)
+            FocusFirstPane_();
+    }
+
+    /// Returns the focused Pane, which may be null.
+    PanePtr GetFocusedPane() const {
+        return focused_index_ >= 0 ? panes_[focused_index_] : PanePtr();
+    }
+
+    /// Sets focus on the given Pane, which must be one from SetPanes().
+    void SetFocus(const PanePtr &pane);
+
+    /// Changes focus in the given direction.
+    void MoveFocus(Direction dir);
+
   private:
+    /// Border state saved for the focused Pane so it can be restored when
+    /// losing focus.
+    struct BorderState_ {
+        bool  is_enabled;
+        float width;
+        Color color;
+    };
+
+    /// String used for log messages.
+    const std::string desc_;
+
     /// All Panes in the Panel that are potentially able to receive focus.
     std::vector<PanePtr> panes_;
+
+    /// Index into panes_ of the current Pane with focus. This is -1 if there
+    /// is none.
+    int focused_index_ = -1;
+
+    /// Saves the previous state for the focused Pane.
+    BorderState_ prev_state_;
+
+    /// Finds the first Pane that can be focused, if there is one, and sets the
+    /// focus on it.
+    void FocusFirstPane_();
+
+    /// Changes focus from #old_pane to #new_pane. Either may be null.
+    void ChangeFocus_(const PanePtr &old_pane, const PanePtr &new_pane);
 };
+
+void Panel::Focuser_::SetFocus(const PanePtr &pane) {
+    ASSERT(pane);
+    ASSERT(pane->GetInteractor());
+    const PanePtr focused_pane = GetFocusedPane();
+    if (pane != focused_pane) {
+        auto it = std::find(panes_.begin(), panes_.end(), pane);
+        ASSERTM(it != panes_.end(), desc_);
+        ChangeFocus_(focused_pane, pane);
+        focused_index_ = it - panes_.begin();
+    }
+}
+
+void Panel::Focuser_::MoveFocus(Direction dir) {
+    // XXXX Handle Left/Right at some point.
+    ASSERT(dir == Direction::kDown || dir == Direction::kUp);
+    const int increment = dir == Direction::kDown ? 1 : -1;
+
+    // Has to be a starting point.
+    if (focused_index_ < 0)
+        return;
+
+    // Keep going in the specified direction until an enabled interactive pane
+    // is found or the original focused pane is hit again.
+    int new_index = focused_index_;
+    while (true) {
+        new_index = new_index + increment;
+        if (new_index < 0)
+            new_index = panes_.size() - 1;
+        else if (static_cast<size_t>(new_index) >= panes_.size())
+            new_index = 0;
+        if (new_index == focused_index_)
+            break;  // No other interactive pane.
+        auto &pane = *panes_[new_index];
+        if (pane.IsEnabled() && pane.GetInteractor()->GetFocusBorder())
+            break;
+    }
+
+    if (new_index != focused_index_) {
+        ChangeFocus_(panes_[focused_index_], panes_[new_index]);
+        focused_index_ = new_index;
+    }
+}
+
+void Panel::Focuser_::FocusFirstPane_() {
+    // Use the first focusable interactive pane by default.
+    ASSERT(focused_index_ < 0);
+    for (size_t i = 0; i < panes_.size(); ++i) {
+        if (panes_[i]->GetInteractor()->GetFocusBorder()) {
+            focused_index_ = i;
+            KLOG('F', desc_ << " focused on "
+                 << panes_[0]->GetDesc() << " to start");
+            ChangeFocus_(PanePtr(), panes_[i]);
+            break;
+        }
+    }
+}
+
+void Panel::Focuser_::ChangeFocus_(const PanePtr &old_pane,
+                                   const PanePtr &new_pane) {
+    if (old_pane) {
+        KLOG('F', desc_ << " removing focus from " << old_pane->GetDesc());
+        if (auto border = old_pane->GetInteractor()->GetFocusBorder()) {
+            border->SetEnabled(prev_state_.is_enabled);
+            border->SetWidth(prev_state_.width);
+            border->SetColor(prev_state_.color);
+        }
+    }
+    if (new_pane) {
+        KLOG('F', desc_ << " adding focus to " << new_pane->GetDesc());
+        auto border = new_pane->GetInteractor()->GetFocusBorder();
+        ASSERT(border);
+        // Save state.
+        prev_state_.is_enabled = border->IsEnabled();
+        prev_state_.width      = border->GetWidth();
+        prev_state_.color      = border->GetColor();
+        // Activate.
+        border->SetEnabled(true);
+        border->SetWidth(TK::kFocusedPaneBorderWidth);
+        border->SetColor(SG::ColorMap::SGetColor("PaneFocusColor"));
+    }
+}
 
 // ----------------------------------------------------------------------------
 // Panel functions.
 // ----------------------------------------------------------------------------
 
-Panel::Panel() : focuser_(new Focuser_) {
+Panel::Panel() {
 }
 
 Panel::~Panel() {
@@ -73,15 +205,12 @@ void Panel::CreationDone() {
     SG::Node::CreationDone();
 
     if (! IsTemplate()) {
+        focuser_.reset(new Focuser_(GetDesc()));
+
         ASSERTM(GetPane(), GetDesc());
 
         // Add the root Pane as a child.
         AddChild(GetPane());
-
-        // Find the highlight Border.
-        if (! highlight_border_)
-            highlight_border_ =
-                SG::FindTypedNodeUnderNode<Border>(*this, "FocusHighlight");
     }
 }
 
@@ -97,10 +226,9 @@ void Panel::SetContext(const ContextPtr &context) {
 
     context_ = context;
 
-    // The context is required for FindInteractivePanes_() to work, so do it
+    // The context is required for UpdateInteractivePanes_() to work, so do it
     // now.
-    ASSERT(interactive_panes_.empty());
-    FindInteractivePanes_(GetPane());
+    UpdateInteractivePanes_();
 }
 
 void Panel::SetTestContext(const ContextPtr &context) {
@@ -108,8 +236,7 @@ void Panel::SetTestContext(const ContextPtr &context) {
     context_ = context;
 
     // Same as in SetContext().
-    ASSERT(interactive_panes_.empty());
-    FindInteractivePanes_(GetPane());
+    UpdateInteractivePanes_();
 }
 
 void Panel::SetSize(const Vector2f &size) {
@@ -117,8 +244,6 @@ void Panel::SetSize(const Vector2f &size) {
     ASSERT(GetSize() == Vector2f::Zero() || IsResizable());
     if (auto pane = GetPane())
         pane->SetLayoutSize(size);
-    if (focused_index_ >= 0)
-        update_focus_highlight_ = true;
 }
 
 Vector2f Panel::GetSize() const {
@@ -148,10 +273,6 @@ Vector2f Panel::UpdateSize() {
             break;
     }
 
-    // The focused Pane may have changed size.
-    if (focused_index_ >= 0)
-        update_focus_highlight_ = true;
-
     // Let the derived class know the Pane size may have changed.
     UpdateForPaneSizeChange();
 
@@ -179,7 +300,7 @@ bool Panel::HandleEvent(const Event &event) {
     bool handled = false;
 
     // Let the focused Pane (if any) handle the event.
-    if (auto focused_pane = GetFocusedPane()) {
+    if (auto focused_pane = focuser_->GetFocusedPane()) {
         ASSERT(focused_pane->GetInteractor());
         handled = focused_pane->GetInteractor()->HandleEvent(event);
         if (handled) {
@@ -208,21 +329,7 @@ void Panel::SetIsShown(bool is_shown) {
     if (is_shown) {
         // Let the derived class update any UI.
         UpdateInterface();
-
-        if (focused_index_ < 0) {
-            // Use first focusable interactive pane by default.
-            for (size_t i = 0; i < interactive_panes_.size(); ++i) {
-                if (interactive_panes_[i]->GetInteractor()->GetFocusBorder()) {
-                    focused_index_ = i;
-                    KLOG('F', GetDesc() << " focused on "
-                         << interactive_panes_[0]->GetDesc() << " to start");
-                    update_focus_highlight_ = true;
-                }
-            }
-            // Didn't find one? Turn off focus highlight.
-            if (focused_index_ < 0)
-                highlight_border_->SetEnabled(false);
-        }
+        focuser_->InitFocus();
     }
 }
 
@@ -265,15 +372,6 @@ Panel::Context & Panel::GetContext() const {
     return *context_;
 }
 
-void Panel::UpdateForRenderPass(const std::string &pass_name) {
-    SG::Node::UpdateForRenderPass(pass_name);
-    if (update_focus_highlight_) {
-        if (focused_index_ >= 0)
-            HighlightFocusedPane_();
-        update_focus_highlight_ = false;
-    }
-}
-
 void Panel::ResetSize() {
     if (auto pane = GetPane())
         pane->ResetLayoutSize();
@@ -301,14 +399,7 @@ void Panel::EnableButton(const std::string &name, bool enabled) {
 }
 
 void Panel::SetFocus(const PanePtr &pane) {
-    ASSERT(pane);
-    ASSERT(pane->GetInteractor());
-    auto it = std::find(interactive_panes_.begin(),
-                        interactive_panes_.end(), pane);
-    ASSERTM(it != interactive_panes_.end(), pane->GetDesc());
-    const size_t index = it - interactive_panes_.begin();
-    if (static_cast<int>(index) != focused_index_)
-        ChangeFocusTo_(index);
+    focuser_->SetFocus(pane);
 }
 
 void Panel::SetFocus(const std::string &name) {
@@ -316,10 +407,7 @@ void Panel::SetFocus(const std::string &name) {
 }
 
 PanePtr Panel::GetFocusedPane() const {
-    if (focused_index_ >= 0)
-        return interactive_panes_[focused_index_];
-    else
-        return PanePtr();
+    return focuser_->GetFocusedPane();
 }
 
 void Panel::DisplayMessage(const std::string &message,
@@ -352,18 +440,27 @@ void Panel::Close(const std::string &result) {
     context_->panel_helper->ClosePanel(result);
 }
 
-void Panel::FindInteractivePanes_(const PanePtr &pane) {
+void Panel::UpdateInteractivePanes_() {
+    std::vector<PanePtr> interactive_panes;
+    FindInteractivePanes_(GetPane(), interactive_panes);
+    focuser_->SetPanes(interactive_panes);
+}
+
+void Panel::FindInteractivePanes_(const PanePtr &pane,
+                                  std::vector<PanePtr> &panes) {
     if (pane->GetInteractor()) {
-        interactive_panes_.push_back(pane);
+        panes.push_back(pane);
         InitPaneInteraction_(pane);
     }
+    // Recurse if the Pane is a ContainerPane.
     if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
         for (auto &sub_pane: ctr->GetPotentialInteractiveSubPanes())
-            FindInteractivePanes_(sub_pane);
+            FindInteractivePanes_(sub_pane, panes);
     }
 }
 
 void Panel::InitPaneInteraction_(const PanePtr &pane) {
+    // XXXX Move to Focuser_?
     ASSERT(pane->GetInteractor());
     auto &interactor = *pane->GetInteractor();
 
@@ -414,7 +511,8 @@ bool Panel::ProcessKeyPress_(const Event &event) {
 
     // Navigation:
     else if (key_string == "Tab" || key_string == "<Shift>Tab") {
-        ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
+        focuser_->MoveFocus(key_string == "Tab" ? Focuser_::Direction::kDown :
+                            Focuser_::Direction::kUp);
         handled = true;
         KLOG('h', GetName() << " handled navigation key press");
     }
@@ -422,75 +520,8 @@ bool Panel::ProcessKeyPress_(const Event &event) {
     return handled;
 }
 
-void Panel::HighlightFocusedPane_() {
-    ASSERT(highlight_border_);
-
-    ASSERT(static_cast<size_t>(focused_index_) <= interactive_panes_.size());
-    auto &pane = interactive_panes_[focused_index_];
-
-    // Translate the border to the center of the focused pane in the local
-    // coordinates of the panel.
-    const CoordConv cc = GetCoordConv_(*pane);
-    const Bounds bounds = pane->GetBounds();
-    highlight_border_->SetTranslation(cc.ObjectToRoot(bounds.GetCenter()));
-
-    // Scale the border and set its size.
-    const Vector3f size = cc.ObjectToRoot(bounds.GetSize());
-    highlight_border_->SetScale(size);
-    highlight_border_->SetSize(ToVector2f(size));
-}
-
 void Panel::ProcessPaneContentsChange_() {
-    // Update the interactive panes.
-    interactive_panes_.clear();
-    FindInteractivePanes_(GetPane());
-    update_focus_highlight_ = true;
-}
-
-void Panel::ChangeFocusBy_(int increment) {
-    // Has to be a starting point.
-    if (focused_index_ < 0)
-        return;
-
-    // Keep going in the specified direction until an enabled interactive pane
-    // is found or the original focused pane is hit again.
-    int new_index = focused_index_;
-    while (true) {
-        new_index = new_index + increment;
-        if (new_index < 0)
-            new_index = interactive_panes_.size() - 1;
-        else if (static_cast<size_t>(new_index) >= interactive_panes_.size())
-            new_index = 0;
-        if (new_index == focused_index_)
-            break;  // No other interactive pane.
-        auto &pane = *interactive_panes_[new_index];
-        if (pane.IsEnabled() && pane.GetInteractor()->GetFocusBorder())
-            break;
-    }
-
-    if (new_index != focused_index_)
-        ChangeFocusTo_(new_index);
-}
-
-void Panel::ChangeFocusTo_(size_t index) {
-    ASSERT(index < interactive_panes_.size());
-    ASSERT(static_cast<int>(index) != focused_index_);
-    if (focused_index_ >= 0) {
-        auto &pane = *interactive_panes_[focused_index_];
-        KLOG('F', GetDesc() << " removing focus from " << pane.GetDesc());
-        auto &interactor = *pane.GetInteractor();
-        if (interactor.IsActive())
-            interactor.Deactivate();
-        interactor.SetFocus(false);
-    }
-    focused_index_ = index;
-    if (focused_index_ >= 0) {
-        const auto &pane = interactive_panes_[focused_index_];
-        KLOG('F', GetDesc() << " adding focus to " << pane->GetDesc());
-        pane->GetInteractor()->SetFocus(true);
-        UpdateFocus(pane);
-    }
-    update_focus_highlight_ = true;
+    UpdateInteractivePanes_();
 }
 
 void Panel::ActivatePane_(const PanePtr &pane, bool is_click) {
@@ -500,7 +531,7 @@ void Panel::ActivatePane_(const PanePtr &pane, bool is_click) {
     // Make sure the Pane is still able to interact. It may have been disabled
     // by another observer.
     if (! interactor.GetFocusBorder()) {
-        ChangeFocusBy_(1);
+        focuser_->MoveFocus(Focuser_::Direction::kDown);
         return;
     }
 

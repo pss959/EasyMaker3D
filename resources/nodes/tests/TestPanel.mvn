@@ -7,6 +7,4 @@ TestPanel "TestPanel" {
   #pane: <"nodes/tests/GridTestPane.mvn">,
   #pane: <"nodes/tests/ProfilePane.mvn">,
   pane: <"nodes/tests/TextInputPane.mvn">,
-
-  children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
 }

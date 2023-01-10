@@ -21,6 +21,7 @@ const float    kBoardTouchDistance               = .6f;
 const float    kBoardTouchScale                  = .4f;
 const float    kFloatingBoardYOffset             = 4;
 const float    kMinBoardCanvasSize               = 4;
+const float    kFocusedPaneBorderWidth           = 4;
 const float    kPaneZOffset                      = .08f;
 const float    kPanelToWorldScale                = .06f;
 const float    kTextInputPaneCursorWidth         = 40;

@@ -73,104 +73,82 @@ Node "Panels" {
         SpacerPane { resize_width: True },
       ]
     },
-
-    # Border used by all Panels to show focus.
-    CLONE "T_Border" "T_FocusHighlight" {
-      color: "#33b4c5",
-      width: .015,
-    },
   ],
 
   children: [
     ActionPanel "ActionPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/ActionPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     BevelToolPanel "BevelToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/BevelToolPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     CSGToolPanel "CSGToolPanel" {
       pane: <"nodes/TopPanes/CSGToolPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     DialogPanel "DialogPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/DialogPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     FilePanel "FilePanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/FilePane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     HelpPanel "HelpPanel" {
       pane: <"nodes/TopPanes/HelpPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     ImportToolPanel "ImportToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/FilePane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     InfoPanel "InfoPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/InfoPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     KeyboardPanel "KeyboardPanel" {
       pane: <"nodes/TopPanes/KeyboardPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     NameToolPanel "NameToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/NameToolPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     RadialMenuPanel "RadialMenuPanel" {
       pane: <"nodes/TopPanes/RadialMenuPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     RevSurfToolPanel "RevSurfToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/RevSurfToolPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     SessionPanel "SessionPanel" {
       pane: <"nodes/TopPanes/SessionPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     SettingsPanel "SettingsPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/SettingsPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     TextToolPanel "TextToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/TextToolPane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     TreePanel "TreePanel" {
       is_movable: False,
       pane: <"nodes/TopPanes/TreePane.mvn">,
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     # XXXX For testing only.

@@ -150,9 +150,6 @@ class Panel : public SG::Node {
     /// class defines this to do nothing.
     virtual void UpdateInterface() {}
 
-    /// Redefines this to update the focus if necessary.
-    virtual void UpdateForRenderPass(const std::string &pass_name) override;
-
     /// This is called when the size of the contained Pane may have changed,
     /// allowing derived classes to update anything that is
     /// size-dependent. THis will be called at least once when the original
@@ -241,21 +238,13 @@ class Panel : public SG::Node {
     /// Set to true if the focus highlight may need to be updated.
     bool update_focus_highlight_ = false;
 
-    /// All interactive Pane instances found in the Panel. This is used for
-    /// highlighting and navigation.
-    std::vector<PanePtr> interactive_panes_;
+    /// Finds all interactive Panes and sets up the Focuser_.
+    void UpdateInteractivePanes_();
 
-    /// Index into interactive_panes_ of the current Pane with focus. This is
-    /// -1 if there is none.
-    int focused_index_ = -1;
-
-    /// This Border is used to highlight the interactive Pane with keyboard
-    /// focus.
-    BorderPtr highlight_border_;
-
-    /// Finds all interactive Panes under the given one (inclusive) and adds
-    /// them to the interactive_panes_ vector.
-    void FindInteractivePanes_(const PanePtr &pane);
+    /// Recursively finds all interactive Panes under the given one (inclusive)
+    /// and adds them to the given vector.
+    void FindInteractivePanes_(const PanePtr &pane,
+                               std::vector<PanePtr> &panes);
 
     /// Initializes interaction for an interactive Pane.
     void InitPaneInteraction_(const PanePtr &pane);
@@ -263,17 +252,8 @@ class Panel : public SG::Node {
     /// Handles an event with a key press.
     bool ProcessKeyPress_(const Event &event);
 
-    /// Highlights the focused Pane for keyboard interaction.
-    void HighlightFocusedPane_();
-
     /// This is invoked when the contents of the root Pane have changed.
     void ProcessPaneContentsChange_();
-
-    /// Changes focus in the given direction.
-    void ChangeFocusBy_(int increment);
-
-    /// Changes focus to the indexed interactive Pane.
-    void ChangeFocusTo_(size_t index);
 
     /// Activates the given interactive Pane from a button click or key press.
     void ActivatePane_(const PanePtr &pane, bool is_click);
