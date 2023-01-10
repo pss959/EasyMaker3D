@@ -1,6 +1,5 @@
 ScrollingPane "T_ScrollingPane" {
-  # Border is used only for focus highlight.
-  border: $BORDER { disabled_flags: "kTraversal" },
+  border: $BORDER { width: 0 },  # Border is used only for focus highlight.
   orientation: "kHorizontal",
   spacing:     2,
   panes: [
