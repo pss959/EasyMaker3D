@@ -1,4 +1,6 @@
 RadioButtonPane "T_RadioButtonPane" {
+  # Border is used only for focus highlight.
+  border: $BORDER { disabled_flags: "kTraversal" },
   min_size: 14 14,
   blocks: [ UniformBlock {
     pass_name: $LIGHTING_PASS,

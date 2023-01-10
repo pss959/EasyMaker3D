@@ -23,6 +23,32 @@
 #include "Widgets/ClickableWidget.h"
 #include "Widgets/PushButtonWidget.h"
 
+// ----------------------------------------------------------------------------
+// Panel::Focuser_ class.
+// ----------------------------------------------------------------------------
+
+/// This class manages Pane focus for a Panel. It keeps track of all Panes that
+/// can potentially receive focus and allows the focus to change in different
+/// ways.
+class Panel::Focuser_ {
+  public:
+    enum class Direction { kUp, kDown, kLeft, kRight };
+
+  private:
+    /// All Panes in the Panel that are potentially able to receive focus.
+    std::vector<PanePtr> panes_;
+};
+
+// ----------------------------------------------------------------------------
+// Panel functions.
+// ----------------------------------------------------------------------------
+
+Panel::Panel() : focuser_(new Focuser_) {
+}
+
+Panel::~Panel() {
+}
+
 void Panel::AddFields() {
     AddField(pane_.Init("pane"));
     AddField(is_movable_.Init("is_movable", true));
@@ -186,7 +212,7 @@ void Panel::SetIsShown(bool is_shown) {
         if (focused_index_ < 0) {
             // Use first focusable interactive pane by default.
             for (size_t i = 0; i < interactive_panes_.size(); ++i) {
-                if (interactive_panes_[i]->GetInteractor()->CanFocus()) {
+                if (interactive_panes_[i]->GetInteractor()->GetFocusBorder()) {
                     focused_index_ = i;
                     KLOG('F', GetDesc() << " focused on "
                          << interactive_panes_[0]->GetDesc() << " to start");
@@ -438,7 +464,7 @@ void Panel::ChangeFocusBy_(int increment) {
         if (new_index == focused_index_)
             break;  // No other interactive pane.
         auto &pane = *interactive_panes_[new_index];
-        if (pane.IsEnabled() && pane.GetInteractor()->CanFocus())
+        if (pane.IsEnabled() && pane.GetInteractor()->GetFocusBorder())
             break;
     }
 
@@ -473,7 +499,7 @@ void Panel::ActivatePane_(const PanePtr &pane, bool is_click) {
 
     // Make sure the Pane is still able to interact. It may have been disabled
     // by another observer.
-    if (! interactor.CanFocus()) {
+    if (! interactor.GetFocusBorder()) {
         ChangeFocusBy_(1);
         return;
     }

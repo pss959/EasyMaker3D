@@ -5,6 +5,7 @@
 #include "Base/Memory.h"
 
 struct Event;
+DECL_SHARED_PTR(Border);
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(VirtualKeyboard);
 
@@ -26,9 +27,10 @@ class IPaneInteractor {
     /// return null.
     virtual ClickableWidgetPtr GetActivationWidget() const { return nullptr; }
 
-    /// Returns true if the Pane can be focused for interaction. Some Panes
-    /// respond to interaction only under certain conditions.
-    virtual bool CanFocus() const = 0;
+    /// Returns a Border to highlight to focus the Pane for interaction if
+    /// possible, or null if it is not possible. Note that some Pane classes
+    /// may respond to interaction only under certain conditions.
+    virtual BorderPtr GetFocusBorder() const = 0;
 
     /// This is called when the Pane is focused or unfocused. The default is to
     /// do nothing.

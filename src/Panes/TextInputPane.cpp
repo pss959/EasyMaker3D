@@ -301,7 +301,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     virtual ClickableWidgetPtr GetActivationWidget() const override {
         return SG::FindTypedNodeUnderNode<GenericWidget>(root_pane_, "Widget");
     }
-    virtual bool CanFocus() const override { return true; }
+    BorderPtr GetFocusBorder() const override { return root_pane_.GetBorder(); }
     virtual void Activate() override;
     virtual void Deactivate() override;
     virtual bool IsActive() const override { return is_active_; }

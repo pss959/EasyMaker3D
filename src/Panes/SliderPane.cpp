@@ -82,9 +82,9 @@ ClickableWidgetPtr SliderPane::GetActivationWidget() const {
     return slider_;
 }
 
-bool SliderPane::CanFocus() const {
-    // Focusing on a SliderPane does not make sense.
-    return false;
+BorderPtr SliderPane::GetFocusBorder() const {
+    // Focusing on a SliderPane is not allowed - it would not make sense.
+    return BorderPtr();
 }
 
 void SliderPane::SliderActivated_(bool is_activation) {

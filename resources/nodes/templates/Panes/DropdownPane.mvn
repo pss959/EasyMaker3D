@@ -7,7 +7,7 @@ DropdownPane "T_DropdownPane" {
       halignment: "kAlignLeft",
     },
   ],
-
+  border: $BORDER { width: 1, color: "#000000" },
   min_size: 1 20,
   orientation: "kHorizontal",
   panes: [

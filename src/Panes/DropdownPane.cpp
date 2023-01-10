@@ -122,8 +122,8 @@ ClickableWidgetPtr DropdownPane::GetActivationWidget() const {
     return activation_button_pane_->GetActivationWidget();
 }
 
-bool DropdownPane::CanFocus() const {
-    return true;
+BorderPtr DropdownPane::GetFocusBorder() const {
+    return GetBorder();
 }
 
 void DropdownPane::Activate() {

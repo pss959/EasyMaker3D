@@ -130,7 +130,8 @@ class Panel : public SG::Node {
     /// Type of function that is invoked by AskQuestion().
     typedef std::function<void(const std::string &)> QuestionFunc;
 
-    Panel() {}
+    Panel();
+    ~Panel() override;
 
     virtual void AddFields();
     virtual bool IsValid(std::string &details) override;
@@ -219,6 +220,8 @@ class Panel : public SG::Node {
     virtual void Close(const std::string &result);
 
   private:
+    class Focuser_;  /// Handles Pane focus management.
+
     typedef std::unordered_map<ButtonPanePtr, ButtonFunc> ButtonFuncMap_;
 
     /// \name Parsed Fields
@@ -227,6 +230,8 @@ class Panel : public SG::Node {
     Parser::TField<bool>               is_movable_;
     Parser::TField<bool>               is_resizable_;
     ///@}
+
+    std::unique_ptr<Focuser_> focuser_;
 
     ContextPtr context_;
 

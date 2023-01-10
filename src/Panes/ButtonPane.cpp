@@ -40,8 +40,8 @@ ClickableWidgetPtr ButtonPane::GetActivationWidget() const {
     return button_;
 }
 
-bool ButtonPane::CanFocus() const {
-    return GetButton().IsInteractionEnabled();
+BorderPtr ButtonPane::GetFocusBorder() const {
+    return GetButton().IsInteractionEnabled() ? GetBorder() : BorderPtr();
 }
 
 void ButtonPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {

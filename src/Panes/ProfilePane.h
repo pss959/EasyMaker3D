@@ -11,8 +11,10 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(ProfilePane);
 
-/// ProfilePane is a derived LeafPane that supports editing of 2D Profiles. All
-/// interaction is through Widgets that already receive events.
+/// ProfilePane is a derived LeafPane that supports editing of 2D Profiles. It
+/// is not marked as being interactive because it cannot do anything with
+/// keyboard focus and all interaction is through Widgets that already receive
+/// events.
 ///
 /// \ingroup Panes
 class ProfilePane : public LeafPane, public IPaneInteractor {
@@ -43,8 +45,8 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     /// which is normalized to (0,1) in both dimensions.
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
 
-    virtual IPaneInteractor * GetInteractor() override { return this; }
-    virtual bool CanFocus() const override { return false; }
+    virtual IPaneInteractor * GetInteractor() override;
+    virtual BorderPtr GetFocusBorder() const override;
 
   protected:
     ProfilePane();

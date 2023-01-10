@@ -83,8 +83,8 @@ ClickableWidgetPtr RadioButtonPane::GetActivationWidget() const {
     return button_;
 }
 
-bool RadioButtonPane::CanFocus() const {
-    return true;
+BorderPtr RadioButtonPane::GetFocusBorder() const {
+    return GetBorder();
 }
 
 void RadioButtonPane::Activate() {

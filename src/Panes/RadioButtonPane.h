@@ -42,7 +42,7 @@ class RadioButtonPane : public LeafPane, public IPaneInteractor {
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;
-    virtual bool CanFocus() const override;
+    virtual BorderPtr GetFocusBorder() const override;
     virtual void Activate() override;
 
   protected:

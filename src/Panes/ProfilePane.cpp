@@ -571,3 +571,12 @@ void ProfilePane::SetLayoutSize(const Vector2f &size) {
 ClickableWidgetPtr ProfilePane::GetGripWidget(const Point2f &p) {
     return impl_->GetGripWidget(p);
 }
+
+IPaneInteractor * ProfilePane::GetInteractor() {
+    return this;
+}
+
+BorderPtr ProfilePane::GetFocusBorder() const {
+    // Cannot take focus - would not make sense.
+    return BorderPtr();
+}

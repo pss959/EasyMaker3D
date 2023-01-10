@@ -76,8 +76,8 @@ ClickableWidgetPtr ScrollingPane::GetActivationWidget() const {
     return nullptr;
 }
 
-bool ScrollingPane::CanFocus() const {
-    return true;
+BorderPtr ScrollingPane::GetFocusBorder() const {
+    return GetBorder();
 }
 
 bool ScrollingPane::HandleEvent(const Event &event) {

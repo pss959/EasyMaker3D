@@ -39,8 +39,8 @@ ClickableWidgetPtr CheckboxPane::GetActivationWidget() const {
     return button_;
 }
 
-bool CheckboxPane::CanFocus() const {
-    return true;
+BorderPtr CheckboxPane::GetFocusBorder() const {
+    return GetBorder();
 }
 
 void CheckboxPane::Toggle_() {

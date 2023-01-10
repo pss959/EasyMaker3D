@@ -107,6 +107,9 @@ class Pane : public SG::Node {
     /// Returns true if the Pane has a background set.
     bool HasBackground() const { return background_.GetValue().get(); }
 
+    /// Returns the Border, if any.
+    const BorderPtr & GetBorder() const { return border_; }
+
     /// Returns a string representing the Pane for debugging. Derived classes
     /// can add info. If is_brief is true, this stores just the description and
     /// current layout size along with any derived identifying data.
