@@ -198,7 +198,8 @@ void Panel::Focuser_::InitPaneInteraction_(const PanePtr &pane) {
         if (! clickable->GetActivation().HasObserver(this)) {
             auto func = [&, pane](Widget &, bool is_act){
                 if (is_act) {
-                    SetFocus(pane);
+                    if (interactor.GetFocusBorder())
+                        SetFocus(pane);
                     ActivatePane(pane, true);
                 }
             };
