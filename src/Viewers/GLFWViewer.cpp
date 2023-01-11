@@ -167,6 +167,11 @@ GLFWViewer::~GLFWViewer() {
 bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     ASSERT(! window_);
 
+#if defined(ION_PLATFORM_MAC)
+    // Do NOT change directory on Mac. Not sure why this is not the default.
+    glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
+#endif
+
     if (! glfwInit()) {
         std::cerr << "*** GLFW initialization failed!\n";
         return false;
