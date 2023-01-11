@@ -17,8 +17,8 @@ RadialMenu "T_RadialMenu" {
       blocks: [ USE "T_BorderColor" ],
       state_table: StateTable { line_width: 1 },
       shapes: [
-        Tube "Outer" { diameter: .2 },
-        Tube "Inner" { diameter: .2 },
+        Tube "Outer" { diameter: .1 },
+        Tube "Inner" { diameter: .1 },
       ],
     },
     PushButtonWidget "Button" {
