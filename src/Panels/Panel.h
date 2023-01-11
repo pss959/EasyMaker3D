@@ -235,9 +235,6 @@ class Panel : public SG::Node {
     /// Set to true if the Panel size may have changed.
     bool size_may_have_changed_ = false;
 
-    /// Set to true if the focus highlight may need to be updated.
-    bool update_focus_highlight_ = false;
-
     /// Finds all interactive Panes and sets up the Focuser_.
     void UpdateInteractivePanes_();
 
@@ -246,17 +243,11 @@ class Panel : public SG::Node {
     void FindInteractivePanes_(const PanePtr &pane,
                                std::vector<PanePtr> &panes);
 
-    /// Initializes interaction for an interactive Pane.
-    void InitPaneInteraction_(const PanePtr &pane);
-
     /// Handles an event with a key press.
     bool ProcessKeyPress_(const Event &event);
 
     /// This is invoked when the contents of the root Pane have changed.
     void ProcessPaneContentsChange_();
-
-    /// Activates the given interactive Pane from a button click or key press.
-    void ActivatePane_(const PanePtr &pane, bool is_click);
 
     /// Returns a CoordConv for the given Node relative to this Panel. The Node
     /// must be found somewhere under the Panel.

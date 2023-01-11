@@ -1,5 +1,6 @@
 #include "Panels/Panel.h"
 
+#include <functional>
 #include <limits>
 
 #include <ion/math/transformutils.h>
@@ -37,10 +38,16 @@ class Panel::Focuser_ {
 
     /// The constructor is passed a description string to use for log
     /// messages.
-    explicit Focuser_(const std::string &desc) : desc_(desc) {}
+    Focuser_(const std::string &desc) : desc_(desc) {}
+
+    /// Sets the VirtualKeyboard instance to pass along to interactive Panes.
+    void SetVirtualKeyboard(const VirtualKeyboardPtr &virtual_keyboard) {
+        virtual_keyboard_ = virtual_keyboard;
+    }
 
     /// Sets the interactive Pane instances that can potentially be focused.
-    void SetPanes(const std::vector<PanePtr> &panes) { panes_ = panes; }
+    /// This also initializes the Panes for interaction.
+    void SetPanes(const std::vector<PanePtr> &panes);
 
     /// Initializes focus if there is no Pane focused already.
     void InitFocus() {
@@ -59,6 +66,10 @@ class Panel::Focuser_ {
     /// Changes focus in the given direction.
     void MoveFocus(Direction dir);
 
+
+    /// Activates the given interactive Pane from a button click or key press.
+    void ActivatePane(const PanePtr &pane, bool is_click);
+
   private:
     /// Border state saved for the focused Pane so it can be restored when
     /// losing focus.
@@ -71,6 +82,9 @@ class Panel::Focuser_ {
     /// String used for log messages.
     const std::string desc_;
 
+    /// VirtualKeyboard instance to pass to interactive Panes.
+    VirtualKeyboardPtr virtual_keyboard_;
+
     /// All Panes in the Panel that are potentially able to receive focus.
     std::vector<PanePtr> panes_;
 
@@ -81,6 +95,9 @@ class Panel::Focuser_ {
     /// Saves the previous state for the focused Pane.
     BorderState_ prev_state_;
 
+    /// Initializes interaction for an interactive Pane.
+    void InitPaneInteraction_(const PanePtr &pane);
+
     /// Finds the first Pane that can be focused, if there is one, and sets the
     /// focus on it.
     void FocusFirstPane_();
@@ -88,6 +105,12 @@ class Panel::Focuser_ {
     /// Changes focus from #old_pane to #new_pane. Either may be null.
     void ChangeFocus_(const PanePtr &old_pane, const PanePtr &new_pane);
 };
+
+void Panel::Focuser_::SetPanes(const std::vector<PanePtr> &panes) {
+    panes_ = panes;
+    for (auto &pane: panes_)
+        InitPaneInteraction_(pane);
+}
 
 void Panel::Focuser_::SetFocus(const PanePtr &pane) {
     ASSERT(pane);
@@ -102,7 +125,7 @@ void Panel::Focuser_::SetFocus(const PanePtr &pane) {
 }
 
 void Panel::Focuser_::MoveFocus(Direction dir) {
-    // XXXX Handle Left/Right at some point.
+    /// \todo Handle change in focus to left/right at some point.
     ASSERT(dir == Direction::kDown || dir == Direction::kUp);
     const int increment = dir == Direction::kDown ? 1 : -1;
 
@@ -129,6 +152,58 @@ void Panel::Focuser_::MoveFocus(Direction dir) {
     if (new_index != focused_index_) {
         ChangeFocus_(panes_[focused_index_], panes_[new_index]);
         focused_index_ = new_index;
+    }
+}
+
+void Panel::Focuser_::ActivatePane(const PanePtr &pane, bool is_click) {
+    ASSERT(pane->GetInteractor());
+    auto &interactor = *pane->GetInteractor();
+
+    // Make sure the Pane is still able to interact. It may have been disabled
+    // by another observer.
+    if (! interactor.GetFocusBorder()) {
+        MoveFocus(Focuser_::Direction::kDown);
+        return;
+    }
+
+    // If the activation is not from a click, simulate a click on the
+    // activation Widget, but do NOT invoke this again (infinite recursion kind
+    // of thing).
+    if (! is_click) {
+        auto clickable = interactor.GetActivationWidget();
+        ASSERT(clickable);
+        clickable->GetActivation().EnableObserver(this, false);
+        ClickInfo info;
+        info.widget = clickable.get();
+        clickable->Click(info);
+        clickable->GetActivation().EnableObserver(this, true);
+    }
+
+    KLOG('F', desc_ << " activating " << pane->GetDesc());
+    interactor.Activate();
+}
+
+void Panel::Focuser_::InitPaneInteraction_(const PanePtr &pane) {
+    ASSERT(pane->GetInteractor());
+    auto &interactor = *pane->GetInteractor();
+
+    // Tell the IPaneInteractor about the VirtualKeyboard, if any.
+    if (virtual_keyboard_)
+        interactor.SetVirtualKeyboard(virtual_keyboard_);
+
+    // If there is an activator Widget, observe its GetActivation() Notifier if
+    // not already done. This is better than using the GetClicked() Notifier
+    // because the observer should be notified at the start of a click or drag.
+    if (auto clickable = interactor.GetActivationWidget()) {
+        if (! clickable->GetActivation().HasObserver(this)) {
+            auto func = [&, pane](Widget &, bool is_act){
+                if (is_act) {
+                    SetFocus(pane);
+                    ActivatePane(pane, true);
+                }
+            };
+            clickable->GetActivation().AddObserver(this, func);
+        }
     }
 }
 
@@ -207,9 +282,8 @@ void Panel::CreationDone() {
     if (! IsTemplate()) {
         focuser_.reset(new Focuser_(GetDesc()));
 
-        ASSERTM(GetPane(), GetDesc());
-
         // Add the root Pane as a child.
+        ASSERTM(GetPane(), GetDesc());
         AddChild(GetPane());
     }
 }
@@ -312,9 +386,6 @@ bool Panel::HandleEvent(const Event &event) {
     // Handle certain key presses.
     if (! handled && event.flags.Has(Event::Flag::kKeyPress))
         handled = ProcessKeyPress_(event);
-
-    if (handled)
-        update_focus_highlight_ = true;
 
     // If requested, handle all valuator events so the MainHandler does not get
     // them.
@@ -448,39 +519,13 @@ void Panel::UpdateInteractivePanes_() {
 
 void Panel::FindInteractivePanes_(const PanePtr &pane,
                                   std::vector<PanePtr> &panes) {
-    if (pane->GetInteractor()) {
+    if (pane->GetInteractor())
         panes.push_back(pane);
-        InitPaneInteraction_(pane);
-    }
+
     // Recurse if the Pane is a ContainerPane.
     if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
         for (auto &sub_pane: ctr->GetPotentialInteractiveSubPanes())
             FindInteractivePanes_(sub_pane, panes);
-    }
-}
-
-void Panel::InitPaneInteraction_(const PanePtr &pane) {
-    // XXXX Move to Focuser_?
-    ASSERT(pane->GetInteractor());
-    auto &interactor = *pane->GetInteractor();
-
-    // Tell the IPaneInteractor about the VirtualKeyboard, if any.
-    if (auto &vk = GetContext().virtual_keyboard)
-        interactor.SetVirtualKeyboard(vk);
-
-    // If there is an activator Widget, observe its GetActivation() Notifier if
-    // not already done. This is better than using the GetClicked() Notifier
-    // because the observer should be notified at the start of a click or drag.
-    if (auto clickable = interactor.GetActivationWidget()) {
-        if (! clickable->GetActivation().HasObserver(this)) {
-            auto func = [&, pane](Widget &, bool is_act){
-                if (is_act) {
-                    SetFocus(pane);
-                    ActivatePane_(pane, true);
-                }
-            };
-            clickable->GetActivation().AddObserver(this, func);
-        }
     }
 }
 
@@ -494,7 +539,7 @@ bool Panel::ProcessKeyPress_(const Event &event) {
             ASSERT(focused_pane->GetInteractor());
             auto &interactor = *focused_pane->GetInteractor();
             if (! interactor.IsActive()) {
-                ActivatePane_(focused_pane, false);
+                focuser_->ActivatePane(focused_pane, false);
                 KLOG('h', GetName() << " handled key press '" << key_string
                      << "' to activate " << focused_pane->GetName());
                 handled = true;
@@ -522,34 +567,6 @@ bool Panel::ProcessKeyPress_(const Event &event) {
 
 void Panel::ProcessPaneContentsChange_() {
     UpdateInteractivePanes_();
-}
-
-void Panel::ActivatePane_(const PanePtr &pane, bool is_click) {
-    ASSERT(pane->GetInteractor());
-    auto &interactor = *pane->GetInteractor();
-
-    // Make sure the Pane is still able to interact. It may have been disabled
-    // by another observer.
-    if (! interactor.GetFocusBorder()) {
-        focuser_->MoveFocus(Focuser_::Direction::kDown);
-        return;
-    }
-
-    // If the activation is not from a click, simulate a click on the
-    // activation Widget, but do NOT invoke this again (infinite recursion kind
-    // of thing).
-    if (! is_click) {
-        auto clickable = interactor.GetActivationWidget();
-        ASSERT(clickable);
-        clickable->GetActivation().EnableObserver(this, false);
-        ClickInfo info;
-        info.widget = clickable.get();
-        clickable->Click(info);
-        clickable->GetActivation().EnableObserver(this, true);
-    }
-
-    KLOG('F', GetDesc() << " activating " << pane->GetDesc());
-    interactor.Activate();
 }
 
 CoordConv Panel::GetCoordConv_(const SG::Node &node) {
