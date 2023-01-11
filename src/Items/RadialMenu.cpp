@@ -7,6 +7,7 @@
 #include "SG/PolyLine.h"
 #include "SG/Polygon.h"
 #include "SG/Search.h"
+#include "SG/Tube.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/String.h"
@@ -111,15 +112,15 @@ void RadialMenu::SimulateButtonPress() {
 }
 
 void RadialMenu::InitCircle_(const std::string &name, float radius) {
-    auto circles   = SG::FindNodeUnderNode(*this, "Circles");
-    auto polyline  = SG::FindTypedShapeInNode<SG::PolyLine>(*circles, name);
+    auto circles = SG::FindNodeUnderNode(*this, "Circles");
+    auto tube    = SG::FindTypedShapeInNode<SG::Tube>(*circles, name);
 
     // Create a closed circle.
     std::vector<Point2f> circle_points =
         GetCirclePoints(TK::kRadialMenuCirclePointCount, 1, true);
     circle_points.push_back(circle_points[0]);
 
-    polyline->SetPoints(
+    tube->SetPoints(
         Util::ConvertVector<Point3f, Point2f>(
             circle_points,
             [radius](const Point2f &p){
