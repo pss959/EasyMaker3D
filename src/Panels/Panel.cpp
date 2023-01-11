@@ -513,6 +513,8 @@ void Panel::Close(const std::string &result) {
 }
 
 void Panel::UpdateInteractivePanes_() {
+    if (auto &vk = GetContext().virtual_keyboard)
+        focuser_->SetVirtualKeyboard(vk);
     std::vector<PanePtr> interactive_panes;
     FindInteractivePanes_(GetPane(), interactive_panes);
     focuser_->SetPanes(interactive_panes);
