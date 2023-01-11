@@ -12,9 +12,10 @@ Node {
 
   children: [
     AngularFeedback "AngularFeedback" {
+      CONSTANTS: [DIAM: "diameter: .15"],
       children: [
-        Node "StartLine" { shapes: [ Line "Line" {} ] },
-        Node "EndLine"   { shapes: [ Line "Line" {} ] },
+        Node "StartLine" { shapes: [ Tube "Line" { $DIAM } ] },
+        Node "EndLine"   { shapes: [ Tube "Line" { $DIAM } ] },
         Node "Arc" {
           shapes: [
             Tube "Line" {
@@ -28,10 +29,11 @@ Node {
     },
 
     LinearFeedback "LinearFeedback" {
+      CONSTANTS: [DIAM: "diameter: .1"],
       children: [
-        Node "Upright0" { shapes: [ Tube "Line" { diameter: .1 } ] },
-        Node "Upright1" { shapes: [ Tube "Line" { diameter: .1 } ] },
-        Node "Crossbar" { shapes: [ Tube "Line" { diameter: .1 } ] },
+        Node "Upright0" { shapes: [ Tube "Line" { $DIAM } ] },
+        Node "Upright1" { shapes: [ Tube "Line" { $DIAM } ] },
+        Node "Crossbar" { shapes: [ Tube "Line" { $DIAM } ] },
         CLONE "T_FeedbackText" "Text" {},
       ]
     },
