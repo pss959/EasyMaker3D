@@ -181,6 +181,14 @@ bool FilePath::CreateDirectories() const {
     return ret;
 }
 
+void FilePath::MakeCurrent() const {
+    std::filesystem::current_path(*this);
+}
+
+FilePath FilePath::GetCurrent() {
+    return FilePath(std::filesystem::current_path());
+}
+
 FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
     ASSERT(! p1.IsAbsolute());
     FilePath result = p0;

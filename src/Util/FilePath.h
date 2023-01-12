@@ -101,6 +101,12 @@ class FilePath : private std::filesystem::path {
     /// fails.
     bool CreateDirectories() const;
 
+    /// Changes the current directory to this one. Use with caution.
+    void MakeCurrent() const;
+
+    /// Returns the current directory.
+    static FilePath GetCurrent();
+
     /// Joins two paths, returning the result. The second path must be relative.
     static FilePath Join(const FilePath &p0, const FilePath &p1);
 
