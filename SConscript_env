@@ -26,6 +26,8 @@ def PrintCmdLine_(s, target, source, env):
         # Ignore boring Copy and Mkdir commands.
         if s.startswith('Copy(') or s.startswith('Mkdir('):
             return
+        elif s.startswith('Install '):
+            action = 'Installing'
         elif 'install_name_tool' in s:
             action = 'Fixing paths in'
         elif 'BuildZipFile' in s:

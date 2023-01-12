@@ -11,7 +11,8 @@ from zipfile    import ZipFile
 Import('rel_dict')
 
 # -----------------------------------------------------------------------------
-# General helper functions.
+# Linux/Windows helper functions. Builds a Zip file containing the app and all
+# other necessary files.
 # -----------------------------------------------------------------------------
 
 # Creates the release Zip file. NOTE: The 'Zip()' builder in SCons claims to
@@ -35,14 +36,62 @@ def BuildZipFile_(target, source, env):
         else:  # Regular file - add at the top level.
             AddFile_(name, basename(name))
 
+def BuildReleaseZipFile_(env):
+    zip_input  = [rel_dict['app'], rel_dict['app_lib'], rel_dict['ion_lib'],
+                  rel_dict['ovr_lib'], rel_dict['res_dir']]
+    zip_output = f'$BUILD_DIR/Release/{rel_dict["rel_name"]}.zip'
+    if env['PLATFORM'] == 'windows':
+        # Windows requires all dependent libraries to be present.
+        zip_win_mingw_libs = [
+            'glfw3',
+            'libbrotlicommon',
+            'libbrotlidec',
+            'libbz2-1',
+            'libfreetype-6',
+            'libgcc_s_seh-1',
+            'libglib-2.0-0',
+            'libgmp-10',
+            'libgraphite2',
+            'libharfbuzz-0',
+            'libiconv-2',
+            'libintl-8',
+            'libmpfr-6',
+            'libpcre2-8-0',
+            'libpng16-16',
+            'libstdc++-6',
+            'libwinpthread-1',
+            'zlib1',
+        ]
+        mingw_dir = env.ConvertPath('/mingw64/bin')
+        zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
+    return env.Command(zip_output, zip_input, BuildZipFile_)
+
 # -----------------------------------------------------------------------------
-# Mac-specific helper functions. Need to copy all dependent libraries into the
-# Zip file and change all relative paths to use @rpath.
+# Mac-specific helper functions. Builds a DMG from a bundle.
+#
+# Bundle hierarchy, created under $BUILD_DIR :
+#  {app_name}.app/Contents/
+#        Frameworks/
+#           <all dylibs>
+#        Info.plist [generated here]
+#        MacOS/
+#           <app>
+#        Resources/
+#           resources/...
+#
+# 'install_name_tool' is used to fix paths in the app and dylibs, as follows:
+#    app refers to each dylib as:
+#           '@loader_path/../Frameworks/<full-dylib-name.dylib>'
+#    each dylib has ID:
+#           '@executable_path/../Frameworks/<full-dylib-name.dylib>'
+#       and refers to other dylibs as:
+#           '@loader_path/../Frameworks/<full-dylib-name.dylib>'
 # -----------------------------------------------------------------------------
 
 # Recursively collects dependency libraries for the given target, adding to
-# both replacement_dict and source_dict.
-def CollectMacLibs_(target, replacement_dict, source_dict):
+# replacement_dict (maps full path => library file name) and source_dict (maps
+# library file name => one absolute path to library).
+def OLDCollectMacLibs_(target, replacement_dict, source_dict):
     # Stop if already handled.
     if target in replacement_dict:
         return
@@ -73,9 +122,55 @@ def CollectMacLibs_(target, replacement_dict, source_dict):
         if result:
             CollectMacLibs_(result.group(), replacement_dict, source_dict)
 
+# Runs otool on the given target (app or library) and returns a list of paths
+# of dependent libraries.
+def GetLibPaths_(target):
+    prog = compile(r'.*/([^/]+\.dylib)')
+
+    def GetLibLine_(line):
+        line = line.strip()
+        # Skip lines starting with '@', '/System/', or '/usr/lib'; they are ok.
+        if (line.startswith('@') or
+            line.startswith('/System') or
+            line.startswith('/usr/lib')):
+            return ''
+        # See if there is a parsable library.
+        result = prog.match(line)
+        return result.group() if result else ''
+
+    # Get dependent library lines.
+    full_path = File(target).abspath
+    lines = Popen(['otool', '-L', full_path],
+                  stdout=PIPE, text=True).stdout.read().splitlines()
+
+    # Skip the first line, which is the name of the target.
+    return [lib_path for line in lines[1:] if (lib_path := GetLibLine_(line))]
+
+
+# Recursively collects dependency libraries for the given target (app or
+# library), adding to replacement_dict (maps full path => library file name)
+# and source_dict (maps library file name => one absolute path to library).
+def CollectMacLibs_(target, replacement_dict, source_dict):
+    for lib_path in GetLibPaths_(target):
+        if lib_path in replacement_dict:  # Already handled
+            continue
+
+        # replacement_dict maps the target (as is) to the base file name.
+        name      = basename(lib_path)
+        replacement_dict[lib_path] = name
+
+        # source_dict maps the name to a valid absolute path to the
+        # target. (There may be multiple locations; any one is ok.)
+        full_path = File(lib_path).abspath
+        source_dict[name] = full_path
+
+        # Recurse.
+        CollectMacLibs_(lib_path, replacement_dict, source_dict)
+
 # For the given target application and each dependent library, this creates a
 # copy in a temporary directory and processes it to change the load path to be
-# relative to @rpath.  This returns a list of paths to add to the Zip file.
+# what is expected in the bundle. This returns a list of paths to add to the
+# Zip file.
 def FixMacFiles_(env, app):
     # Collect which files to process.
     replacement_dict = {}
@@ -101,45 +196,38 @@ def FixMacFiles_(env, app):
         targets.append(target)
     return targets
 
+# XXXX
+def BuildReleaseMacDMG_(env):
+    app      = rel_dict['app']
+    app_name = rel_dict['app_name']
+
+    # Collect dependent libraries into dictionaries.
+    replacement_dict = {}
+    source_dict      = {}
+    CollectMacLibs_(str(app), replacement_dict, source_dict)
+
+    # Create the bundle hierarchy with the app, libraries, and other necessary
+    # files.
+    bundle_name  = f'{app_name}.app'
+    bundle_path  = f'$BUILD_DIR/{bundle_name}'
+    bundled_app  = env.Install(target=f'{bundle_path}/Contents/MacOS',
+                               source=app)
+    bundled_libs = env.Install(target=f'{bundle_path}/Contents/Frameworks',
+                               source=[source_dict.values()])
+    bundled_res  = env.Install(target=f'{bundle_path}/Contents/Resources',
+                               source=['resources'])
+    # XXXX
+    return [bundled_app, bundled_libs, bundled_res]
+
 # -----------------------------------------------------------------------------
 # Building the release.
 # -----------------------------------------------------------------------------
 
-app_env = rel_dict['app_env']
+app_env  = rel_dict['app_env']
+platform = app_env['PLATFORM']
 
-# Zip the files to include in the release.
-zip_input  = [rel_dict['app'], rel_dict['app_lib'], rel_dict['ion_lib'],
-              rel_dict['ovr_lib'], rel_dict['res_dir']]
-zip_output = f'$BUILD_DIR/Release/{rel_dict["rel_name"]}.zip'
-
-# Windows requires all dependent libraries to be present.
-zip_win_mingw_libs = [
-    'glfw3',
-    'libbrotlicommon',
-    'libbrotlidec',
-    'libbz2-1',
-    'libfreetype-6',
-    'libgcc_s_seh-1',
-    'libglib-2.0-0',
-    'libgmp-10',
-    'libgraphite2',
-    'libharfbuzz-0',
-    'libiconv-2',
-    'libintl-8',
-    'libmpfr-6',
-    'libpcre2-8-0',
-    'libpng16-16',
-    'libstdc++-6',
-    'libwinpthread-1',
-    'zlib1',
-]
-if app_env['PLATFORM'] == 'mac':
-    # Have to replace a few items, so rebuild the input list.
-    zip_input = (FixMacFiles_(app_env, rel_dict['app']) +
-                 [rel_dict['ovr_lib'], rel_dict['res_dir']])
-elif app_env['PLATFORM'] == 'windows':
-    mingw_dir = app_env.ConvertPath('/mingw64/bin')
-    zip_input += [f'{mingw_dir}/{lib}.dll' for lib in zip_win_mingw_libs]
-
-rel = app_env.Command(zip_output, zip_input, BuildZipFile_)
+# The release is a Zip file on Linux and Windows and a DMG on Mac.
+rel = (BuildReleaseZipFile_(app_env)
+       if platform == 'linux' or platform == 'windows'
+       else BuildReleaseMacDMG_(app_env))
 Return('rel')
