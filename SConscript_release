@@ -1,11 +1,8 @@
-# -----------------------------------------------------------------------------
-# Building the release as a Zip file.
-# -----------------------------------------------------------------------------
-
 from re         import compile, match
+from shutil     import copyfile, copytree, ignore_patterns
 from subprocess import Popen, PIPE, run
-from os         import walk
-from os.path    import basename, dirname, isfile, join, relpath
+from os         import makedirs, rmdir, walk
+from os.path    import basename, dirname, isdir, isfile, join, relpath
 from zipfile    import ZipFile
 
 Import('rel_dict')
@@ -20,19 +17,22 @@ Import('rel_dict')
 # construction variables. However, they are actually not used in the
 # SCons.Tool.zip source file. So do everything manually here.
 def BuildZipFile_(target, source, env):
+    exclusions = env['RESOURCE_EXCLUSIONS']
     zf = ZipFile(str(target[0]), 'w')
     def AddFile_(f, rel_path):
-        zf.write(f, f'{rel_dict["app_name"]}/{rel_path}')
+        if not f in exclusions:
+            zf.write(f, f'{rel_dict["app_name"]}/{rel_path}')
     for src in source:
         name = str(src)
         # Walk through directories.
         if src.isdir():
             basedir = dirname(name)
             for root, dirs, files in walk(name):
-                for f in files:
-                    path = join(root, f)
-                    if isfile(path):
-                        AddFile_(path, relpath(path, basedir))
+                if not root in exclusions:
+                    for f in files:
+                        path = join(root, f)
+                        if isfile(path):
+                            AddFile_(path, relpath(path, basedir))
         else:  # Regular file - add at the top level.
             AddFile_(name, basename(name))
 
@@ -88,46 +88,65 @@ def BuildReleaseZipFile_(env):
 #           '@loader_path/../Frameworks/<full-dylib-name.dylib>'
 # -----------------------------------------------------------------------------
 
-# Recursively collects dependency libraries for the given target, adding to
-# replacement_dict (maps full path => library file name) and source_dict (maps
-# library file name => one absolute path to library).
-def OLDCollectMacLibs_(target, replacement_dict, source_dict):
-    # Stop if already handled.
-    if target in replacement_dict:
-        return
+# -----------------------------------------------------------------------------
+# This class does most of the work for building a Mac release.
+# -----------------------------------------------------------------------------
 
-    # replacement_dict maps the target (as is) to the base file name.
-    name      = basename(target)
-    replacement_dict[target] = name
+class MacHelper(object):
+    def BuildDMG(self, env, target, app):
+        # Step 1: Collect libraries to fill dictionaries:
+        #  _lib_replacement_dict maps full path => library file name.
+        #  _lib_source_dict maps library file name => absolute path to library.
+        self._lib_source_dict      = {}
+        self._lib_replacement_dict = {}
+        self._CollectLibs(app)
 
-    # source_dict maps the name to a valid absolute path to the target. (There
-    # may be multiple locations; any one is ok.)
-    full_path = File(target).abspath
-    source_dict[name] = full_path
+        # Step 2: Copy everything into a bundle directory.
+        app_name = rel_dict['app_name']
+        bundle_path = env.Dir(f'$BUILD_DIR/{app_name}.app').abspath
+        (bundled_app, bundled_libs) = self._CreateBundle(env, app, bundle_path)
 
-    # Handle dependencies: get the results of running "otool -L" on the target.
-    lines = Popen(['otool', '-L', full_path],
-                  stdout=PIPE, text=True).stdout.read().splitlines()
-    prog = compile(r'.*/([^/]+\.dylib)')
-    # Skip the first line, which is the name of the target.
-    for line in lines[1:]:
-        line = line.strip()
-        # Skip lines starting with '@', '/System/', or '/usr/lib'; they are ok.
-        if (line.startswith('@') or
-            line.startswith('/System') or
-            line.startswith('/usr/lib')):
-            continue
-        # Extract the library name and recurse on it.
-        result = prog.match(line)
-        if result:
-            CollectMacLibs_(result.group(), replacement_dict, source_dict)
+        # Step 3: Fix all of the library paths in the bundled app and libs.
+        self._FixLibs(env, bundled_app, bundled_libs)
 
-# Runs otool on the given target (app or library) and returns a list of paths
-# of dependent libraries.
-def GetLibPaths_(target):
-    prog = compile(r'.*/([^/]+\.dylib)')
+        # Step 4: Create a DMG from the bundle directory.
+        dmg_file = File(target[0]).abspath
+        dmg_cmd = f'tar cfz {dmg_file} {bundle_path}'
+        run(Split(dmg_cmd))
 
-    def GetLibLine_(line):
+    # -------------------------------------------------------------------------
+
+    # Recursively collects dependency libraries for the given target (app
+    # or library).
+    def _CollectLibs(self, target):
+        for lib_path in self._GetLibPaths_(target):
+            if lib_path in self._lib_replacement_dict:  # Already handled
+                continue
+
+            name      = basename(lib_path)
+            full_path = File(lib_path).abspath
+
+            self._lib_replacement_dict[lib_path] = name
+            self._lib_source_dict[name]          = full_path
+
+            # Recurse.
+            self._CollectLibs(lib_path)
+
+    # Runs otool on the given target (app or library) and returns a list of paths
+    # of dependent libraries.
+    def _GetLibPaths_(self, target):
+        prog = compile(r'.*/([^/]+\.dylib)')
+
+        # Get dependent library lines.
+        full_path = File(target).abspath
+        lines = Popen(['otool', '-L', full_path],
+                      stdout=PIPE, text=True).stdout.read().splitlines()
+
+        # Skip the first line, which is the name of the target.
+        return [lib_path for line in lines[1:]
+                if (lib_path := self._GetLibLine(prog, line))]
+
+    def _GetLibLine(self, prog, line):
         line = line.strip()
         # Skip lines starting with '@', '/System/', or '/usr/lib'; they are ok.
         if (line.startswith('@') or
@@ -138,96 +157,82 @@ def GetLibPaths_(target):
         result = prog.match(line)
         return result.group() if result else ''
 
-    # Get dependent library lines.
-    full_path = File(target).abspath
-    lines = Popen(['otool', '-L', full_path],
-                  stdout=PIPE, text=True).stdout.read().splitlines()
+    def _CreateBundle(self, env, app, bundle_path):
+        app_name = basename(str(app))
 
-    # Skip the first line, which is the name of the target.
-    return [lib_path for line in lines[1:] if (lib_path := GetLibLine_(line))]
+        if isdir(bundle_path):
+            rmdir(bundle_path)
+        makedirs(f'{bundle_path}/MacOS/')
+        makedirs(f'{bundle_path}/Frameworks/')
+        makedirs(f'{bundle_path}/Resources/')
 
+        # Copy the app.
+        bundled_app = f'{bundle_path}/MacOS/{app_name}'
+        copyfile(File(app).abspath, bundled_app)
 
-# Recursively collects dependency libraries for the given target (app or
-# library), adding to replacement_dict (maps full path => library file name)
-# and source_dict (maps library file name => one absolute path to library).
-def CollectMacLibs_(target, replacement_dict, source_dict):
-    for lib_path in GetLibPaths_(target):
-        if lib_path in replacement_dict:  # Already handled
-            continue
+        # Copy the libraries.
+        bundled_libs = []
+        for lib_name, lib_path in self._lib_source_dict.items():
+            bundled_lib = f'{bundle_path}/Frameworks/{lib_name}'
+            copyfile(lib_path, bundled_lib)
+            bundled_libs.append(bundled_lib)
 
-        # replacement_dict maps the target (as is) to the base file name.
-        name      = basename(lib_path)
-        replacement_dict[lib_path] = name
+        # Copy the resources directory.
+        print(f'XXXX Copying resources')
+        exclusions = env['RESOURCE_EXCLUSIONS']
+        def Exclude_(directory, contents):
+            return ([directory] if directory in exclusions else
+                    [c for c in contents if c in exclusions])
+        copytree('resources', f'{bundle_path}/Resources/resources',
+                 ignore=Exclude_)
 
-        # source_dict maps the name to a valid absolute path to the
-        # target. (There may be multiple locations; any one is ok.)
-        full_path = File(lib_path).abspath
-        source_dict[name] = full_path
+        # The app and libs need to be fixed.
+        return (bundled_app, bundled_libs)
 
-        # Recurse.
-        CollectMacLibs_(lib_path, replacement_dict, source_dict)
+    def _FixLibs(self, env, app, libs):
+        # Construct most of a command to replace library paths with
+        # bundle-relative ones.
+        replace_cmd = 'install_name_tool '
+        for old_path, name in self._lib_replacement_dict.items():
+            new_path     = f'@loader_path/../Frameworks/{name}'
+            replace_cmd += f'-change {old_path} {new_path} '
 
-# For the given target application and each dependent library, this creates a
-# copy in a temporary directory and processes it to change the load path to be
-# what is expected in the bundle. This returns a list of paths to add to the
-# Zip file.
-def FixMacFiles_(env, app):
-    # Collect which files to process.
-    replacement_dict = {}
-    source_dict      = {}
-    CollectMacLibs_(str(app), replacement_dict, source_dict)
+        # Fix the app.
+        run(Split(f'{replace_cmd} {app}'))
 
-    # Use the replacement_dict to construct most of a command to replace all
-    # library paths in the dictionary with rpath-relative ones.
-    replace_cmd = 'install_name_tool '
-    for path, name in replacement_dict.items():
-        replace_cmd += f'-change {path} {join("@rpath", name)} '
+        # Fix the libraries.
+        for lib in libs:
+            lib_name = basename(lib)
+            lib_id = f'@executable_path/../Frameworks/{lib_name}'
+            run(Split(f'{replace_cmd} -id {lib_id} {lib}'))
 
-    # Use the source_dict to create a processed copy of each source.
-    targets = []
-    tmp_dir = '$BUILD_DIR/TMP'
-    for name, source_path in source_dict.items():
-        target = join(tmp_dir, name)
-        env.Command(target, source_path,
-                    ['echo Building $TARGET from $SOURCE',
-                     Mkdir(tmp_dir),
-                     Copy('$TARGET', '$SOURCE', False),  # Copy links as files.
-                     f'{replace_cmd} -id {name} $TARGET'])
-        targets.append(target)
-    return targets
+# -----------------------------------------------------------------------------
 
-# XXXX
-def BuildReleaseMacDMG_(env):
-    app      = rel_dict['app']
+# This is used to build a DMG on the Mac. This uses a Builder because it has
+# to execute after the application and its dependency libraries are built.
+def BuildMacDMG_(env):
+    # SCons Builder that creates the DMG for the release. The source is a list
+    # whose first element is the app. The target is the DMG file path.
+    def MacDMGBuilder_(target, source, env):
+        MacHelper().BuildDMG(env, target, source[0])
+        return None  # Success!
+
+    env.Append(BUILDERS={ 'BuildMacDMG' : Builder(action=MacDMGBuilder_) })
+
     app_name = rel_dict['app_name']
-
-    # Collect dependent libraries into dictionaries.
-    replacement_dict = {}
-    source_dict      = {}
-    CollectMacLibs_(str(app), replacement_dict, source_dict)
-
-    # Create the bundle hierarchy with the app, libraries, and other necessary
-    # files.
-    bundle_name  = f'{app_name}.app'
-    bundle_path  = f'$BUILD_DIR/{bundle_name}'
-    bundled_app  = env.Install(target=f'{bundle_path}/Contents/MacOS',
-                               source=app)
-    bundled_libs = env.Install(target=f'{bundle_path}/Contents/Frameworks',
-                               source=[source_dict.values()])
-    bundled_res  = env.Install(target=f'{bundle_path}/Contents/Resources',
-                               source=['resources'])
-    # XXXX
-    return [bundled_app, bundled_libs, bundled_res]
+    dmg_file = f'$BUILD_DIR/Release/{app_name}.dmg'
+    sources  = [rel_dict['app'], rel_dict['app_lib'], rel_dict['ion_lib']]
+    env.BuildMacDMG(target=dmg_file, source=sources)
+    return dmg_file
 
 # -----------------------------------------------------------------------------
-# Building the release.
+# Building the release. The release is a Zip file on Linux and Windows and a
+# DMG on Mac.
 # -----------------------------------------------------------------------------
 
-app_env  = rel_dict['app_env']
-platform = app_env['PLATFORM']
+app_env = rel_dict['app_env']
 
-# The release is a Zip file on Linux and Windows and a DMG on Mac.
-rel = (BuildReleaseZipFile_(app_env)
-       if platform == 'linux' or platform == 'windows'
-       else BuildReleaseMacDMG_(app_env))
+rel = (BuildMacDMG_(app_env) if app_env['PLATFORM'] == 'mac'
+       else BuildReleaseZipFile_(app_env))
+
 Return('rel')

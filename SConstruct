@@ -101,7 +101,7 @@ if mode == 'rel':
     # Make a list of items needed to build the release. These are passed as a
     # dictionary so that they can be modified if necessary (see Mac).
     rel_dict = {
-        'app'      : apps[app_name][0],
+        'app'      : apps[app_name],
         'app_env'  : app_env,
         'app_lib'  : app_lib,
         'app_name' : app_name,

@@ -454,6 +454,13 @@ app_env = lib_env.Clone()
 app_env.Append(
     LIBPATH = ['#/$BUILD_DIR', '#/$BUILD_DIR/docopt.cpp'],
     LIBS    = ['docopt'],
+
+    # Resource files and directories to avoid adding to a release.
+    RESOURCE_EXCLUSIONS = [
+        'resources/SConscript_resources',
+        'resources/nodes/tests',
+        'resources/scenes/nodeviewer.mvn',
+    ],
 )
 
 # Avoid opening a cmd window with the application on Windows (Release only -
