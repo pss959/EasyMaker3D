@@ -1,8 +1,8 @@
-from re         import compile, match
-from shutil     import copyfile, copytree, ignore_patterns
+from re         import match
+from shutil     import copy2, copytree, rmtree
 from subprocess import Popen, PIPE, run
-from os         import makedirs, rmdir, walk
-from os.path    import basename, dirname, isdir, isfile, join, relpath
+from os         import makedirs, walk
+from os.path    import basename, dirname, isfile, join, relpath
 from zipfile    import ZipFile
 
 Import('rel_dict')
@@ -94,106 +94,132 @@ def BuildReleaseZipFile_(env):
 
 class MacHelper(object):
     def BuildDMG(self, env, target, app):
+        app_file = env.File(app).abspath
+        app_name = basename(app_file)
+
         # Step 1: Collect libraries to fill dictionaries:
-        #  _lib_replacement_dict maps full path => library file name.
-        #  _lib_source_dict maps library file name => absolute path to library.
-        self._lib_source_dict      = {}
-        self._lib_replacement_dict = {}
-        self._CollectLibs(app)
+        lib_mgr = self._LibManager(env)
+        lib_mgr.AddLibsForTarget(app_file)
 
         # Step 2: Copy everything into a bundle directory.
-        app_name = rel_dict['app_name']
         bundle_path = env.Dir(f'$BUILD_DIR/{app_name}.app').abspath
-        (bundled_app, bundled_libs) = self._CreateBundle(env, app, bundle_path)
+        bundler = self._Bundler(env, bundle_path)
+        bundler.Bundle(app_file, lib_mgr.GetFileDict(), 'resources')
 
         # Step 3: Fix all of the library paths in the bundled app and libs.
-        self._FixLibs(env, bundled_app, bundled_libs)
+        self._FixLibs(bundler.GetApp(), bundler.GetLibs(),
+                      lib_mgr.GetReplacementDict())
 
         # Step 4: Create a DMG from the bundle directory.
         dmg_file = File(target[0]).abspath
-        dmg_cmd = f'tar cfz {dmg_file} {bundle_path}'
+        dmg_cmd = (f'hdiutil create {dmg_file} -ov -volname {app_name}' +
+                   f' -fs HFS+ -srcfolder {bundle_path}')
         run(Split(dmg_cmd))
 
     # -------------------------------------------------------------------------
 
-    # Recursively collects dependency libraries for the given target (app
-    # or library).
-    def _CollectLibs(self, target):
-        for lib_path in self._GetLibPaths_(target):
-            if lib_path in self._lib_replacement_dict:  # Already handled
-                continue
+    # Private class to manage libraries. Some terminology:
+    #
+    #   "lib_path" is the path to a library accessed from running otool.
+    #   "lib_name" is the name of the library file (e.g., "libfoo.dylib").
+    #   "file_path" is an absolute path to some instance of the library file.
+    #
+    # Dictionaries:
+    #   self._repl_dict maps lib_path => lib_name
+    #   self._file_dict maps lib_name => file_path
+    class _LibManager(object):
+        def __init__(self, env):
+            self._env = env
+            #  Initialize the dicts with the openvr_api library, which is a
+            #  special case because its ID uses '@rpath'.
+            ovr_name = 'libopenvr_api.dylib'
+            ovr_path = env.File('$OPENVR_LIB').abspath
+            self._repl_dict = { f'@rpath/{ovr_name}' : ovr_name }
+            self._file_dict = { ovr_name             : ovr_path }
 
-            name      = basename(lib_path)
-            full_path = File(lib_path).abspath
+        # Adds any new libraries found by running otool on the given target,
+        # which may be an application or dylib.
+        def AddLibsForTarget(self, target):
+            for lib_path in self._GetLibPaths(target):
+                if not lib_path in self._repl_dict:  # Not already handled
+                    lib_name  = basename(lib_path)
+                    file_path = File(lib_path).abspath
+                    self._repl_dict[lib_path] = lib_name
+                    self._file_dict[lib_name] = file_path
 
-            self._lib_replacement_dict[lib_path] = name
-            self._lib_source_dict[name]          = full_path
+                    # Recurse.
+                    self.AddLibsForTarget(file_path)
 
-            # Recurse.
-            self._CollectLibs(lib_path)
+        # Returns the resulting dictionary of library replacements.
+        def GetReplacementDict(self):
+            return self._repl_dict
 
-    # Runs otool on the given target (app or library) and returns a list of paths
-    # of dependent libraries.
-    def _GetLibPaths_(self, target):
-        prog = compile(r'.*/([^/]+\.dylib)')
+        # Returns the resulting dictionary of library files.
+        def GetFileDict(self):
+            return self._file_dict
 
-        # Get dependent library lines.
-        full_path = File(target).abspath
-        lines = Popen(['otool', '-L', full_path],
-                      stdout=PIPE, text=True).stdout.read().splitlines()
+        def _GetLibPaths(self, target):
+            # Get dependent library lines.
+            lines = Popen(['otool', '-L', target],
+                          stdout=PIPE, text=True).stdout.read().splitlines()
+            # Skip the first line, which is the name of the target.
+            return [lib_path for line in lines[1:]
+                    if (lib_path := self._GetLibLine(line.strip()))]
 
-        # Skip the first line, which is the name of the target.
-        return [lib_path for line in lines[1:]
-                if (lib_path := self._GetLibLine(prog, line))]
+        def _GetLibLine(self, line):
+            if (line.startswith('@') or line.startswith('/System') or
+                line.startswith('/usr/lib')):
+                return ''
+            # See if there is a parsable library.
+            result = match(r'.*/([^/]+\.dylib)', line)
+            return result.group() if result else ''
 
-    def _GetLibLine(self, prog, line):
-        line = line.strip()
-        # Skip lines starting with '@', '/System/', or '/usr/lib'; they are ok.
-        if (line.startswith('@') or
-            line.startswith('/System') or
-            line.startswith('/usr/lib')):
-            return ''
-        # See if there is a parsable library.
-        result = prog.match(line)
-        return result.group() if result else ''
+    # -------------------------------------------------------------------------
 
-    def _CreateBundle(self, env, app, bundle_path):
-        app_name = basename(str(app))
+    # Private class used to create a bundle.
+    class _Bundler(object):
+        def __init__(self, env, path):
+            self._env = env
+            self._path = f'{path}/Contents'
+            # Remove any previous bundle and create subdirectories.
+            rmtree(self._path, ignore_errors=True)
+            makedirs(f'{self._path}/MacOS/')
+            makedirs(f'{self._path}/Frameworks/')
+            makedirs(f'{self._path}/Resources/')
 
-        if isdir(bundle_path):
-            rmdir(bundle_path)
-        makedirs(f'{bundle_path}/MacOS/')
-        makedirs(f'{bundle_path}/Frameworks/')
-        makedirs(f'{bundle_path}/Resources/')
+        def Bundle(self, app_file, lib_dict, resource_dir):
+            # Copy the app.
+            self._app_path = f'{self._path}/MacOS/{basename(app_file)}'
+            copy2(app_file, self._app_path)
 
-        # Copy the app.
-        bundled_app = f'{bundle_path}/MacOS/{app_name}'
-        copyfile(File(app).abspath, bundled_app)
+            # Copy the libraries.
+            self._lib_paths = []
+            for lib_name, lib_path in lib_dict.items():
+                lib = f'{self._path}/Frameworks/{lib_name}'
+                copy2(lib_path, lib)
+                self._lib_paths.append(lib)
 
-        # Copy the libraries.
-        bundled_libs = []
-        for lib_name, lib_path in self._lib_source_dict.items():
-            bundled_lib = f'{bundle_path}/Frameworks/{lib_name}'
-            copyfile(lib_path, bundled_lib)
-            bundled_libs.append(bundled_lib)
+            # Copy the resources directory.
+            exclusions = self._env['RESOURCE_EXCLUSIONS']
+            def Exclude_(dir, files):
+                return ([dir] if dir in exclusions else
+                        [f for f in files if f'{dir}/{f}' in exclusions])
+            copytree(resource_dir, f'{self._path}/Resources/{resource_dir}',
+                     ignore=Exclude_)
 
-        # Copy the resources directory.
-        print(f'XXXX Copying resources')
-        exclusions = env['RESOURCE_EXCLUSIONS']
-        def Exclude_(directory, contents):
-            return ([directory] if directory in exclusions else
-                    [c for c in contents if c in exclusions])
-        copytree('resources', f'{bundle_path}/Resources/resources',
-                 ignore=Exclude_)
+        def GetApp(self):
+            return self._app_path
 
-        # The app and libs need to be fixed.
-        return (bundled_app, bundled_libs)
+        def GetLibs(self):
+            return self._lib_paths
 
-    def _FixLibs(self, env, app, libs):
+    # -------------------------------------------------------------------------
+
+    def _FixLibs(self, app, libs, replacement_dict):
         # Construct most of a command to replace library paths with
         # bundle-relative ones.
         replace_cmd = 'install_name_tool '
-        for old_path, name in self._lib_replacement_dict.items():
+        for old_path, name in replacement_dict.items():
             new_path     = f'@loader_path/../Frameworks/{name}'
             replace_cmd += f'-change {old_path} {new_path} '
 
