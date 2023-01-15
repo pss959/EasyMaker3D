@@ -126,11 +126,11 @@ class STLTextWriter_ : public STLWriter_ {
         return std::ios::out;
     }
     virtual void WriteHeader(std::ostream &out, const Selection &sel) override {
-        out << "solid MakerVR_Export\n";
+        out << "solid " << TK::kApplicationName << "_Export\n";
     }
     virtual void WriteMesh(std::ostream &out, const TriMesh &mesh) override;
     virtual void WriteFooter(std::ostream &out) override {
-        out << "endsolid MakerVR_Export\n";
+        out << "endsolid " << TK::kApplicationName << "_Export\n";
     }
 
   private:
@@ -181,7 +181,7 @@ class STLBinaryWriter_ : public STLWriter_ {
 
 void STLBinaryWriter_::WriteHeader(std::ostream &out, const Selection &sel) {
     // Create an 80-byte header.
-    std::string header = "MakerVR_Export";
+    std::string header = std::string(TK::kApplicationName) + "_Export";
     header += std::string(80 - header.size(), ' ');
     out.write(&header[0], 80);
 
