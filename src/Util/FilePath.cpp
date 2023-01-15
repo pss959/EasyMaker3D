@@ -119,7 +119,7 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
 }
 
 FilePath FilePath::GetAbsolute() const {
-    return IsAbsolute() ? *this :
+    return IsAbsolute() ? FilePath(lexically_normal()) :
         FromPath_(std::filesystem::current_path() / *this);
 }
 

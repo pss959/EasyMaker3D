@@ -1,3 +1,7 @@
+#if defined(ION_PLATFORM_MAC)
+#include <mach-o/dyld.h>  // For _NSGetExecutablePath()
+#endif
+
 #include <csignal>
 #include <ctime>
 #include <functional>
@@ -92,6 +96,26 @@ FilePath CrashHandler_::GetCrashFilePath_() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+/// This is used for release builds on the Mac to make sure the working
+/// directory is where the app is, allowing the resources to be loaded.
+static void SetWorkingDirectory_() {
+#if defined(ION_PLATFORM_MAC)
+    // On the Mac, the executable is run from some unknown place where the DMG
+    // was installed. (Or something - not really clear.) Get the executable
+    // path to allow resource access.
+    uint32_t size = 10000;
+    char buf[size];
+    _NSGetExecutablePath(buf, &size);
+    const FilePath app_path = FilePath(buf).GetAbsolute();
+
+    // The resources directory is in the "Resources" subdirectory of the
+    // bundle.
+    const FilePath res_path = FilePath::Join(
+        app_path.GetParentDirectory().GetParentDirectory(), "Resources");
+    res_path.MakeCurrent();
+#endif
+}
+
 static void InitLogging_(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));
 
@@ -178,6 +202,8 @@ int main(int argc, const char *argv[]) {
 #if RELEASE_BUILD
     // Release version is always run fullscreen.
     options.fullscreen = true;
+
+    SetWorkingDirectory_();
 #endif
 
     const int height = TK::kWindowHeight;
