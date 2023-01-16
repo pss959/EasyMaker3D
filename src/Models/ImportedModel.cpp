@@ -25,6 +25,9 @@ void ImportedModel::SetUnitConversion(const UnitConversion &conv) {
 void ImportedModel::SetPath(const std::string &path) {
     path_ = path;
     ProcessChange(SG::Change::kGeometry, *this);
+
+    // Clear any previous error; it does not relate to the new path.
+    import_error_.clear();
 }
 
 TriMesh ImportedModel::BuildMesh() {
