@@ -241,8 +241,7 @@ class MockFilePathList_ : public FilePathList {
                              bool include_hidden) const override;
     virtual bool IsValidDirectory(const FilePath &path) const {
         const std::string fn = path.GetFileName();
-        return ion::base::StartsWith(fn, "Dir") ||
-            fn == "stl" || fn == "makervr";
+        return ion::base::StartsWith(fn, "Dir") || fn == "stl" || fn == "maker";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
         return true;
@@ -254,7 +253,8 @@ void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,
                                     const std::string &extension,
                                     bool include_hidden) const {
     const FilePath dir = GetCurrent();
-    if (dir.ToString() == "/projects/makervr/stl/") {
+    // Special case for dummy path used in doc.
+    if (dir.ToString() == "/projects/maker/stl/") {
         files.push_back("Airplane.stl");
         files.push_back("Boat.stl");
         files.push_back("Car.stl");

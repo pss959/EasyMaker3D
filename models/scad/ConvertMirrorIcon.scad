@@ -1,6 +1,6 @@
 //=============================================================================
-// 3D icon used for Mirror tool in MakerVR. The tool itself is just 3 planes,
-// which isn't useful as an icon.
+// 3D icon used for MirrorTool. The tool itself is just 3 planes, which isn't
+// useful as an icon.
 // =============================================================================
 
 use </home/pss/git/projects/maker/scad/Torus.scad>

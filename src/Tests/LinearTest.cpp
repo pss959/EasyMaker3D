@@ -103,4 +103,4 @@ TEST_F(LinearTest, TransformPlane3) {
     EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
 }
 
-/// \todo Add more from old MakerVR
+/// \todo Add more from Unity-based version.

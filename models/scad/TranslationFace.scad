@@ -1,5 +1,5 @@
 //=============================================================================
-// One of these is used for each face of the TranslationManip in MakerVR.
+// One of these is used for each face of the TranslationTool.
 //=============================================================================
 
 module Pyramid(baseSize = 10, height = 10) {
