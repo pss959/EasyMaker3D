@@ -43,7 +43,7 @@ class CrashHandler_ {
                      Util::GetStackTrace());
     }
 
-#if ! defined(RELEASE_BUILD)
+#if ! RELEASE_BUILD
     void HandleAssertion(const AssertException &ex) {
         HandleCrash_(std::string("Caught assertion:\n") + ex.what(),
                      ex.GetStackTrace());
@@ -70,7 +70,7 @@ class CrashHandler_ {
 
 void CrashHandler_::HandleCrash_(const std::string &cause,
                                  const StackTrace_ &stack) {
-#if ! defined(RELEASE_BUILD)
+#if ! RELEASE_BUILD
     // Non-release version also prints to stderr.
     std::cerr << "*** " << cause << "\n";
     std::cerr << "*** STACK:\n";
@@ -96,6 +96,7 @@ FilePath CrashHandler_::GetCrashFilePath_() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+#if RELEASE_BUILD
 /// This is used for release builds on the Mac to make sure the working
 /// directory is where the app is, allowing the resources to be loaded.
 static void SetWorkingDirectory_() {
@@ -115,6 +116,7 @@ static void SetWorkingDirectory_() {
     res_path.MakeCurrent();
 #endif
 }
+#endif
 
 static void InitLogging_(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));
@@ -152,7 +154,7 @@ static bool RunApp_(const Application::Options &options) {
 
         app.MainLoop();
     }
-#if ! defined(RELEASE_BUILD)
+#if ! RELEASE_BUILD
     catch (AssertException &ex) {
         ch.HandleAssertion(ex);
         return false;
