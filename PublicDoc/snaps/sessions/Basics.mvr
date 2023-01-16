@@ -1,6 +1,5 @@
 CommandList { # 0x55e6231a1290
   app_info: AppInfo { # 0x55e62326a6e0
-    app_name: "MakerVR",
     version: "0.0.1",
     session_state: SessionState { # 0x55e62326a880
     },

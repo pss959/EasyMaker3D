@@ -1,6 +1,5 @@
 CommandList {
   app_info: AppInfo {
-    app_name: "MakerVR",
     version: "0.0.1",
     session_state: SessionState {
       point_target_visible: False,

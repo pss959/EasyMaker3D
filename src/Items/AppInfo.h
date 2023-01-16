@@ -16,7 +16,6 @@ DECL_SHARED_PTR(AppInfo);
 /// \ingroup Items
 class AppInfo : public Parser::Object {
   public:
-    const std::string     & GetAppName()      const { return app_name_; }
     const std::string     & GetVersion()      const { return version_; }
     const SessionStatePtr & GetSessionState() const { return session_state_; }
 
@@ -33,7 +32,6 @@ class AppInfo : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>       app_name_;
     Parser::TField<std::string>       version_;
     Parser::ObjectField<SessionState> session_state_;
     ///@}

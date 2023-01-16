@@ -1,6 +1,5 @@
 CommandList { # 0x5573d399c5d0
   app_info: AppInfo { # 0x5573d3a56930
-    app_name: "MakerVR",
     version: "0.0.1",
     session_state: SessionState { # 0x5573d3a56ad0
       point_target_visible: True,
