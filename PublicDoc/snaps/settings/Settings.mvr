@@ -1,8 +1,8 @@
 Settings {
-  last_session_path: "/projects/makervr/Hinge.mvr",
-  session_directory: "/projects/makervr/",
-  import_directory:  "/projects/makervr/stl/",
-  export_directory:  "/projects/makervr/stl/",
+  last_session_path: "/projects/maker/Hinge.mvr",
+  session_directory: "/projects/maker/",
+  import_directory:  "/projects/maker/stl/",
+  export_directory:  "/projects/maker/stl/",
   tooltip_delay: 2,
   import_units: UnitConversion {
     from_units: "kMillimeters",

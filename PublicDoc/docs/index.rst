@@ -12,8 +12,8 @@ keyboard.
 You can create many different types of models and then save them as STL files
 that can be sent to a 3D printer.
 
-MakerVR is available for Windows and Linux. There is also a Mac version, but it
-may or not work in VR due to the `lack of official SteamVR support
+|appname| is available for Windows, Mac, and Linux. The Mac version may or not
+work in VR due to the `lack of official SteamVR support
 <https://store.steampowered.com/news/app/250820/view/2216278054495230717>`_.
 
 |block-image|
