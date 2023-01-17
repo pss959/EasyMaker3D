@@ -1,6 +1,6 @@
 Settings {
   last_session_path: "/tmp/last.mvr",
-  session_directory: "/tmp/makervr",
+  session_directory: "/tmp/maker",
   import_directory: "/tmp/import",
   export_directory: "/tmp/export/stl",
   tooltip_delay: 0.5,

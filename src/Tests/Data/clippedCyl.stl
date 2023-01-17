@@ -1,4 +1,4 @@
-solid MakerVR_Export
+solid EasyMaker3D_Export
   facet normal 0.9399 -0.3414 0
     outer loop
       vertex 6.0335 -5.4133 6.8851
@@ -223,4 +223,4 @@ solid MakerVR_Export
       vertex -4.6227 10.6064 12.8114
     endloop
   endfacet
-endsolid MakerVR_Export
+endsolid EasyMaker3D_Export

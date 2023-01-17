@@ -165,6 +165,10 @@ void FilePath::Remove() const {
     std::filesystem::remove(*this);
 }
 
+void FilePath::CopyTo(const FilePath &to_path) const {
+    std::filesystem::copy(*this, to_path);
+}
+
 bool FilePath::CreateDirectories() const {
     KLOG('f', "Creating directories for path \"" << ToString() << "\"");
     std::error_code ec;

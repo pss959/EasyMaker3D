@@ -96,6 +96,9 @@ class FilePath : private std::filesystem::path {
     /// files for testing.
     void Remove() const;
 
+    /// Copies this file to the given path. Used primarily for testing.
+    void CopyTo(const FilePath &to_path) const;
+
     /// Creates all directories that do not already exist in this path. This
     /// should be called only on a directory path.  Returns false if anything
     /// fails.

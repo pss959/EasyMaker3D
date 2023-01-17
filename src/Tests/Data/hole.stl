@@ -1,4 +1,4 @@
-solid MakerVR_Export
+solid EasyMaker3D_Export
   facet normal 0 -1 0
     outer loop
       vertex 5 -10 15
@@ -223,4 +223,4 @@ solid MakerVR_Export
       vertex 5 10 15
     endloop
   endfacet
-endsolid MakerVR_Export
+endsolid EasyMaker3D_Export

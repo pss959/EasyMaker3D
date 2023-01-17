@@ -3,8 +3,8 @@
 # -----------------------------------------------------------------------------
 
 app_dict = {
-    'APP_NAME'            : 'MakerVR',
-    'SESSION_SUFFIX'      : '.mvr',
+    'APP_NAME'            : 'EasyMaker3D',
+    'SESSION_SUFFIX'      : '.ems',
     'VERSION_STRING'      : '0.0.1',
     'PUBLIC_DOC_BASE_URL' : 'https://pss959.github.io/MakerVR-dist/',
 }
