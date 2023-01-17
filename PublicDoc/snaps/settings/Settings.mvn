@@ -1,0 +1,25 @@
+Settings {
+  last_session_path: "/projects/maker/Hinge.ems",
+  session_directory: "/projects/maker/",
+  import_directory:  "/projects/maker/stl/",
+  export_directory:  "/projects/maker/stl/",
+  tooltip_delay: 2,
+  import_units: UnitConversion {
+    from_units: "kMillimeters",
+    to_units: "kCentimeters",
+  },
+  export_units: UnitConversion {
+    from_units: "kCentimeters",
+    to_units: "kMillimeters",
+  },
+  build_volume_size: 22 30 22,
+  left_radial_menu: RadialMenuInfo {
+    count: "kCount4",
+    actions: ["kHideSelected", "kShowAll", "kTogglePointTarget", "kToggleEdgeTarget"],
+  },
+  right_radial_menu: RadialMenuInfo {
+    count: "kCount8",
+    actions: ["kScaleTool", "kCreateCylinder", "kRotationTool", "kTranslationTool", "kUndo", "kSelectAll", "kSelectNone", "kRedo"],
+  },
+  radial_menus_mode: "kIndependent",
+}

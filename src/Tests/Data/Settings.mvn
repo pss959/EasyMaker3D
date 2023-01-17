@@ -1,5 +1,5 @@
 Settings {
-  last_session_path: "/tmp/last.mvr",
+  last_session_path: "/tmp/last.ems",
   session_directory: "/tmp/maker",
   import_directory: "/tmp/import",
   export_directory: "/tmp/export/stl",
