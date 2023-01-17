@@ -102,7 +102,7 @@ class Panel::Focuser_ {
     /// focus on it.
     void FocusFirstPane_();
 
-    /// Changes focus from #old_pane to #new_pane. Either may be null.
+    /// Changes focus from \c old_pane to \c new_pane. Either may be null.
     void ChangeFocus_(const PanePtr &old_pane, const PanePtr &new_pane);
 };
 

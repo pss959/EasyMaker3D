@@ -464,7 +464,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kLoad: {
           const auto &linst = GetTypedInstr_<SnapScript::LoadInstr>(instr);
-          if (! LoadSession_(linst.file_name + TK::kSessionFileSuffix))
+          if (! LoadSession_(linst.file_name))
               return false;
           break;
       }
@@ -531,8 +531,8 @@ bool SnapshotApp_::LoadSession_(const std::string &file_name) {
         std::cout << "    Started new session\n";
     }
     else {
-        const FilePath path("PublicDoc/snaps/sessions/" + file_name);
-
+        const FilePath path("PublicDoc/snaps/sessions/" + file_name +
+                            TK::kSessionFileSuffix);
         std::string error;
         if (! test_context_.session_manager->LoadSession(path, error)) {
             std::cerr << "*** Error loading session from '"

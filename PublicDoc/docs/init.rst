@@ -78,4 +78,4 @@
 .. ----------------------------------------------------------------------------
 .. session-extension: Replaced with the session extension.
 
-.. |session-extension| replace:: ``.mvr``
+.. |session-extension| replace:: ``.ems``
