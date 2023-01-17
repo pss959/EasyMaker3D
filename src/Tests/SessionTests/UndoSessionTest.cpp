@@ -8,7 +8,7 @@
 
 TEST_F(SessionTestBase, UndoSessionTest) {
     // Tests that loading a session with undo at the end works properly.
-    LoadSession("Undo.mvr");
+    LoadSession("Undo");
 
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(1U, rm.GetChildModelCount());

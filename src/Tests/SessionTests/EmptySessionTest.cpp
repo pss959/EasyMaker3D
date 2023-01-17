@@ -6,7 +6,7 @@
 #include "Tests/Testing.h"
 
 TEST_F(SessionTestBase, EmptySessionTest) {
-    EXPECT_TRUE(LoadSession("Empty.mvr"));
+    EXPECT_TRUE(LoadSession("Empty"));
 
     EXPECT_TRUE(context.scene_context);
     EXPECT_TRUE(context.scene_context->root_model);

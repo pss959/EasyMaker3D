@@ -17,7 +17,7 @@ static Rotationf GetXRot_() {
 TEST_F(SessionTestBase, RevSurfSessionTest1) {
     // This has 1 RevSurfModel (RevSurf_1) that is scaled by 2 in height,
     // rotated by 90 degrees around X, and translated by 5 in X.
-    LoadSession("RevSurf1.mvr");
+    LoadSession("RevSurf1");
 
     // Do this twice - the second time after undo/redo.
     for (int i = 0; i < 2; ++i) {
@@ -50,7 +50,7 @@ TEST_F(SessionTestBase, RevSurfSessionTest2) {
     // Same as above, but the sweep angle is changed to 120 degrees. The
     // translation must be adjusted to compensate for the apparent change in
     // position.
-    LoadSession("RevSurf2.mvr");
+    LoadSession("RevSurf2");
 
     // Do this twice - the second time after undo/redo.
     for (int i = 0; i < 2; ++i) {

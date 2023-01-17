@@ -3,6 +3,6 @@
 
 TEST_F(SessionTestBase, CopyBeveledSessionTest) {
     // Tests a bug copying and pasting a BeveledModel.
-    LoadSession("CopyBeveled.mvr");
+    LoadSession("CopyBeveled");
 }
 

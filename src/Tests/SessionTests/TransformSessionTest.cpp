@@ -7,7 +7,7 @@
 #include "Tests/Testing.h"
 
 TEST_F(SessionTestBase, TransformSessionTest) {
-    LoadSession("Transforms.mvr");
+    LoadSession("Transforms");
 
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(5U, rm.GetChildModelCount());

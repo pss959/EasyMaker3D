@@ -10,7 +10,7 @@ class CSGSessionTest : public SessionTestBase {
 
 TEST_F(CSGSessionTest, Logo) {
     // Some complex CSG operations.
-    LoadSession("Logo.mvr");
+    LoadSession("Logo");
 
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(1U, rm.GetChildModelCount());

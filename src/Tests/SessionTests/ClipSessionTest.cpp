@@ -102,7 +102,7 @@ TEST_F(ClipSessionTest, ClipSessionTest1) {
     // stage coordinates.
     //
     // Clipped_1 should have its rotated top half (front) clipped away.
-    LoadSession("Clip1.mvr");
+    LoadSession("Clip1");
 
     const float s = TK::kInitialModelScale;
 
@@ -131,7 +131,7 @@ TEST_F(ClipSessionTest, ClipSessionTest1b) {
     // This has 1 cylinder (Cylinder_1) that is scaled by 2 in
     // height and then converted to a ClippedModel (Clipped_1). It should have
     // its front half clipped away.
-    LoadSession("Clip1b.mvr");
+    LoadSession("Clip1b");
 
     const float s = TK::kInitialModelScale;
 
@@ -183,7 +183,7 @@ TEST_F(ClipSessionTest, ClipSessionTest3) {
     // All resulting ClippedModel remnants should have the same position as
     // before clipping.
 
-    LoadSession("Clip3.mvr");
+    LoadSession("Clip3");
 
     const float s = TK::kInitialModelScale;
 
@@ -234,7 +234,7 @@ TEST_F(ClipSessionTest, ClipSessionTest2Planes) {
     // the cylinder and the second should clip off the front half of the
     // remaining piece. The resulting ClippedModel should be 4x2x2 and should
     // be centered on (0,1,-1) so that the front is at the Z=0 plane.
-    LoadSession("Clip2Planes.mvr");
+    LoadSession("Clip2Planes");
 
     const float s = TK::kInitialModelScale;
 
@@ -297,7 +297,7 @@ TEST_F(ClipSessionTest, ClipSessionTest2PlanesScaled) {
     // the cylinder and the second should clip off the front half of the
     // remaining piece. The resulting ClippedModel should be 4x3x4 and should
     // be centered on (0,1.5,3) so that the front is at the Z=5 plane.
-    LoadSession("Clip2PlanesScaled.mvr");
+    LoadSession("Clip2PlanesScaled");
 
     const float s = TK::kInitialModelScale;
 
@@ -336,7 +336,7 @@ TEST_F(ClipSessionTest, ClipSessionTest2PlanesScaled) {
 TEST_F(ClipSessionTest, ClipSemiCylinder) {
     // A cylinder with 8 sides and the left half clipped away. Used to create
     // a mesh that CGAL did not like until CleanMesh() was improved.
-    LoadSession("ClipSemiCylinder.mvr");
+    LoadSession("ClipSemiCylinder");
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(1U, rm.GetChildModelCount());
     const TriMesh &mesh = rm.GetChildModel(0)->GetMesh();

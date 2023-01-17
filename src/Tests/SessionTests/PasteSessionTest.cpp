@@ -5,7 +5,7 @@
 
 TEST_F(SessionTestBase, PasteSessionTest) {
     // This session creates a CylinderModel, copies it, and pastes it.
-    LoadSession("PasteCyl.mvr");
+    LoadSession("PasteCyl");
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(2U, rm.GetChildModelCount());
     const auto &orig = *rm.GetChildModel(0);
@@ -19,7 +19,7 @@ TEST_F(SessionTestBase, PasteRenamedSessionTest) {
     // This session creates a CylinderModel, renames it, copies it, and pastes
     // it.
 
-    LoadSession("PasteRenamed.mvr");
+    LoadSession("PasteRenamed");
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(2U, rm.GetChildModelCount());
     const auto &orig = *rm.GetChildModel(0);

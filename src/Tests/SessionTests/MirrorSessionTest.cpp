@@ -14,7 +14,7 @@ TEST_F(SessionTestBase, MirrorSessionTest) {
     //      BEFORE converting to Mirrored_2.
     //  - Cylinder_3 is translated by 10 in X BEFORE converting to Mirrored_3
     //      and rotated 90 around X AFTER converting.
-    LoadSession("Mirror.mvr");
+    LoadSession("Mirror");
 
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(3U, rm.GetChildModelCount());
@@ -79,7 +79,7 @@ TEST_F(SessionTestBase, MirrorSessionTest) {
 
 TEST_F(SessionTestBase, MirrorInPlaceSessionTest) {
     // Same as above, but mirroring in place, so no change in translation.
-    LoadSession("MirrorInPlace.mvr");
+    LoadSession("MirrorInPlace");
 
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(3U, rm.GetChildModelCount());
