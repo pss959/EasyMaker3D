@@ -7,10 +7,10 @@ Controller "T_Controller" {
     }
   ],
   children: [
-    <"nodes/templates/ControllerModel.mvn">,
-    <"nodes/templates/ControllerLaserPointer.mvn">,
-    <"nodes/templates/ControllerGrip.mvn">,
-    <"nodes/templates/ControllerTouch.mvn">,
+    <"nodes/templates/ControllerModel.emd">,
+    <"nodes/templates/ControllerLaserPointer.emd">,
+    <"nodes/templates/ControllerGrip.emd">,
+    <"nodes/templates/ControllerTouch.emd">,
 
     # Attachment point for RadialMenu.
     Node "RadialMenuParent" {

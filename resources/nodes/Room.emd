@@ -1,10 +1,10 @@
 Node "Room" {
   children: [
-    <"nodes/RoomStructure.mvn">,     # Floor, walls, and ceiling.
-    <"nodes/HeightPole.mvn">,        # Interactive height pole.
-    <"nodes/ExitSign.mvn">,          # Interactive exit sign.
-    <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
-    <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
+    <"nodes/RoomStructure.emd">,     # Floor, walls, and ceiling.
+    <"nodes/HeightPole.emd">,        # Interactive height pole.
+    <"nodes/ExitSign.emd">,          # Interactive exit sign.
+    <"nodes/PrecisionControl.emd">,  # Interactive precision control.
+    <"nodes/Shelves.emd">,           # Shelves with interactive 3D icons.
 
     Node "RadialMenus" {
       children: [
@@ -50,6 +50,6 @@ Node "Room" {
 
     # The interactive stage has to come last because of transparency in the
     # BuildVolume.
-    <"nodes/Stage.mvn">,
+    <"nodes/Stage.emd">,
   ]
 }

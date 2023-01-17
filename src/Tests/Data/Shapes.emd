@@ -2,7 +2,7 @@ Scene {
   render_passes: [
     LightingPass "Lighting" {
       shader_programs: [
-        <"programs/BaseColor.mvn">,
+        <"programs/BaseColor.emd">,
       ],
     }
   ],

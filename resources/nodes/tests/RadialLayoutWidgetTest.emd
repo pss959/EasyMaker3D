@@ -5,6 +5,6 @@ Node {
       shapes: [ Box { size: 20 20 .1 } ],
     },
 
-    <"nodes/RadialLayoutWidget.mvn">,
+    <"nodes/RadialLayoutWidget.emd">,
   ]
 }

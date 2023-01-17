@@ -43,7 +43,7 @@ TEST_F(WriteSTLTest, TextBox) {
     auto box = Model::CreateModel<BoxModel>();
     box->SetScale(Vector3f(2, 3, 4));
 
-    const std::string expected = ReadDataFile("exportedTextBox.stl");
+    const std::string expected = ReadDataFile("exportedTextBox.stl", false);
     const std::string actual   = WriteModelAsSTL(box, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
@@ -54,7 +54,7 @@ TEST_F(WriteSTLTest, BinaryBox) {
     auto box = Model::CreateModel<BoxModel>();
     box->SetScale(Vector3f(2, 3, 4));
 
-    const std::string expected = ReadDataFile("exportedBinaryBox.stl");
+    const std::string expected = ReadDataFile("exportedBinaryBox.stl", false);
     const std::string actual   = WriteModelAsSTL(box, FileFormat::kBinarySTL);
 
     // Compare as binary strings.
@@ -74,7 +74,7 @@ TEST_F(WriteSTLTest, TextBoxConv) {
     conv->SetFromUnits(UnitConversion::Units::kMillimeters);
     conv->SetToUnits(UnitConversion::Units::kMeters);
 
-    const std::string expected = ReadDataFile("exportedTextBox.stl");
+    const std::string expected = ReadDataFile("exportedTextBox.stl", false);
     const std::string actual   = WriteConvModelAsSTL(box, *conv,
                                                      FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
@@ -86,7 +86,7 @@ TEST_F(WriteSTLTest, TextF) {
     f->SetUniformScale(10);
     f->SetTextString("F");
 
-    const std::string expected = ReadDataFile("exportedTextF.stl");
+    const std::string expected = ReadDataFile("exportedTextF.stl", false);
     const std::string actual   = WriteModelAsSTL(f, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }

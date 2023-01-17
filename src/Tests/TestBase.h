@@ -72,8 +72,10 @@ class TestBase : public ::testing::Test {
     static UnitConversionPtr GetDefaultUC();
 
     /// Reads the named test file and returns the contents as a string. Asserts
-    /// if the file cannot be opened.
-    std::string ReadDataFile(const std::string &file_name);
+    /// if the file cannot be opened. If add_data_extension is true, this adds
+    /// the default data file extension.
+    std::string ReadDataFile(const std::string &file_name,
+                             bool add_data_extension = true);
 
     // FP testing predicates from Ion.
     static bool VectorsClose(const Vector3f &v0, const Vector3f &v1);

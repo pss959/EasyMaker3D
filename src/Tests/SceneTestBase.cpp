@@ -7,7 +7,7 @@
 const std::string SceneTestBase::str1 =
     "Scene {\n"
         " render_passes: [ LightingPass \"Lighting\" {\n"
-        "   shader_programs: [<\"programs/BaseColor.mvn\">],"
+        "   shader_programs: [<\"programs/BaseColor.emd\">],"
         " }],\n"
     " root_node: Node \"Root\" {";
 

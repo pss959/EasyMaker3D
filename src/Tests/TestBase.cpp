@@ -7,6 +7,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/RegisterTypes.h"
+#include "Base/Tuning.h"
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
 #include "Tests/Testing.h"
@@ -79,9 +80,12 @@ UnitConversionPtr TestBase::GetDefaultUC() {
     return CreateObject<UnitConversion>();
 }
 
-std::string TestBase::ReadDataFile(const std::string &file_name) {
+std::string TestBase::ReadDataFile(const std::string &file_name,
+                                   bool add_data_extension) {
     std::string s;
-    EXPECT_TRUE(Util::ReadFile(GetDataPath(file_name), s));
+    const FilePath path = GetDataPath(
+        add_data_extension ? file_name + TK::kDataFileSuffix : file_name);
+    EXPECT_TRUE(Util::ReadFile(path, s)) << "Path: " << path.ToString();
     return s;
 }
 

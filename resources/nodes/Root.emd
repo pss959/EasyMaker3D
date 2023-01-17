@@ -56,7 +56,7 @@ Node "Root" {
         Texture "IconAtlasTexture" {
           is_static: True,
           uniform_name: "uTexture",
-          image: <"nodes/IconAtlas.mvn">,
+          image: <"nodes/IconAtlas.emd">,
           sampler: USE "DefaultSampler",
         },
       ],
@@ -93,12 +93,12 @@ Node "Root" {
     Node "Passes" {
       TEMPLATES: [
         # Note: order here matters because there are some dependencies.
-        <"nodes/templates/Frame.mvn">,
-        <"nodes/templates/Board.mvn">,
-        <"nodes/templates/Border.mvn">,
-        <"nodes/templates/Controller.mvn">,
-        <"nodes/templates/PaneBackground.mvn">,
-        <"nodes/templates/RadialMenu.mvn">,
+        <"nodes/templates/Frame.emd">,
+        <"nodes/templates/Board.emd">,
+        <"nodes/templates/Border.emd">,
+        <"nodes/templates/Controller.emd">,
+        <"nodes/templates/PaneBackground.emd">,
+        <"nodes/templates/RadialMenu.emd">,
       ],
       children: [
         # Non-template Nodes that are available to clone or USE in other
@@ -106,11 +106,11 @@ Node "Root" {
         UnscopedNode "Definitions" {
           disabled_flags: "kTraversal",  # None of these show up here.
           children: [
-            <"nodes/DimensionColors.mvn">,
-            <"nodes/Feedback.mvn">,
-            <"nodes/Panels.mvn">,
-            <"nodes/Shelf.mvn">,
-            <"nodes/Tools.mvn">,
+            <"nodes/DimensionColors.emd">,
+            <"nodes/Feedback.emd">,
+            <"nodes/Panels.emd">,
+            <"nodes/Shelf.emd">,
+            <"nodes/Tools.emd">,
           ]
         }
 

@@ -35,6 +35,7 @@ def BuildObject_(env, source):
     if source == 'Base/Tuning.cpp':
         defs += [
             ('APP_NAME',            QuoteDictDef_('APP_NAME')),
+            ('DATA_SUFFIX',         QuoteDictDef_('DATA_SUFFIX')),
             ('SESSION_SUFFIX',      QuoteDictDef_('SESSION_SUFFIX')),
             ('VERSION_STRING',      QuoteDictDef_('VERSION_STRING')),
             ('PUBLIC_DOC_BASE_URL', QuoteDictDef_('PUBLIC_DOC_BASE_URL')),

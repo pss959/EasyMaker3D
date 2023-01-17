@@ -13,26 +13,26 @@ Node "Panels" {
 
   TEMPLATES: [
     # Basic Pane templates.
-    <"nodes/templates/Panes/ButtonPane.mvn">,
-    <"nodes/templates/Panes/CheckboxPane.mvn">,
-    <"nodes/templates/Panes/ClipPane.mvn">,
-    <"nodes/templates/Panes/IconPane.mvn">,
-    <"nodes/templates/Panes/ImagePane.mvn">,
-    <"nodes/templates/Panes/ProfilePane.mvn">,
-    <"nodes/templates/Panes/RadioButtonPane.mvn">,
-    <"nodes/templates/Panes/SliderPane.mvn">,
-    <"nodes/templates/Panes/TextPane.mvn">,
-    <"nodes/templates/Panes/TextInputPane.mvn">,
+    <"nodes/templates/Panes/ButtonPane.emd">,
+    <"nodes/templates/Panes/CheckboxPane.emd">,
+    <"nodes/templates/Panes/ClipPane.emd">,
+    <"nodes/templates/Panes/IconPane.emd">,
+    <"nodes/templates/Panes/ImagePane.emd">,
+    <"nodes/templates/Panes/ProfilePane.emd">,
+    <"nodes/templates/Panes/RadioButtonPane.emd">,
+    <"nodes/templates/Panes/SliderPane.emd">,
+    <"nodes/templates/Panes/TextPane.emd">,
+    <"nodes/templates/Panes/TextInputPane.emd">,
     # These have to come after TextPane.
-    <"nodes/templates/Panes/SpecialKeyPane.mvn">,
-    <"nodes/templates/Panes/TextKeyPane.mvn">,
+    <"nodes/templates/Panes/SpecialKeyPane.emd">,
+    <"nodes/templates/Panes/TextKeyPane.emd">,
     # This has to come after SliderPane.
-    <"nodes/templates/Panes/ScrollingPane.mvn">,
+    <"nodes/templates/Panes/ScrollingPane.emd">,
     # This has to come after TextPane, ScrollingPane, & ButtonPane.
-    <"nodes/templates/Panes/DropdownPane.mvn">,
+    <"nodes/templates/Panes/DropdownPane.emd">,
     # These have to come after TextPane & SliderPane.
-    <"nodes/templates/Panes/LabeledHSliderPane.mvn">,
-    <"nodes/templates/Panes/LabeledVSliderPane.mvn">,
+    <"nodes/templates/Panes/LabeledHSliderPane.emd">,
+    <"nodes/templates/Panes/LabeledVSliderPane.emd">,
 
     # Title text pane.
     CLONE "T_TextPane" "T_TitleTextPane" {
@@ -78,80 +78,80 @@ Node "Panels" {
   children: [
     ActionPanel "ActionPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/ActionPane.mvn">,
+      pane: <"nodes/TopPanes/ActionPane.emd">,
     },
 
     BevelToolPanel "BevelToolPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/BevelToolPane.mvn">,
+      pane: <"nodes/TopPanes/BevelToolPane.emd">,
     },
 
     CSGToolPanel "CSGToolPanel" {
-      pane: <"nodes/TopPanes/CSGToolPane.mvn">,
+      pane: <"nodes/TopPanes/CSGToolPane.emd">,
     },
 
     DialogPanel "DialogPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/DialogPane.mvn">,
+      pane: <"nodes/TopPanes/DialogPane.emd">,
     },
 
     FilePanel "FilePanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/FilePane.mvn">,
+      pane: <"nodes/TopPanes/FilePane.emd">,
     },
 
     HelpPanel "HelpPanel" {
-      pane: <"nodes/TopPanes/HelpPane.mvn">,
+      pane: <"nodes/TopPanes/HelpPane.emd">,
     },
 
     ImportToolPanel "ImportToolPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/FilePane.mvn">,
+      pane: <"nodes/TopPanes/FilePane.emd">,
     },
 
     InfoPanel "InfoPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/InfoPane.mvn">,
+      pane: <"nodes/TopPanes/InfoPane.emd">,
     },
 
     KeyboardPanel "KeyboardPanel" {
-      pane: <"nodes/TopPanes/KeyboardPane.mvn">,
+      pane: <"nodes/TopPanes/KeyboardPane.emd">,
     },
 
     NameToolPanel "NameToolPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/NameToolPane.mvn">,
+      pane: <"nodes/TopPanes/NameToolPane.emd">,
     },
 
     RadialMenuPanel "RadialMenuPanel" {
-      pane: <"nodes/TopPanes/RadialMenuPane.mvn">,
+      pane: <"nodes/TopPanes/RadialMenuPane.emd">,
     },
 
     RevSurfToolPanel "RevSurfToolPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/RevSurfToolPane.mvn">,
+      pane: <"nodes/TopPanes/RevSurfToolPane.emd">,
     },
 
     SessionPanel "SessionPanel" {
-      pane: <"nodes/TopPanes/SessionPane.mvn">,
+      pane: <"nodes/TopPanes/SessionPane.emd">,
     },
 
     SettingsPanel "SettingsPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/SettingsPane.mvn">,
+      pane: <"nodes/TopPanes/SettingsPane.emd">,
     },
 
     TextToolPanel "TextToolPanel" {
       is_resizable: True,
-      pane: <"nodes/TopPanes/TextToolPane.mvn">,
+      pane: <"nodes/TopPanes/TextToolPane.emd">,
     },
 
     TreePanel "TreePanel" {
       is_movable: False,
-      pane: <"nodes/TopPanes/TreePane.mvn">,
+      pane: <"nodes/TopPanes/TreePane.emd">,
     },
 
     # XXXX For testing only.
-    #<"nodes/tests/TestPanel.mvn">,
+    #<"nodes/tests/TestPanel.emd">,
   ]
 }

@@ -7,13 +7,13 @@ Scene {
     PANE_Z_OFFSET:  ".4",
     PANE_Z_OFFSET2: ".8",
   ],
-  color_map: <"colors/SpecialColors.mvn">, # Needed for some Panes.
+  color_map: <"colors/SpecialColors.emd">, # Needed for some Panes.
   render_passes: [
     LightingPass $LIGHTING_PASS {
       shader_programs: [
-        <"programs/FixedLighting.mvn">,  # Needed for Lighting program.
-        <"programs/Lighting.mvn">,       # Needed for uniforms used in Panes.
-        <"programs/BaseColor.mvn">,
+        <"programs/FixedLighting.emd">,  # Needed for Lighting program.
+        <"programs/Lighting.emd">,       # Needed for uniforms used in Panes.
+        <"programs/BaseColor.emd">,
       ],
     }
   ],
@@ -25,7 +25,7 @@ Scene {
           Texture "IconAtlasTexture" {
             is_static: True,
             uniform_name: "uTexture",
-            image: <"nodes/IconAtlas.mvn">,
+            image: <"nodes/IconAtlas.emd">,
             sampler: Sampler "DefaultSampler" {},
           },
         ],
@@ -39,14 +39,14 @@ Scene {
           BORDER: "CLONE \"T_Border\" \"Border\"",
         ],
         TEMPLATES: [
-          <"nodes/templates/PaneBackground.mvn">,
-          <"nodes/templates/Border.mvn">,
-          <"nodes/templates/Panes/ButtonPane.mvn">,
-          <"nodes/templates/Panes/ClipPane.mvn">,
-          <"nodes/templates/Panes/IconPane.mvn">,
-          <"nodes/templates/Panes/TextPane.mvn">,
-          <"nodes/templates/Panes/ScrollingPane.mvn">,
-          <"nodes/templates/Panes/DropdownPane.mvn">,
+          <"nodes/templates/PaneBackground.emd">,
+          <"nodes/templates/Border.emd">,
+          <"nodes/templates/Panes/ButtonPane.emd">,
+          <"nodes/templates/Panes/ClipPane.emd">,
+          <"nodes/templates/Panes/IconPane.emd">,
+          <"nodes/templates/Panes/TextPane.emd">,
+          <"nodes/templates/Panes/ScrollingPane.emd">,
+          <"nodes/templates/Panes/DropdownPane.emd">,
         ],
         children: [
           CLONE "T_TextPane" "Text" {},

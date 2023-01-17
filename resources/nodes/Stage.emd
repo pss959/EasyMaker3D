@@ -44,7 +44,7 @@ StageWidget "Stage" {
         # This node is hidden during certain interactions.
         Node "WorkHider" {
           children: [
-            <"nodes/ModelRoot.mvn">,       # Root to add models to.
+            <"nodes/ModelRoot.emd">,       # Root to add models to.
             Node "ToolParent" {            # Node to add active Tools to.
               $NO_CAST_SHADOWS, # Tools do not cast shadows.
             },
@@ -55,12 +55,12 @@ StageWidget "Stage" {
             },
             Node "TargetParent" {
               children: [
-                <"nodes/PointTarget.mvn">,
-                <"nodes/EdgeTarget.mvn">,
+                <"nodes/PointTarget.emd">,
+                <"nodes/EdgeTarget.emd">,
               ]
             },
             # BuildVolume has to come last for transparency.
-            <"nodes/BuildVolume.mvn">,
+            <"nodes/BuildVolume.emd">,
           ],
         }
       ]

@@ -1,0 +1,22 @@
+Node "Tools" {
+  children: [
+    <"nodes/Tools/ClipTool.emd">,
+    <"nodes/Tools/ColorTool.emd">,
+    <"nodes/Tools/ComplexityTool.emd">,
+    <"nodes/Tools/CylinderTool.emd">,
+    <"nodes/Tools/MirrorTool.emd">,
+    <"nodes/Tools/PassiveTool.emd">,
+    <"nodes/Tools/RotationTool.emd">,
+    <"nodes/Tools/ScaleTool.emd">,
+    <"nodes/Tools/TorusTool.emd">,
+    <"nodes/Tools/TranslationTool.emd">,
+
+    # Panel-based Tools need only an empty instance.
+    BevelTool   "BevelTool"   {},
+    CSGTool     "CSGTool"     {},
+    ImportTool  "ImportTool"  {},
+    NameTool    "NameTool"    {},
+    RevSurfTool "RevSurfTool" {},
+    TextTool    "TextTool"    {},
+  ]
+}

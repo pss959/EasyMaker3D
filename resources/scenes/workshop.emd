@@ -8,10 +8,10 @@ Scene "WorkshopScene" {
 
     # Name of the file containing the main node under the Root node and the
     # name of the node in it.
-    MAIN_NODE_FILE: "\"nodes/Main.mvn\"",
+    MAIN_NODE_FILE: "\"nodes/Main.emd\"",
     MAIN_NODE_NAME: "\"Main\"",
 
-    # Colors for dimensions. Here so that they can be used in SpecialColors.mvn
+    # Colors for dimensions. Here so that they can be used in SpecialColors.emd
     # and in nodes. Note that the Y/Z color names are for the application
     # coordinate system (Y up), but the colors correspond to the user
     # coordinate system for 3D printing (Z up).
@@ -22,7 +22,7 @@ Scene "WorkshopScene" {
 
   log_key_string: "",
 
-  color_map: <"colors/SpecialColors.mvn">,
+  color_map: <"colors/SpecialColors.emd">,
 
   gantry: Gantry "Gantry" {
     cameras: [
@@ -57,18 +57,18 @@ Scene "WorkshopScene" {
   render_passes: [
     ShadowPass $SHADOW_PASS {
       shader_programs: [
-        <"programs/ShadowDepth.mvn">,
+        <"programs/ShadowDepth.emd">,
       ],
     }
     LightingPass $LIGHTING_PASS {
       shader_programs: [
-        <"programs/FixedLighting.mvn">,
-        <"programs/Lighting.mvn">,
-        <"programs/Faceted.mvn">,
-        <"programs/BaseColor.mvn">,
+        <"programs/FixedLighting.emd">,
+        <"programs/Lighting.emd">,
+        <"programs/Faceted.emd">,
+        <"programs/BaseColor.emd">,
       ],
     }
   ],
 
-  root_node: <"nodes/Root.mvn">
+  root_node: <"nodes/Root.emd">
 }

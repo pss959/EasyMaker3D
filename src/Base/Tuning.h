@@ -23,6 +23,9 @@ namespace TK {
 /// Name of the application.
 extern const char *   kApplicationName;
 
+/// Suffix to use for data (node/scene/etc) files (including the dot).
+extern const char *   kDataFileSuffix;
+
 /// Suffix to use for session files (including the dot).
 extern const char *   kSessionFileSuffix;
 

@@ -356,7 +356,7 @@ bool SnapshotApp_::Init(const Options &options) {
 
     // Use default settings file so that state is deterministic.
     const FilePath path(std::string("PublicDoc/snaps/settings/Settings") +
-                                    ".mvn"); // XXXX
+                        TK::kDataFileSuffix);
     if (! test_context_.settings_manager->ReplaceSettings(path)) {
         std::cerr << "*** Unable to load default settings from "
                   << path.ToString() << "\n";
@@ -482,7 +482,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       case SIType::kSettings: {
           const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
           const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
-                              ".mvn"); // XXXX
+                              TK::kDataFileSuffix);
           if (! test_context_.settings_manager->ReplaceSettings(path))
               return false;
           break;

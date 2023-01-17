@@ -11,7 +11,7 @@
 class PaneTest : public SceneTestBase {
   protected:
     SG::ScenePtr ReadPaneScene() {
-        const std::string input = ReadDataFile("Panes.mvn");
+        const std::string input = ReadDataFile("Panes");
         return ReadScene(input);
     }
     PanePtr FindPaneOrAssert(ContainerPane &ctr, const std::string &name) {

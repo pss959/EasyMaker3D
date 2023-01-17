@@ -81,17 +81,17 @@ TEST_F(ReaderTest, RootNode) {
 }
 
 TEST_F(ReaderTest, Settings) {
-    std::string input = ReadDataFile("Settings.mvn");
+    std::string input = ReadDataFile("Settings");
     EXPECT_TRUE(ParseStringAndCompare(input, input));
 }
 
 TEST_F(ReaderTest, AllTypes) {
-    std::string input = ReadDataFile("AllTypes.mvn");
+    std::string input = ReadDataFile("AllTypes");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 }
 
 TEST_F(ReaderTest, Instances) {
-    std::string input = ReadDataFile("Instances.mvn");
+    std::string input = ReadDataFile("Instances");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 }
 

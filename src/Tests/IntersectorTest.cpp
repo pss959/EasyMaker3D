@@ -33,7 +33,7 @@ TEST_F(IntersectorTest, EmptyScene) {
 }
 
 TEST_F(IntersectorTest, Sphere) {
-    std::string input = ReadDataFile("Shapes.mvn");
+    std::string input = ReadDataFile("Shapes");
 
     // Intersect from front. Sphere is at (-100,0,0).
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -58,7 +58,7 @@ TEST_F(IntersectorTest, Sphere) {
 }
 
 TEST_F(IntersectorTest, Cone) {
-    std::string input = ReadDataFile("Shapes.mvn");
+    std::string input = ReadDataFile("Shapes");
 
     // Intersect from front. Cone is at (100,0,0).
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -74,7 +74,7 @@ TEST_F(IntersectorTest, Cone) {
 }
 
 TEST_F(IntersectorTest, Torus) {
-    std::string input = ReadDataFile("Shapes.mvn");
+    std::string input = ReadDataFile("Shapes");
 
     // Intersect from front. Torus is at origin with outer radius 1.2 and inner
     // radius .2.
@@ -89,7 +89,7 @@ TEST_F(IntersectorTest, Torus) {
 }
 
 TEST_F(IntersectorTest, Rectangles) {
-    std::string input = ReadDataFile("Rectangles.mvn");
+    std::string input = ReadDataFile("Rectangles");
 
     // The scene is translated 10 units in X.
     // Intersect rays from the center to all 5 rectangles.
@@ -128,7 +128,7 @@ TEST_F(IntersectorTest, Rectangles) {
 }
 
 TEST_F(IntersectorTest, HiddenParent) {
-    std::string input = ReadDataFile("Shapes.mvn");
+    std::string input = ReadDataFile("Shapes");
 
     // The parent Ellipsoid is large and encompasses the two child Ellipsoids.
     // The parent should not be intersected, and its translation should not be
@@ -153,7 +153,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
     // Because the translation is inside the shape, it is included in the local
     // coordinates.
 
-    std::string input = ReadDataFile("Shapes.mvn");
+    std::string input = ReadDataFile("Shapes");
 
     // Intersect from front:
     //   Box      is at ( 4,0,0).
@@ -210,7 +210,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
 }
 
 TEST_F(IntersectorTest, Cone2) {
-    std::string input = ReadDataFile("Shapes.mvn");
+    std::string input = ReadDataFile("Shapes");
     SG::Hit hit;
     hit = IntersectGraph(input, "ConeTest",
                          Ray(Point3f(0, 8, 20), Vector3f(0, 0, -1)));
