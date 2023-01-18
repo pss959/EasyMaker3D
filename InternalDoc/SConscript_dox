@@ -15,6 +15,7 @@ env = Environment(
 env.Append(
     ENV = {
         'APP_NAME'         : app_dict['APP_NAME'],
+        'COPYRIGHT'        : app_dict['COPYRIGHT'],
         'VERSION_STRING'   : app_dict['VERSION_STRING'],
         'OUTPUT_DIRECTORY' : env.subst('$OUTPUT_DIR'),
     }

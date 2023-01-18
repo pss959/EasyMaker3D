@@ -139,8 +139,8 @@ Application_::Application_(const Args &args) : args_(args) {
 }
 
 bool Application_::InitScene() {
-    const FilePath scene_path = FilePath::GetResourcePath(
-        "scenes", std::string("nodeviewer") + TK::kDataFileSuffix);
+    const FilePath scene_path =
+        FilePath::GetResourcePath("scenes", "nodeviewer" + TK::kDataFileSuffix);
     scene_ = loader_.LoadScene(scene_path);
     if (! scene_)
         return false;

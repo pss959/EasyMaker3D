@@ -355,7 +355,7 @@ bool SnapshotApp_::Init(const Options &options) {
     SetControllerRenderOffsets(-kLeftControllerOffset, -kRightControllerOffset);
 
     // Use default settings file so that state is deterministic.
-    const FilePath path(std::string("PublicDoc/snaps/settings/Settings") +
+    const FilePath path("PublicDoc/snaps/settings/Settings" +
                         TK::kDataFileSuffix);
     if (! test_context_.settings_manager->ReplaceSettings(path)) {
         std::cerr << "*** Unable to load default settings from "

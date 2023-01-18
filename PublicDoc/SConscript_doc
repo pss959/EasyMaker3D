@@ -35,9 +35,10 @@ env = Environment(
 # Pass values through to sphinx-build via environment variables.
 env.Append(
     ENV = {
-        'PROJECT' : app_dict['APP_NAME'],
-        'VERSION' : app_dict['VERSION_STRING'],
-        'SUFFIX'  : app_dict['SESSION_SUFFIX'],
+        'PROJECT'   : app_dict['APP_NAME'],
+        'VERSION'   : app_dict['VERSION_STRING'],
+        'SUFFIX'    : app_dict['SESSION_SUFFIX'],
+        'COPYRIGHT' : app_dict['COPYRIGHT'],
     },
 )
 

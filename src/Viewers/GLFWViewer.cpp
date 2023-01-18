@@ -184,8 +184,7 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,  3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,  3);
     glfwWindowHint(GLFW_SAMPLES, 16);
-    const std::string title =
-        std::string(TK::kApplicationName) + " " + TK::kVersionString;
+    const std::string title = TK::kApplicationName + " " + TK::kVersionString;
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
                                nullptr, nullptr);
     if (! window_) {

@@ -85,6 +85,5 @@ void SettingsManager::WriteSettings_() {
 }
 
 FilePath SettingsManager::GetSettingsFilePath_(const FilePath &dir_path) {
-    return FilePath::Join(dir_path,
-                          std::string("settings") + TK::kDataFileSuffix);
+    return FilePath::Join(dir_path, "settings" + TK::kDataFileSuffix);
 }

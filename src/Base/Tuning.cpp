@@ -1,20 +1,31 @@
 #include "Base/Tuning.h"
 
+#include <ion/base/stringutils.h>
+
 namespace TK {
 
+/// Strings passed in through the compiler from SCons cannot have spaces, so
+/// they have been replaced with underscores. This restores the spaces.
+static std::string FixString_(const std::string &s) {
+    return ion::base::ReplaceString(s, "_", " ");
+}
+
 // Application Settings (values passed in from SCons)
-const char *   kApplicationName                  = APP_NAME;
-const char *   kDataFileSuffix                   = DATA_SUFFIX;
-const char *   kSessionFileSuffix                = SESSION_SUFFIX;
-const char *   kVersionString                    = VERSION_STRING;
-const char *   kPublicDocBaseURL                 = PUBLIC_DOC_BASE_URL;
+const std::string kApplicationName   = FixString_(APP_NAME);
+const std::string kCopyright         = FixString_(COPYRIGHT);
+const std::string kDataFileSuffix    = FixString_(DATA_SUFFIX);
+const std::string kSessionFileSuffix = FixString_(SESSION_SUFFIX);
+const std::string kVersionString     = FixString_(VERSION_STRING);
+const std::string kPublicDocBaseURL  = FixString_(PUBLIC_DOC_BASE_URL);
 
 // Save Ion data except in release mode.
 #if ENABLE_DEBUG_FEATURES
-const bool     kSaveIonData                      = true;
+const bool     kSaveIonData          = true;
 #else
-const bool     kSaveIonData                      = false;
+const bool     kSaveIonData          = false;
 #endif
+
+// ----------------------------------------------------------------------------
 
 // Boards and Panels
 const float    kAppBoardHeight                   = 14;

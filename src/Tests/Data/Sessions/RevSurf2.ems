@@ -1,6 +1,6 @@
 CommandList {
   app_info: AppInfo {
-    version: "0.0.1",
+    version: "1.0.0",
     session_state: SessionState {
       point_target_visible: False,
       edge_target_visible: False,

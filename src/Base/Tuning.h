@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Math/Types.h"
 
 /// \file
@@ -21,22 +23,25 @@ namespace TK {
 ///@{
 
 /// Name of the application.
-extern const char *   kApplicationName;
+extern const std::string kApplicationName;
+
+/// Copyright string.
+extern const std::string kCopyright;
 
 /// Suffix to use for data (node/scene/etc) files (including the dot).
-extern const char *   kDataFileSuffix;
+extern const std::string kDataFileSuffix;
 
 /// Suffix to use for session files (including the dot).
-extern const char *   kSessionFileSuffix;
+extern const std::string kSessionFileSuffix;
 
 /// Application version as a string.
-extern const char *   kVersionString;
+extern const std::string kVersionString;
 
 /// Base URL of public documentation.
-extern const char *   kPublicDocBaseURL;
+extern const std::string kPublicDocBaseURL;
 
 /// Whether to preserve data in Ion objects (to help debug).
-extern const bool     kSaveIonData;
+extern const bool        kSaveIonData;
 
 ///@}
 

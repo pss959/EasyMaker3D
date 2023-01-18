@@ -13,14 +13,12 @@ void HelpPanel::InitInterface() {
     AddButtonFunc("Done",       [this](){ Close("Done");     });
 
     // Set the title text and description.
-    const std::string app_name = TK::kApplicationName;
-    const std::string version  = TK::kVersionString;
     auto &root_pane = GetPane();
     auto title_pane = root_pane->FindTypedPane<TextPane>("Title");
     auto desc_pane  = root_pane->FindTypedPane<TextPane>("Description");
-    title_pane->SetText(app_name + " Help");
-    desc_pane->SetText(app_name + " Version " + version +
-                       "\nCopyright 2022 Paul S. Strauss");
+    title_pane->SetText(TK::kApplicationName + " Help");
+    desc_pane->SetText(TK::kApplicationName + " Version " + TK::kVersionString +
+                       "\nCopyright " + TK::kCopyright);
 }
 
 void HelpPanel::UpdateInterface() {
@@ -28,6 +26,6 @@ void HelpPanel::UpdateInterface() {
 }
 
 void HelpPanel::OpenPage_(const std::string &page_name) {
-    const std::string base_url = TK::kPublicDocBaseURL;
-    Util::OpenURL(base_url + TK::kVersionString + "/" + page_name + "/");
+    Util::OpenURL(TK::kPublicDocBaseURL + TK::kVersionString + "/" +
+                  page_name + "/");
 }

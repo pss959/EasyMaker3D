@@ -4,9 +4,10 @@
 
 app_dict = {
     'APP_NAME'            : 'EasyMaker3D',
+    'COPYRIGHT'           : '2021-2023 Paul S. Strauss',
     'DATA_SUFFIX'         : '.emd',
     'SESSION_SUFFIX'      : '.ems',
-    'VERSION_STRING'      : '0.0.1',
+    'VERSION_STRING'      : '1.0.0',
     'PUBLIC_DOC_BASE_URL' : 'https://pss959.github.io/MakerVR-dist/',
 }
 doc_build_dir = 'build'

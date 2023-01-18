@@ -390,8 +390,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
     // (in the SceneContext) before doing anything else.
     scene_context_.reset(new SceneContext);
     const FilePath scene_path =
-        FilePath::GetResourcePath(
-            "scenes", std::string("workshop") + TK::kDataFileSuffix);
+        FilePath::GetResourcePath("scenes", "workshop" + TK::kDataFileSuffix);
     SG::ScenePtr scene = loader_->LoadScene(scene_path);
     if (! scene)
         return false;

@@ -181,7 +181,7 @@ class STLBinaryWriter_ : public STLWriter_ {
 
 void STLBinaryWriter_::WriteHeader(std::ostream &out, const Selection &sel) {
     // Create an 80-byte header.
-    std::string header = std::string(TK::kApplicationName) + "_Export";
+    std::string header = TK::kApplicationName + "_Export";
     header += std::string(80 - header.size(), ' ');
     out.write(&header[0], 80);
 

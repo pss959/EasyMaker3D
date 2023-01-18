@@ -8,9 +8,10 @@ from os      import environ
 from os.path import abspath
 from sys     import path as sys_path
 
-project = environ.get('PROJECT', '<Unknown Project>')
-version = environ.get('VERSION', '<Unknown Version>')
-suffix  = environ.get('SUFFIX',  '<Unknown Suffix>')  # For session files.
+project = environ.get('PROJECT',   '<Unknown Project>')
+version = environ.get('VERSION',   '<Unknown Version>')
+suffix  = environ.get('SUFFIX',    '<Unknown Suffix>')  # For session files.
+copyrt  = environ.get('COPYRIGHT', '<Unknown Copyright>')
 release = version
 
 # External links.
@@ -21,7 +22,7 @@ download_site = (
 # Project information
 # -----------------------------------------------------------------------------
 
-copyright = '2022, Paul S. Strauss'
+copyright = copyrt
 author    = 'Paul S. Strauss'
 
 # -----------------------------------------------------------------------------
