@@ -175,9 +175,9 @@ principal axes of the :ref:`stage <ug-stage>`.
 
 .. admonition:: VR Only
 
-   .. incimage:: /images/RotationToolVRSphere.jpg 200px right
-   .. incimage:: /images/RotationToolVRZ.jpg      200px right
-   .. incimage:: /images/RotationToolVRX.jpg      200px right
+   .. incimage:: /images/RotationToolVRSphere.jpg -140px right
+   .. incimage:: /images/RotationToolVRZ.jpg      -140px right
+   .. incimage:: /images/RotationToolVRX.jpg      -140px right
 
    :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
    controller to define the rotation. A special rotation grip hover guide will
@@ -247,8 +247,8 @@ shearing to occur.
 
 .. admonition:: VR Only
 
-   .. incimage:: /images/ScaleToolVRUniform.jpg 200px right
-   .. incimage:: /images/ScaleToolVRX.jpg       240px right
+   .. incimage:: /images/ScaleToolVRUniform.jpg -140px right
+   .. incimage:: /images/ScaleToolVRX.jpg       -140px right
 
    :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
    controller to select a scaler handle to activate. The hover guide for each
@@ -288,13 +288,15 @@ principal axes of the :ref:`stage <ug-stage>`.
 
 .. admonition:: VR Only
 
-   .. incimage:: /images/TranslationToolVRZ.jpg 200px right
-   .. incimage:: /images/TranslationToolVRX.jpg 200px right
+   .. incimage:: /images/TranslationToolVRZ.jpg -140px right
+   .. incimage:: /images/TranslationToolVRX.jpg -140px right
 
    :ref:`Grip dragging <ug-grip-dragging>` uses the orientation of the VR
    controller to choose a translation axis. The hover guide for each controller
    will show a :ref:`color-coded <ug-dimension-colors>` connection to the
    handle closest to the guide's orientation, if any, as shown in the images.
+
+   |block-image|
 
 .. _ug-specialized-tools:
 
@@ -452,7 +454,7 @@ has three basic uses:
   - Choosing the initial file to import the model data from, right after
     creating the Imported model with the :ref:`Create Imported Model
     <ug-create-imported-model>` action.
-  - Re-importing the model data from the same file.
+  - Re-importing the model data from the same file after the file has changed.
   - Changing the file to import the model data from.
 
 The Import Tool displays a :ref:`Import Tool Panel <ug-import-tool-panel>`
@@ -468,9 +470,9 @@ file. Any errors during data import will be displayed in a :ref:`Dialog Panel
 Mirror Tool
 ,,,,,,,,,,,
 
-.. incimage:: /images/MirrorToolTwoAfter.jpg  240px right
-.. incimage:: /images/MirrorToolTwoBefore.jpg 240px right
-.. incimage:: /images/MirrorTool.jpg          200px right
+.. incimage:: /images/MirrorToolTwoAfter.jpg  -160px right
+.. incimage:: /images/MirrorToolTwoBefore.jpg -160px right
+.. incimage:: /images/MirrorTool.jpg          -160px right
 
 The specialized :newterm:`Mirror Tool` is enabled when all of the selected
 models are :ref:`Mirrored models <ug-converted-models>`. You can convert any
@@ -511,7 +513,7 @@ profile in the panel are applied to all selected RevSurf models.
 Torus Tool
 ,,,,,,,,,,,,,
 
-.. incimage:: /images/TorusTool.jpg 200px right
+.. incimage:: /images/TorusTool.jpg -180px right
 
 The specialized :newterm:`Torus Tool` is enabled when all of the selected
 models are :ref:`Torus models <ug-primitive-models>`. It allows you to change
@@ -526,7 +528,7 @@ axis.
 
 |block-image|
 
-.. incimage:: /images/TorusToolActive.jpg 200px right
+.. incimage:: /images/TorusToolActive.jpg -180px right
 
 The diameter being modified follows the current :ref:`precision level
 <ug-precision-level>` setting and also snaps to the current :ref:`Edge Target

@@ -64,9 +64,8 @@ dimensions and distances interactively.
 Visual Feedback
 ...............
 
-.. incimage:: /images/AngularFeedback.jpg 200px right
-.. incimage:: /images/LinearFeedback.jpg 200px right
-
+.. incimage:: /images/AngularFeedback.jpg -180px right
+.. incimage:: /images/LinearFeedback.jpg  -180px right
 
 Most interactive drag operations display some sort of visual feedback.
 Operations that are essentially linear show the current dimension of that
@@ -123,8 +122,8 @@ while the drag is in process. Targets can be placed either on the :ref:`stage
 target will snap to grid locations based on the current :ref:`precision level
 <ug-precision-level>`.
 
-.. incimage:: /images/EdgeTargetSnapped.jpg  200px right
-.. incimage:: /images/PointTargetSnapped.jpg 240px right
+.. incimage:: /images/EdgeTargetSnapped.jpg  -200px right
+.. incimage:: /images/PointTargetSnapped.jpg -200px right
 
 The Point Target can be dragged by any part (except the ring). When dragging
 over a model's surface, the target location will snap to vertices of the
@@ -140,9 +139,9 @@ edges <ug-show-edges>`.) If the Edge Target is dragged from a model to the
 Clicking on the Edge Target reverses its direction, which can be useful when
 performing :ref:`linear layout <ug-layout>`.
 
-.. incimage:: /images/EdgeTargetModSnapped.jpg   200px right
-.. incimage:: /images/PointTargetModSnapped2.jpg 200px right
-.. incimage:: /images/PointTargetModSnapped.jpg  240px right
+.. incimage:: /images/EdgeTargetModSnapped.jpg   -200px right
+.. incimage:: /images/PointTargetModSnapped2.jpg -200px right
+.. incimage:: /images/PointTargetModSnapped.jpg  -200px right
 
 :ref:`Modified-dragging <ug-modified-mode>` either target over a model uses the
 rectangular bounds of the model instead of its mesh. The Point Target will snap
@@ -204,8 +203,8 @@ The Point Target can also be used to lay out :ref:`selected models
 <ug-selection>` in a circle or along a circular arc. All of the parameters of
 the layout are specified using the features of the target.
 
-.. incimage:: /images/RadialLayoutArc.jpg    300px right
-.. incimage:: /images/RadialLayoutRadius.jpg 300px right
+.. incimage:: /images/RadialLayoutArc.jpg    -140px right
+.. incimage:: /images/RadialLayoutRadius.jpg -140px right
 
 The radius of the circle or arc is specified by dragging the ring around the
 Point Target to the desired size. The radius adheres to the current
@@ -222,8 +221,8 @@ desired direction. As you drag either spoke, color-coded feedback shows the
 spoke angles and the subtended arc angle.  The spoke angles also adhere to the
 current :ref:`precision level <ug-precision-level>`
 
-.. incimage:: /images/RadialLayoutSingle.jpg   300px right
-.. incimage:: /images/RadialLayoutMultiple.jpg 300px right
+.. incimage:: /images/RadialLayoutSingle.jpg   -140px right
+.. incimage:: /images/RadialLayoutMultiple.jpg -140px right
 
 When the radius and spokes are correct, click on the :ref:`Radial Layout icon
 <ug-radial-layout>` to lay out the selected models. The primary selection will

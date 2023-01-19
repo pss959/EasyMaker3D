@@ -7,8 +7,11 @@ from docutils.parsers.rst import Directive, directives
 
 class IncImage(Directive):
   """IncImage includes an image.
-  Required arguments: uri width align
+  Required arguments: uri size align
   Optional arguments: caption, block [if specified, makes figure a block]
+
+  If size is positive, it is used as the width; if negative, it is used as the
+  height.
   """
   required_arguments = 3
   optional_arguments = 2
@@ -20,18 +23,19 @@ class IncImage(Directive):
   }
 
   def run(self):
-    (uri, width, align) = self.arguments
+    (uri, size, align) = self.arguments
     caption = self.options.get('caption', None)
     block   = 'block' in self.options
-    node_list = [self.BuildFigure_(uri, width, align)]
+    node_list = [self.BuildFigure_(uri, size, align)]
     if caption:
       node_list.append(self.BuildCaption_(caption, align))
     if block:
       node_list.append(self.BuildBlock_())
     return node_list
 
-  def BuildFigure_(self, uri, width, align):
-    image_node  = nodes.image(uri=uri, width=width)
+  def BuildFigure_(self, uri, size, align):
+    image_node  = (nodes.image(uri=uri, width=size) if size[0] != '-' else
+                   nodes.image(uri=uri, height=size[1:]))
     figure_node = nodes.figure('', image_node)
     figure_node['align'] = align
     figure_node['classes'] = [f'align-{align}']

@@ -33,13 +33,13 @@ These are all described in more detail in the following sections.
 Primitive Models
 ,,,,,,,,,,,,,,,,
 
-.. incimage:: /images/PrimitiveImported.jpg 100px right
-.. incimage:: /images/PrimitiveText.jpg     100px right
-.. incimage:: /images/PrimitiveRevSurf.jpg  100px right
-.. incimage:: /images/PrimitiveTorus.jpg    100px right
-.. incimage:: /images/PrimitiveSphere.jpg   100px right
-.. incimage:: /images/PrimitiveCylinder.jpg 100px right
-.. incimage:: /images/PrimitiveBox.jpg      100px right
+.. incimage:: /images/PrimitiveImported.jpg -100px right
+.. incimage:: /images/PrimitiveText.jpg     -100px right
+.. incimage:: /images/PrimitiveRevSurf.jpg  -100px right
+.. incimage:: /images/PrimitiveTorus.jpg    -100px right
+.. incimage:: /images/PrimitiveSphere.jpg   -100px right
+.. incimage:: /images/PrimitiveCylinder.jpg -100px right
+.. incimage:: /images/PrimitiveBox.jpg      -100px right
 
 |block-image|
 
@@ -71,7 +71,10 @@ Primitive Models
     :ref:`Import Tool <ug-import-tool>` is used to select or change the file to
     import from. Note that a newly-created Imported model will be displayed as
     a dummy tetrahedron with an :ref:`invalid color <ug-model-colors>` until a
-    valid STL file has been selected with the Import Tool.
+    valid STL file has been selected with the Import Tool. Also note that many,
+    many publicly-available STL models are not valid meshes (watertight, not
+    self-intersecting) and will also appear with the invalid color. The
+    :ref:`Info Panel <ug-info-panel>` can tell you why the mesh is invalid.
 
 New primitive models are placed at the center of the :ref:`stage <ug-stage>`
 unless the :ref:`Point Target <ug-targets>` is active, in which case the new
@@ -192,8 +195,8 @@ Model Names
 
 When |appname| creates a model of any type, a unique name is assigned to it
 automatically by affixing an underscore and a number to its base model type,
-such as `"Sphere_1"` or `"Imported_13"`. Model names can be seen in the
-:ref:`Tree Panel <ug-tree-panel>` and edited with the :ref:`Name Tool
+such as :model:`Sphere_1` or :model:`Imported_13`. Model names can be seen in
+the :ref:`Tree Panel <ug-tree-panel>` and edited with the :ref:`Name Tool
 <ug-name-tool>`.
 
 .. _ug-model-colors:

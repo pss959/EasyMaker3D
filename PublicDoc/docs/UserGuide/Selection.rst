@@ -26,6 +26,8 @@ the primary selection. All secondary selections are indicated with a
 noninteractive blue wireframe box as shown here. Some tools and actions treat
 the primary and secondary selections differently.
 
+|block-image|
+
 .. _ug-select-hierarchy:
 
 Parent and Child Selection

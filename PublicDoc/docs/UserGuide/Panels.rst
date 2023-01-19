@@ -23,7 +23,7 @@ Panels are divided into three categories:
 Moving and Resizing Panels
 ..........................
 
-.. incimage:: /images/SessionPanel.jpg 200px right
+.. incimage:: /images/SessionPanel.jpg 240px right
 
 Panels are placed initially to be reasonably easy to interact with.  When
 application panels are visible, they temporarily hide the scene contents so
@@ -38,7 +38,7 @@ forward, or back. Each application and tool panel remembers its last position.
 
 |block-image|
 
-.. incimage:: /images/SettingsPanel.jpg 200px right
+.. incimage:: /images/SettingsPanel.jpg 240px right
 
 Some panels (such as the :ref:`Settings Panel <ug-settings-panel>` shown here)
 also have interactive spherical handles in the four corners that allow you to
@@ -47,7 +47,7 @@ them smaller than that.
 
 .. admonition:: VR Only
 
-   .. incimage:: /images/GripPanelBar.jpg 200px right
+   .. incimage:: /images/GripPanelBar.jpg 240px right
 
    All interactive panel handles respond to :ref:`grip-dragging
    <ug-grip-dragging>` as well. The relative orientation of the grip hover
@@ -321,8 +321,8 @@ Format dropdown appears at the top right for selecting a format.
 Dialog Panel
 ,,,,,,,,,,,,
 
-.. incimage:: /images/DialogMessagePanel.jpg  300px right
-.. incimage:: /images/DialogQuestionPanel.jpg 300px right
+.. incimage:: /images/DialogMessagePanel.jpg  -140px right
+.. incimage:: /images/DialogQuestionPanel.jpg -140px right
 
 A :newterm:`Dialog Panel` is used by other application panels to ask you a
 question or inform you of some other condition. A question dialog will have
@@ -338,13 +338,15 @@ Virtual Keyboard Panel
 
 .. admonition:: VR Only
 
-   .. incimage:: /images/VirtualKeyboardPanel.jpg 300px right
+   .. incimage:: /images/VirtualKeyboardPanel.jpg 320px right
 
    The :newterm:`Virtual Keyboard Panel` is used only in :ref:`full VR mode
    <ug-vr-modes>` when you are wearing the VR headset and you need to edit text
    in a panel. It is most easily used by touching the keys with the :ref:`touch
    affordance <ug-touch-mode>`. (You can also use the laser pointer, but it is
-   more awkward.)
+   much more awkward.)
+
+   |block-image|
 
 .. _ug-tool-panels:
 
@@ -437,13 +439,15 @@ applied. The angles between faces forming the sides are typically greater than
 <ug-complexity-tool>`). As long as the maximum angle is smaller than that those
 edges will be left alone. The default is 120 degrees.
 
+|block-image|
+
 Grip Dragging
 :::::::::::::
 
 .. admonition:: VR Only
 
-   .. incimage:: /images/BevelToolPanelGripMidpoint.jpg 200px right
-   .. incimage:: /images/BevelToolPanelGripPoint.jpg    200px right
+   .. incimage:: /images/BevelToolPanelGripMidpoint.jpg -180px right
+   .. incimage:: /images/BevelToolPanelGripPoint.jpg    -180px right
 
    In either VR mode, you can use the laser pointer and pinch action to edit
    the profile and adjust the sliders in the panel. However, it is very hard to
@@ -488,10 +492,9 @@ Import Tool Panel
 .. incimage:: /images/ImportToolPanel.jpg 200px right
 
 The :newterm:`Import Tool Panel` is essentially a :ref:`File Panel
-<ug-file-panel>` that lets you specify the file to import or reimport the mesh
-used for an :ref:`Imported model <ug-primitive-models>`. If multiple Imported
-models are selected, all of them will be changed to use the file when the
-``Accept`` button is pressed.
+<ug-file-panel>` that lets you specify the STL file to import or reimport the
+mesh used for an :ref:`Imported model <ug-primitive-models>`. The model will be
+changed to use the specified file when the ``Accept`` button is pressed.
 
 |block-image|
 
