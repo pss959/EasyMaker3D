@@ -38,6 +38,16 @@ to dive right in, you can try the :doc:`Quickstart`. Otherwise, take a look at
 the :doc:`User Guide <UserGuide/index>` first. There is also a compact guide to
 keyboard shortcuts in the :doc:`Cheat Sheet <CheatSheet>`.
 
+Problems?
+---------
+
+If |appname| were to crash for some reason, it saves a crash session file in
+the same directory it is run in. This file will contain the session up to the
+point of the crash, so you can load it to get back to where you were.
+
+Feel free to `contact the author <https://github.com/pss959>`_ to report a
+problem. Please include the crash file in your report.
+
 ----
 
 Contents
