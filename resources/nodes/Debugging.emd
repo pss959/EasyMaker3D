@@ -5,38 +5,29 @@
 Node "Debugging" {
   disabled_flags: "kIntersectAll",  # Don't intersect any of this.
   pass_name:      $LIGHTING_PASS,   # Ignore shadow passes.
+  # All of this uses the BaseColor shader.
+  shader_names: ["BaseColor"],
+
   children: [
-    # Debugging text that can be set to any string. Placed on back wall.
-    Node "Debug Text Root" {
-      scale:       3 3 3,
-      translation: 0 71 -69,
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [Uniform "uReceiveShadows" { int_val: 0 }]
-        },
-      ],
-      children: [
-        TextNode "DebugText" {
-          scale: .8 1 1,
-          text: "Debug Text",
-          font_name: "Arial-Regular",
-          color: "#ffffdd",
-          #outline_color: "#000000",
-          #outline_width: .04,
-          layout_options: LayoutOptions { halignment: "kAlignHCenter" },
-        },
-      ],
+    # Debugging text set in program. Placed in front of back wall.
+    TextNode "DebugText" {
+      disabled_flags: "kTraversal",
+      scale:          2.5 2.5 2.5,
+      translation:    0 72 -69,
+      text:           "Debug Text",
+      font_name:      "Arial-Regular",
+      color:          "#000000",
+      outline_color:  "#000000",
+      outline_width:  0,
+      layout_options: LayoutOptions { halignment: "kAlignHCenter" },
     },
 
-    # The rest uses the BaseColor shader.
     Node {
       pass_name: $LIGHTING_PASS,
-      shader_names: ["BaseColor"],
       children: [
         # Translucent rectangle used for dragging rectangles.
         Node "DebugRect" {
-          disabled_flags: "kTraversal|kIntersectAll",
+          disabled_flags: "kTraversal",
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
@@ -48,7 +39,7 @@ Node "Debugging" {
 
         # A handy red sphere. Disabled by default.
         Node "DebugSphere" {
-          disabled_flags: "kTraversal|kRender|kIntersectAll",
+          disabled_flags: "kTraversal|kRender",
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
