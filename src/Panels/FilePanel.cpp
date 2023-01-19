@@ -120,6 +120,7 @@ class FilePanel::Impl_ {
     void    OpenPath_(const FilePath &path);
     void    OpenDirectory_(const FilePath &path);
     void    SelectFile_(const FilePath &path);
+    void    InitFocus_();
     void    UpdateFiles_(bool scroll_to_highlighted_file);
     int     CreateFileButtons_(const std::vector<std::string> &names,
                                bool are_dirs, std::vector<PanePtr> &buttons);
@@ -307,7 +308,17 @@ void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
 
     UpdateFiles_(true);
     UpdateButtons_(GetPathStatus_(path));
+    InitFocus_();
+}
 
+void FilePanel::Impl_::SelectFile_(const FilePath &path) {
+    input_pane_->SetInitialText(path.ToString());
+    UpdateFiles_(true);
+    UpdateButtons_(GetPathStatus_(path));
+    InitFocus_();
+}
+
+void FilePanel::Impl_::InitFocus_() {
     // Focus on the Accept button if it is enabled. Otherwise, focus on the
     // first button in the file list if there are any. If neither is true,
     // focus on the Cancel button.
@@ -317,15 +328,6 @@ void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
         FocusFileButton_();
     else
         focus_func_(cancel_button_pane_);
-}
-
-void FilePanel::Impl_::SelectFile_(const FilePath &path) {
-    input_pane_->SetInitialText(path.ToString());
-    UpdateFiles_(true);
-    UpdateButtons_(GetPathStatus_(path));
-
-    // Set the focus on the Accept button.
-    focus_func_(accept_button_pane_);
 }
 
 void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
