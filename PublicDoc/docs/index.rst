@@ -1,3 +1,5 @@
+.. _welcome:
+
 Welcome to |appname|
 ====================
 
@@ -22,13 +24,19 @@ Installing and Running |appname|
 --------------------------------
 
 The application is available to download as Zip files from `the download site
-<download_site_>`_ (on Google Drive). Download the Zip file for your operating
-system and extract the |appname| folder from it. Open the folder and execute
-the |appname| executable file. Note that the application must be run from
-inside this folder.
+<download_site_>`_ (on Google Drive).
 
-.. todo::
-   Add directions to set up VR.
+ - Windows or Linux: Download the Zip file for your operating system and
+   extract the |appname| folder from it. Open the folder and execute the
+   |appname| executable file. Note that the application must be run from inside
+   this folder.
+
+ - Mac: Download the DMG file and use it to run or install the application.
+
+.. admonition:: VR Only
+
+   Instructions for setting up your VR device for use with |appname| are on
+   :doc:`this page <VRSetup>`.
 
 Next Steps
 ----------
@@ -41,9 +49,9 @@ keyboard shortcuts in the :doc:`Cheat Sheet <CheatSheet>`.
 Problems?
 ---------
 
-If |appname| were to crash for some reason, it saves a crash session file in
-the same directory it is run in. This file will contain the session up to the
-point of the crash, so you can load it to get back to where you were.
+If for some reason |appname| crashes, it saves a crash session file in the same
+directory it is run in. This file will contain the session up to the point of
+the crash, so you can load it to get back to where you were.
 
 Feel free to `contact the author <https://github.com/pss959>`_ to report a
 problem. Please include the crash file in your report.
@@ -56,6 +64,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   VRSetup
    Quickstart
    UserGuide/index
    CheatSheet
