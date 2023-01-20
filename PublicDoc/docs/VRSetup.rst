@@ -58,7 +58,7 @@ Initial Set-Up
    version::
 
      cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/
-     cp vrcompositor vrcompositor.real
+     ln -s vrcompositor vrcompositor.real
 
  - Install the ALVR client on the Quest using `SideQuest
    <https://sidequestvr.com/>_`.
@@ -79,16 +79,12 @@ to use a different device. If you have a different VR system you want to use:
  - Restore the real SteamVR compositor you changed above::
 
     cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/
-    cp vrcompositor vrcompositor.alvr
-    cp vrcompositor.real vrcompositor
+    ln -sf vrcompositor.real vrcompositor
 
 To switch back to using ALVR again:
 
  - Restore the server directory to its original name.
- - Use ALVR's compositor::
-
-    cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/
-    cp vrcompositor.alvr vrcompositor
+ - Switch to using ALVR's compositor as in the initial set-up.
 
 HTC Vive
 ........
