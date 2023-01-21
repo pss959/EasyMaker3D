@@ -379,7 +379,7 @@ lib_env.Append(
 )
 
 # Add mode-specific items.
-if mode == 'rel':
+if mode == 'rel' or platform == 'windows':
     # The release executable always runs from its own directory.
     AddRpath_(lib_env, lib_env.Literal('\\$$ORIGIN'))
 else:
