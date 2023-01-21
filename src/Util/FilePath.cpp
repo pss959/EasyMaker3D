@@ -119,8 +119,8 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
 }
 
 FilePath FilePath::GetAbsolute() const {
-    return IsAbsolute() ? FilePath(lexically_normal()) :
-        FromPath_(std::filesystem::current_path() / *this);
+    return FromPath_(IsAbsolute() ? lexically_normal() :
+                     (std::filesystem::current_path() / *this));
 }
 
 UTime FilePath::GetModTime() const {
@@ -190,7 +190,7 @@ void FilePath::MakeCurrent() const {
 }
 
 FilePath FilePath::GetCurrent() {
-    return FilePath(std::filesystem::current_path());
+    return FromPath_(std::filesystem::current_path());
 }
 
 FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
