@@ -51,8 +51,8 @@ elif platform == 'mac':
     portgfx_sources = [ 'maccontext.cc' ]
     objc_sources    = [ 'ion/portgfx/macfuncs.mm' ]
 else:
-    portgfx_names   = []
-    portgfx_sources = [ 'glxcontext.cc' ]
+    portgfx_names   = [ 'callbackcontext' ]
+    portgfx_sources = []
 
 # Each entry is a tuple: (subdir, names, headers, sources).
 ion_files = [

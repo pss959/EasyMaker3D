@@ -84,6 +84,10 @@ class GLFWViewer : public Viewer, public IEmitter {
     /// Used for temporarily ignoring mouse motion.
     bool is_mouse_motion_enabled_ = true;
 
+    /// Sets the callbacks in the ion::portgfx::CallbackContext to use GLFW
+    /// functions.
+    void InitIonCallbacks_();
+
     /// Updates the Frustum based on the current state.
     void UpdateFrustum_();
 

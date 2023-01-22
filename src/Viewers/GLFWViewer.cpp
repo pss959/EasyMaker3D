@@ -4,6 +4,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <ion/portgfx/callbackcontext.h>
+
 // Allow access to native types in glfw3.
 #if defined(ION_PLATFORM_WINDOWS)
 #  define GLFW_EXPOSE_NATIVE_WIN32
@@ -192,6 +194,9 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
         return false;
     }
 
+    // Set up Ion callbacks.
+    InitIonCallbacks_();
+
     glfwSetWindowPos(window_, 600, 100);
 
     // Fullscreen is just a maximized window. This allows the user to
@@ -249,6 +254,35 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
 
 void GLFWViewer::FlushPendingEvents() {
     pending_events_.clear();
+}
+
+void GLFWViewer::InitIonCallbacks_() {
+    using ion::portgfx::CallbackContext;
+
+    ASSERT(window_);
+
+    auto init      = [&](){ return window_; };
+    auto is_valid  = [&](){ return true; };
+    auto get_addr  = [&](const char *name, unsigned int flags){
+        return reinterpret_cast<void *>(glfwGetProcAddress(name));
+    };
+    auto swap_buf  = [&](){ glfwSwapBuffers(window_); };
+    auto make_cur  = [&](CallbackContext::ContextID id){
+        glfwMakeContextCurrent(reinterpret_cast<GLFWwindow *>(id));
+        return true;
+    };
+    auto clear_cur = [&](){ glfwMakeContextCurrent(nullptr); };
+    auto get_cur   = [&](){
+        return reinterpret_cast<uintptr_t>(glfwGetCurrentContext());
+    };
+
+    CallbackContext::SetInitCB(init);
+    CallbackContext::SetIsValidCB(is_valid);
+    CallbackContext::SetGetProcAddressCB(get_addr);
+    CallbackContext::SetSwapBuffersCB(swap_buf);
+    CallbackContext::SetMakeCurrentCB(make_cur);
+    CallbackContext::SetClearCurrentCB(clear_cur);
+    CallbackContext::SetGetCurrentCB(get_cur);
 }
 
 void GLFWViewer::UpdateFrustum_() {
