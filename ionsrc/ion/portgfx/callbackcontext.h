@@ -12,7 +12,7 @@ namespace portgfx {
 // managed by a higher-level library such as GLFW. It implements an
 // ion::portgfx::GlContext by delegating all of the work via callbacks. All
 // callbacks must be set before a CallbackContext can be created successfully.
-class CallbackContext : public GlContext {
+class ION_API CallbackContext : public GlContext {
  public:
   // Opaque context id.
   typedef void* ContextID;

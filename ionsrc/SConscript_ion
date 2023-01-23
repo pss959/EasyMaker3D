@@ -43,16 +43,6 @@ def MakeTuple_(subdir, names=[], headers=[], sources=[], assets=[]):
 # Platform-specific lists:
 platform = ion_env['PLATFORM']
 objc_sources = []
-if platform == 'windows':
-    portgfx_names   = [ 'window_win32' ]
-    portgfx_sources = [ 'wglcontext.cc' ]
-elif platform == 'mac':
-    portgfx_names   = []
-    portgfx_sources = [ 'maccontext.cc' ]
-    objc_sources    = [ 'ion/portgfx/macfuncs.mm' ]
-else:
-    portgfx_names   = [ 'callbackcontext' ]
-    portgfx_sources = []
 
 # Each entry is a tuple: (subdir, names, headers, sources).
 ion_files = [
@@ -221,7 +211,8 @@ ion_files = [
                    'logging_cerr.cc',
                ]),
     MakeTuple_(subdir='portgfx',
-               names=portgfx_names + [
+               names= [
+                   'callbackcontext',
                    'glcontext',
                    'isextensionsupported',
                    'setswapinterval'
@@ -229,9 +220,7 @@ ion_files = [
                headers=[
                    'glenums.h',
                    'glheaders.h'
-               ],
-               sources=portgfx_sources,
-               ),
+               ]),
     MakeTuple_(subdir='profile',
                names=[
                    'calltracemanager',
