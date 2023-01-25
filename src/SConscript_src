@@ -3,6 +3,21 @@ from itertools import chain
 Import('app_dict', 'lib_env')
 
 # -----------------------------------------------------------------------------
+# Create the special version of the openvr.h header file for files that need
+# it. This keeps OpenVR from crashing on Windows and may help elsewhere?
+# -----------------------------------------------------------------------------
+
+fixed_openvr_header = '$BUILD_DIR/include/openvr-fixed.h'
+orig_openvr_header  = '#/submodules/openvr/headers/openvr.h'
+
+lib_env.Command(fixed_openvr_header,
+                [orig_openvr_header, '#/bin/fix-openvr-header.py'],
+                [Mkdir('$BUILD_DIR/include'),
+                 ('bin/fix-openvr-header.py' +
+                  ' submodules/openvr/headers/openvr.h ' +
+                  fixed_openvr_header)])
+
+# -----------------------------------------------------------------------------
 # Helper functions.
 # -----------------------------------------------------------------------------
 
@@ -45,7 +60,10 @@ def BuildObject_(env, source):
             ('PUBLIC_DOC_BASE_URL', QuoteDictDef_('PUBLIC_DOC_BASE_URL')),
         ]
 
-    return env.SharedObject(source=source, CXXFLAGS=flags, CPPDEFINES=defs)
+    obj = env.SharedObject(source=source, CXXFLAGS=flags, CPPDEFINES=defs)
+    if source in openvr_lib_sources:
+        env.Depends(obj, fixed_openvr_header)
+    return obj
 
 # -----------------------------------------------------------------------------
 # Source file definitions.
