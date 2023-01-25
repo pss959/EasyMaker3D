@@ -34,6 +34,8 @@ class ProfilePane::Impl_ {
     const Profile & GetProfile() const { return profile_; }
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
+    WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
+                                   float &closest_distance);
 
   private:
     SG::Node     &root_node_;
@@ -70,7 +72,6 @@ class ProfilePane::Impl_ {
     void CreateMovablePoints_();
     void PositionDeleteRect_(const Point2f &pos);
     void AreaHovered_(const Point3f &point);
-    void AreaDragged_(const DragInfo *info, bool is_start);
     void NewPointClicked_(const ClickInfo &info);
     void NewPointDragged_(const DragInfo *info, bool is_start);
     void PointActivated_(size_t index, bool is_activation);
@@ -140,9 +141,6 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
 
     area_widget_->GetHovered().AddObserver(
         this, [&](const Point3f &point){ AreaHovered_(point); });
-    area_widget_->GetDragged().AddObserver(
-        this, [&](const DragInfo *info, bool is_start){
-            AreaDragged_(info, is_start); });
 
     new_point_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ NewPointClicked_(info); });
@@ -209,6 +207,42 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     return widget;
 }
 
+WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
+                                                   float &closest_distance) {
+    // Test movable points.
+    WidgetPtr intersected_widget;
+    for (const auto &ms: movable_parent_->GetChildren()) {
+        auto slider = Util::CastToDerived<Slider2DWidget>(ms);
+        ASSERT(slider);
+        float dist;
+        if (func(*slider, dist) && dist < closest_distance) {
+            closest_distance = dist;
+            intersected_widget = slider;
+        }
+    }
+
+    // If no hit, try midpoints (unless already showing for a grip drag).
+    if (! intersected_widget && ! new_point_->IsEnabled()) {
+        new_point_->SetEnabled(true);
+        const auto &points = profile_.GetAllPoints();
+        for (size_t i = 1; i < points.size(); ++i) {
+            const Point2f mp = .5f * (points[i - 1] + points[i]);
+            new_point_->SetTranslation(FromProfile_(mp, TK::kPaneZOffset));
+            float dist;
+            if (func(*new_point_, dist) && dist < closest_distance) {
+                closest_distance = dist;
+                new_point_->SetEnabled(true);
+                intersected_widget = new_point_;
+                break;
+            }
+        }
+        if (! intersected_widget)
+            new_point_->SetEnabled(false);
+    }
+
+    return intersected_widget;
+}
+
 void ProfilePane::Impl_::PositionFixedPoints_() {
     start_point_->SetTranslation(FromProfile_(profile_.GetStartPoint()));
     end_point_->SetTranslation(FromProfile_(profile_.GetEndPoint()));
@@ -263,37 +297,6 @@ void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
     }
     else {
         new_point_->SetEnabled(false);
-    }
-}
-
-void ProfilePane::Impl_::AreaDragged_(const DragInfo *info, bool is_start) {
-    // Handle only touch interaction.
-    if (! info || info->trigger != Trigger::kTouch)
-        return;
-
-    // Note that is_start is true for the start of a drag and info is null for
-    // the end of a drag.
-    if (is_start) {
-        ASSERT(info);
-        const CoordConv cc(info->path_to_widget);
-        const Point2f pp = ToProfile_(cc.RootToObject(info->touch_position));
-        int index = GetNewPointIndex_(pp);
-        if (index > 0) {
-            new_point_->SetEnabled(false);
-            CreateDelegateSlider_(index - 1, pp);
-            delegate_slider_ = GetMovableSlider_(index - 1);
-            delegate_slider_->StartDrag(*info);
-        }
-    }
-    else if (info) {  // Continued drag.
-        if (delegate_slider_)
-            delegate_slider_->ContinueDrag(*info);
-    }
-    else {            // End drag.
-        if (delegate_slider_) {
-            delegate_slider_->EndDrag();
-            delegate_slider_.reset();
-        }
     }
 }
 
@@ -570,6 +573,11 @@ void ProfilePane::SetLayoutSize(const Vector2f &size) {
 
 ClickableWidgetPtr ProfilePane::GetGripWidget(const Point2f &p) {
     return impl_->GetGripWidget(p);
+}
+
+WidgetPtr ProfilePane::GetIntersectedWidget(const IntersectionFunc &func,
+                                            float &closest_distance) {
+    return impl_->GetIntersectedWidget(func, closest_distance);
 }
 
 IPaneInteractor * ProfilePane::GetInteractor() {

@@ -45,6 +45,11 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     /// which is normalized to (0,1) in both dimensions.
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
 
+    /// Redefines this to test the movable point sliders and also midpoints for
+    /// touch interaction.
+    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
+                                           float &closest_distance) override;
+
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override;
     virtual BorderPtr GetFocusBorder() const override;
