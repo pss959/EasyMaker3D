@@ -32,7 +32,7 @@ void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
 }
 
 bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
-    // An Touchable has to be present for this to activate.
+    // A Touchable has to be present for this to activate.
     const float radius = cdata.GetController().GetTouchRadius();
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {

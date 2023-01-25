@@ -42,8 +42,8 @@ class TouchTracker : public Tracker {
     ControllerData cdata;
 
     TouchablePtr touchable_;        ///< Active Touchable (or null).
-    Point3f       activation_pos_;   ///< Touch position at activation.
-    WidgetPtr     current_widget_;   ///< Current tracked Widget (or null).
+    Point3f      activation_pos_;   ///< Touch position at activation.
+    WidgetPtr    current_widget_;   ///< Current tracked Widget (or null).
 
     /// If the given event contains data for a touch with the correct
     /// controller, this sets the touch position and returns true.

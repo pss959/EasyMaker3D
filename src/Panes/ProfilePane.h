@@ -45,6 +45,7 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     /// which is normalized to (0,1) in both dimensions.
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
 
+    // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override;
     virtual BorderPtr GetFocusBorder() const override;
 
