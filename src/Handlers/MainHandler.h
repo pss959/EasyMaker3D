@@ -59,6 +59,10 @@ class MainHandler : public Handler {
     /// operation. Returns Event::Device::kUnknown if there is none.
     Event::Device GetActiveDevice() const;
 
+    /// Returns the device that was last active during a click or drag
+    /// operation. Returns Event::Device::kUnknown if there is none.
+    Event::Device GetLastActiveDevice() const;
+
     /// Returns true if the MainHandler is waiting for something to happen,
     /// meaning that it is not in the middle of handling a button press, drag
     /// operation, or waiting for a click timer.

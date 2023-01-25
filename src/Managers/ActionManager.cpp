@@ -984,7 +984,7 @@ void ActionManager::Impl_::ShowInspector_(bool show) {
     auto &inspector = *context_->scene_context->inspector;
     if (show) {
         // Get the controller, if any, that caused the inspector to be shown.
-        const auto dev = context_->main_handler->GetActiveDevice();
+        const auto dev = context_->main_handler->GetLastActiveDevice();
         ControllerPtr controller;
         if (dev == Event::Device::kLeftController)
             controller = context_->scene_context->left_controller;

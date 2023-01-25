@@ -86,6 +86,10 @@ class MainHandler::Impl_ {
         return cur_tracker_ ? cur_tracker_->GetDevice() :
             Event::Device::kUnknown;
     }
+    Event::Device GetLastActiveDevice() const {
+        return last_tracker_ ? last_tracker_->GetDevice() :
+            Event::Device::kUnknown;
+    }
     bool IsWaiting() const {
         return state_ == State_::kWaiting && ! click_state_.alarm.IsRunning();
     }
@@ -135,6 +139,10 @@ class MainHandler::Impl_ {
     /// Tracker that manages the current activated actuator, or null if there
     /// is none in progress.
     TrackerPtr  cur_tracker_;
+
+    /// Tracker that managed the last activated actuator, or null if there was
+    /// none.
+    TrackerPtr  last_tracker_;
 
     /// If a click or drag is in progress, this stores the Widget that is
     /// involved.
@@ -300,6 +308,7 @@ void MainHandler::Impl_::Reset() {
 
     click_state_.Reset();
     cur_tracker_.reset();
+    last_tracker_.reset();
 }
 
 void MainHandler::Impl_::InitVRTrackers_() {
@@ -405,7 +414,8 @@ bool MainHandler::Impl_::Activate_(const Event event) {
     WidgetPtr widget;
     for (auto &tracker: trackers_) {
         if (tracker->IsActivation(event, widget)) {
-            cur_tracker_  = tracker;
+            cur_tracker_   = tracker;
+            last_tracker_  = tracker;
             active_widget_ = widget;
             KLOG('h', "MainHandler active widget = "
                  << (widget ? widget->GetDesc() : "NULL")
@@ -639,6 +649,10 @@ Util::Notifier<Event::Device, float> & MainHandler::GetValuatorChanged() {
 
 Event::Device MainHandler::GetActiveDevice() const {
     return impl_->GetActiveDevice();
+}
+
+Event::Device MainHandler::GetLastActiveDevice() const {
+    return impl_->GetLastActiveDevice();
 }
 
 bool MainHandler::IsWaiting() const {
