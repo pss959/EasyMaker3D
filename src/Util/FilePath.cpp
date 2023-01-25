@@ -222,12 +222,12 @@ FilePath FilePath::GetFullResourcePath(const std::string &subdir,
 
 FilePath FilePath::GetHomeDirPath() {
 #if defined(ION_PLATFORM_WINDOWS)
-    const std::string kVarName = "HOMEPATH";
+    const std::string kVarName = "USERPROFILE";
 #else
     const std::string kVarName = "HOME";
 #endif
     const FilePath dir = GetEnvVar_(kVarName);
-    ASSERT(dir.Exists());
+    ASSERTM(dir.Exists(), dir.ToString());
     return dir;
 }
 
