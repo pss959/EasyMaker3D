@@ -128,8 +128,8 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
     else {
         ASSERT(info.trigger == Trigger::kGrip);
         ASSERT(cur_action_ == Action_::kRotation);
-        const Anglef angle = ComputeRotation_(start_orientation_,
-                                              info.grip_orientation);
+        const Anglef angle = ComputeGripRotation_(start_orientation_,
+                                                  info.grip_orientation);
         UpdateRotation_(angle);
     }
 }
@@ -229,14 +229,19 @@ Anglef DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
     return SignedAngleBetween_(vec0, vec1);
 }
 
-Anglef DiscWidget::ComputeRotation_(const Rotationf &rot0,
-                                    const Rotationf &rot1) {
-    // Project the change in rotation into the plane.
-    const Rotationf rot = GetLocalPlane_().ProjectRotation(
-        RotationDifference(rot0, rot1));
+#include "Math/ToString.h" // XXXX
 
-    // Return the angle from it.
-    return GetRotationAngle_(rot);
+Anglef DiscWidget::ComputeGripRotation_(const Rotationf &rot0,
+                                        const Rotationf &rot1) {
+    // Grip rotation is always around the grip guide, which is an X rotation of
+    // the Controller (in the YZ plane). Determine the change in angle in this
+    // plane.
+    const Plane yz(0, Vector3f::AxisX());
+    const Rotationf rot = yz.ProjectRotation(RotationDifference(rot0, rot1));
+
+    // Return the angle from it. If the -X axis is used, negate the angle.
+    const Anglef angle = RotationAngle(rot);
+    return RotationAxis(rot)[0] < 0 ? -angle : angle;
 }
 
 void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {

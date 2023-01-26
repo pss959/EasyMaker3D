@@ -242,6 +242,13 @@ Anglef RotationAngle(const Rotationf &rot) {
     return angle;
 }
 
+Vector3f RotationAxis(const Rotationf &rot) {
+    Vector3f axis;
+    Anglef   angle;
+    rot.GetAxisAndAngle(&axis, &angle);
+    return axis;
+}
+
 Rotationf RotationFromMatrix(const Matrix4f &mat) {
     return Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(mat));
 }

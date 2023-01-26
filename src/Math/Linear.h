@@ -167,6 +167,9 @@ Anglef NormalizedAngle(const Anglef &angle);
 /// Returns the angle part of a rotation.
 Anglef RotationAngle(const Rotationf &rot);
 
+/// Returns the axis part of a rotation.
+Vector3f RotationAxis(const Rotationf &rot);
+
 /// Returns the rotation part of a matrix.
 Rotationf RotationFromMatrix(const Matrix4f &mat);
 

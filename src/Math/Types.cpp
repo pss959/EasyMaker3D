@@ -214,12 +214,12 @@ Rotationf Plane::ProjectRotation(const Rotationf &rot) const {
     // Find the component of the plane normal with the smallest absolute
     // value. Use that to choose an axis that is guaranteed not to be close to
     // the normal.
-    const Vector3f axis = GetAxis(GetMinAbsElementIndex(normal));
+    const Vector3f perp_axis = GetAxis(GetMinAbsElementIndex(normal));
 
     // Project the axis and rotated axis onto the plane, then compute the
     // rotation between them. This is the result.
-    return Rotationf::RotateInto(ProjectVector(axis),
-                                 ProjectVector(rot * axis));
+    return Rotationf::RotateInto(ProjectVector(perp_axis),
+                                 ProjectVector(rot * perp_axis));
 }
 
 float Plane::GetDistanceToPoint(const Point3f &p) const {

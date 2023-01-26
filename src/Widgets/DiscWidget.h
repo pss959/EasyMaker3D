@@ -152,7 +152,7 @@ class DiscWidget : public DraggableWidget {
 
     /// Computes and returns a rotation angle based on start and end
     /// orientations (for grip drags).
-    Anglef ComputeRotation_(const Rotationf &rot0, const Rotationf &rot1);
+    Anglef ComputeGripRotation_(const Rotationf &rot0, const Rotationf &rot1);
 
     /// Updates the rotation based on the given change in rotation angle and
     /// notifies.
