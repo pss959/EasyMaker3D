@@ -132,12 +132,10 @@ class Controller : public SG::Node {
     ///@{
 
     /// Attaches the given object to the Controller so that it moves with
-    /// it. The object is scaled so that it is approximately the given fraction
-    /// of the Controller's Z size. The given offset is used; the X is adjusted
-    /// based on the Controller's Hand. Note that this modifies the translation
+    /// it. The given offset vector is used; the X is adjusted based on the
+    /// Controller's Hand. Note that this modifies the rotatoin and translation
     /// of the object.
-    void AttachObject(const SG::NodePtr &object, float size_fraction,
-                      const Vector3f &offset);
+    void AttachObject(const SG::NodePtr &object, const Vector3f &offset);
 
     /// Detaches an attached object. Asserts if it is not currently attached.
     void DetachObject(const SG::NodePtr &object);

@@ -51,11 +51,16 @@ class Inspector : public SG::Node {
   private:
     std::function<void()> deactivation_func_;
 
-    /// Node that is used to transform the inspected Node.
+    /// Node that is used to transform the inspected Node or to attach to the
+    /// controller.
     SG::NodePtr   transformer_;
 
-    /// Node that is the parent of the inspected Node.
-    SG::NodePtr   parent_;
+    /// Node that is used to scale the inspected Node to a reasonable size.
+    SG::NodePtr   scaler_;
+
+    /// Node that is used to center the inspected Node on the origin. The Node
+    /// is added as a child of this.
+    SG::NodePtr   centerer_;
 
     /// Controller attached to; may be null.
     ControllerPtr attached_controller_;

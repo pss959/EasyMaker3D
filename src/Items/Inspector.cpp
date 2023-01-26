@@ -11,29 +11,25 @@ void Inspector::Activate(const SG::NodePtr &node,
                          const ControllerPtr &controller) {
     ASSERT(! IsEnabled());
 
-    // Add the inspected Node to the parent and translate the parent to
-    // center it on the origin.
-    parent_->SetTranslation(-node->GetTranslation());
-    parent_->AddChild(node);
+    // Apply a translation to center the Node on the origin.
+    centerer_->SetTranslation(-node->GetTranslation());
+
+    // Scale the Node to a reasonable scale.
+    const float target_size = controller ?
+        TK::kInspectorVRModelSize : TK::kInspectorNonVRModelSize;
+    const Vector3f node_size = node->GetScaledBounds().GetSize();
+    const float scale = target_size / node_size[GetMaxElementIndex(node_size)];
+    scaler_->SetUniformScale(scale);
+
+    // Add the Node.
+    centerer_->AddChild(node);
 
     if (controller) {
-        // Attach the parent node to the Controller.
-        parent_->SetRotation(
-            Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
-                                        Anglef::FromDegrees(-90)));
-        controller->AttachObject(parent_, TK::kInspectorVRFraction,
-                                 Vector3f(TK::kInspectorVRXOffset, 0, 0));
-        attached_controller_ = controller;
-    }
-    else {
-        // Compute a reasonable scale.
-        const Vector3f size = node->GetScaledBounds().GetSize();
-        const float scale =
-            TK::kInspectorNonVRModelSize / size[GetMaxElementIndex(size)];
-        transformer_->SetUniformScale(scale);
+        // If using a Controller, attach the scaled Node to it.
+        const Vector3f offset(TK::kInspectorVRXOffset, 0, 0);
+        controller->AttachObject(transformer_, offset);
 
-        // Reset the rotation.
-        transformer_->SetRotation(Rotationf::Identity());
+        attached_controller_ = controller;
     }
 
     SetEnabled(true);
@@ -41,17 +37,18 @@ void Inspector::Activate(const SG::NodePtr &node,
 
 void Inspector::Deactivate() {
     ASSERT(IsEnabled());
-    ASSERT(parent_);
+    ASSERT(transformer_);
     if (attached_controller_) {
-        attached_controller_->DetachObject(parent_);
+        attached_controller_->DetachObject(transformer_);
         attached_controller_.reset();
-
-        // Reset the change to the parent's transform from the attachment.
-        parent_->SetRotation(Rotationf::Identity());
-        parent_->SetUniformScale(1);
-        parent_->SetTranslation(Vector3f::Zero());
     }
-    parent_->ClearChildren();
+
+    // Reset all possible transformation changes.
+    centerer_->ResetTransform();
+    scaler_->ResetTransform();
+    transformer_->ResetTransform();
+
+    centerer_->ClearChildren();
 
     SetEnabled(false);
 
@@ -77,7 +74,7 @@ void Inspector::ApplyRotation(const Rotationf &rot) {
 }
 
 void Inspector::ShowEdges(bool show) {
-    auto &block = parent_->GetUniformBlockForPass("Lighting");
+    auto &block = transformer_->GetUniformBlockForPass("Lighting");
     block.SetFloatUniformValue("uEdgeWidth", show ? 1 : 0);
 }
 
@@ -85,5 +82,6 @@ void Inspector::PostSetUpIon() {
     // Access important Nodes.
     ASSERT(! transformer_);
     transformer_ = SG::FindNodeUnderNode(*this, "Transformer");
-    parent_      = SG::FindNodeUnderNode(*this, "Parent");
+    scaler_      = SG::FindNodeUnderNode(*this, "Scaler");
+    centerer_    = SG::FindNodeUnderNode(*this, "Centerer");
 }

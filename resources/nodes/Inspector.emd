@@ -3,30 +3,23 @@ Inspector "Inspector" {
   translation: 0 14 34,
 
   children: [
-    Node "Transformer" {  # This node is scaled and rotated interactively.
-      children: [
-        Node "Parent" {  # The inspected Node is added to this.
-          # Use the Faceted shader for models.
-          shader_names: ["Faceted"],
+    # This node is interactively scaled and rotated by the mouse or attached to
+    # the controller when in VR.
+    Node "Transformer" {
+      # Use the Faceted shader for models.
+      shader_names: ["Faceted"],
 
-          # Set up uniforms for the Faceted shader.
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [
-                # Define default values.
-                Uniform "uBaseColor"          { vec4f_val: "#b3b3b3" },
-                Uniform "uEmissiveColor"      { vec4f_val: 0 0 0 0 },
-                Uniform "uEdgeColor"          { vec4f_val: "#000000" },
-                Uniform "uEdgeWidth"          { float_val: 0 },
-                Uniform "uBuildVolumeSize"    { vec3f_val: 0 0 0 },
-                Uniform "uWorldToStageMatrix" { mat4_val: $MAT4_0 }
-                Uniform "uIsSelected"         { int_val: 0 }
-                Uniform "uDoClip"             { int_val: 0 }
-                Uniform "uClipPlaneEq"        { vec4f_val: 0 0 0 0 },
-              ],
-            }
-          ],
+      # Set up uniforms for the Faceted shader.
+      blocks: [ USE "T_DefaultFacetedUniforms" ],
+
+      children: [
+        # This is used to scale the inspected Node to a reasonable size.
+        Node "Scaler" {
+          children: [
+            # This is used to center the inspected Node on the origin (negating
+            # any translation it has). The Node is added as a child to this.
+            Node "Centerer" {}
+          ]
         }
       ]
     }

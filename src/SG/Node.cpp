@@ -77,6 +77,13 @@ void Node::SetTranslation(const ion::math::Vector3f &translation) {
     ProcessChange(Change::kTransform, *this);
 }
 
+void Node::ResetTransform() {
+    scale_       = Vector3f(1, 1, 1);
+    rotation_    = Rotationf::Identity();
+    translation_ = Vector3f::Zero();
+    ProcessChange(Change::kTransform, *this);
+}
+
 void Node::CopyTransformsFrom(const Node &from) {
     SetScale(from.GetScale());
     SetRotation(from.GetRotation());

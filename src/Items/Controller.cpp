@@ -190,18 +190,18 @@ void Controller::Vibrate(float seconds) {
         vibrate_func_(seconds);
 }
 
-void Controller::AttachObject(const SG::NodePtr &object, float size_fraction,
+void Controller::AttachObject(const SG::NodePtr &object,
                               const Vector3f &offset) {
     Vector3f trans = offset;
     if (hand_ == Hand::kRight)
         trans[0] = -trans[0];
-    object->SetTranslation(guide_parent_->GetTranslation() + trans);
 
-    const auto object_scale = object->GetScale();
-    const auto object_size  = object->GetScaledBounds().GetSize();
-    const auto model_size   = model_node_->GetScaledBounds().GetSize();
-    const float obj_max = object_size[GetMaxElementIndex(object_size)];
-    object->SetScale(object_scale * (size_fraction * model_size[2] / obj_max));
+    // Rotate the object so that it aligns with the controller.
+    object->SetRotation(Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
+                                                    Anglef::FromDegrees(-90)));
+
+    // Offset from the center of the controller.
+    object->SetTranslation(model_node_->GetScaledBounds().GetCenter() + trans);
 
     AddChild(object);
 }
@@ -315,7 +315,9 @@ void Controller::PositionGuides_() {
         const auto &mesh = shape->GetMesh();
         target_point = mesh.points[0];
         for (const auto &pt: mesh.points) {
-            if (is_left ? (pt[0] > target_point[0]) : (pt[0] < target_point[0]))
+            const bool is_on_correct_side = is_left ?
+                (pt[0] > target_point[0]) : (pt[0] < target_point[0]);
+            if (is_on_correct_side)
                 target_point = pt;
         }
     }

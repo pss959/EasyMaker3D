@@ -304,8 +304,8 @@ extern const float    kInspectorNonVRModelSize;
 /// (not in VR).
 extern const float    kInspectorNonVRScaleMult;
 
-/// Fraction of the controller size to use for a Model inspected in VR.
-extern const float    kInspectorVRFraction;
+/// Size to use for a Model being inspected in VR.
+extern const float    kInspectorVRModelSize;
 
 /// Offset in X from the controller for a Model inspected in VR.
 extern const float    kInspectorVRXOffset;

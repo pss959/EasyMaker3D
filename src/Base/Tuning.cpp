@@ -110,10 +110,10 @@ const float    kInspectorMousePitchAngle         = 120;
 const float    kInspectorMouseYawAngle           = 180;
 const float    kInspectorNonVRMaxScale           = 8;
 const float    kInspectorNonVRMinScale           = .2f;
-const float    kInspectorNonVRModelSize          = 14;
+const float    kInspectorNonVRModelSize          = 12;
 const float    kInspectorNonVRScaleMult          = .06f;
-const float    kInspectorVRFraction              = .8f;
-const float    kInspectorVRXOffset               = .14f;
+const float    kInspectorVRModelSize             = .2f;
+const float    kInspectorVRXOffset               = .2f;
 
 // Layout
 const float    kRLWArcAngleTextYOffset           = 1.6f;

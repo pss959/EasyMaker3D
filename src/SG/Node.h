@@ -90,6 +90,9 @@ class Node : public Object {
         SetTranslation(Vector3f(translation));
     }
 
+    /// Resets all transformation fields to default values.
+    void ResetTransform();
+
     /// Copies the transformation values from another Node.
     void CopyTransformsFrom(const Node &from);
     ///@}
