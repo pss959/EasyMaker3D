@@ -105,9 +105,6 @@ class DiscWidget : public DraggableWidget {
     /// Ending point of a pointer drag in local coordinates.
     Point3f    end_point_;
 
-    /// Starting orientation for a grip drag.
-    Rotationf  start_orientation_;
-
     /// Starting angle.
     Anglef     start_angle_;
 
@@ -152,7 +149,8 @@ class DiscWidget : public DraggableWidget {
 
     /// Computes and returns a rotation angle based on start and end
     /// orientations (for grip drags).
-    Anglef ComputeGripRotation_(const Rotationf &rot0, const Rotationf &rot1);
+    Anglef ComputeGripRotation_(const Rotationf &rot0, const Rotationf &rot1,
+                                bool is_left);
 
     /// Updates the rotation based on the given change in rotation angle and
     /// notifies.
