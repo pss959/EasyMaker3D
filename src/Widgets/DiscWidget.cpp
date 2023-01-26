@@ -229,8 +229,6 @@ Anglef DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
     return SignedAngleBetween_(vec0, vec1);
 }
 
-#include "Math/ToString.h" // XXXX
-
 Anglef DiscWidget::ComputeGripRotation_(const Rotationf &rot0,
                                         const Rotationf &rot1) {
     // Grip rotation is always around the grip guide, which is an X rotation of
