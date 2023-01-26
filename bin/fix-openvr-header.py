@@ -30,16 +30,16 @@
 # SOFTWARE.
 
 import shlex
-import sys
 import re
 import io
+from sys import argv, exit
 
-if len(sys.argv) != 3:
+if len(argv) != 3:
     print(f'*** usage: {argv[0]} <input_header_file> <output_header_file>')
-    sys.exit(1)
+    exit(1)
 
-input_header_file  = sys.argv[1]
-output_header_file = sys.argv[2]
+input_header_file  = argv[1]
+output_header_file = argv[2]
 
 header = open(input_header_file, newline='\n').read()
 

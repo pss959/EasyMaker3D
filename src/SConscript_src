@@ -7,15 +7,13 @@ Import('app_dict', 'lib_env')
 # it. This keeps OpenVR from crashing on Windows and may help elsewhere?
 # -----------------------------------------------------------------------------
 
-fixed_openvr_header = '$BUILD_DIR/include/openvr-fixed.h'
-orig_openvr_header  = '#/submodules/openvr/headers/openvr.h'
+fixed_openvr_header = File('#/$BUILD_DIR/include/openvr-fixed.h').abspath
+orig_openvr_header  = File('#/submodules/openvr/headers/openvr.h').abspath
 
-lib_env.Command(fixed_openvr_header,
-                [orig_openvr_header, '#/bin/fix-openvr-header.py'],
-                [Mkdir('$BUILD_DIR/include'),
-                 ('bin/fix-openvr-header.py' +
-                  ' submodules/openvr/headers/openvr.h ' +
-                  fixed_openvr_header)])
+lib_env.Command(
+    fixed_openvr_header, [orig_openvr_header, '#/bin/fix-openvr-header.py'],
+    [Mkdir('$BUILD_DIR/include'),
+     f'bin/fix-openvr-header.py {orig_openvr_header} {fixed_openvr_header}'])
 
 # -----------------------------------------------------------------------------
 # Helper functions.
