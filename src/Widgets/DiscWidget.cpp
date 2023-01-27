@@ -129,7 +129,7 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
         ASSERT(cur_action_ == Action_::kRotation);
         const Anglef angle = ComputeGripRotation_(
             GetStartDragInfo().grip_orientation,
-            info.grip_orientation, info.grip_hand == Hand::kLeft);
+            info.grip_orientation, info.grip_guide_direction);
         UpdateRotation_(angle);
     }
 }
@@ -230,21 +230,28 @@ Anglef DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
 }
 
 Anglef DiscWidget::ComputeGripRotation_(const Rotationf &rot0,
-                                        const Rotationf &rot1, bool is_left) {
-    // Grip rotation is always around the grip guide, which is an X rotation of
-    // the Controller (in the YZ plane). Determine the change in angle in this
-    // plane.
+                                        const Rotationf &rot1,
+                                        const Vector3f &guide_direction) {
+    // Grip rotation is always around the grip guide, meaning it is a rotation
+    // of the controller around its X axis. Determine the change in angle of
+    // the controller around this axis (i.e., in the YZ plane).
     const Plane yz(0, Vector3f::AxisX());
-    const Rotationf rot   = yz.ProjectRotation(RotationDifference(rot0, rot1));
-    const Anglef    angle = RotationAngle(rot);
+    const Rotationf rot = yz.ProjectRotation(RotationDifference(rot0, rot1));
+    Vector3f axis;
+    Anglef   angle;
+    rot.GetAxisAndAngle(&axis, &angle);
 
-    // The controller affects whether to flip the rotation, based on whether
-    // the controller is more aligned with the +Y or -Y axis:
-    //   Left  controller: flip if -Y axis.
-    //   Right controller: flip if  Y axis.
-    // Flip also if the computed rotation is around the -X axis (vs. +X axis).
-    const bool flip = (RotationAxis(rot0)[1] < 0) != (RotationAxis(rot)[0] < 0);
-    return flip ? -angle : angle;
+    // Negate if around the -X axis.
+    if (axis[0] < 0)
+        angle = -angle;
+
+    // Also negate if the rotated guide direction is pointing opposite the Y
+    // axis.
+    const Vector3f rotated_dir = WorldToWidget(rot0 * guide_direction);
+    if ((guide_direction[0] < 0) != (rotated_dir[1] < 0))
+        angle = -angle;
+
+    return angle;
 }
 
 void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {

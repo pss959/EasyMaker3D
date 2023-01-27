@@ -58,8 +58,15 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
     else {
         // Grip drag. Rotate using the change in orientations.
         ASSERT(info.trigger == Trigger::kGrip);
-        rot = RotationDifference(GetStartDragInfo().grip_orientation,
-                                 info.grip_orientation);
+        const Rotationf &start_rot = GetStartDragInfo().grip_orientation;
+        const Rotationf &diff_rot  = RotationDifference(start_rot,
+                                                        info.grip_orientation);
+
+        // Compute the true axis of rotation. This is the axis of the rotation
+        // difference after the starting rotation is applied.
+        const Vector3f axis = start_rot * RotationAxis(diff_rot);
+
+        rot = Rotationf::FromAxisAndAngle(axis, RotationAngle(diff_rot));
     }
 
     // Update the Widget rotation and notify observers.

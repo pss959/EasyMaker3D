@@ -1,7 +1,6 @@
 #pragma once
 
 #include "App/CoordConv.h"
-#include "Enums/Hand.h"
 #include "Enums/Trigger.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
@@ -59,8 +58,8 @@ struct DragInfo {
     /// These fields are available only when trigger is Trigger::kGrip.
     ///@{
 
-    /// Hand used for grip dragging.
-    Hand         grip_hand = Hand::kRight;
+    /// Guide direction for the controller used for the grip.
+    Vector3f     grip_guide_direction;
 
     /// Controller position in world coordinates.
     Point3f      grip_position;
