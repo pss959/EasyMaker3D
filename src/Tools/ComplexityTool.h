@@ -1,13 +1,13 @@
 ﻿#pragma once
 
 #include "Commands/ChangeComplexityCommand.h"
-#include "Tools/Tool.h"
+#include "Tools/FloatingTool.h"
 #include "Widgets/Slider1DWidget.h"
 
 /// ComplexityTool allows the user to change the complexity of selected Models.
 ///
 /// \ingroup Tools
-class ComplexityTool : public Tool {
+class ComplexityTool : public FloatingTool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------

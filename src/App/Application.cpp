@@ -508,6 +508,12 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     scene_context_->tree_panel->SetSessionString(
         session_manager_->GetSessionString());
 
+    // Update the current tool if there is one and it is attached to a Model.
+    // Do this after processing events so the world is up to date.
+    auto tool = tool_manager_->GetCurrentTool();
+    if (tool && tool->GetModelAttachedTo())
+        tool->Update();
+
     // Clear this flag before rendering. Rendering might cause some changes
     // to occur, and those may need to be detected.
     scene_changed_ = false;

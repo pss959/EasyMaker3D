@@ -10,7 +10,7 @@ ComplexityTool::ComplexityTool() {
 }
 
 void ComplexityTool::CreationDone() {
-    Tool::CreationDone();
+    FloatingTool::CreationDone();
 
     if (! IsTemplate())
         FindParts_();
@@ -30,7 +30,7 @@ void ComplexityTool::Attach() {
 
     // Position the ComplexityTool above the center of the attached Model.
     const float height = GetScaledBounds().GetSize()[1];
-    SetTranslation(GetPositionAboveModel(.5f * height + 2));
+    SetTranslation(GetPositionAboveModel(.5f * height + 2, false));
 
     // Set the slider based on the current complexity.
     const float complexity = GetModelAttachedTo()->GetComplexity();

@@ -112,6 +112,10 @@ class Tool : public Grippable {
     /// not attached.
     ModelPtr GetModelAttachedTo() const;
 
+    /// This is called every frame to allow the active Tool to update based on
+    /// current conditions. The base class defines this to do nothing.
+    virtual void Update();
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
@@ -175,6 +179,10 @@ class Tool : public Grippable {
     /// Tool.
     Point3f ToWorld(const Point3f &p) const;
 
+    /// Converts a vector to world coordinates from the local coordinates of
+    /// the Tool.
+    Vector3f ToWorld(const Vector3f &v) const;
+
     /// Converts a point to world coordinates from the local coordinates of the
     /// given Node, which must be found somewhere under the Tool.
     Point3f ToWorld(const SG::NodePtr &local_node, const Point3f &p) const;
@@ -189,8 +197,9 @@ class Tool : public Grippable {
     Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
 
     /// Returns a point (in stage coordinates) for the position of the Tool at
-    /// the given distance above the top front center of the attached Model.
-    Point3f GetPositionAboveModel(float distance) const;
+    /// the given distance above the top center (if over_front is false) or top
+    /// front center (if over_front is true) of the attached Model.
+    Point3f GetPositionAboveModel(float distance, bool over_front) const;
 
     /// This can be used to help compute a reasonable scale for parts of a
     /// Tool's geometry. It returns a size computed as the product of the given

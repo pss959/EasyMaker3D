@@ -68,6 +68,9 @@ ModelPtr Tool::GetModelAttachedTo() const {
         return ModelPtr();
 }
 
+void Tool::Update() {
+}
+
 Tool::Context & Tool::GetContext() const {
     ASSERT(context_);
     return *context_;
@@ -82,6 +85,11 @@ CoordConv Tool::GetStageCoordConv() const {
 Point3f Tool::ToWorld(const Point3f &p) const {
     ASSERT(! context_->path_to_parent_node.empty());
     return CoordConv(context_->path_to_parent_node).ObjectToRoot(p);
+}
+
+Vector3f Tool::ToWorld(const Vector3f &v) const {
+    ASSERT(! context_->path_to_parent_node.empty());
+    return CoordConv(context_->path_to_parent_node).ObjectToRoot(v);
 }
 
 Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
@@ -112,7 +120,7 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
         ion::math::GetScaleVector(osm) * obj_bounds.GetSize();
 }
 
-Point3f Tool::GetPositionAboveModel(float distance) const {
+Point3f Tool::GetPositionAboveModel(float distance, bool over_front) const {
     // Need the path to the Model to convert to stage coordinates.
     ASSERT(model_sel_index_ >= 0);
     const auto &path  = selection_.GetPaths()[model_sel_index_];
@@ -122,7 +130,9 @@ Point3f Tool::GetPositionAboveModel(float distance) const {
     const Bounds stage_bounds =
         TransformBounds(model.GetBounds(),
                         path.GetCoordConv().GetObjectToRootMatrix());
-    Point3f pos = stage_bounds.GetFaceCenter(Bounds::Face::kFront);
+    Point3f pos = over_front ?
+        stage_bounds.GetFaceCenter(Bounds::Face::kFront) :
+        stage_bounds.GetCenter();
     pos[1] = stage_bounds.GetMaxPoint()[1] + distance;
     return pos;
 }

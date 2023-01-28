@@ -2,13 +2,13 @@
 
 #include "Commands/ChangeColorCommand.h"
 #include "SG/Node.h"
-#include "Tools/Tool.h"
+#include "Tools/FloatingTool.h"
 #include "Widgets/GenericWidget.h"
 
 /// ColorTool allows the user to change the color of selected Models.
 ///
 /// \ingroup Tools
-class ColorTool : public Tool {
+class ColorTool : public FloatingTool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------

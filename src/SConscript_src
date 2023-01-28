@@ -386,6 +386,7 @@ lib_sources = list(chain(
         'ComplexityTool',
         'CylinderTool',
         'FindTools',
+        'FloatingTool',
         'ImportTool',
         'MirrorTool',
         'NameTool',

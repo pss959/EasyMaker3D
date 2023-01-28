@@ -21,7 +21,7 @@ ColorTool::ColorTool() {
 }
 
 void ColorTool::CreationDone() {
-    Tool::CreationDone();
+    FloatingTool::CreationDone();
 
     if (! IsTemplate())
         FindParts_();
@@ -39,7 +39,7 @@ void ColorTool::Attach() {
 
     // Position the ColorTool above the center of the attached Model.
     const float height = GetScaledBounds().GetSize()[1];
-    SetTranslation(GetPositionAboveModel(.5f * height + 2));
+    SetTranslation(GetPositionAboveModel(.5f * height + 2, false));
 }
 
 void ColorTool::Detach() {
