@@ -123,8 +123,12 @@ void TranslationTool::UpdateGeometry_() {
 
     // Determine the size of the Model in stage coordinates. If aligned to
     // axes, use the axis-aligned box size.
-    model_size_ = model.GetScaledBounds().GetSize();
-    if (! is_aligned) {
+    if (is_aligned) {
+        const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+        model_size_ = TransformBounds(model.GetBounds(), osm).GetSize();
+    }
+    else {
+        model_size_ = model.GetScaledBounds().GetSize();
         for (int i = 0; i < 3; ++i)
             model_size_[i] *= lsm[i][i];
     }
