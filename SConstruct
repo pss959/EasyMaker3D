@@ -2,6 +2,9 @@
 # Configuration.
 # -----------------------------------------------------------------------------
 
+# This version string has to be in exactly this format for the publishdoc script.
+version_string = '1.0.0'
+
 app_name = 'EasyMaker3D'
 
 app_dict = {
@@ -9,7 +12,7 @@ app_dict = {
     'COPYRIGHT'           : '2021-2023 Paul S. Strauss',
     'DATA_SUFFIX'         : '.emd',
     'SESSION_SUFFIX'      : '.ems',
-    'VERSION_STRING'      : '1.0.0',
+    'VERSION_STRING'      : version_string,
     'PUBLIC_DOC_BASE_URL' : f'https://pss959.github.io/{app_name}',
     'GITHUB_URL'          : f'https://github.com/pss959/{app_name}',
 }
