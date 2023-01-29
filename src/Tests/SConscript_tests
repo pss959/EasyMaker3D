@@ -5,13 +5,6 @@ Import('test_env')
 platform = test_env['PLATFORM']
 mode     = test_env['MODE']
 
-# On Windows, have to use a bash script to run anything (to pick up shared
-# libraries).
-if platform == 'windows':
-    run_program = (f'$MSYS2_HOME//usr/bin/bash.exe bin/runwinprogram.bash {mode}')
-else:
-    run_program = ''
-
 test_sources = [
     'AppTestBase.cpp',
     'AssertTest.cpp',
@@ -106,7 +99,7 @@ test_args = ' '.join([
   ('--gtest_filter="%s"' % test_filter) if test_filter else '',
 ])
 
-test_env.Alias('RunTests', test_program, f'{run_program} $SOURCE {test_args}')
+test_env.Alias('RunTests', test_program, f'$RUN_PROGRAM $SOURCE {test_args}')
 
 # Make sure test run targets are always considered out of date.
 test_env.AlwaysBuild('RunTests')

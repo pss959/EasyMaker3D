@@ -1,9 +1,11 @@
 #include "App/VRContext.h"
 
-#if ! defined(ION_PLATFORM_WINDOWS)
-#define __stdcall
-#include "openvr-fixed.h"
-#undef  __stdcall
+#if defined(ION_PLATFORM_WINDOWS)
+#  include "openvr-fixed.h"
+#else
+#  define __stdcall
+#  include "openvr-fixed.h"
+#  undef  __stdcall
 #endif
 
 #include <ion/gfx/framebufferobject.h>

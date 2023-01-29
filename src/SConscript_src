@@ -7,13 +7,13 @@ Import('app_dict', 'lib_env')
 # it. This keeps OpenVR from crashing on Windows and may help elsewhere?
 # -----------------------------------------------------------------------------
 
-fixed_openvr_header = File('#/$BUILD_DIR/include/openvr-fixed.h').abspath
-orig_openvr_header  = File('#/submodules/openvr/headers/openvr.h').abspath
+fixed_openvr_h = File('#/$BUILD_DIR/include/openvr-fixed.h').abspath
+orig_openvr_h  = File('#/submodules/openvr/headers/openvr.h').abspath
 
 lib_env.Command(
-    fixed_openvr_header, [orig_openvr_header, '#/bin/fix-openvr-header.py'],
+    fixed_openvr_h, [orig_openvr_h, '#/bin/fix-openvr-header.py'],
     [Mkdir('$BUILD_DIR/include'),
-     f'bin/fix-openvr-header.py {orig_openvr_header} {fixed_openvr_header}'])
+     f'python3 bin/fix-openvr-header.py {orig_openvr_h} {fixed_openvr_h}'])
 
 # -----------------------------------------------------------------------------
 # Helper functions.
@@ -60,7 +60,7 @@ def BuildObject_(env, source):
 
     obj = env.SharedObject(source=source, CXXFLAGS=flags, CPPDEFINES=defs)
     if source in openvr_lib_sources:
-        env.Depends(obj, fixed_openvr_header)
+        env.Depends(obj, fixed_openvr_h)
     return obj
 
 # -----------------------------------------------------------------------------

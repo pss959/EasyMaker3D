@@ -117,6 +117,10 @@ base_env = Environment(
     ION_DIR         = '#/ionsrc',
     SYS_INCLUDE_DIR = '/usr/include',
 
+    # Running a bash script or external program; overridden on Windows below.
+    RUN_BASH    = '',
+    RUN_PROGRAM = '',
+
     CPPDEFINES = [
         # Stuff for Ion.
         'ARCH_K8',
@@ -144,7 +148,11 @@ if platform == 'windows':
         print('*** The MSYS2_HOME environment variable is not set.\n' +
               '    It should be set to the location of the msys2 installation.')
         Exit(-1)
-    base_env.Replace(MSYS2_HOME = environ['MSYS2_HOME'])
+    base_env.Replace(
+        MSYS2_HOME  = environ['MSYS2_HOME'],
+        RUN_BASH    = '$MSYS2_HOME//usr/bin/bash.exe',
+        RUN_PROGRAM = f'$RUN_BASH bin/runwinprogram.bash {mode}',
+    )
     base_env.Append(
         CPPDEFINES = [
             'COMPILER_HAS_RVALUEREF',
