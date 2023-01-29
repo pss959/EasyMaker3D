@@ -2,13 +2,16 @@
 # Configuration.
 # -----------------------------------------------------------------------------
 
+app_name = 'EasyMaker3D'
+
 app_dict = {
-    'APP_NAME'            : 'EasyMaker3D',
+    'APP_NAME'            : app_name,
     'COPYRIGHT'           : '2021-2023 Paul S. Strauss',
     'DATA_SUFFIX'         : '.emd',
     'SESSION_SUFFIX'      : '.ems',
     'VERSION_STRING'      : '1.0.0',
-    'PUBLIC_DOC_BASE_URL' : 'https://pss959.github.io/MakerVR-dist/',
+    'PUBLIC_DOC_BASE_URL' : f'https://pss959.github.io/{app_name}',
+    'GITHUB_URL'          : f'https://github.com/pss959/{app_name}',
 }
 doc_build_dir = 'build'
 
@@ -95,7 +98,6 @@ if platform == 'linux':
 # -----------------------------------------------------------------------------
 
 if mode == 'rel':
-    app_name = app_dict['APP_NAME']
     version  = app_dict['VERSION_STRING']
     rel_name = (f'{app_name}-{version}-{platform.capitalize()}')
     app      = apps[app_name]

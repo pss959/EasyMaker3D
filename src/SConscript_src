@@ -56,6 +56,7 @@ def BuildObject_(env, source):
             ('SESSION_SUFFIX',      QuoteDictDef_('SESSION_SUFFIX')),
             ('VERSION_STRING',      QuoteDictDef_('VERSION_STRING')),
             ('PUBLIC_DOC_BASE_URL', QuoteDictDef_('PUBLIC_DOC_BASE_URL')),
+            ('GITHUB_URL',          QuoteDictDef_('GITHUB_URL')),
         ]
 
     obj = env.SharedObject(source=source, CXXFLAGS=flags, CPPDEFINES=defs)

@@ -40,6 +40,9 @@ extern const std::string kVersionString;
 /// Base URL of public documentation.
 extern const std::string kPublicDocBaseURL;
 
+/// URL of Github repository.
+extern const std::string kGithubURL;
+
 /// Whether to preserve data in Ion objects (to help debug).
 extern const bool        kSaveIonData;
 

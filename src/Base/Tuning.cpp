@@ -17,6 +17,7 @@ const std::string kDataFileSuffix    = FixString_(DATA_SUFFIX);
 const std::string kSessionFileSuffix = FixString_(SESSION_SUFFIX);
 const std::string kVersionString     = FixString_(VERSION_STRING);
 const std::string kPublicDocBaseURL  = FixString_(PUBLIC_DOC_BASE_URL);
+const std::string kGithubURL         = FixString_(GITHUB_URL);
 
 // Save Ion data except in release mode.
 #if ENABLE_DEBUG_FEATURES

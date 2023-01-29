@@ -1,51 +1,44 @@
 BoxPane "HelpPane" {
+  CONSTANTS: [BUTTON_TEXT: "CLONE \"T_FullButtonText\" \"ButtonText\""],
+  TEMPLATES: [ SpacerPane "T_VSpacer" { min_size: 1 10 } ],
+
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
-  padding: 10,
+  padding: 20,
   spacing: 10,
-  min_size: 400 300,
+  min_size: 400 1,
   panes: [
-    CLONE "T_TitleTextPane" "Title" {},
-    BoxPane {
+    CLONE "T_VSpacer" {}
+
+    CLONE "T_TextPane" "Description" {
+      border:     $BORDER { width: 2 },
+      background: $BG     { color: "#cedbef" },
       padding: 10,
       resize_width: True,
-      panes: [
-        BoxPane {
-          orientation: "kHorizontal",
-          resize_width: True,
-          background: $BG     { color: "#cedbef" },
-          border:     $BORDER { width: 2 },
-          padding: 10,
-          panes: [
-            SpacerPane { resize_width: True },
-            CLONE "T_TextPane" "Description" {
-              padding: 12,
-              font_name: "Verdana-Italic",
-              font_size: 14,
-              line_spacing: 1.4,
-              $CENTER_TEXT,
-            },
-            SpacerPane { resize_width: True },
-          ]
-        },
-      ]
+      font_name: "Verdana-Italic",
+      font_size: 14,
+      line_spacing: 1.4,
+      $CENTER_TEXT,
     },
-    BoxPane {  # Main action buttons.
-      CONSTANTS: [BUTTON_TEXT: "CLONE \"T_FullButtonText\" \"ButtonText\""],
+
+    CLONE "T_VSpacer" {}
+
+    CLONE "T_FullButton" "UserGuide" {
       resize_width:  True,
-      resize_height: True,
-      spacing: 12,
-      panes: [
-        CLONE "T_FullButton" "UserGuide" {
-          resize_width:  True,
-          panes: [ $BUTTON_TEXT { text: "Open User Guide in browser" }]
-        },
-        CLONE "T_FullButton" "CheatSheet" {
-          resize_width:  True,
-          panes: [ $BUTTON_TEXT { text: "Open Cheat Sheet in browser" }]
-        },
-      ]
+      panes: [ $BUTTON_TEXT { text: "Open User Guide in browser" }]
     },
+
+    CLONE "T_FullButton" "CheatSheet" {
+      resize_width:  True,
+      panes: [ $BUTTON_TEXT { text: "Open Cheat Sheet in browser" }]
+    },
+
+    CLONE "T_VSpacer" {}
+
+    CLONE "T_FullButton" "Issue" {
+      panes: [ $BUTTON_TEXT { text: "Report a bug / Request a feature" }]
+    },
+
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
         CLONE "T_ResponseButton" "Done" {

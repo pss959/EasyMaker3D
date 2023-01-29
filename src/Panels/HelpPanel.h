@@ -21,6 +21,7 @@ class HelpPanel : public Panel {
 
   private:
     void OpenPage_(const std::string &page_name);
+    void OpenIssue_();
 
     friend class Parser::Registry;
 };

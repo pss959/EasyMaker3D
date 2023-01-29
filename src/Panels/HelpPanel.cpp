@@ -10,13 +10,12 @@
 void HelpPanel::InitInterface() {
     AddButtonFunc("UserGuide",  [this](){ OpenPage_("UserGuide");  });
     AddButtonFunc("CheatSheet", [this](){ OpenPage_("CheatSheet"); });
-    AddButtonFunc("Done",       [this](){ Close("Done");     });
+    AddButtonFunc("Issue",      [this](){ OpenIssue_();            });
+    AddButtonFunc("Done",       [this](){ Close("Done");           });
 
-    // Set the title text and description.
+    // Set the description text.
     auto &root_pane = GetPane();
-    auto title_pane = root_pane->FindTypedPane<TextPane>("Title");
     auto desc_pane  = root_pane->FindTypedPane<TextPane>("Description");
-    title_pane->SetText(TK::kApplicationName + " Help");
     desc_pane->SetText(TK::kApplicationName + " Version " + TK::kVersionString +
                        "\nCopyright " + TK::kCopyright);
 }
@@ -28,4 +27,8 @@ void HelpPanel::UpdateInterface() {
 void HelpPanel::OpenPage_(const std::string &page_name) {
     Util::OpenURL(TK::kPublicDocBaseURL + TK::kVersionString + "/" +
                   page_name + "/");
+}
+
+void HelpPanel::OpenIssue_() {
+    Util::OpenURL(TK::kGithubURL + "/issues");
 }
