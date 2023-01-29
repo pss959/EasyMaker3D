@@ -454,7 +454,9 @@ Grip Dragging
    make fine adjustments this way. It is much easier to use :ref:`touch mode
    interaction <ug-touch-mode>` or :ref:`grip-dragging
    <ug-grip-dragging>`. Touch mode interaction works as you would expect, where
-   the touch affordance acts like the mouse.
+   the touch affordance acts like the mouse; you can touch to drag existing
+   points or near the midpoint of a profile segment to create and drag a new
+   point.
 
    Grip dragging is enabled when the hover guide is pointed approximately
    towards the panel. The relative position of each controller determines

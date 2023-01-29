@@ -24,7 +24,40 @@ up for a comfortable, fixed standing or seated position. Note that the scene
 view is set up for sitting, so you may need to adjust your VR positioning for a
 different height if you prefer to stand.
 
-System-Specific Instructions
+Platform-Specific Instructions
+------------------------------
+
+Windows
+.......
+
+.. admonition:: Bug:
+
+   Unfortunately, there seems to be a bug in the OpenVR library that interfaces
+   with SteamVR that prevents rendering to the VR headset. The application can
+   still work in :ref:`hybrid mode <ug-vr-modes>`, meaning you can still use
+   the controllers.
+
+Mac
+...
+
+It is not clear whether VR will work at all on a Mac, due to the `lack of
+official SteamVR support
+<https://store.steampowered.com/news/app/250820/view/2216278054495230717>`_.
+
+
+Linux
+.....
+
+If you are unable to see any rendering in your VR headset, you may need to
+apply the following workaround::
+
+    cd /usr/share/vulkan/icd.d
+    sudo mv intel_icd.x86_64.json intel_icd.x86_64.json.disabled
+
+Note that this must be done each time after the `mesa-vulkan-drivers` package
+is installed or updated.
+
+Device-Specific Instructions
 ----------------------------
 
 Oculus Quest 2
