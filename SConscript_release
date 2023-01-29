@@ -246,7 +246,7 @@ def BuildMacDMG_(env):
     env.Append(BUILDERS={ 'BuildMacDMG' : Builder(action=MacDMGBuilder_) })
 
     app_name = rel_dict['app_name']
-    dmg_file = f'$BUILD_DIR/Release/{app_name}.dmg'
+    dmg_file = f'$BUILD_DIR/Release/{rel_dict["rel_name"]}.dmg'
     sources  = [rel_dict['app'], rel_dict['app_lib'], rel_dict['ion_lib']]
     env.BuildMacDMG(target=dmg_file, source=sources)
     return dmg_file
