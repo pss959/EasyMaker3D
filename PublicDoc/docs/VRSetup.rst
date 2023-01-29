@@ -7,8 +7,8 @@ input works simultaneously.
 
 The application has been run successfully with an Oculus Quest 2 and an HTC
 Vive (coincidentally the systems I own). Other systems that are supported by
-`SteamVR <https://www.steamvr.com>`_ should also work. If not, `contact the
-author <https://github.com/pss959>`_ for help.
+`SteamVR <https://www.steamvr.com>`_ should also work. If not, feel free to
+`contact the author <https://github.com/pss959>`_ for help.
 
 General Set-Up
 --------------
