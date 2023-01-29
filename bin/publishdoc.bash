@@ -36,3 +36,8 @@ $RUN rsync -vau --delete build/PublicDoc/ "docs/$version/"
 # Commit the results.
 echo "--- Committing to the gh-pages branch."
 $RUN git commit -m "Updating doc for version $version" -- "docs/$version/" 
+
+# Push to local repo and Github.
+echo "--- Pushing to local repo and Github."
+$RUN git push origin gh-pages
+$RUN git push github gh-pages
