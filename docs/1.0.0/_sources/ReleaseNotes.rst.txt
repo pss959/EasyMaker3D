@@ -1,9 +1,0 @@
-Release Notes
-=============
-
-Version 1.0.0
--------------
-
-Released January 29, 2023
-
-Initial public release.
