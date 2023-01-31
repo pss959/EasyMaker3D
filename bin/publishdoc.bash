@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 
 # Set to "echo" for testing.
-RUN=echo
+RUN=
 
 # Get the root directory as an absolute path.
 script_dir=$(dirname -- "${BASH_SOURCE[0]}")
@@ -29,6 +29,10 @@ $RUN scons PublicDoc
 echo "--- Switching to the gh-pages branch."
 $RUN git checkout gh-pages
 
+# Merge the master branch to the gh-pages branch.
+echo "--- Merging the master branch into the gh-pages branch."
+$RUN git merge --no-edit master
+
 # Sync the latest doc into the correct subdirectory.
 echo "--- Syncing the HTML doc into the docs/$version subdirectory."
 mkdir -p docs
@@ -49,6 +53,7 @@ EOF
 
 # Commit the results.
 echo "--- Committing to the gh-pages branch."
+$RUN git add "docs/" 
 $RUN git commit -m "Updating doc for version $version" -- "docs/" 
 
 # Push to local repo and Github.
