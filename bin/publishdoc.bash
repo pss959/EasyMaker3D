@@ -28,6 +28,7 @@ $RUN scons PublicDoc
 # Switch to the gh-pages branch.
 echo "--- Switching to the gh-pages branch."
 $RUN git checkout gh-pages
+$RUN git checkout HEAD
 
 # Merge the master branch to the gh-pages branch.
 echo "--- Merging the master branch into the gh-pages branch."
