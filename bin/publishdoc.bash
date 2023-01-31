@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 
 # Set to "echo" for testing.
-RUN=
+RUN=echo
 
 # Get the root directory as an absolute path.
 script_dir=$(dirname -- "${BASH_SOURCE[0]}")
@@ -31,11 +31,25 @@ $RUN git checkout gh-pages
 
 # Sync the latest doc into the correct subdirectory.
 echo "--- Syncing the HTML doc into the docs/$version subdirectory."
+mkdir -p docs
 $RUN rsync -vau --delete build/PublicDoc/ "docs/$version/"
+
+# Update the "latest" link.
+mkdir -p docs/latest
+cat <<EOF > docs/latest/index.html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Refresh" content="0; url='../$version/index.html'" />
+  </head>
+  <body>
+  </body>
+</html>
+EOF
 
 # Commit the results.
 echo "--- Committing to the gh-pages branch."
-$RUN git commit -m "Updating doc for version $version" -- "docs/$version/" 
+$RUN git commit -m "Updating doc for version $version" -- "docs/" 
 
 # Push to local repo and Github.
 echo "--- Pushing to local repo and Github."
