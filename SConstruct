@@ -69,6 +69,7 @@ app_env.Append(LIBS = ['$APP_LIB_NAME'])
 apps = SConscript('src/Apps/SConscript_apps', exports=['app_dict', 'app_env'],
                   variant_dir=f'{build_dir}/Apps', duplicate=False)
 app_env.Alias('Apps', apps.values())
+app_env.Alias('App',  apps[app_name])
 
 # Build tests.
 test_env = envs['test']
