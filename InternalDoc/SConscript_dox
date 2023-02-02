@@ -33,7 +33,7 @@ def FindSources_(root_dir, patterns):
             sources += [join(root, fn) for fn in fnfilter(filenames, pattern)]
     return sources
 
-dox_files = FindSources_('.',         ['*.dox'])
+dox_files = FindSources_('.',         ['*.dox', '*.md'])
 inc_files = FindSources_('./include', ['*'])
 src_files = FindSources_('../src',    ['*.h', '*.cpp'])
 
