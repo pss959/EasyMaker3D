@@ -9,14 +9,10 @@ found [in Github Pages](https://pss959.github.io/EasyMaker3D/latest).
 
 This documentation is organized into the following sections:
 
- - [Source Directory Structure](#Structure)
  - [Building the Application](#Building)
- - [Internals Overview](#Overview)
+ - [Source Directory Structure](#Structure)
+ - [Application Design Overview](#Overview)
+ - [Application Resources and Data Files](#Resources)
  - [Source Code Documentation](#SourceCode)
- - [Application Resources](#Resources)
-
-TODO: Add these somewhere
- - Logging
- - Ion remote
 
 TODO: Look into LAYOUT_FILE to fix order in navigation panel.

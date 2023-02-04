@@ -20,7 +20,8 @@ The top-level subdirectories of the $(APP_NAME) project are:
 
   - **ionsrc**: Contains a fork of the [Google
     Ion](https://github.com/google/ion) repository with some fixes and
-    additions. This is used as the underlying rendering library.
+    additions. This is used as the underlying scene graph and rendering
+    library.
 
   - **models**: The `controllers` subdirectory contains local versions of the
     SteamVR controller models used for graphical feedback. The `scad`
@@ -28,7 +29,8 @@ The top-level subdirectories of the $(APP_NAME) project are:
     create the OFF files for 3D icons.
 
   - **resources**: Contains all run-time resource files used by the
-    application. See the [Resources] page for more details.
+    application. See the [Resources] page for more details. Most of these files
+    are included in the release file.
 
   - **src**: Contains the source code for the application. The code is divided
     into [Modules], each of which has a subdirectory. There is also a `Tests`
