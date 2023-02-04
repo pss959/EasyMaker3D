@@ -33,13 +33,10 @@ def FindSources_(root_dir, patterns):
             sources += [join(root, fn) for fn in fnfilter(filenames, pattern)]
     return sources
 
-dox_files = FindSources_('.',         ['*.dox', '*.md'])
-inc_files = FindSources_('./include', ['*'])
-src_files = FindSources_('../src',    ['*.h', '*.cpp'])
+dox_files = FindSources_('.',      ['*'])
+src_files = FindSources_('../src', ['*.h', '*.cpp'])
 
-doxygen_sources = ['Doxyfile'] + dox_files + inc_files + src_files
-
-doc = env.Command('$OUTPUT_DIR/html/index.html', doxygen_sources,
+doc = env.Command('$OUTPUT_DIR/html/index.html', dox_files + src_files,
                   ['echo = Building internal doc for version: $VERSION_STRING',
                    '$DOXYGEN InternalDoc/Doxyfile'])
 Return('doc')
