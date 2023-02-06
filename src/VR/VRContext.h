@@ -15,7 +15,7 @@ namespace SG { class Scene; }
 /// VRContext defines a environment that sets up OpenVR for all VR-related
 /// parts of the application. It handles both rendering and input.
 ///
-/// \ingroup App
+/// \ingroup VR
 class VRContext {
   public:
     VRContext();

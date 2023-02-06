@@ -12,9 +12,9 @@ struct FBTarget;
 struct Frustum;
 namespace SG { class Scene; }
 
-/// A Renderer is used to render a scene in a viewer.
+/// A Renderer is used by Viewer classes to render a scene.
 ///
-/// \ingroup App
+/// \ingroup Viewers
 class Renderer {
   public:
     /// The constructor passed an Ion ShaderManager and a flag indicating

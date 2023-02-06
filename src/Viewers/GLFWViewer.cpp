@@ -12,13 +12,13 @@
 #  include <GLFW/glfw3native.h>
 #endif
 
-#include "App/Renderer.h"
 #include "Base/Event.h"
 #include "Math/Linear.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
+#include "Viewers/Renderer.h"
 
 #include <cctype>
 

@@ -73,12 +73,9 @@ lib_sources = list(chain(
     PlaceInDir_('App', [
         'Application',
         'RegisterTypes',
-        'Renderer',
         'SceneContext',
         'SceneLoader',
         'SelPath',
-        'VRContext',
-        'VRModelLoader',
     ]),
     PlaceInDir_('Base', [
         'ActionMap',
@@ -423,8 +420,13 @@ lib_sources = list(chain(
         'UTime',
         'Write',
     ]),
+    PlaceInDir_('VR', [
+        'VRContext',
+        'VRModelLoader',
+    ]),
     PlaceInDir_('Viewers', [
         'GLFWViewer',
+        'Renderer',
         'VRViewer',
     ]),
     PlaceInDir_('Widgets', [
@@ -463,8 +465,8 @@ big_lib_sources = [
 
 # Source files that needs special treatment because of OpenVR
 openvr_lib_sources = [
-    'App/VRContext.cpp',
-    'App/VRModelLoader.cpp',
+    'VR/VRContext.cpp',
+    'VR/VRModelLoader.cpp',
 ]
 
 # Add non-release sources.

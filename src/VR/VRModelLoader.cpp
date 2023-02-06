@@ -1,4 +1,4 @@
-#include "App/VRModelLoader.h"
+#include "VR/VRModelLoader.h"
 
 #if defined(ION_PLATFORM_WINDOWS)
 #  include "openvr-fixed.h"

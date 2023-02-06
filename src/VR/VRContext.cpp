@@ -1,4 +1,4 @@
-#include "App/VRContext.h"
+#include "VR/VRContext.h"
 
 #if defined(ION_PLATFORM_WINDOWS)
 #  include "openvr-fixed.h"
@@ -12,8 +12,6 @@
 #include <ion/gfx/image.h>
 #include <ion/math/transformutils.h>
 
-#include "App/Renderer.h"
-#include "App/VRModelLoader.h"
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
 #include "Math/Linear.h"
@@ -23,6 +21,8 @@
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
+#include "VR/VRModelLoader.h"
+#include "Viewers/Renderer.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

@@ -7,7 +7,6 @@
 
 #include "App/Application.h"
 #include "App/Args.h"
-#include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "App/Selection.h"
 #include "App/SnapScript.h"
@@ -39,6 +38,7 @@
 #include "Util/Read.h"
 #include "Util/Tuning.h"
 #include "Util/Write.h"
+#include "Viewers/Renderer.h"
 #include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------

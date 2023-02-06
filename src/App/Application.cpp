@@ -8,10 +8,8 @@
 
 #include "App/ClickInfo.h"
 #include "App/RegisterTypes.h"
-#include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
-#include "App/VRContext.h"
 #include "Base/IEmitter.h"
 #include "Base/VirtualKeyboard.h"
 #include "Debug/Shortcuts.h"
@@ -77,7 +75,9 @@
 #include "Util/KLog.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
+#include "VR/VRContext.h"
 #include "Viewers/GLFWViewer.h"
+#include "Viewers/Renderer.h"
 #include "Viewers/VRViewer.h"
 #include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/IconSwitcherWidget.h"
@@ -613,7 +613,15 @@ bool Application::Impl_::InitViewers_() {
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
     if (! options_.ignore_vr && vr_context_->InitSystem()) {
-        vr_viewer_.reset(new VRViewer(*vr_context_));
+        const auto render_func = [&](const SG::Scene &scene, Renderer &renderer,
+                                     const Point3f &base_position){
+            vr_context_->Render(scene, renderer, base_position);
+        };
+        const auto emit_func = [&](std::vector<Event> &events,
+                                   const Point3f &base_position){
+            vr_context_->EmitEvents(events, base_position);
+        };
+        vr_viewer_.reset(new VRViewer(render_func, emit_func));
         viewers_.push_back(vr_viewer_);
         emitters_.push_back(vr_viewer_);
     }

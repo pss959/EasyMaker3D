@@ -1,4 +1,4 @@
-#include "App/Renderer.h"
+#include "Viewers/Renderer.h"
 
 // Ion Remote does not work on Windows (yet?)
 #if ENABLE_DEBUG_FEATURES && ! defined(ION_PLATFORM_WINDOWS)

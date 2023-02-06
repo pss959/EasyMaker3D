@@ -6,7 +6,6 @@
 #include "App/Args.h"
 #include "App/ClickInfo.h"
 #include "App/RegisterTypes.h"
-#include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
 #include "Base/Event.h"
@@ -33,6 +32,7 @@
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
 #include "Viewers/GLFWViewer.h"
+#include "Viewers/Renderer.h"
 #include "Widgets/ClickableWidget.h"
 
 // These are needed for special case code to examine specific Panels.
