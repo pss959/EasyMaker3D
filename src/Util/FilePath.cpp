@@ -8,7 +8,6 @@
 
 #include <ion/port/environment.h>
 
-#include "Base/Tuning.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
@@ -231,13 +230,13 @@ FilePath FilePath::GetHomeDirPath() {
     return dir;
 }
 
-FilePath FilePath::GetSettingsDirPath() {
+FilePath FilePath::GetSettingsDirPath(const std::string &app_name) {
 #if defined(ION_PLATFORM_WINDOWS)
     FilePath path = GetEnvVar_("APPDATA");
 #else
     FilePath path = Join(FilePath(GetEnvVar_("HOME")), FilePath(".config"));
 #endif
-    return Join(path, FilePath(TK::kApplicationName));
+    return Join(path, FilePath(app_name));
 }
 
 FilePath FilePath::GetTestDataPath() {

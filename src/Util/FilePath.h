@@ -133,8 +133,9 @@ class FilePath : private std::filesystem::path {
     /// Returns a path to the user's home directory, which is OS-dependent.
     static FilePath GetHomeDirPath();
 
-    /// Returns a path to the settings directory, which is OS-dependent.
-    static FilePath GetSettingsDirPath();
+    /// Returns a path to the settings directory, which is OS-dependent. The
+    /// name of the application is supplied.
+    static FilePath GetSettingsDirPath(const std::string &app_name);
 
     /// Returns a path to the test data directory, which comes from the
     /// TEST_DATA_DIR environment variable.

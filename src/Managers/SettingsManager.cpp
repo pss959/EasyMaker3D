@@ -14,7 +14,8 @@
 
 SettingsManager::SettingsManager() {
     // See if there is a file with settings.
-    const auto path = GetSettingsFilePath_(FilePath::GetSettingsDirPath());
+    const auto path = GetSettingsFilePath_(
+        FilePath::GetSettingsDirPath(TK::kApplicationName));
     if (path.Exists())
         settings_ = ReadSettings_(path);
     if (! settings_)
@@ -64,7 +65,7 @@ SettingsPtr SettingsManager::ReadSettings_(const FilePath &path) {
 
 void SettingsManager::WriteSettings_() {
     // Make sure the directory path exists.
-    const auto dir_path = FilePath::GetSettingsDirPath();
+    const auto dir_path = FilePath::GetSettingsDirPath(TK::kApplicationName);
     if (! dir_path.CreateDirectories()) {
         std::cerr << "*** Unable to create settings directory '"
                   << dir_path.ToString() << "'\n";
