@@ -10,10 +10,10 @@
 #include <ion/gfxutils/buffertoattributebinder.h>
 #include <ion/math/transformutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

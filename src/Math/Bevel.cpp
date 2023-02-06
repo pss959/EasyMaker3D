@@ -1,7 +1,7 @@
 #include "Math/Bevel.h"
 
-#include "Base/Tuning.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 Bevel::Bevel() : max_angle(Anglef::FromDegrees(TK::kDefaultMaxBevelAngle)) {
 }

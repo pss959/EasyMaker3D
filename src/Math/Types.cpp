@@ -7,11 +7,11 @@
 #include <ion/math/angleutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

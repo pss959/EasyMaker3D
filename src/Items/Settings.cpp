@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Base/Tuning.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
+#include "Util/Tuning.h"
 
 void Settings::AddFields() {
     AddField(last_session_path_.Init("last_session_path"));

@@ -1,5 +1,4 @@
 #include "App/SceneContext.h"
-#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
@@ -9,6 +8,7 @@
 #include "Tests/Testing.h"
 #include "Util/General.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // ClipSessionTest base class - provides helpers for tests.

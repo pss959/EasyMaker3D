@@ -4,13 +4,13 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Items/Border.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Util/Delay.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // TooltipFeedback::Impl_ class definition.

@@ -1,8 +1,8 @@
 #include "Models/SphereModel.h"
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
+#include "Util/Tuning.h"
 
 TriMesh SphereModel::BuildMesh() {
     // Determine the number of rings and sectors based on the complexity.

@@ -48,7 +48,7 @@ def BuildObject_(env, source):
     # Special case for Tuning.cpp, which needs to have these defined. Restrict
     # to just this file to avoid unnecessary recompilation when they change.
     defs += env['CPPDEFINES']
-    if source == 'Base/Tuning.cpp':
+    if source == 'Util/Tuning.cpp':
         defs += [
             ('APP_NAME',            QuoteDictDef_('APP_NAME')),
             ('COPYRIGHT',           QuoteDictDef_('COPYRIGHT')),
@@ -85,7 +85,6 @@ lib_sources = list(chain(
         'Event',
         'HelpMap',
         'Procedural',
-        'Tuning',
         'VirtualKeyboard',
     ]),
     PlaceInDir_('Commands', [
@@ -419,6 +418,7 @@ lib_sources = list(chain(
         'Read',
         'StackTrace',
         'String',
+        'Tuning',
         'URL',
         'UTime',
         'Write',

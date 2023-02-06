@@ -12,7 +12,6 @@
 #include "App/Selection.h"
 #include "App/SnapScript.h"
 #include "Base/IEmitter.h"
-#include "Base/Tuning.h"
 #include "Debug/Shortcuts.h"
 #include "Handlers/Handler.h"
 #include "Items/Board.h"
@@ -38,6 +37,7 @@
 #include "Util/FilePathList.h"
 #include "Util/KLog.h"
 #include "Util/Read.h"
+#include "Util/Tuning.h"
 #include "Util/Write.h"
 #include "Widgets/StageWidget.h"
 

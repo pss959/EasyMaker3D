@@ -5,12 +5,12 @@
 #include <ion/math/vectorutils.h>
 #include <ion/text/layout.h>
 
-#include "Base/Tuning.h"
 #include "Math/TextUtils.h"
 #include "SG/Exception.h"
 #include "SG/IonContext.h"
 #include "Util/Assert.h"
 #include "Util/Read.h"
+#include "Util/Tuning.h"
 
 using ion::gfxutils::ShaderManagerPtr;
 using ion::text::FontImagePtr;

@@ -7,7 +7,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/ClickInfo.h"
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/PolyLine.h"
@@ -15,6 +14,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 #include "Widgets/GenericWidget.h"
 #include "Widgets/Slider2DWidget.h"
 

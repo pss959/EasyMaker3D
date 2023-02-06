@@ -2,7 +2,6 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
 #include "SG/Node.h"
@@ -10,6 +9,7 @@
 #include "SG/TextNode.h"
 #include "SG/Tube.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // AngularFeedback::Impl_ class definition.

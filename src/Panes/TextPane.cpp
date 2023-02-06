@@ -2,13 +2,13 @@
 
 #include <algorithm>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 void TextPane::AddFields() {
     AddField(text_.Init("text",                 "."));

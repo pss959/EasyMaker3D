@@ -1,8 +1,8 @@
 #include "Tests/SceneTestBase.h"
 
 #include "App/RegisterTypes.h"
-#include "Base/Tuning.h"
 #include "SG/FileMap.h"
+#include "Util/Tuning.h"
 
 const std::string SceneTestBase::str1 =
     "Scene {\n"

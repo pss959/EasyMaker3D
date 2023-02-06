@@ -6,7 +6,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "SG/CoordConv.h"
-#include "Base/Tuning.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Managers/CommandManager.h"
@@ -16,6 +15,7 @@
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 #include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/PointTargetWidget.h"
 

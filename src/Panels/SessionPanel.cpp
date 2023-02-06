@@ -1,6 +1,5 @@
 #include "Panels/SessionPanel.h"
 
-#include "Base/Tuning.h"
 #include "Items/Settings.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -9,6 +8,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 void SessionPanel::InitInterface() {
     suffix_ = TK::kSessionFileSuffix;

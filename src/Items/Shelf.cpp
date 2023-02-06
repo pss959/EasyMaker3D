@@ -1,9 +1,9 @@
 #include "Items/Shelf.h"
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 
 void Shelf::AddFields() {
     AddField(depth_scale_.Init("depth_scale", 1));

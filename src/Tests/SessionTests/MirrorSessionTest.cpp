@@ -1,11 +1,11 @@
 #include "App/SceneContext.h"
-#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "Models/MirroredModel.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 
 TEST_F(SessionTestBase, MirrorSessionTest) {
     // This has 3 cylinders converted to MirroredModels:

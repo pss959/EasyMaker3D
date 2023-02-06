@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "Base/Tuning.h"
 #include "SG/Search.h"
 #include "Panes/TextPane.h"
+#include "Util/Tuning.h"
 #include "Util/URL.h"
 
 void HelpPanel::InitInterface() {

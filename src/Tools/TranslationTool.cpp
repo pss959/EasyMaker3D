@@ -2,7 +2,6 @@
 
 #include <ion/math/transformutils.h>
 
-#include "Base/Tuning.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -12,6 +11,7 @@
 #include "Models/Model.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 #include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------

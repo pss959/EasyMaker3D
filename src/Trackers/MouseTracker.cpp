@@ -1,10 +1,10 @@
 #include "Trackers/MouseTracker.h"
 
 #include "App/SceneContext.h"
-#include "Base/Tuning.h"
 #include "Debug/Shortcuts.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 MouseTracker::MouseTracker(Actuator actuator) : PointerTracker(actuator) {
     ASSERT(actuator == Actuator::kMouse);

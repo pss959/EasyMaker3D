@@ -1,8 +1,8 @@
 #include "Widgets/ScaleWidget.h"
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
+#include "Util/Tuning.h"
 #include "Widgets/Slider1DWidget.h"
 
 void ScaleWidget::AddFields() {

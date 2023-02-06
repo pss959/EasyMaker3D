@@ -1,10 +1,10 @@
 #include "Models/BeveledModel.h"
 
-#include "Base/Tuning.h"
 #include "Math/Beveler.h"
 #include "Math/MeshUtils.h"
 #include "Math/Profile.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 void BeveledModel::AddFields() {
     AddModelField(profile_points_.Init("profile_points"));

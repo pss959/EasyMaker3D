@@ -2,8 +2,8 @@
 
 #include <ion/math/angleutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
+#include "Util/Tuning.h"
 
 Color ColorRing::GetColorForPoint(const Point2f &point) {
     using ion::math::ArcTangent2;

@@ -1,11 +1,11 @@
 #include "Panes/ScrollingPane.h"
 
 #include "Base/Event.h"
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Panes/SliderPane.h"
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
+#include "Util/Tuning.h"
 
 void ScrollingPane::AddFields() {
     AddField(contents_.Init("contents"));

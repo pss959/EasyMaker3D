@@ -3,11 +3,11 @@
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
-#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "Tests/Testing.h"
+#include "Util/Tuning.h"
 
 class ScaleCommandTest : public AppTestBase {
   protected:

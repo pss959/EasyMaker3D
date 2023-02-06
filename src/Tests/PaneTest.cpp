@@ -1,5 +1,4 @@
-﻿#include "Base/Tuning.h"
-#include "Panes/BoxPane.h"
+﻿#include "Panes/BoxPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/SwitcherPane.h"
@@ -7,6 +6,7 @@
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
+#include "Util/Tuning.h"
 
 class PaneTest : public SceneTestBase {
   protected:

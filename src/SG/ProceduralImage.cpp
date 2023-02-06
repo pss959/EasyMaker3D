@@ -1,7 +1,7 @@
 #include "SG/ProceduralImage.h"
 
-#include "Base/Tuning.h"
 #include "SG/Exception.h"
+#include "Util/Tuning.h"
 
 namespace SG {
 

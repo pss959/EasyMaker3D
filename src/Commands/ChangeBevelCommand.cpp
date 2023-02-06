@@ -1,7 +1,7 @@
 #include "Commands/ChangeBevelCommand.h"
 
-#include "Base/Tuning.h"
 #include "Parser/Registry.h"
+#include "Util/Tuning.h"
 
 void ChangeBevelCommand::AddFields() {
     AddField(profile_points_.Init("profile_points"));

@@ -1,6 +1,5 @@
 ﻿#include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshValidation.h"
@@ -9,6 +8,7 @@
 #include "Math/TextUtils.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
+#include "Util/Tuning.h"
 
 class MeshBuildingTest : public TestBase {};
 

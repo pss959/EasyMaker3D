@@ -6,7 +6,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "Base/Dimensionality.h"
-#include "Base/Tuning.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -17,6 +16,7 @@
 #include "SG/Search.h"
 #include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 #include "Widgets/ScaleWidget.h"
 #include "Widgets/Slider1DWidget.h"
 

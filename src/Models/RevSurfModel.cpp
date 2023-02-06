@@ -1,10 +1,10 @@
 #include "Models/RevSurfModel.h"
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 void RevSurfModel::AddFields() {
     AddModelField(profile_points_.Init("profile_points"));

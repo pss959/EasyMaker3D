@@ -2,7 +2,6 @@
 
 #include "App/ClickInfo.h"
 #include "Base/Procedural.h"
-#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Math/ColorRing.h"
 #include "Math/Curves.h"
@@ -16,6 +15,7 @@
 #include "SG/Texture.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 
 ColorTool::ColorTool() {
 }

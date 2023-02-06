@@ -4,9 +4,9 @@
 
 #include <ion/math/angleutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
+#include "Util/Tuning.h"
 
 void DiscWidget::AddFields() {
     AddField(mode_.Init("mode",                 Mode::kRotateAndScale));

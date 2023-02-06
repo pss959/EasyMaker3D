@@ -3,12 +3,12 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Commands/ChangeTorusCommand.h"
 #include "Managers/SelectionManager.h"
 #include "Math/Linear.h"
 #include "Models/TorusModel.h"
 #include "SG/CoordConv.h"
+#include "Util/Tuning.h"
 
 void ChangeTorusExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);

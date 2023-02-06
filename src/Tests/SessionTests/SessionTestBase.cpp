@@ -1,9 +1,9 @@
 #include "SessionTests/SessionTestBase.h"
 
-#include "Base/Tuning.h"
 #include "Managers/SessionManager.h"
 #include "Tests/Testing.h"
 #include "Util/FilePath.h"
+#include "Util/Tuning.h"
 
 SessionTestBase::SessionTestBase() {
     ASSERT(context.session_manager);

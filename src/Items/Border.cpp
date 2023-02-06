@@ -1,8 +1,8 @@
 #include "Items/Border.h"
 
-#include "Base/Tuning.h"
 #include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 Border::Border() {
 }

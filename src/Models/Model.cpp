@@ -7,7 +7,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/DragInfo.h"
-#include "Base/Tuning.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
@@ -19,6 +18,7 @@
 #include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Model::ColorSet_ class.

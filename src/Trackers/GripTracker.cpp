@@ -6,7 +6,6 @@
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
-#include "Base/Tuning.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
 #include "Math/Linear.h"
@@ -14,6 +13,7 @@
 #include "SG/Intersector.h"
 #include "SG/Search.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 #include "Widgets/ClickableWidget.h"
 
 GripTracker::GripTracker(Actuator actuator) : Tracker(actuator) {

@@ -1,10 +1,10 @@
 ﻿#include <ion/math/transformutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/TextUtils.h"
-#include "Util/FilePath.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
+#include "Util/FilePath.h"
+#include "Util/Tuning.h"
 
 class TextUtilsTest : public TestBase {
   protected:

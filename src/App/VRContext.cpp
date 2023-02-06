@@ -16,13 +16,13 @@
 #include "App/VRModelLoader.h"
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

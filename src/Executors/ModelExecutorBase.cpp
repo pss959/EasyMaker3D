@@ -2,7 +2,6 @@
 
 #include "App/SelPath.h"
 #include "App/Selection.h"
-#include "Base/Tuning.h"
 #include "Commands/CreateModelCommand.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/CommandManager.h"
@@ -12,6 +11,7 @@
 #include "Math/Linear.h"
 #include "Targets/PointTarget.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 
 void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);

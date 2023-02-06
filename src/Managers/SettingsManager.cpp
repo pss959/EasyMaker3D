@@ -2,7 +2,6 @@
 
 #include <fstream>
 
-#include "Base/Tuning.h"
 #include "Items/Settings.h"
 #include "Parser/Exception.h"
 #include "Parser/Parser.h"
@@ -11,6 +10,7 @@
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Util/Tuning.h"
 
 SettingsManager::SettingsManager() {
     // See if there is a file with settings.

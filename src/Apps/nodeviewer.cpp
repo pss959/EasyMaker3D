@@ -10,7 +10,6 @@
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
 #include "Base/Event.h"
-#include "Base/Tuning.h"
 #include "Debug/Print.h"
 #include "Debug/Shortcuts.h"
 #include "Handlers/BoardHandler.h"
@@ -32,6 +31,7 @@
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
+#include "Util/Tuning.h"
 #include "Viewers/GLFWViewer.h"
 #include "Widgets/ClickableWidget.h"
 

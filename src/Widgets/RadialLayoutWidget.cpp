@@ -2,13 +2,13 @@
 
 #include <algorithm>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "SG/Torus.h"
 #include "SG/Tube.h"
+#include "Util/Tuning.h"
 #include "Widgets/DiscWidget.h"
 
 #include <ion/math/angleutils.h>

@@ -7,7 +7,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/RegisterTypes.h"
-#include "Base/Tuning.h"
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
 #include "Tests/Testing.h"
@@ -15,6 +14,7 @@
 #include "Util/Enum.h"
 #include "Util/Read.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

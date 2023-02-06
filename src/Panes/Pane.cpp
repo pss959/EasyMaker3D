@@ -1,12 +1,12 @@
 #include "Panes/Pane.h"
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "Panes/IPaneInteractor.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 #include "Widgets/ClickableWidget.h"
 
 void Pane::AddFields() {

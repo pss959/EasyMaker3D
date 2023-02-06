@@ -1,12 +1,12 @@
 #include "Tools/TextTool.h"
 
 #include "Commands/ChangeTextCommand.h"
-#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Models/TextModel.h"
 #include "Panels/TextToolPanel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 bool TextTool::CanAttach(const Selection &sel) const {
     return AreSelectedModelsOfType<TextModel>(sel);

@@ -1,8 +1,8 @@
 #include "Commands/ChangeTorusCommand.h"
 
-#include "Base/Tuning.h"
 #include "Models/TorusModel.h"
 #include "Parser/Registry.h"
+#include "Util/Tuning.h"
 
 void ChangeTorusCommand::AddFields() {
     AddField(is_inner_radius_.Init("is_inner_radius", true));

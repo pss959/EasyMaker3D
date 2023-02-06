@@ -1,7 +1,7 @@
 #include "App/Args.h"
 
-#include "Base/Tuning.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 Args::Args(int argc, const char **argv, const std::string &usage) :
     args_(docopt::docopt(usage, { argv + 1, argv + argc },

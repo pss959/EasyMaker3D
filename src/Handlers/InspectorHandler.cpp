@@ -1,9 +1,9 @@
 #include "Handlers/InspectorHandler.h"
 
 #include "Base/Event.h"
-#include "Base/Tuning.h"
 #include "Items/Inspector.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 void InspectorHandler::SetInspector(const InspectorPtr &inspector) {
     ASSERT(inspector);

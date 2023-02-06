@@ -2,8 +2,8 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
+#include "Util/Tuning.h"
 
 DraggableWidget::DraggableWidget() :
     grip_drag_scale_(TK::kGripDragScale) {

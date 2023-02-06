@@ -1,6 +1,5 @@
 #include "Panels/InfoPanel.h"
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "Models/Model.h"
@@ -12,6 +11,7 @@
 #include "Targets/PointTarget.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

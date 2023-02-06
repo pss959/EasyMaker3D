@@ -6,7 +6,6 @@
 #include <ion/math/transformutils.h>
 
 #include "App/ClickInfo.h"
-#include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
 #include "Items/Border.h"
 #include "Managers/NameManager.h"
@@ -22,6 +21,7 @@
 #include "SG/Search.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Util/Tuning.h"
 #include "Widgets/ClickableWidget.h"
 #include "Widgets/PushButtonWidget.h"
 

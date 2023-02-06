@@ -2,7 +2,12 @@
 
 #include <string>
 
-#include "Math/Types.h"
+// Don't want to add a dependency from Util->Math, so just use Ion typedefs
+// here.
+#include <ion/math/angle.h>
+#include <ion/math/vector.h>
+typedef ion::math::Anglef   Anglef;
+typedef ion::math::Vector3f Vector3f;
 
 /// \file
 /// This file defines constants that can be modified to tune various aspects of
@@ -66,9 +71,6 @@ extern const float    kFloatingBoardYOffset;
 
 /// Minimum size for either canvas dimension in a Board.
 extern const float    kMinBoardCanvasSize;
-
-/// Color to use for focused Pane borders.
-extern const Color    kFocusedPaneBorderColor;
 
 /// Width to use for focused Pane borders.
 extern const float    kFocusedPaneBorderWidth;

@@ -1,12 +1,12 @@
 #include "Executors/CreatePrimitiveExecutor.h"
 
-#include "Base/Tuning.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Models/BoxModel.h"
 #include "Models/CylinderModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TorusModel.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 
 ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
     CreatePrimitiveModelCommand &cc =

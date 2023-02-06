@@ -1,11 +1,11 @@
 #include "Items/Inspector.h"
 
-#include "Base/Tuning.h"
 #include "Items/Controller.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 void Inspector::Activate(const SG::NodePtr &node,
                          const ControllerPtr &controller) {

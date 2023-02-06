@@ -2,7 +2,6 @@
 
 #include <ion/math/transformutils.h>
 
-#include "Base/Tuning.h"
 #include "Items/RadialMenu.h"
 #include "Math/Linear.h"
 #include "Parser/Registry.h"
@@ -17,6 +16,7 @@
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 
 void Controller::SetHand(Hand hand) {
     hand_ = hand;

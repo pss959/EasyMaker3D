@@ -8,7 +8,6 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
@@ -23,6 +22,7 @@
 #include "Targets/PointTarget.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/SphereWidget.h"

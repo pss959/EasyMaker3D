@@ -1,8 +1,8 @@
 #include "Tools/PanelTool.h"
 
-#include "Base/Tuning.h"
 #include "Items/Board.h"
 #include "Managers/BoardManager.h"
+#include "Util/Tuning.h"
 
 void PanelTool::Attach() {
     ASSERT(! panel_);

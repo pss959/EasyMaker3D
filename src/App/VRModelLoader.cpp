@@ -15,10 +15,10 @@
 #include <ion/gfx/image.h>
 #include <ion/math/vectorutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

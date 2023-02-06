@@ -1,10 +1,10 @@
 #include "Panes/SliderPane.h"
 
-#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 #include "Widgets/Slider1DWidget.h"
 
 void SliderPane::AddFields() {

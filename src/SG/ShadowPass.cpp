@@ -9,10 +9,10 @@
 #include <ion/gfx/texture.h>
 #include <ion/math/transformutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
+#include "Util/Tuning.h"
 
 using ion::gfx::FramebufferObject;
 

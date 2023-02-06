@@ -1,8 +1,8 @@
 #include "Executors/CreateRevSurfExecutor.h"
 
-#include "Base/Tuning.h"
 #include "Commands/CreateRevSurfModelCommand.h"
 #include "Models/RevSurfModel.h"
+#include "Util/Tuning.h"
 
 ModelPtr CreateRevSurfExecutor::CreateModel(Command &command) {
     CreateRevSurfModelCommand &crc =

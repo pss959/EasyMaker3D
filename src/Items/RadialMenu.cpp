@@ -1,7 +1,6 @@
 #include "Items/RadialMenu.h"
 
 #include "App/ClickInfo.h"
-#include "Base/Tuning.h"
 #include "Items/RadialMenuInfo.h"
 #include "Math/Polygon.h"
 #include "SG/PolyLine.h"
@@ -11,6 +10,7 @@
 #include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 #include "Widgets/PushButtonWidget.h"
 
 namespace {

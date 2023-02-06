@@ -1,10 +1,10 @@
 ﻿#include "Managers/BoardManager.h"
 
-#include "Base/Tuning.h"
 #include "Items/Board.h"
 #include "Managers/PanelManager.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
+#include "Util/Tuning.h"
 
 BoardManager::BoardManager(const PanelManagerPtr &panel_manager) :
     panel_manager_(panel_manager) {

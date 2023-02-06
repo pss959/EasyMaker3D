@@ -1,5 +1,4 @@
 #include "App/SceneContext.h"
-#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "Managers/CommandManager.h"
 #include "Models/RevSurfModel.h"
@@ -7,6 +6,7 @@
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 
 // Convenience function
 static Rotationf GetXRot_() {

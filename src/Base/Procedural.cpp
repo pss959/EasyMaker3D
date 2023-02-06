@@ -1,10 +1,10 @@
 #include "Base/Procedural.h"
 
-#include "Base/Tuning.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper classes.

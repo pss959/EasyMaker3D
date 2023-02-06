@@ -11,7 +11,6 @@
 #include "App/Application.h"
 #include "App/Args.h"
 #include "Base/Event.h"
-#include "Base/Tuning.h"
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
@@ -20,6 +19,7 @@
 #include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
+#include "Util/Tuning.h"
 #include "Util/UTime.h"
 
 namespace {

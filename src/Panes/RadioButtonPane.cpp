@@ -1,10 +1,10 @@
 #include "Panes/RadioButtonPane.h"
 
 #include "Base/Event.h"
-#include "Base/Tuning.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 #include "Widgets/PushButtonWidget.h"
 
 void RadioButtonPane::AddFields() {

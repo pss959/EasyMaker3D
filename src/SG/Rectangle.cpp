@@ -2,9 +2,9 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "Base/Tuning.h"
 #include "Math/Intersection.h"
 #include "SG/Hit.h"
+#include "Util/Tuning.h"
 
 namespace SG {
 

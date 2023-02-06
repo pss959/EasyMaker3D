@@ -1,7 +1,7 @@
 #include "Items/AppInfo.h"
 
-#include "Base/Tuning.h"
- #include "Parser/Registry.h"
+#include "Parser/Registry.h"
+#include "Util/Tuning.h"
 
 void AppInfo::AddFields() {
     AddField(version_.Init("version"));

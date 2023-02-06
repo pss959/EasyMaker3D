@@ -8,7 +8,6 @@
 #include "App/ClickInfo.h"
 #include "App/DragInfo.h"
 #include "Base/Event.h"
-#include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
 #include "Enums/TextAction.h"
 #include "Math/Linear.h"
@@ -18,6 +17,7 @@
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 #include "Widgets/GenericWidget.h"
 
 // ----------------------------------------------------------------------------
