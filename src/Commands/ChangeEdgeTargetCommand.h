@@ -2,7 +2,7 @@
 
 #include "Base/Memory.h"
 #include "Commands/Command.h"
-#include "Targets/EdgeTarget.h"
+#include "Locate/EdgeTarget.h"
 
 DECL_SHARED_PTR(ChangeEdgeTargetCommand);
 

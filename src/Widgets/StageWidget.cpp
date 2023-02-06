@@ -1,7 +1,7 @@
 #include "Widgets/StageWidget.h"
 
-#include "App/DragInfo.h"
 #include "Base/Procedural.h"
+#include "Locate/DragInfo.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
 #include "SG/Node.h"

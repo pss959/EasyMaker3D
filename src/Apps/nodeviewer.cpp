@@ -4,7 +4,6 @@
 #include <ion/gfxutils/shadermanager.h>
 
 #include "App/Args.h"
-#include "App/ClickInfo.h"
 #include "App/RegisterTypes.h"
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
@@ -15,6 +14,7 @@
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "Items/Board.h"
+#include "Locate/ClickInfo.h"
 #include "Managers/EventManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SettingsManager.h"

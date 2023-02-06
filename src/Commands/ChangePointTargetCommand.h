@@ -2,7 +2,7 @@
 
 #include "Base/Memory.h"
 #include "Commands/Command.h"
-#include "Targets/PointTarget.h"
+#include "Locate/PointTarget.h"
 
 DECL_SHARED_PTR(ChangePointTargetCommand);
 

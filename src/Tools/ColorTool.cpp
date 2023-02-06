@@ -1,7 +1,7 @@
 #include "Tools/ColorTool.h"
 
-#include "App/ClickInfo.h"
 #include "Base/Procedural.h"
+#include "Locate/ClickInfo.h"
 #include "Managers/CommandManager.h"
 #include "Math/ColorRing.h"
 #include "Math/Curves.h"

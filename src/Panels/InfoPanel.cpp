@@ -1,5 +1,7 @@
 #include "Panels/InfoPanel.h"
 
+#include "Locate/EdgeTarget.h"
+#include "Locate/PointTarget.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "Models/Model.h"
@@ -7,8 +9,6 @@
 #include "Panes/TextPane.h"
 #include "SG/ColorMap.h"
 #include "SG/CoordConv.h"
-#include "Targets/EdgeTarget.h"
-#include "Targets/PointTarget.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"

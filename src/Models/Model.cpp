@@ -6,7 +6,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "App/DragInfo.h"
+#include "Locate/DragInfo.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"

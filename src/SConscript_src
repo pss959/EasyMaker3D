@@ -206,6 +206,10 @@ lib_sources = list(chain(
         'Shelf',
         'UnitConversion',
     ]),
+    PlaceInDir_('Locate', [
+        'EdgeTarget',
+        'PointTarget',
+    ]),
     PlaceInDir_('Managers', [
         'ActionManager',
         'AnimationManager',
@@ -372,10 +376,6 @@ lib_sources = list(chain(
     ]),
     PlaceInDir_('Selection', [
         'SelPath',
-    ]),
-    PlaceInDir_('Targets', [
-        'EdgeTarget',
-        'PointTarget',
     ]),
     PlaceInDir_('Tools', [
         'BevelTool',

@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include "App/DragInfo.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
 #include "Enums/Actuator.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
+#include "Locate/DragInfo.h"
 #include "Managers/PrecisionManager.h"
 #include "Math/Types.h"
 #include "SG/Search.h"

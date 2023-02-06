@@ -2,12 +2,12 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "App/ClickInfo.h"
-#include "App/DragInfo.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
+#include "Locate/ClickInfo.h"
+#include "Locate/DragInfo.h"
 #include "Math/Linear.h"
 #include "SG/CoordConv.h"
 #include "SG/Intersector.h"

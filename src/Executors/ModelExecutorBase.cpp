@@ -1,6 +1,7 @@
 #include "Executors/ModelExecutorBase.h"
 
 #include "Commands/CreateModelCommand.h"
+#include "Locate/PointTarget.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
@@ -9,7 +10,6 @@
 #include "Math/Linear.h"
 #include "Selection/SelPath.h"
 #include "Selection/Selection.h"
-#include "Targets/PointTarget.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
 

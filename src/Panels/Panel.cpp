@@ -5,9 +5,9 @@
 
 #include <ion/math/transformutils.h>
 
-#include "App/ClickInfo.h"
 #include "Base/VirtualKeyboard.h"
 #include "Items/Border.h"
+#include "Locate/ClickInfo.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"

@@ -1,4 +1,4 @@
-#include "Targets/EdgeTarget.h"
+#include "Locate/EdgeTarget.h"
 
 #include <ion/math/vectorutils.h>
 

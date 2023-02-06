@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "App/ClickInfo.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Items/Border.h"
+#include "Locate/ClickInfo.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Math/Linear.h"

@@ -10,6 +10,7 @@
 
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
+#include "Locate/PointTarget.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
@@ -19,7 +20,6 @@
 #include "SG/CoordConv.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
-#include "Targets/PointTarget.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"

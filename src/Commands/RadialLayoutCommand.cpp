@@ -1,6 +1,6 @@
 #include "Commands/RadialLayoutCommand.h"
 
-#include "Targets/PointTarget.h"
+#include "Locate/PointTarget.h"
 
 void RadialLayoutCommand::AddFields() {
     AddField(center_.Init("center", Point3f::Zero()));

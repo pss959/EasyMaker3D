@@ -6,7 +6,6 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/math/vectorutils.h>
 
-#include "App/ClickInfo.h"
 #include "App/RegisterTypes.h"
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
@@ -33,6 +32,7 @@
 #include "Items/RadialMenu.h"
 #include "Items/Settings.h"
 #include "Items/Shelf.h"
+#include "Locate/ClickInfo.h"
 #include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/BoardManager.h"
