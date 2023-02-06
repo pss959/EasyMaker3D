@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "App/Selection.h"
 #include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "SG/NodePath.h"
+#include "Selection/Selection.h"
 #include "Util/General.h"
 #include "Util/Notifier.h"
 

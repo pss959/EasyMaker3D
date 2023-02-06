@@ -2,13 +2,15 @@
 
 #include <vector>
 
-#include "App/SelPath.h"
+#include "Selection/SelPath.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
 /// The Selection class is used to store and pass around the set of currently
 /// selected Models. Each selected Model is specified as a SelPath, which is a
 /// NodePath from the RootModel to the selected Model.
+///
+/// \ingroup Selection
 class Selection {
   public:
     /// The default constructor creates an empty Selection.

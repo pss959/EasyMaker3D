@@ -1,8 +1,8 @@
 #include "Tools/ComplexityTool.h"
 
-#include "App/Selection.h"
 #include "Managers/CommandManager.h"
 #include "SG/Search.h"
+#include "Selection/Selection.h"
 #include "Models/Model.h"
 #include "Util/Assert.h"
 

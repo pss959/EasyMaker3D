@@ -1,4 +1,4 @@
-#include "App/SelPath.h"
+#include "Selection/SelPath.h"
 
 #include <ion/math/matrixutils.h>
 

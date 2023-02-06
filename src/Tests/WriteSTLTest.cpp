@@ -1,11 +1,11 @@
 ﻿#include <vector>
 
-#include "App/Selection.h"
 #include "IO/STLWriter.h"
 #include "Items/UnitConversion.h"
 #include "Models/BoxModel.h"
 #include "Models/RootModel.h"
 #include "Models/TextModel.h"
+#include "Selection/Selection.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/String.h"
@@ -90,4 +90,3 @@ TEST_F(WriteSTLTest, TextF) {
     const std::string actual   = WriteModelAsSTL(f, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
-

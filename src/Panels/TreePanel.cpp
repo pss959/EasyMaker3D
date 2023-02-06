@@ -5,8 +5,6 @@
 #include <vector>
 
 #include "App/ClickInfo.h"
-#include "App/SelPath.h"
-#include "App/Selection.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Items/Border.h"
 #include "Managers/CommandManager.h"
@@ -23,11 +21,13 @@
 #include "Parser/Registry.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
+#include "Selection/SelPath.h"
+#include "Selection/Selection.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Tuning.h"
-#include "Widgets/PushButtonWidget.h"
 #include "Widgets/GenericWidget.h"
+#include "Widgets/PushButtonWidget.h"
 
 // ----------------------------------------------------------------------------
 // TreePanel::Impl_ class definition.

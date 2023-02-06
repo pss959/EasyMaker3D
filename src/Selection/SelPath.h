@@ -13,6 +13,8 @@ DECL_SHARED_PTR(RootModel);
 
 /// A SelPath is a derived SG::NodePath that represents selection of a
 /// Model. It must begin at the RootModel and end at the selected Model.
+///
+/// \ingroup Selection
 struct SelPath : public SG::NodePath {
     /// Default constructor.
     SelPath() {}

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "App/Selection.h"
 #include "Base/Memory.h"
 #include "Panels/Panel.h"
+#include "Selection/Selection.h"
 
 DECL_SHARED_PTR(ContainerPane);
 DECL_SHARED_PTR(EdgeTarget);

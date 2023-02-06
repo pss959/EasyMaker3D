@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "App/SelPath.h"
 #include "Enums/CSGOperation.h"
 #include "Executors/Executor.h"
+#include "Selection/SelPath.h"
 
 /// ChangeCSGExecutor executes the ChangeCSGOperationCommand.
 ///

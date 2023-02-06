@@ -6,8 +6,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/SceneContext.h"
-#include "App/SelPath.h"
-#include "App/Selection.h"
 #include "Base/HelpMap.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
@@ -24,8 +22,8 @@
 #include "Commands/CreateTextModelCommand.h"
 #include "Commands/DeleteCommand.h"
 #include "Commands/LinearLayoutCommand.h"
-#include "Commands/RadialLayoutCommand.h"
 #include "Commands/PasteCommand.h"
+#include "Commands/RadialLayoutCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
 #include "Enums/PrimitiveType.h"
@@ -58,6 +56,8 @@
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
+#include "Selection/SelPath.h"
+#include "Selection/Selection.h"
 #include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"

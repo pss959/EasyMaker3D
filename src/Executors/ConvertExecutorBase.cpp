@@ -1,9 +1,9 @@
 #include "Executors/ConvertExecutorBase.h"
 
-#include "App/Selection.h"
 #include "Commands/ConvertCommand.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
+#include "Selection/Selection.h"
 #include "Util/General.h"
 
 void ConvertExecutorBase::Execute(Command &command, Command::Op operation) {

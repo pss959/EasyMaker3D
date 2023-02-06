@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "App/SelPath.h"
 #include "Executors/Executor.h"
 #include "Math/Types.h"
+#include "Selection/SelPath.h"
 
 class ClippedModel;
 

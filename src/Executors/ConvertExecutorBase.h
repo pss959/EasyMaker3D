@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "App/SelPath.h"
 #include "Executors/Executor.h"
 #include "Models/ConvertedModel.h"
+#include "Selection/SelPath.h"
 
 /// ConvertExecutorBase is an abstract base class for Executor classes that
 /// convert selected Model instances to some derived ConvertedModel class.

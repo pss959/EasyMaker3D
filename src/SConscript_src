@@ -75,7 +75,6 @@ lib_sources = list(chain(
         'RegisterTypes',
         'SceneContext',
         'SceneLoader',
-        'SelPath',
     ]),
     PlaceInDir_('Base', [
         'ActionMap',
@@ -370,6 +369,9 @@ lib_sources = list(chain(
         'UniformDef',
         'VRCamera',
         'WindowCamera',
+    ]),
+    PlaceInDir_('Selection', [
+        'SelPath',
     ]),
     PlaceInDir_('Targets', [
         'EdgeTarget',

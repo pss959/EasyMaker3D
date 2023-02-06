@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "App/SelPath.h"
 #include "Executors/Executor.h"
+#include "Selection/SelPath.h"
 
 /// ChangeTextExecutor executes the ChangeTextCommand.
 ///

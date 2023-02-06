@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "App/SelPath.h"
 #include "Executors/Executor.h"
+#include "Selection/SelPath.h"
 
 /// ChangeNameExecutor executes the ChangeNameCommand.
 ///
