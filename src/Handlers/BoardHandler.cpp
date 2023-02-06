@@ -1,6 +1,6 @@
 #include "Handlers/BoardHandler.h"
 
-#include "Items/Board.h"
+#include "Panels/Board.h"
 #include "Panels/Panel.h"
 #include "Util/Assert.h"
 

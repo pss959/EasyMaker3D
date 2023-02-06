@@ -188,7 +188,6 @@ lib_sources = list(chain(
     ]),
     PlaceInDir_('Items', [
         'AppInfo',
-        'Board',
         'Border',
         'BuildVolume',
         'Controller',
@@ -274,6 +273,7 @@ lib_sources = list(chain(
     PlaceInDir_('Panels', [
         'ActionPanel',
         'BevelToolPanel',
+        'Board',
         'CSGToolPanel',
         'DialogPanel',
         'FilePanel',

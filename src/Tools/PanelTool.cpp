@@ -1,7 +1,7 @@
 #include "Tools/PanelTool.h"
 
-#include "Items/Board.h"
 #include "Managers/BoardManager.h"
+#include "Panels/Board.h"
 #include "Util/Tuning.h"
 
 void PanelTool::Attach() {

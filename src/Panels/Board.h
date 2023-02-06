@@ -20,7 +20,7 @@ DECL_SHARED_PTR(Panel);
 /// Each Board maintains a stack of Panel instances that are active within the
 /// Board.
 ///
-/// \ingroup Items
+/// \ingroup Panels
 class Board : public Grippable, public Touchable {
   public:
     /// Defines the visibility behavior of a Board.

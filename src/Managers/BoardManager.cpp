@@ -1,7 +1,7 @@
 ﻿#include "Managers/BoardManager.h"
 
-#include "Items/Board.h"
 #include "Managers/PanelManager.h"
+#include "Panels/Board.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
