@@ -1,6 +1,6 @@
 #include "Parser/Registry.h"
 
-#include "SG/Exception.h"
+#include "Parser/Exception.h"
 #include "Util/General.h"
 
 namespace Parser {
