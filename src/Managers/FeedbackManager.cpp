@@ -4,7 +4,7 @@
 #include <typeindex>
 #include <unordered_map>
 
-#include "App/CoordConv.h"
+#include "SG/CoordConv.h"
 #include "Util/KLog.h"
 
 void FeedbackManager::SetParentNodes(const SG::NodePtr &world_parent,
@@ -26,7 +26,7 @@ void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
     instance->Activate();
     instance->SetSceneBoundsFunc(scene_bounds_func_);
     instance->SetObjectToWorldMatrix(
-        CoordConv(path_to_stage_).GetObjectToRootMatrix());
+        SG::CoordConv(path_to_stage_).GetObjectToRootMatrix());
 
     // Add the instance to the correct parent.
     auto &parent = instance->IsInWorldCoordinates() ?

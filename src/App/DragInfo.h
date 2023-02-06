@@ -1,8 +1,8 @@
 #pragma once
 
-#include "App/CoordConv.h"
 #include "Enums/Trigger.h"
 #include "Math/Types.h"
+#include "SG/CoordConv.h"
 #include "SG/Hit.h"
 #include "SG/NodePath.h"
 #include "Util/Assert.h"
@@ -80,7 +80,7 @@ struct DragInfo {
     /// Convenience function that returns a matrix converting from world
     /// coordinates to stage coordinates.
     Matrix4f GetWorldToStageMatrix() const {
-        return CoordConv(path_to_stage).GetRootToObjectMatrix();
+        return SG::CoordConv(path_to_stage).GetRootToObjectMatrix();
     }
 
     /// Convenience function that returns a matrix converting from object
@@ -88,14 +88,14 @@ struct DragInfo {
     /// pointer-based drags.
     Matrix4f GetObjectToStageMatrix() const {
         ASSERT(trigger == Trigger::kPointer);
-        return CoordConv(path_to_stage).GetRootToObjectMatrix() *
-            CoordConv(hit.path).GetObjectToRootMatrix();
+        return SG::CoordConv(path_to_stage).GetRootToObjectMatrix() *
+            SG::CoordConv(hit.path).GetObjectToRootMatrix();
     }
 
     /// Convenience function that converts grip_position to local coordinates
     /// of the Widget.
     Point3f GetLocalGripPosition() const {
-        return CoordConv(path_to_widget).RootToLocal(grip_position);
+        return SG::CoordConv(path_to_widget).RootToLocal(grip_position);
     }
 
     ///@}

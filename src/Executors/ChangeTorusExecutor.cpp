@@ -3,12 +3,12 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "App/CoordConv.h"
 #include "Base/Tuning.h"
 #include "Commands/ChangeTorusCommand.h"
 #include "Managers/SelectionManager.h"
 #include "Math/Linear.h"
 #include "Models/TorusModel.h"
+#include "SG/CoordConv.h"
 
 void ChangeTorusExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -22,7 +22,7 @@ void ChangeTorusExecutor::Execute(Command &command, Command::Op operation) {
             // Convert the radius from stage coordinates into object coordinates
             // of the TorusModel. This is not perfect, but is reasonable.
             const float obj_radius =
-                ion::math::Length(CoordConv(pm.path_to_model).RootToObject(
+                ion::math::Length(SG::CoordConv(pm.path_to_model).RootToObject(
                                       Vector3f(ccc.GetNewRadius(), 0, 0)));
             if (ccc.IsInnerRadius())
                 torus.SetInnerRadius(obj_radius);
@@ -78,7 +78,7 @@ bool ChangeTorusExecutor::IsOnStage_(const ExecData_::PerModel &pm) const {
     using ion::math::Normalized;
 
     const TorusModel &torus = GetTypedModel<TorusModel>(pm.path_to_model);
-    const CoordConv cc(pm.path_to_model);
+    const SG::CoordConv cc(pm.path_to_model);
 
     // The torus has to have its axis of symmetry very close to the Y axis.
     // and its bottom very close to Y=0.

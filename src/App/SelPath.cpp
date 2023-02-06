@@ -76,9 +76,9 @@ bool SelPath::IsAncestorOf(const SelPath &p) const {
     return true;
 }
 
-CoordConv SelPath::GetCoordConv() const {
+SG::CoordConv SelPath::GetCoordConv() const {
     Validate();
-    return CoordConv(*this);
+    return SG::CoordConv(*this);
 }
 
 SelPath SelPath::GetPathToChild(const ModelPtr &child) const {

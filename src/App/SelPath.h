@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "App/CoordConv.h"
 #include "Base/Memory.h"
 #include "Math/Types.h"
+#include "SG/CoordConv.h"
 #include "SG/NodePath.h"
 
 DECL_SHARED_PTR(Model);
@@ -44,10 +44,10 @@ struct SelPath : public SG::NodePath {
     /// Model.
     bool IsAncestorOf(const SelPath &p) const;
 
-    /// Returns a CoordConv instance that can be used to convert coordinates
-    /// based on the path. Note that stage coordinates are equivalent to world
-    /// coordinates for this CoordConv.
-    CoordConv GetCoordConv() const;
+    /// Returns an SG::CoordConv instance that can be used to convert
+    /// coordinates based on the path. Note that stage coordinates are
+    /// equivalent to world coordinates for this SG::CoordConv.
+    SG::CoordConv GetCoordConv() const;
 
     /// Returns a SelPath to a child of the selected Model. Asserts if the new
     /// SelPath would be ill-formed.

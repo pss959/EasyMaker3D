@@ -412,7 +412,7 @@ WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
     // into world coordinates, which is where the touch sphere is defined.
     const Pane::IntersectionFunc intersect_func = [&](const SG::Node &node,
                                                       float &dist){
-        const CoordConv cc = GetCoordConv_(node);
+        const SG::CoordConv cc = GetCoordConv_(node);
         const Matrix4f p2w = panel_to_world * cc.GetObjectToRootMatrix();
         const auto bounds = TransformBounds(node.GetBounds(), p2w);
         return SphereBoundsIntersect(pos, radius, bounds, dist);
@@ -572,9 +572,9 @@ void Panel::ProcessPaneContentsChange_() {
     UpdateInteractivePanes_();
 }
 
-CoordConv Panel::GetCoordConv_(const SG::Node &node) {
+SG::CoordConv Panel::GetCoordConv_(const SG::Node &node) {
     // Create an std::shared_ptr that does not delete this.
     auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
     const SG::NodePath path = SG::FindNodePathUnderNode(np, node);
-    return CoordConv(path);
+    return SG::CoordConv(path);
 }

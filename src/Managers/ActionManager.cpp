@@ -961,7 +961,8 @@ void ActionManager::Impl_::MoveSelectionToOrigin_() {
     const Model &primary = *sel.GetPrimary().GetModel();
 
     // Compute the bounds in stage coordinates.
-    const Matrix4f osm = CoordConv(sel.GetPrimary()).GetObjectToRootMatrix();
+    const Matrix4f osm =
+        SG::CoordConv(sel.GetPrimary()).GetObjectToRootMatrix();
     const Bounds stage_bounds = TransformBounds(primary.GetBounds(), osm);
 
     // Compute the translation to put the bounds center at 0 in X and Z and to

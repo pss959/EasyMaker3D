@@ -3,10 +3,10 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "App/CoordConv.h"
 #include "Commands/ChangeCylinderCommand.h"
 #include "Managers/SelectionManager.h"
 #include "Models/CylinderModel.h"
+#include "SG/CoordConv.h"
 
 void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -20,7 +20,7 @@ void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {
             // Convert the radius from stage coordinates into object coordinates
             // of the CylinderModel. This is not perfect, but is reasonable.
             const float obj_radius =
-                ion::math::Length(CoordConv(pm.path_to_model).RootToObject(
+                ion::math::Length(SG::CoordConv(pm.path_to_model).RootToObject(
                                       Vector3f(ccc.GetNewRadius(), 0, 0)));
             if (ccc.IsTopRadius())
                 cyl.SetTopRadius(obj_radius);

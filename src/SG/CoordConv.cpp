@@ -1,10 +1,12 @@
-#include "App/CoordConv.h"
+#include "SG/CoordConv.h"
 
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
 #include "SG/Node.h"
+
+namespace SG {
 
 CoordConv::CoordConv(const SG::NodePath &path) : path_(path) {
     ASSERT(! path_.empty());
@@ -50,3 +52,5 @@ CONVERSION_FUNC_(Point3f,  ObjectToRoot, GetObjectToRootMatrix)
 CONVERSION_FUNC_(Point3f,  RootToObject, GetRootToObjectMatrix)
 CONVERSION_FUNC_(Point3f,  LocalToRoot,  GetLocalToRootMatrix)
 CONVERSION_FUNC_(Point3f,  RootToLocal,  GetRootToLocalMatrix)
+
+}  // namespace SG

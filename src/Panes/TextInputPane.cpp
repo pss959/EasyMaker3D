@@ -864,7 +864,7 @@ void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
         else {
             // The touch point needs to be converted from world coordinates.
             ASSERT(info->trigger == Trigger::kTouch);
-            const CoordConv cc(info->path_to_widget);
+            const SG::CoordConv cc(info->path_to_widget);
             const Point3f pane_pt = cc.RootToObject(info->touch_position);
             x = pane_pt[0];
         }

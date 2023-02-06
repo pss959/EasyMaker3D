@@ -3,7 +3,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/ClickInfo.h"
-#include "App/CoordConv.h"
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
@@ -11,6 +10,7 @@
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
 #include "Math/Linear.h"
+#include "SG/CoordConv.h"
 #include "SG/Intersector.h"
 #include "SG/Search.h"
 #include "Util/General.h"

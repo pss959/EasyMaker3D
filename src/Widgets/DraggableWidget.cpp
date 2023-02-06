@@ -17,8 +17,8 @@ void DraggableWidget::ContinueDrag(const DragInfo &info) {
     cur_info_ = info;
 }
 
-CoordConv DraggableWidget::GetCoordConv() const {
-    return CoordConv(start_info_.path_to_widget);
+SG::CoordConv DraggableWidget::GetCoordConv() const {
+    return SG::CoordConv(start_info_.path_to_widget);
 }
 
 Point3f DraggableWidget::WidgetToWorld(const Point3f &p) const {

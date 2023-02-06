@@ -2,12 +2,12 @@
 
 #include <ion/math/transformutils.h>
 
-#include "App/CoordConv.h"
 #include "Base/Tuning.h"
 #include "Items/RadialMenu.h"
 #include "Math/Linear.h"
 #include "Parser/Registry.h"
 #include "SG/ColorMap.h"
+#include "SG/CoordConv.h"
 #include "SG/MutableTriMeshShape.h"
 #include "SG/NodePath.h"
 #include "SG/ProceduralImage.h"
@@ -343,8 +343,8 @@ void Controller::SetUpForTouch_() {
 
     const auto touch_path =
         SG::FindNodePathUnderNode(touch_node_, *touch_tip_node_);
-    const CoordConv touch_cc(touch_path);
-    const Matrix4f  touch_m = touch_cc.GetObjectToRootMatrix();
+    const SG::CoordConv touch_cc(touch_path);
+    const Matrix4f      touch_m = touch_cc.GetObjectToRootMatrix();
 
     touch_offset_ = Vector3f(touch_m * Point3f::Zero());
 

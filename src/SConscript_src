@@ -72,7 +72,6 @@ def BuildObject_(env, source):
 lib_sources = list(chain(
     PlaceInDir_('App', [
         'Application',
-        'CoordConv',
         'RegisterTypes',
         'Renderer',
         'SceneContext',
@@ -328,6 +327,7 @@ lib_sources = list(chain(
     PlaceInDir_('SG', [
         'Box',
         'ColorMap',
+        'CoordConv',
         'Cylinder',
         'Ellipsoid',
         'FileImage',

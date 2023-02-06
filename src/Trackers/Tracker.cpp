@@ -1,8 +1,8 @@
 #include "Trackers/Tracker.h"
 
-#include "App/CoordConv.h"
 #include "App/SceneContext.h"
 #include "Items/Controller.h"
+#include "SG/CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -68,5 +68,5 @@ Controller & Tracker::ControllerData::GetOtherController() const {
 
 Point3f Tracker::ControllerData::ToControllerCoords(const Point3f &p) const {
     ASSERT(! path_.empty());
-    return CoordConv(path_).RootToObject(p);
+    return SG::CoordConv(path_).RootToObject(p);
 }

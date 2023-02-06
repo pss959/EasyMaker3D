@@ -170,10 +170,10 @@ class Tool : public Grippable {
         return Parser::Registry::CreateObject<T>();
     }
 
-    /// Returns a CoordConv instance for converting between object, local, and
-    /// stage coordinates (the root coordinates for the CoordConv) for the
-    /// attached Model.
-    CoordConv GetStageCoordConv() const;
+    /// Returns a SG::CoordConv instance for converting between object, local,
+    /// and stage coordinates (the root coordinates for the SG::CoordConv) for
+    /// the attached Model.
+    SG::CoordConv GetStageCoordConv() const;
 
     /// Converts a point to world coordinates from the local coordinates of the
     /// Tool.

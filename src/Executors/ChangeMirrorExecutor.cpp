@@ -49,7 +49,7 @@ ChangeMirrorExecutor::ExecData_ & ChangeMirrorExecutor::GetExecData_(
             // Convert the plane normal into object coordinates for the
             // MirroredModel.
             pm.object_plane_normal =
-                CoordConv(path).RootToObject(stage_plane.normal);
+                SG::CoordConv(path).RootToObject(stage_plane.normal);
 
             // If operating in-place, there is no need to modify the
             // translation of the MirroredModel. If not, it needs to be

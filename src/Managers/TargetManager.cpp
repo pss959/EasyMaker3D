@@ -5,7 +5,7 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "App/CoordConv.h"
+#include "SG/CoordConv.h"
 #include "Base/Tuning.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
@@ -166,7 +166,8 @@ void TargetManager::PointActivated_(bool is_activation) {
 
     if (is_activation) {
         // Update the stage-to-world matrix.
-        const Matrix4f swm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
+        const Matrix4f swm =
+            SG::CoordConv(path_to_stage_).GetObjectToRootMatrix();
         point_target_widget_->SetStageToWorldMatrix(swm);
 
         // Create the command to move the target.
@@ -198,7 +199,8 @@ void TargetManager::EdgeActivated_(bool is_activation) {
 
     if (is_activation) {
         // Update the stage-to-world matrix.
-        const Matrix4f swm = CoordConv(path_to_stage_).GetObjectToRootMatrix();
+        const Matrix4f swm =
+            SG::CoordConv(path_to_stage_).GetObjectToRootMatrix();
         edge_target_widget_->SetStageToWorldMatrix(swm);
 
         // Create the command to move the target.

@@ -1,8 +1,8 @@
 #include <string>
 
-#include "App/CoordConv.h"
 #include "App/RegisterTypes.h"
 #include "Parser/Registry.h"
+#include "SG/CoordConv.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "Tests/TestBase.h"
@@ -39,7 +39,7 @@ TEST_F(CoordConvTest, ObjectWorld) {
     path.push_back(a);
 
     {
-        CoordConv cc(path);
+        SG::CoordConv cc(path);
 
         EXPECT_VECS_CLOSE(Vector3f(0, 0, 0), cc.ObjectToRoot(v0));
         EXPECT_VECS_CLOSE(Vector3f(2, 3, 4), cc.ObjectToRoot(v1));
@@ -58,7 +58,7 @@ TEST_F(CoordConvTest, ObjectWorld) {
     path.push_back(b);
 
     {
-        CoordConv cc(path);
+        SG::CoordConv cc(path);
 
         EXPECT_VECS_CLOSE(Vector3f(0,  0,   0),    cc.ObjectToRoot(v0));
         EXPECT_VECS_CLOSE(Vector3f(20, 300, 4000), cc.ObjectToRoot(v1));
@@ -87,7 +87,7 @@ TEST_F(CoordConvTest, LocalWorld) {
     path.push_back(a);
 
     {
-        CoordConv cc(path);
+        SG::CoordConv cc(path);
 
         EXPECT_VECS_CLOSE(Vector3f(0, 0, 0), cc.LocalToRoot(v0));
         EXPECT_VECS_CLOSE(Vector3f(1, 1, 1), cc.LocalToRoot(v1));
@@ -106,7 +106,7 @@ TEST_F(CoordConvTest, LocalWorld) {
     path.push_back(b);
 
     {
-        CoordConv cc(path);
+        SG::CoordConv cc(path);
 
         EXPECT_VECS_CLOSE(Vector3f(0, 0, 0), cc.LocalToRoot(v0));
         EXPECT_VECS_CLOSE(Vector3f(2, 3, 4), cc.LocalToRoot(v1));

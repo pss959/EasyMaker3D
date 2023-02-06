@@ -12,7 +12,7 @@
 
 #include <vector>
 
-class CoordConv;
+namespace SG { class CoordConv; }
 DECL_SHARED_PTR(Border);
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(ClickableWidget);
@@ -249,7 +249,7 @@ class Panel : public SG::Node {
     /// This is invoked when the contents of the root Pane have changed.
     void ProcessPaneContentsChange_();
 
-    /// Returns a CoordConv for the given Node relative to this Panel. The Node
-    /// must be found somewhere under the Panel.
-    CoordConv GetCoordConv_(const SG::Node &node);
+    /// Returns an SG::CoordConv for the given Node relative to this Panel. The
+    /// Node must be found somewhere under the Panel.
+    SG::CoordConv GetCoordConv_(const SG::Node &node);
 };

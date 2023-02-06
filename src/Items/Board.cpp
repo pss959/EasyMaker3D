@@ -304,7 +304,7 @@ WidgetPtr Board::Impl_::GetTouchedWidget(const Point3f &touch_pos,
         if (SphereBoundsIntersect(touch_pos, radius, world_bounds, dist)) {
             // Compute the matrix from panel to world coordinates for the Panel.
             auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
-            const CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
+            const SG::CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
             const Matrix4f p2w = cc.GetObjectToRootMatrix();
             widget = panel->GetIntersectedPaneWidget(touch_pos, radius, p2w);
         }
@@ -605,7 +605,7 @@ bool Board::Impl_::UpdatePanelGripInfo_(GripInfo &info) {
                            TK::kMaxGripHoverDirAngle)) {
         // Convert the controller position into Panel coordinates.
         auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
-        const CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
+        const SG::CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
         const Matrix4f w2p = cc.GetRootToObjectMatrix();
         const Point2f panel_pt = ToPoint2f(w2p * info.event.position3D);
 
@@ -617,7 +617,8 @@ bool Board::Impl_::UpdatePanelGripInfo_(GripInfo &info) {
             const auto path =
                 SG::NodePath::Stitch(path_to_root_node_, path_to_widget);
             info.widget       = widget;
-            info.target_point = CoordConv(path).ObjectToRoot(Point3f::Zero());
+            info.target_point =
+                SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
             return true;
         }
     }
@@ -694,7 +695,7 @@ void Board::Impl_::UpdateGripHover_(const GripState_ &state, GripInfo &info) {
     else if (info.widget == xz_move_slider_) {
         // Use the rotated position of the xz_move_slider_ geometry.
         auto bar  = SG::FindNodeUnderNode(root_node_, "Bar");
-        const CoordConv cc(SG::FindNodePathUnderNode(bar, "Crossbar"));
+        const SG::CoordConv cc(SG::FindNodePathUnderNode(bar, "Crossbar"));
         local_pt = canvas_->GetTranslation() + cc.ObjectToRoot(Point3f::Zero());
     }
     else {
@@ -704,7 +705,8 @@ void Board::Impl_::UpdateGripHover_(const GripState_ &state, GripInfo &info) {
                            Vector3f(size_slider_->GetValue(), 0));
     }
     ASSERT(! path_to_root_node_.empty());
-    info.target_point = CoordConv(path_to_root_node_).ObjectToRoot(local_pt);
+    info.target_point =
+        SG::CoordConv(path_to_root_node_).ObjectToRoot(local_pt);
 }
 
 // ----------------------------------------------------------------------------

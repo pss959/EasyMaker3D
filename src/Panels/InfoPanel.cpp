@@ -1,6 +1,5 @@
 #include "Panels/InfoPanel.h"
 
-#include "App/CoordConv.h"
 #include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
@@ -8,6 +7,7 @@
 #include "Panes/ContainerPane.h"
 #include "Panes/TextPane.h"
 #include "SG/ColorMap.h"
+#include "SG/CoordConv.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Assert.h"
@@ -98,7 +98,7 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
     AddTextPane_(panes, TextType_::kNormal,
                  "Triangle Count", Util::ToString(mesh.GetTriangleCount()));
 
-    const Matrix4f osm    = CoordConv(sel_path).GetObjectToRootMatrix();
+    const Matrix4f osm    = SG::CoordConv(sel_path).GetObjectToRootMatrix();
     const Bounds   bounds = TransformBounds(model.GetBounds(), osm);
     const Point3f  center = bounds.GetCenter();
     const Vector3f size   = bounds.GetSize();

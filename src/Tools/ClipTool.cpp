@@ -8,7 +8,6 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "App/CoordConv.h"
 #include "Base/Tuning.h"
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
@@ -18,6 +17,7 @@
 #include "Models/ClippedModel.h"
 #include "Models/RootModel.h"
 #include "SG/ColorMap.h"
+#include "SG/CoordConv.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Targets/PointTarget.h"
@@ -389,7 +389,7 @@ void ClipTool::Impl_::SnapRotation_(bool &snapped_to_target, int &snapped_dim) {
     auto &tm = *context_.target_manager;
 
     ASSERT(selection_.HasAny());
-    const CoordConv cc(selection_.GetPrimary());
+    const SG::CoordConv cc(selection_.GetPrimary());
 
     // Try to snap to the point target (in stage coordinates) if it is active.
     Rotationf snap_rot;
@@ -457,7 +457,7 @@ void ClipTool::Impl_::SnapTranslation_(bool &is_snapped) {
     // If not, try snapping to the center of the Model. Assume the center is
     // the origin in object coordinates.
     if (! is_snapped) {
-        const CoordConv cc(selection_.GetPrimary());
+        const SG::CoordConv cc(selection_.GetPrimary());
         is_snapped = snap_to_pt(cc.ObjectToRoot(Point3f::Zero()));
     }
 

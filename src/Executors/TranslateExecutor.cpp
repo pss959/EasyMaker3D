@@ -1,8 +1,8 @@
 #include "Executors/TranslateExecutor.h"
 
-#include "App/CoordConv.h"
 #include "Commands/TranslateCommand.h"
 #include "Managers/SelectionManager.h"
+#include "SG/CoordConv.h"
 
 void TranslateExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -50,7 +50,7 @@ void TranslateExecutor::TranslateModels_(ExecData_ &data,
         // object, since it needs to include the Model's scale and rotation.
         const auto &path = pm.path_to_model;
         pm.new_translation =
-            pm.old_translation + CoordConv(path).RootToLocal(translation);
+            pm.old_translation + SG::CoordConv(path).RootToLocal(translation);
         path.GetModel()->SetTranslation(pm.new_translation);
     }
 }

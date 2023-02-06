@@ -1,9 +1,9 @@
 #include "Trackers/PinchTracker.h"
 
-#include "App/CoordConv.h"
 #include "Base/Tuning.h"
 #include "App/SceneContext.h"
 #include "Items/Controller.h"
+#include "SG/CoordConv.h"
 #include "SG/Search.h"
 
 PinchTracker::PinchTracker(Actuator actuator) : PointerTracker(actuator) {

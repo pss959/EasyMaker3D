@@ -42,7 +42,7 @@ ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
             pm.path_to_model = path;
 
             // Convert plane from stage to object coordinates.
-            const Matrix4f som = CoordConv(path).GetRootToObjectMatrix();
+            const Matrix4f som = SG::CoordConv(path).GetRootToObjectMatrix();
             pm.object_plane = TransformPlane(ccc.GetPlane(), som);
         }
         command.SetExecData(data);

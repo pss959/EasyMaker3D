@@ -2,9 +2,9 @@
 
 #include <ion/math/transformutils.h>
 
-#include "App/CoordConv.h"
 #include "Commands/LinearLayoutCommand.h"
 #include "Managers/SelectionManager.h"
+#include "SG/CoordConv.h"
 
 void LinearLayoutExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -47,7 +47,7 @@ void LinearLayoutExecutor::LayOutModels_(ExecData_ &data,
                                          const Vector3f &offset) {
     // Compute the position of the first Model in stage coordinates.
     const Matrix4f osm =
-        CoordConv(data.per_model[0].path_to_model).GetObjectToRootMatrix();
+        SG::CoordConv(data.per_model[0].path_to_model).GetObjectToRootMatrix();
     Point3f cur_position = osm * Point3f::Zero();
 
     // Move the center of each other Model center to the current position.

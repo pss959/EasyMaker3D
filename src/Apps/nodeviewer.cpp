@@ -412,8 +412,8 @@ void Application_::ResetView_() {
     // Change the view to encompass the object, looking along the -Z axis
     // toward the center.
     const Bounds lb = path_to_node_.back()->GetBounds();
-    const Bounds wb =
-        TransformBounds(lb, CoordConv(path_to_node_).GetObjectToRootMatrix());
+    const Bounds wb = TransformBounds(
+        lb, SG::CoordConv(path_to_node_).GetObjectToRootMatrix());
     const float radius = kRadiusScale *
         .5f * ion::math::Length(wb.GetMaxPoint() - wb.GetMinPoint());
 
@@ -453,8 +453,8 @@ void Application_::PrintIntersection_() {
 
 void Application_::PrintBounds_() {
     const Bounds lb = path_to_node_.back()->GetBounds();
-    const Bounds wb =
-        TransformBounds(lb, CoordConv(path_to_node_).GetObjectToRootMatrix());
+    const Bounds wb = TransformBounds(
+        lb, SG::CoordConv(path_to_node_).GetObjectToRootMatrix());
 
     std::cout << "== Path: " << path_to_node_.ToString()
               << "\n   Local Bounds: " << lb

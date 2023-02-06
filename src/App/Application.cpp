@@ -1173,7 +1173,7 @@ void Application::Impl_::UpdateIcons_() {
 void Application::Impl_::UpdateGlobalUniforms_() {
     // Get the current world-to-stage matrix.
     const auto wsm =
-        CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
+        SG::CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
 
     // Get the build volume size. Note that an inactive build volume is
     // indicated by a zero size.
@@ -1369,7 +1369,7 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
     auto path = SG::FindNodePathInScene(*scene_context_->scene, widget);
 
     // Convert its location to world coordinates.
-    const Point3f world_pt = CoordConv(path).ObjectToRoot(Point3f::Zero());
+    const Point3f world_pt = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
 
     // Use a plane at a reasonable distance past the image plane of the
     // frustum.

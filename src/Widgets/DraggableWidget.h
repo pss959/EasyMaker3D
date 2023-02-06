@@ -55,15 +55,15 @@ class DraggableWidget : public ClickableWidget {
     DraggableWidget();
 
     /// \name Coordinate Conversion Helpers
-    /// Each of these functions uses the CoordConv instance in the DragInfo
+    /// Each of these functions uses the SG::CoordConv instance in the DragInfo
     /// saved at the start of the drag. (They all assume that
     /// DraggableWidget::StartDrag() has been called.) They convert between the
     /// Widget's local coordinate system and other systems.
     ///@{
 
-    /// Convenience that returns a CoordConv for the DragInfo at the start of
-    /// the drag.
-    CoordConv GetCoordConv() const;
+    /// Convenience that returns an SG::CoordConv for the DragInfo at the start
+    /// of the drag.
+    SG::CoordConv GetCoordConv() const;
 
     /// Convenience function that converts a point in the local coordinates of
     /// the Widget to world coordinates.

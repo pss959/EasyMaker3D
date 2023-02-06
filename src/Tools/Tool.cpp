@@ -2,7 +2,6 @@
 
 #include <ion/math/transformutils.h>
 
-#include "App/CoordConv.h"
 #include "Managers/BoardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -13,6 +12,7 @@
 #include "Models/Model.h"
 #include "Models/RootModel.h"
 #include "SG/ColorMap.h"
+#include "SG/CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
@@ -76,20 +76,20 @@ Tool::Context & Tool::GetContext() const {
     return *context_;
 }
 
-CoordConv Tool::GetStageCoordConv() const {
+SG::CoordConv Tool::GetStageCoordConv() const {
     ASSERT(selection_.HasAny());
     ASSERT(model_sel_index_ >= 0);
-    return CoordConv(selection_.GetPaths()[model_sel_index_]);
+    return SG::CoordConv(selection_.GetPaths()[model_sel_index_]);
 }
 
 Point3f Tool::ToWorld(const Point3f &p) const {
     ASSERT(! context_->path_to_parent_node.empty());
-    return CoordConv(context_->path_to_parent_node).ObjectToRoot(p);
+    return SG::CoordConv(context_->path_to_parent_node).ObjectToRoot(p);
 }
 
 Vector3f Tool::ToWorld(const Vector3f &v) const {
     ASSERT(! context_->path_to_parent_node.empty());
-    return CoordConv(context_->path_to_parent_node).ObjectToRoot(v);
+    return SG::CoordConv(context_->path_to_parent_node).ObjectToRoot(v);
 }
 
 Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
@@ -97,7 +97,7 @@ Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     ASSERT(! path_to_parent.empty());
     auto path = SG::FindNodePathUnderNode(path_to_parent.back(), *local_node);
     auto full_path = SG::NodePath::Stitch(path_to_parent, path);
-    return CoordConv(full_path).ObjectToRoot(p);
+    return SG::CoordConv(full_path).ObjectToRoot(p);
 }
 
 Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {

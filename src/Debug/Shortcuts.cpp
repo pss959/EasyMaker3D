@@ -226,7 +226,7 @@ const Pane & GetBoardPane_() {
 static Matrix4f GetWorldToStageMatrix_() {
     ASSERT(scene_context_);
     ASSERT(! scene_context_->path_to_stage.empty());
-    return CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
+    return SG::CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
 }
 
 /// Dumps mesh and texture image data for the given Controller to files.
