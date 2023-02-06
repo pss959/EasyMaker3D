@@ -186,7 +186,7 @@ builds the one specified object file (from `Renderer.cpp`) with output
 containing the full command used to compile it. This can be handy to make sure
 all compiler arguments are correct.
 
-## Build Files
+## Build Input Files
 
 In case you need to modify some aspect of the build, the input files to `SCons`
 are as follows:

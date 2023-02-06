@@ -908,7 +908,13 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ./InternalDoc \
+# These are ordered to make the navigation panel match the main page.
+INPUT                  = ./InternalDoc/Main.md \
+                         ./InternalDoc/Building.md \
+                         ./InternalDoc/Structure.md \
+                         ./InternalDoc/Resources.md \
+                         ./InternalDoc/Overview.md \
+                         ./InternalDoc/SourceCode.md \
                          ./src
 
 # This tag can be used to specify the character encoding of the source files
