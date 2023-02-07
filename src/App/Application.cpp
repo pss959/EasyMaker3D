@@ -816,7 +816,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     inspector_handler_->SetInspector(scene_context_->inspector);
 
 #if ENABLE_DEBUG_FEATURES
-    drag_rect_handler_->SetSceneContext(scene_context_);
+    drag_rect_handler_->SetFrustum(scene_context_->frustum);
+    drag_rect_handler_->SetRect(scene_context_->debug_rect);
 #endif
     board_handler_->AddBoard(scene_context_->key_board);
     board_handler_->AddBoard(scene_context_->app_board);

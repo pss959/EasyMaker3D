@@ -8,7 +8,8 @@
 
 struct Event;
 DECL_SHARED_PTR(DragRectHandler);
-DECL_SHARED_PTR(SceneContext);
+DECL_SHARED_PTR(Frustum);
+namespace SG { DECL_SHARED_PTR(Node); }
 
 /// DragRectHandler is used for dragging out a rectangle in the main window,
 /// printing the resulting coordinates to stdout. This is used to help take
@@ -17,10 +18,11 @@ DECL_SHARED_PTR(SceneContext);
 /// \ingroup Handlers
 class DragRectHandler : public Handler {
   public:
-    /// Sets the SceneContext to interact with.
-    void SetSceneContext(const SceneContextPtr &context) {
-        scene_context_ = context;
-    }
+    /// Sets the SG::Node containing the rectangle to draw.
+    void SetRect(const SG::NodePtr &rect) { rect_ = rect; }
+
+    /// Sets the Frustum used to build rays.
+    void SetFrustum(const FrustumPtr &frustum) { frustum_ = frustum; }
 
     // ------------------------------------------------------------------------
     // Handler interface.
@@ -28,10 +30,11 @@ class DragRectHandler : public Handler {
     virtual bool HandleEvent(const Event &event) override;
 
   private:
-    SceneContextPtr scene_context_;        ///< For graphical feedback.
-    bool            is_dragging_ = false;  ///< True during a drag.
-    Point2f         start_point2_;         ///< Start point of drag (2D).
-    Point3f         start_point3_;         ///< Start point of drag (3D).
+    SG::NodePtr rect_;                 ///< For graphical feedback.
+    FrustumPtr  frustum_;              ///< For ray intersections.
+    bool        is_dragging_ = false;  ///< True during a drag.
+    Point2f     start_point2_;         ///< Start point of drag (2D).
+    Point3f     start_point3_;         ///< Start point of drag (3D).
 
     /// Returns true if the given Event starts a drag.
     static bool IsDragStart_(const Event &event);

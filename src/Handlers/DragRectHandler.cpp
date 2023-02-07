@@ -4,19 +4,18 @@
 
 #include <cmath>
 
-#include "App/SceneContext.h"
 #include "Base/Event.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
 
 bool DragRectHandler::HandleEvent(const Event &event) {
-    ASSERT(scene_context_);
+    ASSERT(rect_);
 
     bool handled = false;
     if (is_dragging_) {
         if (IsDragEnd_(event)) {
             is_dragging_ = false;
-            scene_context_->debug_rect->SetEnabled(false);
+            rect_->SetEnabled(false);
             handled = true;
 
             // Print the result.
@@ -25,9 +24,9 @@ bool DragRectHandler::HandleEvent(const Event &event) {
         else if (event.flags.Has(Event::Flag::kPosition2D)) {
             const Point3f cur_point3 = GetPoint3_(event);
             const Vector3f size = cur_point3 - start_point3_;
-            scene_context_->debug_rect->SetScale(
+            rect_->SetScale(
                 Vector3f(std::abs(size[0]), std::abs(size[1]), 1));
-            scene_context_->debug_rect->SetTranslation(
+            rect_->SetTranslation(
                 .5f * (start_point3_ + cur_point3));
             handled = true;
         }
@@ -37,7 +36,7 @@ bool DragRectHandler::HandleEvent(const Event &event) {
             is_dragging_ = true;
             start_point2_ = event.position2D;
             start_point3_ = GetPoint3_(event);
-            scene_context_->debug_rect->SetEnabled(true);
+            rect_->SetEnabled(true);
             handled = true;
         }
     }
@@ -62,7 +61,8 @@ bool DragRectHandler::IsDragEnd_(const Event &event) {
 Point3f DragRectHandler::GetPoint3_(const Event &event) const {
     // Use the frustum to compute a ray through the 2D point. The origin of the
     // ray is the point on the image plane.
-    return scene_context_->frustum->BuildRay(event.position2D).origin;
+    ASSERT(frustum_);
+    return frustum_->BuildRay(event.position2D).origin;
 }
 
 void DragRectHandler::PrintRect_(const Point2f &p0, const Point2f &p1) {
