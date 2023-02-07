@@ -4,9 +4,8 @@
 
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
-#include "Models/Model.h"
-#include "Selection/Selection.h"
 #include "Util/Assert.h"
+#include "Util/FilePath.h"
 #include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
@@ -34,7 +33,7 @@ namespace {
 class STLWriter_ {
   public:
     /// Implements STL writing. Returns false on error.
-    bool Write(const Selection &sel, const FilePath &path,
+    bool Write(const std::vector<TriMesh> &meshes, const FilePath &path,
                float conversion_factor);
 
   protected:
@@ -42,7 +41,8 @@ class STLWriter_ {
     virtual std::ios::openmode GetMode() const = 0;
 
     /// Writes the file header to the stream.
-    virtual void WriteHeader(std::ostream &out, const Selection &sel) = 0;
+    virtual void WriteHeader(std::ostream &out,
+                             const std::vector<TriMesh> &meshes) = 0;
 
     /// Writes a mesh (processed to the correct coordinates) to the stream.
     virtual void WriteMesh(std::ostream &out, const TriMesh &mesh) = 0;
@@ -66,41 +66,34 @@ class STLWriter_ {
   private:
     std::ofstream out_;
 
-    /// Processes the mesh for the Model specified by the given SelPath to get
-    /// a mesh that can be written as STL: transforms vertices to stage
-    /// coordinates, applies the conversion factor, applies rounding, and
-    /// converts the results to the STL coordinate system (Z-up).
-    static TriMesh ProcessModelMesh_(const SelPath &sel_path,
-                                     float conversion_factor);
+    /// Processes the mesh to get a mesh that can be written as STL: applies
+    /// the conversion factor, applies rounding, and converts the results to
+    /// the STL coordinate system (Z-up).
+    static TriMesh ProcessMesh_(const TriMesh &mesh, float conversion_factor);
 };
 
-bool STLWriter_::Write(const Selection &sel, const FilePath &path,
+bool STLWriter_::Write(const std::vector<TriMesh> &meshes, const FilePath &path,
                        float conversion_factor) {
     // Open the stream for writing.
     std::ofstream out(path.ToNativeString(), GetMode());
     if (! out.is_open())
         return false;
 
-    WriteHeader(out, sel);
+    WriteHeader(out, meshes);
 
-    for (const auto &sel_path: sel.GetPaths())
-        WriteMesh(out, ProcessModelMesh_(sel_path, conversion_factor));
+    for (const auto &mesh: meshes)
+        WriteMesh(out, ProcessMesh_(mesh, conversion_factor));
 
     WriteFooter(out);
 
     return true;
 }
 
-TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
-                                      float conversion_factor) {
-    ASSERT(sel_path.GetModel());
-
-    // Apply the matrix to the mesh to convert to stage coordinates.
-    const Matrix4f osm = sel_path.GetCoordConv().GetObjectToRootMatrix();
-    TriMesh mesh = TransformMesh(sel_path.GetModel()->GetMesh(), osm);
+TriMesh STLWriter_::ProcessMesh_(const TriMesh &mesh, float conversion_factor) {
+    TriMesh result = mesh;
 
     // Process each vertex.
-    for (auto &point: mesh.points) {
+    for (auto &point: result.points) {
         // Apply the conversion factor.
         point *= conversion_factor;
 
@@ -112,7 +105,7 @@ TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
         point = ToPrintCoords(point);
     }
 
-    return mesh;
+    return result;
 }
 
 // ----------------------------------------------------------------------------
@@ -125,7 +118,8 @@ class STLTextWriter_ : public STLWriter_ {
     virtual std::ios::openmode GetMode() const override {
         return std::ios::out;
     }
-    virtual void WriteHeader(std::ostream &out, const Selection &sel) override {
+    virtual void WriteHeader(std::ostream &out,
+                             const std::vector<TriMesh> &meshes) override {
         out << "solid " << TK::kApplicationName << "_Export\n";
     }
     virtual void WriteMesh(std::ostream &out, const TriMesh &mesh) override;
@@ -168,7 +162,8 @@ class STLBinaryWriter_ : public STLWriter_ {
     virtual std::ios::openmode GetMode() const override {
         return std::ios::out | std::ios::binary;
     }
-    virtual void WriteHeader(std::ostream &out, const Selection &sel) override;
+    virtual void WriteHeader(std::ostream &out,
+                             const std::vector<TriMesh> &meshes) override;
     virtual void WriteMesh(std::ostream &out, const TriMesh &mesh) override;
     virtual void WriteFooter(std::ostream &out) override {}
 
@@ -179,7 +174,8 @@ class STLBinaryWriter_ : public STLWriter_ {
     }
 };
 
-void STLBinaryWriter_::WriteHeader(std::ostream &out, const Selection &sel) {
+void STLBinaryWriter_::WriteHeader(std::ostream &out, 
+                                   const std::vector<TriMesh> &meshes) {
     // Create an 80-byte header.
     std::string header = TK::kApplicationName + "_Export";
     header += std::string(80 - header.size(), ' ');
@@ -187,8 +183,8 @@ void STLBinaryWriter_::WriteHeader(std::ostream &out, const Selection &sel) {
 
     // Write the total number of triangles as 4 bytes.
     uint32 tri_count = 0;
-    for (const auto &sel_path: sel.GetPaths())
-        tri_count += sel_path.GetModel()->GetTriangleCount();
+    for (const auto &mesh: meshes)
+        tri_count += mesh.GetTriangleCount();
     Write_(out, tri_count);
 }
 
@@ -220,18 +216,18 @@ void STLBinaryWriter_::WriteMesh(std::ostream &out, const TriMesh &mesh) {
 // Public STL writing functions.
 // ----------------------------------------------------------------------------
 
-bool WriteSTLFile(const Selection &sel, const FilePath &path,
+bool WriteSTLFile(const std::vector<TriMesh> &meshes, const FilePath &path,
                   FileFormat format, float conversion_factor) {
+    ASSERT(! meshes.empty());
     ASSERT(format != FileFormat::kUnknown);
-    ASSERT(sel.HasAny());
 
     if (format == FileFormat::kTextSTL) {
         STLTextWriter_ writer;
-        return writer.Write(sel, path, conversion_factor);
+        return writer.Write(meshes, path, conversion_factor);
     }
     else if (format == FileFormat::kBinarySTL) {
         STLBinaryWriter_ writer;
-        return writer.Write(sel, path, conversion_factor);
+        return writer.Write(meshes, path, conversion_factor);
     }
 
     return true;

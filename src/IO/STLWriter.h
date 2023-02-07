@@ -6,12 +6,12 @@
 
 class FilePath;
 class Selection;
+struct TriMesh;
 
-/// Writes the selected Models to an STL file in the given format. The
-/// conversion factor is used to convert coordinates to millimeters, which is
-/// the standard STL unit. Returns false on failure (file could not be opened
-/// for writing).
+/// Writes the given meshes to an STL file in the given format. The conversion
+/// factor is used to convert coordinates to millimeters, which is the standard
+/// STL unit. Returns false on failure (file could not be opened for writing).
 ///
 /// \ingroup IO
-bool WriteSTLFile(const Selection &sel, const FilePath &path,
+bool WriteSTLFile(const std::vector<TriMesh> &meshes, const FilePath &path,
                   FileFormat format, float conversion_factor);

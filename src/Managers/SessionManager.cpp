@@ -9,6 +9,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/Model.h"
+#include "Math/MeshUtils.h"
 #include "Parser/Parser.h"
 #include "Parser/Registry.h"
 #include "Parser/Writer.h"
@@ -74,8 +75,16 @@ std::string SessionManager::GetModelNameForExport() const {
 
 bool SessionManager::Export(const FilePath &path, FileFormat format,
                             const UnitConversion &conv) {
-    return WriteSTLFile(selection_manager_->GetSelection(), path, format,
-                        conv.GetFactor());
+    // Collect Model meshes, transforming them into stage coordinates.
+    const auto &sel = selection_manager_->GetSelection();
+    std::vector<TriMesh> meshes;
+    for (const auto &sel_path: sel.GetPaths()) {
+        ASSERT(sel_path.GetModel());
+        const Matrix4f osm = sel_path.GetCoordConv().GetObjectToRootMatrix();
+        meshes.push_back(TransformMesh(sel_path.GetModel()->GetMesh(), osm));
+    }
+
+    return WriteSTLFile(meshes, path, format, conv.GetFactor());
 }
 
 std::string SessionManager::GetSessionString() const {

@@ -2,10 +2,9 @@
 
 #include "IO/STLWriter.h"
 #include "Items/UnitConversion.h"
+#include "Math/MeshUtils.h"
 #include "Models/BoxModel.h"
-#include "Models/RootModel.h"
 #include "Models/TextModel.h"
-#include "Selection/Selection.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/String.h"
@@ -18,14 +17,12 @@ class WriteSTLTest : public SceneTestBase {
     std::string WriteConvModelAsSTL(const ModelPtr &model,
                                     const UnitConversion &conv,
                                     FileFormat format) {
-        // Construct a Selection with the Model.
-        auto root_model = Model::CreateModel<RootModel>();
-        root_model->AddChildModel(model);
-        SelPath sel_path(root_model, model);
-        Selection sel(sel_path);
+        const TriMesh mesh = TransformMesh(model->GetMesh(),
+                                           model->GetModelMatrix());
 
         TempFile tmp("");
-        EXPECT_TRUE(WriteSTLFile(sel, tmp.GetPath(), format, conv.GetFactor()));
+        EXPECT_TRUE(WriteSTLFile(std::vector<TriMesh>{ mesh },
+                                 tmp.GetPath(), format, conv.GetFactor()));
 
         return tmp.GetContents();
     }
