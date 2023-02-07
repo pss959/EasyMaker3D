@@ -15,7 +15,7 @@ DECL_SHARED_PTR(PointTarget);
 /// operations. It contains a position (for snapping translation or layout), a
 /// direction (for snapping orientation), and several radial layout fields.
 ///
-/// \ingroup Locate
+/// \ingroup Place
 class PointTarget : public Parser::Object {
   public:
     /// Sets the target's position in stage coordinates.

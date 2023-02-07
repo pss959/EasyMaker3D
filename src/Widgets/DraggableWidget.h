@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Base/Memory.h"
-#include "Locate/DragInfo.h"
 #include "Math/Types.h"
+#include "Place/DragInfo.h"
 #include "Widgets/ClickableWidget.h"
 
 DECL_SHARED_PTR(DraggableWidget);

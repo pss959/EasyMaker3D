@@ -10,12 +10,12 @@
 
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
-#include "Locate/PointTarget.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/ClippedModel.h"
 #include "Models/RootModel.h"
+#include "Place/PointTarget.h"
 #include "SG/ColorMap.h"
 #include "SG/CoordConv.h"
 #include "SG/Node.h"

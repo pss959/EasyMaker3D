@@ -1,11 +1,11 @@
 #include "Panels/ActionPanel.h"
 
 #include "Base/ActionMap.h"
-#include "Locate/ClickInfo.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/IconPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/TextPane.h"
+#include "Place/ClickInfo.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"

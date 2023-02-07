@@ -1,8 +1,8 @@
 #include "Items/RadialMenu.h"
 
 #include "Items/RadialMenuInfo.h"
-#include "Locate/ClickInfo.h"
 #include "Math/Polygon.h"
+#include "Place/ClickInfo.h"
 #include "SG/PolyLine.h"
 #include "SG/Polygon.h"
 #include "SG/Search.h"

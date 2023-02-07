@@ -1,4 +1,4 @@
-#include "Locate/PointTarget.h"
+#include "Place/PointTarget.h"
 
 void PointTarget::AddFields() {
     AddField(position_.Init("position", Point3f::Zero()));

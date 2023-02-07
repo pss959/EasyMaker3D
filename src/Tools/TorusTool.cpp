@@ -5,13 +5,13 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Locate/EdgeTarget.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
+#include "Place/EdgeTarget.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"

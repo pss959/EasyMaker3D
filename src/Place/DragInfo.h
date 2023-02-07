@@ -12,7 +12,7 @@
 /// also for placing targets. An instance of this is set up by the MainHandler
 /// for pointer-based, grip, and touch drags.
 ///
-/// \ingroup Locate
+/// \ingroup Place
 struct DragInfo {
     // ------------------------------------
     /// \name Common fields.

@@ -5,7 +5,7 @@
 #include "Base/Event.h"
 #include "Base/Memory.h"
 #include "Handlers/Handler.h"
-#include "Locate/ClickInfo.h"
+#include "Place/ClickInfo.h"
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"
 

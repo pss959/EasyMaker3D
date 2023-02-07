@@ -1,6 +1,6 @@
 #include "Commands/LinearLayoutCommand.h"
 
-#include "Locate/EdgeTarget.h"
+#include "Place/EdgeTarget.h"
 
 void LinearLayoutCommand::AddFields() {
     AddField(offset_.Init("offset", Vector3f::Zero()));

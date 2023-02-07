@@ -11,7 +11,7 @@ DECL_SHARED_PTR(EdgeTarget);
 /// EdgeTarget represents the edge-based target for interactive snapping
 /// operations. It contains the position of both ends of the edge.
 ///
-/// \ingroup Locate
+/// \ingroup Place
 class EdgeTarget : public Parser::Object {
   public:
     /// Sets the position of the start and end of the edge in stage coordinates.

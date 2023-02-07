@@ -6,7 +6,6 @@
 
 #include "Commands/ChangeOrderCommand.h"
 #include "Items/Border.h"
-#include "Locate/ClickInfo.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Math/Linear.h"
@@ -19,6 +18,7 @@
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "Parser/Registry.h"
+#include "Place/ClickInfo.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Selection/SelPath.h"

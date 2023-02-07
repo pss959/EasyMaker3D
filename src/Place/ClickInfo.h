@@ -8,7 +8,7 @@ class ClickableWidget;
 /// The ClickInfo struct packages up information about a click from an input
 /// device.
 ///
-/// \ingroup Locate
+/// \ingroup Place
 struct ClickInfo {
     /// Device that initiated the click.
     Event::Device   device = Event::Device::kUnknown;

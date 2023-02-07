@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base/Memory.h"
-#include "Locate/PointTarget.h"
+#include "Place/PointTarget.h"
 #include "Widgets/TargetWidgetBase.h"
 
 namespace SG {

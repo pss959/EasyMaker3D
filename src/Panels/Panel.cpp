@@ -7,7 +7,6 @@
 
 #include "Base/VirtualKeyboard.h"
 #include "Items/Border.h"
-#include "Locate/ClickInfo.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -17,6 +16,7 @@
 #include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/TextPane.h"
+#include "Place/ClickInfo.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/General.h"

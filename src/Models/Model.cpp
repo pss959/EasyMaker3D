@@ -6,11 +6,11 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Locate/DragInfo.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
+#include "Place/DragInfo.h"
 #include "SG/ColorMap.h"
 #include "SG/Exception.h"
 #include "SG/MutableTriMeshShape.h"

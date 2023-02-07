@@ -1,6 +1,5 @@
 #include "Executors/Executor.h"
 
-#include "Locate/PointTarget.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/ClipboardManager.h"
 #include "Managers/CommandManager.h"
@@ -9,6 +8,7 @@
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/RootModel.h"
+#include "Place/PointTarget.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 

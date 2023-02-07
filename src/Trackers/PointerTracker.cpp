@@ -1,8 +1,8 @@
 #include "Trackers/PointerTracker.h"
 
 #include "App/SceneContext.h"
-#include "Locate/ClickInfo.h"
-#include "Locate/DragInfo.h"
+#include "Place/ClickInfo.h"
+#include "Place/DragInfo.h"
 #include "SG/Intersector.h"
 #include "Util/General.h"
 #include "Widgets/ClickableWidget.h"

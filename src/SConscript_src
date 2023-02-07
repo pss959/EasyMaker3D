@@ -205,10 +205,6 @@ lib_sources = list(chain(
         'Shelf',
         'UnitConversion',
     ]),
-    PlaceInDir_('Locate', [
-        'EdgeTarget',
-        'PointTarget',
-    ]),
     PlaceInDir_('Managers', [
         'ActionManager',
         'AnimationManager',
@@ -322,6 +318,10 @@ lib_sources = list(chain(
         'Scanner',
         'ValueWriter',
         'Writer',
+    ]),
+    PlaceInDir_('Place', [
+        'EdgeTarget',
+        'PointTarget',
     ]),
     PlaceInDir_('SG', [
         'Box',
