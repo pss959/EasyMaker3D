@@ -85,7 +85,7 @@ test_objects  = [test_env.SharedObject(source=source, CPPDEFINES=test_defines,
                  for source in test_sources]
 
 # Build all unit tests into a single program.
-test_program = test_env.Program(f'Tests/UnitTest', test_objects)
+test_program = test_env.Program('UnitTest', test_objects)
 
 test_env.Alias('Tests', test_program)
 
