@@ -62,7 +62,7 @@ bool DragRectHandler::IsDragEnd_(const Event &event) {
 Point3f DragRectHandler::GetPoint3_(const Event &event) const {
     // Use the frustum to compute a ray through the 2D point. The origin of the
     // ray is the point on the image plane.
-    return scene_context_->frustum.BuildRay(event.position2D).origin;
+    return scene_context_->frustum->BuildRay(event.position2D).origin;
 }
 
 void DragRectHandler::PrintRect_(const Point2f &p0, const Point2f &p1) {

@@ -157,7 +157,7 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
 // GLFWViewer implementation.
 // ----------------------------------------------------------------------------
 
-GLFWViewer::GLFWViewer() {
+GLFWViewer::GLFWViewer() : frustum_(new Frustum) {
 }
 
 GLFWViewer::~GLFWViewer() {
@@ -223,7 +223,7 @@ void GLFWViewer::Render(const SG::Scene &scene, Renderer &renderer) {
     UpdateFrustum_();
 
     glfwMakeContextCurrent(window_);
-    renderer.RenderScene(scene, frustum_);
+    renderer.RenderScene(scene, *frustum_);
     glfwSwapBuffers(window_);
 }
 
@@ -287,17 +287,18 @@ void GLFWViewer::InitIonCallbacks_() {
 
 void GLFWViewer::UpdateFrustum_() {
     ASSERT(camera_);
-    frustum_.viewport     = Viewport::BuildWithSize(Point2i(0, 0),
-                                                    GetWindowSizePixels_());
-    frustum_.position     = camera_->GetPosition();
-    frustum_.position[1] += camera_->GetHeight();
-    frustum_.orientation  = camera_->GetOrientation();
-    frustum_.pnear        = camera_->GetNear();
-    frustum_.pfar         = camera_->GetFar();
+    auto &frustum = *frustum_;
+    frustum.viewport     = Viewport::BuildWithSize(Point2i(0, 0),
+                                                   GetWindowSizePixels_());
+    frustum.position     = camera_->GetPosition();
+    frustum.position[1] += camera_->GetHeight();
+    frustum.orientation  = camera_->GetOrientation();
+    frustum.pnear        = camera_->GetNear();
+    frustum.pfar         = camera_->GetFar();
 
     // Create a symmetric FOV.
-    frustum_.SetSymmetricFOV(camera_->GetFOV(),
-                             GetAspectRatio(frustum_.viewport));
+    frustum.SetSymmetricFOV(camera_->GetFOV(),
+                            GetAspectRatio(frustum.viewport));
 }
 
 Vector2i GLFWViewer::GetWindowSizeScreenCoords_() const {

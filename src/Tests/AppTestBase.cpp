@@ -1,6 +1,8 @@
 #include "Tests/AppTestBase.h"
 
 #include "App/Application.h"
+#include "App/SceneContext.h"
+#include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
 // Derived Application class that provides functions for testing via the
@@ -28,6 +30,10 @@ void AppTestBase::TestingApp_::InitForTests() {
     // Have the base Application class fill in the TestContext now that the
     // session is loaded.
     GetTestContext(tc_);
+
+    // Make sure the TestContext has what it needs.
+    ASSERT(tc_.scene_context);
+    ASSERT(tc_.scene_context->frustum);
 }
 
 // ----------------------------------------------------------------------------

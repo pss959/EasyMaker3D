@@ -8,6 +8,7 @@ DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(Board);
 DECL_SHARED_PTR(BuildVolume);
 DECL_SHARED_PTR(Controller);
+DECL_SHARED_PTR(Frustum);
 DECL_SHARED_PTR(Inspector);
 DECL_SHARED_PTR(KeyboardPanel);
 DECL_SHARED_PTR(PrecisionControl);
@@ -37,7 +38,7 @@ struct SceneContext {
     SG::ScenePtr        scene;
 
     // Current frustum in window view.
-    Frustum             frustum;
+    FrustumPtr          frustum;
 
     // Gantry and cameras.
     SG::GantryPtr       gantry;

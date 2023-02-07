@@ -466,9 +466,6 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
 
     const bool is_modified_mode = glfw_viewer_->IsShiftKeyPressed();
 
-    // Update the frustum used for intersection testing.
-    scene_context_->frustum = glfw_viewer_->GetFrustum();
-
     // Update global uniforms in the RootModel.
     UpdateGlobalUniforms_();
 
@@ -585,6 +582,10 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
     tc.session_manager   = session_manager_;
     tc.settings_manager  = settings_manager_;
     tc.scene_context     = scene_context_;
+
+    // Make sure the SceneContext has a valid Frustum.
+    if (! tc.scene_context->frustum)
+        tc.scene_context->frustum.reset(new Frustum);
 }
 
 void Application::Impl_::AddEmitter(const IEmitterPtr &emitter) {
@@ -775,6 +776,10 @@ void Application::Impl_::InitInteraction_() {
 void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
+
+    // Use the frustum from the GLFWViewer.
+    if (glfw_viewer_)
+        scene_context_->frustum = glfw_viewer_->GetFrustum();
 
     auto &scene = *scene_context_->scene;
 
@@ -1026,7 +1031,7 @@ void Application::Impl_::AddIcons_() {
     }
     else {
         ASSERT(glfw_viewer_);
-        cam_pos = glfw_viewer_->GetFrustum().position;
+        cam_pos = glfw_viewer_->GetFrustum()->position;
     }
 
     // Set up the icons on the shelves.
@@ -1381,7 +1386,7 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
 
     // Use a plane at a reasonable distance past the image plane of the
     // frustum.
-    const auto &frustum = scene_context_->frustum;
+    const auto &frustum = *scene_context_->frustum;
     const Point3f  &cam_pos = frustum.position;
     const Vector3f  cam_dir = frustum.orientation * -Vector3f::AxisZ();
     const Plane plane(cam_pos + TK::kTooltipDistance * cam_dir, cam_dir);
@@ -1418,7 +1423,7 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
 
 Rotationf Application::Impl_::ComputeTooltipRotation_() const {
     // Rotate to face the camera.
-    return scene_context_->frustum.orientation;
+    return scene_context_->frustum->orientation;
 }
 
 // ----------------------------------------------------------------------------

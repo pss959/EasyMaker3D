@@ -7,6 +7,7 @@
 
 class GLFWwindow;
 
+DECL_SHARED_PTR(Frustum);
 DECL_SHARED_PTR(GLFWViewer);
 namespace SG { DECL_SHARED_PTR(WindowCamera); }
 
@@ -30,7 +31,7 @@ class GLFWViewer : public Viewer, public IEmitter {
     }
 
     /// Returns the Frustum computed for the latest render.
-    const Frustum & GetFrustum() const { return frustum_; }
+    const FrustumPtr & GetFrustum() const { return frustum_; }
 
     /// Sets a flag indicating whether to wait for events or to poll events
     /// continuously. The default is to wait.
@@ -67,7 +68,7 @@ class GLFWViewer : public Viewer, public IEmitter {
     SG::WindowCameraPtr camera_;
 
     /// Stores the current Frustum for the viewer.
-    Frustum frustum_;
+    FrustumPtr frustum_;
 
     /// Events created by GLFW callbacks to add the next time EmitEvents() is
     /// called.

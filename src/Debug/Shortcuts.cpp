@@ -336,7 +336,7 @@ static bool HandleShortcut_(const std::string &str) {
         Debug::PrintTransformsOnPath(limit_path_);
         break;
       case SAction::kPrintView:
-        Debug::PrintViewInfo(scene_context_->frustum, *scene_context_->stage);
+        Debug::PrintViewInfo(*scene_context_->frustum, *scene_context_->stage);
         break;
       case SAction::kPrintWidget:
         PrintTouchedWidget_();

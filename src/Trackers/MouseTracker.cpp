@@ -41,7 +41,7 @@ float MouseTracker::GetClickTimeout() const {
 bool MouseTracker::GetRay(const Event &event, Ray &ray) {
     if (event.device == Event::Device::kMouse &&
         event.flags.Has(Event::Flag::kPosition2D)) {
-        ray = GetContext().frustum.BuildRay(event.position2D);
+        ray = GetContext().frustum->BuildRay(event.position2D);
         return true;
     }
     return false;

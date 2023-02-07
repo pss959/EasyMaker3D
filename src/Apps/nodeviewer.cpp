@@ -385,7 +385,7 @@ void Application_::InitIntersectionSphere_(const SG::NodePtr &node) {
 void Application_::UpdateIntersectionSphere_(const Event &event) {
     if (event.device == Event::Device::kMouse &&
         event.flags.Has(Event::Flag::kPosition2D)) {
-        const Ray ray = scene_context_->frustum.BuildRay(event.position2D);
+        const Ray ray = scene_context_->frustum->BuildRay(event.position2D);
         hit_ = SG::Intersector::IntersectScene(*scene_, ray);
         const bool got_hit = ! hit_.path.empty();
         intersection_sphere_->SetEnabled(got_hit);
