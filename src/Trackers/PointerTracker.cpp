@@ -1,6 +1,5 @@
 #include "Trackers/PointerTracker.h"
 
-#include "App/SceneContext.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
 #include "SG/Intersector.h"
@@ -47,7 +46,7 @@ void PointerTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
     if (GetRay(event, ray)) {
         info.trigger = Trigger::kPointer;
         info.ray = ray;
-        info.hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
+        info.hit = SG::Intersector::IntersectScene(*GetScene(), ray);
     }
 }
 
@@ -91,7 +90,7 @@ bool PointerTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
     if (! GetRay(event, ray))
         return false;
 
-    SG::Hit hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
+    SG::Hit hit = SG::Intersector::IntersectScene(*GetScene(), ray);
 
     current_ray_ = ray;
     current_hit_ = hit;

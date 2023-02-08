@@ -25,9 +25,6 @@ class GripTracker : public Tracker {
         grippable_path_ = path;
     }
 
-    /// Redefines this to also store Controller info.
-    virtual void SetSceneContext(const SceneContextPtr &context) override;
-
     virtual void UpdateHovering(const Event &event) override;
     virtual void StopHovering() override;
     virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
@@ -39,6 +36,11 @@ class GripTracker : public Tracker {
     virtual void FillClickInfo(ClickInfo &info) override;
     virtual void Reset() override;
 
+  protected:
+    virtual bool IsLeft() const override {
+        return GetActuator() == Actuator::kLeftGrip;
+    }
+
   private:
     /// Stores activation or current grip data.
     struct Data_ {
@@ -46,8 +48,6 @@ class GripTracker : public Tracker {
         Point3f             position;
         Rotationf           orientation;
     };
-
-    ControllerData cdata;
 
     GrippablePtr  grippable_;        ///< Active Grippable (or null).
     SG::NodePath  grippable_path_;   ///< Path to active Grippable (or empty).

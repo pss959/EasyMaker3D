@@ -233,7 +233,13 @@ class MainHandler::Impl_ {
 void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
     context_ = context;
     for (auto &tracker: trackers_)
-        tracker->SetSceneContext(context);
+        tracker->Init(context->scene,
+                      context->left_controller, context->right_controller);
+
+    // Special initialization for the MouseTracker.
+    auto mt = Util::CastToDerived<MouseTracker>(GetTracker_(Actuator::kMouse));
+    mt->SetFrustum(context->frustum);
+    mt->SetDebugSphere(context->debug_sphere);
 }
 
 void MainHandler::Impl_::SetTouchable(const TouchablePtr &touchable) {

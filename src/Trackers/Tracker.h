@@ -11,9 +11,9 @@ struct ClickInfo;
 struct DragInfo;
 
 DECL_SHARED_PTR(Controller);
-DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(Tracker);
 DECL_SHARED_PTR(Widget);
+namespace SG { DECL_SHARED_PTR(Scene); }
 
 /// Tracker is an abstract base class for actuator trackers used by the
 /// MainHandler. A Tracker is responsible for responding to Event instances to
@@ -33,8 +33,14 @@ class Tracker {
     /// Returns the Event::Device the Tracker tracks.
     virtual Event::Device GetDevice() const = 0;
 
-    /// Sets or updates the SceneContext to use.
-    virtual void SetSceneContext(const SceneContextPtr &context);
+    /// \name Initialization
+    ///@{
+
+    /// Sets the current SG::Scene and controllers.
+    void Init(const SG::ScenePtr &scene,
+              const ControllerPtr &lc, const ControllerPtr &rc);
+
+    ///@}
 
     /// \name Widget Hovering
     ///@{
@@ -93,33 +99,32 @@ class Tracker {
     virtual void Reset() = 0;
 
   protected:
-    /// Maintains data for derived classes that track a Controller.
-    class ControllerData {
-      public:
-        /// Sets up an instance for the given Hand from the given SceneContext.
-        void Init(const SceneContext &context, Hand hand);
+    /// Returns the current SG::Scene.
+    const SG::ScenePtr & GetScene() const { return scene_; }
 
-        /// Returns a pointer to the Controller.
-        const ControllerPtr & GetControllerPtr() const { return controller_; }
+    /// \name Functions for Controller-based Trackers
+    ///@{
 
-        /// Returns the Controller.
-        Controller & GetController() const;
+    /// Returns true if this Tracker is for the left Controller. The base class
+    /// defines this to assert, since it should be defined in all
+    /// Controller-based classes.
+    virtual bool IsLeft() const;
 
-        /// Returns the other Controller.
-        Controller & GetOtherController() const;
+    /// Returns the Controller for this Tracker.
+    const ControllerPtr & GetController() const {
+        return IsLeft() ? left_controller_ : right_controller_;
+    }
 
-        /// Converts a point from world coordinates into the Controller's
-        /// object coordinates.
-        Point3f ToControllerCoords(const Point3f &p) const;
+    /// Returns the other Controller.
+    const ControllerPtr & GetOtherController() const {
+        return IsLeft() ? right_controller_ : left_controller_;
+    }
 
-      private:
-        ControllerPtr controller_;
-        ControllerPtr other_controller_;
-        SG::NodePath  path_;
-    };
+    /// Convenience that converts a point from world coordinates into the
+    /// Controller's object coordinates.
+    Point3f ToControllerCoords(const Point3f &p) const;
 
-    /// Returns the SceneContext.
-    SceneContext & GetContext() const;
+    ///@}
 
     /// Convenience that updates hovering when the current Widget changes.
     static void UpdateWidgetHovering(const WidgetPtr &old_widget,
@@ -134,5 +139,9 @@ class Tracker {
 
   private:
     Actuator        actuator_;
-    SceneContextPtr context_;
+    SG::ScenePtr    scene_;
+    ControllerPtr   left_controller_;
+    ControllerPtr   right_controller_;
+    SG::NodePath    left_controller_path_;
+    SG::NodePath    right_controller_path_;
 };

@@ -2,7 +2,6 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "App/SceneContext.h"
 #include "Base/Event.h"
 #include "Items/Controller.h"
 #include "Math/Linear.h"
@@ -21,19 +20,13 @@ TouchTracker::TouchTracker(Actuator actuator) : Tracker(actuator) {
 }
 
 Event::Device TouchTracker::GetDevice() const {
-    return GetActuator() == Actuator::kLeftTouch ?
+    return IsLeft() ?
         Event::Device::kLeftController : Event::Device::kRightController;
-}
-
-void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
-    Tracker::SetSceneContext(context);
-    cdata.Init(*context, GetActuator() == Actuator::kLeftTouch ?
-               Hand::kLeft : Hand::kRight);
 }
 
 bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     // A Touchable has to be present for this to activate.
-    const float radius = cdata.GetController().GetTouchRadius();
+    const float radius = GetController()->GetTouchRadius();
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {
         widget = touchable_->GetTouchedWidget(pos, radius);
@@ -41,7 +34,7 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
             activation_pos_ = pos;
             current_widget_ = widget;
             current_widget_->SetActive(true);
-            cdata.GetController().ShowTouch(true);
+            GetController()->ShowTouch(true);
             return true;
         }
     }
@@ -57,7 +50,7 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     Point3f pos;
     if (GetTouchPos_(event, pos) &&
         pos[2] >= activation_pos_[2] + TK::kMinTouchZMotion) {
-        const float radius = cdata.GetController().GetTouchRadius();
+        const float radius = GetController()->GetTouchRadius();
         widget = touchable_->GetTouchedWidget(pos, radius);
         // Deactivation requires pulling the touch affordance back (+Z)
         // sufficiently to stop intersecting the current widget. This is a
@@ -69,7 +62,7 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
             // touching a different Widget, this is not a valid touch; just
             // return the new Widget.
             if (! widget) {
-                cdata.GetController().ShowTouch(false);
+                GetController()->ShowTouch(false);
                 widget = current_widget_;
             }
             return true;

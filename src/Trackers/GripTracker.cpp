@@ -2,7 +2,6 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "App/SceneContext.h"
 #include "Base/Event.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
@@ -22,14 +21,8 @@ GripTracker::GripTracker(Actuator actuator) : Tracker(actuator) {
 }
 
 Event::Device GripTracker::GetDevice() const {
-    return GetActuator() == Actuator::kLeftGrip ?
+    return IsLeft() ?
         Event::Device::kLeftController : Event::Device::kRightController;
-}
-
-void GripTracker::SetSceneContext(const SceneContextPtr &context) {
-    Tracker::SetSceneContext(context);
-    cdata.Init(*context, GetActuator() == Actuator::kLeftGrip ?
-               Hand::kLeft : Hand::kRight);
 }
 
 void GripTracker::UpdateHovering(const Event &event) {
@@ -45,7 +38,7 @@ void GripTracker::UpdateHovering(const Event &event) {
 void GripTracker::StopHovering() {
     if (current_widget_)
         UpdateWidgetHovering(current_widget_, WidgetPtr());
-    cdata.GetController().ShowGripHover(false, Point3f::Zero(), Color::White());
+    GetController()->ShowGripHover(false, Point3f::Zero(), Color::White());
 }
 
 bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
@@ -104,7 +97,7 @@ bool GripTracker::MovedEnoughForDrag(const Event &event) {
 
 void GripTracker::FillActivationDragInfo(DragInfo &info) {
     info.trigger              = Trigger::kGrip;
-    info.grip_guide_direction = cdata.GetController().GetGuideDirection();
+    info.grip_guide_direction = GetController()->GetGuideDirection();
     info.grip_position        = activation_data_.position;
     info.grip_orientation     = activation_data_.orientation;
 }
@@ -113,7 +106,7 @@ void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
     Data_ data;
     if (GetGripData_(event, false, data)) {
         info.trigger              = Trigger::kGrip;
-        info.grip_guide_direction = cdata.GetController().GetGuideDirection();
+        info.grip_guide_direction = GetController()->GetGuideDirection();
         info.grip_position        = data.position;
         info.grip_orientation     = data.orientation;
     }
@@ -144,12 +137,11 @@ bool GripTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
     // Update the Controller grip hover. The target point needs to be converted
     // from world coordinates into the Controller's object coordinates.
     if (widget && ! grippable_path_.empty()) {
-        const Point3f pt = cdata.ToControllerCoords(data.info.target_point);
-        cdata.GetController().ShowGripHover(true, pt, data.info.color);
+        const Point3f pt = ToControllerCoords(data.info.target_point);
+        GetController()->ShowGripHover(true, pt, data.info.color);
     }
     else {
-        cdata.GetController().ShowGripHover(false, Point3f::Zero(),
-                                            data.info.color);
+        GetController()->ShowGripHover(false, Point3f::Zero(), data.info.color);
     }
     return true;
 }
@@ -167,7 +159,7 @@ bool GripTracker::GetGripData_(const Event &event, bool add_info,
             Grippable::GripInfo &info = data.info;
             info = Grippable::GripInfo();
             info.event      = event;
-            info.controller = cdata.GetControllerPtr();
+            info.controller = GetController();
             info.guide_direction =
                 event.orientation * info.controller->GetGuideDirection();
 
@@ -182,8 +174,8 @@ bool GripTracker::GetGripData_(const Event &event, bool add_info,
 }
 
 void GripTracker::UpdateControllers_(bool is_active) {
-    cdata.GetController().SetTriggerMode(Trigger::kGrip, is_active);
-    cdata.GetOtherController().ShowAll(! is_active);
+    GetController()->SetTriggerMode(Trigger::kGrip, is_active);
+    GetOtherController()->ShowAll(! is_active);
     if (grippable_)
-        grippable_->ActivateGrip(cdata.GetController().GetHand(), is_active);
+        grippable_->ActivateGrip(GetController()->GetHand(), is_active);
 }

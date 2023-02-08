@@ -1,6 +1,5 @@
 #include "Trackers/Tracker.h"
 
-#include "App/SceneContext.h"
 #include "Items/Controller.h"
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
@@ -8,21 +7,33 @@
 #include "Util/General.h"
 #include "Widgets/ClickableWidget.h"
 
-// ----------------------------------------------------------------------------
-// Tracker functions.
-// ----------------------------------------------------------------------------
-
 Tracker::Tracker(Actuator actuator) : actuator_(actuator) {
     ASSERT(actuator != Actuator::kNone);
 }
 
-void Tracker::SetSceneContext(const SceneContextPtr &context) {
-    context_ = context;
+void Tracker::Init(const SG::ScenePtr &scene,
+                   const ControllerPtr &lc, const ControllerPtr &rc) {
+    ASSERT(scene);
+    ASSERT(lc);
+    ASSERT(rc);
+    scene_            = scene;
+    left_controller_  = lc;
+    right_controller_ = rc;
+
+    // Find Controller paths.
+    left_controller_path_  = SG::FindNodePathInScene(*scene_, *lc);
+    right_controller_path_ = SG::FindNodePathInScene(*scene_, *rc);
 }
 
-SceneContext & Tracker::GetContext() const {
-    ASSERT(context_);
-    return *context_;
+bool Tracker::IsLeft() const {
+    ASSERTM(false, "Base Tracker::IsLeft() should not be called");
+}
+
+Point3f Tracker::ToControllerCoords(const Point3f &p) const {
+    const SG::NodePath &path = IsLeft() ?
+        left_controller_path_ : right_controller_path_;
+    ASSERT(! path.empty());
+    return SG::CoordConv(path).RootToObject(p);
 }
 
 void Tracker::UpdateWidgetHovering(const WidgetPtr &old_widget,
@@ -42,31 +53,4 @@ float Tracker::GetMotionScale(const WidgetPtr &widget) {
             return .5f;
     }
     return 1;
-}
-
-// ----------------------------------------------------------------------------
-// Tracker::ControllerData functions.
-// ----------------------------------------------------------------------------
-
-void Tracker::ControllerData::Init(const SceneContext &context, Hand hand) {
-    controller_ = hand == Hand::kLeft ?
-        context.left_controller : context.right_controller;
-    other_controller_ = hand == Hand::kLeft ?
-        context.right_controller : context.left_controller;
-    path_ = SG::FindNodePathInScene(*context.scene, *controller_);
-}
-
-Controller & Tracker::ControllerData::GetController() const {
-    ASSERT(controller_);
-    return *controller_;
-}
-
-Controller & Tracker::ControllerData::GetOtherController() const {
-    ASSERT(other_controller_);
-    return *other_controller_;
-}
-
-Point3f Tracker::ControllerData::ToControllerCoords(const Point3f &p) const {
-    ASSERT(! path_.empty());
-    return SG::CoordConv(path_).RootToObject(p);
 }

@@ -1,6 +1,5 @@
 #include "Trackers/PinchTracker.h"
 
-#include "App/SceneContext.h"
 #include "Items/Controller.h"
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
@@ -12,14 +11,8 @@ PinchTracker::PinchTracker(Actuator actuator) : PointerTracker(actuator) {
 }
 
 Event::Device PinchTracker::GetDevice() const {
-    return GetActuator() == Actuator::kLeftPinch ?
+    return IsLeft() ?
         Event::Device::kLeftController : Event::Device::kRightController;
-}
-
-void PinchTracker::SetSceneContext(const SceneContextPtr &context) {
-    PointerTracker::SetSceneContext(context);
-    cdata.Init(*context, GetActuator() == Actuator::kLeftPinch ?
-               Hand::kLeft : Hand::kRight);
 }
 
 bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
@@ -62,15 +55,15 @@ Anglef PinchTracker::GetMinRayAngleChange() const {
 
 void PinchTracker::ProcessCurrentHit(const SG::Hit &hit) {
     if (hit.IsValid()) {
-        const auto pt = cdata.ToControllerCoords(hit.GetWorldPoint());
-        cdata.GetController().ShowPointerHover(true, pt);
+        const auto pt = ToControllerCoords(hit.GetWorldPoint());
+        GetController()->ShowPointerHover(true, pt);
     }
     else {
-        cdata.GetController().ShowPointerHover(false, Point3f::Zero());
+        GetController()->ShowPointerHover(false, Point3f::Zero());
     }
 }
 
 void PinchTracker::UpdateControllers_(bool is_active) {
-    cdata.GetController().SetTriggerMode(Trigger::kPointer, is_active);
-    cdata.GetOtherController().ShowAll(! is_active);
+    GetController()->SetTriggerMode(Trigger::kPointer, is_active);
+    GetOtherController()->ShowAll(! is_active);
 }

@@ -14,9 +14,6 @@ class PinchTracker : public PointerTracker {
     explicit PinchTracker(Actuator actuator);
     virtual Event::Device GetDevice() const override;
 
-    /// Redefines this to also store Controller info.
-    virtual void SetSceneContext(const SceneContextPtr &context) override;
-
     virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
     virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
     virtual float GetClickTimeout() const override;
@@ -28,9 +25,11 @@ class PinchTracker : public PointerTracker {
     /// Redefines this to update the Controller state.
     virtual void ProcessCurrentHit(const SG::Hit &hit) override;
 
-  private:
-    ControllerData cdata;
+    virtual bool IsLeft() const override {
+        return GetActuator() == Actuator::kLeftPinch;
+    }
 
+  private:
     /// Updates the Controllers when the active state changes.
     void UpdateControllers_(bool is_active);
 };

@@ -1,6 +1,5 @@
 #include "Trackers/MouseTracker.h"
 
-#include "App/SceneContext.h"
 #include "Debug/Shortcuts.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
@@ -41,7 +40,8 @@ float MouseTracker::GetClickTimeout() const {
 bool MouseTracker::GetRay(const Event &event, Ray &ray) {
     if (event.device == Event::Device::kMouse &&
         event.flags.Has(Event::Flag::kPosition2D)) {
-        ray = GetContext().frustum->BuildRay(event.position2D);
+        ASSERT(frustum_);
+        ray = frustum_->BuildRay(event.position2D);
         return true;
     }
     return false;
@@ -53,8 +53,8 @@ Anglef MouseTracker::GetMinRayAngleChange() const {
 
 void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
 #if ENABLE_DEBUG_FEATURES
-    if (GetContext().debug_sphere) {
-        auto &ds = *GetContext().debug_sphere;
+    if (debug_sphere_) {
+        auto &ds = *debug_sphere_;
         if (hit.IsValid()) {
             ds.SetTranslation(hit.GetWorldPoint());
             ds.SetEnabled(true);

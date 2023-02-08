@@ -22,9 +22,6 @@ class TouchTracker : public Tracker {
         touchable_ = touchable;
     }
 
-    /// Redefines this to also store Controller info.
-    virtual void SetSceneContext(const SceneContextPtr &context) override;
-
     // The TouchTracker never hovers any Widgets.
     virtual void UpdateHovering(const Event &event) override {}
     virtual void StopHovering() override {}
@@ -38,9 +35,12 @@ class TouchTracker : public Tracker {
     virtual void FillClickInfo(ClickInfo &info) override;
     virtual void Reset() override;
 
-  private:
-    ControllerData cdata;
+  protected:
+    virtual bool IsLeft() const override {
+        return GetActuator() == Actuator::kLeftTouch;
+    }
 
+  private:
     TouchablePtr touchable_;        ///< Active Touchable (or null).
     Point3f      activation_pos_;   ///< Touch position at activation.
     WidgetPtr    current_widget_;   ///< Current tracked Widget (or null).
