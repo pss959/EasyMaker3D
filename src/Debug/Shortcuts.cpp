@@ -6,11 +6,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "App/SceneContext.h"
 #include "Commands/CommandList.h"
 #include "Debug/Print.h"
 #include "Handlers/LogHandler.h"
 #include "Items/Controller.h"
+#include "Managers/SceneContext.h"
 #include "Models/RootModel.h"
 #include "Panels/Board.h"
 #include "Panels/Panel.h"

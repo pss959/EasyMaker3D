@@ -7,7 +7,6 @@
 
 #include "App/Application.h"
 #include "App/Args.h"
-#include "App/SceneContext.h"
 #include "App/SnapScript.h"
 #include "Base/IEmitter.h"
 #include "Debug/Shortcuts.h"
@@ -17,6 +16,7 @@
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/PanelManager.h"
+#include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"

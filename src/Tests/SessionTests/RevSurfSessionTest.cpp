@@ -1,6 +1,6 @@
-#include "App/SceneContext.h"
 #include "Math/Types.h"
 #include "Managers/CommandManager.h"
+#include "Managers/SceneContext.h"
 #include "Models/RevSurfModel.h"
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"

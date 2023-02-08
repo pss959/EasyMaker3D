@@ -5,7 +5,6 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "App/SceneContext.h"
 #include "Base/HelpMap.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
@@ -39,6 +38,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/PrecisionManager.h"
+#include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"

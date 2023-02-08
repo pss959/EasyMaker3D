@@ -5,7 +5,6 @@
 
 #include "App/Args.h"
 #include "App/RegisterTypes.h"
-#include "App/SceneContext.h"
 #include "App/SceneLoader.h"
 #include "Base/Event.h"
 #include "Debug/Print.h"
@@ -15,6 +14,7 @@
 #include "Handlers/ViewHandler.h"
 #include "Managers/EventManager.h"
 #include "Managers/PrecisionManager.h"
+#include "Managers/SceneContext.h"
 #include "Managers/SettingsManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"

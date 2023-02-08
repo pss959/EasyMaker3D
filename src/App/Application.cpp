@@ -7,7 +7,6 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/RegisterTypes.h"
-#include "App/SceneContext.h"
 #include "App/SceneLoader.h"
 #include "Base/IEmitter.h"
 #include "Base/VirtualKeyboard.h"
@@ -41,6 +40,7 @@
 #include "Managers/NameManager.h"
 #include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
+#include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"

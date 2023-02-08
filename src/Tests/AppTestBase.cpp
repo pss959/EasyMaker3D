@@ -1,7 +1,7 @@
 #include "Tests/AppTestBase.h"
 
 #include "App/Application.h"
-#include "App/SceneContext.h"
+#include "Managers/SceneContext.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------

@@ -73,7 +73,6 @@ lib_sources = list(chain(
     PlaceInDir_('App', [
         'Application',
         'RegisterTypes',
-        'SceneContext',
         'SceneLoader',
     ]),
     PlaceInDir_('Base', [
@@ -216,6 +215,7 @@ lib_sources = list(chain(
         'InstanceManager',
         'NameManager',
         'PanelManager',
+        'SceneContext',
         'SelectionManager',
         'SessionManager',
         'SettingsManager',
