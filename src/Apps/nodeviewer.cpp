@@ -181,7 +181,14 @@ bool Application_::InitViewer(const Vector2i &window_size) {
     renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
     renderer_->Reset(*scene_);
 
-    main_handler_->SetSceneContext(scene_context_);
+    MainHandler::Context mc;
+    mc.scene            = scene_context_->scene;
+    mc.frustum          = scene_context_->frustum;
+    mc.path_to_stage    = scene_context_->path_to_stage;
+    mc.left_controller  = scene_context_->left_controller;
+    mc.right_controller = scene_context_->right_controller;
+    mc.debug_sphere     = scene_context_->debug_sphere;
+    main_handler_->SetContext(mc);
 
     UpdateScene_();
     ResetView_();

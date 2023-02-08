@@ -9,11 +9,16 @@
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"
 
+DECL_SHARED_PTR(Controller);
+DECL_SHARED_PTR(Frustum);
 DECL_SHARED_PTR(Grippable);
 DECL_SHARED_PTR(Touchable);
 DECL_SHARED_PTR(MainHandler);
 DECL_SHARED_PTR(PrecisionManager);
-DECL_SHARED_PTR(SceneContext);
+namespace SG {
+DECL_SHARED_PTR(Node);
+DECL_SHARED_PTR(Scene);
+}
 
 /// MainHandler is a derived Handler that does most of the interactive event
 /// handling for the application.
@@ -21,6 +26,17 @@ DECL_SHARED_PTR(SceneContext);
 /// \ingroup Handlers
 class MainHandler : public Handler {
   public:
+    /// This Context stores all the information required by the MainHandler to
+    /// set up Trackers.
+    struct Context {
+        SG::ScenePtr  scene;
+        FrustumPtr    frustum;
+        SG::NodePath  path_to_stage;
+        ControllerPtr left_controller;
+        ControllerPtr right_controller;
+        SG::NodePtr   debug_sphere;
+    };
+
     /// Typedef for function passed to SetPathFilter().
     typedef std::function<bool(const SG::NodePath &path)> PathFilter;
 
@@ -32,8 +48,8 @@ class MainHandler : public Handler {
     /// Sets the PrecisionManager used for interaction.
     void SetPrecisionManager(const PrecisionManagerPtr &precision_manager);
 
-    /// Sets the SceneContext to interact with.
-    void SetSceneContext(const SceneContextPtr &context);
+    /// Sets the Context containing all the information needed for interaction.
+    void SetContext(const Context &context);
 
     /// Adds a Grippable instance that responds to grip-related events to a
     /// list. The order in which instances are added is important: the first

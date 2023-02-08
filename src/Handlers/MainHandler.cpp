@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "App/SceneContext.h"
 #include "Base/Event.h"
 #include "Enums/Actuator.h"
 #include "Items/Controller.h"
@@ -71,7 +70,7 @@ class MainHandler::Impl_ {
     void SetPrecisionManager(const PrecisionManagerPtr &precision_manager) {
         precision_manager_ = precision_manager;
     }
-    void SetSceneContext(const SceneContextPtr &context);
+    void SetContext(const MainHandler::Context &context);
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
     }
@@ -112,8 +111,8 @@ class MainHandler::Impl_ {
     /// PrecisionManager used for accessing precision details.
     PrecisionManagerPtr precision_manager_;
 
-    /// SceneContext the handler is interacting with.
-    SceneContextPtr context_;
+    /// MainHandler::Context storing required data.
+    MainHandler::Context context_;
 
     /// Ordered set of Grippable instances for interaction.
     std::vector<GrippablePtr> grippables_;
@@ -230,16 +229,18 @@ class MainHandler::Impl_ {
 // MainHandler::Impl_ implementation.
 // ----------------------------------------------------------------------------
 
-void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
+void MainHandler::Impl_::SetContext(const MainHandler::Context &context) {
+    // Copy the Context data.
     context_ = context;
+
     for (auto &tracker: trackers_)
-        tracker->Init(context->scene,
-                      context->left_controller, context->right_controller);
+        tracker->Init(context_.scene,
+                      context_.left_controller, context_.right_controller);
 
     // Special initialization for the MouseTracker.
     auto mt = Util::CastToDerived<MouseTracker>(GetTracker_(Actuator::kMouse));
-    mt->SetFrustum(context->frustum);
-    mt->SetDebugSphere(context->debug_sphere);
+    mt->SetFrustum(context_.frustum);
+    mt->SetDebugSphere(context_.debug_sphere);
 }
 
 void MainHandler::Impl_::SetTouchable(const TouchablePtr &touchable) {
@@ -279,7 +280,7 @@ void MainHandler::Impl_::ProcessUpdate(bool is_modified_mode) {
 }
 
 bool MainHandler::Impl_::HandleEvent(const Event &event) {
-    ASSERT(context_);
+    ASSERT(context_.scene);
 
     bool handled = false;
 
@@ -382,15 +383,15 @@ void MainHandler::Impl_::UpdateGrippable_() {
     if (grippable_node != cur_grippable_node_) {
         const auto guide_type = grippable ?
             grippable->GetGripGuideType() : GripGuideType::kNone;
-        context_->left_controller->SetGripGuideType(guide_type);
-        context_->right_controller->SetGripGuideType(guide_type);
+        context_.left_controller->SetGripGuideType(guide_type);
+        context_.right_controller->SetGripGuideType(guide_type);
     }
 
     // Update trackers if either the grippable or its node changed.
     if (grippable != cur_grippable_ || grippable_node != cur_grippable_node_) {
         SG::NodePath path;
         if (grippable_node)
-            path = SG::FindNodePathInScene(*context_->scene, *grippable_node);
+            path = SG::FindNodePathInScene(*context_.scene, *grippable_node);
         auto set_grippable = [&](Actuator act){
             GetTypedTracker_<GripTracker>(act).SetGrippable(grippable, path);
         };
@@ -568,9 +569,9 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
     // If starting a new drag.
     if (is_start) {
         // These are set once and used throughout the drag.
-        drag_info_.path_to_stage  = context_->path_to_stage;
+        drag_info_.path_to_stage  = context_.path_to_stage;
         drag_info_.path_to_widget =
-            SG::FindNodePathInScene(*context_->scene, *draggable);
+            SG::FindNodePathInScene(*context_.scene, *draggable);
 
         cur_tracker_->FillActivationDragInfo(drag_info_);
 
@@ -633,8 +634,8 @@ void MainHandler::SetPrecisionManager(
     impl_->SetPrecisionManager(precision_manager);
 }
 
-void MainHandler::SetSceneContext(const SceneContextPtr &context) {
-    impl_->SetSceneContext(context);
+void MainHandler::SetContext(const Context &context) {
+    impl_->SetContext(context);
 }
 
 void MainHandler::SetTouchable(const TouchablePtr &touchable) {
