@@ -6,9 +6,9 @@
 #include "Enums/Actuator.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
-#include "Managers/PrecisionManager.h"
 #include "Math/Types.h"
 #include "Place/DragInfo.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Search.h"
 #include "Trackers/GripTracker.h"
 #include "Trackers/MouseTracker.h"
@@ -67,8 +67,8 @@ class MainHandler::Impl_ {
         else
             InitNonVRTrackers_();
     }
-    void SetPrecisionManager(const PrecisionManagerPtr &precision_manager) {
-        precision_manager_ = precision_manager;
+    void SetPrecisionStore(const PrecisionStorePtr &precision_store) {
+        precision_store_ = precision_store;
     }
     void SetContext(const MainHandler::Context &context);
     void AddGrippable(const GrippablePtr &grippable) {
@@ -108,8 +108,8 @@ class MainHandler::Impl_ {
     /// Current state.
     State_ state_ = State_::kWaiting;
 
-    /// PrecisionManager used for accessing precision details.
-    PrecisionManagerPtr precision_manager_;
+    /// PrecisionStore used for accessing precision details.
+    PrecisionStorePtr precision_store_;
 
     /// MainHandler::Context storing required data.
     MainHandler::Context context_;
@@ -558,8 +558,8 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
 
     // Set common items in DragInfo.
     drag_info_.is_modified_mode = is_modified_mode || click_state_.count > 1;
-    drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
-    drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
+    drag_info_.linear_precision  = precision_store_->GetLinearPrecision();
+    drag_info_.angular_precision = precision_store_->GetAngularPrecision();
 
     // Let the tracker set up the rest.
     auto draggable = Util::CastToDerived<DraggableWidget>(active_widget_);
@@ -629,9 +629,9 @@ MainHandler::MainHandler(bool is_vr_enabled) : impl_(new Impl_(is_vr_enabled)) {
 MainHandler::~MainHandler() {
 }
 
-void MainHandler::SetPrecisionManager(
-    const PrecisionManagerPtr &precision_manager) {
-    impl_->SetPrecisionManager(precision_manager);
+void MainHandler::SetPrecisionStore(
+    const PrecisionStorePtr &precision_store) {
+    impl_->SetPrecisionStore(precision_store);
 }
 
 void MainHandler::SetContext(const Context &context) {

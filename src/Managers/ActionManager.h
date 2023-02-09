@@ -12,7 +12,7 @@ DECL_SHARED_PTR(ClipboardManager);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(MainHandler);
 DECL_SHARED_PTR(NameManager);
-DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(PrecisionStore);
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SessionState);
@@ -42,7 +42,7 @@ class ActionManager {
         ClipboardManagerPtr clipboard_manager;
         CommandManagerPtr   command_manager;
         NameManagerPtr      name_manager;
-        PrecisionManagerPtr precision_manager;
+        PrecisionStorePtr precision_store;
         SelectionManagerPtr selection_manager;
         SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;

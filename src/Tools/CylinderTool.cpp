@@ -7,10 +7,10 @@
 
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Types.h"
 #include "Place/EdgeTarget.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -190,13 +190,13 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     else {
         // Do not let the diameter get below the current precision if the other
         // radius is 0.
-        const auto &precision_manager = *GetContext().precision_manager;
+        const auto &precision_store = *GetContext().precision_store;
         const auto &other_scaler =
             scaler == top_scaler_ ? *bottom_scaler_ : *top_scaler_;
         const float min_diameter = other_scaler.GetLength() > 0 ? 0 :
-            precision_manager.GetLinearPrecision();
+            precision_store.GetLinearPrecision();
         radius = .5f * std::max(min_diameter,
-                                precision_manager.Apply(diameter));
+                                precision_store.Apply(diameter));
         is_snapped = false;
     }
 

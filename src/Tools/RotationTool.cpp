@@ -9,9 +9,9 @@
 #include "Feedback/AngularFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Search.h"
 #include "SG/Torus.h"
 #include "Util/Assert.h"
@@ -240,7 +240,7 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
         new_angle = angles[dim];
     }
     else {
-        new_angle = context.precision_manager->ApplyAngle(angle);
+        new_angle = context.precision_store->ApplyAngle(angle);
     }
 
     // Compute the rotation with the updated angle and simulate execution of

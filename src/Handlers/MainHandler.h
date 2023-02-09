@@ -14,7 +14,7 @@ DECL_SHARED_PTR(Frustum);
 DECL_SHARED_PTR(Grippable);
 DECL_SHARED_PTR(Touchable);
 DECL_SHARED_PTR(MainHandler);
-DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(PrecisionStore);
 namespace SG {
 DECL_SHARED_PTR(Node);
 DECL_SHARED_PTR(Scene);
@@ -45,8 +45,8 @@ class MainHandler : public Handler {
     explicit MainHandler(bool is_vr_enabled);
     virtual ~MainHandler();
 
-    /// Sets the PrecisionManager used for interaction.
-    void SetPrecisionManager(const PrecisionManagerPtr &precision_manager);
+    /// Sets the PrecisionStore used for interaction.
+    void SetPrecisionStore(const PrecisionStorePtr &precision_store);
 
     /// Sets the Context containing all the information needed for interaction.
     void SetContext(const Context &context);

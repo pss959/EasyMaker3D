@@ -5,12 +5,12 @@
 #include "Managers/BoardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
 #include "Models/Model.h"
 #include "Models/RootModel.h"
+#include "Place/PrecisionStore.h"
 #include "SG/ColorMap.h"
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
@@ -21,7 +21,7 @@ void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context->board_manager);
     ASSERT(context->command_manager);
     ASSERT(context->feedback_manager);
-    ASSERT(context->precision_manager);
+    ASSERT(context->precision_store);
     ASSERT(context->settings_manager);
     ASSERT(context->target_manager);
     ASSERT(context->root_model);

@@ -6,13 +6,13 @@
 #include "Math/Linear.h"
 #include "Math/Types.h"
 
-DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(PrecisionStore);
 
-/// The PrecisionManager is in charge of the current precision setting and
-/// applying it to various interactive operations.
+/// The PrecisionStore stores the current precision setting and applies it to
+/// various interactive operations.
 ///
-/// \ingroup Managers
-class PrecisionManager {
+/// \ingroup Place
+class PrecisionStore {
   public:
     /// Returns the current linear precision.
     float GetLinearPrecision() const {

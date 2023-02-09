@@ -39,7 +39,6 @@
 #include "Managers/FeedbackManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/PanelManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -56,6 +55,7 @@
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
 #include "Place/ClickInfo.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Change.h"
 #include "SG/IonContext.h"
 #include "SG/Node.h"
@@ -156,7 +156,7 @@ class  Application::Impl_ {
     FeedbackManagerPtr  feedback_manager_;
     NameManagerPtr      name_manager_;
     PanelManagerPtr     panel_manager_;
-    PrecisionManagerPtr precision_manager_;
+    PrecisionStorePtr precision_store_;
     SelectionManagerPtr selection_manager_;
     SessionManagerPtr   session_manager_;
     SettingsManagerPtr  settings_manager_;
@@ -445,7 +445,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
     InitInteraction_();
 
     // Install things...
-    main_handler_->SetPrecisionManager(precision_manager_);
+    main_handler_->SetPrecisionStore(precision_store_);
     shortcut_handler_->SetActionManager(action_manager_);
 
     ConnectSceneInteraction_();
@@ -658,7 +658,7 @@ void Application::Impl_::InitManagers_() {
     event_manager_.reset(new EventManager);
     name_manager_.reset(new NameManager);
     panel_manager_.reset(new PanelManager);
-    precision_manager_.reset(new PrecisionManager);
+    precision_store_.reset(new PrecisionStore);
     selection_manager_.reset(new SelectionManager);
     settings_manager_.reset(new SettingsManager);
 
@@ -701,7 +701,7 @@ void Application::Impl_::InitManagers_() {
     action_context_->clipboard_manager = clipboard_manager_;
     action_context_->command_manager   = command_manager_;
     action_context_->name_manager      = name_manager_;
-    action_context_->precision_manager = precision_manager_;
+    action_context_->precision_store = precision_store_;
     action_context_->selection_manager = selection_manager_;
     action_context_->settings_manager  = settings_manager_;
     action_context_->target_manager    = target_manager_;
@@ -749,7 +749,7 @@ void Application::Impl_::InitToolContext_() {
     tool_context_->board_manager     = board_manager_;
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
-    tool_context_->precision_manager = precision_manager_;
+    tool_context_->precision_store = precision_store_;
     tool_context_->settings_manager  = settings_manager_;
     tool_context_->target_manager    = target_manager_;
 }

@@ -13,7 +13,6 @@
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "Managers/EventManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/SceneContext.h"
 #include "Managers/SettingsManager.h"
 #include "Math/Linear.h"
@@ -21,6 +20,7 @@
 #include "Panels/Board.h"
 #include "Panels/Panel.h"
 #include "Place/ClickInfo.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Intersector.h"
 #include "SG/IonContext.h"
 #include "SG/Node.h"
@@ -99,7 +99,7 @@ class Application_ {
     const Args          &args_;
     bool                is_fixed_camera_ = false;
     EventManagerPtr     event_manager_;
-    PrecisionManagerPtr precision_manager_;
+    PrecisionStorePtr precision_store_;
     SceneLoader         loader_;
     SG::ScenePtr        scene_;
     SceneContextPtr     scene_context_;
@@ -147,7 +147,7 @@ bool Application_::InitScene() {
     scene_context_.reset(new SceneContext);
 
     // Set up managers.
-    precision_manager_.reset(new PrecisionManager);
+    precision_store_.reset(new PrecisionStore);
     event_manager_.reset(new EventManager);
 
     // Set up event handlers. Order is important here.
@@ -157,7 +157,7 @@ bool Application_::InitScene() {
     view_handler_->SetFixedCameraPosition(is_fixed_camera_);
     board_handler_.reset(new BoardHandler);
     main_handler_.reset(new MainHandler(false));
-    main_handler_->SetPrecisionManager(precision_manager_);
+    main_handler_->SetPrecisionStore(precision_store_);
     main_handler_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
     event_manager_->AddHandler(app_handler_);

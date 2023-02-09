@@ -5,10 +5,10 @@
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -245,7 +245,7 @@ void TranslationTool::SliderChanged_(int dim, const float &value) {
             is_snapped = true;
         }
         else {
-            motion *= GetContext().precision_manager->Apply(length) / length;
+            motion *= GetContext().precision_store->Apply(length) / length;
         }
     }
 

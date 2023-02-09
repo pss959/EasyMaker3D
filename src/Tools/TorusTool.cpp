@@ -7,11 +7,11 @@
 
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Place/EdgeTarget.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -211,9 +211,9 @@ void TorusTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     }
     else {
         // Do not let the diameter get below the current precision.
-        const auto &precision_manager = *GetContext().precision_manager;
-        radius = .5f * std::max(precision_manager.GetLinearPrecision(),
-                                precision_manager.Apply(diameter));
+        const auto &precision_store = *GetContext().precision_store;
+        radius = .5f * std::max(precision_store.GetLinearPrecision(),
+                                precision_store.Apply(diameter));
         is_snapped = false;
     }
 

@@ -9,11 +9,11 @@
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "Place/EdgeTarget.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -370,7 +370,7 @@ Vector3f ScaleTool::ComputeRatios_(size_t index, Dimensionality &snapped_dims) {
         // difference in sizes with and without precision, then find the active
         // dimension with the smallest difference.
         const Vector3f prec =
-            GetContext().precision_manager->ApplyPositive(new_size);
+            GetContext().precision_store->ApplyPositive(new_size);
         const Vector3f abs_diff(std::abs(new_size[0] - prec[0]),
                                 std::abs(new_size[1] - prec[1]),
                                 std::abs(new_size[2] - prec[2]));

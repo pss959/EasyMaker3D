@@ -37,7 +37,6 @@
 #include "Managers/ClipboardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
-#include "Managers/PrecisionManager.h"
 #include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
@@ -54,6 +53,7 @@
 #include "Panels/TreePanel.h"
 #include "Parser/Registry.h"
 #include "Place/EdgeTarget.h"
+#include "Place/PrecisionStore.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
@@ -255,7 +255,7 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context->clipboard_manager);
     ASSERT(context->command_manager);
     ASSERT(context->name_manager);
-    ASSERT(context->precision_manager);
+    ASSERT(context->precision_store);
     ASSERT(context->selection_manager);
     ASSERT(context->settings_manager);
     ASSERT(context->target_manager);
@@ -418,7 +418,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
       case Action::kDecreasePrecision:
       case Action::kIncreasePrecision: {
-          auto &pm = *context_->precision_manager;
+          auto &pm = *context_->precision_store;
           if (action == Action::kIncreasePrecision)
               pm.Increase();
           else
@@ -767,9 +767,9 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kIncreaseComplexity, can_set_complexity);
 
     set_enabled(Action::kDecreasePrecision,
-                context_->precision_manager->CanDecrease());
+                context_->precision_store->CanDecrease());
     set_enabled(Action::kIncreasePrecision,
-                context_->precision_manager->CanIncrease());
+                context_->precision_store->CanIncrease());
 
     set_enabled(Action::kMoveToOrigin, any_selected);
 

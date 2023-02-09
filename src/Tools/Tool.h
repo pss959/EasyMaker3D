@@ -14,7 +14,7 @@ DECL_SHARED_PTR(BoardManager);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(FeedbackManager);
 DECL_SHARED_PTR(Model);
-DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(PrecisionStore);
 DECL_SHARED_PTR(RootModel);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(TargetManager);
@@ -33,7 +33,7 @@ class Tool : public Grippable {
         BoardManagerPtr     board_manager;
         CommandManagerPtr   command_manager;
         FeedbackManagerPtr  feedback_manager;
-        PrecisionManagerPtr precision_manager;
+        PrecisionStorePtr precision_store;
         SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;
 
