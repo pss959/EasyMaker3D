@@ -3,6 +3,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Commands/ChangeMirrorCommand.h"
+#include "Items/SessionState.h"
 #include "Managers/CommandManager.h"
 #include "Math/Linear.h"
 #include "Models/MirroredModel.h"
@@ -55,7 +56,7 @@ void MirrorTool::PlaneClicked_(int dim) {
     // Get the mirror plane in stage coordinates based on axis-alignment.
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
     const Vector3f axis = GetAxis(dim);
-    const Plane stage_plane = context.is_axis_aligned ?
+    const Plane stage_plane = context.session_state->IsAxisAligned() ?
         Plane(osm * Point3f::Zero(), axis) :
         Plane(Point3f(GetTranslation()), osm * axis);
 

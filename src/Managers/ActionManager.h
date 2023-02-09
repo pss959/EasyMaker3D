@@ -1,11 +1,11 @@
 ﻿#pragma once
 
+#include <functional>
 #include <string>
 
 #include "Agents/ActionAgent.h"
 #include "Base/Memory.h"
 #include "Enums/Action.h"
-#include "Tools/Tool.h"
 
 DECL_SHARED_PTR(ActionManager);
 DECL_SHARED_PTR(BoardManager);
@@ -35,15 +35,12 @@ class ActionManager : public ActionAgent {
         /// The SceneContext storing important scene contents.
         SceneContextPtr     scene_context;
 
-        /// Tool Context.
-        Tool::ContextPtr    tool_context;
-
         // Managers.
         BoardManagerPtr     board_manager;
         ClipboardManagerPtr clipboard_manager;
         CommandManagerPtr   command_manager;
         NameManagerPtr      name_manager;
-        PrecisionStorePtr precision_store;
+        PrecisionStorePtr   precision_store;
         SelectionManagerPtr selection_manager;
         SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;

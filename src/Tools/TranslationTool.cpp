@@ -3,6 +3,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Feedback/LinearFeedback.h"
+#include "Items/SessionState.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
@@ -114,7 +115,7 @@ void TranslationTool::UpdateGeometry_() {
     const Model &model = *GetModelAttachedTo();
 
     // Rotate to match the Model if not aligning with stage axes.
-    const bool is_aligned = GetContext().is_axis_aligned;
+    const bool is_aligned = GetContext().session_state->IsAxisAligned();
     SetRotation(is_aligned ? Rotationf::Identity() : model.GetRotation());
 
     // Move the Tool to the center of the Model in stage coordinates.

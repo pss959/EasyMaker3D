@@ -16,6 +16,7 @@ DECL_SHARED_PTR(FeedbackManager);
 DECL_SHARED_PTR(Model);
 DECL_SHARED_PTR(PrecisionStore);
 DECL_SHARED_PTR(RootModel);
+DECL_SHARED_PTR(SessionState);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(TargetManager);
 DECL_SHARED_PTR(Tool);
@@ -33,7 +34,7 @@ class Tool : public Grippable {
         BoardManagerPtr     board_manager;
         CommandManagerPtr   command_manager;
         FeedbackManagerPtr  feedback_manager;
-        PrecisionStorePtr precision_store;
+        PrecisionStorePtr   precision_store;
         SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;
 
@@ -43,8 +44,8 @@ class Tool : public Grippable {
         /// Board to use for Tools derived from PanelTool.
         BoardPtr            board;
 
-        /// Flag indicating how to transform Models.
-        bool                is_axis_aligned = false;
+        /// SessionState for updating modal tool features.
+        SessionStatePtr     session_state;
 
         /// Flag indicating whether the app is in modified input mode.
         bool                is_modified_mode = false;

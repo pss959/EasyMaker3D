@@ -28,6 +28,7 @@
 #include "Items/Inspector.h"
 #include "Items/PrecisionControl.h"
 #include "Items/RadialMenu.h"
+#include "Items/SessionState.h"
 #include "Items/Settings.h"
 #include "Items/Shelf.h"
 #include "Managers/ActionManager.h"
@@ -473,6 +474,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     main_handler_->SetTouchable(board_manager_->GetCurrentBoard());
     main_handler_->ProcessUpdate(is_modified_mode);
     tool_context_->is_modified_mode = is_modified_mode;
+    tool_context_->session_state = command_manager_->GetSessionState();
 
     action_manager_->ProcessUpdate();
 
@@ -696,7 +698,6 @@ void Application::Impl_::InitManagers_() {
     // The ActionManager requires its own context.
     action_context_.reset(new ActionManager::Context);
     action_context_->scene_context     = scene_context_;
-    action_context_->tool_context      = tool_context_;
     action_context_->board_manager     = board_manager_;
     action_context_->clipboard_manager = clipboard_manager_;
     action_context_->command_manager   = command_manager_;

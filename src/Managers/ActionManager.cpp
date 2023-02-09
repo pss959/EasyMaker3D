@@ -250,7 +250,6 @@ class ActionManager::Impl_ {
 ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context);
     ASSERT(context->scene_context);
-    ASSERT(context->tool_context);
     ASSERT(context->board_manager);
     ASSERT(context->clipboard_manager);
     ASSERT(context->command_manager);
@@ -572,7 +571,6 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
 
       case Action::kToggleAxisAligned:
         ss->SetAxisAligned(state);
-        context_->tool_context->is_axis_aligned = state;
         // Reselect so that attached tools use the correct alignment.
         context_->selection_manager->ReselectAll();
         break;
@@ -663,7 +661,7 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
                 "along a circular arc using the point target radial layout";
 
       case Action::kToggleAxisAligned:
-        return context_->tool_context->is_axis_aligned ?
+        return context_->command_manager->GetSessionState()->IsAxisAligned() ?
             "Transform models in their local coordinates" :
             "Transform models relative to global coordinate axes";
 

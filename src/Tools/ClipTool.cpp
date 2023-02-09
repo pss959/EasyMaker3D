@@ -10,6 +10,7 @@
 
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
+#include "Items/SessionState.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
@@ -420,7 +421,7 @@ void ClipTool::Impl_::SnapRotation_(bool &snapped_to_target, int &snapped_dim) {
             return false;
         };
 
-        const bool is_stage = context_.is_axis_aligned;
+        const bool is_stage = context_.session_state->IsAxisAligned();
         const Vector3f &dir =
             is_stage ? stage_plane_.normal : object_plane_.normal;
         for (int dim = 0; dim < 3; ++dim) {

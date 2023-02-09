@@ -2,6 +2,7 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Items/SessionState.h"
 #include "Managers/BoardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -105,7 +106,8 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     const Model &model = *GetModelAttachedTo();
 
     // Rotate to match the Model if not aligning.
-    const bool align = allow_axis_aligned && context_->is_axis_aligned;
+    const bool align =
+        allow_axis_aligned && context_->session_state->IsAxisAligned();
     SetRotation(align ? Rotationf::Identity() : model.GetRotation());
 
     // Move the Tool to the center of the Model in stage coordinates.
