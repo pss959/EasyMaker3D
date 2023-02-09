@@ -1,13 +1,11 @@
 #pragma once
 
-#include <functional>
 #include <string>
 #include <vector>
 
+#include "Agents/SessionAgent.h"
 #include "Base/Memory.h"
-#include "Enums/FileFormat.h"
 #include "Util/Enum.h"
-#include "Util/FilePath.h"
 #include "Util/Flags.h"
 
 DECL_SHARED_PTR(ActionManager);
@@ -20,7 +18,7 @@ class UnitConversion;
 /// The SessionManager handles saving and loading sessions.
 ///
 /// \ingroup Managers
-class SessionManager {
+class SessionManager : public SessionAgent {
   public:
     /// Enum indicating how the current session has been modified.
     enum class Modification : uint32_t {
@@ -48,43 +46,6 @@ class SessionManager {
     /// Returns flags indicating how the current session has been modified.
     Util::Flags<Modification> GetModifications() const;
 
-    /// Returns true if a session was started. This means that either a session
-    /// was loaded or modifications were made to a new session.
-    bool SessionStarted() const;
-
-    /// Creates a new session.
-    void NewSession();
-
-    /// Returns true if the current session can be saved to its existing file,
-    /// meaning that something has changed.
-    bool CanSaveSession() const;
-
-    /// Saves the current session to the given path. Returns true if all went
-    /// well.
-    bool SaveSession(const FilePath &path);
-
-    /// Loads an existing session from the given path. Returns false and sets
-    /// error to an informative string if anything fails.
-    bool LoadSession(const FilePath &path, std::string &error);
-
-    /// Returns the name of the Model that can be exported, or an empty string
-    /// if there is none.
-    std::string GetModelNameForExport() const;
-
-    /// Exports the current Model to the given path in the given format using
-    /// the given ConversionInfo.  Returns true if all went well.
-    bool Export(const FilePath &path, FileFormat format,
-                const UnitConversion &conv);
-
-    /// Returns the name of the previous session, which may be empty.
-    const std::string & GetPreviousSessionName() const {
-        return previous_session_name_;
-    }
-
-    /// Returns the name of the current session, which may be empty.
-    const std::string & GetCurrentSessionName() const {
-        return current_session_name_;
-    }
 
     /// Returns a string representing the current session: the name of the
     /// session and characters representing the current modifications.
@@ -95,6 +56,18 @@ class SessionManager {
     /// if all went well.
     bool SaveSessionWithComments(const FilePath &path,
                                  const std::vector<std::string> &comments);
+
+    // SessionAgent interface implementation.
+    virtual bool WasSessionStarted() const override;
+    virtual void NewSession() override;
+    virtual bool CanSaveSession() const override;
+    virtual bool SaveSession(const FilePath &path) override;
+    virtual bool LoadSession(const FilePath &path, std::string &error) override;
+    virtual std::string GetModelNameForExport() const override;
+    virtual bool Export(const FilePath &path, FileFormat format,
+                        const UnitConversion &conv) override;
+    virtual const std::string & GetPreviousSessionName() const override;
+    virtual const std::string & GetCurrentSessionName() const override;
 
   private:
     ActionManagerPtr    action_manager_;

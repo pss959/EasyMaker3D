@@ -4,10 +4,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Agents/SelectionAgent.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Items/Border.h"
 #include "Managers/CommandManager.h"
-#include "Managers/SelectionManager.h"
 #include "Math/Linear.h"
 #include "Models/CombinedModel.h"
 #include "Models/RootModel.h"
@@ -57,10 +57,10 @@ class TreePanel::Impl_ {
     void InitInterface(ContainerPane &root_pane);
     void UpdateInterface();
 
-    void SetManagers(const CommandManagerPtr   &command_manager,
-                     const SelectionManagerPtr &selection_manager) {
+    void SetAgents(const CommandManagerPtr &command_manager,
+                   const SelectionAgentPtr &selection_agent) {
         command_manager_   = command_manager;
-        selection_manager_ = selection_manager;
+        selection_agent_ = selection_agent;
     }
 
   private:
@@ -88,25 +88,25 @@ class TreePanel::Impl_ {
     typedef std::shared_ptr<ModelRow_>              ModelRowPtr_;
     typedef std::unordered_map<ModelPtr, ExpState_> ExpStateMap_;
 
-    CommandManagerPtr         command_manager_;
-    SelectionManagerPtr       selection_manager_;
-    RootModelPtr              root_model_;
-    SwitcherPanePtr           session_vis_switcher_pane_;
-    TextPanePtr               session_text_pane_;
-    ScrollingPanePtr          scrolling_pane_;
-    ContainerPanePtr          model_row_pane_;
-    ButtonPanePtr             move_up_pane_;
-    ButtonPanePtr             move_down_pane_;
+    CommandManagerPtr command_manager_;
+    SelectionAgentPtr selection_agent_;
+    RootModelPtr      root_model_;
+    SwitcherPanePtr   session_vis_switcher_pane_;
+    TextPanePtr       session_text_pane_;
+    ScrollingPanePtr  scrolling_pane_;
+    ContainerPanePtr  model_row_pane_;
+    ButtonPanePtr     move_up_pane_;
+    ButtonPanePtr     move_down_pane_;
 
     /// Manages rectangle selection.
     std::unique_ptr<RectSelect_> rect_select_;
 
     /// Maps a ModelPtr to the ExpState_ of the ModelRow_ for that Model. This
     /// allows state to persist even when the rows are rebuilt from scratch.
-    ExpStateMap_              exp_state_map_;
+    ExpStateMap_ exp_state_map_;
 
     /// Indicates that Models have changed in some way that requires rebuild.
-    bool                      models_changed_ = true;
+    bool         models_changed_ = true;
 
     void UpdateModelRows_();
     void UpdateButtons_();
@@ -227,9 +227,9 @@ class TreePanel::Impl_::RectSelect_ {
         start_end_func_ = func;
     }
 
-    void SetSelectionManager(const SelectionManagerPtr &selection_manager) {
-        ASSERT(selection_manager);
-        selection_manager_ = selection_manager;
+    void SetSelectionAgent(const SelectionAgentPtr &selection_agent) {
+        ASSERT(selection_agent);
+        selection_agent_ = selection_agent;
     }
 
     /// Sets the height of the rectangle area.
@@ -248,7 +248,7 @@ class TreePanel::Impl_::RectSelect_ {
     }
 
   private:
-    SelectionManagerPtr       selection_manager_;
+    SelectionAgentPtr         selection_agent_;
     float                     height_ = 0;
     std::function<void(bool)> start_end_func_;
 
@@ -349,10 +349,10 @@ void TreePanel::Impl_::RectSelect_::FinishDrag_() {
     if (sel.HasAny()) {
         if (is_modified_mode_) {
             for (const auto &sel_path: sel.GetPaths())
-                selection_manager_->ChangeModelSelection(sel_path, true);
+                selection_agent_->ChangeModelSelection(sel_path, true);
         }
         else {
-            selection_manager_->ChangeSelection(sel);
+            selection_agent_->ChangeSelection(sel);
         }
     }
 
@@ -416,7 +416,7 @@ void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
         this, [&](const ClickInfo &){ root_model_->ShowAllModels(); });
     hide->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &){
-            selection_manager_->DeselectAll();
+            selection_agent_->DeselectAll();
             root_model_->HideAllModels();
         });
     session_vis_switcher_pane_ = vsp;
@@ -455,12 +455,12 @@ void TreePanel::Impl_::UpdateInterface() {
     const Vector3f trans =
         scrolling_pane_->GetTranslation() + Vector3f(0, 0, TK::kPaneZOffset);
     rect_select_->UpdateTransform(scrolling_pane_->GetScale(), trans);
-    rect_select_->SetSelectionManager(selection_manager_);
+    rect_select_->SetSelectionAgent(selection_agent_);
 }
 
 bool TreePanel::Impl_::CanMoveUpOrDown(bool is_up) const {
-    ASSERT(selection_manager_);
-    const Selection &sel = selection_manager_->GetSelection();
+    ASSERT(selection_agent_);
+    const Selection &sel = selection_agent_->GetSelection();
 
     bool can_move = false;
 
@@ -491,8 +491,8 @@ bool TreePanel::Impl_::CanMoveUpOrDown(bool is_up) const {
 
 void TreePanel::Impl_::MoveUpOrDown(bool is_up) {
     ASSERT(command_manager_);
-    ASSERT(selection_manager_);
-    const Selection &sel = selection_manager_->GetSelection();
+    ASSERT(selection_agent_);
+    const Selection &sel = selection_agent_->GetSelection();
 
     ASSERT(sel.GetCount() == 1U);
     auto coc = Parser::Registry::CreateObject<ChangeOrderCommand>();
@@ -592,9 +592,9 @@ void TreePanel::Impl_::ShowOrHideModel_(ModelRow_ &row, bool show) {
     }
     else {
         // Deselect the Model if it is selected.
-        ASSERT(selection_manager_);
+        ASSERT(selection_agent_);
         if (model->IsSelected())
-            selection_manager_->ChangeModelSelection(sel_path, true);
+            selection_agent_->ChangeModelSelection(sel_path, true);
         root_model_->HideModel(model);
     }
     row.UpdateVisibility();
@@ -614,11 +614,11 @@ void TreePanel::Impl_::ModelClicked_(ModelRow_ &row, bool is_alt) {
 
     // Toggle selection if in modified mode.
     if (is_alt)
-        selection_manager_->ChangeModelSelection(sel_path, true);
+        selection_agent_->ChangeModelSelection(sel_path, true);
 
     // Otherwise, select only the given Model.
     else
-        selection_manager_->ChangeSelection(Selection(sel_path));
+        selection_agent_->ChangeSelection(Selection(sel_path));
 
     // Changing the selection will cause the rows to be rebuilt.
 }
@@ -770,7 +770,7 @@ void TreePanel::ModelsChanged() {
 
 void TreePanel::SetContext(const ContextPtr &context) {
     Panel::SetContext(context);
-    impl_->SetManagers(context->command_manager, context->selection_manager);
+    impl_->SetAgents(context->command_manager, context->selection_agent);
 }
 
 void TreePanel::UpdateForRenderPass(const std::string &pass_name) {

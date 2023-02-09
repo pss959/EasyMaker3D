@@ -1,8 +1,8 @@
 #include "Panels/SessionPanel.h"
 
+#include "Agents/SessionAgent.h"
 #include "Items/Settings.h"
 #include "Managers/SelectionManager.h"
-#include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
 #include "Util/Assert.h"
@@ -24,7 +24,7 @@ void SessionPanel::InitInterface() {
 }
 
 void SessionPanel::UpdateInterface() {
-    auto &session_manager = *GetContext().session_manager;
+    auto &session_agent = *GetContext().session_agent;
 
     // The Continue button is the most complicated. The possible versions of
     // this button are:
@@ -42,9 +42,9 @@ void SessionPanel::UpdateInterface() {
     bool        have_name = false;
     std::string continue_text;
 
-    const auto &prev_name  = session_manager.GetPreviousSessionName();
-    const auto &cur_name   = session_manager.GetCurrentSessionName();
-    const bool has_changes = session_manager.CanSaveSession();
+    const auto &prev_name  = session_agent.GetPreviousSessionName();
+    const auto &cur_name   = session_agent.GetCurrentSessionName();
+    const bool has_changes = session_agent.CanSaveSession();
 
     // Have a current or previous session name.
     auto add_name = [](const std::string &msg, const std::string &name){
@@ -69,7 +69,7 @@ void SessionPanel::UpdateInterface() {
 
     EnableButton("Load",   true);
     EnableButton("Save",   have_name && has_changes);
-    EnableButton("Export", ! session_manager.GetModelNameForExport().empty());
+    EnableButton("Export", ! session_agent.GetModelNameForExport().empty());
 
     // Move the focus to a button that is enabled unless there is already a
     // focused pane.
@@ -80,7 +80,7 @@ void SessionPanel::UpdateInterface() {
 void SessionPanel::Close(const std::string &result) {
     // Canceling starts a new session if this is the initial SessionPanel.
     if (result == "Cancel" &&
-        ! GetContext().session_manager->SessionStarted()) {
+        ! GetContext().session_agent->WasSessionStarted()) {
         StartNewSession_();
     }
     else {
@@ -103,14 +103,14 @@ void SessionPanel::ContinueSession_() {
     // first starts (i.e., there is no current session name) and the user
     // continued a previous session. In this case, load the previous session
     // file.
-    auto &session_manager    = *GetContext().session_manager;
-    const bool changes_made  = session_manager.CanSaveSession();
+    auto &session_agent      = *GetContext().session_agent;
+    const bool changes_made  = session_agent.CanSaveSession();
     const auto &session_path = GetSettings().GetLastSessionPath();
 
-    if (session_manager.GetCurrentSessionName().empty() && session_path &&
+    if (session_agent.GetCurrentSessionName().empty() && session_path &&
         ! changes_made) {
         std::string error;
-        if (session_manager.LoadSession(session_path, error))
+        if (session_agent.LoadSession(session_path, error))
             Close("Done");
         else
             DisplayMessage("Could not load session from '" +
@@ -143,20 +143,20 @@ void SessionPanel::LoadSession_() {
 void SessionPanel::StartNewSession_() {
     // If changes were made in the current session (and it can therefore be
     // saved), ask the user what to do.
-    if (GetContext().session_manager->CanSaveSession()) {
+    if (GetContext().session_agent->CanSaveSession()) {
         const std::string msg = "There are unsaved changes."
             " Do you really want to start a new session?";
         auto func = [&](const std::string &answer){
             if (answer == "Yes") {
                 Close("Done");
-                GetContext().session_manager->NewSession();
+                GetContext().session_agent->NewSession();
             }
         };
         AskQuestion(msg, func, true);
     }
     else {
         Close("Done");
-        GetContext().session_manager->NewSession();
+        GetContext().session_agent->NewSession();
         SetLastSessionPath_(FilePath());
     }
 }
@@ -215,7 +215,7 @@ void SessionPanel::ExportSelection_() {
 FilePath SessionPanel::GetInitialExportPath_() {
     // Get the name of the selected Model and use it for the path.
     const std::string model_name =
-        GetContext().session_manager->GetModelNameForExport();
+        GetContext().session_agent->GetModelNameForExport();
     ASSERT(! model_name.empty());
 
     return FilePath::Join(GetSettings().GetExportDirectory(),
@@ -227,7 +227,7 @@ void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
 
     // If changes were made in the current session (and it can therefore be
     // saved), ask the user what to do.
-    if (GetContext().session_manager->CanSaveSession()) {
+    if (GetContext().session_agent->CanSaveSession()) {
         const std::string msg = "There are unsaved changes."
             " Do you really want to load another session?";
         auto func = [&](const std::string &answer){
@@ -245,7 +245,7 @@ void SessionPanel::ReallyLoadSessionFromPath_(const FilePath &path) {
     ASSERT(path);
 
     std::string error;
-    if (GetContext().session_manager->LoadSession(path, error)) {
+    if (GetContext().session_agent->LoadSession(path, error)) {
         Close("Done");
         SetLastSessionPath_(path);
     }
@@ -258,7 +258,7 @@ void SessionPanel::ReallyLoadSessionFromPath_(const FilePath &path) {
 void SessionPanel::SaveSessionToPath_(const FilePath &path) {
     ASSERT(path);
     Close("Done");
-    if (GetContext().session_manager->SaveSession(path))
+    if (GetContext().session_agent->SaveSession(path))
         SetLastSessionPath_(path);
 }
 
@@ -267,7 +267,7 @@ void SessionPanel::ExportToPath_(const FilePath &path, FileFormat format) {
     Close("Done");
 
     const UnitConversion &conv = GetSettings().GetExportUnitsConversion();
-    if (! GetContext().session_manager->Export(path, format, conv)) {
+    if (! GetContext().session_agent->Export(path, format, conv)) {
         DisplayMessage("Could not export selection to '" +
                        path.ToString() + "'", nullptr);
     }

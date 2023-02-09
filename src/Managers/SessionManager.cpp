@@ -52,41 +52,6 @@ SessionManager::GetModifications() const {
     return mods;
 }
 
-bool SessionManager::SessionStarted() const {
-    return ! current_session_name_.empty();
-}
-
-void SessionManager::NewSession() {
-    ResetSession_();
-}
-
-bool SessionManager::SaveSession(const FilePath &path) {
-    return SaveSessionWithComments(path, std::vector<std::string>());
-}
-
-bool SessionManager::LoadSession(const FilePath &path, std::string &error) {
-    return LoadSessionSafe_(path, &error);
-}
-
-std::string SessionManager::GetModelNameForExport() const {
-    const auto &sel = selection_manager_->GetSelection();
-    return sel.HasAny() ? sel.GetPrimary().GetModel()->GetName() : "";
-}
-
-bool SessionManager::Export(const FilePath &path, FileFormat format,
-                            const UnitConversion &conv) {
-    // Collect Model meshes, transforming them into stage coordinates.
-    const auto &sel = selection_manager_->GetSelection();
-    std::vector<TriMesh> meshes;
-    for (const auto &sel_path: sel.GetPaths()) {
-        ASSERT(sel_path.GetModel());
-        const Matrix4f osm = sel_path.GetCoordConv().GetObjectToRootMatrix();
-        meshes.push_back(TransformMesh(sel_path.GetModel()->GetMesh(), osm));
-    }
-
-    return WriteSTLFile(meshes, path, format, conv.GetFactor());
-}
-
 std::string SessionManager::GetSessionString() const {
     std::string session_string = ! current_session_name_.empty() ?
         current_session_name_ : "<Untitled Session>";
@@ -126,6 +91,49 @@ bool SessionManager::SaveSessionWithComments(
     command_list.ClearChanges();
     SaveOriginalSessionState_();
     return true;
+}
+
+bool SessionManager::WasSessionStarted() const {
+    return ! current_session_name_.empty();
+}
+
+void SessionManager::NewSession() {
+    ResetSession_();
+}
+
+bool SessionManager::SaveSession(const FilePath &path) {
+    return SaveSessionWithComments(path, std::vector<std::string>());
+}
+
+bool SessionManager::LoadSession(const FilePath &path, std::string &error) {
+    return LoadSessionSafe_(path, &error);
+}
+
+std::string SessionManager::GetModelNameForExport() const {
+    const auto &sel = selection_manager_->GetSelection();
+    return sel.HasAny() ? sel.GetPrimary().GetModel()->GetName() : "";
+}
+
+bool SessionManager::Export(const FilePath &path, FileFormat format,
+                            const UnitConversion &conv) {
+    // Collect Model meshes, transforming them into stage coordinates.
+    const auto &sel = selection_manager_->GetSelection();
+    std::vector<TriMesh> meshes;
+    for (const auto &sel_path: sel.GetPaths()) {
+        ASSERT(sel_path.GetModel());
+        const Matrix4f osm = sel_path.GetCoordConv().GetObjectToRootMatrix();
+        meshes.push_back(TransformMesh(sel_path.GetModel()->GetMesh(), osm));
+    }
+
+    return WriteSTLFile(meshes, path, format, conv.GetFactor());
+}
+
+const std::string & SessionManager::GetPreviousSessionName() const {
+    return previous_session_name_;
+}
+
+const std::string & SessionManager::GetCurrentSessionName() const {
+    return current_session_name_;
 }
 
 void SessionManager::ResetSession_() {

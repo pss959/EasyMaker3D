@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Agents/SelectionAgent.h"
 #include "Base/Memory.h"
 #include "Models/RootModel.h"
 #include "Selection/Selection.h"
@@ -14,7 +15,7 @@ DECL_SHARED_PTR(SelectionManager);
 /// that the current selection is always valid.
 ///
 /// \ingroup Managers
-class SelectionManager {
+class SelectionManager : public SelectionAgent {
   public:
     // ------------------------------------------------------------------------
     // Enums.
@@ -66,7 +67,9 @@ class SelectionManager {
     // ------------------------------------------------------------------------
 
     /// Returns the current selection.
-    const Selection & GetSelection() const { return selection_; }
+    virtual const Selection & GetSelection() const override {
+        return selection_;
+    }
 
     /// Returns true if the primary selection can be changed in the given
     /// direction.
@@ -80,17 +83,18 @@ class SelectionManager {
     // ------------------------------------------------------------------------
 
     /// Changes the selection to the given one.
-    void ChangeSelection(const Selection &new_selection);
+    virtual void ChangeSelection(const Selection &new_selection) override;
 
     /// Changes the selection status for the Model on the given SelPath. The
     /// is_multi_select flag indicates whether multi-selection is in effect.
-    void ChangeModelSelection(const SelPath &path, bool is_multi_select);
+    virtual void ChangeModelSelection(const SelPath &path,
+                                      bool is_multi_select) override;
 
     /// Selects all visible top-level models.
     void SelectAll();
 
     /// Deselects all currently-selected Models.
-    void DeselectAll();
+    virtual void DeselectAll() override;
 
     /// Reselects all currently-selected Models. This can be used to update
     /// attached Tools after a change was made.

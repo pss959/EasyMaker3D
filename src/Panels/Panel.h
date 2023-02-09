@@ -19,8 +19,8 @@ DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(NameManager);
 DECL_SHARED_PTR(Panel);
-DECL_SHARED_PTR(SelectionManager);
-DECL_SHARED_PTR(SessionManager);
+DECL_SHARED_PTR(SelectionAgent);
+DECL_SHARED_PTR(SessionAgent);
 DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(VirtualKeyboard);
@@ -41,8 +41,8 @@ class Panel : public SG::Node {
     struct Context {
         CommandManagerPtr   command_manager;
         NameManagerPtr      name_manager;
-        SelectionManagerPtr selection_manager;
-        SessionManagerPtr   session_manager;
+        SelectionAgentPtr   selection_agent;
+        SessionAgentPtr     session_agent;
         SettingsManagerPtr  settings_manager;
         PanelHelperPtr      panel_helper;
         VirtualKeyboardPtr  virtual_keyboard;  // Null if VR not enabled.

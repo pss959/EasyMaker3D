@@ -5,11 +5,11 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Agents/SelectionAgent.h"
+#include "Agents/SessionAgent.h"
 #include "Base/VirtualKeyboard.h"
 #include "Items/Border.h"
 #include "Managers/NameManager.h"
-#include "Managers/SelectionManager.h"
-#include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
@@ -294,8 +294,8 @@ void Panel::SetContext(const ContextPtr &context) {
     ASSERT(context);
     ASSERT(context->command_manager);
     ASSERT(context->name_manager);
-    ASSERT(context->selection_manager);
-    ASSERT(context->session_manager);
+    ASSERT(context->selection_agent);
+    ASSERT(context->session_agent);
     ASSERT(context->settings_manager);
     ASSERT(context->panel_helper);
 
