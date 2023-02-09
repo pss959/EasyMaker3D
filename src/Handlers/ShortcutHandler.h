@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <unordered_map>
 
@@ -8,18 +9,20 @@
 #include "Handlers/Handler.h"
 
 DECL_SHARED_PTR(ShortcutHandler);
-DECL_SHARED_PTR(ActionManager);
 
 /// ShortcutHandler is a derived Handler that handles keyboard shortcuts.
 ///
 /// \ingroup Handlers
 class ShortcutHandler : public Handler {
   public:
+    /// Typedef for function used to apply a shortcut action.
+    typedef std::function<void(Action)> ApplyActionFunc;
+
     ShortcutHandler();
 
-    /// Sets the ActionManager used to apply actions.
-    void SetActionManager(const ActionManagerPtr &action_manager) {
-        action_manager_ = action_manager;
+    /// Sets the function used to apply actions.
+    void SetApplyActionFunc(const ApplyActionFunc &func) {
+        apply_action_func_ = func;
     }
 
     /// Sets the string parameters to the keyboard and controller shortcut(s)
@@ -36,7 +39,7 @@ class ShortcutHandler : public Handler {
     virtual bool HandleEvent(const Event &event) override;
 
   private:
-    ActionManagerPtr action_manager_;
+    ApplyActionFunc apply_action_func_;
 
     /// Maps event key strings to Action enum values.
     std::unordered_map<std::string, Action> action_map_;

@@ -445,8 +445,12 @@ bool Application::Impl_::Init(const Application::Options &options) {
     InitInteraction_();
 
     // Install things...
+    auto apply = [&](Action action){
+        if (action_manager_->CanApplyAction(action))
+            action_manager_->ApplyAction(action);
+    };
     main_handler_->SetPrecisionStore(precision_store_);
-    shortcut_handler_->SetActionManager(action_manager_);
+    shortcut_handler_->SetApplyActionFunc(apply);
 
     ConnectSceneInteraction_();
     if (options.show_session_panel)

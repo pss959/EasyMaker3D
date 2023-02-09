@@ -2,7 +2,7 @@
 
 #include "Base/Event.h"
 #include "Debug/Shortcuts.h"
-#include "Managers/ActionManager.h"
+#include "Util/Assert.h"
 #include "Util/KLog.h"
 
 ShortcutHandler::ShortcutHandler() {
@@ -111,9 +111,8 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
 bool ShortcutHandler::HandleShortcutString_(const std::string &str) {
     auto it = action_map_.find(str);
     if (it != action_map_.end()) {
-        const Action action = it->second;
-        if (action_manager_->CanApplyAction(action))
-            action_manager_->ApplyAction(action);
+        ASSERT(apply_action_func_);
+        apply_action_func_(it->second);
         return true;
     }
 
