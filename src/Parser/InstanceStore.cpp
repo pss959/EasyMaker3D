@@ -1,13 +1,15 @@
-#include "Managers/InstanceManager.h"
+#include "Parser/InstanceStore.h"
 
 #include "Util/String.h"
 
-void InstanceManager::Reset() {
+namespace Parser {
+
+void InstanceStore::Reset() {
     original_map_.clear();
     available_instances_.clear();
 }
 
-void InstanceManager::AddOriginal_(const std::type_index &key,
+void InstanceStore::AddOriginal_(const std::type_index &key,
                                    const BasePtr_ &original) {
     ASSERT(! Util::MapContains(original_map_, key));
     OriginalData_ data;
@@ -20,7 +22,7 @@ void InstanceManager::AddOriginal_(const std::type_index &key,
     available_instances_[key] = AvailableList_();
 }
 
-InstanceManager::BasePtr_ InstanceManager::GetAvailableInstance_(
+InstanceStore::BasePtr_ InstanceStore::GetAvailableInstance_(
     const std::type_index &key) {
     ASSERT(Util::MapContains(original_map_, key));
     BasePtr_ instance;
@@ -32,13 +34,15 @@ InstanceManager::BasePtr_ InstanceManager::GetAvailableInstance_(
     return instance;
 }
 
-void InstanceManager::MakeAvailable_(const BasePtr_ &instance,
+void InstanceStore::MakeAvailable_(const BasePtr_ &instance,
                                      const std::type_index &key) {
     ASSERT(Util::MapContains(available_instances_, key));
     available_instances_[key].push_front(instance);
 }
 
-std::string InstanceManager::CreateName_(const std::type_index &key,
+std::string InstanceStore::CreateName_(const std::type_index &key,
                                          size_t index) {
     return Util::Demangle(key.name()) + "_" + Util::ToString(index);
 }
+
+}  //  namespace Parser

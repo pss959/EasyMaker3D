@@ -2,8 +2,8 @@
 
 #include "Base/Memory.h"
 #include "Feedback/Feedback.h"
-#include "Managers/InstanceManager.h"
 #include "Math/Types.h"
+#include "Parser/InstanceStore.h"
 #include "SG/NodePath.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -15,7 +15,7 @@ namespace SG { DECL_SHARED_PTR(Node); }
 /// can be shared and reused by all Tools that need them.
 ///
 /// \ingroup Managers
-class FeedbackManager : public InstanceManager {
+class FeedbackManager : public Parser::InstanceStore {
   public:
     /// Typedef for function returning scene bounds.
     typedef std::function<Bounds()> SceneBoundsFunc;

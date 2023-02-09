@@ -10,12 +10,12 @@
 
 class TargetManager;
 
-DECL_SHARED_PTR(InstanceManager);
 DECL_SHARED_PTR(Model);
 DECL_SHARED_PTR(Tool);
 DECL_SHARED_PTR(ToolManager);
 
-namespace SG { DECL_SHARED_PTR(Node); }
+namespace Parser { DECL_SHARED_PTR(InstanceStore); }
+namespace SG     { DECL_SHARED_PTR(Node); }
 
 /// The ToolManager class manages interactive tools that may be attached to
 /// Models in the scene.
@@ -181,8 +181,8 @@ class ToolManager : public Grippable {
     /// Set to true while a Tool is actively dragging.
     bool is_tool_dragging_ = false;
 
-    /// Manages PassiveTool instances.
-    InstanceManagerPtr passive_tool_manager_;
+    /// Keeps track of PassiveTool instances.
+    Parser::InstanceStorePtr passive_tool_store_;
 
     /// Finds and returns the named general Tool.
     ToolPtr GetGeneralTool_(const std::string &name) const;

@@ -212,7 +212,6 @@ lib_sources = list(chain(
         'CommandManager',
         'EventManager',
         'FeedbackManager',
-        'InstanceManager',
         'NameManager',
         'PanelManager',
         'SceneContext',
@@ -312,6 +311,7 @@ lib_sources = list(chain(
     ]),
     PlaceInDir_('Parser', [
         'Field',
+        'InstanceStore',
         'Object',
         'Parser',
         'Registry',

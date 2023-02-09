@@ -2,16 +2,16 @@
 
 #include <vector>
 
-#include "Managers/InstanceManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/Model.h"
+#include "Parser/InstanceStore.h"
 #include "Tools/PassiveTool.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
 
 ToolManager::ToolManager(TargetManager &target_manager) :
-    passive_tool_manager_(new InstanceManager) {
+    passive_tool_store_(new Parser::InstanceStore) {
     // Attach a callback to the TargetManager to turn off active tools while
     // the target is being dragged so the tool geometry does not interfere with
     // target placement.
@@ -36,7 +36,7 @@ void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
         // Special case for the PassiveTool.
         if (PassiveToolPtr pt = Util::CastToDerived<PassiveTool>(tool)) {
             KLOG('T', "Adding PassiveTool");
-            passive_tool_manager_->AddOriginal<PassiveTool>(pt);
+            passive_tool_store_->AddOriginal<PassiveTool>(pt);
         }
         else {
             ASSERTM(! Util::MapContains(tool_name_map_, type_name), type_name);
@@ -54,7 +54,7 @@ void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
     }
 
     // Make sure there is a PassiveTool installed.
-    ASSERT(passive_tool_manager_->HasOriginal<PassiveTool>());
+    ASSERT(passive_tool_store_->HasOriginal<PassiveTool>());
 }
 
 void ToolManager::SetDefaultGeneralTool(const std::string &name) {
@@ -79,7 +79,7 @@ void ToolManager::ClearTools() {
 
 void ToolManager::Reset() {
     ResetSession();
-    passive_tool_manager_->Reset();
+    passive_tool_store_->Reset();
 }
 
 void ToolManager::ResetSession() {
@@ -180,7 +180,7 @@ void ToolManager::AttachToSelection(const Selection &sel) {
     // Attach a PassiveTool to all secondary selections.
     const size_t count = sel.GetCount();
     for (size_t i = 1; i < count; ++i) {
-        auto pt = passive_tool_manager_->Acquire<PassiveTool>();
+        auto pt = passive_tool_store_->Acquire<PassiveTool>();
         AttachToolToModel_(pt, sel, i);
     }
 }
@@ -304,7 +304,7 @@ void ToolManager::DetachToolFromModel_(Model &model) {
     model.GetChanged().RemoveObserver(this);
 
     if (PassiveToolPtr passive_tool = Util::CastToDerived<PassiveTool>(tool)) {
-        passive_tool_manager_->Release<PassiveTool>(passive_tool);
+        passive_tool_store_->Release<PassiveTool>(passive_tool);
     }
     else {
         // Remove listeners from any other Tool.

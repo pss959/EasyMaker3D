@@ -9,14 +9,16 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-DECL_SHARED_PTR(InstanceManager);
+namespace Parser {
 
-/// The InstanceManager class manages a set of instances of some sort of
+DECL_SHARED_PTR(InstanceStore);
+
+/// A Parser::InstanceStore manages a set of instances of some type of
 /// Parser::Object. It allows instances to be reused when possible rather than
 /// creating new ones all of the time.
 ///
-/// \ingroup Managers
-class InstanceManager {
+/// \ingroup Parser
+class InstanceStore {
   public:
     /// Resets to original state, clearing all originals and available
     /// instances.
@@ -88,3 +90,5 @@ class InstanceManager {
     /// Creates a unique name for an instance of the given type using the index.
     static std::string CreateName_(const std::type_index &key, size_t index);
 };
+
+}  // namespace Parser
