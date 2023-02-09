@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "Agents/NameAgent.h"
 #include "Base/Memory.h"
 
 DECL_SHARED_PTR(NameManager);
@@ -11,7 +12,7 @@ DECL_SHARED_PTR(NameManager);
 /// NameManager is responsible for managing names to guarantee uniqueness.
 ///
 /// \ingroup Managers
-class NameManager {
+class NameManager : public NameAgent {
   public:
     /// Clears the manager of all names.
     void Reset();
@@ -23,7 +24,7 @@ class NameManager {
     void Remove(const std::string &name);
 
     /// Returns true if the given name is known.
-    bool Find(const std::string &name) const;
+    virtual bool Find(const std::string &name) const override;
 
     /// Creates and adds a new and unique name using the given prefix. For
     // example, passing a prefix of "Sphere" may create "Sphere_1" or another

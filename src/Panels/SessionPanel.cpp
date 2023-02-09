@@ -2,7 +2,6 @@
 
 #include "Agents/SessionAgent.h"
 #include "Items/Settings.h"
-#include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
 #include "Util/Assert.h"

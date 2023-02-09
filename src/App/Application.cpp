@@ -445,12 +445,8 @@ bool Application::Impl_::Init(const Application::Options &options) {
     InitInteraction_();
 
     // Install things...
-    auto apply = [&](Action action){
-        if (action_manager_->CanApplyAction(action))
-            action_manager_->ApplyAction(action);
-    };
     main_handler_->SetPrecisionStore(precision_store_);
-    shortcut_handler_->SetApplyActionFunc(apply);
+    shortcut_handler_->SetActionAgent(action_manager_);
 
     ConnectSceneInteraction_();
     if (options.show_session_panel)
@@ -799,7 +795,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     if (! panel_context_) {
         panel_context_.reset(new Panel::Context);
         panel_context_->command_manager  = command_manager_;
-        panel_context_->name_manager     = name_manager_;
+        panel_context_->name_agent       = name_manager_;
         panel_context_->selection_agent  = selection_manager_;
         panel_context_->session_agent    = session_manager_;
         panel_context_->settings_manager = settings_manager_;

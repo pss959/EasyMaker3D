@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Agents/ActionAgent.h"
 #include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Tools/Tool.h"
@@ -23,7 +24,7 @@ DECL_SHARED_PTR(ToolManager);
 /// ActionManager is responsible for applying actions.
 ///
 /// \ingroup Managers
-class ActionManager {
+class ActionManager : public ActionAgent {
   public:
     typedef std::function<void()> QuitFunc;
     typedef std::function<void()> ReloadFunc;
@@ -80,10 +81,10 @@ class ActionManager {
     std::string GetActionTooltip(Action action, bool for_help = false);
 
     /// Returns true if the given Action can be applied.
-    bool CanApplyAction(Action action) const;
+    virtual bool CanApplyAction(Action action) const override;
 
     /// Applies the given Action. Asserts if the Action cannot be applied.
-    void ApplyAction(Action action);
+    virtual void ApplyAction(Action action) override;
 
     /// Returns the current state of the given Action, which must represent a
     /// toggle of some sort.

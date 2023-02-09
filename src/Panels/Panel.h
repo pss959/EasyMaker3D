@@ -17,7 +17,7 @@ DECL_SHARED_PTR(Border);
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(CommandManager);
-DECL_SHARED_PTR(NameManager);
+DECL_SHARED_PTR(NameAgent);
 DECL_SHARED_PTR(Panel);
 DECL_SHARED_PTR(SelectionAgent);
 DECL_SHARED_PTR(SessionAgent);
@@ -40,7 +40,7 @@ class Panel : public SG::Node {
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
         CommandManagerPtr   command_manager;
-        NameManagerPtr      name_manager;
+        NameAgentPtr        name_agent;
         SelectionAgentPtr   selection_agent;
         SessionAgentPtr     session_agent;
         SettingsManagerPtr  settings_manager;

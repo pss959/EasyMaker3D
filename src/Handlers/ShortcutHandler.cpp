@@ -1,5 +1,6 @@
 #include "Handlers/ShortcutHandler.h"
 
+#include "Agents/ActionAgent.h"
 #include "Base/Event.h"
 #include "Debug/Shortcuts.h"
 #include "Util/Assert.h"
@@ -111,8 +112,10 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
 bool ShortcutHandler::HandleShortcutString_(const std::string &str) {
     auto it = action_map_.find(str);
     if (it != action_map_.end()) {
-        ASSERT(apply_action_func_);
-        apply_action_func_(it->second);
+        const Action action = it->second;
+        ASSERT(action_agent_);
+        if (action_agent_->CanApplyAction(action))
+            action_agent_->ApplyAction(action);
         return true;
     }
 

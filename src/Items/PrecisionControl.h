@@ -7,8 +7,6 @@
 
 namespace Parser { class Registry; }
 
-class ActionManager;
-
 DECL_SHARED_PTR(IconWidget);
 DECL_SHARED_PTR(PrecisionControl);
 namespace SG { DECL_SHARED_PTR(TextNode); }

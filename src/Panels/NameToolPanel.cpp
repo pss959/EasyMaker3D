@@ -1,6 +1,6 @@
 #include "Panels/NameToolPanel.h"
 
-#include "Managers/NameManager.h"
+#include "Agents/NameAgent.h"
 #include "Models/Model.h"
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
@@ -47,7 +47,7 @@ bool NameToolPanel::ValidateName_(const std::string &name) {
         is_valid = false;
         msg = "Invalid name for Model";
     }
-    else if (is_changed && GetContext().name_manager->Find(name)) {
+    else if (is_changed && GetContext().name_agent->Find(name)) {
         is_valid = false;
         msg = "Name is in use by another Model";
     }
