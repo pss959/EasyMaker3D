@@ -26,7 +26,7 @@ DECL_SHARED_PTR(Tool);
 /// \ingroup Tools
 class Tool : public Grippable {
   public:
-    /// The Context is provided by the ToolManager. It allows Tool classes to
+    /// The Context is provided by the ToolBox. It allows Tool classes to
     /// access the available manager instances and other info during their
     /// operation.
     struct Context {

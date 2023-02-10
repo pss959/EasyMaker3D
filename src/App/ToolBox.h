@@ -12,13 +12,13 @@ class TargetManager;
 
 DECL_SHARED_PTR(Model);
 DECL_SHARED_PTR(Tool);
-DECL_SHARED_PTR(ToolManager);
+DECL_SHARED_PTR(ToolBox);
 
 namespace Parser { DECL_SHARED_PTR(InstanceStore); }
 namespace SG     { DECL_SHARED_PTR(Node); }
 
-/// The ToolManager class manages interactive tools that may be attached to
-/// Models in the scene.
+/// The ToolBox class manages interactive tools that may be attached to Models
+/// in the scene.
 ///
 /// There are 3 types of tools:
 ///   - General tools: these can be used for any Model (except for the
@@ -28,7 +28,7 @@ namespace SG     { DECL_SHARED_PTR(Node); }
 ///   - The PassiveTool, which is attached to all secondary selections and does
 ///     not provide any interaction.
 ///
-/// Depending on the current selection, the ToolManager supports:
+/// Depending on the current selection, the ToolBox supports:
 ///   - Switching between the current general tool and the appropriate
 ///     specialized tool.
 ///   - If the current tool is a general tool, switching to the previous or
@@ -38,12 +38,12 @@ namespace SG     { DECL_SHARED_PTR(Node); }
 /// Tool has enough context to decide what to do, since some require knowledge
 /// of all selected Models to operate.
 ///
-/// ToolManager is derived from Grippable so that the current Tool (if any) can
-/// interact correctly with grip drags; the ToolManager delegates all grip
+/// ToolBox is derived from Grippable so that the current Tool (if any) can
+/// interact correctly with grip drags; the ToolBox delegates all grip
 /// operations to the current Tool.
 ///
-/// \ingroup Managers
-class ToolManager : public Grippable {
+/// \ingroup App
+class ToolBox : public Grippable {
   public:
     // ------------------------------------------------------------------------
     // Initialization and update.
@@ -51,7 +51,7 @@ class ToolManager : public Grippable {
 
     /// The constructor is passed the TargetManager instance so an observer can
     /// be added to hide active tools while a target is being dragged.
-    explicit ToolManager(TargetManager &target_manager);
+    explicit ToolBox(TargetManager &target_manager);
 
     /// Sets the parent Node for all active Tools.
     void SetParentNode(const SG::NodePtr &parent_node);
@@ -64,10 +64,10 @@ class ToolManager : public Grippable {
     /// is no such Tool.
     void SetDefaultGeneralTool(const std::string &name);
 
-    /// Resets the ToolManager completely (for reload).
+    /// Resets the ToolBox completely (for reload).
     void Reset();
 
-    /// Resets the ToolManager for a new session.
+    /// Resets the ToolBox for a new session.
     void ResetSession();
 
     /// Clears all tools that have been added. This should be called when

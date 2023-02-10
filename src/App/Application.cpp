@@ -9,6 +9,7 @@
 #include "App/ActionProcessor.h"
 #include "App/RegisterTypes.h"
 #include "App/SceneLoader.h"
+#include "App/ToolBox.h"
 #include "Base/IEmitter.h"
 #include "Base/VirtualKeyboard.h"
 #include "Debug/Shortcuts.h"
@@ -45,7 +46,6 @@
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
-#include "Managers/ToolManager.h"
 #include "Math/Animation.h"
 #include "Math/Intersection.h"
 #include "Math/Types.h"
@@ -146,6 +146,9 @@ class  Application::Impl_ {
 
     std::unique_ptr<SceneLoader> loader_;
 
+    /// The ToolBox.
+    ToolBoxPtr          tool_box_;
+
     /// \name Managers.
     ///@{
     ActionProcessorPtr  action_processor_;
@@ -162,7 +165,6 @@ class  Application::Impl_ {
     SessionManagerPtr   session_manager_;
     SettingsManagerPtr  settings_manager_;
     TargetManagerPtr    target_manager_;
-    ToolManagerPtr      tool_manager_;
     ///@}
 
     /// \name Various Contexts.
@@ -282,7 +284,7 @@ class  Application::Impl_ {
     /// Adds the Board instances for 2D-ish UI.
     void AddBoards_();
 
-    /// Adds templates for all Tools to the ToolManager.
+    /// Adds templates for all Tools to the ToolBox.
     void AddTools_();
 
     /// Adds templates for all Feedback types to the FeedbackManager.
@@ -508,7 +510,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
 
     // Update the current tool if there is one and it is attached to a Model.
     // Do this after processing events so the world is up to date.
-    auto tool = tool_manager_->GetCurrentTool();
+    auto tool = tool_box_->GetCurrentTool();
     if (tool && tool->GetModelAttachedTo())
         tool->Update();
 
@@ -536,7 +538,7 @@ void Application::Impl_::ReloadScene() {
     panel_manager_->Reset();
     selection_manager_->Reset();
     command_manager_->ResetCommandList();
-    tool_manager_->ClearTools();
+    tool_box_->ClearTools();
     Model::ResetColors();
 
     // Wipe out any events that may be pending in emitters.
@@ -666,7 +668,7 @@ void Application::Impl_::InitManagers_() {
     // Managers that depend on others.
     board_manager_.reset(new BoardManager(panel_manager_));
     target_manager_.reset(new TargetManager(command_manager_));
-    tool_manager_.reset(new ToolManager(*target_manager_));
+    tool_box_.reset(new ToolBox(*target_manager_));
 
     settings_manager_->SetChangeFunc(
         [&](const Settings &settings){ SettingsChanged_(settings); });
@@ -697,6 +699,7 @@ void Application::Impl_::InitManagers_() {
     // The ActionProcessor requires its own context.
     action_context_.reset(new ActionProcessor::Context);
     action_context_->scene_context     = scene_context_;
+    action_context_->tool_box          = tool_box_;
     action_context_->board_manager     = board_manager_;
     action_context_->clipboard_manager = clipboard_manager_;
     action_context_->command_manager   = command_manager_;
@@ -705,7 +708,6 @@ void Application::Impl_::InitManagers_() {
     action_context_->selection_manager = selection_manager_;
     action_context_->settings_manager  = settings_manager_;
     action_context_->target_manager    = target_manager_;
-    action_context_->tool_manager      = tool_manager_;
     action_context_->main_handler      = main_handler_;
     action_processor_.reset(new ActionProcessor(action_context_));
     action_processor_->SetReloadFunc([&]() { ReloadScene(); });
@@ -744,7 +746,7 @@ void Application::Impl_::InitExecutors_() {
 }
 
 void Application::Impl_::InitToolContext_() {
-    ASSERT(tool_manager_);
+    ASSERT(tool_box_);
     ASSERT(tool_context_);
 
     tool_context_->board_manager     = board_manager_;
@@ -768,7 +770,7 @@ void Application::Impl_::InitInteraction_() {
     main_handler_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
 
-    // Detect selection changes to update the ToolManager.
+    // Detect selection changes to update the ToolBox.
     selection_manager_->GetSelectionChanged().AddObserver(
         this, [&](const Selection &sel, SelectionManager::Operation op){
             SelectionChanged_(sel, op); });
@@ -987,7 +989,7 @@ void Application::Impl_::AddBoards_() {
 }
 
 void Application::Impl_::AddTools_() {
-    ASSERT(tool_manager_);
+    ASSERT(tool_box_);
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
 
@@ -995,8 +997,8 @@ void Application::Impl_::AddTools_() {
 
     SG::Scene &scene = *scene_context_->scene;
     auto path_to_parent = SG::FindNodePathInScene(scene, "ToolParent");
-    tool_manager_->ClearTools();
-    tool_manager_->SetParentNode(path_to_parent.back());
+    tool_box_->ClearTools();
+    tool_box_->SetParentNode(path_to_parent.back());
     tool_context_->path_to_parent_node = path_to_parent;
 
     // Find the parent node containing all Tools in the scene and use it to get
@@ -1004,8 +1006,8 @@ void Application::Impl_::AddTools_() {
     const std::vector<ToolPtr> tools = FindTools(scene);
     for (auto &tool: tools)
         tool->SetContext(tool_context_);
-    tool_manager_->AddTools(tools);
-    tool_manager_->SetDefaultGeneralTool("TranslationTool");
+    tool_box_->AddTools(tools);
+    tool_box_->SetDefaultGeneralTool("TranslationTool");
 }
 
 void Application::Impl_::AddFeedback_() {
@@ -1084,7 +1086,7 @@ void Application::Impl_::AddGrippables_() {
     add_grippable(scene_context_->key_board);
     add_grippable(scene_context_->app_board);
     add_grippable(scene_context_->tool_board);
-    add_grippable(tool_manager_);
+    add_grippable(tool_box_);
 }
 
 void Application::Impl_::InitRadialMenus_() {
@@ -1128,13 +1130,13 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
                                            SelectionManager::Operation op) {
     switch (op) {
       case SelectionManager::Operation::kSelection:
-        tool_manager_->AttachToSelection(sel);
+        tool_box_->AttachToSelection(sel);
         break;
       case SelectionManager::Operation::kReselection:
-        tool_manager_->ReattachTools();
+        tool_box_->ReattachTools();
         break;
       case SelectionManager::Operation::kDeselection:
-        tool_manager_->DetachTools(sel);
+        tool_box_->DetachTools(sel);
         break;
       case SelectionManager::Operation::kUpdate:
         // Nothing to do in this case.
@@ -1181,11 +1183,11 @@ void Application::Impl_::UpdateIcons_() {
 
     // Special case for the ToggleSpecializedToolIcon.
     const auto &sel = selection_manager_->GetSelection();
-    const auto tool = tool_manager_->GetSpecializedToolForSelection(sel);
+    const auto tool = tool_box_->GetSpecializedToolForSelection(sel);
     const std::string tool_name = tool ? tool->GetTypeName() : "Null";
     toggle_specialized_tool_icon_->SetIndexByName(tool_name + "Icon");
     toggle_specialized_tool_icon_->SetToggleState(
-        tool_manager_->IsUsingSpecializedTool());
+        tool_box_->IsUsingSpecializedTool());
 
     // Also update RadialMenu widgets.
     if (scene_context_->left_radial_menu->IsEnabled())

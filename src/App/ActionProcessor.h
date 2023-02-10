@@ -19,7 +19,7 @@ DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SessionState);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(TargetManager);
-DECL_SHARED_PTR(ToolManager);
+DECL_SHARED_PTR(ToolBox);
 
 /// ActionProcessor is responsible for applying actions.
 ///
@@ -44,7 +44,7 @@ class ActionProcessor : public ActionAgent {
         SelectionManagerPtr selection_manager;
         SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;
-        ToolManagerPtr      tool_manager;
+        ToolBoxPtr          tool_box;
 
         // Handlers.
         MainHandlerPtr      main_handler;

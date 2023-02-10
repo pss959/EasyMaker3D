@@ -75,6 +75,7 @@ lib_sources = list(chain(
         'Application',
         'RegisterTypes',
         'SceneLoader',
+        'ToolBox',
     ]),
     PlaceInDir_('Base', [
         'ActionMap',
@@ -219,7 +220,6 @@ lib_sources = list(chain(
         'SessionManager',
         'SettingsManager',
         'TargetManager',
-        'ToolManager',
     ]),
     PlaceInDir_('Math', [
         'Animation',

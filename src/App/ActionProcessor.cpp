@@ -5,6 +5,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "App/ToolBox.h"
 #include "Base/HelpMap.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
@@ -41,7 +42,6 @@
 #include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
-#include "Managers/ToolManager.h"
 #include "Models/BeveledModel.h"
 #include "Models/ClippedModel.h"
 #include "Models/CombinedModel.h"
@@ -258,7 +258,7 @@ ActionProcessor::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context->selection_manager);
     ASSERT(context->settings_manager);
     ASSERT(context->target_manager);
-    ASSERT(context->tool_manager);
+    ASSERT(context->tool_box);
     ASSERT(context->main_handler);
 
     // Assume all actions are enabled unless disabled in ProcessUpdate().
@@ -270,7 +270,7 @@ ActionProcessor::Impl_::Impl_(const ContextPtr &context) : context_(context) {
 void ActionProcessor::Impl_::Reset() {
     // Order here matters!
     context_->selection_manager->Reset();
-    context_->tool_manager->ResetSession();
+    context_->tool_box->ResetSession();
     context_->scene_context->root_model->Reset();
     context_->command_manager->ResetCommandList();
     context_->scene_context->tree_panel->Reset();
@@ -397,15 +397,15 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
       case Action::kRotationTool:
       case Action::kScaleTool:
       case Action::kTranslationTool:
-        context_->tool_manager->UseGeneralTool(Util::EnumToWord(action),
-                                               GetSelection());
+        context_->tool_box->UseGeneralTool(Util::EnumToWord(action),
+                                           GetSelection());
         break;
 
       case Action::kSwitchToPreviousTool:
-        context_->tool_manager->UsePreviousGeneralTool(GetSelection());
+        context_->tool_box->UsePreviousGeneralTool(GetSelection());
         break;
       case Action::kSwitchToNextTool:
-        context_->tool_manager->UseNextGeneralTool(GetSelection());
+        context_->tool_box->UseNextGeneralTool(GetSelection());
         break;
 
       case Action::kDecreaseComplexity:
@@ -510,7 +510,7 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
 }
 
 bool ActionProcessor::Impl_::GetToggleState_(Action action) const {
-    const auto &tm = *context_->tool_manager;
+    const auto &tm = *context_->tool_box;
     const auto &ss = *context_->command_manager->GetSessionState();
 
     switch (action) {
@@ -556,8 +556,8 @@ void ActionProcessor::Impl_::SetToggleState_(Action action, bool state) {
 
     switch (action) {
       case Action::kToggleSpecializedTool:
-        context_->tool_manager->ToggleSpecializedTool(GetSelection());
-        ASSERT(context_->tool_manager->IsUsingSpecializedTool() == state);
+        context_->tool_box->ToggleSpecializedTool(GetSelection());
+        ASSERT(context_->tool_box->IsUsingSpecializedTool() == state);
         break;
 
       case Action::kTogglePointTarget:
@@ -635,11 +635,11 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
       }
 
       case Action::kToggleSpecializedTool:
-        if (context_->tool_manager->IsUsingSpecializedTool())
+        if (context_->tool_box->IsUsingSpecializedTool())
             return "Switch back to the current general tool";
         else
             return "Switch to the specialized " +
-                context_->tool_manager->GetSpecializedToolForSelection(
+                context_->tool_box->GetSpecializedToolForSelection(
                     GetSelection())->GetTypeName();
 
       case Action::kTogglePointTarget:
@@ -741,7 +741,7 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
     auto enable_tool = [&](Action action){
         const std::string &name = Util::EnumToWord(action);
         set_enabled(action,
-                    context_->tool_manager->CanUseGeneralTool(name, sel));
+                    context_->tool_box->CanUseGeneralTool(name, sel));
     };
     enable_tool(Action::kColorTool);
     enable_tool(Action::kComplexityTool);
@@ -752,12 +752,12 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
 
     const bool can_switch_tools =
         context_->main_handler->IsWaiting() && any_selected &&
-        ! context_->tool_manager->IsUsingSpecializedTool();
+        ! context_->tool_box->IsUsingSpecializedTool();
     set_enabled(Action::kSwitchToPreviousTool, can_switch_tools);
     set_enabled(Action::kSwitchToNextTool,     can_switch_tools);
 
     set_enabled(Action::kToggleSpecializedTool,
-                context_->tool_manager->CanUseSpecializedTool(sel));
+                context_->tool_box->CanUseSpecializedTool(sel));
 
     const bool can_set_complexity =
         any_selected && sel.GetPrimary().GetModel()->CanSetComplexity();
@@ -895,7 +895,7 @@ void ActionProcessor::Impl_::CreateCSGModel_(CSGOperation op) {
     ccc->SetOperation(op);
     ccc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(ccc);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
+    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateHullModel_() {
@@ -907,33 +907,33 @@ void ActionProcessor::Impl_::CreateHullModel_() {
 void ActionProcessor::Impl_::CreateImportedModel_() {
     auto cic = CreateCommand_<CreateImportedModelCommand>();
     context_->command_manager->AddAndDo(cic);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
+    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateRevSurfModel_() {
     auto crc = CreateCommand_<CreateRevSurfModelCommand>();
     context_->command_manager->AddAndDo(crc);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
+    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
     auto cpc = CreateCommand_<CreatePrimitiveModelCommand>();
     cpc->SetType(type);
     context_->command_manager->AddAndDo(cpc);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
+    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateTextModel_() {
     auto ctc = CreateCommand_<CreateTextModelCommand>();
     ctc->SetText("A");
     context_->command_manager->AddAndDo(ctc);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
+    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::ConvertModels_(const ConvertCommandPtr &command) {
     command->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(command);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
+    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::ChangeComplexity_(float delta) {
