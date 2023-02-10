@@ -4,10 +4,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Agents/ActionAgent.h"
 #include "Agents/SelectionAgent.h"
-#include "Commands/ChangeOrderCommand.h"
 #include "Items/Border.h"
-#include "Managers/CommandManager.h"
 #include "Math/Linear.h"
 #include "Models/CombinedModel.h"
 #include "Models/RootModel.h"
@@ -51,15 +50,12 @@ class TreePanel::Impl_ {
         UpdateButtons_();
     }
 
-    bool CanMoveUpOrDown(bool is_up) const;
-    void MoveUpOrDown(bool is_up);
-
     void InitInterface(ContainerPane &root_pane);
     void UpdateInterface();
 
-    void SetAgents(const CommandManagerPtr &command_manager,
+    void SetAgents(const ActionAgentPtr &action_agent,
                    const SelectionAgentPtr &selection_agent) {
-        command_manager_   = command_manager;
+        action_agent_    = action_agent;
         selection_agent_ = selection_agent;
     }
 
@@ -88,7 +84,7 @@ class TreePanel::Impl_ {
     typedef std::shared_ptr<ModelRow_>              ModelRowPtr_;
     typedef std::unordered_map<ModelPtr, ExpState_> ExpStateMap_;
 
-    CommandManagerPtr command_manager_;
+    ActionAgentPtr    action_agent_;
     SelectionAgentPtr selection_agent_;
     RootModelPtr      root_model_;
     SwitcherPanePtr   session_vis_switcher_pane_;
@@ -424,7 +420,9 @@ void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     // Set up the Move Up/Down buttons.
     auto add_but = [&](ButtonPane &pane, bool is_up){
         pane.GetButton().GetClicked().AddObserver(
-            this, [&, is_up](const ClickInfo &){ MoveUpOrDown(is_up); });
+            this, [&, is_up](const ClickInfo &){
+                action_agent_->ApplyAction(is_up ? Action::kMovePrevious :
+                                           Action::kMoveNext); });
     };
     move_up_pane_   = session_row_pane->FindTypedPane<ButtonPane>("MoveUp");
     move_down_pane_ = session_row_pane->FindTypedPane<ButtonPane>("MoveDown");
@@ -456,49 +454,6 @@ void TreePanel::Impl_::UpdateInterface() {
         scrolling_pane_->GetTranslation() + Vector3f(0, 0, TK::kPaneZOffset);
     rect_select_->UpdateTransform(scrolling_pane_->GetScale(), trans);
     rect_select_->SetSelectionAgent(selection_agent_);
-}
-
-bool TreePanel::Impl_::CanMoveUpOrDown(bool is_up) const {
-    ASSERT(selection_agent_);
-    const Selection &sel = selection_agent_->GetSelection();
-
-    bool can_move = false;
-
-    // Has to be a single Model selected.
-    if (sel.GetCount() == 1U) {
-        // There must be at least the RootModel and the selected Model in the
-        // path.
-        const auto &sel_path = sel.GetPrimary();
-        ASSERT(sel_path.size() >= 2U);
-
-        // Get the index of the selected Model within its parent.
-        const auto model  = sel_path.GetModel();
-        const auto parent = sel_path.GetParentModel();
-
-        // The parent has to be a CombinedModel or the RootModel.
-        if (model->IsTopLevel() || Util::IsA<CombinedModel>(parent)) {
-            const int index = parent->GetChildModelIndex(model);
-            ASSERT(index >= 0);
-            if (is_up)
-                can_move = index > 0;
-            else
-                can_move = static_cast<size_t>(index + 1) <
-                    parent->GetChildModelCount();
-        }
-    }
-    return can_move;
-}
-
-void TreePanel::Impl_::MoveUpOrDown(bool is_up) {
-    ASSERT(command_manager_);
-    ASSERT(selection_agent_);
-    const Selection &sel = selection_agent_->GetSelection();
-
-    ASSERT(sel.GetCount() == 1U);
-    auto coc = Parser::Registry::CreateObject<ChangeOrderCommand>();
-    coc->SetFromSelection(sel);
-    coc->SetIsPrevious(is_up);
-    command_manager_->AddAndDo(coc);
 }
 
 void TreePanel::Impl_::UpdateModelRows_() {
@@ -533,8 +488,10 @@ void TreePanel::Impl_::UpdateModelRows_() {
 }
 
 void TreePanel::Impl_::UpdateButtons_() {
-    move_up_pane_->SetInteractionEnabled(CanMoveUpOrDown(true));
-    move_down_pane_->SetInteractionEnabled(CanMoveUpOrDown(false));
+    move_up_pane_->SetInteractionEnabled(
+        action_agent_->CanApplyAction(Action::kMovePrevious));
+    move_down_pane_->SetInteractionEnabled(
+        action_agent_->CanApplyAction(Action::kMoveNext));
 }
 
 void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path, float y_top,
@@ -770,7 +727,7 @@ void TreePanel::ModelsChanged() {
 
 void TreePanel::SetContext(const ContextPtr &context) {
     Panel::SetContext(context);
-    impl_->SetAgents(context->command_manager, context->selection_agent);
+    impl_->SetAgents(context->action_agent, context->selection_agent);
 }
 
 void TreePanel::UpdateForRenderPass(const std::string &pass_name) {
@@ -783,12 +740,4 @@ void TreePanel::InitInterface() {
 
 void TreePanel::UpdateInterface() {
     impl_->UpdateInterface();
-}
-
-bool TreePanel::CanMoveUpOrDown(bool is_up) const {
-    return impl_->CanMoveUpOrDown(is_up);
-}
-
-void TreePanel::MoveUpOrDown(bool is_up) {
-    impl_->MoveUpOrDown(is_up);
 }

@@ -13,6 +13,7 @@
 #include <vector>
 
 namespace SG { class CoordConv; }
+DECL_SHARED_PTR(ActionAgent);
 DECL_SHARED_PTR(Border);
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(ClickableWidget);
@@ -39,6 +40,7 @@ class Panel : public SG::Node {
   public:
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
+        ActionAgentPtr      action_agent;
         CommandManagerPtr   command_manager;
         NameAgentPtr        name_agent;
         SelectionAgentPtr   selection_agent;

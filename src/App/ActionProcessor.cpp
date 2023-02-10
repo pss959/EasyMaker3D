@@ -215,6 +215,12 @@ class ActionProcessor::Impl_ {
     /// Performs radial layout of selected Models using the PointTarget.
     void DoRadialLayout_();
 
+    /// Returns true if the current selection can change order up or down.
+    bool CanMoveUpOrDown_(bool is_up) const;
+
+    /// Changes the order of the current selection.
+    void MoveUpOrDown_(bool is_up);
+
     /// \name Model Creation
     /// Each of these adds a Command to create a Model of some type.
     ///@{
@@ -480,10 +486,10 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
         break;
 
       case Action::kMovePrevious:
-        context_->scene_context->tree_panel->MoveUpOrDown(true);
+        MoveUpOrDown_(true);
         break;
       case Action::kMoveNext:
-        context_->scene_context->tree_panel->MoveUpOrDown(false);
+        MoveUpOrDown_(false);
         break;
 
       case Action::kHideSelected: {
@@ -804,8 +810,8 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kRadialLayout, any_selected &&
                 context_->target_manager->IsPointTargetVisible());
 
-    set_enabled(Action::kMovePrevious, sc.tree_panel->CanMoveUpOrDown(true));
-    set_enabled(Action::kMoveNext,     sc.tree_panel->CanMoveUpOrDown(false));
+    set_enabled(Action::kMovePrevious, CanMoveUpOrDown_(true));
+    set_enabled(Action::kMoveNext,     CanMoveUpOrDown_(false));
 
     set_enabled(Action::kToggleInspector, any_selected);
 
@@ -888,6 +894,46 @@ void ActionProcessor::Impl_::DoRadialLayout_() {
     rlc->SetFromTarget(context_->target_manager->GetPointTarget());
 
     context_->command_manager->AddAndDo(rlc);
+}
+
+bool ActionProcessor::Impl_::CanMoveUpOrDown_(bool is_up) const {
+    const Selection &sel = GetSelection();
+
+    bool can_move = false;
+
+    // Has to be a single Model selected.
+    if (sel.GetCount() == 1U) {
+        // There must be at least the RootModel and the selected Model in the
+        // path.
+        const auto &sel_path = sel.GetPrimary();
+        ASSERT(sel_path.size() >= 2U);
+
+        // Get the index of the selected Model within its parent.
+        const auto model  = sel_path.GetModel();
+        const auto parent = sel_path.GetParentModel();
+
+        // The parent has to be a CombinedModel or the RootModel.
+        if (model->IsTopLevel() || Util::IsA<CombinedModel>(parent)) {
+            const int index = parent->GetChildModelIndex(model);
+            ASSERT(index >= 0);
+            if (is_up)
+                can_move = index > 0;
+            else
+                can_move = static_cast<size_t>(index + 1) <
+                    parent->GetChildModelCount();
+        }
+    }
+    return can_move;
+}
+
+void ActionProcessor::Impl_::MoveUpOrDown_(bool is_up) {
+    const Selection &sel = GetSelection();
+
+    ASSERT(sel.GetCount() == 1U);
+    auto coc = Parser::Registry::CreateObject<ChangeOrderCommand>();
+    coc->SetFromSelection(sel);
+    coc->SetIsPrevious(is_up);
+    context_->command_manager->AddAndDo(coc);
 }
 
 void ActionProcessor::Impl_::CreateCSGModel_(CSGOperation op) {

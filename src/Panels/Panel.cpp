@@ -5,6 +5,7 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Agents/ActionAgent.h"
 #include "Agents/NameAgent.h"
 #include "Agents/SelectionAgent.h"
 #include "Agents/SessionAgent.h"
@@ -292,6 +293,7 @@ void Panel::CreationDone() {
 void Panel::SetContext(const ContextPtr &context) {
     ASSERT(! context_);  // Call only once.
     ASSERT(context);
+    ASSERT(context->action_agent);
     ASSERT(context->command_manager);
     ASSERT(context->name_agent);
     ASSERT(context->selection_agent);
