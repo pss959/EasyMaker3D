@@ -17,13 +17,12 @@ DECL_SHARED_PTR(ActionAgent);
 DECL_SHARED_PTR(Border);
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(ClickableWidget);
-DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(NameAgent);
 DECL_SHARED_PTR(Panel);
 DECL_SHARED_PTR(SelectionAgent);
 DECL_SHARED_PTR(SessionAgent);
 DECL_SHARED_PTR(Settings);
-DECL_SHARED_PTR(SettingsManager);
+DECL_SHARED_PTR(SettingsAgent);
 DECL_SHARED_PTR(VirtualKeyboard);
 DECL_SHARED_PTR(Widget);
 
@@ -41,11 +40,10 @@ class Panel : public SG::Node {
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
         ActionAgentPtr      action_agent;
-        CommandManagerPtr   command_manager;
         NameAgentPtr        name_agent;
         SelectionAgentPtr   selection_agent;
         SessionAgentPtr     session_agent;
-        SettingsManagerPtr  settings_manager;
+        SettingsAgentPtr    settings_agent;
         PanelHelperPtr      panel_helper;
         VirtualKeyboardPtr  virtual_keyboard;  // Null if VR not enabled.
     };

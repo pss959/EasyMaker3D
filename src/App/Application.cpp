@@ -798,11 +798,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
     if (! panel_context_) {
         panel_context_.reset(new Panel::Context);
         panel_context_->action_agent     = action_processor_;
-        panel_context_->command_manager  = command_manager_;
         panel_context_->name_agent       = name_manager_;
         panel_context_->selection_agent  = selection_manager_;
         panel_context_->session_agent    = session_manager_;
-        panel_context_->settings_manager = settings_manager_;
+        panel_context_->settings_agent   = settings_manager_;
         panel_context_->panel_helper     = board_manager_;
         panel_context_->virtual_keyboard = virtual_keyboard_;
     }

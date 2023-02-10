@@ -9,9 +9,9 @@
 #include "Agents/NameAgent.h"
 #include "Agents/SelectionAgent.h"
 #include "Agents/SessionAgent.h"
+#include "Agents/SettingsAgent.h"
 #include "Base/VirtualKeyboard.h"
 #include "Items/Border.h"
-#include "Managers/SettingsManager.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
 #include "Panels/DialogPanel.h"
@@ -294,11 +294,10 @@ void Panel::SetContext(const ContextPtr &context) {
     ASSERT(! context_);  // Call only once.
     ASSERT(context);
     ASSERT(context->action_agent);
-    ASSERT(context->command_manager);
     ASSERT(context->name_agent);
     ASSERT(context->selection_agent);
     ASSERT(context->session_agent);
-    ASSERT(context->settings_manager);
+    ASSERT(context->settings_agent);
     ASSERT(context->panel_helper);
 
     context_ = context;
@@ -452,7 +451,7 @@ void Panel::ResetSize() {
 }
 
 const Settings & Panel::GetSettings() const {
-    return GetContext().settings_manager->GetSettings();
+    return GetContext().settings_agent->GetSettings();
 }
 
 void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {

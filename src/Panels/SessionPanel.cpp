@@ -1,8 +1,8 @@
 #include "Panels/SessionPanel.h"
 
 #include "Agents/SessionAgent.h"
+#include "Agents/SettingsAgent.h"
 #include "Items/Settings.h"
-#include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -278,5 +278,5 @@ void SessionPanel::SetLastSessionPath_(const FilePath &path) {
     new_settings->CopyFrom(GetSettings());
 
     new_settings->SetLastSessionPath(path);
-    GetContext().settings_manager->SetSettings(*new_settings);
+    GetContext().settings_agent->SetSettings(*new_settings);
 }

@@ -316,7 +316,7 @@ void Application_::SetUpScene_() {
         // Always set a context.
         SettingsManagerPtr settings_manager(new SettingsManager);
         Panel::ContextPtr pc(new Panel::Context);
-        pc->settings_manager = settings_manager;
+        pc->settings_agent = settings_manager;
         panel->SetTestContext(pc);
 
         // Special case for FilePanel: set up path to something real.

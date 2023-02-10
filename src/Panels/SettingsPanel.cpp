@@ -2,9 +2,9 @@
 
 #include <string>
 
+#include "Agents/SettingsAgent.h"
 #include "Items/Settings.h"
 #include "Items/UnitConversion.h"
-#include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/SliderPane.h"
@@ -306,7 +306,7 @@ void SettingsPanel::AcceptSettings_() {
     new_settings->SetImportUnitsConversion(*import_conv);
     new_settings->SetExportUnitsConversion(*export_conv);
 
-    GetContext().settings_manager->SetSettings(*new_settings);
+    GetContext().settings_agent->SetSettings(*new_settings);
 
     Close("Accept");
 }

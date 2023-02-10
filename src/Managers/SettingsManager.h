@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "Agents/SettingsAgent.h"
 #include "Base/Memory.h"
 #include "Util/FilePath.h"
 
@@ -9,11 +10,11 @@ DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsManager);
 
 /// SettingsManager manages application settings. Settings are represented by
-/// an instance of the Settings struct. The SettingsManager allows the settings
+/// an instance of the Settings class. The SettingsManager allows the settings
 /// to be saved and loaded from a file.
 ///
 /// \ingroup Managers
-class SettingsManager {
+class SettingsManager : public SettingsAgent {
   public:
     /// Typedef for function that is invoked when settings change.
     typedef std::function<void(const Settings &)> ChangeFunc;
@@ -28,11 +29,11 @@ class SettingsManager {
     void SetChangeFunc(const ChangeFunc &func) { change_func_ = func; }
 
     /// Returns the current settings (read-only).
-    const Settings & GetSettings() const { return *settings_; }
+    virtual const Settings & GetSettings() const override { return *settings_; }
 
     /// Updates the settings to new values and notifies the change function, if
-    /// any. Writes out the new settings unless wr.
-    void SetSettings(const Settings &new_settings);
+    /// any. Writes out the new settings if the write flag is set.
+    virtual void SetSettings(const Settings &new_settings) override;
 
     /// Replaces current settings with those read from the given file. Returns
     /// false on any error.

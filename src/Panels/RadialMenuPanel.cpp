@@ -2,11 +2,11 @@
 
 #include <vector>
 
+#include "Agents/SettingsAgent.h"
 #include "Enums/RadialMenusMode.h"
 #include "Items/RadialMenu.h"
 #include "Items/RadialMenuInfo.h"
 #include "Items/Settings.h"
-#include "Managers/SettingsManager.h"
 #include "Panels/ActionPanel.h"
 #include "Panes/BoxPane.h"
 #include "Panes/RadioButtonPane.h"
@@ -162,7 +162,7 @@ void RadialMenuPanel::AcceptEdits_() {
     new_settings->SetLeftRadialMenuInfo(*left_info_);
     new_settings->SetRightRadialMenuInfo(*right_info_);
 
-    GetContext().settings_manager->SetSettings(*new_settings);
+    GetContext().settings_agent->SetSettings(*new_settings);
 
     Close("Accept");
 }
