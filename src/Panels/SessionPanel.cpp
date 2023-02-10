@@ -1,5 +1,6 @@
 #include "Panels/SessionPanel.h"
 
+#include "Agents/BoardAgent.h"
 #include "Agents/SessionAgent.h"
 #include "Agents/SettingsAgent.h"
 #include "Items/Settings.h"
@@ -88,13 +89,13 @@ void SessionPanel::Close(const std::string &result) {
 }
 
 void SessionPanel::OpenHelp_() {
-    auto &helper = *GetContext().panel_helper;
-    helper.PushPanel(helper.GetPanel("HelpPanel"), nullptr);
+    auto &ba = *GetContext().board_agent;
+    ba.PushPanel(ba.GetPanel("HelpPanel"), nullptr);
 }
 
 void SessionPanel::OpenSettings_() {
-    auto &helper = *GetContext().panel_helper;
-    helper.PushPanel(helper.GetPanel("SettingsPanel"), nullptr);
+    auto &ba = *GetContext().board_agent;
+    ba.PushPanel(ba.GetPanel("SettingsPanel"), nullptr);
 }
 
 void SessionPanel::ContinueSession_() {
@@ -122,8 +123,7 @@ void SessionPanel::ContinueSession_() {
 
 void SessionPanel::LoadSession_() {
     // Access and set up the FilePanel.
-    auto &helper = *GetContext().panel_helper;
-    auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+    auto fp = GetTypedPanel<FilePanel>("FilePanel");
     const auto &settings = GetSettings();
     fp->Reset();
     fp->SetTitle("Select a session file (" + suffix_ + ") to load");
@@ -136,7 +136,7 @@ void SessionPanel::LoadSession_() {
         if (result == "Accept")
             LoadSessionFromPath_(fp->GetPath());
     };
-    helper.PushPanel(fp, result_func);
+    GetContext().board_agent->PushPanel(fp, result_func);
 }
 
 void SessionPanel::StartNewSession_() {
@@ -166,8 +166,7 @@ void SessionPanel::SaveSession_(bool use_current_file) {
     }
     else {
         // Access and set up the FilePanel.
-        auto &helper = *GetContext().panel_helper;
-        auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+        auto fp = GetTypedPanel<FilePanel>("FilePanel");
         const auto &settings = GetSettings();
         fp->Reset();
         fp->SetTitle("Enter a session file (" + suffix_ + ") to save to");
@@ -181,14 +180,13 @@ void SessionPanel::SaveSession_(bool use_current_file) {
             if (result == "Accept")
                 SaveSessionToPath_(fp->GetPath());
         };
-        helper.PushPanel(fp, result_func);
+        GetContext().board_agent->PushPanel(fp, result_func);
     }
 }
 
 void SessionPanel::ExportSelection_() {
     // Access and set up the FilePanel.
-    auto &helper = *GetContext().panel_helper;
-    auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+    auto fp = GetTypedPanel<FilePanel>("FilePanel");
     fp->Reset();
     fp->SetTitle("Enter a file to export to");
     fp->SetInitialPath(GetInitialExportPath_());
@@ -208,7 +206,7 @@ void SessionPanel::ExportSelection_() {
             ExportToPath_(fp->GetPath(), format);
         }
     };
-    helper.PushPanel(fp, result_func);
+    GetContext().board_agent->PushPanel(fp, result_func);
 }
 
 FilePath SessionPanel::GetInitialExportPath_() {

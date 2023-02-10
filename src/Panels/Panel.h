@@ -5,7 +5,6 @@
 
 #include "Base/Event.h"
 #include "Base/Memory.h"
-#include "Panels/PanelHelper.h"
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
 #include "Util/General.h"
@@ -14,6 +13,7 @@
 
 namespace SG { class CoordConv; }
 DECL_SHARED_PTR(ActionAgent);
+DECL_SHARED_PTR(BoardAgent);
 DECL_SHARED_PTR(Border);
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(ClickableWidget);
@@ -40,11 +40,11 @@ class Panel : public SG::Node {
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
         ActionAgentPtr      action_agent;
+        BoardAgentPtr       board_agent;
         NameAgentPtr        name_agent;
         SelectionAgentPtr   selection_agent;
         SessionAgentPtr     session_agent;
         SettingsAgentPtr    settings_agent;
-        PanelHelperPtr      panel_helper;
         VirtualKeyboardPtr  virtual_keyboard;  // Null if VR not enabled.
     };
     typedef std::shared_ptr<Context> ContextPtr;
@@ -212,9 +212,22 @@ class Panel : public SG::Node {
     void AskQuestion(const std::string &question, const QuestionFunc &func,
                      bool is_no_default);
 
-    /// Convenience that calls Close on the PanelHelper. Derived classes can
+    /// Convenience that calls Close on the BoardAgent. Derived classes can
     /// modify this behavior.
     virtual void Close(const std::string &result);
+
+    /// Uses the BoardAgent to get the named Panel. Asserts if the name is not
+    /// known.
+    PanelPtr GetPanel(const std::string &name) const;
+
+    /// Same as GetPanel(), but requires that the Panel is of the given derived
+    /// type. Asserts if not found.
+    template <typename T>
+    std::shared_ptr<T> GetTypedPanel(const std::string &name) const {
+        auto panel = Util::CastToDerived<T>(GetPanel(name));
+        ASSERT(panel);
+        return panel;
+    }
 
   private:
     class Focuser_;  /// Handles Pane focus management.

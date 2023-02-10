@@ -2,18 +2,18 @@
 
 #include <vector>
 
+#include "Agents/BoardAgent.h"
 #include "Base/Memory.h"
-#include "Panels/PanelHelper.h"
 
 DECL_SHARED_PTR(Board);
 DECL_SHARED_PTR(BoardManager);
 DECL_SHARED_PTR(PanelManager);
 
 /// The BoardManager manages all current Board instances. It is derived from
-/// PanelHelper so that Panel classes can operate on Board instances opaquely.
+/// BoardAgent so that Panel classes can operate on Board instances opaquely.
 ///
 /// \ingroup Managers
-class BoardManager : public PanelHelper {
+class BoardManager : public BoardAgent {
   public:
     /// The BoardManager is passed a PanelManager used to access Panels.
     explicit BoardManager(const PanelManagerPtr &panel_manager);
@@ -29,13 +29,20 @@ class BoardManager : public PanelHelper {
     /// shown.
     BoardPtr GetCurrentBoard() const;
 
-    // ------------------------------------------------------------------------
-    // PanelHelper interface.
-    // ------------------------------------------------------------------------
+    // BoardAgent interface.
     virtual PanelPtr GetPanel(const std::string &name) const override;
     virtual void ClosePanel(const std::string &result) override;
     virtual void PushPanel(const PanelPtr &panel,
                            const ResultFunc &result_func) override;
+
+    /// Uses GetPanel(), but requires that the Panel is of the given derived
+    /// type. Asserts if not found.
+    template <typename T>
+    std::shared_ptr<T> GetTypedPanel(const std::string &name) const {
+        auto panel = Util::CastToDerived<T>(GetPanel(name));
+        ASSERT(panel);
+        return panel;
+    }
 
   private:
     /// PanelManager used to access Panels.

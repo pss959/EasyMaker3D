@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Agents/BoardAgent.h"
 #include "Agents/SettingsAgent.h"
 #include "Enums/RadialMenusMode.h"
 #include "Items/RadialMenu.h"
@@ -137,8 +138,7 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
     RadialMenuInfoPtr info = hand == Hand::kLeft ? left_info_ : right_info_;
     RadialMenuPtr     menu = hand == Hand::kLeft ? left_menu_ : right_menu_;
 
-    auto &helper = *GetContext().panel_helper;
-    auto ap = helper.GetTypedPanel<ActionPanel>("ActionPanel");
+    auto ap = GetTypedPanel<ActionPanel>("ActionPanel");
     ap->SetAction(info->GetButtonAction(index));
 
     auto result_func = [ap, info, menu, index](const std::string &result){
@@ -148,7 +148,7 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
             menu->ChangeButtonAction(index, action);
         }
     };
-    helper.PushPanel(ap, result_func);
+    GetContext().board_agent->PushPanel(ap, result_func);
 }
 
 void RadialMenuPanel::AcceptEdits_() {

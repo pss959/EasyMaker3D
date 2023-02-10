@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Agents/BoardAgent.h"
 #include "Agents/SettingsAgent.h"
 #include "Items/Settings.h"
 #include "Items/UnitConversion.h"
@@ -232,15 +233,14 @@ void SettingsPanel::UpdateFromSettings_(const Settings &settings,
 }
 
 void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
-    auto &helper = *GetContext().panel_helper;
-    auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+    auto fp = GetTypedPanel<FilePanel>("FilePanel");
     InitFilePanel_(*fp, item_name);
 
     auto result_func = [&, fp, item_name](const std::string &result){
         if (result == "Accept")
             AcceptFileItem_(item_name, fp->GetPath());
     };
-    helper.PushPanel(fp, result_func);
+    GetContext().board_agent->PushPanel(fp, result_func);
 }
 
 void SettingsPanel::InitFilePanel_(FilePanel &file_panel,
@@ -263,8 +263,8 @@ void SettingsPanel::AcceptFileItem_(const std::string &item_name,
 }
 
 void SettingsPanel::OpenRadialMenuPanel_() {
-    auto &helper = *GetContext().panel_helper;
-    helper.PushPanel(helper.GetPanel("RadialMenuPanel"), nullptr);
+    auto &ba = *GetContext().board_agent;
+    ba.PushPanel(ba.GetPanel("RadialMenuPanel"), nullptr);
 }
 
 void SettingsPanel::AcceptSettings_() {

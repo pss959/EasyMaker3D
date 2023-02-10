@@ -802,7 +802,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         panel_context_->selection_agent  = selection_manager_;
         panel_context_->session_agent    = session_manager_;
         panel_context_->settings_agent   = settings_manager_;
-        panel_context_->panel_helper     = board_manager_;
+        panel_context_->board_agent      = board_manager_;
         panel_context_->virtual_keyboard = virtual_keyboard_;
     }
     panel_manager_->FindAllPanels(scene, panel_context_);

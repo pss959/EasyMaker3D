@@ -6,6 +6,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Agents/ActionAgent.h"
+#include "Agents/BoardAgent.h"
 #include "Agents/NameAgent.h"
 #include "Agents/SelectionAgent.h"
 #include "Agents/SessionAgent.h"
@@ -294,11 +295,11 @@ void Panel::SetContext(const ContextPtr &context) {
     ASSERT(! context_);  // Call only once.
     ASSERT(context);
     ASSERT(context->action_agent);
+    ASSERT(context->board_agent);
     ASSERT(context->name_agent);
     ASSERT(context->selection_agent);
     ASSERT(context->session_agent);
     ASSERT(context->settings_agent);
-    ASSERT(context->panel_helper);
 
     context_ = context;
 
@@ -485,8 +486,7 @@ PanePtr Panel::GetFocusedPane() const {
 
 void Panel::DisplayMessage(const std::string &message,
                            const MessageFunc &func) {
-    auto &helper = *GetContext().panel_helper;
-    auto dp = helper.GetTypedPanel<DialogPanel>("DialogPanel");
+    auto dp = GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage(message);
     dp->SetSingleResponse("OK");
 
@@ -494,23 +494,26 @@ void Panel::DisplayMessage(const std::string &message,
         if (func)
             func();
     };
-    helper.PushPanel(dp, result_func);
+    context_->board_agent->PushPanel(dp, result_func);
 }
 
 void Panel::AskQuestion(const std::string &question, const QuestionFunc &func,
                         bool is_no_default) {
     ASSERT(func);
 
-    auto &helper = *GetContext().panel_helper;
-    auto dp = helper.GetTypedPanel<DialogPanel>("DialogPanel");
+    auto dp = GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage(question);
     dp->SetChoiceResponse("No", "Yes", is_no_default);
 
-    helper.PushPanel(dp, func);
+    context_->board_agent->PushPanel(dp, func);
 }
 
 void Panel::Close(const std::string &result) {
-    context_->panel_helper->ClosePanel(result);
+    context_->board_agent->ClosePanel(result);
+}
+
+PanelPtr Panel::GetPanel(const std::string &name) const {
+    return context_->board_agent->GetPanel(name);
 }
 
 void Panel::UpdateInteractivePanes_() {

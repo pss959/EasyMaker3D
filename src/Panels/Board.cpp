@@ -32,9 +32,9 @@ class Board::Impl_ {
     }
     void InitCanvas();
     void SetPanel(const PanelPtr &panel,
-                  const PanelHelper::ResultFunc &result_func);
+                  const BoardAgent::ResultFunc &result_func);
     void PushPanel(const PanelPtr &panel,
-                   const PanelHelper::ResultFunc &result_func);
+                   const BoardAgent::ResultFunc &result_func);
     bool PopPanel(const std::string &result);
     PanelPtr GetCurrentPanel() const;
     void SetPanelScale(float scale);
@@ -53,8 +53,8 @@ class Board::Impl_ {
   private:
     /// Struct representing an active Panel. These are stored in a stack.
     struct PanelInfo_ {
-        PanelPtr                panel;
-        PanelHelper::ResultFunc result_func;
+        PanelPtr               panel;
+        BoardAgent::ResultFunc result_func;
     };
 
     /// This struct represents the current grip state for a controller.
@@ -115,7 +115,7 @@ class Board::Impl_ {
 
     /// Pushes a PanelInfo_ on the stack.
     void PushPanelInfo_(const PanelPtr &panel,
-                        const PanelHelper::ResultFunc &result_func);
+                        const BoardAgent::ResultFunc &result_func);
 
     /// Replaces one Panel with another. Either (but not both) may be null.
     void ReplacePanel_(const PanelPtr &cur_panel, const PanelPtr &new_panel);
@@ -167,7 +167,7 @@ void Board::Impl_::InitCanvas() {
 }
 
 void Board::Impl_::SetPanel(const PanelPtr &panel,
-                            const PanelHelper::ResultFunc &result_func) {
+                            const BoardAgent::ResultFunc &result_func) {
     ASSERT(panel);
     ASSERT(panel_stack_.empty());
     KLOG('g', root_node_.GetDesc() << " SetPanel to " << panel->GetDesc());
@@ -176,7 +176,7 @@ void Board::Impl_::SetPanel(const PanelPtr &panel,
 }
 
 void Board::Impl_::PushPanel(const PanelPtr &panel,
-                             const PanelHelper::ResultFunc &result_func) {
+                             const BoardAgent::ResultFunc &result_func) {
     ASSERT(panel);
     ASSERT(! panel_stack_.empty());
 
@@ -357,7 +357,7 @@ void Board::Impl_::FindParts_() {
 }
 
 void Board::Impl_::PushPanelInfo_(const PanelPtr &panel,
-                                  const PanelHelper::ResultFunc &result_func) {
+                                  const BoardAgent::ResultFunc &result_func) {
     PanelInfo_ info;
     info.panel       = panel;
     info.result_func = result_func;
@@ -731,12 +731,12 @@ void Board::CreationDone() {
 }
 
 void Board::SetPanel(const PanelPtr &panel,
-                     const PanelHelper::ResultFunc &result_func) {
+                     const BoardAgent::ResultFunc &result_func) {
     impl_->SetPanel(panel, result_func);
 }
 
 void Board::PushPanel(const PanelPtr &panel,
-                      const PanelHelper::ResultFunc &result_func) {
+                      const BoardAgent::ResultFunc &result_func) {
     impl_->PushPanel(panel, result_func);
 }
 

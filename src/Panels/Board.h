@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Agents/BoardAgent.h"
 #include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
-#include "Panels/PanelHelper.h"
 #include "Widgets/Touchable.h"
 
 namespace Parser { class Registry; }
@@ -54,13 +54,13 @@ class Board : public Grippable, public Touchable {
     /// is invoked when the Panel is closed. This asserts if the Board already
     /// has a Panel set.
     void SetPanel(const PanelPtr &panel,
-                  const PanelHelper::ResultFunc &result_func = nullptr);
+                  const BoardAgent::ResultFunc &result_func = nullptr);
 
     /// Pushes a Panel to display in the board. The ResultFunc is invoked when
     /// the Panel is closed (popped). This asserts if the Board is not already
     /// showing a Panel.
     void PushPanel(const PanelPtr &panel,
-                   const PanelHelper::ResultFunc &result_func);
+                   const BoardAgent::ResultFunc &result_func);
 
     /// Pops the current Panel, passing the given string to the result function
     /// (if any). Returns true if there are more Panels left on the
@@ -138,7 +138,7 @@ class Board : public Grippable, public Touchable {
     ///@}
 
     friend class Parser::Registry;
-    friend class PanelHelper;
+    friend class BoardAgent;
 
     /// Hide this so SetToHeight() must be used.
     using Grippable::SetTranslation;

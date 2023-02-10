@@ -8,29 +8,19 @@
 #include "Util/General.h"
 
 DECL_SHARED_PTR(Panel);
-DECL_SHARED_PTR(PanelHelper);
+DECL_SHARED_PTR(BoardAgent);
 
-/// PanelHelper is an abstract class that lets Panel classes operate on Boards
-/// and other Panels opaquely.  It decouples dependencies between BoardManager
-/// and Panel classes.
+/// BoardAgent is an abstract interface class that lets Panel classes operate
+/// on Boards and other Panels opaquely.  It decouples dependencies between
+/// BoardManager and Panel classes.
 ///
-/// \ingroup Panels
-class PanelHelper {
+/// \ingroup Agents
+class BoardAgent {
   public:
-    typedef std::function<void(const PanelPtr &)>    InitFunc;
     typedef std::function<void(const std::string &)> ResultFunc;
 
     /// Returns the named Panel. Asserts if the name is not known.
     virtual PanelPtr GetPanel(const std::string &name) const = 0;
-
-    /// Same as GetPanel(), but requires that the Panel is of the given derived
-    /// type. Asserts if not found.
-    template <typename T>
-    std::shared_ptr<T> GetTypedPanel(const std::string &name) const {
-        auto panel = Util::CastToDerived<T>(GetPanel(name));
-        ASSERT(panel);
-        return panel;
-    }
 
     /// Closes the currently open Panel, passing the given string to the result
     /// function.
