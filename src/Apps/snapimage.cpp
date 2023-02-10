@@ -5,6 +5,7 @@
 #include <ion/gfx/image.h>
 #include <ion/image/conversionutils.h>
 
+#include "App/ActionProcessor.h"
 #include "App/Application.h"
 #include "App/Args.h"
 #include "App/SnapScript.h"
@@ -13,7 +14,6 @@
 #include "Handlers/Handler.h"
 #include "Items/Controller.h"
 #include "Items/Settings.h"
-#include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/PanelManager.h"
 #include "Managers/SceneContext.h"
@@ -416,9 +416,9 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
     switch (instr.type) {
       case SIType::kAction: {
           const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
-          ASSERTM(test_context_.action_manager->CanApplyAction(ainst.action),
+          ASSERTM(test_context_.action_processor->CanApplyAction(ainst.action),
                   Util::EnumName(ainst.action));
-          test_context_.action_manager->ApplyAction(ainst.action);
+          test_context_.action_processor->ApplyAction(ainst.action);
           break;
       }
       case SIType::kClick: {

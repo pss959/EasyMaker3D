@@ -6,6 +6,7 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/math/vectorutils.h>
 
+#include "App/ActionProcessor.h"
 #include "App/RegisterTypes.h"
 #include "App/SceneLoader.h"
 #include "Base/IEmitter.h"
@@ -31,7 +32,6 @@
 #include "Items/SessionState.h"
 #include "Items/Settings.h"
 #include "Items/Shelf.h"
-#include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/BoardManager.h"
 #include "Managers/ClipboardManager.h"
@@ -148,7 +148,7 @@ class  Application::Impl_ {
 
     /// \name Managers.
     ///@{
-    ActionManagerPtr    action_manager_;
+    ActionProcessorPtr  action_processor_;
     AnimationManagerPtr animation_manager_;
     BoardManagerPtr     board_manager_;
     ClipboardManagerPtr clipboard_manager_;
@@ -211,8 +211,8 @@ class  Application::Impl_ {
     /// Panel::Context used to set up all Panel instances.
     Panel::ContextPtr          panel_context_;
 
-    /// ActionManager::Context used to set up the ActionManager.
-    ActionManager::ContextPtr  action_context_;
+    /// ActionProcessor::Context used to set up the ActionProcessor.
+    ActionProcessor::ContextPtr  action_context_;
 
     /// All 3D icons that need to be updated every frame.
     std::vector<IconWidgetPtr> icons_;
@@ -416,7 +416,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
         virtual_keyboard_.reset(new VirtualKeyboard);
     }
 
-    // This needs to exist for the ActionManager.
+    // This needs to exist for the ActionProcessor.
     tool_context_.reset(new Tool::Context);
 
     // Set up the tooltip function for use in all Widgets and Models.
@@ -447,14 +447,14 @@ bool Application::Impl_::Init(const Application::Options &options) {
 
     // Install things...
     main_handler_->SetPrecisionStore(precision_store_);
-    shortcut_handler_->SetActionAgent(action_manager_);
+    shortcut_handler_->SetActionAgent(action_processor_);
 
     ConnectSceneInteraction_();
     if (options.show_session_panel)
         ShowInitialPanel_();
 
-    // Tell the ActionManager how to quit.
-    action_manager_->SetQuitFunc([&]{ TryQuit_(); });
+    // Tell the ActionProcessor how to quit.
+    action_processor_->SetQuitFunc([&]{ TryQuit_(); });
 
     return true;
 }
@@ -474,9 +474,8 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     main_handler_->SetTouchable(board_manager_->GetCurrentBoard());
     main_handler_->ProcessUpdate(is_modified_mode);
     tool_context_->is_modified_mode = is_modified_mode;
-    tool_context_->session_state = command_manager_->GetSessionState();
 
-    action_manager_->ProcessUpdate();
+    action_processor_->ProcessUpdate();
 
     // Process any animations. Do this after updating the MainHandler
     // because a click timeout may start an animation.
@@ -577,7 +576,7 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
     // This should not be called before Init().
     ASSERT(session_manager_);
     ASSERT(scene_context_);
-    tc.action_manager    = action_manager_;
+    tc.action_processor  = action_processor_;
     tc.command_manager   = command_manager_;
     tc.panel_manager     = panel_manager_;
     tc.selection_manager = selection_manager_;
@@ -695,8 +694,8 @@ void Application::Impl_::InitManagers_() {
     Debug::SetLogHandler(log_handler_);
 #endif
 
-    // The ActionManager requires its own context.
-    action_context_.reset(new ActionManager::Context);
+    // The ActionProcessor requires its own context.
+    action_context_.reset(new ActionProcessor::Context);
     action_context_->scene_context     = scene_context_;
     action_context_->board_manager     = board_manager_;
     action_context_->clipboard_manager = clipboard_manager_;
@@ -708,13 +707,14 @@ void Application::Impl_::InitManagers_() {
     action_context_->target_manager    = target_manager_;
     action_context_->tool_manager      = tool_manager_;
     action_context_->main_handler      = main_handler_;
-    action_manager_.reset(new ActionManager(action_context_));
-    action_manager_->SetReloadFunc([&]() { ReloadScene(); });
+    action_processor_.reset(new ActionProcessor(action_context_));
+    action_processor_->SetReloadFunc([&]() { ReloadScene(); });
 
     // Initialize the SessionManager with the previous session path.
     const auto path = settings_manager_->GetSettings().GetLastSessionPath();
-    session_manager_.reset(new SessionManager(action_manager_, command_manager_,
-                                              selection_manager_, path));
+    session_manager_.reset(
+        new SessionManager(action_processor_, command_manager_,
+                           selection_manager_, path));
 
 #if ENABLE_DEBUG_FEATURES
     Debug::SetCommandList(command_manager_->GetCommandList());
@@ -750,7 +750,7 @@ void Application::Impl_::InitToolContext_() {
     tool_context_->board_manager     = board_manager_;
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
-    tool_context_->precision_store = precision_store_;
+    tool_context_->precision_store   = precision_store_;
     tool_context_->settings_manager  = settings_manager_;
     tool_context_->target_manager    = target_manager_;
 }
@@ -784,7 +784,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     auto &scene = *scene_context_->scene;
 
-    // Tell the ActionManager::Context about the new Scene.
+    // Tell the ActionProcessor::Context about the new Scene.
     action_context_->scene_context = scene_context_;
 
     // Tell the SelectionManager and Executor::Context about the new RootModel.
@@ -902,7 +902,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         SG::FindTypedNodeInScene<PushButtonWidget>(scene, "ExitSign");
     exit_sign->GetClicked().AddObserver(
         this, [this](const ClickInfo &){
-            action_manager_->ApplyAction(Action::kQuit);
+            action_processor_->ApplyAction(Action::kQuit);
         });
     InitTooltip_(*exit_sign);
 
@@ -1030,7 +1030,7 @@ void Application::Impl_::AddFeedback_() {
 }
 
 void Application::Impl_::AddIcons_() {
-    ASSERT(action_manager_);
+    ASSERT(action_processor_);
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
 
@@ -1062,7 +1062,7 @@ void Application::Impl_::AddIcons_() {
     for (const auto &icon: icons_) {
         icon->GetClicked().AddObserver(
             this, [&](const ClickInfo &){
-                action_manager_->ApplyAction(icon->GetAction());});
+                action_processor_->ApplyAction(icon->GetAction());});
         InitTooltip_(*icon);
     }
 
@@ -1090,8 +1090,8 @@ void Application::Impl_::AddGrippables_() {
 void Application::Impl_::InitRadialMenus_() {
     // This is called when a RadialMenu button is clicked.
     auto apply = [&](size_t index, Action action){
-        if (action_manager_->CanApplyAction(action))
-            action_manager_->ApplyAction(action);
+        if (action_processor_->CanApplyAction(action))
+            action_processor_->ApplyAction(action);
     };
     const auto &lrmenu = scene_context_->left_radial_menu;
     const auto &rrmenu = scene_context_->right_radial_menu;
@@ -1116,7 +1116,7 @@ void Application::Impl_::InitRadialMenus_() {
 
 void Application::Impl_::ShowInitialPanel_() {
     // Show the SessionPanel.
-    action_manager_->ApplyAction(Action::kOpenSessionPanel);
+    action_processor_->ApplyAction(Action::kOpenSessionPanel);
 }
 
 void Application::Impl_::InitTooltip_(Widget &widget) {
@@ -1163,7 +1163,7 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
 
 void Application::Impl_::UpdateIcons_() {
     auto is_enabled = [&](Action action){
-        return action_manager_->CanApplyAction(action); };
+        return action_processor_->CanApplyAction(action); };
 
     for (auto &icon: icons_) {
         ASSERT(icon);
@@ -1173,9 +1173,9 @@ void Application::Impl_::UpdateIcons_() {
 
         if (enabled) {
             const Action action = icon->GetAction();
-            icon->SetTooltipText(action_manager_->GetActionTooltip(action));
+            icon->SetTooltipText(action_processor_->GetActionTooltip(action));
             if (icon->IsToggle())
-                icon->SetToggleState(action_manager_->GetToggleState(action));
+                icon->SetToggleState(action_processor_->GetToggleState(action));
         }
     }
 
@@ -1267,7 +1267,7 @@ bool Application::Impl_::ProcessEvents_(bool is_modified_mode,
         emitter->EmitEvents(events);
 
     // Check for an event resulting in quitting. Note that an action that
-    // results in quitting invokes the ActionManager's QuitFunc.
+    // results in quitting invokes the ActionProcessor's QuitFunc.
     return event_manager_->HandleEvents(events, is_modified_mode,
                                         TK::kMaxEventHandlingTime);
 }
@@ -1292,8 +1292,8 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
                 if (model) {
                     select_model(*model, false);
                     // Make sure that the action is enabled.
-                    action_manager_->ProcessUpdate();
-                    action_manager_->ApplyAction(Action::kToggleInspector);
+                    action_processor_->ProcessUpdate();
+                    action_processor_->ApplyAction(Action::kToggleInspector);
                 }
             }
         }

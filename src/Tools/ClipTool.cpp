@@ -421,7 +421,8 @@ void ClipTool::Impl_::SnapRotation_(bool &snapped_to_target, int &snapped_dim) {
             return false;
         };
 
-        const bool is_stage = context_.session_state->IsAxisAligned();
+        const bool is_stage =
+            context_.command_manager->GetSessionState()->IsAxisAligned();
         const Vector3f &dir =
             is_stage ? stage_plane_.normal : object_plane_.normal;
         for (int dim = 0; dim < 3; ++dim) {

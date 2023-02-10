@@ -71,6 +71,7 @@ def BuildObject_(env, source):
 # These are all relative to this subdirectory.
 lib_sources = list(chain(
     PlaceInDir_('App', [
+        'ActionProcessor',
         'Application',
         'RegisterTypes',
         'SceneLoader',
@@ -205,7 +206,6 @@ lib_sources = list(chain(
         'UnitConversion',
     ]),
     PlaceInDir_('Managers', [
-        'ActionManager',
         'AnimationManager',
         'BoardManager',
         'ClipboardManager',

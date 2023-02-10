@@ -7,7 +7,7 @@
 #include "Base/Memory.h"
 #include "Enums/Action.h"
 
-DECL_SHARED_PTR(ActionManager);
+DECL_SHARED_PTR(ActionProcessor);
 DECL_SHARED_PTR(BoardManager);
 DECL_SHARED_PTR(ClipboardManager);
 DECL_SHARED_PTR(CommandManager);
@@ -21,16 +21,16 @@ DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(TargetManager);
 DECL_SHARED_PTR(ToolManager);
 
-/// ActionManager is responsible for applying actions.
+/// ActionProcessor is responsible for applying actions.
 ///
-/// \ingroup Managers
-class ActionManager : public ActionAgent {
+/// \ingroup App
+class ActionProcessor : public ActionAgent {
   public:
     typedef std::function<void()> QuitFunc;
     typedef std::function<void()> ReloadFunc;
 
-    /// The ActionManager::Context stores everything the ActionManager needs to
-    /// apply actions.
+    /// The ActionProcessor::Context stores everything the ActionProcessor
+    /// needs to apply actions.
     struct Context {
         /// The SceneContext storing important scene contents.
         SceneContextPtr     scene_context;
@@ -51,11 +51,11 @@ class ActionManager : public ActionAgent {
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
-    /// Initializes the ActionManager with a Context and a function to call
+    /// Initializes the ActionProcessor with a Context and a function to call
     /// when the user tries to quit.
-    ActionManager(const ContextPtr &context);
+    ActionProcessor(const ContextPtr &context);
 
-    ~ActionManager();
+    ~ActionProcessor();
 
     /// Resets to original conditions.
     virtual void Reset() override;

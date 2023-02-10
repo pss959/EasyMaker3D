@@ -16,7 +16,6 @@ DECL_SHARED_PTR(FeedbackManager);
 DECL_SHARED_PTR(Model);
 DECL_SHARED_PTR(PrecisionStore);
 DECL_SHARED_PTR(RootModel);
-DECL_SHARED_PTR(SessionState);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(TargetManager);
 DECL_SHARED_PTR(Tool);
@@ -43,9 +42,6 @@ class Tool : public Grippable {
 
         /// Board to use for Tools derived from PanelTool.
         BoardPtr            board;
-
-        /// SessionState for updating modal tool features.
-        SessionStatePtr     session_state;
 
         /// Flag indicating whether the app is in modified input mode.
         bool                is_modified_mode = false;
@@ -196,6 +192,9 @@ class Tool : public Grippable {
     /// coordinates. Returns the size of the Model's bounds (oriented properly)
     /// in stage coordinates.
     Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
+
+    /// Returns true if the axis-aligned flag is on.
+    bool IsAxisAligned() const;
 
     /// Returns a point (in stage coordinates) for the position of the Tool at
     /// the given distance above the top center (if over_front is false) or top

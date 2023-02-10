@@ -56,7 +56,7 @@ void MirrorTool::PlaneClicked_(int dim) {
     // Get the mirror plane in stage coordinates based on axis-alignment.
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
     const Vector3f axis = GetAxis(dim);
-    const Plane stage_plane = context.session_state->IsAxisAligned() ?
+    const Plane stage_plane = IsAxisAligned() ?
         Plane(osm * Point3f::Zero(), axis) :
         Plane(Point3f(GetTranslation()), osm * axis);
 

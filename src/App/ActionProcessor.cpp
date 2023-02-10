@@ -1,4 +1,4 @@
-﻿#include "Managers/ActionManager.h"
+﻿#include "App/ActionProcessor.h"
 
 #include <unordered_set>
 
@@ -145,10 +145,10 @@ static bool CanDeleteModels_(const Selection &sel) {
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
-// ActionManager::Impl_ class.
+// ActionProcessor::Impl_ class.
 // ----------------------------------------------------------------------------
 
-class ActionManager::Impl_ {
+class ActionProcessor::Impl_ {
   public:
     Impl_(const ContextPtr &context);
 
@@ -247,7 +247,7 @@ class ActionManager::Impl_ {
     SG::Scene & GetScene() const { return *context_->scene_context->scene; }
 };
 
-ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
+ActionProcessor::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context);
     ASSERT(context->scene_context);
     ASSERT(context->board_manager);
@@ -267,7 +267,7 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     is_action_enabled_[Util::EnumInt(Action::kNone)] = false;  // Except this.
 }
 
-void ActionManager::Impl_::Reset() {
+void ActionProcessor::Impl_::Reset() {
     // Order here matters!
     context_->selection_manager->Reset();
     context_->tool_manager->ResetSession();
@@ -277,7 +277,7 @@ void ActionManager::Impl_::Reset() {
     context_->name_manager->Reset();
 }
 
-void ActionManager::Impl_::UpdateFromSessionState(const SessionState &state) {
+void ActionProcessor::Impl_::UpdateFromSessionState(const SessionState &state) {
     SetToggleState_(Action::kTogglePointTarget, state.IsPointTargetVisible());
     SetToggleState_(Action::kToggleEdgeTarget,  state.IsEdgeTargetVisible());
     SetToggleState_(Action::kToggleShowEdges,   state.AreEdgesShown());
@@ -285,15 +285,15 @@ void ActionManager::Impl_::UpdateFromSessionState(const SessionState &state) {
     SetToggleState_(Action::kToggleAxisAligned, state.IsAxisAligned());
 }
 
-void ActionManager::Impl_::ProcessUpdate() {
+void ActionProcessor::Impl_::ProcessUpdate() {
     UpdateEnabledFlags_();
 }
 
-std::string ActionManager::Impl_::GetHelpTooltip(Action action) {
+std::string ActionProcessor::Impl_::GetHelpTooltip(Action action) {
     return help_map_.GetHelpString(action);
 }
 
-std::string ActionManager::Impl_::GetRegularTooltip(Action action) {
+std::string ActionProcessor::Impl_::GetRegularTooltip(Action action) {
     // If there is a context-sensitive version of the tooltip, use it.
     // Otherwise, use the help string.
     std::string str = GetUpdatedTooltip_(action);
@@ -306,11 +306,11 @@ std::string ActionManager::Impl_::GetRegularTooltip(Action action) {
     return str;
 }
 
-bool ActionManager::Impl_::CanApplyAction(Action action) const {
+bool ActionProcessor::Impl_::CanApplyAction(Action action) const {
     return is_action_enabled_[Util::EnumInt(action)];
 }
 
-void ActionManager::Impl_::ApplyAction(Action action) {
+void ActionProcessor::Impl_::ApplyAction(Action action) {
     ASSERTM(CanApplyAction(action), Util::EnumName(action));
 
     KLOG('j', "Applying action " << Util::EnumName(action));
@@ -509,7 +509,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
     }
 }
 
-bool ActionManager::Impl_::GetToggleState_(Action action) const {
+bool ActionProcessor::Impl_::GetToggleState_(Action action) const {
     const auto &tm = *context_->tool_manager;
     const auto &ss = *context_->command_manager->GetSessionState();
 
@@ -551,7 +551,7 @@ bool ActionManager::Impl_::GetToggleState_(Action action) const {
     }
 }
 
-void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
+void ActionProcessor::Impl_::SetToggleState_(Action action, bool state) {
     const auto &ss = context_->command_manager->GetSessionState();
 
     switch (action) {
@@ -615,7 +615,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
     }
 }
 
-std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
+std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
     // Helper string when needed.
     std::string s;
 
@@ -689,7 +689,7 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
     }
 }
 
-void ActionManager::Impl_::UpdateEnabledFlags_() {
+void ActionProcessor::Impl_::UpdateEnabledFlags_() {
     // Update all enabled flags. They are true by default, so anything that is
     // not set here is assumed to always be enabled.
 
@@ -819,7 +819,7 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kToggleRightRadialMenu, menus_enabled);
 }
 
-void ActionManager::Impl_::OpenInfoPanel_() {
+void ActionProcessor::Impl_::OpenInfoPanel_() {
     InfoPanel::Info info;
     info.selection = GetSelection();
     if (context_->target_manager->IsPointTargetVisible())
@@ -833,26 +833,26 @@ void ActionManager::Impl_::OpenInfoPanel_() {
     OpenAppPanel_("InfoPanel");
 }
 
-void ActionManager::Impl_::OpenAppPanel_(const std::string &name) {
+void ActionProcessor::Impl_::OpenAppPanel_(const std::string &name) {
     auto  panel = context_->board_manager->GetPanel(name);
     auto &board = context_->scene_context->app_board;
     board->SetPanel(panel);
     context_->board_manager->ShowBoard(board, true);
 }
 
-void ActionManager::Impl_::DeleteSelection_() {
+void ActionProcessor::Impl_::DeleteSelection_() {
     auto dc = CreateCommand_<DeleteCommand>();
     dc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(dc);
 }
 
-void ActionManager::Impl_::CopySelection_() {
+void ActionProcessor::Impl_::CopySelection_() {
     auto cc = CreateCommand_<CopyCommand>();
     cc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(cc);
 }
 
-void ActionManager::Impl_::PasteFromClipboard_(bool is_into) {
+void ActionProcessor::Impl_::PasteFromClipboard_(bool is_into) {
     auto pc = CreateCommand_<PasteCommand>();
     if (is_into) {
         // The target of the paste-into is the current selection, which must be
@@ -866,7 +866,7 @@ void ActionManager::Impl_::PasteFromClipboard_(bool is_into) {
     context_->command_manager->AddAndDo(pc);
 }
 
-void ActionManager::Impl_::DoLinearLayout_() {
+void ActionProcessor::Impl_::DoLinearLayout_() {
     const Selection &sel = GetSelection();
     ASSERT(sel.GetCount() > 1U);
 
@@ -878,7 +878,7 @@ void ActionManager::Impl_::DoLinearLayout_() {
     context_->command_manager->AddAndDo(llc);
 }
 
-void ActionManager::Impl_::DoRadialLayout_() {
+void ActionProcessor::Impl_::DoRadialLayout_() {
     const Selection &sel = GetSelection();
     ASSERT(sel.HasAny());
 
@@ -890,7 +890,7 @@ void ActionManager::Impl_::DoRadialLayout_() {
     context_->command_manager->AddAndDo(rlc);
 }
 
-void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
+void ActionProcessor::Impl_::CreateCSGModel_(CSGOperation op) {
     auto ccc = CreateCommand_<CreateCSGModelCommand>();
     ccc->SetOperation(op);
     ccc->SetFromSelection(GetSelection());
@@ -898,45 +898,45 @@ void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
-void ActionManager::Impl_::CreateHullModel_() {
+void ActionProcessor::Impl_::CreateHullModel_() {
     auto chc = CreateCommand_<CreateHullModelCommand>();
     chc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(chc);
 }
 
-void ActionManager::Impl_::CreateImportedModel_() {
+void ActionProcessor::Impl_::CreateImportedModel_() {
     auto cic = CreateCommand_<CreateImportedModelCommand>();
     context_->command_manager->AddAndDo(cic);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
-void ActionManager::Impl_::CreateRevSurfModel_() {
+void ActionProcessor::Impl_::CreateRevSurfModel_() {
     auto crc = CreateCommand_<CreateRevSurfModelCommand>();
     context_->command_manager->AddAndDo(crc);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
-void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
+void ActionProcessor::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
     auto cpc = CreateCommand_<CreatePrimitiveModelCommand>();
     cpc->SetType(type);
     context_->command_manager->AddAndDo(cpc);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
-void ActionManager::Impl_::CreateTextModel_() {
+void ActionProcessor::Impl_::CreateTextModel_() {
     auto ctc = CreateCommand_<CreateTextModelCommand>();
     ctc->SetText("A");
     context_->command_manager->AddAndDo(ctc);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
-void ActionManager::Impl_::ConvertModels_(const ConvertCommandPtr &command) {
+void ActionProcessor::Impl_::ConvertModels_(const ConvertCommandPtr &command) {
     command->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(command);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
-void ActionManager::Impl_::ChangeComplexity_(float delta) {
+void ActionProcessor::Impl_::ChangeComplexity_(float delta) {
     const Selection &sel = GetSelection();
     ASSERT(sel.HasAny());
     const Model &primary = *sel.GetPrimary().GetModel();
@@ -953,7 +953,7 @@ void ActionManager::Impl_::ChangeComplexity_(float delta) {
     }
 }
 
-void ActionManager::Impl_::MoveSelectionToOrigin_() {
+void ActionProcessor::Impl_::MoveSelectionToOrigin_() {
     const Selection &sel = GetSelection();
     ASSERT(sel.HasAny());
     const Model &primary = *sel.GetPrimary().GetModel();
@@ -979,7 +979,7 @@ void ActionManager::Impl_::MoveSelectionToOrigin_() {
     }
 }
 
-void ActionManager::Impl_::ShowInspector_(bool show) {
+void ActionProcessor::Impl_::ShowInspector_(bool show) {
     auto &inspector = *context_->scene_context->inspector;
     if (show) {
         // Get the controller, if any, that caused the inspector to be shown.
@@ -1014,7 +1014,7 @@ void ActionManager::Impl_::ShowInspector_(bool show) {
     }
 }
 
-void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {
+void ActionProcessor::Impl_::ToggleRadialMenu_(Hand hand) {
     auto &menu = hand == Hand::kLeft ?
         context_->scene_context->left_radial_menu :
         context_->scene_context->right_radial_menu;
@@ -1029,49 +1029,49 @@ void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {
 }
 
 // ----------------------------------------------------------------------------
-// ActionManager functions.
+// ActionProcessor functions.
 // ----------------------------------------------------------------------------
 
-ActionManager::ActionManager(const ContextPtr &context) :
+ActionProcessor::ActionProcessor(const ContextPtr &context) :
     impl_(new Impl_(context)) {
 }
 
-ActionManager::~ActionManager() {
+ActionProcessor::~ActionProcessor() {
 }
 
-void ActionManager::Reset() {
+void ActionProcessor::Reset() {
     impl_->Reset();
 }
 
-void ActionManager::UpdateFromSessionState(const SessionState &state) {
+void ActionProcessor::UpdateFromSessionState(const SessionState &state) {
     impl_->UpdateFromSessionState(state);
 }
 
-void ActionManager::SetQuitFunc(const QuitFunc &func) {
+void ActionProcessor::SetQuitFunc(const QuitFunc &func) {
     impl_->SetQuitFunc(func);
 }
 
-void ActionManager::SetReloadFunc(const ReloadFunc &func) {
+void ActionProcessor::SetReloadFunc(const ReloadFunc &func) {
     impl_->SetReloadFunc(func);
 }
 
-void ActionManager::ProcessUpdate() {
+void ActionProcessor::ProcessUpdate() {
     impl_->ProcessUpdate();
 }
 
-std::string ActionManager::GetActionTooltip(Action action, bool for_help) {
+std::string ActionProcessor::GetActionTooltip(Action action, bool for_help) {
     return for_help ? impl_->GetHelpTooltip(action) :
         impl_->GetRegularTooltip(action);
 }
 
-bool ActionManager::CanApplyAction(Action action) const {
+bool ActionProcessor::CanApplyAction(Action action) const {
     return impl_->CanApplyAction(action);
 }
 
-void ActionManager::ApplyAction(Action action) {
+void ActionProcessor::ApplyAction(Action action) {
     impl_->ApplyAction(action);
 }
 
-bool ActionManager::GetToggleState(Action action) const {
+bool ActionProcessor::GetToggleState(Action action) const {
     return impl_->GetToggleState(action);
 }

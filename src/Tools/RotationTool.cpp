@@ -148,7 +148,7 @@ void RotationTool::UpdateGeometry_() {
 
     // If axis-aligned, undo the tool rotation. Do this here rather than in
     // MatchModelAndGetSize() so that tighter bounds are used for the Model.
-    if (GetContext().session_state->IsAxisAligned())
+    if (IsAxisAligned())
         SetRotation(Rotationf::Identity());
 
     // Determine the proper outer radius for the axis-rotation DiscWidget rings
@@ -337,7 +337,7 @@ void RotationTool::StartRotation_(const Dimensionality &dims) {
     command_ = CreateCommand<RotateCommand>();
     command_->SetFromSelection(GetSelection());
     command_->SetIsInPlace(is_in_place_);
-    command_->SetIsAxisAligned(GetContext().session_state->IsAxisAligned());
+    command_->SetIsAxisAligned(IsAxisAligned());
     GetDragStarted().Notify(*this);
 
     // Turn on feedback for the dimension(s).
@@ -352,7 +352,7 @@ int RotationTool::SnapRotation_(int dim, Rotationf &rot) {
         return -1;
 
     // Get the current rotation (including rot).
-    const bool is_aligned = context.session_state->IsAxisAligned();
+    const bool is_aligned = IsAxisAligned();
     const Rotationf cur_rot = ComposeRotations_(start_rot_, rot, is_aligned);
 
     // Snap if any coordinate axis (except the one being rotated around) is now

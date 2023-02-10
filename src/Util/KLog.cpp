@@ -19,7 +19,7 @@
 //   h:   MainHandler state changes.
 //   i:   Intersection testing in the scene.
 //   I:   Ion setup for SG nodes.
-//   j:   ActionManager action processing.
+//   j:   Action processing.
 //   k:   Clicks on objects.
 //   K:   VirtualKeyboard state changes.
 //   l:   PolyMeshBuilder construction.

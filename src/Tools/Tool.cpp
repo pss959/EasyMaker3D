@@ -106,8 +106,7 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     const Model &model = *GetModelAttachedTo();
 
     // Rotate to match the Model if not aligning.
-    const bool align =
-        allow_axis_aligned && context_->session_state->IsAxisAligned();
+    const bool align = allow_axis_aligned && IsAxisAligned();
     SetRotation(align ? Rotationf::Identity() : model.GetRotation());
 
     // Move the Tool to the center of the Model in stage coordinates.
@@ -120,6 +119,10 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     // object bounds.
     return align ? TransformBounds(obj_bounds, osm).GetSize() :
         ion::math::GetScaleVector(osm) * obj_bounds.GetSize();
+}
+
+bool Tool::IsAxisAligned() const {
+    return context_->command_manager->GetSessionState()->IsAxisAligned();
 }
 
 Point3f Tool::GetPositionAboveModel(float distance, bool over_front) const {
