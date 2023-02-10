@@ -8,7 +8,7 @@
 #include "Util/Enum.h"
 #include "Util/Flags.h"
 
-DECL_SHARED_PTR(ActionManager);
+DECL_SHARED_PTR(ActionAgent);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SessionManager);
@@ -35,7 +35,7 @@ class SessionManager : public SessionAgent {
 
     /// The constructor is passed the required managers and the file path for
     /// the previous session, if any.
-    SessionManager(const ActionManagerPtr &action_manager,
+    SessionManager(const ActionAgentPtr &action_agent,
                    const CommandManagerPtr &command_manager,
                    const SelectionManagerPtr &selection_manager,
                    const FilePath &previous_path);
@@ -70,7 +70,7 @@ class SessionManager : public SessionAgent {
     virtual const std::string & GetCurrentSessionName() const override;
 
   private:
-    ActionManagerPtr    action_manager_;
+    ActionAgentPtr      action_agent_;
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
     std::string         previous_session_name_;  ///< From previous run.

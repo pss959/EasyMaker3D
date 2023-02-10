@@ -2,10 +2,10 @@
 
 #include <fstream>
 
+#include "Agents/ActionAgent.h"
 #include "Commands/CommandList.h"
 #include "IO/STLWriter.h"
 #include "Items/UnitConversion.h"
-#include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/Model.h"
@@ -15,14 +15,14 @@
 #include "Parser/Writer.h"
 #include "Util/KLog.h"
 
-SessionManager::SessionManager(const ActionManagerPtr &action_manager,
+SessionManager::SessionManager(const ActionAgentPtr &action_agent,
                                const CommandManagerPtr &command_manager,
                                const SelectionManagerPtr &selection_manager,
                                const FilePath &previous_path) :
-    action_manager_(action_manager),
+    action_agent_(action_agent),
     command_manager_(command_manager),
     selection_manager_(selection_manager) {
-    ASSERT(action_manager_);
+    ASSERT(action_agent_);
     ASSERT(command_manager_);
     ASSERT(selection_manager_);
 
@@ -140,7 +140,7 @@ void SessionManager::ResetSession_() {
     previous_session_name_.clear();
     current_session_name_.clear();
 
-    action_manager_->Reset();
+    action_agent_->Reset();
     Model::ResetColors();
     SaveOriginalSessionState_();
 }
@@ -168,8 +168,7 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
     }
     command_manager_->GetCommandList()->ClearChanges();
     current_session_name_ = GetSessionNameFromPath_(path);
-    action_manager_->UpdateFromSessionState(
-        *command_manager_->GetSessionState());
+    action_agent_->UpdateFromSessionState(*command_manager_->GetSessionState());
     SaveOriginalSessionState_();
     return true;
 }

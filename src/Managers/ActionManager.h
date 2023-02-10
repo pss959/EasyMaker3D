@@ -58,10 +58,10 @@ class ActionManager : public ActionAgent {
     ~ActionManager();
 
     /// Resets to original conditions.
-    void Reset();
+    virtual void Reset() override;
 
     /// Updates from the given SessionState instance.
-    void UpdateFromSessionState(const SessionState &state);
+    virtual void UpdateFromSessionState(const SessionState &state) override;
 
     /// Sets a function to call when the user tries to quit.
     void SetQuitFunc(const QuitFunc &func);
