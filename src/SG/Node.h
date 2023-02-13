@@ -261,24 +261,6 @@ class Node : public Object {
     virtual void UpdateForRenderPass(const std::string &pass_name);
 
   protected:
-    /// This can be used to make changes to the given Node without notifying
-    /// observers. Notification is disabled as long as the instance is in
-    /// scope.
-    class NotificationDisabler {
-      public:
-        NotificationDisabler(Node &node) :
-            node_(node), was_enabled_(node.IsNotifyEnabled()) {
-            node_.SetNotifyEnabled(false);
-        }
-        ~NotificationDisabler() {
-            if (was_enabled_)
-                node_.SetNotifyEnabled(true);
-        }
-      private:
-        Node       &node_;
-        const bool was_enabled_;
-    };
-
     Node() {}
 
     virtual void AddFields() override;
