@@ -5,6 +5,29 @@ $(APP_NAME). Reading the User Guide in the [user
 documentation](https://pss959.github.io/EasyMaker3D/latest) first
 would likely be very helpful.
 
+## Design Principles
+
+Encapsulation
+
+Run-time resource files
+
+Scene graphs
+
+Coordinate systems/handedness/size/precision
+
+Paths
+## Design Constraints
+
+Beginner-focused
+
+VR
+
+Multi-platform
+
+Session files + undo/redo
+
+Data files
+
 ## General Comments
 
 ### Namespaces
@@ -120,41 +143,12 @@ entity to display in a scene graph. There are shape classes for various
 primitives and imported meshes. Each shape class defines bound computation and
 ray intersection testing.
 
-## Design Principles
-
-Encapsulation
-
-Run-time resource files
-
-Scene graphs
-
-Coordinate systems/handedness/size/precision
-
-Paths
-## Design Constraints
-
-Beginner-focused
-
-VR
-
-Multi-platform
-
-Session files + undo/redo
-
-Data files
-
-## Software Layers
-
-Ion
-
-SG
-
-Everything else?
-
 ## Development and Debugging Aids
 
 Tuning.h/cpp
 
 Logging
+
+Debug printing/shortcuts
 
 Ion remote

@@ -1,0 +1,48 @@
+.contents .textblock h1,
+.contents .textblock h2,
+.contents .textblock h3,
+.contents .textblock h4 {
+    margin-top:       0px;
+    margin-right:     0px;
+    margin-bottom:    0px;
+    font-size:        16pt;
+}
+
+.contents .textblock h1 {
+    background-color: #f0f0f0;
+    margin-left:      0px;
+    padding:          10px;
+    font-size:        15pt;
+}
+
+.contents .textblock h2 {
+    background-color: #e8e8e8;
+    margin-left:      10px;
+    font-size:        13pt;
+}
+
+.contents .textblock h3 {
+    background-color: #e0e0e0;
+    margin-left:      20px;
+    padding:          6px;
+    font-size:        12pt;
+}
+
+.contents .textblock h4 {
+    background-color: #d8d8d8;
+    margin-left:      30px;
+    padding:          4px;
+    font-size:        11pt;
+}
+
+.contents .textblock p {
+    margin-left:      40px;
+}
+
+.contents .textblock pre {
+    margin-left:      60px;
+}
+
+#nav-tree {
+    background-color: #edecdc;
+}
