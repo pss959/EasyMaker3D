@@ -36,7 +36,14 @@ def FindSources_(root_dir, patterns):
 dox_files = FindSources_('.',      ['*'])
 src_files = FindSources_('../src', ['*.h', '*.cpp'])
 
-doc = env.Command('$OUTPUT_DIR/html/index.html', dox_files + src_files,
+# Create the dot diagram showing module dependencies.
+dep_dot_file    = env.File('./include/moduledependencies.dot').abspath
+dep_dot_program = env.File('../bin/findmoduledependencies.py').abspath
+env.Command(dep_dot_file, [dep_dot_program, src_files],
+            f'{dep_dot_program} | tred -v > {dep_dot_file}')
+
+doc = env.Command('$OUTPUT_DIR/html/index.html',
+                  dox_files + src_files + [dep_dot_file],
                   ['echo = Building internal doc for version: $VERSION_STRING',
                    '$DOXYGEN InternalDoc/Doxyfile'])
 Return('doc')

@@ -3,9 +3,17 @@
 $(APP_NAME) is a VR-enabled application for building models for 3D printing.
 
 This is internal Doxygen-generated documentation developers for version
-$(VERSION_STRING). The application source can be found [here on Github](
-https://github.com/pss959/EasyMaker3D).  The public user documentation can be
-found [in Github Pages](https://pss959.github.io/EasyMaker3D/latest).
+$(VERSION_STRING). 
+
+Handy links:
+
+ - The application source can be found [on
+   Github](https://github.com/pss959/EasyMaker3D).
+
+ - Public user documentation [in Github
+   Pages](https://pss959.github.io/EasyMaker3D/latest). Familiarity with the
+   User Guide found there will help with understanding the material in these
+   pages.
 
 This documentation is organized into the following pages:
 
@@ -16,6 +24,7 @@ This documentation is organized into the following pages:
  - @subpage SourceCode
 
 @noop ---- These define the groups/modules used in the source code:
+@defgroup Agents    Abstract interfaces for managers to avoid cycles
 @defgroup App       Application-level types and functions
 @defgroup Base      Base-level types
 @defgroup Commands  Command classes
@@ -32,11 +41,13 @@ This documentation is organized into the following pages:
 @defgroup Panels    GUI Panel classes
 @defgroup Panes     GUI Pane classes
 @defgroup Parser    Parsing-related classes
+@defgroup Place     Classes related to placing models in the scene
 @defgroup SG        Scene graph classes
-@defgroup Targets   Target classes
+@defgroup Selection Interactive selection-related classes
 @defgroup Tools     Interactive tool classes
 @defgroup Trackers  Interaction trackers used by MainHandler
 @defgroup Tuning    Constants used to tune the application
 @defgroup Utility   Utility classes and functions
-@defgroup Viewers   Interactive viewer classes
+@defgroup VR        VR-related classes
+@defgroup Viewers   Interactive viewer and rendering classes
 @defgroup Widgets   Interactive widget classes

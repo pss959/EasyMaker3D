@@ -1,0 +1,209 @@
+strict digraph {
+	graph [compound=true,
+		nodesep=0.4,
+		pencolor=darkblue,
+		penwidth=1.2,
+		rankdir=TB,
+		ranksep=.1,
+		splines=ortho
+	];
+	node [fontname=Arial,
+		fontsize=8,
+		height=0.25,
+		margin=0,
+		shape=box,
+		style=rounded,
+		width=0.7
+	];
+	edge [arrowsize=0.5,
+		dir=down,
+		minlen=2
+	];
+	subgraph cluster_0 {
+		graph [fillcolor="#fffff7",
+			margin=1,
+			style=filled
+		];
+		Apps	[group=0];
+		BOT0	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		Apps -> BOT0	[minlen=.001,
+			style=invis];
+		TOP0	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		TOP0 -> Apps	[minlen=.001,
+			style=invis];
+	}
+	subgraph cluster_1 {
+		graph [fillcolor="#fffff7",
+			margin=1,
+			style=filled
+		];
+		App	[group=1];
+		Executors	[group=1];
+		App -> Executors;
+		Tools	[group=1];
+		App -> Tools;
+		VR	[group=1];
+		App -> VR;
+		Managers	[group=1];
+		Executors -> Managers;
+		BOT1	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		Managers -> BOT1	[minlen=.001,
+			style=invis];
+		Tools -> Managers;
+		Viewers	[group=1];
+		VR -> Viewers;
+		Viewers -> BOT1	[minlen=.001,
+			style=invis];
+		TOP1	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		TOP1 -> App	[minlen=.001,
+			style=invis];
+	}
+	subgraph cluster_2 {
+		graph [fillcolor="#fffff7",
+			margin=1,
+			style=filled
+		];
+		Agents	[group=2];
+		BOT2	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		Agents -> BOT2	[minlen=.001,
+			style=invis];
+		Commands	[group=2];
+		Selection	[group=2];
+		Commands -> Selection;
+		Handlers	[group=2];
+		Trackers	[group=2];
+		Handlers -> Trackers;
+		Panels	[group=2];
+		Handlers -> Panels;
+		Trackers -> BOT2	[minlen=.001,
+			style=invis];
+		Panels -> Agents;
+		Panes	[group=2];
+		Panels -> Panes;
+		Panels -> Selection;
+		Panes -> BOT2	[minlen=.001,
+			style=invis];
+		Selection -> BOT2	[minlen=.001,
+			style=invis];
+		TOP2	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		TOP2 -> Commands	[minlen=.001,
+			style=invis];
+		TOP2 -> Handlers	[minlen=.001,
+			style=invis];
+	}
+	subgraph cluster_3 {
+		graph [fillcolor="#fffff7",
+			margin=1,
+			style=filled
+		];
+		Feedback	[group=3];
+		Items	[group=3];
+		Feedback -> Items;
+		IO	[group=3];
+		BOT3	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		IO -> BOT3	[minlen=.001,
+			style=invis];
+		Widgets	[group=3];
+		Items -> Widgets;
+		Models	[group=3];
+		Models -> IO;
+		Models -> Items;
+		Place	[group=3];
+		Place -> BOT3	[minlen=.001,
+			style=invis];
+		Widgets -> Place;
+		TOP3	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		TOP3 -> Feedback	[minlen=.001,
+			style=invis];
+		TOP3 -> Models	[minlen=.001,
+			style=invis];
+	}
+	subgraph cluster_4 {
+		graph [fillcolor="#fffff7",
+			margin=1,
+			style=filled
+		];
+		Base	[group=4];
+		Enums	[group=4];
+		Base -> Enums;
+		Math	[group=4];
+		Base -> Math;
+		BOT4	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		Enums -> BOT4	[minlen=.001,
+			style=invis];
+		Util	[group=4];
+		Math -> Util;
+		Parser	[group=4];
+		Parser -> Base;
+		SG	[group=4];
+		SG -> Parser;
+		Util -> BOT4	[minlen=.001,
+			style=invis];
+		TOP4	[fixedsize=true,
+			fontsize=.01,
+			height=.01,
+			style=invis,
+			width=3.4];
+		TOP4 -> SG	[minlen=.001,
+			style=invis];
+	}
+	subgraph InterGroup {
+		edge [color=blue];
+		BOT0;
+		TOP1;
+		BOT0 -> TOP1	[color=blue,
+			lhead=cluster_1,
+			ltail=cluster_0];
+		BOT1;
+		TOP2;
+		BOT1 -> TOP2	[color=blue,
+			lhead=cluster_2,
+			ltail=cluster_1];
+		BOT2;
+		TOP3;
+		BOT2 -> TOP3	[color=blue,
+			lhead=cluster_3,
+			ltail=cluster_2];
+		BOT3;
+		TOP4;
+		BOT3 -> TOP4	[color=blue,
+			lhead=cluster_4,
+			ltail=cluster_3];
+	}
+}
