@@ -8,6 +8,12 @@
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
 
+/// \file
+/// The printtypes application writes to standard output all known concrete
+/// parsable types with their fields.
+///
+/// \ingroup Apps
+
 int main() {
     // Register all known concrete types with the Parser::Registry.
     RegisterTypes();

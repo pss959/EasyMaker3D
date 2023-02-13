@@ -14,14 +14,14 @@ typedef ion::math::Vector3f Vector3f;
 /// the application. It defines the \c K namespace for the constants for
 /// brevity.
 ///
-/// \ingroup Tuning
+/// \ingroup Utility
 
 /// The TK (tuning constants) namespace has constants defining various values
 /// that can be used to tune the application. The values are set in Tuning.cpp
 /// so that modifying values to tune application behavior has minimal effect on
 /// compilation time.
 ///
-/// \ingroup Tuning
+/// \ingroup Utility
 namespace TK {
 
 /// \name Application Settings

@@ -41,6 +41,13 @@
 #include "Panels/RadialMenuPanel.h"
 #include "Panels/SettingsPanel.h"
 
+/// \file
+/// The nodeviewer application can be used to interactively view EMD nodes for
+/// testing purposes without having to run the main application. See the usage
+/// string for details.
+///
+/// \ingroup Apps
+
 // ----------------------------------------------------------------------------
 // Exception handling.
 // ----------------------------------------------------------------------------

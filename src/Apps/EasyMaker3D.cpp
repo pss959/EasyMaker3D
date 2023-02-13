@@ -22,6 +22,12 @@
 #include "Util/Tuning.h"
 #include "Util/UTime.h"
 
+/// \file
+/// This is the source for the main EasyMaker3D application. See the usage
+/// string for details.
+///
+/// \ingroup Apps
+
 namespace {
 
 // This global variable is necessary because std::signal() requires a function

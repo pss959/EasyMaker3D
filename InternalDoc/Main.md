@@ -26,6 +26,7 @@ This documentation is organized into the following pages:
 @noop ---- These define the groups/modules used in the source code:
 @defgroup Agents    Abstract interfaces for managers to avoid cycles
 @defgroup App       Application-level types and functions
+@defgroup Apps      Applications
 @defgroup Base      Base-level types
 @defgroup Commands  Command classes
 @defgroup Debug     Classes and functions for debugging help
@@ -46,7 +47,6 @@ This documentation is organized into the following pages:
 @defgroup Selection Interactive selection-related classes
 @defgroup Tools     Interactive tool classes
 @defgroup Trackers  Interaction trackers used by MainHandler
-@defgroup Tuning    Constants used to tune the application
 @defgroup Utility   Utility classes and functions
 @defgroup VR        VR-related classes
 @defgroup Viewers   Interactive viewer and rendering classes

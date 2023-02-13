@@ -12,6 +12,12 @@
 #include "Util/Enum.h"
 #include "Util/String.h"
 
+/// \file
+/// The createcheatsheet application is used by the build to generate the Cheat
+/// Sheet in the public documentation.
+///
+/// \ingroup Apps
+
 // ----------------------------------------------------------------------------
 // Helpers.
 // ----------------------------------------------------------------------------

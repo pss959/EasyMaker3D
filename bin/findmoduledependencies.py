@@ -72,72 +72,58 @@ def FindInterGroupDependencies_(group_dict, module_deps, intra_deps):
     return inter_deps
 
 def WriteDot_(intra, inter):
-    import graphviz
+    from graphviz import Digraph
 
     # Some constants to control sizing, etc.
-    arrow_size  = .5
-    font_name   = 'Arial'
-    font_size   = 8
-    group_width = 3.4
-    node_height = .25
-    node_width  = .7
+    arrow_size   = .5
+    font_name    = 'Arial'
+    font_size    = 10
+    group_margin = 12
+    node_height  = .3
+    node_sep     = .2
+    node_width   = .7
+    rank_sep     = .25
 
     graph_attr = {
-        'nodesep'  :  '0.4',
-        'pencolor' :  'darkblue',
-        'penwidth' :  '1.2',
-        'rankdir'  :  'TB',
-        'ranksep'  :  '.1',  # Separation created by edge lengths.
-        'splines'  :  'ortho',
+        'nodesep'   :  str(node_sep),
+        'pencolor'  :  'darkblue',
+        'penwidth'  :  '1.2',
+        'rankdir'   :  'TB',
+        'ranksep'   :  str(rank_sep),
+        'splines'   :  'ortho',
     }
     node_attr = {
-        'fontname' :  font_name,
-        'fontsize' :  str(font_size),
-        'height'   :  str(node_height),
-        'margin'   :  '0',
-        'shape'    :  'box',
-        'style'    :  'rounded',
-        'width'    :  str(node_width),
+        'fontcolor' : 'blue',   # They are links
+        'fontname'  :  font_name,
+        'fontsize'  :  str(font_size),
+        'height'    :  str(node_height),
+        'margin'    :  '0',
+        'shape'     :  'box',
+        'style'     :  'rounded',
+        'width'     :  str(node_width),
     }
     edge_attr = {
         'arrowsize' : str(arrow_size),
-        'dir'       : 'down',
-        'minlen'    : '2',
     }
-    dot = graphviz.Digraph(strict=True,
-                           graph_attr=graph_attr,
-                           node_attr=node_attr,
-                           edge_attr=edge_attr,
-                           body="\tcompound=true\n")
+    dot = Digraph(strict=True, graph_attr=graph_attr, node_attr=node_attr,
+                  edge_attr=edge_attr)
 
-    # Groups as cluster subgraphs.
-    sub_attr = { 'fillcolor' : '#fffff7',
-                 'style'     : 'filled',
-                 'margin'    : '1' }
-    for i, group in enumerate(groups):
-        with dot.subgraph(name=f'cluster_{i}', graph_attr=sub_attr) as sub:
-            for node in group:
-                sub.node(node, group=str(i))
-            for k, v in intra[i].items():
-                for vv in v:
-                    sub.edge(k, vv)
-            # Insert invisible nodes at the top and bottom with the desired
-            # cluster width.
-            sub.node(f'TOP{i}', style='invis', width=str(group_width),
-                     height='.01', fixedsize='true', fontsize='.01')
-            sub.node(f'BOT{i}', style='invis', width=str(group_width),
-                     height='.01', fixedsize='true', fontsize='.01')
-            # Invisible edges to dummy node to put them at top/bottom.
-            for node in group:
-                sub.edge(f'TOP{i}', node, style='invis', minlen='.001')
-                sub.edge(node, f'BOT{i}', style='invis', minlen='.001')
-
-    # Inter-group edges.
-    with dot.subgraph(name=f'InterGroup', edge_attr={'color' : 'blue'}) as sub:
-        for k, v in inter.items():
+    # Groups as nested cluster subgraphs. This assumes the order of the groups
+    # is the hierarchical ordering. This iterates in reverse order; for some
+    # reason, it does not seem to work the other way.
+    sub_attr = { 'margin' : str(group_margin) }
+    child_cluster = None
+    for i, group in reversed(list(enumerate(groups))):
+        cluster = Digraph(name=f'cluster_{i}', graph_attr=sub_attr)
+        for node in group:
+            cluster.node(node, group=str(i), URL=f'\\ref {node}')
+        for k, v in intra[i].items():
             for vv in v:
-                sub.edge(f'BOT{k}', f'TOP{vv}',
-                         ltail=f'cluster_{k}', lhead=f'cluster_{vv}')
+                cluster.edge(k, vv)
+        if child_cluster:
+            cluster.subgraph(child_cluster)
+        child_cluster = cluster
+    dot.subgraph(child_cluster)
 
     print(dot.source)
 

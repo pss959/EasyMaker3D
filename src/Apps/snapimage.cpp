@@ -41,6 +41,12 @@
 #include "Viewers/Renderer.h"
 #include "Widgets/StageWidget.h"
 
+/// \file
+/// The snapimage application is used to create snapshot images for the public
+/// documentation. See the usage string for details.
+///
+/// \ingroup Apps
+
 // ----------------------------------------------------------------------------
 // Constants.
 // ----------------------------------------------------------------------------
