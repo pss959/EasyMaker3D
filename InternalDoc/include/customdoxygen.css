@@ -1,3 +1,11 @@
+#nav-tree {
+    background-color: #edecdc;
+}
+
+#nav-tree .item a {
+    font-size: 10pt;
+}
+
 .contents .textblock h1,
 .contents .textblock h2,
 .contents .textblock h3,
@@ -43,6 +51,6 @@
     margin-left:      60px;
 }
 
-#nav-tree {
-    background-color: #edecdc;
+.markdownTable {
+    margin-left: 60px;
 }

@@ -10,7 +10,7 @@ $(VERSION_STRING).
  - The application source can be found [on
    Github](https://github.com/pss959/EasyMaker3D).
 
- - Public user documentation [in Github
+ - Public user documentation is [in Github
    Pages](https://pss959.github.io/EasyMaker3D/latest). Familiarity with the
    User Guide found there will help with understanding the material in these
    pages.
@@ -23,7 +23,6 @@ This documentation is organized into the following pages:
  - @subpage Structure
  - @subpage Resources
  - @subpage Overview
- - @subpage SourceCode
 
 @noop ---- These define the groups/modules used in the source code:
 @defgroup Agents    Abstract interfaces for managers to avoid cycles

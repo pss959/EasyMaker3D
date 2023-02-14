@@ -50,11 +50,43 @@ the `DECL_SHARED_PTR()` macro to define a shared pointer type. For example, the
 `Model` class defines the `ModelPtr` type as a `shared_ptr` to a `Model`
 instance.
 
-## Module Layers
+## Source Code Modules
 
-The source code is divided into [modules](#Modules), each of which has a
-similarly-named subdirectory. The modules are arranged (roughly) in a hierarchy
-shown in this diagram:
+The source code is divided into modules, each of which has a similarly-named
+subdirectory.
+
+| Module    | Description    | Base Class  |
+| :-------: | -------------- | ----------- |
+| Agents    | \ref Agents    |             |
+| App       | \ref App       |             |
+| Apps      | \ref Apps      |             |
+| Base      | \ref Base      |             |
+| Commands  | \ref Commands  | Command     |
+| Debug     | \ref Debug     |             |
+| Enums     | \ref Enums     |             |
+| Executors | \ref Executors | Executor    |
+| Feedback  | \ref Feedback  | Feedback    |
+| Handlers  | \ref Handlers  | Handler     |
+| IO        | \ref IO        |             |
+| Items     | \ref Items     |             |
+| Managers  | \ref Managers  |             |
+| Math      | \ref Math      |             |
+| Models    | \ref Models    | Model       |
+| Panels    | \ref Panels    | Panel       |
+| Panes     | \ref Panes     | Pane        |
+| Parser    | \ref Parser    |             |
+| Place     | \ref Place     |             |
+| SG        | \ref SG        |             |
+| Selection | \ref Selection |             |
+| Tools     | \ref Tools     | Tool        |
+| Trackers  | \ref Trackers  | Tracker     |
+| Utility   | \ref Utility   |             |
+| VR        | \ref VR        |             |
+| Viewers   | \ref Viewers   | Viewer      |
+| Widgets   | \ref Widgets   | Widget      |
+
+
+These modules are arranged (roughly) in a hierarchy shown in this diagram:
 
 @dotfile moduledependencies.dot
 
