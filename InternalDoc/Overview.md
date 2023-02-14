@@ -1,46 +1,77 @@
-# Application Design Overview {#Overview}
+# Application Design and Implementation Overview {#Overview}
 
-This section describes some of the principles and decisions in the design of
-$(APP_NAME). Reading the User Guide in the [user
-documentation](https://pss959.github.io/EasyMaker3D/latest) first
-would likely be very helpful.
+This section describes some of the overall design of $(APP_NAME). Familiarity
+with the material in the User Guide in the [user
+documentation](https://pss959.github.io/EasyMaker3D/latest) would likely be
+very helpful.
 
-## Design Principles
+## Design
 
-Encapsulation
+### Size and Precision
 
-Run-time resource files
+$(APP_NAME) is targeted for casual 3D printing, which places some useful
+constraints on the application:
 
-Scene graphs
+  - Most 3D printers have a relatively small, fixed size, meaning there is no
+    need to support an infinite size range.
+  - The size of printer nozzles is also constrained, meaning that model
+    features smaller than about a tenth of a millimeter are unlikely to be
+    useful. This limits the precision of various modeling operations.
+    
+These constraints are exhibited in the room and stage sizes and in the
+available precision settings.
 
-Coordinate systems/handedness/size/precision
+### VR and Multi-Platform
 
-Paths
-## Design Constraints
+Allowing the application to work in VR and on multiple platforms adds more
+requirements:
 
-Beginner-focused
+  - The UI cannot be a standard 2D menu-based one, since that does not work
+    well in VR.
+  - The UI must also be available on all platforms.
 
-VR
+The result is a custom embedded 3D UI that works both with mouse/keyboard and
+VR controllers.
 
-Multi-platform
+### Coordinate Systems
 
-Session files + undo/redo
+The application uses a conventional 3D graphics coordinate system:
+right-handed, with +X to the right, +Y up, and +Z toward the viewer.
+Conversions to and from the conventional STL/3D-printing coordinate system (RHS
+with +Z up) are performed when necessary. All user-facing documentation and
+color coding assume the 3D-printing system.
 
-Data files
+### Encapsulation
 
-## General Comments
+The application relies heavily on encapsulation in its design and
+implementation. All data access and modification in classes occurs through
+class methods. Similarly, there is a rigid ordering of module dependencies to
+avoid any cycles (see the diagram below).
 
-### Namespaces
+### Session Management
 
-C++ namespaces are used in a few places: the `SG` module, the `Debug` module,
-and some of the `Math` and `Util` modules. There is also a `TK` namespace that
-is used for constants used to tune the application.
+The decision to support infinite undo/redo, even in restored sessions, means
+that all changes made to the scene must be saved in files. Each change is an
+instance of a derived class of the `Command` class. The `CommandManager` class
+stores the full list of commands and supports undo and redo of the entire list.
+
+Session files (with an `.ems` extension) are just another type of [EMD text
+resource file](#EMD). The version number is included in the session files in
+case the format or contents change in future releases.
+
+## Implementation
 
 ### Naming Conventions
 
 The code naming conventions follow the [Google C++ Style
 Guide](https://google.github.io/styleguide/cppguide.html) for the most part.
 There may be some deviations.
+
+### Namespaces
+
+C++ namespaces are used in a few places: the `SG` module, the `Debug` module,
+and some of the `Math` and `Util` modules. There is also a `TK` namespace that
+is used for constants used to tune the application.
 
 ### Smart Pointers
 
@@ -50,7 +81,7 @@ the `DECL_SHARED_PTR()` macro to define a shared pointer type. For example, the
 `Model` class defines the `ModelPtr` type as a `shared_ptr` to a `Model`
 instance.
 
-## Source Code Modules
+## Source Code Modules {#Modules}
 
 The source code is divided into modules, each of which has a similarly-named
 subdirectory.
@@ -85,7 +116,6 @@ subdirectory.
 | Viewers   | \ref Viewers   | Viewer      |
 | Widgets   | \ref Widgets   | Widget      |
 
-
 These modules are arranged (roughly) in a hierarchy shown in this diagram:
 
 @dotfile moduledependencies.dot
@@ -96,9 +126,9 @@ from the innermost.
 ### Parser: Parsed Objects
 
 The `Parser` module contains a base `Parser::Object` class for all objects that
-can be parsed from [EMD resource files](#Resources). This is the base class for
-all objects that appear in the scene graph. This scheme allows most of the data
-for the application to be read from files at run-time.
+can be parsed from [EMD resource files](#EMD). This is the base class for all
+objects that appear in the scene graph. This scheme allows most of the data for
+the application to be read from files at run-time.
 
 Each parsed object may define a set of derived `Parser::Field` instances, each
 of which has a name and a specific value type. For example, the `SG::Node`
@@ -133,6 +163,14 @@ semantics for the application. The base `SG::Object` class is derived from
 `Util::Notifier`) of changes made to it. For example, the `SG::Node` class is
 derived from `SG::Object` and tracks changes to its various parts and
 descendent nodes.
+
+The Ion and SG scene graphs have unidirectional connections: parent nodes point
+to their children and not the other way around. Upwards notification is
+implemented using an observer/notifier model (`Util::Notifier`). A reference to
+a specific descendent node in a graph or subgraph uses the `SG::NodePath`
+class, which allows the entire path of nodes to be examined. For example, ray
+intersection with a graph returns an `SG::Hit` instance that includes a path
+from the scene root to the intersected node.
 
 #### Scenes
 
@@ -176,6 +214,8 @@ primitives and imported meshes. Each shape class defines bound computation and
 ray intersection testing.
 
 ## Development and Debugging Aids
+
+XXXX
 
 Tuning.h/cpp
 

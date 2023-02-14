@@ -5,8 +5,6 @@ $(APP_NAME) is a VR-enabled application for building models for 3D printing.
 This is internal Doxygen-generated documentation developers for version
 $(VERSION_STRING). 
 
-## Handy Links
-
  - The application source can be found [on
    Github](https://github.com/pss959/EasyMaker3D).
 
@@ -14,15 +12,6 @@ $(VERSION_STRING).
    Pages](https://pss959.github.io/EasyMaker3D/latest). Familiarity with the
    User Guide found there will help with understanding the material in these
    pages.
-
-## Organization
-
-This documentation is organized into the following pages:
-
- - @subpage Building
- - @subpage Structure
- - @subpage Resources
- - @subpage Overview
 
 @noop ---- These define the groups/modules used in the source code:
 @defgroup Agents    Abstract interfaces for managers to avoid cycles

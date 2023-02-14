@@ -1,4 +1,4 @@
-# Application Resources and Data Files {#Resources}
+# Resource and Data Files {#Resources}
 
 ## Resource Files
 
@@ -22,7 +22,7 @@ The `resources` directory has the following subdirectories:
 | `shaders`       | GLSL shader program source files                   |
 | `shapes`        | OFF files used for 3D icons and other items        |
 
-## EMD Format
+## EMD Format {#EMD}
 
 EMD ($(APP_NAME) Data) is designed to be an easy to read and write Python-like
 data format.

@@ -1,5 +1,11 @@
+#titlearea {
+    padding:          2px;
+    background-color: #c8dbf4;
+    border:           1px solid black;
+}
+
 #nav-tree {
-    background-color: #edecdc;
+    background-color: #F8F6E6;
 }
 
 #nav-tree .item a {
@@ -19,6 +25,7 @@
 .contents .textblock h1 {
     background-color: #f0f0f0;
     margin-left:      0px;
+    margin-bottom:    6px;
     padding:          10px;
     font-size:        15pt;
 }

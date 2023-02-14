@@ -33,7 +33,7 @@ The top-level subdirectories of the $(APP_NAME) project are:
     are included in the release file.
 
   - **src**: Contains the source code for the application. The code is divided
-    into [Modules], each of which has a subdirectory. There is also a `Tests`
-    subdirectory that contains unit test source code and data.
+    into [Modules](#Modules), each of which has a subdirectory. There is also a
+    `Tests` subdirectory that contains unit test source code and data.
 
   - **submodules**: Contains the git submodules the project depends on.
