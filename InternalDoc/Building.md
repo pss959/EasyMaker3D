@@ -77,8 +77,8 @@ There are four different modes you can specify when building the application:
   - **opt** (optimized) is the default mode.
   - **dbg** (debug) adds debugging information to the executable. It is slower
     and takes longer to build, but is very handy when fixing issues.
-  - **cov** (coverage) is used to build unit tests with coverage tracking
-    enabled.
+  - **cov** (coverage) is used to build [unit tests](#UnitTests) with coverage
+    tracking enabled.
     
 The `opt` and `dbg` modes include some features that help when developing the
 application. These features are compiled out in `rel` mode.
@@ -92,7 +92,7 @@ The build is set up to print brief versions of what it is doing, such as
 `"Compiling foo.cpp"`.  If you want to see each command line in full,
 excruciating detail, pass the `--nobrief` option to `scons`.
 
-## Build Targets
+## Build Targets {#BuildTargets}
 
 The targets consist of three main groups:
 
@@ -136,7 +136,8 @@ fairly easily in the `SCons` files if necessary.
 
 ## Examples
 
-All of these examples assume you run the command in the top-level $(APP_NAME) directory.
+All of these examples assume you run the command in the top-level $(APP_NAME)
+directory.
 
     scons -j8 --mode=rel Release
 
@@ -148,12 +149,12 @@ the public documentation as needed).
     
 builds the main application in the default `opt` mode. The `-j8` option allows
 8 parallel jobs to run to speed things up. The result is
-`build/opt/Apps/$(APP_NAME)`.
+<tt>build/opt/Apps/$(APP_NAME)</tt>.
 
     scons -j8 --mode=dbg App
     
 builds the main application in `dbg` mode. The result is
-`build/dbg/Apps/$(APP_NAME)`.
+<tt>build/dbg/Apps/$(APP_NAME)</tt>.
 
     scons -j8 InternalDoc
 

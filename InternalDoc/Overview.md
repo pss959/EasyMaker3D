@@ -215,9 +215,16 @@ ray intersection testing.
 
 ## Development and Debugging Aids
 
-### Unit Tests
+### Unit Tests {#UnitTests}
 
-XXXX
+The `src/Tests` subdirectory contains several unit tests that validate some
+portion of the code base. (Not enough, yet, but...) The `RunTests` [build
+target](#BuildTargets) builds and runs all of the unit tests. The `TESTFILTER`
+flag can be specified on the build line to limit which tests are run.
+
+The test code coverage can be explored by building the `Coverage` target with
+the `cov` mode. This creates an HTML page with the results in
+`build/cov/coverage/html/index.html`
 
 ### Tuning Constants
 
@@ -240,9 +247,9 @@ It works as follows.
   - The source code contains uses of the `KLOG` macro to output messages to
     standard output. The first argument is a single case-sensitive character
     that identifies the key for a message.
-  - The `$(APP_NAME)`, `nodeviewer`, and `snapimage` applications all have a
-    `--klog` command-line argument specifying a key string to use to enable
-    logging messages. This can also be done in code with the the
+  - The <tt>$(APP_NAME)</tt>, `nodeviewer`, and `snapimage` applications all
+    have a `--klog` command-line argument specifying a key string to use to
+    enable logging messages. This can also be done in code with the the
     `KLogger::SetKeyString()` function. Unit tests can use the `EnableKLog()`
     function that calls this.
   - Since some logging messages spew a lot of information, the `Alt-!` key
@@ -325,8 +332,33 @@ these:
 
 ### Debug Module
 
-XXXX
+The `Debug` module (in `src/Debug`) contains some handy functions and features
+to help debug the application. `src/Debug/Print.h` defines a bunch of functions
+that print useful information to standard output, such as scene graph
+structure, bounding boxes, transforms, and so on.
+
+Some of these functions are accessible from the <tt>$(APP_NAME)</tt>,
+`nodeviewer`, and `snapimage` applications via keyboard shortcuts. Use the
+`<Alt>h` shortcut to print help for the available shortcuts.
+
+The `Debug::DisplayDebugText()` function displays a given text string on the
+back wall of the scene in the main application. By default it shows the path
+from the scene root node to the geometry intersected by the current mouse
+position. There is also a small sphere that shows the current intersection
+point (but can be changed to any other point); its display can be toggled on
+and off with `<Alt>D`.
+
+**Note**: All Debug features are disabled entirely in release builds.
 
 ### Ion Remote
 
-XXXX
+The underlying [Google Ion](https://github.com/google/ion) library contains a
+very useful feature that allows you to explore and interact with various
+aspects of the running application, such as tracing OpenGL calls, editing
+shaders, and exploring the Ion scene graph. Pass the `--remote` flag to the
+application to enable this feature, then point your browser at
+`https://localhost:1234` to access the interface.
+
+Note that this disables other URL access by the application, such as opening
+the URLs in the `HelpPanel`.
+
