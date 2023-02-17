@@ -215,12 +215,118 @@ ray intersection testing.
 
 ## Development and Debugging Aids
 
+### Unit Tests
+
 XXXX
 
-Tuning.h/cpp
+### Tuning Constants
 
-Logging
+A variety of application constants are declared in `Util/Tuning.h` and defined
+in `Util/Tuning.cpp`. These constants are defined in the `TK` namespace and
+allow values to be tweaked relatively easily. For example, the default
+complexity value for new models is defined as `TK::kModelComplexity`.
 
-Debug printing/shortcuts
+Some of the constants are used to enforce consistency between parts of the
+application and documentation. The values are these are passed in as predefined
+preprocessor values from the build system. For example, the
+`TK::kVersionString` constant defines the version string, which is passed in as
+`VERSION_STRING` to the C++ preprocessor from the `SCons` build.
 
-Ion remote
+### Runtime Logging
+
+The `KLogger` class defines a key-based logging system to help with debugging.
+It works as follows.
+
+  - The source code contains uses of the `KLOG` macro to output messages to
+    standard output. The first argument is a single case-sensitive character
+    that identifies the key for a message.
+  - The `$(APP_NAME)`, `nodeviewer`, and `snapimage` applications all have a
+    `--klog` command-line argument specifying a key string to use to enable
+    logging messages. This can also be done in code with the the
+    `KLogger::SetKeyString()` function. Unit tests can use the `EnableKLog()`
+    function that calls this.
+  - Since some logging messages spew a lot of information, the `Alt-!` key
+    sequence can be used to toggle logging on and off. To start it off by
+    default, add `!` to the key string. This can be particularly useful for
+    logging interactive features.
+  - The current key characters are listed below.
+
+For example, passing `--klog="Sx"` to the application on the command line will
+display messages about selection changes and command execution. This is because
+the `SelectionManager` and `CommandManager` classes contain statements like
+these:
+
+    KLOG('S', "Selection change: " << Util::EnumName(op) << sel_string());
+    KLOG('x', "Executing " << command->GetDescription());
+
+**Note**: This feature is disabled entirely in release builds.
+
+#### Regular KLOG character codes {#KLogCodes}
+
+<div class="table2columns" markdown="1">
+<div class="tablecolumn" markdown="1">
+| Char | Logging Category                                |
+| :--: | ----------------------------------------------- |
+| a    | NameManager name processing                     |
+| A    | SG::FileMap data storage and lookup             |
+| b    | Scene graph bounds computation                  |
+| B    | Model mesh building and invalidation            |
+| c    | Scene graph object construction and destruction |
+| C    | Mesh combining/clipping                         |
+| d    | Mouse drag positions                            |
+| D    | Feedback activation and deactivation            |
+| e    | Events and event handling                       |
+| E    | Event compression and deferring                 |
+| f    | File reading/parsing                            |
+| F    | Interactive Pane focus and activation           |
+| g    | (GUI) Board and Panel opening and closing       |
+| h    | MainHandler state changes                       |
+| i    | Intersection testing in the scene               |
+| I    | Ion setup for SG nodes                          |
+| j    | Action processing                               |
+| k    | Clicks on objects                               |
+| K    | VirtualKeyboard state changes                   |
+| l    | PolyMeshBuilder construction                    |
+| m    | Changes to matrices in SG Nodes                 |
+</div>
+<div class="tablecolumn" markdown="1">
+| Char   | Logging Category                                |
+| :----: | ----------------------------------------------- |
+| M      | Model structure and visibility changes          |
+| n      | Initial notification trigger                    |
+| N      | All notifications                               |
+| o      | Notification observer changes                   |
+| p      | Pane sizing                                     |
+| P      | Object parsing                                  |
+| q      | Pane size notification                          |
+| r      | Ion registries                                  |
+| R      | Rendering                                       |
+| s      | Parser name scoping and resolution              |
+| S      | Selection changes                               |
+| t      | Threads for delayed execution                   |
+| T      | Tool initialization, selection, and attachment  |
+| u      | Ion uniform processing                          |
+| v      | VR system status                                |
+| V      | VR input bindings                               |
+| w      | Session reading and writing                     |
+| x      | Command execution, undo, redo                   |
+| y      | Model status changes                            |
+| z      | Font loading                                    |
+| &nbsp; | &nbsp;                                          |
+</div>
+</div>
+
+#### Special KLOG character codes:
+
+| Char | Effect                                                                |
+| :--: | --------------------------------------------------------------------- |
+| !    | Disables all logging. `<Alt>!` in the app toggles this interactively. |
+| *    | Enables *all* characters. Use with caution!                           |
+
+### Debug Module
+
+XXXX
+
+### Ion Remote
+
+XXXX

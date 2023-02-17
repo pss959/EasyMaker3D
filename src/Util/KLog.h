@@ -13,6 +13,8 @@
 /// The KLogger class prints a message to std::cout if the message key (a
 /// character) is present in the current key string.
 ///
+/// \ref KLogCodes "The full list of character codes can be found here."
+///
 /// \ingroup Utility
 class KLogger : public std::ostream {
   public:

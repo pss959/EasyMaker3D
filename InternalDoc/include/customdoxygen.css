@@ -58,6 +58,26 @@
     margin-left:      60px;
 }
 
+/* Indent all tables. */
 .markdownTable {
     margin-left: 60px;
+}
+
+/* Set up 2-column tables. */
+.table2columns {
+    display:        flex;
+    flex-direction: row;
+    margin-left:    0px;
+}
+
+.tablecolumn > .markdownTable {
+    margin-left: 0px;
+}
+
+.table2columns .tablecolumn:nth-of-type(1) {
+    margin-left: 60px;
+}
+
+.table2columns .tablecolumn:nth-of-type(n+2) {
+    margin-left: 20px;
 }
