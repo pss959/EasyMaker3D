@@ -362,3 +362,5 @@ application to enable this feature, then point your browser at
 Note that this disables other URL access by the application, such as opening
 the URLs in the `HelpPanel`.
 
+
+**Note**: This feature is disabled entirely in release builds.
