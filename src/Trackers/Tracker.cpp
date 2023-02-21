@@ -27,6 +27,7 @@ void Tracker::Init(const SG::ScenePtr &scene,
 
 bool Tracker::IsLeft() const {
     ASSERTM(false, "Base Tracker::IsLeft() should not be called");
+    return false;
 }
 
 Point3f Tracker::ToControllerCoords(const Point3f &p) const {
