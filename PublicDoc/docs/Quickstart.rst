@@ -156,11 +156,8 @@ top right of the panel.
 
 .. _qs-vr:
 
-.. todo::
-   TBD finish this
+.. The Doorstop Example in VR
+.. --------------------------
 
-The Doorstop Example in VR
---------------------------
-
-.. todo::
-   TBD with images
+.. .. todo::
+..   TBD with images
