@@ -3,9 +3,8 @@
 # subdirectory of the build directory.
 # -----------------------------------------------------------------------------
 
-from os      import environ, walk
-from os.path import join
-from pathlib import Path
+from os      import environ, makedirs, walk
+from os.path import dirname, join, relpath
 
 Import('app_dict', 'doc_build_dir', 'snapimage')
 
@@ -43,27 +42,27 @@ env.Append(
     },
 )
 
-# Function that creates an HTML file to redirect to another file. The to_dir
-# directory is assumed to be at the same level as from_dir.
-def AddRedirect_(env, file_path, from_dir, to_dir):
-    from_path = Path(from_dir, file_path)
-    to_path   = Path('../' * (len(from_path.parents) - 1), to_dir, file_path)
-    print(f'--- Adding redirect: "{from_path}" => "{to_path}"')
-    abs_from_path = Path(env.Dir('$OUTPUT_DIR').abspath, from_path)
-    abs_from_path.parent.mkdir(parents=True, exist_ok=True)
+# Builder function that creates an HTML URL redirect file. source is the
+# absolute path to the file to redirect to; target is the absolute path to the
+# file to redirect from.
+def AddRedirect_(target, source, env):
+    abs_from_path = str(target[0])
+    abs_to_path   = str(source[0])
+    rel_to_path   = relpath(abs_to_path, start=dirname(abs_from_path))
+    makedirs(dirname(abs_from_path), exist_ok=True)
     with open(abs_from_path, 'w') as f:
         f.write(f"""<!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Refresh" content="0; url='{to_path}'" />
+    <meta http-equiv="Refresh" content="0; url='{rel_to_path}'" />
   </head>
   <body>
   </body>
 </html>
 """)
-    return abs_from_path
+    return None  # Success!
 
-env.AddMethod(AddRedirect_, "AddRedirect")
+env.Append(BUILDERS={ 'AddRedirect' : Builder(action=AddRedirect_) })
 
 # -----------------------------------------------------------------------------
 # Cheat Sheet generation.
@@ -320,17 +319,22 @@ doc = env.Command(f'$OUTPUT_DIR/v{version}/index.html',
                    f'sphinx-multiversion {sphinx_args} docs {output_dir}'],
                   chdir=f'{root_dir}/PublicDoc')
 
-# Add URL redirect files to "latest" directory. These commands can execute at
-# any time.
+# Add URL redirect files to "latest" directory. These commands require the rest
+# of the doc to be built first.
 redirect_files = [
-    'index',
-    'CheatSheet',
-    'Quickstart',
-    'ReleaseNotes',
-    'UserGuide/index',
+    'index.html',
+    'CheatSheet.html',
+    'Quickstart.html',
+    'ReleaseNotes.html',
+    'UserGuide/index.html',
     'VRSetup.html',
 ]
+redirects = []
 for rfile in redirect_files:
-    env.AddRedirect(f'{rfile}.html', 'latest', f'v{version}')
+    from_path = join('latest',      rfile)
+    to_path   = join(f'v{version}', rfile)
+    abs_from_path = join(env.Dir('$OUTPUT_DIR').abspath, from_path)
+    abs_to_path   = join(env.Dir('$OUTPUT_DIR').abspath, to_path)
+    redirects.append(env.AddRedirect(target=abs_from_path, source=abs_to_path))
 
-Return('doc')
+Return('redirects')
