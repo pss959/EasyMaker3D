@@ -69,3 +69,4 @@ Contents
    Quickstart
    UserGuide/index
    CheatSheet
+   ReleaseNotes
