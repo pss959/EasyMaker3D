@@ -107,9 +107,9 @@ def main():
 
     # Update the "latest" links.
     makedirs('docs/latest/UserGuide', exist_ok=True)
-    for fn in ['index.html', 'CheatSheet.html', 'Quickstart.html',
-               'UserGuide/index.html']:
-        AddRedirect('docs/latest/', fn, version)
+    for fn in ['index', 'CheatSheet', 'Quickstart', 'ReleaseNotes',
+               'UserGuide/index']:
+        AddRedirect('docs/latest/', f'{fn}.html', version)
 
     # Commit the results.
     if do_commit:
