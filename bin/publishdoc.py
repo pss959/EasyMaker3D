@@ -37,9 +37,10 @@ def ProcessArguments():
 # -----------------------------------------------------------------------------
 
 def Run(cmd_str):
+    from shlex import split  # Version that preserves quoted strings.
     print(f'---   Running: "{cmd_str}"')
     if not do_dry_run:
-        run(cmd_str.split(), cwd=root_dir)
+        run(split(cmd_str), cwd=root_dir)
 
 #-----------------------------------------------------------------------------
 # Mainline.
