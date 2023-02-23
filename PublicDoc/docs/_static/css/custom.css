@@ -42,10 +42,50 @@
     background: #c7d4e9;
 }
 
-/* Version text at top. */
-.wy-side-nav-search div.version {
+/* Version selector just below search bar. Have to use fixed positioning
+   because it appears at the bottom by default. */
+.rst-versions {
+    background: #6895d9;
+    position:   fixed;
+    top:        100px;
+    bottom:     auto;
+}
+
+/* Opened version selector. */
+.rst-versions.shift-up {
+    background: #6895d9;
+    max-height: 200px;
+}
+
+.rst-versions .rst-current-version {
+    background: #6895d9;
     color:      #eeeeee;
-    font-style: italic;
+    text-align: left;
+}
+
+.rst-versions .rst-other-versions {
+    position: static;
+    color:    #eeeeee;
+}
+
+.current-version-label {
+    text-align:  left;
+    margin-left: 10px;
+}
+
+.current-version-text {
+    text-align:  right;
+}
+
+/* Move the pulldown caret to the right end. */
+.fa-caret-down {
+    position: fixed;
+    left:     280px;
+}
+
+/* Navigation menu below the version selector. */
+.wy-menu {
+    margin-top: 54px;
 }
 
 /* -----------------------------------------------------------------------------

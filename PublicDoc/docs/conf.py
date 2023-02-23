@@ -60,6 +60,8 @@ rst_prolog = f"""
 .. include:: /init.rst
 """
 
+templates_path = ['_templates']
+
 todo_include_todos = True
 
 # Substitutions that can be used inside code blocks and other directives:
@@ -75,7 +77,7 @@ fixreplace_dict = {
 smv_tag_whitelist = r'^v\d+\.\d+.\d+$'
 
 # No branches should be included.
-smv_branch_whitelist = 'XXXX'
+smv_branch_whitelist = 'None'
 
 # Output directory is named with the version string.
 smv_outputdir_format = '{config.version}'
@@ -94,7 +96,7 @@ html_favicon         = 'images/static/favicon.ico'
 # html_logo          = 'images/logo.jpg'
 html_show_sourcelink = False
 html_theme_options   = {
-    'display_version':             True,
+    'display_version':             False,  # Use version selector instead.
     'logo_only':                   False,
     'prev_next_buttons_location':  'both',
     'style_external_links':        False,
