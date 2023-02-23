@@ -32,7 +32,7 @@ env = Environment(
     ENV = environ.copy(),
 )
 
-# Pass values through to sphinx-build via environment variables.
+# Pass values through to Sphinx via environment variables.
 env.Append(
     ENV = {
         'PROJECT'   : app_dict['APP_NAME'],
@@ -292,6 +292,6 @@ doc = env.Command('$OUTPUT_DIR/index.html',
                   sources + [cs_output] + snaps + anns,
                   ['echo = Building public doc for version: ' +
                    app_dict['VERSION_STRING'],
-                   f'sphinx-build {sphinx_args} docs {output_dir}'],
+                   f'sphinx-multiversion {sphinx_args} docs {output_dir}'],
                   chdir=f'{root_dir}/PublicDoc')
 Return('doc')

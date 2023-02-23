@@ -12,7 +12,7 @@
 from os         import chdir
 from os.path    import dirname, join, realpath
 from re         import match
-from subprocess import Popen, PIPE, run
+from subprocess import Popen, PIPE
 
 groups = [s.split() for s in [
     'Apps',

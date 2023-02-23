@@ -35,6 +35,7 @@ sys_path.append(abspath("./_ext"))
 extensions = [
   # Official extensions:
   'sphinx.ext.todo',
+  'sphinx_multiversion',
 
   # Local extensions:
   'fixreplace',
@@ -65,6 +66,22 @@ todo_include_todos = True
 fixreplace_dict = {
     "{appname}" : f'{project}',
 }
+
+# -----------------------------------------------------------------------------
+# Sphinx-multiversion options.
+# -----------------------------------------------------------------------------
+
+# Include tags of the form "vN.N.N"
+smv_tag_whitelist = r'^v\d+\.\d+.\d+$'
+
+# No branches should be included.
+smv_branch_whitelist = 'XXXX'
+
+# Output directory is named with the version string.
+smv_outputdir_format = '{config.version}'
+
+# Only tagged versions are released.
+smv_released_pattern = r'^tags/.*$'
 
 # -----------------------------------------------------------------------------
 # HTML output options.
