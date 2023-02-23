@@ -84,7 +84,9 @@ def main():
     # Sync all generated doc into the 'docs' directory.
     print(f'--- Syncing the HTML doc into the docs directory.')
     makedirs('docs', exist_ok=True)
-    Run(f'rsync -vau --delete --exclude=.nojekyll build/PublicDoc/ docs/')
+    exclusions = ' '.join([f'--exclude={ex}'
+                           for ex in ['.nojekyll', 'index.html']])
+    Run(f'rsync -vau --delete {exclusions} build/PublicDoc/ docs/')
 
     # Commit the results.
     if do_commit:
