@@ -79,11 +79,11 @@ smv_tag_whitelist = r'^v\d+\.\d+.\d+$'
 # No branches should be included.
 smv_branch_whitelist = 'None'
 
-# Output directory is named with the version string.
-smv_outputdir_format = '{config.version}'
+# Output directory is named with the tag name.
+smv_outputdir_format = '{ref.name}'
 
-# Only tagged versions are released.
-smv_released_pattern = r'^tags/.*$'
+# All tagged versions are released.
+smv_released_pattern = r'^.*$'
 
 # -----------------------------------------------------------------------------
 # HTML output options.

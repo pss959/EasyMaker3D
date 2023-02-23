@@ -42,26 +42,6 @@ def Run(cmd_str):
         run(cmd_str.split(), cwd=root_dir)
 
 #-----------------------------------------------------------------------------
-# Adds a URL-redirecting file with the given path.
-#-----------------------------------------------------------------------------
-
-def AddRedirect(file_dir, file_name, version):
-    source = join(file_dir, file_name)
-    target = join('..', version, file_name)
-    print(f'--- Adding redirect: "{source}" => "{target}"')
-    if not do_dry_run:
-        with open(source, 'w') as f:
-            f.write(f"""<!DOCTYPE html>
-  <html>
-    <head>
-      <meta http-equiv="Refresh" content="0; url='{target}'" />
-    </head>
-    <body>
-    </body>
-  </html>
-""")
-
-#-----------------------------------------------------------------------------
 # Mainline.
 #-----------------------------------------------------------------------------
 
@@ -100,16 +80,10 @@ def main():
     print(f'--- Building the doc for version {version}.')
     Run('scons PublicDoc')
 
-    # Sync the latest doc into the correct subdirectory.
-    print(f'--- Syncing the HTML doc into the docs/{version} subdirectory.')
+    # Sync all generated doc into the 'docs' directory.
+    print(f'--- Syncing the HTML doc into the docs directory.')
     makedirs('docs', exist_ok=True)
-    Run(f'rsync -vau --delete build/PublicDoc/ docs/{version}/')
-
-    # Update the "latest" links.
-    makedirs('docs/latest/UserGuide', exist_ok=True)
-    for fn in ['index', 'CheatSheet', 'Quickstart', 'ReleaseNotes',
-               'UserGuide/index']:
-        AddRedirect('docs/latest/', f'{fn}.html', version)
+    Run(f'rsync -vau --delete build/PublicDoc/ docs/')
 
     # Commit the results.
     if do_commit:

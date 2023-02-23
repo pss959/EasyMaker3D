@@ -58,14 +58,20 @@
 }
 
 .rst-versions .rst-current-version {
-    background: #6895d9;
-    color:      #eeeeee;
-    text-align: left;
+    background:  #6895d9;
+    color:       #ffffff;
+    text-align:  left;
+    font-weight: bold;
 }
 
 .rst-versions .rst-other-versions {
     position: static;
     color:    #eeeeee;
+}
+
+.rst-versions .rst-other-versions dd {
+    display:     block;
+    margin-left: 60px;
 }
 
 .current-version-label {
@@ -80,7 +86,7 @@
 /* Move the pulldown caret to the right end. */
 .fa-caret-down {
     position: fixed;
-    left:     280px;
+    left:     260px;
 }
 
 /* Navigation menu below the version selector. */

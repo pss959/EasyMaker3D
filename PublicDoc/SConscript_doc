@@ -4,7 +4,8 @@
 # -----------------------------------------------------------------------------
 
 from os      import environ, walk
-from os.path import basename, join, splitext
+from os.path import join
+from pathlib import Path
 
 Import('app_dict', 'doc_build_dir', 'snapimage')
 
@@ -41,6 +42,28 @@ env.Append(
         'COPYRIGHT' : app_dict['COPYRIGHT'],
     },
 )
+
+# Function that creates an HTML file to redirect to another file. The to_dir
+# directory is assumed to be at the same level as from_dir.
+def AddRedirect_(env, file_path, from_dir, to_dir):
+    from_path = Path(from_dir, file_path)
+    to_path   = Path('../' * (len(from_path.parents) - 1), to_dir, file_path)
+    print(f'--- Adding redirect: "{from_path}" => "{to_path}"')
+    abs_from_path = Path(env.Dir('$OUTPUT_DIR').abspath, from_path)
+    abs_from_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(abs_from_path, 'w') as f:
+        f.write(f"""<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Refresh" content="0; url='{to_path}'" />
+  </head>
+  <body>
+  </body>
+</html>
+""")
+    return abs_from_path
+
+env.AddMethod(AddRedirect_, "AddRedirect")
 
 # -----------------------------------------------------------------------------
 # Cheat Sheet generation.
@@ -281,17 +304,33 @@ env.Alias('Images', [snaps, anns])
 
 sources    = FindAllSources_('docs')
 output_dir = env.Dir('$OUTPUT_DIR').abspath
+version    = app_dict['VERSION_STRING']
 
 sphinx_args = ' '.join([
     '-W',    # Treat warnings as errors,
     '-E',    # Rebuild if anything changes (no environment cache).
     '-a',    # Write all files.
+    # '--dump-metadata',  # Uncomment this to debug versioning.
 ])
 
-doc = env.Command('$OUTPUT_DIR/index.html',
+# Run Sphinx to build the doc.
+doc = env.Command(f'$OUTPUT_DIR/v{version}/index.html',
                   sources + [cs_output] + snaps + anns,
-                  ['echo = Building public doc for version: ' +
-                   app_dict['VERSION_STRING'],
+                  ['echo === Building public doc for version: {version}',
                    f'sphinx-multiversion {sphinx_args} docs {output_dir}'],
                   chdir=f'{root_dir}/PublicDoc')
+
+# Add URL redirect files to "latest" directory. These commands can execute at
+# any time.
+redirect_files = [
+    'index',
+    'CheatSheet',
+    'Quickstart',
+    'ReleaseNotes',
+    'UserGuide/index',
+    'VRSetup.html',
+]
+for rfile in redirect_files:
+    env.AddRedirect(f'{rfile}.html', 'latest', f'v{version}')
+
 Return('doc')
