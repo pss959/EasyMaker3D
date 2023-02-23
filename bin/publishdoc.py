@@ -81,12 +81,17 @@ def main():
     print(f'--- Building the doc for version {version}.')
     Run('scons PublicDoc')
 
-    # Sync all generated doc into the 'docs' directory.
+    # Sync all generated doc into the 'docs' directory, with some exceptions.
     print(f'--- Syncing the HTML doc into the docs directory.')
     makedirs('docs', exist_ok=True)
-    exclusions = ' '.join([f'--exclude={ex}'
-                           for ex in ['.nojekyll', 'index.html']])
-    Run(f'rsync -vau --delete {exclusions} build/PublicDoc/ docs/')
+    exclusions = [
+        '.nojekyll',   # Don't delete this
+        'index.html',  # Don't delete this
+        '.doctrees',   # No need for this in Github Pages.
+        '.buildinfo',  # No need for this in Github Pages.
+    ]
+    exclusion_args = ' '.join([f'--exclude={ex}' for ex in exclusions])
+    Run(f'rsync -vau --delete {exclusion_args} build/PublicDoc/ docs/')
 
     # Commit the results.
     if do_commit:
