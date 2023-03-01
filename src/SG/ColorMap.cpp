@@ -37,8 +37,7 @@ Color ColorMap::GetColorForDimension(int dim) const {
 }
 
 Color ColorMap::SGetColor(const std::string &name) {
-    ASSERT(s_instance);
-    return s_instance->GetColor(name);
+    return s_instance ? s_instance->GetColor(name) : Color::White();
 }
 
 Color ColorMap::SGetColorForDimension(int dim) {
