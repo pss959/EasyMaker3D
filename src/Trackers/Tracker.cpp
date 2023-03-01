@@ -14,15 +14,16 @@ Tracker::Tracker(Actuator actuator) : actuator_(actuator) {
 void Tracker::Init(const SG::ScenePtr &scene,
                    const ControllerPtr &lc, const ControllerPtr &rc) {
     ASSERT(scene);
-    ASSERT(lc);
-    ASSERT(rc);
-    scene_            = scene;
-    left_controller_  = lc;
-    right_controller_ = rc;
+    scene_ = scene;
 
-    // Find Controller paths.
-    left_controller_path_  = SG::FindNodePathInScene(*scene_, *lc);
-    right_controller_path_ = SG::FindNodePathInScene(*scene_, *rc);
+    if (lc && rc) {
+        left_controller_  = lc;
+        right_controller_ = rc;
+
+        // Find Controller paths.
+        left_controller_path_  = SG::FindNodePathInScene(*scene_, *lc);
+        right_controller_path_ = SG::FindNodePathInScene(*scene_, *rc);
+    }
 }
 
 bool Tracker::IsLeft() const {

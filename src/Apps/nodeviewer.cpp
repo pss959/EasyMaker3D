@@ -188,6 +188,8 @@ bool Application_::InitViewer(const Vector2i &window_size) {
     renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
     renderer_->Reset(*scene_);
 
+    scene_context_->frustum = glfw_viewer_->GetFrustum();
+
     MainHandler::Context mc;
     mc.scene            = scene_context_->scene;
     mc.frustum          = scene_context_->frustum;
@@ -208,9 +210,6 @@ void Application_::MainLoop() {
     while (! should_quit_) {
         renderer_->BeginFrame();
         const bool is_modified_mode = glfw_viewer_->IsShiftKeyPressed();
-
-        // Update the frustum used for intersection testing.
-        scene_context_->frustum = glfw_viewer_->GetFrustum();
 
         main_handler_->ProcessUpdate(is_modified_mode);
 
