@@ -219,16 +219,18 @@ int GetMaxElementIndex(const VectorBase<DIM, float> &v) {
 
 template <int DIM>
 int GetMinAbsElementIndex(const VectorBase<DIM, float> &v) {
-    return GetMinElementIndex(Vector3f(std::abs(v[0]),
-                                       std::abs(v[1]),
-                                       std::abs(v[2])));
+    ion::math::Vector<DIM, float> av;
+    for (int i = 0; i < DIM; ++i)
+	av[i] = std::abs(v[i]);
+    return GetMinElementIndex(av);
 }
 
 template <int DIM>
 int GetMaxAbsElementIndex(const VectorBase<DIM, float> &v) {
-    return GetMaxElementIndex(Vector3f(std::abs(v[0]),
-                                       std::abs(v[1]),
-                                       std::abs(v[2])));
+    ion::math::Vector<DIM, float> av;
+    for (int i = 0; i < DIM; ++i)
+	av[i] = std::abs(v[i]);
+    return GetMaxElementIndex(av);
 }
 
 // Instantiate for all needed vector dimensions.

@@ -7,6 +7,43 @@
 class LinearTest : public TestBase {
 };
 
+TEST_F(LinearTest, MinMaxElement) {
+    const Vector2f v2a(-.2f, 1.f);
+    const Vector2f v2b( .2f, 1.f);
+    const Vector3f v3a(-.2f, 1.f, -1.4f);
+    const Vector3f v3b( .2f, 1.f,   .4f);
+    const Vector4f v4a(-.2f, 1.f, -.4f, -1.5f);
+    const Vector4f v4b( .2f, 1.f,  .1f,   .5f);
+
+    EXPECT_EQ(0, GetMinElementIndex(v2a));
+    EXPECT_EQ(0, GetMinElementIndex(v2b));
+    EXPECT_EQ(2, GetMinElementIndex(v3a));
+    EXPECT_EQ(0, GetMinElementIndex(v3b));
+    EXPECT_EQ(3, GetMinElementIndex(v4a));
+    EXPECT_EQ(2, GetMinElementIndex(v4b));
+
+    EXPECT_EQ(1, GetMaxElementIndex(v2a));
+    EXPECT_EQ(1, GetMaxElementIndex(v2b));
+    EXPECT_EQ(1, GetMaxElementIndex(v3a));
+    EXPECT_EQ(1, GetMaxElementIndex(v3b));
+    EXPECT_EQ(1, GetMaxElementIndex(v4a));
+    EXPECT_EQ(1, GetMaxElementIndex(v4b));
+
+    EXPECT_EQ(0, GetMinAbsElementIndex(v2a));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v2b));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v3a));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v3b));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v4a));
+    EXPECT_EQ(2, GetMinAbsElementIndex(v4b));
+
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v2a));
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v2b));
+    EXPECT_EQ(2, GetMaxAbsElementIndex(v3a));
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v3b));
+    EXPECT_EQ(3, GetMaxAbsElementIndex(v4a));
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v4b));
+}
+
 TEST_F(LinearTest, RotationDifference) {
     const Rotationf r0 = Rotationf::FromAxisAndAngle(Vector3f(1, 2, -3),
                                                      Anglef::FromDegrees(18));
