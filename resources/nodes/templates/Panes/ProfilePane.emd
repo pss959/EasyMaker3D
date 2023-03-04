@@ -36,6 +36,18 @@ ProfilePane "T_ProfilePane" {
 
     CLONE "T_FixedPoint" "StartPoint" {},
     CLONE "T_FixedPoint" "EndPoint"   {},
+    Node "SnappedPoint" {
+      disabled_flags: "kTraversal",
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#000000" } ],
+        }
+      ],
+      shapes: [
+        CLONE "T_Point" {},
+      ]
+    }
 
     PushButtonWidget "DeleteSpot" {
       # Root of DeleteSpot has to have identity scale so code can

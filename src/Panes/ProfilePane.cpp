@@ -59,6 +59,7 @@ class ProfilePane::Impl_ {
     GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
     GenericWidgetPtr  new_point_;       ///< Shows location of new point.
     SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
+    SG::NodePtr       snapped_point_;   ///< Shows point when snapped.
 
     /// Rectangle representing the drag target area used for deleting points.
     Range2f           delete_rect_;
@@ -135,6 +136,7 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
         root_node, "AreaWidget");
     new_point_   = SG::FindTypedNodeUnderNode<GenericWidget>(
         root_node, "NewPoint");
+    snapped_point_ = SG::FindNodeUnderNode(root_node, "SnappedPoint");
 
     auto line = SG::FindNodeUnderNode(root_node, "ProfileLine");
     profile_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*line, "Line");
@@ -368,20 +370,51 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
             profile_changed_.Notify(profile_);
         }
         delete_spot_->SetEnabled(false);
+
+        // Make sure all movable points are in the correct place.
+        UpdateLine_(true);
     }
     activation_.Notify(is_activation);
 }
 
 void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
-    // Update the point in the Profile.
+    // Index is into movable points. (Does not include end points.)
     ASSERT(index < profile_.GetPoints().size());
-    profile_.SetPoint(index, pos);
+
+    // Determine if modified-dragging is happening. If so, check for
+    // horizontal, vertical, and 45-degree diagonal snapping.
+    Point2f snapped_pos = pos;
+    if (GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode) {
+        const auto pts = profile_.GetAllPoints();
+        const Point2f &prev_pt = pts[index];
+        const Point2f &next_pt = pts[index + 2];
+
+        const Vector4f diffs(pos[0] - prev_pt[0],
+                             pos[1] - prev_pt[1],
+                             pos[0] - next_pt[0],
+                             pos[1] - next_pt[1]);
+        const int min = GetMinAbsElementIndex(diffs);
+        switch (min) {
+          case 0:  snapped_pos[0] = prev_pt[0]; break;
+          case 1:  snapped_pos[1] = prev_pt[1]; break;
+          case 2:  snapped_pos[0] = next_pt[0]; break;
+          default: snapped_pos[1] = next_pt[1]; break;
+        }
+        snapped_point_->SetTranslation(FromProfile_(snapped_pos, 0));
+        snapped_point_->SetEnabled(true);
+    }
+    else {
+        snapped_point_->SetEnabled(false);
+    }
+
+    // Update the point in the Profile.
+    profile_.SetPoint(index, snapped_pos);
     UpdateLine_(false);
     profile_changed_.Notify(profile_);
 
     // Highlight the delete spot if the point is over it.
     if (delete_spot_->IsEnabled())
-        delete_spot_->SetActive(delete_rect_.ContainsPoint(pos));
+        delete_spot_->SetActive(delete_rect_.ContainsPoint(snapped_pos));
 }
 
 void ProfilePane::Impl_::UpdateLine_(bool update_points) {
