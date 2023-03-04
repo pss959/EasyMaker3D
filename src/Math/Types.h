@@ -38,6 +38,8 @@ typedef ion::math::Vector4f  Vector4f;
 typedef ion::math::Vector4i  Vector4i;
 typedef ion::math::Vector4ui Vector4ui;
 
+template <int DIM, typename T> using VectorBase = ion::math::VectorBase<DIM, T>;
+
 typedef ion::math::Range2i Viewport;  ///< Used for viewing operations.
 
 /// Type used for any geometry index.

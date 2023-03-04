@@ -2,9 +2,7 @@
 
 #include <string>
 
-#include <ion/math/matrix.h>
-#include <ion/math/rotation.h>
-#include <ion/math/vector.h>
+#include "Math/Types.h"
 
 /// \file
 /// This file contains functions for converting Math types to character strings.
@@ -21,21 +19,21 @@ std::string ToString(float f, float precision);
 /// Converts a vector with output precision.
 ///
 /// \ingroup Math
-std::string ToString(const ion::math::VectorBase<2, float> &v, float precision);
+std::string ToString(const VectorBase<2, float> &v, float precision);
 
 /// Converts a vector with output precision.
 ///
 /// \ingroup math
-std::string ToString(const ion::math::VectorBase<3, float> &v, float precision);
+std::string ToString(const VectorBase<3, float> &v, float precision);
 
 /// Converts a rotation with reasonable output precision.
 ///
 /// \ingroup math
-std::string ToString(const ion::math::Rotationf &r);
+std::string ToString(const Rotationf &r);
 
 /// Converts a matrix with output precision, using multiple lines for clarity.
 ///
 /// \ingroup math
-std::string ToString(const ion::math::Matrix4f &m, float precision);
+std::string ToString(const Matrix4f &m, float precision);
 
 }  // namespace Math

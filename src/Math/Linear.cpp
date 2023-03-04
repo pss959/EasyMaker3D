@@ -191,41 +191,59 @@ bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
     return ion::math::AngleBetween(dir0, dir1) <= tolerance_angle;
 }
 
-int GetMinElementIndex(const Vector3f &v) {
+template <int DIM>
+int GetMinElementIndex(const VectorBase<DIM, float> &v) {
     int   min_index = 0;
     float min_value = v[0];
-    if (v[1] < min_value) {
-        min_index = 1;
-        min_value = v[1];
+    for (int i = 1; i < DIM; ++i) {
+        if (v[i] < min_value) {
+            min_index = i;
+            min_value = v[i];
+        }
     }
-    if (v[2] < min_value)
-        min_index = 2;
     return min_index;
 }
 
-int GetMaxElementIndex(const Vector3f &v) {
+template <int DIM>
+int GetMaxElementIndex(const VectorBase<DIM, float> &v) {
     int   max_index = 0;
     float max_value = v[0];
-    if (v[1] > max_value) {
-        max_index = 1;
-        max_value = v[1];
+    for (int i = 1; i < DIM; ++i) {
+        if (v[i] > max_value) {
+            max_index = i;
+            max_value = v[i];
+        }
     }
-    if (v[2] > max_value)
-        max_index = 2;
     return max_index;
 }
 
-int GetMinAbsElementIndex(const Vector3f &v) {
+template <int DIM>
+int GetMinAbsElementIndex(const VectorBase<DIM, float> &v) {
     return GetMinElementIndex(Vector3f(std::abs(v[0]),
                                        std::abs(v[1]),
                                        std::abs(v[2])));
 }
 
-int GetMaxAbsElementIndex(const Vector3f &v) {
+template <int DIM>
+int GetMaxAbsElementIndex(const VectorBase<DIM, float> &v) {
     return GetMaxElementIndex(Vector3f(std::abs(v[0]),
                                        std::abs(v[1]),
                                        std::abs(v[2])));
 }
+
+// Instantiate for all needed vector dimensions.
+template int GetMinElementIndex(const VectorBase<2, float> &v);
+template int GetMinElementIndex(const VectorBase<3, float> &v);
+template int GetMinElementIndex(const VectorBase<4, float> &v);
+template int GetMaxElementIndex(const VectorBase<2, float> &v);
+template int GetMaxElementIndex(const VectorBase<3, float> &v);
+template int GetMaxElementIndex(const VectorBase<4, float> &v);
+template int GetMinAbsElementIndex(const VectorBase<2, float> &v);
+template int GetMinAbsElementIndex(const VectorBase<3, float> &v);
+template int GetMinAbsElementIndex(const VectorBase<4, float> &v);
+template int GetMaxAbsElementIndex(const VectorBase<2, float> &v);
+template int GetMaxAbsElementIndex(const VectorBase<3, float> &v);
+template int GetMaxAbsElementIndex(const VectorBase<4, float> &v);
 
 Anglef AbsAngle(const Anglef &angle) {
     return angle.Radians() < 0 ? -angle : angle;

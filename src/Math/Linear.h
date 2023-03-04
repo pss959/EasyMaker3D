@@ -137,17 +137,21 @@ bool AreClose(const Point3f &a, const Point3f &b, float tolerance = .0001f);
 bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
                         const Anglef &tolerance_angle);
 
-/// Returns the index of the minimum element of a Vector3f.
-int GetMinElementIndex(const Vector3f &v);
+/// Returns the index of the minimum element of a vector.
+template <int DIM>
+int GetMinElementIndex(const VectorBase<DIM, float> &v);
 
-/// Returns the index of the maximum element of a Vector3f.
-int GetMaxElementIndex(const Vector3f &v);
+/// Returns the index of the maximum element of a vector.
+template <int DIM>
+int GetMaxElementIndex(const VectorBase<DIM, float> &v);
 
-/// Returns the index of the minimum element (by absolute value) of a Vector3f.
-int GetMinAbsElementIndex(const Vector3f &v);
+/// Returns the index of the minimum element (by absolute value) of a vector.
+template <int DIM>
+int GetMinAbsElementIndex(const VectorBase<DIM, float> &v);
 
 /// Returns the index of the maximum element (by absolute value) of a Vector3f.
-int GetMaxAbsElementIndex(const Vector3f &v);
+template <int DIM>
+int GetMaxAbsElementIndex(const VectorBase<DIM, float> &v);
 
 /// Returns the coordinate axis for the given dimension (0, 1, or 2). The scale
 /// value (default 1) is used for the axis length.
