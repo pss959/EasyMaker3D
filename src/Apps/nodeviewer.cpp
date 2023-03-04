@@ -98,6 +98,7 @@ DECL_SHARED_PTR(AppHandler_);
 class Application_ {
   public:
     explicit Application_(const Args &args);
+    ~Application_();
     bool InitScene();
     bool InitViewer(const Vector2i &window_size);
     void MainLoop();
@@ -143,6 +144,19 @@ Application_::Application_(const Args &args) : args_(args) {
     RegisterTypes();
 
     is_fixed_camera_ = args_.GetBool("--fixed_camera");
+}
+
+Application_::~Application_() {
+    event_manager_->ClearHandlers();
+
+    // Instances must be destroyed in a particular order.
+#if ENABLE_DEBUG_FEATURES
+    Debug::ShutDown();
+#endif
+    view_handler_.reset();
+    scene_context_.reset();
+    renderer_.reset();
+    glfw_viewer_.reset();
 }
 
 bool Application_::InitScene() {
@@ -521,14 +535,16 @@ int main(int argc, const char** argv)
 
     KLogger::SetKeyString(args.GetString("--klog"));
 
-    Application_ app(args);
-    try {
-        if (! app.InitScene() || ! app.InitViewer(Vector2i(800, 600)))
-            return 1;
-        app.MainLoop();
-    }
-    catch (std::exception &ex) {
-        HandleEx_("in app", ex);
+    {
+        Application_ app(args);
+        try {
+            if (! app.InitScene() || ! app.InitViewer(Vector2i(800, 600)))
+                return 1;
+            app.MainLoop();
+        }
+        catch (std::exception &ex) {
+            HandleEx_("in app", ex);
+        }
     }
     return 0;
 }
