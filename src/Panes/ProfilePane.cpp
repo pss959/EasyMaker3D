@@ -8,6 +8,7 @@
 
 #include "Math/Linear.h"
 #include "Place/ClickInfo.h"
+#include "SG/ColorMap.h"
 #include "SG/Node.h"
 #include "SG/PolyLine.h"
 #include "SG/Search.h"
@@ -395,6 +396,8 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
         GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode;
     if (should_snap && SnapPoint_(index, pos, snapped_pos)) {
         snapped_point_->SetTranslation(FromProfile_(snapped_pos, 0));
+        snapped_point_->SetBaseColor(
+            SG::ColorMap::SGetColor("ProfileSnapColor"));
         snapped_point_->SetEnabled(true);
     }
     else {
@@ -488,14 +491,11 @@ ProfilePane::Impl_::SnapDirection_ ProfilePane::Impl_::SnapToDirection_(
     // in the range -180 to +180, with 0 to the right (east)
     const Anglef angle = ion::math::ArcTangent2(diff[1], diff[0]);
 
-    // XXXX Put in TK.
-    const float kAngleTolerance = 15;
-
     // Check for closeness to any of the principal directions.
-    const float deg = angle.Degrees();
-    auto check_angle = [&](float d){
-        if (AreClose(deg, d, kAngleTolerance)) {
-            deg_off = std::abs(deg - d);
+    auto check_angle = [&](float deg){
+        if (AreClose(angle, Anglef::FromDegrees(deg),
+                     TK::kProfilePaneMaxSnapAngle)) {
+            deg_off = std::abs(deg - angle.Degrees());
             return true;
         }
         return false;

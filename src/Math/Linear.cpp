@@ -186,6 +186,10 @@ bool AreClose(const Point3f &a, const Point3f &b, float tolerance) {
     return ion::math::LengthSquared(b - a) <= tolerance;
 }
 
+bool AreClose(const Anglef &a, const Anglef &b, const Anglef &tolerance) {
+    return AreClose(a.Radians(), b.Radians(), tolerance.Radians());
+}
+
 bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
                         const Anglef &tolerance_angle) {
     return ion::math::AngleBetween(dir0, dir1) <= tolerance_angle;

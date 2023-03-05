@@ -133,6 +133,10 @@ bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance = .0001f);
 /// tolerance, which is the square of the distance.
 bool AreClose(const Point3f &a, const Point3f &b, float tolerance = .0001f);
 
+/// Returns true if two angles are close enough to each other within a
+/// tolerance.
+bool AreClose(const Anglef &a, const Anglef &b, const Anglef &tolerance);
+
 /// Returns true if two directions are withing the given angle of each other.
 bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
                         const Anglef &tolerance_angle);

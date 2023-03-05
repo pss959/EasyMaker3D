@@ -569,6 +569,9 @@ extern const float    kMinTouchZMotion;
 /// Maximum distance to a ProfilePane point to be considered close to it.
 extern const float    kProfilePanePointTolerance;
 
+/// Maximum angle for snapping a ProfilePane point to a principal direction.
+extern const Anglef   kProfilePaneMaxSnapAngle;
+
 /// Precision to use for points when writing STL files.
 extern const float    kSTLPrecision;
 

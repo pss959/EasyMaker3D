@@ -197,6 +197,7 @@ const float    kMinGripControllerDistance        = .04f;
 const float    kMinTouchControllerDistance       = .025f;
 const float    kMinTouchZMotion                  = .02f;
 const float    kProfilePanePointTolerance        = .04f;
+const Anglef   kProfilePaneMaxSnapAngle          = Anglef::FromDegrees(15);
 const float    kSTLPrecision                     = .0001f;
 const float    kSnapDirectionTolerance           = 15;
 const float    kSnapLengthTolerance              = 1;
