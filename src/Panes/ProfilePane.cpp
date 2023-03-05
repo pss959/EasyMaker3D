@@ -38,6 +38,8 @@ class ProfilePane::Impl_ {
                                    float &closest_distance);
 
   private:
+    enum class SnapDirection_ { kNone, kN, kE, kW, kS, kNE, kNW, kSE, kSW };
+
     SG::Node     &root_node_;
     const size_t  min_point_count_;
 
@@ -77,6 +79,11 @@ class ProfilePane::Impl_ {
     void NewPointDragged_(const DragInfo *info, bool is_start);
     void PointActivated_(size_t index, bool is_activation);
     void PointMoved_(size_t index, const Point2f &pos);
+    bool SnapPoint_(size_t index, const Point2f &pos, Point2f &snapped_pos);
+    void SnapToPoint_(const Point2f &pt, SnapDirection_ dir,
+                      Point2f &snapped_pos);
+    SnapDirection_ SnapToDirection_(const Point2f &from_pos,
+                                    const Point2f &to_pos, float &deg_off);
     void UpdateLine_(bool update_points);
     void CreateDelegateSlider_(size_t index, const Point2f &pos);
     Slider2DWidgetPtr GetMovableSlider_(size_t index) const;
@@ -383,27 +390,15 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
 
     // Determine if modified-dragging is happening. If so, check for
     // horizontal, vertical, and 45-degree diagonal snapping.
-    Point2f snapped_pos = pos;
-    if (GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode) {
-        const auto pts = profile_.GetAllPoints();
-        const Point2f &prev_pt = pts[index];
-        const Point2f &next_pt = pts[index + 2];
-
-        const Vector4f diffs(pos[0] - prev_pt[0],
-                             pos[1] - prev_pt[1],
-                             pos[0] - next_pt[0],
-                             pos[1] - next_pt[1]);
-        const int min = GetMinAbsElementIndex(diffs);
-        switch (min) {
-          case 0:  snapped_pos[0] = prev_pt[0]; break;
-          case 1:  snapped_pos[1] = prev_pt[1]; break;
-          case 2:  snapped_pos[0] = next_pt[0]; break;
-          default: snapped_pos[1] = next_pt[1]; break;
-        }
+    Point2f snapped_pos;
+    const bool should_snap =
+        GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode;
+    if (should_snap && SnapPoint_(index, pos, snapped_pos)) {
         snapped_point_->SetTranslation(FromProfile_(snapped_pos, 0));
         snapped_point_->SetEnabled(true);
     }
     else {
+        snapped_pos = pos;
         snapped_point_->SetEnabled(false);
     }
 
@@ -415,6 +410,115 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
     // Highlight the delete spot if the point is over it.
     if (delete_spot_->IsEnabled())
         delete_spot_->SetActive(delete_rect_.ContainsPoint(snapped_pos));
+}
+
+bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
+                                    Point2f &snapped_pos) {
+    using ion::math::ArcTangent2;
+
+    // Get the previous and next points.
+    const auto points = profile_.GetAllPoints();
+    const Point2f prev_pos = points[index];
+    const Point2f next_pos = points[index + 2];
+
+    // Snap to the closest direction around both points and see how many
+    // degrees they are from that direction.
+    float prev_deg, next_deg;
+    const SnapDirection_ prev_dir = SnapToDirection_(prev_pos, pos, prev_deg);
+    const SnapDirection_ next_dir = SnapToDirection_(next_pos, pos, next_deg);
+
+    snapped_pos = pos;
+
+    if (prev_dir != SnapDirection_::kNone &&
+        next_dir != SnapDirection_::kNone) {
+        // Snap first to the closer direction.
+        if (prev_deg <= next_deg) {
+            SnapToPoint_(prev_pos, prev_dir, snapped_pos);
+            SnapToPoint_(next_pos, next_dir, snapped_pos);
+        }
+        else {
+            SnapToPoint_(next_pos, next_dir, snapped_pos);
+            SnapToPoint_(prev_pos, prev_dir, snapped_pos);
+        }
+    }
+    else if (prev_dir != SnapDirection_::kNone) {
+        SnapToPoint_(prev_pos, prev_dir, snapped_pos);
+    }
+    else if (next_dir != SnapDirection_::kNone) {
+        SnapToPoint_(next_pos, next_dir, snapped_pos);
+    }
+    else {
+        return false;
+    }
+    return true;
+}
+
+void ProfilePane::Impl_::SnapToPoint_(const Point2f &pt, SnapDirection_ dir,
+                                      Point2f &snapped_pos) {
+    auto diag = [&](const Point2f &p, int x_sign, int y_sign){
+        // Compute the side of a 45-degree right triangle.
+        const float len = ion::math::Length(snapped_pos - p) / std::sqrt(2);
+        return p + Vector2f(x_sign * len, y_sign * len);
+    };
+
+    switch (dir) {
+      case SnapDirection_::kN:
+      case SnapDirection_::kS:  snapped_pos[0] = pt[0]; break;
+      case SnapDirection_::kE:
+      case SnapDirection_::kW:  snapped_pos[1] = pt[1]; break;
+      case SnapDirection_::kNE: snapped_pos = diag(pt,  1,  1); break;
+      case SnapDirection_::kNW: snapped_pos = diag(pt, -1,  1); break;
+      case SnapDirection_::kSE: snapped_pos = diag(pt,  1, -1); break;
+      case SnapDirection_::kSW: snapped_pos = diag(pt, -1, -1); break;
+      default: break;
+    }
+}
+
+ProfilePane::Impl_::SnapDirection_ ProfilePane::Impl_::SnapToDirection_(
+    const Point2f &from_pos, const Point2f &to_pos, float &deg_off) {
+
+    // If the two points are close together, can't do this.
+    const Vector2f diff = to_pos - from_pos;
+    if (ion::math::Length(diff) < .001f) {
+        deg_off = 0;
+        return SnapDirection_::kNone;
+    }
+
+    // Determine the angle of the new point around those points. This should be
+    // in the range -180 to +180, with 0 to the right (east)
+    const Anglef angle = ion::math::ArcTangent2(diff[1], diff[0]);
+
+    // XXXX Put in TK.
+    const float kAngleTolerance = 15;
+
+    // Check for closeness to any of the principal directions.
+    const float deg = angle.Degrees();
+    auto check_angle = [&](float d){
+        if (AreClose(deg, d, kAngleTolerance)) {
+            deg_off = std::abs(deg - d);
+            return true;
+        }
+        return false;
+    };
+    SnapDirection_ dir = SnapDirection_::kNone;
+    if      (check_angle(0))
+        dir = SnapDirection_::kE;
+    else if (check_angle(45))
+        dir = SnapDirection_::kNE;
+    else if (check_angle(90))
+        dir = SnapDirection_::kN;
+    else if (check_angle(135))
+        dir = SnapDirection_::kNW;
+    else if (check_angle(180) || check_angle(-180))
+        dir = SnapDirection_::kW;
+    else if (check_angle(-135))
+        dir = SnapDirection_::kSW;
+    else if (check_angle(-90))
+        dir = SnapDirection_::kS;
+    else if (check_angle(-45))
+        dir = SnapDirection_::kSE;
+
+    return dir;
 }
 
 void ProfilePane::Impl_::UpdateLine_(bool update_points) {
