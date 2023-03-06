@@ -27,6 +27,9 @@ class ProfilePane::Impl_ {
   public:
     Impl_(SG::Node &root_node, size_t min_point_count);
 
+    // Sets colors on certain parts. This has to be done after Ion is set up.
+    void SetColors();
+
     Util::Notifier<bool> & GetActivation() { return activation_; }
     Util::Notifier<const Profile &> & GetProfileChanged() {
         return profile_changed_;
@@ -62,7 +65,9 @@ class ProfilePane::Impl_ {
     GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
     GenericWidgetPtr  new_point_;       ///< Shows location of new point.
     SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
+    SG::NodePtr       snap_feedback_;   ///< Shows point and line when snapped.
     SG::NodePtr       snapped_point_;   ///< Shows point when snapped.
+    SG::PolyLinePtr   snapped_line_;    ///< Line showing snapped segments.
 
     /// Rectangle representing the drag target area used for deleting points.
     Range2f           delete_rect_;
@@ -112,6 +117,10 @@ class ProfilePane::Impl_ {
     void GetClosestMidPoint_(const std::vector<Point2f> &points,
                              const Point2f &p, Point2f &mid_pt, float &dist);
 
+    /// Sets 3D points in an SG::PolyLine from a vector of profile points.
+    void SetLinePoints_(const std::vector<Point2f> points, SG::PolyLine &line,
+                        float z_offset);
+
     /// Converts a 3D point from the object coordinates of the ProfilePane to
     /// 2D profile coordinates.
     static Point2f ToProfile_(const Point3f &p) {
@@ -144,10 +153,13 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
         root_node, "AreaWidget");
     new_point_   = SG::FindTypedNodeUnderNode<GenericWidget>(
         root_node, "NewPoint");
-    snapped_point_ = SG::FindNodeUnderNode(root_node, "SnappedPoint");
+    snap_feedback_ = SG::FindNodeUnderNode(root_node, "SnapFeedback");
+    snapped_point_ = SG::FindNodeUnderNode(*snap_feedback_, "SnappedPoint");
 
-    auto line = SG::FindNodeUnderNode(root_node, "ProfileLine");
-    profile_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*line, "Line");
+    auto pline = SG::FindNodeUnderNode(root_node,       "ProfileLine");
+    auto sline = SG::FindNodeUnderNode(*snap_feedback_, "SnappedLine");
+    profile_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*pline, "Line");
+    snapped_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*sline, "Line");
 
     area_widget_->GetHovered().AddObserver(
         this, [&](const Point3f &point){ AreaHovered_(point); });
@@ -165,6 +177,11 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     PositionFixedPoints_();
     CreateMovablePoints_();
     UpdateLine_(true);
+}
+
+void ProfilePane::Impl_::SetColors() {
+    const Color snapped_color = SG::ColorMap::SGetColor("ProfileSnapColor");
+    snap_feedback_->SetBaseColor(snapped_color);
 }
 
 void ProfilePane::Impl_::SetProfile(const Profile &profile) {
@@ -377,10 +394,11 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
             UpdateLine_(true);
             profile_changed_.Notify(profile_);
         }
+        else {
+            // Make sure all movable points are in the correct place.
+            UpdateLine_(true);
+        }
         delete_spot_->SetEnabled(false);
-
-        // Make sure all movable points are in the correct place.
-        UpdateLine_(true);
     }
     activation_.Notify(is_activation);
 }
@@ -396,13 +414,11 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
         GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode;
     if (should_snap && SnapPoint_(index, pos, snapped_pos)) {
         snapped_point_->SetTranslation(FromProfile_(snapped_pos, 0));
-        snapped_point_->SetBaseColor(
-            SG::ColorMap::SGetColor("ProfileSnapColor"));
-        snapped_point_->SetEnabled(true);
+        snap_feedback_->SetEnabled(true);
     }
     else {
         snapped_pos = pos;
-        snapped_point_->SetEnabled(false);
+        snap_feedback_->SetEnabled(false);
     }
 
     // Update the point in the Profile.
@@ -431,6 +447,7 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
     const SnapDirection_ next_dir = SnapToDirection_(next_pos, pos, next_deg);
 
     snapped_pos = pos;
+    std::vector<Point2f> line_points;
 
     if (prev_dir != SnapDirection_::kNone &&
         next_dir != SnapDirection_::kNone) {
@@ -443,16 +460,25 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
             SnapToPoint_(next_pos, next_dir, snapped_pos);
             SnapToPoint_(prev_pos, prev_dir, snapped_pos);
         }
+        line_points.push_back(prev_pos);
+        line_points.push_back(snapped_pos);
+        line_points.push_back(next_pos);
     }
     else if (prev_dir != SnapDirection_::kNone) {
         SnapToPoint_(prev_pos, prev_dir, snapped_pos);
+        line_points.push_back(prev_pos);
+        line_points.push_back(snapped_pos);
     }
     else if (next_dir != SnapDirection_::kNone) {
         SnapToPoint_(next_pos, next_dir, snapped_pos);
+        line_points.push_back(snapped_pos);
+        line_points.push_back(next_pos);
     }
     else {
         return false;
     }
+    SetLinePoints_(line_points, *snapped_line_, 2 * TK::kPaneZOffset);
+
     return true;
 }
 
@@ -522,20 +548,15 @@ ProfilePane::Impl_::SnapDirection_ ProfilePane::Impl_::SnapToDirection_(
 }
 
 void ProfilePane::Impl_::UpdateLine_(bool update_points) {
-    // Convert all profile points to 3D positions.
-    const std::vector<Point3f> pts =
-        Util::ConvertVector<Point3f, Point2f>(
-            profile_.GetAllPoints(),
-            [](const Point2f &p){ return FromProfile_(p, TK::kPaneZOffset); });
-
     // Update the line to connect all points.
-    profile_line_->SetPoints(pts);
+    SetLinePoints_(profile_.GetAllPoints(), *profile_line_, TK::kPaneZOffset);
 
     // Position the movable points based on the interior points if requested.
     if (update_points) {
         for (size_t index = 0; index < profile_.GetPoints().size(); ++index) {
             auto slider = GetMovableSlider_(index);
-            const auto &pt = pts[index + 1];  // Skip start point.
+            // Skip the start point.
+            const auto &pt = profile_line_->GetPoints()[index + 1];
             slider->SetValue(Vector2f(pt[0], pt[1]));
         }
     }
@@ -657,6 +678,15 @@ void ProfilePane::Impl_::GetClosestMidPoint_(const std::vector<Point2f> &points,
     }
 }
 
+void ProfilePane::Impl_::SetLinePoints_(const std::vector<Point2f> points,
+                                        SG::PolyLine &line, float z_offset) {
+    // Convert all points to 3D positions.
+    auto convert_pt = [&](const Point2f &p){
+        return FromProfile_(p, z_offset);
+    };
+    line.SetPoints(Util::ConvertVector<Point3f, Point2f>(points, convert_pt));
+}
+
 // ----------------------------------------------------------------------------
 // ProfilePane functions.
 // ----------------------------------------------------------------------------
@@ -724,4 +754,9 @@ IPaneInteractor * ProfilePane::GetInteractor() {
 BorderPtr ProfilePane::GetFocusBorder() const {
     // Cannot take focus - would not make sense.
     return BorderPtr();
+}
+
+void ProfilePane::PostSetUpIon() {
+    LeafPane::PostSetUpIon();
+    impl_->SetColors();
 }

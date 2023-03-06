@@ -54,6 +54,8 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     virtual IPaneInteractor * GetInteractor() override;
     virtual BorderPtr GetFocusBorder() const override;
 
+    virtual void PostSetUpIon() override;
+
   protected:
     ProfilePane();
 
