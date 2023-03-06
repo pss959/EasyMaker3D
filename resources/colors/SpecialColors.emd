@@ -22,7 +22,7 @@ ColorMap {
     NamedColor "LaserActiveColor"            { color: "#e6331a" },
     NamedColor "LaserInactiveColor"          { color: "#33cccc" },
     NamedColor "PaneFocusColor"              { color: "#33b4c5" },
-    NamedColor "ProfileSnapColor"            { color: "#66ee55" },
+    NamedColor "ProfileSnapColor"            { color: "#55c446" },
     NamedColor "RLWArcColor"                 { color: "#ddaadd" },
     NamedColor "RLWEndSpokeActiveColor"      { color: "#ff2222" },
     NamedColor "RLWEndSpokeColor"            { color: "#b02222" },

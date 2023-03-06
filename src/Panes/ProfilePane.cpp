@@ -477,7 +477,7 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
     else {
         return false;
     }
-    SetLinePoints_(line_points, *snapped_line_, 2 * TK::kPaneZOffset);
+    SetLinePoints_(line_points, *snapped_line_, 1.1 * TK::kPaneZOffset);
 
     return true;
 }
