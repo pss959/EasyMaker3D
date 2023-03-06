@@ -7,6 +7,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
+#include "Math/Snap2D.h"
 #include "Place/ClickInfo.h"
 #include "SG/ColorMap.h"
 #include "SG/Node.h"
@@ -42,8 +43,6 @@ class ProfilePane::Impl_ {
                                    float &closest_distance);
 
   private:
-    enum class SnapDirection_ { kNone, kN, kE, kW, kS, kNE, kNW, kSE, kSW };
-
     SG::Node     &root_node_;
     const size_t  min_point_count_;
 
@@ -86,10 +85,6 @@ class ProfilePane::Impl_ {
     void PointActivated_(size_t index, bool is_activation);
     void PointMoved_(size_t index, const Point2f &pos);
     bool SnapPoint_(size_t index, const Point2f &pos, Point2f &snapped_pos);
-    void SnapToPoint_(const Point2f &pt, SnapDirection_ dir,
-                      Point2f &snapped_pos);
-    SnapDirection_ SnapToDirection_(const Point2f &from_pos,
-                                    const Point2f &to_pos, float &deg_off);
     void UpdateLine_(bool update_points);
     void CreateDelegateSlider_(size_t index, const Point2f &pos);
     Slider2DWidgetPtr GetMovableSlider_(size_t index) const;
@@ -440,37 +435,39 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
     const Point2f prev_pos = points[index];
     const Point2f next_pos = points[index + 2];
 
-    // Snap to the closest direction around both points and see how many
-    // degrees they are from that direction.
-    float prev_deg, next_deg;
-    const SnapDirection_ prev_dir = SnapToDirection_(prev_pos, pos, prev_deg);
-    const SnapDirection_ next_dir = SnapToDirection_(next_pos, pos, next_deg);
+    // Snap to the closest direction around both points and see how close they
+    // are to that direction.
+    Anglef prev_angle, next_angle;
+    const auto prev_dir = Snap2D::GetSnapDirection(
+        prev_pos, pos, TK::kProfilePaneMaxSnapAngle, prev_angle);
+    const auto next_dir = Snap2D::GetSnapDirection(
+        next_pos, pos, TK::kProfilePaneMaxSnapAngle, next_angle);
 
     snapped_pos = pos;
     std::vector<Point2f> line_points;
 
-    if (prev_dir != SnapDirection_::kNone &&
-        next_dir != SnapDirection_::kNone) {
+    if (prev_dir != Snap2D::Direction::kNone &&
+        next_dir != Snap2D::Direction::kNone) {
         // Snap first to the closer direction.
-        if (prev_deg <= next_deg) {
-            SnapToPoint_(prev_pos, prev_dir, snapped_pos);
-            SnapToPoint_(next_pos, next_dir, snapped_pos);
+        if (std::abs(prev_angle.Radians()) <= std::abs(next_angle.Radians())) {
+            Snap2D::SnapPointToDirection(prev_dir, prev_pos, snapped_pos);
+            Snap2D::SnapPointToDirection(next_dir, next_pos, snapped_pos);
         }
         else {
-            SnapToPoint_(next_pos, next_dir, snapped_pos);
-            SnapToPoint_(prev_pos, prev_dir, snapped_pos);
+            Snap2D::SnapPointToDirection(next_dir, next_pos, snapped_pos);
+            Snap2D::SnapPointToDirection(prev_dir, prev_pos, snapped_pos);
         }
         line_points.push_back(prev_pos);
         line_points.push_back(snapped_pos);
         line_points.push_back(next_pos);
     }
-    else if (prev_dir != SnapDirection_::kNone) {
-        SnapToPoint_(prev_pos, prev_dir, snapped_pos);
+    else if (prev_dir != Snap2D::Direction::kNone) {
+        Snap2D::SnapPointToDirection(prev_dir, prev_pos, snapped_pos);
         line_points.push_back(prev_pos);
         line_points.push_back(snapped_pos);
     }
-    else if (next_dir != SnapDirection_::kNone) {
-        SnapToPoint_(next_pos, next_dir, snapped_pos);
+    else if (next_dir != Snap2D::Direction::kNone) {
+        Snap2D::SnapPointToDirection(next_dir, next_pos, snapped_pos);
         line_points.push_back(snapped_pos);
         line_points.push_back(next_pos);
     }
@@ -480,71 +477,6 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
     SetLinePoints_(line_points, *snapped_line_, 1.1 * TK::kPaneZOffset);
 
     return true;
-}
-
-void ProfilePane::Impl_::SnapToPoint_(const Point2f &pt, SnapDirection_ dir,
-                                      Point2f &snapped_pos) {
-    auto diag = [&](const Point2f &p, int x_sign, int y_sign){
-        // Compute the side of a 45-degree right triangle.
-        const float len = ion::math::Length(snapped_pos - p) / std::sqrt(2);
-        return p + Vector2f(x_sign * len, y_sign * len);
-    };
-
-    switch (dir) {
-      case SnapDirection_::kN:
-      case SnapDirection_::kS:  snapped_pos[0] = pt[0]; break;
-      case SnapDirection_::kE:
-      case SnapDirection_::kW:  snapped_pos[1] = pt[1]; break;
-      case SnapDirection_::kNE: snapped_pos = diag(pt,  1,  1); break;
-      case SnapDirection_::kNW: snapped_pos = diag(pt, -1,  1); break;
-      case SnapDirection_::kSE: snapped_pos = diag(pt,  1, -1); break;
-      case SnapDirection_::kSW: snapped_pos = diag(pt, -1, -1); break;
-      default: break;
-    }
-}
-
-ProfilePane::Impl_::SnapDirection_ ProfilePane::Impl_::SnapToDirection_(
-    const Point2f &from_pos, const Point2f &to_pos, float &deg_off) {
-
-    // If the two points are close together, can't do this.
-    const Vector2f diff = to_pos - from_pos;
-    if (ion::math::Length(diff) < .001f) {
-        deg_off = 0;
-        return SnapDirection_::kNone;
-    }
-
-    // Determine the angle of the new point around those points. This should be
-    // in the range -180 to +180, with 0 to the right (east)
-    const Anglef angle = ion::math::ArcTangent2(diff[1], diff[0]);
-
-    // Check for closeness to any of the principal directions.
-    auto check_angle = [&](float deg){
-        if (AreClose(angle, Anglef::FromDegrees(deg),
-                     TK::kProfilePaneMaxSnapAngle)) {
-            deg_off = std::abs(deg - angle.Degrees());
-            return true;
-        }
-        return false;
-    };
-    SnapDirection_ dir = SnapDirection_::kNone;
-    if      (check_angle(0))
-        dir = SnapDirection_::kE;
-    else if (check_angle(45))
-        dir = SnapDirection_::kNE;
-    else if (check_angle(90))
-        dir = SnapDirection_::kN;
-    else if (check_angle(135))
-        dir = SnapDirection_::kNW;
-    else if (check_angle(180) || check_angle(-180))
-        dir = SnapDirection_::kW;
-    else if (check_angle(-135))
-        dir = SnapDirection_::kSW;
-    else if (check_angle(-90))
-        dir = SnapDirection_::kS;
-    else if (check_angle(-45))
-        dir = SnapDirection_::kSE;
-
-    return dir;
 }
 
 void ProfilePane::Impl_::UpdateLine_(bool update_points) {
