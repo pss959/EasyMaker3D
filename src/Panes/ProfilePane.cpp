@@ -428,51 +428,28 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
 
 bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
                                     Point2f &snapped_pos) {
-    using ion::math::ArcTangent2;
-
     // Get the previous and next points.
     const auto points = profile_.GetAllPoints();
     const Point2f prev_pos = points[index];
     const Point2f next_pos = points[index + 2];
 
-    // Snap to the closest direction around both points and see how close they
-    // are to that direction.
-    Anglef prev_angle, next_angle;
-    const auto prev_dir = Snap2D::GetSnapDirection(
-        prev_pos, pos, TK::kProfilePaneMaxSnapAngle, prev_angle);
-    const auto next_dir = Snap2D::GetSnapDirection(
-        next_pos, pos, TK::kProfilePaneMaxSnapAngle, next_angle);
-
+    // Compute the snapped point position and set the feedback line points.
     snapped_pos = pos;
     std::vector<Point2f> line_points;
 
-    if (prev_dir != Snap2D::Direction::kNone &&
-        next_dir != Snap2D::Direction::kNone) {
-        // Snap first to the closer direction.
-        if (std::abs(prev_angle.Radians()) <= std::abs(next_angle.Radians())) {
-            Snap2D::SnapPointToDirection(prev_dir, prev_pos, snapped_pos);
-            Snap2D::SnapPointToDirection(next_dir, next_pos, snapped_pos);
-        }
-        else {
-            Snap2D::SnapPointToDirection(next_dir, next_pos, snapped_pos);
-            Snap2D::SnapPointToDirection(prev_dir, prev_pos, snapped_pos);
-        }
-        line_points.push_back(prev_pos);
-        line_points.push_back(snapped_pos);
-        line_points.push_back(next_pos);
-    }
-    else if (prev_dir != Snap2D::Direction::kNone) {
-        Snap2D::SnapPointToDirection(prev_dir, prev_pos, snapped_pos);
-        line_points.push_back(prev_pos);
-        line_points.push_back(snapped_pos);
-    }
-    else if (next_dir != Snap2D::Direction::kNone) {
-        Snap2D::SnapPointToDirection(next_dir, next_pos, snapped_pos);
-        line_points.push_back(snapped_pos);
-        line_points.push_back(next_pos);
-    }
-    else {
+    switch (Snap2D::SnapPointBetween(prev_pos, next_pos,
+                                     TK::kProfilePaneMaxSnapAngle,
+                                     snapped_pos)) {
+      case Snap2D::Result::kNeither:
         return false;
+      case Snap2D::Result::kPoint0:
+        line_points = std::vector<Point2f>{ prev_pos, snapped_pos };
+        break;
+      case Snap2D::Result::kPoint1:
+        line_points = std::vector<Point2f>{ snapped_pos, next_pos };
+        break;
+      case Snap2D::Result::kBoth:
+        line_points = std::vector<Point2f>{ prev_pos, snapped_pos, next_pos };
     }
     SetLinePoints_(line_points, *snapped_line_, 1.1 * TK::kPaneZOffset);
 

@@ -70,3 +70,39 @@ void Snap2D::SnapPointToDirection(Direction direction,
       default: break;
     }
 }
+
+Snap2D::Result Snap2D::SnapPointBetween(const Point2f &p0, const Point2f &p1,
+                                        const Anglef &tolerance_angle,
+                                        Point2f &point_to_snap) {
+    // Snap to the closest direction around both points and see how close they
+    // are to that direction.
+    Anglef angle0, angle1;
+    const Direction dir0 = GetSnapDirection(p0, point_to_snap,
+                                            tolerance_angle, angle0);
+    const Direction dir1 = GetSnapDirection(p1, point_to_snap,
+                                            tolerance_angle, angle1);
+
+    Result result = Result::kNeither;
+    if (dir0 != Direction::kNone && dir1 != Direction::kNone) {
+        // Snap to both, snapping first to the closer direction.
+        if (std::abs(angle0.Radians()) <= std::abs(angle1.Radians())) {
+            SnapPointToDirection(dir0, p0, point_to_snap);
+            SnapPointToDirection(dir1, p1, point_to_snap);
+        }
+        else {
+            SnapPointToDirection(dir1, p1, point_to_snap);
+            SnapPointToDirection(dir0, p0, point_to_snap);
+        }
+        result = Result::kBoth;
+    }
+    else if (dir0 != Direction::kNone) {
+        SnapPointToDirection(dir0, p0, point_to_snap);
+        result = Result::kPoint0;
+    }
+    else if (dir1 != Direction::kNone) {
+        SnapPointToDirection(dir1, p1, point_to_snap);
+        result = Result::kPoint1;
+    }
+
+    return result;
+}
