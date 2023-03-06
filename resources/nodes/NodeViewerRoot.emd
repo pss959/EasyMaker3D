@@ -26,31 +26,31 @@ Node "NodeViewerRoot" {
 
     # Uncomment one of these to test out a Board with a Panel.
     # CLONE "T_Board" "AppBoard" {}
-    # CLONE "T_Board" "ToolBoard" {}
+    CLONE "T_Board" "ToolBoard" {}
     # CLONE "T_Board" "KeyBoard" {}
 
-    Node "TestTube1" {
-      shapes: [
-        Tube  {
-          points: [0 -3 0, 0 3 0],
-          diameter:  .4,
-          taper:     3,
-          side_count: 5,
-        },
-      ]
-    }
-    Node "TestTube2" {
-      translation: 4 0 0,
-      shapes: [
-        Tube  {
-          points: [0 -3 0,
-                   0 3 0,
-                   3 3 0],
-          diameter: 2.2,
-          taper:     0,
-          side_count: 13,
-        },
-      ]
-    }
+    # Node "TestTube1" {
+    #   shapes: [
+    #     Tube  {
+    #       points: [0 -3 0, 0 3 0],
+    #       diameter:  .4,
+    #       taper:     3,
+    #       side_count: 5,
+    #     },
+    #   ]
+    # }
+    # Node "TestTube2" {
+    #   translation: 4 0 0,
+    #   shapes: [
+    #     Tube  {
+    #       points: [0 -3 0,
+    #                0 3 0,
+    #                3 3 0],
+    #       diameter: 2.2,
+    #       taper:     0,
+    #       side_count: 13,
+    #     },
+    #   ]
+    # }
   ]
 }
