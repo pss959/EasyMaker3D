@@ -6,6 +6,7 @@
 #include "Math/Bevel.h"
 #include "Panels/ToolPanel.h"
 
+DECL_SHARED_PTR(CheckboxPane);
 DECL_SHARED_PTR(ProfilePane);
 DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(BevelToolPanel);
@@ -40,9 +41,10 @@ class BevelToolPanel : public ToolPanel {
     bool is_dragging_ = false;
 
     // Parts.
-    ProfilePanePtr profile_pane_;
-    SliderPanePtr  scale_slider_;
-    SliderPanePtr  angle_slider_;
+    ProfilePanePtr  profile_pane_;
+    SliderPanePtr   scale_slider_;
+    SliderPanePtr   angle_slider_;
+    CheckboxPanePtr snap_checkbox_;
 
     void Activate_(const std::string &key, bool is_activation);
     void Change_(const std::string &key);
