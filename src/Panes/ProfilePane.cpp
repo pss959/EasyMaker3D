@@ -45,6 +45,7 @@ class ProfilePane::Impl_ {
   private:
     SG::Node     &root_node_;
     const size_t  min_point_count_;
+    Snap2D        snapper_;
 
     /// Profile being edited.
     Profile profile_;
@@ -136,6 +137,8 @@ class ProfilePane::Impl_ {
 ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     root_node_(root_node),
     min_point_count_(min_point_count) {
+
+    snapper_.SetToleranceAngle(TK::kProfilePaneMaxSnapAngle);
 
     // Find all the parts.
     start_point_    = SG::FindNodeUnderNode(root_node, "StartPoint");
@@ -437,9 +440,7 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
     snapped_pos = pos;
     std::vector<Point2f> line_points;
 
-    switch (Snap2D::SnapPointBetween(prev_pos, next_pos,
-                                     TK::kProfilePaneMaxSnapAngle,
-                                     snapped_pos)) {
+    switch (snapper_.SnapPointBetween(prev_pos, next_pos, snapped_pos)) {
       case Snap2D::Result::kNeither:
         return false;
       case Snap2D::Result::kPoint0:

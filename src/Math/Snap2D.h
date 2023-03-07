@@ -14,23 +14,31 @@ class Snap2D {
     /// Result from calling SnapPointBetween().
     enum class Result { kNeither, kPoint0, kPoint1, kBoth };
 
-    /// If the line segment from \p from_pos to \p to_pos is within the \p
-    /// tolerance_angle of any principal direction, this returns that
-    /// direction. If not, it returns Direction::kNone,
-    static Direction GetSnapDirection(const Point2f &from_pos,
-                                      const Point2f &to_pos,
-                                      const Anglef &tolerance_angle);
+    /// Sets the tolerance angle to use for snapping.
+    void SetToleranceAngle(const Anglef &angle) { tolerance_angle_ = angle; }
+
+    /// Returns the tolerance angle used for snapping.
+    const Anglef & GetToleranceAngle() const { return tolerance_angle_; }
+
+    /// If \p point_to_snap is within the tolerance angle of a principal
+    /// direction from either or both \p p0 and \p p1, this snaps it to that
+    /// direction. Returns a Result enum indicating what was snapped.
+    Result SnapPointBetween(const Point2f &p0, const Point2f &p1,
+                            Point2f &point_to_snap);
+
+  private:
+    Anglef tolerance_angle_;
+
+    /// If the line segment from \p p0 to \p p1 is within the tolerance angle
+    /// of any principal direction, this returns that direction. If not, it
+    /// returns Direction::kNone,
+    Direction GetSnapDirection_(const Point2f &p0, const Point2f &p1);
 
     /// Modifies \p point_to_snap to snap to the given \p direction relative to
     /// \p fixed_point.
-    static void SnapPointToDirection(Direction direction,
-                                     const Point2f &fixed_point,
-                                     Point2f &point_to_snap);
+    void SnapPointToDirection_(Direction direction, const Point2f &fixed_point,
+                               Point2f &point_to_snap);
 
-    /// If \p point_to_snap is within \p tolerance_angle of a principal
-    /// direction from either or both fixed points, this snaps it to that
-    /// direction. Returns a Result enum indicating what was snapped.
-    static Result SnapPointBetween(const Point2f &p0, const Point2f &p1,
-                                   const Anglef &tolerance_angle,
-                                   Point2f &point_to_snap);
+    /// Returns the 2D vector corresponding to a Direction.
+    static Vector2f GetVector_(Direction direction);
 };
