@@ -15,13 +15,11 @@ class Snap2D {
     enum class Result { kNeither, kPoint0, kPoint1, kBoth };
 
     /// If the line segment from \p from_pos to \p to_pos is within the \p
-    /// tolerance_angle of any principal direction, this returns that direction
-    /// and sets \p angle_off to the angle formed by the segment and that
+    /// tolerance_angle of any principal direction, this returns that
     /// direction. If not, it returns Direction::kNone,
     static Direction GetSnapDirection(const Point2f &from_pos,
                                       const Point2f &to_pos,
-                                      const Anglef &tolerance_angle,
-                                      Anglef &angle_off);
+                                      const Anglef &tolerance_angle);
 
     /// Modifies \p point_to_snap to snap to the given \p direction relative to
     /// \p fixed_point.

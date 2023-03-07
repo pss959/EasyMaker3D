@@ -7,16 +7,30 @@
 
 #include "Math/Linear.h"
 
+// XXXX
+static Vector2f GetVector_(Snap2D::Direction direction) {
+    Vector2f v;
+    switch (direction) {
+      case Snap2D::Direction::kN:  v.Set( 0,  1); break;
+      case Snap2D::Direction::kS:  v.Set( 0, -1); break;
+      case Snap2D::Direction::kE:  v.Set( 1,  0); break;
+      case Snap2D::Direction::kW:  v.Set(-1,  0); break;
+      case Snap2D::Direction::kNE: v.Set( 1,  1); break;
+      case Snap2D::Direction::kNW: v.Set(-1,  1); break;
+      case Snap2D::Direction::kSE: v.Set( 1, -1); break;
+      case Snap2D::Direction::kSW: v.Set(-1, -1); break;
+      default:                     v.Set( 0,  0); break;
+    }
+    return v;
+}
+
 Snap2D::Direction Snap2D::GetSnapDirection(const Point2f &from_pos,
                                            const Point2f &to_pos,
-                                           const Anglef &tolerance_angle,
-                                           Anglef &angle_off) {
+                                           const Anglef &tolerance_angle) {
     // If the two points are too close together, can't do this.
     const Vector2f diff = to_pos - from_pos;
-    if (ion::math::Length(diff) < .001f) {
-        angle_off = Anglef();
+    if (ion::math::Length(diff) < .001f)
         return Direction::kNone;
-    }
 
     // Determine the angle of the new point around those points. This should be
     // in the range -180 to +180, with 0 to the right (east)
@@ -39,7 +53,6 @@ Snap2D::Direction Snap2D::GetSnapDirection(const Point2f &from_pos,
     for (const auto &dp: dir_pairs) {
         const Anglef dir_angle = Anglef::FromDegrees(dp.degrees);
         if (AreClose(candidate_angle, dir_angle, tolerance_angle)) {
-            angle_off = candidate_angle - dir_angle;
             dir = dp.direction;
             break;
         }
@@ -50,50 +63,49 @@ Snap2D::Direction Snap2D::GetSnapDirection(const Point2f &from_pos,
 void Snap2D::SnapPointToDirection(Direction direction,
                                   const Point2f &fixed_point,
                                   Point2f &point_to_snap) {
-    // Snaps to a diagonal direction.
-    auto diag = [&](int x_sign, int y_sign){
-        // Compute the side of a 45-degree right triangle.
-        const float len =
-            ion::math::Length(point_to_snap - fixed_point) / std::sqrt(2);
-        return fixed_point + Vector2f(x_sign * len, y_sign * len);
-    };
-
     switch (direction) {
       case Snap2D::Direction::kN:
-      case Snap2D::Direction::kS:  point_to_snap[0] = fixed_point[0]; break;
+      case Snap2D::Direction::kS:
+        point_to_snap[0] = fixed_point[0];
+        break;
       case Snap2D::Direction::kE:
-      case Snap2D::Direction::kW:  point_to_snap[1] = fixed_point[1]; break;
-      case Snap2D::Direction::kNE: point_to_snap = diag( 1,  1); break;
-      case Snap2D::Direction::kNW: point_to_snap = diag(-1,  1); break;
-      case Snap2D::Direction::kSE: point_to_snap = diag( 1, -1); break;
-      case Snap2D::Direction::kSW: point_to_snap = diag(-1, -1); break;
-      default: break;
+      case Snap2D::Direction::kW:
+        point_to_snap[1] = fixed_point[1];
+        break;
+      case Snap2D::Direction::kNE:
+      case Snap2D::Direction::kNW:
+      case Snap2D::Direction::kSE:
+      case Snap2D::Direction::kSW: {
+          // Compute the side of a 45-degree right triangle.
+          const float len =
+              ion::math::Length(point_to_snap - fixed_point) / std::sqrt(2);
+          point_to_snap = fixed_point + len * GetVector_(direction);
+          break;
+      }
+      default:
+        break;
     }
 }
 
 Snap2D::Result Snap2D::SnapPointBetween(const Point2f &p0, const Point2f &p1,
                                         const Anglef &tolerance_angle,
                                         Point2f &point_to_snap) {
-    // Snap to the closest direction around both points and see how close they
-    // are to that direction.
-    Anglef angle0, angle1;
-    const Direction dir0 = GetSnapDirection(p0, point_to_snap,
-                                            tolerance_angle, angle0);
-    const Direction dir1 = GetSnapDirection(p1, point_to_snap,
-                                            tolerance_angle, angle1);
-
+    const Direction dir0 = GetSnapDirection(p0, point_to_snap, tolerance_angle);
+    const Direction dir1 = GetSnapDirection(p1, point_to_snap, tolerance_angle);
     Result result = Result::kNeither;
+
+    // If snapping to both directions, have to find their intersection.
     if (dir0 != Direction::kNone && dir1 != Direction::kNone) {
-        // Snap to both, snapping first to the closer direction.
-        if (std::abs(angle0.Radians()) <= std::abs(angle1.Radians())) {
-            SnapPointToDirection(dir0, p0, point_to_snap);
-            SnapPointToDirection(dir1, p1, point_to_snap);
+        // Use the 3D function to make this easier. If there is no
+        // intersection, do not snap at all.
+        Point3f c0, c1;
+        if (GetClosestLinePoints(Point3f(p0, 0), Vector3f(GetVector_(dir0), 0),
+                                 Point3f(p1, 0), Vector3f(GetVector_(dir1), 0),
+                                 c0, c1)) {
+
+            point_to_snap = ToPoint2f(c0);
+            result = Result::kBoth;
         }
-        else {
-            SnapPointToDirection(dir1, p1, point_to_snap);
-            SnapPointToDirection(dir0, p0, point_to_snap);
-        }
-        result = Result::kBoth;
     }
     else if (dir0 != Direction::kNone) {
         SnapPointToDirection(dir0, p0, point_to_snap);
