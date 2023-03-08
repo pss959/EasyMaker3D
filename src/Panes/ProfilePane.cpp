@@ -37,6 +37,9 @@ class ProfilePane::Impl_ {
     }
     void SetProfile(const Profile &profile);
     const Profile & GetProfile() const { return profile_; }
+    void SetPointPrecision(float x_precision, float y_precision) {
+        precision_.Set(x_precision, y_precision);
+    }
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
     WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
@@ -45,6 +48,7 @@ class ProfilePane::Impl_ {
   private:
     SG::Node     &root_node_;
     const size_t  min_point_count_;
+    Vector2f      precision_{0, 0};
     Snap2D        snapper_;
 
     /// Profile being edited.
@@ -85,7 +89,7 @@ class ProfilePane::Impl_ {
     void NewPointDragged_(const DragInfo *info, bool is_start);
     void PointActivated_(size_t index, bool is_activation);
     void PointMoved_(size_t index, const Point2f &pos);
-    bool SnapPoint_(size_t index, const Point2f &pos, Point2f &snapped_pos);
+    bool SnapPoint_(size_t index, Point2f &point);
     void UpdateLine_(bool update_points);
     void CreateDelegateSlider_(size_t index, const Point2f &pos);
     Slider2DWidgetPtr GetMovableSlider_(size_t index) const;
@@ -405,19 +409,19 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
     // Index is into movable points. (Does not include end points.)
     ASSERT(index < profile_.GetPoints().size());
 
+    // Round to precision if requested.
+    Point2f snapped_pos = pos;
+    if (precision_[0] > 0)
+        snapped_pos[0] = RoundToPrecision(snapped_pos[0], precision_[0]);
+    if (precision_[1] > 0)
+        snapped_pos[1] = RoundToPrecision(snapped_pos[1], precision_[1]);
+
     // Determine if modified-dragging is happening. If so, check for
     // horizontal, vertical, and 45-degree diagonal snapping.
-    Point2f snapped_pos;
     const bool should_snap =
         GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode;
-    if (should_snap && SnapPoint_(index, pos, snapped_pos)) {
-        snapped_point_->SetTranslation(FromProfile_(snapped_pos, 0));
-        snap_feedback_->SetEnabled(true);
-    }
-    else {
-        snapped_pos = pos;
-        snap_feedback_->SetEnabled(false);
-    }
+    snap_feedback_->SetEnabled(should_snap && SnapPoint_(index, snapped_pos));
+    snapped_point_->SetTranslation(FromProfile_(snapped_pos, 0));
 
     // Update the point in the Profile.
     profile_.SetPoint(index, snapped_pos);
@@ -429,28 +433,26 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
         delete_spot_->SetActive(delete_rect_.ContainsPoint(snapped_pos));
 }
 
-bool ProfilePane::Impl_::SnapPoint_(size_t index, const Point2f &pos,
-                                    Point2f &snapped_pos) {
+bool ProfilePane::Impl_::SnapPoint_(size_t index, Point2f &point) {
     // Get the previous and next points.
     const auto points = profile_.GetAllPoints();
     const Point2f prev_pos = points[index];
     const Point2f next_pos = points[index + 2];
 
     // Compute the snapped point position and set the feedback line points.
-    snapped_pos = pos;
     std::vector<Point2f> line_points;
 
-    switch (snapper_.SnapPointBetween(prev_pos, next_pos, snapped_pos)) {
+    switch (snapper_.SnapPointBetween(prev_pos, next_pos, point)) {
       case Snap2D::Result::kNeither:
         return false;
       case Snap2D::Result::kPoint0:
-        line_points = std::vector<Point2f>{ prev_pos, snapped_pos };
+        line_points = std::vector<Point2f>{ prev_pos, point };
         break;
       case Snap2D::Result::kPoint1:
-        line_points = std::vector<Point2f>{ snapped_pos, next_pos };
+        line_points = std::vector<Point2f>{ point, next_pos };
         break;
       case Snap2D::Result::kBoth:
-        line_points = std::vector<Point2f>{ prev_pos, snapped_pos, next_pos };
+        line_points = std::vector<Point2f>{ prev_pos, point, next_pos };
     }
     SetLinePoints_(line_points, *snapped_line_, 1.1 * TK::kPaneZOffset);
 
@@ -641,6 +643,10 @@ void ProfilePane::SetProfile(const Profile &profile) {
 
 const Profile & ProfilePane::GetProfile() const {
     return impl_->GetProfile();
+}
+
+void ProfilePane::SetPointPrecision(float x_precision, float y_precision) {
+    impl_->SetPointPrecision(x_precision, y_precision);
 }
 
 void ProfilePane::SetLayoutSize(const Vector2f &size) {
