@@ -53,5 +53,21 @@ ColorTool "ColorTool" {
       disabled_flags: "kRender",
       shapes: [ USE "RingGeometry" ],
     },
+
+    # Invisible disc blocking ray intersections from going through the gap
+    # between the outer ring and inner disc.
+    Node {
+      disabled_flags: "kRender",
+      rotation: 1 0 0 90,
+      translation: 0 0 -.1,
+      shapes: [
+        Cylinder {
+          top_radius:    .5,
+          bottom_radius: .5,
+          height:        .01,
+          sector_count:  64,
+        }
+      ],
+    },
   ]
 }
