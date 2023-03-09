@@ -1,6 +1,5 @@
 #include "Panels/BevelToolPanel.h"
 
-#include "Panes/CheckboxPane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
 #include "Panes/SliderPane.h"
@@ -17,8 +16,6 @@ void BevelToolPanel::CreationDone() {
     };
     scale_slider_ = find_slider("ScaleSlider");
     angle_slider_ = find_slider("AngleSlider");
-
-    snap_checkbox_ = root_pane->FindTypedPane<CheckboxPane>("SnapToPrecision");
 
     // Set up the initial slider values.
     scale_slider_->SetValue(1);
@@ -39,10 +36,6 @@ void BevelToolPanel::CreationDone() {
         this, [&](bool is_act){ Activate_("MaxAngle", is_act); });
     angle_slider_->GetValueChanged().AddObserver(
         this, [&](float){ Change_("MaxAngle"); });
-
-    snap_checkbox_->GetStateChanged().AddObserver(
-        this, [&](){ std::cerr << "XXXX STP = "
-                               << snap_checkbox_->GetState() << "\n"; });
 }
 
 void BevelToolPanel::SetBevel(const Bevel &bevel) {
