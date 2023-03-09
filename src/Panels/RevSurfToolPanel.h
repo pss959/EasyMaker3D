@@ -7,6 +7,7 @@
 #include "Math/Types.h"
 #include "Panels/ToolPanel.h"
 
+DECL_SHARED_PTR(CheckboxPane);
 DECL_SHARED_PTR(ProfilePane);
 DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(RevSurfToolPanel);
@@ -46,9 +47,11 @@ protected:
     bool is_dragging_ = false;
 
     // Parts.
-    ProfilePanePtr profile_pane_;
-    SliderPanePtr  sweep_angle_slider_;
+    CheckboxPanePtr snap_checkbox_;
+    ProfilePanePtr  profile_pane_;
+    SliderPanePtr   sweep_angle_slider_;
 
+    void SetSnapToPrecision_(bool snap);
     void Activate_(const std::string &key, bool is_activation);
     void Change_(const std::string &key);
 

@@ -5,6 +5,21 @@ BoxPane "RevSurfToolPane" {
   spacing:    14,
 
   panes: [
+    # Snap to precision checkbox on the top.
+    BoxPane {
+      orientation: "kHorizontal",
+      panes: [
+        SpacerPane { min_size: 4 1 },
+        CLONE "T_CheckboxPane" "SnapToPrecision" {},
+        SpacerPane { min_size: 4 1 },
+        CLONE "T_TextPane" {
+          halignment: "kAlignLeft",
+          font_size: 12,
+          text: "Snap points to current precision"
+        },
+      ]
+    },
+
     CLONE "T_ProfilePane" "Profile" {
       min_point_count: 1,   # Has to have at least one movable point.
       background:      $BG     { color: "#edddbb" },

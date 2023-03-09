@@ -1,5 +1,6 @@
 #include "Panels/RevSurfToolPanel.h"
 
+#include "Panes/CheckboxPane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
 #include "Panes/SliderPane.h"
@@ -8,7 +9,8 @@ void RevSurfToolPanel::CreationDone() {
     ToolPanel::CreationDone();
 
     auto &root_pane = GetPane();
-    profile_pane_ = root_pane->FindTypedPane<ProfilePane>("Profile");
+    snap_checkbox_ = root_pane->FindTypedPane<CheckboxPane>("SnapToPrecision");
+    profile_pane_  = root_pane->FindTypedPane<ProfilePane>("Profile");
 
     auto lsp = root_pane->FindTypedPane<LabeledSliderPane>("SweepAngleSlider");
     sweep_angle_slider_ = lsp->GetSliderPane();
@@ -17,6 +19,9 @@ void RevSurfToolPanel::CreationDone() {
     sweep_angle_slider_->SetValue(360);
 
     // Detect changes to everything.
+    snap_checkbox_->GetStateChanged().AddObserver(
+        this, [&](){ SetSnapToPrecision_(snap_checkbox_->GetState()); });
+
     profile_pane_->GetActivation().AddObserver(
         this, [&](bool is_act){ Activate_("Profile", is_act); });
     profile_pane_->GetProfileChanged().AddObserver(
@@ -64,6 +69,10 @@ ClickableWidgetPtr RevSurfToolPanel::GetGripWidget(const Point2f &panel_point) {
     }
 
     return widget;
+}
+
+void RevSurfToolPanel::SetSnapToPrecision_(bool snap) {
+    std::cerr << "XXXX STP = " << snap << "\n";
 }
 
 void RevSurfToolPanel::Activate_(const std::string &key, bool is_activation) {
