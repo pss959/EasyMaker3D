@@ -14,6 +14,8 @@ class RevSurfTool : public PanelTool {
 
     virtual bool IsSpecialized() const override { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
+    virtual void Attach() override;
+    virtual void Detach() override;
 
     virtual std::string GetPanelName() const override {
         return "RevSurfToolPanel";
@@ -26,6 +28,10 @@ class RevSurfTool : public PanelTool {
   private:
     /// Command used to modify the RevSurfModel data.
     ChangeRevSurfCommandPtr command_;
+
+    // Updates the point precision in the RevSurfToolPanel when the tool is
+    // attached or when the precision changes.
+    void UpdatePrecision_();
 
     friend class Parser::Registry;
 };

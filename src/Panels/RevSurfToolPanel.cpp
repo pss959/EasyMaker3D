@@ -20,7 +20,7 @@ void RevSurfToolPanel::CreationDone() {
 
     // Detect changes to everything.
     snap_checkbox_->GetStateChanged().AddObserver(
-        this, [&](){ SetSnapToPrecision_(snap_checkbox_->GetState()); });
+        this, [&](){ UpdatePrecision_(); });
 
     profile_pane_->GetActivation().AddObserver(
         this, [&](bool is_act){ Activate_("Profile", is_act); });
@@ -71,8 +71,9 @@ ClickableWidgetPtr RevSurfToolPanel::GetGripWidget(const Point2f &panel_point) {
     return widget;
 }
 
-void RevSurfToolPanel::SetSnapToPrecision_(bool snap) {
-    std::cerr << "XXXX STP = " << snap << "\n";
+void RevSurfToolPanel::UpdatePrecision_() {
+    profile_pane_->SetPointPrecision(snap_checkbox_->GetState() ? precision_ :
+                                     Vector2f::Zero());
 }
 
 void RevSurfToolPanel::Activate_(const std::string &key, bool is_activation) {

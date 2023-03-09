@@ -5,6 +5,7 @@
 #include "Base/Memory.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
+#include "Util/Notifier.h"
 
 DECL_SHARED_PTR(PrecisionStore);
 
@@ -14,6 +15,10 @@ DECL_SHARED_PTR(PrecisionStore);
 /// \ingroup Place
 class PrecisionStore {
   public:
+    /// Returns a Notifier that is invoked when the user changes the current
+    /// precision setting.
+    Util::Notifier<> & GetChanged() { return changed_; }
+
     /// Returns the current linear precision.
     float GetLinearPrecision() const {
         return precisions_[current_index_].linear;
@@ -108,6 +113,7 @@ class PrecisionStore {
     bool Increase() {
         if (CanIncrease()) {
             ++current_index_;
+            changed_.Notify();
             return true;
         }
         return false;
@@ -118,6 +124,7 @@ class PrecisionStore {
     bool Decrease() {
         if (CanDecrease()) {
             --current_index_;
+            changed_.Notify();
             return true;
         }
         return false;
@@ -129,6 +136,9 @@ class PrecisionStore {
         float linear;    ///< Linear precision.
         float angular;   ///< Angular precision in degrees.
     };
+
+    /// Notifier that is invoked when the precision changes.
+    Util::Notifier<> changed_;
 
     /// Allowable precision values for lengths and angles, from lowest precision
     /// to highest.

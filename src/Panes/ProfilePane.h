@@ -39,8 +39,10 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     const Profile & GetProfile() const;
 
     /// Sets the precision in X and Y to round points to. Passing zero for
-    /// either turns off rounding in that dimension. The default is 0.
-    void SetPointPrecision(float x_precision, float y_precision);
+    /// either turns off rounding in that dimension. The default is 0 for both.
+    /// Note that points are in the range from (0,0) to (1,1), so the precision
+    /// should be relative to that size.
+    void SetPointPrecision(const Vector2f &xy_precision);
 
     /// Redefines this to maintain the aspect ratio of items in the Pane.
     virtual void SetLayoutSize(const Vector2f &size) override;

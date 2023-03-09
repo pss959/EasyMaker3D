@@ -37,8 +37,8 @@ class ProfilePane::Impl_ {
     }
     void SetProfile(const Profile &profile);
     const Profile & GetProfile() const { return profile_; }
-    void SetPointPrecision(float x_precision, float y_precision) {
-        precision_.Set(x_precision, y_precision);
+    void SetPointPrecision(const Vector2f &xy_precision) {
+        precision_ = xy_precision;
     }
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
@@ -645,8 +645,8 @@ const Profile & ProfilePane::GetProfile() const {
     return impl_->GetProfile();
 }
 
-void ProfilePane::SetPointPrecision(float x_precision, float y_precision) {
-    impl_->SetPointPrecision(x_precision, y_precision);
+void ProfilePane::SetPointPrecision(const Vector2f &xy_precision) {
+    impl_->SetPointPrecision(xy_precision);
 }
 
 void ProfilePane::SetLayoutSize(const Vector2f &size) {
