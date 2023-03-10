@@ -29,6 +29,15 @@ struct Bevel {
     /// default is 120 degrees.
     Anglef  max_angle;
 
+    /// Equality operator.
+    bool operator==(const Bevel &b) const {
+        return b.profile == profile && b.scale == scale &&
+            b.max_angle == max_angle;
+    }
+
+    /// Inequality operator.
+    bool operator!=(const Bevel &b) const { return ! (b == *this); }
+
     /// Returns the default Profile used for a Bevel: just two fixed points at
     /// (0,1) and (1,0), forming a straight line.
     static Profile CreateDefaultProfile();

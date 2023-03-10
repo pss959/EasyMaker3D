@@ -37,7 +37,8 @@ class BevelToolPanel : public ToolPanel {
     virtual void CreationDone() override;
 
   private:
-    bool is_dragging_ = false;
+    bool was_bevel_set_ = false;
+    bool is_dragging_   = false;
 
     // Parts.
     ProfilePanePtr profile_pane_;

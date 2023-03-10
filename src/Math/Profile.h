@@ -66,6 +66,15 @@ class Profile {
     /// least the given number.
     bool IsValid(size_t min_count) const;
 
+    /// Equality operator.
+    bool operator==(const Profile &p) const {
+        return p.start_point_ == start_point_ && p.end_point_ == end_point_ &&
+            p.points_ == points_;
+    }
+
+    /// Inequality operator.
+    bool operator!=(const Profile &p) const { return ! (p == *this); }
+
     /// Converts to a string to help with debugging.
     std::string ToString() const;
 

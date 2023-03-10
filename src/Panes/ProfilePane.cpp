@@ -401,6 +401,7 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
             UpdateLine_(true);
         }
         delete_spot_->SetEnabled(false);
+        snap_feedback_->SetEnabled(false);
     }
     activation_.Notify(is_activation);
 }

@@ -41,8 +41,9 @@ void PanelTool::Detach() {
 void PanelTool::ReattachToSelection() {
     // The Tool class defines this to call Detach() and Attach(). For a
     // PanelTool, that would mean closing and reopening the Panel, which is
-    // overkill. There should not be any need to do anything for a panel tool,
-    // since the only changes to models should come from its own interaction.
+    // overkill. Instead, just reinitialize the Panel and update the Board's
+    // position.
+    InitPanel();
     UpdateBoardPosition_();
 }
 

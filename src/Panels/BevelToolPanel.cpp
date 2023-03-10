@@ -39,17 +39,23 @@ void BevelToolPanel::CreationDone() {
 }
 
 void BevelToolPanel::SetBevel(const Bevel &bevel) {
-    profile_pane_->GetProfileChanged().EnableObserver(this, false);
-    scale_slider_->GetValueChanged().EnableObserver(this, false);
-    angle_slider_->GetValueChanged().EnableObserver(this, false);
+    // Don't do anything if the Bevel has not changed, except for the first
+    // time.
+    if (! was_bevel_set_ || bevel != GetBevel()) {
+        profile_pane_->GetProfileChanged().EnableObserver(this, false);
+        scale_slider_->GetValueChanged().EnableObserver(this, false);
+        angle_slider_->GetValueChanged().EnableObserver(this, false);
 
-    profile_pane_->SetProfile(bevel.profile);
-    scale_slider_->SetValue(bevel.scale);
-    angle_slider_->SetValue(bevel.max_angle.Degrees());
+        profile_pane_->SetProfile(bevel.profile);
+        scale_slider_->SetValue(bevel.scale);
+        angle_slider_->SetValue(bevel.max_angle.Degrees());
 
-    profile_pane_->GetProfileChanged().EnableObserver(this, true);
-    scale_slider_->GetValueChanged().EnableObserver(this, true);
-    angle_slider_->GetValueChanged().EnableObserver(this, true);
+        profile_pane_->GetProfileChanged().EnableObserver(this, true);
+        scale_slider_->GetValueChanged().EnableObserver(this, true);
+        angle_slider_->GetValueChanged().EnableObserver(this, true);
+
+        was_bevel_set_ = true;
+    }
 }
 
 Bevel BevelToolPanel::GetBevel() const {
