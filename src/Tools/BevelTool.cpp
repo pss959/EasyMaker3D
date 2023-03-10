@@ -26,6 +26,7 @@ void BevelTool::PanelChanged(const std::string &key,
       case ToolPanel::InteractionType::kDragStart:
         command_ = CreateCommand<ChangeBevelCommand>();
         command_->SetFromSelection(GetSelection());
+        start_bevel_ = panel.GetBevel();
         break;
 
       case ToolPanel::InteractionType::kDrag:
@@ -39,7 +40,9 @@ void BevelTool::PanelChanged(const std::string &key,
 
       case ToolPanel::InteractionType::kDragEnd:
         ASSERT(command_);
-        GetContext().command_manager->AddAndDo(command_);
+        // Don't process the command if the bevel was not set.
+        if (panel.GetBevel() != start_bevel_)
+            GetContext().command_manager->AddAndDo(command_);
         command_.reset();
         break;
 

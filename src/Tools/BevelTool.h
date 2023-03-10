@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Commands/ChangeBevelCommand.h"
+#include "Math/Bevel.h"
 #include "Tools/PanelTool.h"
 
 /// BevelTool is a specialized Tool that is used to edit the Bevel data for
@@ -26,6 +27,9 @@ class BevelTool : public PanelTool {
   private:
     /// Command used to modify the BeveledModel data.
     ChangeBevelCommandPtr command_;
+
+    /// Bevel at the start of a drag.
+    Bevel start_bevel_;
 
     friend class Parser::Registry;
 };
