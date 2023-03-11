@@ -26,7 +26,9 @@ def FindAllSources_(root_dir):
 # -----------------------------------------------------------------------------
 
 env = Environment(
-    OUTPUT_DIR = f'#{doc_build_dir}/PublicDoc',
+    OUTPUT_DIR     = f'#{doc_build_dir}/PublicDoc',
+    VERSION_SUBDIR = 'v' + app_dict['VERSION_STRING'],
+    VERSION_DIR    = '$OUTPUT_DIR/$VERSION_SUBDIR',
 
     # Copy the environment variables for the snapimage application.
     ENV = environ.copy(),
@@ -65,10 +67,18 @@ def AddRedirect_(target, source, env):
 env.Append(BUILDERS={ 'AddRedirect' : Builder(action=AddRedirect_) })
 
 # -----------------------------------------------------------------------------
-# Cheat Sheet generation.
+# Global variables.
 # -----------------------------------------------------------------------------
 
-cs_output    = './docs/CheatSheet.rst'
+output_root_path = env.Dir('$OUTPUT_DIR').abspath
+output_doc_path  = env.Dir('$VERSION_DIR').abspath
+
+# -----------------------------------------------------------------------------
+# Cheat Sheet generation. This goes in the 'PublicDoc/docs' directory so it can
+# be processed like all the other input.
+# -----------------------------------------------------------------------------
+
+cs_output    = 'docs/CheatSheet.rst'
 cs_generator = '#build/opt/Apps/createcheatsheet'
 env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 
@@ -301,9 +311,7 @@ env.Alias('Images', [snaps, anns])
 # Documentation generation.
 # -----------------------------------------------------------------------------
 
-sources    = FindAllSources_('docs')
-output_dir = env.Dir('$OUTPUT_DIR').abspath
-version    = app_dict['VERSION_STRING']
+sources = FindAllSources_('docs')
 
 sphinx_args = ' '.join([
     '-W',    # Treat warnings as errors,
@@ -313,10 +321,10 @@ sphinx_args = ' '.join([
 ])
 
 # Run Sphinx to build the doc.
-doc = env.Command(f'$OUTPUT_DIR/v{version}/index.html',
+doc = env.Command(f'$VERSION_DIR/index.html',
                   sources + [cs_output] + snaps + anns,
-                  ['echo === Building public doc for version: {version}',
-                   f'sphinx-multiversion {sphinx_args} docs {output_dir}'],
+                  ['echo === Building public doc for version: $VERSION_SUBDIR',
+                   f'sphinx-multiversion {sphinx_args} docs {output_root_path}'],
                   chdir=f'{root_dir}/PublicDoc')
 
 # Add URL redirect files to "latest" directory. These commands require the rest
@@ -332,7 +340,7 @@ redirect_files = [
 redirects = []
 for rfile in redirect_files:
     from_path = join('latest',      rfile)
-    to_path   = join(f'v{version}', rfile)
+    to_path   = join(env.subst('$VERSION_SUBDIR'), rfile)
     abs_from_path = join(env.Dir('$OUTPUT_DIR').abspath, from_path)
     abs_to_path   = join(env.Dir('$OUTPUT_DIR').abspath, to_path)
     redirects.append(env.AddRedirect(target=abs_from_path, source=abs_to_path))

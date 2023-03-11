@@ -207,3 +207,34 @@ are as follows:
 | `submodules/SConscript_submodules` | Rules to build all submodules                            |
 | `submodules/SConscript_docopt`     | Rules to build the `docopt` library                      |
 | `submodules/SConscript_googletest` | Rules to build the `gtest` library                       |
+
+## Building a Release
+
+Here are the steps required to create a new release:
+
+  - Decide whether this is a major, minor, or patch release and Update the
+    version number in the top `SConstruct` file.
+
+  - Add all public-facing changes to `PublicDoc/docs/ReleaseNotes.rst`. You can
+    use `git log vX.Y.Z..HEAD --oneline` to see the first line of all commits
+    since the `X.Y.Z` release.
+
+  - Make any other necessary changes to `PublicDoc` and `InternalDoc`.
+
+  - Build on all 3 platforms and upload the resulting release files (zip or
+    DMG) to Google Drive.
+
+  - Create a tag for the release. This has to be done before building the
+    public documentation because `sphinx-multiversion` relies on tags to create
+    output directories. Use: `git tag -f -a vX.Y.Z -m "Version X.Y.Z"`
+
+  - Publish the public documentation:
+     + Build the documentation with `scons PublicDoc`.
+     + If any images are regenerated, use `bin/revertimages.sh` to revert any
+       images that did not change enough to warrant committing. This script
+       uses ImageMagick to measure image changes.
+     + Commit any outstanding changes and push to Github.
+     + Run `bin/publishdoc.py -n` to see what will happen to publish the doc.
+       If it looks ok, run it without the `-n` to publish to Github.
+     + If any changes needed to be committed, update the tag: `git tag vX.Y.Z
+       vX.Y.Z^{} -f -m "Version X.Y.Z"`
