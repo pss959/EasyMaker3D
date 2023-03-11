@@ -86,7 +86,6 @@ def main():
     makedirs('docs', exist_ok=True)
     exclusions = [
         '.nojekyll',   # Don't delete this
-        'index.html',  # Don't delete this
         '.doctrees',   # No need for this in Github Pages.
         '.buildinfo',  # No need for this in Github Pages.
     ]

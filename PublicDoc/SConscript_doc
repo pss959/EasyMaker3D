@@ -327,6 +327,9 @@ doc = env.Command(f'$VERSION_DIR/index.html',
                    f'sphinx-multiversion {sphinx_args} docs {output_root_path}'],
                   chdir=f'{root_dir}/PublicDoc')
 
+# Copy the top-level index.html file into the build directory.
+index = env.Install(target='$OUTPUT_DIR', source='./index.html')
+
 # Add URL redirect files to "latest" directory. These commands require the rest
 # of the doc to be built first.
 redirect_files = [
@@ -345,4 +348,6 @@ for rfile in redirect_files:
     abs_to_path   = join(env.Dir('$OUTPUT_DIR').abspath, to_path)
     redirects.append(env.AddRedirect(target=abs_from_path, source=abs_to_path))
 
-Return('redirects')
+public_doc = [redirects, index]
+
+Return('public_doc')
