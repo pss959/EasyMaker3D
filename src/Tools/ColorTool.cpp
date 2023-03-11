@@ -128,7 +128,9 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
         // End of the drag.
         GetDragEnded().Notify(*this);
         ASSERT(command_);
-        GetContext().command_manager->AddAndDo(command_);
+        // Don't apply the command if the color was never set.
+        if (command_->GetNewColor() != Color::Black())
+            GetContext().command_manager->AddAndDo(command_);
         command_.reset();
     }
     UpdateColor_();

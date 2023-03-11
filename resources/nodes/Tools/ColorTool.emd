@@ -56,7 +56,7 @@ ColorTool "ColorTool" {
 
     # Invisible disc blocking ray intersections from going through the gap
     # between the outer ring and inner disc.
-    Node {
+    Node "Blocker" {
       disabled_flags: "kRender",
       rotation: 1 0 0 90,
       translation: 0 0 -.1,

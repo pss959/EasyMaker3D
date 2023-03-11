@@ -81,6 +81,9 @@ struct Color : public Vector4f {
     /// Returns a vector containing hue, saturation, and value for the Color.
     Vector3f ToHSV() const;
 
+    /// Converts the color to a hex string in the format "#RRGGBBAA".
+    std::string ToHexString() const;
+
     /// Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
     /// storing the results in this instance. Returns false on error.
     bool FromHexString(const std::string &str);

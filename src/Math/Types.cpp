@@ -2,6 +2,8 @@
 
 #include <cctype>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
 
 #include <ion/base/bufferbuilder.h>
 #include <ion/math/angleutils.h>
@@ -108,6 +110,17 @@ Vector3f Color::ToHSV() const {
     }
 
     return Vector3f(hue, sat, val);
+}
+
+std::string Color::ToHexString() const {
+    auto to_hex = [](float f){
+        std::ostringstream out;
+        out << std::hex << std::setfill('0') << std::setw(2)
+            << std::lround(255 * f);
+        return out.str();
+    };
+    const auto &v = *this;
+    return "#" + to_hex(v[0]) + to_hex(v[1]) + to_hex(v[2]) + to_hex(v[3]);
 }
 
 bool Color::FromHexString(const std::string &str) {
