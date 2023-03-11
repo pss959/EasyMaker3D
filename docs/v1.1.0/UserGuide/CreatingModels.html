@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creating Models &mdash; EasyMaker3D 1.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Selecting Models" href="Selection.html" />
+    <link rel="prev" title="Interaction" href="Interaction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Quickstart.html"><span class="appname">EasyMaker3D</span> Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interaction.html">Interaction</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Creating Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#model-types">Model Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#primitive-models">Primitive Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#combined-models">Combined Models</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#constructive-solid-geometry-csg">Constructive Solid Geometry (CSG)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#convex-hull">Convex Hull</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#converted-models">Converted Models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#model-names">Model Names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-colors">Model Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-edge-display">Model Edge Display</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Selection.html">Selecting Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Precision.html">Precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Actions.html">Actions, 3D Icons, and Shelves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Panels.html">Panels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html">Quirks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+      <li class="breadcrumb-item active">Creating Models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="Interaction.html" class="btn btn-neutral float-left" title="Interaction" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Selection.html" class="btn btn-neutral float-right" title="Selecting Models" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="creating-models">
+<span id="ug-model-creation"></span><h1>Creating Models<a class="headerlink" href="#creating-models" title="Permalink to this heading"></a></h1>
+<p><span class="appname">EasyMaker3D</span> supports a variety of model types. Most have a <a class="reference internal" href="Tools.html#ug-specialized-tools"><span class="std std-ref">specialized tool</span></a> designed specifically for editing them. Some (such as
+Sphere and Box models) have no specialized tools because there is nothing that
+cannot be modifed with a <a class="reference internal" href="Tools.html#ug-general-tools"><span class="std std-ref">general tool</span></a>].</p>
+<section id="model-types">
+<span id="ug-model-types"></span><h2>Model Types<a class="headerlink" href="#model-types" title="Permalink to this heading"></a></h2>
+<p>Models can be divided into three basic categories:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="newterm">Primitive models</span> are created from scratch or imported from STL
+files.</p></li>
+<li><p><span class="newterm">Combined models</span> are created by combining other models in
+different ways. The resulting model may or may not have a specialized tool
+associated with it.</p></li>
+<li><p><span class="newterm">Converted models</span> are created by converting other types of models
+in order to apply a particular specialized tool. For example, if you want
+to create beveled edges on a Box model, you first convert it to a Beveled
+model, then use the specialized <a class="reference internal" href="Tools.html#ug-bevel-tool"><span class="std std-ref">Bevel Tool</span></a> to modify
+the bevel.</p></li>
+</ul>
+</div></blockquote>
+<p>These are all described in more detail in the following sections.</p>
+<section id="primitive-models">
+<span id="ug-primitive-models"></span><h3>Primitive Models<a class="headerlink" href="#primitive-models" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/PrimitiveImported.jpg"><img alt="../_images/PrimitiveImported.jpg" src="../_images/PrimitiveImported.jpg" style="height: 100px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/PrimitiveText.jpg"><img alt="../_images/PrimitiveText.jpg" src="../_images/PrimitiveText.jpg" style="height: 100px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/PrimitiveRevSurf.jpg"><img alt="../_images/PrimitiveRevSurf.jpg" src="../_images/PrimitiveRevSurf.jpg" style="height: 100px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/PrimitiveTorus.jpg"><img alt="../_images/PrimitiveTorus.jpg" src="../_images/PrimitiveTorus.jpg" style="height: 100px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/PrimitiveSphere.jpg"><img alt="../_images/PrimitiveSphere.jpg" src="../_images/PrimitiveSphere.jpg" style="height: 100px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/PrimitiveCylinder.jpg"><img alt="../_images/PrimitiveCylinder.jpg" src="../_images/PrimitiveCylinder.jpg" style="height: 100px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/PrimitiveBox.jpg"><img alt="../_images/PrimitiveBox.jpg" src="../_images/PrimitiveBox.jpg" style="height: 100px;" /></a>
+</figure>
+<p><p class="after-image"></p></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A <span class="newterm">Box model</span> represents a 3D box with the length of all sides
+equal to 4 units by default. There is no specialized tool for a Box.</p></li>
+<li><p>A <span class="newterm">Cylinder model</span> represents a closed cylinder that by default
+has a diameter and height of 4 units. Its axis of symmetry is aligned with
+the +Z (“up”) axis. The specialized <a class="reference internal" href="Tools.html#ug-cylinder-tool"><span class="std std-ref">Cylinder Tool</span></a>
+allows you to change the top and bottom diameters independently.</p></li>
+<li><p>A <span class="newterm">Sphere model</span> represents a sphere that has a diameter of 4
+units by default. There is no specialized tool for a Sphere.</p></li>
+<li><p>A <span class="newterm">Torus model</span> represents a torus that by default has an outer
+diameter of 4 units and an inner diameter (height) of .8 units. Its axis of
+symmetry is aligned with the +Z (“up”) axis. The specialized <a class="reference internal" href="Tools.html#ug-torus-tool"><span class="std std-ref">Torus
+Tool</span></a> allows you to change the outer and inner diameters
+independently.</p></li>
+<li><p>A <span class="newterm">RevSurf model</span> represents a closed surface of revolution
+created by rotating a 2D profile about the Z (“up”) axis. The default
+profile consists of 3 points (the minimum allowed) that forms a surface
+with the widest diameter of 4 units and a height of 4 units. The
+specialized <a class="reference internal" href="Tools.html#ug-rev-surf-tool"><span class="std std-ref">Surface of Revolution Tool</span></a> lets you
+edit the profile and also the sweep angle of the surface.</p></li>
+<li><p>A <span class="newterm">Text model</span> represents extruded 3D text, which is laid out by
+default at the origin along the +X axis, extruded 4 units along the +Z (up)
+direction. It is sized by default so that the characters are approximately
+4 units in the Y dimension. The specialized <a class="reference internal" href="Tools.html#ug-text-tool"><span class="std std-ref">Text Tool</span></a>
+allows you to change the text string, font, and character spacing.</p></li>
+<li><p>An <span class="newterm">Imported model</span> is read from an STL file. The specialized
+<a class="reference internal" href="Tools.html#ug-import-tool"><span class="std std-ref">Import Tool</span></a> is used to select or change the file to
+import from. Note that a newly-created Imported model will be displayed as
+a dummy tetrahedron with an <a class="reference internal" href="#ug-model-colors"><span class="std std-ref">invalid color</span></a> until a
+valid STL file has been selected with the Import Tool. Also note that many,
+many publicly-available STL models are not valid meshes (watertight, not
+self-intersecting) and will also appear with the invalid color. The
+<a class="reference internal" href="Panels.html#ug-info-panel"><span class="std std-ref">Info Panel</span></a> can tell you why the mesh is invalid.</p></li>
+</ul>
+</div></blockquote>
+<p>New primitive models are placed at the center of the <a class="reference internal" href="Interaction.html#ug-stage"><span class="std std-ref">stage</span></a>
+unless the <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point Target</span></a> is active, in which case the new
+model is placed to align with it.</p>
+</section>
+<section id="combined-models">
+<span id="ug-combined-models"></span><h3>Combined Models<a class="headerlink" href="#combined-models" title="Permalink to this heading"></a></h3>
+<p>One of the main features of <span class="appname">EasyMaker3D</span> is the ability to create new models by
+combining other models. When models are combined, the original models become
+children of the combined model in the model hierarchy (as shown in the
+<a class="reference internal" href="Panels.html#ug-tree-panel"><span class="std std-ref">Tree Panel</span></a>). The original models can be modified later,
+and the changes will be reflected in the combined model.</p>
+<p>A combined model is defined in its own coordinate system, originally aligned
+with the stage. That is, if you take two rotated models and create a combined
+model from them, the combined model’s axes will not be rotated like either of
+the parts; they will align with the stage.</p>
+<section id="constructive-solid-geometry-csg">
+<span id="ug-csg"></span><h4>Constructive Solid Geometry (CSG)<a class="headerlink" href="#constructive-solid-geometry-csg" title="Permalink to this heading"></a></h4>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CSGUnion.jpg"><img alt="../_images/CSGUnion.jpg" src="../_images/CSGUnion.jpg" style="width: 180px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CSGOperands.jpg"><img alt="../_images/CSGOperands.jpg" src="../_images/CSGOperands.jpg" style="width: 180px;" /></a>
+</figure>
+<p>A useful way to create a new model is to apply any of the three
+<span class="newterm">constructive solid geometry (CSG)</span> operations to two or more models:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A <span class="newterm">CSG Union</span> is formed by adding all selected models together.</p></li>
+<li><p><span class="newterm">CSG Intersection</span> uses the intersection of all selected models.</p></li>
+<li><p><span class="newterm">CSG Difference</span> subtracts all <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">secondary selections from the
+primary selection</span></a>. Unlike union and intersection, CSG
+difference is asymmetric, so the selection order really matters.</p></li>
+</ul>
+</div></blockquote>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CSGDifference.jpg"><img alt="../_images/CSGDifference.jpg" src="../_images/CSGDifference.jpg" style="width: 180px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CSGIntersection.jpg"><img alt="../_images/CSGIntersection.jpg" src="../_images/CSGIntersection.jpg" style="width: 180px;" /></a>
+</figure>
+<p>These images show the original operand models, a box and a cylinder, and the
+resulting CSG union, intersection, and difference (cylinder subtracted from the
+box).</p>
+<p>Note that in some cases using the <a class="reference internal" href="Tools.html#ug-clip-tool"><span class="std std-ref">Clip Tool</span></a> may be a
+sufficient and simpler method of geometric editing.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="convex-hull">
+<span id="ug-hull"></span><h4>Convex Hull<a class="headerlink" href="#convex-hull" title="Permalink to this heading"></a></h4>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/HullCapsule.jpg"><img alt="../_images/HullCapsule.jpg" src="../_images/HullCapsule.jpg" style="width: 180px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/HullSpheres.jpg"><img alt="../_images/HullSpheres.jpg" src="../_images/HullSpheres.jpg" style="width: 180px;" /></a>
+</figure>
+<p>Another way to combine models is with the <span class="newterm">convex hull</span> operation,
+which creates a new model from the <a class="reference external" href="https://en.wikipedia.org/wiki/Convex_hull">3D convex hull</a> of the selected models. This can
+be used to easily create different shapes. For example, here is an easy way to
+create a capsule by applying the convex hull operation to two spheres.</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/HullDisk.jpg"><img alt="../_images/HullDisk.jpg" src="../_images/HullDisk.jpg" style="width: 180px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/HullTorus.jpg"><img alt="../_images/HullTorus.jpg" src="../_images/HullTorus.jpg" style="width: 180px;" /></a>
+</figure>
+<p>The convex hull operation can sometimes be useful to apply to a single model,
+if the model is not already convex. Here’s an example of creating a rounded
+disk as the convex hull of a torus.</p>
+<p>Note that there is no specialized tool for a Hull model.</p>
+</section>
+</section>
+<section id="converted-models">
+<span id="ug-converted-models"></span><h3>Converted Models<a class="headerlink" href="#converted-models" title="Permalink to this heading"></a></h3>
+<p>Certain operations require models to first be converted to a different type.</p>
+<p>Each of these model types is created by <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">selecting</span></a> one or
+more models and clicking on the appropriate conversion tool icon. Once the
+conversion is done, you can use the corresponding specialized tool to edit
+the resulting models, as listed below.</p>
+<p>Note that this two-step process (converting, then editing) makes it clear that
+a new type of model must be created in order to apply the editing operation.
+The converted model becomes a parent of the original model in the hierarchy (as
+shown in the <a class="reference internal" href="Panels.html#ug-tree-panel"><span class="std std-ref">Tree Panel</span></a>). This scheme also simplifies
+the interface and also allows the original objects to be modified even after
+the conversion operation has been applied.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A <span class="newterm">Beveled model</span> applies a bevel or other profile to edges of a
+model. The <a class="reference internal" href="Actions.html#ug-convert-bevel"><span class="std std-ref">Convert to Bevel action</span></a> is used to
+convert the models, and the specialized <a class="reference internal" href="Tools.html#ug-bevel-tool"><span class="std std-ref">Bevel Tool</span></a> is
+used to modify the bevel profile.</p></li>
+<li><p>A <span class="newterm">Clipped model</span> applies one or more clipping planes to a
+model. The <a class="reference internal" href="Actions.html#ug-convert-clip"><span class="std std-ref">Convert to Clipped action</span></a> is used to
+convert the models and the specialized <a class="reference internal" href="Tools.html#ug-clip-tool"><span class="std std-ref">Clip Tool</span></a> is
+used to specify the clipping plane or planes.</p></li>
+<li><p>A <span class="newterm">Mirrored model</span> mirrors a model about one or more principal
+planes. The <a class="reference internal" href="Actions.html#ug-convert-mirror"><span class="std std-ref">Convert to Mirrored action</span></a> is used
+to convert the models and the specialized <a class="reference internal" href="Tools.html#ug-mirror-tool"><span class="std std-ref">Mirror Tool</span></a> is used to specify how to mirror.</p></li>
+</ul>
+</div></blockquote>
+<p>Note that a converted model synchronizes its transformations (scale, rotation,
+and translation) with the original model. Any changes made to the
+transformations for either the original or converted model are also applied to
+the other. One slight exception to this is the Beveled model, since the scale
+of the original model has to be applied before the bevel profile is applied.
+The scales in this case are kept in sync, but a scale applied to the Beveled
+model is applied after the beveling operation is applied.</p>
+</section>
+</section>
+<section id="model-names">
+<span id="ug-model-names"></span><h2>Model Names<a class="headerlink" href="#model-names" title="Permalink to this heading"></a></h2>
+<p>When <span class="appname">EasyMaker3D</span> creates a model of any type, a unique name is assigned to it
+automatically by affixing an underscore and a number to its base model type,
+such as <span class="model">Sphere_1</span> or <span class="model">Imported_13</span>. Model names can be seen in
+the <a class="reference internal" href="Panels.html#ug-tree-panel"><span class="std std-ref">Tree Panel</span></a> and edited with the <a class="reference internal" href="Tools.html#ug-name-tool"><span class="std std-ref">Name Tool</span></a>.</p>
+</section>
+<section id="model-colors">
+<span id="ug-model-colors"></span><h2>Model Colors<a class="headerlink" href="#model-colors" title="Permalink to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/InvalidColors.jpg"><img alt="../_images/InvalidColors.jpg" src="../_images/InvalidColors.jpg" style="width: 200px;" /></a>
+</figure>
+<p>Reasonable colors are chosen automatically for new models created in the
+scene. The <a class="reference internal" href="Tools.html#ug-color-tool"><span class="std std-ref">Color Tool</span></a> allows you to change the color of
+any model for aesthetic reasons. (The colors have no effect on the 3D-printed
+model.)</p>
+<p>Two special model colors are outside the normal range as shown here:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Any model with an invalid mesh is colored like the model on the left to
+indicate that it will probably not print successfully. A mesh is invalid if
+it is not closed, has weird connectivity, or self-intersects.</p></li>
+<li><p>If the <a class="reference internal" href="Overview.html#ug-build-volume"><span class="std std-ref">build volume</span></a> is visible, any part of any
+model that lies outside of it will be colored as shown on the right in the
+image. This indicates that the model will likely not be printed
+successfully.</p></li>
+</ul>
+</div></blockquote>
+<p>When an invalid mesh is detected, it will retain the invalid mesh color until
+the problem is fixed. Changes made to such a model with the Color Tool will
+still take effect, but you will not be able to see them while the model is
+invalid. Also, some tools will be disabled when an invalid model is selected to
+avoid compounding the problem.</p>
+<p>One exception is the <a class="reference internal" href="#ug-hull"><span class="std std-ref">convex hull</span></a> operation, which is enabled
+even for invalid meshes. This can be used as a quick way to “fix” an invalid
+mesh if the hull is close to what you want.</p>
+</section>
+<section id="model-edge-display">
+<span id="ug-show-edges"></span><h2>Model Edge Display<a class="headerlink" href="#model-edge-display" title="Permalink to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ModelEdges.jpg"><img alt="../_images/ModelEdges.jpg" src="../_images/ModelEdges.jpg" style="width: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ModelNoEdges.jpg"><img alt="../_images/ModelNoEdges.jpg" src="../_images/ModelNoEdges.jpg" style="width: 200px;" /></a>
+</figure>
+<p>Clicking The <a class="reference internal" href="Actions.html#ug-toggle-show-edges"><span class="std std-ref">Show Edges Toggle</span></a> icon lets you
+display edges of your models as visible lines or hide them.  Showing them can
+help you see how your models are tessellated into triangles for 3D printing or
+to help place the <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Edge Target</span></a>.</p>
+<p><p class="after-image"></p></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Interaction.html" class="btn btn-neutral float-left" title="Interaction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Selection.html" class="btn btn-neutral float-right" title="Selecting Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.1.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      <dd>
+        <a href="CreatingModels.html">Version 1.1.0</a>
+      </dd>
+      <dd>
+        <a href="../../v1.0.1/UserGuide/CreatingModels.html">Version 1.0.1</a>
+      </dd>
+      <dd>
+        <a href="../../v1.0.0/UserGuide/CreatingModels.html">Version 1.0.0</a>
+      </dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
