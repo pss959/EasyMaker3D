@@ -2,6 +2,8 @@
 
 #include "SG/ColorMap.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
+#include "Util/KLog.h"
 
 void Widget::AddFields() {
     AddField(inactive_color_.Init("inactive_color"));
@@ -82,8 +84,12 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
     if (new_state == state_)
         return;
 
+    KLOG('W', GetDesc() << " changed state from "
+         << Util::EnumName(state_) << " to " << Util::EnumName(new_state));
+
     // Stop hovering if that is the current state.
     if (IsHovering()) {
+        hover_count_ = 0;
         ChangeHovering_(false);
         ActivateTooltip_(false);
     }

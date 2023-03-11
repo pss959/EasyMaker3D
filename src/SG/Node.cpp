@@ -222,8 +222,6 @@ ion::gfx::NodePtr Node::SetUpIon(
     if (ion_node_)
         return ion_node_;
 
-    KLOG('I', "SetUpIon called for " << GetDesc());
-
     // Check for changes to transform fields.
     if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
         ProcessChange(Change::kTransform, *this);

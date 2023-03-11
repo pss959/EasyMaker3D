@@ -272,29 +272,30 @@ these:
 
 <div class="table2columns" markdown="1">
 <div class="tablecolumn" markdown="1">
-| Char | Logging Category                                |
-| :--: | ----------------------------------------------- |
-| a    | NameManager name processing                     |
-| A    | SG::FileMap data storage and lookup             |
-| b    | Scene graph bounds computation                  |
-| B    | Model mesh building and invalidation            |
-| c    | Scene graph object construction and destruction |
-| C    | Mesh combining/clipping                         |
-| d    | Mouse drag positions                            |
-| D    | Feedback activation and deactivation            |
-| e    | Events and event handling                       |
-| E    | Event compression and deferring                 |
-| f    | File reading/parsing                            |
-| F    | Interactive Pane focus and activation           |
-| g    | (GUI) Board and Panel opening and closing       |
-| h    | MainHandler state changes                       |
-| i    | Intersection testing in the scene               |
-| I    | Ion setup for SG nodes                          |
-| j    | Action processing                               |
-| k    | Clicks on objects                               |
-| K    | VirtualKeyboard state changes                   |
-| l    | PolyMeshBuilder construction                    |
-| m    | Changes to matrices in SG Nodes                 |
+| Char   | Logging Category                                |
+| :----: | ----------------------------------------------- |
+| a      | NameManager name processing                     |
+| A      | SG::FileMap data storage and lookup             |
+| b      | Scene graph bounds computation                  |
+| B      | Model mesh building and invalidation            |
+| c      | Scene graph object construction and destruction |
+| C      | Mesh combining/clipping                         |
+| d      | Mouse drag positions                            |
+| D      | Feedback activation and deactivation            |
+| e      | Events and event handling                       |
+| E      | Event compression and deferring                 |
+| f      | File reading/parsing                            |
+| F      | Interactive Pane focus and activation           |
+| g      | (GUI) Board and Panel opening and closing       |
+| h      | MainHandler state changes                       |
+| H      | Widget hovering state changes                   |
+| i      | Scene intersection results                      |
+| I      | Full intersection testing in the scene          |
+| j      | Action processing                               |
+| k      | Clicks on objects                               |
+| K      | VirtualKeyboard state changes                   |
+| l      | PolyMeshBuilder construction                    |
+| m      | Changes to matrices in SG Nodes                 |
 </div>
 <div class="tablecolumn" markdown="1">
 | Char   | Logging Category                                |
@@ -316,12 +317,16 @@ these:
 | v      | VR system status                                |
 | V      | VR input bindings                               |
 | w      | Session reading and writing                     |
+| W      | Widget state changes                            |
 | x      | Command execution, undo, redo                   |
 | y      | Model status changes                            |
 | z      | Font loading                                    |
 | &nbsp; | &nbsp;                                          |
 </div>
 </div>
+
+[comment]: # (If a blank line is needed in the above table for symmetry,)
+[comment]: # (use "| &nbsp; | &nbsp |")
 
 #### Special KLOG character codes:
 

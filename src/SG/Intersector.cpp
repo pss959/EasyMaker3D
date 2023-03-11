@@ -81,7 +81,7 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
     // Skip the entire subgraph if either of these flags is set.
     if (! node.IsFlagEnabled(Node::Flag::kTraversal) ||
         ! node.IsFlagEnabled(Node::Flag::kIntersectAll)) {
-        KLOG('i', Util::Spaces(2 * path.size())
+        KLOG('I', Util::Spaces(2 * path.size())
              << "Skipping " << node.GetDesc()
              << ": flags=" << node.GetDisabledFlags().ToString());
         return;
@@ -149,7 +149,7 @@ bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &obj_ray,
     Bounds::Face face;
     bool         is_entry;
     if (RayBoundsIntersectFace(obj_ray, bounds, distance, face, is_entry)) {
-        KLOG('i', Util::Spaces(2 * path.size())
+        KLOG('I', Util::Spaces(2 * path.size())
              << "Hit bounds of " << node.GetDesc()
              << " at " << distance << " z="
              << obj_ray.GetPoint(distance)[2]
@@ -161,7 +161,7 @@ bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &obj_ray,
             return false;
     }
     else {
-        KLOG('i', Util::Spaces(2 * path.size())
+        KLOG('I', Util::Spaces(2 * path.size())
              << "Missed bounds of " << node.GetDesc());
         return false;
     }
@@ -182,7 +182,7 @@ bool Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
             // No good reason to check the bounds first, since most Nodes have
             // a single Shape and the bounds are the same.
             if (shape->IntersectRay(obj_ray, shape_hit)) {
-                KLOG('i', Util::Spaces(2 * path.size() + 1)
+                KLOG('I', Util::Spaces(2 * path.size() + 1)
                      << "Intersected " << shape->GetDesc()
                      << " at " << shape_hit.distance);
                 const float dist = shape_hit.distance;
@@ -197,7 +197,7 @@ bool Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
                 any_hit = true;
             }
             else {
-                KLOG('i', Util::Spaces(2 * path.size() + 1)
+                KLOG('I', Util::Spaces(2 * path.size() + 1)
                      << "Missed " << shape->GetDesc());
             }
         }
@@ -211,18 +211,20 @@ bool Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
 
 Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
     Visitor_ visitor;
-    KLOG('i', "Intersecting scene with " << ray.ToString());
+    KLOG('I', "Intersecting scene with " << ray.ToString());
     const Hit hit = visitor.IntersectScene(ray, scene.GetRootNode());
-    KLOG('i', "Intersection on " << hit.path.ToString());
+    KLOG('I', "Intersection on " << hit.path.ToString());
+    KLOG('I', "Intersection on " << hit.path.ToString());
     return hit;
 }
 
 Hit Intersector::IntersectGraph(const SG::NodePtr &root, const Ray &ray) {
     ASSERT(root);
     Visitor_ visitor;
-    KLOG('i', "Intersecting graph rooted by " << root->GetDesc()
+    KLOG('I', "Intersecting graph rooted by " << root->GetDesc()
          << " with " << ray.ToString());
     const Hit hit = visitor.IntersectScene(ray, root);
+    KLOG('I', "Intersection on " << hit.path.ToString());
     KLOG('i', "Intersection on " << hit.path.ToString());
     return hit;
 }

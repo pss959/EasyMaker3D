@@ -5,6 +5,7 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 #include "Widgets/ClickableWidget.h"
 
 Tracker::Tracker(Actuator actuator) : actuator_(actuator) {
@@ -41,10 +42,14 @@ Point3f Tracker::ToControllerCoords(const Point3f &p) const {
 void Tracker::UpdateWidgetHovering(const WidgetPtr &old_widget,
                                    const WidgetPtr &new_widget) {
     ASSERT(old_widget != new_widget);
-    if (old_widget && old_widget->IsHovering())
+    if (old_widget && old_widget->IsHovering()) {
+        KLOG('H', "Stop hovering " << old_widget->GetDesc());
         old_widget->SetHovering(false);
-    if (new_widget)
+    }
+    if (new_widget && new_widget->IsInteractionEnabled()) {
+        KLOG('H', "Start hovering " << new_widget->GetDesc());
         new_widget->SetHovering(true);
+    }
 }
 
 float Tracker::GetMotionScale(const WidgetPtr &widget) {
