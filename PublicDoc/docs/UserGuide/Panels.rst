@@ -392,6 +392,7 @@ creates a bevel for all edges as in this image.
 Adding, Moving, and Deleting Points
 :::::::::::::::::::::::::::::::::::
 
+.. incimage:: /images/BevelToolPanelSnap.jpg   200px right
 .. incimage:: /images/BevelToolPanelDelete.jpg 200px right
 .. incimage:: /images/BevelToolPanelHover.jpg  200px right
 
@@ -403,7 +404,13 @@ you want.
 
 Dragging an existing interior point moves it; when you do this, a box with an
 "X" in it appears to allow you to delete the point by dragging it over that
-box, as shown in the right image.
+box, as shown in the center image.
+
+:ref:`Modified-dragging <ug-modified-mode>` a profile point will cause it to
+snap relative to its neighbor points. Snapping will occur if the dragged point
+is close to vertical, horizontal, or on a 45-degree diagonal from either or
+both neighbors. When this happens, the snapped segment(s) will be highlighted
+with a different color as in the right image above.
 
 |block-image|
 
@@ -538,6 +545,12 @@ Editing the profile for the RevSurf models is essentially the same as in the
 :ref:`Bevel Tool Panel <ug-bevel-tool-panel>`, except that there must always be
 at least 3 points in the profile; the panel will not let you delete an interior
 profile point if it is the only one left.
+
+The checkbox at the top of the panel allows you to enable snapping of profile
+points to the current :ref:`precision level <ug-precision-level>`. Note that
+this snapping is relative to the size of the selected RevSurf model. For
+example if the current precision is 1 unit, a dragged profile point will be
+snapped in X to create 1 unit increments for the model at its current scale.
 
 Adjusting the Sweep Angle
 :::::::::::::::::::::::::

@@ -4,11 +4,16 @@
     <span class="fa fa-book"></span>
     <span class="current-version-label">Version</span>
     <span class="current-version-text">
-      {{ current_version.name | replace("v", "") }}
+      {% if current_version is defined %}
+        {{ current_version.name | replace("v", "") }}
+      {% else %}
+        CURRENT VERSION
+      {% endif %}
     </span>
     <span class="fa fa-caret-down"></span>
   </span>
 
+  {% if versions is defined %}
   <div class="rst-other-versions">
     <dl>
       <dt>Select another version:</dt>
@@ -19,4 +24,5 @@
       {%- endfor %}
     </dl>
   </div>
+  {% endif %}
 </div>

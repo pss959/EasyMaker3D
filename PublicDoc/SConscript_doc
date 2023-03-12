@@ -251,6 +251,7 @@ snap_map = {
     'BevelToolPanelMaxAngle',
     'BevelToolPanelScaleLarge',
     'BevelToolPanelScaleSmall',
+    'BevelToolPanelSnap',
     'CSGToolPanel',
     'ImportToolPanel',
     'RevSurfToolPanel',
@@ -311,20 +312,24 @@ env.Alias('Images', [snaps, anns])
 # Documentation generation.
 # -----------------------------------------------------------------------------
 
+# Change this to 'sphinx-build' to create only the latest version for
+# development.
+sphinx = 'sphinx-multiversion'
+
 sources = FindAllSources_('docs')
 
 sphinx_args = ' '.join([
     '-W',    # Treat warnings as errors,
     '-E',    # Rebuild if anything changes (no environment cache).
     '-a',    # Write all files.
-    # '--dump-metadata',  # Uncomment this to debug versioning.
+    # '--dump-metadata',  # Uncomment to debug versioning (sphinx-multiversion).
 ])
 
 # Run Sphinx to build the doc.
 doc = env.Command(f'$VERSION_DIR/index.html',
                   sources + [cs_output] + snaps + anns,
                   ['echo === Building public doc for version: $VERSION_SUBDIR',
-                   f'sphinx-multiversion {sphinx_args} docs {output_root_path}'],
+                   f'{sphinx} {sphinx_args} docs {output_root_path}'],
                   chdir=f'{root_dir}/PublicDoc')
 
 # Copy the top-level index.html file into the build directory.
