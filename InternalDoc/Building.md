@@ -238,3 +238,5 @@ Here are the steps required to create a new release:
        If it looks ok, run it without the `-n` to publish to Github.
      + If any changes needed to be committed, update the tag: `git tag vX.Y.Z
        vX.Y.Z^{} -f -m "Version X.Y.Z"`
+
+  - On Github, select the new tag and create a release from it.
