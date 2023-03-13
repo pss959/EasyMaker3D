@@ -86,8 +86,10 @@ def main():
     makedirs('docs', exist_ok=True)
     exclusions = [
         '.nojekyll',   # Don't delete this
-        '.doctrees',   # No need for this in Github Pages.
-        '.buildinfo',  # No need for this in Github Pages.
+        # No need for any of these in Github Pages:
+        '.doctrees',
+        '.buildinfo',
+        '_sources',
     ]
     exclusion_args = ' '.join([f'--exclude={ex}' for ex in exclusions])
     Run(f'rsync -vau --delete {exclusion_args} build/PublicDoc/ docs/')

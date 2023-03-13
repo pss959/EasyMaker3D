@@ -58,19 +58,18 @@ version_dict = dict((vers, f'{baseurl}/{vers}/') for vers in doc_versions)
 sys_path.append(abspath("./_ext"))
 
 extensions = [
-  # Official extensions:
-  'sphinx.ext.todo',
+    # Official extensions:
+    'sphinx.ext.todo',
 
-  # Local extensions:
-  'fixreplace',
-  'incimage',
-  'menuicon',
+    # Local extensions:
+    'fixreplace',
+    'incimage',
+    'menuicon',
 ]
 
 # Ignore included files.
 exclude_patterns = [
     'init.rst',
-    #'UserGuide/*.rst',
 ]
 
 # Prolog includes a file with reStructuredText substitutions. Define some
@@ -100,6 +99,7 @@ fixreplace_dict = {
 html_theme           = 'sphinx_rtd_theme'  # Read the Docs.
 html_static_path     = ['_static']
 html_css_files       = ['css/custom.css']
+html_js_files        = ['js/custom.js']
 html_favicon         = 'images/static/favicon.ico'
 # html_logo          = 'images/logo.jpg'
 html_show_sourcelink = False
