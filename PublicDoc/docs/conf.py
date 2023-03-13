@@ -12,6 +12,7 @@ project = environ.get('PROJECT',   '<Unknown Project>')
 version = environ.get('VERSION',   '<Unknown Version>')
 suffix  = environ.get('SUFFIX',    '<Unknown Suffix>')  # For session files.
 copyrt  = environ.get('COPYRIGHT', '<Unknown Copyright>')
+baseurl = environ.get('BASE_URL',  '<Unknown Base URL>')
 release = version
 
 # External links.
@@ -26,6 +27,30 @@ copyright = copyrt
 author    = 'Paul S. Strauss'
 
 # -----------------------------------------------------------------------------
+# Version selection.
+# -----------------------------------------------------------------------------
+
+# Runs git with the given arguments, returning the resulting lines that match
+# the given pattern as a list.
+def RunGit_(arg_string, pattern):
+    from subprocess import Popen, PIPE, run
+    lines = Popen(['git'] + arg_string.split(),
+                  stdout=PIPE, text=True).stdout.read()
+    return [s for line in lines.split() if pattern in (s := line.strip())]
+
+# Determine all versions to include. Use the last tag for each release branch.
+# Create a dictionary mapping version to URL.
+rels = [rel.replace('Release-', '') for rel in RunGit_('branch', 'Release-')]
+tags = RunGit_('tag',    'v')
+
+latest_tags = []
+for rel in rels:
+    latest_tags.append([t for t in tags if t.startswith('v' + rel + '.')][-1])
+
+doc_versions = [tag.replace('v', '') for tag in latest_tags]
+version_dict = dict((vers, f'{baseurl}/{vers}/') for vers in doc_versions)
+
+# -----------------------------------------------------------------------------
 # General configuration.
 # -----------------------------------------------------------------------------
 
@@ -35,7 +60,6 @@ sys_path.append(abspath("./_ext"))
 extensions = [
   # Official extensions:
   'sphinx.ext.todo',
-  'sphinx_multiversion',
 
   # Local extensions:
   'fixreplace',
@@ -70,22 +94,6 @@ fixreplace_dict = {
 }
 
 # -----------------------------------------------------------------------------
-# Sphinx-multiversion options.
-# -----------------------------------------------------------------------------
-
-# Include tags of the form "vN.N.N"
-smv_tag_whitelist = r'^v\d+\.\d+.\d+$'
-
-# No branches should be included.
-smv_branch_whitelist = 'None'
-
-# Output directory is named with the tag name.
-smv_outputdir_format = '{ref.name}'
-
-# All tagged versions are released.
-smv_released_pattern = r'^.*$'
-
-# -----------------------------------------------------------------------------
 # HTML output options.
 # -----------------------------------------------------------------------------
 
@@ -108,4 +116,10 @@ html_theme_options   = {
     'navigation_depth':            -1,
     'sticky_navigation':           True,
     'titles_only':                 False,
+}
+
+# Variables passed to templates.
+html_context = {
+    'current_version' : version,
+    'version_dict'    : version_dict,
 }

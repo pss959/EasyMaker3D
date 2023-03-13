@@ -23,7 +23,7 @@ work in VR due to the `lack of official SteamVR support
 Installing and Running |appname|
 --------------------------------
 
-The application is available to download as Zip files from `the download site
+The application is available to download from `the download site
 <download_site_>`_ (on Google Drive).
 
  - Windows or Linux: Download the Zip file for your operating system and

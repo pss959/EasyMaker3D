@@ -27,7 +27,7 @@ def FindAllSources_(root_dir):
 
 env = Environment(
     OUTPUT_DIR     = f'#{doc_build_dir}/PublicDoc',
-    VERSION_SUBDIR = 'v' + app_dict['VERSION_STRING'],
+    VERSION_SUBDIR = app_dict['VERSION_STRING'],
     VERSION_DIR    = '$OUTPUT_DIR/$VERSION_SUBDIR',
 
     # Copy the environment variables for the snapimage application.
@@ -41,6 +41,7 @@ env.Append(
         'VERSION'   : app_dict['VERSION_STRING'],
         'SUFFIX'    : app_dict['SESSION_SUFFIX'],
         'COPYRIGHT' : app_dict['COPYRIGHT'],
+        'BASE_URL'  : app_dict['PUBLIC_DOC_BASE_URL'],
     },
 )
 
@@ -70,7 +71,6 @@ env.Append(BUILDERS={ 'AddRedirect' : Builder(action=AddRedirect_) })
 # Global variables.
 # -----------------------------------------------------------------------------
 
-output_root_path = env.Dir('$OUTPUT_DIR').abspath
 output_doc_path  = env.Dir('$VERSION_DIR').abspath
 
 # -----------------------------------------------------------------------------
@@ -312,9 +312,12 @@ env.Alias('Images', [snaps, anns])
 # Documentation generation.
 # -----------------------------------------------------------------------------
 
-# Change this to 'sphinx-build' to create only the latest version for
-# development.
-sphinx = 'sphinx-multiversion'
+# Find the latest tag for each release branch.
+# XXXX
+
+
+
+sphinx = 'sphinx-build'
 
 sources = FindAllSources_('docs')
 
@@ -322,14 +325,13 @@ sphinx_args = ' '.join([
     '-W',    # Treat warnings as errors,
     '-E',    # Rebuild if anything changes (no environment cache).
     '-a',    # Write all files.
-    # '--dump-metadata',  # Uncomment to debug versioning (sphinx-multiversion).
 ])
 
 # Run Sphinx to build the doc.
 doc = env.Command(f'$VERSION_DIR/index.html',
                   sources + [cs_output] + snaps + anns,
                   ['echo === Building public doc for version: $VERSION_SUBDIR',
-                   f'{sphinx} {sphinx_args} docs {output_root_path}'],
+                   f'{sphinx} {sphinx_args} docs {output_doc_path}'],
                   chdir=f'{root_dir}/PublicDoc')
 
 # Copy the top-level index.html file into the build directory.
