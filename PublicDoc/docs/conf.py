@@ -33,20 +33,18 @@ author    = 'Paul S. Strauss'
 sys_path.append(abspath("./_ext"))
 
 extensions = [
-  # Official extensions:
-  'sphinx.ext.todo',
-  'sphinx_multiversion',
+    # Official extensions:
+    'sphinx.ext.todo',
 
-  # Local extensions:
-  'fixreplace',
-  'incimage',
-  'menuicon',
+    # Local extensions:
+    'fixreplace',
+    'incimage',
+    'menuicon',
 ]
 
 # Ignore included files.
 exclude_patterns = [
     'init.rst',
-    #'UserGuide/*.rst',
 ]
 
 # Prolog includes a file with reStructuredText substitutions. Define some
@@ -70,28 +68,13 @@ fixreplace_dict = {
 }
 
 # -----------------------------------------------------------------------------
-# Sphinx-multiversion options.
-# -----------------------------------------------------------------------------
-
-# Include tags of the form "vN.N.N"
-smv_tag_whitelist = r'^v\d+\.\d+.\d+$'
-
-# No branches should be included.
-smv_branch_whitelist = 'None'
-
-# Output directory is named with the tag name.
-smv_outputdir_format = '{ref.name}'
-
-# All tagged versions are released.
-smv_released_pattern = r'^.*$'
-
-# -----------------------------------------------------------------------------
 # HTML output options.
 # -----------------------------------------------------------------------------
 
 html_theme           = 'sphinx_rtd_theme'  # Read the Docs.
 html_static_path     = ['_static']
 html_css_files       = ['css/custom.css']
+html_js_files        = ['js/version_selector.js', 'js/versions.js']
 html_favicon         = 'images/static/favicon.ico'
 # html_logo          = 'images/logo.jpg'
 html_show_sourcelink = False
@@ -108,4 +91,9 @@ html_theme_options   = {
     'navigation_depth':            -1,
     'sticky_navigation':           True,
     'titles_only':                 False,
+}
+
+# Variables passed to templates.
+html_context = {
+    'current_version' : version,
 }

@@ -3,8 +3,9 @@
 # subdirectory of the build directory.
 # -----------------------------------------------------------------------------
 
-from os      import environ, makedirs, walk
-from os.path import dirname, join, relpath
+from os         import environ, makedirs, walk
+from os.path    import dirname, join, relpath
+from subprocess import Popen, PIPE, run
 
 Import('app_dict', 'doc_build_dir', 'snapimage')
 
@@ -21,12 +22,50 @@ def FindAllSources_(root_dir):
         sources += [join(root, fn) for fn in filenames]
     return sources
 
+# Returns a list of all current documentation versions (as strings), in order
+# from oldest to newest.
+def GetAllVersions_():
+    # Runs git with the given arguments, returning the resulting lines that match
+    # the given pattern as a list.
+    def RunGit_(arg_string, pattern):
+        lines = Popen(['git'] + arg_string.split(),
+                      stdout=PIPE, text=True).stdout.read()
+        return [s for line in lines.split() if pattern in (s := line.strip())]
+
+    # Get names of all releases (from release branches) and version tags.
+    rels = [rel.replace('Release-', '')
+            for rel in RunGit_('branch', 'Release-')]
+    tags = RunGit_('tag', 'v')
+
+    # Use the last tag for each release branch.
+    versions = []
+    for rel in rels:
+        versions.append([t.replace('v', '') for t in tags
+                         if t.startswith('v' + rel + '.')][-1])
+    return versions
+
+# Writes the JavaScript file defining all current documentation versions.
+def CreateVersionJSFile_(file_path, versions):
+    abs_file_path = File(file_path).abspath
+    makedirs(dirname(abs_file_path), exist_ok=True)
+    with open(abs_file_path, 'w') as f:
+        f.write('var all_versions = [\n')
+        for version in versions:
+            alias = 'latest' if version == versions[-1] else ''
+            f.write('    {\n')
+            f.write(f'        "version": "{version}",\n')
+            f.write(f'        "alias":   "{alias}",\n')
+            f.write('    },\n')
+        f.write(']\n')
+
 # -----------------------------------------------------------------------------
 # Environment.
 # -----------------------------------------------------------------------------
 
 env = Environment(
-    OUTPUT_DIR = f'#{doc_build_dir}/PublicDoc',
+    OUTPUT_DIR     = f'#{doc_build_dir}/PublicDoc',
+    VERSION_SUBDIR = app_dict['VERSION_STRING'],
+    VERSION_DIR    = '$OUTPUT_DIR/$VERSION_SUBDIR',
 
     # Copy the environment variables for the snapimage application.
     ENV = environ.copy(),
@@ -39,8 +78,15 @@ env.Append(
         'VERSION'   : app_dict['VERSION_STRING'],
         'SUFFIX'    : app_dict['SESSION_SUFFIX'],
         'COPYRIGHT' : app_dict['COPYRIGHT'],
+        'BASE_URL'  : app_dict['PUBLIC_DOC_BASE_URL'],
     },
 )
+
+root_dir = env.Dir('#').abspath   # Work around SCons issue.
+
+# -----------------------------------------------------------------------------
+# Builders.
+# -----------------------------------------------------------------------------
 
 # Builder function that creates an HTML URL redirect file. source is the
 # absolute path to the file to redirect to; target is the absolute path to the
@@ -65,10 +111,17 @@ def AddRedirect_(target, source, env):
 env.Append(BUILDERS={ 'AddRedirect' : Builder(action=AddRedirect_) })
 
 # -----------------------------------------------------------------------------
-# Cheat Sheet generation.
+# Global variables.
 # -----------------------------------------------------------------------------
 
-cs_output    = './docs/CheatSheet.rst'
+output_doc_path  = env.Dir('$VERSION_DIR').abspath
+
+# -----------------------------------------------------------------------------
+# Cheat Sheet generation. This goes in the 'PublicDoc/docs' directory so it can
+# be processed like all the other input.
+# -----------------------------------------------------------------------------
+
+cs_output    = 'docs/CheatSheet.rst'
 cs_generator = '#build/opt/Apps/createcheatsheet'
 env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 
@@ -76,248 +129,41 @@ env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 # Snapshot Image generation and annotation.
 # -----------------------------------------------------------------------------
 
-root_dir   = env.Dir('#').abspath   # Work around SCons issue.
-image_dir  = './docs/images'
-script_dir = './snaps/scripts'
-ann_dir    = './snaps/annotations'
-annotator  = env.File('#/bin/annotate.py').abspath
+images = SConscript('SConscript_snaps', exports=['snapimage'])
 
-# This maps snapimage script files to the images they generate.
-snap_map = {
-  'AppPanels1' : [
-    'ActionPanel',
-    'DialogMessagePanel',
-    'DialogQuestionPanel',
-    'HelpPanel',
-    'InfoPanel',
-    'RadialMenuPanel',
-    'SettingsPanel',
-  ],
-  'AppPanels2' : [
-    'FilePanel',
-    'GripPanelBar',
-    'VirtualKeyboardPanel',
-  ],
-  'CSG' : [
-    'CSGDifference',
-    'CSGIntersection',
-    'CSGOperands',
-    'CSGUnion',
-  ],
-  'Controller' : [
-    'OculusTouch',
-    'TouchMode',
-    'Vive',
-  ],
-  'Doorstop' : [
-    'Doorstop',
-  ],
-  'Feedback' : [
-    'AngularFeedback',
-    'LinearFeedback',
-  ],
-  'GeneralTools' : [
-    'ColorTool',
-    'ComplexityToolHigh',
-    'ComplexityToolLow',
-    'NameTool',
-    'RotationTool',
-    'RotationToolVRSphere',
-    'RotationToolVRX',
-    'RotationToolVRZ',
-    'ScaleTool',
-    'ScaleToolVRUniform',
-    'ScaleToolVRX',
-    'TranslationTool',
-    'TranslationToolVRX',
-    'TranslationToolVRZ',
-  ],
-  'Hull' : [
-    'HullCapsule',
-    'HullDisk',
-    'HullSpheres',
-    'HullTorus',
-  ],
-  'InvalidColors' : [
-    'InvalidColors',
-  ],
-  'LinearLayout' : [
-    'LinearLayout',
-  ],
-  'Main' : [
-    'BuildVolume',
-    'Logo',
-    'PrecisionControl',
-    'WorkArea',
-    'WorkAreaWithSelection',
-  ],
-  'ModelEdges' : [
-    'ModelEdges',
-    'ModelNoEdges',
-  ],
-  'Primitives' : [
-    'PrimitiveBox',
-    'PrimitiveCylinder',
-    'PrimitiveImported',
-    'PrimitiveRevSurf',
-    'PrimitiveSphere',
-    'PrimitiveText',
-    'PrimitiveTorus',
-  ],
-  'Quickstart' : [
-    'QuickstartCylinder',
-    'QuickstartExport',
-    'QuickstartHull',
-    'QuickstartRenamed',
-    'QuickstartScale',
-    'QuickstartSelected',
-    'QuickstartTorus',
-    'SessionPanel',
-  ],
-  'RadialLayout' : [
-    'RadialLayoutArc',
-    'RadialLayoutMultiple',
-    'RadialLayoutRadius',
-    'RadialLayoutSingle',
-  ],
-  'RadialMenu' : [
-    'AttachedRadialMenu',
-    'FixedRadialMenu',
-  ],
-  'Selection' : [
-    'Selection',
-  ],
-  'Shelves' : [
-    'BasicsShelf',
-    'BevelToolIcon',
-    'CSGToolIcon',
-    'ClipToolIcon',
-    'CylinderToolIcon',
-    'GeneralToolShelf',
-    'ImportToolIcon',
-    'LayoutShelf',
-    'MirrorToolIcon',
-    'ModelCombinationShelf',
-    'ModelConversionShelf',
-    'ModelCreationShelf',
-    'NullIcon',
-    'RevSurfToolIcon',
-    'TextToolIcon',
-    'TorusToolIcon',
-    'ViewingShelf',
-  ],
-  'SpecializedTools' : [
-    'BevelTool',
-    'CSGTool',
-    'ClipTool',
-    'ClipToolActive',
-    'ClipToolClipped',
-    'CylinderTool',
-    'CylinderToolActive',
-    'MirrorTool',
-    'MirrorToolTwoAfter',
-    'MirrorToolTwoBefore',
-    'RevSurfTool',
-    'TextTool',
-    'TorusTool',
-  ],
-  'Targets' : [
-    'EdgeTarget',
-    'EdgeTargetModSnapped',
-    'EdgeTargetSnapped',
-    'PointTarget',
-    'PointTargetModSnapped',
-    'PointTargetModSnapped2',
-    'PointTargetSnapped',
-  ],
-  'TargetSnap' : [
-    'SnappedToPointTarget',
-  ],
-  'ToolPanels' : [
-    'BevelToolPanel',
-    'BevelToolPanelDelete',
-    'BevelToolPanelGripMidpoint',
-    'BevelToolPanelHover',
-    'BevelToolPanelMaxAngle',
-    'BevelToolPanelScaleLarge',
-    'BevelToolPanelScaleSmall',
-    'CSGToolPanel',
-    'ImportToolPanel',
-    'RevSurfToolPanel',
-    'RevSurfToolPanelSweep',
-    'TextToolPanel',
-  ],
-  'TreePanel' : [
-    'TreePanel',
-    'TreePanelSelect',
-    'TreePanelUpDown',
-  ],
-}
+# -----------------------------------------------------------------------------
+# Version processing.
+# -----------------------------------------------------------------------------
 
-# This maps annotation script files to the images they read and write.
-ann_map = {
-  'Icons'    : (['WorkArea', 'WorkAreaWithSelection'],
-                [
-                  'CombineHullIcon',
-                  'CreateCylinderIcon',
-                  'CreateTorusIcon',
-                  'NameToolIcon',
-                  'ScaleToolIcon',
-                  'SessionPanelIcon',
-                ]),
-  'WorkArea' : (['WorkArea'], ['WorkAreaAnnotated']),
-}
+versions = GetAllVersions_()
 
-def ImageFile(name):
-  return join(image_dir, name + '.jpg')
-
-# Snapshot script processing.
-snaps = []
-for (script, images) in snap_map.items():
-  script_file = script + '.conf'
-  snap = env.Command([ImageFile(image) for image in images],
-                     [snapimage, join(script_dir, script_file)],
-                     f'{snapimage.abspath} --fullscreen {script_file}',
-                     chdir=root_dir)
-  # This prevents snapimage from running in parallel.
-  env.SideEffect('dummy', snap)
-  snaps.append(snap)
-
-# Annotation processing.
-anns = []
-for (script, (input_images, output_images)) in ann_map.items():
-  script_file = script + '.conf'
-  ann = env.Command([ImageFile(image) for image in output_images],
-                    [annotator, join(ann_dir, script_file)] +
-                    [ImageFile(image) for image in input_images],
-                    f'{annotator} {script_file}',
-                    chdir=root_dir)
-  anns.append(ann)
-
-env.Alias('Snaps', snaps)
-env.Alias('Images', [snaps, anns])
+# Create the versions.js file. This defines all versions that are shown in the
+# version selector. The custom.js file contains a function that populates the
+# version selector dropdown with all of these versions.
+version_js_file = env.subst('$VERSION_DIR/_static/js/versions.js')
+CreateVersionJSFile_(version_js_file, versions)
 
 # -----------------------------------------------------------------------------
 # Documentation generation.
 # -----------------------------------------------------------------------------
 
-sources    = FindAllSources_('docs')
-output_dir = env.Dir('$OUTPUT_DIR').abspath
-version    = app_dict['VERSION_STRING']
-
+sphinx      = 'sphinx-build'
 sphinx_args = ' '.join([
     '-W',    # Treat warnings as errors,
     '-E',    # Rebuild if anything changes (no environment cache).
     '-a',    # Write all files.
-    # '--dump-metadata',  # Uncomment this to debug versioning.
 ])
 
 # Run Sphinx to build the doc.
-doc = env.Command(f'$OUTPUT_DIR/v{version}/index.html',
-                  sources + [cs_output] + snaps + anns,
-                  ['echo === Building public doc for version: {version}',
-                   f'sphinx-multiversion {sphinx_args} docs {output_dir}'],
+sources = FindAllSources_('docs')
+doc = env.Command(f'$VERSION_DIR/index.html',
+                  sources + [cs_output] + images,
+                  ['echo === Building public doc for version: $VERSION_SUBDIR',
+                   f'{sphinx} {sphinx_args} docs {output_doc_path}'],
                   chdir=f'{root_dir}/PublicDoc')
+
+# Copy the top-level index.html file into the build directory.
+index = env.Install(target='$OUTPUT_DIR', source='./index.html')
 
 # Add URL redirect files to "latest" directory. These commands require the rest
 # of the doc to be built first.
@@ -332,9 +178,11 @@ redirect_files = [
 redirects = []
 for rfile in redirect_files:
     from_path = join('latest',      rfile)
-    to_path   = join(f'v{version}', rfile)
+    to_path   = join(env.subst('$VERSION_SUBDIR'), rfile)
     abs_from_path = join(env.Dir('$OUTPUT_DIR').abspath, from_path)
     abs_to_path   = join(env.Dir('$OUTPUT_DIR').abspath, to_path)
     redirects.append(env.AddRedirect(target=abs_from_path, source=abs_to_path))
 
-Return('redirects')
+public_doc = [redirects, index]
+
+Return('public_doc')

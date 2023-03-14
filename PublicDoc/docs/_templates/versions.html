@@ -4,7 +4,7 @@
     <span class="fa fa-book"></span>
     <span class="current-version-label">Version</span>
     <span class="current-version-text">
-      {{ current_version.name | replace("v", "") }}
+      {{ current_version }}
     </span>
     <span class="fa fa-caret-down"></span>
   </span>
@@ -12,11 +12,7 @@
   <div class="rst-other-versions">
     <dl>
       <dt>Select another version:</dt>
-      {%- for item in versions.tags | reverse %}
-      <dd>
-        <a href="{{ item.url }}">Version {{ item.name | replace("v", "") }}</a>
-      </dd>
-      {%- endfor %}
+      __VERSION_SELECTOR__
     </dl>
   </div>
 </div>
