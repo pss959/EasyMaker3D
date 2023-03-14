@@ -1,0 +1,252 @@
+# -----------------------------------------------------------------------------
+# Generates images for public documentation using the snapimage application.
+# -----------------------------------------------------------------------------
+
+from os      import environ
+from os.path import join
+
+Import('snapimage')
+
+# -----------------------------------------------------------------------------
+# Environment.
+# -----------------------------------------------------------------------------
+
+env = Environment()
+
+# -----------------------------------------------------------------------------
+# Environment.
+# -----------------------------------------------------------------------------
+
+env = Environment(
+    # Copy the environment variables for the snapimage application.
+    ENV = environ.copy(),
+)
+
+# -----------------------------------------------------------------------------
+# Snapshot Image generation and annotation.
+# -----------------------------------------------------------------------------
+
+root_dir   = env.Dir('#').abspath   # Work around SCons issue.
+image_dir  = './docs/images'
+script_dir = './snaps/scripts'
+ann_dir    = './snaps/annotations'
+annotator  = env.File('#/bin/annotate.py').abspath
+
+# This maps snapimage script files to the images they generate.
+snap_map = {
+  'AppPanels1' : [
+    'ActionPanel',
+    'DialogMessagePanel',
+    'DialogQuestionPanel',
+    'HelpPanel',
+    'InfoPanel',
+    'RadialMenuPanel',
+    'SettingsPanel',
+  ],
+  'AppPanels2' : [
+    'FilePanel',
+    'GripPanelBar',
+    'VirtualKeyboardPanel',
+  ],
+  'CSG' : [
+    'CSGDifference',
+    'CSGIntersection',
+    'CSGOperands',
+    'CSGUnion',
+  ],
+  'Controller' : [
+    'OculusTouch',
+    'TouchMode',
+    'Vive',
+  ],
+  'Doorstop' : [
+    'Doorstop',
+  ],
+  'Feedback' : [
+    'AngularFeedback',
+    'LinearFeedback',
+  ],
+  'GeneralTools' : [
+    'ColorTool',
+    'ComplexityToolHigh',
+    'ComplexityToolLow',
+    'NameTool',
+    'RotationTool',
+    'RotationToolVRSphere',
+    'RotationToolVRX',
+    'RotationToolVRZ',
+    'ScaleTool',
+    'ScaleToolVRUniform',
+    'ScaleToolVRX',
+    'TranslationTool',
+    'TranslationToolVRX',
+    'TranslationToolVRZ',
+  ],
+  'Hull' : [
+    'HullCapsule',
+    'HullDisk',
+    'HullSpheres',
+    'HullTorus',
+  ],
+  'InvalidColors' : [
+    'InvalidColors',
+  ],
+  'LinearLayout' : [
+    'LinearLayout',
+  ],
+  'Main' : [
+    'BuildVolume',
+    'Logo',
+    'PrecisionControl',
+    'WorkArea',
+    'WorkAreaWithSelection',
+  ],
+  'ModelEdges' : [
+    'ModelEdges',
+    'ModelNoEdges',
+  ],
+  'Primitives' : [
+    'PrimitiveBox',
+    'PrimitiveCylinder',
+    'PrimitiveImported',
+    'PrimitiveRevSurf',
+    'PrimitiveSphere',
+    'PrimitiveText',
+    'PrimitiveTorus',
+  ],
+  'Quickstart' : [
+    'QuickstartCylinder',
+    'QuickstartExport',
+    'QuickstartHull',
+    'QuickstartRenamed',
+    'QuickstartScale',
+    'QuickstartSelected',
+    'QuickstartTorus',
+    'SessionPanel',
+  ],
+  'RadialLayout' : [
+    'RadialLayoutArc',
+    'RadialLayoutMultiple',
+    'RadialLayoutRadius',
+    'RadialLayoutSingle',
+  ],
+  'RadialMenu' : [
+    'AttachedRadialMenu',
+    'FixedRadialMenu',
+  ],
+  'Selection' : [
+    'Selection',
+  ],
+  'Shelves' : [
+    'BasicsShelf',
+    'BevelToolIcon',
+    'CSGToolIcon',
+    'ClipToolIcon',
+    'CylinderToolIcon',
+    'GeneralToolShelf',
+    'ImportToolIcon',
+    'LayoutShelf',
+    'MirrorToolIcon',
+    'ModelCombinationShelf',
+    'ModelConversionShelf',
+    'ModelCreationShelf',
+    'NullIcon',
+    'RevSurfToolIcon',
+    'TextToolIcon',
+    'TorusToolIcon',
+    'ViewingShelf',
+  ],
+  'SpecializedTools' : [
+    'BevelTool',
+    'CSGTool',
+    'ClipTool',
+    'ClipToolActive',
+    'ClipToolClipped',
+    'CylinderTool',
+    'CylinderToolActive',
+    'MirrorTool',
+    'MirrorToolTwoAfter',
+    'MirrorToolTwoBefore',
+    'RevSurfTool',
+    'TextTool',
+    'TorusTool',
+  ],
+  'Targets' : [
+    'EdgeTarget',
+    'EdgeTargetModSnapped',
+    'EdgeTargetSnapped',
+    'PointTarget',
+    'PointTargetModSnapped',
+    'PointTargetModSnapped2',
+    'PointTargetSnapped',
+  ],
+  'TargetSnap' : [
+    'SnappedToPointTarget',
+  ],
+  'ToolPanels' : [
+    'BevelToolPanel',
+    'BevelToolPanelDelete',
+    'BevelToolPanelGripMidpoint',
+    'BevelToolPanelHover',
+    'BevelToolPanelMaxAngle',
+    'BevelToolPanelScaleLarge',
+    'BevelToolPanelScaleSmall',
+    'BevelToolPanelSnap',
+    'CSGToolPanel',
+    'ImportToolPanel',
+    'RevSurfToolPanel',
+    'RevSurfToolPanelSweep',
+    'TextToolPanel',
+  ],
+  'TreePanel' : [
+    'TreePanel',
+    'TreePanelSelect',
+    'TreePanelUpDown',
+  ],
+}
+
+# This maps annotation script files to the images they read and write.
+ann_map = {
+  'Icons'    : (['WorkArea', 'WorkAreaWithSelection'],
+                [
+                  'CombineHullIcon',
+                  'CreateCylinderIcon',
+                  'CreateTorusIcon',
+                  'NameToolIcon',
+                  'ScaleToolIcon',
+                  'SessionPanelIcon',
+                ]),
+  'WorkArea' : (['WorkArea'], ['WorkAreaAnnotated']),
+}
+
+def ImageFile(name):
+  return join(image_dir, name + '.jpg')
+
+# Snapshot script processing.
+snaps = []
+for (script, images) in snap_map.items():
+  script_file = script + '.conf'
+  snap = env.Command([ImageFile(image) for image in images],
+                     [snapimage, join(script_dir, script_file)],
+                     f'{snapimage.abspath} --fullscreen {script_file}',
+                     chdir=root_dir)
+  # This prevents snapimage from running in parallel.
+  env.SideEffect('dummy', snap)
+  snaps.append(snap)
+
+# Annotation processing.
+anns = []
+for (script, (input_images, output_images)) in ann_map.items():
+  script_file = script + '.conf'
+  ann = env.Command([ImageFile(image) for image in output_images],
+                    [annotator, join(ann_dir, script_file)] +
+                    [ImageFile(image) for image in input_images],
+                    f'{annotator} {script_file}',
+                    chdir=root_dir)
+  anns.append(ann)
+
+images = [snaps, anns]
+env.Alias('Snaps', snaps)
+env.Alias('Images', images)
+
+Return('images')
