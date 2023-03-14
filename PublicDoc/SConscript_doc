@@ -147,15 +147,7 @@ CreateVersionJSFile_(version_js_file, versions)
 # Documentation generation.
 # -----------------------------------------------------------------------------
 
-# Find the latest tag for each release branch.
-# XXXX
-
-
-
-sphinx = 'sphinx-build'
-
-sources = FindAllSources_('docs')
-
+sphinx      = 'sphinx-build'
 sphinx_args = ' '.join([
     '-W',    # Treat warnings as errors,
     '-E',    # Rebuild if anything changes (no environment cache).
@@ -163,6 +155,7 @@ sphinx_args = ' '.join([
 ])
 
 # Run Sphinx to build the doc.
+sources = FindAllSources_('docs')
 doc = env.Command(f'$VERSION_DIR/index.html',
                   sources + [cs_output] + images,
                   ['echo === Building public doc for version: $VERSION_SUBDIR',
