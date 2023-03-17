@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyMaker3D Quickstart &mdash; EasyMaker3D 1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/js/version_selector.js"></script>
+        <script src="_static/js/versions.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="EasyMaker3D User Guide" href="UserGuide/index.html" />
+    <link rel="prev" title="Setting up EasyMaker3D for VR" href="VRSetup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            EasyMaker3D
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><span class="appname">EasyMaker3D</span> Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-and-running-appname">Installing and Running <span class="appname">EasyMaker3D</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-simple-doorstop-example-non-vr">A Simple Doorstop Example (Non-VR)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-the-application">Start the Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-and-position-a-torus">Create and Position a Torus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-cylinder-and-change-its-size">Create a Cylinder and Change Its Size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#combine-the-two-models-to-create-the-doorstop">Combine the two Models to Create the Doorstop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#change-the-model-name">Change the Model Name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export-the-model-for-3d-printing">Export the Model for 3D Printing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="UserGuide/index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="appname">EasyMaker3D</span> Quickstart</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="VRSetup.html" class="btn btn-neutral float-left" title="Setting up EasyMaker3D for VR" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="UserGuide/index.html" class="btn btn-neutral float-right" title="EasyMaker3D User Guide" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="appname-quickstart">
+<h1><span class="appname">EasyMaker3D</span> Quickstart<a class="headerlink" href="#appname-quickstart" title="Permalink to this heading"></a></h1>
+<section id="installing-and-running-appname">
+<h2>Installing and Running <span class="appname">EasyMaker3D</span><a class="headerlink" href="#installing-and-running-appname" title="Permalink to this heading"></a></h2>
+<p>Open the <a class="reference external" href="https://drive.google.com/drive/folders/1Z-ri3U1eGfifelhi-wnCQR6fk42etpde">the download site</a> (on Google Drive) in a browser
+and download the Zip file for your operating system. Extract all files wherever
+you like; this will create a <span class="appname">EasyMaker3D</span> folder. In this folder there is a
+<span class="appname">EasyMaker3D</span> executable that you can click on to run the application.</p>
+</section>
+<section id="a-simple-doorstop-example-non-vr">
+<h2>A Simple Doorstop Example (Non-VR)<a class="headerlink" href="#a-simple-doorstop-example-non-vr" title="Permalink to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/Doorstop.jpg"><img alt="_images/Doorstop.jpg" src="_images/Doorstop.jpg" style="width: 240px;" /></a>
+</figure>
+<p>This example will use <span class="appname">EasyMaker3D</span> in non-VR mode to create a simple doorstop
+model and output it as an STL file.</p>
+<p><span class="dnote">Clicking on any of these images will show an enlarged version.</span></p>
+<p><p class="after-image"></p></p>
+<section id="start-the-application">
+<h3>Start the Application<a class="headerlink" href="#start-the-application" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/SessionPanel.jpg"><img alt="_images/SessionPanel.jpg" src="_images/SessionPanel.jpg" style="width: 240px;" /></a>
+</figure>
+<p>Starting the application should open a maximized window that you can interact
+with using the keyboard and mouse. The first thing you should see is <a class="reference internal" href="UserGuide/Panels.html#ug-session-panel"><span class="std std-ref">this
+panel that lets you interact with sessions</span></a>. Click on the
+<cite>Start new session</cite> button to start a new session (or just hit the
+<span class="shortcut">Escape</span> key).</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="create-and-position-a-torus">
+<h3>Create and Position a Torus<a class="headerlink" href="#create-and-position-a-torus" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/CreateTorusIcon.jpg"><img alt="_images/CreateTorusIcon.jpg" src="_images/CreateTorusIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>Click on the 3D torus icon on the bottom-left shelf to drop a new torus model
+into the scene. The torus will have some interactive handles attached to it
+that you can use to change the sizes of the outer and inner diameters. You can
+leave them at their default sizes for this example. If you change them and want
+to undo your changes, you can click on the 3D undo icon on the top shelf on the
+back wall or use <span class="shortcut">Ctrl-Z</span>.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/QuickstartTorus.jpg"><img alt="_images/QuickstartTorus.jpg" src="_images/QuickstartTorus.jpg" style="width: 220px;" /></a>
+</figure>
+<p>Next you will move the torus a little to the right.  Hit <span class="shortcut">Space</span> to
+switch from the specialized torus tool to the general translation tool.</p>
+<p>Drag the handle on the right side of the torus to the right until it has moved
+5 units. You will notice that as you drag the torus, feedback appears to show
+you the direction and distance you have moved, as shown here.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="create-a-cylinder-and-change-its-size">
+<h3>Create a Cylinder and Change Its Size<a class="headerlink" href="#create-a-cylinder-and-change-its-size" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/CreateCylinderIcon.jpg"><img alt="_images/CreateCylinderIcon.jpg" src="_images/CreateCylinderIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>Click on the 3D cylinder icon on the bottom-left shelf to add a cylinder. Like
+the torus, the cylinder has specialized handles for changing the top and bottom
+diameters, but you won’t need them right now.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/QuickstartScale.jpg"><img alt="_images/QuickstartScale.jpg" src="_images/QuickstartScale.jpg" style="width: 240px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/ScaleToolIcon.jpg"><img alt="_images/ScaleToolIcon.jpg" src="_images/ScaleToolIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>Next, select the <a class="reference internal" href="UserGuide/Tools.html#ug-scale-tool"><span class="std std-ref">Scale Tool</span></a> from the General Tools
+shelf. This will attach a bunch of scaling widgets to the cylinder as shown
+here.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/QuickstartCylinder.jpg"><img alt="_images/QuickstartCylinder.jpg" src="_images/QuickstartCylinder.jpg" style="width: 240px;" /></a>
+</figure>
+<p>Drag the top (green) scaler down until the height of the cylinder is 3 units.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="combine-the-two-models-to-create-the-doorstop">
+<h3>Combine the two Models to Create the Doorstop<a class="headerlink" href="#combine-the-two-models-to-create-the-doorstop" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/QuickstartSelected.jpg"><img alt="_images/QuickstartSelected.jpg" src="_images/QuickstartSelected.jpg" style="width: 240px;" /></a>
+</figure>
+<p>The next step is to select both models. Since the cylinder is already selected,
+you just need to add the torus to the selection. You can do that in any of
+these ways:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Shift-click on the torus model.</p></li>
+<li><p>Double-click on the torus model</p></li>
+<li><p>Shift-click or double-click on the name of the torus (<span class="model">Torus_1</span>) in
+the <a class="reference internal" href="UserGuide/Panels.html#ug-tree-panel"><span class="std std-ref">Tree Panel</span></a> on the back wall.</p></li>
+<li><p>Drag a rectangle in the Tree Panel that includes both model names.</p></li>
+<li><p>Use the <span class="shortcut">Ctrl-A</span> select-all shortcut.</p></li>
+</ul>
+</div></blockquote>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/QuickstartHull.jpg"><img alt="_images/QuickstartHull.jpg" src="_images/QuickstartHull.jpg" style="width: 240px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/CombineHullIcon.jpg"><img alt="_images/CombineHullIcon.jpg" src="_images/CombineHullIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>With both models selected, click on the <a class="reference internal" href="UserGuide/Actions.html#ug-combine-hull"><span class="std std-ref">Combine Hull</span></a>
+icon on the Model Combining shelf. This creates a new model whose surface is a
+convex hull surrounding both selected models. You can see in the Tree Panel
+that the new model is named <span class="model">Hull_1</span> and that the two models it was
+created from appear as indented children.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="change-the-model-name">
+<h3>Change the Model Name<a class="headerlink" href="#change-the-model-name" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/QuickstartRenamed.jpg"><img alt="_images/QuickstartRenamed.jpg" src="_images/QuickstartRenamed.jpg" style="width: 240px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/NameToolIcon.jpg"><img alt="_images/NameToolIcon.jpg" src="_images/NameToolIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>This is not a necessary step, but it will make the next step (exporting)
+easier. With the hull model selected, click on the <a class="reference internal" href="UserGuide/Tools.html#ug-name-tool"><span class="std std-ref">Name Tool</span></a> icon from the General Tools shelf. This will bring up a 2D
+panel for editing the model’s name.</p>
+<p>Click in the text input area to activate it, and change the name of the model
+to <span class="model">Doorstop</span>. Click the “Apply” button to change the model name; the
+new name should be shown in the Tree Panel.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="export-the-model-for-3d-printing">
+<h3>Export the Model for 3D Printing<a class="headerlink" href="#export-the-model-for-3d-printing" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/QuickstartExport.jpg"><img alt="_images/QuickstartExport.jpg" src="_images/QuickstartExport.jpg" style="width: 300px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/SessionPanelIcon.jpg"><img alt="_images/SessionPanelIcon.jpg" src="_images/SessionPanelIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>Exporting is done with the <a class="reference internal" href="UserGuide/Panels.html#ug-session-panel"><span class="std std-ref">Session Panel</span></a> that you saw
+when you started the application. Bring the panel up by clicking on the Session
+Panel icon on the Session shelf. Click on the “Export selection” button, which
+will open a <a class="reference internal" href="UserGuide/Panels.html#ug-file-panel"><span class="std std-ref">File Panel</span></a> that will let you select a file
+to export to, as shown here.</p>
+<p>This panel is a fairly standard file browser. The default location for exported
+files is your home directory; this can be changed in the <a class="reference internal" href="UserGuide/Panels.html#ug-settings-panel"><span class="std std-ref">Settings Panel</span></a>. The default name for the file will be the same as the
+name of the model, which is why renaming the model made sense.</p>
+<p>A model can be exported as either text or binary STL using the dropdown at the
+top right of the panel.</p>
+<p><p class="after-image"></p></p>
+<span class="target" id="qs-vr"></span></section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="VRSetup.html" class="btn btn-neutral float-left" title="Setting up EasyMaker3D for VR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="UserGuide/index.html" class="btn btn-neutral float-right" title="EasyMaker3D User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.1.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panels &mdash; EasyMaker3D 1.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/js/version_selector.js"></script>
+        <script src="../_static/js/versions.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quirks" href="Quirks.html" />
+    <link rel="prev" title="Tools" href="Tools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Quickstart.html"><span class="appname">EasyMaker3D</span> Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interaction.html">Interaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CreatingModels.html">Creating Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Selection.html">Selecting Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Precision.html">Precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Actions.html">Actions, 3D Icons, and Shelves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html">Tools</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Panels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#moving-and-resizing-panels">Moving and Resizing Panels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interacting-with-panel-elements">Interacting with Panel Elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application-panels">Application Panels</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#session-panel">Session Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#settings-panel">Settings Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#info-panel">Info Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#help-panel">Help Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#radial-menu-panel">Radial Menu Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#action-panel">Action Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#file-panel">File Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dialog-panel">Dialog Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtual-keyboard-panel">Virtual Keyboard Panel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tool-panels">Tool Panels</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bevel-tool-panel">Bevel Tool Panel</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#profile-area">Profile Area</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#adding-moving-and-deleting-points">Adding, Moving, and Deleting Points</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#profile-scaling">Profile Scaling</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#adjusting-the-maximum-edge-angle">Adjusting the Maximum Edge Angle</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#grip-dragging">Grip Dragging</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#csg-tool-panel">CSG Tool Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#import-tool-panel">Import Tool Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#name-tool-panel">Name Tool Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#revsurf-tool-panel">RevSurf Tool Panel</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#editing-the-revsurf-profile">Editing the RevSurf Profile</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#adjusting-the-sweep-angle">Adjusting the Sweep Angle</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#text-tool-panel">Text Tool Panel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tree-panel">Tree Panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#session-name-and-status">Session Name and Status</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#model-names-and-colors">Model Names and Colors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#changing-model-visibility">Changing Model Visibility</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#selecting-models">Selecting Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reordering-models">Reordering Models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html">Quirks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+      <li class="breadcrumb-item active">Panels</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="Tools.html" class="btn btn-neutral float-left" title="Tools" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Quirks.html" class="btn btn-neutral float-right" title="Quirks" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="panels">
+<span id="ug-panels"></span><h1>Panels<a class="headerlink" href="#panels" title="Permalink to this heading"></a></h1>
+<p>As mentioned in the <a class="reference internal" href="Overview.html#ug-panel-overview"><span class="std std-ref">Overview</span></a>, <span class="appname">EasyMaker3D</span> uses some
+more conventional 2D user interface panels. Because these panels need to work
+in <a class="reference internal" href="Overview.html#ug-vr-modes"><span class="std std-ref">VR as well as in conventional mode</span></a>, they appear in the
+3D <a class="reference internal" href="Overview.html#ug-work-area"><span class="std std-ref">work area</span></a>. Panels are always aligned with the
+XZ-plane.</p>
+<p>Panels are divided into three categories:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="newterm">Application panels</span> implement various application functions, such
+as loading sessions or modifying program settings.  Application panels
+appear initially in a central location.</p></li>
+<li><p><span class="newterm">Tool panels</span> are used for <a class="reference internal" href="Tools.html#ug-specialized-tools"><span class="std std-ref">certain specialized tools</span></a>. A tool panel appears initially above the
+<a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">primary selection</span></a> it is operating on.</p></li>
+<li><p>The <span class="newterm">Tree Panel</span> is special; it is always fixed to the back wall
+and has <a class="reference internal" href="#ug-tree-panel"><span class="std std-ref">its own section in this guide</span></a>.</p></li>
+</ul>
+</div></blockquote>
+<section id="moving-and-resizing-panels">
+<h2>Moving and Resizing Panels<a class="headerlink" href="#moving-and-resizing-panels" title="Permalink to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/SessionPanel.jpg"><img alt="../_images/SessionPanel.jpg" src="../_images/SessionPanel.jpg" style="width: 240px;" /></a>
+</figure>
+<p>Panels are placed initially to be reasonably easy to interact with.  When
+application panels are visible, they temporarily hide the scene contents so
+there is no interference. (Tool panels do not do this because you may need to
+see the results of editing models with them.)</p>
+<p>You can move any application or tool panel if it is in an inconvenient place.
+All panels have interactive handles on the center of each edge that can be
+dragged to move the panel to the left, right, up, or down. There is also a bar
+at the bottom that can be dragged to move the panel to the left, right,
+forward, or back. Each application and tool panel remembers its last position.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/SettingsPanel.jpg"><img alt="../_images/SettingsPanel.jpg" src="../_images/SettingsPanel.jpg" style="width: 240px;" /></a>
+</figure>
+<p>Some panels (such as the <a class="reference internal" href="#ug-settings-panel"><span class="std std-ref">Settings Panel</span></a> shown here)
+also have interactive spherical handles in the four corners that allow you to
+resize the panel. All panels have a minimum size and will not let you resize
+them smaller than that.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/GripPanelBar.jpg"><img alt="../_images/GripPanelBar.jpg" src="../_images/GripPanelBar.jpg" style="width: 240px;" /></a>
+</figure>
+<p>All interactive panel handles respond to <a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">grip-dragging</span></a> as well. The relative orientation of the grip hover
+guide on the controller determines which handle will be used. For example,
+if the guide for the right controller is close to parallel to the X axis, it
+will highlight the move handle on the right side so you can grip-drag it.
+If the panel has scale handles and the guide is close to the diagonal
+direction, it will highlight the corresponding scale handle.</p>
+<p>You can interact with the contents of a panel (if it supports it) by
+pointing the grip hover guide towards the board. If the controller is low
+enough (relative to the panel), it will allow you to grip drag the bottom
+bar, as shown here.</p>
+</div>
+</section>
+<section id="interacting-with-panel-elements">
+<span id="ug-panel-interaction"></span><h2>Interacting with Panel Elements<a class="headerlink" href="#interacting-with-panel-elements" title="Permalink to this heading"></a></h2>
+<p>Each panel consists of interactive <span class="newterm">elements</span> (buttons, dropdowns,
+etc.) that work pretty much the same as in conventional 2D user interfaces.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Disabled elements are dark gray.</p></li>
+<li><p>All enabled elements highlight when hovered with the mouse or laser
+pointer.</p></li>
+<li><p>Clicking on an element with the mouse or <a class="reference internal" href="Interaction.html#ug-pinch"><span class="std std-ref">pinch action</span></a>
+activates it.</p></li>
+<li><p>Keyboard navigation between enabled elements uses the <span class="shortcut">Tab</span> and
+<span class="shortcut">Shift-Tab</span> keys. The element with the current keyboard focus is
+shown with a cyan border outline.</p></li>
+<li><p>Pressing <span class="shortcut">Enter</span> on the keyboard activates the focused element.</p></li>
+<li><p>Pressing the <span class="shortcut">Escape</span> key in any application panel always cancels
+whatever the current panel is doing and dismisses it.</p></li>
+</ul>
+</div></blockquote>
+<p>Some panels contain scrolling areas when their contents are too large to
+fit. You can scroll a panel using a scroll wheel, the scrollbar on the right
+(drag with mouse or pinch), or the <span class="shortcut">Up</span> and <span class="shortcut">Down</span> arrow
+keys (or Up/Down trackpad/joystick buttons on a VR controller). The same is
+true for long dropdown lists.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p><a class="reference internal" href="Interaction.html#ug-touch-mode"><span class="std std-ref">Panel touch mode</span></a> is active when in either of the
+<a class="reference internal" href="Overview.html#ug-vr-modes"><span class="std std-ref">VR modes</span></a>. In touch mode, a touch affordance is added to
+each controller model that acts as a virtual finger. Touching the tip of
+this affordance to a button, slider, or other element works as you would
+expect. The controller will vibrate briefly when this happens for feedback.</p>
+<p>Most interactive elements also support clicking with the grip button. When
+the <a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">hover guide</span></a> is close enough to perpendicular
+to the panel, it will highlight the element that it will interact with.</p>
+</div>
+</section>
+<section id="application-panels">
+<span id="ug-application-panels"></span><h2>Application Panels<a class="headerlink" href="#application-panels" title="Permalink to this heading"></a></h2>
+<section id="session-panel">
+<span id="ug-session-panel"></span><span id="ug-export"></span><h3>Session Panel<a class="headerlink" href="#session-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/SessionPanel.jpg"><img alt="../_images/SessionPanel.jpg" src="../_images/SessionPanel.jpg" style="width: 240px;" /></a>
+</figure>
+<p>The <span class="newterm">Session Panel</span> is shown when the application starts and can also
+be brought up at any time with the <a class="reference internal" href="Actions.html#ug-open-session-panel"><span class="std std-ref">Open Session Panel</span></a> action. This panel is used to start, save, and load
+<a class="reference internal" href="Overview.html#ug-sessions"><span class="std std-ref">sessions</span></a>. Sessions are saved as text files with an
+<code class="docutils literal notranslate"><span class="pre">.ems</span></code> extension.</p>
+<p>The Session Panel has the following buttons:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Continue</span> <span class="pre">previous/current</span> <span class="pre">session</span></code>. When the application starts, this
+choice will be enabled if your previous session was saved with a name,
+which will appear in brackets in the button text. Click this to resume
+working in that session. If the panel is invoked during a session, clicking
+this button will act as if nothing happened. If there was no previous
+session when the application starts, this button will say <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">previous</span>
+<span class="pre">session</span></code> and will be disabled as in the image.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">session</span> <span class="pre">file</span></code>. This can be used to load a different session file
+using the <a class="reference internal" href="#ug-file-panel"><span class="std std-ref">File Panel</span></a>; you will be asked if you made
+any changes to the current session that you might want to save.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Start</span> <span class="pre">new</span> <span class="pre">session</span></code>. This resets everything to empty and starts a new,
+unnamed session. If you do this during a session, you will be asked if you
+made any changes that you might want to save.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">session</span></code>. If your session is already named, this will be enabled to
+save it again if you made any changes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">session</span> <span class="pre">as</span></code>. This lets you save your session with a different name
+using the <a class="reference internal" href="#ug-file-panel"><span class="std std-ref">File Panel</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">Selection</span></code>. This lets you export the <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">selected model(s)</span></a> to a file, using a <a class="reference internal" href="#ug-file-panel"><span class="std std-ref">File Panel</span></a>. The
+File Panel has a dropdown that allows you to select the desired format
+(text or binary STL).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Help</span></code> (Question mark icon at top left). Opens the <a class="reference internal" href="#ug-help-panel"><span class="std std-ref">Help Panel</span></a>. Dismissing the Help Panel returns to the Session Panel.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Settings</span></code> (Gear icon at top right). Brings up the <a class="reference internal" href="#ug-settings-panel"><span class="std std-ref">Settings Panel</span></a>. Dismissing the Settings Panel returns to the Session
+Panel.</p></li>
+</ul>
+</div></blockquote>
+<p>The default directories in which to find or save session files and STL files
+are both stored as user settings and can be modified with the <a class="reference internal" href="#ug-settings-panel"><span class="std std-ref">Settings
+Panel</span></a>.</p>
+</section>
+<section id="settings-panel">
+<span id="ug-unit-conversion"></span><span id="ug-settings-panel"></span><h3>Settings Panel<a class="headerlink" href="#settings-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/SettingsPanel.jpg"><img alt="../_images/SettingsPanel.jpg" src="../_images/SettingsPanel.jpg" style="width: 300px;" /></a>
+</figure>
+<p>The <span class="newterm">Settings Panel</span> lets you modify application settings that are
+saved between sessions. The location of the saved settings is
+<code class="docutils literal notranslate"><span class="pre">$HOME/.config/EasyMaker3D</span></code> on Linux and Mac, and <code class="docutils literal notranslate"><span class="pre">%APPDATA%\EasyMaker3D</span></code> on
+Windows.</p>
+<p>Each item in this panel has two buttons to the right:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Default</span></code> button resets the item to its default value.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Current</span></code> button sets the item to its current (saved) value. You can
+use this if you accidentally change a value and want to undo that without
+having to cancel all other changes.</p></li>
+</ul>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">Accept</span></code> button at the bottom of the panel will be enabled if you make
+any changes to the current settings. Clicking it applies the new settings and
+saves them to the settings file. The <code class="docutils literal notranslate"><span class="pre">Cancel</span></code> button leaves all settings at
+their previous values. Either button makes the panel go away. The
+<span class="shortcut">Escape</span> key also cancels the panel.</p>
+<p>The items in this panel are, from top down:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="newterm">Default Directories</span>: The first three settings are the default
+directories for saving and loading sessions, STL model export, and STL model
+import. Each of these has a <a class="reference internal" href="Interaction.html#ug-text-input"><span class="std std-ref">text input field</span></a> for the
+directory name and a <code class="docutils literal notranslate"><span class="pre">Browse</span></code> button that opens a <a class="reference internal" href="#ug-file-panel"><span class="std std-ref">File Panel</span></a> to choose a directory for that item.</p></li>
+<li><p><span class="newterm">Tooltip Delay</span>: This is a horizontal slider you can use to adjust
+the time it takes for <a class="reference internal" href="Interaction.html#ug-tooltips"><span class="std std-ref">tooltips</span></a> to appear when hovering
+the mouse or laser pointer over an interactive object.  Values are in
+seconds, from 0 at the left to 10 at the right. Setting this to 0 disables
+tooltips completely.</p></li>
+<li><p><span class="newterm">Build Volume Size</span>: This consists of three <a class="reference internal" href="Interaction.html#ug-text-input"><span class="std std-ref">text input fields</span></a> for the width, depth, and height of the <a class="reference internal" href="Overview.html#ug-build-volume"><span class="std std-ref">build volume</span></a>, specified in the current <a class="reference internal" href="Overview.html#ug-units"><span class="std std-ref">units</span></a>. You
+can set these to match the approximate size of your 3D printer’s build area
+for reference.</p></li>
+<li><p><span class="newterm">Unit Conversion</span>: There are two pairs of dropdowns allowing
+conversion of units on <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">model import</span></a> and
+<a class="reference internal" href="#ug-session-panel"><span class="std std-ref">model export</span></a>. The use of these settings are
+explained in more detail in the <a class="reference internal" href="Overview.html#ug-units"><span class="std std-ref">Overview</span></a>.</p></li>
+<li><p><span class="newterm">Radial Menus</span>: The last button brings up the <a class="reference internal" href="#ug-radial-menu-panel"><span class="std std-ref">Radial Menu
+Panel</span></a>, which allows you to edit which buttons appear
+in <a class="reference internal" href="Interaction.html#ug-radial-menus"><span class="std std-ref">radial menus</span></a>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="info-panel">
+<span id="ug-info-panel"></span><h3>Info Panel<a class="headerlink" href="#info-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/InfoPanel.jpg"><img alt="../_images/InfoPanel.jpg" src="../_images/InfoPanel.jpg" style="width: 240px;" /></a>
+</figure>
+<p>The <span class="newterm">Info Panel</span> shows information about all selected models,
+including the number of vertices, number of triangles, size in all three
+dimensions, and the X/Y coordinates of the center of the model. If any model
+has an <a class="reference internal" href="CreatingModels.html#ug-model-colors"><span class="std std-ref">invalid mesh</span></a>, this is noted, along with the
+reason it is considered invalid.</p>
+<p>If either the <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point or Edge Target</span></a> is active, the relevant
+information about it will also be shown in the Info Panel.</p>
+<p>The Info Panel is resizable using the corner handles. If the text does not all
+fit vertically in the info area, the thumb in the scroll bar will appear to let
+you scroll up and down.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Done</span></code> button or the <span class="shortcut">Escape</span> key closes the Info Panel.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="help-panel">
+<span id="ug-help-panel"></span><h3>Help Panel<a class="headerlink" href="#help-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/HelpPanel.jpg"><img alt="../_images/HelpPanel.jpg" src="../_images/HelpPanel.jpg" style="width: 240px;" /></a>
+</figure>
+<p>The <span class="newterm">Help Panel</span> shows text with the current application version along
+with two buttons that open this <a class="reference internal" href="index.html#ug"><span class="std std-ref">User Guide</span></a> and the <a class="reference internal" href="../CheatSheet.html#cheat-sheet"><span class="std std-ref">Cheat
+Sheet</span></a> in your default browser.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Done</span></code> button or the <span class="shortcut">Escape</span> key closes the Info Panel.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="radial-menu-panel">
+<span id="ug-radial-menu-panel"></span><h3>Radial Menu Panel<a class="headerlink" href="#radial-menu-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RadialMenuPanel.jpg"><img alt="../_images/RadialMenuPanel.jpg" src="../_images/RadialMenuPanel.jpg" style="width: 300px;" /></a>
+</figure>
+<p>The <span class="newterm">Radial Menu Panel</span> can be opened from the <a class="reference internal" href="#ug-settings-panel"><span class="std std-ref">Settings Panel</span></a> to let you edit which buttons appear in the <a class="reference internal" href="Interaction.html#ug-radial-menus"><span class="std std-ref">left and
+right radial menus</span></a>. The radio buttons in the box at the top
+let you choose one of the following options:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">Independent</span> <span class="pre">Settings</span></code>: Editing areas for both left and right menus
+appear to let you edit buttons for each side independently as shown in the
+image.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">Left</span> <span class="pre">Settings</span> <span class="pre">for</span> <span class="pre">Both</span></code>: Only the area for the left menu is shown;
+the buttons defined in there are used for both menus.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">Right</span> <span class="pre">Settings</span> <span class="pre">for</span> <span class="pre">Both</span></code>: Only the area for the right menu is shown;
+the buttons defined in there are used for both menus.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Disable</span> <span class="pre">Radial</span> <span class="pre">Menus</span></code>: Both areas are hidden and radial menus are not
+available.</p></li>
+</ul>
+</div></blockquote>
+<p>You can set the number of buttons to use in a radial menu to 2, 4, or 8. The
+menu diagram updates to reflect the current number. Clicking on any button in
+the diagram brings up the <a class="reference internal" href="#ug-action-panel"><span class="std std-ref">Action Panel</span></a> that lets you
+choose the <a class="reference internal" href="Actions.html#ug-actions"><span class="std std-ref">action</span></a> attached to that button. Each type of
+action is represented by a horribly-designed 2D icon that is displayed in the
+radial menu diagram and in the actual radial menu as well. The <a class="reference internal" href="../_images/MINone.png"><img alt="../_images/MINone.png" src="../_images/MINone.png" style="width: 28px;" /></a> null
+icon is shown when no action is bound to a button. All actions and icons are
+shown in the <a class="reference internal" href="../CheatSheet.html#cheat-sheet"><span class="std std-ref">Cheat Sheet</span></a>.</p>
+</section>
+<section id="action-panel">
+<span id="ug-action-panel"></span><h3>Action Panel<a class="headerlink" href="#action-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ActionPanel.jpg"><img alt="../_images/ActionPanel.jpg" src="../_images/ActionPanel.jpg" style="width: 300px;" /></a>
+</figure>
+<p>The <span class="newterm">Action Panel</span> is used by the <a class="reference internal" href="#ug-radial-menu-panel"><span class="std std-ref">Radial Menu Panel</span></a> to select the <a class="reference internal" href="Actions.html#ug-actions"><span class="std std-ref">action</span></a> attached to a
+radial menu button. It presents a scrolling list of actions to choose from,
+organized by category. The action that is currently bound to the button being
+modified is highlighted.</p>
+<p>See the <a class="reference internal" href="../CheatSheet.html#cheat-sheet"><span class="std std-ref">Cheat Sheet</span></a> for a list of all actions and their
+associated icons.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="file-panel">
+<span id="ug-file-panel"></span><h3>File Panel<a class="headerlink" href="#file-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/FilePanel.jpg"><img alt="../_images/FilePanel.jpg" src="../_images/FilePanel.jpg" style="width: 300px;" /></a>
+</figure>
+<p>The <span class="newterm">File Panel</span> is used by the <a class="reference internal" href="#ug-session-panel"><span class="std std-ref">Session Panel</span></a> and the <a class="reference internal" href="#ug-settings-panel"><span class="std std-ref">Settings Panel</span></a> when a
+directory or file needs to be chosen. In addition, the <a class="reference internal" href="#ug-import-tool-panel"><span class="std std-ref">Import Tool Panel</span></a> is essentially a File Panel.</p>
+<p>This panel works pretty much like a standard file browser. The four buttons at
+the top go to the previous directory (if any), the next directory (if you went
+to the previous one), one directory up, or your home directory. A button at the
+bottom lets you see (operating-system-specific) hidden files and directories.</p>
+<p>The scrolling list is color coded for directories and files, with directories
+listed first.</p>
+<p>When using a File Panel for <a class="reference internal" href="#ug-session-panel"><span class="std std-ref">exporting models</span></a>, a File
+Format dropdown appears at the top right for selecting a format.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="dialog-panel">
+<span id="ug-dialog-panel"></span><h3>Dialog Panel<a class="headerlink" href="#dialog-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DialogMessagePanel.jpg"><img alt="../_images/DialogMessagePanel.jpg" src="../_images/DialogMessagePanel.jpg" style="height: 140px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DialogQuestionPanel.jpg"><img alt="../_images/DialogQuestionPanel.jpg" src="../_images/DialogQuestionPanel.jpg" style="height: 140px;" /></a>
+</figure>
+<p>A <span class="newterm">Dialog Panel</span> is used by other application panels to ask you a
+question or inform you of some other condition. A question dialog will have
+buttons with answer choices. A message dialog will just have one button to
+dismiss it.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="virtual-keyboard-panel">
+<span id="ug-virtual-keyboard-panel"></span><h3>Virtual Keyboard Panel<a class="headerlink" href="#virtual-keyboard-panel" title="Permalink to this heading"></a></h3>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/VirtualKeyboardPanel.jpg"><img alt="../_images/VirtualKeyboardPanel.jpg" src="../_images/VirtualKeyboardPanel.jpg" style="width: 320px;" /></a>
+</figure>
+<p>The <span class="newterm">Virtual Keyboard Panel</span> is used only in <a class="reference internal" href="Overview.html#ug-vr-modes"><span class="std std-ref">full VR mode</span></a> when you are wearing the VR headset and you need to edit text
+in a panel. It is most easily used by touching the keys with the <a class="reference internal" href="Interaction.html#ug-touch-mode"><span class="std std-ref">touch
+affordance</span></a>. (You can also use the laser pointer, but it is
+much more awkward.)</p>
+<p><p class="after-image"></p></p>
+</div>
+</section>
+</section>
+<section id="tool-panels">
+<span id="ug-tool-panels"></span><h2>Tool Panels<a class="headerlink" href="#tool-panels" title="Permalink to this heading"></a></h2>
+<section id="bevel-tool-panel">
+<span id="ug-bevel-tool-panel"></span><h3>Bevel Tool Panel<a class="headerlink" href="#bevel-tool-panel" title="Permalink to this heading"></a></h3>
+<p>The <span class="newterm">Bevel Tool Panel</span> lets you edit the bevel created for all Beveled
+models once they have been <a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">converted from other models</span></a>. The bevel can be any sort of <span class="newterm">profile</span> applied
+to model edges to create various effects such as chamfering or rounding.</p>
+<p>All interactive changes made to a profile can be undone and redone
+individually.</p>
+<section id="profile-area">
+<h4>Profile Area<a class="headerlink" href="#profile-area" title="Permalink to this heading"></a></h4>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanel.jpg"><img alt="../_images/BevelToolPanel.jpg" src="../_images/BevelToolPanel.jpg" style="width: 300px;" /></a>
+</figure>
+<p>The large area in the panel shows the current profile of the <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">primary
+selection</span></a> and lets you edit it. If you make changes, they are
+applied to all selected Beveled models. The models update in real time as the
+profile is edited.</p>
+<p>The profile is interpreted as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The lower-left corner is where the edge is located, looking along its
+length.</p></li>
+<li><p>The upper-left and lower-right points of the profile are at fixed locations
+and are colored blue to indicate this. You can add new points between them,
+move those points around, and delete points.</p></li>
+</ul>
+</div></blockquote>
+<p>The default profile is just a line connecting the two fixed points, which
+creates a bevel for all edges as in this image.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="adding-moving-and-deleting-points">
+<h4>Adding, Moving, and Deleting Points<a class="headerlink" href="#adding-moving-and-deleting-points" title="Permalink to this heading"></a></h4>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelSnap.jpg"><img alt="../_images/BevelToolPanelSnap.jpg" src="../_images/BevelToolPanelSnap.jpg" style="width: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelDelete.jpg"><img alt="../_images/BevelToolPanelDelete.jpg" src="../_images/BevelToolPanelDelete.jpg" style="width: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelHover.jpg"><img alt="../_images/BevelToolPanelHover.jpg" src="../_images/BevelToolPanelHover.jpg" style="width: 200px;" /></a>
+</figure>
+<p>If you move the mouse close to an existing profile line (but not near an
+existing point), a red square will appear to indicate that a new interior
+profile point can be created there as shown in the left image. Clicking in that
+spot will create a new point. Click-dragging lets you move the new point where
+you want.</p>
+<p>Dragging an existing interior point moves it; when you do this, a box with an
+“X” in it appears to allow you to delete the point by dragging it over that
+box, as shown in the center image.</p>
+<p><a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-dragging</span></a> a profile point will cause it to
+snap relative to its neighbor points. Snapping will occur if the dragged point
+is close to vertical, horizontal, or on a 45-degree diagonal from either or
+both neighbors. When this happens, the snapped segment(s) will be highlighted
+with a different color as in the right image above.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="profile-scaling">
+<h4>Profile Scaling<a class="headerlink" href="#profile-scaling" title="Permalink to this heading"></a></h4>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelScaleLarge.jpg"><img alt="../_images/BevelToolPanelScaleLarge.jpg" src="../_images/BevelToolPanelScaleLarge.jpg" style="width: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelScaleSmall.jpg"><img alt="../_images/BevelToolPanelScaleSmall.jpg" src="../_images/BevelToolPanelScaleSmall.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The slider at the bottom of the panel allows you to change the size of the
+profile as it is applied to edges without having to move any points. For
+example, you can create a rounding profile and change the radius by adjusting
+the slider as shown here. The value shown for the scale slider is defined as
+the distance of the new bevel edges from the original vertices, measured along
+the original edges.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="adjusting-the-maximum-edge-angle">
+<h4>Adjusting the Maximum Edge Angle<a class="headerlink" href="#adjusting-the-maximum-edge-angle" title="Permalink to this heading"></a></h4>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelMaxAngle.jpg"><img alt="../_images/BevelToolPanelMaxAngle.jpg" src="../_images/BevelToolPanelMaxAngle.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The slider on the right side of the panel allows you to change the
+<span class="newterm">maximum edge angle</span>, from 0 to 180 degrees. This setting determines
+which edges of a model will have the bevel profile applied to them.</p>
+<p>For example, suppose you want to bevel just the edges along the top and bottom
+faces of a cylinder, as shown here. These edges form 90 degree angles, so as
+long as the maximum angle is at least 90, they will have the bevel profile
+applied. The angles between faces forming the sides are typically greater than
+90 degrees (unless the cylinder has very low <a class="reference internal" href="Tools.html#ug-complexity-tool"><span class="std std-ref">complexity</span></a>). As long as the maximum angle is smaller than that those
+edges will be left alone. The default is 120 degrees.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="grip-dragging">
+<h4>Grip Dragging<a class="headerlink" href="#grip-dragging" title="Permalink to this heading"></a></h4>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelGripMidpoint.jpg"><img alt="../_images/BevelToolPanelGripMidpoint.jpg" src="../_images/BevelToolPanelGripMidpoint.jpg" style="height: 180px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelToolPanelGripPoint.jpg"><img alt="../_images/BevelToolPanelGripPoint.jpg" src="../_images/BevelToolPanelGripPoint.jpg" style="height: 180px;" /></a>
+</figure>
+<p>In either VR mode, you can use the laser pointer and pinch action to edit
+the profile and adjust the sliders in the panel. However, it is very hard to
+make fine adjustments this way. It is much easier to use <a class="reference internal" href="Interaction.html#ug-touch-mode"><span class="std std-ref">touch mode
+interaction</span></a> or <a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">grip-dragging</span></a>. Touch mode interaction works as you would expect, where
+the touch affordance acts like the mouse; you can touch to drag existing
+points or near the midpoint of a profile segment to create and drag a new
+point.</p>
+<p>Grip dragging is enabled when the hover guide is pointed approximately
+towards the panel. The relative position of each controller determines
+whether it will interact with the main profile area or one of the two
+sliders. As usual, the hover guide will connect to the active input to
+indicate what will happen.</p>
+<p>When interacting with the profile area, the relative position of the
+controller determines whether a grip drag will operate on an existing point
+or will create a new point. In the left image, the controller position is
+closer to an existing point, so it highlights it. In the right image, it is
+not closer to an existing point, so it highlights the midpoint with a red
+square, indicating that grip-dragging it will create a new point that you
+can then move around.</p>
+</div>
+</section>
+</section>
+<section id="csg-tool-panel">
+<span id="ug-csg-tool-panel"></span><h3>CSG Tool Panel<a class="headerlink" href="#csg-tool-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CSGToolPanel.jpg"><img alt="../_images/CSGToolPanel.jpg" src="../_images/CSGToolPanel.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">CSG Tool Panel</span> is a very simple panel that lets you change the
+<a class="reference internal" href="CreatingModels.html#ug-csg"><span class="std std-ref">CSG operation</span></a> applied to all selected <a class="reference internal" href="CreatingModels.html#ug-combined-models"><span class="std std-ref">CSG models</span></a>. Clicking any of the radio buttons applies the change
+immediately.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="import-tool-panel">
+<span id="ug-import-tool-panel"></span><h3>Import Tool Panel<a class="headerlink" href="#import-tool-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ImportToolPanel.jpg"><img alt="../_images/ImportToolPanel.jpg" src="../_images/ImportToolPanel.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Import Tool Panel</span> is essentially a <a class="reference internal" href="#ug-file-panel"><span class="std std-ref">File Panel</span></a> that lets you specify the STL file to import or reimport the
+mesh used for an <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">Imported model</span></a>. The model will be
+changed to use the specified file when the <code class="docutils literal notranslate"><span class="pre">Accept</span></code> button is pressed.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="name-tool-panel">
+<span id="ug-name-tool-panel"></span><h3>Name Tool Panel<a class="headerlink" href="#name-tool-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/NameTool.jpg"><img alt="../_images/NameTool.jpg" src="../_images/NameTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Name Tool Panel</span> is a very simple panel that is used by the
+<a class="reference internal" href="Tools.html#ug-name-tool"><span class="std std-ref">Name Tool</span></a> to edit the name of the <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">primary selection</span></a>. The tool is activated when you apply the general <a class="reference internal" href="Actions.html#ug-tool-actions"><span class="std std-ref">Name
+Tool action</span></a>. The model’s name is updated whenever you hit
+the <code class="docutils literal notranslate"><span class="pre">Apply</span></code> button.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="revsurf-tool-panel">
+<span id="ug-revsurf-tool-panel"></span><h3>RevSurf Tool Panel<a class="headerlink" href="#revsurf-tool-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RevSurfToolPanel.jpg"><img alt="../_images/RevSurfToolPanel.jpg" src="../_images/RevSurfToolPanel.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">RevSurf Tool Panel</span> lets you edit the profile that is revolved
+around the Z (up) axis for all selected <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">RevSurf (surface of revolution)
+models</span></a>. The panel initially shows the current profile of
+the <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">primary selection</span></a>. Any changes to the profile are
+applied to all selected RevSurf models; the models update in real time as the
+profile is edited.</p>
+<p><p class="after-image"></p></p>
+<section id="editing-the-revsurf-profile">
+<h4>Editing the RevSurf Profile<a class="headerlink" href="#editing-the-revsurf-profile" title="Permalink to this heading"></a></h4>
+<p>Editing the profile for the RevSurf models is essentially the same as in the
+<a class="reference internal" href="#ug-bevel-tool-panel"><span class="std std-ref">Bevel Tool Panel</span></a>, except that there must always be
+at least 3 points in the profile; the panel will not let you delete an interior
+profile point if it is the only one left.</p>
+<p>The checkbox at the top of the panel allows you to enable snapping of profile
+points to the current <a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">precision level</span></a>. Note that
+this snapping is relative to the size of the selected RevSurf model. For
+example if the current precision is 1 unit, a dragged profile point will be
+snapped in X to create 1 unit increments for the model at its current scale.</p>
+</section>
+<section id="adjusting-the-sweep-angle">
+<h4>Adjusting the Sweep Angle<a class="headerlink" href="#adjusting-the-sweep-angle" title="Permalink to this heading"></a></h4>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RevSurfToolPanelSweep.jpg"><img alt="../_images/RevSurfToolPanelSweep.jpg" src="../_images/RevSurfToolPanelSweep.jpg" style="width: 200px;" /></a>
+</figure>
+<p>By default, a RevSurf model is created by revolving the profile 360 degrees
+around the Z (up) axis. You can change this with the slider at the bottom of
+the panel. Angles less than 360 result in a partial sweep with end cap
+polygons, as shown here.</p>
+<p><p class="after-image"></p></p>
+</section>
+</section>
+<section id="text-tool-panel">
+<span id="ug-text-tool-panel"></span><h3>Text Tool Panel<a class="headerlink" href="#text-tool-panel" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TextToolPanel.jpg"><img alt="../_images/TextToolPanel.jpg" src="../_images/TextToolPanel.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Text Tool Panel</span> lets you edit the text string, font, and
+character spacing for all selected <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">Text models</span></a>.
+The panel initially shows the values for the <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">primary selection</span></a>. Clicking the <code class="docutils literal notranslate"><span class="pre">Apply</span></code> button applies all changes made with
+the panel to all selected Text models.</p>
+<p>The panel lets you specify the following settings:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="emphasis">Text string</span>.</p></li>
+<li><p><span class="emphasis">Font name</span>. The dropdown contains all available fonts.</p></li>
+<li><p><span class="emphasis">Character spacing</span>. The value of this slider multiplies the
+spacing between individual characters to move them closer together or
+further apart. The default is 1, which is the standard spacing defined by
+the font.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="tree-panel">
+<span id="ug-tree-panel"></span><h2>Tree Panel<a class="headerlink" href="#tree-panel" title="Permalink to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TreePanel.jpg"><img alt="../_images/TreePanel.jpg" src="../_images/TreePanel.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Tree Panel</span> is the framed panel on the back wall. It has multiple
+uses:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Displaying a list of all models in the scene, including their tree
+structure and current status.</p></li>
+<li><p>Selecting models.</p></li>
+<li><p>Hiding and showing models.</p></li>
+<li><p>Changing model order.</p></li>
+</ul>
+</div></blockquote>
+<p>As mentioned previously, the Tree Panel is always visible in the same place,
+unlike other (movable) panels.</p>
+<p><p class="after-image"></p></p>
+<section id="session-name-and-status">
+<span id="ug-session-name"></span><h3>Session Name and Status<a class="headerlink" href="#session-name-and-status" title="Permalink to this heading"></a></h3>
+<p>At the top of the Tree Panel is a row showing the current name of the session
+being edited.  If the session was not loaded from a file and has not yet been
+saved with a name, it will show as <code class="docutils literal notranslate"><span class="pre">&lt;Untitled</span> <span class="pre">Session&gt;</span></code>. To the left is a way
+to change the visibility of all models, as described <a class="reference internal" href="#ug-visibility"><span class="std std-ref">below</span></a>.</p>
+<p>If the session has been modified since it was loaded or started, there will be
+a string of special characters within square brackets after the session name.
+This string may contain the following characters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>An asterisk (<code class="docutils literal notranslate"><span class="pre">*</span></code>) indicates that one or more models has been created or
+modified and not undone.</p></li>
+<li><p>An exclamation point (<code class="docutils literal notranslate"><span class="pre">!</span></code>) indicates that the session state (such as
+<a class="reference internal" href="Actions.html#ug-toggle-show-edges"><span class="std std-ref">edge visibility</span></a> or <a class="reference internal" href="Actions.html#ug-toggle-build-volume"><span class="std std-ref">build volume
+visibility</span></a>) has changed.</p></li>
+<li><p>A plus sign (<code class="docutils literal notranslate"><span class="pre">+</span></code>) indicates that the commands in the session file
+have changed, usually by being undone.</p></li>
+</ul>
+</div></blockquote>
+<p>All three characters are shown for the session in the above image.</p>
+<p>Note that a session can only be saved to the same file if at least one of these
+symbols appears. For example, if you make changes to models and then undo back
+to their original state, there will be no asterisk, but the plus sign lets you
+know that the session can still be saved (because the sequence of commands has
+changed). The session state is also saved, so making changes to it allow you to
+save as well.</p>
+</section>
+<section id="model-names-and-colors">
+<h3>Model Names and Colors<a class="headerlink" href="#model-names-and-colors" title="Permalink to this heading"></a></h3>
+<p>Every row under the top row of the Tree Panel represents a top-level model in
+the scene along with its indented children, if it has any. If it has children,
+a triangle appears on the left (as shown in the above image) that you can click
+to collapse or expand the children.</p>
+<p>The name of each model uses color-coded text to indicate its status:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The name of the <span class="tree-primary">primary selection is bold red</span>.</p></li>
+<li><p>The names of all <span class="tree-secondary">secondary selections are bold blue</span>.</p></li>
+<li><p>The names of all <span class="tree-hbu">models hidden because the visibility was turned
+off are purple and italic</span>.</p></li>
+<li><p>The names of all <span class="tree-hbm">models hidden because some ancestor or
+descendent model is visible are gray and italic</span>.</p></li>
+<li><p>The names of all other models are black.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="changing-model-visibility">
+<span id="ug-visibility"></span><h3>Changing Model Visibility<a class="headerlink" href="#changing-model-visibility" title="Permalink to this heading"></a></h3>
+<p>To the left of each top-level model name in the Tree Panel is a little eye
+icon. Clicking this icon toggles the visibility of the corresponding model in
+the scene.</p>
+<p>There is also an eye icon next to the session name at the top. If any top-level
+model is currently hidden, clicking this will show all top-level models using
+the <a class="reference internal" href="Actions.html#ug-show-all"><span class="std std-ref">Show All action</span></a>. Otherwise, it will hide all models.</p>
+</section>
+<section id="selecting-models">
+<span id="ug-tree-panel-selection"></span><h3>Selecting Models<a class="headerlink" href="#selecting-models" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TreePanelSelect.jpg"><img alt="../_images/TreePanelSelect.jpg" src="../_images/TreePanelSelect.jpg" style="width: 200px;" /></a>
+</figure>
+<p>Clicking with the mouse (or pinch) on a model name in the Tree Panel selects
+that model as the primary selection. <a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-clicking</span></a> on a model name toggles its selection status.</p>
+<p>You can also use the mouse (or pinch) to drag out a rectangle withinin the
+panel. All model names intersected by the rectangle will be selected as shown
+here. <a class="reference internal" href="#ug-reorder-models"><span class="std std-ref">Changing the order of model names</span></a> may help in
+some cases to allow contiguous selections.</p>
+<p>Note that you cannot have both a parent and child model in the same hierarchy
+selected at the same time. That would be bad.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="reordering-models">
+<span id="ug-reorder-models"></span><h3>Reordering Models<a class="headerlink" href="#reordering-models" title="Permalink to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TreePanelUpDown.jpg"><img alt="../_images/TreePanelUpDown.jpg" src="../_images/TreePanelUpDown.jpg" style="width: 200px;" /></a>
+</figure>
+<p>There are some rare cases where the order of models in the Tree Panel matters.
+One is when you want to use <a class="reference internal" href="#ug-tree-panel-selection"><span class="std std-ref">rectangle selection</span></a> to select some set of models and they need to be
+listed consecutively. Another is when the order of children within a parent
+matters, such as within a <a class="reference internal" href="CreatingModels.html#ug-csg"><span class="std std-ref">CSG difference</span></a>.</p>
+<p>In these cases the two buttons to the right of the session name can be used to
+apply the <a class="reference internal" href="Actions.html#ug-move-previous"><span class="std std-ref">Move Previous</span></a> and <a class="reference internal" href="Actions.html#ug-move-next"><span class="std std-ref">Move Next</span></a> actions, which move the primary selection up and down in the
+list. Note that if the primary selection is not a top-level model, it can only
+be moved up and down within its parent model.</p>
+<p>These buttons are enabled only if there is a single model selected and it can
+be moved in the corresponding direction.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Tools.html" class="btn btn-neutral float-left" title="Tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Quirks.html" class="btn btn-neutral float-right" title="Quirks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.1.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
