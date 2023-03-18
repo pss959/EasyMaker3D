@@ -210,33 +210,52 @@ are as follows:
 
 ## Building a Release
 
-Here are the steps required to create a new release:
+Here are the steps required to create a new release. These should all be done
+in the `master` branch.
 
-  - Decide whether this is a major, minor, or patch release and Update the
+  - Decide whether this is a major, minor, or patch release and update the
     version number in the top `SConstruct` file.
 
-  - Add all public-facing changes to `PublicDoc/docs/ReleaseNotes.rst`. You can
-    use `git log vX.Y.Z..HEAD --oneline` to see the first line of all commits
-    since the `X.Y.Z` release.
+  - Add all public-facing changes to `PublicDoc/docs/ReleaseNotes.rst`. You
+    can use 
+    
+        git log vX.Y.Z..HEAD --oneline
+        
+    to see the first line of all commits since the `X.Y.Z` release.
 
-  - Make any other necessary changes to `PublicDoc` and `InternalDoc`.
+  - Make any other necessary changes to `PublicDoc` and `InternalDoc`. Commit
+    them and push them to Github.
 
   - Build on all 3 platforms and upload the resulting release files (zip or
     DMG) to Google Drive.
 
-  - Create a tag for the release. This has to be done before building the
-    public documentation because `sphinx-multiversion` relies on tags to create
-    output directories. Use: `git tag -f -a vX.Y.Z -m "Version X.Y.Z"`
-
-  - Publish the public documentation:
-     + Build the documentation with `scons PublicDoc`.
-     + If any images are regenerated, use `bin/revertimages.sh` to revert any
+  - Update the public documentation:
+     - Build the documentation with `scons PublicDoc`.
+     - If any images are regenerated, use `bin/revertimages.sh` to revert any
        images that did not change enough to warrant committing. This script
        uses ImageMagick to measure image changes.
-     + Commit any outstanding changes and push to Github.
-     + Run `bin/publishdoc.py -n` to see what will happen to publish the doc.
-       If it looks ok, run it without the `-n` to publish to Github.
-     + If any changes needed to be committed, update the tag: `git tag vX.Y.Z
-       vX.Y.Z^{} -f -m "Version X.Y.Z"`
+     - Commit any outstanding changes and push to Github.
+     - If this is a patch release, remove the previous version of the public
+       documentation. For example, if the new patch is version `3.2.7`,
+       remove `build/PublicDoc/3.2.6` if it exists and also use `git` to
+       remove `docs/3.2.6`.
+     - Run
+     
+           rsync -vau --exclude=.nojekyll --exclude=.doctrees --exclude=.buildinfo --exclude=_sources build/PublicDoc/ docs/
+       
+       to update the documentation source used by GitHub Pages.
+     - Copy `docs/<current-version>/_static/js/versions.js` to all other
+       versions under `docs/`. This guarantees that all versions in GitHub
+       Pages have the same entries in their version selectors.
+     - Commit all changes under `docs/` (including the new version) and push
+       to GitHub.
+         
+  - For a major or minor release, create a new release branch. For example, if
+    the release version is `3.4.0`, create the branch named `Release-3.4` from
+    the current `master` branch. Push the release branch to GitHub.
 
-  - On Github, select the new tag and create a release from it.
+  - Create a tag for the release with
+  
+        git tag -f -a vX.Y.Z -m "Version X.Y.Z"
+        
+    Push the tag to GitHub.
