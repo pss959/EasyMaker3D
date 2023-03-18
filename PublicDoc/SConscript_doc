@@ -42,6 +42,12 @@ def GetAllVersions_():
     for rel in rels:
         versions.append([t.replace('v', '') for t in tags
                          if t.startswith('v' + rel + '.')][-1])
+
+    # Add the current version if it is not included (because there is no tag
+    # for it yet).
+    current_version = app_dict['VERSION_STRING']
+    if not current_version in versions:
+        versions.append(current_version)
     return versions
 
 # Writes the JavaScript file defining all current documentation versions.

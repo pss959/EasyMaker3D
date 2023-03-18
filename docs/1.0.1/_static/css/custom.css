@@ -1,0 +1,345 @@
+/* -----------------------------------------------------------------------------
+ * Navigation area colors (left side).
+ * -------------------------------------------------------------------------- */
+
+/* Top-left background is set in conf.py (style_nav_header_background). */
+
+/* Navigation sidebar. */
+.wy-nav-side {
+    background: #dddddd;
+}
+
+/* Non-current top-level navigation headings have a gray background. */
+.wy-menu-vertical li.toctree-l1 > a {
+    font-size:  100%;
+    background: #bbbbbb;
+    color:      black;
+}
+
+/* Use lighter theme color for current top-level navigation heading. */
+.wy-menu-vertical li.toctree-l1.current > a {
+    font-size:  100%;
+    background: #9ebce9;
+    color:      black;
+}
+
+/* Other navigation headings. */
+.wy-menu-vertical li.toctree-l2 > a,
+.wy-menu-vertical li.toctree-l3 > a,
+.wy-menu-vertical li.toctree-l4 > a {
+    color:      #333333;
+}
+
+/* Use dark blue color for current navigation heading text. */
+.wy-menu-vertical li.toctree-l2.current > a,
+.wy-menu-vertical li.toctree-l3.current > a,
+.wy-menu-vertical li.toctree-l4.current > a {
+    color:      #111166;
+}
+
+/* Use even lighter theme color for current nested navigation headings. */
+.wy-menu-vertical li.toctree-l1.current li.toctree-l2.current a {
+    background: #c7d4e9;
+}
+
+/* Version selector just below search bar. Have to use fixed positioning
+   because it appears at the bottom by default. */
+.rst-versions {
+    background: #6895d9;
+    position:   fixed;
+    top:        100px;
+    bottom:     auto;
+}
+
+/* Opened version selector. */
+.rst-versions.shift-up {
+    background: #6895d9;
+    max-height: 200px;
+}
+
+.rst-versions .rst-current-version {
+    background:  #6895d9;
+    color:       #ffffff;
+    text-align:  left;
+    font-weight: bold;
+}
+
+.rst-versions .rst-other-versions {
+    position: static;
+    color:    #eeeeee;
+}
+
+.rst-versions .rst-other-versions dd {
+    display:     block;
+    margin-left: 60px;
+}
+
+.current-version-label {
+    text-align:  left;
+    margin-left: 10px;
+}
+
+.current-version-text {
+    text-align:  right;
+}
+
+/* Move the pulldown caret to the right end. */
+.fa-caret-down {
+    position: fixed;
+    left:     260px;
+}
+
+/* Navigation menu below the version selector. */
+.wy-menu {
+    margin-top: 54px;
+}
+
+/* -----------------------------------------------------------------------------
+ * Reduce main content vertical space.
+ * -------------------------------------------------------------------------- */
+
+/* Limit width of main text area. */
+.rst-content {
+    max-width: 1000px;
+}
+
+.wy-nav-content {
+    padding: 10px 3.236em;
+}
+
+.wy-nav-content p {
+    margin-block-start: 8px;
+    margin-block-end:   8px;
+}
+
+.wy-nav-content h1, .wy-nav-content h2, .wy-nav-content h3,
+.wy-nav-content h4, .wy-nav-content h5, .wy-nav-content h6 {
+    margin-bottom:      12px;
+}
+
+.wy-nav-content section ul, .wy-nav-content blockquote {
+    margin-block-start: 8px;
+    margin-block-end:   8px;
+    margin-bottom:      8px;
+}
+    
+.rst-breadcrumbs-buttons {
+    margin-top: 6px;
+}
+
+.rst-content .align-right {
+    margin-bottom: 8px;
+    margin-left:   4px;
+    margin-right:  4px;
+}
+
+div[role=navigation] hr {
+    margin: 4px 0;
+}
+
+/* Sphinx inserts empty paragraphs for no reason. */
+p:empty {
+    margin: 0;
+}
+
+/* -----------------------------------------------------------------------------
+ * Main content section colors. 
+ * -------------------------------------------------------------------------- */
+
+/* Main content area. */
+.wy-nav-content {
+    background: #eeeeee;
+}
+
+/* Nested sections. Each level is slightly darker than the one above it. */
+.wy-nav-content section {
+    background: #fefefe;
+}
+.wy-nav-content section section {
+    filter: brightness(0.98);
+}
+
+/* -----------------------------------------------------------------------------
+ * Main content section sizing and indentation.
+ * -------------------------------------------------------------------------- */
+
+/* Main content area. */
+.wy-nav-content {
+    max-width: 100%;
+}
+
+/* Section headings. */
+.wy-nav-content section {
+    margin-left:   3px;
+    margin-bottom: 2px;
+    padding:       6px;
+    border:        1px solid #aaaaaa;
+    max-width:     100%;
+}
+.wy-nav-content section section {
+    margin-left: 2%;
+}
+
+/* Section content paragraphs. */
+.wy-nav-content section p {
+    margin-left: 1%;
+}
+
+/* Bug sections. */
+.rst-content .admonition-bug {
+    margin-left:  1%;
+    margin-right: 1%;
+    background:   #eedddd;
+}
+.rst-content .admonition-bug .admonition-title {
+    background: #de4444;
+}
+
+/* VR-only sections. */
+.rst-content .admonition-vr-only {
+    margin-left:  1%;
+    margin-right: 1%;
+}
+
+/* -----------------------------------------------------------------------------
+ * Figures/images.
+ * -------------------------------------------------------------------------- */
+
+/* Put a border around all images. */
+img {
+    border: 1px solid #444444;
+}
+
+.large-centered-image {
+    width: 500px;
+}
+
+/* Captions */
+.caption-left, .caption-center, .caption-right {
+    margin-top: 8px;
+    font-style: italic;
+    color:      #666666;
+}
+.caption-left {
+    text-align: left;
+}
+.caption-center {
+    text-align: center;
+}
+.caption-right {
+    text-align: right;
+}
+
+/* Special class assigned to an item after an image so it does not overlap. */
+.after-image {
+    clear:       both;
+    line-height: 0;
+    margin:      0;
+    padding:     0;
+}
+
+/* -----------------------------------------------------------------------------
+ * Cheat Sheet.
+ * -------------------------------------------------------------------------- */
+
+#cheat-sheet, #cheat-sheet * {
+    background: #fafaf2;
+}
+
+/* Line-blocks inside tables create undesired vertical space. */
+.cheat-sheet-table .line-block {
+    text-align:    center;
+    margin-bottom: 0;
+    line-height:   1.4;
+}
+
+/* Center heading text vertically. */
+.cheat-sheet-table thead th {
+    text-align:     center;
+    vertical-align: middle;
+}
+
+/* Icon images are centered. */
+.cheat-sheet-table img {
+    display:      block;
+    margin-left:  auto;
+    margin-right: auto;    
+}
+
+/* Description text should wrap. */
+.cheat-sheet-table tbody td:nth-child(4) {
+    max-width:   30%;
+    word-break:  normal;
+    white-space: normal;
+}
+
+/* -----------------------------------------------------------------------------
+ * Role styles.
+ * -------------------------------------------------------------------------- */
+
+/* Style used for the application name. */
+.appname {
+    color:        #174971;
+    font-family:  sans-serif;
+    font-style:   italic;
+    font-size:    90%;
+    /* font-variant: small-caps; */
+}
+
+.action {
+    color:      #c86200;
+    font-style: italic;
+}
+
+.dnote {
+    color:      #882233;
+    font-style: italic;
+}
+
+.emphasis {
+    font-style: italic;
+}
+
+.model {
+    color:       #6d5435;
+    font-family: monospace;
+    font-weight: bold;
+    font-size:   90%;
+}
+
+.newterm {
+    color:      green;
+    font-style: italic;
+}
+
+/* Shortcuts use monospace text. */
+.shortcut {
+    padding:     2px;
+    border:      1px solid #1e8a81;
+    color:       #1e8a81;
+    font-family: monospace;
+    font-size:   80%;
+}
+
+.strong {
+    font-weight: bold;
+    font-style:  italic;
+}
+
+/* Colors for text in TreePanel. */
+.tree-primary {
+    color:       #d41516;
+    font-weight: bold;
+}
+.tree-secondary {
+    color:       #0000fe;
+    font-weight: bold;
+}
+.tree-hbu {
+    color:       #800a75;
+    font-style:  italic;
+}
+.tree-hbm {
+    color:       #666666;
+    font-style:  italic;
+}
