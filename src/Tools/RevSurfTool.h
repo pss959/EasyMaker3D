@@ -29,6 +29,9 @@ class RevSurfTool : public PanelTool {
     /// Command used to modify the RevSurfModel data.
     ChangeRevSurfCommandPtr command_;
 
+    /// Set to true if a point was dragged.
+    bool                    point_dragged_ = false;
+
     // Updates the point precision in the RevSurfToolPanel when the tool is
     // attached or when the precision changes.
     void UpdatePrecision_();
