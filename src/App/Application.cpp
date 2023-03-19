@@ -452,6 +452,20 @@ bool Application::Impl_::Init(const Application::Options &options) {
     shortcut_handler_->SetActionAgent(action_processor_);
 
     ConnectSceneInteraction_();
+
+    // Process any custom shortcut file. Quit on error after showing an error
+    // message.
+    std::string errors;
+    if (! shortcut_handler_->AddCustomShortcuts(errors)) {
+        auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
+        dp->SetMessage("Error in custom shortcut file: " + errors);
+        dp->SetSingleResponse("OK");
+        auto board = scene_context_->app_board;
+        board->SetPanel(dp, [&](const std::string &){ TryQuit_(); });
+        board_manager_->ShowBoard(board, true);
+        return true;  // Continue so that the user sees the message.
+    }
+
     if (options.show_session_panel)
         ShowInitialPanel_();
 

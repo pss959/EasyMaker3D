@@ -17,6 +17,10 @@ class ShortcutHandler : public Handler {
   public:
     ShortcutHandler();
 
+    /// Adds custom shortcuts from the "shortcuts.txt" file in the current
+    /// directory. Sets the error string and returns false on error.
+    bool AddCustomShortcuts(std::string &error);
+
     /// Sets the ActionAgent used to apply actions.
     void SetActionAgent(const ActionAgentPtr &action_agent) {
         action_agent_ = action_agent;

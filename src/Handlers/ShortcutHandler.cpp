@@ -73,6 +73,12 @@ ShortcutHandler::ShortcutHandler() {
 #endif
 }
 
+bool ShortcutHandler::AddCustomShortcuts(std::string &error) {
+    // XXXX
+    error = "XXXX Mysterious error";
+    return false;
+}
+
 void ShortcutHandler::GetShortcutStrings(Action action,
                                          std::string &keyboard_string,
                                          std::string &controller_string) const {
