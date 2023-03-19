@@ -2,7 +2,6 @@
 
 #include "SG/ColorMap.h"
 #include "Util/Assert.h"
-#include "Util/Enum.h"
 #include "Util/KLog.h"
 
 void Widget::AddFields() {
@@ -16,57 +15,64 @@ void Widget::AddFields() {
     SG::Node::AddFields();
 }
 
-void Widget::SetHovering(bool is_hovering) {
-    const bool was_hovering = hover_count_ > 0;
-    ASSERT(is_hovering || hover_count_ > 0);
-    if (is_hovering)
-        ++hover_count_;
-    else
-        --hover_count_;
-    const bool is_now_hovering = hover_count_ > 0;
-    if (is_now_hovering == was_hovering)
-        return;
+void Widget::SetInteractionEnabled(bool enabled) {
+    if (is_interaction_enabled_ != enabled) {
+        is_interaction_enabled_ = enabled;
+        KLOG('W', GetDesc() << " now " << (enabled ? "enabled" : "disabled"));
+        UpdateColor_();
+    }
+}
 
-    if (IsInteractionEnabled()) {
-        // Change hovering only if the Widget is not active or if it is active
-        // and supports active hovering.
-        if (IsActiveState_(state_)) {
-            if (SupportsActiveHovering()) {
-                const State_ new_state = is_hovering ?
-                    State_::kActiveHovered : State_::kActive;
-                if (new_state != state_)
-                    SetState_(new_state, false);
-            }
-        }
-        else {
-            SetState_(is_hovering ? State_::kHovered : State_::kInactive,
-                      false);
-        }
+void Widget::SetActive(bool active, bool notify) {
+    if (is_interaction_enabled_ && active != is_active_) {
+        is_active_ = active;
+        KLOG('W', GetDesc() << " now " << (active ? "active" : "inactive"));
+        if (hover_count_ > 0)
+            StopHovering_();
+        UpdateColor_();
+
+        if (notify)
+            activation_.Notify(*this, active);
+    }
+}
+
+void Widget::StartHovering() {
+    // Change status only if hovering started.
+    if (! hover_count_++) {
+        KLOG('W', GetDesc() << " hover started");
+
+        // Change hover state only if the widget is enabled. Note that some
+        // Widget classes support hovering while active.
+        if (is_interaction_enabled_ &&
+            (! is_active_ || SupportsActiveHovering()))
+            ChangeHoverState_(true);
+
+        // Activate the tooltip even if disabled.
+        ActivateTooltip_(true);
+    }
+}
+
+void Widget::StopHovering() {
+    ASSERT(hover_count_ > 0);
+
+    // Change status only if hovering stopped.
+    if (hover_count_ == 1U) {
+        KLOG('W', GetDesc() << " hover ended");
+        StopHovering_();
+    }
+    else {
+        --hover_count_;
     }
 }
 
 void Widget::SetInactiveColor(const Color &color) {
     inactive_color_ = color;
-    if (state_ == State_::kInactive && GetIonContext())
-        SetBaseColor(color);
+    UpdateColor_();
 }
 
 void Widget::SetActiveColor(const Color &color) {
     active_color_ = color;
-    if (state_ == State_::kActive && GetIonContext())
-        SetBaseColor(color);
-}
-
-void Widget::SetTooltipText(const std::string &text) {
-    tooltip_text_ = text;
-}
-
-void Widget::PostSetUpIon() {
-    SG::Node::PostSetUpIon();
-
-    // Set the base color to the inactive color.
-    if (ShouldSetBaseColor())
-        SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
+    UpdateColor_();
 }
 
 void Widget::PlacePointTarget(const DragInfo &info,
@@ -80,52 +86,31 @@ void Widget::PlaceEdgeTarget(const DragInfo &info, float current_length,
     ASSERTM(false, "Widget::PlaceEdgeTarget() should not be called");
 }
 
-void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
-    if (new_state == state_)
-        return;
+void Widget::PostSetUpIon() {
+    SG::Node::PostSetUpIon();
+    UpdateColor_();
+}
 
-    KLOG('W', GetDesc() << " changed state from "
-         << Util::EnumName(state_) << " to " << Util::EnumName(new_state));
+void Widget::StopHovering_() {
+    ASSERT(hover_count_ > 0);
+    hover_count_ = 0;
+    ChangeHoverState_(false);
+    ActivateTooltip_(false);
+}
 
-    // Stop hovering if that is the current state.
-    if (IsHovering()) {
-        hover_count_ = 0;
-        ChangeHovering_(false);
-        ActivateTooltip_(false);
-    }
-
-    // Update the base color based on the new state unless the derived class
-    // says not to.
-    if (ShouldSetBaseColor()) {
-        if (new_state == State_::kDisabled)
+void Widget::UpdateColor_() {
+    if (ShouldSetBaseColor() && GetIonContext()) {
+        if (! is_interaction_enabled_)
             SetBaseColor(GetColor_(disabled_color_, "DisabledColor"));
-        else if (new_state == State_::kActive)
+        else if (is_active_)
             SetBaseColor(GetColor_(active_color_,   "ActiveColor"));
         else
             SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
     }
-
-    // Start hovering if that is the new state.
-    if (IsHoveredState_(new_state)) {
-        ChangeHovering_(true);
-        ActivateTooltip_(true);
-    }
-
-    // Invoke callbacks if requested.
-    if (invoke_callbacks) {
-        bool was_active = IsActiveState_(state_);
-        bool is_active  = IsActiveState_(new_state);
-        if (was_active && ! is_active)
-            activation_.Notify(*this, false);
-        else if (! was_active && is_active)
-            activation_.Notify(*this, true);
-    }
-
-    state_ = new_state;
 }
 
-void Widget::ChangeHovering_(bool begin) {
-    if (begin) {
+void Widget::ChangeHoverState_(bool hover) {
+    if (hover) {
         if (hover_scale_.WasSet()) {
             saved_scale_ = GetScale();
             SetScale(hover_scale_ * saved_scale_);
