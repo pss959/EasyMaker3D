@@ -17,16 +17,14 @@ DECL_SHARED_PTR(Widget);
 /// Widget is an abstract base class for all interactive widgets. It is derived
 /// from SG::Node so that it can be placed in a scene graph.
 ///
-/// A Widget has 4 possible states: XXXX Fix this.
-///  - Disabled: the Widget will not react to anything the user does.
-///  - Inactive: the Widget is not being interacted with
-///  - Hovered:  the user has hovered on the Widget; it can be activated
-///  - Active:   the Widget is in use (e.g., a button is still pressed or a
-///              slider thumb is being dragged.)
+/// Interaction with a Widget can be enabled or disabled. An enabled Widget
+/// will highlight by changing color and/or size when hovered. A disabled
+/// Widget is rendered with a dark color and does not highlight when hovered,
+/// but will still activate a tooltip.
 ///
-/// A Widget may indicate these states using color and/or scale changes.  In
-/// addition, a Widget may show a Tooltip when in the Hovered state for long
-/// enough if SetTooltipFunc() has been called.
+/// A Widget will be marked as active and change color when it is currently
+/// being used (during a click or drag operation). A Widget that implements a
+/// toggle shows the active state when the toggle is on.
 ///
 /// The GetActivation() notifier can be used to detect activation and
 /// deactivation; it is passed the Widget and a flag indicating activation

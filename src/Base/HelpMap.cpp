@@ -52,9 +52,10 @@ HelpMap::HelpMap() {
     set_hs(Action::kNameTool,
            "Edit the name of the selected model");
     set_hs(Action::kRotationTool,
-           "Rotate the selected models (Modified for in-place)");
+           "Rotate the selected models (Modified-drag for in-place)");
     set_hs(Action::kScaleTool,
-           "Change the size of the selected models (Modified for symmetric)");
+           "Change the size of the selected models"
+           " (Modified-drag for symmetric)");
     set_hs(Action::kTranslationTool,
            "Change the position of the selected models");
 

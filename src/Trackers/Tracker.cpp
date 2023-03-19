@@ -46,7 +46,7 @@ void Tracker::UpdateWidgetHovering(const WidgetPtr &old_widget,
         KLOG('H', "Stop hovering " << old_widget->GetDesc());
         old_widget->StopHovering();
     }
-    if (new_widget && new_widget->IsInteractionEnabled()) {
+    if (new_widget) {
         KLOG('H', "Start hovering " << new_widget->GetDesc());
         new_widget->StartHovering();
     }

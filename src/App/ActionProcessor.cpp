@@ -629,19 +629,29 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
     auto hide_show = [](bool visible){ return visible ? "Hide" : "Show"; };
 
     switch (action) {
-      case Action::kUndo: {
-        auto &cl = *context_->command_manager->GetCommandList();
-        return "Undo the last command:\n<" +
-            cl.GetCommandToUndo()->GetDescription() + ">";
-      }
-      case Action::kRedo: {
-        auto &cl = *context_->command_manager->GetCommandList();
-        return "Redo the last undone command:\n<" +
-            cl.GetCommandToRedo()->GetDescription() + ">";
-      }
+      case Action::kUndo:
+        if (! CanApplyAction(action)) {
+            return "Undo the last command";
+        }
+        else {
+            auto &cl = *context_->command_manager->GetCommandList();
+            return "Undo the last command:\n<" +
+                cl.GetCommandToUndo()->GetDescription() + ">";
+        }
+      case Action::kRedo:
+        if (! CanApplyAction(action)) {
+            return "Undo the last command";
+        }
+        else {
+            auto &cl = *context_->command_manager->GetCommandList();
+            return "Redo the last undone command:\n<" +
+                cl.GetCommandToRedo()->GetDescription() + ">";
+        }
 
       case Action::kToggleSpecializedTool:
-        if (context_->tool_box->IsUsingSpecializedTool())
+        if (! CanApplyAction(action))
+            return "Switch between specialized and general tools";
+        else if (context_->tool_box->IsUsingSpecializedTool())
             return "Switch back to the current general tool";
         else
             return "Switch to the specialized " +

@@ -1173,12 +1173,11 @@ void Application::Impl_::UpdateIcons_() {
         const bool enabled = is_enabled(icon->GetAction());
         icon->SetInteractionEnabled(enabled);
 
-        if (enabled) {
-            const Action action = icon->GetAction();
-            icon->SetTooltipText(action_processor_->GetActionTooltip(action));
-            if (icon->IsToggle())
-                icon->SetToggleState(action_processor_->GetToggleState(action));
-        }
+        const Action action = icon->GetAction();
+        icon->SetTooltipText(action_processor_->GetActionTooltip(action));
+
+        if (enabled && icon->IsToggle())
+            icon->SetToggleState(action_processor_->GetToggleState(action));
     }
 
     // Special case for the ToggleSpecializedToolIcon.

@@ -40,14 +40,7 @@ void Widget::StartHovering() {
     // Change status only if hovering started.
     if (! hover_count_++) {
         KLOG('W', GetDesc() << " hover started");
-
-        // Change hover state only if the widget is enabled. Note that some
-        // Widget classes support hovering while active.
-        if (is_interaction_enabled_ &&
-            (! is_active_ || SupportsActiveHovering()))
-            ChangeHoverState_(true);
-
-        // Activate the tooltip even if disabled.
+        ChangeHoverState_(true);
         ActivateTooltip_(true);
     }
 }
@@ -110,17 +103,21 @@ void Widget::UpdateColor_() {
 }
 
 void Widget::ChangeHoverState_(bool hover) {
-    if (hover) {
-        if (hover_scale_.WasSet()) {
-            saved_scale_ = GetScale();
-            SetScale(hover_scale_ * saved_scale_);
+    // Change hover state only if the widget is enabled. Note that some Widget
+    // classes support hovering while active.
+    if (is_interaction_enabled_ && (! is_active_ || SupportsActiveHovering())) {
+        if (hover) {
+            if (hover_scale_.WasSet()) {
+                saved_scale_ = GetScale();
+                SetScale(hover_scale_ * saved_scale_);
+            }
+            SetEmissiveColor(GetColor_(hover_color_, "HoverColor"));
         }
-        SetEmissiveColor(GetColor_(hover_color_, "HoverColor"));
-    }
-    else {
-        if (hover_scale_.WasSet())
-            SetScale(saved_scale_);
-        SetEmissiveColor(Color::Clear());
+        else {
+            if (hover_scale_.WasSet())
+                SetScale(saved_scale_);
+            SetEmissiveColor(Color::Clear());
+        }
     }
 }
 
