@@ -25,7 +25,7 @@ void HelpPanel::UpdateInterface() {
 }
 
 void HelpPanel::OpenPage_(const std::string &page_name) {
-    Util::OpenURL(TK::kPublicDocBaseURL + "/v" + TK::kVersionString + "/" +
+    Util::OpenURL(TK::kPublicDocBaseURL + "/" + TK::kVersionString + "/" +
                   page_name);
 }
 
