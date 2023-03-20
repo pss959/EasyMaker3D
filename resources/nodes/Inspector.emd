@@ -1,6 +1,5 @@
 Inspector "Inspector" {
   disabled_flags: "kTraversal",  # Enabled when activated.
-  translation: 0 14 34,
 
   children: [
     # This node is interactively scaled and rotated by the mouse or attached to

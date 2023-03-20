@@ -107,6 +107,7 @@ const float    kTextHeight                       = 4;
 const float    kTorusInnerRadius                 = .2f;
 
 // Inspector
+const float    kInspectorViewDistance            = 30;
 const float    kInspectorMousePitchAngle         = 120;
 const float    kInspectorMouseYawAngle           = 180;
 const float    kInspectorNonVRMaxScale           = 8;

@@ -1036,15 +1036,19 @@ void ActionProcessor::Impl_::MoveSelectionToOrigin_() {
 }
 
 void ActionProcessor::Impl_::ShowInspector_(bool show) {
-    auto &inspector = *context_->scene_context->inspector;
+    const auto &sc = *context_->scene_context;
+    auto &inspector = *sc.inspector;
     if (show) {
         // Get the controller, if any, that caused the inspector to be shown.
         const auto dev = context_->main_handler->GetLastActiveDevice();
         ControllerPtr controller;
         if (dev == Event::Device::kLeftController)
-            controller = context_->scene_context->left_controller;
+            controller = sc.left_controller;
         else if (dev == Event::Device::kRightController)
-            controller = context_->scene_context->right_controller;
+            controller = sc.right_controller;
+        // If no controller, position the Inspector based on the current view.
+        else
+            inspector.SetPositionForView(*sc.frustum);
 
         // Deselect everything after saving the selection.
         saved_selection_for_inspector_ = GetSelection();

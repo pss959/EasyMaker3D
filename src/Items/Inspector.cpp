@@ -56,6 +56,11 @@ void Inspector::Deactivate() {
         deactivation_func_();
 }
 
+void Inspector::SetPositionForView(const Frustum &frustum) {
+    const Vector3f view_dir = frustum.orientation * -Vector3f::AxisZ();
+    SetTranslation(frustum.position + TK::kInspectorViewDistance * view_dir);
+}
+
 void Inspector::ApplyScaleChange(float delta) {
     ASSERT(IsEnabled());
     if (! attached_controller_) {
