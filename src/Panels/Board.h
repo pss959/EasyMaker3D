@@ -140,6 +140,6 @@ class Board : public Grippable, public Touchable {
     friend class Parser::Registry;
     friend class BoardAgent;
 
-    /// Hide this so SetToHeight() must be used.
+    /// Hide this so SetPosition() must be used.
     using Grippable::SetTranslation;
 };
