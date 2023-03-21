@@ -13,46 +13,47 @@ ShortcutHandler::ShortcutHandler() {
     };
 
     // Keyboard keys.
-    add_shortcut(" ",           Action::kToggleSpecializedTool);
-    add_shortcut("<",           Action::kDecreaseComplexity);
-    add_shortcut("<Ctrl>,",     Action::kOpenSettingsPanel);
-    add_shortcut("<Ctrl>A",     Action::kSelectNone);
-    add_shortcut("<Ctrl>Down",  Action::kSelectFirstChild);
-    add_shortcut("<Ctrl>E",     Action::kToggleEdgeTarget);
-    add_shortcut("<Ctrl>H",     Action::kShowAll);
-    add_shortcut("<Ctrl>I",     Action::kOpenInfoPanel);
-    add_shortcut("<Ctrl>Left",  Action::kSelectPreviousSibling);
-    add_shortcut("<Ctrl>P",     Action::kTogglePointTarget);
-    add_shortcut("<Ctrl>Right", Action::kSelectNextSibling);
-    add_shortcut("<Ctrl>Up",    Action::kSelectParent);
-    add_shortcut("<Ctrl>V",     Action::kPasteInto);
-    add_shortcut("<Ctrl>Z",     Action::kRedo);
-    add_shortcut("<Ctrl>a",     Action::kSelectAll);
-    add_shortcut("<Ctrl>b",     Action::kToggleBuildVolume);
-    add_shortcut("<Ctrl>c",     Action::kCopy);
-    add_shortcut("<Ctrl>e",     Action::kToggleShowEdges);
-    add_shortcut("<Ctrl>h",     Action::kHideSelected);
-    add_shortcut("<Ctrl>i",     Action::kCreateImportedModel);
-    add_shortcut("<Ctrl>l",     Action::kToggleLeftRadialMenu);
-    add_shortcut("<Ctrl>n",     Action::kNameTool);
-    add_shortcut("<Ctrl>q",     Action::kQuit);
-    add_shortcut("<Ctrl>r",     Action::kToggleRightRadialMenu);
-    add_shortcut("<Ctrl>s",     Action::kOpenSessionPanel);
-    add_shortcut("<Ctrl>t",     Action::kToggleInspector);
-    add_shortcut("<Ctrl>v",     Action::kPaste);
-    add_shortcut("<Ctrl>x",     Action::kCut);
-    add_shortcut("<Ctrl>z",     Action::kUndo);
-    add_shortcut("=",           Action::kMoveToOrigin);
-    add_shortcut(">",           Action::kIncreaseComplexity);
-    add_shortcut("?",           Action::kOpenHelpPanel);
-    add_shortcut("Backspace",   Action::kDelete);
-    add_shortcut("F1",          Action::kOpenHelpPanel);
-    add_shortcut("[",           Action::kSwitchToPreviousTool);
-    add_shortcut("]",           Action::kSwitchToNextTool);
-    add_shortcut("x",           Action::kIncreasePrecision);
-    add_shortcut("z",           Action::kDecreasePrecision);
-    add_shortcut("{",           Action::kMovePrevious);
-    add_shortcut("}",           Action::kMoveNext);
+    add_shortcut(" ",              Action::kToggleSpecializedTool);
+    add_shortcut(".",              Action::kIncreaseComplexity);
+    add_shortcut("<",              Action::kDecreaseComplexity);
+    add_shortcut("<Ctrl>,",        Action::kOpenSettingsPanel);
+    add_shortcut("<Ctrl>Down",     Action::kSelectFirstChild);
+    add_shortcut("<Ctrl>Left",     Action::kSelectPreviousSibling);
+    add_shortcut("<Ctrl>Right",    Action::kSelectNextSibling);
+    add_shortcut("<Ctrl>Up",       Action::kSelectParent);
+    add_shortcut("<Ctrl>a",        Action::kSelectAll);
+    add_shortcut("<Ctrl>b",        Action::kToggleBuildVolume);
+    add_shortcut("<Ctrl>c",        Action::kCopy);
+    add_shortcut("<Ctrl>e",        Action::kToggleShowEdges);
+    add_shortcut("<Ctrl>h",        Action::kHideSelected);
+    add_shortcut("<Ctrl>i",        Action::kCreateImportedModel);
+    add_shortcut("<Ctrl>l",        Action::kToggleLeftRadialMenu);
+    add_shortcut("<Ctrl>n",        Action::kNameTool);
+    add_shortcut("<Ctrl>q",        Action::kQuit);
+    add_shortcut("<Ctrl>r",        Action::kToggleRightRadialMenu);
+    add_shortcut("<Ctrl>s",        Action::kOpenSessionPanel);
+    add_shortcut("<Ctrl>t",        Action::kToggleInspector);
+    add_shortcut("<Ctrl>v",        Action::kPaste);
+    add_shortcut("<Ctrl>x",        Action::kCut);
+    add_shortcut("<Ctrl>z",        Action::kUndo);
+    add_shortcut("<Shift>/",       Action::kOpenHelpPanel);
+    add_shortcut("<Shift><Ctrl>a", Action::kSelectNone);
+    add_shortcut("<Shift><Ctrl>e", Action::kToggleEdgeTarget);
+    add_shortcut("<Shift><Ctrl>h", Action::kShowAll);
+    add_shortcut("<Shift><Ctrl>i", Action::kOpenInfoPanel);
+    add_shortcut("<Shift><Ctrl>p", Action::kTogglePointTarget);
+    add_shortcut("<Shift><Ctrl>v", Action::kPasteInto);
+    add_shortcut("<Shift><Ctrl>z", Action::kRedo);
+    add_shortcut("<Shift>[",       Action::kMovePrevious);
+    add_shortcut("<Shift>]",       Action::kMoveNext);
+    add_shortcut("=",              Action::kMoveToOrigin);
+    add_shortcut("Backspace",      Action::kDelete);
+    add_shortcut("Delete",         Action::kDelete);
+    add_shortcut("F1",             Action::kOpenHelpPanel);
+    add_shortcut("[",              Action::kSwitchToPreviousTool);
+    add_shortcut("]",              Action::kSwitchToNextTool);
+    add_shortcut("x",              Action::kIncreasePrecision);
+    add_shortcut("z",              Action::kDecreasePrecision);
 
     // Controller buttons.
     add_shortcut("L:Menu",      Action::kToggleLeftRadialMenu);
@@ -75,8 +76,9 @@ ShortcutHandler::ShortcutHandler() {
 
 bool ShortcutHandler::AddCustomShortcuts(std::string &error) {
     // XXXX
-    error = "XXXX Mysterious error";
-    return false;
+    //error = "XXXX Mysterious error";
+    //return false;
+    return true;
 }
 
 void ShortcutHandler::GetShortcutStrings(Action action,

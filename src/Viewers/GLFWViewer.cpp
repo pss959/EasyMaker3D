@@ -55,86 +55,91 @@ static bool IgnoreKeyEvent_(int key) {
     }
 }
 
-/// Sets the key_name in the event based on the given key. This handles shifted
-/// characters.
-static void SetKeyName_(int key, Event &event) {
-    const char *name = glfwGetKeyName(key, 0);
+/// Returns a name for the given key from GLFW.
+static const char * GetKeyName_(int key) {
+    const char *name = nullptr;
 
-    // Handle special cases that GLFW does not for some reason.
+    // Map special keys to names first.
+    switch (key) {
+      case GLFW_KEY_BACKSPACE:    name = "Backspace";   break;
+      case GLFW_KEY_CAPS_LOCK:    name = "CapsLock";    break;
+      case GLFW_KEY_DELETE:       name = "Delete";      break;
+      case GLFW_KEY_DOWN:         name = "Down";        break;
+      case GLFW_KEY_END:          name = "End";         break;
+      case GLFW_KEY_ENTER:        name = "Enter";       break;
+      case GLFW_KEY_ESCAPE:       name = "Escape";      break;
+      case GLFW_KEY_F10:          name = "F10";         break;
+      case GLFW_KEY_F11:          name = "F11";         break;
+      case GLFW_KEY_F12:          name = "F12";         break;
+      case GLFW_KEY_F13:          name = "F13";         break;
+      case GLFW_KEY_F14:          name = "F14";         break;
+      case GLFW_KEY_F15:          name = "F15";         break;
+      case GLFW_KEY_F16:          name = "F16";         break;
+      case GLFW_KEY_F17:          name = "F17";         break;
+      case GLFW_KEY_F18:          name = "F18";         break;
+      case GLFW_KEY_F19:          name = "F19";         break;
+      case GLFW_KEY_F1:           name = "F1";          break;
+      case GLFW_KEY_F20:          name = "F20";         break;
+      case GLFW_KEY_F21:          name = "F21";         break;
+      case GLFW_KEY_F22:          name = "F22";         break;
+      case GLFW_KEY_F23:          name = "F23";         break;
+      case GLFW_KEY_F24:          name = "F24";         break;
+      case GLFW_KEY_F25:          name = "F25";         break;
+      case GLFW_KEY_F2:           name = "F2";          break;
+      case GLFW_KEY_F3:           name = "F3";          break;
+      case GLFW_KEY_F4:           name = "F4";          break;
+      case GLFW_KEY_F5:           name = "F5";          break;
+      case GLFW_KEY_F6:           name = "F6";          break;
+      case GLFW_KEY_F7:           name = "F7";          break;
+      case GLFW_KEY_F8:           name = "F8";          break;
+      case GLFW_KEY_F9:           name = "F9";          break;
+      case GLFW_KEY_HOME:         name = "Home";        break;
+      case GLFW_KEY_INSERT:       name = "Insert";      break;
+      case GLFW_KEY_KP_0:         name = "KP0";         break;
+      case GLFW_KEY_KP_1:         name = "KP1";         break;
+      case GLFW_KEY_KP_2:         name = "KP2";         break;
+      case GLFW_KEY_KP_3:         name = "KP3";         break;
+      case GLFW_KEY_KP_4:         name = "KP4";         break;
+      case GLFW_KEY_KP_5:         name = "KP5";         break;
+      case GLFW_KEY_KP_6:         name = "KP6";         break;
+      case GLFW_KEY_KP_7:         name = "KP7";         break;
+      case GLFW_KEY_KP_8:         name = "KP8";         break;
+      case GLFW_KEY_KP_9:         name = "KP9";         break;
+      case GLFW_KEY_KP_ADD:       name = "KPAdd";       break;
+      case GLFW_KEY_KP_DECIMAL:   name = "KPDecimal";   break;
+      case GLFW_KEY_KP_DIVIDE:    name = "KPDivide";    break;
+      case GLFW_KEY_KP_ENTER:     name = "KPEnter";     break;
+      case GLFW_KEY_KP_EQUAL:     name = "KPEqual";     break;
+      case GLFW_KEY_KP_MULTIPLY:  name = "KPMultiply";  break;
+      case GLFW_KEY_KP_SUBTRACT:  name = "KPSubtract";  break;
+      case GLFW_KEY_LEFT:         name = "Left";        break;
+      case GLFW_KEY_MENU:         name = "Menu";        break;
+      case GLFW_KEY_NUM_LOCK:     name = "NumLock";     break;
+      case GLFW_KEY_PAGE_DOWN:    name = "PageDown";    break;
+      case GLFW_KEY_PAGE_UP:      name = "PageUp";      break;
+      case GLFW_KEY_PAUSE:        name = "Pause";       break;
+      case GLFW_KEY_PRINT_SCREEN: name = "PrintScreen"; break;
+      case GLFW_KEY_RIGHT:        name = "Right";       break;
+      case GLFW_KEY_SCROLL_LOCK:  name = "ScrollLock";  break;
+      case GLFW_KEY_SPACE:        name = " ";           break;
+      case GLFW_KEY_TAB:          name = "Tab";         break;
+      case GLFW_KEY_UP:           name = "Up";          break;
+      default:
+        break;
+    }
+
+    // If not handled above, see if GLFW has a name for the key.
     if (! name) {
-        switch (key) {
-          case GLFW_KEY_F1:        name = "F1";        break;
-          case GLFW_KEY_F2:        name = "F2";        break;
-          case GLFW_KEY_F3:        name = "F3";        break;
-          case GLFW_KEY_F4:        name = "F4";        break;
-          case GLFW_KEY_F5:        name = "F5";        break;
-          case GLFW_KEY_F6:        name = "F6";        break;
-          case GLFW_KEY_F7:        name = "F7";        break;
-          case GLFW_KEY_F8:        name = "F8";        break;
-          case GLFW_KEY_F9:        name = "F9";        break;
-          case GLFW_KEY_F10:       name = "F10";       break;
-          case GLFW_KEY_F11:       name = "F11";       break;
-          case GLFW_KEY_F12:       name = "F12";       break;
-          case GLFW_KEY_DOWN:      name = "Down";      break;
-          case GLFW_KEY_ENTER:     name = "Enter";     break;
-          case GLFW_KEY_ESCAPE:    name = "Escape";    break;
-          case GLFW_KEY_LEFT:      name = "Left";      break;
-          case GLFW_KEY_RIGHT:     name = "Right";     break;
-          case GLFW_KEY_TAB:       name = "Tab";       break;
-          case GLFW_KEY_UP:        name = "Up";        break;
-          case GLFW_KEY_BACKSPACE: name = "Backspace"; break;
-          case GLFW_KEY_SPACE:     name = " ";         break;
-
-          default:
-            /// \todo Add other required but unknown keys.
-            std::cerr << "*** Unhandled key " << key << "\n";
+        name = glfwGetKeyName(key, 0);
+        if (! name)
             name = "UNKNOWN";
-            break;
-        }
     }
+    return name;
+}
 
-    event.key_name = name;
-
-    // Handle shifted single keys.
-    const bool is_shifted = event.modifiers.Has(Event::ModifierKey::kShift);
-    if (is_shifted && event.key_name.size() == 1U) {
-        const char c = event.key_name[0];
-        char new_c = 0;
-        if (c >= 'a' && c <= 'z') {
-            new_c = std::toupper(c);
-        }
-        else {
-            // Handle other special characters.
-            switch (c) {
-              case ',':  new_c = '<'; break;
-              case '-':  new_c = '_'; break;
-              case '.':  new_c = '>'; break;
-              case '/':  new_c = '?'; break;
-              case '0':  new_c = ')'; break;
-              case '1':  new_c = '!'; break;
-              case '2':  new_c = '@'; break;
-              case '3':  new_c = '#'; break;
-              case '4':  new_c = '$'; break;
-              case '5':  new_c = '%'; break;
-              case '6':  new_c = '^'; break;
-              case '7':  new_c = '&'; break;
-              case '8':  new_c = '*'; break;
-              case '9':  new_c = '('; break;
-              case ';':  new_c = ':'; break;
-              case '=':  new_c = '+'; break;
-              case '[':  new_c = '{'; break;
-              case '\'': new_c = '"'; break;
-              case '\\': new_c = '|'; break;
-              case ']':  new_c = '}'; break;
-              case '`':  new_c = '~'; break;
-              default:                break;
-            }
-        }
-        if (new_c) {
-            event.key_name[0] = new_c;
-            event.modifiers.Reset(Event::ModifierKey::kShift);
-        }
-    }
+/// Sets the key_name in the event based on the given key.
+static void SetKeyName_(int key, Event &event) {
+    event.key_name = GetKeyName_(key);
 }
 
 /// Creates and returns an Event instance representing a key press or release.
