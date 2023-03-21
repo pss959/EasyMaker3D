@@ -19,11 +19,11 @@ std::string Event::GetKeyString() const {
         (flags.Has(Event::Flag::kKeyPress) ||
          flags.Has(Event::Flag::kKeyRelease))) {
         if (modifiers.Has(ModifierKey::kShift))
-            s+= "<Shift>";
+            s+= "Shift-";
         if (modifiers.Has(ModifierKey::kControl))
-            s += "<Ctrl>";
+            s += "Ctrl-";
         if (modifiers.Has(ModifierKey::kAlt))
-            s += "<Alt>";
+            s += "Alt-";
         s += key_name;
     }
     return s;
