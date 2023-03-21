@@ -781,8 +781,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_->scene);
 
     // Use the frustum from the GLFWViewer.
-    if (glfw_viewer_)
+    if (glfw_viewer_) {
         scene_context_->frustum = glfw_viewer_->GetFrustum();
+        board_manager_->SetFrustum(scene_context_->frustum);
+    }
 
     auto &scene = *scene_context_->scene;
 

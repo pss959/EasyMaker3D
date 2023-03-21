@@ -410,9 +410,9 @@ void Board::Impl_::MoveActivated_(bool is_xy, bool is_activation) {
         active_slider->GetValueChanged().EnableObserver(this, false);
 
         // Transfer the translation from the canvas to the Board.
-        root_node_.SetTranslation(
-            root_node_.GetTranslation() +
-            root_node_.GetScale() * canvas_->GetTranslation());
+        const Vector3f motion = root_node_.GetRotation() *
+            (root_node_.GetScale() * canvas_->GetTranslation());
+        root_node_.SetTranslation(root_node_.GetTranslation() + motion);
         canvas_->SetTranslation(Vector3f::Zero());
         frame_->SetTranslation(Vector3f::Zero());
 

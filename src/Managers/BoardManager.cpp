@@ -21,15 +21,20 @@ void BoardManager::ShowBoard(const BoardPtr &board, bool is_shown) {
     // Show or hide the Board.
     ChangeBoardVisibility_(*board, is_shown);
 
-    // If the Board is floating, make sure it is above the stage, meaning the
-    // bottom is above Y=0. Note that this has no effect when in VR.
+    // Position the Board if it is floating. Note that none of this has any
+    // effect when in VR.
     if (is_shown && board->IsFloating()) {
-        Point3f pos = Point3f(board->GetTranslation());
+        // Use the Frustum to compute a good position and direction.
+        ASSERT(frustum_);
+        const Vector3f view_dir = frustum_->GetViewDirection();
+        Point3f pos = frustum_->position + frustum_->position[2] * view_dir;
+        board->SetRotation(Rotationf::RotateInto(-Vector3f::AxisZ(), view_dir));
+
+        // Also make sure it is above the stage (bottom above Y=0).
         const float min_y = pos[1] + board->GetScaledBounds().GetMinPoint()[1];
-        if (min_y < 0) {
+        if (min_y < 0)
             pos[1] += TK::kFloatingBoardYOffset - min_y;
-            board->SetPosition(pos);
-        }
+        board->SetPosition(pos);
     }
 
     // Update other Boards based on the Board's behavior; permanent Boards have

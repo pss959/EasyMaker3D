@@ -267,6 +267,11 @@ struct Frustum {
     /// what OpenVR supplies.
     void SetFromTangents(float left, float right, float down, float up);
 
+    /// Convenience that returns the main view direction.
+    Vector3f GetViewDirection() const {
+        return orientation * -Vector3f::AxisZ();
+    }
+
     /// Constructs an Ray through the given normalized point on the image
     /// rectangle (in the near plane). (0,0) is the lower-left corner of the
     /// rectangle.
