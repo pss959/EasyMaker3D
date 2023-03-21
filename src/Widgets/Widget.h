@@ -17,16 +17,14 @@ DECL_SHARED_PTR(Widget);
 /// Widget is an abstract base class for all interactive widgets. It is derived
 /// from SG::Node so that it can be placed in a scene graph.
 ///
-/// A Widget has 4 possible states:
-///  - Disabled: the Widget will not react to anything the user does.
-///  - Inactive: the Widget is not being interacted with
-///  - Hovered:  the user has hovered on the Widget; it can be activated
-///  - Active:   the Widget is in use (e.g., a button is still pressed or a
-///              slider thumb is being dragged.)
+/// Interaction with a Widget can be enabled or disabled. An enabled Widget
+/// will highlight by changing color and/or size when hovered. A disabled
+/// Widget is rendered with a dark color and does not highlight when hovered,
+/// but will still activate a tooltip.
 ///
-/// A Widget may indicate these states using color and/or scale changes.  In
-/// addition, a Widget may show a Tooltip when in the Hovered state for long
-/// enough if SetTooltipFunc() has been called.
+/// A Widget will be marked as active and change color when it is currently
+/// being used (during a click or drag operation). A Widget that implements a
+/// toggle shows the active state when the toggle is on.
 ///
 /// The GetActivation() notifier can be used to detect activation and
 /// deactivation; it is passed the Widget and a flag indicating activation
@@ -44,48 +42,42 @@ class Widget : public SG::Node {
     /// or deactivation.
     Util::Notifier<Widget&, bool> & GetActivation() { return activation_; }
 
-    /// Sets a function that can be invoked by the Widget to show or hide a
-    /// tooltip. The function is passed the Widget, the text string, and a flag
-    /// that is true to show the tooltip and false to hide it.
-    void SetTooltipFunc(const TooltipFunc &func) { tooltip_func_ = func; }
+    /// \name State Management
+    ///@{
 
     /// Enables or disables the Widget for interacting.
-    void SetInteractionEnabled(bool enabled) {
-        // If the Widget is already in the correct state, do nothing.
-        if (IsInteractionEnabled() != enabled)
-            SetState_(enabled ? State_::kInactive : State_::kDisabled, true);
-    }
+    void SetInteractionEnabled(bool enabled);
 
     /// Returns true if the widget is not disabled for interaction.
-    bool IsInteractionEnabled() const {
-        return state_ != State_::kDisabled;
-    }
+    bool IsInteractionEnabled() const { return is_interaction_enabled_; }
 
     /// Sets the state to indicate that the Widget is active or not. Does
     /// nothing if the Widget is disabled. Notifies of activation if notify is
     /// true (the default).
-    void SetActive(bool active, bool notify = true) {
-        if (IsInteractionEnabled() && active != IsActiveState_(state_))
-            SetState_(active ? State_::kActive : State_::kInactive, notify);
-    }
+    void SetActive(bool active, bool notify = true);
 
     /// Returns true if the widget is currently active.
-    bool IsActive() const {
-        return IsActiveState_(state_);
-    }
+    bool IsActive() const { return is_active_; }
 
-    /// Sets the state of hovering to on or off. Actually increments or
-    /// decrements a counter so that multiple devices can hover the same
-    /// Widget..
-    void SetHovering(bool is_hovering);
+    /// Starts hovering the Widget. Since multiple devices can hover the same
+    /// Widget, this uses a counter to track hovering state.
+    void StartHovering();
 
-    bool IsHovering() const { return IsHoveredState_(state_); }
+    /// Stops hovering the Widget (decrementing the counter).
+    void StopHovering();
+
+    bool IsHovering() const { return hover_count_ > 0; }
 
     /// Allows derived classes to respond to an Event that causes hovering on
     /// it. The 3D point on the Widget is passed in. Note that this is called
-    /// for each Event that results in the Widget t to become or remain
-    /// hovered. The base class defines this to do nothing.
+    /// for each Event that results in the Widget to become or remain hovered.
+    /// The base class defines this to do nothing.
     virtual void UpdateHoverPoint(const Point3f &point) {}
+
+    ///@}
+
+    /// \name Color Management
+    ///@{
 
     /// Sets the inactive color for the Widget.
     void SetInactiveColor(const Color &color);
@@ -106,12 +98,21 @@ class Widget : public SG::Node {
         color_name_prefix_ = prefix;
     }
 
+    ///@}
+
+    /// \name Tooltip Management
+    ///@{
+
+    /// Sets a function that can be invoked by the Widget to show or hide a
+    /// tooltip. The function is passed the Widget, the text string, and a flag
+    /// that is true to show the tooltip and false to hide it.
+    void SetTooltipFunc(const TooltipFunc &func) { tooltip_func_ = func; }
+
     /// Sets the tooltip text to display when hovered long enough. The default
     /// text is empty, which disables tooltips.
-    void SetTooltipText(const std::string &text);
+    void SetTooltipText(const std::string &text) { tooltip_text_ = text; }
 
-    /// Redefines this to set up colors.
-    virtual void PostSetUpIon() override;
+    ///@}
 
     /// \name Target Interface
     ///@{
@@ -143,6 +144,9 @@ class Widget : public SG::Node {
 
     ///@}
 
+    /// Redefines this to set up colors.
+    virtual void PostSetUpIon() override;
+
   protected:
     /// The constructor is protected to make this abstract.
     Widget() {}
@@ -158,11 +162,6 @@ class Widget : public SG::Node {
     virtual bool ShouldSetBaseColor() const { return true; }
 
   private:
-    /// Widget states. See the header comment.
-    enum class State_ {
-        kDisabled, kInactive, kHovered, kActive, kActiveHovered
-    };
-
     /// \name Parsed Fields
     ///@{
     Parser::TField<Color>       inactive_color_;
@@ -173,17 +172,20 @@ class Widget : public SG::Node {
     Parser::TField<std::string> tooltip_text_;
     ///@}
 
-    /// Current state.
-    State_ state_ = State_::kInactive;
+    /// Set to true if interaction is enabled. This is true by default.
+    bool        is_interaction_enabled_ = true;
 
-    /// Hover count.
-    size_t hover_count_ = 0;
+    /// Set to true while active. This is false by default.
+    bool        is_active_ = false;
+
+    /// Hover count. Greater than zero while hovering.
+    size_t      hover_count_ = 0;
 
     /// Function that is invoked to show or hide a Tooltip.
     TooltipFunc tooltip_func_;
 
     /// Saves the current scale factor before hovering.
-    Vector3f saved_scale_;
+    Vector3f    saved_scale_;
 
     /// Prefix string used for all special color names accessed from the
     /// ColorMap.
@@ -192,11 +194,14 @@ class Widget : public SG::Node {
     /// Notifies when the widget is activated or deactivated.
     Util::Notifier<Widget&, bool> activation_;
 
-    /// Changes the Widget's state to the given one.
-    void SetState_(State_ new_state, bool invoke_callbacks);
+    /// Stops hovering if currently doing so,
+    void StopHovering_();
+
+    /// Handles updates to the Widget color when state changes.
+    void UpdateColor_();
 
     /// Begins or ends a hover.
-    void ChangeHovering_(bool begin);
+    void ChangeHoverState_(bool hover);
 
     /// If the given field has a value set, this returns it. Otherwise, it
     /// looks up the named special color in the ColorMap.
@@ -206,14 +211,4 @@ class Widget : public SG::Node {
     /// Activates or deactivates the Tooltip object. Creates it first if
     /// necessary.
     void ActivateTooltip_(bool is_active);
-
-    /// Convenience that returns true if a state represents an active Widget.
-    static bool IsActiveState_(State_ state) {
-        return state == State_::kActive || state == State_::kActiveHovered;
-    }
-
-    /// Convenience that returns true if a state represents a hovered Widget.
-    static bool IsHoveredState_(State_ state) {
-        return state == State_::kHovered || state == State_::kActiveHovered;
-    }
 };

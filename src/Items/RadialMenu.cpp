@@ -87,7 +87,7 @@ void RadialMenu::HighlightButton(const Anglef &angle) {
                 ClearHighlightedButton();
                 if (but.widget->IsInteractionEnabled()) {
                     highlighted_button_ = &but;
-                    but.widget->SetHovering(true);
+                    but.widget->StartHovering();
                 }
             }
             return;
@@ -97,7 +97,7 @@ void RadialMenu::HighlightButton(const Anglef &angle) {
 
 void RadialMenu::ClearHighlightedButton() {
     if (highlighted_button_) {
-        highlighted_button_->widget->SetHovering(false);
+        highlighted_button_->widget->StopHovering();
         highlighted_button_ = nullptr;
     }
 }

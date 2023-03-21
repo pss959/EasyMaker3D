@@ -32,6 +32,10 @@ class Inspector : public SG::Node {
     /// Deactivates the Inspector.
     void Deactivate();
 
+    /// Positions the Inspector relative to the view specified by the given
+    /// Frustum.
+    void SetPositionForView(const Frustum &frustum);
+
     /// Applies a relative change to the scale of the inspected object if it is
     /// not attached to a Controller.
     void ApplyScaleChange(float delta);

@@ -288,6 +288,10 @@ extern const float    kTorusInnerRadius;
 /// \name Inspector
 ///@{
 
+/// Distance from the viewpoint for the inspected Model when not attached to a
+/// Controller.
+extern const float    kInspectorViewDistance;
+
 /// Angle (in degrees) the Inspector should rotate the Model vertically for a
 /// mouse drag across the entire window height.
 extern const float    kInspectorMousePitchAngle;

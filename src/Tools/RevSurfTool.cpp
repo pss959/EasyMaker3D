@@ -33,7 +33,7 @@ void RevSurfTool::InitPanel() {
 }
 
 void RevSurfTool::PanelChanged(const std::string &key,
-                             ToolPanel::InteractionType type) {
+                               ToolPanel::InteractionType type) {
     PanelTool::PanelChanged(key, type);
 
     auto &panel = GetTypedPanel<RevSurfToolPanel>();
@@ -51,12 +51,18 @@ void RevSurfTool::PanelChanged(const std::string &key,
             command_->SetSweepAngle(panel.GetSweepAngle());
             // Simulate execution to update all the Models.
             GetContext().command_manager->SimulateDo(command_);
+            point_dragged_ = true;
         }
         break;
 
       case ToolPanel::InteractionType::kDragEnd:
         ASSERT(command_);
-        GetContext().command_manager->AddAndDo(command_);
+        // Don't do anything if there was no actual drag (i.e., the point was
+        // clicked).
+        if (point_dragged_) {
+            GetContext().command_manager->AddAndDo(command_);
+            point_dragged_ = false;
+        }
         command_.reset();
         break;
 

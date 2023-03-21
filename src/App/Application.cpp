@@ -795,8 +795,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_->scene);
 
     // Use the frustum from the GLFWViewer.
-    if (glfw_viewer_)
+    if (glfw_viewer_) {
         scene_context_->frustum = glfw_viewer_->GetFrustum();
+        board_manager_->SetFrustum(scene_context_->frustum);
+    }
 
     auto &scene = *scene_context_->scene;
 
@@ -1187,12 +1189,11 @@ void Application::Impl_::UpdateIcons_() {
         const bool enabled = is_enabled(icon->GetAction());
         icon->SetInteractionEnabled(enabled);
 
-        if (enabled) {
-            const Action action = icon->GetAction();
-            icon->SetTooltipText(action_processor_->GetActionTooltip(action));
-            if (icon->IsToggle())
-                icon->SetToggleState(action_processor_->GetToggleState(action));
-        }
+        const Action action = icon->GetAction();
+        icon->SetTooltipText(action_processor_->GetActionTooltip(action));
+
+        if (enabled && icon->IsToggle())
+            icon->SetToggleState(action_processor_->GetToggleState(action));
     }
 
     // Special case for the ToggleSpecializedToolIcon.

@@ -47,7 +47,7 @@ bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
         UpdateCurrentData_(event, current_widget_);
         if (current_widget_) {
             if (current_widget_->IsHovering())
-                current_widget_->SetHovering(false);
+                current_widget_->StopHovering();
             current_widget_->SetActive(true);
         }
         activation_data_ = current_data_;

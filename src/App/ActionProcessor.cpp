@@ -629,19 +629,29 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
     auto hide_show = [](bool visible){ return visible ? "Hide" : "Show"; };
 
     switch (action) {
-      case Action::kUndo: {
-        auto &cl = *context_->command_manager->GetCommandList();
-        return "Undo the last command:\n<" +
-            cl.GetCommandToUndo()->GetDescription() + ">";
-      }
-      case Action::kRedo: {
-        auto &cl = *context_->command_manager->GetCommandList();
-        return "Redo the last undone command:\n<" +
-            cl.GetCommandToRedo()->GetDescription() + ">";
-      }
+      case Action::kUndo:
+        if (! CanApplyAction(action)) {
+            return "Undo the last command";
+        }
+        else {
+            auto &cl = *context_->command_manager->GetCommandList();
+            return "Undo the last command:\n<" +
+                cl.GetCommandToUndo()->GetDescription() + ">";
+        }
+      case Action::kRedo:
+        if (! CanApplyAction(action)) {
+            return "Undo the last command";
+        }
+        else {
+            auto &cl = *context_->command_manager->GetCommandList();
+            return "Redo the last undone command:\n<" +
+                cl.GetCommandToRedo()->GetDescription() + ">";
+        }
 
       case Action::kToggleSpecializedTool:
-        if (context_->tool_box->IsUsingSpecializedTool())
+        if (! CanApplyAction(action))
+            return "Switch between specialized and general tools";
+        else if (context_->tool_box->IsUsingSpecializedTool())
             return "Switch back to the current general tool";
         else
             return "Switch to the specialized " +
@@ -1026,15 +1036,19 @@ void ActionProcessor::Impl_::MoveSelectionToOrigin_() {
 }
 
 void ActionProcessor::Impl_::ShowInspector_(bool show) {
-    auto &inspector = *context_->scene_context->inspector;
+    const auto &sc = *context_->scene_context;
+    auto &inspector = *sc.inspector;
     if (show) {
         // Get the controller, if any, that caused the inspector to be shown.
         const auto dev = context_->main_handler->GetLastActiveDevice();
         ControllerPtr controller;
         if (dev == Event::Device::kLeftController)
-            controller = context_->scene_context->left_controller;
+            controller = sc.left_controller;
         else if (dev == Event::Device::kRightController)
-            controller = context_->scene_context->right_controller;
+            controller = sc.right_controller;
+        // If no controller, position the Inspector based on the current view.
+        else
+            inspector.SetPositionForView(*sc.frustum);
 
         // Deselect everything after saving the selection.
         saved_selection_for_inspector_ = GetSelection();
