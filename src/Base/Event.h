@@ -61,6 +61,9 @@ struct Event {
         kAlt     = (1 << 2),  ///< Alt key.
     };
 
+    /// Typedef for a collection of ModifierKey flags.
+    typedef Util::Flags<ModifierKey> Modifiers;
+
     /// Serial number for the event. Primarily for logging and debugging.
     size_t            serial = 0;
 
@@ -78,7 +81,7 @@ struct Event {
     std::string       key_name;
 
     /// Current keyboard modifiers for a key press or release.
-    Util::Flags<ModifierKey> modifiers;
+    Modifiers         modifiers;
 
     /// Relative 1D position change for a thumbwheel or other 1D
     /// valuator.
@@ -111,8 +114,14 @@ struct Event {
     static bool IsTrackpadButton(Button button);
 
     /// Convenience function that builds a string representing a key press or
-    /// release with all modifiers. (Example: "<Shift><Ctrl>a".)
+    /// release with all modifiers in the event. (Example: "Shift-Ctrl-a".)
     std::string GetKeyString() const;
+
+    /// Convenience function that builds a string representing a key press or
+    /// release with the given modifiers and key code. (Example:
+    /// "Shift-Ctrl-a".)
+    static std::string BuildKeyString(const Modifiers &modifiers,
+                                      const std::string &key_name);
 
     /// Convenience function that builds a string representing a Controller
     /// button press or release. (Example: "L:Center" or "R:Menu".)

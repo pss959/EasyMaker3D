@@ -17,6 +17,7 @@ test_sources = [
     'ColorTest.cpp',
     'CommandListTest.cpp',
     'CoordConvTest.cpp',
+    'CustomShortcutTest.cpp',
     'DelayTest.cpp',
     'DimensionalityTest.cpp',
     'EnumTest.cpp',

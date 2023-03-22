@@ -7,6 +7,7 @@
 #include "Enums/Action.h"
 #include "Handlers/Handler.h"
 
+class FilePath;
 DECL_SHARED_PTR(ActionAgent);
 DECL_SHARED_PTR(ShortcutHandler);
 
@@ -17,9 +18,15 @@ class ShortcutHandler : public Handler {
   public:
     ShortcutHandler();
 
-    /// Adds custom shortcuts from the "shortcuts.txt" file in the current
-    /// directory. Sets the error string and returns false on error.
-    bool AddCustomShortcuts(std::string &error);
+    /// Adds custom shortcuts from the given FilePath. Sets the error string
+    /// and returns false on error.
+    bool AddCustomShortcutsFromFile(const FilePath &path, std::string &error);
+
+    /// Adds custom shortcuts from the given string. Sets the error
+    /// string and returns false on error. This is provided separately to make
+    /// testing easier.
+    bool AddCustomShortcutsFromString(const std::string &contents,
+                                      std::string &error);
 
     /// Sets the ActionAgent used to apply actions.
     void SetActionAgent(const ActionAgentPtr &action_agent) {
@@ -40,12 +47,24 @@ class ShortcutHandler : public Handler {
     virtual bool HandleEvent(const Event &event) override;
 
   private:
+    class Parser_;
+
+    typedef std::unordered_map<std::string, Action> ActionMap_;
+
     ActionAgentPtr action_agent_;
 
     /// Maps event key strings to Action enum values.
-    std::unordered_map<std::string, Action> action_map_;
+    ActionMap_ action_map_;
 
     /// Handles a string representing a potential keyboard key or controller
     /// button shortcut.
     bool HandleShortcutString_(const std::string &str);
+
+    /// Processes custom shortcuts from the contents of the shortcuts.txt file.
+    void ProcessCustomShortcuts_(const std::string &contents);
+
+    /// Adds a shortcut.
+    void AddShortcut_(const std::string &key, Action action) {
+        action_map_[key] = action;
+    };
 };

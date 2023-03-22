@@ -22,13 +22,13 @@ TEST(Event, GetKeyString) {
     ev.key_name = "q";
     EXPECT_EQ("q", ev.GetKeyString());
     ev.modifiers.Set(Event::ModifierKey::kControl);
-    EXPECT_EQ("<Ctrl>q", ev.GetKeyString());
+    EXPECT_EQ("Ctrl-q", ev.GetKeyString());
     ev.modifiers.Set(Event::ModifierKey::kShift);
-    EXPECT_EQ("<Shift><Ctrl>q", ev.GetKeyString());
+    EXPECT_EQ("Shift-Ctrl-q", ev.GetKeyString());
     ev.modifiers.Set(Event::ModifierKey::kAlt);
-    EXPECT_EQ("<Shift><Ctrl><Alt>q", ev.GetKeyString());
+    EXPECT_EQ("Shift-Ctrl-Alt-q", ev.GetKeyString());
     ev.modifiers.Reset(Event::ModifierKey::kControl);
-    EXPECT_EQ("<Shift><Alt>q", ev.GetKeyString());
+    EXPECT_EQ("Shift-Alt-q", ev.GetKeyString());
 }
 
 TEST(Event, GetControllerButtonString) {

@@ -29,6 +29,19 @@ std::string Event::GetKeyString() const {
     return s;
 }
 
+std::string Event::BuildKeyString(const Modifiers &modifiers,
+                                  const std::string &key_name) {
+    std::string s;
+    if (modifiers.Has(ModifierKey::kShift))
+        s+= "Shift-";
+    if (modifiers.Has(ModifierKey::kControl))
+        s += "Ctrl-";
+    if (modifiers.Has(ModifierKey::kAlt))
+        s += "Alt-";
+    s += key_name;
+    return s;
+}
+
 std::string Event::GetControllerButtonString() const {
     std::string s;
     if ((device == Device::kLeftController ||

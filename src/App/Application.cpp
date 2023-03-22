@@ -453,12 +453,13 @@ bool Application::Impl_::Init(const Application::Options &options) {
 
     ConnectSceneInteraction_();
 
-    // Process any custom shortcut file. Quit on error after showing an error
-    // message.
+    // Try to read shortcuts from a "shortcuts.txt" file in the current
+    // directory. Quit on error after showing an error message.
+    const FilePath path("shortcuts.txt");
     std::string errors;
-    if (! shortcut_handler_->AddCustomShortcuts(errors)) {
+    if (! shortcut_handler_->AddCustomShortcutsFromFile(path, errors)) {
         auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
-        dp->SetMessage("Error in custom shortcut file: " + errors);
+        dp->SetMessage("Error in custom shortcut file:\n" + errors);
         dp->SetSingleResponse("OK");
         auto board = scene_context_->app_board;
         board->SetPanel(dp, [&](const std::string &){ TryQuit_(); });
@@ -599,10 +600,6 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
     tc.session_manager   = session_manager_;
     tc.settings_manager  = settings_manager_;
     tc.scene_context     = scene_context_;
-
-    // Make sure the SceneContext has a valid Frustum.
-    if (! tc.scene_context->frustum)
-        tc.scene_context->frustum.reset(new Frustum);
 }
 
 void Application::Impl_::AddEmitter(const IEmitterPtr &emitter) {
@@ -795,10 +792,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_->scene);
 
     // Use the frustum from the GLFWViewer.
-    if (glfw_viewer_) {
+    if (glfw_viewer_)
         scene_context_->frustum = glfw_viewer_->GetFrustum();
-        board_manager_->SetFrustum(scene_context_->frustum);
-    }
+    else
+        scene_context_->frustum.reset(new Frustum);
+
+    board_manager_->SetFrustum(scene_context_->frustum);
 
     auto &scene = *scene_context_->scene;
 
