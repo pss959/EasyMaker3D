@@ -266,7 +266,8 @@ img {
     margin-right: auto;    
 }
 
-/* Description text should wrap. */
+/* Name and description text should wrap. */
+.cheat-sheet-table tbody td:nth-child(2),
 .cheat-sheet-table tbody td:nth-child(4) {
     max-width:   30%;
     word-break:  normal;
