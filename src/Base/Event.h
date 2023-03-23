@@ -117,6 +117,13 @@ struct Event {
     /// release with all modifiers in the event. (Example: "Shift-Ctrl-a".)
     std::string GetKeyString() const;
 
+    /// Convenience function that does the reverse of BuildKeyString(); it
+    /// parses the given string and sets the \p modifiers and \p key_name from
+    /// it. Returns false and sets the error message on error.
+    static bool ParseKeyString(const std::string &key_string,
+                               Modifiers &modifiers, std::string &key_name,
+                               std::string &error);
+
     /// Convenience function that builds a string representing a key press or
     /// release with the given modifiers and key code. (Example:
     /// "Shift-Ctrl-a".)

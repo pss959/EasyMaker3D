@@ -460,12 +460,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kKey: {
           const auto &kinst = GetTypedInstr_<SnapScript::KeyInstr>(instr);
-          Emitter_::KModifiers modifiers;
-          if (kinst.is_ctrl_on)
-              modifiers.Set(Event::ModifierKey::kControl);
-          if (kinst.is_alt_on)
-              modifiers.Set(Event::ModifierKey::kAlt);
-          emitter_->AddKey(kinst.key, modifiers);
+          emitter_->AddKey(kinst.key_name, kinst.modifiers);
           break;
       }
       case SIType::kLoad: {

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "Base/Event.h"
 #include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Enums/Hand.h"
@@ -77,9 +78,8 @@ class SnapScript {
         Point2f     pos;
     };
     struct KeyInstr : public Instr {
-        std::string key;
-        bool        is_ctrl_on;
-        bool        is_alt_on;
+        Event::Modifiers modifiers;
+        std::string      key_name;
     };
     struct LoadInstr : public Instr {
         std::string file_name;

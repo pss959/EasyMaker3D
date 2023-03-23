@@ -257,29 +257,17 @@ SnapScript::InstrPtr SnapScript::ProcessHover_(const Words &words) {
 
 SnapScript::InstrPtr SnapScript::ProcessKey_(const Words &words) {
     KeyInstrPtr kinst;
-    if (words.size() < 2U) {
+    if (words.size() != 2U) {
         Error_("Bad syntax for key instruction");
     }
     else {
-        // words[1] is the key name. All the rest are modifiers.
-        bool ok = true;
-        for (size_t i = 2U; i < words.size(); ++i) {
-            if (words[i] != "ctrl" &&
-                words[i] != "alt") {
-                Error_("Bad modifier for key instruction");
-                ok = false;
-            }
-        }
-        if (ok) {
-            kinst.reset(new KeyInstr);
-            kinst->key = words[1];
-            kinst->is_ctrl_on = kinst->is_alt_on = false;
-            for (size_t i = 2U; i < words.size(); ++i) {
-                if (words[i] == "ctrl")
-                    kinst->is_ctrl_on = true;
-                else
-                    kinst->is_alt_on = true;
-            }
+        // words[1] is the key string
+        kinst.reset(new KeyInstr);
+        std::string error;
+        if (! Event::ParseKeyString(words[1], kinst->modifiers,
+                                    kinst->key_name, error)) {
+            Error_(error + " in key instruction");
+            kinst.reset();
         }
     }
     return kinst;

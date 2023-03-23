@@ -48,7 +48,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
 
     // Ctrl-Period key: Reset the view.
     if (event.flags.Has(Event::Flag::kKeyPress) &&
-        event.GetKeyString() == "<Ctrl>.") {
+        event.GetKeyString() == "Ctrl-.") {
         ResetView();
         return true;
     }

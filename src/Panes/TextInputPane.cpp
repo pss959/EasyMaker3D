@@ -518,26 +518,26 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
 }
 
 void TextInputPane::Impl_::InitActionMap_() {
-    s_action_map_["<Ctrl>Backspace"] = TextAction::kDeleteAll;
-    s_action_map_["<Ctrl>K"]         = TextAction::kDeleteToStart;
-    s_action_map_["<Ctrl>Z"]         = TextAction::kRedo;
-    s_action_map_["<Ctrl>a"]         = TextAction::kSelectAll;
-    s_action_map_["<Ctrl>b"]         = TextAction::kMovePrevious;
-    s_action_map_["<Ctrl>d"]         = TextAction::kDeleteNext;
-    s_action_map_["<Ctrl>e"]         = TextAction::kMoveToEnd;
-    s_action_map_["<Ctrl>f"]         = TextAction::kMoveNext;
-    s_action_map_["<Ctrl>k"]         = TextAction::kDeleteToEnd;
-    s_action_map_["<Ctrl>z"]         = TextAction::kUndo;
-    s_action_map_["<Shift>Down"]     = TextAction::kSelectToEnd;
-    s_action_map_["<Shift>Left"]     = TextAction::kSelectPrevious;
-    s_action_map_["<Shift>Right"]    = TextAction::kSelectNext;
-    s_action_map_["<Shift>Up"]       = TextAction::kSelectToStart;
-    s_action_map_["Backspace"]       = TextAction::kDeleteSelected;
-    s_action_map_["Down"]            = TextAction::kMoveToEnd;
-    s_action_map_["Left"]            = TextAction::kMovePrevious;
-    s_action_map_["Left"]            = TextAction::kMovePrevious;
-    s_action_map_["Right"]           = TextAction::kMoveNext;
-    s_action_map_["Up"]              = TextAction::kMoveToStart;
+    s_action_map_["Backspace"]      = TextAction::kDeleteSelected;
+    s_action_map_["Ctrl-Backspace"] = TextAction::kDeleteAll;
+    s_action_map_["Ctrl-a"]         = TextAction::kSelectAll;
+    s_action_map_["Ctrl-b"]         = TextAction::kMovePrevious;
+    s_action_map_["Ctrl-d"]         = TextAction::kDeleteNext;
+    s_action_map_["Ctrl-e"]         = TextAction::kMoveToEnd;
+    s_action_map_["Ctrl-f"]         = TextAction::kMoveNext;
+    s_action_map_["Ctrl-k"]         = TextAction::kDeleteToEnd;
+    s_action_map_["Ctrl-z"]         = TextAction::kUndo;
+    s_action_map_["Down"]           = TextAction::kMoveToEnd;
+    s_action_map_["Left"]           = TextAction::kMovePrevious;
+    s_action_map_["Left"]           = TextAction::kMovePrevious;
+    s_action_map_["Right"]          = TextAction::kMoveNext;
+    s_action_map_["Shift-Ctrl-k"]   = TextAction::kDeleteToStart;
+    s_action_map_["Shift-Ctrl-z"]   = TextAction::kRedo;
+    s_action_map_["Shift-Down"]     = TextAction::kSelectToEnd;
+    s_action_map_["Shift-Left"]     = TextAction::kSelectPrevious;
+    s_action_map_["Shift-Right"]    = TextAction::kSelectNext;
+    s_action_map_["Shift-Up"]       = TextAction::kSelectToStart;
+    s_action_map_["Up"]             = TextAction::kMoveToStart;
 }
 
 void TextInputPane::Impl_::AttachToVirtualKeyboard_() {

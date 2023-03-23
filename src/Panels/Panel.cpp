@@ -562,7 +562,7 @@ bool Panel::ProcessKeyPress_(const Event &event) {
     }
 
     // Navigation:
-    else if (key_string == "Tab" || key_string == "<Shift>Tab") {
+    else if (key_string == "Tab" || key_string == "Shift-Tab") {
         focuser_->MoveFocus(key_string == "Tab" ? Focuser_::Direction::kDown :
                             Focuser_::Direction::kUp);
         handled = true;

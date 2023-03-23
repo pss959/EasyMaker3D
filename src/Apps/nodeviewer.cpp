@@ -263,22 +263,22 @@ bool Application_::HandleEvent_(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
 #if ENABLE_DEBUG_FEATURES
-        if (key_string == "<Alt>r") {
+        if (key_string == "Alt-r") {
             ReloadScene_();
             return true;
         }
         else if (Debug::HandleShortcut(key_string))
             return true;
 #endif
-        else if (key_string == "<Ctrl>q") {
+        else if (key_string == "Ctrl-q") {
             should_quit_ = true;
             return true;
         }
-        else if (key_string == "<Ctrl>v") {
+        else if (key_string == "Ctrl-v") {
             view_handler_->ResetView();
             return true;
         }
-        else if (key_string == "<Ctrl>o") {
+        else if (key_string == "Ctrl-o") {
             IntersectCenterRay_();
             return true;
         }

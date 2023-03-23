@@ -75,29 +75,12 @@ bool ShortcutHandler::Parser_::ParseLine_(const std::string &line,
     if (words.size() != 2U)
         return Error_("Syntax error");
 
-    // The shortcut key string comes first. Split it by "-".
-    const std::vector<std::string> s = SplitString(words[0], "-");
-
-    // All but the last part should be a valid modifier.
+    // The shortcut key string comes first. Let the Event class parse it to
+    // check for errors.
     Event::Modifiers modifiers;
-    for (size_t i = 0; i + 1 < s.size(); ++i) {
-        const std::string &mod = s[i];
-        if (ion::base::CompareCaseInsensitive(mod, "shift") == 0)
-            modifiers.Set(Event::ModifierKey::kShift);
-        else if (ion::base::CompareCaseInsensitive(mod, "ctrl") == 0)
-            modifiers.Set(Event::ModifierKey::kControl);
-        else if (ion::base::CompareCaseInsensitive(mod, "alt") == 0)
-            modifiers.Set(Event::ModifierKey::kAlt);
-        else
-            return Error_("Invalid key modifier: \"" + mod + "\"");
-    }
-
-    // The last part is assumed to be a valid key name. If it isn't, it won't
-    // work. Leaving this unvalidated makes it possible to handle other (and
-    // future) GLFW key names.
-
-    // Build a key string from the modifiers and the key name.
-    const std::string key_string = Event::BuildKeyString(modifiers, s.back());
+    std::string      key_name;
+    if (! Event::ParseKeyString(words[0], modifiers, key_name, error_))
+        return Error_(error_);
 
     // The scond word is the action to perform. A valid action string has the
     // same name as the corresponding action enum without the leading "k".
@@ -106,7 +89,8 @@ bool ShortcutHandler::Parser_::ParseLine_(const std::string &line,
     if (! Util::EnumFromString("k" + action_name, action))
         return Error_("Invalid action name: \"" + action_name + "\"");
 
-    action_map[key_string] = action;
+    // Construct a valid key string for the map.
+    action_map[Event::BuildKeyString(modifiers, key_name)] = action;
 
     return true;
 }
