@@ -1,6 +1,7 @@
 #include "App/Application.h"
 
 #include <algorithm>
+#include <fstream>
 #include <typeinfo>
 
 #include <ion/gfxutils/shadermanager.h>
@@ -55,6 +56,8 @@
 #include "Panels/KeyboardPanel.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
+#include "Parser/Exception.h"
+#include "Parser/Writer.h"
 #include "Place/ClickInfo.h"
 #include "Place/PrecisionStore.h"
 #include "SG/Change.h"
@@ -367,6 +370,10 @@ Application::Impl_::Impl_() : loader_(new SceneLoader) {
 }
 
 Application::Impl_::~Impl_() {
+    // Do nothing if Init() failed.
+    if (! scene_context_->scene)
+        return;
+
     event_manager_->ClearHandlers();
     viewers_.clear();
     emitters_.clear();
@@ -395,8 +402,12 @@ bool Application::Impl_::Init(const Application::Options &options) {
     const FilePath scene_path =
         FilePath::GetResourcePath("scenes", "workshop" + TK::kDataFileSuffix);
     SG::ScenePtr scene = loader_->LoadScene(scene_path);
-    if (! scene)
+    if (! scene) {
+#if RELEASE_BUILD
+        throw Parser::Exception("Error loading scene from resources");
+#endif
         return false;
+    }
     scene_context_->FillFromScene(scene, true);
 #if ENABLE_DEBUG_FEATURES
     Debug::SetSceneContext(scene_context_);
@@ -584,8 +595,19 @@ void Application::Impl_::SaveCrashSession(
     comments.push_back("---- Stack Trace:");
     Util::AppendVector(stack, comments);
 
-    session_manager_->SaveSessionWithComments(path, comments);
-
+    // Save the session to the crash file if possible. If the problem happens
+    // before a successful init, just save the stack.
+    if (session_manager_) {
+        session_manager_->SaveSessionWithComments(path, comments);
+    }
+    else {
+        std::ofstream out(path.ToNativeString());
+        if (out) {
+            Parser::Writer writer(out);
+            for (const auto &comment: comments)
+                writer.WriteComment(comment);
+        }
+    }
     std::cerr << "*** Saved crash session to " << path.ToString() << "\n";
 }
 

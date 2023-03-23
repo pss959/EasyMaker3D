@@ -5,9 +5,9 @@
 
 #include <ion/base/stringutils.h>
 
-#include "Base/ExceptionBase.h"
 #include "Math/Point3fMap.h"
 #include "Math/Types.h"
+#include "Util/ExceptionBase.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/Read.h"

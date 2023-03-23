@@ -5,11 +5,9 @@
 ///
 /// \ingroup Utility
 
-#include <assert.h>
-
-#include <exception>
 #include <string>
-#include <vector>
+
+#include "Util/ExceptionBase.h"
 
 // ============================================================================
 // Assertions are turned off in release builds.
@@ -23,15 +21,15 @@
 /// Exception class that is thrown when a run-time assertion fails.
 ///
 /// \ingroup Utility
-class AssertException : public std::exception {
+class AssertException : public ExceptionBase {
   public:
     AssertException(const std::string &expr, const std::string &file,
-                    int line, const std::string &msg);
-    const char * what() const throw() override;
-    const std::vector<std::string> & GetStackTrace() const;
+                    int line, const std::string &msg) :
+        ExceptionBase(BuildMessage_(expr, file, line, msg)) {}
   private:
-    std::string              msg_;
-    std::vector<std::string> stack_trace_;
+    static std::string BuildMessage_(const std::string &expr,
+                                     const std::string &file,
+                                     int line, const std::string &msg);
 };
 
    /// Additional Assert macro that takes an optional message.

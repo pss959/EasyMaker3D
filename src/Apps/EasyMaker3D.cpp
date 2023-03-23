@@ -14,6 +14,7 @@
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
+#include "Util/ExceptionBase.h"
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
 #include "Util/General.h"
@@ -57,8 +58,11 @@ class CrashHandler_ {
 #endif
 
     void HandleException(const std::exception &ex) {
-        HandleCrash_(std::string("Caught exception:\n") + ex.what(),
-                     StackTrace_());
+        StackTrace_ stack;
+        if (const ExceptionBase *exb = dynamic_cast<const ExceptionBase *>(&ex))
+            stack = exb->GetStackTrace();
+
+        HandleCrash_(std::string("Caught exception:\n") + ex.what(), stack);
     }
 
   private:

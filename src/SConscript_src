@@ -411,6 +411,7 @@ lib_sources = list(chain(
     PlaceInDir_('Util', [
         'Assert',
         'Delay',
+        'ExceptionBase',
         'FilePath',
         'FilePathList',
         'General',
