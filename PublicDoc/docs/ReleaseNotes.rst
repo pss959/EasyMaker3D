@@ -1,6 +1,31 @@
 |appname| Release Notes
 =======================
 
+Release 1.2.0 (March, 2023)
+---------------------------
+
+ - New Features:
+
+   - Tooltips are now triggered even for disabled 3D icons.
+
+   - Floating panels are always placed in the line of sight for the current
+     view (non-VR only).
+
+   - Inspector mode places the inspected model in the line of sight for the
+     current view (non-VR/mouse only).
+
+   - Added processing of custom keyboard shortcut file.
+
+   - Added Delete key as a shortcut for delete action.
+
+   - Crash files now contain more useful information.
+
+ - Bug Fixes:
+
+   - Use proper URLs in Help Panel.
+
+   - Clicking on a point when editing a profile no longer resets the profile.
+
 Release 1.1.0 (March, 2023)
 ---------------------------
 

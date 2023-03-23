@@ -29,8 +29,8 @@ Additionally:
 
  - The `Pillow` Python package (`PIL` replacement) is required to build the 2D
    radial menu icon resource files (required for the application).
- - The `Sphinx`, `sphinx-rtd-theme`, and `sphinx-multiversion` Python packages
-   are required to build the public documentation.
+ - The `Sphinx` and `sphinx-rtd-theme` Python packages are required to build
+   the public documentation.
  - The `libboost-dev` package is required to run the unit tests.
 
 ### Windows
