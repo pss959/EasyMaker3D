@@ -87,11 +87,11 @@ Initial Set-Up
 ::::::::::::::
 
  - Install ALVR on your computer.
- - ALVR replaces the compositor application used by SteamVR, so save the real
-   version::
+ - ALVR replaces the vrcompositor application used by SteamVR, so save the
+   real version::
 
      cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/
-     ln -s vrcompositor vrcompositor.real
+     cp vrcompositor vrcompositor.real
 
  - Install the ALVR client on the Quest using `SideQuest
    <https://sidequestvr.com/>_`.
@@ -109,7 +109,12 @@ to use a different device. If you have a different VR system you want to use:
  - Rename the ALVR server directory so SteamVR does not access its drivers
    first. (Really, if it finds this server it will run it despite having other
    devices to use.)
- - Restore the real SteamVR compositor you changed above::
+ - Save the ALVR version of the vrcompositor (if not already done)::
+
+    cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/
+    ln -sf vrcompositor vrcompositor.alvr
+
+ - Restore the real SteamVR compositor you changed in the initial setup::
 
     cd ~/.steam/debian-installation/steamapps/common/SteamVR/bin/linux64/
     ln -sf vrcompositor.real vrcompositor
