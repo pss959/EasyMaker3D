@@ -99,6 +99,10 @@ class Board : public Grippable, public Touchable {
     /// processing.
     void SetUpForTouch(const Point3f &cam_pos);
 
+    /// Sets the Board to orient for the given view direction vector. This has
+    /// no effect if the Board is set up for touch.
+    void SetOrientation(const Vector3f &view_dir);
+
     /// Sets the Board's position. This has no effect if the Board is set up
     /// for touch.
     void SetPosition(const Point3f &pos);
@@ -140,6 +144,8 @@ class Board : public Grippable, public Touchable {
     friend class Parser::Registry;
     friend class BoardAgent;
 
+    /// Hide this so SetOrientation() must be used.
+    using Grippable::SetRotation;
     /// Hide this so SetPosition() must be used.
     using Grippable::SetTranslation;
 };

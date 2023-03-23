@@ -28,7 +28,7 @@ void BoardManager::ShowBoard(const BoardPtr &board, bool is_shown) {
         ASSERT(frustum_);
         const Vector3f view_dir = frustum_->GetViewDirection();
         Point3f pos = frustum_->position + frustum_->position[2] * view_dir;
-        board->SetRotation(Rotationf::RotateInto(-Vector3f::AxisZ(), view_dir));
+        board->SetOrientation(view_dir);
 
         // Also make sure it is above the stage (bottom above Y=0).
         const float min_y = pos[1] + board->GetScaledBounds().GetMinPoint()[1];

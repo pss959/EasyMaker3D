@@ -41,6 +41,7 @@ class Board::Impl_ {
     void Show(bool shown);
     void UpdateSizeIfNecessary();
     void SetUpForTouch(const Point3f &cam_pos, const Vector3f &offset);
+    void SetOrientation(const Vector3f &view_dir);
     void SetPosition(const Point3f &pos);
     bool IsGrippableEnabled() const {
         return is_move_enabled_ || is_size_enabled_;
@@ -261,6 +262,13 @@ void Board::Impl_::SetUpForTouch(const Point3f &cam_pos,
 
         is_set_up_for_touch_ = true;
     }
+}
+
+void Board::Impl_::SetOrientation(const Vector3f &view_dir) {
+    // Do nothing if set up for touch interaction.
+    if (! IsSetUpForTouch_())
+        root_node_.SetRotation(
+            Rotationf::RotateInto(-Vector3f::AxisZ(), view_dir));
 }
 
 void Board::Impl_::SetPosition(const Point3f &pos) {
@@ -769,6 +777,10 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
 
 void Board::SetUpForTouch(const Point3f &cam_pos) {
     impl_->SetUpForTouch(cam_pos, GetTouchOffset());
+}
+
+void Board::SetOrientation(const Vector3f &view_dir) {
+    impl_->SetOrientation(view_dir);
 }
 
 void Board::SetPosition(const Point3f &pos) {
