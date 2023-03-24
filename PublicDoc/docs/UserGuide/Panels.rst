@@ -30,6 +30,10 @@ application panels are visible, they temporarily hide the scene contents so
 there is no interference. (Tool panels do not do this because you may need to
 see the results of editing models with them.)
 
+When activated, tool panels appear near the :ref:`primary selection
+<ug-selection>` so you can see their effects. Application panels, on the other
+hand, are positioned to be visible in the :ref:`current view <ug-viewing>`.
+
 You can move any application or tool panel if it is in an inconvenient place.
 All panels have interactive handles on the center of each edge that can be
 dragged to move the panel to the left, right, up, or down. There is also a bar
@@ -61,6 +65,10 @@ them smaller than that.
    pointing the grip hover guide towards the board. If the controller is low
    enough (relative to the panel), it will allow you to grip drag the bottom
    bar, as shown here.
+
+   Note that application panels in either VR mode are positioned for
+   :ref:`panel touch mode <ug-panel-interaction>` and therefore are not
+   affected by the non-VR viewing position or orientation.
 
 .. _ug-panel-interaction:
 

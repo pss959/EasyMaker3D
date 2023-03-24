@@ -71,9 +71,52 @@ guide.
 Keyboard Shortcuts
 ..................
 
-All keyboard shortcuts are listed in the :ref:`Cheat Sheet <cheat-sheet>`. In
-the future, there may be a way for users to customize them. Note that the
-shortcuts are available in all three application modes.
+All built-in keyboard shortcuts are listed in the :ref:`Cheat Sheet
+<cheat-sheet>`. Shortcuts are available in all three application modes.
+
+Adding Custom Shortcuts
+,,,,,,,,,,,,,,,,,,,,,,,
+
+You can change the built-in shortcuts or add your own by placing a file named
+`shortcuts.txt` in the main |appname| folder before running the application.
+The format of this file is as follows:
+
+   - Lines with only white space are ignored.
+   - Lines beginning with `'#'` (after optional white space) are comments and
+     are ignored.
+   - Every other line should be in the format::
+
+        key-string action-name
+
+   - A `key-string` consists of optional modifiers and a key name. Modifiers
+     are `Shift-`, `Ctrl-`, and `Alt-`, in any order. A key name is any single
+     unshifted character (except space) or any of the special key names in the
+     table below.
+
+   - The `action-name` corresponds to one of the available |appname| actions
+     listed in the :ref:`Cheat Sheet <cheat-sheet>`.
+
+Special key names are:
+
+========= ======= ========== ======== ===========
+Backspace Escape  KPDecimal  Left     PrintScreen
+CapsLock  F1-F25  KPDivide   Menu     Right
+Delete    Home    KPEnter    NumLock  ScrollLock
+Down      Insert  KPEqual    PageDown Space
+End       KP0-KP9 KPMultiply PageUp   Tab
+Enter     KPAdd   KPSubtract Pause    Up
+========= ======= ========== ======== ===========
+
+Example `shortcuts.txt` file::
+
+           # This is a comment that is ignored.
+           Shift-1       CreateBox
+           Shift-Ctrl-s  ScaleTool
+           Alt-u         CombineCSGUnion
+           Ctrl-Right    SwitchToNextTool
+
+Note that custom shortcuts are processed *after* the built-in ones, so you can
+override key mappings for built-in shortcuts.
 
 .. _ug-stage:
 
@@ -195,8 +238,8 @@ a model, whether selected or not. There is also a :ref:`keyboard shortcut
 
 When the mouse or keyboard shortcut is used to enter inspector mode, the
 selected model will be shown in the middle of the application window at an
-appropriate size. Moving the mouse (without pressing any buttons) rotates the
-model.
+appropriate size (relative to the :ref:`current view <ug-viewing>`.  Moving the
+mouse (without pressing any buttons) rotates the model.
 
 Any key press, mouse click, or controller button press exits inspector mode.
 
@@ -214,9 +257,9 @@ Highlighting and Tooltips
 Everything in the application that is interactive responds to hovering with the
 mouse or laser pointer by highlighting in some way. For most items, if you
 hover long enough, a tooltip will appear with information about the
-interaction. For example, hovering on a 3D icon gives information about what
-the icon does when pressed, and hovering on any model in the scene shows the
-name of the model.
+interaction. For example, hovering on a 3D icon (even if it is disabled) gives
+information about what the icon does when pressed, and hovering on any model in
+the scene shows the name of the model.
 
 The delay for showing tooltips is a setting that can be edited in the
 :ref:`Settings Panel <ug-settings-panel>`. Setting the delay to 0 turns off
