@@ -103,7 +103,6 @@ ShortcutHandler::ShortcutHandler() {
     // Populate the map from event key strings to actions.
 
     // Keyboard keys.
-    AddShortcut_(" ",            Action::kToggleSpecializedTool);
     AddShortcut_(",",            Action::kDecreaseComplexity);
     AddShortcut_(".",            Action::kIncreaseComplexity);
     AddShortcut_("=",            Action::kMoveToOrigin);
@@ -140,6 +139,7 @@ ShortcutHandler::ShortcutHandler() {
     AddShortcut_("Shift-Ctrl-z", Action::kRedo);
     AddShortcut_("Shift-[",      Action::kMovePrevious);
     AddShortcut_("Shift-]",      Action::kMoveNext);
+    AddShortcut_("Space",        Action::kToggleSpecializedTool);
     AddShortcut_("[",            Action::kSwitchToPreviousTool);
     AddShortcut_("]",            Action::kSwitchToNextTool);
     AddShortcut_("x",            Action::kIncreasePrecision);

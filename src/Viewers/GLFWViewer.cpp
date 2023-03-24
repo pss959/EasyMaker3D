@@ -121,7 +121,7 @@ static const char * GetKeyName_(int key) {
       case GLFW_KEY_PRINT_SCREEN: name = "PrintScreen"; break;
       case GLFW_KEY_RIGHT:        name = "Right";       break;
       case GLFW_KEY_SCROLL_LOCK:  name = "ScrollLock";  break;
-      case GLFW_KEY_SPACE:        name = " ";           break;
+      case GLFW_KEY_SPACE:        name = "Space";       break;
       case GLFW_KEY_TAB:          name = "Tab";         break;
       case GLFW_KEY_UP:           name = "Up";          break;
       default:
