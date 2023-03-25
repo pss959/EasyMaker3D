@@ -116,7 +116,7 @@ Positioning Targets
 ,,,,,,,,,,,,,,,,,,,
 
 Targets are positioned by dragging or :ref:`modified-dragging
-<ug-modified-mode>` them; they change to the :newterm"`active target color`
+<ug-modified-mode>` them; they change to the :newterm:`active target color`
 while the drag is in process. Targets can be placed either on the :ref:`stage
 <ug-stage>` or any model in the scene. When dragging a target on the stage, the
 target will snap to grid locations based on the current :ref:`precision level
