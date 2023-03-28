@@ -26,7 +26,7 @@ bool BeveledModel::IsValid(std::string &details) {
 
     // Construct and validate the Profile if points were specified.
     if (profile_points_.WasSet()) {
-        if (! BuildProfile(profile_points_).IsValid()) {
+        if (! CreateProfile(profile_points_).IsValid()) {
             details = "Invalid profile";
             return false;
         }
@@ -40,7 +40,7 @@ void BeveledModel::CreationDone() {
 
     if (! IsTemplate()) {
         ASSERT(bevel_.profile.GetPoints().empty());
-        bevel_.profile   = BuildProfile(profile_points_);
+        bevel_.profile   = CreateProfile(profile_points_);
         bevel_.scale     = bevel_scale_;
         bevel_.max_angle = max_angle_;
     }
@@ -54,7 +54,7 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-Profile BeveledModel::BuildProfile(const Profile::PointVec &points) {
+Profile BeveledModel::CreateProfile(const Profile::PointVec &points) {
     return Profile(Point2f(0, 1), Point2f(1, 0), points, 0);
 }
 

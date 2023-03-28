@@ -40,7 +40,7 @@ void ChangeBevelCommand::SetBevel(const Bevel &bevel) {
 
 Bevel ChangeBevelCommand::GetBevel() const {
     Bevel bevel;
-    bevel.profile   = BeveledModel::BuildProfile(profile_points_);
+    bevel.profile   = BeveledModel::CreateProfile(profile_points_);
     bevel.scale     = bevel_scale_;
     bevel.max_angle = max_angle_;
     return bevel;

@@ -42,7 +42,7 @@ void ChangeRevSurfCommand::SetProfile(const Profile &profile) {
 }
 
 Profile ChangeRevSurfCommand::GetProfile() const {
-    return RevSurfModel::BuildProfile(profile_points_);
+    return RevSurfModel::CreateProfile(profile_points_);
 }
 
 void ChangeRevSurfCommand::SetSweepAngle(const Anglef &sweep_angle) {

@@ -255,6 +255,7 @@ lib_sources = list(chain(
         'CombinedModel',
         'ConvertedModel',
         'CylinderModel',
+        'ExtrudedModel',
         'HullModel',
         'ImportedModel',
         'MirroredModel',

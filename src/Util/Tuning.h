@@ -244,6 +244,12 @@ extern const float    kDiscWidgetMaxScale;
 /// Minimum allowable scale factor produced by a DiscWidget.
 extern const float    kDiscWidgetMinScale;
 
+/// Default height for an ExtrudedModel.
+extern const float    kExtrudedModelHeight;
+
+/// Default radius for an ExtrudedModel.
+extern const float    kExtrudedModelRadius;
+
 /// Extruded length of a TextModel.
 extern const float    kExtrudedTextLength;
 
