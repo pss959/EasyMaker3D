@@ -25,9 +25,8 @@ bool BeveledModel::IsValid(std::string &details) {
     }
 
     // Construct and validate the profile.
-    Profile profile;
-    profile.AddPoints(profile_points_);
-    if (! profile.IsValid(0)) {
+    Profile profile(Point2f(0, 1), Point2f(1, 0), profile_points_, 0);
+    if (! profile.IsValid()) {
         details = "Invalid profile";
         return false;
     }

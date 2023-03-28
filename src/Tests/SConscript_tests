@@ -43,6 +43,7 @@ test_sources = [
     'PlaneTest.cpp',
     'PolyMeshTest.cpp',
     'PolygonTest.cpp',
+    'ProfileTest.cpp',
     'ReadFileTest.cpp',
     'ReadSTLTest.cpp',
     'ReaderTest.cpp',

@@ -19,9 +19,8 @@ bool RevSurfModel::IsValid(std::string &details) {
 
     // Construct and validate the profile if points were specified.
     if (profile_points_.WasSet()) {
-        Profile profile(Point2f(0, 1), Point2f(0, 0));
-        profile.AddPoints(profile_points_);
-        if (! profile.IsValid(1)) {
+        Profile profile(Point2f(0, 1), Point2f(0, 0), profile_points_, 1);
+        if (! profile.IsValid()) {
             details = "Invalid profile";
             return false;
         }
@@ -47,7 +46,7 @@ void RevSurfModel::CreationDone() {
 }
 
 void RevSurfModel::SetProfile(const Profile &profile) {
-    ASSERT(profile.IsValid(1));
+    ASSERT(profile.IsValid());
     profile_ = profile;
     profile_points_ = profile_.GetPoints();
     ProcessChange(SG::Change::kGeometry, *this);
