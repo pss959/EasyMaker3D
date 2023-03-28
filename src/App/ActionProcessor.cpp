@@ -225,6 +225,7 @@ class ActionProcessor::Impl_ {
     /// Each of these adds a Command to create a Model of some type.
     ///@{
     void CreateCSGModel_(CSGOperation op);
+    void CreateExtrudedModel_();
     void CreateHullModel_();
     void CreateImportedModel_();
     void CreateRevSurfModel_();
@@ -357,6 +358,9 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
         break;
       case Action::kCreateCylinder:
         CreatePrimitiveModel_(PrimitiveType::kCylinder);
+        break;
+      case Action::kCreateExtruded:
+        CreateExtrudedModel_();
         break;
       case Action::kCreateImportedModel:
         CreateImportedModel_();
@@ -952,6 +956,14 @@ void ActionProcessor::Impl_::CreateCSGModel_(CSGOperation op) {
     ccc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(ccc);
     context_->tool_box->UseSpecializedTool(GetSelection());
+}
+
+void ActionProcessor::Impl_::CreateExtrudedModel_() {
+    std::cerr << "XXXX CreateExtrudedModel_ not yet implemented\n";
+    // XXXX TODO
+    // auto crc = CreateCommand_<CreateExtrudedModelCommand>();
+    // context_->command_manager->AddAndDo(crc);
+    // context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateHullModel_() {

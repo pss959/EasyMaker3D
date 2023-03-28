@@ -48,6 +48,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
         { ActionCategory::kCreation,
           { Action::kCreateBox,
             Action::kCreateCylinder,
+            Action::kCreateExtruded,
             Action::kCreateImportedModel,
             Action::kCreateRevSurf,
             Action::kCreateSphere,

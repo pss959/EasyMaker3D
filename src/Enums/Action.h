@@ -22,6 +22,7 @@ enum class Action {
     // Model creation.
     kCreateBox,
     kCreateCylinder,
+    kCreateExtruded,
     kCreateImportedModel,
     kCreateRevSurf,
     kCreateSphere,

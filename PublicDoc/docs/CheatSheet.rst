@@ -123,6 +123,12 @@
      - 
      - 
    * - Creation
+     - CreateExtruded / :ref:`Create Extruded <ug-create-extruded>`
+     - .. menuicon:: CreateExtruded
+     - 
+     - 
+     - 
+   * - Creation
      - CreateImportedModel / :ref:`Create Imported Model <ug-create-imported-model>`
      - .. menuicon:: CreateImportedModel
      - Import a model from a file
@@ -306,7 +312,7 @@
      - ToggleSpecializedTool / :ref:`Toggle Specialized Tool <ug-toggle-specialized-tool>`
      - .. menuicon:: ToggleSpecializedTool
      - TOGGLE: Switch between the current general tool and the specialized tool for the selected models
-     - :shortcut:`SPACE`
+     - :shortcut:`Space`
      - :shortcut:`L:Center, R:Center`
    * - Tool
      - ColorTool / :ref:`Color Tool <ug-color-tool>`

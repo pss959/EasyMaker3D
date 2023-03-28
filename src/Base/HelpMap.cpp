@@ -24,6 +24,8 @@ HelpMap::HelpMap() {
 
     set_hs(Action::kCreateBox,           "Create a primitive Box model");
     set_hs(Action::kCreateCylinder,      "Create a primitive Cylinder model");
+    set_hs(Action::kCreateExtruded,
+           "Create a model that is a linear extrusion");
     set_hs(Action::kCreateImportedModel, "Import a model from a file");
     set_hs(Action::kCreateRevSurf,
            "Create a model that is a surface of revolution");

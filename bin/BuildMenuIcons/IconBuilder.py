@@ -238,6 +238,11 @@ class IconBuilder(object):
         self._AddPlus(ic)
         self._AddCylinder(ic, self._CreationObjRect, self._CreateColor)
 
+    def _MICreateExtruded(self, ic):
+        self._AddPlus(ic)
+        ic.SetFontSize(self._SafeSize - 10)
+        ic.Text(self._SafeRect.center, 'E', self._GeneralColor) # XXXX TEMPORARY
+
     def _MICreateImportedModel(self, ic):
         self._AddFileIcon(ic)
         # Add arrow.

@@ -55,6 +55,11 @@ Node "Shelves" {
           import_path: "CreateRevSurfIcon.off",
           rotation:    1 0 0 -90,
         },
+        CLONE "T_IconWidget" "CreateExtrudedIcon" {
+          action:      "kCreateExtruded",
+          import_path: "CreateExtrudedIcon.off",
+          rotation:    1 0 0 -90,
+        },
         CLONE "T_IconWidget" "CreateTextIcon" {
           action:      "kCreateText",
           import_path: "CreateTextIcon.off"
