@@ -1,5 +1,6 @@
 #include "Commands/ChangeBevelCommand.h"
 
+#include "Models/BeveledModel.h"
 #include "Parser/Registry.h"
 #include "Util/Tuning.h"
 
@@ -39,7 +40,7 @@ void ChangeBevelCommand::SetBevel(const Bevel &bevel) {
 
 Bevel ChangeBevelCommand::GetBevel() const {
     Bevel bevel;
-    bevel.profile.SetPoints(profile_points_);
+    bevel.profile   = BeveledModel::BuildProfile(profile_points_);
     bevel.scale     = bevel_scale_;
     bevel.max_angle = max_angle_;
     return bevel;

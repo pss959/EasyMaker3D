@@ -24,11 +24,12 @@ bool BeveledModel::IsValid(std::string &details) {
         return false;
     }
 
-    // Construct and validate the profile.
-    Profile profile(Point2f(0, 1), Point2f(1, 0), profile_points_, 0);
-    if (! profile.IsValid()) {
-        details = "Invalid profile";
-        return false;
+    // Construct and validate the Profile if points were specified.
+    if (profile_points_.WasSet()) {
+        if (! BuildProfile(profile_points_).IsValid()) {
+            details = "Invalid profile";
+            return false;
+        }
     }
 
     return true;
@@ -39,7 +40,7 @@ void BeveledModel::CreationDone() {
 
     if (! IsTemplate()) {
         ASSERT(bevel_.profile.GetPoints().empty());
-        bevel_.profile.AddPoints(profile_points_);
+        bevel_.profile   = BuildProfile(profile_points_);
         bevel_.scale     = bevel_scale_;
         bevel_.max_angle = max_angle_;
     }
@@ -51,6 +52,10 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
     bevel_scale_    = bevel_.scale;
     max_angle_      = bevel_.max_angle;
     ProcessChange(SG::Change::kGeometry, *this);
+}
+
+Profile BeveledModel::BuildProfile(const Profile::PointVec &points) {
+    return Profile(Point2f(0, 1), Point2f(1, 0), points, 0);
 }
 
 TriMesh BeveledModel::BuildMesh() {

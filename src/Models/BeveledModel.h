@@ -25,6 +25,10 @@ class BeveledModel : public ConvertedModel {
     /// Returns the current Bevel.
     const Bevel & GetBevel() const { return bevel_; }
 
+    /// Convenience that creates a valid RevSurfModel Profile from the given
+    /// vector of movable profile points.
+    static Profile BuildProfile(const Profile::PointVec &points);
+
   protected:
     BeveledModel() {}
     virtual void AddFields() override;
