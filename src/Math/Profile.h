@@ -56,6 +56,10 @@ class Profile {
     /// Returns true if the Profile is open.
     bool IsOpen() const { return is_open_; }
 
+    /// Returns the minimum number of movable Profile points passed to the
+    /// constructor.
+    size_t GetMinPointCount() const { return min_count_; }
+
     /// Returns the fixed starting point for an open Profile. Asserts if the
     /// Profile is not open.
     const Point2f & GetStartPoint() const;

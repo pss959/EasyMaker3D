@@ -16,9 +16,8 @@ class RevSurfModel : public PrimitiveModel {
   public:
     /// Creates and returns a default Profile for a RevSurfModel.
     static Profile CreateDefaultProfile() {
-        Profile profile(Point2f(0, 1), Point2f(0, 0));
-        profile.AddPoint(Point2f(.5f, .5f));
-        return profile;
+        return Profile(Point2f(0, 1), Point2f(0, 0),
+                       Profile::PointVec{ Point2f(.5f, .5f) }, 1);
     }
 
     /// Sets the Profile to use for the surface.
@@ -42,6 +41,10 @@ class RevSurfModel : public PrimitiveModel {
     /// is not a full 360-degree sweep. This will be the zero vector for a full
     /// sweep.
     const Vector3f & GetCenterOffset() const { return center_offset_; }
+
+    /// Convenience that creates a valid RevSurfModel Profile from the given
+    /// vector of movable profile points.
+    static Profile BuildProfile(const Profile::PointVec &points);
 
   protected:
     RevSurfModel() {}

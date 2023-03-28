@@ -26,7 +26,7 @@
 
 class ProfilePane::Impl_ {
   public:
-    Impl_(SG::Node &root_node, size_t min_point_count);
+    Impl_(SG::Node &root_node);
 
     // Sets colors on certain parts. This has to be done after Ion is set up.
     void SetColors();
@@ -47,7 +47,6 @@ class ProfilePane::Impl_ {
 
   private:
     SG::Node     &root_node_;
-    const size_t  min_point_count_;
     Vector2f      precision_{0, 0};
     Snap2D        snapper_;
 
@@ -138,10 +137,7 @@ class ProfilePane::Impl_ {
     }
 };
 
-ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
-    root_node_(root_node),
-    min_point_count_(min_point_count) {
-
+ProfilePane::Impl_::Impl_(SG::Node &root_node) : root_node_(root_node) {
     snapper_.SetToleranceAngle(TK::kProfilePaneMaxSnapAngle);
 
     // Find all the parts.
@@ -175,10 +171,6 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     // Initialize the size of the delete rectangle.
     const Vector3f size = delete_spot_->GetBounds().GetSize();
     delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(size[0], size[1]));
-
-    PositionFixedPoints_();
-    CreateMovablePoints_();
-    UpdateLine_(true);
 }
 
 void ProfilePane::Impl_::SetColors() {
@@ -187,6 +179,7 @@ void ProfilePane::Impl_::SetColors() {
 }
 
 void ProfilePane::Impl_::SetProfile(const Profile &profile) {
+    ASSERT(profile.IsValid());
     profile_ = profile;
 
     PositionFixedPoints_();
@@ -377,7 +370,7 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
         // Put the delete spot in a good location unless this is a new point or
         // the minimum would be violated.
         if (! delegate_slider_ &&
-            profile_.GetPoints().size() > min_point_count_) {
+            profile_.GetPointCount() > profile_.GetMinPointCount()) {
             PositionDeleteSpot_();
             delete_spot_->SetEnabled(true);
         }
@@ -607,26 +600,10 @@ void ProfilePane::Impl_::SetLinePoints_(const std::vector<Point2f> points,
 ProfilePane::ProfilePane() {
 }
 
-void ProfilePane::AddFields() {
-    AddField(min_point_count_.Init("min_point_count", 0));
-
-    LeafPane::AddFields();
-}
-
-bool ProfilePane::IsValid(std::string &details) {
-    if (! LeafPane::IsValid(details))
-        return false;
-    if (min_point_count_ < 0) {
-        details = "Negative minimum point count";
-        return false;
-    }
-    return true;
-}
-
 void ProfilePane::CreationDone() {
     LeafPane::CreationDone();
     if (! IsTemplate())
-        impl_.reset(new Impl_(*this, min_point_count_));
+        impl_.reset(new Impl_(*this));
 }
 
 Util::Notifier<bool> & ProfilePane::GetActivation() {
@@ -638,7 +615,6 @@ Util::Notifier<const Profile &> & ProfilePane::GetProfileChanged() {
 }
 
 void ProfilePane::SetProfile(const Profile &profile) {
-    ASSERT(profile.GetPoints().size() >= GetMinPointCount());
     impl_->SetProfile(profile);
 }
 

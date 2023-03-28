@@ -97,10 +97,7 @@ bool Profile::operator==(const Profile &p) const {
 }
 
 std::string Profile::ToString() const {
-    std::string s = "PR [<" + Util::ToString(GetStartPoint()) + ">, " +
-        Util::JoinItems(GetPoints(), ", ");
-    if (! GetPoints().empty())
-        s += ", ";
-    s += "<" + Util::ToString(GetEndPoint()) + ">]";
-    return s;
+    return std::string(IsOpen() ? "OP [" : "CP [") +
+        "MIN: " + Util::ToString(GetMinPointCount()) + " <" +
+        Util::JoinItems(GetAllPoints(), ", ") + ">]";
 }

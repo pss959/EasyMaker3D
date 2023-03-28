@@ -28,10 +28,6 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     /// passed the new Profile.
     Util::Notifier<const Profile &> & GetProfileChanged();
 
-    /// Returns the minimum number of additional points the edited Profile is
-    /// allowed to have. The default is 0.
-    size_t GetMinPointCount() const { return min_point_count_; }
-
     /// Sets the Profile to edit. This initializes the ProfilePane for editing.
     void SetProfile(const Profile &profile);
 
@@ -65,18 +61,11 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
   protected:
     ProfilePane();
 
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
   private:
     class Impl_;
     std::unique_ptr<Impl_> impl_;
-
-    /// \name Parsed Fields
-    ///@{
-    Parser::TField<int> min_point_count_;
-    ///@}
 
     friend class Parser::Registry;
 };

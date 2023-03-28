@@ -17,10 +17,9 @@ bool RevSurfModel::IsValid(std::string &details) {
     if (! PrimitiveModel::IsValid(details))
         return false;
 
-    // Construct and validate the profile if points were specified.
+    // Construct and validate the Profile if points were specified.
     if (profile_points_.WasSet()) {
-        Profile profile(Point2f(0, 1), Point2f(0, 0), profile_points_, 1);
-        if (! profile.IsValid()) {
+        if (! BuildProfile(profile_points_).IsValid()) {
             details = "Invalid profile";
             return false;
         }
@@ -39,8 +38,8 @@ void RevSurfModel::CreationDone() {
 
     if (! IsTemplate()) {
         if (profile_points_.WasSet()) {
-            profile_ = Profile(Point2f(0, 1), Point2f(0, 0));
-            profile_.AddPoints(profile_points_);
+            profile_ = BuildProfile(profile_points_);
+            ASSERT(profile_.IsValid());
         }
     }
 }
@@ -56,6 +55,10 @@ void RevSurfModel::SetSweepAngle(const Anglef &angle) {
     ASSERT(angle.Degrees() > 0 && angle.Degrees() <= 360);
     sweep_angle_ = angle;
     ProcessChange(SG::Change::kGeometry, *this);
+}
+
+Profile RevSurfModel::BuildProfile(const Profile::PointVec &points) {
+    return Profile(Point2f(0, 1), Point2f(0, 0), points, 1);
 }
 
 TriMesh RevSurfModel::BuildMesh() {

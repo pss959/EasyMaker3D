@@ -1,5 +1,6 @@
 #include "Commands/ChangeRevSurfCommand.h"
 
+#include "Models/RevSurfModel.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
 
@@ -32,6 +33,8 @@ std::string ChangeRevSurfCommand::GetDescription() const {
 
 void ChangeRevSurfCommand::SetProfile(const Profile &profile) {
     // Make sure the profile is set up for a RevSurfModel.
+    ASSERT(profile.IsOpen());
+    ASSERT(profile.GetMinPointCount() == 1U);
     ASSERT(profile.GetStartPoint() == Point2f(0, 1));
     ASSERT(profile.GetEndPoint()   == Point2f::Zero());
 
@@ -39,9 +42,7 @@ void ChangeRevSurfCommand::SetProfile(const Profile &profile) {
 }
 
 Profile ChangeRevSurfCommand::GetProfile() const {
-    Profile profile(Point2f(0, 1), Point2f::Zero());
-    profile.SetPoints(profile_points_);
-    return profile;
+    return RevSurfModel::BuildProfile(profile_points_);
 }
 
 void ChangeRevSurfCommand::SetSweepAngle(const Anglef &sweep_angle) {

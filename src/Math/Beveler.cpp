@@ -270,7 +270,7 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
             AddFaceBorder_(hole, true);
     }
 
-    if (bevel_.profile.GetPointCount() > 2U) {
+    if (bevel_.profile.GetPointCount() > 0U) {
         for (auto &edge: mesh_.edges)
             InsertInteriorPoints_(*edge);
     }
@@ -457,7 +457,7 @@ void Beveler_::InsertInteriorPoints_(const PolyMesh::Edge &edge) {
 
     // If the profile has interior points (N > 2), need to add the indices of
     // the interior vertices.
-    const size_t profile_size = bevel_.profile.GetPointCount();
+    const size_t profile_size = bevel_.profile.GetTotalPointCount();
     ASSERT(profile_size > 2U);
 
     // If the edge is beveled, apply the profile. Otherwise, just use copies of
@@ -521,7 +521,7 @@ void Beveler_::AddVertexFaces_(const PolyMesh::Vertex &vertex,
         vertex_edges.push_back(edge);
         const auto &data = edge_data_map_.at(edge);
 
-        ASSERT(data.indices.size() == bevel_.profile.GetPointCount());
+        ASSERT(data.indices.size() == bevel_.profile.GetTotalPointCount());
         Util::AppendVector(data.indices, indices);
         // The last index should always refer to the same vertex as the
         // start of the next one, so remove the last one.
@@ -538,7 +538,7 @@ void Beveler_::AddFacesForVertex_(const CEdgeVec_ &edges,
     // If NE is the number of edges and NP is the number of profile points,
     // then the number of points in a ring of vertices around the vertex is:
     //    NE * (NP - 1).
-    const size_t profile_size = bevel_.profile.GetPointCount();
+    const size_t profile_size = bevel_.profile.GetTotalPointCount();
     ASSERT(indices.size() == edges.size() * (profile_size - 1));
 
     // Ignore zero-area cases. They can cause bogus interior vertices to be
@@ -596,7 +596,7 @@ Beveler_::RingVec_ Beveler_::BuildRings_(const CEdgeVec_ &edges,
                                          const IndexVec_ &outer_indices) {
     // Compute the number of rings that are needed. Each ring has 2 fewer
     // points per edge than the ring surrounding it.
-    const size_t profile_size = bevel_.profile.GetPointCount();
+    const size_t profile_size = bevel_.profile.GetTotalPointCount();
     const size_t ring_count   = profile_size / 2;
     RingVec_ rings(ring_count);
 
@@ -634,7 +634,7 @@ void Beveler_::PositionRingPoints_(const CEdgeVec_ &edges, RingVec_ &rings) {
         ring.reposition_counts.assign(ring.indices.size(), 0);
     }
 
-    const size_t profile_size = bevel_.profile.GetPointCount();
+    const size_t profile_size = bevel_.profile.GetTotalPointCount();
 
     // Work towards the innermost ring.
     const Ring_  &outer      = rings[0];
