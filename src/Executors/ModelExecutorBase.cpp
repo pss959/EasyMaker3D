@@ -34,8 +34,19 @@ void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
     context.selection_manager->ChangeSelection(sel);
 }
 
-void ModelExecutorBase::InitModelTransform(Model &model,
-                                           CreateModelCommand &command) {
+void ModelExecutorBase::InitModel_(Model &model, CreateModelCommand &command) {
+    InitModelTransform_(model, command);
+    AddModelInteraction(model);
+    SetRandomModelColor(model);
+
+    // If in the main application and the Model was not read from a file, drop
+    // it from above.
+    if (Util::is_in_main_app && ! command.IsValidating())
+        AnimateModelPlacement_(model);
+}
+
+void ModelExecutorBase::InitModelTransform_(Model &model,
+                                            CreateModelCommand &command) {
     // Make sure the model has an updated mesh, since it is used for computing
     // bounds.
     model.GetMesh();
@@ -64,11 +75,7 @@ void ModelExecutorBase::InitModelTransform(Model &model,
     }
 }
 
-void ModelExecutorBase::AnimateModelPlacement(Model &model) {
-    // Don't animate if not in the main application.
-    if (! Util::is_in_main_app)
-        return;
-
+void ModelExecutorBase::AnimateModelPlacement_(Model &model) {
     // Save the current translation as the end point of the animation.
     const Point3f end_pos(model.GetTranslation());
 
@@ -92,8 +99,7 @@ bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
     }
     else {
         // The animation has completed. Make sure the Model is in the correct
-        // spot and tell the SelectionManager to reselect to keep the tool
-        // placed correctly.
+        // spot and select it.
         model.SetTranslation(end_pos);
         GetContext().selection_manager->ReselectAll();
         return false;
@@ -106,6 +112,7 @@ ModelExecutorBase::ExecData_ & ModelExecutorBase::GetExecData_(
     if (! command.GetExecData()) {
         ExecData_ *data = new ExecData_;
         data->model = CreateModel(command);
+        InitModel_(*data->model, GetTypedCommand<CreateModelCommand>(command));
         command.SetExecData(data);
     }
     return *static_cast<ExecData_ *>(command.GetExecData());
