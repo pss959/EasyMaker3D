@@ -137,9 +137,61 @@ static const char * GetKeyName_(int key) {
     return name;
 }
 
-/// Sets the key_name in the event based on the given key.
-static void SetKeyName_(int key, Event &event) {
-    event.key_name = GetKeyName_(key);
+/// Returns text to associate with the given key, if any.
+static std::string GetKeyText_(int key, int mods) {
+    std::string text;
+
+    // Control and Alt cannot be present for regular text, and the key must
+    // have a known name,
+    if (mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT))
+        return text;
+
+    const char *name = glfwGetKeyName(key, 0);
+
+    // Special case for the space key.
+    if (key == GLFW_KEY_SPACE) {
+        text = " ";
+    }
+    // Otherwise, the key must have a known name,
+    else if (name) {
+        text = name;
+
+        // Handle some shifted single keys.
+        if (text.size() == 1U && (mods & GLFW_MOD_SHIFT)) {
+            char &c = text[0];
+            if (c >= 'a' && c <= 'z') {
+                c = std::toupper(c);
+            }
+            else {
+                // Handle other special characters.
+                switch (c) {
+                  case ',':  c = '<'; break;
+                  case '-':  c = '_'; break;
+                  case '.':  c = '>'; break;
+                  case '/':  c = '?'; break;
+                  case '0':  c = ')'; break;
+                  case '1':  c = '!'; break;
+                  case '2':  c = '@'; break;
+                  case '3':  c = '#'; break;
+                  case '4':  c = '$'; break;
+                  case '5':  c = '%'; break;
+                  case '6':  c = '^'; break;
+                  case '7':  c = '&'; break;
+                  case '8':  c = '*'; break;
+                  case '9':  c = '('; break;
+                  case ';':  c = ':'; break;
+                  case '=':  c = '+'; break;
+                  case '[':  c = '{'; break;
+                  case '\'': c = '"'; break;
+                  case '\\': c = '|'; break;
+                  case ']':  c = '}'; break;
+                  case '`':  c = '~'; break;
+                  default:            break;
+                }
+            }
+        }
+    }
+    return text;
 }
 
 /// Creates and returns an Event instance representing a key press or release.
@@ -152,8 +204,9 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
     // Store the modifiers first.
     AddModifiers_(mods, event);
 
-    // Set the name of the key.
-    SetKeyName_(key, event);
+    // Set the name and text for the key.
+    event.key_name = GetKeyName_(key);
+    event.key_text = GetKeyText_(key, mods);
 
     return event;
 }

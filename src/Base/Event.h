@@ -80,6 +80,10 @@ struct Event {
     /// modifiers.
     std::string       key_name;
 
+    /// Text string for a key press or release, including modifiers. This will
+    /// be empty for some keys.
+    std::string       key_text;
+
     /// Current keyboard modifiers for a key press or release.
     Modifiers         modifiers;
 

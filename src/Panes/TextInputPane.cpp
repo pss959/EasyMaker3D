@@ -498,11 +498,9 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
                 ret = true;
             }
 
-            // Otherwise, insert the text.
-            else if (! event.modifiers.HasAny() &&
-                     (event.key_name.size() == 1U ||
-                      event.key_name == "Space")) {
-                InsertChars_(event.key_name == "Space" ? " " : event.key_name);
+            // Otherwise, insert the text if it is text.
+            else if (! event.key_text.empty()) {
+                InsertChars_(event.key_text);
                 ret = true;
             }
 
