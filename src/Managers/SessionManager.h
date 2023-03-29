@@ -58,7 +58,6 @@ class SessionManager : public SessionAgent {
                                  const std::vector<std::string> &comments);
 
     // SessionAgent interface implementation.
-    virtual bool WasSessionStarted() const override;
     virtual void NewSession() override;
     virtual bool CanSaveSession() const override;
     virtual bool SaveSession(const FilePath &path) override;

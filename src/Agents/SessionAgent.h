@@ -14,10 +14,6 @@ class UnitConversion;
 /// \ingroup Agents
 class SessionAgent {
   public:
-    /// Returns true if a session was started. This means that either a session
-    /// was loaded or modifications were made to a new session.
-    virtual bool WasSessionStarted() const = 0;
-
     /// Creates a new session.
     virtual void NewSession() = 0;
 

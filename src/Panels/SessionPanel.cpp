@@ -78,14 +78,16 @@ void SessionPanel::UpdateInterface() {
 }
 
 void SessionPanel::Close(const std::string &result) {
-    // Canceling starts a new session if this is the initial SessionPanel.
+    // Rules for Cancel:
+    //  If a previous session exists but no changes have been made and the
+    //  current session has no name, start a new session. Otherwise, just
+    //  continue the current session.
+    const auto &sa = *GetContext().session_agent;
     if (result == "Cancel" &&
-        ! GetContext().session_agent->WasSessionStarted()) {
+        ! sa.GetPreviousSessionName().empty() && ! sa.CanSaveSession())
         StartNewSession_();
-    }
-    else {
+    else
         Panel::Close(result);
-    }
 }
 
 void SessionPanel::OpenHelp_() {
