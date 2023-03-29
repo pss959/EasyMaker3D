@@ -37,11 +37,13 @@ def GetAllVersions_():
             for rel in RunGit_('branch', 'Release-')]
     tags = RunGit_('tag', 'v')
 
-    # Use the last tag for each release branch.
+    # Use the last tag for each release branch. Use patch '.0' if there is no
+    # tag yet.
     versions = []
     for rel in rels:
-        versions.append([t.replace('v', '') for t in tags
-                         if t.startswith('v' + rel + '.')][-1])
+        tags_for_rel = [t.replace('v', '') for t in tags
+                        if t.startswith('v' + rel + '.')]
+        versions.append(tags_for_rel[-1] if tags_for_rel else f'{rel}.0')
 
     # Add the current version if it is not included (because there is no tag
     # for it yet).
