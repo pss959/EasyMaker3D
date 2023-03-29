@@ -6,6 +6,7 @@
 #include "Executors/ChangeColorExecutor.h"
 #include "Executors/ChangeComplexityExecutor.h"
 #include "Executors/ChangeCylinderExecutor.h"
+#include "Executors/ChangeExtrudedExecutor.h"
 #include "Executors/ChangeImportedExecutor.h"
 #include "Executors/ChangeMirrorExecutor.h"
 #include "Executors/ChangeNameExecutor.h"
@@ -18,6 +19,7 @@
 #include "Executors/ConvertMirrorExecutor.h"
 #include "Executors/CopyExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
+#include "Executors/CreateExtrudedExecutor.h"
 #include "Executors/CreateHullExecutor.h"
 #include "Executors/CreateImportedExecutor.h"
 #include "Executors/CreatePrimitiveExecutor.h"
@@ -44,6 +46,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeColorExecutor);
     ADDEXEC_(ChangeComplexityExecutor);
     ADDEXEC_(ChangeCylinderExecutor);
+    ADDEXEC_(ChangeExtrudedExecutor);
     ADDEXEC_(ChangeImportedExecutor);
     ADDEXEC_(ChangeMirrorExecutor);
     ADDEXEC_(ChangeNameExecutor);
@@ -56,6 +59,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ConvertMirrorExecutor);
     ADDEXEC_(CopyExecutor);
     ADDEXEC_(CreateCSGExecutor);
+    ADDEXEC_(CreateExtrudedExecutor);
     ADDEXEC_(CreateHullExecutor);
     ADDEXEC_(CreateImportedExecutor);
     ADDEXEC_(CreatePrimitiveExecutor);

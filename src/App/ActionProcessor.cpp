@@ -15,6 +15,7 @@
 #include "Commands/ConvertMirrorCommand.h"
 #include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
+#include "Commands/CreateExtrudedModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
@@ -959,11 +960,9 @@ void ActionProcessor::Impl_::CreateCSGModel_(CSGOperation op) {
 }
 
 void ActionProcessor::Impl_::CreateExtrudedModel_() {
-    std::cerr << "XXXX CreateExtrudedModel_ not yet implemented\n";
-    // XXXX TODO
-    // auto crc = CreateCommand_<CreateExtrudedModelCommand>();
-    // context_->command_manager->AddAndDo(crc);
-    // context_->tool_box->UseSpecializedTool(GetSelection());
+    auto cec = CreateCommand_<CreateExtrudedModelCommand>();
+    context_->command_manager->AddAndDo(cec);
+    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateHullModel_() {

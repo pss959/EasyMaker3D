@@ -9,11 +9,19 @@
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+namespace {
+
 /// Returns the translation offset (in local coordinates) for the given
 /// RevSurfModel based on its center offset (in object coordinates).
 static Vector3f GetCenterOffset_(const RevSurfModel &rsm) {
     return rsm.GetModelMatrix() * rsm.GetCenterOffset();
 }
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// ChangeRevSurfExecutor functions.
+// ----------------------------------------------------------------------------
 
 void ChangeRevSurfExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);

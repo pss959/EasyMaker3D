@@ -7,6 +7,7 @@
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeCylinderCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
+#include "Commands/ChangeExtrudedCommand.h"
 #include "Commands/ChangeImportedModelCommand.h"
 #include "Commands/ChangeMirrorCommand.h"
 #include "Commands/ChangeNameCommand.h"
@@ -21,6 +22,7 @@
 #include "Commands/ConvertMirrorCommand.h"
 #include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
+#include "Commands/CreateExtrudedModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
@@ -60,8 +62,8 @@
 #include "Models/HullModel.h"
 #include "Models/ImportedModel.h"
 #include "Models/MirroredModel.h"
-#include "Models/RootModel.h"
 #include "Models/RevSurfModel.h"
+#include "Models/RootModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TextModel.h"
 #include "Models/TorusModel.h"
@@ -198,6 +200,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeComplexityCommand);
     ADD_TYPE_(ChangeCylinderCommand);
     ADD_TYPE_(ChangeEdgeTargetCommand);
+    ADD_TYPE_(ChangeExtrudedCommand);
     ADD_TYPE_(ChangeImportedModelCommand);
     ADD_TYPE_(ChangeMirrorCommand);
     ADD_TYPE_(ChangeNameCommand);
@@ -211,6 +214,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ConvertMirrorCommand);
     ADD_TYPE_(CopyCommand);
     ADD_TYPE_(CreateCSGModelCommand);
+    ADD_TYPE_(CreateExtrudedModelCommand);
     ADD_TYPE_(CreateHullModelCommand);
     ADD_TYPE_(CreateImportedModelCommand);
     ADD_TYPE_(CreatePrimitiveModelCommand);

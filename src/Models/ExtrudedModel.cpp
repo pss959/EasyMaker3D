@@ -59,6 +59,6 @@ Profile ExtrudedModel::CreateProfile(const Profile::PointVec &points) {
 }
 
 TriMesh ExtrudedModel::BuildMesh() {
-    return CenterMesh(BuildExtrudedMesh(Polygon(profile_.GetPoints()),
-                                        TK::kExtrudedModelHeight));
+    // Use a height of 1; the ExtrudedModel will be scaled when created.
+    return CenterMesh(BuildExtrudedMesh(Polygon(profile_.GetPoints()), 1));
 }

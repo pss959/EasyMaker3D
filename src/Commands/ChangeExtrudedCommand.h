@@ -1,0 +1,39 @@
+﻿#pragma once
+
+#include "Base/Memory.h"
+#include "Commands/MultiModelCommand.h"
+#include "Math/Profile.h"
+#include "Math/Types.h"
+
+namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ChangeExtrudedCommand);
+
+/// ChangeExtrudedCommand is used to change the profile or sweep angle in one or
+/// more ExtrudedModel instances.
+///
+/// \ingroup Commands
+class ChangeExtrudedCommand : public MultiModelCommand {
+  public:
+    virtual std::string GetDescription() const override;
+
+    /// Sets the new Profile points from the given Profile.
+    void SetProfile(const Profile &profile);
+
+    /// Returns a Profile corresponding to the new points.
+    Profile GetProfile() const;
+
+  protected:
+    ChangeExtrudedCommand() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+
+  private:
+    /// \name Parsed Fields
+    ///@{
+    Parser::VField<Point2f> profile_points_;
+    ///@}
+
+    friend class Parser::Registry;
+};
