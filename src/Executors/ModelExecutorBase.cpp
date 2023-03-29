@@ -14,34 +14,39 @@
 #include "Util/Tuning.h"
 
 void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
+    // If this is the first time this was executed, may need to animate. Note
+    // that this has to be called before setting the ExecData_ in the command.
+    const bool should_animate = ShouldAnimateModel_(command);
+
     ExecData_ &data = GetExecData_(command);
 
     // Process the command.
     const Context &context = GetContext();
-    Selection sel;
     if (operation == Command::Op::kDo) {
-        // Add as a top-level Model and select it.
+        // Add as a top-level Model and select it unless it is about to be
+        // animated.
         context.root_model->AddChildModel(data.model);
-        sel.Add(SelPath(context.root_model, data.model));
         context.name_manager->Add(data.model->GetName());
+        if (! should_animate)
+            SelectModel_(data.model);
     }
     else {  // Undo.
         const int index = context.root_model->GetChildModelIndex(data.model);
         ASSERT(index >= 0);
         context.root_model->RemoveChildModel(index);
         context.name_manager->Remove(data.model->GetName());
+        context.selection_manager->DeselectAll();
     }
-    context.selection_manager->ChangeSelection(sel);
 }
 
-void ModelExecutorBase::InitModel_(Model &model, CreateModelCommand &command) {
-    InitModelTransform_(model, command);
-    AddModelInteraction(model);
-    SetRandomModelColor(model);
+void ModelExecutorBase::InitModel_(const ModelPtr &model,
+                                   CreateModelCommand &command) {
+    InitModelTransform_(*model, command);
+    AddModelInteraction(*model);
+    SetRandomModelColor(*model);
 
-    // If in the main application and the Model was not read from a file, drop
-    // it from above.
-    if (Util::is_in_main_app && ! command.IsValidating())
+    // Drop it from above if appropriate.
+    if (ShouldAnimateModel_(command))
         AnimateModelPlacement_(model);
 }
 
@@ -75,9 +80,16 @@ void ModelExecutorBase::InitModelTransform_(Model &model,
     }
 }
 
-void ModelExecutorBase::AnimateModelPlacement_(Model &model) {
+bool ModelExecutorBase::ShouldAnimateModel_(const Command &command) {
+    // Animation occurs only in the main app the first time a command was
+    // executed, unless it was read from a file.
+    const bool is_first_time = ! command.GetExecData();
+    return Util::is_in_main_app && is_first_time && ! command.IsValidating();
+}
+
+void ModelExecutorBase::AnimateModelPlacement_(const ModelPtr &model) {
     // Save the current translation as the end point of the animation.
-    const Point3f end_pos(model.GetTranslation());
+    const Point3f end_pos(model->GetTranslation());
 
     // Invoke the animation function to place the Model at t=0.
     AnimateModel_(model, end_pos, 0);
@@ -87,23 +99,29 @@ void ModelExecutorBase::AnimateModelPlacement_(Model &model) {
         [&, end_pos](float t){ return AnimateModel_(model, end_pos, t); });
 }
 
-bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
-                                      float time) {
+bool ModelExecutorBase::AnimateModel_(const ModelPtr &model,
+                                      const Point3f &end_pos, float time) {
     const Point3f start_pos = end_pos + GetAxis(1, TK::kModelAnimationHeight);
     const float duration = TK::kModelAnimationDuration;
     if (time < duration) {
         // Animation still running.
-        model.SetTranslation(
+        model->SetTranslation(
             Vector3f(start_pos + (time / duration) * (end_pos - start_pos)));
         return true;
     }
     else {
         // The animation has completed. Make sure the Model is in the correct
         // spot and select it.
-        model.SetTranslation(end_pos);
-        GetContext().selection_manager->ReselectAll();
+        model->SetTranslation(end_pos);
+        SelectModel_(model);
         return false;
     }
+}
+
+void ModelExecutorBase::SelectModel_(const ModelPtr &model) {
+    const Context &context = GetContext();
+    context.selection_manager->ChangeSelection(
+        Selection(SelPath(context.root_model, model)));
 }
 
 ModelExecutorBase::ExecData_ & ModelExecutorBase::GetExecData_(
@@ -112,7 +130,7 @@ ModelExecutorBase::ExecData_ & ModelExecutorBase::GetExecData_(
     if (! command.GetExecData()) {
         ExecData_ *data = new ExecData_;
         data->model = CreateModel(command);
-        InitModel_(*data->model, GetTypedCommand<CreateModelCommand>(command));
+        InitModel_(data->model, GetTypedCommand<CreateModelCommand>(command));
         command.SetExecData(data);
     }
     return *static_cast<ExecData_ *>(command.GetExecData());

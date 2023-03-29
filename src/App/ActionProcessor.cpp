@@ -649,7 +649,7 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
         }
 
       case Action::kToggleSpecializedTool:
-        if (! CanApplyAction(action))
+        if (! context_->tool_box->CanUseSpecializedTool(GetSelection()))
             return "Switch between specialized and general tools";
         else if (context_->tool_box->IsUsingSpecializedTool())
             return "Switch back to the current general tool";
@@ -951,7 +951,6 @@ void ActionProcessor::Impl_::CreateCSGModel_(CSGOperation op) {
     ccc->SetOperation(op);
     ccc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(ccc);
-    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateHullModel_() {
@@ -963,33 +962,28 @@ void ActionProcessor::Impl_::CreateHullModel_() {
 void ActionProcessor::Impl_::CreateImportedModel_() {
     auto cic = CreateCommand_<CreateImportedModelCommand>();
     context_->command_manager->AddAndDo(cic);
-    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateRevSurfModel_() {
     auto crc = CreateCommand_<CreateRevSurfModelCommand>();
     context_->command_manager->AddAndDo(crc);
-    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
     auto cpc = CreateCommand_<CreatePrimitiveModelCommand>();
     cpc->SetType(type);
     context_->command_manager->AddAndDo(cpc);
-    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::CreateTextModel_() {
     auto ctc = CreateCommand_<CreateTextModelCommand>();
     ctc->SetText("A");
     context_->command_manager->AddAndDo(ctc);
-    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::ConvertModels_(const ConvertCommandPtr &command) {
     command->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(command);
-    context_->tool_box->UseSpecializedTool(GetSelection());
 }
 
 void ActionProcessor::Impl_::ChangeComplexity_(float delta) {

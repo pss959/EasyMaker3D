@@ -34,7 +34,7 @@ class ModelExecutorBase : public Executor {
     ///   - Sets a random color.
     ///   - Animates the placement of the Model (unless it was read from a
     ///     file.)
-    void InitModel_(Model &model, CreateModelCommand &command);
+    void InitModel_(const ModelPtr &model, CreateModelCommand &command);
 
     /// Initializes the Transform for a Model so that it is rotated and
     /// positioned correctly. This depends on whether the CommandManager is
@@ -44,11 +44,19 @@ class ModelExecutorBase : public Executor {
     /// visible and sets the target position and direction in the command.
     void InitModelTransform_(Model &model, CreateModelCommand &command);
 
+    /// Returns true if the newly-created Model should have its position
+    /// animated based on the given command.
+    static bool ShouldAnimateModel_(const Command &command);
+
     /// Animates dropping the given Model to its position.
-    void AnimateModelPlacement_(Model &model);
+    void AnimateModelPlacement_(const ModelPtr &model);
 
     /// Animates placement of the given Model.
-    bool AnimateModel_(Model &model, const Point3f &end_pos, float time);
+    bool AnimateModel_(const ModelPtr &model, const Point3f &end_pos,
+                       float time);
+
+    /// Selects the Model.
+    void SelectModel_(const ModelPtr &model);
 
     /// Creates and stores a ExecData_ in the given command if necessary,
     /// returning it either way.
