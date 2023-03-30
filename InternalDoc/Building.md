@@ -208,7 +208,7 @@ are as follows:
 | `submodules/SConscript_docopt`     | Rules to build the `docopt` library                      |
 | `submodules/SConscript_googletest` | Rules to build the `gtest` library                       |
 
-## Building a Release
+## Building a Release {#Release}
 
 Here are the steps required to create a new release. These should all be done
 in the `master` branch.
@@ -246,7 +246,11 @@ in the `master` branch.
        to update the documentation source used by GitHub Pages.
      - Copy `docs/<current-version>/_static/js/versions.js` to all other
        versions under `docs/`. This guarantees that all versions in GitHub
-       Pages have the same entries in their version selectors.
+       Pages have the same entries in their version selectors. This shell
+       command can do this for new version X.Y.Z::
+
+           ls -d docs/*/_static/js | grep -v "X.Y.Z" | xargs -n 1 cp docs/X.Y.Z/_static/js/versions.js
+
      - Commit all changes under `docs/` (including the new version) and push
        to GitHub.
          
