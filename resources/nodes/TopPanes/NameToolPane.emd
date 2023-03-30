@@ -8,7 +8,9 @@ BoxPane "NameToolPane" {
     CLONE "T_TitleTextPane" "Title" { text: "Model Name Editor" },
     CLONE "T_TextInputPane" "Input" {},
     CLONE "T_TextPane" "Message" {
+      color: "#ee2222",
       font_size: 14,
+      halignment: "kAlignLeft",
     }
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
