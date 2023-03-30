@@ -72,6 +72,7 @@
 #include "Panels/Board.h"
 #include "Panels/CSGToolPanel.h"
 #include "Panels/DialogPanel.h"
+#include "Panels/ExtrudedToolPanel.h"
 #include "Panels/FilePanel.h"
 #include "Panels/HelpPanel.h"
 #include "Panels/ImportToolPanel.h"
@@ -152,6 +153,7 @@
 #include "Tools/ColorTool.h"
 #include "Tools/ComplexityTool.h"
 #include "Tools/CylinderTool.h"
+#include "Tools/ExtrudedTool.h"
 #include "Tools/ImportTool.h"
 #include "Tools/MirrorTool.h"
 #include "Tools/NameTool.h"
@@ -294,6 +296,7 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(BevelToolPanel);
     ADD_TYPE_(CSGToolPanel);
     ADD_TYPE_(DialogPanel);
+    ADD_TYPE_(ExtrudedToolPanel);
     ADD_TYPE_(FilePanel);
     ADD_TYPE_(HelpPanel);
     ADD_TYPE_(ImportToolPanel);
@@ -369,6 +372,7 @@ static void RegisterToolTypes_() {
     ADD_TYPE_(ColorTool);
     ADD_TYPE_(ComplexityTool);
     ADD_TYPE_(CylinderTool);
+    ADD_TYPE_(ExtrudedTool);
     ADD_TYPE_(ImportTool);
     ADD_TYPE_(MirrorTool);
     ADD_TYPE_(NameTool);

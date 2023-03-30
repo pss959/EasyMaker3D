@@ -16,16 +16,5 @@ ModelPtr CreateExtrudedExecutor::CreateModel(Command &command) {
 
     cec.SetInitialScale(TK::kExtrudedModelHeight);
 
-    // Create and initialize the Model.
-    ExtrudedModelPtr em = Model::CreateModel<ExtrudedModel>(name);
-
-    InitModelTransform(*em, cec);
-    AddModelInteraction(*em);
-    SetRandomModelColor(*em);
-
-    // If the Model was not read from a file, drop it from above.
-    if (! cec.IsValidating())
-        AnimateModelPlacement(*em);
-
-    return em;
+    return Model::CreateModel<ExtrudedModel>(name);
 }

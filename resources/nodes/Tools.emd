@@ -12,11 +12,12 @@ Node "Tools" {
     <"nodes/Tools/TranslationTool.emd">,
 
     # Panel-based Tools need only an empty instance.
-    BevelTool   "BevelTool"   {},
-    CSGTool     "CSGTool"     {},
-    ImportTool  "ImportTool"  {},
-    NameTool    "NameTool"    {},
-    RevSurfTool "RevSurfTool" {},
-    TextTool    "TextTool"    {},
+    BevelTool    "BevelTool"    {},
+    CSGTool      "CSGTool"      {},
+    ExtrudedTool "ExtrudedTool" {},
+    ImportTool   "ImportTool"   {},
+    NameTool     "NameTool"     {},
+    RevSurfTool  "RevSurfTool"  {},
+    TextTool     "TextTool"     {},
   ]
 }

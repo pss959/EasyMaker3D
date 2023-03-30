@@ -179,6 +179,7 @@ void ProfilePane::Impl_::SetColors() {
 }
 
 void ProfilePane::Impl_::SetProfile(const Profile &profile) {
+    std::cerr << "XXXX Profile = " << profile.ToString() << "\n";
     ASSERT(profile.IsValid());
     profile_ = profile;
 

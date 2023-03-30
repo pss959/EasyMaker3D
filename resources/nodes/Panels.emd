@@ -95,6 +95,11 @@ Node "Panels" {
       pane: <"nodes/TopPanes/DialogPane.emd">,
     },
 
+    ExtrudedToolPanel "ExtrudedToolPanel" {
+      is_resizable: True,
+      pane: <"nodes/TopPanes/ExtrudedToolPane.emd">,
+    },
+
     FilePanel "FilePanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/FilePane.emd">,

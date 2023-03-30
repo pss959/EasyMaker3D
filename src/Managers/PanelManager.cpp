@@ -20,6 +20,7 @@ void PanelManager::FindAllPanels(const SG::Scene &scene,
     add_panel("BevelToolPanel");
     add_panel("CSGToolPanel");
     add_panel("DialogPanel");
+    add_panel("ExtrudedToolPanel");
     add_panel("FilePanel");
     add_panel("HelpPanel");
     add_panel("ImportToolPanel");
