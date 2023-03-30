@@ -509,10 +509,11 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     UpdateIcons_();
 
     // If an application panel is visible, hide the scene and disable
-    // shortcuts.
+    // shortcuts (main app only).
     const bool is_app_panel_shown = scene_context_->app_board->IsShown();
     scene_context_->work_hider->SetEnabled(! is_app_panel_shown);
-    shortcut_handler_->SetEnabled(! is_app_panel_shown);
+    if (Util::is_in_main_app)
+        shortcut_handler_->SetEnabled(! is_app_panel_shown);
 
     // Put controllers in touch mode if the AppBoard, KeyBoard, or
     // ToolBoard is active.

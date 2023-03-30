@@ -1,5 +1,7 @@
 #include "Base/Event.h"
 
+#include <cctype>
+
 #include <ion/base/stringutils.h>
 
 #include "Util/Assert.h"
@@ -55,6 +57,62 @@ bool Event::ParseKeyString(const std::string &key_string,
     // makes it possible to handle other (and future) GLFW key names.
     key_name = parts.back();
     return true;
+}
+
+std::string Event::BuildKeyText(const Modifiers &modifiers,
+                                const std::string &key_name) {
+    std::string text;
+
+    // Control and Alt cannot be present for regular text, and the key must
+    // have a known name,
+    if (modifiers.Has(ModifierKey::kControl) ||
+        modifiers.Has(ModifierKey::kAlt))
+        return text;
+
+    // Special case for the space key.
+    if (key_name == "Space") {
+        text = " ";
+    }
+    // Add text only if a single character.
+    else if (key_name.size() == 1U) {
+        text = key_name;
+
+        // Handle some shifted keys.
+        if (modifiers.Has(ModifierKey::kShift)) {
+            char &c = text[0];
+            if (c >= 'a' && c <= 'z') {
+                c = std::toupper(c);
+            }
+            else {
+                // Handle other special characters.
+                switch (c) {
+                  case ',':  c = '<'; break;
+                  case '-':  c = '_'; break;
+                  case '.':  c = '>'; break;
+                  case '/':  c = '?'; break;
+                  case '0':  c = ')'; break;
+                  case '1':  c = '!'; break;
+                  case '2':  c = '@'; break;
+                  case '3':  c = '#'; break;
+                  case '4':  c = '$'; break;
+                  case '5':  c = '%'; break;
+                  case '6':  c = '^'; break;
+                  case '7':  c = '&'; break;
+                  case '8':  c = '*'; break;
+                  case '9':  c = '('; break;
+                  case ';':  c = ':'; break;
+                  case '=':  c = '+'; break;
+                  case '[':  c = '{'; break;
+                  case '\'': c = '"'; break;
+                  case '\\': c = '|'; break;
+                  case ']':  c = '}'; break;
+                  case '`':  c = '~'; break;
+                  default:            break;
+                }
+            }
+        }
+    }
+    return text;
 }
 
 std::string Event::BuildKeyString(const Modifiers &modifiers,

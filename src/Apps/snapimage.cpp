@@ -168,6 +168,7 @@ void Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
     event.device    = Event::Device::kKeyboard;
     event.key_name  = key;
     event.modifiers = modifiers;
+    event.key_text  = Event::BuildKeyText(modifiers, key);
 
     // Press.
     event.flags.Set(Event::Flag::kKeyPress);

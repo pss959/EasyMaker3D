@@ -306,7 +306,7 @@
      - ToggleSpecializedTool / :ref:`Toggle Specialized Tool <ug-toggle-specialized-tool>`
      - .. menuicon:: ToggleSpecializedTool
      - TOGGLE: Switch between the current general tool and the specialized tool for the selected models
-     - :shortcut:`SPACE`
+     - :shortcut:`Space`
      - :shortcut:`L:Center, R:Center`
    * - Tool
      - ColorTool / :ref:`Color Tool <ug-color-tool>`

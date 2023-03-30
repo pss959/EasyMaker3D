@@ -128,6 +128,11 @@ struct Event {
                                Modifiers &modifiers, std::string &key_name,
                                std::string &error);
 
+    /// Convenience function that builds a string representing the #key_text
+    /// for the given modifiers and key name.
+    static std::string BuildKeyText(const Modifiers &modifiers,
+                                    const std::string &key_name);
+
     /// Convenience function that builds a string representing a key press or
     /// release with the given modifiers and key code. (Example:
     /// "Shift-Ctrl-a".)
