@@ -349,10 +349,6 @@ class  Application::Impl_ {
                              const Rotationf &start_view_rot,
                              bool reset_view, float time);
 
-    /// Returns true if the Models in the scene should be visible. They are
-    /// turned off during certain interactions.
-    bool ShouldShowModels_() const;
-
     /// Returns a reasonable position for a tooltip for the given Widget whose
     /// size (in object coordinates) is provided.
     Vector3f ComputeTooltipTranslation_(Widget &widget,
@@ -512,8 +508,11 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     // Enable or disable all icon widgets and update tooltips.
     UpdateIcons_();
 
-    // Hide all the Models, Tools, etc. under certain conditions.
-    scene_context_->work_hider->SetEnabled(ShouldShowModels_());
+    // If an application panel is visible, hide the scene and disable
+    // shortcuts.
+    const bool is_app_panel_shown = scene_context_->app_board->IsShown();
+    scene_context_->work_hider->SetEnabled(! is_app_panel_shown);
+    shortcut_handler_->SetEnabled(! is_app_panel_shown);
 
     // Put controllers in touch mode if the AppBoard, KeyBoard, or
     // ToolBoard is active.
@@ -1418,11 +1417,6 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
     }
     // Keep going until finished.
     return t < 1.f;
-}
-
-bool Application::Impl_::ShouldShowModels_() const {
-    // Hide Models if the AppBoard is visible.
-    return ! scene_context_->app_board->IsShown();
 }
 
 Vector3f Application::Impl_::ComputeTooltipTranslation_(
