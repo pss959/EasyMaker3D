@@ -47,8 +47,6 @@ class PanelTool : public Tool {
   private:
     ToolPanelPtr panel_;  ///< Panel interacting with. (Null when not attached.)
 
-    bool is_dragging_ = false;  ///< Set to true during a drag interaction.
-
     /// Updates the position of the Board based on the Model's position.
     void UpdateBoardPosition_();
 };
