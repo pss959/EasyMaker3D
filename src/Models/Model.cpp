@@ -166,6 +166,10 @@ void Model::SetStatus(Status status) {
             SetFlagEnabled(Flag::kIntersect, false);
         }
 
+        // Update the selection count.
+        if (status_ == Status::kPrimary || status_ == Status::kSecondary)
+            ++selection_count_;
+
         if (GetIonContext()) {
             // Set the uIsSelected uniform for real-time clipping.
             auto &block = GetUniformBlockForPass("Lighting");

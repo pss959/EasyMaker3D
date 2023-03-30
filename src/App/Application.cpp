@@ -1167,6 +1167,11 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
     switch (op) {
       case SelectionManager::Operation::kSelection:
         tool_box_->AttachToSelection(sel);
+        // If this is the first time the primary selected Model was selected,
+        // try to use a specialized tool for it.
+        if (sel.HasAny() &&
+            sel.GetPrimary().GetModel()->GetSelectionCount() == 1U)
+            tool_box_->UseSpecializedTool(sel);
         break;
       case SelectionManager::Operation::kReselection:
         tool_box_->ReattachTools();
