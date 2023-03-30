@@ -20,8 +20,6 @@
 #include "Util/Tuning.h"
 #include "Viewers/Renderer.h"
 
-#include <cctype>
-
 // ----------------------------------------------------------------------------
 // Static helper functions.
 // ----------------------------------------------------------------------------
@@ -137,11 +135,6 @@ static const char * GetKeyName_(int key) {
     return name;
 }
 
-/// Sets the key_name in the event based on the given key.
-static void SetKeyName_(int key, Event &event) {
-    event.key_name = GetKeyName_(key);
-}
-
 /// Creates and returns an Event instance representing a key press or release.
 static Event GetKeyEvent_(bool is_press, int key, int mods) {
     Event event;
@@ -152,8 +145,9 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
     // Store the modifiers first.
     AddModifiers_(mods, event);
 
-    // Set the name of the key.
-    SetKeyName_(key, event);
+    // Set the name and text for the key.
+    event.key_name = GetKeyName_(key);
+    event.key_text = Event::BuildKeyText(event.modifiers, event.key_name);
 
     return event;
 }

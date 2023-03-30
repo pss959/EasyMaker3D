@@ -93,10 +93,6 @@ bool SessionManager::SaveSessionWithComments(
     return true;
 }
 
-bool SessionManager::WasSessionStarted() const {
-    return ! current_session_name_.empty();
-}
-
 void SessionManager::NewSession() {
     ResetSession_();
 }

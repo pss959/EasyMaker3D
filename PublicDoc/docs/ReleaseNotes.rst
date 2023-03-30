@@ -1,6 +1,22 @@
 |appname| Release Notes
 =======================
 
+Release 1.3.0 (March, 2023)
+---------------------------
+
+ - Bug Fixes:
+
+   - The escape key now works as expected in the Session Panel.
+
+   - Text input in panels handles shifted keys correctly again.
+
+   - Interacting in a tool panel no longer causes the panel to be repositioned.
+
+   - Keyboard shortcuts are now ignored while an application panel is in use.
+
+   - Tools are not attached to new models until animated placement is complete.
+
+
 Release 1.2.0 (March, 2023)
 ---------------------------
 

@@ -104,6 +104,9 @@ class Model : public ClickableWidget {
         return status_ == Status::kPrimary || status_ == Status::kSecondary;
     }
 
+    /// Returns the number of times this Model was selected.
+    size_t GetSelectionCount() const { return selection_count_; }
+
     /// For a Model instance that is a clone, this returns the name of the
     /// Model it was cloned from. It is used to create new cloned names so that
     /// the addition of suffixes does not get out of hand. It will be null for
@@ -308,6 +311,10 @@ class Model : public ClickableWidget {
     /// Flag indicating that the user edited the Model's name and it should not
     /// be changed by other operations.
     bool is_user_name_ = false;
+
+    /// Count of times this Model was selected. This can be used to determine
+    /// if the Model was selected for the first time.
+    size_t selection_count_ = 0;
 
     /// Stores pointers to all Model-related fields for a derived class that
     /// should be copied when creating a clone. The AddModelField() function

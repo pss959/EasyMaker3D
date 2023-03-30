@@ -38,13 +38,6 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
       default:
         ASSERTM(false, "Bad Primitive type");
     }
-    InitModelTransform(*pm, cc);
-    AddModelInteraction(*pm);
-    SetRandomModelColor(*pm);
-
-    // If the Model was not read from a file, drop it from above.
-    if (! cc.IsValidating())
-        AnimateModelPlacement(*pm);
 
     return pm;
 }

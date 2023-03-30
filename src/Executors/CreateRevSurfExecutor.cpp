@@ -16,16 +16,7 @@ ModelPtr CreateRevSurfExecutor::CreateModel(Command &command) {
 
     crc.SetInitialScale(TK::kRevSurfHeight);
 
-    // Create and initialize the Model.
     RevSurfModelPtr rsm = Model::CreateModel<RevSurfModel>(name);
-
-    InitModelTransform(*rsm, crc);
-    AddModelInteraction(*rsm);
-    SetRandomModelColor(*rsm);
-
-    // If the Model was not read from a file, drop it from above.
-    if (! crc.IsValidating())
-        AnimateModelPlacement(*rsm);
 
     return rsm;
 }

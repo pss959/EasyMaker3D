@@ -80,6 +80,10 @@ struct Event {
     /// modifiers.
     std::string       key_name;
 
+    /// Text string for a key press or release, including modifiers. This will
+    /// be empty for some keys.
+    std::string       key_text;
+
     /// Current keyboard modifiers for a key press or release.
     Modifiers         modifiers;
 
@@ -123,6 +127,11 @@ struct Event {
     static bool ParseKeyString(const std::string &key_string,
                                Modifiers &modifiers, std::string &key_name,
                                std::string &error);
+
+    /// Convenience function that builds a string representing the #key_text
+    /// for the given modifiers and key name.
+    static std::string BuildKeyText(const Modifiers &modifiers,
+                                    const std::string &key_name);
 
     /// Convenience function that builds a string representing a key press or
     /// release with the given modifiers and key code. (Example:

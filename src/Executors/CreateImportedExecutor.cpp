@@ -34,13 +34,5 @@ ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
 
     im->SetUnitConversion(settings.GetImportUnitsConversion());
 
-    InitModelTransform(*im, cic);
-    AddModelInteraction(*im);
-    SetRandomModelColor(*im);
-
-    // If the Model was not read from a file, drop it from above.
-    if (! cic.IsValidating())
-        AnimateModelPlacement(*im);
-
     return im;
 }

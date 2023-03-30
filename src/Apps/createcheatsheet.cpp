@@ -57,7 +57,7 @@ static std::string WrapShortcut_(const std::string &str) {
     if (! new_str.empty()) {
         // Replace space so it is visible.
         if (new_str == " ")
-            new_str = "SPACE";
+            new_str = "Space";
 
         // Non-empty shortcuts must be wrapped with the role.
         new_str = ":shortcut:`" + new_str + "`";
