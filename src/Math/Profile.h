@@ -85,6 +85,18 @@ class Profile {
     /// points.
     PointVec GetAllPoints() const;
 
+    /// Returns the location of the point before the indexed movable point. If
+    /// the Profile is open, this may return the fixed start point. If it is
+    /// closed, this may wrap around to the last movable point. Asserts if the
+    /// index is bad.
+    const Point2f & GetPreviousPoint(size_t index) const;
+
+    /// Returns the location of the point after the indexed movable point. If
+    /// the Profile is open, this may return the fixed end point. If it is
+    /// closed, this may wrap around to the first movable point. Asserts if the
+    /// index is bad.
+    const Point2f & GetNextPoint(size_t index) const;
+
     ///@}
 
     /// \name Modification

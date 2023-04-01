@@ -60,6 +60,24 @@ Profile::PointVec Profile::GetAllPoints() const {
     }
 }
 
+const Point2f & Profile::GetPreviousPoint(size_t index) const {
+    ASSERT(index < points_.size());
+    // Special case for index 0.
+    if (index == 0)
+        return IsOpen() ? start_point_ : points_.back();
+    else
+        return points_[index - 1];
+}
+
+const Point2f & Profile::GetNextPoint(size_t index) const {
+    ASSERT(index < points_.size());
+    // Special case for last index.
+    if (index + 1 == points_.size())
+        return IsOpen() ? end_point_ : points_[0];
+    else
+        return points_[index + 1];
+}
+
 void Profile::SetPoint(size_t index, const Point2f &point) {
     ASSERT(index < points_.size());
     points_[index] = point;

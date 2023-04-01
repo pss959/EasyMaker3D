@@ -12,40 +12,55 @@ TEST_F(ProfileTest, Default) {
 }
 
 TEST_F(ProfileTest, Open0) {
+    const Point2f p0(0, 1);
+    const Point2f p1(1, 0);
+
     // Create an open profile with no interior points.
-    Profile p(Point2f(0, 1), Point2f(1, 0));
+    Profile p(p0, p1);
     EXPECT_TRUE(p.IsValid());
     EXPECT_TRUE(p.IsOpen());
-    EXPECT_EQ(Point2f(0, 1), p.GetStartPoint());
-    EXPECT_EQ(Point2f(1, 0), p.GetEndPoint());
+    EXPECT_EQ(p0, p.GetStartPoint());
+    EXPECT_EQ(p1, p.GetEndPoint());
     EXPECT_EQ(0U, p.GetPointCount());
     EXPECT_EQ(2U, p.GetTotalPointCount());
     const auto &pp = p.GetPoints();
     EXPECT_TRUE(pp.empty());
     const auto ap = p.GetAllPoints();
     EXPECT_EQ(2U, ap.size());
-    EXPECT_EQ(Point2f(0, 1), ap[0]);
-    EXPECT_EQ(Point2f(1, 0), ap[1]);
+    EXPECT_EQ(p0, ap[0]);
+    EXPECT_EQ(p1, ap[1]);
+
+    TEST_THROW(p.GetPreviousPoint(0), AssertException, "index");
+    TEST_THROW(p.GetNextPoint(0),     AssertException, "index");
 }
 
 TEST_F(ProfileTest, Open1) {
     // Create an open profile with 1 interior point.
-    Profile p(Point2f(0, 1), Point2f(0, 0),
-              Profile::PointVec{ Point2f(1, .5f) }, 1);
+    const Point2f p0(0, 1);
+    const Point2f p1(0, 0);
+    const Point2f pm(1, .5f);
+
+    Profile p(p0, p1, Profile::PointVec{ pm }, 1);
     EXPECT_TRUE(p.IsValid());
     EXPECT_TRUE(p.IsOpen());
-    EXPECT_EQ(Point2f(0, 1), p.GetStartPoint());
-    EXPECT_EQ(Point2f(0, 0), p.GetEndPoint());
+    EXPECT_EQ(p0, p.GetStartPoint());
+    EXPECT_EQ(p1, p.GetEndPoint());
     EXPECT_EQ(1U, p.GetPointCount());
     EXPECT_EQ(3U, p.GetTotalPointCount());
     const auto &pp = p.GetPoints();
     EXPECT_EQ(1U, pp.size());
-    EXPECT_EQ(Point2f(1, .5f), pp[0]);
+    EXPECT_EQ(pm, pp[0]);
     const auto ap = p.GetAllPoints();
     EXPECT_EQ(3U, ap.size());
-    EXPECT_EQ(Point2f(0, 1),   ap[0]);
-    EXPECT_EQ(Point2f(1, .5f), ap[1]);
-    EXPECT_EQ(Point2f(0, 0),   ap[2]);
+    EXPECT_EQ(p0, ap[0]);
+    EXPECT_EQ(pm, ap[1]);
+    EXPECT_EQ(p1, ap[2]);
+
+    EXPECT_EQ(p0, p.GetPreviousPoint(0));
+    EXPECT_EQ(p1, p.GetNextPoint(0));
+
+    TEST_THROW(p.GetPreviousPoint(1), AssertException, "index");
+    TEST_THROW(p.GetNextPoint(1),     AssertException, "index");
 }
 
 TEST_F(ProfileTest, Closed) {
@@ -64,6 +79,18 @@ TEST_F(ProfileTest, Closed) {
 
     TEST_THROW(p.GetStartPoint(), AssertException, "IsOpen");
     TEST_THROW(p.GetEndPoint(),   AssertException, "IsOpen");
+
+    EXPECT_EQ(pts[3], p.GetPreviousPoint(0));
+    EXPECT_EQ(pts[0], p.GetPreviousPoint(1));
+    EXPECT_EQ(pts[1], p.GetPreviousPoint(2));
+    EXPECT_EQ(pts[2], p.GetPreviousPoint(3));
+    EXPECT_EQ(pts[1], p.GetNextPoint(0));
+    EXPECT_EQ(pts[2], p.GetNextPoint(1));
+    EXPECT_EQ(pts[3], p.GetNextPoint(2));
+    EXPECT_EQ(pts[0], p.GetNextPoint(3));
+
+    TEST_THROW(p.GetPreviousPoint(4), AssertException, "index");
+    TEST_THROW(p.GetNextPoint(4),     AssertException, "index");
 }
 
 TEST_F(ProfileTest, Edit) {
