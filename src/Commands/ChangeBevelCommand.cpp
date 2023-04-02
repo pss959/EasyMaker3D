@@ -33,7 +33,7 @@ std::string ChangeBevelCommand::GetDescription() const {
 }
 
 void ChangeBevelCommand::SetBevel(const Bevel &bevel) {
-    profile_points_ = bevel.profile.GetPoints();
+    profile_points_ = bevel.profile.GetMovablePoints();
     bevel_scale_    = bevel.scale;
     max_angle_      = bevel.max_angle;
 }

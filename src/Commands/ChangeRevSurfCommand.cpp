@@ -34,11 +34,12 @@ std::string ChangeRevSurfCommand::GetDescription() const {
 void ChangeRevSurfCommand::SetProfile(const Profile &profile) {
     // Make sure the profile is set up for a RevSurfModel.
     ASSERT(profile.IsOpen());
-    ASSERT(profile.GetMinPointCount() == 1U);
-    ASSERT(profile.GetStartPoint() == Point2f(0, 1));
-    ASSERT(profile.GetEndPoint()   == Point2f::Zero());
+    ASSERT(profile.GetMinPointCount() == 3U);
+    ASSERT(profile.GetPoints().front() == Point2f(0, 1));
+    ASSERT(profile.GetPoints().back()  == Point2f::Zero());
 
-    profile_points_ = profile.GetPoints();
+    // Save only the movable points.
+    profile_points_ = profile.GetMovablePoints();
 }
 
 Profile ChangeRevSurfCommand::GetProfile() const {

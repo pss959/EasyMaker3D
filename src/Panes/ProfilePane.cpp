@@ -216,7 +216,7 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     // Find the closest midpoint as well.
     float closest_mid_dist;
     Point2f mid_pt;
-    GetClosestMidPoint_(profile_.GetAllPoints(), p, mid_pt, closest_mid_dist);
+    GetClosestMidPoint_(profile_.GetPoints(), p, mid_pt, closest_mid_dist);
 
     if (closest_pt < 0 || closest_mid_dist < closest_pt_dist) {
         new_point_->SetTranslation(FromProfile_(mid_pt, TK::kPaneZOffset));
@@ -248,7 +248,7 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
     // If no hit, try midpoints (unless already showing for a grip drag).
     if (! intersected_widget && ! new_point_->IsEnabled()) {
         new_point_->SetEnabled(true);
-        const auto &points = profile_.GetAllPoints();
+        const auto &points = profile_.GetPoints();
         for (size_t i = 1; i < points.size(); ++i) {
             const Point2f mp = .5f * (points[i - 1] + points[i]);
             new_point_->SetTranslation(FromProfile_(mp, TK::kPaneZOffset));
@@ -270,8 +270,8 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
 void ProfilePane::Impl_::PositionFixedPoints_() {
     const bool has_fixed_points = profile_.IsOpen();
     if (has_fixed_points) {
-        start_point_->SetTranslation(FromProfile_(profile_.GetStartPoint()));
-        end_point_->SetTranslation(FromProfile_(profile_.GetEndPoint()));
+        start_point_->SetTranslation(FromProfile_(profile_.GetPoints().front()));
+        end_point_->SetTranslation(FromProfile_(profile_.GetPoints().back()));
     }
     start_point_->SetEnabled(has_fixed_points);
     end_point_->SetEnabled(has_fixed_points);
@@ -459,7 +459,7 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, Point2f &point) {
 
 void ProfilePane::Impl_::UpdateLine_(bool update_sliders) {
     // Update the line to connect all points.
-    Profile::PointVec points = profile_.GetAllPoints();
+    Profile::PointVec points = profile_.GetPoints();
     // Close the loop if the Profile is closed.
     if (! profile_.IsOpen())
         points.push_back(points[0]);
@@ -493,7 +493,7 @@ Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) const {
 }
 
 int ProfilePane::Impl_::GetNewPointIndex_(const Point2f &pt) {
-    const auto points = profile_.GetAllPoints();
+    const auto points = profile_.GetPoints();
 
     // XXXX Add something to Profile to help with this?
 

@@ -68,6 +68,10 @@ Profile ExtrudedModel::CreateProfile(const Profile::PointVec &points) {
     return Profile(points, 3);
 }
 
+Profile ExtrudedModel::CreateDefaultProfile() {
+    return CreateRegularPolygonProfile(4);
+}
+
 TriMesh ExtrudedModel::BuildMesh() {
     // Use a height of 1; the ExtrudedModel will be scaled when created.
     return CenterMesh(BuildExtrudedMesh(Polygon(profile_.GetPoints()), 1));
