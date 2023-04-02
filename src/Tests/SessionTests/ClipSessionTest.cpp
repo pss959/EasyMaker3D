@@ -43,16 +43,15 @@ class ClipSessionTest : public SessionTestBase {
 void ClipSessionTest::Compare1(const ModelData &expected, ClippedModel &cm) {
     auto &orig = *cm.GetOriginalModel();
 
-    // Make sure model transformations are up to date.
-    cm.SetStatus(Model::Status::kDescendantShown);
-    orig.SetStatus(Model::Status::kPrimary);
-    orig.SetStatus(Model::Status::kAncestorShown);
-    cm.SetStatus(Model::Status::kPrimary);
+    // Select the original model to make sure it is up to date.
+    SelectModel(orig);
 
     // Original model transform.
     EXPECT_VECS_CLOSE(expected.scale,      orig.GetScale());
     EXPECT_ROTS_CLOSE(expected.rot,        orig.GetRotation());
     EXPECT_VECS_CLOSE(expected.orig_trans, orig.GetTranslation());
+
+    SelectModel(cm);
 
     // ClippedModel transform.
     EXPECT_VECS_CLOSE(expected.scale,         cm.GetScale());
