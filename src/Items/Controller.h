@@ -133,7 +133,7 @@ class Controller : public SG::Node {
 
     /// Attaches the given object to the Controller so that it moves with
     /// it. The given offset vector is used; the X is adjusted based on the
-    /// Controller's Hand. Note that this modifies the rotatoin and translation
+    /// Controller's Hand. Note that this modifies the rotation and translation
     /// of the object.
     void AttachObject(const SG::NodePtr &object, const Vector3f &offset);
 
