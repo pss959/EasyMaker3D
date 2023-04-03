@@ -199,6 +199,9 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node) : root_node_(root_node) {
     // Initialize the size of the delete rectangle.
     const Vector3f size = delete_spot_->GetBounds().GetSize();
     delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(size[0], size[1]));
+
+    // Start with a valid Profile.
+    SetProfile(Profile(Point2f(0, 1), Point2f(1, 0)));
 }
 
 void ProfilePane::Impl_::SetColors() {
