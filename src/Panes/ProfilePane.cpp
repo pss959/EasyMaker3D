@@ -495,7 +495,8 @@ void ProfilePane::Impl_::UpdateLine_(bool update_sliders) {
     // If requested, position the movable point sliders based on the points.
     if (update_sliders) {
         const auto &line_pts = profile_line_->GetPoints();
-        for (size_t index = 0; index < profile_.GetPointCount(); ++index) {
+        const size_t point_count = profile_.GetPointCount();
+        for (size_t index = 0; index < point_count; ++index) {
             if (auto slider = GetMovableSlider_(index))
                 slider->SetValue(ToVector2f(Vector3f(line_pts[index])));
         }
@@ -514,9 +515,11 @@ Slider2DWidgetPtr ProfilePane::Impl_::CreateDelegateSlider_(
 Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) const {
     Slider2DWidgetPtr slider;
     if (! profile_.IsFixedPoint(index)) {
-        ASSERT(index - 1 < movable_parent_->GetChildCount());
+        // Get the child index of the slider.
+        const size_t child_index = index - (profile_.IsOpen() ? 1 : 0);
+        ASSERT(child_index < movable_parent_->GetChildCount());
         slider = Util::CastToDerived<Slider2DWidget>(
-            movable_parent_->GetChild(index - 1));
+            movable_parent_->GetChild(child_index));
         ASSERT(slider);
     }
     return slider;
@@ -540,6 +543,15 @@ bool ProfilePane::Impl_::IsNearProfileSegment_(const Point2f &pt,
             is_near_segment = true;
         }
     }
+
+    // If the Profile is closed, also test the closing segment.
+    if (! profile_.IsOpen() &&
+        IsNearLineSegment(pt, points.back(), points[0],
+                          TK::kProfilePanePointTolerance)) {
+        start_index = points.size() - 1;
+        is_near_segment = true;
+    }
+
     return is_near_segment;
 }
 
