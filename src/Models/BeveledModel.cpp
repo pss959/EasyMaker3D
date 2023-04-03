@@ -39,7 +39,7 @@ void BeveledModel::CreationDone() {
     ConvertedModel::CreationDone();
 
     if (! IsTemplate()) {
-        ASSERT(bevel_.profile.GetPoints().empty());
+        ASSERT(bevel_.profile.GetPointCount() == 2U);
         bevel_.profile   = CreateProfile(profile_points_);
         bevel_.scale     = bevel_scale_;
         bevel_.max_angle = max_angle_;
@@ -48,14 +48,14 @@ void BeveledModel::CreationDone() {
 
 void BeveledModel::SetBevel(const Bevel &bevel) {
     bevel_          = bevel;
-    profile_points_ = bevel_.profile.GetPoints();
+    profile_points_ = bevel_.profile.GetMovablePoints();
     bevel_scale_    = bevel_.scale;
     max_angle_      = bevel_.max_angle;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
 Profile BeveledModel::CreateProfile(const Profile::PointVec &points) {
-    return Profile(Point2f(0, 1), Point2f(1, 0), points, 0);
+    return Profile(Point2f(0, 1), Point2f(1, 0), points, 2);
 }
 
 TriMesh BeveledModel::BuildMesh() {

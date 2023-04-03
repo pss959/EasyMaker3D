@@ -14,12 +14,6 @@ DECL_SHARED_PTR(RevSurfModel);
 /// \ingroup Models
 class RevSurfModel : public PrimitiveModel {
   public:
-    /// Creates and returns a default Profile for a RevSurfModel.
-    static Profile CreateDefaultProfile() {
-        return Profile(Point2f(0, 1), Point2f(0, 0),
-                       Profile::PointVec{ Point2f(.5f, .5f) }, 1);
-    }
-
     /// Sets the Profile to use for the surface.
     void SetProfile(const Profile &profile);
 
@@ -45,6 +39,10 @@ class RevSurfModel : public PrimitiveModel {
     /// Convenience that creates a valid RevSurfModel Profile from the given
     /// vector of movable profile points.
     static Profile CreateProfile(const Profile::PointVec &points);
+
+    /// Convenience that creates and returns a default Profile for a
+    /// RevSurfModel.
+    static Profile CreateDefaultProfile();
 
   protected:
     RevSurfModel() {}

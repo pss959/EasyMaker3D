@@ -29,7 +29,7 @@ void ChangeExtrudedCommand::SetProfile(const Profile &profile) {
     ASSERT(! profile.IsOpen());
     ASSERT(profile.GetMinPointCount() == 3U);
 
-    profile_points_ = profile.GetPoints();
+    profile_points_ = profile.GetMovablePoints();
 }
 
 Profile ChangeExtrudedCommand::GetProfile() const {

@@ -196,17 +196,18 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     TriMesh mesh;
 
      // P is the number of interior Profile points (always >= 1).
-    const size_t p = profile.GetPoints().size();
+    const size_t p = profile.GetPointCount() - 2;
 
     // There is 1 vertex at the top center, 1 at the bottom center, and
     // p*num_sides in the middle.
     const size_t point_count = 2 + p * num_sides;
     mesh.points.reserve(point_count);
-    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1, true);
-    mesh.points.push_back(Point3f(profile.GetStartPoint(), 0));
-    for (const auto &pp: profile.GetPoints())
-        AddArcPoints_(ring_pts, pp[0], pp[1], mesh.points);
-    mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
+    const auto &prof_pts = profile.GetPoints();
+    const auto  ring_pts = GetCirclePoints(num_sides, 1, true);
+    mesh.points.push_back(Point3f(prof_pts.front(), 0));
+    for (size_t i = 1; i + 1 < prof_pts.size(); ++i)
+        AddArcPoints_(ring_pts, prof_pts[i][0], prof_pts[i][1], mesh.points);
+    mesh.points.push_back(Point3f(prof_pts.back(), 0));
     ASSERT(mesh.points.size() == point_count);
 
     // Translate all mesh points down in Y by .5 to center them.
@@ -246,7 +247,7 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
     const float sweep_fraction = sweep_angle.Degrees() / 360.f;
     const size_t c = std::max(2, 1 + static_cast<int>(sweep_fraction *
                                                       num_sides));
-    const size_t p = profile.GetPoints().size();
+    const size_t p = profile.GetPointCount() - 2;
     const std::vector<Point2f> arc_pts =
         GetCircleArcPoints(c, 1, CircleArc(Anglef(), sweep_angle));
 
@@ -254,18 +255,19 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
     // vertices in the middle.
     const size_t point_count = 2 + p * c;
     mesh.points.reserve(point_count);
-    mesh.points.push_back(Point3f(profile.GetStartPoint(), 0));
-    for (const auto &pp: profile.GetPoints())
-        AddArcPoints_(arc_pts, pp[0], pp[1], mesh.points);
-    mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
+    const auto &prof_pts = profile.GetPoints();
+    mesh.points.push_back(Point3f(prof_pts.front(), 0));
+    for (size_t i = 1; i + 1 < prof_pts.size(); ++i)
+        AddArcPoints_(arc_pts, prof_pts[i][0], prof_pts[i][1], mesh.points);
+    mesh.points.push_back(Point3f(prof_pts.back(), 0));
     ASSERT(mesh.points.size() == point_count);
 
     // Translate all mesh points down in Y by .5 to center them.
     for (auto &p: mesh.points)
         p[1] -= .5f;
 
-    // Create a Polygon with all profile points and triangulate it.
-    Polygon poly(profile.GetAllPoints());
+    // Create a Polygon with all interior profile points and triangulate it.
+    Polygon poly(profile.GetMovablePoints());
     std::vector<GIndex> poly_tri_indices = TriangulatePolygon(poly);
     const size_t poly_tri_count = poly_tri_indices.size() / 3;
 
@@ -400,6 +402,7 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
 
 TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
                          int num_sides) {
+    ASSERT(profile.IsOpen());
     const float angle = sweep_angle.Degrees();
     ASSERT(angle > 0 && angle <= 360);
     TriMesh mesh = angle == 360 ?

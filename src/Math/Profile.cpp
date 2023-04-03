@@ -15,10 +15,12 @@ Profile::Profile() : is_open_(false), min_count_(1) {
 Profile::Profile(const Point2f &start_point, const Point2f &end_point,
                  const PointVec &points, size_t min_count) :
     is_open_(true),
-    min_count_(min_count),
-    start_point_(start_point),
-    end_point_(end_point),
-    points_(points) {
+    min_count_(min_count) {
+    ASSERT(min_count >= 2U);
+    ASSERT(points.size() + 2 >= min_count);
+    points_.push_back(start_point);
+    Util::AppendVector(points, points_);
+    points_.push_back(end_point);
 }
 
 Profile::Profile(const PointVec &points, size_t min_count) :
@@ -36,55 +38,46 @@ bool Profile::IsValid() const {
 
 }
 
-const Point2f & Profile::GetStartPoint() const {
-    ASSERT(IsOpen());
-    return start_point_;
+bool Profile::IsFixedPoint(size_t index) const {
+    ASSERT(index < points_.size());
+    return IsOpen() && (index == 0 || index + 1 == points_.size());
 }
 
-const Point2f & Profile::GetEndPoint() const {
-    ASSERT(IsOpen());
-    return end_point_;
-}
-
-Profile::PointVec Profile::GetAllPoints() const {
-    if (IsOpen()) {
-        PointVec points;
-        points.reserve(GetTotalPointCount());
-        points.push_back(start_point_);
-        Util::AppendVector(points_, points);
-        points.push_back(end_point_);
-        return points;
-    }
-    else {
-        return points_;
-    }
+Profile::PointVec Profile::GetMovablePoints() const {
+    return IsOpen() ? PointVec(points_.begin() + 1,
+                               points_.end()   - 1) : points_;
 }
 
 const Point2f & Profile::GetPreviousPoint(size_t index) const {
     ASSERT(index < points_.size());
-    // Special case for index 0.
-    if (index == 0)
-        return IsOpen() ? start_point_ : points_.back();
-    else
-        return points_[index - 1];
+    ASSERT(index > 0 || ! IsOpen());
+    return index == 0 ? points_.back() : points_[index - 1];
 }
 
 const Point2f & Profile::GetNextPoint(size_t index) const {
     ASSERT(index < points_.size());
-    // Special case for last index.
-    if (index + 1 == points_.size())
-        return IsOpen() ? end_point_ : points_[0];
-    else
-        return points_[index + 1];
+    ASSERT(index + 1 < points_.size() || ! IsOpen());
+    return index + 1 == points_.size() ? points_[0] : points_[index + 1];
 }
 
 void Profile::SetPoint(size_t index, const Point2f &point) {
+    ASSERTM(! (IsOpen() && (index == 0 || index + 1 == points_.size())),
+            "Cannot change fixed endpoint of open Profile");
     ASSERT(index < points_.size());
     points_[index] = point;
 }
 
+void Profile::AppendPoint(const Point2f &point) {
+    // If open, insert before the fixed end point.
+    if (IsOpen())
+        points_.insert(points_.begin() + points_.size() - 1, point);
+    else
+        points_.push_back(point);
+}
+
 void Profile::InsertPoint(size_t index, const Point2f &point) {
     ASSERT(index <= points_.size());
+    ASSERT(! IsOpen() || (index > 0 && index < points_.size()));
     if (index == points_.size())
         points_.push_back(point);
     else
@@ -92,30 +85,20 @@ void Profile::InsertPoint(size_t index, const Point2f &point) {
 }
 
 void Profile::RemovePoint(size_t index) {
-    ASSERT(points_.size() > min_count_);
+    ASSERTM(! (IsOpen() && (index == 0 || index + 1 == points_.size())),
+            "Cannot remove fixed endpoint of open Profile");
     ASSERT(index < points_.size());
+    ASSERT(points_.size() > min_count_);
     points_.erase(points_.begin() + index);
 }
 
-void Profile::AddPoints(const PointVec &points) {
-        Util::AppendVector(points, points_);
-    }
-
-
 bool Profile::operator==(const Profile &p) const {
-    if (p.IsOpen() != IsOpen())
-        return false;
-    if (IsOpen()) {
-        return p.start_point_ == start_point_ && p.end_point_ == end_point_ &&
-            p.points_ == points_;
-    }
-    else {
-        return p.points_ == points_;
-    }
+    return p.IsOpen() == IsOpen() && p.points_ == points_;
 }
 
 std::string Profile::ToString() const {
     return std::string(IsOpen() ? "OP [" : "CP [") +
-        "MIN: " + Util::ToString(GetMinPointCount()) + " <" +
-        Util::JoinItems(GetAllPoints(), ", ") + ">]";
+        "CT=" + Util::ToString(points_.size()) +
+        " MIN=" + Util::ToString(min_count_) + " <" +
+        Util::JoinItems(points_, ", ") + ">]";
 }

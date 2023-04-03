@@ -15,12 +15,6 @@ DECL_SHARED_PTR(ExtrudedModel);
 /// \ingroup Models
 class ExtrudedModel : public PrimitiveModel {
   public:
-    /// Creates and returns a default Profile for a ExtrudedModel. It is a
-    /// square.
-    static Profile CreateDefaultProfile() {
-        return CreateRegularPolygonProfile(4);
-    }
-
     /// Sets the Profile to use for the surface. Asserts if it is not a valid
     /// closed Profile.
     void SetProfile(const Profile &profile);
@@ -36,6 +30,10 @@ class ExtrudedModel : public PrimitiveModel {
     /// vector of movable profile points. Asserts if there are fewer than 3
     /// points.
     static Profile CreateProfile(const Profile::PointVec &points);
+
+    /// Convenience that creates and returns a default Profile for an
+    /// ExtrudedModel. It is a square.
+    static Profile CreateDefaultProfile();
 
   protected:
     ExtrudedModel() {}

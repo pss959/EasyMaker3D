@@ -16,8 +16,8 @@ class BevelerTest : public TestBase {
         return bevel;
     }
 
-    // Returns a Bevel with the given number of points (3-6) and optional scale
-    // and max_angle settings.
+    // Returns a Bevel with the given number of total points (3-6) and
+    // optional scale and max_angle settings.
     static Bevel GetBevel(size_t np, float scale = 1, float max_angle = 120) {
         static const Point2f pts[4]{
             { .4f, .8f }, { .5f, .8f }, { .8f, .6f }, { .9f, .2f }
@@ -30,7 +30,7 @@ class BevelerTest : public TestBase {
 
         const auto add_pts = [&](const std::vector<size_t> indices){
             for (const auto i: indices)
-                bevel.profile.AddPoint(pts[i]);
+                bevel.profile.AppendPoint(pts[i]);
         };
         if (np == 3)
             add_pts(std::vector<size_t>{0});

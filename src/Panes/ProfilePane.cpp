@@ -80,41 +80,69 @@ class ProfilePane::Impl_ {
     /// the rest of the time.
     Slider2DWidgetPtr delegate_slider_;
 
+    /// If the Profile is open, this sets the positions of the fixed point
+    /// markers. Otherwise, it hides them.
     void PositionFixedPoints_();
+
+    /// Updates the number of Slider2DWidget instances to match the number of
+    /// movable Profile points.
     void CreateMovablePoints_();
-    void PositionDeleteRect_(const Point2f &pos);
+
+    /// This is invoked when the user hovers inside the AreaWidget. It shows
+    /// and positions the new_point_ widget if the hover is close to a Profile
+    /// line segment.
     void AreaHovered_(const Point3f &point);
+
+    /// This is invoked when the new_point_ widget is clicked, inserting a new
+    /// Profile point if the new_point_ widget is close to a Profile line
+    /// segment.
     void NewPointClicked_(const ClickInfo &info);
+
+    /// This is invoked when the new_point_ widget is dragged. It uses the
+    /// delegate_slider_ to create and drag a new movable Profile point.
     void NewPointDragged_(const DragInfo *info, bool is_start);
+
+    /// This is invoked when a movable Profile point widget is activated.
     void PointActivated_(size_t index, bool is_activation);
+
+    /// This is invoked when a movable Profile point widget is dragged.
     void PointMoved_(size_t index, const Point2f &pos);
+
+    /// Potentially snaps the (movable) Profile point with the given index from
+    /// the given position based on its neighbors. Updates \p point and returns
+    /// true if it is snapped to either neighbor.
     bool SnapPoint_(size_t index, Point2f &point);
+
+    /// Updates the profile_line_ based on the current Profile. If \p
+    /// update_sliders is true, this also updates the positions of the movable
+    /// point sliders.
     void UpdateLine_(bool update_sliders);
-    void CreateDelegateSlider_(size_t index, const Point2f &pos);
+
+    /// Inserts a movable Profile point at the given index and position and
+    /// returns the new movable point widget created for it.
+    Slider2DWidgetPtr CreateDelegateSlider_(size_t index, const Point2f &pos);
+
+    /// Returns the movable point widget for the indexed Profile point. Returns
+    /// a null pointer if the index is for a fixed Profile point.
     Slider2DWidgetPtr GetMovableSlider_(size_t index) const;
 
-    /// If the given point is on the profile line but not too close to any
-    /// existing point, this returns the index (> 0) into the full set of
-    /// profile points (including the fixed points at the ends if the Profile
-    /// is open) of where to create a new point. Otherwise, it returns -1.
-    int GetNewPointIndex_(const Point2f &pt);
-
-    static bool IsPointOnSegment_(const Point2f &p,
-                                  const Point2f &end0, const Point2f &end1);
+    /// If the given point is near a Profile line segment but not too close to
+    /// any existing point, this sets \p start_index to the index of the
+    /// starting Profile point of that segment and returns true. Otherwise, it
+    /// just returns false.
+    bool IsNearProfileSegment_(const Point2f &pt, size_t &start_index);
 
     /// Puts the delete rectangle in a reasonable spot that is not too close to
     /// any of the profile points.
     void PositionDeleteSpot_();
 
-    /// Returns the index of the closest point in the given vector to p and
-    /// sets dist to its distance.
-    size_t GetClosestPoint_(const Profile::PointVec &points,
-                            const Point2f &p, float &dist);
+    /// Returns the index of the closest movable Profile point to \p p and sets
+    /// \p dist to its distance.
+    size_t GetClosestMovablePoint_(const Point2f &p, float &dist);
 
-    /// Sets mid_pt to the coordinates of the closest midpoint to p and sets
-    /// dist to its distance from it.
-    void GetClosestMidPoint_(const Profile::PointVec &points,
-                             const Point2f &p, Point2f &mid_pt, float &dist);
+    /// Sets \p mid_pt to the closest Profile midpoint to \p p and sets \p dist
+    /// to its distance from it.
+    void GetClosestMidPoint_(const Point2f &p, Point2f &mid_pt, float &dist);
 
     /// Sets 3D points in an SG::PolyLine from a vector of profile points.
     void SetLinePoints_(const Profile::PointVec &points, SG::PolyLine &line,
@@ -154,8 +182,8 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node) : root_node_(root_node) {
     snap_feedback_ = SG::FindNodeUnderNode(root_node, "SnapFeedback");
     snapped_point_ = SG::FindNodeUnderNode(*snap_feedback_, "SnappedPoint");
 
-    auto pline = SG::FindNodeUnderNode(root_node,       "ProfileLine");
-    auto sline = SG::FindNodeUnderNode(*snap_feedback_, "SnappedLine");
+    auto pline    = SG::FindNodeUnderNode(root_node,       "ProfileLine");
+    auto sline    = SG::FindNodeUnderNode(*snap_feedback_, "SnappedLine");
     profile_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*pline, "Line");
     snapped_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*sline, "Line");
 
@@ -181,8 +209,6 @@ void ProfilePane::Impl_::SetColors() {
 void ProfilePane::Impl_::SetProfile(const Profile &profile) {
     ASSERT(profile.IsValid());
     profile_ = profile;
-
-    // XXXX Deal with closed Profiles.
 
     PositionFixedPoints_();
     CreateMovablePoints_();
@@ -210,13 +236,13 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     // Find the closest movable point, if there are any.
     int closest_pt = -1;
     float closest_pt_dist;
-    if (! profile_.GetPoints().empty())
-        closest_pt = GetClosestPoint_(profile_.GetPoints(), p, closest_pt_dist);
+    if (profile_.GetMovablePointCount() > 0U)
+        closest_pt = GetClosestMovablePoint_(p, closest_pt_dist);
 
     // Find the closest midpoint as well.
-    float closest_mid_dist;
+    float   closest_mid_dist;
     Point2f mid_pt;
-    GetClosestMidPoint_(profile_.GetAllPoints(), p, mid_pt, closest_mid_dist);
+    GetClosestMidPoint_(p, mid_pt, closest_mid_dist);
 
     if (closest_pt < 0 || closest_mid_dist < closest_pt_dist) {
         new_point_->SetTranslation(FromProfile_(mid_pt, TK::kPaneZOffset));
@@ -233,22 +259,23 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
 
 WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
                                                    float &closest_distance) {
+    const auto &points = profile_.GetPoints();
+
     // Test movable points.
     WidgetPtr intersected_widget;
-    for (const auto &ms: movable_parent_->GetChildren()) {
-        auto slider = Util::CastToDerived<Slider2DWidget>(ms);
-        ASSERT(slider);
-        float dist;
-        if (func(*slider, dist) && dist < closest_distance) {
-            closest_distance = dist;
-            intersected_widget = slider;
+    for (size_t i = 0; i < points.size(); ++i) {
+        if (auto slider = GetMovableSlider_(i)) {
+            float dist;
+            if (func(*slider, dist) && dist < closest_distance) {
+                closest_distance = dist;
+                intersected_widget = slider;
+            }
         }
     }
 
     // If no hit, try midpoints (unless already showing for a grip drag).
     if (! intersected_widget && ! new_point_->IsEnabled()) {
         new_point_->SetEnabled(true);
-        const auto &points = profile_.GetAllPoints();
         for (size_t i = 1; i < points.size(); ++i) {
             const Point2f mp = .5f * (points[i - 1] + points[i]);
             new_point_->SetTranslation(FromProfile_(mp, TK::kPaneZOffset));
@@ -270,8 +297,8 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
 void ProfilePane::Impl_::PositionFixedPoints_() {
     const bool has_fixed_points = profile_.IsOpen();
     if (has_fixed_points) {
-        start_point_->SetTranslation(FromProfile_(profile_.GetStartPoint()));
-        end_point_->SetTranslation(FromProfile_(profile_.GetEndPoint()));
+        start_point_->SetTranslation(FromProfile_(profile_.GetPoints().front()));
+        end_point_->SetTranslation(FromProfile_(profile_.GetPoints().back()));
     }
     start_point_->SetEnabled(has_fixed_points);
     end_point_->SetEnabled(has_fixed_points);
@@ -281,14 +308,17 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
     // Update the number of Slider2DWidget instances to match the number of
     // movable Profile points. The positions are set in UpdateLine_().
 
-    const size_t num_needed  = profile_.GetPoints().size();
+    const size_t num_needed  = profile_.GetMovablePointCount();
     const size_t num_present = movable_parent_->GetChildCount();
     if (num_present > num_needed) {
         while (movable_parent_->GetChildCount() > num_needed)
             movable_parent_->RemoveChild(movable_parent_->GetChildCount() - 1);
     }
     else {
-        for (size_t index = num_present; index < num_needed; ++index) {
+        for (size_t i = num_present; i < num_needed; ++i) {
+            // Get the index of the point in the Profile.
+            const size_t index = i + (profile_.IsOpen() ? 1 : 0);
+
             // No need for a deep clone for these.
             const std::string name = "MovablePoint_" + Util::ToString(index);
             auto slider =
@@ -311,16 +341,13 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
     }
 }
 
-void ProfilePane::Impl_::PositionDeleteRect_(const Point2f &pos) {
-    delete_rect_ = BuildRange(pos, delete_rect_.GetSize());
-}
-
 void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
     // If there is a 2D position and it is close enough to start a drag on a
-    // line segment, show the midpoint at the position.
-    const Point2f pos = ToProfile_(point);
-    if (GetNewPointIndex_(pos) >= 0) {
-        new_point_->SetTranslation(FromProfile_(pos, TK::kPaneZOffset));
+    // line segment, show the new_point_ widget at the position.
+    const Point2f pt = ToProfile_(point);
+    size_t start_index;
+    if (IsNearProfileSegment_(pt, start_index)) {
+        new_point_->SetTranslation(FromProfile_(pt, TK::kPaneZOffset));
         new_point_->SetEnabled(true);
     }
     else {
@@ -331,9 +358,9 @@ void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
 void ProfilePane::Impl_::NewPointClicked_(const ClickInfo &info) {
     new_point_->SetEnabled(false);
     const Point2f pt = ToProfile_(Point3f(new_point_->GetTranslation()));
-    const int index = GetNewPointIndex_(pt);
-    if (index > 0) {
-        profile_.InsertPoint(index - 1, pt);
+    size_t start_index;
+    if (IsNearProfileSegment_(pt, start_index)) {
+        profile_.InsertPoint(start_index + 1, pt);
         CreateMovablePoints_();
         UpdateLine_(true);
         profile_changed_.Notify(profile_);
@@ -346,11 +373,10 @@ void ProfilePane::Impl_::NewPointDragged_(const DragInfo *info, bool is_start) {
     if (is_start) {
         ASSERT(info);
         const Point2f pp = ToProfile_(Point3f(new_point_->GetTranslation()));
-        int index = GetNewPointIndex_(pp);
-        if (index > 0) {
+        size_t start_index;
+        if (IsNearProfileSegment_(pp, start_index)) {
             new_point_->SetEnabled(false);
-            CreateDelegateSlider_(index - 1, pp);
-            delegate_slider_ = GetMovableSlider_(index - 1);
+            delegate_slider_ = CreateDelegateSlider_(start_index + 1, pp);
             delegate_slider_->StartDrag(*info);
         }
     }
@@ -368,6 +394,7 @@ void ProfilePane::Impl_::NewPointDragged_(const DragInfo *info, bool is_start) {
 
 void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
     auto slider = GetMovableSlider_(index);
+    ASSERT(slider);
 
     if (is_activation) {
         // Detect point motion.
@@ -406,8 +433,8 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
 }
 
 void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
-    // Index is into movable points. (Does not include end points.)
-    ASSERT(index < profile_.GetPoints().size());
+    // Index must be for a movable point.
+    ASSERT(! profile_.IsFixedPoint(index));
 
     // Round to precision if requested.
     Point2f snapped_pos = pos;
@@ -459,87 +486,78 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, Point2f &point) {
 
 void ProfilePane::Impl_::UpdateLine_(bool update_sliders) {
     // Update the line to connect all points.
-    Profile::PointVec points = profile_.GetAllPoints();
+    Profile::PointVec points = profile_.GetPoints();
     // Close the loop if the Profile is closed.
     if (! profile_.IsOpen())
         points.push_back(points[0]);
     SetLinePoints_(points, *profile_line_, TK::kPaneZOffset);
 
-    // Position the movable point sliders based on the points if requested.
+    // If requested, position the movable point sliders based on the points.
     if (update_sliders) {
         const auto &line_pts = profile_line_->GetPoints();
-        for (size_t index = 0; index < profile_.GetPoints().size(); ++index) {
-            auto slider = GetMovableSlider_(index);
-            // Skip the start point if the Profile is open.
-            const auto &pt = line_pts[index + (profile_.IsOpen() ? 1 : 0)];
-            slider->SetValue(Vector2f(pt[0], pt[1]));
+        const size_t point_count = profile_.GetPointCount();
+        for (size_t index = 0; index < point_count; ++index) {
+            if (auto slider = GetMovableSlider_(index))
+                slider->SetValue(ToVector2f(Vector3f(line_pts[index])));
         }
     }
 }
 
-void ProfilePane::Impl_::CreateDelegateSlider_(size_t index,
-                                               const Point2f &pos) {
+Slider2DWidgetPtr ProfilePane::Impl_::CreateDelegateSlider_(
+    size_t index, const Point2f &pos) {
     profile_.InsertPoint(index, pos);
     CreateMovablePoints_();
     UpdateLine_(true);
+
+    return GetMovableSlider_(index);
 }
 
 Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) const {
-    ASSERT(index < movable_parent_->GetChildCount());
-    Slider2DWidgetPtr slider =
-        Util::CastToDerived<Slider2DWidget>(movable_parent_->GetChild(index));
-    ASSERT(slider);
+    Slider2DWidgetPtr slider;
+    if (! profile_.IsFixedPoint(index)) {
+        // Get the child index of the slider.
+        const size_t child_index = index - (profile_.IsOpen() ? 1 : 0);
+        ASSERT(child_index < movable_parent_->GetChildCount());
+        slider = Util::CastToDerived<Slider2DWidget>(
+            movable_parent_->GetChild(child_index));
+        ASSERT(slider);
+    }
     return slider;
 }
 
-int ProfilePane::Impl_::GetNewPointIndex_(const Point2f &pt) {
-    const auto points = profile_.GetAllPoints();
-
-    // XXXX Add something to Profile to help with this?
-
-
-    // The point has to be on the profile line but not too close to an existing
-    // profile point.
-    int on_line_index = -1;
-    for (size_t i = 0; i < points.size(); ++i) {
-        if (ion::math::Distance(pt, points[i]) <= TK::kProfilePanePointTolerance)
-            return -1;
-        if (i > 0 && IsPointOnSegment_(pt, points[i - 1], points[i]))
-            on_line_index = i;
-    }
-    return on_line_index;
-}
-
-bool ProfilePane::Impl_::IsPointOnSegment_(const Point2f &p,
-                                           const Point2f &end0,
-                                           const Point2f &end1) {
+bool ProfilePane::Impl_::IsNearProfileSegment_(const Point2f &pt,
+                                               size_t &start_index) {
     using ion::math::Distance;
-    using ion::math::Dot;
-    using ion::math::Normalized;
 
-    // Do this in 3D since the function already exists.
-    Point3f close0, close1;
-    if (! GetClosestLinePoints(Point3f(p, 0), Vector3f(0, 0, 1),
-                               Point3f(end0, 0),
-                               Normalized(Vector3f(end1 - end0, 0)),
-                               close0, close1))
-        return false;  // Should never happen - can't be parallel.
+    const auto &points = profile_.GetPoints();
+    bool is_near_segment = false;
+    for (size_t i = 0; i < points.size(); ++i) {
+        // If the new point is too close to an existing profile point, stop.
+        if (Distance(pt, points[i]) <= TK::kProfilePanePointTolerance)
+            return false;
 
-    auto to2 = [](const Point3f &p){ return Point2f(p[0], p[1]); };
-    const Point2f c0 = to2(close0);
-    const Point2f c1 = to2(close1);
-    if (Distance(c0, c1) <= TK::kProfilePanePointTolerance) {
-        // Make sure the point is between end0 and end1.
-        if (Dot(c1 - end0, end1 - end0) > 0 && Dot(c1 - end1, end0 - end1) > 0)
-            return true;
+        // See if it is close enough to a segment.
+        if (i > 0 && IsNearLineSegment(pt, points[i - 1], points[i],
+                                       TK::kProfilePanePointTolerance)) {
+            start_index = i - 1;
+            is_near_segment = true;
+        }
     }
 
-    return false;
+    // If the Profile is closed, also test the closing segment.
+    if (! profile_.IsOpen() &&
+        IsNearLineSegment(pt, points.back(), points[0],
+                          TK::kProfilePanePointTolerance)) {
+        start_index = points.size() - 1;
+        is_near_segment = true;
+    }
+
+    return is_near_segment;
 }
 
 void ProfilePane::Impl_::PositionDeleteSpot_() {
     // Use one of the points in the center of one of the sides, a quarter way
-    // in. Choose the one that is farthest from all profile points.
+    // in. Choose the one that is farthest from all movable Profile points.
     const Point2f cpts[4]{
         Point2f(.25f, .50f),  // Left edge.
         Point2f(.75f, .50f),  // Right edge.
@@ -551,7 +569,7 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
     int   max_index = -1;
     for (int i = 0; i < 4; ++i) {
         float dist;
-        GetClosestPoint_(profile_.GetPoints(), cpts[i], dist);
+        GetClosestMovablePoint_(cpts[i], dist);
         if (dist > max_dist) {
             max_index = i;
             max_dist  = dist;
@@ -560,29 +578,31 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
     ASSERT(max_index >= 0 && max_index <= 3);
     const Point2f &pt = cpts[max_index];
 
-    // Position the rectangle and the feedback rectangle.
-    PositionDeleteRect_(pt);
+    // Position the delete rectangle and the delete spot widget.
+    delete_rect_ = BuildRange(pt, delete_rect_.GetSize());
     delete_spot_->SetTranslation(FromProfile_(pt, 0));
 }
 
-size_t ProfilePane::Impl_::GetClosestPoint_(const Profile::PointVec &points,
-                                            const Point2f &p, float &dist) {
-    ASSERT(! points.empty());
-    int closest = 0;
+size_t ProfilePane::Impl_::GetClosestMovablePoint_(const Point2f &p,
+                                                   float &dist) {
+    const auto &points = profile_.GetPoints();
+    size_t closest = 0;
     dist = std::numeric_limits<float>::max();
     for (size_t i = 0; i < points.size(); ++i) {
-        const float d = ion::math::Distance(p, points[i]);
-        if (d < dist) {
-            closest = i;
-            dist    = d;
+        if (! profile_.IsFixedPoint(i)) {
+            const float d = ion::math::Distance(p, points[i]);
+            if (d < dist) {
+                closest = i;
+                dist    = d;
+            }
         }
     }
     return closest;
 }
 
-void ProfilePane::Impl_::GetClosestMidPoint_(const Profile::PointVec &points,
-                                             const Point2f &p,
+void ProfilePane::Impl_::GetClosestMidPoint_(const Point2f &p,
                                              Point2f &mid_pt, float &dist) {
+    const auto &points = profile_.GetPoints();
     dist = std::numeric_limits<float>::max();
     for (size_t i = 1; i < points.size(); ++i) {
         const Point2f mp = .5f * (points[i - 1] + points[i]);
