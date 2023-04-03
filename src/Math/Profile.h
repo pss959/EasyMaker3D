@@ -61,6 +61,15 @@ class Profile {
     /// Returns the number of Profile points.
     size_t GetPointCount() const { return points_.size(); }
 
+    /// Returns true if the given index refers to a fixed point in an open
+    /// Profile.
+    bool IsFixedPoint(size_t index) const;
+
+    /// Returns the number of movable Profile points.
+    size_t GetMovablePointCount() const {
+        return points_.size() - (IsOpen() ? 2 : 0);
+    }
+
     /// Returns the vector of Profile points.
     const PointVec & GetPoints() const { return points_; }
 

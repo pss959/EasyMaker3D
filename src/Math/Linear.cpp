@@ -388,6 +388,29 @@ bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
     return true;
 }
 
+bool IsNearLineSegment(const Point2f &p, const Point2f &end0,
+                       const Point2f &end1, float tolerance) {
+    // Do this in 3D since the function already exists.
+    Point3f close0, close1;
+    if (! GetClosestLinePoints(Point3f(p, 0), Vector3f(0, 0, 1),
+                               Point3f(end0, 0),
+                               ion::math::Normalized(Vector3f(end1 - end0, 0)),
+                               close0, close1))
+        return false;  // Should never happen - can't be parallel.
+
+    auto to2 = [](const Point3f &p){ return Point2f(p[0], p[1]); };
+    const Point2f c0 = to2(close0);
+    const Point2f c1 = to2(close1);
+    if (ion::math::Distance(c0, c1) <= tolerance) {
+        // Make sure the point is between end0 and end1.
+        if (ion::math::Dot(c1 - end0, end1 - end0) > 0 &&
+            ion::math::Dot(c1 - end1, end0 - end1) > 0)
+            return true;
+    }
+
+    return false;
+}
+
 // ----------------------------------------------------------------------------
 // Min/Max.
 // ----------------------------------------------------------------------------

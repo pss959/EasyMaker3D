@@ -20,14 +20,18 @@ TEST_F(ProfileTest, Open0) {
     EXPECT_TRUE(p.IsValid());
     EXPECT_TRUE(p.IsOpen());
     EXPECT_EQ(2U, p.GetPointCount());
+    EXPECT_EQ(0U, p.GetMovablePointCount());
     const auto &pp = p.GetPoints();
     EXPECT_EQ(2U, pp.size());
     EXPECT_EQ(p0, pp[0]);
     EXPECT_EQ(p1, pp[1]);
 
+    EXPECT_TRUE(p.IsFixedPoint(0));
+    EXPECT_TRUE(p.IsFixedPoint(1));
+    TEST_THROW(p.IsFixedPoint(2), AssertException, "index");
+
     EXPECT_EQ(p0, p.GetPreviousPoint(1));
     EXPECT_EQ(p1, p.GetNextPoint(0));
-
     TEST_THROW(p.GetPreviousPoint(0), AssertException, "index");
     TEST_THROW(p.GetNextPoint(1),     AssertException, "index");
 }
@@ -42,17 +46,22 @@ TEST_F(ProfileTest, Open1) {
     EXPECT_TRUE(p.IsValid());
     EXPECT_TRUE(p.IsOpen());
     EXPECT_EQ(3U, p.GetPointCount());
+    EXPECT_EQ(1U, p.GetMovablePointCount());
     const auto pp = p.GetPoints();
     EXPECT_EQ(3U, pp.size());
     EXPECT_EQ(p0, pp[0]);
     EXPECT_EQ(pm, pp[1]);
     EXPECT_EQ(p1, pp[2]);
 
+    EXPECT_TRUE(p.IsFixedPoint(0));
+    EXPECT_FALSE(p.IsFixedPoint(1));
+    EXPECT_TRUE(p.IsFixedPoint(2));
+    TEST_THROW(p.IsFixedPoint(3), AssertException, "index");
+
     EXPECT_EQ(p0, p.GetPreviousPoint(1));
     EXPECT_EQ(pm, p.GetPreviousPoint(2));
     EXPECT_EQ(pm, p.GetNextPoint(0));
     EXPECT_EQ(p1, p.GetNextPoint(1));
-
     TEST_THROW(p.GetPreviousPoint(0), AssertException, "index");
     TEST_THROW(p.GetNextPoint(2),     AssertException, "index");
 }
@@ -67,7 +76,14 @@ TEST_F(ProfileTest, Closed) {
     EXPECT_TRUE(p.IsValid());
     EXPECT_FALSE(p.IsOpen());
     EXPECT_EQ(4U,  p.GetPointCount());
+    EXPECT_EQ(4U,  p.GetMovablePointCount());
     EXPECT_EQ(pts, p.GetPoints());
+
+    EXPECT_FALSE(p.IsFixedPoint(0));
+    EXPECT_FALSE(p.IsFixedPoint(1));
+    EXPECT_FALSE(p.IsFixedPoint(2));
+    EXPECT_FALSE(p.IsFixedPoint(3));
+    TEST_THROW(p.IsFixedPoint(4), AssertException, "index");
 
     EXPECT_EQ(pts[3], p.GetPreviousPoint(0));
     EXPECT_EQ(pts[0], p.GetPreviousPoint(1));
@@ -77,7 +93,6 @@ TEST_F(ProfileTest, Closed) {
     EXPECT_EQ(pts[2], p.GetNextPoint(1));
     EXPECT_EQ(pts[3], p.GetNextPoint(2));
     EXPECT_EQ(pts[0], p.GetNextPoint(3));
-
     TEST_THROW(p.GetPreviousPoint(4), AssertException, "index");
     TEST_THROW(p.GetNextPoint(4),     AssertException, "index");
 }
@@ -92,12 +107,14 @@ TEST_F(ProfileTest, Edit) {
     // Move the interior point.
     p.SetPoint(1, Point2f(.5f, .5f));
     EXPECT_EQ(3U, p.GetPointCount());
+    EXPECT_EQ(1U, p.GetMovablePointCount());
     EXPECT_EQ(Point2f(.5f, .5f), p.GetPoints()[1]);
 
     // Add an interior point.
     p.AppendPoint(Point2f(.2f, .2f));
     EXPECT_TRUE(p.IsValid());
     EXPECT_EQ(4U, p.GetPointCount());
+    EXPECT_EQ(2U, p.GetMovablePointCount());
     EXPECT_EQ(p0,                p.GetPoints()[0]);
     EXPECT_EQ(Point2f(.5f, .5f), p.GetPoints()[1]);
     EXPECT_EQ(Point2f(.2f, .2f), p.GetPoints()[2]);
@@ -107,6 +124,7 @@ TEST_F(ProfileTest, Edit) {
     p.InsertPoint(2, Point2f(.4f, .0));
     EXPECT_TRUE(p.IsValid());
     EXPECT_EQ(5U, p.GetPointCount());
+    EXPECT_EQ(3U, p.GetMovablePointCount());
     EXPECT_EQ(p0,                p.GetPoints()[0]);
     EXPECT_EQ(Point2f(.5f, .5f), p.GetPoints()[1]);
     EXPECT_EQ(Point2f(.4f, .0),  p.GetPoints()[2]);
@@ -117,6 +135,7 @@ TEST_F(ProfileTest, Edit) {
     p.RemovePoint(2);
     EXPECT_TRUE(p.IsValid());
     EXPECT_EQ(4U, p.GetPointCount());
+    EXPECT_EQ(2U, p.GetMovablePointCount());
     EXPECT_EQ(p0,                p.GetPoints()[0]);
     EXPECT_EQ(Point2f(.5f, .5f), p.GetPoints()[1]);
     EXPECT_EQ(Point2f(.2f, .2f), p.GetPoints()[2]);
@@ -126,6 +145,7 @@ TEST_F(ProfileTest, Edit) {
     p.RemovePoint(1);
     EXPECT_TRUE(p.IsValid());
     EXPECT_EQ(3U, p.GetPointCount());
+    EXPECT_EQ(1U, p.GetMovablePointCount());
     EXPECT_EQ(p0,                p.GetPoints()[0]);
     EXPECT_EQ(Point2f(.2f, .2f), p.GetPoints()[1]);
     EXPECT_EQ(p1,                p.GetPoints()[2]);

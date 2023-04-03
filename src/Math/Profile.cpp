@@ -38,6 +38,11 @@ bool Profile::IsValid() const {
 
 }
 
+bool Profile::IsFixedPoint(size_t index) const {
+    ASSERT(index < points_.size());
+    return IsOpen() && (index == 0 || index + 1 == points_.size());
+}
+
 Profile::PointVec Profile::GetMovablePoints() const {
     return IsOpen() ? PointVec(points_.begin() + 1,
                                points_.end()   - 1) : points_;
