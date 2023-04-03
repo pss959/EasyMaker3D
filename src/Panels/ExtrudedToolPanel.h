@@ -8,8 +8,10 @@
 #include "Panels/ToolPanel.h"
 
 DECL_SHARED_PTR(CheckboxPane);
-DECL_SHARED_PTR(ProfilePane);
 DECL_SHARED_PTR(ExtrudedToolPanel);
+DECL_SHARED_PTR(ProfilePane);
+DECL_SHARED_PTR(SliderPane);
+DECL_SHARED_PTR(TextInputPane);
 
 namespace Parser { class Registry; }
 
@@ -17,11 +19,8 @@ namespace Parser { class Registry; }
 /// ExtrudedTool for interactive editing of one or more ExtrudedModel
 /// instances.
 ///
-/// ReportChange keys: "Profile", "XXXX". (Profile is drag-based, but creation
-/// of a new profile point is immediate; XXXX is immediate).
-///
-/// XXXX Add button to generate regular polygon.
-/// XXXX Add slider to rotate profile ? Or just rely on RotateTool?
+/// ReportChange keys: "Profile" (immediate for click to create a new point or
+/// to set to a regular polygon, drag-based otherwise).
 ///
 /// \ingroup Panels
 class ExtrudedToolPanel : public ToolPanel {
@@ -51,12 +50,17 @@ protected:
     bool     is_dragging_ = false;
 
     // Parts.
-    CheckboxPanePtr snap_checkbox_;
-    ProfilePanePtr  profile_pane_;
+    CheckboxPanePtr  snap_checkbox_;
+    ProfilePanePtr   profile_pane_;
+    TextInputPanePtr sides_text_;
+    SliderPanePtr    sides_slider_;
 
     void UpdatePrecision_();
+    bool ValidateSidesText_(const std::string &text);
+    void UpdateSidesFromSlider_(size_t sides);
     void Activate_(const std::string &key, bool is_activation);
     void Change_(const std::string &key);
+    void SetToPolygon_();
 
     friend class Parser::Registry;
 };

@@ -107,6 +107,20 @@ std::string SplitCamelCase(const std::string &s, bool remove_first) {
     return ss;
 }
 
+bool StringToInteger(const std::string &s, int &n) {
+    // Integers may be signed and are always base 10.
+    if (! s.empty() && ! std::isspace(s[0])) {
+        try {
+            size_t chars_processed;
+            n = std::stoi(s, &chars_processed, 10);
+            if (chars_processed == s.size())  // No extra characters at the end.
+                return true;
+        }
+        catch (std::exception &) {} // Fall through to return below.
+    }
+    return false;
+}
+
 std::string Demangle(const std::string &mangled_name) {
     int status = 0 ;
     char *demangled = __cxxabiv1::__cxa_demangle(

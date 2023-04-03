@@ -230,15 +230,9 @@ bool Scanner::ScanBool() {
 int Scanner::ScanInteger() {
     // Integers may be signed and are always base 10.
     std::string s = ScanNumericString_();
-    if (! s.empty()) {
-        try {
-            size_t chars_processed;
-            int i = std::stoi(s, &chars_processed, 10);
-            if (chars_processed == s.size())  // No extra characters at the end.
-                return i;
-        }
-        catch (std::exception &) {} // Fall through to Throw_ below.
-    }
+    int n;
+    if (Util::StringToInteger(s, n))
+        return n;
     Throw("Invalid integer value");
     return 0;  // LCOV_EXCL_LINE
 }

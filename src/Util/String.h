@@ -85,6 +85,11 @@ std::string RemoveFirstN(const std::string &s, size_t n);
 /// "Some Thing").
 std::string SplitCamelCase(const std::string &s, bool remove_first);
 
+/// Converts string \p s to a signed base 10 integer and stores it in \p n.
+/// Returns false if there is any error. Note that the entire string must
+/// represent the number; no whitespace is allowed.
+bool StringToInteger(const std::string &s, int &n);
+
 /// Platform-specific C++ name demangling. For use with typeid(), for example.
 std::string Demangle(const std::string &mangled_name);
 

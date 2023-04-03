@@ -6,9 +6,9 @@
 #include "Math/Bevel.h"
 #include "Panels/ToolPanel.h"
 
+DECL_SHARED_PTR(BevelToolPanel);
 DECL_SHARED_PTR(ProfilePane);
 DECL_SHARED_PTR(SliderPane);
-DECL_SHARED_PTR(BevelToolPanel);
 
 namespace Parser { class Registry; }
 

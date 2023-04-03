@@ -113,3 +113,34 @@ TEST(String, SplitCamelCase) {
     EXPECT_EQ("Abc Def GH Ij", Util::SplitCamelCase("AbcDefGHIj",  false));
     EXPECT_EQ("Hello There",   Util::SplitCamelCase("kHelloThere", true));
 }
+
+TEST(String, StringToInteger) {
+    int n;
+    EXPECT_TRUE(Util::StringToInteger("0", n));
+    EXPECT_EQ(0, n);
+    EXPECT_TRUE(Util::StringToInteger("1", n));
+    EXPECT_EQ(1, n);
+    EXPECT_TRUE(Util::StringToInteger("12345", n));
+    EXPECT_EQ(12345, n);
+    EXPECT_TRUE(Util::StringToInteger("+0", n));
+    EXPECT_EQ(0, n);
+    EXPECT_TRUE(Util::StringToInteger("+1", n));
+    EXPECT_EQ(1, n);
+    EXPECT_TRUE(Util::StringToInteger("+12345", n));
+    EXPECT_EQ(12345, n);
+    EXPECT_TRUE(Util::StringToInteger("-0", n));
+    EXPECT_EQ(0, n);
+    EXPECT_TRUE(Util::StringToInteger("-1", n));
+    EXPECT_EQ(-1, n);
+    EXPECT_TRUE(Util::StringToInteger("-12345", n));
+    EXPECT_EQ(-12345, n);
+
+    // Error cases.
+    EXPECT_FALSE(Util::StringToInteger(" 0",  n));
+    EXPECT_FALSE(Util::StringToInteger("0 ",  n));
+    EXPECT_FALSE(Util::StringToInteger("0.",  n));
+    EXPECT_FALSE(Util::StringToInteger("a",   n));
+    EXPECT_FALSE(Util::StringToInteger("0a",  n));
+    EXPECT_FALSE(Util::StringToInteger("a0",  n));
+    EXPECT_FALSE(Util::StringToInteger("1z2", n));
+}
