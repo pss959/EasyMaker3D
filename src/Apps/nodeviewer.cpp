@@ -187,6 +187,8 @@ bool Application_::InitScene() {
     event_manager_->AddHandler(main_handler_);
 
     SetUpScene_();
+    UpdateScene_();
+    ResetView_();
 
     return true;
 }
@@ -200,21 +202,6 @@ bool Application_::InitViewer(const Vector2i &window_size) {
 
     // Set up the renderer.
     renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
-    renderer_->Reset(*scene_);
-
-    scene_context_->frustum = glfw_viewer_->GetFrustum();
-
-    MainHandler::Context mc;
-    mc.scene            = scene_context_->scene;
-    mc.frustum          = scene_context_->frustum;
-    mc.path_to_stage    = scene_context_->path_to_stage;
-    mc.left_controller  = scene_context_->left_controller;
-    mc.right_controller = scene_context_->right_controller;
-    mc.debug_sphere     = scene_context_->debug_sphere;
-    main_handler_->SetContext(mc);
-
-    UpdateScene_();
-    ResetView_();
 
     return true;
 }
@@ -364,6 +351,21 @@ void Application_::SetUpScene_() {
     // Set up the IntersectionSphere.
     InitIntersectionSphere_(SG::FindNodeInScene(*scene_, "IntersectionSphere"));
 
+    // Set up the frustum in the SceneContext.
+    ASSERT(glfw_viewer_);
+    scene_context_->frustum = glfw_viewer_->GetFrustum();
+
+    // Initialize the MainHandler::Context.
+    ASSERT(main_handler_);
+    MainHandler::Context mc;
+    mc.scene            = scene_context_->scene;
+    mc.frustum          = scene_context_->frustum;
+    mc.path_to_stage    = scene_context_->path_to_stage;
+    mc.left_controller  = scene_context_->left_controller;
+    mc.right_controller = scene_context_->right_controller;
+    mc.debug_sphere     = scene_context_->debug_sphere;
+    main_handler_->SetContext(mc);
+
     // Now that everything has been found, disable searching through the
     // "Definitions" Node.
     SG::FindNodeInScene(*scene_, "Definitions")->SetFlagEnabled(
@@ -372,6 +374,8 @@ void Application_::SetUpScene_() {
     // Check for changes to the root node to trigger rendering.
     scene_->GetRootNode()->GetChanged().AddObserver(
         this, [&](SG::Change, const SG::Object &){ need_render_ = true; });
+
+    renderer_->Reset(*scene_);
 }
 
 void Application_::UpdateScene_() {
@@ -538,7 +542,7 @@ int main(int argc, const char** argv)
     {
         Application_ app(args);
         try {
-            if (! app.InitScene() || ! app.InitViewer(Vector2i(800, 600)))
+            if (! app.InitViewer(Vector2i(800, 600)) || ! app.InitScene())
                 return 1;
             app.MainLoop();
         }

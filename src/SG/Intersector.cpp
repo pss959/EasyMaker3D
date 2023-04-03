@@ -214,7 +214,7 @@ Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
     KLOG('I', "Intersecting scene with " << ray.ToString());
     const Hit hit = visitor.IntersectScene(ray, scene.GetRootNode());
     KLOG('I', "Intersection on " << hit.path.ToString());
-    KLOG('I', "Intersection on " << hit.path.ToString());
+    KLOG('i', "Intersection on " << hit.path.ToString());
     return hit;
 }
 
