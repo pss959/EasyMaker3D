@@ -26,7 +26,36 @@ BoxPane "ExtrudedToolPane" {
     },
 
     BoxPane {
-      # XXXX Add button to reset to regular polygon with N (>=3) sides.
+      # Text input, slider, and button to reset to regular polygon with N (>=3)
+      # sides.
+      orientation:  "kHorizontal",
+      spacing:      8,
+      resize_width: True,
+      panes: [
+        CLONE "T_ButtonPane" "SetSides" {
+          padding: 6,
+          panes: [ CLONE "T_TextPane" { text: "Reset to regular polygon" }],
+        },
+        BoxPane {
+          padding: 2,
+          panes: [
+            CLONE "T_TextInputPane" "SidesText" {
+              resize_width: False,
+              min_size: 40 1,
+            },
+          ]
+        },
+        CLONE "T_TextPane" {
+          resize_height: True,
+          font_size: 12,
+          text: "Sides",
+        },
+        CLONE "T_LabeledHSliderPane" "SidesSlider" {
+          resize_height: True,
+          range:     3 100,
+          precision: 1,
+        },
+      ]
     }
   ],
 },
