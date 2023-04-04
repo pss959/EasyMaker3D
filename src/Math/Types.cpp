@@ -7,6 +7,7 @@
 
 #include <ion/base/bufferbuilder.h>
 #include <ion/math/angleutils.h>
+#include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
@@ -303,16 +304,21 @@ void Frustum::SetFromTangents(float left, float right, float down, float up) {
     fov_up    = ArcTangent(up);
 }
 
-Ray Frustum::BuildRay(const Point2f &pt) const {
-    // Ignore position and orientation for now; assume the direction is -Z. Use
-    // the FOV angles to get the lower-left and upper-right corners of the
+Range2f Frustum::GetImageRect() const {
+    // Use the FOV angles to get the lower-left and upper-right corners of the
     // image rectangle in the near plane.  All values follow this form:
     // tan(-fov_left) = left_x / near => left_x = near * tan(-fov_left).
-    Point2f ll(pnear * ion::math::Tangent(fov_left),
-               pnear * ion::math::Tangent(fov_down));
-    Point2f ur(pnear * ion::math::Tangent(fov_right),
-               pnear * ion::math::Tangent(fov_up));
-    Point2f rect_pt = ll + Vector2f(pt) * (ur - ll);
+    const Point2f ll(pnear * ion::math::Tangent(fov_left),
+                     pnear * ion::math::Tangent(fov_down));
+    const Point2f ur(pnear * ion::math::Tangent(fov_right),
+                     pnear * ion::math::Tangent(fov_up));
+    return Range2f(ll, ur);
+}
+
+Ray Frustum::BuildRay(const Point2f &pt) const {
+    const Range2f image_rect = GetImageRect();
+    const Point2f rect_pt =
+        image_rect.GetMinPoint() + Vector2f(pt) * image_rect.GetSize();
 
     // Use this to compute the point in the canonical image plane.  This point
     // gives us the unrotated direction relative to the view position. The
@@ -326,6 +332,14 @@ Ray Frustum::BuildRay(const Point2f &pt) const {
 
     // Use the distance and the correct direction to get the ray origin.
     return Ray(position + distance * direction, direction);
+}
+
+Point2f Frustum::ProjectToImageRect(const Point3f &pt) const {
+    // Apply the projection and view matrices and convert to normalized image
+    // rectangle coordinates.
+    const Point3f p = (GetProjectionMatrix(*this) * GetViewMatrix(*this)) * pt;
+    return Point2f(.5f + .5f * p[0],
+                   .5f + .5f * p[1]);
 }
 
 std::string Frustum::ToString() const {

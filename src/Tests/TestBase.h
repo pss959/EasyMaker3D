@@ -78,11 +78,15 @@ class TestBase : public ::testing::Test {
                              bool add_data_extension = true);
 
     // FP testing predicates from Ion.
+    static bool VectorsClose2(const Vector2f &v0, const Vector2f &v1);
+    static bool PointsClose2(const Point2f &p0, const Point2f &p1);
     static bool VectorsClose(const Vector3f &v0, const Vector3f &v1);
     static bool PointsClose(const Point3f &p0, const Point3f &p1);
     static bool RotationsClose(const Rotationf &r0, const Rotationf &r1);
 
     // FP testing predicates from Ion with custom tolerance.
+    static bool VectorsClose2T(const Vector2f &v0, const Vector2f &v1, float t);
+    static bool PointsClose2T(const Point2f &p0, const Point2f &p1, float t);
     static bool VectorsCloseT(const Vector3f &v0, const Vector3f &v1, float t);
     static bool PointsCloseT(const Point3f &p0, const Point3f &p1, float t);
     static bool RotationsCloseT(const Rotationf &r0, const Rotationf &r1,

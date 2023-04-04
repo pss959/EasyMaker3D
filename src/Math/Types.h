@@ -272,10 +272,17 @@ struct Frustum {
         return orientation * -Vector3f::AxisZ();
     }
 
+    /// Returns the 2D image rectangle based on the field of view.
+    Range2f GetImageRect() const;
+
     /// Constructs an Ray through the given normalized point on the image
     /// rectangle (in the near plane). (0,0) is the lower-left corner of the
     /// rectangle.
     Ray BuildRay(const Point2f &pt) const;
+
+    /// Projects the given 3D point onto the near plane and returns the result
+    /// in normalized coordinates in the image rectangle.
+    Point2f ProjectToImageRect(const Point3f &pt) const;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

@@ -19,6 +19,12 @@
 #define ASSERT_NOT_NULL(PTR) ASSERT_TRUE((PTR) != nullptr)
 
 /// Macro for testing near-equality for vectors.
+#define EXPECT_VECS_CLOSE2(EXP, V) EXPECT_PRED2(VectorsClose2, EXP, V)
+
+/// Macro for testing near-equality for points.
+#define EXPECT_PTS_CLOSE2(EXP, P) EXPECT_PRED2(PointsClose2, EXP, P)
+
+/// Macro for testing near-equality for vectors.
 #define EXPECT_VECS_CLOSE(EXP, V) EXPECT_PRED2(VectorsClose, EXP, V)
 
 /// Macro for testing near-equality for points.

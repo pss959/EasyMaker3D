@@ -89,6 +89,14 @@ std::string TestBase::ReadDataFile(const std::string &file_name,
     return s;
 }
 
+bool TestBase::VectorsClose2(const Vector2f &v0, const Vector2f &v1) {
+    return ion::math::VectorsAlmostEqual(v0, v1, kClose);
+}
+
+bool TestBase::PointsClose2(const Point2f &p0, const Point2f &p1) {
+    return ion::math::PointsAlmostEqual(p0, p1, kClose);
+}
+
 bool TestBase::VectorsClose(const Vector3f &v0, const Vector3f &v1) {
     return ion::math::VectorsAlmostEqual(v0, v1, kClose);
 }
@@ -99,6 +107,14 @@ bool TestBase::PointsClose(const Point3f &p0, const Point3f &p1) {
 
 bool TestBase::RotationsClose(const Rotationf &r0, const Rotationf &r1) {
     return RotationsCloseT(r0, r1, .01f);
+}
+
+bool TestBase::VectorsClose2T(const Vector2f &v0, const Vector2f &v1, float t) {
+    return ion::math::VectorsAlmostEqual(v0, v1, t);
+}
+
+bool TestBase::PointsClose2T(const Point2f &p0, const Point2f &p1, float t) {
+    return ion::math::PointsAlmostEqual(p0, p1, t);
 }
 
 bool TestBase::VectorsCloseT(const Vector3f &v0, const Vector3f &v1, float t) {

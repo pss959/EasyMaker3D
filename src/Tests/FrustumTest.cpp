@@ -81,3 +81,17 @@ TEST_F(FrustumTest, BuildRayTransformed) {
     EXPECT_PTS_CLOSE(Point3f(-1, 10, 40), ray.origin);
     EXPECT_VECS_CLOSE(Vector3f(-1, 0, 0),  ray.direction);
 }
+
+TEST_F(FrustumTest, ProjectToNearPlane) {
+    // Opposite of BuildRayTransformed.
+    Frustum f;
+    f.pnear = 1.f;
+    f.position.Set(0, 10, 40);
+    EXPECT_PTS_CLOSE2(Point2f(.5f, .5f),
+                      f.ProjectToImageRect(Point3f(0, 10, 0)));
+
+    f.orientation = Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
+                                                Anglef::FromDegrees(90));
+    EXPECT_PTS_CLOSE2(Point2f(.5f, .5f),
+                      f.ProjectToImageRect(Point3f(-30, 10, 40)));
+}
