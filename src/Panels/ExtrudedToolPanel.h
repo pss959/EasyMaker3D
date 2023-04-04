@@ -58,9 +58,9 @@ protected:
     void UpdatePrecision_();
     bool ValidateSidesText_(const std::string &text);
     void UpdateSidesFromSlider_(size_t sides);
+    void SetToPolygon_();
     void Activate_(const std::string &key, bool is_activation);
     void Change_(const std::string &key);
-    void SetToPolygon_();
 
     friend class Parser::Registry;
 };

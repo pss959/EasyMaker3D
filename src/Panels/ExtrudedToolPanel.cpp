@@ -72,6 +72,13 @@ void ExtrudedToolPanel::UpdateSidesFromSlider_(size_t sides) {
     sides_text_->SetInitialText(Util::ToString(sides));
 }
 
+void ExtrudedToolPanel::SetToPolygon_() {
+    const size_t side_count = static_cast<size_t>(sides_slider_->GetValue());
+    ASSERT(side_count >= 3U && side_count <= 100U);
+    SetProfile(ExtrudedModel::CreateRegularPolygonProfile(side_count));
+    ReportChange("Profile", InteractionType::kImmediate);
+}
+
 void ExtrudedToolPanel::Activate_(const std::string &key, bool is_activation) {
     is_dragging_ = is_activation;
     ReportChange(key, is_activation ? InteractionType::kDragStart :
@@ -81,10 +88,4 @@ void ExtrudedToolPanel::Activate_(const std::string &key, bool is_activation) {
 void ExtrudedToolPanel::Change_(const std::string &key) {
     ReportChange(key, is_dragging_ ? InteractionType::kDrag :
                  InteractionType::kImmediate);
-}
-
-void ExtrudedToolPanel::SetToPolygon_() {
-    const size_t side_count = static_cast<size_t>(sides_slider_->GetValue());
-    ASSERT(side_count >= 3U && side_count <= 100U);
-    SetProfile(ExtrudedModel::CreateRegularPolygonProfile(side_count));
 }
