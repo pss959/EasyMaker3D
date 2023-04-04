@@ -1,6 +1,6 @@
 Node "Shelves" {
   CONSTANTS: [
-    LEFT_X: "-50",
+    LEFT_X: "-53",
     LEFT_Z: "-40",
     BACK_X: "-6",
     BACK_Z: "-64",
@@ -29,13 +29,13 @@ Node "Shelves" {
   ],
 
   children: [
-    CLONE "Shelf" "CreationShelf" {
-      translation: $LEFT_X 6.1 $LEFT_Z,
+    CLONE "Shelf" "CreationShelf0" {
+      translation: $LEFT_X 3.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         CLONE "T_IconWidget" "CreateBoxIcon" {
           action: "kCreateBox",
-          shapes: [ Box { size: 4 4 4 } ]
+          shapes: [ Box { size: 4 4 4 } ],
         },
         CLONE "T_IconWidget" "CreateCylinderIcon" {
           action: "kCreateCylinder",
@@ -50,6 +50,13 @@ Node "Shelves" {
           shapes: [ Torus { outer_radius: 3, inner_radius: 1 } ],
           rotation: 1 0 0 90,
         },
+      ]
+    },
+
+    CLONE "Shelf" "CreationShelf1" {
+      translation: $LEFT_X 12.1 $LEFT_Z,
+      rotation:     0 1 0 45,
+      icons: [
         CLONE "T_IconWidget" "CreateRevSurfIcon" {
           action:      "kCreateRevSurf",
           import_path: "CreateRevSurfIcon.off",
@@ -72,7 +79,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "GeneralToolShelf" {
-      translation: $LEFT_X 15.1 $LEFT_Z,
+      translation: $LEFT_X 21.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         CLONE "T_IconWidget" "NameToolIcon" {
@@ -111,7 +118,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "ConversionShelf" {
-      translation: $LEFT_X 24.1 $LEFT_Z,
+      translation: $LEFT_X 30.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         CLONE "T_IconWidget" "ConvertBevelIcon" {
@@ -132,7 +139,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "CombiningShelf" {
-      translation: $LEFT_X 33.1 $LEFT_Z,
+      translation: $LEFT_X 39.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         CLONE "T_IconWidget" "CombineCSGDifferenceIcon" {
@@ -155,7 +162,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "SpecializedShelf" {
-      translation: $LEFT_X 42.1 $LEFT_Z,
+      translation: $LEFT_X 48.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         # This icon is special - it switches among its children. The NullIcon
