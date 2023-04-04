@@ -76,6 +76,18 @@ lib_sources = list(chain(
         'RegisterTypes',
         'SceneLoader',
         'ToolBox',
+
+        # Type registration.
+        'RegisterCommandTypes',
+        'RegisterFeedbackTypes',
+        'RegisterItemTypes',
+        'RegisterModelTypes',
+        'RegisterPaneTypes',
+        'RegisterPanelTypes',
+        'RegisterSGTypes',
+        'RegisterTargetTypes',
+        'RegisterToolTypes',
+        'RegisterWidgetTypes',
     ]),
     PlaceInDir_('Base', [
         'ActionMap',
