@@ -173,7 +173,10 @@ the primary selection.  From left to right, they are:
 Creation Actions
 ................
 
-.. incimage:: /images/ModelCreationShelf.jpg 300px right
+.. incimage:: /images/ModelCreationShelf1.jpg 300px right
+.. incimage:: /images/ModelCreationShelf0.jpg 300px right
+
+XXXX Fix text for new shelf layout.
 
 Model Creation actions are all available as 3D icons on the bottom shelf on the
 left wall of the :ref:`work area <ug-work-area>`. Each creates :ref:`a model of
