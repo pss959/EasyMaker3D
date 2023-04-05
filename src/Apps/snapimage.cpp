@@ -4,6 +4,7 @@
 
 #include <ion/gfx/image.h>
 #include <ion/image/conversionutils.h>
+#include <ion/math/rangeutils.h>
 
 #include "App/ActionProcessor.h"
 #include "App/Application.h"
@@ -20,6 +21,7 @@
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "Panels/Board.h"
@@ -310,6 +312,8 @@ class SnapshotApp_ : public Application {
     bool SetHand_(Hand hand, const std::string &controller_type);
     void SetTouchMode_(bool is_on);
     bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
+    bool GetObjRect_(const std::string &object_name, float margin,
+                     Range2f &rect);
     Selection BuildSelection_(const std::vector<std::string> &names);
 
     template <typename T>
@@ -420,6 +424,11 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
               << " of " << instr_count << ") on line "
               << instr.line_number << "\n";
 
+    // Skip snap instructions if disabled.
+    if (nosnap_ && (instr.type == SIType::kSnap ||
+                    instr.type == SIType::kSnapObj))
+        return true;
+
     switch (instr.type) {
       case SIType::kAction: {
           const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
@@ -490,11 +499,17 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
           break;
       }
       case SIType::kSnap: {
-          if (! nosnap_) {
-              const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
-              if (! TakeSnapshot_(sinst.rect, sinst.file_name))
-                  return false;
-          }
+          const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
+          if (! TakeSnapshot_(sinst.rect, sinst.file_name))
+              return false;
+          break;
+      }
+      case SIType::kSnapObj: {
+          const auto &sinst = GetTypedInstr_<SnapScript::SnapObjInstr>(instr);
+          Range2f rect;
+          if (! GetObjRect_(sinst.object_name, sinst.margin, rect) ||
+              ! TakeSnapshot_(rect, sinst.file_name))
+              return false;
           break;
       }
       case SIType::kStage: {
@@ -634,6 +649,43 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
         return false;
     }
     std::cout << "    Saved snap image to = '" << path.ToString() << "'\n";
+    return true;
+}
+
+bool SnapshotApp_::GetObjRect_(const std::string &object_name, float margin,
+                               Range2f &rect) {
+    // Search in the scene for the object.
+    const auto &sc = *test_context_.scene_context;
+    const auto path = SG::FindNodePathInScene(*sc.scene, object_name, true);
+    if (path.empty()) {
+        std::cerr << "*** No object named '" << object_name
+                  << "' found for snapobj\n";
+        return false;
+    }
+
+    // Compute the world-coordinate bounds of the object.
+    Matrix4f ctm = Matrix4f::Identity();
+    for (auto &node: path)
+        ctm = ctm * node->GetModelMatrix();
+    const auto bounds = TransformBounds(path.back()->GetBounds(), ctm);
+    std::cerr << "XXXX BOUNDS: " << bounds.ToString() << "\n";
+
+    // Find the projection of each bounds corner point on the image plane to
+    // get the extents of the rectangle.
+    Point3f corners[8];
+    bounds.GetCorners(corners);
+    rect.MakeEmpty();
+    const auto &frustum = *test_context_.scene_context->frustum;
+    std::cerr << "XXXX FRUSTUM: " << frustum.ToString() << "\n";
+    for (const auto &corner: corners) {
+        //std::cerr << "XXXX CORNER: " << corner << " => "
+        //<< frustum.ProjectToImageRect(corner) << "\n";
+        rect.ExtendByPoint(frustum.ProjectToImageRect(corner));
+    }
+
+    // Clamp to (0,1) in both dimensions.
+    rect = RangeIntersection(rect, Range2f(Point2f(0, 0), Point2f(1, 1)));
+    std::cerr << "XXXX RECT: " << rect << "\n";
     return true;
 }
 

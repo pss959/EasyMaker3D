@@ -41,6 +41,7 @@ class SnapScript {
             kSelect,
             kSettings,
             kSnap,
+            kSnapObj,
             kStage,
             kStop,
             kTouch,
@@ -97,6 +98,11 @@ class SnapScript {
         Range2f     rect;
         std::string file_name;
     };
+    struct SnapObjInstr : public Instr {
+        std::string object_name;
+        float       margin;
+        std::string file_name;
+    };
     struct StageInstr : public Instr {
         float       scale;
         Anglef      angle;
@@ -125,6 +131,7 @@ class SnapScript {
     DECL_SHARED_PTR(SelectInstr);
     DECL_SHARED_PTR(SettingsInstr);
     DECL_SHARED_PTR(SnapInstr);
+    DECL_SHARED_PTR(SnapObjInstr);
     DECL_SHARED_PTR(StageInstr);
     DECL_SHARED_PTR(StopInstr);
     DECL_SHARED_PTR(TouchInstr);
@@ -160,6 +167,7 @@ class SnapScript {
     InstrPtr ProcessSelect_(const Words &words);
     InstrPtr ProcessSettings_(const Words &words);
     InstrPtr ProcessSnap_(const Words &words);
+    InstrPtr ProcessSnapObj_(const Words &words);
     InstrPtr ProcessStage_(const Words &words);
     InstrPtr ProcessStop_(const Words &words);
     InstrPtr ProcessTouch_(const Words &words);

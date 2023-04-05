@@ -337,7 +337,8 @@ Ray Frustum::BuildRay(const Point2f &pt) const {
 Point2f Frustum::ProjectToImageRect(const Point3f &pt) const {
     // Apply the projection and view matrices and convert to normalized image
     // rectangle coordinates.
-    const Point3f p = (GetProjectionMatrix(*this) * GetViewMatrix(*this)) * pt;
+    const Matrix4f m = GetProjectionMatrix(*this) * GetViewMatrix(*this);
+    const Point3f  p = ion::math::ProjectPoint(m, pt);
     return Point2f(.5f + .5f * p[0],
                    .5f + .5f * p[1]);
 }

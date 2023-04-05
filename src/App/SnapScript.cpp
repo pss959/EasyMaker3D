@@ -94,6 +94,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
       case Instr::Type::kSelect:   instr = ProcessSelect_(words);   break;
       case Instr::Type::kSettings: instr = ProcessSettings_(words); break;
       case Instr::Type::kSnap:     instr = ProcessSnap_(words);     break;
+      case Instr::Type::kSnapObj:  instr = ProcessSnapObj_(words);  break;
       case Instr::Type::kStage:    instr = ProcessStage_(words);    break;
       case Instr::Type::kStop:     instr = ProcessStop_(words);     break;
       case Instr::Type::kTouch:    instr = ProcessTouch_(words);    break;
@@ -334,6 +335,24 @@ SnapScript::InstrPtr SnapScript::ProcessSnap_(const Words &words) {
         sinst.reset(new SnapInstr);
         sinst->rect.SetWithSize(Point2f(x, y), Vector2f(w, h));
         sinst->file_name = words[5];
+    }
+    return sinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessSnapObj_(const Words &words) {
+    SnapObjInstrPtr sinst;
+    float margin;
+    if (words.size() != 4U) {
+        Error_("Bad syntax for snapobj instruction");
+    }
+    else if (! ParseFloat_(words[2], margin)) {
+        Error_("Invalid margin float for snapobj instruction");
+    }
+    else {
+        sinst.reset(new SnapObjInstr);
+        sinst->object_name = words[1];
+        sinst->margin = margin;
+        sinst->file_name = words[3];
     }
     return sinst;
 }
