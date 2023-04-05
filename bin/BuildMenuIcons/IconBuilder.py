@@ -239,9 +239,20 @@ class IconBuilder(object):
         self._AddCylinder(ic, self._CreationObjRect, self._CreateColor)
 
     def _MICreateExtruded(self, ic):
+        edge = int(self._SafeSize / 2)
+        cor = self._CreationObjRect
         self._AddPlus(ic)
-        ic.SetFontSize(self._SafeSize - 10)
-        ic.Text(self._SafeRect.center, 'E', self._GeneralColor) # XXXX TEMPORARY
+        # Lines for base of model.
+        bc = cor.BC() - Point(10, 0)
+        ic.PolyLine([cor.CL(), bc, cor.CR()], self._CreateColor)
+        # Lines for top of model.
+        tc = cor.center - Point(10, 0)
+        ic.PolyLine([cor.TL(), tc, cor.TR(), cor.TL()], self._HighlightColor)
+        # Lines joining along extrusion direction.
+        ic.SetLineWidth(3)
+        ic.DashedLine(cor.TL(), cor.CL(), self._HighlightColor)
+        ic.DashedLine(cor.TR(), cor.CR(), self._HighlightColor)
+        ic.DashedLine(tc,       bc,       self._HighlightColor)
 
     def _MICreateImportedModel(self, ic):
         self._AddFileIcon(ic)
