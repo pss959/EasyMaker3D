@@ -125,7 +125,7 @@
    * - Creation
      - CreateExtruded / :ref:`Create Extruded <ug-create-extruded>`
      - .. menuicon:: CreateExtruded
-     - 
+     - Create a model that is a linear extrusion
      - 
      - 
    * - Creation

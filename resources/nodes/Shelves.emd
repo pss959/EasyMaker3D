@@ -302,7 +302,7 @@ Node "Shelves" {
       ]
     },
 
-    CLONE "Shelf" "ViewShelf" {
+    CLONE "Shelf" "ViewingShelf" {
       translation: 48 60 $BACK_Z,
       depth_scale: .4,
       icons: [

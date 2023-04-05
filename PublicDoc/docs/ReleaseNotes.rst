@@ -1,6 +1,16 @@
 |appname| Release Notes
 =======================
 
+Release 1.4.0 (April, 2023)
+---------------------------
+
+ - New Features:
+
+   - Added extruded models with a specialized editor.
+
+   - Split the model creation shelf into two parts and tweaked some sizes and
+     positions to improve icon placement.
+
 Release 1.3.0 (March, 2023)
 ---------------------------
 

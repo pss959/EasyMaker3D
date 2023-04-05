@@ -104,6 +104,7 @@ Hovering over the Undo or Redo icon (when enabled) shows a :ref:`tooltip
 
 .. _ug-create-box:
 .. _ug-create-cylinder:
+.. _ug-create-extruded:
 .. _ug-create-imported-model:
 .. _ug-create-rev-surf:
 .. _ug-create-sphere:
