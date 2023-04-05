@@ -50,8 +50,6 @@ void ExtrudedModel::SetProfile(const Profile &profile) {
 Profile ExtrudedModel::CreateRegularPolygonProfile(size_t side_count) {
     ASSERT(side_count >= 3U);
 
-    /// XXXX Consider rotating based on odd/even number of points?
-
     // Generate points around a circle and offset them to put them in the range
     // (0,1).
     Profile::PointVec pts =
