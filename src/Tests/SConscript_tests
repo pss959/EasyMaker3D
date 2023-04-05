@@ -48,6 +48,7 @@ test_sources = [
     'ReadSTLTest.cpp',
     'ReaderTest.cpp',
     'RegistryTest.cpp',
+    'RevSurfModelTest.cpp',
     'ScaleCommandTest.cpp',
     'SceneTestBase.cpp',
     'SearchTest.cpp',

@@ -266,8 +266,8 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
     for (auto &p: mesh.points)
         p[1] -= .5f;
 
-    // Create a Polygon with all interior profile points and triangulate it.
-    Polygon poly(profile.GetMovablePoints());
+    // Create a Polygon with all Profile points and triangulate it.
+    Polygon poly(profile.GetPoints());
     std::vector<GIndex> poly_tri_indices = TriangulatePolygon(poly);
     const size_t poly_tri_count = poly_tri_indices.size() / 3;
 
