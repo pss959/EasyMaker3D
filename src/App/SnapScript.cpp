@@ -341,18 +341,18 @@ SnapScript::InstrPtr SnapScript::ProcessSnap_(const Words &words) {
 
 SnapScript::InstrPtr SnapScript::ProcessSnapObj_(const Words &words) {
     SnapObjInstrPtr sinst;
-    float margin;
-    if (words.size() != 4U) {
+    float margin = 0;
+    if (words.size() < 3U || words.size() > 4U) {
         Error_("Bad syntax for snapobj instruction");
     }
-    else if (! ParseFloat_(words[2], margin)) {
+    else if (words.size() == 4U && ! ParseFloat_(words[3], margin)) {
         Error_("Invalid margin float for snapobj instruction");
     }
     else {
         sinst.reset(new SnapObjInstr);
         sinst->object_name = words[1];
         sinst->margin = margin;
-        sinst->file_name = words[3];
+        sinst->file_name = words[2];
     }
     return sinst;
 }

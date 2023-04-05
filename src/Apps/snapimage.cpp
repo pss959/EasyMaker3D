@@ -668,7 +668,6 @@ bool SnapshotApp_::GetObjRect_(const std::string &object_name, float margin,
     for (auto &node: path)
         ctm = ctm * node->GetModelMatrix();
     const auto bounds = TransformBounds(path.back()->GetBounds(), ctm);
-    std::cerr << "XXXX BOUNDS: " << bounds.ToString() << "\n";
 
     // Find the projection of each bounds corner point on the image plane to
     // get the extents of the rectangle.
@@ -676,16 +675,15 @@ bool SnapshotApp_::GetObjRect_(const std::string &object_name, float margin,
     bounds.GetCorners(corners);
     rect.MakeEmpty();
     const auto &frustum = *test_context_.scene_context->frustum;
-    std::cerr << "XXXX FRUSTUM: " << frustum.ToString() << "\n";
-    for (const auto &corner: corners) {
-        //std::cerr << "XXXX CORNER: " << corner << " => "
-        //<< frustum.ProjectToImageRect(corner) << "\n";
+    for (const auto &corner: corners)
         rect.ExtendByPoint(frustum.ProjectToImageRect(corner));
-    }
+
+    // Add the margin.
+    const Vector2f margin_vec(margin, margin);
+    rect.Set(rect.GetMinPoint() - margin_vec, rect.GetMaxPoint() + margin_vec);
 
     // Clamp to (0,1) in both dimensions.
     rect = RangeIntersection(rect, Range2f(Point2f(0, 0), Point2f(1, 1)));
-    std::cerr << "XXXX RECT: " << rect << "\n";
     return true;
 }
 
