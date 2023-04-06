@@ -133,7 +133,6 @@ void SessionPanel::LoadSession_() {
 
     auto result_func = [&, fp](const std::string &result){
         if (result == "Accept") {
-            Close("Done");
             LoadSessionFromPath_(fp->GetPath());
         }
     };
@@ -235,6 +234,7 @@ void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
         AskQuestion(msg, func, true);
     }
     else {
+        Close("Done");
         ReallyLoadSessionFromPath_(path);
     }
 }
