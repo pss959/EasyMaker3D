@@ -1,6 +1,5 @@
 BoxPane "ExtrudedToolPane" {
   background: $BG { color: "#aaaaaa" },
-  min_size:   400 300,
   padding:    12,
   spacing:    14,
 
@@ -23,6 +22,7 @@ BoxPane "ExtrudedToolPane" {
     CLONE "T_ProfilePane" "Profile" {
       background: $BG     { color: "#edddbb" },
       border:     $BORDER { width: 2 },
+      min_size:   320 320,
     },
 
     BoxPane {
@@ -52,7 +52,7 @@ BoxPane "ExtrudedToolPane" {
         },
         CLONE "T_LabeledHSliderPane" "SidesSlider" {
           resize_height: True,
-          range:     3 100,
+          range:     3 60,
           precision: 1,
         },
       ]

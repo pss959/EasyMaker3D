@@ -450,10 +450,8 @@ Extruded Tool
 The specialized :newterm:`Extruded Tool` is a panel-based tool used to edit the
 profile used for one or more :ref:`Extruded models <ug-primitive-models>`.
 Attaching the Extruded Tool displays a :ref:`Extruded Tool Panel
-<ug-extruded-tool-panel>` above the primary selection.  Changes to the revolved
-profile in the panel are applied to all selected Extruded models.
-
-XXXX More here...
+<ug-extruded-tool-panel>` above the primary selection.  Changes to the
+extrusion profile in the panel are applied to all selected Extruded models.
 
 |block-image|
 

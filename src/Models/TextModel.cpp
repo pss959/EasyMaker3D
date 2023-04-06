@@ -45,7 +45,6 @@ void TextModel::AddFields() {
     AddModelField(text_.Init("text"));
     AddModelField(font_name_.Init("font_name",       TK::k3DFont));
     AddModelField(char_spacing_.Init("char_spacing", 1));
-    AddModelField(height_.Init("height",             TK::kExtrudedTextLength));
 
     PrimitiveModel::AddFields();
 }
@@ -61,11 +60,6 @@ bool TextModel::IsValid(std::string &details) {
 
     if (GetTextString().empty()) {
         details = "Empty text string";
-        return false;
-    }
-
-    if (GetHeight() <= 0) {
-        details = "Non-positive text height";
         return false;
     }
 
@@ -91,12 +85,6 @@ void TextModel::SetCharSpacing(float spacing) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-void TextModel::SetHeight(float height) {
-    ASSERT(height > 0);
-    height_ = height;
-    ProcessChange(SG::Change::kGeometry, *this);
-}
-
 TriMesh TextModel::BuildMesh() {
     std::vector<Polygon> polygons =
         GetTextOutlines(GetFontName(), GetTextString(),
@@ -108,8 +96,9 @@ TriMesh TextModel::BuildMesh() {
     ScaleAndCenterPolygons_(polygons, TK::kTextHeight);
 
     // Extrude each polygon and combine the results.
-    const float ht = GetHeight();
-    auto extrude = [ht](const Polygon &p){ return BuildExtrudedMesh(p, ht); };
+    auto extrude = [](const Polygon &p){
+        return BuildExtrudedMesh(p, TK::kExtrudedTextLength);
+    };
 
     return CenterMesh(
         CombineMeshes(

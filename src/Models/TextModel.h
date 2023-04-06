@@ -34,12 +34,6 @@ class TextModel : public PrimitiveModel {
     /// Returns the current character spacing.
     float GetCharSpacing() const { return char_spacing_; }
 
-    /// Sets the text height.
-    void SetHeight(float height);
-
-    /// Returns the current text height.
-    float GetHeight() const { return height_; }
-
     /// TextModel responds to complexity.
     virtual bool CanSetComplexity() const override { return true; }
 
@@ -55,7 +49,6 @@ class TextModel : public PrimitiveModel {
     Parser::TField<std::string> text_;
     Parser::TField<std::string> font_name_;
     Parser::TField<float>       char_spacing_;
-    Parser::TField<float>       height_;
     ///@}
 
     /// Validates the given text string, asserting on error.

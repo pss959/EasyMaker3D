@@ -2,7 +2,6 @@
 
 #include "Commands/CreateExtrudedModelCommand.h"
 #include "Models/ExtrudedModel.h"
-#include "Util/Tuning.h"
 
 ModelPtr CreateExtrudedExecutor::CreateModel(Command &command) {
     CreateExtrudedModelCommand &cec =
@@ -13,8 +12,6 @@ ModelPtr CreateExtrudedExecutor::CreateModel(Command &command) {
         name = CreateUniqueName("Extruded");
         cec.SetResultName(name);
     }
-
-    cec.SetInitialScale(TK::kExtrudedModelHeight);
 
     return Model::CreateModel<ExtrudedModel>(name);
 }

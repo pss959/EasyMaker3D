@@ -71,6 +71,10 @@ Profile ExtrudedModel::CreateDefaultProfile() {
 }
 
 TriMesh ExtrudedModel::BuildMesh() {
-    // Use a height of 1; the ExtrudedModel will be scaled when created.
-    return CenterMesh(BuildExtrudedMesh(Polygon(profile_.GetPoints()), 1));
+    // Scale in X and Z by scaling the Polygon formed from the Profile.
+    Polygon poly(profile_.GetPoints());
+    poly.Scale(TK::kExtrudedModelXZScale);
+
+    // Scale in Y by passing the height here.
+    return CenterMesh(BuildExtrudedMesh(poly, TK::kExtrudedModelHeight));
 }

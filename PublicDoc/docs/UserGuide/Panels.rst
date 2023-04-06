@@ -508,7 +508,40 @@ Extruded Tool Panel
 
 .. incimage:: /images/ExtrudedToolPanel.jpg 200px right
 
-XXXX Fill this in.
+The :newterm:`Extruded Tool Panel` lets you edit the profile that is extruded
+along the Z (up) axis for all selected :ref:`Extruded models
+<ug-primitive-models>`. The panel initially shows the current profile of the
+:ref:`primary selection <ug-selection>`. Any changes to the profile are applied
+to all selected Extruded models; the models update in real time as the profile
+is edited.
+
+|block-image|
+
+Editing the Extruded Profile
+::::::::::::::::::::::::::::
+
+Editing the profile for the Extruded models is essentially the same as in the
+:ref:`Bevel Tool Panel <ug-bevel-tool-panel>`, except that there are no fixed
+end points, the profile is closed, and there must always be at least 3 points
+to form a closed profile.
+
+The checkbox at the top of the panel allows you to enable snapping of profile
+points to the current :ref:`precision level <ug-precision-level>`. Note that
+this snapping is relative to the size of the selected Extruded model. For
+example if the current precision is 1 unit, a dragged profile point will be
+snapped in X to create 1 unit increments for the model at its current scale.
+
+Setting the Profile to a Polygon
+::::::::::::::::::::::::::::::::
+
+.. incimage:: /images/ExtrudedToolPanelPolygon.jpg 200px right
+
+At the bottom of the panel is a button that lets you reset the extrusion
+profile to a regular polygon. The text input box and slider can be used to set
+the number of sides of the polygon. The slider ranges from 3 to 60, but the
+text input allows values up to 100. Clicking the button changes the current
+profile to a polygon. For example, this image shows the results of changing the
+profile to a polygon with 10 sides.
 
 |block-image|
 

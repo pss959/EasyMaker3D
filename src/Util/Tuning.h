@@ -250,6 +250,9 @@ extern const float    kExtrudedModelHeight;
 /// Default radius for an ExtrudedModel.
 extern const float    kExtrudedModelRadius;
 
+/// Default scale in X and Z for an ExtrudedModel.
+extern const float    kExtrudedModelXZScale;
+
 /// Extruded length of a TextModel.
 extern const float    kExtrudedTextLength;
 

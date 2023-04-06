@@ -71,7 +71,7 @@ void DragRectHandler::PrintRect_(const Point2f &p0, const Point2f &p1) {
     rect.ExtendByPoint(p1);
     const Point2f  &min  = rect.GetMinPoint();
     const Vector2f &size = rect.GetSize();
-    std::cout << "====== RECT X Y Z W: "
+    std::cout << "====== RECT X Y W H: "
               << min[0] << " " << min[1] << " "
               << size[0] << " " << size[1] << "\n";
 }
