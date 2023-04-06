@@ -35,26 +35,6 @@ CommandList {
       initial_scale: 4,
     },
     ChangeRevSurfCommand {
-      profile_points: [0.26921 0.917622, 0.5 0.5],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.26921 0.917622, 0.40848 0.748058, 0.5 0.5],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.26921 0.917622, 0.40848 0.748058, 0.241356 0.503686, 0.5 0.5],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
-      profile_points: [0.26921 0.917622, 0.40848 0.748058, 0.241356 0.503686, 0.315868 0.265894],
-      sweep_angle: 360,
-      model_names: ["RevSurf_1"],
-    },
-    ChangeRevSurfCommand {
       profile_points: [0.26921 0.917622, 0.40848 0.748058, 0.241356 0.503686, 0.315868 0.265894, 0.215833 0.00884947],
       sweep_angle: 360,
       model_names: ["RevSurf_1"],
@@ -67,6 +47,28 @@ CommandList {
       path: "PublicDoc/snaps/stl/Spoon.stl",
       result_name: "Imported_1",
     },
+    CreateExtrudedModelCommand {
+      result_name: "Extruded_1",
+      initial_scale: 4,
+    },
+    ChangeExtrudedCommand {
+      profile_points: [0.9 0.5, 0.7 0.9, 0.496416 0.320757, 0.3 0.9, 0.1 0.5, 0.3 0.3, 0.397159 0.0774492, 0.60284 0.0774492, 0.7 0.3],
+      model_names: ["Extruded_1"],
+    },
+    ScaleCommand {
+      ratios: 2.5 1 2.5,
+      mode: "kBaseSymmetric",
+      model_names: ["Extruded_1"],
+    },
+    ScaleCommand {
+      ratios: 1 0.5 1,
+      mode: "kAsymmetric",
+      model_names: ["Extruded_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.478554 0.949163 0.497768 1,
+      model_names: ["Extruded_1"],
+    },
   ],
-  current_index: 12,
+  current_index: 13,
 }

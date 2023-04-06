@@ -11,6 +11,10 @@ Release 1.4.0 (April, 2023)
    - Split the model creation shelf into two parts and tweaked some sizes and
      positions to improve icon placement.
 
+ - Bug Fixes:
+
+   - Fixed some crashes due to Session Panel mismanagement.
+
 Release 1.3.0 (March, 2023)
 ---------------------------
 
@@ -25,7 +29,6 @@ Release 1.3.0 (March, 2023)
    - Keyboard shortcuts are now ignored while an application panel is in use.
 
    - Tools are not attached to new models until animated placement is complete.
-
 
 Release 1.2.0 (March, 2023)
 ---------------------------

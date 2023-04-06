@@ -33,8 +33,6 @@ These are all described in more detail in the following sections.
 Primitive Models
 ,,,,,,,,,,,,,,,,
 
-.. incimage:: /images/PrimitiveImported.jpg -100px right
-.. incimage:: /images/PrimitiveText.jpg     -100px right
 .. incimage:: /images/PrimitiveRevSurf.jpg  -100px right
 .. incimage:: /images/PrimitiveTorus.jpg    -100px right
 .. incimage:: /images/PrimitiveSphere.jpg   -100px right
@@ -43,38 +41,56 @@ Primitive Models
 
 |block-image|
 
-  - A :newterm:`Box model` represents a 3D box with the length of all sides
-    equal to 4 units by default. There is no specialized tool for a Box.
-  - A :newterm:`Cylinder model` represents a closed cylinder that by default
-    has a diameter and height of 4 units. Its axis of symmetry is aligned with
-    the +Z ("up") axis. The specialized :ref:`Cylinder Tool <ug-cylinder-tool>`
-    allows you to change the top and bottom diameters independently.
-  - A :newterm:`Sphere model` represents a sphere that has a diameter of 4
-    units by default. There is no specialized tool for a Sphere.
-  - A :newterm:`Torus model` represents a torus that by default has an outer
-    diameter of 4 units and an inner diameter (height) of .8 units. Its axis of
-    symmetry is aligned with the +Z ("up") axis. The specialized :ref:`Torus
-    Tool <ug-torus-tool>` allows you to change the outer and inner diameters
-    independently.
-  - A :newterm:`RevSurf model` represents a closed surface of revolution
-    created by rotating a 2D profile about the Z ("up") axis. The default
-    profile consists of 3 points (the minimum allowed) that forms a surface
-    with the widest diameter of 4 units and a height of 4 units. The
-    specialized :ref:`Surface of Revolution Tool <ug-rev-surf-tool>` lets you
-    edit the profile and also the sweep angle of the surface.
-  - A :newterm:`Text model` represents extruded 3D text, which is laid out by
-    default at the origin along the +X axis, extruded 4 units along the +Z (up)
-    direction. It is sized by default so that the characters are approximately
-    4 units in the Y dimension. The specialized :ref:`Text Tool <ug-text-tool>`
-    allows you to change the text string, font, and character spacing.
-  - An :newterm:`Imported model` is read from an STL file. The specialized
-    :ref:`Import Tool <ug-import-tool>` is used to select or change the file to
-    import from. Note that a newly-created Imported model will be displayed as
-    a dummy tetrahedron with an :ref:`invalid color <ug-model-colors>` until a
-    valid STL file has been selected with the Import Tool. Also note that many,
-    many publicly-available STL models are not valid meshes (watertight, not
-    self-intersecting) and will also appear with the invalid color. The
-    :ref:`Info Panel <ug-info-panel>` can tell you why the mesh is invalid.
+.. incimage:: /images/PrimitiveImported.jpg -100px right
+.. incimage:: /images/PrimitiveText.jpg     -100px right
+.. incimage:: /images/PrimitiveExtruded.jpg -100px right
+
+|block-image|
+
+  - First row:
+
+    - A :newterm:`Box model` represents a 3D box with the length of all sides
+      equal to 4 units by default. There is no specialized tool for a Box.
+    - A :newterm:`Cylinder model` represents a closed cylinder that by default
+      has a diameter and height of 4 units. Its axis of symmetry is aligned
+      with the +Z ("up") axis. The specialized :ref:`Cylinder Tool
+      <ug-cylinder-tool>` allows you to change the top and bottom diameters
+      independently.
+    - A :newterm:`Sphere model` represents a sphere that has a diameter of 4
+      units by default. There is no specialized tool for a Sphere.
+    - A :newterm:`Torus model` represents a torus that by default has an outer
+      diameter of 4 units and an inner diameter (height) of .8 units. Its axis
+      of symmetry is aligned with the +Z ("up") axis. The specialized
+      :ref:`Torus Tool <ug-torus-tool>` allows you to change the outer and
+      inner diameters independently.
+    - A :newterm:`RevSurf model` represents a closed surface of revolution
+      created by rotating a 2D profile about the Z ("up") axis. The default
+      profile consists of 3 points (the minimum allowed) that forms a surface
+      with the widest diameter of 4 units and a height of 4 units. The
+      specialized :ref:`Surface of Revolution Tool <ug-rev-surf-tool>` lets you
+      edit the profile and also the sweep angle of the surface.
+
+  - Second row:
+
+    - An :newterm:`Extruded model` represents a closed profile extruded along
+      the +Z (up) direction. Its default height is 4 units. The specialized
+      :ref:`Extruded Tool <ug-extruded-tool>` allows you to edit the extruded
+      profile.
+    - A :newterm:`Text model` represents extruded 3D text, which is laid out by
+      default at the origin along the +X axis, extruded 4 units along the +Z
+      (up) direction. It is sized by default so that the characters are
+      approximately 4 units in the Y dimension. The specialized :ref:`Text Tool
+      <ug-text-tool>` allows you to change the text string, font, and character
+      spacing.
+    - An :newterm:`Imported model` is read from an STL file. The specialized
+      :ref:`Import Tool <ug-import-tool>` is used to select or change the file
+      to import from. Note that a newly-created Imported model will be
+      displayed as a dummy tetrahedron with an :ref:`invalid color
+      <ug-model-colors>` until a valid STL file has been selected with the
+      Import Tool. Also note that many, many publicly-available STL models are
+      not valid meshes (watertight, not self-intersecting) and will also appear
+      with the invalid color. The :ref:`Info Panel <ug-info-panel>` can tell
+      you why the mesh is invalid.
 
 New primitive models are placed at the center of the :ref:`stage <ug-stage>`
 unless the :ref:`Point Target <ug-targets>` is active, in which case the new

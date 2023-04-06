@@ -501,6 +501,17 @@ immediately.
 
 |block-image|
 
+.. _ug-extruded-tool-panel:
+
+Extruded Tool Panel
+,,,,,,,,,,,,,,,,,,,
+
+.. incimage:: /images/ExtrudedToolPanel.jpg 200px right
+
+XXXX Fill this in.
+
+|block-image|
+
 .. _ug-import-tool-panel:
 
 Import Tool Panel
@@ -530,7 +541,7 @@ the ``Apply`` button.
 
 |block-image|
 
-.. _ug-revsurf-tool-panel:
+.. _ug-rev-surf-tool-panel:
 
 RevSurf Tool Panel
 ,,,,,,,,,,,,,,,,,,

@@ -440,6 +440,23 @@ here.
    :ref:`Grip-dragging <ug-grip-dragging>` also works with the scalers. The
    relative vertical position of a controller chooses the top or bottom scaler.
 
+.. _ug-extruded-tool:
+
+Extruded Tool
+,,,,,,,,,,,,,
+
+.. incimage:: /images/ExtrudedTool.jpg 200px right
+
+The specialized :newterm:`Extruded Tool` is a panel-based tool used to edit the
+profile used for one or more :ref:`Extruded models <ug-primitive-models>`.
+Attaching the Extruded Tool displays a :ref:`Extruded Tool Panel
+<ug-extruded-tool-panel>` above the primary selection.  Changes to the revolved
+profile in the panel are applied to all selected Extruded models.
+
+XXXX More here...
+
+|block-image|
+
 .. _ug-import-tool:
 
 Import Tool
@@ -503,7 +520,7 @@ RevSurf Tool
 The specialized :newterm:`RevSurf Tool` is a panel-based tool used to edit the
 revolved profile for one or more :ref:`RevSurf models <ug-primitive-models>`.
 Attaching the RevSurf Tool displays a :ref:`RevSurf Tool Panel
-<ug-revsurf-tool-panel>` above the primary selection.  Changes to the revolved
+<ug-rev-surf-tool-panel>` above the primary selection.  Changes to the revolved
 profile in the panel are applied to all selected RevSurf models.
 
 |block-image|

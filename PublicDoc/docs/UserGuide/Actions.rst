@@ -173,22 +173,25 @@ the primary selection.  From left to right, they are:
 Creation Actions
 ................
 
-.. incimage:: /images/ModelCreationShelf1.jpg 300px right
+Model Creation actions are all available as 3D icons on the two shelves on the
+bottom of the left wall of the :ref:`work area <ug-work-area>`. Each creates
+:ref:`a model of a specific type <ug-model-types>`
+
 .. incimage:: /images/ModelCreationShelf0.jpg 300px right
 
-XXXX Fix text for new shelf layout.
-
-Model Creation actions are all available as 3D icons on the bottom shelf on the
-left wall of the :ref:`work area <ug-work-area>`. Each creates :ref:`a model of
-a specific type <ug-model-types>`
-
-From left to right on the shelf, the icons/actions are:
+From left to right on the bottom shelf, the icons/actions are:
 
   - Box model (:action:`Create Box`)
   - Cylinder model (:action:`Create Cylinder`)
   - Sphere model (:action:`Create Sphere`)
   - Torus model (:action:`Create Torus`)
+
+.. incimage:: /images/ModelCreationShelf1.jpg 300px right
+
+From left to right on the next shelf up, the icons/actions are:
+
   - Surface of revolution model (:action:`Create Rev Surf`)
+  - Extruded model (:action:`Create Extruded`)
   - Text model (:action:`Create Text`)
   - Imported model (:action:`Create Imported Model`)
 
