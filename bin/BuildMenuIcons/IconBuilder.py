@@ -210,6 +210,18 @@ class IconBuilder(object):
         ic.PolyLine([ap1 + Point(4, -14), ap1, ap1 + Point(-14, 0)],
                     self._HighlightColor)
 
+    def _MIConvertTwist(self, ic):
+        cr = self._SafeRect.Center(Point(40, 80))
+        self._AddCylinder(ic, cr, self._GeneralColor)
+        ar = Rect(self._SafeRect.center - Point(0, 10), Point(80, 50))
+        ic.Arc(ar, 20, 160, self._HighlightColor)
+        ap0 = ar.CL() + Point(2, 3)
+        ap1 = ar.CR() + Point(-2, 3)
+        ic.PolyLine([ap0 + Point(-4, 14), ap0, ap0 + Point(14, 0)],
+                    self._HighlightColor)
+        ic.PolyLine([ap1 + Point(4, 14), ap1, ap1 + Point(-14, 0)],
+                    self._HighlightColor)
+
     def _MICopy(self, ic):
         frontr = self._SafeRect.Center(Point(60, 80)).Move(Point(-10, 10))
         backr  = self._SafeRect.Center(Point(60, 80)).Move(Point(10, -5))
