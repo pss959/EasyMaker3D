@@ -81,7 +81,7 @@ test_sources = [
 # Building tests.
 # -----------------------------------------------------------------------------
 
-test_defines  = test_env['CPPDEFINES'] + [('IN_UNIT_TEST', 1)]
+test_defines  = list(test_env['CPPDEFINES']) + [('IN_UNIT_TEST', 1)]
 test_cpppaths = test_env['CPPPATH'] + ['#/src/Tests/']
 test_objects  = [test_env.SharedObject(source=source, CPPDEFINES=test_defines,
                                        CPPPATH=test_cpppaths)
