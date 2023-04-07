@@ -43,7 +43,8 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
         { ActionCategory::kConversion,
           { Action::kConvertBevel,
             Action::kConvertClip,
-            Action::kConvertMirror }
+            Action::kConvertMirror,
+            Action::kConvertTwist }
         },
         { ActionCategory::kCreation,
           { Action::kCreateBox,

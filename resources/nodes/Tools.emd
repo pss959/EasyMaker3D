@@ -10,6 +10,7 @@ Node "Tools" {
     <"nodes/Tools/ScaleTool.emd">,
     <"nodes/Tools/TorusTool.emd">,
     <"nodes/Tools/TranslationTool.emd">,
+    <"nodes/Tools/TwistTool.emd">,
 
     # Panel-based Tools need only an empty instance.
     BevelTool    "BevelTool"    {},

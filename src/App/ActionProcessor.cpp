@@ -13,6 +13,7 @@
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
 #include "Commands/ConvertMirrorCommand.h"
+#include "Commands/ConvertTwistCommand.h"
 #include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateExtrudedModelCommand.h"
@@ -48,6 +49,7 @@
 #include "Models/CombinedModel.h"
 #include "Models/HullModel.h"
 #include "Models/MirroredModel.h"
+#include "Models/TwistedModel.h"
 #include "Panels/Board.h"
 #include "Panels/InfoPanel.h"
 #include "Panels/Panel.h"
@@ -387,6 +389,9 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
         break;
       case Action::kConvertMirror:
         ConvertModels_(CreateCommand_<ConvertMirrorCommand>());
+        break;
+      case Action::kConvertTwist:
+        ConvertModels_(CreateCommand_<ConvertTwistCommand>());
         break;
 
       case Action::kCombineCSGDifference:
@@ -744,6 +749,7 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kConvertBevel,  CanConvert_<BeveledModel>(sel));
     set_enabled(Action::kConvertClip,   CanConvert_<ClippedModel>(sel));
     set_enabled(Action::kConvertMirror, CanConvert_<MirroredModel>(sel));
+    set_enabled(Action::kConvertTwist,  CanConvert_<TwistedModel>(sel));
 
     // CSG requires at least 2 models selected, and all must be valid and at
     // the top level.

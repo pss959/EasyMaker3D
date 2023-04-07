@@ -33,6 +33,7 @@ enum class Action {
     kConvertBevel,
     kConvertClip,
     kConvertMirror,
+    kConvertTwist,
 
     // Model combining.
     kCombineCSGDifference,

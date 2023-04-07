@@ -135,6 +135,11 @@ Node "Shelves" {
           import_path: "ConvertMirrorIcon.off",
           rotation:    1 0 0 -90,
         },
+        CLONE "T_IconWidget" "ConvertTwistIcon" {
+          action:      "kConvertTwist",
+          import_path: "ConvertTwistIcon.off",
+          rotation:    1 0 0 -90,
+        },
       ]
     },
 
@@ -208,6 +213,10 @@ Node "Shelves" {
             },
             Node "TorusToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "TorusToolIcon.off" } ]
+            },
+            Node "TwistToolIcon" {
+              rotation: 1 0 0 -90,
+              shapes: [ CLONE "T_IconShape" { path: "TwistToolIcon.off" } ]
             },
           ]
         },

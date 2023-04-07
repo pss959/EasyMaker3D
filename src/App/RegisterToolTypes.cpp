@@ -16,6 +16,7 @@
 #include "Tools/TextTool.h"
 #include "Tools/TorusTool.h"
 #include "Tools/TranslationTool.h"
+#include "Tools/TwistTool.h"
 
 #define REGISTER_TYPE_(T) Parser::Registry::AddType<T>(#T)
 
@@ -39,6 +40,7 @@ void RegisterToolTypes_() {
     REGISTER_TYPE_(TextTool);
     REGISTER_TYPE_(TorusTool);
     REGISTER_TYPE_(TranslationTool);
+    REGISTER_TYPE_(TwistTool);
 }
 
 #undef REGISTER_TYPE_

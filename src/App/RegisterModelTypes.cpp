@@ -12,6 +12,7 @@
 #include "Models/SphereModel.h"
 #include "Models/TextModel.h"
 #include "Models/TorusModel.h"
+#include "Models/TwistedModel.h"
 #include "Parser/Registry.h"
 
 #define REGISTER_TYPE_(T) Parser::Registry::AddType<T>(#T)
@@ -33,6 +34,7 @@ void RegisterModelTypes_() {
     REGISTER_TYPE_(SphereModel);
     REGISTER_TYPE_(TextModel);
     REGISTER_TYPE_(TorusModel);
+    REGISTER_TYPE_(TwistedModel);
 }
 
 #undef REGISTER_TYPE_

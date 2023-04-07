@@ -14,10 +14,12 @@
 #include "Commands/ChangeRevSurfCommand.h"
 #include "Commands/ChangeTextCommand.h"
 #include "Commands/ChangeTorusCommand.h"
+#include "Commands/ChangeTwistCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
 #include "Commands/ConvertMirrorCommand.h"
+#include "Commands/ConvertTwistCommand.h"
 #include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateExtrudedModelCommand.h"
@@ -59,9 +61,11 @@ void RegisterCommandTypes_() {
     REGISTER_TYPE_(ChangeRevSurfCommand);
     REGISTER_TYPE_(ChangeTextCommand);
     REGISTER_TYPE_(ChangeTorusCommand);
+    REGISTER_TYPE_(ChangeTwistCommand);
     REGISTER_TYPE_(ConvertBevelCommand);
     REGISTER_TYPE_(ConvertClipCommand);
     REGISTER_TYPE_(ConvertMirrorCommand);
+    REGISTER_TYPE_(ConvertTwistCommand);
     REGISTER_TYPE_(CopyCommand);
     REGISTER_TYPE_(CreateCSGModelCommand);
     REGISTER_TYPE_(CreateExtrudedModelCommand);
