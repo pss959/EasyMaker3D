@@ -1,0 +1,26 @@
+TwistTool "TwistTool" {
+  TEMPLATES: [
+    PushButtonWidget "T_Plane" {
+      # Show the plane from both sides.
+      state_table: StateTable { cull_face_enabled: False },
+      shapes: [ Rectangle { plane_normal: "kPositiveX",  size: 1 1 } ],
+    },
+  ],
+
+  $NO_CAST_SHADOWS,
+
+  # Enable 2-sided lighting so planes show up well from any angle.
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uTwoSidedLighting" { int_val: 1 } ]
+    }
+  ],
+
+  children: [
+    # Colors are set in the code.
+    CLONE "T_Plane" "XPlane" {},
+    CLONE "T_Plane" "YPlane" { rotation: 0 0 1 90 },
+    CLONE "T_Plane" "ZPlane" { rotation: 0 1 0 90 },
+  ]
+}

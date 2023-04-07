@@ -79,229 +79,233 @@ FileImage "IconAtlas" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.30000000000000004,
     },
-    SubImage "MICopy" {
+    SubImage "MIConvertTwist" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.30000000000000004,
     },
-    SubImage "MICreateBox" {
+    SubImage "MICopy" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.30000000000000004,
     },
-    SubImage "MICreateCylinder" {
+    SubImage "MICreateBox" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.30000000000000004,
     },
-    SubImage "MICreateExtruded" {
+    SubImage "MICreateCylinder" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.30000000000000004,
     },
-    SubImage "MICreateImportedModel" {
+    SubImage "MICreateExtruded" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.30000000000000004,
     },
-    SubImage "MICreateRevSurf" {
+    SubImage "MICreateImportedModel" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.4,
     },
-    SubImage "MICreateSphere" {
+    SubImage "MICreateRevSurf" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.4,
     },
-    SubImage "MICreateText" {
+    SubImage "MICreateSphere" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.4,
     },
-    SubImage "MICreateTorus" {
+    SubImage "MICreateText" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.4,
     },
-    SubImage "MICut" {
+    SubImage "MICreateTorus" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.4,
     },
-    SubImage "MIDecreaseComplexity" {
+    SubImage "MICut" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.4,
     },
-    SubImage "MIDecreasePrecision" {
+    SubImage "MIDecreaseComplexity" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.4,
     },
-    SubImage "MIDelete" {
+    SubImage "MIDecreasePrecision" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.4,
     },
-    SubImage "MIHideSelected" {
+    SubImage "MIDelete" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.5,
     },
-    SubImage "MIIncreaseComplexity" {
+    SubImage "MIHideSelected" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.5,
     },
-    SubImage "MIIncreasePrecision" {
+    SubImage "MIIncreaseComplexity" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.5,
     },
-    SubImage "MILinearLayout" {
+    SubImage "MIIncreasePrecision" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.5,
     },
-    SubImage "MIMoveNext" {
+    SubImage "MILinearLayout" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.5,
     },
-    SubImage "MIMovePrevious" {
+    SubImage "MIMoveNext" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.5,
     },
-    SubImage "MIMoveToOrigin" {
+    SubImage "MIMovePrevious" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.5,
     },
-    SubImage "MINameTool" {
+    SubImage "MIMoveToOrigin" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.5,
     },
-    SubImage "MINone" {
+    SubImage "MINameTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.6000000000000001,
     },
-    SubImage "MIOpenHelpPanel" {
+    SubImage "MINone" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.6000000000000001,
     },
-    SubImage "MIOpenInfoPanel" {
+    SubImage "MIOpenHelpPanel" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.6000000000000001,
     },
-    SubImage "MIOpenSessionPanel" {
+    SubImage "MIOpenInfoPanel" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.6000000000000001,
     },
-    SubImage "MIOpenSettingsPanel" {
+    SubImage "MIOpenSessionPanel" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.6000000000000001,
     },
-    SubImage "MIPaste" {
+    SubImage "MIOpenSettingsPanel" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.6000000000000001,
     },
-    SubImage "MIPasteInto" {
+    SubImage "MIPaste" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.6000000000000001,
     },
-    SubImage "MIQuit" {
+    SubImage "MIPasteInto" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.6000000000000001,
     },
-    SubImage "MIRadialLayout" {
+    SubImage "MIQuit" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.7000000000000001,
     },
-    SubImage "MIRedo" {
+    SubImage "MIRadialLayout" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.7000000000000001,
     },
-    SubImage "MIRotationTool" {
+    SubImage "MIRedo" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.7000000000000001,
     },
-    SubImage "MIScaleTool" {
+    SubImage "MIRotationTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.7000000000000001,
     },
-    SubImage "MISelectAll" {
+    SubImage "MIScaleTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.7000000000000001,
     },
-    SubImage "MISelectFirstChild" {
+    SubImage "MISelectAll" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.7000000000000001,
     },
-    SubImage "MISelectNextSibling" {
+    SubImage "MISelectFirstChild" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.7000000000000001,
     },
-    SubImage "MISelectNone" {
+    SubImage "MISelectNextSibling" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.7000000000000001,
     },
-    SubImage "MISelectParent" {
+    SubImage "MISelectNone" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.8,
     },
-    SubImage "MISelectPreviousSibling" {
+    SubImage "MISelectParent" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.8,
     },
-    SubImage "MIShowAll" {
+    SubImage "MISelectPreviousSibling" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.8,
     },
-    SubImage "MISwitchToNextTool" {
+    SubImage "MIShowAll" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.8,
     },
-    SubImage "MISwitchToPreviousTool" {
+    SubImage "MISwitchToNextTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.8,
     },
-    SubImage "MIToggleAxisAligned" {
+    SubImage "MISwitchToPreviousTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.8,
     },
-    SubImage "MIToggleBuildVolume" {
+    SubImage "MIToggleAxisAligned" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.8,
     },
-    SubImage "MIToggleEdgeTarget" {
+    SubImage "MIToggleBuildVolume" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.8,
     },
-    SubImage "MIToggleInspector" {
+    SubImage "MIToggleEdgeTarget" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.9,
     },
-    SubImage "MIToggleLeftRadialMenu" {
+    SubImage "MIToggleInspector" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.9,
     },
-    SubImage "MITogglePointTarget" {
+    SubImage "MIToggleLeftRadialMenu" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.9,
     },
-    SubImage "MIToggleRightRadialMenu" {
+    SubImage "MITogglePointTarget" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.9,
     },
-    SubImage "MIToggleShowEdges" {
+    SubImage "MIToggleRightRadialMenu" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.9,
     },
-    SubImage "MIToggleSpecializedTool" {
+    SubImage "MIToggleShowEdges" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.9,
     },
-    SubImage "MITranslationTool" {
+    SubImage "MIToggleSpecializedTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.9,
     },
-    SubImage "MIUndo" {
+    SubImage "MITranslationTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.9,
     },
-    SubImage "SettingsIcon" {
+    SubImage "MIUndo" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 1.0,
     },
-    SubImage "UpIcon" {
+    SubImage "SettingsIcon" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 1.0,
     },
-    SubImage "VisibleIcon" {
+    SubImage "UpIcon" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 1.0,
+    },
+    SubImage "VisibleIcon" {
+      texture_scale:  0.125 0.1,
+      texture_offset: 0.625 1.0,
     },
   ]
 }
