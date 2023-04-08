@@ -63,11 +63,8 @@ void PointerTracker::Reset() {
 
 WidgetPtr PointerTracker::ActivateWidget(const Event &event) {
     UpdateCurrentData_(event, current_widget_);
-    if (current_widget_) {
-        if (current_widget_->IsHovering())
-            current_widget_->StopHovering();
+    if (current_widget_)
         current_widget_->SetActive(true);
-    }
     activation_ray_ = current_ray_;
     activation_hit_ = current_hit_;
     return current_widget_;
