@@ -6,31 +6,32 @@
 #include "Util/Assert.h"
 
 void TwistedModel::AddFields() {
-    AddModelField(plane_normals_.Init("plane_normals"));
+    AddModelField(center_.Init("center", Point3f::Zero()));
+    AddModelField(axis_.Init("axis", Vector3f::AxisY()));
+    AddModelField(angle_.Init("angle"));
 
     ConvertedModel::AddFields();
 }
 
-void TwistedModel::AddPlaneNormal(const Vector3f &object_normal) {
-    auto &normals = plane_normals_.GetValue();
-    normals.push_back(ion::math::Normalized(object_normal));
-    plane_normals_ = normals;
+void TwistedModel::SetTwist(const Twist &twist) {
+    center_ = twist.center;
+    axis_   = twist.axis;
+    angle_  = twist.angle;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-void TwistedModel::RemoveLastPlaneNormal() {
-    auto &normals = plane_normals_.GetValue();
-    ASSERT(! normals.empty());
-    normals.pop_back();
-    plane_normals_ = normals;
-    ProcessChange(SG::Change::kGeometry, *this);
+TwistedModel::Twist TwistedModel::GetTwist() const {
+    Twist twist;
+    twist.center = center_;
+    twist.axis   = axis_;
+    twist.angle  = angle_;
+    return twist;
 }
 
 TriMesh TwistedModel::BuildMesh() {
     // Twist the untransformed original mesh.
     ASSERT(GetOriginalModel());
     TriMesh mesh = GetOriginalModel()->GetMesh();
-    for (const auto &normal: GetPlaneNormals())
-        mesh = MirrorMesh(mesh, Plane(0, normal));
+    // XXXX DO THE TWIST.
     return mesh;
 }

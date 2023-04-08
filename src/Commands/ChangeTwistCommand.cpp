@@ -6,8 +6,9 @@
 #include "Util/Assert.h"
 
 void ChangeTwistCommand::AddFields() {
-    AddField(plane_.Init("plane"));
-    AddField(is_in_place_.Init("is_in_place", false));
+    AddField(center_.Init("center", Point3f::Zero()));
+    AddField(axis_.Init("axis", Vector3f::AxisY()));
+    AddField(angle_.Init("angle"));
 
     MultiModelCommand::AddFields();
 }
@@ -15,19 +16,27 @@ void ChangeTwistCommand::AddFields() {
 bool ChangeTwistCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (ion::math::Length(GetPlane().normal) < .00001f) {
-        details = "zero-length plane normal";
+    if (ion::math::Length(axis_.GetValue()) < .00001f) {
+        details = "zero-length axis";
         return false;
     }
     return true;
 }
 
 std::string ChangeTwistCommand::GetDescription() const {
-    return "Twisted " + GetModelsDesc(GetModelNames()) + " across plane " +
-        GetPlane().ToString();
+    return "Twisted " + GetModelsDesc(GetModelNames());
 }
 
-void ChangeTwistCommand::SetPlane(const Plane &plane) {
-    ASSERT(ion::math::Length(plane.normal) >= .00001f);
-    plane_ = plane;
+void ChangeTwistCommand::SetTwist(const TwistedModel::Twist &twist) {
+    center_ = twist.center;
+    axis_   = twist.axis;
+    angle_  = twist.angle;
+}
+
+TwistedModel::Twist ChangeTwistCommand::GetTwist() const {
+    TwistedModel::Twist twist;
+    twist.center = center_;
+    twist.axis   = axis_;
+    twist.angle  = angle_;
+    return twist;
 }

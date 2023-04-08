@@ -2,13 +2,10 @@
 
 #include <memory>
 
-#include "Math/Types.h"
 #include "Tools/Tool.h"
-#include "Widgets/PushButtonWidget.h"
 
 /// TwistTool provides interactive twisting of all selected TwistedModels.
-/// It has 3 planes aligned with the coordinate axes that can be twisted
-/// across. Each plane is a PushButtonWidget.
+/// It has XXXX.
 ///
 /// \ingroup Tools
 class TwistTool : public Tool {
@@ -28,11 +25,5 @@ class TwistTool : public Tool {
     virtual void Detach() override;
 
   private:
-    /// Planes in all 3 dimensions.
-    PushButtonWidgetPtr planes_[3]{nullptr, nullptr, nullptr};
-
-    /// Plane click callback.
-    void PlaneClicked_(int dim);
-
     friend class Parser::Registry;
 };

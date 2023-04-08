@@ -8,26 +8,26 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(TwistedModel);
 
-/// TwistedModel is a derived ConvertedModel class that represents a Model
-/// that has been twisted across one or more planes through its center. Each
-/// plane is specified as a normal vector in object coordinates.
+/// TwistedModel is a derived ConvertedModel class that represents a Model that
+/// has been twisted by some angle around an arbitrary axis through an
+/// arbitrary point. The point and axis are specified in object coordinates of
+/// the TwistedModel.
 ///
 /// \ingroup Models
 class TwistedModel : public ConvertedModel {
   public:
-    /// Adds a plane through the center (specified by normal in object
-    /// coordinates) to twist across. The vector is normalized if necessary.
-    void AddPlaneNormal(const Vector3f &object_normal);
+    /// Struct defining a twist.
+    struct Twist {
+        Point3f  center;  ///< Twist center in object coordinates.
+        Vector3f axis;    ///< Twist axis in object coordinates.
+        Anglef   angle;   ///< Twist angle.
+    };
 
-    /// Removes the last plane normal added. This should not be called if there
-    /// is only one.
-    void RemoveLastPlaneNormal();
+    /// Sets the twist parameters.
+    void SetTwist(const Twist &twist);
 
-    /// Returns the current twisting plane normals. This may be an empty
-    /// vector.
-    const std::vector<Vector3f> & GetPlaneNormals() const {
-        return plane_normals_;
-    }
+    /// Returns the twist parameters.
+    Twist GetTwist() const;
 
   protected:
     TwistedModel() {}
@@ -37,7 +37,9 @@ class TwistedModel : public ConvertedModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Vector3f> plane_normals_;
+    Parser::TField<Point3f>  center_;
+    Parser::TField<Vector3f> axis_;
+    Parser::TField<Anglef>   angle_;
     ///@}
 
     friend class Parser::Registry;

@@ -4,6 +4,7 @@
 
 #include "Executors/Executor.h"
 #include "Math/Types.h"
+#include "Models/TwistedModel.h"
 #include "Selection/SelPath.h"
 
 /// ChangeTwistExecutor executes the ChangeTwistCommand.
@@ -23,10 +24,8 @@ class ChangeTwistExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.
         struct PerModel {
-            SelPath  path_to_model;
-            Vector3f object_plane_normal;
-            Vector3f old_translation;
-            Vector3f new_translation;
+            SelPath             path_to_model;
+            TwistedModel::Twist old_twist;
         };
         std::vector<PerModel> per_model;
     };
