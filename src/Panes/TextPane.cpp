@@ -207,9 +207,11 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) const {
     ASSERT(text_size != Vector2f::Zero());
 
     // Use that to compute the scale factor to apply to scale the text to fit
-    // within the Pane bounds.
+    // within the Pane bounds. If the scale is 0 (due to unknown text size),
+    // don't change it.
     const auto scale = ComputeTextScale_(pane_size, text_size);
-    text_node_->SetScale(scale);
+    if (scale[0] > 0)
+        text_node_->SetScale(scale);
 
     // Compute the translation to apply to postion the text to account for
     // padding and alignment.

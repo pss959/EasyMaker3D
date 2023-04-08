@@ -167,6 +167,8 @@ void ScaleWidget::UpdateStick_() {
     Vector3f scale = stick_->GetScale();
     Vector3f trans = stick_->GetTranslation();
     scale[0] = max_value_ - min_value_;
+    if (scale[0] <= 0)
+        scale[0] = 1;
     trans[0] = .5f * (min_value_ + max_value_);
     stick_->SetScale(scale);
     stick_->SetTranslation(trans);
