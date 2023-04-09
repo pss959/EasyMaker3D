@@ -8,23 +8,13 @@
 #include "Util/Assert.h"
 
 void ClippedModel::AddFields() {
-    AddModelField(planes_.Init("planes"));
+    AddModelField(plane_.Init("plane", Plane(0, Vector3f::AxisY())));
 
     ConvertedModel::AddFields();
 }
 
-void ClippedModel::AddPlane(const Plane &object_plane) {
-    auto &planes = planes_.GetValue();
-    planes.push_back(object_plane);
-    planes_ = planes;
-    ProcessChange(SG::Change::kGeometry, *this);
-}
-
-void ClippedModel::RemoveLastPlane() {
-    auto &planes = planes_.GetValue();
-    ASSERT(! planes.empty());
-    planes.pop_back();
-    planes_ = planes;
+void ClippedModel::SetPlane(const Plane &plane) {
+    plane_ = plane;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
@@ -33,9 +23,9 @@ TriMesh ClippedModel::BuildMesh() {
     ASSERT(GetOriginalModel());
     TriMesh mesh = GetOriginalModel()->GetMesh();
 
-    for (const auto &plane: GetPlanes())
-        mesh = ClipMesh(mesh, plane);
+    mesh = ClipMesh(mesh, plane_);
 
+    // Set the mesh_offset_ based on the new center.
     mesh_offset_ = Point3f::Zero() - ComputeMeshBounds(mesh).GetCenter();
 
     return CenterMesh(mesh);

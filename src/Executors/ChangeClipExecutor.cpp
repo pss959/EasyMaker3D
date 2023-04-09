@@ -13,9 +13,9 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
     for (auto &pm: data.per_model) {
         ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
         if (operation == Command::Op::kDo)
-            cm.AddPlane(pm.object_plane);
+            cm.SetPlane(pm.new_plane);
         else   // Undo.
-            cm.RemoveLastPlane();
+            cm.SetPlane(pm.old_plane);
         AdjustTranslation_(cm);
     }
 
@@ -43,7 +43,9 @@ ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
 
             // Convert plane from stage to object coordinates.
             const Matrix4f som = SG::CoordConv(path).GetRootToObjectMatrix();
-            pm.object_plane = TransformPlane(ccc.GetPlane(), som);
+            pm.new_plane = TransformPlane(ccc.GetPlane(), som);
+            ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
+            pm.old_plane = cm.GetPlane();
         }
         command.SetExecData(data);
     }

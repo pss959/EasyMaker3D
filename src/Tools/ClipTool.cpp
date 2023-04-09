@@ -207,26 +207,19 @@ void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
     arrow_shaft_->SetScale(Vector3f(1, arrow_scale, 1));
     arrow_cone_->SetTranslation(Vector3f(0, arrow_scale, 0));
 
-    // Set the current plane to match the last Plane in the ClippedModel if it
-    // has any. Otherwise, use the XZ plane in local coordinates.
+    // Set the current plane to match the Plane in the ClippedModel.  Access
+    // the plane in the object coordinates of the unclipped ClippedModel and
+    // transform it by the scale: the rotation and translation of the
+    // ClippedModel are also applied to the ClipTool, so they are not needed to
+    // convert the plane into the object coordinates of the ClipTool.
     const auto &primary = GetModel_(0);
-    if (! primary.GetPlanes().empty()) {
-        // Access the plane in the object coordinates of the unclipped
-        // ClippedModel and transform it by the scale: the rotation and
-        // translation of the ClippedModel are also applied to the ClipTool, so
-        // they are not needed to convert the plane into the object coordinates
-        // of the ClipTool.
-        object_plane_ = TransformPlane(primary.GetPlanes().back(),
-                                        ScaleMatrixH(primary.GetScale()));
+    object_plane_ = TransformPlane(primary.GetPlane(),
+                                   ScaleMatrixH(primary.GetScale()));
 
-        // Compensate for the mesh offset in the normal direction.
-        const Vector3f offset_vec =
-            primary.GetModelMatrix() * -primary.GetMeshOffset();
-        object_plane_.distance -= Dot(offset_vec, object_plane_.normal);
-    }
-    else {
-        object_plane_ = Plane(0, Vector3f::AxisY());
-    }
+    // Compensate for the mesh offset in the normal direction.
+    const Vector3f offset_vec =
+        primary.GetModelMatrix() * -primary.GetMeshOffset();
+    object_plane_.distance -= Dot(offset_vec, object_plane_.normal);
 
     MatchPlane_();
 }
@@ -291,11 +284,10 @@ void ClipTool::Impl_::UpdateTranslationRange_() {
         max_dist = std::max(max_dist, dist);
     }
 
-    // Set the range, making sure not to clip away all of the mesh. Restrict
-    // the maximum only if this is the first clipping plane in the Model.
-    const bool limit_max = model.GetPlanes().empty();
+    // Set the range, making sure not to clip away all of the mesh by
+    // restricting the minimum and maximum values.
     arrow_->SetRange(min_dist + TK::kMinClippedSize,
-                     max_dist - (limit_max ? TK::kMinClippedSize : 0));
+                     max_dist - TK::kMinClippedSize);
 }
 
 void ClipTool::Impl_::RotatorActivated_(bool is_activation) {

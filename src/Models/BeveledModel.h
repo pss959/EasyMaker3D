@@ -12,9 +12,9 @@ DECL_SHARED_PTR(BeveledModel);
 /// whose edges have had a bevel or rounding operation applied to them.
 ///
 /// Note that the BeveledModel applies the bevel profile to the scaled version
-/// of the original Model's mesh, since that is what the user
-/// expects. Therefore, the scale factors in the BeveledModel differ from those
-/// in the original. This stores the difference so the two can be kept in sync.
+/// of the original Model's mesh, since that is what the user expects.
+/// Therefore, the scale factors in the BeveledModel differ from those in the
+/// original. This stores the difference so the two can be kept in sync.
 ///
 /// \ingroup Models
 class BeveledModel : public ConvertedModel {

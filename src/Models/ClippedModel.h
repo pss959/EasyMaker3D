@@ -9,27 +9,24 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(ClippedModel);
 
 /// ClippedModel is a derived ConvertedModel class that represents a Model that
-/// has been clipped by one or more planes specified in object coordinates.
+/// has been clipped by a plane specified in object coordinates.
 ///
-/// Note that the ClippedModel maintains an offset vector (in local
-/// coordinates) that can be used to keep the ClippedModel in the same relative
-/// position as the original mesh after clipping. (Since clipping changes the
-/// size of the mesh, its center has to move as well.) Therefore, the
-/// translation in the ClippedModel differs from that in the original.
+/// Clipping changes the size of the mesh, so the ClippedModel's center has to
+/// move as well. It maintains an offset vector (in local coordinates) that is
+/// used to keep the ClippedModel in the same relative position as the original
+/// mesh after clipping. Therefore, the translation in the ClippedModel differs
+/// from that in the original.
 ///
 /// \ingroup Models
 class ClippedModel : public ConvertedModel {
   public:
-    /// Adds a Plane (specified in object coordinates) to clip to. The side the
-    /// Plane normal points toward is clipped away.
-    void AddPlane(const Plane &local_plane);
+    /// Sets the Plane (specified in object coordinates) to clip to. The side
+    /// the Plane normal points toward is clipped away. The default is the XZ
+    /// plane (clipping the +Y side).
+    void SetPlane(const Plane &plane);
 
-    /// Removes the last Plane added. This should not be called if there is
-    /// only one Plane.
-    void RemoveLastPlane();
-
-    /// Returns the current clipping Planes. This may be an empty vector.
-    const std::vector<Plane> & GetPlanes() const { return planes_; }
+    /// Returns the clipping Plane (in object coordinates).
+    const Plane & GetPlane() const { return plane_; }
 
     /// Whenever the ClippedModel's mesh is rebuilt, it is recentered to put
     /// the mesh at the origin in object coordinates. This returns the offset
@@ -54,7 +51,7 @@ class ClippedModel : public ConvertedModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Plane> planes_;
+    Parser::TField<Plane> plane_;
     ///@}
 
     /// Offset used to center the mesh in object coordinates.
