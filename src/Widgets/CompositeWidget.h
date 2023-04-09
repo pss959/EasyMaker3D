@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Memory.h"
+#include "Widgets/Widget.h"
 
 DECL_SHARED_PTR(CompositeWidget);
 

@@ -1,54 +1,6 @@
 ClipTool "ClipTool" {
   $NO_CAST_SHADOWS,
   children: [
-    Node "ArrowAndPlane" {
-      children: [
-        # First so that transparency works for the rest.
-        Slider1DWidget "Arrow" {
-          dimension: 1,
-          inactive_color: "#e6e644",
-          children: [
-            Node "Shaft" {
-              shapes: [
-                Cylinder {
-                  top_radius:    .3,
-                  bottom_radius: .3,
-                  height:        2,
-                },
-              ]
-            },
-            Node "Cone" {
-              shapes: [
-                Cylinder {
-                  top_radius:    0,
-                  bottom_radius: .8,
-                  height:        1.2,
-                  sector_count:  20,
-                },
-              ],
-            },
-          ]
-        },
-        PushButtonWidget "Plane" {
-          inactive_color: "#eedddd20",
-          children: [
-            Node {
-              # Show the plane from both sides.
-              state_table: StateTable { cull_face_enabled: False },
-              shapes: [ Rectangle { plane_normal: "kPositiveY",  size: 2 2 } ],
-            }
-          ],
-        },
-      ]
-    },
-    SphereWidget "Rotator" {
-      inactive_color: "#ddddcc20",
-      active_color:   "#00000000",
-      children: [
-        Node {
-          shapes: [ Ellipsoid {size: 2 2 2, band_count: 20, sector_count: 20 } ]
-        }
-      ],
-    },
+    <"nodes/PlaneWidget.emd">,
   ]
 }

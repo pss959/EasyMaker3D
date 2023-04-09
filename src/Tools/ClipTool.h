@@ -6,9 +6,7 @@
 #include "Tools/Tool.h"
 
 /// ClipTool provides interactive clipping of all selected ClippedModels. It
-/// has a SphereWidget used to rotate the clipping plane, a Slider1DWidget
-/// (arrow) used to translate the plane along its normal, and a
-/// PushButtonWidget (plane) used to apply the clipping plane to the Models.
+/// uses a PlaneWidget to orient and position the clipping plane
 ///
 /// \ingroup Tools
 class ClipTool : public Tool {

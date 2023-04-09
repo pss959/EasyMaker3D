@@ -26,8 +26,19 @@ Node "NodeViewerRoot" {
 
     # Uncomment one of these to test out a Board with a Panel.
     # CLONE "T_Board" "AppBoard" {}
-    CLONE "T_Board" "ToolBoard" {}
+    # CLONE "T_Board" "ToolBoard" {}
     # CLONE "T_Board" "KeyBoard" {}
+
+    Node {
+      children: [
+        Node {  # Background square.
+          translation: 0 0 -14,
+          shapes: [ Box { size: 20 20 .1 } ],
+        },
+
+        <"nodes/PlaneWidget.emd">,
+      ]
+    }
 
     # Node "TestTube1" {
     #   shapes: [

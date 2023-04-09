@@ -12,14 +12,13 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
 
     for (auto &pm: data.per_model) {
         ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
-        if (operation == Command::Op::kDo)
-            cm.SetPlane(pm.new_plane);
-        else   // Undo.
-            cm.SetPlane(pm.old_plane);
+        cm.SetPlane(operation == Command::Op::kDo ?
+                    pm.new_plane : pm.old_plane);
         AdjustTranslation_(cm);
     }
 
     // Reselect if undo or if command is finished being done.
+    // XXXX Still needed?
     if (operation == Command::Op::kUndo || command.IsFinalized())
         GetContext().selection_manager->ReselectAll();
 }

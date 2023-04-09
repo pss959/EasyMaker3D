@@ -4,6 +4,7 @@
 #include "Widgets/GenericWidget.h"
 #include "Widgets/IconSwitcherWidget.h"
 #include "Widgets/IconWidget.h"
+#include "Widgets/PlaneWidget.h"
 #include "Widgets/PointTargetWidget.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/RadialLayoutWidget.h"
@@ -24,6 +25,7 @@ void RegisterWidgetTypes_() {
     REGISTER_TYPE_(IconSwitcherWidget);
     REGISTER_TYPE_(IconWidget);
     REGISTER_TYPE_(PointTargetWidget);
+    REGISTER_TYPE_(PlaneWidget);
     REGISTER_TYPE_(PushButtonWidget);
     REGISTER_TYPE_(RadialLayoutWidget);
     REGISTER_TYPE_(ScaleWidget);

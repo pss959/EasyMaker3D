@@ -1,0 +1,37 @@
+PlaneWidget "PlaneWidget" {
+  children: [
+    # Square for rotating the plane.
+    SphereWidget "Rotator" {
+      inactive_color: "#eecccc22",
+      shapes: [ Box { size: 1 .1 1 } ]
+    },
+
+    # Arrow to show the normal and for translating the plane.
+    Slider1DWidget "Translator" {
+      dimension: 1,
+      inactive_color: "#e6e644",
+      children: [
+        Node "Shaft" {
+          shapes: [
+            Cylinder {
+              top_radius:    .3,
+              bottom_radius: .3,
+              height:        2,
+            },
+          ]
+        },
+        Node "Cone" {
+          shapes: [
+            Cylinder {
+              top_radius:    0,
+              bottom_radius: .8,
+              height:        1.2,
+              sector_count:  20,
+            },
+          ],
+        },
+      ]
+    },
+  ]
+},
+
