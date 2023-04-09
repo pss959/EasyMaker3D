@@ -8,17 +8,13 @@ void PlaneWidget::CreationDone() {
     CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
-        std::cerr << "XXXX Setting up " << GetDesc() << "\n";
-
         // Access the rotation and translation widgets.
         rotator_  = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
         translator_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this,
                                                                  "Translator");
-        // Set up callbacks.
-        rotator_->GetRotationChanged().AddObserver(
-            this, [&](Widget &, const Rotationf &){ changed_.Notify(true); });
-        translator_->GetValueChanged().AddObserver(
-            this, [&](Widget &, const float &){ changed_.Notify(false); });
+        // Access the other parts that are needed for sizing.
+        arrow_shaft_ = SG::FindNodeUnderNode(*translator_, "Shaft");
+        arrow_cone_  = SG::FindNodeUnderNode(*translator_, "Cone");
     }
 }
 
@@ -28,7 +24,15 @@ void PlaneWidget::SetPlane(const Plane &plane) {
 }
 
 void PlaneWidget::SetSize(float radius) {
-    // XXXX Do something.
+    const float kArrowScale = 1.6f;
+    const float kPlaneScale = 1.5f;
+
+    rotator_->SetScale(Vector3f(kPlaneScale * radius, 1, kPlaneScale * radius));
+
+    // Scale the arrow shaft and position the cone at the end.
+    const float arrow_scale = kArrowScale * radius;
+    arrow_shaft_->SetScale(Vector3f(1, arrow_scale, 1));
+    arrow_cone_->SetTranslation(Vector3f(0, arrow_scale, 0));
 }
 
 void PlaneWidget::SetTranslationRange(const Range1f &range) {

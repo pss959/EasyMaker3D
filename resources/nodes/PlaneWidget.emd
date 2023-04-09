@@ -3,7 +3,7 @@ PlaneWidget "PlaneWidget" {
     # Square for rotating the plane.
     SphereWidget "Rotator" {
       inactive_color: "#eecccc22",
-      shapes: [ Box { size: 1 .1 1 } ]
+      shapes: [ Box { size: 2 .1 2 } ]
     },
 
     # Arrow to show the normal and for translating the plane.

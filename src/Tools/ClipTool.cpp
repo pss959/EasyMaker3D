@@ -1,5 +1,6 @@
 #include "Tools/ClipTool.h"
 
+// XXXX Check all of these
 #include <algorithm>
 #include <functional>
 #include <limits>
@@ -82,7 +83,8 @@ class ClipTool::Impl_ {
     /// mesh extents along the current plane's normal.
     void UpdateTranslationRange_();
 
-    // Widget callback.
+    // Widget callbacks.
+    void Activate_(bool is_activation, bool is_rotation);
     void PlaneChanged_(bool is_rotation);
 
     /// Updates feedback for plane translation.
@@ -110,8 +112,19 @@ ClipTool::Impl_::Impl_(const Tool::Context &context,
 
     plane_widget_ =
         SG::FindTypedNodeUnderNode<PlaneWidget>(root_node, "PlaneWidget");
-    plane_widget_->GetChanged().AddObserver(this, [&](bool is_rotation){
-        PlaneChanged_(is_rotation); });
+
+    // Set up callbacks.
+    const auto &rot = plane_widget_->GetRotator();
+    const auto &tr  = plane_widget_->GetTranslator();
+
+    rot->GetActivation().AddObserver(this, [&](Widget &, bool is_activation){
+        Activate_(is_activation, true); });
+    tr->GetActivation().AddObserver(this, [&](Widget &, bool is_activation){
+        Activate_(is_activation, false); });
+    rot->GetRotationChanged().AddObserver(
+        this, [&](Widget &, const Rotationf &){ PlaneChanged_(true); });
+    tr->GetValueChanged().AddObserver(
+        this, [&](Widget &, const float &){ PlaneChanged_(false); });
 }
 
 void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
@@ -148,7 +161,6 @@ void ClipTool::Impl_::Attach(const Selection &sel, const Vector3f &model_size) {
 }
 
 void ClipTool::Impl_::Detach() {
-    UpdateRealTimeClipPlane_(false);
     selection_.Clear();
 }
 
@@ -189,6 +201,21 @@ void ClipTool::Impl_::UpdateTranslationRange_() {
     // by restricting the minimum and maximum values.
     plane_widget_->SetTranslationRange(Range1f(min_dist + TK::kMinClippedSize,
                                                max_dist - TK::kMinClippedSize));
+}
+
+void ClipTool::Impl_::Activate_(bool is_activation, bool is_rotation) {
+    if (is_activation) {
+        start_stage_plane_ = stage_plane_;
+        feedback_ = context_.feedback_manager->Activate<LinearFeedback>();
+        context_.target_manager->StartSnapping();
+    }
+    else {
+        context_.target_manager->EndSnapping();
+        context_.feedback_manager->Deactivate(feedback_);
+        feedback_.reset();
+    }
+
+    UpdateRealTimeClipPlane_(is_activation);
 }
 
 void ClipTool::Impl_::PlaneChanged_(bool is_rotation) {

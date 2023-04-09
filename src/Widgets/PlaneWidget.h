@@ -22,11 +22,6 @@ DECL_SHARED_PTR(SphereWidget);
 /// \ingroup Widgets
 class PlaneWidget : public CompositeWidget {
   public:
-    /// Returns a Notifier that is invoked when the user drags the widget to
-    /// change the plane. It is passed a flag that is true for rotation and
-    /// false for translation.
-    Util::Notifier<bool> & GetChanged() { return changed_; }
-
     /// Sets the Plane for the widget. The initial Plane is the XY-plane with
     /// the normal pointing along +Z.
     void SetPlane(const Plane &plane);
@@ -53,14 +48,22 @@ class PlaneWidget : public CompositeWidget {
     virtual void CreationDone() override;
 
   private:
-    /// Notifies when the widget is dragged.
-    Util::Notifier<bool> changed_;
-
     /// Current Plane.
     Plane plane_;
 
+    /// Interactive SphereWidget used to rotate the plane.
     SphereWidgetPtr   rotator_;
+
+    /// Slider1DWidget with an arrow for translating the plane.
     Slider1DWidgetPtr translator_;
+
+    /// Cylindrical shaft part of the arrow. This is scaled in Y based on the
+    /// size passed to SetSize().
+    SG::NodePtr       arrow_shaft_;
+
+    /// Conical end part of the arrow. This is translated in Y to stay at the
+    /// end of the arrow_shaft.
+    SG::NodePtr       arrow_cone_;
 
     // ------------------------------------------------------------------------
     // Functions.
