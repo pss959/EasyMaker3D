@@ -4,7 +4,7 @@
 #include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Util/Notifier.h"
-#include "Widgets/Widget.h"
+#include "Widgets/CompositeWidget.h"
 
 namespace Parser { class Registry; }
 
@@ -15,9 +15,9 @@ DECL_SHARED_PTR(Node);
 DECL_SHARED_PTR(TextNode);
 }
 
-/// RadialLayoutWidget is a specialized Widget for setting up radial layout -
-/// it allows the user to define a circle with adjustable radius and optional
-/// start and end angles. The widget contains the following geometry:
+/// RadialLayoutWidget is a derived CompositeWidget used for setting up radial
+/// layout - it allows the user to define a circle with adjustable radius and
+/// optional start and end angles. The widget contains the following geometry:
 ///   - A ring (torus) with a DiscWidget attached to it for scaling the radius.
 ///   - Two radial spokes with DiscWidgets attached to them for rotating the
 ///     start and end angles.
@@ -43,7 +43,7 @@ DECL_SHARED_PTR(TextNode);
 /// The GetChanged() Notifier can be used to track changes.
 ///
 /// \ingroup Widgets
-class RadialLayoutWidget : public Widget {
+class RadialLayoutWidget : public CompositeWidget {
   public:
     /// Returns a Notifier that is invoked when the user drags any part of the
     /// widget.

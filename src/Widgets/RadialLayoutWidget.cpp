@@ -14,7 +14,7 @@
 #include <ion/math/angleutils.h>
 
 void RadialLayoutWidget::CreationDone() {
-    Widget::CreationDone();
+    CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
         auto get_widget = [&](const std::string &name){
@@ -103,7 +103,7 @@ void RadialLayoutWidget::Reset() {
 }
 
 void RadialLayoutWidget::PostSetUpIon() {
-    Widget::PostSetUpIon();
+    CompositeWidget::PostSetUpIon();
     SetColors_();
 }
 

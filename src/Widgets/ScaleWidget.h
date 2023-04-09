@@ -4,17 +4,17 @@
 #include "Math/Types.h"
 #include "Parser/Field.h"
 #include "Util/Notifier.h"
-#include "Widgets/Widget.h"
+#include "Widgets/CompositeWidget.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ScaleWidget);
 DECL_SHARED_PTR(Slider1DWidget);
 
-/// ScaleWidget is a derived Widget that has a Slider1DWidget handle at either
-/// end and a noninteractive stick joining them. Dragging either handle causes
-/// the range spanned by the widget to change, resulting in a length that can
-/// be used to scale some value.
+/// ScaleWidget is a derived CompositeWidget that has a Slider1DWidget handle
+/// at either end and a noninteractive stick joining them. Dragging either
+/// handle causes the range spanned by the widget to change, resulting in a
+/// length that can be used to scale some value.
 ///
 /// There are two modes of operation:
 ///   - Symmetric mode: dragging a handle causes both handles to move in
@@ -26,7 +26,7 @@ DECL_SHARED_PTR(Slider1DWidget);
 /// have the same effect if only one handle is present.
 ///
 /// \ingroup Widgets
-class ScaleWidget : public Widget {
+class ScaleWidget : public CompositeWidget {
   public:
     /// Defines the mode for the widget.
     enum class Mode {

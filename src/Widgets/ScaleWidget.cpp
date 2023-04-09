@@ -11,11 +11,11 @@ void ScaleWidget::AddFields() {
     AddField(limits_.Init("limits", Vector2f(TK::kScaleWidgetMinLimit,
                                              TK::kScaleWidgetMaxLimit)));
 
-    Widget::AddFields();
+    CompositeWidget::AddFields();
 }
 
 void ScaleWidget::CreationDone() {
-    Widget::CreationDone();
+    CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
         min_slider_ = InitSlider_("MinSlider");
