@@ -2,6 +2,7 @@
 
 #include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Notifier.h"
 #include "Widgets/CompositeWidget.h"
 
 namespace Parser { class Registry; }
@@ -22,13 +23,18 @@ DECL_SHARED_PTR(SphereWidget);
 /// \ingroup Widgets
 class PlaneWidget : public CompositeWidget {
   public:
+    /// Returns a Notifier that is invoked when the user drags the widget to
+    /// change the plane. It is passed a flag that is true for rotation and
+    /// false for translation.
+    Util::Notifier<bool> & GetPlaneChanged() { return plane_changed_; }
+
     /// Sets the Plane for the widget. The initial Plane is the XY-plane with
     /// the normal pointing along +Z.
     void SetPlane(const Plane &plane);
 
     /// Returns the current plane. This can be called at any time, including
     /// during a drag.
-    const Plane GetPlane() const { return plane_; }
+    Plane GetPlane() const;
 
     /// Sets the size of the widget to the given radius.
     void SetSize(float radius);
@@ -48,6 +54,9 @@ class PlaneWidget : public CompositeWidget {
     virtual void CreationDone() override;
 
   private:
+    /// Notifies when the widget is dragged.
+    Util::Notifier<bool> plane_changed_;
+
     /// Current Plane.
     Plane plane_;
 
@@ -65,10 +74,14 @@ class PlaneWidget : public CompositeWidget {
     /// end of the arrow_shaft.
     SG::NodePtr       arrow_cone_;
 
-    // ------------------------------------------------------------------------
-    // Functions.
+    /// Invoked when either sub-widget is activated or deactivated.
+    void Activate_(bool is_activation);
 
-    // XXXX
+    /// Invoked when the plane rotation changed.
+    void RotationChanged_();
+
+    /// Invoked when the plane translation changed.
+    void TranslationChanged_();
 
     friend class Parser::Registry;
 };

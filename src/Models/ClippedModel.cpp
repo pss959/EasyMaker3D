@@ -28,11 +28,20 @@ TriMesh ClippedModel::BuildMesh() {
     // Set the mesh_offset_ based on the new center.
     mesh_offset_ = Point3f::Zero() - ComputeMeshBounds(mesh).GetCenter();
 
+    // Update the translation to keep the ClippedModel positioned correctly
+    // relative to the original Model.
+    SyncTransformsFromOriginal(*GetOriginalModel());
+
     return CenterMesh(mesh);
 }
 
 void ClippedModel::SyncTransformsFromOriginal(const Model &original) {
     CopyTransformsFrom(original);
+    if (mesh_offset_ != Vector3f::Zero())
+        std::cerr << "XXXX " << GetDesc() << " trans " << GetTranslation()
+                  << " => "
+                  << (GetTranslation() - GetModelMatrix() * mesh_offset_)
+                  << "\n";
     if (mesh_offset_ != Vector3f::Zero())
         SetTranslation(GetTranslation() - GetModelMatrix() * mesh_offset_);
 }

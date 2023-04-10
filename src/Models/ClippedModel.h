@@ -30,7 +30,9 @@ class ClippedModel : public ConvertedModel {
 
     /// Whenever the ClippedModel's mesh is rebuilt, it is recentered to put
     /// the mesh at the origin in object coordinates. This returns the offset
-    /// used to recenter the mesh (in object coordinates).
+    /// used to recenter the mesh (in object coordinates) so that the
+    /// ClippedModel can be positioned correctly relative to the original
+    /// Model.
     const Vector3f & GetMeshOffset() const {
         // Make sure the mesh is up to date first.
         GetMesh();
