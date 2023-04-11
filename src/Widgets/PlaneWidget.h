@@ -66,6 +66,9 @@ class PlaneWidget : public CompositeWidget {
     /// Slider1DWidget with an arrow for translating the plane.
     Slider1DWidgetPtr translator_;
 
+    /// Node used to rotate the arrow.
+    SG::NodePtr       arrow_rotator_;
+
     /// Cylindrical shaft part of the arrow. This is scaled in Y based on the
     /// size passed to SetSize().
     SG::NodePtr       arrow_shaft_;
@@ -82,6 +85,12 @@ class PlaneWidget : public CompositeWidget {
 
     /// Invoked when the plane translation changed.
     void TranslationChanged_();
+
+    /// Updates the #rotator_ to match the current plane.
+    void UpdateRotator_();
+
+    /// Updates the #translator_ to match the current plane.
+    void UpdateTranslator_();
 
     friend class Parser::Registry;
 };

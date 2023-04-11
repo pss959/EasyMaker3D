@@ -12,9 +12,10 @@ void PlaneWidget::CreationDone() {
         rotator_  = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
         translator_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this,
                                                                  "Translator");
-        // Access the other parts that are needed for sizing.
-        arrow_shaft_ = SG::FindNodeUnderNode(*translator_, "Shaft");
-        arrow_cone_  = SG::FindNodeUnderNode(*translator_, "Cone");
+        // Access the other parts that are needed for rotating and sizing.
+        arrow_rotator_ = SG::FindNodeUnderNode(*this, "ArrowRotator");
+        arrow_shaft_   = SG::FindNodeUnderNode(*translator_, "Shaft");
+        arrow_cone_    = SG::FindNodeUnderNode(*translator_, "Cone");
 
         // Set up callbacks.
         rotator_->GetActivation().AddObserver(
@@ -29,18 +30,21 @@ void PlaneWidget::CreationDone() {
 }
 
 void PlaneWidget::SetPlane(const Plane &plane) {
-    // Use the plane normal to compute the rotation. The untransformed arrow
+    // Use the plane normal to compute the rotation. The untransformed normal
     // direction is the +Y axis.
-    const Rotationf rot =
-        Rotationf::RotateInto(Vector3f::AxisY(), plane.normal);
-    rotator_->SetRotation(rot);
-    translator_->SetRotation(rot);
+    rotator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
+                                                plane.normal));
 
     // Use the distance of the plane as the Slider1DWidget value without
     // notifying.
     translator_->GetValueChanged().EnableAll(false);
     translator_->SetValue(plane.distance);
     translator_->GetValueChanged().EnableAll(true);
+    //std::cerr << "XXXX SetPlane = " << plane.ToString() << "\n";
+    //std::cerr << "XXXX GetPlane = " << GetPlane().ToString() << "\n";
+
+    UpdateTranslator_();
+    UpdateRotator_();
 }
 
 Plane PlaneWidget::GetPlane() const {
@@ -70,13 +74,20 @@ void PlaneWidget::Activate_(bool is_activation) {
 }
 
 void PlaneWidget::RotationChanged_() {
-    // Have to update the arrow rotation.
-    translator_->SetRotation(rotator_->GetRotation());
+    UpdateTranslator_();
     plane_changed_.Notify(true);
 }
 
 void PlaneWidget::TranslationChanged_() {
-    // Have to update the plane position.
-    rotator_->SetTranslation(translator_->GetValue() * Vector3f::AxisY());
+    UpdateRotator_();
     plane_changed_.Notify(false);
+}
+
+void PlaneWidget::UpdateRotator_() {
+    rotator_->SetTranslation(translator_->GetValue() *
+                             (rotator_->GetRotation() * Vector3f::AxisY()));
+}
+
+void PlaneWidget::UpdateTranslator_() {
+    arrow_rotator_->SetRotation(rotator_->GetRotation());
 }

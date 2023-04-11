@@ -12,6 +12,5 @@ class ConvertBevelExecutor : public ConvertExecutorBase {
     }
 
   protected:
-    virtual ConvertedModelPtr ConvertModel(
-        const ModelPtr &model, const ConvertedModelPtr &primary) override;
+    virtual ConvertedModelPtr CreateConvertedModel() override;
 };

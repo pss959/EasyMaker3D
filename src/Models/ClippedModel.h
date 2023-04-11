@@ -50,6 +50,9 @@ class ClippedModel : public ConvertedModel {
     /// Overrides this to deal with the offset vector.
     virtual void SyncTransformsToOriginal(Model &original) const override;
 
+    /// Compensates for a change in translation caused by clipping.
+    void AdjustTranslation_();
+
   private:
     /// \name Parsed fields.
     ///@{

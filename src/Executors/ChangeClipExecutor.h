@@ -35,7 +35,4 @@ class ChangeClipExecutor : public Executor {
     /// Creates and stores a ExecData_ in the given command if necessary,
     /// returning it either way.
     ExecData_ & GetExecData_(Command &command);
-
-    /// Compensates for a change in translation caused by clipping.
-    void AdjustTranslation_(ClippedModel &cm);
 };

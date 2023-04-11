@@ -15,14 +15,9 @@ class ConvertExecutorBase : public Executor {
     virtual void Execute(Command &command, Command::Op operation) override;
 
   protected:
-    /// Derived classes are required to implement this to actually convert a
-    /// model to a derived ConvertedModel class. Note that if the Model is
-    /// already of the correct type, it should be left alone. The
-    /// ConvertedModel for the primary selection is passed in to help with the
-    /// conversion (e.g., for copying data); this will be null for the primary
-    /// selection itself.
-    virtual ConvertedModelPtr ConvertModel(
-        const ModelPtr &model, const ConvertedModelPtr &primary) = 0;
+    /// Derived classes must implement this to create a derived ConvertedModel
+    /// of the correct type.
+    virtual ConvertedModelPtr CreateConvertedModel() = 0;
 
   private:
     /// Derived Command::ExecData class that stores everything needed to undo

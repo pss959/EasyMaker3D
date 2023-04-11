@@ -15,6 +15,7 @@ void ClippedModel::AddFields() {
 
 void ClippedModel::SetPlane(const Plane &plane) {
     plane_ = plane;
+    AdjustTranslation_();
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
@@ -27,21 +28,13 @@ TriMesh ClippedModel::BuildMesh() {
 
     // Set the mesh_offset_ based on the new center.
     mesh_offset_ = Point3f::Zero() - ComputeMeshBounds(mesh).GetCenter();
-
-    // Update the translation to keep the ClippedModel positioned correctly
-    // relative to the original Model.
-    SyncTransformsFromOriginal(*GetOriginalModel());
+    AdjustTranslation_();
 
     return CenterMesh(mesh);
 }
 
 void ClippedModel::SyncTransformsFromOriginal(const Model &original) {
     CopyTransformsFrom(original);
-    if (mesh_offset_ != Vector3f::Zero())
-        std::cerr << "XXXX " << GetDesc() << " trans " << GetTranslation()
-                  << " => "
-                  << (GetTranslation() - GetModelMatrix() * mesh_offset_)
-                  << "\n";
     if (mesh_offset_ != Vector3f::Zero())
         SetTranslation(GetTranslation() - GetModelMatrix() * mesh_offset_);
 }
@@ -51,4 +44,8 @@ void ClippedModel::SyncTransformsToOriginal(Model &original) const {
     if (mesh_offset_ != Vector3f::Zero())
         original.SetTranslation(original.GetTranslation() +
                                 GetModelMatrix() * mesh_offset_);
+}
+
+void ClippedModel::AdjustTranslation_() {
+    SyncTransformsFromOriginal(*GetOriginalModel());
 }

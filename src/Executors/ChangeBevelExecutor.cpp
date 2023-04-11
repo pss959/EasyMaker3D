@@ -8,18 +8,10 @@ void ChangeBevelExecutor::Execute(Command &command, Command::Op operation) {
 
     ChangeBevelCommand &cbc = GetTypedCommand<ChangeBevelCommand>(command);
 
-    if (operation == Command::Op::kDo) {
-        const Bevel new_bevel = cbc.GetBevel();
-        for (auto &pm: data.per_model) {
-            BeveledModel &bev = GetTypedModel<BeveledModel>(pm.path_to_model);
-            bev.SetBevel(new_bevel);
-        }
-    }
-    else {  // Undo.
-        for (auto &pm: data.per_model) {
-            BeveledModel &bev = GetTypedModel<BeveledModel>(pm.path_to_model);
-            bev.SetBevel(pm.old_bevel);
-        }
+    for (auto &pm: data.per_model) {
+        BeveledModel &bev = GetTypedModel<BeveledModel>(pm.path_to_model);
+        bev.SetBevel(operation == Command::Op::kDo ?
+                     cbc.GetBevel() : pm.old_bevel);
     }
 
     // There is no need to reselect for a Panel-based Tool.
