@@ -155,16 +155,14 @@ Plane ClipTool::GetObjectPlaneFromModel_() const {
 }
 
 Plane ClipTool::GetStagePlaneFromWidget_() {
-    // Convert the PlaneWidget's plane to stage coordinates. Note that the mesh
-    // offset has to be applied first.
-    const auto &primary = GetPrimary_();
-    const Vector3f offset_vec =
-        primary.GetModelMatrix() * -primary.GetMeshOffset();
-    Plane object_plane = plane_widget_->GetPlane();
-    object_plane.distance += ion::math::Dot(offset_vec, object_plane.normal);
-
-    return TransformPlane(object_plane,
-                          GetStageCoordConv().GetObjectToRootMatrix());
+    // The PlaneWidget's plane is in the local coordinates of the ClipTool, but
+    // still needs to take the ClipTool's translation into account.
+    const Plane &object_plane = plane_widget_->GetPlane();
+    Plane stage_plane = TransformPlane(
+        object_plane, GetStageCoordConv().GetLocalToRootMatrix());
+    stage_plane.distance += ion::math::Dot(GetTranslation(),
+                                           object_plane.normal);
+    return stage_plane;
 }
 
 void ClipTool::UpdateTranslationRange_() {

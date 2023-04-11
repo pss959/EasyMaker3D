@@ -47,5 +47,8 @@ void ClippedModel::SyncTransformsToOriginal(Model &original) const {
 }
 
 void ClippedModel::AdjustTranslation_() {
-    SyncTransformsFromOriginal(*GetOriginalModel());
+    if (mesh_offset_ != Vector3f::Zero()) {
+        const Vector3f offset = GetModelMatrix() * mesh_offset_;
+        SetTranslation(GetOriginalModel()->GetTranslation() - offset);
+    }
 }
