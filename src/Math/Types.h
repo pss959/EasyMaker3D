@@ -169,6 +169,11 @@ struct Plane {
     /// Constructs from three points.
     Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 
+    /// Returns true if this is the default plane.
+    bool IsDefault() const {
+        return distance == 0 && normal == Vector3f::AxisZ();
+    }
+
     /// Projects a point onto the plane, returning the result.
     Point3f ProjectPoint(const Point3f &p) const;
 

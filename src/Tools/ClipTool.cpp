@@ -101,14 +101,39 @@ void ClipTool::Activate_(bool is_activation) {
         context.target_manager->EndSnapping();
         context.feedback_manager->Deactivate(feedback_);
         feedback_.reset();
+
+        GetDragEnded().Notify(*this);
+        GetContext().target_manager->EndSnapping();
+
+        // If there was any change due to a drag, execute the command to change
+        // the ClippedModel(s).
+        if (command_) {
+            if (! command_->GetPlane().IsDefault())
+                GetContext().command_manager->AddAndDo(command_);
+            command_.reset();
+        }
     }
 
-    UpdateRealTimeClipPlane_(is_activation);
+    UpdateRealTimeClipPlane_(is_activation, GetStagePlaneFromWidget_());
 }
 
 void ClipTool::PlaneChanged_(bool is_rotation) {
-    UpdateRealTimeClipPlane_(true);
+    // If this is the first change, create the ChangeClipCommand and start the
+    // drag.
+    if (! command_) {
+        command_ = CreateCommand<ChangeClipCommand>();
+        command_->SetFromSelection(GetSelection());
+        GetDragStarted().Notify(*this);
+    }
+
+    const Plane stage_plane = GetStagePlaneFromWidget_();
+    command_->SetPlane(stage_plane);
+    GetContext().command_manager->SimulateDo(command_);
+
+    UpdateRealTimeClipPlane_(true, stage_plane);
     UpdateTranslationRange_();
+
+    // Update translation feedback.
     if (! is_rotation)
         UpdateTranslationFeedback_(Color(1, 0, 0, 1));  // XXXX Color
 }
@@ -127,6 +152,19 @@ Plane ClipTool::GetObjectPlaneFromModel_() const {
     object_plane.distance -= ion::math::Dot(offset_vec, object_plane.normal);
 
     return object_plane;
+}
+
+Plane ClipTool::GetStagePlaneFromWidget_() {
+    // Convert the PlaneWidget's plane to stage coordinates. Note that the mesh
+    // offset has to be applied first.
+    const auto &primary = GetPrimary_();
+    const Vector3f offset_vec =
+        primary.GetModelMatrix() * -primary.GetMeshOffset();
+    Plane object_plane = plane_widget_->GetPlane();
+    object_plane.distance += ion::math::Dot(offset_vec, object_plane.normal);
+
+    return TransformPlane(object_plane,
+                          GetStageCoordConv().GetObjectToRootMatrix());
 }
 
 void ClipTool::UpdateTranslationRange_() {
@@ -164,17 +202,7 @@ void ClipTool::UpdateTranslationFeedback_(const Color &color) {
     feedback_->SpanLength(Point3f::Zero(), current_plane.normal, distance); // XXXX pos
 }
 
-void ClipTool::UpdateRealTimeClipPlane_(bool enable) {
-    // Convert the plane to stage coordinates. Note that the mesh offset has to
-    // be applied first.
-    const auto &primary = GetPrimary_();
-    const Vector3f offset_vec =
-        primary.GetModelMatrix() * -primary.GetMeshOffset();
-    Plane object_plane = plane_widget_->GetPlane();
-    object_plane.distance += ion::math::Dot(offset_vec, object_plane.normal);
-
-    const Plane stage_plane = TransformPlane(
-        object_plane, GetStageCoordConv().GetObjectToRootMatrix());
+void ClipTool::UpdateRealTimeClipPlane_(bool enable, const Plane &stage_plane) {
     GetContext().root_model->EnableClipping(enable, stage_plane);
 }
 

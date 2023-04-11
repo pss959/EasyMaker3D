@@ -17,7 +17,6 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
     }
 
     // Reselect if undo or if command is finished being done.
-    // XXXX Still needed?
     if (operation == Command::Op::kUndo || command.IsFinalized())
         GetContext().selection_manager->ReselectAll();
 }

@@ -61,6 +61,10 @@ class ClipTool : public Tool {
     /// object coordinates.
     Plane GetObjectPlaneFromModel_() const;
 
+    /// Returns the current clipping plane (from the PlaneWidget) in stage
+    /// coordinates.
+    Plane GetStagePlaneFromWidget_();
+
     /// Sets the min/max range for the translation slider based on the Model's
     /// mesh extents along the current plane's normal.
     void UpdateTranslationRange_();
@@ -70,7 +74,7 @@ class ClipTool : public Tool {
 
     /// Updates the state of the real-time clipping plane implemented in the
     /// Faceted shader.
-    void UpdateRealTimeClipPlane_(bool enable);
+    void UpdateRealTimeClipPlane_(bool enable, const Plane &stage_plane);
 
     /// Returns the primary ClippedModel.
     ClippedModel & GetPrimary_() const;
