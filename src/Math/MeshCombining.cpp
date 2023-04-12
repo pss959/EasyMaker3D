@@ -191,7 +191,7 @@ TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane) {
     // Clip it by the plane.
     const Vector4f coeffs = plane.GetCoefficients();
 
-    KLOG('C', "Clipping TriMesh with " << plane.ToString());
+    KLOG('C', "Clipping TriMesh with " << plane);
     CGAL::Polygon_mesh_processing::clip(
         poly, CPlane3(coeffs[0], coeffs[1], coeffs[2], coeffs[3]),
         CGAL::parameters::clip_volume(true));

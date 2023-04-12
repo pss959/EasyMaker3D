@@ -197,8 +197,7 @@ void Node::ClearChildren() {
 const Bounds & Node::GetBounds() const {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
-        KLOG('b', "Updated bounds for " << GetDesc()
-             << " to " << bounds_.ToString());
+        KLOG('b', "Updated bounds for " << GetDesc() << " to " << bounds_);
         bounds_valid_ = true;
     }
     return bounds_;

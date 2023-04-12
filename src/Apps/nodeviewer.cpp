@@ -506,11 +506,11 @@ void Application_::IntersectCenterRay_() {
     Ray ray(camera_->GetPosition(), camera_->GetViewDirection());
     const SG::Hit hit = SG::Intersector::IntersectScene(*scene_, ray);
     if (hit.path.empty()) {
-        std::cout << "Ray " << ray.ToString() << " intersected nothing\n";
+        std::cout << "Ray " << ray << " intersected nothing\n";
     }
     else {
-        std::cout << "Ray " << ray.ToString()
-                  << " intersected " << hit.path.ToString() << "\n";
+        std::cout << "Ray " << ray << " intersected "
+                  << hit.path.ToString() << "\n";
     }
 }
 

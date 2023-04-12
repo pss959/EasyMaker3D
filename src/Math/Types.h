@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -364,3 +365,27 @@ struct ModelMesh : public TriMesh {
     /// false on error.
     bool FromBinaryString(const std::string &str);
 };
+
+// ----------------------------------------------------------------------------
+// Output operators.
+// ----------------------------------------------------------------------------
+
+inline std::ostream & operator<<(std::ostream& out, const Bounds &b) {
+    return out << b.ToString(false);
+}
+
+inline std::ostream & operator<<(std::ostream& out, const Plane &p) {
+    return out << p.ToString();
+}
+
+inline std::ostream & operator<<(std::ostream& out, const Ray &r) {
+    return out << r.ToString();
+}
+
+inline std::ostream & operator<<(std::ostream& out, const Frustum &f) {
+    return out << f.ToString();
+}
+
+inline std::ostream & operator<<(std::ostream& out, const TriMesh &m) {
+    return out << m.ToString();
+}

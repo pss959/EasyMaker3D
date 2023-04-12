@@ -40,8 +40,6 @@ void PlaneWidget::SetPlane(const Plane &plane) {
     translator_->GetValueChanged().EnableAll(false);
     translator_->SetValue(plane.distance);
     translator_->GetValueChanged().EnableAll(true);
-    //std::cerr << "XXXX SetPlane = " << plane.ToString() << "\n";
-    //std::cerr << "XXXX GetPlane = " << GetPlane().ToString() << "\n";
 
     UpdateTranslator_();
     UpdateRotator_();

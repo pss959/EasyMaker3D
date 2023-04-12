@@ -145,9 +145,9 @@ static Matrix4f PrintBounds_(const SG::Node &node, const Matrix4f &wsm,
         const Bounds wbounds = TransformBounds(bounds,  ctm);
         const Bounds sbounds = TransformBounds(wbounds, wsm);
         std::cout << indent << extra << GetDesc_(obj) << "\n"
-                  << indent << "    LOC: " <<  bounds.ToString() << "\n"
-                  << indent << "    STG: " << sbounds.ToString() << "\n"
-                  << indent << "    WLD: " << wbounds.ToString() << "\n";
+                  << indent << "    LOC: " <<  bounds << "\n"
+                  << indent << "    STG: " << sbounds << "\n"
+                  << indent << "    WLD: " << wbounds << "\n";
     };
 
     print_bounds(node, node.GetBounds(), "");
@@ -263,7 +263,7 @@ static void PrintModelTree_(const Model &model) {
     std::cout << Indent_(level) << GetDesc_(model)
               << " " << Util::EnumName(model.GetStatus()) << "\n";
     std::cout << Indent_(level + 1) << "mesh bounds: "
-              << ComputeMeshBounds(model.GetCurrentMesh()).ToString() << "\n";
+              << ComputeMeshBounds(model.GetCurrentMesh()) << "\n";
     PrintTransformFields_(model, level);
 
     // Recurse on ParentModels.
@@ -414,7 +414,7 @@ void PrintModels(const Model &root) {
 
 void PrintViewInfo(const Frustum &frustum, const SG::Node &stage) {
     Surrounder_ surrounder;
-    std::cout << "Frustum:\n" << frustum.ToString() << "\n";
+    std::cout << "Frustum:\n" << frustum << "\n";
     std::cout << "Proj: " << GetProjectionMatrix(frustum) << "\n";
     std::cout << "View: " << GetViewMatrix(frustum) << "\n";
     std::cout << "Stage: scale=" << Util::ToString(stage.GetScale(), .001f)
