@@ -13,31 +13,31 @@ DECL_SHARED_PTR(ClippedModel);
 ///
 /// Clipping changes the size of the mesh, so the ClippedModel's center has to
 /// move as well. It maintains an offset vector (in local coordinates) that is
-/// used to keep the ClippedModel in the same relative position as the original
-/// mesh after clipping. Therefore, the translation in the ClippedModel differs
-/// from that in the original.
+/// used to translate the ClippedModel so it stays in the same relative
+/// position as the original mesh after clipping. (This makes the translation
+/// in the ClippedModel different from that in the original.)
+///
+/// The clipping plane is stored without considering the offset. The SetPlane()
+/// and GetPlane() functions apply and remove the effects of the offset,
+/// respectively.
 ///
 /// \ingroup Models
 class ClippedModel : public ConvertedModel {
   public:
     /// Sets the Plane (specified in object coordinates) to clip to. The side
     /// the Plane normal points toward is clipped away. The default is the XZ
-    /// plane (clipping the +Y side).
+    /// plane (clipping the +Y side). This assumes the given plane includes the
+    /// effects of the mesh offset.
     void SetPlane(const Plane &plane);
 
-    /// Returns the clipping Plane (in object coordinates).
+    /// Returns the clipping Plane in object coordinates without accounting for
+    /// the mesh offset. This is the Plane read in or the last Plane passed to
+    /// SetPlane().
     const Plane & GetPlane() const { return plane_; }
 
-    /// Whenever the ClippedModel's mesh is rebuilt, it is recentered to put
-    /// the mesh at the origin in object coordinates. This returns the offset
-    /// used to recenter the mesh (in object coordinates) so that the
-    /// ClippedModel can be positioned correctly relative to the original
-    /// Model.
-    const Vector3f & GetMeshOffset() const {
-        // Make sure the mesh is up to date first.
-        GetMesh();
-        return mesh_offset_;
-    }
+    /// Returns the clipping Plane in object coordinates after accounting for
+    /// the mesh offset.
+    const Plane & GetOffsetPlane() const { return offset_plane_; }
 
   protected:
     ClippedModel() {}
@@ -50,17 +50,23 @@ class ClippedModel : public ConvertedModel {
     /// Overrides this to deal with the offset vector.
     virtual void SyncTransformsToOriginal(Model &original) const override;
 
-    /// Compensates for a change in translation caused by clipping.
-    void AdjustTranslation_();
-
   private:
     /// \name Parsed fields.
     ///@{
+    /// Plane in object coordinates without compensating for the mesh offset.
     Parser::TField<Plane> plane_;
     ///@}
 
-    /// Offset used to center the mesh in object coordinates.
+    /// Offset used to center the mesh in object coordinates. This is updated
+    /// whenever the mesh is rebuilt.
     Vector3f mesh_offset_{0, 0, 0};
+
+    /// Plane in object coordinates that compensates for the mesh offset.
+    Plane offset_plane_;
+
+    /// Updates the offset vector, offset plane, and translation to compensate
+    /// for a change in mesh centering.
+    void UpdateMeshOffset_(const TriMesh &mesh);
 
     friend class Parser::Registry;
 };

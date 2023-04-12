@@ -26,7 +26,6 @@ class ChangeClipExecutor : public Executor {
         /// Data per Model to operate on.
         struct PerModel {
             SelPath path_to_model;
-            Plane   new_plane;  ///< In object coordinates.
             Plane   old_plane;  ///< In object coordinates.
         };
         std::vector<PerModel> per_model;

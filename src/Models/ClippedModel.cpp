@@ -1,6 +1,7 @@
 #include "Models/ClippedModel.h"
 
 #include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
 
 #include "Math/MeshCombining.h"
 #include "Math/MeshUtils.h"
@@ -14,8 +15,9 @@ void ClippedModel::AddFields() {
 }
 
 void ClippedModel::SetPlane(const Plane &plane) {
+    // Store the plane. The mesh offset and offset plane will be updated when
+    // the mesh is rebuilt.
     plane_ = plane;
-    AdjustTranslation_();
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
@@ -26,9 +28,9 @@ TriMesh ClippedModel::BuildMesh() {
 
     mesh = ClipMesh(mesh, plane_);
 
-    // Set the mesh_offset_ based on the new center.
-    mesh_offset_ = Point3f::Zero() - ComputeMeshBounds(mesh).GetCenter();
-    AdjustTranslation_();
+    // Update the mesh_offset_ based on the new center. Use it to update the
+    // offset plane and the compensating translation.
+    UpdateMeshOffset_(mesh);
 
     return CenterMesh(mesh);
 }
@@ -46,9 +48,23 @@ void ClippedModel::SyncTransformsToOriginal(Model &original) const {
                                 GetModelMatrix() * mesh_offset_);
 }
 
-void ClippedModel::AdjustTranslation_() {
-    if (mesh_offset_ != Vector3f::Zero()) {
-        const Vector3f offset = GetModelMatrix() * mesh_offset_;
-        SetTranslation(GetOriginalModel()->GetTranslation() - offset);
-    }
+void ClippedModel::UpdateMeshOffset_(const TriMesh &mesh) {
+    mesh_offset_ = Point3f::Zero() - ComputeMeshBounds(mesh).GetCenter();
+
+    // Compute the offset plane. Compensate for the mesh offset in the normal
+    // direction. Note that the scale and rotation have to be applied to the
+    // offset vector. (This also applies the translation, but translation does
+    // not get applied to a Vector3f.)
+    const Vector3f offset_vec = GetModelMatrix() * -mesh_offset_;
+    offset_plane_ = plane_;
+    offset_plane_.distance -= ion::math::Dot(offset_vec, offset_plane_.normal);
+    std::cerr << "XXXX P=" << plane_.GetValue().ToString()
+              << " OV=" << offset_vec
+              << " D=" << ion::math::Dot(offset_vec, offset_plane_.normal)
+              << " OP=" << offset_plane_.ToString()
+              << "\n";
+
+    // Adjust the translation to keep the mesh in the same relative place as
+    // the original Model.
+    SetTranslation(GetOriginalModel()->GetTranslation() + offset_vec);
 }

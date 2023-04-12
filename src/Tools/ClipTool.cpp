@@ -69,17 +69,21 @@ bool ClipTool::CanAttach(const Selection &sel) const {
 }
 
 void ClipTool::Attach() {
-    ASSERT(Util::IsA<ClippedModel>(GetModelAttachedTo()));
+    const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
+    ASSERT(cm);
+
+    // Match the original (unclipped) Model's size.
+    const auto model_size = MatchModelAndGetSize(true, cm->GetOriginalModel());
 
     // Update the widget size based on the model size. Note: no need to use
     // is_axis_aligned here, since that affects only snapping.
-    const auto model_size = MatchModelAndGetSize(true);
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);
 
     // Match the Plane in the ClippedModel, which is stored in object
-    // coordinates of the original (unclipped) Model.
-    plane_widget_->SetPlane(GetObjectPlaneFromModel_());
+    // coordinates of the original (unclipped) Model. Use the Plane that takes
+    // the mesh offset into account.
+    plane_widget_->SetPlane(GetPrimary_().GetOffsetPlane());
 
     // Update the range of the slider based on the size of the Model and the
     // normal direction.
@@ -105,6 +109,8 @@ void ClipTool::Activate_(bool is_activation) {
         GetDragEnded().Notify(*this);
         GetContext().target_manager->EndSnapping();
 
+        UpdateTranslationRange_();
+
         // If there was any change due to a drag, execute the command to change
         // the ClippedModel(s).
         if (command_) {
@@ -114,7 +120,7 @@ void ClipTool::Activate_(bool is_activation) {
         }
     }
 
-    UpdateRealTimeClipPlane_(is_activation, GetStagePlaneFromWidget_());
+    UpdateRealTimeClipPlane_(is_activation, GetStagePlane_());
 }
 
 void ClipTool::PlaneChanged_(bool is_rotation) {
@@ -126,35 +132,18 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
         GetDragStarted().Notify(*this);
     }
 
-    const Plane stage_plane = GetStagePlaneFromWidget_();
+    const Plane stage_plane = GetStagePlane_();
     command_->SetPlane(stage_plane);
     GetContext().command_manager->SimulateDo(command_);
 
     UpdateRealTimeClipPlane_(true, stage_plane);
-    UpdateTranslationRange_();
 
     // Update translation feedback.
     if (! is_rotation)
         UpdateTranslationFeedback_(Color(1, 0, 0, 1));  // XXXX Color
 }
 
-Plane ClipTool::GetObjectPlaneFromModel_() const {
-    const auto &primary = GetPrimary_();
-    Plane object_plane = primary.GetPlane();
-
-    // Compensate for the mesh offset in the normal direction. Note that the
-    // ClippedModel's scale and rotation have to be applied to the offset
-    // vector. (This also applies the translation, that should not affect the
-    // vector.)
-    const Vector3f offset_vec =
-        primary.GetModelMatrix() * -primary.GetMeshOffset();
-
-    object_plane.distance -= ion::math::Dot(offset_vec, object_plane.normal);
-
-    return object_plane;
-}
-
-Plane ClipTool::GetStagePlaneFromWidget_() {
+Plane ClipTool::GetStagePlane_() {
     // The PlaneWidget's plane is in the local coordinates of the ClipTool, but
     // still needs to take the ClipTool's translation into account.
     const Plane &object_plane = plane_widget_->GetPlane();
@@ -171,6 +160,7 @@ void ClipTool::UpdateTranslationRange_() {
     // centered on the origin, so that the center point is at a distance of
     // 0. Convert the mesh points into stage coordinates so they can be
     // compared with the plane.
+    // XXXX Fix this - need to use original Model's mesh.
     const auto &model    = GetPrimary_();
     const auto &mesh     = model.GetMesh();
     const auto &normal   = plane_widget_->GetPlane().normal;

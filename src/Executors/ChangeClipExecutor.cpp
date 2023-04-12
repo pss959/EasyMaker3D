@@ -10,10 +10,19 @@
 void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
 
+    const ChangeClipCommand &ccc = GetTypedCommand<ChangeClipCommand>(command);
+
     for (auto &pm: data.per_model) {
         ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
-        cm.SetPlane(operation == Command::Op::kDo ?
-                    pm.new_plane : pm.old_plane);
+        if (operation == Command::Op::kDo) {
+            // Convert Plane from stage to object coordinates.
+            const Matrix4f som =
+                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
+            cm.SetPlane(TransformPlane(ccc.GetPlane(), som));
+        }
+        else {
+            cm.SetPlane(pm.old_plane);
+        }
     }
 
     // Reselect if undo or if command is finished being done.
@@ -35,12 +44,6 @@ ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
         for (size_t i = 0; i < model_names.size(); ++i) {
             ExecData_::PerModel &pm = data->per_model[i];
             pm.path_to_model = FindPathToModel(model_names[i]);
-
-            // Convert plane from stage to object coordinates.
-            const Matrix4f som =
-                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
-            pm.new_plane = TransformPlane(ccc.GetPlane(), som);
-
             ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
             pm.old_plane = cm.GetPlane();
         }
