@@ -141,6 +141,9 @@ bool AreClose(const Anglef &a, const Anglef &b, const Anglef &tolerance);
 bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
                         const Anglef &tolerance_angle);
 
+/// Returns true if the given vector is valid for a normal or axis vector.
+bool IsValidVector(const Vector3f &v);
+
 /// Returns the index of the minimum element of a vector.
 template <int DIM>
 int GetMinElementIndex(const VectorBase<DIM, float> &v);

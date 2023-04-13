@@ -195,6 +195,10 @@ bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
     return ion::math::AngleBetween(dir0, dir1) <= tolerance_angle;
 }
 
+bool IsValidVector(const Vector3f &v) {
+    return ion::math::Length(v) >= .00001f;
+}
+
 template <int DIM>
 int GetMinElementIndex(const VectorBase<DIM, float> &v) {
     int   min_index = 0;

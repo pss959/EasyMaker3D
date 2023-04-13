@@ -1,7 +1,6 @@
 #include "Commands/ChangeClipCommand.h"
 
-#include <ion/math/vectorutils.h>
-
+#include "Math/Linear.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
 
@@ -13,7 +12,7 @@ void ChangeClipCommand::AddFields() {
 bool ChangeClipCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (ion::math::Length(GetPlane().normal) < .00001f) {
+    if (! IsValidVector(GetPlane().normal)) {
         details = "zero-length plane normal";
         return false;
     }
@@ -26,6 +25,6 @@ std::string ChangeClipCommand::GetDescription() const {
 }
 
 void ChangeClipCommand::SetPlane(const Plane &plane) {
-    ASSERT(ion::math::Length(plane.normal) >= .00001f);
+    ASSERT(IsValidVector(plane.normal));
     plane_ = plane;
 }

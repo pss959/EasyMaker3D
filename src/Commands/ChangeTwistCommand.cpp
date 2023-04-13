@@ -1,7 +1,6 @@
 #include "Commands/ChangeTwistCommand.h"
 
-#include <ion/math/vectorutils.h>
-
+#include "Math/Linear.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
 
@@ -16,8 +15,8 @@ void ChangeTwistCommand::AddFields() {
 bool ChangeTwistCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (ion::math::Length(axis_.GetValue()) < .00001f) {
-        details = "zero-length axis";
+    if (! IsValidVector(axis_)) {
+         details = "zero-length axis";
         return false;
     }
     return true;
