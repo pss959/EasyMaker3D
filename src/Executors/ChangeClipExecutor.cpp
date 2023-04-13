@@ -8,6 +8,8 @@
 #include "Models/ClippedModel.h"
 
 void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
+#if XXXX
+    // XXXX FIX THIS!
     ExecData_ &data = GetExecData_(command);
 
     const ChangeClipCommand &ccc = GetTypedCommand<ChangeClipCommand>(command);
@@ -15,10 +17,12 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
     for (auto &pm: data.per_model) {
         ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
         if (operation == Command::Op::kDo) {
-            // Convert Plane from stage to object coordinates.
+            // Convert the Plane from stage to object coordinates. However, the
+            // offset translation in the ClippedModel that is used to position
+            // the recentered mesh should NOT be part of this conversion.
             const Matrix4f som =
                 SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
-            cm.SetPlane(TransformPlane(ccc.GetPlane(), som));
+            cm.SetOffsetPlane(TransformPlane(ccc.GetPlane(), som));
         }
         else {
             cm.SetPlane(pm.old_plane);
@@ -28,6 +32,7 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
     // Reselect if undo or if command is finished being done.
     if (operation == Command::Op::kUndo || command.IsFinalized())
         GetContext().selection_manager->ReselectAll();
+#endif
 }
 
 ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(

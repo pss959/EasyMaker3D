@@ -32,7 +32,8 @@ class TwistedModel : public ConvertedModel {
   protected:
     TwistedModel() {}
     virtual void AddFields() override;
-    virtual TriMesh BuildMesh() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual TriMesh ConvertMesh(const TriMesh &mesh) override;
 
   private:
     /// \name Parsed fields.

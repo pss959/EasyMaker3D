@@ -35,17 +35,31 @@ void PlaneWidget::SetPlane(const Plane &plane) {
     rotator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
                                                 plane.normal));
 
+#if 1 // XXXX
     // Use the distance of the plane as the Slider1DWidget value without
     // notifying.
     translator_->GetValueChanged().EnableAll(false);
     translator_->SetValue(plane.distance);
     translator_->GetValueChanged().EnableAll(true);
+#endif
+    // XXXX Translate the Widget so the plane is at the center.
+    // XXXX SetTranslation(plane.distance * plane.normal);
 
     UpdateTranslator_();
     UpdateRotator_();
+#if 1 // XXXX
+    std::cerr << "XXXX PW SP P=" << plane
+              << " TV=" << translator_->GetValue() << "\n";
+#endif
 }
 
 Plane PlaneWidget::GetPlane() const {
+#if XXXX
+    std::cerr << "XXXX   PW GP PL="
+              << Plane(translator_->GetValue(),
+                       rotator_->GetRotation() * Vector3f::AxisY())
+              << "\n";
+#endif
     return Plane(translator_->GetValue(),
                  rotator_->GetRotation() * Vector3f::AxisY());
 }
@@ -73,6 +87,7 @@ void PlaneWidget::Activate_(bool is_activation) {
 
 void PlaneWidget::RotationChanged_() {
     UpdateTranslator_();
+    std::cerr << "XXXX PW RC V=" << translator_->GetValue() << "\n";
     plane_changed_.Notify(true);
 }
 

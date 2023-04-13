@@ -39,9 +39,6 @@ void ClipTool::CreationDone() {
             SG::FindTypedNodeUnderNode<PlaneWidget>(*this, "PlaneWidget");
 
         // Set up callbacks.
-        const auto &rot = plane_widget_->GetRotator();
-        const auto &tr  = plane_widget_->GetTranslator();
-
         plane_widget_->GetActivation().AddObserver(
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
         plane_widget_->GetPlaneChanged().AddObserver(
@@ -69,6 +66,8 @@ bool ClipTool::CanAttach(const Selection &sel) const {
 }
 
 void ClipTool::Attach() {
+#if XXXX
+    // XXXX FIX THIS!
     const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm);
 
@@ -80,14 +79,19 @@ void ClipTool::Attach() {
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);
 
+    // XXXX Translate the widget to the center of the original Model.
+    plane_widget_->SetTranslation(cm->GetOffsetVec());
+
     // Match the Plane in the ClippedModel, which is stored in object
     // coordinates of the original (unclipped) Model. Use the Plane that takes
     // the mesh offset into account.
-    plane_widget_->SetPlane(GetPrimary_().GetOffsetPlane());
+    // XXXX plane_widget_->SetPlane(GetPrimary_().GetOffsetPlane());
+    plane_widget_->SetPlane(GetPrimary_().GetPlane());
 
     // Update the range of the slider based on the size of the Model and the
     // normal direction.
     UpdateTranslationRange_();
+#endif
 }
 
 void ClipTool::Detach() {
@@ -100,6 +104,7 @@ void ClipTool::Activate_(bool is_activation) {
         start_plane_ = plane_widget_->GetPlane();
         feedback_ = context.feedback_manager->Activate<LinearFeedback>();
         context.target_manager->StartSnapping();
+        UpdateRealTimeClipPlane_(true, GetStagePlane_());
     }
     else {
         context.target_manager->EndSnapping();
@@ -118,9 +123,8 @@ void ClipTool::Activate_(bool is_activation) {
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
+        UpdateRealTimeClipPlane_(false, Plane());
     }
-
-    UpdateRealTimeClipPlane_(is_activation, GetStagePlane_());
 }
 
 void ClipTool::PlaneChanged_(bool is_rotation) {
@@ -133,6 +137,13 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
     }
 
     const Plane stage_plane = GetStagePlane_();
+    if (stage_plane.normal[0] < -.99f) {
+        const Plane &object_plane = plane_widget_->GetPlane();
+        std::cerr << "XXXX PW TR VAL = "
+                  << plane_widget_->GetTranslator()->GetValue() << "\n";
+        std::cerr << "XXXX Object Plane = " << object_plane << "\n";
+        std::cerr << "XXXX Stage  Plane = " << stage_plane << "\n";
+    }
     command_->SetPlane(stage_plane);
     GetContext().command_manager->SimulateDo(command_);
 
@@ -177,6 +188,9 @@ void ClipTool::UpdateTranslationRange_() {
     // by restricting the minimum and maximum values.
     plane_widget_->SetTranslationRange(Range1f(min_dist + TK::kMinClippedSize,
                                                max_dist - TK::kMinClippedSize));
+
+    // XXXX TEMPORARY!
+    plane_widget_->SetTranslationRange(Range1f(-20, 20));
 }
 
 void ClipTool::UpdateTranslationFeedback_(const Color &color) {

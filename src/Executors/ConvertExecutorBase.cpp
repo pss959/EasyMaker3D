@@ -52,19 +52,25 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
         ExecData_ *data = new ExecData_;
         data->per_model.resize(model_names.size());
         for (size_t i = 0; i < model_names.size(); ++i) {
-            ExecData_::PerModel &pm = data->per_model[i];
-            pm.path_to_model   = FindPathToModel(model_names[i]);
-            pm.original_model  = pm.path_to_model.GetModel();
-            pm.converted_model = CreateConvertedModel();
-            pm.converted_model->SetOriginalModel(pm.original_model);
+            // Create the derived ConvertedModel and set it up.
+            const auto operand_path = FindPathToModel(model_names[i]);
+            const auto &result = CreateConvertedModel();
+            result->SetOperandModel(operand_path.GetModel());
 
-            // Temporarily add the new Model's name so that all names will be
-            // unique.
-            context.name_manager->Add(pm.converted_model->GetName());
+            // Compensate for the centering offset.
+            result->SetTranslation(result->GetCenterOffset());
 
             // Set up the new Model.
-            AddModelInteraction(*pm.converted_model);
-            SetRandomModelColor(*pm.converted_model);
+            AddModelInteraction(*result);
+            SetRandomModelColor(*result);
+
+            // Temporarily add the new Model's name so that all subsequent
+            // names will be unique.
+            context.name_manager->Add(result->GetName());
+
+            ExecData_::PerModel &pm = data->per_model[i];
+            pm.path_to_model   = operand_path;
+            pm.converted_model = result;
         }
 
         // Now that all converted Models have been created and named, remove

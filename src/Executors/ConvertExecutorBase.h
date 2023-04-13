@@ -25,7 +25,6 @@ class ConvertExecutorBase : public Executor {
     struct ExecData_ : public Command::ExecData {
         struct PerModel {
             SelPath           path_to_model;    ///< Path to Model to convert.
-            ModelPtr          original_model;   ///< Model to convert.
             ConvertedModelPtr converted_model;  ///< Resulting ConvertedModel.
         };
         std::vector<PerModel> per_model;

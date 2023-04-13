@@ -280,6 +280,7 @@ lib_sources = list(chain(
         'ImportedModel',
         'MirroredModel',
         'Model',
+        'OperatorModel',
         'ParentModel',
         'RevSurfModel',
         'RootModel',

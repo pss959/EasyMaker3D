@@ -16,7 +16,6 @@ void ChangeCSGExecutor::Execute(Command &command, Command::Op operation) {
             const Vector3f old_offset = csg.GetCenterOffset();
             csg.SetOperation(ccc.GetNewOperation());
             csg.ChangeModelName(pm.new_name, false);
-            csg.GetMesh();  // Make sure offset is correct.
             pm.new_translation =
                 pm.old_translation - old_offset + csg.GetCenterOffset();
             csg.SetTranslation(pm.new_translation);

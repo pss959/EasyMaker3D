@@ -36,7 +36,7 @@ PlaneWidget "PlaneWidget" {
     SphereWidget "Rotator" {
       inactive_color: "#eecccc22",
       active_color:   "#ffeeee22",
-      shapes: [ Box { size: 2 .1 2 } ]
+      shapes: [ Box { size: 2 .2 2 } ]
     },
   ]
 },

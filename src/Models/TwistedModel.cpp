@@ -1,8 +1,6 @@
 #include "Models/TwistedModel.h"
 
-#include <ion/math/vectorutils.h>
-
-#include "Math/MeshUtils.h"
+#include "Math/Linear.h"
 #include "Util/Assert.h"
 
 void TwistedModel::AddFields() {
@@ -13,7 +11,18 @@ void TwistedModel::AddFields() {
     ConvertedModel::AddFields();
 }
 
+bool TwistedModel::IsValid(std::string &details) {
+    if (! ConvertedModel::IsValid(details))
+        return false;
+    if (! IsValidVector(axis_)) {
+        details = "zero-length twist axis";
+        return false;
+    }
+    return true;
+}
+
 void TwistedModel::SetTwist(const Twist &twist) {
+    ASSERT(IsValidVector(twist.axis));
     center_ = twist.center;
     axis_   = twist.axis;
     angle_  = twist.angle;
@@ -28,10 +37,7 @@ TwistedModel::Twist TwistedModel::GetTwist() const {
     return twist;
 }
 
-TriMesh TwistedModel::BuildMesh() {
-    // Twist the untransformed original mesh.
-    ASSERT(GetOriginalModel());
-    TriMesh mesh = GetOriginalModel()->GetMesh();
+TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
     // XXXX DO THE TWIST.
     return mesh;
 }

@@ -8,7 +8,35 @@
 #include "Models/MirroredModel.h"
 
 void ChangeMirrorExecutor::Execute(Command &command, Command::Op operation) {
+#if XXXX
+    // XXXX FIX THIS!
+
     ExecData_ &data = GetExecData_(command);
+
+    const ChangeMirrorCommand &cmc =
+        GetTypedCommand<ChangeMirrorCommand>(command);
+
+    for (auto &pm: data.per_model) {
+        MirroredModel &mm = GetTypedModel<MirroredModel>(pm.path_to_model);
+        if (operation == Command::Op::kDo) {
+            // Convert the Plane from stage to object coordinates. However, the
+            // offset translation in the MirroredModel that is used to position
+            // the recentered mesh should NOT be part of this conversion.
+            const Matrix4f som =
+                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
+            mm.SetOffsetPlane(TransformPlane(cmc.GetPlane(), som));
+        }
+        else {
+            mm.SetPlane(pm.old_plane);
+        }
+    }
+
+    // Reselect if undo or if command is finished being done.
+    if (operation == Command::Op::kUndo || command.IsFinalized())
+        GetContext().selection_manager->ReselectAll();
+
+
+
 
     for (auto &pm: data.per_model) {
         MirroredModel &mm = GetTypedModel<MirroredModel>(pm.path_to_model);
@@ -25,6 +53,7 @@ void ChangeMirrorExecutor::Execute(Command &command, Command::Op operation) {
     // Reselect if undo or if command is finished being done.
     if (operation == Command::Op::kUndo || command.IsFinalized())
         GetContext().selection_manager->ReselectAll();
+#endif
 }
 
 ChangeMirrorExecutor::ExecData_ & ChangeMirrorExecutor::GetExecData_(

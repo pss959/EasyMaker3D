@@ -68,8 +68,7 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
         const auto &result = CreateCombinedModel(command);
         result->SetOperandModels(operand_models);
 
-        // Make sure the mesh is up to date to get the correct offset.
-        result->GetMesh();
+        // Compensate for the centering offset.
         result->SetTranslation(result->GetCenterOffset());
 
         AddModelInteraction(*result);
