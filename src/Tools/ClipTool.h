@@ -72,7 +72,7 @@ class ClipTool : public Tool {
     /// Faceted shader.
     void UpdateRealTimeClipPlane_(bool enable, const Plane &stage_plane);
 
-    /// Returns the primary ClippedModel.
+    /// Returns the primary ClippedModel. // XXXX Nuke this.
     ClippedModel & GetPrimary_() const;
 
     friend class Parser::Registry;

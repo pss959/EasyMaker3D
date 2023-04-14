@@ -13,19 +13,18 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
         for (auto &pm: data.per_model) {
             ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
             // Save the current translation without offset compensation.
-            const Vector3f trans = cm.GetTranslation() - cm.GetCenterOffset();
+            const Vector3f trans =
+                cm.GetTranslation() - cm.GetLocalCenterOffset();
 
-            // Convert the plane from stage coordinates into object coordinates
-            // for the ClippedModel's operand Model.
-            SG::NodePath path = pm.path_to_model;
-            path.push_back(cm.GetOperandModel());
-            const Matrix4f som = SG::CoordConv(path).GetRootToObjectMatrix();
+            // Convert the plane from stage coordinates into object coordinates.
+            const Matrix4f som =
+                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
             const Plane object_plane = TransformPlane(ccc.GetPlane(), som);
 
             // Set the plane in the ClippedModel and compensate for any new
             // centering translation.
             cm.SetPlane(object_plane);
-            cm.SetTranslation(trans + cm.GetCenterOffset());
+            cm.SetTranslation(trans + cm.GetLocalCenterOffset());
         }
     }
     else {

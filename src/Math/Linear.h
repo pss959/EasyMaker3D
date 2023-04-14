@@ -38,6 +38,9 @@ Matrix4f GetTransformMatrix(const Vector3f &scale, const Rotationf &rot,
 /// direction vector, so that parametric distances are preserved.
 Ray TransformRay(const Ray &ray, const Matrix4f &m);
 
+/// Translates a Plane by a vector.
+Plane TranslatePlane(const Plane &plane, const Vector3f &v);
+
 /// Transforms a Plane by a matrix.
 Plane TransformPlane(const Plane &plane, const Matrix4f &m);
 

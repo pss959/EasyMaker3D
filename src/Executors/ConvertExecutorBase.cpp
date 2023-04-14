@@ -52,14 +52,13 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
         ExecData_ *data = new ExecData_;
         data->per_model.resize(model_names.size());
         for (size_t i = 0; i < model_names.size(); ++i) {
-            // Create the derived ConvertedModel and set it up.
+            // Create the derived ConvertedModel.
             const auto operand_path = FindPathToModel(model_names[i]);
             const auto &result = CreateConvertedModel();
-            result->SetOperandModel(operand_path.GetModel());
 
-            // Compensate for the centering offset.
-            result->SetTranslation(result->GetTranslation() +
-                                   result->GetCenterOffset());
+            // Set the operand Model. Note that this also compensates for any
+            // centering offset.
+            result->SetOperandModel(operand_path.GetModel());
 
             // Set up the new Model.
             AddModelInteraction(*result);

@@ -13,11 +13,11 @@ void ChangeCSGExecutor::Execute(Command &command, Command::Op operation) {
     for (auto &pm: data.per_model) {
         CSGModel &csg = GetTypedModel<CSGModel>(pm.path_to_model);
         if (operation == Command::Op::kDo) {
-            const Vector3f old_offset = csg.GetCenterOffset();
+            const Vector3f old_offset = csg.GetLocalCenterOffset();
             csg.SetOperation(ccc.GetNewOperation());
             csg.ChangeModelName(pm.new_name, false);
             csg.SetTranslation(pm.old_translation -
-                               old_offset + csg.GetCenterOffset());
+                               old_offset + csg.GetLocalCenterOffset());
         }
         else {  // Undo.
             csg.SetOperation(pm.old_operation);

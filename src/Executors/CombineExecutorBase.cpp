@@ -69,7 +69,7 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
         result->SetOperandModels(operand_models);
 
         // Compensate for the centering offset.
-        result->SetTranslation(result->GetCenterOffset());
+        result->SetTranslation(result->GetLocalCenterOffset());
 
         AddModelInteraction(*result);
         SetRandomModelColor(*result);

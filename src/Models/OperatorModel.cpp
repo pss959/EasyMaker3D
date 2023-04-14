@@ -1,13 +1,17 @@
 #include "Models/OperatorModel.h"
 
+#include <ion/math/transformutils.h>
+
 #include "Math/MeshUtils.h"
 
-const Vector3f & OperatorModel::GetCenterOffset(bool update_first) const {
-    // Make sure the mesh and offset are up to date if requested.
-    if (update_first)
-        GetMesh();
-
+const Vector3f & OperatorModel::GetObjectCenterOffset() const {
+    // Make sure the mesh and offset are up to date.
+    GetMesh();
     return center_offset_;
+}
+
+Vector3f OperatorModel::GetLocalCenterOffset() const {
+    return GetModelMatrix() * GetObjectCenterOffset();
 }
 
 bool OperatorModel::ProcessChange(SG::Change change, const Object &obj) {

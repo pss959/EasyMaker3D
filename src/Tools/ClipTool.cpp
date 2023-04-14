@@ -70,28 +70,19 @@ void ClipTool::Attach() {
     ASSERT(cm);
     ASSERT(cm->GetOperandModel());
 
-    // The PlaneWidget should be centered on the center of the ClippedModel's
-    // operand Model and the PlaneWidget's plane should match the
-    // ClippedModel's Plane (which is defined in object coordinates of the
-    // operand Model).  Don't use MatchModelAndGetSize() because of the
-    // nonstandard coordinate system differences.
-    const Model &operand = *cm->GetOperandModel();
-    SetRotation(IsAxisAligned() ? Rotationf::Identity() : cm->GetRotation());
-    SetTranslation(operand.GetTranslation());
-
-    // Include the operand Model's transform when transforming bounds.
-    const Matrix4f osm =
-        cm->GetModelMatrix() * GetStageCoordConv().GetObjectToRootMatrix();
-    const Vector3f model_size = IsAxisAligned() ?
-        TransformBounds(operand.GetBounds(), osm).GetSize() :
-        ion::math::GetScaleVector(osm) * operand.GetBounds().GetSize();
+    // Rotate and translate to the ClippedModel.
+    const auto model_size = MatchModelAndGetSize(true);
 
     // Update the widget size based on the model size.
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);
 
-    // Match the Plane in the ClippedModel, which is stored in object
-    // coordinates of the operand (unclipped) Model.
+    // Translate the PlaneWidget so that it is centered on the unclipped mesh.
+    plane_widget_->SetTranslation(-cm->GetLocalCenterOffset());
+
+    // Match the Plane in the ClippedModel. Note that this Plane does not
+    // include the centering offset, so it is correct for the translated
+    // PlaneWidget.
     plane_widget_->SetPlane(cm->GetPlane());
 
     // Update the range of the slider based on the size of the Model and the
@@ -153,18 +144,14 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
 }
 
 Plane ClipTool::GetStagePlane_() {
-    // The PlaneWidget's plane is in the local coordinates of the ClipTool, but
-    // still needs to take the ClipTool's translation into account.
-    const Plane &object_plane = plane_widget_->GetPlane();
-    Plane stage_plane = TransformPlane(
-        object_plane, GetStageCoordConv().GetLocalToRootMatrix());
-    stage_plane.distance += ion::math::Dot(GetTranslation(),
-                                           object_plane.normal);
-#if XXXX
-    std::cerr << "XXXX OP=" << object_plane << "\n";
-    std::cerr << "XXXX SP=" << stage_plane << "\n";
-#endif
-    return stage_plane;
+    // The PlaneWidget's plane is in the object coordinates of the ClipTool
+    // except for the centering offset. Convert to stage coordinates and then
+    // undo the centering translation.
+    const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
+    return TranslatePlane(
+        TransformPlane(plane_widget_->GetPlane(),
+                       GetStageCoordConv().GetObjectToRootMatrix()),
+        -cm->GetLocalCenterOffset());
 }
 
 void ClipTool::UpdateTranslationRange_() {

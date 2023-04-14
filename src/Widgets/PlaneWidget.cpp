@@ -66,7 +66,7 @@ Plane PlaneWidget::GetPlane() const {
 
 void PlaneWidget::SetSize(float radius) {
     const float kArrowScale = 1.6f;
-    const float kPlaneScale = 2.5f;
+    const float kPlaneScale = 1.5f;
 
     rotator_->SetScale(Vector3f(kPlaneScale * radius, 1, kPlaneScale * radius));
 

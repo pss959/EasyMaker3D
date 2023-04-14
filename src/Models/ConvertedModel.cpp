@@ -92,15 +92,16 @@ void ConvertedModel::SyncTransformsFromOperand(const Model &operand) {
     CopyTransformsFrom(operand);
 
     // Compensate for the mesh centering offset.
-    SetTranslation(GetTranslation() - GetModelMatrix() * GetCenterOffset());
+    SetTranslation(GetTranslation() + GetLocalCenterOffset());
+    std::cerr << "XXXX LOFF=" << GetLocalCenterOffset()
+              << " TR=" << GetTranslation() << "\n";
 }
 
 void ConvertedModel::SyncTransformsToOperand(Model &operand) const {
     operand.CopyTransformsFrom(*this);
 
     // Compensate for the mesh centering offset.
-    operand.SetTranslation(operand.GetTranslation() +
-                           GetModelMatrix() * GetCenterOffset());
+    operand.SetTranslation(operand.GetTranslation() - GetLocalCenterOffset());
 }
 
 TriMesh ConvertedModel::BuildMeshFromOperands() {

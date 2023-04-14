@@ -38,6 +38,11 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m) {
     return Ray(m * ray.origin, m * ray.direction);
 }
 
+Plane TranslatePlane(const Plane &plane, const Vector3f &v) {
+    return Plane(plane.distance + ion::math::Dot(v, plane.normal),
+                 plane.normal);
+}
+
 Plane TransformPlane(const Plane &plane, const Matrix4f &m) {
     using ion::math::Inverse;
     using ion::math::Normalized;
