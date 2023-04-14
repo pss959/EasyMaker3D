@@ -66,32 +66,37 @@ bool ClipTool::CanAttach(const Selection &sel) const {
 }
 
 void ClipTool::Attach() {
-#if XXXX
-    // XXXX FIX THIS!
     const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm);
+    ASSERT(cm->GetOperandModel());
 
-    // Match the original (unclipped) Model's size.
-    const auto model_size = MatchModelAndGetSize(true, cm->GetOriginalModel());
+    // The PlaneWidget should be centered on the center of the ClippedModel's
+    // operand Model and the PlaneWidget's plane should match the
+    // ClippedModel's Plane (which is defined in object coordinates of the
+    // operand Model).  Don't use MatchModelAndGetSize() because of the
+    // nonstandard coordinate system differences.
+    const Model &operand = *cm->GetOperandModel();
+    SetRotation(IsAxisAligned() ? Rotationf::Identity() : cm->GetRotation());
+    SetTranslation(operand.GetTranslation());
 
-    // Update the widget size based on the model size. Note: no need to use
-    // is_axis_aligned here, since that affects only snapping.
+    // Include the operand Model's transform when transforming bounds.
+    const Matrix4f osm =
+        cm->GetModelMatrix() * GetStageCoordConv().GetObjectToRootMatrix();
+    const Vector3f model_size = IsAxisAligned() ?
+        TransformBounds(operand.GetBounds(), osm).GetSize() :
+        ion::math::GetScaleVector(osm) * operand.GetBounds().GetSize();
+
+    // Update the widget size based on the model size.
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);
 
-    // XXXX Translate the widget to the center of the original Model.
-    plane_widget_->SetTranslation(cm->GetOffsetVec());
-
     // Match the Plane in the ClippedModel, which is stored in object
-    // coordinates of the original (unclipped) Model. Use the Plane that takes
-    // the mesh offset into account.
-    // XXXX plane_widget_->SetPlane(GetPrimary_().GetOffsetPlane());
-    plane_widget_->SetPlane(GetPrimary_().GetPlane());
+    // coordinates of the operand (unclipped) Model.
+    plane_widget_->SetPlane(cm->GetPlane());
 
     // Update the range of the slider based on the size of the Model and the
     // normal direction.
     UpdateTranslationRange_();
-#endif
 }
 
 void ClipTool::Detach() {
@@ -137,13 +142,6 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
     }
 
     const Plane stage_plane = GetStagePlane_();
-    if (stage_plane.normal[0] < -.99f) {
-        const Plane &object_plane = plane_widget_->GetPlane();
-        std::cerr << "XXXX PW TR VAL = "
-                  << plane_widget_->GetTranslator()->GetValue() << "\n";
-        std::cerr << "XXXX Object Plane = " << object_plane << "\n";
-        std::cerr << "XXXX Stage  Plane = " << stage_plane << "\n";
-    }
     command_->SetPlane(stage_plane);
     GetContext().command_manager->SimulateDo(command_);
 
@@ -162,6 +160,10 @@ Plane ClipTool::GetStagePlane_() {
         object_plane, GetStageCoordConv().GetLocalToRootMatrix());
     stage_plane.distance += ion::math::Dot(GetTranslation(),
                                            object_plane.normal);
+#if XXXX
+    std::cerr << "XXXX OP=" << object_plane << "\n";
+    std::cerr << "XXXX SP=" << stage_plane << "\n";
+#endif
     return stage_plane;
 }
 
@@ -171,7 +173,7 @@ void ClipTool::UpdateTranslationRange_() {
     // centered on the origin, so that the center point is at a distance of
     // 0. Convert the mesh points into stage coordinates so they can be
     // compared with the plane.
-    // XXXX Fix this - need to use original Model's mesh.
+    // XXXX Fix this - need to use operand Model's mesh.
     const auto &model    = GetPrimary_();
     const auto &mesh     = model.GetMesh();
     const auto &normal   = plane_widget_->GetPlane().normal;

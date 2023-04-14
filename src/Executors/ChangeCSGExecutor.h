@@ -28,7 +28,6 @@ class ChangeCSGExecutor : public Executor {
             std::string  old_name;
             std::string  new_name;
             Vector3f     old_translation;
-            Vector3f     new_translation;
         };
         std::vector<PerModel> per_model;
     };

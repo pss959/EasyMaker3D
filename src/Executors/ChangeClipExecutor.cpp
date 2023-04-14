@@ -1,38 +1,44 @@
 #include "Executors/ChangeClipExecutor.h"
 
-#include <ion/math/transformutils.h>
-
 #include "Commands/ChangeClipCommand.h"
 #include "Managers/SelectionManager.h"
 #include "Math/Linear.h"
 #include "Models/ClippedModel.h"
 
 void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
-#if XXXX
-    // XXXX FIX THIS!
     ExecData_ &data = GetExecData_(command);
 
-    const ChangeClipCommand &ccc = GetTypedCommand<ChangeClipCommand>(command);
+    if (operation == Command::Op::kDo) {
+        ChangeClipCommand &ccc = GetTypedCommand<ChangeClipCommand>(command);
+        for (auto &pm: data.per_model) {
+            ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
+            // Save the current translation without offset compensation.
+            const Vector3f trans = cm.GetTranslation() - cm.GetCenterOffset();
 
-    for (auto &pm: data.per_model) {
-        ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
-        if (operation == Command::Op::kDo) {
-            // Convert the Plane from stage to object coordinates. However, the
-            // offset translation in the ClippedModel that is used to position
-            // the recentered mesh should NOT be part of this conversion.
-            const Matrix4f som =
-                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
-            cm.SetOffsetPlane(TransformPlane(ccc.GetPlane(), som));
+            // Convert the plane from stage coordinates into object coordinates
+            // for the ClippedModel's operand Model.
+            SG::NodePath path = pm.path_to_model;
+            path.push_back(cm.GetOperandModel());
+            const Matrix4f som = SG::CoordConv(path).GetRootToObjectMatrix();
+            const Plane object_plane = TransformPlane(ccc.GetPlane(), som);
+
+            // Set the plane in the ClippedModel and compensate for any new
+            // centering translation.
+            cm.SetPlane(object_plane);
+            cm.SetTranslation(trans + cm.GetCenterOffset());
         }
-        else {
-            cm.SetPlane(pm.old_plane);
+    }
+    else {
+        for (auto &pm: data.per_model) {
+            ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
+            cm.SetPlane(pm.old_object_plane);
+            cm.SetTranslation(pm.old_translation);
         }
     }
 
     // Reselect if undo or if command is finished being done.
     if (operation == Command::Op::kUndo || command.IsFinalized())
         GetContext().selection_manager->ReselectAll();
-#endif
 }
 
 ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
@@ -46,11 +52,15 @@ ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
 
         ExecData_ *data = new ExecData_;
         data->per_model.resize(model_names.size());
+
         for (size_t i = 0; i < model_names.size(); ++i) {
-            ExecData_::PerModel &pm = data->per_model[i];
-            pm.path_to_model = FindPathToModel(model_names[i]);
-            ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
-            pm.old_plane = cm.GetPlane();
+            ExecData_::PerModel &pm   = data->per_model[i];
+            const SelPath        path = FindPathToModel(model_names[i]);
+            const ClippedModel  &cm   = GetTypedModel<ClippedModel>(path);
+            pm.path_to_model    = path;
+            pm.old_object_plane = cm.GetPlane();
+
+            pm.old_translation  = cm.GetTranslation();
         }
         command.SetExecData(data);
     }

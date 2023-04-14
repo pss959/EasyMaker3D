@@ -184,16 +184,14 @@ class Tool : public Grippable {
     /// given Node, which must be found somewhere under the Tool.
     Point3f ToWorld(const SG::NodePtr &local_node, const Point3f &p) const;
 
-    /// Translates the Tool to place its center at the center of the given
-    /// Model's bounds in stage coordinates. If \p model is null (the default),
-    /// this uses the attached Model. If allow_axis_aligned is true and the
-    /// is_axis_aligned flag in the Context is set, the Tool's rotation is set
-    /// to identity to align with the stage coordinate axes. Otherwise, the
+    /// Translates the Tool to place its center at the center of the attached
+    /// Model's bounds in stage coordinates. If allow_axis_aligned is true and
+    /// the is_axis_aligned flag in the Context is set, the Tool's rotation is
+    /// set to identity to align with the stage coordinate axes. Otherwise, the
     /// Tool is rotated to match the rotation of the Model in stage
     /// coordinates. Returns the size of the Model's bounds (oriented properly)
     /// in stage coordinates.
-    Vector3f MatchModelAndGetSize(bool allow_axis_aligned,
-                                  ModelPtr model = ModelPtr());
+    Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
 
     /// Returns true if the axis-aligned flag is on.
     bool IsAxisAligned() const;

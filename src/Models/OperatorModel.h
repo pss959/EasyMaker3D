@@ -17,12 +17,12 @@ DECL_SHARED_PTR(OperatorModel);
 class OperatorModel : public ParentModel {
   public:
     /// Returns the offset vector used to center the OperatorModel's mesh. This
-    /// vector translates the mesh center to its original position.
-    const Vector3f & GetCenterOffset() const {
-        // Make sure the mesh and offset are up to date.
-        GetMesh();
-        return center_offset_;
-    }
+    /// vector translates the mesh center to its original position. If the \p
+    /// update_first flag is true, this first makes sure the center offset is
+    /// up to date. Otherwise, it just returns its current value. (Passing
+    /// false can be useful to get the offset during the process of mesh
+    /// construction.)
+    const Vector3f & GetCenterOffset(bool update_first = true) const;
 
   protected:
     /// Redefines this to also mark the mesh as stale when a child has been

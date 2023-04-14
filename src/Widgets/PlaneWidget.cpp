@@ -47,14 +47,14 @@ void PlaneWidget::SetPlane(const Plane &plane) {
 
     UpdateTranslator_();
     UpdateRotator_();
-#if 1 // XXXX
+#if 0 // XXXX
     std::cerr << "XXXX PW SP P=" << plane
               << " TV=" << translator_->GetValue() << "\n";
 #endif
 }
 
 Plane PlaneWidget::GetPlane() const {
-#if XXXX
+#if 0 // XXXX
     std::cerr << "XXXX   PW GP PL="
               << Plane(translator_->GetValue(),
                        rotator_->GetRotation() * Vector3f::AxisY())
@@ -66,7 +66,7 @@ Plane PlaneWidget::GetPlane() const {
 
 void PlaneWidget::SetSize(float radius) {
     const float kArrowScale = 1.6f;
-    const float kPlaneScale = 1.5f;
+    const float kPlaneScale = 2.5f;
 
     rotator_->SetScale(Vector3f(kPlaneScale * radius, 1, kPlaneScale * radius));
 
@@ -87,7 +87,9 @@ void PlaneWidget::Activate_(bool is_activation) {
 
 void PlaneWidget::RotationChanged_() {
     UpdateTranslator_();
+#if 0 // XXXX
     std::cerr << "XXXX PW RC V=" << translator_->GetValue() << "\n";
+#endif
     plane_changed_.Notify(true);
 }
 

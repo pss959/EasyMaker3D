@@ -2,6 +2,14 @@
 
 #include "Math/MeshUtils.h"
 
+const Vector3f & OperatorModel::GetCenterOffset(bool update_first) const {
+    // Make sure the mesh and offset are up to date if requested.
+    if (update_first)
+        GetMesh();
+
+    return center_offset_;
+}
+
 bool OperatorModel::ProcessChange(SG::Change change, const Object &obj) {
     if (! ParentModel::ProcessChange(change, obj))
         return false;

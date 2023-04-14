@@ -25,5 +25,8 @@ void ClippedModel::SetPlane(const Plane &plane) {
 }
 
 TriMesh ClippedModel::ConvertMesh(const TriMesh &mesh) {
-    return ClipMesh(mesh, plane_);
+    // The supplied mesh is in object coordinates of the ClippedModel, so
+    // convert the plane into the same object coordinates.
+    return ClipMesh(mesh, TransformPlane(plane_,
+                                         GetOperandModel()->GetModelMatrix()));
 }

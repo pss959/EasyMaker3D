@@ -101,16 +101,16 @@ Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     return SG::CoordConv(full_path).ObjectToRoot(p);
 }
 
-Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned, ModelPtr model) {
+Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     ASSERT(GetModelAttachedTo());
-    const Model &model_to_match = model ? *model : *GetModelAttachedTo();
+    const Model &model = *GetModelAttachedTo();
 
     // Rotate to match the Model if not aligning.
     const bool align = allow_axis_aligned && IsAxisAligned();
-    SetRotation(align ? Rotationf::Identity() : model_to_match.GetRotation());
+    SetRotation(align ? Rotationf::Identity() : model.GetRotation());
 
     // Move the Tool to the center of the Model in stage coordinates.
-    const Bounds &obj_bounds = model_to_match.GetBounds();
+    const Bounds &obj_bounds = model.GetBounds();
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
     SetTranslation(osm * obj_bounds.GetCenter());
 

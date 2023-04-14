@@ -16,9 +16,8 @@ void ChangeCSGExecutor::Execute(Command &command, Command::Op operation) {
             const Vector3f old_offset = csg.GetCenterOffset();
             csg.SetOperation(ccc.GetNewOperation());
             csg.ChangeModelName(pm.new_name, false);
-            pm.new_translation =
-                pm.old_translation - old_offset + csg.GetCenterOffset();
-            csg.SetTranslation(pm.new_translation);
+            csg.SetTranslation(pm.old_translation -
+                               old_offset + csg.GetCenterOffset());
         }
         else {  // Undo.
             csg.SetOperation(pm.old_operation);
@@ -61,7 +60,6 @@ ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
             pm.old_name        = csg.GetName();
             pm.new_name        = result_names[i];
             pm.old_translation = csg.GetTranslation();
-            pm.new_translation = pm.old_translation;  // Changed later.
         }
         command.SetExecData(data);
     }

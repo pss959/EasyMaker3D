@@ -45,6 +45,7 @@ class ShortcutMap_ {
         kPrintBounds,
         kPrintBoundsOnPath,
         kPrintCommands,
+        kPrintEndNode,
         kPrintGraph,
         kPrintGraphOnPath,
         kPrintHelp,
@@ -125,6 +126,8 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print the position of the debug sphere" },
         { "Shift-Alt-d", Action::kToggleSphere,
           "Toggle the visibility of the debug sphere" },
+        { "Alt-e",       Action::kPrintEndNode,
+          "Print the node graph rooted by the end of the current path" },
         { "Alt-g",       Action::kPrintGraph,
           "Print the full node graph for the scene" },
         { "Shift-Alt-g", Action::kPrintGraphOnPath,
@@ -294,6 +297,10 @@ static bool HandleShortcut_(const std::string &str) {
       case SAction::kPrintCommands:
         ASSERT(command_list_);
         Debug::PrintCommands(*command_list_);
+        break;
+      case SAction::kPrintEndNode:
+        if (! limit_path_.empty())
+            Debug::PrintGraph(*limit_path_.back());
         break;
       case SAction::kPrintGraph:
         Debug::PrintGraph(root);
