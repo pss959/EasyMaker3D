@@ -30,6 +30,7 @@ class ClippedModel : public ConvertedModel {
     ClippedModel() {}
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
+
     virtual TriMesh ConvertMesh(const TriMesh &mesh) override;
 
   private:

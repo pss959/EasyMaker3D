@@ -1,5 +1,7 @@
 #include "Models/ConvertedModel.h"
 
+#include <ion/math/transformutils.h>
+
 void ConvertedModel::AddFields() {
     AddModelField(operand_model_.Init("operand_model"));
 
@@ -36,6 +38,7 @@ void ConvertedModel::SetOperandModel(const ModelPtr &model) {
         ClearChildModels();
     OperatorModel::AddChildModel(model);
     operand_model_ = model;
+    SyncTransformsFromOperand(*model);
 }
 
 void ConvertedModel::AddChildModel(const ModelPtr &child) {
@@ -58,8 +61,49 @@ void ConvertedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) 
     ASSERTM(false, "ConvertedModel::ReplaceChildModel() should not be called");
 }
 
+void ConvertedModel::SetStatus(Status status) {
+    const Status prev_status = GetStatus();
+    const bool   was_shown   = IsShown();
+    ParentModel::SetStatus(status);
+
+    // If the child was shown and now the ConvertedModel is, update the
+    // transforms in the ConvertedModel from the operand.
+    if (prev_status == Status::kDescendantShown && IsShown()) {
+        SyncTransformsFromOperand(*GetOperandModel());
+    }
+
+    // If the ConvertedModel was shown and now the child may be, update the
+    // transforms in the operand from the ConvertedModel.
+    else if (was_shown && status == Status::kDescendantShown) {
+        SyncTransformsToOperand(*GetOperandModel());
+    }
+}
+
+void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
+                                      bool is_deep) {
+    Model::CopyContentsFrom(from, is_deep);
+
+    // Clone the operand Model.
+    const ConvertedModel &from_cm = static_cast<const ConvertedModel &>(from);
+    SetOperandModel(from_cm.GetOperandModel()->CreateClone());
+}
+
+void ConvertedModel::SyncTransformsFromOperand(const Model &operand) {
+    CopyTransformsFrom(operand);
+
+    // Compensate for the mesh centering offset.
+    SetTranslation(GetTranslation() - GetModelMatrix() * GetCenterOffset());
+}
+
+void ConvertedModel::SyncTransformsToOperand(Model &operand) const {
+    operand.CopyTransformsFrom(*this);
+
+    // Compensate for the mesh centering offset.
+    operand.SetTranslation(operand.GetTranslation() +
+                           GetModelMatrix() * GetCenterOffset());
+}
+
 TriMesh ConvertedModel::BuildMeshFromOperands() {
-    const auto meshes = GetChildMeshes();
-    ASSERT(meshes.size() == 1U);
-    return ConvertMesh(meshes[0]);
+    ASSERT(GetOperandModel());
+    return ConvertMesh(GetOperandModel()->GetMesh());
 }

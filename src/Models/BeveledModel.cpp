@@ -1,6 +1,7 @@
 #include "Models/BeveledModel.h"
 
 #include "Math/Beveler.h"
+#include "Math/MeshUtils.h"
 #include "Math/Profile.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -57,6 +58,46 @@ Profile BeveledModel::CreateProfile(const Profile::PointVec &points) {
     return Profile(Point2f(0, 1), Point2f(1, 0), points, 2);
 }
 
+void BeveledModel::SyncTransformsFromOperand(const Model &operand) {
+    // Leave the scale alone.
+    SetRotation(operand.GetRotation());
+    SetTranslation(operand.GetTranslation());
+}
+
+void BeveledModel::SyncTransformsToOperand(Model &operand) const {
+    // Leave the scale alone.
+    operand.SetRotation(GetRotation());
+    operand.SetTranslation(GetTranslation());
+}
+
+void BeveledModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    ConvertedModel::CopyContentsFrom(from, is_deep);
+
+    // Copy the operand scale. The Bevel is set in CreationDone().
+    const BeveledModel &from_bev = static_cast<const BeveledModel &>(from);
+    operand_scale_ = from_bev.operand_scale_;
+}
+
+bool BeveledModel::ProcessChange(SG::Change change, const Object &obj) {
+    if (! ConvertedModel::ProcessChange(change, obj))
+        return false;
+
+    // If the scale in the operand Model changed, need to rebuild the mesh. Do
+    // NOT do anything if there is no operand Model, which can happen during
+    // CopyContentsFrom().
+    const auto &operand = GetOperandModel();
+    if (operand && change == SG::Change::kTransform) {
+        const Vector3f new_scale = operand->GetScale();
+        if (new_scale != operand_scale_) {
+            operand_scale_ = new_scale;
+            MarkMeshAsStale();
+        }
+    }
+    return true;
+}
+
 TriMesh BeveledModel::ConvertMesh(const TriMesh &mesh) {
-    return Beveler::ApplyBevel(mesh, bevel_);
+    // Apply the bevel to the scaled operand mesh.
+    const auto scale = GetOperandModel()->GetScale();
+    return Beveler::ApplyBevel(ScaleMesh(mesh, scale),  bevel_);
 }

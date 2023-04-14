@@ -58,7 +58,8 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             result->SetOperandModel(operand_path.GetModel());
 
             // Compensate for the centering offset.
-            result->SetTranslation(result->GetCenterOffset());
+            result->SetTranslation(result->GetTranslation() +
+                                   result->GetCenterOffset());
 
             // Set up the new Model.
             AddModelInteraction(*result);
