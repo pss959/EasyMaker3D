@@ -155,14 +155,14 @@ struct Bounds : public Range3f {
 ///
 /// \ingroup Math
 struct Plane {
-    float    distance;  ///< Signed distance from origin.
     Vector3f normal;    ///< Plane Normal, pointing to positive half-space.
+    float    distance;  ///< Signed distance from origin.
 
     /// The default constructor creates the XY plane.
-    Plane() : distance(0.f), normal(Vector3f::AxisZ()) {}
+    Plane();
 
     /// Constructs from signed distance and normal.
-    Plane(float dist, const Vector3f &norm) : distance(dist), normal(norm) {}
+    Plane(float dist, const Vector3f &norm);
 
     /// Constructs from point and normal.
     Plane(const Point3f &point, const Vector3f &norm);

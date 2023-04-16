@@ -206,14 +206,22 @@ std::string Bounds::ToString(bool use_min_max) const {
 // Plane functions.
 // ----------------------------------------------------------------------------
 
-Plane::Plane(const Point3f &point, const Vector3f &norm) {
-    normal   = ion::math::Normalized(norm);
-    distance = SignedDistance(point, normal);
+Plane::Plane() : normal(Vector3f::AxisZ()), distance(0.f) {
 }
 
-Plane::Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2) {
-    normal   = ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));
-    distance = SignedDistance(p0, normal);
+Plane::Plane(float dist, const Vector3f &norm) :
+    normal(ion::math::Normalized(norm)),
+    distance(dist) {
+}
+
+Plane::Plane(const Point3f &point, const Vector3f &norm) :
+    normal(ion::math::Normalized(norm)),
+    distance(SignedDistance(point, normal)) {
+}
+
+Plane::Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2) :
+    normal(ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0))),
+    distance(SignedDistance(p0, normal)) {
 }
 
 Point3f Plane::ProjectPoint(const Point3f &p) const {
