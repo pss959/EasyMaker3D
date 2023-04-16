@@ -46,6 +46,9 @@ class ClipTool : public Tool {
     /// plane.
     PlaneWidgetPtr       plane_widget_;
 
+    /// Current clipping plane in object coordinates.
+    Plane                object_plane_;
+
     /// Current clipping plane in stage coordinates.
     Plane                stage_plane_;
 
@@ -70,12 +73,15 @@ class ClipTool : public Tool {
     /// PointTarget or origin, this returns true.
     bool SnapTranslation_();
 
-    /// Returns the current clipping plane (from the PlaneWidget) in stage
-    /// coordinates.
-    Plane GetStagePlane_() const;
-
-    /// Converts stage_plane_ back into object coordinates.
+    /// Returns the current clipping plane in object coordinates based on the
+    /// PlaneWidget's plane and the ClipTool's rotation.
     Plane GetObjectPlane_() const;
+
+    /// Converts the given Plane from object to stage coordinates.
+    Plane ObjectToStagePlane_(const Plane &object_plane) const;
+
+    /// Converts the given Plane from stage to object coordinates.
+    Plane StageToObjectPlane_(const Plane &stage_plane) const;
 
     /// Sets the min/max range for the translation slider based on the Model's
     /// mesh extents along the current plane's normal.

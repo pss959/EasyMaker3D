@@ -68,17 +68,17 @@ bool ClipTool::CanAttach(const Selection &sel) const {
 void ClipTool::Attach() {
     const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm);
-    ASSERT(cm->GetOperandModel());
 
-    // Rotate and translate to the ClippedModel.
-    const auto model_size = MatchModelAndGetSize(true);
+    // Rotate and translate to the ClippedModel. Always align with the
+    // ClippedModel even if is_axis_aligned is true.
+    const auto model_size = MatchModelAndGetSize(false);
+
+    // Translate the ClipTool so that it is centered on the unclipped mesh.
+    SetTranslation(GetTranslation() - cm->GetLocalCenterOffset());
 
     // Update the widget size based on the model size.
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);
-
-    // Translate the PlaneWidget so that it is centered on the unclipped mesh.
-    plane_widget_->SetTranslation(-cm->GetLocalCenterOffset());
 
     // Match the Plane in the ClippedModel. Note that this Plane does not
     // include the centering offset, so it is correct for the translated
@@ -96,11 +96,15 @@ void ClipTool::Detach() {
 
 void ClipTool::Activate_(bool is_activation) {
     const auto &context = GetContext();
+
+    // Update the clipping plane in both coordinate systems.
+    object_plane_ = GetObjectPlane_();
+    stage_plane_  = ObjectToStagePlane_(object_plane_);
+
     if (is_activation) {
-        start_stage_plane_ = plane_widget_->GetPlane();
         feedback_ = context.feedback_manager->Activate<LinearFeedback>();
         context.target_manager->StartSnapping();
-        stage_plane_ = GetStagePlane_();
+        start_stage_plane_ = stage_plane_;
         UpdateRealTimeClipPlane_(true);
     }
     else {
@@ -116,6 +120,7 @@ void ClipTool::Activate_(bool is_activation) {
         // If there was any change due to a drag, execute the command to change
         // the ClippedModel(s).
         if (command_) {
+            // XXXX Check for change to previous plane!
             if (! command_->GetPlane().IsDefault())
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
@@ -127,8 +132,9 @@ void ClipTool::Activate_(bool is_activation) {
 void ClipTool::PlaneChanged_(bool is_rotation) {
     const auto &context = GetContext();
 
-    // Update the current stage plane.
-    stage_plane_ = GetStagePlane_();
+    // Update the clipping plane in both coordinate systems.
+    object_plane_ = GetObjectPlane_();
+    stage_plane_  = ObjectToStagePlane_(object_plane_);
 
     // If this is the first change, create the ChangeClipCommand and start the
     // drag.
@@ -191,44 +197,41 @@ bool ClipTool::SnapRotation_(int &snapped_dim) {
             for (int dim = 0; dim < 3; ++dim) {
                 const Vector3f axis = GetAxis(dim);
                 if (tm.ShouldSnapDirections(dir, axis, rot)) {
-                    stage_plane_ = Plane(0, axis);
+                    stage_plane_.normal = axis;
                     snapped_dim = dim;
                     break;
                 }
                 else if (tm.ShouldSnapDirections(dir, -axis, rot)) {
-                    stage_plane_ = Plane(0, -axis);
+                    stage_plane_.normal = -axis;
                     snapped_dim = dim;
                     break;
                 }
             }
-            is_snapped = snapped_dim >= 0;
         }
         else {
-            auto dir = plane_widget_->GetPlane().normal;
+            const auto &dir = plane_widget_->GetPlane().normal;
             for (int dim = 0; dim < 3; ++dim) {
                 const Vector3f axis = GetAxis(dim);
                 if (tm.ShouldSnapDirections(dir,  axis, rot)) {
-                    dir = axis;
+                    object_plane_.normal = axis;
                     snapped_dim = dim;
                     break;
                 }
                 else if (tm.ShouldSnapDirections(dir, -axis, rot)) {
-                    dir = -axis;
+                    object_plane_.normal = -axis;
                     snapped_dim = dim;
                     break;
                 }
             }
-            if ((is_snapped = snapped_dim >= 0))
-                plane_widget_->SetPlane(
-                    Plane(plane_widget_->GetPlane().distance, dir));
         }
+        is_snapped = snapped_dim >= 0;
     }
     if (is_snapped) {
-        // Update the plane in the other coordinate system.
-        if (use_stage_coords)
-            plane_widget_->SetPlane(GetObjectPlane_());
-        else
-            stage_plane_ = GetStagePlane_();
+        // Update planes as necessary and update the PlaneWidget.
+        if (use_stage_coords && snapped_dim == 0)
+            object_plane_ = StageToObjectPlane_(stage_plane_);
+        stage_plane_ = ObjectToStagePlane_(object_plane_);
+        plane_widget_->SetPlane(object_plane_);
     }
 
     return is_snapped;
@@ -239,23 +242,29 @@ bool ClipTool::SnapTranslation_() {
     return false;
 }
 
-Plane ClipTool::GetStagePlane_() const {
-    // The PlaneWidget's_plane is in the object coordinates of the ClipTool
-    // except for the centering offset. Convert to stage coordinates and then
-    // undo the centering translation.
+Plane ClipTool::GetObjectPlane_() const {
+    return plane_widget_->GetPlane();
+}
+
+Plane ClipTool::ObjectToStagePlane_(const Plane &object_plane) const {
+    // Convert to stage coordinates and then undo the centering translation.
     const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
     return TranslatePlane(
-        TransformPlane(plane_widget_->GetPlane(),
+        TransformPlane(object_plane,
                        GetStageCoordConv().GetObjectToRootMatrix()),
         -cm->GetLocalCenterOffset());
 }
 
-Plane ClipTool::GetObjectPlane_() const {
-    // Exact opposite of GetStagePlane_().
+Plane ClipTool::StageToObjectPlane_(const Plane &stage_plane) const {
+    // Use the distance from the PlaneWidget's plane, since that is based on
+    // the actual plane translation. Note that the TransformPlane() function
+    // is used even though the distance is set explicitly. This is so the
+    // correct transformed normal (using the inverse transpose) is used.
     const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
-    return TransformPlane(
-        TranslatePlane(stage_plane_, cm->GetLocalCenterOffset()),
-        GetStageCoordConv().GetRootToObjectMatrix());
+    Plane object_plane =
+        TransformPlane(stage_plane, GetStageCoordConv().GetRootToObjectMatrix());
+    object_plane.distance = plane_widget_->GetPlane().distance;
+    return object_plane;
 }
 
 void ClipTool::UpdateTranslationRange_() {
