@@ -25,7 +25,7 @@ class SphereWidget : public DraggableWidget {
     }
 
     /// Returns the current rotation, even if in the middle of a drag.
-    const Rotationf & GetRotation() const { return rot_; }
+    const Rotationf & GetCurrentRotation() const { return rot_; }
 
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
