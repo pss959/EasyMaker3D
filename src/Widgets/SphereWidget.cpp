@@ -9,7 +9,7 @@
 void SphereWidget::StartDrag(const DragInfo &info) {
     DraggableWidget::StartDrag(info);
 
-    start_rot_ = GetRotation();
+    start_rot_ = rot_ = GetRotation();
 
     if (info.trigger == Trigger::kPointer) {
         // Get the center and radius of the virtual sphere in world coordinates.
@@ -31,7 +31,6 @@ void SphereWidget::StartDrag(const DragInfo &info) {
 void SphereWidget::ContinueDrag(const DragInfo &info) {
     DraggableWidget::ContinueDrag(info);
 
-    Rotationf rot;
     if (info.trigger == Trigger::kPointer) {
         // Get the current intersection point with the plane.
         float distance;
@@ -42,7 +41,7 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
         const Vector3f diff = cur_pt - start_point_;
         const float length = ion::math::Length(diff);
         if (length < .0001f) {
-            rot = Rotationf::Identity();
+            rot_ = Rotationf::Identity();
         }
         else {
             // The rotation axis is the vector in the plane that is
@@ -52,7 +51,7 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
             // Want a distance of 1 radius to result in a 90 degree rotation.
             const Anglef angle = Anglef::FromDegrees(90 * length / radius_);
 
-            rot = Rotationf::FromAxisAndAngle(axis, angle);
+            rot_ = Rotationf::FromAxisAndAngle(axis, angle);
         }
     }
     else {
@@ -66,12 +65,12 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
         // difference after the starting rotation is applied.
         const Vector3f axis = start_rot * RotationAxis(diff_rot);
 
-        rot = Rotationf::FromAxisAndAngle(axis, RotationAngle(diff_rot));
+        rot_ = Rotationf::FromAxisAndAngle(axis, RotationAngle(diff_rot));
     }
 
     // Update the Widget rotation and notify observers.
-    SetRotation(ComposeRotations(start_rot_, rot));
-    rotation_changed_.Notify(*this, rot);
+    SetRotation(ComposeRotations(start_rot_, rot_));
+    rotation_changed_.Notify(*this, rot_);
 }
 
 void SphereWidget::EndDrag() {

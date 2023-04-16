@@ -24,6 +24,9 @@ class SphereWidget : public DraggableWidget {
         return rotation_changed_;
     }
 
+    /// Returns the current rotation, even if in the middle of a drag.
+    const Rotationf & GetRotation() const { return rot_; }
+
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
@@ -41,6 +44,9 @@ class SphereWidget : public DraggableWidget {
 
     /// Radius of the virtual sphere in world coordinates.
     float radius_;
+
+    /// Current rotation of the Widget.
+    Rotationf rot_;
 
     /// Rotation of the Widget at the start of the drag.
     Rotationf start_rot_;
