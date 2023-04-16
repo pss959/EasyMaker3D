@@ -48,6 +48,12 @@ class PlaneWidget : public CompositeWidget {
     /// Returns the Slider1DWidget used to translate the plane.
     Slider1DWidgetPtr GetTranslator() const { return translator_; }
 
+    /// Highlights the translation arrow in the given Color.
+    void HighlightArrowColor(const Color &color);
+
+    /// Unhighlights the color applied to the translation arrow.
+    void UnhighlightArrowColor();
+
   protected:
     PlaneWidget() {}
 
@@ -76,6 +82,9 @@ class PlaneWidget : public CompositeWidget {
     /// Conical end part of the arrow. This is translated in Y to stay at the
     /// end of the arrow_shaft.
     SG::NodePtr       arrow_cone_;
+
+    /// Saves the color used for the Arrow when inactive so it can be changed.
+    Color             arrow_inactive_color_;
 
     /// Invoked when either sub-widget is activated or deactivated.
     void Activate_(bool is_activation);

@@ -93,8 +93,6 @@ void ConvertedModel::SyncTransformsFromOperand(const Model &operand) {
 
     // Compensate for the mesh centering offset.
     SetTranslation(GetTranslation() + GetLocalCenterOffset());
-    std::cerr << "XXXX LOFF=" << GetLocalCenterOffset()
-              << " TR=" << GetTranslation() << "\n";
 }
 
 void ConvertedModel::SyncTransformsToOperand(Model &operand) const {

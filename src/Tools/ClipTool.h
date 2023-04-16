@@ -46,9 +46,12 @@ class ClipTool : public Tool {
     /// plane.
     PlaneWidgetPtr       plane_widget_;
 
+    /// Current clipping plane in stage coordinates.
+    Plane                stage_plane_;
+
     /// Plane (stage coordinates) at the start of widget interaction. This is
     /// used to show translation feedback.
-    Plane                start_plane_;
+    Plane                start_stage_plane_;
 
     /// Feedback showing translation distance in local coordinates.
     LinearFeedbackPtr    feedback_;
@@ -57,9 +60,22 @@ class ClipTool : public Tool {
     void Activate_(bool is_activation);
     void PlaneChanged_(bool is_rotation);
 
+    /// If the current PlaneWidget rotation should be snapped to the
+    /// PointTarget or principal axis, this returns true. It sets \p
+    /// snapped_dim to the axis dimension if appropriate; otherwise it sets it
+    /// to -1.
+    bool SnapRotation_(int &snapped_dim);
+
+    /// If the current PlaneWidget translation should be snapped to the
+    /// PointTarget or origin, this returns true.
+    bool SnapTranslation_();
+
     /// Returns the current clipping plane (from the PlaneWidget) in stage
     /// coordinates.
-    Plane GetStagePlane_();
+    Plane GetStagePlane_() const;
+
+    /// Converts stage_plane_ back into object coordinates.
+    Plane GetObjectPlane_() const;
 
     /// Sets the min/max range for the translation slider based on the Model's
     /// mesh extents along the current plane's normal.
@@ -70,7 +86,7 @@ class ClipTool : public Tool {
 
     /// Updates the state of the real-time clipping plane implemented in the
     /// Faceted shader.
-    void UpdateRealTimeClipPlane_(bool enable, const Plane &stage_plane);
+    void UpdateRealTimeClipPlane_(bool enable);
 
     /// Returns the primary ClippedModel. // XXXX Nuke this.
     ClippedModel & GetPrimary_() const;

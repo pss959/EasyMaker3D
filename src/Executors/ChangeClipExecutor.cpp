@@ -17,9 +17,9 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
                 cm.GetTranslation() - cm.GetLocalCenterOffset();
 
             // Convert the plane from stage coordinates into object coordinates.
-            const Matrix4f som =
-                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
-            const Plane object_plane = TransformPlane(ccc.GetPlane(), som);
+            const Plane object_plane = TransformPlane(
+                TranslatePlane(ccc.GetPlane(), cm.GetLocalCenterOffset()),
+                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix());
 
             // Set the plane in the ClippedModel and compensate for any new
             // centering translation.

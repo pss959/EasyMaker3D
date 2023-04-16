@@ -97,10 +97,11 @@ void ClipTool::Detach() {
 void ClipTool::Activate_(bool is_activation) {
     const auto &context = GetContext();
     if (is_activation) {
-        start_plane_ = plane_widget_->GetPlane();
+        start_stage_plane_ = plane_widget_->GetPlane();
         feedback_ = context.feedback_manager->Activate<LinearFeedback>();
         context.target_manager->StartSnapping();
-        UpdateRealTimeClipPlane_(true, GetStagePlane_());
+        stage_plane_ = GetStagePlane_();
+        UpdateRealTimeClipPlane_(true);
     }
     else {
         context.target_manager->EndSnapping();
@@ -119,11 +120,16 @@ void ClipTool::Activate_(bool is_activation) {
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
-        UpdateRealTimeClipPlane_(false, Plane());
+        UpdateRealTimeClipPlane_(false);
     }
 }
 
 void ClipTool::PlaneChanged_(bool is_rotation) {
+    const auto &context = GetContext();
+
+    // Update the current stage plane.
+    stage_plane_ = GetStagePlane_();
+
     // If this is the first change, create the ChangeClipCommand and start the
     // drag.
     if (! command_) {
@@ -132,19 +138,109 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
         GetDragStarted().Notify(*this);
     }
 
-    const Plane stage_plane = GetStagePlane_();
-    command_->SetPlane(stage_plane);
-    GetContext().command_manager->SimulateDo(command_);
+    // Try snapping unless modified dragging.
+    if (! context.is_modified_mode) {
+        int snapped_dim = -1;
+        const bool is_snapped =
+            is_rotation ? SnapRotation_(snapped_dim) : SnapTranslation_();
+        if (is_snapped) {
+            const Color color = snapped_dim >= 0 ?
+                SG::ColorMap::SGetColorForDimension(snapped_dim) :
+                GetSnappedFeedbackColor();
+            plane_widget_->HighlightArrowColor(color);
+        }
+        else {
+            plane_widget_->UnhighlightArrowColor();
+        }
+    }
 
-    UpdateRealTimeClipPlane_(true, stage_plane);
+    command_->SetPlane(stage_plane_);
+    context.command_manager->SimulateDo(command_);
+
+    UpdateRealTimeClipPlane_(true);
 
     // Update translation feedback.
     if (! is_rotation)
         UpdateTranslationFeedback_(Color(1, 0, 0, 1));  // XXXX Color
 }
 
-Plane ClipTool::GetStagePlane_() {
-    // The PlaneWidget's plane is in the object coordinates of the ClipTool
+bool ClipTool::SnapRotation_(int &snapped_dim) {
+    const auto &context = GetContext();
+    auto &tm            = *context.target_manager;
+
+    bool use_stage_coords = false;
+    bool is_snapped       = false;
+    snapped_dim           = -1;
+
+    // Try to snap to the point target direction (in stage coordinates) if it
+    // is active.
+    Rotationf rot;
+    if (tm.SnapToDirection(stage_plane_.normal, rot)) {
+        stage_plane_.normal = tm.GetPointTarget().GetDirection();
+        use_stage_coords = is_snapped = true;
+    }
+
+    // Otherwise, try to snap to any of the principal axes. Use stage axes if
+    // is_axis_aligned is true; otherwise, use object axes.
+    else {
+        use_stage_coords =
+            context.command_manager->GetSessionState()->IsAxisAligned();
+
+        if (use_stage_coords) {
+            const auto &dir = stage_plane_.normal;
+            for (int dim = 0; dim < 3; ++dim) {
+                const Vector3f axis = GetAxis(dim);
+                if (tm.ShouldSnapDirections(dir, axis, rot)) {
+                    stage_plane_ = Plane(0, axis);
+                    snapped_dim = dim;
+                    break;
+                }
+                else if (tm.ShouldSnapDirections(dir, -axis, rot)) {
+                    stage_plane_ = Plane(0, -axis);
+                    snapped_dim = dim;
+                    break;
+                }
+            }
+            is_snapped = snapped_dim >= 0;
+        }
+        else {
+            auto dir = plane_widget_->GetPlane().normal;
+            for (int dim = 0; dim < 3; ++dim) {
+                const Vector3f axis = GetAxis(dim);
+                if (tm.ShouldSnapDirections(dir,  axis, rot)) {
+                    dir = axis;
+                    snapped_dim = dim;
+                    break;
+                }
+                else if (tm.ShouldSnapDirections(dir, -axis, rot)) {
+                    dir = -axis;
+                    snapped_dim = dim;
+                    break;
+                }
+            }
+            if ((is_snapped = snapped_dim >= 0))
+                plane_widget_->SetPlane(
+                    Plane(plane_widget_->GetPlane().distance, dir));
+        }
+    }
+    if (is_snapped) {
+        // Update the plane in the other coordinate system.
+        if (use_stage_coords)
+            plane_widget_->SetPlane(GetObjectPlane_());
+        else
+            stage_plane_ = GetStagePlane_();
+    }
+
+    return is_snapped;
+}
+
+bool ClipTool::SnapTranslation_() {
+    // XXXX
+    return false;
+}
+
+Plane ClipTool::GetStagePlane_() const {
+    // The PlaneWidget's_plane is in the object coordinates of the ClipTool
     // except for the centering offset. Convert to stage coordinates and then
     // undo the centering translation.
     const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
@@ -152,6 +248,14 @@ Plane ClipTool::GetStagePlane_() {
         TransformPlane(plane_widget_->GetPlane(),
                        GetStageCoordConv().GetObjectToRootMatrix()),
         -cm->GetLocalCenterOffset());
+}
+
+Plane ClipTool::GetObjectPlane_() const {
+    // Exact opposite of GetStagePlane_().
+    const auto &cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
+    return TransformPlane(
+        TranslatePlane(stage_plane_, cm->GetLocalCenterOffset()),
+        GetStageCoordConv().GetRootToObjectMatrix());
 }
 
 void ClipTool::UpdateTranslationRange_() {
@@ -187,14 +291,14 @@ void ClipTool::UpdateTranslationFeedback_(const Color &color) {
 
     // Need signed distance in stage coordinates.
     const auto &current_plane = plane_widget_->GetPlane();
-    const float distance = current_plane.distance - start_plane_.distance;
+    const float distance = current_plane.distance - start_stage_plane_.distance;
 
     feedback_->SetColor(color);
     feedback_->SpanLength(Point3f::Zero(), current_plane.normal, distance); // XXXX pos
 }
 
-void ClipTool::UpdateRealTimeClipPlane_(bool enable, const Plane &stage_plane) {
-    GetContext().root_model->EnableClipping(enable, stage_plane);
+void ClipTool::UpdateRealTimeClipPlane_(bool enable) {
+    GetContext().root_model->EnableClipping(enable, stage_plane_);
 }
 
 ClippedModel & ClipTool::GetPrimary_() const {

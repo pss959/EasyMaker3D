@@ -17,6 +17,8 @@ void PlaneWidget::CreationDone() {
         arrow_shaft_   = SG::FindNodeUnderNode(*translator_, "Shaft");
         arrow_cone_    = SG::FindNodeUnderNode(*translator_, "Cone");
 
+        arrow_inactive_color_ = translator_->GetInactiveColor();
+
         // Set up callbacks.
         rotator_->GetActivation().AddObserver(
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
@@ -78,6 +80,16 @@ void PlaneWidget::SetSize(float radius) {
 
 void PlaneWidget::SetTranslationRange(const Range1f &range) {
     translator_->SetRange(range.GetMinPoint(), range.GetMaxPoint());
+}
+
+void PlaneWidget::HighlightArrowColor(const Color &color) {
+    translator_->SetInactiveColor(color);
+    translator_->SetActiveColor(color);
+}
+
+void PlaneWidget::UnhighlightArrowColor() {
+    translator_->SetInactiveColor(arrow_inactive_color_);
+    translator_->SetActiveColor(arrow_inactive_color_);
 }
 
 void PlaneWidget::Activate_(bool is_activation) {
