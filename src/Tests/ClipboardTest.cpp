@@ -65,8 +65,8 @@ TEST_F(ClipboardTest, CopyTwo) {
 TEST_F(ClipboardTest, CopyParent) {
     ModelPtr        box     = Model::CreateModel<BoxModel>("ABox");
     ClippedModelPtr clipped = Model::CreateModel<ClippedModel>("AClip");
-    clipped->SetOriginalModel(box);
-    clipped->AddPlane(Plane(0, Vector3f::AxisY()));
+    clipped->SetOperandModel(box);
+    clipped->SetPlane(Plane(0, Vector3f::AxisY()));
     clipped->SetStatus(Model::Status::kUnselected);
     EXPECT_EQ(1U, box->GetShapes().size());
     EXPECT_EQ(1U, clipped->GetShapes().size());
@@ -83,11 +83,11 @@ TEST_F(ClipboardTest, CopyParent) {
 
     // Child should be present.
     const auto ccopy = Util::CastToDerived<ClippedModel>(copy);
-    EXPECT_TRUE(clipped->GetOriginalModel());
-    EXPECT_TRUE(ccopy->GetOriginalModel());
-    EXPECT_TRUE(Util::IsA<BoxModel>(clipped->GetOriginalModel()));
-    EXPECT_TRUE(Util::IsA<BoxModel>(ccopy->GetOriginalModel()));
-    EXPECT_NE(clipped->GetOriginalModel(), ccopy->GetOriginalModel());
+    EXPECT_TRUE(clipped->GetOperandModel());
+    EXPECT_TRUE(ccopy->GetOperandModel());
+    EXPECT_TRUE(Util::IsA<BoxModel>(clipped->GetOperandModel()));
+    EXPECT_TRUE(Util::IsA<BoxModel>(ccopy->GetOperandModel()));
+    EXPECT_NE(clipped->GetOperandModel(), ccopy->GetOperandModel());
 }
 
 TEST_F(ClipboardTest, CopyModified) {

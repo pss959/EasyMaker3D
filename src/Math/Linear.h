@@ -34,6 +34,10 @@ Range2f ToRange2f(const Range3f &r, int dim = 2);
 Matrix4f GetTransformMatrix(const Vector3f &scale, const Rotationf &rot,
                             const Vector3f &trans);
 
+/// Transforms a normal vector by the inverse transpose of the given matrix,
+/// returning the result.
+Vector3f TransformNormal(const Vector3f &normal, const Matrix4f &m);
+
 /// Transforms a Ray by a matrix. This does not normalize the resulting
 /// direction vector, so that parametric distances are preserved.
 Ray TransformRay(const Ray &ray, const Matrix4f &m);

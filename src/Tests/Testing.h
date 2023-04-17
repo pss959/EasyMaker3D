@@ -18,6 +18,9 @@
 /// Macro for testing against null for clarity.
 #define ASSERT_NOT_NULL(PTR) ASSERT_TRUE((PTR) != nullptr)
 
+/// Macro for testing near-equality for floats (using TestBase::kClose).
+#define EXPECT_CLOSE(EXP, V) EXPECT_NEAR(EXP, V, kClose)
+
 /// Macro for testing near-equality for vectors.
 #define EXPECT_VECS_CLOSE2(EXP, V) EXPECT_PRED2(VectorsClose2, EXP, V)
 

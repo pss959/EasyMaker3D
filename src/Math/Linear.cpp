@@ -34,6 +34,13 @@ Matrix4f GetTransformMatrix(const Vector3f &scale, const Rotationf &rot,
         ion::math::RotationMatrixH(rot) * ion::math::ScaleMatrixH(scale);
 }
 
+Vector3f TransformNormal(const Vector3f &normal, const Matrix4f &m) {
+    using ion::math::Inverse;
+    using ion::math::Normalized;
+    using ion::math::Transpose;
+    return Normalized(Transpose(Inverse(m)) * normal);
+}
+
 Ray TransformRay(const Ray &ray, const Matrix4f &m) {
     return Ray(m * ray.origin, m * ray.direction);
 }
@@ -44,15 +51,11 @@ Plane TranslatePlane(const Plane &plane, const Vector3f &v) {
 }
 
 Plane TransformPlane(const Plane &plane, const Matrix4f &m) {
-    using ion::math::Inverse;
-    using ion::math::Normalized;
-    using ion::math::Transpose;
-
     // Transform a point on the plane and the normal.
     const Point3f p = m * Point3f(plane.distance * plane.normal);
-    Vector3f      n = Normalized(Transpose(Inverse(m)) * plane.normal);
+    Vector3f      n = TransformNormal(plane.normal, m);
 
-    // Compute the distance of the point and Adjust it if it is close to the
+    // Compute the distance of the point and adjust it if it is close to the
     // origin.
     float d = SignedDistance(p, n);
     if (AreClose(d, 0))

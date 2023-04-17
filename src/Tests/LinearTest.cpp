@@ -2,6 +2,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
 class LinearTest : public TestBase {
@@ -76,6 +77,56 @@ TEST_F(LinearTest, GetClosestPointOnLine) {
                                                        Vector3f(-10, 10, 0)));
 }
 
+TEST_F(LinearTest, TransformNormal) {
+    using ion::math::Cross;
+    using ion::math::Dot;
+    using ion::math::Length;
+    using ion::math::Normalized;
+
+    // Shorthand.
+    const Vector3f x = Vector3f::AxisX();
+    const Vector3f y = Vector3f::AxisY();
+    const Vector3f z = Vector3f::AxisZ();
+    const Vector3f v = Normalized(Vector3f(1, 2, 3));
+
+    // Identity.
+    EXPECT_VECS_CLOSE(x, TransformNormal(x, Matrix4f::Identity()));
+    EXPECT_VECS_CLOSE(y, TransformNormal(y, Matrix4f::Identity()));
+    EXPECT_VECS_CLOSE(z, TransformNormal(z, Matrix4f::Identity()));
+    EXPECT_VECS_CLOSE(v, TransformNormal(v, Matrix4f::Identity()));
+
+    // Pure rotation.
+    const Rotationf rot = Rotationf::RotateInto(x, y);
+    const Matrix4f rm(ion::math::RotationMatrixH(rot));
+    EXPECT_VECS_CLOSE( y, TransformNormal(x, rm));
+    EXPECT_VECS_CLOSE(-x, TransformNormal(y, rm));
+    EXPECT_VECS_CLOSE( z, TransformNormal(z, rm));
+    EXPECT_VECS_CLOSE(Vector3f(-v[1], v[0], v[2]), TransformNormal(v, rm));
+    EXPECT_CLOSE(1, Length(TransformNormal(v, rm)));
+
+    // Pure scale..
+    const Matrix4f sm(ion::math::ScaleMatrixH(Vector3f(10, 40, 80)));
+    EXPECT_VECS_CLOSE(x, TransformNormal(x, sm));
+    EXPECT_VECS_CLOSE(y, TransformNormal(y, sm));
+    EXPECT_VECS_CLOSE(z, TransformNormal(z, sm));
+    EXPECT_VECS_CLOSE(Vector3f(.847998f, .423999f, .317999f),
+                      TransformNormal(v, sm));
+    EXPECT_CLOSE(1, Length(TransformNormal(v, sm)));
+
+    // General matrix. Apply to a vector and its perpendicular normal and make
+    // sure the results are perpendicular.
+    const Vector3f n = Normalized(Cross(v, Vector3f(-2, 1, 5)));
+    EXPECT_CLOSE(0, Dot(n, v));
+    const Matrix4f gm =
+        ion::math::TranslationMatrix(Vector3f(-3, 10, 4)) * rm * sm;
+    const Vector3f tv = gm * v;
+    const Vector3f tn = TransformNormal(n, gm);
+    EXPECT_CLOSE(0, Dot(tn, tv));
+
+    // Invert back to the original.
+    EXPECT_VECS_CLOSE(n, TransformNormal(tn, ion::math::Inverse(gm)));
+}
+
 TEST_F(LinearTest, TransformPlane) {
     const Plane pl(10, Vector3f::AxisZ());
     EXPECT_EQ(Vector3f::AxisZ(), pl.normal);
@@ -90,7 +141,7 @@ TEST_F(LinearTest, TransformPlane) {
     // along the normal from it. The normalized difference vector between the
     // resulting points should be the transformed normal.
     const Point3f p0(0, 0, 10);
-    EXPECT_NEAR(0, pl.GetDistanceToPoint(p0), kClose);
+    EXPECT_CLOSE(0, pl.GetDistanceToPoint(p0));
     const Point3f p1 = p0 + 10 * pl.normal;
     const Point3f tp0 = tm * p0;
     const Point3f tp1 = tm * p1;
@@ -108,11 +159,11 @@ TEST_F(LinearTest, TransformPlane2) {
         ion::math::RotationMatrixH(rot);
     const Plane tpl = TransformPlane(pl, tm);
     EXPECT_VECS_CLOSE(Vector3f::AxisY(), tpl.normal);
-    EXPECT_NEAR(30.f, tpl.distance, kClose);
+    EXPECT_CLOSE(30.f, tpl.distance);
 
     // Do the transformed point test.
     const Point3f p0(10, 0, 0);
-    EXPECT_NEAR(0, pl.GetDistanceToPoint(p0), kClose);
+    EXPECT_CLOSE(0, pl.GetDistanceToPoint(p0));
     const Point3f p1 = p0 + 10 * pl.normal;
     const Point3f tp0 = tm * p0;
     const Point3f tp1 = tm * p1;
@@ -133,7 +184,7 @@ TEST_F(LinearTest, TransformPlane3) {
 
     // Do the transformed point test.
     const Point3f p0(10, 0, 0);
-    EXPECT_NEAR(0, pl.GetDistanceToPoint(p0), kClose);
+    EXPECT_CLOSE(0, pl.GetDistanceToPoint(p0));
     const Point3f p1 = p0 + 10 * pl.normal;
     const Point3f tp0 = tm * p0;
     const Point3f tp1 = tm * p1;
