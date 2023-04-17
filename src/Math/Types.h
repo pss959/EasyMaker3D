@@ -193,6 +193,16 @@ struct Plane {
     /// Gets the 4 coefficients of the plane equation (ax + by + cz + d = 0).
     Vector4f GetCoefficients() const;
 
+    /// Equality operator.
+    bool operator==(const Plane &p) const {
+        return p.distance == distance && p.normal == normal;
+    }
+
+    /// Inequality operator.
+    bool operator!=(const Plane &p) const {
+        return ! (p == *this);
+    }
+
     /// Converts to a string to help with debugging.
     std::string ToString() const;
 };

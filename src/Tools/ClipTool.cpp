@@ -120,11 +120,14 @@ void ClipTool::Activate_(bool is_activation) {
 
         UpdateTranslationRange_();
 
-        // If there was any change due to a drag, execute the command to change
-        // the ClippedModel(s).
+        // If there was a significant enough change due to a drag, execute the
+        // command to change the ClippedModel(s).
         if (command_) {
-            // XXXX Check for change to previous plane!
-            if (! command_->GetPlane().IsDefault())
+            const Plane &new_plane = command_->GetPlane();
+            if (! AreClose(new_plane.distance, start_stage_plane_.distance) ||
+                ! AreDirectionsClose(new_plane.normal,
+                                     start_stage_plane_.normal,
+                                     Anglef::FromDegrees(.01f)))
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
@@ -146,6 +149,7 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
     }
 
     // Try snapping unless modified dragging.
+    plane_widget_->UnhighlightArrowColor();
     if (! context.is_modified_mode) {
         int snapped_dim = -1;
         const bool is_snapped =
@@ -155,9 +159,6 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
                 SG::ColorMap::SGetColorForDimension(snapped_dim) :
                 GetSnappedFeedbackColor();
             plane_widget_->HighlightArrowColor(color);
-        }
-        else {
-            plane_widget_->UnhighlightArrowColor();
         }
     }
 
