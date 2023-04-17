@@ -5,18 +5,29 @@
 #include "Math/Types.h"
 #include "Tools/Tool.h"
 
-class ClippedModel;
 DECL_SHARED_PTR(ChangeClipCommand);
+DECL_SHARED_PTR(ClippedModel);
 DECL_SHARED_PTR(PlaneWidget);
 DECL_SHARED_PTR(LinearFeedback);
 
 /// ClipTool provides interactive clipping of all selected ClippedModel
 /// instances. It uses a PlaneWidget to orient and position the clipping
-/// plane. The tool is rotated and translated to align with the primary
-/// selection (ClippedModel) and the widget is scaled to surround it. This
-/// means that the PlaneWidget and its Plane are defined in the object
-/// coordinates of the ClipTool. The Plane is converted to stage coordinates
-/// when necessary: for the ChangeClipCommand and for real-time clipping.
+/// plane.
+
+/// Some notes on transformations:
+///   - The ClipTool is rotated to align with the primary ClippedModel (even if
+///     is_axis_aligned is true).
+///   - The PlaneWidget is explicitly sized to surround the ClippedModel. Any
+///     scale in the ClippedModel does \em not apply to the PlaneWidget's
+///     plane.
+///   - The ClipTool is translated so that it is centered on the ClippedModel's
+///     operand mesh (i.e., the unclipped mesh) using the center offset in the
+///     ClippedModel. This offset has to be dealt with when converting to and
+///     from stage coordinates.
+///
+/// The ClipTool maintains the clipping plane only in stage coordinates; this
+/// plane is used for the ChangeClipCommand and for real-time clipping. The
+/// clipping plane is converted to other coordinates when necessary.
 ///
 /// \ingroup Tools
 class ClipTool : public Tool {
@@ -42,12 +53,13 @@ class ClipTool : public Tool {
     /// Command used to modify all affected Models.
     ChangeClipCommandPtr command_;
 
+    /// Attached ClippedModel (for convenience). This is null when not attached
+    /// to the current selection.
+    ClippedModelPtr      cm_;
+
     /// Interactive PlaneWidget used to orient and position the clipping
     /// plane.
     PlaneWidgetPtr       plane_widget_;
-
-    /// Current clipping plane in object coordinates.
-    Plane                object_plane_;
 
     /// Current clipping plane in stage coordinates.
     Plane                stage_plane_;
@@ -55,6 +67,9 @@ class ClipTool : public Tool {
     /// Plane (stage coordinates) at the start of widget interaction. This is
     /// used to show translation feedback.
     Plane                start_stage_plane_;
+
+    /// Center of the unclipped model in stage coordinates.
+    Point3f              stage_center_;
 
     /// Feedback showing translation distance in local coordinates.
     LinearFeedbackPtr    feedback_;
@@ -73,6 +88,14 @@ class ClipTool : public Tool {
     /// PointTarget or origin, this returns true.
     bool SnapTranslation_();
 
+    /// Returns the clipping plane in stage coordinates from the Plane in the
+    /// attached ClippedModel.
+    Plane GetStagePlaneFromModel_() const;
+
+    /// Returns the clipping plane in stage coordinates from the PlaneWidget's
+    /// current clipping plane.
+    Plane GetStagePlaneFromWidget_() const;
+
     /// Returns the current clipping plane in object coordinates based on the
     /// PlaneWidget's plane and the ClipTool's rotation.
     Plane GetObjectPlane_() const;
@@ -82,6 +105,9 @@ class ClipTool : public Tool {
 
     /// Converts the given Plane from stage to object coordinates.
     Plane StageToObjectPlane_(const Plane &stage_plane) const;
+
+    /// Updates the PlaneWidget to match the current clipping plane.
+    void UpdatePlaneWidgetPlane_();
 
     /// Sets the min/max range for the translation slider based on the Model's
     /// mesh extents along the current plane's normal.
@@ -93,9 +119,6 @@ class ClipTool : public Tool {
     /// Updates the state of the real-time clipping plane implemented in the
     /// Faceted shader.
     void UpdateRealTimeClipPlane_(bool enable);
-
-    /// Returns the primary ClippedModel. // XXXX Nuke this.
-    ClippedModel & GetPrimary_() const;
 
     friend class Parser::Registry;
 };
