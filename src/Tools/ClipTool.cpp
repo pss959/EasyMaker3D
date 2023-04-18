@@ -231,7 +231,22 @@ bool ClipTool::SnapRotation_(int &snapped_dim) {
 }
 
 bool ClipTool::SnapTranslation_() {
-    // XXXX
+    auto &tm = *GetContext().target_manager;
+
+    // Try to snap to the point target position (if it is active) or the center
+    // of the unclipped Model, whichever is closer.
+    float dist = stage_plane_.GetDistanceToPoint(stage_center_);
+    if (tm.IsPointTargetVisible()) {
+        const float target_dist =
+            stage_plane_.GetDistanceToPoint(tm.GetPointTarget().GetPosition());
+        if (std::abs(target_dist) < std::abs(dist))
+            dist = target_dist;
+    }
+    if (std::abs(dist) <= TK::kSnapPointTolerance) {
+        stage_plane_.distance += dist;
+        UpdatePlaneWidgetPlane_();
+        return true;
+    }
     return false;
 }
 
