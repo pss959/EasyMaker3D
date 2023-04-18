@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Base/Memory.h"
+#include "Math/Types.h"
 
 DECL_SHARED_PTR(CommandList);
 DECL_SHARED_PTR(LogHandler);
@@ -40,6 +41,10 @@ bool HandleShortcut(const std::string &str);
 /// Displays the given text string in the debug text area. If the text string
 /// is empty, this turns off the text string.
 void DisplayDebugText(const std::string &text);
+
+/// Displays the debug sphere at the given location with the given diameter,
+/// both in stage coordinates.
+void DisplayDebugSphere(const Point3f &stage_pos, float stage_diameter);
 
 }  // namespace Debug
 

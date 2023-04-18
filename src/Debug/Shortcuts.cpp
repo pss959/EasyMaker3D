@@ -424,6 +424,17 @@ void DisplayDebugText(const std::string &text) {
     }
 }
 
+void DisplayDebugSphere(const Point3f &stage_pos, float stage_diameter) {
+    // Convert from stage to world coordinates.
+    const Point3f world_pos =
+        SG::CoordConv(scene_context_->path_to_stage).ObjectToRoot(stage_pos);
+    auto &ds = *scene_context_->debug_sphere;
+    ds.SetEnabled(true);
+    ds.SetFlagEnabled(SG::Node::Flag::kRender, true);
+    ds.SetUniformScale(stage_diameter);
+    ds.SetTranslation(world_pos);
+}
+
 }  // namespace Debug
 
 #endif

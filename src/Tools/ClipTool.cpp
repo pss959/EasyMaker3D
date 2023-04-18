@@ -261,33 +261,29 @@ void ClipTool::UpdatePlaneWidgetPlane_() {
 }
 
 void ClipTool::UpdateTranslationRange_() {
-#if XXXX
-    // Compute the min/max signed distances of any mesh vertex along the
-    // current plane's normal vector. This assumes that the Model's mesh is
-    // centered on the origin, so that the center point is at a distance of
-    // 0. Convert the mesh points into stage coordinates so they can be
-    // compared with the plane.
-    // XXXX Fix this - need to use operand Model's mesh.
-    const auto &model    = GetPrimary_();
-    const auto &mesh     = model.GetMesh();
-    const auto &normal   = plane_widget_->GetPlane().normal;
-    float       min_dist =  std::numeric_limits<float>::max();
-    float       max_dist = -std::numeric_limits<float>::max();
-    const auto  stage_cc = GetStageCoordConv();
+    // Compute the min/max signed distances of any vertex of the unclipped mesh
+    // along the current clipping plane's normal vector. This assumes that the
+    // PlaneWidget is centered on the unclipped mesh so that the mesh's center
+    // point is at a distance of 0. Note that the mesh points need to be scaled
+    // by the ClippedModel's scale to bring them into the object coordinates of
+    // the ClipTool.
+    ASSERT(cm_);
+    const auto &mesh        = cm_->GetOperandModel()->GetMesh();
+    const Vector3f &scale   = cm_->GetScale();
+    float          min_dist =  std::numeric_limits<float>::max();
+    float          max_dist = -std::numeric_limits<float>::max();
+    const auto object_plane = StageToObjectPlane_(stage_plane_);
     for (const Point3f &p: mesh.points) {
-        const float dist = SignedDistance(stage_cc.ObjectToRoot(p), normal);
+        const float dist = SignedDistance(ScalePoint(p, scale),
+                                          object_plane.normal);
         min_dist = std::min(min_dist, dist);
         max_dist = std::max(max_dist, dist);
     }
 
-    // Set the translation range, making sure not to clip away all of the mesh
-    // by restricting the minimum and maximum values.
+    // Set the range, making sure not to clip away all of the mesh by
+    // restricting the minimum and maximum values.
     plane_widget_->SetTranslationRange(Range1f(min_dist + TK::kMinClippedSize,
                                                max_dist - TK::kMinClippedSize));
-#endif
-
-    // XXXX TEMPORARY!
-    plane_widget_->SetTranslationRange(Range1f(-20, 20));
 }
 
 void ClipTool::UpdateTranslationFeedback_(const Color &color) {
