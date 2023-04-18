@@ -179,9 +179,6 @@ bool ClipTool::SnapRotation_(int &snapped_dim) {
     bool is_snapped = false;
     snapped_dim     = -1;
 
-    // This is used to maintain the plane distance from the center.
-    const float dist = stage_plane_.GetDistanceToPoint(stage_center_);
-
     // Try to snap to the point target direction (in stage coordinates) if it
     // is active.
     Rotationf rot;
@@ -215,6 +212,7 @@ bool ClipTool::SnapRotation_(int &snapped_dim) {
     }
     if (is_snapped) {
         // Maintain the same distance from the center.
+        const float dist = start_stage_plane_.GetDistanceToPoint(stage_center_);
         const Point3f plane_pt = stage_center_ - dist * stage_plane_.normal;
         stage_plane_ = Plane(plane_pt, stage_plane_.normal);
         UpdatePlaneWidgetPlane_();
