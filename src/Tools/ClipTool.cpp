@@ -70,14 +70,21 @@ void ClipTool::Attach() {
     cm_ = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm_);
 
-    // Rotate and translate to the ClippedModel. Always align with the
-    // ClippedModel even if is_axis_aligned is true.
-    const auto model_size = MatchModelAndGetSize(false);
+    // Do not use MatchModelAndGetSize() here because the unclipped mesh has to
+    // be used to get the correct size.
+
+    // Rotate the ClipTool to align with the ClippedModel even if
+    // is_axis_aligned is true.
+    SetRotation(cm_->GetRotation());
 
     // Translate the ClipTool so that it is centered on the unclipped mesh.
-    SetTranslation(GetTranslation() - cm_->GetLocalCenterOffset());
+    const Bounds &obj_bounds = cm_->GetOperandModel()->GetBounds();
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+    SetTranslation(osm * obj_bounds.GetCenter() - cm_->GetLocalCenterOffset());
 
-    // Update the widget size based on the model size.
+    // Update the widget size based on the size of the unclipped mesh.
+    const auto model_size =
+        ion::math::GetScaleVector(osm) * obj_bounds.GetSize();
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);
 
@@ -111,6 +118,7 @@ void ClipTool::Activate_(bool is_activation) {
         UpdateRealTimeClipPlane_(true);
     }
     else {
+        plane_widget_->UnhighlightArrowColor();
         context.target_manager->EndSnapping();
         context.feedback_manager->Deactivate(feedback_);
         feedback_.reset();
@@ -196,7 +204,7 @@ bool ClipTool::SnapRotation_(int &snapped_dim) {
         const Matrix4f m = use_stage_coords ? Matrix4f::Identity() :
             GetStageCoordConv().GetObjectToRootMatrix();
         for (int dim = 0; dim < 3; ++dim) {
-            const Vector3f axis = m * GetAxis(dim);
+            const Vector3f axis = ion::math::Normalized(m * GetAxis(dim));
             if (tm.ShouldSnapDirections(stage_plane_.normal, axis, rot)) {
                 stage_plane_.normal = axis;
                 snapped_dim = dim;
@@ -212,6 +220,7 @@ bool ClipTool::SnapRotation_(int &snapped_dim) {
     }
     if (is_snapped) {
         // Maintain the same distance from the center.
+        ASSERT(AreClose(ion::math::Length(stage_plane_.normal), 1));
         const float dist = start_stage_plane_.GetDistanceToPoint(stage_center_);
         const Point3f plane_pt = stage_center_ - dist * stage_plane_.normal;
         stage_plane_ = Plane(plane_pt, stage_plane_.normal);
@@ -244,14 +253,10 @@ Plane ClipTool::GetStagePlaneFromWidget_() const {
 
 Plane ClipTool::StageToObjectPlane_(const Plane &stage_plane) const {
     // Use the distance from the PlaneWidget's plane, since that is based on
-    // the actual plane translation. Note that the TransformPlane() function
-    // is used even though the distance is set explicitly. This is so the
-    // correct transformed normal (using the inverse transpose) is used.
-    // XXXX
-    Plane object_plane =
-        TransformPlane(stage_plane, GetStageCoordConv().GetRootToObjectMatrix());
-    object_plane.distance = plane_widget_->GetPlane().distance;
-    return object_plane;
+    // the actual plane translation.
+    return Plane(plane_widget_->GetPlane().distance,
+                 TransformNormal(stage_plane.normal,
+                                 GetStageCoordConv().GetRootToObjectMatrix()));
 }
 
 void ClipTool::UpdatePlaneWidgetPlane_() {
