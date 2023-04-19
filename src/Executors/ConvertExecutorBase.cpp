@@ -71,6 +71,11 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             ExecData_::PerModel &pm = data->per_model[i];
             pm.path_to_model   = operand_path;
             pm.converted_model = result;
+
+            // Let the derived class set up the ConvertedModel if necessary.
+            // Pass true for the primary selection.
+            InitConvertedModel(*result, operand_path,
+                               data->per_model[0].path_to_model);
         }
 
         // Now that all converted Models have been created and named, remove

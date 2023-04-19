@@ -19,6 +19,14 @@ class ConvertExecutorBase : public Executor {
     /// of the correct type.
     virtual ConvertedModelPtr CreateConvertedModel() = 0;
 
+    /// Derived classes may implement this to initialize the given
+    /// newly-created ConvertedModel. SelPath instances (for the operand Model)
+    /// for this Model and for the primary Model are supplied to help with
+    /// coordinate conversions.  The base class defines this to do nothing.
+    virtual void InitConvertedModel(ConvertedModel &model,
+                                    const SelPath &path,
+                                    const SelPath &primary_path) {}
+
   private:
     /// Derived Command::ExecData class that stores everything needed to undo
     /// and redo a Command creating a ConvertedModel.

@@ -26,6 +26,9 @@ DECL_SHARED_PTR(ClippedModel);
 /// \ingroup Models
 class ClippedModel : public ConvertedModel {
   public:
+    /// Returns the default clipping Plane.
+    static Plane GetDefaultPlane() { return Plane(0, Vector3f::AxisY()); }
+
     /// Sets the Plane (in object coordinates without the centering offset) to
     /// clip to. The half-space in the direction of the Plane normal points
     /// toward is clipped away. The default is the XZ plane (clipping the +Y

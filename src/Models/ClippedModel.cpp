@@ -4,7 +4,7 @@
 #include "Math/MeshCombining.h"
 
 void ClippedModel::AddFields() {
-    AddModelField(plane_.Init("plane", Plane(0, Vector3f::AxisY())));
+    AddModelField(plane_.Init("plane", GetDefaultPlane()));
 
     ConvertedModel::AddFields();
 }
