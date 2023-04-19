@@ -4,71 +4,58 @@
 #include "Models/CylinderModel.h"
 #include "Tests/SceneTestBase.h"
 
-#if XXXX // Have to fix all of these tests!!!!
-
 class ClippedModelTest : public SceneTestBase {
 };
 
-TEST_F(ClippedModelTest, NoPlanes) {
-    // 8x8x8 box at (0,4,0).
-    ModelPtr box = Model::CreateModel<BoxModel>();
-    box->SetUniformScale(4);
-    box->SetTranslation(Vector3f(0, 4, 0));
-    Bounds bounds = box->GetBounds();
-    EXPECT_EQ(Vector3f(2, 2, 2), bounds.GetSize());
-    EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
-
-    ClippedModelPtr clipped = Model::CreateModel<ClippedModel>();
-    clipped->SetOriginalModel(box);
-    clipped->SetStatus(Model::Status::kUnselected);
-
-    // Transformation should be copied to ClippedModel.
-    bounds = clipped->GetBounds();
-    EXPECT_EQ(Vector3f(2, 2, 2), bounds.GetSize());
-    EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
-    EXPECT_EQ(Vector3f(4, 4, 4), clipped->GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0), clipped->GetTranslation());
-}
-
-TEST_F(ClippedModelTest, OnePlane) {
+TEST_F(ClippedModelTest, DefaultPlane) {
     // 8x8x8 box at (0,4,0).
     ModelPtr box = Model::CreateModel<BoxModel>();
     box->SetUniformScale(4);
     box->SetTranslation(Vector3f(0, 4, 0));
 
     ClippedModelPtr clipped = Model::CreateModel<ClippedModel>();
-    clipped->SetOriginalModel(box);
+    clipped->SetOperandModel(box);
 
-    // This should clip away the top half.
-    clipped->AddPlane(Plane(0, Vector3f::AxisY()));
-    clipped->SetStatus(Model::Status::kUnselected);
+    // The default plane should clip away the top half.
+    EXPECT_EQ(ClippedModel::GetDefaultPlane(), clipped->GetPlane());
 
     Bounds bounds = clipped->GetBounds();
     EXPECT_EQ(Vector3f(2, 1, 2), bounds.GetSize());
     EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
     EXPECT_EQ(Vector3f(4, 4, 4), clipped->GetScale());
     EXPECT_EQ(Vector3f(0, 4, 0), clipped->GetTranslation());
+
+    // Verify offset vectors.
+    EXPECT_EQ(Vector3f(0, -.5f, 0), clipped->GetObjectCenterOffset());
+    EXPECT_EQ(Vector3f(0,   -2, 0), clipped->GetLocalCenterOffset());
 }
 
-TEST_F(ClippedModelTest, TwoPlanes) {
-    // 8x8x8 box at (0,4,0).
+TEST_F(ClippedModelTest, OtherPlane) {
+    // 4x4x4 box at (0,4,0).
     ModelPtr box = Model::CreateModel<BoxModel>();
-    box->SetUniformScale(4);
+    box->SetUniformScale(2);
     box->SetTranslation(Vector3f(0, 4, 0));
 
     ClippedModelPtr clipped = Model::CreateModel<ClippedModel>();
-    clipped->SetOriginalModel(box);
 
-    // Clip the top half and right half.
-    clipped->AddPlane(Plane(0, Vector3f::AxisY()));
-    clipped->AddPlane(Plane(0, Vector3f::AxisX()));
-    clipped->SetStatus(Model::Status::kUnselected);
+    // Clip the right quarter.
+    const Plane plane(.5f, Vector3f::AxisX());
+    clipped->SetPlane(plane);
+
+    // Do this last so transforms are synced.
+    clipped->SetOperandModel(box);
+
+    EXPECT_EQ(plane, clipped->GetPlane());
 
     Bounds bounds = clipped->GetBounds();
-    EXPECT_EQ(Vector3f(1, 1, 2), bounds.GetSize());
-    EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
-    EXPECT_EQ(Vector3f(4, 4, 4), clipped->GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0), clipped->GetTranslation());
+    EXPECT_EQ(Vector3f(1.5f, 2, 2), bounds.GetSize());
+    EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
+    EXPECT_EQ(Vector3f(2, 2, 2),    clipped->GetScale());
+    EXPECT_EQ(Vector3f(0, 4, 0),    clipped->GetTranslation());
+
+    // Verify offset vectors.
+    EXPECT_EQ(Vector3f(-.25f, 0, 0), clipped->GetObjectCenterOffset());
+    EXPECT_EQ(Vector3f(-.5f,  0, 0), clipped->GetLocalCenterOffset());
 }
 
 TEST_F(ClippedModelTest, Cylinder) {
@@ -80,13 +67,10 @@ TEST_F(ClippedModelTest, Cylinder) {
     cyl->SetComplexity(0.0864977f);
 
     ClippedModelPtr clipped = Model::CreateModel<ClippedModel>();
-    clipped->SetOriginalModel(cyl);
-    clipped->AddPlane(Plane(1.33878e-09f,
+    clipped->SetPlane(Plane(1.33878e-09f,
                             Vector3f(5.96047e-08f, 1, 1.19209e-07f)));
-    clipped->SetStatus(Model::Status::kUnselected);
+    clipped->SetOperandModel(cyl);
 
     std::string reason;
     EXPECT_TRUE(clipped->IsMeshValid(reason));
 }
-
-#endif
