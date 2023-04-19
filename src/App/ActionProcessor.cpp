@@ -90,15 +90,6 @@ static bool AreAllTopLevel_(const Selection &sel) {
     return true;
 }
 
-/// Returns true if at least one Model in the given Selection is not of the
-/// templated type and can therefore be converted to it.
-template <typename T> static bool CanConvert_(const Selection &sel) {
-    for (const auto &sel_path: sel.GetPaths())
-        if (! Util::CastToDerived<T>(sel_path.GetModel()))
-            return true;
-    return false;
-}
-
 /// Creates a Command of the templated type.
 template <typename T> static std::shared_ptr<T> CreateCommand_() {
     return Parser::Registry::CreateObject<T>();
@@ -746,10 +737,10 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
                  context_->target_manager->IsEdgeTargetVisible()));
     set_enabled(Action::kOpenHelpPanel,     can_open_app_panel);
 
-    set_enabled(Action::kConvertBevel,  CanConvert_<BeveledModel>(sel));
-    set_enabled(Action::kConvertClip,   CanConvert_<ClippedModel>(sel));
-    set_enabled(Action::kConvertMirror, CanConvert_<MirroredModel>(sel));
-    set_enabled(Action::kConvertTwist,  CanConvert_<TwistedModel>(sel));
+    set_enabled(Action::kConvertBevel,  any_selected);
+    set_enabled(Action::kConvertClip,   any_selected);
+    set_enabled(Action::kConvertMirror, any_selected);
+    set_enabled(Action::kConvertTwist,  any_selected);
 
     // CSG requires at least 2 models selected, and all must be valid and at
     // the top level.
