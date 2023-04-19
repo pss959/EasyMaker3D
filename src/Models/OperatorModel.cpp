@@ -5,8 +5,10 @@
 #include "Math/MeshUtils.h"
 
 const Vector3f & OperatorModel::GetObjectCenterOffset() const {
-    // Make sure the mesh and offset are up to date.
-    GetMesh();
+    // Make sure the mesh and offset are up to date unless the Model is not
+    // visible.
+    if (IsShown())
+        GetMesh();
     return center_offset_;
 }
 
