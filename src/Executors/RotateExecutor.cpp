@@ -64,7 +64,7 @@ void RotateExecutor::RotateInPlace_(const RotateCommand &rc, ExecData_ &data) {
 
         // Convert the rotation into stage coordinates.
         const Matrix4f osm =
-            SG::CoordConv(pm.path_to_model).GetObjectToRootMatrix();
+            pm.path_to_model.GetCoordConv().GetObjectToRootMatrix();
         const Rotationf rot = GetStageRotation_(rc, osm);
 
         // Update the rotation. The translation should not need to change.
@@ -85,7 +85,7 @@ void RotateExecutor::RotateAroundPrimary_(const RotateCommand &rc,
     // Convert the center and rotation into stage coordinates for the primary
     // Model.
     const Matrix4f osm0 =
-        SG::CoordConv(pm0.path_to_model).GetObjectToRootMatrix();
+        pm0.path_to_model.GetCoordConv().GetObjectToRootMatrix();
     const Point3f primary_center = osm0 * Point3f::Zero();
     const Rotationf rot = GetStageRotation_(rc, osm0);
 
@@ -107,7 +107,7 @@ void RotateExecutor::RotateAroundPrimary_(const RotateCommand &rc,
 
             // Compute the center of the Model in stage coordinates.
             const Matrix4f osm =
-                SG::CoordConv(pm.path_to_model).GetObjectToRootMatrix();
+                pm.path_to_model.GetCoordConv().GetObjectToRootMatrix();
             const Point3f center = osm * Point3f::Zero();
 
             // Rotate the Model and move it so its center is at the rotated

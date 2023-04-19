@@ -47,7 +47,7 @@ void LinearLayoutExecutor::LayOutModels_(ExecData_ &data,
                                          const Vector3f &offset) {
     // Compute the position of the first Model in stage coordinates.
     const Matrix4f osm =
-        SG::CoordConv(data.per_model[0].path_to_model).GetObjectToRootMatrix();
+        data.per_model[0].path_to_model.GetCoordConv().GetObjectToRootMatrix();
     Point3f cur_position = osm * Point3f::Zero();
 
     // Move the center of each other Model center to the current position.

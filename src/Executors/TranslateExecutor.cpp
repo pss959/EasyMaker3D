@@ -50,7 +50,7 @@ void TranslateExecutor::TranslateModels_(ExecData_ &data,
         // object, since it needs to include the Model's scale and rotation.
         const auto &path = pm.path_to_model;
         pm.new_translation =
-            pm.old_translation + SG::CoordConv(path).RootToLocal(translation);
+            pm.old_translation + path.GetCoordConv().RootToLocal(translation);
         path.GetModel()->SetTranslation(pm.new_translation);
     }
 }

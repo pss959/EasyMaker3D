@@ -23,7 +23,7 @@ void ChangeMirrorExecutor::Execute(Command &command, Command::Op operation) {
             // offset translation in the MirroredModel that is used to position
             // the recentered mesh should NOT be part of this conversion.
             const Matrix4f som =
-                SG::CoordConv(pm.path_to_model).GetRootToObjectMatrix();
+                pm.path_to_model.GetCoordConv().GetRootToObjectMatrix();
             mm.SetOffsetPlane(TransformPlane(cmc.GetPlane(), som));
         }
         else {
@@ -78,7 +78,7 @@ ChangeMirrorExecutor::ExecData_ & ChangeMirrorExecutor::GetExecData_(
             // Convert the plane normal into object coordinates for the
             // MirroredModel.
             pm.object_plane_normal =
-                SG::CoordConv(path).RootToObject(stage_plane.normal);
+                path.GetCoordConv().RootToObject(stage_plane.normal);
 
             // If operating in-place, there is no need to modify the
             // translation of the MirroredModel. If not, it needs to be
