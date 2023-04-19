@@ -58,7 +58,6 @@ ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
             const ClippedModel  &cm   = GetTypedModel<ClippedModel>(path);
             pm.path_to_model    = path;
             pm.old_object_plane = cm.GetPlane();
-
             pm.old_translation  = cm.GetTranslation();
         }
         command.SetExecData(data);

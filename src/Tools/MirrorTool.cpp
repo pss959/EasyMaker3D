@@ -1,69 +1,259 @@
 #include "Tools/MirrorTool.h"
 
+#include <algorithm>
+
+#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
 
 #include "Commands/ChangeMirrorCommand.h"
 #include "Items/SessionState.h"
 #include "Managers/CommandManager.h"
+#include "Managers/TargetManager.h"
 #include "Math/Linear.h"
 #include "Models/MirroredModel.h"
+#include "Place/PointTarget.h"
 #include "SG/ColorMap.h"
+#include "SG/CoordConv.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
+#include "Util/Tuning.h"
+#include "Widgets/PlaneWidget.h"
+#include "Widgets/Slider1DWidget.h"
+#include "Widgets/SphereWidget.h"
+
+MirrorTool::MirrorTool() {
+}
+
+void MirrorTool::CreationDone() {
+    Tool::CreationDone();
+
+    if (! IsTemplate()) {
+        plane_widget_ =
+            SG::FindTypedNodeUnderNode<PlaneWidget>(*this, "PlaneWidget");
+
+        // Set up callbacks.
+        plane_widget_->GetActivation().AddObserver(
+            this, [&](Widget &, bool is_act){ Activate_(is_act); });
+        plane_widget_->GetPlaneChanged().AddObserver(
+            this, [&](bool is_rotation){ PlaneChanged_(is_rotation); });
+
+        // Allow the plane to move a lot.
+        plane_widget_->SetTranslationRange(Range1f(-100, 100));
+    }
+}
+
+void MirrorTool::UpdateGripInfo(GripInfo &info) {
+    // If the direction is close to the plane normal (in either direction), use
+    // the translator.
+    const Vector3f &guide_dir = info.guide_direction;
+    const Vector3f &normal    = plane_widget_->GetPlane().normal;
+    if (AreDirectionsClose(guide_dir,  normal, TK::kMaxGripHoverDirAngle) ||
+        AreDirectionsClose(guide_dir, -normal, TK::kMaxGripHoverDirAngle)) {
+        info.widget = plane_widget_->GetTranslator();
+    }
+    else {
+        info.widget = plane_widget_->GetRotator();
+    }
+    info.target_point = ToWorld(info.widget, Point3f::Zero());
+}
 
 bool MirrorTool::CanAttach(const Selection &sel) const {
     return AreSelectedModelsOfType<MirroredModel>(sel);
 }
 
 void MirrorTool::Attach() {
-    ASSERT(Util::IsA<MirroredModel>(GetModelAttachedTo()));
+    mm_ = Util::CastToDerived<MirroredModel>(GetModelAttachedTo());
+    ASSERT(mm_);
 
-    // Set up planes if not already done.
-    if (! planes_[0]) {
-        for (int dim = 0; dim < 3; ++dim) {
-            std::string name = "XPlane";
-            name[0] += dim;
-            planes_[dim] =
-                SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, name);
-            // Use translucent color.
-            const float kPlaneOpacity = .2f;
-            Color color = SG::ColorMap::SGetColorForDimension(dim);
-            color[3] = kPlaneOpacity;
-            planes_[dim]->SetInactiveColor(color);
+    // Do not use MatchModelAndGetSize() here because the centering is
+    // different.
 
-            planes_[dim]->GetClicked().AddObserver(
-                this, [&, dim](const ClickInfo &){ PlaneClicked_(dim); });
-        }
-    }
+    // Rotate the MirrorTool to align with the MirroredModel even if
+    // is_axis_aligned is true.
+    SetRotation(mm_->GetRotation());
 
-    // Match the MirroredModel's transform and pass the size of the Model for
-    // scaling. Allow axis alignment.
-    const Vector3f model_size = MatchModelAndGetSize(true);
+    // Translate the MirrorTool so that it is centered on the unclipped mesh.
+    const Bounds &obj_bounds = mm_->GetOperandModel()->GetBounds();
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+    SetTranslation(osm * obj_bounds.GetCenter() - mm_->GetLocalCenterOffset());
 
-    // Make the plane rectangles a little larger than the model size.
-    const float kPlaneScale = 1.8f;
-    SetScale(kPlaneScale * model_size);
+    plane_widget_->SetSize(5);
+
+    // Convert the MirroredModel's Plane from object to stage coordinates.
+    stage_plane_ = GetStagePlaneFromModel_();
+
+    // Update the PlaneWidget from the stage_plane_.
+    UpdatePlaneWidgetPlane_();
 }
 
 void MirrorTool::Detach() {
-    // Nothing to do here.
+    mm_.reset();
 }
 
-void MirrorTool::PlaneClicked_(int dim) {
+void MirrorTool::Activate_(bool is_activation) {
+    ASSERT(mm_);
     const auto &context = GetContext();
 
-    // Get the mirror plane in stage coordinates based on axis-alignment.
-    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    const Vector3f axis = GetAxis(dim);
-    const Plane stage_plane = IsAxisAligned() ?
-        Plane(osm * Point3f::Zero(), axis) :
-        Plane(Point3f(GetTranslation()), osm * axis);
+    stage_plane_ = GetStagePlaneFromWidget_();
 
-    // Add and execute a ChangeMirrorCommand.
-    auto command = CreateCommand<ChangeMirrorCommand>();
-    command->SetFromSelection(GetSelection());
-    command->SetPlane(stage_plane);
-    command->SetInPlace(context.is_modified_mode);
-    context.command_manager->AddAndDo(command);
+    if (is_activation) {
+        // Save the center of the unclipped Model in stage coordinates.
+        stage_center_ = Point3f(GetTranslation());
+        start_stage_plane_ = stage_plane_;
+        context.target_manager->StartSnapping();
+    }
+    else {
+        plane_widget_->UnhighlightArrowColor();
+        context.target_manager->EndSnapping();
+
+        GetDragEnded().Notify(*this);
+        GetContext().target_manager->EndSnapping();
+
+        // If there was a significant enough change due to a drag, execute the
+        // command to change the MirroredModel(s).
+        if (command_) {
+            const Plane &new_plane = command_->GetPlane();
+            if (! AreClose(new_plane.distance, start_stage_plane_.distance) ||
+                ! AreDirectionsClose(new_plane.normal,
+                                     start_stage_plane_.normal,
+                                     Anglef::FromDegrees(.01f)))
+                GetContext().command_manager->AddAndDo(command_);
+            command_.reset();
+        }
+    }
+}
+
+void MirrorTool::PlaneChanged_(bool is_rotation) {
+    const auto &context = GetContext();
+
+    stage_plane_ = GetStagePlaneFromWidget_();
+
+    // If this is the first change, create the ChangeMirrorCommand and start the
+    // drag.
+    if (! command_) {
+        command_ = CreateCommand<ChangeMirrorCommand>();
+        command_->SetFromSelection(GetSelection());
+        GetDragStarted().Notify(*this);
+    }
+
+    // Try snapping unless modified dragging.
+    plane_widget_->UnhighlightArrowColor();
+    Color color = Color::White();  // Changed if snapped.
+    if (! context.is_modified_mode) {
+        int snapped_dim = -1;
+        const bool is_snapped = is_rotation ?
+            SnapRotation_(snapped_dim) : SnapTranslation_();
+        if (is_snapped) {
+            color = snapped_dim >= 0 ?
+                SG::ColorMap::SGetColorForDimension(snapped_dim) :
+                GetSnappedFeedbackColor();
+            plane_widget_->HighlightArrowColor(color);
+        }
+    }
+
+    command_->SetPlane(stage_plane_);
+    context.command_manager->SimulateDo(command_);
+}
+
+bool MirrorTool::SnapRotation_(int &snapped_dim) {
+    const auto &context = GetContext();
+    auto &tm = *context.target_manager;
+
+    bool is_snapped = false;
+    snapped_dim     = -1;
+
+    // Try to snap to the point target direction (in stage coordinates) if it
+    // is active.
+    Rotationf rot;
+    if (tm.SnapToDirection(stage_plane_.normal, rot)) {
+        stage_plane_.normal = tm.GetPointTarget().GetDirection();
+        is_snapped = true;
+    }
+
+    // Otherwise, try to snap to any of the principal axes. If is_axis_aligned
+    // is true, use the stage-coordinate axes as is. Otherwise, convert
+    // object-coordinate axes into stage coordinates first.
+    else {
+        const bool use_stage_coords =
+            context.command_manager->GetSessionState()->IsAxisAligned();
+        const Matrix4f m = use_stage_coords ? Matrix4f::Identity() :
+            GetStageCoordConv().GetObjectToRootMatrix();
+        for (int dim = 0; dim < 3; ++dim) {
+            const Vector3f axis = ion::math::Normalized(m * GetAxis(dim));
+            if (tm.ShouldSnapDirections(stage_plane_.normal, axis, rot)) {
+                stage_plane_.normal = axis;
+                snapped_dim = dim;
+                break;
+            }
+            else if (tm.ShouldSnapDirections(stage_plane_.normal, -axis, rot)) {
+                stage_plane_.normal = -axis;
+                snapped_dim = dim;
+                break;
+            }
+        }
+        is_snapped = snapped_dim >= 0;
+    }
+    if (is_snapped) {
+        // Maintain the same distance from the center.
+        ASSERT(AreClose(ion::math::Length(stage_plane_.normal), 1));
+        const float dist = start_stage_plane_.GetDistanceToPoint(stage_center_);
+        const Point3f plane_pt = stage_center_ - dist * stage_plane_.normal;
+        stage_plane_ = Plane(plane_pt, stage_plane_.normal);
+        UpdatePlaneWidgetPlane_();
+    }
+
+    return is_snapped;
+}
+
+bool MirrorTool::SnapTranslation_() {
+    auto &tm = *GetContext().target_manager;
+
+    // Try to snap to the point target position (if it is active) or the center
+    // of the unclipped Model, whichever is closer.
+    float dist = stage_plane_.GetDistanceToPoint(stage_center_);
+    if (tm.IsPointTargetVisible()) {
+        const float target_dist =
+            stage_plane_.GetDistanceToPoint(tm.GetPointTarget().GetPosition());
+        if (std::abs(target_dist) < std::abs(dist))
+            dist = target_dist;
+    }
+    if (std::abs(dist) <= TK::kSnapPointTolerance) {
+        stage_plane_.distance += dist;
+        UpdatePlaneWidgetPlane_();
+        return true;
+    }
+    return false;
+}
+
+Plane MirrorTool::GetStagePlaneFromModel_() const {
+    // Convert to stage coordinates and then undo the centering translation.
+    ASSERT(mm_);
+    return TranslatePlane(
+        TransformPlane(mm_->GetPlane(),
+                       GetStageCoordConv().GetObjectToRootMatrix()),
+        -mm_->GetLocalCenterOffset());
+}
+
+Plane MirrorTool::GetStagePlaneFromWidget_() const {
+    // Need to apply the current rotation and translation of the MirrorTool to
+    // the PlaneWidget's Plane. Since the MirrorTool is never scaled, its model
+    // matrix should do the trick.
+    return TransformPlane(plane_widget_->GetPlane(), GetModelMatrix());
+}
+
+Plane MirrorTool::StageToObjectPlane_(const Plane &stage_plane) const {
+    // Use the distance from the PlaneWidget's plane, since that is based on
+    // the actual plane translation.
+    return Plane(plane_widget_->GetPlane().distance,
+                 TransformNormal(stage_plane.normal,
+                                 GetStageCoordConv().GetRootToObjectMatrix()));
+}
+
+void MirrorTool::UpdatePlaneWidgetPlane_() {
+    // This is the reverse of GetStagePlaneFromWidget_().
+    plane_widget_->SetPlane(
+        TransformPlane(stage_plane_, ion::math::Inverse(GetModelMatrix())));
 }
