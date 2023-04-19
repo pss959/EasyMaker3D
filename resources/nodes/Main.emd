@@ -11,9 +11,6 @@ Node "Main" {
         Uniform "uEdgeWidth"          { float_val: 0 },
         Uniform "uBuildVolumeSize"    { vec3f_val: 0 0 0 },
         Uniform "uWorldToStageMatrix" { mat4_val: $MAT4_0 }
-        Uniform "uIsSelected"         { int_val: 0 }
-        Uniform "uDoClip"             { int_val: 0 }
-        Uniform "uClipPlaneEq"        { vec4f_val: 0 0 0 0 },
       ],
     }
   ],

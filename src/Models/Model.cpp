@@ -169,12 +169,6 @@ void Model::SetStatus(Status status) {
         // Update the selection count.
         if (status_ == Status::kPrimary || status_ == Status::kSecondary)
             ++selection_count_;
-
-        if (GetIonContext()) {
-            // Set the uIsSelected uniform for real-time clipping.
-            auto &block = GetUniformBlockForPass("Lighting");
-            block.SetIntUniformValue("uIsSelected", IsSelected());
-        }
     }
 }
 
@@ -247,11 +241,6 @@ bool Model::IsMeshValid(std::string &reason) const {
 void Model::PostSetUpIon() {
     ClickableWidget::PostSetUpIon();
     UpdateColor_();
-
-    // Create and initialize uniforms for real-time clipping.
-    auto &block = GetUniformBlockForPass("Lighting");
-    block.CreateAndAddUniform("uIsSelected",  "int_val");
-    block.SetIntUniformValue("uIsSelected",   0);
 }
 
 void Model::UpdateForRenderPass(const std::string &pass_name) {

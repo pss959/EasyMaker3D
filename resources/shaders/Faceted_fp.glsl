@@ -18,11 +18,6 @@ uniform vec3       uBuildVolumeSize;
 uniform mat4       uViewMatrix;
 uniform mat4       uWorldToStageMatrix;
 
-// Uniforms for real-time clipping.
-uniform int        uDoClip;       // True if clipping is enabled.
-uniform int        uIsSelected;   // True if part of a selected Model.
-uniform vec4       uClipPlaneEq;  // Clipping plane equation (stage coords).
-
 // Per-light uniforms:
 uniform vec3       uLightPos[MAX_LIGHTS];     // Position in world coords.
 uniform vec4       uLightColor[MAX_LIGHTS];
@@ -43,14 +38,6 @@ out vec4 result_color;
 
 void main(void) {
   vec3 stage_pos = (uWorldToStageMatrix * vec4(frag_input.world_pos, 1)).xyz;
-
-  // Do clipping first if requested. Plug the position in stage coordinates
-  // into the clipping plane equation.
-  if (uDoClip != 0 && uIsSelected != 0) {
-    float d = dot(uClipPlaneEq.xyz, stage_pos) + uClipPlaneEq.w;
-    if (d >= -.001)
-      discard;
-  }
 
   // Do all lighting computations in world coordinates.
   ldata.is_two_sided = false;

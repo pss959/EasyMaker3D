@@ -34,14 +34,6 @@ void RootModel::ShowEdges(bool show) {
     }
 }
 
-void RootModel::EnableClipping(bool enable, const Plane &stage_plane) {
-    auto &block = GetUniformBlockForPass("Lighting");
-    block.SetIntUniformValue("uDoClip", enable);
-    if (enable)
-        block.SetVector4fUniformValue("uClipPlaneEq",
-                                      stage_plane.GetCoefficients());
-}
-
 void RootModel::HideModel(const ModelPtr &model) {
     ASSERT(model);
     ASSERT(model->IsTopLevel());

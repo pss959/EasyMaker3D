@@ -116,9 +116,5 @@ class ClipTool : public Tool {
     /// Updates feedback for plane translation.
     void UpdateTranslationFeedback_(const Color &color);
 
-    /// Updates the state of the real-time clipping plane implemented in the
-    /// Faceted shader.
-    void UpdateRealTimeClipPlane_(bool enable);
-
     friend class Parser::Registry;
 };

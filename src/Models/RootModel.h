@@ -38,7 +38,7 @@ class RootModel : public ParentModel {
 
     /// Updates global uniforms:
     /// - uWorldToStageMatrix: the matrix that converts from world to stage
-    ///   coordinates (needed for build volume and clipping math).
+    ///   coordinates (needed for build volume math).
     /// - uBuildVolumeSize: portions of Models outside this size (in stage
     ///   coordinates) are shown in a special color.
     void UpdateGlobalUniforms(const Matrix4f &wsm, const Vector3f &bv_size);
@@ -48,10 +48,6 @@ class RootModel : public ParentModel {
 
     /// Returns true if Model edges are currently shown.
     bool AreEdgesShown() const { return are_edges_shown_; }
-
-    /// Enables or disables real-time clipping of all selected Models using the
-    /// given Plane (in stage coordinates).
-    void EnableClipping(bool enable, const Plane &stage_plane);
 
     /// \name Model Hiding and Showing.
     ///@{

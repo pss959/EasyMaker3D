@@ -15,7 +15,6 @@
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
 #include "Models/ClippedModel.h"
-#include "Models/RootModel.h"
 #include "Place/PointTarget.h"
 #include "SG/ColorMap.h"
 #include "SG/CoordConv.h"
@@ -114,7 +113,6 @@ void ClipTool::Activate_(bool is_activation) {
         start_stage_plane_ = stage_plane_;
         feedback_ = context.feedback_manager->Activate<LinearFeedback>();
         context.target_manager->StartSnapping();
-        UpdateRealTimeClipPlane_(true);
     }
     else {
         plane_widget_->UnhighlightArrowColor();
@@ -138,7 +136,6 @@ void ClipTool::Activate_(bool is_activation) {
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
-        UpdateRealTimeClipPlane_(false);
     }
 }
 
@@ -172,8 +169,6 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
 
     command_->SetPlane(stage_plane_);
     context.command_manager->SimulateDo(command_);
-
-    UpdateRealTimeClipPlane_(true);
 
     // Update translation feedback.
     if (! is_rotation)
@@ -329,8 +324,4 @@ void ClipTool::UpdateTranslationFeedback_(const Color &color) {
     feedback_->SetColor(color);
     feedback_->SpanLength(p0, stage_plane_.normal,
                           ion::math::Dot(p1 - p0, stage_plane_.normal));
-}
-
-void ClipTool::UpdateRealTimeClipPlane_(bool enable) {
-    GetContext().root_model->EnableClipping(enable, stage_plane_);
 }
