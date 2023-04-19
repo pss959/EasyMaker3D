@@ -13,4 +13,10 @@ class ConvertMirrorExecutor : public ConvertExecutorBase {
 
   protected:
     virtual ConvertedModelPtr CreateConvertedModel() override;
+
+    /// Redefines this to use the primary MirroredModel's plane for all
+    /// secondary selections.
+    virtual void InitConvertedModel(ConvertedModel &model,
+                                    const SelPath &path,
+                                    const SelPath &primary_path) override;
 };

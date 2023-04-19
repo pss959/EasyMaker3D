@@ -4,7 +4,7 @@
 #include "Math/MeshUtils.h"
 
 void MirroredModel::AddFields() {
-    AddModelField(plane_.Init("plane", Plane(0, Vector3f::AxisY())));
+    AddModelField(plane_.Init("plane", GetDefaultPlane()));
 
     ConvertedModel::AddFields();
 }

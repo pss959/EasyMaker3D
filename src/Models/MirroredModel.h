@@ -15,6 +15,9 @@ DECL_SHARED_PTR(MirroredModel);
 /// \ingroup Models
 class MirroredModel : public ConvertedModel {
   public:
+    /// Returns the default mirroring Plane.
+    static Plane GetDefaultPlane() { return Plane(0, Vector3f::AxisX()); }
+
     /// Sets the Plane (specified in object coordinates of the operand Model)
     /// to mirror across.
     void SetPlane(const Plane &plane);
