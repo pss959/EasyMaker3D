@@ -228,6 +228,11 @@ class Model : public ClickableWidget {
                                  Point3f &position0,
                                  Point3f &position1) override;
 
+    /// XXXX
+    const std::vector<Parser::Field *> GetModelFields() const {
+        return model_fields_;
+    }
+
   protected:
     Model();
 

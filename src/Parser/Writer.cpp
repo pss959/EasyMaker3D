@@ -47,6 +47,12 @@ class Writer::Impl_ {
             out_ << "\n";
     }
 
+    void WriteField(const Field &field) {
+        out_ << Indent_() << field.GetName() << ": ";
+        field.WriteValue(value_writer_);
+        out_ << ",\n";
+    }
+
   private:
     std::ostream &out_;                      ///< Stream passed to constructor.
     int           cur_depth_ = 0;            ///< Current depth in graph.
@@ -96,11 +102,8 @@ bool Writer::Impl_::WriteObject_(const Object &obj, bool do_indent) {
 
     // Write all non-hidden fields that have values set.
     for (auto field: obj.GetFields()) {
-        if (field->WasSet() && ! field->IsHidden()) {
-            out_ << Indent_() << field->GetName() << ": ";
-            field->WriteValue(value_writer_);
-            out_ << ",\n";
-        }
+        if (field->WasSet() && ! field->IsHidden())
+            WriteField(*field);
     }
 
     WriteObjFooter_();
@@ -186,6 +189,10 @@ void Writer::WriteObjectConditional(const Object &obj, const ObjectFunc &func) {
     impl_->SetObjectFunction(func);
     impl_->WriteObject(obj);
     impl_->SetObjectFunction(nullptr);
+}
+
+void Writer::WriteField(const Field &field) {
+    impl_->WriteField(field);
 }
 
 }  // namespace Parser

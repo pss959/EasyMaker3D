@@ -52,6 +52,7 @@ class ShortcutMap_ {
         kPrintMatrices,
         kPrintMatricesOnPath,
         kPrintModels,
+        kPrintModelsFull,
         kPrintPaneTreeBrief,
         kPrintPaneTreeFull,
         kPrintPosition,
@@ -144,6 +145,8 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print matrices for all nodes in the current path" },
         { "Alt-o",       Action::kPrintModels,
           "Print all models in the scene" },
+        { "Shift-Alt-o", Action::kPrintModelsFull,
+          "Print all models in the scene with model-specific fields" },
         { "Alt-p",       Action::kPrintPaneTreeBrief,
           "Print a brief pane tree for the current board" },
         { "Shift-Alt-p", Action::kPrintPaneTreeFull,
@@ -318,7 +321,10 @@ static bool HandleShortcut_(const std::string &str) {
         Debug::PrintMatricesOnPath(limit_path_);
         break;
       case SAction::kPrintModels:
-        Debug::PrintModels(*scene_context_->root_model);
+        Debug::PrintModels(*scene_context_->root_model, false);
+        break;
+      case SAction::kPrintModelsFull:
+        Debug::PrintModels(*scene_context_->root_model, true);
         break;
       case SAction::kPrintPaneTreeBrief:
         Debug::PrintPaneTree(GetBoardPane_(), true);

@@ -7,6 +7,7 @@
 
 namespace Parser {
 
+class Field;
 class Object;
 
 /// The Writer class writes any parsed Object to a stream.
@@ -36,6 +37,9 @@ class Writer {
     /// written. Otherwise, it is written and the function is called again with
     /// the flag set to false afterwards.
     void WriteObjectConditional(const Object &obj, const ObjectFunc &func);
+
+    /// Writes a single field.
+    void WriteField(const Field &field);
 
   private:
     class Impl_;

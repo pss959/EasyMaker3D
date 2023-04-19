@@ -258,7 +258,7 @@ static void PrintPaneTree_(const Pane &pane, int level, bool is_brief) {
         PrintPaneTree_(dp->GetMenuPane(), level + 1, is_brief);
 }
 
-static void PrintModelTree_(const Model &model) {
+static void PrintModelTree_(const Model &model, bool is_full) {
     const int level = model.GetLevel();
     std::cout << Indent_(level) << GetDesc_(model)
               << " " << Util::EnumName(model.GetStatus()) << "\n";
@@ -266,10 +266,22 @@ static void PrintModelTree_(const Model &model) {
               << ComputeMeshBounds(model.GetCurrentMesh()) << "\n";
     PrintTransformFields_(model, level);
 
+    // Write out all Model fields (except those that refer to other Models).
+    if (is_full) {
+        Parser::Writer writer(std::cout);
+        for (const auto &f: model.GetModelFields()) {
+            if (! dynamic_cast<const Parser::ObjectField<Model> *>(f) &&
+                ! dynamic_cast<const Parser::ObjectListField<Model> *>(f)) {
+                std::cout << Indent_(level + 1);
+                writer.WriteField(*f);
+            }
+        }
+    }
+
     // Recurse on ParentModels.
     if (const auto *parent = dynamic_cast<const ParentModel *>(&model)) {
         for (size_t i = 0; i < parent->GetChildModelCount(); ++i)
-            PrintModelTree_(*parent->GetChildModel(i));
+            PrintModelTree_(*parent->GetChildModel(i), is_full);
     }
 }
 
@@ -407,9 +419,9 @@ void PrintPaneTree(const Pane &root, bool is_brief) {
     PrintPaneTree_(root, 0, is_brief);
 }
 
-void PrintModels(const Model &root) {
+void PrintModels(const Model &root, bool is_full) {
     Surrounder_ surrounder;
-    PrintModelTree_(root);
+    PrintModelTree_(root, is_full);
 }
 
 void PrintViewInfo(const Frustum &frustum, const SG::Node &stage) {

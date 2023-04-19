@@ -70,13 +70,15 @@ void PrintNodesAndShapes(const SG::Node &root);
 void PrintNodesAndShapesOnPath(const SG::NodePath &path,
                                bool print_below = true);
 
-/// Prints an indented tree of Panes starting with the given root Pane. If
+/// Prints an indented tree of Panes starting with the given root Pane. If \p
 /// is_brief is true, this just prints the Panes with their name and current
 /// layout position.
 void PrintPaneTree(const Pane &root, bool is_brief);
 
-/// Prints an indented tree of Models starting with the given root.
-void PrintModels(const Model &root);
+/// Prints an indented tree of Models and their transforms starting with the
+/// given root. If \p is_full is true, all other Model-specific fields are
+/// printed as well.
+void PrintModels(const Model &root, bool is_full);
 
 /// Prints viewing information for the given Frustum and Stage.
 void PrintViewInfo(const Frustum &frustum, const SG::Node &stage);
