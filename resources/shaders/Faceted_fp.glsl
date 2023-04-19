@@ -48,13 +48,8 @@ void main(void) {
   // into the clipping plane equation.
   if (uDoClip != 0 && uIsSelected != 0) {
     float d = dot(uClipPlaneEq.xyz, stage_pos) + uClipPlaneEq.w;
-    if (d >= 0.)
+    if (d >= -.001)
       discard;
-    // Color fragments close to the clipping plane magenta.
-    if (d > -.1) {
-      result_color = vec4(1, .2, 1, 1);
-      return;
-    }
   }
 
   // Do all lighting computations in world coordinates.

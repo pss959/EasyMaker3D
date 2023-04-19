@@ -1,6 +1,5 @@
 #include "Tools/ClipTool.h"
 
-// XXXX Check all of these
 #include <algorithm>
 #include <limits>
 
@@ -158,12 +157,13 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
 
     // Try snapping unless modified dragging.
     plane_widget_->UnhighlightArrowColor();
+    Color color = Color::White();  // Changed if snapped.
     if (! context.is_modified_mode) {
         int snapped_dim = -1;
-        const bool is_snapped =
-            is_rotation ? SnapRotation_(snapped_dim) : SnapTranslation_();
+        const bool is_snapped = is_rotation ?
+            SnapRotation_(snapped_dim) : SnapTranslation_();
         if (is_snapped) {
-            const Color color = snapped_dim >= 0 ?
+            color = snapped_dim >= 0 ?
                 SG::ColorMap::SGetColorForDimension(snapped_dim) :
                 GetSnappedFeedbackColor();
             plane_widget_->HighlightArrowColor(color);
@@ -177,7 +177,7 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
 
     // Update translation feedback.
     if (! is_rotation)
-        UpdateTranslationFeedback_(Color(1, 0, 0, 1));  // XXXX Color
+        UpdateTranslationFeedback_(color);
 }
 
 bool ClipTool::SnapRotation_(int &snapped_dim) {
@@ -290,8 +290,8 @@ void ClipTool::UpdateTranslationRange_() {
     ASSERT(cm_);
     const auto &mesh        = cm_->GetOperandModel()->GetMesh();
     const Vector3f &scale   = cm_->GetScale();
-    float          min_dist =  std::numeric_limits<float>::max();
-    float          max_dist = -std::numeric_limits<float>::max();
+    float min_dist =  std::numeric_limits<float>::max();
+    float max_dist = -std::numeric_limits<float>::max();
     const auto object_plane = StageToObjectPlane_(stage_plane_);
     for (const Point3f &p: mesh.points) {
         const float dist = SignedDistance(ScalePoint(p, scale),
@@ -307,14 +307,28 @@ void ClipTool::UpdateTranslationRange_() {
 }
 
 void ClipTool::UpdateTranslationFeedback_(const Color &color) {
-    // XXXX Consider showing something else? Model size?
-
-    // Need signed distance in stage coordinates.
-    const auto &current_plane = plane_widget_->GetPlane();
-    const float distance = current_plane.distance - start_stage_plane_.distance;
-
+    // Show the ClippedModel size in the direction of the plane normal. Find
+    // the position of the minimum point (relative to the clipping plane) in
+    // stage coordinates.
+    ASSERT(cm_);
+    const auto &mesh        = cm_->GetMesh();
+    const Vector3f &scale   = cm_->GetScale();
+    float min_dist = std::numeric_limits<float>::max();
+    const auto object_plane = StageToObjectPlane_(stage_plane_);
+    Point3f min_pt(0, 0, 0);
+    for (const Point3f &p: mesh.points) {
+        const Point3f scaled_pt = ScalePoint(p, scale);
+        const float dist = SignedDistance(scaled_pt, object_plane.normal);
+        if (dist < min_dist) {
+            min_dist = dist;
+            min_pt   = scaled_pt;
+        }
+    }
+    const Point3f p0 = GetModelMatrix() * min_pt + cm_->GetLocalCenterOffset();
+    const Point3f p1 = Point3f(stage_plane_.distance * stage_plane_.normal);
     feedback_->SetColor(color);
-    feedback_->SpanLength(Point3f::Zero(), current_plane.normal, distance); // XXXX pos
+    feedback_->SpanLength(p0, stage_plane_.normal,
+                          ion::math::Dot(p1 - p0, stage_plane_.normal));
 }
 
 void ClipTool::UpdateRealTimeClipPlane_(bool enable) {

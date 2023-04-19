@@ -71,7 +71,7 @@ class ClipTool : public Tool {
     /// Center of the unclipped model in stage coordinates.
     Point3f              stage_center_;
 
-    /// Feedback showing translation distance in local coordinates.
+    /// Feedback showing ClippedModel size in the direction of the plane normal.
     LinearFeedbackPtr    feedback_;
 
     // Widget callbacks.
