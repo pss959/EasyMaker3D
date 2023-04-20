@@ -124,6 +124,12 @@ class Model : public ClickableWidget {
     /// necessary.
     ModelPtr CreateClone() const;
 
+    /// Returns a vector of fields intrinsic to this derived Model instance.
+    /// This is used only to print extra information when debugging.
+    const std::vector<Parser::Field *> GetModelFields() const {
+        return model_fields_;
+    }
+
     // ------------------------------------------------------------------------
     // Placement.
     // ------------------------------------------------------------------------
@@ -227,11 +233,6 @@ class Model : public ClickableWidget {
     virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
                                  Point3f &position0,
                                  Point3f &position1) override;
-
-    /// XXXX
-    const std::vector<Parser::Field *> GetModelFields() const {
-        return model_fields_;
-    }
 
   protected:
     Model();
