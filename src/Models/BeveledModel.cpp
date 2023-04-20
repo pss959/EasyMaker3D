@@ -78,24 +78,6 @@ void BeveledModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     operand_scale_ = from_bev.operand_scale_;
 }
 
-bool BeveledModel::ProcessChange(SG::Change change, const Object &obj) {
-    if (! ConvertedModel::ProcessChange(change, obj))
-        return false;
-
-    // If the scale in the operand Model changed, need to rebuild the mesh. Do
-    // NOT do anything if there is no operand Model, which can happen during
-    // CopyContentsFrom().
-    const auto &operand = GetOperandModel();
-    if (operand && change == SG::Change::kTransform) {
-        const Vector3f new_scale = operand->GetScale();
-        if (new_scale != operand_scale_) {
-            operand_scale_ = new_scale;
-            MarkMeshAsStale();
-        }
-    }
-    return true;
-}
-
 TriMesh BeveledModel::ConvertMesh(const TriMesh &mesh) {
     // Apply the bevel to the scaled operand mesh.
     const auto scale = GetOperandModel()->GetScale();

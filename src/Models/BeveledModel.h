@@ -39,10 +39,6 @@ class BeveledModel : public ConvertedModel {
     virtual void CopyContentsFrom(const Parser::Object &from,
                                   bool is_deep) override;
 
-    /// Redefines this to also mark the mesh as stale if the operand Model's
-    /// scale changed.
-    virtual bool ProcessChange(SG::Change change, const Object &obj) override;
-
     /// Overrides this to deal with the difference in scale.
     virtual void SyncTransformsFromOperand(const Model &operand) override;
 
