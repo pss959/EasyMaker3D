@@ -6,7 +6,6 @@
 
 void ChangeMirrorCommand::AddFields() {
     AddField(plane_.Init("plane"));
-    AddField(is_in_place_.Init("is_in_place", false));
 
     MultiModelCommand::AddFields();
 }

@@ -232,7 +232,7 @@ Plane MirrorTool::GetStagePlaneFromModel_() const {
     // Convert to stage coordinates and then undo the centering translation.
     ASSERT(mm_);
     return TranslatePlane(
-        TransformPlane(mm_->GetPlane(),
+        TransformPlane(Plane(0, mm_->GetPlaneNormal()),
                        GetStageCoordConv().GetObjectToRootMatrix()),
         -mm_->GetLocalCenterOffset());
 }

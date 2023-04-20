@@ -22,14 +22,6 @@ class ChangeMirrorCommand : public MultiModelCommand {
     /// Returns the Plane (in stage coordinates) to mirror across.
     const Plane & GetPlane() const { return plane_; }
 
-    /// Returns a flag indicating whether secondary Models are mirrored in place
-    /// or relative to the primary model.
-    bool IsInPlace() const { return is_in_place_; }
-
-    /// Sets a flag indicating whether secondary Models are mirrored in place
-    /// or relative to the primary model.
-    void SetInPlace(bool in_place) { is_in_place_ = in_place; }
-
   protected:
     ChangeMirrorCommand() {}
 
@@ -40,7 +32,6 @@ class ChangeMirrorCommand : public MultiModelCommand {
     /// \name Parsed Fields
     ///@{
     Parser::TField<Plane> plane_;
-    Parser::TField<bool>  is_in_place_;
     ///@}
 
     friend class Parser::Registry;

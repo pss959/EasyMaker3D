@@ -34,6 +34,7 @@ class ConvertExecutorBase : public Executor {
         struct PerModel {
             SelPath           path_to_model;    ///< Path to Model to convert.
             ConvertedModelPtr converted_model;  ///< Resulting ConvertedModel.
+            Vector3f          old_translation;
         };
         std::vector<PerModel> per_model;
     };

@@ -13,27 +13,29 @@ void ChangeMirrorExecutor::Execute(Command &command, Command::Op operation) {
     if (operation == Command::Op::kDo) {
         ChangeMirrorCommand &cmc =
             GetTypedCommand<ChangeMirrorCommand>(command);
+
         for (auto &pm: data.per_model) {
             MirroredModel &mm = GetTypedModel<MirroredModel>(pm.path_to_model);
-            // Save the current translation without offset compensation.
-            const Vector3f trans =
-                mm.GetTranslation() - mm.GetLocalCenterOffset();
 
             // Convert the plane from stage coordinates into object coordinates.
-            const Plane object_plane = TransformPlane(
-                TranslatePlane(cmc.GetPlane(), mm.GetLocalCenterOffset()),
-                pm.path_to_model.GetCoordConv().GetRootToObjectMatrix());
+            const auto cc = pm.path_to_model.GetCoordConv();
+            const Plane &stage_plane = cmc.GetPlane();
+            const Plane object_plane =
+                TransformPlane(stage_plane, cc.GetRootToObjectMatrix());
 
-            // Set the plane in the MirroredModel and compensate for any new
-            // centering translation.
-            mm.SetPlane(object_plane);
-            mm.SetTranslation(trans + mm.GetLocalCenterOffset());
+            // Set the plane in the MirroredModel.
+            mm.SetPlaneNormal(object_plane.normal);
+
+            // Translate to the other side of the stage plane.
+            const Point3f center =
+                cc.LocalToRoot(Point3f(mm.GetOperandModel()->GetTranslation()));
+            mm.SetTranslation(cc.RootToLocal(stage_plane.MirrorPoint(center)));
         }
     }
     else {
         for (auto &pm: data.per_model) {
             MirroredModel &mm = GetTypedModel<MirroredModel>(pm.path_to_model);
-            mm.SetPlane(pm.old_object_plane);
+            mm.SetPlaneNormal(pm.old_object_plane_normal);
             mm.SetTranslation(pm.old_translation);
         }
     }
@@ -60,9 +62,9 @@ ChangeMirrorExecutor::ExecData_ & ChangeMirrorExecutor::GetExecData_(
             ExecData_::PerModel &pm   = data->per_model[i];
             const SelPath        path = FindPathToModel(model_names[i]);
             const MirroredModel  &mm  = GetTypedModel<MirroredModel>(path);
-            pm.path_to_model    = path;
-            pm.old_object_plane = mm.GetPlane();
-            pm.old_translation  = mm.GetTranslation();
+            pm.path_to_model           = path;
+            pm.old_object_plane_normal = mm.GetPlaneNormal();
+            pm.old_translation         = mm.GetTranslation();
         }
         command.SetExecData(data);
     }

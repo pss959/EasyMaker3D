@@ -9,22 +9,27 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(MirroredModel);
 
 /// MirroredModel is a derived ConvertedModel class that represents a Model
-/// that has been mirrored across a plane specified in object coordinates of
-/// the operand Model.
+/// that has been mirrored across a plane through the center of the Model. The
+/// plane normal is specified in object coordinates of the operand Model.
+///
+/// The MirroredModel mirrors the operand Model's mesh around the center, but
+/// the mirroring usually results in a change in translation.  Therefore, the
+/// translation in the MirroredModel usually differs from the translation in
+/// the operand.
 ///
 /// \ingroup Models
 class MirroredModel : public ConvertedModel {
   public:
-    /// Returns the default mirroring Plane.
-    static Plane GetDefaultPlane() { return Plane(0, Vector3f::AxisX()); }
+    /// Returns the default mirroring plane normal.
+    static Vector3f GetDefaultPlaneNormal() { return Vector3f::AxisX(); }
 
-    /// Sets the Plane (specified in object coordinates of the operand Model)
-    /// to mirror across.
-    void SetPlane(const Plane &plane);
+    /// Sets the plane normal (specified in object coordinates of the operand
+    /// Model) to mirror across.
+    void SetPlaneNormal(const Vector3f &plane_normal);
 
-    /// Returns the mirroring Plane (in object coordinates of the operand
-    /// Model).
-    const Plane & GetPlane() const { return plane_; }
+    /// Returns the mirroring plane normal (in object coordinates of the
+    /// operand Model).
+    const Vector3f & GetPlaneNormal() const { return plane_normal_; }
 
   protected:
     MirroredModel() {}
@@ -32,10 +37,16 @@ class MirroredModel : public ConvertedModel {
     virtual bool IsValid(std::string &details) override;
     virtual TriMesh ConvertMesh(const TriMesh &mesh) override;
 
+    /// Overrides this to deal with the difference in translation.
+    virtual void SyncTransformsFromOperand(const Model &operand) override;
+
+    /// Overrides this to deal with the difference in translation.
+    virtual void SyncTransformsToOperand(Model &operand) const override;
+
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<Plane> plane_;
+    Parser::TField<Vector3f> plane_normal_;
     ///@}
 
     friend class Parser::Registry;

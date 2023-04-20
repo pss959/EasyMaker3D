@@ -24,7 +24,7 @@ class ChangeMirrorExecutor : public Executor {
         /// Data per Model to operate on.
         struct PerModel {
             SelPath  path_to_model;
-            Plane    old_object_plane;
+            Vector3f old_object_plane_normal;
             Vector3f old_translation;
         };
         std::vector<PerModel> per_model;

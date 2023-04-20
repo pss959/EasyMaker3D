@@ -28,6 +28,11 @@ void ConvertExecutorBase::Execute(Command &command, Command::Op operation) {
             old_model = pm.converted_model;
             new_model = pm.path_to_model.GetModel();
             context.name_manager->Remove(old_model->GetName());
+
+            // Some derived Executors change the translation of the resulting
+            // ConvertedModel, which is then sync'ed to the operand Model.
+            // Restore the original translation just in case.
+            new_model->SetTranslation(pm.old_translation);
         }
         const int index = context.root_model->GetChildModelIndex(old_model);
         context.root_model->ReplaceChildModel(index, new_model);
@@ -71,6 +76,7 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             ExecData_::PerModel &pm = data->per_model[i];
             pm.path_to_model   = operand_path;
             pm.converted_model = result;
+            pm.old_translation = operand_path.GetModel()->GetTranslation();
 
             // Let the derived class set up the ConvertedModel if necessary.
             // Pass true for the primary selection.
