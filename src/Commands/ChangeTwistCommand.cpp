@@ -1,6 +1,7 @@
 #include "Commands/ChangeTwistCommand.h"
 
 #include "Math/Linear.h"
+#include "Math/Twist.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
 
@@ -26,14 +27,14 @@ std::string ChangeTwistCommand::GetDescription() const {
     return "Twisted " + GetModelsDesc(GetModelNames());
 }
 
-void ChangeTwistCommand::SetTwist(const TwistedModel::Twist &twist) {
+void ChangeTwistCommand::SetTwist(const Twist &twist) {
     center_ = twist.center;
     axis_   = twist.axis;
     angle_  = twist.angle;
 }
 
-TwistedModel::Twist ChangeTwistCommand::GetTwist() const {
-    TwistedModel::Twist twist;
+Twist ChangeTwistCommand::GetTwist() const {
+    Twist twist;
     twist.center = center_;
     twist.axis   = axis_;
     twist.angle  = angle_;

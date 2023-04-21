@@ -2,6 +2,7 @@
 
 #include "Commands/ChangeTwistCommand.h"
 #include "Managers/SelectionManager.h"
+#include "Models/TwistedModel.h"
 
 void ChangeTwistExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -10,12 +11,8 @@ void ChangeTwistExecutor::Execute(Command &command, Command::Op operation) {
 
     for (auto &pm: data.per_model) {
         TwistedModel &tm = GetTypedModel<TwistedModel>(pm.path_to_model);
-        if (operation == Command::Op::kDo) {
-            tm.SetTwist(ctc.GetTwist());
-        }
-        else {   // Undo.
-            tm.SetTwist(pm.old_twist);
-        }
+        tm.SetTwist(operation == Command::Op::kDo ?
+                    ctc.GetTwist() : pm.old_twist);
     }
 
     // Reselect if undo or if command is finished being done.

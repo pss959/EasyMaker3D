@@ -3,8 +3,8 @@
 #include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
 #include "Math/Types.h"
-#include "Models/TwistedModel.h"
 
+struct Twist;
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ChangeTwistCommand);
@@ -17,11 +17,10 @@ class ChangeTwistCommand : public MultiModelCommand {
   public:
     virtual std::string GetDescription() const override;
 
-    /// Sets the twist parameters to those in the given TwistedModel::Twist
-    /// instance.
-    void SetTwist(const TwistedModel::Twist &twist);
+    /// Sets the twist parameters to those in the given Twist instance.
+    void SetTwist(const Twist &twist);
 
-    TwistedModel::Twist GetTwist() const;
+    Twist GetTwist() const;
 
   protected:
     ChangeTwistCommand() {}

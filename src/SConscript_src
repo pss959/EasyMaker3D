@@ -265,6 +265,7 @@ lib_sources = list(chain(
         'TextUtils',
         'ToString',
         'Triangulation',
+        'Twist',
         'Types',
     ]),
     PlaceInDir_('Models', [
