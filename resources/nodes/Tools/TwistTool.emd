@@ -1,26 +1,58 @@
 TwistTool "TwistTool" {
   TEMPLATES: [
-    PushButtonWidget "T_Plane" {
-      # Show the plane from both sides.
-      state_table: StateTable { cull_face_enabled: False },
-      shapes: [ Rectangle { plane_normal: "kPositiveX",  size: 1 1 } ],
+    Node "T_TwisterStick" {
+      disabled_flags: "kIntersectAll",
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
+        }
+      ],
+      shapes: [ Box { size: 1 .4 .4 } ],
+    }
+    Node "T_TwisterHandle" {
+      shapes: [ Ellipsoid { size: 1.2 1.2 1.2 } ]
     },
   ],
 
-  $NO_CAST_SHADOWS,
-
-  # Enable 2-sided lighting so planes show up well from any angle.
-  blocks: [
-    UniformBlock {
-      pass_name: $LIGHTING_PASS,
-      uniforms: [ Uniform "uTwoSidedLighting" { int_val: 1 } ]
-    }
-  ],
-
   children: [
-    # Colors are set in the code.
-    CLONE "T_Plane" "XPlane" {},
-    CLONE "T_Plane" "YPlane" { rotation: 0 0 1 90 },
-    CLONE "T_Plane" "ZPlane" { rotation: 0 1 0 90 },
+    # Handles for rotating the axis.
+    SphereWidget "AxisRotator" {
+      children: [
+        # Box at the bottom end
+        Node "Min" { shapes: [ Box { size: 1 .5 1 } ] },
+        # Cone at the top end
+        Node "Max" {
+          shapes: [ Cylinder { height: 2, top_radius: 0, bottom_radius: 1 } ]
+        }
+      ]
+    }
+
+    # Stick for translating the center.
+    Slider2DWidget "CenterTranslator" {
+      shapes: [ Box "Stick" { size: .8 1 .8 } ]
+    }
+
+    # Handles for rotating the twist angle.
+    DiscWidget "Twister" {
+      mode: "kRotationOnly",
+      children: [
+        Node "X" {
+          children: [
+            CLONE "T_TwisterHandle" "XMin"   {},
+            CLONE "T_TwisterHandle" "XMax"   {},
+            CLONE "T_TwisterStick"  "XStick" {},
+          ]
+        },
+        Node "Z" {
+          rotation: 0 1 0 90,
+          children: [
+            CLONE "T_TwisterHandle" "ZMin"   {},
+            CLONE "T_TwisterHandle" "ZMax"   {},
+            CLONE "T_TwisterStick"  "ZStick" {},
+          ]
+        },
+      ]
+     }
   ]
 }

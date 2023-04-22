@@ -7,6 +7,8 @@
 
 #include "Math/Types.h"
 
+struct Twist;
+
 /// \name Mesh Utility functions
 ///
 /// \ingroup Math
@@ -25,6 +27,9 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m);
 
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
+
+/// Twists a mesh using the given Twist struct.
+TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist);
 
 /// Returns a new version of a mesh with the bounds centered on the origin.
 TriMesh CenterMesh(const TriMesh &mesh);

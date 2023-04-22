@@ -1,6 +1,7 @@
 #include "Models/TwistedModel.h"
 
 #include "Math/Linear.h"
+#include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 
 void TwistedModel::AddFields() {
@@ -42,7 +43,5 @@ void TwistedModel::SetTwist(const Twist &twist) {
 }
 
 TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
-    // XXXX DO THE TWIST.
-    // return TwistMesh(mesh, twist_);
-    return mesh;
+    return TwistMesh(mesh, twist_);
 }

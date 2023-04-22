@@ -12,6 +12,7 @@
 
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
+#include "Math/Twist.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
@@ -64,7 +65,7 @@ static float GetTriangleArea_(const TriMesh &mesh, size_t i) {
 // ----------------------------------------------------------------------------
 
 TriMesh ScaleMesh(const TriMesh &mesh, const Vector3f &scale) {
-    const auto scale_pt = [scale](const Point3f &p){
+    const auto scale_pt = [&scale](const Point3f &p){
         return Point3f(scale[0] * p[0], scale[1] * p[1], scale[2] * p[2]);
     };
     return ModifyVertices_(mesh, scale_pt);
@@ -77,6 +78,17 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
     return ModifyVertices_(mesh, [plane](const Point3f &p){
         return plane.MirrorPoint(p); }, true);
+}
+
+TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist) {
+    const Rotationf rot = Rotationf::FromAxisAndAngle(twist.axis, twist.angle);
+
+    const auto twist_pt = [&twist, &rot](const Point3f &p){
+        // XXXX FIX THIS - has to use limits of mesh along axis to scale angle.
+        return twist.center + rot * (p - twist.center);
+    };
+
+    return ModifyVertices_(mesh, twist_pt);
 }
 
 TriMesh CenterMesh(const TriMesh &mesh) {
