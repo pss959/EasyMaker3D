@@ -28,31 +28,37 @@ TwistTool "TwistTool" {
       ]
     }
 
-    # Stick for translating the center.
-    Slider2DWidget "CenterTranslator" {
-      shapes: [ Box "Stick" { size: .8 1 .8 } ]
-    }
-
-    # Handles for rotating the twist angle.
-    DiscWidget "Twister" {
-      mode: "kRotationOnly",
+    # This node is rotated to match the current axis.
+    Node "Rotator" {
       children: [
-        Node "X" {
+        # Stick for translating the center in X and Z.
+        Slider2DWidget "CenterTranslator" {
+          rotation: 1 0 0 90,
+          shapes: [ Box "Stick" { size: .6 .6 1 } ]
+        }
+
+        # Handles for rotating the twist angle.
+        DiscWidget "Twister" {
+          mode: "kRotationOnly",
           children: [
-            CLONE "T_TwisterHandle" "XMin"   {},
-            CLONE "T_TwisterHandle" "XMax"   {},
-            CLONE "T_TwisterStick"  "XStick" {},
+            Node "X" {
+              children: [
+                CLONE "T_TwisterHandle" "XMin"   {},
+                CLONE "T_TwisterHandle" "XMax"   {},
+                CLONE "T_TwisterStick"  "XStick" {},
+              ]
+            },
+            Node "Z" {
+              rotation: 0 1 0 90,
+              children: [
+                CLONE "T_TwisterHandle" "ZMin"   {},
+                CLONE "T_TwisterHandle" "ZMax"   {},
+                CLONE "T_TwisterStick"  "ZStick" {},
+              ]
+            },
           ]
-        },
-        Node "Z" {
-          rotation: 0 1 0 90,
-          children: [
-            CLONE "T_TwisterHandle" "ZMin"   {},
-            CLONE "T_TwisterHandle" "ZMax"   {},
-            CLONE "T_TwisterStick"  "ZStick" {},
-          ]
-        },
+        }
       ]
-     }
+    }
   ]
 }

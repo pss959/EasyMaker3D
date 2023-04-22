@@ -59,6 +59,7 @@ class ShortcutMap_ {
         kPrintSkeleton,
         kPrintSkeletonOnPath,
         kPrintTransforms,
+        kPrintTool,
         kPrintTransformsOnPath,
         kPrintView,
         kPrintWidget,
@@ -163,6 +164,8 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print transforms for all nodes in the scene" },
         { "Shift-Alt-t", Action::kPrintTransformsOnPath,
           "Print transforms for all nodes in the current path" },
+        { "Alt-u",       Action::kPrintTool,
+          "Print the scene subgraph for the active Tool" },
         { "Alt-v",       Action::kPrintView,
           "Print the current viewing information" },
         { "Alt-w",       Action::kPrintWidget,
@@ -347,6 +350,11 @@ static bool HandleShortcut_(const std::string &str) {
         break;
       case SAction::kPrintTransformsOnPath:
         Debug::PrintTransformsOnPath(limit_path_);
+        break;
+      case SAction::kPrintTool:
+        Debug::PrintTransformsOnPath(
+            SG::FindNodePathInScene(*scene_context_->scene, "ToolParent"),
+            true);
         break;
       case SAction::kPrintView:
         Debug::PrintViewInfo(*scene_context_->frustum, *scene_context_->stage);
