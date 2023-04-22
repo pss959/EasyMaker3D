@@ -4,6 +4,7 @@
 
 #include "Tools/Tool.h"
 
+DECL_SHARED_PTR(ChangeTwistCommand);
 DECL_SHARED_PTR(DiscWidget);
 DECL_SHARED_PTR(Slider2DWidget);
 DECL_SHARED_PTR(SphereWidget);
@@ -30,9 +31,21 @@ class TwistTool : public Tool {
     virtual void Detach() override;
 
   private:
-    DiscWidgetPtr     twister_;
-    SphereWidgetPtr   axis_rotator_;
-    Slider2DWidgetPtr center_translator_;
+    /// Command used to modify all affected Models.
+    ChangeTwistCommandPtr command_;
+
+    /// Widget used to change the twist axis direction.
+    SphereWidgetPtr       axis_rotator_;
+
+    /// Widget used to change the twist center.
+    Slider2DWidgetPtr     center_translator_;
+
+    /// Widget used to change the twist angle.
+    DiscWidgetPtr         twister_;
+
+    // Widget callbacks.
+    void Activate_(bool is_activation);
+    void TwistChanged_();
 
     friend class Parser::Registry;
 };

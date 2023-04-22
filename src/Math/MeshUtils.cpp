@@ -1,6 +1,7 @@
 #include "Math/MeshUtils.h"
 
 #include <functional>
+#include <limits>
 #include <numeric>
 #include <unordered_map>
 
@@ -81,10 +82,23 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
 }
 
 TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist) {
-    const Rotationf rot = Rotationf::FromAxisAndAngle(twist.axis, twist.angle);
+    // Determine the extent of the mesh in the twist axis direction. Project
+    // each point onto the axis vector and find the min/max distances.
+    float min_dist =  std::numeric_limits<float>::max();
+    float max_dist = -std::numeric_limits<float>::max();
+    for (const auto &p: mesh.points) {
+        const float dist = ion::math::Dot(Vector3f(p), twist.axis);
+        min_dist = std::min(min_dist, dist);
+        max_dist = std::max(max_dist, dist);
+    }
+    ASSERT(min_dist < max_dist);
 
-    const auto twist_pt = [&twist, &rot](const Point3f &p){
-        // XXXX FIX THIS - has to use limits of mesh along axis to scale angle.
+    const auto twist_pt = [&twist, min_dist, max_dist](const Point3f &p){
+        // Interpolate the angle based on the distance.
+        const float dist = ion::math::Dot(Vector3f(p), twist.axis);
+        const Anglef angle = Lerp((dist - min_dist) / (max_dist - min_dist),
+                                  Anglef(), twist.angle);
+        const Rotationf rot = Rotationf::FromAxisAndAngle(twist.axis, angle);
         return twist.center + rot * (p - twist.center);
     };
 

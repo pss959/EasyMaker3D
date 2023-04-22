@@ -2,9 +2,13 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Commands/ChangeTwistCommand.h"
+#include "Managers/CommandManager.h"
+#include "Math/Twist.h"
 #include "Models/TwistedModel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
@@ -22,7 +26,11 @@ void TwistTool::CreationDone() {
 
         center_translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
 
-        // XXXX Add callbacks.
+        // Set up callbacks.
+        twister_->GetActivation().AddObserver(
+            this, [&](Widget &, bool is_act){ Activate_(is_act); });
+        twister_->GetRotationChanged().AddObserver(
+            this, [&](Widget &, const Anglef &){ TwistChanged_(); });
     }
 }
 
@@ -66,4 +74,39 @@ void TwistTool::Attach() {
 
 void TwistTool::Detach() {
     // Nothing to do here.
+}
+
+void TwistTool::Activate_(bool is_activation) {
+    if (is_activation) {
+        // XXXX
+    }
+    else {
+        GetDragEnded().Notify(*this);
+
+        // Execute the command to change the ClippedModel(s).
+        if (command_) {
+            // XXXX Check for no change.
+            GetContext().command_manager->AddAndDo(command_);
+            command_.reset();
+        }
+    }
+}
+
+void TwistTool::TwistChanged_() {
+    const auto &context = GetContext();
+
+    // If this is the first change, create the ChangeTwistCommand and start the
+    // drag.
+    if (! command_) {
+        command_ = CreateCommand<ChangeTwistCommand>();
+        command_->SetFromSelection(GetSelection());
+        GetDragStarted().Notify(*this);
+    }
+
+    // Create a Twist from the current Widget values and update the command.
+    Twist twist;
+    // XXXX Get center and axis.
+    twist.angle = twister_->GetRotationAngle();
+    command_->SetTwist(twist);
+    context.command_manager->SimulateDo(command_);
 }

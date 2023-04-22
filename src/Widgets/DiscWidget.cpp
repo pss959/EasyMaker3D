@@ -51,7 +51,7 @@ void DiscWidget::SetRotationAngle(const Anglef &angle) {
 }
 
 Anglef DiscWidget::GetRotationAngle() const {
-    return RotationAngle(GetRotation());
+    return GetRotationAngle_(GetRotation());
 }
 
 void DiscWidget::StartDrag(const DragInfo &info) {
@@ -60,7 +60,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
 
     DraggableWidget::StartDrag(info);
 
-    start_angle_ = GetRotationAngle_(GetRotation());
+    start_angle_ = GetRotationAngle();
     start_scale_ = GetScale();
 
     if (info.trigger == Trigger::kPointer) {
