@@ -1,5 +1,7 @@
 #include "Tools/TwistTool.h"
 
+#include <ion/math/vectorutils.h>
+
 #include "Models/TwistedModel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -11,50 +13,16 @@ void TwistTool::CreationDone() {
     Tool::CreationDone();
 
     if (! IsTemplate()) {
+        // Find all of the parts.
         twister_ = SG::FindTypedNodeUnderNode<DiscWidget>(*this, "Twister");
         axis_rotator_ = SG::FindTypedNodeUnderNode<SphereWidget>(
             *this, "AxisRotator");
         center_translator_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
             *this, "CenterTranslator");
 
-        const float radius = 10; // XXXX TEMP.
+        center_translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
 
-        // Translate the axis rotator parts. XXXX Move this to Attach().
-        {
-            const auto min   = SG::FindNodeUnderNode(*axis_rotator_, "Min");
-            const auto max   = SG::FindNodeUnderNode(*axis_rotator_, "Max");
-            const Vector3f trans(0, radius, 0);
-            min->SetTranslation(-trans);
-            max->SetTranslation(trans);
-        }
-
-        // Scale the center translator parts. XXXX Move this to Attach().
-        {
-            auto scale = center_translator_->GetScale();
-            scale[1] = 2 * radius;
-            center_translator_->SetScale(scale);
-            center_translator_->SetRange(Vector2f(-100, -100),
-                                         Vector2f(100, 100));
-        }
-
-        // Scale and translate the twister parts. XXXX Move this to Attach().
-        {
-            const auto xmin   = SG::FindNodeUnderNode(*twister_, "XMin");
-            const auto xmax   = SG::FindNodeUnderNode(*twister_, "XMax");
-            const auto xstick = SG::FindNodeUnderNode(*twister_, "XStick");
-            const auto zmin   = SG::FindNodeUnderNode(*twister_, "ZMin");
-            const auto zmax   = SG::FindNodeUnderNode(*twister_, "ZMax");
-            const auto zstick = SG::FindNodeUnderNode(*twister_, "ZStick");
-            auto scale = xstick->GetScale();
-            scale[0] = 2 * radius;
-            xstick->SetScale(scale);
-            zstick->SetScale(scale);
-            const Vector3f trans(radius, 0, 0);
-            xmin->SetTranslation(-trans);
-            zmin->SetTranslation(-trans);
-            xmax->SetTranslation(trans);
-            zmax->SetTranslation(trans);
-        }
+        // XXXX Add callbacks.
     }
 }
 
@@ -65,7 +33,35 @@ bool TwistTool::CanAttach(const Selection &sel) const {
 void TwistTool::Attach() {
     ASSERT(Util::IsA<TwistedModel>(GetModelAttachedTo()));
 
-    // XXXX DO SOMETHING.
+    // Rotate to match the Model. The TwistTool always aligns with local axes.
+    const Vector3f model_size = MatchModelAndGetSize(false);
+    const float radius = .6f * ion::math::Length(model_size);
+
+    // Translate the axis rotator handles.
+    const Vector3f ytrans(0, radius, 0);
+    SG::FindNodeUnderNode(*axis_rotator_, "Min")->SetTranslation(-ytrans);
+    SG::FindNodeUnderNode(*axis_rotator_, "Max")->SetTranslation(ytrans);
+
+    // Scale the center translator axis.
+    auto scale = center_translator_->GetScale();
+    scale[1] = 2 * radius;
+    center_translator_->SetScale(scale);
+
+    // Scale and translate the twister parts.
+    for (const auto &dim_char: std::string("XZ")) {
+        const std::string dim_str(1, dim_char);
+        const auto min   = SG::FindNodeUnderNode(*twister_, dim_str + "Min");
+        const auto max   = SG::FindNodeUnderNode(*twister_, dim_str + "Max");
+        const auto stick = SG::FindNodeUnderNode(*twister_, dim_str + "Stick");
+        auto yscale = stick->GetScale();
+        yscale[0] = 2 * radius;
+        stick->SetScale(yscale);
+        const Vector3f xtrans(radius, 0, 0);
+        min->SetTranslation(-xtrans);
+        max->SetTranslation(xtrans);
+    }
+
+    // XXXX
 }
 
 void TwistTool::Detach() {
