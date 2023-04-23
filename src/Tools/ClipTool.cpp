@@ -121,7 +121,6 @@ void ClipTool::Activate_(bool is_activation) {
         feedback_.reset();
 
         GetDragEnded().Notify(*this);
-        GetContext().target_manager->EndSnapping();
 
         UpdateTranslationRange_();
 

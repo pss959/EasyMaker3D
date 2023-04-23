@@ -7,8 +7,10 @@
 #include "Feedback/AngularFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
+#include "Managers/TargetManager.h"
 #include "Math/Curves.h"
 #include "Models/TwistedModel.h"
+#include "Place/PointTarget.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -32,26 +34,17 @@ void TwistTool::CreationDone() {
 
         // Set up callbacks.
         twister_->GetActivation().AddObserver(
-            this, [&](Widget &, bool is_act){
-                Activate_(Mode_::kTwisting, is_act); });
+            this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
         twister_->GetRotationChanged().AddObserver(
-            this, [&](Widget &, const Anglef &){
-                TwistChanged_(Mode_::kTwisting); });
+            this, [&](Widget &w, const Anglef &){ TwistChanged_(w); });
         rotator_->GetActivation().AddObserver(
-            this, [&](Widget &, bool is_act){
-                Activate_(Mode_::kRotating, is_act); });
+            this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
         rotator_->GetRotationChanged().AddObserver(
-            this, [&](Widget &, const Rotationf &){
-                axis_->SetRotation(rotator_->GetRotation() *
-                                   start_axis_rotation_);
-                TwistChanged_(Mode_::kRotating);
-            });
+            this, [&](Widget &w, const Rotationf &){ TwistChanged_(w); });
         translator_->GetActivation().AddObserver(
-            this, [&](Widget &, bool is_act){
-                Activate_(Mode_::kTranslating, is_act); });
+            this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
         translator_->GetValueChanged().AddObserver(
-            this, [&](Widget &, const Vector2f &){
-                TwistChanged_(Mode_::kTranslating); });
+            this, [&](Widget &w, const Vector2f &){ TwistChanged_(w); });
     }
 }
 
@@ -60,6 +53,16 @@ bool TwistTool::CanAttach(const Selection &sel) const {
 }
 
 void TwistTool::Attach() {
+    UpdateGeometry_();
+
+    // Match the Twist in the primary TwistedModel without notifying.
+    const auto tm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
+    ASSERT(tm);
+    twist_ = tm->GetTwist();
+    MatchCurrentTwist_();
+}
+
+void TwistTool::UpdateGeometry_() {
     static const float kRadiusScale = .75f;
     static const float kAxisScale   = 1.2f;
 
@@ -92,40 +95,44 @@ void TwistTool::Attach() {
         min->SetTranslation(-xtrans);
         max->SetTranslation(xtrans);
     }
+}
 
-    // Match the Twist in the primary TwistedModel without notifying.
-    const auto tm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
-    ASSERT(tm);
-    const Twist &twist = tm->GetTwist();
+void TwistTool::MatchCurrentTwist_() {
+    // Don't notify for widget changes.
     twister_->GetRotationChanged().EnableObserver(this, false);
     rotator_->GetRotationChanged().EnableObserver(this, false);
     translator_->GetValueChanged().EnableObserver(this, false);
-    twister_->SetRotationAngle(twist.angle);
-    rotator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(), twist.axis));
-    translator_->SetValue(Vector2f(twist.center[0], twist.center[1]));
+
+    const Rotationf rot = Rotationf::RotateInto(Twist().axis, twist_.axis);
+    twister_->SetRotationAngle(twist_.angle);
+    rotator_->SetRotation(rot);
+    translator_->SetValue(Vector2f(twist_.center[0], twist_.center[1]));
+
     twister_->GetRotationChanged().EnableObserver(this, true);
     rotator_->GetRotationChanged().EnableObserver(this, true);
     translator_->GetValueChanged().EnableObserver(this, true);
 
-    // Set other geometry.
-    axis_->SetRotation(rotator_->GetRotation() * start_axis_rotation_);
+    // Update the axis rotation to match.
+    axis_->SetRotation(rot * start_axis_rotation_);
 }
 
 void TwistTool::Detach() {
     // Nothing to do here.
 }
 
-void TwistTool::Activate_(Mode_ mode, bool is_activation) {
+void TwistTool::Activate_(Widget &widget, bool is_activation) {
     const auto &context = GetContext();
     if (is_activation) {
         const auto tm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
         ASSERT(tm);
-        start_twist_ = tm->GetTwist();
-        if (mode == Mode_::kTwisting)
+        start_twist_ = twist_ = tm->GetTwist();
+        if (&widget == twister_.get())
             feedback_ = context.feedback_manager->Activate<AngularFeedback>();
+        context.target_manager->StartSnapping();
     }
     else {
-        if (mode == Mode_::kTwisting) {
+        context.target_manager->EndSnapping();
+        if (&widget == twister_.get()) {
             context.feedback_manager->Deactivate(feedback_);
             feedback_.reset();
         }
@@ -141,7 +148,7 @@ void TwistTool::Activate_(Mode_ mode, bool is_activation) {
     }
 }
 
-void TwistTool::TwistChanged_(Mode_ mode) {
+void TwistTool::TwistChanged_(Widget &widget) {
     const auto &context = GetContext();
 
     // If this is the first change, create the ChangeTwistCommand and start the
@@ -152,31 +159,78 @@ void TwistTool::TwistChanged_(Mode_ mode) {
         GetDragStarted().Notify(*this);
     }
 
-    // Create a Twist from the current Widget values and update the command.
-    Twist twist;
-    twist.center += translator_->GetTranslation();
-    twist.axis  = rotator_->GetRotation() * twist.axis;
-    twist.angle = twister_->GetRotationAngle();
-    command_->SetTwist(twist);
+    // Try snapping if rotating or translating unless modified dragging.
+    const bool is_snapped = ! context.is_modified_mode &&
+        &widget == translator_.get() ? SnapTranslation_() :
+        &widget == rotator_.get()    ? SnapRotation_() : false;
+
+    // If not snapped, update the current Twist from the current Widget values
+    // and match it.
+    if (! is_snapped) {
+        if (&widget == translator_.get())
+            twist_.center = Twist().center + translator_->GetTranslation();
+        else if (&widget == rotator_.get())
+            twist_.axis = rotator_->GetRotation() * Twist().axis;
+        else
+            twist_.angle = twister_->GetRotationAngle();
+    }
+    MatchCurrentTwist_();
+
+    // Update the command.
+    command_->SetTwist(twist_);
     context.command_manager->SimulateDo(command_);
 
-    // Update angle feedback.
-    if (mode == Mode_::kTwisting)
-        UpdateTwistFeedback_(twist);
+    // Update feedback if twisting.
+    if (&widget == twister_.get())
+        UpdateTwistFeedback_();
 }
 
-void TwistTool::UpdateTwistFeedback_(const Twist &twist) {
+bool TwistTool::SnapTranslation_() {
+    // XXXX
+    return false;
+}
+
+bool TwistTool::SnapRotation_() {
+    const auto &context = GetContext();
+    auto &tm = *context.target_manager;
+
+    bool is_snapped = false;
+
+    // Try to snap to the point target direction (in stage coordinates) if it
+    // is active.
+    const Vector3f default_axis = Twist().axis;
+    Vector3f axis = rotator_->GetRotation() * default_axis;
+    Rotationf rot;
+    rotator_->SetActiveColor(SG::ColorMap::SGetColor("WidgetActiveColor"));
+    if (tm.SnapToDirection(axis, rot)) {
+        twist_.axis = tm.GetPointTarget().GetDirection();
+        rotator_->SetActiveColor(GetSnappedFeedbackColor());
+        is_snapped = true;
+    }
+
+    // Otherwise, try to snap to any of the principal axes. If is_axis_aligned
+    // is true, use the stage-coordinate axes as is. Otherwise, convert
+    // object-coordinate axes into stage coordinates first.
+    else {
+        // XXXX
+    }
+
+    return is_snapped;
+}
+
+void TwistTool::UpdateTwistFeedback_() {
     // The feedback should be in the plane perpendicular to the twist axis (in
     // stage coordinates).
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    const Vector3f axis = osm * twist.axis;
+    const Vector3f axis = osm * twist_.axis;
 
     // Move the center of rotation to be just past the tip of the axis arrow in
     // stage coordinates.
     const float height =
         .55f * SG::FindNodeUnderNode(*rotator_, "Max")->GetTranslation()[1];
-    const Point3f center = osm * (twist.center + height * twist.axis);
+    const Point3f center = osm * (twist_.center + height * twist_.axis);
 
     ASSERT(feedback_);
-    feedback_->SubtendArc(center, 1, 0, axis, CircleArc(Anglef(), twist.angle));
+    feedback_->SubtendArc(center, 1, 0, axis,
+                          CircleArc(Anglef(), twist_.angle));
 }

@@ -6,6 +6,7 @@
 #include "Math/Types.h"
 #include "Tools/Tool.h"
 
+class Widget;
 DECL_SHARED_PTR(AngularFeedback);
 DECL_SHARED_PTR(ChangeTwistCommand);
 DECL_SHARED_PTR(DiscWidget);
@@ -36,13 +37,6 @@ class TwistTool : public Tool {
     virtual void Detach() override;
 
   private:
-    /// Modes of operation.
-    enum class Mode_ {
-        kTranslating,   ///< Translating the center.
-        kRotating,      ///< Rotating the axis.
-        kTwisting,      ///< Changing the twist angle.
-    };
-
     /// Command used to modify all affected Models.
     ChangeTwistCommandPtr command_;
 
@@ -65,17 +59,32 @@ class TwistTool : public Tool {
     /// Twist at the start of interaction.
     Twist                 start_twist_;
 
+    /// Current Twist.
+    Twist                 twist_;
+
     /// Feedback showing current twist angle.
     AngularFeedbackPtr    feedback_;
 
+    /// Updates the geometry based on the attached TwistedModel.
     void UpdateGeometry_();
 
+    /// Updates all Widgets (without notifying) based on the current Twist.
+    void MatchCurrentTwist_();
+
     // Widget callbacks.
-    void Activate_(Mode_ mode, bool is_activation);
-    void TwistChanged_(Mode_ mode);
+    void Activate_(Widget &widget, bool is_activation);
+    void TwistChanged_(Widget &widget);
+
+    /// Snaps the current axis translation to the PointTarget location or an
+    /// important point on the attached TwistedModel.
+    bool SnapTranslation_();
+
+    /// Snaps the current axis rotation to the PointTarget direction or
+    /// principal axis.
+    bool SnapRotation_();
 
     /// Updates the feedback showing the current twist angle.
-    void UpdateTwistFeedback_(const Twist &twist);
+    void UpdateTwistFeedback_();
 
     friend class Parser::Registry;
 };
