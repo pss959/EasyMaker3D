@@ -1,9 +1,13 @@
 #include "Tools/TwistTool.h"
 
+#include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Commands/ChangeTwistCommand.h"
+#include "Feedback/AngularFeedback.h"
 #include "Managers/CommandManager.h"
+#include "Managers/FeedbackManager.h"
+#include "Math/Curves.h"
 #include "Models/TwistedModel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -28,21 +32,26 @@ void TwistTool::CreationDone() {
 
         // Set up callbacks.
         twister_->GetActivation().AddObserver(
-            this, [&](Widget &, bool is_act){ Activate_(is_act); });
+            this, [&](Widget &, bool is_act){
+                Activate_(Mode_::kTwisting, is_act); });
         twister_->GetRotationChanged().AddObserver(
-            this, [&](Widget &, const Anglef &){ TwistChanged_(); });
+            this, [&](Widget &, const Anglef &){
+                TwistChanged_(Mode_::kTwisting); });
         rotator_->GetActivation().AddObserver(
-            this, [&](Widget &, bool is_act){ Activate_(is_act); });
+            this, [&](Widget &, bool is_act){
+                Activate_(Mode_::kRotating, is_act); });
         rotator_->GetRotationChanged().AddObserver(
             this, [&](Widget &, const Rotationf &){
                 axis_->SetRotation(rotator_->GetRotation() *
                                    start_axis_rotation_);
-                TwistChanged_();
+                TwistChanged_(Mode_::kRotating);
             });
         translator_->GetActivation().AddObserver(
-            this, [&](Widget &, bool is_act){ Activate_(is_act); });
+            this, [&](Widget &, bool is_act){
+                Activate_(Mode_::kTranslating, is_act); });
         translator_->GetValueChanged().AddObserver(
-            this, [&](Widget &, const Vector2f &){ TwistChanged_(); });
+            this, [&](Widget &, const Vector2f &){
+                TwistChanged_(Mode_::kTranslating); });
     }
 }
 
@@ -106,13 +115,21 @@ void TwistTool::Detach() {
     // Nothing to do here.
 }
 
-void TwistTool::Activate_(bool is_activation) {
+void TwistTool::Activate_(Mode_ mode, bool is_activation) {
+    const auto &context = GetContext();
     if (is_activation) {
         const auto tm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
         ASSERT(tm);
         start_twist_ = tm->GetTwist();
+        if (mode == Mode_::kTwisting)
+            feedback_ = context.feedback_manager->Activate<AngularFeedback>();
     }
     else {
+        if (mode == Mode_::kTwisting) {
+            context.feedback_manager->Deactivate(feedback_);
+            feedback_.reset();
+        }
+
         GetDragEnded().Notify(*this);
 
         // Execute the command to change the ClippedModel(s).
@@ -124,7 +141,7 @@ void TwistTool::Activate_(bool is_activation) {
     }
 }
 
-void TwistTool::TwistChanged_() {
+void TwistTool::TwistChanged_(Mode_ mode) {
     const auto &context = GetContext();
 
     // If this is the first change, create the ChangeTwistCommand and start the
@@ -143,5 +160,23 @@ void TwistTool::TwistChanged_() {
     command_->SetTwist(twist);
     context.command_manager->SimulateDo(command_);
 
-    // XXXX Add angle feedback.
+    // Update angle feedback.
+    if (mode == Mode_::kTwisting)
+        UpdateTwistFeedback_(twist);
+}
+
+void TwistTool::UpdateTwistFeedback_(const Twist &twist) {
+    // The feedback should be in the plane perpendicular to the twist axis (in
+    // stage coordinates).
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+    const Vector3f axis = osm * twist.axis;
+
+    // Move the center of rotation to be just past the tip of the axis arrow in
+    // stage coordinates.
+    const float height =
+        .55f * SG::FindNodeUnderNode(*rotator_, "Max")->GetTranslation()[1];
+    const Point3f center = osm * (twist.center + height * twist.axis);
+
+    ASSERT(feedback_);
+    feedback_->SubtendArc(center, 1, 0, axis, CircleArc(Anglef(), twist.angle));
 }

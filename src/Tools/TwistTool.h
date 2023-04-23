@@ -6,6 +6,7 @@
 #include "Math/Types.h"
 #include "Tools/Tool.h"
 
+DECL_SHARED_PTR(AngularFeedback);
 DECL_SHARED_PTR(ChangeTwistCommand);
 DECL_SHARED_PTR(DiscWidget);
 DECL_SHARED_PTR(Slider2DWidget);
@@ -35,6 +36,13 @@ class TwistTool : public Tool {
     virtual void Detach() override;
 
   private:
+    /// Modes of operation.
+    enum class Mode_ {
+        kTranslating,   ///< Translating the center.
+        kRotating,      ///< Rotating the axis.
+        kTwisting,      ///< Changing the twist angle.
+    };
+
     /// Command used to modify all affected Models.
     ChangeTwistCommandPtr command_;
 
@@ -57,11 +65,17 @@ class TwistTool : public Tool {
     /// Twist at the start of interaction.
     Twist                 start_twist_;
 
+    /// Feedback showing current twist angle.
+    AngularFeedbackPtr    feedback_;
+
     void UpdateGeometry_();
 
     // Widget callbacks.
-    void Activate_(bool is_activation);
-    void TwistChanged_();
+    void Activate_(Mode_ mode, bool is_activation);
+    void TwistChanged_(Mode_ mode);
+
+    /// Updates the feedback showing the current twist angle.
+    void UpdateTwistFeedback_(const Twist &twist);
 
     friend class Parser::Registry;
 };
