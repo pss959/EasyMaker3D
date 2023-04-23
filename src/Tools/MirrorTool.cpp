@@ -166,35 +166,17 @@ bool MirrorTool::SnapRotation_(int &snapped_dim) {
     snapped_dim     = -1;
 
     // Try to snap to the point target direction (in stage coordinates) if it
-    // is active.
+    // is active.  Otherwise, try to snap to any of the principal axes.
     Rotationf rot;
     if (tm.SnapToDirection(stage_plane_.normal, rot)) {
         stage_plane_.normal = tm.GetPointTarget().GetDirection();
         is_snapped = true;
     }
-
-    // Otherwise, try to snap to any of the principal axes. If is_axis_aligned
-    // is true, use the stage-coordinate axes as is. Otherwise, convert
-    // object-coordinate axes into stage coordinates first.
     else {
-        const bool use_stage_coords = IsAxisAligned();
-        const Matrix4f m = use_stage_coords ? Matrix4f::Identity() :
-            GetStageCoordConv().GetObjectToRootMatrix();
-        for (int dim = 0; dim < 3; ++dim) {
-            const Vector3f axis = ion::math::Normalized(m * GetAxis(dim));
-            if (tm.ShouldSnapDirections(stage_plane_.normal, axis, rot)) {
-                stage_plane_.normal = axis;
-                snapped_dim = dim;
-                break;
-            }
-            else if (tm.ShouldSnapDirections(stage_plane_.normal, -axis, rot)) {
-                stage_plane_.normal = -axis;
-                snapped_dim = dim;
-                break;
-            }
-        }
+        snapped_dim = SnapToAxis(stage_plane_.normal);
         is_snapped = snapped_dim >= 0;
     }
+
     if (is_snapped) {
         // Maintain the same distance from the center.
         ASSERT(AreClose(ion::math::Length(stage_plane_.normal), 1));

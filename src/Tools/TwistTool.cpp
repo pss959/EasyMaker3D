@@ -11,6 +11,7 @@
 #include "Math/Curves.h"
 #include "Models/TwistedModel.h"
 #include "Place/PointTarget.h"
+#include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -197,9 +198,8 @@ bool TwistTool::SnapRotation_() {
     bool is_snapped = false;
 
     // Try to snap to the point target direction (in stage coordinates) if it
-    // is active.
-    const Vector3f default_axis = Twist().axis;
-    Vector3f axis = rotator_->GetRotation() * default_axis;
+    // is active.  Otherwise, try to snap to any of the principal axes.
+    Vector3f axis = rotator_->GetRotation() * Twist().axis;
     Rotationf rot;
     rotator_->SetActiveColor(SG::ColorMap::SGetColor("WidgetActiveColor"));
     if (tm.SnapToDirection(axis, rot)) {
@@ -207,12 +207,16 @@ bool TwistTool::SnapRotation_() {
         rotator_->SetActiveColor(GetSnappedFeedbackColor());
         is_snapped = true;
     }
-
-    // Otherwise, try to snap to any of the principal axes. If is_axis_aligned
-    // is true, use the stage-coordinate axes as is. Otherwise, convert
-    // object-coordinate axes into stage coordinates first.
     else {
-        // XXXX
+        const auto stage_cc = GetStageCoordConv();
+        Vector3f stage_axis = stage_cc.ObjectToRoot(axis);
+        const int snapped_dim = SnapToAxis(stage_axis);
+        is_snapped = snapped_dim >= 0;
+        if (is_snapped) {
+            twist_.axis = stage_cc.RootToObject(stage_axis);
+            rotator_->SetActiveColor(
+                SG::ColorMap::SGetColorForDimension(snapped_dim));
+        }
     }
 
     return is_snapped;

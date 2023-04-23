@@ -125,6 +125,27 @@ bool Tool::IsAxisAligned() const {
     return context_->command_manager->GetSessionState()->IsAxisAligned();
 }
 
+int Tool::SnapToAxis(Vector3f &dir) {
+    auto &tm = *GetContext().target_manager;
+
+    const Matrix4f m = IsAxisAligned() ? Matrix4f::Identity() :
+        GetStageCoordConv().GetObjectToRootMatrix();
+
+    Rotationf rot;
+    for (int dim = 0; dim < 3; ++dim) {
+        const Vector3f axis = ion::math::Normalized(m * GetAxis(dim));
+        if (tm.ShouldSnapDirections(dir, axis, rot)) {
+            dir = axis;
+            return dim;
+        }
+        else if (tm.ShouldSnapDirections(dir, -axis, rot)) {
+            dir = -axis;
+            return dim;
+        }
+    }
+    return -1;
+}
+
 Point3f Tool::GetPositionAboveModel(float distance, bool over_front) const {
     // Need the path to the Model to convert to stage coordinates.
     ASSERT(model_sel_index_ >= 0);

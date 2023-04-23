@@ -196,6 +196,15 @@ class Tool : public Grippable {
     /// Returns true if the axis-aligned flag is on.
     bool IsAxisAligned() const;
 
+    /// This can be used by any derived class to determine if the given
+    /// direction vector (in stage coordinates) is close to a principal axis or
+    /// its opposite. If axis-aligned is true, the direction is compared with
+    /// the stage coordinates. Otherwise, it is compared with local coordinates
+    /// of the Tool. If \p dir is close, it is modified to contain the
+    /// principal axis (or its opposite) and the snapped dimension is
+    /// returned. Otherwise, this just returns -1.
+    int SnapToAxis(Vector3f &dir);
+
     /// Returns a point (in stage coordinates) for the position of the Tool at
     /// the given distance above the top center (if over_front is false) or top
     /// front center (if over_front is true) of the attached Model.
