@@ -4,7 +4,6 @@
 
 #include "Commands/ChangeTwistCommand.h"
 #include "Managers/CommandManager.h"
-#include "Math/Twist.h"
 #include "Models/TwistedModel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -19,35 +18,31 @@ void TwistTool::CreationDone() {
     if (! IsTemplate()) {
         // Find all of the parts.
         twister_ = SG::FindTypedNodeUnderNode<DiscWidget>(*this, "Twister");
-        axis_rotator_ = SG::FindTypedNodeUnderNode<SphereWidget>(
-            *this, "AxisRotator");
-        center_translator_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
-            *this, "CenterTranslator");
-        rotator_    = SG::FindNodeUnderNode(*this, "Rotator");
+        rotator_ = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
+        translator_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
+            *this, "Translator");
+        axis_ = SG::FindNodeUnderNode(*translator_, "Axis");
+        start_axis_rotation_ = axis_->GetRotation();
 
-        center_translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
+        translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
 
         // Set up callbacks.
         twister_->GetActivation().AddObserver(
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
         twister_->GetRotationChanged().AddObserver(
             this, [&](Widget &, const Anglef &){ TwistChanged_(); });
-        axis_rotator_->GetActivation().AddObserver(
+        rotator_->GetActivation().AddObserver(
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
-        axis_rotator_->GetRotationChanged().AddObserver(
+        rotator_->GetRotationChanged().AddObserver(
             this, [&](Widget &, const Rotationf &){
-                rotator_->SetRotation(axis_rotator_->GetRotation());
+                axis_->SetRotation(rotator_->GetRotation() *
+                                   start_axis_rotation_);
                 TwistChanged_();
             });
-        center_translator_->GetActivation().AddObserver(
+        translator_->GetActivation().AddObserver(
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
-        center_translator_->GetValueChanged().AddObserver(
-            this, [&](Widget &, const Vector2f &){
-                const auto &trans = center_translator_->GetTranslation();
-                axis_rotator_->SetTranslation(trans);
-                twister_->SetTranslation(trans);
-                TwistChanged_();
-            });
+        translator_->GetValueChanged().AddObserver(
+            this, [&](Widget &, const Vector2f &){ TwistChanged_(); });
     }
 }
 
@@ -56,28 +51,6 @@ bool TwistTool::CanAttach(const Selection &sel) const {
 }
 
 void TwistTool::Attach() {
-    UpdateGeometry_();
-
-    // Reset all Widgets.
-    rotator_->SetRotation(Rotationf::Identity());
-    axis_rotator_->SetTranslation(Vector3f::Zero());
-    twister_->SetTranslation(Vector3f::Zero());
-
-    axis_rotator_->SetRotation(Rotationf::Identity());
-    center_translator_->SetValue(Vector2f::Zero());
-    twister_->SetRotationAngle(Anglef());
-}
-
-void TwistTool::Detach() {
-    // Nothing to do here.
-}
-
-void TwistTool::ReattachToSelection() {
-    // Update without resetting widgets.
-    UpdateGeometry_();
-}
-
-void TwistTool::UpdateGeometry_() {
     static const float kRadiusScale = .75f;
     static const float kAxisScale   = 1.2f;
 
@@ -87,14 +60,15 @@ void TwistTool::UpdateGeometry_() {
 
     // Translate the axis rotator handles.
     const Vector3f ytrans(0, kAxisScale * radius, 0);
-    SG::FindNodeUnderNode(*axis_rotator_, "Min")->SetTranslation(-ytrans);
-    SG::FindNodeUnderNode(*axis_rotator_, "Max")->SetTranslation(ytrans);
+    SG::FindNodeUnderNode(*rotator_, "Min")->SetTranslation(-ytrans);
+    SG::FindNodeUnderNode(*rotator_, "Max")->SetTranslation(ytrans);
 
     // Scale the center translator axis (in Z because it is rotated to
     // translate in the XZ plane).
-    auto scale = center_translator_->GetScale();
+    const auto axis = SG::FindNodeUnderNode(*translator_, "Axis");
+    auto scale = axis_->GetScale();
     scale[2] = 2 * kAxisScale * radius;
-    center_translator_->SetScale(scale);
+    axis_->SetScale(scale);
 
     // Scale and translate the twister parts.
     for (const auto &dim_char: std::string("XZ")) {
@@ -109,19 +83,42 @@ void TwistTool::UpdateGeometry_() {
         min->SetTranslation(-xtrans);
         max->SetTranslation(xtrans);
     }
+
+    // Match the Twist in the primary TwistedModel without notifying.
+    const auto tm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
+    ASSERT(tm);
+    const Twist &twist = tm->GetTwist();
+    twister_->GetRotationChanged().EnableObserver(this, false);
+    rotator_->GetRotationChanged().EnableObserver(this, false);
+    translator_->GetValueChanged().EnableObserver(this, false);
+    twister_->SetRotationAngle(twist.angle);
+    rotator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(), twist.axis));
+    translator_->SetValue(Vector2f(twist.center[0], twist.center[1]));
+    twister_->GetRotationChanged().EnableObserver(this, true);
+    rotator_->GetRotationChanged().EnableObserver(this, true);
+    translator_->GetValueChanged().EnableObserver(this, true);
+
+    // Set other geometry.
+    axis_->SetRotation(rotator_->GetRotation() * start_axis_rotation_);
+}
+
+void TwistTool::Detach() {
+    // Nothing to do here.
 }
 
 void TwistTool::Activate_(bool is_activation) {
     if (is_activation) {
-        // XXXX
+        const auto tm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
+        ASSERT(tm);
+        start_twist_ = tm->GetTwist();
     }
     else {
         GetDragEnded().Notify(*this);
 
         // Execute the command to change the ClippedModel(s).
         if (command_) {
-            // XXXX Check for no change.
-            GetContext().command_manager->AddAndDo(command_);
+            if (command_->GetTwist() != start_twist_)
+                GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
     }
@@ -140,8 +137,11 @@ void TwistTool::TwistChanged_() {
 
     // Create a Twist from the current Widget values and update the command.
     Twist twist;
-    // XXXX Get center and axis.
+    twist.center += translator_->GetTranslation();
+    twist.axis  = rotator_->GetRotation() * twist.axis;
     twist.angle = twister_->GetRotationAngle();
     command_->SetTwist(twist);
     context.command_manager->SimulateDo(command_);
+
+    // XXXX Add angle feedback.
 }

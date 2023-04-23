@@ -16,46 +16,51 @@ TwistTool "TwistTool" {
   ],
 
   children: [
-    # Handles for rotating the axis.
-    SphereWidget "AxisRotator" {
+    # Widget for translating the center in X and Z.
+    Slider2DWidget "Translator" {
       children: [
-        # Box at the bottom end
-        Node "Min" { shapes: [ Box { size: 1 .5 1 } ] },
-        # Cone at the top end
-        Node "Max" {
-          shapes: [ Cylinder { height: 2, top_radius: 0, bottom_radius: 1 } ]
-        }
-      ]
-    }
-
-    # This node is rotated to match the current axis.
-    Node "Rotator" {
-      children: [
-        # Stick for translating the center in X and Z.
-        Slider2DWidget "CenterTranslator" {
+        Node "Axis" {
           rotation: 1 0 0 90,
-          shapes: [ Box "Stick" { size: .6 .6 1 } ]
-        }
+          shapes: [ Box { size: .6 .6 1 } ],
+        },
 
-        # Handles for rotating the twist angle.
-        DiscWidget "Twister" {
-          mode: "kRotationOnly",
+        # Widget for rotating the axis.
+        SphereWidget "Rotator" {
           children: [
-            Node "X" {
+            Node {
               children: [
-                CLONE "T_TwisterHandle" "XMin"   {},
-                CLONE "T_TwisterHandle" "XMax"   {},
-                CLONE "T_TwisterStick"  "XStick" {},
+                # Box at the bottom end
+                Node "Min" { shapes: [ Box { size: 1 .5 1 } ] },
+                # Cone at the top end
+                Node "Max" {
+                  shapes: [
+                    Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
+                  ]
+                },
               ]
             },
-            Node "Z" {
-              rotation: 0 1 0 90,
+
+            # Widget for rotating the twist angle.
+            DiscWidget "Twister" {
+              mode: "kRotationOnly",
               children: [
-                CLONE "T_TwisterHandle" "ZMin"   {},
-                CLONE "T_TwisterHandle" "ZMax"   {},
-                CLONE "T_TwisterStick"  "ZStick" {},
+                Node "X" {
+                  children: [
+                    CLONE "T_TwisterHandle" "XMin"   {},
+                    CLONE "T_TwisterHandle" "XMax"   {},
+                    CLONE "T_TwisterStick"  "XStick" {},
+                  ]
+                },
+                Node "Z" {
+                  rotation: 0 1 0 90,
+                  children: [
+                    CLONE "T_TwisterHandle" "ZMin"   {},
+                    CLONE "T_TwisterHandle" "ZMax"   {},
+                    CLONE "T_TwisterStick"  "ZStick" {},
+                  ]
+                },
               ]
-            },
+            }
           ]
         }
       ]

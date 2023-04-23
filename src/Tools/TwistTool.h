@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "Math/Twist.h"
+#include "Math/Types.h"
 #include "Tools/Tool.h"
 
 DECL_SHARED_PTR(ChangeTwistCommand);
@@ -11,7 +13,8 @@ DECL_SHARED_PTR(SphereWidget);
 namespace SG { DECL_SHARED_PTR(Node); }
 
 /// TwistTool provides interactive twisting of all selected TwistedModels.
-/// It has XXXX.
+/// It uses a DiscWidget to modify the twist angle, a SphereWidget to modify
+/// the twist axis direction, and a Slider2DWidget to modify the twist center.
 ///
 /// \ingroup Tools
 class TwistTool : public Tool {
@@ -31,25 +34,28 @@ class TwistTool : public Tool {
     virtual void Attach() override;
     virtual void Detach() override;
 
-    /// Redefines this to not reset the Widgets.
-    virtual void ReattachToSelection() override;
-
   private:
     /// Command used to modify all affected Models.
     ChangeTwistCommandPtr command_;
 
-    /// Widget used to change the twist axis direction.
-    SphereWidgetPtr       axis_rotator_;
+    /// Widget used to rotate the twist axis direction.
+    SphereWidgetPtr       rotator_;
 
-    /// Widget used to change the twist center.
-    Slider2DWidgetPtr     center_translator_;
+    /// Widget used to translate the twist center.
+    Slider2DWidgetPtr     translator_;
 
     /// Widget used to change the twist angle.
     DiscWidgetPtr         twister_;
 
-    /// Node used to rotate the translator and twister to match the axis
+    /// Node used to rotate the center translator axis to match the axis
     /// rotation.
-    SG::NodePtr           rotator_;
+    SG::NodePtr           axis_;
+
+    /// Starting rotation for the #axis_.
+    Rotationf             start_axis_rotation_;
+
+    /// Twist at the start of interaction.
+    Twist                 start_twist_;
 
     void UpdateGeometry_();
 
