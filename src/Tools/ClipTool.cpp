@@ -193,8 +193,7 @@ bool ClipTool::SnapRotation_(int &snapped_dim) {
     // is true, use the stage-coordinate axes as is. Otherwise, convert
     // object-coordinate axes into stage coordinates first.
     else {
-        const bool use_stage_coords =
-            context.command_manager->GetSessionState()->IsAxisAligned();
+        const bool use_stage_coords = IsAxisAligned();
         const Matrix4f m = use_stage_coords ? Matrix4f::Identity() :
             GetStageCoordConv().GetObjectToRootMatrix();
         for (int dim = 0; dim < 3; ++dim) {
