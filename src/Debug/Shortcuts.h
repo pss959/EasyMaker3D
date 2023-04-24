@@ -44,7 +44,11 @@ void DisplayDebugText(const std::string &text);
 
 /// Displays the debug sphere at the given location with the given diameter,
 /// both in stage coordinates.
-void DisplayDebugSphere(const Point3f &stage_pos, float stage_diameter);
+void DisplayDebugSphereStage(const Point3f &pos, float diameter);
+
+/// Displays the debug sphere at the given location with the given diameter,
+/// both in world coordinates.
+void DisplayDebugSphereWorld(const Point3f &pos, float diameter);
 
 }  // namespace Debug
 

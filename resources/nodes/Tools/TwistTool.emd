@@ -18,11 +18,9 @@ TwistTool "TwistTool" {
   children: [
     # Widget for translating the center in X and Z.
     Slider2DWidget "Translator" {
+      principal_plane: "kXZ",
       children: [
-        Node "Axis" {
-          rotation: 1 0 0 90,
-          shapes: [ Box { size: .6 .6 1 } ],
-        },
+        Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
 
         # Widget for rotating the axis.
         SphereWidget "Rotator" {

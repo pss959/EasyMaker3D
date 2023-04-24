@@ -66,6 +66,11 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     virtual void EndDrag() override;
 
   protected:
+    /// Derived classe can implement this to do anything necessary to prepare
+    /// for a drag operation. This is passed the DragInfo that is set up for
+    /// the start of the drag. The base class defines this to do nothing.
+    virtual void PrepareForDrag(const DragInfo &info) {}
+
     /// Derived classes must implement this to compute a value from
     /// GetMinValue(), GetMaxValue() and GetValue(). This is used only when
     /// IsNormalized() is true.

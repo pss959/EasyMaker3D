@@ -438,15 +438,19 @@ void DisplayDebugText(const std::string &text) {
     }
 }
 
-void DisplayDebugSphere(const Point3f &stage_pos, float stage_diameter) {
+void DisplayDebugSphereStage(const Point3f &pos, float diameter) {
     // Convert from stage to world coordinates.
-    const Point3f world_pos =
-        SG::CoordConv(scene_context_->path_to_stage).ObjectToRoot(stage_pos);
+    DisplayDebugSphereWorld(
+        SG::CoordConv(scene_context_->path_to_stage).ObjectToRoot(pos),
+        diameter);
+}
+
+void DisplayDebugSphereWorld(const Point3f &pos, float diameter) {
     auto &ds = *scene_context_->debug_sphere;
     ds.SetEnabled(true);
     ds.SetFlagEnabled(SG::Node::Flag::kRender, true);
-    ds.SetUniformScale(stage_diameter);
-    ds.SetTranslation(world_pos);
+    ds.SetUniformScale(diameter);
+    ds.SetTranslation(pos);
 }
 
 }  // namespace Debug

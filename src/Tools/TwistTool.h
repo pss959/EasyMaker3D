@@ -53,9 +53,6 @@ class TwistTool : public Tool {
     /// rotation.
     SG::NodePtr           axis_;
 
-    /// Starting rotation for the #axis_.
-    Rotationf             start_axis_rotation_;
-
     /// Twist at the start of interaction.
     Twist                 start_twist_;
 

@@ -78,6 +78,24 @@ Node "SliderTests" {
           ]
         }
       ]
-    }
+    },
+
+    # 2D Slider using XZ plane.
+    Node {
+      #scale:       2 2 2,     # Should make motion reach edges.
+      translation: 4 -6 24, # Offsets.
+      children: [
+        Slider2DWidget {
+          principal_plane: "kXZ",
+          min_value:      -30 -30,
+          max_value:       30  30,
+          initial_value:  0 0,
+
+          scale:          3 7 3,
+          hover_scale:    1.1 1.1 1.1,
+          shapes: [ Box {}, ]
+        },
+      ]
+    },
   ]
 }

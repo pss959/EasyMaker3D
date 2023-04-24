@@ -15,6 +15,7 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/Tuning.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
@@ -29,7 +30,6 @@ void TwistTool::CreationDone() {
         translator_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
             *this, "Translator");
         axis_ = SG::FindNodeUnderNode(*translator_, "Axis");
-        start_axis_rotation_ = axis_->GetRotation();
 
         translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
 
@@ -76,11 +76,10 @@ void TwistTool::UpdateGeometry_() {
     SG::FindNodeUnderNode(*rotator_, "Min")->SetTranslation(-ytrans);
     SG::FindNodeUnderNode(*rotator_, "Max")->SetTranslation(ytrans);
 
-    // Scale the center translator axis (in Z because it is rotated to
-    // translate in the XZ plane).
+    // Scale the center translator axis height.
     const auto axis = SG::FindNodeUnderNode(*translator_, "Axis");
     auto scale = axis_->GetScale();
-    scale[2] = 2 * kAxisScale * radius;
+    scale[1] = 2 * kAxisScale * radius;
     axis_->SetScale(scale);
 
     // Scale and translate the twister parts.
@@ -107,14 +106,14 @@ void TwistTool::MatchCurrentTwist_() {
     const Rotationf rot = Rotationf::RotateInto(Twist().axis, twist_.axis);
     twister_->SetRotationAngle(twist_.angle);
     rotator_->SetRotation(rot);
-    translator_->SetValue(Vector2f(twist_.center[0], twist_.center[1]));
+    translator_->SetValue(Vector2f(twist_.center[0], twist_.center[2]));
 
     twister_->GetRotationChanged().EnableObserver(this, true);
     rotator_->GetRotationChanged().EnableObserver(this, true);
     translator_->GetValueChanged().EnableObserver(this, true);
 
     // Update the axis rotation to match.
-    axis_->SetRotation(rot * start_axis_rotation_);
+    axis_->SetRotation(rot);
 }
 
 void TwistTool::Detach() {
@@ -150,8 +149,6 @@ void TwistTool::Activate_(Widget &widget, bool is_activation) {
 }
 
 void TwistTool::TwistChanged_(Widget &widget) {
-    const auto &context = GetContext();
-
     // If this is the first change, create the ChangeTwistCommand and start the
     // drag.
     if (! command_) {
@@ -161,6 +158,7 @@ void TwistTool::TwistChanged_(Widget &widget) {
     }
 
     // Try snapping if rotating or translating unless modified dragging.
+    const auto &context = GetContext();
     const bool is_snapped = ! context.is_modified_mode &&
         &widget == translator_.get() ? SnapTranslation_() :
         &widget == rotator_.get()    ? SnapRotation_() : false;
@@ -187,29 +185,54 @@ void TwistTool::TwistChanged_(Widget &widget) {
 }
 
 bool TwistTool::SnapTranslation_() {
-    // XXXX
-    return false;
+    using ion::math::Distance;
+
+    auto &tm = *GetContext().target_manager;
+
+    // Current center in object coordinates (from the Slider2DWidget).
+    const auto cur_obj_pos = Twist().center + translator_->GetTranslation();
+
+    // Try to snap to the point target position (if it is active) or the center
+    // of the untwisted Model, whichever is closer. Work in stage coordinates.
+    const auto stage_cc  = GetStageCoordConv();
+    const auto osm       = stage_cc.GetObjectToRootMatrix();
+    const auto start_pos = osm * start_twist_.center;
+    const auto cur_pos   = osm * cur_obj_pos;
+    const auto model_pos = osm * Point3f::Zero();
+
+    bool is_snapped = false;
+
+    Vector3f motion = cur_pos - start_pos;
+    if (tm.SnapToPoint(start_pos, motion)) {
+        twist_.center = stage_cc.RootToObject(start_pos + motion);
+        is_snapped = true;
+    }
+    else if (Distance(cur_pos, model_pos) <= TK::kSnapPointTolerance) {
+        twist_.center = Point3f::Zero();
+        is_snapped = true;
+    }
+
+    return is_snapped;
 }
 
 bool TwistTool::SnapRotation_() {
-    const auto &context = GetContext();
-    auto &tm = *context.target_manager;
+    auto &tm = *GetContext().target_manager;
 
     bool is_snapped = false;
 
     // Try to snap to the point target direction (in stage coordinates) if it
     // is active.  Otherwise, try to snap to any of the principal axes.
     Vector3f axis = rotator_->GetRotation() * Twist().axis;
+    const auto stage_cc = GetStageCoordConv();
+    Vector3f stage_axis = stage_cc.ObjectToRoot(axis);
     Rotationf rot;
     rotator_->SetActiveColor(SG::ColorMap::SGetColor("WidgetActiveColor"));
-    if (tm.SnapToDirection(axis, rot)) {
-        twist_.axis = tm.GetPointTarget().GetDirection();
+    if (tm.SnapToDirection(stage_axis, rot)) {
+        twist_.axis = stage_cc.RootToObject(tm.GetPointTarget().GetDirection());
         rotator_->SetActiveColor(GetSnappedFeedbackColor());
         is_snapped = true;
     }
     else {
-        const auto stage_cc = GetStageCoordConv();
-        Vector3f stage_axis = stage_cc.ObjectToRoot(axis);
         const int snapped_dim = SnapToAxis(stage_axis);
         is_snapped = snapped_dim >= 0;
         if (is_snapped) {

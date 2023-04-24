@@ -42,6 +42,8 @@ template <typename T>
 void SliderWidgetBase<T>::StartDrag(const DragInfo &info) {
     DraggableWidget::StartDrag(info);
 
+    PrepareForDrag(info);
+
     // Pointer drags use absolute positions to compute slider values. To turn
     // that into a relative change from the current position, save the
     // (absolute) value for the starting position. This will be subtracted to
