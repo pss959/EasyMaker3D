@@ -11,6 +11,7 @@
 #include "Math/Curves.h"
 #include "Models/TwistedModel.h"
 #include "Place/PointTarget.h"
+#include "Place/PrecisionStore.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -171,7 +172,11 @@ void TwistTool::TwistChanged_(Widget &widget) {
         else if (&widget == rotator_.get())
             twist_.axis = rotator_->GetRotation() * Twist().axis;
         else
-            twist_.angle = twister_->GetRotationAngle();
+            // Apply precision to the angle unless modified dragging.
+            twist_.angle = context.is_modified_mode ?
+                twister_->GetRotationAngle() :
+                context.precision_store->ApplyAngle(
+                    twister_->GetRotationAngle());
     }
     MatchCurrentTwist_();
 
