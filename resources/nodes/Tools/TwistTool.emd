@@ -41,6 +41,7 @@ TwistTool "TwistTool" {
             # Widget for rotating the twist angle.
             DiscWidget "Twister" {
               mode: "kRotationOnly",
+              angle_mode: "kAccumulate",
               children: [
                 Node "X" {
                   children: [

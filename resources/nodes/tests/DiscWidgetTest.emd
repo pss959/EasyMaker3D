@@ -17,12 +17,12 @@ Node "DiscWidgetTest" {
 
   children: [
     Node {  # Background square.
-      translation: 0 0 -14,
-      shapes: [ Box { size: 80 40 .1 } ],
+      translation: 0 0 -12,
+      shapes: [ Box { size: 100 60 .1 } ],
     },
 
     Node "RotationToolTest" {
-      translation: -20 0 0,
+      translation: 0 10 0,
       children: [
         Node "XRotator" {
           rotation: 0 0 1 -90,
@@ -48,16 +48,55 @@ Node "DiscWidgetTest" {
         },
       ]
     },
-    Node "DiscTest" {
-      rotation: 1 0 0 90,
-      scale: 20 1 20,
-      translation: 20 0 0,
-      children: [
-        DiscWidget {
-          inactive_color: "#669999",
+
+    Node "Widgets" {
+      TEMPLATES: [
+        DiscWidget "T_DiscTest" {
           scale_range: .4 10,
-          shapes: [Cylinder "Disc" {}],
+          children: [
+            Node "Disc" {
+              scale: 30 4 30,
+              shapes: [ Cylinder { sector_count: 40 } ],
+            },
+            Node "Knob" {
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [ Uniform "uBaseColor" { vec4f_val: "#112211" }, ],
+                }
+              ],
+              scale: 5 5 5,
+              translation: 15 1 .5,
+              shapes: [ Ellipsoid {} ],
+            }
+          ],
         }
+      ],
+
+      translation: 0 -15 -6,
+
+      children: [
+        Node {
+          rotation: 1 0 0 90,
+          translation: -20 0 0,
+          children: [
+            CLONE "T_DiscTest" "DiscTestClamp" {
+              angle_mode: "kClamp",
+              inactive_color: "#bb6666",
+            }
+          ]
+        },
+
+        Node {
+          rotation: 1 0 0 90,
+          translation: 20 0 0,
+          children: [
+            CLONE "T_DiscTest" "DiscTestAccumulate" {
+              angle_mode: "kAccumulate",
+              inactive_color: "#6666bb",
+            }
+          ]
+        },
       ]
     }
   ]

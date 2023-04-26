@@ -9,12 +9,13 @@
 #include "Util/Tuning.h"
 
 void DiscWidget::AddFields() {
-    AddField(mode_.Init("mode",                 Mode::kRotateAndScale));
-    AddField(scale_range_.Init("scale_range",
-                               Vector2f(TK::kDiscWidgetMinScale,
-                                        TK::kDiscWidgetMaxScale)));
+    const Vector2f scale_range(TK::kDiscWidgetMinScale,
+                               TK::kDiscWidgetMaxScale);
+    AddField(mode_.Init("mode",                       Mode::kRotateAndScale));
+    AddField(angle_mode_.Init("angle_mode",           AngleMode::kClamp));
+    AddField(scale_range_.Init("scale_range",         scale_range));
     AddField(apply_to_widget_.Init("apply_to_widget", true));
-    AddField(plane_offset_.Init("plane_offset", 0));
+    AddField(plane_offset_.Init("plane_offset",       0));
 
     Widget::AddFields();
 }
@@ -48,10 +49,6 @@ void DiscWidget::ApplyScaleChange(float delta) {
 
 void DiscWidget::SetRotationAngle(const Anglef &angle) {
     ApplyRotationToWidget_(angle);
-}
-
-Anglef DiscWidget::GetRotationAngle() const {
-    return GetRotationAngle_(GetRotation());
 }
 
 void DiscWidget::StartDrag(const DragInfo &info) {
@@ -257,25 +254,32 @@ Anglef DiscWidget::ComputeGripRotation_(const Rotationf &rot0,
 void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {
     using ion::math::AngleBetween;
 
-    Anglef angle = rot_angle;
-
-    // If the new angle is more than 180 degrees from the previous angle,
-    // switch direction for consistency.
-    const float prev_deg = prev_rot_angle_.Degrees();
-    const float cur_deg  = rot_angle.Degrees();
-    if (std::abs(cur_deg - prev_deg) > 180) {
+    if (GetAngleMode() == AngleMode::kAccumulate) {
+        Anglef angle_diff = rot_angle - prev_rot_angle_;
+        if (angle_diff.Degrees() < -180)
+            angle_diff += Anglef::FromDegrees(360);
+        else if (angle_diff.Degrees() > 180)
+            angle_diff -= Anglef::FromDegrees(360);
+        cur_angle_ += angle_diff;
+    }
+    else {
+        // Get the new rotation angle in the clamp range [-360, 360].
+        const float prev_deg = prev_rot_angle_.Degrees();
+        const float cur_deg  = rot_angle.Degrees();
         float new_deg = cur_deg;
-        if (prev_deg < 0 && cur_deg > 0)
-            new_deg -= 360;
-        else if (prev_deg > 0 && cur_deg < 0)
-            new_deg += 360;
-        angle = Anglef::FromDegrees(new_deg);
+        if (std::abs(cur_deg - prev_deg) > 180) {
+            if (prev_deg < 0 && cur_deg > 0)
+                new_deg -= 360;
+            else if (prev_deg > 0 && cur_deg < 0)
+                new_deg += 360;
+        }
+        cur_angle_ = Anglef::FromDegrees(new_deg);
     }
 
-    ApplyRotationToWidget_(start_angle_ + angle);
-    rotation_changed_.Notify(*this, angle);
+    ApplyRotationToWidget_(start_angle_ + rot_angle);
+    rotation_changed_.Notify(*this, rot_angle);
 
-    prev_rot_angle_ = angle;
+    prev_rot_angle_ = rot_angle;
 }
 
 void DiscWidget::ApplyRotationToWidget_(const Anglef &new_angle) {

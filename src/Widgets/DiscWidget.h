@@ -30,6 +30,14 @@ class DiscWidget : public DraggableWidget {
         kRotateAndScale,
     };
 
+    /// Defines modes used to compute the angle during rotation.
+    enum class AngleMode {
+        /// Clamp the current angle to the range [-360, 360] (default).
+        kClamp,
+        /// Accumulate the change in angle continuously.
+        kAccumulate,
+    };
+
     /// Returns a Notifier that is invoked when the user drags the widget to
     /// cause rotation. It is passed the widget and the change in rotation
     /// angle around the axis from the start of the drag.
@@ -47,6 +55,10 @@ class DiscWidget : public DraggableWidget {
     /// Returns the mode of operation. The default is Mode::kRotateAndScale.
     Mode GetMode() const { return mode_; }
 
+    /// Returns the mode used to compute the angle during rotation. The default
+    /// is AngleMode::kClamp.
+    AngleMode GetAngleMode() const { return angle_mode_; }
+
     /// Returns the scaling range, which is used only if scaling is allowed.
     /// Any scaling will be clamped to this range.
     const Vector2f & GetScaleRange() const { return scale_range_; }
@@ -61,7 +73,7 @@ class DiscWidget : public DraggableWidget {
 
     /// Returns the current rotation angle. This can be called at any time,
     /// including during a rotation drag.
-    Anglef GetRotationAngle() const;
+    Anglef GetRotationAngle() const { return cur_angle_; }
 
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
@@ -87,10 +99,11 @@ class DiscWidget : public DraggableWidget {
 
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Mode>  mode_;
-    Parser::TField<Vector2f> scale_range_;
-    Parser::TField<bool>     apply_to_widget_;
-    Parser::TField<float>    plane_offset_;
+    Parser::EnumField<Mode>      mode_;
+    Parser::EnumField<AngleMode> angle_mode_;
+    Parser::TField<Vector2f>     scale_range_;
+    Parser::TField<bool>         apply_to_widget_;
+    Parser::TField<float>        plane_offset_;
     ///@}
 
     /// Current action being performed.
@@ -113,6 +126,9 @@ class DiscWidget : public DraggableWidget {
 
     /// Change in rotation angle from the previous drag.
     Anglef     prev_rot_angle_;
+
+    /// Current rotation angle, taking the AngleMode into account.
+    Anglef     cur_angle_;
 
     /// Notifies when the widget is rotated.
     Util::Notifier<Widget&, const Anglef &> rotation_changed_;

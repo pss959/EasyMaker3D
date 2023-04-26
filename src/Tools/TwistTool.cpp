@@ -164,19 +164,21 @@ void TwistTool::TwistChanged_(Widget &widget) {
         &widget == translator_.get() ? SnapTranslation_() :
         &widget == rotator_.get()    ? SnapRotation_() : false;
 
-    // If not snapped, update the current Twist from the current Widget values
+    // If not snapped, update the current Twist from the active Widget's values
     // and match it.
     if (! is_snapped) {
-        if (&widget == translator_.get())
+        if (&widget == translator_.get()) {
             twist_.center = Twist().center + translator_->GetTranslation();
-        else if (&widget == rotator_.get())
+        }
+        else if (&widget == rotator_.get()) {
             twist_.axis = rotator_->GetRotation() * Twist().axis;
-        else
+        }
+        else {
             // Apply precision to the angle unless modified dragging.
+            const Anglef angle = twister_->GetRotationAngle();
             twist_.angle = context.is_modified_mode ?
-                twister_->GetRotationAngle() :
-                context.precision_store->ApplyAngle(
-                    twister_->GetRotationAngle());
+                context.precision_store->ApplyAngle(angle) : angle;
+        }
     }
     MatchCurrentTwist_();
 

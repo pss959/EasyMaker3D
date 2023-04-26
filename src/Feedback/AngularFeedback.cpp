@@ -75,16 +75,19 @@ void AngularFeedback::Impl_::SubtendArc(const Point3f &center,
     root_node_.SetTranslation(center + Vector3f(0, up_offset, 0));
 
     // Modify the angles if necessary.
-    float rounded_degrees = RoundToPrecision(arc.arc_angle.Degrees(), 1);
-    if (rounded_degrees >= 360)
-        rounded_degrees -= 360;
+    const float rounded_degrees =
+        RoundToPrecision(arc.arc_angle.Degrees(), 1);
     const CircleArc adjusted_arc(arc.start_angle,
                                  Anglef::FromDegrees(rounded_degrees));
 
+    // Round to the nearest angle for the text.
+    const Anglef rounded_angle =
+        Anglef::FromDegrees(RoundToPrecision(arc.arc_angle.Degrees(), 1));
+
     // Update the parts.
-    UpdateLines_(adjusted_arc);
-    UpdateArc_(adjusted_arc);
-    UpdateText_(adjusted_arc.arc_angle, text_up_offset, owm);
+    UpdateLines_(arc);
+    UpdateArc_(arc);
+    UpdateText_(rounded_angle, text_up_offset, owm);
 
     root_node_.SetBaseColor(color_);
 }
