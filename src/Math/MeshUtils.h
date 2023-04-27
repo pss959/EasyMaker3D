@@ -32,8 +32,10 @@ TriMesh SliceMesh(const TriMesh &mesh, size_t num_slices, const Vector3f &dir);
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 
-/// Twists a mesh using the given Twist struct.
-TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist);
+/// Twists a mesh using the given Twist struct. If num_slices is greater than
+/// 1, this first slices the mesh along the twist axis.
+TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist,
+                  size_t num_slices = 1);
 
 /// Returns a new version of a mesh with the bounds centered on the origin.
 TriMesh CenterMesh(const TriMesh &mesh);

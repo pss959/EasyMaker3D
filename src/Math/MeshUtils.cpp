@@ -12,6 +12,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
+#include "Math/MeshDividing.h"
 #include "Math/Point3fMap.h"
 #include "Math/Twist.h"
 #include "Util/Assert.h"
@@ -20,6 +21,41 @@
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------
+
+/// Determines the extent of the mesh in the given direction, returning the
+/// projected min/max distances along the direction results as a Range1f.
+static Range1f FindMeshExtents_(const TriMesh &mesh, const Vector3f &dir) {
+    // Project each mesh point onto the vector and find the min/max distances.
+    float min_dist =  std::numeric_limits<float>::max();
+    float max_dist = -std::numeric_limits<float>::max();
+    for (const auto &p: mesh.points) {
+        const float dist = ion::math::Dot(Vector3f(p), dir);
+        min_dist = std::min(min_dist, dist);
+        max_dist = std::max(max_dist, dist);
+    }
+    ASSERT(min_dist < max_dist);
+    return Range1f(min_dist, max_dist);
+}
+
+/// Implements SliceMesh(); the extents along the slicing direction are
+/// supplied.
+static TriMesh SliceMesh_(const TriMesh &mesh, size_t num_slices,
+                          const Vector3f &dir, const Range1f &dist_range) {
+    ASSERT(num_slices > 1U);
+    ASSERT(IsValidVector(dir));
+
+    TriMesh sliced_mesh = mesh;
+
+    // Create planes perpendicular to the direction and use SplitMesh() to
+    // create slices.
+    const float min_dist = dist_range.GetMinPoint();
+    const float length   = dist_range.GetSize();
+    const float delta    = length / num_slices;
+    for (size_t i = 1; i < num_slices; ++i)
+        sliced_mesh = SplitMesh(sliced_mesh, Plane(min_dist + i * delta, dir));
+
+    return sliced_mesh;
+}
 
 /// Creates a new mesh by modifying each point in the given mesh using the
 /// given function. If change_orientation is true, this also changes the
@@ -80,9 +116,10 @@ TriMesh SliceMesh(const TriMesh &mesh, size_t num_slices, const Vector3f &dir) {
     ASSERT(num_slices > 0);
     ASSERT(IsValidVector(dir));
 
-    // XXXX Do something.
+    // Determine the extent of the mesh in the twist axis direction.
+    const Range1f dist_range = FindMeshExtents_(mesh, dir);
 
-    return mesh;
+    return SliceMesh_(mesh, num_slices, dir, dist_range);
 }
 
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
@@ -90,28 +127,23 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
         return plane.MirrorPoint(p); }, true);
 }
 
-TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist) {
-    // Determine the extent of the mesh in the twist axis direction. Project
-    // each point onto the axis vector and find the min/max distances.
-    float min_dist =  std::numeric_limits<float>::max();
-    float max_dist = -std::numeric_limits<float>::max();
-    for (const auto &p: mesh.points) {
-        const float dist = ion::math::Dot(Vector3f(p), twist.axis);
-        min_dist = std::min(min_dist, dist);
-        max_dist = std::max(max_dist, dist);
-    }
-    ASSERT(min_dist < max_dist);
+TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist, size_t num_slices) {
+    // Determine the extent of the mesh in the twist axis direction.
+    const Range1f dist_range = FindMeshExtents_(mesh, twist.axis);
 
-    const auto twist_pt = [&twist, min_dist, max_dist](const Point3f &p){
+    const auto twist_pt = [&twist, dist_range](const Point3f &p){
         // Interpolate the angle based on the distance.
         const float dist = ion::math::Dot(Vector3f(p), twist.axis);
-        const Anglef angle = Lerp((dist - min_dist) / (max_dist - min_dist),
+        const Anglef angle = Lerp((dist - dist_range.GetMinPoint()) /
+                                  dist_range.GetSize(),
                                   Anglef(), twist.angle);
         const Rotationf rot = Rotationf::FromAxisAndAngle(twist.axis, angle);
         return twist.center + rot * (p - twist.center);
     };
 
-    return ModifyVertices_(mesh, twist_pt);
+    return ModifyVertices_(num_slices <= 1U ? mesh :
+                           SliceMesh_(mesh, num_slices, twist.axis, dist_range),
+                           twist_pt);
 }
 
 TriMesh CenterMesh(const TriMesh &mesh) {
