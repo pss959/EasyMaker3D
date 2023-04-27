@@ -51,7 +51,28 @@ void TwistTool::CreationDone() {
 }
 
 void TwistTool::UpdateGripInfo(GripInfo &info) {
-    // XXXX Implement this...
+    info.guide_type = GripGuideType::kRotation;
+
+    // If the direction is close to the axis (in either direction), use the
+    // twister.
+    const Vector3f &guide_dir = info.guide_direction;
+    if (AreDirectionsClose(guide_dir,  twist_.axis,
+                           TK::kMaxGripHoverDirAngle) ||
+        AreDirectionsClose(guide_dir, -twist_.axis,
+                           TK::kMaxGripHoverDirAngle)) {
+        info.widget       = twister_;
+        info.target_point = ToWorld(info.widget, Point3f::Zero());
+    }
+    else {
+        // Otherwise, use the axis rotator.
+        info.widget = rotator_;
+        // Connect to the min/max handle, whichever is higher up.
+        const Point3f min_pt = ToWorld(SG::FindNodeUnderNode(*rotator_, "Min"),
+                                       Point3f::Zero());
+        const Point3f max_pt = ToWorld(SG::FindNodeUnderNode(*rotator_, "Max"),
+                                       Point3f::Zero());
+        info.target_point = min_pt[1] > max_pt[1] ? min_pt : max_pt;
+    }
 }
 
 bool TwistTool::CanAttach(const Selection &sel) const {
