@@ -43,5 +43,9 @@ void TwistedModel::SetTwist(const Twist &twist) {
 }
 
 TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
-    return TwistMesh(mesh, twist_);
+    // Use the complexity to slice the mesh along the twist axis direction.
+    const int num_slices = LerpInt(GetComplexity(), 1, 100); // XXXX
+    return TwistMesh(
+        num_slices == 1 ? mesh : SliceMesh(mesh, num_slices, twist_.axis),
+        twist_);
 }

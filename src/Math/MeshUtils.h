@@ -25,6 +25,10 @@ TriMesh ScaleMesh(const TriMesh &mesh, const Vector3f &scale);
 /// this does NOT recenter the transformed mesh.
 TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m);
 
+/// Slices a mesh into the given number (> 1) along the given direction
+/// vector.
+TriMesh SliceMesh(const TriMesh &mesh, size_t num_slices, const Vector3f &dir);
+
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 

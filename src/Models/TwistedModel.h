@@ -23,6 +23,8 @@ class TwistedModel : public ConvertedModel {
     /// Returns the current Twist.
     const Twist & GetTwist() const { return twist_; }
 
+    virtual bool CanSetComplexity() const { return true; }
+
   protected:
     TwistedModel() {}
     virtual void AddFields() override;

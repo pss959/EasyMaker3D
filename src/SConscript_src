@@ -252,6 +252,7 @@ lib_sources = list(chain(
         'Linear',
         'MeshBuilding',
         'MeshCombining',
+        'MeshDividing',
         'MeshUtils',
         'MeshValidation',
         'Point3fMap',

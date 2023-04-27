@@ -1,7 +1,7 @@
 #include "Models/ClippedModel.h"
 
 #include "Math/Linear.h"
-#include "Math/MeshCombining.h"
+#include "Math/MeshDividing.h"
 
 void ClippedModel::AddFields() {
     AddModelField(plane_.Init("plane", GetDefaultPlane()));

@@ -30,7 +30,7 @@ test_sources = [
     'IntersectorTest.cpp',
     'LinearTest.cpp',
     'MeshBuildingTest.cpp',
-    'MeshCombiningTest.cpp',
+    'MeshDividingTest.cpp',
     'MeshUtilsTest.cpp',
     'ModelMeshBinaryTest.cpp',
     'ModelTest.cpp',

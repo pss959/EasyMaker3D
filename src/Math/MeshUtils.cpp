@@ -76,6 +76,15 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
     return ModifyVertices_(mesh, [m](const Point3f &p){ return m * p; });
 }
 
+TriMesh SliceMesh(const TriMesh &mesh, size_t num_slices, const Vector3f &dir) {
+    ASSERT(num_slices > 0);
+    ASSERT(IsValidVector(dir));
+
+    // XXXX Do something.
+
+    return mesh;
+}
+
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
     return ModifyVertices_(mesh, [plane](const Point3f &p){
         return plane.MirrorPoint(p); }, true);
