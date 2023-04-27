@@ -37,26 +37,6 @@ static Range1f FindMeshExtents_(const TriMesh &mesh, const Vector3f &dir) {
     return Range1f(min_dist, max_dist);
 }
 
-/// Implements SliceMesh(); the extents along the slicing direction are
-/// supplied.
-static TriMesh SliceMesh_(const TriMesh &mesh, size_t num_slices,
-                          const Vector3f &dir, const Range1f &dist_range) {
-    ASSERT(num_slices > 1U);
-    ASSERT(IsValidVector(dir));
-
-    TriMesh sliced_mesh = mesh;
-
-    // Create planes perpendicular to the direction and use SplitMesh() to
-    // create slices.
-    const float min_dist = dist_range.GetMinPoint();
-    const float length   = dist_range.GetSize();
-    const float delta    = length / num_slices;
-    for (size_t i = 1; i < num_slices; ++i)
-        sliced_mesh = SplitMesh(sliced_mesh, Plane(min_dist + i * delta, dir));
-
-    return sliced_mesh;
-}
-
 /// Creates a new mesh by modifying each point in the given mesh using the
 /// given function. If change_orientation is true, this also changes the
 /// orientation of the new mesh's triangles.
@@ -116,10 +96,20 @@ TriMesh SliceMesh(const TriMesh &mesh, size_t num_slices, const Vector3f &dir) {
     ASSERT(num_slices > 0);
     ASSERT(IsValidVector(dir));
 
-    // Determine the extent of the mesh in the twist axis direction.
+    // Determine the extent of the mesh in the given direction.
     const Range1f dist_range = FindMeshExtents_(mesh, dir);
 
-    return SliceMesh_(mesh, num_slices, dir, dist_range);
+    TriMesh sliced_mesh = mesh;
+
+    // Create planes perpendicular to the direction and use SplitMesh() to
+    // create slices.
+    const float min_dist = dist_range.GetMinPoint();
+    const float length   = dist_range.GetSize();
+    const float delta    = length / num_slices;
+    for (size_t i = 1; i < num_slices; ++i)
+        sliced_mesh = SplitMesh(sliced_mesh, Plane(min_dist + i * delta, dir));
+
+    return sliced_mesh;
 }
 
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
@@ -127,7 +117,7 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
         return plane.MirrorPoint(p); }, true);
 }
 
-TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist, size_t num_slices) {
+TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist) {
     // Determine the extent of the mesh in the twist axis direction.
     const Range1f dist_range = FindMeshExtents_(mesh, twist.axis);
 
@@ -141,9 +131,7 @@ TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist, size_t num_slices) {
         return twist.center + rot * (p - twist.center);
     };
 
-    return ModifyVertices_(num_slices <= 1U ? mesh :
-                           SliceMesh_(mesh, num_slices, twist.axis, dist_range),
-                           twist_pt);
+    return ModifyVertices_(mesh, twist_pt);
 }
 
 TriMesh CenterMesh(const TriMesh &mesh) {

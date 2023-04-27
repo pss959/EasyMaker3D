@@ -248,6 +248,8 @@ bool TwistTool::SnapRotation_() {
                 SG::ColorMap::SGetColorForDimension(snapped_dim));
         }
     }
+    // Make sure the axis is unit length.
+    ion::math::Normalize(&twist_.axis);
 
     return is_snapped;
 }
