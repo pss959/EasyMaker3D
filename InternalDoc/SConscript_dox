@@ -40,7 +40,8 @@ src_files = FindSources_('../src', ['*.h', '*.cpp'])
 dep_dot_file    = env.File('./include/moduledependencies.dot').abspath
 dep_dot_program = env.File('../bin/findmoduledependencies.py').abspath
 env.Command(dep_dot_file, [dep_dot_program, src_files],
-            f'{dep_dot_program} | tred -v > {dep_dot_file}')
+            [f'{dep_dot_program} | tred -v > {dep_dot_file}',
+             f'echo Created {dep_dot_file}'])
 
 doc = env.Command('$OUTPUT_DIR/html/index.html',
                   dox_files + src_files + [dep_dot_file],

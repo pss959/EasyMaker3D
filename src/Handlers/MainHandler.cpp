@@ -397,7 +397,6 @@ void MainHandler::Impl_::UpdateGrippable_() {
         };
         set_grippable(Actuator::kLeftGrip);
         set_grippable(Actuator::kRightGrip);
-
     }
     cur_grippable_      = grippable;
     cur_grippable_node_ = grippable_node;
