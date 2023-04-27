@@ -54,6 +54,9 @@ class Grippable : public SG::Node {
         /// function.
         ///@{
 
+        /// Type of grip guide to display on the controller.
+        GripGuideType      guide_type = GripGuideType::kBasic;
+
         /// ClickableWidget that is the hover target, or null if there is none.
         ClickableWidgetPtr widget;
 
@@ -78,13 +81,6 @@ class Grippable : public SG::Node {
     /// grip hovers. If the Grippable is not active, this should return a null
     /// pointer.
     virtual const SG::Node * GetGrippableNode() const = 0;
-
-    /// Returns the GripGuideType that should be used to hover-highlight the
-    /// Grippable's interaction. The base class defines this to return the
-    /// basic guide.
-    virtual GripGuideType GetGripGuideType() const {
-        return GripGuideType::kBasic;
-    }
 
     /// This is given a GripInfo instance with just the Event filled in. The
     /// Grippable should set the other fields in the instance with the correct

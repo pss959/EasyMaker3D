@@ -119,12 +119,10 @@ class Tool : public Grippable {
     virtual const SG::Node * GetGrippableNode() const override {
         return GetModelAttachedTo() ? this : nullptr;
     }
-    /// The base Tool class defines this to return GripGuideType::kNone.
-    virtual GripGuideType GetGripGuideType() const override {
-        return GripGuideType::kNone;
-    }
-    /// The base Tool class defines this to set the Widget in the info to null.
+    /// The base Tool class defines this to set the Widget in the info to null
+    /// and the guide to GripGuideType::kNone.
     virtual void UpdateGripInfo(GripInfo &info) override {
+        info.guide_type = GripGuideType::kNone;
         info.widget.reset();
     }
 

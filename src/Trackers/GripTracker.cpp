@@ -164,8 +164,12 @@ bool GripTracker::GetGripData_(const Event &event, bool add_info,
                 event.orientation * info.controller->GetGuideDirection();
 
             // Let the Grippable (if any) fill in the rest of the GripInfo.
-            if (grippable_)
+            if (grippable_) {
                 grippable_->UpdateGripInfo(info);
+
+                // Update the guide in the Controller.
+                info.controller->SetGripGuideType(info.guide_type);
+            }
         }
 
         return true;

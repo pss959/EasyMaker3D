@@ -34,9 +34,6 @@ class ClipTool : public Tool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
-    virtual GripGuideType GetGripGuideType() const override {
-        return GripGuideType::kBasic;
-    }
     virtual void UpdateGripInfo(GripInfo &info) override;
 
   protected:

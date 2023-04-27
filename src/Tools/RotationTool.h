@@ -16,9 +16,6 @@ class RotationTool : public Tool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
-    virtual GripGuideType GetGripGuideType() const override {
-        return GripGuideType::kRotation;
-    }
     virtual void UpdateGripInfo(GripInfo &info) override;
 
   protected:

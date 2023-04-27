@@ -23,9 +23,7 @@ class TwistTool : public Tool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
-    virtual GripGuideType GetGripGuideType() const override {
-        return GripGuideType::kNone;
-    }
+    virtual void UpdateGripInfo(GripInfo &info) override;
 
   protected:
     TwistTool() {}

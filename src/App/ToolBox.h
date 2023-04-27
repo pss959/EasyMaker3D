@@ -142,7 +142,6 @@ class ToolBox : public Grippable {
     // ------------------------------------------------------------------------
 
     virtual const SG::Node * GetGrippableNode() const override;
-    virtual GripGuideType    GetGripGuideType() const override;
     virtual void             UpdateGripInfo(GripInfo &info) override;
 
   private:

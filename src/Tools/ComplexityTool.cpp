@@ -17,6 +17,7 @@ void ComplexityTool::CreationDone() {
 }
 
 void ComplexityTool::UpdateGripInfo(GripInfo &info) {
+    info.guide_type   = GripGuideType::kBasic;
     info.widget       = slider_;
     info.target_point = ToWorld(slider_, Point3f::Zero());
 }

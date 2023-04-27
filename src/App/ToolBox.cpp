@@ -208,12 +208,6 @@ const SG::Node * ToolBox::GetGrippableNode() const {
     return tool ? tool->GetGrippableNode() : nullptr;
 }
 
-GripGuideType ToolBox::GetGripGuideType() const {
-    // This should not be called unless there is a current Tool.
-    ASSERT(GetCurrentTool());
-    return GetCurrentTool()->GetGripGuideType();
-}
-
 void ToolBox::UpdateGripInfo(GripInfo &info) {
     // This should not be called unless there is a current Tool.
     ASSERT(GetCurrentTool());

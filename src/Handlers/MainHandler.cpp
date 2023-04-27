@@ -379,14 +379,6 @@ void MainHandler::Impl_::UpdateGrippable_() {
     auto grippable = GetActiveGrippable_();
     auto grippable_node = grippable ? grippable->GetGrippableNode() : nullptr;
 
-    // Update the guides in the controllers if now using a different node.
-    if (grippable_node != cur_grippable_node_) {
-        const auto guide_type = grippable ?
-            grippable->GetGripGuideType() : GripGuideType::kNone;
-        context_.left_controller->SetGripGuideType(guide_type);
-        context_.right_controller->SetGripGuideType(guide_type);
-    }
-
     // Update trackers if either the grippable or its node changed.
     if (grippable != cur_grippable_ || grippable_node != cur_grippable_node_) {
         SG::NodePath path;

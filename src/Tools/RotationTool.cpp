@@ -63,6 +63,8 @@ void RotationTool::CreationDone() {
 }
 
 void RotationTool::UpdateGripInfo(GripInfo &info) {
+    info.guide_type = GripGuideType::kRotation;
+
     // Convert the controller guide direction into coordinates of the Tool.
     const Vector3f guide_dir = -GetRotation() * info.guide_direction;
 

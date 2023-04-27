@@ -68,6 +68,8 @@ void ScaleTool::CreationDone() {
 }
 
 void ScaleTool::UpdateGripInfo(GripInfo &info) {
+    info.guide_type = GripGuideType::kBasic;
+
     // Convert the controller guide direction into coordinates of the Tool.
     const Vector3f guide_dir = -GetRotation() * info.guide_direction;
 

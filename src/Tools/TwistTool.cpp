@@ -50,6 +50,10 @@ void TwistTool::CreationDone() {
     }
 }
 
+void TwistTool::UpdateGripInfo(GripInfo &info) {
+    // XXXX Implement this...
+}
+
 bool TwistTool::CanAttach(const Selection &sel) const {
     return AreSelectedModelsOfType<TwistedModel>(sel);
 }

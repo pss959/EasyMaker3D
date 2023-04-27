@@ -53,9 +53,11 @@ void ClipTool::UpdateGripInfo(GripInfo &info) {
     if (AreDirectionsClose(guide_dir,  normal, TK::kMaxGripHoverDirAngle) ||
         AreDirectionsClose(guide_dir, -normal, TK::kMaxGripHoverDirAngle)) {
         info.widget = plane_widget_->GetTranslator();
+        info.guide_type = GripGuideType::kBasic;
     }
     else {
         info.widget = plane_widget_->GetRotator();
+        info.guide_type = GripGuideType::kRotation;
     }
     info.target_point = ToWorld(info.widget, Point3f::Zero());
 }

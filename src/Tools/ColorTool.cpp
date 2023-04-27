@@ -28,6 +28,7 @@ void ColorTool::CreationDone() {
 }
 
 void ColorTool::UpdateGripInfo(GripInfo &info) {
+    info.guide_type   = GripGuideType::kBasic;
     info.target_point = ToWorld(marker_, Point3f::Zero());
     info.widget       = widget_;
     info.color        = GetModelAttachedTo()->GetColor();
