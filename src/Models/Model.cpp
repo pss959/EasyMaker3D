@@ -3,6 +3,7 @@
 #include <limits>
 #include <random>
 
+#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -397,41 +398,57 @@ void Model::RebuildMesh_(bool notify) {
 void Model::PlacePointTargetOnBounds_(const DragInfo &info,
                                       Point3f &position, Vector3f &direction,
                                       Dimensionality &snapped_dims) {
-    // Convert the bounds intersection point into stage coordinates and use
-    // that as the target position.
+    // Get the matrices to convert between object and stage coordinates.
     const Matrix4f osm = info.GetObjectToStageMatrix();
-    position = osm * info.hit.bounds_point;
+    const Matrix4f som = ion::math::Inverse(osm);
 
-    // Determine which face of the bounds was hit, in stage coordinates, and
-    // use its normal as the target direction.
-    const Bounds bounds = TransformBounds(GetBounds(), osm);
-    const Bounds::Face face = bounds.GetFaceForPoint(position);
-    direction = bounds.GetFaceNormal(face);
-    const int face_dim = Bounds::GetFaceDim(face);
+    // The bounds are guaranteed to be axis-aligned only in object or scaled
+    // object coordinates, so do the math in object coordinates to determine
+    // which face of the bounds was hit and use its normal as the target
+    // direction.
+    const Bounds       &obj_bounds = GetBounds();
+    Point3f            obj_pos     = info.hit.bounds_point;
+    const Bounds::Face face        = obj_bounds.GetFaceForPoint(obj_pos);
+    const int          face_dim    = Bounds::GetFaceDim(face);
 
-    // If position is close to test_pt in the indexed dimension, this updates
-    // position in that dimension and updates min_dist with the new distance.
+    // Testing for snapping to the bounds is done most easily in object
+    // coordinates (with aligned bounds), so convert the precision value from
+    // stage coordinates to object coordinates.
+    Vector3f object_precision;
+    for (int dim = 0; dim < 3; ++dim)
+        object_precision[dim] =
+            ion::math::Length(som * GetAxis(dim, info.linear_precision));
+
+    // The position is already on the face in the face dimension.
+    snapped_dims.AddDimension(face_dim);
+
+    // In the other two dimensions, test for position being close to a corner
+    // or center value and snap to it if so.  This function checks if obj_pos
+    // is close to test_pt in the indexed dimension. If so, it updates obj_pos
+    // in that dimension and updates min_dist with the new distance.
     auto check_val = [&](const Point3f &test_pt, int dim, float &min_dist){
         ASSERT(dim >= 0 && dim <= 2);
-        const float dist = std::fabs(position[dim] - test_pt[dim]);
-        if (dist <= info.linear_precision && dist < min_dist) {
-            position[dim] = test_pt[dim];
+        const float dist = std::fabs(obj_pos[dim] - test_pt[dim]);
+        if (dist <= object_precision[dim] && dist < min_dist) {
+            obj_pos[dim] = test_pt[dim];
             min_dist = dist;
         }
     };
 
-    // Snap to the bounds corner and center values in the other two dimensions.
-    snapped_dims.AddDimension(face_dim);
     for (int dim = 0; dim < 3; ++dim) {
         if (dim == face_dim)
             continue;
-        float min_dist = 100000 * info.linear_precision;
-        check_val(bounds.GetMinPoint(), dim, min_dist);
-        check_val(bounds.GetCenter(),   dim, min_dist);
-        check_val(bounds.GetMaxPoint(), dim, min_dist);
-        if (min_dist < info.linear_precision)
+        float min_dist = 100000 * object_precision[dim];
+        check_val(obj_bounds.GetMinPoint(), dim, min_dist);
+        check_val(obj_bounds.GetCenter(),   dim, min_dist);
+        check_val(obj_bounds.GetMaxPoint(), dim, min_dist);
+        if (min_dist < object_precision[dim])
             snapped_dims.AddDimension(dim);
     }
+
+    // Convert the point and normal into stage coordinates.
+    position  = osm * obj_pos;
+    direction = TransformNormal(obj_bounds.GetFaceNormal(face), osm);
 }
 
 void Model::PlacePointTargetOnMesh_(const DragInfo &info,
