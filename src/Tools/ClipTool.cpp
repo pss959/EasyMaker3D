@@ -113,14 +113,15 @@ void ClipTool::Activate_(bool is_activation) {
         // Save the center of the unclipped Model in stage coordinates.
         stage_center_ = Point3f(GetTranslation());
         start_stage_plane_ = stage_plane_;
-        feedback_ = context.feedback_manager->Activate<LinearFeedback>();
         context.target_manager->StartSnapping();
     }
     else {
         plane_widget_->UnhighlightArrowColor();
         context.target_manager->EndSnapping();
-        context.feedback_manager->Deactivate(feedback_);
-        feedback_.reset();
+        if (feedback_) {
+            context.feedback_manager->Deactivate(feedback_);
+            feedback_.reset();
+        }
 
         GetDragEnded().Notify(*this);
 
@@ -172,8 +173,11 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
     context.command_manager->SimulateDo(command_);
 
     // Update translation feedback.
-    if (! is_rotation)
+    if (! is_rotation) {
+        if (! feedback_)
+            feedback_ = context.feedback_manager->Activate<LinearFeedback>();
         UpdateTranslationFeedback_(color);
+    }
 }
 
 bool ClipTool::SnapRotation_(int &snapped_dim) {
