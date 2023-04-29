@@ -228,8 +228,10 @@ void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
         const std::string msg = "There are unsaved changes."
             " Do you really want to load another session?";
         auto func = [&](const std::string &answer){
-            if (answer == "Yes")
+            if (answer == "Yes") {
+                Close("Done");
                 ReallyLoadSessionFromPath_(path);
+            }
         };
         AskQuestion(msg, func, true);
     }
