@@ -223,7 +223,6 @@ void Model::SetColor(const Color &new_color) {
 }
 
 const TriMesh & Model::GetMesh() const {
-    ASSERT(status_ != Status::kDescendantShown);
     RebuildMeshIfStaleAndShown_(true);
     return shape_->GetMesh();
 }
