@@ -109,14 +109,16 @@ void SessionPanel::ContinueSession_() {
     const bool changes_made  = session_agent.CanSaveSession();
     const auto &session_path = GetSettings().GetLastSessionPath();
 
-    Close("Done");
-
     if (session_agent.GetCurrentSessionName().empty() && session_path &&
         ! changes_made) {
         std::string error;
-        if (! session_agent.LoadSession(session_path, error))
+        if (! session_agent.LoadSession(session_path, error)) {
             DisplayMessage("Could not load session from '" +
                            session_path.ToString() + "':\n" + error, nullptr);
+        }
+        else {
+            Close("Done");
+        }
     }
 }
 
