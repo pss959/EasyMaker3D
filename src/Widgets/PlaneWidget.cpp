@@ -84,11 +84,15 @@ void PlaneWidget::Activate_(bool is_activation) {
 }
 
 void PlaneWidget::RotationChanged_() {
+    // Update the translator to match the new rotation and then update the
+    // rotator to match the new translation.
     UpdateTranslator_();
+    UpdateRotator_();
     plane_changed_.Notify(true);
 }
 
 void PlaneWidget::TranslationChanged_() {
+    // Update the rotator to match the new translation.
     UpdateRotator_();
     plane_changed_.Notify(false);
 }
