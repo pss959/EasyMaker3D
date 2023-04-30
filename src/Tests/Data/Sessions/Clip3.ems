@@ -41,6 +41,7 @@ CommandList {
     },
     ConvertClipCommand {
       model_names: ["Cylinder_1", "Cylinder_2", "Cylinder_3"],
+      result_names: ["Clipped_1", "Clipped_2", "Clipped_3"],
     },
     RotateCommand {
       rotation: 1 0 0 90,

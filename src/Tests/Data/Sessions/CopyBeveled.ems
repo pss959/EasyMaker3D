@@ -12,6 +12,7 @@ CommandList {
     },
     ConvertBevelCommand {
       model_names: ["Box_1"],
+      result_names: ["Beveled_1"],
     },
     ChangeBevelCommand {
       profile_points: [0.29 0.85, 0.69 0.62, 0.91 0.36],

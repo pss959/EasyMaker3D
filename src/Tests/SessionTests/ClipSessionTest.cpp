@@ -88,6 +88,39 @@ void ClipSessionTest::CompareN(const std::vector<ModelData> &expected) {
 // Tests.
 // ----------------------------------------------------------------------------
 
+#if XXXX
+TEST_F(ClipSessionTest, ClipSessionTest0) {
+    // This has 1 cylinder (Cylinder_1) that has a default transform, then
+    // converted to a ClippedModel (Clipped_1). Clipped_1 is then clipped by
+    // the Z=0 plane in stage coordinates.
+    //
+    // Clipped_1 should have its rotated top half (front) clipped away.
+    LoadSession("Clip1");
+
+    const float s = TK::kInitialModelScale;
+
+    ModelData md;
+    md.scale.Set(s, 2 * s, s);
+    md.rot = GetXRot();
+    md.op_trans.Set(5, 4, 2);
+    md.clipped_trans.Set(5, 4, -1);
+    md.plane = Plane(-.5f, Vector3f::AxisY());
+    md.clipped_bounds = Bounds(Vector3f(2, .5f, 2));
+    md.center_offset.Set(0, -.75f, 0);
+
+    // Do this twice - the second time after undo/redo.
+    for (int i = 0; i < 2; ++i) {
+        SCOPED_TRACE("Iteration " + Util::ToString(i));
+
+        CompareN(std::vector<ModelData>(1, md));
+
+        // Undo and redo the clip change for second iteration.
+        context.command_manager->Undo();
+        context.command_manager->Redo();
+    }
+}
+#endif
+
 TEST_F(ClipSessionTest, ClipSessionTest1) {
     // This has 1 cylinder (Cylinder_1) that is scaled by 2 in height, rotated
     // by 90 degrees around X, and translated by 5 in X, then converted to a

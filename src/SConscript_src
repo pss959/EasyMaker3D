@@ -119,6 +119,7 @@ lib_sources = list(chain(
         'CommandList',
         'ConvertBevelCommand',
         'ConvertClipCommand',
+        'ConvertCommand',
         'ConvertMirrorCommand',
         'ConvertTwistCommand',
         'CopyCommand',

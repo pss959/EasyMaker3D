@@ -27,6 +27,7 @@ CommandList {
     },
     ConvertClipCommand {
       model_names: ["Cylinder_1"],
+      result_names: ["Clipped_1"],
     },
     ChangeClipCommand {
       plane: 0 0 1 0,

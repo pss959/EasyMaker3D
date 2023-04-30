@@ -36,6 +36,7 @@ CommandList {
     },
     ConvertTwistCommand {
       model_names: ["Cylinder_1", "Cylinder_2", "Cylinder_3"],
+      result_names: ["Twisted_1", "Twisted_2", "Twisted_3"],
     },
     RotateCommand {
       rotation: 1 0 0 90,
