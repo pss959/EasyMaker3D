@@ -38,6 +38,7 @@ void ConvertedModel::SetOperandModel(const ModelPtr &model) {
         ClearChildModels();
     OperatorModel::AddChildModel(model);
     operand_model_ = model;
+    GetMesh();  // Make sure the center offset is up to date.
     SyncTransformsFromOperand(*model);
 }
 

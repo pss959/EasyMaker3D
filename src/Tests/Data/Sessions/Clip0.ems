@@ -1,0 +1,20 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.0.0",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    ConvertClipCommand {
+      model_names: ["Cylinder_1"],
+      result_names: ["Clipped_1"],
+    },
+  ],
+  current_index: 2,
+}
+}

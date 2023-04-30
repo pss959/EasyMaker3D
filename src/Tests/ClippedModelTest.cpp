@@ -23,7 +23,7 @@ TEST_F(ClippedModelTest, DefaultPlane) {
     EXPECT_EQ(Vector3f(2, 1, 2), bounds.GetSize());
     EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
     EXPECT_EQ(Vector3f(4, 4, 4), clipped->GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0), clipped->GetTranslation());
+    EXPECT_EQ(Vector3f(0, 2, 0), clipped->GetTranslation());
 
     // Verify offset vectors.
     EXPECT_EQ(Vector3f(0, -.5f, 0), clipped->GetObjectCenterOffset());
@@ -51,7 +51,7 @@ TEST_F(ClippedModelTest, OtherPlane) {
     EXPECT_EQ(Vector3f(1.5f, 2, 2), bounds.GetSize());
     EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
     EXPECT_EQ(Vector3f(2, 2, 2),    clipped->GetScale());
-    EXPECT_EQ(Vector3f(0, 4, 0),    clipped->GetTranslation());
+    EXPECT_EQ(Vector3f(-.5f, 4, 0), clipped->GetTranslation());
 
     // Verify offset vectors.
     EXPECT_EQ(Vector3f(-.25f, 0, 0), clipped->GetObjectCenterOffset());

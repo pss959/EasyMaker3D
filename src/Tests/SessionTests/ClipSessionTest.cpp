@@ -67,8 +67,8 @@ void ClipSessionTest::Compare1(const ModelData &expected, ClippedModel &cm) {
     EXPECT_PTS_CLOSE(expected.clipped_bounds.GetCenter(), cb.GetCenter());
     EXPECT_VECS_CLOSE(expected.clipped_bounds.GetSize(),  cb.GetSize());
 
-    // ClippedModel mesh offset (in object coordinates).
-    EXPECT_VECS_CLOSE(expected.center_offset, cm.GetObjectCenterOffset());
+    // ClippedModel mesh offset (in local coordinates).
+    EXPECT_VECS_CLOSE(expected.center_offset, cm.GetLocalCenterOffset());
 }
 
 void ClipSessionTest::CompareN(const std::vector<ModelData> &expected) {
@@ -88,25 +88,24 @@ void ClipSessionTest::CompareN(const std::vector<ModelData> &expected) {
 // Tests.
 // ----------------------------------------------------------------------------
 
-#if XXXX
 TEST_F(ClipSessionTest, ClipSessionTest0) {
     // This has 1 cylinder (Cylinder_1) that has a default transform, then
-    // converted to a ClippedModel (Clipped_1). Clipped_1 is then clipped by
-    // the Z=0 plane in stage coordinates.
+    // converted to a ClippedModel (Clipped_1) with the default clipping plane.
     //
-    // Clipped_1 should have its rotated top half (front) clipped away.
-    LoadSession("Clip1");
+    // Clipped_1 should have its top half clipped away and sit on the Y=0
+    // plane.
+    LoadSession("Clip0");
 
     const float s = TK::kInitialModelScale;
 
     ModelData md;
-    md.scale.Set(s, 2 * s, s);
-    md.rot = GetXRot();
-    md.op_trans.Set(5, 4, 2);
-    md.clipped_trans.Set(5, 4, -1);
-    md.plane = Plane(-.5f, Vector3f::AxisY());
-    md.clipped_bounds = Bounds(Vector3f(2, .5f, 2));
-    md.center_offset.Set(0, -.75f, 0);
+    md.scale.Set(s, s, s);
+    md.rot = Rotationf::Identity();
+    md.op_trans.Set(0, 2, 0);
+    md.clipped_trans.Set(0, 1, 0);
+    md.plane = ClippedModel::GetDefaultPlane();
+    md.clipped_bounds = Bounds(Vector3f(2, 1, 2));
+    md.center_offset.Set(0, -1, 0);
 
     // Do this twice - the second time after undo/redo.
     for (int i = 0; i < 2; ++i) {
@@ -119,13 +118,13 @@ TEST_F(ClipSessionTest, ClipSessionTest0) {
         context.command_manager->Redo();
     }
 }
-#endif
 
 TEST_F(ClipSessionTest, ClipSessionTest1) {
-    // This has 1 cylinder (Cylinder_1) that is scaled by 2 in height, rotated
-    // by 90 degrees around X, and translated by 5 in X, then converted to a
-    // ClippedModel (Clipped_1). Clipped_1 is then clipped by the Z=0 plane in
-    // stage coordinates.
+    // This has 1 cylinder (Cylinder_1) that has its height scaled by 2,
+    // rotated by 90 degrees around X, and translated by 5 in X, then converted
+    // to a ClippedModel (Clipped_1). Clipped_1 is then clipped by the Z=0
+    // plane in stage coordinates, which is the Y=0 plane in object
+    // coordinates.
     //
     // Clipped_1 should have its rotated top half (front) clipped away.
     LoadSession("Clip1");
@@ -135,11 +134,11 @@ TEST_F(ClipSessionTest, ClipSessionTest1) {
     ModelData md;
     md.scale.Set(s, 2 * s, s);
     md.rot = GetXRot();
-    md.op_trans.Set(5, 4, 2);
-    md.clipped_trans.Set(5, 4, -1);
-    md.plane = Plane(-.5f, Vector3f::AxisY());
-    md.clipped_bounds = Bounds(Vector3f(2, .5f, 2));
-    md.center_offset.Set(0, -.75f, 0);
+    md.op_trans.Set(5, 4, 0);
+    md.clipped_trans.Set(5, 4, -2);
+    md.plane = Plane(0, Vector3f::AxisY());
+    md.clipped_bounds = Bounds(Vector3f(2, 1, 2));
+    md.center_offset.Set(0, 0, -2);
 
     // Do this twice - the second time after undo/redo.
     for (int i = 0; i < 2; ++i) {
@@ -164,14 +163,11 @@ TEST_F(ClipSessionTest, ClipSessionTest1b) {
     ModelData md;
     md.scale.Set(s, 2 * s, s);
     md.rot = Rotationf::Identity();
-    md.op_trans.Set(0, 6, 0);
-    md.clipped_trans.Set(0,  6, -1);
-    // Clipping planes. The clip plane is the Z=0 plane in stage coordinates,
-    // with the normal pointing along +Z. The planes in the ClippedModels are
-    // in object coordinates.
+    md.op_trans.Set(0, 4, 0);
+    md.clipped_trans.Set(0,  4, -1);
     md.plane = Plane(0, Vector3f::AxisZ());
     md.clipped_bounds = Bounds(Vector3f(2, 2, 1));
-    md.center_offset.Set(0, 0, -.5f);
+    md.center_offset.Set(0, 0, -1);
 
     // Do this twice - the second time after undo/redo.
     for (int i = 0; i < 2; ++i) {
@@ -220,24 +216,24 @@ TEST_F(ClipSessionTest, ClipSessionTest3) {
     md1.rot = Rotationf::Identity();
     md2.rot = GetXRot();
     md3.rot = GetXRot();
-    md1.op_trans.Set(0, 6, 0);
-    md2.op_trans.Set(5, 5, 0);
-    md3.op_trans.Set(10, 4, 2);
-    md1.clipped_trans.Set(0,  6, -1);
-    md2.clipped_trans.Set(5,  5, -2);
-    md3.clipped_trans.Set(10, 4, -1);
+    md1.op_trans.Set(0,  4, 0);
+    md2.op_trans.Set(5,  5, -2);
+    md3.op_trans.Set(10, 2, 2);
+    md1.clipped_trans.Set(0,  4, -1);
+    md2.clipped_trans.Set(5,  5, -3);
+    md3.clipped_trans.Set(10, 2, -1);
     // Clipping planes. The clip plane is the Z=0 plane in stage coordinates,
     // with the normal pointing along +Z. The planes in the ClippedModels are
     // in object coordinates.
     md1.plane = Plane(0,    Vector3f::AxisZ());
-    md2.plane = Plane(0,    Vector3f::AxisY());
+    md2.plane = Plane(.5f,  Vector3f::AxisY());
     md3.plane = Plane(-.5f, Vector3f::AxisY());
     md1.clipped_bounds = Bounds(Vector3f(2, 2, 1));
-    md2.clipped_bounds = Bounds(Vector3f(2, 1, 2));
+    md2.clipped_bounds = Bounds(Vector3f(2, 1.5f, 2));
     md3.clipped_bounds = Bounds(Vector3f(2, .5f, 2));
-    md1.center_offset.Set(0, 0, -.5f);
-    md2.center_offset.Set(0, -.5f, 0);
-    md3.center_offset.Set(0, -.75f, 0);
+    md1.center_offset.Set(0, 0, -1);
+    md2.center_offset.Set(0, 0, -1);
+    md3.center_offset.Set(0, 0, -3);
 
     // Do this twice - the second time after undo/redo.
     for (int i = 0; i < 2; ++i) {
