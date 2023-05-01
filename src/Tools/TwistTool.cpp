@@ -183,6 +183,10 @@ void TwistTool::TwistChanged_(Widget &widget) {
         GetDragStarted().Notify(*this);
     }
 
+    const Color wac = SG::ColorMap::SGetColor("WidgetActiveColor");
+    rotator_->SetActiveColor(wac);
+    translator_->SetActiveColor(wac);
+
     // Try snapping if rotating or translating unless modified dragging.
     const auto &context = GetContext();
     const bool is_snapped = ! context.is_modified_mode &&
@@ -226,11 +230,13 @@ bool TwistTool::SnapTranslation_() {
 
     // Try to snap to the point target position (if it is active) or the center
     // of the untwisted Model, whichever is closer. Work in stage coordinates.
+    // Note that the conversion is from local coordinates since the translation
+    // is after the scale.
     const auto stage_cc  = GetStageCoordConv();
-    const auto osm       = stage_cc.GetObjectToRootMatrix();
-    const auto start_pos = osm * start_twist_.center;
-    const auto cur_pos   = osm * cur_obj_pos;
-    const auto model_pos = osm * Point3f::Zero();
+    const auto lsm       = stage_cc.GetLocalToRootMatrix();
+    const auto start_pos = lsm * start_twist_.center;
+    const auto cur_pos   = lsm * cur_obj_pos;
+    const auto model_pos = lsm * Point3f::Zero();
 
     bool is_snapped = false;
 
@@ -239,10 +245,13 @@ bool TwistTool::SnapTranslation_() {
         twist_.center = stage_cc.RootToObject(start_pos + motion);
         is_snapped = true;
     }
-    else if (Distance(cur_pos, model_pos) <= TK::kSnapPointTolerance) {
+    // Use twice the tolerance here because of 2 dimensions. :-)
+    else if (Distance(cur_pos, model_pos) <= 2 * TK::kSnapPointTolerance) {
         twist_.center = Point3f::Zero();
         is_snapped = true;
     }
+    if (is_snapped)
+        translator_->SetActiveColor(GetSnappedFeedbackColor());
 
     return is_snapped;
 }
