@@ -1316,24 +1316,18 @@ bool Application::Impl_::ProcessEvents_(bool is_modified_mode,
 }
 
 void Application::Impl_::ProcessClick_(const ClickInfo &info) {
-    // Shorthand for selecting the given Model from the ClickInfo's Hit path.
-    auto select_model = [&](const Model &model, bool is_alt){
-        const SelPath path(info.hit.path.GetSubPath(model));
-        selection_manager_->ChangeModelSelection(path, is_alt);
-    };
-
-    KLOG('k', "Click on widget "
-         << (info.widget ? info.widget->GetDesc() : "NULL")
-         << " is_alt = " << info.is_modified_mode
-         << " is_long = " << info.is_long_press);
     if (info.widget) {
+        KLOG('k', "Click on widget " << info.widget->GetDesc()
+             << " is_mod = " << info.is_modified_mode
+             << " is_long = " << info.is_long_press);
         if (info.widget->IsInteractionEnabled()) {
             info.widget->Click(info);
             // If long pressing on a Model, select and inspect it.
             if (info.is_long_press) {
                 auto model = dynamic_cast<Model *>(info.widget);
                 if (model) {
-                    select_model(*model, false);
+                    const SelPath path(info.hit.path.GetSubPath(*model));
+                    selection_manager_->ChangeModelSelection(path, false);
                     // Make sure that the action is enabled.
                     action_processor_->ProcessUpdate();
                     action_processor_->ApplyAction(Action::kToggleInspector);
@@ -1343,25 +1337,33 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     }
 
     // If the intersected object is part of a Tool, process the click as if
-    // it were a click on the attached Model.
+    // it were a click on the attached (primary) Model. This has an effect only
+    // for a modified-click.
     else if (ToolPtr tool = info.hit.path.FindNodeUpwards<Tool>()) {
-        ASSERT(tool->GetModelAttachedTo());
-        select_model(*tool->GetModelAttachedTo(), info.is_modified_mode);
+        KLOG('k', "Click on tool " << tool->GetDesc()
+             << " is_mod = " << info.is_modified_mode);
+        if (info.is_modified_mode) {
+            const auto &sel = selection_manager_->GetSelection();
+            ASSERT(sel.HasAny());
+            selection_manager_->ChangeModelSelection(sel.GetPrimary(), true);
+        }
     }
 
     // If the intersected object is part of a Board, ignore the click.
     else if (info.hit.path.FindNodeUpwards<Board>()) {
-        ;  // Do nothing.
+        // Do nothing.
+        KLOG('k', "Click on Board");
     }
 
     // Otherwise, the click was on a noninteractive object, so deselect.
     else {
+        KLOG('k', "Click on noninteractive object");
         selection_manager_->DeselectAll();
     }
 }
 
 void Application::Impl_::StartResetStage_(bool is_modified_mode) {
-    // Reset the stage only if alt-clicked.
+    // Reset the stage only if modified-clicked.
     if (is_modified_mode) {
         const Vector3f  scale = scene_context_->stage->GetScale();
         const Rotationf rot   = scene_context_->stage->GetRotation();
