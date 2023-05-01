@@ -16,8 +16,10 @@ class CombineExecutorBase : public Executor {
 
   protected:
     /// Derived classes are required to implement this to actually create a
-    /// CombinedModel.
-    virtual CombinedModelPtr CreateCombinedModel(Command &command) = 0;
+    /// CombinedModel. If the given name is not empty, it should be used for
+    /// the new CombinedModel.
+    virtual CombinedModelPtr CreateCombinedModel(
+        Command &command, const std::string &name) = 0;
 
   private:
     /// Derived Command::ExecData class that stores everything needed to undo

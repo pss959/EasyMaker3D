@@ -12,5 +12,6 @@ class CreateHullExecutor : public CombineExecutorBase {
     }
 
   protected:
-    virtual CombinedModelPtr CreateCombinedModel(Command &command) override;
+    virtual CombinedModelPtr CreateCombinedModel(
+        Command &command, const std::string &name) override;
 };

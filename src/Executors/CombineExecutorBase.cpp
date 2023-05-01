@@ -65,7 +65,8 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
             operand_models.push_back(data->paths_to_models.back().GetModel());
         }
 
-        const auto &result = CreateCombinedModel(command);
+        std::string name = cc.GetResultName();
+        const auto &result = CreateCombinedModel(command, name);
         result->SetOperandModels(operand_models);
 
         // Compensate for the centering offset.
@@ -76,6 +77,10 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
 
         data->combined_model = result;
         command.SetExecData(data);
+
+        // Update the name in the command if necessary.
+        if (name.empty())
+            cc.SetResultName(result->GetName());
     }
     return *static_cast<ExecData_ *>(command.GetExecData());
 }
