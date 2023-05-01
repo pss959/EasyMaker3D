@@ -7,8 +7,10 @@
 #include "Models/ClippedModel.h"
 #include "Util/Assert.h"
 
-ConvertedModelPtr ConvertClipExecutor::CreateConvertedModel() {
-    return Model::CreateModel<ClippedModel>(CreateUniqueName("Clipped"));
+ConvertedModelPtr ConvertClipExecutor::CreateConvertedModel(
+    const std::string &name) {
+    return Model::CreateModel<ClippedModel>(
+        name.empty() ? CreateUniqueName("Clipped") : name);
 }
 
 void ConvertClipExecutor::InitConvertedModel(ConvertedModel &model,

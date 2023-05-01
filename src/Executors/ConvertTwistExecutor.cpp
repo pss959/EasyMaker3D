@@ -2,6 +2,8 @@
 
 #include "Models/TwistedModel.h"
 
-ConvertedModelPtr ConvertTwistExecutor::CreateConvertedModel() {
-    return Model::CreateModel<TwistedModel>(CreateUniqueName("Twisted"));
+ConvertedModelPtr ConvertTwistExecutor::CreateConvertedModel(
+    const std::string &name) {
+    return Model::CreateModel<TwistedModel>(
+        name.empty() ? CreateUniqueName("Twisted") : name);
 }

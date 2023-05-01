@@ -53,13 +53,16 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
         const auto &model_names = cc.GetModelNames();
         ASSERT(! model_names.empty());
 
+        const auto &result_names = cc.GetResultNames();
+
         // Add a PerModel instance for each Model.
         ExecData_ *data = new ExecData_;
         data->per_model.resize(model_names.size());
         for (size_t i = 0; i < model_names.size(); ++i) {
             // Create the derived ConvertedModel.
             const auto operand_path = FindPathToModel(model_names[i]);
-            const auto &result = CreateConvertedModel();
+            const auto &result = CreateConvertedModel(
+                result_names.empty() ? "" : result_names[i]);
 
             // Set the operand Model. Note that this also compensates for any
             // centering offset.
@@ -90,6 +93,14 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             context.name_manager->Remove(pm.converted_model->GetName());
 
         command.SetExecData(data);
+
+        // Update the names in the command if necessary.
+        if (cc.GetResultNames().empty()) {
+            std::vector<std::string> names;
+            for (const auto &pm: data->per_model)
+                names.push_back(pm.converted_model->GetName());
+            cc.SetResultNames(names);
+        }
     }
     return *static_cast<ExecData_ *>(command.GetExecData());
 }

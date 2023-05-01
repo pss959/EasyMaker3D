@@ -12,5 +12,6 @@ class ConvertTwistExecutor : public ConvertExecutorBase {
     }
 
   protected:
-    virtual ConvertedModelPtr CreateConvertedModel() override;
+    virtual ConvertedModelPtr CreateConvertedModel(
+        const std::string &name) override;
 };

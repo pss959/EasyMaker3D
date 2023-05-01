@@ -12,7 +12,8 @@ class ConvertClipExecutor : public ConvertExecutorBase {
     }
 
   protected:
-    virtual ConvertedModelPtr CreateConvertedModel() override;
+    virtual ConvertedModelPtr CreateConvertedModel(
+        const std::string &name) override;
 
     /// Redefines this to use the primary ClippedModel's plane for all
     /// secondary selections.

@@ -30,7 +30,7 @@ class ConvertCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<std::string>     result_names_;
+    Parser::VField<std::string> result_names_;
     ///@}
 
     friend class Parser::Registry;

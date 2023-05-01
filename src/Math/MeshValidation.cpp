@@ -6,7 +6,7 @@
 
 #define REPAIR_SELF_INTERSECTIONS 0
 #define REPORT_SELF_INTERSECTIONS 0
-#define STITCH_BORDERS            0
+#define STITCH_BORDERS            1
 
 #if STITCH_BORDERS
 #include <CGAL/Polygon_mesh_processing/stitch_borders.h>

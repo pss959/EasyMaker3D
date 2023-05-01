@@ -16,8 +16,9 @@ class ConvertExecutorBase : public Executor {
 
   protected:
     /// Derived classes must implement this to create a derived ConvertedModel
-    /// of the correct type.
-    virtual ConvertedModelPtr CreateConvertedModel() = 0;
+    /// of the correct type. If the given name is not empty, it should be used
+    /// for the new CombinedModel.
+    virtual ConvertedModelPtr CreateConvertedModel(const std::string &name) = 0;
 
     /// Derived classes may implement this to initialize the given
     /// newly-created ConvertedModel. SelPath instances (for the operand Model)

@@ -2,6 +2,8 @@
 
 #include "Models/BeveledModel.h"
 
-ConvertedModelPtr ConvertBevelExecutor::CreateConvertedModel() {
-    return Model::CreateModel<BeveledModel>(CreateUniqueName("Beveled"));
+ConvertedModelPtr ConvertBevelExecutor::CreateConvertedModel(
+    const std::string &name) {
+    return Model::CreateModel<BeveledModel>(
+        name.empty() ? CreateUniqueName("Beveled") : name);
 }
