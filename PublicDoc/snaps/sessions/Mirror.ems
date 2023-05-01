@@ -59,6 +59,7 @@ CommandList {
     },
     ConvertMirrorCommand {
       model_names: ["Difference_1", "Difference_1_A"],
+      result_names: ["Mirrored_1", "Mirrored_2"],
     },
   ],
   current_index: 12,
