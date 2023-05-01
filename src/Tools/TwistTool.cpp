@@ -190,8 +190,8 @@ void TwistTool::TwistChanged_(Widget &widget) {
     // Try snapping if rotating or translating unless modified dragging.
     const auto &context = GetContext();
     const bool is_snapped = ! context.is_modified_mode &&
-        &widget == translator_.get() ? SnapTranslation_() :
-        &widget == rotator_.get()    ? SnapRotation_() : false;
+        (&widget == translator_.get() ? SnapTranslation_() :
+         &widget == rotator_.get()    ? SnapRotation_() : false);
 
     // If not snapped, update the current Twist from the active Widget's values
     // and match it.
