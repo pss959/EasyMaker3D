@@ -110,6 +110,12 @@
      - Convert selected models to mirrored models
      - 
      - 
+   * - Conversion
+     - ConvertTwist / :ref:`Convert Twist <ug-convert-twist>`
+     - .. menuicon:: ConvertTwist
+     - Convert selected models to twisted models
+     - 
+     - 
    * - Creation
      - CreateBox / :ref:`Create Box <ug-create-box>`
      - .. menuicon:: CreateBox
