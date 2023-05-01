@@ -231,14 +231,12 @@ void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
             " Do you really want to load another session?";
         auto func = [&](const std::string &answer){
             if (answer == "Yes") {
-                Close("Done");
                 ReallyLoadSessionFromPath_(path);
             }
         };
         AskQuestion(msg, func, true);
     }
     else {
-        Close("Done");
         ReallyLoadSessionFromPath_(path);
     }
 }
@@ -248,6 +246,7 @@ void SessionPanel::ReallyLoadSessionFromPath_(const FilePath &path) {
 
     std::string error;
     if (GetContext().session_agent->LoadSession(path, error)) {
+        Close("Done");
         SetLastSessionPath_(path);
     }
     else {
