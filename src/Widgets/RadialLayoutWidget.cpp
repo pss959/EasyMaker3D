@@ -299,5 +299,7 @@ void RadialLayoutWidget::UpdateArc_() {
 }
 
 std::string RadialLayoutWidget::GetAngleText_(const Anglef &angle) {
-    return Util::ToString(std::abs(angle.Degrees())) + TK::kDegreeSign;
+    // Round the angle to the nearest degree.
+    const float deg = RoundToPrecision(std::abs(angle.Degrees()), 1);
+    return Util::ToString(deg) + TK::kDegreeSign;
 }
