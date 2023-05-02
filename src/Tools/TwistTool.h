@@ -47,8 +47,10 @@ class TwistTool : public Tool {
     /// Widget used to change the twist angle.
     DiscWidgetPtr         twister_;
 
-    /// Node used to rotate the center translator axis to match the axis
-    /// rotation.
+    /// Node used to apply current rotation to the #translator_ and axis.
+    SG::NodePtr           axis_rotator_;
+
+    /// Node used to represent the axis; scaled in the code.
     SG::NodePtr           axis_;
 
     /// Twist at the start of interaction.
@@ -59,6 +61,9 @@ class TwistTool : public Tool {
 
     /// Feedback showing current twist angle.
     AngularFeedbackPtr    feedback_;
+
+    /// Finds and sets up all of the parts of the tool.
+    void SetUpParts_();
 
     /// Updates the geometry based on the attached TwistedModel.
     void UpdateGeometry_();

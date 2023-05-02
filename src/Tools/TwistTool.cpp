@@ -24,30 +24,8 @@
 void TwistTool::CreationDone() {
     Tool::CreationDone();
 
-    if (! IsTemplate()) {
-        // Find all of the parts.
-        twister_ = SG::FindTypedNodeUnderNode<DiscWidget>(*this, "Twister");
-        rotator_ = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
-        translator_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
-            *this, "Translator");
-        axis_ = SG::FindNodeUnderNode(*translator_, "Axis");
-
-        translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
-
-        // Set up callbacks.
-        twister_->GetActivation().AddObserver(
-            this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
-        twister_->GetRotationChanged().AddObserver(
-            this, [&](Widget &w, const Anglef &){ TwistChanged_(w); });
-        rotator_->GetActivation().AddObserver(
-            this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
-        rotator_->GetRotationChanged().AddObserver(
-            this, [&](Widget &w, const Rotationf &){ TwistChanged_(w); });
-        translator_->GetActivation().AddObserver(
-            this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
-        translator_->GetValueChanged().AddObserver(
-            this, [&](Widget &w, const Vector2f &){ TwistChanged_(w); });
-    }
+    if (! IsTemplate())
+        SetUpParts_();
 }
 
 void TwistTool::UpdateGripInfo(GripInfo &info) {
@@ -87,6 +65,33 @@ void TwistTool::Attach() {
     ASSERT(tm);
     twist_ = tm->GetTwist();
     MatchCurrentTwist_();
+}
+
+void TwistTool::SetUpParts_() {
+    // Find all of the parts.
+    rotator_      = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
+    twister_      = SG::FindTypedNodeUnderNode<DiscWidget>(*this,   "Twister");
+    translator_   = SG::FindTypedNodeUnderNode<Slider2DWidget>(*this,
+                                                               "Translator");
+    axis_rotator_ = SG::FindNodeUnderNode(*this, "AxisRotator");
+    axis_         = SG::FindNodeUnderNode(*translator_, "Axis");
+
+    // Set a wide range for the translator.
+    translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
+
+    // Set up callbacks.
+    twister_->GetActivation().AddObserver(
+        this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
+    twister_->GetRotationChanged().AddObserver(
+        this, [&](Widget &w, const Anglef &){ TwistChanged_(w); });
+    rotator_->GetActivation().AddObserver(
+        this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
+    rotator_->GetRotationChanged().AddObserver(
+        this, [&](Widget &w, const Rotationf &){ TwistChanged_(w); });
+    translator_->GetActivation().AddObserver(
+        this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
+    translator_->GetValueChanged().AddObserver(
+        this, [&](Widget &w, const Vector2f &){ TwistChanged_(w); });
 }
 
 void TwistTool::UpdateGeometry_() {
@@ -130,16 +135,15 @@ void TwistTool::MatchCurrentTwist_() {
     translator_->GetValueChanged().EnableObserver(this, false);
 
     const Rotationf rot = Rotationf::RotateInto(Twist().axis, twist_.axis);
-    twister_->SetRotationAngle(twist_.angle);
     rotator_->SetRotation(rot);
+    rotator_->SetTranslation(rot * twist_.center);
+    axis_rotator_->SetRotation(rot);
     translator_->SetValue(Vector2f(twist_.center[0], twist_.center[2]));
+    twister_->SetRotationAngle(twist_.angle);
 
     twister_->GetRotationChanged().EnableObserver(this, true);
     rotator_->GetRotationChanged().EnableObserver(this, true);
     translator_->GetValueChanged().EnableObserver(this, true);
-
-    // Update the axis rotation to match.
-    axis_->SetRotation(rot);
 }
 
 void TwistTool::Detach() {
@@ -292,7 +296,7 @@ void TwistTool::UpdateTwistFeedback_() {
     // The feedback should be in the plane perpendicular to the twist axis (in
     // stage coordinates).
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    const Vector3f axis = osm * twist_.axis;
+    const Vector3f axis = ion::math::Normalized(osm * twist_.axis);
 
     // Move the center of rotation to be just past the tip of the axis arrow in
     // stage coordinates.
@@ -301,6 +305,6 @@ void TwistTool::UpdateTwistFeedback_() {
     const Point3f center = osm * (twist_.center + height * twist_.axis);
 
     ASSERT(feedback_);
-    feedback_->SubtendArc(center, 1, 0, axis,
+    feedback_->SubtendArc(center, 0, 0, axis,
                           CircleArc(Anglef(), twist_.angle));
 }

@@ -16,27 +16,32 @@ TwistTool "TwistTool" {
   ],
 
   children: [
-    # Widget for translating the center in X and Z.
-    Slider2DWidget "Translator" {
-      principal_plane: "kXZ",
+    # Widget for rotating the axis.
+    SphereWidget "Rotator" {
       children: [
-        Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
-
-        # Widget for rotating the axis.
-        SphereWidget "Rotator" {
+        Node {
           children: [
-            Node {
-              children: [
-                # Box at the bottom end
-                Node "Min" { shapes: [ Box { size: 1 .5 1 } ] },
-                # Cone at the top end
-                Node "Max" {
-                  shapes: [
-                    Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
-                  ]
-                },
+            # Box at the bottom end
+            Node "Min" { shapes: [ Box { size: 1 .5 1 } ] },
+            # Cone at the top end
+            Node "Max" {
+              shapes: [
+                Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
               ]
             },
+          ]
+        },
+      ]
+    },
+
+    # This node is rotated to make the axis and twister point the correct way.
+    Node "AxisRotator" {
+      children: [
+        # Widget for translating the axis in (rotated) X and Z.
+        Slider2DWidget "Translator" {
+          principal_plane: "kXZ",
+          children: [
+            Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
 
             # Widget for rotating the twist angle.
             DiscWidget "Twister" {
