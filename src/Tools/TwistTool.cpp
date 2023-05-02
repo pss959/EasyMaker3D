@@ -45,10 +45,8 @@ void TwistTool::UpdateGripInfo(GripInfo &info) {
         // Otherwise, use the axis rotator.
         info.widget = rotator_;
         // Connect to the min/max handle, whichever is higher up.
-        const Point3f min_pt = ToWorld(SG::FindNodeUnderNode(*rotator_, "Min"),
-                                       Point3f::Zero());
-        const Point3f max_pt = ToWorld(SG::FindNodeUnderNode(*rotator_, "Max"),
-                                       Point3f::Zero());
+        const Point3f min_pt = ToWorld(base_, Point3f::Zero());
+        const Point3f max_pt = ToWorld(cone_, Point3f::Zero());
         info.target_point = min_pt[1] > max_pt[1] ? min_pt : max_pt;
     }
 }
@@ -75,6 +73,8 @@ void TwistTool::SetUpParts_() {
                                                                "Translator");
     axis_rotator_ = SG::FindNodeUnderNode(*this, "AxisRotator");
     axis_         = SG::FindNodeUnderNode(*translator_, "Axis");
+    cone_         = SG::FindNodeUnderNode(*rotator_, "Cone");
+    base_         = SG::FindNodeUnderNode(*rotator_, "Base");
 
     // Set a wide range for the translator.
     translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
@@ -103,9 +103,9 @@ void TwistTool::UpdateGeometry_() {
     const float radius = kRadiusScale * ion::math::Length(model_size);
 
     // Translate the axis rotator handles.
-    const Vector3f ytrans(0, kAxisScale * radius, 0);
-    SG::FindNodeUnderNode(*rotator_, "Min")->SetTranslation(-ytrans);
-    SG::FindNodeUnderNode(*rotator_, "Max")->SetTranslation(ytrans);
+    const Vector3f y_trans(0, kAxisScale * radius, 0);
+    base_->SetTranslation(-y_trans);
+    cone_->SetTranslation(y_trans);
 
     // Scale the center translator axis height.
     const auto axis = SG::FindNodeUnderNode(*translator_, "Axis");
@@ -295,16 +295,15 @@ bool TwistTool::SnapRotation_() {
 void TwistTool::UpdateTwistFeedback_() {
     // The feedback should be in the plane perpendicular to the twist axis (in
     // stage coordinates).
-    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    const Vector3f axis = ion::math::Normalized(osm * twist_.axis);
+    const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
+    const Vector3f stage_axis = ion::math::Normalized(lsm * twist_.axis);
 
-    // Move the center of rotation to be just past the tip of the axis arrow in
-    // stage coordinates.
-    const float height =
-        .55f * SG::FindNodeUnderNode(*rotator_, "Max")->GetTranslation()[1];
-    const Point3f center = osm * (twist_.center + height * twist_.axis);
+    // Move the feedback center to be just past the axis cone in stage
+    // coordinates.
+    const Point3f stage_center = Point3f(GetTranslation()) +
+        (1.2f * cone_->GetTranslation()[1] * stage_axis);
 
     ASSERT(feedback_);
-    feedback_->SubtendArc(center, 0, 0, axis,
+    feedback_->SubtendArc(stage_center, 0, 0, stage_axis,
                           CircleArc(Anglef(), twist_.angle));
 }

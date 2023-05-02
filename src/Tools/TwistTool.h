@@ -53,6 +53,12 @@ class TwistTool : public Tool {
     /// Node used to represent the axis; scaled in the code.
     SG::NodePtr           axis_;
 
+    /// Node representing the cone at the end of the axis.
+    SG::NodePtr           cone_;
+
+    /// Node representing the box at the base of the axis.
+    SG::NodePtr           base_;
+
     /// Twist at the start of interaction.
     Twist                 start_twist_;
 
