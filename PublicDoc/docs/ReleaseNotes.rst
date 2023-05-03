@@ -1,6 +1,34 @@
 |appname| Release Notes
 =======================
 
+Release 1.5.0 (May, 2023)
+---------------------------
+
+ - New Features:
+
+   - Added Twisted model and Twist Tool.
+
+   - Changed the way converted models work. You can now convert a model again
+     to apply another operation of the same type (such as a clipping
+     plane). Each converted model has a single type of operation that it edited
+     by its specialized tool.
+
+   - Changed the UI for Clip Tool and Mirror Tool to operate on a single plane
+     more flexibly, resulting from above change to converted models.
+
+ - Bug Fixes:
+
+   - The Session Panel no longer remains visible incorrectly after loading a
+     new session.
+
+   - The Point Target now snaps more correctly to model bounds when
+     modified-dragging.
+
+   - Commands using converted models no longer can use incorrect model names.
+
+   - Fixed a couple of places where scaling by 0 could occur, including for
+     hovered icons.
+
 Release 1.4.0 (April, 2023)
 ---------------------------
 
