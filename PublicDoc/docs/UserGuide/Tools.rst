@@ -30,6 +30,7 @@ through the available general tools.
 If a specialized tool is available for the current selection, you can
 :ref:`toggle between the current general tool and that specialized tool
 <ug-toggle-specialized-tool>` with the :action:`Toggle Specialized Tool`
+action. Note that the :shortcut:`Space` shortcut is an easy way to apply this
 action.
 
 As mentioned previously, :ref:`creating a new model <ug-model-creation>` that
