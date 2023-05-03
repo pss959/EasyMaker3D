@@ -14,31 +14,29 @@ Node "SphereWidgetTest" {
             }
           ],
           translation: 0 0 -12,
-          shapes: [ Box { size: 20 20 .1 } ],
+          shapes: [ Box { size: 40 40 .1 } ],
         },
 
         SphereWidget "SphereWidget" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#aaaa77" } ],
+            }
+          ],
           children: [
             Node {
-              # translation: 4 4 8,
-              blocks: [
-                UniformBlock {
-                  pass_name: $LIGHTING_PASS,
-                  textures: [
-                    Texture {
-                      uniform_name: "uTexture",
-                      image:   FileImage { path: "Floor.jpg" },
-                      sampler: USE "DefaultSampler",
-                    }
-                  ],
-                  uniforms: [ Uniform "uShowTexture" { int_val: 1 } ],
-                }
-              ],
               shapes: [
                 Ellipsoid {
                   size:         10 10 10,
                   sector_count: 6,
-                }
+                },
+                Box { size: 12 12 .2 },
+                Cylinder {
+                  top_radius:    1,
+                  bottom_radius: 2,
+                  height:        14,
+                },
               ]
             },
           ]
