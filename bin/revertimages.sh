@@ -8,6 +8,10 @@ trap '{ echo "QUITTING" ; exit 1; }' INT
 
 cd /home/pss/git/EasyMaker3D
 
+# Error tolerance for images to be considered close enough.
+declare -i tolerance
+tolerance=400
+
 # The diff-filter arg should ignore new images, but it does not seem to work.
 git dt --diff-filter=M -t imagemetric ./PublicDoc/docs/images 2>&1 |
 while read line
@@ -15,7 +19,7 @@ do
     words=( $line )
     error=${words[0]}
     filename=${words[1]}
-    if (( $error < 100 )) ; then
+    if (( $error < $tolerance )) ; then
         echo "Reverting $filename"
         git checkout HEAD -- $filename
     fi
