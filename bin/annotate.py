@@ -39,8 +39,14 @@ class ImageAnnotator(object):
     if not self._draw:
       print('*** No image read for annotating rectangle')
       return False
-    self._draw.rectangle([self.ToImageCoords_(x, y),
-                          self.ToImageCoords_(x+w, y+h)],
+    # As of Pillow 9.5.0, coordinates must be in order
+    x0, y0 = self.ToImageCoords_(x,   y)
+    x1, y1 = self.ToImageCoords_(x+w, y+h)
+    if x0 > x1:
+        x0, x1 = x1, x0
+    if y0 > y1:
+        y0, y1 = y1, y0
+    self._draw.rectangle([x0, y0, x1, y1],
                          outline = self._color, width=int(line_width))
     return True
 
