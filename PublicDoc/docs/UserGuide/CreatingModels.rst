@@ -185,16 +185,24 @@ the conversion operation has been applied.
 
   - A :newterm:`Beveled model` applies a bevel or other profile to edges of a
     model. The :ref:`Convert to Bevel action <ug-convert-bevel>` is used to
-    convert the models, and the specialized :ref:`Bevel Tool <ug-bevel-tool>` is
-    used to modify the bevel profile.
-  - A :newterm:`Clipped model` applies one or more clipping planes to a
-    model. The :ref:`Convert to Clipped action <ug-convert-clip>` is used to
-    convert the models and the specialized :ref:`Clip Tool <ug-clip-tool>` is
-    used to specify the clipping plane or planes.
-  - A :newterm:`Mirrored model` mirrors a model about one or more principal
-    planes. The :ref:`Convert to Mirrored action <ug-convert-mirror>` is used
-    to convert the models and the specialized :ref:`Mirror Tool
-    <ug-mirror-tool>` is used to specify how to mirror.
+    convert the models and apply a default bevel. The specialized :ref:`Bevel
+    Tool <ug-bevel-tool>` is attached to the selection to allow you to modify
+    the bevel profile.
+  - A :newterm:`Clipped model` applies a clipping plane to a model. The
+    :ref:`Convert to Clipped action <ug-convert-clip>` is used to convert the
+    models and apply the default clipping plane that removes the top half of
+    the primary model. The specialized :ref:`Clip Tool <ug-clip-tool>` is
+    attached to let you modify the clipping plane.
+  - A :newterm:`Mirrored model` mirrors a model about a plane. The
+    :ref:`Convert to Mirrored action <ug-convert-mirror>` is used to convert
+    the models and mirror them about the default mirroring plane (which mirrors
+    left/right through the center of the primary model) and the specialized
+    :ref:`Mirror Tool <ug-mirror-tool>` is attached to let you change the
+    plane.
+  - A :newterm:`Twisted model` twists the vertices of a model about an
+    arbitrary axis. The :ref:`Convert to Twisted action <ug-convert-twist>`
+    is used to convert the models and attach the specialized :ref:`Twist Tool
+    <ug-twist-tool>` to let you change the axis and twist angle.
 
 Note that a converted model synchronizes its transformations (scale, rotation,
 and translation) with the original model. Any changes made to the

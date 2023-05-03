@@ -124,22 +124,36 @@ Combination Actions
 Actions to create a :ref:`combined model <ug-combined-models>` from the
 :ref:`selected models <ug-selection>` are available as 3D icons on the second
 shelf from the top on the left wall in the :ref:`work area
-<ug-work-area>`. From left to right, they are:
+<ug-work-area>`.
 
-  - The :action:`Combine CSG Difference` action applies the :ref:`CSG
-    difference <ug-csg>` operation to all selected models and attaches the
-    :ref:`CSG Tool <ug-csg-tool>` to the resulting CSG model. Note that this
-    operation is not symmetric, so it depends on the selection order.
-  - The :action:`Combine CSG Intersection` action applies the :ref:`CSG
-    intersection <ug-csg>` operation to all selected models and attaches the
-    :ref:`CSG Tool <ug-csg-tool>` to the resulting CSG model.
-  - The :action:`Combine CSG Union` action applies the :ref:`CSG union
-    <ug-csg>` operation to all selected models and attaches the :ref:`CSG Tool
-    <ug-csg-tool>` to the resulting CSG model.
-  - The :action:`Combine Hull` action applies the :ref:`convex hull <ug-hull>`
-    operation to all selected models. There is no specialized tool for a hull
-    model, so the current :ref:`general tool <ug-general-tools>` is attached to
-    the resulting model.
+The following table lists the icons from left to right and what they do. The
+specialized tool links describe how to edit the resulting models.
+
+.. list-table::
+   :align:  center
+   :widths: auto
+   :header-rows: 1
+
+   * - Action
+     - Model Type
+     - Specialized Tool
+     - Combination Effects
+   * - :action:`Combine CSG Difference`
+     - :ref:`CSG model <ug-combined-models>`
+     - :ref:`CSG Tool <ug-csg-tool>`
+     - All secondary selections subtracted from the primary selection
+   * - :action:`Combine CSG Intersection`
+     - :ref:`CSG model <ug-combined-models>`
+     - :ref:`CSG Tool <ug-csg-tool>`
+     - Intersection of all selected models
+   * - :action:`Combine CSG Union`
+     - :ref:`CSG model <ug-combined-models>`
+     - :ref:`CSG Tool <ug-csg-tool>`
+     - Union of all selected models
+   * - :action:`Combine Hull`
+     - :ref:`Hull model <ug-combined-models>`
+     - None (current :ref:`general tool <ug-general-tools>` is attached)
+     - :ref:`Convex hull <ug-hull>` of all selected models
 
 The CSG actions require at least two models to be selected, but the convex hull
 action can be applied to a single model.
@@ -147,28 +161,57 @@ action can be applied to a single model.
 .. _ug-convert-bevel:
 .. _ug-convert-clip:
 .. _ug-convert-mirror:
+.. _ug-convert-twist:
 
 Conversion Actions
 ..................
 
 .. incimage:: /images/ModelConversionShelf.jpg 200px right
 
-The center shelf on the left wall of the :ref:`work area <ug-work-area>` has 3D
-icons that apply actions to create :ref:`converted models
-<ug-converted-models>` from the :ref:`selected models <ug-selection>`. Applying
-any of these actions converts all selected models to a specific type and then
-attaches the corresponding :ref:`specialized tool <ug-specialized-tools>` to
-the primary selection.  From left to right, they are:
+The third shelf from the top on the left wall of the :ref:`work area
+<ug-work-area>` has 3D icons that apply actions to create :ref:`converted
+models <ug-converted-models>` from the :ref:`selected models
+<ug-selection>`. Applying any of these actions converts all selected models to
+a specific type and then attaches the corresponding :ref:`specialized tool
+<ug-specialized-tools>` to the primary selection.
 
-  - The :action:`Convert Bevel` action converts all selected models to Beveled
-    models and attaches the :ref:`Bevel Tool <ug-bevel-tool>` to the primary
-    selection.
-  - The :action:`Convert Clip` action converts all selected models to Clipped
-    models and attaches the :ref:`Clip Tool <ug-clip-tool>` to the primary
-    selection.
-  - The :action:`Convert Mirror` action converts all selected models to
-    Mirrored models and attaches the :ref:`Mirror Tool <ug-mirror-tool>` to the
-    primary selection.
+The following table lists the icons from left to right and what they do. The
+specialized tool links describe how to edit the resulting models.
+
+.. list-table::
+   :align:  center
+   :widths: auto
+   :header-rows: 1
+
+   * - Action
+     - Model Type
+     - Specialized Tool
+     - Initial State after Conversion
+   * - :action:`Convert Bevel`
+     - :ref:`Beveled model <ug-converted-models>`
+     - :ref:`Bevel Tool <ug-bevel-tool>`
+     - Simple bevel on all edges
+   * - :action:`Convert Clip`
+     - :ref:`Clipped model <ug-converted-models>`
+     - :ref:`Clip Tool <ug-clip-tool>`
+     - Top half of primary model clipped away; other models clipped by same
+       plane
+   * - :action:`Convert Mirror`
+     - :ref:`Mirrored model <ug-converted-models>`
+     - :ref:`Mirror Tool <ug-mirror-tool>`
+     - All models mirrored left-to-right across center of primary model
+   * - :action:`Convert Twist`
+     - :ref:`Twisted model <ug-converted-models>`
+     - :ref:`Twist Tool <ug-twist-tool>`
+     - No twist (0 degrees)
+
+Each converted model applies a single operation. To apply another one, you can
+convert the model again. For example to clip a Cylinder model with multiple
+planes, you can convert the cylinder to a Clipped model and edit the first
+plane with the Clip Tool. Then you can convert the Clipped model to another
+Clipped model and edit the second plane. For consistency, this process works
+for all types of converted models, although it doesn't always make sense.
+(Beveling an already Beveled model probably results in something awful.)
 
 Creation Actions
 ................
@@ -239,9 +282,14 @@ the middle shelf on the back wall. From left to right:
     rotated to an arbitrary orientation and you want to move it 5 units to the
     right in the scene, you can turn this toggle on and the :ref:`Translation
     Tool <ug-translation-tool>` will then align its geometry and motion with the
-    stage axes, not the model's local axes. This toggle affects the :ref:`Clip
-    Tool <ug-clip-tool>`, :ref:`Mirror Tool <ug-mirror-tool>`, :ref:`Rotation
-    Tool <ug-rotation-tool>`, and :ref:`Translation Tool <ug-translation-tool>`.
+    stage axes, not the model's local axes. This toggle affects the following
+    tools:
+
+      - :ref:`Clip Tool <ug-clip-tool>`
+      - :ref:`Mirror Tool <ug-mirror-tool>`
+      - :ref:`Rotation Tool <ug-rotation-tool>`
+      - :ref:`Translation Tool <ug-translation-tool>`
+      - :ref:`Twist Tool <ug-twist-tool>`
 
 One other layout-related action is available only via a :ref:`keyboard shortcut
 <ug-keyboard-shortcuts>` or :ref:`radial menu <ug-radial-menus>`:
@@ -355,16 +403,27 @@ which is the bottom shelf on the back wall. From left to right:
 Specialized Action
 ..................
 
-Each :ref:`specialized tool <ug-specialized-tools>` can be attached only to a
-specific type of model. When a model of that type is created, the corresponding
-specialized tool is attached to it automatically.
+The 3D icon on the top shelf on the left wall toggles between the
+:ref:`specialized tool <ug-specialized-tools>` for the :ref:`current selection
+<ug-selection>` and the current :ref:`general tool <ug-general-tools>`. This
+icon changes shape to reflect what the toggle will do.
 
-The :action:`Toggle Specialized Tool` action switches between the specialized
-tool for the :ref:`current selection <ug-selection>` and the current
-:ref:`general tool <ug-general-tools>`. This action is disabled if any selected
-model has no specialized tool or if multiple models are selected and they are
-not all of the same type.
+.. incimage:: /images/NullIcon.jpg 80px right
 
+When no model is selected or if no specialized tool can be applied to the
+current selection, the :newterm:`null icon` is shown. This icon is always
+disabled.
+
+|block-image|
+
+If a specialized tool can be used for the current selection, this icon changes
+to one of the ones shown here. Clicking on the icon applies the :action:`Toggle
+Specialized Tool` action to switch between the specialized tool and the current
+general tool. The icon will be shown with the active icon color when the
+corresponding specialized tool is attached and the regular woodgrain icon color
+when toggled back to a general tool.
+
+.. incimage:: /images/TwistToolIcon.jpg    80px right
 .. incimage:: /images/TorusToolIcon.jpg    80px right
 .. incimage:: /images/TextToolIcon.jpg     80px right
 .. incimage:: /images/RevSurfToolIcon.jpg  80px right
@@ -374,38 +433,41 @@ not all of the same type.
 .. incimage:: /images/ClipToolIcon.jpg     80px right
 .. incimage:: /images/CSGToolIcon.jpg      80px right
 .. incimage:: /images/BevelToolIcon.jpg    80px right
-.. incimage:: /images/NullIcon.jpg         80px right
 
 |block-image|
 
-Clicking on the 3D icon on the top shelf on the left wall applies the toggle
-action if available. This icon changes shape to reflect what the toggle will
-do. It will be one of the icons shown here, from left to right:
+The following table explains the above icons from left to right. For each icon,
+the table lists the specialized tool the icon switches to and the type of model
+it can be attached to. Note that all selected models must be of the appropriate
+type for the icon to be enabled.
 
-  - The null icon is shown when no model is selected or no specialized tool
-    that can be applied to the current selection. It is always disabled.
-  - The :ref:`Bevel Tool <ug-bevel-tool>` icon is shown when the current
-    selection consists of only :ref:`Beveled models <ug-converted-models>`.
-  - The :ref:`CSG Tool <ug-csg-tool>` icon is shown when the current
-    selection consists of only :ref:`CSG models <ug-combined-models>`.
-  - The :ref:`Clip Tool <ug-clip-tool>` icon is shown when the current
-    selection consists of only :ref:`Clipped models <ug-converted-models>`.
-  - The :ref:`Cylinder Tool <ug-cylinder-tool>` icon is shown when the current
-    selection consists of only :ref:`Cylinder models <ug-primitive-models>`.
-  - The :ref:`Import Tool <ug-import-tool>` icon is shown when the current
-    selection consists of a single :ref:`Imported model <ug-primitive-models>`.
-  - The :ref:`Mirror Tool <ug-mirror-tool>` icon is shown when the current
-    selection consists of only :ref:`Mirrored models <ug-converted-models>`.
-  - The :ref:`Rev Surf Tool <ug-rev-surf-tool>` icon is shown when the current
-    selection consists of only :ref:`RevSurf models <ug-primitive-models>`.
-  - The :ref:`Text Tool <ug-text-tool>` icon is shown when the current
-    selection consists of only :ref:`Text models <ug-primitive-models>`.
-  - The :ref:`Torus Tool <ug-torus-tool>` icon is shown when the current
-    selection consists of only :ref:`Torus models <ug-primitive-models>`.
+.. list-table::
+   :align:  center
+   :widths: auto
+   :header-rows: 1
 
-All but the null icon will be shown with the active icon color when the
-corresponding specialized tool is attached and the regular woodgrain icon color
-when toggled back to a general tool.
+   * - Icon/Specialized Tool
+     - Required Selected Model Type
+   * - :ref:`Bevel Tool <ug-bevel-tool>`
+     - :ref:`Beveled models <ug-converted-models>`
+   * - :ref:`CSG Tool <ug-csg-tool>`
+     - :ref:`CSG models <ug-combined-models>`
+   * - :ref:`Clip Tool <ug-clip-tool>`
+     - :ref:`Clipped models <ug-converted-models>`
+   * - :ref:`Cylinder Tool <ug-cylinder-tool>`
+     - :ref:`Cylinder models <ug-primitive-models>`
+   * - :ref:`Import Tool <ug-import-tool>`
+     - (One) :ref:`Imported model <ug-primitive-models>`
+   * - :ref:`Mirror Tool <ug-mirror-tool>`
+     - :ref:`Mirrored models <ug-converted-models>`
+   * - :ref:`Rev Surf Tool <ug-rev-surf-tool>`
+     - :ref:`RevSurf models <ug-primitive-models>`
+   * - :ref:`Text Tool <ug-text-tool>`
+     - :ref:`Text models <ug-primitive-models>`
+   * - :ref:`Torus Tool <ug-torus-tool>`
+     - :ref:`Torus models <ug-primitive-models>`
+   * - :ref:`Twist Tool <ug-twist-tool>`
+     - :ref:`Twisted models <ug-converted-models>`
 
 Note that the :shortcut:`Space` shortcut is an easy way to toggle between
 general and specialized tools when enabled.
@@ -414,35 +476,41 @@ general and specialized tools when enabled.
 .. _ug-switch-to-previous-tool:
 .. _ug-tool-actions:
 
-Tool Actions
-............
+General Tool Actions
+....................
 
 .. incimage:: /images/GeneralToolShelf.jpg 300px right
 
 Actions to choose the current :ref:`general tool <ug-general-tools>` are
-available as 3D icons on the second shelf from the bottom on the left wall of
+available as 3D icons on the third shelf from the bottom on the left wall of
 the :ref:`work area <ug-work-area>`. Clicking on any of these icons attaches
 the corresponding general tool to the :ref:`primary selection
-<ug-selection>`. Note that most of these tools affect all secondary selections
-in addition to the primary model.
+<ug-selection>`. Note that most of these tools also affect all secondary
+selections in addition to the primary model.
 
-From left to right the tool icons are:
+The following table lists the general tool icons from left to right.
 
-  - The :action:`Name Tool` action attaches the `Name Tool <ug-name-tool>` to
-    edit the name of the primary selection.
-  - The :action:`Color Tool` action attaches the :ref:`Color Tool
-    <ug-color-tool>` to change the color of all selected models.
-  - The :action:`Complexity Tool` action attaches the :ref:`Complexity Tool
-    <ug-complexity-tool>` to change the tessellation of all selected
-    model(s). (Note that only Cylinder, Sphere, Torus, RevSurf, and text models
-    respond to complexity changes; the action is disabled if only other types
-    of models are selected.)
-  - The :action:`Rotation Tool` action attaches the :ref:`Rotation Tool
-    <ug-rotation-tool>` to rotate all selected models.
-  - The :action:`Scale Tool` action attaches the :ref:`Scale Tool
-    <ug-scale-tool>` to change the size of all selected models.
-  - The :action:`Translation Tool` action attaches the :ref:`Translation Tool
-    <ug-translation-tool>` to change the position of all selected models.
+.. list-table::
+   :align:  center
+   :widths: auto
+   :header-rows: 1
+
+   * - Action/General Tool
+     - Tool Effects
+   * - :ref:`Name Tool <ug-name-tool>`
+     - Edits the name of the primary selection
+   * - :ref:`Color Tool <ug-color-tool>`
+     - Changes the color of all selected models
+   * - :ref:`Complexity Tool <ug-complexity-tool>`
+     - Changes the tessellation of all selected model(s); note that only
+       certain model types respond to complexity changes; the action is
+       disabled if only other types of models are selected.
+   * - :ref:`Rotation Tool <ug-rotation-tool>`
+     - Rotates all selected models
+   * - :ref:`Scale Tool <ug-scale-tool>`
+     - Changes the size of all selected models
+   * - :ref:`Translation Tool <ug-translation-tool>`
+     - Changes the position of all selected models
 
 In addition, the :action:`Switch To Next Tool` and :action:`Switch To Previous
 Tool` actions are available via :ref:`keyboard and controller shortcuts

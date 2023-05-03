@@ -22,9 +22,9 @@ TwistTool "TwistTool" {
         Node {
           children: [
             # Box at the bottom end
-            Node "Min" { shapes: [ Box { size: 1 .5 1 } ] },
+            Node "Base" { shapes: [ Box { size: 1 .5 1 } ] },
             # Cone at the top end
-            Node "Max" {
+            Node "Cone" {
               shapes: [
                 Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
               ]

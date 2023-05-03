@@ -99,8 +99,8 @@ Some notes about this tool:
 
   - The Complexity Tool has effect only on the following :ref:`model types
     <ug-model-types>`: Cylinder, Sphere, Torus, RevSurf (surface of
-    revolution), and Text. The tool is disabled if the selection contains only
-    models of other types.
+    revolution), Text, and Twisted model. The tool is disabled if the selection
+    contains only models of other types.
   - If you want to change the complexity of a child model of a
     :ref:`converted model <ug-converted-models>` or :ref:`combined model
     <ug-combined-models>` of any type you can :ref:`select the child or
@@ -108,9 +108,9 @@ Some notes about this tool:
     model will update appropriately when its children are no longer selected.
   - :ref:`Showing model edges <ug-show-edges>` can help you see the triangles
     more clearly as in these images.
-  - You can use complexity to create models with certain basic shapes. The
-    lowest complexity Cylinder model is a triangular prism, and the lowest
-    complexity Sphere model is an octohedron.
+  - You can use complexity to create models representing certain basic
+    shapes. The lowest complexity Cylinder model is a triangular prism, and the
+    lowest complexity Sphere model is an octohedron.
 
 .. admonition:: VR Only
 
@@ -336,53 +336,46 @@ Clip Tool
 .. incimage:: /images/ClipTool.jpg 200px right
 
 The specialized :newterm:`Clip Tool` allows you to slice away parts of selected
-models by using one or more clipping planes. It is enabled when all of the
-selected models are :ref:`Clipped models <ug-converted-models>`. You can
-convert any model to a Clipped model with the :ref:`Convert Clip action
-<ug-convert-clip>`.
+models by using a clipping plane. It is enabled when all of the selected models
+are :ref:`Clipped models <ug-converted-models>`. You can convert any model to a
+Clipped model with the :ref:`Convert Clip action <ug-convert-clip>`.
 
-Any number of clipping planes can be applied to the same Clipped model. When
-the Clip Tool is attached, it aligns itself with the most recent clipping plane
-applied to the primary model, if it has any.
+The default clipping plane for a new Clipped model clips away the top half of
+the primary selection, however it is oriented. The Clip Tool is then attached
+to this plane to let you edit it. Whenever the Clip Tool is attached, it aligns
+itself with the clipping plane already applied to the primary model.
 
-This tool has three interactive parts:
+This tool has two interactive parts:
 
-  - A translucent quadrilateral representing the clipping plane that will be
-    applied to selected models. Clicking this quadrilateral adds the displayed
-    clipping plane to all selected Clipped models.
-  - A translucent sphere that can be rotated to change the orientation of the
-    clipping plane that will be added.
+  - A translucent quadrilateral showing the position and orientation of the
+    clipping plane relative to the primary selection. This plane can be rotated
+    around its center to change the orientation of the clipping plane.
   - An arrow indicating the normal to the clipping plane. The part of the
-    selected model(s) on the side of the plane with the normal is what will be
-    clipped away when the plane is clicked. Dragging the arrow lets you
-    translate the plane along the normal.
+    selected model(s) on the side of the plane with the normal is clipped
+    away. Dragging the arrow lets you translate the plane along the normal.
 
-.. incimage:: /images/ClipToolClipped.jpg 200px right
-.. incimage:: /images/ClipToolActive.jpg  200px right
+.. incimage:: /images/ClipToolActive.jpg 260px right
 
-All selected Clipped models will be clipped in real time by the current plane
-while you drag the sphere or arrow to rotate or translate the plane, as shown
-in the left image. Clicking on the plane clips the models for real, as shown on
-the right.  Note that the interactive clipping does not fill in the clipped
-parts of models, but the real clipping operation does.
+All selected Clipped models are clipped in real time by the current plane while
+you rotate or translate the plane as shown here.
 
 Translating the plane by dragging the arrow is limited by the extents of the
-primary model; it will not let you move the plane completely off this model.
-The plane will snap to the :ref:`Point Target position <ug-targets>` if the
-target is active and also to the center of the primary selection. The plane
-will change color to the active target color when it is snapped to either
+primary model; it will not let you move the plane completely off this model,
+since that would leave either nothing or the entire model. While translating,
+the plane snaps to the :ref:`Point Target position <ug-targets>` if the target
+is active and also to the center of the primary selection. The plane will
+change color to the active target color when it is snapped to either
 point. :ref:`Modified-dragging <ug-modified-mode>` the arrow deactivates any
 snapping.
    
-When rotating the plane by dragging the sphere, the plane normal will snap to
-the :ref:`Point Target direction <ug-targets>` if the target is active or to
-any of the principal axes. If the :ref:`Axis-Aligned toggle
-<ug-toggle-axis-aligned>` is active, the principal axes of the :ref:`stage
-<ug-stage>` are used; otherwise, the local axes of the primary model are
-used. The plane changes color when snapped to either the target color or the
-:ref:`color corresponding to a principal axis <ug-dimension-colors>`.
-:ref:`Modified-dragging <ug-modified-mode>` the sphere deactivates any
-snapping.
+When rotating the plane, the plane normal will snap to the :ref:`Point Target
+direction <ug-targets>` if the target is active or to any of the principal
+axes. If the :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` is active, the
+principal axes of the :ref:`stage <ug-stage>` are used; otherwise, the local
+axes of the primary model are used. The plane normal arrow changes color when
+snapped to either the target color or the :ref:`color corresponding to a
+principal axis <ug-dimension-colors>`.  :ref:`Modified-dragging
+<ug-modified-mode>` when rotating the plane deactivates any snapping.
 
 .. admonition:: VR Only
 
@@ -390,8 +383,8 @@ snapping.
    rotation. If the controller is oriented so that the hover guide is nearly
    parallel to the plane normal arrow, grip dragging will translate the plane
    along the normal based on the controller position. Otherwise, grip dragging
-   will rotate the sphere and plane based on the controller orientation.
-   Snapping occurs as above unless :ref:`modified-dragging <ug-modified-mode>`.
+   will rotate the plane based on the controller orientation.  Snapping occurs
+   as above unless :ref:`modified-dragging <ug-modified-mode>`.
 
 .. _ug-csg-tool:
 
@@ -485,28 +478,27 @@ file. Any errors during data import will be displayed in a :ref:`Dialog Panel
 Mirror Tool
 ,,,,,,,,,,,
 
-.. incimage:: /images/MirrorToolTwoAfter.jpg  -160px right
-.. incimage:: /images/MirrorToolTwoBefore.jpg -160px right
-.. incimage:: /images/MirrorTool.jpg          -160px right
+.. incimage:: /images/MirrorToolAfter.jpg  -160px right
+.. incimage:: /images/MirrorToolBefore.jpg -160px right
 
 The specialized :newterm:`Mirror Tool` is enabled when all of the selected
 models are :ref:`Mirrored models <ug-converted-models>`. You can convert any
 model to a Mirrored model with the :ref:`Convert Mirror action
-<ug-convert-mirror>`.
+<ug-convert-mirror>`. The default mirroring plane is oriented with the primary
+selection to mirror its local X (left-to-right) axis as shown here.
 
-When the Mirror Tool is active, it adds 3 color-coded orthogonal planes through
-the center of the primary selection. Clicking on any of the planes mirrors the
-model across it. If multiple Mirrored models are selected, all secondary
-selections are mirrored across the same planes, meaning that they will move to
-the opposite side of the plane if they are not also bisected by the plane, in
-addition to being mirrored, as shown in the center and right images. However,
-:ref:`modified-clicking <ug-modified-mode>` on a mirroring plane causes each
-Mirrored model to be mirrored in place as if the plane passed through its local
-center.
+|block-image|
 
-If the :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` is active, the
-mirroring planes will be aligned with the principal planes of the :ref:`stage
-<ug-stage>` instead of the local coordinates of the primary selection.
+.. incimage:: /images/MirrorToolRotated.jpg -160px right
+
+The Mirror Tool has the same interface as the :ref:`Clip Tool <ug-clip-tool>`
+for editing the mirroring plane (including in VR); refer to that tool for
+details. For example, you can rotate the plane to mirror vertically instead of
+horizontally as shown here.
+
+Note that translating the mirroring plane results in the primary
+selection moving to compensate. Additionally, all secondary selections are
+mirrored across the same plane, so they will move to the other side of it.
 
 .. _ug-rev-surf-tool:
 
@@ -577,3 +569,76 @@ spacing.  Clicking the "Apply" button in the panel applies all changes to all
 selected Text models.
 
 |block-image|
+
+.. _ug-twist-tool:
+
+Twist Tool
+,,,,,,,,,,
+
+.. incimage:: /images/TwistToolTwisting.jpg -200px right
+.. incimage:: /images/TwistTool.jpg         -200px right
+
+The specialized :newterm:`Twist Tool` allows you to twist the vertices of a
+model around an axis. It is enabled when all of the selected models are
+:ref:`Twisted models <ug-converted-models>`. You can convert any model to a
+Twisted model with the :ref:`Convert Twist action <ug-convert-twist>`.
+
+The Twist Tool displays an arrow showing the twist axis and a ring of four
+spherical handles that can be rotated around the axis to modify the twist
+angle. The arrow has a cone handle at one end and a box handle at the other.
+Twisting holds the mesh vertices at the base (box end) of the axis are held in
+place while the mesh vertices at the other end are twisted around the axis by
+the twist angle. All mesh vertices between those extremes are twisted
+proportionally. The right image here shows a Box model being twisted. 
+
+|block-image|
+
+The Twist Tool supports three types of interaction:
+  - Dragging any of the spheres around the axis modifies the twist
+    angle. Feedback shows the current angle, which is snapped to the current
+    :ref:`angle precision level setting <ug-precision-level>` as shown above.
+  - Dragging either handle at the ends of the axis arrow rotates the twist
+    axis.
+  - Dragging any other part of the arrow translates the twist axis
+    perpendicular to the axis direction.
+
+All selected Twisted models are updated in real time when any of these occur.
+
+When rotating the axis, the axis direction will snap to the :ref:`Point Target
+direction <ug-targets>` if the target is active or to any of the principal
+axes. If the :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` is active, the
+principal axes of the :ref:`stage <ug-stage>` are used; otherwise, the local
+axes of the primary model are used. The axis arrow changes color when snapped
+to either the target color or the :ref:`color corresponding to a principal axis
+<ug-dimension-colors>`.  :ref:`Modified-dragging <ug-modified-mode>` when
+rotating the axis deactivates any snapping.
+
+While translating the axis, it snaps to the :ref:`Point Target position
+<ug-targets>` if the target is active and also to the center of the primary
+selection. The axis will change color to the active target color when it is
+snapped to either point. :ref:`Modified-dragging <ug-modified-mode>` the axis
+deactivates any snapping.
+   
+.. incimage:: /images/TwistToolHighComplexity.jpg 200px right
+.. incimage:: /images/TwistToolLowComplexity.jpg  200px right
+
+Note that a Twisted model is affected by the :ref:`Complexity Tool
+<ug-complexity-tool>`. Increasing the complexity of a Twisted model increases
+the number of slices (and vertices) in the direction of the axis as shown
+here. Use caution, because the slicing operation and the resulting twist
+operations can get pretty slow for high complexity values. Also note that
+changing the complexity of the original model the twist is applied to may also
+affect the twist.
+
+|block-image|
+
+.. admonition:: VR Only
+
+   :ref:`Grip-dragging <ug-grip-dragging>` works for rotating the axis and
+   twisting. If the controller is oriented so that the hover guide is nearly
+   parallel to the axis direction (or its opposite), grip dragging will twist
+   around the axis (by rotating the controller appropriately). Otherwise, grip
+   dragging will rotate the axis direction based on the controller
+   orientation. Snapping occurs as above unless :ref:`modified-dragging
+   <ug-modified-mode>`.
+
