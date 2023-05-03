@@ -35,6 +35,7 @@ sys_path.append(abspath("./_ext"))
 extensions = [
     # Official extensions:
     'sphinx.ext.todo',
+    'sphinxcontrib.jquery',
 
     # Local extensions:
     'fixreplace',
