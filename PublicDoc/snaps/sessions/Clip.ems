@@ -1,0 +1,36 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.5.0",
+    session_state: SessionState {
+      edges_shown: True,
+    },
+  },
+  commands: [
+    CreateExtrudedModelCommand {
+      result_name: "Extruded_1",
+    },
+    ChangeExtrudedCommand {
+      profile_points: [0.9 0.5, 0.592233 0.632011, 0.5 0.9, 0.412394 0.632236, 0.1 0.5, 0.412373 0.37468, 0.5 0.1, 0.596737 0.365508],
+      model_names: ["Extruded_1"],
+    },
+    ScaleCommand {
+      ratios: 1 2.5 1,
+      mode: "kAsymmetric",
+      model_names: ["Extruded_1"],
+    },
+    TranslateCommand {
+      translation: 6 0 0,
+      model_names: ["Extruded_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    ConvertClipCommand {
+      result_names: ["Clipped_1", "Clipped_2"],
+      model_names: ["Cylinder_1", "Extruded_1"],
+    },
+  ],
+  current_index: 6,
+}
