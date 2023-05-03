@@ -284,7 +284,7 @@ void RadialLayoutWidget::UpdateArc_() {
 
     const Anglef &sa = arc_.start_angle;
     const Anglef &aa = arc_.arc_angle;
-    const Anglef  ea = end_spoke_->GetRotationAngle();
+    const Anglef  ea = sa + aa;
 
     const Point3f sa_pos = tpos(sa, TK::kRLWStartEndAngleTextRadiusScale,
                                 TK::kRLWStartEndAngleTextYOffset);
