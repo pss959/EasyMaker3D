@@ -156,8 +156,10 @@ void TwistTool::Activate_(Widget &widget, bool is_activation) {
         const auto tm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
         ASSERT(tm);
         start_twist_ = twist_ = tm->GetTwist();
-        if (&widget == twister_.get())
+        if (&widget == twister_.get()) {
             feedback_ = context.feedback_manager->Activate<AngularFeedback>();
+            UpdateTwistFeedback_();
+        }
         context.target_manager->StartSnapping();
     }
     else {
@@ -295,8 +297,9 @@ bool TwistTool::SnapRotation_() {
 void TwistTool::UpdateTwistFeedback_() {
     // The feedback should be in the plane perpendicular to the twist axis (in
     // stage coordinates).
-    const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
-    const Vector3f stage_axis = ion::math::Normalized(lsm * twist_.axis);
+    //const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
+    const Vector3f stage_axis =
+        ion::math::Normalized(GetRotation() * twist_.axis);
 
     // Move the feedback center to be just past the axis cone in stage
     // coordinates.
