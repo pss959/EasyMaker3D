@@ -41,6 +41,13 @@ class ShortcutHandler : public Handler {
                             std::string &keyboard_string,
                             std::string &controller_string) const;
 
+    /// Enables or disables application shortcuts. This has no effect on
+    /// debugging shortcuts so they are always available. (As opposed to
+    /// calling SetEnabled(false), which would disable all shortcuts.)
+    void SetAppShortcutsEnabled(bool enabled) {
+        are_app_shortcuts_enabled = enabled;
+    }
+
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
@@ -55,6 +62,9 @@ class ShortcutHandler : public Handler {
 
     /// Maps event key strings to Action enum values.
     ActionMap_ action_map_;
+
+    /// Indicates whether application shortcuts are enabled.
+    bool are_app_shortcuts_enabled = true;
 
     /// Handles a string representing a potential keyboard key or controller
     /// button shortcut.

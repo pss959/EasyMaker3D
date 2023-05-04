@@ -23,6 +23,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Util/String.h"
 #include "Util/Write.h"
 #include "Widgets/StageWidget.h"
 
@@ -188,9 +189,11 @@ void ShortcutMap_::InitHelpString_(const std::vector<ActionData_> &data) {
     help_string_ = "-----------------------------------------------------\n"
         "Debugging help shortcuts:\n"
         "(Current path is defined by node under mouse cursor.)\n";
+    const size_t kLen = 12;
     for (const auto &d: data) {
         help_string_ += "   " + kColor + d.shortcut + kNormal +
-            ": " + d.help_string + ".\n";
+            ":" + Util::Spaces(kLen - d.shortcut.size()) +
+            d.help_string + ".\n";
     }
     help_string_ += "-----------------------------------------------------\n\n";
 };

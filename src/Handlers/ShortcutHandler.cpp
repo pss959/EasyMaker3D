@@ -222,17 +222,19 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
 }
 
 bool ShortcutHandler::HandleShortcutString_(const std::string &str) {
-    auto it = action_map_.find(str);
-    if (it != action_map_.end()) {
-        const Action action = it->second;
-        ASSERT(action_agent_);
-        if (action_agent_->CanApplyAction(action))
-            action_agent_->ApplyAction(action);
-        return true;
+    if (are_app_shortcuts_enabled) {
+        auto it = action_map_.find(str);
+        if (it != action_map_.end()) {
+            const Action action = it->second;
+            ASSERT(action_agent_);
+            if (action_agent_->CanApplyAction(action))
+                action_agent_->ApplyAction(action);
+            return true;
+        }
     }
 
 #if ENABLE_DEBUG_FEATURES
-    // Special cases for debugging shortcuts.
+    // Special cases for debugging shortcuts, which are always enabled.
     if (Debug::HandleShortcut(str))
         return true;
 #endif
