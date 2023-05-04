@@ -38,9 +38,16 @@ class Panel::Focuser_ {
   public:
     enum class Direction { kUp, kDown, kLeft, kRight };
 
+    /// Function that returns true if a Pane can be focused.
+    typedef std::function<bool(Pane &)> CanFocusFunc;
+
     /// The constructor is passed a description string to use for log
-    /// messages.
-    Focuser_(const std::string &desc) : desc_(desc) {}
+    /// messages and a function to invoke to see if a sub-Pane can be focused.
+    Focuser_(const std::string &desc, const CanFocusFunc &can_focus_func) :
+        desc_(desc), can_focus_func_(can_focus_func) {
+        ASSERT(! desc.empty());
+        ASSERT(can_focus_func);
+    }
 
     /// Sets the VirtualKeyboard instance to pass along to interactive Panes.
     void SetVirtualKeyboard(const VirtualKeyboardPtr &virtual_keyboard) {
@@ -68,7 +75,6 @@ class Panel::Focuser_ {
     /// Changes focus in the given direction.
     void MoveFocus(Direction dir);
 
-
     /// Activates the given interactive Pane from a button click or key press.
     void ActivatePane(const PanePtr &pane, bool is_click);
 
@@ -83,6 +89,9 @@ class Panel::Focuser_ {
 
     /// String used for log messages.
     const std::string desc_;
+
+    /// Function that returns true if a Pane can be focused.
+    CanFocusFunc can_focus_func_;
 
     /// VirtualKeyboard instance to pass to interactive Panes.
     VirtualKeyboardPtr virtual_keyboard_;
@@ -147,7 +156,7 @@ void Panel::Focuser_::MoveFocus(Direction dir) {
         if (new_index == focused_index_)
             break;  // No other interactive pane.
         auto &pane = *panes_[new_index];
-        if (pane.IsEnabled() && pane.GetInteractor()->GetFocusBorder())
+        if (can_focus_func_(pane))
             break;
     }
 
@@ -283,7 +292,8 @@ void Panel::CreationDone() {
     SG::Node::CreationDone();
 
     if (! IsTemplate()) {
-        focuser_.reset(new Focuser_(GetDesc()));
+        focuser_.reset(
+            new Focuser_(GetDesc(), [&](Pane &p){ return CanFocusPane_(p); }));
 
         // Add the root Pane as a child.
         ASSERTM(GetPane(), GetDesc());
@@ -581,4 +591,18 @@ SG::CoordConv Panel::GetCoordConv_(const SG::Node &node) {
     auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
     const SG::NodePath path = SG::FindNodePathUnderNode(np, node);
     return SG::CoordConv(path);
+}
+
+bool Panel::CanFocusPane_(Pane &pane) const {
+    // The Pane has to have a focus border.
+    if (! pane.GetInteractor()->GetFocusBorder())
+        return false;
+
+    // The Pane and all ancestors have to be enabled.
+    for (const auto &p: SG::FindNodePathUnderNode(GetPane(), pane)) {
+        if (! p->IsEnabled())
+            return false;
+    }
+
+    return true;
 }

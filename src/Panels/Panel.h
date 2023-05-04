@@ -265,4 +265,7 @@ class Panel : public SG::Node {
     /// Returns an SG::CoordConv for the given Node relative to this Panel. The
     /// Node must be found somewhere under the Panel.
     SG::CoordConv GetCoordConv_(const SG::Node &node);
+
+    /// Returns true if the given Pane can be focused.
+    bool CanFocusPane_(Pane &pane) const;
 };
