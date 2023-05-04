@@ -19,7 +19,7 @@ class SphereWidget : public DraggableWidget {
   public:
     /// Returns a Notifier that is invoked when the user drags the widget to
     /// cause rotation. It is passed the widget and the rotation relative to
-    /// the start of the drag.
+    /// the start of the drag in world coordinates.
     Util::Notifier<Widget &, const Rotationf &> & GetRotationChanged() {
         return rotation_changed_;
     }
@@ -38,8 +38,8 @@ class SphereWidget : public DraggableWidget {
     /// Notifies when the widget is rotated.
     Util::Notifier<Widget&, const Rotationf &> rotation_changed_;
 
-    /// Plane perpendicular to the initial ray. This is used to compute
-    /// intersection points for pointer-based rotations.
+    /// Plane perpendicular to the initial ray in world coordinates. This is
+    /// used to compute intersection points for pointer-based rotations.
     Plane plane_;
 
     /// Radius of the virtual sphere in world coordinates.

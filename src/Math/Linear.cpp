@@ -101,6 +101,13 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
     return result;
 }
 
+Rotationf TransformRotation(const Rotationf &rot, const Matrix4f &m) {
+    Vector3f axis;
+    Anglef   angle;
+    rot.GetAxisAndAngle(&axis, &angle);
+    return Rotationf::FromAxisAndAngle(m * axis, angle);
+}
+
 void ScalePointsToSize(const Vector2f &target, std::vector<Point2f> &points) {
     Range2f bounds;
     for (const auto &p: points)

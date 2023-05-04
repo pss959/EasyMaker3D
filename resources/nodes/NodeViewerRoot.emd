@@ -18,10 +18,10 @@ Node "NodeViewerRoot" {
     #<"nodes/templates/RadialMenu.emd">
     #<"nodes/tests/AtlasTest.emd">
     #<"nodes/tests/BlendTest.emd">
-    <"nodes/tests/DiscWidgetTest.emd">
+    #<"nodes/tests/DiscWidgetTest.emd">
     #<"nodes/tests/RadialLayoutWidgetTest.emd">
     #<"nodes/tests/SliderTest.emd">
-    #<"nodes/tests/SphereWidgetTest.emd">
+    <"nodes/tests/SphereWidgetTest.emd">
     #<"nodes/tests/StencilTest.emd">
     #<"nodes/tests/ViewTest.emd">
 

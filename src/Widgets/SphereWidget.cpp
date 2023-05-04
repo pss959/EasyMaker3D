@@ -16,7 +16,8 @@ void SphereWidget::StartDrag(const DragInfo &info) {
         Point3f center;
         ComputeSphere_(center, radius_);
 
-        // Set up the plane through the center and perpendicular to the ray.
+        // Set up the plane (in world coordinates) through the center and
+        // perpendicular to the ray.
         plane_ = Plane(center, -info.ray.direction);
 
         // Get the initial intersection point with the plane.
@@ -68,8 +69,12 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
         rot_ = Rotationf::FromAxisAndAngle(axis, RotationAngle(diff_rot));
     }
 
-    // Update the Widget rotation and notify observers.
-    SetRotation(ComposeRotations(start_rot_, rot_));
+    // Convert the rotation to object coordinates and update the Widget.
+    const Rotationf obj_rot =
+        TransformRotation(rot_, GetCoordConv().GetRootToLocalMatrix());
+    SetRotation(ComposeRotations(start_rot_, obj_rot));
+
+    // Notify observers.
     rotation_changed_.Notify(*this, rot_);
 }
 

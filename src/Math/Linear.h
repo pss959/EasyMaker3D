@@ -59,6 +59,10 @@ Bounds TranslateBounds(const Bounds &bounds, const Vector3f &trans);
 /// encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
 
+/// Transforms a rotation by a matrix. This rotates the axis and leaves the
+/// angle unchanged.
+Rotationf TransformRotation(const Rotationf &rot, const Matrix4f &m);
+
 /// Composes two rotations in the proper order so r1 has more local effect than
 /// r0.
 inline Rotationf ComposeRotations(const Rotationf &r0, const Rotationf &r1) {
