@@ -297,7 +297,6 @@ bool TwistTool::SnapRotation_() {
 void TwistTool::UpdateTwistFeedback_() {
     // The feedback should be in the plane perpendicular to the twist axis (in
     // stage coordinates).
-    //const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
     const Vector3f stage_axis =
         ion::math::Normalized(GetRotation() * twist_.axis);
 
