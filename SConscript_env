@@ -405,8 +405,11 @@ elif platform == 'linux':
     lib_env.Append(LIBS = ['GLX', 'GLU', 'GL', 'dl', 'pthread', 'm'])
 elif platform == 'mac':
     lib_env.Append(
-        CXXFLAGS = ['-Wno-old-style-cast',  # Needed for CGAL.
-                    '-Wno-deprecated-copy'],
+        CXXFLAGS = [
+            '-Wno-old-style-cast',        # Needed for CGAL.
+            '-Wno-expansion-to-defined',  # Needed for CGAL/boost.
+            '-Wno-deprecated-copy',
+        ],
         LIBS = ['dl', 'pthread', 'm'],
     )
 
