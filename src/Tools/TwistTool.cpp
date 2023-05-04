@@ -297,8 +297,7 @@ bool TwistTool::SnapRotation_() {
 void TwistTool::UpdateTwistFeedback_() {
     // The feedback should be in the plane perpendicular to the twist axis (in
     // stage coordinates).
-    const Vector3f stage_axis =
-        ion::math::Normalized(GetRotation() * twist_.axis);
+    const Vector3f stage_axis = GetRotation() * twist_.axis;
 
     // Move the feedback center to be just past the axis cone in stage
     // coordinates.
