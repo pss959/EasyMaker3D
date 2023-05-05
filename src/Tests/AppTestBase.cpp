@@ -11,14 +11,14 @@
 
 class AppTestBase::TestingApp_ : public Application {
   public:
-    explicit TestingApp_(TestContext &tc);
+    TestingApp_();
     void InitForTests();
 
-  private:
-    TestContext &tc_;
+    // Make this available to AppTestBase.
+    using Application::GetContext;
 };
 
-AppTestBase::TestingApp_::TestingApp_(TestContext &tc) : tc_(tc) {
+AppTestBase::TestingApp_::TestingApp_() {
     SetTestingFlag();
 }
 
@@ -27,21 +27,20 @@ void AppTestBase::TestingApp_::InitForTests() {
     options.window_size.Set(800, 600);
     Init(options);
 
-    // Have the base Application class fill in the TestContext now that the
-    // session is loaded.
-    GetTestContext(tc_);
-
     // Make sure the TestContext has what it needs.
-    ASSERT(tc_.scene_context);
-    ASSERT(tc_.scene_context->frustum);
+    ASSERT(GetContext().scene_context);
+    ASSERT(GetContext().scene_context->frustum);
 }
 
 // ----------------------------------------------------------------------------
 // AppTestBase functions.
 // ----------------------------------------------------------------------------
 
-AppTestBase::AppTestBase() : app_(new TestingApp_(context)) {
+AppTestBase::AppTestBase() : app_(new TestingApp_) {
     app_->InitForTests();
+
+    // Copy Application::Context locally for convenience in derived classes.
+    context = app_->GetContext();
 }
 
 AppTestBase::~AppTestBase() {

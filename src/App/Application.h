@@ -7,8 +7,23 @@ class Controller;
 class FilePath;
 class LogHandler;
 class Renderer;
-struct TestContext;
+
+DECL_SHARED_PTR(ActionProcessor);
+DECL_SHARED_PTR(AnimationManager);
+DECL_SHARED_PTR(BoardManager);
+DECL_SHARED_PTR(ClipboardManager);
+DECL_SHARED_PTR(CommandManager);
+DECL_SHARED_PTR(EventManager);
+DECL_SHARED_PTR(FeedbackManager);
 DECL_SHARED_PTR(IEmitter);
+DECL_SHARED_PTR(NameManager);
+DECL_SHARED_PTR(PanelManager);
+DECL_SHARED_PTR(PrecisionStore);
+DECL_SHARED_PTR(SceneContext);
+DECL_SHARED_PTR(SelectionManager);
+DECL_SHARED_PTR(SessionManager);
+DECL_SHARED_PTR(SettingsManager);
+DECL_SHARED_PTR(TargetManager);
 
 /// The Application class manages the entire application.
 ///
@@ -24,6 +39,30 @@ class Application {
         bool     ignore_vr          = false;
         bool     set_up_touch       = false;
         bool     show_session_panel = true;
+    };
+
+    /// Application context with all managers and the SceneContext.
+    struct Context {
+        /// \name Managers.
+        ///@{
+        ActionProcessorPtr  action_processor;
+        AnimationManagerPtr animation_manager;
+        BoardManagerPtr     board_manager;
+        ClipboardManagerPtr clipboard_manager;
+        CommandManagerPtr   command_manager;
+        EventManagerPtr     event_manager;
+        FeedbackManagerPtr  feedback_manager;
+        NameManagerPtr      name_manager;
+        PanelManagerPtr     panel_manager;
+        PrecisionStorePtr   precision_store;
+        SelectionManagerPtr selection_manager;
+        SessionManagerPtr   session_manager;
+        SettingsManagerPtr  settings_manager;
+        TargetManagerPtr    target_manager;
+        ///@}
+
+        /// SceneContext.
+        SceneContextPtr     scene_context;
     };
 
     Application();
@@ -67,8 +106,8 @@ class Application {
     /// before quitting a session. The default is true.
     void SetAskBeforeQuitting(bool ask);
 
-    /// Fills in a TestContext.
-    void GetTestContext(TestContext &tc);
+    /// Returns the current Context.
+    const Context & GetContext() const;
 
     /// Adds an event IEmitter to the list of emitters.
     void AddEmitter(const IEmitterPtr &emitter);

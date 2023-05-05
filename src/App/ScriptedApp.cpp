@@ -1,3 +1,5 @@
+#include "App/ScriptedApp.h"
+
 #include <deque>
 #include <string>
 #include <vector>
@@ -6,11 +8,13 @@
 #include <ion/image/conversionutils.h>
 #include <ion/math/rangeutils.h>
 
+#include "Base/IEmitter.h"
+
+// XXXX Check all of these:
 #include "App/ActionProcessor.h"
 #include "App/Application.h"
 #include "App/Args.h"
 #include "App/SnapScript.h"
-#include "Base/IEmitter.h"
 #include "Debug/Shortcuts.h"
 #include "Handlers/Handler.h"
 #include "Items/Controller.h"
@@ -42,35 +46,13 @@
 #include "Viewers/Renderer.h"
 #include "Widgets/StageWidget.h"
 
-/// \file
-/// The snapimage application is used to create snapshot images for the public
-/// documentation. See the usage string for details.
-///
-/// \ingroup Apps
-
 // ----------------------------------------------------------------------------
-// Constants.
+// ScriptedApp::Emitter_ class.
 // ----------------------------------------------------------------------------
 
-/// Default rest position for the left controller.
-static Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};
-
-/// Default rest position for the right controller.
-static Point3f kRightControllerPos{.18f, 14.06, 59.5f};
-
-/// Offset to add to left controller position for event position.
-static Vector3f kLeftControllerOffset{0, -.12f, 0};
-
-/// Offset to add to right controller position for event position.
-static Vector3f kRightControllerOffset{0, .12f, 0};
-
-// ----------------------------------------------------------------------------
-// Emitter_ class.
-// ----------------------------------------------------------------------------
-
-/// Emitter_ is a derived IEmitter class used to create events to simulate
-/// mouse clicks, mouse drags and key presses.
-class Emitter_ : public IEmitter {
+/// ScriptedApp::Emitter_ is a derived IEmitter class used to create events to
+/// simulate mouse clicks, mouse drags and key presses.
+class ScriptedApp::Emitter_ : public IEmitter {
   public:
     using DIPhase    = SnapScript::DragInstr::Phase;
     using KModifiers = Util::Flags<Event::ModifierKey>;
@@ -103,6 +85,18 @@ class Emitter_ : public IEmitter {
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() {}
 
+    /// Default rest position for the left controller.
+    static constexpr Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};
+
+    /// Default rest position for the right controller.
+    static constexpr Point3f kRightControllerPos{.18f, 14.06, 59.5f};
+
+    /// Offset to add to left controller position for event position.
+    static constexpr Vector3f kLeftControllerOffset{0, -.12f, 0};
+
+    /// Offset to add to right controller position for event position.
+    static constexpr Vector3f kRightControllerOffset{0, .12f, 0};
+
   private:
     /// Whether modified mode is on.
     bool               is_mod_ = false;
@@ -118,7 +112,11 @@ class Emitter_ : public IEmitter {
     bool               waited_for_click_ = false;
 };
 
-void Emitter_::AddClick(const Point2f &pos) {
+// ----------------------------------------------------------------------------
+// ScriptedApp::Emitter_ functions.
+// ----------------------------------------------------------------------------
+
+void ScriptedApp::Emitter_::AddClick(const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
@@ -136,7 +134,7 @@ void Emitter_::AddClick(const Point2f &pos) {
     events_.push_back(event);
 }
 
-void Emitter_::AddHoverPoint(const Point2f &pos) {
+void ScriptedApp::Emitter_::AddHoverPoint(const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
@@ -145,7 +143,7 @@ void Emitter_::AddHoverPoint(const Point2f &pos) {
     events_.push_back(event);
 }
 
-void Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
+void ScriptedApp::Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
@@ -164,7 +162,7 @@ void Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
     events_.push_back(event);
 }
 
-void Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
+void ScriptedApp::Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
     Event event;
     event.device    = Event::Device::kKeyboard;
     event.key_name  = key;
@@ -181,7 +179,7 @@ void Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
     events_.push_back(event);
 }
 
-void Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
+void ScriptedApp::Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
                                 const Rotationf &rot) {
     Event event;
     event.device = hand == Hand::kLeft ?
@@ -198,7 +196,7 @@ void Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
     events_.push_back(event);
 }
 
-void Emitter_::AddHeadsetButton(bool is_press) {
+void ScriptedApp::Emitter_::AddHeadsetButton(bool is_press) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kHeadset;
@@ -209,7 +207,7 @@ void Emitter_::AddHeadsetButton(bool is_press) {
     events_.push_back(event);
 }
 
-void Emitter_::EmitEvents(std::vector<Event> &events) {
+void ScriptedApp::Emitter_::EmitEvents(std::vector<Event> &events) {
     // Emit the first event, if any.
     if (! events_.empty()) {
         const Event &event = events_.front();
@@ -234,91 +232,11 @@ void Emitter_::EmitEvents(std::vector<Event> &events) {
     }
 }
 
-DECL_SHARED_PTR(Emitter_);
-
 // ----------------------------------------------------------------------------
-// MockFilePathList_ class.
+/// ScriptedApp functions.
 // ----------------------------------------------------------------------------
 
-/// Derived FilePathList class that simulates a file system.
-class MockFilePathList_ : public FilePathList {
-    /// Redefines this to simulate files.
-    virtual void GetContents(std::vector<std::string> &subdirs,
-                             std::vector<std::string> &files,
-                             const std::string &extension,
-                             bool include_hidden) const override;
-    virtual bool IsValidDirectory(const FilePath &path) const {
-        const std::string fn = path.GetFileName();
-        return ion::base::StartsWith(fn, "Dir") || fn == "stl" || fn == "maker";
-    }
-    virtual bool IsExistingFile(const FilePath &path) const {
-        return true;
-    }
-};
-
-void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,
-                                    std::vector<std::string> &files,
-                                    const std::string &extension,
-                                    bool include_hidden) const {
-    const FilePath dir = GetCurrent();
-    // Special case for dummy path used in doc.
-    if (dir.ToString() == "/projects/maker/stl/") {
-        files.push_back("Airplane.stl");
-        files.push_back("Boat.stl");
-        files.push_back("Car.stl");
-    }
-    else {
-        subdirs.push_back("Dir0");
-        subdirs.push_back("Dir1");
-        files.push_back("FileA" + extension);
-        files.push_back("FileB" + extension);
-        files.push_back("FileC" + extension);
-        files.push_back("FileD" + extension);
-        files.push_back("FileE" + extension);
-    }
-}
-
-// ----------------------------------------------------------------------------
-/// SnapshotApp_ class.
-// ----------------------------------------------------------------------------
-
-/// Derived Application class that adds snapshot processing. Reads a SnapScript
-/// that specifies what to do.
-class SnapshotApp_ : public Application {
-  public:
-    /// This struct adds some additional options.
-    struct Options : public Application::Options {
-        SnapScript script;
-        bool       nosnap = false;
-        bool       remain = false;
-    };
-
-    bool Init(const Options &options);
-
-    virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
-
-  private:
-    Options     options_;
-    Vector2i    window_size_;   // From Options.
-    Emitter_Ptr emitter_;       // To simulate mouse clicks/drags and keys.
-    size_t      cur_instruction_ = 0;
-
-    bool ProcessInstruction_(const SnapScript::Instr &instr);
-    bool LoadSession_(const std::string &file_name);
-    bool SetHand_(Hand hand, const std::string &controller_type);
-    void SetTouchMode_(bool is_on);
-    bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
-    bool GetObjRect_(const std::string &object_name, float margin,
-                     Range2f &rect);
-    Selection BuildSelection_(const std::vector<std::string> &names);
-
-    template <typename T>
-    const T & GetTypedInstr_(const SnapScript::Instr &instr) {
-        return static_cast<const T &>(instr);
-    }
-};
-
-bool SnapshotApp_::Init(const Options &options) {
+bool ScriptedApp::Init(const Options &options) {
     if (! Application::Init(options))
         return false;
 
@@ -329,12 +247,14 @@ bool SnapshotApp_::Init(const Options &options) {
 
     window_size_ = GetWindowSize();
 
+    const auto &context = GetContext();
+
     // Do NOT write out settings that change because of a script.
-    GetContext().settings_manager->SetWriteFlag(false);
+    context.settings_manager->SetWriteFlag(false);
 
     // Turn off controllers until they are specifically added.
-    GetContext().scene_context->left_controller->SetEnabled(false);
-    GetContext().scene_context->right_controller->SetEnabled(false);
+    context.scene_context->left_controller->SetEnabled(false);
+    context.scene_context->right_controller->SetEnabled(false);
 
     // Make sure there is no debug text visible.
     Debug::DisplayDebugText("");
@@ -346,34 +266,26 @@ bool SnapshotApp_::Init(const Options &options) {
     // No need to ask before quitting this app.
     SetAskBeforeQuitting(false);
 
-    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
-    const auto set_mock = [&](const std::string &panel_name){
-        auto panel =
-            GetContext().panel_manager->GetTypedPanel<FilePanel>(panel_name);
-        panel->SetFilePathList(new MockFilePathList_);
-    };
-    set_mock("FilePanel");
-    set_mock("ImportToolPanel");
-
     // Set the render offsets for the controllers.
-    SetControllerRenderOffsets(-kLeftControllerOffset, -kRightControllerOffset);
+    SetControllerRenderOffsets(-Emitter_::kLeftControllerOffset,
+                               -Emitter_::kRightControllerOffset);
 
     // Use default settings file so that state is deterministic.
     const FilePath path("PublicDoc/snaps/settings/Settings" +
                         TK::kDataFileSuffix);
-    if (! GetContext().settings_manager->ReplaceSettings(path)) {
+    if (! context.settings_manager->ReplaceSettings(path)) {
         std::cerr << "*** Unable to load default settings from "
                   << path.ToString() << "\n";
         return false;
     }
     // Tell the SessionManager to update its previous path.
-    GetContext().session_manager->ChangePreviousPath(
-        GetContext().settings_manager->GetSettings().GetLastSessionPath());
+    context.session_manager->ChangePreviousPath(
+        context.settings_manager->GetSettings().GetLastSessionPath());
 
     return true;
 }
 
-bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
+bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     const size_t instr_count = options_.script.GetInstructions().size();
     const bool are_more_instructions = cur_instruction_ < instr_count;
     bool keep_going;
@@ -392,8 +304,7 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     }
     // Process the next instruction, if any.
     else if (are_more_instructions) {
-        const auto &instr =
-            *options_.script.GetInstructions()[cur_instruction_];
+        const auto &instr = *options_.script.GetInstructions()[cur_instruction_];
         keep_going = ProcessInstruction_(instr);
         if (instr.type == SnapScript::Instr::Type::kStop)
             cur_instruction_ = instr_count;
@@ -409,7 +320,7 @@ bool SnapshotApp_::ProcessFrame(size_t render_count, bool force_poll) {
     return keep_going;
 }
 
-bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
+bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
     using SIType = SnapScript::Instr::Type;
 
     const size_t instr_count = options_.script.GetInstructions().size();
@@ -480,8 +391,9 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
       }
       case SIType::kSelect: {
           const auto &sinst = GetTypedInstr_<SnapScript::SelectInstr>(instr);
-          GetContext().selection_manager->ChangeSelection(
-              BuildSelection_(sinst.names));
+          Selection sel;
+          BuildSelection_(sinst.names, sel);
+          GetContext().selection_manager->ChangeSelection(sel);
           break;
       }
       case SIType::kSettings: {
@@ -535,7 +447,7 @@ bool SnapshotApp_::ProcessInstruction_(const SnapScript::Instr &instr) {
     return true;
 }
 
-bool SnapshotApp_::LoadSession_(const std::string &file_name) {
+bool ScriptedApp::LoadSession_(const std::string &file_name) {
     // Empty file name means start a new session.
     if (file_name.empty()) {
         GetContext().session_manager->NewSession();
@@ -555,7 +467,7 @@ bool SnapshotApp_::LoadSession_(const std::string &file_name) {
     return true;
 }
 
-bool SnapshotApp_::SetHand_(Hand hand, const std::string &controller_type) {
+bool ScriptedApp::SetHand_(Hand hand, const std::string &controller_type) {
     const auto &sc = *GetContext().scene_context;
     auto &controller = hand == Hand::kLeft ?
         *sc.left_controller : *sc.right_controller;
@@ -601,7 +513,7 @@ bool SnapshotApp_::SetHand_(Hand hand, const std::string &controller_type) {
     return true;
 }
 
-void SnapshotApp_::SetTouchMode_(bool is_on) {
+void ScriptedApp::SetTouchMode_(bool is_on) {
     auto &sc = *GetContext().scene_context;
 
     ForceTouchMode(is_on);
@@ -621,7 +533,7 @@ void SnapshotApp_::SetTouchMode_(bool is_on) {
     sc.right_controller->SetTouchMode(is_on);
 }
 
-bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
+bool ScriptedApp::TakeSnapshot_(const Range2f &rect,
                                  const std::string &file_name) {
     const auto &minp = rect.GetMinPoint();
     const auto  size = rect.GetSize();
@@ -646,7 +558,7 @@ bool SnapshotApp_::TakeSnapshot_(const Range2f &rect,
     return true;
 }
 
-bool SnapshotApp_::GetObjRect_(const std::string &object_name, float margin,
+bool ScriptedApp::GetObjRect_(const std::string &object_name, float margin,
                                Range2f &rect) {
     // Search in the scene for the object.
     const auto &sc = *GetContext().scene_context;
@@ -681,77 +593,12 @@ bool SnapshotApp_::GetObjRect_(const std::string &object_name, float margin,
     return true;
 }
 
-Selection SnapshotApp_::BuildSelection_(const std::vector<std::string> &names) {
+void ScriptedApp::BuildSelection_(const std::vector<std::string> &names,
+                                  Selection &selection) {
+    selection.Clear();
     const auto &root_model = GetContext().scene_context->root_model;
-    Selection sel;
     for (const auto &name: names) {
         SelPath path(SG::FindNodePathUnderNode(root_model, name, false));
-        sel.Add(path);
+        selection.Add(path);
     }
-    return sel;
-}
-
-// ----------------------------------------------------------------------------
-// Mainline.
-// ----------------------------------------------------------------------------
-
-static const char kUsageString[] =
-R"(snapimage: Reads a script with instructions on how to create snapshot images
- for public documentation. See SnapScript.h for script details.
-    Usage:
-      snapimage [--fullscreen] [--klog=<klog_string>]
-                [--remain] [--nosnap] SCRIPT
-
-    Options:
-      --fullscreen    Start with a full-screen window.
-      --klog=<string> String to pass to KLogger::SetKeyString().
-      --nosnap        Ignore snap commands (useful for testing).
-      --remain        Keep the window alive after script processing.
-
-    Script files are relative to PublicDoc/snaps/scripts.
-    Image files are placed in PublicDoc/docs/images.
-)";
-
-int main(int argc, const char *argv[]) {
-    Args args(argc, argv, kUsageString);
-
-    SnapshotApp_::Options options;
-
-    const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
-    if (! options.script.ReadScript(path))
-        return -1;
-
-    std::cout << "======= Processing Script file " << path.ToString() << "\n";
-
-    KLogger::SetKeyString(args.GetString("--klog"));
-    options.do_ion_remote      = true;
-    options.enable_vr          = true;   // So controllers work properly.
-    options.fullscreen         = args.GetBool("--fullscreen");
-    options.nosnap             = args.GetBool("--nosnap");
-    options.remain             = args.GetBool("--remain");
-    options.show_session_panel = false;
-
-    // Note that this must have the same aspect ratio as fullscreen.
-    options.window_size.Set(1024, 552);
-
-    SnapshotApp_ app;
-    if (! app.Init(options))
-        return -1;
-
-    try {
-        app.MainLoop();
-    }
-    catch (AssertException &ex) {
-        std::cerr << "*** Caught Assertion failure: " << ex.what() << "\n";
-        std::cerr << "*** STACK:\n";
-        for (const auto &s: ex.GetStackTrace())
-            std::cerr << "  " << s << "\n";
-        return -1;
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception: " << ex.what() << "\n";
-        return -1;
-    }
-
-    return 0;
 }

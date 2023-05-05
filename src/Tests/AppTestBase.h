@@ -2,15 +2,15 @@
 
 #include <memory>
 
+#include "App/Application.h"
 #include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/TestContext.h"
 
 // This is a base class for any test that requies an Application instance.
 class AppTestBase : public SceneTestBase {
  protected:
-    // TestContext used for the session.
-    TestContext context;
+    // Application::Context used for the session.
+    Application::Context context;
 
     AppTestBase();
     ~AppTestBase();

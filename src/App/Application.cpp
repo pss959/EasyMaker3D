@@ -69,7 +69,6 @@
 #include "SG/TextNode.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
-#include "Tests/TestContext.h"
 #include "Tools/FindTools.h"
 #include "Tools/Tool.h"
 #include "Util/Assert.h"
@@ -119,7 +118,7 @@ class  Application::Impl_ {
     void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
 
     void SetTestingFlag() { is_testing_ = true; }
-    void GetTestContext(TestContext &tc);
+    const Context & GetContext() const { return context_; }
     void SetAskBeforeQuitting(bool ask) { ask_before_quitting_ = ask; }
     void AddEmitter(const IEmitterPtr &emitter);
     Vector2i GetWindowSize() const;
@@ -152,27 +151,11 @@ class  Application::Impl_ {
     /// The ToolBox.
     ToolBoxPtr          tool_box_;
 
-    /// \name Managers.
-    ///@{
-    ActionProcessorPtr  action_processor_;
-    AnimationManagerPtr animation_manager_;
-    BoardManagerPtr     board_manager_;
-    ClipboardManagerPtr clipboard_manager_;
-    CommandManagerPtr   command_manager_;
-    EventManagerPtr     event_manager_;
-    FeedbackManagerPtr  feedback_manager_;
-    NameManagerPtr      name_manager_;
-    PanelManagerPtr     panel_manager_;
-    PrecisionStorePtr precision_store_;
-    SelectionManagerPtr selection_manager_;
-    SessionManagerPtr   session_manager_;
-    SettingsManagerPtr  settings_manager_;
-    TargetManagerPtr    target_manager_;
-    ///@}
+    /// Context with managers and SceneContext.
+    Context             context_;
 
-    /// \name Various Contexts.
+    /// \name Other Contexts.
     ///@{
-    SceneContextPtr            scene_context_;
     Tool::ContextPtr           tool_context_;
     std::unique_ptr<VRContext> vr_context_;
     ///@}
@@ -362,15 +345,21 @@ class  Application::Impl_ {
 // Application::Impl_ functions.
 // ----------------------------------------------------------------------------
 
+// Shorthand. E.g., MGR_(Session) => context_.session_manager_.
+#define MGR_(NAME) context_.NAME ## _manager
+#define AP_        context_.action_processor
+#define SC_        context_.scene_context
+#define PREC_      context_.precision_store
+
 Application::Impl_::Impl_() : loader_(new SceneLoader) {
 }
 
 Application::Impl_::~Impl_() {
     // Do nothing if Init() failed.
-    if (! scene_context_->scene)
+    if (! SC_->scene)
         return;
 
-    event_manager_->ClearHandlers();
+    MGR_(event)->ClearHandlers();
     viewers_.clear();
     emitters_.clear();
 
@@ -379,7 +368,7 @@ Application::Impl_::~Impl_() {
     Debug::ShutDown();
 #endif
     view_handler_.reset();
-    scene_context_.reset();
+    SC_.reset();
     renderer_.reset();
     vr_context_.reset();
     glfw_viewer_.reset();
@@ -394,7 +383,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
 
     // Make sure the scene loads properly and has all of the necessary items
     // (in the SceneContext) before doing anything else.
-    scene_context_.reset(new SceneContext);
+    SC_.reset(new SceneContext);
     const FilePath scene_path =
         FilePath::GetResourcePath("scenes", "workshop" + TK::kDataFileSuffix);
     SG::ScenePtr scene = loader_->LoadScene(scene_path);
@@ -404,9 +393,9 @@ bool Application::Impl_::Init(const Application::Options &options) {
 #endif
         return false;
     }
-    scene_context_->FillFromScene(scene, true);
+    SC_->FillFromScene(scene, true);
 #if ENABLE_DEBUG_FEATURES
-    Debug::SetSceneContext(scene_context_);
+    Debug::SetSceneContext(SC_);
 #endif
 
     if (! is_testing_) {
@@ -432,9 +421,9 @@ bool Application::Impl_::Init(const Application::Options &options) {
     tooltip_func_ = [&](Widget &widget, const std::string &text, bool show){
         const std::string key = Util::ToString(&widget);
         if (show) {
-            auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
+            auto tf = MGR_(feedback)->ActivateWithKey<TooltipFeedback>(key);
             tf->SetText(text);
-            auto tpath = SG::FindNodePathInScene(*scene_context_->scene, *tf);
+            auto tpath = SG::FindNodePathInScene(*SC_->scene, *tf);
             // Object coordinates for the tooltip object are the same as world
             // coordinates except for the scale applied to the tooltip object,
             // so just scale the size.
@@ -444,7 +433,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
             tf->SetRotation(ComputeTooltipRotation_());
         }
         else {
-            feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
+            MGR_(feedback)->DeactivateWithKey<TooltipFeedback>(key);
         }
     };
 
@@ -455,8 +444,8 @@ bool Application::Impl_::Init(const Application::Options &options) {
     InitInteraction_();
 
     // Install things...
-    main_handler_->SetPrecisionStore(precision_store_);
-    shortcut_handler_->SetActionAgent(action_processor_);
+    main_handler_->SetPrecisionStore(PREC_);
+    shortcut_handler_->SetActionAgent(AP_);
 
     ConnectSceneInteraction_();
 
@@ -465,12 +454,12 @@ bool Application::Impl_::Init(const Application::Options &options) {
     const FilePath path("shortcuts.txt");
     std::string errors;
     if (! shortcut_handler_->AddCustomShortcutsFromFile(path, errors)) {
-        auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
+        auto dp = MGR_(board)->GetTypedPanel<DialogPanel>("DialogPanel");
         dp->SetMessage("Error in custom shortcut file:\n" + errors);
         dp->SetSingleResponse("OK");
-        auto board = scene_context_->app_board;
+        auto board = SC_->app_board;
         board->SetPanel(dp, [&](const std::string &){ TryQuit_(); });
-        board_manager_->ShowBoard(board, true);
+        MGR_(board)->ShowBoard(board, true);
         return true;  // Continue so that the user sees the message.
     }
 
@@ -478,7 +467,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
         ShowInitialPanel_();
 
     // Tell the ActionProcessor how to quit.
-    action_processor_->SetQuitFunc([&]{ TryQuit_(); });
+    AP_->SetQuitFunc([&]{ TryQuit_(); });
 
     return true;
 }
@@ -495,23 +484,23 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     UpdateGlobalUniforms_();
 
     // Update everything that needs it.
-    main_handler_->SetTouchable(board_manager_->GetCurrentBoard());
+    main_handler_->SetTouchable(MGR_(board)->GetCurrentBoard());
     main_handler_->ProcessUpdate(is_modified_mode);
     tool_context_->is_modified_mode = is_modified_mode;
 
-    action_processor_->ProcessUpdate();
+    AP_->ProcessUpdate();
 
     // Process any animations. Do this after updating the MainHandler
     // because a click timeout may start an animation.
-    animation_manager_->ProcessUpdate();
+    MGR_(animation)->ProcessUpdate();
 
     // Enable or disable all icon widgets and update tooltips.
     UpdateIcons_();
 
     // If an application panel is visible, hide the scene and disable
     // application shortcuts (main app only).
-    const bool is_app_panel_shown = scene_context_->app_board->IsShown();
-    scene_context_->work_hider->SetEnabled(! is_app_panel_shown);
+    const bool is_app_panel_shown = SC_->app_board->IsShown();
+    SC_->work_hider->SetEnabled(! is_app_panel_shown);
     if (Util::is_in_main_app)
         shortcut_handler_->SetAppShortcutsEnabled(! is_app_panel_shown);
 
@@ -519,11 +508,11 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     // ToolBoard is active.
     const bool in_touch_mode =
         force_touch_mode_on_ ||
-        scene_context_->app_board->IsShown() ||
-        scene_context_->key_board->IsShown() ||
-        scene_context_->tool_board->IsShown();
-    scene_context_->left_controller->SetTouchMode(in_touch_mode);
-    scene_context_->right_controller->SetTouchMode(in_touch_mode);
+        SC_->app_board->IsShown() ||
+        SC_->key_board->IsShown() ||
+        SC_->tool_board->IsShown();
+    SC_->left_controller->SetTouchMode(in_touch_mode);
+    SC_->right_controller->SetTouchMode(in_touch_mode);
 
     // Emit and process Events. This returns false if the application
     // should quit because the window was closed.
@@ -531,8 +520,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
         TryQuit_();
 
     // Update the TreePanel.
-    scene_context_->tree_panel->SetSessionString(
-        session_manager_->GetSessionString());
+    SC_->tree_panel->SetSessionString(MGR_(session)->GetSessionString());
 
     // Update the current tool if there is one and it is attached to a Model.
     // Do this after processing events so the world is up to date.
@@ -547,7 +535,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     // Render to all viewers.
     for (auto &viewer: viewers_) {
         KLOG('R', "Render to " << Util::Demangle(typeid(*viewer).name()));
-        viewer->Render(*scene_context_->scene, *renderer_);
+        viewer->Render(*SC_->scene, *renderer_);
     }
 
     renderer_->EndFrame();
@@ -556,14 +544,14 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
 }
 
 void Application::Impl_::ReloadScene() {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
+    ASSERT(SC_);
+    ASSERT(SC_->scene);
 
-    name_manager_->Reset();
-    event_manager_->Reset();
-    panel_manager_->Reset();
-    selection_manager_->Reset();
-    command_manager_->ResetCommandList();
+    MGR_(name)->Reset();
+    MGR_(event)->Reset();
+    MGR_(panel)->Reset();
+    MGR_(selection)->Reset();
+    MGR_(command)->ResetCommandList();
     tool_box_->ClearTools();
     Model::ResetColors();
 
@@ -573,8 +561,8 @@ void Application::Impl_::ReloadScene() {
 
     try {
         SG::ScenePtr scene =
-            loader_->LoadScene(scene_context_->scene->GetPath());
-        scene_context_->FillFromScene(scene, true);
+            loader_->LoadScene(SC_->scene->GetPath());
+        SC_->FillFromScene(scene, true);
         ConnectSceneInteraction_();
         view_handler_->ResetView();
         renderer_->Reset(*scene);
@@ -597,8 +585,8 @@ void Application::Impl_::SaveCrashSession(
 
     // Save the session to the crash file if possible. If the problem happens
     // before a successful init, just save the stack.
-    if (session_manager_) {
-        session_manager_->SaveSessionWithComments(path, comments);
+    if (MGR_(session)) {
+        MGR_(session)->SaveSessionWithComments(path, comments);
     }
     else {
         std::ofstream out(path.ToNativeString());
@@ -609,19 +597,6 @@ void Application::Impl_::SaveCrashSession(
         }
     }
     std::cerr << "*** Saved crash session to " << path.ToString() << "\n";
-}
-
-void Application::Impl_::GetTestContext(TestContext &tc) {
-    // This should not be called before Init().
-    ASSERT(session_manager_);
-    ASSERT(scene_context_);
-    tc.action_processor  = action_processor_;
-    tc.command_manager   = command_manager_;
-    tc.panel_manager     = panel_manager_;
-    tc.selection_manager = selection_manager_;
-    tc.session_manager   = session_manager_;
-    tc.settings_manager  = settings_manager_;
-    tc.scene_context     = scene_context_;
 }
 
 void Application::Impl_::AddEmitter(const IEmitterPtr &emitter) {
@@ -687,43 +662,43 @@ void Application::Impl_::InitManagers_() {
     ASSERT(main_handler_);
     ASSERT(tool_context_);
 
-    animation_manager_.reset(new AnimationManager);
-    clipboard_manager_.reset(new ClipboardManager);
-    feedback_manager_.reset(new FeedbackManager);
-    command_manager_.reset(new CommandManager);
-    event_manager_.reset(new EventManager);
-    name_manager_.reset(new NameManager);
-    panel_manager_.reset(new PanelManager);
-    precision_store_.reset(new PrecisionStore);
-    selection_manager_.reset(new SelectionManager);
-    settings_manager_.reset(new SettingsManager);
+    MGR_(animation).reset(new AnimationManager);
+    MGR_(clipboard).reset(new ClipboardManager);
+    MGR_(feedback).reset(new FeedbackManager);
+    MGR_(command).reset(new CommandManager);
+    MGR_(event).reset(new EventManager);
+    MGR_(name).reset(new NameManager);
+    MGR_(panel).reset(new PanelManager);
+    PREC_.reset(new PrecisionStore);
+    MGR_(selection).reset(new SelectionManager);
+    MGR_(settings).reset(new SettingsManager);
 
     // Managers that depend on others.
-    board_manager_.reset(new BoardManager(panel_manager_));
-    target_manager_.reset(new TargetManager(command_manager_));
-    tool_box_.reset(new ToolBox(*target_manager_));
+    MGR_(board).reset(new BoardManager(MGR_(panel)));
+    MGR_(target).reset(new TargetManager(MGR_(command)));
+    tool_box_.reset(new ToolBox(*MGR_(target)));
 
-    settings_manager_->SetChangeFunc(
+    MGR_(settings)->SetChangeFunc(
         [&](const Settings &settings){ SettingsChanged_(settings); });
 
     // Add all handlers to the EventManager. Order here is extremely
     // important, since Handlers are passed events in this order.
     // LogHandler has to be first so it can log all events.
-    event_manager_->AddHandler(log_handler_);
+    MGR_(event)->AddHandler(log_handler_);
 #if ENABLE_DEBUG_FEATURES
-    event_manager_->AddHandler(drag_rect_handler_);
+    MGR_(event)->AddHandler(drag_rect_handler_);
 #endif
     // ControllerHandler just updates controller position, so it needs all
     // controller events.
     if (IsVREnabled() || options_.enable_vr)
-        event_manager_->AddHandler(controller_handler_);
+        MGR_(event)->AddHandler(controller_handler_);
     // InspectorHandler traps most events when active.
-    event_manager_->AddHandler(inspector_handler_);
+    MGR_(event)->AddHandler(inspector_handler_);
     // Board Handler needs to process keyboard events before others.
-    event_manager_->AddHandler(board_handler_);
-    event_manager_->AddHandler(shortcut_handler_);
-    event_manager_->AddHandler(view_handler_);
-    event_manager_->AddHandler(main_handler_);
+    MGR_(event)->AddHandler(board_handler_);
+    MGR_(event)->AddHandler(shortcut_handler_);
+    MGR_(event)->AddHandler(view_handler_);
+    MGR_(event)->AddHandler(main_handler_);
 
 #if ENABLE_DEBUG_FEATURES
     Debug::SetLogHandler(log_handler_);
@@ -731,50 +706,49 @@ void Application::Impl_::InitManagers_() {
 
     // The ActionProcessor requires its own context.
     action_context_.reset(new ActionProcessor::Context);
-    action_context_->scene_context     = scene_context_;
+    action_context_->scene_context     = SC_;
     action_context_->tool_box          = tool_box_;
-    action_context_->board_manager     = board_manager_;
-    action_context_->clipboard_manager = clipboard_manager_;
-    action_context_->command_manager   = command_manager_;
-    action_context_->name_manager      = name_manager_;
-    action_context_->precision_store = precision_store_;
-    action_context_->selection_manager = selection_manager_;
-    action_context_->settings_manager  = settings_manager_;
-    action_context_->target_manager    = target_manager_;
+    action_context_->board_manager     = MGR_(board);
+    action_context_->clipboard_manager = MGR_(clipboard);
+    action_context_->command_manager   = MGR_(command);
+    action_context_->name_manager      = MGR_(name);
+    action_context_->precision_store   = PREC_;
+    action_context_->selection_manager = MGR_(selection);
+    action_context_->settings_manager  = MGR_(settings);
+    action_context_->target_manager    = MGR_(target);
     action_context_->main_handler      = main_handler_;
-    action_processor_.reset(new ActionProcessor(action_context_));
-    action_processor_->SetReloadFunc([&]() { ReloadScene(); });
+    AP_.reset(new ActionProcessor(action_context_));
+    AP_->SetReloadFunc([&]() { ReloadScene(); });
 
     // Initialize the SessionManager with the previous session path.
-    const auto path = settings_manager_->GetSettings().GetLastSessionPath();
-    session_manager_.reset(
-        new SessionManager(action_processor_, command_manager_,
-                           selection_manager_, path));
+    const auto path = MGR_(settings)->GetSettings().GetLastSessionPath();
+    MGR_(session).reset(new SessionManager(AP_, MGR_(command),
+                                           MGR_(selection), path));
 
 #if ENABLE_DEBUG_FEATURES
-    Debug::SetCommandList(command_manager_->GetCommandList());
+    Debug::SetCommandList(MGR_(command)->GetCommandList());
 #endif
 }
 
 void Application::Impl_::InitExecutors_() {
-    ASSERT(command_manager_);
+    ASSERT(MGR_(command));
 
     executors_ = InitExecutors();
 
     exec_context_.reset(new Executor::Context);
-    exec_context_->animation_manager = animation_manager_;
-    exec_context_->clipboard_manager = clipboard_manager_;
-    exec_context_->command_manager   = command_manager_;
-    exec_context_->name_manager      = name_manager_;
-    exec_context_->selection_manager = selection_manager_;
-    exec_context_->settings_manager  = settings_manager_;
-    exec_context_->target_manager    = target_manager_;
+    exec_context_->animation_manager = MGR_(animation);
+    exec_context_->clipboard_manager = MGR_(clipboard);
+    exec_context_->command_manager   = MGR_(command);
+    exec_context_->name_manager      = MGR_(name);
+    exec_context_->selection_manager = MGR_(selection);
+    exec_context_->settings_manager  = MGR_(settings);
+    exec_context_->target_manager    = MGR_(target);
     exec_context_->tooltip_func      = tooltip_func_;
     for (auto &exec: executors_) {
         exec->SetContext(exec_context_);
         auto func = [exec](Command &cmd,
                            Command::Op op){ exec->Execute(cmd, op); };
-        command_manager_->RegisterFunction(exec->GetCommandTypeName(), func);
+        MGR_(command)->RegisterFunction(exec->GetCommandTypeName(), func);
     }
 }
 
@@ -782,12 +756,12 @@ void Application::Impl_::InitToolContext_() {
     ASSERT(tool_box_);
     ASSERT(tool_context_);
 
-    tool_context_->board_manager     = board_manager_;
-    tool_context_->command_manager   = command_manager_;
-    tool_context_->feedback_manager  = feedback_manager_;
-    tool_context_->precision_store   = precision_store_;
-    tool_context_->settings_manager  = settings_manager_;
-    tool_context_->target_manager    = target_manager_;
+    tool_context_->board_manager     = MGR_(board);
+    tool_context_->command_manager   = MGR_(command);
+    tool_context_->feedback_manager  = MGR_(feedback);
+    tool_context_->precision_store   = PREC_;
+    tool_context_->settings_manager  = MGR_(settings);
+    tool_context_->target_manager    = MGR_(target);
 }
 
 void Application::Impl_::InitInteraction_() {
@@ -796,7 +770,7 @@ void Application::Impl_::InitInteraction_() {
     // Set up scroll wheel interaction.
     auto scroll = [&](Event::Device dev, float value){
         if (dev == Event::Device::kMouse)
-            scene_context_->stage->ApplyScaleChange(.1f * value);
+            SC_->stage->ApplyScaleChange(.1f * value);
     };
 
     main_handler_->GetValuatorChanged().AddObserver(this, scroll);
@@ -804,91 +778,91 @@ void Application::Impl_::InitInteraction_() {
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
 
     // Detect selection changes to update the ToolBox.
-    selection_manager_->GetSelectionChanged().AddObserver(
+    MGR_(selection)->GetSelectionChanged().AddObserver(
         this, [&](const Selection &sel, SelectionManager::Operation op){
             SelectionChanged_(sel, op); });
 }
 
 void Application::Impl_::ConnectSceneInteraction_() {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
+    ASSERT(SC_);
+    ASSERT(SC_->scene);
 
     // Use the frustum from the GLFWViewer.
     if (glfw_viewer_)
-        scene_context_->frustum = glfw_viewer_->GetFrustum();
+        SC_->frustum = glfw_viewer_->GetFrustum();
     else
-        scene_context_->frustum.reset(new Frustum);
+        SC_->frustum.reset(new Frustum);
 
-    board_manager_->SetFrustum(scene_context_->frustum);
+    MGR_(board)->SetFrustum(SC_->frustum);
 
-    auto &scene = *scene_context_->scene;
+    auto &scene = *SC_->scene;
 
     // Tell the ActionProcessor::Context about the new Scene.
-    action_context_->scene_context = scene_context_;
+    action_context_->scene_context = SC_;
 
     // Tell the SelectionManager and Executor::Context about the new RootModel.
-    selection_manager_->SetRootModel(scene_context_->root_model);
-    exec_context_->root_model = scene_context_->root_model;
+    MGR_(selection)->SetRootModel(SC_->root_model);
+    exec_context_->root_model = SC_->root_model;
 
     // Set up the Panel::Context and let the PanelManager find the new Panel
     // instances.
     if (! panel_context_) {
         panel_context_.reset(new Panel::Context);
-        panel_context_->action_agent     = action_processor_;
-        panel_context_->name_agent       = name_manager_;
-        panel_context_->selection_agent  = selection_manager_;
-        panel_context_->session_agent    = session_manager_;
-        panel_context_->settings_agent   = settings_manager_;
-        panel_context_->board_agent      = board_manager_;
+        panel_context_->action_agent     = AP_;
+        panel_context_->name_agent       = MGR_(name);
+        panel_context_->selection_agent  = MGR_(selection);
+        panel_context_->session_agent    = MGR_(session);
+        panel_context_->settings_agent   = MGR_(settings);
+        panel_context_->board_agent      = MGR_(board);
         panel_context_->virtual_keyboard = virtual_keyboard_;
     }
-    panel_manager_->FindAllPanels(scene, panel_context_);
+    MGR_(panel)->FindAllPanels(scene, panel_context_);
 
     // The TreePanel does not go through the PanelManager, so set it up.
-    scene_context_->tree_panel->SetContext(panel_context_);
+    SC_->tree_panel->SetContext(panel_context_);
 
     // Set up the VirtualKeyboard so that it can make itself visible.
     if (virtual_keyboard_)
         virtual_keyboard_->SetShowHideFunc([&](bool is_shown){
-            board_manager_->ShowBoard(scene_context_->key_board, is_shown);
+            MGR_(board)->ShowBoard(SC_->key_board, is_shown);
         });
 
-    inspector_handler_->SetInspector(scene_context_->inspector);
+    inspector_handler_->SetInspector(SC_->inspector);
 
 #if ENABLE_DEBUG_FEATURES
-    drag_rect_handler_->SetFrustum(scene_context_->frustum);
-    drag_rect_handler_->SetRect(scene_context_->debug_rect);
+    drag_rect_handler_->SetFrustum(SC_->frustum);
+    drag_rect_handler_->SetRect(SC_->debug_rect);
 #endif
-    board_handler_->AddBoard(scene_context_->key_board);
-    board_handler_->AddBoard(scene_context_->app_board);
-    board_handler_->AddBoard(scene_context_->tool_board);
+    board_handler_->AddBoard(SC_->key_board);
+    board_handler_->AddBoard(SC_->app_board);
+    board_handler_->AddBoard(SC_->tool_board);
 
     MainHandler::Context mc;
-    mc.scene            = scene_context_->scene;
-    mc.frustum          = scene_context_->frustum;
-    mc.path_to_stage    = scene_context_->path_to_stage;
-    mc.left_controller  = scene_context_->left_controller;
-    mc.right_controller = scene_context_->right_controller;
-    mc.debug_sphere     = scene_context_->debug_sphere;
+    mc.scene            = SC_->scene;
+    mc.frustum          = SC_->frustum;
+    mc.path_to_stage    = SC_->path_to_stage;
+    mc.left_controller  = SC_->left_controller;
+    mc.right_controller = SC_->right_controller;
+    mc.debug_sphere     = SC_->debug_sphere;
     main_handler_->SetContext(mc);
 
-    target_manager_->SetPathToStage(scene_context_->path_to_stage);
+    MGR_(target)->SetPathToStage(SC_->path_to_stage);
 
     // Inform the viewers and ViewHandler about the cameras in the scene.
     if (! is_testing_) {
-        view_handler_->SetCamera(scene_context_->window_camera);
-        glfw_viewer_->SetCamera(scene_context_->window_camera);
+        view_handler_->SetCamera(SC_->window_camera);
+        glfw_viewer_->SetCamera(SC_->window_camera);
         if (IsVREnabled())
-            vr_viewer_->SetCamera(scene_context_->vr_camera);
+            vr_viewer_->SetCamera(SC_->vr_camera);
 
         // Store the current camera position in the Tool::Context.
         tool_context_->camera_position =
-            scene_context_->window_camera->GetCurrentPosition();
+            SC_->window_camera->GetCurrentPosition();
     }
 
     // Set Nodes in the Controllers.
-    auto lc = scene_context_->left_controller;
-    auto rc = scene_context_->right_controller;
+    auto lc = SC_->left_controller;
+    auto rc = SC_->right_controller;
     ASSERT(lc);
     ASSERT(rc);
     lc->SetHand(Hand::kLeft);
@@ -932,7 +906,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     AddGrippables_();
 
     // Set up targets in the TargetManager.
-    target_manager_->InitTargets(
+    MGR_(target)->InitTargets(
         SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"),
         SG::FindTypedNodeInScene<EdgeTargetWidget>(scene, "EdgeTarget"));
 
@@ -941,43 +915,43 @@ void Application::Impl_::ConnectSceneInteraction_() {
         SG::FindTypedNodeInScene<PushButtonWidget>(scene, "ExitSign");
     exit_sign->GetClicked().AddObserver(
         this, [this](const ClickInfo &){
-            action_processor_->ApplyAction(Action::kQuit);
+            AP_->ApplyAction(Action::kQuit);
         });
     InitTooltip_(*exit_sign);
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
     wall_board->SetPanelScale(TK::kPanelToWorldScale * 4);  // Far away.
-    wall_board->SetPanel(scene_context_->tree_panel);
-    board_manager_->ShowBoard(wall_board, true);
+    wall_board->SetPanel(SC_->tree_panel);
+    MGR_(board)->ShowBoard(wall_board, true);
 
     // Set up the other boards for touch mode if in VR or faking it.
     if (IsVREnabled() || options_.set_up_touch) {
-        scene_context_->key_board->SetPanel(scene_context_->keyboard_panel);
+        SC_->key_board->SetPanel(SC_->keyboard_panel);
 
-        const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
-        scene_context_->app_board->SetUpForTouch(cam_pos);
-        scene_context_->tool_board->SetUpForTouch(cam_pos);
-        scene_context_->key_board->SetUpForTouch(cam_pos);
+        const Point3f cam_pos = SC_->vr_camera->GetCurrentPosition();
+        SC_->app_board->SetUpForTouch(cam_pos);
+        SC_->tool_board->SetUpForTouch(cam_pos);
+        SC_->key_board->SetUpForTouch(cam_pos);
     }
 
     // Set up the stage.
-    scene_context_->stage->GetClicked().AddObserver(
+    SC_->stage->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
             StartResetStage_(info.is_modified_mode); });
 
     // Set up the height pole and slider.
-    scene_context_->height_pole->GetClicked().AddObserver(
+    SC_->height_pole->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
             StartResetHeight_(info.is_modified_mode); });
-    scene_context_->height_slider->GetClicked().AddObserver(
+    SC_->height_slider->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
             StartResetHeight_(info.is_modified_mode); });
-    scene_context_->height_slider->GetValueChanged().AddObserver(
+    SC_->height_slider->GetValueChanged().AddObserver(
         this, [&](Widget &w, const float &val){
-            scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
-    InitTooltip_(*scene_context_->height_pole);
-    InitTooltip_(*scene_context_->height_slider);
+            SC_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
+    InitTooltip_(*SC_->height_pole);
+    InitTooltip_(*SC_->height_slider);
     // Set up the radial menus.
     InitRadialMenus_();
 
@@ -987,7 +961,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         SG::Node::Flag::kSearch, false);
 
     // Simulate a change in settings to update everything.
-    SettingsChanged_(settings_manager_->GetSettings());
+    SettingsChanged_(MGR_(settings)->GetSettings());
 }
 
 void Application::Impl_::ReplaceControllerModel_(Hand hand) {
@@ -995,30 +969,30 @@ void Application::Impl_::ReplaceControllerModel_(Hand hand) {
     Controller::CustomModel model;
     if (vr_context_->LoadControllerModel(hand, model)) {
         auto &controller = hand == Hand::kLeft ?
-            *scene_context_->left_controller :
-            *scene_context_->right_controller;
+            *SC_->left_controller :
+            *SC_->right_controller;
         controller.UseCustomModel(model);
     }
 }
 
 void Application::Impl_::AddBoards_() {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->app_board);
-    ASSERT(scene_context_->key_board);
-    ASSERT(scene_context_->tool_board);
+    ASSERT(SC_);
+    ASSERT(SC_->app_board);
+    ASSERT(SC_->key_board);
+    ASSERT(SC_->tool_board);
 
-    tool_context_->board = scene_context_->tool_board;
+    tool_context_->board = SC_->tool_board;
 
     // Set a reasonable position for the AppBoard when not in VR.
-    scene_context_->app_board->SetPosition(
+    SC_->app_board->SetPosition(
         Point3f(0, TK::kAppBoardHeight, 0));
 
     // Install a path filter in the MainHandler that disables interaction with
     // other widgets when the KeyBoard or AppBoard is visible.
     ASSERT(main_handler_);
     auto filter = [&](const SG::NodePath &path){
-        auto &kb = scene_context_->key_board;
-        auto &ab = scene_context_->app_board;
+        auto &kb = SC_->key_board;
+        auto &ab = SC_->app_board;
         return (kb->IsShown() ? Util::Contains(path, kb) :
                 ab->IsShown() ? Util::Contains(path, ab) : true);
     };
@@ -1027,12 +1001,12 @@ void Application::Impl_::AddBoards_() {
 
 void Application::Impl_::AddTools_() {
     ASSERT(tool_box_);
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
+    ASSERT(SC_);
+    ASSERT(SC_->scene);
 
-    tool_context_->root_model = scene_context_->root_model;
+    tool_context_->root_model = SC_->root_model;
 
-    SG::Scene &scene = *scene_context_->scene;
+    SG::Scene &scene = *SC_->scene;
     auto path_to_parent = SG::FindNodePathInScene(scene, "ToolParent");
     tool_box_->ClearTools();
     tool_box_->SetParentNode(path_to_parent.back());
@@ -1048,30 +1022,30 @@ void Application::Impl_::AddTools_() {
 }
 
 void Application::Impl_::AddFeedback_() {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
-    ASSERT(feedback_manager_);
+    ASSERT(SC_);
+    ASSERT(SC_->scene);
+    ASSERT(MGR_(feedback));
 
-    SG::Scene &scene = *scene_context_->scene;
+    SG::Scene &scene = *SC_->scene;
 
     const SG::NodePtr world_fb_parent =
         SG::FindNodeInScene(scene, "WorldFeedbackParent");
     const SG::NodePtr stage_fb_parent =
         SG::FindNodeInScene(scene, "StageFeedbackParent");
-    feedback_manager_->Reset();
-    feedback_manager_->SetParentNodes(world_fb_parent, stage_fb_parent);
-    feedback_manager_->SetSceneBoundsFunc([this](){
-        return scene_context_->root_model->GetBounds(); });
-    feedback_manager_->SetPathToStage(scene_context_->path_to_stage);
+    MGR_(feedback)->Reset();
+    MGR_(feedback)->SetParentNodes(world_fb_parent, stage_fb_parent);
+    MGR_(feedback)->SetSceneBoundsFunc([this](){
+        return SC_->root_model->GetBounds(); });
+    MGR_(feedback)->SetPathToStage(SC_->path_to_stage);
 
     for (auto &fb: FindFeedback(*scene.GetRootNode()))
-        feedback_manager_->AddOriginal<Feedback>(fb);
+        MGR_(feedback)->AddOriginal<Feedback>(fb);
 }
 
 void Application::Impl_::AddIcons_() {
-    ASSERT(action_processor_);
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
+    ASSERT(AP_);
+    ASSERT(SC_);
+    ASSERT(SC_->scene);
 
     icons_.clear();
 
@@ -1085,7 +1059,7 @@ void Application::Impl_::AddIcons_() {
     }
 
     // Set up the icons on the shelves.
-    SG::Scene &scene = *scene_context_->scene;
+    SG::Scene &scene = *SC_->scene;
     const SG::NodePtr shelves = SG::FindNodeInScene(scene, "Shelves");
     for (const auto &child: shelves->GetChildren()) {
         const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
@@ -1095,13 +1069,13 @@ void Application::Impl_::AddIcons_() {
     }
 
     // PrecisionControl is a special case.
-    Util::AppendVector(scene_context_->precision_control->GetIcons(), icons_);
+    Util::AppendVector(SC_->precision_control->GetIcons(), icons_);
 
     // Set up actions and tooltips for all icons.
     for (const auto &icon: icons_) {
         icon->GetClicked().AddObserver(
             this, [&](const ClickInfo &){
-                action_processor_->ApplyAction(icon->GetAction());});
+                AP_->ApplyAction(icon->GetAction());});
         InitTooltip_(*icon);
     }
 
@@ -1115,38 +1089,38 @@ void Application::Impl_::AddGrippables_() {
     auto add_grippable = [&](const GrippablePtr &grippable){
         // Each Grippable needs to have its path set so it can convert target
         // points to world coordinates.
-        SG::Scene &scene = *scene_context_->scene;
+        SG::Scene &scene = *SC_->scene;
         grippable->SetPath(SG::FindNodePathInScene(scene, *grippable));
         main_handler_->AddGrippable(grippable);
     };
 
-    add_grippable(scene_context_->key_board);
-    add_grippable(scene_context_->app_board);
-    add_grippable(scene_context_->tool_board);
+    add_grippable(SC_->key_board);
+    add_grippable(SC_->app_board);
+    add_grippable(SC_->tool_board);
     add_grippable(tool_box_);
 }
 
 void Application::Impl_::InitRadialMenus_() {
     // This is called when a RadialMenu button is clicked.
     auto apply = [&](size_t index, Action action){
-        if (action_processor_->CanApplyAction(action))
-            action_processor_->ApplyAction(action);
+        if (AP_->CanApplyAction(action))
+            AP_->ApplyAction(action);
     };
-    const auto &lrmenu = scene_context_->left_radial_menu;
-    const auto &rrmenu = scene_context_->right_radial_menu;
+    const auto &lrmenu = SC_->left_radial_menu;
+    const auto &rrmenu = SC_->right_radial_menu;
     lrmenu->GetButtonClicked().AddObserver(this, apply);
     rrmenu->GetButtonClicked().AddObserver(this, apply);
 
     // Attach the RadialMenu instances to the controllers in case they become
     // visible.
-    scene_context_->left_controller->AttachRadialMenu(lrmenu);
-    scene_context_->right_controller->AttachRadialMenu(rrmenu);
+    SC_->left_controller->AttachRadialMenu(lrmenu);
+    SC_->right_controller->AttachRadialMenu(rrmenu);
 
     // If in VR, turn off the RadialMenu parent in the room, since the menus
     // will be attached to the controllers.
     if (IsVREnabled()) {
         const auto parent =
-            SG::FindNodeInScene(*scene_context_->scene, "RadialMenus");
+            SG::FindNodeInScene(*SC_->scene, "RadialMenus");
         parent->SetEnabled(false);
     }
 
@@ -1155,7 +1129,7 @@ void Application::Impl_::InitRadialMenus_() {
 
 void Application::Impl_::ShowInitialPanel_() {
     // Show the SessionPanel.
-    action_processor_->ApplyAction(Action::kOpenSessionPanel);
+    AP_->ApplyAction(Action::kOpenSessionPanel);
 }
 
 void Application::Impl_::InitTooltip_(Widget &widget) {
@@ -1184,30 +1158,30 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
         // Nothing to do in this case.
         break;
     }
-    scene_context_->tree_panel->ModelsChanged();
+    SC_->tree_panel->ModelsChanged();
 }
 
 void Application::Impl_::SettingsChanged_(const Settings &settings) {
     TooltipFeedback::SetDelay(settings.GetTooltipDelay());
 
-    scene_context_->left_radial_menu->UpdateFromInfo(
+    SC_->left_radial_menu->UpdateFromInfo(
         settings.GetLeftRadialMenuInfo());
-    scene_context_->right_radial_menu->UpdateFromInfo(
+    SC_->right_radial_menu->UpdateFromInfo(
         settings.GetRightRadialMenuInfo());
 
     /// Update the build volume size.
     const auto &bv_size = settings.GetBuildVolumeSize();
-    scene_context_->build_volume->SetSize(bv_size);
+    SC_->build_volume->SetSize(bv_size);
 
     /// Update the stage radius based on the build volume size.
     const float stage_radius =
         TK::kStageRadiusFraction * std::max(bv_size[0], bv_size[2]);
-    scene_context_->stage->SetStageRadius(stage_radius);
+    SC_->stage->SetStageRadius(stage_radius);
 }
 
 void Application::Impl_::UpdateIcons_() {
     auto is_enabled = [&](Action action){
-        return action_processor_->CanApplyAction(action); };
+        return AP_->CanApplyAction(action); };
 
     for (auto &icon: icons_) {
         ASSERT(icon);
@@ -1216,14 +1190,14 @@ void Application::Impl_::UpdateIcons_() {
         icon->SetInteractionEnabled(enabled);
 
         const Action action = icon->GetAction();
-        icon->SetTooltipText(action_processor_->GetActionTooltip(action));
+        icon->SetTooltipText(AP_->GetActionTooltip(action));
 
         if (enabled && icon->IsToggle())
-            icon->SetToggleState(action_processor_->GetToggleState(action));
+            icon->SetToggleState(AP_->GetToggleState(action));
     }
 
     // Special case for the ToggleSpecializedToolIcon.
-    const auto &sel = selection_manager_->GetSelection();
+    const auto &sel = MGR_(selection)->GetSelection();
     const auto tool = tool_box_->GetSpecializedToolForSelection(sel);
     const std::string tool_name = tool ? tool->GetTypeName() : "Null";
     toggle_specialized_tool_icon_->SetIndexByName(tool_name + "Icon");
@@ -1231,24 +1205,24 @@ void Application::Impl_::UpdateIcons_() {
         tool_box_->IsUsingSpecializedTool());
 
     // Also update RadialMenu widgets.
-    if (scene_context_->left_radial_menu->IsEnabled())
-        scene_context_->left_radial_menu->EnableButtons(is_enabled);
-    if (scene_context_->right_radial_menu->IsEnabled())
-        scene_context_->right_radial_menu->EnableButtons(is_enabled);
+    if (SC_->left_radial_menu->IsEnabled())
+        SC_->left_radial_menu->EnableButtons(is_enabled);
+    if (SC_->right_radial_menu->IsEnabled())
+        SC_->right_radial_menu->EnableButtons(is_enabled);
 }
 
 void Application::Impl_::UpdateGlobalUniforms_() {
     // Get the current world-to-stage matrix.
     const auto wsm =
-        SG::CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
+        SG::CoordConv(SC_->path_to_stage).GetRootToObjectMatrix();
 
     // Get the build volume size. Note that an inactive build volume is
     // indicated by a zero size.
-    const auto &bv = *scene_context_->build_volume;
+    const auto &bv = *SC_->build_volume;
     Vector3f bv_size = bv.IsActive() ? bv.GetSize() : Vector3f::Zero();
 
     // Update the uniforms.
-    scene_context_->root_model->UpdateGlobalUniforms(wsm, bv_size);
+    SC_->root_model->UpdateGlobalUniforms(wsm, bv_size);
 }
 
 void Application::Impl_::TryQuit_() {
@@ -1258,7 +1232,7 @@ void Application::Impl_::TryQuit_() {
 
     // If there are no changes to the session or the application should not ask
     // the user, just quit.
-    if (! session_manager_->CanSaveSession() || ! ask_before_quitting_) {
+    if (! MGR_(session)->CanSaveSession() || ! ask_before_quitting_) {
         run_state_ = RunState_::kQuitting;
         return;
     }
@@ -1270,26 +1244,26 @@ void Application::Impl_::TryQuit_() {
     auto func = [&](const std::string &s){
         run_state_ = s == "Yes" ? RunState_::kQuitting : RunState_::kRunning;
     };
-    auto dp = board_manager_->GetTypedPanel<DialogPanel>("DialogPanel");
+    auto dp = MGR_(board)->GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage("There are unsaved changes.\nDo you really want to quit?");
     dp->SetChoiceResponse("No", "Yes", true);
 
     // If the AppBoard is already visible, replace its Panel. Otherwise, just
     // show it with the new Panel.
-    const auto &board = scene_context_->app_board;
+    const auto &board = SC_->app_board;
     if (board->IsShown()) {
         board->PushPanel(dp, func);
     }
     else {
         board->SetPanel(dp, func);
-        board_manager_->ShowBoard(board, true);
+        MGR_(board)->ShowBoard(board, true);
     }
 }
 
 bool Application::Impl_::ProcessEvents_(bool is_modified_mode,
                                         bool force_poll) {
     // Always check for running animations and finished delayed threads.
-    const bool is_animating    = animation_manager_->IsAnimating();
+    const bool is_animating    = MGR_(animation)->IsAnimating();
     const bool is_any_delaying = Util::IsAnyDelaying();
 
     // Let the GLFWViewer know whether to poll events or wait for events.  If
@@ -1311,8 +1285,8 @@ bool Application::Impl_::ProcessEvents_(bool is_modified_mode,
 
     // Check for an event resulting in quitting. Note that an action that
     // results in quitting invokes the ActionProcessor's QuitFunc.
-    return event_manager_->HandleEvents(events, is_modified_mode,
-                                        TK::kMaxEventHandlingTime);
+    return MGR_(event)->HandleEvents(events, is_modified_mode,
+                                     TK::kMaxEventHandlingTime);
 }
 
 void Application::Impl_::ProcessClick_(const ClickInfo &info) {
@@ -1327,10 +1301,10 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
                 auto model = dynamic_cast<Model *>(info.widget);
                 if (model) {
                     const SelPath path(info.hit.path.GetSubPath(*model));
-                    selection_manager_->ChangeModelSelection(path, false);
+                    MGR_(selection)->ChangeModelSelection(path, false);
                     // Make sure that the action is enabled.
-                    action_processor_->ProcessUpdate();
-                    action_processor_->ApplyAction(Action::kToggleInspector);
+                    AP_->ProcessUpdate();
+                    AP_->ApplyAction(Action::kToggleInspector);
                 }
             }
         }
@@ -1343,9 +1317,9 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
         KLOG('k', "Click on tool " << tool->GetDesc()
              << " is_mod = " << info.is_modified_mode);
         if (info.is_modified_mode) {
-            const auto &sel = selection_manager_->GetSelection();
+            const auto &sel = MGR_(selection)->GetSelection();
             ASSERT(sel.HasAny());
-            selection_manager_->ChangeModelSelection(sel.GetPrimary(), true);
+            MGR_(selection)->ChangeModelSelection(sel.GetPrimary(), true);
         }
     }
 
@@ -1358,25 +1332,25 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     // Otherwise, the click was on a noninteractive object, so deselect.
     else {
         KLOG('k', "Click on noninteractive object");
-        selection_manager_->DeselectAll();
+        MGR_(selection)->DeselectAll();
     }
 }
 
 void Application::Impl_::StartResetStage_(bool is_modified_mode) {
     // Reset the stage only if modified-clicked.
     if (is_modified_mode) {
-        const Vector3f  scale = scene_context_->stage->GetScale();
-        const Rotationf rot   = scene_context_->stage->GetRotation();
-        animation_manager_->StartAnimation(
+        const Vector3f  scale = SC_->stage->GetScale();
+        const Rotationf rot   = SC_->stage->GetRotation();
+        MGR_(animation)->StartAnimation(
             [&, scale, rot](float t){ return ResetStage_(scale, rot, t); });
     }
 }
 
 void Application::Impl_::StartResetHeight_(bool is_modified_mode) {
-    const float     height = scene_context_->height_slider->GetValue();
-    const Rotationf orient = scene_context_->window_camera->GetOrientation();
+    const float     height = SC_->height_slider->GetValue();
+    const Rotationf orient = SC_->window_camera->GetOrientation();
     const bool      reset_view = is_modified_mode;
-    animation_manager_->StartAnimation(
+    MGR_(animation)->StartAnimation(
         [&, height, orient, reset_view](float t){
         return ResetHeightAndView_(height, orient, reset_view, t); });
 }
@@ -1393,7 +1367,7 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
 
     // Interpolate and update the stage's scale and rotation.
     const float t = std::min(1.f, time / duration);
-    StageWidget &stage = *scene_context_->stage;
+    StageWidget &stage = *SC_->stage;
     stage.SetScale(Lerp(t, start_scale, Vector3f(1, 1, 1)));
     stage.SetRotation(Rotationf::Slerp(start_rot, Rotationf::Identity(), t));
 
@@ -1417,10 +1391,10 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
     // window camera view direction. Use the Dampen function to ease in and
     // ease out the animation.
     const float t = std::min(1.f, Dampen(time / duration));
-    Slider1DWidget &slider = *scene_context_->height_slider;
+    Slider1DWidget &slider = *SC_->height_slider;
     slider.SetValue(Lerp(t, start_height, slider.GetInitialValue()));
     if (reset_view) {
-        scene_context_->window_camera->SetOrientation(
+        SC_->window_camera->SetOrientation(
             Rotationf::Slerp(start_view_rot, Rotationf::Identity(), t));
     }
     // Keep going until finished.
@@ -1430,14 +1404,14 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
 Vector3f Application::Impl_::ComputeTooltipTranslation_(
     Widget &widget, const Vector3f &world_size) const {
     // Find a path to the Widget.
-    auto path = SG::FindNodePathInScene(*scene_context_->scene, widget);
+    auto path = SG::FindNodePathInScene(*SC_->scene, widget);
 
     // Convert its location to world coordinates.
     const Point3f world_pt = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
 
     // Use a plane at a reasonable distance past the image plane of the
     // frustum.
-    const auto &frustum = *scene_context_->frustum;
+    const auto &frustum = *SC_->frustum;
     const Point3f  &cam_pos = frustum.position;
     const Vector3f  cam_dir = frustum.orientation * -Vector3f::AxisZ();
     const Plane plane(cam_pos + TK::kTooltipDistance * cam_dir, cam_dir);
@@ -1474,8 +1448,13 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
 
 Rotationf Application::Impl_::ComputeTooltipRotation_() const {
     // Rotate to face the camera.
-    return scene_context_->frustum->orientation;
+    return SC_->frustum->orientation;
 }
+
+#undef MGR_
+#undef AP_
+#undef SC_
+#undef PREC_
 
 // ----------------------------------------------------------------------------
 // Application functions.
@@ -1532,8 +1511,8 @@ void Application::SetAskBeforeQuitting(bool ask) {
     impl_->SetAskBeforeQuitting(ask);
 }
 
-void Application::GetTestContext(TestContext &tc) {
-    impl_->GetTestContext(tc);
+const Application::Context & Application::GetContext() const {
+    return impl_->GetContext();
 }
 
 void Application::AddEmitter(const IEmitterPtr &emitter) {
