@@ -10,8 +10,6 @@
 
 class Selection;
 
-DECL_SHARED_PTR(TestContext);
-
 /// The ScriptedApp is derived from Application and adds processing of a
 /// read-in SnapScript that specifies what to do.
 ///
@@ -29,13 +27,15 @@ class ScriptedApp : public Application {
 
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
 
+    // Make this available to applications.
+    using Application::GetContext;
+
   private:
     class Emitter_;
     DECL_SHARED_PTR(Emitter_);
 
     Options         options_;            ///< Set in Init().
     Vector2i        window_size_;        ///< From Options.
-    TestContextPtr  test_context_;       ///< For accessing managers.
     size_t          cur_instruction_ = 0;
     Emitter_Ptr     emitter_;  ///< Simulates mouse and key events.
 

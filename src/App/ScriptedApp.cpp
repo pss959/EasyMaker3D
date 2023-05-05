@@ -12,11 +12,7 @@
 
 // XXXX Check all of these:
 #include "App/ActionProcessor.h"
-#include "App/Application.h"
-#include "App/Args.h"
-#include "App/SnapScript.h"
 #include "Debug/Shortcuts.h"
-#include "Handlers/Handler.h"
 #include "Items/Controller.h"
 #include "Items/Settings.h"
 #include "Managers/CommandManager.h"
@@ -26,7 +22,6 @@
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Math/Linear.h"
-#include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "Panels/Board.h"
 #include "Panels/FilePanel.h"
@@ -38,8 +33,6 @@
 #include "Util/Assert.h"
 #include "Util/Delay.h"
 #include "Util/FilePath.h"
-#include "Util/FilePathList.h"
-#include "Util/KLog.h"
 #include "Util/Read.h"
 #include "Util/Tuning.h"
 #include "Util/Write.h"
