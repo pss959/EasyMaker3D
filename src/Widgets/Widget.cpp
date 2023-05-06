@@ -37,7 +37,7 @@ void Widget::SetActive(bool active, bool notify) {
 }
 
 void Widget::StartHovering() {
-    // Change status only if hovering started.
+    // Change status only if hovering just started.
     if (! hover_count_++) {
         KLOG('W', GetDesc() << " hover started");
         ChangeHoverState_(true);
@@ -48,7 +48,7 @@ void Widget::StartHovering() {
 void Widget::StopHovering() {
     ASSERT(hover_count_ > 0);
 
-    // Change status only if hovering stopped.
+    // Change status only if hovering just stopped.
     if (hover_count_ == 1U) {
         KLOG('W', GetDesc() << " hover ended");
         StopHovering_();
@@ -103,21 +103,22 @@ void Widget::UpdateColor_() {
 }
 
 void Widget::ChangeHoverState_(bool hover) {
-    // Change hover state only if the widget is enabled. Note that some Widget
-    // classes support hovering while active.
-    if (is_interaction_enabled_ && (! is_active_ || SupportsActiveHovering())) {
-        if (hover) {
+    if (hover) {
+        // Start hovering only if the widget is enabled. Note that some Widget
+        // classes support hovering while active.
+        if (is_interaction_enabled_ &&
+            (! is_active_ || SupportsActiveHovering())) {
             if (hover_scale_.WasSet()) {
                 saved_scale_ = GetScale();
                 SetScale(hover_scale_ * saved_scale_);
             }
             SetEmissiveColor(GetColor_(hover_color_, "HoverColor"));
         }
-        else {
-            if (hover_scale_.WasSet())
-                SetScale(saved_scale_);
-            SetEmissiveColor(Color::Clear());
-        }
+    }
+    else {
+        if (hover_scale_.WasSet())
+            SetScale(saved_scale_);
+        SetEmissiveColor(Color::Clear());
     }
 }
 

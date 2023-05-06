@@ -76,6 +76,7 @@ test_sources = [
 
     # Simulation tests:
     'SimTests/EmptySimTest.cpp',
+    'SimTests/HoverSimTest.cpp',
     'SimTests/SimTestBase.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
