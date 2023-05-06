@@ -10,7 +10,6 @@
 
 #include "Base/IEmitter.h"
 
-// XXXX Check all of these:
 #include "App/ActionProcessor.h"
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"

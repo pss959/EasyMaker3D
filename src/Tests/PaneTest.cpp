@@ -22,8 +22,8 @@ class PaneTest : public SceneTestBase {
 };
 
 TEST_F(PaneTest, Text) {
-    // Disable this flag for this test; need to build font images.
-    UnitTestFlagDisabler utfd;
+    // Override this setting for this test; need to build font images.
+    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
 
     SG::ScenePtr scene = ReadPaneScene();
     TextPanePtr text = SG::FindTypedNodeInScene<TextPane>(*scene, "Text");
@@ -115,8 +115,8 @@ TEST_F(PaneTest, HBox) {
 }
 
 TEST_F(PaneTest, Dropdown) {
-    // Disable this flag for this test; need to build font images.
-    UnitTestFlagDisabler utfd;
+    // Override this setting for this test; need to build font images.
+    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
 
     SG::ScenePtr scene = ReadPaneScene();
     auto dd = SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");

@@ -100,7 +100,7 @@ class Application {
   protected:
     /// Sets a flag indicating the Application will be used only for unit
     /// testing.
-    void SetTestingFlag();
+    void SetTestingFlag(bool is_testing);
 
     /// Sets a flag indicating whether the application should ask about saving
     /// before quitting a session. The default is true.

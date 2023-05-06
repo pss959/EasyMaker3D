@@ -12,7 +12,7 @@ class Derived_ : public Base_ {
 };
 
 TEST(UtilTest, IsInUnitTest) {
-    EXPECT_TRUE(Util::is_in_unit_test);
+    EXPECT_EQ(Util::AppType::kUnitTest, Util::app_type);
 }
 
 TEST(UtilTest, Casts) {

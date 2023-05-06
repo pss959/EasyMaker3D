@@ -489,7 +489,10 @@ test_env = lib_env.Clone()
 test_env.Append(
     CPPPATH = ['#submodules/googletest/googletest/include'],
     LIBPATH = ['#/$BUILD_DIR/docopt.cpp', '#/$BUILD_DIR/googletest'],
-    LIBS  = ['docopt', 'gtest', 'pthread'],
+    LIBS    = ['docopt', 'gtest', 'pthread'],
+
+    # Copy all environment variables to simulate user environment.
+    ENV     = environ,
 )
 AddRpath_(test_env, Dir(test_env.subst('$BUILD_DIR/googletest')).abspath)
 

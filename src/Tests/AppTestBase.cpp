@@ -11,16 +11,11 @@
 
 class AppTestBase::TestingApp_ : public Application {
   public:
-    TestingApp_();
     void InitForTests();
 
     // Make this available to AppTestBase.
     using Application::GetContext;
 };
-
-AppTestBase::TestingApp_::TestingApp_() {
-    SetTestingFlag();
-}
 
 void AppTestBase::TestingApp_::InitForTests() {
     Application::Options options;
@@ -37,11 +32,15 @@ void AppTestBase::TestingApp_::InitForTests() {
 // ----------------------------------------------------------------------------
 
 AppTestBase::AppTestBase() : app_(new TestingApp_) {
+    Util::app_type = Util::AppType::kUnitTest;
+}
+
+AppTestBase::~AppTestBase() {
+}
+
+void AppTestBase::SetUp() {
     app_->InitForTests();
 
     // Copy Application::Context locally for convenience in derived classes.
     context = app_->GetContext();
-}
-
-AppTestBase::~AppTestBase() {
 }

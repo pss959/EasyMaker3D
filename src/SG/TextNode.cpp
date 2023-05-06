@@ -83,7 +83,7 @@ void TextNode::CreationDone() {
 void TextNode::SetFontName(const std::string &font_name) {
     if (font_name != font_name_.GetValue()) {
         font_name_ = font_name;
-        if (GetIonContext() && ! Util::is_in_unit_test)
+        if (GetIonContext() && Util::app_type != Util::AppType::kUnitTest)
             SetUpFont_();
         needs_rebuild_ = true;
     }
@@ -150,7 +150,7 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     auto ion_node = Node::SetUpIon(ion_context, programs);
     ASSERT(ion_node);
 
-    if (! Util::is_in_unit_test) {
+    if (Util::app_type != Util::AppType::kUnitTest) {
         SetUpFont_();
 
         // Build the text.

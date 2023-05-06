@@ -75,6 +75,8 @@ lib_sources = list(chain(
         'Application',
         'RegisterTypes',
         'SceneLoader',
+        'ScriptedApp',  # Used for snapimage and simulation tests only.
+        'SnapScript',   # Used for snapimage and simulation tests only.
         'ToolBox',
 
         # Type registration.

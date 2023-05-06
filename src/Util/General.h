@@ -13,9 +13,18 @@
 /// This namespace contains general utility functions and classes.
 namespace Util {
 
-/// Flag indicating whether code is running inside a unit test. It is
-/// initialized to false and is set to true at the beginning of unit tests.
-extern bool is_in_unit_test;
+/// Enum indicating application status. This is used to determine whether code
+/// is running inside a unit test or simulation test.
+enum class AppType {
+    kInteractive,  ///< Regular interactive application (default).
+    kUnitTest,     ///< Non-interactive unit test.
+    kSimTest,      ///< Interactive simulation unit test.
+};
+
+/// Enum indicating application status. This is used to determine whether code
+/// is running inside a unit test or simulation test. This is initialized to
+/// AppType::kInteractive and is changed at the beginning of unit tests.
+extern AppType app_type;
 
 /// Flag indicating whether code is running inside the main application. It is
 /// initialized to false and is set to true at the beginning of the main app.

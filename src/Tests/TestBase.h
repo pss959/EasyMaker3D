@@ -33,13 +33,18 @@ class TestBase : public ::testing::Test {
         FilePath path_;
     };
 
-    /// Class that temporarily disables the Util::is_in_unit_test flag for a
-    /// test that needs to pretend it is not a test. The flag is disabled while
-    /// this is in scope.
-    class UnitTestFlagDisabler {
+    /// Class that temporarily changes Util::app_type for a test that needs to
+    /// pretend it is not a regular unit test. The new type applies while this
+    /// is in scope.
+    class UnitTestTypeChanger {
       public:
-        UnitTestFlagDisabler()  { Util::is_in_unit_test = false; }
-        ~UnitTestFlagDisabler() { Util::is_in_unit_test = true; }
+        UnitTestTypeChanger(Util::AppType type) {
+            prev_type_     = Util::app_type;
+            Util::app_type = type;
+        }
+        ~UnitTestTypeChanger() { Util::app_type = prev_type_; }
+      private:
+        Util::AppType prev_type_;
     };
 
     // Close enough.

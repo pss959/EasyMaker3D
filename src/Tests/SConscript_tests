@@ -74,6 +74,10 @@ test_sources = [
     'SessionTests/TransformSessionTest.cpp',
     'SessionTests/UndoSessionTest.cpp',
 
+    # Simulation tests:
+    'SimTests/EmptySimTest.cpp',
+    'SimTests/SimTestBase.cpp',
+
     'TestMain.cpp',  # main() function that runs all tests.
 ]
 

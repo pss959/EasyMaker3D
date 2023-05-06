@@ -5,8 +5,8 @@
 #include "Util/String.h"
 
 int main(int argc, char **argv) {
-    // Set a flag so that code can tell a test is running.
-    Util::is_in_unit_test = true;
+    // Let the code know a regular unit test is running.
+    Util::app_type = Util::AppType::kUnitTest;
 
     try {
         ::testing::InitGoogleTest(&argc, argv);

@@ -117,7 +117,6 @@ class  Application::Impl_ {
 
     void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
 
-    void SetTestingFlag() { is_testing_ = true; }
     const Context & GetContext() const { return context_; }
     void SetAskBeforeQuitting(bool ask) { ask_before_quitting_ = ask; }
     void AddEmitter(const IEmitterPtr &emitter);
@@ -143,7 +142,6 @@ class  Application::Impl_ {
     /// Saves Options passed to Init().
     Application::Options options_;
 
-    bool is_testing_          = false;
     bool ask_before_quitting_ = true;
 
     std::unique_ptr<SceneLoader> loader_;
@@ -398,7 +396,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
     Debug::SetSceneContext(SC_);
 #endif
 
-    if (! is_testing_) {
+    if (Util::app_type != Util::AppType::kUnitTest) {
         // Set up the viewers. This also sets up the VRContext if VR is enabled
         // so that IsVREnabled() returns a valid value.
         if (! InitViewers_())
@@ -849,7 +847,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     MGR_(target)->SetPathToStage(SC_->path_to_stage);
 
     // Inform the viewers and ViewHandler about the cameras in the scene.
-    if (! is_testing_) {
+    if (Util::app_type != Util::AppType::kUnitTest) {
         view_handler_->SetCamera(SC_->window_camera);
         glfw_viewer_->SetCamera(SC_->window_camera);
         if (IsVREnabled())
@@ -1050,7 +1048,7 @@ void Application::Impl_::AddIcons_() {
     icons_.clear();
 
     Point3f cam_pos;
-    if (is_testing_) {
+    if (Util::app_type == Util::AppType::kUnitTest) {
         cam_pos = Point3f(0, 0, 100);
     }
     else {
@@ -1501,10 +1499,6 @@ void Application::SaveCrashSession(const FilePath &path,
 
 void Application::Shutdown() {
     impl_->Shutdown();
-}
-
-void Application::SetTestingFlag() {
-    impl_->SetTestingFlag();
 }
 
 void Application::SetAskBeforeQuitting(bool ask) {

@@ -6,7 +6,7 @@
 #include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
 
-// This is a base class for any test that requies an Application instance.
+// This is a base class for any test that requires an Application instance.
 class AppTestBase : public SceneTestBase {
  protected:
     // Application::Context used for the session.
@@ -14,6 +14,9 @@ class AppTestBase : public SceneTestBase {
 
     AppTestBase();
     ~AppTestBase();
+
+    // Overrides this to initialize the Application.
+    void SetUp() override;
 
     /// Creates a Command of the templated and named type.
     template <typename T> static std::shared_ptr<T> CreateCommand() {

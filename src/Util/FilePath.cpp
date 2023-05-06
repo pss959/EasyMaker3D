@@ -31,8 +31,8 @@ static inline FilePath FromPath_(const std::filesystem::path &path) {
 /// Access to environment variables.
 static std::string GetEnvVar_(const std::string &name) {
     // No regular access to environment in unit tests.
-    return Util::is_in_unit_test ? "/" :
-        ion::port::GetEnvironmentVariableValue(name);
+    return Util::app_type == Util::AppType::kInteractive ?
+        ion::port::GetEnvironmentVariableValue(name) : "/";
 }
 
 }  // anonymous namespace

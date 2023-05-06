@@ -87,7 +87,6 @@ int main(int argc, const char *argv[]) {
 
     ScriptedApp::Options options;
 
-    // XXXX Move to ScriptedApp?
     const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
     if (! options.script.ReadScript(path))
         return -1;

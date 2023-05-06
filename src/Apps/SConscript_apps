@@ -5,12 +5,10 @@ main_app_name = app_dict['APP_NAME']
 # Build the applications. The doc-related apps build only on Linux.
 app_names = [main_app_name, 'nodeviewer', 'printtypes']
 if app_env['PLATFORM'] == 'linux':
-    app_names += ['simscript', 'createcheatsheet', 'snapimage']
+    app_names += ['createcheatsheet', 'snapimage']
 
 apps_extra_sources = [
     '../App/Args.cpp',
-    '../App/ScriptedApp.cpp',
-    '../App/SnapScript.cpp',
 ]
 
 apps_extra_objects = [app_env.SharedObject(src) for src in apps_extra_sources]
