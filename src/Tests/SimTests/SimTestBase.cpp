@@ -12,12 +12,29 @@ SimTestBase::SimTestBase() {
     Util::app_type = Util::AppType::kSimTest;
 }
 
-SimTestBase::~SimTestBase() {
-    // If the simulation is still running, end it.
-    // XXXX
+void SimTestBase::RunScript(const std::string &script_name) {
+    // Execute RunScriptAndExit_() as a death test so it exits and cleans up.
+    // Ion has some static variables that need to be reset for each execution;
+    // calling _exit() is the easiest way to reset everything for each
+    // simulation.
+    EXPECT_EXIT(RunScriptAndExit_(script_name), testing::ExitedWithCode(0), "");
 }
 
-bool SimTestBase::RunScript(const std::string &file_name) {
+void SimTestBase::RunScriptAndExit_(const std::string &script_name) {
+    // If the script was executed successfully, let the derived class test the
+    // results.
+    bool ok = RunScript_(script_name);
+    if (ok) {
+        TestResults();
+
+        // Detect if anything in TestResults() failed.
+        ok = ! ::testing::Test::HasFailure();
+    }
+
+    _exit(ok ? 0 : 1);
+}
+
+bool SimTestBase::RunScript_(const std::string &file_name) {
     ScriptedApp::Options options;
 
     // Hardwire all options.

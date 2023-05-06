@@ -69,7 +69,7 @@ class Application {
     ~Application();
 
     /// Initializes the application.
-    virtual bool Init(const Options &options);
+    bool Init(const Options &options);
 
     /// Enters the main loop.
     void MainLoop();
