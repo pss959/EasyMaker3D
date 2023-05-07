@@ -35,16 +35,17 @@ env.Default(mi_cmd)
 # Generate the icon texture atlas files.
 # -----------------------------------------------------------------------------
 
-icon_pgm    = 'bin/buildatlas.py'
-icon_name   = 'IconAtlas'
-icon_dir    = 'images/Icons'
-icon_png    = f'{icon_name}.png'
-icon_emd    = f'nodes/{icon_name}.emd'
-icon_images = Glob(f'#resources/{icon_dir}/[!M][!I]*.png') + mi_files
+icon_pgm     = 'bin/buildatlas.py'
+icon_pgm_src = Glob('#bin/BuildMenuIcons/*.py')
+icon_name    = 'IconAtlas'
+icon_dir     = 'images/Icons'
+icon_png     = f'{icon_name}.png'
+icon_emd     = f'nodes/{icon_name}.emd'
+icon_images  = Glob(f'#resources/{icon_dir}/[!M][!I]*.png') + mi_files
 
 icon_cmd = env.Command(
   target=[f'#resources/images/{icon_png}', f'#resources/{icon_emd}'],
-  source=icon_images + [f'#{icon_pgm}'],
+  source=icon_images + [f'#{icon_pgm}'] + icon_pgm_src,
   action=('cd resources ;'
           f' ../{icon_pgm} {icon_dir} {icon_png} {icon_emd} {icon_name}'))
 

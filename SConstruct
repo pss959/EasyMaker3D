@@ -83,7 +83,8 @@ SConscript('src/Tests/SConscript_tests', exports=['test_env'],
 if platform == 'linux':
     # Applications depend on the icons.
     app_env.Alias('Icons', SConscript('resources/SConscript_resources'))
-    app_env.Depends('Apps', 'Icons')
+    for app in apps.values():
+        app_env.Depends(app, 'Icons')
 
     # Internal (Doxygen-generated) web documentation.
     base_env.Alias('InternalDoc',
