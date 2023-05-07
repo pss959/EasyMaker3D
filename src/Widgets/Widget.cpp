@@ -116,7 +116,7 @@ void Widget::ChangeHoverState_(bool hover) {
         }
     }
     else {
-        if (hover_scale_.WasSet())
+        if (hover_scale_.WasSet() && saved_scale_ != Vector3f::Zero())
             SetScale(saved_scale_);
         SetEmissiveColor(Color::Clear());
     }
