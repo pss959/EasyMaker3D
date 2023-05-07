@@ -3,7 +3,7 @@ use <ConvertTaperIcon.scad>
 
 module TaperToolIcon() {
   scale([3, 3, 1]) ConvertTaperIcon();
-  translate([7, 9, 10]) Pencil();
+  translate([7, 9, 8]) Pencil();
 }
 
 $fn = 64;
