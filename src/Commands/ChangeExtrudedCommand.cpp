@@ -26,7 +26,7 @@ std::string ChangeExtrudedCommand::GetDescription() const {
 
 void ChangeExtrudedCommand::SetProfile(const Profile &profile) {
     // Make sure the profile is set up for a ExtrudedModel.
-    ASSERT(! profile.IsOpen());
+    ASSERT(profile.GetType() == Profile::Type::kClosed);
     ASSERT(profile.GetMinPointCount() == 3U);
 
     profile_points_ = profile.GetMovablePoints();

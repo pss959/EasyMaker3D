@@ -55,7 +55,7 @@ void TaperedModel::SetTaper(const Bevel &taper) {
 }
 
 Profile TaperedModel::CreateProfile(const Profile::PointVec &points) {
-    return Profile(Point2f(0, 1), Point2f(1, 0), points, 2);
+    return Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2, points);
 }
 
 void TaperedModel::SyncTransformsFromOperand(const Model &operand) {

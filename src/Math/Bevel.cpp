@@ -7,8 +7,8 @@ Bevel::Bevel() : max_angle(Anglef::FromDegrees(TK::kDefaultMaxBevelAngle)) {
 }
 
 Profile Bevel::CreateDefaultProfile() {
-    return Profile(Point2f(0, 1),
-                   Point2f(1, 0));
+    return Profile(Profile::Type::kFixed, 2,
+                   Profile::PointVec{Point2f(0, 1), Point2f(1, 0)});
 }
 
 std::string Bevel::ToString() const {

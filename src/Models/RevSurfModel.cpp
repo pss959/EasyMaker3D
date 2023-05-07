@@ -58,8 +58,7 @@ void RevSurfModel::SetSweepAngle(const Anglef &angle) {
 }
 
 Profile RevSurfModel::CreateProfile(const Profile::PointVec &points) {
-    ASSERT(! points.empty());
-    return Profile(Point2f(0, 1), Point2f(0, 0), points, 3);
+    return Profile::CreateFixedProfile(Point2f(0, 1), Point2f(0, 0), 3, points);
 }
 
 Profile RevSurfModel::CreateDefaultProfile() {

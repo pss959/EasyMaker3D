@@ -402,7 +402,7 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
 
 TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
                          int num_sides) {
-    ASSERT(profile.IsOpen());
+    ASSERT(profile.GetType() == Profile::Type::kFixed);
     const float angle = sweep_angle.Degrees();
     ASSERT(angle > 0 && angle <= 360);
     TriMesh mesh = angle == 360 ?

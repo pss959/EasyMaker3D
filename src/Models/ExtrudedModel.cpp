@@ -41,7 +41,7 @@ void ExtrudedModel::CreationDone() {
 
 void ExtrudedModel::SetProfile(const Profile &profile) {
     ASSERT(profile.IsValid());
-    ASSERT(! profile.IsOpen());
+    ASSERT(profile.GetType() == Profile::Type::kClosed);
     profile_ = profile;
     profile_points_ = profile_.GetPoints();
     ProcessChange(SG::Change::kGeometry, *this);
@@ -62,8 +62,7 @@ Profile ExtrudedModel::CreateRegularPolygonProfile(size_t side_count) {
 }
 
 Profile ExtrudedModel::CreateProfile(const Profile::PointVec &points) {
-    ASSERT(points.size() >= 3U);
-    return Profile(points, 3);
+    return Profile(Profile::Type::kClosed, 3, points);
 }
 
 Profile ExtrudedModel::CreateDefaultProfile() {

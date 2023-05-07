@@ -200,8 +200,9 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node) : root_node_(root_node) {
     const Vector3f size = delete_spot_->GetBounds().GetSize();
     delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(size[0], size[1]));
 
-    // Start with a valid Profile.
-    SetProfile(Profile(Point2f(0, 1), Point2f(1, 0)));
+    // Start with a valid Fixed Profile.
+    SetProfile(Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2,
+                                           Profile::PointVec()));
 }
 
 void ProfilePane::Impl_::SetColors() {
@@ -298,13 +299,13 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
 }
 
 void ProfilePane::Impl_::PositionFixedPoints_() {
-    const bool has_fixed_points = profile_.IsOpen();
-    if (has_fixed_points) {
+    const bool is_fixed = profile_.GetType() == Profile::Type::kFixed;
+    if (is_fixed) {
         start_point_->SetTranslation(FromProfile_(profile_.GetPoints().front()));
         end_point_->SetTranslation(FromProfile_(profile_.GetPoints().back()));
     }
-    start_point_->SetEnabled(has_fixed_points);
-    end_point_->SetEnabled(has_fixed_points);
+    start_point_->SetEnabled(is_fixed);
+    end_point_->SetEnabled(is_fixed);
 }
 
 void ProfilePane::Impl_::CreateMovablePoints_() {
@@ -318,9 +319,10 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
             movable_parent_->RemoveChild(movable_parent_->GetChildCount() - 1);
     }
     else {
+        const bool is_fixed = profile_.GetType() == Profile::Type::kFixed;
         for (size_t i = num_present; i < num_needed; ++i) {
             // Get the index of the point in the Profile.
-            const size_t index = i + (profile_.IsOpen() ? 1 : 0);
+            const size_t index = i + (is_fixed ? 1 : 0);
 
             // No need for a deep clone for these.
             const std::string name = "MovablePoint_" + Util::ToString(index);
@@ -491,7 +493,7 @@ void ProfilePane::Impl_::UpdateLine_(bool update_sliders) {
     // Update the line to connect all points.
     Profile::PointVec points = profile_.GetPoints();
     // Close the loop if the Profile is closed.
-    if (! profile_.IsOpen())
+    if (profile_.GetType() == Profile::Type::kClosed)
         points.push_back(points[0]);
     SetLinePoints_(points, *profile_line_, TK::kPaneZOffset);
 
@@ -519,7 +521,8 @@ Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) const {
     Slider2DWidgetPtr slider;
     if (! profile_.IsFixedPoint(index)) {
         // Get the child index of the slider.
-        const size_t child_index = index - (profile_.IsOpen() ? 1 : 0);
+        const bool is_fixed = profile_.GetType() == Profile::Type::kFixed;
+        const size_t child_index = index - (is_fixed ? 1 : 0);
         ASSERT(child_index < movable_parent_->GetChildCount());
         slider = Util::CastToDerived<Slider2DWidget>(
             movable_parent_->GetChild(child_index));
@@ -548,7 +551,7 @@ bool ProfilePane::Impl_::IsNearProfileSegment_(const Point2f &pt,
     }
 
     // If the Profile is closed, also test the closing segment.
-    if (! profile_.IsOpen() &&
+    if (profile_.GetType() == Profile::Type::kClosed &&
         IsNearLineSegment(pt, points.back(), points[0],
                           TK::kProfilePanePointTolerance)) {
         start_index = points.size() - 1;

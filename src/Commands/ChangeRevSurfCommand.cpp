@@ -33,7 +33,7 @@ std::string ChangeRevSurfCommand::GetDescription() const {
 
 void ChangeRevSurfCommand::SetProfile(const Profile &profile) {
     // Make sure the profile is set up for a RevSurfModel.
-    ASSERT(profile.IsOpen());
+    ASSERT(profile.GetType() == Profile::Type::kFixed);
     ASSERT(profile.GetMinPointCount() == 3U);
     ASSERT(profile.GetPoints().front() == Point2f(0, 1));
     ASSERT(profile.GetPoints().back()  == Point2f::Zero());

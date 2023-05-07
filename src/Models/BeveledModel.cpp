@@ -55,7 +55,7 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
 }
 
 Profile BeveledModel::CreateProfile(const Profile::PointVec &points) {
-    return Profile(Point2f(0, 1), Point2f(1, 0), points, 2);
+    return Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2, points);
 }
 
 void BeveledModel::SyncTransformsFromOperand(const Model &operand) {

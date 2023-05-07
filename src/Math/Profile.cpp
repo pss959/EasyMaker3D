@@ -5,31 +5,39 @@
 #include <ion/base/stringutils.h>
 
 #include "Util/Assert.h"
+#include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/String.h"
 
-Profile::Profile() : is_open_(false), min_count_(1) {
-    // min_count_ is set to 1 so the Profile is not valid.
+Profile::Profile() : type_(Type::kOpen), min_count_(0) {
+    // min_count_ is set to 0 so the Profile is not valid.
 }
 
-Profile::Profile(const Point2f &start_point, const Point2f &end_point,
-                 const PointVec &points, size_t min_count) :
-    is_open_(true),
-    min_count_(min_count) {
-    ASSERT(min_count >= 2U);
-    ASSERT(points.size() + 2 >= min_count);
-    points_.push_back(start_point);
-    Util::AppendVector(points, points_);
-    points_.push_back(end_point);
-}
-
-Profile::Profile(const PointVec &points, size_t min_count) :
-    is_open_(false),
+Profile::Profile(Type type, size_t min_count, const PointVec &points) :
+    type_(type),
     min_count_(min_count),
     points_(points) {
+    ASSERT(IsValid());
+}
+
+Profile Profile::CreateFixedProfile(const Point2f &start_point,
+                                    const Point2f &end_point,
+                                    size_t min_count, const PointVec &points) {
+    PointVec all_points;
+    all_points.reserve(2 + points.size());
+    all_points.push_back(start_point);
+    Util::AppendVector(points, all_points);
+    all_points.push_back(end_point);
+    return Profile(Profile::Type::kFixed, min_count, all_points);
 }
 
 bool Profile::IsValid() const {
+    // Make sure the minimum number of points is valid for the type.
+    const size_t min = type_ == Type::kClosed ? 3U : 2U;
+    if (min_count_ < min)
+        return false;
+
+    // Make sure there are enough points and all of them are in range.
     return points_.size() >= min_count_ &&
         std::all_of(points_.begin(), points_.end(),
                     [](const Point2f &p)
@@ -40,36 +48,37 @@ bool Profile::IsValid() const {
 
 bool Profile::IsFixedPoint(size_t index) const {
     ASSERT(index < points_.size());
-    return IsOpen() && (index == 0 || index + 1 == points_.size());
+    return type_ == Type::kFixed && (index == 0 || index + 1 == points_.size());
 }
 
 Profile::PointVec Profile::GetMovablePoints() const {
-    return IsOpen() ? PointVec(points_.begin() + 1,
-                               points_.end()   - 1) : points_;
+    if (type_ == Type::kFixed)
+        return PointVec(points_.begin() + 1, points_.end()   - 1);
+    else
+        return points_;
 }
 
 const Point2f & Profile::GetPreviousPoint(size_t index) const {
     ASSERT(index < points_.size());
-    ASSERT(index > 0 || ! IsOpen());
+    ASSERT(index > 0 || type_ == Type::kClosed);
     return index == 0 ? points_.back() : points_[index - 1];
 }
 
 const Point2f & Profile::GetNextPoint(size_t index) const {
     ASSERT(index < points_.size());
-    ASSERT(index + 1 < points_.size() || ! IsOpen());
+    ASSERT(index + 1 < points_.size() || type_ == Type::kClosed);
     return index + 1 == points_.size() ? points_[0] : points_[index + 1];
 }
 
 void Profile::SetPoint(size_t index, const Point2f &point) {
-    ASSERTM(! (IsOpen() && (index == 0 || index + 1 == points_.size())),
-            "Cannot change fixed endpoint of open Profile");
-    ASSERT(index < points_.size());
+    // Cannot change a fixed point.
+    ASSERT(! IsFixedPoint(index));
     points_[index] = point;
 }
 
 void Profile::AppendPoint(const Point2f &point) {
-    // If open, insert before the fixed end point.
-    if (IsOpen())
+    // If Fixed, insert before the fixed end point.
+    if (type_ == Type::kFixed)
         points_.insert(points_.begin() + points_.size() - 1, point);
     else
         points_.push_back(point);
@@ -77,7 +86,7 @@ void Profile::AppendPoint(const Point2f &point) {
 
 void Profile::InsertPoint(size_t index, const Point2f &point) {
     ASSERT(index <= points_.size());
-    ASSERT(! IsOpen() || (index > 0 && index < points_.size()));
+    ASSERT(type_ == Type::kClosed || (index > 0 && index < points_.size()));
     if (index == points_.size())
         points_.push_back(point);
     else
@@ -85,20 +94,20 @@ void Profile::InsertPoint(size_t index, const Point2f &point) {
 }
 
 void Profile::RemovePoint(size_t index) {
-    ASSERTM(! (IsOpen() && (index == 0 || index + 1 == points_.size())),
-            "Cannot remove fixed endpoint of open Profile");
-    ASSERT(index < points_.size());
     ASSERT(points_.size() > min_count_);
+    ASSERT(! IsFixedPoint(index));
     points_.erase(points_.begin() + index);
 }
 
 bool Profile::operator==(const Profile &p) const {
-    return p.IsOpen() == IsOpen() && p.points_ == points_;
+    return p.type_ == type_ &&
+        p.min_count_ == min_count_ &&
+        p.points_ == points_;
 }
 
 std::string Profile::ToString() const {
-    return std::string(IsOpen() ? "OP [" : "CP [") +
-        "CT=" + Util::ToString(points_.size()) +
-        " MIN=" + Util::ToString(min_count_) + " <" +
+    return std::string("PROF[") + Util::EnumName(type_) +
+        " MN=" + Util::ToString(min_count_) + " <" +
+        " CT=" + Util::ToString(points_.size()) +
         Util::JoinItems(points_, ", ") + ">]";
 }
