@@ -21,13 +21,13 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/DiscWidgetTest.emd">
     #<"nodes/tests/RadialLayoutWidgetTest.emd">
     #<"nodes/tests/SliderTest.emd">
-    <"nodes/tests/SphereWidgetTest.emd">
+    #<"nodes/tests/SphereWidgetTest.emd">
     #<"nodes/tests/StencilTest.emd">
     #<"nodes/tests/ViewTest.emd">
 
     # Uncomment one of these to test out a Board with a Panel.
     # CLONE "T_Board" "AppBoard" {}
-    # CLONE "T_Board" "ToolBoard" {}
+    CLONE "T_Board" "ToolBoard" {}
     # CLONE "T_Board" "KeyBoard" {}
 
     # Node {
