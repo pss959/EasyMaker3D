@@ -40,11 +40,11 @@ icon_name   = 'IconAtlas'
 icon_dir    = 'images/Icons'
 icon_png    = f'{icon_name}.png'
 icon_emd    = f'nodes/{icon_name}.emd'
-icon_images = Glob(f'#resources/{icon_dir}/*.png') + mi_files
+icon_images = Glob(f'#resources/{icon_dir}/[!M][!I]*.png') + mi_files
 
 icon_cmd = env.Command(
   target=[f'#resources/images/{icon_png}', f'#resources/{icon_emd}'],
-  source=[icon_images, f'#{icon_pgm}'],
+  source=icon_images + [f'#{icon_pgm}'],
   action=('cd resources ;'
           f' ../{icon_pgm} {icon_dir} {icon_png} {icon_emd} {icon_name}'))
 
