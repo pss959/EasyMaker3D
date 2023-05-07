@@ -3,7 +3,6 @@
 #include "Managers/CommandManager.h"
 #include "Models/BeveledModel.h"
 #include "Panels/BevelToolPanel.h"
-#include "SG/Search.h"
 #include "Util/Assert.h"
 
 bool BevelTool::CanAttach(const Selection &sel) const {

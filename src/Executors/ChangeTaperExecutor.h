@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Executors/Executor.h"
-#include "Math/Bevel.h"  // XXXX
+#include "Math/Taper.h"
 #include "Selection/SelPath.h"
 
 /// ChangeTaperExecutor executes the ChangeTaperCommand.
@@ -24,7 +24,7 @@ class ChangeTaperExecutor : public Executor {
         /// Data per Model to operate on.
         struct PerModel {
             SelPath path_to_model;
-            Bevel   old_taper;
+            Taper   old_taper;
         };
         std::vector<PerModel> per_model;
     };

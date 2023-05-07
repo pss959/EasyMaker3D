@@ -47,6 +47,7 @@ void BeveledModel::CreationDone() {
 }
 
 void BeveledModel::SetBevel(const Bevel &bevel) {
+    ASSERT(bevel.profile.GetType() == Profile::Type::kFixed);
     bevel_          = bevel;
     profile_points_ = bevel_.profile.GetMovablePoints();
     bevel_scale_    = bevel_.scale;

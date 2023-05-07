@@ -270,6 +270,7 @@ lib_sources = list(chain(
         'PolygonBuilder',
         'Profile',
         'Snap2D',
+        'Taper',
         'TextUtils',
         'ToString',
         'Triangulation',

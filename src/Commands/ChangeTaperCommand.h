@@ -2,13 +2,13 @@
 
 #include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
-#include "Math/Bevel.h"  // XXXX
+#include "Math/Taper.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ChangeTaperCommand);
 
-/// ChangeTaperCommand is used to change the Taper data in one or more
+/// ChangeTaperCommand is used to change the taper profile in one or more
 /// TaperedModel instances.
 ///
 /// \ingroup Commands
@@ -17,10 +17,10 @@ class ChangeTaperCommand : public MultiModelCommand {
     virtual std::string GetDescription() const override;
 
     /// Sets all the fields from the given Taper.
-    void SetTaper(const Bevel &taper);
+    void SetTaper(const Taper &taper);
 
     /// Returns a Taper representing the new Taper data in the command.
-    Bevel GetTaper() const;
+    Taper GetTaper() const;
 
   protected:
     ChangeTaperCommand() {}
@@ -31,9 +31,8 @@ class ChangeTaperCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
+    Parser::EnumField<Axis> axis_;
     Parser::VField<Point2f> profile_points_;
-    Parser::TField<float>   taper_scale_;
-    Parser::TField<Anglef>  max_angle_;
     ///@}
 
     friend class Parser::Registry;

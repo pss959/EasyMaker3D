@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Base/Memory.h"
-#include "Math/Bevel.h"  // XXXX
+#include "Math/Taper.h"
 #include "Panels/ToolPanel.h"
 
 DECL_SHARED_PTR(TaperToolPanel);
@@ -15,18 +15,17 @@ namespace Parser { class Registry; }
 /// TaperToolPanel is a derived ToolPanel class that is used by the TaperTool
 /// for interactive editing of one or more TaperedModel instances.
 ///
-/// ReportChange keys: "Profile", "Scale", "MaxAngle" (all drag-based, but
-/// creation of a new profile point is immediate).
+/// ReportChange keys: "Profile" (drag-based, but creation of a new profile
+/// point is immediate) and "Axis" (immediate).
 ///
 /// \ingroup Panels
 class TaperToolPanel : public ToolPanel {
   public:
-    /// Sets the initial Taper to edit. This initializes the Panel for editing
-    /// and sets up the sliders.
-    void SetTaper(const Bevel &taper);
+    /// Sets the initial Taper to edit.
+    void SetTaper(const Taper &taper);
 
     /// Returns the current taper after possible editing.
-    Bevel GetTaper() const;
+    Taper GetTaper() const;
 
     virtual bool CanGripHover() const { return true; }
     virtual ClickableWidgetPtr GetGripWidget(const Point2f &panel_point);
@@ -42,8 +41,7 @@ class TaperToolPanel : public ToolPanel {
 
     // Parts.
     ProfilePanePtr profile_pane_;
-    SliderPanePtr  scale_slider_;
-    SliderPanePtr  angle_slider_;
+    // XXXX Add radio buttons for Axis.
 
     void Activate_(const std::string &key, bool is_activation);
     void Change_(const std::string &key);

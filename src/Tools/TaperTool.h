@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "Commands/ChangeTaperCommand.h"
-#include "Math/Bevel.h"
+#include "Enums/Axis.h"
+#include "Math/Profile.h"
 #include "Tools/PanelTool.h"
 
 /// TaperTool is a specialized Tool that is used to edit the Taper data for
@@ -29,7 +30,7 @@ class TaperTool : public PanelTool {
     ChangeTaperCommandPtr command_;
 
     /// Taper at the start of a drag.
-    Bevel start_taper_;
+    Taper start_taper_;
 
     friend class Parser::Registry;
 };
