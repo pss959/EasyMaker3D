@@ -10,6 +10,7 @@
 #include "Models/RevSurfModel.h"
 #include "Models/RootModel.h"
 #include "Models/SphereModel.h"
+#include "Models/TaperedModel.h"
 #include "Models/TextModel.h"
 #include "Models/TorusModel.h"
 #include "Models/TwistedModel.h"
@@ -32,6 +33,7 @@ void RegisterModelTypes_() {
     REGISTER_TYPE_(RootModel);
     REGISTER_TYPE_(RevSurfModel);
     REGISTER_TYPE_(SphereModel);
+    REGISTER_TYPE_(TaperedModel);
     REGISTER_TYPE_(TextModel);
     REGISTER_TYPE_(TorusModel);
     REGISTER_TYPE_(TwistedModel);

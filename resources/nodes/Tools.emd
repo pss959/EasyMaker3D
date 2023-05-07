@@ -19,6 +19,7 @@ Node "Tools" {
     ImportTool   "ImportTool"   {},
     NameTool     "NameTool"     {},
     RevSurfTool  "RevSurfTool"  {},
+    TaperTool    "TaperTool"    {},
     TextTool     "TextTool"     {},
   ]
 }

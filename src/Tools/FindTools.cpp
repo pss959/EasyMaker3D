@@ -74,6 +74,7 @@ std::vector<ToolPtr> FindTools(const SG::Scene &scene) {
     finder.AddTool("ImportTool");
     finder.AddTool("MirrorTool");
     finder.AddTool("RevSurfTool");
+    finder.AddTool("TaperTool");
     finder.AddTool("TextTool");
     finder.AddTool("TorusTool");
     finder.AddTool("TwistTool");

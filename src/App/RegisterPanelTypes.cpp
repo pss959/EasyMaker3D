@@ -14,6 +14,7 @@
 #include "Panels/RevSurfToolPanel.h"
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
+#include "Panels/TaperToolPanel.h"
 #include "Panels/TestPanel.h"
 #include "Panels/TextToolPanel.h"
 #include "Panels/TreePanel.h"
@@ -40,6 +41,7 @@ void RegisterPanelTypes_() {
     REGISTER_TYPE_(RevSurfToolPanel);
     REGISTER_TYPE_(SessionPanel);
     REGISTER_TYPE_(SettingsPanel);
+    REGISTER_TYPE_(TaperToolPanel);
 #if ENABLE_DEBUG_FEATURES
     REGISTER_TYPE_(TestPanel);
 #endif

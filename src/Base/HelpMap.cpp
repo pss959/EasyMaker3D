@@ -37,8 +37,8 @@ HelpMap::HelpMap() {
     set_hs(Action::kConvertClip,  "Convert selected models to clipped models");
     set_hs(Action::kConvertMirror,
            "Convert selected models to mirrored models");
-    set_hs(Action::kConvertTwist,
-           "Convert selected models to twisted models");
+    set_hs(Action::kConvertTaper, "Convert selected models to tapered models");
+    set_hs(Action::kConvertTwist, "Convert selected models to twisted models");
 
     set_hs(Action::kCombineCSGDifference,
            "Create a CSG Difference from selected objects");

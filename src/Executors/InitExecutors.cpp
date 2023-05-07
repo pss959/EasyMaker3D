@@ -12,12 +12,14 @@
 #include "Executors/ChangeNameExecutor.h"
 #include "Executors/ChangeOrderExecutor.h"
 #include "Executors/ChangeRevSurfExecutor.h"
+#include "Executors/ChangeTaperExecutor.h"
 #include "Executors/ChangeTextExecutor.h"
 #include "Executors/ChangeTorusExecutor.h"
 #include "Executors/ChangeTwistExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/ConvertClipExecutor.h"
 #include "Executors/ConvertMirrorExecutor.h"
+#include "Executors/ConvertTaperExecutor.h"
 #include "Executors/ConvertTwistExecutor.h"
 #include "Executors/CopyExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
@@ -54,12 +56,14 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeNameExecutor);
     ADDEXEC_(ChangeOrderExecutor);
     ADDEXEC_(ChangeRevSurfExecutor);
+    ADDEXEC_(ChangeTaperExecutor);
     ADDEXEC_(ChangeTextExecutor);
     ADDEXEC_(ChangeTorusExecutor);
     ADDEXEC_(ChangeTwistExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(ConvertClipExecutor);
     ADDEXEC_(ConvertMirrorExecutor);
+    ADDEXEC_(ConvertTaperExecutor);
     ADDEXEC_(ConvertTwistExecutor);
     ADDEXEC_(CopyExecutor);
     ADDEXEC_(CreateCSGExecutor);

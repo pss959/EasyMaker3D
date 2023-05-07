@@ -44,6 +44,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
           { Action::kConvertBevel,
             Action::kConvertClip,
             Action::kConvertMirror,
+            Action::kConvertTaper,
             Action::kConvertTwist }
         },
         { ActionCategory::kCreation,

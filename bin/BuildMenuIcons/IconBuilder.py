@@ -210,6 +210,15 @@ class IconBuilder(object):
         ic.PolyLine([ap1 + Point(4, -14), ap1, ap1 + Point(-14, 0)],
                     self._HighlightColor)
 
+    def _MIConvertTaper(self, ic):
+        # XXXX Change this!!
+        ic.SetLineWidth(6)
+        r = self._SafeRect.Shrink(10)
+        ic.PolyLine([r.TL(), r.TR(), r.BR()], self._GeneralColor)
+        ic.PolyLine([r.BR(), r.TR() + Point(-30, 30), r.TL()],
+                    self._HighlightColor)
+        ic.Text(self._SafeRect.center, 'V', self._GeneralColor)
+
     def _MIConvertTwist(self, ic):
         cr = self._SafeRect.Center(Point(40, 80))
         self._AddCylinder(ic, cr, self._GeneralColor)

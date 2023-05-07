@@ -146,6 +146,11 @@ Node "Panels" {
       pane: <"nodes/TopPanes/SettingsPane.emd">,
     },
 
+    TaperToolPanel "TaperToolPanel" {
+      is_resizable: True,
+      pane: <"nodes/TopPanes/TaperToolPane.emd">,
+    },
+
     TextToolPanel "TextToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/TextToolPane.emd">,

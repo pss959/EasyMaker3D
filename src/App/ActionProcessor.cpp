@@ -13,6 +13,7 @@
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
 #include "Commands/ConvertMirrorCommand.h"
+#include "Commands/ConvertTaperCommand.h"
 #include "Commands/ConvertTwistCommand.h"
 #include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
@@ -49,6 +50,7 @@
 #include "Models/CombinedModel.h"
 #include "Models/HullModel.h"
 #include "Models/MirroredModel.h"
+#include "Models/TaperedModel.h"
 #include "Models/TwistedModel.h"
 #include "Panels/Board.h"
 #include "Panels/InfoPanel.h"
@@ -380,6 +382,9 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
         break;
       case Action::kConvertMirror:
         ConvertModels_(CreateCommand_<ConvertMirrorCommand>());
+        break;
+      case Action::kConvertTaper:
+        ConvertModels_(CreateCommand_<ConvertTaperCommand>());
         break;
       case Action::kConvertTwist:
         ConvertModels_(CreateCommand_<ConvertTwistCommand>());
@@ -740,6 +745,7 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kConvertBevel,  any_selected);
     set_enabled(Action::kConvertClip,   any_selected);
     set_enabled(Action::kConvertMirror, any_selected);
+    set_enabled(Action::kConvertTaper,  any_selected);
     set_enabled(Action::kConvertTwist,  any_selected);
 
     // CSG requires at least 2 models selected, and all must be valid and at

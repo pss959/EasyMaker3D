@@ -135,6 +135,10 @@ Node "Shelves" {
           import_path: "ConvertMirrorIcon.off",
           rotation:    1 0 0 -90,
         },
+        CLONE "T_IconWidget" "ConvertTaperIcon" {
+          action:      "kConvertTaper",
+          import_path: "ConvertTaperIcon.off",
+        },
         CLONE "T_IconWidget" "ConvertTwistIcon" {
           action:      "kConvertTwist",
           import_path: "ConvertTwistIcon.off",
@@ -207,6 +211,9 @@ Node "Shelves" {
             },
             Node "RevSurfToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "RevSurfToolIcon.off" } ]
+            },
+            Node "TaperToolIcon" {
+              shapes: [ CLONE "T_IconShape" { path: "TaperToolIcon.off" } ]
             },
             Node "TextToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "TextToolIcon.off" } ]

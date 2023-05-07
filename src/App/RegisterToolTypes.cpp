@@ -13,6 +13,7 @@
 #include "Tools/RevSurfTool.h"
 #include "Tools/RotationTool.h"
 #include "Tools/ScaleTool.h"
+#include "Tools/TaperTool.h"
 #include "Tools/TextTool.h"
 #include "Tools/TorusTool.h"
 #include "Tools/TranslationTool.h"
@@ -37,6 +38,7 @@ void RegisterToolTypes_() {
     REGISTER_TYPE_(RevSurfTool);
     REGISTER_TYPE_(RotationTool);
     REGISTER_TYPE_(ScaleTool);
+    REGISTER_TYPE_(TaperTool);
     REGISTER_TYPE_(TextTool);
     REGISTER_TYPE_(TorusTool);
     REGISTER_TYPE_(TranslationTool);
