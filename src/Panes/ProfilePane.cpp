@@ -1,5 +1,6 @@
 #include "Panes/ProfilePane.h"
 
+#include <functional>
 #include <limits>
 #include <string>
 #include <vector>
@@ -26,7 +27,18 @@
 
 class ProfilePane::Impl_ {
   public:
-    Impl_(SG::Node &root_node);
+    /// Typedef for function to set the range for a movable point
+    /// Slider2DWidget.
+    typedef std::function<Range2f(Slider2DWidget &,
+                                  const Profile &, size_t)> SliderRangeFunc;
+
+    /// Typedef for function that determines whether a new point can be
+    /// inserted in the Profile at a given index.
+    typedef std::function<bool(const Profile &, size_t)> CanInsertPointFunc;
+
+    Impl_(SG::Node &root_node,
+          const SliderRangeFunc &slider_range_func,
+          const CanInsertPointFunc &can_insert_point_func);
 
     // Sets colors on certain parts. This has to be done after Ion is set up.
     void SetColors();
@@ -46,12 +58,15 @@ class ProfilePane::Impl_ {
                                    float &closest_distance);
 
   private:
-    SG::Node     &root_node_;
-    Vector2f      precision_{0, 0};
-    Snap2D        snapper_;
+    SG::Node           &root_node_;
+    SliderRangeFunc    slider_range_func_;
+    CanInsertPointFunc can_insert_point_func_;
+
+    Vector2f           precision_{0, 0};
+    Snap2D             snapper_;
 
     /// Profile being edited.
-    Profile profile_;
+    Profile            profile_;
 
     /// Notifies when any interaction starts or ends.
     Util::Notifier<bool> activation_;
@@ -113,6 +128,9 @@ class ProfilePane::Impl_ {
     /// true if it is snapped to either neighbor.
     bool SnapPoint_(size_t index, Point2f &point);
 
+    /// Updates the range for the Slider2DWidget for each movable point.
+    void UpdateSliderRanges_();
+
     /// Updates the profile_line_ based on the current Profile. If \p
     /// update_sliders is true, this also updates the positions of the movable
     /// point sliders.
@@ -158,14 +176,28 @@ class ProfilePane::Impl_ {
         return Point2f(.5f + p[0], .5f + p[1]);
     }
 
-    /// Does the opposite of ToProfile_. The Z coordinate is 0 unless specified.
-    static Point3f FromProfile_(const Point2f &p, float z = 0) {
+    /// Does the opposite of ToProfile_ in 2 dimensions.
+    static Point2f FromProfile2_(const Point2f &p, float z = 0) {
         // Convert X and Y from (0,1) to (-.5,.5).
-        return Point3f(p[0] - .5f, p[1] - .5f, z);
+        return Point2f(p[0] - .5f, p[1] - .5f);
+    }
+
+    /// Does the opposite of ToProfile_ in 3 dimensions. The Z coordinate is 0
+    /// unless specified.
+    static Point3f FromProfile3_(const Point2f &p, float z = 0) {
+        return Point3f(FromProfile2_(p), z);
     }
 };
 
-ProfilePane::Impl_::Impl_(SG::Node &root_node) : root_node_(root_node) {
+ProfilePane::Impl_::Impl_(SG::Node &root_node,
+                          const SliderRangeFunc &slider_range_func,
+                          const CanInsertPointFunc &can_insert_point_func) :
+    root_node_(root_node),
+    slider_range_func_(slider_range_func),
+    can_insert_point_func_(can_insert_point_func) {
+    ASSERT(slider_range_func);
+    ASSERT(can_insert_point_func);
+
     snapper_.SetToleranceAngle(TK::kProfilePaneMaxSnapAngle);
 
     // Find all the parts.
@@ -249,7 +281,7 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     GetClosestMidPoint_(p, mid_pt, closest_mid_dist);
 
     if (closest_pt < 0 || closest_mid_dist < closest_pt_dist) {
-        new_point_->SetTranslation(FromProfile_(mid_pt, TK::kPaneZOffset));
+        new_point_->SetTranslation(FromProfile3_(mid_pt, TK::kPaneZOffset));
         new_point_->SetEnabled(true);
         widget = new_point_;
     }
@@ -282,7 +314,7 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
         new_point_->SetEnabled(true);
         for (size_t i = 1; i < points.size(); ++i) {
             const Point2f mp = .5f * (points[i - 1] + points[i]);
-            new_point_->SetTranslation(FromProfile_(mp, TK::kPaneZOffset));
+            new_point_->SetTranslation(FromProfile3_(mp, TK::kPaneZOffset));
             float dist;
             if (func(*new_point_, dist) && dist < closest_distance) {
                 closest_distance = dist;
@@ -301,8 +333,9 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
 void ProfilePane::Impl_::PositionFixedPoints_() {
     const bool is_fixed = profile_.GetType() == Profile::Type::kFixed;
     if (is_fixed) {
-        start_point_->SetTranslation(FromProfile_(profile_.GetPoints().front()));
-        end_point_->SetTranslation(FromProfile_(profile_.GetPoints().back()));
+        const auto &pts = profile_.GetPoints();
+        start_point_->SetTranslation(FromProfile3_(pts.front()));
+        end_point_->SetTranslation(FromProfile3_(pts.back()));
     }
     start_point_->SetEnabled(is_fixed);
     end_point_->SetEnabled(is_fixed);
@@ -331,8 +364,6 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
             slider->SetScale(start_point_->GetScale());
             slider->SetGripDragScale(TK::kPaneGripDragScale);
 
-            // Use the same range as Pane coordinates: (-.5,.5).
-            slider->SetRange(Vector2f(-.5f, -.5f), Vector2f(.5f, .5f));
             slider->GetActivation().AddObserver(
                 this, [&, index](Widget &, bool is_activation){
                     PointActivated_(index, is_activation); });
@@ -343,16 +374,21 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
             movable_parent_->AddChild(slider);
             slider->SetEnabled(true);
         }
+
+        // Update the range for all movable points.
+        UpdateSliderRanges_();
     }
 }
 
 void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
     // If there is a 2D position and it is close enough to start a drag on a
-    // line segment, show the new_point_ widget at the position.
+    // line segment AND a new point can be created between the two neighbors,
+    // show the new_point_ widget at the position.
     const Point2f pt = ToProfile_(point);
     size_t start_index;
-    if (IsNearProfileSegment_(pt, start_index)) {
-        new_point_->SetTranslation(FromProfile_(pt, TK::kPaneZOffset));
+    if (IsNearProfileSegment_(pt, start_index) &&
+        can_insert_point_func_(profile_, start_index)) {
+        new_point_->SetTranslation(FromProfile3_(pt, TK::kPaneZOffset));
         new_point_->SetEnabled(true);
     }
     else {
@@ -428,6 +464,8 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
             profile_changed_.Notify(profile_);
         }
         else {
+            // Update the ranges for all movable point sliders.
+            UpdateSliderRanges_();
             // Make sure all movable points are in the correct place.
             UpdateLine_(true);
         }
@@ -453,7 +491,7 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
     const bool should_snap =
         GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode;
     snap_feedback_->SetEnabled(should_snap && SnapPoint_(index, snapped_pos));
-    snapped_point_->SetTranslation(FromProfile_(snapped_pos, 0));
+    snapped_point_->SetTranslation(FromProfile3_(snapped_pos, 0));
 
     // Update the point in the Profile.
     profile_.SetPoint(index, snapped_pos);
@@ -487,6 +525,17 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, Point2f &point) {
     SetLinePoints_(line_points, *snapped_line_, 1.1 * TK::kPaneZOffset);
 
     return true;
+}
+
+void ProfilePane::Impl_::UpdateSliderRanges_() {
+    for (size_t i = 0; i < profile_.GetPointCount(); ++i) {
+        if (! profile_.IsFixedPoint(i)) {
+            auto slider = GetMovableSlider_(i);
+            const Range2f range = slider_range_func_(*slider, profile_, i);
+            slider->SetRange(Vector2f(FromProfile2_(range.GetMinPoint())),
+                             Vector2f(FromProfile2_(range.GetMaxPoint())));
+        }
+    }
 }
 
 void ProfilePane::Impl_::UpdateLine_(bool update_sliders) {
@@ -586,7 +635,7 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
 
     // Position the delete rectangle and the delete spot widget.
     delete_rect_ = BuildRange(pt, delete_rect_.GetSize());
-    delete_spot_->SetTranslation(FromProfile_(pt, 0));
+    delete_spot_->SetTranslation(FromProfile3_(pt, 0));
 }
 
 size_t ProfilePane::Impl_::GetClosestMovablePoint_(const Point2f &p,
@@ -624,7 +673,7 @@ void ProfilePane::Impl_::SetLinePoints_(const Profile::PointVec &points,
                                         SG::PolyLine &line, float z_offset) {
     // Convert all points to 3D positions.
     auto convert_pt = [&](const Point2f &p){
-        return FromProfile_(p, z_offset);
+        return FromProfile3_(p, z_offset);
     };
     line.SetPoints(Util::ConvertVector<Point3f, Point2f>(points, convert_pt));
 }
@@ -641,8 +690,15 @@ ProfilePane::~ProfilePane() {
 
 void ProfilePane::CreationDone() {
     LeafPane::CreationDone();
-    if (! IsTemplate())
-        impl_.reset(new Impl_(*this));
+    if (! IsTemplate()) {
+        const auto srfunc = [&](Slider2DWidget &s, const Profile &p, size_t i){
+            return GetMovablePointRange(s, p, i);
+        };
+        const auto cifunc = [&](const Profile &p, size_t i){
+            return CanInsertPoint(p, i);
+        };
+        impl_.reset(new Impl_(*this, srfunc, cifunc));
+    }
 }
 
 Util::Notifier<bool> & ProfilePane::GetActivation() {
@@ -691,4 +747,14 @@ BorderPtr ProfilePane::GetFocusBorder() const {
 void ProfilePane::PostSetUpIon() {
     LeafPane::PostSetUpIon();
     impl_->SetColors();
+}
+
+Range2f ProfilePane::GetMovablePointRange(Slider2DWidget &slider,
+                                          const Profile &profile,
+                                          size_t index) const {
+    return Range2f(Point2f(0, 0), Point2f(1, 1));
+}
+
+bool ProfilePane::CanInsertPoint(const Profile &profile, size_t index) const {
+    return true;
 }

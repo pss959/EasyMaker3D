@@ -597,6 +597,10 @@ extern const float    kSnapLengthTolerance;
 /// How close points need to be to be snapped to (in stage coordinates).
 extern const float    kSnapPointTolerance;
 
+/// Minimum Y distance between neighboring points in a TaperProfilePane
+/// profile.
+extern const float    kMinTaperProfilePaneYDistance;
+
 ///@}
 
 /// \name Tooltips

@@ -2,12 +2,14 @@
 
 #include "Base/Memory.h"
 #include "Math/Profile.h"
+#include "Math/Types.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
 
+class Slider2DWidget;
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(ProfilePane);
 
@@ -63,6 +65,19 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     virtual ~ProfilePane() override;
 
     virtual void CreationDone() override;
+
+    /// This is called when setting the range (in 0-1 profile coordinates) of
+    /// the Slider2DWidget used to drag a movable point. The current Profile
+    /// and the index of the point within the profile are supplied. The base
+    /// class defines this to always return (0,1).
+    virtual Range2f GetMovablePointRange(Slider2DWidget &slider,
+                                         const Profile &profile,
+                                         size_t index) const;
+
+    /// This is called to determine if a new point can be inserted into the
+    /// given Profile between the given index and the next point in the
+    /// Profile. The base class defines this to always return true).
+    virtual bool CanInsertPoint(const Profile &profile, size_t index) const;
 
   private:
     class Impl_;
