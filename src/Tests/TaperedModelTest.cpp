@@ -3,6 +3,7 @@
 #include "Models/TaperedModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"
+#include "Util/Tuning.h"
 
 class TaperedModelTest : public SceneTestBase {
 };
@@ -23,6 +24,8 @@ TEST_F(TaperedModelTest, TaperProfile) {
 
     const Point2f pbad0(.3f, 1.1f);
     const Point2f pbad1(.3f, -.1f);
+
+    const Point2f pb2 = pb + Vector2f(0, .5f * TK::kMinTaperProfileYDistance);
 
     // Wrong type.
     prof = Profile::CreateFixedProfile(p0, p1, 2, Profile::PointVec());
@@ -72,6 +75,10 @@ TEST_F(TaperedModelTest, TaperProfile) {
 
     // Non-increasing 4-point profile.
     prof = buildprof(2, Profile::PointVec{p0, pb, pb, p1});
+    EXPECT_FALSE(Taper::IsValidProfile(prof));
+
+    // 4-point profile not increasing enough.
+    prof = buildprof(2, Profile::PointVec{p0, pb2, pb, p1});
     EXPECT_FALSE(Taper::IsValidProfile(prof));
 }
 

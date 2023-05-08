@@ -599,7 +599,7 @@ extern const float    kSnapPointTolerance;
 
 /// Minimum Y distance between neighboring points in a TaperProfilePane
 /// profile.
-extern const float    kMinTaperProfilePaneYDistance;
+extern const float    kMinTaperProfileYDistance;
 
 ///@}
 

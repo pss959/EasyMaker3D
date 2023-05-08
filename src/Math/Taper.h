@@ -17,12 +17,10 @@ struct Taper {
     /// Taper Profile.
     Profile profile = CreateDefaultProfile();
 
-    /// XXXX IsValid() - has to have profile with points decreasing from 1 to 0
-    /// in Y, separated at least by TK::kSomething.
+    /// Returns true if the given Profile is valid for use in a Taper: it has
+    /// to have points monotonically decreasing from 1 to 0 in Y by at least
+    /// TK::kMinTaperProfileYDistance.
     static bool IsValidProfile(const Profile &prof);
-
-    /// XXXX Add func to get X for Y in [0,1].
-    float GetX(float y) const;
 
     /// Equality operator.
     bool operator==(const Taper &t) const {

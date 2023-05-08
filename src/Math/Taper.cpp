@@ -2,6 +2,7 @@
 
 #include "Util/Enum.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 Profile Taper::CreateDefaultProfile() {
     return Profile(Profile::Type::kOpen, 2,
@@ -22,9 +23,10 @@ bool Taper::IsValidProfile(const Profile &prof) {
     if (pts.front()[1] != 1 || pts.back()[1] != 0)
         return false;
 
-    // All other points must be monotonically decreasing in Y.
+    // All other points must be monotonically decreasing in Y, separated at
+    // least by TK::kMinTaperProfileYDistance.
     for (size_t i = 1; i + 1 < pts.size(); ++i)
-        if (pts[i - 1][1] <= pts[i][1])
+        if (pts[i - 1][1] < pts[i][1] + TK::kMinTaperProfileYDistance)
             return false;
 
     return true;
