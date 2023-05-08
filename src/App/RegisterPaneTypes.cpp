@@ -14,6 +14,7 @@
 #include "Panes/SpacerPane.h"
 #include "Panes/SpecialKeyPane.h"
 #include "Panes/SwitcherPane.h"
+#include "Panes/TaperProfilePane.h"
 #include "Panes/TextInputPane.h"
 #include "Panes/TextKeyPane.h"
 #include "Panes/TextPane.h"
@@ -41,6 +42,7 @@ void RegisterPaneTypes_() {
     REGISTER_TYPE_(SpacerPane);
     REGISTER_TYPE_(SpecialKeyPane);
     REGISTER_TYPE_(SwitcherPane);
+    REGISTER_TYPE_(TaperProfilePane);
     REGISTER_TYPE_(TextInputPane);
     REGISTER_TYPE_(TextKeyPane);
     REGISTER_TYPE_(TextPane);

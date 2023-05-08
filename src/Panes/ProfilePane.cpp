@@ -636,6 +636,9 @@ void ProfilePane::Impl_::SetLinePoints_(const Profile::PointVec &points,
 ProfilePane::ProfilePane() {
 }
 
+ProfilePane::~ProfilePane() {
+}
+
 void ProfilePane::CreationDone() {
     LeafPane::CreationDone();
     if (! IsTemplate())

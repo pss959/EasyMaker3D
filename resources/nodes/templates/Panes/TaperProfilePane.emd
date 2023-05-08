@@ -1,7 +1,7 @@
-ProfilePane "T_ProfilePane" {
+TaperProfilePane "T_TaperProfilePane" {
   min_size:      300 300,
   resize_width:  True,
   resize_height: True,
 
   children: [ CLONE "T_ProfilePaneBase" {} ]
-},
+}

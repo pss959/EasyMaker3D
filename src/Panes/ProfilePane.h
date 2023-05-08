@@ -60,6 +60,7 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
 
   protected:
     ProfilePane();
+    virtual ~ProfilePane() override;
 
     virtual void CreationDone() override;
 

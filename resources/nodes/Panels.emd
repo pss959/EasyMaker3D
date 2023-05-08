@@ -12,6 +12,8 @@ Node "Panels" {
   ],
 
   TEMPLATES: [
+    # Pane base types.
+    <"nodes/templates/Panes/ProfilePaneBase.emd">,
     # Basic Pane templates.
     <"nodes/templates/Panes/ButtonPane.emd">,
     <"nodes/templates/Panes/CheckboxPane.emd">,
@@ -21,6 +23,7 @@ Node "Panels" {
     <"nodes/templates/Panes/ProfilePane.emd">,
     <"nodes/templates/Panes/RadioButtonPane.emd">,
     <"nodes/templates/Panes/SliderPane.emd">,
+    <"nodes/templates/Panes/TaperProfilePane.emd">,
     <"nodes/templates/Panes/TextPane.emd">,
     <"nodes/templates/Panes/TextInputPane.emd">,
     # These have to come after TextPane.

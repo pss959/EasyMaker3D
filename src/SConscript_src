@@ -341,6 +341,7 @@ lib_sources = list(chain(
         'SliderPane',
         'SpecialKeyPane',
         'SwitcherPane',
+        'TaperProfilePane',
         'TextInputPane',
         'TextKeyPane',
         'TextPane',

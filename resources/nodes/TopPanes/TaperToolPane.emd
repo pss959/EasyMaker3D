@@ -6,7 +6,7 @@ BoxPane "TaperToolPane" {
   spacing:     14,
 
   panes: [
-    CLONE "T_ProfilePane" "Profile" {
+    CLONE "T_TaperProfilePane" "Profile" {
       background: $BG     { color: "#edddbb" },
       border:     $BORDER { width: 2 },
     },

@@ -1,0 +1,118 @@
+Node "T_ProfilePaneBase" {
+  TEMPLATES: [
+    Cylinder "T_Point" {
+      rotation:      1 0 0 90,
+      top_radius:    .02,
+      bottom_radius: .02,
+      height:        .5,  # Not scaled!
+    },
+
+    Node "T_FixedPoint" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#7777dd" } ],
+        }
+      ],
+      shapes: [
+        CLONE "T_Point" {},
+      ]
+    }
+  ],
+
+  children: [
+    GenericWidget "AreaWidget" {
+      children: [
+        Node {
+          disabled_flags: "kRender",
+          shapes: [ Rectangle {} ],
+        }
+      ]
+    }
+
+    CLONE "T_FixedPoint" "StartPoint" {},
+    CLONE "T_FixedPoint" "EndPoint"   {},
+
+    PushButtonWidget "DeleteSpot" {
+      # Root of DeleteSpot has to have identity scale so code can
+      # compensate for aspect ratio.
+      disabled_flags: "kTraversal",
+      inactive_color: "#226622",  # Dark green when not deleting.
+      active_color:   "#55bb44",  # Bright green when deleting.
+      children: [
+        Node "Rectangle" {
+          scale: .08 .08 .08,
+          translation: 0 0 .1,
+          shapes: [ Rectangle { size: 1 1 } ],
+          children: [
+            Node "X" {
+              scale:       .3 .3 .3,
+              translation: 0 0 .1,
+              shader_names: ["BaseColor"],
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
+                }
+              ],
+              shapes: [
+                Tube { diameter: .4, points: [-1 -1 0, 1  1 0] },
+                Tube { diameter: .4, points: [-1  1 0, 1 -1 0] },
+              ]
+            }
+          ]
+        },
+      ]
+    },
+
+    Node "MovableParent" {},
+
+    Slider2DWidget "MovableSlider" {
+      disabled_flags: "kTraversal",
+      shapes: [ CLONE "T_Point" {} ],
+    },
+
+    GenericWidget "NewPoint" {
+      disabled_flags: "kTraversal",
+      inactive_color: "#cc55d4",
+      shapes: [Box { size: .04 .04 .5 }],
+    },
+
+    Node {  # Non-interactive stuff.
+      pass_name: $LIGHTING_PASS,
+      shader_names: ["BaseColor"],
+      children: [
+        Node "ProfileLine" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#221122" } ],
+            }
+          ],
+          shapes: [
+            PolyLine "Line" {
+              points: [ 0 0 0, 1 1 1 ],  # Replaced in code.
+            }
+          ]
+        },
+        Node "SnapFeedback" {
+          disabled_flags: "kTraversal",
+          children: [
+            Node "SnappedPoint" {
+              shapes: [
+                CLONE "T_Point" {},
+              ]
+            },
+            Node "SnappedLine" {
+              shapes: [
+                PolyLine "Line" {
+                  points: [ 0 0 0, 1 1 1 ],  # Replaced in code.
+                }
+              ]
+            }
+          ]
+        },
+      ]
+    }
+  ]
+},
