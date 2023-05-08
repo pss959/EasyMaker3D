@@ -34,7 +34,7 @@ class RevSurfModel : public PrimitiveModel {
     /// Returns the offset vector used to center the RevSurfModel's mesh if it
     /// is not a full 360-degree sweep. This will be the zero vector for a full
     /// sweep.
-    const Vector3f & GetCenterOffset() const { return center_offset_; }
+    const Vector3f & GetCenterOffset() const;
 
     /// Convenience that creates a valid RevSurfModel Profile from the given
     /// vector of movable profile points.

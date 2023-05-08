@@ -17,11 +17,12 @@ DECL_SHARED_PTR(ClippedModel);
 /// before it has been scaled, rotated, and translated.
 ///
 /// Clipping changes the size of the mesh, so the ClippedModel's center
-/// typically moves as well. The GetCenterOffset() function can be used to get
-/// the offset vector used to reposition the ClippedModel. Note that the Plane
-/// should \em not include this offset; it should be relative to the center of
-/// the unclipped object. For example, a Plane through the center of the
-/// unclipped object should have a distance of 0.
+/// typically moves as well. The GetObjectCenterOffset() and
+/// GetLocalCenterOffset() functions can be used to get the offset vector used
+/// to reposition the ClippedModel. Note that the Plane should \em not include
+/// this offset; it should be relative to the center of the unclipped
+/// object. For example, a Plane through the center of the unclipped object
+/// should have a distance of 0.
 ///
 /// \ingroup Models
 class ClippedModel : public ConvertedModel {
