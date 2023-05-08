@@ -53,6 +53,7 @@ test_sources = [
     'SceneTestBase.cpp',
     'SearchTest.cpp',
     'StringTest.cpp',
+    'TaperedModelTest.cpp',
     'TestBase.cpp',
     'TextUtilsTest.cpp',
     'TimingTest.cpp',

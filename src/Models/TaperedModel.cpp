@@ -4,7 +4,7 @@
 #include "Util/Assert.h"
 
 void TaperedModel::AddFields() {
-    AddModelField(axis_.Init("axis"));
+    AddModelField(axis_.Init("axis", Axis::kY));
     AddModelField(profile_points_.Init("profile_points"));
 
     ConvertedModel::AddFields();
@@ -16,7 +16,7 @@ bool TaperedModel::IsValid(std::string &details) {
 
     // Construct and validate the Profile if points were specified.
     if (profile_points_.WasSet()) {
-        if (! CreateProfile(profile_points_).IsValid()) {
+        if (! Taper::IsValidProfile(CreateProfile(profile_points_))) {
             details = "Invalid profile";
             return false;
         }
@@ -46,13 +46,11 @@ void TaperedModel::SetTaper(const Taper &taper) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-
 Profile TaperedModel::CreateProfile(const Profile::PointVec &points) {
     return Profile(Profile::Type::kOpen, 2, points);
 }
 
 TriMesh TaperedModel::ConvertMesh(const TriMesh &mesh) {
     // Apply the taper to the scaled operand mesh.
-    // XXXX return TaperMesh(mesh, taper_);
-    return mesh; // XXXX
+    return TaperMesh(mesh, taper_);
 }

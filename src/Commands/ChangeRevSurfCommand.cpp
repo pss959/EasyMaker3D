@@ -14,8 +14,8 @@ void ChangeRevSurfCommand::AddFields() {
 bool ChangeRevSurfCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (profile_points_.GetValue().size() == 0) {
-        details = "Not enough profile points";
+    if (! GetProfile().IsValid()) {
+        details = "Invalid profile";
         return false;
     }
     const float sweep_deg = sweep_angle_.GetValue().Degrees();
@@ -37,6 +37,7 @@ void ChangeRevSurfCommand::SetProfile(const Profile &profile) {
     ASSERT(profile.GetMinPointCount() == 3U);
     ASSERT(profile.GetPoints().front() == Point2f(0, 1));
     ASSERT(profile.GetPoints().back()  == Point2f::Zero());
+    ASSERT(profile.IsValid());
 
     // Save only the movable points.
     profile_points_ = profile.GetMovablePoints();

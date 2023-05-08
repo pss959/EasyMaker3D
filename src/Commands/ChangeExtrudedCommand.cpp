@@ -13,8 +13,8 @@ void ChangeExtrudedCommand::AddFields() {
 bool ChangeExtrudedCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (profile_points_.GetValue().size() < 3U) {
-        details = "Not enough profile points";
+    if (! GetProfile().IsValid()) {
+        details = "Invalid profile";
         return false;
     }
     return true;
@@ -28,6 +28,7 @@ void ChangeExtrudedCommand::SetProfile(const Profile &profile) {
     // Make sure the profile is set up for a ExtrudedModel.
     ASSERT(profile.GetType() == Profile::Type::kClosed);
     ASSERT(profile.GetMinPointCount() == 3U);
+    ASSERT(profile.IsValid());
 
     profile_points_ = profile.GetMovablePoints();
 }

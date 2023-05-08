@@ -16,15 +16,21 @@ void ChangeBevelCommand::AddFields() {
 bool ChangeBevelCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (bevel_scale_ <= 0) {
+    const Bevel bevel = GetBevel();
+    if (! bevel.profile.IsValid()) {
+        details = "Invalid profile";
+        return false;
+    }
+    if (bevel.scale <= 0) {
         details = "Bevel scale is not positive";
         return false;
     }
-    const float max_deg = max_angle_.GetValue().Degrees();
+    const float max_deg = bevel.max_angle.Degrees();
     if (max_deg < 0 || max_deg > 180) {
         details = "Maximum angle is out of range";
         return false;
     }
+
     return true;
 }
 
@@ -33,6 +39,7 @@ std::string ChangeBevelCommand::GetDescription() const {
 }
 
 void ChangeBevelCommand::SetBevel(const Bevel &bevel) {
+    ASSERT(bevel.profile.IsValid());
     profile_points_ = bevel.profile.GetMovablePoints();
     bevel_scale_    = bevel.scale;
     max_angle_      = bevel.max_angle;

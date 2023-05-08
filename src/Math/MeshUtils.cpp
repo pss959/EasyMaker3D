@@ -14,8 +14,10 @@
 #include "Math/Linear.h"
 #include "Math/MeshDividing.h"
 #include "Math/Point3fMap.h"
+#include "Math/Taper.h"
 #include "Math/Twist.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
 #include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
@@ -117,16 +119,48 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
         return plane.MirrorPoint(p); }, true);
 }
 
+TriMesh TaperMesh(const TriMesh &mesh, const Taper &taper) {
+    const int dim = Util::EnumInt(taper.axis);
+    const Vector3f dir = GetAxis(dim);
+
+    // Determine the extent of the mesh along the taper axis.
+    const Range1f dist_range = FindMeshExtents_(mesh, dir);
+    const float min  = dist_range.GetMinPoint();
+    const float size = dist_range.GetSize();
+
+    // Slice the mesh at all interior profile points.
+    const auto &prof_pts = taper.profile.GetPoints();
+    TriMesh sliced_mesh = mesh;
+    const float pmin = prof_pts.back()[1];
+    const float pmax = prof_pts.front()[1];
+    if (prof_pts.size() > 2U) {
+        for (size_t i = 1; i + 1 < prof_pts.size(); ++i) {
+            const float frac = (prof_pts[i][1] - pmin) / (pmax - pmin);
+            sliced_mesh = SplitMesh(sliced_mesh, Plane(min + frac * size, dir));
+        }
+    }
+
+    const auto taper_pt = [&](const Point3f &p){
+        // Scale the other 2 dimensions.
+        const float scale = Lerp((p[dim] - min) / size, pmin, pmax);
+        Point3f scaled_p = scale * p;
+        scaled_p[dim] = p[dim];
+        return scaled_p;
+    };
+
+    return ModifyVertices_(sliced_mesh, taper_pt);
+}
+
 TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist) {
     // Determine the extent of the mesh in the twist axis direction.
     const Range1f dist_range = FindMeshExtents_(mesh, twist.axis);
+    const float min  = dist_range.GetMinPoint();
+    const float size = dist_range.GetSize();
 
-    const auto twist_pt = [&twist, dist_range](const Point3f &p){
+    const auto twist_pt = [&](const Point3f &p){
         // Interpolate the angle based on the distance.
         const float dist = ion::math::Dot(Vector3f(p), twist.axis);
-        const Anglef angle = Lerp((dist - dist_range.GetMinPoint()) /
-                                  dist_range.GetSize(),
-                                  Anglef(), twist.angle);
+        const Anglef angle = Lerp((dist - min) / size, Anglef(), twist.angle);
         const Rotationf rot = Rotationf::FromAxisAndAngle(twist.axis, angle);
         return twist.center + rot * (p - twist.center);
     };

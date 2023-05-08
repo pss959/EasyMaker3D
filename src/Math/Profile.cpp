@@ -17,7 +17,6 @@ Profile::Profile(Type type, size_t min_count, const PointVec &points) :
     type_(type),
     min_count_(min_count),
     points_(points) {
-    ASSERT(IsValid());
 }
 
 Profile Profile::CreateFixedProfile(const Point2f &start_point,

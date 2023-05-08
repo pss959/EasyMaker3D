@@ -7,6 +7,7 @@
 
 #include "Math/Types.h"
 
+struct Taper;
 struct Twist;
 
 /// \name Mesh Utility functions
@@ -31,6 +32,9 @@ TriMesh SliceMesh(const TriMesh &mesh, size_t num_slices, const Vector3f &dir);
 
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
+
+/// Tapers a mesh using the given Taper struct.
+TriMesh TaperMesh(const TriMesh &mesh, const Taper &taper);
 
 /// Twists a mesh using the given Twist struct.
 TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist);
