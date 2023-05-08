@@ -154,14 +154,23 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
                                     root->GetTypeName());
         command_manager_->ProcessCommandList(
             Util::CastToDerived<CommandList>(root));
+
+        // Reselect now that the session is loaded so the correct Tool is
+        // attached. Cannot use ReselectAll() here because Tools are not
+        // currently attached.
+        selection_manager_->ChangeSelection(selection_manager_->GetSelection());
     }
     catch (const Parser::Exception &ex) {
+        KLOG('w', "Loading threw exception: " << ex.what());
         if (error)
             *error = ex.what();
         else
             throw;
         return false;
     }
+    KLOG('w', "Loading was successful: "
+         << command_manager_->GetCommandList()->GetCommandCount()
+         << " command(s)");
     command_manager_->GetCommandList()->ClearChanges();
     current_session_name_ = GetSessionNameFromPath_(path);
     action_agent_->UpdateFromSessionState(*command_manager_->GetSessionState());

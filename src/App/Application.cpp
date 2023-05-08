@@ -1137,24 +1137,27 @@ void Application::Impl_::InitTooltip_(Widget &widget) {
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,
                                            SelectionManager::Operation op) {
-    switch (op) {
-      case SelectionManager::Operation::kSelection:
-        tool_box_->AttachToSelection(sel);
-        // If this is the first time the primary selected Model was selected,
-        // try to use a specialized tool for it.
-        if (sel.HasAny() &&
-            sel.GetPrimary().GetModel()->GetSelectionCount() == 1U)
-            tool_box_->UseSpecializedTool(sel);
-        break;
-      case SelectionManager::Operation::kReselection:
-        tool_box_->ReattachTools();
-        break;
-      case SelectionManager::Operation::kDeselection:
-        tool_box_->DetachTools(sel);
-        break;
-      case SelectionManager::Operation::kUpdate:
-        // Nothing to do in this case.
-        break;
+    // Don't update tools while loading a session.
+    if (! MGR_(command)->IsValidating()) {
+        switch (op) {
+          case SelectionManager::Operation::kSelection:
+            tool_box_->AttachToSelection(sel);
+            // If this is the first time the primary selected Model was selected,
+            // try to use a specialized tool for it.
+            if (sel.HasAny() &&
+                sel.GetPrimary().GetModel()->GetSelectionCount() == 1U)
+                tool_box_->UseSpecializedTool(sel);
+            break;
+          case SelectionManager::Operation::kReselection:
+            tool_box_->ReattachTools();
+            break;
+          case SelectionManager::Operation::kDeselection:
+            tool_box_->DetachTools(sel);
+            break;
+          case SelectionManager::Operation::kUpdate:
+            // Nothing to do in this case.
+            break;
+        }
     }
     SC_->tree_panel->ModelsChanged();
 }
