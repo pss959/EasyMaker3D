@@ -316,10 +316,11 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
     using SIType = SnapScript::Instr::Type;
 
     const size_t instr_count = options_.script.GetInstructions().size();
-    std::cout << "  Processing " << Util::EnumToWords(instr.type)
-              << " (instruction " << (cur_instruction_ + 1)
-              << " of " << instr_count << ") on line "
-              << instr.line_number << "\n";
+    if (options_.report)
+        std::cout << "  Processing " << Util::EnumToWords(instr.type)
+                  << " (instruction " << (cur_instruction_ + 1)
+                  << " of " << instr_count << ") on line "
+                  << instr.line_number << "\n";
 
     // Skip snap instructions if disabled.
     if (options_.nosnap && (instr.type == SIType::kSnap ||

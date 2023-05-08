@@ -19,8 +19,9 @@ class ScriptedApp : public Application {
     /// This struct adds some additional options.
     struct Options : public Application::Options {
         SnapScript script;
-        bool       nosnap = false;
-        bool       remain = false;
+        bool       nosnap = false;  ///< Ignore image snapping instructions.
+        bool       remain = false;  ///< Leave the window up after.
+        bool       report = false;   ///< Report each instruction when executed.
     };
 
     bool Init(const Options &options);

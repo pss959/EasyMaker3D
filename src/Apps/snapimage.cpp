@@ -99,6 +99,7 @@ int main(int argc, const char *argv[]) {
     options.fullscreen         = args.GetBool("--fullscreen");
     options.nosnap             = args.GetBool("--nosnap");
     options.remain             = args.GetBool("--remain");
+    options.report             = true;
     options.show_session_panel = false;
 
     // Note that this must have the same aspect ratio as fullscreen.
