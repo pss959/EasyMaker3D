@@ -57,6 +57,12 @@ void RevSurfModel::SetSweepAngle(const Anglef &angle) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
+const Vector3f & RevSurfModel::GetCenterOffset() const {
+    // Make sure the mesh and offset are up to date.
+    GetMesh();
+    return center_offset_;
+}
+
 Profile RevSurfModel::CreateProfile(const Profile::PointVec &points) {
     ASSERT(! points.empty());
     return Profile(Point2f(0, 1), Point2f(0, 0), points, 3);
