@@ -1,7 +1,7 @@
 #include "Panels/CSGToolPanel.h"
 
 #include "Panes/RadioButtonPane.h"
-
+#include "Util/Enum.h"
 
 void CSGToolPanel::SetOperation(CSGOperation operation) {
     operation_ = operation;
@@ -20,7 +20,8 @@ void CSGToolPanel::InitInterface() {
 
     // Detect changes to the operation.
     auto set_op = [&](size_t index){
-        const CSGOperation new_operation = static_cast<CSGOperation>(index);
+        const CSGOperation new_operation =
+            Util::EnumFromIndex<CSGOperation>(index);
         if (new_operation != operation_) {
             operation_ = new_operation;
             ReportChange("Operation", InteractionType::kImmediate);

@@ -38,8 +38,6 @@ class InfoPanel : public Panel {
   protected:
     InfoPanel() {}
 
-    virtual void CreationDone() override;
-
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
 

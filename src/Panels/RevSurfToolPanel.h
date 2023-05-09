@@ -47,7 +47,7 @@ class RevSurfToolPanel : public ToolPanel {
 protected:
     RevSurfToolPanel() {}
 
-    virtual void CreationDone() override;
+    virtual void InitInterface() override;
 
   private:
     Vector2f precision_{0, 0};

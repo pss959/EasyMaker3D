@@ -37,7 +37,6 @@ class TextToolPanel : public ToolPanel {
   protected:
     TextToolPanel() {}
 
-    virtual void CreationDone() override;
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
 

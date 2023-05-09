@@ -34,7 +34,7 @@ class BevelToolPanel : public ToolPanel {
   protected:
     BevelToolPanel() {}
 
-    virtual void CreationDone() override;
+    virtual void InitInterface() override;
 
   private:
     bool was_bevel_set_ = false;

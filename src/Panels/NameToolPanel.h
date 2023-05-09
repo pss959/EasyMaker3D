@@ -28,7 +28,6 @@ class NameToolPanel : public ToolPanel {
   protected:
     NameToolPanel() {}
 
-    virtual void CreationDone() override;
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
 

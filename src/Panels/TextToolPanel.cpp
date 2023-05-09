@@ -6,9 +6,7 @@
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 
-void TextToolPanel::CreationDone() {
-    ToolPanel::CreationDone();
-
+void TextToolPanel::InitInterface() {
     auto &root_pane = GetPane();
     text_pane_    = root_pane->FindTypedPane<TextInputPane>("Text");
     font_pane_    = root_pane->FindTypedPane<DropdownPane>("Font");
@@ -28,9 +26,7 @@ void TextToolPanel::CreationDone() {
         this, [&](const std::string &choice){ ChangeFont_(choice); });
     spacing_pane_->GetValueChanged().AddObserver(
         this, [&](float val){ ChangeSpacing_(val); });
-}
 
-void TextToolPanel::InitInterface() {
     AddButtonFunc("Apply",
                   [&](){ ReportChange("Apply", InteractionType::kImmediate); });
 }

@@ -43,7 +43,7 @@ class ExtrudedToolPanel : public ToolPanel {
 protected:
     ExtrudedToolPanel() {}
 
-    virtual void CreationDone() override;
+    virtual void InitInterface() override;
 
   private:
     Vector2f precision_{0, 0};

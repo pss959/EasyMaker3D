@@ -8,9 +8,22 @@
 #include "Panes/TextInputPane.h"
 #include "Util/String.h"
 
-void ExtrudedToolPanel::CreationDone() {
-    ToolPanel::CreationDone();
+void ExtrudedToolPanel::SetProfile(const Profile &profile) {
+    profile_pane_->GetProfileChanged().EnableObserver(this, false);
+    profile_pane_->SetProfile(profile);
+    profile_pane_->GetProfileChanged().EnableObserver(this, true);
+}
 
+const Profile & ExtrudedToolPanel::GetProfile() const {
+    return profile_pane_->GetProfile();
+}
+
+ClickableWidgetPtr ExtrudedToolPanel::GetGripWidget(const Point2f &panel_point) {
+    // Ask the ProfilePane.
+    return profile_pane_->GetGripWidget(panel_point);
+}
+
+void ExtrudedToolPanel::InitInterface() {
     auto &root_pane = GetPane();
     snap_checkbox_ = root_pane->FindTypedPane<CheckboxPane>("SnapToPrecision");
     profile_pane_  = root_pane->FindTypedPane<ProfilePane>("Profile");
@@ -37,21 +50,6 @@ void ExtrudedToolPanel::CreationDone() {
         this, [&](float s){ UpdateSidesFromSlider_(static_cast<size_t>(s)); });
 
     AddButtonFunc("SetSides", [&](){ SetToPolygon_(); });
-}
-
-void ExtrudedToolPanel::SetProfile(const Profile &profile) {
-    profile_pane_->GetProfileChanged().EnableObserver(this, false);
-    profile_pane_->SetProfile(profile);
-    profile_pane_->GetProfileChanged().EnableObserver(this, true);
-}
-
-const Profile & ExtrudedToolPanel::GetProfile() const {
-    return profile_pane_->GetProfile();
-}
-
-ClickableWidgetPtr ExtrudedToolPanel::GetGripWidget(const Point2f &panel_point) {
-    // Ask the ProfilePane.
-    return profile_pane_->GetGripWidget(panel_point);
 }
 
 void ExtrudedToolPanel::UpdatePrecision_() {

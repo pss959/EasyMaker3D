@@ -5,34 +5,6 @@
 #include "Panes/ProfilePane.h"
 #include "Panes/SliderPane.h"
 
-void RevSurfToolPanel::CreationDone() {
-    ToolPanel::CreationDone();
-
-    auto &root_pane = GetPane();
-    snap_checkbox_ = root_pane->FindTypedPane<CheckboxPane>("SnapToPrecision");
-    profile_pane_  = root_pane->FindTypedPane<ProfilePane>("Profile");
-
-    auto lsp = root_pane->FindTypedPane<LabeledSliderPane>("SweepAngleSlider");
-    sweep_angle_slider_ = lsp->GetSliderPane();
-
-    // Set up the initial slider value.
-    sweep_angle_slider_->SetValue(360);
-
-    // Detect changes to everything.
-    snap_checkbox_->GetStateChanged().AddObserver(
-        this, [&](){ UpdatePrecision_(); });
-
-    profile_pane_->GetActivation().AddObserver(
-        this, [&](bool is_act){ Activate_("Profile", is_act); });
-    profile_pane_->GetProfileChanged().AddObserver(
-        this, [&](const Profile &){ Change_("Profile"); });
-
-    sweep_angle_slider_->GetActivation().AddObserver(
-        this, [&](bool is_act){ Activate_("SweepAngle", is_act); });
-    sweep_angle_slider_->GetValueChanged().AddObserver(
-        this, [&](float){ Change_("SweepAngle"); });
-}
-
 void RevSurfToolPanel::SetProfile(const Profile &profile) {
     profile_pane_->GetProfileChanged().EnableObserver(this, false);
     profile_pane_->SetProfile(profile);
@@ -69,6 +41,32 @@ ClickableWidgetPtr RevSurfToolPanel::GetGripWidget(const Point2f &panel_point) {
     }
 
     return widget;
+}
+
+void RevSurfToolPanel::InitInterface() {
+    auto &root_pane = GetPane();
+    snap_checkbox_ = root_pane->FindTypedPane<CheckboxPane>("SnapToPrecision");
+    profile_pane_  = root_pane->FindTypedPane<ProfilePane>("Profile");
+
+    auto lsp = root_pane->FindTypedPane<LabeledSliderPane>("SweepAngleSlider");
+    sweep_angle_slider_ = lsp->GetSliderPane();
+
+    // Set up the initial slider value.
+    sweep_angle_slider_->SetValue(360);
+
+    // Detect changes to everything.
+    snap_checkbox_->GetStateChanged().AddObserver(
+        this, [&](){ UpdatePrecision_(); });
+
+    profile_pane_->GetActivation().AddObserver(
+        this, [&](bool is_act){ Activate_("Profile", is_act); });
+    profile_pane_->GetProfileChanged().AddObserver(
+        this, [&](const Profile &){ Change_("Profile"); });
+
+    sweep_angle_slider_->GetActivation().AddObserver(
+        this, [&](bool is_act){ Activate_("SweepAngle", is_act); });
+    sweep_angle_slider_->GetValueChanged().AddObserver(
+        this, [&](float){ Change_("SweepAngle"); });
 }
 
 void RevSurfToolPanel::UpdatePrecision_() {

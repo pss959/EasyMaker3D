@@ -44,15 +44,6 @@ static std::string ToString_(const Anglef &a) {
 // InfoPanel functions.
 // ----------------------------------------------------------------------------
 
-void InfoPanel::CreationDone() {
-    Panel::CreationDone();
-
-    auto &root_pane = GetPane();
-    contents_pane_  = root_pane->FindTypedPane<ContainerPane>("Contents");
-    text_pane_      = root_pane->FindTypedPane<TextPane>("InfoText");
-    separator_pane_ = root_pane->FindPane("InfoSeparator");
-}
-
 void InfoPanel::SetInfo(const Info &info) {
     ASSERT(info.selection.HasAny() || info.point_target || info.edge_target);
 
@@ -72,6 +63,11 @@ void InfoPanel::SetInfo(const Info &info) {
 }
 
 void InfoPanel::InitInterface() {
+    auto &root_pane = GetPane();
+    contents_pane_  = root_pane->FindTypedPane<ContainerPane>("Contents");
+    text_pane_      = root_pane->FindTypedPane<TextPane>("InfoText");
+    separator_pane_ = root_pane->FindPane("InfoSeparator");
+
     AddButtonFunc("Done", [this](){ Close("Done");     });
 }
 
