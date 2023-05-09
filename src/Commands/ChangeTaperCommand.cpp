@@ -25,9 +25,6 @@ std::string ChangeTaperCommand::GetDescription() const {
 }
 
 void ChangeTaperCommand::SetTaper(const Taper &taper) {
-    if (! Taper::IsValidProfile(taper.profile))
-        std::cerr << "XXXX BAD TAPER: " << taper.ToString() << "\n";
-
     ASSERT(Taper::IsValidProfile(taper.profile));
     axis_           = taper.axis;
     profile_points_ = taper.profile.GetPoints();
