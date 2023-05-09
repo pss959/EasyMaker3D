@@ -93,8 +93,8 @@ void Profile::InsertPoint(size_t index, const Point2f &point) {
 }
 
 void Profile::RemovePoint(size_t index) {
-    ASSERT(points_.size() > min_count_);
     ASSERT(! IsFixedPoint(index));
+    ASSERT(points_.size() > min_count_);
     points_.erase(points_.begin() + index);
 }
 

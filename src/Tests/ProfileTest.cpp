@@ -36,16 +36,15 @@ TEST_F(ProfileTest, Fixed0) {
     TEST_THROW(p.GetNextPoint(1),     AssertException, "index");
 }
 
-#if XXXX
 TEST_F(ProfileTest, Fixed1) {
     // Create a fixed profile with 1 interior point.
     const Point2f p0(0, 1);
     const Point2f p1(0, 0);
     const Point2f pm(1, .5f);
 
-    Profile p(p0, p1, Profile::PointVec{ pm }, 3);
+    Profile p = Profile::CreateFixedProfile(p0, p1, 3, Profile::PointVec{ pm });
     EXPECT_TRUE(p.IsValid());
-    EXPECT_TRUE(p.IsFixed());
+    EXPECT_EQ(Profile::Type::kFixed, p.GetType());
     EXPECT_EQ(3U, p.GetPointCount());
     EXPECT_EQ(1U, p.GetMovablePointCount());
     const auto pp = p.GetPoints();
@@ -73,9 +72,9 @@ TEST_F(ProfileTest, Closed) {
         Point2f(0, 0), Point2f(1, 0),
         Point2f(1, 1), Point2f(0, 1)
     };
-    Profile p(pts, 3);
+    Profile p(Profile::Type::kClosed, 3, pts);
     EXPECT_TRUE(p.IsValid());
-    EXPECT_FALSE(p.IsFixed());
+    EXPECT_EQ(Profile::Type::kClosed, p.GetType());
     EXPECT_EQ(4U,  p.GetPointCount());
     EXPECT_EQ(4U,  p.GetMovablePointCount());
     EXPECT_EQ(pts, p.GetPoints());
@@ -103,7 +102,8 @@ TEST_F(ProfileTest, Edit) {
     const Point2f p1(1, 0);
 
     // Create a fixed profile with 1 interior point.
-    Profile p(p0, p1, Profile::PointVec{ Point2f(1, .5f) }, 3);
+    Profile p = Profile::CreateFixedProfile(
+        p0, p1, 3, Profile::PointVec{ Point2f(1, .5f) });
 
     // Move the interior point.
     p.SetPoint(1, Point2f(.5f, .5f));
@@ -153,12 +153,11 @@ TEST_F(ProfileTest, Edit) {
 
     // Test error cases:
 
-    TEST_THROW(p.RemovePoint(0), AssertException, "fixed");
-    TEST_THROW(p.RemovePoint(2), AssertException, "fixed");
+    TEST_THROW(p.RemovePoint(0), AssertException, "Fixed");
+    TEST_THROW(p.RemovePoint(2), AssertException, "Fixed");
     TEST_THROW(p.RemovePoint(1), AssertException, "min_count");
-    TEST_THROW(p.SetPoint(0,    Point2f(.5f, .5f)), AssertException, "fixed");
-    TEST_THROW(p.SetPoint(2,    Point2f(.5f, .5f)), AssertException, "fixed");
+    TEST_THROW(p.SetPoint(0,    Point2f(.5f, .5f)), AssertException, "Fixed");
+    TEST_THROW(p.SetPoint(2,    Point2f(.5f, .5f)), AssertException, "Fixed");
     TEST_THROW(p.SetPoint(3,    Point2f(.5f, .5f)), AssertException, "index");
     TEST_THROW(p.InsertPoint(3, Point2f(.5f, .5f)), AssertException, "index");
 }
-#endif
