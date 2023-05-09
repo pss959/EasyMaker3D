@@ -68,6 +68,34 @@ static TriMesh ModifyVertices_(
     return new_mesh;
 }
 
+/// Given a Taper and a Y value in the range [0,1], this returns the X value
+/// corresponding to the Taper scale.
+static float GetTaperScale(const Taper &taper, float y) {
+    const auto &prof_pts = taper.profile.GetPoints();
+
+    float scale = -1;
+    // Special case for Y=1.
+    if (y == 1) {
+        scale = prof_pts[0][0];
+    }
+    else {
+        // Otherwise, do a linear search. The Profile should never be so
+        // big that it really matters how this search is done.
+        for (size_t i = 1; i < prof_pts.size(); ++i) {
+            // Profile points go from Y=1 at the beginning to Y=0 at the end.
+            const Point2f &prev = prof_pts[i - 1];
+            const Point2f &next = prof_pts[i];
+            if (y < prev[1] && y >= next[1]) {
+                scale = Lerp((y - next[1]) / (prev[1] - next[1]),
+                             next[0], prev[0]);
+                break;
+            }
+        }
+    }
+    ASSERT(scale >= 0);
+    return scale;
+}
+
 /// Returns the area of the i'th triangle in a TriMesh.
 static float GetTriangleArea_(const TriMesh &mesh, size_t i) {
     ASSERT(i < mesh.GetTriangleCount());
@@ -120,6 +148,7 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
 }
 
 TriMesh TaperMesh(const TriMesh &mesh, const Taper &taper) {
+    ASSERT(Taper::IsValidProfile(taper.profile));
     const int dim = Util::EnumInt(taper.axis);
     const Vector3f dir = GetAxis(dim);
 
@@ -142,7 +171,7 @@ TriMesh TaperMesh(const TriMesh &mesh, const Taper &taper) {
 
     const auto taper_pt = [&](const Point3f &p){
         // Scale the other 2 dimensions.
-        const float scale = Lerp((p[dim] - min) / size, pmin, pmax);
+        const float scale = GetTaperScale(taper, (p[dim] - min) / size);
         Point3f scaled_p = scale * p;
         scaled_p[dim] = p[dim];
         return scaled_p;

@@ -3,6 +3,7 @@
 #include "Models/TaperedModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"
+#include "Util/General.h"
 #include "Util/Tuning.h"
 
 class TaperedModelTest : public SceneTestBase {
@@ -82,4 +83,31 @@ TEST_F(TaperedModelTest, TaperProfile) {
     EXPECT_FALSE(Taper::IsValidProfile(prof));
 }
 
-// XXXX Add actual TaperedModel tests. Check slicing, etc...
+TEST_F(TaperedModelTest, DefaultTaper) {
+    // 8x8x8 box at (0,4,0).
+    ModelPtr box = Model::CreateModel<BoxModel>();
+    box->SetUniformScale(4);
+    box->SetTranslation(Vector3f(0, 4, 0));
+
+    TaperedModelPtr tapered = Model::CreateModel<TaperedModel>();
+    tapered->SetOperandModel(box);
+
+    // Should be using a default taper.
+    EXPECT_EQ(Axis::kY, tapered->GetTaper().axis);
+    EXPECT_EQ(Profile::Type::kOpen, tapered->GetTaper().profile.GetType());
+    EXPECT_EQ(2U, tapered->GetTaper().profile.GetPointCount());
+
+    // The result should be a pyramid with a square base.
+    const auto &mesh = tapered->GetMesh();
+    EXPECT_EQ(5U, mesh.points.size());
+
+    // One of the values should be the apex at (0,1,0); the others should form
+    // the square base.
+    EXPECT_TRUE(Util::Contains(mesh.points, Point3f(0, 1, 0)));
+    EXPECT_TRUE(Util::Contains(mesh.points, Point3f(-1, -1, -1)));
+    EXPECT_TRUE(Util::Contains(mesh.points, Point3f(-1, -1,  1)));
+    EXPECT_TRUE(Util::Contains(mesh.points, Point3f( 1, -1, -1)));
+    EXPECT_TRUE(Util::Contains(mesh.points, Point3f( 1, -1,  1)));
+}
+
+// XXXX Add more TaperedModel tests. Check slicing, etc...
