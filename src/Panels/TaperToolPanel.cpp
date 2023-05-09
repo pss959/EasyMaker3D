@@ -62,10 +62,6 @@ Taper TaperToolPanel::GetTaper() const {
 }
 
 ClickableWidgetPtr TaperToolPanel::GetGripWidget(const Point2f &panel_point) {
-    ClickableWidgetPtr widget;
-
-    // XXXX Maybe radio buttons?
-
     return profile_pane_->GetGripWidget(panel_point);
 }
 
