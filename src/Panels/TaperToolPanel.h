@@ -3,11 +3,12 @@
 #include <string>
 
 #include "Base/Memory.h"
+#include "Enums/Axis.h"
 #include "Math/Taper.h"
 #include "Panels/ToolPanel.h"
 
 DECL_SHARED_PTR(TaperToolPanel);
-DECL_SHARED_PTR(ProfilePane);
+DECL_SHARED_PTR(TaperProfilePane);
 DECL_SHARED_PTR(SliderPane);
 
 namespace Parser { class Registry; }
@@ -33,15 +34,17 @@ class TaperToolPanel : public ToolPanel {
   protected:
     TaperToolPanel() {}
 
-    virtual void CreationDone() override;
+    virtual void InitInterface() override;
+    virtual void UpdateInterface() override;
 
   private:
     bool was_taper_set_ = false;
     bool is_dragging_   = false;
 
-    // Parts.
-    ProfilePanePtr profile_pane_;
-    // XXXX Add radio buttons for Axis.
+    TaperProfilePanePtr profile_pane_;
+
+    /// Currently selected Axis.
+    Axis axis_ = Axis::kY;
 
     void Activate_(const std::string &key, bool is_activation);
     void Change_(const std::string &key);
