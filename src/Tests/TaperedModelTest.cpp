@@ -110,4 +110,60 @@ TEST_F(TaperedModelTest, DefaultTaper) {
     EXPECT_TRUE(Util::Contains(mesh.points, Point3f( 1, -1,  1)));
 }
 
-// XXXX Add more TaperedModel tests. Check slicing, etc...
+TEST_F(TaperedModelTest, TaperSlice) {
+    // 8x8x8 box at (0,4,0).
+    ModelPtr box = Model::CreateModel<BoxModel>();
+    box->SetUniformScale(4);
+    box->SetTranslation(Vector3f(0, 4, 0));
+
+    TaperedModelPtr tapered = Model::CreateModel<TaperedModel>();
+    tapered->SetOperandModel(box);
+
+    // Create a taper with 3 points with the middle point at Y=.25 and set it
+    // in the TaperedModel.
+    Taper taper;
+    taper.profile.InsertPoint(1, Point2f(.5f, .25f));
+
+    // Do this for each axis.
+    for (const auto axis: Util::EnumValues<Axis>()) {
+        // Update the TaperedModel.
+        taper.axis = axis;
+        tapered->SetTaper(taper);
+
+        // Check the taper.
+        EXPECT_EQ(axis, tapered->GetTaper().axis);
+        EXPECT_EQ(Profile::Type::kOpen, tapered->GetTaper().profile.GetType());
+        EXPECT_EQ(3U, tapered->GetTaper().profile.GetPointCount());
+
+        // Check the mesh.
+        const auto &mesh = tapered->GetMesh();
+        EXPECT_EQ(13U, mesh.points.size());  // Sliced at Y=.25 and triangulated.
+
+        // One of the points should be the apex at 1 in the axis dimension and
+        // 0 in the other 2 dimensions. The other points should form 2 squares.
+        const int dim = Util::EnumInt(axis);
+        const int d0  = (dim + 1) % 3;
+        const int d1  = (dim + 2) % 3;
+
+        // Make a point with d in the axis dimension and a, b in the other 2.
+        const auto makept = [dim, d0, d1](float d, float a, float b){
+            Point3f p;
+            p[dim] = d;
+            p[d0]  = a;
+            p[d1]  = b;
+            return p;
+        };
+
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(1, 0, 0)));
+
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-.5f, -.5f, -.5f)));
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-.5f, -.5f,  .5f)));
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-.5f,  .5f, -.5f)));
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-.5f,  .5f,  .5f)));
+
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-1, -1, -1)));
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-1, -1,  1)));
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-1,  1, -1)));
+        EXPECT_TRUE(Util::Contains(mesh.points, makept(-1,  1,  1)));
+    }
+}
