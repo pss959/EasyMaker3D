@@ -10,9 +10,11 @@ BoxPane "TextToolPane" {
   background: $BG { color: "#aaaaaa" },
   min_size:   400 200,
   padding:    12,
-  spacing:    14,
+  spacing:    10,
 
   panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "Text Model Editor" },
+
     GridPane {
       row_count:         3,
       column_count:      2,

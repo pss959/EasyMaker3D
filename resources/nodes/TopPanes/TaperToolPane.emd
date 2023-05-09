@@ -6,6 +6,8 @@ BoxPane "TaperToolPane" {
   spacing:     14,
 
   panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "Taper Model Editor" },
+
     CLONE "T_TaperProfilePane" "Profile" {
       background: $BG     { color: "#edddbb" },
       border:     $BORDER { width: 2 },

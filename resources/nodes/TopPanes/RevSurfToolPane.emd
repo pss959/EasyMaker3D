@@ -5,6 +5,8 @@ BoxPane "RevSurfToolPane" {
   spacing:    14,
 
   panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "RevSurf Model Editor" },
+
     # Snap to precision checkbox on the top.
     BoxPane {
       orientation: "kHorizontal",

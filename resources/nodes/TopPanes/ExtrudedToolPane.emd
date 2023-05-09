@@ -4,6 +4,8 @@ BoxPane "ExtrudedToolPane" {
   spacing:    14,
 
   panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "Extruded Model Editor" },
+
     # Snap to precision checkbox on the top.
     BoxPane {
       orientation: "kHorizontal",
