@@ -12,7 +12,7 @@ CommandList {
       initial_scale: 2,
     },
     ScaleCommand {
-      ratios: 1.75 1.75 1.75,
+      ratios: 1.5 1.5 1.5,
       mode: "kBaseSymmetric",
       model_names: ["Sphere_1"],
     },
