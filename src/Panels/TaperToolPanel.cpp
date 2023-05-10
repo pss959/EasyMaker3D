@@ -23,7 +23,7 @@ void TaperToolPanel::InitInterface() {
 
     // Detect changes to the axis.
     auto set_axis = [&](size_t index){
-        const Axis new_axis = Util::EnumFromIndex<Axis>(index);
+        const Axis new_axis = FromUserAxis(Util::EnumFromIndex<Axis>(index));
         if (new_axis != axis_) {
             axis_ = new_axis;
             ReportChange("Axis", InteractionType::kImmediate);
@@ -36,7 +36,7 @@ void TaperToolPanel::InitInterface() {
 
 void TaperToolPanel::UpdateInterface() {
     // Turn on the correct radio button.
-    const std::string axis_name = Util::EnumToWord(axis_);
+    const std::string axis_name = Util::EnumToWord(ToUserAxis(axis_));
     GetPane()->FindTypedPane<RadioButtonPane>(axis_name)->SetState(true);
 }
 
@@ -74,4 +74,12 @@ void TaperToolPanel::Activate_(const std::string &key, bool is_activation) {
 void TaperToolPanel::Change_(const std::string &key) {
     ReportChange(key, is_dragging_ ? InteractionType::kDrag :
                  InteractionType::kImmediate);
+}
+
+Axis TaperToolPanel::ToUserAxis(Axis axis) {
+    return axis == Axis::kX ? Axis::kX : axis == Axis::kY ? Axis::kZ : Axis::kY;
+}
+
+Axis TaperToolPanel::FromUserAxis(Axis axis) {
+    return axis == Axis::kX ? Axis::kX : axis == Axis::kY ? Axis::kZ : Axis::kY;
 }
