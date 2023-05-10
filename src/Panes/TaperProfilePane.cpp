@@ -12,26 +12,31 @@ TaperProfilePane::~TaperProfilePane() {
 Range2f TaperProfilePane::GetMovablePointRange(Slider2DWidget &slider,
                                                const Profile &profile,
                                                size_t index) const {
-    float ymin;
-    float ymax;
+    Point2f min;
+    Point2f max;
 
     // First and last points are limited to constant Y values.
     if (index == 0) {
-        ymin = ymax = 1;
+        min.Set(0, 1);
+        max.Set(1, 1);
     }
     else if (index + 1 == profile.GetPointCount()) {
-        ymin = ymax = 0;
+        min.Set(0, 0);
+        max.Set(1, 0);
     }
     // All other points are constrained by their neighbors to be monotonically
-    // decreasing in Y.
+    // decreasing in Y and to not reach 0 in X.
     else {
+        min[0] = TK::kMinTaperProfileYDistance;
+        max[0] = 1;
+
         const auto &pts = profile.GetPoints();
         const auto &prev = pts[index - 1];
         const auto &next = pts[index + 1];
-        ymax = prev[1] - TK::kMinTaperProfileYDistance;
-        ymin = next[1] + TK::kMinTaperProfileYDistance;
+        max[1] = prev[1] - TK::kMinTaperProfileYDistance;
+        min[1] = next[1] + TK::kMinTaperProfileYDistance;
     }
-    return Range2f(Point2f(0, ymin), Point2f(1, ymax));
+    return Range2f(min, max);
 }
 
 bool TaperProfilePane::CanInsertPoint(const Profile &profile,
