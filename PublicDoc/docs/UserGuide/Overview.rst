@@ -123,7 +123,7 @@ Coordinate System, Units, and Dimension Colors
 .. incimage:: /images/static/CoordSystem.jpg 200px right
 
 |appname| uses the same coordinate system that most 3D printing software uses:
-right-handed, with +X to the right, +Y away from the viewer, and +Z up. The top
+left-handed, with +X to the right, +Y toward the viewer, and +Z up. The top
 surface of the :ref:`stage <ug-stage>` is at Z=0.
 
 All dimensions in |appname| are essentially unitless, so you can consider them

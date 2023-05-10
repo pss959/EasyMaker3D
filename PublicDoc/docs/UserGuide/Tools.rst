@@ -531,6 +531,8 @@ Taper Tool displays a :ref:`Taper Tool Panel <ug-taper-tool-panel>` above the
 primary selection.  Changes to the taper profile or axis in the panel are
 applied to all selected Tapered models.
 
+|block-image|
+
 .. _ug-text-tool:
 
 

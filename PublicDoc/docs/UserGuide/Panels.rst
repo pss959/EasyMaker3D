@@ -623,7 +623,44 @@ Taper Tool Panel
 
 .. incimage:: /images/TaperToolPanel.jpg 200px right
 
-XXXX Fill this in.
+The :newterm:`Taper Tool Panel` lets you edit the taper specification for all
+selected :ref:`Tapered models <ug-converted-models>`. The panel initially shows
+the current axis and profile of the :ref:`primary selection
+<ug-selection>`. Any changes made in the panel are applied to all selected
+Tapered models; the models update in real time as the taper is edited.
+
+The taper profile is used to scale the vertices of each Tapered model along the
+specified axis. The position of each point in the taper profile defines how
+much to scale the vertices. A point all the way to the left scales by 0 and a
+point all the way to the right scales by 1. Note that only the top and bottom
+profile points may scale by 0; otherwise the resulting mesh would be invalid.
+
+|block-image|
+
+Changing the Taper Axis
+:::::::::::::::::::::::
+
+The axis along which the taper is applied can be changed with the radio buttons
+at the bottom of the panel. The default is the Z (up) axis, which is likely to
+be the most useful for 3D printed models. The X (left/right) and Y (front/back)
+axes may also be useful in some cases.
+
+Note that the taper axis is always a local axis of each selected Tapered model
+the tool is operating on.
+
+Editing the Taper Profile
+:::::::::::::::::::::::::
+
+Editing the profile for Tapered models is essentially the same as in the
+:ref:`Bevel Tool Panel <ug-bevel-tool-panel>`, with the following exceptions:
+
+  - The top point is constrained to the top of the panel and the bottom point
+    is constrained to the bottom; they can move only left and right.
+  - Any points between the top and bottom points is constrained to be a small
+    distance below the point above it and a small distance above the point
+    below it. The resulting profile has points that all decrease in height.
+  - A new point can not be inserted between two existing points that are very
+    close together in height.
 
 .. _ug-text-tool-panel:
 
