@@ -248,8 +248,10 @@ bool ScriptedApp::Init(const Options &options) {
     context.scene_context->left_controller->SetEnabled(false);
     context.scene_context->right_controller->SetEnabled(false);
 
+#if ENABLE_DEBUG_FEATURES
     // Make sure there is no debug text visible.
     Debug::DisplayDebugText("");
+#endif
 
     // Ignore mouse events from GLFWViewer so they do not interfere with the
     // click and drag events.
