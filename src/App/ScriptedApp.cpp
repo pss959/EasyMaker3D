@@ -527,7 +527,7 @@ void ScriptedApp::SetTouchMode_(bool is_on) {
 }
 
 bool ScriptedApp::TakeSnapshot_(const Range2f &rect,
-                                 const std::string &file_name) {
+                                const std::string &file_name) {
     const auto &minp = rect.GetMinPoint();
     const auto  size = rect.GetSize();
 
@@ -552,7 +552,7 @@ bool ScriptedApp::TakeSnapshot_(const Range2f &rect,
 }
 
 bool ScriptedApp::GetObjRect_(const std::string &object_name, float margin,
-                               Range2f &rect) {
+                              Range2f &rect) {
     // Search in the scene for the object.
     const auto &sc = *GetContext().scene_context;
     const auto path = SG::FindNodePathInScene(*sc.scene, object_name, true);
