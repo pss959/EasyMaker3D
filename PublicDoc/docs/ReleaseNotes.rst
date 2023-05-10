@@ -1,6 +1,28 @@
 |appname| Release Notes
 =======================
 
+Release 1.6.0 (May, 2023)
+---------------------------
+
+ - New Features:
+
+   - Added Tapered model and Taper Tool.
+
+   - Added titles to all panel-based tools.
+
+ - Bug Fixes:
+
+   - Improved spherical rotation when a rotation was already applied.
+
+   - Twist Tool angle feedback positioning is now correct for rotated models.
+
+   - Tab/Shift-Tab to move focus in panels now correctly skips over all
+     disabled parts.
+
+   - Fixed a problem where loading a file could cause the Session Panel to
+     remain displayed incorrectly.
+
+
 Release 1.5.0 (May, 2023)
 ---------------------------
 

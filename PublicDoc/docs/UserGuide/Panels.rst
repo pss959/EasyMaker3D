@@ -616,6 +616,15 @@ polygons, as shown here.
 
 |block-image|
 
+.. _ug-taper-tool-panel:
+
+Taper Tool Panel
+,,,,,,,,,,,,,,,,
+
+.. incimage:: /images/TaperToolPanel.jpg 200px right
+
+XXXX Fill this in.
+
 .. _ug-text-tool-panel:
 
 Text Tool Panel

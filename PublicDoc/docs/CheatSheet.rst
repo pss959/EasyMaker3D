@@ -111,6 +111,12 @@
      - 
      - 
    * - Conversion
+     - ConvertTaper / :ref:`Convert Taper <ug-convert-taper>`
+     - .. menuicon:: ConvertTaper
+     - Convert selected models to tapered models
+     - 
+     - 
+   * - Conversion
      - ConvertTwist / :ref:`Convert Twist <ug-convert-twist>`
      - .. menuicon:: ConvertTwist
      - Convert selected models to twisted models

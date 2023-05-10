@@ -516,6 +516,38 @@ profile in the panel are applied to all selected RevSurf models.
 
 |block-image|
 
+.. _ug-taper-tool:
+
+Taper Tool
+,,,,,,,,,,
+
+.. incimage:: /images/TaperTool.jpg -200px right
+
+The specialized :newterm:`Taper Tool` is a panel-based tool used to edit the
+taper profile or axis for one or more :ref:`Tapered models
+<ug-converted-models>`. A Tapered model can be created from another model by
+applying the :ref:`Convert Taper action <ug-convert-taper>`. Attaching the
+Taper Tool displays a :ref:`Taper Tool Panel <ug-taper-tool-panel>` above the
+primary selection.  Changes to the taper profile or axis in the panel are
+applied to all selected Tapered models.
+
+.. _ug-text-tool:
+
+
+Text Tool
+,,,,,,,,,
+
+.. incimage:: /images/TextTool.jpg 200px right
+
+The specialized :newterm:`Text Tool` is a panel-based tool used to edit one or
+more :ref:`RevSurf models <ug-primitive-models>`.  Attaching the Text Tool
+displays a :ref:`Text Tool Panel <ug-text-tool-panel>` above the primary
+selection. The panel lets you change the text string, font, and character
+spacing.  Clicking the "Apply" button in the panel applies all changes to all
+selected Text models.
+
+|block-image|
+
 .. _ug-torus-tool:
 
 Torus Tool
@@ -554,22 +586,6 @@ well up to its previous size.
    :ref:`Grip-dragging <ug-grip-dragging>` also works with the scalers. The
    relative orientation of the grip hover guide on the controller (closer to
    horizontal or vertical) chooses the outer or inner diameter scaler.
-
-.. _ug-text-tool:
-
-Text Tool
-,,,,,,,,,
-
-.. incimage:: /images/TextTool.jpg 200px right
-
-The specialized :newterm:`Text Tool` is a panel-based tool used to edit one or
-more :ref:`RevSurf models <ug-primitive-models>`.  Attaching the Text Tool
-displays a :ref:`Text Tool Panel <ug-text-tool-panel>` above the primary
-selection. The panel lets you change the text string, font, and character
-spacing.  Clicking the "Apply" button in the panel applies all changes to all
-selected Text models.
-
-|block-image|
 
 .. _ug-twist-tool:
 

@@ -1,0 +1,40 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.6.0",
+    session_state: SessionState {
+      edges_shown: True,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kSphere",
+      result_name: "Sphere_1",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 1.75 1.75 1.75,
+      mode: "kBaseSymmetric",
+      model_names: ["Sphere_1"],
+    },
+    ConvertTaperCommand {
+      result_names: ["Tapered_1"],
+      model_names: ["Sphere_1"],
+    },
+    ChangeTaperCommand {
+      axis: "kY",
+      profile_points: [0.461982 1, 1 0],
+      model_names: ["Tapered_1"],
+    },
+    ChangeTaperCommand {
+      axis: "kY",
+      profile_points: [0.461982 1, 0.448288 0.560588, 1 0],
+      model_names: ["Tapered_1"],
+    },
+    ChangeTaperCommand {
+      axis: "kY",
+      profile_points: [0.461982 1, 0.448288 0.560588, 0.729375 0.335277, 1 0],
+      model_names: ["Tapered_1"],
+    },
+  ],
+  current_index: 6,
+}

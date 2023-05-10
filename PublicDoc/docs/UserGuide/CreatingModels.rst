@@ -199,6 +199,10 @@ the conversion operation has been applied.
     left/right through the center of the primary model) and the specialized
     :ref:`Mirror Tool <ug-mirror-tool>` is attached to let you change the
     plane.
+  - A :newterm:`Tapered model` tapers the vertices of a model along one of its
+    principal axes. The :ref:`Convert to Tapered action <ug-convert-taper>` is
+    used to convert the models and attach the specialized :ref:`Taper Tool
+    <ug-taper-tool>` to let you change the axis and taper profile.
   - A :newterm:`Twisted model` twists the vertices of a model about an
     arbitrary axis. The :ref:`Convert to Twisted action <ug-convert-twist>`
     is used to convert the models and attach the specialized :ref:`Twist Tool

@@ -161,6 +161,7 @@ action can be applied to a single model.
 .. _ug-convert-bevel:
 .. _ug-convert-clip:
 .. _ug-convert-mirror:
+.. _ug-convert-taper:
 .. _ug-convert-twist:
 
 Conversion Actions
@@ -200,6 +201,10 @@ specialized tool links describe how to edit the resulting models.
      - :ref:`Mirrored model <ug-converted-models>`
      - :ref:`Mirror Tool <ug-mirror-tool>`
      - All models mirrored left-to-right across center of primary model
+   * - :action:`Convert Taper`
+     - :ref:`Tapered model <ug-converted-models>`
+     - :ref:`Taper Tool <ug-taper-tool>`
+     - Taper from 0 to 1 along the Y axis
    * - :action:`Convert Twist`
      - :ref:`Twisted model <ug-converted-models>`
      - :ref:`Twist Tool <ug-twist-tool>`
@@ -426,6 +431,7 @@ when toggled back to a general tool.
 .. incimage:: /images/TwistToolIcon.jpg    80px right
 .. incimage:: /images/TorusToolIcon.jpg    80px right
 .. incimage:: /images/TextToolIcon.jpg     80px right
+.. incimage:: /images/TaperToolIcon.jpg    80px right
 .. incimage:: /images/RevSurfToolIcon.jpg  80px right
 .. incimage:: /images/MirrorToolIcon.jpg   80px right
 .. incimage:: /images/ImportToolIcon.jpg   80px right
@@ -462,6 +468,8 @@ type for the icon to be enabled.
      - :ref:`Mirrored models <ug-converted-models>`
    * - :ref:`Rev Surf Tool <ug-rev-surf-tool>`
      - :ref:`RevSurf models <ug-primitive-models>`
+   * - :ref:`Taper Tool <ug-taper-tool>`
+     - :ref:`Tapered models <ug-converted-models>`
    * - :ref:`Text Tool <ug-text-tool>`
      - :ref:`Text models <ug-primitive-models>`
    * - :ref:`Torus Tool <ug-torus-tool>`

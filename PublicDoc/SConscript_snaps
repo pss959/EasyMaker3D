@@ -155,6 +155,7 @@ snap_map = {
     'ModelCreationShelf1',
     'NullIcon',
     'RevSurfToolIcon',
+    'TaperToolIcon',
     'TextToolIcon',
     'TorusToolIcon',
     'TwistToolIcon',
@@ -172,6 +173,7 @@ snap_map = {
     'MirrorToolBefore',
     'MirrorToolRotated',
     'RevSurfTool',
+    'TaperTool',
     'TextTool',
     'TorusTool',
     'TwistTool',
@@ -206,6 +208,7 @@ snap_map = {
     'ImportToolPanel',
     'RevSurfToolPanel',
     'RevSurfToolPanelSweep',
+    'TaperToolPanel',
     'TextToolPanel',
   ],
   'TreePanel' : [
