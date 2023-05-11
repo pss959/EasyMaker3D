@@ -1,6 +1,7 @@
 #include "Models/TwistedModel.h"
 
 #include "Math/Linear.h"
+#include "Math/MeshDividing.h"
 #include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 
@@ -45,12 +46,12 @@ void TwistedModel::SetTwist(const Twist &twist) {
 TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
     // Reslice if the complexity or axis changed.
     const float complexity = GetComplexity();
-    if (complexity != split_complexity_ || twist_.axis != split_axis_) {
-        split_complexity_ = complexity;
-        split_axis_       = twist_.axis;
+    if (complexity != sliced_complexity_ || twist_.axis != sliced_axis_) {
+        sliced_complexity_ = complexity;
+        sliced_axis_       = twist_.axis;
         const int num_slices = LerpInt(complexity, 1, 20);
-        split_mesh_ = SliceMesh(mesh, num_slices, twist_.axis);
+        sliced_mesh_ = SliceMesh(mesh, twist_.axis, num_slices);
     }
 
-    return TwistMesh(split_mesh_, twist_);
+    return TwistMesh(sliced_mesh_, twist_);
 }

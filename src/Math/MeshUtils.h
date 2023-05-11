@@ -7,6 +7,7 @@
 
 #include "Math/Types.h"
 
+struct SlicedMesh;
 struct Taper;
 struct Twist;
 
@@ -26,18 +27,14 @@ TriMesh ScaleMesh(const TriMesh &mesh, const Vector3f &scale);
 /// this does NOT recenter the transformed mesh.
 TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m);
 
-/// Slices a mesh into the given number (> 1) along the given direction
-/// vector.
-TriMesh SliceMesh(const TriMesh &mesh, size_t num_slices, const Vector3f &dir);
-
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 
-/// Tapers a mesh using the given Taper struct.
-TriMesh TaperMesh(const TriMesh &mesh, const Taper &taper);
+/// Tapers a SlicedMesh using the given Taper struct.
+TriMesh TaperMesh(const SlicedMesh &sliced_mesh, const Taper &taper);
 
-/// Twists a mesh using the given Twist struct.
-TriMesh TwistMesh(const TriMesh &mesh, const Twist &twist);
+/// Twists a SlicedMesh using the given Twist struct.
+TriMesh TwistMesh(const SlicedMesh &mesh, const Twist &twist);
 
 /// Returns a new version of a mesh with the bounds centered on the origin.
 TriMesh CenterMesh(const TriMesh &mesh);

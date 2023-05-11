@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include "Base/Memory.h"
-#include "Math/Types.h"
+#include "Math/SlicedMesh.h"
 #include "Math/Twist.h"
+#include "Math/Types.h"
 #include "Models/ConvertedModel.h"
 
 namespace Parser { class Registry; }
@@ -42,17 +43,17 @@ class TwistedModel : public ConvertedModel {
     ///@}
 
     /// Twist used to create the model.
-    Twist twist_;
+    Twist      twist_;
 
     /// Caches the operand Model mesh split into slices based on complexity and
     /// the current Twist axis.
-    TriMesh  split_mesh_;
+    SlicedMesh sliced_mesh_;
 
-    /// Complexity used to create #split_mesh_.
-    float    split_complexity_ = -1;
+    /// Complexity used to create #sliced_mesh_.
+    float      sliced_complexity_ = -1;
 
-    /// Axis used to create #split_mesh_.
-    Vector3f split_axis_{0, 0, 0};
+    /// Axis used to create #sliced_mesh_.
+    Vector3f   sliced_axis_{0, 0, 0};
 
     friend class Parser::Registry;
 };

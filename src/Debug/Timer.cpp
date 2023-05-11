@@ -1,5 +1,6 @@
 #include "Debug/Timer.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 
@@ -33,6 +34,7 @@ namespace Debug {
 Timer::Timer(const std::string &name) : name_(name) {
     // Avoid unnecessary allocations.
     timepoints_.reserve(100);
+    Reset();
 }
 
 void Timer::Reset() {
@@ -47,10 +49,14 @@ void Timer::AddTimePoint(const std::string &name) {
 void Timer::Report() {
     std::cout << "=== Timer '" << name_ << "'\n";
 
+    size_t max_len = 0;
+    for (const auto &tp: timepoints_)
+        max_len = std::max(max_len, tp.name.size());
+
     UTime end_time = UTime::Now();
     UTime prev_time = reset_time_;
     for (const auto &tp: timepoints_) {
-        std::cout << "  " << tp.name
+        std::cout << "  " << std::setw(max_len) << tp.name
                   << ": "       << Duration_(prev_time,   tp.time)
                   << "   cum: " << Duration_(reset_time_, tp.time)
                   << "\n";
