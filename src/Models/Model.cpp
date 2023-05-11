@@ -293,6 +293,7 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
 }
 
 bool Model::ValidateMesh(TriMesh &mesh, std::string &reason) {
+    KLOG('B', GetDesc() << " validating mesh");
     ASSERT(shape_);
     bool is_valid = false;
     switch (ValidateAndRepairTriMesh(mesh)) {
@@ -386,12 +387,14 @@ void Model::RebuildMesh_(bool notify) {
     reason_for_invalid_mesh_.clear();
     is_mesh_valid_ = ValidateMesh(mesh, reason_for_invalid_mesh_);
     shape_->ChangeMesh(mesh);
-    is_mesh_stale_ = false;
 
     // Reenable notification and notify if requested.
     SetNotifyEnabled(was_notify_enabled);
     if (notify)
         ProcessChange(SG::Change::kGeometry, *this);
+
+    // Clear this flag after notifying, which may set it to true.
+    is_mesh_stale_ = false;
 }
 
 void Model::PlacePointTargetOnBounds_(const DragInfo &info,
