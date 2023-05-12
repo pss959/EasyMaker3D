@@ -52,6 +52,7 @@ test_sources = [
     'ScaleCommandTest.cpp',
     'SceneTestBase.cpp',
     'SearchTest.cpp',
+    'SliceTest.cpp',
     'StringTest.cpp',
     'TaperedModelTest.cpp',
     'TestBase.cpp',
