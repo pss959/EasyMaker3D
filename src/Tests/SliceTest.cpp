@@ -63,7 +63,7 @@ TEST_F(SliceTest, Box3SlicesX) {
     EXPECT_EQ(32U,               sm.mesh.points.size());
     EXPECT_EQ(60U,               sm.mesh.GetTriangleCount());
 
-#if XXXX
+#if 0 // XXXX
     Debug::Dump3dv d("/tmp/sliced3.3dv", "XXXX From SliceTest");
     d.SetLabelFontSize(60);
     d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
@@ -83,7 +83,7 @@ TEST_F(SliceTest, Cylinder) {
     EXPECT_EQ(162U,              sm.mesh.points.size());
     EXPECT_EQ(320U,              sm.mesh.GetTriangleCount());
 
-#if XXXX
+#if 1 // XXXX
     Debug::Dump3dv d("/tmp/slicedcyl.3dv", "XXXX From SliceTest");
     d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
     d.SetLabelFontSize(40);
