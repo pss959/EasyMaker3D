@@ -52,8 +52,10 @@ static float FindBucket_(float y, const std::vector<float> &ys) {
     auto lower = std::lower_bound(ys.begin(), ys.end(), y);
     ASSERT(lower != ys.end());
     const size_t index = std::distance(ys.begin(), lower);
+#if XXXX
     std::cerr << "XXXX Found " << y << " at "
               << index << " (" << ys[index] << ")\n";
+#endif
 
     return y == ys[index] ? index : index + .5f;
 }
@@ -65,8 +67,12 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
     const auto &p1 = mesh.points[i1];
     const auto &p2 = mesh.points[i2];
 
+#if XXXX
     std::cerr << "XXXX Splitting tri <" << p0 << ", " << p1
               << ", " << p2 << "> at Y=" << y << "\n";
+#endif
+    std::cerr << "XXXX Splitting tri <" << i0 << ", " << i1
+              << ", " << i2 << "> at Y=" << y << "\n";
 
     // p0 is the point on the other side of the y value from p1 and p2. Find
     // the two new points on the edges from p0 to p1 and p0 to p2.
@@ -105,8 +111,13 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
     ASSERT(p0[1] < ys.front());
     ASSERT(p1[1] > ys.back() || p2[1] > ys.back());
 
+#if XXXX
     std::cerr << "XXXX Splitting tri <" << p0 << ", " << p1
               << ", " << p2 << "> at "
+              << ys.size() << ": " << Util::JoinItems(ys) << "\n";
+#endif
+    std::cerr << "XXXX Splitting tri <" << i0 << ", " << i1
+              << ", " << i2 << "> at "
               << ys.size() << ": " << Util::JoinItems(ys) << "\n";
 
     const auto ADDTRI = [&](GIndex a, GIndex b, GIndex c, size_t i, char cs){
@@ -136,15 +147,15 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
         ADDTRI(i0,  i1, ni0, 0, 'A');
         ADDTRI(ni0, i1, ni1, 0, 'A');
 
-        const GIndex prev0 = ni0;
-        const GIndex prev1 = ni1;
-
         // Continue to following trapezoids.
         for (size_t i = 1; i < ys.size(); ++i) {
             std::cerr << "XXXX A ----------------------------i = " << i << "\n";
             float y = ys[i];
             const Point3f np0 = Lerp((p0[1] - y) / (p0[1] - p2[1]), p0, p2);
             const Point3f np1 = Lerp((p1[1] - y) / (p1[1] - p2[1]), p1, p2);
+
+            const GIndex prev0 = ni0;
+            const GIndex prev1 = ni1;
 
             new_mesh.points.push_back(np0);
             new_mesh.points.push_back(np1);
@@ -174,9 +185,6 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
         ADDTRI(i2,  i0, ni2, 0, 'B');
         ADDTRI(ni2, i0, ni0, 0, 'B');
 
-        const GIndex prev2 = ni2;
-        const GIndex prev0 = ni0;
-
         // Continue to following trapezoids.
         for (size_t i = 1; i < ys.size(); ++i) {
             std::cerr << "XXXX B ----------------------------i = " << i << "\n";
@@ -184,6 +192,9 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
 
             const Point3f np2 = Lerp((p2[1] - y) / (p2[1] - p1[1]), p2, p1);
             const Point3f np0 = Lerp((p0[1] - y) / (p0[1] - p1[1]), p0, p1);
+
+            const GIndex prev2 = ni2;
+            const GIndex prev0 = ni0;
 
             new_mesh.points.push_back(np2);
             new_mesh.points.push_back(np0);
@@ -213,9 +224,6 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
         // Triangle:
         ADDTRI(i0, ni1, ni2, 0, 'C');
 
-        const GIndex prev1 = ni1;
-        const GIndex prev2 = ni2;
-
         // Continue to following trapezoids.
         for (size_t i = 1; i < ys.size(); ++i) {
             std::cerr << "XXXX C ----------------------------i = " << i << "\n";
@@ -223,6 +231,9 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
 
             const Point3f np1 = Lerp((p0[1] - y) / (p0[1] - p1[1]), p0, p1);
             const Point3f np2 = Lerp((p0[1] - y) / (p0[1] - p2[1]), p0, p2);
+
+            const GIndex prev1 = ni1;
+            const GIndex prev2 = ni2;
 
             new_mesh.points.push_back(np1);
             new_mesh.points.push_back(np2);
@@ -248,8 +259,10 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
 
 SlicedMesh NSliceMesh(const TriMesh &mesh, const Vector3f &dir,
                       const std::vector<float> &fractions) {
+#if XXXX
     std::cerr << "XXXX ---- Slicing mesh " << mesh.ToString()
               << " by " << Util::JoinItems(fractions) << "\n";
+#endif
 
     // XXXX Assume direction is Y axis. Rotate if not...
 
@@ -301,12 +314,14 @@ SlicedMesh NSliceMesh(const TriMesh &mesh, const Vector3f &dir,
         const auto diff = std::ceil(max) - std::floor(min);
         const int num_buckets = static_cast<int>(diff);
 
+#if XXXX
         std::cerr << "XXXX Tri " << i << ":"
                   << " B=(" << b0 << "/" << b1 << "/" << b2 << ")"
                   << " MN=" << min
                   << " MX=" << max
                   << " D=" << diff
                   << " NB=" << num_buckets << "\n";
+#endif
 
         // Copy the triangle if it does not need to be split.
         if (num_buckets <= 1) {
@@ -361,7 +376,9 @@ SlicedMesh NSliceMesh(const TriMesh &mesh, const Vector3f &dir,
     // Remove redundant vertices and any other issues.
     CleanMesh(new_mesh);
 
+#if XXXX
     std::cerr << "XXXX ---- Sliced mesh: " << new_mesh.ToString() << "\n";
+#endif
 
     SlicedMesh sliced_mesh;
     sliced_mesh.mesh  = new_mesh;
