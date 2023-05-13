@@ -57,6 +57,14 @@ class Slicer_ {
     /// mesh.
     void SplitTri_(GIndex i0, GIndex i1, GIndex i2, const FloatVec &slice_vals);
 
+    /// Splits the edge between \p p0 and \p1 based on slicing \p value. Adds
+    /// the new point to the result mesh and returns its index.
+    GIndex SplitEdge_(const Point3f &p0, const Point3f &p1, float value) {
+        const float frac = (p0[dim_] - value) / (p0[dim_] - p1[dim_]);
+        result_mesh_.points.push_back(Lerp(frac, p0, p1));
+        return result_mesh_.points.size() - 1;
+    }
+
     /// Adds a trapezoid to the result mesh.
     void AddTrapezoid_(GIndex i0, GIndex i1, GIndex i2, GIndex i3) {
         AddTri_(i0, i1, i2);
@@ -196,108 +204,52 @@ void Slicer_::SplitTri_(GIndex i0, GIndex i1, GIndex i2,
     ASSERT(p0[dim_] < slice_vals.front());
     ASSERT(p1[dim_] > slice_vals.back() || p2[dim_] > slice_vals.back());
 
-    // p0 is below the first slicing value. If either other point is, then
-    // create a trapezoid.
-    float y = slice_vals[0];
-    if (p1[dim_] < y) {  // Case A.
-        const Point3f np0 = Lerp((p0[dim_] - y) / (p0[dim_] - p2[dim_]), p0, p2);
-        const Point3f np1 = Lerp((p1[dim_] - y) / (p1[dim_] - p2[dim_]), p1, p2);
-
-        // Add the new points.
-        result_mesh_.points.push_back(np0);
-        result_mesh_.points.push_back(np1);
-        GIndex ni0 = result_mesh_.points.size() - 2;
-        GIndex ni1 = result_mesh_.points.size() - 1;
-
-        AddTrapezoid_(i0, i1, ni0, ni1);
-
-        // Continue to following trapezoids.
-        for (size_t i = 1; i < slice_vals.size(); ++i) {
-            float y = slice_vals[i];
-            const Point3f np0 = Lerp((p0[dim_] - y) / (p0[dim_] - p2[dim_]), p0, p2);
-            const Point3f np1 = Lerp((p1[dim_] - y) / (p1[dim_] - p2[dim_]), p1, p2);
-
-            const GIndex prev0 = ni0;
-            const GIndex prev1 = ni1;
-
-            result_mesh_.points.push_back(np0);
-            result_mesh_.points.push_back(np1);
-            ni0 = result_mesh_.points.size() - 2;
-            ni1 = result_mesh_.points.size() - 1;
-
+    // p0 is less than the first slicing value. If either p1 or p2 is also,
+    // then create a trapezoid.
+    if (p1[dim_] < slice_vals[0]) {  // Only p2 is on the other side.
+        GIndex prev0 = i0;
+        GIndex prev1 = i1;
+        for (size_t i = 0; i < slice_vals.size(); ++i) {
+            // Split the edges and add the new points.
+            const GIndex ni0 = SplitEdge_(p0, p2, slice_vals[i]);
+            const GIndex ni1 = SplitEdge_(p1, p2, slice_vals[i]);
             AddTrapezoid_(prev0, prev1, ni0, ni1);
+            prev0 = ni0;
+            prev1 = ni1;
         }
-
-        // Triangle at the top.
-        AddTri_(ni0, ni1, i2);
+        // Triangle at the max end.
+        AddTri_(prev0, prev1, i2);
     }
-    else if (p2[dim_] < y) {  // Case B.
-        const Point3f np2 = Lerp((p2[dim_] - y) / (p2[dim_] - p1[dim_]), p2, p1);
-        const Point3f np0 = Lerp((p0[dim_] - y) / (p0[dim_] - p1[dim_]), p0, p1);
-
-        // Add the new points.
-        result_mesh_.points.push_back(np2);
-        result_mesh_.points.push_back(np0);
-        GIndex ni2 = result_mesh_.points.size() - 2;
-        GIndex ni0 = result_mesh_.points.size() - 1;
-
-        AddTrapezoid_(i2,  i0, ni2, ni0);
-
-        // Continue to following trapezoids.
-        for (size_t i = 1; i < slice_vals.size(); ++i) {
-            float y = slice_vals[i];
-
-            const Point3f np2 = Lerp((p2[dim_] - y) / (p2[dim_] - p1[dim_]), p2, p1);
-            const Point3f np0 = Lerp((p0[dim_] - y) / (p0[dim_] - p1[dim_]), p0, p1);
-
-            const GIndex prev2 = ni2;
-            const GIndex prev0 = ni0;
-
-            result_mesh_.points.push_back(np2);
-            result_mesh_.points.push_back(np0);
-            ni2 = result_mesh_.points.size() - 2;
-            ni0 = result_mesh_.points.size() - 1;
-
+    else if (p2[dim_] < slice_vals[0]) {  // Only p1 is on the other side.
+        GIndex prev2 = i2;
+        GIndex prev0 = i0;
+        for (size_t i = 0; i < slice_vals.size(); ++i) {
+            // Split the edges and add the new points.
+            const GIndex ni2 = SplitEdge_(p2, p1, slice_vals[i]);
+            const GIndex ni0 = SplitEdge_(p0, p1, slice_vals[i]);
             AddTrapezoid_(prev2, prev0, ni2, ni0);
+            prev2 = ni2;
+            prev0 = ni0;
         }
-
-        // Triangle at the top.
-        AddTri_(ni2, ni0, i1);
+        // Triangle at the max end.
+        AddTri_(prev2, prev0, i1);
     }
-    else {  // Case C.
-        // Otherwise, only p0 is below y. Add a clipped triangle.
-        const Point3f np1 = Lerp((p0[dim_] - y) / (p0[dim_] - p1[dim_]), p0, p1);
-        const Point3f np2 = Lerp((p0[dim_] - y) / (p0[dim_] - p2[dim_]), p0, p2);
-
-        // Add the new points.
-        result_mesh_.points.push_back(np1);
-        result_mesh_.points.push_back(np2);
-        GIndex ni1 = result_mesh_.points.size() - 2;
-        GIndex ni2 = result_mesh_.points.size() - 1;
-
-        // Triangle:
-        AddTri_(i0, ni1, ni2);
-
-        // Continue to following trapezoids.
-        for (size_t i = 1; i < slice_vals.size(); ++i) {
-            float y = slice_vals[i];
-
-            const Point3f np1 = Lerp((p0[dim_] - y) / (p0[dim_] - p1[dim_]), p0, p1);
-            const Point3f np2 = Lerp((p0[dim_] - y) / (p0[dim_] - p2[dim_]), p0, p2);
-
-            const GIndex prev1 = ni1;
-            const GIndex prev2 = ni2;
-
-            result_mesh_.points.push_back(np1);
-            result_mesh_.points.push_back(np2);
-            ni1 = result_mesh_.points.size() - 2;
-            ni2 = result_mesh_.points.size() - 1;
-
-            AddTrapezoid_(prev1, ni1, prev2, ni2);
+    else {  // p1 and p2 are on the other side.
+        GIndex prev1 = i1;
+        GIndex prev2 = i2;
+        for (size_t i = 0; i < slice_vals.size(); ++i) {
+            const GIndex ni1 = SplitEdge_(p0, p1, slice_vals[i]);
+            const GIndex ni2 = SplitEdge_(p0, p2, slice_vals[i]);
+            // Start with a clipped triangle; the rest are trapezoids.
+            if (i == 0)
+                AddTri_(i0, ni1, ni2);
+            else
+                AddTrapezoid_(prev1, ni1, prev2, ni2);
+            prev1 = ni1;
+            prev2 = ni2;
         }
-
-        // Trapezoid at the top.
-        AddTrapezoid_(ni1, i1, ni2, i2);
+        // Trapezoid at the max end.
+        AddTrapezoid_(prev1, i1, prev2, i2);
     }
 }
 
