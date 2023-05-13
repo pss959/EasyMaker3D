@@ -43,13 +43,6 @@ TEST_F(SliceTest, Box3Slices) {
     EXPECT_EQ(Range1f(-10, 10),  sm.range);
     EXPECT_EQ(32U,               sm.mesh.points.size());
     EXPECT_EQ(60U,               sm.mesh.GetTriangleCount());
-
-#if XXXX
-    Debug::Dump3dv d("/tmp/sliced3.3dv", "XXXX From SliceTest");
-    d.SetLabelFontSize(60);
-    d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
-    d.AddTriMesh(sm.mesh);
-#endif
 }
 
 TEST_F(SliceTest, Box3SlicesX) {
@@ -64,7 +57,7 @@ TEST_F(SliceTest, Box3SlicesX) {
     EXPECT_EQ(60U,               sm.mesh.GetTriangleCount());
 
 #if 0 // XXXX
-    Debug::Dump3dv d("/tmp/sliced3.3dv", "XXXX From SliceTest");
+    Debug::Dump3dv d("/tmp/sliced.3dv", "XXXX From SliceTest");
     d.SetLabelFontSize(60);
     d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
     d.AddTriMesh(sm.mesh);
@@ -82,10 +75,25 @@ TEST_F(SliceTest, Cylinder) {
     EXPECT_EQ(Range1f(-10, 10),  sm.range);
     EXPECT_EQ(162U,              sm.mesh.points.size());
     EXPECT_EQ(320U,              sm.mesh.GetTriangleCount());
+}
+
+TEST_F(SliceTest, CylinderX) {
+    EnableKLog("|"); // XXXX
+
+    const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 20);
+
+    const Vector3f dir(0, 1, 0);
+    const SlicedMesh sm = SliceMesh(cyl, Axis::kX,
+                                    std::vector<float>{.25f, .6f, .75f});
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
+    EXPECT_EQ(Vector3f::AxisX(), sm.dir);
+    EXPECT_EQ(Range1f(-10, 10),  sm.range);
+    EXPECT_EQ(162U,              sm.mesh.points.size());
+    EXPECT_EQ(320U,              sm.mesh.GetTriangleCount());
 
 #if 1 // XXXX
-    Debug::Dump3dv d("/tmp/slicedcyl.3dv", "XXXX From SliceTest");
-    d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
+    Debug::Dump3dv d("/tmp/sliced.3dv", "XXXX From SliceTest");
+    // d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
     d.SetLabelFontSize(40);
     d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
     d.AddTriMesh(sm.mesh);
