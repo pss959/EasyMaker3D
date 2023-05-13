@@ -34,10 +34,12 @@ TEST_F(SliceTest, BoxTwoSlices) {
     EXPECT_EQ(dir,              sm.dir);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
-    EXPECT_EQ(16U,              sm.mesh.points.size());
-    EXPECT_EQ(28U,              sm.mesh.GetTriangleCount());
+    EXPECT_EQ(24U,              sm.mesh.points.size());
+    EXPECT_EQ(44U,              sm.mesh.GetTriangleCount());
     // XXXX More...
 
     Debug::Dump3dv d("/tmp/sliced2.3dv", "XXXX From SliceTest");
+    d.SetLabelFontSize(60);
+    d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
     d.AddTriMesh(sm.mesh);
 }

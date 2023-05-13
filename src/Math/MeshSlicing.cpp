@@ -94,6 +94,152 @@ static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
     new_mesh.indices.push_back(ni2);
 }
 
+/// XXXX ys are sorted increasing.
+static void SplitTri_(const TriMesh &mesh, GIndex i0, GIndex i1, GIndex i2,
+                      const std::vector<float> &ys, TriMesh &new_mesh) {
+    ASSERT(ys.size() >= 2U);
+    const auto &p0 = mesh.points[i0];
+    const auto &p1 = mesh.points[i1];
+    const auto &p2 = mesh.points[i2];
+
+    ASSERT(p0[1] < ys.front());
+    ASSERT(p1[1] > ys.back() || p2[1] > ys.back());
+
+    std::cerr << "XXXX Splitting tri <" << p0 << ", " << p1
+              << ", " << p2 << "> at "
+              << ys.size() << ": " << Util::JoinItems(ys) << "\n";
+
+    const auto ADDTRI = [&](GIndex a, GIndex b, GIndex c, size_t i, char cs){
+        new_mesh.indices.push_back(a);
+        new_mesh.indices.push_back(b);
+        new_mesh.indices.push_back(c);
+        std::cerr << "XXXX Added Tri " << (new_mesh.GetTriangleCount() - 1)
+                  << ": " << a << " / " << b << " / " << c
+                  << " from trap " << i << " in case " << cs << "\n";
+    };
+
+    // p0 is below the first slicing Y. If either other point is, then create a
+    // trapezoid.
+    float y = ys[0];
+    if (p1[1] < y) {  // Case A.
+        std::cerr << "XXXX A ----------------------------i = " << 0 << "\n";
+        const Point3f np0 = Lerp((p0[1] - y) / (p0[1] - p2[1]), p0, p2);
+        const Point3f np1 = Lerp((p1[1] - y) / (p1[1] - p2[1]), p1, p2);
+
+        // Add the new points.
+        new_mesh.points.push_back(np0);
+        new_mesh.points.push_back(np1);
+        GIndex ni0 = new_mesh.points.size() - 2;
+        GIndex ni1 = new_mesh.points.size() - 1;
+
+        // Trapezoid:
+        ADDTRI(i0,  i1, ni0, 0, 'A');
+        ADDTRI(ni0, i1, ni1, 0, 'A');
+
+        const GIndex prev0 = ni0;
+        const GIndex prev1 = ni1;
+
+        // Continue to following trapezoids.
+        for (size_t i = 1; i < ys.size(); ++i) {
+            std::cerr << "XXXX A ----------------------------i = " << i << "\n";
+            float y = ys[i];
+            const Point3f np0 = Lerp((p0[1] - y) / (p0[1] - p2[1]), p0, p2);
+            const Point3f np1 = Lerp((p1[1] - y) / (p1[1] - p2[1]), p1, p2);
+
+            new_mesh.points.push_back(np0);
+            new_mesh.points.push_back(np1);
+            ni0 = new_mesh.points.size() - 2;
+            ni1 = new_mesh.points.size() - 1;
+
+            // Trapezoid.
+            ADDTRI(prev0, prev1, ni0, i, 'A');
+            ADDTRI(ni0, prev1, ni1, i, 'A');
+        }
+
+        // Triangle at the top.
+        ADDTRI(ni0, ni1, i2, ys.size(), 'A');
+    }
+    else if (p2[1] < y) {  // Case B.
+        std::cerr << "XXXX B ----------------------------i = " << 0 << "\n";
+        const Point3f np2 = Lerp((p2[1] - y) / (p2[1] - p1[1]), p2, p1);
+        const Point3f np0 = Lerp((p0[1] - y) / (p0[1] - p1[1]), p0, p1);
+
+        // Add the new points.
+        new_mesh.points.push_back(np2);
+        new_mesh.points.push_back(np0);
+        GIndex ni2 = new_mesh.points.size() - 2;
+        GIndex ni0 = new_mesh.points.size() - 1;
+
+        // Trapezoid:
+        ADDTRI(i2,  i0, ni2, 0, 'B');
+        ADDTRI(ni2, i0, ni0, 0, 'B');
+
+        const GIndex prev2 = ni2;
+        const GIndex prev0 = ni0;
+
+        // Continue to following trapezoids.
+        for (size_t i = 1; i < ys.size(); ++i) {
+            std::cerr << "XXXX B ----------------------------i = " << i << "\n";
+            float y = ys[i];
+
+            const Point3f np2 = Lerp((p2[1] - y) / (p2[1] - p1[1]), p2, p1);
+            const Point3f np0 = Lerp((p0[1] - y) / (p0[1] - p1[1]), p0, p1);
+
+            new_mesh.points.push_back(np2);
+            new_mesh.points.push_back(np0);
+            ni2 = new_mesh.points.size() - 2;
+            ni0 = new_mesh.points.size() - 1;
+
+            // Trapezoid.
+            ADDTRI(prev2, prev0, ni2, i, 'B');
+            ADDTRI(ni2, prev0, ni0, i, 'B');
+        }
+
+        // Triangle at the top.
+        ADDTRI(ni2, ni0, i1, ys.size(), 'B');
+    }
+    else {  // Case C.
+        std::cerr << "XXXX C ----------------------------i = " << 0 << "\n";
+        // Otherwise, only p0 is below y. Add a clipped triangle.
+        const Point3f np1 = Lerp((p0[1] - y) / (p0[1] - p1[1]), p0, p1);
+        const Point3f np2 = Lerp((p0[1] - y) / (p0[1] - p2[1]), p0, p2);
+
+        // Add the new points.
+        new_mesh.points.push_back(np1);
+        new_mesh.points.push_back(np2);
+        GIndex ni1 = new_mesh.points.size() - 2;
+        GIndex ni2 = new_mesh.points.size() - 1;
+
+        // Triangle:
+        ADDTRI(i0, ni1, ni2, 0, 'C');
+
+        const GIndex prev1 = ni1;
+        const GIndex prev2 = ni2;
+
+        // Continue to following trapezoids.
+        for (size_t i = 1; i < ys.size(); ++i) {
+            std::cerr << "XXXX C ----------------------------i = " << i << "\n";
+            float y = ys[i];
+
+            const Point3f np1 = Lerp((p0[1] - y) / (p0[1] - p1[1]), p0, p1);
+            const Point3f np2 = Lerp((p0[1] - y) / (p0[1] - p2[1]), p0, p2);
+
+            new_mesh.points.push_back(np1);
+            new_mesh.points.push_back(np2);
+            ni1 = new_mesh.points.size() - 2;
+            ni2 = new_mesh.points.size() - 1;
+
+            // Trapezoid.
+            ADDTRI(prev1, ni1, prev2, i, 'C');
+            ADDTRI(prev2, ni1, ni2, i, 'C');
+        }
+
+        // Trapezoid at the top.
+        ADDTRI(ni1, i1, ni2, ys.size(), 'C');
+        ADDTRI(ni2, i1, i2,  ys.size(), 'C');
+    }
+}
+
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -171,9 +317,7 @@ SlicedMesh NSliceMesh(const TriMesh &mesh, const Vector3f &dir,
 
         // Split if it crosses 2 or more buckets.
         else {
-
-            // Need to split the triangle. If the triangle crosses only 1 slice
-            // plane, this is easier.
+            // If the triangle crosses only 1 slice plane, this is easier.
             if (num_buckets == 2) {
                 const float slice_y = ys[min + 1];
                 // One of the vertices is in a different bucket.
@@ -195,7 +339,21 @@ SlicedMesh NSliceMesh(const TriMesh &mesh, const Vector3f &dir,
                 }
             }
             else {
-                std::cerr << "XXXX Need to handle > 2 buckets\n";
+                // Gather the Y bucket-crossing values.
+                std::vector<float> slice_ys;
+                for (int i = min + 1; i < max; ++i)
+                    slice_ys.push_back(ys[i]);
+                // The lowest point comes first.
+                if (b0 == min) {
+                    SplitTri_(mesh, i0, i1, i2, slice_ys, new_mesh);
+                }
+                else if (b1 == min) {
+                    SplitTri_(mesh, i1, i2, i0, slice_ys, new_mesh);
+                }
+                else {
+                    ASSERT(b2 == min);
+                    SplitTri_(mesh, i2, i0, i1, slice_ys, new_mesh);
+                }
             }
         }
     }
