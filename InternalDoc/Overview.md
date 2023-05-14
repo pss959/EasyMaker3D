@@ -319,9 +319,9 @@ these:
 | w      | Session reading and writing                     |
 | W      | Widget state changes                            |
 | x      | Command execution, undo, redo                   |
+| X      | Mesh slicing                                    |
 | y      | Model status changes                            |
 | z      | Font loading                                    |
-| &nbsp; | &nbsp;                                          |
 </div>
 </div>
 

@@ -11,7 +11,8 @@
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
-#include "Util/String.h" // XXXX
+#include "Util/KLog.h"
+#include "Util/String.h"
 
 namespace {
 
@@ -88,8 +89,6 @@ class Slicer_ {
     GIndex SplitEdge_(const Tri_ &tri, int i0, int i1, float value) {
         const auto &p0 = tri.p[i0];
         const auto &p1 = tri.p[i1];
-        std::cerr << "XXXX SplitEdge_  " << p0 << " / " << p1
-                  << " @ " << value << "\n";
         ASSERT(p0[dim_] != p1[dim_]);
         const float frac = (p0[dim_] - value) / (p0[dim_] - p1[dim_]);
         return AddPoint_(Lerp(frac, p0, p1));
@@ -116,8 +115,7 @@ class Slicer_ {
 
     /// Adds a triangle to the result mesh.
     void AddTri_(const Tri_ &tri) {
-        for (int i = 0; i < 3; ++i)
-            result_mesh_.indices.push_back(tri.i[i]);
+        AddTri_(tri.i[0], tri.i[1], tri.i[2]);
     }
 
     /// For logging/debugging.
@@ -139,9 +137,8 @@ SlicedMesh Slicer_::Slice(const FloatVec &fractions) {
     // Convert the fractions into slice coordinates.
     const FloatVec slice_vals = GetSliceVals_(fractions);
 
-    std::cerr << "XXXX Slicing at values:\n";
-    for (size_t i = 0; i < slice_vals.size(); ++i)
-        std::cerr << "   [" << i << "] " << slice_vals[i] << "\n";
+    KLOG('X', "--- Slicing in " << ('X' + dim_) << " at: "
+         << Util::JoinItems(slice_vals));
 
     // Sort the points of the mesh into buckets based on the distances. For
     // each point, store the bucket index.
@@ -216,11 +213,9 @@ float Slicer_::FindBucket_(const FloatVec &slice_vals, float val) const {
     auto lower = std::lower_bound(slice_vals.begin(), slice_vals.end(), val);
     ASSERT(lower != slice_vals.end());
     const size_t index = std::distance(slice_vals.begin(), lower);
-#if XXXX
-    std::cerr << "XXXX Bucket for " << val << " = "
-              << (val == slice_vals[index] ? index : index - .5f) << "\n";
-#endif
-    return val == slice_vals[index] ? index : index - .5f;
+    const float bucket = val == slice_vals[index] ? index : index - .5f;
+    KLOG('X', "   Bucket for " << val << " = " << bucket);
+    return bucket;
 }
 
 Slicer_::Tri_ Slicer_::BuildTri_(size_t tri_index,
@@ -255,17 +250,14 @@ Slicer_::Tri_ Slicer_::BuildTri_(const GIndex indices[3],
     const auto diff = std::ceil(tri.max) - std::floor(tri.min);
     tri.num_buckets = static_cast<int>(diff);
 
-    std::cerr << "XXXX BUILT: " << tri << "\n";
+    KLOG('X', "   Built " << tri);
 
     return tri;
 }
 
 void Slicer_::SplitTri_(const Tri_ &tri, const FloatVec &slice_vals,
                         FloatVec &buckets, Tri_ &sub_tri0, Tri_ &sub_tri1) {
-    std::cerr << "XXXX SPLITTING " << tri << "\n";
-
-    // All 3 points are in different buckets. Find the one in the middle and
-    // split based on its coordinate.
+    // All 3 points are in different buckets. Find the one in the middle.
     int middle = -1;
     for (int i = 0; i < 3; ++i) {
         if (tri.b[i] != tri.min  && tri.b[i] != tri.max) {
@@ -275,29 +267,36 @@ void Slicer_::SplitTri_(const Tri_ &tri, const FloatVec &slice_vals,
     }
     ASSERT(middle >= 0);
 
+    // Get the other two points.
     const int other0 = (middle + 1) % 3;
     const int other1 = (middle + 2) % 3;
-
     const auto &p0 = tri.p[other0];
     const auto &p1 = tri.p[other1];
+    KLOG('X', "  === Splitting " << tri);
+    KLOG('X', "      MID = V" << tri.i[middle]
+         << " OTHER0 = V"  << tri.i[other0]
+         << " OTHER1 = V"  << tri.i[other1]);
 
-    // Find the point on the opposite edge where the middle point lies and add
-    // it.
+    // Find the point on the opposite edge (between p0 and p1) where the middle
+    // point lies and add it.
+
     const float val = tri.p[middle][dim_];
     const float frac = (p0[dim_] - val) / (p0[dim_] - p1[dim_]);
     const Point3f new_pt = Lerp(frac, p0, p1);
     const GIndex new_index = AddPoint_(new_pt);
-    std::cerr << "XXXX SPLIT added point " << new_index
-              << " @ " << new_pt << "\n";
+    KLOG('X', "      Added V" << new_index << " between V" << tri.i[other0]
+         << " and V" << tri.i[other1]);
+    KLOG('X', "      Points: " << p0 << " / " << p1 << " => " << new_pt);
 
     // Have to add a bucket for the new point.
     buckets.resize(new_index + 1);
     buckets[new_index] = FindBucket_(slice_vals, new_pt[dim_]);
 
+    // Split the triangle at the new point.
     GIndex indices0[3];
     indices0[0] = tri.i[other0];
-    indices0[1] = tri.i[middle];
-    indices0[2] = new_index;
+    indices0[1] = new_index;
+    indices0[2] = tri.i[middle];
 
     GIndex indices1[3];
     indices1[0] = tri.i[middle];
@@ -312,7 +311,6 @@ void Slicer_::ProcessTri_(const Tri_ &tri, const FloatVec &slice_vals) {
     // Add the triangle as is if it does cross at least 2 buckets.  Otherwise,
     // it needs to be sliced.
     if (tri.num_buckets <= 1) {
-        std::cerr << "XXXX Adding tri as is\n";
         AddTri_(tri);
     }
     else {
@@ -321,8 +319,8 @@ void Slicer_::ProcessTri_(const Tri_ &tri, const FloatVec &slice_vals) {
         for (int i = tri.min + 1; i < tri.max; ++i)
             tri_slice_vals.push_back(slice_vals[i]);
 
-        std::cerr << "XXXX ProcessTri_: " << tri
-                  << " @ " << Util::JoinItems(tri_slice_vals) << "\n";
+        KLOG('X', "  ProcessTri_: " << tri
+             << " @ " << Util::JoinItems(tri_slice_vals));
 
         // The lowest point comes first.
         ASSERT(tri.b[0] == tri.min ||

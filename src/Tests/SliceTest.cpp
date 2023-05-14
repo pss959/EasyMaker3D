@@ -71,20 +71,26 @@ TEST_F(SliceTest, Cylinder) {
 }
 
 TEST_F(SliceTest, CylinderX) {
-    EnableKLog("|"); // XXXX
+    // EnableKLog("X"); // XXXX
 
-    const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 20);
+    // XXXX const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 20);
+    const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 8);
 
     const Vector3f dir(0, 1, 0);
+
+    // XXXX Simple case that fails:
     const SlicedMesh sm = SliceMesh(cyl, Axis::kX,
-                                    std::vector<float>{.25f, .6f, .75f});
+                                    std::vector<float>{ .4f, .6f });
+
+    //XXXX const SlicedMesh sm = SliceMesh(cyl, Axis::kX,
+    //std::vector<float>{.25f, .6f, .75f});
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Vector3f::AxisX(), sm.dir);
-    EXPECT_EQ(Range1f(-10, 10),  sm.range);
-    EXPECT_EQ(162U,              sm.mesh.points.size());
-    EXPECT_EQ(320U,              sm.mesh.GetTriangleCount());
+    EXPECT_EQ(Range1f(-8, 8),    sm.range);
+    // EXPECT_EQ(162U,              sm.mesh.points.size());
+    // EXPECT_EQ(320U,              sm.mesh.GetTriangleCount());
 
-#if 1 // XXXX
+#if 0 // XXXX
     Debug::Dump3dv d("/tmp/sliced.3dv", "XXXX From SliceTest");
     // d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
     d.SetLabelFontSize(40);

@@ -82,8 +82,46 @@ static void ReportSelfIntersections_(const TriMesh &mesh,
 static MeshValidityCode IsPolyValid_(const CPolyhedron &poly) {
     if (! poly.is_valid())
         return MeshValidityCode::kInconsistent;
-    else if (! poly.is_closed())
+    else if (! poly.is_closed()) {
+#if XXXX
+        std::cerr << "Polyhedron_3:\n";
+        std::cerr << " is_valid:              " << poly.is_valid() << "\n";
+        std::cerr << " is_closed:             " << poly.is_closed() << "\n";
+        std::cerr << " vertex count:          " << poly.size_of_vertices()  << "\n";
+        std::cerr << " halfedge count:        " << poly.size_of_halfedges() << "\n";
+        std::cerr << " facet count:           " << poly.size_of_facets() << "\n";
+        std::cerr << " border edge count:     " << poly.size_of_border_edges() << "\n";
+        std::cerr << " border halfedge count: " << poly.size_of_border_halfedges() << "\n";
+
+#if XXXX
+        for (auto it = poly.border_halfedges_begin();
+             it != poly.halfedges_end(); ++it) {
+            std::cerr << "XXXX edge is border = " << it->is_border() << "\n";
+
+            std::cerr << "XXXX SHEV = "
+                      << (CPolyhedron::Supports_halfedge_vertex() ? 'T' : 'F')
+                      << "\n";
+#endif
+#if 0 // XXXX
+            std::cerr << "XXXX Accessing edge\n";
+            const auto &edge = *it;
+            std::cerr << "XXXX     EDGE = : " << &edge << "\n";
+            std::cerr << "XXXX Accessing vertp\n";
+            const auto vertp = edge.vertex().operator->();
+            std::cerr << "XXXX     VERTP = : " << vertp << "\n";
+            std::cerr << "XXXX Accessing vert\n";
+            const auto &vert = *edge.vertex();
+            std::cerr << "XXXX Accessing point\n";
+            const auto &point = vert.point();
+            //std::cerr << "XXXX     BORDER EDGE: "
+            //<< vert.point() << "\n";
+            std::cerr << "XXXX     BORDER EDGE: "
+                      << &edge << " VERT " << &vert << "\n";
+        }
+#endif
+#endif
         return MeshValidityCode::kNotClosed;
+    }
     else if (CGAL::Polygon_mesh_processing::does_self_intersect(poly))
         return MeshValidityCode::kSelfIntersecting;
     else
