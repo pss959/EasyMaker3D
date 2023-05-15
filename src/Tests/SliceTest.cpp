@@ -92,7 +92,7 @@ TEST_F(SliceTest, CylinderX) {
 
 #if 0 // XXXX
     Debug::Dump3dv d("/tmp/sliced.3dv", "XXXX From SliceTest");
-    // d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
+    d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
     d.SetLabelFontSize(40);
     d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
     d.AddTriMesh(sm.mesh);

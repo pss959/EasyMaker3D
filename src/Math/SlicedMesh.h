@@ -23,3 +23,7 @@ struct SlicedMesh {
 /// axis.
 SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis,
                      const std::vector<float> &fractions);
+
+/// Divides a mesh evenly into the given number (>= 1) of slices along the
+/// given axis. Returns a SlicedMesh representing the result.
+SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis, size_t num_slices);

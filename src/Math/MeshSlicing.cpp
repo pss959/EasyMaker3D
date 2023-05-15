@@ -132,7 +132,13 @@ Slicer_::Slicer_(const TriMesh &mesh, Axis axis) :
 }
 
 SlicedMesh Slicer_::Slice(const FloatVec &fractions) {
-    ASSERT(! fractions.empty());
+    if (fractions.empty()) {
+        SlicedMesh sliced_mesh;
+        sliced_mesh.mesh  = input_mesh_;
+        sliced_mesh.dir   = GetAxis(dim_);
+        sliced_mesh.range = range_;
+        return sliced_mesh;
+    }
 
     // Convert the fractions into slice coordinates.
     const FloatVec slice_vals = GetSliceVals_(fractions);
@@ -418,4 +424,13 @@ void Slicer_::Tri_::Print(std::ostream &out) const {
 SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis,
                      const std::vector<float> &fractions) {
     return Slicer_(mesh, axis).Slice(fractions);
+}
+
+SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis, size_t num_slices) {
+    ASSERT(num_slices >= 1U);
+    // Construct a vector of fractions.
+    std::vector<float> fractions(num_slices - 1, 0.f);
+    for (size_t i = 1; i < num_slices; ++i)
+        fractions[i - 1] = static_cast<float>(i) / num_slices;
+    return SliceMesh(mesh, axis, fractions);
 }

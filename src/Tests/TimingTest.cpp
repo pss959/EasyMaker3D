@@ -1,17 +1,19 @@
 #include "Debug/Timer.h"  // To help diagnose timing issues.
+#include "Math/MeshBuilding.h"
+#include "Math/MeshDividing.h"
+#include "Math/SlicedMesh.h"
 #include "Math/Twist.h"
 #include "Models/CylinderModel.h"
 #include "Models/TwistedModel.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
-// This test can be used in conjunction with valgrind/callgrind to investigate
-// slow parts of the application. These are generally #if-ed out so that they
-// do not slow down regular testing.
+// These tests can be used in conjunction with valgrind/callgrind to
+// investigate slow parts of the application. These are filtered out by default
+// in TestMain.cpp and can be run by setting the gtest filter to include them.
 class TimingTest : public SceneTestBase {
 };
 
-#if 0
 TEST_F(TimingTest, ChangeCylinder) {
     // Test changing cylinder radius and validating its mesh. This used to be
     // very slow before setting up to always build all CGAL-related code with
@@ -21,6 +23,32 @@ TEST_F(TimingTest, ChangeCylinder) {
     for (int i = 0; i < 100; ++i) {
         cyl->SetTopRadius(i * .001f);
         EXPECT_TRUE(cyl->IsMeshValid(reason));
+    }
+}
+
+TEST_F(TimingTest, Slicing) {
+    // Slice a box with several slicing planes. Used this to compare the
+    // CGAL-based version with the custom slicing version.
+    const TriMesh box = BuildBoxMesh(Vector3f(10, 10, 10));
+
+    {
+        // CGAL version.
+        Debug::Timer timer("CGAL Slicing");
+        for (int i = 0; i < 100; ++i) {
+            const SlicedMesh sm = SliceMesh(box, Vector3f::AxisY(), 20);
+            EXPECT_EQ(1680U,  sm.mesh.points.size());
+        }
+        timer.Report();
+    }
+
+    {
+        // Custom slicer.
+        Debug::Timer timer("Custom Slicing");
+        for (int i = 0; i < 100; ++i) {
+            const SlicedMesh sm = SliceMesh(box, Axis::kY, 20);
+            EXPECT_EQ(160U,  sm.mesh.points.size());
+        }
+        timer.Report();
     }
 }
 
@@ -54,4 +82,3 @@ TEST_F(TimingTest, Twist) {
     timer.AddTimePoint("Loop done");
     timer.Report();
 }
-#endif

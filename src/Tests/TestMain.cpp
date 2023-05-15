@@ -8,6 +8,9 @@ int main(int argc, char **argv) {
     // Let the code know a regular unit test is running.
     Util::app_type = Util::AppType::kUnitTest;
 
+    // Exclude timing tests by default. They can be run by adding a test filter.
+    testing::GTEST_FLAG(filter) = "-TimingTest.*";
+
     try {
         ::testing::InitGoogleTest(&argc, argv);
         return RUN_ALL_TESTS();
