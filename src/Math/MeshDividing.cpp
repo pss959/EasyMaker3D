@@ -22,6 +22,7 @@ static CPlane3 ToCPlane3(const Plane &plane) {
     return CPlane3(coeffs[0], coeffs[1], coeffs[2], coeffs[3]);
 }
 
+#if XXXX
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------
@@ -40,6 +41,7 @@ static Range1f FindMeshExtents_(const TriMesh &mesh, const Vector3f &dir) {
     ASSERT(min_dist < max_dist);
     return Range1f(min_dist, max_dist);
 }
+#endif
 
 }  // anonymous namespace
 
@@ -64,6 +66,7 @@ TriMesh SplitMesh(const TriMesh &mesh, const Plane &plane) {
     return CGALPolyhedronToTriMesh(poly);
 }
 
+#if XXXX
 SlicedMesh SliceMesh(const TriMesh &mesh, const Vector3f &dir,
                      size_t num_slices) {
     ASSERT(num_slices >= 1U);
@@ -106,3 +109,5 @@ SlicedMesh SliceMesh(const TriMesh &mesh, const Vector3f &dir,
     sliced_mesh.range = range;
     return sliced_mesh;
 }
+#endif
+

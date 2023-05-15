@@ -98,18 +98,23 @@ TriMesh ScaleMesh(const TriMesh &mesh, const Vector3f &scale) {
     return ModifyVertices_(mesh, scale_pt);
 }
 
+TriMesh RotateMesh(const TriMesh &mesh, const Rotationf &rot) {
+    return ModifyVertices_(mesh, [&rot](const Point3f &p){ return rot * p; });
+}
+
 TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
-    return ModifyVertices_(mesh, [m](const Point3f &p){ return m * p; });
+    return ModifyVertices_(mesh, [&m](const Point3f &p){ return m * p; });
 }
 
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
-    return ModifyVertices_(mesh, [plane](const Point3f &p){
+    return ModifyVertices_(mesh, [&plane](const Point3f &p){
         return plane.MirrorPoint(p); }, true);
 }
 
 TriMesh TaperMesh(const SlicedMesh &sliced_mesh, const Taper &taper) {
+    ASSERT(sliced_mesh.axis == taper.axis);
     ASSERT(Taper::IsValidProfile(taper.profile));
-    const int dim = Util::EnumInt(taper.axis);
+    const int   dim   = Util::EnumInt(taper.axis);
     const float min  = sliced_mesh.range.GetMinPoint();
     const float size = sliced_mesh.range.GetSize();
 

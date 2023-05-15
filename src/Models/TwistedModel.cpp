@@ -1,7 +1,6 @@
 #include "Models/TwistedModel.h"
 
 #include "Math/Linear.h"
-#include "Math/MeshDividing.h"
 #include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 
@@ -49,8 +48,22 @@ TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
     if (complexity != sliced_complexity_ || twist_.axis != sliced_axis_) {
         sliced_complexity_ = complexity;
         sliced_axis_       = twist_.axis;
-        const int num_slices = LerpInt(complexity, 1, 20);
-        sliced_mesh_ = SliceMesh(mesh, twist_.axis, num_slices);
+        const size_t num_slices = LerpInt(complexity, 1, 20);
+
+        if (twist_.axis == Vector3f::AxisY()) {
+            sliced_mesh_ = SliceMesh(mesh, Axis::kY, num_slices);
+        }
+        else {
+            // If the twist axis is not the +Y axis, rotate the mesh so it is,
+            // apply the twist, and rotate back.
+            const Rotationf rot =
+                Rotationf::RotateInto(twist_.axis, Vector3f::AxisY());
+
+            sliced_mesh_ = SliceMesh(RotateMesh(mesh, rot), Axis::kY,
+                                     num_slices);
+
+            sliced_mesh_.mesh = RotateMesh(sliced_mesh_.mesh, -rot);
+        }
     }
 
     return TwistMesh(sliced_mesh_, twist_);

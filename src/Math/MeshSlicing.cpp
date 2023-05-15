@@ -48,6 +48,7 @@ class Slicer_ {
     };
 
     const TriMesh &input_mesh_;
+    Axis          axis_;
     int           dim_;
     Range1f       range_;
     TriMesh       result_mesh_;
@@ -124,6 +125,7 @@ class Slicer_ {
 
 Slicer_::Slicer_(const TriMesh &mesh, Axis axis) :
     input_mesh_(mesh),
+    axis_(axis),
     dim_(Util::EnumInt(axis)) {
     ASSERT(dim_ >= 0 && dim_ <= 2);
 
@@ -132,18 +134,19 @@ Slicer_::Slicer_(const TriMesh &mesh, Axis axis) :
 }
 
 SlicedMesh Slicer_::Slice(const FloatVec &fractions) {
+    SlicedMesh sliced_mesh;
+    sliced_mesh.axis  = axis_;
+    sliced_mesh.range = range_;
+
     if (fractions.empty()) {
-        SlicedMesh sliced_mesh;
         sliced_mesh.mesh  = input_mesh_;
-        sliced_mesh.dir   = GetAxis(dim_);
-        sliced_mesh.range = range_;
         return sliced_mesh;
     }
 
     // Convert the fractions into slice coordinates.
     const FloatVec slice_vals = GetSliceVals_(fractions);
 
-    KLOG('X', "--- Slicing in " << ('X' + dim_) << " at: "
+    KLOG('X', "--- Slicing in " << static_cast<char>('X' + dim_) << " at: "
          << Util::JoinItems(slice_vals));
 
     // Sort the points of the mesh into buckets based on the distances. For
@@ -178,11 +181,7 @@ SlicedMesh Slicer_::Slice(const FloatVec &fractions) {
     // Remove redundant vertices and any other issues.
     CleanMesh(result_mesh_);
 
-    SlicedMesh sliced_mesh;
     sliced_mesh.mesh  = result_mesh_;
-    sliced_mesh.dir   = GetAxis(dim_);
-    sliced_mesh.range = range_;
-
     return sliced_mesh;
 }
 
