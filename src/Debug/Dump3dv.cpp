@@ -19,7 +19,7 @@ static const std::string kEdgeLabelColor{"1 1 0 1"};
 static const std::string kFaceLabelColor{".7 .9 .8 1"};
 static const std::string kHighlightEdgeColor{"1 .2 .8 1"};
 static const std::string kHighlightEdgeLabelColor{"1 .8 .8 1"};
-static const std::string kHighlightFaceLabelColor{".7 .9 .8 1"};
+static const std::string kHighlightFaceLabelColor{"1 .5 .9 1"};
 static const std::string kHighlightVertexLabelColor{"1 .5 .5 1"};
 static const std::string kVertexLabelColor{"1 1 1 1"};
 ///@}
@@ -127,27 +127,27 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh,
                  << "\n";
     }
     else {
-        const auto do_edge = [&](size_t ind, char sub, GIndex v0, GIndex v1){
-            out_ << "l " << extra_prefix_ << "E" << (ind / 3)
-                 << sub << " " << IID_("V", v0) << " " << IID_("V", v1) << "\n";
+        const auto add_edge = [&](size_t ind, char sub, GIndex v0, GIndex v1){
+            const auto id = extra_prefix_ + "E" + Util::ToString(ind / 3) + sub;
+            AddEdge(id, IID_("V", v0), IID_("V", v1));
         };
         for (size_t i = 0; i < inds.size(); i += 3) {
             if (! edge_highlight_func(inds[i], inds[i + 1]))
-                do_edge(i, 'a', inds[i], inds[i + 1]);
+                add_edge(i, 'a', inds[i], inds[i + 1]);
             if (! edge_highlight_func(inds[i + 1], inds[i + 2]))
-                do_edge(i, 'b', inds[i + 1], inds[i + 2]);
+                add_edge(i, 'b', inds[i + 1], inds[i + 2]);
             if (! edge_highlight_func(inds[i + 2], inds[i]))
-                do_edge(i, 'c', inds[i + 2], inds[i]);
+                add_edge(i, 'c', inds[i + 2], inds[i]);
         }
         // Highlighted edges.
         out_ << "c " << kHighlightEdgeColor << "\n";
         for (size_t i = 0; i < inds.size(); i += 3) {
             if (edge_highlight_func(inds[i], inds[i + 1]))
-                do_edge(i, 'a', inds[i], inds[i + 1]);
+                add_edge(i, 'a', inds[i], inds[i + 1]);
             if (edge_highlight_func(inds[i + 1], inds[i + 2]))
-                do_edge(i, 'b', inds[i + 1], inds[i + 2]);
+                add_edge(i, 'b', inds[i + 1], inds[i + 2]);
             if (edge_highlight_func(inds[i + 2], inds[i]))
-                do_edge(i, 'c', inds[i + 2], inds[i]);
+                add_edge(i, 'c', inds[i + 2], inds[i]);
         }
     }
 
@@ -188,14 +188,14 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh,
         };
         out_ << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
         for (size_t i = 0; i < inds.size() / 3; ++i) {
-            if (! face_highlight_func || ! face_highlight_func(i / 3))
+            if (! face_highlight_func || ! face_highlight_func(i))
                 do_face(i);
         }
         // Highlighted labels.
         if (face_highlight_func) {
             out_ << "c " << kHighlightFaceLabelColor << "\n";
             for (size_t i = 0; i < inds.size() / 3; ++i) {
-                if (face_highlight_func(i / 3))
+                if (face_highlight_func(i))
                     do_face(i);
             }
         }
@@ -316,6 +316,12 @@ void Dump3dv::AddVertex(const std::string &id, const Point3f &point) {
 void Dump3dv::AddEdge(const std::string &id,
                       const std::string &v0_id, const std::string &v1_id) {
     out_ << "l " << id << ' ' << v0_id << ' ' << v1_id << "\n";
+}
+
+void Dump3dv::AddFace(const std::string &id,
+                      const std::vector<std::string> &vids) {
+    AltFaceColor_(0);
+    out_ << "f " << id << " " << Util::JoinItems(vids, " ") << "\n";
 }
 
 void Dump3dv::AddVertex_(const std::string &id, const Point3f &p) {

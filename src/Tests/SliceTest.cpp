@@ -5,6 +5,8 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+#include "Math/Linear.h"   // XXXX
+#include "Util/General.h"  // XXXX
 #include "Debug/Dump3dv.h" // XXXX
 
 class SliceTest : public TestBase {};
@@ -69,17 +71,15 @@ TEST_F(SliceTest, Cylinder) {
 }
 
 TEST_F(SliceTest, CylinderX) {
-    // EnableKLog("X"); // XXXX
+    //EnableKLog("X"); // XXXX
 
     // XXXX const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 20);
     const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 8);
 
-#if XXXX
-    SlicedMesh sm = SliceMesh(cyl, Axis::kX,
-                              std::vector<float>{.2f, .6f, .75f});
-#endif
-    SlicedMesh sm = SliceMesh(cyl, Axis::kX,
-                              std::vector<float>{.2f});
+    const std::vector<float> slices{.2f, .6f, .75f};
+    // const std::vector<float> slices{.2f}; // XXXX TEMP
+
+    SlicedMesh sm = SliceMesh(cyl, Axis::kX, slices);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kX,       sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
@@ -87,24 +87,53 @@ TEST_F(SliceTest, CylinderX) {
     EXPECT_EQ(320U,           sm.mesh.GetTriangleCount());
 
 #if 1 // XXXX
-    const auto border_indices = GetBorderEdges(sm.mesh);
-    const auto highlight_edge = [&border_indices](GIndex v0, GIndex v1){
-        for (size_t i = 0; i < border_indices.size(); i += 2) {
-            if (v0 == border_indices[i] && v1 == border_indices[i + 1])
-                return true;
+    {
+        const std::vector<GIndex> split_faces{ 15, 17, 27, 28 };
+        const auto highlight_face = [&](GIndex f){
+            return Util::Contains(split_faces, f);
+        };
+
+        // Dump original mesh.
+        Debug::Dump3dv d("/tmp/unsliced.3dv", "XXXX From SliceTest");
+        //d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
+        d.SetLabelFontSize(40);
+        d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
+        d.AddTriMesh(cyl, highlight_face, nullptr, nullptr);
+
+        // Add quads showing slicing planes.
+        for (size_t i = 0; i < slices.size(); ++i) {
+            const float x =
+                Lerp(slices[i], sm.range.GetMinPoint(), sm.range.GetMaxPoint());
+            const std::string fid = "SPF" + Util::ToString(i);
+            d.AddVertex(fid + "_0", Point3f(x, -10, -10));
+            d.AddVertex(fid + "_1", Point3f(x, -10,  10));
+            d.AddVertex(fid + "_2", Point3f(x,  10,  10));
+            d.AddVertex(fid + "_3", Point3f(x,  10, -10));
+            d.AddFace(fid, std::vector<std::string>{
+                    fid + "_0", fid + "_1", fid + "_2", fid + "_3"});
         }
-        return false;
-    };
-    const auto highlight_vert = [&border_indices](GIndex v){
-        return std::find(border_indices.begin(), border_indices.end(), v) !=
-            border_indices.end();
-    };
+    }
 
-    Debug::Dump3dv d("/tmp/sliced.3dv", "XXXX From SliceTest");
-    //d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
-    d.SetLabelFontSize(40);
-    d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
+    {
+        // Dump result mesh
+        const auto border_indices = GetBorderEdges(sm.mesh);
+        const auto highlight_edge = [&border_indices](GIndex v0, GIndex v1){
+            for (size_t i = 0; i < border_indices.size(); i += 2) {
+                if (v0 == border_indices[i] && v1 == border_indices[i + 1])
+                    return true;
+            }
+            return false;
+        };
+        const auto highlight_vert = [&border_indices](GIndex v){
+            return Util::Contains(border_indices, v);
+        };
 
-    d.AddTriMesh(sm.mesh, nullptr, highlight_edge, highlight_vert);
+        Debug::Dump3dv d("/tmp/sliced.3dv", "XXXX From SliceTest");
+        //d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
+        d.SetLabelFontSize(40);
+        d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
+
+        d.AddTriMesh(sm.mesh, nullptr, highlight_edge, highlight_vert);
+    }
 #endif
 }

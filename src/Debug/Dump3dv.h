@@ -101,6 +101,10 @@ class Dump3dv {
     void AddEdge(const std::string &id,
                  const std::string &v0_id, const std::string &v1_id);
 
+    /// Adds a face joining the given vertices to dump. Adds a label if the
+    /// face labeling flag is set.
+    void AddFace(const std::string &id, const std::vector<std::string> &vids);
+
   private:
     std::ofstream out_;
     LabelFlags    label_flags_;
