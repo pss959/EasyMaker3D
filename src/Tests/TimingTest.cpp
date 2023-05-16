@@ -1,6 +1,6 @@
 #include "Debug/Timer.h"  // To help diagnose timing issues.
 #include "Math/MeshBuilding.h"
-#include "Math/SlicedMesh.h"
+#include "Math/MeshSlicing.h"
 #include "Math/Twist.h"
 #include "Models/CylinderModel.h"
 #include "Models/TwistedModel.h"

@@ -1,7 +1,7 @@
 ﻿#include "Math/MeshBuilding.h"
-#include "Math/MeshValidation.h"
+#include "Math/MeshSlicing.h"
 #include "Math/MeshUtils.h"
-#include "Math/SlicedMesh.h"  // XXXX
+#include "Math/MeshValidation.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

@@ -11,8 +11,8 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
-#include "Math/MeshDividing.h"
 #include "Math/Point3fMap.h"
+#include "Math/SlicedMesh.h"
 #include "Math/Taper.h"
 #include "Math/Twist.h"
 #include "Util/Assert.h"

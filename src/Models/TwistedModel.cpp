@@ -1,6 +1,7 @@
 #include "Models/TwistedModel.h"
 
 #include "Math/Linear.h"
+#include "Math/MeshSlicing.h"
 #include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 

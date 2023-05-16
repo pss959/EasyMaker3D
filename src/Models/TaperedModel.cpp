@@ -1,7 +1,7 @@
 #include "Models/TaperedModel.h"
 
 #include "Math/Linear.h"
-#include "Math/SlicedMesh.h"
+#include "Math/MeshSlicing.h"
 #include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"

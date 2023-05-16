@@ -1,4 +1,4 @@
-#include "Math/SlicedMesh.h" // XXXX
+#include "Math/MeshSlicing.h"
 
 #include <algorithm>
 #include <cmath>
