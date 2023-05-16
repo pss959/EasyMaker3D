@@ -26,4 +26,9 @@ MeshValidityCode ValidateTriMesh(const TriMesh &mesh);
 /// valid, this attempts to repair it and tests it again if possible.
 MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh);
 
+/// If either validation function returns MeshValidityCode::kNotClosed, this
+/// can be used to return the border edges. Each edge is a pair of indices in
+/// the returned vector.
+std::vector<GIndex> GetBorderEdges(const TriMesh &mesh);
+
 ///@}

@@ -1,5 +1,7 @@
 #include "Debug/Dump3dv.h"
 
+#include <random>
+
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Util/String.h"
@@ -15,10 +17,10 @@ namespace {
 static const std::string kEdgeColor{"1 1 0 1"};
 static const std::string kEdgeLabelColor{"1 1 0 1"};
 static const std::string kFaceLabelColor{".7 .9 .8 1"};
-static const std::string kHighlightEdgeColor{"1 0 0 1"};
+static const std::string kHighlightEdgeColor{"1 .2 .8 1"};
 static const std::string kHighlightEdgeLabelColor{"1 .8 .8 1"};
 static const std::string kHighlightFaceLabelColor{".7 .9 .8 1"};
-static const std::string kHighlightVertexLabelColor{"1 0 0 1"};
+static const std::string kHighlightVertexLabelColor{"1 .5 .5 1"};
 static const std::string kVertexLabelColor{"1 1 1 1"};
 ///@}
 
@@ -99,7 +101,10 @@ Dump3dv::~Dump3dv() {
     out_.close();
 }
 
-void Dump3dv::AddTriMesh(const TriMesh &mesh) {
+void Dump3dv::AddTriMesh(const TriMesh &mesh,
+                         const TFaceHighlightFunc &face_highlight_func,
+                         const TEdgeHighlightFunc &edge_highlight_func,
+                         const TVertexHighlightFunc &vert_highlight_func) {
     // Shorthand.
     const auto &pts  = mesh.points;
     const auto &inds = mesh.indices;
@@ -112,13 +117,39 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
     // Triangles as edges.
     out_ << "\n#  " << mesh.GetTriangleCount()
          << " Triangles as edges:\n" << "c " << kEdgeColor << "\n";
-    for (size_t i = 0; i < inds.size(); i += 3)
-        out_ << "l " << extra_prefix_ << "E" << (i / 3)
-             << " " << IID_("V", inds[i])
-             << " " << IID_("V", inds[i + 1])
-             << " " << IID_("V", inds[i + 2])
-             << " " << IID_("V", inds[i])
-             << "\n";
+    if (! edge_highlight_func) {
+        for (size_t i = 0; i < inds.size(); i += 3)
+            out_ << "l " << extra_prefix_ << "E" << (i / 3)
+                 << " " << IID_("V", inds[i])
+                 << " " << IID_("V", inds[i + 1])
+                 << " " << IID_("V", inds[i + 2])
+                 << " " << IID_("V", inds[i])
+                 << "\n";
+    }
+    else {
+        const auto do_edge = [&](size_t ind, char sub, GIndex v0, GIndex v1){
+            out_ << "l " << extra_prefix_ << "E" << (ind / 3)
+                 << sub << " " << IID_("V", v0) << " " << IID_("V", v1) << "\n";
+        };
+        for (size_t i = 0; i < inds.size(); i += 3) {
+            if (! edge_highlight_func(inds[i], inds[i + 1]))
+                do_edge(i, 'a', inds[i], inds[i + 1]);
+            if (! edge_highlight_func(inds[i + 1], inds[i + 2]))
+                do_edge(i, 'b', inds[i + 1], inds[i + 2]);
+            if (! edge_highlight_func(inds[i + 2], inds[i]))
+                do_edge(i, 'c', inds[i + 2], inds[i]);
+        }
+        // Highlighted edges.
+        out_ << "c " << kHighlightEdgeColor << "\n";
+        for (size_t i = 0; i < inds.size(); i += 3) {
+            if (edge_highlight_func(inds[i], inds[i + 1]))
+                do_edge(i, 'a', inds[i], inds[i + 1]);
+            if (edge_highlight_func(inds[i + 1], inds[i + 2]))
+                do_edge(i, 'b', inds[i + 1], inds[i + 2]);
+            if (edge_highlight_func(inds[i + 2], inds[i]))
+                do_edge(i, 'c', inds[i + 2], inds[i]);
+        }
+    }
 
     // Triangles as translucent faces.
     out_ << "\n#  Triangles as faces:\n";
@@ -138,23 +169,43 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh) {
     if (label_flags_.Has(LabelFlag::kVertexLabels)) {
         out_ << "\n# Vertex labels:\n" << "c " << kVertexLabelColor << "\n";
         for (size_t i = 0; i < pts.size(); ++i)
-            AddLabel_(pts[i], IID_("V", i));
+            if (! vert_highlight_func || ! vert_highlight_func(i))
+                AddLabel_(pts[i], IID_("V", i));
+        // Highlighted labels.
+        if (vert_highlight_func) {
+            out_ << "c " << kHighlightVertexLabelColor << "\n";
+            for (size_t i = 0; i < pts.size(); ++i)
+            if (vert_highlight_func(i))
+                AddLabel_(pts[i], IID_("V", i));
+        }
     }
     if (label_flags_.Has(LabelFlag::kFaceLabels)) {
-        out_ << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
         const Point3f mesh_center = ComputeMeshBounds(mesh).GetCenter();
-        for (size_t i = 0; i < inds.size() / 3; ++i) {
-            const Point3f tri_center = GetTriCenter_(mesh, i);
+        const auto do_face = [&](size_t ind){
+            const Point3f tri_center = GetTriCenter_(mesh, ind);
             const Point3f pos = tri_center + .05f * (tri_center - mesh_center);
-            AddRotatedLabel_(pos, GetTriNormal_(mesh, i), IID_("F", i));
+            AddRotatedLabel_(pos, GetTriNormal_(mesh, ind), IID_("F", ind));
+        };
+        out_ << "\n# Face labels:\n" << "c .8 .9 .8 1\n";
+        for (size_t i = 0; i < inds.size() / 3; ++i) {
+            if (! face_highlight_func || ! face_highlight_func(i / 3))
+                do_face(i);
+        }
+        // Highlighted labels.
+        if (face_highlight_func) {
+            out_ << "c " << kHighlightFaceLabelColor << "\n";
+            for (size_t i = 0; i < inds.size() / 3; ++i) {
+                if (face_highlight_func(i / 3))
+                    do_face(i);
+            }
         }
     }
 }
 
 void Dump3dv::AddPolyMesh(const PolyMesh &mesh,
-                          const FaceHighlightFunc &face_highlight_func,
-                          const EdgeHighlightFunc &edge_highlight_func,
-                          const VertexHighlightFunc &vert_highlight_func) {
+                          const PFaceHighlightFunc &face_highlight_func,
+                          const PEdgeHighlightFunc &edge_highlight_func,
+                          const PVertexHighlightFunc &vert_highlight_func) {
     // Vertices.
     out_ << "\n# PolyMesh with " << mesh.vertices.size() << " vertices:\n";
     for (const auto &v: mesh.vertices)
@@ -295,20 +346,27 @@ void Dump3dv::AddRotatedLabel_(const Point3f &pos, const Vector3f &dir,
 }
 
 void Dump3dv::AltFaceColor_(size_t i) {
-    // Set up 6 colors spaced out in hue.
-    static const float kSat   = .4f;
-    static const float kVal   = .95;
-    static const float kAlpha = .25f;
-    static const Color colors[6]{
-        Color::FromHSV(0.f / 6, kSat, kVal),
-        Color::FromHSV(2.f / 6, kSat, kVal),
-        Color::FromHSV(4.f / 6, kSat, kVal),
-        Color::FromHSV(1.f / 6, kSat, kVal),
-        Color::FromHSV(3.f / 6, kSat, kVal),
-        Color::FromHSV(5.f / 6, kSat, kVal),
-    };
+    // Set up N colors spaced out in hue.
+    static const int   kColorCount = 8;
+    static const float kSat        = .4f;
+    static const float kVal        = .95;
+    static const float kAlpha      = .25f;
+    static std::vector<Color> colors;
 
-    const Color &color = colors[i % 6];
+    // Populate colors if not already done.
+    if (colors.empty()) {
+        colors.reserve(kColorCount);
+        for (int i = 0; i < kColorCount; ++i) {
+            const float hue = static_cast<float>(i) / kColorCount;
+            colors.push_back(Color::FromHSV(hue, kSat, kVal));
+        }
+        // Randomize the vector so that neighboring colors are not always
+        // similar.
+        auto rng = std::default_random_engine{};
+        std::shuffle(colors.begin(), colors.end(), rng);
+    }
+
+    const Color &color = colors[i % kColorCount];
     out_ << "c " << color[0] << " " << color[1] << " " << color[2]
          << " " << kAlpha << "\n";
 }

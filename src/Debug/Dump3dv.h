@@ -30,11 +30,18 @@ class Dump3dv {
 
     typedef Util::Flags<LabelFlag> LabelFlags;
 
+    /// \name Functions used to highlight certain TriMesh features.
+    ///@{
+    typedef std::function<bool(GIndex)>         TFaceHighlightFunc;
+    typedef std::function<bool(GIndex, GIndex)> TEdgeHighlightFunc;
+    typedef std::function<bool(GIndex)>         TVertexHighlightFunc;
+    ///@}
+
     /// \name Functions used to highlight certain PolyMesh features.
     ///@{
-    typedef std::function<bool(const PolyMesh::Face   &)> FaceHighlightFunc;
-    typedef std::function<bool(const PolyMesh::Edge   &)> EdgeHighlightFunc;
-    typedef std::function<bool(const PolyMesh::Vertex &)> VertexHighlightFunc;
+    typedef std::function<bool(const PolyMesh::Face   &)> PFaceHighlightFunc;
+    typedef std::function<bool(const PolyMesh::Edge   &)> PEdgeHighlightFunc;
+    typedef std::function<bool(const PolyMesh::Vertex &)> PVertexHighlightFunc;
     ///@}
 
     /// The constructor is passed the file to dump to and a string to put in
@@ -71,15 +78,19 @@ class Dump3dv {
         extra_label_offset_ = offset;
     }
 
-    /// Adds a TriMesh to dump.
-    void AddTriMesh(const TriMesh &mesh);
+    /// Adds a TriMesh to dump. The highlight functions, if supplied, are used
+    /// to call out certain features with highlight colors.
+    void AddTriMesh(const TriMesh &mesh,
+                    const TFaceHighlightFunc &face_highlight_func = nullptr,
+                    const TEdgeHighlightFunc &edge_highlight_func = nullptr,
+                    const TVertexHighlightFunc &vert_highlight_func = nullptr);
 
     /// Adds a PolyMesh to dump. The highlight functions, if supplied, are used
     /// to call out certain features with highlight colors.
     void AddPolyMesh(const PolyMesh &mesh,
-                     const FaceHighlightFunc &face_highlight_func = nullptr,
-                     const EdgeHighlightFunc &edge_highlight_func = nullptr,
-                     const VertexHighlightFunc &vert_highlight_func = nullptr);
+                     const PFaceHighlightFunc &face_highlight_func = nullptr,
+                     const PEdgeHighlightFunc &edge_highlight_func = nullptr,
+                     const PVertexHighlightFunc &vert_highlight_func = nullptr);
 
     /// Adds a vertex to dump. Also adds a label if the vertex labeling flag is
     /// set.

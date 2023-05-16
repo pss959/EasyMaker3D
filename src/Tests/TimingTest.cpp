@@ -1,6 +1,5 @@
 #include "Debug/Timer.h"  // To help diagnose timing issues.
 #include "Math/MeshBuilding.h"
-#include "Math/MeshDividing.h"
 #include "Math/SlicedMesh.h"
 #include "Math/Twist.h"
 #include "Models/CylinderModel.h"
@@ -31,25 +30,13 @@ TEST_F(TimingTest, Slicing) {
     // CGAL-based version with the custom slicing version.
     const TriMesh box = BuildBoxMesh(Vector3f(10, 10, 10));
 
-    {
-        // CGAL version.
-        Debug::Timer timer("CGAL Slicing");
-        for (int i = 0; i < 100; ++i) {
-            const SlicedMesh sm = SliceMesh(box, Vector3f::AxisY(), 20);
-            EXPECT_EQ(1680U,  sm.mesh.points.size());
-        }
-        timer.Report();
+    // Custom slicer.
+    Debug::Timer timer("Custom Slicing");
+    for (int i = 0; i < 100; ++i) {
+        const SlicedMesh sm = SliceMesh(box, Axis::kY, 20);
+        EXPECT_EQ(160U,  sm.mesh.points.size());
     }
-
-    {
-        // Custom slicer.
-        Debug::Timer timer("Custom Slicing");
-        for (int i = 0; i < 100; ++i) {
-            const SlicedMesh sm = SliceMesh(box, Axis::kY, 20);
-            EXPECT_EQ(160U,  sm.mesh.points.size());
-        }
-        timer.Report();
-    }
+    timer.Report();
 }
 
 TEST_F(TimingTest, Twist) {

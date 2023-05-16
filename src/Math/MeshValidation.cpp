@@ -6,6 +6,7 @@
 
 #define REPAIR_SELF_INTERSECTIONS 0
 #define REPORT_SELF_INTERSECTIONS 0
+#define REPORT_BORDER_EDGES       0  // Useful when is_closed() returns false.
 #define STITCH_BORDERS            1
 
 #if STITCH_BORDERS
@@ -15,6 +16,49 @@
 #if REPAIR_SELF_INTERSECTIONS || REPORT_SELF_INTERSECTIONS
 #include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #endif
+
+// ----------------------------------------------------------------------------
+// Helper classes and functions.
+// ----------------------------------------------------------------------------
+
+// Maps vertices in a CPolyhedron to TriMesh indices.
+class VertexMap_ {
+  public:
+    explicit VertexMap_(const TriMesh &mesh) : mesh_(mesh) {}
+
+    GIndex FindPoint(const CPoint3 &p) {
+        const Point3f pt(CGAL::to_double(p.x().exact()),
+                         CGAL::to_double(p.y().exact()),
+                         CGAL::to_double(p.z().exact()));
+        // Linear search. Efficiency does not matter here.
+        GIndex index = -1;
+        for (size_t i = 0; i < mesh_.points.size(); ++i) {
+            if (mesh_.points[i] == pt) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+  private:
+    const TriMesh &mesh_;
+};
+
+static std::vector<GIndex> GetBorderEdges_(const TriMesh &mesh,
+                                           CPolyhedron poly) {
+    std::vector<GIndex> indices;
+    poly.normalize_border();
+    VertexMap_ vmap(mesh);
+    for (auto it = poly.border_halfedges_begin();
+         it != poly.halfedges_end(); ++it) {
+        const auto &p0 = it->vertex()->point();
+        const auto &p1 = it->next()->vertex()->point();
+        indices.push_back(vmap.FindPoint(p0));
+        indices.push_back(vmap.FindPoint(p1));
+    }
+    return indices;
+}
 
 #if REPAIR_SELF_INTERSECTIONS
 static void RemoveSelfIntersections_(CPolyhedron &poly) {
@@ -30,30 +74,14 @@ inline std::ostream & operator<<(std::ostream &out, const CPoint3 &p) {
 }
 
 static void PrintTriFacet_(const TriMesh &mesh, const CPolyhedron::Facet &f) {
-    // Store triangle points to find in the TriMesh.
-    std::vector<Point3f> tri;
+    std::cerr << " MESH INDICES:";
+
+    VertexMap_ vmap(mesh);
     auto hc = f.facet_begin();
     do {
         const auto &p = hc->vertex()->point();
-        tri.push_back(Point3f(CGAL::to_double(p.x().exact()),
-                              CGAL::to_double(p.y().exact()),
-                              CGAL::to_double(p.z().exact())));
+        std::cerr << " " << vmap.FindPoint(hc->vertex()->point()) << "\n";
     } while (++hc != f.facet_begin());
-    ASSERT(tri.size() == 3U);
-
-    // Find the points in the TriMesh to get vertex indices.
-    std::vector<int> indices;
-    for (int i = 0; i < 3; ++i) {
-        int index = -1;
-        for (size_t j = 0; j < mesh.points.size(); ++j) {
-            if (mesh.points[j] == tri[i]) {
-                index = j;
-                break;
-            }
-        }
-        indices.push_back(index);
-    }
-    std::cerr << " MESH INDICES: " << Util::JoinItems(indices);
 }
 
 static void ReportSelfIntersections_(const TriMesh &mesh,
@@ -79,49 +107,21 @@ static void ReportSelfIntersections_(const TriMesh &mesh,
 }
 #endif
 
+#if REPORT_BORDER_EDGES
+static void ReportBorderEdges_(const TriMesh &mesh, CPolyhedron poly) {
+    const auto indices = GetBorderEdges_(mesh, poly);
+    for (size_t i = 0; i < indices.size(); i += 2) {
+        std::cerr << "*** Border Edge from V" << indices[i]
+                  << " to V" << indices[i + 1] << "\n";
+    }
+}
+#endif
+
 static MeshValidityCode IsPolyValid_(const CPolyhedron &poly) {
     if (! poly.is_valid())
         return MeshValidityCode::kInconsistent;
-    else if (! poly.is_closed()) {
-#if XXXX
-        std::cerr << "Polyhedron_3:\n";
-        std::cerr << " is_valid:              " << poly.is_valid() << "\n";
-        std::cerr << " is_closed:             " << poly.is_closed() << "\n";
-        std::cerr << " vertex count:          " << poly.size_of_vertices()  << "\n";
-        std::cerr << " halfedge count:        " << poly.size_of_halfedges() << "\n";
-        std::cerr << " facet count:           " << poly.size_of_facets() << "\n";
-        std::cerr << " border edge count:     " << poly.size_of_border_edges() << "\n";
-        std::cerr << " border halfedge count: " << poly.size_of_border_halfedges() << "\n";
-
-#if XXXX
-        for (auto it = poly.border_halfedges_begin();
-             it != poly.halfedges_end(); ++it) {
-            std::cerr << "XXXX edge is border = " << it->is_border() << "\n";
-
-            std::cerr << "XXXX SHEV = "
-                      << (CPolyhedron::Supports_halfedge_vertex() ? 'T' : 'F')
-                      << "\n";
-#endif
-#if 0 // XXXX
-            std::cerr << "XXXX Accessing edge\n";
-            const auto &edge = *it;
-            std::cerr << "XXXX     EDGE = : " << &edge << "\n";
-            std::cerr << "XXXX Accessing vertp\n";
-            const auto vertp = edge.vertex().operator->();
-            std::cerr << "XXXX     VERTP = : " << vertp << "\n";
-            std::cerr << "XXXX Accessing vert\n";
-            const auto &vert = *edge.vertex();
-            std::cerr << "XXXX Accessing point\n";
-            const auto &point = vert.point();
-            //std::cerr << "XXXX     BORDER EDGE: "
-            //<< vert.point() << "\n";
-            std::cerr << "XXXX     BORDER EDGE: "
-                      << &edge << " VERT " << &vert << "\n";
-        }
-#endif
-#endif
+    else if (! poly.is_closed())
         return MeshValidityCode::kNotClosed;
-    }
     else if (CGAL::Polygon_mesh_processing::does_self_intersect(poly))
         return MeshValidityCode::kSelfIntersecting;
     else
@@ -135,6 +135,10 @@ MeshValidityCode ValidateTriMesh(const TriMesh &mesh) {
 #if REPORT_SELF_INTERSECTIONS
         if (code == MeshValidityCode::kSelfIntersecting)
             ReportSelfIntersections_(mesh, poly);
+#endif
+#if REPORT_BORDER_EDGES
+        if (code == MeshValidityCode::kNotClosed)
+            ReportBorderEdges_(mesh, poly);
 #endif
         return code;
     }
@@ -151,14 +155,19 @@ MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh) {
         if (code == MeshValidityCode::kValid)
             return code;
 
+        else if (code == MeshValidityCode::kNotClosed) {
 #if STITCH_BORDERS
-        // See if stitching borders helps. This was needed before CleanMesh()
-        // removed duplicate vertices properly.
-        CGAL::Polygon_mesh_processing::stitch_borders(poly);
-        code = IsPolyValid_(poly);
-        if (code == MeshValidityCode::kValid)
-            return code;
+            // See if stitching borders helps. This was needed before
+            // CleanMesh() removed duplicate vertices properly.
+            CGAL::Polygon_mesh_processing::stitch_borders(poly);
+            code = IsPolyValid_(poly);
+            if (code == MeshValidityCode::kValid)
+                return code;
 #endif
+#if REPORT_BORDER_EDGES
+            ReportBorderEdges_(mesh, poly);
+#endif
+        }
 
         else if (code == MeshValidityCode::kSelfIntersecting) {
 #if REPORT_SELF_INTERSECTIONS
@@ -185,4 +194,9 @@ MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh) {
         // inconsistent.
         return MeshValidityCode::kInconsistent;
     }
+}
+
+std::vector<GIndex> GetBorderEdges(const TriMesh &mesh) {
+    CPolyhedron poly = TriMeshToCGALPolyhedron(mesh);
+    return GetBorderEdges_(mesh, poly);
 }
