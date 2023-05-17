@@ -195,7 +195,7 @@ static bool AreFacesCoplanar_(const Edge &e) {
 
 /// Inserts an edge into a face at an appropriate spot by finding an existing
 /// edge it is connected to.
-void InsertEdgeIntoFace_(Face &face, Edge &edge) {
+static void InsertEdgeIntoFace_(Face &face, Edge &edge) {
     // Find an edge that this one connects to at either end.
     int index = -1;
     for (size_t i = 0; index < 0 && i < face.outer_edges.size(); ++i) {
