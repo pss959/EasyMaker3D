@@ -296,11 +296,11 @@ these:
 | K      | VirtualKeyboard state changes                   |
 | l      | PolyMeshBuilder construction                    |
 | m      | Changes to matrices in SG Nodes                 |
+| M      | Model structure and visibility changes          |
 </div>
 <div class="tablecolumn" markdown="1">
 | Char   | Logging Category                                |
 | :----: | ----------------------------------------------- |
-| M      | Model structure and visibility changes          |
 | n      | Initial notification trigger                    |
 | N      | All notifications                               |
 | o      | Notification observer changes                   |
@@ -322,11 +322,13 @@ these:
 | X      | Mesh slicing                                    |
 | y      | Model status changes                            |
 | z      | Font loading                                    |
+| 0      | Mesh cleaning                                   |
+| &nbsp; | &nbsp;                                          |
 </div>
 </div>
 
 [comment]: # (If a blank line is needed in the above table for symmetry,)
-[comment]: # (use "| &nbsp; | &nbsp |")
+[comment]: # (use "| &nbsp; | &nbsp;                                     |")
 
 #### Special KLOG character codes:
 

@@ -28,12 +28,12 @@ strict digraph {
 						graph [margin=12];
 						Base	[URL="\ref Base",
 							group=4];
-						Enums	[URL="\ref Enums",
-							group=4];
-						Base -> Enums;
 						Math	[URL="\ref Math",
 							group=4];
 						Base -> Math;
+						Enums	[URL="\ref Enums",
+							group=4];
+						Math -> Enums;
 						Util	[URL="\ref Util",
 							group=4];
 						Math -> Util;

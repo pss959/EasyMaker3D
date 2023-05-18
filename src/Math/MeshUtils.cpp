@@ -17,6 +17,7 @@
 #include "Math/Twist.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
+#include "Util/KLog.h"
 #include "Util/Tuning.h"
 
 /// Creates a new mesh by modifying each point in the given mesh using the
@@ -165,13 +166,26 @@ void UnshareMeshVertices(TriMesh &mesh) {
 }
 
 void CleanMesh(TriMesh &mesh) {
+    KLOG('0', "Cleaning a mesh with " << mesh.points.size() << " points and "
+         << mesh.GetTriangleCount() << " triangles");
+
     // First, use a Point3fMap to clean and uniquify points. Keep track of how
     // old indices map to new ones.
     Point3fMap point_map(TK::kMeshCleanPrecision);
     std::vector<GIndex> index_map;
     index_map.reserve(mesh.indices.size());
-    for (const auto &p: mesh.points)
+    for (size_t i = 0; i < mesh.points.size(); ++i) {
+        const auto &p = mesh.points.at(i);
+#if ENABLE_DEBUG_FEATURES
+        const size_t prev_count = point_map.GetCount();
+#endif
         index_map.push_back(point_map.Add(p));
+#if ENABLE_DEBUG_FEATURES
+        if (point_map.GetCount() == prev_count)
+            KLOG('0', "   Point " << i
+                 << " is the same as map point " << index_map.back());
+#endif
+    }
 
     // Replace the TriMesh contents, replacing the old indices with new ones.
     mesh.points = point_map.GetPoints();
@@ -189,6 +203,8 @@ void CleanMesh(TriMesh &mesh) {
             new_indices.push_back(mesh.indices[3 * i + 1]);
             new_indices.push_back(mesh.indices[3 * i + 2]);
         }
+        else
+            KLOG('0', "   Triangle " << i << " is degenerate");
     }
     if (new_indices.size() < mesh.indices.size()) {
         mesh.indices = new_indices;
