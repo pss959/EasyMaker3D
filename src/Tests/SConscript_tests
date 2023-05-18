@@ -41,6 +41,7 @@ test_sources = [
     'PaneTest.cpp',
     'ParserTest.cpp',
     'PlaneTest.cpp',
+    'Point3fMapTest.cpp',
     'PolyMeshTest.cpp',
     'PolygonTest.cpp',
     'ProfileTest.cpp',
