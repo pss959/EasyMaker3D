@@ -5,6 +5,7 @@
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -17,7 +18,7 @@ namespace {
 static const std::string kEdgeColor{"1 1 0 1"};
 static const std::string kEdgeLabelColor{"1 1 0 1"};
 static const std::string kFaceLabelColor{".7 .9 .8 1"};
-static const std::string kHighlightEdgeColor{"1 .2 .8 1"};
+static const std::string kHighlightEdgeColor{".4 .9 1 1"};
 static const std::string kHighlightEdgeLabelColor{"1 .8 .8 1"};
 static const std::string kHighlightFaceLabelColor{"1 .5 .9 1"};
 static const std::string kHighlightVertexLabelColor{"1 .5 .5 1"};
@@ -27,7 +28,7 @@ static const std::string kVertexLabelColor{"1 1 1 1"};
 /// Outputs a Point3f with rounded precision.
 inline std::ostream & operator<<(std::ostream &out, const Point3f &p) {
     for (int i = 0; i < 3; ++i)
-        out << ' ' << RoundToPrecision(p[i], .01f);
+        out << ' ' << RoundToPrecision(p[i], TK::kMeshCleanPrecision);
     return out;
 }
 
@@ -127,27 +128,28 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh,
                  << "\n";
     }
     else {
-        const auto add_edge = [&](size_t ind, char sub, GIndex v0, GIndex v1){
-            const auto id = extra_prefix_ + "E" + Util::ToString(ind / 3) + sub;
+        const auto add_edge = [&](size_t ind, int sub, GIndex v0, GIndex v1){
+            const auto id = extra_prefix_ + "E" +
+                Util::ToString(ind / 3) + "_" + Util::ToString(sub);
             AddEdge(id, IID_("V", v0), IID_("V", v1));
         };
         for (size_t i = 0; i < inds.size(); i += 3) {
             if (! edge_highlight_func(inds[i], inds[i + 1]))
-                add_edge(i, 'a', inds[i], inds[i + 1]);
+                add_edge(i, 0, inds[i], inds[i + 1]);
             if (! edge_highlight_func(inds[i + 1], inds[i + 2]))
-                add_edge(i, 'b', inds[i + 1], inds[i + 2]);
+                add_edge(i, 1, inds[i + 1], inds[i + 2]);
             if (! edge_highlight_func(inds[i + 2], inds[i]))
-                add_edge(i, 'c', inds[i + 2], inds[i]);
+                add_edge(i, 2, inds[i + 2], inds[i]);
         }
         // Highlighted edges.
         out_ << "c " << kHighlightEdgeColor << "\n";
         for (size_t i = 0; i < inds.size(); i += 3) {
             if (edge_highlight_func(inds[i], inds[i + 1]))
-                add_edge(i, 'a', inds[i], inds[i + 1]);
+                add_edge(i, 0, inds[i], inds[i + 1]);
             if (edge_highlight_func(inds[i + 1], inds[i + 2]))
-                add_edge(i, 'b', inds[i + 1], inds[i + 2]);
+                add_edge(i, 1, inds[i + 1], inds[i + 2]);
             if (edge_highlight_func(inds[i + 2], inds[i]))
-                add_edge(i, 'c', inds[i + 2], inds[i]);
+                add_edge(i, 2, inds[i + 2], inds[i]);
         }
     }
 

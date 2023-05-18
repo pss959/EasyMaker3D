@@ -6,6 +6,7 @@
 #include "Tests/Testing.h"
 
 // These are needed for the mesh dump functions.
+#include <ion/math/vectorutils.h>
 #include "Debug/Dump3dv.h"
 #include "Math/Linear.h"
 #include "Util/General.h"
@@ -17,71 +18,97 @@
 
 class SliceTest : public TestBase {
   protected:
+    // Data passed to DumpTriMesh.
+    struct DumpData {
+        bool add_face_labels   = true;
+        bool add_edge_labels   = true;
+        bool add_vertex_labels = true;
+
+        // Set these to add slicing plane rectangles.
+        std::vector<float> fractions;
+        Range1f range;
+        int     dim = 1;
+
+        // Set this to true to highlight border edges and vertices.
+        bool highlight_borders = false;
+    };
+
     // Enables slicing logging.
     void EnableSliceLogging() { EnableKLog("X"); }
 
     // This can be used in tests to dump a TriMesh in 3dv format to /tmp.
-    void DumpTriMesh(const std::string &name, const TriMesh &mesh,
-                     bool add_labels = true);
-
-    // This can be used in tests to dump a TriMesh and slicing planes for the
-    // given fractions in 3dv format to /tmp.
-    void DumpTriMesh(const std::string &name, const TriMesh &mesh,
-                     int dim, const std::vector<float> &fractions,
-                     const Range1f &range, bool add_labels = true);
+    void DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
+                     const DumpData &data);
 };
 
-void SliceTest::DumpTriMesh(const std::string &name, const TriMesh &mesh,
-                            bool add_labels) {
-    Debug::Dump3dv d("/tmp/" + name + ".3dv", "XXXX From SliceTest");
-    if (! add_labels)
-        d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
-    d.SetLabelFontSize(40);
-    d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
-    d.AddTriMesh(mesh);
-};
+void SliceTest::DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
+                            const DumpData &data) {
+    Debug::Dump3dv d("/tmp/" + file_name + ".3dv", "From SliceTest");
+    const auto sz = .8f * ComputeMeshBounds(mesh).GetSize();
 
-void SliceTest::DumpTriMesh(const std::string &name, const TriMesh &mesh,
-                            int dim, const std::vector<float> &fractions,
-                            const Range1f &range, bool add_labels) {
-    Debug::Dump3dv d("/tmp/" + name + ".3dv", "XXXX From SliceTest");
-    if (! add_labels)
-        d.SetLabelFlags(Debug::Dump3dv::LabelFlags());
-    d.SetLabelFontSize(40);
+    Debug::Dump3dv::LabelFlags flags;
+    if (data.add_face_labels)
+        flags.Set(Debug::Dump3dv::LabelFlag::kFaceLabels);
+    if (data.add_edge_labels)
+        flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
+    if (data.add_vertex_labels)
+        flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+    d.SetLabelFontSize(1.2f * ion::math::Length(sz));
     d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
-    d.AddTriMesh(mesh);
+
+    // Set up highlighting if requested.
+    if (data.highlight_borders) {
+        const auto border_indices = GetBorderEdges(mesh);
+        const auto highlight_edge = [&border_indices](GIndex v0, GIndex v1){
+            for (size_t i = 0; i < border_indices.size(); i += 2) {
+                if (v0 == border_indices[i] && v1 == border_indices[i + 1])
+                    return true;
+            }
+            return false;
+        };
+        const auto highlight_vert = [&border_indices](GIndex v){
+            return Util::Contains(border_indices, v);
+        };
+        d.AddTriMesh(mesh, nullptr, highlight_edge, highlight_vert);
+    }
+    else {
+        d.AddTriMesh(mesh);
+    }
 
     // Add rectangles showing slicing planes.
-    const auto sz = .8f * ComputeMeshBounds(mesh).GetSize();
-    const int dim1 = (dim + 1) % 3;
-    const int dim2 = (dim + 2) % 3;
-    ASSERT(dim  >= 0 && dim  <= 2);
-    ASSERT(dim1 >= 0 && dim1 <= 2);
-    ASSERT(dim2 >= 0 && dim2 <= 2);
-    for (size_t i = 0; i < fractions.size(); ++i) {
-        const float frac = fractions[i];
-        const std::string fid = "SPF" + Util::ToString(i);
-        const float val = Lerp(frac, range.GetMinPoint(), range.GetMaxPoint());
-        for (int j = 0; j < 4; ++j) {
-            Point3f p;
-            p[dim]  = val;
-            p[dim1] = (j == 0 || j == 1) ? -sz[dim1] : sz[dim1];
-            p[dim2] = (j == 0 || j == 3) ? -sz[dim2] : sz[dim2];
-            d.AddVertex(fid + "_" + Util::ToString(j), p);
+    if (! data.fractions.empty()) {
+        const int dim0 = data.dim;
+        const int dim1 = (dim0 + 1) % 3;
+        const int dim2 = (dim0 + 2) % 3;
+        ASSERT(dim0 >= 0 && dim0 <= 2);
+        ASSERT(dim1 >= 0 && dim1 <= 2);
+        ASSERT(dim2 >= 0 && dim2 <= 2);
+        for (size_t i = 0; i < data.fractions.size(); ++i) {
+            const float frac = data.fractions[i];
+            const std::string fid = "SPF" + Util::ToString(i);
+            const float val =
+                Lerp(frac, data.range.GetMinPoint(), data.range.GetMaxPoint());
+            for (int j = 0; j < 4; ++j) {
+                Point3f p;
+                p[dim0] = val;
+                p[dim1] = (j == 0 || j == 1) ? -sz[dim1] : sz[dim1];
+                p[dim2] = (j == 0 || j == 3) ? -sz[dim2] : sz[dim2];
+                d.AddVertex(fid + "_" + Util::ToString(j), p);
+            }
+            d.AddFace(fid, std::vector<std::string>{
+                    fid + "_0", fid + "_1", fid + "_2", fid + "_3"});
         }
-        d.AddFace(fid, std::vector<std::string>{
-                fid + "_0", fid + "_1", fid + "_2", fid + "_3"});
     }
-}
+};
 
 // ----------------------------------------------------------------------------
 // Tests.
 // ----------------------------------------------------------------------------
 
 TEST_F(SliceTest, Box0Slices) {
-    const TriMesh box = BuildBoxMesh(Vector3f(10, 20, 30));
+    const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
 
-    const SlicedMesh sm = SliceMesh(box, Axis::kY, std::vector<float>());
+    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, std::vector<float>());
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kY,         sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
@@ -90,12 +117,10 @@ TEST_F(SliceTest, Box0Slices) {
 }
 
 TEST_F(SliceTest, Box1Slice) {
-    const TriMesh box = BuildBoxMesh(Vector3f(10, 20, 30));
+    const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
 
     const std::vector<float> fractions{.25f};
-    const SlicedMesh sm = SliceMesh(box, Axis::kY, fractions);
-    DumpTriMesh("unsliced", box, 1, fractions, sm.range);
-    DumpTriMesh("sliced",   sm.mesh);
+    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kY,         sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
@@ -104,10 +129,10 @@ TEST_F(SliceTest, Box1Slice) {
 }
 
 TEST_F(SliceTest, Box2Slices) {
-    const TriMesh box = BuildBoxMesh(Vector3f(10, 20, 30));
+    const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
 
     const std::vector<float> fractions{.25f, .75f};
-    const SlicedMesh sm = SliceMesh(box, Axis::kY, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kY,         sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
@@ -116,10 +141,10 @@ TEST_F(SliceTest, Box2Slices) {
 }
 
 TEST_F(SliceTest, Box3Slices) {
-    const TriMesh box = BuildBoxMesh(Vector3f(10, 20, 30));
+    const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
 
     const std::vector<float> fractions{.25f, .6f, .75f};
-    const SlicedMesh sm = SliceMesh(box, Axis::kY, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kY,         sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
@@ -128,10 +153,10 @@ TEST_F(SliceTest, Box3Slices) {
 }
 
 TEST_F(SliceTest, Box3SlicesX) {
-    const TriMesh box = BuildBoxMesh(Vector3f(10, 20, 30));
+    const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
 
     const std::vector<float> fractions{.25f, .6f, .75f};
-    const SlicedMesh sm = SliceMesh(box, Axis::kX, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kX,       sm.axis);
     EXPECT_EQ(Range1f(-5, 5), sm.range);
@@ -140,10 +165,10 @@ TEST_F(SliceTest, Box3SlicesX) {
 }
 
 TEST_F(SliceTest, Cylinder) {
-    const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 20);
+    const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
 
     const std::vector<float> fractions{.25f, .6f, .75f};
-    const SlicedMesh sm = SliceMesh(cyl, Axis::kY, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kY,         sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
@@ -152,13 +177,31 @@ TEST_F(SliceTest, Cylinder) {
 }
 
 TEST_F(SliceTest, CylinderX) {
-    // XXXX const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 20);
-    const TriMesh cyl = BuildCylinderMesh(4, 8, 20, 8);
+    // EnableSliceLogging(); // XXXX
 
-    const std::vector<float> fractions{.2f, .6f, .75f};
-    // const std::vector<float> fractions{.2f}; // XXXX TEMP
+    // XXXX const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
+    const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
 
-    SlicedMesh sm = SliceMesh(cyl, Axis::kX, fractions);
+    const std::vector<float> fractions{.2f, .75f}; // XXXX TEMP
+    // const std::vector<float> fractions{.2f, .6f, .75f};
+
+    SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
+#if XXXX
+    {
+        DumpData data;
+        data.fractions = fractions;
+        data.dim = Util::EnumInt(sm.axis);
+        data.range = sm.range;
+        DumpTriMesh("unsliced", mesh, data);
+    }
+    {
+        DumpData data;
+        data.add_face_labels = false;
+        data.add_edge_labels = false;
+        //data.highlight_borders = true;
+        DumpTriMesh("sliced", sm.mesh, data);
+    }
+#endif
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kX,       sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);

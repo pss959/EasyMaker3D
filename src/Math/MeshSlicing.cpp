@@ -14,6 +14,8 @@
 #include "Util/KLog.h"
 #include "Util/String.h"
 
+#include "Debug/Dump3dv.h" // XXXX
+
 namespace {
 
 // ----------------------------------------------------------------------------
@@ -25,400 +27,372 @@ class Slicer_ {
     /// Shorthand.
     typedef std::vector<float> FloatVec;
 
-    /// The constructor is passed the input TriMesh to slice and the Axis along
-    /// which to slice.
-    Slicer_(const TriMesh &mesh, Axis axis);
-
-    /// Slices the mesh using a vector of fractions with the relative distances
-    /// in the range (0,1) of the planes relative to the min/max distances of
-    /// the mesh along the axis. Returns the sliced mesh.
-    SlicedMesh Slice(const FloatVec &fractions);
+    /// Slices the given TriMesh along the given Axis. The \p fractions vector
+    /// contains the relative distances in the range (0,1) of the planes
+    /// relative to the min/max distances of the mesh along the axis.
+    /// This returns the SlicedMesh.
+    SlicedMesh Slice(const TriMesh &mesh, Axis axis, const FloatVec &fractions);
 
   private:
-    /// Collects all info about a triangle being processed.
-    struct Tri_ {
-        int     index = -1;   ///< Index within original TriMesh, if any.
-        int     dim;          ///< Copied from Slicer_.
-        GIndex  i[3];         ///< Indices of result_mesh_ points.
-        Point3f p[3];         ///< Points.
-        float   b[3];         ///< Buckets for the three values.
-        float   min, max;     ///< Min/max bucket values.
-        int     num_buckets;  ///< Number of buckets crossed.
-
-        void Print(std::ostream &out) const;
-    };
-
-    const TriMesh &input_mesh_;
-    Axis          axis_;
-    int           dim_;
-    Range1f       range_;
-    TriMesh       result_mesh_;
-
-    /// Finds the min and max coordinates in the given dimension among all points
-    /// in the mesh, returning the result as a Range1f.
-    Range1f FindMeshExtents_() const;
-
-    /// Returns a sorted vector of slice values in the axis dimesion, including
-    /// the min and max at the ends.
-    FloatVec GetCrossings_(const FloatVec &fractions) const;
-
-    /// Finds the bucket in which the given value lies relative to \p
-    /// crossings (which must be sorted increasing). If the value is the same
-    /// as one of the values, this returns its index. Otherwise, it returns the
-    /// number halfway between the indices of the two values surrounding it.
-    float FindBucket_(const FloatVec &crossings, float val) const;
-
-    /// XXXX
-    Tri_ BuildTri_(int tri_index, const FloatVec &buckets) const;
-
-    /// XXXX
-    Tri_ BuildTri_(int tri_index, const GIndex indices[3],
-                   const FloatVec &buckets) const;
-
-    /// XXXX
-    void SplitTri_(const Tri_ &tri, const FloatVec &crossings,
-                   FloatVec &buckets, Tri_ &sub_tri0, Tri_ &sub_tri1);
+    /// Shorthand.
+    typedef std::vector<GIndex> IndexVec_;
 
     // XXXX
-    void ProcessTri_(const Tri_ &tri, const FloatVec &crossings);
+    struct Tri_ {
+        GIndex    a, b, c;       // Low to high; points A, B, C.
+        bool      is_ccw = true; // True if ABC is counterclockwise.
+        IndexVec_ ab, ac, bc;
+    };
 
-    /// Splits a triangle across the given slice values, adding the resulting
-    /// points and triangles to the result mesh.
-    void SliceTri_(const Tri_ &tri, int min_pt, const FloatVec &crossings);
+    // XXXX
+    int        dim_;
+    SlicedMesh sliced_mesh_;
+    FloatVec   crossings_;
+    FloatVec   buckets_;
 
-    /// Splits the edge of a triangle between the indexed points based on a
-    /// slicing \p value. Adds the new point to the result mesh and returns its
-    /// index.
-    GIndex SplitEdge_(const Tri_ &tri, int i0, int i1, float value) {
-        const auto &p0 = tri.p[i0];
-        const auto &p1 = tri.p[i1];
-        ASSERT(p0[dim_] != p1[dim_]);
-        const float frac = (p0[dim_] - value) / (p0[dim_] - p1[dim_]);
+    /// Finds the min and max coordinates in the given dimension among all
+    /// points in the given mesh, returning the result as a Range1f.
+    Range1f FindMeshExtents_(const TriMesh &mesh, int dim) const;
+
+    /// Returns a sorted vector of coordinates where the slicing planes cross
+    /// the axis dimension, including the min and max at the ends.
+    FloatVec GetCrossings_(const FloatVec &fractions,
+                           const Range1f &range) const;
+
+    /// Finds the bucket in which the given value lies relative to #crossings
+    /// (which is sorted increasing). If the value is the same as one of the
+    /// values, this returns its index. Otherwise, it returns the number
+    /// halfway between the indices of the two values surrounding it.
+    float FindBucket_(float val) const;
+
+    /// XXXX
+    void ProcessTri_(const TriMesh &mesh, size_t tri_index);
+
+    /// Fills in and returns a Tri_ instance for the indexed triangle of the
+    /// given TriMesh.
+    Tri_ GetTri_(const TriMesh &mesh, size_t tri_index);
+
+    /// XXXX iextra inserts at ...
+    IndexVec_ GetEdge_(const TriMesh &mesh,
+                       GIndex i0, GIndex i1, int iextra = -1);
+
+    /// Returns the indexed point from the result TriMesh. This is used in
+    /// place of indexing into the original TriMesh because it allows access to
+    /// newly-added points.
+    const Point3f & GetPoint_(GIndex index) const {
+        return sliced_mesh_.mesh.points.at(index);
+    }
+
+    /// Interpolates between \p p0 and \p p1 to find the point with the given
+    /// value in the axis dimension. Adds the point to the result mesh and
+    /// returns the index.
+    GIndex InterpolatePoints_(const Point3f &p0, const Point3f &p1, float val) {
+        const float diff = p0[dim_] - p1[dim_];
+        ASSERT(std::abs(diff) > 1.e-7f);
+        const float frac = (p0[dim_] - val) / diff;
         return AddPoint_(Lerp(frac, p0, p1));
     }
 
     /// Adds a point to the result mesh, returning its index.
     GIndex AddPoint_(const Point3f &p) {
-        result_mesh_.points.push_back(p);
-        return result_mesh_.points.size() - 1;
+        auto &pts = sliced_mesh_.mesh.points;
+        KLOG('X', "Adding point " << pts.size() << " @ " << p);
+        pts.push_back(p);
+        return pts.size() - 1;
     }
 
-    /// Adds a trapezoid to the result mesh.
-    void AddTrapezoid_(GIndex i0, GIndex i1, GIndex i2, GIndex i3) {
+    /// XXXX
+    void AddQuad_(bool is_ccw, GIndex i0, GIndex i1, GIndex i2, GIndex i3) {
+        AddTri_(is_ccw, i0, i1, i2);
+        AddTri_(is_ccw, i0, i2, i3);
+    }
+
+    /// XXXX. Points in CCW order.
+    void AddQuad_(GIndex i0, GIndex i1, GIndex i2, GIndex i3) {
+        KLOG('X', "Adding quad " << i0 << " " << i1 << " " << i2 << " " << i3);
         AddTri_(i0, i1, i2);
-        AddTri_(i2, i1, i3);
+        AddTri_(i0, i2, i3);
     }
 
-    /// Adds a triangle to the result mesh.
+    void AddTri_(bool is_ccw, GIndex i0, GIndex i1, GIndex i2) {
+        if (is_ccw)
+            AddTri_(i0, i1, i2);
+        else
+            AddTri_(i0, i2, i1);
+    }
+
+    /// XXXX
     void AddTri_(GIndex i0, GIndex i1, GIndex i2) {
-        result_mesh_.indices.push_back(i0);
-        result_mesh_.indices.push_back(i1);
-        result_mesh_.indices.push_back(i2);
+        KLOG('X', "Adding triangle F" << sliced_mesh_.mesh.GetTriangleCount()
+             << ": " << i0 << " " << i1 << " " << i2);
+        sliced_mesh_.mesh.indices.push_back(i0);
+        sliced_mesh_.mesh.indices.push_back(i1);
+        sliced_mesh_.mesh.indices.push_back(i2);
     }
-
-    /// Adds a triangle to the result mesh.
-    void AddTri_(const Tri_ &tri) {
-        AddTri_(tri.i[0], tri.i[1], tri.i[2]);
-    }
-
-    /// For logging/debugging.
-    friend std::ostream & operator<<(std::ostream &out, const Tri_ &tri);
 };
 
-Slicer_::Slicer_(const TriMesh &mesh, Axis axis) :
-    input_mesh_(mesh),
-    axis_(axis),
-    dim_(Util::EnumInt(axis)) {
+SlicedMesh Slicer_::Slice(const TriMesh &mesh, Axis axis,
+                           const FloatVec &fractions) {
+    dim_  = Util::EnumInt(axis);
     ASSERT(dim_ >= 0 && dim_ <= 2);
 
-    // Determine the extent of the mesh in the axis direction.
-    range_ = FindMeshExtents_();
-}
+    sliced_mesh_.axis  = axis;
 
-SlicedMesh Slicer_::Slice(const FloatVec &fractions) {
-    SlicedMesh sliced_mesh;
-    sliced_mesh.axis  = axis_;
-    sliced_mesh.range = range_;
+    // Determine the extent of the mesh in the axis direction.
+    sliced_mesh_.range = FindMeshExtents_(mesh, dim_);
 
     if (fractions.empty()) {
-        sliced_mesh.mesh  = input_mesh_;
-        return sliced_mesh;
+        sliced_mesh_.mesh = mesh;
+    }
+    else {
+        // Convert the fractions into crossing coordinates.
+        crossings_ = GetCrossings_(fractions, sliced_mesh_.range);
+
+        KLOG('X', "--- Slicing mesh in " << static_cast<char>('X' + dim_)
+             << " at: " << Util::JoinItems(crossings_));
+
+        // Find the bucket value for each mesh point.
+        buckets_.reserve(mesh.points.size());
+        for (size_t i = 0; i < mesh.points.size(); ++i) {
+            buckets_.push_back(FindBucket_(mesh.points[i][dim_]));
+            KLOG('X', "Bucket for V" << i << " = " << buckets_.back());
+        }
+
+        // Add all input mesh points to the result mesh.
+        sliced_mesh_.mesh.points.reserve(2 * mesh.points.size());
+        sliced_mesh_.mesh.points = mesh.points;
+        sliced_mesh_.mesh.indices.reserve(2 * mesh.indices.size());
+
+        // Process each triangle of the TriMesh.
+        const size_t tri_count = mesh.GetTriangleCount();
+        for (size_t i = 0; i < tri_count; ++i)
+            ProcessTri_(mesh, i);
+
+        // Clean the result to remove duplicate vertices and edges.
+        CleanMesh(sliced_mesh_.mesh);
     }
 
-    // Convert the fractions into slice coordinates.
-    const FloatVec crossings = GetCrossings_(fractions);
-
-    KLOG('X', "--- Slicing in " << static_cast<char>('X' + dim_) << " at: "
-         << Util::JoinItems(crossings));
-
-    // Sort the points of the mesh into buckets based on the distances. For
-    // each point, store the bucket index.
-    FloatVec buckets = Util::ConvertVector<float, Point3f>(
-        input_mesh_.points,
-        [&](const Point3f &p){ return FindBucket_(crossings, p[dim_]); });
-
-    result_mesh_.points.reserve(2 * input_mesh_.points.size());
-    result_mesh_.indices.reserve(2 * input_mesh_.indices.size());
-    result_mesh_.points = input_mesh_.points;
-
-    // For each mesh triangle, determine if it crosses two or more buckets.
-    const size_t tri_count = input_mesh_.GetTriangleCount();
-    for (size_t i = 0; i < tri_count; ++i) {
-        Tri_ tri = BuildTri_(i, buckets);
-
-        // If the 3 points are in different buckets, the triangle needs to be
-        // split by the middle point into two sub-triangles.
-        if (tri.b[0] != tri.b[1] && tri.b[0] != tri.b[2] &&
-                 tri.b[1] != tri.b[2]) {
-            Tri_ sub_tri0, sub_tri1;
-            KLOG('X', "  === Splitting tri " << tri);
-            SplitTri_(tri, crossings, buckets, sub_tri0, sub_tri1);
-            ProcessTri_(sub_tri0, crossings);
-            ProcessTri_(sub_tri1, crossings);
-        }
-        else {
-            ProcessTri_(tri, crossings);
-        }
-    }
-
-    // Remove redundant vertices and any other issues.
-    CleanMesh(result_mesh_);
-
-    sliced_mesh.mesh  = result_mesh_;
-    return sliced_mesh;
+    return sliced_mesh_;
 }
 
-Range1f Slicer_::FindMeshExtents_() const {
+Range1f Slicer_::FindMeshExtents_(const TriMesh &mesh, int dim) const {
     float min =  std::numeric_limits<float>::max();
     float max = -std::numeric_limits<float>::max();
-    for (const auto &p: input_mesh_.points) {
-        min = std::min(min, p[dim_]);
-        max = std::max(max, p[dim_]);
+    for (const auto &p: mesh.points) {
+        min = std::min(min, p[dim]);
+        max = std::max(max, p[dim]);
     }
     ASSERT(min < max);
     return Range1f(min, max);
 }
 
-std::vector<float> Slicer_::GetCrossings_(
-    const std::vector<float> &fractions) const {
-    // Convert the fractions into axis coordinates.
+std::vector<float> Slicer_::GetCrossings_(const std::vector<float> &fractions,
+                                           const Range1f &range) const {
+    // Convert the fractions into axis coordinate crossings.
     std::vector<float> vals = Util::ConvertVector<float, float>(
         fractions, [&](const float &f){
-            return Lerp(f, range_.GetMinPoint(), range_.GetMaxPoint());
+            return Lerp(f, range.GetMinPoint(), range.GetMaxPoint());
         });
 
     // Sort the coordinates and add the min/max at either end. This makes the
     // bucket search have fewer special cases.
     std::sort(vals.begin(), vals.end());
-    vals.insert(vals.begin(), range_.GetMinPoint());
-    vals.push_back(range_.GetMaxPoint());
+    vals.insert(vals.begin(), range.GetMinPoint());
+    vals.push_back(range.GetMaxPoint());
 
     return vals;
 }
 
-float Slicer_::FindBucket_(const FloatVec &crossings, float val) const {
+float Slicer_::FindBucket_(float val) const {
     // Do a binary search.
-    auto lower = std::lower_bound(crossings.begin(), crossings.end(), val);
-    ASSERT(lower != crossings.end());
-    const size_t index = std::distance(crossings.begin(), lower);
-    const float bucket = val == crossings[index] ? index : index - .5f;
-    KLOG('X', "Bucket for " << val << " = " << bucket);
-    return bucket;
+    auto lower = std::lower_bound(crossings_.begin(), crossings_.end(), val);
+    ASSERT(lower != crossings_.end());
+    const size_t index = std::distance(crossings_.begin(), lower);
+    return val == crossings_[index] ? index : index - .5f;
 }
 
-Slicer_::Tri_ Slicer_::BuildTri_(int tri_index, const FloatVec &buckets) const {
-    GIndex indices[3];
+void Slicer_::ProcessTri_(const TriMesh &mesh, size_t tri_index) {
+    // Fill in a Tri_ instance.
+    const Tri_ tri = GetTri_(mesh, tri_index);
 
-    for (int i = 0; i < 3; ++i)
-        indices[i] = input_mesh_.indices[3 * tri_index + i];
+    KLOG('X', "=== TRI A=" << tri.a << " (" << GetPoint_(tri.a)[dim_]
+         << ") B=" << tri.b << " (" << GetPoint_(tri.b)[dim_]
+         << ") C=" << tri.c << " (" << GetPoint_(tri.c)[dim_]
+         << ") CCW=" << tri.is_ccw
+         << " AB=[" << Util::JoinItems(tri.ab)
+         << "] AC=[" << Util::JoinItems(tri.ac)
+         << "] BC=[" << Util::JoinItems(tri.bc) << "]");
 
-    const Tri_ tri = BuildTri_(tri_index, indices, buckets);
-    KLOG('X', "Built tri " << tri);
-    return tri;
-}
+    ASSERT(tri.ab.size() >= 2U);
+    ASSERT(tri.ac.size() >= 2U);
+    ASSERT(tri.bc.size() >= 2U);
 
-Slicer_::Tri_ Slicer_::BuildTri_(int tri_index, const GIndex indices[3],
-                                 const FloatVec &buckets) const {
-    Tri_ tri;
-    tri.index = tri_index;
-    tri.dim   = dim_;
-
-    for (int i = 0; i < 3; ++i) {
-        const GIndex index = indices[i];
-        tri.i[i] = index;
-        // Use the result mesh in case the index refers to a new point.
-        tri.p[i] = result_mesh_.points.at(index);
-        tri.b[i] = buckets.at(index);
+    // If the edges all have only 2 points, add the triangle as is.
+    if (tri.ab.size() == 2U && tri.ac.size() == 2U && tri.bc.size() == 2U) {
+        AddTri_(tri.is_ccw, tri.a, tri.b, tri.c);
     }
+    else {
+        // Otherwise, scan-convert the triangle.
+        //
+        // Either A forms the minimum point of the triangle or C forms the
+        // maximum point, or both, with B somewhere between. So there are 3
+        // possibilities:
+        //  1) A is the minimum with B and C at the same value.
+        //  2) C is the maximum with A and B at the same value
+        //  3) A is the minimum, C is the maximum, B is between.
+        //
+        // For case 1, side0 is AB    and side1 is AC.
+        // For case 2, side0 is BC    and side1 is AC.
+        // For case 3, side0 is AB+BC and side1 is AC.
+        const Point3f &a = GetPoint_(tri.a);
+        const Point3f &b = GetPoint_(tri.b);
+        const Point3f &c = GetPoint_(tri.c);
+        IndexVec_ side0;
+        IndexVec_ side1;
+        if (b[dim_] == c[dim_]) {
+            // Case 1.
+            side0 = tri.ab;
+            side1 = tri.ac;
+            KLOG('X', "   Case 1: side0=[" << Util::JoinItems(side0)
+                 << "] side1=[" << Util::JoinItems(side1) << "]");
+        }
+        else if (a[dim_] == b[dim_]) {
+            // Case 2.
+            side0 = tri.bc;
+            side1 = tri.ac;
+            KLOG('X', "   Case 2: side0=[" << Util::JoinItems(side0)
+                 << "] side1=[" << Util::JoinItems(side1) << "]");
+        }
+        else {
+            // Case 3.
+            ASSERT(tri.ab.back() == tri.bc.front());
+            side0 = tri.ab;
+            side0.pop_back();
+            Util::AppendVector(tri.bc, side0);
+            side1 = tri.ac;
+            KLOG('X', "   Case 3: side0=[" << Util::JoinItems(side0)
+                 << "] side1=[" << Util::JoinItems(side1) << "]");
+        }
 
-    // If the minimum is in bucket N or N+.5, then the maximum has to be in
-    // bucket >= N+1.5 for there to be a bucket crossing. In general, there
-    // are C crossings if the maximum is at N+C+.5 or N+C+1 (which is
-    // equivalent to the ceiling of the maximum at N+C+1).
-    tri.min = *std::min_element(&tri.b[0], &tri.b[3]);
-    tri.max = *std::max_element(&tri.b[0], &tri.b[3]);
-    const auto diff = std::ceil(tri.max) - std::floor(tri.min);
-    tri.num_buckets = static_cast<int>(diff);
+#if XXXX
+        if (side0.size() != side1.size()) {// XXXX
+            Debug::Dump3dv d("/tmp/sliced.3dv", "XXXX From MeshSlicing");
+            d.SetLabelFontSize(40);
+            d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
+            d.AddTriMesh(sliced_mesh_.mesh);
+        }
+#endif
 
-    return tri;
+        ASSERT(side0.size() == side1.size());
+
+        // Traverse.
+        for (size_t i = 1; i < side0.size(); ++i) {
+            const auto i0a = side0[i - 1];
+            const auto i0b = side0[i];
+            const auto i1a = side1[i - 1];
+            const auto i1b = side1[i];
+            if (i0a == i1a)
+                AddTri_(tri.is_ccw, i0a, i0b, i1b);
+            else if (i0b == i1b)
+                AddTri_(tri.is_ccw, i0a, i0b, i1a);
+            else
+                AddQuad_(tri.is_ccw, i0a, i0b, i1b, i1a);
+        }
+    }
 }
 
-void Slicer_::SplitTri_(const Tri_ &tri, const FloatVec &crossings,
-                        FloatVec &buckets, Tri_ &sub_tri0, Tri_ &sub_tri1) {
-    // All 3 points are in different buckets. Find the one in the middle.
-    int middle = -1;
+Slicer_::Tri_ Slicer_::GetTri_(const TriMesh &mesh, size_t tri_index) {
+    Tri_ tri;
+
+    GIndex index[3];
+    for (int i = 0; i < 3; ++i)
+        index[i] = mesh.indices[3 * tri_index + i];
+
+    // Save these to detect direction.
+    const GIndex i0 = index[0];
+    const GIndex i1 = index[1];
+
+    // Sort the indices increasing.
+    const auto compare = [&](int a, int b){
+        return mesh.points.at(a)[dim_] <= mesh.points.at(b)[dim_];
+    };
+    std::sort(std::begin(index), std::end(index), compare);
+
+    // Detect counterclockwise or clockwise direction.
     for (int i = 0; i < 3; ++i) {
-        if (tri.b[i] != tri.min  && tri.b[i] != tri.max) {
-            middle = i;
+        if (index[i] == i0) {
+            tri.is_ccw = index[(i + 1) % 3] == i1;
             break;
         }
     }
-    ASSERT(middle >= 0);
 
-    // Get the other two points.
-    const int other0 = (middle + 1) % 3;
-    const int other1 = (middle + 2) % 3;
-    const auto &p0 = tri.p[other0];
-    const auto &p1 = tri.p[other1];
-    KLOG('X', "  MID = V" << tri.i[middle]
-         << " OTHER0 = V"  << tri.i[other0]
-         << " OTHER1 = V"  << tri.i[other1]);
+    // Store A, B, C indices.
+    tri.a = index[0];
+    tri.b = index[1];
+    tri.c = index[2];
 
-    // Find the point on the opposite edge (between p0 and p1) where the middle
-    // point lies and add it.
+    // Collect indices of all relevant points along the three edges.  Insert
+    // B's value into AC if it belongs there.
+    tri.ab = GetEdge_(mesh, tri.a, tri.b);
+    tri.ac = GetEdge_(mesh, tri.a, tri.c, tri.b);
+    tri.bc = GetEdge_(mesh, tri.b, tri.c);
 
-    const float val = tri.p[middle][dim_];
-    const float frac = (p0[dim_] - val) / (p0[dim_] - p1[dim_]);
-    const Point3f new_pt = Lerp(frac, p0, p1);
-    const GIndex new_index = AddPoint_(new_pt);
-    KLOG('X', "  Added V" << new_index << " between V" << tri.i[other0]
-         << " and V" << tri.i[other1]);
-    KLOG('X', "  Points: " << p0 << " / " << p1 << " => " << new_pt);
-
-    // Have to add a bucket for the new point.
-    buckets.resize(new_index + 1);
-    buckets[new_index] = FindBucket_(crossings, new_pt[dim_]);
-
-    // Split the triangle at the new point.
-    GIndex indices0[3];
-    indices0[0] = tri.i[other0];
-    indices0[1] = new_index;
-    indices0[2] = tri.i[middle];
-
-    GIndex indices1[3];
-    indices1[0] = tri.i[middle];
-    indices1[1] = new_index;
-    indices1[2] = tri.i[other1];
-
-    sub_tri0 = BuildTri_(-1, indices0, buckets);
-    sub_tri1 = BuildTri_(-1, indices1, buckets);
-
-    KLOG('X', "Built sub_tri0 " << sub_tri0);
-    KLOG('X', "Built sub_tri1 " << sub_tri1);
+    return tri;
 }
 
-void Slicer_::ProcessTri_(const Tri_ &tri, const FloatVec &crossings) {
-    // Add the triangle as is if it does cross at least 2 buckets.  Otherwise,
-    // it needs to be sliced.
-    if (tri.num_buckets <= 1) {
-        KLOG('X', "Adding as is: " << tri);
-        AddTri_(tri);
-    }
-    else {
-        // Gather the bucket-crossing values.
-        std::vector<float> tri_crossings;
-        for (int i = tri.min + 1; i < tri.max; ++i)
-            tri_crossings.push_back(crossings[i]);
+Slicer_::IndexVec_ Slicer_::GetEdge_(const TriMesh &mesh,
+                                     GIndex i0, GIndex i1, int iextra) {
+    // Use the original mesh points here so that the references remain valid
+    // after inserting new points.
+    const Point3f &p0 = mesh.points.at(i0);
+    const Point3f &p1 = mesh.points.at(i1);
 
-        KLOG('X', "ProcessTri_ " << tri
-             << " @ " << Util::JoinItems(tri_crossings));
+    IndexVec_ edge_indices;
+    edge_indices.push_back(i0);
 
-        // The lowest point comes first.
-        ASSERT(tri.b[0] == tri.min ||
-               tri.b[1] == tri.min ||
-               tri.b[2] == tri.min);
-        const int min_i = tri.b[0] == tri.min ? 0 : tri.b[1] == tri.min ? 1 : 2;
-
-        SliceTri_(tri, min_i, tri_crossings);
-    }
-}
-
-void Slicer_::SliceTri_(const Tri_ &tri, int min_pt,
-                        const FloatVec &crossings) {
-    // All 3 triangle points, with the smallest first.
-    const int t0 = min_pt;
-    const int t1 = (min_pt + 1) % 3;
-    const int t2 = (min_pt + 2) % 3;
-
-    ASSERT(tri.p[t0][dim_] < crossings.front());
-    ASSERT(tri.p[t1][dim_] > crossings.back() ||
-           tri.p[t2][dim_] > crossings.back());
-
-    // The min_pt is less than the first slicing value. If either of the other
-    // two points also is less, then create a trapezoid.
-    if (tri.p[t1][dim_] < crossings[0]) {
-        // Only t2 is on the other side.
-        GIndex prev0 = tri.i[t0];
-        GIndex prev1 = tri.i[t1];
-        for (size_t i = 0; i < crossings.size(); ++i) {
-            // Split the edges and add the new points.
-            const GIndex ni0 = SplitEdge_(tri, t0, t2, crossings[i]);
-            const GIndex ni1 = SplitEdge_(tri, t1, t2, crossings[i]);
-            AddTrapezoid_(prev0, prev1, ni0, ni1);
-            prev0 = ni0;
-            prev1 = ni1;
+    // Add intermediate points at crossings, if any.
+    const float d0 = p0[dim_];
+    const float d1 = p1[dim_];
+    if (d0 < d1) {
+        const int bucket0 = static_cast<int>(std::floor(buckets_.at(i0)));
+        const int bucket1 = static_cast<int>(std::ceil(buckets_.at(i1)));
+        for (int i = bucket0; i <= bucket1; ++i) {
+            const float crossing = crossings_.at(i);
+            if (crossing > d0 && crossing < d1)
+                edge_indices.push_back(InterpolatePoints_(p0, p1, crossing));
         }
-        // Triangle at the max end.
-        AddTri_(prev0, prev1, tri.i[t2]);
     }
-    else if (tri.p[t2][dim_] < crossings[0]) {
-        // Only t1 is on the other side.
-        GIndex prev2 = tri.i[t2];
-        GIndex prev0 = tri.i[t0];
-        for (size_t i = 0; i < crossings.size(); ++i) {
-            // Split the edges and add the new points.
-            const GIndex ni2 = SplitEdge_(tri, t2, t1, crossings[i]);
-            const GIndex ni0 = SplitEdge_(tri, t0, t1, crossings[i]);
-            AddTrapezoid_(prev2, prev0, ni2, ni0);
-            prev2 = ni2;
-            prev0 = ni0;
-        }
-        // Triangle at the max end.
-        AddTri_(prev2, prev0, tri.i[t1]);
-    }
-    else {  // p1 and p2 are on the other side.
-        GIndex prev1 = tri.i[t1];
-        GIndex prev2 = tri.i[t2];
-        for (size_t i = 0; i < crossings.size(); ++i) {
-            const GIndex ni1 = SplitEdge_(tri, t0, t1, crossings[i]);
-            const GIndex ni2 = SplitEdge_(tri, t0, t2, crossings[i]);
-            // Start with a clipped triangle; the rest are trapezoids.
-            if (i == 0)
-                AddTri_(tri.i[t0], ni1, ni2);
-            else
-                AddTrapezoid_(prev1, ni1, prev2, ni2);
-            prev1 = ni1;
-            prev2 = ni2;
-        }
-        // Trapezoid at the max end.
-        AddTrapezoid_(prev1, tri.i[t1], prev2, tri.i[t2]);
-    }
-}
 
-std::ostream & operator<<(std::ostream &out, const Slicer_::Tri_ &tri) {
-    tri.Print(out);
-    return out;
-}
+    edge_indices.push_back(i1);
 
-void Slicer_::Tri_::Print(std::ostream &out) const {
-    out << "TRI[" << index
-        << " I[" << i[0] << "," << i[1] << "," << i[2] << "]"
-        << " V<" << p[0][dim] << "," << p[1][dim] << "," << p[2][dim] << ">"
-        << " B(" << b[0] << "," << b[1] << "," << b[2] << ")"
-        << " MN=" << min
-        << " MX=" << max
-        << " NB=" << num_buckets
-        << "]";
+    // If there is an extra value to insert, see if it is already there.
+    if (iextra >= 0) {
+        const float pval = GetPoint_(iextra)[dim_];
+        int found_index = -1;
+        if (pval > GetPoint_(edge_indices.front())[dim_] &&
+            pval < GetPoint_(edge_indices.back())[dim_]) {
+            for (size_t i = 1; i < edge_indices.size(); ++i) {
+                const float val = GetPoint_(edge_indices[i])[dim_];
+                // Already there? No need to insert.
+                if (pval == val) {
+                    break;
+                }
+                else if (pval > val) {
+                    found_index = i - 1;
+                    break;
+                }
+            }
+            if (found_index >= 0) {
+                // Add a point at the same value.
+                const GIndex index = InterpolatePoints_(p0, p1, pval);
+                edge_indices.insert(edge_indices.begin() + found_index, index);
+                KLOG('X', "-- Inserted " << index << " to get ["
+                     << Util::JoinItems(edge_indices) << "]");
+            }
+        }
+    }
+
+    return edge_indices;
 }
 
 }  // anonymous namespace
@@ -429,7 +403,7 @@ void Slicer_::Tri_::Print(std::ostream &out) const {
 
 SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis,
                      const std::vector<float> &fractions) {
-    return Slicer_(mesh, axis).Slice(fractions);
+    return Slicer_().Slice(mesh, axis, fractions);
 }
 
 SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis, size_t num_slices) {
