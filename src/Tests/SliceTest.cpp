@@ -19,6 +19,20 @@
 class SliceTest : public TestBase {
   protected:
     // Data passed to DumpTriMesh.
+    //
+    // For example, to dump the original (unsliced) mesh:
+    //   DumpData data;
+    //   data.fractions = fractions;
+    //   data.dim = Util::EnumInt(sm.axis);
+    //   data.range = sm.range;
+    //   DumpTriMesh("unsliced", mesh, data);
+    //
+    // Or to dump the result (sliced) mesh with borders highlighted:
+    //   DumpData data;
+    //   data.add_face_labels = false;
+    //   data.add_edge_labels = false;
+    //   data.highlight_borders = true;
+    //   DumpTriMesh("sliced", sm.mesh, data);
     struct DumpData {
         bool add_face_labels   = true;
         bool add_edge_labels   = true;
@@ -34,7 +48,7 @@ class SliceTest : public TestBase {
     };
 
     // Enables slicing logging.
-    void EnableSliceLogging() { EnableKLog("X0"); }
+    void EnableSliceLogging() { EnableKLog("X"); }
 
     // This can be used in tests to dump a TriMesh in 3dv format to /tmp.
     void DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
@@ -107,7 +121,6 @@ void SliceTest::DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
 
 TEST_F(SliceTest, Box0Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
-
     const SlicedMesh sm = SliceMesh(mesh, Axis::kY, std::vector<float>());
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kY,         sm.axis);
@@ -118,7 +131,6 @@ TEST_F(SliceTest, Box0Slices) {
 
 TEST_F(SliceTest, Box1Slice) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
-
     const std::vector<float> fractions{.25f};
     const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
@@ -130,7 +142,6 @@ TEST_F(SliceTest, Box1Slice) {
 
 TEST_F(SliceTest, Box2Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
-
     const std::vector<float> fractions{.25f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
@@ -142,7 +153,6 @@ TEST_F(SliceTest, Box2Slices) {
 
 TEST_F(SliceTest, Box3Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
-
     const std::vector<float> fractions{.25f, .6f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
@@ -154,7 +164,6 @@ TEST_F(SliceTest, Box3Slices) {
 
 TEST_F(SliceTest, Box3SlicesX) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
-
     const std::vector<float> fractions{.25f, .6f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
@@ -166,7 +175,6 @@ TEST_F(SliceTest, Box3SlicesX) {
 
 TEST_F(SliceTest, Cylinder) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
-
     const std::vector<float> fractions{.25f, .6f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
@@ -177,100 +185,45 @@ TEST_F(SliceTest, Cylinder) {
 }
 
 TEST_F(SliceTest, CylinderX1) {
-    // EnableSliceLogging(); // XXXX
-    EnableKLog("0"); // XXXX
-
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
     const std::vector<float> fractions{.75f};
-    {
-        DumpData data;
-        data.fractions = fractions;
-        data.dim = Util::EnumInt(Axis::kX);
-        data.range = Range1f(-8, 8);
-        DumpTriMesh("unsliced", mesh, data);
-    }
     SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
-    {
-        DumpData data;
-        data.add_face_labels = false;
-        data.add_edge_labels = false;
-        data.highlight_borders = true;
-        DumpTriMesh("sliced", sm.mesh, data);
-    }
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kX,       sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
-    EXPECT_EQ(162U,           sm.mesh.points.size());
-    EXPECT_EQ(320U,           sm.mesh.GetTriangleCount());
+    EXPECT_EQ(27U,            sm.mesh.points.size());
+    EXPECT_EQ(50U,            sm.mesh.GetTriangleCount());
 }
 
 TEST_F(SliceTest, CylinderX2) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
-
-    const std::vector<float> fractions{.2f, .75f}; // XXXX TEMP
+    const std::vector<float> fractions{.2f, .75f};
     SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kX,       sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
-    EXPECT_EQ(162U,           sm.mesh.points.size());
-    EXPECT_EQ(320U,           sm.mesh.GetTriangleCount());
+    EXPECT_EQ(38U,            sm.mesh.points.size());
+    EXPECT_EQ(72U,            sm.mesh.GetTriangleCount());
 }
 
 TEST_F(SliceTest, CylinderX3) {
-    // EnableSliceLogging(); // XXXX
-
-    // XXXX const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
-
     const std::vector<float> fractions{.2f, .6f, .75f};
     SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
-#if XXXX
-    {
-        DumpData data;
-        data.fractions = fractions;
-        data.dim = Util::EnumInt(sm.axis);
-        data.range = sm.range;
-        DumpTriMesh("unsliced", mesh, data);
-    }
-    {
-        DumpData data;
-        data.add_face_labels = false;
-        data.add_edge_labels = false;
-        //data.highlight_borders = true;
-        DumpTriMesh("sliced", sm.mesh, data);
-    }
-#endif
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kX,       sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
-    EXPECT_EQ(162U,           sm.mesh.points.size());
-    EXPECT_EQ(320U,           sm.mesh.GetTriangleCount());
+    EXPECT_EQ(50U,            sm.mesh.points.size());
+    EXPECT_EQ(96U,            sm.mesh.GetTriangleCount());
 }
 
 TEST_F(SliceTest, CylinderX3b) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
-
     const std::vector<float> fractions{.2f, .6f, .75f};
     SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
-#if XXXX
-    {
-        DumpData data;
-        data.fractions = fractions;
-        data.dim = Util::EnumInt(sm.axis);
-        data.range = sm.range;
-        DumpTriMesh("unsliced", mesh, data);
-    }
-    {
-        DumpData data;
-        data.add_face_labels = false;
-        data.add_edge_labels = false;
-        //data.highlight_borders = true;
-        DumpTriMesh("sliced", sm.mesh, data);
-    }
-#endif
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
     EXPECT_EQ(Axis::kX,       sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
-    EXPECT_EQ(162U,           sm.mesh.points.size());
-    EXPECT_EQ(320U,           sm.mesh.GetTriangleCount());
+    EXPECT_EQ(104U,           sm.mesh.points.size());
+    EXPECT_EQ(204U,           sm.mesh.GetTriangleCount());
 }
