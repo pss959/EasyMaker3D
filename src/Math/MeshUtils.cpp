@@ -203,8 +203,9 @@ void CleanMesh(TriMesh &mesh) {
             new_indices.push_back(mesh.indices[3 * i + 1]);
             new_indices.push_back(mesh.indices[3 * i + 2]);
         }
-        else
+        else {
             KLOG('0', "   Triangle " << i << " is degenerate");
+        }
     }
     if (new_indices.size() < mesh.indices.size()) {
         mesh.indices = new_indices;
