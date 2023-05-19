@@ -201,6 +201,18 @@ p:empty {
     margin-right: 1%;
 }
 
+/* Note admonitions. Use a custom color and icon */
+.rst-content div.admonition.note {
+    background: #e2f1e4;
+}
+.rst-content div.admonition.note > .admonition-title {
+    background: #a9e6b3;
+}
+.rst-content div.admonition.note > .admonition-title:before {
+    /* Icons are in https://fontawesome.com/v6/search?o=r&m=free */
+    content: "\f00c";       /* Checkmark */
+}
+
 /* -----------------------------------------------------------------------------
  * Figures/images.
  * -------------------------------------------------------------------------- */
@@ -318,6 +330,7 @@ img {
     padding:     2px;
     border:      1px solid #1e8a81;
     color:       #1e8a81;
+    background:  #fdfdfd;
     font-family: monospace;
     font-size:   80%;
 }

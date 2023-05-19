@@ -84,13 +84,18 @@ Primitive Models
       spacing.
     - An :newterm:`Imported model` is read from an STL file. The specialized
       :ref:`Import Tool <ug-import-tool>` is used to select or change the file
-      to import from. Note that a newly-created Imported model will be
-      displayed as a dummy tetrahedron with an :ref:`invalid color
-      <ug-model-colors>` until a valid STL file has been selected with the
-      Import Tool. Also note that many, many publicly-available STL models are
-      not valid meshes (watertight, not self-intersecting) and will also appear
-      with the invalid color. The :ref:`Info Panel <ug-info-panel>` can tell
-      you why the mesh is invalid.
+      to import from.
+
+      .. note::
+
+         A newly-created Imported model will be displayed as a dummy
+         tetrahedron with an :ref:`invalid color <ug-model-colors>` until a
+         valid STL file has been selected with the Import Tool.
+
+         Also, many, many publicly-available STL models are not valid meshes
+         (watertight, not self-intersecting) and will also appear with the
+         invalid color. The :ref:`Info Panel <ug-info-panel>` can tell you why
+         the mesh is invalid.
 
 New primitive models are placed at the center of the :ref:`stage <ug-stage>`
 unless the :ref:`Point Target <ug-targets>` is active, in which case the new
@@ -136,8 +141,10 @@ These images show the original operand models, a box and a cylinder, and the
 resulting CSG union, intersection, and difference (cylinder subtracted from the
 box).
 
-Note that in some cases using the :ref:`Clip Tool <ug-clip-tool>` may be a
-sufficient and simpler method of geometric editing.
+.. note::
+
+   In some cases using the :ref:`Clip Tool <ug-clip-tool>` may be a sufficient
+   and simpler method of geometric editing.
 
 |block-image|
 
@@ -162,7 +169,9 @@ The convex hull operation can sometimes be useful to apply to a single model,
 if the model is not already convex. Here's an example of creating a rounded
 disk as the convex hull of a torus.
 
-Note that there is no specialized tool for a Hull model.
+.. note::
+
+   There is no specialized tool for a Hull model.
 
 .. _ug-converted-models:
 
@@ -170,18 +179,21 @@ Converted Models
 ,,,,,,,,,,,,,,,,
 
 Certain operations require models to first be converted to a different type.
-
 Each of these model types is created by :ref:`selecting <ug-selection>` one or
 more models and clicking on the appropriate conversion tool icon. Once the
-conversion is done, you can use the corresponding specialized tool to edit
-the resulting models, as listed below.
+conversion is done, you can use the corresponding specialized tool to edit the
+resulting models.
 
-Note that this two-step process (converting, then editing) makes it clear that
-a new type of model must be created in order to apply the editing operation.
-The converted model becomes a parent of the original model in the hierarchy (as
-shown in the :ref:`Tree Panel <ug-tree-panel>`). This scheme also simplifies
-the interface and also allows the original objects to be modified even after
-the conversion operation has been applied.
+.. note::
+
+   This two-step process (converting, then editing) makes it clear that a new
+   type of model must be created in order to apply the editing operation. The
+   converted model becomes a parent of the original model in the hierarchy (as
+   shown in the :ref:`Tree Panel <ug-tree-panel>`). This scheme also simplifies
+   the interface and also allows the original objects to be modified even after
+   the conversion operation has been applied.
+
+The converted model types and their tools are as follows:
 
   - A :newterm:`Beveled model` applies a bevel or other profile to edges of a
     model. The :ref:`Convert to Bevel action <ug-convert-bevel>` is used to
@@ -208,13 +220,15 @@ the conversion operation has been applied.
     is used to convert the models and attach the specialized :ref:`Twist Tool
     <ug-twist-tool>` to let you change the axis and twist angle.
 
-Note that a converted model synchronizes its transformations (scale, rotation,
-and translation) with the original model. Any changes made to the
-transformations for either the original or converted model are also applied to
-the other. One slight exception to this is the Beveled model, since the scale
-of the original model has to be applied before the bevel profile is applied.
-The scales in this case are kept in sync, but a scale applied to the Beveled
-model is applied after the beveling operation is applied.
+.. note::
+
+   A converted model synchronizes its transformations (scale, rotation, and
+   translation) with the original model. Any changes made to the
+   transformations for either the original or converted model are also applied
+   to the other. One slight exception to this is the Beveled model, since the
+   scale of the original model has to be applied before the bevel profile is
+   applied. The scales in this case are kept in sync, but a scale applied to
+   the Beveled model is applied after the beveling operation is applied.
 
 .. _ug-model-names:
 

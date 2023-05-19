@@ -10,11 +10,15 @@ Release 1.6.0 (May, 2023)
 
    - Added titles to all panel-based tools.
 
+   - Added a new format for calling out important notes in the User Guide.
+
  - Bug Fixes:
 
-   - Improved spherical rotation when a rotation was already applied.
+   - Greatly sped up Twist Tool (and Taper Tool) with custom mesh slicing code.
 
    - Twist Tool angle feedback positioning is now correct for rotated models.
+
+   - Improved spherical rotation when a rotation was already applied.
 
    - Tab/Shift-Tab to move focus in panels now correctly skips over all
      disabled parts.

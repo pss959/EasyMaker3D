@@ -30,8 +30,13 @@ through the available general tools.
 If a specialized tool is available for the current selection, you can
 :ref:`toggle between the current general tool and that specialized tool
 <ug-toggle-specialized-tool>` with the :action:`Toggle Specialized Tool`
-action. Note that the :shortcut:`Space` shortcut is an easy way to apply this
 action.
+
+.. note::
+
+   The :shortcut:`Space` shortcut is an easy way to apply this action to toggle
+   between the current general tool and the specialized tool for the selection,
+   if one is available.
 
 As mentioned previously, :ref:`creating a new model <ug-model-creation>` that
 has a corresponding specialized tool automatically attaches that tool so you
@@ -97,6 +102,8 @@ images show two positions of the handle applied to a Cylinder model's
 complexity.
 
 Some notes about this tool:
+
+.. _ug-complexity-model-types:
 
   - The Complexity Tool has effect only on the following :ref:`model types
     <ug-model-types>`: Cylinder, Sphere, Torus, RevSurf (surface of
@@ -497,9 +504,11 @@ for editing the mirroring plane (including in VR); refer to that tool for
 details. For example, you can rotate the plane to mirror vertically instead of
 horizontally as shown here.
 
-Note that translating the mirroring plane results in the primary
-selection moving to compensate. Additionally, all secondary selections are
-mirrored across the same plane, so they will move to the other side of it.
+Translating the mirroring plane results in the primary selection moving to
+compensate. Additionally, all secondary selections are mirrored across the same
+plane, so they will move to the other side of it.
+
+|block-image|
 
 .. _ug-rev-surf-tool:
 
@@ -641,13 +650,13 @@ deactivates any snapping.
 .. incimage:: /images/TwistToolHighComplexity.jpg 200px right
 .. incimage:: /images/TwistToolLowComplexity.jpg  200px right
 
-Note that a Twisted model is affected by the :ref:`Complexity Tool
-<ug-complexity-tool>`. Increasing the complexity of a Twisted model increases
-the number of slices (and vertices) in the direction of the axis as shown
-here. Use caution, because the slicing operation and the resulting twist
-operations can get pretty slow for high complexity values. Also note that
-changing the complexity of the original model the twist is applied to may also
-affect the twist.
+.. note::
+
+   A Twisted model is affected by the :ref:`Complexity Tool
+   <ug-complexity-tool>`. Increasing the complexity of a Twisted model
+   increases the number of slices (and vertices) in the direction of the axis
+   as shown here. Also note that changing the complexity of the original model
+   the twist is applied to may also affect the twist.
 
 |block-image|
 

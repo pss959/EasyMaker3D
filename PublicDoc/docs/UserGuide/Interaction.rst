@@ -11,9 +11,10 @@ Clicking and Dragging
 .....................
 
 |appname| responds to mouse and keyboard actions in any of the :ref:`three
-VR/non-VR modes <ug-vr-modes>`. Note that the left mouse button is used for all
-click and drag actions. The right mouse button is used to :ref:`change the view
-orientation <ug-viewing>`.
+VR/non-VR modes <ug-vr-modes>`.
+
+The left mouse button is used for all click and drag actions. The right mouse
+button is used to :ref:`change the view orientation <ug-viewing>`.
 
 .. admonition:: VR Only
 

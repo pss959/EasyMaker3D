@@ -140,13 +140,10 @@ how large the build volume is in whatever units you would like to work in. For
 example, if you consider |appname| units to be inches and need to convert to
 millimeters for export (which is the standard for STL files), you can set that.
 
-The default settings assume that |appname| units are centimeters and convert to
-and from millimeters (STL standard) on export and import.
+.. note::
 
-Note that the grid on the stage has thin lines every 1 unit, with thicker lines
-every 5 units. The grid grows or shrinks :ref:`when the stage is scaled
-<ug-stage>` so that you can always discern the absolute sizes of models on
-it. Also, the X and Y axes are colored red and green on the grid for reference.
+   The default settings assume that |appname| units are centimeters and convert
+   to and from millimeters (STL standard) on export and import.
 
 Most everything in the application that aligns with the coordinate axes uses a
 standard RGB color scheme: :raw-html:`<font color="red">X is red</font>`,
@@ -154,6 +151,14 @@ standard RGB color scheme: :raw-html:`<font color="red">X is red</font>`,
 color="blue">Z is blue</font>` as in the diagram. This is true for axis-aligned
 parts of :ref:`Tools <ug-tools>` and :ref:`interactive visual feedback
 <ug-feedback>`.
+
+.. note::
+
+   The grid on the stage has thin lines every 1 unit, with thicker lines every
+   5 units. The grid grows or shrinks :ref:`when the stage is scaled
+   <ug-stage>` so that you can always discern the absolute sizes of models on
+   it. Also, the X and Y axes are colored red and green on the grid for
+   reference.
 
 .. _ug-build-volume:
 

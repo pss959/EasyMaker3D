@@ -66,9 +66,11 @@ them smaller than that.
    enough (relative to the panel), it will allow you to grip drag the bottom
    bar, as shown here.
 
-   Note that application panels in either VR mode are positioned for
-   :ref:`panel touch mode <ug-panel-interaction>` and therefore are not
-   affected by the non-VR viewing position or orientation.
+   .. note::
+
+      Application panels in either VR mode are positioned for :ref:`panel touch
+      mode <ug-panel-interaction>` and therefore are not affected by changes to
+      the non-VR viewing position or orientation.
 
 .. _ug-panel-interaction:
 
@@ -526,10 +528,13 @@ end points, the profile is closed, and there must always be at least 3 points
 to form a closed profile.
 
 The checkbox at the top of the panel allows you to enable snapping of profile
-points to the current :ref:`precision level <ug-precision-level>`. Note that
-this snapping is relative to the size of the selected Extruded model. For
-example if the current precision is 1 unit, a dragged profile point will be
-snapped in X to create 1 unit increments for the model at its current scale.
+points to the current :ref:`precision level <ug-precision-level>`.
+
+.. note::
+
+   This snapping is relative to the size of the selected Extruded model. For
+   example if the current precision is 1 unit, a dragged profile point will be
+   snapped in X to create 1 unit increments for the model at its current scale.
 
 Setting the Profile to a Polygon
 ::::::::::::::::::::::::::::::::
@@ -602,7 +607,7 @@ The checkbox at the top of the panel allows you to enable snapping of profile
 points to the current :ref:`precision level <ug-precision-level>`. Note that
 this snapping is relative to the size of the selected RevSurf model. For
 example if the current precision is 1 unit, a dragged profile point will be
-snapped in X to create 1 unit increments for the model at its current scale.
+snapped in X at 1 unit increments for the model at its current scale.
 
 Adjusting the Sweep Angle
 :::::::::::::::::::::::::
@@ -627,13 +632,16 @@ The :newterm:`Taper Tool Panel` lets you edit the taper specification for all
 selected :ref:`Tapered models <ug-converted-models>`. The panel initially shows
 the current axis and profile of the :ref:`primary selection
 <ug-selection>`. Any changes made in the panel are applied to all selected
-Tapered models; the models update in real time as the taper is edited.
+Tapered models; the models update in real time as the taper is edited. In this
+image, the taper profile is applied in the Z axis (up) direction to a Sphere
+model.
 
 The taper profile is used to scale the vertices of each Tapered model along the
 specified axis. The position of each point in the taper profile defines how
 much to scale the vertices. A point all the way to the left scales by 0 and a
 point all the way to the right scales by 1. Note that only the top and bottom
-profile points may scale by 0; otherwise the resulting mesh would be invalid.
+profile points are allowed to scale by 0; otherwise the resulting mesh would be
+invalid.
 
 |block-image|
 
@@ -645,8 +653,10 @@ at the bottom of the panel. The default is the Z (up) axis, which is likely to
 be the most useful for 3D printed models. The X (left/right) and Y (front/back)
 axes may also be useful in some cases.
 
-Note that the taper axis is always a local axis of each selected Tapered model
-the tool is operating on.
+.. note::
+
+   The taper axis is always a local axis of each selected Tapered model the
+   tool is operating on.
 
 Editing the Taper Profile
 :::::::::::::::::::::::::
@@ -730,12 +740,14 @@ This string may contain the following characters:
 
 All three characters are shown for the session in the above image.
 
-Note that a session can only be saved to the same file if at least one of these
-symbols appears. For example, if you make changes to models and then undo back
-to their original state, there will be no asterisk, but the plus sign lets you
-know that the session can still be saved (because the sequence of commands has
-changed). The session state is also saved, so making changes to it allow you to
-save as well.
+.. note::
+
+   A session can only be saved to the current file if at least one of the above
+   symbols appears with the session name. For example, if you make changes to
+   models and then undo back to their original state, there will be no
+   asterisk, but the plus sign lets you know that the session can still be
+   saved (because the sequence of commands has changed). The session state is
+   also saved, so making changes to it allow you to save as well.
 
 Model Names and Colors
 ,,,,,,,,,,,,,,,,,,,,,,
@@ -784,8 +796,10 @@ panel. All model names intersected by the rectangle will be selected as shown
 here. :ref:`Changing the order of model names <ug-reorder-models>` may help in
 some cases to allow contiguous selections.
 
-Note that you cannot have both a parent and child model in the same hierarchy
-selected at the same time. That would be bad.
+.. note::
+
+   You cannot have both a model and any of its ancestor or descendent models
+   selected at the same time. That would be bad.
 
 |block-image|
 
@@ -805,8 +819,12 @@ matters, such as within a :ref:`CSG difference <ug-csg>`.
 In these cases the two buttons to the right of the session name can be used to
 apply the :ref:`Move Previous <ug-move-previous>` and :ref:`Move Next
 <ug-move-next>` actions, which move the primary selection up and down in the
-list. Note that if the primary selection is not a top-level model, it can only
-be moved up and down within its parent model.
+list.
+
+.. note::
+
+   If the primary selection is a child of another model, it can be moved up and
+   down only within its parent model.
 
 These buttons are enabled only if there is a single model selected and it can
 be moved in the corresponding direction.

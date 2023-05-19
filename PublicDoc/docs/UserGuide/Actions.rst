@@ -27,8 +27,12 @@ many have corresponding :ref:`keyboard shortcuts <ug-keyboard-shortcuts>`. The
 :ref:`Cheat Sheet <cheat-sheet>` lists all supported actions along with their
 names, radial menu icons, and keyboard/controller shortcuts. The actions are
 divided into categories, some of which correspond to shelves in the work area.
-Note that some actions do not have corresponding 3D icons; they can be
-performed only from a radial menu or shortcut.
+
+.. note::
+
+   Some actions do not have corresponding 3D icons; they can be performed only
+   from a :ref:`radial menu <ug-radial-menus>` or :ref:`keyboard shortcut
+   <ug-keyboard-shortcuts>`.
 
 Certain actions may not be enabled due to the current application state. A 3D
 icon for an enabled action will appear with the regular light woodgrain
@@ -81,11 +85,13 @@ In addition, the :action:`Quit` action (avalable via shortcut or radial menu)
 exits the program after checking for unsaved changes. This is equivalent to
 clicking on the exit sign in the :ref:`work area <ug-work-area>`.
 
-Note that Undo and Redo actions apply to these operations:
+.. note::
 
-  - Any change to a model or models.
-  - Changing the position or any other aspect of either of the :ref:`targets
-    <ug-targets>`.
+   Undo and Redo actions apply to only these operations:
+
+    - Any change to a model or models.
+    - Changing the position or any other aspect of either of the :ref:`targets
+      <ug-targets>`.
 
 Actions that are :emphasis:`not` considered changes and are therefore not
 undoable include:
@@ -374,8 +380,10 @@ are available only via :ref:`keyboard shortcuts <ug-keyboard-shortcuts>` or
     be used to :ref:`change selections through model hierarchies
     <ug-select-hierarchy>`.
 
-Note that the :ref:`Tree Panel <ug-tree-panel>` can be used to view and change
-the current selection, especially in a model hierarchy.
+.. note::
+
+   The :ref:`Tree Panel <ug-tree-panel>` can be used to view and change the
+   current selection, especially within a model hierarchy.
 
 .. _ug-open-help-panel:
 .. _ug-open-info-panel:
@@ -477,8 +485,10 @@ type for the icon to be enabled.
    * - :ref:`Twist Tool <ug-twist-tool>`
      - :ref:`Twisted models <ug-converted-models>`
 
-Note that the :shortcut:`Space` shortcut is an easy way to toggle between
-general and specialized tools when enabled.
+.. note::
+
+   The :shortcut:`Space` shortcut is an easy way to toggle between general and
+   specialized tools when enabled.
 
 .. _ug-switch-to-next-tool:
 .. _ug-switch-to-previous-tool:
@@ -493,8 +503,12 @@ Actions to choose the current :ref:`general tool <ug-general-tools>` are
 available as 3D icons on the third shelf from the bottom on the left wall of
 the :ref:`work area <ug-work-area>`. Clicking on any of these icons attaches
 the corresponding general tool to the :ref:`primary selection
-<ug-selection>`. Note that most of these tools also affect all secondary
-selections in addition to the primary model.
+<ug-selection>`.
+
+.. note::
+
+    Most of these tools also affect all :ref:`secondary
+    selections<ug-selection>` in addition to the primary model.
 
 The following table lists the general tool icons from left to right.
 
@@ -510,15 +524,19 @@ The following table lists the general tool icons from left to right.
    * - :ref:`Color Tool <ug-color-tool>`
      - Changes the color of all selected models
    * - :ref:`Complexity Tool <ug-complexity-tool>`
-     - Changes the tessellation of all selected model(s); note that only
-       certain model types respond to complexity changes; the action is
-       disabled if only other types of models are selected.
+     - Changes the tessellation of all selected models\*
    * - :ref:`Rotation Tool <ug-rotation-tool>`
      - Rotates all selected models
    * - :ref:`Scale Tool <ug-scale-tool>`
      - Changes the size of all selected models
    * - :ref:`Translation Tool <ug-translation-tool>`
      - Changes the position of all selected models
+
+.. note::
+
+   \*Only :ref:`certain model types<ug-complexity-model-types>` respond to
+   Complexity Tool changes; the action and tool icon are disabled if only other
+   types of models are selected.
 
 In addition, the :action:`Switch To Next Tool` and :action:`Switch To Previous
 Tool` actions are available via :ref:`keyboard and controller shortcuts
@@ -556,5 +574,7 @@ Other viewing actions are available only via :ref:`keyboard shortcuts
     models temporarily invisible.
   - The :action:`Show All` action makes all top-level models visible again.
 
-Note that the :ref:`Tree Panel <ug-tree-panel>` can also be used to hide or
-show models.
+.. note::
+
+   The :ref:`Tree Panel <ug-tree-panel>` can also be used to hide or show
+   models.

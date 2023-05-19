@@ -39,25 +39,27 @@ Here is how to change the current precision level:
      You can also click the Up or Down buttons on either VR controller trackpad
      or joystick to increase or decrease the current precision.
 
-Note that the keyboard and controller shortcuts work even during drag and VR
-grip drag operations. Modifying the precision setting during a drag has the
-following effects:
+.. note::
 
-  - Updates the text and buttons on the Precision Control.
-  - Changes the precision of the current operation (position, size, etc.).
-  - Changes the precision of the :ref:`visual feedback <ug-feedback>` for the
-    current operation.
-  - :strong:`Changes the relative amount of drag motion.` This may be
-    startling at first, but makes sense when you try it out. For example, if
-    you want to move an object exactly 5.45 units to the right, you start out
-    with 1 unit precision and drag it 5 units. While still dragging, increase
-    precision to .1 unit and drag it .4 units more. This uses the same amount
-    of drag motion that 4 units would at 1 unit precision, so it's much
-    easier. Finally, increase precision again to .01 unit and drag another .05
-    units to the right, again with the corresponding amount of drag motion.
+   The keyboard and controller shortcuts work even during drag (and VR grip drag)
+   operations. Modifying the precision setting during a drag has the following
+   effects:
 
-Once you get used to this, it becomes relatively easy to achieve precise
-dimensions and distances interactively.
+     - Updates the text and buttons on the Precision Control.
+     - Changes the precision of the current operation (position, size, etc.)
+       and its :ref:`visual feedback <ug-feedback>`.
+     - :strong:`Changes the relative amount of drag motion.` This may be
+       startling at first, but makes sense when you try it out. For example, if
+       you want to move an object exactly 5.45 units to the right, you start
+       out with 1 unit precision and drag it 5 units. While still dragging,
+       increase precision to .1 unit and drag it .4 units more. This uses the
+       same amount of drag motion that 4 units would at 1 unit precision, so
+       it's much easier. Finally, increase precision again to .01 unit and drag
+       another .05 units to the right, again with the corresponding amount of
+       drag motion.
+
+Once you get used to these operations, it becomes relatively easy to achieve
+precise dimensions and distances interactively.
 
 .. _ug-feedback:
 
