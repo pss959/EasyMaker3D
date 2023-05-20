@@ -3,8 +3,11 @@
 // =============================================================================
 
 module ConvertBendIcon() {
-  linear_extrude(height = 2.5, center = 2, bend = -90, slices = 8)
-    circle(r = 1, $fn = 5);
+  bend = 110;
+  translate([.6, 0, 0])
+    rotate ([90, bend - 180, 0])
+    rotate_extrude(angle = bend, convexity = 10, $fn = 32)
+    translate([2, 0, 0]) circle(r = .6, $fn = 18);
 }
 
 ConvertBendIcon();
