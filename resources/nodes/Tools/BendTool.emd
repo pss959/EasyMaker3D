@@ -1,0 +1,73 @@
+BendTool "BendTool" {
+  TEMPLATES: [
+    Node "T_BenderStick" {
+      disabled_flags: "kIntersectAll",
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
+        }
+      ],
+      shapes: [ Box { size: 1 .4 .4 } ],
+    }
+    Node "T_BenderHandle" {
+      shapes: [ Ellipsoid { size: 1.2 1.2 1.2 } ]
+    },
+  ],
+
+  children: [
+    # Widget for rotating the axis.
+    SphereWidget "Rotator" {
+      children: [
+        Node {
+          children: [
+            # Box at the bottom end
+            Node "Base" { shapes: [ Box { size: 1 .5 1 } ] },
+            # Cone at the top end
+            Node "Cone" {
+              shapes: [
+                Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
+              ]
+            },
+          ]
+        },
+      ]
+    },
+
+    # This node is rotated to make the axis and bender point the correct way.
+    Node "AxisRotator" {
+      children: [
+        # Widget for translating the axis in (rotated) X and Z.
+        Slider2DWidget "Translator" {
+          principal_plane: "kXZ",
+          children: [
+            Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
+
+            # Widget for rotating the bend angle.
+            DiscWidget "Bender" {
+              mode: "kRotationOnly",
+              angle_mode: "kAccumulate",
+              children: [
+                Node "X" {
+                  children: [
+                    CLONE "T_BenderHandle" "XMin"   {},
+                    CLONE "T_BenderHandle" "XMax"   {},
+                    CLONE "T_BenderStick"  "XStick" {},
+                  ]
+                },
+                Node "Z" {
+                  rotation: 0 1 0 90,
+                  children: [
+                    CLONE "T_BenderHandle" "ZMin"   {},
+                    CLONE "T_BenderHandle" "ZMax"   {},
+                    CLONE "T_BenderStick"  "ZStick" {},
+                  ]
+                },
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

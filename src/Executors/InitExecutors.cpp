@@ -1,5 +1,6 @@
 #include "Executors/InitExecutors.h"
 
+#include "Executors/ChangeBendExecutor.h"
 #include "Executors/ChangeBevelExecutor.h"
 #include "Executors/ChangeCSGExecutor.h"
 #include "Executors/ChangeClipExecutor.h"
@@ -16,6 +17,7 @@
 #include "Executors/ChangeTextExecutor.h"
 #include "Executors/ChangeTorusExecutor.h"
 #include "Executors/ChangeTwistExecutor.h"
+#include "Executors/ConvertBendExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/ConvertClipExecutor.h"
 #include "Executors/ConvertMirrorExecutor.h"
@@ -44,6 +46,7 @@ std::vector<ExecutorPtr> InitExecutors() {
 
 #define ADDEXEC_(TYPE) executors.push_back(ExecutorPtr(new TYPE))
 
+    ADDEXEC_(ChangeBendExecutor);
     ADDEXEC_(ChangeBevelExecutor);
     ADDEXEC_(ChangeCSGExecutor);
     ADDEXEC_(ChangeClipExecutor);
@@ -60,6 +63,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeTextExecutor);
     ADDEXEC_(ChangeTorusExecutor);
     ADDEXEC_(ChangeTwistExecutor);
+    ADDEXEC_(ConvertBendExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(ConvertClipExecutor);
     ADDEXEC_(ConvertMirrorExecutor);

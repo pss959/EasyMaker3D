@@ -1,0 +1,29 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.5.0",
+    session_state: SessionState {
+      edges_shown: True,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 0 0 7,
+      model_names: ["Box_1"],
+    },
+    ScaleCommand {
+      ratios: 1 1.5 1,
+      mode: "kAsymmetric",
+      model_names: ["Box_1"],
+    },
+    ConvertBendCommand {
+      result_names: ["Bended_1"],
+      model_names: ["Box_1"],
+    },
+  ],
+  current_index: 4,
+}

@@ -33,6 +33,7 @@ HelpMap::HelpMap() {
     set_hs(Action::kCreateText,          "Create a 3D Text model");
     set_hs(Action::kCreateTorus,         "Create a primitive Torus model");
 
+    set_hs(Action::kConvertBend,  "Convert selected models to bent models");
     set_hs(Action::kConvertBevel, "Convert selected models to beveled models");
     set_hs(Action::kConvertClip,  "Convert selected models to clipped models");
     set_hs(Action::kConvertMirror,

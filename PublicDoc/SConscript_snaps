@@ -140,6 +140,7 @@ snap_map = {
   ],
   'Shelves' : [
     'BasicsShelf',
+    'BendToolIcon',
     'BevelToolIcon',
     'CSGToolIcon',
     'ClipToolIcon',
@@ -162,6 +163,10 @@ snap_map = {
     'ViewingShelf',
   ],
   'SpecializedTools' : [
+    'BendTool',
+    'BendToolBending',
+    'BendToolHighComplexity',
+    'BendToolLowComplexity',
     'BevelTool',
     'CSGTool',
     'ClipTool',

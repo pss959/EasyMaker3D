@@ -10,6 +10,7 @@
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Commands/CommandList.h"
+#include "Commands/ConvertBendCommand.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
 #include "Commands/ConvertMirrorCommand.h"
@@ -45,6 +46,7 @@
 #include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
+#include "Models/BentModel.h"
 #include "Models/BeveledModel.h"
 #include "Models/ClippedModel.h"
 #include "Models/CombinedModel.h"
@@ -374,6 +376,9 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
         CreatePrimitiveModel_(PrimitiveType::kTorus);
         break;
 
+      case Action::kConvertBend:
+        ConvertModels_(CreateCommand_<ConvertBendCommand>());
+        break;
       case Action::kConvertBevel:
         ConvertModels_(CreateCommand_<ConvertBevelCommand>());
         break;
@@ -746,6 +751,7 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
                  context_->target_manager->IsEdgeTargetVisible()));
     set_enabled(Action::kOpenHelpPanel,     can_open_app_panel);
 
+    set_enabled(Action::kConvertBend,   any_selected);
     set_enabled(Action::kConvertBevel,  any_selected);
     set_enabled(Action::kConvertClip,   any_selected);
     set_enabled(Action::kConvertMirror, any_selected);

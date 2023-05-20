@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "Math/Profile.h"
 #include "Math/Types.h"
 
 /// A Twist defines how to twist a mesh around an axis through some center

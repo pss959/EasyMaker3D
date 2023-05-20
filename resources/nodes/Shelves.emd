@@ -121,6 +121,11 @@ Node "Shelves" {
       translation: $LEFT_X 30.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
+        CLONE "T_IconWidget" "ConvertBendIcon" {
+          action:      "kConvertBend",
+          import_path: "ConvertBendIcon.off",
+          rotation:    1 0 0 -90,
+        },
         CLONE "T_IconWidget" "ConvertBevelIcon" {
           action:      "kConvertBevel",
           import_path: "ConvertBevelIcon.off",
@@ -185,6 +190,10 @@ Node "Shelves" {
           children: [
             Node "NullIcon" {
               shapes: [ CLONE "T_IconShape" { path: "NullIcon.off" } ]
+            },
+            Node "BendToolIcon" {
+              rotation: 1 0 0 -90,
+              shapes: [ CLONE "T_IconShape" { path: "BendToolIcon.off" } ]
             },
             Node "BevelToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "BevelToolIcon.off" } ]

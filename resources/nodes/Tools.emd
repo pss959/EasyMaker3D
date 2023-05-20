@@ -1,5 +1,6 @@
 Node "Tools" {
   children: [
+    <"nodes/Tools/BendTool.emd">,
     <"nodes/Tools/ClipTool.emd">,
     <"nodes/Tools/ColorTool.emd">,
     <"nodes/Tools/ComplexityTool.emd">,

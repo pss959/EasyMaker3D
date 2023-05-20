@@ -1,4 +1,5 @@
 #include "Parser/Registry.h"
+#include "Tools/BendTool.h"
 #include "Tools/BevelTool.h"
 #include "Tools/CSGTool.h"
 #include "Tools/ClipTool.h"
@@ -24,6 +25,7 @@
 void RegisterToolTypes_();
 
 void RegisterToolTypes_() {
+    REGISTER_TYPE_(BendTool);
     REGISTER_TYPE_(BevelTool);
     REGISTER_TYPE_(CSGTool);
     REGISTER_TYPE_(ClipTool);

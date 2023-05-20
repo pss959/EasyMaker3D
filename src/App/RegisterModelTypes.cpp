@@ -1,3 +1,4 @@
+#include "Models/BentModel.h"
 #include "Models/BeveledModel.h"
 #include "Models/BoxModel.h"
 #include "Models/CSGModel.h"
@@ -21,6 +22,7 @@
 void RegisterModelTypes_();
 
 void RegisterModelTypes_() {
+    REGISTER_TYPE_(BentModel);
     REGISTER_TYPE_(BeveledModel);
     REGISTER_TYPE_(BoxModel);
     REGISTER_TYPE_(CSGModel);

@@ -30,6 +30,7 @@ enum class Action {
     kCreateTorus,
 
     // Model conversion.
+    kConvertBend,
     kConvertBevel,
     kConvertClip,
     kConvertMirror,

@@ -107,6 +107,10 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
     return ModifyVertices_(mesh, [&m](const Point3f &p){ return m * p; });
 }
 
+TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &twist) {
+    return sliced_mesh.mesh; // XXXX
+}
+
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
     return ModifyVertices_(mesh, [&plane](const Point3f &p){
         return plane.MirrorPoint(p); }, true);

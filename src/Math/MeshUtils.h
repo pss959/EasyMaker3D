@@ -7,18 +7,22 @@
 
 #include "Math/Types.h"
 
+struct Bend;
 struct SlicedMesh;
 struct Taper;
 struct Twist;
 
-/// \name Mesh Utility functions
+/// \file
+/// Mesh Utility functions
 ///
 /// \ingroup Math
-///@{
 
 // ----------------------------------------------------------------------------
 // Mesh transformations.
 // ----------------------------------------------------------------------------
+
+/// \name General transformations.
+///@{
 
 /// Applies the given scale to a mesh and returns the result.
 TriMesh ScaleMesh(const TriMesh &mesh, const Vector3f &scale);
@@ -30,6 +34,14 @@ TriMesh RotateMesh(const TriMesh &mesh, const Rotationf &rot);
 /// this does NOT recenter the transformed mesh.
 TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m);
 
+///@}
+
+/// \name Deformations.
+///@{
+
+/// Bends a SlicedMesh using the given Bend struct.
+TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &twist);
+
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 
@@ -37,7 +49,12 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 TriMesh TaperMesh(const SlicedMesh &sliced_mesh, const Taper &taper);
 
 /// Twists a SlicedMesh using the given Twist struct.
-TriMesh TwistMesh(const SlicedMesh &mesh, const Twist &twist);
+TriMesh TwistMesh(const SlicedMesh &sliced_mesh, const Twist &twist);
+
+///@}
+
+/// \name Other modifications.
+///@{
 
 /// Returns a new version of a mesh with the bounds centered on the origin.
 TriMesh CenterMesh(const TriMesh &mesh);
@@ -51,9 +68,14 @@ void UnshareMeshVertices(TriMesh &mesh);
 /// helps CGAL not have issues.
 void CleanMesh(TriMesh &mesh);
 
+///@}
+
 // ----------------------------------------------------------------------------
 // Mesh to Ion Shapes and vice-versa.
 // ----------------------------------------------------------------------------
+
+/// \name Conversion to and from Ion Shape instances.
+///@{
 
 /// Converts a TriMesh to an Ion Shape. The alloc_normals and alloc_tex_coords
 /// flags indicate whether to allocate space for surface normal and texture
@@ -75,9 +97,14 @@ void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
 /// Converts an Ion Shape to a TriMesh.
 TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);
 
+///@}
+
 // ----------------------------------------------------------------------------
 // I/O.
 // ----------------------------------------------------------------------------
+
+/// \name I/O.
+///@{
 
 /// Writes the given TriMesh in OFF format to the given stream. The description
 /// is written as a comment. Note: OFF does not contain normals or texture
@@ -85,9 +112,14 @@ TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);
 void WriteMeshAsOFF(const TriMesh &mesh, const std::string &description,
                     std::ostream &out);
 
+///@}
+
 // ----------------------------------------------------------------------------
 // Other mesh utilities.
 // ----------------------------------------------------------------------------
+
+/// \name Other utilities.
+///@{
 
 Bounds ComputeMeshBounds(const TriMesh &mesh);
 

@@ -1,3 +1,4 @@
+#include "Commands/ChangeBendCommand.h"
 #include "Commands/ChangeBevelCommand.h"
 #include "Commands/ChangeCSGOperationCommand.h"
 #include "Commands/ChangeClipCommand.h"
@@ -17,6 +18,7 @@
 #include "Commands/ChangeTorusCommand.h"
 #include "Commands/ChangeTwistCommand.h"
 #include "Commands/CommandList.h"
+#include "Commands/ConvertBendCommand.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
 #include "Commands/ConvertMirrorCommand.h"
@@ -47,6 +49,7 @@ void RegisterCommandTypes_() {
     // Types required for command processing.
     REGISTER_TYPE_(CommandList);
 
+    REGISTER_TYPE_(ChangeBendCommand);
     REGISTER_TYPE_(ChangeBevelCommand);
     REGISTER_TYPE_(ChangeCSGOperationCommand);
     REGISTER_TYPE_(ChangeClipCommand);
@@ -65,6 +68,7 @@ void RegisterCommandTypes_() {
     REGISTER_TYPE_(ChangeTextCommand);
     REGISTER_TYPE_(ChangeTorusCommand);
     REGISTER_TYPE_(ChangeTwistCommand);
+    REGISTER_TYPE_(ConvertBendCommand);
     REGISTER_TYPE_(ConvertBevelCommand);
     REGISTER_TYPE_(ConvertClipCommand);
     REGISTER_TYPE_(ConvertMirrorCommand);

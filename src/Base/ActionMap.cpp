@@ -42,7 +42,8 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kCombineHull }
         },
         { ActionCategory::kConversion,
-          { Action::kConvertBevel,
+          { Action::kConvertBend,
+            Action::kConvertBevel,
             Action::kConvertClip,
             Action::kConvertMirror,
             Action::kConvertTaper,

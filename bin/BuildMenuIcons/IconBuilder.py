@@ -172,6 +172,10 @@ class IconBuilder(object):
         ic.PolyLine([lp + arrow_end0, lp, lp + arrow_end1], self._ToolColor)
         ic.PolyLine([rp - arrow_end0, rp, rp - arrow_end1], self._ToolColor)
 
+    def _MIConvertBend(self, ic):
+        ic.SetFontSize(self._SafeSize - 10)
+        ic.Text(self._SafeRect.center, 'B', self._GeneralColor) # TEMPORARY!
+
     def _MIConvertBevel(self, ic):
         ic.SetLineWidth(6)
         r = self._SafeRect.Shrink(10)

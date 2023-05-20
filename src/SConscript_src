@@ -99,6 +99,7 @@ lib_sources = list(chain(
         'VirtualKeyboard',
     ]),
     PlaceInDir_('Commands', [
+        'ChangeBendCommand',
         'ChangeBevelCommand',
         'ChangeCSGOperationCommand',
         'ChangeClipCommand',
@@ -120,6 +121,7 @@ lib_sources = list(chain(
         'CombineCommand',
         'Command',
         'CommandList',
+        'ConvertBendCommand',
         'ConvertBevelCommand',
         'ConvertClipCommand',
         'ConvertCommand',
@@ -149,6 +151,7 @@ lib_sources = list(chain(
         'Timer',
     ]),
     PlaceInDir_('Executors', [
+        'ChangeBendExecutor',
         'ChangeBevelExecutor',
         'ChangeCSGExecutor',
         'ChangeClipExecutor',
@@ -166,6 +169,7 @@ lib_sources = list(chain(
         'ChangeTorusExecutor',
         'ChangeTwistExecutor',
         'CombineExecutorBase',
+        'ConvertBendExecutor',
         'ConvertBevelExecutor',
         'ConvertClipExecutor',
         'ConvertExecutorBase',
@@ -250,6 +254,7 @@ lib_sources = list(chain(
     ]),
     PlaceInDir_('Math', [
         'Animation',
+        'Bend',
         'Bevel',
         'Beveler',
         'CGALInternal',
@@ -279,6 +284,7 @@ lib_sources = list(chain(
         'Types',
     ]),
     PlaceInDir_('Models', [
+        'BentModel',
         'BeveledModel',
         'BoxModel',
         'CSGModel',
@@ -417,6 +423,7 @@ lib_sources = list(chain(
         'SelPath',
     ]),
     PlaceInDir_('Tools', [
+        'BendTool',
         'BevelTool',
         'CSGTool',
         'ClipTool',
