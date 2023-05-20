@@ -52,7 +52,8 @@ PasteExecutor::ExecData_ & PasteExecutor::GetExecData_(Command &command) {
         // Clone the Models from the clipboard.
         data->models = context.clipboard_manager->CreateClones();
 
-        // Give them unique names and attach clicks (recursively).
+        // Change their colors to random ones, give them unique names, and
+        // attach clicks (recursively).
         for (const auto &model: data->models)
             SetUpPastedModel_(*model);
 
@@ -68,6 +69,9 @@ PasteExecutor::ExecData_ & PasteExecutor::GetExecData_(Command &command) {
 
 void PasteExecutor::SetUpPastedModel_(Model &model) {
     const auto &context = GetContext();
+
+    // Change the color to a random one.
+    SetRandomModelColor(model);
 
     // Assign a unique name. Pass true for is_user_edit so that the unique name
     // is always used.
