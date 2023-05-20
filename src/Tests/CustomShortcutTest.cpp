@@ -62,13 +62,14 @@ TEST_F(CustomShortcutTest, Valid) {
     EXPECT_TRUE(AddInput(input));
     EXPECT_TRUE(error.empty());
 
-    TestShortcutString(Action::kCut, "a");
-    TestShortcutString(Action::kCopy, "b");
-    TestShortcutString(Action::kPaste, "Shift-c");
-    TestShortcutString(Action::kDelete, "Shift-Ctrl-d");
-    TestShortcutString(Action::kUndo, "Shift-Ctrl-Alt-e");
-    TestShortcutString(Action::kRedo, "Shift-Ctrl-Alt-f");
-    TestShortcutString(Action::kQuit, "Shift-Ctrl-Alt-g");
+    TestShortcutString(Action::kCut,       "a");
+    TestShortcutString(Action::kCopy,      "b");
+    TestShortcutString(Action::kDuplicate, "Ctrl-d");
+    TestShortcutString(Action::kPaste,     "Shift-c");
+    TestShortcutString(Action::kDelete,    "Shift-Ctrl-d");
+    TestShortcutString(Action::kUndo,      "Shift-Ctrl-Alt-e");
+    TestShortcutString(Action::kRedo,      "Shift-Ctrl-Alt-f");
+    TestShortcutString(Action::kQuit,      "Shift-Ctrl-Alt-g");
 }
 
 TEST_F(CustomShortcutTest, BadSyntax) {

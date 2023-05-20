@@ -28,6 +28,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
           { Action::kCopy,
             Action::kCut,
             Action::kDelete,
+            Action::kDuplicate,
             Action::kPaste,
             Action::kPasteInto,
             Action::kQuit,

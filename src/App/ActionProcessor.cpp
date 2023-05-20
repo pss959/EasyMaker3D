@@ -477,6 +477,10 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
       case Action::kCopy:
         CopySelection_();
         break;
+      case Action::kDuplicate:
+        CopySelection_();
+        PasteFromClipboard_(false);
+        break;
       case Action::kPaste:
         PasteFromClipboard_(false);
         break;
@@ -815,7 +819,8 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kDelete, can_delete);
     set_enabled(Action::kCut,    can_delete);
 
-    set_enabled(Action::kCopy, any_selected);
+    set_enabled(Action::kCopy,      any_selected);
+    set_enabled(Action::kDuplicate, any_selected);
 
     set_enabled(Action::kPaste, ! context_->clipboard_manager->Get().empty());
     set_enabled(Action::kPasteInto,

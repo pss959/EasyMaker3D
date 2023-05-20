@@ -92,10 +92,11 @@ HelpMap::HelpMap() {
     set_hs(Action::kSelectNextSibling,
            "Select the next sibling of the primary selection");
 
-    set_hs(Action::kDelete, "Delete all selected models");
-    set_hs(Action::kCut,    "Cut all selected models to the clipboard");
-    set_hs(Action::kCopy,   "Copy all selected models to the clipboard");
-    set_hs(Action::kPaste,  "Paste all models from the clipboard");
+    set_hs(Action::kDelete,    "Delete all selected models");
+    set_hs(Action::kCut,       "Cut all selected models to the clipboard");
+    set_hs(Action::kCopy,      "Copy all selected models to the clipboard");
+    set_hs(Action::kDuplicate, "Duplicate all selected models");
+    set_hs(Action::kPaste,     "Paste all models from the clipboard");
     set_hs(Action::kPasteInto,
            "Paste all models from the clipboard as children of"
            " the selected model");

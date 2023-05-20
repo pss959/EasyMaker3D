@@ -115,6 +115,7 @@ ShortcutHandler::ShortcutHandler() {
     AddShortcut_("Ctrl-a",       Action::kSelectAll);
     AddShortcut_("Ctrl-b",       Action::kToggleBuildVolume);
     AddShortcut_("Ctrl-c",       Action::kCopy);
+    AddShortcut_("Ctrl-d",       Action::kDuplicate);
     AddShortcut_("Ctrl-e",       Action::kToggleShowEdges);
     AddShortcut_("Ctrl-h",       Action::kHideSelected);
     AddShortcut_("Ctrl-i",       Action::kCreateImportedModel);

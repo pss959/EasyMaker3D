@@ -80,6 +80,7 @@ enum class Action {
     kDelete,
     kCut,
     kCopy,
+    kDuplicate,
     kPaste,
     kPasteInto,
 

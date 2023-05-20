@@ -241,7 +241,7 @@ class IconBuilder(object):
     def _MICopy(self, ic):
         frontr = self._SafeRect.Center(Point(60, 80)).Move(Point(-10, 10))
         backr  = self._SafeRect.Center(Point(60, 80)).Move(Point(10, -5))
-        ic.RoundedRectangle(backr,  6, self._GeneralColor)
+        ic.RoundedRectangle(backr,  6, self._LightColor)
         ic.RoundedRectangle(frontr, 6, self._Background, fill=True)
         ic.RoundedRectangle(frontr, 6, self._GeneralColor)
 
@@ -350,6 +350,13 @@ class IconBuilder(object):
     def _MIDelete(self, ic):
         ic.SetFontSize(self._SafeSize - 10)
         ic.Text(self._SafeRect.center, 'X', self._GeneralColor)
+
+    def _MIDuplicate(self, ic):
+        frontr = self._SafeRect.Center(Point(60, 80)).Move(Point(-10, 10))
+        backr  = self._SafeRect.Center(Point(60, 80)).Move(Point(10, -5))
+        ic.RoundedRectangle(backr,  6, self._GeneralColor)
+        ic.RoundedRectangle(frontr, 6, self._Background, fill=True)
+        ic.RoundedRectangle(frontr, 6, self._GeneralColor)
 
     def _MIHideSelected(self, ic):
         self._AddSelectRect(ic, self._GeneralColor)
