@@ -388,12 +388,15 @@ void Model::RebuildMesh_(bool notify) {
     is_mesh_valid_ = ValidateMesh(mesh, reason_for_invalid_mesh_);
     shape_->ChangeMesh(mesh);
 
+    // Clear this flag before notifying so the mesh is not rebuilt.
+    is_mesh_stale_ = false;
+
     // Reenable notification and notify if requested.
     SetNotifyEnabled(was_notify_enabled);
     if (notify)
         ProcessChange(SG::Change::kGeometry, *this);
 
-    // Clear this flag after notifying, which may set it to true.
+    // Clear this flag again after notifying, which may set it to true.
     is_mesh_stale_ = false;
 }
 
