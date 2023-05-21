@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 # This version string has to be in exactly this format for the publishdoc script.
-version_string = '1.6.0'
+version_string = '1.7.0'
 
 app_name = 'EasyMaker3D'
 

@@ -319,6 +319,16 @@ selected models are of the correct type for that tool.
 For more information about each specialized tool that uses a :ref:`panel
 <ug-panels>` for its interface, see the corresponding panel documentation.
 
+.. _ug-bend-tool:
+
+Bend Tool
+,,,,,,,,,
+
+.. incimage:: /images/BendToolBending.jpg -200px right
+.. incimage:: /images/BendTool.jpg        -200px right
+
+The specialized :newterm:`Bend Tool` XXXX.
+
 .. _ug-bevel-tool:
 
 Bevel Tool

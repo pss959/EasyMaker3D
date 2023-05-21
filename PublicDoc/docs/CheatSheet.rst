@@ -36,7 +36,13 @@
      - Delete / :ref:`Delete <ug-delete>`
      - .. menuicon:: Delete
      - Delete all selected models
-     - :shortcut:`Backspace, Delete`
+     - :shortcut:`Delete, Backspace`
+     - 
+   * - Basics
+     - Duplicate / :ref:`Duplicate <ug-duplicate>`
+     - .. menuicon:: Duplicate
+     - Duplicate all selected models
+     - :shortcut:`Ctrl-d`
      - 
    * - Basics
      - Paste / :ref:`Paste <ug-paste>`
@@ -90,6 +96,12 @@
      - CombineHull / :ref:`Combine Hull <ug-combine-hull>`
      - .. menuicon:: CombineHull
      - Create a model that is the convex hull of selected models
+     - 
+     - 
+   * - Conversion
+     - ConvertBend / :ref:`Convert Bend <ug-convert-bend>`
+     - .. menuicon:: ConvertBend
+     - Convert selected models to bent models
      - 
      - 
    * - Conversion
@@ -247,7 +259,7 @@
      - .. menuicon:: IncreasePrecision
      - Increase the current precision
      - :shortcut:`x`
-     - :shortcut:`R:Up, L:Up`
+     - :shortcut:`L:Up, R:Up`
    * - Radial Menu
      - ToggleLeftRadialMenu / :ref:`Toggle Left Radial Menu <ug-toggle-left-radial-menu>`
      - .. menuicon:: ToggleLeftRadialMenu

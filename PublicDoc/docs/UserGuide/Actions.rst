@@ -46,6 +46,7 @@ by category.
 .. _ug-copy:
 .. _ug-cut:
 .. _ug-delete:
+.. _ug-duplicate:
 .. _ug-paste-into:
 .. _ug-paste:
 .. _ug-quit:
@@ -81,10 +82,6 @@ the Basic Operations shelf on the top of the back wall in the :ref:`work area
     select the CSG model, and click the Paste Into icon. The box will be added
     as a child of the union and therefore become part of the CSG operation.
 
-In addition, the :action:`Quit` action (avalable via shortcut or radial menu)
-exits the program after checking for unsaved changes. This is equivalent to
-clicking on the exit sign in the :ref:`work area <ug-work-area>`.
-
 .. note::
 
    Undo and Redo actions apply to only these operations:
@@ -107,6 +104,15 @@ undoable include:
 
 Hovering over the Undo or Redo icon (when enabled) shows a :ref:`tooltip
 <ug-tooltips>` describing what operation will be undone or redone.
+
+There are additional actions that are not attached to 3D icons, but are 
+avalable via keyboard shortcuts and radial menus.
+
+  - The :action:`Duplicate` action is equivalent to a Copy action followed by a
+    Paste action.
+  - The :action:`Quit` action exits the program after checking for unsaved
+    changes. This action is also available by clicking on the exit sign in the
+    :ref:`work area <ug-work-area>`.
 
 .. _ug-create-box:
 .. _ug-create-cylinder:
@@ -164,6 +170,7 @@ specialized tool links describe how to edit the resulting models.
 The CSG actions require at least two models to be selected, but the convex hull
 action can be applied to a single model.
 
+.. _ug-convert-bend:
 .. _ug-convert-bevel:
 .. _ug-convert-clip:
 .. _ug-convert-mirror:
@@ -194,6 +201,10 @@ specialized tool links describe how to edit the resulting models.
      - Model Type
      - Specialized Tool
      - Initial State after Conversion
+   * - :action:`Convert Twist`
+     - :ref:`Bent model <ug-converted-models>`
+     - :ref:`Bend Tool <ug-bend-tool>`
+     - No bend
    * - :action:`Convert Bevel`
      - :ref:`Beveled model <ug-converted-models>`
      - :ref:`Bevel Tool <ug-bevel-tool>`
@@ -296,6 +307,7 @@ the middle shelf on the back wall. From left to right:
     stage axes, not the model's local axes. This toggle affects the following
     tools:
 
+      - :ref:`Bend Tool <ug-bend-tool>`
       - :ref:`Clip Tool <ug-clip-tool>`
       - :ref:`Mirror Tool <ug-mirror-tool>`
       - :ref:`Rotation Tool <ug-rotation-tool>`
@@ -447,6 +459,7 @@ when toggled back to a general tool.
 .. incimage:: /images/ClipToolIcon.jpg     80px right
 .. incimage:: /images/CSGToolIcon.jpg      80px right
 .. incimage:: /images/BevelToolIcon.jpg    80px right
+.. incimage:: /images/BendToolIcon.jpg    80px right
 
 |block-image|
 
@@ -462,6 +475,8 @@ type for the icon to be enabled.
 
    * - Icon/Specialized Tool
      - Required Selected Model Type
+   * - :ref:`Bend Tool <ug-bend-tool>`
+     - :ref:`Bent models <ug-converted-models>`
    * - :ref:`Bevel Tool <ug-bevel-tool>`
      - :ref:`Beveled models <ug-converted-models>`
    * - :ref:`CSG Tool <ug-csg-tool>`

@@ -173,8 +173,21 @@ class IconBuilder(object):
         ic.PolyLine([rp - arrow_end0, rp, rp - arrow_end1], self._ToolColor)
 
     def _MIConvertBend(self, ic):
-        ic.SetFontSize(self._SafeSize - 10)
-        ic.Text(self._SafeRect.center, 'B', self._GeneralColor) # TEMPORARY!
+        unbent = self._SafeRect.Shrink(20).Left(30).Right(25)
+        ic.SetLineWidth(4)
+        ic.Rectangle(unbent, self._GeneralColor)
+        # Curved points.
+        def Curve_(rad):
+            return [Point(round(rad * cos(radians(angle))) - rad,
+                          round(rad * sin(radians(angle))))
+                    for angle in range(0, 105, 15)]
+        inner_rad = 30
+        outer_rad = inner_rad + unbent.size.x
+        lpts = [unbent.BL() - p for p in Curve_(outer_rad)]
+        rpts = [unbent.BR() - p for p in Curve_(inner_rad)]
+        rpts.reverse()
+        ic.SetLineWidth(4)
+        ic.PolyLine(lpts + rpts + [lpts[0]], self._HighlightColor)
 
     def _MIConvertBevel(self, ic):
         ic.SetLineWidth(6)

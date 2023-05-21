@@ -30,5 +30,8 @@ class Point(object):
     def __str__(self):
         return '(' + str(self.x) + ',' + str(self.y) + ')'
 
+    def __repr__(self):
+        return '(' + str(self.x) + ',' + str(self.y) + ')'
+
     def Tuple(self):
         return (self.x, self.y)
