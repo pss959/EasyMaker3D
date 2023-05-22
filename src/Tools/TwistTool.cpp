@@ -211,7 +211,7 @@ void TwistTool::TwistChanged_(Widget &widget) {
         else {
             // Apply precision to the angle unless modified dragging.
             const Anglef angle = twister_->GetRotationAngle();
-            twist_.angle = context.is_modified_mode ?
+            twist_.angle = ! context.is_modified_mode ?
                 context.precision_store->ApplyAngle(angle) : angle;
         }
     }
