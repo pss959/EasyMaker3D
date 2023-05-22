@@ -2,22 +2,22 @@
 
 #include "Base/Memory.h"
 #include "Math/Bevel.h"
-#include "Models/ConvertedModel.h"
+#include "Models/ScaledConvertedModel.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(BeveledModel);
 
-/// BeveledModel is a derived ConvertedModel class that represents a Model
-/// whose edges have had a bevel or rounding operation applied to them.
+/// BeveledModel is a derived ScaledConvertedModel class that represents a
+/// Model whose edges have had a bevel or rounding operation applied to them.
 ///
 /// Note that the BeveledModel applies the bevel profile to the scaled version
 /// of the operand Model's mesh, since that is what the user expects.
-/// Therefore, the scale factors in the BeveledModel differ from those in the
-/// operand. This stores the difference so the two can be kept in sync.
+/// Therefore, it is derived from ScaledConvertedModel so that the scales are
+/// maintained properly.
 ///
 /// \ingroup Models
-class BeveledModel : public ConvertedModel {
+class BeveledModel : public ScaledConvertedModel {
   public:
     /// Sets the Bevel to use.
     void SetBevel(const Bevel &bevel);
@@ -35,16 +35,6 @@ class BeveledModel : public ConvertedModel {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
-    /// Redefines this to also copy the operand scale.
-    virtual void CopyContentsFrom(const Parser::Object &from,
-                                  bool is_deep) override;
-
-    /// Overrides this to deal with the difference in scale.
-    virtual void SyncTransformsFromOperand(const Model &operand) override;
-
-    /// Overrides this to deal with the difference in scale.
-    virtual void SyncTransformsToOperand(Model &operand) const override;
-
     virtual TriMesh ConvertMesh(const TriMesh &mesh) override;
 
   private:
@@ -57,9 +47,6 @@ class BeveledModel : public ConvertedModel {
 
     /// Bevel used to create the model.
     Bevel bevel_;
-
-    /// Scale factors applied to the operand Model's mesh before beveling.
-    Vector3f operand_scale_{1, 1, 1};
 
     friend class Parser::Registry;
 };

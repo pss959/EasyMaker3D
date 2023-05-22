@@ -13,11 +13,11 @@ void BeveledModel::AddFields() {
                       "max_angle",
                       Anglef::FromDegrees(TK::kDefaultMaxBevelAngle)));
 
-    ConvertedModel::AddFields();
+    ScaledConvertedModel::AddFields();
 }
 
 bool BeveledModel::IsValid(std::string &details) {
-    if (! ConvertedModel::IsValid(details))
+    if (! ScaledConvertedModel::IsValid(details))
         return false;
     if (bevel_scale_ <= 0) {
         details = "Non-positive scale value";
@@ -36,7 +36,7 @@ bool BeveledModel::IsValid(std::string &details) {
 }
 
 void BeveledModel::CreationDone() {
-    ConvertedModel::CreationDone();
+    ScaledConvertedModel::CreationDone();
 
     if (! IsTemplate()) {
         ASSERT(bevel_.profile.GetPointCount() == 2U);
@@ -57,26 +57,6 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
 
 Profile BeveledModel::CreateProfile(const Profile::PointVec &points) {
     return Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2, points);
-}
-
-void BeveledModel::SyncTransformsFromOperand(const Model &operand) {
-    // Leave the scale alone.
-    SetRotation(operand.GetRotation());
-    SetTranslation(operand.GetTranslation());
-}
-
-void BeveledModel::SyncTransformsToOperand(Model &operand) const {
-    // Leave the scale alone.
-    operand.SetRotation(GetRotation());
-    operand.SetTranslation(GetTranslation());
-}
-
-void BeveledModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    ConvertedModel::CopyContentsFrom(from, is_deep);
-
-    // Copy the operand scale. The Bevel is set in CreationDone().
-    const BeveledModel &from_bev = static_cast<const BeveledModel &>(from);
-    operand_scale_ = from_bev.operand_scale_;
 }
 
 TriMesh BeveledModel::ConvertMesh(const TriMesh &mesh) {

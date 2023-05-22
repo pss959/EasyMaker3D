@@ -301,6 +301,7 @@ lib_sources = list(chain(
         'ParentModel',
         'RevSurfModel',
         'RootModel',
+        'ScaledConvertedModel',
         'SphereModel',
         'TaperedModel',
         'TextModel',
