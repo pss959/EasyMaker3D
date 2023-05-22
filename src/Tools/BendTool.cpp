@@ -45,8 +45,8 @@ void BendTool::UpdateGripInfo(GripInfo &info) {
         // Otherwise, use the axis rotator.
         info.widget = rotator_;
         // Connect to the min/max handle, whichever is higher up.
-        const Point3f min_pt = ToWorld(base_, Point3f::Zero());
-        const Point3f max_pt = ToWorld(cone_, Point3f::Zero());
+        const Point3f min_pt = ToWorld(cone0_, Point3f::Zero());
+        const Point3f max_pt = ToWorld(cone1_, Point3f::Zero());
         info.target_point = min_pt[1] > max_pt[1] ? min_pt : max_pt;
     }
 }
@@ -73,8 +73,8 @@ void BendTool::SetUpParts_() {
                                                                "Translator");
     axis_rotator_ = SG::FindNodeUnderNode(*this, "AxisRotator");
     axis_         = SG::FindNodeUnderNode(*translator_, "Axis");
-    cone_         = SG::FindNodeUnderNode(*rotator_, "Cone");
-    base_         = SG::FindNodeUnderNode(*rotator_, "Base");
+    cone0_        = SG::FindNodeUnderNode(*rotator_, "Cone0");
+    cone1_        = SG::FindNodeUnderNode(*rotator_, "Cone1");
 
     // Set a wide range for the translator.
     translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
@@ -104,8 +104,8 @@ void BendTool::UpdateGeometry_() {
 
     // Translate the axis rotator handles.
     const Vector3f y_trans(0, kAxisScale * radius, 0);
-    base_->SetTranslation(-y_trans);
-    cone_->SetTranslation(y_trans);
+    cone0_->SetTranslation(-y_trans);
+    cone1_->SetTranslation(y_trans);
 
     // Scale the center translator axis height.
     const auto axis = SG::FindNodeUnderNode(*translator_, "Axis");
@@ -134,7 +134,8 @@ void BendTool::MatchCurrentBend_() {
     rotator_->GetRotationChanged().EnableObserver(this, false);
     translator_->GetValueChanged().EnableObserver(this, false);
 
-    const Rotationf rot = Rotationf::RotateInto(Bend().axis, bend_.axis);
+    // The tool points along +Y by default.
+    const Rotationf rot = Rotationf::RotateInto(Vector3f::AxisY(), bend_.axis);
     rotator_->SetRotation(rot);
     rotator_->SetTranslation(rot * bend_.center);
     axis_rotator_->SetRotation(rot);
@@ -302,7 +303,7 @@ void BendTool::UpdateBendFeedback_() {
     // Move the feedback center to be just past the axis cone in stage
     // coordinates.
     const Point3f stage_center = Point3f(GetTranslation()) +
-        (1.2f * cone_->GetTranslation()[1] * stage_axis);
+        (1.2f * cone1_->GetTranslation()[1] * stage_axis);
 
     ASSERT(feedback_);
     feedback_->SubtendArc(stage_center, 0, 0, stage_axis,

@@ -12,6 +12,7 @@ Node "NodeViewerRoot" {
     # -------------------------  Add the node(s) to be viewed below here.
     #<"nodes/ModelRoot.emd">
     #<"nodes/PointTarget.emd">
+    <"nodes/Tools/BendTool.emd">
     #<"nodes/Tools/ScaleTool.emd">
     #<"nodes/Tools/TwistTool.emd">
     #<"nodes/templates/Controller.emd">
@@ -27,7 +28,7 @@ Node "NodeViewerRoot" {
 
     # Uncomment one of these to test out a Board with a Panel.
     # CLONE "T_Board" "AppBoard" {}
-    CLONE "T_Board" "ToolBoard" {}
+    # CLONE "T_Board" "ToolBoard" {}
     # CLONE "T_Board" "KeyBoard" {}
 
     # Node {

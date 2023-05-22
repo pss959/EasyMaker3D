@@ -23,8 +23,11 @@ class ChangeBendExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.
         struct PerModel {
-            SelPath path_to_model;
-            Bend   old_bend;
+            SelPath  path_to_model;
+            Bend     old_bend;
+            Vector3f old_translation;
+            Vector3f new_translation;
+            Vector3f base_translation;  /// Without any offset.
         };
         std::vector<PerModel> per_model;
     };

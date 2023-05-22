@@ -1,27 +1,7 @@
 ﻿#include "Executors/ChangeRevSurfExecutor.h"
 
-#include <ion/math/transformutils.h>
-
 #include "Commands/ChangeRevSurfCommand.h"
 #include "Models/RevSurfModel.h"
-
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
-
-namespace {
-
-/// Returns the translation offset (in local coordinates) for the given
-/// RevSurfModel based on its center offset (in object coordinates).
-static Vector3f GetCenterOffset_(const RevSurfModel &rsm) {
-    return rsm.GetModelMatrix() * rsm.GetCenterOffset();
-}
-
-}  // anonymous namespace
-
-// ----------------------------------------------------------------------------
-// ChangeRevSurfExecutor functions.
-// ----------------------------------------------------------------------------
 
 void ChangeRevSurfExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -35,7 +15,8 @@ void ChangeRevSurfExecutor::Execute(Command &command, Command::Op operation) {
             RevSurfModel &rsm = GetTypedModel<RevSurfModel>(pm.path_to_model);
             rsm.SetProfile(new_profile);
             rsm.SetSweepAngle(new_sweep_angle);
-            pm.new_translation = pm.base_translation + GetCenterOffset_(rsm);
+            pm.new_translation = pm.base_translation +
+                ComputeLocalOffset(rsm, rsm.GetCenterOffset());
             rsm.SetTranslation(pm.new_translation);
         }
     }
@@ -73,7 +54,8 @@ ChangeRevSurfExecutor::ExecData_ & ChangeRevSurfExecutor::GetExecData_(
             pm.new_translation = pm.old_translation;
 
             // Compute the base translation, which has no offset.
-            pm.base_translation = pm.old_translation - GetCenterOffset_(rsm);
+            pm.base_translation = pm.old_translation -
+                ComputeLocalOffset(rsm, rsm.GetCenterOffset());
         }
         command.SetExecData(data);
     }

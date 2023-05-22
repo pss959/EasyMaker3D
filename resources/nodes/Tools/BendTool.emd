@@ -21,14 +21,14 @@ BendTool "BendTool" {
       children: [
         Node {
           children: [
-            # Box at the bottom end
-            Node "Base" { shapes: [ Box { size: 1 .5 1 } ] },
-            # Cone at the top end
-            Node "Cone" {
+            # Cone at the far end
+            Node "Cone0" {
               shapes: [
                 Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
               ]
             },
+            # Cone at the near end
+            CLONE "Cone0" "Cone1" {}
           ]
         },
       ]

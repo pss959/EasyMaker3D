@@ -10,6 +10,7 @@
 #include <ion/gfxutils/buffertoattributebinder.h>
 #include <ion/math/transformutils.h>
 
+#include "Math/Bend.h"
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
 #include "Math/SlicedMesh.h"
@@ -107,8 +108,18 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
     return ModifyVertices_(mesh, [&m](const Point3f &p){ return m * p; });
 }
 
-TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &twist) {
-    return sliced_mesh.mesh; // XXXX
+TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
+    // Get the rotation by the angle around the axis.
+    const Rotationf rot = Rotationf::FromAxisAndAngle(bend.axis, bend.angle);
+
+    const auto bend_pt = [&](const Point3f &p){
+        // return bend.center + rot * (p - bend.center);
+        // XXXX
+        Point3f bp = bend.center + rot * (p - bend.center);
+        return bp;
+    };
+
+    return ModifyVertices_(sliced_mesh.mesh, bend_pt);
 }
 
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {

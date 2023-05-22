@@ -1,5 +1,7 @@
 #include "Executors/Executor.h"
 
+#include <ion/math/transformutils.h>
+
 #include "Managers/AnimationManager.h"
 #include "Managers/ClipboardManager.h"
 #include "Managers/CommandManager.h"
@@ -58,4 +60,9 @@ void Executor::SetRandomModelColor(Model &model) {
     // Access the mesh so that it can be validated.
     model.GetMesh();
     model.SetColor(Model::GetNextColor());
+}
+
+Vector3f Executor::ComputeLocalOffset(const Model &model,
+                                      const Vector3f &obj_offset) {
+    return model.GetModelMatrix() * obj_offset;
 }

@@ -95,6 +95,11 @@ class Executor {
     /// Sets a random color for the Model.
     void SetRandomModelColor(Model &model);
 
+    /// Given an offset vector in object coordinates for the given Model, this
+    /// returns a translation to apply in local coordinates.
+    static Vector3f ComputeLocalOffset(const Model &model,
+                                       const Vector3f &obj_offset);
+
   private:
     ContextPtr context_;
 };

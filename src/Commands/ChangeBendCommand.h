@@ -9,8 +9,8 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ChangeBendCommand);
 
-/// ChangeBendCommand is used to change the bend applied one or more
-/// BentModel instances.
+/// ChangeBendCommand is used to change the bend applied one or more BentModel
+/// instances.
 ///
 /// \ingroup Commands
 class ChangeBendCommand : public MultiModelCommand {

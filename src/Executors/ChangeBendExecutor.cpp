@@ -7,12 +7,23 @@
 void ChangeBendExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
 
-    ChangeBendCommand &ctc = GetTypedCommand<ChangeBendCommand>(command);
+    ChangeBendCommand &cbc = GetTypedCommand<ChangeBendCommand>(command);
 
-    for (auto &pm: data.per_model) {
-        BentModel &tm = GetTypedModel<BentModel>(pm.path_to_model);
-        tm.SetBend(operation == Command::Op::kDo ?
-                    ctc.GetBend() : pm.old_bend);
+    if (operation == Command::Op::kDo) {
+        for (auto &pm: data.per_model) {
+            BentModel &bm = GetTypedModel<BentModel>(pm.path_to_model);
+            bm.SetBend(cbc.GetBend());
+            pm.new_translation = pm.base_translation +
+                ComputeLocalOffset(bm, bm.GetObjectCenterOffset());
+            bm.SetTranslation(pm.new_translation);
+        }
+    }
+    else {  // Undo.
+        for (auto &pm: data.per_model) {
+            BentModel &bm = GetTypedModel<BentModel>(pm.path_to_model);
+            bm.SetBend(pm.old_bend);
+            bm.SetTranslation(pm.old_translation);
+        }
     }
 
     // Reselect if undo or if command is finished being done.
@@ -24,9 +35,9 @@ ChangeBendExecutor::ExecData_ & ChangeBendExecutor::GetExecData_(
     Command &command) {
     // Create the ExecData_ if not already done.
     if (! command.GetExecData()) {
-        ChangeBendCommand &ctc = GetTypedCommand<ChangeBendCommand>(command);
+        ChangeBendCommand &cbc = GetTypedCommand<ChangeBendCommand>(command);
 
-        const auto &model_names = ctc.GetModelNames();
+        const auto &model_names = cbc.GetModelNames();
         ASSERT(! model_names.empty());
 
         ExecData_ *data = new ExecData_;
@@ -36,8 +47,14 @@ ChangeBendExecutor::ExecData_ & ChangeBendExecutor::GetExecData_(
             ExecData_::PerModel &pm = data->per_model[i];
             const SelPath path = FindPathToModel(model_names[i]);
             pm.path_to_model = path;
-            BentModel &tm = GetTypedModel<BentModel>(pm.path_to_model);
-            pm.old_bend = tm.GetBend();
+            BentModel &bm = GetTypedModel<BentModel>(pm.path_to_model);
+            pm.old_bend = bm.GetBend();
+            pm.old_translation = bm.GetTranslation();
+            pm.new_translation = pm.old_translation;
+
+            // Compute the base translation, which has no offset.
+            pm.base_translation = pm.old_translation -
+                ComputeLocalOffset(bm, bm.GetObjectCenterOffset());
         }
         command.SetExecData(data);
     }
