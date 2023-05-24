@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Base/Memory.h"
+#include "Enums/Axis.h"
 #include "Math/Bend.h"
 #include "Math/SlicedMesh.h"
 #include "Math/Types.h"
@@ -60,6 +61,10 @@ class BentModel : public ScaledConvertedModel {
 
     /// Axis used to create #sliced_mesh_.
     Vector3f   sliced_axis_{0, 0, 0};
+
+    /// Returns the principal axis to slice along for the given Bend axis
+    /// applied to the given TriMesh.
+    static Axis GetSliceAxis_(const TriMesh &mesh, const Vector3f &bend_axis);
 
     friend class Parser::Registry;
 };

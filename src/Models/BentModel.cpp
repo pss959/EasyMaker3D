@@ -58,29 +58,23 @@ TriMesh BentModel::ConvertMesh(const TriMesh &mesh) {
         const TriMesh scaled_mesh =
             ScaleMesh(mesh, GetOperandModel()->GetScale());
 
-        // XXXX
-        sliced_mesh_ = SliceMesh(scaled_mesh, Axis::kX, num_slices);
-
-#if XXXX
-        // Slice the mesh. Slice along the Y axis unless the bend axis is not
-        // perpendicular to it.
-        // XXXX Need to figure out how to get a real slicing axis here.
-        if (bend_.axis[2] == 0) {
-            sliced_mesh_ = SliceMesh(scaled_mesh, Axis::kY, num_slices);
-        }
-        else {
-            // If the bend axis is not perpendicular to the +Y axis, rotate the
-            // mesh to align with the +Z axis, apply the bend, and rotate back.
-            const Rotationf rot =
-                Rotationf::RotateInto(bend_.axis, Vector3f::AxisY());
-
-            sliced_mesh_ = SliceMesh(RotateMesh(scaled_mesh, rot), Axis::kY,
-                                     num_slices);
-
-            sliced_mesh_.mesh = RotateMesh(sliced_mesh_.mesh, -rot);
-        }
-#endif
+        // Figure out which axis to use for slicing and slice the mesh.
+        const Axis slice_axis = GetSliceAxis_(scaled_mesh, bend_.axis);
+        sliced_mesh_ = SliceMesh(scaled_mesh, slice_axis, num_slices);
     }
 
     return BendMesh(sliced_mesh_, bend_);
+}
+
+Axis BentModel::GetSliceAxis_(const TriMesh &mesh, const Vector3f &bend_axis) {
+    // Use the longer of the two principal axes that are more perpendicular to
+    // the bend axis.
+    const int bend_axis_dim = GetMaxAbsElementIndex(bend_axis);
+    const int dim0 = (bend_axis_dim + 1) % 3;
+    const int dim1 = (bend_axis_dim + 2) % 3;
+
+    const auto scaled_size = ComputeMeshBounds(mesh).GetSize();
+    const int slice_dim = scaled_size[dim0] >= scaled_size[dim1] ? dim0 : dim1;
+
+    return static_cast<Axis>(slice_dim);
 }
