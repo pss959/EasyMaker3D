@@ -15,7 +15,7 @@
 /// \ingroup Math
 struct Bend {
     Point3f  center{0, 0, 0};  ///< Bend center; defaults to origin.
-    Vector3f axis{0, 0, 1};    ///< Bend axis; defaults to +Z axis.
+    Vector3f axis{0, 1, 0};    ///< Bend axis; defaults to +Y axis.
     Anglef   angle;            ///< Bend angle; defaults to 0.
     float    offset = 0;       ///< Offset per 360 degrees; defaults to 0.
 

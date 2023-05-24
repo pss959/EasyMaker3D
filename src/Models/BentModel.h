@@ -4,7 +4,7 @@
 #include "Math/Bend.h"
 #include "Math/SlicedMesh.h"
 #include "Math/Types.h"
-#include "Models/ConvertedModel.h"
+#include "Models/ScaledConvertedModel.h"
 
 namespace Parser { class Registry; }
 
@@ -15,8 +15,13 @@ DECL_SHARED_PTR(BentModel);
 /// center point with an optional offset proportional to the angle. The center,
 /// axis, and pffset are specified in object coordinates of the operand Model.
 ///
+/// Note that the BentModel applies a Bend to the scaled version of the operand
+/// Model's mesh, since that is what the user expects.  Therefore, it is
+/// derived from ScaledConvertedModel so that the scales are maintained
+/// properly.
+///
 /// \ingroup Models
-class BentModel : public ConvertedModel {
+class BentModel : public ScaledConvertedModel {
   public:
     /// Sets the bend parameters.
     void SetBend(const Bend &bend);

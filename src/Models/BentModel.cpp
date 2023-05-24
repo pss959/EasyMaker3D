@@ -12,11 +12,11 @@ void BentModel::AddFields() {
     AddModelField(angle_.Init("angle",   default_bend.angle));
     AddModelField(offset_.Init("offset", default_bend.offset));
 
-    ConvertedModel::AddFields();
+    ScaledConvertedModel::AddFields();
 }
 
 bool BentModel::IsValid(std::string &details) {
-    if (! ConvertedModel::IsValid(details))
+    if (! ScaledConvertedModel::IsValid(details))
         return false;
     if (! IsValidVector(axis_)) {
         details = "zero-length bend axis";
@@ -26,7 +26,7 @@ bool BentModel::IsValid(std::string &details) {
 }
 
 void BentModel::CreationDone() {
-    ConvertedModel::CreationDone();
+    ScaledConvertedModel::CreationDone();
 
     if (! IsTemplate()) {
         bend_.center = center_;
@@ -54,26 +54,33 @@ TriMesh BentModel::ConvertMesh(const TriMesh &mesh) {
         sliced_axis_       = bend_.axis;
         const size_t num_slices = LerpInt(complexity, 1, 20);
 
+        // Use the scaled operand mesh.
+        const TriMesh scaled_mesh =
+            ScaleMesh(mesh, GetOperandModel()->GetScale());
+
+        // XXXX
+        sliced_mesh_ = SliceMesh(scaled_mesh, Axis::kX, num_slices);
+
+#if XXXX
         // Slice the mesh. Slice along the Y axis unless the bend axis is not
         // perpendicular to it.
+        // XXXX Need to figure out how to get a real slicing axis here.
         if (bend_.axis[2] == 0) {
-            sliced_mesh_ = SliceMesh(mesh, Axis::kY, num_slices);
+            sliced_mesh_ = SliceMesh(scaled_mesh, Axis::kY, num_slices);
         }
         else {
             // If the bend axis is not perpendicular to the +Y axis, rotate the
             // mesh to align with the +Z axis, apply the bend, and rotate back.
             const Rotationf rot =
-                Rotationf::RotateInto(bend_.axis, Vector3f::AxisZ());
+                Rotationf::RotateInto(bend_.axis, Vector3f::AxisY());
 
-            sliced_mesh_ = SliceMesh(RotateMesh(mesh, rot), Axis::kZ,
+            sliced_mesh_ = SliceMesh(RotateMesh(scaled_mesh, rot), Axis::kY,
                                      num_slices);
 
             sliced_mesh_.mesh = RotateMesh(sliced_mesh_.mesh, -rot);
         }
+#endif
     }
 
-    // XXXX return BendMesh(sliced_mesh_, bend_);
-    const auto m = BendMesh(sliced_mesh_, bend_);
-    // XXXX std::cerr << "XXXX Mesh bounds = " << ComputeMeshBounds(m) << "\n";
-    return m;
+    return BendMesh(sliced_mesh_, bend_);
 }

@@ -21,6 +21,8 @@
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
+// XXXX Merge most of this with TwistTool?
+
 void BendTool::CreationDone() {
     Tool::CreationDone();
 
@@ -135,7 +137,7 @@ void BendTool::MatchCurrentBend_() {
     translator_->GetValueChanged().EnableObserver(this, false);
 
     // The tool points along +Y by default.
-    const Rotationf rot = Rotationf::RotateInto(Vector3f::AxisY(), bend_.axis);
+    const Rotationf rot = Rotationf::RotateInto(Bend().axis, bend_.axis);
     rotator_->SetRotation(rot);
     rotator_->SetTranslation(rot * bend_.center);
     axis_rotator_->SetRotation(rot);
@@ -212,7 +214,7 @@ void BendTool::BendChanged_(Widget &widget) {
         else {
             // Apply precision to the angle unless modified dragging.
             const Anglef angle = bender_->GetRotationAngle();
-            bend_.angle = context.is_modified_mode ?
+            bend_.angle = ! context.is_modified_mode ?
                 context.precision_store->ApplyAngle(angle) : angle;
         }
     }

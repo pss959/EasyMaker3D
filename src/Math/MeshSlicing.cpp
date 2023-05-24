@@ -161,7 +161,7 @@ class Slicer_ {
 };
 
 SlicedMesh Slicer_::Slice(const TriMesh &mesh, Axis axis,
-                           const FloatVec &fractions) {
+                          const FloatVec &fractions) {
     dim_  = Util::EnumInt(axis);
     ASSERT(dim_ >= 0 && dim_ <= 2);
 

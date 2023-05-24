@@ -7,6 +7,8 @@
 
 #include <algorithm>
 
+#include "Util/Enum.h"
+
 // ----------------------------------------------------------------------------
 // Dimension conversion functions.
 // ----------------------------------------------------------------------------
@@ -99,6 +101,13 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
         result.ExtendByPoint(center + m * corner);
     }
     return result;
+}
+
+Rotationf ScaleRotation(const Rotationf &rot, float scale) {
+    Vector3f axis;
+    Anglef   angle;
+    rot.GetAxisAndAngle(&axis, &angle);
+    return Rotationf::FromAxisAndAngle(axis, scale * angle);
 }
 
 Rotationf TransformRotation(const Rotationf &rot, const Matrix4f &m) {
@@ -269,6 +278,10 @@ template int GetMinAbsElementIndex(const VectorBase<4, float> &v);
 template int GetMaxAbsElementIndex(const VectorBase<2, float> &v);
 template int GetMaxAbsElementIndex(const VectorBase<3, float> &v);
 template int GetMaxAbsElementIndex(const VectorBase<4, float> &v);
+
+Vector3f GetAxis(Axis axis, float scale) {
+    return GetAxis(Util::EnumInt(axis), scale);
+}
 
 Anglef AbsAngle(const Anglef &angle) {
     return angle.Radians() < 0 ? -angle : angle;

@@ -7,6 +7,8 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(Slider1DWidget);
 
+// XXXX Change dimension to Axis enum.
+
 /// Slider1DWidget is a derived SliderWidgetBase that provides interaction
 /// along a constrained linear path.
 ///

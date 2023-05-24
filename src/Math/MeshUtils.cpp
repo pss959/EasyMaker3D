@@ -109,14 +109,75 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
 }
 
 TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
-    // Get the rotation by the angle around the axis.
+    // If the angle is 0, there is no bending.
+    if (bend.angle.Radians() == 0)
+        return sliced_mesh.mesh;
+
+    // Axis along which the mesh is sliced.
+    const Vector3f slice_axis = GetAxis(sliced_mesh.axis);
+
+    // Get the full rotation by the angle around the axis.
     const Rotationf rot = Rotationf::FromAxisAndAngle(bend.axis, bend.angle);
 
+    // Get the plane perpendicular to the slicing axis that passes through the
+    // bend center. All mesh points on this plane stay put; all other mesh
+    // points rotate proportional to their distance from this plane.
+    const Plane plane(bend.center, slice_axis);
+
+    // Vector perpendicular to the slice axis and bend axis. This is used
+    // to find the center of the bend circle.
+    const Vector3f perp_vec = ion::math::Cross(bend.axis, slice_axis);
+
+    // Radius of bend circle.
+    const float radius = sliced_mesh.range.GetSize() / bend.angle.Radians();
+
+    // Center point around which all mesh points are rotated.
+    const Point3f center = bend.center + radius * perp_vec;
+
+#if 0 // XXXX
+    std::cerr << "XXXX Bend=" << bend.ToString() << "\n";
+    std::cerr << "XXXX Range=" << sliced_mesh.range
+              << " axis=" << Util::EnumName(sliced_mesh.axis)
+              << " " << plane
+              << " rad=" << radius
+              << "\n";
+#endif
+
     const auto bend_pt = [&](const Point3f &p){
-        // return bend.center + rot * (p - bend.center);
-        // XXXX
-        Point3f bp = bend.center + rot * (p - bend.center);
-        return bp;
+        // The distance of the point in the direction of the bend axis should
+        // not change. Compute the offset vector.
+        const auto axis_offset = SignedDistance(p, bend.axis) * bend.axis;
+
+        // The amount to rotate is proportional to the distance of the point
+        // from the plane.
+        const float rotate_scale =
+            plane.GetDistanceToPoint(p) / sliced_mesh.range.GetSize();
+
+        // Find the radius to use based on the point's location along the
+        // perpendicular vector from the bend center.
+        const float rad = radius - ion::math::Dot(p - bend.center, perp_vec);
+
+        // This vector is rotated around the circle center by the scaled
+        // rotation to get the result mesh point.
+        // XXXX const Vector3f rot_vec = bend.center - center;
+        const Vector3f rot_vec = bend.center - (bend.center + rad * perp_vec);
+
+        // Rotate about the bend axis through the center point.
+        return center + ScaleRotation(rot, rotate_scale) * rot_vec + axis_offset;
+
+#if 0 // XXXX
+        if (p == Point3f(10, 1, 1) && bend.angle.Degrees() == 15) { // XXXX
+            std::cerr << "XXXX ------ \n";
+            std::cerr << "XXXX  p    = " << p << "\n";
+            std::cerr << "XXXX  rad  = " << radius << "\n";
+            std::cerr << "XXXX  dist = " << dist << "\n";
+            std::cerr << "XXXX  rv   = " << rv << "\n";
+            std::cerr << "XXXX  p'   = "
+                      << (bend.center + rv + axis_offset) << "\n";
+        }
+        // Add it all up.
+        return bend.center + rv + axis_offset;
+#endif
     };
 
     return ModifyVertices_(sliced_mesh.mesh, bend_pt);

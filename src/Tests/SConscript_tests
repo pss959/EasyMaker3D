@@ -8,6 +8,7 @@ mode     = test_env['MODE']
 test_sources = [
     'AppTestBase.cpp',
     'AssertTest.cpp',
+    'BentModelTest.cpp',
     'BeveledModelTest.cpp',
     'BevelerTest.cpp',
     'BoundsTest.cpp',

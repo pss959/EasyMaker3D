@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "Enums/Axis.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 
@@ -58,6 +59,9 @@ Bounds TranslateBounds(const Bounds &bounds, const Vector3f &trans);
 /// Transforms a Bounds by a matrix, returning a new (aligned) Bounds that
 /// encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
+
+/// Scales the angle of rotation by a factor.
+Rotationf ScaleRotation(const Rotationf &rot, float scale);
 
 /// Transforms a rotation by a matrix. This rotates the axis and leaves the
 /// angle unchanged.
@@ -170,6 +174,10 @@ int GetMinAbsElementIndex(const VectorBase<DIM, float> &v);
 /// Returns the index of the maximum element (by absolute value) of a Vector3f.
 template <int DIM>
 int GetMaxAbsElementIndex(const VectorBase<DIM, float> &v);
+
+/// Returns the coordinate axis for the given Axis. The scale value (default 1)
+/// is used for the axis length.
+Vector3f GetAxis(Axis axis, float scale = 1.f);
 
 /// Returns the coordinate axis for the given dimension (0, 1, or 2). The scale
 /// value (default 1) is used for the axis length.
