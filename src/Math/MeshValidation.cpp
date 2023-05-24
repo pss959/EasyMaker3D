@@ -17,9 +17,6 @@
 #include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #endif
 
-// XXXX
-#include <CGAL/Polygon_mesh_processing/repair_degeneracies.h>
-
 // ----------------------------------------------------------------------------
 // Helper classes and functions.
 // ----------------------------------------------------------------------------
@@ -157,14 +154,6 @@ MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh) {
         auto code = IsPolyValid_(poly);
         if (code == MeshValidityCode::kValid)
             return code;
-
-        else if (code == MeshValidityCode::kInconsistent) {
-            if (CGAL::Polygon_mesh_processing::remove_degenerate_faces(poly)) {
-                auto code = IsPolyValid_(poly);
-                if (code == MeshValidityCode::kValid)
-                    return code;
-            }
-        }
 
         else if (code == MeshValidityCode::kNotClosed) {
 #if STITCH_BORDERS
