@@ -103,13 +103,6 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
     return result;
 }
 
-Rotationf ScaleRotation(const Rotationf &rot, float scale) {
-    Vector3f axis;
-    Anglef   angle;
-    rot.GetAxisAndAngle(&axis, &angle);
-    return Rotationf::FromAxisAndAngle(axis, scale * angle);
-}
-
 Rotationf TransformRotation(const Rotationf &rot, const Matrix4f &m) {
     Vector3f axis;
     Anglef   angle;

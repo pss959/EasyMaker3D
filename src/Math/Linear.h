@@ -60,9 +60,6 @@ Bounds TranslateBounds(const Bounds &bounds, const Vector3f &trans);
 /// encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
 
-/// Scales the angle of rotation by a factor.
-Rotationf ScaleRotation(const Rotationf &rot, float scale);
-
 /// Transforms a rotation by a matrix. This rotates the axis and leaves the
 /// angle unchanged.
 Rotationf TransformRotation(const Rotationf &rot, const Matrix4f &m);

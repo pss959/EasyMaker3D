@@ -52,7 +52,7 @@ static TriMesh ModifyVertices_(
 
 /// Given a Taper and a Y value in the range [0,1], this returns the X value
 /// corresponding to the Taper scale.
-static float GetTaperScale(const Taper &taper, float y) {
+static float GetTaperScale_(const Taper &taper, float y) {
     const auto &prof_pts = taper.profile.GetPoints();
 
     float scale = -1;
@@ -89,6 +89,34 @@ static float GetTriangleArea_(const TriMesh &mesh, size_t i) {
     return ComputeArea(mesh.points[i0], mesh.points[i1], mesh.points[i2]);
 }
 
+/// Removes all triangles with the given indices from a TriMesh.
+static void RemoveIndexedTriangles_(TriMesh &mesh,
+                                    const std::vector<size_t> &tris) {
+    // Sort the triangle indices increasing to speed up the search.
+    std::vector<size_t> sorted_tris = tris;
+    std::sort(std::begin(sorted_tris), std::end(sorted_tris));
+
+    // Construct a new_indices vector without the triangles to remove.
+    std::vector<GIndex> new_indices;
+    const size_t new_count = mesh.indices.size() - 3 * sorted_tris.size();
+    new_indices.reserve(new_count);
+
+    int next_tri = 0;
+    for (size_t i = 0; i < mesh.GetTriangleCount(); ++i) {
+        if (next_tri >= 0 && i == sorted_tris[next_tri]) {
+            // If no more triangles to remove
+            if (static_cast<size_t>(++next_tri) == sorted_tris.size())
+                next_tri = -1;
+        }
+        else {
+            for (int j = 0; j < 3; ++j)
+                new_indices.push_back(mesh.indices[3 * i + j]);
+        }
+    }
+    ASSERT(new_indices.size() == new_count);
+    mesh.indices = new_indices;
+}
+
 // ----------------------------------------------------------------------------
 // Public functions.
 // ----------------------------------------------------------------------------
@@ -116,8 +144,10 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     // Axis along which the mesh is sliced.
     const Vector3f slice_axis = GetAxis(sliced_mesh.axis);
 
-    // Get the full rotation by the angle around the axis.
-    const Rotationf rot = Rotationf::FromAxisAndAngle(bend.axis, bend.angle);
+    // If the bend offset is 0, don't let the angle exceed 360 degrees in
+    // either direction.
+    const Anglef angle = bend.offset != 0 ? bend.angle :
+        Anglef::FromDegrees(Clamp(bend.angle.Degrees(), -360.f, 360.f));
 
     // Get the plane perpendicular to the slicing axis that passes through the
     // bend center. All mesh points on this plane stay put; all other mesh
@@ -129,19 +159,10 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     const Vector3f perp_vec = ion::math::Cross(bend.axis, slice_axis);
 
     // Radius of bend circle.
-    const float radius = sliced_mesh.range.GetSize() / bend.angle.Radians();
+    const float radius = sliced_mesh.range.GetSize() / angle.Radians();
 
     // Center point around which all mesh points are rotated.
     const Point3f center = bend.center + radius * perp_vec;
-
-#if 0 // XXXX
-    std::cerr << "XXXX Bend=" << bend.ToString() << "\n";
-    std::cerr << "XXXX Range=" << sliced_mesh.range
-              << " axis=" << Util::EnumName(sliced_mesh.axis)
-              << " " << plane
-              << " rad=" << radius
-              << "\n";
-#endif
 
     const auto bend_pt = [&](const Point3f &p){
         // The distance of the point in the direction of the bend axis should
@@ -153,34 +174,33 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
         const float rotate_scale =
             plane.GetDistanceToPoint(p) / sliced_mesh.range.GetSize();
 
+        // Get the rotation by the scaled angle around the axis.
+        const Rotationf rot =
+            Rotationf::FromAxisAndAngle(bend.axis, rotate_scale * angle);
+
         // Find the radius to use based on the point's location along the
         // perpendicular vector from the bend center.
         const float rad = radius - ion::math::Dot(p - bend.center, perp_vec);
 
         // This vector is rotated around the circle center by the scaled
         // rotation to get the result mesh point.
-        // XXXX const Vector3f rot_vec = bend.center - center;
         const Vector3f rot_vec = bend.center - (bend.center + rad * perp_vec);
 
         // Rotate about the bend axis through the center point.
-        return center + ScaleRotation(rot, rotate_scale) * rot_vec + axis_offset;
-
-#if 0 // XXXX
-        if (p == Point3f(10, 1, 1) && bend.angle.Degrees() == 15) { // XXXX
-            std::cerr << "XXXX ------ \n";
-            std::cerr << "XXXX  p    = " << p << "\n";
-            std::cerr << "XXXX  rad  = " << radius << "\n";
-            std::cerr << "XXXX  dist = " << dist << "\n";
-            std::cerr << "XXXX  rv   = " << rv << "\n";
-            std::cerr << "XXXX  p'   = "
-                      << (bend.center + rv + axis_offset) << "\n";
-        }
-        // Add it all up.
-        return bend.center + rv + axis_offset;
-#endif
+        const auto bp = center + rot * rot_vec + axis_offset;
+        return bp;
     };
 
-    return ModifyVertices_(sliced_mesh.mesh, bend_pt);
+    TriMesh result_mesh = ModifyVertices_(sliced_mesh.mesh, bend_pt);
+    CleanMesh(result_mesh);
+
+    // If the angle is +/- 360, there is a good chance that there are now
+    // coplanar triangles facing in opposite directions. Remove them if there
+    // are any.
+    if (AreClose(std::abs(angle.Degrees()), 360))
+        RemoveReversedTriangles(result_mesh);
+
+    return result_mesh;
 }
 
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
@@ -197,7 +217,7 @@ TriMesh TaperMesh(const SlicedMesh &sliced_mesh, const Taper &taper) {
 
     const auto taper_pt = [&](const Point3f &p){
         // Scale the other 2 dimensions.
-        const float scale = GetTaperScale(taper, (p[dim] - min) / size);
+        const float scale = GetTaperScale_(taper, (p[dim] - min) / size);
         Point3f scaled_p = scale * p;
         scaled_p[dim] = p[dim];
         return scaled_p;
@@ -239,6 +259,44 @@ void UnshareMeshVertices(TriMesh &mesh) {
         unique_points.push_back(mesh.points[index]);
     mesh.points = unique_points;
     std::iota(mesh.indices.begin(), mesh.indices.end(), 0);
+}
+
+void RemoveReversedTriangles(TriMesh &mesh) {
+    // Maps a key representing vertex indices to triangle index.
+    std::unordered_map<size_t, GIndex> tri_map;
+
+    // Generates a size_t key from 3 vertex indices; the number of points is
+    // used to guarantee uniqueness.
+    const auto get_key = [&mesh](size_t tri_index){
+        // Get the 3 vertex indices and sort increasing.
+        GIndex ind[3];
+        for (int i = 0; i < 3; ++i)
+            ind[i] = mesh.indices[3 * tri_index + i];
+        std::sort(std::begin(ind), std::end(ind));
+
+        // Create a unique key.
+        const size_t np = mesh.points.size();
+        return ind[0] * np * np + ind[1] * np + ind[2];
+    };
+
+    // Collect indices of bad triangles.
+    const size_t tri_count = mesh.GetTriangleCount();
+    std::vector<size_t> bad_tris;
+    for (size_t i = 0; i < tri_count; ++i) {
+        const size_t key = get_key(i);
+        const auto it = tri_map.find(key);
+        if (it != tri_map.end()) {
+            bad_tris.push_back(it->second);
+            bad_tris.push_back(i);
+        }
+        else {
+            tri_map[key] = i;
+        }
+    }
+
+    // Remove bad triangles if any.
+    if (! bad_tris.empty())
+        RemoveIndexedTriangles_(mesh, bad_tris);
 }
 
 void CleanMesh(TriMesh &mesh) {

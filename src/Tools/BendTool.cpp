@@ -174,7 +174,7 @@ void BendTool::Activate_(Widget &widget, bool is_activation) {
 
         GetDragEnded().Notify(*this);
 
-        // Execute the command to change the ClippedModel(s).
+        // Execute the command to change the BentModel(s).
         if (command_) {
             if (command_->GetBend() != start_bend_)
                 GetContext().command_manager->AddAndDo(command_);
@@ -221,8 +221,10 @@ void BendTool::BendChanged_(Widget &widget) {
     MatchCurrentBend_();
 
     // Update the command.
-    command_->SetBend(bend_);
-    context.command_manager->SimulateDo(command_);
+    if (command_->GetBend() != bend_) {
+        command_->SetBend(bend_);
+        context.command_manager->SimulateDo(command_);
+    }
 
     // Update feedback if bending.
     if (&widget == bender_.get())

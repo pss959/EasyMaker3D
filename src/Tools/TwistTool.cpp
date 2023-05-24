@@ -171,7 +171,7 @@ void TwistTool::Activate_(Widget &widget, bool is_activation) {
 
         GetDragEnded().Notify(*this);
 
-        // Execute the command to change the ClippedModel(s).
+        // Execute the command to change the TwistedModel(s).
         if (command_) {
             if (command_->GetTwist() != start_twist_)
                 GetContext().command_manager->AddAndDo(command_);
@@ -218,8 +218,10 @@ void TwistTool::TwistChanged_(Widget &widget) {
     MatchCurrentTwist_();
 
     // Update the command.
-    command_->SetTwist(twist_);
-    context.command_manager->SimulateDo(command_);
+    if (command_->GetTwist() != twist_) {
+        command_->SetTwist(twist_);
+        context.command_manager->SimulateDo(command_);
+    }
 
     // Update feedback if twisting.
     if (&widget == twister_.get())
