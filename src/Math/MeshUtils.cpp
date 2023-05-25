@@ -165,9 +165,10 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     const Point3f center = bend.center + radius * perp_vec;
 
     const auto bend_pt = [&](const Point3f &p){
-        // The distance of the point in the direction of the bend axis should
-        // not change. Compute the offset vector.
-        const auto axis_offset = SignedDistance(p, bend.axis) * bend.axis;
+        // The relative distance of the point from the center in the direction
+        // of the bend axis should not change. Compute the offset vector.
+        const auto axis_offset =
+            ion::math::Dot(p - center, bend.axis) * bend.axis;
 
         // The amount to rotate is proportional to the distance of the point
         // from the plane.
