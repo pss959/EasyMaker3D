@@ -117,6 +117,48 @@ static void RemoveIndexedTriangles_(TriMesh &mesh,
     mesh.indices = new_indices;
 }
 
+static void RemoveUnusedPoints_(TriMesh &mesh) {
+    const size_t point_count = mesh.points.size();
+
+    std::vector<bool> is_used(point_count, false);
+
+    size_t num_used = 0;
+    for (size_t i = 0; i < mesh.GetTriangleCount(); ++i) {
+        for (int j = 0; j < 3; ++j) {
+            const GIndex index = mesh.indices[3 * i + j];
+            if (! is_used[index]) {
+                ++num_used;
+                is_used[index] = true;
+            }
+        }
+    }
+
+    // Nothing to do if all of the points are used.
+    if (num_used == point_count)
+        return;
+
+    // Copy all used points and keep track of how many points have been removed
+    // before each one.
+    std::vector<Point3f> remaining_pts;
+    std::vector<size_t>  remove_count;
+    remaining_pts.reserve(point_count);
+    remove_count.reserve(point_count);
+
+    size_t removed = 0;
+    for (size_t i = 0; i < point_count; ++i) {
+        if (is_used[i])
+            remaining_pts.push_back(mesh.points[i]);
+        else
+            ++removed;
+        remove_count.push_back(removed);
+    }
+    mesh.points  = remaining_pts;
+
+    // Reindex.
+    for (auto &index: mesh.indices)
+        index -= remove_count[index];
+}
+
 // ----------------------------------------------------------------------------
 // Public functions.
 // ----------------------------------------------------------------------------
@@ -301,8 +343,10 @@ void RemoveReversedTriangles(TriMesh &mesh) {
     }
 
     // Remove bad triangles if any.
-    if (! bad_tris.empty())
+    if (! bad_tris.empty()) {
         RemoveIndexedTriangles_(mesh, bad_tris);
+        RemoveUnusedPoints_(mesh);
+    }
 }
 
 void CleanMesh(TriMesh &mesh) {

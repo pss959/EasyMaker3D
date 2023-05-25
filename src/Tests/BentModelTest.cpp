@@ -2,6 +2,7 @@
 #include "Math/MeshValidation.h"
 #include "Models/BoxModel.h"
 #include "Models/BentModel.h"
+#include "Models/CylinderModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"
 #include "Util/General.h"
@@ -108,17 +109,8 @@ TEST_F(BentModelTest, Bend90Max) {
     // for the curve.
     EXPECT_EQ(Vector3f(0, 1, 0), bent->GetTranslation());
 
-    EXPECT_VECS_CLOSE(Vector3f(1.01344f, 0, -3.37566f),
+    EXPECT_VECS_CLOSE(Vector3f(1.01344f, 0, 3.37566f),
                       bent->GetObjectCenterOffset());
-
-#if 1 // XXXX
-        {
-            Debug::Dump3dv d("/tmp/bent.3dv", "XXXX From BentModelTest");
-            d.SetLabelFontSize(30);
-            d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
-            d.AddTriMesh(mesh);
-        }
-#endif
 }
 
 TEST_F(BentModelTest, Bend360) {
@@ -164,5 +156,52 @@ TEST_F(BentModelTest, Bend360) {
         const Bounds bounds = bent->GetScaledBounds();
         EXPECT_EQ(Point3f::Zero(), bounds.GetCenter());
         EXPECT_VECS_CLOSE(Vector3f(10.3662f, 4, 8.97738f), bounds.GetSize());
+    }
+}
+
+TEST_F(BentModelTest, BendCyl360) {
+    // 2x10x2 cylinder at (0,5,0).
+    ModelPtr cyl = Model::CreateModel<CylinderModel>();
+    cyl->SetComplexity(.01f);  // 4 sides.
+    cyl->SetScale(Vector3f(2, 10, 2));
+    cyl->SetTranslation(Vector3f(0, 5, 0));
+
+    // Bend 360 degrees counterclockwise around +X with the center in the
+    // middle.  This should create a ring.
+    Bend bend;
+    bend.axis  = Vector3f::AxisX();
+    bend.angle = Anglef::FromDegrees(360);
+
+    BentModelPtr bent = Model::CreateModel<BentModel>();
+    bent->SetBend(bend);
+    bent->SetOperandModel(cyl);
+
+    EXPECT_EQ(bend, bent->GetBend());
+
+    // Should be similar number of points and triangles as above, but coplanar
+    // end triangles removed.
+    {
+        const auto &mesh = bent->GetMesh();
+        EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
+        EXPECT_EQ(44U, mesh.points.size());
+        EXPECT_EQ(88U, mesh.GetTriangleCount());
+
+        const Bounds bounds = bent->GetScaledBounds();
+        EXPECT_EQ(Point3f::Zero(), bounds.GetCenter());
+        EXPECT_VECS_CLOSE(Vector3f(4, 8.97738f, 10.3662f), bounds.GetSize());
+    }
+
+    // Repeat with -360.
+    bend.angle = Anglef::FromDegrees(-360);
+    bent->SetBend(bend);
+    {
+        const auto &mesh = bent->GetMesh();
+        EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
+        EXPECT_EQ(44U, mesh.points.size());
+        EXPECT_EQ(88U, mesh.GetTriangleCount());
+
+        const Bounds bounds = bent->GetScaledBounds();
+        EXPECT_EQ(Point3f::Zero(), bounds.GetCenter());
+        EXPECT_VECS_CLOSE(Vector3f(4, 8.97738f, 10.3662f), bounds.GetSize());
     }
 }

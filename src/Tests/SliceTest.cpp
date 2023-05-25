@@ -67,6 +67,7 @@ void SliceTest::DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
         flags.Set(Debug::Dump3dv::LabelFlag::kEdgeLabels);
     if (data.add_vertex_labels)
         flags.Set(Debug::Dump3dv::LabelFlag::kVertexLabels);
+    d.SetLabelFlags(flags);
     d.SetLabelFontSize(1.2f * ion::math::Length(sz));
     d.SetCoincidentLabelOffset(.25f * Vector3f(1, 1, 1));
 
