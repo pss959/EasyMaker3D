@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Enums/Axis.h"
+#include "Enums/Dim.h"
 #include "Math/Types.h"
 
 /// A SlicedMesh represents a TriMesh that has been sliced by some number of
@@ -9,6 +9,6 @@
 /// during mesh construction.
 struct SlicedMesh {
     TriMesh  mesh;
-    Axis     axis;
+    Dim      axis;
     Range1f  range;
 };

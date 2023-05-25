@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "Enums/Axis.h"
+#include "Enums/Dim.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 
@@ -26,6 +26,13 @@ Point2f ToPoint2f(const Point3f &p, int dim = 2);
 /// Convenience to convert a Range3f to a Range2f by removing a dimension (Z by
 /// default).
 Range2f ToRange2f(const Range3f &r, int dim = 2);
+
+/// Converts a Dim enum from the application coordinate system (+Y up) to the
+/// user/3D-printing coordinate system (+Z up).
+Dim ToUserDim(Dim dim);
+
+/// Does the opposite of ToUserAxis().
+Dim FromUserDim(Dim dim);
 
 // ----------------------------------------------------------------------------
 // Transformation functions.
@@ -172,9 +179,9 @@ int GetMinAbsElementIndex(const VectorBase<DIM, float> &v);
 template <int DIM>
 int GetMaxAbsElementIndex(const VectorBase<DIM, float> &v);
 
-/// Returns the coordinate axis for the given Axis. The scale value (default 1)
+/// Returns the coordinate axis for the given Dim. The scale value (default 1)
 /// is used for the axis length.
-Vector3f GetAxis(Axis axis, float scale = 1.f);
+Vector3f GetAxis(Dim dim, float scale = 1.f);
 
 /// Returns the coordinate axis for the given dimension (0, 1, or 2). The scale
 /// value (default 1) is used for the axis length.

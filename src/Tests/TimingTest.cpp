@@ -33,7 +33,7 @@ TEST_F(TimingTest, Slicing) {
     // Custom slicer.
     Debug::Timer timer("Custom Slicing");
     for (int i = 0; i < 100; ++i) {
-        const SlicedMesh sm = SliceMesh(box, Axis::kY, 20);
+        const SlicedMesh sm = SliceMesh(box, Dim::kY, 20);
         EXPECT_EQ(160U,  sm.mesh.points.size());
     }
     timer.Report();

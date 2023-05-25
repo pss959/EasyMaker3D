@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Enums/Dim.h"
 #include "Util/Enum.h"
 #include "Util/Assert.h"
 
@@ -12,9 +13,6 @@
 /// \ingroup Base
 class Dimensionality {
   public:
-    /// This enum is used to indicate one of the 3 principal dimensions.
-    enum class Dim { X, Y, Z };
-
     /// The default constructor creates a 0-dimensional (empty) instance.
     Dimensionality() { Clear(); }
 

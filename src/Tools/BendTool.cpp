@@ -12,6 +12,7 @@
 #include "Models/BentModel.h"
 #include "Place/PointTarget.h"
 #include "Place/PrecisionStore.h"
+#include "Place/Snapping.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -239,27 +240,33 @@ bool BendTool::SnapTranslation_() {
     // Current center in object coordinates (from the Slider2DWidget).
     const auto cur_obj_pos = Bend().center + translator_->GetTranslation();
 
-    // Try to snap to the point target position (if it is active) or the center
-    // of the unbent Model, whichever is closer. Work in stage coordinates.
-    // Note that the conversion is from local coordinates since the translation
-    // is after the scale.
+    // Snap in stage coordinates.
     const auto stage_cc  = GetStageCoordConv();
-    const auto lsm       = stage_cc.GetLocalToRootMatrix();
-    const auto start_pos = lsm * start_bend_.center;
-    const auto cur_pos   = lsm * cur_obj_pos;
-    const auto model_pos = lsm * Point3f::Zero();
+    const auto osm       = stage_cc.GetObjectToRootMatrix();
+    const auto start_pos = osm * start_bend_.center;
+    const auto cur_pos   = osm * cur_obj_pos;
 
     bool is_snapped = false;
 
+    // Try to snap to the point target position (if it is active) or any of the
+    // principal points of the unbent Model's bounds, whichever is
     Vector3f motion = cur_pos - start_pos;
     if (tm.SnapToPoint(start_pos, motion)) {
         bend_.center = stage_cc.RootToObject(start_pos + motion);
         is_snapped = true;
     }
-    // Use twice the tolerance here because of 2 dimensions. :-)
-    else if (Distance(cur_pos, model_pos) <= 2 * TK::kSnapPointTolerance) {
-        bend_.center = Point3f::Zero();
-        is_snapped = true;
+    // Otherwise, try to snap to any of the principal points of the unbent
+    // Model's bounds.
+    else {
+        const Bounds stage_bounds = GetStageBounds();
+        Point3f stage_pos = cur_pos;
+        const Vector3f tolerance = TK::kSnapPointTolerance * Vector3f(1, 1, 1);
+        const Dimensionality snapped_dims =
+            SnapToBounds(stage_bounds, stage_pos, tolerance);
+        if (snapped_dims.GetCount() > 1) {
+            bend_.center = stage_cc.RootToObject(stage_pos);
+            is_snapped = true;
+        }
     }
     if (is_snapped)
         translator_->SetActiveColor(GetSnappedFeedbackColor());

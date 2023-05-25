@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Enums/Axis.h"
+#include "Enums/Dim.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
 
@@ -12,7 +12,7 @@
 /// \ingroup Math
 struct Taper {
     /// Taper axis.
-    Axis    axis    = Axis::kY;
+    Dim     axis    = Dim::kY;
 
     /// Taper Profile.
     Profile profile = CreateDefaultProfile();

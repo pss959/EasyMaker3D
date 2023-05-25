@@ -147,20 +147,23 @@ int Tool::SnapToAxis(Vector3f &dir) {
 }
 
 Point3f Tool::GetPositionAboveModel(float distance, bool over_front) const {
-    // Need the path to the Model to convert to stage coordinates.
-    ASSERT(model_sel_index_ >= 0);
-    const auto &path  = selection_.GetPaths()[model_sel_index_];
-    const auto &model = *path.GetModel();
-
     // Get the point at the top front center of the Model in stage coordinates.
-    const Bounds stage_bounds =
-        TransformBounds(model.GetBounds(),
-                        path.GetCoordConv().GetObjectToRootMatrix());
+    const Bounds stage_bounds = GetStageBounds();
     Point3f pos = over_front ?
         stage_bounds.GetFaceCenter(Bounds::Face::kFront) :
         stage_bounds.GetCenter();
     pos[1] = stage_bounds.GetMaxPoint()[1] + distance;
     return pos;
+}
+
+Bounds Tool::GetStageBounds() const {
+    // Need the path to the Model to convert to stage coordinates.
+    ASSERT(model_sel_index_ >= 0);
+    const auto &path  = selection_.GetPaths()[model_sel_index_];
+    const auto &model = *path.GetModel();
+
+    return TransformBounds(model.GetBounds(),
+                           path.GetCoordConv().GetObjectToRootMatrix());
 }
 
 float Tool::ComputePartScale(const Vector3f &model_size, float fraction,

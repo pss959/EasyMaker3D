@@ -121,9 +121,9 @@ void SliceTest::DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
 
 TEST_F(SliceTest, Box0Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
-    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, std::vector<float>());
+    const SlicedMesh sm = SliceMesh(mesh, Dim::kY, std::vector<float>());
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kY,         sm.axis);
+    EXPECT_EQ(Dim::kY,          sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
     EXPECT_EQ(8U,               sm.mesh.points.size());
     EXPECT_EQ(12U,              sm.mesh.GetTriangleCount());
@@ -132,9 +132,9 @@ TEST_F(SliceTest, Box0Slices) {
 TEST_F(SliceTest, Box1Slice) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f};
-    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kY,         sm.axis);
+    EXPECT_EQ(Dim::kY,          sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
     EXPECT_EQ(16U,              sm.mesh.points.size());
     EXPECT_EQ(28U,              sm.mesh.GetTriangleCount());
@@ -143,9 +143,9 @@ TEST_F(SliceTest, Box1Slice) {
 TEST_F(SliceTest, Box2Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f, .75f};
-    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kY,         sm.axis);
+    EXPECT_EQ(Dim::kY,          sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
     EXPECT_EQ(24U,              sm.mesh.points.size());
     EXPECT_EQ(44U,              sm.mesh.GetTriangleCount());
@@ -154,9 +154,9 @@ TEST_F(SliceTest, Box2Slices) {
 TEST_F(SliceTest, Box3Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f, .6f, .75f};
-    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kY,         sm.axis);
+    EXPECT_EQ(Dim::kY,          sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
     EXPECT_EQ(32U,              sm.mesh.points.size());
     EXPECT_EQ(60U,              sm.mesh.GetTriangleCount());
@@ -165,9 +165,9 @@ TEST_F(SliceTest, Box3Slices) {
 TEST_F(SliceTest, Box3SlicesX) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f, .6f, .75f};
-    const SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kX,       sm.axis);
+    EXPECT_EQ(Dim::kX,        sm.axis);
     EXPECT_EQ(Range1f(-5, 5), sm.range);
     EXPECT_EQ(32U,            sm.mesh.points.size());
     EXPECT_EQ(60U,            sm.mesh.GetTriangleCount());
@@ -176,9 +176,9 @@ TEST_F(SliceTest, Box3SlicesX) {
 TEST_F(SliceTest, Cylinder) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
     const std::vector<float> fractions{.25f, .6f, .75f};
-    const SlicedMesh sm = SliceMesh(mesh, Axis::kY, fractions);
+    const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kY,         sm.axis);
+    EXPECT_EQ(Dim::kY,          sm.axis);
     EXPECT_EQ(Range1f(-10, 10), sm.range);
     EXPECT_EQ(162U,             sm.mesh.points.size());
     EXPECT_EQ(320U,             sm.mesh.GetTriangleCount());
@@ -187,9 +187,9 @@ TEST_F(SliceTest, Cylinder) {
 TEST_F(SliceTest, CylinderX1) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
     const std::vector<float> fractions{.75f};
-    SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
+    SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kX,       sm.axis);
+    EXPECT_EQ(Dim::kX,        sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
     EXPECT_EQ(27U,            sm.mesh.points.size());
     EXPECT_EQ(50U,            sm.mesh.GetTriangleCount());
@@ -198,9 +198,9 @@ TEST_F(SliceTest, CylinderX1) {
 TEST_F(SliceTest, CylinderX2) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
     const std::vector<float> fractions{.2f, .75f};
-    SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
+    SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kX,       sm.axis);
+    EXPECT_EQ(Dim::kX,        sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
     EXPECT_EQ(38U,            sm.mesh.points.size());
     EXPECT_EQ(72U,            sm.mesh.GetTriangleCount());
@@ -209,9 +209,9 @@ TEST_F(SliceTest, CylinderX2) {
 TEST_F(SliceTest, CylinderX3) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
     const std::vector<float> fractions{.2f, .6f, .75f};
-    SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
+    SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kX,       sm.axis);
+    EXPECT_EQ(Dim::kX,        sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
     EXPECT_EQ(50U,            sm.mesh.points.size());
     EXPECT_EQ(96U,            sm.mesh.GetTriangleCount());
@@ -220,9 +220,9 @@ TEST_F(SliceTest, CylinderX3) {
 TEST_F(SliceTest, CylinderX3b) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
     const std::vector<float> fractions{.2f, .6f, .75f};
-    SlicedMesh sm = SliceMesh(mesh, Axis::kX, fractions);
+    SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateAndRepairTriMesh(sm.mesh));
-    EXPECT_EQ(Axis::kX,       sm.axis);
+    EXPECT_EQ(Dim::kX,        sm.axis);
     EXPECT_EQ(Range1f(-8, 8), sm.range);
     EXPECT_EQ(104U,           sm.mesh.points.size());
     EXPECT_EQ(204U,           sm.mesh.GetTriangleCount());

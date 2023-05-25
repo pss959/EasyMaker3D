@@ -52,7 +52,7 @@ TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
         const size_t num_slices = LerpInt(complexity, 1, 20);
 
         if (twist_.axis == Vector3f::AxisY()) {
-            sliced_mesh_ = SliceMesh(mesh, Axis::kY, num_slices);
+            sliced_mesh_ = SliceMesh(mesh, Dim::kY, num_slices);
         }
         else {
             // If the twist axis is not the +Y axis, rotate the mesh so it is,
@@ -60,7 +60,7 @@ TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
             const Rotationf rot =
                 Rotationf::RotateInto(twist_.axis, Vector3f::AxisY());
 
-            sliced_mesh_ = SliceMesh(RotateMesh(mesh, rot), Axis::kY,
+            sliced_mesh_ = SliceMesh(RotateMesh(mesh, rot), Dim::kY,
                                      num_slices);
 
             sliced_mesh_.mesh = RotateMesh(sliced_mesh_.mesh, -rot);

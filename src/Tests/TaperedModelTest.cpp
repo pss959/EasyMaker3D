@@ -93,7 +93,7 @@ TEST_F(TaperedModelTest, DefaultTaper) {
     tapered->SetOperandModel(box);
 
     // Should be using a default taper.
-    EXPECT_EQ(Axis::kY, tapered->GetTaper().axis);
+    EXPECT_EQ(Dim::kY, tapered->GetTaper().axis);
     EXPECT_EQ(Profile::Type::kOpen, tapered->GetTaper().profile.GetType());
     EXPECT_EQ(2U, tapered->GetTaper().profile.GetPointCount());
 
@@ -125,7 +125,7 @@ TEST_F(TaperedModelTest, TaperSlice) {
     taper.profile.InsertPoint(1, Point2f(.5f, .25f));
 
     // Do this for each axis.
-    for (const auto axis: Util::EnumValues<Axis>()) {
+    for (const auto axis: Util::EnumValues<Dim>()) {
         // Update the TaperedModel.
         taper.axis = axis;
         tapered->SetTaper(taper);

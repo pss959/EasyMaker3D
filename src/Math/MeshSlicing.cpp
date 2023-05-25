@@ -25,11 +25,11 @@ class Slicer_ {
     /// Shorthand.
     typedef std::vector<float> FloatVec;
 
-    /// Slices the given TriMesh along the given Axis. The \p fractions vector
-    /// contains the relative distances in the range (0,1) of the planes
-    /// relative to the min/max distances of the mesh along the axis.
-    /// This returns the SlicedMesh.
-    SlicedMesh Slice(const TriMesh &mesh, Axis axis, const FloatVec &fractions);
+    /// Slices the given TriMesh along the given dimension. The \p fractions
+    /// vector contains the relative distances in the range (0,1) of the planes
+    /// relative to the min/max distances of the mesh along the dimension. This
+    /// returns the SlicedMesh.
+    SlicedMesh Slice(const TriMesh &mesh, Dim dim, const FloatVec &fractions);
 
   private:
     typedef std::vector<GIndex> IndexVec_;
@@ -38,7 +38,7 @@ class Slicer_ {
     struct Tri_ {
         /// \name Triangle vertices
         /// The three vertices of the triangle, sorted by increasing coordinate
-        /// value in the slicing axis dimension.
+        /// value in the slicing dimension.
         ///@{
         GIndex    a, b, c;       // Low to high; points A, B, C.
         ///@}
@@ -54,7 +54,7 @@ class Slicer_ {
         IndexVec_ ab, ac, bc;
     };
 
-    /// Slicing axis dimension.
+    /// Slicing dimension.
     int        dim_;
 
     /// Vector of coordinate values in the slicing dimension where the slicing
@@ -83,7 +83,7 @@ class Slicer_ {
     void SliceMesh_(const TriMesh &mesh, const FloatVec &fractions);
 
     /// Returns a sorted vector of coordinates where the slicing planes cross
-    /// the axis dimension, including the min and max at the ends.
+    /// the slicing dimension, including the min and max at the ends.
     FloatVec GetCrossings_(const FloatVec &fractions,
                            const Range1f &range) const;
 
@@ -104,9 +104,9 @@ class Slicer_ {
     IndexVec_ GetEdgeIndices_(const TriMesh &mesh, GIndex i0, GIndex i1);
 
     /// Interpolates between mesh points indexed by \p i0 and \p i1 to find the
-    /// point with the given value in the axis dimension. Adds the point to the
-    /// result mesh and returns the index. This is used to slice an edge at a
-    /// crossing value.
+    /// point with the given value in the slicing dimension. Adds the point to
+    /// the result mesh and returns the index. This is used to slice an edge at
+    /// a crossing value.
     GIndex InterpolatePoints_(GIndex i0, GIndex i1, float val);
 
     /// Processes the mesh triangle represented by \p tri, adding to the
@@ -160,12 +160,12 @@ class Slicer_ {
     }
 };
 
-SlicedMesh Slicer_::Slice(const TriMesh &mesh, Axis axis,
+SlicedMesh Slicer_::Slice(const TriMesh &mesh, Dim dim,
                           const FloatVec &fractions) {
-    dim_  = Util::EnumInt(axis);
+    dim_  = Util::EnumInt(dim);
     ASSERT(dim_ >= 0 && dim_ <= 2);
 
-    sliced_mesh_.axis  = axis;
+    sliced_mesh_.axis  = dim;
 
     // Determine the extent of the mesh in the axis direction.
     sliced_mesh_.range = FindMeshExtents_(mesh, dim_);
@@ -402,16 +402,16 @@ void Slicer_::TraverseTriSides_(bool is_ccw,
 // Public functions.
 // ----------------------------------------------------------------------------
 
-SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis,
+SlicedMesh SliceMesh(const TriMesh &mesh, Dim dim,
                      const std::vector<float> &fractions) {
-    return Slicer_().Slice(mesh, axis, fractions);
+    return Slicer_().Slice(mesh, dim, fractions);
 }
 
-SlicedMesh SliceMesh(const TriMesh &mesh, Axis axis, size_t num_slices) {
+SlicedMesh SliceMesh(const TriMesh &mesh, Dim dim, size_t num_slices) {
     ASSERT(num_slices >= 1U);
     // Construct a vector of fractions.
     std::vector<float> fractions(num_slices - 1, 0.f);
     for (size_t i = 1; i < num_slices; ++i)
         fractions[i - 1] = static_cast<float>(i) / num_slices;
-    return SliceMesh(mesh, axis, fractions);
+    return SliceMesh(mesh, dim, fractions);
 }

@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Base/Memory.h"
-#include "Enums/Axis.h"
+#include "Enums/Dim.h"
 #include "Math/Taper.h"
 #include "Panels/ToolPanel.h"
 
@@ -44,17 +44,10 @@ class TaperToolPanel : public ToolPanel {
     TaperProfilePanePtr profile_pane_;
 
     /// Currently selected Axis.
-    Axis axis_ = Axis::kY;
+    Dim axis_ = Dim::kY;
 
     void Activate_(const std::string &key, bool is_activation);
     void Change_(const std::string &key);
-
-    // Converts an Axis from the application coordinate system (+Y up) to the
-    // user/3D-printing coordinate system (+Z up).
-    static Axis ToUserAxis(Axis axis);
-
-    // Does the opposite of ToUserAxis().
-    static Axis FromUserAxis(Axis axis);
 
     friend class Parser::Registry;
 };

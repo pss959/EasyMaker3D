@@ -107,6 +107,7 @@ TEST_F(BentModelTest, Bend90Max) {
     // Translation should not have changed, but the offset should compensate
     // for the curve.
     EXPECT_EQ(Vector3f(0, 1, 0), bent->GetTranslation());
+
     EXPECT_VECS_CLOSE(Vector3f(1.01344f, 0, -3.37566f),
                       bent->GetObjectCenterOffset());
 

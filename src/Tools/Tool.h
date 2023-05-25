@@ -208,6 +208,9 @@ class Tool : public Grippable {
     /// front center (if over_front is true) of the attached Model.
     Point3f GetPositionAboveModel(float distance, bool over_front) const;
 
+    /// Returns the bounds of the attached Model in stage coordinates.
+    Bounds GetStageBounds() const;
+
     /// This can be used to help compute a reasonable scale for parts of a
     /// Tool's geometry. It returns a size computed as the product of the given
     /// fraction and the average of the sizes in the model_size vector, clamped

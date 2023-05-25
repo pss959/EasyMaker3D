@@ -26,6 +26,14 @@ Range2f ToRange2f(const Range3f &r, int dim) {
                    ToPoint2f(r.GetMaxPoint(), dim));
 }
 
+Dim ToUserDim(Dim dim) {
+    return dim == Dim::kX ? Dim::kX : dim == Dim::kY ? Dim::kZ : Dim::kY;
+}
+
+Dim FromUserDim(Dim dim) {
+    return dim == Dim::kX ? Dim::kX : dim == Dim::kY ? Dim::kZ : Dim::kY;
+}
+
 // ----------------------------------------------------------------------------
 // Transformation functions.
 // ----------------------------------------------------------------------------
@@ -272,8 +280,8 @@ template int GetMaxAbsElementIndex(const VectorBase<2, float> &v);
 template int GetMaxAbsElementIndex(const VectorBase<3, float> &v);
 template int GetMaxAbsElementIndex(const VectorBase<4, float> &v);
 
-Vector3f GetAxis(Axis axis, float scale) {
-    return GetAxis(Util::EnumInt(axis), scale);
+Vector3f GetAxis(Dim dim, float scale) {
+    return GetAxis(Util::EnumInt(dim), scale);
 }
 
 Anglef AbsAngle(const Anglef &angle) {

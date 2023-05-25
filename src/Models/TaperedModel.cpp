@@ -7,7 +7,7 @@
 #include "Util/Tuning.h"
 
 void TaperedModel::AddFields() {
-    AddModelField(axis_.Init("axis", Axis::kY));
+    AddModelField(axis_.Init("axis", Dim::kY));
     AddModelField(profile_points_.Init("profile_points"));
 
     ConvertedModel::AddFields();

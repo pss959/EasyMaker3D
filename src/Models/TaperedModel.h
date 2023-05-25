@@ -36,7 +36,7 @@ class TaperedModel : public ConvertedModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::EnumField<Axis> axis_;
+    Parser::EnumField<Dim>  axis_;
     Parser::VField<Point2f> profile_points_;
     ///@}
 

@@ -12,6 +12,7 @@
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
 #include "Place/DragInfo.h"
+#include "Place/Snapping.h"
 #include "SG/ColorMap.h"
 #include "SG/Exception.h"
 #include "SG/MutableTriMeshShape.h"
@@ -414,7 +415,6 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
     const Bounds       &obj_bounds = GetBounds();
     Point3f            obj_pos     = info.hit.bounds_point;
     const Bounds::Face face        = obj_bounds.GetFaceForPoint(obj_pos);
-    const int          face_dim    = Bounds::GetFaceDim(face);
 
     // Testing for snapping to the bounds is done most easily in object
     // coordinates (with aligned bounds), so convert the precision value from
@@ -424,32 +424,7 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
         object_precision[dim] =
             ion::math::Length(som * GetAxis(dim, info.linear_precision));
 
-    // The position is already on the face in the face dimension.
-    snapped_dims.AddDimension(face_dim);
-
-    // In the other two dimensions, test for position being close to a corner
-    // or center value and snap to it if so.  This function checks if obj_pos
-    // is close to test_pt in the indexed dimension. If so, it updates obj_pos
-    // in that dimension and updates min_dist with the new distance.
-    auto check_val = [&](const Point3f &test_pt, int dim, float &min_dist){
-        ASSERT(dim >= 0 && dim <= 2);
-        const float dist = std::fabs(obj_pos[dim] - test_pt[dim]);
-        if (dist <= object_precision[dim] && dist < min_dist) {
-            obj_pos[dim] = test_pt[dim];
-            min_dist = dist;
-        }
-    };
-
-    for (int dim = 0; dim < 3; ++dim) {
-        if (dim == face_dim)
-            continue;
-        float min_dist = 100000 * object_precision[dim];
-        check_val(obj_bounds.GetMinPoint(), dim, min_dist);
-        check_val(obj_bounds.GetCenter(),   dim, min_dist);
-        check_val(obj_bounds.GetMaxPoint(), dim, min_dist);
-        if (min_dist < object_precision[dim])
-            snapped_dims.AddDimension(dim);
-    }
+    snapped_dims = SnapToBounds(obj_bounds, obj_pos, object_precision);
 
     // Convert the point and normal into stage coordinates.
     position  = osm * obj_pos;

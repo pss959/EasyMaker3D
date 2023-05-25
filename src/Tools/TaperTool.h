@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Commands/ChangeTaperCommand.h"
-#include "Enums/Axis.h"
 #include "Math/Profile.h"
 #include "Tools/PanelTool.h"
 

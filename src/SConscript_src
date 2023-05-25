@@ -368,6 +368,7 @@ lib_sources = list(chain(
     PlaceInDir_('Place', [
         'EdgeTarget',
         'PointTarget',
+        'Snapping',
     ]),
     PlaceInDir_('SG', [
         'Box',

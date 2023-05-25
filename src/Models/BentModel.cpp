@@ -58,15 +58,15 @@ TriMesh BentModel::ConvertMesh(const TriMesh &mesh) {
         const TriMesh scaled_mesh =
             ScaleMesh(mesh, GetOperandModel()->GetScale());
 
-        // Figure out which axis to use for slicing and slice the mesh.
-        const Axis slice_axis = GetSliceAxis_(scaled_mesh, bend_.axis);
-        sliced_mesh_ = SliceMesh(scaled_mesh, slice_axis, num_slices);
+        // Figure out which dimension to use for slicing and slice the mesh.
+        const Dim slice_dim = GetSliceDim_(scaled_mesh, bend_.axis);
+        sliced_mesh_ = SliceMesh(scaled_mesh, slice_dim, num_slices);
     }
 
     return BendMesh(sliced_mesh_, bend_);
 }
 
-Axis BentModel::GetSliceAxis_(const TriMesh &mesh, const Vector3f &bend_axis) {
+Dim BentModel::GetSliceDim_(const TriMesh &mesh, const Vector3f &bend_axis) {
     // Use the longer of the two principal axes that are more perpendicular to
     // the bend axis.
     const int bend_axis_dim = GetMaxAbsElementIndex(bend_axis);
@@ -76,5 +76,5 @@ Axis BentModel::GetSliceAxis_(const TriMesh &mesh, const Vector3f &bend_axis) {
     const auto scaled_size = ComputeMeshBounds(mesh).GetSize();
     const int slice_dim = scaled_size[dim0] >= scaled_size[dim1] ? dim0 : dim1;
 
-    return static_cast<Axis>(slice_dim);
+    return static_cast<Dim>(slice_dim);
 }

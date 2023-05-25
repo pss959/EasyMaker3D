@@ -2,6 +2,7 @@
 
 #include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
+#include "Enums/Dim.h"
 #include "Math/Taper.h"
 
 namespace Parser { class Registry; }
@@ -31,7 +32,7 @@ class ChangeTaperCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Axis> axis_;
+    Parser::EnumField<Dim>  axis_;
     Parser::VField<Point2f> profile_points_;
     ///@}
 
