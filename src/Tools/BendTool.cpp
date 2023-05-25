@@ -263,7 +263,7 @@ bool BendTool::SnapTranslation_() {
         const Vector3f tolerance = TK::kSnapPointTolerance * Vector3f(1, 1, 1);
         const Dimensionality snapped_dims =
             SnapToBounds(stage_bounds, stage_pos, tolerance);
-        if (snapped_dims.GetCount() > 1) {
+        if (snapped_dims.GetCount()) {
             bend_.center = stage_cc.RootToObject(stage_pos);
             is_snapped = true;
         }

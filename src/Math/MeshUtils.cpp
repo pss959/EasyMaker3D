@@ -144,15 +144,21 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     // Axis along which the mesh is sliced.
     const Vector3f slice_axis = GetAxis(sliced_mesh.axis);
 
-    // If the bend offset is 0, don't let the angle exceed 360 degrees in
-    // either direction.
-    const Anglef angle = bend.offset != 0 ? bend.angle :
-        Anglef::FromDegrees(Clamp(bend.angle.Degrees(), -360.f, 360.f));
-
     // Get the plane perpendicular to the slicing axis that passes through the
     // bend center. All mesh points on this plane stay put; all other mesh
     // points rotate proportional to their distance from this plane.
     const Plane plane(bend.center, slice_axis);
+
+    // If the plane is closer to the maximim end of the slice axis, have to
+    // negate the rotation angle for consistency.
+    const bool negate_angle = plane.distance > 0;
+
+    // If the bend offset is 0, don't let the angle exceed 360 degrees in
+    // either direction.
+    Anglef angle = bend.offset != 0 ? bend.angle :
+        Anglef::FromDegrees(Clamp(bend.angle.Degrees(), -360.f, 360.f));
+    if (negate_angle)
+        angle = -angle;
 
     // Vector perpendicular to the slice axis and bend axis. This is used
     // to find the center of the bend circle.
@@ -188,8 +194,7 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
         const Vector3f rot_vec = bend.center - (bend.center + rad * perp_vec);
 
         // Rotate about the bend axis through the center point.
-        const auto bp = center + rot * rot_vec + axis_offset;
-        return bp;
+        return center + rot * rot_vec + axis_offset;
     };
 
     TriMesh result_mesh = ModifyVertices_(sliced_mesh.mesh, bend_pt);
