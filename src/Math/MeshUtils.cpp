@@ -193,6 +193,7 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
 
     // If the plane is closer to the maximim end of the slice axis, have to
     // negate the rotation angle for consistency.
+    // XXXX Should also look at where center is relative to bounds.
     const bool negate_angle = plane.distance > 0;
 
     // If the bend offset is 0, don't let the angle exceed 360 degrees in

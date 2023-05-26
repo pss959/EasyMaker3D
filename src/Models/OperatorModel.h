@@ -15,17 +15,6 @@ DECL_SHARED_PTR(OperatorModel);
 ///
 /// \ingroup Models
 class OperatorModel : public ParentModel {
-  public:
-    /// Returns the offset vector used to center the OperatorModel's mesh after
-    /// making sure the mesh and offset are up to date. The offset vector
-    /// translates the mesh center to its original position in object
-    /// coordinates of the OperatorModel.
-    const Vector3f & GetObjectCenterOffset() const;
-
-    /// This is the same as GetCenterOffset() except that the returned vector
-    /// is first transformed by the OperatorModel's current transform.
-    Vector3f GetLocalCenterOffset() const;
-
   protected:
     /// Redefines this to also mark the mesh as stale when a child has been
     /// transformed.
@@ -38,8 +27,4 @@ class OperatorModel : public ParentModel {
     /// Derived classes must define this to create the mesh from the operand
     /// Model(s).
     virtual TriMesh BuildMeshFromOperands() = 0;
-
-  private:
-    /// Offset added to the mesh in object coordinates to center it.
-    Vector3f center_offset_{0, 0, 0};
 };

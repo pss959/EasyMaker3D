@@ -204,6 +204,19 @@ class Model : public ClickableWidget {
     /// to be rebuilt.
     bool IsMeshStale() { return is_mesh_stale_; }
 
+    /// Some derived Model classes may have meshes that for some reason have to
+    /// be recentered to be at the origin. For those classes, this function
+    /// returns the offset vector used to center the Model's mesh (after making
+    /// sure the mesh and offset are both up to date). The offset vector
+    /// translates the mesh center to its original position in object
+    /// coordinates of the Model. This vector is typically the zero vector for
+    /// most Model types.
+    const Vector3f & GetObjectCenterOffset() const { return center_offset_; }
+
+    /// This is the same as GetObjectCenterOffset() except that the returned
+    /// vector is first transformed by the Model's current transform.
+    virtual Vector3f GetLocalCenterOffset() const;
+
     // ------------------------------------------------------------------------
     // Update.
     // ------------------------------------------------------------------------
@@ -269,6 +282,11 @@ class Model : public ClickableWidget {
     /// the first time or after something calls MarkMeshAsStale().
     virtual TriMesh BuildMesh() = 0;
 
+    /// Sets the offset vector (in object coordinates) that was used to center
+    /// the mesh. This can be used by derived classes that have to recenter
+    /// their meshes for any reason.
+    void SetCenterOffset(const Vector3f &offset) { center_offset_ = offset; }
+
     /// Redefines this to copy all relevant Model data, including the shape.
     virtual void CopyContentsFrom(const Parser::Object &from,
                                   bool is_deep) override;
@@ -309,6 +327,11 @@ class Model : public ClickableWidget {
     /// If the mesh is valid, this is empty. Otherwise, it contains the reason
     /// it is not considered valid.
     std::string reason_for_invalid_mesh_ = "Never built";
+
+    /// Offset added to the mesh in object coordinates to center it. Typically
+    /// the zero vector except for some derived classes that call
+    /// SetCenterOffset().
+    Vector3f center_offset_{0, 0, 0};
 
     /// Current color of the Model. If the mesh is invalid, the invalid color
     /// is shown temporarily, but this stores the real color.

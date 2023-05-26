@@ -265,6 +265,10 @@ static void PrintModelTree_(const Model &model, bool is_full) {
     std::cout << Indent_(level + 1) << "mesh bounds: "
               << ComputeMeshBounds(model.GetCurrentMesh()) << "\n";
     PrintTransformFields_(model, level);
+    // Also print the center offset if any.
+    const Vector3f &offset = model.GetObjectCenterOffset();
+    if (offset != Vector3f::Zero())
+        std::cout << Indent_(level + 1) << "offset:      " << offset << "\n";
 
     // Write out all Model fields (except those that refer to other Models).
     if (is_full) {

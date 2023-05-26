@@ -62,9 +62,9 @@ void BendTool::Attach() {
     UpdateGeometry_();
 
     // Match the Bend in the primary BentModel without notifying.
-    const auto tm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
-    ASSERT(tm);
-    bend_ = tm->GetBend();
+    const auto bm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
+    ASSERT(bm);
+    bend_ = bm->GetBend();
     MatchCurrentBend_();
 }
 
@@ -104,6 +104,16 @@ void BendTool::UpdateGeometry_() {
     // Rotate to match the Model. The BendTool always aligns with local axes.
     const Vector3f model_size = MatchModelAndGetSize(false);
     const float radius = kRadiusScale * ion::math::Length(model_size);
+
+    const auto bm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
+    std::cerr << "XXXX "
+              << " BM TR=" << bm->GetTranslation()
+              << " BM OO=" << bm->GetObjectCenterOffset()
+              << " BM LO=" << bm->GetLocalCenterOffset()
+              << " BT TR=" << GetTranslation()
+              << "\n";
+    // XXXX
+    SetTranslation(GetTranslation() - bm->GetLocalCenterOffset());
 
     // Translate the axis rotator handles.
     const Vector3f y_trans(0, kAxisScale * radius, 0);
@@ -157,9 +167,9 @@ void BendTool::Detach() {
 void BendTool::Activate_(Widget &widget, bool is_activation) {
     const auto &context = GetContext();
     if (is_activation) {
-        const auto tm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
-        ASSERT(tm);
-        start_bend_ = bend_ = tm->GetBend();
+        const auto bm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
+        ASSERT(bm);
+        start_bend_ = bend_ = bm->GetBend();
         if (&widget == bender_.get()) {
             feedback_ = context.feedback_manager->Activate<AngularFeedback>();
             UpdateBendFeedback_();

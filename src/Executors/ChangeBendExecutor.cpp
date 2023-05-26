@@ -13,8 +13,8 @@ void ChangeBendExecutor::Execute(Command &command, Command::Op operation) {
         for (auto &pm: data.per_model) {
             BentModel &bm = GetTypedModel<BentModel>(pm.path_to_model);
             bm.SetBend(cbc.GetBend());
-            pm.new_translation = pm.base_translation +
-                ComputeLocalOffset(bm, bm.GetObjectCenterOffset());
+            pm.new_translation =
+                pm.base_translation + bm.GetLocalCenterOffset();
             bm.SetTranslation(pm.new_translation);
         }
     }
@@ -53,8 +53,8 @@ ChangeBendExecutor::ExecData_ & ChangeBendExecutor::GetExecData_(
             pm.new_translation = pm.old_translation;
 
             // Compute the base translation, which has no offset.
-            pm.base_translation = pm.old_translation -
-                ComputeLocalOffset(bm, bm.GetObjectCenterOffset());
+            pm.base_translation =
+                pm.old_translation - bm.GetLocalCenterOffset();
         }
         command.SetExecData(data);
     }

@@ -4,16 +4,6 @@
 
 #include "Math/MeshUtils.h"
 
-const Vector3f & OperatorModel::GetObjectCenterOffset() const {
-    // Make sure the mesh and offset are up to date.
-    GetMesh();
-    return center_offset_;
-}
-
-Vector3f OperatorModel::GetLocalCenterOffset() const {
-    return GetModelMatrix() * GetObjectCenterOffset();
-}
-
 bool OperatorModel::ProcessChange(SG::Change change, const Object &obj) {
     if (! ParentModel::ProcessChange(change, obj))
         return false;
@@ -30,7 +20,7 @@ TriMesh OperatorModel::BuildMesh() {
     TriMesh mesh = BuildMeshFromOperands();
 
     // Save the center as the offset.
-    center_offset_ = Vector3f(ComputeMeshBounds(mesh).GetCenter());
+    SetCenterOffset(Vector3f(ComputeMeshBounds(mesh).GetCenter()));
 
     // Recenter the mesh.
     return CenterMesh(mesh);

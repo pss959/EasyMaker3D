@@ -57,12 +57,6 @@ void RevSurfModel::SetSweepAngle(const Anglef &angle) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-const Vector3f & RevSurfModel::GetCenterOffset() const {
-    // Make sure the mesh and offset are up to date.
-    GetMesh();
-    return center_offset_;
-}
-
 Profile RevSurfModel::CreateProfile(const Profile::PointVec &points) {
     return Profile::CreateFixedProfile(Point2f(0, 1), Point2f(0, 0), 3, points);
 }
@@ -79,7 +73,7 @@ TriMesh RevSurfModel::BuildMesh() {
     // If not a full sweep, center the mesh and save the offset.
     const float angle = GetSweepAngle().Degrees();
     if (angle < 360) {
-        center_offset_ = Vector3f(ComputeMeshBounds(mesh).GetCenter());
+        SetCenterOffset(Vector3f(ComputeMeshBounds(mesh).GetCenter()));
         return CenterMesh(mesh);
     }
 

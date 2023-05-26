@@ -239,6 +239,10 @@ bool Model::IsMeshValid(std::string &reason) const {
     return is_mesh_valid_;
 }
 
+Vector3f Model::GetLocalCenterOffset() const {
+    return GetModelMatrix() * GetObjectCenterOffset();
+}
+
 void Model::PostSetUpIon() {
     ClickableWidget::PostSetUpIon();
     UpdateColor_();

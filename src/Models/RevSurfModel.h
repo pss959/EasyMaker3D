@@ -31,11 +31,6 @@ class RevSurfModel : public PrimitiveModel {
     /// RevSurfModel responds to complexity.
     virtual bool CanSetComplexity() const override { return true; }
 
-    /// Returns the offset vector used to center the RevSurfModel's mesh if it
-    /// is not a full 360-degree sweep. This will be the zero vector for a full
-    /// sweep.
-    const Vector3f & GetCenterOffset() const;
-
     /// Convenience that creates a valid RevSurfModel Profile from the given
     /// vector of movable profile points.
     static Profile CreateProfile(const Profile::PointVec &points);
@@ -60,10 +55,6 @@ class RevSurfModel : public PrimitiveModel {
 
     /// Stores the current Profile.
     Profile profile_{ CreateDefaultProfile() };
-
-    /// Offset added to the mesh in object coordinates to center it, if not a
-    /// full 360-degree sweep.
-    Vector3f center_offset_{0, 0, 0};
 
     friend class Parser::Registry;
 };

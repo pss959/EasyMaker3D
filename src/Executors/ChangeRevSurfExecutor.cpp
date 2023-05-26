@@ -15,8 +15,8 @@ void ChangeRevSurfExecutor::Execute(Command &command, Command::Op operation) {
             RevSurfModel &rsm = GetTypedModel<RevSurfModel>(pm.path_to_model);
             rsm.SetProfile(new_profile);
             rsm.SetSweepAngle(new_sweep_angle);
-            pm.new_translation = pm.base_translation +
-                ComputeLocalOffset(rsm, rsm.GetCenterOffset());
+            pm.new_translation =
+                pm.base_translation + rsm.GetLocalCenterOffset();
             rsm.SetTranslation(pm.new_translation);
         }
     }
@@ -54,8 +54,8 @@ ChangeRevSurfExecutor::ExecData_ & ChangeRevSurfExecutor::GetExecData_(
             pm.new_translation = pm.old_translation;
 
             // Compute the base translation, which has no offset.
-            pm.base_translation = pm.old_translation -
-                ComputeLocalOffset(rsm, rsm.GetCenterOffset());
+            pm.base_translation =
+                pm.old_translation - rsm.GetLocalCenterOffset();
         }
         command.SetExecData(data);
     }

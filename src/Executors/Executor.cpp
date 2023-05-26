@@ -61,8 +61,3 @@ void Executor::SetRandomModelColor(Model &model) {
     model.GetMesh();
     model.SetColor(Model::GetNextColor());
 }
-
-Vector3f Executor::ComputeLocalOffset(const Model &model,
-                                      const Vector3f &obj_offset) {
-    return model.GetModelMatrix() * obj_offset;
-}
