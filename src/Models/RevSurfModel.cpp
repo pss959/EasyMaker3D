@@ -76,6 +76,8 @@ TriMesh RevSurfModel::BuildMesh() {
         SetCenterOffset(Vector3f(ComputeMeshBounds(mesh).GetCenter()));
         return CenterMesh(mesh);
     }
-
-    return mesh;
+    else {
+        SetCenterOffset(Vector3f::Zero());
+        return mesh;
+    }
 }

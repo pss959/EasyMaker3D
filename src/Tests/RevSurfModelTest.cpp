@@ -15,7 +15,7 @@ TEST_F(RevSurfModelTest, DefaultProfile) {
     const TriMesh mesh = rsm->GetMesh();
     EXPECT_EQ(40U, mesh.points.size());
     EXPECT_EQ(76U, mesh.GetTriangleCount());
-    EXPECT_EQ(Vector3f::Zero(), rsm->GetCenterOffset());
+    EXPECT_EQ(Vector3f::Zero(), rsm->GetObjectCenterOffset());
 
     const auto bounds = rsm->GetBounds();
     EXPECT_EQ(Vector3f(1, 1, 1), bounds.GetSize());
@@ -39,7 +39,7 @@ TEST_F(RevSurfModelTest, Profile4Points) {
     const TriMesh mesh = rsm->GetMesh();
     EXPECT_EQ(78U,  mesh.points.size());
     EXPECT_EQ(152U, mesh.GetTriangleCount());
-    EXPECT_EQ(Vector3f::Zero(), rsm->GetCenterOffset());
+    EXPECT_EQ(Vector3f::Zero(), rsm->GetObjectCenterOffset());
 
     const auto bounds = rsm->GetBounds();
     EXPECT_EQ(Vector3f(1, 1, 1), bounds.GetSize());
@@ -61,7 +61,7 @@ TEST_F(RevSurfModelTest, HalfSweep) {
     EXPECT_EQ(40U, mesh.GetTriangleCount());
     // Offset to compensate for partial sweep.
     EXPECT_VECS_CLOSE(Vector3f(0, 0, .5f * kExpectedZSize),
-                      rsm->GetCenterOffset());
+                      rsm->GetObjectCenterOffset());
 
     const auto bounds = rsm->GetBounds();
     EXPECT_VECS_CLOSE(Vector3f(1, 1, kExpectedZSize), bounds.GetSize());

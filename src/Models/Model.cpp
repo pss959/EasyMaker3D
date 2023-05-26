@@ -240,6 +240,8 @@ bool Model::IsMeshValid(std::string &reason) const {
 }
 
 Vector3f Model::GetLocalCenterOffset() const {
+    // Make sure the mesh and offset are up to date.
+    GetMesh();
     return GetModelMatrix() * GetObjectCenterOffset();
 }
 

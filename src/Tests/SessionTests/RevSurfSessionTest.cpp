@@ -28,12 +28,16 @@ TEST_F(SessionTestBase, RevSurfSessionTest1) {
         const auto rsm = Util::CastToDerived<RevSurfModel>(rm.GetChildModel(0));
         ASSERT_TRUE(rsm);
 
+        EXPECT_EQ(360.f, rsm->GetSweepAngle().Degrees());
+
         const Rotationf xrot = GetXRot_();
 
         const float s = TK::kRevSurfHeight;
         EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), rsm->GetScale());
         EXPECT_ROTS_CLOSE(xrot,                  rsm->GetRotation());
         EXPECT_VECS_CLOSE(Vector3f(5,  4, 0),    rsm->GetTranslation());
+        EXPECT_VECS_CLOSE(Vector3f::Zero(),      rsm->GetObjectCenterOffset());
+        EXPECT_VECS_CLOSE(Vector3f::Zero(),      rsm->GetLocalCenterOffset());
 
         // (Object) Bounds.
         const Bounds b = rsm->GetBounds();
@@ -61,6 +65,8 @@ TEST_F(SessionTestBase, RevSurfSessionTest2) {
         const auto rsm = Util::CastToDerived<RevSurfModel>(rm.GetChildModel(0));
         ASSERT_TRUE(rsm);
 
+        EXPECT_EQ(120.f, rsm->GetSweepAngle().Degrees());
+
         const Rotationf xrot = GetXRot_();
 
         // Smaller sweep angle means the RevSurfModel is 3/4 size in X and 1/2
@@ -71,6 +77,9 @@ TEST_F(SessionTestBase, RevSurfSessionTest2) {
         EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), rsm->GetScale());
         EXPECT_ROTS_CLOSE(xrot,                  rsm->GetRotation());
         EXPECT_VECS_CLOSE(Vector3f(5.5f, 3, 0),  rsm->GetTranslation());
+        EXPECT_VECS_CLOSE(Vector3f(.125f, 0, .25f),
+                          rsm->GetObjectCenterOffset());
+        EXPECT_VECS_CLOSE(Vector3f(.5f, -1, 0),  rsm->GetLocalCenterOffset());
 
         // (Object) Bounds are smaller due to smaller sweep angle.
         const Bounds b = rsm->GetBounds();
