@@ -9,6 +9,7 @@
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
+#include "Models/ConvertedModel.h"
 #include "Models/Model.h"
 #include "Models/RootModel.h"
 #include "Place/PrecisionStore.h"
@@ -16,6 +17,7 @@
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context);
@@ -119,6 +121,28 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     // object bounds.
     return align ? TransformBounds(obj_bounds, osm).GetSize() :
         ion::math::GetScaleVector(osm) * obj_bounds.GetSize();
+}
+
+Vector3f Tool::MatchOperandModelAndGetSize(bool use_operand_model_size) {
+    ConvertedModelPtr cm =
+        Util::CastToDerived<ConvertedModel>(GetModelAttachedTo());
+    ASSERT(cm);
+
+    // Always rotate to align with the ConvertedModel.
+    SetRotation(cm->GetRotation());
+
+    // Translate the Tool so that it is centered on the operand mesh.
+    const Bounds &operand_bounds = cm->GetOperandModel()->GetBounds();
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+    SetTranslation(osm * operand_bounds.GetCenter() -
+                   cm->GetLocalCenterOffset());
+
+    // Return the size of the ConvertedModel's or operand Model's mesh in stage
+    // coordinates.
+    const Vector3f bounds_size = use_operand_model_size ?
+        operand_bounds.GetSize() : cm->GetBounds().GetSize();
+
+    return ion::math::GetScaleVector(osm) * bounds_size;
 }
 
 bool Tool::IsAxisAligned() const {

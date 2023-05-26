@@ -98,8 +98,7 @@ void TwistTool::UpdateGeometry_() {
     static const float kRadiusScale = .75f;
     static const float kAxisScale   = 1.2f;
 
-    // Rotate to match the Model. The TwistTool always aligns with local axes.
-    const Vector3f model_size = MatchModelAndGetSize(false);
+    const Vector3f model_size = MatchOperandModelAndGetSize(false);
     const float radius = kRadiusScale * ion::math::Length(model_size);
 
     // Translate the axis rotator handles.

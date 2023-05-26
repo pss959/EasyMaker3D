@@ -101,19 +101,11 @@ void BendTool::UpdateGeometry_() {
     static const float kRadiusScale = .75f;
     static const float kAxisScale   = 1.2f;
 
-    // Rotate to match the Model. The BendTool always aligns with local axes.
-    const Vector3f model_size = MatchModelAndGetSize(false);
+    const Vector3f model_size = MatchOperandModelAndGetSize(false);
     const float radius = kRadiusScale * ion::math::Length(model_size);
 
     const auto bm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
-    std::cerr << "XXXX "
-              << " BM TR=" << bm->GetTranslation()
-              << " BM OO=" << bm->GetObjectCenterOffset()
-              << " BM LO=" << bm->GetLocalCenterOffset()
-              << " BT TR=" << GetTranslation()
-              << "\n";
-    // XXXX
-    SetTranslation(GetTranslation() - bm->GetLocalCenterOffset());
+    // XXXX SetTranslation(GetTranslation() - bm->GetLocalCenterOffset());
 
     // Translate the axis rotator handles.
     const Vector3f y_trans(0, kAxisScale * radius, 0);

@@ -9,10 +9,21 @@ void ChangeTwistExecutor::Execute(Command &command, Command::Op operation) {
 
     ChangeTwistCommand &ctc = GetTypedCommand<ChangeTwistCommand>(command);
 
-    for (auto &pm: data.per_model) {
-        TwistedModel &tm = GetTypedModel<TwistedModel>(pm.path_to_model);
-        tm.SetTwist(operation == Command::Op::kDo ?
-                    ctc.GetTwist() : pm.old_twist);
+    if (operation == Command::Op::kDo) {
+        for (auto &pm: data.per_model) {
+            TwistedModel &tm = GetTypedModel<TwistedModel>(pm.path_to_model);
+            tm.SetTwist(ctc.GetTwist());
+            pm.new_translation =
+                pm.base_translation + tm.GetLocalCenterOffset();
+            tm.SetTranslation(pm.new_translation);
+        }
+    }
+    else {  // Undo.
+        for (auto &pm: data.per_model) {
+            TwistedModel &tm = GetTypedModel<TwistedModel>(pm.path_to_model);
+            tm.SetTwist(pm.old_twist);
+            tm.SetTranslation(pm.old_translation);
+        }
     }
 
     // Reselect if undo or if command is finished being done.
@@ -37,7 +48,13 @@ ChangeTwistExecutor::ExecData_ & ChangeTwistExecutor::GetExecData_(
             const SelPath path = FindPathToModel(model_names[i]);
             pm.path_to_model = path;
             TwistedModel &tm = GetTypedModel<TwistedModel>(pm.path_to_model);
-            pm.old_twist = tm.GetTwist();
+            pm.old_twist       = tm.GetTwist();
+            pm.old_translation = tm.GetTranslation();
+            pm.new_translation = pm.old_translation;
+
+            // Compute the base translation, which has no offset.
+            pm.base_translation =
+                pm.old_translation - tm.GetLocalCenterOffset();
         }
         command.SetExecData(data);
     }

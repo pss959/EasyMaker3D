@@ -70,17 +70,7 @@ void MirrorTool::Attach() {
     mm_ = Util::CastToDerived<MirroredModel>(GetModelAttachedTo());
     ASSERT(mm_);
 
-    // Do not use MatchModelAndGetSize() here because the centering is
-    // different.
-
-    // Rotate the MirrorTool to align with the MirroredModel even if
-    // is_axis_aligned is true.
-    SetRotation(mm_->GetRotation());
-
-    // Translate the MirrorTool so that it is centered on the unclipped mesh.
-    const Bounds &obj_bounds = mm_->GetOperandModel()->GetBounds();
-    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    SetTranslation(osm * obj_bounds.GetCenter() - mm_->GetLocalCenterOffset());
+    MatchOperandModelAndGetSize(false);
 
     plane_widget_->SetSize(5);
 

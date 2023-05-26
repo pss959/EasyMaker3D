@@ -9,6 +9,7 @@ void ChangeBendExecutor::Execute(Command &command, Command::Op operation) {
 
     ChangeBendCommand &cbc = GetTypedCommand<ChangeBendCommand>(command);
 
+    // XXXX Move some of this into base class for converted models?
     if (operation == Command::Op::kDo) {
         for (auto &pm: data.per_model) {
             BentModel &bm = GetTypedModel<BentModel>(pm.path_to_model);
@@ -48,7 +49,7 @@ ChangeBendExecutor::ExecData_ & ChangeBendExecutor::GetExecData_(
             const SelPath path = FindPathToModel(model_names[i]);
             pm.path_to_model = path;
             BentModel &bm = GetTypedModel<BentModel>(pm.path_to_model);
-            pm.old_bend = bm.GetBend();
+            pm.old_bend        = bm.GetBend();
             pm.old_translation = bm.GetTranslation();
             pm.new_translation = pm.old_translation;
 

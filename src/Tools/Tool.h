@@ -191,6 +191,14 @@ class Tool : public Grippable {
     /// in stage coordinates.
     Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
 
+    /// This is similar to MatchModelAndGetSize() but can be used when the
+    /// Model is a ConvertedModel and the Tool needs to match the operand
+    /// Model's mesh instead. This also assumes that the Tool should always
+    /// align with the ConvertedModel's rotation. This returns the size of the
+    /// bounds of the ConvertedModel (if \p use_operand_model_size is false) or
+    /// of the operand Model (if true) in stage coordinates.
+    Vector3f MatchOperandModelAndGetSize(bool use_operand_model_size);
+
     /// Returns true if the axis-aligned flag is on.
     bool IsAxisAligned() const;
 

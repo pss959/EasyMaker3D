@@ -70,21 +70,9 @@ void ClipTool::Attach() {
     cm_ = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm_);
 
-    // Do not use MatchModelAndGetSize() here because the unclipped mesh has to
-    // be used to get the correct size.
-
-    // Rotate the ClipTool to align with the ClippedModel even if
-    // is_axis_aligned is true.
-    SetRotation(cm_->GetRotation());
-
-    // Translate the ClipTool so that it is centered on the unclipped mesh.
-    const Bounds &obj_bounds = cm_->GetOperandModel()->GetBounds();
-    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    SetTranslation(osm * obj_bounds.GetCenter() - cm_->GetLocalCenterOffset());
-
-    // Update the widget size based on the size of the unclipped mesh.
-    const auto model_size =
-        ion::math::GetScaleVector(osm) * obj_bounds.GetSize();
+    // Update the widget size based on the size of the operand Model (unclipped
+    // mesh).
+    const auto model_size = MatchOperandModelAndGetSize(true);
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);
 
