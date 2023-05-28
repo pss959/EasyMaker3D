@@ -35,4 +35,4 @@ for token in "${!tokens[@]}"; do
 done
 
 # Invoke the python script.
-python ./dev/replace_strings.py $args
+python3 ./dev/replace_strings.py $args

@@ -348,6 +348,30 @@ for (subdir, names, headers, sources, assets) in ion_files:
         target = f'ion/{subdir}/{asset}'.replace('.iad', '.cc')
         ion_sources.append(ion_env.ZipAsset(source=source, target=target))
 
+# ---------------------------------
+# Building doxygen documentation.
+
+ion_doc_env = ion_env.Clone(
+    OUTPUT_DIR = Dir(f'#/build/IonDoc').abspath,
+)
+
+# Set up environment variables for doxyfile to access.
+ion_doc_env.Append(
+    ENV = { 'OUTPUT_DIRECTORY' : ion_doc_env.subst('$OUTPUT_DIR') }
+)
+
+doxygen = '/local/inst/doxygen-1.9.6/bin/doxygen'  # Latest version.
+
+ion_doc = ion_doc_env.Command('$OUTPUT_DIR/html/index.html', ion_sources,
+                              ['echo Building Ion doxygen doc',
+                               f'{doxygen} ./dev/doxyfile'],
+                              chdir='./ionsrc/ion')
+
+ion_doc_env.Alias('IonDoc', ion_doc)
+
+# ---------------------------------
+# Building library.
+
 objc_objects = [objc_env.SharedObject(src) for src in objc_sources]
 
 lib = ion_env.SharedLibrary(ion_env['ION_LIB_NAME'],
