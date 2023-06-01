@@ -186,6 +186,10 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     // Axis along which the mesh is sliced.
     const Vector3f slice_axis = GetAxis(sliced_mesh.axis);
 
+    // Vector perpendicular to the slice axis and bend axis. This is used
+    // to find the center of the bend circle.
+    const Vector3f perp_vec = ion::math::Cross(bend.axis, slice_axis);
+
     // Get the plane perpendicular to the slicing axis that passes through the
     // bend center. All mesh points on this plane stay put; all other mesh
     // points rotate proportional to their distance from this plane.
@@ -193,8 +197,7 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
 
     // If the plane is closer to the maximim end of the slice axis, have to
     // negate the rotation angle for consistency.
-    // XXXX Should also look at where center is relative to bounds.
-    const bool negate_angle = plane.distance > 0;
+    const bool negate_angle = SignedDistance(bend.center, perp_vec) > 0;
 
     // If the bend offset is 0, don't let the angle exceed 360 degrees in
     // either direction.
@@ -203,15 +206,17 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     if (negate_angle)
         angle = -angle;
 
-    // Vector perpendicular to the slice axis and bend axis. This is used
-    // to find the center of the bend circle.
-    const Vector3f perp_vec = ion::math::Cross(bend.axis, slice_axis);
-
     // Radius of bend circle.
     const float radius = sliced_mesh.range.GetSize() / angle.Radians();
 
     // Center point around which all mesh points are rotated.
     const Point3f center = bend.center + radius * perp_vec;
+
+    // The mesh turns inside out if the distance of the bend center to the
+    // slicing axis is more than the radius. Detect this case and fix it later.
+    const float center_dist = SignedDistance(bend.center, perp_vec);
+    const bool inside_out =
+        radius > 0 ? (center_dist + radius < 0) : (center_dist + radius > 0);
 
     const auto bend_pt = [&](const Point3f &p){
         // The relative distance of the point from the center in the direction
@@ -248,6 +253,14 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     // are any.
     if (AreClose(std::abs(angle.Degrees()), 360))
         RemoveReversedTriangles(result_mesh);
+
+    // Reverse the orientation of all triangles if inside out.
+    if (inside_out) {
+        const size_t tri_count = result_mesh.GetTriangleCount();
+        for (size_t i = 0; i < tri_count; ++i)
+            std::swap(result_mesh.indices[3 * i + 1],
+                      result_mesh.indices[3 * i + 2]);
+    }
 
     return result_mesh;
 }

@@ -1,4 +1,5 @@
 ﻿#include "Math/Bend.h"
+#include "Math/Linear.h"
 #include "Math/MeshValidation.h"
 #include "Models/BoxModel.h"
 #include "Models/BentModel.h"
@@ -7,8 +8,6 @@
 #include "Tests/SceneTestBase.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
-
-#include "Debug/Dump3dv.h" // XXXX
 
 class BentModelTest : public SceneTestBase {
 };
@@ -109,7 +108,7 @@ TEST_F(BentModelTest, Bend90Max) {
     // for the curve.
     EXPECT_EQ(Vector3f(0, 1, 0), bent->GetTranslation());
 
-    EXPECT_VECS_CLOSE(Vector3f(1.01344f, 0, 3.37566f),
+    EXPECT_VECS_CLOSE(Vector3f(1.01344f, 0, -3.37567f),
                       bent->GetObjectCenterOffset());
 }
 
@@ -203,5 +202,53 @@ TEST_F(BentModelTest, BendCyl360) {
         const Bounds bounds = bent->GetScaledBounds();
         EXPECT_EQ(Point3f::Zero(), bounds.GetCenter());
         EXPECT_VECS_CLOSE(Vector3f(4, 8.97738f, 10.3662f), bounds.GetSize());
+    }
+}
+
+TEST_F(BentModelTest, Bend180OffCenter) {
+    // This was resulting in an inside-out mesh.
+
+    // 10x1x1 box at (0,1,0).
+    ModelPtr box = Model::CreateModel<BoxModel>();
+    box->SetScale(Vector3f(10, 1, 1));
+    box->SetTranslation(Vector3f(0, 1, 0));
+
+    // Bend 180 degrees counterclockwise around +Y with the center at Z=10.
+    Bend bend;
+    bend.axis  = Vector3f::AxisY();
+    bend.angle = Anglef::FromDegrees(180);
+    bend.center.Set(0, 0, 10);
+
+    BentModelPtr bent = Model::CreateModel<BentModel>();
+    bent->SetBend(bend);
+    bent->SetOperandModel(box);
+
+    EXPECT_EQ(bend, bent->GetBend());
+
+    {
+        const auto &mesh = bent->GetMesh();
+        EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
+
+        // Make sure the mesh is not inside-out.
+        const auto &p0 = mesh.points[mesh.indices[0]];
+        const auto &p1 = mesh.points[mesh.indices[1]];
+        const auto &p2 = mesh.points[mesh.indices[2]];
+        EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), ComputeNormal(p0, p1, p2));
+    }
+
+    // Bend 180 degrees clockwise.
+    bend.angle = Anglef::FromDegrees(-180);
+    bent->SetBend(bend);
+    EXPECT_EQ(bend, bent->GetBend());
+
+    {
+        const auto &mesh = bent->GetMesh();
+        EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
+
+        // Make sure the mesh is not inside-out.
+        const auto &p0 = mesh.points[mesh.indices[0]];
+        const auto &p1 = mesh.points[mesh.indices[1]];
+        const auto &p2 = mesh.points[mesh.indices[2]];
+        EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), ComputeNormal(p0, p1, p2));
     }
 }
