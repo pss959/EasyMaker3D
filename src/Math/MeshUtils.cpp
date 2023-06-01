@@ -195,28 +195,22 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     // points rotate proportional to their distance from this plane.
     const Plane plane(bend.center, slice_axis);
 
-    // If the plane is closer to the maximim end of the slice axis, have to
-    // negate the rotation angle for consistency.
-    const bool negate_angle = SignedDistance(bend.center, perp_vec) > 0;
+    // If the plane is closer to the maximum end of the slice axis, negate the
+    // rotation angle for consistency.
+    const float angle_sign =
+        SignedDistance(bend.center, perp_vec) > 0 ? -1 : 1;
 
     // If the bend offset is 0, don't let the angle exceed 360 degrees in
     // either direction.
-    Anglef angle = bend.offset != 0 ? bend.angle :
-        Anglef::FromDegrees(Clamp(bend.angle.Degrees(), -360.f, 360.f));
-    if (negate_angle)
-        angle = -angle;
+    const Anglef angle = angle_sign *
+        (bend.offset != 0 ? bend.angle :
+         Anglef::FromDegrees(Clamp(bend.angle.Degrees(), -360.f, 360.f)));
 
-    // Radius of bend circle.
+    // Radius of bend circle, preserving arc length along the slicing axis.
     const float radius = sliced_mesh.range.GetSize() / angle.Radians();
 
     // Center point around which all mesh points are rotated.
     const Point3f center = bend.center + radius * perp_vec;
-
-    // The mesh turns inside out if the distance of the bend center to the
-    // slicing axis is more than the radius. Detect this case and fix it later.
-    const float center_dist = SignedDistance(bend.center, perp_vec);
-    const bool inside_out =
-        radius > 0 ? (center_dist + radius < 0) : (center_dist + radius > 0);
 
     const auto bend_pt = [&](const Point3f &p){
         // The relative distance of the point from the center in the direction
@@ -249,13 +243,18 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &bend) {
     CleanMesh(result_mesh);
 
     // If the angle is +/- 360, there is a good chance that there are now
-    // coplanar triangles facing in opposite directions. Remove them if there
+    // duplicate triangles facing in opposite directions. Remove them if there
     // are any.
     if (AreClose(std::abs(angle.Degrees()), 360))
-        RemoveReversedTriangles(result_mesh);
+        RemoveDualTriangles(result_mesh);
 
-    // Reverse the orientation of all triangles if inside out.
-    if (inside_out) {
+    // The mesh turns inside out if the distance of the bend center to the
+    // slicing axis is more than the radius. Detect this case and fix it by
+    // reversing the orientation of all triangles.
+    const float center_dist = SignedDistance(bend.center, perp_vec);
+    const bool is_inside_out =
+        radius > 0 ? (center_dist + radius < 0) : (center_dist + radius > 0);
+    if (is_inside_out) {
         const size_t tri_count = result_mesh.GetTriangleCount();
         for (size_t i = 0; i < tri_count; ++i)
             std::swap(result_mesh.indices[3 * i + 1],
@@ -323,7 +322,7 @@ void UnshareMeshVertices(TriMesh &mesh) {
     std::iota(mesh.indices.begin(), mesh.indices.end(), 0);
 }
 
-void RemoveReversedTriangles(TriMesh &mesh) {
+void RemoveDualTriangles(TriMesh &mesh) {
     // Maps a key representing vertex indices to triangle index.
     std::unordered_map<size_t, GIndex> tri_map;
 

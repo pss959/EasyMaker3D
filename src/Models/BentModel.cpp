@@ -52,7 +52,7 @@ TriMesh BentModel::ConvertMesh(const TriMesh &mesh) {
     if (complexity != sliced_complexity_ || bend_.axis != sliced_axis_) {
         sliced_complexity_ = complexity;
         sliced_axis_       = bend_.axis;
-        const size_t num_slices = LerpInt(complexity, 1, 20);
+        const size_t num_slices = LerpInt(complexity, 1, 60);
 
         // Use the scaled operand mesh.
         const TriMesh scaled_mesh =

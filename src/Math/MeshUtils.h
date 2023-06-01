@@ -66,7 +66,7 @@ void UnshareMeshVertices(TriMesh &mesh);
 /// If there any triangles that share the same vertices, this removes them.
 /// This can be useful when an operation such as BendMesh() can result in faces
 /// that abut exactly.
-void RemoveReversedTriangles(TriMesh &mesh);
+void RemoveDualTriangles(TriMesh &mesh);
 
 /// "Cleans" vertices in a mesh if necessary by rounding values that are close
 /// to 0. Also removes degenerate triangles and unused vertex points. This
