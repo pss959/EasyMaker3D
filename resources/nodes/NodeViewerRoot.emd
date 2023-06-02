@@ -38,7 +38,7 @@ Node "NodeViewerRoot" {
     #       shapes: [ Box { size: 20 20 .1 } ],
     #     },
 
-    #     <"nodes/PlaneWidget.emd">,
+    #     <"nodes/Widgets/PlaneWidget.emd">,
     #   ]
     # }
 

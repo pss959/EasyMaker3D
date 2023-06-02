@@ -1,6 +1,6 @@
 ClipTool "ClipTool" {
   $NO_CAST_SHADOWS,
   children: [
-    <"nodes/PlaneWidget.emd">,
+    <"nodes/Widgets/PlaneWidget.emd">,
   ]
 }

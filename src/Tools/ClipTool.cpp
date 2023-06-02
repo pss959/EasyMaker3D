@@ -50,15 +50,18 @@ void ClipTool::UpdateGripInfo(GripInfo &info) {
     // the translator.
     const Vector3f &guide_dir = info.guide_direction;
     const Vector3f &normal    = plane_widget_->GetPlane().normal;
+    WidgetPtr widget;
     if (AreDirectionsClose(guide_dir,  normal, TK::kMaxGripHoverDirAngle) ||
         AreDirectionsClose(guide_dir, -normal, TK::kMaxGripHoverDirAngle)) {
-        info.widget = plane_widget_->GetTranslator();
+        widget          = plane_widget_->GetSubWidget("PlaneTranslator");
         info.guide_type = GripGuideType::kBasic;
     }
     else {
-        info.widget = plane_widget_->GetRotator();
+        widget          = plane_widget_->GetSubWidget("AxisWidget");
         info.guide_type = GripGuideType::kRotation;
     }
+    info.widget = Util::CastToDerived<ClickableWidget>(widget);
+    ASSERT(info.widget);
     info.target_point = ToWorld(info.widget, Point3f::Zero());
 }
 
@@ -104,7 +107,8 @@ void ClipTool::Activate_(bool is_activation) {
         context.target_manager->StartSnapping();
     }
     else {
-        plane_widget_->UnhighlightArrowColor();
+        plane_widget_->UnhighlightSubWidget("Rotator");
+        plane_widget_->UnhighlightSubWidget("Translator");
         context.target_manager->EndSnapping();
         if (feedback_) {
             context.feedback_manager->Deactivate(feedback_);
@@ -143,17 +147,24 @@ void ClipTool::PlaneChanged_(bool is_rotation) {
     }
 
     // Try snapping unless modified dragging.
-    plane_widget_->UnhighlightArrowColor();
+    plane_widget_->UnhighlightSubWidget("Rotator");
+    plane_widget_->UnhighlightSubWidget("Translator");
     Color color = Color::White();  // Changed if snapped.
     if (! context.is_modified_mode) {
-        int snapped_dim = -1;
-        const bool is_snapped = is_rotation ?
-            SnapRotation_(snapped_dim) : SnapTranslation_();
-        if (is_snapped) {
-            color = snapped_dim >= 0 ?
-                SG::ColorMap::SGetColorForDimension(snapped_dim) :
-                GetSnappedFeedbackColor();
-            plane_widget_->HighlightArrowColor(color);
+        if (is_rotation) {
+            int snapped_dim = -1;
+            if (SnapRotation_(snapped_dim)) {
+                color = snapped_dim >= 0 ?
+                    SG::ColorMap::SGetColorForDimension(snapped_dim) :
+                    GetSnappedFeedbackColor();
+                plane_widget_->HighlightSubWidget("Rotator", color);
+            }
+        }
+        else {
+            if (SnapTranslation_()) {
+                color = GetSnappedFeedbackColor();
+                plane_widget_->HighlightSubWidget("Translator", color);
+            }
         }
     }
 

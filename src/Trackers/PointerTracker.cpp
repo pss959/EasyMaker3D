@@ -92,8 +92,11 @@ bool PointerTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
     current_ray_ = ray;
     current_hit_ = hit;
 
-    if (! path_filter_ || path_filter_(hit.path))
+    if (! path_filter_ || path_filter_(hit.path)) {
         widget = hit.path.FindNodeUpwards<Widget>();
+        if (widget && ! widget->IsInteractionEnabled())
+            widget.reset();
+    }
 
     // Let the derived class update based on the new Hit.
     ProcessCurrentHit(hit);

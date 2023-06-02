@@ -27,7 +27,8 @@ Event::Device GripTracker::GetDevice() const {
 
 void GripTracker::UpdateHovering(const Event &event) {
     WidgetPtr widget;
-    if (UpdateCurrentData_(event, widget) && widget != current_widget_) {
+    if (UpdateCurrentData_(event, widget) && widget != current_widget_&&
+        widget->IsInteractionEnabled()) {
         UpdateWidgetHovering(current_widget_, widget);
         current_widget_ = widget;
     }
@@ -132,11 +133,13 @@ bool GripTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
         return false;
 
     widget = data.info.widget;
+    if (widget && ! widget->IsInteractionEnabled())
+        widget.reset();
     current_data_ = data;
 
     // Update the Controller grip hover. The target point needs to be converted
     // from world coordinates into the Controller's object coordinates.
-    if (widget && ! grippable_path_.empty()) {
+     if (widget && ! grippable_path_.empty()) {
         const Point3f pt = ToControllerCoords(data.info.target_point);
         GetController()->ShowGripHover(true, pt, data.info.color);
     }

@@ -7,18 +7,18 @@
 
 namespace Parser { class Registry; }
 
+DECL_SHARED_PTR(AxisWidget);
 DECL_SHARED_PTR(PlaneWidget);
 DECL_SHARED_PTR(Slider1DWidget);
-DECL_SHARED_PTR(SphereWidget);
 
 /// A PlaneWidget is used to specify the orientation and position of a plane in
-/// 3D. The widget contains the following parts:
-///   - A square showing the plane that is also a SphereWidget used to rotate
-///     it.
-///   - An arrow showing the plane normal that is also a Slider1DWidget used to
-///     translate it along the normal direction.
+/// 3D. The widget contains the following named sub-widgets:
 ///
-/// The GetChanged() Notifier can be used to track changes.
+///   - "AxisWidget": An AxisWidget allowing the plane normal to be rotated.
+///   - "PlaneTranslator": A Slider1DWidget connected to a square showing the
+///      plane and allowing it to be translated along the normal.
+///
+/// The GetPlaneChanged() Notifier can be used to track changes.
 ///
 /// \ingroup Widgets
 class PlaneWidget : public CompositeWidget {
@@ -34,25 +34,13 @@ class PlaneWidget : public CompositeWidget {
 
     /// Returns the current plane. This can be called at any time, including
     /// during a drag.
-    Plane GetPlane() const;
+    const Plane & GetPlane() const { return plane_; }
 
     /// Sets the size of the widget to the given radius.
     void SetSize(float radius);
 
     /// Sets the allowable range for the plane translation.
     void SetTranslationRange(const Range1f &range);
-
-    /// Returns the SphereWidget used to orient the plane.
-    SphereWidgetPtr GetRotator() const { return rotator_; }
-
-    /// Returns the Slider1DWidget used to translate the plane.
-    Slider1DWidgetPtr GetTranslator() const { return translator_; }
-
-    /// Highlights the translation arrow in the given Color.
-    void HighlightArrowColor(const Color &color);
-
-    /// Unhighlights the color applied to the translation arrow.
-    void UnhighlightArrowColor();
 
   protected:
     PlaneWidget() {}
@@ -64,42 +52,17 @@ class PlaneWidget : public CompositeWidget {
     Util::Notifier<bool> plane_changed_;
 
     /// Current Plane.
-    Plane plane_;
+    Plane                plane_;
 
-    /// Interactive SphereWidget used to rotate the plane.
-    SphereWidgetPtr   rotator_;
+    /// AxisWidget used to rotate the plane.
+    AxisWidgetPtr        rotator_;
 
-    /// Slider1DWidget with an arrow for translating the plane.
-    Slider1DWidgetPtr translator_;
+    /// Slider1DWidget for translating the plane.
+    Slider1DWidgetPtr    translator_;
 
-    /// Node used to rotate the arrow.
-    SG::NodePtr       arrow_rotator_;
-
-    /// Cylindrical shaft part of the arrow. This is scaled in Y based on the
-    /// size passed to SetSize().
-    SG::NodePtr       arrow_shaft_;
-
-    /// Conical end part of the arrow. This is translated in Y to stay at the
-    /// end of the arrow_shaft.
-    SG::NodePtr       arrow_cone_;
-
-    /// Saves the color used for the Arrow when inactive so it can be changed.
-    Color             arrow_inactive_color_;
-
-    /// Invoked when either sub-widget is activated or deactivated.
-    void Activate_(bool is_activation);
-
-    /// Invoked when the plane rotation changed.
-    void RotationChanged_();
-
-    /// Invoked when the plane translation changed.
-    void TranslationChanged_();
-
-    /// Updates the #rotator_ to match the current plane.
-    void UpdateRotator_();
-
-    /// Updates the #translator_ to match the current plane.
-    void UpdateTranslator_();
+    /// Updates the #plane_ to match the current plane. Called when rotation or
+    /// translation changes.
+    void UpdatePlane_(bool is_rotation);
 
     friend class Parser::Registry;
 };

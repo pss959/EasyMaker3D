@@ -30,7 +30,7 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {
         widget = touchable_->GetTouchedWidget(pos, radius);
-        if (widget) {
+        if (widget && widget->IsInteractionEnabled()) {
             activation_pos_ = pos;
             current_widget_ = widget;
             current_widget_->SetActive(true);

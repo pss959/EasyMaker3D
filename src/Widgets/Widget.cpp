@@ -63,9 +63,17 @@ void Widget::SetInactiveColor(const Color &color) {
     UpdateColor_();
 }
 
+Color Widget::GetInactiveColor() const {
+    return GetColor_(inactive_color_, "InactiveColor");
+}
+
 void Widget::SetActiveColor(const Color &color) {
     active_color_ = color;
     UpdateColor_();
+}
+
+Color Widget::GetActiveColor() const {
+    return GetColor_(active_color_, "ActiveColor");
 }
 
 void Widget::PlacePointTarget(const DragInfo &info,
@@ -96,9 +104,9 @@ void Widget::UpdateColor_() {
         if (! is_interaction_enabled_)
             SetBaseColor(GetColor_(disabled_color_, "DisabledColor"));
         else if (is_active_)
-            SetBaseColor(GetColor_(active_color_,   "ActiveColor"));
+            SetBaseColor(GetActiveColor());
         else
-            SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
+            SetBaseColor(GetInactiveColor());
     }
 }
 

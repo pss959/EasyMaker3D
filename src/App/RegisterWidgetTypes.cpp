@@ -1,4 +1,5 @@
 #include "Parser/Registry.h"
+#include "Widgets/AxisWidget.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/GenericWidget.h"
@@ -19,6 +20,7 @@
 void RegisterWidgetTypes_();
 
 void RegisterWidgetTypes_() {
+    REGISTER_TYPE_(AxisWidget);
     REGISTER_TYPE_(DiscWidget);
     REGISTER_TYPE_(EdgeTargetWidget);
     REGISTER_TYPE_(GenericWidget);
