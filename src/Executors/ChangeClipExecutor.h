@@ -1,38 +1,19 @@
 ﻿#pragma once
 
-#include <vector>
-
-#include "Executors/Executor.h"
-#include "Math/Types.h"
-#include "Selection/SelPath.h"
-
-class ClippedModel;
+#include "Executors/ChangePlaneExecutor.h"
 
 /// ChangeClipExecutor executes the ChangeClipCommand.
 ///
 /// \ingroup Executors
-class ChangeClipExecutor : public Executor {
+class ChangeClipExecutor : public ChangePlaneExecutor {
   public:
     virtual std::string GetCommandTypeName() const override {
         return "ChangeClipCommand";
     }
 
-    virtual void Execute(Command &command, Command::Op operation) override;
-
-  private:
-    /// Derived Command::ExecData class that stores everything needed to undo
-    /// and redo a ChangeClipCommand.
-    struct ExecData_ : public Command::ExecData {
-        /// Data per Model to operate on.
-        struct PerModel {
-            SelPath  path_to_model;
-            Plane    old_object_plane;
-            Vector3f old_translation;
-        };
-        std::vector<PerModel> per_model;
-    };
-
-    /// Creates and stores a ExecData_ in the given command if necessary,
-    /// returning it either way.
-    ExecData_ & GetExecData_(Command &command);
+  protected:
+    // Required ChangePlaneExecutor functions:
+    virtual Plane GetModelPlane(const Model &model) const override;
+    virtual void  SetModelPlane(Model &model, const Plane &plane,
+                                const SG::CoordConv *cc) const override;
 };

@@ -1,66 +1,35 @@
 #include "Executors/ChangeClipExecutor.h"
 
-#include "Commands/ChangeClipCommand.h"
-#include "Managers/SelectionManager.h"
 #include "Math/Linear.h"
 #include "Models/ClippedModel.h"
+#include "Util/Assert.h"
 
-void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
-    ExecData_ &data = GetExecData_(command);
-
-    if (operation == Command::Op::kDo) {
-        ChangeClipCommand &ccc = GetTypedCommand<ChangeClipCommand>(command);
-        for (auto &pm: data.per_model) {
-            ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
-            // Save the current translation without offset compensation.
-            const Vector3f trans =
-                cm.GetTranslation() - cm.GetLocalCenterOffset();
-
-            // Convert the plane from stage coordinates into object coordinates.
-            const Plane object_plane = TransformPlane(
-                TranslatePlane(ccc.GetPlane(), cm.GetLocalCenterOffset()),
-                pm.path_to_model.GetCoordConv().GetRootToObjectMatrix());
-
-            // Set the plane in the ClippedModel and compensate for any new
-            // centering translation.
-            cm.SetPlane(object_plane);
-            cm.SetTranslation(trans + cm.GetLocalCenterOffset());
-        }
-    }
-    else {
-        for (auto &pm: data.per_model) {
-            ClippedModel &cm = GetTypedModel<ClippedModel>(pm.path_to_model);
-            cm.SetPlane(pm.old_object_plane);
-            cm.SetTranslation(pm.old_translation);
-        }
-    }
-
-    // Reselect if undo or if command is finished being done.
-    if (operation == Command::Op::kUndo || command.IsFinalized())
-        GetContext().selection_manager->ReselectAll();
+Plane ChangeClipExecutor::GetModelPlane(const Model &model) const {
+    ASSERT(dynamic_cast<const ClippedModel *>(&model));
+    return static_cast<const ClippedModel &>(model).GetPlane();
 }
 
-ChangeClipExecutor::ExecData_ & ChangeClipExecutor::GetExecData_(
-    Command &command) {
-    // Create the ExecData_ if not already done.
-    if (! command.GetExecData()) {
-        ChangeClipCommand &ccc = GetTypedCommand<ChangeClipCommand>(command);
+void ChangeClipExecutor::SetModelPlane(Model &model, const Plane &plane,
+                                       const SG::CoordConv *cc) const {
+    ASSERT(dynamic_cast<ClippedModel *>(&model));
+    auto &cm = static_cast<ClippedModel &>(model);
 
-        const auto &model_names = ccc.GetModelNames();
-        ASSERT(! model_names.empty());
+    if (cc) {
+        // Save the current translation without offset compensation.
+        const Vector3f trans = cm.GetTranslation() - cm.GetLocalCenterOffset();
 
-        ExecData_ *data = new ExecData_;
-        data->per_model.resize(model_names.size());
+        // Convert the plane from stage coordinates into object coordinates.
+        const Plane object_plane = TransformPlane(
+            TranslatePlane(plane, cm.GetLocalCenterOffset()),
+            cc->GetRootToObjectMatrix());
 
-        for (size_t i = 0; i < model_names.size(); ++i) {
-            ExecData_::PerModel &pm   = data->per_model[i];
-            const SelPath        path = FindPathToModel(model_names[i]);
-            const ClippedModel  &cm   = GetTypedModel<ClippedModel>(path);
-            pm.path_to_model    = path;
-            pm.old_object_plane = cm.GetPlane();
-            pm.old_translation  = cm.GetTranslation();
-        }
-        command.SetExecData(data);
+        // Set the plane in the ClippedModel.
+        cm.SetPlane(object_plane);
+
+        // Compensate for any new centering translation.
+        cm.SetTranslation(trans + cm.GetLocalCenterOffset());
     }
-    return *static_cast<ExecData_ *>(command.GetExecData());
+    else {
+        cm.SetPlane(plane);
+    }
 }

@@ -164,6 +164,7 @@ lib_sources = list(chain(
         'ChangeMirrorExecutor',
         'ChangeNameExecutor',
         'ChangeOrderExecutor',
+        'ChangePlaneExecutor',
         'ChangeRevSurfExecutor',
         'ChangeTaperExecutor',
         'ChangeTextExecutor',
