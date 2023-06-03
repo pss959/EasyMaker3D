@@ -36,8 +36,6 @@ class CompositeWidget : public Widget {
     /// CompositeWidget.
     WidgetPtr AddSubWidget(const std::string &name);
 
-    ///@}
-
   private:
     struct SubWidget_ {
         WidgetPtr widget;
