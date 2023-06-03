@@ -60,6 +60,9 @@ class PlaneWidget : public CompositeWidget {
     /// Slider1DWidget for translating the plane.
     Slider1DWidgetPtr    translator_;
 
+    /// Rotates the Slider1DWidget.
+    SG::NodePtr          plane_rotator_;
+
     /// Updates the #plane_ to match the current plane. Called when rotation or
     /// translation changes.
     void UpdatePlane_(bool is_rotation);

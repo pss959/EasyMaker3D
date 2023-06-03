@@ -8,10 +8,10 @@ void PlaneWidget::CreationDone() {
     CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
-        // Access the rotation and translation widgets.
         rotator_  = Util::CastToDerived<AxisWidget>(AddSubWidget("AxisWidget"));
         translator_ = Util::CastToDerived<Slider1DWidget>(
             AddSubWidget("PlaneTranslator"));
+        plane_rotator_ = SG::FindNodeUnderNode(*this, "PlaneRotator");
 
         rotator_->SetTranslationEnabled(false);
 
@@ -19,7 +19,7 @@ void PlaneWidget::CreationDone() {
         rotator_->GetAxisChanged().AddObserver(
             this, [&](bool){ UpdatePlane_(true); });
         translator_->GetValueChanged().AddObserver(
-            this, [&](Widget &, const float &){ UpdatePlane_(true); });
+            this, [&](Widget &, const float &){ UpdatePlane_(false); });
     }
 }
 
@@ -34,8 +34,8 @@ void PlaneWidget::SetPlane(const Plane &plane) {
     translator_->SetValue(plane.distance);
     translator_->GetValueChanged().EnableAll(true);
 
-    translator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
-                                                   plane.normal));
+    plane_rotator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
+                                                      plane.normal));
 }
 
 void PlaneWidget::SetSize(float radius) {
@@ -55,8 +55,8 @@ void PlaneWidget::UpdatePlane_(bool is_rotation) {
     plane_.distance = translator_->GetValue();
 
     if (is_rotation)
-        translator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
-                                                       plane_.normal));
+        plane_rotator_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
+                                                          plane_.normal));
 
     plane_changed_.Notify(is_rotation);
 }
