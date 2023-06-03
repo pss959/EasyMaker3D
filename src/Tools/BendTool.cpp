@@ -15,12 +15,15 @@
 #include "Place/Snapping.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
+#include "SG/Torus.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
+
+// XXXX Add a way to offset each 360 degree bend.
 
 // XXXX Merge most of this with TwistTool?
 
@@ -98,8 +101,9 @@ void BendTool::SetUpParts_() {
 }
 
 void BendTool::UpdateGeometry_() {
-    static const float kRadiusScale = .75f;
-    static const float kAxisScale   = 1.2f;
+    static const float kRadiusScale    = .75f;
+    static const float kAxisScale      = 1.2f;
+    static const float kHandWheelScale = 1.6f;
 
     const Vector3f model_size = MatchOperandModelAndGetSize(false);
     const float radius = kRadiusScale * ion::math::Length(model_size);
@@ -118,19 +122,18 @@ void BendTool::UpdateGeometry_() {
     scale[1] = 2 * kAxisScale * radius;
     axis_->SetScale(scale);
 
-    // Scale and translate the bender parts.
-    for (const auto &dim_char: std::string("XZ")) {
-        const std::string dim_str(1, dim_char);
-        const auto min   = SG::FindNodeUnderNode(*bender_, dim_str + "Min");
-        const auto max   = SG::FindNodeUnderNode(*bender_, dim_str + "Max");
-        const auto stick = SG::FindNodeUnderNode(*bender_, dim_str + "Stick");
-        auto yscale = stick->GetScale();
-        yscale[0] = 2 * radius;
-        stick->SetScale(yscale);
-        const Vector3f xtrans(radius, 0, 0);
-        min->SetTranslation(-xtrans);
-        max->SetTranslation(xtrans);
-    }
+    // Scale and translate the bender HandWheel parts.
+    const auto x_stick  = SG::FindNodeUnderNode(*bender_, "XStick");
+    const auto z_stick  = SG::FindNodeUnderNode(*bender_, "ZStick");
+    auto x_scale = x_stick->GetScale();
+    auto z_scale = z_stick->GetScale();
+    x_scale[0] = z_scale[2] = .9f * kHandWheelScale * radius;
+    x_stick->SetScale(x_scale);
+    z_stick->SetScale(z_scale);
+
+    const auto ring  = SG::FindNodeUnderNode(*bender_, "Ring");
+    const auto torus = SG::FindTypedShapeInNode<SG::Torus>(*ring, "Torus");
+    torus->SetOuterRadius(.5f * kHandWheelScale * radius);
 }
 
 void BendTool::MatchCurrentBend_() {

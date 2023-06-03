@@ -44,27 +44,7 @@ BendTool "BendTool" {
             Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
 
             # Widget for rotating the bend angle.
-            DiscWidget "Bender" {
-              mode: "kRotationOnly",
-              angle_mode: "kAccumulate",
-              children: [
-                Node "X" {
-                  children: [
-                    CLONE "T_BenderHandle" "XMin"   {},
-                    CLONE "T_BenderHandle" "XMax"   {},
-                    CLONE "T_BenderStick"  "XStick" {},
-                  ]
-                },
-                Node "Z" {
-                  rotation: 0 1 0 90,
-                  children: [
-                    CLONE "T_BenderHandle" "ZMin"   {},
-                    CLONE "T_BenderHandle" "ZMax"   {},
-                    CLONE "T_BenderStick"  "ZStick" {},
-                  ]
-                },
-              ]
-            }
+            CLONE "T_HandWheel" "Bender" {}
           ]
         }
       ]
