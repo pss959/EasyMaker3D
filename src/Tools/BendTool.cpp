@@ -109,7 +109,6 @@ void BendTool::UpdateGeometry_() {
     const float radius = kRadiusScale * ion::math::Length(model_size);
 
     const auto bm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
-    // XXXX SetTranslation(GetTranslation() - bm->GetLocalCenterOffset());
 
     // Translate the axis rotator handles.
     const Vector3f y_trans(0, kAxisScale * radius, 0);

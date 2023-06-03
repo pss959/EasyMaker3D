@@ -1,20 +1,4 @@
 TwistTool "TwistTool" {
-  TEMPLATES: [
-    Node "T_TwisterStick" {
-      disabled_flags: "kIntersectAll",
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
-        }
-      ],
-      shapes: [ Box { size: 1 .4 .4 } ],
-    }
-    Node "T_TwisterHandle" {
-      shapes: [ Ellipsoid { size: 1.2 1.2 1.2 } ]
-    },
-  ],
-
   children: [
     # Widget for rotating the axis.
     SphereWidget "Rotator" {
@@ -44,27 +28,7 @@ TwistTool "TwistTool" {
             Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
 
             # Widget for rotating the twist angle.
-            DiscWidget "Twister" {
-              mode: "kRotationOnly",
-              angle_mode: "kAccumulate",
-              children: [
-                Node "X" {
-                  children: [
-                    CLONE "T_TwisterHandle" "XMin"   {},
-                    CLONE "T_TwisterHandle" "XMax"   {},
-                    CLONE "T_TwisterStick"  "XStick" {},
-                  ]
-                },
-                Node "Z" {
-                  rotation: 0 1 0 90,
-                  children: [
-                    CLONE "T_TwisterHandle" "ZMin"   {},
-                    CLONE "T_TwisterHandle" "ZMax"   {},
-                    CLONE "T_TwisterStick"  "ZStick" {},
-                  ]
-                },
-              ]
-            }
+            CLONE "T_HandWheel" "Twister" {}
           ]
         }
       ]

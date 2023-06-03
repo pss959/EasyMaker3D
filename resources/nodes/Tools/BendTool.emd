@@ -1,20 +1,4 @@
 BendTool "BendTool" {
-  TEMPLATES: [
-    Node "T_BenderStick" {
-      disabled_flags: "kIntersectAll",
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
-        }
-      ],
-      shapes: [ Box { size: 1 .4 .4 } ],
-    }
-    Node "T_BenderHandle" {
-      shapes: [ Ellipsoid { size: 1.2 1.2 1.2 } ]
-    },
-  ],
-
   children: [
     # Widget for rotating the axis.
     SphereWidget "Rotator" {
