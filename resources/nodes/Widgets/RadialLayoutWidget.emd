@@ -1,0 +1,78 @@
+RadialLayoutWidget "RadialLayoutWidget" {
+  children: [
+    UnscopedNode "Definitions" {
+      disabled_flags: "kTraversal",
+      children: [
+        Node "SpokeGeom" {
+          scale: 1 .8 .2,  # X scale is changed in code.
+          shapes: [ Box {} ]
+        }
+      ]
+    },
+
+    # Torus ring for changing radius.
+    DiscWidget "Ring" {
+      mode: "kScaleOnly",
+      apply_to_widget: False,   # Code responds to scale changes.
+      shapes: [
+        Torus "Torus" {
+          inner_radius: .2, # Changed in code.
+          outer_radius: 1,  # Changed in code.
+          sector_count: 72,
+        }
+      ]
+    },
+
+    # Parts for layout; hidden when ring is very small.
+    Node "Layout" {
+      disabled_flags: "kTraversal",  # Hidden to start.
+      children: [
+        # Rotatable start angle spoke.
+        DiscWidget "StartSpoke" {
+          mode: "kRotationOnly",
+          children: [
+            Node {
+              rotation: 1 0 0 45,
+              children: [USE "SpokeGeom"]
+            }
+          ],
+        },
+        # Rotatable end angle spoke.
+        DiscWidget "EndSpoke" {
+          mode: "kRotationOnly",
+          children: [
+            Node {
+              rotation: 1 0 0 -45,
+              children: [USE "SpokeGeom"]
+            }
+          ],
+        },
+
+        # Arc showing current angle.
+        Node "Arc" {
+          disabled_flags: "kIntersectAll",
+          pass_name: $LIGHTING_PASS,
+          shader_names: ["BaseColor"],
+          rotation: 1 0 0 -90,  # Rotate into XZ-plane.
+          shapes: [
+            Tube "Line" {
+              diameter:  .2,
+              side_count: 6,
+            }
+          ]
+        },
+      ]
+    },
+
+    # Text for numeric feedback.
+    Node "Text" {
+      CONSTANTS: [SCALE: "scale: .8 .8 .8"],
+      children: [
+        TextNode "RadiusText"     { $SCALE },
+        TextNode "StartAngleText" { $SCALE },
+        TextNode "EndAngleText"   { $SCALE },
+        TextNode "ArcAngleText"   { $SCALE },
+      ]
+    }
+  ]
+},

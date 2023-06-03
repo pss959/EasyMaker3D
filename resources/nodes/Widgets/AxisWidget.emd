@@ -1,0 +1,27 @@
+AxisWidget "AxisWidget" {
+  children: [
+    # Widget for rotating the axis.
+    SphereWidget "Rotator" {
+      children: [
+        # Cone at the axis direction end.
+        Node "Cone" {
+          shapes: [ Cylinder { height: 2, top_radius: 0, bottom_radius: 1 } ],
+        },
+        # Box at the other end.
+        Node "Base" { shapes: [ Box { size: 1 .5 1 } ] },
+
+        # Widget for translating the axis.
+        Slider2DWidget "Translator" {
+          inactive_color: "#e6e644",
+          children: [
+            Node "Shaft" {
+              shapes: [
+                Cylinder { top_radius: .3, bottom_radius: .3, height: 2 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

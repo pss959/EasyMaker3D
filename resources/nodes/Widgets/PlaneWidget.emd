@@ -1,0 +1,19 @@
+PlaneWidget "PlaneWidget" {
+  children: [
+    # AxisWidget to show and rotate the normal.
+    <"nodes/Widgets/AxisWidget.emd">,
+
+    # Node to rotate the Slider1DWidget.
+    Node "PlaneRotator" {
+      children: [
+        # Translucent square for translating the plane.
+        Slider1DWidget "PlaneTranslator" {
+          dimension: 1,
+          inactive_color: "#eecccc22",
+          active_color:   "#ffeeee22",
+          shapes: [ Box { size: 2 .2 2 } ]
+        },
+      ]
+    }
+  ]
+}
