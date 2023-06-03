@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
 #include "Tools/PlaneBasedTool.h"
 
