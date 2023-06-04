@@ -1,6 +1,6 @@
 BendTool "BendTool" {
   children: [
     <"nodes/Widgets/AxisWidget.emd">,
-    <"nodes/Widgets/HandWheelWidget.emd">,
+    <"nodes/Widgets/WheelWidget.emd">,
   ]
 }

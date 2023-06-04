@@ -18,7 +18,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
-#include "Widgets/HandWheelWidget.h"
+#include "Widgets/WheelWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
@@ -70,8 +70,8 @@ void TwistTool::Attach() {
 void TwistTool::SetUpParts_() {
     // Find all of the parts.
     rotator_      = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
-    twister_      = SG::FindTypedNodeUnderNode<HandWheelWidget>(*this,
-                                                                "HandWheel");
+    twister_      = SG::FindTypedNodeUnderNode<WheelWidget>(*this,
+                                                                "Wheel");
     translator_   = SG::FindTypedNodeUnderNode<Slider2DWidget>(*this,
                                                                "Translator");
     axis_rotator_ = SG::FindNodeUnderNode(*this, "AxisRotator");
@@ -100,7 +100,7 @@ void TwistTool::SetUpParts_() {
 void TwistTool::UpdateGeometry_() {
     static const float kRadiusScale    = .75f;
     static const float kAxisScale      = 1.2f;
-    static const float kHandWheelScale = 1.6f;
+    static const float kWheelScale = 1.6f;
 
     const Vector3f model_size = MatchOperandModelAndGetSize(false);
     const float radius = kRadiusScale * ion::math::Length(model_size);
@@ -116,18 +116,18 @@ void TwistTool::UpdateGeometry_() {
     scale[1] = 2 * kAxisScale * radius;
     axis_->SetScale(scale);
 
-    // Scale the twister HandWheel parts.
+    // Scale the twister Wheel parts.
     const auto x_stick  = SG::FindNodeUnderNode(*twister_, "XStick");
     const auto z_stick  = SG::FindNodeUnderNode(*twister_, "ZStick");
     auto x_scale = x_stick->GetScale();
     auto z_scale = z_stick->GetScale();
-    x_scale[0] = z_scale[2] = .9f * kHandWheelScale * radius;
+    x_scale[0] = z_scale[2] = .9f * kWheelScale * radius;
     x_stick->SetScale(x_scale);
     z_stick->SetScale(z_scale);
 
     const auto ring  = SG::FindNodeUnderNode(*twister_, "Ring");
     const auto torus = SG::FindTypedShapeInNode<SG::Torus>(*ring, "Torus");
-    torus->SetOuterRadius(.5f * kHandWheelScale * radius);
+    torus->SetOuterRadius(.5f * kWheelScale * radius);
 }
 
 void TwistTool::MatchCurrentTwist_() {

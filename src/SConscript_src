@@ -495,7 +495,6 @@ lib_sources = list(chain(
         'GenericWidget',
         'IconSwitcherWidget',
         'IconWidget',
-        'HandWheelWidget',
         'PlaneWidget',
         'PointTargetWidget',
         'PushButtonWidget',
@@ -507,6 +506,7 @@ lib_sources = list(chain(
         'SphereWidget',
         'StageWidget',
         'TargetWidgetBase',
+        'WheelWidget',
         'Widget',
     ]),
 ))

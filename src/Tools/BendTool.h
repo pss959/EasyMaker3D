@@ -11,7 +11,7 @@ DECL_SHARED_PTR(AngularFeedback);
 DECL_SHARED_PTR(AxisWidget);
 DECL_SHARED_PTR(ChangeBendCommand);
 DECL_SHARED_PTR(DiscWidget);
-DECL_SHARED_PTR(HandWheelWidget);
+DECL_SHARED_PTR(WheelWidget);
 // XXXX
 //DECL_SHARED_PTR(Slider2DWidget);
 //DECL_SHARED_PTR(SphereWidget);
@@ -45,7 +45,7 @@ class BendTool : public Tool {
     AxisWidgetPtr         axis_;
 
     /// Widget used to change the bend angle.
-    HandWheelWidgetPtr    bender_;
+    WheelWidgetPtr    bender_;
 
 #if XXXX
     /// Widget used to rotate the bend axis direction.

@@ -1,4 +1,4 @@
-HandWheelWidget "HandWheel" {
+WheelWidget "Wheel" {
   children: [
     DiscWidget "Rotator" {
       mode: "kRotationOnly",

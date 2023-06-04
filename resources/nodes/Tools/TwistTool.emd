@@ -28,7 +28,7 @@ TwistTool "TwistTool" {
             Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
 
             # Widget for rotating the twist angle.
-            <"nodes/Widgets/HandWheelWidget.emd">,
+            <"nodes/Widgets/WheelWidget.emd">,
           ]
         }
       ]

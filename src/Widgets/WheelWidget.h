@@ -8,20 +8,20 @@
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(DiscWidget);
-DECL_SHARED_PTR(HandWheelWidget);
+DECL_SHARED_PTR(WheelWidget);
 
-/// A HandWheelWidget wraps a DiscWidget used to specify a continuous rotation,
+/// A WheelWidget wraps a DiscWidget used to specify a continuous rotation,
 /// such as for a twist or bend. The widget contains the following named
 /// sub-widget:
-///   - "Rotator": A DiscWidget allowing the HandWheel to be rotated.
+///   - "Rotator": A DiscWidget allowing the Wheel to be rotated.
 ///
 /// The GetRotationChanged() Notifier can be used to track changes.
 ///
 /// \ingroup Widgets
-class HandWheelWidget : public CompositeWidget {
+class WheelWidget : public CompositeWidget {
   public:
     /// Returns a Notifier that is invoked when the user rotates the
-    /// HandWheel.
+    /// Wheel.
     Util::Notifier<> & GetRotationChanged() { return rotation_changed_; }
 
     /// Sets the size of the widget to the given radius.
@@ -37,7 +37,7 @@ class HandWheelWidget : public CompositeWidget {
     Anglef GetRotationAngle() const;
 
   protected:
-    HandWheelWidget() {}
+    WheelWidget() {}
 
     virtual void CreationDone() override;
 
@@ -45,7 +45,7 @@ class HandWheelWidget : public CompositeWidget {
     /// Notifies when the widget is rotation.
     Util::Notifier<> rotation_changed_;
 
-    /// DiscWidget used to rotate the HandWheel.
+    /// DiscWidget used to rotate the Wheel.
     DiscWidgetPtr    rotator_;
 
     friend class Parser::Registry;

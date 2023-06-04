@@ -19,7 +19,7 @@
 #include "Util/General.h"
 #include "Util/Tuning.h"
 #include "Widgets/AxisWidget.h"
-#include "Widgets/HandWheelWidget.h"
+#include "Widgets/WheelWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
@@ -77,7 +77,7 @@ void BendTool::Attach() {
 void BendTool::SetUpParts_() {
     // Find all of the parts.
     axis_   = SG::FindTypedNodeUnderNode<AxisWidget>(*this,   "AxisWidget");
-    bender_ = SG::FindTypedNodeUnderNode<HandWheelWidget>(*this, "HandWheel");
+    bender_ = SG::FindTypedNodeUnderNode<WheelWidget>(*this, "Wheel");
 
     // Set a wide range for the axis translation.
     axis_->SetTranslationRange(Range2f(Point2f(-100, -100), Point2f(100, 100)));
