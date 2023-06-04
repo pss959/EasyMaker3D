@@ -9,7 +9,7 @@
 class Widget;
 DECL_SHARED_PTR(AngularFeedback);
 DECL_SHARED_PTR(ChangeTwistCommand);
-DECL_SHARED_PTR(DiscWidget);
+DECL_SHARED_PTR(HandWheelWidget);
 DECL_SHARED_PTR(Slider2DWidget);
 DECL_SHARED_PTR(SphereWidget);
 namespace SG { DECL_SHARED_PTR(Node); }
@@ -45,7 +45,7 @@ class TwistTool : public Tool {
     Slider2DWidgetPtr     translator_;
 
     /// Widget used to change the twist angle.
-    DiscWidgetPtr         twister_;
+    HandWheelWidgetPtr    twister_;
 
     /// Node used to apply current rotation to the #translator_ and axis.
     SG::NodePtr           axis_rotator_;

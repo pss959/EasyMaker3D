@@ -8,10 +8,13 @@
 
 class Widget;
 DECL_SHARED_PTR(AngularFeedback);
+DECL_SHARED_PTR(AxisWidget);
 DECL_SHARED_PTR(ChangeBendCommand);
 DECL_SHARED_PTR(DiscWidget);
-DECL_SHARED_PTR(Slider2DWidget);
-DECL_SHARED_PTR(SphereWidget);
+DECL_SHARED_PTR(HandWheelWidget);
+// XXXX
+//DECL_SHARED_PTR(Slider2DWidget);
+//DECL_SHARED_PTR(SphereWidget);
 namespace SG { DECL_SHARED_PTR(Node); }
 
 /// BendTool provides interactive bending of all selected BentModels.  It uses
@@ -39,13 +42,17 @@ class BendTool : public Tool {
     ChangeBendCommandPtr command_;
 
     /// Widget used to rotate the bend axis direction.
+    AxisWidgetPtr         axis_;
+
+    /// Widget used to change the bend angle.
+    HandWheelWidgetPtr    bender_;
+
+#if XXXX
+    /// Widget used to rotate the bend axis direction.
     SphereWidgetPtr       rotator_;
 
     /// Widget used to translate the bend center.
     Slider2DWidgetPtr     translator_;
-
-    /// Widget used to change the bend angle.
-    DiscWidgetPtr         bender_;
 
     /// Node used to apply current rotation to the #translator_ and axis.
     SG::NodePtr           axis_rotator_;
@@ -58,6 +65,7 @@ class BendTool : public Tool {
 
     /// Node representing the cone at the +Z end of the axis.
     SG::NodePtr           cone1_;
+#endif
 
     /// Bend at the start of interaction.
     Bend                  start_bend_;

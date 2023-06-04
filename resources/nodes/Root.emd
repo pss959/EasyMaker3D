@@ -97,7 +97,6 @@ Node "Root" {
         <"nodes/templates/Board.emd">,
         <"nodes/templates/Border.emd">,
         <"nodes/templates/Controller.emd">,
-        <"nodes/templates/HandWheel.emd">,
         <"nodes/templates/PaneBackground.emd">,
         <"nodes/templates/RadialMenu.emd">,
       ],

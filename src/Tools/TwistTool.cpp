@@ -18,7 +18,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
-#include "Widgets/DiscWidget.h"
+#include "Widgets/HandWheelWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
@@ -39,7 +39,8 @@ void TwistTool::UpdateGripInfo(GripInfo &info) {
                            TK::kMaxGripHoverDirAngle) ||
         AreDirectionsClose(guide_dir, -twist_.axis,
                            TK::kMaxGripHoverDirAngle)) {
-        info.widget       = twister_;
+        info.widget = Util::CastToDerived<ClickableWidget>(
+            twister_->GetSubWidget("Rotator"));
         info.target_point = ToWorld(info.widget, Point3f::Zero());
     }
     else {
@@ -69,7 +70,8 @@ void TwistTool::Attach() {
 void TwistTool::SetUpParts_() {
     // Find all of the parts.
     rotator_      = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
-    twister_      = SG::FindTypedNodeUnderNode<DiscWidget>(*this,   "Twister");
+    twister_      = SG::FindTypedNodeUnderNode<HandWheelWidget>(*this,
+                                                                "HandWheel");
     translator_   = SG::FindTypedNodeUnderNode<Slider2DWidget>(*this,
                                                                "Translator");
     axis_rotator_ = SG::FindNodeUnderNode(*this, "AxisRotator");
@@ -84,7 +86,7 @@ void TwistTool::SetUpParts_() {
     twister_->GetActivation().AddObserver(
         this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
     twister_->GetRotationChanged().AddObserver(
-        this, [&](Widget &w, const Anglef &){ TwistChanged_(w); });
+        this, [&](){ TwistChanged_(*twister_); });
     rotator_->GetActivation().AddObserver(
         this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
     rotator_->GetRotationChanged().AddObserver(

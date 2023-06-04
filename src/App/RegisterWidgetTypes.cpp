@@ -3,6 +3,7 @@
 #include "Widgets/DiscWidget.h"
 #include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/GenericWidget.h"
+#include "Widgets/HandWheelWidget.h"
 #include "Widgets/IconSwitcherWidget.h"
 #include "Widgets/IconWidget.h"
 #include "Widgets/PlaneWidget.h"
@@ -24,6 +25,7 @@ void RegisterWidgetTypes_() {
     REGISTER_TYPE_(DiscWidget);
     REGISTER_TYPE_(EdgeTargetWidget);
     REGISTER_TYPE_(GenericWidget);
+    REGISTER_TYPE_(HandWheelWidget);
     REGISTER_TYPE_(IconSwitcherWidget);
     REGISTER_TYPE_(IconWidget);
     REGISTER_TYPE_(PointTargetWidget);

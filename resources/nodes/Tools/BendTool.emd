@@ -1,37 +1,6 @@
 BendTool "BendTool" {
   children: [
-    # Widget for rotating the axis.
-    SphereWidget "Rotator" {
-      children: [
-        Node {
-          children: [
-            # Cone at the far end
-            Node "Cone0" {
-              shapes: [
-                Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
-              ]
-            },
-            # Cone at the near end
-            CLONE "Cone0" "Cone1" {}
-          ]
-        },
-      ]
-    },
-
-    # This node is rotated to make the axis and bender point the correct way.
-    Node "AxisRotator" {
-      children: [
-        # Widget for translating the axis in (rotated) X and Z.
-        Slider2DWidget "Translator" {
-          principal_plane: "kXZ",
-          children: [
-            Node "Axis" { shapes: [ Box { size: .6 1 .6 } ], },
-
-            # Widget for rotating the bend angle.
-            CLONE "T_HandWheel" "Bender" {}
-          ]
-        }
-      ]
-    }
+    <"nodes/Widgets/AxisWidget.emd">,
+    <"nodes/Widgets/HandWheelWidget.emd">,
   ]
 }

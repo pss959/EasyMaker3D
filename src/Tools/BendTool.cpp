@@ -15,11 +15,11 @@
 #include "Place/Snapping.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
-#include "SG/Torus.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
-#include "Widgets/DiscWidget.h"
+#include "Widgets/AxisWidget.h"
+#include "Widgets/HandWheelWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
@@ -44,16 +44,19 @@ void BendTool::UpdateGripInfo(GripInfo &info) {
                            TK::kMaxGripHoverDirAngle) ||
         AreDirectionsClose(guide_dir, -bend_.axis,
                            TK::kMaxGripHoverDirAngle)) {
-        info.widget       = bender_;
+        info.widget = Util::CastToDerived<ClickableWidget>(
+            bender_->GetSubWidget("Rotator"));
         info.target_point = ToWorld(info.widget, Point3f::Zero());
     }
     else {
+#if XXXX
         // Otherwise, use the axis rotator.
         info.widget = rotator_;
         // Connect to the min/max handle, whichever is higher up.
         const Point3f min_pt = ToWorld(cone0_, Point3f::Zero());
         const Point3f max_pt = ToWorld(cone1_, Point3f::Zero());
         info.target_point = min_pt[1] > max_pt[1] ? min_pt : max_pt;
+#endif
     }
 }
 
@@ -73,10 +76,16 @@ void BendTool::Attach() {
 
 void BendTool::SetUpParts_() {
     // Find all of the parts.
-    rotator_      = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
-    bender_      = SG::FindTypedNodeUnderNode<DiscWidget>(*this,   "Bender");
+    axis_   = SG::FindTypedNodeUnderNode<AxisWidget>(*this,   "AxisWidget");
+    bender_ = SG::FindTypedNodeUnderNode<HandWheelWidget>(*this, "HandWheel");
+
+    // Set a wide range for the axis translation.
+    axis_->SetTranslationRange(Range2f(Point2f(-100, -100), Point2f(100, 100)));
+
+#if XXXX
     translator_   = SG::FindTypedNodeUnderNode<Slider2DWidget>(*this,
                                                                "Translator");
+    rotator_      = SG::FindTypedNodeUnderNode<SphereWidget>(*this, "Rotator");
     axis_rotator_ = SG::FindNodeUnderNode(*this, "AxisRotator");
     axis_         = SG::FindNodeUnderNode(*translator_, "Axis");
     cone0_        = SG::FindNodeUnderNode(*rotator_, "Cone0");
@@ -84,7 +93,9 @@ void BendTool::SetUpParts_() {
 
     // Set a wide range for the translator.
     translator_->SetRange(Vector2f(-100, -100), Vector2f(100, 100));
+#endif
 
+#if XXXX
     // Set up callbacks.
     bender_->GetActivation().AddObserver(
         this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
@@ -98,60 +109,27 @@ void BendTool::SetUpParts_() {
         this, [&](Widget &w, bool is_act){ Activate_(w, is_act); });
     translator_->GetValueChanged().AddObserver(
         this, [&](Widget &w, const Vector2f &){ BendChanged_(w); });
+#endif
 }
 
 void BendTool::UpdateGeometry_() {
-    static const float kRadiusScale    = .75f;
-    static const float kAxisScale      = 1.2f;
-    static const float kHandWheelScale = 1.6f;
-
     const Vector3f model_size = MatchOperandModelAndGetSize(false);
-    const float radius = kRadiusScale * ion::math::Length(model_size);
-
-    const auto bm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
-
-    // Translate the axis rotator handles.
-    const Vector3f y_trans(0, kAxisScale * radius, 0);
-    cone0_->SetTranslation(-y_trans);
-    cone1_->SetTranslation(y_trans);
-
-    // Scale the center translator axis height.
-    const auto axis = SG::FindNodeUnderNode(*translator_, "Axis");
-    auto scale = axis_->GetScale();
-    scale[1] = 2 * kAxisScale * radius;
-    axis_->SetScale(scale);
-
-    // Scale and translate the bender HandWheel parts.
-    const auto x_stick  = SG::FindNodeUnderNode(*bender_, "XStick");
-    const auto z_stick  = SG::FindNodeUnderNode(*bender_, "ZStick");
-    auto x_scale = x_stick->GetScale();
-    auto z_scale = z_stick->GetScale();
-    x_scale[0] = z_scale[2] = .9f * kHandWheelScale * radius;
-    x_stick->SetScale(x_scale);
-    z_stick->SetScale(z_scale);
-
-    const auto ring  = SG::FindNodeUnderNode(*bender_, "Ring");
-    const auto torus = SG::FindTypedShapeInNode<SG::Torus>(*ring, "Torus");
-    torus->SetOuterRadius(.5f * kHandWheelScale * radius);
+    const float radius = .5f * ion::math::Length(model_size);
+    axis_->SetSize(radius);
+    bender_->SetSize(radius);
 }
 
 void BendTool::MatchCurrentBend_() {
-    // Don't notify for widget changes.
-    bender_->GetRotationChanged().EnableObserver(this, false);
-    rotator_->GetRotationChanged().EnableObserver(this, false);
-    translator_->GetValueChanged().EnableObserver(this, false);
-
-    // The tool points along +Y by default.
     const Rotationf rot = Rotationf::RotateInto(Bend().axis, bend_.axis);
-    rotator_->SetRotation(rot);
-    rotator_->SetTranslation(rot * bend_.center);
-    axis_rotator_->SetRotation(rot);
-    translator_->SetValue(Vector2f(bend_.center[0], bend_.center[2]));
-    bender_->SetRotationAngle(bend_.angle);
 
-    bender_->GetRotationChanged().EnableObserver(this, true);
-    rotator_->GetRotationChanged().EnableObserver(this, true);
-    translator_->GetValueChanged().EnableObserver(this, true);
+    axis_->SetDirection(bend_.axis);
+    axis_->SetPosition(rot * bend_.center);
+
+    // Don't notify for widget changes.
+    bender_->GetRotationChanged().EnableAll(false);
+    bender_->SetRotation(rot);
+    bender_->SetRotationAngle(bend_.angle);
+    bender_->GetRotationChanged().EnableAll(true);
 }
 
 void BendTool::Detach() {
@@ -198,11 +176,11 @@ void BendTool::BendChanged_(Widget &widget) {
     }
 
     const Color wac = SG::ColorMap::SGetColor("WidgetActiveColor");
-    rotator_->SetActiveColor(wac);
-    translator_->SetActiveColor(wac);
+    axis_->SetActiveColor(wac);
 
     // Try snapping if rotating or translating unless modified dragging.
     const auto &context = GetContext();
+#if XXXX
     const bool is_snapped = ! context.is_modified_mode &&
         (&widget == translator_.get() ? SnapTranslation_() :
          &widget == rotator_.get()    ? SnapRotation_() : false);
@@ -223,6 +201,7 @@ void BendTool::BendChanged_(Widget &widget) {
                 context.precision_store->ApplyAngle(angle) : angle;
         }
     }
+#endif
     MatchCurrentBend_();
 
     // Update the command.
@@ -241,8 +220,8 @@ bool BendTool::SnapTranslation_() {
 
     auto &tm = *GetContext().target_manager;
 
-    // Current center in object coordinates (from the Slider2DWidget).
-    const auto cur_obj_pos = Bend().center + translator_->GetTranslation();
+    // Current center in object coordinates (from the AxisWidget).
+    const auto cur_obj_pos = axis_->GetPosition();
 
     // Snap in stage coordinates.
     const auto stage_cc  = GetStageCoordConv();
@@ -272,16 +251,18 @@ bool BendTool::SnapTranslation_() {
             is_snapped = true;
         }
     }
+#if XXXX
     if (is_snapped)
         translator_->SetActiveColor(GetSnappedFeedbackColor());
+#endif
 
     return is_snapped;
 }
 
 bool BendTool::SnapRotation_() {
-    auto &tm = *GetContext().target_manager;
-
     bool is_snapped = false;
+#if XXXX
+    auto &tm = *GetContext().target_manager;
 
     // Try to snap to the point target direction (in stage coordinates) if it
     // is active.  Otherwise, try to snap to any of the principal axes.
@@ -306,11 +287,13 @@ bool BendTool::SnapRotation_() {
     }
     // Make sure the axis is unit length.
     ion::math::Normalize(&bend_.axis);
+#endif
 
     return is_snapped;
 }
 
 void BendTool::UpdateBendFeedback_() {
+#if XXXX
     // The feedback should be in the plane perpendicular to the bend axis (in
     // stage coordinates).
     const Vector3f stage_axis = GetRotation() * bend_.axis;
@@ -323,4 +306,5 @@ void BendTool::UpdateBendFeedback_() {
     ASSERT(feedback_);
     feedback_->SubtendArc(stage_center, 0, 0, stage_axis,
                           CircleArc(Anglef(), bend_.angle));
+#endif
 }
