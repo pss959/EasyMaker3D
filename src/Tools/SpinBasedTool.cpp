@@ -40,6 +40,8 @@ void SpinBasedTool::CreationDone() {
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
         spin_widget_->GetSpinChanged().AddObserver(
             this, [&](SpinWidget::ChangeType type){ SpinChanged_(type); });
+
+        
     }
 }
 
@@ -104,7 +106,8 @@ void SpinBasedTool::Activate_(bool is_activation) {
         context.target_manager->StartSnapping();
     }
     else {
-        spin_widget_->UnhighlightSubWidget("Axis");
+        spin_widget_->UnhighlightSubWidget("Rotator");
+        spin_widget_->UnhighlightSubWidget("Translator");
         spin_widget_->UnhighlightSubWidget("Ring");
         context.target_manager->EndSnapping();
         if (feedback_) {
@@ -183,14 +186,14 @@ bool SpinBasedTool::SnapAxis_() {
     Rotationf rot;
     if (tm.SnapToDirection(stage_spin_.axis, rot)) {
         stage_spin_.axis = tm.GetPointTarget().GetDirection();
-        spin_widget_->HighlightSubWidget("Axis", GetSnappedFeedbackColor());
+        spin_widget_->HighlightSubWidget("Rotator", GetSnappedFeedbackColor());
         is_snapped = true;
     }
     else {
         const int snapped_dim = SnapToAxis(stage_spin_.axis);
         if (snapped_dim >= 0) {
             spin_widget_->HighlightSubWidget(
-                "Axis", SG::ColorMap::SGetColorForDimension(snapped_dim));
+                "Rotator", SG::ColorMap::SGetColorForDimension(snapped_dim));
             is_snapped = true;
         }
     }
@@ -202,8 +205,6 @@ bool SpinBasedTool::SnapAxis_() {
 }
 
 bool SpinBasedTool::SnapCenter_() {
-    using ion::math::Distance;
-
     auto &tm = *GetContext().target_manager;
 
     // Current spin center in object coordinates (from the SpinWidget).
@@ -239,7 +240,8 @@ bool SpinBasedTool::SnapCenter_() {
     }
 
     if (is_snapped)
-        spin_widget_->HighlightSubWidget("Axis", GetSnappedFeedbackColor());
+        spin_widget_->HighlightSubWidget(
+            "Translator", GetSnappedFeedbackColor());
 
     return is_snapped;
 }
@@ -250,7 +252,7 @@ Spin SpinBasedTool::GetStageSpinFromModel_() const {
     // translation.
     const auto osm = GetStageCoordConv().GetObjectToRootMatrix();
     Spin spin = GetObjectSpinFromModel();
-    spin.axis   = osm * spin.axis;
+    spin.axis   = ion::math::Normalized(osm * spin.axis);
     spin.center = osm *
         spin.center -GetModelAttachedTo()->GetLocalCenterOffset();
     return spin;
@@ -262,7 +264,7 @@ Spin SpinBasedTool::GetStageSpinFromWidget_() const {
     // matrix should do the trick.
     const auto mm = GetModelMatrix();
     Spin spin = spin_widget_->GetSpin();
-    spin.axis   = mm * spin.axis;
+    spin.axis   = ion::math::Normalized(mm * spin.axis);
     spin.center = mm * spin.center;
     return spin;
 }
@@ -270,8 +272,8 @@ Spin SpinBasedTool::GetStageSpinFromWidget_() const {
 void SpinBasedTool::UpdateSpinWidget_() {
     // This is the reverse of GetStageSpinFromWidget_().
     const auto imm = ion::math::Inverse(GetModelMatrix());
-    Spin spin = spin_widget_->GetSpin();
-    spin.axis   = imm * spin.axis;
+    Spin spin = stage_spin_;
+    spin.axis   = ion::math::Normalized(imm * spin.axis);
     spin.center = imm * spin.center;
     spin_widget_->SetSpin(spin);
 }

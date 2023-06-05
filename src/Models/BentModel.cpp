@@ -3,55 +3,15 @@
 #include "Math/Linear.h"
 #include "Math/MeshSlicing.h"
 #include "Math/MeshUtils.h"
-#include "Util/Assert.h"
-
-void BentModel::AddFields() {
-    Spin default_spin;
-    AddModelField(center_.Init("center", default_spin.center));
-    AddModelField(axis_.Init("axis",     default_spin.axis));
-    AddModelField(angle_.Init("angle",   default_spin.angle));
-    AddModelField(offset_.Init("offset", default_spin.offset));
-
-    ScaledConvertedModel::AddFields();
-}
-
-bool BentModel::IsValid(std::string &details) {
-    if (! ScaledConvertedModel::IsValid(details))
-        return false;
-    if (! IsValidVector(axis_)) {
-        details = "zero-length bend spin axis";
-        return false;
-    }
-    return true;
-}
-
-void BentModel::CreationDone() {
-    ScaledConvertedModel::CreationDone();
-
-    if (! IsTemplate()) {
-        spin_.center = center_;
-        spin_.axis   = axis_;
-        spin_.angle  = angle_;
-        spin_.offset = offset_;
-    }
-}
-
-void BentModel::SetSpin(const Spin &spin) {
-    ASSERT(IsValidVector(spin.axis));
-    spin_    = spin;
-    center_  = spin.center;
-    axis_    = spin.axis;
-    angle_   = spin.angle;
-    offset_  = spin.offset;
-    ProcessChange(SG::Change::kGeometry, *this);
-}
 
 TriMesh BentModel::ConvertMesh(const TriMesh &mesh) {
+    const Spin spin = GetSpin();
+
     // Reslice if the complexity or axis changed.
     const float complexity = GetComplexity();
-    if (complexity != sliced_complexity_ || spin_.axis != sliced_axis_) {
+    if (complexity != sliced_complexity_ || spin.axis != sliced_axis_) {
         sliced_complexity_ = complexity;
-        sliced_axis_       = spin_.axis;
+        sliced_axis_       = spin.axis;
         const size_t num_slices = LerpInt(complexity, 1, 60);
 
         // Use the scaled operand mesh.
@@ -59,11 +19,11 @@ TriMesh BentModel::ConvertMesh(const TriMesh &mesh) {
             ScaleMesh(mesh, GetOperandModel()->GetScale());
 
         // Figure out which dimension to use for slicing and slice the mesh.
-        const Dim slice_dim = GetSliceDim_(scaled_mesh, spin_.axis);
+        const Dim slice_dim = GetSliceDim_(scaled_mesh, spin.axis);
         sliced_mesh_ = SliceMesh(scaled_mesh, slice_dim, num_slices);
     }
 
-    return BendMesh(sliced_mesh_, spin_);
+    return BendMesh(sliced_mesh_, spin);
 }
 
 Dim BentModel::GetSliceDim_(const TriMesh &mesh, const Vector3f &spin_axis) {

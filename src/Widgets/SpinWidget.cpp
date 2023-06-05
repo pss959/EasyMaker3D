@@ -14,6 +14,9 @@ void SpinWidget::CreationDone() {
 
         ring_transform_ = SG::FindNodeUnderNode(*this, "RingTransform");
 
+        axis_->SetTranslationRange(Range2f(Point2f(-100, -100),
+                                           Point2f(100, 100)));
+
         // Set up callbacks.
         axis_->GetAxisChanged().AddObserver(
             this, [&](bool is_rotation){

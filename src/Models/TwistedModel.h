@@ -2,9 +2,8 @@
 
 #include "Base/Memory.h"
 #include "Math/SlicedMesh.h"
-#include "Math/Spin.h"
 #include "Math/Types.h"
-#include "Models/ConvertedModel.h"
+#include "Models/SpinBasedModel.h"
 
 namespace Parser { class Registry; }
 
@@ -15,35 +14,13 @@ DECL_SHARED_PTR(TwistedModel);
 /// Model.
 ///
 /// \ingroup Models
-class TwistedModel : public ConvertedModel {
-  public:
-    /// Sets the spin parameters.
-    void SetSpin(const Spin &spin);
-
-    /// Returns the current Spin.
-    const Spin & GetSpin() const { return spin_; }
-
-    virtual bool CanSetComplexity() const { return true; }
-
+class TwistedModel : public SpinBasedModel {
   protected:
     TwistedModel() {}
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone() override;
 
     virtual TriMesh ConvertMesh(const TriMesh &mesh) override;
 
   private:
-    /// \name Parsed fields.
-    ///@{
-    Parser::TField<Point3f>  center_;
-    Parser::TField<Vector3f> axis_;
-    Parser::TField<Anglef>   angle_;
-    ///@}
-
-    /// Spin used to create the model.
-    Spin       spin_;
-
     /// Caches the operand Model mesh split into slices based on complexity and
     /// the current Spin axis.
     SlicedMesh sliced_mesh_;

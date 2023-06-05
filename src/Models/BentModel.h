@@ -2,10 +2,9 @@
 
 #include "Base/Memory.h"
 #include "Enums/Dim.h"
-#include "Math/Spin.h"
 #include "Math/SlicedMesh.h"
 #include "Math/Types.h"
-#include "Models/ScaledConvertedModel.h"
+#include "Models/SpinBasedModel.h"
 
 namespace Parser { class Registry; }
 
@@ -13,45 +12,16 @@ DECL_SHARED_PTR(BentModel);
 
 /// BentModel is a derived ConvertedModel class that represents a Model that
 /// has been bent by some angle around an arbitrary axis through an arbitrary
-/// center point with an optional offset proportional to the angle. The center,
-/// axis, and pffset are specified in object coordinates of the operand Model.
-///
-/// Note that the BentModel applies a Spin to the scaled version of the operand
-/// Model's mesh, since that is what the user expects.  Therefore, it is
-/// derived from ScaledConvertedModel so that the scales are maintained
-/// properly.
+/// center point with an optional offset proportional to the angle.
 ///
 /// \ingroup Models
-class BentModel : public ScaledConvertedModel {
-  public:
-    /// Sets the spin parameters.
-    void SetSpin(const Spin &spin);
-
-    /// Returns the current Spin.
-    const Spin & GetSpin() const { return spin_; }
-
-    virtual bool CanSetComplexity() const { return true; }
-
+class BentModel : public SpinBasedModel {
   protected:
     BentModel() {}
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone() override;
 
     virtual TriMesh ConvertMesh(const TriMesh &mesh) override;
 
   private:
-    /// \name Parsed fields.
-    ///@{
-    Parser::TField<Point3f>  center_;
-    Parser::TField<Vector3f> axis_;
-    Parser::TField<Anglef>   angle_;
-    Parser::TField<float>    offset_;
-    ///@}
-
-    /// Spin used to create the model.
-    Spin       spin_;
-
     /// Caches the operand Model mesh split into slices based on complexity and
     /// the current Spin axis.
     SlicedMesh sliced_mesh_;

@@ -306,6 +306,7 @@ lib_sources = list(chain(
         'RootModel',
         'ScaledConvertedModel',
         'SphereModel',
+        'SpinBasedModel',
         'TaperedModel',
         'TextModel',
         'TorusModel',

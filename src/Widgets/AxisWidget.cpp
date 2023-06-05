@@ -19,9 +19,11 @@ void AxisWidget::CreationDone() {
 
         // Set up callbacks.
         rotator_->GetRotationChanged().AddObserver(
-            this, [&](Widget &, const Rotationf &){ RotationChanged_(); });
+            this, [&](Widget &, const Rotationf &){
+                axis_changed_.Notify(true); });
         translator_->GetValueChanged().AddObserver(
-            this, [&](Widget &, const Vector2f &){ TranslationChanged_(); });
+            this, [&](Widget &, const Vector2f &){
+                axis_changed_.Notify(false); });
     }
 }
 
@@ -64,28 +66,4 @@ void AxisWidget::SetSize(float radius) {
 void AxisWidget::SetTranslationRange(const Range2f &range) {
     translator_->SetRange(Vector2f(range.GetMinPoint()),
                           Vector2f(range.GetMaxPoint()));
-}
-
-void AxisWidget::HighlightRotator(const Color &color) {
-    HighlightSubWidget("Rotator", color);
-}
-
-void AxisWidget::UnhighlightRotator() {
-    UnhighlightSubWidget("Rotator");
-}
-
-void AxisWidget::HighlightTranslator(const Color &color) {
-    HighlightSubWidget("Translator", color);
-}
-
-void AxisWidget::UnhighlightTranslator() {
-    UnhighlightSubWidget("Translator");
-}
-
-void AxisWidget::RotationChanged_() {
-    axis_changed_.Notify(true);
-}
-
-void AxisWidget::TranslationChanged_() {
-    axis_changed_.Notify(false);
 }
