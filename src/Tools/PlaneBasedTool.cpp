@@ -9,7 +9,6 @@
 
 #include "Commands/ChangePlaneCommand.h"
 #include "Feedback/LinearFeedback.h"
-#include "Items/SessionState.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
@@ -102,7 +101,7 @@ void PlaneBasedTool::Activate_(bool is_activation) {
     stage_plane_ = GetStagePlaneFromWidget_();
 
     if (is_activation) {
-        // Save the center of the unclipped Model in stage coordinates.
+        // Save the center of the Model in stage coordinates.
         stage_center_ = Point3f(GetTranslation());
         start_stage_plane_ = stage_plane_;
         context.target_manager->StartSnapping();
@@ -138,7 +137,7 @@ void PlaneBasedTool::PlaneChanged_(bool is_rotation) {
 
     stage_plane_ = GetStagePlaneFromWidget_();
 
-    // If this is the first change, create the ChangeClipCommand and start the
+    // If this is the first change, create the ChangePlaneCommand and start the
     // drag.
     if (! command_) {
         command_ = CreateChangePlaneCommand();
@@ -146,27 +145,13 @@ void PlaneBasedTool::PlaneChanged_(bool is_rotation) {
         GetDragStarted().Notify(*this);
     }
 
-    // Try snapping unless modified dragging.
+    // Undo any highlighting to start.
     plane_widget_->UnhighlightSubWidget("Rotator");
     plane_widget_->UnhighlightSubWidget("Translator");
-    Color color = Color::White();  // Changed if snapped.
-    if (! context.is_modified_mode) {
-        if (is_rotation) {
-            int snapped_dim = -1;
-            if (SnapRotation_(snapped_dim)) {
-                color = snapped_dim >= 0 ?
-                    SG::ColorMap::SGetColorForDimension(snapped_dim) :
-                    GetSnappedFeedbackColor();
-                plane_widget_->HighlightSubWidget("Rotator", color);
-            }
-        }
-        else {
-            if (SnapTranslation_()) {
-                color = GetSnappedFeedbackColor();
-                plane_widget_->HighlightSubWidget("Translator", color);
-            }
-        }
-    }
+
+    // Try snapping unless modified dragging.
+    const bool is_snapped = ! context.is_modified_mode &&
+        (is_rotation ? SnapRotation_() : SnapTranslation_());
 
     command_->SetPlane(stage_plane_);
     context.command_manager->SimulateDo(command_);
@@ -175,27 +160,29 @@ void PlaneBasedTool::PlaneChanged_(bool is_rotation) {
     if (! is_rotation) {
         if (! feedback_)
             feedback_ = context.feedback_manager->Activate<LinearFeedback>();
-        UpdateTranslationFeedback_(color);
+        UpdateTranslationFeedback_(is_snapped);
     }
 }
 
-bool PlaneBasedTool::SnapRotation_(int &snapped_dim) {
-    const auto &context = GetContext();
-    auto &tm = *context.target_manager;
-
+bool PlaneBasedTool::SnapRotation_() {
+    auto &tm = *GetContext().target_manager;
     bool is_snapped = false;
-    snapped_dim     = -1;
 
     // Try to snap to the point target direction (in stage coordinates) if it
     // is active.  Otherwise, try to snap to any of the principal axes.
     Rotationf rot;
     if (tm.SnapToDirection(stage_plane_.normal, rot)) {
         stage_plane_.normal = tm.GetPointTarget().GetDirection();
+        plane_widget_->HighlightSubWidget("Rotator", GetSnappedFeedbackColor());
         is_snapped = true;
     }
     else {
-        snapped_dim = SnapToAxis(stage_plane_.normal);
-        is_snapped = snapped_dim >= 0;
+        const int snapped_dim = SnapToAxis(stage_plane_.normal);
+        if (snapped_dim >= 0) {
+            plane_widget_->HighlightSubWidget(
+                "Rotator", SG::ColorMap::SGetColorForDimension(snapped_dim));
+            is_snapped = true;
+        }
     }
 
     if (is_snapped) {
@@ -206,7 +193,6 @@ bool PlaneBasedTool::SnapRotation_(int &snapped_dim) {
         stage_plane_ = Plane(plane_pt, stage_plane_.normal);
         UpdatePlaneWidgetPlane_();
     }
-
     return is_snapped;
 }
 
@@ -214,7 +200,7 @@ bool PlaneBasedTool::SnapTranslation_() {
     auto &tm = *GetContext().target_manager;
 
     // Try to snap to the point target position (if it is active) or the center
-    // of the unclipped Model, whichever is closer.
+    // of the Model, whichever is closer.
     float dist = stage_plane_.GetDistanceToPoint(stage_center_);
     if (tm.IsPointTargetVisible()) {
         const float target_dist =
@@ -222,12 +208,14 @@ bool PlaneBasedTool::SnapTranslation_() {
         if (std::abs(target_dist) < std::abs(dist))
             dist = target_dist;
     }
-    if (std::abs(dist) <= TK::kSnapPointTolerance) {
+    const bool is_snapped = std::abs(dist) <= TK::kSnapPointTolerance;
+    if (is_snapped) {
         stage_plane_.distance += dist;
         UpdatePlaneWidgetPlane_();
-        return true;
+        plane_widget_->HighlightSubWidget("Translator",
+                                          GetSnappedFeedbackColor());
     }
-    return false;
+    return is_snapped;
 }
 
 Plane PlaneBasedTool::GetStagePlaneFromModel_() const {
@@ -257,10 +245,10 @@ void PlaneBasedTool::UpdateTranslationRange_() {
     plane_widget_->SetTranslationRange(GetTranslationRange());
 }
 
-void PlaneBasedTool::UpdateTranslationFeedback_(const Color &color) {
-    // Show the ClippedModel size in the direction of the plane normal. Find
-    // the position of the minimum point (relative to the clipping plane) in
-    // stage coordinates.
+void PlaneBasedTool::UpdateTranslationFeedback_(bool is_snapped) {
+    // Show the motion in the direction of the plane normal. Find the position
+    // of the minimum point (relative to the plane) in stage coordinates.
+    // XXXX Do something better?
     const auto &model = *GetModelAttachedTo();
     const auto &mesh        = model.GetMesh();
     const Vector3f &scale   = model.GetScale();
@@ -277,7 +265,8 @@ void PlaneBasedTool::UpdateTranslationFeedback_(const Color &color) {
     }
     const Point3f p0 = GetModelMatrix() * min_pt + model.GetLocalCenterOffset();
     const Point3f p1 = Point3f(stage_plane_.distance * stage_plane_.normal);
-    feedback_->SetColor(color);
+    feedback_->SetColor(is_snapped ? GetSnappedFeedbackColor() :
+                        Color::White());
     feedback_->SpanLength(p0, stage_plane_.normal,
                           ion::math::Dot(p1 - p0, stage_plane_.normal));
 }

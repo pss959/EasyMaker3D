@@ -60,26 +60,24 @@ class PlaneBasedTool : public Tool {
 
     /// Plane (stage coordinates) at the start of widget interaction. This is
     /// used to show translation feedback.
-    Plane                start_stage_plane_;
+    Plane                 start_stage_plane_;
 
-    /// Center of the unclipped model in stage coordinates.
-    Point3f              stage_center_;
+    /// Center of the model in stage coordinates.
+    Point3f               stage_center_;
 
-    /// Feedback showing ClippedModel size in the direction of the plane normal.
-    LinearFeedbackPtr    feedback_;
+    /// Feedback showing motion in the direction of the plane normal.
+    LinearFeedbackPtr     feedback_;
 
     // Widget callbacks.
     void Activate_(bool is_activation);
     void PlaneChanged_(bool is_rotation);
 
-    /// If the current PlaneWidget rotation should be snapped to the
-    /// PointTarget or principal axis, this returns true. It sets \p
-    /// snapped_dim to the axis dimension if appropriate; otherwise it sets it
-    /// to -1.
-    bool SnapRotation_(int &snapped_dim);
+    /// Snaps the current axis rotation to the PointTarget direction or
+    /// principal axis.
+    bool SnapRotation_();
 
-    /// If the current PlaneWidget translation should be snapped to the
-    /// PointTarget or origin, this returns true.
+    /// Snaps the current PlaneWidget translation to the PointTarget or model
+    /// center if appropriate.
     bool SnapTranslation_();
 
     /// Returns the current plane in stage coordinates from the attached Model.
@@ -97,7 +95,7 @@ class PlaneBasedTool : public Tool {
     void UpdateTranslationRange_();
 
     /// Updates feedback for plane translation.
-    void UpdateTranslationFeedback_(const Color &color);
+    void UpdateTranslationFeedback_(bool is_snapped);
 
     friend class Parser::Registry;
 };

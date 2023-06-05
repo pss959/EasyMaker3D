@@ -6,10 +6,10 @@
 #include "Util/Assert.h"
 
 void TwistedModel::AddFields() {
-    Twist default_twist;
-    AddModelField(center_.Init("center", default_twist.center));
-    AddModelField(axis_.Init("axis",     default_twist.axis));
-    AddModelField(angle_.Init("angle",   default_twist.angle));
+    Spin default_spin;
+    AddModelField(center_.Init("center", default_spin.center));
+    AddModelField(axis_.Init("axis",     default_spin.axis));
+    AddModelField(angle_.Init("angle",   default_spin.angle));
 
     ConvertedModel::AddFields();
 }
@@ -18,7 +18,7 @@ bool TwistedModel::IsValid(std::string &details) {
     if (! ConvertedModel::IsValid(details))
         return false;
     if (! IsValidVector(axis_)) {
-        details = "zero-length twist axis";
+        details = "zero-length twist spin axis";
         return false;
     }
     return true;
@@ -28,37 +28,37 @@ void TwistedModel::CreationDone() {
     ConvertedModel::CreationDone();
 
     if (! IsTemplate()) {
-        twist_.center = center_;
-        twist_.axis   = axis_;
-        twist_.angle  = angle_;
+        spin_.center = center_;
+        spin_.axis   = axis_;
+        spin_.angle  = angle_;
     }
 }
 
-void TwistedModel::SetTwist(const Twist &twist) {
-    ASSERT(IsValidVector(twist.axis));
-    twist_  = twist;
-    center_ = twist.center;
-    axis_   = twist.axis;
-    angle_  = twist.angle;
+void TwistedModel::SetSpin(const Spin &spin) {
+    ASSERT(IsValidVector(spin.axis));
+    spin_  = spin;
+    center_ = spin.center;
+    axis_   = spin.axis;
+    angle_  = spin.angle;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
 TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
     // Reslice if the complexity or axis changed.
     const float complexity = GetComplexity();
-    if (complexity != sliced_complexity_ || twist_.axis != sliced_axis_) {
+    if (complexity != sliced_complexity_ || spin_.axis != sliced_axis_) {
         sliced_complexity_ = complexity;
-        sliced_axis_       = twist_.axis;
+        sliced_axis_       = spin_.axis;
         const size_t num_slices = LerpInt(complexity, 1, 20);
 
-        if (twist_.axis == Vector3f::AxisY()) {
+        if (spin_.axis == Vector3f::AxisY()) {
             sliced_mesh_ = SliceMesh(mesh, Dim::kY, num_slices);
         }
         else {
-            // If the twist axis is not the +Y axis, rotate the mesh so it is,
-            // apply the twist, and rotate back.
+            // If the spin axis is not the +Y axis, rotate the mesh so it is,
+            // apply the spin, and rotate back.
             const Rotationf rot =
-                Rotationf::RotateInto(twist_.axis, Vector3f::AxisY());
+                Rotationf::RotateInto(spin_.axis, Vector3f::AxisY());
 
             sliced_mesh_ = SliceMesh(RotateMesh(mesh, rot), Dim::kY,
                                      num_slices);
@@ -67,5 +67,5 @@ TriMesh TwistedModel::ConvertMesh(const TriMesh &mesh) {
         }
     }
 
-    return TwistMesh(sliced_mesh_, twist_);
+    return TwistMesh(sliced_mesh_, spin_);
 }

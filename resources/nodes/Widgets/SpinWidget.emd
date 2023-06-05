@@ -1,0 +1,41 @@
+SpinWidget "Spin" {
+  children: [
+    # AxisWidget to change the spin axis.
+    <"nodes/Widgets/AxisWidget.emd">,
+
+    # Node to allow the Ring to be rotated and translated to match the axis.
+    Node "RingTransform" {
+      children: [
+        # Ring (DiscWidget) to change the spin angle.
+        DiscWidget "Ring" {
+          mode: "kRotationOnly",
+          angle_mode: "kAccumulate",
+          children: [
+            Node "Sticks" {
+              disabled_flags: "kIntersectAll",
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
+                }
+              ],
+              children: [
+                Node "XStick" { scale: 1 .4 .4, shapes: [Box {}] },
+                Node "ZStick" { scale: .4 .4 1, shapes: [Box {}] },
+              ],
+            },
+            Node "Ring" {
+              shapes: [
+                Torus "Torus" {
+                  inner_radius: .4,
+                  ring_count:   12,
+                  sector_count: 72,
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

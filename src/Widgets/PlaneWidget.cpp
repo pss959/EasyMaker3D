@@ -8,7 +8,7 @@ void PlaneWidget::CreationDone() {
     CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
-        rotator_  = Util::CastToDerived<AxisWidget>(AddSubWidget("AxisWidget"));
+        rotator_  = Util::CastToDerived<AxisWidget>(AddSubWidget("Axis"));
         translator_ = Util::CastToDerived<Slider1DWidget>(
             AddSubWidget("PlaneTranslator"));
         plane_rotator_ = SG::FindNodeUnderNode(*this, "PlaneRotator");

@@ -13,8 +13,8 @@
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
+#include "Widgets/SpinWidget.h"
 #include "Widgets/StageWidget.h"
-#include "Widgets/WheelWidget.h"
 
 #define REGISTER_TYPE_(T) Parser::Registry::AddType<T>(#T)
 
@@ -35,8 +35,8 @@ void RegisterWidgetTypes_() {
     REGISTER_TYPE_(Slider1DWidget);
     REGISTER_TYPE_(Slider2DWidget);
     REGISTER_TYPE_(SphereWidget);
+    REGISTER_TYPE_(SpinWidget);
     REGISTER_TYPE_(StageWidget);
-    REGISTER_TYPE_(WheelWidget);
 }
 
 #undef REGISTER_TYPE_

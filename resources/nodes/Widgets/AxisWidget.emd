@@ -1,4 +1,4 @@
-AxisWidget "AxisWidget" {
+AxisWidget "Axis" {
   children: [
     # Widget for rotating the axis.
     SphereWidget "Rotator" {

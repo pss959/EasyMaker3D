@@ -2,7 +2,7 @@
 
 #include "Base/Memory.h"
 #include "Math/SlicedMesh.h"
-#include "Math/Twist.h"
+#include "Math/Spin.h"
 #include "Math/Types.h"
 #include "Models/ConvertedModel.h"
 
@@ -11,18 +11,17 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(TwistedModel);
 
 /// TwistedModel is a derived ConvertedModel class that represents a Model that
-/// has been twisted by some angle around an arbitrary axis through an
-/// arbitrary point. The point and axis are specified in object coordinates of
-/// the operand Model.
+/// has been twisted by a Spin specified in object coordinates of the operand
+/// Model.
 ///
 /// \ingroup Models
 class TwistedModel : public ConvertedModel {
   public:
-    /// Sets the twist parameters.
-    void SetTwist(const Twist &twist);
+    /// Sets the spin parameters.
+    void SetSpin(const Spin &spin);
 
-    /// Returns the current Twist.
-    const Twist & GetTwist() const { return twist_; }
+    /// Returns the current Spin.
+    const Spin & GetSpin() const { return spin_; }
 
     virtual bool CanSetComplexity() const { return true; }
 
@@ -42,11 +41,11 @@ class TwistedModel : public ConvertedModel {
     Parser::TField<Anglef>   angle_;
     ///@}
 
-    /// Twist used to create the model.
-    Twist      twist_;
+    /// Spin used to create the model.
+    Spin       spin_;
 
     /// Caches the operand Model mesh split into slices based on complexity and
-    /// the current Twist axis.
+    /// the current Spin axis.
     SlicedMesh sliced_mesh_;
 
     /// Complexity used to create #sliced_mesh_.

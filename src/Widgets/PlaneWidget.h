@@ -14,9 +14,9 @@ DECL_SHARED_PTR(Slider1DWidget);
 /// A PlaneWidget is used to specify the orientation and position of a plane in
 /// 3D. The widget contains the following named sub-widgets:
 ///
-///   - "AxisWidget": An AxisWidget allowing the plane normal to be rotated.
-///   - "PlaneTranslator": A Slider1DWidget connected to a square showing the
-///      plane and allowing it to be translated along the normal.
+///   - "Axis":  An AxisWidget allowing the plane normal to be rotated.
+///   - "Plane": A Slider1DWidget connected to a square showing the plane and
+///      allowing it to be translated along the normal.
 ///
 /// The GetPlaneChanged() Notifier can be used to track changes.
 ///

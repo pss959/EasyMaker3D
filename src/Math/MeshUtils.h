@@ -7,10 +7,9 @@
 
 #include "Math/Types.h"
 
-struct Bend;
 struct SlicedMesh;
+struct Spin;
 struct Taper;
-struct Twist;
 
 /// \file
 /// Mesh Utility functions
@@ -39,8 +38,8 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m);
 /// \name Deformations.
 ///@{
 
-/// Bends a SlicedMesh using the given Bend struct.
-TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Bend &twist);
+/// Bends a SlicedMesh using the given Spin struct.
+TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Spin &spin);
 
 /// Mirrors a mesh about a plane. Returns the mirrored mesh.
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
@@ -48,8 +47,8 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 /// Tapers a SlicedMesh using the given Taper struct.
 TriMesh TaperMesh(const SlicedMesh &sliced_mesh, const Taper &taper);
 
-/// Twists a SlicedMesh using the given Twist struct.
-TriMesh TwistMesh(const SlicedMesh &sliced_mesh, const Twist &twist);
+/// Twists a SlicedMesh using the given Spin struct.
+TriMesh TwistMesh(const SlicedMesh &sliced_mesh, const Spin &spin);
 
 ///@}
 
