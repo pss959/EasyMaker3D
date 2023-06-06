@@ -1,6 +1,6 @@
-﻿#include "Math/Bend.h"
-#include "Math/Linear.h"
+﻿#include "Math/Linear.h"
 #include "Math/MeshValidation.h"
+#include "Math/Spin.h"
 #include "Models/BoxModel.h"
 #include "Models/BentModel.h"
 #include "Models/CylinderModel.h"
@@ -23,8 +23,8 @@ TEST_F(BentModelTest, DefaultBend) {
     bent->SetOperandModel(box);
 
     // Should be using a default bend.
-    Bend default_bend;
-    EXPECT_EQ(default_bend, bent->GetBend());
+    Spin default_spin;
+    EXPECT_EQ(default_spin, bent->GetSpin());
 
     // The result should be the original box, but sliced.
     const auto &mesh = bent->GetMesh();
@@ -49,16 +49,16 @@ TEST_F(BentModelTest, Bend90) {
 
     // Bend 90 degrees clockwise around +Y with the center at the left end.
     // This should create a 90-degree curve ending near Z=5.
-    Bend bend;
-    bend.center.Set(-5, 0, 0);
-    bend.angle = Anglef::FromDegrees(-90);
+    Spin spin;
+    spin.center.Set(-5, 0, 0);
+    spin.angle = Anglef::FromDegrees(-90);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
     bent->SetComplexity(.1f);
-    bent->SetBend(bend);
+    bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
-    EXPECT_EQ(bend, bent->GetBend());
+    EXPECT_EQ(spin, bent->GetSpin());
 
     // Should be the same number of points and triangles as above.
     const auto &mesh = bent->GetMesh();
@@ -85,16 +85,16 @@ TEST_F(BentModelTest, Bend90Max) {
 
     // Bend 90 degrees counterclockwise around +Y with the center at the right
     // end.  This should create a 90-degree curve ending near Z=5.
-    Bend bend;
-    bend.center.Set(5, 0, 0);
-    bend.angle = Anglef::FromDegrees(90);
+    Spin spin;
+    spin.center.Set(5, 0, 0);
+    spin.angle = Anglef::FromDegrees(90);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
     bent->SetComplexity(.1f);
-    bent->SetBend(bend);
+    bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
-    EXPECT_EQ(bend, bent->GetBend());
+    EXPECT_EQ(spin, bent->GetSpin());
 
     // Should be the same number of points and triangles as above.
     const auto &mesh = bent->GetMesh();
@@ -123,16 +123,16 @@ TEST_F(BentModelTest, Bend360) {
 
     // Bend 360 degrees counterclockwise around +Y with the center at the left
     // end.  This should create a ring.
-    Bend bend;
-    bend.center.Set(-5, 0, 0);
-    bend.angle = Anglef::FromDegrees(360);
+    Spin spin;
+    spin.center.Set(-5, 0, 0);
+    spin.angle = Anglef::FromDegrees(360);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
     bent->SetComplexity(.1f);
-    bent->SetBend(bend);
+    bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
-    EXPECT_EQ(bend, bent->GetBend());
+    EXPECT_EQ(spin, bent->GetSpin());
 
     // Should be similar number of points and triangles as above, but coplanar
     // end triangles removed.
@@ -148,8 +148,8 @@ TEST_F(BentModelTest, Bend360) {
     }
 
     // Repeat with -360.
-    bend.angle = Anglef::FromDegrees(-360);
-    bent->SetBend(bend);
+    spin.angle = Anglef::FromDegrees(-360);
+    bent->SetSpin(spin);
     {
         const auto &mesh = bent->GetMesh();
         EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
@@ -171,16 +171,16 @@ TEST_F(BentModelTest, BendCyl360) {
 
     // Bend 360 degrees counterclockwise around +X with the center in the
     // middle.  This should create a ring.
-    Bend bend;
-    bend.axis  = Vector3f::AxisX();
-    bend.angle = Anglef::FromDegrees(360);
+    Spin spin;
+    spin.axis  = Vector3f::AxisX();
+    spin.angle = Anglef::FromDegrees(360);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
     bent->SetComplexity(.1f);
-    bent->SetBend(bend);
+    bent->SetSpin(spin);
     bent->SetOperandModel(cyl);
 
-    EXPECT_EQ(bend, bent->GetBend());
+    EXPECT_EQ(spin, bent->GetSpin());
 
     // Should be similar number of points and triangles as above, but coplanar
     // end triangles removed.
@@ -196,8 +196,8 @@ TEST_F(BentModelTest, BendCyl360) {
     }
 
     // Repeat with -360.
-    bend.angle = Anglef::FromDegrees(-360);
-    bent->SetBend(bend);
+    spin.angle = Anglef::FromDegrees(-360);
+    bent->SetSpin(spin);
     {
         const auto &mesh = bent->GetMesh();
         EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
@@ -219,17 +219,17 @@ TEST_F(BentModelTest, Bend180OffCenter) {
     box->SetTranslation(Vector3f(0, 1, 0));
 
     // Bend 180 degrees counterclockwise around +Y with the center at Z=10.
-    Bend bend;
-    bend.axis  = Vector3f::AxisY();
-    bend.angle = Anglef::FromDegrees(180);
-    bend.center.Set(0, 0, 10);
+    Spin spin;
+    spin.axis  = Vector3f::AxisY();
+    spin.angle = Anglef::FromDegrees(180);
+    spin.center.Set(0, 0, 10);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
     bent->SetComplexity(.1f);
-    bent->SetBend(bend);
+    bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
-    EXPECT_EQ(bend, bent->GetBend());
+    EXPECT_EQ(spin, bent->GetSpin());
 
     {
         const auto &mesh = bent->GetMesh();
@@ -243,9 +243,9 @@ TEST_F(BentModelTest, Bend180OffCenter) {
     }
 
     // Bend 180 degrees clockwise.
-    bend.angle = Anglef::FromDegrees(-180);
-    bent->SetBend(bend);
-    EXPECT_EQ(bend, bent->GetBend());
+    spin.angle = Anglef::FromDegrees(-180);
+    bent->SetSpin(spin);
+    EXPECT_EQ(spin, bent->GetSpin());
 
     {
         const auto &mesh = bent->GetMesh();

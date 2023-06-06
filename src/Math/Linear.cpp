@@ -111,6 +111,13 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
     return result;
 }
 
+Spin TransformSpin(const Spin &spin, const Matrix4f &m) {
+    Spin result = spin;
+    result.axis   = ion::math::Normalized(m * spin.axis);
+    result.center = m * spin.center;
+    return result;
+}
+
 Rotationf TransformRotation(const Rotationf &rot, const Matrix4f &m) {
     Vector3f axis;
     Anglef   angle;

@@ -1,7 +1,7 @@
 #include "Debug/Timer.h"  // To help diagnose timing issues.
 #include "Math/MeshBuilding.h"
 #include "Math/MeshSlicing.h"
-#include "Math/Twist.h"
+#include "Math/Spin.h"
 #include "Models/CylinderModel.h"
 #include "Models/TwistedModel.h"
 #include "Tests/SceneTestBase.h"
@@ -61,9 +61,9 @@ TEST_F(TimingTest, Twist) {
 
     timer.AddTimePoint("Entering loop");
     for (int i = 0; i < 10; ++i) {
-        Twist twist;
-        twist.angle = Anglef::FromDegrees(i + 1);
-        tw->SetTwist(twist);
+        Spin spin;
+        spin.angle = Anglef::FromDegrees(i + 1);
+        tw->SetSpin(spin);
         EXPECT_TRUE(tw->IsMeshValid(reason));
     }
     timer.AddTimePoint("Loop done");

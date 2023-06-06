@@ -29,6 +29,7 @@ void SpinWidget::CreationDone() {
 }
 
 void SpinWidget::SetSpin(const Spin &spin) {
+    std::cerr << "XXXX SpinWidget: " << spin.ToString() << "\n";
     spin_ = spin;
     axis_->SetDirection(spin.axis);
     axis_->SetPosition(spin.center);
@@ -40,12 +41,14 @@ void SpinWidget::SetSpin(const Spin &spin) {
 }
 
 void SpinWidget::SetSize(float radius) {
+    std::cerr << "XXXX SpinWidget radius = " << radius << "\n";
+
     // Scale the AxisWidget.
     axis_->SetSize(radius);
 
     // Scale the DiscWidget parts.
-    const float kStickScale = 1.2f;
-    const float kRingScale = .8f;
+    const float kRingScale  = 1.2f;
+    const float kStickScale = .95f * kRingScale;
     const auto x_stick  = SG::FindNodeUnderNode(*ring_, "XStick");
     const auto z_stick  = SG::FindNodeUnderNode(*ring_, "ZStick");
     auto x_scale = x_stick->GetScale();

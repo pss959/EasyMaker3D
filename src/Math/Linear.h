@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "Enums/Dim.h"
+#include "Math/Spin.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 
@@ -66,6 +67,9 @@ Bounds TranslateBounds(const Bounds &bounds, const Vector3f &trans);
 /// Transforms a Bounds by a matrix, returning a new (aligned) Bounds that
 /// encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
+
+/// Transforms the center and axis in a Spin by a matrix, returning a new Spin.
+Spin TransformSpin(const Spin &spin, const Matrix4f &m);
 
 /// Transforms a rotation by a matrix. This rotates the axis and leaves the
 /// angle unchanged.

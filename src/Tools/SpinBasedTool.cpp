@@ -40,8 +40,6 @@ void SpinBasedTool::CreationDone() {
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
         spin_widget_->GetSpinChanged().AddObserver(
             this, [&](SpinWidget::ChangeType type){ SpinChanged_(type); });
-
-        
     }
 }
 
@@ -72,9 +70,8 @@ void SpinBasedTool::Attach() {
     auto model = GetModelAttachedTo();
     ASSERT(model);
 
-    // Update the widget size based on the size of the operand Model (unclipped
-    // mesh).
-    const auto model_size = MatchOperandModelAndGetSize(true);
+    // Update the widget size based on the current Model size.
+    const auto model_size = MatchModelAndGetSize(false);
     const float radius = .5f * ion::math::Length(model_size);
     spin_widget_->SetSize(radius);
 
@@ -88,12 +85,8 @@ void SpinBasedTool::Detach() {
 }
 
 Spin SpinBasedTool::GetObjectSpin() const {
-    // Convert the spin axis and center into object coordinates.
-    const auto som = GetStageCoordConv().GetRootToObjectMatrix();
-    Spin spin = spin_widget_->GetSpin();
-    spin.axis   = som * spin.axis;
-    spin.center = som * spin.center;
-    return spin;
+    return TransformSpin(spin_widget_->GetSpin(),
+                         GetStageCoordConv().GetRootToObjectMatrix());
 }
 
 void SpinBasedTool::Activate_(bool is_activation) {
@@ -250,11 +243,9 @@ Spin SpinBasedTool::GetStageSpinFromModel_() const {
     // Let the derived class get the Spin in object coordinates from the
     // Model, convert it to stage coordinates, and then undo the centering
     // translation.
-    const auto osm = GetStageCoordConv().GetObjectToRootMatrix();
-    Spin spin = GetObjectSpinFromModel();
-    spin.axis   = ion::math::Normalized(osm * spin.axis);
-    spin.center = osm *
-        spin.center -GetModelAttachedTo()->GetLocalCenterOffset();
+    Spin spin = TransformSpin(GetObjectSpinFromModel(),
+                              GetStageCoordConv().GetObjectToRootMatrix());
+    spin.center -= GetModelAttachedTo()->GetLocalCenterOffset();
     return spin;
 }
 
@@ -262,20 +253,13 @@ Spin SpinBasedTool::GetStageSpinFromWidget_() const {
     // Need to apply the current rotation and translation of the tool to the
     // SpinWidget's Spin. Since a SpinBasedTool is never scaled, its model
     // matrix should do the trick.
-    const auto mm = GetModelMatrix();
-    Spin spin = spin_widget_->GetSpin();
-    spin.axis   = ion::math::Normalized(mm * spin.axis);
-    spin.center = mm * spin.center;
-    return spin;
+    return TransformSpin(spin_widget_->GetSpin(), GetModelMatrix());
 }
 
 void SpinBasedTool::UpdateSpinWidget_() {
     // This is the reverse of GetStageSpinFromWidget_().
-    const auto imm = ion::math::Inverse(GetModelMatrix());
-    Spin spin = stage_spin_;
-    spin.axis   = ion::math::Normalized(imm * spin.axis);
-    spin.center = imm * spin.center;
-    spin_widget_->SetSpin(spin);
+    spin_widget_->SetSpin(
+        TransformSpin(stage_spin_, ion::math::Inverse(GetModelMatrix())));
 }
 
 void SpinBasedTool::UpdateAngleFeeedback_() {
