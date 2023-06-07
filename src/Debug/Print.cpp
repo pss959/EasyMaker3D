@@ -7,6 +7,8 @@
 #include <string>
 #include <unordered_set>
 
+#include <ion/math/transformutils.h>
+
 #include "Commands/CommandList.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
@@ -164,6 +166,28 @@ static void PrintBoundsRecursive_(const SG::Node &node, const Matrix4f &wsm,
     const Matrix4f ctm = PrintBounds_(node, wsm, level, start_matrix);
     for (const auto &child: node.GetAllChildren())
         PrintBoundsRecursive_(*child, wsm, level + 1, ctm);
+}
+
+static Matrix4f PrintLocations_(const SG::Node &node, const Matrix4f &wsm,
+                                int level, const Matrix4f &start_matrix) {
+    std::string indent = Indent_(level);
+    const Matrix4f ctm = start_matrix * node.GetModelMatrix();
+
+    const auto lloc = Point3f::Zero() + node.GetTranslation();
+    const auto wloc = ctm * lloc;
+    const auto sloc = wsm * wloc;
+    std::cout << indent << GetDesc_(node) << "\n"
+              << indent
+              << " L: " << lloc << " S: " << sloc << " W:" << wloc << "\n";
+
+    return ctm;
+}
+
+static void PrintLocationsRecursive_(const SG::Node &node, const Matrix4f &wsm,
+                                  int level, const Matrix4f &start_matrix) {
+    const Matrix4f ctm = PrintLocations_(node, wsm, level, start_matrix);
+    for (const auto &child: node.GetAllChildren())
+        PrintLocationsRecursive_(*child, wsm, level + 1, ctm);
 }
 
 static Matrix4f PrintMatrices_(const SG::Node &node, int level,
@@ -357,6 +381,26 @@ void PrintBoundsOnPath(const SG::NodePath &path, const Matrix4f &wsm,
                 PrintBoundsRecursive_(*node, wsm, level, ctm);
             else
                 ctm = PrintBounds_(*node, wsm, level++, ctm);
+        }
+    }
+}
+
+void PrintLocations(const SG::Node &root, const Matrix4f &wsm) {
+    Surrounder_ surrounder;
+    PrintLocationsRecursive_(root, wsm, 0, Matrix4f::Identity());
+}
+
+void PrintLocationsOnPath(const SG::NodePath &path, const Matrix4f &wsm,
+                       bool print_below) {
+    Surrounder_ surrounder;
+    if (PrintPath_(path)) {
+        int level = 0;
+        Matrix4f ctm = Matrix4f::Identity();
+        for (auto &node: path) {
+            if (node == path.back() && print_below)
+                PrintLocationsRecursive_(*node, wsm, level, ctm);
+            else
+                ctm = PrintLocations_(*node, wsm, level++, ctm);
         }
     }
 }

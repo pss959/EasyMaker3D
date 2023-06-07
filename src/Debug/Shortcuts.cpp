@@ -50,13 +50,15 @@ class ShortcutMap_ {
         kPrintGraph,
         kPrintGraphOnPath,
         kPrintHelp,
+        kPrintLocations,
+        kPrintLocationsOnPath,
         kPrintMatrices,
         kPrintMatricesOnPath,
         kPrintModels,
         kPrintModelsFull,
         kPrintPaneTreeBrief,
         kPrintPaneTreeFull,
-        kPrintPosition,
+        kPrintDebugSpherePosition,
         kPrintSkeleton,
         kPrintSkeletonOnPath,
         kPrintTransforms,
@@ -125,7 +127,7 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print bounds for all nodes in the current path" },
         { "Alt-c",       Action::kPrintCommands,
           "Print the command list" },
-        { "Alt-d",       Action::kPrintPosition,
+        { "Alt-d",       Action::kPrintDebugSpherePosition,
           "Print the position of the debug sphere" },
         { "Shift-Alt-d", Action::kToggleSphere,
           "Toggle the visibility of the debug sphere" },
@@ -141,6 +143,8 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Dump the custom controller models to files" },
         { "Alt-l",       Action::kToggleEventLogging,
           "Toggle event logging" },
+        { "Shift-Alt-1", Action::kToggleLogging,
+          "Toggle all logging" },
         { "Alt-m",       Action::kPrintMatrices,
           "Print matrices for all nodes in the scene" },
         { "Shift-Alt-m", Action::kPrintMatricesOnPath,
@@ -171,8 +175,10 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print the current viewing information" },
         { "Alt-w",       Action::kPrintWidget,
           "Print the widget intersected by the debug sphere" },
-        { "Shift-Alt-1", Action::kToggleLogging,
-          "Toggle all logging" },
+        { "Alt-.",       Action::kPrintLocations,
+          "Print locations for all nodes in the scene" },
+        { "Shift-Alt-.", Action::kPrintLocationsOnPath,
+          "Print locations for all nodes in the current path" },
     };
 }
 
@@ -307,6 +313,10 @@ static bool HandleShortcut_(const std::string &str) {
         ASSERT(command_list_);
         Debug::PrintCommands(*command_list_);
         break;
+      case SAction::kPrintDebugSpherePosition:
+        std::cout << "Sphere at "
+                  << scene_context_->debug_sphere->GetTranslation() << "\n";
+        break;
       case SAction::kPrintEndNode:
         if (! limit_path_.empty())
             Debug::PrintGraph(*limit_path_.back());
@@ -319,6 +329,12 @@ static bool HandleShortcut_(const std::string &str) {
         break;
       case SAction::kPrintHelp:
         std::cout << shortcut_map_.GetHelpString();
+        break;
+      case SAction::kPrintLocations:
+        Debug::PrintLocations(root, GetWorldToStageMatrix_());
+        break;
+      case SAction::kPrintLocationsOnPath:
+        Debug::PrintLocationsOnPath(limit_path_, GetWorldToStageMatrix_());
         break;
       case SAction::kPrintMatrices:
         Debug::PrintMatrices(root);
@@ -337,10 +353,6 @@ static bool HandleShortcut_(const std::string &str) {
         break;
       case SAction::kPrintPaneTreeFull:
         Debug::PrintPaneTree(GetBoardPane_(), false);
-        break;
-      case SAction::kPrintPosition:
-        std::cout << "Sphere at "
-                  << scene_context_->debug_sphere->GetTranslation() << "\n";
         break;
       case SAction::kPrintSkeleton:
         Debug::PrintNodesAndShapes(root);

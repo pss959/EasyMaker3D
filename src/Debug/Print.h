@@ -49,6 +49,15 @@ void PrintBounds(const SG::Node &root, const Matrix4f &wsm);
 void PrintBoundsOnPath(const SG::NodePath &path, const Matrix4f &wsm,
                        bool print_below = true);
 
+/// Prints an indented tree of locations of all nodes starting with the given
+/// one. A matrix used to convert from world to stage coordinates is supplied.
+void PrintLocations(const SG::Node &root, const Matrix4f &wsm);
+
+/// Prints an indented tree of locations of all nodes on the given path. A
+/// matrix used to convert from world to stage coordinates is supplied.
+void PrintLocationsOnPath(const SG::NodePath &path, const Matrix4f &wsm,
+                          bool print_below = true);
+
 /// Prints an indented tree of nodes with their local and cumulative matrices.
 void PrintMatrices(const SG::Node &root);
 
