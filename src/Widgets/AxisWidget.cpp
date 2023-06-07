@@ -36,12 +36,13 @@ void AxisWidget::SetDirection(const Vector3f &direction) {
     rotator_->GetRotationChanged().EnableAll(false);
     rotator_->SetRotation(rot);
     rotator_->GetRotationChanged().EnableAll(true);
-
-    //t_rotator_->SetRotation(rot);
 }
 
 void AxisWidget::SetPosition(const Point3f &position) {
-    SetTranslation(position);
+    // This may be called during translation, so make sure to take the current
+    // offset into account. XXXX This is wrong?
+    SetTranslation(position -
+                   rotator_->GetRotation() * translator_->GetTranslation());
 }
 
 Vector3f AxisWidget::GetDirection() const {
@@ -49,7 +50,10 @@ Vector3f AxisWidget::GetDirection() const {
 }
 
 Point3f AxisWidget::GetPosition() const {
-    return Point3f(GetTranslation());
+    /// Add the Slider2DWidget's translation value (which is only non-zero
+    /// during its interaction) to the current translation.
+    return Point3f(GetTranslation() +
+                   rotator_->GetRotation() * translator_->GetTranslation());
 }
 
 void AxisWidget::SetSize(float radius) {
@@ -73,11 +77,8 @@ void AxisWidget::SubWidgetActivated(const std::string &name,
         // When the Slider2DWidget is deactivated, transfer the translation
         // from the Slider2DWidget to the AxisWidget and reset the
         // Slider2DWidget without notifying.
-        SetTranslation(GetTranslation() +
-                       rotator_->GetRotation() * translator_->GetTranslation());
-
+        SetTranslation(GetPosition());
         rotator_parts_->SetTranslation(Vector3f::Zero());
-
         translator_->GetValueChanged().EnableObserver(this, false);
         translator_->SetValue(Vector2f::Zero());
         translator_->GetValueChanged().EnableObserver(this, true);

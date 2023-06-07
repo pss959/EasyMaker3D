@@ -13,7 +13,8 @@ DECL_SHARED_PTR(AngularFeedback);
 /// SpinBasedTool is an abstract base class for specialized tools whose
 /// interaction involves rotating by some angle about some 3D axis specified as
 /// a Spin struct. It uses a SpinWidget to orient and position the axis and to
-/// modify the angle.
+/// modify the angle. This class assumes the attached Model is derived from
+/// ConvertedModel.
 ///
 /// The SpinBasedTool maintains the axis in stage coordinates for use in a
 /// ChangeSpinCommand. The axis can be converted to object coordinates when

@@ -68,8 +68,7 @@ void PlaneBasedTool::Attach() {
     auto model = GetModelAttachedTo();
     ASSERT(model);
 
-    // Update the widget size based on the size of the operand Model (unclipped
-    // mesh).
+    // Update the widget size based on the size of the operand Model.
     const auto model_size = MatchOperandModelAndGetSize(true);
     const float radius = .5f * ion::math::Length(model_size);
     plane_widget_->SetSize(radius);

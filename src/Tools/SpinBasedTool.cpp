@@ -13,7 +13,7 @@
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
-#include "Models/Model.h"
+#include "Models/ConvertedModel.h"
 #include "Place/PointTarget.h"
 #include "Place/PrecisionStore.h"
 #include "Place/Snapping.h"
@@ -35,13 +35,11 @@ void SpinBasedTool::CreationDone() {
     if (! IsTemplate()) {
         spin_widget_ = SG::FindTypedNodeUnderNode<SpinWidget>(*this, "Spin");
 
-#if 0 // XXXX
         // Set up callbacks.
         spin_widget_->GetActivation().AddObserver(
             this, [&](Widget &, bool is_act){ Activate_(is_act); });
         spin_widget_->GetSpinChanged().AddObserver(
             this, [&](SpinWidget::ChangeType type){ SpinChanged_(type); });
-#endif
     }
 }
 
@@ -72,8 +70,8 @@ void SpinBasedTool::Attach() {
     auto model = GetModelAttachedTo();
     ASSERT(model);
 
-    // Update the widget size based on the current Model size.
-    const auto model_size = MatchModelAndGetSize(false);
+    // Update the widget size based on the size of the ConvertedModel.
+    const auto model_size = MatchOperandModelAndGetSize(false);
     const float radius = .5f * ion::math::Length(model_size);
     spin_widget_->SetSize(radius);
 
@@ -149,8 +147,12 @@ void SpinBasedTool::SpinChanged_(SpinWidget::ChangeType type) {
         (type == SpinWidget::ChangeType::kAxis   ? SnapAxis_() :
          type == SpinWidget::ChangeType::kCenter ? SnapCenter_() : false);
 
-    // If not snapped, update the current Spin and match it.
-    if (! is_snapped) {
+    if (is_snapped) {
+        // If snapped, update the SpinWidget to reflect the change.
+        UpdateSpinWidget_();
+    }
+    else {
+        // If not snapped, update the current Spin and match it.
         stage_spin_ = GetStageSpinFromWidget_();
 
         // Apply precision to the angle unless modified dragging.
@@ -193,9 +195,6 @@ bool SpinBasedTool::SnapAxis_() {
         }
     }
 
-    if (is_snapped)
-        UpdateSpinWidget_();
-
     return is_snapped;
 }
 
@@ -203,7 +202,7 @@ bool SpinBasedTool::SnapCenter_() {
     auto &tm = *GetContext().target_manager;
 
     // Current spin center in object coordinates (from the SpinWidget).
-    const auto cur_obj_pos = Point3f(spin_widget_->GetTranslation());
+    const auto cur_obj_pos = Point3f(spin_widget_->GetSpin().center);
 
     // Snap in stage coordinates.
     const auto stage_cc  = GetStageCoordConv();
@@ -220,10 +219,15 @@ bool SpinBasedTool::SnapCenter_() {
         stage_spin_.center = stage_cc.RootToObject(start_pos + motion);
         is_snapped = true;
     }
-    // Otherwise, try to snap to any of the principal points of the unbent
+    // Otherwise, try to snap to any of the principal points of the operand
     // Model's bounds.
     else {
-        const Bounds stage_bounds = GetStageBounds();
+        ConvertedModelPtr cm =
+            Util::CastToDerived<ConvertedModel>(GetModelAttachedTo());
+        ASSERT(cm);
+        const auto stage_bounds =
+            TransformBounds(cm->GetOperandModel()->GetScaledBounds(),
+                            GetStageCoordConv().GetObjectToRootMatrix());
         Point3f stage_pos = cur_pos;
         const Vector3f tolerance = TK::kSnapPointTolerance * Vector3f(1, 1, 1);
         const Dimensionality snapped_dims =

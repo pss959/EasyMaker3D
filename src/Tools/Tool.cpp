@@ -181,13 +181,8 @@ Point3f Tool::GetPositionAboveModel(float distance, bool over_front) const {
 }
 
 Bounds Tool::GetStageBounds() const {
-    // Need the path to the Model to convert to stage coordinates.
-    ASSERT(model_sel_index_ >= 0);
-    const auto &path  = selection_.GetPaths()[model_sel_index_];
-    const auto &model = *path.GetModel();
-
-    return TransformBounds(model.GetBounds(),
-                           path.GetCoordConv().GetObjectToRootMatrix());
+    return TransformBounds(GetModelAttachedTo()->GetBounds(),
+                           GetStageCoordConv().GetObjectToRootMatrix());
 }
 
 float Tool::ComputePartScale(const Vector3f &model_size, float fraction,
