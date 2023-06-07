@@ -57,14 +57,12 @@ class Tracker {
     ///@{
 
     /// If the given Event represents an activation of the Tracker's actuator,
-    /// this processes the activation, sets widget to the activated Widget (if
-    /// any), and returns true.
+    /// this sets \p widget to the activated Widget (if any), and returns true.
     virtual bool IsActivation(const Event &event, WidgetPtr &widget) = 0;
 
     /// This is called only if the Tracker has been activated. If the given
-    /// Event represents a deactivation of the Tracker's actuator, this
-    /// processes the deactivation, sets widget to the current Widget (if any),
-    /// and returns true.
+    /// Event represents a deactivation of the Tracker's actuator, this sets \p
+    /// widget to the new current Widget (if any) and returns true.
     virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) = 0;
 
     ///@}

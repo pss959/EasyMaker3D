@@ -17,7 +17,7 @@ bool MouseTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         event.device == Event::Device::kMouse &&
         event.button == Event::Button::kMouse1) {
-        widget = ActivateWidget(event);
+        widget = GetCurrentWidget(event, true);
         return true;
     }
     return false;
@@ -27,7 +27,7 @@ bool MouseTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
         event.device == Event::Device::kMouse &&
         event.button == Event::Button::kMouse1) {
-        widget = DeactivateWidget(event);
+        widget = GetCurrentWidget(event, false);
         return true;
     }
     return false;

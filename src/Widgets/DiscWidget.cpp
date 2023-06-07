@@ -132,6 +132,7 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
 }
 
 void DiscWidget::EndDrag() {
+    DraggableWidget::EndDrag();
     SetActive(false);
     prev_rot_angle_ = start_angle_ = Anglef::FromDegrees(0);
 }

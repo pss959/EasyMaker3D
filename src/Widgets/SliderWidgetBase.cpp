@@ -75,6 +75,7 @@ void SliderWidgetBase<T>::ContinueDrag(const DragInfo &info) {
 
 template <typename T>
 void SliderWidgetBase<T>::EndDrag() {
+    DraggableWidget::EndDrag();
     SetActive(false);
 }
 

@@ -1,6 +1,7 @@
 #include "Widgets/AxisWidget.h"
 
 #include "SG/Search.h"
+#include "Util/Assert.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
@@ -9,9 +10,8 @@ void AxisWidget::CreationDone() {
 
     if (! IsTemplate()) {
         // Access the rotation and translation widgets.
-        rotator_ = Util::CastToDerived<SphereWidget>(AddSubWidget("Rotator"));
-        translator_ =
-            Util::CastToDerived<Slider2DWidget>(AddSubWidget("Translator"));
+        rotator_    = AddTypedSubWidget<SphereWidget>("Rotator");
+        translator_ = AddTypedSubWidget<Slider2DWidget>("Translator");
 
         // Access the parts needed for positioning and rotating.
         rotator_parts_ = SG::FindNodeUnderNode(*this,     "RotatorParts");
@@ -28,6 +28,23 @@ void AxisWidget::CreationDone() {
 
 void AxisWidget::SetTranslationEnabled(bool enabled) {
     translator_->SetInteractionEnabled(enabled);
+}
+
+void AxisWidget::SetSize(float radius) {
+    ASSERT(! rotator_->IsDragging() && ! translator_->IsDragging());
+    const float kAxisScale = 1.6f;
+    const float size = kAxisScale * radius;
+
+    // Scale the translator shaft and position the arrow end parts.
+    translator_->SetScale(Vector3f(1, .9f * size, 1));
+    cone_->SetTranslation(Vector3f(0,       size, 0));
+    base_->SetTranslation(Vector3f(0,      -size, 0));
+}
+
+void AxisWidget::SetTranslationRange(const Range2f &range) {
+    ASSERT(! rotator_->IsDragging() && ! translator_->IsDragging());
+    translator_->SetRange(Vector2f(range.GetMinPoint()),
+                          Vector2f(range.GetMaxPoint()));
 }
 
 void AxisWidget::SetDirection(const Vector3f &direction) {
@@ -54,21 +71,6 @@ Point3f AxisWidget::GetPosition() const {
     /// during its interaction) to the current translation.
     return Point3f(GetTranslation() +
                    rotator_->GetRotation() * translator_->GetTranslation());
-}
-
-void AxisWidget::SetSize(float radius) {
-    const float kAxisScale = 1.6f;
-    const float size = kAxisScale * radius;
-
-    // Scale the translator shaft and position the arrow end parts.
-    translator_->SetScale(Vector3f(1, .9f * size, 1));
-    cone_->SetTranslation(Vector3f(0,       size, 0));
-    base_->SetTranslation(Vector3f(0,      -size, 0));
-}
-
-void AxisWidget::SetTranslationRange(const Range2f &range) {
-    translator_->SetRange(Vector2f(range.GetMinPoint()),
-                          Vector2f(range.GetMaxPoint()));
 }
 
 void AxisWidget::SubWidgetActivated(const std::string &name,

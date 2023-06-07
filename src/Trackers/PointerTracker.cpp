@@ -61,25 +61,14 @@ void PointerTracker::Reset() {
     current_widget_.reset();
 }
 
-WidgetPtr PointerTracker::ActivateWidget(const Event &event) {
+WidgetPtr PointerTracker::GetCurrentWidget(const Event &event,
+                                           bool is_activation) {
     UpdateCurrentData_(event, current_widget_);
-    if (current_widget_)
-        current_widget_->SetActive(true);
-    activation_ray_ = current_ray_;
-    activation_hit_ = current_hit_;
+    if (is_activation) {
+        activation_ray_ = current_ray_;
+        activation_hit_ = current_hit_;
+    }
     return current_widget_;
-}
-
-WidgetPtr PointerTracker::DeactivateWidget(const Event &event) {
-    if (current_widget_)
-        current_widget_->SetActive(false);
-
-    // If there is no way to get a new Widget, use the current one.
-    WidgetPtr widget;
-    if (! UpdateCurrentData_(event, widget))
-        widget = current_widget_;
-
-    return widget;
 }
 
 bool PointerTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {

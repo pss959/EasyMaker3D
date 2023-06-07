@@ -32,15 +32,24 @@ class AxisWidget : public CompositeWidget {
     /// false for translation.
     Util::Notifier<bool> & GetAxisChanged() { return axis_changed_; }
 
+    /// \name Inititialization
+    /// These functions should not be called during a drag.
+    ///@{
+
     /// Sets whether translation is enabled for the AxisWidget.
     void SetTranslationEnabled(bool enabled);
 
-    /// Sets the axis direction for the widget. The initial direction is the +Y
-    /// axis.
-    void SetDirection(const Vector3f &direction);
+    /// Sets the size of the widget to the given radius.
+    void SetSize(float radius);
 
-    /// Sets the position for the widget. The initial position is the origin.
-    void SetPosition(const Point3f &position);
+    /// Sets the allowable range for the axis translation.
+    void SetTranslationRange(const Range2f &range);
+
+    ///@}
+
+    /// \name Query
+    /// These functions can be called at any time, including during a drag
+    ///@{
 
     /// Returns the current axis direction. This can be called at any time,
     /// including during a drag.
@@ -50,11 +59,20 @@ class AxisWidget : public CompositeWidget {
     /// including during a drag.
     Point3f GetPosition() const;
 
-    /// Sets the size of the widget to the given radius.
-    void SetSize(float radius);
+    ///@}
 
-    /// Sets the allowable range for the axis translation.
-    void SetTranslationRange(const Range2f &range);
+    /// \name Update
+    /// These functions can be called at any time, including during a drag
+    ///@{
+
+    /// Sets the axis direction for the widget. The initial direction is the +Y
+    /// axis.
+    void SetDirection(const Vector3f &direction);
+
+    /// Sets the position for the widget. The initial position is the origin.
+    void SetPosition(const Point3f &position);
+
+    ///@}
 
   protected:
     AxisWidget() {}

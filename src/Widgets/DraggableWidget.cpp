@@ -3,6 +3,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
+#include "Util/KLog.h"
 #include "Util/Tuning.h"
 
 DraggableWidget::DraggableWidget() :
@@ -10,11 +11,18 @@ DraggableWidget::DraggableWidget() :
 }
 
 void DraggableWidget::StartDrag(const DragInfo &info) {
+    KLOG('W', GetDesc() << " StartDrag");
+    is_dragging_ = true;
     start_info_ = cur_info_ = info;
 }
 
 void DraggableWidget::ContinueDrag(const DragInfo &info) {
     cur_info_ = info;
+}
+
+void DraggableWidget::EndDrag() {
+    KLOG('W', GetDesc() << " EndDrag");
+    is_dragging_ = false;
 }
 
 SG::CoordConv DraggableWidget::GetCoordConv() const {

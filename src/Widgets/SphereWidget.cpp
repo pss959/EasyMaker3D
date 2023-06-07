@@ -79,6 +79,7 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
 }
 
 void SphereWidget::EndDrag() {
+    DraggableWidget::EndDrag();
     SetActive(false);
 }
 

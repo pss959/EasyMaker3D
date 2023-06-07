@@ -48,15 +48,6 @@ class SpinWidget : public CompositeWidget {
     /// Sets the size of the widget to the given radius.
     void SetSize(float radius);
 
-    /// Sets the  angle. This can be called at any time, including
-    /// during a rotation drag to modify the rotation (to apply precision or
-    /// snapping, for example). This does not invoke callbacks.
-    void SetRotationAngle(const Anglef &angle);
-
-    /// Returns the current rotation angle. This can be called at any time,
-    /// including during a rotation drag.
-    Anglef GetRotationAngle() const;
-
   protected:
     SpinWidget() {}
 

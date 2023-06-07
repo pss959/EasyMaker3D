@@ -42,14 +42,10 @@ class PointerTracker : public Tracker {
     /// defines it to do nothing.
     virtual void ProcessCurrentHit(const SG::Hit &hit) {}
 
-    /// Sets the current Widget to the Widget pointed to by the given Event, if
-    /// any. If there is a Widget, this activates it and returns the
-    /// Widget. Otherwise, it returns null.
-    WidgetPtr ActivateWidget(const Event &event);
-
-    /// Deactivates the current Widget (if any) and returns the Widget
-    // pointed to by the given pointer Ray, if any.
-    WidgetPtr DeactivateWidget(const Event &event);
+    /// If there is a Widget pointed to by the given Event, this sets the
+    /// current Widget to it and returns it. Otherwise, it returns null. If \p
+    /// is_activation is true, this also saves the activation Ray and Hit.
+    WidgetPtr GetCurrentWidget(const Event &event, bool is_activation);
 
   private:
     PathFilter    path_filter_;

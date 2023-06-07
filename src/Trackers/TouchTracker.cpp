@@ -33,7 +33,6 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
         if (widget && widget->IsInteractionEnabled()) {
             activation_pos_ = pos;
             current_widget_ = widget;
-            current_widget_->SetActive(true);
             GetController()->ShowTouch(true);
             return true;
         }
@@ -57,7 +56,6 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
         // deactivation if this is true and now touching nothing or a different
         // Widget.
         if (widget != current_widget_) {
-            current_widget_->SetActive(false);
             // If no longer touching any Widget, this is a valid touch.  If now
             // touching a different Widget, this is not a valid touch; just
             // return the new Widget.

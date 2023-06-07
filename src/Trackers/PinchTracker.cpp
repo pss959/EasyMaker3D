@@ -18,7 +18,7 @@ Event::Device PinchTracker::GetDevice() const {
 bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         event.device == GetDevice() && event.button == Event::Button::kPinch) {
-        widget = ActivateWidget(event);
+        widget = GetCurrentWidget(event, true);
         UpdateControllers_(true);
         return true;
     }
@@ -28,7 +28,7 @@ bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
         event.device == GetDevice() && event.button == Event::Button::kPinch) {
-        widget = DeactivateWidget(event);
+        widget = GetCurrentWidget(event, false);
         UpdateControllers_(false);
         return true;
     }

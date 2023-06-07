@@ -38,8 +38,9 @@ class DraggableWidget : public ClickableWidget {
     /// Drag() continues a drag operation.
     virtual void ContinueDrag(const DragInfo &info);
 
-    /// EndDrag() finishes the drag operation.
-    virtual void EndDrag() = 0;
+    /// EndDrag() finishes the drag operation. Derived classes should call this
+    /// version before adding their own functions.
+    virtual void EndDrag();
 
     /// This can be called during a drag to get the DragInfo used to start the
     /// current drag operation. It is undefined at other times.
@@ -48,6 +49,10 @@ class DraggableWidget : public ClickableWidget {
     /// This can be called during a drag to get the current DragInfo. It is
     /// undefined at other times.
     const DragInfo & GetCurrentDragInfo() const { return cur_info_; }
+
+    /// Returns true if the DraggableWidget is in the middle of a drag
+    /// operation.
+    bool IsDragging() const { return is_dragging_; }
 
     ///@}
 
@@ -86,6 +91,9 @@ class DraggableWidget : public ClickableWidget {
     Ray WorldToWidget(const Ray &ray) const;
 
   private:
+    /// Set to true during a drag.
+    bool is_dragging_ = false;
+
     /// Amount to scale controller motion for grip drags.
     float grip_drag_scale_;
 

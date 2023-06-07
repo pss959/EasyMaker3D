@@ -9,8 +9,8 @@ void SpinWidget::CreationDone() {
     CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
-        axis_ = Util::CastToDerived<AxisWidget>(AddSubWidget("Axis"));
-        ring_ = Util::CastToDerived<DiscWidget>(AddSubWidget("Ring"));
+        axis_ = AddTypedSubWidget<AxisWidget>("Axis");
+        ring_ = AddTypedSubWidget<DiscWidget>("Ring");
 
         ring_transform_ = SG::FindNodeUnderNode(*this, "RingTransform");
 

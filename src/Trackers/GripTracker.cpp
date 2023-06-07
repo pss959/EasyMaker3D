@@ -49,7 +49,6 @@ bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
         if (current_widget_) {
             if (current_widget_->IsHovering())
                 current_widget_->StopHovering();
-            current_widget_->SetActive(true);
         }
         activation_data_ = current_data_;
         UpdateControllers_(true);
@@ -62,8 +61,6 @@ bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 bool GripTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
         event.device == GetDevice() && event.button == Event::Button::kGrip) {
-        if (current_widget_)
-            current_widget_->SetActive(false);
         UpdateControllers_(false);
         UpdateCurrentData_(event, widget);
         return true;

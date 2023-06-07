@@ -33,6 +33,8 @@ void TargetWidgetBase::ContinueDrag(const DragInfo &info) {
 }
 
 void TargetWidgetBase::EndDrag() {
+    DraggableWidget::EndDrag();
+
     // Let the derived class update anything it needs to.
     EndTargetPlacement();
 

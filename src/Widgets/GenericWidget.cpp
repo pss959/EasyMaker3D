@@ -12,6 +12,7 @@ void GenericWidget::ContinueDrag(const DragInfo &info) {
 }
 
 void GenericWidget::EndDrag() {
+    DraggableWidget::EndDrag();
     dragged_.Notify(nullptr, false);
     SetActive(false);
 }
