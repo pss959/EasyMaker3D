@@ -3,8 +3,8 @@
 #include <functional>
 #include <string>
 
-#include "Base/Dimensionality.h"
 #include "Base/Memory.h"
+#include "Math/Dimensionality.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"

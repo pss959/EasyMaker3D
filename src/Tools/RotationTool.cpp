@@ -5,12 +5,12 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Base/Dimensionality.h"
 #include "Feedback/AngularFeedback.h"
 #include "Items/SessionState.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
+#include "Math/Dimensionality.h"
 #include "Math/Linear.h"
 #include "Place/PrecisionStore.h"
 #include "SG/Search.h"

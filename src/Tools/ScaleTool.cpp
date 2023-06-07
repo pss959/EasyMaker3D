@@ -5,11 +5,11 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Base/Dimensionality.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
+#include "Math/Dimensionality.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "Place/EdgeTarget.h"

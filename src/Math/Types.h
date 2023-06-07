@@ -1,8 +1,6 @@
 #pragma once
 
-#include <ostream>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 #include <ion/math/angle.h>
@@ -11,6 +9,8 @@
 #include <ion/math/range.h>
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
+
+#include "Math/MathType.h"
 
 /// \file
 /// This file defines math-related items, including convenience typedefs for
@@ -46,12 +46,6 @@ typedef ion::math::Range2i Viewport;  ///< Used for viewing operations.
 
 /// Type used for any geometry index.
 typedef unsigned int GIndex;
-
-// ----------------------------------------------------------------------------
-// XXXX.
-// ----------------------------------------------------------------------------
-
-struct MathType {};
 
 // ----------------------------------------------------------------------------
 // Color.
@@ -95,6 +89,8 @@ struct Color : public Vector4f, public MathType {
     /// Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
     /// storing the results in this instance. Returns false on error.
     bool FromHexString(const std::string &str);
+
+    std::string ToString() const { return ToHexString(); }
 };
 
 // ----------------------------------------------------------------------------
@@ -382,14 +378,3 @@ struct ModelMesh : public TriMesh {
     /// false on error.
     bool FromBinaryString(const std::string &str);
 };
-
-// ----------------------------------------------------------------------------
-// Output operator for anything derived from MathType.
-// ----------------------------------------------------------------------------
-
-template <typename T>
-inline typename std::enable_if<std::is_base_of<MathType, T>::value,
-                               std::ostream>::type &
-operator<<(std::ostream& out, const T &t) {
-    return out << t.ToString();
-}

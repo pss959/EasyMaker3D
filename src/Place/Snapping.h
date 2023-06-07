@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/Dimensionality.h"
+#include "Math/Dimensionality.h"
 #include "Math/Types.h"
 
 /// \file
