@@ -465,7 +465,8 @@ void MainHandler::Impl_::ProcessActivation_() {
          << " on " << (active_widget_ ? active_widget_->GetDesc() :
                        "<NO WIDGET>"));
 
-    active_widget_->SetActive(true);
+    if (active_widget_)
+        active_widget_->SetActive(true);
 
     // If the click alarm is currently running and this is the same button,
     // this is a multiple click.
@@ -498,7 +499,8 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_modified_mode,
         KLOG('h', "MainHandler click count = " << click_state_.count);
     }
 
-    active_widget_->SetActive(false);
+    if (active_widget_)
+        active_widget_->SetActive(false);
 
     // If the click alarm is not already running, process the event.
     if (! click_state_.alarm.IsRunning()) {

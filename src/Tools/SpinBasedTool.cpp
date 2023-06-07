@@ -216,7 +216,7 @@ bool SpinBasedTool::SnapCenter_() {
     // principal points of the Model's bounds, whichever is closer.
     Vector3f motion = cur_pos - start_pos;
     if (tm.SnapToPoint(start_pos, motion)) {
-        stage_spin_.center = stage_cc.RootToObject(start_pos + motion);
+        stage_spin_.center = start_pos + motion;
         is_snapped = true;
     }
     // Otherwise, try to snap to any of the principal points of the operand
@@ -233,7 +233,7 @@ bool SpinBasedTool::SnapCenter_() {
         const Dimensionality snapped_dims =
             SnapToBounds(stage_bounds, stage_pos, tolerance);
         if (snapped_dims.GetCount()) {
-            stage_spin_.center = stage_cc.RootToObject(stage_pos);
+            stage_spin_.center = stage_pos;
             is_snapped = true;
         }
     }

@@ -57,7 +57,7 @@ void AxisWidget::SetDirection(const Vector3f &direction) {
 
 void AxisWidget::SetPosition(const Point3f &position) {
     // This may be called during translation, so make sure to take the current
-    // offset into account. XXXX This is wrong?
+    // offset into account.
     SetTranslation(position -
                    rotator_->GetRotation() * translator_->GetTranslation());
 }
