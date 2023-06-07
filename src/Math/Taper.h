@@ -10,7 +10,7 @@
 /// the axis along which to apply it.
 ///
 /// \ingroup Math
-struct Taper {
+struct Taper : public MathType {
     /// Taper axis.
     Dim     axis    = Dim::kY;
 

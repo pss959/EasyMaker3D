@@ -10,7 +10,7 @@
 /// degrees of spin.
 ///
 /// \ingroup Math
-struct Spin {
+struct Spin : public MathType {
     Point3f  center{0, 0, 0};  ///< Axis center; defaults to origin.
     Vector3f axis{0, 1, 0};    ///< Axis direction; defaults to +Y axis.
     Anglef   angle;            ///< Angle; defaults to 0.

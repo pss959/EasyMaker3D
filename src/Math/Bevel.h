@@ -15,7 +15,7 @@
 /// line joining those 2 points, creating a simple bevel.
 ///
 /// \ingroup Math
-struct Bevel {
+struct Bevel : public MathType {
     Bevel();
 
     /// Profile applied to each beveled edge.

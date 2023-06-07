@@ -2,6 +2,7 @@
 
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <ion/math/angle.h>
@@ -47,6 +48,12 @@ typedef ion::math::Range2i Viewport;  ///< Used for viewing operations.
 typedef unsigned int GIndex;
 
 // ----------------------------------------------------------------------------
+// XXXX.
+// ----------------------------------------------------------------------------
+
+struct MathType {};
+
+// ----------------------------------------------------------------------------
 // Color.
 // ----------------------------------------------------------------------------
 
@@ -54,7 +61,7 @@ typedef unsigned int GIndex;
 /// can be overridden.
 ///
 /// \ingroup Math
-struct Color : public Vector4f {
+struct Color : public Vector4f, public MathType {
     /// Default constructor sets the color to opaque black.
     Color() : Vector4f(0, 0, 0, 1) {}
 
@@ -97,7 +104,7 @@ struct Color : public Vector4f {
 /// A Bounds struct represents 3D bounds.
 ///
 /// \ingroup Math
-struct Bounds : public Range3f {
+struct Bounds : public Range3f, public MathType {
     /// Faces of bounds, ordered by dimension, then min/max.
     enum class Face { kLeft, kRight, kBottom, kTop, kBack, kFront };
 
@@ -154,7 +161,7 @@ struct Bounds : public Range3f {
 /// 3D plane.
 ///
 /// \ingroup Math
-struct Plane {
+struct Plane : public MathType {
     Vector3f normal;    ///< Plane Normal, pointing to positive half-space.
     float    distance;  ///< Signed distance from origin.
 
@@ -214,7 +221,7 @@ struct Plane {
 /// A Ray struct represents a 3D ray.
 ///
 /// \ingroup Math
-struct Ray {
+struct Ray : public MathType{
     Point3f  origin;     ///< Origin point of the ray.
     Vector3f direction;  ///< Ray direction, not necessarily normalized.
 
@@ -240,7 +247,7 @@ struct Ray {
 /// contains the Viewport being viewed in for convenience.
 ///
 /// \ingroup Math
-struct Frustum {
+struct Frustum : public MathType {
     Frustum();
 
     /// Viewport used for the view.
@@ -311,7 +318,7 @@ struct Frustum {
 /// A TriMesh struct represents a 3D triangle mesh.
 ///
 /// \ingroup Math
-struct TriMesh {
+struct TriMesh : public MathType {
     /// A point on the mesh resulting from a Ray intersection.
     struct Hit {
         Point3f  point;        ///< Point of intersection.
@@ -377,25 +384,12 @@ struct ModelMesh : public TriMesh {
 };
 
 // ----------------------------------------------------------------------------
-// Output operators.
+// Output operator for anything derived from MathType.
 // ----------------------------------------------------------------------------
 
-inline std::ostream & operator<<(std::ostream& out, const Bounds &b) {
-    return out << b.ToString(false);
-}
-
-inline std::ostream & operator<<(std::ostream& out, const Plane &p) {
-    return out << p.ToString();
-}
-
-inline std::ostream & operator<<(std::ostream& out, const Ray &r) {
-    return out << r.ToString();
-}
-
-inline std::ostream & operator<<(std::ostream& out, const Frustum &f) {
-    return out << f.ToString();
-}
-
-inline std::ostream & operator<<(std::ostream& out, const TriMesh &m) {
-    return out << m.ToString();
+template <typename T>
+inline typename std::enable_if<std::is_base_of<MathType, T>::value,
+                               std::ostream>::type &
+operator<<(std::ostream& out, const T &t) {
+    return out << t.ToString();
 }
