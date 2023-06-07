@@ -36,6 +36,12 @@ class CompositeWidget : public Widget {
     /// CompositeWidget.
     WidgetPtr AddSubWidget(const std::string &name);
 
+    /// This is invoked when any sub-widget is activated or deactivated. It
+    /// notifies all observers of the CompositeWidget by default. Derived
+    /// classes can add their own behaviors.
+    virtual void SubWidgetActivated(const std::string &name,
+                                    bool is_activation);
+
   private:
     struct SubWidget_ {
         WidgetPtr widget;

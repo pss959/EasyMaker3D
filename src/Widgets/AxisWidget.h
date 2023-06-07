@@ -61,6 +61,9 @@ class AxisWidget : public CompositeWidget {
 
     virtual void CreationDone() override;
 
+    virtual void SubWidgetActivated(const std::string &name,
+                                    bool is_activation) override;
+
   private:
     /// Notifies when any part of the AxisWidget is dragged.
     Util::Notifier<bool> axis_changed_;
@@ -72,11 +75,20 @@ class AxisWidget : public CompositeWidget {
     /// it just always translates in X and Z.
     Slider2DWidgetPtr    translator_;
 
+    /// Node used to translate the #rotator_ parts during translation.
+    SG::NodePtr          rotator_parts_;
+
     /// Conical end part of the arrow.
     SG::NodePtr          cone_;
 
     /// Box at the base of the arrow.
     SG::NodePtr          base_;
+
+    /// Activation/deactivation callback.
+    void Activate_(bool is_activation);
+
+    /// Invoked when the axis rotation or translation changed.
+    void AxisChanged_(bool is_rotation);
 
     friend class Parser::Registry;
 };

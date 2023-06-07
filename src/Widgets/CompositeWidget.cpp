@@ -14,8 +14,8 @@ WidgetPtr CompositeWidget::AddSubWidget(const std::string &name) {
 
     // Propagate activation notification to observers of the CompositeWidget.
     widget->GetActivation().AddObserver(
-        this,
-        [&](Widget &, bool is_act){ GetActivation().Notify(*this, is_act); });
+        this, [&, name](Widget &, bool is_act){
+            SubWidgetActivated(name, is_act); });
 
     SubWidget_ sub;
     sub.widget         = widget;
@@ -24,6 +24,11 @@ WidgetPtr CompositeWidget::AddSubWidget(const std::string &name) {
     sub_widgets_.push_back(sub);
 
     return widget;
+}
+
+void CompositeWidget::SubWidgetActivated(const std::string &name,
+                                         bool is_activation) {
+    GetActivation().Notify(*this, is_activation);
 }
 
 void CompositeWidget::HighlightSubWidget(const std::string &name,

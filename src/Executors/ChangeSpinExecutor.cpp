@@ -2,6 +2,7 @@
 
 #include "Commands/ChangeSpinCommand.h"
 #include "Managers/SelectionManager.h"
+#include "Math/Linear.h"
 #include "SG/CoordConv.h"
 
 void ChangeSpinExecutor::Execute(Command &command, Command::Op operation) {
@@ -11,19 +12,17 @@ void ChangeSpinExecutor::Execute(Command &command, Command::Op operation) {
     for (auto &pm: data.per_model) {
         auto &model = *pm.path_to_model.GetModel();
         if (operation == Command::Op::kDo) {
-            // Convert the Spin center and axis direction into object
-            // coordinates.
-            const auto cc = pm.path_to_model.GetCoordConv();
-            Spin object_spin = csc.GetSpin();
-            object_spin.center = cc.RootToObject(object_spin.center);
-            object_spin.axis   = cc.RootToObject(object_spin.axis);
+            // Convert the Spin from stage to object coordinates.
+            const auto som =
+                pm.path_to_model.GetCoordConv().GetRootToObjectMatrix();
+            const Spin object_spin = TransformSpin(csc.GetSpin(), som);
 
             // Save the current translation without offset compensation.
             const Vector3f trans =
                 model.GetTranslation() - model.GetLocalCenterOffset();
 
             // Update the Spin in the Model.
-            SetModelSpin(model, csc.GetSpin());
+            SetModelSpin(model, object_spin);
 
             // Compensate for any new centering translation.
             model.SetTranslation(trans + model.GetLocalCenterOffset());
@@ -53,7 +52,7 @@ ChangeSpinExecutor::ExecData_ & ChangeSpinExecutor::GetExecData_(
 
         for (size_t i = 0; i < model_names.size(); ++i) {
             ExecData_::PerModel &pm   = data->per_model[i];
-            const SelPath        path = FindPathToModel(model_names[i]);
+            const SelPath path = FindPathToModel(model_names[i]);
             auto &model        = *path.GetModel();
             pm.path_to_model   = path;
             pm.old_spin        = GetModelSpin(model);
