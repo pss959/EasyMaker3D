@@ -9,7 +9,12 @@ AxisWidget "Axis" {
             # Cone at the axis direction end.
             Node "Cone" {
               shapes: [
-                Cylinder { height: 2, top_radius: 0, bottom_radius: 1 }
+                Cylinder {
+                  height:        2,
+                  top_radius:    0,
+                  bottom_radius: 1,
+                  sector_count:  20,
+                }
               ],
             },
             # Box at the other end.
@@ -24,7 +29,12 @@ AxisWidget "Axis" {
           children: [
             Node "Shaft" {
               shapes: [
-                Cylinder { top_radius: .3, bottom_radius: .3, height: 2 }
+                Cylinder {
+                  top_radius:    .3,
+                  bottom_radius: .3,
+                  height:        1.92,
+                  sector_count:  10,
+                }
               ]
             }
           ]

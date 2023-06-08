@@ -36,9 +36,9 @@ void AxisWidget::SetSize(float radius) {
     const float size = kAxisScale * radius;
 
     // Scale the translator shaft and position the arrow end parts.
-    translator_->SetScale(Vector3f(1, .9f * size, 1));
-    cone_->SetTranslation(Vector3f(0,       size, 0));
-    base_->SetTranslation(Vector3f(0,      -size, 0));
+    translator_->SetScale(Vector3f(1,  size, 1));
+    cone_->SetTranslation(Vector3f(0,  size, 0));
+    base_->SetTranslation(Vector3f(0, -size, 0));
 }
 
 void AxisWidget::SetTranslationRange(const Range2f &range) {

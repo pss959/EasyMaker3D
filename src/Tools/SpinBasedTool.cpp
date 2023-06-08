@@ -170,7 +170,7 @@ void SpinBasedTool::SpinChanged_(SpinWidget::ChangeType type) {
     if (type == SpinWidget::ChangeType::kAngle) {
         if (! feedback_)
             feedback_ = context.feedback_manager->Activate<AngularFeedback>();
-        UpdateAngleFeeedback_();
+        UpdateAngleFeedback_();
     }
 }
 
@@ -260,7 +260,7 @@ void SpinBasedTool::UpdateSpinWidget_() {
         TransformSpin(stage_spin_, ion::math::Inverse(GetModelMatrix())));
 }
 
-void SpinBasedTool::UpdateAngleFeeedback_() {
+void SpinBasedTool::UpdateAngleFeedback_() {
     // The feedback should be in the plane perpendicular to the Spin axis (in
     // stage coordinates).
     const Point3f center = stage_spin_.center + 1.2f * stage_spin_.axis;

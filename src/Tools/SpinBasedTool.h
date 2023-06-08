@@ -86,7 +86,7 @@ class SpinBasedTool : public Tool {
     void UpdateSpinWidget_();
 
     /// Updates feedback for a change in angle.
-    void UpdateAngleFeeedback_();
+    void UpdateAngleFeedback_();
 
     friend class Parser::Registry;
 };
