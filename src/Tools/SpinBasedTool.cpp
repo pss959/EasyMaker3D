@@ -201,39 +201,31 @@ bool SpinBasedTool::SnapAxis_() {
 bool SpinBasedTool::SnapCenter_() {
     auto &tm = *GetContext().target_manager;
 
-    // Current spin center in object coordinates (from the SpinWidget).
-    const auto cur_obj_pos = Point3f(spin_widget_->GetSpin().center);
-
-    // Snap in stage coordinates.
-    const auto stage_cc  = GetStageCoordConv();
-    const auto osm       = stage_cc.GetObjectToRootMatrix();
-    const auto start_pos = osm * start_stage_spin_.center;
-    const auto cur_pos   = osm * cur_obj_pos;
-
+    // Snapping is done in stage coordinates.  Try to snap to the point target
+    // position (if it is active).  Otherwise, try to snap to any of the
+    // principal points of the operand Model's bounds.
     bool is_snapped = false;
-
-    // Try to snap to the point target position (if it is active) or any of the
-    // principal points of the Model's bounds, whichever is closer.
-    Vector3f motion = cur_pos - start_pos;
-    if (tm.SnapToPoint(start_pos, motion)) {
-        stage_spin_.center = start_pos + motion;
+    Vector3f motion = stage_spin_.center - start_stage_spin_.center;
+    if (tm.SnapToPoint(start_stage_spin_.center, motion)) {
+        stage_spin_.center = start_stage_spin_.center + motion;
         is_snapped = true;
     }
-    // Otherwise, try to snap to any of the principal points of the operand
-    // Model's bounds.
     else {
         ConvertedModelPtr cm =
             Util::CastToDerived<ConvertedModel>(GetModelAttachedTo());
         ASSERT(cm);
-        const auto stage_bounds =
-            TransformBounds(cm->GetOperandModel()->GetScaledBounds(),
-                            GetStageCoordConv().GetObjectToRootMatrix());
-        Point3f stage_pos = cur_pos;
-        const Vector3f tolerance = TK::kSnapPointTolerance * Vector3f(1, 1, 1);
-        const Dimensionality snapped_dims =
-            SnapToBounds(stage_bounds, stage_pos, tolerance);
-        if (snapped_dims.GetCount()) {
-            stage_spin_.center = stage_pos;
+        // Convert the operand Model's bounds into stage coordinates, which
+        // requires undoing the offset translation from the ConvertedModel.
+        const auto bounds =
+            TranslateBounds(TransformBounds(
+                                cm->GetOperandModel()->GetScaledBounds(),
+                                GetStageCoordConv().GetObjectToRootMatrix()),
+                            -cm->GetObjectCenterOffset());
+        Point3f center = stage_spin_.center;
+        const Dimensionality snapped_dims = SnapToBounds(
+            bounds, center, TK::kSnapPointTolerance * Vector3f(1, 1, 1));
+        if (snapped_dims.GetCount() > 1) {
+            stage_spin_.center = center;
             is_snapped = true;
         }
     }

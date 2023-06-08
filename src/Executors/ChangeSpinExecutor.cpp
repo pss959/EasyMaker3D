@@ -12,20 +12,17 @@ void ChangeSpinExecutor::Execute(Command &command, Command::Op operation) {
     for (auto &pm: data.per_model) {
         auto &model = *pm.path_to_model.GetModel();
         if (operation == Command::Op::kDo) {
-            // Convert the Spin from stage to object coordinates.
+            // Convert the Spin from stage to object coordinates of the
+            // ConvertedModel, disregarding the current offset.
             const auto som =
                 pm.path_to_model.GetCoordConv().GetRootToObjectMatrix();
-            const Spin object_spin = TransformSpin(csc.GetSpin(), som);
+            Spin spin = TransformSpin(csc.GetSpin(), som);
+            spin.center += model.GetLocalCenterOffset();
 
-            // Save the current translation without offset compensation.
-            const Vector3f trans =
-                model.GetTranslation() - model.GetLocalCenterOffset();
-
-            // Update the Spin in the Model.
-            SetModelSpin(model, object_spin);
-
-            // Compensate for any new centering translation.
-            model.SetTranslation(trans + model.GetLocalCenterOffset());
+            // Update the Spin in the Model and compensate for any new offset.
+            SetModelSpin(model, spin);
+            model.SetTranslation(pm.base_translation +
+                                 model.GetLocalCenterOffset());
         }
         else {
             SetModelSpin(model, pm.old_spin);
@@ -57,6 +54,10 @@ ChangeSpinExecutor::ExecData_ & ChangeSpinExecutor::GetExecData_(
             pm.path_to_model   = path;
             pm.old_spin        = GetModelSpin(model);
             pm.old_translation = model.GetTranslation();
+
+            // Save the base translation, which has no offset.
+            pm.base_translation =
+                pm.old_translation - model.GetLocalCenterOffset();
         }
         command.SetExecData(data);
     }

@@ -35,7 +35,6 @@ class ChangeSpinExecutor : public Executor {
             SelPath  path_to_model;
             Spin     old_spin;
             Vector3f old_translation;
-            Vector3f new_translation;
             Vector3f base_translation;  /// Without any offset.
         };
         std::vector<PerModel> per_model;

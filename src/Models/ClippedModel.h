@@ -13,8 +13,7 @@ DECL_SHARED_PTR(ClippedModel);
 /// normal is clipped away.
 ///
 /// The clipping plane is specified in the object coordinates of the
-/// ClippedModel. That is, the plane is applied to the operand Model's mesh
-/// before it has been scaled, rotated, and translated.
+/// ClippedModel.
 ///
 /// Clipping changes the size of the mesh, so the ClippedModel's center
 /// typically moves as well. The GetObjectCenterOffset() and

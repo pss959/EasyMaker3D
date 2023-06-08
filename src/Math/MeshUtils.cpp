@@ -195,9 +195,10 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Spin &spin) {
     const Plane plane(spin.center, slice_axis);
 
     // If the plane is closer to the maximum end of the slice axis, negate the
-    // rotation angle for consistency.
+    // rotation angle for consistency. Use a tolerance here to prevent
+    // oscillations caused by FP error.
     const float angle_sign =
-        SignedDistance(spin.center, perp_vec) > 0 ? -1 : 1;
+        SignedDistance(spin.center, perp_vec) > .0001f ? -1 : 1;
 
     // If the spin offset is 0, don't let the angle exceed 360 degrees in
     // either direction.

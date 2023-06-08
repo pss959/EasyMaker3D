@@ -11,7 +11,7 @@ DECL_SHARED_PTR(SpinBasedModel);
 
 /// SpinBasedModel is a derived ConvertedModel class that is used as a base
 /// class for Models that use a Spin to define some operation on the operand
-/// Model. The Spin is specified in object coordinates of the operand Model.
+/// Model. The Spin is specified in object coordinates of the ConvertedModel.
 ///
 /// Note that a SpinBasedModel applies a Spin to the scaled version of the
 /// operand Model's mesh, since that is what the user expects.  Therefore, it
