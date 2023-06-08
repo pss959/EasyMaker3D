@@ -410,7 +410,7 @@ void Application_::InitIntersectionSphere_(const SG::NodePtr &node) {
 
     // Save for later use and start invisible.
     intersection_sphere_ = node;
-    intersection_sphere_->SetFlagEnabled(SG::Node::Flag::kRender, false);
+    intersection_sphere_->SetEnabled(false);
 }
 
 void Application_::UpdateIntersectionSphere_(const Event &event) {
