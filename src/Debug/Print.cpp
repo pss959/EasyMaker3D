@@ -330,6 +330,10 @@ void PrintObject(const Parser::Object &obj) {
 void PrintCommands(const CommandList &command_list) {
     Surrounder_ surrounder;
     PrintObject(command_list);
+    const auto index = command_list.GetCurrentIndex();
+    std::cout << "# Index " << index << " = "
+              << (index < command_list.GetCommandCount() ?
+                  command_list.GetCommand(index)->GetDesc() : "<END>") << "\n";
 }
 
 void PrintScene(const SG::Scene &scene) {
