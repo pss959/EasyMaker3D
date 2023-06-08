@@ -48,6 +48,7 @@ void DiscWidget::ApplyScaleChange(float delta) {
 }
 
 void DiscWidget::SetRotationAngle(const Anglef &angle) {
+    cur_angle_ = angle;
     ApplyRotationToWidget_(angle);
 }
 
