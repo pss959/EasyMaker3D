@@ -9,17 +9,23 @@ Node "Debugging" {
   shader_names: ["BaseColor"],
 
   children: [
-    # Debugging text set in program. Placed in front of back wall.
-    TextNode "DebugText" {
-      disabled_flags: "kTraversal",
-      scale:          2.5 2.5 2.5,
-      translation:    0 72 -69,
-      text:           "Debug Text",
-      font_name:      "Arial-Regular",
-      color:          "#000000",
-      outline_color:  "#000000",
-      outline_width:  0,
-      layout_options: LayoutOptions { halignment: "kAlignHCenter" },
+    # Debugging text set in program. Placed in front of back wall. Turn off
+    # depth test so it is not clipped by walls.
+    Node {
+      state_table: StateTable { depth_test_enabled: False },
+      children: [
+        TextNode "DebugText" {
+          disabled_flags: "kTraversal",
+          scale:          2.5 2.5 2.5,
+          translation:    0 72 -69,
+          text:           "Debug Text",
+          font_name:      "Arial-Regular",
+          color:          "#000000",
+          outline_color:  "#000000",
+          outline_width:  0,
+          layout_options: LayoutOptions { halignment: "kAlignHCenter" },
+        },
+      ]
     },
 
     Node {
