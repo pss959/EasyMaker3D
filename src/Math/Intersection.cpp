@@ -12,29 +12,52 @@
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-/// Solves a quadratic equation with coefficients a, b, c. If there is a
-/// solution, this sets solution and returns true. Otherwise, returns false.
-static bool SolveQuadratic_(float a, float b, float c, float &solution) {
-    // If the discriminant is zero or negative, there is no good intersection.
-    float discriminant = b * b - 4. * a * c;
-    if (discriminant <= 0.f)
-	return false;
+/// Solves a quadratic equation with coefficients \p a, \p b, \p c. If there
+/// are 2 positive real roots, this sets \p root0 to the smaller, sets \p root1
+/// to the larger, and returns true. If there is 1 positive real root, this
+/// sets both \p root0 and \p root1 to it and returns true. Otherwise, it just
+/// returns false.
+static bool SolveQuadratic_(float a, float b, float c,
+                            float &root0, float &root1) {
+    // If the discriminant is not positive, there are no positive real roots.
+    const float discriminant = b * b - 4 * a * c;
+    if (discriminant <= 0)
+	return 0;
 
-    // Compute t as:
-    //		(-b - sqrt(b^2 - 4c)) / 2a
-    //    and   (-b + sqrt(b^2 - 4c)) / 2a
+    // Compute t0 as (-b - sqrt(b^2 - 4ac)) / 2a
+    //    and  t1 as (-b + sqrt(b^2 - 4ac)) / 2a
     //
     const float sqroot = std::sqrt(discriminant);
-    const float denom  = 1.f / (2.f * a);
+    const float denom  = 1.f / (2 * a);
     const float t0 = (-b - sqroot) * denom;
     const float t1 = (-b + sqroot) * denom;
-    float t = std::min(t0, t1);
-    if (t <= 0.f)
-        t = std::max(t0, t1);
-    if (t <= 0.f)
+
+    const float smaller = std::min(t0, t1);
+    const float larger  = std::max(t0, t1);
+    if (smaller > 0) {  // There are 2 positive real roots.
+        root0 = smaller;
+        root1 = larger;
+        return 2;
+    }
+    else if (larger > 0) { // There is 1 positive real root.
+        root0 = root1 = larger;
+        return 1;
+    }
+    return 0;  // No positive roots.
+}
+
+/// Solves a quadratic equation with coefficients \p a, \p b, \p c. If there
+/// are any positive real roots, this sets \p solution to the smaller one and
+/// returns true. Otherwise, it just returns false.
+static bool SolveQuadratic_(float a, float b, float c, float &solution) {
+    float root0, root1;
+    if (SolveQuadratic_(a, b, c, root0, root1)) {
+        solution = root0;
+        return true;
+    }
+    else {
         return false;
-    solution = t;
-    return true;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -308,7 +331,25 @@ bool RayConeIntersect(const Ray &ray, const Point3f &apex,
     const float a = Square(da) - cos2;
     const float b = 2.f * (da * pv - Dot(norm_dir, pa) * cos2);
     const float c = Square(pv) - Dot(pa, pa) * cos2;
-    if (SolveQuadratic_(a, b, c, distance)) {
+
+    // Check both roots if more than 1. One may be on the part of the cone that
+    // does not exist (on the other side of the apex).
+    float root0, root1;
+    if (SolveQuadratic_(a, b, c, root0, root1)) {
+        // Returns true if the root results in a point on the correct part of
+        // the cone.
+        const auto check_root = [&](float root){
+            const Point3f cone_pt = ray.origin + root * norm_dir;
+            return Dot(cone_pt - apex, axis) >= 0;
+        };
+        // Use the smaller distance that is on the correct side of the apex.
+        if (check_root(root0))
+            distance = root0;
+        else if (check_root(root1))
+            distance = root1;
+        else
+            return false;  // Neither hit on the correct side.
+
         // Scale the distance by the inverse of the ray direction length,
         distance /= Length(ray.direction);
         return true;

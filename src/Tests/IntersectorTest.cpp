@@ -224,3 +224,37 @@ TEST_F(IntersectorTest, Cone2) {
     EXPECT_PTS_CLOSE(Point3f(0, 0, .15f), hit.point);
     EXPECT_PTS_CLOSE(Point3f(0, 8, .3f),  hit.GetWorldPoint());
 }
+
+TEST_F(IntersectorTest, Cone3) {
+    // This case was not working due to a bug where the ray-cone intersection
+    // code was returning intersections on the part of the geometric cone on
+    // the wrong side of the apex.
+
+    // This is a 90-degree cone with the apex at (0,1,0) and the base at Y=-1.
+    std::string input = R"(
+Scene {
+  root_node: Node "Cone" {
+    shapes: [
+      Cylinder "Cone" {
+        height:        2,
+        top_radius:    0,
+        bottom_radius: 2,
+        has_bottom_cap: False,
+      }
+    ],
+  },
+}
+)";
+    // Points straight down. Should hit the cone at (1,0,0) / distance = 10.
+    const Ray ray(Point3f(1, 10, 0), Vector3f(0, -1, 0));
+
+    SG::Hit hit;
+    hit = IntersectScene(input, ray);
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_EQ("Cone", hit.path.back()->GetName());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Cone", hit.shape->GetName());
+    EXPECT_NEAR(10.f, hit.distance, kClose);  // Sphere has radius 5.
+    EXPECT_PTS_CLOSE(Point3f(1, 0, .0), hit.point);
+}
