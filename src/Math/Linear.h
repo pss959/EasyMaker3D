@@ -164,6 +164,11 @@ bool AreClose(const Anglef &a, const Anglef &b, const Anglef &tolerance);
 bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
                         const Anglef &tolerance_angle);
 
+/// Returns true if two directions are withing the given angle of being
+/// perpendicular to each other.
+bool AreAlmostPerpendicular(const Vector3f dir0, const Vector3f dir1,
+                            const Anglef &tolerance_angle);
+
 /// Returns true if the given vector is valid for a normal or axis vector.
 bool IsValidVector(const Vector3f &v);
 

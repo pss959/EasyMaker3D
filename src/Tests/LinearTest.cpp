@@ -4,9 +4,35 @@
 
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
 
 class LinearTest : public TestBase {
 };
+
+TEST_F(LinearTest, AreClose) {
+    const auto nvec = [](float x, float y, float z){
+        return ion::math::Normalized(Vector3f(x, y, z)); };
+
+    EXPECT_TRUE(AreClose(12.f,  12.01f, .02f));
+    EXPECT_FALSE(AreClose(12.f, 12.02f, .01f));
+
+    // This uses the square of the distance.
+    EXPECT_TRUE(AreClose(Vector3f(0, 1, 2),  Vector3f(0, 1, 2.005f), .01f));
+    EXPECT_FALSE(AreClose(Vector3f(0, 1, 2), Vector3f(0, 1, 2.2f),   .01f));
+
+    // This uses angles.
+    EXPECT_TRUE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .1f, 0),
+                                   Anglef::FromDegrees(10)));
+    EXPECT_FALSE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .5f, 0),
+                                    Anglef::FromDegrees(10)));
+
+    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, 1, 0),
+                                       Anglef::FromDegrees(1)));
+    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, -1, 0),
+                                       Anglef::FromDegrees(1)));
+    EXPECT_FALSE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(.2f, 1, 0),
+                                        Anglef::FromDegrees(1)));
+}
 
 TEST_F(LinearTest, MinMaxElement) {
     const Vector2f v2a(-.2f, 1.f);

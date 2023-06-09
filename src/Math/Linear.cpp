@@ -227,6 +227,12 @@ bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
     return ion::math::AngleBetween(dir0, dir1) <= tolerance_angle;
 }
 
+bool AreAlmostPerpendicular(const Vector3f dir0, const Vector3f dir1,
+                            const Anglef &tolerance_angle) {
+    return std::abs(ion::math::AngleBetween(dir0, dir1).Degrees() - 90) <=
+        tolerance_angle.Degrees();
+}
+
 bool IsValidVector(const Vector3f &v) {
     return ion::math::Length(v) >= .00001f;
 }

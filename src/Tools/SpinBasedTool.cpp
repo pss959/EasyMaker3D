@@ -44,18 +44,26 @@ void SpinBasedTool::CreationDone() {
 }
 
 void SpinBasedTool::UpdateGripInfo(GripInfo &info) {
-    // XXXX Figure this out!!!
-#if XXXX
-    // If the direction is close to the angle normal (in either direction), use
-    // the translator.
+    // If the direction is close to the axis direction (in either direction),
+    // use the axis rotator.
     const Vector3f &guide_dir = info.guide_direction;
-    const Vector3f &normal    = spin_widget_->GetSpin().normal;
-    WidgetPtr widget;
-    if (AreDirectionsClose(guide_dir,  normal, TK::kMaxGripHoverDirSpin) ||
-        AreDirectionsClose(guide_dir, -normal, TK::kMaxGripHoverDirSpin)) {
-        widget          = spin_widget_->GetSubWidget("Axis");
+    const Vector3f &axis      = spin_widget_->GetSpin().axis;
+    WidgetPtr       widget;
+    if (AreDirectionsClose(guide_dir,  axis, TK::kMaxGripHoverDirAngle) ||
+        AreDirectionsClose(guide_dir, -axis, TK::kMaxGripHoverDirAngle)) {
+        widget          = spin_widget_->GetSubWidget("Rotator");
+        info.guide_type = GripGuideType::kRotation;
+    }
+
+    // If the direction is close to perpendicular to the axis direction, use
+    // the axis translator.
+    else if (AreAlmostPerpendicular(guide_dir, axis,
+                                    TK::kMaxGripHoverDirAngle)) {
+        widget          = spin_widget_->GetSubWidget("Translator");
         info.guide_type = GripGuideType::kBasic;
     }
+
+    // Otherwise, use the spin ring.
     else {
         widget          = spin_widget_->GetSubWidget("Ring");
         info.guide_type = GripGuideType::kRotation;
@@ -63,7 +71,6 @@ void SpinBasedTool::UpdateGripInfo(GripInfo &info) {
     info.widget = Util::CastToDerived<ClickableWidget>(widget);
     ASSERT(info.widget);
     info.target_point = ToWorld(info.widget, Point3f::Zero());
-#endif
 }
 
 void SpinBasedTool::Attach() {
