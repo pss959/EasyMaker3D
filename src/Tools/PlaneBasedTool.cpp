@@ -207,7 +207,7 @@ bool PlaneBasedTool::SnapTranslation_() {
         if (std::abs(target_dist) < std::abs(dist))
             dist = target_dist;
     }
-    const bool is_snapped = std::abs(dist) <= TK::kSnapPointTolerance;
+    const bool is_snapped = std::abs(dist) <= TK::kSnapLengthTolerance;
     if (is_snapped) {
         stage_plane_.distance += dist;
         UpdatePlaneWidgetPlane_();

@@ -423,14 +423,14 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
     const Bounds::Face face        = obj_bounds.GetFaceForPoint(obj_pos);
 
     // Testing for snapping to the bounds is done most easily in object
-    // coordinates (with aligned bounds), so convert the precision value from
+    // coordinates (with aligned bounds), so convert the tolerance value from
     // stage coordinates to object coordinates.
-    Vector3f object_precision;
+    Vector3f object_tolerance;
     for (int dim = 0; dim < 3; ++dim)
-        object_precision[dim] =
-            ion::math::Length(som * GetAxis(dim, info.linear_precision));
+        object_tolerance[dim] =
+            ion::math::Length(som * GetAxis(dim, TK::kSnapPointTolerance));
 
-    snapped_dims = SnapToBounds(obj_bounds, obj_pos, object_precision);
+    snapped_dims = SnapToBounds(obj_bounds, obj_pos, object_tolerance);
 
     // Convert the point and normal into stage coordinates.
     position  = osm * obj_pos;
@@ -442,16 +442,16 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
                                     Dimensionality &snapped_dims) {
     const auto &mesh = GetMesh();
 
-    // See if the point is close enough (within the current precision) to snap
-    // to any vertex of the Mesh.  If multiple vertices are close, choose the
-    // best one. Do all of this in stage coordinates.
+    // See if the point is close enough to snap to any vertex of the Mesh.  If
+    // multiple vertices are close, choose the best one. Do all of this in
+    // stage coordinates.
     const Matrix4f osm = info.GetObjectToStageMatrix();
     float min_dist = std::numeric_limits<float>::max();
     bool is_close = false;
     for (const auto &pt: mesh.points) {
         const Point3f stage_pt = osm * pt;
         const float dist = ion::math::Distance(stage_pt, position);
-        if (dist < info.linear_precision && dist < min_dist) {
+        if (dist < TK::kSnapPointTolerance && dist < min_dist) {
             position = stage_pt;
             min_dist = dist;
             is_close = true;

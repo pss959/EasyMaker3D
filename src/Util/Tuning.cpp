@@ -205,7 +205,7 @@ const Anglef   kProfilePaneMaxSnapAngle          = Anglef::FromDegrees(10);
 const float    kSTLPrecision                     = .0001f;
 const float    kSnapDirectionTolerance           = 15;
 const float    kSnapLengthTolerance              = 1;
-const float    kSnapPointTolerance               = 1;
+const float    kSnapPointTolerance               = .2f;
 const float    kMinTaperProfileYDistance         = .02f;
 
 // Tooltips
