@@ -442,15 +442,16 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
                                     Dimensionality &snapped_dims) {
     const auto &mesh = GetMesh();
 
-    // See if the point is close enough to snap to any vertex of the Mesh.  If
+    // See if the point is close enough to snap to any vertex of the Mesh. If
     // multiple vertices are close, choose the best one. Do all of this in
     // stage coordinates.
     const Matrix4f osm = info.GetObjectToStageMatrix();
     float min_dist = std::numeric_limits<float>::max();
     bool is_close = false;
+    const Point3f target_position = position;
     for (const auto &pt: mesh.points) {
         const Point3f stage_pt = osm * pt;
-        const float dist = ion::math::Distance(stage_pt, position);
+        const float dist = ion::math::Distance(stage_pt, target_position);
         if (dist < TK::kSnapPointTolerance && dist < min_dist) {
             position = stage_pt;
             min_dist = dist;
