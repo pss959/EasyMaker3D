@@ -10,6 +10,7 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(AxisWidget);
 DECL_SHARED_PTR(DiscWidget);
+DECL_SHARED_PTR(Slider1DWidget);
 DECL_SHARED_PTR(SpinWidget);
 
 /// A SpinWidget is used to specify a continuous rotation about an axis defined
@@ -30,7 +31,7 @@ class SpinWidget : public CompositeWidget {
         kAxis,    ///< Axis direction was rotated.
         kCenter,  ///< Axis center was translated.
         kAngle,   ///< Spin was rotated to change the angle.
-        // XXXX Add offset
+        kOffset,  ///< Offset slider changed the spin offset.
     };
 
     /// Returns a Notifier that is invoked when the user changes the current
@@ -65,6 +66,9 @@ class SpinWidget : public CompositeWidget {
 
     /// DiscWidget with a ring used to change the angle.
     DiscWidgetPtr              ring_;
+
+    /// Slider1DWidget used to change the offset.
+    Slider1DWidgetPtr          offset_;
 
     /// Node used to rotate and translate the ring to match the spin axis.
     SG::NodePtr                ring_transform_;

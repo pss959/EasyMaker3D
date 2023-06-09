@@ -32,7 +32,17 @@ SpinWidget "Spin" {
                   sector_count: 72,
                 }
               ]
-            }
+            },
+
+            # XXXX for translating the spin offset.
+            Node "OffsetPosition" {
+              children: [
+                Slider1DWidget "Offset" {
+                  dimension: 1,
+                  shapes: [ Box { size: 2 2 2 } ]
+                }
+              ]
+            },
           ]
         }
       ]

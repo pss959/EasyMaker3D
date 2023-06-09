@@ -178,6 +178,8 @@ TriMesh TransformMesh(const TriMesh &mesh, const Matrix4f &m) {
 }
 
 TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Spin &spin) {
+    using ion::math::Dot;
+
     // If the angle is 0, there is no bending.
     if (spin.angle.Radians() == 0)
         return sliced_mesh.mesh;
@@ -213,23 +215,25 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Spin &spin) {
     const Point3f center = spin.center + radius * perp_vec;
 
     const auto bend_pt = [&](const Point3f &p){
-        // The relative distance of the point from the center in the direction
-        // of the spin axis should not change. Compute the offset vector.
-        const auto axis_offset =
-            ion::math::Dot(p - center, spin.axis) * spin.axis;
-
         // The amount to rotate is proportional to the distance of the point
         // from the plane.
-        const float rotate_scale =
-            plane.GetDistanceToPoint(p) / sliced_mesh.range.GetSize();
+        const Anglef scaled_angle =
+            (plane.GetDistanceToPoint(p) / sliced_mesh.range.GetSize()) * angle;
 
         // Get the rotation by the scaled angle around the axis.
         const Rotationf rot =
-            Rotationf::FromAxisAndAngle(spin.axis, rotate_scale * angle);
+            Rotationf::FromAxisAndAngle(spin.axis, scaled_angle);
+
+        // The relative distance of the point from the center in the direction
+        // of the spin axis should be the same except for the contribution from
+        // the spin offset. Compute the offset vector.
+        const auto angle_offset = spin.offset * scaled_angle.Degrees() / 360;
+        const auto axis_offset =
+            (angle_offset + Dot(p - center, spin.axis)) * spin.axis;
 
         // Find the radius to use based on the point's location along the
         // perpendicular vector from the spin center.
-        const float rad = radius - ion::math::Dot(p - spin.center, perp_vec);
+        const float rad = radius - Dot(p - spin.center, perp_vec);
 
         // This vector is rotated around the circle center by the scaled
         // rotation to get the result mesh point.
@@ -296,7 +300,8 @@ TriMesh TwistMesh(const SlicedMesh &sliced_mesh, const Spin &spin) {
         const float dist = ion::math::Dot(Vector3f(p), spin.axis);
         const Anglef angle = Lerp((dist - min) / size, Anglef(), spin.angle);
         const Rotationf rot = Rotationf::FromAxisAndAngle(spin.axis, angle);
-        return spin.center + rot * (p - spin.center);
+        const auto offset = spin.offset * angle.Degrees() / 360;
+        return spin.center + rot * (p - spin.center) + offset * spin.axis;
     };
 
     return ModifyVertices_(sliced_mesh.mesh, twist_pt);
