@@ -29,7 +29,7 @@ class ChangeRevSurfExecutor : public Executor {
             Anglef   old_sweep_angle;
             Vector3f old_translation;
             Vector3f new_translation;
-            Vector3f base_translation;  /// Without any offset.
+            Vector3f base_translation;  ///< Translation without any offset.
         };
         std::vector<PerModel> per_model;
     };

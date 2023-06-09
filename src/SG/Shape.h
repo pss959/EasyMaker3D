@@ -27,7 +27,7 @@ class Shape : public Object {
     ion::gfx::ShapePtr GetIonShape() const { return ion_shape_; }
 
     /// Returns the current Bounds.
-    const Bounds & GetBounds();
+    const Bounds & GetBounds() const;
 
     /// Intersects the Shape with the given ray (in local coordinates). If
     /// there is any intersection, this sets the distance, point, and normal
@@ -56,10 +56,11 @@ class Shape : public Object {
     }
 
   private:
-    ion::gfx::ShapePtr ion_shape_;  /// Associated Ion Shape.
+    ion::gfx::ShapePtr ion_shape_;  ///< Associated Ion Shape.
 
-    Bounds bounds_;                /// Computed and cached Bounds.
-    bool   bounds_valid_ = false;  /// Bounds validity flag.
+    // These are mutable because they are caches.
+    mutable Bounds bounds_;                ///< Computed and cached Bounds.
+    mutable bool   bounds_valid_ = false;  ///< Bounds validity flag.
 };
 
 }  // namespace SG

@@ -46,7 +46,7 @@ class TreePanel : public Panel {
 
   private:
     class Impl_;
-    std::unique_ptr<Impl_> impl_;  /// Implementation instance.
+    std::unique_ptr<Impl_> impl_;  ///< Implementation instance.
 
     friend class Parser::Registry;
 };

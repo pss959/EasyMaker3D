@@ -45,7 +45,7 @@ class Panel : public SG::Node {
         SelectionAgentPtr   selection_agent;
         SessionAgentPtr     session_agent;
         SettingsAgentPtr    settings_agent;
-        VirtualKeyboardPtr  virtual_keyboard;  // Null if VR not enabled.
+        VirtualKeyboardPtr  virtual_keyboard;  ///< Null if VR not enabled.
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
@@ -230,7 +230,7 @@ class Panel : public SG::Node {
     }
 
   private:
-    class Focuser_;  /// Handles Pane focus management.
+    class Focuser_;  ///< Handles Pane focus management.
 
     typedef std::unordered_map<ButtonPanePtr, ButtonFunc> ButtonFuncMap_;
 

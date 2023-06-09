@@ -98,7 +98,7 @@ class FilePanel : public ToolPanel {
 
   private:
     class Impl_;
-    std::unique_ptr<Impl_> impl_;  /// Implementation instance.
+    std::unique_ptr<Impl_> impl_;  ///< Implementation instance.
 
     /// This cannot be in Impl_ because it requires access to Panel functions.
     void TryAcceptPath_();

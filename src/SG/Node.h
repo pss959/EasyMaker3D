@@ -289,7 +289,7 @@ class Node : public Object {
     virtual bool ProcessChange(Change change, const Object &obj) override;
 
   private:
-    ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.
+    ion::gfx::NodePtr ion_node_;  ///< Associated Ion Node.
 
     /// \name Parsed Fields
     ///@{

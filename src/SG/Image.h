@@ -51,7 +51,7 @@ class Image : public Object {
     /// Maps name of a SubImage to a SubImage instance.
     SubImageMap_ sub_image_map_;
 
-    ion::gfx::ImagePtr ion_image_;  /// Associated Ion Image.
+    ion::gfx::ImagePtr ion_image_;  ///< Associated Ion Image.
 };
 
 }  // namespace SG

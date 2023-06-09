@@ -64,7 +64,7 @@ class Sampler : public Object {
     Parser::TField<float>              max_lod_;
     ///@}
 
-    ion::gfx::SamplerPtr ion_sampler_;  /// Associated Ion Sampler.
+    ion::gfx::SamplerPtr ion_sampler_;  ///< Associated Ion Sampler.
 
     friend class Parser::Registry;
 };

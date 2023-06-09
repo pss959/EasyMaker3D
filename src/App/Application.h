@@ -32,7 +32,7 @@ class Application {
   public:
     /// Application options.
     struct Options {
-        Vector2i window_size;             /// Size of the application window.
+        Vector2i window_size;             ///< Size of the application window.
         bool     do_ion_remote      = false;
         bool     fullscreen         = false;
         bool     enable_vr          = false;

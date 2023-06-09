@@ -14,7 +14,7 @@ ion::gfx::ShapePtr Shape::SetUpIon() {
     return ion_shape_;
 }
 
-const Bounds & Shape::GetBounds() {
+const Bounds & Shape::GetBounds() const {
     if (! bounds_valid_) {
         // Ask the derived class to compute bounds.
         bounds_ = ComputeBounds();
