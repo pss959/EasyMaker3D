@@ -91,5 +91,9 @@ class SpinBasedTool : public Tool {
     /// Updates feedback for a change in angle.
     void UpdateAngleFeedback_();
 
+    /// Returns true if the two given Spin instances differ enough to execute a
+    /// command to change them.
+    static bool SpinsDiffer_(const Spin &spin0, const Spin &spin1);
+
     friend class Parser::Registry;
 };

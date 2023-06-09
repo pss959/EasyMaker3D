@@ -114,11 +114,7 @@ void SpinBasedTool::Activate_(bool is_activation) {
         // command to change the Model(s).
         if (command_) {
             const Spin &new_spin = command_->GetSpin();
-            if (! AreClose(new_spin.center, start_stage_spin_.center) ||
-                ! AreDirectionsClose(new_spin.axis, start_stage_spin_.axis,
-                                     Anglef::FromDegrees(.01f)) ||
-                ! AreClose(new_spin.angle, start_stage_spin_.angle,
-                           Anglef::FromDegrees(.01f)))
+            if (SpinsDiffer_(start_stage_spin_, new_spin))
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
@@ -267,4 +263,13 @@ void SpinBasedTool::UpdateAngleFeedback_() {
     ASSERT(feedback_);
     feedback_->SubtendArc(center, 0, 0, stage_spin_.axis,
                           CircleArc(Anglef(), stage_spin_.angle));
+}
+
+bool SpinBasedTool::SpinsDiffer_(const Spin &spin0, const Spin &spin1) {
+    const Anglef angle_tolerance = Anglef::FromDegrees(.01f);
+    return
+        !           AreClose(spin0.center, spin1.center)                 ||
+        ! AreDirectionsClose(spin0.axis,   spin1.axis, angle_tolerance)  ||
+        !           AreClose(spin0.angle,  spin1.angle, angle_tolerance) ||
+        !           AreClose(spin0.offset, spin1.offset);
 }

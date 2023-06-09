@@ -34,12 +34,31 @@ SpinWidget "Spin" {
               ]
             },
 
-            # XXXX for translating the spin offset.
+            # Slider1DWidget for modifying the spin offset.
             Node "OffsetPosition" {
               children: [
                 Slider1DWidget "Offset" {
                   dimension: 1,
-                  shapes: [ Box { size: 2 2 2 } ]
+                  inactive_color: "#66aa55",
+                  shapes: [
+                    Cylinder "TopCone" {
+                      translation:   0 1 0,
+                      top_radius:    0,
+                      bottom_radius: .5,
+                      height:        1,
+                    },
+                    Cylinder "Shaft" {
+                      top_radius:    .2,
+                      bottom_radius: .2,
+                      height:        2,
+                    },
+                    Cylinder "BottomCone" {
+                      translation:   0 -1 0,
+                      top_radius:    .5,
+                      bottom_radius: 0,
+                      height:        1,
+                    },
+                  ]
                 }
               ]
             },
