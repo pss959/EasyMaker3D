@@ -60,6 +60,9 @@ class SpinBasedTool : public Tool {
     /// Spin (in stage coordinates) at the start of widget interaction.
     Spin                 start_stage_spin_;
 
+    /// Radius used to set the widget sizes and for feedback placement.
+    float                radius_ = 1;
+
     /// Feedback showing current Spin angle.
     AngularFeedbackPtr   feedback_;
 

@@ -72,8 +72,8 @@ void SpinBasedTool::Attach() {
 
     // Update the widget size based on the size of the ConvertedModel.
     const auto model_size = MatchOperandModelAndGetSize(false);
-    const float radius = .5f * ion::math::Length(model_size);
-    spin_widget_->SetSize(radius);
+    radius_ = .5f * ion::math::Length(model_size);
+    spin_widget_->SetSize(radius_);
 
     // Get the Spin from the attached Model in stage coordinates.
     stage_spin_ = GetStageSpinFromModel_();
@@ -263,7 +263,7 @@ void SpinBasedTool::UpdateSpinWidget_() {
 void SpinBasedTool::UpdateAngleFeedback_() {
     // The feedback should be in the plane perpendicular to the Spin axis (in
     // stage coordinates).
-    const Point3f center = stage_spin_.center + 1.2f * stage_spin_.axis;
+    const Point3f center = stage_spin_.center + radius_ * stage_spin_.axis;
     ASSERT(feedback_);
     feedback_->SubtendArc(center, 0, 0, stage_spin_.axis,
                           CircleArc(Anglef(), stage_spin_.angle));
