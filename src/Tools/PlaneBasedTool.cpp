@@ -245,24 +245,9 @@ void PlaneBasedTool::UpdateTranslationRange_() {
 }
 
 void PlaneBasedTool::UpdateTranslationFeedback_(bool is_snapped) {
-    // Show the motion in the direction of the plane normal. Find the position
-    // of the minimum point (relative to the plane) in stage coordinates.
-    // XXXX Do something better?
-    const auto &model = *GetModelAttachedTo();
-    const auto &mesh        = model.GetMesh();
-    const Vector3f &scale   = model.GetScale();
-    float min_dist = std::numeric_limits<float>::max();
-    const auto object_plane = GetObjectPlane();
-    Point3f min_pt(0, 0, 0);
-    for (const Point3f &p: mesh.points) {
-        const Point3f scaled_pt = ScalePoint(p, scale);
-        const float dist = SignedDistance(scaled_pt, object_plane.normal);
-        if (dist < min_dist) {
-            min_dist = dist;
-            min_pt   = scaled_pt;
-        }
-    }
-    const Point3f p0 = GetModelMatrix() * min_pt + model.GetLocalCenterOffset();
+    // Show the motion in the direction of the plane normal. Let the derived
+    // class define the base point.
+    const Point3f p0 = GetTranslationFeedbackBasePoint();
     const Point3f p1 = Point3f(stage_plane_.distance * stage_plane_.normal);
     feedback_->SetColor(is_snapped ? GetSnappedFeedbackColor() :
                         Color::White());

@@ -30,6 +30,7 @@ class ClipTool : public PlaneBasedTool {
     virtual Plane GetObjectPlaneFromModel() const override;
     virtual Range1f GetTranslationRange() const override;
     virtual ChangePlaneCommandPtr CreateChangePlaneCommand() const override;
+    virtual Point3f GetTranslationFeedbackBasePoint() const override;
 
     friend class Parser::Registry;
 };

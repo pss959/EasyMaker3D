@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <limits>
 
+#include <ion/math/transformutils.h>
+
 #include "Commands/ChangeClipCommand.h"
 #include "Math/Linear.h"
 #include "Models/ClippedModel.h"
@@ -52,4 +54,23 @@ Range1f ClipTool::GetTranslationRange() const {
 
 ChangePlaneCommandPtr ClipTool::CreateChangePlaneCommand() const {
     return CreateCommand<ChangeClipCommand>();
+}
+
+Point3f ClipTool::GetTranslationFeedbackBasePoint() const {
+    // Use the minimum point (relative to the plane) in stage coordinates.
+    const auto &model = *GetModelAttachedTo();
+    const auto &mesh        = model.GetMesh();
+    const Vector3f &scale   = model.GetScale();
+    float min_dist = std::numeric_limits<float>::max();
+    const auto object_plane = GetObjectPlane();
+    Point3f min_pt(0, 0, 0);
+    for (const Point3f &p: mesh.points) {
+        const Point3f scaled_pt = ScalePoint(p, scale);
+        const float dist = SignedDistance(scaled_pt, object_plane.normal);
+        if (dist < min_dist) {
+            min_dist = dist;
+            min_pt   = scaled_pt;
+        }
+    }
+    return GetModelMatrix() * min_pt + model.GetLocalCenterOffset();
 }

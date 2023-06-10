@@ -45,6 +45,10 @@ class PlaneBasedTool : public Tool {
     /// ChangePlaneCommand that will be used to modify the selected Model(s).
     virtual ChangePlaneCommandPtr CreateChangePlaneCommand() const = 0;
 
+    /// Derived classes must implement this to return the base point (in stage
+    /// coordinates) for translation feedback.
+    virtual Point3f GetTranslationFeedbackBasePoint() const = 0;
+
     /// Returns the current Plane in object coordinates.
     Plane GetObjectPlane() const;
 

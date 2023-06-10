@@ -25,3 +25,10 @@ Range1f MirrorTool::GetTranslationRange() const {
 ChangePlaneCommandPtr MirrorTool::CreateChangePlaneCommand() const {
     return CreateCommand<ChangeMirrorCommand>();
 }
+
+Point3f MirrorTool::GetTranslationFeedbackBasePoint() const {
+    // Always use the center of the operand Model.
+    auto mm = Util::CastToDerived<MirroredModel>(GetModelAttachedTo());
+    ASSERT(mm);
+    return Point3f(mm->GetOperandModel()->GetTranslation());
+}
