@@ -35,16 +35,16 @@ bool DiscWidget::IsValid(std::string &details) {
 }
 
 void DiscWidget::ApplyScaleChange(float delta) {
-    const float factor = 1.f + delta;
+    scale_factor_ = 1.f + delta;
     if (apply_to_widget_) {
-        Vector3f scale = factor * GetScale();
+        Vector3f scale = scale_factor_ * GetScale();
         const Vector2f &range = GetScaleRange();
         for (int dim = 0; dim < 3; ++dim)
             scale[dim] = Clamp(scale[dim], range[0], range[1]);
 
         SetScale(scale);
     }
-    scale_changed_.Notify(*this, factor);
+    scale_changed_.Notify(*this, scale_factor_);
 }
 
 void DiscWidget::SetRotationAngle(const Anglef &angle) {

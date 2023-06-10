@@ -78,6 +78,8 @@ class RadialLayoutWidget : public CompositeWidget {
     RadialLayoutWidget() {}
 
     virtual void CreationDone() override;
+    virtual void SubWidgetActivated(const std::string &name,
+                                    bool is_activation) override;
 
   private:
     /// Notifies when the widget is dragged in any way.
@@ -122,10 +124,8 @@ class RadialLayoutWidget : public CompositeWidget {
     void SetColors_();
 
     // Sub-widget callbacks.
-    void RadiusActivated_(bool is_activation);
-    void RadiusChanged_(float new_radius, float precision);
-    void SpokeActivated_(bool is_activation, bool is_start);
-    void SpokeChanged_(const Anglef &angle, bool is_start, float precision);
+    void RadiusChanged_();
+    void SpokeChanged_(bool is_start);
 
     /// This is called when the end spoke is rotated. If the end spoke crossed
     /// over the start spoke, this returns the new signed angle between them.

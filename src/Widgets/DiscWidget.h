@@ -75,6 +75,10 @@ class DiscWidget : public DraggableWidget {
     /// including during a rotation drag.
     Anglef GetRotationAngle() const { return cur_angle_; }
 
+    /// Returns the current scale factor. This can be called at any time,
+    /// including during a scale drag.
+    float GetScaleFactor() const { return scale_factor_; }
+
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
@@ -129,6 +133,9 @@ class DiscWidget : public DraggableWidget {
 
     /// Current rotation angle, taking the AngleMode into account.
     Anglef     cur_angle_;
+
+    /// Current scale factor.
+    float      scale_factor_ = 1;
 
     /// Notifies when the widget is rotated.
     Util::Notifier<Widget&, const Anglef &> rotation_changed_;

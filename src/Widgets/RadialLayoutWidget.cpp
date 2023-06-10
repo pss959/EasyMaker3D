@@ -17,19 +17,17 @@ void RadialLayoutWidget::CreationDone() {
     CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
-        auto get_widget = [&](const std::string &name){
-            return SG::FindTypedNodeUnderNode<DiscWidget>(*this, name);
-        };
         auto get_text = [&](const std::string &name){
             return SG::FindTypedNodeUnderNode<SG::TextNode>(*this, name);
         };
 
         // Main parts.
-        ring_             = get_widget("Ring");
+        ring_        = AddTypedSubWidget<DiscWidget>("Ring");
+        start_spoke_ = AddTypedSubWidget<DiscWidget>("StartSpoke");
+        end_spoke_   = AddTypedSubWidget<DiscWidget>("EndSpoke");
+
         layout_           = SG::FindNodeUnderNode(*this, "Layout");
         spoke_geom_       = SG::FindNodeUnderNode(*this, "SpokeGeom");
-        start_spoke_      = get_widget("StartSpoke");
-        end_spoke_        = get_widget("EndSpoke");
         arc_line_         = SG::FindNodeUnderNode(*this, "Arc");
         radius_text_      = get_text("RadiusText");
         start_angle_text_ = get_text("StartAngleText");
@@ -37,28 +35,12 @@ void RadialLayoutWidget::CreationDone() {
         arc_angle_text_   = get_text("ArcAngleText");
 
         // Set up callbacks.
-        auto ring_act = [&](Widget &, bool is_act){
-            RadiusActivated_(is_act);
-        };
-        auto ring_change = [&](Widget &w, float change){
-            auto &dw = static_cast<DiscWidget &>(w);
-            RadiusChanged_(change, dw.GetCurrentDragInfo().linear_precision);
-        };
-        auto spoke_act = [&](Widget &w, bool is_act){
-            SpokeActivated_(is_act, &w == start_spoke_.get());
-        };
-        auto spoke_change = [&](Widget &w, const Anglef &angle){
-            auto &dw = static_cast<DiscWidget &>(w);
-            SpokeChanged_(angle, &dw == start_spoke_.get(),
-                          dw.GetCurrentDragInfo().angular_precision);
-        };
-
-        ring_->GetActivation().AddObserver(this, ring_act);
-        ring_->GetScaleChanged().AddObserver(this, ring_change);
-        start_spoke_->GetActivation().AddObserver(this, spoke_act);
-        end_spoke_->GetActivation().AddObserver(this, spoke_act);
-        start_spoke_->GetRotationChanged().AddObserver(this, spoke_change);
-        end_spoke_->GetRotationChanged().AddObserver(this, spoke_change);
+        ring_->GetScaleChanged().AddObserver(
+            this, [&](Widget &, float){ RadiusChanged_(); });
+        start_spoke_->GetRotationChanged().AddObserver(
+            this, [&](Widget &, const Anglef &){ SpokeChanged_(true); });
+        end_spoke_->GetRotationChanged().AddObserver(
+            this, [&](Widget &, const Anglef &){ SpokeChanged_(false); });
 
         // Layout is off until radius is scaled up large enough.
         layout_->SetEnabled(false);
@@ -107,6 +89,25 @@ void RadialLayoutWidget::PostSetUpIon() {
     SetColors_();
 }
 
+void RadialLayoutWidget::SubWidgetActivated(const std::string &name,
+                                            bool is_activation) {
+    if (name == "Ring") {
+        if (is_activation)
+            start_radius_ = radius_;
+        radius_text_->SetEnabled(is_activation);
+    }
+    else if (name == "StartSpoke" || name == "EndSpoke") {
+        if (is_activation)
+            start_rot_angle_ =
+                name == "StartSpoke" ? arc_.start_angle : end_angle_;
+        start_angle_text_->SetEnabled(is_activation);
+        end_angle_text_->SetEnabled(is_activation);
+        arc_angle_text_->SetEnabled(is_activation);
+    }
+
+    CompositeWidget::SubWidgetActivated(name, is_activation);
+}
+
 void RadialLayoutWidget::SetColors_() {
     auto get_color = [](const std::string &name){
         return SG::ColorMap::SGetColor(name);
@@ -131,15 +132,10 @@ void RadialLayoutWidget::SetColors_() {
     arc_angle_text_->SetTextColor(arc);
 }
 
-void RadialLayoutWidget::RadiusActivated_(bool is_activation) {
-    if (is_activation)
-        start_radius_ = radius_;
-    radius_text_->SetEnabled(is_activation);
-    GetActivation().Notify(*this, is_activation);
-}
-
-void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
-    radius_ = std::max(RoundToPrecision(start_radius_ * change, precision),
+void RadialLayoutWidget::RadiusChanged_() {
+    const float new_radius = start_radius_ * ring_->GetScaleFactor();
+    const float precision = ring_->GetCurrentDragInfo().linear_precision;
+    radius_ = std::max(RoundToPrecision(new_radius, precision),
                        TK::kRLWRingMinOuterRadius);
     UpdateRing_();
     UpdateSpokes_();
@@ -147,22 +143,15 @@ void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
     changed_.Notify();
 }
 
-void RadialLayoutWidget::SpokeActivated_(bool is_activation, bool is_start) {
-    if (is_activation)
-        start_rot_angle_ = is_start ? arc_.start_angle : end_angle_;
-    start_angle_text_->SetEnabled(is_activation);
-    end_angle_text_->SetEnabled(is_activation);
-    arc_angle_text_->SetEnabled(is_activation);
-    GetActivation().Notify(*this, is_activation);
-}
+void RadialLayoutWidget::SpokeChanged_(bool is_start) {
+    const auto widget = is_start ? start_spoke_ : end_spoke_;
+    const float precision = widget->GetCurrentDragInfo().angular_precision;
 
-void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
-                                       float precision) {
     // Compute the new full angle and apply precision.
-    Anglef new_angle = Anglef::FromDegrees(
-        RoundToPrecision(
-            NormalizedAngle(start_rot_angle_ + angle).Degrees(),
-            precision));
+    const Anglef angle =
+        NormalizedAngle(start_rot_angle_ + widget->GetRotationAngle());
+    Anglef new_angle = Anglef::FromDegrees(RoundToPrecision(angle.Degrees(),
+                                                            precision));
     if (new_angle.Degrees() == 360)
         new_angle = Anglef::FromDegrees(0);
 
