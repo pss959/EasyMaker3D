@@ -91,6 +91,8 @@ class ScaleWidget : public CompositeWidget {
 
     virtual void AddFields() override;
     virtual void CreationDone() override;
+    virtual void SubWidgetActivated(const std::string &name,
+                                    bool is_activation) override;
 
   private:
     /// \name Parsed Fields
@@ -115,11 +117,8 @@ class ScaleWidget : public CompositeWidget {
     /// Saved center value at start of a symmetric drag.
     float starting_center_value_ = 0;
 
-    /// Initializes and returns a slider.
-    Slider1DWidgetPtr InitSlider_(const std::string &name);
-
-    void SliderActivated_(const Slider1DWidgetPtr &slider, bool is_activation);
-    void SliderChanged_(const Slider1DWidgetPtr &slider);
+    /// Slider change callback.
+    void SliderChanged_(bool is_max);
 
     /// Sets the starting configurations of the sliders when a drag is started
     // on the given slider.

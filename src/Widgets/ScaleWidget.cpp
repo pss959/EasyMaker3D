@@ -6,7 +6,7 @@
 #include "Widgets/Slider1DWidget.h"
 
 void ScaleWidget::AddFields() {
-    AddField(mode_.Init("mode",                 Mode::kAsymmetric));
+    AddField(mode_.Init("mode", Mode::kAsymmetric));
     AddField(use_modified_mode_.Init("use_modified_mode", false));
     AddField(limits_.Init("limits", Vector2f(TK::kScaleWidgetMinLimit,
                                              TK::kScaleWidgetMaxLimit)));
@@ -18,15 +18,26 @@ void ScaleWidget::CreationDone() {
     CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
-        min_slider_ = InitSlider_("MinSlider");
-        max_slider_ = InitSlider_("MaxSlider");
-        stick_ = SG::FindNodeUnderNode(*this, "Stick");
+        min_slider_ = AddTypedSubWidget<Slider1DWidget>("MinSlider");
+        max_slider_ = AddTypedSubWidget<Slider1DWidget>("MaxSlider");
+        stick_      = SG::FindNodeUnderNode(*this, "Stick");
+
+        // Add callbacks.
+        min_slider_->GetValueChanged().AddObserver(
+            this, [&](Widget &, const float &){ SliderChanged_(false); });
+        max_slider_->GetValueChanged().AddObserver(
+            this, [&](Widget &, const float &){ SliderChanged_(true); });
+
+        // Disable the value-changed callbacks until activated.
+        min_slider_->GetValueChanged().EnableObserver(this, false);
+        max_slider_->GetValueChanged().EnableObserver(this, false);
+
         UpdateSlidersAndStick_();
     }
 }
 
 void ScaleWidget::SetLimits(const Vector2f &limits) {
-    ASSERT(! is_dragging_);
+    ASSERT(! min_slider_->IsDragging() && ! max_slider_->IsDragging());
     ASSERT(limits[1] > limits[0]);
     limits_ = limits;
 
@@ -38,53 +49,37 @@ void ScaleWidget::SetLimits(const Vector2f &limits) {
 }
 
 void ScaleWidget::SetMinValue(float value) {
-    ASSERT(! is_dragging_);
+    ASSERT(! min_slider_->IsDragging() && ! max_slider_->IsDragging());
     const Vector2f &limits = GetLimits();
     min_value_ = Clamp(value, max_value_ - limits[1], max_value_ - limits[0]);
     UpdateSlidersAndStick_();
 }
 
 void ScaleWidget::SetMaxValue(float value) {
-    ASSERT(! is_dragging_);
+    ASSERT(! min_slider_->IsDragging() && ! max_slider_->IsDragging());
     const Vector2f &limits = GetLimits();
     max_value_ = Clamp(value, min_value_ + limits[0], min_value_ + limits[1]);
     UpdateSlidersAndStick_();
 }
 
-Slider1DWidgetPtr ScaleWidget::InitSlider_(const std::string &name) {
-    auto slider = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, name);
+void ScaleWidget::SubWidgetActivated(const std::string &name,
+                                     bool is_activation) {
+    const auto slider = name == "MinSlider" ? min_slider_ : max_slider_;
 
-    slider->GetActivation().AddObserver(
-        this, [&, slider](Widget &, bool is_act){
-            SliderActivated_(slider, is_act); });
-    slider->GetValueChanged().AddObserver(
-        this, [&, slider](Widget &, const float &){ SliderChanged_(slider); });
-
-    // Disable the value-changed callback until activated.
-    slider->GetValueChanged().EnableObserver(this, false);
-
-    return slider;
-}
-
-void ScaleWidget::SliderActivated_(const Slider1DWidgetPtr &slider,
-                                   bool is_activation) {
-    // Order of these is different for activation vs. deactivation: change this
-    // widget's active state so that observers will be notified, and enable or
-    // disable the value-changed callback on the active slider.
     if (is_activation) {
-        SetActive(true, true);
         slider->GetValueChanged().EnableObserver(this, true);
         InitForDrag_(slider);
-        is_dragging_ = true;
     }
     else {
-        is_dragging_ = false;
         slider->GetValueChanged().EnableObserver(this, false);
-        SetActive(false, true);
     }
+
+    CompositeWidget::SubWidgetActivated(name, is_activation);
 }
 
-void ScaleWidget::SliderChanged_(const Slider1DWidgetPtr &slider) {
+void ScaleWidget::SliderChanged_(bool is_max) {
+    const auto slider = is_max ? max_slider_ : min_slider_;
+
     // If use_modified_mode_ is true, set the mode based on the flag when the
     // drag started.
     if (IsUsingModifiedMode()) {
@@ -117,7 +112,7 @@ void ScaleWidget::SliderChanged_(const Slider1DWidgetPtr &slider) {
     UpdateStick_();
 
     // Let all listeners know about the change.
-    scale_changed_.Notify(*this, slider == max_slider_);
+    scale_changed_.Notify(*this, is_max);
 }
 
 void ScaleWidget::InitForDrag_(const Slider1DWidgetPtr &slider) {
@@ -146,7 +141,7 @@ void ScaleWidget::InitForDrag_(const Slider1DWidgetPtr &slider) {
 }
 
 void ScaleWidget::UpdateSlidersAndStick_() {
-    ASSERT(! is_dragging_);
+    ASSERT(! min_slider_->IsDragging() && ! max_slider_->IsDragging());
 
     // Set the ranges of the active sliders so the current values position the
     // handles correctly. The ranges will be updated properly when a drag
