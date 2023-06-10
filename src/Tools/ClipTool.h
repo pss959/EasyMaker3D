@@ -32,5 +32,10 @@ class ClipTool : public PlaneBasedTool {
     virtual ChangePlaneCommandPtr CreateChangePlaneCommand() const override;
     virtual Point3f GetTranslationFeedbackBasePoint() const override;
 
+    /// Returns the distance range and the min/max points of the scaled operand
+    /// mesh along the plane normal.
+    void GetRangeAlongPlaneNormal_(Range1f &distance_range,
+                                   Range3f &point_range) const;
+
     friend class Parser::Registry;
 };
