@@ -160,8 +160,8 @@ const float    kRadialMenuRadiusMargin           = .25f;
 
 // Shelves and 3D Icons
 const float    kShelfIconDistanceScale           = .015f;
-const float    kShelfIconMargin                  = 1;
-const float    kShelfIconSize                    = 3.4f;
+const float    kShelfIconMargin                  = .8f;
+const float    kShelfIconSize                    = 3.2f;
 const float    kShelfIconYOffset                 = 1.2f;
 
 // Stage

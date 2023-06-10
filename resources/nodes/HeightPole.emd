@@ -1,5 +1,5 @@
 PushButtonWidget "HeightPole" {
-  translation: 50 $ROOM_HALF_SIZE -28,
+  translation: 50 $ROOM_HALF_SIZE -24,
   $NO_CAST_SHADOWS,
   hover_scale:   1.05 1 1.05,
   tooltip_text: "Click to reset the view.",

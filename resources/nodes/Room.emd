@@ -32,7 +32,7 @@ Node "Room" {
     # Wall Board for TreePanel.
     CLONE "T_Board" "WallBoard" {
       behavior: "kPermanent",
-      translation: 48 30 -69.8,
+      translation: 49 30 -69.8,
     },
 
     # Floating Board for application Panels.

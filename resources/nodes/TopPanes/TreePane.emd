@@ -72,7 +72,7 @@ BoxPane "TreePane" {
   ],
 
   background: $BG { disabled_flags: "kIntersectAll", color: $PANE_BG_COLOR },
-  min_size: 150 200,
+  min_size: 146 200,
   padding: 2,
   spacing: 2,
   panes: [

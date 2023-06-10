@@ -2,7 +2,7 @@ Node "Shelves" {
   CONSTANTS: [
     LEFT_X: "-53",
     LEFT_Z: "-40",
-    BACK_X: "-6",
+    BACK_X: "-3",
     BACK_Z: "-64",
   ],
 
