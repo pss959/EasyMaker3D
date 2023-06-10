@@ -5,7 +5,7 @@
 from os      import environ
 from os.path import join
 
-Import('snapimage')
+Import('noimages', 'snapimage')
 
 # -----------------------------------------------------------------------------
 # Environment.
@@ -240,31 +240,32 @@ ann_map = {
 def ImageFile(name):
   return join(image_dir, name + '.jpg')
 
-# Snapshot script processing.
+# Snapshot and annotation script processing.
 snaps = []
-for (script, images) in snap_map.items():
-  script_file = script + '.conf'
-  snap = env.Command([ImageFile(image) for image in images],
-                     [snapimage, join(script_dir, script_file)],
-                     f'{snapimage.abspath} --fullscreen {script_file}',
-                     chdir=root_dir)
-  # This prevents snapimage from running in parallel.
-  env.SideEffect('dummy', snap)
-  snaps.append(snap)
+anns  = []
+if noimages != True:  # Have to compare with True here.
+  # Snapshots.
+  for (script, images) in snap_map.items():
+    script_file = script + '.conf'
+    snap = env.Command([ImageFile(image) for image in images],
+                       [snapimage, join(script_dir, script_file)],
+                       f'{snapimage.abspath} --fullscreen {script_file}',
+                       chdir=root_dir)
+    # This prevents snapimage from running in parallel.
+    env.SideEffect('dummy', snap)
+    snaps.append(snap)
 
-# Annotation processing.
-anns = []
-for (script, (input_images, output_images)) in ann_map.items():
-  script_file = script + '.conf'
-  ann = env.Command([ImageFile(image) for image in output_images],
-                    [annotator, join(ann_dir, script_file)] +
-                    [ImageFile(image) for image in input_images],
-                    f'{annotator} {script_file}',
-                    chdir=root_dir)
-  anns.append(ann)
+  # Annotations.
+  for (script, (input_images, output_images)) in ann_map.items():
+    script_file = script + '.conf'
+    ann = env.Command([ImageFile(image) for image in output_images],
+                      [annotator, join(ann_dir, script_file)] +
+                      [ImageFile(image) for image in input_images],
+                      f'{annotator} {script_file}', chdir=root_dir)
+    anns.append(ann)
 
 images = [snaps, anns]
-env.Alias('Snaps', snaps)
+env.Alias('Snaps',  snaps)
 env.Alias('Images', images)
 
 Return('images')

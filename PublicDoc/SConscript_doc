@@ -7,7 +7,7 @@ from os         import environ, makedirs, walk
 from os.path    import dirname, join, relpath
 from subprocess import Popen, PIPE, run
 
-Import('app_dict', 'doc_build_dir', 'snapimage')
+Import('app_dict', 'doc_build_dir', 'noimages', 'snapimage')
 
 # -----------------------------------------------------------------------------
 # Helper functions.
@@ -137,7 +137,7 @@ env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 # Snapshot Image generation and annotation.
 # -----------------------------------------------------------------------------
 
-images = SConscript('SConscript_snaps', exports=['snapimage'])
+images = SConscript('SConscript_snaps', exports=['noimages', 'snapimage'])
 
 # -----------------------------------------------------------------------------
 # Version processing.

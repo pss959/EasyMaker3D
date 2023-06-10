@@ -25,9 +25,12 @@ AddOption('--brief', dest='brief', action='store_true',
           default='True', help='Shortened vs. full output')
 AddOption('--nobrief', dest='brief', action='store_false',
           default='True', help='Shortened vs. full output')
+AddOption('--noimages', dest='noimages', action='store_true',
+          default='False', help='Do not update images for PublicDoc')
 
-mode  = GetOption('mode')
-brief = GetOption('brief')
+mode     = GetOption('mode')
+brief    = GetOption('brief')
+noimages = GetOption('noimages')
 
 # -----------------------------------------------------------------------------
 # Environment setup.
@@ -96,7 +99,7 @@ if platform == 'linux':
     base_env.Alias('PublicDoc',
                    SConscript('PublicDoc/SConscript_doc',
                               exports=['app_dict', 'doc_build_dir',
-                                       'snapimage']))
+                                       'noimages', 'snapimage']))
 
 # -----------------------------------------------------------------------------
 # Building the release as a Zip file.
