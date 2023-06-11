@@ -199,14 +199,8 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Spin &spin) {
     // If the plane is closer to the maximum end of the slice axis, negate the
     // rotation angle for consistency. Use a tolerance here to prevent
     // oscillations caused by FP error.
-    const float angle_sign =
-        SignedDistance(spin.center, perp_vec) > .0001f ? -1 : 1;
-
-    // If the spin offset is 0, don't let the angle exceed 360 degrees in
-    // either direction.
-    const Anglef angle = angle_sign *
-        (spin.offset != 0 ? spin.angle :
-         Anglef::FromDegrees(Clamp(spin.angle.Degrees(), -360.f, 360.f)));
+    const Anglef angle = spin.angle *
+        (SignedDistance(spin.center, perp_vec) > .0001f ? -1 : 1);
 
     // Radius of spin circle, preserving arc length along the slicing axis.
     const float radius = sliced_mesh.range.GetSize() / angle.Radians();

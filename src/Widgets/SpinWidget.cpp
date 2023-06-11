@@ -16,8 +16,7 @@ void SpinWidget::CreationDone() {
 
         ring_transform_ = SG::FindNodeUnderNode(*this, "RingTransform");
 
-        axis_->SetTranslationRange(Range2f(Point2f(-100, -100),
-                                           Point2f(100, 100)));
+        axis_->SetTranslationRange(Range2f(Point2f(-40, -40), Point2f(40, 40)));
         offset_->SetRange(-100, 100);
 
         // Set up callbacks.
