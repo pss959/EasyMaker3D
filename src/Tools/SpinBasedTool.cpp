@@ -9,6 +9,7 @@
 
 #include "Commands/ChangeSpinCommand.h"
 #include "Feedback/AngularFeedback.h"
+#include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
@@ -110,9 +111,13 @@ void SpinBasedTool::Activate_(bool is_activation) {
         spin_widget_->UnhighlightSubWidget("Translator");
         spin_widget_->UnhighlightSubWidget("Ring");
         context.target_manager->EndSnapping();
-        if (feedback_) {
-            context.feedback_manager->Deactivate(feedback_);
-            feedback_.reset();
+        if (angle_feedback_) {
+            context.feedback_manager->Deactivate(angle_feedback_);
+            angle_feedback_.reset();
+        }
+        if (offset_feedback_) {
+            context.feedback_manager->Deactivate(offset_feedback_);
+            offset_feedback_.reset();
         }
 
         GetDragEnded().Notify(*this);
@@ -158,22 +163,32 @@ void SpinBasedTool::SpinChanged_(SpinWidget::ChangeType type) {
         // If not snapped, update the current Spin and match it.
         stage_spin_ = GetStageSpinFromWidget_();
 
-        // Apply precision to the angle unless modified dragging.
-        if (! context.is_modified_mode &&
-            type == SpinWidget::ChangeType::kAngle) {
-            stage_spin_.angle =
-                context.precision_store->ApplyAngle(stage_spin_.angle);
+        // Apply precision to the angle and offset unless modified dragging.
+        if (! context.is_modified_mode) {
+            if (type == SpinWidget::ChangeType::kAngle)
+                stage_spin_.angle =
+                    context.precision_store->ApplyAngle(stage_spin_.angle);
+            else if (type == SpinWidget::ChangeType::kOffset)
+                stage_spin_.offset =
+                    context.precision_store->Apply(stage_spin_.offset);
         }
     }
 
     command_->SetSpin(stage_spin_);
     context.command_manager->SimulateDo(command_);
 
-    // Update angle feedback.
+    // Update angle or offset feedback.
     if (type == SpinWidget::ChangeType::kAngle) {
-        if (! feedback_)
-            feedback_ = context.feedback_manager->Activate<AngularFeedback>();
+        if (! angle_feedback_)
+            angle_feedback_ =
+                context.feedback_manager->Activate<AngularFeedback>();
         UpdateAngleFeedback_();
+    }
+    else if (type == SpinWidget::ChangeType::kOffset) {
+        if (! offset_feedback_)
+            offset_feedback_ =
+                context.feedback_manager->Activate<LinearFeedback>();
+        UpdateOffsetFeedback_();
     }
 }
 
@@ -267,9 +282,22 @@ void SpinBasedTool::UpdateAngleFeedback_() {
     // The feedback should be in the plane perpendicular to the Spin axis (in
     // stage coordinates).
     const Point3f center = stage_spin_.center + radius_ * stage_spin_.axis;
-    ASSERT(feedback_);
-    feedback_->SubtendArc(center, 0, 0, stage_spin_.axis,
-                          CircleArc(Anglef(), stage_spin_.angle));
+    ASSERT(angle_feedback_);
+    angle_feedback_->SubtendArc(center, 0, 0, stage_spin_.axis,
+                                CircleArc(Anglef(), stage_spin_.angle));
+}
+
+void SpinBasedTool::UpdateOffsetFeedback_() {
+    // The feedback ranges from the starting position of the offset slider to
+    // its current position. Use SpanLength() instead of SpanPoints() here
+    // because the offset may be 0. The slider starts at the angle=0 position
+    // on the ring.
+    const auto rot = Rotationf::FromAxisAndAngle(stage_spin_.axis,
+                                                 stage_spin_.angle);
+    const Point3f p0 = rot * (Point3f::Zero() + radius_ * Vector3f::AxisX());
+    const float length = stage_spin_.offset;
+    ASSERT(offset_feedback_);
+    offset_feedback_->SpanLength(p0, stage_spin_.axis, length);
 }
 
 bool SpinBasedTool::SpinsDiffer_(const Spin &spin0, const Spin &spin1) {

@@ -9,6 +9,7 @@
 
 DECL_SHARED_PTR(ChangeSpinCommand);
 DECL_SHARED_PTR(AngularFeedback);
+DECL_SHARED_PTR(LinearFeedback);
 
 /// SpinBasedTool is an abstract base class for specialized tools whose
 /// interaction involves rotating by some angle about some 3D axis specified as
@@ -64,7 +65,10 @@ class SpinBasedTool : public Tool {
     float                radius_ = 1;
 
     /// Feedback showing current Spin angle.
-    AngularFeedbackPtr   feedback_;
+    AngularFeedbackPtr   angle_feedback_;
+
+    /// Feedback showing current Spin offset.
+    LinearFeedbackPtr    offset_feedback_;
 
     // Widget callbacks.
     void Activate_(bool is_activation);
@@ -90,6 +94,9 @@ class SpinBasedTool : public Tool {
 
     /// Updates feedback for a change in angle.
     void UpdateAngleFeedback_();
+
+    /// Updates feedback for a change in offset.
+    void UpdateOffsetFeedback_();
 
     /// Returns true if the two given Spin instances differ enough to execute a
     /// command to change them.
