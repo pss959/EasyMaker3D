@@ -190,7 +190,8 @@ a specific type and then attaches the corresponding :ref:`specialized tool
 <ug-specialized-tools>` to the primary selection.
 
 The following table lists the icons from left to right and what they do. The
-specialized tool links describe how to edit the resulting models.
+specialized tool links describe how to edit the resulting models. See those
+tools for more information.
 
 .. list-table::
    :align:  center
@@ -201,14 +202,14 @@ specialized tool links describe how to edit the resulting models.
      - Model Type
      - Specialized Tool
      - Initial State after Conversion
-   * - :action:`Convert Twist`
+   * - :action:`Convert Bend`
      - :ref:`Bent model <ug-converted-models>`
      - :ref:`Bend Tool <ug-bend-tool>`
-     - No bend
+     - No bend (0 degrees)
    * - :action:`Convert Bevel`
      - :ref:`Beveled model <ug-converted-models>`
      - :ref:`Bevel Tool <ug-bevel-tool>`
-     - Simple bevel on all edges
+     - Simple (straight) bevel on all edges
    * - :action:`Convert Clip`
      - :ref:`Clipped model <ug-converted-models>`
      - :ref:`Clip Tool <ug-clip-tool>`
@@ -217,7 +218,8 @@ specialized tool links describe how to edit the resulting models.
    * - :action:`Convert Mirror`
      - :ref:`Mirrored model <ug-converted-models>`
      - :ref:`Mirror Tool <ug-mirror-tool>`
-     - All models mirrored left-to-right across center of primary model
+     - Primary model mirrored left-to-right across center; other models
+       mirrored across same plane
    * - :action:`Convert Taper`
      - :ref:`Tapered model <ug-converted-models>`
      - :ref:`Taper Tool <ug-taper-tool>`
@@ -230,10 +232,11 @@ specialized tool links describe how to edit the resulting models.
 Each converted model applies a single operation. To apply another one, you can
 convert the model again. For example to clip a Cylinder model with multiple
 planes, you can convert the cylinder to a Clipped model and edit the first
-plane with the Clip Tool. Then you can convert the Clipped model to another
-Clipped model and edit the second plane. For consistency, this process works
-for all types of converted models, although it doesn't always make sense.
-(Beveling an already Beveled model probably results in something awful.)
+plane with the Clip Tool. Then you can convert the Clipped model again to
+create another Clipped model and edit the second plane. For consistency, this
+process works for all types of converted models, although it doesn't always
+make sense.  (Beveling an already Beveled model probably results in something
+awful.)
 
 Creation Actions
 ................
@@ -304,15 +307,11 @@ the middle shelf on the back wall. From left to right:
     rotated to an arbitrary orientation and you want to move it 5 units to the
     right in the scene, you can turn this toggle on and the :ref:`Translation
     Tool <ug-translation-tool>` will then align its geometry and motion with the
-    stage axes, not the model's local axes. This toggle affects the following
-    tools:
-
-      - :ref:`Bend Tool <ug-bend-tool>`
-      - :ref:`Clip Tool <ug-clip-tool>`
-      - :ref:`Mirror Tool <ug-mirror-tool>`
-      - :ref:`Rotation Tool <ug-rotation-tool>`
-      - :ref:`Translation Tool <ug-translation-tool>`
-      - :ref:`Twist Tool <ug-twist-tool>`
+    stage axes, not the model's local axes. This toggle affects these
+    tools: :ref:`Bend Tool <ug-bend-tool>`, :ref:`Clip Tool <ug-clip-tool>`,
+    :ref:`Mirror Tool <ug-mirror-tool>`, :ref:`Rotation Tool
+    <ug-rotation-tool>`, :ref:`Translation Tool <ug-translation-tool>`, and
+    :ref:`Twist Tool <ug-twist-tool>`.
 
 One other layout-related action is available only via a :ref:`keyboard shortcut
 <ug-keyboard-shortcuts>` or :ref:`radial menu <ug-radial-menus>`:
@@ -448,18 +447,18 @@ general tool. The icon will be shown with the active icon color when the
 corresponding specialized tool is attached and the regular woodgrain icon color
 when toggled back to a general tool.
 
-.. incimage:: /images/TwistToolIcon.jpg    80px right
-.. incimage:: /images/TorusToolIcon.jpg    80px right
-.. incimage:: /images/TextToolIcon.jpg     80px right
-.. incimage:: /images/TaperToolIcon.jpg    80px right
-.. incimage:: /images/RevSurfToolIcon.jpg  80px right
-.. incimage:: /images/MirrorToolIcon.jpg   80px right
-.. incimage:: /images/ImportToolIcon.jpg   80px right
-.. incimage:: /images/CylinderToolIcon.jpg 80px right
-.. incimage:: /images/ClipToolIcon.jpg     80px right
-.. incimage:: /images/CSGToolIcon.jpg      80px right
-.. incimage:: /images/BevelToolIcon.jpg    80px right
-.. incimage:: /images/BendToolIcon.jpg    80px right
+.. incimage:: /images/TwistToolIcon.jpg    64px right
+.. incimage:: /images/TorusToolIcon.jpg    64px right
+.. incimage:: /images/TextToolIcon.jpg     64px right
+.. incimage:: /images/TaperToolIcon.jpg    64px right
+.. incimage:: /images/RevSurfToolIcon.jpg  64px right
+.. incimage:: /images/MirrorToolIcon.jpg   64px right
+.. incimage:: /images/ImportToolIcon.jpg   64px right
+.. incimage:: /images/CylinderToolIcon.jpg 64px right
+.. incimage:: /images/ClipToolIcon.jpg     64px right
+.. incimage:: /images/CSGToolIcon.jpg      64px right
+.. incimage:: /images/BevelToolIcon.jpg    64px right
+.. incimage:: /images/BendToolIcon.jpg    64px right
 
 |block-image|
 
@@ -502,8 +501,8 @@ type for the icon to be enabled.
 
 .. note::
 
-   The :shortcut:`Space` shortcut is an easy way to toggle between general and
-   specialized tools when enabled.
+   The :shortcut:`Space` shortcut is an easy way to toggle between the current
+   general and specialized tools when a specialized tool is available.
 
 .. _ug-switch-to-next-tool:
 .. _ug-switch-to-previous-tool:

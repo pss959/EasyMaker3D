@@ -3,8 +3,8 @@
 Tools
 -----
 
-:newterm:`Tools` attach to :ref:`selected models <ug-selection>` in the scene,
-adding interaction to perform a specific type of editing.
+:newterm:`Tools` are interactive objects that attach to :ref:`selected models
+<ug-selection>` in the scene to perform a specific type of editing.
 
 Tools are divided into two categories:
 
@@ -74,8 +74,8 @@ primary selection, as does the position of the small marker in the outer
 ring. Clicking or dragging anywhere in the ring moves the marker and changes
 the color of all selected models.
 
-Colors have no real effect on the 3D-printed model, but they can be used to
-distinguish different parts while editing. Or just to make things look nicer.
+Colors have no real effect on 3D-printed models, but they can be used to
+distinguish different parts while editing, or just to make things look nicer.
 
 .. admonition:: VR Only
 
@@ -105,20 +105,23 @@ Some notes about this tool:
 
 .. _ug-complexity-model-types:
 
-  - The Complexity Tool has effect only on the following :ref:`model types
-    <ug-model-types>`: Cylinder, Sphere, Torus, RevSurf (surface of
-    revolution), Text, and Twisted model. The tool is disabled if the selection
-    contains only models of other types.
+  - :ref:`Showing model edges <ug-show-edges>` can help you see the triangles
+    more clearly as in these images.
+  - You can use complexity to create models representing certain basic
+    shapes. For example, the lowest complexity Cylinder model is a triangular
+    prism, and the lowest complexity Sphere model is an octohedron.
   - If you want to change the complexity of a child model of a
     :ref:`converted model <ug-converted-models>` or :ref:`combined model
     <ug-combined-models>` of any type you can :ref:`select the child or
     children <ug-select-hierarchy>` and apply the complexity change. The parent
     model will update appropriately when its children are no longer selected.
-  - :ref:`Showing model edges <ug-show-edges>` can help you see the triangles
-    more clearly as in these images.
-  - You can use complexity to create models representing certain basic
-    shapes. The lowest complexity Cylinder model is a triangular prism, and the
-    lowest complexity Sphere model is an octohedron.
+
+.. note::
+
+    The Complexity Tool has effect only on the following :ref:`types of models
+    <ug-model-types>`: Bent, Cylinder, RevSurf (surface of revolution), Sphere,
+    Text, Torus, and Twisted. The tool is disabled if the selection contains
+    only models of other types.
 
 .. admonition:: VR Only
 
@@ -148,7 +151,7 @@ already used by another model.
 .. admonition:: VR Only
 
    If you are using the application in VR with the headset on, activating the
-   text input field will bring up :ref:`a panel with the virtual keyboard
+   text input field will bring up :ref:`the virtual keyboard panel
    <ug-virtual-keyboard-panel>` to allow text to be edited with the
    controllers.
 
@@ -241,8 +244,13 @@ There are two scaling modes:
     stays fixed. This is the default scaling mode when dragging a handle.
   - :newterm:`Symmetric scaling` resizes the model about its center. When
     dragging a scaler handle in this mode, the handle on the opposite side
-    moves the same amount in the other direction. :ref:`modified-dragging
-    <ug-modified-mode>` a scaler handle performs symmetric scaling.
+    moves the same amount in the other direction.
+
+.. note::
+
+    Scaling is asymmetric by default.  :ref:`Modified-dragging
+    <ug-modified-mode>` any scaler handle performs symmetric scaling.
+
 
 Keep in mind that scaling a model's height symmetrically can cause it to extend
 under the :ref:`stage <ug-stage>`.
@@ -278,15 +286,20 @@ Translation Tool
 The :newterm:`Translation Tool` lets you change the position of selected
 models. It has three :ref:`color-coded <ug-dimension-colors>` double-ended 3D
 sliders along each of the principal axes. Dragging the handle at either end
-translates all selected models along the corresponding axis.
+translates all selected models along the corresponding axis. Color-coded
+:ref:`linear feedback <ug-feedback>` shows the current translation distance
+during a drag.
 
-Color-coded :ref:`linear feedback <ug-feedback>` shows the current translation
-distance during a drag.  Translation distances follow the current
-:ref:`precision level <ug-precision-level>` setting. Translation also snaps to
-the current :ref:`Point Target position <ug-targets>` if the target is
-active. Snapping is done when the minimum, center, or maximum value of the
-primary model's bounds in the translated dimension is aligned with the target's
-position.
+.. note::
+
+   Translation distances and feedback follow the current :ref:`precision level
+   <ug-precision-level>` setting. You can change the setting during use of this
+   tool for more precise placement.
+
+Translation also snaps to the current :ref:`Point Target position <ug-targets>`
+if the target is active. Snapping is done when the minimum, center, or maximum
+value of the primary model's bounds in the translated dimension is aligned with
+the target's position.
 
 The :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` affects how the
 Translation Tool is attached to the primary selection. If the toggle is not
@@ -324,10 +337,82 @@ For more information about each specialized tool that uses a :ref:`panel
 Bend Tool
 ,,,,,,,,,
 
-.. incimage:: /images/BendToolBending.jpg -200px right
-.. incimage:: /images/BendTool.jpg        -200px right
+.. incimage:: /images/BendTool.jpg -200px right
 
-The specialized :newterm:`Bend Tool` XXXX.
+The specialized :newterm:`Bend Tool` allows you to bend a model along a
+circular arc relative to an axis. It is enabled when all of the selected models
+are :ref:`Bent models <ug-converted-models>`. You can convert any model to a
+Bent model with the :ref:`Convert Bend action <ug-convert-twist>`.
+
+The math for a bend operation is fairly complicated. (Using this tool to see
+how it works is probably much easier than reading about it.) A bend is based on
+the following values:
+
+  - An :newterm:`axis direction` around which the model is bent.
+  - An :newterm:`axis center` that affects the bend radius.
+  - A :newterm:`bend angle` that specifies the amount of bending.
+  - An :newterm:`offset value` that defines how much to offset mesh vertices in
+    the axis direction for each 360 degrees of bend. (This can be used to
+    create a helix, for example.)
+
+.. incimage:: /images/BendToolApplied.jpg -200px right
+
+The Bend Tool has the following interactive parts:
+
+  - An arrow showing the axis direction. The handles at the ends of the arrow
+    can be dragged to rotate the axis direction. The shaft of the arrow can be
+    dragged in the plane perpendicular to the axis direction to translate the
+    axis center.
+  - A spoked ring surrounding the model that can be dragged to change the bend
+    angle. Feedback shows the current angle, which is snapped to the current
+    :ref:`angle precision level setting <ug-precision-level>`.
+  - A double-ended green arrow near the ring that is used to change the offset
+    value. Feedback shows the current offset, which is the amount of
+    translation applied for each 360 degrees of bend. The offset is snapped to
+    the current :ref:`precision level setting <ug-precision-level>`.
+
+The above image shows the result of changing the axis center, bend angle, and
+offset applied to a rotated and scaled Cylinder model. Note that in this
+example the complexity of the Bent model was changed with the :ref:`Complexity
+Tool <ug-complexity-tool>` to increase the number of mesh vertices in the
+direction of the bend.
+
+When rotating the axis by dragging the arrow handles, the axis direction will
+snap to the :ref:`Point Target direction <ug-targets>` if the target is active
+or to any of the principal axes. If the :ref:`Axis-Aligned toggle
+<ug-toggle-axis-aligned>` is active, the principal axes of the :ref:`stage
+<ug-stage>` are used; otherwise, the local axes of the primary model are
+used. The interactive ends of the arrow change color when snapped to either the
+target color or the :ref:`color corresponding to a principal axis
+<ug-dimension-colors>`.
+
+When dragging the arrow shaft to translate the axis center, the center snaps to
+the :ref:`Point Target position <ug-targets>` if the target is active and also
+to the minimum, center, and maximum coordinates of the unbent primary model in
+both dragging dimensions. This makes it easier to snap the center to important
+points on the unbent model. The arrow shaft will change color to the active
+target color when it is snapped.
+
+.. note::
+
+   :ref:`Modified-dragging <ug-modified-mode>` when rotating the axis or
+   translating the center deactivates any snapping. It also deactivates
+   snapping the bend angle or offset value to the current precision level
+   during interaction.
+
+.. admonition:: VR Only
+
+   :ref:`Grip-dragging <ug-grip-dragging>` works as follows:
+
+        - If the controller is oriented so that the hover guide is nearly
+          parallel to the axis direction (or its opposite), grip dragging will
+          let you rotate the axis direction by rotating the controller.
+        - If the hover guide is nearly perpendicular to the axis direction,
+          grip dragging will translate the axis center (by the arrow shaft).
+        - Otherwise, grip dragging will let you change the bend angle by
+          rotating the controller.
+
+   Snapping occurs as above unless :ref:`modified-dragging <ug-modified-mode>`.
 
 .. _ug-bevel-tool:
 
@@ -343,6 +428,9 @@ Bevel action <ug-convert-bevel>`. Attaching the Bevel Tool displays a
 :ref:`Bevel Tool Panel <ug-bevel-tool-panel>` above the primary selection.
 Changes to the bevel profile in the panel are applied to all selected Beveled
 models.
+
+See the :ref:`Bevel Tool Panel documentation <ug-bevel-tool-panel>` for more
+information about this tool.
 
 |block-image|
 
@@ -365,35 +453,45 @@ itself with the clipping plane already applied to the primary model.
 
 This tool has two interactive parts:
 
-  - A translucent quadrilateral showing the position and orientation of the
-    clipping plane relative to the primary selection. This plane can be rotated
-    around its center to change the orientation of the clipping plane.
   - An arrow indicating the normal to the clipping plane. The part of the
-    selected model(s) on the side of the plane with the normal is clipped
-    away. Dragging the arrow lets you translate the plane along the normal.
+    selected model(s) on the side of the plane with the head of the arrow is
+    clipped away. Dragging either end of the arrow rotates it around its center
+    to change the orientation of the clipping plane.
+  - A translucent rectangle showing the clipping plane relative to the primary
+    selection. This rectangle can be dragged along the direction of the normal
+    arrow to translate the clipping plane.
 
 .. incimage:: /images/ClipToolActive.jpg 260px right
 
 All selected Clipped models are clipped in real time by the current plane while
 you rotate or translate the plane as shown here.
 
-Translating the plane by dragging the arrow is limited by the extents of the
-primary model; it will not let you move the plane completely off this model,
-since that would leave either nothing or the entire model. While translating,
-the plane snaps to the :ref:`Point Target position <ug-targets>` if the target
-is active and also to the center of the primary selection. The plane will
-change color to the active target color when it is snapped to either
-point. :ref:`Modified-dragging <ug-modified-mode>` the arrow deactivates any
-snapping.
-   
-When rotating the plane, the plane normal will snap to the :ref:`Point Target
-direction <ug-targets>` if the target is active or to any of the principal
-axes. If the :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` is active, the
-principal axes of the :ref:`stage <ug-stage>` are used; otherwise, the local
-axes of the primary model are used. The plane normal arrow changes color when
-snapped to either the target color or the :ref:`color corresponding to a
-principal axis <ug-dimension-colors>`.  :ref:`Modified-dragging
-<ug-modified-mode>` when rotating the plane deactivates any snapping.
+When rotating the plane by dragging the arrow, the plane normal will snap to
+the :ref:`Point Target direction <ug-targets>` if the target is active or to
+any of the principal axes. If the :ref:`Axis-Aligned toggle
+<ug-toggle-axis-aligned>` is active, the principal axes of the :ref:`stage
+<ug-stage>` are used; otherwise, the local axes of the primary model are
+used. The interactive ends of the plane normal arrow change color when snapped
+to either the target color or the :ref:`color corresponding to a principal axis
+<ug-dimension-colors>`. 
+
+|block-image|
+
+.. incimage:: /images/ClipToolFeedback.jpg 260px right
+
+When dragging the rectangle to translate the plane, :ref:`linear feedback
+<ug-feedback>` shows the current size of the primary model along the plane
+normal as shown here. The plane is limited to the extents of the primary model;
+it cannot be moved completely off this model, since that would leave either
+nothing or the entire model. While translating, the plane snaps to the
+:ref:`Point Target position <ug-targets>` if the target is active and also to
+the center of the primary selection. The feedback will change color to the
+active target color when it is snapped to either point.
+
+.. note::
+
+   :ref:`Modified-dragging <ug-modified-mode>` when rotating or translating the
+   clipping plane deactivates any snapping.
 
 .. admonition:: VR Only
 
@@ -464,6 +562,9 @@ Attaching the Extruded Tool displays a :ref:`Extruded Tool Panel
 <ug-extruded-tool-panel>` above the primary selection.  Changes to the
 extrusion profile in the panel are applied to all selected Extruded models.
 
+See the :ref:`Extruded Tool Panel documentation <ug-extruded-tool-panel>` for
+more information about this tool.
+
 |block-image|
 
 .. _ug-import-tool:
@@ -489,6 +590,13 @@ re-import the data. Choosing a different file will load the data from that
 file. Any errors during data import will be displayed in a :ref:`Dialog Panel
 <ug-dialog-panel>`.
 
+.. note::
+
+   As :ref:`mentioned previously<ug-primitive-models>`, many publicly-available
+   STL models are not valid solid meshes (watertight, not
+   self-intersecting). The :ref:`Info Panel <ug-info-panel>` can tell you why
+   a mesh is considered to be invalid.
+
 |block-image|
 
 .. _ug-mirror-tool:
@@ -509,10 +617,10 @@ selection to mirror its local X (left-to-right) axis as shown here.
 
 .. incimage:: /images/MirrorToolRotated.jpg -160px right
 
-The Mirror Tool has the same interface as the :ref:`Clip Tool <ug-clip-tool>`
-for editing the mirroring plane (including in VR); refer to that tool for
-details. For example, you can rotate the plane to mirror vertically instead of
-horizontally as shown here.
+The Mirror Tool has the same interface as the Clip Tool for editing the
+mirroring plane (including in VR); refer to :ref:`the Clip Tool
+documentation<ug-clip-tool>` for details. For example, you can rotate the plane
+to mirror vertically instead of horizontally as shown here.
 
 Translating the mirroring plane results in the primary selection moving to
 compensate. Additionally, all secondary selections are mirrored across the same
@@ -533,6 +641,9 @@ Attaching the RevSurf Tool displays a :ref:`RevSurf Tool Panel
 <ug-rev-surf-tool-panel>` above the primary selection.  Changes to the revolved
 profile in the panel are applied to all selected RevSurf models.
 
+See the :ref:`RevSurf Tool Panel documentation <ug-rev-surf-tool-panel>` for
+more information about this tool.
+
 |block-image|
 
 .. _ug-taper-tool:
@@ -550,6 +661,9 @@ Taper Tool displays a :ref:`Taper Tool Panel <ug-taper-tool-panel>` above the
 primary selection.  Changes to the taper profile or axis in the panel are
 applied to all selected Tapered models.
 
+See the :ref:`Taper Tool Panel documentation <ug-taper-tool-panel>` for more
+information about this tool.
+
 |block-image|
 
 .. _ug-text-tool:
@@ -561,11 +675,14 @@ Text Tool
 .. incimage:: /images/TextTool.jpg 200px right
 
 The specialized :newterm:`Text Tool` is a panel-based tool used to edit one or
-more :ref:`RevSurf models <ug-primitive-models>`.  Attaching the Text Tool
+more :ref:`Text models <ug-primitive-models>`.  Attaching the Text Tool
 displays a :ref:`Text Tool Panel <ug-text-tool-panel>` above the primary
 selection. The panel lets you change the text string, font, and character
 spacing.  Clicking the "Apply" button in the panel applies all changes to all
 selected Text models.
+
+See the :ref:`Text Tool Panel documentation <ug-text-tool-panel>` for more
+information about this tool.
 
 |block-image|
 
@@ -621,42 +738,15 @@ model around an axis. It is enabled when all of the selected models are
 :ref:`Twisted models <ug-converted-models>`. You can convert any model to a
 Twisted model with the :ref:`Convert Twist action <ug-convert-twist>`.
 
-The Twist Tool displays an arrow showing the twist axis and a ring of four
-spherical handles that can be rotated around the axis to modify the twist
-angle. The arrow has a cone handle at one end and a box handle at the other.
-Twisting holds the mesh vertices at the base (box end) of the axis are held in
+The Twist Tool has the same interface as the Bend Tool for editing the twist
+axis direction, axis center, twist angle, and twist offset; refer to :ref:`the
+Bend Tool documentation<ug-bend-tool>` for details.
+
+Twisting a mesh holds the mesh vertices at the base (box end) of the axis in
 place while the mesh vertices at the other end are twisted around the axis by
-the twist angle. All mesh vertices between those extremes are twisted
-proportionally. The right image here shows a Box model being twisted. 
+the twist angle. All mesh vertices between those extremes are twisted and
+offset proportionally. The right image here shows a Box model being twisted.
 
-|block-image|
-
-The Twist Tool supports three types of interaction:
-  - Dragging any of the spheres around the axis modifies the twist
-    angle. Feedback shows the current angle, which is snapped to the current
-    :ref:`angle precision level setting <ug-precision-level>` as shown above.
-  - Dragging either handle at the ends of the axis arrow rotates the twist
-    axis.
-  - Dragging any other part of the arrow translates the twist axis
-    perpendicular to the axis direction.
-
-All selected Twisted models are updated in real time when any of these occur.
-
-When rotating the axis, the axis direction will snap to the :ref:`Point Target
-direction <ug-targets>` if the target is active or to any of the principal
-axes. If the :ref:`Axis-Aligned toggle <ug-toggle-axis-aligned>` is active, the
-principal axes of the :ref:`stage <ug-stage>` are used; otherwise, the local
-axes of the primary model are used. The axis arrow changes color when snapped
-to either the target color or the :ref:`color corresponding to a principal axis
-<ug-dimension-colors>`.  :ref:`Modified-dragging <ug-modified-mode>` when
-rotating the axis deactivates any snapping.
-
-While translating the axis, it snaps to the :ref:`Point Target position
-<ug-targets>` if the target is active and also to the center of the primary
-selection. The axis will change color to the active target color when it is
-snapped to either point. :ref:`Modified-dragging <ug-modified-mode>` the axis
-deactivates any snapping.
-   
 .. incimage:: /images/TwistToolHighComplexity.jpg 200px right
 .. incimage:: /images/TwistToolLowComplexity.jpg  200px right
 
@@ -672,11 +762,4 @@ deactivates any snapping.
 
 .. admonition:: VR Only
 
-   :ref:`Grip-dragging <ug-grip-dragging>` works for rotating the axis and
-   twisting. If the controller is oriented so that the hover guide is nearly
-   parallel to the axis direction (or its opposite), grip dragging will twist
-   around the axis (by rotating the controller appropriately). Otherwise, grip
-   dragging will rotate the axis direction based on the controller
-   orientation. Snapping occurs as above unless :ref:`modified-dragging
-   <ug-modified-mode>`.
-
+   Grip dragging works the same way as for the :ref:`Bend Tool<ug-bend-tool>`.

@@ -95,7 +95,7 @@ Primitive Models
          Also, many, many publicly-available STL models are not valid meshes
          (watertight, not self-intersecting) and will also appear with the
          invalid color. The :ref:`Info Panel <ug-info-panel>` can tell you why
-         the mesh is invalid.
+         the mesh is considered to be invalid.
 
 New primitive models are placed at the center of the :ref:`stage <ug-stage>`
 unless the :ref:`Point Target <ug-targets>` is active, in which case the new
@@ -195,6 +195,10 @@ resulting models.
 
 The converted model types and their tools are as follows:
 
+  - A :newterm:`Bent model` bends a model along a circular arc defined by an
+    axis and angle. The :ref:`Convert to Bent action <ug-convert-bend>` is used
+    to convert the models and attach the specialized :ref:`Bend Tool
+    <ug-bend-tool>` to let you change the axis and angle.
   - A :newterm:`Beveled model` applies a bevel or other profile to edges of a
     model. The :ref:`Convert to Bevel action <ug-convert-bevel>` is used to
     convert the models and apply a default bevel. The specialized :ref:`Bevel
@@ -216,19 +220,21 @@ The converted model types and their tools are as follows:
     used to convert the models and attach the specialized :ref:`Taper Tool
     <ug-taper-tool>` to let you change the axis and taper profile.
   - A :newterm:`Twisted model` twists the vertices of a model about an
-    arbitrary axis. The :ref:`Convert to Twisted action <ug-convert-twist>`
-    is used to convert the models and attach the specialized :ref:`Twist Tool
+    axis. The :ref:`Convert to Twisted action <ug-convert-twist>` is used to
+    convert the models and attach the specialized :ref:`Twist Tool
     <ug-twist-tool>` to let you change the axis and twist angle.
 
 .. note::
 
    A converted model synchronizes its transformations (scale, rotation, and
-   translation) with the original model. Any changes made to the
-   transformations for either the original or converted model are also applied
-   to the other. One slight exception to this is the Beveled model, since the
-   scale of the original model has to be applied before the bevel profile is
-   applied. The scales in this case are kept in sync, but a scale applied to
-   the Beveled model is applied after the beveling operation is applied.
+   translation) with the original model in some way. Any changes made to the
+   transformations for either the original or converted model are applied
+   to the other.
+
+   For Bent, Beveled, and Twisted models, it more sense to apply the scale of
+   the original model before the relevant operation. In these cases, the scales
+   of the original model and the converted model differ, but are kept in sync
+   to make this work.
 
 .. _ug-model-names:
 

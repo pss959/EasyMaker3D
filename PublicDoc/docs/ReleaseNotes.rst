@@ -1,6 +1,38 @@
 |appname| Release Notes
 =======================
 
+Release 1.7.0 (June, 2023)
+---------------------------
+
+ - New Features:
+
+   - Added *Duplicate* action, icon, and shortcut.
+
+   - Added Bend Tool.
+
+   - Changed Twist Tool interaction to be consistent with Bend Tool and added a
+     way to offset twisted models.
+
+   - Changed Clip Tool and Mirror Tool to be more consistent with Twist Tool
+     and Bend Tool; use the arrow for rotation and the plane for translation.
+     Improved plane translation feedback as well.
+
+   - Pasted models now have random colors assigned to help distinguish them
+     from originals.
+
+   - Resized and rearranged some items in the work area to fit shelves better.
+
+ - Bug Fixes:
+
+   - Fixed an issue that caused the program to freeze.
+
+   - Fixed problems with Point Target placement on models.
+
+   - Fixed some interactive rotation problems.
+
+   - Fixed a problem with dragging cone-shaped interactive parts.
+
+
 Release 1.6.0 (May, 2023)
 ---------------------------
 

@@ -194,9 +194,9 @@ below. The Edge Target can be used for linear layout, also described below.
 Layout
 ......
 
-The Point Target can be used to lay out objects along a circular arc
-(:newterm:`radial layout`), and the Edge Target can be used to lay out objects
-along a line (:newterm:`linear layout`).
+The :ref:`Point Target<ug-targets>` can be used to lay out objects along a
+circular arc (:newterm:`radial layout`), and the :ref:`Edge Target<ug-targets>`
+can be used to lay out objects along a line (:newterm:`linear layout`).
 
 Radial Layout
 ,,,,,,,,,,,,,
