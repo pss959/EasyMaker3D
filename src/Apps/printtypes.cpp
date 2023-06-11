@@ -3,10 +3,12 @@
 #include <vector>
 
 #include "App/RegisterTypes.h"
+#include "Models/Model.h"
 #include "Parser/Field.h"
 #include "Parser/Object.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 /// \file
 /// The printtypes application writes to standard output all known concrete
@@ -37,6 +39,13 @@ int main() {
         std::cout << name << ":\n";
         for (const auto &fn: field_names)
             std::cout << "   " << fn << "\n";
+
+        // Special case for Model classes.
+        if (const auto model = Util::CastToDerived<Model>(obj))
+            std::cout << "   " << model->GetTypeName()
+                      << " Can set complexity: "
+                      << (model->CanSetComplexity() ? "Yes" : "No") << "\n";
+
         std::cout << "\n";
     }
 
