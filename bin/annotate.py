@@ -19,6 +19,7 @@ class ImageAnnotator(object):
     self._draw  = None
     self._color = "white"
     self._font  = ImageFont.truetype('arialbd.ttf', 10)
+    self._outline = None
 
   def ReadImage(self, image_file):
     try:
@@ -34,6 +35,9 @@ class ImageAnnotator(object):
 
   def SetFont(self, font, size):
     self._font = ImageFont.truetype(font + '.ttf', size)
+
+  def SetOutline(self, color):
+    self._outline = None if color == "None" else color
 
   def DrawRectangle(self, line_width, x, y, w, h):
     if not self._draw:
@@ -56,9 +60,9 @@ class ImageAnnotator(object):
       return False
     self._draw.text(self.ToImageCoords_(x, y),
                     text, fill=self._color, font=self._font,
-                    align=align, anchor='mm')
-                    # Draw outline in white.
-                    #stroke_width=1, stroke_fill='#ffffff')
+                    align=align, anchor='mm',
+                    stroke_width=1 if self._outline else 0,
+                    stroke_fill=self._outline)
     return True
 
   def WriteImage(self, image_file):
@@ -95,6 +99,14 @@ def ProcessFont(ia, args):
     print(f'*** Invalid font arguments: {args}')
     return False
   ia.SetFont(args[0], int(args[1]))
+  return True
+
+# Takes 1 argument: color
+def ProcessOutline(ia, args):
+  if len(args) != 1:
+    print(f'*** Invalid outline arguments: {args}')
+    return False
+  ia.SetOutline(args[0])
   return True
 
 # Takes 1 argument: the image file.
@@ -136,6 +148,8 @@ def ProcessCommand(ia, command):
       ok = ProcessColor(ia, args)
     elif cmd == 'font':
       ok = ProcessFont(ia, args)
+    elif cmd == 'outline':
+      ok = ProcessOutline(ia, args)
     elif cmd == 'read':
       ok = ProcessRead(ia, args)
     elif cmd == 'rect':
@@ -184,6 +198,7 @@ An annotation script may contain any number of lines with one of the following:
   read image_file         => Reads the image to annotate from a file.
   color <color>           => Sets the color for text and rectangles.
   font name size          => Sets the font to use for text.
+  outline <color>         => Sets the outline color for text.
   rect line_width x y w h => Draws a rectangle.
   text x y align <text>   => Draws text. align is one of (left, center, right).
   write image_file        => Writes the current result to a file.
