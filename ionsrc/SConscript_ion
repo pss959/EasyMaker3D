@@ -379,7 +379,7 @@ ion_lib = ion_env.SharedLibrary(
     ion_sources + third_party_objects + objc_objects)
 
 # ---------------------------------
-# Building tests.
+# Building tests. This works in 'dbg' mode only!
 
 SConscript('SConscript_iontests', exports=['ion_env', 'ion_lib'])
 

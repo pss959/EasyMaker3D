@@ -732,7 +732,6 @@ static void FillTextureInfo(const GraphicsManagerPtr& gm,
     gm->GetTexParameteriv(info->target, GL_TEXTURE_PROTECTED_EXT,
                           reinterpret_cast<GLint*>(&info->is_protected));
   }
-#if XXXX
   if (gm->IsFeatureAvailable(GraphicsManager::kTextureMultisample)) {
     gm->GetTexParameteriv(info->target, GL_TEXTURE_SAMPLES,
                           reinterpret_cast<GLint*>(&info->samples));
@@ -740,7 +739,6 @@ static void FillTextureInfo(const GraphicsManagerPtr& gm,
                           reinterpret_cast<GLint*>(
                               &info->fixed_sample_locations));
   }
-#endif
 }
 
 //---------------------------------------------------------------------------

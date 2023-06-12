@@ -71,9 +71,7 @@ class ION_API CallbackContext : public GlContext {
   bool Init();
 
   static uintptr_t GetCurrentContext() {
-    if (! get_current_cb_)
-      LOG(ERROR) << "CallbackContext missing GetCurrent callback";
-    return get_current_cb_();
+    return get_current_cb_ ? get_current_cb_() : 0;
   }
 
  private:

@@ -503,8 +503,10 @@ TEST(TransformUtils, GetRotationMatrix) {
   Matrix<4, float> matrix_a = RotationMatrixH(rotation_a);
   Matrix<4, float> matrix_b = RotationMatrixH(rotation_b);
 
-  EXPECT_EQ(rotation_a,
-            Rotation<float>::FromRotationMatrix(GetRotationMatrix(matrix_a)));
+  EXPECT_PRED2(
+      (testing::RotationsAlmostEqual<float>),
+      rotation_a,
+      Rotation<float>::FromRotationMatrix(GetRotationMatrix(matrix_a)));
 
   Rotation<float> rotation_actual = Rotation<float>::FromRotationMatrix(
       GetRotationMatrix(matrix_a * matrix_b));

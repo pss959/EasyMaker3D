@@ -18,6 +18,7 @@ limitations under the License.
 // This file tests C++11 features to verify they work (and keep working)
 // on all Ion-supported platforms.
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <random>

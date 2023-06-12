@@ -7,7 +7,10 @@ Import('ion_env', 'ion_lib')
 ion_test_env = ion_env.Clone()
 
 ion_test_env.Append(
-    CPPPATH = ['#submodules/googletest/googletest/include'],
+    CPPPATH = [
+        '#submodules/googletest/googletest/include',
+        '#submodules/googletest/googlemock/include',
+    ],
     LIBPATH = ['#/$BUILD_DIR/googletest'],
     LIBS    = [ion_lib, 'gtest_main', 'gtest'],
     CXXFLAGS = [
@@ -15,15 +18,8 @@ ion_test_env.Append(
     ],
 )
 
-# Verifies that the mode is 'dbg' when running tests. Ion tests break in other
-# modes because ION_DEBUG is required for death tests and other things.
-def CheckMode_():
-    if ion_test_env['MODE'] != 'dbg':
-        from sys import exit
-        exit('***** Ion tests work only in dbg mode - Exiting!')
-
 # -----------------------------------------------------------------------------
-# Source files. A "name" means there is both a .h header and a .cc source file.
+# Test source files.
 # -----------------------------------------------------------------------------
 
 # Each entry is a tuple: (subdir, names); names are names of .cc files.
@@ -72,24 +68,114 @@ test_files = [
         'weakreferent_test',
         'workerpool_test',
         # 'zipassetmanager_test',  # Requires extra build stuff.
-    ])
+    ]),
+    ('gfx', [
+        'attribute_test',
+        'attributearray_test',
+        'bufferobject_test',
+        'computeprogram_test',
+        'cubemaptexture_test',
+        'fakeglcontext',
+        'fakegraphicsmanager',
+        'fakegraphicsmanager_test',
+        'framebufferobject_test',
+        'graphicsmanager_test',
+        'image_test',
+        'indexbuffer_test',
+        'mockresource_test',
+        'node_test',
+        'renderer_common',
+        'renderer_test',
+        'renderer_texture_test',
+        'resourcemanager_test',
+        'sampler_test',
+        'shader_test',
+        'shaderinputregistry_test',
+        'shaderprogram_test',
+        'shape_test',
+        'statetable_test',
+        'testscene',
+        'texture_test',
+        'tracecallextractor_test',
+        'traceverifier',
+        'transformfeedback_test',
+        'uniform_test',
+        'uniformblock_test',
+        'uniformholder_test',
+        'updatestatetable_test',
+    ]),
+    ('math', [
+        'angle_test',
+        'angleutils_test',
+        'fieldofview_test',
+        'matrix_test',
+        'matrixutils_test',
+        'range_test',
+        'rangeutils_test',
+        'rotation_test',
+        'transformutils_test',
+        'utils_test',
+        'vector_test',
+        'vectorutils_test',
+    ]),
+    ('port', [
+        'align_test',
+        'atomic_test',
+        'barrier_test',
+        'break_test',
+        'cxx11_test',
+        'environment_test',
+        'fileutils_test',
+        'macros_test',
+        'memory_test',
+        'memorymappedfile_test',
+        'semaphore_test',
+        # 'stacktrace_test',  # Fails due to changed system functions.
+        'std_array_test',
+        'std_unordered_map_test',
+        'std_unordered_set_test',
+        'string_test',
+        'threadutils_test',
+        'timer_test',
+    ]),
+    ('portgfx', [
+        'isextensionsupported_test',
+        'setswapinterval_test',
+        'glcontext_test',
+    ]),
 ]
+
+gmock_sources = [f'#submodules/googletest/googlemock/src/{name}.cc'
+                 for name in [
+                         'gmock',
+                         'gmock-cardinalities',
+                         'gmock-internal-utils',
+                         'gmock-matchers',
+                         'gmock-spec-builders',
+                 ]]
 
 # Build one test program from all the sources.
 ion_test_sources = [f'ion/{subdir}/tests/{name}.cc'
                     for (subdir, names) in test_files for name in names]
-ion_test = ion_test_env.Program(f'IonTest', ion_test_sources)
+ion_test = ion_test_env.Program(f'IonTest', ion_test_sources + gmock_sources)
 
-# The 'IonTests' alias builds all Ion tests.
-ion_test_env.Alias('IonTests', ion_test)
+# Build and run tests in 'dbg' mode only!
+if ion_env['MODE'] == 'dbg':
+    # The 'IonTests' alias builds all Ion tests.
+    ion_test_env.Alias('IonTests', ion_test)
 
-# The 'RunIonTests' alias builds and runs all Ion tests.
-test_filter = ARGUMENTS.get('TESTFILTER')
-test_args = ' '.join([
-  ('--gtest_filter="%s"' % test_filter) if test_filter else '',
-])
-ion_test_env.Alias('RunIonTests', ion_test,
-                   [CheckMode_(), f'$RUN_PROGRAM $SOURCE {test_args}'])
+    # The RunIonTests builds and runs all Ion tests
+    test_filter = ARGUMENTS.get('TESTFILTER')
+    test_args = ' '.join([
+        ('--gtest_filter="%s"' % test_filter) if test_filter else '',
+    ])
+    ion_test_env.Alias('RunIonTests', ion_test,
+                       [f'$RUN_PROGRAM $SOURCE {test_args}'])
 
-# Make sure test run targets are always considered out of date.
-ion_test_env.AlwaysBuild('RunIonTests')
+    # Make sure test run targets are always considered out of date.
+    ion_test_env.AlwaysBuild('RunIonTests')
+
+else:
+    msg = '*** Ion tests build and run only in dbg mode!'
+    ion_test_env.Alias('IonTests',    [print(msg), Exit()])
+    ion_test_env.Alias('RunIonTests', [print(msg), Exit()])

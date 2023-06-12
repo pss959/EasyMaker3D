@@ -325,7 +325,7 @@ TEST_P(GlContextFlagsTest, GetProcAddress) {  // NOLINT
 #endif
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     FramePosting, GlContextFlagsTest,
     ::testing::Values(ion::portgfx::GlContext::kProcAddressCore |
                           ion::portgfx::GlContext::kProcAddressPure,
