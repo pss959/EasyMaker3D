@@ -374,6 +374,14 @@ ion_doc_env.Alias('IonDoc', ion_doc)
 
 objc_objects = [objc_env.SharedObject(src) for src in objc_sources]
 
-lib = ion_env.SharedLibrary(ion_env['ION_LIB_NAME'],
-                            ion_sources + third_party_objects + objc_objects)
-Return('lib')
+ion_lib = ion_env.SharedLibrary(
+    ion_env['ION_LIB_NAME'],
+    ion_sources + third_party_objects + objc_objects)
+
+# ---------------------------------
+# Building tests.
+
+SConscript('SConscript_iontests', exports=['ion_env', 'ion_lib'])
+
+Return('ion_lib')
+

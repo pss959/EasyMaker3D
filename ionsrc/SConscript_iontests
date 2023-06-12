@@ -1,0 +1,95 @@
+Import('ion_env', 'ion_lib')
+
+# -----------------------------------------------------------------------------
+# Environment setup.
+# -----------------------------------------------------------------------------
+
+ion_test_env = ion_env.Clone()
+
+ion_test_env.Append(
+    CPPPATH = ['#submodules/googletest/googletest/include'],
+    LIBPATH = ['#/$BUILD_DIR/googletest'],
+    LIBS    = [ion_lib, 'gtest_main', 'gtest'],
+    CXXFLAGS = [
+        '-Wno-nonnull-compare',   # Not sure why DCHECK triggers this.
+    ],
+)
+
+# Verifies that the mode is 'dbg' when running tests. Ion tests break in other
+# modes because ION_DEBUG is required for death tests and other things.
+def CheckMode_():
+    if ion_test_env['MODE'] != 'dbg':
+        from sys import exit
+        exit('***** Ion tests work only in dbg mode - Exiting!')
+
+# -----------------------------------------------------------------------------
+# Source files. A "name" means there is both a .h header and a .cc source file.
+# -----------------------------------------------------------------------------
+
+# Each entry is a tuple: (subdir, names); names are names of .cc files.
+test_files = [
+    ('base', [
+        'allocatable_test',
+        'allocationmanager_test',
+        'allocator_test',
+        'array2_test',
+        'calllist_test',
+        'circularbuffer_test',
+        'datacontainer_test',
+        'datetime_test',
+        'enumhelper_test',
+        'fullallocationtracker_test',
+        'functioncall_test',
+        'incompletetype',
+        'indexmap_test',
+        'invalid_test',
+        'logchecker_test',
+        'logging_test',
+        'memoryzipstream_test',
+        'notifier_test',
+        'nulllogentrywriter_test',
+        'once_test',
+        'readwritelock_test',
+        'scalarsequence_test',
+        'scopedallocation_test',
+        'serialize_test',
+        'setting_test',
+        'settingmanager_test',
+        'sharedptr_test',
+        'signal_test',
+        'spinmutex_test',
+        'staticsafedeclare_test',
+        'stlallocator_test',
+        'stringutils_test',
+        'testallocator',
+        'threadlocalobject_test',
+        'threadspawner_test',
+        'type_structs_test',
+        'utf8iterator_test',
+        'variant_test',
+        'varianttyperesolver_test',
+        'vectordatacontainer_test',
+        'weakreferent_test',
+        'workerpool_test',
+        # 'zipassetmanager_test',  # Requires extra build stuff.
+    ])
+]
+
+# Build one test program from all the sources.
+ion_test_sources = [f'ion/{subdir}/tests/{name}.cc'
+                    for (subdir, names) in test_files for name in names]
+ion_test = ion_test_env.Program(f'IonTest', ion_test_sources)
+
+# The 'IonTests' alias builds all Ion tests.
+ion_test_env.Alias('IonTests', ion_test)
+
+# The 'RunIonTests' alias builds and runs all Ion tests.
+test_filter = ARGUMENTS.get('TESTFILTER')
+test_args = ' '.join([
+  ('--gtest_filter="%s"' % test_filter) if test_filter else '',
+])
+ion_test_env.Alias('RunIonTests', ion_test,
+                   [CheckMode_(), f'$RUN_PROGRAM $SOURCE {test_args}'])
+
+# Make sure test run targets are always considered out of date.
+ion_test_env.AlwaysBuild('RunIonTests')
