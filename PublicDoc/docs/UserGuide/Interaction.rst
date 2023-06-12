@@ -42,6 +42,22 @@ button is used to :ref:`change the view orientation <ug-viewing>`.
      for more details. Grip dragging can be much easier to control than
      dragging with the laser pointer.
 
+.. _ug-tooltips:
+
+Highlighting and Tooltips
+.........................
+
+Everything in the application that is interactive responds to hovering with the
+mouse or VR laser pointer by highlighting in some way. For most items, if you
+hover long enough, a tooltip will appear with information about the
+interaction. For example, hovering on a 3D icon (even if it is disabled) gives
+information about what the icon does when pressed, and hovering on any model in
+the scene shows the name of the model.
+
+The delay for showing tooltips is a setting that can be edited in the
+:ref:`Settings Panel <ug-settings-panel>`. Setting the delay to 0 turns off
+tooltips completely.
+
 .. _ug-modified-mode:
 
 Modified Interaction Mode
@@ -66,6 +82,96 @@ selected. When dragging a handle in the :ref:`Scale Tool <ug-scale-tool>`, the
 modified version performs a symmetric scale about the model's center point
 instead of an asymmetric scale. Other uses are described elsewhere in this
 guide.
+
+.. _ug-stage:
+
+The Stage
+.........
+
+The stage is the large disc on the floor of the :ref:`work area
+<ug-work-area>`. Models are placed at the center of the stage by default when
+they are created.
+
+The stage can be manipulated as follows to change your view of the models. Any
+rotation or scale change to the stage applies to the models on it as well.
+
+ - Drag it in a circular arc to rotate it.
+ - Drag toward or away from the stage center to scale the stage up or down.
+ - A mouse scroll wheel can also be used to scale the stage.
+ - :ref:`Modified-clicking <ug-modified-mode>` anywhere on the stage resets it
+   to its default size and rotation.
+
+Rotating and scaling the stage is a fairly easy way to get a different
+perspective on your models without modifying the models themselves. Another
+option is to use :ref:`inspector mode <ug-inspector-mode>`.
+
+.. _ug-viewing:
+
+Viewing
+.......
+
+|appname| is designed to be maintain a relatively stable viewpoint. However,
+there may be times when you want to change the view of the entire scene (in
+addition to manipulating the :ref:`stage <ug-stage>` or using :ref:`inspector
+mode <ug-inspector-mode>`).
+
+.. admonition:: VR Only
+
+   In full VR mode, you can turn your head to see the room from different
+   angles, if you wish.
+
+Dragging with the right mouse button rotates the view in the application
+window. Additionally, the height slider on the pole on the right side of
+:ref:`the work area <ug-work-area>` can be dragged up and down to raise and
+lower your view of the room. Clicking on the pole or the slider brings you back
+to the default height. :ref:`Modified-clicking <ug-modified-mode>` on the pole
+or slider also resets the view direction in the window in addition to the
+height.
+
+.. _ug-inspector-mode:
+
+Inspector Mode
+..............
+
+|appname| provides a special :newterm:`inspector mode` that lets you easily
+examine a model from all directions. To inspect a model, first :ref:`select it
+as the primary selection <ug-selection>`, and then click on the :ref:`inspector
+action <ug-toggle-inspector>` icon. Alternatively, you can long-press (more
+than a half-second or so) either the left mouse button or a VR pinch action on
+a model, whether selected or not. There is also a :ref:`keyboard shortcut
+<ug-keyboard-shortcuts>`.
+
+When the mouse or keyboard shortcut is used to enter inspector mode, the
+selected model will be shown in the middle of the application window at an
+appropriate size (relative to the :ref:`current view <ug-viewing>`.  Moving the
+mouse (without pressing any buttons) rotates the model.
+
+Any key press, mouse click, or controller button press exits inspector mode.
+
+.. admonition:: VR Only
+
+   If inspector mode is initiated with either controller, the selected model
+   will be attached to that controller in the scene. You can move and turn the
+   controller in your hand to see the model from all angles.
+
+.. _ug-touch-mode:
+
+Panel Touch Mode
+................
+
+.. admonition:: VR Only
+
+   .. incimage:: /images/TouchMode.jpg 180px right
+
+   Panel touch mode allows for a more natural style of 2D interaction in VR.
+   When in VR and any of the 2D :ref:`Panels <ug-panels>` is visible for active
+   use, a :newterm:`touch affordance` is added to each controller, as in this
+   image. The touch affordance is like a virtual finger that can be used to
+   interact with the Panel. Touching the tip of this affordance to an
+   interactive Panel element (such as a button or slider thumb) activates that
+   element. The controller will vibrate briefly when this happens for feedback.
+
+   |block-image|
 
 .. _ug-keyboard-shortcuts:
 
@@ -119,70 +225,6 @@ Example `shortcuts.txt` file::
 Note that custom shortcuts are processed *after* the built-in ones, so you can
 override key mappings for built-in shortcuts.
 
-.. _ug-stage:
-
-The Stage
-.........
-
-The stage is the large disc on the floor of the :ref:`work area
-<ug-work-area>`. Models are placed at the center of the stage by default when
-they are created.
-
-The stage can be manipulated as follows to change your view of the models. Any
-rotation or scale change to the stage applies to the models on it as well.
-
- - Drag it in a circular arc to rotate it.
- - Drag toward or away from the stage center to scale the stage up or down.
- - A mouse scroll wheel can also be used to scale the stage.
- - :ref:`Modified-clicking <ug-modified-mode>` anywhere on the stage resets it
-   to its default size and rotation.
-
-Rotating and scaling the stage is a fairly easy way to get a different
-perspective on your models without modifying the models themselves. Another
-option is to use :ref:`inspector mode <ug-inspector-mode>`.
-
-.. _ug-viewing:
-
-Viewing
-.......
-
-|appname| is designed to be maintain a relatively stable viewpoint. However,
-there may be times when you want to change the view of the entire scene (in
-addition to manipulating the :ref:`stage <ug-stage>` or using :ref:`inspector
-mode <ug-inspector-mode>`).
-
-.. admonition:: VR Only
-
-   In full VR mode, you can turn your head to see the room from different
-   angles, if you wish.
-
-Dragging with the right mouse button rotates the view in the application
-window. Additionally, the height slider on the pole on the right side of
-:ref:`the work area <ug-work-area>` can be dragged up and down to raise and
-lower your view of the room. Clicking on the pole or the slider brings you back
-to the default height. :ref:`Modified-clicking <ug-modified-mode>` on the pole
-or slider also resets the view direction in the window in addition to the
-height.
-
-.. _ug-touch-mode:
-
-Panel Touch Mode
-................
-
-.. admonition:: VR Only
-
-   .. incimage:: /images/TouchMode.jpg 180px right
-
-   Panel touch mode allows for a more natural style of 2D interaction in VR.
-   When in VR and any of the 2D :ref:`Panels <ug-panels>` is visible for active
-   use, a :newterm:`touch affordance` is added to each controller, as in this
-   image. The touch affordance is like a virtual finger that can be used to
-   interact with the Panel. Touching the tip of this affordance to an
-   interactive Panel element (such as a button or slider thumb) activates that
-   element. The controller will vibrate briefly when this happens for feedback.
-
-   |block-image|
-
 .. _ug-none:
 .. _ug-radial-menus:
 
@@ -223,48 +265,6 @@ gray). By default, all buttons are set to the :action:`None` action (null sign
 icon), which is always disabled and has no corresponding effect.
 
 |block-image|
-
-.. _ug-inspector-mode:
-
-Inspector Mode
-..............
-
-|appname| provides a special :newterm:`inspector mode` that lets you easily
-examine a model from all directions. To inspect a model, first :ref:`select it
-as the primary selection <ug-selection>`, and then click on the :ref:`inspector
-action <ug-toggle-inspector>` icon. Alternatively, you can long-press (more
-than a half-second or so) either the left mouse button or a VR pinch action on
-a model, whether selected or not. There is also a :ref:`keyboard shortcut
-<ug-keyboard-shortcuts>`.
-
-When the mouse or keyboard shortcut is used to enter inspector mode, the
-selected model will be shown in the middle of the application window at an
-appropriate size (relative to the :ref:`current view <ug-viewing>`.  Moving the
-mouse (without pressing any buttons) rotates the model.
-
-Any key press, mouse click, or controller button press exits inspector mode.
-
-.. admonition:: VR Only
-
-   If inspector mode is initiated with either controller, the selected model
-   will be attached to that controller in the scene. You can move and turn the
-   controller in your hand to see the model from all angles.
-
-.. _ug-tooltips:
-
-Highlighting and Tooltips
-.........................
-
-Everything in the application that is interactive responds to hovering with the
-mouse or laser pointer by highlighting in some way. For most items, if you
-hover long enough, a tooltip will appear with information about the
-interaction. For example, hovering on a 3D icon (even if it is disabled) gives
-information about what the icon does when pressed, and hovering on any model in
-the scene shows the name of the model.
-
-The delay for showing tooltips is a setting that can be edited in the
-:ref:`Settings Panel <ug-settings-panel>`. Setting the delay to 0 turns off
-tooltips completely.
 
 .. _ug-text-input:
 .. _ug-virtual-keyboard:

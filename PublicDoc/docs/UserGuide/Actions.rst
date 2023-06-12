@@ -180,7 +180,7 @@ action can be applied to a single model.
 Conversion Actions
 ..................
 
-.. incimage:: /images/ModelConversionShelf.jpg 200px right
+.. incimage:: /images/ModelConversionShelf.jpg 260px right
 
 The third shelf from the top on the left wall of the :ref:`work area
 <ug-work-area>` has 3D icons that apply actions to create :ref:`converted
@@ -245,7 +245,7 @@ Model Creation actions are all available as 3D icons on the two shelves on the
 bottom of the left wall of the :ref:`work area <ug-work-area>`. Each creates
 :ref:`a model of a specific type <ug-model-types>`
 
-.. incimage:: /images/ModelCreationShelf0.jpg 300px right
+.. incimage:: /images/ModelCreationShelves.jpg 300px right
 
 From left to right on the bottom shelf, the icons/actions are:
 
@@ -253,8 +253,6 @@ From left to right on the bottom shelf, the icons/actions are:
   - Cylinder model (:action:`Create Cylinder`)
   - Sphere model (:action:`Create Sphere`)
   - Torus model (:action:`Create Torus`)
-
-.. incimage:: /images/ModelCreationShelf1.jpg 300px right
 
 From left to right on the next shelf up, the icons/actions are:
 

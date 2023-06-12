@@ -172,7 +172,7 @@ build volume, you can choose to display the build volume on the stage by
 clicking on the :ref:`Build Volume Toggle <ug-toggle-build-volume>` icon on the
 :ref:`Viewing Shelf <ug-work-area>`. The build volume is rendered as a
 translucent box. You can specify the size of the build volume for your specific
-printer in the ref:`Settings Panel <ug-settings-panel>`.
+printer in the :ref:`Settings Panel <ug-settings-panel>`.
 
 When the build volume is visible, parts of models that lie outside it are
 rendered in :ref:`a special color <ug-model-colors>` to warn you of potential

@@ -355,7 +355,8 @@ the following values:
     the axis direction for each 360 degrees of bend. (This can be used to
     create a helix, for example.)
 
-.. incimage:: /images/BendToolApplied.jpg -200px right
+.. incimage:: /images/BendToolAfter.jpg  200px right
+.. incimage:: /images/BendToolBefore.jpg 200px right
 
 The Bend Tool has the following interactive parts:
 
@@ -369,13 +370,23 @@ The Bend Tool has the following interactive parts:
   - A double-ended green arrow near the ring that is used to change the offset
     value. Feedback shows the current offset, which is the amount of
     translation applied for each 360 degrees of bend. The offset is snapped to
-    the current :ref:`precision level setting <ug-precision-level>`.
+    the current :ref:`precision level setting <ug-precision-level>`. Note that
+    the sign of the offset indicates its direction; this is relative to the
+    angle direction, which is positive for counterclockwise angles and negative
+    for clockwise ones.
 
-The above image shows the result of changing the axis center, bend angle, and
-offset applied to a rotated and scaled Cylinder model. Note that in this
-example the complexity of the Bent model was changed with the :ref:`Complexity
-Tool <ug-complexity-tool>` to increase the number of mesh vertices in the
-direction of the bend.
+The above images show a rotated and scaled Cylinder model and the result of
+changing the axis center, bend angle, and offset applied to it. Note that in
+this example the complexity of the Bent model was changed with the
+:ref:`Complexity Tool <ug-complexity-tool>` to increase the number of mesh
+vertices in the direction of the bend.
+
+.. note::
+
+   It is very easy to create :ref:`invalid models<ug-model-colors>` with this
+   tool, especially when the axis direction is skewed, when the axis center is
+   far from the original model, or when the bend angle causes the Bent model to
+   overlap itself.
 
 When rotating the axis by dragging the arrow handles, the axis direction will
 snap to the :ref:`Point Target direction <ug-targets>` if the target is active
@@ -750,15 +761,19 @@ offset proportionally. The right image here shows a Box model being twisted.
 .. incimage:: /images/TwistToolHighComplexity.jpg 200px right
 .. incimage:: /images/TwistToolLowComplexity.jpg  200px right
 
-.. note::
-
-   A Twisted model is affected by the :ref:`Complexity Tool
-   <ug-complexity-tool>`. Increasing the complexity of a Twisted model
-   increases the number of slices (and vertices) in the direction of the axis
-   as shown here. Also note that changing the complexity of the original model
-   the twist is applied to may also affect the twist.
+A Twisted model is affected by the :ref:`Complexity Tool
+<ug-complexity-tool>`. Increasing the complexity of a Twisted model increases
+the number of slices (and vertices) in the direction of the axis as shown
+here. Also note that changing the complexity of the original model the twist is
+applied to may also affect the twist.
 
 |block-image|
+
+.. note::
+
+   It is very easy to create :ref:`invalid models<ug-model-colors>` with this
+   tool, especially when the axis direction is skewed or when the axis center
+   is far from the original model.
 
 .. admonition:: VR Only
 

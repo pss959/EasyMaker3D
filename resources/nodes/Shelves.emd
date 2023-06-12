@@ -29,52 +29,55 @@ Node "Shelves" {
   ],
 
   children: [
-    CLONE "Shelf" "CreationShelf0" {
-      translation: $LEFT_X 3.1 $LEFT_Z,
-      rotation:     0 1 0 45,
-      icons: [
-        CLONE "T_IconWidget" "CreateBoxIcon" {
-          action: "kCreateBox",
-          shapes: [ Box { size: 4 4 4 } ],
+    Node "CreationShelves" {  # For creating an image for doc.
+      children: [
+        CLONE "Shelf" "CreationShelf0" {
+          translation: $LEFT_X 3.1 $LEFT_Z,
+          rotation:     0 1 0 45,
+          icons: [
+            CLONE "T_IconWidget" "CreateBoxIcon" {
+              action: "kCreateBox",
+              shapes: [ Box { size: 4 4 4 } ],
+            },
+            CLONE "T_IconWidget" "CreateCylinderIcon" {
+              action: "kCreateCylinder",
+              shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]
+            },
+            CLONE "T_IconWidget" "CreateSphereIcon" {
+              action: "kCreateSphere",
+              shapes: [ Ellipsoid { size: 4 4 4 } ]
+            },
+            CLONE "T_IconWidget" "CreateTorusIcon" {
+              action: "kCreateTorus",
+              shapes: [ Torus { outer_radius: 3, inner_radius: 1 } ],
+              rotation: 1 0 0 90,
+            },
+          ]
         },
-        CLONE "T_IconWidget" "CreateCylinderIcon" {
-          action: "kCreateCylinder",
-          shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]
-        },
-        CLONE "T_IconWidget" "CreateSphereIcon" {
-          action: "kCreateSphere",
-          shapes: [ Ellipsoid { size: 4 4 4 } ]
-        },
-        CLONE "T_IconWidget" "CreateTorusIcon" {
-          action: "kCreateTorus",
-          shapes: [ Torus { outer_radius: 3, inner_radius: 1 } ],
-          rotation: 1 0 0 90,
-        },
-      ]
-    },
-
-    CLONE "Shelf" "CreationShelf1" {
-      translation: $LEFT_X 12.1 $LEFT_Z,
-      rotation:     0 1 0 45,
-      icons: [
-        CLONE "T_IconWidget" "CreateRevSurfIcon" {
-          action:      "kCreateRevSurf",
-          import_path: "CreateRevSurfIcon.off",
-          rotation:    1 0 0 -90,
-        },
-        CLONE "T_IconWidget" "CreateExtrudedIcon" {
-          action:      "kCreateExtruded",
-          import_path: "CreateExtrudedIcon.off",
-          rotation:    1 0 0 -90,
-        },
-        CLONE "T_IconWidget" "CreateTextIcon" {
-          action:      "kCreateText",
-          import_path: "CreateTextIcon.off"
-        },
-        CLONE "T_IconWidget" "CreateImportedModelIcon" {
-          action:      "kCreateImportedModel",
-          import_path: "CreateImportedModelIcon.off"
-        },
+        CLONE "Shelf" "CreationShelf1" {
+          translation: $LEFT_X 12.1 $LEFT_Z,
+          rotation:     0 1 0 45,
+          icons: [
+            CLONE "T_IconWidget" "CreateRevSurfIcon" {
+              action:      "kCreateRevSurf",
+              import_path: "CreateRevSurfIcon.off",
+              rotation:    1 0 0 -90,
+            },
+            CLONE "T_IconWidget" "CreateExtrudedIcon" {
+              action:      "kCreateExtruded",
+              import_path: "CreateExtrudedIcon.off",
+              rotation:    1 0 0 -90,
+            },
+            CLONE "T_IconWidget" "CreateTextIcon" {
+              action:      "kCreateText",
+              import_path: "CreateTextIcon.off"
+            },
+            CLONE "T_IconWidget" "CreateImportedModelIcon" {
+              action:      "kCreateImportedModel",
+              import_path: "CreateImportedModelIcon.off"
+            },
+          ]
+        }
       ]
     },
 

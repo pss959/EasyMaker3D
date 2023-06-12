@@ -1058,8 +1058,11 @@ void Application::Impl_::AddIcons_() {
 
     // Set up the icons on the shelves.
     SG::Scene &scene = *SC_->scene;
-    const SG::NodePtr shelves = SG::FindNodeInScene(scene, "Shelves");
-    for (const auto &child: shelves->GetChildren()) {
+    const SG::NodePtr shelves_root = SG::FindNodeInScene(scene, "Shelves");
+    const auto is_shelf = [](const SG::Node &node){
+        return dynamic_cast<const Shelf *>(&node) != nullptr;
+    };
+    for (const auto &child: FindNodes(shelves_root, is_shelf)) {
         const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
         ASSERT(shelf);
         shelf->LayOutIcons(cam_pos);

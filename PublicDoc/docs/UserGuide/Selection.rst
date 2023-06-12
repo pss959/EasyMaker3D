@@ -3,9 +3,9 @@
 Selecting Models
 ----------------
 
-The easiest way to select a model is to click on it with the mouse or pinch
-action. Selecting a model attaches the appropriate :ref:`tool <ug-tools>` to
-it for editing.
+The easiest way to select a model is to click on it with the mouse or VR
+controller pinch action. Selecting a model attaches the appropriate :ref:`tool
+<ug-tools>` to it for editing.
 
 Multiple models can be selected by :ref:`modified-clicking <ug-modified-mode>`
 them. Modified-clicking an unselected model adds it as a selection, and

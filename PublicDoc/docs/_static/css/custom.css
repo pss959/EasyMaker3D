@@ -201,9 +201,12 @@ p:empty {
     margin-right: 1%;
 }
 
-/* Note admonitions. Use a custom color and icon */
+/* Note admonitions.  Use a custom color and icon, and match other admonition
+ * margins */
 .rst-content div.admonition.note {
-    background: #e2f1e4;
+    background:   #e2f1e4;
+    margin-left:  1%;
+    margin-right: 1%;
 }
 .rst-content div.admonition.note > .admonition-title {
     background: #a9e6b3;

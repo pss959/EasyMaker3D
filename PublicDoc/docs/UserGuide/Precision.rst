@@ -182,6 +182,13 @@ the :ref:`Translation Tool <ug-translation-tool>`) or orientation (such as the
 :ref:`Rotation Tool <ug-rotation-tool>`) snap to the target's position and
 direction as shown here.
 
+.. note::
+
+   When the Point Target is active, creating a new model positions the model at
+   the target's position with the model's Z (up) direction aligned with the
+   target direction. Turn the target off before creating a new model if this is
+   not what you want.
+
 Similarly, when the Edge Target is active, interactions that involve size (such
 as the :ref:`Scale Tool <ug-scale-tool>`) snap to the target's length.
 

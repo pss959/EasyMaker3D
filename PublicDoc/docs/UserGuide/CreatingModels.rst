@@ -231,10 +231,10 @@ The converted model types and their tools are as follows:
    transformations for either the original or converted model are applied
    to the other.
 
-   For Bent, Beveled, and Twisted models, it more sense to apply the scale of
-   the original model before the relevant operation. In these cases, the scales
-   of the original model and the converted model differ, but are kept in sync
-   to make this work.
+   For Bent, Beveled, and Twisted models, it makes more sense to apply the
+   scale of the original model before the relevant operation. In these cases,
+   the scales of the original model and the converted model differ, but are
+   kept in sync to make this work.
 
 .. _ug-model-names:
 
@@ -290,6 +290,7 @@ Model Edge Display
 Clicking The :ref:`Show Edges Toggle <ug-toggle-show-edges>` icon lets you
 display edges of your models as visible lines or hide them.  Showing them can
 help you see how your models are tessellated into triangles for 3D printing or
-to help place the :ref:`Edge Target <ug-targets>`.
+to help place the :ref:`Point Target <ug-targets>` and :ref:`Edge Target
+<ug-targets>`.
 
 |block-image|
