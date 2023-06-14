@@ -219,7 +219,7 @@ class Setting : public SettingBase {
  private:
   T value_;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Setting<T>);
+  DISALLOW_IMPLICIT_CONSTRUCTORS_T(Setting, T);
 };
 
 // Specialize for std::atomic types.
@@ -294,7 +294,7 @@ class Setting<std::atomic<T> > : public SettingBase {
  private:
   std::atomic<T> value_;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Setting<std::atomic<T> >);
+  DISALLOW_IMPLICIT_CONSTRUCTORS_T(Setting, std::atomic<T>);
 };
 
 // An EnvironmentSetting is a Setting can take its initial value from the named
@@ -327,7 +327,7 @@ class EnvironmentSetting : public Setting<T> {
   }
 
  private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(EnvironmentSetting<T>);
+  DISALLOW_IMPLICIT_CONSTRUCTORS_T(EnvironmentSetting, T);
 };
 
 // Sets a Setting<T> to a new value.  The original value will be

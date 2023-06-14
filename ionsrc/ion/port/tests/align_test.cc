@@ -63,6 +63,7 @@ TEST(Align, Variables) {
 
 TEST(Align, Members) {
   Aligned a;
+  a.b = true;  // a needs to be initialized.
   EXPECT_EQ(kAligned, IsSupposedToBe16ByteAligned(&a.b));
   EXPECT_EQ(kAligned, IsSupposedToBe16ByteAligned(&a.i));
   EXPECT_EQ(kAligned, IsSupposedToBe16ByteAligned(&a.c));

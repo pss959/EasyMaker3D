@@ -15,6 +15,7 @@ ion_test_env.Append(
     LIBS    = [ion_lib, 'gtest_main', 'gtest'],
     CXXFLAGS = [
         '-Wno-nonnull-compare',   # Not sure why DCHECK triggers this.
+        '-Wno-unused-function',   # Some tests define unused static functions.
     ],
 )
 
@@ -175,7 +176,7 @@ if ion_env['MODE'] == 'dbg':
     # Make sure test run targets are always considered out of date.
     ion_test_env.AlwaysBuild('RunIonTests')
 
-else:
-    msg = '*** Ion tests build and run only in dbg mode!'
-    ion_test_env.Alias('IonTests',    [print(msg), Exit()])
-    ion_test_env.Alias('RunIonTests', [print(msg), Exit()])
+elif ('IonTests'    in COMMAND_LINE_TARGETS or
+      'RunIonTests' in COMMAND_LINE_TARGETS):
+    print('*** Ion tests build and run only in dbg mode!')
+    Exit()

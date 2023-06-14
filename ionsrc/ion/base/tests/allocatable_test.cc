@@ -242,6 +242,8 @@ TEST_F(AllocatableTest, StackAllocation) {
               AllocationManager::GetDefaultAllocator().Get());
 
   // Newing a StackTest should DCHECK.
+  // This no longer compiles with c++20.
+#if __cplusplus < 202002L
   {
 // Running this test without the DCHECK corrupts the thread's allocation helper
 // so it has to be disabled entirely.
@@ -252,6 +254,7 @@ TEST_F(AllocatableTest, StackAllocation) {
     }
 #endif
   }
+#endif
 }
 
 TEST_F(AllocatableTest, DefaultAllocation) {

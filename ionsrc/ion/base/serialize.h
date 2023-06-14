@@ -19,9 +19,15 @@ limitations under the License.
 #define ION_BASE_SERIALIZE_H_
 
 #include <chrono> // NOLINT
+#include <deque>
+#include <list>
+#include <map>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "ion/base/stringutils.h"
 
@@ -170,51 +176,52 @@ inline bool StringToStlContainer(std::istringstream& in,  // NOLINT
   return !in.fail();
 }
 
-// Overload for std::unordered_map with a bool at the end.
-template <typename T, typename U, typename V, typename W, typename X, bool B,
-          template <class, class, class, class, class, bool>
-          class ContainerType>
+// Overload for std::unordered_map.
+template <typename T, typename U, typename V, typename W, typename X>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
-                          ContainerType<T, U, V, W, X, B>* val) {
+                          std::unordered_map<T, U, V, W, X>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::unordered_map without a bool at the end.
-template <typename T, typename U, typename V, typename W, typename X,
-          template <class, class, class, class, class> class ContainerType>
+// Overload for std::map.
+template <typename T, typename U, typename V, typename W>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
-                ContainerType<T, U, V, W, X>* val) {
+                          std::map<T, U, V, W>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::unordered_set with a bool at the end.
-template <typename T, typename U, typename V, typename W, bool B,
-          template <class, class, class, class, bool> class ContainerType>
+// Overload for std::unordered_set.
+template <typename T, typename U, typename V, typename W>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
-                          ContainerType<T, U, V, W, B>* val) {
-  return StringToStlContainer(in, val);
-}
-
-// Overload for std::map and std::unordered_set without a bool at the end.
-template <typename T, typename U, typename V, typename W,
-          template <class, class, class, class> class ContainerType>
-inline bool StringToValue(std::istringstream& in,  // NOLINT
-                          ContainerType<T, U, V, W>* val) {
+                          std::unordered_set<T, U, V, W>* val) {
   return StringToStlContainer(in, val);
 }
 
 // Overload for std::set.
-template <typename T, typename U, typename V,
-          template <class, class, class> class ContainerType>
+template <typename T, typename U, typename V>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
-                          ContainerType<T, U, V>* val) {
+                          std::set<T, U, V>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for STL containers like deque, list, vector.
-template <typename T, typename U, template <class, class> class ContainerType>
+// Overload for std::deque.
+template <typename T, typename U>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
-                          ContainerType<T, U>* val) {
+                          std::deque<T, U>* val) {
+  return StringToStlContainer(in, val);
+}
+
+// Overload for std::list.
+template <typename T, typename U>
+inline bool StringToValue(std::istringstream& in,  // NOLINT
+                          std::list<T, U>* val) {
+  return StringToStlContainer(in, val);
+}
+
+// Overload for std::vector.
+template <typename T, typename U>
+inline bool StringToValue(std::istringstream& in,  // NOLINT
+                          std::vector<T, U>* val) {
   return StringToStlContainer(in, val);
 }
 
@@ -338,50 +345,45 @@ inline std::string StlContainerToString(const ContainerType& c) {
   return out.str();
 }
 
-// Overload for std::unordered_map with a bool at the end.
-template <typename T, typename U, typename V, typename W, typename X, bool B,
-          template <class, class, class, class, class, bool>
-          class ContainerType>
-inline std::string ValueToString(
-    const ContainerType<T, U, V, W, X, B>& val) {
+// Overload for std::unordered_map.
+template <typename T, typename U, typename V, typename W, typename X>
+inline std::string ValueToString(const std::unordered_map<T, U, V, W, X>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::unordered_map without a bool at the end.
-template <typename T, typename U, typename V, typename W, typename X,
-          template <class, class, class, class, class>
-          class ContainerType>
-inline std::string ValueToString(
-    const ContainerType<T, U, V, W, X>& val) {
+// Overload for std::map.
+template <typename T, typename U, typename V, typename W>
+inline std::string ValueToString(const std::map<T, U, V, W>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::unordered_set with a bool at the end.
-template <typename T, typename U, typename V, typename W, bool B,
-          template <class, class, class, class, bool> class ContainerType>
-inline std::string ValueToString(
-    const ContainerType<T, U, V, W, B>& val) {
-  return StlContainerToString(val);
-}
-
-// Overload for std::map and std::unordered_set without a bool at the end.
-template <typename T, typename U, typename V, typename W,
-          template <class, class, class, class> class ContainerType>
-inline std::string ValueToString(
-    const ContainerType<T, U, V, W>& val) {
+// Overload for std::unordered_set.
+template <typename T, typename U, typename V, typename W>
+inline std::string ValueToString(const std::unordered_set<T, U, V, W>& val) {
   return StlContainerToString(val);
 }
 
 // Overload for std::set.
-template <typename T, typename U, typename V,
-          template <class, class, class> class ContainerType>
-inline std::string ValueToString(const ContainerType<T, U, V>& val) {
+template <typename T, typename U, typename V>
+inline std::string ValueToString(const std::set<T, U, V>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for non-associative STL containers (deque, list, vector).
-template <typename T, typename U, template <class, class> class ContainerType>
-inline std::string ValueToString(const ContainerType<T, U>& val) {
+// Overload for std::deque.
+template <typename T, typename U>
+inline std::string ValueToString(const std::deque<T, U>& val) {
+  return StlContainerToString(val);
+}
+
+// Overload for std::list.
+template <typename T, typename U>
+inline std::string ValueToString(const std::list<T, U>& val) {
+  return StlContainerToString(val);
+}
+
+// Overload for std::vector.
+template <typename T, typename U>
+inline std::string ValueToString(const std::vector<T, U>& val) {
   return StlContainerToString(val);
 }
 

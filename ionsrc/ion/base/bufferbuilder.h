@@ -43,8 +43,9 @@ class ION_API BufferBuilder {
 
   // Append a POD type T.
   template <typename T>
-  typename std::enable_if<std::is_pod<T>::value && !std::is_pointer<T>::value,
-                          void>::type
+  typename std::enable_if<std::is_standard_layout<T>::value &&
+                          std::is_trivial<T>::value &&
+                          !std::is_pointer<T>::value, void>::type
   Append(const T& t) {
     if (buffers_ == nullptr) {
       buffers_ = absl::make_unique<Buffer>();

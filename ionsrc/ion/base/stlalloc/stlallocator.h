@@ -34,9 +34,10 @@ namespace base {
 // AllocVector and AllocMap) that make it easier to use this allocator.
 template <typename T> class StlAllocator : public std::allocator<T> {
  public:
-  typedef typename std::allocator<T>::pointer Pointer;
-  typedef typename std::allocator<T>::const_pointer ConstPointer;
-  typedef typename std::allocator<T>::size_type SizeType;
+  using Pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
+  using ConstPointer =
+      typename std::allocator_traits<std::allocator<T>>::const_pointer;
+  using SizeType = typename std::allocator<T>::size_type;
 
   // These allocator traits affect the behavior of containers such as
   // AllocVector. During an assignment or swap, the StlAllocators will be
@@ -77,6 +78,8 @@ template <typename T> class StlAllocator : public std::allocator<T> {
     allocator_->DeallocateMemory(p);
   }
 
+// C++20 no longer supports the construct() functions; need to fix this.
+#if XXXX
   // Replace the construct() functions so that we can pass an Allocator to
   // Allocatable types. The construct() functions inform the allocation system
   // that there is a placement new allocation that might be an Allocatable. If
@@ -118,6 +121,7 @@ template <typename T> class StlAllocator : public std::allocator<T> {
     const VoidOrU* select_overload = nullptr;
     construct_impl(select_overload, p, std::forward<Args>(args)...);  // NOLINT
   }
+#endif
 
   template <typename U>
   struct rebind {
@@ -127,6 +131,7 @@ template <typename T> class StlAllocator : public std::allocator<T> {
  private:
   StlAllocator();  // Not default constructible.
 
+#if XXXX
   // These just call the default construct function from std::allocator.
   void construct_impl(const void* dummy, Pointer p, const T& val) {
     std::allocator<T>::construct(p, val);
@@ -160,6 +165,7 @@ template <typename T> class StlAllocator : public std::allocator<T> {
     std::allocator<T>::construct(p, std::forward<Args>(args)...);  // NOLINT
     Allocatable::SetPlacementAllocator(nullptr);
   }
+#endif
 
   AllocatorPtr allocator_;
   template <typename U> friend class StlAllocator;

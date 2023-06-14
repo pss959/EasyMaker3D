@@ -148,7 +148,7 @@ Barrier::~Barrier() {
   if (IsValid()) {
     // Block until no thread is in the Wait() method, meaning we know that
     // pthread_barrier_wait() has returned.
-    while (ref_count_.load(std::memory_order::memory_order_acquire) != 0) {
+    while (ref_count_.load(std::memory_order::acquire) != 0) {
     }
     pthread_barrier_destroy(&barrier_);
   }
@@ -156,9 +156,9 @@ Barrier::~Barrier() {
 
 void Barrier::Wait() {
   if (IsValid()) {
-    ref_count_.fetch_add(1, std::memory_order::memory_order_acquire);
+    ref_count_.fetch_add(1, std::memory_order::acquire);
     pthread_barrier_wait(&barrier_);
-    ref_count_.fetch_add(-1, std::memory_order::memory_order_release);
+    ref_count_.fetch_add(-1, std::memory_order::release);
   }
 }
 

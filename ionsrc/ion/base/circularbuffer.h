@@ -133,9 +133,13 @@ class CircularBuffer : public ion::base::Allocatable {
   // In addition, TContainer is given as a template parameter, as it may be
   // a pointer to a const or non-const CircularBuffer.
   template <typename TDerived, typename TContainer>
-  class IteratorBase
-      : public std::iterator<std::random_access_iterator_tag, T> {
+  class IteratorBase {
    public:
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = T;
+    using difference_type = T;
+    using pointer = T*;
+    using reference = T&;
     IteratorBase() : owner_(nullptr), index_(kInvalidIndex) {}
 
     IteratorBase(TContainer* owner, size_t index)

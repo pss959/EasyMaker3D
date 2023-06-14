@@ -1357,7 +1357,7 @@ class FakeGlContext::ShadowState {
              (textarget == object_state_->textures[texture].target))))
       return;
 
-    auto DoSet = [=](GLenum slot) -> void {
+    auto DoSet = [&](GLenum slot) -> void {
       FramebufferObject::Attachment* a = GetClearedAttachment(target, slot);
       a->type = GL_TEXTURE;
       a->value = texture;
@@ -3137,7 +3137,7 @@ class FakeGlContext::ShadowState {
                          (renderbuffer == 0U ||
                           IsRenderbuffer(renderbuffer))) &&
         CheckFunction("FramebufferRenderbuffer")) {
-      auto DoSet = [=](GLenum slot) -> void {
+      auto DoSet = [&](GLenum slot) -> void {
         FramebufferObject::Attachment* a =
             GetClearedAttachment(target, slot);
         if (renderbuffer == 0U)

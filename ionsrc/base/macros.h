@@ -46,14 +46,12 @@ limitations under the License.
 // should use static_assert instead.
 #define COMPILE_ASSERT(expr, msg) static_assert((expr), #msg)
 
-// DEPRECATED: Prefer the language-supported `= delete` syntax in the `public:`
-// section of the class over these macros.
-// More info: http://go/cppstyle#Copyable_Movable_Types
-//
 // DISALLOW_COPY_AND_ASSIGN disallows the copy constructor and copy assignment
 // operator. DISALLOW_IMPLICIT_CONSTRUCTORS is like DISALLOW_COPY_AND_ASSIGN,
 // but also disallows the default constructor, intended to help make a
 // class uninstantiable.
+//
+// The _T versions are for templated classes; the syntax is different.
 //
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = delete;      \
@@ -61,6 +59,12 @@ limitations under the License.
 #define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
   TypeName() = delete;                           \
   DISALLOW_COPY_AND_ASSIGN(TypeName)
+#define DISALLOW_COPY_AND_ASSIGN_T(TypeName, TempType)   \
+  TypeName(const TypeName<TempType>&) = delete;      \
+  TypeName& operator=(const TypeName<TempType>&) = delete
+#define DISALLOW_IMPLICIT_CONSTRUCTORS_T(TypeName, TempType) \
+  TypeName() = delete;                           \
+  DISALLOW_COPY_AND_ASSIGN_T(TypeName, TempType)
 
 // DEPRECATED: ABSL_ARRAYSIZE() is prefered over ARRAYSIZE().
 //
