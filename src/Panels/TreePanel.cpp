@@ -679,24 +679,14 @@ std::string TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
 Color TreePanel::Impl_::ModelRow_::GetColorForModel_(const Model &model) {
     std::string color_name;
     switch (model.GetStatus()) {
-      case Model::Status::kUnselected:
-        color_name = "Default";
-        break;
-      case Model::Status::kPrimary:
-        color_name = "Primary";
-        break;
-      case Model::Status::kSecondary:
-        color_name = "Secondary";
-        break;
-      case Model::Status::kHiddenByUser:
-        color_name = "HiddenByUser";
-        break;
-      case Model::Status::kAncestorShown:
-      case Model::Status::kDescendantShown:
-        color_name = "HiddenByModel";
-        break;
-      default:
-        ASSERTM(false, model.GetDesc() + " has invalid status");
+        using enum Model::Status;
+      case kUnselected:      color_name = "Default";       break;
+      case kPrimary:         color_name = "Primary";       break;
+      case kSecondary:       color_name = "Secondary";     break;
+      case kHiddenByUser:    color_name = "HiddenByUser";  break;
+      case kAncestorShown:
+      case kDescendantShown: color_name = "HiddenByModel"; break;
+      default: ASSERTM(false, model.GetDesc() + " has invalid status");
     }
     return SG::ColorMap::SGetColor("TreePanel" + color_name + "Color");
 }

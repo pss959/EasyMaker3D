@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -9,8 +10,6 @@
 #include <ion/math/range.h>
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
-
-#include "Math/MathType.h"
 
 /// \file
 /// This file defines math-related items, including convenience typedefs for
@@ -55,7 +54,7 @@ typedef unsigned int GIndex;
 /// can be overridden.
 ///
 /// \ingroup Math
-struct Color : public Vector4f, public MathType {
+struct Color : public Vector4f {
     /// Default constructor sets the color to opaque black.
     Color() : Vector4f(0, 0, 0, 1) {}
 
@@ -103,7 +102,7 @@ struct Color : public Vector4f, public MathType {
 /// A Bounds struct represents 3D bounds.
 ///
 /// \ingroup Math
-struct Bounds : public Range3f, public MathType {
+struct Bounds : public Range3f {
     /// Faces of bounds, ordered by dimension, then min/max.
     enum class Face { kLeft, kRight, kBottom, kTop, kBack, kFront };
 
@@ -163,7 +162,7 @@ struct Bounds : public Range3f, public MathType {
 /// 3D plane.
 ///
 /// \ingroup Math
-struct Plane : public MathType {
+struct Plane {
     Vector3f normal;    ///< Plane Normal, pointing to positive half-space.
     float    distance;  ///< Signed distance from origin.
 
@@ -216,7 +215,7 @@ struct Plane : public MathType {
 /// A Ray struct represents a 3D ray.
 ///
 /// \ingroup Math
-struct Ray : public MathType{
+struct Ray {
     Point3f  origin;     ///< Origin point of the ray.
     Vector3f direction;  ///< Ray direction, not necessarily normalized.
 
@@ -242,7 +241,7 @@ struct Ray : public MathType{
 /// contains the Viewport being viewed in for convenience.
 ///
 /// \ingroup Math
-struct Frustum : public MathType {
+struct Frustum {
     Frustum();
 
     /// Viewport used for the view.
@@ -313,7 +312,7 @@ struct Frustum : public MathType {
 /// A TriMesh struct represents a 3D triangle mesh.
 ///
 /// \ingroup Math
-struct TriMesh : public MathType {
+struct TriMesh {
     /// A point on the mesh resulting from a Ray intersection.
     struct Hit {
         Point3f  point;        ///< Point of intersection.
@@ -377,3 +376,21 @@ struct ModelMesh : public TriMesh {
     /// false on error.
     bool FromBinaryString(const std::string &str);
 };
+
+// ----------------------------------------------------------------------------
+// Output helpers.
+// ----------------------------------------------------------------------------
+
+/// A Stringable is any class that supports ToString().
+template <typename T>
+concept Stringable = requires(T v)
+{
+    {v.ToString()} -> std::convertible_to<std::string>;
+};
+
+
+/// Output operator for a Stringable.
+template <Stringable T>
+inline std::ostream& operator<<(std::ostream& out, const T &t) {
+    return out << t.ToString();
+}

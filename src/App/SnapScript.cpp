@@ -81,24 +81,25 @@ bool SnapScript::ProcessLine_(const std::string &line) {
 
     InstrPtr instr;
     switch (type) {
-      case Instr::Type::kAction:   instr = ProcessAction_(words);   break;
-      case Instr::Type::kClick:    instr = ProcessClick_(words);    break;
-      case Instr::Type::kDrag:     instr = ProcessDrag_(words);     break;
-      case Instr::Type::kHand:     instr = ProcessHand_(words);     break;
-      case Instr::Type::kHandPos:  instr = ProcessHandPos_(words);  break;
-      case Instr::Type::kHeadset:  instr = ProcessHeadset_(words);  break;
-      case Instr::Type::kHover:    instr = ProcessHover_(words);    break;
-      case Instr::Type::kKey:      instr = ProcessKey_(words);      break;
-      case Instr::Type::kLoad:     instr = ProcessLoad_(words);     break;
-      case Instr::Type::kMod:      instr = ProcessMod_(words);      break;
-      case Instr::Type::kSelect:   instr = ProcessSelect_(words);   break;
-      case Instr::Type::kSettings: instr = ProcessSettings_(words); break;
-      case Instr::Type::kSnap:     instr = ProcessSnap_(words);     break;
-      case Instr::Type::kSnapObj:  instr = ProcessSnapObj_(words);  break;
-      case Instr::Type::kStage:    instr = ProcessStage_(words);    break;
-      case Instr::Type::kStop:     instr = ProcessStop_(words);     break;
-      case Instr::Type::kTouch:    instr = ProcessTouch_(words);    break;
-      case Instr::Type::kView:     instr = ProcessView_(words);     break;
+        using enum Instr::Type;
+      case kAction:   instr = ProcessAction_(words);   break;
+      case kClick:    instr = ProcessClick_(words);    break;
+      case kDrag:     instr = ProcessDrag_(words);     break;
+      case kHand:     instr = ProcessHand_(words);     break;
+      case kHandPos:  instr = ProcessHandPos_(words);  break;
+      case kHeadset:  instr = ProcessHeadset_(words);  break;
+      case kHover:    instr = ProcessHover_(words);    break;
+      case kKey:      instr = ProcessKey_(words);      break;
+      case kLoad:     instr = ProcessLoad_(words);     break;
+      case kMod:      instr = ProcessMod_(words);      break;
+      case kSelect:   instr = ProcessSelect_(words);   break;
+      case kSettings: instr = ProcessSettings_(words); break;
+      case kSnap:     instr = ProcessSnap_(words);     break;
+      case kSnapObj:  instr = ProcessSnapObj_(words);  break;
+      case kStage:    instr = ProcessStage_(words);    break;
+      case kStop:     instr = ProcessStop_(words);     break;
+      case kTouch:    instr = ProcessTouch_(words);    break;
+      case kView:     instr = ProcessView_(words);     break;
     }
     if (! instr)
         return false;

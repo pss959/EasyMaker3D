@@ -169,16 +169,13 @@ TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
     KLOG('C', "Combining " << meshes.size() << " meshes with "
          << Util::EnumName(operation));
     switch (operation) {
-      case MeshCombiningOperation::kConcatenate:
-        return Concatenate_(meshes);
-      case MeshCombiningOperation::kCSGUnion:
-      case MeshCombiningOperation::kCSGIntersection:
-      case MeshCombiningOperation::kCSGDifference:
-        return ApplyCSG_(meshes, operation);
-      case MeshCombiningOperation::kConvexHull:
-        return ApplyConvexHull_(meshes);
-      case MeshCombiningOperation::kMinkowskiSum:
-        return ApplyMinkowskiSum_(meshes);
+        using enum MeshCombiningOperation;
+      case kConcatenate:     return Concatenate_(meshes);
+      case kCSGUnion:
+      case kCSGIntersection:
+      case kCSGDifference:   return ApplyCSG_(meshes, operation);
+      case kConvexHull:      return ApplyConvexHull_(meshes);
+      case kMinkowskiSum:    return ApplyMinkowskiSum_(meshes);
     }
     // Should never get here.
     ASSERT(false);

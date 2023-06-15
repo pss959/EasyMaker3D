@@ -22,13 +22,14 @@ void TaperTool::PanelChanged(const std::string &key,
     TaperToolPanel &panel = GetTypedPanel<TaperToolPanel>();
 
     switch (type) {
-      case ToolPanel::InteractionType::kDragStart:
+        using enum ToolPanel::InteractionType;
+      case kDragStart:
         command_ = CreateCommand<ChangeTaperCommand>();
         command_->SetFromSelection(GetSelection());
         start_taper_ = panel.GetTaper();
         break;
 
-      case ToolPanel::InteractionType::kDrag:
+      case kDrag:
         ASSERT(command_);
         ASSERT(key == "Profile");
         command_->SetTaper(panel.GetTaper());
@@ -36,7 +37,7 @@ void TaperTool::PanelChanged(const std::string &key,
         GetContext().command_manager->SimulateDo(command_);
         break;
 
-      case ToolPanel::InteractionType::kDragEnd:
+      case kDragEnd:
         ASSERT(command_);
         // Don't process the command unless something changed.
         if (panel.GetTaper() != start_taper_)
@@ -44,7 +45,7 @@ void TaperTool::PanelChanged(const std::string &key,
         command_.reset();
         break;
 
-      case ToolPanel::InteractionType::kImmediate:
+      case kImmediate:
         // User changed the axis or clicked on profile to add a point.
         ASSERT(key == "Axis" || key == "Profile");
         command_ = CreateCommand<ChangeTaperCommand>();

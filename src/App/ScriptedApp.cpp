@@ -315,8 +315,6 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
 }
 
 bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
-    using SIType = SnapScript::Instr::Type;
-
     const size_t instr_count = options_.script.GetInstructions().size();
     if (options_.report)
         std::cout << "  Processing " << Util::EnumToWords(instr.type)
@@ -325,73 +323,75 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
                   << instr.line_number << "\n";
 
     // Skip snap instructions if disabled.
-    if (options_.nosnap && (instr.type == SIType::kSnap ||
-                            instr.type == SIType::kSnapObj))
+    if (options_.nosnap && (instr.type == SnapScript::Instr::Type::kSnap ||
+                            instr.type == SnapScript::Instr::Type::kSnapObj))
         return true;
 
     switch (instr.type) {
-      case SIType::kAction: {
+        using enum SnapScript::Instr::Type;
+
+      case kAction: {
           const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
           ASSERTM(GetContext().action_processor->CanApplyAction(ainst.action),
                   Util::EnumName(ainst.action));
           GetContext().action_processor->ApplyAction(ainst.action);
           break;
       }
-      case SIType::kClick: {
+      case kClick: {
           const auto &cinst = GetTypedInstr_<SnapScript::ClickInstr>(instr);
           emitter_->AddClick(cinst.pos);
           break;
       }
-      case SIType::kDrag: {
+      case kDrag: {
           const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
           emitter_->AddDragPoint(dinst.phase, dinst.pos);
           break;
       }
-      case SIType::kHand: {
+      case kHand: {
           const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
           if (! SetHand_(hinst.hand, hinst.controller))
               return false;
           break;
       }
-      case SIType::kHandPos: {
+      case kHandPos: {
           const auto &hinst = GetTypedInstr_<SnapScript::HandPosInstr>(instr);
           emitter_->AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
           break;
       }
-      case SIType::kHeadset: {
+      case kHeadset: {
           const auto &hinst = GetTypedInstr_<SnapScript::HeadsetInstr>(instr);
           emitter_->AddHeadsetButton(hinst.is_on);
           break;
       }
-      case SIType::kHover: {
+      case kHover: {
           const auto &hinst = GetTypedInstr_<SnapScript::HoverInstr>(instr);
           emitter_->AddHoverPoint(hinst.pos);
           break;
       }
-      case SIType::kKey: {
+      case kKey: {
           const auto &kinst = GetTypedInstr_<SnapScript::KeyInstr>(instr);
           emitter_->AddKey(kinst.key_name, kinst.modifiers);
           break;
       }
-      case SIType::kLoad: {
+      case kLoad: {
           const auto &linst = GetTypedInstr_<SnapScript::LoadInstr>(instr);
           if (! LoadSession_(linst.file_name))
               return false;
           break;
       }
-      case SIType::kMod: {
+      case kMod: {
           const auto &minst = GetTypedInstr_<SnapScript::ModInstr>(instr);
           emitter_->SetModifiedMode(minst.is_on);
           break;
       }
-      case SIType::kSelect: {
+      case kSelect: {
           const auto &sinst = GetTypedInstr_<SnapScript::SelectInstr>(instr);
           Selection sel;
           BuildSelection_(sinst.names, sel);
           GetContext().selection_manager->ChangeSelection(sel);
           break;
       }
-      case SIType::kSettings: {
+      case kSettings: {
           const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
           const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
                               TK::kDataFileSuffix);
@@ -399,13 +399,13 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
               return false;
           break;
       }
-      case SIType::kSnap: {
+      case kSnap: {
           const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
           if (! TakeSnapshot_(sinst.rect, sinst.file_name))
               return false;
           break;
       }
-      case SIType::kSnapObj: {
+      case kSnapObj: {
           const auto &sinst = GetTypedInstr_<SnapScript::SnapObjInstr>(instr);
           Range2f rect;
           if (! GetObjRect_(sinst.object_name, sinst.margin, rect) ||
@@ -413,22 +413,22 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
               return false;
           break;
       }
-      case SIType::kStage: {
+      case kStage: {
           const auto &sinst = GetTypedInstr_<SnapScript::StageInstr>(instr);
           auto &stage = *GetContext().scene_context->stage;
           stage.SetScaleAndRotation(sinst.scale, sinst.angle);
           break;
       }
-      case SIType::kStop: {
+      case kStop: {
           // Handled elsewhere.
           break;
       }
-      case SIType::kTouch: {
+      case kTouch: {
           const auto &tinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
           SetTouchMode_(tinst.is_on);
           break;
       }
-      case SIType::kView: {
+      case kView: {
           const auto &vinst = GetTypedInstr_<SnapScript::ViewInstr>(instr);
           GetContext().scene_context->window_camera->SetOrientation(
               Rotationf::RotateInto(-Vector3f::AxisZ(), vinst.dir));

@@ -38,12 +38,13 @@ void ExtrudedTool::PanelChanged(const std::string &key,
     auto &panel = GetTypedPanel<ExtrudedToolPanel>();
 
     switch (type) {
-      case ToolPanel::InteractionType::kDragStart:
+        using enum ToolPanel::InteractionType;
+      case kDragStart:
         command_ = CreateCommand<ChangeExtrudedCommand>();
         command_->SetFromSelection(GetSelection());
         break;
 
-      case ToolPanel::InteractionType::kDrag:
+      case kDrag:
         ASSERT(command_);
         if (key == "Profile") {
             command_->SetProfile(panel.GetProfile());
@@ -53,7 +54,7 @@ void ExtrudedTool::PanelChanged(const std::string &key,
         }
         break;
 
-      case ToolPanel::InteractionType::kDragEnd:
+      case kDragEnd:
         ASSERT(command_);
         // Don't do anything if there was no actual drag (i.e., the point was
         // clicked).
@@ -64,7 +65,7 @@ void ExtrudedTool::PanelChanged(const std::string &key,
         command_.reset();
         break;
 
-      case ToolPanel::InteractionType::kImmediate:
+      case kImmediate:
         // User clicked on profile to add a point.
         ASSERT(key == "Profile");
         command_ = CreateCommand<ChangeExtrudedCommand>();

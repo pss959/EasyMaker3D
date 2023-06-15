@@ -68,18 +68,14 @@ void Snap2D::SnapPointToDirection_(Direction direction,
                                    const Point2f &fixed_point,
                                    Point2f &point_to_snap) {
     switch (direction) {
-      case Snap2D::Direction::kN:
-      case Snap2D::Direction::kS:
+        using enum Snap2D::Direction;
+      case kN: case kS:
         point_to_snap[0] = fixed_point[0];
         break;
-      case Snap2D::Direction::kE:
-      case Snap2D::Direction::kW:
+      case kE: case kW:
         point_to_snap[1] = fixed_point[1];
         break;
-      case Snap2D::Direction::kNE:
-      case Snap2D::Direction::kNW:
-      case Snap2D::Direction::kSE:
-      case Snap2D::Direction::kSW: {
+      case kNE: case kNW: case kSE: case kSW: {
           // Compute the side of a 45-degree right triangle.
           const float len =
               ion::math::Length(point_to_snap - fixed_point) / std::sqrt(2);
@@ -94,15 +90,16 @@ void Snap2D::SnapPointToDirection_(Direction direction,
 Vector2f Snap2D::GetVector_(Direction direction) {
     Vector2f v;
     switch (direction) {
-      case Snap2D::Direction::kN:  v.Set( 0,  1); break;
-      case Snap2D::Direction::kS:  v.Set( 0, -1); break;
-      case Snap2D::Direction::kE:  v.Set( 1,  0); break;
-      case Snap2D::Direction::kW:  v.Set(-1,  0); break;
-      case Snap2D::Direction::kNE: v.Set( 1,  1); break;
-      case Snap2D::Direction::kNW: v.Set(-1,  1); break;
-      case Snap2D::Direction::kSE: v.Set( 1, -1); break;
-      case Snap2D::Direction::kSW: v.Set(-1, -1); break;
-      default:                     v.Set( 0,  0); break;
+        using enum Snap2D::Direction;
+      case kN:  v.Set( 0,  1); break;
+      case kS:  v.Set( 0, -1); break;
+      case kE:  v.Set( 1,  0); break;
+      case kW:  v.Set(-1,  0); break;
+      case kNE: v.Set( 1,  1); break;
+      case kNW: v.Set(-1,  1); break;
+      case kSE: v.Set( 1, -1); break;
+      case kSW: v.Set(-1, -1); break;
+      default:  v.Set( 0,  0); break;
     }
     return v;
 }

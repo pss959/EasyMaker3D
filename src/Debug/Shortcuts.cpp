@@ -286,110 +286,109 @@ static void PrintTouchedWidget_() {
 
 /// Does all of the work for HandleShortcut().
 static bool HandleShortcut_(const std::string &str) {
-    typedef ShortcutMap_::Action SAction;   // Shorthand.
-
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
     const SG::Node &root = *scene_context_->scene->GetRootNode();
 
     const auto action = shortcut_map_.GetAction(str);
     switch (action) {
-      case SAction::kNone:
+        using enum ShortcutMap_::Action;
+      case kNone:
         break;
-      case SAction::kDumpControllerModels:
+      case kDumpControllerModels:
         DumpControllerModel_(*scene_context_->left_controller);
         DumpControllerModel_(*scene_context_->right_controller);
         break;
-      case SAction::kPrintBounds:
+      case kPrintBounds:
         Debug::PrintBounds(root, GetWorldToStageMatrix_());
         break;
-      case SAction::kPrintBoundsOnPath:
+      case kPrintBoundsOnPath:
         Debug::PrintBoundsOnPath(limit_path_, GetWorldToStageMatrix_());
         break;
-      case SAction::kPrintCommands:
+      case kPrintCommands:
         ASSERT(command_list_);
         Debug::PrintCommands(*command_list_);
         break;
-      case SAction::kPrintDebugSpherePosition:
+      case kPrintDebugSpherePosition:
         std::cout << "Sphere at "
                   << scene_context_->debug_sphere->GetTranslation() << "\n";
         break;
-      case SAction::kPrintEndNode:
+      case kPrintEndNode:
         if (! limit_path_.empty())
             Debug::PrintGraph(*limit_path_.back());
         break;
-      case SAction::kPrintGraph:
+      case kPrintGraph:
         Debug::PrintGraph(root);
         break;
-      case SAction::kPrintGraphOnPath:
+      case kPrintGraphOnPath:
         Debug::PrintGraphOnPath(limit_path_);
         break;
-      case SAction::kPrintHelp:
+      case kPrintHelp:
         std::cout << shortcut_map_.GetHelpString();
         break;
-      case SAction::kPrintLocations:
+      case kPrintLocations:
         Debug::PrintLocations(root, GetWorldToStageMatrix_());
         break;
-      case SAction::kPrintLocationsOnPath:
+      case kPrintLocationsOnPath:
         Debug::PrintLocationsOnPath(limit_path_, GetWorldToStageMatrix_());
         break;
-      case SAction::kPrintMatrices:
+      case kPrintMatrices:
         Debug::PrintMatrices(root);
         break;
-      case SAction::kPrintMatricesOnPath:
+      case kPrintMatricesOnPath:
         Debug::PrintMatricesOnPath(limit_path_);
         break;
-      case SAction::kPrintModels:
+      case kPrintModels:
         Debug::PrintModels(*scene_context_->root_model, false);
         break;
-      case SAction::kPrintModelsFull:
+      case kPrintModelsFull:
         Debug::PrintModels(*scene_context_->root_model, true);
         break;
-      case SAction::kPrintPaneTreeBrief:
+      case kPrintPaneTreeBrief:
         Debug::PrintPaneTree(GetBoardPane_(), true);
         break;
-      case SAction::kPrintPaneTreeFull:
+      case kPrintPaneTreeFull:
         Debug::PrintPaneTree(GetBoardPane_(), false);
         break;
-      case SAction::kPrintSkeleton:
+      case kPrintSkeleton:
         Debug::PrintNodesAndShapes(root);
         break;
-      case SAction::kPrintSkeletonOnPath:
+      case kPrintSkeletonOnPath:
         Debug::PrintNodesAndShapesOnPath(limit_path_);
         break;
-      case SAction::kPrintTransforms:
+      case kPrintTransforms:
         Debug::PrintTransforms(root);
         break;
-      case SAction::kPrintTransformsOnPath:
+      case kPrintTransformsOnPath:
         Debug::PrintTransformsOnPath(limit_path_);
         break;
-      case SAction::kPrintTool:
+      case kPrintTool:
         Debug::PrintTransformsOnPath(
             SG::FindNodePathInScene(*scene_context_->scene, "ToolParent"),
             true);
         break;
-      case SAction::kPrintView:
+      case kPrintView:
         Debug::PrintViewInfo(*scene_context_->frustum, *scene_context_->stage);
         break;
-      case SAction::kPrintWidget:
+      case kPrintWidget:
         PrintTouchedWidget_();
         break;
-      case SAction::kReloadScene:
+      case kReloadScene:
         ASSERTM(false, "Should have handled reload-scene shortcut elsewhere");
         break;
-      case SAction::kToggleEventLogging:
+      case kToggleEventLogging:
         if (log_handler_)
             log_handler_->SetEnabled(! log_handler_->IsEnabled());
         break;
-      case SAction::kToggleLogging:
+      case kToggleLogging:
         KLogger::ToggleLogging();
         break;
-      case SAction::kToggleShadows: {
+      case kToggleShadows: {
           auto &sp = *scene_context_->shadow_pass;
           sp.SetShadowsEnabled(! sp.AreShadowsEnabled());
           break;
       }
-      case SAction::kToggleSphere: {
+      case kToggleSphere: {
           auto &ds = *scene_context_->debug_sphere;
           const auto flag = SG::Node::Flag::kRender;
           ds.SetFlagEnabled(flag, ! ds.IsFlagEnabled(flag));
@@ -397,7 +396,7 @@ static bool HandleShortcut_(const std::string &str) {
       }
     }
 
-    return action != SAction::kNone;
+    return action != ShortcutMap_::Action::kNone;
 }
 
 }  // anonymous namespace

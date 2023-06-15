@@ -22,13 +22,14 @@ void BevelTool::PanelChanged(const std::string &key,
     BevelToolPanel &panel = GetTypedPanel<BevelToolPanel>();
 
     switch (type) {
-      case ToolPanel::InteractionType::kDragStart:
+        using enum ToolPanel::InteractionType;
+      case kDragStart:
         command_ = CreateCommand<ChangeBevelCommand>();
         command_->SetFromSelection(GetSelection());
         start_bevel_ = panel.GetBevel();
         break;
 
-      case ToolPanel::InteractionType::kDrag:
+      case kDrag:
         ASSERT(command_);
         if (key == "Profile" || key == "Scale" || key == "MaxAngle") {
             command_->SetBevel(panel.GetBevel());
@@ -37,7 +38,7 @@ void BevelTool::PanelChanged(const std::string &key,
         }
         break;
 
-      case ToolPanel::InteractionType::kDragEnd:
+      case kDragEnd:
         ASSERT(command_);
         // Don't process the command if the bevel was not set.
         if (panel.GetBevel() != start_bevel_)
@@ -45,7 +46,7 @@ void BevelTool::PanelChanged(const std::string &key,
         command_.reset();
         break;
 
-      case ToolPanel::InteractionType::kImmediate:
+      case kImmediate:
         // User clicked on profile to add a point.
         ASSERT(key == "Profile");
         command_ = CreateCommand<ChangeBevelCommand>();

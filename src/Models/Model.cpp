@@ -304,18 +304,11 @@ bool Model::ValidateMesh(TriMesh &mesh, std::string &reason) {
     ASSERT(shape_);
     bool is_valid = false;
     switch (ValidateAndRepairTriMesh(mesh)) {
-      case MeshValidityCode::kValid:
-        is_valid = true;
-        break;
-      case MeshValidityCode::kInconsistent:
-        reason = "Mesh is inconsistent";
-        break;
-      case MeshValidityCode::kNotClosed:
-        reason = "Mesh is not closed";
-        break;
-      case MeshValidityCode::kSelfIntersecting:
-        reason = "Mesh is self-intersecting";
-        break;
+        using enum MeshValidityCode;
+      case kValid:            is_valid = true;                      break;
+      case kInconsistent:     reason = "Mesh is inconsistent";      break;
+      case kNotClosed:        reason = "Mesh is not closed";        break;
+      case kSelfIntersecting: reason = "Mesh is self-intersecting"; break;
     }
     return is_valid;
 }

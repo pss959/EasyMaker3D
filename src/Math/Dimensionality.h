@@ -3,7 +3,6 @@
 #include <string>
 
 #include "Enums/Dim.h"
-#include "Math/MathType.h"
 #include "Util/Enum.h"
 #include "Util/Assert.h"
 
@@ -12,7 +11,7 @@
 /// operations easier.
 ///
 /// \ingroup Math
-class Dimensionality : public MathType {
+class Dimensionality {
   public:
     /// The default constructor creates a 0-dimensional (empty) instance.
     Dimensionality() { Clear(); }

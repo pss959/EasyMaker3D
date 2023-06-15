@@ -1143,7 +1143,8 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
     // Don't update tools while loading a session.
     if (! MGR_(command)->IsValidating()) {
         switch (op) {
-          case SelectionManager::Operation::kSelection:
+            using enum SelectionManager::Operation;
+          case kSelection:
             tool_box_->AttachToSelection(sel);
             // If this is the first time the primary selected Model was selected,
             // try to use a specialized tool for it.
@@ -1151,13 +1152,13 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
                 sel.GetPrimary().GetModel()->GetSelectionCount() == 1U)
                 tool_box_->UseSpecializedTool(sel);
             break;
-          case SelectionManager::Operation::kReselection:
+          case kReselection:
             tool_box_->ReattachTools();
             break;
-          case SelectionManager::Operation::kDeselection:
+          case kDeselection:
             tool_box_->DetachTools(sel);
             break;
-          case SelectionManager::Operation::kUpdate:
+          case kUpdate:
             // Nothing to do in this case.
             break;
         }

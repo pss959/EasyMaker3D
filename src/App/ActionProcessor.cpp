@@ -327,115 +327,116 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
     }
 
     switch (action) {
-      case Action::kUndo:
+        using enum Action;
+      case kUndo:
         context_->command_manager->Undo();
         break;
-      case Action::kRedo:
+      case kRedo:
         context_->command_manager->Redo();
         break;
-      case Action::kQuit:
+      case kQuit:
         if (quit_func_)
             quit_func_();
         break;
 
-      case Action::kOpenSessionPanel:
+      case kOpenSessionPanel:
         OpenAppPanel_("SessionPanel");
         break;
-      case Action::kOpenSettingsPanel:
+      case kOpenSettingsPanel:
         OpenAppPanel_("SettingsPanel");
         break;
-      case Action::kOpenInfoPanel:
+      case kOpenInfoPanel:
         OpenInfoPanel_();
         break;
-      case Action::kOpenHelpPanel:
+      case kOpenHelpPanel:
         OpenAppPanel_("HelpPanel");
         break;
 
-      case Action::kCreateBox:
+      case kCreateBox:
         CreatePrimitiveModel_(PrimitiveType::kBox);
         break;
-      case Action::kCreateCylinder:
+      case kCreateCylinder:
         CreatePrimitiveModel_(PrimitiveType::kCylinder);
         break;
-      case Action::kCreateExtruded:
+      case kCreateExtruded:
         CreateExtrudedModel_();
         break;
-      case Action::kCreateImportedModel:
+      case kCreateImportedModel:
         CreateImportedModel_();
         break;
-      case Action::kCreateRevSurf:
+      case kCreateRevSurf:
         CreateRevSurfModel_();
         break;
-      case Action::kCreateSphere:
+      case kCreateSphere:
         CreatePrimitiveModel_(PrimitiveType::kSphere);
         break;
-      case Action::kCreateText:
+      case kCreateText:
         CreateTextModel_();
         break;
-      case Action::kCreateTorus:
+      case kCreateTorus:
         CreatePrimitiveModel_(PrimitiveType::kTorus);
         break;
 
-      case Action::kConvertBend:
+      case kConvertBend:
         ConvertModels_(CreateCommand_<ConvertBendCommand>());
         break;
-      case Action::kConvertBevel:
+      case kConvertBevel:
         ConvertModels_(CreateCommand_<ConvertBevelCommand>());
         break;
-      case Action::kConvertClip:
+      case kConvertClip:
         ConvertModels_(CreateCommand_<ConvertClipCommand>());
         break;
-      case Action::kConvertMirror:
+      case kConvertMirror:
         ConvertModels_(CreateCommand_<ConvertMirrorCommand>());
         break;
-      case Action::kConvertTaper:
+      case kConvertTaper:
         ConvertModels_(CreateCommand_<ConvertTaperCommand>());
         break;
-      case Action::kConvertTwist:
+      case kConvertTwist:
         ConvertModels_(CreateCommand_<ConvertTwistCommand>());
         break;
 
-      case Action::kCombineCSGDifference:
+      case kCombineCSGDifference:
         CreateCSGModel_(CSGOperation::kDifference);
         break;
-      case Action::kCombineCSGIntersection:
+      case kCombineCSGIntersection:
         CreateCSGModel_(CSGOperation::kIntersection);
         break;
-      case Action::kCombineCSGUnion:
+      case kCombineCSGUnion:
         CreateCSGModel_(CSGOperation::kUnion);
         break;
-      case Action::kCombineHull:
+      case kCombineHull:
         CreateHullModel_();
         break;
 
-      case Action::kColorTool:
-      case Action::kComplexityTool:
-      case Action::kNameTool:
-      case Action::kRotationTool:
-      case Action::kScaleTool:
-      case Action::kTranslationTool:
+      case kColorTool:
+      case kComplexityTool:
+      case kNameTool:
+      case kRotationTool:
+      case kScaleTool:
+      case kTranslationTool:
         context_->tool_box->UseGeneralTool(Util::EnumToWord(action),
                                            GetSelection());
         break;
 
-      case Action::kSwitchToPreviousTool:
+      case kSwitchToPreviousTool:
         context_->tool_box->UsePreviousGeneralTool(GetSelection());
         break;
-      case Action::kSwitchToNextTool:
+      case kSwitchToNextTool:
         context_->tool_box->UseNextGeneralTool(GetSelection());
         break;
 
-      case Action::kDecreaseComplexity:
+      case kDecreaseComplexity:
         ChangeComplexity_(-.05f);
         break;
-      case Action::kIncreaseComplexity:
+      case kIncreaseComplexity:
         ChangeComplexity_(.05f);
         break;
 
-      case Action::kDecreasePrecision:
-      case Action::kIncreasePrecision: {
+      case kDecreasePrecision:
+      case kIncreasePrecision: {
           auto &pm = *context_->precision_store;
-          if (action == Action::kIncreasePrecision)
+          if (action == kIncreasePrecision)
               pm.Increase();
           else
               pm.Decrease();
@@ -444,82 +445,82 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
           break;
       }
 
-      case Action::kMoveToOrigin:
+      case kMoveToOrigin:
         MoveSelectionToOrigin_();
         break;
 
-      case Action::kSelectAll:
+      case kSelectAll:
         context_->selection_manager->SelectAll();
         break;
-      case Action::kSelectNone:
+      case kSelectNone:
         context_->selection_manager->DeselectAll();
         break;
 
-      case Action::kSelectParent:
+      case kSelectParent:
         context_->selection_manager->SelectInDirection(
             SelectionManager::Direction::kParent);
         break;
-      case Action::kSelectFirstChild:
+      case kSelectFirstChild:
         context_->selection_manager->SelectInDirection(
             SelectionManager::Direction::kFirstChild);
         break;
-      case Action::kSelectPreviousSibling:
+      case kSelectPreviousSibling:
         context_->selection_manager->SelectInDirection(
             SelectionManager::Direction::kPreviousSibling);
         break;
-      case Action::kSelectNextSibling:
+      case kSelectNextSibling:
         context_->selection_manager->SelectInDirection(
             SelectionManager::Direction::kNextSibling);
         break;
 
-      case Action::kDelete:
+      case kDelete:
         DeleteSelection_();
         break;
-      case Action::kCut:
+      case kCut:
         CopySelection_();
         DeleteSelection_();
         break;
-      case Action::kCopy:
+      case kCopy:
         CopySelection_();
         break;
-      case Action::kDuplicate:
+      case kDuplicate:
         CopySelection_();
         PasteFromClipboard_(false);
         break;
-      case Action::kPaste:
+      case kPaste:
         PasteFromClipboard_(false);
         break;
-      case Action::kPasteInto:
+      case kPasteInto:
         PasteFromClipboard_(true);
         break;
 
-      case Action::kLinearLayout:
+      case kLinearLayout:
         DoLinearLayout_();
         break;
-      case Action::kRadialLayout:
+      case kRadialLayout:
         DoRadialLayout_();
         break;
 
-      case Action::kMovePrevious:
+      case kMovePrevious:
         MoveUpOrDown_(true);
         break;
-      case Action::kMoveNext:
+      case kMoveNext:
         MoveUpOrDown_(false);
         break;
 
-      case Action::kHideSelected: {
+      case kHideSelected: {
           const std::vector<ModelPtr> models = GetSelection().GetModels();
           context_->selection_manager->DeselectAll();
           for (const auto &model: models)
               context_->scene_context->root_model->HideModel(model);
           break;
       }
-      case Action::kShowAll:
+      case kShowAll:
         context_->scene_context->root_model->ShowAllModels();
         break;
 
 #if ! RELEASE_BUILD
-      case Action::kReloadScene:
+      case kReloadScene:
         ASSERT(reload_func_);
         reload_func_();
         break;
@@ -535,34 +536,35 @@ bool ActionProcessor::Impl_::GetToggleState_(Action action) const {
     const auto &ss = *context_->command_manager->GetSessionState();
 
     switch (action) {
+        using enum Action;
       // Tools:
-      case Action::kColorTool:
-      case Action::kComplexityTool:
-      case Action::kNameTool:
-      case Action::kRotationTool:
-      case Action::kScaleTool:
-      case Action::kTranslationTool:
+      case kColorTool:
+      case kComplexityTool:
+      case kNameTool:
+      case kRotationTool:
+      case kScaleTool:
+      case kTranslationTool:
         return ! tm.IsUsingSpecializedTool() &&
             tm.GetCurrentTool()->GetTypeName() == Util::EnumToWord(action);
-      case Action::kToggleSpecializedTool:
+      case kToggleSpecializedTool:
         return tm.IsUsingSpecializedTool();
 
       // Other toggles:
-      case Action::kTogglePointTarget:
+      case kTogglePointTarget:
         return ss.IsPointTargetVisible();
-      case Action::kToggleEdgeTarget:
+      case kToggleEdgeTarget:
         return ss.IsEdgeTargetVisible();
-      case Action::kToggleAxisAligned:
+      case kToggleAxisAligned:
         return ss.IsAxisAligned();
-      case Action::kToggleInspector:
+      case kToggleInspector:
         return context_->scene_context->inspector->IsEnabled();
-      case Action::kToggleBuildVolume:
+      case kToggleBuildVolume:
         return ss.IsBuildVolumeVisible();
-      case Action::kToggleShowEdges:
+      case kToggleShowEdges:
         return ss.AreEdgesShown();
-      case Action::kToggleLeftRadialMenu:
+      case kToggleLeftRadialMenu:
         return context_->scene_context->left_radial_menu->IsEnabled();
-      case Action::kToggleRightRadialMenu:
+      case kToggleRightRadialMenu:
         return context_->scene_context->right_radial_menu->IsEnabled();
 
       default:
@@ -576,42 +578,43 @@ void ActionProcessor::Impl_::SetToggleState_(Action action, bool state) {
     const auto &ss = context_->command_manager->GetSessionState();
 
     switch (action) {
-      case Action::kToggleSpecializedTool:
+        using enum Action;
+      case kToggleSpecializedTool:
         context_->tool_box->ToggleSpecializedTool(GetSelection());
         ASSERT(context_->tool_box->IsUsingSpecializedTool() == state);
         break;
 
-      case Action::kTogglePointTarget:
+      case kTogglePointTarget:
         context_->target_manager->SetPointTargetVisible(state);
         ss->SetPointTargetVisible(state);
         break;
-      case Action::kToggleEdgeTarget:
+      case kToggleEdgeTarget:
         context_->target_manager->SetEdgeTargetVisible(state);
         ss->SetEdgeTargetVisible(state);
         break;
 
-      case Action::kToggleAxisAligned:
+      case kToggleAxisAligned:
         ss->SetAxisAligned(state);
         // Reselect so that attached tools use the correct alignment.
         context_->selection_manager->ReselectAll();
         break;
 
-      case Action::kToggleInspector:
+      case kToggleInspector:
         ShowInspector_(! context_->scene_context->inspector->IsEnabled());
         break;
 
-      case Action::kToggleBuildVolume:
+      case kToggleBuildVolume:
         context_->scene_context->build_volume->Activate(state);
         ss->SetBuildVolumeVisible(state);
         break;
 
-      case Action::kToggleShowEdges:
+      case kToggleShowEdges:
           context_->scene_context->root_model->ShowEdges(state);
           context_->scene_context->inspector->ShowEdges(state);
           ss->SetEdgesShown(state);
           break;
 
-      case Action::kToggleLeftRadialMenu: {
+      case kToggleLeftRadialMenu: {
           auto &menu = context_->scene_context->left_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
@@ -620,7 +623,7 @@ void ActionProcessor::Impl_::SetToggleState_(Action action, bool state) {
           menu->SetEnabled(state);
         break;
       }
-      case Action::kToggleRightRadialMenu: {
+      case kToggleRightRadialMenu: {
           auto &menu = context_->scene_context->right_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
@@ -644,7 +647,8 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
     auto hide_show = [](bool visible){ return visible ? "Hide" : "Show"; };
 
     switch (action) {
-      case Action::kUndo:
+        using enum Action;
+      case kUndo:
         if (! CanApplyAction(action)) {
             return "Undo the last command";
         }
@@ -653,7 +657,7 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
             return "Undo the last command:\n<" +
                 cl.GetCommandToUndo()->GetDescription() + ">";
         }
-      case Action::kRedo:
+      case kRedo:
         if (! CanApplyAction(action)) {
             return "Undo the last command";
         }
@@ -663,7 +667,7 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
                 cl.GetCommandToRedo()->GetDescription() + ">";
         }
 
-      case Action::kToggleSpecializedTool:
+      case kToggleSpecializedTool:
         if (! context_->tool_box->CanUseSpecializedTool(GetSelection()))
             return "Switch between specialized and general tools";
         else if (context_->tool_box->IsUsingSpecializedTool())
@@ -673,16 +677,16 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
                 context_->tool_box->GetSpecializedToolForSelection(
                     GetSelection())->GetTypeName();
 
-      case Action::kTogglePointTarget:
+      case kTogglePointTarget:
         s = context_->target_manager->IsPointTargetVisible() ?
             "Deactivate" : "Activate";
         return s + " the point target";
-      case Action::kToggleEdgeTarget:
+      case kToggleEdgeTarget:
         s = context_->target_manager->IsEdgeTargetVisible() ?
             "Deactivate" : "Activate";
         return s + " the edge target";
 
-      case Action::kRadialLayout:
+      case kRadialLayout:
         if (GetSelection().GetCount() == 1U)
             return "Move the bottom center of the selected Model\n"
                 "to the point target and orient its +Y axis to\n"
@@ -691,26 +695,26 @@ std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
             return "Lay out the bottom centers of the selected models\n"
                 "along a circular arc using the point target radial layout";
 
-      case Action::kToggleAxisAligned:
+      case kToggleAxisAligned:
         return context_->command_manager->GetSessionState()->IsAxisAligned() ?
             "Transform models in their local coordinates" :
             "Transform models relative to global coordinate axes";
 
-      case Action::kToggleInspector:
+      case kToggleInspector:
         s = context_->scene_context->inspector->IsEnabled() ? "Close" : "Open";
         return s + " the Inspector for the primary selection";
 
-      case Action::kToggleBuildVolume:
+      case kToggleBuildVolume:
         s = hide_show(context_->scene_context->build_volume->IsEnabled());
         return s + " the build volume";
-      case Action::kToggleShowEdges:
+      case kToggleShowEdges:
         s = hide_show(context_->scene_context->root_model->AreEdgesShown());
         return s + " edges on all models";
 
-      case Action::kToggleLeftRadialMenu:
+      case kToggleLeftRadialMenu:
         s = hide_show(context_->scene_context->left_radial_menu->IsEnabled());
         return s + " the left radial menu";
-      case Action::kToggleRightRadialMenu:
+      case kToggleRightRadialMenu:
         s = hide_show(context_->scene_context->right_radial_menu->IsEnabled());
         return s + " the right radial menu";
 

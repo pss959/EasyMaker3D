@@ -284,14 +284,14 @@ void ShapeHelper_::GenerateTexCoords(SG::TriMeshShape::TexCoordsType type) {
 
 void ShapeHelper_::GetTextureDimensions_(SG::TriMeshShape::TexCoordsType type,
                                          int &dim0, int &dim1) {
-    typedef SG::TriMeshShape::TexCoordsType TCType;  // Shorthand.
     switch (type) {
-      case TCType::kTexCoordsXY: dim0 = 0; dim1 = 1; break;
-      case TCType::kTexCoordsXZ: dim0 = 0; dim1 = 2; break;
-      case TCType::kTexCoordsYX: dim0 = 1; dim1 = 0; break;
-      case TCType::kTexCoordsYZ: dim0 = 1; dim1 = 2; break;
-      case TCType::kTexCoordsZX: dim0 = 2; dim1 = 0; break;
-      case TCType::kTexCoordsZY: dim0 = 2; dim1 = 1; break;
+        using enum SG::TriMeshShape::TexCoordsType;  // Shorthand.
+      case kTexCoordsXY: dim0 = 0; dim1 = 1; break;
+      case kTexCoordsXZ: dim0 = 0; dim1 = 2; break;
+      case kTexCoordsYX: dim0 = 1; dim1 = 0; break;
+      case kTexCoordsYZ: dim0 = 1; dim1 = 2; break;
+      case kTexCoordsZX: dim0 = 2; dim1 = 0; break;
+      case kTexCoordsZY: dim0 = 2; dim1 = 1; break;
       default: ASSERT(false);
     }
 }

@@ -23,7 +23,7 @@
 /// an invalid, undefined Profile.
 ///
 /// \ingroup Math
-class Profile : public MathType {
+class Profile {
   public:
     /// Profile types.
     enum class Type {

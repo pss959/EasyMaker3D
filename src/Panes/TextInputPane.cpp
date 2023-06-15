@@ -588,57 +588,58 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
     //
 
     switch (action) {
-      case TextAction::kInsert:
-        ASSERTM(false, "TextAction::kInsert should use InsertText");
+        using enum TextAction;
+      case kInsert:
+        ASSERTM(false, "kInsert should use InsertText");
         break;
 
-      case TextAction::kToggleShift:  // No-op.
+      case kToggleShift:  // No-op.
         break;
 
-      case TextAction::kDeleteAll:
-      case TextAction::kDeleteNext:
-      case TextAction::kDeletePrevious:
-      case TextAction::kDeleteSelected:
-      case TextAction::kDeleteToEnd:
-      case TextAction::kDeleteToStart:
+      case kDeleteAll:
+      case kDeleteNext:
+      case kDeletePrevious:
+      case kDeleteSelected:
+      case kDeleteToEnd:
+      case kDeleteToStart:
         DeleteRange_(GetRangeForAction_(action));
         break;
 
-      case TextAction::kMoveNext:
+      case kMoveNext:
         MoveCursorBy_(false, 1);
         break;
-      case TextAction::kMovePrevious:
+      case kMovePrevious:
         MoveCursorBy_(true, 1);
         break;
-      case TextAction::kMoveToEnd:
+      case kMoveToEnd:
         MoveCursorBy_(false, 0);
         break;
-      case TextAction::kMoveToStart:
+      case kMoveToStart:
         MoveCursorBy_(true, 0);
         break;
 
-      case TextAction::kSelectAll:
-      case TextAction::kSelectNext:
-      case TextAction::kSelectNone:
-      case TextAction::kSelectPrevious:
-      case TextAction::kSelectToEnd:
-      case TextAction::kSelectToStart:
+      case kSelectAll:
+      case kSelectNext:
+      case kSelectNone:
+      case kSelectPrevious:
+      case kSelectToEnd:
+      case kSelectToStart:
         ChangeSelection_(GetRangeForAction_(action));
         break;
 
-      case TextAction::kUndo:
+      case kUndo:
         if (stack_.Undo())
             UpdateFromState_();
         break;
-      case TextAction::kRedo:
+      case kRedo:
         if (stack_.Redo())
             UpdateFromState_();
         break;
 
-      case TextAction::kAccept:
+      case kAccept:
         Finish_(true);
         break;
-      case TextAction::kCancel:
+      case kCancel:
         Finish_(false);
         break;
     }
