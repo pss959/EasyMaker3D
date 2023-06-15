@@ -324,6 +324,10 @@ Allocator* Allocatable::GetPlacementAllocator() {
   return GetHelper()->GetPlacementAllocator();
 }
 
+void Allocatable::ResetPlacementAllocator() {
+  GetHelper()->SetPlacementAllocator(nullptr);
+}
+
 void Allocatable::SetPlacementAllocator(Allocator* allocator) {
   GetHelper()->SetPlacementAllocator(allocator);
 }

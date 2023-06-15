@@ -23,6 +23,7 @@ limitations under the License.
 #include "ion/base/allocatable.h"
 #include "ion/base/allocationmanager.h"
 #include "ion/base/stlalloc/stlallocator.h"
+#include "ion/base/stlalloc/stlcontainer.h"
 
 namespace ion {
 namespace base {
@@ -47,7 +48,7 @@ namespace base {
 //   };
 
 template <typename T>
-class AllocDeque : public std::deque<T, StlAllocator<T> > {
+class AllocDeque : public std::deque<T, StlAllocator<T>>, public StlContainer {
  public:
   typedef StlAllocator<T> AllocType;
   typedef std::deque<T, AllocType> DequeType;

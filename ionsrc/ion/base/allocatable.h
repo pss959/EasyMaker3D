@@ -117,6 +117,9 @@ class ION_API Allocatable {
   // The placement delete operator does nothing, as usual.
   void operator delete(void* ptr, void* ptr2) {}
 
+  // Resets the placement allocator to null.
+  static void ResetPlacementAllocator();
+
  protected:
   // This constructor sets up the Allocator pointer. If this instance is created
   // on the stack then GetAllocator() will return a NULL Allocator since the
@@ -177,11 +180,11 @@ class ION_API Allocatable {
                             void* memory_ptr);
 
   // Sets the Allocator to use for all allocations of Allocatables on this
-  // thread until the next call to SetPlacementAllocator(NULL). This is required
+  // thread until the next call to ResetPlacementAllocator(). This is required
   // for placement new constructions initiated by STL containers to inform an
   // about-to-be-constructed Allocatable what Allocator created it. The
   // Allocator must have a lifetime at least as long as the next call to
-  // SetPlacementAllocator(NULL).
+  // ResetPlacementAllocator().
   //
   // This function is private since it is fairly dangerous. If used improperly
   // it could set the wrong Allocator for an Allocatable.

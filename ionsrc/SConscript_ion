@@ -73,6 +73,7 @@ ion_files = [
                    'settingmanager',
                    'spinmutex',
                    'staticsafedeclare',
+                   'stlalloc/stlcontainer',
                    'stringtable',
                    'stringutils',
                    'threadspawner',

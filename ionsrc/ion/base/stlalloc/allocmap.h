@@ -23,6 +23,7 @@ limitations under the License.
 #include "ion/base/allocatable.h"
 #include "ion/base/allocationmanager.h"
 #include "ion/base/stlalloc/stlallocator.h"
+#include "ion/base/stlalloc/stlcontainer.h"
 
 namespace ion {
 namespace base {
@@ -48,7 +49,8 @@ namespace base {
 
 template <typename K, typename V, typename Compare = std::less<K> >
 class AllocMap : public std::map<K, V, Compare,
-                                 StlAllocator<std::pair<const K, V> > > {
+                                 StlAllocator<std::pair<const K, V>>>,
+                 public StlContainer {
  public:
   typedef std::pair<const K, V> PairType;
   typedef StlAllocator<PairType> AllocType;

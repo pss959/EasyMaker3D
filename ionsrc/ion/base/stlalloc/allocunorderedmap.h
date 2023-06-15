@@ -23,6 +23,7 @@ limitations under the License.
 #include "ion/base/allocatable.h"
 #include "ion/base/allocationmanager.h"
 #include "ion/base/stlalloc/stlallocator.h"
+#include "ion/base/stlalloc/stlcontainer.h"
 
 namespace ion {
 namespace base {
@@ -51,7 +52,8 @@ template <typename Key,
           typename Hash = ::std::hash<Key>,
           typename Pred = ::std::equal_to<Key> >
 class AllocUnorderedMap : public std::unordered_map<
-  Key, Value, Hash, Pred, StlAllocator<std::pair<const Key, Value> > > {
+  Key, Value, Hash, Pred, StlAllocator<std::pair<const Key, Value>>>,
+                          public StlContainer {
  public:
   typedef std::pair<const Key, Value> PairType;
   typedef StlAllocator<PairType> AllocType;

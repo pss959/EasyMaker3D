@@ -23,6 +23,7 @@ limitations under the License.
 #include "ion/base/allocatable.h"
 #include "ion/base/allocationmanager.h"
 #include "ion/base/stlalloc/stlallocator.h"
+#include "ion/base/stlalloc/stlcontainer.h"
 
 namespace ion {
 namespace base {
@@ -47,7 +48,8 @@ namespace base {
 //   };
 
 template <typename T>
-class AllocVector : public std::vector<T, StlAllocator<T> > {
+class AllocVector : public std::vector<T, StlAllocator<T>>,
+                    public StlContainer {
  public:
   typedef StlAllocator<T> AllocType;
   typedef std::vector<T, AllocType> VectorType;

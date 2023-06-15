@@ -35,20 +35,19 @@ namespace base {
 template <typename T> class StlAllocator : public std::allocator<T> {
  public:
   using Pointer = typename std::allocator_traits<std::allocator<T>>::pointer;
-  using ConstPointer =
-      typename std::allocator_traits<std::allocator<T>>::const_pointer;
+
   using SizeType = typename std::allocator<T>::size_type;
 
   // These allocator traits affect the behavior of containers such as
   // AllocVector. During an assignment or swap, the StlAllocators will be
-  // swapped along with the container's memory.
+  // swapped along with the container's memory, but not on a copy.
   typedef std::true_type propagate_on_container_move_assignment;
   typedef std::true_type propagate_on_container_swap;
 
   explicit StlAllocator(const AllocatorPtr& allocator)
       : allocator_(allocator) {}
-  // This copy constructor cannot be explicit because older versions of STL
-  // seem to implicitly cast between allocators of different types.
+  // This copy constructor cannot be explicit because it messes up
+  // std::vector<bool>.
   template <typename U> StlAllocator(const StlAllocator<U>& a)
       : allocator_(a.allocator_) {}
 
@@ -69,103 +68,32 @@ template <typename T> class StlAllocator : public std::allocator<T> {
   // Returns the Allocator used by this.
   const AllocatorPtr& GetAllocator() const { return allocator_; }
 
-  Pointer allocate(SizeType n, ConstPointer hint = nullptr) {
+  Pointer allocate(SizeType n) {
+    const SizeType size = n * sizeof(T);
     DCHECK(allocator_.Get());
-    void* p = allocator_->AllocateMemory(n * sizeof(T));
+    void* p = allocator_->AllocateMemory(size);
+    // If T is derived from Allocatable or T is a key/value pair with an
+    // Allocatable value, call SetPlacementAllocator() so the Allocatables are
+    // created with the correct allocator.
+    if (std::is_base_of_v<Allocatable, T> || IsAllocatablePair<T>::value)
+      Allocatable::SetPlacementAllocator(allocator_.Get());
     return reinterpret_cast<Pointer>(p);
   }
   void deallocate(Pointer p, SizeType n) {
     allocator_->DeallocateMemory(p);
   }
 
-// C++20 no longer supports the construct() functions; need to fix this.
-#if XXXX
-  // Replace the construct() functions so that we can pass an Allocator to
-  // Allocatable types. The construct() functions inform the allocation system
-  // that there is a placement new allocation that might be an Allocatable. If
-  // the constructed type is trivially destructible, then construct() is
-  // forwarded to std::allocator, which just calls placement new(). Any
-  // non-trivially-destructible type that is default, copy, or move constructed,
-  // and thus might contain an Allocatable, will receive this container's
-  // Allocator.
-  void construct(Pointer p, const T& val) {
-    // Type that is void if T is trivially destructible, and T otherwise.
-    // Allocatables are not trivially destructible. This is a local type so that
-    // it is only instantiated when the function (as opposed to the class) is
-    // instantiated.
-    typedef typename std::conditional<HasTrivialDestructor<T>::value, void,
-                                      T>::type VoidOrT;
-    const VoidOrT* select_overload = nullptr;
-    construct_impl(select_overload, p, val);
-  }
-  template <typename... Args>
-  void construct(Pointer p, Args&&... args) {  // NOLINT
-    // Type that is void if T is trivially destructible, and T otherwise.
-    // Allocatables are not trivially destructible. This is a local type so that
-    // it is only instantiated when the function (as opposed to the class) is
-    // instantiated.
-    typedef typename std::conditional<HasTrivialDestructor<T>::value, void,
-                                      T>::type VoidOrT;
-    const VoidOrT* select_overload = nullptr;
-    construct_impl(select_overload, p, std::forward<Args>(args)...);  // NOLINT
-  }
-  template <class U, class... Args>
-  void construct(U* p, Args&&... args) {  // NOLINT
-    // Type that is void if U is trivially destructible, and U otherwise.
-    // Allocatables are not trivially destructible. This is a local type so that
-    // it
-    // is only instantiated when the function (as opposed to the class) is
-    // instantiated.
-    typedef typename std::conditional<HasTrivialDestructor<U>::value, void,
-                                      U>::type VoidOrU;
-    const VoidOrU* select_overload = nullptr;
-    construct_impl(select_overload, p, std::forward<Args>(args)...);  // NOLINT
-  }
-#endif
-
-  template <typename U>
-  struct rebind {
-    typedef StlAllocator<U> other;
-  };
-
  private:
   StlAllocator();  // Not default constructible.
 
-#if XXXX
-  // These just call the default construct function from std::allocator.
-  void construct_impl(const void* dummy, Pointer p, const T& val) {
-    std::allocator<T>::construct(p, val);
-  }
-  template <typename... Args>
-  void construct_impl(const void* dummy, Pointer p,
-                      Args&&... args) {  // NOLINT
-    std::allocator<T>::construct(p, std::forward<Args>(args)...);  // NOLINT
-  }
-  template <class U, class... Args>
-  void construct_impl(const void* dummy, U* p, Args&&... args) {  // NOLINT
-    std::allocator<T>::construct(p, std::forward<Args>(args)...);  // NOLINT
-  }
-
-  // These set allocator_ as the placement Allocator to be used by
-  // Allocatable-derived types.
-  void construct_impl(const T* dummy, Pointer p, const T& val) {
-    Allocatable::SetPlacementAllocator(allocator_.Get());
-    std::allocator<T>::construct(p, val);
-    Allocatable::SetPlacementAllocator(nullptr);
-  }
-  template <typename... Args>
-  void construct_impl(const T* dummy, Pointer p, Args&&... args) {  // NOLINT
-    Allocatable::SetPlacementAllocator(allocator_.Get());
-    std::allocator<T>::construct(p, std::forward<Args>(args)...);  // NOLINT
-    Allocatable::SetPlacementAllocator(nullptr);
-  }
-  template <class U, class... Args>
-  void construct_impl(const U* dummy, U* p, Args&&... args) {  // NOLINT
-    Allocatable::SetPlacementAllocator(allocator_.Get());
-    std::allocator<T>::construct(p, std::forward<Args>(args)...);  // NOLINT
-    Allocatable::SetPlacementAllocator(nullptr);
-  }
-#endif
+  // This is used to test the templated type to see if it is an std::pair with
+  // an Allocatable key.
+  template <typename U> struct IsAllocatablePair : public std::false_type {};
+  template <typename U, typename V> struct IsAllocatablePair<std::pair<U, V>>
+      : public std::is_base_of<Allocatable, V> {};
+  template <typename U, typename V>
+  struct IsAllocatablePair<std::_Rb_tree_node<std::pair<U, V>>>
+      : public std::is_base_of<Allocatable, V> {};
 
   AllocatorPtr allocator_;
   template <typename U> friend class StlAllocator;
@@ -178,7 +106,6 @@ template <typename T, int N>
 class StlInlinedAllocator : public StlAllocator<T> {
  public:
   typedef typename StlAllocator<T>::Pointer Pointer;
-  typedef typename StlAllocator<T>::ConstPointer ConstPointer;
   typedef typename StlAllocator<T>::SizeType SizeType;
   explicit StlInlinedAllocator(const AllocatorPtr& allocator)
       : StlAllocator<T>(allocator), current_(nullptr), inlined_(true) {}
@@ -195,7 +122,7 @@ class StlInlinedAllocator : public StlAllocator<T> {
       : StlAllocator<T>(a.GetAllocator()),
         current_(nullptr),
         inlined_(a.inlined_) {}
-  Pointer allocate(SizeType n, ConstPointer hint = nullptr) {
+  Pointer allocate(SizeType n) {
     // Return the local storage if we can, otherwise mark this as not inlined
     // and do a normal allocation.
     if (n <= N && inlined_) {
@@ -206,7 +133,7 @@ class StlInlinedAllocator : public StlAllocator<T> {
       return reinterpret_cast<Pointer>(current_);
     } else {
       inlined_ = false;
-      return this->StlAllocator<T>::allocate(n, hint);
+      return this->StlAllocator<T>::allocate(n);
     }
   }
   void deallocate(Pointer p, SizeType n) {
