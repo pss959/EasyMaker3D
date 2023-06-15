@@ -8,7 +8,9 @@
 /// insertion operator for convenience.
 ///
 /// \ingroup Math
-struct MathType {};
+struct MathType {
+    bool operator==(const MathType &t) const = default;
+};
 
 /// Output operator for anything derived from MathType.
 template <typename T>

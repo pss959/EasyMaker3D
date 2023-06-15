@@ -120,10 +120,7 @@ class Profile : public MathType {
     ///@}
 
     /// Equality operator.
-    bool operator==(const Profile &p) const;
-
-    /// Inequality operator.
-    bool operator!=(const Profile &p) const { return ! (p == *this); }
+    bool operator==(const Profile &p) const = default;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

@@ -154,12 +154,7 @@ class FilePath : private std::filesystem::path {
     operator bool() const { return ! empty(); }
 
     /// Equality testing.
-    bool operator==(const FilePath &p) const {
-        return static_cast<const BaseType_>(p) ==
-            static_cast<const BaseType_>(*this);
-    }
-    /// Inequality testing.
-    bool operator!=(const FilePath &p) const { return ! (p == *this); }
+    bool operator==(const FilePath &p) const = default;
 
   private:
     using BaseType_ = std::filesystem::path;

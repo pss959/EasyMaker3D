@@ -98,12 +98,6 @@ void Profile::RemovePoint(size_t index) {
     points_.erase(points_.begin() + index);
 }
 
-bool Profile::operator==(const Profile &p) const {
-    return p.type_ == type_ &&
-        p.min_count_ == min_count_ &&
-        p.points_ == points_;
-}
-
 std::string Profile::ToString() const {
     return std::string("PROF[") + Util::EnumName(type_) +
         " MN=" + Util::ToString(min_count_) + " <" +

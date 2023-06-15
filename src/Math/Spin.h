@@ -17,13 +17,7 @@ struct Spin : public MathType {
     float    offset = 0;       ///< Offset per 360 degrees; defaults to 0.
 
     /// Equality operator.
-    bool operator==(const Spin &s) const {
-        return s.center == center && s.axis == axis &&
-            s.angle == angle && s.offset == offset;
-    }
-
-    /// Inequality operator.
-    bool operator!=(const Spin &s) const { return ! (s == *this); }
+    bool operator==(const Spin &s) const = default;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

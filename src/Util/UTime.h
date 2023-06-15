@@ -24,12 +24,8 @@ class UTime {
     static UTime Now();
 
     /// UTime comparisons.
-    bool operator==(const UTime &other) { return time_ == other.time_; }
-    bool operator!=(const UTime &other) { return time_ != other.time_; }
-    bool operator<(const  UTime &other) { return time_ <  other.time_; }
-    bool operator>(const  UTime &other) { return time_ >  other.time_; }
-    bool operator<=(const UTime &other) { return time_ <= other.time_; }
-    bool operator>=(const UTime &other) { return time_ >= other.time_; }
+    bool operator==(const UTime &other)  const = default;
+    auto operator<=>(const UTime &other) const = default;
 
     /// Returns the duration from the given time to this one in seconds.
     double SecondsSince(const UTime &start) const;

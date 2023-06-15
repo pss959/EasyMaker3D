@@ -23,12 +23,7 @@ struct Taper : public MathType {
     static bool IsValidProfile(const Profile &prof);
 
     /// Equality operator.
-    bool operator==(const Taper &t) const {
-        return t.axis == axis && t.profile == profile;
-    }
-
-    /// Inequality operator.
-    bool operator!=(const Taper &t) const { return ! (t == *this); }
+    bool operator==(const Taper &t) const = default;
 
     /// Returns the default Profile used for a Taper: from (0,1) to (1,0).
     static Profile CreateDefaultProfile();

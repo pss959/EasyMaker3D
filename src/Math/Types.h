@@ -90,6 +90,9 @@ struct Color : public Vector4f, public MathType {
     /// storing the results in this instance. Returns false on error.
     bool FromHexString(const std::string &str);
 
+    /// Equality operator.
+    bool operator==(const Color &c) const = default;
+
     std::string ToString() const { return ToHexString(); }
 };
 
@@ -145,6 +148,9 @@ struct Bounds : public Range3f, public MathType {
     /// Stores all 8 corners of the Bounds in the given array.
     void GetCorners(Point3f corners[8]) const;
 
+    /// Equality operator.
+    bool operator==(const Bounds &b) const = default;
+
     /// Converts to a string to help with debugging. If use_min_max is true,
     /// the min/max values are printed rather than the center and size.
     std::string ToString(bool use_min_max = false) const;
@@ -197,14 +203,7 @@ struct Plane : public MathType {
     Vector4f GetCoefficients() const;
 
     /// Equality operator.
-    bool operator==(const Plane &p) const {
-        return p.distance == distance && p.normal == normal;
-    }
-
-    /// Inequality operator.
-    bool operator!=(const Plane &p) const {
-        return ! (p == *this);
-    }
+    bool operator==(const Plane &p) const = default;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

@@ -122,7 +122,7 @@ base_env = Environment(
     RUN_PROGRAM = '',
 
     COMMON_FLAGS = [
-        '--std=c++20',
+        '--std=c++23',
         '-Wall',
         '-Werror',
         # Works around a compiler bug in std::char_traits: __builtin_memcpy may
@@ -159,7 +159,7 @@ if platform == 'windows':
         Exit(-1)
     base_env.Replace(
         MSYS2_HOME  = environ['MSYS2_HOME'],
-        RUN_BASH    = '$MSYS2_HOME//usr/bin/bash.exe',
+        RUN_BASH    = '$MSYS2_HOME/usr/bin/bash.exe',
         RUN_PROGRAM = f'$RUN_BASH bin/runwinprogram.bash {mode}',
     )
     base_env.Append(
