@@ -1,7 +1,7 @@
 #include <Util/StackTrace.h>
 
 // Platform-dependent headers.
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
 #  include <windows.h>
 #  include <DbgHelp.h>
 #else
@@ -18,7 +18,7 @@
 
 namespace Util {
 
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
 
 // ----------------------------------------------------------------------------
 // Windows version.

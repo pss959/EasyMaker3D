@@ -53,7 +53,7 @@
 // ----------------------------------------------------------------------------
 
 static void HandleEx_(const std::string &when, const std::exception &ex) {
-#if defined(RELEASE_BUILD)
+#if RELEASE_BUILD
     std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
 #else
     if (const auto *aex = dynamic_cast<const AssertException *>(&ex)) {

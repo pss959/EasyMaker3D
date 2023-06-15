@@ -16,7 +16,7 @@ class OutputMuter {
     OutputMuter() {
         saved_stdout_ = *stdout;
         saved_stderr_ = *stderr;
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
         auto out = fopen("nul", "w");
 #else
         auto out = fopen("/dev/null", "w");

@@ -1,6 +1,6 @@
 #include "VR/VRContext.h"
 
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
 #  include "openvr-fixed.h"
 #else
 #  define __stdcall

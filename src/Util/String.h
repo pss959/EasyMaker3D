@@ -93,7 +93,7 @@ bool StringToInteger(const std::string &s, int &n);
 /// Platform-specific C++ name demangling. For use with typeid(), for example.
 std::string Demangle(const std::string &mangled_name);
 
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
 /// Helper for annoying wide string conversion on Windows.
 inline std::string FromWString(const std::wstring &w) {
     return std::string(w.begin(), w.end());

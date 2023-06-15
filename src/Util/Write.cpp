@@ -21,7 +21,7 @@ bool WriteString(const FilePath &path, const std::string &s) {
 
 bool WriteImage(const FilePath &path, const ion::gfx::Image &image,
                 bool flip_vertically) {
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
     std::cerr << "*** Util::WriteImage() not implemented on Windows!\n";
     return false;
 #else

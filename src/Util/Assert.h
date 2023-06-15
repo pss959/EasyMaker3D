@@ -12,7 +12,7 @@
 
 // ============================================================================
 // Assertions are turned off in release builds.
-#if defined(RELEASE_BUILD)
+#if RELEASE_BUILD
 #  define ASSERT(expr)
 #  define ASSERTM(expr, msg)
 

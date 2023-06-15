@@ -1,4 +1,4 @@
-#if defined(ION_PLATFORM_MAC)
+#ifdef ION_PLATFORM_MAC
 #include <mach-o/dyld.h>  // For _NSGetExecutablePath()
 #endif
 
@@ -109,7 +109,7 @@ FilePath CrashHandler_::GetCrashFilePath_() {
 /// This is used for release builds on the Mac to make sure the working
 /// directory is where the app is, allowing the resources to be loaded.
 static void SetWorkingDirectory_() {
-#if defined(ION_PLATFORM_MAC)
+#ifdef ION_PLATFORM_MAC
     // On the Mac, the executable is run from some unknown place where the DMG
     // was installed. (Or something - not really clear.) Get the executable
     // path to allow resource access.

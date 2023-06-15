@@ -1,11 +1,11 @@
 #include "Util/URL.h"
 
-#if defined(ION_PLATFORM_LINUX)
+#ifdef ION_PLATFORM_LINUX
 #include <cstdlib>
 
-#elif defined(ION_PLATFORM_MAC)
+#elifdef ION_PLATFORM_MAC
 
-#elif defined(ION_PLATFORM_WINDOWS)
+#elifdef ION_PLATFORM_WINDOWS
 #include <windows.h>
 #include <shellapi.h>
 
@@ -18,17 +18,17 @@ namespace Util {
 
 void OpenURL(const std::string &url) {
 
-#if defined(ION_PLATFORM_LINUX)
+#ifdef ION_PLATFORM_LINUX
     const std::string cmd = "xdg-open " + url;
     if (std::system(cmd.c_str()) < 0) {
         ASSERTM(false, "std::system() failed");
     }
 
-#elif defined(ION_PLATFORM_MAC)
+#elifdef ION_PLATFORM_MAC
     const std::string cmd = "open " + url;
     std::system(cmd.c_str());
 
-#elif defined(ION_PLATFORM_WINDOWS)
+#elifdef ION_PLATFORM_WINDOWS
     ShellExecute(nullptr, nullptr, ToWString(url).c_str(),
                  nullptr, nullptr, SW_SHOWNORMAL);
 

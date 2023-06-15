@@ -7,7 +7,7 @@
 #include <ion/portgfx/callbackcontext.h>
 
 // Allow access to native types in glfw3.
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
 #  define GLFW_EXPOSE_NATIVE_WIN32
 #  include <GLFW/glfw3native.h>
 #endif
@@ -168,7 +168,7 @@ GLFWViewer::~GLFWViewer() {
 bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     ASSERT(! window_);
 
-#if defined(ION_PLATFORM_MAC)
+#ifdef ION_PLATFORM_MAC
     // Do NOT change directory on Mac. Not sure why this is not the default.
     glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
 #endif

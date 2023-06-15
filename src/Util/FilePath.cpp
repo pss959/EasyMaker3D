@@ -1,6 +1,6 @@
 #include "Util/FilePath.h"
 
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
 #include <fileapi.h>
 #endif
 
@@ -21,7 +21,7 @@ namespace {
 
 /// Platform-dependent path construction.
 static inline FilePath FromPath_(const std::filesystem::path &path) {
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
     return FilePath(path.string());
 #else
     return FilePath(path);
@@ -56,7 +56,7 @@ std::string FilePath::ToString() const {
 }
 
 std::string FilePath::ToNativeString() const {
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
     return FilePath(*this).make_preferred().string();
 #else
     return native();
@@ -76,7 +76,7 @@ bool FilePath::IsAbsolute() const {
 }
 
 bool FilePath::IsHidden() const {
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
     return Exists() && (GetFileAttributes(Util::ToWString(ToString()).c_str()) &
                         FILE_ATTRIBUTE_HIDDEN);
 #else
@@ -220,7 +220,7 @@ FilePath FilePath::GetFullResourcePath(const std::string &subdir,
 }
 
 FilePath FilePath::GetHomeDirPath() {
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
     const std::string kVarName = "USERPROFILE";
 #else
     const std::string kVarName = "HOME";
@@ -231,7 +231,7 @@ FilePath FilePath::GetHomeDirPath() {
 }
 
 FilePath FilePath::GetSettingsDirPath(const std::string &app_name) {
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
     FilePath path = GetEnvVar_("APPDATA");
 #else
     FilePath path = Join(FilePath(GetEnvVar_("HOME")), FilePath(".config"));
@@ -248,7 +248,7 @@ FilePath FilePath::GetTempFilePath() {
 }
 
 std::string FilePath::GetSeparator() {
-#if defined(ION_PLATFORM_WINDOWS)
+#ifdef ION_PLATFORM_WINDOWS
     return Util::FromWString(std::wstring(1, preferred_separator));
 #else
     return std::string(1, preferred_separator);

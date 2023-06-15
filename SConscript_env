@@ -123,6 +123,7 @@ base_env = Environment(
 
     COMMON_FLAGS = [
         '--std=c++23',
+        # '-fmodules-ts',  # Required to use modules. g++ is NOT ready yet.
         '-Wall',
         '-Werror',
         # Works around a compiler bug in std::char_traits: __builtin_memcpy may
