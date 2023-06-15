@@ -1,6 +1,7 @@
 #include "Math/Snap2D.h"
 
 #include <cmath>
+#include <numbers>
 
 #include <ion/math/vectorutils.h>
 
@@ -77,8 +78,8 @@ void Snap2D::SnapPointToDirection_(Direction direction,
         break;
       case kNE: case kNW: case kSE: case kSW: {
           // Compute the side of a 45-degree right triangle.
-          const float len =
-              ion::math::Length(point_to_snap - fixed_point) / std::sqrt(2);
+          const float len = ion::math::Length(point_to_snap - fixed_point) /
+              std::numbers::sqrt2;
           point_to_snap = fixed_point + len * GetVector_(direction);
           break;
       }

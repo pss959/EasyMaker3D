@@ -518,7 +518,7 @@ void Application_::IntersectCenterRay_() {
 // Mainline.
 // ----------------------------------------------------------------------------
 
-static const char kUsageString[] =
+constinit const char kUsageString[] =
 R"(nodeviewer: a test program for viewing nodes
 
     Usage:

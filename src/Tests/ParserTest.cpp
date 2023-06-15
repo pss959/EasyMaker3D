@@ -153,7 +153,7 @@ class ParserTest : public SceneTestBase {
 // ----------------------------------------------------------------------------
 
 // String used to init all fields in a Simple instance.
-static const std::string kFullSimpleInput =
+constinit const char kFullSimpleInput[] =
     "# Full-line comment\n"
     "Simple \"TestObj\" {\n"
     "  bool_val:  true,\n"

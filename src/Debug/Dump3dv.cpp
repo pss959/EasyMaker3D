@@ -15,14 +15,14 @@ namespace {
 
 /// \name Colors.
 ///@{
-static const std::string kEdgeColor{"1 1 0 1"};
-static const std::string kEdgeLabelColor{"1 1 0 1"};
-static const std::string kFaceLabelColor{".7 .9 .8 1"};
-static const std::string kHighlightEdgeColor{".4 .9 1 1"};
-static const std::string kHighlightEdgeLabelColor{"1 .8 .8 1"};
-static const std::string kHighlightFaceLabelColor{"1 .5 .9 1"};
-static const std::string kHighlightVertexLabelColor{"1 .5 .5 1"};
-static const std::string kVertexLabelColor{"1 1 1 1"};
+constinit const std::string kEdgeColor{"1 1 0 1"};
+constinit const std::string kEdgeLabelColor{"1 1 0 1"};
+constinit const std::string kFaceLabelColor{".7 .9 .8 1"};
+constinit const std::string kHighlightEdgeColor{".4 .9 1 1"};
+constinit const std::string kHighlightEdgeLabelColor{"1 .8 .8 1"};
+constinit const std::string kHighlightFaceLabelColor{"1 .5 .9 1"};
+constinit const std::string kHighlightVertexLabelColor{"1 .5 .5 1"};
+constinit const std::string kVertexLabelColor{"1 1 1 1"};
 ///@}
 
 /// Outputs a Point3f with rounded precision.

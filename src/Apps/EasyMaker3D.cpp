@@ -181,7 +181,7 @@ static bool RunApp_(const Application::Options &options) {
 // Mainline.
 // ----------------------------------------------------------------------------
 
-static const char kUsageString[] =
+constinit const char kUsageString[] =
 R"(<NAME>: A VR-enabled application for creating models for 3D printing.
     Usage:
       <NAME> [--fullscreen] [--klog=<klog_string>] [--novr] [--remote] [--touch]

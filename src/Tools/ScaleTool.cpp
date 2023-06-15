@@ -1,6 +1,7 @@
 #include "Tools/ScaleTool.h"
 
 #include <limits>
+#include <numbers>
 
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
@@ -177,7 +178,7 @@ void ScaleTool::UpdateGeometry_() {
     // they are visible when attached to a Box.
     const float kLengthScale = 1.1f;
     const Vector3f dim_scales =
-        kLengthScale * Vector3f(1, std::sqrt(2), std::sqrt(3));
+        kLengthScale * Vector3f(1, std::numbers::sqrt2, std::numbers::sqrt3);
 
     // Compute a reasonable scale for the handles based on the Model size.
     const float kHandleSizeFraction  = .25f;

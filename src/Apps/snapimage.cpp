@@ -65,7 +65,7 @@ void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,
 // Mainline.
 // ----------------------------------------------------------------------------
 
-static const char kUsageString[] =
+constinit const char kUsageString[] =
 R"(snapimage: Reads a script with instructions on how to create snapshot images
  for public documentation. See SnapScript.h for script details.
     Usage:

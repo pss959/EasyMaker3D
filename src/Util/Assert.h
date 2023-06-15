@@ -6,6 +6,7 @@
 /// \ingroup Utility
 
 #include <string>
+#include <source_location>
 
 #include "Util/ExceptionBase.h"
 
@@ -23,18 +24,18 @@
 /// \ingroup Utility
 class AssertException : public ExceptionBase {
   public:
-    AssertException(const std::string &expr, const std::string &file,
-                    int line, const std::string &msg) :
-        ExceptionBase(BuildMessage_(expr, file, line, msg)) {}
+    AssertException(const std::string &expr, const std::source_location &loc,
+                    const std::string &msg) :
+        ExceptionBase(BuildMessage_(expr, loc, msg)) {}
   private:
     static std::string BuildMessage_(const std::string &expr,
-                                     const std::string &file,
-                                     int line, const std::string &msg);
+                                     const std::source_location &loc,
+                                     const std::string &msg);
 };
 
    /// Additional Assert macro that takes an optional message.
 #  define ASSERTM(expr, msg) if (! (expr)) \
-        throw AssertException(#expr, __FILE__, __LINE__, msg)
+        throw AssertException(#expr, std::source_location::current(), msg)
 
 /// Conventional assert.
 #  define ASSERT(expr) ASSERTM((expr), "")

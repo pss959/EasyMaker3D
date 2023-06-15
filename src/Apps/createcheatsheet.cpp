@@ -22,7 +22,7 @@
 // Helpers.
 // ----------------------------------------------------------------------------
 
-static const char kHeaderString[] =
+constinit const char kHeaderString[] =
 R"(.. _cheat-sheet:
 
 |appname| Cheat Sheet
