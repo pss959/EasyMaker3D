@@ -30,20 +30,6 @@ extern AppType app_type;
 /// initialized to false and is set to true at the beginning of the main app.
 extern bool is_in_main_app;
 
-/// Convenience to cast an std::shared_ptr of a derived class to an
-/// std::shared_ptr of a base class.
-template <typename Base, typename Derived>
-std::shared_ptr<Base> CastToBase(const std::shared_ptr<Derived> &ptr) {
-    return std::dynamic_pointer_cast<Base>(ptr);
-}
-
-/// Convenience to cast an std::shared_ptr of a base class to an
-/// std::shared_ptr of a derived class.
-template <typename Derived, typename Base>
-std::shared_ptr<Derived> CastToDerived(const std::shared_ptr<Base> &ptr) {
-    return std::dynamic_pointer_cast<Derived>(ptr);
-}
-
 /// Convenience that returns true if the given std::shared_ptr holds a pointer
 /// to an instance of the given class.
 template <typename Want, typename Have>

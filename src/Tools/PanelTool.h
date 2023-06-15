@@ -27,7 +27,7 @@ class PanelTool : public Tool {
     template <typename T> T & GetTypedPanel() const {
         ASSERT(panel_);
         ASSERT(Util::IsA<T>(panel_));
-        return *Util::CastToDerived<T>(panel_);
+        return *std::dynamic_pointer_cast<T>(panel_);
     }
 
     /// Derived classes must implement to return the name of the type of Panel

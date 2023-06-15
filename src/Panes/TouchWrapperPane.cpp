@@ -38,6 +38,6 @@ std::vector<WidgetPtr> TouchWrapperPane::FindWrappedWidgets_() const {
     SG::NodePtr tp = Util::CreateTemporarySharedPtr<SG::Node>(cp);
     std::vector<WidgetPtr> widgets;
     for (auto &node: SG::FindNodes(tp, is_widget))
-        widgets.push_back(Util::CastToDerived<Widget>(node));
+        widgets.push_back(std::dynamic_pointer_cast<Widget>(node));
     return widgets;
 }

@@ -11,7 +11,6 @@
 #include "SG/CoordConv.h"
 #include "SG/Intersector.h"
 #include "SG/Search.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 #include "Widgets/ClickableWidget.h"
 
@@ -112,7 +111,8 @@ void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 
 void GripTracker::FillClickInfo(ClickInfo &info) {
     info.device = GetDevice();
-    info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
+    info.widget =
+        std::dynamic_pointer_cast<ClickableWidget>(current_widget_).get();
 }
 
 void GripTracker::Reset() {

@@ -21,7 +21,6 @@
 #include "SG/ShadowPass.h"
 #include "SG/TextNode.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/String.h"
 #include "Util/Write.h"

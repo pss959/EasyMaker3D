@@ -34,14 +34,15 @@ SelPath::SelPath(const SG::NodePath &node_path) {
 
 ModelPtr SelPath::GetModel() const {
     ASSERT(! empty());
-    ModelPtr model = Util::CastToDerived<Model>(back());
+    ModelPtr model = std::dynamic_pointer_cast<Model>(back());
     ASSERT(model);
     return model;
 }
 
 ParentModelPtr SelPath::GetParentModel() const {
     ASSERT(size() >= 2U);
-    ParentModelPtr parent = Util::CastToDerived<ParentModel>(at(size() - 2));
+    ParentModelPtr parent =
+        std::dynamic_pointer_cast<ParentModel>(at(size() - 2));
     ASSERT(parent);
     return parent;
 }
@@ -49,7 +50,7 @@ ParentModelPtr SelPath::GetParentModel() const {
 void SelPath::Validate() const {
     ASSERT(! empty());
     ASSERT(Util::IsA<RootModel>(front()));
-    ASSERT(Util::CastToDerived<Model>(back()));
+    ASSERT(std::dynamic_pointer_cast<Model>(back()));
 }
 
 std::vector<ModelPtr> SelPath::GetAllModels(bool skip_root) const {
@@ -57,7 +58,7 @@ std::vector<ModelPtr> SelPath::GetAllModels(bool skip_root) const {
     std::vector<ModelPtr> models;
     models.reserve(size());
     for (size_t i = skip_root ? 1 : 0; i < size(); ++i) {
-        ModelPtr model = Util::CastToDerived<Model>((*this)[i]);
+        ModelPtr model = std::dynamic_pointer_cast<Model>((*this)[i]);
         ASSERT(model);
         models.push_back(model);
     }
@@ -83,7 +84,7 @@ SG::CoordConv SelPath::GetCoordConv() const {
 
 SelPath SelPath::GetPathToChild(const ModelPtr &child) const {
     ASSERT(Util::IsA<ParentModel>(GetModel()));
-    ASSERT(Util::CastToDerived<ParentModel>(
+    ASSERT(std::dynamic_pointer_cast<ParentModel>(
                GetModel())->GetChildModelIndex(child) >= 0);
     SelPath path_to_child = *this;
     path_to_child.push_back(child);

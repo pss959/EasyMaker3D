@@ -10,7 +10,7 @@ bool BevelTool::CanAttach(const Selection &sel) const {
 }
 
 void BevelTool::InitPanel() {
-    auto model = Util::CastToDerived<BeveledModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<BeveledModel>(GetModelAttachedTo());
     ASSERT(model);
     GetTypedPanel<BevelToolPanel>().SetBevel(model->GetBevel());
 }

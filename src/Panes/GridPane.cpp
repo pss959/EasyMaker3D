@@ -5,7 +5,7 @@
 
 #include "Math/Linear.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
+#include "Util/String.h"
 
 void GridPane::AddFields() {
     AddField(row_count_.Init("row_count",           1));

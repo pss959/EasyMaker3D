@@ -23,7 +23,6 @@
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 #include "Widgets/SpinWidget.h"
 
@@ -69,7 +68,7 @@ void SpinBasedTool::UpdateGripInfo(GripInfo &info) {
         widget          = spin_widget_->GetSubWidget("Ring");
         info.guide_type = GripGuideType::kRotation;
     }
-    info.widget = Util::CastToDerived<ClickableWidget>(widget);
+    info.widget = std::dynamic_pointer_cast<ClickableWidget>(widget);
     ASSERT(info.widget);
     info.target_point = ToWorld(info.widget, Point3f::Zero());
 }
@@ -230,7 +229,7 @@ bool SpinBasedTool::SnapCenter_() {
     }
     else {
         ConvertedModelPtr cm =
-            Util::CastToDerived<ConvertedModel>(GetModelAttachedTo());
+            std::dynamic_pointer_cast<ConvertedModel>(GetModelAttachedTo());
         ASSERT(cm);
         // Convert the operand Model's bounds into stage coordinates, which
         // requires undoing the offset translation from the ConvertedModel.

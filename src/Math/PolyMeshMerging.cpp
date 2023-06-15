@@ -11,7 +11,6 @@
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshBuilder.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 namespace {
 

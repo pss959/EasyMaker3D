@@ -15,7 +15,6 @@
 #include "SG/Tube.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 
 void Controller::SetHand(Hand hand) {
@@ -57,7 +56,8 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     ASSERT(! block->GetTextures().empty());
     const auto &tex = block->GetTextures()[0];
     ASSERT(tex);
-    auto proc_image = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+    auto proc_image =
+        std::dynamic_pointer_cast<SG::ProceduralImage>(tex->GetImage());
     ASSERT(proc_image);
     proc_image->SetFunction([&](){ return custom_model.texture_image; });
     proc_image->RegenerateImage();
@@ -248,7 +248,7 @@ void Controller::PostSetUpIon() {
 
     // Add each of its children as a guide.
     for (auto &child: guide_parent_->GetChildren()) {
-        GripGuidePtr guide = Util::CastToDerived<GripGuide>(child);
+        GripGuidePtr guide = std::dynamic_pointer_cast<GripGuide>(child);
         ASSERT(guide);
         guides_.push_back(guide);
     }
@@ -309,8 +309,8 @@ void Controller::PositionGuides_() {
     const auto cust = SG::FindNodeUnderNode(*this, "CustomModel");
     if (cust->IsEnabled()) {
         ASSERT(! cust->GetShapes().empty());
-        const auto shape =
-            Util::CastToDerived<SG::MutableTriMeshShape>(cust->GetShapes()[0]);
+        const auto shape = std::dynamic_pointer_cast<SG::MutableTriMeshShape>(
+            cust->GetShapes()[0]);
         ASSERT(shape);
         const auto &mesh = shape->GetMesh();
         target_point = mesh.points[0];

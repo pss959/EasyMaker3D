@@ -6,7 +6,6 @@
 #include "Base/Memory.h"
 #include "Parser/Field.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 namespace Parser {
 
@@ -77,7 +76,7 @@ class Object {
     std::shared_ptr<T> CloneTyped(bool is_deep,
                                   const std::string &name = "") const {
         std::shared_ptr<T> clone =
-            Util::CastToDerived<T>(Clone_(name, is_deep, true));
+            std::dynamic_pointer_cast<T>(Clone_(name, is_deep, true));
         ASSERT(clone);
         return clone;
     }

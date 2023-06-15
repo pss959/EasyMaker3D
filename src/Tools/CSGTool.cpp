@@ -12,7 +12,7 @@ bool CSGTool::CanAttach(const Selection &sel) const {
 }
 
 void CSGTool::InitPanel() {
-    auto model = Util::CastToDerived<CSGModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<CSGModel>(GetModelAttachedTo());
     ASSERT(model);
     GetTypedPanel<CSGToolPanel>().SetOperation(model->GetOperation());
 }

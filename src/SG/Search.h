@@ -7,7 +7,6 @@
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 /// \file
 /// \name Graph Search Utilities
@@ -60,7 +59,7 @@ NodePtr FindNodeUnderNode(const Node &root, const std::string &name,
 template <typename T> std::shared_ptr<T> FindTypedNodeInScene(
     const Scene &scene, const std::string &name) {
     NodePtr node = FindNodeInScene(scene, name, false);
-    std::shared_ptr<T> typed_node = Util::CastToDerived<T>(node);
+    std::shared_ptr<T> typed_node = std::dynamic_pointer_cast<T>(node);
     ASSERTM(typed_node, "Typed Node '" + name + "' not found in scene");
     return typed_node;
 }
@@ -69,7 +68,7 @@ template <typename T> std::shared_ptr<T> FindTypedNodeInScene(
 /// the templated type (derived from Node). This always asserts on failure.
 template <typename T> std::shared_ptr<T> FindTypedNodeUnderNode(
     const Node &root, const std::string &name) {
-    std::shared_ptr<T> typed_node = Util::CastToDerived<T>(
+    std::shared_ptr<T> typed_node = std::dynamic_pointer_cast<T>(
         FindNodeUnderNode(root, name, false));
     ASSERTM(typed_node, "Typed Node '" + name + "' not found under " +
             root.GetDesc());
@@ -87,7 +86,7 @@ NodePtr FindFirstTypedNodeUnderNode(const Node &root,
 /// failure.
 template <typename T> std::shared_ptr<T> FindFirstTypedNodeUnderNode(
     const Node &root, const std::string &type_name) {
-    std::shared_ptr<T> typed_node = Util::CastToDerived<T>(
+    std::shared_ptr<T> typed_node = std::dynamic_pointer_cast<T>(
         FindFirstTypedNodeUnderNode(root, type_name));
     ASSERTM(typed_node, "Node of type '" + type_name + "' not found under " +
             root.GetDesc());
@@ -116,7 +115,7 @@ ShapePtr FindShapeInNode(const Node &node, const std::string &name);
 template <typename T> std::shared_ptr<T> FindTypedShapeInNode(
     const Node &node, const std::string &name) {
     std::shared_ptr<T> shape =
-        Util::CastToDerived<T>(FindShapeInNode(node, name));
+        std::dynamic_pointer_cast<T>(FindShapeInNode(node, name));
     ASSERTM(shape, "Typed Shape with name '" + name + "' not found in " +
             node.GetDesc());
     return shape;

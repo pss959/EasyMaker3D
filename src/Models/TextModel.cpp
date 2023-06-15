@@ -8,6 +8,7 @@
 #include "Math/TextUtils.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+#include "Util/General.h"
 #include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------

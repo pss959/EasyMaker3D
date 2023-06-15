@@ -116,7 +116,7 @@ static bool CanDeleteModels_(const Selection &sel) {
         // the Model's parent, and the Model.
         ASSERT(sel_path.size() >= 3U);
         auto parent = sel_path[sel_path.size() - 2];
-        auto combined_model = Util::CastToDerived<CombinedModel>(parent);
+        auto combined_model = std::dynamic_pointer_cast<CombinedModel>(parent);
         if (! combined_model)
             return false;
 

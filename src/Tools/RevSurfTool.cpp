@@ -24,7 +24,7 @@ void RevSurfTool::Detach() {
 }
 
 void RevSurfTool::InitPanel() {
-    auto model = Util::CastToDerived<RevSurfModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<RevSurfModel>(GetModelAttachedTo());
     ASSERT(model);
     auto &panel = GetTypedPanel<RevSurfToolPanel>();
     panel.SetProfile(model->GetProfile());

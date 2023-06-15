@@ -5,7 +5,6 @@
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 
 // Convenience function
@@ -25,7 +24,8 @@ TEST_F(SessionTestBase, RevSurfSessionTest1) {
 
         const auto &rm = *context.scene_context->root_model;
         EXPECT_EQ(1U, rm.GetChildModelCount());
-        const auto rsm = Util::CastToDerived<RevSurfModel>(rm.GetChildModel(0));
+        const auto rsm =
+            std::dynamic_pointer_cast<RevSurfModel>(rm.GetChildModel(0));
         ASSERT_TRUE(rsm);
 
         EXPECT_EQ(360.f, rsm->GetSweepAngle().Degrees());
@@ -62,7 +62,8 @@ TEST_F(SessionTestBase, RevSurfSessionTest2) {
 
         const auto &rm = *context.scene_context->root_model;
         EXPECT_EQ(1U, rm.GetChildModelCount());
-        const auto rsm = Util::CastToDerived<RevSurfModel>(rm.GetChildModel(0));
+        const auto rsm =
+            std::dynamic_pointer_cast<RevSurfModel>(rm.GetChildModel(0));
         ASSERT_TRUE(rsm);
 
         EXPECT_EQ(120.f, rsm->GetSweepAngle().Degrees());

@@ -8,7 +8,7 @@ bool BendTool::CanAttach(const Selection &sel) const {
 }
 
 Spin BendTool::GetObjectSpinFromModel() const {
-    auto bm = Util::CastToDerived<BentModel>(GetModelAttachedTo());
+    auto bm = std::dynamic_pointer_cast<BentModel>(GetModelAttachedTo());
     ASSERT(bm);
     return bm->GetSpin();
 }

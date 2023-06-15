@@ -540,7 +540,7 @@ void Panel::FindInteractivePanes_(const PanePtr &pane,
         panes.push_back(pane);
 
     // Recurse if the Pane is a ContainerPane.
-    if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
+    if (ContainerPanePtr ctr = std::dynamic_pointer_cast<ContainerPane>(pane)) {
         for (auto &sub_pane: ctr->GetPotentialInteractiveSubPanes())
             FindInteractivePanes_(sub_pane, panes);
     }

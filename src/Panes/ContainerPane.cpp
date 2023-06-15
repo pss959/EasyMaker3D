@@ -38,7 +38,7 @@ PanePtr ContainerPane::FindPane(const std::string &name) const {
         if (pane->GetName() == name)
             return pane;
         // Recurse if this is a ContainerPane.
-        if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
+        if (auto ctr = std::dynamic_pointer_cast<ContainerPane>(pane)) {
             if (PanePtr found = ctr->FindPane(name))
                 return found;
         }
@@ -153,7 +153,7 @@ void ContainerPane::ObservePanes_() {
         KLOG('o', "CP: " << GetDesc() << " observing " << pane->GetDesc());
         pane->GetBaseSizeChanged().AddObserver(
             this, [&](){ BaseSizeChanged(); });
-        if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane))
+        if (auto ctr = std::dynamic_pointer_cast<ContainerPane>(pane))
             ctr->GetContentsChanged().AddObserver(
                 this, [&](){ ContentsChanged(); });
     }
@@ -163,7 +163,7 @@ void ContainerPane::UnobservePanes_() {
     for (auto &pane: GetPanes()) {
         KLOG('o', "CP: " << GetDesc() << " unobserving " << pane->GetDesc());
         pane->GetBaseSizeChanged().RemoveObserver(this);
-        if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane))
+        if (auto ctr = std::dynamic_pointer_cast<ContainerPane>(pane))
             ctr->GetContentsChanged().RemoveObserver(this);
     }
 }

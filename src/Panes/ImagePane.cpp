@@ -5,7 +5,6 @@
 #include "SG/Texture.h"
 #include "SG/UniformBlock.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 void ImagePane::AddFields() {
     AddField(path_.Init("path"));
@@ -34,7 +33,7 @@ void ImagePane::CreationDone() {
         auto &block = GetUniformBlocks()[0];
         ASSERT(! block->GetTextures().empty());
         auto &tex = block->GetTextures()[0];
-        auto image = Util::CastToDerived<SG::FileImage>(tex->GetImage());
+        auto image = std::dynamic_pointer_cast<SG::FileImage>(tex->GetImage());
         ASSERT(image);
         image->SetFilePath(path_.GetValue());
     }

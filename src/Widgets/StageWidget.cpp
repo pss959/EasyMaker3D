@@ -10,7 +10,6 @@
 #include "SG/Texture.h"
 #include "SG/UniformBlock.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 void StageWidget::CreationDone() {
     DiscWidget::CreationDone();
@@ -35,7 +34,8 @@ void StageWidget::CreationDone() {
         ASSERT(! block->GetTextures().empty());
         const auto &tex = block->GetTextures()[0];
         ASSERT(tex);
-        grid_image_ = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+        grid_image_ =
+            std::dynamic_pointer_cast<SG::ProceduralImage>(tex->GetImage());
         ASSERT(grid_image_);
         grid_image_->SetFunction(gen_grid);
     }

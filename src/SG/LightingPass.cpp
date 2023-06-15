@@ -12,6 +12,7 @@
 #include "SG/RenderData.h"
 #include "SG/Search.h"
 #include "SG/UniformBlock.h"
+#include "Util/General.h"
 
 namespace SG {
 

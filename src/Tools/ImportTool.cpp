@@ -8,7 +8,6 @@
 #include "Models/ImportedModel.h"
 #include "Panels/ImportToolPanel.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 bool ImportTool::CanAttach(const Selection &sel) const {
     // There has to be exactly one selected ImportedModel.
@@ -16,7 +15,7 @@ bool ImportTool::CanAttach(const Selection &sel) const {
 }
 
 void ImportTool::InitPanel() {
-    auto model = Util::CastToDerived<ImportedModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<ImportedModel>(GetModelAttachedTo());
     ASSERT(model);
 
     auto &panel = GetTypedPanel<ImportToolPanel>();
@@ -37,7 +36,7 @@ void ImportTool::InitPanel() {
 void ImportTool::PanelChanged(const std::string &key,
                               ToolPanel::InteractionType type) {
     const Context &context = GetContext();
-    auto model = Util::CastToDerived<ImportedModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<ImportedModel>(GetModelAttachedTo());
     ASSERT(model);
 
     // Assume the panel is no longer needed.
@@ -66,8 +65,9 @@ void ImportTool::PanelChanged(const std::string &key,
             // Accepting the initial path means officially creating the
             // ImportedModel with the correct path. Update the Command and the
             // ImportedModel.
-            const auto &cimc = Util::CastToDerived<CreateImportedModelCommand>(
-                context.command_manager->GetLastCommand());
+            const auto &cimc =
+                std::dynamic_pointer_cast<CreateImportedModelCommand>(
+                    context.command_manager->GetLastCommand());
             ASSERT(cimc);
             cimc->SetPath(path);
             model->SetPath(path);

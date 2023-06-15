@@ -6,7 +6,6 @@
 #include "Items/Settings.h"
 #include "Panels/FilePanel.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
 

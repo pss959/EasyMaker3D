@@ -24,7 +24,7 @@ void ExtrudedTool::Detach() {
 }
 
 void ExtrudedTool::InitPanel() {
-    auto model = Util::CastToDerived<ExtrudedModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<ExtrudedModel>(GetModelAttachedTo());
     ASSERT(model);
     auto &panel = GetTypedPanel<ExtrudedToolPanel>();
     panel.SetProfile(model->GetProfile());

@@ -1063,7 +1063,7 @@ void Application::Impl_::AddIcons_() {
         return dynamic_cast<const Shelf *>(&node) != nullptr;
     };
     for (const auto &child: FindNodes(shelves_root, is_shelf)) {
-        const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
+        const ShelfPtr shelf = std::dynamic_pointer_cast<Shelf>(child);
         ASSERT(shelf);
         shelf->LayOutIcons(cam_pos);
         Util::AppendVector(shelf->GetIcons(), icons_);

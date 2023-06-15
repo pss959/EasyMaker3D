@@ -9,6 +9,7 @@
 #include "SG/Exception.h"
 #include "SG/IonContext.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 #include "Util/Read.h"
 #include "Util/Tuning.h"
 

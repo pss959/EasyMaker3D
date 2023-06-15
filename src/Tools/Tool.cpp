@@ -17,7 +17,6 @@
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context);
@@ -125,7 +124,7 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
 
 Vector3f Tool::MatchOperandModelAndGetSize(bool use_operand_model_size) {
     ConvertedModelPtr cm =
-        Util::CastToDerived<ConvertedModel>(GetModelAttachedTo());
+        std::dynamic_pointer_cast<ConvertedModel>(GetModelAttachedTo());
     ASSERT(cm);
 
     // Always rotate to align with the ConvertedModel.

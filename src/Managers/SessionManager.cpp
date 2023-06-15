@@ -153,7 +153,7 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
             throw Parser::Exception(path, "Expected a CommandList; got " +
                                     root->GetTypeName());
         command_manager_->ProcessCommandList(
-            Util::CastToDerived<CommandList>(root));
+            std::dynamic_pointer_cast<CommandList>(root));
 
         // Reselect now that the session is loaded so the correct Tool is
         // attached. Cannot use ReselectAll() here because Tools are not

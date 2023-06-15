@@ -2,7 +2,6 @@
 
 #include "Math/Linear.h"
 #include "SG/Search.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 
 void Shelf::AddFields() {

@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "Base/Memory.h"
-#include "Util/General.h"
 
 namespace SG {
 
@@ -49,7 +48,7 @@ struct NodePath : public std::vector<NodePtr> {
     /// returning it or a null pointer.
     template <typename T> std::shared_ptr<T> FindNodeUpwards() const {
         for (auto it = rbegin(); it != rend(); ++it) {
-            std::shared_ptr<T> t = Util::CastToDerived<T>(*it);
+            std::shared_ptr<T> t = std::dynamic_pointer_cast<T>(*it);
             if (t)
                 return t;
         }

@@ -31,13 +31,13 @@ TEST(UtilTest, Casts) {
     EXPECT_EQ(1, bp.use_count());
     EXPECT_EQ(1, dp.use_count());
 
-    std::shared_ptr<Base_> bdp = Util::CastToBase<Base_>(dp);
+    std::shared_ptr<Base_> bdp = std::dynamic_pointer_cast<Base_>(dp);
     EXPECT_NOT_NULL(bdp);
     EXPECT_EQ(dp, bdp);
     EXPECT_EQ(2,  dp.use_count());
     EXPECT_EQ(2, bdp.use_count());
 
-    std::shared_ptr<Derived_> dbp = Util::CastToDerived<Derived_>(bp);
+    std::shared_ptr<Derived_> dbp = std::dynamic_pointer_cast<Derived_>(bp);
     EXPECT_NOT_NULL(dbp);
     EXPECT_EQ(bp, dbp);
     EXPECT_EQ(2,  bp.use_count());

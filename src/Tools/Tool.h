@@ -6,7 +6,6 @@
 #include "Parser/Registry.h"
 #include "SG/NodePath.h"
 #include "Selection/Selection.h"
-#include "Util/General.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(Board);
@@ -155,7 +154,7 @@ class Tool : public Grippable {
     template <typename T>
     bool AreSelectedModelsOfType(const Selection &sel) const {
         for (auto &sel_path: sel.GetPaths())
-            if (! Util::CastToDerived<T>(sel_path.GetModel()))
+            if (! std::dynamic_pointer_cast<T>(sel_path.GetModel()))
                 return false;
         return true;
     }

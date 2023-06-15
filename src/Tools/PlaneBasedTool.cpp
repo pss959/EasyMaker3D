@@ -20,7 +20,6 @@
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 #include "Widgets/PlaneWidget.h"
 #include "Widgets/Slider1DWidget.h"
@@ -59,7 +58,7 @@ void PlaneBasedTool::UpdateGripInfo(GripInfo &info) {
         widget          = plane_widget_->GetSubWidget("AxisWidget");
         info.guide_type = GripGuideType::kRotation;
     }
-    info.widget = Util::CastToDerived<ClickableWidget>(widget);
+    info.widget = std::dynamic_pointer_cast<ClickableWidget>(widget);
     ASSERT(info.widget);
     info.target_point = ToWorld(info.widget, Point3f::Zero());
 }

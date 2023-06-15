@@ -10,7 +10,7 @@ bool TaperTool::CanAttach(const Selection &sel) const {
 }
 
 void TaperTool::InitPanel() {
-    auto model = Util::CastToDerived<TaperedModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<TaperedModel>(GetModelAttachedTo());
     ASSERT(model);
     GetTypedPanel<TaperToolPanel>().SetTaper(model->GetTaper());
 }

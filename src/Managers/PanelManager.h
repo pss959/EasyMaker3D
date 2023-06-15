@@ -5,7 +5,6 @@
 #include "Base/Memory.h"
 #include "Panels/Panel.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 DECL_SHARED_PTR(PanelManager);
 namespace SG { class Scene; }
@@ -31,7 +30,7 @@ class PanelManager {
     /// type. Asserts if not found.
     template <typename T>
     std::shared_ptr<T> GetTypedPanel(const std::string &name) const {
-        auto panel = Util::CastToDerived<T>(GetPanel(name));
+        auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
         ASSERT(panel);
         return panel;
     }

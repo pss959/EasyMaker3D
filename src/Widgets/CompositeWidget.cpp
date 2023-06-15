@@ -4,7 +4,6 @@
 
 #include "SG/Search.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 CompositeWidget::CompositeWidget() {
 }
@@ -67,7 +66,8 @@ CompositeWidget::SubWidget_ * CompositeWidget::FindSubWidgetRecursive_(
     // If not found, look also in sub-widgets that are derived from
     // CompositeWidget.
     for (auto &sub: sub_widgets_) {
-        if (auto sub_cw = Util::CastToDerived<CompositeWidget>(sub.widget)) {
+        if (auto sub_cw =
+            std::dynamic_pointer_cast<CompositeWidget>(sub.widget)) {
             if (auto sw = sub_cw->FindSubWidgetRecursive_(name))
                 return sw;
         }

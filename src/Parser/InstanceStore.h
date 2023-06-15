@@ -7,7 +7,6 @@
 #include "Base/Memory.h"
 #include "Parser/Object.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 namespace Parser {
 
@@ -28,7 +27,7 @@ class InstanceStore {
     /// never used directly; it is used only to create instances of that type.
     template <typename T> void AddOriginal(const std::shared_ptr<T> &original) {
         AddOriginal_(std::type_index(typeid(*original)),
-                     Util::CastToBase<Parser::Object>(original));
+                     std::dynamic_pointer_cast<Parser::Object>(original));
     }
 
     /// Returns true if there is an original instance for the given type.
@@ -37,12 +36,12 @@ class InstanceStore {
     }
 
     /// Returns an instance of the templated type of object, creating a new one
-    /// if necessary.  Asserts if anything goes wrong.
+    /// if necessary.
     template <typename T> std::shared_ptr<T> Acquire() {
         // Check available instances. If none is available, clone a new one.
         std::type_index key(typeid(T));
         std::shared_ptr<T> instance =
-            Util::CastToDerived<T>(GetAvailableInstance_(key));
+            std::dynamic_pointer_cast<T>(GetAvailableInstance_(key));
         if (! instance) {
             auto &data = original_map_[key];
             const std::string name = CreateName_(key, data.count++);

@@ -13,7 +13,7 @@ bool TextTool::CanAttach(const Selection &sel) const {
 }
 
 void TextTool::InitPanel() {
-    auto model = Util::CastToDerived<TextModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<TextModel>(GetModelAttachedTo());
     ASSERT(model);
     auto &panel = GetTypedPanel<TextToolPanel>();
     std::string font_name = model->GetFontName();
@@ -30,7 +30,7 @@ void TextTool::PanelChanged(const std::string &key,
 
     // Access the TextModel to be able to detect changes. Note that at least
     // one field must have changed for the Apply button to be enabled.
-    auto model = Util::CastToDerived<TextModel>(GetModelAttachedTo());
+    auto model = std::dynamic_pointer_cast<TextModel>(GetModelAttachedTo());
     ASSERT(model);
 
     auto command = CreateCommand<ChangeTextCommand>();

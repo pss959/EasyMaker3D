@@ -74,7 +74,7 @@ class Executor {
     /// Convenience that converts the Model at the tail of the given SelPath to
     /// the derived Model type, asserting that it is of that type.
     template <typename T> static T & GetTypedModel(const SelPath &sel_path) {
-        std::shared_ptr<T> tm = Util::CastToDerived<T>(sel_path.GetModel());
+        auto tm = std::dynamic_pointer_cast<T>(sel_path.GetModel());
         ASSERT(tm);
         return *tm;
     }

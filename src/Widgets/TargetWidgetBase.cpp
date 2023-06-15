@@ -66,6 +66,6 @@ WidgetPtr TargetWidgetBase::GetReceiver_(const DragInfo &info) {
         auto widget = dynamic_cast<const Widget *>(&n);
         return widget && widget->CanReceiveTarget();
     };
-    return Util::CastToDerived<Widget>(
+    return std::dynamic_pointer_cast<Widget>(
         info.hit.path.FindNodeUpwards(can_receive));
 }

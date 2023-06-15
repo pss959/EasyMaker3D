@@ -5,7 +5,6 @@
 
 #include "Math/Linear.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 void BoxPane::AddFields() {
     AddField(orientation_.Init("orientation", Orientation::kVertical));

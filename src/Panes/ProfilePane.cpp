@@ -573,7 +573,7 @@ Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) const {
         const bool is_fixed = profile_.GetType() == Profile::Type::kFixed;
         const size_t child_index = index - (is_fixed ? 1 : 0);
         ASSERT(child_index < movable_parent_->GetChildCount());
-        slider = Util::CastToDerived<Slider2DWidget>(
+        slider = std::dynamic_pointer_cast<Slider2DWidget>(
             movable_parent_->GetChild(child_index));
         ASSERT(slider);
     }

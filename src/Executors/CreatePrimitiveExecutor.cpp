@@ -5,7 +5,7 @@
 #include "Models/CylinderModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TorusModel.h"
-#include "Util/General.h"
+#include "Util/Enum.h"
 #include "Util/Tuning.h"
 
 ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {

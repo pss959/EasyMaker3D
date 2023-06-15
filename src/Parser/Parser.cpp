@@ -9,7 +9,6 @@
 #include "Parser/Registry.h"
 #include "Parser/Scanner.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
 
 namespace Parser {

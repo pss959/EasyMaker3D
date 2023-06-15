@@ -11,7 +11,6 @@
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
-#include "Util/General.h"
 
 namespace Parser {
 
@@ -243,7 +242,7 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
 
     virtual void ParseValue(Scanner &scanner) override {
         ObjectPtr obj = scanner.ScanObject();
-        PtrType t = Util::CastToDerived<T>(obj);
+        PtrType t = std::dynamic_pointer_cast<T>(obj);
         if (! t)
             Field::ThrowObjectTypeError(scanner, obj);
         TypedField<PtrType>::value_ = t;
@@ -283,7 +282,7 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
     virtual void ParseValue(Scanner &scanner) override {
         ObjectListPtr list = scanner.ScanObjectList();
         for (auto &obj: list->objects) {
-            PtrType t = Util::CastToDerived<T>(obj);
+            PtrType t = std::dynamic_pointer_cast<T>(obj);
             if (! t)
                 Field::ThrowObjectTypeError(scanner, obj);
             TypedField<ListType>::value_.push_back(t);

@@ -34,7 +34,7 @@ void ToolBox::AddTools(const std::vector<ToolPtr> &tools) {
         const std::string &type_name = tool->GetTypeName();
 
         // Special case for the PassiveTool.
-        if (PassiveToolPtr pt = Util::CastToDerived<PassiveTool>(tool)) {
+        if (PassiveToolPtr pt = std::dynamic_pointer_cast<PassiveTool>(tool)) {
             KLOG('T', "Adding PassiveTool");
             passive_tool_store_->AddOriginal<PassiveTool>(pt);
         }
@@ -294,7 +294,8 @@ void ToolBox::DetachToolFromModel_(Model &model) {
     // Remove the observer from the Model.
     model.GetChanged().RemoveObserver(this);
 
-    if (PassiveToolPtr passive_tool = Util::CastToDerived<PassiveTool>(tool)) {
+    if (PassiveToolPtr passive_tool =
+        std::dynamic_pointer_cast<PassiveTool>(tool)) {
         passive_tool_store_->Release<PassiveTool>(passive_tool);
     }
     else {

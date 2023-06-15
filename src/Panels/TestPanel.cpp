@@ -14,12 +14,12 @@ void TestPanel::UpdateInterface() {
 }
 
 void TestPanel::FindButtonPanes_(const PanePtr &pane) {
-    if (auto but_pane = Util::CastToDerived<ButtonPane>(pane)) {
+    if (auto but_pane = std::dynamic_pointer_cast<ButtonPane>(pane)) {
         const std::string &name = but_pane->GetName();
         auto report = [&](){ std::cerr << "== Clicked " << name << "\n"; };
         AddButtonFunc(but_pane->GetName(), report);
     }
-    if (auto ctr_pane = Util::CastToDerived<ContainerPane>(pane)) {
+    if (auto ctr_pane = std::dynamic_pointer_cast<ContainerPane>(pane)) {
         for (auto &sub_pane: ctr_pane->GetPanes())
             FindButtonPanes_(sub_pane);
     }

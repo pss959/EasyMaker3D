@@ -163,7 +163,8 @@ void SelectionManager::SelectModel_(const SelPath &path, bool is_primary) {
         // Skip the last model.
         if (ancestor.get() != &model) {
             if (ancestor->GetStatus() == Model::Status::kUnselected) {
-                ParentModelPtr ap = Util::CastToDerived<ParentModel>(ancestor);
+                ParentModelPtr ap =
+                    std::dynamic_pointer_cast<ParentModel>(ancestor);
                 ASSERT(ap);
                 for (size_t i = 0; i < ap->GetChildModelCount(); ++i) {
                     Model &child = *ap->GetChildModel(i);
@@ -180,7 +181,7 @@ void SelectionManager::SelectModel_(const SelPath &path, bool is_primary) {
         // The Model is at the end of the path, so its parent is just before
         // it.
         ASSERT(path_models.size() >= 2U);
-        ParentModelPtr parent = Util::CastToDerived<ParentModel>(
+        ParentModelPtr parent = std::dynamic_pointer_cast<ParentModel>(
             path_models[path_models.size() - 2]);
         ASSERT(parent);
         for (size_t i = 0; i < parent->GetChildModelCount(); ++i) {
@@ -210,7 +211,7 @@ bool SelectionManager::GetSelectionInDirection_(Direction dir,
 
       case Direction::kFirstChild:
         if (ParentModelPtr parent =
-            Util::CastToDerived<ParentModel>(primary.GetModel())) {
+            std::dynamic_pointer_cast<ParentModel>(primary.GetModel())) {
             if (parent->GetChildModelCount() > 0) {
                 path = primary;
                 path.push_back(parent->GetChildModel(0));

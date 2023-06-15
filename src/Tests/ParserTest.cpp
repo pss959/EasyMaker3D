@@ -13,7 +13,6 @@
 #include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
 #include "Util/Enum.h"
-#include "Util/General.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains
 // the given string pattern.
@@ -142,7 +141,7 @@ class ParserTest : public SceneTestBase {
         Parser::ObjectPtr obj = ParseString(str);
         if (! obj)
             return false;
-        std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
+        std::shared_ptr<Simple> sp = std::dynamic_pointer_cast<Simple>(obj);
         EXPECT_NOT_NULL(sp.get());
         return ((*sp).*field).GetValue() == expected;
     };
@@ -187,7 +186,7 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_NOT_NULL(obj.get());
         EXPECT_EQ("Simple",  obj->GetTypeName());
         EXPECT_EQ("TestObj", obj->GetName());
-        std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
+        std::shared_ptr<Simple> sp = std::dynamic_pointer_cast<Simple>(obj);
         EXPECT_NOT_NULL(sp.get());
         EXPECT_TRUE(sp->bool_val);
         EXPECT_EQ(-13,  sp->int_val);
@@ -254,7 +253,7 @@ TEST_F(ParserTest, Derived) {
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Derived", obj->GetTypeName());
     EXPECT_EQ("TestObj", obj->GetName());
-    std::shared_ptr<Derived> dp = Util::CastToDerived<Derived>(obj);
+    std::shared_ptr<Derived> dp = std::dynamic_pointer_cast<Derived>(obj);
     EXPECT_NOT_NULL(dp.get());
     EXPECT_EQ(13,   dp->int_val);
     EXPECT_EQ(3.4f, dp->float_val);
@@ -286,7 +285,7 @@ TEST_F(ParserTest, WasSet) {
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
-    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
+    std::shared_ptr<Simple> sp = std::dynamic_pointer_cast<Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_TRUE(sp->bool_val.WasSet());
     EXPECT_TRUE(sp->float_val.WasSet());
@@ -308,7 +307,7 @@ TEST_F(ParserTest, OverwriteField) {
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
-    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
+    std::shared_ptr<Simple> sp = std::dynamic_pointer_cast<Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_EQ(19, sp->int_val);
 }
@@ -400,7 +399,7 @@ TEST_F(ParserTest, Includes) {
 
     EXPECT_EQ("Derived", obj->GetTypeName());
     EXPECT_EQ("ParentName", obj->GetName());
-    std::shared_ptr<Derived> dp = Util::CastToDerived<Derived>(obj);
+    std::shared_ptr<Derived> dp = std::dynamic_pointer_cast<Derived>(obj);
     EXPECT_NOT_NULL(dp.get());
     const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;
     EXPECT_FALSE(list.empty());
@@ -425,7 +424,7 @@ TEST_F(ParserTest, Constants) {
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj);
     EXPECT_EQ("Simple",  obj->GetTypeName());
-    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
+    std::shared_ptr<Simple> sp = std::dynamic_pointer_cast<Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_EQ(123, sp->int_val);
     EXPECT_EQ(Vector3f(2.5f, 123.f, 5.f), sp->vec3f_val);
@@ -466,7 +465,7 @@ TEST_F(ParserTest, Templates) {
     InitDerived();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
-    std::shared_ptr<Derived> dp = Util::CastToDerived<Derived>(obj);
+    std::shared_ptr<Derived> dp = std::dynamic_pointer_cast<Derived>(obj);
     EXPECT_NOT_NULL(dp.get());
 
     // Validate the clones.
@@ -513,7 +512,7 @@ TEST_F(ParserTest, Scoping) {
     InitDerived();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
-    std::shared_ptr<Derived> dp1 = Util::CastToDerived<Derived>(obj);
+    std::shared_ptr<Derived> dp1 = std::dynamic_pointer_cast<Derived>(obj);
     EXPECT_NOT_NULL(dp1.get());
 
     const auto sp1 = dp1->simple.GetValue();
@@ -521,7 +520,7 @@ TEST_F(ParserTest, Scoping) {
     EXPECT_EQ(3U, list1.size());
     EXPECT_EQ_OBJS(sp1, list1[0]);
 
-    const auto dp2 = Util::CastToDerived<Derived>(list1[1]);
+    const auto dp2 = std::dynamic_pointer_cast<Derived>(list1[1]);
     EXPECT_NOT_NULL(dp2.get());
     const auto &list2 = dp2->simple_list.GetValue();
     EXPECT_EQ(2U, list2.size());
@@ -529,7 +528,7 @@ TEST_F(ParserTest, Scoping) {
     EXPECT_NE(sp1, sp2);
     EXPECT_EQ_OBJS(sp2, list2[1]);
 
-    const auto dp3 = Util::CastToDerived<Derived>(list1[2]);
+    const auto dp3 = std::dynamic_pointer_cast<Derived>(list1[2]);
     EXPECT_NOT_NULL(dp3.get());
     EXPECT_EQ_OBJS(sp1, dp3->simple.GetValue());
 }
@@ -545,7 +544,7 @@ TEST_F(ParserTest, CopyContentsFrom) {
     EXPECT_NOT_NULL(obj2.get());
     EXPECT_EQ("Simple",  obj2->GetTypeName());
     EXPECT_EQ("TestObj2", obj2->GetName());
-    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj2);
+    std::shared_ptr<Simple> sp = std::dynamic_pointer_cast<Simple>(obj2);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_TRUE(sp->bool_val);
     EXPECT_EQ(-13,  sp->int_val);

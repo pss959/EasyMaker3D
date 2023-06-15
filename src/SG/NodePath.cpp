@@ -2,6 +2,7 @@
 
 #include "SG/Node.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 namespace SG {
 

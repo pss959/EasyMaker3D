@@ -6,7 +6,6 @@
 #include "Parser/InstanceStore.h"
 #include "SG/NodePath.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 DECL_SHARED_PTR(FeedbackManager);
 namespace SG { DECL_SHARED_PTR(Node); }
@@ -37,7 +36,7 @@ class FeedbackManager : public Parser::InstanceStore {
     /// Asserts if anything goes wrong.
     template <typename T> std::shared_ptr<T> Activate() {
         std::shared_ptr<T> instance = Acquire<T>();
-        ActivateInstance_(Util::CastToBase<Feedback>(instance));
+        ActivateInstance_(std::dynamic_pointer_cast<Feedback>(instance));
         return instance;
     }
 
@@ -52,7 +51,7 @@ class FeedbackManager : public Parser::InstanceStore {
 
     /// Deactivates the given Feedback instance.
     template <typename T> void Deactivate(const std::shared_ptr<T> &instance) {
-        DeactivateInstance_(Util::CastToBase<Feedback>(instance));
+        DeactivateInstance_(std::dynamic_pointer_cast<Feedback>(instance));
         Release<T>(instance);
     }
 
@@ -61,8 +60,8 @@ class FeedbackManager : public Parser::InstanceStore {
     template <typename T> void DeactivateWithKey(const std::string &key) {
         auto instance = FindActiveInstance_(key);
         RemoveActiveInstance_(key, instance);
-        ASSERT(Util::CastToDerived<T>(instance));
-        Deactivate(Util::CastToDerived<T>(instance));
+        ASSERT(std::dynamic_pointer_cast<T>(instance));
+        Deactivate(std::dynamic_pointer_cast<T>(instance));
     }
 
   private:

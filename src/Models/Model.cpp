@@ -18,7 +18,6 @@
 #include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
 
@@ -102,7 +101,7 @@ void Model::CreationDone() {
             ASSERT(! shape_);
             // Create a MutableTriMeshShape instance and set it up.
             shape_ = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
-            AddShape(Util::CastToBase<SG::Shape>(shape_));
+            AddShape(std::dynamic_pointer_cast<SG::Shape>(shape_));
         }
 
         SetTooltipText(GetName());

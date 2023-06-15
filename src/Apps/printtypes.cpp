@@ -8,7 +8,6 @@
 #include "Parser/Object.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 /// \file
 /// The printtypes application writes to standard output all known concrete
@@ -41,7 +40,7 @@ int main() {
             std::cout << "   " << fn << "\n";
 
         // Special case for Model classes.
-        if (const auto model = Util::CastToDerived<Model>(obj))
+        if (const auto model = std::dynamic_pointer_cast<Model>(obj))
             std::cout << "   " << model->GetTypeName()
                       << " Can set complexity: "
                       << (model->CanSetComplexity() ? "Yes" : "No") << "\n";

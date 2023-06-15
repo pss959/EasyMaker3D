@@ -6,7 +6,6 @@
 #include "Math/Types.h"
 #include "Panes/Pane.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 DECL_SHARED_PTR(ContainerPane);
 
@@ -37,7 +36,7 @@ class ContainerPane : public Pane {
     std::shared_ptr<T> FindTypedPane(const std::string &name) const {
         auto pane = FindPane(name);
         ASSERTM(pane, "Pane '" + name + "' not found in " + GetDesc());
-        auto typed_pane = Util::CastToDerived<T>(pane);
+        auto typed_pane = std::dynamic_pointer_cast<T>(pane);
         ASSERTM(typed_pane, "Wrong type for Pane '" + name +
                 "' in " + GetDesc());
         return typed_pane;

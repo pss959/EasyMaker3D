@@ -4,7 +4,6 @@
 #include "SG/Box.h"
 #include "SG/Node.h"
 #include "Tests/SceneTestBase.h"
-#include "Util/General.h"
 
 class CloneTest : public SceneTestBase {};
 

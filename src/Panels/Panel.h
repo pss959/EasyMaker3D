@@ -7,7 +7,6 @@
 #include "Base/Memory.h"
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
-#include "Util/General.h"
 
 #include <vector>
 
@@ -224,7 +223,7 @@ class Panel : public SG::Node {
     /// type. Asserts if not found.
     template <typename T>
     std::shared_ptr<T> GetTypedPanel(const std::string &name) const {
-        auto panel = Util::CastToDerived<T>(GetPanel(name));
+        auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
         ASSERT(panel);
         return panel;
     }

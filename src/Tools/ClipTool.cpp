@@ -9,7 +9,6 @@
 #include "Math/Linear.h"
 #include "Models/ClippedModel.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 
 ClipTool::ClipTool() {
@@ -20,7 +19,7 @@ bool ClipTool::CanAttach(const Selection &sel) const {
 }
 
 Plane ClipTool::GetObjectPlaneFromModel() const {
-    auto cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
+    auto cm = std::dynamic_pointer_cast<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm);
     return cm->GetPlane();
 }
@@ -45,7 +44,7 @@ Point3f ClipTool::GetTranslationFeedbackBasePoint() const {
     Range3f point_range;
     GetRangeAlongPlaneNormal_(distance_range, point_range);
 
-    auto cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
+    auto cm = std::dynamic_pointer_cast<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm);
     return GetModelMatrix() * point_range.GetMinPoint();
 }
@@ -58,7 +57,7 @@ void ClipTool::GetRangeAlongPlaneNormal_(Range1f &distance_range,
     // point is at a distance of 0. Note that the mesh points need to be scaled
     // by the ClippedModel's scale to bring them into the object coordinates of
     // the ClipTool.
-    auto cm = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
+    auto cm = std::dynamic_pointer_cast<ClippedModel>(GetModelAttachedTo());
     ASSERT(cm);
     const auto &mesh      = cm->GetOperandModel()->GetMesh();
     const Vector3f &scale = cm->GetScale();

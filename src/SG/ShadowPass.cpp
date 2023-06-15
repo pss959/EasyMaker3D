@@ -12,6 +12,7 @@
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
+#include "Util/General.h"
 #include "Util/Tuning.h"
 
 using ion::gfx::FramebufferObject;

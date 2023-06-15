@@ -8,7 +8,6 @@
 
 #include "Parser/Object.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 namespace Parser {
 
@@ -53,7 +52,7 @@ class Registry {
     template <typename T>
     static std::shared_ptr<T> CreateObject(const std::string &name = "") {
         const std::string &type_name = FindTypeName_(typeid(T));
-        return Util::CastToDerived<T>(
+        return std::dynamic_pointer_cast<T>(
             CreateObjectOfType_(type_name, name, true));
     }
 

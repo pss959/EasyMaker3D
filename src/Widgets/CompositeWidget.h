@@ -4,7 +4,6 @@
 
 #include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Util/General.h"
 #include "Widgets/Widget.h"
 
 DECL_SHARED_PTR(CompositeWidget);
@@ -40,7 +39,7 @@ class CompositeWidget : public Widget {
     /// Convenience that adds a sub-widget of a given type.
     template <typename T> std::shared_ptr<T> AddTypedSubWidget(
         const std::string &name) {
-        return Util::CastToDerived<T>(AddSubWidget(name));
+        return std::dynamic_pointer_cast<T>(AddSubWidget(name));
     }
 
     /// This is invoked when any sub-widget is activated or deactivated. It

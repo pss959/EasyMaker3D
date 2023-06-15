@@ -38,7 +38,7 @@ int ParentModel::GetChildModelIndex(const ModelPtr &child) const {
 ModelPtr ParentModel::GetChildModel(size_t index) const {
     SG::NodePtr child = GetChild(index);
     ASSERT(! child || Util::IsA<Model>(child));
-    return Util::CastToDerived<Model>(child);
+    return std::dynamic_pointer_cast<Model>(child);
 }
 
 void ParentModel::AddChildModel(const ModelPtr &child) {

@@ -6,7 +6,6 @@
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
-#include "Util/General.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
 
@@ -76,7 +75,8 @@ void ClipSessionTest::CompareN(const std::vector<ModelData> &expected) {
     EXPECT_EQ(expected.size(), rm.GetChildModelCount());
 
     for (size_t i = 0; i < expected.size(); ++i) {
-        const auto cm = Util::CastToDerived<ClippedModel>(rm.GetChildModel(i));
+        const auto cm =
+            std::dynamic_pointer_cast<ClippedModel>(rm.GetChildModel(i));
         ASSERT_TRUE(cm);
         SCOPED_TRACE("Model " + cm->GetName() + " / " +
                      cm->GetOperandModel()->GetName());

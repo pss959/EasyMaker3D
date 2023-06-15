@@ -327,7 +327,7 @@ void Application_::SetUpScene_() {
         panel->SetTestContext(pc);
 
         // Special case for FilePanel: set up path to something real.
-        if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
+        if (auto file_panel = std::dynamic_pointer_cast<FilePanel>(panel)) {
             file_panel->SetInitialPath(FilePath::GetHomeDirPath());
             file_panel->SetFileFormats(std::vector<FileFormat>{
                     FileFormat::kTextSTL,
@@ -335,7 +335,7 @@ void Application_::SetUpScene_() {
                 });
         }
         // Special case for DialogPanel.
-        if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {
+        if (auto dialog_panel = std::dynamic_pointer_cast<DialogPanel>(panel)) {
             dialog_panel->SetMessage("This is a temporary message!");
             dialog_panel->SetChoiceResponse("No", "Yes", true);
         }
@@ -386,7 +386,7 @@ void Application_::UpdateScene_() {
     ASSERT(gantry);
     for (auto &cam: gantry->GetCameras()) {
         if (cam->GetTypeName() == "WindowCamera") {
-            camera_ = Util::CastToDerived<SG::WindowCamera>(cam);
+            camera_ = std::dynamic_pointer_cast<SG::WindowCamera>(cam);
             break;
         }
     }

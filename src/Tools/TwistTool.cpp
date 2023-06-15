@@ -8,7 +8,7 @@ bool TwistTool::CanAttach(const Selection &sel) const {
 }
 
 Spin TwistTool::GetObjectSpinFromModel() const {
-    auto bm = Util::CastToDerived<TwistedModel>(GetModelAttachedTo());
+    auto bm = std::dynamic_pointer_cast<TwistedModel>(GetModelAttachedTo());
     ASSERT(bm);
     return bm->GetSpin();
 }

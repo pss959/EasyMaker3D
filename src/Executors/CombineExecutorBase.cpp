@@ -4,7 +4,6 @@
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Selection/Selection.h"
-#include "Util/General.h"
 
 void CombineExecutorBase::Execute(Command &command, Command::Op operation) {
     // Deselect everything so that changes to Models do not cause reselection.

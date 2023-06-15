@@ -77,7 +77,7 @@ void ColorTool::FindParts_() {
     const auto &tex = block->GetTextures()[0];
     ASSERT(tex);
     const auto &proc_im =
-        Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+        std::dynamic_pointer_cast<SG::ProceduralImage>(tex->GetImage());
     ASSERT(proc_im);
     proc_im->SetFunction([](){ return GenerateColorRingImage(); });
 }

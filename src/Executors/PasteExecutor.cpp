@@ -6,7 +6,6 @@
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 void PasteExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -14,7 +13,7 @@ void PasteExecutor::Execute(Command &command, Command::Op operation) {
 
     const auto &parent = data.path_to_parent.empty() ?
         context.root_model :
-        Util::CastToDerived<ParentModel>(data.path_to_parent.GetModel());
+        std::dynamic_pointer_cast<ParentModel>(data.path_to_parent.GetModel());
     ASSERT(parent);
 
     Selection sel;

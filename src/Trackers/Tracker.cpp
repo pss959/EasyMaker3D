@@ -4,7 +4,6 @@
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Widgets/ClickableWidget.h"
 
@@ -55,7 +54,7 @@ void Tracker::UpdateWidgetHovering(const WidgetPtr &old_widget,
 float Tracker::GetMotionScale(const WidgetPtr &widget) {
     // See if the Widget is clickable and has any click observers. If so, scale
     // the motion by 1/2 so that more motion is required for a drag.
-    if (auto clickable = Util::CastToDerived<ClickableWidget>(widget)) {
+    if (auto clickable = std::dynamic_pointer_cast<ClickableWidget>(widget)) {
         if (clickable->GetClicked().GetObserverCount() > 0)
             return .5f;
     }

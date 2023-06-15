@@ -16,7 +16,6 @@
 #include "Trackers/TouchTracker.h"
 #include "Util/Alarm.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
 #include "Util/UTime.h"
@@ -218,7 +217,7 @@ class MainHandler::Impl_ {
 
     /// Returns true if the given Widget (which may be null) is draggable.
     static bool IsDraggableWidget_(const WidgetPtr &widget) {
-        return Util::CastToDerived<DraggableWidget>(widget).get();
+        return std::dynamic_pointer_cast<DraggableWidget>(widget).get();
     }
 
     /// Returns the Widget, if any, touched at the given 3D location.
@@ -238,7 +237,8 @@ void MainHandler::Impl_::SetContext(const MainHandler::Context &context) {
                       context_.left_controller, context_.right_controller);
 
     // Special initialization for the MouseTracker.
-    auto mt = Util::CastToDerived<MouseTracker>(GetTracker_(Actuator::kMouse));
+    auto mt =
+        std::dynamic_pointer_cast<MouseTracker>(GetTracker_(Actuator::kMouse));
     mt->SetFrustum(context_.frustum);
     mt->SetDebugSphere(context_.debug_sphere);
 }
@@ -355,7 +355,7 @@ template <typename T> T &
 MainHandler::Impl_::GetTypedTracker_(Actuator actuator) const {
     ASSERT(actuator != Actuator::kNone);
     std::shared_ptr<T> tracker =
-        Util::CastToDerived<T>(trackers_[Util::EnumInt(actuator)]);
+        std::dynamic_pointer_cast<T>(trackers_[Util::EnumInt(actuator)]);
     ASSERT(tracker);
     return *tracker;
 }
@@ -492,7 +492,8 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_modified_mode,
          << " state = " << Util::EnumName(state_));
 
     if (state_ == State_::kDragging) {
-        auto draggable = Util::CastToDerived<DraggableWidget>(active_widget_);
+        auto draggable =
+            std::dynamic_pointer_cast<DraggableWidget>(active_widget_);
         ASSERT(draggable);
         draggable->EndDrag();
         click_state_.Reset();
@@ -559,7 +560,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
     drag_info_.angular_precision = precision_store_->GetAngularPrecision();
 
     // Let the tracker set up the rest.
-    auto draggable = Util::CastToDerived<DraggableWidget>(active_widget_);
+    auto draggable = std::dynamic_pointer_cast<DraggableWidget>(active_widget_);
     ASSERT(draggable);
     ASSERT(! draggable->IsHovering());
 

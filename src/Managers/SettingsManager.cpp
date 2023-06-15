@@ -8,7 +8,6 @@
 #include "Parser/Writer.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
 
@@ -50,7 +49,7 @@ SettingsPtr SettingsManager::ReadSettings_(const FilePath &path) {
         Parser::Parser parser;
         auto obj = parser.ParseFile(path);
         ASSERT(obj);
-        settings = Util::CastToDerived<Settings>(obj);
+        settings = std::dynamic_pointer_cast<Settings>(obj);
         if (! settings)
             std::cerr << "*** Unable to read settings from '"
                       << path.ToString() << "':\n Got " << obj->GetDesc()

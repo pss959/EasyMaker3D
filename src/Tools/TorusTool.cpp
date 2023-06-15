@@ -62,7 +62,7 @@ bool TorusTool::CanAttach(const Selection &sel) const {
 
 void TorusTool::Attach() {
     ASSERT(Util::IsA<TorusModel>(GetModelAttachedTo()));
-    torus_model_ = Util::CastToDerived<TorusModel>(GetModelAttachedTo());
+    torus_model_ = std::dynamic_pointer_cast<TorusModel>(GetModelAttachedTo());
     UpdateScalers_();
 }
 

@@ -50,7 +50,8 @@ void Border::UpdateMesh_() {
 
     // Set up the TriMesh to form a border with the correct width.
     ASSERT(GetShapes().size() == 1U);
-    auto mtms = Util::CastToDerived<SG::MutableTriMeshShape>(GetShapes()[0]);
+    auto mtms =
+        std::dynamic_pointer_cast<SG::MutableTriMeshShape>(GetShapes()[0]);
     ASSERT(mtms);
 
     TriMesh mesh;

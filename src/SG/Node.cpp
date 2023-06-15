@@ -4,6 +4,7 @@
 #include "Parser/Registry.h"
 #include "SG/Exception.h"
 #include "SG/IonContext.h"
+#include "Util/General.h"
 #include "Util/KLog.h"
 
 namespace SG {

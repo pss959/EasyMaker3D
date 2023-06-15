@@ -2,7 +2,6 @@
 
 #include "Commands/ChangeImportedModelCommand.h"
 #include "Managers/SelectionManager.h"
-#include "Util/General.h"
 
 void ChangeImportedExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -39,7 +38,7 @@ ChangeImportedExecutor::ExecData_ & ChangeImportedExecutor::GetExecData_(
         ExecData_ *data = new ExecData_;
         const auto path_to_model = FindPathToModel(cimc.GetModelName());
         ImportedModelPtr im =
-            Util::CastToDerived<ImportedModel>(path_to_model.GetModel());
+            std::dynamic_pointer_cast<ImportedModel>(path_to_model.GetModel());
         ASSERT(im);
         data->imported_model = im;
         data->old_path       = im->GetPath();

@@ -82,7 +82,7 @@ TEST_F(ClipboardTest, CopyParent) {
     EXPECT_EQ(1U, copy->GetShapes().size());
 
     // Child should be present.
-    const auto ccopy = Util::CastToDerived<ClippedModel>(copy);
+    const auto ccopy = std::dynamic_pointer_cast<ClippedModel>(copy);
     EXPECT_TRUE(clipped->GetOperandModel());
     EXPECT_TRUE(ccopy->GetOperandModel());
     EXPECT_TRUE(Util::IsA<BoxModel>(clipped->GetOperandModel()));
@@ -99,13 +99,13 @@ TEST_F(ClipboardTest, CopyModified) {
 
     mgr.StoreCopies(models);
     EXPECT_EQ(1U, mgr.Get().size());
-    auto cyl_copy = Util::CastToDerived<CylinderModel>(mgr.Get()[0]);
+    auto cyl_copy = std::dynamic_pointer_cast<CylinderModel>(mgr.Get()[0]);
     EXPECT_NOT_NULL(cyl_copy.get());
     EXPECT_EQ(2, cyl_copy->GetTopRadius());
 
     const std::vector<ModelPtr> clones = mgr.CreateClones();
     EXPECT_EQ(1U, clones.size());
-    auto cyl_clone = Util::CastToDerived<CylinderModel>(clones[0]);
+    auto cyl_clone = std::dynamic_pointer_cast<CylinderModel>(clones[0]);
     EXPECT_NOT_NULL(cyl_clone.get());
     EXPECT_EQ(2, cyl_clone->GetTopRadius());
 }

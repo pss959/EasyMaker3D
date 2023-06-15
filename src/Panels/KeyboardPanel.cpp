@@ -9,7 +9,6 @@
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Widgets/PushButtonWidget.h"
 
 void KeyboardPanel::InitInterface() {
@@ -23,11 +22,11 @@ void KeyboardPanel::InitInterface() {
 }
 
 void KeyboardPanel::FindKeyPanes_(const PanePtr &pane) {
-    if (KeyPanePtr key_pane = Util::CastToDerived<KeyPane>(pane))
+    if (KeyPanePtr key_pane = std::dynamic_pointer_cast<KeyPane>(pane))
         key_panes_.push_back(key_pane);
 
     // Recurse if this is a ContainerPane.
-    if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
+    if (ContainerPanePtr ctr = std::dynamic_pointer_cast<ContainerPane>(pane)) {
         for (const auto &sub_pane: ctr->GetPanes())
             FindKeyPanes_(sub_pane);
     }

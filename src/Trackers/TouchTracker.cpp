@@ -9,7 +9,6 @@
 #include "Place/DragInfo.h"
 #include "SG/Intersector.h"
 #include "SG/Search.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 #include "Widgets/ClickableWidget.h"
 #include "Widgets/Touchable.h"
@@ -96,7 +95,8 @@ void TouchTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 
 void TouchTracker::FillClickInfo(ClickInfo &info) {
     info.device = GetDevice();
-    info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
+    info.widget =
+        std::dynamic_pointer_cast<ClickableWidget>(current_widget_).get();
 }
 
 void TouchTracker::Reset() {

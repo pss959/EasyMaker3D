@@ -3,7 +3,6 @@
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
 #include "SG/Intersector.h"
-#include "Util/General.h"
 #include "Widgets/ClickableWidget.h"
 
 void PointerTracker::UpdateHovering(const Event &event) {
@@ -53,7 +52,8 @@ void PointerTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 void PointerTracker::FillClickInfo(ClickInfo &info) {
     info.device = GetDevice();
     info.hit    = current_hit_;
-    info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
+    info.widget =
+        std::dynamic_pointer_cast<ClickableWidget>(current_widget_).get();
 }
 
 void PointerTracker::Reset() {

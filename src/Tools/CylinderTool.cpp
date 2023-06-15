@@ -54,7 +54,8 @@ bool CylinderTool::CanAttach(const Selection &sel) const {
 
 void CylinderTool::Attach() {
     ASSERT(Util::IsA<CylinderModel>(GetModelAttachedTo()));
-    cylinder_model_ = Util::CastToDerived<CylinderModel>(GetModelAttachedTo());
+    cylinder_model_ =
+        std::dynamic_pointer_cast<CylinderModel>(GetModelAttachedTo());
     UpdateScalers_();
 }
 

@@ -4,7 +4,6 @@
 #include "Models/RootModel.h"
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 
 TEST_F(SessionTestBase, MirrorSessionTest) {
@@ -18,9 +17,12 @@ TEST_F(SessionTestBase, MirrorSessionTest) {
 
     const auto &rm = *context.scene_context->root_model;
     EXPECT_EQ(3U, rm.GetChildModelCount());
-    const auto mm1 = Util::CastToDerived<MirroredModel>(rm.GetChildModel(0));
-    const auto mm2 = Util::CastToDerived<MirroredModel>(rm.GetChildModel(1));
-    const auto mm3 = Util::CastToDerived<MirroredModel>(rm.GetChildModel(2));
+    const auto mm1 =
+        std::dynamic_pointer_cast<MirroredModel>(rm.GetChildModel(0));
+    const auto mm2 =
+        std::dynamic_pointer_cast<MirroredModel>(rm.GetChildModel(1));
+    const auto mm3 =
+        std::dynamic_pointer_cast<MirroredModel>(rm.GetChildModel(2));
     ASSERT_TRUE(mm1);
     ASSERT_TRUE(mm2);
     ASSERT_TRUE(mm3);

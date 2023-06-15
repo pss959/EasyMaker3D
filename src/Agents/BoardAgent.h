@@ -5,7 +5,6 @@
 
 #include "Base/Memory.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 DECL_SHARED_PTR(Panel);
 DECL_SHARED_PTR(BoardAgent);

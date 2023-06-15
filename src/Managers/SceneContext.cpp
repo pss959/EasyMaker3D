@@ -20,7 +20,6 @@
 #include "SG/TextNode.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
-#include "Util/General.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/StageWidget.h"
@@ -53,9 +52,9 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     ASSERT(gantry);
     for (auto &cam: gantry->GetCameras()) {
         if (cam->GetTypeName() == "WindowCamera")
-            window_camera = Util::CastToDerived<SG::WindowCamera>(cam);
+            window_camera = std::dynamic_pointer_cast<SG::WindowCamera>(cam);
         else if (cam->GetTypeName() == "VRCamera")
-            vr_camera = Util::CastToDerived<SG::VRCamera>(cam);
+            vr_camera = std::dynamic_pointer_cast<SG::VRCamera>(cam);
     }
     ASSERT(window_camera);
 
@@ -64,7 +63,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
     // Access the ShadowPass from the Scene.
     for (const auto &rp: sc.GetRenderPasses()) {
-        if ((shadow_pass = Util::CastToDerived<SG::ShadowPass>(rp)))
+        if ((shadow_pass = std::dynamic_pointer_cast<SG::ShadowPass>(rp)))
             break;
     }
     ASSERT(shadow_pass);
