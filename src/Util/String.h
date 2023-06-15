@@ -35,9 +35,6 @@ std::string ToUpperCase(const std::string &s);
 /// Converts a string to lower-case (ASCII) as well as possible.
 std::string ToLowerCase(const std::string &s);
 
-/// Checks for case-sensitive string containment.
-bool StringContains(const std::string &container, const std::string &containee);
-
 /// Returns true if two strings are equal, ignoring case.
 bool StringsEqualNoCase(const std::string &s1, const std::string &s2);
 

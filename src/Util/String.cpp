@@ -32,11 +32,6 @@ std::string ToLowerCase(const std::string &s) {
     return u;
 }
 
-bool StringContains(const std::string &container,
-                    const std::string &containee) {
-    return container.find(containee) != std::string::npos;
-}
-
 bool StringsEqualNoCase(const std::string &s1, const std::string &s2) {
     auto compare_chars = [](const char &c1, const char &c2){
         return c1 == c2 || std::toupper(c1) == std::toupper(c2);

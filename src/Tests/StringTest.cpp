@@ -46,14 +46,6 @@ TEST(String, ToLowerCase) {
     EXPECT_EQ("a  b", Util::ToLowerCase("A  B"));
 }
 
-TEST(String, StringContains) {
-    EXPECT_TRUE(Util::StringContains("ab c", "ab"));
-    EXPECT_FALSE(Util::StringContains("ab c", "Ab"));
-    EXPECT_TRUE(Util::StringContains("ab c", " c"));
-    EXPECT_TRUE(Util::StringContains("ab c", "c"));
-    EXPECT_FALSE(Util::StringContains("ab c", "abc"));
-}
-
 TEST(String, StringsEqualNoCase) {
     EXPECT_TRUE(Util::StringsEqualNoCase(" ab c", " ab c"));
     EXPECT_TRUE(Util::StringsEqualNoCase(" ab c", " AB C"));

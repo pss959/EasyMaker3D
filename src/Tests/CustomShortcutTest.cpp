@@ -28,9 +28,8 @@ class CustomShortcutTest : public TestBase {
     }
 
     void TestString(const std::string &s, const std::string &pattern) {
-        EXPECT_TRUE(Util::StringContains(s, pattern))
-                    << " s = '" << s
-                    << "' pattern = '" << pattern << "'";
+        EXPECT_TRUE(s.contains(pattern))
+            << " s = '" << s << "' pattern = '" << pattern << "'";
     }
 };
 
