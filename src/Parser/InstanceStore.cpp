@@ -11,20 +11,20 @@ void InstanceStore::Reset() {
 
 void InstanceStore::AddOriginal_(const std::type_index &key,
                                    const BasePtr_ &original) {
-    ASSERT(! Util::MapContains(original_map_, key));
+    ASSERT(! original_map_.contains(key));
     OriginalData_ data;
     data.original = original;
     data.count    = 0;
     original_map_[key] = data;
 
     // Create (empty) storage for the available instances.
-    ASSERT(! Util::MapContains(available_instances_, key));
+    ASSERT(! available_instances_.contains(key));
     available_instances_[key] = AvailableList_();
 }
 
 InstanceStore::BasePtr_ InstanceStore::GetAvailableInstance_(
     const std::type_index &key) {
-    ASSERT(Util::MapContains(original_map_, key));
+    ASSERT(original_map_.contains(key));
     BasePtr_ instance;
     auto &avail = available_instances_[key];
     if (! avail.empty()) {
@@ -36,7 +36,7 @@ InstanceStore::BasePtr_ InstanceStore::GetAvailableInstance_(
 
 void InstanceStore::MakeAvailable_(const BasePtr_ &instance,
                                      const std::type_index &key) {
-    ASSERT(Util::MapContains(available_instances_, key));
+    ASSERT(available_instances_.contains(key));
     available_instances_[key].push_front(instance);
 }
 

@@ -137,7 +137,7 @@ ActionMap::ActionMap_ ActionMap::BuildActionMap_(
     for (const Action action: Util::EnumValues<Action>()) {
         if (action == Action::kReloadScene)
             continue;
-        ASSERTM(Util::MapContains(action_map, action), Util::EnumName(action));
+        ASSERTM(action_map.contains(action), Util::EnumName(action));
     }
 #endif
 

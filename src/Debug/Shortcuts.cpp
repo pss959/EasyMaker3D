@@ -78,10 +78,7 @@ class ShortcutMap_ {
     /// Returns the Action corresponding to the given shortcut string, which
     /// may be kNone.
     Action GetAction(const std::string &str) const {
-        if (Util::MapContains(action_map_, str))
-            return action_map_.at(str);
-        else
-            return Action::kNone;
+        return action_map_.contains(str) ? action_map_.at(str) : Action::kNone;
     }
 
     /// Returns the help string to print.

@@ -217,23 +217,21 @@ class TextSTLReader_ : public STLReaderBase_ {
 };
 
 TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
-    using ion::base::StartsWith;
-
     // Split the data into lines. Ignore whitespace and trim each line.
     const std::vector<std::string> lines = SplitIntoLines_(data);
     int cur_line = 0;
-    if (! StartsWith(lines[cur_line], "solid"))
+    if (! lines[cur_line].starts_with("solid"))
         Throw(1, "Expected 'solid'");
 
     TriMesh mesh;
 
     // Read facets.
-    while (StartsWith(lines[++cur_line], "facet")) {
-        if (! StartsWith(lines[++cur_line], "outer loop"))
+    while (lines[++cur_line].starts_with("facet")) {
+        if (! lines[++cur_line].starts_with("outer loop"))
             Throw(cur_line + 1, "Expected 'outer loop'");
         // Read 3 vertices.
         for (int i = 0; i < 3; ++i) {
-            if (! StartsWith(lines[++cur_line], "vertex"))
+            if (! lines[++cur_line].starts_with("vertex"))
                 Throw(cur_line + 1, "Expected 'vertex'");
             std::istringstream in(lines[cur_line]);
             std::string v;
@@ -242,12 +240,12 @@ TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
                 Throw(cur_line + 1, "Invalid vertex");
             mesh.indices.push_back(AddPoint(p));
         }
-        if (! StartsWith(lines[++cur_line], "endloop"))
+        if (! lines[++cur_line].starts_with("endloop"))
             Throw(cur_line + 1, "Expected 'endloop'");
-        if (! StartsWith(lines[++cur_line], "endfacet"))
+        if (! lines[++cur_line].starts_with("endfacet"))
             Throw(cur_line + 1, "Expected 'endfacet'");
     }
-    if (! StartsWith(lines[cur_line], "endsolid"))
+    if (! lines[cur_line].starts_with("endsolid"))
         Throw(cur_line + 1, "Expected 'endsolid'");
 
     mesh.points = GetPoints();
@@ -264,7 +262,7 @@ TextSTLReader_::SplitIntoLines_(const std::string &data) {
         line = ion::base::TrimStartAndEndWhitespace(line);
 
     // Delete blank lines, which should now be empty.
-    Util::EraseIf(lines, [](const std::string &s){ return s.empty(); });
+    std::erase_if(lines, [](const std::string &s){ return s.empty(); });
 
     return lines;
 }

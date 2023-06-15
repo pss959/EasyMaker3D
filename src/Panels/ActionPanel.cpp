@@ -8,7 +8,6 @@
 #include "Place/ClickInfo.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
-#include "Util/General.h"
 #include "Widgets/PushButtonWidget.h"
 
 void ActionPanel::SetAction(Action action) {
@@ -70,6 +69,6 @@ void ActionPanel::UpdateInterface() {
 }
 
 void ActionPanel::ChangeHighlight_(Action action, bool state) {
-    ASSERT(Util::MapContains(button_map_, action));
+    ASSERT(button_map_.contains(action));
     button_map_[action]->GetButton().SetToggleState(state);
 }

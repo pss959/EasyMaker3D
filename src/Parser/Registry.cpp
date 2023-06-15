@@ -15,7 +15,7 @@ std::vector<std::string> Registry::GetAllTypeNames() {
 void Registry::AddType_(const std::string &type_name,
                         const std::type_info &info,
                         const CreationFunc &creation_func) {
-    if (Util::MapContains(creation_map_, type_name))
+    if (creation_map_.contains(type_name))
         throw Exception("Object type registered more than once: '" +
                         type_name + "'");
     creation_map_[type_name] = creation_func;

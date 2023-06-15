@@ -1,8 +1,6 @@
 #include <sstream>
 #include <string>
 
-#include <ion/base/stringutils.h>
-
 #include "Parser/Exception.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -133,7 +131,7 @@ TEST_F(SearchTest, FindNodes) {
     EXPECT_NOT_NULL(scene);
 
     auto func1 = [](const SG::Node &node){
-        return ion::base::StartsWith(node.GetName(), "FindMe");
+        return node.GetName().starts_with("FindMe");
     };
     const std::vector<SG::NodePtr> nodes1a =
         SG::FindNodes(scene->GetRootNode(), func1);
@@ -154,7 +152,7 @@ TEST_F(SearchTest, FindNodes) {
     EXPECT_EQ("FindMe4", nodes1b[4]->GetName());
 
     auto func2 = [](const SG::Node &node){
-        return ion::base::StartsWith(node.GetName(), "NoSuchName");
+        return node.GetName().starts_with("NoSuchName");
     };
     const std::vector<SG::NodePtr> nodes2 =
         SG::FindNodes(scene->GetRootNode(), func2);

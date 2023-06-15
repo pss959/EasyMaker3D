@@ -189,14 +189,12 @@ bool ShortcutHandler::AddCustomShortcutsFromString(const std::string &contents,
 void ShortcutHandler::GetShortcutStrings(Action action,
                                          std::string &keyboard_string,
                                          std::string &controller_string) const {
-    using ion::base::StartsWith;
-
     keyboard_string.clear();
     controller_string.clear();
     for (const auto &it: action_map_) {
         if (it.second == action) {
             const bool is_controller =
-                StartsWith(it.first, "L:") || StartsWith(it.first, "R:");
+                it.first.starts_with("L:") || it.first.starts_with("R:");
             std::string &str =
                 is_controller ? controller_string : keyboard_string;
             if (! str.empty())

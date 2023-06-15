@@ -14,7 +14,7 @@ CommandManager::CommandManager() :
 
 void CommandManager::RegisterFunction(const std::string &type_name,
                                       const CommandFunc &func) {
-    ASSERT(! Util::MapContains(command_registry_, type_name));
+    ASSERT(! command_registry_.contains(type_name));
     command_registry_[type_name] = func;
 }
 

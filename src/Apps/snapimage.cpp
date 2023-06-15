@@ -32,7 +32,7 @@ class MockFilePathList_ : public FilePathList {
                              bool include_hidden) const override;
     virtual bool IsValidDirectory(const FilePath &path) const {
         const std::string fn = path.GetFileName();
-        return ion::base::StartsWith(fn, "Dir") || fn == "stl" || fn == "maker";
+        return fn.starts_with("Dir") || fn == "stl" || fn == "maker";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
         return true;

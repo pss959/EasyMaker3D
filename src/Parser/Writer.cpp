@@ -128,8 +128,8 @@ void Writer::Impl_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
 }
 
 bool Writer::Impl_::WriteObjHeader_(const Object &obj) {
-    const bool is_use = ! obj.GetName().empty() &&
-        Util::MapContains(written_named_objects_, &obj);
+    const bool is_use =
+        ! obj.GetName().empty() && written_named_objects_.contains(&obj);
 
     if (is_use)
         out_ << "USE";

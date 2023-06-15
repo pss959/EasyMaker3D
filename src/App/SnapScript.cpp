@@ -18,7 +18,7 @@ static std::vector<std::string> GetWords_(const std::string &line) {
 
     // Check for comments.
     for (size_t i = 0; i < words.size(); ++i) {
-        if (ion::base::StartsWith(words[i], "#")) {
+        if (words[i].starts_with("#")) {
             words.resize(i);
             break;
         }

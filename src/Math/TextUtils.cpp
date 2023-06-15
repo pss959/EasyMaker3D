@@ -72,7 +72,7 @@ std::vector<std::string> FontManager_::GetAvailableFontNames() {
 
 bool FontManager_::IsValidFontName(const std::string &font_name) {
     Init_();
-    return Util::MapContains(face_map_, font_name);
+    return face_map_.contains(font_name);
 }
 
 bool FontManager_::IsValidStringForFont(const std::string &font_name,
@@ -169,7 +169,7 @@ void FontManager_::Init_() {
                 std::string(face->family_name) + "-" + face->style_name;
             KLOG('z', "Loaded font '" << name << " from path '"
                  << path.ToString() << "'");
-            ASSERTM(! Util::MapContains(face_map_, name), name);
+            ASSERTM(! face_map_.contains(name), name);
             path_map_[name] = path;
             face_map_[name] = face;
         }

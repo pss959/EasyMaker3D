@@ -1,7 +1,6 @@
 #include "SG/ColorMap.h"
 
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 namespace SG {
 
@@ -16,7 +15,7 @@ void ColorMap::AddFields() {
 void ColorMap::CreationDone() {
     // Set up the map.
     for (const auto &nc: GetNamedColors()) {
-        ASSERT(! Util::MapContains(map_, nc->GetName()));
+        ASSERT(! map_.contains(nc->GetName()));
         map_[nc->GetName()] = nc->GetColor();
     }
 
@@ -25,7 +24,7 @@ void ColorMap::CreationDone() {
 }
 
 Color ColorMap::GetColor(const std::string &name) const {
-    ASSERTM(Util::MapContains(map_, name), "Missing color: " + name);
+    ASSERTM(map_.contains(name), "Missing color: " + name);
     return map_.at(name);
 }
 

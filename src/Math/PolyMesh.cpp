@@ -76,10 +76,10 @@ static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
     // CGAL probably won't like this, but it's better than a hole.
     const std::string key     = EdgeHashKey_(*edge.v0, *edge.v1);
     const std::string opp_key = EdgeHashKey_(*edge.v1, *edge.v0);
-    if (Util::MapContains(edge_map, key)) {
+    if (edge_map.contains(key)) {
         // Remove the edge and its opposite, if it is there.
         edge_map.erase(key);
-        if (Util::MapContains(edge_map, opp_key))
+        if (edge_map.contains(opp_key))
             edge_map.erase(opp_key);
     }
 

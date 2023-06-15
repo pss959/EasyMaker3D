@@ -11,7 +11,7 @@ void PanelManager::FindAllPanels(const SG::Scene &scene,
     auto add_panel = [this, &scene, &context](const std::string &name) {
         auto panel = SG::FindTypedNodeInScene<Panel>(scene, name);
         panel->SetContext(context);
-        ASSERTM(! Util::MapContains(panel_map_, name),
+        ASSERTM(! panel_map_.contains(name),
                 "Multiple panels with name " + name);
         panel_map_[name] = panel;
     };
@@ -39,6 +39,6 @@ void PanelManager::FindAllPanels(const SG::Scene &scene,
 }
 
 PanelPtr PanelManager::GetPanel(const std::string &name) const {
-    ASSERTM(Util::MapContains(panel_map_, name), "No panel named " + name);
+    ASSERTM(panel_map_.contains(name), "No panel named " + name);
     return panel_map_.at(name);
 }

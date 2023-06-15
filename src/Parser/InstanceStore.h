@@ -33,7 +33,7 @@ class InstanceStore {
 
     /// Returns true if there is an original instance for the given type.
     template <typename T> bool HasOriginal() const {
-        return Util::MapContains(original_map_, std::type_index(typeid(T)));
+        return original_map_.contains(std::type_index(typeid(T)));
     }
 
     /// Returns an instance of the templated type of object, creating a new one

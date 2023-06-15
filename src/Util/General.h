@@ -57,12 +57,6 @@ bool Contains(const Container &ctr, const Element &elt) {
     return std::find(ctr.begin(), ctr.end(), elt) != ctr.end();
 }
 
-/// Returns true if an STL map or set contains the given element
-template <typename Map, typename Element>
-bool MapContains(const Map &map, const Element &elt) {
-    return map.find(elt) != map.end();
-}
-
 /// Returns a vector containing all keys from a map.
 template <typename Map>
 std::vector<typename Map::key_type> GetKeys(const Map &map) {
@@ -101,16 +95,6 @@ std::vector<To> ConvertVector(const std::vector<From> &from_vec,
 template <typename T>
 void AppendVector(const std::vector<T> &from, std::vector<T> &to) {
     to.insert(to.end(), from.begin(), from.end());
-}
-
-/// Applies the remove_if()/erase() functions for a vector. Returns the number
-/// of items erased.
-template <typename T, typename Pred>
-size_t EraseIf(std::vector<T> &vec, Pred func) {
-    auto it = std::remove_if(vec.begin(), vec.end(), func);
-    const size_t count = std::distance(it, vec.end());
-    vec.erase(it, vec.end());
-    return count;
 }
 
 /// Creates a shared_ptr for the given pointer of the templated type that does

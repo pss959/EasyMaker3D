@@ -26,7 +26,7 @@ GIndex Point3fMap::Add(const Point3f &p, Point3f *pos) {
 }
 
 bool Point3fMap::Contains(const Point3f &p) const {
-    return Util::MapContains(map_, Round_(p));
+    return map_.contains(Round_(p));
 }
 
 Point3f Point3fMap::Round_(const Point3f &p) const {

@@ -107,7 +107,7 @@ GIndex VertexMerger_::GetVertexIndex_(const Vertex &vert) {
     // Add to the Point3fMap and see if the vertex is a duplicate.
     Point3f pos;
     GIndex index = point_map_.Add(vert.point, &pos);
-    if (Util::MapContains(index_map_, index)) {
+    if (index_map_.contains(index)) {
         // This is a duplicate. Associate the vertex with the index of the
         // unique vertex at the same location.
         vertex_map_[&vert] = index_map_.at(index);
@@ -259,7 +259,7 @@ static void MergeFaces_(Edge &common_edge,
         removed_edges.insert(ve);
         removed_edges.insert(ve->opposite_edge);
     }
-    Util::EraseIf(to_face.outer_edges,
+    std::erase_if(to_face.outer_edges,
                   [](const Edge *e){ return e->IsVestigial(); });
 
     // Reindex all remaining edges in the face.
@@ -276,7 +276,7 @@ static VertexMap_ BuildVertexMap_(const PolyMesh &poly_mesh) {
 
     // Count and store edges.
     for (auto &e: poly_mesh.edges) {
-        ASSERT(Util::MapContains(vmap, e->v0));
+        ASSERT(vmap.contains(e->v0));
         VertexInfo_ &info = vmap[e->v0];
 
         // Update the VertexInfo_ for the V0 vertex of the edge.
@@ -327,16 +327,16 @@ static void MergeCollinearEdges_(PolyMesh &poly_mesh, VertexMap_ &vmap) {
 
     // Look for vertices that are part of exactly 2 edges.
     for (auto &v: poly_mesh.vertices) {
-        ASSERT(Util::MapContains(vmap, v));
+        ASSERT(vmap.contains(v));
         const VertexInfo_ &vinfo = vmap[v];
         if (vinfo.edge_count == 2) {
             Edge *from_edge = vinfo.e0;
             Edge *to_edge   = vinfo.e1;
 
             // Don't merge from or to an Edge that is no longer around.
-            while (Util::MapContains(merged_edges, from_edge))
+            while (merged_edges.contains(from_edge))
                 from_edge = merged_edges[from_edge];
-            while (Util::MapContains(merged_edges, to_edge))
+            while (merged_edges.contains(to_edge))
                 to_edge   = merged_edges[to_edge];
 
             // Choose edges so that they have v0 in common.
@@ -349,8 +349,8 @@ static void MergeCollinearEdges_(PolyMesh &poly_mesh, VertexMap_ &vmap) {
     }
 
     // Remove and delete merged edges.
-    Util::EraseIf(poly_mesh.edges, [&merged_edges](Edge *e){
-        return Util::MapContains(merged_edges, e); });
+    std::erase_if(poly_mesh.edges,
+                  [&merged_edges](Edge *e){ return merged_edges.contains(e); });
     for (auto it: merged_edges)
         delete it.first;
 }
@@ -457,8 +457,8 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
 
         // Skip edges already removed by their opposite edge or edges bounding
         // faces that were already merged.
-        if (Util::MapContains(removed_edges, e) ||
-            Util::MapContains(merged_faces, e->opposite_edge->face))
+        if (removed_edges.contains(e) ||
+            merged_faces.contains(e->opposite_edge->face))
             continue;
 
         if (AreFacesCoplanar_(*e)) {
@@ -477,10 +477,11 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
     }
 
     // Remove all of the merged faces and edges from the PolyMesh.
-    Util::EraseIf(poly_mesh.faces, [&merged_faces](Face *f){
-        return Util::MapContains(merged_faces, f); });
-    Util::EraseIf(poly_mesh.edges, [&removed_edges](Edge *e){
-        return Util::MapContains(removed_edges, e); });
+    std::erase_if(poly_mesh.faces,
+                  [&merged_faces](Face *f){ return merged_faces.contains(f); });
+    std::erase_if(poly_mesh.edges,
+                  [&removed_edges](Edge *e){
+                      return removed_edges.contains(e); });
 
     // Also delete them.
     for (auto it: merged_faces)
@@ -496,8 +497,8 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
     MergeCollinearEdges_(poly_mesh, vmap);
 
     // Remove and delete any vertices with fewer than 3 remaining edges.
-    Util::EraseIf(poly_mesh.vertices, [&vmap](Vertex *v){
-        ASSERT(Util::MapContains(vmap, v));
+    std::erase_if(poly_mesh.vertices, [&vmap](Vertex *v){
+        ASSERT(vmap.contains(v));
         return vmap[v].edge_count < 3;
     });
     for (auto it: vmap)

@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include <ion/base/stringutils.h>
-
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/DropdownPane.h"
@@ -301,7 +299,7 @@ void FilePanel::Impl_::OpenPath_(const FilePath &path) {
 
 void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
     std::string path_string = path.ToString();
-    if (! ion::base::EndsWith(path_string, FilePath::GetSeparator()))
+    if (! path_string.ends_with(FilePath::GetSeparator()))
         path_string += FilePath::GetSeparator();
 
     input_pane_->SetInitialText(path_string);

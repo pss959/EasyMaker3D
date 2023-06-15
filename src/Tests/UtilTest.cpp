@@ -77,13 +77,3 @@ TEST(UtilTest, ConvertVector) {
     EXPECT_EQ(2.0f, floats[3]);
     EXPECT_EQ(2.5f, floats[4]);
 }
-
-TEST(UtilTest, EraseIf) {
-    std::vector<int> ints{ 1, 2, 3, 4, 5 };
-    EXPECT_EQ(3U, Util::EraseIf(ints, [](int i){ return i % 2 == 1; }));
-    EXPECT_EQ(2U, ints.size());
-    EXPECT_EQ(2, ints[0]);
-    EXPECT_EQ(4, ints[1]);
-    EXPECT_EQ(0U, Util::EraseIf(ints, [](int i){ return i == 121; }));
-}
-

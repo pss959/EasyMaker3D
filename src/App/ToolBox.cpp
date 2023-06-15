@@ -39,7 +39,7 @@ void ToolBox::AddTools(const std::vector<ToolPtr> &tools) {
             passive_tool_store_->AddOriginal<PassiveTool>(pt);
         }
         else {
-            ASSERTM(! Util::MapContains(tool_name_map_, type_name), type_name);
+            ASSERTM(! tool_name_map_.contains(type_name), type_name);
             tool_name_map_[type_name] = tool;
             if (tool->IsSpecialized()) {
                 KLOG('T', "Adding specialized " << type_name);
@@ -199,7 +199,7 @@ void ToolBox::ReattachTools() {
 }
 
 ToolPtr ToolBox::GetAttachedTool(const ModelPtr &model) const {
-    return Util::MapContains(active_tool_map_, model.get()) ?
+    return active_tool_map_.contains(model.get()) ?
         active_tool_map_.at(model.get()) : ToolPtr();
 }
 
@@ -219,7 +219,7 @@ void ToolBox::UpdateGripInfo(GripInfo &info) {
 }
 
 ToolPtr ToolBox::GetGeneralTool_(const std::string &name) const {
-    ASSERT(Util::MapContains(tool_name_map_, name));
+    ASSERT(tool_name_map_.contains(name));
     auto tool = tool_name_map_.at(name);
     ASSERT(tool);
     ASSERT(! tool->IsSpecialized());
@@ -337,7 +337,7 @@ void ToolBox::ModelChanged_(const ModelPtr &model, SG::Change change) {
     // reattach. However, if a Tool is actively dragging, it is likely the
     // reason for the change, so do not reattach.
     if (! is_tool_dragging_ && change != SG::Change::kAppearance) {
-        ASSERT(Util::MapContains(active_tool_map_, model.get()));
+        ASSERT(active_tool_map_.contains(model.get()));
         active_tool_map_.at(model.get())->ReattachToSelection();
     }
 }

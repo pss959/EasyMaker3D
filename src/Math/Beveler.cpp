@@ -242,7 +242,7 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
     // Create a map storing the first edge that starts at each vertex.
     VertexEdgeMap_ vertex_edge_map;
     for (const auto edge: mesh_.edges) {
-        if (! Util::MapContains(vertex_edge_map, edge->v0))
+        if (! vertex_edge_map.contains(edge->v0))
             vertex_edge_map[edge->v0] = edge;
     }
 
@@ -288,7 +288,7 @@ Beveler_::Beveler_(const PolyMesh &mesh, const Bevel &bevel,
 
 void Beveler_::InitEdgeData_(const PolyMesh::Edge &edge, bool is_reversed) {
     // Do nothing if already handled.
-    if (Util::MapContains(edge_data_map_, &edge))
+    if (edge_data_map_.contains(&edge))
         return;
 
     // Create a new EdgeData_ for the edge and its opposite.
@@ -492,7 +492,7 @@ void Beveler_::AddEdgeFaces_() {
     // This set is used to keep opposite edges from being processed.
     std::unordered_set<const PolyMesh::Edge *> processed_edges;
     for (const auto &edge: mesh_.edges) {
-        if (! Util::MapContains(processed_edges, edge)) {
+        if (! processed_edges.contains(edge)) {
             processed_edges.insert(edge->opposite_edge);
 
             const auto &ei0 = edge_data_map_.at(edge).indices;

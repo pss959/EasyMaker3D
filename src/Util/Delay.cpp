@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
 
 #include <iostream>
@@ -184,8 +183,8 @@ bool ThreadManager_::Cancel(int id) {
 }
 
 void ThreadManager_::RemoveFinished_() {
-    auto is_finished = [](const ThreadPtr_ &tp){ return tp->IsFinished(); };
-    Util::EraseIf(threads_, is_finished);
+    std::erase_if(threads_,
+                  [](const ThreadPtr_ &tp){ return tp->IsFinished(); });
 }
 
 /// Static ThreadManager_ instance.
