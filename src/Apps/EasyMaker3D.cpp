@@ -17,6 +17,7 @@
 #include "Util/ExceptionBase.h"
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
+#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
 #include "Util/String.h"
