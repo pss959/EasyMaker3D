@@ -5,7 +5,10 @@ with the material in the User Guide in the [user
 documentation](https://pss959.github.io/EasyMaker3D/latest) would likely be
 very helpful.
 
-## Design
+## Design Criteria
+
+This section lists a few ideas that place constraints on the application
+design.
 
 ### Size and Precision
 
@@ -13,13 +16,13 @@ $(APP_NAME) is targeted for casual 3D printing, which places some useful
 constraints on the application:
 
   - Most 3D printers have a relatively small, fixed size, meaning there is no
-    need to support an infinite size range.
+    need to support an infinite size range. Therefore, the room, stage, and
+    build volume sizes are reasonable.
   - The size of printer nozzles is also constrained, meaning that model
     features smaller than about a tenth of a millimeter are unlikely to be
-    useful. This limits the precision of various modeling operations.
-    
-These constraints are exhibited in the room and stage sizes and in the
-available precision settings.
+    useful. This limits the precision of various modeling operations and
+    therefore the available application precision settings (such as the
+    PrecisionStore).
 
 ### VR and Multi-Platform
 
@@ -30,23 +33,79 @@ requirements:
     well in VR.
   - The UI must also be available on all platforms.
 
-The result is a custom embedded 3D UI that works both with mouse/keyboard and
-VR controllers.
-
-### Coordinate Systems
-
-The application uses a conventional 3D graphics coordinate system:
-right-handed, with +X to the right, +Y up, and +Z toward the viewer.
-Conversions to and from the conventional STL/3D-printing coordinate system (RHS
-with +Z up) are performed when necessary. All user-facing documentation and
-color coding assume the 3D-printing system.
+To satisfy both of these constraints, $(APP_NAME) uses 3D interaction whenever
+it makes sense and uses a 2D Panel embedded in 3D for non-3D interaction. This
+scheme works with both mouse+keyboard and VR controllers.
 
 ### Encapsulation
 
 The application relies heavily on encapsulation in its design and
 implementation. All data access and modification in classes occurs through
-class methods. Similarly, there is a rigid ordering of module dependencies to
-avoid any cycles (see the diagram below).
+class methods (not directly on member variables). Similarly, there is a rigid
+ordering of module dependencies to avoid any cycles (see the \ref Modules
+diagram below).
+
+### Sessions 
+
+$(APP_NAME) saves sessions as a set of commands performed since the scene was
+empty, rather than as data files. This decision means that the application can
+support infinite undo/redo, even in restored sessions.
+
+## Design Basics
+
+### Scene Graph
+
+At the heart of $(APP_NAME) is a scene graph (in the SG namespace) that
+represents everything rendered and interacted with in the work are. Nodes in
+the scene graph form a directed acyclic graph (not a tree, due to the ability
+to share instances).
+
+Any code that needs to refer to specific nodes in the scene graph uses a path
+(SG::NodePath) that can distinguish among multiple instances of the same
+node. Note that a node in the scene graph does *not* contain any references to
+its parent(s).
+
+Within the scene graph is a graph of the 3D models being created by the
+user. Each node in the model graph is a type derived from the Model class,
+which is derived (distantly) from SG::Node.
+
+More details about the scene graph implementation are [provided
+below](#SGSceneGraph);
+
+### Coordinate Systems
+
+The user-facing coordinate system is the conventional STL/3D-printing
+coordinate system: right-handed with +X to the right, +Y to the back, and +Z
+up. All color-coding in the application and all public documentation use this
+system.
+
+However, the application is implemented using the more conventional 3D graphics
+coordinate system: right-handed, with +X to the right, +Y up, and +Z toward the
+viewer. Conversions betwewen the two systems are performed when necessary.
+
+Within the code, multiple named coordinate systems are used. Every node in the
+scene graph may have a scale, rotation, and translation defined by its
+correspondingly-named fields.
+
++ *World coordinates* are the absolute coordinates for items in the work area.
++ *Stage coordinates* are coordinates for anything appearing on the stage in
+  the work area, including all models, tools, 3D feedback, and more. These
+  coordinates are mapped to world coordinates by applying the scale, rotation,
+  and translation of the stage itself. Much of the code uses these coordinates
+  so that everything works properly when the user rotates or resizes the stage
+  for viewing purposes.
++ *Local coordinates* refer to the coordinate system for a node in the scene
+  graph including the node's local transformations.
++ *Object coordinates* refer to the coordinate system for a node in the scene
+  graph *not* including the node's local transformations.
+
+The use of object and local coordinates may be clearer with an example.
+Consider a scene graph path from the root down to a node named `A`. To
+transform a point from `A`'s *object* coordinates to world coordinates, the
+transformations from all nodes in the path (including `A`) are accumulated into
+a matrix and then applied to the point. To transform a point from `A`'s *local*
+coordinates to world coordinates, the accumulated matrix does not include `A`'s
+transformations.
 
 ### Session Management
 
@@ -148,7 +207,7 @@ concrete classes derived from `Parser::Object` that can be parsed from files.
 All derived concrete parsable classes have a protected no-argument constructor
 and declare `Parser::Registry` as a friend so instances can be created.
 
-### SG: Scene Graph
+### SG: Scene Graph {#SGSceneGraph}
 
 The `ionsrc` subdirectory contains a fork of the [Google
 Ion](https://github.com/google/ion) repository that serves as the underlying
@@ -199,7 +258,7 @@ scene graph. It contains the following items, all of which are optional:
   - An `SG::StateTable` defining graphics state.
   - A collection of `SG::Shape` instances defining geometry (see below).
   - A collection of child nodes.
-    
+
 Nodes implement a simple inheritance model: anything defined in a node is
 inherited by all descendents unless overridden by one of them. The only
 exception is transformation values, which accumulate as expected.
@@ -226,6 +285,10 @@ The test code coverage can be explored by building the `Coverage` target with
 the `cov` mode. This creates an HTML page with the results in
 `build/cov/coverage/html/index.html`
 
+Ion unit tests can be built and run with the `IonTests` and `RunIonTests`
+targets. These tests work only in [`dbg` build mode](#BuildModes); they will
+abort in any other mode. There is no coverage target for these tests.
+
 ### Tuning Constants
 
 A variety of application constants are declared in `Util/Tuning.h` and defined
@@ -247,8 +310,8 @@ It works as follows.
   - The source code contains uses of the `KLOG` macro to output messages to
     standard output. The first argument is a single case-sensitive character
     that identifies the key for a message.
-  - The <tt>$(APP_NAME)</tt>, `nodeviewer`, and `snapimage` applications all
-    have a `--klog` command-line argument specifying a key string to use to
+  - The <code>$(APP_NAME)</code>, `nodeviewer`, and `snapimage` applications
+    all have a `--klog` command-line argument specifying a key string to use to
     enable logging messages. This can also be done in code with the the
     `KLogger::SetKeyString()` function. Unit tests can use the `EnableKLog()`
     function that calls this.
@@ -344,9 +407,9 @@ to help debug the application. `src/Debug/Print.h` defines a bunch of functions
 that print useful information to standard output, such as scene graph
 structure, bounding boxes, transforms, and so on.
 
-Some of these functions are accessible from the <tt>$(APP_NAME)</tt>,
+Some of these functions are accessible from the <code>$(APP_NAME)</code>,
 `nodeviewer`, and `snapimage` applications via keyboard shortcuts. Use the
-`<Alt>h` shortcut to print help for the available shortcuts.
+`Alt-h` shortcut to print help for the available debug shortcuts.
 
 The `Debug::DisplayDebugText()` function displays a given text string on the
 back wall of the scene in the main application. By default it shows the path
@@ -368,6 +431,5 @@ application to enable this feature, then point your browser at
 
 Note that this disables other URL access by the application, such as opening
 the URLs in the `HelpPanel`.
-
 
 **Note**: This feature is disabled entirely in release builds.

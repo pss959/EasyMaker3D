@@ -10,7 +10,8 @@
 DECL_SHARED_PTR(PrecisionStore);
 
 /// The PrecisionStore stores the current precision setting and applies it to
-/// various interactive operations.
+/// various interactive operations. The PrecisionStore currently supports 3
+/// levels of linear and angular precision; see the #precisions_ documentation.
 ///
 /// \ingroup Place
 class PrecisionStore {

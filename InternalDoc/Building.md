@@ -16,7 +16,20 @@ Linux, but could easily be adapted to run on other platforms if anyone wants
 to.
 
 For your convenience, some dependencies are already included as submodules in
-the Github repository.
+the Github repository. They are:
+
++ [`docopt.cpp`](https://github.com/docopt/docopt.cpp): A port of `docopt` to
+  C++, used for command-line processing.
++ [`googletest`](https://github.com/google/googletest): Used for unit testing.
++ [`magic_enum`](https://github.com/Neargye/magic_enum): Adds a bunch of very
+  useful C++ enum-related functions (that really should be built into the
+  language IMO).
++ [`openvr`](https://github.com/ValveSoftware/openvr): Valve's SDK for VR
+  devices.
+
+In addition, there is a stripped down and modified version of the [Google
+Ion](https://github.com/google/ion) source that provides rendering and other
+features in the `ionsrc` subdirectory.
 
 ### Linux
 

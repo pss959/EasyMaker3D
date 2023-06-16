@@ -50,12 +50,8 @@
     font-size:        11pt;
 }
 
-.contents .textblock p {
+.contents .textblock p, .contents .textblock ul {
     margin-left:      40px;
-}
-
-.contents .textblock pre {
-    margin-left:      60px;
 }
 
 /* Indent all tables. */
@@ -80,4 +76,32 @@
 
 .table2columns .tablecolumn:nth-of-type(n+2) {
     margin-left: 20px;
+}
+
+/* Indent all fenced code blocks */
+div.fragment {
+    margin-left: 40px;
+}
+
+/* Indent code blocks and format them like fenced code blocks. (Can't use
+ * actual fenced code blocks because they need to allow bold, italic, etc.)
+ * Note that this has <code> inside the <pre>, but the markdown has it the
+ * other way around so that the initial blank line can be removed with the
+ * margin-top setting here.
+ */
+#doc-content pre > code {
+    font-size:        13px;
+    line-height:      15px;
+    margin-top:       -13px;
+    margin-left:      50px;
+    border:           1px solid var(--fragment-border-color);
+    background-color: var(--fragment-background-color);
+    color:            #447755;
+}
+
+/* Custom code spans */
+.codeterm {
+    color:       #ee7788;
+    font-family: monospace;
+    font-weight: bold;
 }
