@@ -2,10 +2,15 @@ from os import environ
 
 Import('test_env')
 
+# Change these to speed up testing temporarily
+DO_SESSION_TESTS = True
+DO_SIM_TESTS     = True
+
 platform = test_env['PLATFORM']
 mode     = test_env['MODE']
 
 test_sources = [
+    'AlarmTest.cpp',
     'AppTestBase.cpp',
     'AssertTest.cpp',
     'BentModelTest.cpp',
@@ -23,6 +28,7 @@ test_sources = [
     'DimensionalityTest.cpp',
     'EnumTest.cpp',
     'EventTest.cpp',
+    'ExceptionTest.cpp',
     'FeedbackManagerTest.cpp',
     'FilePathTest.cpp',
     'FlagsTest.cpp',
@@ -65,26 +71,33 @@ test_sources = [
     'UTimeTest.cpp',
     'UtilTest.cpp',
     'WriteSTLTest.cpp',
+]
 
-    # Session tests:
-    'SessionTests/CSGSessionTest.cpp',
-    'SessionTests/ClipSessionTest.cpp',
-    'SessionTests/CopyBeveledSessionTest.cpp',
-    'SessionTests/EmptySessionTest.cpp',
-    'SessionTests/MirrorSessionTest.cpp',
-    'SessionTests/PasteSessionTest.cpp',
-    'SessionTests/RevSurfSessionTest.cpp',
-    'SessionTests/SessionTestBase.cpp',
-    'SessionTests/TransformSessionTest.cpp',
-    'SessionTests/UndoSessionTest.cpp',
+# Session tests:
+if DO_SESSION_TESTS:
+    test_sources += [
+        'SessionTests/CSGSessionTest.cpp',
+        'SessionTests/ClipSessionTest.cpp',
+        'SessionTests/CopyBeveledSessionTest.cpp',
+        'SessionTests/EmptySessionTest.cpp',
+        'SessionTests/MirrorSessionTest.cpp',
+        'SessionTests/PasteSessionTest.cpp',
+        'SessionTests/RevSurfSessionTest.cpp',
+        'SessionTests/SessionTestBase.cpp',
+        'SessionTests/TransformSessionTest.cpp',
+        'SessionTests/UndoSessionTest.cpp',
+    ]
 
-    # Simulation tests:
+# Simulation tests:
+if DO_SIM_TESTS:
+    test_sources += [
     'SimTests/EmptySimTest.cpp',
     'SimTests/HoverSimTest.cpp',
     'SimTests/SimTestBase.cpp',
-
-    'TestMain.cpp',  # main() function that runs all tests.
 ]
+
+# Add the main() function that runs all tests.
+test_sources.append('TestMain.cpp')
 
 # -----------------------------------------------------------------------------
 # Building tests.
@@ -122,7 +135,7 @@ test_env.AlwaysBuild('RunTests')
 
 if platform == 'linux' and mode == 'cov':
     # Patterns to remove from coverage results.
-    rm_patterns = '"*/include/*" "*/ionsrc/*" "*/submodules/*"'
+    rm_patterns = '"*/include/*" "*/ionsrc/*" "*/submodules/*" "*/Tests/*"'
 
     # Files for original lcov output and filtered output.
     lcov_file1 = 'coverage/coverage.info'

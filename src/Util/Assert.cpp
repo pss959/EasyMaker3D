@@ -12,6 +12,6 @@ std::string AssertException::BuildMessage_(const std::string &expr,
     if (! msg.empty())
         message += ": " + msg;
     return message;
-}
+}                                                             // LCOV_EXCL_LINE
 
 #endif

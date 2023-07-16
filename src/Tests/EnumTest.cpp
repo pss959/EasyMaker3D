@@ -1,6 +1,8 @@
 #include "Tests/Testing.h"
+#include "Enums/Action.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
+#include "Util/General.h"
 
 namespace {
 
@@ -26,6 +28,15 @@ TEST(Enum, EnumFromIndex) {
     EXPECT_EQ(TestEnum::kAnOther,   Util::EnumFromIndex<TestEnum>(1));
     EXPECT_EQ(TestEnum::kABCMore,   Util::EnumFromIndex<TestEnum>(2));
     EXPECT_EQ(TestEnum::kAlso,      Util::EnumFromIndex<TestEnum>(3));
+}
+
+TEST(Enum, EnumValuesArray) {
+    auto values = Util::EnumValuesArray<TestEnum>();
+    EXPECT_EQ(4U, values.size());
+    EXPECT_EQ(TestEnum::kSomething, values[0]);
+    EXPECT_EQ(TestEnum::kAnOther,   values[1]);
+    EXPECT_EQ(TestEnum::kABCMore,   values[2]);
+    EXPECT_EQ(TestEnum::kAlso,      values[3]);
 }
 
 TEST(Enum, EnumValues) {
@@ -61,6 +72,28 @@ TEST(Enum, EnumToWords) {
     EXPECT_EQ("An Other",  Util::EnumToWords(TestEnum::kAnOther));
     EXPECT_EQ("ABC More",  Util::EnumToWords(TestEnum::kABCMore));
     EXPECT_EQ("Also",      Util::EnumToWords(TestEnum::kAlso));
+}
+
+TEST(Enum, IsToggleAction) {
+    const std::vector toggles{
+        Action::kToggleSpecializedTool,
+        Action::kTogglePointTarget,
+        Action::kToggleEdgeTarget,
+        Action::kToggleAxisAligned,
+        Action::kToggleInspector,
+        Action::kToggleBuildVolume,
+        Action::kToggleShowEdges,
+        Action::kToggleLeftRadialMenu,
+        Action::kToggleRightRadialMenu,
+    };
+    for (const auto action: Util::EnumValues<Action>()) {
+        if (Util::Contains(toggles, action)) {
+            EXPECT_TRUE(IsToggleAction(action));
+        }
+        else {
+            EXPECT_FALSE(IsToggleAction(action));
+        }
+    }
 }
 
 }  // anonymous namespace
