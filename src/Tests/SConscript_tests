@@ -135,33 +135,17 @@ test_env.AlwaysBuild('RunTests')
 # -----------------------------------------------------------------------------
 
 if platform == 'linux' and mode == 'cov':
-    # Patterns to remove from coverage results.
-    rm_patterns = '"*/include/*" "*/ionsrc/*" "*/submodules/*" "*/Tests/*"'
-
-    # Files for original lcov output and filtered output.
-    lcov_file1 = 'coverage/coverage.info'
-    lcov_file2 = 'coverage/coverage_filtered.info'
-
-    # Arguments to lcov to capture results and to filter them.
-    lcov_args1 = f'--capture --directory .. --output-file {lcov_file1}'
-    lcov_args2 = (f'--remove {lcov_file1} {rm_patterns}' +
-                  f' --output-file {lcov_file2}')
-
-    # Arguments to genhtml to produce the HTML results.
-    genhtml_args = f'--output-directory coverage/html {lcov_file2}'
-
+    config_file   = '#/gcovr.cfg'
+    coverage_file = test_env.File('#$BUILD_DIR/coverage/index.html').abspath
     gen_coverage = test_env.Command(
-        'coverage/index.html', test_program,
+        coverage_file, [test_program, config_file],
         [
             # Run the test.
             f'$SOURCE {test_args}',
             # Generate coverage .
             'mkdir -p $BUILD_DIR/coverage',
-            f'cd $BUILD_DIR ; lcov {lcov_args1} ; lcov {lcov_args2}',
-            # Generate HTML from the results .
-            f'cd $BUILD_DIR ; genhtml {genhtml_args}',
-            ('echo === Coverage results in ' +
-             test_env.File('#$BUILD_DIR/coverage/html/index.html').abspath)
+            'gcovr',
+            f'echo === Coverage results in {coverage_file}'
         ])
 
     test_env.Alias('Coverage', gen_coverage)

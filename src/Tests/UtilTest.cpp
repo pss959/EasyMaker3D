@@ -44,6 +44,24 @@ TEST(UtilTest, Casts) {
     EXPECT_EQ(2, dbp.use_count());
 }
 
+TEST(UtilTest, IsA) {
+    std::shared_ptr<Base_>    bp(new Derived_);
+    std::shared_ptr<Derived_> dp(new Derived_);
+    EXPECT_TRUE(Util::IsA<Base_>(bp));
+    EXPECT_TRUE(Util::IsA<Base_>(dp));
+    EXPECT_TRUE(Util::IsA<Derived_>(bp));
+    EXPECT_TRUE(Util::IsA<Derived_>(bp));
+}
+
+TEST(UtilTest, Contains) {
+    const std::vector<int> v{0, 2, 4, 6, 8};
+    EXPECT_TRUE(Util::Contains(v, 0));
+    EXPECT_TRUE(Util::Contains(v, 2));
+    EXPECT_TRUE(Util::Contains(v, 8));
+    EXPECT_FALSE(Util::Contains(v, 1));
+    EXPECT_FALSE(Util::Contains(v, 9));
+}
+
 TEST(UtilTest, GetKeysAndValues) {
     std::unordered_map<std::string, int> map;
     map["hello"] = 13;
@@ -76,4 +94,27 @@ TEST(UtilTest, ConvertVector) {
     EXPECT_EQ(1.5f, floats[2]);
     EXPECT_EQ(2.0f, floats[3]);
     EXPECT_EQ(2.5f, floats[4]);
+}
+
+TEST(UtilTest, AppendVector) {
+    std::vector<int>       v0{ 1, 2 };
+    const std::vector<int> v1{ 3, 4, 5 };
+    Util::AppendVector(v1, v0);
+    EXPECT_EQ(5U, v0.size());
+    EXPECT_EQ(1, v0[0]);
+    EXPECT_EQ(2, v0[1]);
+    EXPECT_EQ(3, v0[2]);
+    EXPECT_EQ(4, v0[3]);
+    EXPECT_EQ(5, v0[4]);
+}
+
+TEST(UtilTest, CreateTemporarySharedPtr) {
+    std::shared_ptr<Derived_> dp(new Derived_);
+    EXPECT_EQ(1, dp.use_count());
+    {
+        // tp should not affect the reference count.
+        auto tp = Util::CreateTemporarySharedPtr<>(dp.get());
+        EXPECT_EQ(1, dp.use_count());
+    }
+    EXPECT_EQ(1, dp.use_count());
 }

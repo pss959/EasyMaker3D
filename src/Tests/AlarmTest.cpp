@@ -1,5 +1,6 @@
 #include "Tests/Testing.h"
 #include "Util/Alarm.h"
+#include "Util/Delay.h"
 
 TEST(AlarmTest, Running) {
     Alarm alarm;
@@ -16,4 +17,14 @@ TEST(AlarmTest, Running) {
     // Run with very short duration.
     alarm.Start(1.e-15);
     EXPECT_TRUE(alarm.IsFinished());
+}
+
+TEST(AlarmTest, TimeOut) {
+    Alarm alarm;
+    // Run with short duration.
+    alarm.Start(.00001f);
+    // Wait and make sure the alarm is no longer running.
+    Util::DelayThread(.0001f);
+    EXPECT_TRUE(alarm.IsFinished());
+    EXPECT_FALSE(alarm.IsRunning());
 }

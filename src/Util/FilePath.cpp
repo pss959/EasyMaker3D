@@ -203,7 +203,7 @@ FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
     FilePath result = p0;
     result /= p1;
     return result;
-}  // LCOV_EXCL_LINE [bug in lcov]
+}
 
 // LCOV_EXCL_START
 FilePath FilePath::GetResourceBasePath() {
