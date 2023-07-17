@@ -5,6 +5,15 @@
 #include "Util/Delay.h"
 #include "Util/UTime.h"
 
+TEST(Delay, DelayThread) {
+    const float delay_secs = .02f;
+    const auto t0 = UTime::Now();
+    Util::DelayThread(delay_secs);
+    const auto t1 = UTime::Now();
+    EXPECT_LE(delay_secs,         t1.SecondsSince(t0));
+    EXPECT_GE(delay_secs + .001f, t1.SecondsSince(t0));
+}
+
 TEST(Delay, RunDelayed) {
     Util::ResetDelay();
     bool flag = false;

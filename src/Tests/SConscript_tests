@@ -30,6 +30,7 @@ test_sources = [
     'EventTest.cpp',
     'ExceptionTest.cpp',
     'FeedbackManagerTest.cpp',
+    'FilePathListTest.cpp',
     'FilePathTest.cpp',
     'FlagsTest.cpp',
     'FrustumTest.cpp',

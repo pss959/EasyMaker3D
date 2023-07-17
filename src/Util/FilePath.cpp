@@ -55,6 +55,7 @@ std::string FilePath::ToString() const {
     return generic_string();
 }
 
+// LCOV_EXCL_START
 std::string FilePath::ToNativeString() const {
 #ifdef ION_PLATFORM_WINDOWS
     return FilePath(*this).make_preferred().string();
@@ -62,6 +63,7 @@ std::string FilePath::ToNativeString() const {
     return native();
 #endif
 }
+// LCOV_EXCL_STOP
 
 bool FilePath::Exists() const {
     return std::filesystem::exists(*this);
@@ -75,6 +77,7 @@ bool FilePath::IsAbsolute() const {
     return is_absolute();
 }
 
+// LCOV_EXCL_START
 bool FilePath::IsHidden() const {
 #ifdef ION_PLATFORM_WINDOWS
     return Exists() && (GetFileAttributes(Util::ToWString(ToString()).c_str()) &
@@ -83,6 +86,7 @@ bool FilePath::IsHidden() const {
     return Exists() && GetFileName()[0] == '.';
 #endif
 }
+// LCOV_EXCL_STOP
 
 FilePath FilePath::GetParentDirectory() const {
     return FromPath_(parent_path());
@@ -127,6 +131,7 @@ UTime FilePath::GetModTime() const {
     return UTime(std::filesystem::last_write_time(*this));
 }
 
+// LCOV_EXCL_START
 void FilePath::GetContents(std::vector<std::string> &subdirs,
                            std::vector<std::string> &files,
                            const std::string &extension,
@@ -187,6 +192,7 @@ bool FilePath::CreateDirectories() const {
 void FilePath::MakeCurrent() const {
     std::filesystem::current_path(*this);
 }
+// LCOV_EXCL_STOP
 
 FilePath FilePath::GetCurrent() {
     return FromPath_(std::filesystem::current_path());
@@ -197,8 +203,9 @@ FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
     FilePath result = p0;
     result /= p1;
     return result;
-}
+}  // LCOV_EXCL_LINE [bug in lcov]
 
+// LCOV_EXCL_START
 FilePath FilePath::GetResourceBasePath() {
     return FilePath(RESOURCE_DIR);
 }
@@ -254,3 +261,4 @@ std::string FilePath::GetSeparator() {
     return std::string(1, preferred_separator);
 #endif
 }
+// LCOV_EXCL_STOP

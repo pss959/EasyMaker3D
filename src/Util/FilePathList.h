@@ -11,7 +11,7 @@
 /// \ingroup Utility
 class FilePathList {
   public:
-    virtual ~FilePathList() {}
+    virtual ~FilePathList() {}  // LCOV_EXCL_LINE [bug in lcov]
 
     /// Directions for switching paths.
     enum class Direction { kUp, kForward, kBack, kHome };

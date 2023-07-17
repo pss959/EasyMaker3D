@@ -11,7 +11,7 @@ class FilePath;
 /// \ingroup Util
 class ExceptionBase : public std::exception {
   public:
-    virtual ~ExceptionBase() {}
+    virtual ~ExceptionBase() {}  // LCOV_EXCL_LINE [bug in lcov]
     const char * what() const throw() override { return msg_.c_str(); }
     const std::vector<std::string> & GetStackTrace() const {
         return stack_trace_;

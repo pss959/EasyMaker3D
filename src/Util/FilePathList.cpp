@@ -22,8 +22,8 @@ bool FilePathList::CanGoInDirection(Direction dir) const {
       case Direction::kHome:
         return GetCurrent() != FilePath::GetHomeDirPath();
     }
-    ASSERT(false);
-    return false;
+    ASSERT(false);  // LCOV_EXCL_LINE
+    return false;   // LCOV_EXCL_LINE
 }
 
 const FilePath & FilePathList::GoInDirection(Direction dir) {
@@ -41,8 +41,8 @@ const FilePath & FilePathList::GoInDirection(Direction dir) {
       case Direction::kHome:
         AddPath(FilePath::GetHomeDirPath());
         break;
-      default:
-        ASSERT(false);
+      default:          // LCOV_EXCL_LINE
+        ASSERT(false);  // LCOV_EXCL_LINE
     }
     return GetCurrent();
 }
@@ -62,6 +62,7 @@ const FilePath & FilePathList::AddPath(const FilePath &path) {
     return GetCurrent();
 }
 
+// LCOV_EXCL_START
 void FilePathList::GetContents(std::vector<std::string> &subdirs,
                                std::vector<std::string> &files,
                                const std::string &extension,
@@ -97,3 +98,4 @@ void FilePathList::Dump() {
         std::cout << "[" << i << "] " << paths_[i].ToString()
                   << (i == cur_index_ ? " [CURRENT]\n" : "\n");
 }
+// LCOV_EXCL_STOP
