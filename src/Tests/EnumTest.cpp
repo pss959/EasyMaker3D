@@ -9,7 +9,11 @@ namespace {
 // Enum used for testing.
 enum class TestEnum { kSomething, kAnOther, kABCMore, kAlso = 7 };
 
-TEST(Enum, EnumName) {
+TEST(EnumTest, EnumCount) {
+    EXPECT_EQ(4U, Util::EnumCount<TestEnum>());
+}
+
+TEST(EnumTest, EnumName) {
     EXPECT_EQ("kSomething", Util::EnumName(TestEnum::kSomething));
     EXPECT_EQ("kAnOther",   Util::EnumName(TestEnum::kAnOther));
     EXPECT_EQ("kABCMore",   Util::EnumName(TestEnum::kABCMore));

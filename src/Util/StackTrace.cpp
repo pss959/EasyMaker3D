@@ -114,11 +114,13 @@ std::vector<std::string> GetStackTrace(size_t count) {
     return GetStackTrace_(count, 2);
 }
 
+// LCOV_EXCL_START
 void PrintStackTrace(size_t count) {
     // Skip PrintStackTrace() and GetStackTrace_() at the top of the stack.
     for (const auto &line: GetStackTrace_(count, 2))
         fprintf(stderr, "%s\n", line.c_str());
 }
+// LCOV_EXCL_STOP
 
 }  // namespace Util
 

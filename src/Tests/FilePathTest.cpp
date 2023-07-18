@@ -15,11 +15,17 @@ static FilePath GetSourceFilePath_() {
 }
 
 TEST(FilePathTest, Assign) {
+    // Assign from const char *.
     FilePath p1 = "/abc/def";
     EXPECT_EQ("/abc/def", p1.ToString());
+    // Assign from another FilePath.
     FilePath p2;
     p2 = p1;
     EXPECT_EQ(p1, p2);
+    // Assign from string.
+    FilePath p3;
+    p3 = std::string("/abc/def");
+    EXPECT_EQ(p1, p3);
 }
 
 TEST(FilePathTest, Clear) {

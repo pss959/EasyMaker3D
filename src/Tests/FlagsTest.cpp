@@ -98,6 +98,8 @@ TEST(FlagsTest, ToFromString) {
     EXPECT_TRUE(flags2.Has(TestFlags::kF1));
     EXPECT_FALSE(flags2.Has(TestFlags::kF2));
     EXPECT_TRUE(flags2.Has(TestFlags::kF3));
+
+    EXPECT_FALSE(Util::Flags<TestFlags>::FromString("kF3|kF9", flags2));
 }
 
 TEST(FlagsTest, MoreThanMax) {

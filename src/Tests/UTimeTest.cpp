@@ -33,12 +33,19 @@ TEST(UTimeTest, SecondsSince) {
 }
 
 TEST(UTimeTest, ToString) {
+    const UTime ut;
+    const std::string ts = ut.ToString();
+    std::ostringstream out;
+    out << ut;
+
     // The undefined time differs per platform.
 #if defined(ION_PLATFORM_WINDOWS) || defined(ION_PLATFORM_MAC_GCC)
-    const std::string ts = UTime().ToString();
     EXPECT_TRUE(ts == "Fri Dec 31 15:59:59 2173" ||
                 ts == "Fri Dec 31 16:00:00 2173");
+    EXPECT_TRUE(out.str() == "Fri Dec 31 15:59:59 2173" ||
+                out.str() == "Fri Dec 31 16:00:00 2173");
 #else
-    EXPECT_EQ("Fri Dec 31 15:59:59 2173", UTime().ToString());
+    EXPECT_EQ("Fri Dec 31 15:59:59 2173", ut.ToString());
+    EXPECT_EQ("Fri Dec 31 15:59:59 2173", out.str());
 #endif
 }

@@ -11,6 +11,11 @@ TEST(StringTest, ToString) {
     EXPECT_EQ("1234 ",  Util::ToString(1234, 5));
     EXPECT_EQ("1234  ", Util::ToString(1234, 6));
 
+    // Sepcial case for bool.
+    EXPECT_EQ("True",  Util::ToString(true));
+    EXPECT_EQ("False", Util::ToString(false));
+    EXPECT_EQ("T",     Util::ToString(true,  true));  // Shorten.
+    EXPECT_EQ("F",     Util::ToString(false, true));  // Shorten.
 }
 
 TEST(StringTest, ToUpperCase) {
