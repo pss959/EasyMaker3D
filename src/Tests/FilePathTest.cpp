@@ -14,7 +14,7 @@ static FilePath GetSourceFilePath_() {
     return FilePath(GetSourceFile_());
 }
 
-TEST(FilePath, Assign) {
+TEST(FilePathTest, Assign) {
     FilePath p1 = "/abc/def";
     EXPECT_EQ("/abc/def", p1.ToString());
     FilePath p2;
@@ -22,19 +22,19 @@ TEST(FilePath, Assign) {
     EXPECT_EQ(p1, p2);
 }
 
-TEST(FilePath, Clear) {
+TEST(FilePathTest, Clear) {
     FilePath p = "/abc/def";
     EXPECT_TRUE(p);
     p.Clear();
     EXPECT_FALSE(p);
 }
 
-TEST(FilePath, Exists) {
+TEST(FilePathTest, Exists) {
     EXPECT_FALSE(FilePath("/abc/def").Exists());
     EXPECT_TRUE(GetSourceFilePath_().Exists());
 }
 
-TEST(FilePath, IsDirectory) {
+TEST(FilePathTest, IsDirectory) {
     EXPECT_FALSE(FilePath("/abc/def").IsDirectory());
     EXPECT_FALSE(GetSourceFilePath_().IsDirectory());
     FilePath parent =
@@ -42,14 +42,14 @@ TEST(FilePath, IsDirectory) {
     EXPECT_TRUE(parent.IsDirectory());
 }
 
-TEST(FilePath, IsAbsolute) {
+TEST(FilePathTest, IsAbsolute) {
     EXPECT_TRUE(FilePath("/").IsAbsolute());
     EXPECT_TRUE(FilePath("/abc/def").IsAbsolute());
     EXPECT_FALSE(FilePath("abc").IsAbsolute());
     EXPECT_FALSE(FilePath("abc/def").IsAbsolute());
 }
 
-TEST(FilePath, GetParentDirectory) {
+TEST(FilePathTest, GetParentDirectory) {
     EXPECT_EQ("/", FilePath("/").GetParentDirectory().ToString());
     EXPECT_EQ("/", FilePath("/ab").GetParentDirectory().ToString());
     EXPECT_EQ("/ab", FilePath("/ab/cd").GetParentDirectory().ToString());
@@ -62,7 +62,7 @@ TEST(FilePath, GetParentDirectory) {
     EXPECT_EQ("ab/cd", FilePath("ab/cd/ef").GetParentDirectory().ToString());
 }
 
-TEST(FilePath, GetFileName) {
+TEST(FilePathTest, GetFileName) {
     // Leave extension.
     EXPECT_EQ("",      FilePath("/").GetFileName());
     EXPECT_EQ("ab.ex", FilePath("/ab.ex").GetFileName());
@@ -89,7 +89,7 @@ TEST(FilePath, GetFileName) {
 }
 
 
-TEST(FilePath, GetExtension) {
+TEST(FilePathTest, GetExtension) {
     EXPECT_EQ("",    FilePath("/").GetExtension());
     EXPECT_EQ(".ex", FilePath("/ab.ex").GetExtension());
     EXPECT_EQ(".ex", FilePath("/ab/cd.ex").GetExtension());
@@ -102,7 +102,7 @@ TEST(FilePath, GetExtension) {
     EXPECT_EQ(".ex", FilePath("ab/cd/ef.ex").GetExtension());
 }
 
-TEST(FilePath, AddExtension) {
+TEST(FilePathTest, AddExtension) {
     FilePath p = "/abc/def/ghi";
     p.AddExtension(".qrs");
     EXPECT_EQ(".qrs", p.GetExtension());
@@ -110,7 +110,7 @@ TEST(FilePath, AddExtension) {
     EXPECT_EQ(".tuv", p.GetExtension());
 }
 
-TEST(FilePath, AppendRelative) {
+TEST(FilePathTest, AppendRelative) {
     FilePath p1 = "abc/def";
     FilePath p2 = "qrs/tuv";
     FilePath p3 = "/abs/solute";
@@ -118,7 +118,7 @@ TEST(FilePath, AppendRelative) {
     EXPECT_EQ("/abs/solute",     p3.AppendRelative(p1).ToString());
 }
 
-TEST(FilePath, MakeRelativeTo) {
+TEST(FilePathTest, MakeRelativeTo) {
     // Absolute path relative to another absolute path.
     FilePath p1 = "/abc/def/ghijkl";
     FilePath p2 = "/abc/def/ghijkl/foo/bar.txt";
@@ -129,7 +129,7 @@ TEST(FilePath, MakeRelativeTo) {
     EXPECT_EQ("../ghijkQ/foo/bar.txt", p3.MakeRelativeTo(p1).ToString());
 }
 
-TEST(FilePath, GetAbsolute) {
+TEST(FilePathTest, GetAbsolute) {
     const auto curdir = FilePath(std::filesystem::current_path()).ToString();
 
     EXPECT_EQ("/",               FilePath("/").GetAbsolute().ToString());
@@ -138,18 +138,18 @@ TEST(FilePath, GetAbsolute) {
     EXPECT_EQ(curdir + "/ab/cd", FilePath("ab/cd").GetAbsolute().ToString());
 }
 
-TEST(FilePath, GetModTime) {
+TEST(FilePathTest, GetModTime) {
     const auto p = std::filesystem::path(GetSourceFile_());
     EXPECT_EQ(UTime(std::filesystem::last_write_time(p)),
               GetSourceFilePath_().GetModTime());
 }
 
-TEST(FilePath, GetCurrent) {
+TEST(FilePathTest, GetCurrent) {
     EXPECT_EQ(FilePath(std::filesystem::current_path()),
               FilePath::GetCurrent());
 }
 
-TEST(FilePath, Join) {
+TEST(FilePathTest, Join) {
     FilePath p1 = "/abc/def";
     FilePath p2 = "ghi/jkl";
     EXPECT_EQ("/abc/def/ghi/jkl", FilePath::Join(p1, p2).ToString());
@@ -159,7 +159,15 @@ TEST(FilePath, Join) {
     EXPECT_EQ("ghi/jkl",  p2.ToString());
 }
 
-TEST(FilePath, Equality) {
+TEST(FilePathTest, GetHashValue) {
+    const std::string ps = "/abc/def";
+    const FilePath p(ps);
+    const auto hashval = std::filesystem::hash_value(std::filesystem::path(ps));
+    EXPECT_EQ(hashval, p.GetHashValue());
+    EXPECT_EQ(hashval, std::hash<FilePath>{}(p));
+}
+
+TEST(FilePathTest, Equality) {
     FilePath p1 = "/abc/def";
     FilePath p2 = "/abc/def";
     EXPECT_EQ(p1, p2);

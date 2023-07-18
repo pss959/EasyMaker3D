@@ -13,10 +13,10 @@
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
-// SliceTest fixture.
+// MeshSlicingTest fixture.
 // ----------------------------------------------------------------------------
 
-class SliceTest : public TestBase {
+class MeshSlicingTest : public TestBase {
   protected:
     // Data passed to DumpTriMesh.
     //
@@ -55,9 +55,9 @@ class SliceTest : public TestBase {
                      const DumpData &data);
 };
 
-void SliceTest::DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
-                            const DumpData &data) {
-    Debug::Dump3dv d("/tmp/" + file_name + ".3dv", "From SliceTest");
+void MeshSlicingTest::DumpTriMesh(const std::string &file_name,
+                                  const TriMesh &mesh, const DumpData &data) {
+    Debug::Dump3dv d("/tmp/" + file_name + ".3dv", "From MeshSlicingTest");
     const auto sz = .8f * ComputeMeshBounds(mesh).GetSize();
 
     Debug::Dump3dv::LabelFlags flags;
@@ -120,7 +120,7 @@ void SliceTest::DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
 // Tests.
 // ----------------------------------------------------------------------------
 
-TEST_F(SliceTest, Box0Slices) {
+TEST_F(MeshSlicingTest, Box0Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const SlicedMesh sm = SliceMesh(mesh, Dim::kY, std::vector<float>());
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
@@ -130,7 +130,7 @@ TEST_F(SliceTest, Box0Slices) {
     EXPECT_EQ(12U,              sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, Box1Slice) {
+TEST_F(MeshSlicingTest, Box1Slice) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f};
     const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
@@ -141,7 +141,7 @@ TEST_F(SliceTest, Box1Slice) {
     EXPECT_EQ(28U,              sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, Box2Slices) {
+TEST_F(MeshSlicingTest, Box2Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
@@ -152,7 +152,7 @@ TEST_F(SliceTest, Box2Slices) {
     EXPECT_EQ(44U,              sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, Box3Slices) {
+TEST_F(MeshSlicingTest, Box3Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f, .6f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
@@ -163,7 +163,7 @@ TEST_F(SliceTest, Box3Slices) {
     EXPECT_EQ(60U,              sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, Box3SlicesX) {
+TEST_F(MeshSlicingTest, Box3SlicesX) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f, .6f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
@@ -174,7 +174,7 @@ TEST_F(SliceTest, Box3SlicesX) {
     EXPECT_EQ(60U,            sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, Cylinder) {
+TEST_F(MeshSlicingTest, Cylinder) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
     const std::vector<float> fractions{.25f, .6f, .75f};
     const SlicedMesh sm = SliceMesh(mesh, Dim::kY, fractions);
@@ -185,7 +185,7 @@ TEST_F(SliceTest, Cylinder) {
     EXPECT_EQ(320U,             sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, CylinderX1) {
+TEST_F(MeshSlicingTest, CylinderX1) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
     const std::vector<float> fractions{.75f};
     SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
@@ -196,7 +196,7 @@ TEST_F(SliceTest, CylinderX1) {
     EXPECT_EQ(50U,            sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, CylinderX2) {
+TEST_F(MeshSlicingTest, CylinderX2) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
     const std::vector<float> fractions{.2f, .75f};
     SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
@@ -207,7 +207,7 @@ TEST_F(SliceTest, CylinderX2) {
     EXPECT_EQ(72U,            sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, CylinderX3) {
+TEST_F(MeshSlicingTest, CylinderX3) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 8);
     const std::vector<float> fractions{.2f, .6f, .75f};
     SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);
@@ -218,7 +218,7 @@ TEST_F(SliceTest, CylinderX3) {
     EXPECT_EQ(96U,            sm.mesh.GetTriangleCount());
 }
 
-TEST_F(SliceTest, CylinderX3b) {
+TEST_F(MeshSlicingTest, CylinderX3b) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
     const std::vector<float> fractions{.2f, .6f, .75f};
     SlicedMesh sm = SliceMesh(mesh, Dim::kX, fractions);

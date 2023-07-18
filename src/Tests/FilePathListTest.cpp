@@ -13,7 +13,7 @@ class TestFPL_ : public FilePathList {
     }
 };
 
-TEST(FilePathList, Basics) {
+TEST(FilePathListTest, Basics) {
     TestFPL_ fpl;
     fpl.Init(FilePath("/abc/def"));
     EXPECT_EQ("/abc/def", fpl.GetCurrent().ToString());
@@ -28,7 +28,7 @@ TEST(FilePathList, Basics) {
     EXPECT_TRUE(fpl.IsExistingFile(fpl.GetCurrent()));
 }
 
-TEST(FilePathList, Directions) {
+TEST(FilePathListTest, Directions) {
     TestFPL_ fpl;
     fpl.Init(FilePath("/DIR0/DIR1"));
     EXPECT_TRUE(fpl.CanGoInDirection(FilePathList::Direction::kUp));

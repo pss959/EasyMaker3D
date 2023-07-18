@@ -1,7 +1,7 @@
 #include "Base/Event.h"
 #include "Tests/Testing.h"
 
-TEST(Event, Defaults) {
+TEST(EventTest, Defaults) {
     Event ev;
     EXPECT_ENUM_EQ(Event::Device::kUnknown, ev.device);
     EXPECT_FALSE(ev.flags.HasAny());
@@ -14,7 +14,7 @@ TEST(Event, Defaults) {
     EXPECT_TRUE(ev.orientation.IsIdentity());
 }
 
-TEST(Event, GetKeyString) {
+TEST(EventTest, GetKeyString) {
     Event ev;
     ev.device = Event::Device::kKeyboard;
     ev.flags.Set(Event::Flag::kKeyPress);
@@ -31,7 +31,7 @@ TEST(Event, GetKeyString) {
     EXPECT_EQ("Shift-Alt-q", ev.GetKeyString());
 }
 
-TEST(Event, GetControllerButtonString) {
+TEST(EventTest, GetControllerButtonString) {
     Event ev;
 
     ev.flags.Set(Event::Flag::kButtonPress);

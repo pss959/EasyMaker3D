@@ -9,7 +9,13 @@
 
 SimTestBase::SimTestBase() {
     // Override the unit test setting.
+    prev_app_type_ = Util::app_type;
     Util::app_type = Util::AppType::kSimTest;
+}
+
+SimTestBase::~SimTestBase() {
+    // Restore the unit test setting.
+    Util::app_type = prev_app_type_;
 }
 
 void SimTestBase::RunScript(const std::string &script_name) {

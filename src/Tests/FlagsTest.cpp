@@ -10,7 +10,7 @@ enum class TestFlags : uint32_t {
     kF3 = (1 << 2),
 };
 
-TEST(Flags, FlagsSetAndHas) {
+TEST(FlagsTest, FlagsSetAndHas) {
     Util::Flags<TestFlags> flags;
     EXPECT_FALSE(flags.HasAny());
     EXPECT_FALSE(flags.Has(TestFlags::kF1));
@@ -39,7 +39,7 @@ TEST(Flags, FlagsSetAndHas) {
     EXPECT_FALSE(flags.HasOnly(TestFlags::kF3));
 }
 
-TEST(Flags, SetAll) {
+TEST(FlagsTest, SetAll) {
     Util::Flags<TestFlags> flags;
     flags.SetAll(true);
     EXPECT_TRUE(flags.Has(TestFlags::kF1));
@@ -51,7 +51,7 @@ TEST(Flags, SetAll) {
     EXPECT_FALSE(flags.Has(TestFlags::kF3));
 }
 
-TEST(Flags, FlagsReset) {
+TEST(FlagsTest, FlagsReset) {
     Util::Flags<TestFlags> flags;
     EXPECT_FALSE(flags.HasAny());
     EXPECT_FALSE(flags.Has(TestFlags::kF1));
@@ -67,7 +67,7 @@ TEST(Flags, FlagsReset) {
     EXPECT_TRUE(flags.Has(TestFlags::kF3));
 }
 
-TEST(Flags, FlagsHasAnyFrom) {
+TEST(FlagsTest, FlagsHasAnyFrom) {
     Util::Flags<TestFlags> flags1;
     Util::Flags<TestFlags> flags2;
     EXPECT_FALSE(flags1.HasAnyFrom(flags2));
@@ -86,7 +86,7 @@ TEST(Flags, FlagsHasAnyFrom) {
     EXPECT_TRUE(flags1.HasAnyFrom(flags2));
 }
 
-TEST(Flags, ToFromString) {
+TEST(FlagsTest, ToFromString) {
     Util::Flags<TestFlags> flags;
     EXPECT_EQ("", flags.ToString());
     flags.Set(TestFlags::kF3);
@@ -100,7 +100,7 @@ TEST(Flags, ToFromString) {
     EXPECT_TRUE(flags2.Has(TestFlags::kF3));
 }
 
-TEST(Flags, MoreThanMax) {
+TEST(FlagsTest, MoreThanMax) {
     // magic_enum has a maximum value of 128 for enum values. This is normally
     // not a problem, but for bit-shifted flags it can be. This tests that
     // case.

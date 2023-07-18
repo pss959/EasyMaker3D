@@ -5,7 +5,7 @@
 #include "Util/Delay.h"
 #include "Util/UTime.h"
 
-TEST(Delay, DelayThread) {
+TEST(DelayTest, DelayThread) {
     const float delay_secs = .02f;
     const auto t0 = UTime::Now();
     Util::DelayThread(delay_secs);
@@ -14,7 +14,7 @@ TEST(Delay, DelayThread) {
     EXPECT_GE(delay_secs + .001f, t1.SecondsSince(t0));
 }
 
-TEST(Delay, RunDelayed) {
+TEST(DelayTest, RunDelayed) {
     Util::ResetDelay();
     bool flag = false;
     Util::RunDelayed(.1f, [&flag](){ flag = true; });
@@ -26,7 +26,7 @@ TEST(Delay, RunDelayed) {
     EXPECT_FALSE(Util::IsAnyDelaying());
 }
 
-TEST(Delay, CancelDelayed) {
+TEST(DelayTest, CancelDelayed) {
     Util::ResetDelay();
     int counter = 0;
     const int id0 = Util::RunDelayed(8, [&counter](){ ++counter; });

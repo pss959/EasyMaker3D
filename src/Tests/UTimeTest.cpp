@@ -4,7 +4,7 @@
 #include "Tests/Testing.h"
 #include "Util/UTime.h"
 
-TEST(UTime, Operators) {
+TEST(UTimeTest, Operators) {
     UTime t1 = UTime::Now();
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
     UTime t2 = t1;
@@ -25,14 +25,14 @@ TEST(UTime, Operators) {
     EXPECT_TRUE(t3 >= t1);
 }
 
-TEST(UTime, SecondsSince) {
+TEST(UTimeTest, SecondsSince) {
     UTime t1 = UTime::Now();
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
     UTime t2 = UTime::Now();
     EXPECT_LT(0., t2.SecondsSince(t1));
 }
 
-TEST(UTime, ToString) {
+TEST(UTimeTest, ToString) {
     // The undefined time differs per platform.
 #if defined(ION_PLATFORM_WINDOWS) || defined(ION_PLATFORM_MAC_GCC)
     const std::string ts = UTime().ToString();

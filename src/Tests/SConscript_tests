@@ -1,109 +1,136 @@
-from os import environ
+from os      import environ
+from os.path import basename
 
 Import('test_env')
-
-# Change these to speed up testing temporarily
-DO_SESSION_TESTS = True
-DO_SIM_TESTS     = True
 
 platform = test_env['PLATFORM']
 mode     = test_env['MODE']
 
-test_sources = [
-    'AlarmTest.cpp',
+# Source files with base testing classes and test mainline.
+main_test_sources = [
     'AppTestBase.cpp',
-    'AssertTest.cpp',
-    'BentModelTest.cpp',
-    'BeveledModelTest.cpp',
-    'BevelerTest.cpp',
-    'BoundsTest.cpp',
-    'ClipboardTest.cpp',
-    'ClippedModelTest.cpp',
-    'CloneTest.cpp',
-    'ColorTest.cpp',
-    'CommandListTest.cpp',
-    'CoordConvTest.cpp',
-    'CustomShortcutTest.cpp',
-    'DelayTest.cpp',
-    'DimensionalityTest.cpp',
-    'EnumTest.cpp',
-    'EventTest.cpp',
-    'ExceptionTest.cpp',
-    'FeedbackManagerTest.cpp',
-    'FilePathListTest.cpp',
-    'FilePathTest.cpp',
-    'FlagsTest.cpp',
-    'FrustumTest.cpp',
-    'HandTest.cpp',
-    'IntersectorTest.cpp',
-    'LinearTest.cpp',
-    'MeshBuildingTest.cpp',
-    'MeshClippingTest.cpp',
-    'MeshUtilsTest.cpp',
-    'ModelMeshBinaryTest.cpp',
-    'ModelTest.cpp',
-    'NameManagerTest.cpp',
-    'NodeBoundsTest.cpp',
-    'NodePathTest.cpp',
-    'NodeTest.cpp',
-    'PaneTest.cpp',
-    'ParserTest.cpp',
-    'PlaneTest.cpp',
-    'Point3fMapTest.cpp',
-    'PolyMeshTest.cpp',
-    'PolygonTest.cpp',
-    'ProfileTest.cpp',
-    'ReadFileTest.cpp',
-    'ReadSTLTest.cpp',
-    'ReaderTest.cpp',
-    'RegistryTest.cpp',
-    'RevSurfModelTest.cpp',
-    'ScaleCommandTest.cpp',
     'SceneTestBase.cpp',
-    'SearchTest.cpp',
-    'SliceTest.cpp',
-    'StringTest.cpp',
-    'TaperedModelTest.cpp',
-    'TestBase.cpp',
-    'TextUtilsTest.cpp',
-    'TimingTest.cpp',
-    'TriMeshBinaryTest.cpp',
-    'TriangulationTest.cpp',
-    'UTimeTest.cpp',
-    'UtilTest.cpp',
-    'WriteSTLTest.cpp',
-]
-
-# Session tests:
-if DO_SESSION_TESTS:
-    test_sources += [
-        'SessionTests/CSGSessionTest.cpp',
-        'SessionTests/ClipSessionTest.cpp',
-        'SessionTests/CopyBeveledSessionTest.cpp',
-        'SessionTests/EmptySessionTest.cpp',
-        'SessionTests/MirrorSessionTest.cpp',
-        'SessionTests/PasteSessionTest.cpp',
-        'SessionTests/RevSurfSessionTest.cpp',
-        'SessionTests/SessionTestBase.cpp',
-        'SessionTests/TransformSessionTest.cpp',
-        'SessionTests/UndoSessionTest.cpp',
-    ]
-
-# Simulation tests:
-if DO_SIM_TESTS:
-    test_sources += [
-    'SimTests/EmptySimTest.cpp',
-    'SimTests/HoverSimTest.cpp',
+    'SessionTests/SessionTestBase.cpp',
     'SimTests/SimTestBase.cpp',
+    'TestBase.cpp',
+    'TestMain.cpp',     # Mainline to run tests.
 ]
 
-# Add the main() function that runs all tests.
-test_sources.append('TestMain.cpp')
+# The rest of the source files are divided into categories to make it easier to
+# run a subset of tests. This is a dictionary mapping category to source files.
+# Note that this arrangement assumes that all tests in a source file are named
+# the same as the source file.
+test_source_dict = {
+    'Base' : [
+        'EventTest',
+    ],
+    'Command' : [
+        'CommandListTest',
+        'ScaleCommandTest',
+    ],
+    'Enum' : [
+        'EnumTest',
+        'HandTest',
+    ],
+    'Handler' : [
+        'CustomShortcutTest',
+    ],
+    'IO' : [
+        'ReadSTLTest',
+        'WriteSTLTest',
+    ],
+    'Manager' : [
+        'ClipboardManagerTest',
+        'FeedbackManagerTest',
+        'NameManagerTest',
+    ],
+    'Math' : [
+        'BevelerTest',
+        'BoundsTest',
+        'ColorTest',
+        'DimensionalityTest',
+        'FrustumTest',
+        'LinearTest',
+        'MathToStringTest',
+        'MeshBuildingTest',
+        'MeshClippingTest',
+        'MeshSlicingTest',
+        'MeshUtilsTest',
+        'ModelMeshBinaryTest',
+        'PlaneTest',
+        'Point3fMapTest',
+        'PolyMeshTest',
+        'PolygonTest',
+        'ProfileTest',
+        'TextUtilsTest',
+        'TriMeshBinaryTest',
+        'TriangulationTest',
+    ],
+    'Model' : [
+        'BentModelTest',
+        'BeveledModelTest',
+        'ClippedModelTest',
+        'ModelTest',
+        'RevSurfModelTest',
+        'TaperedModelTest',
+    ],
+    'Pane' : [
+        'PaneTest',
+    ],
+    'Parser' : [
+        'ParserTest',
+        'RegistryTest',
+    ],
+    'Session' : [
+        'SessionTests/CSGSessionTest',
+        'SessionTests/ClipSessionTest',
+        'SessionTests/CopyBeveledSessionTest',
+        'SessionTests/EmptySessionTest',
+        'SessionTests/MirrorSessionTest',
+        'SessionTests/PasteSessionTest',
+        'SessionTests/RevSurfSessionTest',
+        'SessionTests/TransformSessionTest',
+        'SessionTests/UndoSessionTest',
+    ],
+    'SG' : [
+        'CloneTest',
+        'CoordConvTest',
+        'IntersectorTest',
+        'NodeBoundsTest',
+        'NodePathTest',
+        'NodeTest',
+        'ReaderTest',
+        'SearchTest',
+    ],
+    'Sim' : [
+        'SimTests/EmptySimTest',
+        'SimTests/HoverSimTest',
+    ],
+    'Timing' : [
+        'TimingTest',
+    ],
+    'Util' : [
+        'AlarmTest',
+        'AssertTest',
+        'DelayTest',
+        'ExceptionTest',
+        'FilePathListTest',
+        'FilePathTest',
+        'FlagsTest',
+        'NotifierTest',
+        'ReadFileTest',
+        'StringTest',
+        'UTimeTest',
+        'UtilTest',
+    ],
+}
 
 # -----------------------------------------------------------------------------
 # Building tests.
 # -----------------------------------------------------------------------------
 
+test_sources  = [f'{src}.cpp' for srclist in test_source_dict.values()
+                 for src in srclist] + main_test_sources
 test_defines  = list(test_env['CPPDEFINES']) + [('IN_UNIT_TEST', 1)]
 test_cpppaths = test_env['CPPPATH'] + ['#/src/Tests/']
 test_objects  = [test_env.SharedObject(source=source, CPPDEFINES=test_defines,
@@ -119,7 +146,29 @@ test_env.Alias('Tests', test_program)
 # Running tests.
 # -----------------------------------------------------------------------------
 
-test_filter = ARGUMENTS.get('TESTFILTER')
+# The TESTCATEGORIES argument can be used to limit the test categories to
+# run. It is a comma-separated list of categories. The TESTFILTER argument is
+# passed as '--gtest_filter' to the test program to further filter the test
+# names.
+test_categories_arg = ARGUMENTS.get('TESTCATEGORIES')
+test_filter_arg     = ARGUMENTS.get('TESTFILTER')
+
+# Verify categories and collect test names.
+categories = test_categories_arg.split(',') if test_categories_arg else []
+cat_names = []
+for cat in categories:
+    if not cat in test_source_dict:
+        print(f'*** Unknown test category "{cat}"')
+        Exit()
+    else:
+        cat_names += [basename(src) for src in test_source_dict[cat]]
+
+# Set up the test filter based on the arguments.
+test_filter = ':'.join([f'{name}*' for name in cat_names]) if cat_names else ''
+if test_filter_arg:
+    test_filter = (f'{test_filter}:{test_filter_arg}' if test_filter
+                   else test_filter_arg)
+
 test_args = ' '.join([
   '--gtest_catch_exceptions=0',   # Let exceptions be handled outside gtest.
   ('--gtest_filter="%s"' % test_filter) if test_filter else '',

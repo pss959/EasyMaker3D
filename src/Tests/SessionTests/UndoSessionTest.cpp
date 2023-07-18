@@ -6,7 +6,9 @@
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
 
-TEST_F(SessionTestBase, UndoSessionTest) {
+class UndoSessionTest : public SessionTestBase {};
+
+TEST_F(UndoSessionTest, UndoRedo) {
     // Tests that loading a session with undo at the end works properly.
     LoadSession("Undo");
 

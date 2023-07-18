@@ -4,8 +4,7 @@
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
 
-class CSGSessionTest : public SessionTestBase {
-};
+class CSGSessionTest : public SessionTestBase {};
 
 TEST_F(CSGSessionTest, Logo) {
     // Some complex CSG operations.

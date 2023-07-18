@@ -1,7 +1,7 @@
 ﻿#include "Managers/NameManager.h"
 #include "Tests/Testing.h"
 
-TEST(NameManager, AddRemove) {
+TEST(NameManagerTest, AddRemove) {
     const std::string n1 = "Hello";
     const std::string n2 = "There";
     NameManager nm;
@@ -21,7 +21,7 @@ TEST(NameManager, AddRemove) {
     EXPECT_FALSE(nm.Find(n2));
 }
 
-TEST(NameManager, Create) {
+TEST(NameManagerTest, Create) {
     const std::string prefix = "Name of Doom";
     NameManager nm;
     EXPECT_FALSE(nm.Find(prefix));
@@ -35,7 +35,7 @@ TEST(NameManager, Create) {
     EXPECT_TRUE(nm.Find(n2));
 }
 
-TEST(NameManager, Reset) {
+TEST(NameManagerTest, Reset) {
     const std::string n1 = "Hello";
     const std::string n2 = "There";
     NameManager nm;
@@ -48,7 +48,7 @@ TEST(NameManager, Reset) {
     EXPECT_FALSE(nm.Find(n2));
 }
 
-TEST(NameManager, CreateClone) {
+TEST(NameManagerTest, CreateClone) {
     const std::string name = "Squid";
     NameManager nm;
     nm.Add(name);

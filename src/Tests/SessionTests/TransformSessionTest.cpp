@@ -6,7 +6,9 @@
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
 
-TEST_F(SessionTestBase, TransformSessionTest) {
+class TransformSessionTest : public SessionTestBase {};
+
+TEST_F(TransformSessionTest, FiveBoxes) {
     LoadSession("Transforms");
 
     const auto &rm = *context.scene_context->root_model;

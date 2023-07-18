@@ -13,7 +13,9 @@ static Rotationf GetXRot_() {
                                        Anglef::FromDegrees(90));
 }
 
-TEST_F(SessionTestBase, RevSurfSessionTest1) {
+class RevSurfSessionTest : public SessionTestBase {};
+
+TEST_F(RevSurfSessionTest, FullSweep) {
     // This has 1 RevSurfModel (RevSurf_1) that is scaled by 2 in height,
     // rotated by 90 degrees around X, and translated by 5 in X.
     LoadSession("RevSurf1");
@@ -50,7 +52,7 @@ TEST_F(SessionTestBase, RevSurfSessionTest1) {
     }
 }
 
-TEST_F(SessionTestBase, RevSurfSessionTest2) {
+TEST_F(RevSurfSessionTest, Sweep120) {
     // Same as above, but the sweep angle is changed to 120 degrees. The
     // translation must be adjusted to compensate for the apparent change in
     // position.

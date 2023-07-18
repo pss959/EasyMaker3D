@@ -2,7 +2,7 @@
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
 
-TEST(Dimensionality, DefaultConstructor) {
+TEST(DimensionalityTest, DefaultConstructor) {
     Dimensionality d;
     EXPECT_EQ(0, d.GetCount());
     EXPECT_FALSE(d.HasDimension(Dim::kX));
@@ -13,7 +13,7 @@ TEST(Dimensionality, DefaultConstructor) {
     EXPECT_FALSE(d.HasDimension(2));
 }
 
-TEST(Dimensionality, AddDimensionAndClear) {
+TEST(DimensionalityTest, AddDimensionAndClear) {
     Dimensionality d;
     d.AddDimension(1);
     EXPECT_EQ(1, d.GetCount());
@@ -58,7 +58,7 @@ TEST(Dimensionality, AddDimensionAndClear) {
     EXPECT_FALSE(d.HasDimension(2));
 }
 
-TEST(Dimensionality, GetIndex) {
+TEST(DimensionalityTest, GetIndex) {
     Dimensionality d;
     EXPECT_EQ(-1, d.GetIndex());
 
@@ -77,7 +77,7 @@ TEST(Dimensionality, GetIndex) {
     EXPECT_EQ(-1, d.GetIndex());
 }
 
-TEST(Dimensionality, StringConstructor) {
+TEST(DimensionalityTest, StringConstructor) {
     {
         Dimensionality d("");
         EXPECT_EQ(0, d.GetCount());

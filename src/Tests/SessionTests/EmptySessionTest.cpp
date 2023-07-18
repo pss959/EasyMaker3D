@@ -5,7 +5,9 @@
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
 
-TEST_F(SessionTestBase, EmptySessionTest) {
+class EmptySessionTest : public SessionTestBase {};
+
+TEST_F(EmptySessionTest, Load) {
     EXPECT_TRUE(LoadSession("Empty"));
 
     EXPECT_TRUE(context.scene_context);

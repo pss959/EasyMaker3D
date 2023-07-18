@@ -8,7 +8,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Util/General.h"
 
-class ClipboardTest : public SceneTestBase {
+class ClipboardManagerTest : public SceneTestBase {
   protected:
     ClipboardManager mgr;
 
@@ -16,7 +16,7 @@ class ClipboardTest : public SceneTestBase {
     std::vector<ModelPtr> models;
 };
 
-TEST_F(ClipboardTest, CopyOne) {
+TEST_F(ClipboardManagerTest, CopyOne) {
     EXPECT_TRUE(mgr.Get().empty());
 
     ModelPtr box = Model::CreateModel<BoxModel>("ABox");
@@ -44,7 +44,7 @@ TEST_F(ClipboardTest, CopyOne) {
     EXPECT_EQ(1U, clones[0]->GetShapes().size());
 }
 
-TEST_F(ClipboardTest, CopyTwo) {
+TEST_F(ClipboardManagerTest, CopyTwo) {
     auto box = Model::CreateModel<BoxModel>("ABox");
     auto cyl = Model::CreateModel<CylinderModel>("ACyl");
     models.push_back(box);
@@ -62,7 +62,7 @@ TEST_F(ClipboardTest, CopyTwo) {
     EXPECT_EQ("ACyl", ccopy->GetName());
 }
 
-TEST_F(ClipboardTest, CopyParent) {
+TEST_F(ClipboardManagerTest, CopyParent) {
     ModelPtr        box     = Model::CreateModel<BoxModel>("ABox");
     ClippedModelPtr clipped = Model::CreateModel<ClippedModel>("AClip");
     clipped->SetOperandModel(box);
@@ -90,7 +90,7 @@ TEST_F(ClipboardTest, CopyParent) {
     EXPECT_NE(clipped->GetOperandModel(), ccopy->GetOperandModel());
 }
 
-TEST_F(ClipboardTest, CopyModified) {
+TEST_F(ClipboardManagerTest, CopyModified) {
     EXPECT_TRUE(mgr.Get().empty());
 
     auto cyl = Model::CreateModel<CylinderModel>("ACyl");

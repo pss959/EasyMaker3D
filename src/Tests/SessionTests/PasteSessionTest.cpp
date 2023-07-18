@@ -3,7 +3,9 @@
 #include "SessionTests/SessionTestBase.h"
 #include "Tests/Testing.h"
 
-TEST_F(SessionTestBase, PasteSessionTest) {
+class PasteSessionTest : public SessionTestBase {};
+
+TEST_F(PasteSessionTest, Paste) {
     // This session creates a CylinderModel, copies it, and pastes it.
     LoadSession("PasteCyl");
     const auto &rm = *context.scene_context->root_model;
@@ -15,7 +17,7 @@ TEST_F(SessionTestBase, PasteSessionTest) {
     EXPECT_EQ("Cylinder_1_A", copy.GetName());
 }
 
-TEST_F(SessionTestBase, PasteRenamedSessionTest) {
+TEST_F(PasteSessionTest, PasteRenamed) {
     // This session creates a CylinderModel, renames it, copies it, and pastes
     // it.
 

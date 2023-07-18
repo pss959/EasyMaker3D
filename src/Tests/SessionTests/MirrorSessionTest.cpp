@@ -6,7 +6,9 @@
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
 
-TEST_F(SessionTestBase, MirrorSessionTest) {
+class MirrorSessionTest : public SessionTestBase {};
+
+TEST_F(MirrorSessionTest, ThreeCylinders) {
     // This has 3 cylinders converted to MirroredModels:
     //  - Cylinder_1 / Mirrored_1 is untransformed.
     //  - Cylinder_2 is rotated 90 around X and translated by 5 in X
