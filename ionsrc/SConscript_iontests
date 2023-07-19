@@ -68,7 +68,7 @@ test_files = [
         'vectordatacontainer_test',
         'weakreferent_test',
         'workerpool_test',
-        # 'zipassetmanager_test',  # Requires extra build stuff.
+        'zipassetmanager_test',
     ]),
     ('gfx', [
         'attribute_test',
@@ -104,6 +104,14 @@ test_files = [
         'uniformblock_test',
         'uniformholder_test',
         'updatestatetable_test',
+    ]),
+    ('gfxutils', [
+        'buffertoattributebinder_test',
+        'frame_test',
+        'printer_test',
+        'shadermanager_test',
+        'shadersourcecomposer_test',
+        'shapeutils_test',
     ]),
     ('math', [
         'angle_test',
@@ -146,6 +154,19 @@ test_files = [
     ]),
 ]
 
+# Some tests require assets that have been zipped into .iad (Ion Asset
+# Definition) files. These are converted to source files with the ZipAsset()
+# builder.
+iad_files = [
+    'base/tests/data/zipasset.iad',
+    'gfxutils/tests/data/shapeutils_test.iad',
+    'gfxutils/tests/data/zipassetcomposer_test.iad',
+    'image/tests/data/images.iad',
+]
+iad_sources = [ion_env.ZipAsset(source=f'ion/{iad}',
+                                target=iad.replace('.iad', '.cc'))
+               for iad in iad_files]
+
 gmock_sources = [f'#submodules/googletest/googlemock/src/{name}.cc'
                  for name in [
                          'gmock',
@@ -158,7 +179,8 @@ gmock_sources = [f'#submodules/googletest/googlemock/src/{name}.cc'
 # Build one test program from all the sources.
 ion_test_sources = [f'ion/{subdir}/tests/{name}.cc'
                     for (subdir, names) in test_files for name in names]
-ion_test = ion_test_env.Program(f'IonTest', ion_test_sources + gmock_sources)
+ion_test = ion_test_env.Program(f'IonTest',
+                                ion_test_sources + iad_sources + gmock_sources)
 
 # Build and run tests in 'dbg' mode only!
 if ion_env['MODE'] == 'dbg':

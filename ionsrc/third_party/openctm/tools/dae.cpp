@@ -122,9 +122,10 @@ void ReadIndexArray(XMLElement* p , vector<size_t>& array)
   char val[100];
   size_t value = 0;
   while (!strStream.eof()) {
-    strStream >> val;
-    value = atoi(val);
-    array.push_back(value);
+    if (strStream >> val) {
+      value = atoi(val);
+      array.push_back(value);
+    }
   }
 }
 

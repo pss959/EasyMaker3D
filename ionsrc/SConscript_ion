@@ -44,7 +44,9 @@ def MakeTuple_(subdir, names=[], headers=[], sources=[], assets=[]):
 platform = ion_env['PLATFORM']
 objc_sources = []
 
-# Each entry is a tuple: (subdir, names, headers, sources).
+# Each entry is a tuple: (subdir, names, headers, sources). Some sources are
+# assets that have been zipped into .iad (Ion Asset Definition) files. These
+# are converted to C++ source files with the ZipAsset() builder.
 ion_files = [
     MakeTuple_(subdir='analytics',
                names=[

@@ -1200,8 +1200,9 @@ void VerifyExternalModelLoading(ExternalShapeSpec spec,
 
     // Normals.
     if (spec.format == ExternalShapeSpec::kDae ||
-        spec.format == ExternalShapeSpec::kObj)
+        spec.format == ExternalShapeSpec::kObj) {
       EXPECT_TRUE(TestBoe(aa, 2, 3U, gfx::BufferObject::kFloat, 24U, normals));
+    }
 
     // Texture coordinates.
     if (spec.format != ExternalShapeSpec::kOff) {
