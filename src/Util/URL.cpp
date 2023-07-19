@@ -16,6 +16,7 @@
 
 namespace Util {
 
+// LCOV_EXCL_START
 void OpenURL(const std::string &url) {
 
 #ifdef ION_PLATFORM_LINUX
@@ -36,5 +37,6 @@ void OpenURL(const std::string &url) {
     ASSERTM(false, "Unknown platform for OpenURL");
 #endif
 }
+// LCOV_EXCL_STOP
 
 }  // namespace Util

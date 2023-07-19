@@ -118,10 +118,11 @@ test_source_dict = {
         'FilePathTest',
         'FlagsTest',
         'NotifierTest',
-        'ReadFileTest',
+        'ReadTest',
         'StringTest',
         'UTimeTest',
         'UtilTest',
+        'WriteTest',
     ],
 }
 

@@ -109,4 +109,9 @@ class TestBase : public ::testing::Test {
     // Compares two strings for equality with verbose results on failure.
     static bool CompareStrings(const std::string &expected,
                                const std::string &actual);
+
+    // Compares two data buffers for equality with verbose results on
+    // failure. The buffers are assumed to have the same size.
+    static bool CompareData(const void *expected, size_t size,
+                            const void *actual);
 };

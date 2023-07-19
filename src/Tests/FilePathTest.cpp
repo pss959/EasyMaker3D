@@ -122,6 +122,11 @@ TEST(FilePathTest, AppendRelative) {
     FilePath p3 = "/abs/solute";
     EXPECT_EQ("abc/def/qrs/tuv", p2.AppendRelative(p1).ToString());
     EXPECT_EQ("/abs/solute",     p3.AppendRelative(p1).ToString());
+
+    // Test case where the base path is a non-directory.
+    const auto src_path = GetSourceFilePath_();
+    EXPECT_EQ(src_path.GetParentDirectory().ToString() + "/abc/def",
+              p1.AppendRelative(src_path).ToString());
 }
 
 TEST(FilePathTest, MakeRelativeTo) {

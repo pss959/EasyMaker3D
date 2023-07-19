@@ -1,6 +1,7 @@
 #include "Tests/TestBase.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <fstream>
 #include <random>
 
@@ -192,6 +193,24 @@ bool TestBase::CompareStrings(const std::string &expected,
            Util::ReplaceString(actual,   "\n", "|") << "\n";
         */
         return false;
+    }
+    return true;
+}
+
+bool TestBase::CompareData(const void *expected, size_t size,
+                           const void *actual) {
+    // Compare 1 byte at a time.
+    const auto e = reinterpret_cast<const std::byte *>(expected);
+    const auto a = reinterpret_cast<const std::byte *>(actual);
+
+    for (size_t i = 0; i < size; ++i) {
+        if (a[i] != e[i]) {
+            std::cerr << "*** Data buffers differ at byte " << i
+                      << ": expected 0x" << std::hex << static_cast<int>(e[i])
+                      << ", got 0x" << std::hex << static_cast<int>(a[i])
+                      << std::dec << "\n";
+            return false;
+        }
     }
     return true;
 }
