@@ -10,36 +10,37 @@ mode     = test_env['MODE']
 main_test_sources = [
     'AppTestBase.cpp',
     'SceneTestBase.cpp',
-    'SessionTests/SessionTestBase.cpp',
-    'SimTests/SimTestBase.cpp',
+    'Session/SessionTestBase.cpp',
+    'Sim/SimTestBase.cpp',
     'TestBase.cpp',
     'TestMain.cpp',     # Mainline to run tests.
 ]
 
-# The rest of the source files are divided into categories to make it easier to
-# run a subset of tests. This is a dictionary mapping category to source files.
-# Note that this arrangement assumes that all tests in a source file are named
-# the same as the source file.
+# The rest of the source files are divided into categories (matching
+# subdirectories) to make it easier to run a subset of tests. This is a
+# dictionary mapping category/subdirectory to source files.  Note that this
+# arrangement assumes that all tests in a source file are named the same as the
+# source file.
 test_source_dict = {
     'Base' : [
         'EventTest',
     ],
-    'Command' : [
+    'Commands' : [
         'CommandListTest',
         'ScaleCommandTest',
     ],
-    'Enum' : [
+    'Enums' : [
         'EnumTest',
         'HandTest',
     ],
-    'Handler' : [
+    'Handlers' : [
         'CustomShortcutTest',
     ],
     'IO' : [
         'ReadSTLTest',
         'WriteSTLTest',
     ],
-    'Manager' : [
+    'Managers' : [
         'ClipboardManagerTest',
         'FeedbackManagerTest',
         'NameManagerTest',
@@ -66,7 +67,7 @@ test_source_dict = {
         'TriMeshBinaryTest',
         'TriangulationTest',
     ],
-    'Model' : [
+    'Models' : [
         'BentModelTest',
         'BeveledModelTest',
         'ClippedModelTest',
@@ -74,7 +75,7 @@ test_source_dict = {
         'RevSurfModelTest',
         'TaperedModelTest',
     ],
-    'Pane' : [
+    'Panes' : [
         'PaneTest',
     ],
     'Parser' : [
@@ -82,15 +83,15 @@ test_source_dict = {
         'RegistryTest',
     ],
     'Session' : [
-        'SessionTests/CSGSessionTest',
-        'SessionTests/ClipSessionTest',
-        'SessionTests/CopyBeveledSessionTest',
-        'SessionTests/EmptySessionTest',
-        'SessionTests/MirrorSessionTest',
-        'SessionTests/PasteSessionTest',
-        'SessionTests/RevSurfSessionTest',
-        'SessionTests/TransformSessionTest',
-        'SessionTests/UndoSessionTest',
+        'CSGSessionTest',
+        'ClipSessionTest',
+        'CopyBeveledSessionTest',
+        'EmptySessionTest',
+        'MirrorSessionTest',
+        'PasteSessionTest',
+        'RevSurfSessionTest',
+        'TransformSessionTest',
+        'UndoSessionTest',
     ],
     'SG' : [
         'CloneTest',
@@ -103,8 +104,8 @@ test_source_dict = {
         'SearchTest',
     ],
     'Sim' : [
-        'SimTests/EmptySimTest',
-        'SimTests/HoverSimTest',
+        'EmptySimTest',
+        'HoverSimTest',
     ],
     'Timing' : [
         'TimingTest',
@@ -130,8 +131,9 @@ test_source_dict = {
 # Building tests.
 # -----------------------------------------------------------------------------
 
-test_sources  = [f'{src}.cpp' for srclist in test_source_dict.values()
-                 for src in srclist] + main_test_sources
+test_sources  = [f'{cat}/{src}.cpp'
+                 for cat, sources in test_source_dict.items()
+                 for src in sources] + main_test_sources
 test_defines  = list(test_env['CPPDEFINES']) + [('IN_UNIT_TEST', 1)]
 test_cpppaths = test_env['CPPPATH'] + ['#/src/Tests/']
 test_objects  = [test_env.SharedObject(source=source, CPPDEFINES=test_defines,
@@ -179,6 +181,12 @@ test_env.Alias('RunTests', test_program, f'$RUN_PROGRAM $SOURCE {test_args}')
 
 # Make sure test run targets are always considered out of date.
 test_env.AlwaysBuild('RunTests')
+
+# Special alias for listing test categories.
+all_categories = ', '.join(test_source_dict.keys())
+test_env.Alias('ListTestCategories',
+               test_env.Command('phony', [],
+                                f'echo "Test categories: {all_categories}"'))
 
 # -----------------------------------------------------------------------------
 # Generating coverage results. (Linux platform, 'cov' mode only)

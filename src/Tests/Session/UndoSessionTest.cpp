@@ -3,7 +3,7 @@
 #include "Managers/SceneContext.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
-#include "SessionTests/SessionTestBase.h"
+#include "Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 
 class UndoSessionTest : public SessionTestBase {};

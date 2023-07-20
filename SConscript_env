@@ -26,6 +26,9 @@ def PrintCmdLine_(s, target, source, env):
         # Ignore boring Copy and Mkdir commands.
         if s.startswith('Copy(') or s.startswith('Mkdir('):
             return
+        # echo does not need to be announced either.
+        elif s.startswith('echo '):
+            return
         elif s.startswith('Install '):
             action = 'Installing'
         elif 'install_name_tool' in s:

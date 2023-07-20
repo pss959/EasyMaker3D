@@ -1,6 +1,6 @@
 #include "Managers/SceneContext.h"
 #include "Models/RootModel.h"
-#include "SimTests/SimTestBase.h"
+#include "Sim/SimTestBase.h"
 #include "Tests/Testing.h"
 
 class EmptySimTest_ : public SimTestBase {

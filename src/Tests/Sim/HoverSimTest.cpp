@@ -1,7 +1,7 @@
 #include "Managers/SceneContext.h"
 #include "Models/Model.h"
 #include "SG/Search.h"
-#include "SimTests/SimTestBase.h"
+#include "Sim/SimTestBase.h"
 #include "Tests/Testing.h"
 #include "Tools/Tool.h"
 #include "Widgets/Widget.h"

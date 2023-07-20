@@ -2,7 +2,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/SceneContext.h"
 #include "Models/RootModel.h"
-#include "SessionTests/SessionTestBase.h"
+#include "Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 
 class EmptySessionTest : public SessionTestBase {};

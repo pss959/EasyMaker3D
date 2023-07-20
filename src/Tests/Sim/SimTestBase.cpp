@@ -1,4 +1,4 @@
-#include "SimTests/SimTestBase.h"
+#include "Sim/SimTestBase.h"
 
 #include <exception>
 #include <iostream>

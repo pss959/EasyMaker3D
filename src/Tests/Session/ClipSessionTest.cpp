@@ -4,7 +4,7 @@
 #include "Math/Types.h"
 #include "Models/ClippedModel.h"
 #include "Models/RootModel.h"
-#include "SessionTests/SessionTestBase.h"
+#include "Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
