@@ -46,9 +46,12 @@ test_source_dict = {
         'NameManagerTest',
     ],
     'Math' : [
+        'AnimationTest',
+        'BevelTest',
         'BevelerTest',
         'BoundsTest',
         'ColorTest',
+        'ColorRingTest',
         'DimensionalityTest',
         'FrustumTest',
         'LinearTest',
