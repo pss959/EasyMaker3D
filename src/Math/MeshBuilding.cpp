@@ -425,18 +425,18 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
     const size_t point_count = 2 + num_rings * num_sectors;
     mesh.points.reserve(point_count);
     // Top point.
-    mesh.points.push_back(Point3f(0, radius, 0));
+    mesh.points.push_back(Point3f(0, 1, 0));
     // Rings.
     const Anglef delta_z_angle  = Anglef::FromDegrees(180) / (num_rings + 1);
     for (int r = 0; r < num_rings; ++r) {
         const Anglef y_angle =
             Anglef::FromDegrees(90.f) - (r + 1) * delta_z_angle;
-        const float ring_radius = ion::math::Cosine(y_angle) * radius;
+        const float ring_radius = ion::math::Cosine(y_angle);
         const float ring_y      = ion::math::Sine(y_angle);
         AddArcPoints_(ring_pts, ring_radius, ring_y, mesh.points);
     }
     // Bottom point.
-    mesh.points.push_back(Point3f(0, -radius, 0));
+    mesh.points.push_back(Point3f(0, -1, 0));
     ASSERT(mesh.points.size() == point_count);
 
     // There are num_sectors triangles in each fan around the top and bottom
