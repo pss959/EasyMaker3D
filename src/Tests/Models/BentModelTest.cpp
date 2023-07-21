@@ -18,7 +18,7 @@ TEST_F(BentModelTest, DefaultBend) {
     box->SetTranslation(Vector3f(0, 1, 0));
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
-    bent->SetComplexity(.1f);
+    bent->SetComplexity(.09f);
     bent->SetOperandModel(box);
 
     // Should be using a default bend.
@@ -53,7 +53,7 @@ TEST_F(BentModelTest, Bend90) {
     spin.angle = Anglef::FromDegrees(-90);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
-    bent->SetComplexity(.1f);
+    bent->SetComplexity(.09f);
     bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
@@ -89,7 +89,7 @@ TEST_F(BentModelTest, Bend90Max) {
     spin.angle = Anglef::FromDegrees(90);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
-    bent->SetComplexity(.1f);
+    bent->SetComplexity(.09f);
     bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
@@ -127,7 +127,7 @@ TEST_F(BentModelTest, Bend360) {
     spin.angle = Anglef::FromDegrees(360);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
-    bent->SetComplexity(.1f);
+    bent->SetComplexity(.09f);
     bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
@@ -175,7 +175,7 @@ TEST_F(BentModelTest, BendCyl360) {
     spin.angle = Anglef::FromDegrees(360);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
-    bent->SetComplexity(.1f);
+    bent->SetComplexity(.09f);
     bent->SetSpin(spin);
     bent->SetOperandModel(cyl);
 
@@ -224,7 +224,7 @@ TEST_F(BentModelTest, Bend180OffCenter) {
     spin.center.Set(0, 0, 10);
 
     BentModelPtr bent = Model::CreateModel<BentModel>();
-    bent->SetComplexity(.1f);
+    bent->SetComplexity(.09f);
     bent->SetSpin(spin);
     bent->SetOperandModel(box);
 
