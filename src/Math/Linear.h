@@ -296,6 +296,6 @@ template <typename T> T Lerp(float t, const T &min, const T &max) {
     return min + t * (max - min);
 }
 
-/// Special case of Lerp that interpolates integers.
+/// Special case of Lerp that interpolates integers, rounding.
 int LerpInt(float t, int min, int max);
 ///@}

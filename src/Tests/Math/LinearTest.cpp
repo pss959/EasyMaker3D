@@ -459,8 +459,13 @@ TEST_F(LinearTest, RotationAngleAndAxis) {
                       RotationAxis(rot));
 }
 
-// XXXX STOPPED HERE...
-
+TEST_F(LinearTest, RotationFromMatrix) {
+    const Rotationf rot =
+        Rotationf::FromAxisAndAngle(Vector3f(1, 2, 3), Anglef::FromDegrees(12));
+    const Matrix4f tm =
+        GetTransformMatrix(Vector3f(2, 3, 4), rot, Vector3f(10, 20, 30));
+    EXPECT_ROTS_CLOSE(rot, RotationFromMatrix(tm));
+}
 
 TEST_F(LinearTest, RotationDifference) {
     const Rotationf r0 = Rotationf::FromAxisAndAngle(Vector3f(1, 2, -3),
@@ -471,14 +476,50 @@ TEST_F(LinearTest, RotationDifference) {
     EXPECT_EQ(r1, r0 * diff);
 }
 
+TEST_F(LinearTest, SignedDistance) {
+    EXPECT_EQ(0.f,  SignedDistance(Point3f(0, 0, 0),   Vector3f(0, 0, 0)));
+    EXPECT_EQ(0.f,  SignedDistance(Point3f(0, 0, 0),   Vector3f(1, 0, 0)));
+    EXPECT_EQ(1.f,  SignedDistance(Point3f(1, 0, 0),   Vector3f(1, 0, 0)));
+    EXPECT_EQ(-1.f, SignedDistance(Point3f(-1, 0, 0),  Vector3f(1, 0, 0)));
+    EXPECT_EQ(-1.f, SignedDistance(Point3f(1, 0, 0),   Vector3f(-1, 0, 0)));
+    EXPECT_EQ(0.f,  SignedDistance(Point3f(1, 0, 0),   Vector3f(0, 1, 0)));
+    EXPECT_EQ(10.f, SignedDistance(Point3f(10, 0, 0),  Vector3f(1, 2, 0)));
+    EXPECT_EQ(-8.f, SignedDistance(Point3f(10, -4, 0), Vector3f(0, 2, 0)));
+}
+
 TEST_F(LinearTest, ComputeNormal) {
     EXPECT_EQ(Vector3f(0, 0, 1), ComputeNormal(Point3f(-10, -10, 0),
                                                Point3f( 10, -10, 0),
                                                Point3f(-10,  10, 0)));
 
-    EXPECT_EQ(Vector3f(-1, 0, 0), ComputeNormal(Point3f(-10, -10, -10),
-                                                Point3f(-10, -10,  10),
-                                                Point3f(-10,  10, -10)));
+    const std::vector<Point3f> pts{
+        Point3f(-10, -10, -10),
+        Point3f(-10, -10,  10),
+        Point3f(-10,  10, -10)
+    };
+    EXPECT_EQ(Vector3f(-1, 0, 0), ComputeNormal(pts));
+}
+
+TEST_F(LinearTest, ComputeArea) {
+    EXPECT_EQ(27.f, ComputeArea(Point3f(-3, -1, 0),
+                                Point3f(6, -1, 0),
+                                Point3f(6, 5, 0)));
+    const std::vector<Point3f> pts{
+        Point3f(-10, 2, 1),
+        Point3f( 10, 2, 1),
+        Point3f( 10, 8, 1)
+    };
+    EXPECT_EQ(60.f, ComputeArea(pts));
+}
+
+TEST_F(LinearTest, ComputeBarycentric) {
+    const Point2f a(2, 6), b(10, 6), c(10, 10), z(0, 0);
+    Vector3f bary;
+    EXPECT_TRUE(ComputeBarycentric(Point2f(8, 8), a, b, c, bary));
+    EXPECT_VECS_CLOSE(Vector3f(.25f, .25f, .5f), bary);
+    EXPECT_FALSE(ComputeBarycentric(Point2f(2, 0), a, b, c, bary));
+
+    EXPECT_FALSE(ComputeBarycentric(Point2f(2, 2), z, z, z, bary));
 }
 
 TEST_F(LinearTest, GetClosestPointOnLine) {
@@ -494,12 +535,82 @@ TEST_F(LinearTest, GetClosestPointOnLine) {
                                                        Vector3f(-10, 10, 0)));
 }
 
+TEST_F(LinearTest, GetClosestLinePoints) {
+    Point3f cp0;
+    Point3f cp1;
+
+    // Parallel lines.
+    EXPECT_FALSE(GetClosestLinePoints(Point3f::Zero(),  Vector3f::AxisZ(),
+                                      Point3f(1, 1, 1), Vector3f::AxisZ(),
+                                      cp0, cp1));
+
+    EXPECT_TRUE(GetClosestLinePoints(Point3f(0, 4, 0),  Vector3f::AxisX(),
+                                     Point3f(3, 0, 0), -Vector3f::AxisZ(),
+                                     cp0, cp1));
+    EXPECT_PTS_CLOSE(Point3f(3, 4, 0), cp0);
+    EXPECT_PTS_CLOSE(Point3f(3, 0, 0), cp1);
+}
+
+TEST_F(LinearTest, IsNearLineSegment) {
+    EXPECT_TRUE(IsNearLineSegment(Point2f(0, .09f),
+                                  Point2f(-10, 0), Point2f(20, 0), .1f));
+    EXPECT_TRUE(IsNearLineSegment(Point2f(5.01f, 4.98f),
+                                  Point2f(-10, -10), Point2f(20, 20), .1f));
+    EXPECT_FALSE(IsNearLineSegment(Point2f(5.01f, 4.6f),
+                                   Point2f(-10, -10), Point2f(20, 20), .1f));
+    EXPECT_FALSE(IsNearLineSegment(Point2f(0, 0),
+                                   Point2f(0, 0), Point2f(0, 0), .1f));
+}
+
 TEST_F(LinearTest, BuildRange) {
     const Range2f r = BuildRange(Point2f(-10, 20), Vector2f(6, 8));
     EXPECT_EQ(Point2f(-13, 16), r.GetMinPoint());
     EXPECT_EQ(Point2f( -7, 24), r.GetMaxPoint());
 }
 
+TEST_F(LinearTest, MinMaxComponents) {
+    const Vector2f v2a(1, 20),    v2b(4, -2);
+    const Vector3f v3a(1, 20, 4), v3b(4, -2, 0);
+    EXPECT_EQ(Vector2f(1, -2),    MinComponents(v2a, v2b));
+    EXPECT_EQ(Vector2f(4, 20),    MaxComponents(v2a, v2b));
+    EXPECT_EQ(Vector3f(1, -2, 0), MinComponents(v3a, v3b));
+    EXPECT_EQ(Vector3f(4, 20, 4), MaxComponents(v3a, v3b));
+    EXPECT_EQ(Point2f(1, -2),     MinComponents(Point2f(v2a), Point2f(v2b)));
+    EXPECT_EQ(Point2f(4, 20),     MaxComponents(Point2f(v2a), Point2f(v2b)));
+    EXPECT_EQ(Point3f(1, -2, 0),  MinComponents(Point3f(v3a), Point3f(v3b)));
+    EXPECT_EQ(Point3f(4, 20, 4),  MaxComponents(Point3f(v3a), Point3f(v3b)));
+}
 
+TEST_F(LinearTest, Clamp) {
+    EXPECT_EQ(6,   Clamp(6, 6, 14));
+    EXPECT_EQ(14,  Clamp(14, 6, 14));
+    EXPECT_EQ(6,   Clamp(-6, 6, 14));
+    EXPECT_EQ(14,  Clamp(22, 6, 14));
+    EXPECT_EQ(-6,  Clamp(-99, -6, 14));
 
-/// \todo Add more from Unity-based version.
+    EXPECT_EQ(6.f,   Clamp(6.f, 6.f, 14.f));
+    EXPECT_EQ(14.f,  Clamp(14.f, 6.f, 14.f));
+    EXPECT_EQ(6.f,   Clamp(-6.f, 6.f, 14.f));
+    EXPECT_EQ(14.f,  Clamp(22.f, 6.f, 14.f));
+    EXPECT_EQ(-6.f,  Clamp(-99.f, -6.f, 14.f));
+
+    EXPECT_EQ(Vector2f(4, 5), Clamp(Vector2f(12, -4),
+                                    Vector2f(0, 5), Vector2f(4, 15)));
+    EXPECT_EQ(Vector3f(4, 5, 6), Clamp(Vector3f(12, -4, 16),
+                                       Vector3f(0, 5, 5), Vector3f(4, 15, 6)));
+
+    EXPECT_EQ(Point2f(4, 5), Clamp(Point2f(12, -4),
+                                   Point2f(0, 5), Point2f(4, 15)));
+    EXPECT_EQ(Point3f(4, 5, 6), Clamp(Point3f(12, -4, 16),
+                                      Point3f(0, 5, 5), Point3f(4, 15, 6)));
+}
+
+// ----------------------------------------------------------------------------
+// Interpolation.
+// ----------------------------------------------------------------------------
+
+TEST_F(LinearTest, LerpInt) {
+    EXPECT_EQ(13, LerpInt(0,   13, 22));
+    EXPECT_EQ(22, LerpInt(1,   13, 22));
+    EXPECT_EQ(18, LerpInt(.5f, 13, 22));
+}

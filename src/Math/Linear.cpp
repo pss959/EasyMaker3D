@@ -387,7 +387,7 @@ bool ComputeBarycentric(const Point2f &p, const Point2f & a,
     const double d21 = Dot(v2, v1);
 
     const double denom = d00 * d11 - d01 * d01;
-    if (AreClose(denom, 0, 1e-12))  // Should never happen.
+    if (AreClose(denom, 0, 1e-12))  // Degenerate triangle.
         return false;
 
     const double alpha = (d11 * d20 - d01 * d21) / denom;
@@ -444,8 +444,7 @@ bool IsNearLineSegment(const Point2f &p, const Point2f &end0,
                                Point3f(end0, 0),
                                ion::math::Normalized(Vector3f(end1 - end0, 0)),
                                close0, close1))
-        return false;  // Should never happen - can't be parallel.
-
+        return false;  // Degenerate case.
     auto to2 = [](const Point3f &p){ return Point2f(p[0], p[1]); };
     const Point2f c0 = to2(close0);
     const Point2f c1 = to2(close1);
@@ -535,5 +534,5 @@ Point3f  Clamp(const Point3f &v, const Point3f &min, const Point3f &max) {
 // ----------------------------------------------------------------------------
 
 int LerpInt(float t, int min, int max) {
-    return min + static_cast<int>(t * (max - min));
+    return min + static_cast<int>(.5f + t * (max - min));
 }
