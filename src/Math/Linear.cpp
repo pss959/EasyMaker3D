@@ -224,7 +224,9 @@ bool AreClose(const Anglef &a, const Anglef &b, const Anglef &tolerance) {
 
 bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
                         const Anglef &tolerance_angle) {
-    return ion::math::AngleBetween(dir0, dir1) <= tolerance_angle;
+    // Directions must not be zero.
+    return IsValidVector(dir0) && IsValidVector(dir1) ?
+        ion::math::AngleBetween(dir0, dir1) <= tolerance_angle : false;
 }
 
 bool AreAlmostPerpendicular(const Vector3f dir0, const Vector3f dir1,

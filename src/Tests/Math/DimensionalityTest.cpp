@@ -13,6 +13,35 @@ TEST(DimensionalityTest, DefaultConstructor) {
     EXPECT_FALSE(d.HasDimension(2));
 }
 
+TEST(DimensionalityTest, DimConstructor) {
+    Dimensionality dx(0);
+    EXPECT_EQ(1, dx.GetCount());
+    EXPECT_TRUE(dx.HasDimension(Dim::kX));
+    EXPECT_FALSE(dx.HasDimension(Dim::kY));
+    EXPECT_FALSE(dx.HasDimension(Dim::kZ));
+    EXPECT_TRUE(dx.HasDimension(0));
+    EXPECT_FALSE(dx.HasDimension(1));
+    EXPECT_FALSE(dx.HasDimension(2));
+
+    Dimensionality dy(1);
+    EXPECT_EQ(1, dy.GetCount());
+    EXPECT_FALSE(dy.HasDimension(Dim::kX));
+    EXPECT_TRUE(dy.HasDimension(Dim::kY));
+    EXPECT_FALSE(dy.HasDimension(Dim::kZ));
+    EXPECT_FALSE(dy.HasDimension(0));
+    EXPECT_TRUE(dy.HasDimension(1));
+    EXPECT_FALSE(dy.HasDimension(2));
+
+    Dimensionality dz(2);
+    EXPECT_EQ(1, dz.GetCount());
+    EXPECT_FALSE(dz.HasDimension(Dim::kX));
+    EXPECT_FALSE(dz.HasDimension(Dim::kY));
+    EXPECT_TRUE(dz.HasDimension(Dim::kZ));
+    EXPECT_FALSE(dz.HasDimension(0));
+    EXPECT_FALSE(dz.HasDimension(1));
+    EXPECT_TRUE(dz.HasDimension(2));
+}
+
 TEST(DimensionalityTest, AddDimensionAndClear) {
     Dimensionality d;
     d.AddDimension(1);

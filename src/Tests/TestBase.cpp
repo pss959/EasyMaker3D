@@ -5,6 +5,7 @@
 #include <fstream>
 #include <random>
 
+#include <ion/math/matrixutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "App/RegisterTypes.h"
@@ -110,6 +111,10 @@ bool TestBase::RotationsClose(const Rotationf &r0, const Rotationf &r1) {
     return RotationsCloseT(r0, r1, .01f);
 }
 
+bool TestBase::MatricesClose(const Matrix4f &m0, const Matrix4f &m1) {
+    return MatricesCloseT(m0, m1, kClose);
+}
+
 bool TestBase::VectorsClose2T(const Vector2f &v0, const Vector2f &v1, float t) {
     return ion::math::VectorsAlmostEqual(v0, v1, t);
 }
@@ -134,6 +139,10 @@ bool TestBase::RotationsCloseT(const Rotationf &r0, const Rotationf &r1,
     r1.GetAxisAndAngle(&v1, &a1);
     return VectorsClose(v0, v1) &&
         ion::math::AlmostEqual(a0, a1, Anglef::FromDegrees(t_degrees));
+}
+
+bool TestBase::MatricesCloseT(const Matrix4f &m0, const Matrix4f &m1, float t) {
+    return ion::math::MatricesAlmostEqual(m0, m1, t);
 }
 
 TriMesh TestBase::LoadTriMesh(const std::string &file_name) {

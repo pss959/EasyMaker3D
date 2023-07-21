@@ -49,7 +49,8 @@ class BevelerTest : public TestBase {
     void TestBevel(const TriMesh &m, const Bevel &bevel,
                    size_t expected_point_count, size_t expected_tri_count) {
         SCOPED_TRACE(GetTestName() + " " + bevel.ToString());
-        const TriMesh rm = Beveler::ApplyBevel(m, bevel);
+        TriMesh rm = Beveler::ApplyBevel(m, bevel);
+        CleanMesh(rm);
         ValidateMesh(rm, GetTestName());
         EXPECT_EQ(expected_point_count, rm.points.size());
         EXPECT_EQ(expected_tri_count, rm.GetTriangleCount());
@@ -63,6 +64,12 @@ TEST_F(BevelerTest, BevelBox) {
     TestBevel(m, GetBevel(4),        96, 188);
     TestBevel(m, GetBevel(5),       144, 284);
     TestBevel(m, GetBevel(6),       216, 428);
+}
+
+TEST_F(BevelerTest, BevelBox2) {
+    // Tests an edge case in the Beveler code.
+    const TriMesh m = BuildBoxMesh(Vector3f(4, 4, 4));
+    TestBevel(m, GetDefaultBevel(1, 60), 8, 12);
 }
 
 TEST_F(BevelerTest, BevelCyl) {
@@ -139,4 +146,15 @@ TEST_F(BevelerTest, BevelBend) {
     // Extruded pentagon model with a bend.
     const TriMesh m = LoadTriMesh("Bend.stl");
     TestBevel(m, GetDefaultBevel(.2f), 46, 88);
+}
+
+TEST_F(BevelerTest, BevelLowComplexitySphere) {
+    // Tests an edge case in the Beveler code.
+    const TriMesh m = BuildSphereMesh(2, 6, 8);
+    Bevel b;
+    b.profile.AppendPoint(Point2f(.416472f, .643199f));
+    b.profile.AppendPoint(Point2f(.749835f, .416539f));
+    b.scale     = 0.61f;
+    b.max_angle = Anglef::FromDegrees(151);
+    TestBevel(m, b, 322, 640);
 }

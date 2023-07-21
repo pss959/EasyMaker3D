@@ -6,101 +6,54 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-class LinearTest : public TestBase {
-};
+class LinearTest : public TestBase {};
 
-TEST_F(LinearTest, AreClose) {
-    const auto nvec = [](float x, float y, float z){
-        return ion::math::Normalized(Vector3f(x, y, z)); };
+// ----------------------------------------------------------------------------
+// Dimension conversion functions.
+// ----------------------------------------------------------------------------
 
-    EXPECT_TRUE(AreClose(12.f,  12.01f, .02f));
-    EXPECT_FALSE(AreClose(12.f, 12.02f, .01f));
+TEST_F(LinearTest, TypeConversion) {
+    const Vector3f v(13, -4, 10);
+    EXPECT_EQ(Vector2f(13, -4), ToVector2f(v));
+    EXPECT_EQ(Vector2f(13, 10), ToVector2f(v, 1));
+    EXPECT_EQ(Vector2f(-4, 10), ToVector2f(v, 0));
 
-    // This uses the square of the distance.
-    EXPECT_TRUE(AreClose(Vector3f(0, 1, 2),  Vector3f(0, 1, 2.005f), .01f));
-    EXPECT_FALSE(AreClose(Vector3f(0, 1, 2), Vector3f(0, 1, 2.2f),   .01f));
+    const Point3f p(13, -4, 10);
+    EXPECT_EQ(Point2f(13, -4), ToPoint2f(p));
+    EXPECT_EQ(Point2f(13, 10), ToPoint2f(p, 1));
+    EXPECT_EQ(Point2f(-4, 10), ToPoint2f(p, 0));
 
-    // This uses angles.
-    EXPECT_TRUE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .1f, 0),
-                                   Anglef::FromDegrees(10)));
-    EXPECT_FALSE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .5f, 0),
-                                    Anglef::FromDegrees(10)));
-
-    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, 1, 0),
-                                       Anglef::FromDegrees(1)));
-    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, -1, 0),
-                                       Anglef::FromDegrees(1)));
-    EXPECT_FALSE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(.2f, 1, 0),
-                                        Anglef::FromDegrees(1)));
+    const Range3f r(Point3f(-2, 5, -7), Point3f(4, 6, 5));
+    EXPECT_EQ(Range2f(Point2f(-2,  5), Point2f(4, 6)), ToRange2f(r));
+    EXPECT_EQ(Range2f(Point2f(-2, -7), Point2f(4, 5)), ToRange2f(r, 1));
+    EXPECT_EQ(Range2f(Point2f(5,  -7), Point2f(6, 5)), ToRange2f(r, 0));
 }
 
-TEST_F(LinearTest, MinMaxElement) {
-    const Vector2f v2a(-.2f, 1.f);
-    const Vector2f v2b( .2f, 1.f);
-    const Vector3f v3a(-.2f, 1.f, -1.4f);
-    const Vector3f v3b( .2f, 1.f,   .4f);
-    const Vector4f v4a(-.2f, 1.f, -.4f, -1.5f);
-    const Vector4f v4b( .2f, 1.f,  .1f,   .5f);
+TEST_F(LinearTest, DimConversion) {
+    EXPECT_EQ(Dim::kX, ToUserDim(Dim::kX));
+    EXPECT_EQ(Dim::kZ, ToUserDim(Dim::kY));
+    EXPECT_EQ(Dim::kY, ToUserDim(Dim::kZ));
 
-    EXPECT_EQ(0, GetMinElementIndex(v2a));
-    EXPECT_EQ(0, GetMinElementIndex(v2b));
-    EXPECT_EQ(2, GetMinElementIndex(v3a));
-    EXPECT_EQ(0, GetMinElementIndex(v3b));
-    EXPECT_EQ(3, GetMinElementIndex(v4a));
-    EXPECT_EQ(2, GetMinElementIndex(v4b));
-
-    EXPECT_EQ(1, GetMaxElementIndex(v2a));
-    EXPECT_EQ(1, GetMaxElementIndex(v2b));
-    EXPECT_EQ(1, GetMaxElementIndex(v3a));
-    EXPECT_EQ(1, GetMaxElementIndex(v3b));
-    EXPECT_EQ(1, GetMaxElementIndex(v4a));
-    EXPECT_EQ(1, GetMaxElementIndex(v4b));
-
-    EXPECT_EQ(0, GetMinAbsElementIndex(v2a));
-    EXPECT_EQ(0, GetMinAbsElementIndex(v2b));
-    EXPECT_EQ(0, GetMinAbsElementIndex(v3a));
-    EXPECT_EQ(0, GetMinAbsElementIndex(v3b));
-    EXPECT_EQ(0, GetMinAbsElementIndex(v4a));
-    EXPECT_EQ(2, GetMinAbsElementIndex(v4b));
-
-    EXPECT_EQ(1, GetMaxAbsElementIndex(v2a));
-    EXPECT_EQ(1, GetMaxAbsElementIndex(v2b));
-    EXPECT_EQ(2, GetMaxAbsElementIndex(v3a));
-    EXPECT_EQ(1, GetMaxAbsElementIndex(v3b));
-    EXPECT_EQ(3, GetMaxAbsElementIndex(v4a));
-    EXPECT_EQ(1, GetMaxAbsElementIndex(v4b));
+    EXPECT_EQ(Dim::kX, FromUserDim(Dim::kX));
+    EXPECT_EQ(Dim::kZ, FromUserDim(Dim::kY));
+    EXPECT_EQ(Dim::kY, FromUserDim(Dim::kZ));
 }
 
-TEST_F(LinearTest, RotationDifference) {
-    const Rotationf r0 = Rotationf::FromAxisAndAngle(Vector3f(1, 2, -3),
-                                                     Anglef::FromDegrees(18));
-    const Rotationf r1 = Rotationf::FromAxisAndAngle(Vector3f(-4, 3, 3),
-                                                     Anglef::FromDegrees(-22));
-    const Rotationf diff = RotationDifference(r0, r1);
-    EXPECT_EQ(r1, r0 * diff);
-}
+// ----------------------------------------------------------------------------
+// Transformation functions.
+// ----------------------------------------------------------------------------
 
-TEST_F(LinearTest, ComputeNormal) {
-    EXPECT_EQ(Vector3f(0, 0, 1), ComputeNormal(Point3f(-10, -10, 0),
-                                               Point3f( 10, -10, 0),
-                                               Point3f(-10,  10, 0)));
-
-    EXPECT_EQ(Vector3f(-1, 0, 0), ComputeNormal(Point3f(-10, -10, -10),
-                                                Point3f(-10, -10,  10),
-                                                Point3f(-10,  10, -10)));
-}
-
-TEST_F(LinearTest, GetClosestPointOnLine) {
-    EXPECT_EQ(Point3f(3, 10, 2), GetClosestPointOnLine(Point3f(3, 20, 2),
-                                                       Point3f(0, 10, 2),
-                                                       Vector3f(1, 0, 0)));
-    EXPECT_EQ(Point3f(3, 10, 2), GetClosestPointOnLine(Point3f(3, 20, 2),
-                                                       Point3f(0, 10, 2),
-                                                       Vector3f(-1, 0, 0)));
-    // Diagonal
-    EXPECT_EQ(Point3f(5, 5, 0), GetClosestPointOnLine(Point3f(-3, -3, 0),
-                                                       Point3f(10, 0, 0),
-                                                       Vector3f(-10, 10, 0)));
+TEST_F(LinearTest, GetTransformMatrix) {
+    const Matrix4f tm =
+        GetTransformMatrix(Vector3f(2, 3, 4),
+                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
+                                                       Anglef::FromDegrees(90)),
+                           Vector3f(10, 20, 30));
+    const Matrix4f expected( 0, 0, 4, 10,
+                             0, 3, 0, 20,
+                            -2, 0, 0, 30,
+                             0, 0, 0,  1);
+    EXPECT_MATS_CLOSE(expected, tm);
 }
 
 TEST_F(LinearTest, TransformNormal) {
@@ -153,6 +106,31 @@ TEST_F(LinearTest, TransformNormal) {
     EXPECT_VECS_CLOSE(n, TransformNormal(tn, ion::math::Inverse(gm)));
 }
 
+TEST_F(LinearTest, TransformRay) {
+    const Matrix4f m =
+        GetTransformMatrix(Vector3f(2, 3, 4),
+                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
+                                                       Anglef::FromDegrees(90)),
+                           Vector3f(10, 20, 30));
+
+    const Ray r = TransformRay(Ray(Point3f(1, 1, 1), -Vector3f::AxisZ()), m);
+    EXPECT_PTS_CLOSE(Point3f(14, 23, 28), r.origin);
+    EXPECT_VECS_CLOSE(Vector3f(-4, 0, 0), r.direction);
+}
+
+TEST_F(LinearTest, TranslatePlane) {
+    const Plane pl(10, Vector3f::AxisZ());
+
+    // Translating parallel to plane has no effect.
+    EXPECT_EQ(pl, TranslatePlane(pl, Vector3f(3,  0, 0)));
+    EXPECT_EQ(pl, TranslatePlane(pl, Vector3f(0, -5, 0)));
+
+    EXPECT_EQ(Plane(13, Vector3f::AxisZ()),
+              TranslatePlane(pl, Vector3f(0, 0, 3)));
+    EXPECT_EQ(Plane(7,  Vector3f::AxisZ()),
+              TranslatePlane(pl, Vector3f(0, 0, -3)));
+}
+
 TEST_F(LinearTest, TransformPlane) {
     const Plane pl(10, Vector3f::AxisZ());
     EXPECT_EQ(Vector3f::AxisZ(), pl.normal);
@@ -173,16 +151,14 @@ TEST_F(LinearTest, TransformPlane) {
     const Point3f tp1 = tm * p1;
     EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
 }
-
 TEST_F(LinearTest, TransformPlane2) {
     // Rotate and translate a plane not at the origin.
     const Plane pl(10, Vector3f::AxisX());
 
     const Rotationf rot = Rotationf:: FromAxisAndAngle(Vector3f::AxisZ(),
                                                        Anglef::FromDegrees(90));
-    const Matrix4f tm =
-        ion::math::TranslationMatrix(Vector3f(10, 20, 30)) *
-        ion::math::RotationMatrixH(rot);
+    const Matrix4f tm = GetTransformMatrix(Vector3f(1, 1, 1), rot,
+                                           Vector3f(10, 20, 30));
     const Plane tpl = TransformPlane(pl, tm);
     EXPECT_VECS_CLOSE(Vector3f::AxisY(), tpl.normal);
     EXPECT_CLOSE(30.f, tpl.distance);
@@ -202,10 +178,8 @@ TEST_F(LinearTest, TransformPlane3) {
 
     const Rotationf rot = Rotationf:: FromAxisAndAngle(Vector3f(1, 2, 3),
                                                        Anglef::FromDegrees(40));
-    const Matrix4f tm =
-        ion::math::TranslationMatrix(Vector3f(10, 20, 30)) *
-        ion::math::RotationMatrixH(rot) *
-        ion::math::ScaleMatrixH(Vector3f(2, 5, 10));
+    const Matrix4f tm = GetTransformMatrix(Vector3f(2, 5, 10),
+                                           rot, Vector3f(10, 20, 30));
     const Plane tpl = TransformPlane(pl, tm);
 
     // Do the transformed point test.
@@ -216,5 +190,316 @@ TEST_F(LinearTest, TransformPlane3) {
     const Point3f tp1 = tm * p1;
     EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
 }
+
+TEST_F(LinearTest, TransformPlane4) {
+    // Testing adjusting normals near axis directions.
+    const Matrix4f tiny_rot = ion::math::RotationMatrixH(
+        Rotationf::FromAxisAndAngle(Vector3f(1, 1, 1),
+                                    Anglef::FromDegrees(.001f)));
+    const auto test_axis = [&](const Vector3f &axis){
+        const Plane p(0, axis);
+        EXPECT_EQ(p, TransformPlane(p, tiny_rot));
+    };
+    test_axis( Vector3f::AxisX());
+    test_axis(-Vector3f::AxisX());
+    test_axis( Vector3f::AxisY());
+    test_axis(-Vector3f::AxisY());
+    test_axis( Vector3f::AxisZ());
+    test_axis(-Vector3f::AxisZ());
+}
+
+TEST_F(LinearTest, TransformBounds) {
+    const Bounds b(Point3f(-4, -3, 6), Point3f(-2, 9, 12));
+
+    EXPECT_EQ(Bounds(Point3f(-12, -12, 30), Point3f(-6, 36, 60)),
+              ScaleBounds(b, Vector3f(3, 4, 5)));
+
+    EXPECT_EQ(Bounds(Point3f(-104, 197, 406), Point3f(-102, 209, 412)),
+              TranslateBounds(b, Vector3f(-100, 200, 400)));
+
+    const Matrix4f tm =
+        GetTransformMatrix(Vector3f(2, 3, 4),
+                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
+                                                       Anglef::FromDegrees(90)),
+                           Vector3f(10, 20, 30));
+    const Bounds tb = TransformBounds(b, tm);
+    EXPECT_PTS_CLOSE(Point3f(34, 11, 34), tb.GetMinPoint());
+    EXPECT_PTS_CLOSE(Point3f(58, 47, 38), tb.GetMaxPoint());
+}
+
+TEST_F(LinearTest, TransformSpin) {
+    Spin s;
+    s.center.Set(1, 2, 3);
+    s.axis = Vector3f::AxisX();
+    s.angle = Anglef::FromDegrees(30);
+    s.offset = 12;
+    const Matrix4f tm =
+        GetTransformMatrix(Vector3f(2, 3, 4),
+                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
+                                                       Anglef::FromDegrees(90)),
+                           Vector3f(10, 20, 30));
+    const Spin ts = TransformSpin(s, tm);
+    EXPECT_PTS_CLOSE(Point3f(22, 26, 28), ts.center);
+    EXPECT_VECS_CLOSE(-Vector3f::AxisZ(), ts.axis);
+    EXPECT_EQ(s.angle,                    ts.angle);
+    EXPECT_EQ(s.offset,                   ts.offset);
+}
+
+TEST_F(LinearTest, TransformRotation) {
+    const Rotationf r0 = Rotationf::RotateInto(-Vector3f::AxisZ(),
+                                               Vector3f::AxisX());
+    const Rotationf r1 = Rotationf::RotateInto(Vector3f::AxisX(),
+                                               Vector3f::AxisY());
+    const Rotationf r = TransformRotation(r0, ion::math::RotationMatrixH(r1));
+    EXPECT_ROTS_CLOSE(Rotationf::RotateInto(-Vector3f::AxisZ(),
+                                            Vector3f::AxisY()), r);
+}
+
+TEST_F(LinearTest, ComposeRotations) {
+    const Rotationf r0 = Rotationf::RotateInto(Vector3f::AxisX(),
+                                               Vector3f::AxisY());
+    const Rotationf r1 = Rotationf::RotateInto(Vector3f::AxisY(),
+                                               Vector3f::AxisZ());
+
+    // r0 should be applied first. Should bring +X to +Z and +Y to -X.
+    const Rotationf cr0 = ComposeRotations(r0, r1);
+    EXPECT_VECS_CLOSE( Vector3f::AxisZ(), cr0 * Vector3f::AxisX());
+    EXPECT_VECS_CLOSE(-Vector3f::AxisX(), cr0 * Vector3f::AxisY());
+
+    // r1 should be applied first. Should bring +X to +Y and +Y to +Z.
+    const Rotationf cr1 = ComposeRotations(r1, r0);
+    EXPECT_VECS_CLOSE(Vector3f::AxisY(), cr1 * Vector3f::AxisX());
+    EXPECT_VECS_CLOSE(Vector3f::AxisZ(), cr1 * Vector3f::AxisY());
+}
+
+TEST_F(LinearTest, ScalePointsToSize) {
+    // This also tests ScalePoint().
+
+    // 2D version.
+    std::vector<Point2f> p2{ Point2f(0, 0), Point2f(-1, 1), Point2f(4, -4) };
+    ScalePointsToSize(Vector2f(20, 30), p2);
+    EXPECT_PTS_CLOSE2(Point2f(0,    0), p2[0]);
+    EXPECT_PTS_CLOSE2(Point2f(-4,   6), p2[1]);
+    EXPECT_PTS_CLOSE2(Point2f(16, -24), p2[2]);
+
+    // 3D version.
+    const std::vector<Point3f> p3{
+        Point3f(0, 0, 0), Point3f(-1, 1, 1), Point3f(4, -4, 4)
+    };
+    auto p3a = p3;
+    ScalePointsToSize(Vector3f(20, 30, 20), p3a);
+    EXPECT_PTS_CLOSE(Point3f(0,    0,  0),  p3a[0]);
+    EXPECT_PTS_CLOSE(Point3f(-4,   6,  5),  p3a[1]);
+    EXPECT_PTS_CLOSE(Point3f(16, -24, 20),  p3a[2]);
+    auto p3b = p3;
+    ScalePointsToSize(Vector3f(5, 5, 20), p3b);
+    EXPECT_PTS_CLOSE(Point3f(0,   0,  0), p3b[0]);
+    EXPECT_PTS_CLOSE(Point3f(-1,  1,  5), p3b[1]);
+    EXPECT_PTS_CLOSE(Point3f(4,  -4, 20), p3b[2]);
+}
+
+TEST_F(LinearTest, ToPrintCoords) {
+    EXPECT_EQ(Point3f(4, -5, 6),  ToPrintCoords(Point3f(4, 6, 5)));
+    EXPECT_EQ(Vector3f(4, -5, 6), ToPrintCoords(Vector3f(4, 6, 5)));
+}
+
+// ----------------------------------------------------------------------------
+// Viewing functions.
+// ----------------------------------------------------------------------------
+
+TEST_F(LinearTest, GetAspectRatio) {
+    EXPECT_EQ(4.5f, GetAspectRatio(Viewport(Point2i(0, 0),
+                                            Point2i(450, 100))));
+    EXPECT_EQ(.5f,  GetAspectRatio(Viewport(Point2i(100, 200),
+                                            Point2i(400, 800))));
+}
+
+TEST_F(LinearTest, GetProjectionAndViewMatrix) {
+    Frustum f;
+    f.SetSymmetricFOV(Anglef::FromDegrees(90.f), 2.f);
+    f.pnear = 1;
+    f.pfar  = 100;
+    f.position.Set(0, 10, 40);
+    f.orientation = Rotationf::RotateInto(Vector3f::AxisX(), Vector3f::AxisY());
+
+    EXPECT_MATS_CLOSE(Matrix4f(1, 0, 0, 0,
+                               0, 2, 0, 0,
+                               0, 0, -1.0101f, -1.0101f,
+                               0, 0, -1, 0), GetProjectionMatrix(f));
+
+    EXPECT_MATS_CLOSE(Matrix4f(0, 1, 0, -10,
+                               -1, 0, 0, 0,
+                               0, 0, 1, -40,
+                               0, 0, 0, 1), GetViewMatrix(f));
+}
+
+// ----------------------------------------------------------------------------
+// General linear algebra functions.
+// ----------------------------------------------------------------------------
+
+TEST_F(LinearTest, ZeroAndOneInit) {
+    EXPECT_EQ(0.f, ZeroInit<float>());
+    EXPECT_EQ(1.f,  OneInit<float>());
+
+    EXPECT_EQ(Vector2f(0, 0), ZeroInit<Vector2f>());
+    EXPECT_EQ(Vector2f(1, 1),  OneInit<Vector2f>());
+}
+
+TEST_F(LinearTest, RoundToPrecision) {
+    EXPECT_CLOSE(.05f, RoundToPrecision(.05493f, .01f));
+    EXPECT_CLOSE(.05f, RoundToPrecision(.04792f, .01f));
+}
+
+TEST_F(LinearTest, AreClose) {
+    const auto nvec = [](float x, float y, float z){
+        return ion::math::Normalized(Vector3f(x, y, z)); };
+
+    EXPECT_TRUE(AreClose(12.f,  12.01f, .02f));
+    EXPECT_FALSE(AreClose(12.f, 12.02f, .01f));
+
+    // This uses the square of the distance.
+    EXPECT_TRUE(AreClose(Vector3f(0, 1, 2),  Vector3f(0, 1, 2.005f), .01f));
+    EXPECT_FALSE(AreClose(Vector3f(0, 1, 2), Vector3f(0, 1, 2.2f),   .01f));
+
+    EXPECT_TRUE(AreClose(Anglef::FromDegrees(12), Anglef::FromDegrees(12.9f),
+                         Anglef::FromDegrees(1)));
+    EXPECT_FALSE(AreClose(Anglef::FromDegrees(12), Anglef::FromDegrees(13.1f),
+                          Anglef::FromDegrees(1)));
+
+    // This uses angles.
+    EXPECT_TRUE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .1f, 0),
+                                   Anglef::FromDegrees(10)));
+    EXPECT_FALSE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .5f, 0),
+                                    Anglef::FromDegrees(10)));
+
+    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, 1, 0),
+                                       Anglef::FromDegrees(1)));
+    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, -1, 0),
+                                       Anglef::FromDegrees(1)));
+    EXPECT_FALSE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(.2f, 1, 0),
+                                        Anglef::FromDegrees(1)));
+}
+
+TEST_F(LinearTest, MinMaxElement) {
+    const Vector2f v2a(-.2f, 1.f);
+    const Vector2f v2b( .2f, 1.f);
+    const Vector3f v3a(-.2f, 1.f, -1.4f);
+    const Vector3f v3b( .2f, 1.f,   .4f);
+    const Vector4f v4a(-.2f, 1.f, -.4f, -1.5f);
+    const Vector4f v4b( .2f, 1.f,  .1f,   .5f);
+
+    EXPECT_EQ(0, GetMinElementIndex(v2a));
+    EXPECT_EQ(0, GetMinElementIndex(v2b));
+    EXPECT_EQ(2, GetMinElementIndex(v3a));
+    EXPECT_EQ(0, GetMinElementIndex(v3b));
+    EXPECT_EQ(3, GetMinElementIndex(v4a));
+    EXPECT_EQ(2, GetMinElementIndex(v4b));
+
+    EXPECT_EQ(1, GetMaxElementIndex(v2a));
+    EXPECT_EQ(1, GetMaxElementIndex(v2b));
+    EXPECT_EQ(1, GetMaxElementIndex(v3a));
+    EXPECT_EQ(1, GetMaxElementIndex(v3b));
+    EXPECT_EQ(1, GetMaxElementIndex(v4a));
+    EXPECT_EQ(1, GetMaxElementIndex(v4b));
+
+    EXPECT_EQ(0, GetMinAbsElementIndex(v2a));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v2b));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v3a));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v3b));
+    EXPECT_EQ(0, GetMinAbsElementIndex(v4a));
+    EXPECT_EQ(2, GetMinAbsElementIndex(v4b));
+
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v2a));
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v2b));
+    EXPECT_EQ(2, GetMaxAbsElementIndex(v3a));
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v3b));
+    EXPECT_EQ(3, GetMaxAbsElementIndex(v4a));
+    EXPECT_EQ(1, GetMaxAbsElementIndex(v4b));
+}
+
+TEST_F(LinearTest, GetAxis) {
+    EXPECT_EQ(Vector3f(1,   0, 0), GetAxis(Dim::kX));
+    EXPECT_EQ(Vector3f(2.5, 0, 0), GetAxis(Dim::kX, 2.5));
+    EXPECT_EQ(Vector3f(0, 1,   0), GetAxis(Dim::kY));
+    EXPECT_EQ(Vector3f(0, 2.5, 0), GetAxis(Dim::kY, 2.5));
+    EXPECT_EQ(Vector3f(0, 0, 1),   GetAxis(Dim::kZ));
+    EXPECT_EQ(Vector3f(0, 0, 2.5), GetAxis(Dim::kZ, 2.5));
+
+    EXPECT_EQ(Vector3f(1,   0, 0), GetAxis(0));
+    EXPECT_EQ(Vector3f(2.5, 0, 0), GetAxis(0, 2.5));
+    EXPECT_EQ(Vector3f(0, 1,   0), GetAxis(1));
+    EXPECT_EQ(Vector3f(0, 2.5, 0), GetAxis(1, 2.5));
+    EXPECT_EQ(Vector3f(0, 0, 1),   GetAxis(2));
+    EXPECT_EQ(Vector3f(0, 0, 2.5), GetAxis(2, 2.5));
+}
+
+TEST_F(LinearTest, AbsAngle) {
+    EXPECT_EQ(Anglef::FromDegrees(12), AbsAngle(Anglef::FromDegrees(12)));
+    EXPECT_EQ(Anglef::FromDegrees(12), AbsAngle(Anglef::FromDegrees(-12)));
+}
+
+TEST_F(LinearTest, NormalizedAngle) {
+    const auto ndeg = [](float deg){
+        return NormalizedAngle(Anglef::FromDegrees(deg)).Degrees();
+    };
+    EXPECT_CLOSE(0.f,   ndeg(0));
+    EXPECT_CLOSE(359.f, ndeg(359));
+    EXPECT_CLOSE(0.f,   ndeg(360));
+    EXPECT_CLOSE(2.f,   ndeg(722));
+    EXPECT_CLOSE(0.f,   ndeg(-360));
+    EXPECT_CLOSE(10.f,  ndeg(-350));
+}
+
+TEST_F(LinearTest, RotationAngleAndAxis) {
+    const Rotationf rot =
+        Rotationf::FromAxisAndAngle(Vector3f(1, 2, 3), Anglef::FromDegrees(12));
+
+    EXPECT_CLOSE(12.f, RotationAngle(rot).Degrees());
+    EXPECT_VECS_CLOSE(ion::math::Normalized(Vector3f(1, 2, 3)),
+                      RotationAxis(rot));
+}
+
+// XXXX STOPPED HERE...
+
+
+TEST_F(LinearTest, RotationDifference) {
+    const Rotationf r0 = Rotationf::FromAxisAndAngle(Vector3f(1, 2, -3),
+                                                     Anglef::FromDegrees(18));
+    const Rotationf r1 = Rotationf::FromAxisAndAngle(Vector3f(-4, 3, 3),
+                                                     Anglef::FromDegrees(-22));
+    const Rotationf diff = RotationDifference(r0, r1);
+    EXPECT_EQ(r1, r0 * diff);
+}
+
+TEST_F(LinearTest, ComputeNormal) {
+    EXPECT_EQ(Vector3f(0, 0, 1), ComputeNormal(Point3f(-10, -10, 0),
+                                               Point3f( 10, -10, 0),
+                                               Point3f(-10,  10, 0)));
+
+    EXPECT_EQ(Vector3f(-1, 0, 0), ComputeNormal(Point3f(-10, -10, -10),
+                                                Point3f(-10, -10,  10),
+                                                Point3f(-10,  10, -10)));
+}
+
+TEST_F(LinearTest, GetClosestPointOnLine) {
+    EXPECT_EQ(Point3f(3, 10, 2), GetClosestPointOnLine(Point3f(3, 20, 2),
+                                                       Point3f(0, 10, 2),
+                                                       Vector3f(1, 0, 0)));
+    EXPECT_EQ(Point3f(3, 10, 2), GetClosestPointOnLine(Point3f(3, 20, 2),
+                                                       Point3f(0, 10, 2),
+                                                       Vector3f(-1, 0, 0)));
+    // Diagonal
+    EXPECT_EQ(Point3f(5, 5, 0), GetClosestPointOnLine(Point3f(-3, -3, 0),
+                                                       Point3f(10, 0, 0),
+                                                       Vector3f(-10, 10, 0)));
+}
+
+TEST_F(LinearTest, BuildRange) {
+    const Range2f r = BuildRange(Point2f(-10, 20), Vector2f(6, 8));
+    EXPECT_EQ(Point2f(-13, 16), r.GetMinPoint());
+    EXPECT_EQ(Point2f( -7, 24), r.GetMaxPoint());
+}
+
+
 
 /// \todo Add more from Unity-based version.

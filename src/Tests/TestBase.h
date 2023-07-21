@@ -88,6 +88,7 @@ class TestBase : public ::testing::Test {
     static bool VectorsClose(const Vector3f &v0, const Vector3f &v1);
     static bool PointsClose(const Point3f &p0, const Point3f &p1);
     static bool RotationsClose(const Rotationf &r0, const Rotationf &r1);
+    static bool MatricesClose(const Matrix4f &m0, const Matrix4f &m1);
 
     // FP testing predicates from Ion with custom tolerance.
     static bool VectorsClose2T(const Vector2f &v0, const Vector2f &v1, float t);
@@ -96,6 +97,7 @@ class TestBase : public ::testing::Test {
     static bool PointsCloseT(const Point3f &p0, const Point3f &p1, float t);
     static bool RotationsCloseT(const Rotationf &r0, const Rotationf &r1,
                                 float t_degrees);
+    static bool MatricesCloseT(const Matrix4f &m0, const Matrix4f &m1, float t);
 
     // Loads a TriMesh from an STL file.
     TriMesh LoadTriMesh(const std::string &file_name);
