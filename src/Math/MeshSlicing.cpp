@@ -222,10 +222,11 @@ void Slicer_::SliceMesh_(const TriMesh &mesh, const FloatVec &fractions) {
 std::vector<float> Slicer_::GetCrossings_(const std::vector<float> &fractions,
                                            const Range1f &range) const {
     // Convert the fractions into axis coordinate crossings.
-    std::vector<float> vals = Util::ConvertVector<float, float>(
-        fractions, [&](const float &f){
-            return Lerp(f, range.GetMinPoint(), range.GetMaxPoint());
-        });
+    const auto get_crossing = [&](const float &f){
+        return Lerp(f, range.GetMinPoint(), range.GetMaxPoint());
+    };
+    std::vector<float> vals =
+        Util::ConvertVector<float, float>(fractions, get_crossing);
 
     // Sort the coordinates and add the min/max at either end. This makes the
     // bucket search have fewer special cases.
@@ -359,24 +360,15 @@ void Slicer_::ProcessTri_(const Tri_ &tri) {
 
 void Slicer_::TraverseTriSides_(bool is_ccw,
                                 const IndexVec_ &side0, const IndexVec_&side1) {
-    // If one side has more vertices than the other (by exactly 1), start by
-    // creating a triangle connecting the first 2 from the longer side with the
-    // first one from the shorter side. Then proceed as normal.
-    const size_t size0 = side0.size();
-    const size_t size1 = side1.size();
+    // If side0 (the one formed by combining two triangle edges) has 1 more
+    // vertex than side1, start by creating a triangle connecting the first 2
+    // from side0 with the first one from side1. Then proceed as normal.
     size_t i0 = 1;
     size_t i1 = 1;
-    if (size0 != size1) {
-        if (size0 > size1) {
-            ASSERT(size0 - size1 == 1U);
-            AddTri_(is_ccw, side0[0], side0[1], side1[0]);
-            i0 = 2;
-        }
-        else {
-            ASSERT(size1 - size0 == 1U);
-            AddTri_(is_ccw, side0[0], side1[1], side1[0]);
-            i1 = 2;
-        }
+    if (side0.size() > side1.size()) {
+        ASSERT(side0.size() == side1.size() + 1);
+        AddTri_(is_ccw, side0[0], side0[1], side1[0]);
+        i0 = 2;
     }
 
     // Traverse the rest.

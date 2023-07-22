@@ -40,16 +40,9 @@ class TriHelper_ {
     }
 
     /// Adds a quad; indices must be in circular order around the quad.
-    void AddQuad(GIndex i0, GIndex i1, GIndex i2, GIndex i3,
-                 bool reverse = false) {
-        if (reverse) {
-            AddTri(i0, i2, i1);
-            AddTri(i0, i3, i2);
-        }
-        else {
-            AddTri(i0, i1, i2);
-            AddTri(i0, i2, i3);
-        }
+    void AddQuad(GIndex i0, GIndex i1, GIndex i2, GIndex i3) {
+        AddTri(i0, i1, i2);
+        AddTri(i0, i2, i3);
     }
 
     /// Adds a triangle fan.

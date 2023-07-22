@@ -141,6 +141,16 @@ TEST_F(MeshSlicingTest, Box1Slice) {
     EXPECT_EQ(28U,              sm.mesh.GetTriangleCount());
 }
 
+TEST_F(MeshSlicingTest, Box1SliceEven) {
+    const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
+    const SlicedMesh sm = SliceMesh(mesh, Dim::kY, 2);
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(sm.mesh));
+    EXPECT_EQ(Dim::kY,          sm.axis);
+    EXPECT_EQ(Range1f(-10, 10), sm.range);
+    EXPECT_EQ(16U,              sm.mesh.points.size());
+    EXPECT_EQ(28U,              sm.mesh.GetTriangleCount());
+}
+
 TEST_F(MeshSlicingTest, Box2Slices) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
     const std::vector<float> fractions{.25f, .75f};

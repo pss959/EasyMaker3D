@@ -99,3 +99,48 @@ TEST_F(PolyMeshTest, MergeCoplanarFacesHole) {
     EXPECT_EQ(1U,  bot.hole_edges.size());
     EXPECT_EQ(9U,  bot.hole_edges[0].size());
 }
+
+TEST_F(PolyMeshTest, GetFaceVertices) {
+    // Use a mesh with a hole for completeness.
+    TriMesh m = LoadTriMesh("O.stl");
+    PolyMesh poly_mesh(m);
+    MergeCoplanarFaces(poly_mesh);
+    for (const auto &face: poly_mesh.faces) {
+        PolyMesh::VertexVec verts;
+        std::vector<size_t> border_counts;
+        PolyMesh::GetFaceVertices(*face, verts, border_counts);
+        // The faces with holes have 20 vertices and border counts [11, 9].
+        // All other faces have 4 vertices and one border.
+        EXPECT_TRUE(verts.size() == 4U || verts.size() == 20U);
+        if (verts.size() == 4U) {
+            EXPECT_EQ(1U, border_counts.size());
+            EXPECT_EQ(4U, border_counts[0]);
+        }
+        else {
+            EXPECT_EQ(2U,  border_counts.size());
+            EXPECT_EQ(11U, border_counts[0]);
+            EXPECT_EQ(9U,  border_counts[1]);
+        }
+    }
+
+    // Merging again should have no effect.
+    MergeCoplanarFaces(poly_mesh);
+    for (const auto &face: poly_mesh.faces) {
+        PolyMesh::VertexVec verts;
+        std::vector<size_t> border_counts;
+        PolyMesh::GetFaceVertices(*face, verts, border_counts);
+        // The faces with holes have 20 vertices and border counts [11, 9].
+        // All other faces have 4 vertices and one border.
+        EXPECT_TRUE(verts.size() == 4U || verts.size() == 20U);
+        if (verts.size() == 4U) {
+            EXPECT_EQ(1U, border_counts.size());
+            EXPECT_EQ(4U, border_counts[0]);
+        }
+        else {
+            EXPECT_EQ(2U,  border_counts.size());
+            EXPECT_EQ(11U, border_counts[0]);
+            EXPECT_EQ(9U,  border_counts[1]);
+        }
+    }
+}
+
