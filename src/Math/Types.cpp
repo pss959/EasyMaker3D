@@ -22,31 +22,8 @@
 
 namespace {
 
-/// Overrides the standard Ion string printing version to be more compact and
-/// to round to a reasonable precision.
-template <typename T> std::string ToString_(const T &t) {
-    return Util::ToString(t);
-}
-template <> std::string ToString_(const float &f) {
-    return Math::ToString(f, .001f);
-}
-template <> std::string ToString_(const Point3f &t) {
-    return Math::ToString(t, .001f);
-}
-template <> std::string ToString_(const Vector3f &t) {
-    return Math::ToString(t, .001f);
-}
-template <> std::string ToString_(const Anglef &a) {
-    return Math::ToString(a.Degrees(), .1f);
-}
-template <> std::string ToString_(const Rotationf &r) {
-    Vector3f axis;
-    Anglef   angle;
-    r.GetAxisAndAngle(&axis, &angle);
-    return "R[" + ToString_(axis) + ", " + ToString_(angle) + "]";
-}
-
-/// This is used by TriMesh::FromBinaryString() to parse binary data.
+/// This is used by TriMesh::FromBinaryString() and
+/// PolyMesh::FromBinaryString() to parse binary data.
 template <typename T> T ParseBinary_(const uint8 *&bp) {
     const T val = *reinterpret_cast<const T *>(bp);
     bp += sizeof(val);
@@ -193,15 +170,6 @@ void Bounds::GetCorners(Point3f corners[8]) const {
     corners[7].Set(max_pt[0], max_pt[1], max_pt[2]);
 }
 
-std::string Bounds::ToString(bool use_min_max) const {
-    if (use_min_max)
-        return ("B["   + ToString_(GetMinPoint()) +
-                " => " + ToString_(GetMaxPoint()) + "]");
-    else
-        return ("B[c="  + ToString_(GetCenter())  +
-                " s="   + ToString_(GetSize())    + "]");
-}
-
 // ----------------------------------------------------------------------------
 // Plane functions.
 // ----------------------------------------------------------------------------
@@ -254,18 +222,6 @@ Point3f Plane::MirrorPoint(const Point3f &p) const {
 
 Vector4f Plane::GetCoefficients() const {
     return Vector4f(normal[0], normal[1], normal[2], -distance);
-}
-
-std::string Plane::ToString() const {
-    return "PL [n=" + ToString_(normal) + " d=" + ToString_(distance) + "]";
-}
-
-// ----------------------------------------------------------------------------
-// Ray functions.
-// ----------------------------------------------------------------------------
-
-std::string Ray::ToString() const {
-    return "RAY [o=" + ToString_(origin) + " d=" + ToString_(direction) + "]";
 }
 
 // ----------------------------------------------------------------------------
@@ -351,39 +307,9 @@ Point2f Frustum::ProjectToImageRect(const Point3f &pt) const {
                    .5f + .5f * p[1]);
 }
 
-std::string Frustum::ToString() const {
-    return ("FR [vp="  + ToString_(viewport) +
-            " p="      + ToString_(position) +
-            " o="      + ToString_(orientation) +
-            " fov=(l:" + ToString_(fov_left) +
-            " r:"      + ToString_(fov_right) +
-            " u:"      + ToString_(fov_up) +
-            " d:"      + ToString_(fov_down) +
-            ") n="     + ToString_(pnear) +
-            " f="      + ToString_(pfar) +
-            "]");
-}
-
 // ----------------------------------------------------------------------------
 // TriMesh functions.
 // ----------------------------------------------------------------------------
-
-std::string TriMesh::ToString() const {
-    const size_t pc = points.size();
-    const size_t tc = GetTriangleCount();
-    std::string s = "TriMesh with " + ToString_(pc) + " points and " +
-        ToString_(tc) + " triangles:\n";
-    for (size_t i = 0; i < pc; ++i)
-        s += "   [" + ToString_(i) + "] " + ToString_(points[i]) + "\n";
-
-    auto i2s = [&](size_t index){ return ToString_(indices[index]); };
-    for (size_t i = 0; i < tc; ++i)
-        s += "   TRI [" +
-            i2s(3 * i + 0) + " " +
-            i2s(3 * i + 1) + " " +
-            i2s(3 * i + 2) + "]\n";
-    return s;
-}
 
 std::string TriMesh::ToBinaryString() const {
     const size_t pc = points.size();
@@ -404,31 +330,29 @@ bool TriMesh::FromBinaryString(const std::string &str) {
     const uint8 *bp = reinterpret_cast<const uint8 *>(str.c_str());
 
     // Point and triangle counts.
-    size_t bytes_left = str.size();
     uint32 pc, tc;
-    if (bytes_left < 2 * sizeof(pc))
+    if (str.size() < sizeof(pc) + sizeof(tc))
         return false;
     pc = ParseBinary_<uint32>(bp);
     tc = ParseBinary_<uint32>(bp);
-    bytes_left -= 2 * sizeof(pc);
 
-    points.reserve(pc);
-    indices.reserve(3 * tc);
+    // Make sure there is enough data for points and indices.
+    const size_t bytes_left      = str.size() - (sizeof(pc) + sizeof(tc));
+    const size_t point_bytes = pc * 3 * sizeof(float);
+    const size_t index_bytes = tc * 3 * sizeof(GIndex);
+    if (bytes_left < point_bytes + index_bytes)
+        return false;
 
     // Points.
-    if (bytes_left < pc * 3 * sizeof(float))
-        return false;
+    points.reserve(pc);
     for (size_t i = 0; i < pc; ++i) {
         const float x = ParseBinary_<float>(bp);
         const float y = ParseBinary_<float>(bp);
         const float z = ParseBinary_<float>(bp);
         points.push_back(Point3f(x, y, z));
     }
-    bytes_left -= pc * 3 * sizeof(float);
-
     // Indices.
-    if (bytes_left < tc * 3 * sizeof(GIndex))
-        return false;
+    indices.reserve(3 * tc);
     for (size_t i = 0; i < 3 * tc; ++i)
         indices.push_back(ParseBinary_<GIndex>(bp));
 
@@ -465,54 +389,132 @@ bool ModelMesh::FromBinaryString(const std::string &str) {
     const uint8 *bp = reinterpret_cast<const uint8 *>(str.c_str());
 
     // Point and triangle counts.
-    size_t bytes_left = str.size();
     uint32 pc, tc;
-    if (bytes_left < 2 * sizeof(pc))
+    if (str.size() < sizeof(pc) + sizeof(tc))
         return false;
     pc = ParseBinary_<uint32>(bp);
     tc = ParseBinary_<uint32>(bp);
-    bytes_left -= 2 * sizeof(pc);
 
-    points.reserve(pc);
-    indices.reserve(3 * tc);
+    // Make sure there is enough data.
+    const size_t bytes_left  = str.size() - (sizeof(pc) + sizeof(tc));
+    const size_t point_bytes = pc * 3 * sizeof(float);
+    const size_t norm_bytes  = pc * 3 * sizeof(float);
+    const size_t tex_bytes   = pc * 2 * sizeof(float);
+    const size_t index_bytes = tc * 3 * sizeof(GIndex);
+    if (bytes_left < point_bytes + norm_bytes + tex_bytes + index_bytes)
+        return false;
 
     // Points.
-    if (bytes_left < pc * 3 * sizeof(float))
-        return false;
+    points.reserve(pc);
     for (size_t i = 0; i < pc; ++i) {
         const float x = ParseBinary_<float>(bp);
         const float y = ParseBinary_<float>(bp);
         const float z = ParseBinary_<float>(bp);
         points.push_back(Point3f(x, y, z));
     }
-    bytes_left -= pc * 3 * sizeof(float);
 
     // Normals.
-    if (bytes_left < pc * 3 * sizeof(float))
-        return false;
     for (size_t i = 0; i < pc; ++i) {
         const float nx = ParseBinary_<float>(bp);
         const float ny = ParseBinary_<float>(bp);
         const float nz = ParseBinary_<float>(bp);
         normals.push_back(Vector3f(nx, ny, nz));
     }
-    bytes_left -= pc * 3 * sizeof(float);
 
     // Texture coordinates.
-    if (bytes_left < pc * 2 * sizeof(float))
-        return false;
     for (size_t i = 0; i < pc; ++i) {
         const float u = ParseBinary_<float>(bp);
         const float v = ParseBinary_<float>(bp);
         tex_coords.push_back(Point2f(u, v));
     }
-    bytes_left -= pc * 2 * sizeof(float);
 
     // Indices.
-    if (bytes_left < tc * 3 * sizeof(GIndex))
-        return false;
+    indices.reserve(3 * tc);
     for (size_t i = 0; i < 3 * tc; ++i)
         indices.push_back(ParseBinary_<GIndex>(bp));
 
     return true;
 }
+
+// ----------------------------------------------------------------------------
+// Debugging aids.
+// ----------------------------------------------------------------------------
+
+// LCOV_EXCL_START
+
+namespace {
+
+/// Overrides the standard Ion string printing version to be more compact and
+/// to round to a reasonable precision.
+template <typename T> std::string ToString_(const T &t) {
+    return Util::ToString(t);
+}
+template <> std::string ToString_(const float &f) {
+    return Math::ToString(f, .001f);
+}
+template <> std::string ToString_(const Point3f &t) {
+    return Math::ToString(t, .001f);
+}
+template <> std::string ToString_(const Vector3f &t) {
+    return Math::ToString(t, .001f);
+}
+template <> std::string ToString_(const Anglef &a) {
+    return Math::ToString(a.Degrees(), .1f);
+}
+template <> std::string ToString_(const Rotationf &r) {
+    Vector3f axis;
+    Anglef   angle;
+    r.GetAxisAndAngle(&axis, &angle);
+    return "R[" + ToString_(axis) + ", " + ToString_(angle) + "]";
+}
+
+}  // anonymous namespace
+
+std::string Bounds::ToString(bool use_min_max) const {
+    if (use_min_max)
+        return ("B["   + ToString_(GetMinPoint()) +
+                " => " + ToString_(GetMaxPoint()) + "]");
+    else
+        return ("B[c="  + ToString_(GetCenter())  +
+                " s="   + ToString_(GetSize())    + "]");
+}
+
+std::string Plane::ToString() const {
+    return "PL [n=" + ToString_(normal) + " d=" + ToString_(distance) + "]";
+}
+
+std::string Ray::ToString() const {
+    return "RAY [o=" + ToString_(origin) + " d=" + ToString_(direction) + "]";
+}
+
+std::string Frustum::ToString() const {
+    return ("FR [vp="  + ToString_(viewport) +
+            " p="      + ToString_(position) +
+            " o="      + ToString_(orientation) +
+            " fov=(l:" + ToString_(fov_left) +
+            " r:"      + ToString_(fov_right) +
+            " u:"      + ToString_(fov_up) +
+            " d:"      + ToString_(fov_down) +
+            ") n="     + ToString_(pnear) +
+            " f="      + ToString_(pfar) +
+            "]");
+}
+
+std::string TriMesh::ToString() const {
+    const size_t pc = points.size();
+    const size_t tc = GetTriangleCount();
+    std::string s = "TriMesh with " + ToString_(pc) + " points and " +
+        ToString_(tc) + " triangles:\n";
+    for (size_t i = 0; i < pc; ++i)
+        s += "   [" + ToString_(i) + "] " + ToString_(points[i]) + "\n";
+
+    auto i2s = [&](size_t index){ return ToString_(indices[index]); };
+    for (size_t i = 0; i < tc; ++i)
+        s += "   TRI [" +
+            i2s(3 * i + 0) + " " +
+            i2s(3 * i + 1) + " " +
+            i2s(3 * i + 2) + "]\n";
+    return s;
+}
+
+// LCOV_EXCL_STOP

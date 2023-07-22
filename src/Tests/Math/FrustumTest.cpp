@@ -10,15 +10,41 @@ class FrustumTest : public TestBase {
 
 TEST_F(FrustumTest, SetSymmetricFOV) {
     Frustum f;
-    f.SetSymmetricFOV(Anglef::FromDegrees(90.f), 2.f);
+    {
+        // 2:1 aspect ratio.
+        f.SetSymmetricFOV(Anglef::FromDegrees(90.f), 2.f);
+        const Anglef a = Anglef::FromDegrees(45.f);
+        EXPECT_EQ(-a, f.fov_left);
+        EXPECT_EQ( a, f.fov_right);
+        const Anglef half_vfov =
+            ion::math::ArcTangent(ion::math::Tangent(a) / 2);
+        EXPECT_EQ(-half_vfov, f.fov_down);
+        EXPECT_EQ( half_vfov, f.fov_up);
+        EXPECT_VECS_CLOSE(Vector3f(0, 0, -1), f.GetViewDirection());
+    }
+    {
+        // 1:2 aspect ratio.
+        f.SetSymmetricFOV(Anglef::FromDegrees(90.f), 0.5f);
+        const Anglef a = Anglef::FromDegrees(26.5651f);
+        EXPECT_CLOSE(-a.Degrees(), f.fov_left.Degrees());
+        EXPECT_CLOSE( a.Degrees(), f.fov_right.Degrees());
+        const Anglef half_vfov = Anglef::FromDegrees(45);
+        EXPECT_EQ(-half_vfov, f.fov_down);
+        EXPECT_EQ( half_vfov, f.fov_up);
+        EXPECT_VECS_CLOSE(Vector3f(0, 0, -1), f.GetViewDirection());
+    }
+}
 
-    Anglef a = Anglef::FromDegrees(45.f);
-    EXPECT_EQ(-a,     f.fov_left);
-    EXPECT_EQ( a,     f.fov_right);
-
-    const Anglef half_vfov = ion::math::ArcTangent(ion::math::Tangent(a) / 2);
-    EXPECT_EQ(-half_vfov, f.fov_down);
-    EXPECT_EQ( half_vfov, f.fov_up);
+TEST_F(FrustumTest, SetFromTangents) {
+    using ion::math::Tangent;
+    Frustum f;
+    f.SetFromTangents(Tangent(-45), Tangent(45), Tangent(-45), Tangent(45));
+    const Anglef a = Anglef::FromDegrees(45.f);
+    EXPECT_EQ(-a, f.fov_left);
+    EXPECT_EQ( a, f.fov_right);
+    EXPECT_EQ(-a, f.fov_down);
+    EXPECT_EQ( a, f.fov_up);
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, -1), f.GetViewDirection());
 }
 
 TEST_F(FrustumTest, BuildRay) {
@@ -77,6 +103,7 @@ TEST_F(FrustumTest, BuildRayTransformed) {
     // Rotate 90 degrees around the Y axis.
     f.orientation = Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
                                                 Anglef::FromDegrees(90));
+    EXPECT_VECS_CLOSE(Vector3f(-1, 0, 0), f.GetViewDirection());
     ray = f.BuildRay(Point2f(.5f, .5f));
     EXPECT_PTS_CLOSE(Point3f(-1, 10, 40), ray.origin);
     EXPECT_VECS_CLOSE(Vector3f(-1, 0, 0),  ray.direction);

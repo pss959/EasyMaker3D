@@ -1,5 +1,6 @@
 #include "Math/Taper.h"
 
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
@@ -14,10 +15,9 @@ bool Taper::IsValidProfile(const Profile &prof) {
     if (prof.GetType() != Profile::Type::kOpen || ! prof.IsValid())
         return false;
 
-    // There must be at least 2 profile points.
+    // There must be at least 2 profile points for the profile to be valid.
     const auto &pts = prof.GetPoints();
-    if (pts.size() < 2U)
-        return false;
+    ASSERT(pts.size() >= 2U);
 
     // The end points must be at Y=1 and Y=0.
     if (pts.front()[1] != 1 || pts.back()[1] != 0)
@@ -32,7 +32,8 @@ bool Taper::IsValidProfile(const Profile &prof) {
     return true;
 }
 
-
+// LCOV_EXCL_START
 std::string Taper::ToString() const {
     return "TAP [ " + Util::EnumName(axis) + " / " + profile.ToString();
 }
+// LCOV_EXCL_STOP

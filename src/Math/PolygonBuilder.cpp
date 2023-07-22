@@ -35,10 +35,11 @@ class PolygonBuilder::Impl_ {
 
         /// Returns true if the points in the Border_ are clockwise.
         bool IsClockwise() const {
+            const auto to_p3d = [](const Point_ &p){
+                return Point3f(p.pos[0], 0, p.pos[1]);
+            };
             const std::vector<Point3f> pts =
-                Util::ConvertVector<Point3f, Point_>(
-                    points, [](const Point_ &p){
-                        return Point3f(p.pos[0], 0, p.pos[1]); });
+                Util::ConvertVector<Point3f, Point_>(points, to_p3d);
             // The normal will point up if the points form a clockwise loop or
             // down for a counterclockwise loop.
             const Vector3f normal = ComputeNormal(pts);
@@ -198,7 +199,7 @@ size_t PolygonBuilder::Impl_::FindContainingBorderIndex_(
         if (outer_borders[i].bounds.ContainsPoint(hole_pt))
             return i;
     }
-    ASSERTM(false, "Can't find outer border containing hole");
+    ASSERTM(false, "Can't find outer border containing hole"); // LCOV_EXCL_LINE
     return 0;
 }
 

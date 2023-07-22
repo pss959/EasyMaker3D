@@ -4,6 +4,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 #include "Util/FilePath.h"
+#include "Util/General.h"
 #include "Util/Tuning.h"
 
 class TextUtilsTest : public TestBase {
@@ -14,6 +15,14 @@ class TextUtilsTest : public TestBase {
             EXPECT_EQ(border_counts[i], poly.GetBorderCounts()[i]);
     }
 };
+
+TEST_F(TextUtilsTest, GetAvailableFontNames) {
+    const auto names = GetAvailableFontNames();
+    EXPECT_FALSE(names.empty());
+    EXPECT_TRUE(Util::Contains(names, "Arial-Bold"));
+    EXPECT_TRUE(Util::Contains(names, "Arial-Regular"));
+    EXPECT_TRUE(Util::Contains(names, "Verdana-Regular"));
+}
 
 TEST_F(TextUtilsTest, IsValidFontName) {
     EXPECT_TRUE(IsValidFontName("Arial-Regular"));
@@ -47,6 +56,13 @@ TEST_F(TextUtilsTest, IsValidStringForFont) {
     test_bad("¶¡§",
              "String contains invalid character(s) for the font:"
              " [\xC2\xB6\xC2\xA1\xC2\xA7]");
+}
+
+TEST_F(TextUtilsTest, GetFontPath) {
+    const auto path = GetFontPath("Arial-Regular");
+    EXPECT_TRUE(path);
+    EXPECT_TRUE(path.ToString().contains("Arial"));
+    EXPECT_FALSE(GetFontPath("NoSUCHFont"));
 }
 
 TEST_F(TextUtilsTest, SingleCharOutlines) {

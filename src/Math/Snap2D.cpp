@@ -12,27 +12,38 @@ Snap2D::Result Snap2D::SnapPointBetween(const Point2f &p0, const Point2f &p1,
                                         Point2f &point_to_snap) {
     Result result = Result::kNeither;
 
-    const Direction dir0 = GetSnapDirection_(p0, point_to_snap);
-    const Direction dir1 = GetSnapDirection_(p1, point_to_snap);
+    const Direction_ dir0 = GetSnapDirection_(p0, point_to_snap);
+    const Direction_ dir1 = GetSnapDirection_(p1, point_to_snap);
 
     // If snapping to both directions, have to find their intersection.
-    if (dir0 != Direction::kNone && dir1 != Direction::kNone) {
-        // Use the 3D function to make this easier. If there is no
-        // intersection, do not snap at all.
-        Point3f c0, c1;
-        if (GetClosestLinePoints(Point3f(p0, 0), Vector3f(GetVector_(dir0), 0),
-                                 Point3f(p1, 0), Vector3f(GetVector_(dir1), 0),
-                                 c0, c1)) {
-
-            point_to_snap = ToPoint2f(c0);
+    if (dir0 != Direction_::kNone && dir1 != Direction_::kNone) {
+        const auto v0 = GetVector_(dir0);
+        const auto v1 = GetVector_(dir1);
+        // If directions are opposite, find the closest point on the line from
+        // p0 to p1 to point_to_snap.
+        if (v0 == -v1) {
+            const Point3f c = GetClosestPointOnLine(Point3f(point_to_snap, 0),
+                                                    Point3f(p0, 0),
+                                                    Vector3f(v0, 0));
+            point_to_snap = ToPoint2f(c);
             result = Result::kBoth;
         }
+        else {
+            // Use the 3D function to make this easier. If there is no
+            // intersection, do not snap at all.
+            Point3f c0, c1;
+            if (GetClosestLinePoints(Point3f(p0, 0), Vector3f(v0, 0),
+                                     Point3f(p1, 0), Vector3f(v1, 0), c0, c1)) {
+                point_to_snap = ToPoint2f(c0);
+                result = Result::kBoth;
+            }
+        }
     }
-    else if (dir0 != Direction::kNone) {
+    else if (dir0 != Direction_::kNone) {
         SnapPointToDirection_(dir0, p0, point_to_snap);
         result = Result::kPoint0;
     }
-    else if (dir1 != Direction::kNone) {
+    else if (dir1 != Direction_::kNone) {
         SnapPointToDirection_(dir1, p1, point_to_snap);
         result = Result::kPoint1;
     }
@@ -40,17 +51,17 @@ Snap2D::Result Snap2D::SnapPointBetween(const Point2f &p0, const Point2f &p1,
     return result;
 }
 
-Snap2D::Direction Snap2D::GetSnapDirection_(const Point2f &p0,
-                                            const Point2f &p1) {
+Snap2D::Direction_ Snap2D::GetSnapDirection_(const Point2f &p0,
+                                             const Point2f &p1) {
     // If the two points are too close together, can't do this.
     const Vector2f vec = p1 - p0;
     if (ion::math::Length(vec) < .001f)
-        return Direction::kNone;
+        return Direction_::kNone;
 
     // Compare with principal directions.
-    Direction snap_direction = Direction::kNone;
-    for (const auto dir: Util::EnumValues<Direction>()) {
-        if (dir == Direction::kNone)
+    Direction_ snap_direction = Direction_::kNone;
+    for (const auto dir: Util::EnumValues<Direction_>()) {
+        if (dir == Direction_::kNone)
             continue;
         // Find the angle between the vector from p0 to p1 and the vector for
         // this direction.
@@ -65,11 +76,11 @@ Snap2D::Direction Snap2D::GetSnapDirection_(const Point2f &p0,
     return snap_direction;
 }
 
-void Snap2D::SnapPointToDirection_(Direction direction,
+void Snap2D::SnapPointToDirection_(Direction_ direction,
                                    const Point2f &fixed_point,
                                    Point2f &point_to_snap) {
     switch (direction) {
-        using enum Snap2D::Direction;
+        using enum Snap2D::Direction_;
       case kN: case kS:
         point_to_snap[0] = fixed_point[0];
         break;
@@ -83,15 +94,14 @@ void Snap2D::SnapPointToDirection_(Direction direction,
           point_to_snap = fixed_point + len * GetVector_(direction);
           break;
       }
-      default:
-        break;
+      default: break;  // LCOV_EXCL_LINE
     }
 }
 
-Vector2f Snap2D::GetVector_(Direction direction) {
+Vector2f Snap2D::GetVector_(Direction_ direction) {
     Vector2f v;
     switch (direction) {
-        using enum Snap2D::Direction;
+        using enum Snap2D::Direction_;
       case kN:  v.Set( 0,  1); break;
       case kS:  v.Set( 0, -1); break;
       case kE:  v.Set( 1,  0); break;
@@ -100,7 +110,7 @@ Vector2f Snap2D::GetVector_(Direction direction) {
       case kNW: v.Set(-1,  1); break;
       case kSE: v.Set( 1, -1); break;
       case kSW: v.Set(-1, -1); break;
-      default:  v.Set( 0,  0); break;
+      default:  v.Set( 0,  0); break;  // LCOV_EXCL_LINE
     }
     return v;
 }

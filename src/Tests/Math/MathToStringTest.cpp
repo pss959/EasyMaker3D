@@ -16,4 +16,19 @@ TEST(MathToStringTest, ToStringPrecision) {
     EXPECT_EQ("[5.4, 5.4, 5.4]", Math::ToString(Point3f(f, f, f),  .1f));
     EXPECT_EQ("[5.4, 5.4]",      Math::ToString(Vector2f(f, f),    .1f));
     EXPECT_EQ("[5.4, 5.4, 5.4]", Math::ToString(Vector3f(f, f, f), .1f));
+
+    // Rotation uses a fixed precision.
+    EXPECT_EQ("40.1d / [-0.267, -0.535, -0.802]",
+              Math::ToString(Rotationf::FromAxisAndAngle(
+                                 Vector3f(1, 2, 3.00001f),
+                                 Anglef::FromDegrees(-40.1111f))));
+
+    Matrix4f m;
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+            m[i][j] = 4 * i + j + .01f;
+    EXPECT_EQ("[      0      1      2      3\n"
+              "       4      5      6      7\n"
+              "       8      9     10     11\n"
+              "      12     13     14     15 ]\n", Math::ToString(m, .1f));
 }

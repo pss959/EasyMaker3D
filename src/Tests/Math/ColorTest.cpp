@@ -4,10 +4,14 @@
 TEST(ColorTest, Constructors) {
     EXPECT_EQ(Color(0, 0, 0, 1), Color());
     EXPECT_EQ(Color(0, 0, 0, 1), Color(0, 0, 0));
-    EXPECT_EQ(Color(.1, .2, .3, 1), Color(.1, .2, .3));
+    EXPECT_EQ(Color(.1f, .2f, .3f, 1), Color(.1f, .2f, .3f));
+    EXPECT_EQ(Color(.1f, .2f, .3f, .4), Color(Vector4f(.1f, .2f, .3f, .4f)));
     EXPECT_EQ(Color(0, 0, 0, 1), Color::Black());
     EXPECT_EQ(Color(1, 1, 1, 1), Color::White());
     EXPECT_EQ(Color(0, 0, 0, 0), Color::Clear());
+
+    EXPECT_EQ("#ffffffff", Color::White().ToHexString());
+    EXPECT_EQ("#000000ff", Color::Black().ToString());
 }
 
 TEST(ColorTest, FromHexString) {
