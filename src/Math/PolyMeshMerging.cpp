@@ -125,12 +125,11 @@ GIndex VertexMerger_::GetVertexIndex_(const Vertex &vert) {
 // ----------------------------------------------------------------------------
 
 void HoleFinder_::StoreHoleEdges() {
-    // Add all edges to the borders_ vector.
+    // Add all edges to the borders_ vector. Note that all holes are in
+    // the outer-edges vector.
+    ASSERT(face_.hole_edges.empty());
     for (auto &edge: face_.outer_edges)
         AddEdge_(*edge);
-    for (auto &hole: face_.hole_edges)
-        for (auto &edge: hole)
-            AddEdge_(*edge);
     ASSERT(borders_.size() > 1U);  // Must be at least one hole.
 
     // Figure out which border is the outside. It should have the largest
@@ -332,15 +331,14 @@ static void MergeCollinearEdges_(PolyMesh &poly_mesh, VertexMap_ &vmap) {
             Edge *from_edge = vinfo.e0;
             Edge *to_edge   = vinfo.e1;
 
-            // Don't merge from or to an Edge that is no longer around.
-            while (merged_edges.contains(from_edge))
-                from_edge = merged_edges[from_edge];
-            while (merged_edges.contains(to_edge))
-                to_edge   = merged_edges[to_edge];
+            // Edges must still be around.
+            ASSERT(! merged_edges.contains(from_edge));
+            ASSERT(! merged_edges.contains(to_edge));
 
             // Choose edges so that they have v0 in common.
-            MergeEdges_(*from_edge, from_edge->v0 == to_edge->v0 ?
-                        *to_edge : *to_edge->opposite_edge);
+            const auto other_edge =
+                from_edge->v0 == to_edge->v0 ? to_edge : to_edge->opposite_edge;
+            MergeEdges_(*from_edge, *other_edge);
 
             merged_edges[from_edge]                = to_edge;
             merged_edges[from_edge->opposite_edge] = to_edge->opposite_edge;

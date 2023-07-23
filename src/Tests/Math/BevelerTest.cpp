@@ -53,7 +53,7 @@ class BevelerTest : public TestBase {
         CleanMesh(rm);
         ValidateMesh(rm, GetTestName());
         EXPECT_EQ(expected_point_count, rm.points.size());
-        EXPECT_EQ(expected_tri_count, rm.GetTriangleCount());
+        EXPECT_EQ(expected_tri_count,   rm.GetTriangleCount());
     }
 };
 
@@ -70,6 +70,12 @@ TEST_F(BevelerTest, BevelBox2) {
     // Tests an edge case in the Beveler code.
     const TriMesh m = BuildBoxMesh(Vector3f(4, 4, 4));
     TestBevel(m, GetDefaultBevel(1, 60), 8, 12);
+}
+
+TEST_F(BevelerTest, BevelBox3) {
+    // Tests an edge case in the Beveler code.
+    const TriMesh m = BuildBoxMesh(Vector3f(4, 4, 4));
+    TestBevel(m, GetDefaultBevel(2, 120), 6, 8);
 }
 
 TEST_F(BevelerTest, BevelCyl) {
@@ -89,6 +95,43 @@ TEST_F(BevelerTest, BevelCyl2) {
     TestBevel(m, GetBevel(4, 1, 120),    160, 316);
     TestBevel(m, GetBevel(5, 1, 120),    200, 396);
     TestBevel(m, GetBevel(6, 1, 120),    240, 476);
+}
+
+#if XXXX
+RootModel 'ModelRoot' (0x55f34071b0b0) kUnselected
+|-mesh bounds: B[c=[0, 0, 0] s=[0, 0, 0]]
+|-BeveledModel 'Beveled_1' (0x55f347da59a0) kPrimary
+| |-mesh bounds: B[c=[0, 0, 0] s=[4, 4, 4]]
+| |-translation: V[0, 2, 0]
+| |-profile_points: [0.581569 0.787529],
+| |-bevel_scale: 1.99,
+| |-max_angle: 129,
+| |-CylinderModel 'Cylinder_1' (0x55f345532450) [kTraversal] kAncestorShown
+| | |-mesh bounds: B[c=[0, 0, 0] s=[2, 2, 2]]
+| | |-scale:       V[2, 2, 2]
+| | |-translation: V[0, 2, 0]
+| | |-top_radius: 1,
+| | |-bottom_radius: 1,
+
+    ChangeBevelCommand { # 0x55f347f78750
+      profile_points: [0.581569 0.787529],
+      bevel_scale: 1.99,
+      max_angle: 129,
+      model_names: ["Beveled_1"],
+    },
+#endif
+
+TEST_F(BevelerTest, BevelCyl3) {
+    // This produces an invalid mesh, but it triggers an edge case in the
+    // Beveler code.
+    const TriMesh m = BuildCylinderMesh(2, 2, 4, 38);
+    Bevel b;
+    b.scale = 2;
+    TriMesh rm = Beveler::ApplyBevel(m, b);
+    CleanMesh(rm);
+    EXPECT_ENUM_EQ(MeshValidityCode::kSelfIntersecting, ValidateTriMesh(rm));
+    EXPECT_EQ(110U, rm.points.size());
+    EXPECT_EQ(216U, rm.GetTriangleCount());
 }
 
 TEST_F(BevelerTest, BevelHole) {
