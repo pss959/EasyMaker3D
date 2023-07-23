@@ -102,6 +102,10 @@ class TestBase : public ::testing::Test {
     // Loads a TriMesh from an STL file.
     TriMesh LoadTriMesh(const std::string &file_name);
 
+    // Returns true if the given TriMesh contains a point close to the given
+    // one.
+    static bool MeshHasPoint(const TriMesh &mesh, const Point3f &p);
+
     // Validates a TriMesh.
     static void ValidateMesh(const TriMesh &mesh, string desc);
 

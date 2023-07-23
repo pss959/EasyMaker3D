@@ -161,6 +161,12 @@ void TestBase::ValidateMesh(const TriMesh &mesh, string desc) {
         << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
 }
 
+bool TestBase::MeshHasPoint(const TriMesh &mesh, const Point3f &p) {
+    const auto is_close =
+        [&p](const Point3f &mp){ return PointsClose(p, mp); };
+    return std::any_of(mesh.points.begin(), mesh.points.end(), is_close);
+}
+
 std::string TestBase::FixString(const std::string &s) {
     const char lf = '\r';
     std::string fs = s;

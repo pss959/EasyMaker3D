@@ -14,13 +14,6 @@
 #include "Util/Tuning.h"
 
 class MeshBuildingTest : public TestBase {
-  protected:
-    // Returns true if the given mesh contains a point close to the given one.
-    static bool HasPoint(const TriMesh &mesh, const Point3f &p) {
-        return std::any_of(
-            mesh.points.begin(), mesh.points.end(),
-            [&p](const Point3f &mp){ return PointsClose(p, mp); });
-    }
 };
 
 TEST_F(MeshBuildingTest, Tetrahedron) {
@@ -136,7 +129,7 @@ TEST_F(MeshBuildingTest, Tube) {
     bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),    bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(20, 4, 4), bounds.GetSize());
-    EXPECT_TRUE(HasPoint(mesh, Point3f(10, .4f, 0)));
+    EXPECT_TRUE(MeshHasPoint(mesh, Point3f(10, .4f, 0)));
 
     // 2 segments, no taper. The mesh is not valid because the segments do not
     // join.

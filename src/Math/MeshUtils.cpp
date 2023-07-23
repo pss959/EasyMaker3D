@@ -116,6 +116,8 @@ static void RemoveIndexedTriangles_(TriMesh &mesh,
     mesh.indices = new_indices;
 }
 
+#if 0
+// This does not seem to be necessary; leaving it here in case it ever is.
 static void RemoveUnusedPoints_(TriMesh &mesh) {
     const size_t point_count = mesh.points.size();
 
@@ -157,6 +159,7 @@ static void RemoveUnusedPoints_(TriMesh &mesh) {
     for (auto &index: mesh.indices)
         index -= remove_count[index];
 }
+#endif
 
 // ----------------------------------------------------------------------------
 // Public functions.
@@ -263,8 +266,9 @@ TriMesh BendMesh(const SlicedMesh &sliced_mesh, const Spin &spin) {
 }
 
 TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane) {
-    return ModifyVertices_(mesh, [&plane](const Point3f &p){
-        return plane.MirrorPoint(p); }, true);
+    const auto mirror =
+        [&plane](const Point3f &p){ return plane.MirrorPoint(p); };
+    return ModifyVertices_(mesh, mirror, true);
 }
 
 TriMesh TaperMesh(const SlicedMesh &sliced_mesh, const Taper &taper) {
@@ -357,7 +361,7 @@ void RemoveDualTriangles(TriMesh &mesh) {
     // Remove bad triangles if any.
     if (! bad_tris.empty()) {
         RemoveIndexedTriangles_(mesh, bad_tris);
-        RemoveUnusedPoints_(mesh);
+        // RemoveUnusedPoints_(mesh);  // See comment for RemoveUnusedPoints_().
     }
 }
 
@@ -408,6 +412,8 @@ void CleanMesh(TriMesh &mesh) {
     }
 }
 
+// LCOV_EXCL_START
+// Too much of the to/from Ion code is not easily testable.
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,
                                      bool alloc_tex_coords, bool is_dynamic) {
     ion::gfx::ShapePtr shape(new ion::gfx::Shape);
@@ -596,6 +602,7 @@ void WriteMeshAsOFF(const TriMesh &mesh, const std::string &description,
         out << "3 " << i0 << ' ' << i1 << ' ' << i2 << "\n";
     }
 }
+// LCOV_EXCL_STOP
 
 Bounds ComputeMeshBounds(const TriMesh &mesh) {
     Bounds bounds;
