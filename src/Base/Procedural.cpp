@@ -100,19 +100,12 @@ ion::gfx::ImagePtr GenerateGridImage(float radius,
                                      const Color &y_color) {
     const int size = TK::kStageImageSize;
     ImageStore_ store(size, size);
+    const int center = size / 2;
 
     // Start with all white.
     for (int row = 0; row < size; ++row)
         for (int col = 0; col < size; ++col)
             store.Set(row, col, 255, 255, 255);
-
-    // Small black square to mark the origin.
-    const int center = size / 2;
-    const int m0 = center - TK::kStageOriginRadius;
-    const int m1 = center + TK::kStageOriginRadius;
-    for (int row = m0; row <= m1; ++row)
-        for (int col = m0; col <= m1; ++col)
-            store.Set(row, col, ImageStore_::Pixel(0, 0, 0));
 
     // Adds grid lines in both directions with the given spacing and width.
     auto grid_func = [&store, center, size](int spacing, int width,
@@ -139,6 +132,13 @@ ion::gfx::ImagePtr GenerateGridImage(float radius,
     // Add X/Y axis lines through the center. Do this last so they are on top.
     store.AddXLine(center, 5, ImageStore_::Pixel(y_color));
     store.AddYLine(center, 5, ImageStore_::Pixel(x_color));
+
+    // Small black square to mark the origin. Last so it is on the very top.
+    const int m0 = center - TK::kStageOriginRadius;
+    const int m1 = center + TK::kStageOriginRadius;
+    for (int row = m0; row <= m1; ++row)
+        for (int col = m0; col <= m1; ++col)
+            store.Set(row, col, ImageStore_::Pixel(0, 0, 0));
 
     return store.GetIonImage();
 }

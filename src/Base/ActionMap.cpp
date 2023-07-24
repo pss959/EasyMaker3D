@@ -23,7 +23,7 @@ const std::vector<Action> & ActionMap::GetActionsInCategory(
 
 ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
     CategoryMap_ map({
-        { ActionCategory::kBasics,
+       { ActionCategory::kBasics,         // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kCopy,
             Action::kCut,
             Action::kDelete,
@@ -34,13 +34,13 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kRedo,
             Action::kUndo }
         },
-        { ActionCategory::kCombination,
+        { ActionCategory::kCombination,   // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kCombineCSGDifference,
             Action::kCombineCSGIntersection,
             Action::kCombineCSGUnion,
             Action::kCombineHull }
         },
-        { ActionCategory::kConversion,
+        { ActionCategory::kConversion,    // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kConvertBend,
             Action::kConvertBevel,
             Action::kConvertClip,
@@ -48,7 +48,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kConvertTaper,
             Action::kConvertTwist }
         },
-        { ActionCategory::kCreation,
+        { ActionCategory::kCreation,      // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kCreateBox,
             Action::kCreateCylinder,
             Action::kCreateExtruded,
@@ -58,7 +58,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kCreateText,
             Action::kCreateTorus }
         },
-        { ActionCategory::kLayout,
+        { ActionCategory::kLayout,        // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kLinearLayout,
             Action::kMoveToOrigin,
             Action::kRadialLayout,
@@ -66,24 +66,24 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kToggleEdgeTarget,
             Action::kTogglePointTarget }
         },
-        { ActionCategory::kModification,
+        { ActionCategory::kModification,  // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kDecreaseComplexity,
             Action::kIncreaseComplexity,
             Action::kMoveNext,
             Action::kMovePrevious }
         },
-        { ActionCategory::kNone,
+        { ActionCategory::kNone,          // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kNone }
         },
-        { ActionCategory::kPrecision,
+        { ActionCategory::kPrecision,     // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kDecreasePrecision,
             Action::kIncreasePrecision }
         },
-        { ActionCategory::kRadialMenu,
+        { ActionCategory::kRadialMenu,    // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kToggleLeftRadialMenu,
             Action::kToggleRightRadialMenu }
         },
-        { ActionCategory::kSelection,
+        { ActionCategory::kSelection,     // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kSelectAll,
             Action::kSelectFirstChild,
             Action::kSelectNextSibling,
@@ -91,16 +91,16 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kSelectParent,
             Action::kSelectPreviousSibling }
         },
-        { ActionCategory::kSession,
+        { ActionCategory::kSession,       // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kOpenHelpPanel,
             Action::kOpenInfoPanel,
             Action::kOpenSessionPanel,
             Action::kOpenSettingsPanel }
         },
-        { ActionCategory::kSpecialized,
+        { ActionCategory::kSpecialized,   // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kToggleSpecializedTool }
         },
-        { ActionCategory::kTool,
+        { ActionCategory::kTool,          // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kColorTool,
             Action::kComplexityTool,
             Action::kNameTool,
@@ -110,7 +110,7 @@ ActionMap::CategoryMap_ ActionMap::BuildCategoryMap_() {
             Action::kSwitchToPreviousTool,
             Action::kTranslationTool }
         },
-        { ActionCategory::kViewing,
+        { ActionCategory::kViewing,       // LCOV_EXCL_LINE [bug in gcovr]
           { Action::kHideSelected,
             Action::kShowAll,
             Action::kToggleBuildVolume,

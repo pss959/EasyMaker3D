@@ -33,11 +33,14 @@ bool Event::ParseKeyString(const std::string &key_string,
     using ion::base::CompareCaseInsensitive;
     using ion::base::SplitString;
 
+    modifiers.SetAll(false);
+    key_name.clear();
+    error.clear();
+
     // Split the string into parts by "-".
     const std::vector<std::string> parts = SplitString(key_string, "-");
 
     // All but the last part should be a valid modifier.
-    modifiers.SetAll(false);
     for (size_t i = 0; i + 1 < parts.size(); ++i) {
         const std::string &mod = parts[i];
         if      (CompareCaseInsensitive(mod, "shift") == 0)
@@ -55,7 +58,15 @@ bool Event::ParseKeyString(const std::string &key_string,
     // The last part is assumed to be a valid key name. If it isn't, it won't
     // do anything, but is not really an error. Leaving this name unvalidated
     // makes it possible to handle other (and future) GLFW key names.
-    key_name = parts.back();
+    if (parts.empty()) {
+        error = "Missing key name";
+        return false;
+    }
+    key_name = ion::base::TrimStartAndEndWhitespace(parts.back());
+    if (key_name.empty()) {
+        error = "Missing key name";
+        return false;
+    }
     return true;
 }
 
@@ -140,6 +151,7 @@ std::string Event::GetControllerButtonString() const {
     return s;
 }
 
+// LCOV_EXCL_START
 std::string Event::ToString() const {
     std::string s = "=== Event [" + Util::ToString(serial, 5) +
         "] dev=" + Util::EnumName(device) +
@@ -161,3 +173,4 @@ std::string Event::ToString() const {
 
     return s;
 }
+// LCOV_EXCL_STOP

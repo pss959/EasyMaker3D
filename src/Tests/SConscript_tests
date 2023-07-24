@@ -23,7 +23,11 @@ main_test_sources = [
 # source file.
 test_source_dict = {
     'Base' : [
+        'ActionMapTest',
         'EventTest',
+        'HelpMapTest',
+        'ProceduralTest',
+        'VirtualKeyboardTest',
     ],
     'Commands' : [
         'CommandListTest',
