@@ -84,6 +84,9 @@ class Flags {
         return true;
     }
 
+    /// Equality operator.
+    bool operator==(const Flags<EnumClass> &f) const = default;
+
   private:
     uint32_t flags_ = 0;
 };

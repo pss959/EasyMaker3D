@@ -124,4 +124,31 @@ TEST(FlagsTest, MoreThanMax) {
     EXPECT_EQ("kF1|kF2|kF3|kF4|kF5|kF6|kF7|kF8|kF9|kF10", flags.ToString());
 }
 
+TEST(FlagsTest, Equality) {
+    Util::Flags<TestFlags> f0, f1;
+    EXPECT_TRUE(f0 == f1);
+    EXPECT_FALSE(f0 != f1);
+    EXPECT_EQ(f0, f1);
+
+    f0.Set(TestFlags::kF2);
+    EXPECT_FALSE(f0 == f1);
+    EXPECT_TRUE(f0 != f1);
+    EXPECT_NE(f0, f1);
+
+    f1.Set(TestFlags::kF2);
+    EXPECT_TRUE(f0 == f1);
+    EXPECT_FALSE(f0 != f1);
+    EXPECT_EQ(f0, f1);
+
+    f0.Set(TestFlags::kF1);
+    EXPECT_FALSE(f0 == f1);
+    EXPECT_TRUE(f0 != f1);
+    EXPECT_NE(f0, f1);
+
+    f1.Set(TestFlags::kF1);
+    EXPECT_TRUE(f0 == f1);
+    EXPECT_FALSE(f0 != f1);
+    EXPECT_EQ(f0, f1);
+}
+
 }  // anonymous namespace

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
+#include "Util/Enum.h"
 #include "Util/KLog.h"
 
 // ----------------------------------------------------------------------------
