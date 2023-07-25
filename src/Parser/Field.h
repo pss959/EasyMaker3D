@@ -232,6 +232,12 @@ template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
     virtual void WriteValue(ValueWriter &writer) const override {
         writer.WriteFlags<E>(TypedField<FlagType>::value_);
     }
+
+    /// Assignment operator.
+    FlagField<E> & operator=(const FlagType &new_value) {
+        TypedField<FlagType>::Set(new_value);
+        return *this;
+    }
 };
 
 /// Derived field that stores a shared_ptr to an object of some type.
