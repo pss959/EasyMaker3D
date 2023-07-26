@@ -24,6 +24,10 @@ class Parser {
     Parser();
     ~Parser();
 
+    /// Sets the directory used to turn relative include paths into absolute
+    /// ones. This is FilePath::GetResourceBasePath() by default.
+    void SetBasePath(const FilePath &path);
+
     /// Parses the contents of the file with the given path, returning the root
     /// Object in the parse graph. This will never return null; any error will
     /// result in a Parser::Exception being thrown.

@@ -47,6 +47,9 @@ class Simple : public Parser::Object {
 // Derived class that adds Object and ObjectList value types.
 class Derived : public Simple {
   public:
+    // Makes this publicly available.
+    bool IsCreationDone2() const { return IsCreationDone(); }
+
     virtual void AddFields() override;
 
     Parser::ObjectField<Simple>     simple;
@@ -96,10 +99,21 @@ class Full : public Parser::Object {
     friend class Parser::Registry;
 };
 
-// Another class for testing type errors.
+// Class used for testing type and other errors.
 class Other : public Parser::Object {
   protected:
     Other() {}
+    friend class Parser::Registry;
+};
+
+// Class used to test overriding IsScoped() and unnamed object errors.
+class Unscoped : public Parser::Object {
+  public:
+    virtual bool IsScoped() const override { return false; }
+    virtual bool IsNameRequired() const override { return true; }
+  protected:
+    Unscoped() {}
+    virtual bool IsValid(std::string &details) override;
     friend class Parser::Registry;
 };
 
@@ -117,14 +131,11 @@ class ParserTestBase : public SceneTestBase {
  protected:
     Parser::Parser parser;
 
-    // Sets up the Parser to use the Simple class.
-    void InitSimple();
+    // The constructor calls InitTestClasses() by default.
+    ParserTestBase();
 
-    // Sets up the Parser to use the Simple and Derived classes.
-    void InitDerived();
-
-    // Sets up the Parser to use the Full class.
-    void InitFull();
+    // Sets up the Parser to use all of the classes defined above.
+    void InitTestClasses();
 
     // Returns a string used to initialize all fields in a Simple instance.
     static std::string GetSimpleInput();

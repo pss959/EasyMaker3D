@@ -4,7 +4,7 @@
 #include "Util/Enum.h"
 
 // ----------------------------------------------------------------------------
-// Simple class.
+// Test class functions.
 // ----------------------------------------------------------------------------
 
 Simple::~Simple() {
@@ -26,10 +26,6 @@ void Simple::AddFields() {
     AddField(strs_val.Init("strs_val"));
 }
 
-// ----------------------------------------------------------------------------
-// Derived class.
-// ----------------------------------------------------------------------------
-
 Derived::Derived() {
     hidden_int.SetHidden(true);
 }
@@ -40,10 +36,6 @@ void Derived::AddFields() {
     AddField(simple_list.Init("simple_list"));
     AddField(hidden_int.Init("hidden_int", 12));
 }
-
-// ----------------------------------------------------------------------------
-// Full class.
-// ----------------------------------------------------------------------------
 
 Full::~Full() {
 }
@@ -79,21 +71,28 @@ void Full::AddFields() {
     AddField(ca.Init("ca"));
 }
 
+bool Unscoped::IsValid(std::string &details) {
+    if (GetName() == "INVALID") {
+        details = "invalid name";
+        return false;
+    }
+    return true;
+}
+
 // ----------------------------------------------------------------------------
 // ParserTestBase class.
 // ----------------------------------------------------------------------------
 
-void ParserTestBase::InitSimple() {
+ParserTestBase::ParserTestBase() {
+    InitTestClasses();
+}
+
+void ParserTestBase::InitTestClasses() {
     Parser::Registry::AddType<Simple>("Simple");
-}
-
-void ParserTestBase::InitDerived() {
-    InitSimple();
     Parser::Registry::AddType<Derived>("Derived");
-}
-
-void ParserTestBase::InitFull() {
     Parser::Registry::AddType<Full>("Full");
+    Parser::Registry::AddType<Other>("Other");
+    Parser::Registry::AddType<Unscoped>("Unscoped");
 }
 
 std::string ParserTestBase::GetSimpleInput() {

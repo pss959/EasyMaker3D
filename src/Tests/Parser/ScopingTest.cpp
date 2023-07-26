@@ -20,7 +20,6 @@ TEST_F(ScopingTest, Scoping) {
         "  ],\n"
         "}\n";
 
-    InitDerived();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     DerivedPtr dp1 = std::dynamic_pointer_cast<Derived>(obj);

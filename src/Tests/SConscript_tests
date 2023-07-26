@@ -97,6 +97,8 @@ test_source_dict = {
         'ExceptionTest',
         'FieldTest',
         'IncludeTest',
+        'InstanceStoreTest',
+        'ObjectTest',
         'ParserTestBase',
         'ParsingTest',
         'RegistryTest',

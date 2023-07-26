@@ -23,7 +23,6 @@ TEST_F(ParsingTest, StringAndFile) {
     TempFile tmp_file(input);
 
     // Parse both the string and the file and test the results.
-    InitSimple();
     Parser::ObjectPtr obj1 = ParseString(input);
     Parser::ObjectPtr obj2 = ParseFile(input);
     EXPECT_NOT_NULL(obj1);
@@ -94,8 +93,6 @@ TEST_F(ParsingTest, Derived) {
         "  hidden_int: 5,\n"
         "}\n";
 
-    InitDerived();
-
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Derived", obj->GetTypeName());
@@ -123,8 +120,6 @@ TEST_F(ParsingTest, Derived) {
 
 TEST_F(ParsingTest, Full) {
     // Test scanning/parsing every field type.
-    InitFull();
-
     Parser::ObjectPtr obj = ParseString(GetFullInput());
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Full",     obj->GetTypeName());
@@ -178,8 +173,6 @@ TEST_F(ParsingTest, Full) {
 }
 
 TEST_F(ParsingTest, BoolParsing) {
-    InitSimple();
-
     auto try_func = [&](bool expected, const std::string &str){
         return TryValue(&Simple::bool_val, expected, str); };
 
@@ -195,8 +188,6 @@ TEST_F(ParsingTest, BoolParsing) {
 }
 
 TEST_F(ParsingTest, IntParsing) {
-    InitSimple();
-
     auto try_func = [&](int expected, const std::string &str){
         return TryValue(&Simple::int_val, expected, str); };
 
@@ -206,8 +197,6 @@ TEST_F(ParsingTest, IntParsing) {
 }
 
 TEST_F(ParsingTest, UIntParsing) {
-    InitSimple();
-
     auto try_func = [&](unsigned int expected, const std::string &str){
         return TryValue(&Simple::uint_val, expected, str); };
 
@@ -218,8 +207,6 @@ TEST_F(ParsingTest, UIntParsing) {
 }
 
 TEST_F(ParsingTest, StringParsing) {
-    InitSimple();
-
     auto try_func = [&](const std::string &expected, const std::string &str){
         return TryValue(&Simple::str_val, expected, str); };
 
@@ -233,8 +220,6 @@ TEST_F(ParsingTest, StringParsing) {
 }
 
 TEST_F(ParsingTest, ColorParsing) {
-    InitSimple();
-
     auto try_func = [&](const Color &expected, const std::string &str){
         return TryValue(&Simple::color_val, expected, str); };
 

@@ -25,7 +25,6 @@ TEST_F(TemplateTest, Templates) {
         "  ],\n"
         "}\n";
 
-    InitDerived();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     DerivedPtr dp = std::dynamic_pointer_cast<Derived>(obj);

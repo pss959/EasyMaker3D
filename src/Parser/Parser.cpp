@@ -22,6 +22,10 @@ class Parser::Impl_ {
     Impl_();
     ~Impl_();
 
+    /// Sets the directory used to turn relative include paths into absolute
+    /// ones. This is FilePath::GetResourceBasePath() by default.
+    void SetBasePath(const FilePath &path) { base_path_ = path; }
+
     /// Parses the contents of the file with the given path, returning the root
     /// Object in the parse graph.
     ObjectPtr ParseFile(const FilePath &path);
@@ -56,6 +60,9 @@ class Parser::Impl_ {
         ObjectMap_    templates_map;
         ObjectMap_    objects_map;
     };
+
+    /// Base path used to handle relative include file paths.
+    FilePath base_path_;
 
     /// Scanner used to parse tokens.
     std::unique_ptr<Scanner> scanner_;
@@ -145,6 +152,7 @@ class Parser::Impl_ {
 // ----------------------------------------------------------------------------
 
 Parser::Impl_::Impl_() :
+    base_path_(FilePath::GetResourceBasePath()),
     scanner_(new Scanner([&](const std::string &s){
         return SubstituteConstant_(s); })) {
     scanner_->SetObjectFunction([&](){ return ParseObject_(false); });
@@ -315,7 +323,7 @@ ObjectPtr Parser::Impl_::ParseIncludedFile_(bool is_template) {
     // If the path is relative, make it absolute.
     FilePath fp(path);
     if (! fp.IsAbsolute())
-        fp = FilePath::Join(FilePath::GetResourceBasePath(), fp);
+        fp = FilePath::Join(base_path_, fp);
     return ParseFromFile_(fp, is_template);
 }
 
@@ -490,6 +498,10 @@ Parser::Parser() : impl_(new Impl_) {
 }
 
 Parser::~Parser() {
+}
+
+void Parser::SetBasePath(const FilePath &path) {
+    impl_->SetBasePath(path);
 }
 
 ObjectPtr Parser::ParseFile(const FilePath &path) {

@@ -3,8 +3,6 @@
 class FieldTest : public ParserTestBase {};
 
 TEST_F(FieldTest, Initialization) {
-    InitDerived();
-
     auto dp = Parser::Registry::CreateObject<Derived>();
 
     // Test initial values.
@@ -27,8 +25,6 @@ TEST_F(FieldTest, Initialization) {
 }
 
 TEST_F(FieldTest, AccessAndModify) {
-    InitDerived();
-
     auto dp  = Parser::Registry::CreateObject<Derived>();
     auto sp0 = Parser::Registry::CreateObject<Simple>();
     auto sp1 = Parser::Registry::CreateObject<Simple>();
@@ -86,8 +82,6 @@ TEST_F(FieldTest, AccessAndModify) {
 }
 
 TEST_F(FieldTest, ReplaceValue) {
-    InitDerived();
-
     auto dp = Parser::Registry::CreateObject<Derived>();
 
     // Test field replacement.
@@ -117,7 +111,6 @@ TEST_F(FieldTest, WasSet) {
     // Set up a temporary file with the input string.
     TempFile tmp_file(input);
 
-    InitSimple();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
@@ -139,7 +132,6 @@ TEST_F(FieldTest, OverwriteField) {
     // Set up a temporary file with the input string.
     TempFile tmp_file(input);
 
-    InitSimple();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
@@ -149,8 +141,6 @@ TEST_F(FieldTest, OverwriteField) {
 }
 
 TEST_F(FieldTest, EnumField) {
-    InitSimple();
-
     auto sp = Parser::Registry::CreateObject<Simple>();
 
     sp->enum_val = SimpleEnum::kE2;
@@ -158,8 +148,6 @@ TEST_F(FieldTest, EnumField) {
 }
 
 TEST_F(FieldTest, FlagField) {
-    InitSimple();
-
     auto sp = Parser::Registry::CreateObject<Simple>();
 
     EXPECT_FALSE(sp->flag_val.GetValue().Has(FlagEnum::kF1));
@@ -183,8 +171,6 @@ TEST_F(FieldTest, FlagField) {
 }
 
 TEST_F(FieldTest, ObjectListField) {
-    InitDerived();
-
     auto dp  = Parser::Registry::CreateObject<Derived>();
     auto sp0 = Parser::Registry::CreateObject<Simple>();
     auto sp1 = Parser::Registry::CreateObject<Simple>();

@@ -14,7 +14,6 @@ TEST_F(ConstantTest, Constants) {
         "  vec3f_val: $BAR,\n"
         "  float_val: $FOO_0,\n"
         "}\n";
-    InitSimple();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj);
     EXPECT_EQ("Simple",  obj->GetTypeName());
@@ -31,4 +30,7 @@ TEST_F(ConstantTest, Constants) {
         "}\n";
     TEST_THROW_(parser.ParseFromString(bad_input),
                 "CONSTANTS appears after fields");
+
+    TEST_THROW_(parser.ParseFromString("Simple { $FOO }"),
+                "Missing constant with name");
 }

@@ -69,11 +69,11 @@ class Writer::Impl_ {
     /// is used to detect instances.
     std::unordered_set<const Object *> written_named_objects_;
 
-    bool WriteObject_(const Object &obj, bool do_indent);
+    bool WriteObject_(const Object &obj, bool is_in_list);
     void WriteObjectList_(const std::vector<ObjectPtr> &obj_list);
 
     /// Returns true if the object is an instance.
-    bool WriteObjHeader_(const Object &obj);
+    bool WriteObjHeader_(const Object &obj, bool is_in_list);
     void WriteObjFooter_();
     void WriteObjAddress_(const Object &obj);
 
@@ -90,14 +90,14 @@ Writer::Impl_::Impl_(std::ostream &out) :
                       WriteObjectList_(obj_list); }) {
 }
 
-bool Writer::Impl_::WriteObject_(const Object &obj, bool do_indent) {
+bool Writer::Impl_::WriteObject_(const Object &obj, bool is_in_list) {
     if (object_func_ && ! object_func_(obj, true))
         return false;
 
-    if (do_indent)
+    if (is_in_list)
         out_ << Indent_();
 
-    if (WriteObjHeader_(obj))
+    if (WriteObjHeader_(obj, is_in_list))
         return true;
 
     // Write all non-hidden fields that have values set.
@@ -127,7 +127,7 @@ void Writer::Impl_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
     }
 }
 
-bool Writer::Impl_::WriteObjHeader_(const Object &obj) {
+bool Writer::Impl_::WriteObjHeader_(const Object &obj, bool is_in_list) {
     const bool is_use =
         ! obj.GetName().empty() && written_named_objects_.contains(&obj);
 
@@ -138,8 +138,11 @@ bool Writer::Impl_::WriteObjHeader_(const Object &obj) {
     if (! obj.GetName().empty())
         out_ << " \"" << obj.GetName() << "\"";
     if (is_use) {
-        if (write_addresses_)
+        if (write_addresses_) {
+            if (is_in_list)
+                out_ << ",";
             WriteObjAddress_(obj);
+        }
         return true;
     }
     else {

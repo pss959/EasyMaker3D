@@ -1,42 +1,49 @@
 #include "App/RegisterTypes.h"
-#include "Items/Shelf.h"
 #include "Parser/Registry.h"
-#include "SG/Shape.h"
-#include "SG/TextNode.h"
-#include "Tests/TestBase.h"
-#include "Tests/Testing.h"
+#include "ParserTestBase.h"
 #include "Util/General.h"
 
-class RegistryTest : public TestBase {
-  protected:
-    RegistryTest() {
-        RegisterTypes();
-    }
-    ~RegistryTest() {
-        UnregisterTypes();
-    }
-};
+class RegistryTest : public ParserTestBase {};
+
+TEST_F(RegistryTest, GetAllTypeNames) {
+    // No names by default.
+    Parser::Registry::Clear();
+    EXPECT_TRUE(Parser::Registry::GetAllTypeNames().empty());
+
+    InitTestClasses();
+    const auto names = Parser::Registry::GetAllTypeNames();
+
+    // Test expected names.
+    EXPECT_EQ(5U, names.size());
+    EXPECT_TRUE(Util::Contains(names, "Simple"));
+    EXPECT_TRUE(Util::Contains(names, "Derived"));
+    EXPECT_TRUE(Util::Contains(names, "Full"));
+    EXPECT_TRUE(Util::Contains(names, "Other"));
+    EXPECT_TRUE(Util::Contains(names, "Unscoped"));
+
+    Parser::Registry::Clear();
+    EXPECT_TRUE(Parser::Registry::GetAllTypeNames().empty());
+}
 
 TEST_F(RegistryTest, CreateObjectOfType) {
-    Parser::ObjectPtr obj = Parser::Registry::CreateObjectOfType("TextNode");
-    EXPECT_EQ("TextNode", obj->GetTypeName());
-    EXPECT_TRUE(Util::IsA<SG::TextNode>(obj));
+    Parser::ObjectPtr obj = Parser::Registry::CreateObjectOfType("Derived");
+    EXPECT_EQ("Derived", obj->GetTypeName());
+    EXPECT_TRUE(Util::IsA<Derived>(obj));
 
-    obj = Parser::Registry::CreateObjectOfType("Shelf");
-    EXPECT_EQ("Shelf", obj->GetTypeName());
-    EXPECT_TRUE(Util::IsA<Shelf>(obj));
+    obj = Parser::Registry::CreateObjectOfType("Other");
+    EXPECT_EQ("Other", obj->GetTypeName());
+    EXPECT_TRUE(Util::IsA<Other>(obj));
 
-    // Cannot create unknown or abstract class.
+    // Cannot create unregistered class.
     TEST_THROW(Parser::Registry::CreateObjectOfType("Blahhhh"),
-               Parser::Exception, "Unknown object type");
-    TEST_THROW(Parser::Registry::CreateObjectOfType("SG::Shape"),
                Parser::Exception, "Unknown object type");
 }
 
 TEST_F(RegistryTest, CreateObject) {
-    EXPECT_TRUE(Parser::Registry::CreateObject<SG::TextNode>());
+    EXPECT_TRUE(Parser::Registry::CreateObject<Derived>());
 
-    // Cannot create abstract class.
-    TEST_THROW(Parser::Registry::CreateObject<SG::Shape>(),
+    // Cannot create unknown class.
+    Parser::Registry::Clear();
+    TEST_THROW(Parser::Registry::CreateObject<Derived>(),
                Parser::Exception, "Unknown object with typeid");
 }

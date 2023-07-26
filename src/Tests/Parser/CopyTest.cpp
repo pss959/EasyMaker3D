@@ -3,8 +3,6 @@
 class CopyTest : public ParserTestBase {};
 
 TEST_F(CopyTest, CopyContentsFrom) {
-    InitSimple();
-
     const std::string input = GetSimpleInput();
 
     Parser::ObjectPtr obj1 = ParseString(input);
@@ -13,6 +11,8 @@ TEST_F(CopyTest, CopyContentsFrom) {
     EXPECT_NOT_NULL(obj2.get());
     EXPECT_EQ("Simple",  obj2->GetTypeName());
     EXPECT_EQ("TestObj2", obj2->GetName());
+    EXPECT_FALSE(obj1->IsClone());
+    EXPECT_TRUE(obj2->IsClone());
     SimplePtr sp = std::dynamic_pointer_cast<Simple>(obj2);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_TRUE(sp->bool_val);
@@ -42,8 +42,6 @@ TEST_F(CopyTest, CopyContentsFrom) {
 }
 
 TEST_F(CopyTest, CopyDerived) {
-    InitDerived();
-
     auto sp0 = Parser::Registry::CreateObject<Simple>();
     auto sp1 = Parser::Registry::CreateObject<Simple>();
     auto sp2 = Parser::Registry::CreateObject<Simple>();

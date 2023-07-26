@@ -5,8 +5,6 @@
 class WritingTest : public ParserTestBase {};
 
 TEST_F(WritingTest, WriteDerived) {
-    InitDerived();
-
     auto dp  = Parser::Registry::CreateObject<Derived>();
     auto sp0 = Parser::Registry::CreateObject<Simple>();
     auto sp1 = Parser::Registry::CreateObject<Simple>();
@@ -44,10 +42,12 @@ TEST_F(WritingTest, WriteDerived) {
     std::ostringstream out;
     {
         Parser::Writer writer(out);
+        writer.WriteComment("A header comment");
         writer.WriteObject(*dp);
     }
 
     const std::string kExpected =
+        "# A header comment\n"
         "Derived {\n"
         "  bool_val: True,\n"
         "  int_val: -13,\n"
@@ -79,8 +79,6 @@ TEST_F(WritingTest, WriteDerived) {
 }
 
 TEST_F(WritingTest, WriteFull) {
-    InitFull();
-
     auto fp = Parser::Registry::CreateObject<Full>();
 
     Util::Flags<FlagEnum> flags;
@@ -156,4 +154,95 @@ TEST_F(WritingTest, WriteFull) {
         "}\n";
 
     EXPECT_TRUE(CompareStrings(kExpected, out.str()));
+}
+
+TEST_F(WritingTest, ObjectFunc) {
+    auto dp  = Parser::Registry::CreateObject<Derived>();
+    auto sp1 = Parser::Registry::CreateObject<Simple>("SP1");
+    auto sp2 = Parser::Registry::CreateObject<Simple>("SP2");
+    auto sp3 = Parser::Registry::CreateObject<Simple>("SP3");
+    dp->simple_list = std::vector<SimplePtr>{ sp1, sp2, sp3 };
+
+    bool called_before = false;
+    bool called_after  = false;
+
+    // Set a function that filters out only sp2.
+    const auto obj_func = [&](const Parser::Object &obj, bool is_before){
+        if (is_before)
+            called_before = true;
+        else
+            called_after  = true;
+        return &obj != sp2.get();
+    };
+
+    std::ostringstream out;
+    {
+        Parser::Writer writer(out);
+        writer.WriteObjectConditional(*dp, obj_func);
+    }
+
+    const std::string kExpected =
+        "Derived {\n"
+        "  simple_list: [\n"
+        "    Simple \"SP1\" {\n"
+        "    },\n"
+        "    Simple \"SP3\" {\n"
+        "    },\n"
+        "  ],\n"
+       "}\n";
+
+    EXPECT_TRUE(CompareStrings(kExpected, out.str()));
+    EXPECT_TRUE(called_before);
+    EXPECT_TRUE(called_after);
+}
+
+TEST_F(WritingTest, Addresses) {
+    auto dp = Parser::Registry::CreateObject<Derived>();
+    auto sp = Parser::Registry::CreateObject<Simple>("SP1");
+    dp->simple = sp;
+    dp->simple_list = std::vector<SimplePtr>{ sp };  // Creates a USE.
+
+    const auto daddr = Util::ToString(dp.get());
+    const auto saddr = Util::ToString(sp.get());
+
+    std::ostringstream out;
+    {
+        Parser::Writer writer(out);
+        writer.SetAddressFlag(true);
+        writer.WriteObject(*dp);
+    }
+
+    const std::string kExpected =
+        "Derived { # " + daddr + "\n"
+        "  simple: Simple \"SP1\" { # " + saddr + "\n"
+        "  },\n"
+        "  simple_list: [\n"
+        "    USE \"SP1\", # " + saddr + ",\n"
+        "  ],\n"
+       "}\n";
+
+    EXPECT_TRUE(CompareStrings(kExpected, out.str()));
+}
+
+TEST_F(WritingTest, WriteField) {
+    auto sp = Parser::Registry::CreateObject<Simple>();
+    sp->int_val = 21;
+    sp->str_val = "some text";
+
+    {
+        std::ostringstream out;
+        {
+            Parser::Writer writer(out);
+            writer.WriteField(sp->int_val);
+        }
+        EXPECT_TRUE(CompareStrings("int_val: 21,\n", out.str()));
+    }
+    {
+        std::ostringstream out;
+        {
+            Parser::Writer writer(out);
+            writer.WriteField(sp->str_val);
+        }
+        EXPECT_TRUE(CompareStrings("str_val: \"some text\",\n", out.str()));
+    }
 }

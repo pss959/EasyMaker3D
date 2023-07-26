@@ -13,8 +13,7 @@ TEST_F(ErrorTest, BadFile) {
 }
 
 TEST_F(ErrorTest, ObjectTypeConflict) {
-    InitSimple();
-    TEST_THROW_(InitSimple(), "Object type registered more than once");
+    TEST_THROW_(InitTestClasses(), "Object type registered more than once");
 }
 
 TEST_F(ErrorTest, BadReference) {
@@ -27,14 +26,10 @@ TEST_F(ErrorTest, BadReference) {
         "      USE \"Child2\",\n"  // Bad reference.
         "  ],\n"
         "}\n";
-    InitDerived();
     TEST_THROW_(parser.ParseFromString(input), "Missing object");
 }
 
 TEST_F(ErrorTest, SyntaxErrors) {
-    InitDerived();
-    Parser::Registry::AddType<Other>("Other");
-
     TEST_THROW_(parser.ParseFromString(" "),
                 "Invalid empty name for object type");
     TEST_THROW_(parser.ParseFromString(" 01BadName {}"),
@@ -79,13 +74,27 @@ TEST_F(ErrorTest, SyntaxErrors) {
                 "Invalid value for flag enum");
     TEST_THROW_(parser.ParseFromString("Simple"),
                 "EOF");
+    TEST_THROW_(parser.ParseFromString("USE \"\""),
+                "Missing Object name for USE");
+    TEST_THROW_(parser.ParseFromString("CLONE \"\""),
+                "Missing Template or Object name for CLONE");
+    TEST_THROW_(parser.ParseFromString("CLONE \"NoSuchObj\""),
+                "Missing Template or Object with name");
     TEST_THROW_(parser.ParseFromString("Simple { bad_field: 13 }"),
                 "Unknown field");
+    TEST_THROW_(parser.ParseFromString("Unscoped {}"),
+                "must have a name");
+    TEST_THROW_(parser.ParseFromString("Unscoped \"A\" { CONSTANTS: [] }"),
+                "CONSTANTS appears in unscoped object");
+    TEST_THROW_(parser.ParseFromString("Unscoped \"B\" { TEMPLATES: [] }"),
+                "TEMPLATES appears in unscoped object");
+    // Name causes Unscoped::IsValid() to return false.
+    TEST_THROW_(parser.ParseFromString("Unscoped \"INVALID\" {}"),
+                "has error: invalid name");
     TEST_THROW_(parser.ParseFromString("<\"include/with/eof\""),
                 "Expected '>', got EOF");
     TEST_THROW_(parser.ParseFromString("<\"\">"),
                 "Invalid empty path");
-
     TEST_THROW_(parser.ParseFromString("Derived { simple: Other {} }"),
                 "Incorrect object type");
     TEST_THROW_(parser.ParseFromString("Derived { simple_list: [Other {}] }"),
