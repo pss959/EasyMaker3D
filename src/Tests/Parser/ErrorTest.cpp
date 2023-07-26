@@ -37,10 +37,16 @@ TEST_F(ErrorTest, SyntaxErrors) {
 
     TEST_THROW_(parser.ParseFromString(" "),
                 "Invalid empty name for object type");
+    TEST_THROW_(parser.ParseFromString(" 01BadName {}"),
+                "Invalid name");
     TEST_THROW_(parser.ParseFromString("Simplex"),
                 "Unknown object type");
     TEST_THROW_(parser.ParseFromString("Simple ="),
                 "Expected '{'");
+    TEST_THROW_(parser.ParseFromString("Simple { bool_val: z }"),
+                "Invalid bool value");
+    TEST_THROW_(parser.ParseFromString("Simple { bool_val: tralse }"),
+                "Invalid bool value");
     TEST_THROW_(parser.ParseFromString("Simple { int_val: 9 x }"),
                 "Expected ',' or '}'");
     TEST_THROW_(parser.ParseFromString("Simple { int_val: b }"),
@@ -55,10 +61,16 @@ TEST_F(ErrorTest, SyntaxErrors) {
                 "Invalid unsigned integer value");
     TEST_THROW_(parser.ParseFromString("Simple { uint_val: 0xqb }"),
                 "Invalid unsigned integer value");
+    TEST_THROW_(parser.ParseFromString("Simple { uint_val: 0x12345667875675 }"),
+                "Invalid unsigned integer value");
+    TEST_THROW_(parser.ParseFromString("Simple { str_val: \""),
+                "Found EOF inside quoted string");
     TEST_THROW_(parser.ParseFromString("Simple { vec3f_val: 12 abc 4 }"),
                 "Invalid float value");
-    TEST_THROW_(parser.ParseFromString("Simple { bool_val: \"glorp\" }"),
-                "Invalid bool value");
+    TEST_THROW_(parser.ParseFromString("Simple { vec3f_val: 12 abc 4 }"),
+                "Invalid float value");
+    TEST_THROW_(parser.ParseFromString("Simple { color_val: \"#badcolor\" }"),
+                "Invalid color format");
     TEST_THROW_(parser.ParseFromString("Simple { enum_val: \"glorp\" }"),
                 "Invalid value for enum");
     TEST_THROW_(parser.ParseFromString("Simple { flag_val: \"glorp\" }"),
@@ -78,4 +90,11 @@ TEST_F(ErrorTest, SyntaxErrors) {
                 "Incorrect object type");
     TEST_THROW_(parser.ParseFromString("Derived { simple_list: [Other {}] }"),
                 "Incorrect object type");
+
+    // Test nested file reporting using a temporary file that is included.
+    TempFile included("Simple { bad_field: 12 }");
+    TEST_THROW_(parser.ParseFromString(
+                    "Derived { simple: <\"" +
+                    included.GetPath().ToString() + "\"> }"),
+                "Unknown field");
 }

@@ -5,7 +5,7 @@ class CopyTest : public ParserTestBase {};
 TEST_F(CopyTest, CopyContentsFrom) {
     InitSimple();
 
-    const std::string input = GetFullSimpleInput();
+    const std::string input = GetSimpleInput();
 
     Parser::ObjectPtr obj1 = ParseString(input);
     Parser::ObjectPtr obj2 = obj1->CloneTyped<Simple>(true, "TestObj2");

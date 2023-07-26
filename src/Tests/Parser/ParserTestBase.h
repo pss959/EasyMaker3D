@@ -1,5 +1,6 @@
 #include <string>
 
+#include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Parser/Field.h"
@@ -56,6 +57,45 @@ class Derived : public Simple {
     friend class Parser::Registry;
 };
 
+// Class with a field for each supported type.
+class Full : public Parser::Object {
+  public:
+    virtual void AddFields() override;
+
+    Parser::TField<bool>          b;
+    Parser::TField<int>           i;
+    Parser::TField<unsigned int>  u;
+    Parser::TField<size_t>        z;
+    Parser::TField<float>         f;
+    Parser::TField<std::string>   s;
+    Parser::EnumField<SimpleEnum> e;
+    Parser::FlagField<FlagEnum>   g;
+    Parser::TField<Vector2f>      v2f;
+    Parser::TField<Vector3f>      v3f;
+    Parser::TField<Vector4f>      v4f;
+    Parser::TField<Vector2i>      v2i;
+    Parser::TField<Vector3i>      v3i;
+    Parser::TField<Vector4i>      v4i;
+    Parser::TField<Vector2ui>     v2ui;
+    Parser::TField<Vector3ui>     v3ui;
+    Parser::TField<Vector4ui>     v4ui;
+    Parser::TField<Point2f>       p2f;
+    Parser::TField<Point3f>       p3f;
+    Parser::TField<Point2i>       p2i;
+    Parser::TField<Color>         c;
+    Parser::TField<Anglef>        a;
+    Parser::TField<Rotationf>     r;
+    Parser::TField<Matrix2f>      m2;
+    Parser::TField<Matrix3f>      m3;
+    Parser::TField<Matrix4f>      m4;
+    Parser::TField<Plane>         pl;
+    Parser::TField<CircleArc>     ca;
+
+  protected:
+    virtual ~Full();
+    friend class Parser::Registry;
+};
+
 // Another class for testing type errors.
 class Other : public Parser::Object {
   protected:
@@ -66,6 +106,7 @@ class Other : public Parser::Object {
 // Shorthand.
 DECL_SHARED_PTR(Simple);
 DECL_SHARED_PTR(Derived);
+DECL_SHARED_PTR(Full);
 DECL_SHARED_PTR(Other);
 
 // ----------------------------------------------------------------------------
@@ -82,8 +123,14 @@ class ParserTestBase : public SceneTestBase {
     // Sets up the Parser to use the Simple and Derived classes.
     void InitDerived();
 
+    // Sets up the Parser to use the Full class.
+    void InitFull();
+
     // Returns a string used to initialize all fields in a Simple instance.
-    static std::string GetFullSimpleInput();
+    static std::string GetSimpleInput();
+
+    // Returns a string used to initialize all fields in a Full instance.
+    static std::string GetFullInput();
 
     // Parses the given string, checking for exceptions. Returns a null
     // ObjectPtr on failure.
@@ -92,17 +139,4 @@ class ParserTestBase : public SceneTestBase {
     // Sets up a temporary file containing the given input string, parses it,
     // and returns the result. Returns a null ObjectPtr on failure.
     Parser::ObjectPtr ParseFile(const std::string &input);
-
-    // Tries parsing a value of a given type in a string and comparing with an
-    // expected field value.
-    template <typename T>
-    bool TryValue(Parser::TField<T> Simple::* field, T expected,
-                  const std::string &str){
-        Parser::ObjectPtr obj = ParseString(str);
-        if (! obj)
-            return false;
-        std::shared_ptr<Simple> sp = std::dynamic_pointer_cast<Simple>(obj);
-        EXPECT_NOT_NULL(sp.get());
-        return ((*sp).*field).GetValue() == expected;
-    };
 };
