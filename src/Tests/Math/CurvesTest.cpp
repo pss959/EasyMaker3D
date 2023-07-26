@@ -23,6 +23,12 @@ TEST_F(CurvesTest, CircleArc) {
     CircleArc arc2 = GetArc_(40, -120);
     EXPECT_EQ(Anglef::FromDegrees(40),   arc2.start_angle);
     EXPECT_EQ(Anglef::FromDegrees(-120), arc2.arc_angle);
+
+    // Test equality operator.
+    EXPECT_EQ(arc,  arc);
+    EXPECT_EQ(arc2, arc2);
+    EXPECT_NE(arc,  arc2);
+    EXPECT_NE(arc2, arc);
 }
 
 TEST_F(CurvesTest, GetCirclePoints) {

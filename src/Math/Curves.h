@@ -25,6 +25,9 @@ struct CircleArc {
     /// Constructor taking a start angle and arc angle.
     CircleArc(const Anglef &start, const Anglef &arc) :
         start_angle(start), arc_angle(arc) {}
+
+    /// Equality operator.
+    bool operator==(const CircleArc &ca) const = default;
 };
 
 /// Returns a vector of N 2D points ranging clockwise or counterclockwise
