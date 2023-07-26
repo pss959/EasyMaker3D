@@ -36,8 +36,6 @@ void CylinderModel::SetBottomRadius(float radius) {
 TriMesh CylinderModel::BuildMesh() {
     // Determine the number of sides based on the complexity.
     const int num_sides = LerpInt(GetComplexity(), 3, TK::kMaxCylinderSides);
-    std::cerr << "XXXX TR=" << top_radius_ << " BR=" << bottom_radius_
-              << " NS=" << num_sides << "\n";
     return BuildCylinderMesh(top_radius_, bottom_radius_, 2, num_sides);
 }
 
