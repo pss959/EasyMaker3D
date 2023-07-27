@@ -27,7 +27,10 @@ class TestBase : public ::testing::Test {
         const FilePath GetPath() { return path_; }
 
         /// Returns the contents of the file as a string.
-        std::string GetContents();
+        std::string GetContents() const;
+
+        // Modifies the contents.
+        void SetContents(const std::string &new_contents);
 
       private:
         FilePath path_;

@@ -39,6 +39,19 @@ class SceneTestBase : public TestBaseWithTypes {
     static const std::string str2;
 
     // Creates a TempFile containing the given input, tries to read a Scene
-    // from it, and returns the Scene after removing the file.
+    // from it, and returns the Scene after removing the file. If #set_up_ion
+    // is true, this sets up Ion for the scene.
     SG::ScenePtr ReadScene(const std::string &input);
+
+    // Creates a TempFile containing the given input, tries to read an SG item
+    // of the templated type from it, and returns the item after removing the
+    // file. Returns a null pointer on failure. Note that this does not set up
+    // Ion for any items.
+    template <typename T>
+    std::shared_ptr<T> ReadTypedItem(const std::string &input) {
+        return std::dynamic_pointer_cast<T>(ReadItem_(input));
+    }
+
+  private:
+    Parser::ObjectPtr ReadItem_(const std::string &input);
 };

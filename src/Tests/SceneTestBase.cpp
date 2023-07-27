@@ -1,5 +1,6 @@
 #include "Tests/SceneTestBase.h"
 
+#include "Parser/Parser.h"
 #include "SG/FileMap.h"
 #include "Util/Tuning.h"
 
@@ -29,4 +30,10 @@ SG::ScenePtr SceneTestBase::ReadScene(const std::string &input) {
     if (scene && set_up_ion)
         scene->SetUpIon(ion_context);
     return scene;
+}
+
+Parser::ObjectPtr SceneTestBase::ReadItem_(const std::string &input) {
+    TempFile file(input);
+    Parser::Parser parser;
+    return parser.ParseFromString(input);
 }

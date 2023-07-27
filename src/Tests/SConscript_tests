@@ -118,9 +118,11 @@ test_source_dict = {
         'UndoSessionTest',
     ],
     'SG' : [
+        'CameraTest',
         'CloneTest',
         'ColorMapTest',
         'CoordConvTest',
+        'FileMapTest',
         'IntersectorTest',
         'NodeBoundsTest',
         'NodePathTest',

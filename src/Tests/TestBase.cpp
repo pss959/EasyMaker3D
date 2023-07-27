@@ -63,10 +63,17 @@ TestBase::TempFile::~TempFile() {
     path_.Remove();
 }
 
-std::string TestBase::TempFile::GetContents() {
+std::string TestBase::TempFile::GetContents() const {
     std::string s;
     EXPECT_TRUE(Util::ReadFile(path_, s));
     return s;
+}
+
+void TestBase::TempFile::SetContents(const std::string &new_contents) {
+    std::ofstream out(path_.ToNativeString());
+    ASSERT(out.is_open());
+    out << new_contents;
+    out.close();
 }
 
 // ----------------------------------------------------------------------------
