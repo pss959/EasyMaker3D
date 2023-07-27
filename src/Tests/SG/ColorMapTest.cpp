@@ -12,6 +12,7 @@ class ColorMapTest : public TestBaseWithTypes {};
 
 TEST_F(ColorMapTest, Default) {
     // No instance => returns white.
+    SG::ColorMap::Reset();
     EXPECT_EQ(Color::White(), SG::ColorMap::SGetColor("noname"));
 
     // No instance => assertion failure.

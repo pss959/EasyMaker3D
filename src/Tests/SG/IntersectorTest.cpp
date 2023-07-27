@@ -55,6 +55,10 @@ TEST_F(IntersectorTest, Sphere) {
     EXPECT_PTS_CLOSE(Point3f(0, -5, 0),    hit.point);
     EXPECT_PTS_CLOSE(Point3f(-100, -5, 0), hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(Vector3f(0, -1, 0),  hit.normal);
+
+    // Miss the sphere.
+    hit = IntersectScene(input, Ray(Point3f(-100, 20, 20), Vector3f(0, 0, -1)));
+    EXPECT_FALSE(hit.IsValid());
 }
 
 TEST_F(IntersectorTest, Cone) {
@@ -184,6 +188,30 @@ TEST_F(IntersectorTest, TranslatedShapes) {
     EXPECT_PTS_CLOSE(Point3f(24, 0, 5), hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.normal);
 
+    // Hit the top cap of the cylinder from above.
+    hit = IntersectGraph(input, "TranslatedShapes",
+                         Ray(Point3f(24, 20, 0), Vector3f(0, -1, 0)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("TranslatedCylinder", hit.shape->GetName());
+    EXPECT_NEAR(15.f, hit.distance, kClose);  // Cylinder has height 10.
+    EXPECT_PTS_CLOSE(Point3f(24, 5, 0),  hit.point);
+    EXPECT_PTS_CLOSE(Point3f(24, 5, 0), hit.GetWorldPoint());
+    EXPECT_VECS_CLOSE(Vector3f(0, 1, 0), hit.normal);
+
+    // Hit the bottom cap of the cylinder from below.
+    hit = IntersectGraph(input, "TranslatedShapes",
+                         Ray(Point3f(24, -20, 0), Vector3f(0, 1, 0)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("TranslatedCylinder", hit.shape->GetName());
+    EXPECT_NEAR(15.f, hit.distance, kClose);  // Cylinder has height 10.
+    EXPECT_PTS_CLOSE(Point3f(24, -5, 0),  hit.point);
+    EXPECT_PTS_CLOSE(Point3f(24, -5, 0), hit.GetWorldPoint());
+    EXPECT_VECS_CLOSE(Vector3f(0, -1, 0), hit.normal);
+
     hit = IntersectGraph(input, "TranslatedShapes",
                          Ray(Point3f(44, 0, 20), Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
@@ -257,4 +285,32 @@ Scene {
     EXPECT_EQ("Cone", hit.shape->GetName());
     EXPECT_NEAR(10.f, hit.distance, kClose);  // Sphere has radius 5.
     EXPECT_PTS_CLOSE(Point3f(1, 0, .0), hit.point);
+}
+
+TEST_F(IntersectorTest, Cone4) {
+    // Test upside-down cone for completeness.
+    std::string input = R"(
+Scene {
+  root_node: Node "Cone" {
+    shapes: [
+      Cylinder "Cone" {
+        height:        2,
+        top_radius:    2,
+        bottom_radius: 0,
+        has_bottom_cap: False,
+      }
+    ],
+  },
+}
+)";
+
+    SG::Hit hit;
+    hit = IntersectScene(input, Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Cone", hit.shape->GetName());
+
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 1), hit.point);
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 1), hit.GetWorldPoint());
 }

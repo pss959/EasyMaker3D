@@ -30,6 +30,9 @@ DECL_SHARED_PTR(NamedColor);
 /// \ingroup SG
 class ColorMap : public Object {
   public:
+    // Resets to before any instance was created. Useful for tests.
+    static void Reset();
+
     /// Returns all NamedColor instances in the ColorMap.
     const std::vector<NamedColorPtr> & GetNamedColors() const {
         return named_colors_;

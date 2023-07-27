@@ -24,17 +24,55 @@ Scene "MyScene" {
     ShadowPass "Shadow" {
       shader_programs: [
         ShaderProgram "ShadowDepth" {
+          vertex_source: ShaderSource {
+            path: "Shadow_vp.glsl",
+          },
+          fragment_source: ShaderSource {
+            path: "Shadow_fp.glsl",
+          },
         },
       ],
     },
-    LightingPass "Test Lighting Pass" {
+    LightingPass "Lighting" {
       shader_programs: [
-        ShaderProgram "Lighting" {
+        ShaderProgram "FixedLighting" {
           vertex_source: ShaderSource {
-            path: "shaders/foo_vs.glsl",
+            path: "FixedLighting_vp.glsl",
           },
           fragment_source: ShaderSource {
-            path: "shaders/foo_fs.glsl",
+            path: "FixedLighting_fp.glsl",
+          },
+          uniform_defs: [
+            UniformDef "uEmissiveColor" {
+              value_type: "kFloatVector4Uniform",
+            },
+            UniformDef "uTexture" {
+              value_type: "kTextureUniform",
+            },
+            UniformDef "uShowTexture" {
+              value_type: "kIntUniform",
+            },
+            UniformDef "uSmoothness" {
+              value_type: "kFloatUniform",
+            },
+            UniformDef "uMetalness" {
+              value_type: "kFloatUniform",
+            },
+            UniformDef "uTextureScale" {
+              value_type: "kFloatVector2Uniform",
+            },
+            UniformDef "uTextureOffset" {
+              value_type: "kFloatVector2Uniform",
+            },
+          ],
+        },
+        ShaderProgram "Lighting" {
+          inherit_from: "FixedLighting",
+          vertex_source: ShaderSource {
+            path: "Lighting_vp.glsl",
+          },
+          fragment_source: ShaderSource {
+            path: "Lighting_fp.glsl",
           },
           uniform_defs: [
             UniformDef "UI1" {
@@ -82,28 +120,30 @@ Scene "MyScene" {
             UniformDef "UM4" {
               value_type: "kMatrix4x4Uniform",
             },
+            UniformDef "uIntArray" {
+              value_type: "kIntUniform",
+            },
           ],
         },
       ],
     },
   ],
   root_node: Node "Root" {
-    disabled_flags: "kRender",
-    pass_name: "Lighting",
     scale: 1 2 3,
     rotation: 0 1 0 45,
     translation: -7 -8 -9,
-    shader_names: ["Lighting"],
+    shader_names: ["ShadowDepth", "Lighting"],
     state_table: StateTable {
       clear_color: 0.4 0.4 0.4 1,
       clear_depth: 0.5,
-      line_width: 2,
+      line_width: 0.6,
       depth_test_enabled: True,
       cull_face_enabled: True,
       cull_face_mode: "kCullFront",
     },
     blocks: [
       UniformBlock {
+        pass_name: "Lighting",
         material: Material {
           base_color: 0.5 0.8 0.3 1,
           smoothness: 0.4,
@@ -114,14 +154,14 @@ Scene "MyScene" {
             count: 2,
             uniform_name: "uTex",
             image: FileImage {
-              path: "textures/foo.jpg",
+              path: "Frame.jpg",
             },
             sampler: Sampler {
               auto_mipmaps: True,
               compare_mode: "kCompareToTexture",
               compare_function: "kGreater",
-              min_filter: "kLinear",
-              mag_filter: "kLinearMipmapLinear",
+              min_filter: "kLinearMipmapLinear",
+              mag_filter: "kLinear",
               wrap_r_mode: "kMirroredRepeat",
               wrap_s_mode: "kClampToEdge",
               wrap_t_mode: "kClampToEdge",
@@ -183,7 +223,7 @@ Scene "MyScene" {
           },
           Uniform "uIntArray" {
             count: 2,
-            float_val: 23,
+            int_val: -9,
           },
         ],
       },
@@ -252,6 +292,7 @@ Scene "MyScene" {
         pass_name: "Lighting",
       },
       Node "Child1" {
+        disabled_flags: "kRender",
         pass_name: "Lighting",
       },
       Node "Child2" {

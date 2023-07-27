@@ -6,6 +6,10 @@ namespace SG {
 
 const ColorMap * ColorMap::s_instance = nullptr;
 
+void ColorMap::Reset() {
+    s_instance = nullptr;
+}
+
 void ColorMap::AddFields() {
     AddField(named_colors_.Init("named_colors"));
 

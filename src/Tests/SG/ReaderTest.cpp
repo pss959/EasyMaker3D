@@ -113,6 +113,11 @@ TEST_F(ReaderTest, Settings) {
 TEST_F(ReaderTest, AllTypes) {
     std::string input = ReadDataFile("AllTypes");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
+
+    // Create Ion data for this scene to test all shapes.
+    set_up_ion = true;
+    SG::ScenePtr scene = ReadScene(input);
+    EXPECT_NOT_NULL(scene.get());
 }
 
 TEST_F(ReaderTest, Instances) {

@@ -26,13 +26,13 @@ namespace Debug {
 ///@{
 
 /// Prints any type of Parser::Object.
-void PrintObject(const Parser::Object &obj);
+void PrintObject(const Parser::Object &obj, bool print_addresses);
 
 /// Prints all commands in a CommandList.
 void PrintCommands(const CommandList &command_list);
 
 /// Prints a scene.
-void PrintScene(const SG::Scene &scene);
+void PrintScene(const SG::Scene &scene, bool print_addresses);
 
 /// Prints a graph rooted by the given node.
 void PrintGraph(const SG::Node &root);

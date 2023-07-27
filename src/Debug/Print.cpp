@@ -321,24 +321,24 @@ static void PrintModelTree_(const Model &model, bool is_full) {
 
 namespace Debug {
 
-void PrintObject(const Parser::Object &obj) {
+void PrintObject(const Parser::Object &obj, bool print_addresses) {
     Parser::Writer writer(std::cout);
-    writer.SetAddressFlag(true);
+    writer.SetAddressFlag(print_addresses);
     writer.WriteObject(obj);
 }
 
 void PrintCommands(const CommandList &command_list) {
     Surrounder_ surrounder;
-    PrintObject(command_list);
+    PrintObject(command_list, false);
     const auto index = command_list.GetCurrentIndex();
     std::cout << "# Index " << index << " = "
               << (index < command_list.GetCommandCount() ?
                   command_list.GetCommand(index)->GetDesc() : "<END>") << "\n";
 }
 
-void PrintScene(const SG::Scene &scene) {
+void PrintScene(const SG::Scene &scene, bool print_addresses) {
     Surrounder_ surrounder;
-    PrintObject(scene);
+    PrintObject(scene, print_addresses);
 }
 
 void PrintGraph(const SG::Node &root) {

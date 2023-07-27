@@ -60,7 +60,7 @@ void IonContext::AddShaderProgram(const std::string &name,
 const IonContext::ProgramInfo & IonContext::GetShaderProgramInfo(
     const std::string &name) const {
     auto it = program_map_.find(name);
-    ASSERT(it != program_map_.end());
+    ASSERTM(it != program_map_.end(), "Program: " + name);
     return it->second;
 }
 
