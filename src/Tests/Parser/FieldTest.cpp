@@ -36,8 +36,7 @@ TEST_F(FieldTest, AccessAndModify) {
     const Vector3f  vec(3, 4, 5);
     const Color     col(.2f, 1, .5f, 1);
     const Anglef    ang = Anglef::FromDegrees(110);
-    const Rotationf rot = Rotationf::FromAxisAndAngle(Vector3f(1, 0, 0),
-                                                      Anglef::FromDegrees(30));
+    const Rotationf rot = BuildRotation(1, 0, 0, 30);
 
     dp->bool_val    = true;
     dp->int_val     = -13;

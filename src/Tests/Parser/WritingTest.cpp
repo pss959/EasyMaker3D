@@ -15,8 +15,7 @@ TEST_F(WritingTest, WriteDerived) {
     const Vector3f  vec(3, 4, 5);
     const Color     col(.2f, 1, .5f, 1);
     const Anglef    ang = Anglef::FromDegrees(110);
-    const Rotationf rot = Rotationf::FromAxisAndAngle(Vector3f(1, 0, 0),
-                                                      Anglef::FromDegrees(30));
+    const Rotationf rot = BuildRotation(1, 0, 0, 30);
 
     sp0->int_val   = 15;
     sp1->float_val = 2.5f;
@@ -107,8 +106,7 @@ TEST_F(WritingTest, WriteFull) {
     fp->p2i  = Point2i(-3, 4);
     fp->c    = Color(.2f, 1, .5f, 1);
     fp->a    = Anglef::FromDegrees(-40);
-    fp->r    = Rotationf::FromAxisAndAngle(Vector3f(1, 0, 0),
-                                           Anglef::FromDegrees(30));
+    fp->r    = BuildRotation(1, 0, 0, 30);
     fp->m2   = Matrix2f(1, 2, 3, 4);
     fp->m3   = Matrix3f(1, 2, 3, 4, 5, 6, 7, 8, 9);
     fp->m4   = Matrix4f(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);

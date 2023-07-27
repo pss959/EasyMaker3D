@@ -8,6 +8,17 @@
 
 class IntersectorTest : public SceneTestBase {
   protected:
+    // Derived Node class that uses a bounds proxy.
+    class ProxyNode : public SG::Node {
+      protected:
+        ProxyNode() {}
+        virtual void CreationDone() override {
+            SG::Node::CreationDone();
+            SetUseBoundsProxy(true);
+        }
+        friend class Parser::Registry;
+    };
+
     // Reads a scene from a string and intersects it with the given ray.
     SG::Hit IntersectScene(const std::string &input, const Ray &ray) {
         SG::ScenePtr scene = ReadScene(input);
@@ -35,7 +46,7 @@ TEST_F(IntersectorTest, EmptyScene) {
 TEST_F(IntersectorTest, Sphere) {
     std::string input = ReadDataFile("Shapes");
 
-    // Intersect from front. Sphere is at (-100,0,0).
+    // Intersect from front. Sphere is at (-100,0,0) with radius 5.
     SG::Hit hit = IntersectGraph(input, "Primitives",
                                  Ray(Point3f(-100, 0, 20), Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
@@ -56,8 +67,9 @@ TEST_F(IntersectorTest, Sphere) {
     EXPECT_PTS_CLOSE(Point3f(-100, -5, 0), hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(Vector3f(0, -1, 0),  hit.normal);
 
-    // Miss the sphere.
-    hit = IntersectScene(input, Ray(Point3f(-100, 20, 20), Vector3f(0, 0, -1)));
+    // Just miss the sphere, but hit the bounds..
+    hit = IntersectScene(input, Ray(Point3f(-104.5f, 4.5f, 20),
+                                    Vector3f(0, 0, -1)));
     EXPECT_FALSE(hit.IsValid());
 }
 
@@ -313,4 +325,28 @@ Scene {
 
     EXPECT_PTS_CLOSE(Point3f(0, 0, 1), hit.point);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 1), hit.GetWorldPoint());
+}
+
+TEST_F(IntersectorTest, BoundsProxy) {
+    Parser::Registry::AddType<ProxyNode>("ProxyNode");
+
+    std::string input = R"(
+Scene {
+  root_node: ProxyNode "Proxy" {
+    translation: 10 0 0,
+    shapes: [ Ellipsoid "Sphere" { size: 8 8 8 } ],
+  },
+}
+)";
+
+    // This ray should hit the bounds of the ProxyNode but not the Sphere shape
+    // inside it. Normally, this would result in a miss, but ProxyNode
+    // specifies that the bounds should be used as a proxy for intersections.
+    SG::Hit hit;
+    hit = IntersectScene(input, Ray(Point3f(13.8f, 3.8f, 20),
+                                    Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_EQ("Proxy", hit.path.back()->GetName());
+    EXPECT_NULL(hit.shape);  // No shape when proxy is used.
 }

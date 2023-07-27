@@ -32,8 +32,7 @@ TEST_F(MirrorSessionTest, ThreeCylinders) {
     const auto op2 = mm2->GetOperandModel();
     const auto op3 = mm3->GetOperandModel();
 
-    const Rotationf xrot =
-        Rotationf::FromAxisAndAngle(Vector3f::AxisX(), Anglef::FromDegrees(90));
+    const Rotationf xrot = BuildRotation(Vector3f::AxisX(), 90);
 
     // Operand (Cylinder) model transforms.
     const float s = TK::kInitialModelScale;

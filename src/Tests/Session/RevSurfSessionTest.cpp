@@ -7,13 +7,11 @@
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
 
-// Convenience function
-static Rotationf GetXRot_() {
-    return Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
-                                       Anglef::FromDegrees(90));
-}
-
-class RevSurfSessionTest : public SessionTestBase {};
+class RevSurfSessionTest : public SessionTestBase {
+  protected:
+    // Convenience function
+    static Rotationf GetXRot() { return BuildRotation(Vector3f::AxisX(), 90); }
+};
 
 TEST_F(RevSurfSessionTest, FullSweep) {
     // This has 1 RevSurfModel (RevSurf_1) that is scaled by 2 in height,
@@ -32,7 +30,7 @@ TEST_F(RevSurfSessionTest, FullSweep) {
 
         EXPECT_EQ(360.f, rsm->GetSweepAngle().Degrees());
 
-        const Rotationf xrot = GetXRot_();
+        const Rotationf xrot = GetXRot();
 
         const float s = TK::kRevSurfHeight;
         EXPECT_VECS_CLOSE(Vector3f(s, 2 * s, s), rsm->GetScale());
@@ -70,7 +68,7 @@ TEST_F(RevSurfSessionTest, Sweep120) {
 
         EXPECT_EQ(120.f, rsm->GetSweepAngle().Degrees());
 
-        const Rotationf xrot = GetXRot_();
+        const Rotationf xrot = GetXRot();
 
         // Smaller sweep angle means the RevSurfModel is 3/4 size in X and 1/2
         // size in Y. Adjust bounds size and translation appropriately. (Move

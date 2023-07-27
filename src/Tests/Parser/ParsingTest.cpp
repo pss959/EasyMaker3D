@@ -45,9 +45,7 @@ TEST_F(ParsingTest, StringAndFile) {
         EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), sp->vec3f_val);
         EXPECT_EQ(Color(.2f, .3f, .4f, 1.f), sp->color_val);
         EXPECT_EQ(Anglef::FromDegrees(90), sp->angle_val);
-        EXPECT_EQ(Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
-                                              Anglef::FromDegrees(180)),
-                  sp->rot_val);
+        EXPECT_EQ(BuildRotation(0, 1, 0, 180), sp->rot_val);
         const std::vector<int> &ints = sp->ints_val.GetValue();
         EXPECT_EQ(3U, ints.size());
         EXPECT_EQ(6,  ints[0]);
@@ -131,8 +129,7 @@ TEST_F(ParsingTest, Full) {
     Color c;
     EXPECT_TRUE(c.FromHexString("#aabbccdd"));
     const Anglef    a = Anglef::FromDegrees(-105);
-    const Rotationf r = Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
-                                                    Anglef::FromDegrees(-80));
+    const Rotationf r = BuildRotation(Vector3f::AxisZ(), -80);
     const Matrix2f  m2(1, 2, 3, 4);
     const Matrix3f  m3(1, 2, 3, 4, 5, 6, 7, 8, 9);
     const Matrix4f  m4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);

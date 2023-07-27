@@ -81,7 +81,7 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
     // Skip the entire subgraph if either of these flags is set.
     if (! node.IsFlagEnabled(Node::Flag::kTraversal) ||
         ! node.IsFlagEnabled(Node::Flag::kIntersectAll)) {
-        KLOG('I', Util::Spaces(2 * path.size())
+        KLOG('I', Util::Spaces(2 * path.size())  // LCOV_EXCL_LINE [gcovr bug]
              << "Skipping " << node.GetDesc()
              << ": flags=" << node.GetDisabledFlags().ToString());
         return;
@@ -123,6 +123,8 @@ bool Intersector::Visitor_::IntersectNode_(const Ray &world_ray,
     // on the bounds. Since this should never be used for exact intersections,
     // the shape, point, and normal do not really matter.
     if (node.ShouldUseBoundsProxy()) {
+        KLOG('I', Util::Spaces(2 * path.size())
+             << " Using bounds proxy for " << node.GetDesc());
         result_hit_.path         = path;
         result_hit_.world_ray    = world_ray;
         result_hit_.distance     = distance;

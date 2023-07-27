@@ -46,8 +46,7 @@ TEST_F(MeshUtilsTest, ScaleMesh) {
 TEST_F(MeshUtilsTest, RotateMesh) {
     const TriMesh m1 = BuildTestMesh();
 
-    const Rotationf rot = Rotationf::FromAxisAndAngle(Vector3f(1, 2, -3),
-                                                      Anglef::FromDegrees(40));
+    const Rotationf rot = BuildRotation(1, 2, -3, 40);
     const TriMesh m2 = RotateMesh(m1, rot);
     EXPECT_EQ(m1.points.size(),  m2.points.size());
     for (size_t i = 0; i < m1.points.size(); ++i)

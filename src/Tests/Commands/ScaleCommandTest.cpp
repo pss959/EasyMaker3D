@@ -57,8 +57,7 @@ class ScaleCommandTest : public AppTestBase {
     void ApplyRotateCommand(const Model &model) {
         auto rc = CreateCommand<RotateCommand>();
         rc->SetModelNames(std::vector<std::string>(1, model.GetName()));
-        rc->SetRotation(Rotationf::FromAxisAndAngle(Vector3f(0, 0, 1),
-                                                    Anglef::FromDegrees(90)));
+        rc->SetRotation(BuildRotation(0, 0, 1, 90));
         context.command_manager->AddAndDo(rc);
     }
 };

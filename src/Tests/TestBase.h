@@ -82,6 +82,15 @@ class TestBase : public ::testing::Test {
     std::string ReadDataFile(const std::string &file_name,
                              bool add_data_extension = true);
 
+    // Convenience that returns a Rotationf from axis and angle (degree)
+    // values.
+    static Rotationf BuildRotation(const Vector3f &axis, float deg) {
+        return Rotationf::FromAxisAndAngle(axis, Anglef::FromDegrees(deg));
+    }
+    static Rotationf BuildRotation(float x, float y, float z, float deg) {
+        return BuildRotation(Vector3f(x, y, z), deg);
+    }
+
     // FP testing predicates from Ion.
     static bool VectorsClose2(const Vector2f &v0, const Vector2f &v1);
     static bool PointsClose2(const Point2f &p0, const Point2f &p1);

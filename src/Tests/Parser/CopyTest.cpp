@@ -27,9 +27,7 @@ TEST_F(CopyTest, CopyContentsFrom) {
     EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), sp->vec3f_val);
     EXPECT_EQ(Color(.2f, .3f, .4f, 1.f), sp->color_val);
     EXPECT_EQ(Anglef::FromDegrees(90), sp->angle_val);
-    EXPECT_EQ(Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
-                                          Anglef::FromDegrees(180)),
-              sp->rot_val);
+    EXPECT_EQ(BuildRotation(0, 1, 0, 180), sp->rot_val);
     const std::vector<int> &ints = sp->ints_val.GetValue();
     EXPECT_EQ(3U, ints.size());
     EXPECT_EQ(6,  ints[0]);

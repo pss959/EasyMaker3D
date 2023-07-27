@@ -35,18 +35,14 @@ TEST_F(TransformSessionTest, FiveBoxes) {
     EXPECT_EQ("Box_3", box3.GetName());
     EXPECT_EQ(Vector3f(MS, MS, MS),  box3.GetScale());
     EXPECT_VECS_CLOSE(Vector3f(0, MS, -10), box3.GetTranslation());
-    EXPECT_ROTS_CLOSE(Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
-                                                  Anglef::FromDegrees(90)),
-                      box3.GetRotation());
+    EXPECT_ROTS_CLOSE(BuildRotation(Vector3f::AxisX(), 90), box3.GetRotation());
 
     // Box_4 is rotated around Z by 90 degrees, scaled asymmetrically by 2.5x
     // in X (looks like Y), and translated by 10 in Z.
     EXPECT_EQ("Box_4", box4.GetName());
     EXPECT_EQ(Vector3f(2.5f * MS, MS, MS),  box4.GetScale());
     EXPECT_VECS_CLOSE(Vector3f(0, 2.5f * MS, 10), box4.GetTranslation());
-    EXPECT_ROTS_CLOSE(Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
-                                                  Anglef::FromDegrees(90)),
-                      box4.GetRotation());
+    EXPECT_ROTS_CLOSE(BuildRotation(Vector3f::AxisZ(), 90), box4.GetRotation());
 
     // Box_5 is rotated around Y by 90 degrees, then rotated 90 degrees around
     // X (looks like Z). The +X axis should now be pointing up.

@@ -17,8 +17,7 @@ TEST_F(NodeTest, DefaultNode) {
 TEST_F(NodeTest, BasicFields) {
     SG::NodePtr node = CreateObject<SG::Node>();
     const Vector3f scale(1, 2, 3);
-    const Rotationf rot = Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
-                                                      Anglef::FromDegrees(30));
+    const Rotationf rot = BuildRotation(0, 1, 0, 30);
     const Vector3f trans(10, 20, 30);
     node->SetScale(scale);
     node->SetRotation(rot);

@@ -33,10 +33,7 @@ class ClipSessionTest : public SessionTestBase {
     void CompareN(const std::vector<ModelData> &expected);
 
     // Convenience function
-    static Rotationf GetXRot() {
-        return Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
-                                           Anglef::FromDegrees(90));
-    }
+    static Rotationf GetXRot() { return BuildRotation(Vector3f::AxisX(), 90); }
 };
 
 void ClipSessionTest::Compare1(const ModelData &expected, ClippedModel &cm) {

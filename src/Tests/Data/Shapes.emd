@@ -68,6 +68,14 @@ Scene {
               },
             ]
           },
+          Node "MissMe" {
+            shapes: [
+              Box "BoxBehind" {
+                size:          4 4 4,
+                translation:   4 0 -20,
+              },
+            ]
+          },
           Node {
             shapes: [
               Cylinder "TranslatedCylinder" {

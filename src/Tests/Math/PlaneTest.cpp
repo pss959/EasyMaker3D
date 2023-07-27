@@ -42,13 +42,10 @@ TEST_F(PlaneTest, ProjectVector) {
 }
 
 TEST_F(PlaneTest, ProjectRotation) {
-    const Rotationf rx = Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
-                                                     Anglef::FromDegrees(45));
-    const Rotationf ry = Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
-                                                     Anglef::FromDegrees(-60));
+    const Rotationf rx = BuildRotation(Vector3f::AxisX(),  45);
+    const Rotationf ry = BuildRotation(Vector3f::AxisY(), -60);
     const Plane pl(10, Vector3f::AxisY());
-    EXPECT_ROTS_CLOSE(Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
-                                                  Anglef::FromDegrees(0)),
+    EXPECT_ROTS_CLOSE(BuildRotation(Vector3f::AxisX(), 0),
                       pl.ProjectRotation(rx));
     EXPECT_ROTS_CLOSE(ry, pl.ProjectRotation(ry));
 }

@@ -6,7 +6,10 @@
 #include "Parser/Exception.h"
 #include "Parser/Parser.h"
 #include "Parser/Writer.h"
+#include "SG/Gantry.h"
 #include "SG/Node.h"
+#include "SG/VRCamera.h"
+#include "SG/WindowCamera.h"
 #include "Tests/SceneTestBase.h"
 #include "Util/String.h"
 
@@ -80,7 +83,7 @@ TEST_F(ReaderTest, RootNode) {
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());
 }
 
-TEST_F(ReaderTest, Gantry) {
+TEST_F(ReaderTest, GantryAndCameras) {
     std::string input = ReadDataFile("AllTypes");
     set_up_ion = false;
     SG::ScenePtr scene = ReadScene(input);
@@ -93,6 +96,16 @@ TEST_F(ReaderTest, Gantry) {
     auto cam1 = gantry->GetCameras()[1];
     EXPECT_EQ("WindowCamera", cam0->GetTypeName());
     EXPECT_EQ("VRCamera",     cam1->GetTypeName());
+
+    auto &wcam = *std::dynamic_pointer_cast<SG::WindowCamera>(cam0);
+    EXPECT_EQ(Point3f(1, 2, 3),           wcam.GetPosition());
+    EXPECT_EQ(BuildRotation(0, 1, 0, 30), wcam.GetOrientation());
+    EXPECT_EQ(Anglef::FromDegrees(45),    wcam.GetFOV());
+    EXPECT_EQ(2,                          wcam.GetNear());
+    EXPECT_EQ(10,                         wcam.GetFar());
+
+    auto &vcam = *std::dynamic_pointer_cast<SG::VRCamera>(cam1);
+    EXPECT_EQ(Point3f(1, 2, 3),           vcam.GetBasePosition());
 
     EXPECT_EQ(0, gantry->GetHeight());
     EXPECT_EQ(0, cam0->GetHeight());

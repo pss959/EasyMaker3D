@@ -46,8 +46,7 @@ TEST_F(LinearTest, DimConversion) {
 TEST_F(LinearTest, GetTransformMatrix) {
     const Matrix4f tm =
         GetTransformMatrix(Vector3f(2, 3, 4),
-                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
-                                                       Anglef::FromDegrees(90)),
+                           BuildRotation(Vector3f::AxisY(), 90),
                            Vector3f(10, 20, 30));
     const Matrix4f expected( 0, 0, 4, 10,
                              0, 3, 0, 20,
@@ -109,8 +108,7 @@ TEST_F(LinearTest, TransformNormal) {
 TEST_F(LinearTest, TransformRay) {
     const Matrix4f m =
         GetTransformMatrix(Vector3f(2, 3, 4),
-                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
-                                                       Anglef::FromDegrees(90)),
+                           BuildRotation(Vector3f::AxisY(), 90),
                            Vector3f(10, 20, 30));
 
     const Ray r = TransformRay(Ray(Point3f(1, 1, 1), -Vector3f::AxisZ()), m);
@@ -155,10 +153,9 @@ TEST_F(LinearTest, TransformPlane2) {
     // Rotate and translate a plane not at the origin.
     const Plane pl(10, Vector3f::AxisX());
 
-    const Rotationf rot = Rotationf:: FromAxisAndAngle(Vector3f::AxisZ(),
-                                                       Anglef::FromDegrees(90));
-    const Matrix4f tm = GetTransformMatrix(Vector3f(1, 1, 1), rot,
-                                           Vector3f(10, 20, 30));
+    const Rotationf rot = BuildRotation(Vector3f::AxisZ(), 90);
+    const Matrix4f  tm  = GetTransformMatrix(Vector3f(1, 1, 1), rot,
+                                             Vector3f(10, 20, 30));
     const Plane tpl = TransformPlane(pl, tm);
     EXPECT_VECS_CLOSE(Vector3f::AxisY(), tpl.normal);
     EXPECT_CLOSE(30.f, tpl.distance);
@@ -176,11 +173,10 @@ TEST_F(LinearTest, TransformPlane3) {
     // Scale, rotate, and translate a plane not at the origin.
     const Plane pl(10, Vector3f::AxisX());
 
-    const Rotationf rot = Rotationf:: FromAxisAndAngle(Vector3f(1, 2, 3),
-                                                       Anglef::FromDegrees(40));
-    const Matrix4f tm = GetTransformMatrix(Vector3f(2, 5, 10),
-                                           rot, Vector3f(10, 20, 30));
-    const Plane tpl = TransformPlane(pl, tm);
+    const Rotationf rot = BuildRotation(1, 2, 3, 40);
+    const Matrix4f  tm  = GetTransformMatrix(Vector3f(2, 5, 10),
+                                             rot, Vector3f(10, 20, 30));
+    const Plane     tpl = TransformPlane(pl, tm);
 
     // Do the transformed point test.
     const Point3f p0(10, 0, 0);
@@ -193,9 +189,8 @@ TEST_F(LinearTest, TransformPlane3) {
 
 TEST_F(LinearTest, TransformPlane4) {
     // Testing adjusting normals near axis directions.
-    const Matrix4f tiny_rot = ion::math::RotationMatrixH(
-        Rotationf::FromAxisAndAngle(Vector3f(1, 1, 1),
-                                    Anglef::FromDegrees(.001f)));
+    const Matrix4f tiny_rot =
+        ion::math::RotationMatrixH(BuildRotation(1, 1, 1, .001f));
     const auto test_axis = [&](const Vector3f &axis){
         const Plane p(0, axis);
         EXPECT_EQ(p, TransformPlane(p, tiny_rot));
@@ -219,8 +214,7 @@ TEST_F(LinearTest, TransformBounds) {
 
     const Matrix4f tm =
         GetTransformMatrix(Vector3f(2, 3, 4),
-                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
-                                                       Anglef::FromDegrees(90)),
+                           BuildRotation(Vector3f::AxisY(), 90),
                            Vector3f(10, 20, 30));
     const Bounds tb = TransformBounds(b, tm);
     EXPECT_PTS_CLOSE(Point3f(34, 11, 34), tb.GetMinPoint());
@@ -235,8 +229,7 @@ TEST_F(LinearTest, TransformSpin) {
     s.offset = 12;
     const Matrix4f tm =
         GetTransformMatrix(Vector3f(2, 3, 4),
-                           Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
-                                                       Anglef::FromDegrees(90)),
+                           BuildRotation(Vector3f::AxisY(), 90),
                            Vector3f(10, 20, 30));
     const Spin ts = TransformSpin(s, tm);
     EXPECT_PTS_CLOSE(Point3f(22, 26, 28), ts.center);
@@ -451,27 +444,22 @@ TEST_F(LinearTest, NormalizedAngle) {
 }
 
 TEST_F(LinearTest, RotationAngleAndAxis) {
-    const Rotationf rot =
-        Rotationf::FromAxisAndAngle(Vector3f(1, 2, 3), Anglef::FromDegrees(12));
-
+    const Rotationf rot = BuildRotation(1, 2, 3, 12);
     EXPECT_CLOSE(12.f, RotationAngle(rot).Degrees());
     EXPECT_VECS_CLOSE(ion::math::Normalized(Vector3f(1, 2, 3)),
                       RotationAxis(rot));
 }
 
 TEST_F(LinearTest, RotationFromMatrix) {
-    const Rotationf rot =
-        Rotationf::FromAxisAndAngle(Vector3f(1, 2, 3), Anglef::FromDegrees(12));
-    const Matrix4f tm =
-        GetTransformMatrix(Vector3f(2, 3, 4), rot, Vector3f(10, 20, 30));
+    const Rotationf rot = BuildRotation(1, 2, 3, 12);
+    const Matrix4f  tm  = GetTransformMatrix(Vector3f(2, 3, 4), rot,
+                                             Vector3f(10, 20, 30));
     EXPECT_ROTS_CLOSE(rot, RotationFromMatrix(tm));
 }
 
 TEST_F(LinearTest, RotationDifference) {
-    const Rotationf r0 = Rotationf::FromAxisAndAngle(Vector3f(1, 2, -3),
-                                                     Anglef::FromDegrees(18));
-    const Rotationf r1 = Rotationf::FromAxisAndAngle(Vector3f(-4, 3, 3),
-                                                     Anglef::FromDegrees(-22));
+    const Rotationf r0 = BuildRotation(1, 2, -3,  18);
+    const Rotationf r1 = BuildRotation(-4, 3, 3, -22);
     const Rotationf diff = RotationDifference(r0, r1);
     EXPECT_EQ(r1, r0 * diff);
 }
