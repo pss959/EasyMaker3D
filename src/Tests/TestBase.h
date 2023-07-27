@@ -121,3 +121,11 @@ class TestBase : public ::testing::Test {
     static bool CompareData(const void *expected, size_t size,
                             const void *actual);
 };
+
+// Derived TestBase class that automatically registers and unregisters known
+// types on construction and destruction.
+class TestBaseWithTypes : public TestBase {
+  protected:
+    TestBaseWithTypes();
+    virtual ~TestBaseWithTypes();
+};

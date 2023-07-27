@@ -119,6 +119,7 @@ test_source_dict = {
     ],
     'SG' : [
         'CloneTest',
+        'ColorMapTest',
         'CoordConvTest',
         'IntersectorTest',
         'NodeBoundsTest',

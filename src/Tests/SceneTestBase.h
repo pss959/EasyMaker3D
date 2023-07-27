@@ -11,7 +11,7 @@
 
 // This is a base class for any test that has to read a scene from a file or
 // string.
-class SceneTestBase : public TestBase {
+class SceneTestBase : public TestBaseWithTypes {
  protected:
     // Default PrimitiveModel base scale. This is a shorthand convenience since
     // this value is used in lots of tests.
@@ -37,10 +37,6 @@ class SceneTestBase : public TestBase {
     // between them.
     static const std::string str1;
     static const std::string str2;
-
-    SceneTestBase();
-
-    ~SceneTestBase();
 
     // Creates a TempFile containing the given input, tries to read a Scene
     // from it, and returns the Scene after removing the file.

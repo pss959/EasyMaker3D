@@ -229,3 +229,15 @@ bool TestBase::CompareData(const void *expected, size_t size,
     }
     return true;
 }
+
+// ----------------------------------------------------------------------------
+// TestBaseWithTypes functions.
+// ----------------------------------------------------------------------------
+
+TestBaseWithTypes::TestBaseWithTypes() {
+    RegisterTypes();
+}
+
+TestBaseWithTypes::~TestBaseWithTypes() {
+    UnregisterTypes();
+}

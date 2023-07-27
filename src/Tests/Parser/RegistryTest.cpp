@@ -1,4 +1,3 @@
-#include "App/RegisterTypes.h"
 #include "Parser/Registry.h"
 #include "ParserTestBase.h"
 #include "Util/General.h"

@@ -80,6 +80,31 @@ TEST_F(ReaderTest, RootNode) {
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());
 }
 
+TEST_F(ReaderTest, Gantry) {
+    std::string input = ReadDataFile("AllTypes");
+    set_up_ion = false;
+    SG::ScenePtr scene = ReadScene(input);
+    const auto gantry = scene->GetGantry();
+    EXPECT_NOT_NULL(gantry);
+
+    EXPECT_EQ(2U, gantry->GetCameras().size());
+
+    auto cam0 = gantry->GetCameras()[0];
+    auto cam1 = gantry->GetCameras()[1];
+    EXPECT_EQ("WindowCamera", cam0->GetTypeName());
+    EXPECT_EQ("VRCamera",     cam1->GetTypeName());
+
+    EXPECT_EQ(0, gantry->GetHeight());
+    EXPECT_EQ(0, cam0->GetHeight());
+    EXPECT_EQ(0, cam1->GetHeight());
+
+    // Setting the gantry height should affect the cameras.
+    gantry->SetHeight(10);
+    EXPECT_EQ(10, gantry->GetHeight());
+    EXPECT_EQ(10, cam0->GetHeight());
+    EXPECT_EQ(10, cam1->GetHeight());
+}
+
 TEST_F(ReaderTest, Settings) {
     std::string input = ReadDataFile("Settings");
     EXPECT_TRUE(ParseStringAndCompare(input, input));
