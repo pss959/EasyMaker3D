@@ -143,6 +143,10 @@ class Parser::Impl_ {
         return obj_type_name + '/' + obj_name;
     }
 
+    /// Returns a string describing the current ObjectScope_ for error
+    /// messages.
+    std::string GetScopeDesc_() const;
+
     /// Returns a string representing the current ObjectScope_ stack.
     std::string GetScopeStackString_() const;
 };
@@ -209,10 +213,11 @@ ObjectPtr Parser::Impl_::ParseUse_() {
     //    name must refer to an Object in scope.
     const std::string name = scanner_->ScanQuotedString();
     if (name.empty())
-        Throw_("Missing Object name for USE");
+        Throw_("Missing Object name for USE in " + GetScopeDesc_());
     ObjectPtr obj = FindObject_(name, false);
     if (! obj)
-        Throw_("Missing object with name '" + name + "' for USE");
+        Throw_("Missing object with name '" + name +
+               "' for USE in " + GetScopeDesc_());
     return obj;
 }
 
@@ -221,11 +226,13 @@ ObjectPtr Parser::Impl_::ParseClone_(bool is_template) {
     //    name must refer to a Template or Object in scope.
     const std::string name = scanner_->ScanQuotedString();
     if (name.empty())
-        Throw_("Missing Template or Object name for CLONE");
+        Throw_("Missing Template or Object name for CLONE in " +
+               GetScopeDesc_());
     // Look for a Template or Object.
     ObjectPtr obj = FindObject_(name, true);
     if (! obj)
-        Throw_("Missing Template or Object with name '" + name + "' for CLONE");
+        Throw_("Missing Template or Object with name '" + name +
+               "' for CLONE in " + GetScopeDesc_());
     obj = ParseObjectContents_(obj->GetTypeName(), obj, is_template);
     return obj;
 }
@@ -477,6 +484,13 @@ std::string Parser::Impl_::SubstituteConstant_(const std::string &name) const {
 
 void Parser::Impl_::Throw_(const std::string &msg) const {
     scanner_->Throw(msg);
+}
+
+std::string Parser::Impl_::GetScopeDesc_() const {
+    if (scope_stack_.empty())
+        return "Top-level scope";
+    else
+        return "Scope " + GetScopeStackString_();
 }
 
 std::string Parser::Impl_::GetScopeStackString_() const {

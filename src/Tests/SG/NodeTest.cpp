@@ -2,6 +2,7 @@
 
 #include "Parser/Registry.h"
 #include "SG/Node.h"
+#include "SG/UnscopedNode.h"
 #include "Tests/SceneTestBase.h"
 
 class NodeTest : public SceneTestBase {};
@@ -93,4 +94,11 @@ TEST_F(NodeTest, Children) {
 
     parent->ClearChildren();
     test_it("");
+}
+
+TEST_F(NodeTest, UnscopedNode) {
+    SG::NodePtr sn = CreateObject<SG::Node>();
+    SG::NodePtr un = CreateObject<SG::UnscopedNode>();
+    EXPECT_TRUE(sn->IsScoped());
+    EXPECT_FALSE(un->IsScoped());
 }
