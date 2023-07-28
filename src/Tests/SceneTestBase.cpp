@@ -4,28 +4,27 @@
 #include "SG/FileMap.h"
 #include "Util/Tuning.h"
 
-const std::string SceneTestBase::str1 =
-    "Scene {\n"
-        " render_passes: [ LightingPass \"Lighting\" {\n"
-        "   shader_programs: [<\"programs/BaseColor.emd\">],"
-        " }],\n"
-    " root_node: Node \"Root\" {";
+const float SceneTestBase::MS = TK::kInitialModelScale;
 
-const std::string SceneTestBase::str2 = "}}";
-const float       SceneTestBase::MS   = TK::kInitialModelScale;
+std::string SceneTestBase::BuildSceneString(const std::string &contents) {
+    const std::string header = R"(
+Scene {
+  render_passes: [
+    LightingPass "Lighting" {
+      shader_programs: [<"programs/BaseColor.emd">]
+    }
+  ],
+  root_node: Node "Root" {
+)";
+    return header + contents + "}}";
+}
 
-SG::ScenePtr SceneTestBase::ReadScene(const std::string &input) {
+SG::ScenePtr SceneTestBase::ReadScene(const std::string &input,
+                                      bool set_up_ion) {
+    auto ion_context = GetIonContext();
+
     TempFile file(input);
-
-    // Create new instances to avoid inter-test pollution.
-    ion_context.reset(new SG::IonContext);
-    ion_context->SetFileMap(SG::FileMapPtr(new SG::FileMap()));
-    ion_context->SetShaderManager(
-        ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager));
-    ion_context->SetFontManager(
-        ion::text::FontManagerPtr(new ion::text::FontManager));
-
-    SG::ScenePtr scene = reader.ReadScene(file.GetPath(),
+    auto scene = reader.ReadScene(file.GetPath(),
                                           ion_context->GetFileMap());
     if (scene && set_up_ion)
         scene->SetUpIon(ion_context);
@@ -36,4 +35,14 @@ Parser::ObjectPtr SceneTestBase::ReadItem_(const std::string &input) {
     TempFile file(input);
     Parser::Parser parser;
     return parser.ParseFromString(input);
+}
+
+SG::IonContextPtr SceneTestBase::GetIonContext() {
+    SG::IonContextPtr ion_context(new SG::IonContext);
+    ion_context->SetFileMap(SG::FileMapPtr(new SG::FileMap()));
+    ion_context->SetShaderManager(
+        ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager));
+    ion_context->SetFontManager(
+        ion::text::FontManagerPtr(new ion::text::FontManager));
+    return ion_context;
 }

@@ -11,7 +11,7 @@ class SearchTest : public SceneTestBase {
 };
 
 TEST_F(SearchTest, Empty) {
-    std::string input = "Scene {}";
+    const std::string input = "Scene {}";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
     EXPECT_NULL(scene->GetRootNode());
@@ -21,7 +21,8 @@ TEST_F(SearchTest, Empty) {
 }
 
 TEST_F(SearchTest, TwoLevel) {
-    std::string input = str1 + "children: [ Node \"SomeChild\" {} ] " + str2;
+    const std::string input =
+        BuildSceneString("children: [ Node \"SomeChild\" {} ] ");
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
@@ -45,28 +46,30 @@ TEST_F(SearchTest, TwoLevel) {
 }
 
 TEST_F(SearchTest, MultiLevel) {
-    std::string input = str1 +
-        "    children: [\n"
-        "      Node \"Level1a\" {\n"
-        "        children: [\n"
-        "          Node \"Level2a\" {}\n"
-        "          Node \"Level2b\" {}\n"
-        "        ]\n"
-        "      },\n"
-        "      Node \"Level1b\" {\n"
-        "        children: [\n"
-        "          Node \"Level2c\" {}\n"
-        "          Node \"Level2d\" {}\n"
-        "        ]\n"
-        "      },\n"
-        "      Node \"Level1c\" {\n"
-        "        disabled_flags: \"kSearch\",\n"
-        "        children: [\n"
-        "          Node \"Level2e\" {}\n"
-        "          Node \"Level2f\" {}\n"
-        "        ]\n"
-        "      },\n"
-        "    ]\n" + str2;
+    const std::string contents = R"(
+  children: [
+    Node "Level1a" {
+      children: [
+        Node "Level2a" {}
+        Node "Level2b" {}
+      ]
+    },
+    Node "Level1b" {
+      children: [
+        Node "Level2c" {}
+        Node "Level2d" {}
+      ]
+    },
+    Node "Level1c" {
+      disabled_flags: "kSearch",
+      children: [
+        Node "Level2e" {}
+        Node "Level2f" {}
+      ]
+    },
+  ]
+)";
+    const std::string input = BuildSceneString(contents);
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
@@ -102,31 +105,33 @@ TEST_F(SearchTest, MultiLevel) {
 }
 
 TEST_F(SearchTest, FindNodes) {
-    std::string input = str1 +
-        "    children: [\n"
-        "      Node \"FindMe0\" {}\n"
-        "      Node \"FindMe1\" {\n"
-        "        children: [\n"
-        "          Node \"Blah\" {}\n"
-        "          Node \"FindMe2\" {}\n"
-        "        ]\n"
-        "      },\n"
-        "      Node \"Foo\" {\n"
-        "        children: [\n"
-        "          Node \"FindMe3\" {}\n"
-        "          Node \"FindMe4\" {}\n"
-        "          USE \"FindMe0\"\n"
-        "        ]\n"
-        "      },\n"
-        "      Node \"Disabled\" {\n"  // None of these should be found.
-        "        disabled_flags: \"kSearch\",\n"
-        "        children: [\n"
-        "          Node \"FindMe5\" {}\n"
-        "          Node \"FindMe6\" {}\n"
-        "          USE \"FindMe0\"\n"
-        "        ]\n"
-        "      },\n"
-        "    ]\n" + str2;
+    const std::string contents = R"(
+  children: [
+    Node "FindMe0" {}
+    Node "FindMe1" {
+      children: [
+        Node "Blah" {}
+        Node "FindMe2" {}
+      ]
+    },
+    Node "Foo" {
+      children: [
+        Node "FindMe3" {}
+        Node "FindMe4" {}
+        USE "FindMe0"
+      ]
+    },
+    Node "Disabled" {  # None of these should be found.
+      disabled_flags: "kSearch",
+      children: [
+        Node "FindMe5" {}
+        Node "FindMe6" {}
+        USE "FindMe0"
+      ]
+    },
+  ]
+)";
+    const std::string input = BuildSceneString(contents);
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
@@ -160,7 +165,7 @@ TEST_F(SearchTest, FindNodes) {
 }
 
 TEST_F(SearchTest, AssertErrors) {
-    std::string input = str1 + str2;
+    const std::string input = BuildSceneString("");
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
     EXPECT_NOT_NULL(scene->GetRootNode());

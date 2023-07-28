@@ -6,7 +6,7 @@
 class CameraTest : public SceneTestBase {};
 
 TEST_F(CameraTest, DefaultGantry) {
-    SG::GantryPtr gantry = ReadTypedItem<SG::Gantry>("Gantry {}");
+    auto gantry = CreateObject<SG::Gantry>();
 
     EXPECT_NOT_NULL(gantry);
     EXPECT_TRUE(gantry->GetCameras().empty());
@@ -31,7 +31,7 @@ Gantry {
 },
 )";
 
-    SG::GantryPtr gantry = ReadTypedItem<SG::Gantry>(input);
+    auto gantry = ReadTypedItem<SG::Gantry>(input);
     EXPECT_NOT_NULL(gantry);
 
     EXPECT_EQ(2U, gantry->GetCameras().size());

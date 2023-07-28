@@ -123,6 +123,7 @@ test_source_dict = {
         'ColorMapTest',
         'CoordConvTest',
         'FileMapTest',
+        'ImageTest',
         'IntersectorTest',
         'NodeBoundsTest',
         'NodePathTest',

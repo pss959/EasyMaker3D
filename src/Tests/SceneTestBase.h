@@ -26,22 +26,14 @@ class SceneTestBase : public TestBaseWithTypes {
     // Handy Reader instance.
     Reader reader;
 
-    // Flag indicating whether to set up Ion stuff. (Turning this off is useful
-    // for parsing tests that don't care about Ion objects.)
-    bool set_up_ion = true;
-
-    // IonContext for setting up Ion stuff when needed.
-    SG::IonContextPtr ion_context;
-
-    // These strings help define a valid scene. Put any node-specific fields
-    // between them.
-    static const std::string str1;
-    static const std::string str2;
+    // Builds a string defining a Scene with the given root node contents
+    // (between the curly braces).
+    std::string BuildSceneString(const std::string &contents);
 
     // Creates a TempFile containing the given input, tries to read a Scene
-    // from it, and returns the Scene after removing the file. If #set_up_ion
-    // is true, this sets up Ion for the scene.
-    SG::ScenePtr ReadScene(const std::string &input);
+    // from it, and returns the Scene after removing the file. If set_up_ion
+    // is true (the default), this sets up Ion for the scene.
+    SG::ScenePtr ReadScene(const std::string &input, bool set_up_ion = true);
 
     // Creates a TempFile containing the given input, tries to read an SG item
     // of the templated type from it, and returns the item after removing the
@@ -51,6 +43,9 @@ class SceneTestBase : public TestBaseWithTypes {
     std::shared_ptr<T> ReadTypedItem(const std::string &input) {
         return std::dynamic_pointer_cast<T>(ReadItem_(input));
     }
+
+    // Sets up and returns an IonContext for use in initializing Ion objects.
+    SG::IonContextPtr GetIonContext();
 
   private:
     Parser::ObjectPtr ReadItem_(const std::string &input);
