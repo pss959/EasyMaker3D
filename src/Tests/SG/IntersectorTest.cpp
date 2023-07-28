@@ -5,6 +5,7 @@
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
+#include "Util/String.h"
 
 class IntersectorTest : public SceneTestBase {
   protected:
@@ -35,7 +36,7 @@ class IntersectorTest : public SceneTestBase {
 };
 
 TEST_F(IntersectorTest, EmptyScene) {
-    const std::string input = "Scene {}\n";
+    const std::string input = BuildSceneString("");
     const SG::Hit hit = IntersectScene(input, Ray(Point3f(0, 20, 0),
                                                   Vector3f(0, 0, -1)));
     EXPECT_FALSE(hit.IsValid());
@@ -44,7 +45,7 @@ TEST_F(IntersectorTest, EmptyScene) {
 }
 
 TEST_F(IntersectorTest, Sphere) {
-    std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes");
 
     // Intersect from front. Sphere is at (-100,0,0) with radius 5.
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -56,6 +57,7 @@ TEST_F(IntersectorTest, Sphere) {
     EXPECT_PTS_CLOSE(Point3f(0, 0, 5),    hit.point);
     EXPECT_PTS_CLOSE(Point3f(-100, 0, 5), hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(Vector3f(0, 0, 1),  hit.normal);
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1),  hit.GetWorldNormal());
 
     // Intersect from bottom.
     hit = IntersectScene(input, Ray(Point3f(-100, -10, 0), Vector3f(0, 1, 0)));
@@ -66,6 +68,7 @@ TEST_F(IntersectorTest, Sphere) {
     EXPECT_PTS_CLOSE(Point3f(0, -5, 0),    hit.point);
     EXPECT_PTS_CLOSE(Point3f(-100, -5, 0), hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(Vector3f(0, -1, 0),  hit.normal);
+    EXPECT_VECS_CLOSE(Vector3f(0, -1, 0),  hit.GetWorldNormal());
 
     // Just miss the sphere, but hit the bounds..
     hit = IntersectScene(input, Ray(Point3f(-104.5f, 4.5f, 20),
@@ -74,7 +77,7 @@ TEST_F(IntersectorTest, Sphere) {
 }
 
 TEST_F(IntersectorTest, Cone) {
-    std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes");
 
     // Intersect from front. Cone is at (100,0,0).
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -90,7 +93,7 @@ TEST_F(IntersectorTest, Cone) {
 }
 
 TEST_F(IntersectorTest, Torus) {
-    std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes");
 
     // Intersect from front. Torus is at origin with outer radius 1.2 and inner
     // radius .2.
@@ -105,7 +108,7 @@ TEST_F(IntersectorTest, Torus) {
 }
 
 TEST_F(IntersectorTest, Rectangles) {
-    std::string input = ReadDataFile("Rectangles");
+    const std::string input = ReadDataFile("Rectangles");
 
     // The scene is translated 10 units in X.
     // Intersect rays from the center to all 5 rectangles.
@@ -144,7 +147,7 @@ TEST_F(IntersectorTest, Rectangles) {
 }
 
 TEST_F(IntersectorTest, HiddenParent) {
-    std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes");
 
     // The parent Ellipsoid is large and encompasses the two child Ellipsoids.
     // The parent should not be intersected, and its translation should not be
@@ -169,7 +172,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
     // Because the translation is inside the shape, it is included in the local
     // coordinates.
 
-    std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes");
 
     // Intersect from front:
     //   Box      is at ( 4,0,0).
@@ -186,8 +189,9 @@ TEST_F(IntersectorTest, TranslatedShapes) {
     EXPECT_EQ("TranslatedBox", hit.shape->GetName());
     EXPECT_NEAR(15.f, hit.distance, kClose);  // Box has size 10.
     EXPECT_PTS_CLOSE(Point3f(4, 0, 5),   hit.point);
-    EXPECT_PTS_CLOSE(Point3f(4, 0, 5), hit.GetWorldPoint());
+    EXPECT_PTS_CLOSE(Point3f(4, 0, 5),   hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.normal);
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.GetWorldNormal());
 
     hit = IntersectGraph(input, "TranslatedShapes",
                          Ray(Point3f(24, 0, 20), Vector3f(0, 0, -1)));
@@ -250,7 +254,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
 }
 
 TEST_F(IntersectorTest, Cone2) {
-    std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes");
     SG::Hit hit;
     hit = IntersectGraph(input, "ConeTest",
                          Ray(Point3f(0, 8, 20), Vector3f(0, 0, -1)));
@@ -271,20 +275,22 @@ TEST_F(IntersectorTest, Cone3) {
     // the wrong side of the apex.
 
     // This is a 90-degree cone with the apex at (0,1,0) and the base at Y=-1.
-    std::string input = R"(
-Scene {
-  root_node: Node "Cone" {
-    shapes: [
-      Cylinder "Cone" {
-        height:        2,
-        top_radius:    0,
-        bottom_radius: 2,
-        has_bottom_cap: False,
-      }
-    ],
-  },
-}
+    const std::string contents = R"(
+  children: [
+    Node "Cone" {
+      shapes: [
+        Cylinder "Cone" {
+          height:        2,
+          top_radius:    0,
+          bottom_radius: 2,
+          has_bottom_cap: False,
+        }
+      ],
+    },
+  ]
 )";
+    const std::string input = BuildSceneString(contents);
+
     // Points straight down. Should hit the cone at (1,0,0) / distance = 10.
     const Ray ray(Point3f(1, 10, 0), Vector3f(0, -1, 0));
 
@@ -301,20 +307,21 @@ Scene {
 
 TEST_F(IntersectorTest, Cone4) {
     // Test upside-down cone for completeness.
-    std::string input = R"(
-Scene {
-  root_node: Node "Cone" {
-    shapes: [
-      Cylinder "Cone" {
-        height:        2,
-        top_radius:    2,
-        bottom_radius: 0,
-        has_bottom_cap: False,
-      }
-    ],
-  },
-}
+    const std::string contents = R"(
+  children: [
+    Node "Cone" {
+      shapes: [
+        Cylinder "Cone" {
+          height:        2,
+          top_radius:    2,
+          bottom_radius: 0,
+          has_top_cap: False,
+        }
+      ],
+    },
+  ]
 )";
+    const std::string input = BuildSceneString(contents);
 
     SG::Hit hit;
     hit = IntersectScene(input, Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
@@ -327,10 +334,76 @@ Scene {
     EXPECT_PTS_CLOSE(Point3f(0, 0, 1), hit.GetWorldPoint());
 }
 
+TEST_F(IntersectorTest, ImportedShape) {
+    const std::string contents = R"(
+  children: [
+    Node {
+      shapes: [
+        ImportedShape "Imp" {
+          path: "<PATH>",
+          normal_type: "kFaceNormals",
+        }
+      ],
+    },
+  ]
+)";
+
+    const std::string input = BuildSceneString(
+        Util::ReplaceString(contents, "<PATH>",
+                            GetDataPath("Shapes/shape.off").ToString()));
+
+    SG::Hit hit;
+    hit = IntersectScene(input, Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Imp", hit.shape->GetName());
+
+    EXPECT_PTS_CLOSE(Point3f(0, 0, .5f), hit.point);
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1), hit.normal);
+}
+
+TEST_F(IntersectorTest, ImportedShapeWithProxy) {
+    const std::string contents = R"(
+  children: [
+    Node {
+      shapes: [
+        ImportedShape "Imp" {
+          path: "<PATH>",
+          normal_type: "kFaceNormals",
+          proxy_shape: Box "ProxyBox" { size: 2 2 2 },
+          use_bounds_proxy: False,
+        }
+      ],
+    },
+  ]
+)";
+
+    const std::string input1 = BuildSceneString(
+        Util::ReplaceString(contents, "<PATH>",
+                            GetDataPath("Shapes/shape.off").ToString()));
+
+    // This ray should hit the bounds of the proxy shape Box (which is twice as
+    // large as the ImportedShape) but not the ImportedShape itself.
+    SG::Hit hit;
+    hit = IntersectScene(input1, Ray(Point3f(.8f, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Imp", hit.shape->GetName());
+
+    // Turn on use_bounds_proxy and there should be no hit, since the node
+    // bounds do not include the proxy shape.
+    const std::string input2 = Util::ReplaceString(
+        input1, "use_bounds_proxy: False", "use_bounds_proxy: True");
+    hit = IntersectScene(input2, Ray(Point3f(.8f, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_FALSE(hit.IsValid());
+}
+
 TEST_F(IntersectorTest, BoundsProxy) {
     Parser::Registry::AddType<ProxyNode>("ProxyNode");
 
-    std::string input = R"(
+    const std::string input = R"(
 Scene {
   root_node: ProxyNode "Proxy" {
     translation: 10 0 0,

@@ -130,6 +130,7 @@ test_source_dict = {
         'NodeTest',
         'ReaderTest',
         'SearchTest',
+        'ShapeTest',
     ],
     'Sim' : [
         'EmptySimTest',
