@@ -2,10 +2,10 @@
 
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "SG/Torus.h"
 #include "Tests/SceneTestBase.h"
 
-class NodeBoundsTest : public SceneTestBase {
-};
+class NodeBoundsTest : public SceneTestBase {};
 
 TEST_F(NodeBoundsTest, NoShapes) {
     const std::string input = BuildSceneString("");
@@ -111,15 +111,38 @@ TEST_F(NodeBoundsTest, TransformedChild) {
     Node "Child" {
       scale: 3 4 5,
       translation: 100 200 300,
-      shapes: [Box { size: 2 3 4 }],
+      shapes: [Torus { outer_radius: 4, inner_radius: 1 }],
     },
   ],
 )";
     const std::string input = BuildSceneString(contents);
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const Bounds &bounds = scene->GetRootNode()->GetBounds();
+    Bounds bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
     EXPECT_EQ(Point3f(100, 200, 300), bounds.GetCenter());
-    EXPECT_EQ(Vector3f(6, 12, 20),    bounds.GetSize());
+    EXPECT_EQ(Vector3f(24, 8, 40),    bounds.GetSize());
+
+    // Test notification from the Box shape to update the bounds.
+    EXPECT_EQ(1U, scene->GetRootNode()->GetChildren().size());
+    auto node = scene->GetRootNode()->GetChildren()[0];
+    EXPECT_EQ("Child", node->GetName());
+    EXPECT_EQ(1U, node->GetShapes().size());
+    auto torus = std::dynamic_pointer_cast<SG::Torus>(node->GetShapes()[0]);
+    EXPECT_NOT_NULL(torus);
+    torus->SetOuterRadius(10);
+    bounds = scene->GetRootNode()->GetBounds();
+    EXPECT_EQ(Vector3f(60, 8, 100), bounds.GetSize());
+
+    // Disabling notification in the shape should NOT affect the bounds.
+    torus->SetNotifyEnabled(false);
+    torus->SetOuterRadius(20);
+    bounds = scene->GetRootNode()->GetBounds();
+    EXPECT_EQ(Vector3f(60, 8, 100), bounds.GetSize());
+
+    // Same for the node.
+    node->SetNotifyEnabled(false);
+    node->SetUniformScale(100);
+    bounds = scene->GetRootNode()->GetBounds();
+    EXPECT_EQ(Vector3f(60, 8, 100), bounds.GetSize());
 }

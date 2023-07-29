@@ -33,7 +33,10 @@ class Image : public Object {
     virtual void CreationDone() override;
 
     /// Derived classes must implement this to create an Ion Image.
-    virtual ion::gfx::ImagePtr CreateIonImage(FileMap &file_map) = 0;
+    virtual ion::gfx::ImagePtr CreateIonImage() = 0;
+
+    /// Provides access to the FileMap in the IonContext.
+    FileMap & GetFileMap() const;
 
     /// Derived classes can call this to replace the current image with a new
     /// one when something changes.
@@ -47,6 +50,9 @@ class Image : public Object {
     ///@{
     Parser::ObjectListField<SubImage> sub_images_;
     ///@}
+
+    /// Saves the IonContext used to create the Ion image.
+    IonContextPtr ion_context_;
 
     /// Maps name of a SubImage to a SubImage instance.
     SubImageMap_ sub_image_map_;

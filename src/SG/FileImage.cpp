@@ -14,17 +14,19 @@ void FileImage::AddFields() {
 }
 
 void FileImage::SetFilePath(const FilePath &path) {
-    ASSERT(! GetIonImage());
     path_ = path.ToString();
+    if (GetIonImage())
+        ReplaceImage(CreateIonImage());
 }
 
-ion::gfx::ImagePtr FileImage::CreateIonImage(FileMap &file_map) {
+ion::gfx::ImagePtr FileImage::CreateIonImage() {
     ion::gfx::ImagePtr image;
     if (GetFilePath()) {
         const auto path =
             FilePath::GetFullResourcePath("images", GetFilePath());
 
         // Check the FileMap first to see if the Image was already loaded.
+        FileMap &file_map = GetFileMap();
         image = file_map.FindImage(path);
         if (! image) {
             image = Util::ReadImage(path, true);  // Flip vertically.

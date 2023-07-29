@@ -105,6 +105,11 @@ TEST_F(IntersectorTest, Torus) {
     EXPECT_EQ("Torus", hit.shape->GetName());
     EXPECT_NEAR(18.8f, hit.distance, kClose);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 1.2f), hit.point);
+
+    // Pass down through center, missing.
+    hit = IntersectGraph(input, "Primitives",
+                         Ray(Point3f(0, 20, 0), Vector3f(0, -1, 0)));
+    EXPECT_FALSE(hit.IsValid());
 }
 
 TEST_F(IntersectorTest, Rectangles) {

@@ -20,8 +20,9 @@ void Image::CreationDone() {
 }
 
 ion::gfx::ImagePtr Image::SetUpIon(const IonContextPtr &ion_context) {
+    ion_context_ = ion_context;
     if (! ion_image_)
-        ion_image_ = CreateIonImage(ion_context->GetFileMap());
+        ion_image_ = CreateIonImage();
     return ion_image_;
 }
 
@@ -31,6 +32,11 @@ SubImagePtr Image::FindSubImage(const std::string &name) const {
     if (it != sub_image_map_.end())
         sub = it->second;
     return sub;
+}
+
+FileMap & Image::GetFileMap() const {
+    ASSERT(ion_context_);
+    return ion_context_->GetFileMap();
 }
 
 void Image::ReplaceImage(const ion::gfx::ImagePtr new_image) {

@@ -1,7 +1,8 @@
 #include <algorithm>
 
-#include "SG/Scene.h"
+#include "SG/FileImage.h"
 #include "SG/Node.h"
+#include "SG/Scene.h"
 #include "SG/Texture.h"
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
@@ -62,6 +63,40 @@ TEST_F(SetUpIonTest, NodeColors) {
     auto ec = FindUniform(block, "uEmissiveColor");
     EXPECT_EQ(Vector4f(1, 1, 0, 1), bc->GetVector4f());
     EXPECT_EQ(Vector4f(1, 0, 1, 1), ec->GetVector4f());
+}
+
+TEST_F(SetUpIonTest, Texture) {
+    const std::string input = ReadDataFile("FullScene");
+    auto scene = ReadScene(input, true);
+
+    // The first UniformBlock in the root node has a Texture.
+    EXPECT_FALSE(scene->GetRootNode()->GetUniformBlocks().empty());
+    auto block = scene->GetRootNode()->GetUniformBlocks()[0];
+    EXPECT_EQ("WithTexture", block->GetName());
+    EXPECT_FALSE(block->GetTextures().empty());
+    auto tex = block->GetTextures()[0];
+    auto ion_tex = tex->GetIonTexture();
+    EXPECT_NOT_NULL(ion_tex.Get());
+    EXPECT_NOT_NULL(ion_tex->GetImage(0).Get());
+    EXPECT_EQ(1000U, ion_tex->GetImage(0)->GetWidth());
+    EXPECT_EQ(1000U, ion_tex->GetImage(0)->GetHeight());
+
+    // Disable notification and change the image. The texture should stay the
+    // same.
+    tex->SetNotifyEnabled(false);
+    auto im = std::dynamic_pointer_cast<SG::FileImage>(tex->GetImage());
+    EXPECT_NOT_NULL(im);
+    im->SetFilePath(GetDataPath("testimage.jpg"));
+    EXPECT_NOT_NULL(ion_tex->GetImage(0).Get());
+    EXPECT_EQ(1000U, ion_tex->GetImage(0)->GetWidth());
+    EXPECT_EQ(1000U, ion_tex->GetImage(0)->GetHeight());
+
+    // Re-enable notification and repeat; the texture should be updated.
+    tex->SetNotifyEnabled(true);
+    im->SetFilePath(GetDataPath("testimage.jpg"));
+    EXPECT_NOT_NULL(ion_tex->GetImage(0).Get());
+    EXPECT_EQ(154U, ion_tex->GetImage(0)->GetWidth());
+    EXPECT_EQ(148U, ion_tex->GetImage(0)->GetHeight());
 }
 
 TEST_F(SetUpIonTest, Uniforms) {

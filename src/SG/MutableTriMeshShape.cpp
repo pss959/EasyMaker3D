@@ -13,13 +13,17 @@ void MutableTriMeshShape::ChangeMesh(const TriMesh &mesh) {
     UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
 }
 
-void MutableTriMeshShape::ChangeModelMesh(const ModelMesh &mesh) {
+void MutableTriMeshShape::ChangeModelMesh(const ModelMesh &mesh,
+                                          bool use_face_normals) {
     InstallMesh(mesh);
     if (! GetIonShape())
         SetUpIon();
     auto &shape = *GetIonShape();
     UpdateIonShapeFromTriMesh(mesh, shape, true, true);
-    SetVertexNormals(mesh.normals, shape);
+    if (use_face_normals)
+        SetFaceNormals(mesh.normals, shape);
+    else
+        SetVertexNormals(mesh.normals, shape);
     SetTextureCoords(mesh.tex_coords, shape);
 }
 

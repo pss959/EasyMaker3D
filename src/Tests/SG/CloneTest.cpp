@@ -1,8 +1,8 @@
 #include <string>
 
 #include "Parser/Registry.h"
-#include "SG/Box.h"
 #include "SG/Node.h"
+#include "SG/Torus.h"
 #include "SG/Uniform.h"
 #include "Tests/SceneTestBase.h"
 
@@ -32,17 +32,24 @@ TEST_F(CloneTest, BasicFields) {
 }
 
 TEST_F(CloneTest, Shapes) {
-    SG::NodePtr  node  = CreateObject<SG::Node>();
-    SG::ShapePtr shape = CreateObject<SG::Box>("TestBox");
-    node->AddShape(shape);
+    auto node  = CreateObject<SG::Node>();
+    auto torus = CreateObject<SG::Torus>("TestTorus");
+    node->AddShape(torus);
 
     SG::NodePtr clone = node->CloneTyped<SG::Node>(true);
     EXPECT_NOT_NULL(clone);
     EXPECT_EQ(1U, clone->GetShapes().size());
 
     // Shape should be a clone, not the same pointer.
-    EXPECT_NE(shape,     clone->GetShapes()[0]);
-    EXPECT_EQ("TestBox", clone->GetShapes()[0]->GetName());
+    auto torus_clone =
+        std::dynamic_pointer_cast<SG::Torus>(clone->GetShapes()[0]);
+    EXPECT_NOT_NULL(torus_clone);
+    EXPECT_NE(torus,       torus_clone);
+    EXPECT_EQ("TestTorus", torus_clone->GetName());
+
+    // The cloned Torus should have an identical mesh.
+    EXPECT_EQ(torus->GetTriMesh().points,  torus_clone->GetTriMesh().points);
+    EXPECT_EQ(torus->GetTriMesh().indices, torus_clone->GetTriMesh().indices);
 }
 
 TEST_F(CloneTest, Children) {
