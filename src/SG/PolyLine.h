@@ -25,8 +25,8 @@ class PolyLine : public PrimitiveShape {
 
     void SetPoints(const std::vector<Point3f> &points);
 
-    /// Sets points to form an arc. If the arc angle is not large enough, this
-    /// clears the points.
+    /// Sets points to form an arc around the origin in the Z=0 plane. If the
+    /// arc angle is not large enough, this clears the points.
     void SetArcPoints(const CircleArc &arc, float radius,
                       float degrees_per_segment);
 

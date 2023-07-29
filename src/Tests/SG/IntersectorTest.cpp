@@ -334,6 +334,23 @@ TEST_F(IntersectorTest, Cone4) {
     EXPECT_PTS_CLOSE(Point3f(0, 0, 1), hit.GetWorldPoint());
 }
 
+TEST_F(IntersectorTest, NonIntersectingShapes) {
+    const std::string contents = R"(
+  children: [
+    Node {
+      shapes: [
+        Line     { end0: -1 -1 0, end1: 1 1 0 },
+        PolyLine { points: [-1 -1 0, 1 1 0] },
+      ],
+    },
+  ]
+)";
+    const std::string input = BuildSceneString(contents);
+    SG::Hit hit;
+    hit = IntersectScene(input, Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
+    EXPECT_FALSE(hit.IsValid());
+}
+
 TEST_F(IntersectorTest, ImportedShape) {
     const std::string contents = R"(
   children: [

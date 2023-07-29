@@ -3,25 +3,26 @@
 #include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
+#include "SG/TextNode.h"
+#include "SG/UnscopedNode.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
-class NodePathTest : public TestBaseWithTypes {
-  public:
-    // Creates and returns a named Node to add to a NodePath.
-    SG::NodePtr CreateNode(const std::string &name) {
-        return CreateObject<SG::Node>(name);
-    }
-};
+class NodePathTest : public TestBaseWithTypes {};
+
+TEST_F(NodePathTest, Default) {
+    SG::NodePath path;
+    EXPECT_TRUE(path.empty());
+}
 
 TEST_F(NodePathTest, GetSubPath) {
     SG::NodePath path;
-    path.push_back(CreateNode("A"));
-    path.push_back(CreateNode("B"));
-    path.push_back(CreateNode("C"));
-    path.push_back(CreateNode("D"));
+    path.push_back(CreateObject<SG::Node>("A"));
+    path.push_back(CreateObject<SG::Node>("B"));
+    path.push_back(CreateObject<SG::Node>("C"));
+    path.push_back(CreateObject<SG::Node>("D"));
 
-    SG::NodePtr other = CreateNode("Blah");
+    SG::NodePtr other = CreateObject<SG::Node>("Blah");
 
     EXPECT_EQ("<A/B/C/D>", path.ToString());
     EXPECT_EQ("<A/B/C/D>", path.GetSubPath(*path[3]).ToString());
@@ -34,12 +35,12 @@ TEST_F(NodePathTest, GetSubPath) {
 
 TEST_F(NodePathTest, GetEndSubPath) {
     SG::NodePath path;
-    path.push_back(CreateNode("A"));
-    path.push_back(CreateNode("B"));
-    path.push_back(CreateNode("C"));
-    path.push_back(CreateNode("D"));
+    path.push_back(CreateObject<SG::Node>("A"));
+    path.push_back(CreateObject<SG::Node>("B"));
+    path.push_back(CreateObject<SG::Node>("C"));
+    path.push_back(CreateObject<SG::Node>("D"));
 
-    SG::NodePtr other = CreateNode("Blah");
+    SG::NodePtr other = CreateObject<SG::Node>("Blah");
 
     EXPECT_EQ("<A/B/C/D>", path.ToString());
     EXPECT_EQ("<A/B/C/D>", path.GetEndSubPath(*path[0]).ToString());
@@ -52,24 +53,24 @@ TEST_F(NodePathTest, GetEndSubPath) {
 
 TEST_F(NodePathTest, Stitch) {
     SG::NodePath p0;
-    p0.push_back(CreateNode("A"));
-    p0.push_back(CreateNode("B"));
-    p0.push_back(CreateNode("C"));
-    p0.push_back(CreateNode("D"));
+    p0.push_back(CreateObject<SG::Node>("A"));
+    p0.push_back(CreateObject<SG::Node>("B"));
+    p0.push_back(CreateObject<SG::Node>("C"));
+    p0.push_back(CreateObject<SG::Node>("D"));
 
     SG::NodePath p1;
     p1.push_back(p0.back());
-    p1.push_back(CreateNode("E"));
+    p1.push_back(CreateObject<SG::Node>("E"));
 
     SG::NodePath p2;
-    p2.push_back(CreateNode("E"));
-    p2.push_back(CreateNode("F"));
+    p2.push_back(CreateObject<SG::Node>("E"));
+    p2.push_back(CreateObject<SG::Node>("F"));
 
     SG::NodePath empty;
 
     // Success cases:
     EXPECT_EQ("<A/B/C/D/E>", SG::NodePath::Stitch(p0, p1).ToString());
-    p1.push_back(CreateNode("F"));
+    p1.push_back(CreateObject<SG::Node>("F"));
     EXPECT_EQ("<A/B/C/D/E/F>", SG::NodePath::Stitch(p0, p1).ToString());
 
     // Either path empty is bad.
@@ -87,12 +88,12 @@ TEST_F(NodePathTest, Stitch) {
 
 TEST_F(NodePathTest, ContainsNode) {
     SG::NodePath path;
-    path.push_back(CreateNode("A"));
-    path.push_back(CreateNode("B"));
-    path.push_back(CreateNode("C"));
-    path.push_back(CreateNode("D"));
+    path.push_back(CreateObject<SG::Node>("A"));
+    path.push_back(CreateObject<SG::Node>("B"));
+    path.push_back(CreateObject<SG::Node>("C"));
+    path.push_back(CreateObject<SG::Node>("D"));
 
-    SG::NodePtr other = CreateNode("Blah");
+    SG::NodePtr other = CreateObject<SG::Node>("Blah");
 
     EXPECT_TRUE(path.ContainsNode(*path[0]));
     EXPECT_TRUE(path.ContainsNode(*path[1]));
@@ -102,18 +103,44 @@ TEST_F(NodePathTest, ContainsNode) {
 }
 
 TEST_F(NodePathTest, FindNodeUpwards) {
-    SG::NodePtr a = CreateNode("A");
-    SG::NodePtr b = CreateNode("B");
-    SG::NodePtr c = CreateNode("C");
+    SG::NodePtr a = CreateObject<SG::Node>("A");
+    SG::NodePtr b = CreateObject<SG::TextNode>("B");
+    SG::NodePtr c = CreateObject<SG::Node>("C");
     SG::NodePath path;
     path.push_back(a);
     path.push_back(b);
     path.push_back(c);
 
+    // Find by name.
     EXPECT_EQ(a, path.FindNodeUpwards(
                   [](const SG::Node &n){ return n.GetName() == "A"; }));
     EXPECT_EQ(b, path.FindNodeUpwards(
                   [](const SG::Node &n){ return n.GetName() == "B"; }));
     EXPECT_EQ(c, path.FindNodeUpwards(
                   [](const SG::Node &n){ return n.GetName() == "C"; }));
+
+    // Find by type.
+    EXPECT_EQ(b, path.FindNodeUpwards<SG::TextNode>());
+
+    // Not found.
+    EXPECT_NULL(path.FindNodeUpwards(
+                  [](const SG::Node &n){ return n.GetName() == "D"; }));
+    EXPECT_NULL(path.FindNodeUpwards<SG::UnscopedNode>());
+}
+
+TEST_F(NodePathTest, ToString) {
+    SG::NodePtr a = CreateObject<SG::Node>("A");
+    SG::NodePtr b = CreateObject<SG::TextNode>("B");
+    SG::NodePath path;
+
+    EXPECT_EQ("<EMPTY>", path.ToString());
+    EXPECT_EQ("<EMPTY>", path.ToString(true));
+
+    path.push_back(a);
+    EXPECT_EQ("<A>",       path.ToString());
+    EXPECT_EQ("<A(Node)>", path.ToString(true));
+
+    path.push_back(b);
+    EXPECT_EQ("<A/B>",                 path.ToString());
+    EXPECT_EQ("<A(Node)/B(TextNode)>", path.ToString(true));
 }

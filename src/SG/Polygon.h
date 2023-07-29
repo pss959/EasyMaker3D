@@ -23,6 +23,15 @@ class Polygon : public TriMeshShape {
     /// Defines the Polygon from a Math Polygon.
     void SetPolygon(const ::Polygon &polygon);
 
+    /// Returns a list of all points in the Polygon.
+    const std::vector<Point2f> & GetPoints() const { return points_; }
+
+    /// Returns a list of counts of points in each border. The size of this
+    /// list indicates the number of borders; it should always be at least 1.
+    const std::vector<size_t> & GetBorderCounts() const {
+        return border_counts_;
+    }
+
   protected:
     Polygon() {}
 
