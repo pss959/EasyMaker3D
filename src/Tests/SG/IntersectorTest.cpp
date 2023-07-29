@@ -120,7 +120,13 @@ TEST_F(IntersectorTest, Rectangles) {
 
     const Point3f center(10, 0, 0);
 
-    SG::Hit hit = IntersectScene(input, Ray(center, -Vector3f::AxisZ()));
+    SG::Hit hit = IntersectScene(input, Ray(center, Vector3f::AxisZ()));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    ASSERT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Front", hit.path.back()->GetName());
+
+    hit = IntersectScene(input, Ray(center, -Vector3f::AxisZ()));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     ASSERT_NOT_NULL(hit.shape);
@@ -149,6 +155,11 @@ TEST_F(IntersectorTest, Rectangles) {
     EXPECT_FALSE(hit.path.empty());
     ASSERT_NOT_NULL(hit.shape);
     EXPECT_EQ("Bottom", hit.path.back()->GetName());
+
+    // Just miss (but hit the bounds).
+    hit = IntersectScene(input, Ray(Point3f(10 + 20.0001f, 0, 0),
+                                    -Vector3f::AxisZ()));
+    EXPECT_FALSE(hit.IsValid());
 }
 
 TEST_F(IntersectorTest, HiddenParent) {

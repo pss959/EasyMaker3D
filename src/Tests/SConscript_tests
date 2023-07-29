@@ -132,6 +132,7 @@ test_source_dict = {
         'SGObjectTest',
         'SearchTest',
         'SetUpIonTest',
+        'ShaderProgramTest',
         'ShapeTest',
         'UniformTest',
     ],

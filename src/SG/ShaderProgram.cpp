@@ -45,11 +45,11 @@ void ShaderProgram::SetUpIon(FileMap &file_map, ShaderManager &shader_manager) {
     if (! sscs.vertex_source_composer)
         throw Exception("No vertex program for " + GetDesc());
 
-    // Compile the program.
+    // Create the Ion ShaderProgram. Note that this does NOT compile the
+    // source; that is done during rendering. There is no way for this to
+    // fail.
     ion_program_ = shader_manager.CreateShaderProgram(GetName(), reg, sscs);
-    if (! ion_program_ || ! ion_program_->GetInfoLog().empty())
-        throw Exception("Failed to compile shader program for " + GetDesc() +
-                        ":\n" + ion_program_->GetInfoLog());
+    ASSERT(ion_program_.Get());
 }
 
 ShaderInputRegistryPtr ShaderProgram::CreateRegistry_(
