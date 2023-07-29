@@ -1,0 +1,146 @@
+# This scene contains at least one of each SG class that implements a
+# SetUpIon() function along with the framework necessary to make them work.
+
+Scene "MyScene" {
+  render_passes: [
+    ShadowPass "Shadow" {
+      shader_programs: [
+        ShaderProgram "ShadowDepth" {
+          vertex_source:   ShaderSource { path: "Shadow_vp.glsl" },
+          fragment_source: ShaderSource { path: "Shadow_fp.glsl" },
+        },
+      ],
+    },
+    LightingPass "Lighting" {
+      shader_programs: [
+        ShaderProgram "Lighting" {
+          vertex_source:   ShaderSource { path: "Lighting_vp.glsl" },
+          fragment_source: ShaderSource { path: "Lighting_fp.glsl" },
+          uniform_defs: [
+            UniformDef "uEmissiveColor" { value_type: "kFloatVector4Uniform" },
+            UniformDef "uTexture"       { value_type: "kTextureUniform"      },
+            UniformDef "uShowTexture"   { value_type: "kIntUniform"          },
+            UniformDef "uSmoothness"    { value_type: "kFloatUniform"        },
+            UniformDef "uMetalness"     { value_type: "kFloatUniform"        },
+            UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
+            UniformDef "uTextureOffset" { value_type: "kFloatVector2Uniform" },
+
+            # A uniform for each valid type.
+            UniformDef "UI1" { value_type: "kIntUniform"                },
+            UniformDef "UI2" { value_type: "kIntVector2Uniform"         },
+            UniformDef "UI3" { value_type: "kIntVector3Uniform"         },
+            UniformDef "UI4" { value_type: "kIntVector4Uniform"         },
+            UniformDef "UU1" { value_type: "kUnsignedIntUniform"        },
+            UniformDef "UU2" { value_type: "kUnsignedIntVector2Uniform" },
+            UniformDef "UU3" { value_type: "kUnsignedIntVector3Uniform" },
+            UniformDef "UU4" { value_type: "kUnsignedIntVector4Uniform" },
+            UniformDef "UF1" { value_type: "kFloatUniform"              },
+            UniformDef "UF2" { value_type: "kFloatVector2Uniform"       },
+            UniformDef "UF3" { value_type: "kFloatVector3Uniform"       },
+            UniformDef "UF4" { value_type: "kFloatVector4Uniform"       },
+            UniformDef "UM2" { value_type: "kMatrix2x2Uniform"          },
+            UniformDef "UM3" { value_type: "kMatrix3x3Uniform"          },
+            UniformDef "UM4" { value_type: "kMatrix4x4Uniform"          },
+          ],
+        },
+      ],
+    },
+  ],
+  root_node: Node "Root" {
+    shader_names: ["ShadowDepth", "Lighting"],
+    state_table: StateTable {
+      clear_color:        0.4 0.4 0.4 1,
+      clear_depth:        0.5,
+      line_width:         0.6,
+      depth_test_enabled: True,
+      cull_face_enabled:  True,
+      cull_face_mode:     "kCullFront",
+    },
+    blocks: [
+      UniformBlock "WithTexture" {
+        pass_name: "Lighting",
+        material: Material {
+          base_color: 0.5 0.8 0.3 1,
+          smoothness: 0.4,
+          metalness:  0.2,
+        },
+        textures: [
+          Texture {
+            count: 2,
+            uniform_name: "uTex",
+            image: FileImage {
+              path: "Frame.jpg",
+              sub_images: [
+                SubImage "Sub1" {
+                  texture_scale:  2 3,
+                  texture_offset: 4 -5,
+                },
+                SubImage "Sub2" {
+                  texture_scale:  2 1,
+                  texture_offset: 3 0,
+                },
+              ],
+            },
+            sampler: Sampler {
+              auto_mipmaps:     True,
+              compare_mode:     "kCompareToTexture",
+              compare_function: "kGreater",
+              min_filter:       "kLinearMipmapLinear",
+              mag_filter:       "kLinear",
+              wrap_r_mode:      "kMirroredRepeat",
+              wrap_s_mode:      "kClampToEdge",
+              wrap_t_mode:      "kClampToEdge",
+              max_anisotropy:   1.5,
+              min_lod:          -300,
+              max_lod:          200,
+            },
+          },
+        ],
+        sub_image_name: "Sub1",
+      },
+      UniformBlock "AllTypes" {
+        # This UniformBlock has 1 of each type of uniform.
+        pass_name: "Lighting",
+        uniforms: [
+          Uniform "UI1" { int_val:    23                                     },
+          Uniform "UI2" { vec2i_val:  1 2                                    },
+          Uniform "UI3" { vec3i_val:  1 2 3                                  },
+          Uniform "UI4" { vec4i_val:  1 2 3 4                                },
+          Uniform "UU1" { uint_val:   23                                     },
+          Uniform "UU2" { vec2ui_val: 1 2                                    },
+          Uniform "UU3" { vec3ui_val: 1 2 3                                  },
+          Uniform "UU4" { vec4ui_val: 1 2 3 4                                },
+          Uniform "UF1" { float_val:  23                                     },
+          Uniform "UF2" { vec2f_val:  1 2                                    },
+          Uniform "UF3" { vec3f_val:  1 2 3                                  },
+          Uniform "UF4" { vec4f_val:  1 2 3 4                                },
+          Uniform "UM2" { mat2_val:   1 2 3 4                                },
+          Uniform "UM3" { mat3_val:   1 2 3 4 5 6 7 8 9                      },
+          Uniform "UM4" { mat4_val:   1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 },
+        ]
+      },
+      UniformBlock "AllArrayTypes" {
+        # This UniformBlock has 1 of each type of array uniform.
+        pass_name: "Lighting",
+        uniforms: [
+          Uniform "UI1" { count: 2, int_val:    23                },
+          Uniform "UI2" { count: 2, vec2i_val:  1 2               },
+          Uniform "UI3" { count: 2, vec3i_val:  1 2 3             },
+          Uniform "UI4" { count: 2, vec4i_val:  1 2 3 4           },
+          Uniform "UU1" { count: 2, uint_val:   23                },
+          Uniform "UU2" { count: 2, vec2ui_val: 1 2               },
+          Uniform "UU3" { count: 2, vec3ui_val: 1 2 3             },
+          Uniform "UU4" { count: 2, vec4ui_val: 1 2 3 4           },
+          Uniform "UF1" { count: 2, float_val:  23                },
+          Uniform "UF2" { count: 2, vec2f_val:  1 2               },
+          Uniform "UF3" { count: 2, vec3f_val:  1 2 3             },
+          Uniform "UF4" { count: 2, vec4f_val:  1 2 3 4           },
+          Uniform "UM2" { count: 2, mat2_val:   1 2 3 4           },
+          Uniform "UM3" { count: 2, mat3_val:   1 2 3 4 5 6 7 8 9 },
+          Uniform "UM4" { count: 2,
+                          mat4_val:   1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 },
+        ]
+      },
+    ],
+  },
+}

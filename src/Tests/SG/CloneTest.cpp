@@ -3,6 +3,7 @@
 #include "Parser/Registry.h"
 #include "SG/Box.h"
 #include "SG/Node.h"
+#include "SG/Uniform.h"
 #include "Tests/SceneTestBase.h"
 
 class CloneTest : public SceneTestBase {};
@@ -61,4 +62,11 @@ TEST_F(CloneTest, Children) {
     EXPECT_EQ(1U, clone->GetChildren()[0]->GetChildCount());
     EXPECT_NE(gkid,       clone->GetChildren()[0]->GetChildren()[0]);
     EXPECT_EQ("GrandKid", clone->GetChildren()[0]->GetChildren()[0]->GetName());
+}
+
+TEST_F(CloneTest, Uniforms) {
+    auto uniform = CreateObject<SG::Uniform>("uSomeName");
+    uniform->SetValue<float>(4.5f);
+    auto clone = uniform->CloneTyped<SG::Uniform>(true);
+    EXPECT_EQ(4.5f, clone->GetFloat());
 }
