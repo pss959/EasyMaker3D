@@ -96,6 +96,11 @@ TEST_F(NodeBoundsTest, TransformedRoot) {
     // The root bounds should be in local coordinates.
     EXPECT_EQ(Point3f::Zero(), bounds.GetCenter());
     EXPECT_EQ(Vector3f(2, 3, 4),    bounds.GetSize());
+
+    const Bounds &sbounds = scene->GetRootNode()->GetScaledBounds();
+    EXPECT_FALSE(bounds.IsEmpty());
+    EXPECT_EQ(Point3f::Zero(),     sbounds.GetCenter());
+    EXPECT_EQ(Vector3f(6, 12, 20), sbounds.GetSize());
 }
 
 TEST_F(NodeBoundsTest, TransformedChild) {

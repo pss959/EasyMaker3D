@@ -129,6 +129,7 @@ test_source_dict = {
         'NodePathTest',
         'NodeTest',
         'ReaderTest',
+        'SGObjectTest',
         'SearchTest',
         'SetUpIonTest',
         'ShapeTest',

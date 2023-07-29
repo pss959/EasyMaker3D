@@ -9,11 +9,59 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-class SetUpIonTest : public SceneTestBase {};
+class SetUpIonTest : public SceneTestBase {
+  protected:
+    // Class that allows GetIonContext() to be called.
+    class TestNode : public SG::Node {
+      public:
+        using SG::Node::GetIonContext;
+      protected:
+        TestNode() {}
+        friend class Parser::Registry;
+    };
+
+    // Returns the named Uniform from the given UniformBlock. Asserts if it is
+    // not found.
+    SG::UniformPtr FindUniform(const SG::UniformBlock &block,
+                               const std::string &name) {
+        const auto &uniforms = block.GetUniforms();
+        const auto match = [&](const auto &u){ return u->GetName() == name; };
+        const auto it = std::find_if(uniforms.begin(), uniforms.end(), match);
+        ASSERT(it != uniforms.end());
+        return *it;
+    }
+};
 
 TEST_F(SetUpIonTest, EmptyScene) {
     SG::ScenePtr scene = ReadScene("Scene \"MyScene\" {}\n", true);
     EXPECT_NOT_NULL(scene.get());
+    EXPECT_NULL(scene->GetRootNode());
+
+    Parser::Registry::AddType<TestNode>("TestNode");
+    scene = ReadScene("Scene \"MyScene\" { root_node: TestNode {} }\n", true);
+    EXPECT_NOT_NULL(scene.get());
+    auto root = std::dynamic_pointer_cast<TestNode>(scene->GetRootNode());
+    EXPECT_NOT_NULL(root);
+    EXPECT_NOT_NULL(root->GetIonContext());
+    EXPECT_NOT_NULL(root->GetIonNode().Get());
+}
+
+TEST_F(SetUpIonTest, NodeColors) {
+    const std::string input = ReadDataFile("FullScene");
+    auto scene = ReadScene(input, true);
+    EXPECT_NOT_NULL(scene.get());
+    auto root = scene->GetRootNode();
+    EXPECT_NOT_NULL(root);
+
+    root->SetBaseColor(Color(1, 1, 0));
+    root->SetEmissiveColor(Color(1, 0, 1));
+
+    const auto &block = root->GetUniformBlockForPass("Lighting");
+    EXPECT_LE(2U, block.GetUniforms().size());
+    auto bc = FindUniform(block, "uBaseColor");
+    auto ec = FindUniform(block, "uEmissiveColor");
+    EXPECT_EQ(Vector4f(1, 1, 0, 1), bc->GetVector4f());
+    EXPECT_EQ(Vector4f(1, 0, 1, 1), ec->GetVector4f());
 }
 
 TEST_F(SetUpIonTest, Uniforms) {
@@ -67,17 +115,10 @@ TEST_F(SetUpIonTest, Uniforms) {
 
     // The second UniformBlock has one uniform of each type. Find and set each
     // one.
-    const auto &uniforms = block1->GetUniforms();
-    const auto find_uniform = [&](const std::string &name){
-        const auto match = [&](const auto &u){ return u->GetName() == name; };
-        const auto it = std::find_if(uniforms.begin(), uniforms.end(), match);
-        ASSERT(it != uniforms.end());
-        return *it;
-    };
     SG::UniformPtr u;
 
 #define TEST_U_(name, type, func, val0, val1)                           \
-    u = find_uniform(name);                                             \
+    u = FindUniform(*block1, name);                                     \
     EXPECT_EQ(type val0 , u->func());                                   \
     u->SetValue<type>(type val1);                                       \
     EXPECT_EQ(type val1, u->func())
