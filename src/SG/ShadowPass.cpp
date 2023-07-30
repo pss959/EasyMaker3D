@@ -23,14 +23,10 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) {
     // ShadowPass ignores the FBTarget because it always renders to a texture.
 
-    // Find each Node that uses the shader that needs to be set up.
-    auto match = [](const SG::Node &node){
-        return ! node.GetShaderNames().empty() &&
-            Util::Contains(node.GetShaderNames(), "ShadowDepth");
-    };
+    // Find each Node that uses a Shadow-related shader.
     const std::vector<SG::NodePtr> nodes =
-        SG::FindUniqueNodes(data.root_node, match);
-    ASSERT(nodes.size() >= 1U);
+        FindNodesMatchingShaderName(data.root_node, "Shadow");
+    ASSERT(! nodes.empty());
     for (auto &node: nodes)
         SetShaderUniforms_(data, *node);
 

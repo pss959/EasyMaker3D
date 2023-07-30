@@ -457,7 +457,7 @@ void ConvertValue(ToType* out, const std::vector<GLenum>& v) {
 // values are converted to floating-point values.
 // 
 
-GLfloat Clampf(GLfloat f) { return math::Clamp(f, 0.0f, 1.0f); }
+static GLfloat Clampf(GLfloat f) { return math::Clamp(f, 0.0f, 1.0f); }
 
 // Returns the OpenGL type name of the named type.
 static GLenum GetShaderInputTypeFromTypeName(const std::string& type) {

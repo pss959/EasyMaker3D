@@ -77,7 +77,7 @@ app_env.Alias('App',  apps[app_name])
 # Build tests.
 test_env = envs['test']
 test_env.Append(LIBS = [app_lib])
-SConscript('src/Tests/SConscript_tests', exports=['test_env'],
+SConscript('src/Tests/SConscript_tests', exports=['ion_env', 'test_env'],
            variant_dir=f'{build_dir}/Tests')
 
 # Build documentation and menu icons only on Linux. (Building on different

@@ -67,9 +67,12 @@ ShaderInputRegistryPtr ShaderProgram::CreateRegistry_(
             throw Exception("Unknown shader for " + GetDesc() +
                             " to inherit from: " + GetInheritFrom());
         reg->Include(prog->GetRegistry());
+        KLOG('r', GetDesc() << " including Ion registry "
+             << prog->GetRegistry().Get() << " from " << GetInheritFrom());
     }
     else {
         reg->IncludeGlobalRegistry();
+        KLOG('r', GetDesc() << " including global Ion registry");
     }
 
     // Add uniform definitions.

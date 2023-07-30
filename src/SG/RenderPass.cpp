@@ -1,6 +1,10 @@
 #include "SG/RenderPass.h"
 
+#include <algorithm>
+
+#include "SG/Node.h"
 #include "SG/RenderData.h"
+#include "SG/Search.h"
 
 namespace SG {
 
@@ -21,13 +25,15 @@ ShaderProgramPtr RenderPass::GetDefaultShaderProgram() const {
     return GetShaderPrograms()[0];
 }
 
-ShaderProgramPtr RenderPass::FindShaderProgram(const std::string &name) const {
-    ASSERT(! name.empty());
-    for (auto &program: GetShaderPrograms()) {
-        if (program->GetName() == name)
-            return program;
-    }
-    return ShaderProgramPtr();  // Not found.
+std::vector<NodePtr> RenderPass::FindNodesMatchingShaderName(
+    const NodePtr &root, const std::string &prefix) {
+    auto match = [&](const SG::Node &node){
+        const auto &names = node.GetShaderNames();
+        const auto find =
+            [&](const std::string &name){ return name.starts_with(prefix); };
+        return std::find_if(names.begin(), names.end(), find) != names.end();
+    };
+    return SG::FindUniqueNodes(root, match);
 }
 
 }  // namespace SG

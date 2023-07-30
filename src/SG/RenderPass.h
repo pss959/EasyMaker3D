@@ -14,6 +14,7 @@ struct FBTarget;
 
 namespace SG {
 
+DECL_SHARED_PTR(Node);
 DECL_SHARED_PTR(RenderPass);
 struct RenderData;
 
@@ -43,9 +44,11 @@ class RenderPass : public Object {
   protected:
     virtual void AddFields() override;
 
-    /// Convenience that returns the named ShaderProgram from the
-    /// RenderPass. Returns a null pointer if there is no such program.
-    ShaderProgramPtr FindShaderProgram(const std::string &name) const;
+    /// Returns all Nodes under the given root Node that contain a shader name
+    /// starting with the given prefix string. This is used by derived classes
+    /// to find the nodes to set uniforms in.
+    static std::vector<NodePtr> FindNodesMatchingShaderName(
+        const NodePtr &root, const std::string &prefix);
 
     /// Sets a uniform by name in an Ion UniformBlock, asserting if it
     /// fails. Returns true if successful.
@@ -63,7 +66,12 @@ class RenderPass : public Object {
     bool SetIonUniformAt(ion::gfx::UniformBlock &block, const std::string &name,
                          size_t index, const T &value) {
         bool ok = block.SetUniformByNameAt(name, index, value);
-        ASSERTM(ok, "Setting array uniform " + name + " in " + GetDesc());
+        // Handle the case where the uniform has a single value and the index
+        // is 0. Ion will not recognize this case as an array uniform.
+        if (! ok && index == 0)
+            ok = block.SetUniformByName(name, value);
+        ASSERTM(ok, "Setting array uniform " + name + " in " + GetDesc() +
+                " @ index " + Util::ToString(index));
         return ok;
     }
 

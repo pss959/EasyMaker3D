@@ -1,7 +1,7 @@
 from os      import environ
 from os.path import basename
 
-Import('test_env')
+Import('ion_env', 'test_env')
 
 platform = test_env['PLATFORM']
 mode     = test_env['MODE']
@@ -14,6 +14,12 @@ main_test_sources = [
     'Sim/SimTestBase.cpp',
     'TestBase.cpp',
     'TestMain.cpp',     # Mainline to run tests.
+]
+
+# Source files from Ion needed for testing.
+ion_test_sources = [
+    'gfx/tests/fakeglcontext.cc',
+    'gfx/tests/fakegraphicsmanager.cc',
 ]
 
 # The rest of the source files are divided into categories (matching
@@ -129,6 +135,7 @@ test_source_dict = {
         'NodePathTest',
         'NodeTest',
         'ReaderTest',
+        'RenderTest',
         'SGObjectTest',
         'SearchTest',
         'SetUpIonTest',
@@ -165,14 +172,18 @@ test_source_dict = {
 # Building tests.
 # -----------------------------------------------------------------------------
 
-test_sources  = [f'{cat}/{src}.cpp'
-                 for cat, sources in test_source_dict.items()
-                 for src in sources] + main_test_sources
+ion_objects  = [ion_env.SharedObject(source=f'#$BUILD_DIR/ionsrc/ion/{src}')
+                for src in ion_test_sources]
+
+test_sources  = main_test_sources + [f'{cat}/{src}.cpp'
+                                     for cat, sources in test_source_dict.items()
+                                     for src in sources]
 test_defines  = list(test_env['CPPDEFINES']) + [('IN_UNIT_TEST', 1)]
 test_cpppaths = test_env['CPPPATH'] + ['#/src/Tests/']
-test_objects  = [test_env.SharedObject(source=source, CPPDEFINES=test_defines,
-                                       CPPPATH=test_cpppaths)
-                 for source in test_sources]
+test_objects  = ion_objects + [test_env.SharedObject(source=src,
+                                                     CPPDEFINES=test_defines,
+                                                     CPPPATH=test_cpppaths)
+                               for src in test_sources]
 
 # Build all unit tests into a single program.
 test_program = test_env.Program('UnitTest', test_objects)

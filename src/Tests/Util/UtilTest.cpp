@@ -84,6 +84,17 @@ TEST(UtilTest, GetKeysAndValues) {
     EXPECT_EQ(31, values[3]);
 }
 
+TEST(UtilTest, FindAll) {
+    const std::vector<int> ints{ 1, 2, 3, 4, 5, 6, 7, 8 };
+    const std::vector<int> evens =
+        Util::FindAll<int>(ints, [](const int &i){ return i % 2 == 0; });
+    EXPECT_EQ(4U, evens.size());
+    EXPECT_EQ(2, evens[0]);
+    EXPECT_EQ(4, evens[1]);
+    EXPECT_EQ(6, evens[2]);
+    EXPECT_EQ(8, evens[3]);
+}
+
 TEST(UtilTest, ConvertVector) {
     std::vector<int> ints{ 1, 2, 3, 4, 5 };
     std::vector<float> floats = Util::ConvertVector<float, int>(

@@ -142,5 +142,10 @@ Scene "MyScene" {
         ]
       },
     ],
+    children: [
+      TextNode {
+        text: "Hi!",
+      }
+    ],
   },
 }

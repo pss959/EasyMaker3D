@@ -18,13 +18,10 @@ namespace SG {
 
 void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                           const FBTarget *fb_target) {
-    // Find each Node that uses either of the shaders that need to be set up.
-    auto match = [](const SG::Node &node){
-        return ! node.GetShaderNames().empty() &&
-            Util::Contains(node.GetShaderNames(), "Lighting");
-    };
+    // Find the Node that uses a Lighting-related shader. There should be only
+    // one near the root of the scene.
     const std::vector<SG::NodePtr> nodes =
-        SG::FindUniqueNodes(data.root_node, match);
+        FindNodesMatchingShaderName(data.root_node, "Lighting");
     ASSERT(nodes.size() == 1U);
     for (auto &node: nodes)
         SetShaderUniforms_(data, *node);

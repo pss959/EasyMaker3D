@@ -65,6 +65,16 @@ std::vector<typename Map::mapped_type> GetValues(const Map &map) {
     return values;
 }
 
+/// Finds all elements in a vector that satisfy the given predicate function
+/// and returns a vector of the results.
+template <typename T>
+std::vector<T> FindAll(const std::vector<T> &vec,
+                       const std::function<bool(const T &)> &func) {
+    std::vector<T> results;
+    std::copy_if(vec.begin(), vec.end(), std::back_inserter(results), func);
+    return results;
+}
+
 /// Converts a vector of elements of type From to a vector of elements of type
 /// To using the given conversion function.
 template <typename To, typename From>
