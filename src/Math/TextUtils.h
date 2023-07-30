@@ -27,6 +27,10 @@ bool IsValidStringForFont(const std::string &font_name, const std::string &str,
 /// is not valid.
 FilePath GetFontPath(const std::string &font_name);
 
+/// Adds a font path associated with the given name. This should be used only
+/// for testing.
+void AddFontPath(const std::string &font_name, const FilePath &path);
+
 /// Computes and returns a vector of Polygon instances representing the
 /// character outlines for the given font, character string, character spacing,
 /// and complexity.

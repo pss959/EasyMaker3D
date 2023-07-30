@@ -134,6 +134,7 @@ test_source_dict = {
         'SetUpIonTest',
         'ShaderProgramTest',
         'ShapeTest',
+        'TextTest',
         'UniformTest',
     ],
     'Sim' : [

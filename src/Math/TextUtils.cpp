@@ -28,6 +28,7 @@ class FontManager_ {
     bool IsValidStringForFont(const std::string &font_name,
                               const std::string &str, std::string &reason);
     FilePath GetFontPath(const std::string &font_name);
+    void AddFontPath(const std::string &font_name, const FilePath &path);
     std::vector<Polygon> GetTextOutlines(const std::string &font_name,
                                          const std::string &text,
                                          float complexity,
@@ -118,6 +119,12 @@ FilePath FontManager_::GetFontPath(const std::string &font_name) {
     Init_();
     const auto it = path_map_.find(font_name);
     return it == path_map_.end() ? FilePath() : it->second;
+}
+
+void FontManager_::AddFontPath(const std::string &font_name,
+                               const FilePath &path) {
+    ASSERT(Util::app_type == Util::AppType::kUnitTest);
+    path_map_[font_name] = path;
 }
 
 std::vector<Polygon> FontManager_::GetTextOutlines(const std::string &font_name,
@@ -258,6 +265,11 @@ bool IsValidStringForFont(const std::string &font_name, const std::string &str,
 
 FilePath GetFontPath(const std::string &font_name) {
     return s_font_manager_.GetFontPath(font_name);
+}
+
+void AddFontPath(const std::string &font_name, const FilePath &path) {
+    ASSERT(Util::app_type == Util::AppType::kUnitTest);
+    s_font_manager_.AddFontPath(font_name, path);
 }
 
 std::vector<Polygon> GetTextOutlines(const std::string &font_name,

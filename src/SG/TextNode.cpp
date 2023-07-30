@@ -58,7 +58,7 @@ void TextNode::AddFields() {
 
 bool TextNode::IsValid(std::string &details) {
     if (! Node::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (GetText().empty()) {
         details = "Empty text string";
         return false;
