@@ -7,6 +7,7 @@
 #include "Parser/Parser.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
+#include "SG/Reader.h"
 #include "Tests/SceneTestBase.h"
 #include "Util/String.h"
 
@@ -58,6 +59,19 @@ class ReaderTest : public SceneTestBase {
         return CompareStrings(FixString(expected), FixString(out.str()));
     }
 };
+
+TEST_F(ReaderTest, GetAndSetPath) {
+    TempFile file("Scene \"MyScene\" {}\n");
+    SG::Reader reader;
+    auto scene = reader.ReadScene(file.GetPath(),
+                                  GetIonContext()->GetFileMap());
+    EXPECT_NOT_NULL(scene.get());
+
+    EXPECT_EQ(file.GetPath(), scene->GetPath());
+
+    scene->SetPath("/some/other/path.emd");
+    EXPECT_EQ("/some/other/path.emd", scene->GetPath());
+}
 
 TEST_F(ReaderTest, EmptyScene) {
     SG::ScenePtr scene = ReadScene("Scene \"MyScene\" {}\n");
@@ -338,3 +352,16 @@ R"(ION Node "Root" {
     const std::string input = BuildSceneString(contents);
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
+
+TEST_F(ReaderTest, EmptyPass) {
+    const std::string input = R"(
+Scene "MyScene" {
+  render_passes: [
+    LightingPass "Lighting" {}
+  ]
+}
+)";
+
+    TEST_THROW_(ReadScene(input), "No shader programs");
+}
+

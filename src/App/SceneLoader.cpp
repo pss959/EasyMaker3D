@@ -2,7 +2,7 @@
 
 #include <exception>
 
-#include "IO/Reader.h"
+#include "SG/Reader.h"
 
 SceneLoader::SceneLoader() :
     file_map_(new SG::FileMap),
@@ -22,7 +22,7 @@ SG::ScenePtr SceneLoader::LoadScene(const FilePath &path) {
     ion_context_->SetShaderManager(shader_manager_);
 
     try {
-        Reader reader;
+        SG::Reader reader;
         scene_ = reader.ReadScene(path, *file_map_);
         scene_->SetUpIon(ion_context_);
     }

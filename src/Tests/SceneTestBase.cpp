@@ -2,6 +2,7 @@
 
 #include "Parser/Parser.h"
 #include "SG/FileMap.h"
+#include "SG/Reader.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
@@ -26,6 +27,7 @@ SG::ScenePtr SceneTestBase::ReadScene(const std::string &input,
         InitIonContext_();
 
     TempFile file(input);
+    SG::Reader reader;
     auto scene = reader.ReadScene(file.GetPath(), ion_context_->GetFileMap());
     if (scene && set_up_ion)
         scene->SetUpIon(ion_context_);

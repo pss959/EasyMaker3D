@@ -1,6 +1,5 @@
 #pragma once
 
-#include "IO/Reader.h"
 #include "SG/IonContext.h"
 #include "SG/Scene.h"
 #include "Tests/TestBase.h"
@@ -13,9 +12,6 @@ class SceneTestBase : public TestBaseWithTypes {
     // Default PrimitiveModel base scale. This is a shorthand convenience since
     // this value is used in lots of tests.
     static const float MS;
-
-    // Handy Reader instance.
-    Reader reader;
 
     // Builds a string defining a Scene with the given root node contents
     // (between the curly braces).

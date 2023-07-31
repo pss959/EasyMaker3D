@@ -1,4 +1,5 @@
 Scene "MyScene" {
+  log_key_string: "",
   gantry: Gantry {
     cameras: [
       WindowCamera {

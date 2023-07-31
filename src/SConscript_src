@@ -221,7 +221,6 @@ lib_sources = list(chain(
         'ViewHandler',
     ]),
     PlaceInDir_('IO', [
-        'Reader',
         'STLReader',
         'STLWriter',
     ]),
@@ -405,6 +404,7 @@ lib_sources = list(chain(
         'Polygon',
         'PrimitiveShape',
         'ProceduralImage',
+        'Reader',
         'Rectangle',
         'RegularPolygon',
         'RenderPass',

@@ -19,7 +19,7 @@ void Scene::AddFields() {
 
 bool Scene::IsValid(std::string &details) {
     if (! Object::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     // Make sure each RenderPass has at least one shader program.
     for (const auto &pass: GetRenderPasses()) {
