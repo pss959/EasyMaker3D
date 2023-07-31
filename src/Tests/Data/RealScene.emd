@@ -90,7 +90,7 @@ Scene "RealScene" {
     children: [
       TextNode {
         text: "Hi!",
-      }
+      },
     ],
   },
 }

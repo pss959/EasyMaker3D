@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "SG/FileImage.h"
+#include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Texture.h"
@@ -45,6 +46,16 @@ TEST_F(SetUpIonTest, EmptyScene) {
     EXPECT_NOT_NULL(root);
     EXPECT_NOT_NULL(root->GetIonContext());
     EXPECT_NOT_NULL(root->GetIonNode().Get());
+}
+
+TEST_F(SetUpIonTest, IonContext) {
+    const std::string input = ReadDataFile("FullScene");
+    auto scene = ReadScene(input, true);
+    auto context = GetIonContext();
+    EXPECT_NOT_NULL(context);
+    EXPECT_EQ(2U, context->GetPassCount());
+    context->Reset();
+    EXPECT_EQ(0U, context->GetPassCount());
 }
 
 TEST_F(SetUpIonTest, NodeColors) {

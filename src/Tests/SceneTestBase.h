@@ -45,8 +45,19 @@ class SceneTestBase : public TestBaseWithTypes {
     }
 
     // Sets up and returns an IonContext for use in initializing Ion objects.
-    SG::IonContextPtr GetIonContext();
+    // This context is also set up if necessary by ReadScene() and persists
+    // until the SceneTestBase instance is destroyed.
+    SG::IonContextPtr GetIonContext() {
+        if (! ion_context_)
+            InitIonContext_();
+        return ion_context_;
+    }
 
   private:
+    SG::IonContextPtr ion_context_;
+
+    // Sets up the IonContext for use in initializing Ion objects.
+    void InitIonContext_();
+
     Parser::ObjectPtr ReadItem_(const std::string &input);
 };

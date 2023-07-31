@@ -238,7 +238,6 @@ ion::gfx::NodePtr Node::SetUpIon(
         programs_[info.pass_index] = info.program;
     }
 
-
     // Set up StateTable.
     if (auto &state_table = GetStateTable()) {
         // Make sure we are OpenGL-compliant here.
@@ -306,6 +305,7 @@ void Node::UpdateForRenderPass(const std::string &pass_name) {
         // name of the program for this pass is one of them. If so, install the
         // program. Otherwise, set it to null.
         const int index = ion_context_->GetPassIndex(pass_name);
+        ASSERT(index >= 0);
         ion::gfx::ShaderProgramPtr program = programs_[index];
         if (! Util::Contains(GetShaderNames(), program->GetLabel()))
             program.Reset(nullptr);

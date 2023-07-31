@@ -37,10 +37,14 @@ const ion::text::FontManagerPtr & IonContext::GetFontManager() {
 }
 
 int IonContext::GetPassIndex(const std::string &name) const {
-    for (size_t i = 0; i < pass_names_.size(); ++i)
-        if (pass_names_[i] == name)
-            return i;
-    return -1;
+    int index = -1;
+    for (size_t i = 0; i < pass_names_.size(); ++i) {
+        if (pass_names_[i] == name) {
+            index = i;
+            break;
+        }
+    }
+    return index;
 }
 
 void IonContext::AddShaderProgram(const std::string &name,

@@ -22,14 +22,17 @@ class IntersectorTest : public SceneTestBase {
 
     // Reads a scene from a string and intersects it with the given ray.
     SG::Hit IntersectScene(const std::string &input, const Ray &ray) {
-        SG::ScenePtr scene = ReadScene(input);
+        GetIonContext()->Reset();  // Avoid context pollution.
+        // Call SetUpIon() so that meshes are installed in some shapes.
+        SG::ScenePtr scene = ReadScene(input, true);
         return SG::Intersector::IntersectScene(*scene, ray);
     }
     // Reads a scene from a string and intersects the graph rooted by the named
     // Node with the given ray.
     SG::Hit IntersectGraph(const std::string &input, const std::string &name,
                            const Ray &ray) {
-        SG::ScenePtr scene = ReadScene(input);
+        GetIonContext()->Reset();  // Avoid context pollution.
+        SG::ScenePtr scene = ReadScene(input, true);
         auto node = SG::FindNodeInScene(*scene, name);
         return SG::Intersector::IntersectGraph(node, ray);
     }

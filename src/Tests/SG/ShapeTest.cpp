@@ -96,19 +96,25 @@ TEST_F(ShapeTest, Line) {
     EXPECT_EQ(Point3f( 2,  3,  4), line->GetEnd1());
 }
 
-TEST_F(ShapeTest, MutableTriMeshShape) {
+TEST_F(ShapeTest, MutableTriMeshShapeTriMesh) {
     auto mtms = CreateObject<SG::MutableTriMeshShape>();
     EXPECT_TRUE(mtms->GetMesh().points.empty());
     EXPECT_TRUE(mtms->GetMesh().indices.empty());
-    EXPECT_NOT_NULL(mtms->SetUpIon().Get());
 
-    // Install a new TriMesh.
+    // Install a new TriMesh. This should call SetUpIon() for the shape.
     auto mesh = BuildBoxMesh(Vector3f(2, 3, 4));
     mtms->ChangeMesh(mesh);
     EXPECT_EQ(mesh.points,  mtms->GetMesh().points);
     EXPECT_EQ(mesh.indices, mtms->GetMesh().indices);
+    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
+}
+
+TEST_F(ShapeTest, MutableTriMeshShapeModelMesh) {
+    auto mtms = CreateObject<SG::MutableTriMeshShape>();
 
     // Install a ModelMesh with per-vertex texture coordinates and normals.
+    // This should call SetUpIon() for the shape.
+    auto mesh = BuildBoxMesh(Vector3f(2, 3, 4));
     ModelMesh mmesh;
     mmesh.points  = mesh.points;
     mmesh.indices = mesh.indices;
@@ -117,6 +123,7 @@ TEST_F(ShapeTest, MutableTriMeshShape) {
     mtms->ChangeModelMesh(mmesh, false);  // Normal per vertex.
     EXPECT_EQ(mesh.points,  mtms->GetMesh().points);
     EXPECT_EQ(mesh.indices, mtms->GetMesh().indices);
+    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
 
     // Try with per-vertex texture coordinates and per-face normals.
     mmesh.normals.assign(mesh.GetTriangleCount(), Vector3f::AxisY());
@@ -238,5 +245,3 @@ TEST_F(ShapeTest, Tube) {
     tube->SetTaper(2.5f);
     EXPECT_EQ(2.5f, tube->GetTaper());
 }
-
-// XXXX Other shape types.

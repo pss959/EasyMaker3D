@@ -1,9 +1,7 @@
-#if 1 // XXXX
 #include <ion/gfx/tests/fakeglcontext.h>
 #include <ion/gfx/tests/fakegraphicsmanager.h>
 #include <ion/gfx/renderer.h>
 #include <ion/portgfx/glcontext.h>
-#endif
 
 #include "Math/Linear.h"
 #include "SG/Node.h"
