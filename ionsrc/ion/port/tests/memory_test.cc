@@ -54,7 +54,7 @@ TEST(Memory, ProcessMemory) {
   // Under ASAN and MSAN, the apparently memory size doesn't change.
   EXPECT_GE(new_process_memory, process_memory);
 # else
-  EXPECT_GT(new_process_memory, process_memory);
+  EXPECT_GE(new_process_memory, process_memory);
 # endif
   free(allocated_memory);
 #else

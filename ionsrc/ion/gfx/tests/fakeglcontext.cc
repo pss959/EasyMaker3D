@@ -7426,7 +7426,7 @@ class FakeGlContext::ShadowState {
   GLsizeiptr max_buffer_size_;
 
   // Enabled capability state.
-  static const size_t kNumStaticCapabilities = 16;
+  static const size_t kNumStaticCapabilities = 17;
   std::vector<bool> enabled_state_;
 
   // Blending state.
@@ -8009,6 +8009,8 @@ int FakeGlContext::ShadowState::GetCapabilityIndex(GLenum cap) {
       return 14;
     case GL_SAMPLE_SHADING:
       return 15;
+    case GL_DEPTH_CLAMP:
+      return 16;
     default:
       if (cap >= GL_CLIP_DISTANCE0 &&
           cap < GL_CLIP_DISTANCE0 + max_clip_distances_) {
