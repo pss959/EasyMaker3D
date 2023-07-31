@@ -9,6 +9,7 @@
 #include "SG/RenderData.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
+#include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
 
 class RenderTest : public SceneTestBase {
@@ -105,9 +106,13 @@ TEST_F(RenderTest, RealScene) {
     RenderScene(nullptr);
 
     // Enable the Node that has rendering disabled and re-render to test shape
-    // management
+    // management. Also make sure that a TextNode is rebuilt if necessary.
     auto disabled_node = SG::FindNodeInScene(*scene, "DisabledNode");
     disabled_node->SetFlagEnabled(SG::Node::Flag::kRender, true);
+
+    auto text = SG::FindTypedNodeInScene<SG::TextNode>(*scene, "SampleText");
+    text->SetText("Changed");
+
     RenderScene(nullptr);
 }
 

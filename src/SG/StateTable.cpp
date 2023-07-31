@@ -4,7 +4,7 @@ namespace SG {
 
 void StateTable::AddFields() {
 
-    AddField(clear_color_.Init("clear_color"));
+    AddField(clear_color_.Init("clear_color", Vector4f::Zero()));
     AddField(clear_depth_.Init("clear_depth", 0));
     AddField(clear_stencil_.Init("clear_stencil", 0));
     AddField(line_width_.Init("line_width", 1));

@@ -94,7 +94,7 @@ Scene "RealScene" {
     ],
     children: [
       # For testing text rendering.
-      TextNode {
+      TextNode "SampleText" {
         text: "Hi!",
       },
       # For testing RenderPass management.

@@ -4,6 +4,7 @@
 #include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
+#include "SG/StateTable.h"
 #include "SG/Texture.h"
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"

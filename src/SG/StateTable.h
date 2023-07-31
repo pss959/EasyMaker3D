@@ -36,13 +36,15 @@ class StateTable : public Object {
     const Vector4f & GetClearColor()      const { return clear_color_;        }
     float            GetClearDepth()      const { return clear_depth_;        }
     int              GetClearStencil()    const { return clear_stencil_;      }
-
     float            GetLineWidth()       const { return line_width_;         }
-
+    bool             IsBlendEnabled()     const { return blend_enabled_;      }
+    bool             IsDepthTestEnabled() const { return depth_test_enabled_; }
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
     CullFaceMode     GetCullFaceMode()    const { return cull_face_mode_;     }
+    bool             IsCreateStencil()    const { return create_stencil_;     }
+    bool             IsUseStencil()       const { return use_stencil_;        }
+    bool             IsResetStencil()     const { return reset_stencil_;      }
 
-    bool             IsBlendEnabled()     const { return blend_enabled_; }
     void             GetBlendEquations(BlendEquation &rgb,
                                        BlendEquation &alpha) const {
         rgb   = rgb_blend_equation_;
