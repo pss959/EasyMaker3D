@@ -44,7 +44,6 @@ class Renderer::Impl_ {
     Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
           bool use_ion_remote);
 
-    int CreateFramebuffer();
     void Reset(const SG::Scene &scene);
     void BeginFrame() { frame_->Begin(); }
     void EndFrame()   { frame_->End();   }
@@ -97,12 +96,6 @@ Renderer::Impl_::Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
 #if DO_REMOTE_
     SetUpRemoteServer_();
 #endif
-}
-
-int Renderer::Impl_::CreateFramebuffer() {
-    GLuint fb;
-    renderer_->GetGraphicsManager()->GenFramebuffers(1, &fb);
-    return fb;
 }
 
 void Renderer::Impl_::Reset(const SG::Scene &scene) {
@@ -208,10 +201,6 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
 }
 
 Renderer::~Renderer() {
-}
-
-int Renderer::CreateFramebuffer() {
-    return impl_->CreateFramebuffer();
 }
 
 void Renderer::Reset(const SG::Scene &scene) {

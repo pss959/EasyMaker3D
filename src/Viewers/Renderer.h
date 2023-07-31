@@ -24,10 +24,6 @@ class Renderer {
 
     ~Renderer();
 
-    /// Creates a framebuffer that can be used as a render target, returning
-    /// its index.
-    int CreateFramebuffer();
-
     /// Resets everything (e.g., after a reload). The new Scene is supplied for
     /// setting up remote debugging.
     void Reset(const SG::Scene &scene);
