@@ -1,8 +1,5 @@
 #pragma once
 
-#include <ion/gfxutils/shadermanager.h>
-#include <ion/text/fontmanager.h>
-
 #include "IO/Reader.h"
 #include "SG/IonContext.h"
 #include "SG/Scene.h"
@@ -16,12 +13,6 @@ class SceneTestBase : public TestBaseWithTypes {
     // Default PrimitiveModel base scale. This is a shorthand convenience since
     // this value is used in lots of tests.
     static const float MS;
-
-    // ShaderManager for creating shaders.
-    ion::gfxutils::ShaderManagerPtr shader_manager;
-
-    // FontManager for text.
-    ion::text::FontManagerPtr font_manager;
 
     // Handy Reader instance.
     Reader reader;
@@ -52,6 +43,10 @@ class SceneTestBase : public TestBaseWithTypes {
             InitIonContext_();
         return ion_context_;
     }
+
+    // Clears the IonContext so it will be recreated, to avoid pollution within
+    // tests.
+    void ResetContext() { ion_context_.reset(); }
 
   private:
     SG::IonContextPtr ion_context_;

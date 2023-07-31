@@ -55,6 +55,11 @@ Scene "RealScene" {
       UniformBlock "LightingBlock" {
         pass_name: "Lighting",
         textures: [
+          Texture "Default Texture" {
+            uniform_name: "uTexture",
+            image:   FileImage { path: "White.jpg" },
+            sampler: Sampler "DefaultSampler" {},
+          },
           Texture "ShadowMap Texture" {
             $LCT,  # One per light.
             uniform_name: "uLightShadowMap",
@@ -88,8 +93,18 @@ Scene "RealScene" {
       },
     ],
     children: [
+      # For testing text rendering.
       TextNode {
         text: "Hi!",
+      },
+      # For testing RenderPass management.
+      Node "PassTestNode" {
+        shader_names: ["ShadowDepth"],
+      },
+      # For testing shape disabling.
+      Node "DisabledNode" {
+        disabled_flags: "kRender",
+        shapes: [ Box { size: 3 4 5 } ],
       },
     ],
   },

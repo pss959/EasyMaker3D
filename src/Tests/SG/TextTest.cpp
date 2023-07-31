@@ -1,5 +1,6 @@
 #include <vector>
 
+#include <ion/base/logchecker.h>
 #include <ion/gfx/shaderprogram.h>
 
 #include "Math/TextUtils.h"
@@ -186,9 +187,15 @@ TEST_F(TextTest, BadFont) {
     text->SetFontName("NoSuchFont");
     TEST_THROW(SetUpIonText(text, context), SG::Exception, "does not exist");
 
-    // Use the bad font, forcing a rebuild.
-    TEST_THROW(text->SetFontName("BadFont"), SG::Exception,
-               "Unable to create font");
+    {
+        // Use the bad font, forcing a rebuild. This test generates an Ion
+        // error.
+        ion::base::LogChecker log_checker;
+        TEST_THROW(text->SetFontName("BadFont"), SG::Exception,
+                   "Unable to create font");
+        EXPECT_TRUE(log_checker.GetLogString().contains("Unable to read data"));
+        log_checker.ClearLog();
+    }
 
     // Create a TextNode with a very small maximum image size.
     auto text2 = ReadTypedItem<SG::TextNode>(

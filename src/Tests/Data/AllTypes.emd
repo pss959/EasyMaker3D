@@ -136,10 +136,21 @@ Scene "MyScene" {
     state_table: StateTable {
       clear_color: 0.4 0.4 0.4 1,
       clear_depth: 0.5,
+      clear_stencil: 4,
       line_width: 0.6,
+      blend_enabled: True,
       depth_test_enabled: True,
       cull_face_enabled: True,
       cull_face_mode: "kCullFront",
+      rgb_blend_equation: "kMax",
+      alpha_blend_equation: "kSubtract",
+      rgb_blend_source_factor: "kSrcColor",
+      rgb_blend_dest_factor: "kOne",
+      alpha_blend_source_factor: "kSrcAlpha",
+      alpha_blend_dest_factor: "kZero",
+      create_stencil: True,
+      use_stencil: True,
+      reset_stencil: True,
     },
     blocks: [
       UniformBlock {
