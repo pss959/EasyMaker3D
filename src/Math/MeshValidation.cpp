@@ -143,7 +143,8 @@ MeshValidityCode ValidateTriMesh(const TriMesh &mesh) {
         return code;
     }
     catch (std::exception &ex) {
-        // This is likely an assertion violation. Consider the mesh inconsisent.
+        // This is likely an assertion violation. Consider the mesh
+        // inconsistent.
         return MeshValidityCode::kInconsistent;
     }
 }

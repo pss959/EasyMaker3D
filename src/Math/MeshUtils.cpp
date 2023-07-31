@@ -116,8 +116,6 @@ static void RemoveIndexedTriangles_(TriMesh &mesh,
     mesh.indices = new_indices;
 }
 
-#if 0
-// This does not seem to be necessary; leaving it here in case it ever is.
 static void RemoveUnusedPoints_(TriMesh &mesh) {
     const size_t point_count = mesh.points.size();
 
@@ -159,7 +157,6 @@ static void RemoveUnusedPoints_(TriMesh &mesh) {
     for (auto &index: mesh.indices)
         index -= remove_count[index];
 }
-#endif
 
 // ----------------------------------------------------------------------------
 // Public functions.
@@ -361,7 +358,7 @@ void RemoveDualTriangles(TriMesh &mesh) {
     // Remove bad triangles if any.
     if (! bad_tris.empty()) {
         RemoveIndexedTriangles_(mesh, bad_tris);
-        // RemoveUnusedPoints_(mesh);  // See comment for RemoveUnusedPoints_().
+        RemoveUnusedPoints_(mesh);
     }
 }
 

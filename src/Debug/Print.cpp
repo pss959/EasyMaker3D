@@ -24,6 +24,7 @@
 #include "SG/Scene.h"
 #include "SG/Shape.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 namespace {
 
@@ -288,6 +289,12 @@ static void PrintModelTree_(const Model &model, bool is_full) {
               << " " << Util::EnumName(model.GetStatus()) << "\n";
     std::cout << Indent_(level + 1) << "mesh bounds: "
               << ComputeMeshBounds(model.GetCurrentMesh()) << "\n";
+
+    // Print the complexity.
+    const float complex = model.GetComplexity();
+    if (complex != TK::kModelComplexity)
+        std::cout << Indent_(level + 1) << "complexity:  " << complex << "\n";
+
     PrintTransformFields_(model, level);
     // Also print the center offset if any.
     const Vector3f &offset = model.GetObjectCenterOffset();

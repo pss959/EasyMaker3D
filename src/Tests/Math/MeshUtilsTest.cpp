@@ -112,6 +112,20 @@ TEST_F(MeshUtilsTest, BendMesh) {
     EXPECT_PTS_CLOSE(Point3f(1.59155f, 0, 0),        b3.GetCenter());
 }
 
+TEST_F(MeshUtilsTest, BendCylMesh) {
+    // Tests bending a low-complexity 2x10x2 cylinder 360 degrees around the X
+    // axis; this requires the center vertices on the caps to be removed.
+    const auto sm = SliceMesh(BuildCylinderMesh(1, 1, 10, 4), Dim::kY, 6);
+
+    Spin s;
+    s.center.Set(0, 0, 0);
+    s.axis.Set(1, 0, 0);
+    s.angle = Anglef::FromDegrees(360);
+    const TriMesh m = BendMesh(sm, s);
+    EXPECT_EQ(44U,  m.points.size());
+    EXPECT_EQ(264U, m.indices.size());
+}
+
 TEST_F(MeshUtilsTest, MirrorMesh) {
     // Make a Mesh that is not centered on the origin.
     const float trans = 2 * kMeshSize;
