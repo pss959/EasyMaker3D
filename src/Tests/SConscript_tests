@@ -79,6 +79,7 @@ test_source_dict = {
         'PolygonTest',
         'ProfileTest',
         'Snap2DTest',
+        'Snap3DTest',
         'SpinTest',
         'TaperTest',
         'TextUtilsTest',
@@ -111,6 +112,11 @@ test_source_dict = {
         'ScopingTest',
         'TemplateTest',
         'WritingTest',
+    ],
+    'Place' : [
+        'DragInfoTest',
+        'PrecisionStoreTest',
+        'TargetTest',
     ],
     'Session' : [
         'CSGSessionTest',

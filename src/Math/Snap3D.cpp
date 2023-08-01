@@ -1,11 +1,11 @@
-#include "Place/Snapping.h"
+#include "Math/Snap3D.h"
 
 #include <cmath>
 
 #include "Util/Assert.h"
 
-Dimensionality SnapToBounds(const Bounds &bounds, Point3f &p,
-                            const Vector3f &tolerance) {
+Dimensionality Snap3D::SnapToBounds(const Bounds &bounds, Point3f &p,
+                                    const Vector3f &tolerance) {
     Dimensionality snapped_dims;
 
     auto check_val = [&](const Point3f &bounds_pt, int dim, float &min_dist){

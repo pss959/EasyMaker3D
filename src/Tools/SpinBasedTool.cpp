@@ -14,10 +14,10 @@
 #include "Managers/FeedbackManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Linear.h"
+#include "Math/Snap3D.h"
 #include "Models/ConvertedModel.h"
 #include "Place/PointTarget.h"
 #include "Place/PrecisionStore.h"
-#include "Place/Snapping.h"
 #include "SG/ColorMap.h"
 #include "SG/CoordConv.h"
 #include "SG/Node.h"
@@ -239,7 +239,7 @@ bool SpinBasedTool::SnapCenter_() {
                                 GetStageCoordConv().GetObjectToRootMatrix()),
                             -cm->GetObjectCenterOffset());
         Point3f center = stage_spin_.center;
-        const Dimensionality snapped_dims = SnapToBounds(
+        const Dimensionality snapped_dims = Snap3D::SnapToBounds(
             bounds, center, TK::kSnapPointTolerance * Vector3f(1, 1, 1));
         if (snapped_dims.GetCount() > 1) {
             stage_spin_.center = center;

@@ -281,6 +281,7 @@ lib_sources = list(chain(
         'PolygonBuilder',
         'Profile',
         'Snap2D',
+        'Snap3D',
         'Spin',
         'Taper',
         'TextUtils',
@@ -374,7 +375,6 @@ lib_sources = list(chain(
     PlaceInDir_('Place', [
         'EdgeTarget',
         'PointTarget',
-        'Snapping',
     ]),
     PlaceInDir_('SG', [
         'Box',

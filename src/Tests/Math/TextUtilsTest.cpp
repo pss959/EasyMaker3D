@@ -59,10 +59,15 @@ TEST_F(TextUtilsTest, IsValidStringForFont) {
 }
 
 TEST_F(TextUtilsTest, GetFontPath) {
-    const auto path = GetFontPath("Arial-Regular");
+    auto path = GetFontPath("Arial-Regular");
     EXPECT_TRUE(path);
     EXPECT_TRUE(path.ToString().contains("Arial"));
     EXPECT_FALSE(GetFontPath("NoSUCHFont"));
+
+    // Test AddFontPath(), which is used only for testing.
+    AddFontPath("MythicalFont", "/some/path");
+    path = GetFontPath("MythicalFont");
+    EXPECT_EQ("/some/path", path.ToString());
 }
 
 TEST_F(TextUtilsTest, SingleCharOutlines) {

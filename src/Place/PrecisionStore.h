@@ -68,6 +68,13 @@ class PrecisionStore {
                        ApplyPositive(pt[2]));
     }
 
+    /// Applies the current angular precision to the given angle, returning the
+    /// result.
+    Anglef ApplyAngle(const Anglef &angle) {
+        return Anglef::FromDegrees(RoundToPrecision(angle.Degrees(),
+                                                    GetAngularPrecision()));
+    }
+
     /// Returns true if the given values are within the current precision of
     /// each other. In either case, sets distance to the distance between the
     /// values.
@@ -94,13 +101,6 @@ class PrecisionStore {
         if (difference.Radians() < 0)
             difference = -difference;
         return difference.Degrees() <= GetAngularPrecision();
-    }
-
-    /// Applies the current angular precision to the given angle, returning the
-    /// result.
-    Anglef ApplyAngle(const Anglef &angle) {
-        return Anglef::FromDegrees(RoundToPrecision(angle.Degrees(),
-                                                    GetAngularPrecision()));
     }
 
     /// Returns true if the precision can be increased.

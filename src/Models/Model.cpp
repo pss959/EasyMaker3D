@@ -11,8 +11,8 @@
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
+#include "Math/Snap3D.h"
 #include "Place/DragInfo.h"
-#include "Place/Snapping.h"
 #include "SG/ColorMap.h"
 #include "SG/Exception.h"
 #include "SG/MutableTriMeshShape.h"
@@ -422,7 +422,7 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
         object_tolerance[dim] =
             ion::math::Length(som * GetAxis(dim, TK::kSnapPointTolerance));
 
-    snapped_dims = SnapToBounds(obj_bounds, obj_pos, object_tolerance);
+    snapped_dims = Snap3D::SnapToBounds(obj_bounds, obj_pos, object_tolerance);
 
     // Convert the point and normal into stage coordinates.
     position  = osm * obj_pos;
