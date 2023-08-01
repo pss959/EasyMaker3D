@@ -30,80 +30,87 @@ TEST_F(ErrorTest, BadReference) {
 }
 
 TEST_F(ErrorTest, SyntaxErrors) {
-    TEST_THROW_(parser.ParseFromString(" "),
+    // Parse from a string after resetting the Parser to avoid pollution.
+    auto parse_str = [&](const std::string &s){
+        parser.Reset();
+        return parser.ParseFromString(s);
+    };
+
+    TEST_THROW_(parse_str(" "),
                 "Invalid empty name for object type");
-    TEST_THROW_(parser.ParseFromString(" 01BadName {}"),
+    TEST_THROW_(parse_str(" 01BadName {}"),
                 "Invalid name");
-    TEST_THROW_(parser.ParseFromString("Simplex"),
+    TEST_THROW_(parse_str("Simplex"),
                 "Unknown object type");
-    TEST_THROW_(parser.ParseFromString("Simple ="),
+    TEST_THROW_(parse_str("Simple ="),
                 "Expected '{'");
-    TEST_THROW_(parser.ParseFromString("Simple { bool_val: z }"),
+    TEST_THROW_(parse_str("Simple { bool_val: z }"),
                 "Invalid bool value");
-    TEST_THROW_(parser.ParseFromString("Simple { bool_val: tralse }"),
+    TEST_THROW_(parse_str("Simple { bool_val: tralse }"),
                 "Invalid bool value");
-    TEST_THROW_(parser.ParseFromString("Simple { int_val: 9 x }"),
+    TEST_THROW_(parse_str("Simple { int_val: 9 x }"),
                 "Expected ',' or '}'");
-    TEST_THROW_(parser.ParseFromString("Simple { int_val: b }"),
+    TEST_THROW_(parse_str("Simple { int_val: b }"),
                 "Invalid integer value");
-    TEST_THROW_(parser.ParseFromString("Simple { int_val: 123b }"),
+    TEST_THROW_(parse_str("Simple { int_val: 123b }"),
                 "Invalid integer value");
-    TEST_THROW_(parser.ParseFromString("Simple { int_val: 0xa1 }"),
+    TEST_THROW_(parse_str("Simple { int_val: 0xa1 }"),
                 "Invalid integer value");
-    TEST_THROW_(parser.ParseFromString("Simple { uint_val: -12 }"),
+    TEST_THROW_(parse_str("Simple { uint_val: -12 }"),
                 "Invalid unsigned integer value");
-    TEST_THROW_(parser.ParseFromString("Simple { uint_val: +4 }"),
+    TEST_THROW_(parse_str("Simple { uint_val: +4 }"),
                 "Invalid unsigned integer value");
-    TEST_THROW_(parser.ParseFromString("Simple { uint_val: 0xqb }"),
+    TEST_THROW_(parse_str("Simple { uint_val: 0xqb }"),
                 "Invalid unsigned integer value");
-    TEST_THROW_(parser.ParseFromString("Simple { uint_val: 0x12345667875675 }"),
+    TEST_THROW_(parse_str("Simple { uint_val: 0x12345667875675 }"),
                 "Invalid unsigned integer value");
-    TEST_THROW_(parser.ParseFromString("Simple { str_val: \""),
+    TEST_THROW_(parse_str("Simple { str_val: \""),
                 "Found EOF inside quoted string");
-    TEST_THROW_(parser.ParseFromString("Simple { vec3f_val: 12 abc 4 }"),
+    TEST_THROW_(parse_str("Simple { vec3f_val: 12 abc 4 }"),
                 "Invalid float value");
-    TEST_THROW_(parser.ParseFromString("Simple { vec3f_val: 12 abc 4 }"),
+    TEST_THROW_(parse_str("Simple { vec3f_val: 12 abc 4 }"),
                 "Invalid float value");
-    TEST_THROW_(parser.ParseFromString("Simple { color_val: \"#badcolor\" }"),
+    TEST_THROW_(parse_str("Simple { color_val: \"#badcolor\" }"),
                 "Invalid color format");
-    TEST_THROW_(parser.ParseFromString("Simple { enum_val: \"glorp\" }"),
+    TEST_THROW_(parse_str("Simple { enum_val: \"glorp\" }"),
                 "Invalid value for enum");
-    TEST_THROW_(parser.ParseFromString("Simple { flag_val: \"glorp\" }"),
+    TEST_THROW_(parse_str("Simple { flag_val: \"glorp\" }"),
                 "Invalid value for flag enum");
-    TEST_THROW_(parser.ParseFromString("Simple { flag_val: \"kF1|x\" }"),
+    TEST_THROW_(parse_str("Simple { flag_val: \"kF1|x\" }"),
                 "Invalid value for flag enum");
-    TEST_THROW_(parser.ParseFromString("Simple"),
+    TEST_THROW_(parse_str("Simple"),
                 "EOF");
-    TEST_THROW_(parser.ParseFromString("USE \"\""),
+    TEST_THROW_(parse_str("USE \"\""),
                 "Missing Object name for USE");
-    TEST_THROW_(parser.ParseFromString("CLONE \"\""),
+    TEST_THROW_(parse_str("Derived \"Foo\" { simple: USE \"\" }"),
+                "Missing Object name for USE");
+    TEST_THROW_(parse_str("CLONE \"\""),
                 "Missing Template or Object name for CLONE");
-    TEST_THROW_(parser.ParseFromString("CLONE \"NoSuchObj\""),
+    TEST_THROW_(parse_str("CLONE \"NoSuchObj\""),
                 "Missing Template or Object with name");
-    TEST_THROW_(parser.ParseFromString("Simple { bad_field: 13 }"),
+    TEST_THROW_(parse_str("Simple { bad_field: 13 }"),
                 "Unknown field");
-    TEST_THROW_(parser.ParseFromString("Unscoped {}"),
+    TEST_THROW_(parse_str("Unscoped {}"),
                 "must have a name");
-    TEST_THROW_(parser.ParseFromString("Unscoped \"A\" { CONSTANTS: [] }"),
+    TEST_THROW_(parse_str("Unscoped \"A\" { CONSTANTS: [] }"),
                 "CONSTANTS appears in unscoped object");
-    TEST_THROW_(parser.ParseFromString("Unscoped \"B\" { TEMPLATES: [] }"),
+    TEST_THROW_(parse_str("Unscoped \"B\" { TEMPLATES: [] }"),
                 "TEMPLATES appears in unscoped object");
     // Name causes Unscoped::IsValid() to return false.
-    TEST_THROW_(parser.ParseFromString("Unscoped \"INVALID\" {}"),
+    TEST_THROW_(parse_str("Unscoped \"INVALID\" {}"),
                 "has error: invalid name");
-    TEST_THROW_(parser.ParseFromString("<\"include/with/eof\""),
+    TEST_THROW_(parse_str("<\"include/with/eof\""),
                 "Expected '>', got EOF");
-    TEST_THROW_(parser.ParseFromString("<\"\">"),
+    TEST_THROW_(parse_str("<\"\">"),
                 "Invalid empty path");
-    TEST_THROW_(parser.ParseFromString("Derived { simple: Other {} }"),
+    TEST_THROW_(parse_str("Derived { simple: Other {} }"),
                 "Incorrect object type");
-    TEST_THROW_(parser.ParseFromString("Derived { simple_list: [Other {}] }"),
+    TEST_THROW_(parse_str("Derived { simple_list: [Other {}] }"),
                 "Incorrect object type");
 
     // Test nested file reporting using a temporary file that is included.
     TempFile included("Simple { bad_field: 12 }");
-    TEST_THROW_(parser.ParseFromString(
-                    "Derived { simple: <\"" +
-                    included.GetPath().ToString() + "\"> }"),
+    TEST_THROW_(parse_str("Derived { simple: <\"" +
+                          included.GetPath().ToString() + "\"> }"),
                 "Unknown field");
 }

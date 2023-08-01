@@ -40,6 +40,9 @@ class Parser::Impl_ {
         return dependencies_;
     }
 
+    /// Resets the state to initial conditions.
+    void Reset();
+
   private:
     /// Convenience typedef for a map storing constants (name -> value).
     typedef std::unordered_map<std::string, std::string> ConstantsMap_;
@@ -177,6 +180,14 @@ ObjectPtr Parser::Impl_::ParseFromString(const std::string &str) {
     ObjectPtr obj = ParseObject_(false);
     scanner_->PopInputStream();
     return obj;
+}
+
+void Parser::Impl_::Reset() {
+    base_path_.Clear();
+    scanner_->Clear();
+    scope_stack_.clear();
+    dependencies_.clear();
+    current_template_.reset();
 }
 
 ObjectPtr Parser::Impl_::ParseFromFile_(const FilePath &path,
@@ -528,6 +539,10 @@ ObjectPtr Parser::ParseFromString(const std::string &str) {
 
 const std::vector<Parser::Dependency> Parser::GetDependencies() const {
     return impl_->GetDependencies();
+}
+
+void Parser::Reset() {
+    impl_->Reset();
 }
 
 }  // namespace Parser

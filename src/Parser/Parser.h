@@ -42,6 +42,9 @@ class Parser {
     /// found during parsing.
     const std::vector<Dependency> GetDependencies() const;
 
+    /// Resets the Parser; useful for testing to ensure clean state.
+    void Reset();
+
   private:
     class Impl_;
     std::unique_ptr<Impl_> impl_;
