@@ -44,6 +44,12 @@ class StageWidget : public DiscWidget {
         return radius_scaler_;
     }
 
+    /// Returns the node containing the stage's geometry. This is used
+    /// primarily for testing.
+    const SG::NodePtr & GetStageGeometryNode() const {
+        return geom_;
+    }
+
     // ------------------------------------------------------------------------
     // Target Interface.
     // ------------------------------------------------------------------------

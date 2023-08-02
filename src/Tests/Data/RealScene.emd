@@ -1,6 +1,19 @@
 # This scene contains enough for RenderTest to pass.
 
 Scene "RealScene" {
+  CONSTANTS: [
+    DIM_COLOR_X: "\"#d12224\"",
+    DIM_COLOR_Y: "\"#0f56d8\"",
+    DIM_COLOR_Z: "\"#0fb00f\"",
+    LCT:           "count: 1",
+    LIGHTING_PASS: "\"Lighting\"",
+    MAT4_0:        "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+    SHADOW_PASS:   "\"Shadow\"",
+
+    NO_CAST_SHADOWS: "blocks: [UniformBlock {pass_name: $SHADOW_PASS,
+        uniforms: [Uniform \"uCastShadows\" { int_val: 0 }] }]"
+  ],
+  color_map: <"colors/SpecialColors.emd">,
   gantry: Gantry {
     cameras: [
       WindowCamera {
@@ -24,17 +37,15 @@ Scene "RealScene" {
     },
     LightingPass "Lighting" {
       shader_programs: [
-        <"programs/FixedLighting.emd">,  # Needed for Lighting program.
+        <"programs/BaseColor.emd">,
+        <"programs/FixedLighting.emd">,
         <"programs/Lighting.emd">,
+        <"programs/Faceted.emd">,
       ],
     },
   ],
   root_node: Node "Root" {
-    CONSTANTS: [
-      LCT:    "count: 1",
-      MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
-    ],
-    shader_names: ["ShadowDepth", "Lighting"],
+    shader_names: ["ShadowDepth", "Lighting", "Faceted"],
     state_table: StateTable {
       clear_color:        0.4 0.4 0.4 1,
       clear_depth:        0.5,
@@ -91,21 +102,20 @@ Scene "RealScene" {
           Uniform "uViewportSize"     { vec2i_val:       0 0       },
         ],
       },
+      UniformBlock "T_DefaultFacetedUniforms" {
+        pass_name: $LIGHTING_PASS,
+        uniforms: [
+          Uniform "uBaseColor"          { vec4f_val: "#b3b3b3" },
+          Uniform "uEmissiveColor"      { vec4f_val: 0 0 0 0 },
+          Uniform "uEdgeColor"          { vec4f_val: "#000000" },
+          Uniform "uEdgeWidth"          { float_val: 0 },
+          Uniform "uBuildVolumeSize"    { vec3f_val: 0 0 0 },
+          Uniform "uWorldToStageMatrix" { mat4_val: $MAT4_0 }
+        ],
+      }
     ],
-    children: [
-      # For testing text rendering.
-      TextNode "SampleText" {
-        text: "Hi!",
-      },
-      # For testing RenderPass management.
-      Node "PassTestNode" {
-        shader_names: ["ShadowDepth"],
-      },
-      # For testing shape disabling.
-      Node "DisabledNode" {
-        disabled_flags: "kRender",
-        shapes: [ Box { size: 3 4 5 } ],
-      },
-    ],
+    # The next line can be replaced with a string to add children or other
+    # fields to the root node..
+    #<CONTENTS>,
   },
 }

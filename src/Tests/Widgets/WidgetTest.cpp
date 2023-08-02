@@ -40,7 +40,7 @@ WidgetTest::TestWidgetPtr WidgetTest::CreateTestWidget(bool set_up_ion) {
     EXPECT_EQ("TW", tw->GetName());
 
     if (set_up_ion) {
-        const std::string input = ReadDataFile("FullScene");
+       const std::string input = ReadDataFile("RealScene");
         scene_ = ReadScene(input, true);
         // This will set up Ion in the TestWidget.
         scene_->GetRootNode()->AddChild(tw);

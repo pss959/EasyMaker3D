@@ -5,6 +5,7 @@
 
 #include "Base/FBTarget.h"
 #include "Math/Linear.h"
+#include "SG/Box.h"
 #include "SG/Node.h"
 #include "SG/RenderData.h"
 #include "SG/Scene.h"
@@ -103,14 +104,28 @@ void RenderTest::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
 
 TEST_F(RenderTest, RealScene) {
     auto scene = SetUpScene("RealScene");
+
+    // Add a TextNode to test text rendering.
+    auto text = CreateObject<SG::TextNode>();
+    text->SetText("Original");
+    scene->GetRootNode()->AddChild(text);
+
+    // Add a node to test RenderPass management.
+    auto pass_node =
+        ReadTypedItem<SG::Node>("Node { shader_names: [\"ShadowDepth\"] }");
+    scene->GetRootNode()->AddChild(pass_node);
+
+    // Add a render-disabled node with a Shape to test shape disabling.
+    auto disabled_node = CreateObject<SG::Node>();
+    disabled_node->AddShape(CreateObject<SG::Box>());
+    disabled_node->SetFlagEnabled(SG::Node::Flag::kRender, false);
+    scene->GetRootNode()->AddChild(disabled_node);
+
     RenderScene(nullptr);
 
-    // Enable the Node that has rendering disabled and re-render to test shape
-    // management. Also make sure that a TextNode is rebuilt if necessary.
-    auto disabled_node = SG::FindNodeInScene(*scene, "DisabledNode");
+    // Enable the disabled Node and re-render to test shape management. Also
+    // make sure that the TextNode is rebuilt when necessary.
     disabled_node->SetFlagEnabled(SG::Node::Flag::kRender, true);
-
-    auto text = SG::FindTypedNodeInScene<SG::TextNode>(*scene, "SampleText");
     text->SetText("Changed");
 
     RenderScene(nullptr);
