@@ -7,14 +7,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Util/Assert.h"
 
-class NodeTest : public SceneTestBase {
-  protected:
-    // Calls SetUpIon() for the given Node.
-    void SetUpIonForNode(SG::Node &node) {
-        node.SetUpIon(GetIonContext(),
-                      std::vector<ion::gfx::ShaderProgramPtr>());
-    }
-};
+class NodeTest : public SceneTestBase {};
 
 TEST_F(NodeTest, DefaultNode) {
     SG::NodePtr node = CreateObject<SG::Node>("TestNode");

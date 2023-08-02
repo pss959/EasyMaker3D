@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SG/IonContext.h"
+#include "SG/Node.h"
 #include "SG/Scene.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
@@ -43,6 +44,12 @@ class SceneTestBase : public TestBaseWithTypes {
     // Clears the IonContext so it will be recreated, to avoid pollution within
     // tests.
     void ResetContext() { ion_context_.reset(); }
+
+    // Calls SetUpIon() for the given Node.
+    void SetUpIonForNode(SG::Node &node) {
+        node.SetUpIon(GetIonContext(),
+                      std::vector<ion::gfx::ShaderProgramPtr>());
+    }
 
   private:
     SG::IonContextPtr ion_context_;
