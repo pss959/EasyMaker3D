@@ -17,7 +17,11 @@ void Slider2DWidget::PrepareForDrag(const DragInfo &info) {
 }
 
 Vector2f Slider2DWidget::GetInterpolated() const {
-    return Lerp(GetValue(), GetMinValue(), GetMaxValue());
+    const auto &val = GetValue();
+    const auto &min = GetMinValue();
+    const auto &max = GetMaxValue();
+    return Vector2f(Lerp(val[0], min[0], max[0]),
+                    Lerp(val[1], min[1], max[1]));
 }
 
 void Slider2DWidget::UpdatePosition() {
