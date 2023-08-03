@@ -185,14 +185,18 @@ static bool RunApp_(const Application::Options &options) {
 constinit const char kUsageString[] =
 R"(<NAME>: A VR-enabled application for creating models for 3D printing.
     Usage:
-      <NAME> [--fullscreen] [--klog=<klog_string>] [--novr] [--remote] [--touch]
+      <NAME> [--fullscreen] [--klog=<klog_string>] [--novr] [--remote]
+             [--session=<filename>] [--touch]
+
+    Options:
+      --session=<filename>  EasyMaker3D session file to open by default.
 
     Debug-only Options:
-      --fullscreen    Start with a full-screen window.
-      --klog=<string> String to pass to KLogger::SetKeyString().
-      --novr          Simulate non-VR setup when VR is available.
-      --remote        Enable Ion remote debugging (but URLs fail to open).
-      --touch         Simulate VR setup for testing touch interaction.
+      --fullscreen          Start with a full-screen window.
+      --klog=<string>       String to pass to KLogger::SetKeyString().
+      --novr                Simulate non-VR setup when VR is available.
+      --remote              Enable Ion remote debugging (but URLs fail to open).
+      --touch               Simulate VR setup for testing touch interaction.
 )";
 
 int main(int argc, const char *argv[]) {
@@ -206,10 +210,11 @@ int main(int argc, const char *argv[]) {
     Application::Options options;
 
     KLogger::SetKeyString(args.GetString("--klog"));
-    options.do_ion_remote = args.GetBool("--remote");
-    options.fullscreen    = args.GetBool("--fullscreen");
-    options.ignore_vr     = args.GetBool("--novr");
-    options.set_up_touch  = args.GetBool("--touch");
+    options.do_ion_remote     = args.GetBool("--remote");
+    options.fullscreen        = args.GetBool("--fullscreen");
+    options.ignore_vr         = args.GetBool("--novr");
+    options.session_file_name = args.GetString("--session");
+    options.set_up_touch      = args.GetBool("--touch");
 
 #if RELEASE_BUILD
     // Release version is always run fullscreen.

@@ -269,8 +269,7 @@ void SettingsPanel::OpenRadialMenuPanel_() {
 
 void SettingsPanel::AcceptSettings_() {
     // Copy the current settings.
-    SettingsPtr new_settings = Settings::CreateDefault();
-    new_settings->CopyFrom(GetSettings());
+    SettingsPtr new_settings = Settings::CreateCopy(GetSettings());
 
     // Access from directory input.
     auto get_dir = [&](const std::string &name){

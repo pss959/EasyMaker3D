@@ -153,8 +153,7 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
 
 void RadialMenuPanel::AcceptEdits_() {
     // Copy the current settings.
-    SettingsPtr new_settings = Settings::CreateDefault();
-    new_settings->CopyFrom(GetSettings());
+    SettingsPtr new_settings = Settings::CreateCopy(GetSettings());
 
     // Update mode and RadialMenuInfo for each hand.
     new_settings->SetRadialMenusMode(

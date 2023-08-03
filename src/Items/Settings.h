@@ -25,6 +25,9 @@ class Settings : public Parser::Object {
     /// Creates an instance with default values.
     static SettingsPtr CreateDefault();
 
+    /// Creates an instance with values copied from the given instance.
+    static SettingsPtr CreateCopy(const Settings &from);
+
     /// \name Path Settings
     /// Each of these returns a FilePath of some sort. The FilePath is not
     /// guaranteed to be valid; the caller should check.
