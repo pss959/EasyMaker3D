@@ -274,9 +274,7 @@ void SessionPanel::ExportToPath_(const FilePath &path, FileFormat format) {
 
 void SessionPanel::SetLastSessionPath_(const FilePath &path) {
     // Copy the current settings.
-    SettingsPtr new_settings = Settings::CreateDefault();
-    new_settings->CopyFrom(GetSettings());
-
+    SettingsPtr new_settings = Settings::CreateCopy(GetSettings());
     new_settings->SetLastSessionPath(path);
     GetContext().settings_agent->SetSettings(*new_settings);
 }

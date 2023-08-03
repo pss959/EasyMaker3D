@@ -46,7 +46,6 @@ class SessionManager : public SessionAgent {
     /// Returns flags indicating how the current session has been modified.
     Util::Flags<Modification> GetModifications() const;
 
-
     /// Returns a string representing the current session: the name of the
     /// session and characters representing the current modifications.
     std::string GetSessionString() const;

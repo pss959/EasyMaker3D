@@ -32,13 +32,14 @@ class Application {
   public:
     /// Application options.
     struct Options {
-        Vector2i window_size;             ///< Size of the application window.
-        bool     do_ion_remote      = false;
-        bool     fullscreen         = false;
-        bool     enable_vr          = false;
-        bool     ignore_vr          = false;
-        bool     set_up_touch       = false;
-        bool     show_session_panel = true;
+        Vector2i    window_size;
+        bool        do_ion_remote      = false;
+        bool        fullscreen         = false;
+        bool        enable_vr          = false;
+        bool        ignore_vr          = false;
+        bool        set_up_touch       = false;
+        bool        show_session_panel = true;
+        std::string session_file_name;
     };
 
     /// Application context with all managers and the SceneContext.

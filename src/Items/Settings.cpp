@@ -29,6 +29,12 @@ SettingsPtr Settings::CreateDefault() {
     return settings;
 }
 
+SettingsPtr Settings::CreateCopy(const Settings &from) {
+    auto copy = CreateDefault();
+    copy->CopyFrom(from);
+    return copy;
+}
+
 const RadialMenuInfo & Settings::GetRadialMenuInfo(Hand hand) const {
     const auto mode = GetRadialMenusMode();
     ASSERT(mode != RadialMenusMode::kDisabled);

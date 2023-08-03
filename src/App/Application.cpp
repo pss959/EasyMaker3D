@@ -250,6 +250,10 @@ class  Application::Impl_ {
     /// Initializes interaction that is not dependent on items in the Scene.
     void InitInteraction_();
 
+    /// Initializes the session path from the options and the SettingsManager,
+    /// returning the path to use, which may be empty.
+    FilePath InitSessionPath_();
+
     ///@}
 
     /// \name Scene-dependent Initialization
@@ -718,10 +722,9 @@ void Application::Impl_::InitManagers_() {
     AP_.reset(new ActionProcessor(action_context_));
     AP_->SetReloadFunc([&]() { ReloadScene(); });
 
-    // Initialize the SessionManager with the previous session path.
-    const auto path = MGR_(settings)->GetSettings().GetLastSessionPath();
+    const auto session_path = InitSessionPath_();
     MGR_(session).reset(new SessionManager(AP_, MGR_(command),
-                                           MGR_(selection), path));
+                                           MGR_(selection), session_path));
 
 #if ENABLE_DEBUG_FEATURES
     Debug::SetCommandList(MGR_(command)->GetCommandList());
@@ -779,6 +782,27 @@ void Application::Impl_::InitInteraction_() {
     MGR_(selection)->GetSelectionChanged().AddObserver(
         this, [&](const Selection &sel, SelectionManager::Operation op){
             SelectionChanged_(sel, op); });
+}
+
+FilePath Application::Impl_::InitSessionPath_() {
+    // Initialize the SessionManager with the session file specified on the
+    // command line or the previous session if there was none.
+    const auto &settings = MGR_(settings)->GetSettings();
+
+    FilePath session_path = options_.session_file_name;
+    if (session_path) {
+        if (! session_path.IsAbsolute())
+            session_path =
+                FilePath::Join(settings.GetSessionDirectory(), session_path);
+        // Save the path.
+        auto new_settings = Settings::CreateCopy(settings);
+        new_settings->SetLastSessionPath(session_path);
+        MGR_(settings)->SetSettings(*new_settings);
+    }
+    else {
+        session_path = settings.GetLastSessionPath();
+    }
+    return session_path;
 }
 
 void Application::Impl_::ConnectSceneInteraction_() {
