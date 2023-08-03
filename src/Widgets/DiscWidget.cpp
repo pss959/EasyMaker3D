@@ -250,11 +250,6 @@ void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {
 
     if (GetAngleMode() == AngleMode::kAccumulate) {
         Anglef angle_diff = rot_angle - prev_rot_angle_;
-#if XXXX
-        std::cerr << "XXXX r=" << rot_angle.Degrees()
-                  << " p=" << prev_rot_angle_.Degrees()
-                  << " d=" << angle_diff.Degrees() << "\n";
-#endif
         if (angle_diff.Degrees() < -180)
             angle_diff += Anglef::FromDegrees(360);
         else if (angle_diff.Degrees() > 180)
