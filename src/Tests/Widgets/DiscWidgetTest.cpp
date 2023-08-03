@@ -27,10 +27,9 @@ TEST_F(DiscWidgetTest, RotationInField) {
 TEST_F(DiscWidgetTest, NoMotion) {
     auto dw = CreateObject<DiscWidget>();
 
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
     dt.SetRayDirection(-Vector3f::AxisY());
-    dt.ApplyMouseDrag(*dw, Point3f(0, 0, 2), Point3f(0.0001f, 0, 2));
+    dt.ApplyMouseDrag(Point3f(0, 0, 2), Point3f(0.0001f, 0, 2));
     EXPECT_EQ(1,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(1, 1, 1), dw->GetScale());
     EXPECT_EQ(0,                 dw->GetRotationAngle().Degrees());
@@ -40,17 +39,16 @@ TEST_F(DiscWidgetTest, DragScale) {
     auto dw = CreateObject<DiscWidget>();
 
     // Dragging from Z=2 to Z=4 should scale by 2.
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
     dt.SetRayDirection(-Vector3f::AxisY());
-    dt.ApplyMouseDrag(*dw, Point3f(0, 0, 2), Point3f(0, 0, 4));
+    dt.ApplyMouseDrag(Point3f(0, 0, 2), Point3f(0, 0, 4));
     EXPECT_EQ(2,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(2, 2, 2), dw->GetScale());
     EXPECT_EQ(0,                 dw->GetRotationAngle().Degrees());
 
     // Dragging from X=3 to X=9 should scale by 3. Add some intermediate points
     // to make sure it works.
-    dt.ApplyMouseDrag(*dw, Point3f(3, 0, 0), Point3f(9, 0, 0), 4);
+    dt.ApplyMouseDrag(Point3f(3, 0, 0), Point3f(9, 0, 0), 4);
     EXPECT_EQ(3,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(6, 6, 6), dw->GetScale());
     EXPECT_EQ(0,                 dw->GetRotationAngle().Degrees());
@@ -60,10 +58,9 @@ TEST_F(DiscWidgetTest, DragRotate) {
     auto dw = CreateObject<DiscWidget>();
 
     // Dragging along +X offset from center should rotate counterclockwise.
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
     dt.SetRayDirection(-Vector3f::AxisY());
-    dt.ApplyMouseDrag(*dw, Point3f(0, 0, 2), Point3f(2, 0, 2));
+    dt.ApplyMouseDrag(Point3f(0, 0, 2), Point3f(2, 0, 2));
     EXPECT_EQ(1,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(1, 1, 1), dw->GetScale());
     EXPECT_EQ(45,                dw->GetRotationAngle().Degrees());
@@ -73,16 +70,15 @@ TEST_F(DiscWidgetTest, DragEdgeOnRotate) {
     auto dw = CreateObject<DiscWidget>();
 
     // Dragging along +X with the ray along -Z should do edge-on rotation.
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
     dt.SetRayDirection(-Vector3f::AxisZ());
-    dt.ApplyMouseDrag(*dw, Point3f(-4, 0, 4), Point3f(4, 0, 4));
+    dt.ApplyMouseDrag(Point3f(-4, 0, 4), Point3f(4, 0, 4));
     EXPECT_EQ(1,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(1, 1, 1), dw->GetScale());
     EXPECT_EQ(90,                dw->GetRotationAngle().Degrees());
 
     // Same test, but drag off the cylinder.
-    dt.ApplyMouseDrag(*dw, Point3f(-4, 0, 4), Point3f(10, 0, 4), 4);
+    dt.ApplyMouseDrag(Point3f(-4, 0, 4), Point3f(10, 0, 4), 4);
     EXPECT_EQ(1,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(1, 1, 1), dw->GetScale());
     EXPECT_CLOSE(186.0612f,      dw->GetRotationAngle().Degrees());
@@ -93,10 +89,9 @@ TEST_F(DiscWidgetTest, DragScaleOnly) {
     EXPECT_EQ(DiscWidget::Mode::kScaleOnly, dw->GetMode());
 
     // Dragging from Z=2 to Z=4 should scale by 2.
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
     dt.SetRayDirection(-Vector3f::AxisY());
-    dt.ApplyMouseDrag(*dw, Point3f(0, 0, 2), Point3f(0, 0, 4));
+    dt.ApplyMouseDrag(Point3f(0, 0, 2), Point3f(0, 0, 4));
     EXPECT_EQ(2,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(2, 2, 2), dw->GetScale());
 }
@@ -106,10 +101,9 @@ TEST_F(DiscWidgetTest, DragRotateOnly) {
         ReadTypedItem<DiscWidget>("DiscWidget { mode: \"kRotationOnly\" }");
 
     // Dragging along +X offset from center should rotate counterclockwise.
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
     dt.SetRayDirection(-Vector3f::AxisY());
-    dt.ApplyMouseDrag(*dw, Point3f(0, 0, 2), Point3f(2, 0, 2));
+    dt.ApplyMouseDrag(Point3f(0, 0, 2), Point3f(2, 0, 2));
     EXPECT_EQ(1,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(1, 1, 1), dw->GetScale());
     EXPECT_EQ(45,                dw->GetRotationAngle().Degrees());
@@ -118,9 +112,8 @@ TEST_F(DiscWidgetTest, DragRotateOnly) {
 TEST_F(DiscWidgetTest, GripRotate) {
     auto dw = CreateObject<DiscWidget>();
 
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
-    dt.ApplyGripRotationDrag(*dw, Vector3f::AxisX(),
+    DragTester dt(dw);
+    dt.ApplyGripRotationDrag(Vector3f::AxisX(),
                              BuildRotation(1, 0, 0, 20),
                              BuildRotation(1, 0, 0, 100));
     EXPECT_EQ(1,                 dw->GetScaleFactor());
@@ -129,7 +122,7 @@ TEST_F(DiscWidgetTest, GripRotate) {
 
     // Repeat with opposite guide direction.
     dw->SetRotationAngle(Anglef::FromDegrees(0));
-    dt.ApplyGripRotationDrag(*dw, -Vector3f::AxisX(),
+    dt.ApplyGripRotationDrag(-Vector3f::AxisX(),
                              BuildRotation(1, 0, 0, 20),
                              BuildRotation(1, 0, 0, 100));
     EXPECT_EQ(1,                 dw->GetScaleFactor());
@@ -142,12 +135,11 @@ TEST_F(DiscWidgetTest, ClampAngle) {
 
     // This is easier to test using grip angles directly.
 
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
 
     auto test_rot = [&](float expected_deg, float rot_deg0, float rot_deg1){
         dw->SetRotationAngle(Anglef::FromDegrees(0));  // Start clean.
-        dt.ApplyGripRotationDrag(*dw, Vector3f::AxisX(),
+        dt.ApplyGripRotationDrag(Vector3f::AxisX(),
                                  BuildRotation(1, 0, 0, 0),
                                  BuildRotation(1, 0, 0, rot_deg0),
                                  BuildRotation(1, 0, 0, rot_deg1));
@@ -167,12 +159,11 @@ TEST_F(DiscWidgetTest, AccumulateAngle) {
 
     // Similar to the above test, but the angle should accumulate.
     // Positive direction.
-    DragTester dt;
-    dt.SetPathToWidget(SG::NodePath(dw));
+    DragTester dt(dw);
 
     auto test_rot = [&](float expected_deg, float rot_deg0, float rot_deg1){
         dw->SetRotationAngle(Anglef::FromDegrees(0));  // Start clean.
-        dt.ApplyGripRotationDrag(*dw, Vector3f::AxisX(),
+        dt.ApplyGripRotationDrag(Vector3f::AxisX(),
                                  BuildRotation(1, 0, 0, 0),
                                  BuildRotation(1, 0, 0, rot_deg0),
                                  BuildRotation(1, 0, 0, rot_deg1));

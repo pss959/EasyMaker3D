@@ -81,7 +81,7 @@ void SliderWidgetBase<T>::EndDrag() {
 
 template <typename T>
 T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
-    T val;
+    T val;  // LCOV_EXCL_LINE [gcovr bug]
     if (info.trigger == Trigger::kPointer) {
         // For a pointer drag, compute the new value as the closest position to
         // the new pointer ray.

@@ -175,6 +175,7 @@ test_source_dict = {
     ],
     'Widgets' : [
         'DiscWidgetTest',
+        'Slider1DWidgetTest',
         'StageWidgetTest',
         'WidgetTest',
         'WidgetTestBase',

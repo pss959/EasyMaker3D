@@ -29,8 +29,8 @@ float Slider1DWidget::GetRayValue(const Ray &local_ray) {
     const Point3f max_point = Point3f(GetAxis(dim, GetMaxValue()));
     Point3f axis_pt, ray_pt;
     if (GetClosestLinePoints(min_point, max_point - min_point,
-                               local_ray.origin, local_ray.direction,
-                               axis_pt, ray_pt))
+                             local_ray.origin, local_ray.direction,
+                             axis_pt, ray_pt))
         return axis_pt[dim];
     else
         return 0;  // Parallel lines somehow.

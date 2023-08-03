@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Place/DragInfo.h"
 #include "Tests/SceneTestBase.h"
 
-class DraggableWidget;
+DECL_SHARED_PTR(DraggableWidget);
 
 // Base class for testing Widgets.
 class WidgetTestBase : public SceneTestBase {
@@ -14,7 +15,10 @@ class WidgetTestBase : public SceneTestBase {
     // first DragInfo, ContinueDrag() with the rest, and then EndDrag().
     class DragTester {
       public:
-        DragTester();
+        // The constructor is passed the DraggableWidget that will be tested.
+        // This initializes the path_to_widget field in all DragInfo instances
+        // to contain just the DraggableWidget.
+        explicit DragTester(const DraggableWidgetPtr &dw);
 
         // Each of these sets a value that will be copied into all DragInfo
         // instances.
@@ -24,31 +28,39 @@ class WidgetTestBase : public SceneTestBase {
         void SetRayDirection(const Vector3f &dir);
 
         // Applies a mouse drag between two points in local coordinates of the
-        // given DraggableWidget. If count_between is non-zero, this interpolates
-        // the given number of points for the drag.
-        void ApplyMouseDrag(DraggableWidget &dw,
-                            const Point3f &p0, const Point3f &p1,
+        // DraggableWidget. If count_between is non-zero, this interpolates the
+        // given number of points for the drag.
+        void ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
+                            size_t count_between = 0);
+
+        // Applies a grip position drag between two points in local coordinates
+        // of the DraggableWidget. If count_between is non-zero, this
+        // interpolates the given number of points for the drag.
+        void ApplyGripDrag(const Point3f &p0, const Point3f &p1,
+                           size_t count_between = 0);
+
+        // Same as ApplyGripDrag(), but uses a touch position drag.
+        void ApplyTouchDrag(const Point3f &p0, const Point3f &p1,
                             size_t count_between = 0);
 
         // Applies a grip rotation drag operation between two orientations to
-        // the given DraggableWidget. If count_between is non-zero, this
-        // interpolates the given number of orientations for the drag.
-        void ApplyGripRotationDrag(DraggableWidget &dw,
-                                   const Vector3f &guide_dir,
+        // the DraggableWidget. If count_between is non-zero, this interpolates
+        // the given number of orientations for the drag.
+        void ApplyGripRotationDrag(const Vector3f &guide_dir,
                                    const Rotationf &r0, const Rotationf &r1,
                                    size_t count_between = 0);
 
         // Same as the above ApplyGripRotationDrag(), but includes an
         // intermediate orientation.
-        void ApplyGripRotationDrag(DraggableWidget &dw,
-                                   const Vector3f &guide_dir,
+        void ApplyGripRotationDrag(const Vector3f &guide_dir,
                                    const Rotationf &r0, const Rotationf &r1,
                                    const Rotationf &r2,
                                    size_t count_between = 0);
 
       private:
-        DragInfo base_info_;  // Base DragInfo for setting values.
+        DraggableWidgetPtr dw_;
+        DragInfo           base_info_;  // Base DragInfo for setting values.
 
-        void ApplyDrag_(DraggableWidget &dw, const std::vector<DragInfo> &infos);
+        void ApplyDrag_(const std::vector<DragInfo> &infos);
     };
 };
