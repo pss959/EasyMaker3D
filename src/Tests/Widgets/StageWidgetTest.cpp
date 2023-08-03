@@ -1,12 +1,9 @@
 #include "Place/DragInfo.h"
-#include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/String.h"
 #include "Widgets/StageWidget.h"
-
-#include "Util/Read.h" // XXXX
 
 // ----------------------------------------------------------------------------
 // StageWidgetTest class.

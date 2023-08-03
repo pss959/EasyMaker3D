@@ -22,7 +22,7 @@ void DiscWidget::AddFields() {
 
 bool DiscWidget::IsValid(std::string &details) {
     if (! Widget::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     // Any local rotation on the DiscWidget will be ignored and is likely an
     // error.
@@ -139,44 +139,36 @@ void DiscWidget::EndDrag() {
 }
 
 Point3f DiscWidget::GetRayPoint_(const Ray &local_ray) {
-    using ion::math::Distance;
+    ASSERT(cur_action_ != Action_::kEdgeOnRotation);
 
-    // Special case if the rotation is edge-on. In this case, just take a point
-    // a reasonable distance along the ray and project it into the plane.
-    if (cur_action_ == Action_::kEdgeOnRotation) {
-        return GetLocalPlane_().ProjectPoint(
-            local_ray.GetPoint(Distance(local_ray.origin, start_point_)));
-    }
-    else {
-        float distance;
-        if (RayPlaneIntersect(local_ray, GetLocalPlane_(), distance))
-            return local_ray.GetPoint(distance);
+    float distance;
+    if (RayPlaneIntersect(local_ray, GetLocalPlane_(), distance))
+        return local_ray.GetPoint(distance);
 
-        // If there was no intersection (almost impossible), just use the last
-        // point so there is no new motion.
-        else
-            return end_point_;
-    }
+    // If there was no intersection (almost impossible), just use the last
+    // point so there is no new motion.
+    else
+        return end_point_;  // LCOV_EXCL_LINE [almost impossible]
 }
 
 DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
                                                  const Point3f p1) {
     using ion::math::AngleBetween;
     using ion::math::LengthSquared;
-    using ion::math::Normalized;
 
     // This should not be called unless both scale and rotation are allowed.
     ASSERT(GetMode() == Mode::kRotateAndScale);
 
     // If the main direction of the motion is along a radius (as opposed to in
     // the direction of rotation), scale.
-    const Vector3f motion    = Normalized(p1 -   p0);
-    const Vector3f to_center = Normalized(Vector3f(p1));
+    Vector3f       motion    = p1 -  p0;
+    const Vector3f to_center = ion::math::Normalized(Vector3f(p1));
 
     // Bail if there isn't enough motion to choose an action.
     if (LengthSquared(motion) < TK::kMinDiscWidgetMotion)
         return Action_::kUnknown;
 
+    ion::math::Normalize(&motion);
     const bool is_scale =
         AngleBetween( motion, to_center) <= TK::kMaxDiscWidgetScaleAngle ||
         AngleBetween(-motion, to_center) <= TK::kMaxDiscWidgetScaleAngle;
@@ -258,6 +250,11 @@ void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {
 
     if (GetAngleMode() == AngleMode::kAccumulate) {
         Anglef angle_diff = rot_angle - prev_rot_angle_;
+#if XXXX
+        std::cerr << "XXXX r=" << rot_angle.Degrees()
+                  << " p=" << prev_rot_angle_.Degrees()
+                  << " d=" << angle_diff.Degrees() << "\n";
+#endif
         if (angle_diff.Degrees() < -180)
             angle_diff += Anglef::FromDegrees(360);
         else if (angle_diff.Degrees() > 180)
@@ -270,9 +267,9 @@ void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {
         const float cur_deg  = rot_angle.Degrees();
         float new_deg = cur_deg;
         if (std::abs(cur_deg - prev_deg) > 180) {
-            if (prev_deg < 0 && cur_deg > 0)
+            if (prev_deg < 0 && cur_deg >= 0)
                 new_deg -= 360;
-            else if (prev_deg > 0 && cur_deg < 0)
+            else if (prev_deg >= 0 && cur_deg < 0)
                 new_deg += 360;
         }
         cur_angle_ = Anglef::FromDegrees(new_deg);
@@ -312,19 +309,6 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
 
 Plane DiscWidget::GetLocalPlane_() const {
     return Plane(Point3f(0, plane_offset_, 0), Vector3f::AxisY());
-}
-
-Anglef DiscWidget::GetRotationAngle_(const Rotationf &rot) {
-    Anglef   angle;
-    Vector3f axis;
-    rot.GetAxisAndAngle(&axis, &angle);
-
-    // This must be a rotation around the +/- Y axis (or identity).
-    ASSERTM(AreClose(angle.Radians(), 0.f) || AreClose(std::abs(axis[1]), 1.f),
-            Util::ToString(rot));
-
-    // Flip the angle if the axis is inverted.
-    return axis[1] < 0 ? -angle : angle;
 }
 
 Anglef DiscWidget::SignedAngleBetween_(const Vector3f &v0, const Vector3f &v1) {

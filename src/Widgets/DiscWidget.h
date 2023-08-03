@@ -190,10 +190,6 @@ class DiscWidget : public DraggableWidget {
     /// Returns the plane of the DiscWidget in local coordinates.
     Plane GetLocalPlane_() const;
 
-    /// Returns the rotation angle for the given rotation, which must be around
-    /// the Y axis.
-    static Anglef GetRotationAngle_(const Rotationf &rot);
-
     /// Returns the signed angle between two vectors.
     static Anglef SignedAngleBetween_(const Vector3f &v0, const Vector3f &v1);
 
