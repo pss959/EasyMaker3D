@@ -2,6 +2,7 @@
 
 #include "Math/Linear.h"
 #include "Place/DragInfo.h"
+#include "Tests/Testing.h"
 #include "Util/Assert.h"
 #include "Widgets/DraggableWidget.h"
 
@@ -147,8 +148,15 @@ void WidgetTestBase::DragTester::ApplyGripRotationDrag(
 
 void WidgetTestBase::DragTester::ApplyDrag_(const std::vector<DragInfo> &infos) {
     ASSERT_LE(2U, infos.size());
+    EXPECT_FALSE(dw_->IsDragging());
     dw_->StartDrag(infos[0]);
-    for (size_t i = 1; i < infos.size(); ++i)
+    EXPECT_EQ(infos[0], dw_->GetCurrentDragInfo());
+    EXPECT_TRUE(dw_->IsDragging());
+    for (size_t i = 1; i < infos.size(); ++i) {
         dw_->ContinueDrag(infos[i]);
+        EXPECT_EQ(infos[i], dw_->GetCurrentDragInfo());
+        EXPECT_TRUE(dw_->IsDragging());
+    }
     dw_->EndDrag();
+    EXPECT_FALSE(dw_->IsDragging());
 }

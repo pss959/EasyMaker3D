@@ -26,4 +26,7 @@ struct ClickInfo {
 
     /// Widget the click is on (may be null);
     ClickableWidget *widget;
+
+    /// Equality operator.
+    bool operator==(const ClickInfo &ci) const = default;
 };

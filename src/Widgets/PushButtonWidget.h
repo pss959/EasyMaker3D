@@ -24,7 +24,7 @@ class PushButtonWidget : public ClickableWidget {
 
     /// If IsToggle() returns true, this returns the current state of the
     /// toggle. Otherwise, it just returns false. It is false by default.
-    bool GetToggleState() const { return toggle_state_; }
+    bool GetToggleState() const { return IsToggle() && toggle_state_; }
 
     /// If IsToggle() returns true, this sets the toggle state of the widget.
     /// Otherwise, it does nothing.a

@@ -101,4 +101,7 @@ struct DragInfo {
     }
 
     ///@}
+
+    /// Equality operator.
+    bool operator==(const DragInfo &di) const = default;
 };

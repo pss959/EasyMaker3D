@@ -65,6 +65,9 @@ struct Hit {
     Vector3f GetWorldNormal() const {
         return CoordConv(path).ObjectToRoot(normal);
     }
+
+    /// Equality operator.
+    bool operator==(const Hit &h) const = default;
 };
 
 }  // namespace SG

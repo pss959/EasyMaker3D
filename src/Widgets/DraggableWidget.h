@@ -70,10 +70,6 @@ class DraggableWidget : public ClickableWidget {
     /// of the drag.
     SG::CoordConv GetCoordConv() const;
 
-    /// Convenience function that converts a point in the local coordinates of
-    /// the Widget to world coordinates.
-    Point3f WidgetToWorld(const Point3f &p) const;
-
     /// Convenience function that converts a vector in the local coordinates of
     /// the Widget to world coordinates.
     Vector3f WidgetToWorld(const Vector3f &v, bool normalize = false) const;

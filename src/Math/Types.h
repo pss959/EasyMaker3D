@@ -229,6 +229,9 @@ struct Ray {
     /// Returns the point at parametric distance d along the ray.
     Point3f GetPoint(float d) const { return origin + d * direction; }
 
+    /// Equality operator.
+    bool operator==(const Ray &r) const = default;
+
     /// Converts to a string to help with debugging.
     std::string ToString() const;
 };

@@ -101,6 +101,13 @@ TEST_F(Slider1DWidgetTest, GripDrag) {
     DragTester dt(sw);
     dt.ApplyGripDrag(Point3f(0, 0, 0), Point3f(.1f, .2f, .3f));
     EXPECT_EQ(.1f * sw->GetGripDragScale(), sw->GetValue());
+
+    // Try changing the scale.
+    sw->SetGripDragScale(10);
+    EXPECT_EQ(10, sw->GetGripDragScale());
+    sw->SetValue(0);
+    dt.ApplyGripDrag(Point3f(0, 0, 0), Point3f(.1f, .2f, .3f));
+    EXPECT_EQ(.1f * sw->GetGripDragScale(), sw->GetValue());
 }
 
 TEST_F(Slider1DWidgetTest, TouchDrag) {

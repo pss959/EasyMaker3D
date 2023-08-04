@@ -29,10 +29,6 @@ SG::CoordConv DraggableWidget::GetCoordConv() const {
     return SG::CoordConv(start_info_.path_to_widget);
 }
 
-Point3f DraggableWidget::WidgetToWorld(const Point3f &p) const {
-    return GetCoordConv().LocalToRoot(p);
-}
-
 Vector3f DraggableWidget::WidgetToWorld(const Vector3f &v,
                                         bool normalize) const {
     const Vector3f nv = GetCoordConv().LocalToRoot(v);
