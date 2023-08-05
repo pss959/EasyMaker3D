@@ -6,14 +6,17 @@
 #include "Util/Assert.h"
 #include "Widgets/DraggableWidget.h"
 
-WidgetTestBase::DragTester::DragTester(const DraggableWidgetPtr &dw) {
+WidgetTestBase::DragTester::DragTester(const DraggableWidgetPtr &dw,
+                                       const WidgetPtr &hw) {
     ASSERT(dw);
     dw_ = dw;
     base_info_.ray.direction        = -Vector3f::AxisZ();
     base_info_.grip_guide_direction = -Vector3f::AxisX();
     base_info_.grip_position        =  Point3f::Zero();
+    base_info_.path_to_widget       = SG::NodePath(dw_);
 
-    SetPathToWidget(SG::NodePath(dw_));
+    // Use hw for the Hit path widget if specified.
+    base_info_.hit.path = hw ? SG::NodePath(hw) : base_info_.path_to_widget;
 }
 
 void WidgetTestBase::DragTester::SetLinearPrecision(float p) {
@@ -22,11 +25,6 @@ void WidgetTestBase::DragTester::SetLinearPrecision(float p) {
 
 void WidgetTestBase::DragTester::SetAngularPrecision(float p) {
     base_info_.angular_precision = p;
-}
-
-void WidgetTestBase::DragTester::SetPathToWidget(const SG::NodePath &path) {
-    base_info_.path_to_widget = path;
-    base_info_.hit.path       = path;
 }
 
 void WidgetTestBase::DragTester::SetRayDirection(const Vector3f &dir) {

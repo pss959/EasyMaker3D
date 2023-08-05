@@ -2,9 +2,13 @@
 
 #include "Base/Memory.h"
 #include "Place/DragInfo.h"
+#include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
+#include "Util/String.h"
 
 DECL_SHARED_PTR(DraggableWidget);
+DECL_SHARED_PTR(Widget);
 
 // Base class for testing Widgets.
 class WidgetTestBase : public SceneTestBase {
@@ -17,14 +21,15 @@ class WidgetTestBase : public SceneTestBase {
       public:
         // The constructor is passed the DraggableWidget that will be tested.
         // This initializes the path_to_widget field in all DragInfo instances
-        // to contain just the DraggableWidget.
-        explicit DragTester(const DraggableWidgetPtr &dw);
+        // to contain just the DraggableWidget. If hw is specified, it is used
+        // as the Widget in the path in the SG::Hit in all DragInfo instances.
+        DragTester(const DraggableWidgetPtr &dw,
+                   const WidgetPtr &hw = WidgetPtr());
 
         // Each of these sets a value that will be copied into all DragInfo
         // instances.
         void SetLinearPrecision(float p);
         void SetAngularPrecision(float p);
-        void SetPathToWidget(const SG::NodePath &path);
         void SetRayDirection(const Vector3f &dir);
 
         // Applies a mouse drag between two points in local coordinates of the
@@ -63,4 +68,22 @@ class WidgetTestBase : public SceneTestBase {
 
         void ApplyDrag_(const std::vector<DragInfo> &infos);
     };
+
+    // Some Widget class require some set-up; reading the corresponding data
+    // file and adding it to a real Scene is the easiest way to take care of
+    // this. This reads the named file and returns the typed Widget from it.
+    template <typename T>
+    std::shared_ptr<T> GetWidgetOfType(const std::string &file_name,
+                                       const std::string &widget_name) {
+        const std::string contents = "children: [ <\"" + file_name + "\"> ]";
+        const auto input = Util::ReplaceString(
+            ReadDataFile("RealScene"), "#<CONTENTS>", contents);
+        scene_ = ReadScene(input, true);   // True => sets up grid image.
+        auto w = SG::FindTypedNodeInScene<T>(*scene_, widget_name);
+        EXPECT_NOT_NULL(w);
+        return w;
+    }
+
+  private:
+    SG::ScenePtr scene_;  // Saves scene used to read StageWidget.
 };

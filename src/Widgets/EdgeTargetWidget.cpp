@@ -14,7 +14,7 @@ void EdgeTargetWidget::AddFields() {
 
 bool EdgeTargetWidget::IsValid(std::string &details) {
     if (! TargetWidgetBase::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     const auto &target = target_.GetValue();
     if (! target) {
         details = "Missing target";

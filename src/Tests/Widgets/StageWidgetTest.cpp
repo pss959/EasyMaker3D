@@ -1,36 +1,14 @@
 #include "Place/DragInfo.h"
-#include "SG/Search.h"
-#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Util/String.h"
+#include "Tests/Widgets/WidgetTestBase.h"
 #include "Widgets/StageWidget.h"
 
-// ----------------------------------------------------------------------------
-// StageWidgetTest class.
-// ----------------------------------------------------------------------------
-
-class StageWidgetTest : public SceneTestBase {
+class StageWidgetTest : public WidgetTestBase {
   protected:
-    StageWidgetPtr GetStageWidget();
-  private:
-    SG::ScenePtr scene_;  // Saves scene used to read StageWidget.
+    StageWidgetPtr GetStageWidget() {
+        return GetWidgetOfType<StageWidget>("nodes/Stage.emd", "Stage");
+    }
 };
-
-StageWidgetPtr StageWidgetTest::GetStageWidget() {
-    // The StageWidget requires some set-up; reading the Stage.emd file and
-    // adding it to a real Scene is the easiest way to take care of this.
-    const std::string contents = "children: [ <\"nodes/Stage.emd\"> ]";
-    const auto input =
-        Util::ReplaceString(ReadDataFile("RealScene"), "#<CONTENTS>", contents);
-    scene_ = ReadScene(input, true);   // True => sets up grid image.
-    auto sw = SG::FindTypedNodeInScene<StageWidget>(*scene_, "Stage");
-    EXPECT_NOT_NULL(sw);
-    return sw;
-}
-
-// ----------------------------------------------------------------------------
-// Tests.
-// ----------------------------------------------------------------------------
 
 TEST_F(StageWidgetTest, Transforms) {
     auto sw = GetStageWidget();

@@ -17,7 +17,7 @@ void PointTargetWidget::AddFields() {
 
 bool PointTargetWidget::IsValid(std::string &details) {
     if (! TargetWidgetBase::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! target_.GetValue()) {
         details = "Missing target";
         return false;
@@ -70,11 +70,15 @@ void PointTargetWidget::PlaceTarget(Widget &widget, const DragInfo &info) {
 }
 
 void PointTargetWidget::StartTargetPlacement() {
+    TargetWidgetBase::StartTargetPlacement();
+
     // Turn off the RadialLayoutWidget to avoid confusion.
     layout_widget_->SetEnabled(false);
 }
 
 void PointTargetWidget::EndTargetPlacement() {
+    TargetWidgetBase::EndTargetPlacement();
+
     // Make sure the snap indicator is off.
     snap_indicator_->SetEnabled(false);
 
@@ -83,6 +87,8 @@ void PointTargetWidget::EndTargetPlacement() {
 }
 
 void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {
+    TargetWidgetBase::ShowExtraSnapFeedback(is_snapping);
+
     if (is_snapping) {
         feedback_->SetBaseColor(GetActiveColor());
         // The end point is in stage coordinates, and so is the target. The

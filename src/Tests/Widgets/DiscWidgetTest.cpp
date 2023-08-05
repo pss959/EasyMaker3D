@@ -23,7 +23,6 @@ TEST_F(DiscWidgetTest, RotationInField) {
                Parser::Exception, "Rotation will be ignored");
 }
 
-
 TEST_F(DiscWidgetTest, NoMotion) {
     auto dw = CreateObject<DiscWidget>();
 
