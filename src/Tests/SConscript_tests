@@ -176,11 +176,13 @@ test_source_dict = {
     'Widgets' : [
         'DiscWidgetTest',
         'EdgeTargetWidgetTest',
+        'IconSwitcherWidgetTest',
         'IconWidgetTest',
         'PointTargetWidgetTest',
         'PushButtonWidgetTest',
         'Slider1DWidgetTest',
         'Slider2DWidgetTest',
+        'SphereWidgetTest',
         'StageWidgetTest',
         'TargetWidgetTestBase',
         'WidgetTest',
