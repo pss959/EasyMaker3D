@@ -24,6 +24,7 @@ WidgetTestBase::DragTester::DragTester(const CompositeWidgetPtr &cw,
     SG::NodePath path(cw);
     for (size_t i = 0; i < names.size(); ++i) {
         auto sub = cur_cw->GetSubWidget(names[i]);
+        ASSERT(sub);
         path.push_back(sub);
         if (i + 1 < names.size()) {
             // Another composite widget.
@@ -36,6 +37,7 @@ WidgetTestBase::DragTester::DragTester(const CompositeWidgetPtr &cw,
         }
     }
     base_info_.path_to_widget = path;
+    base_info_.hit.path       = path;
 }
 
 void WidgetTestBase::DragTester::SetIsModifiedMode(bool m) {
@@ -178,14 +180,16 @@ void WidgetTestBase::DragTester::Init_(const DraggableWidgetPtr &dw) {
 void WidgetTestBase::DragTester::ApplyDrag_(const std::vector<DragInfo> &infos) {
     ASSERT_LE(2U, infos.size());
     EXPECT_FALSE(dw_->IsDragging());
-    dw_->StartDrag(infos[0]);
-    EXPECT_EQ(infos[0], dw_->GetCurrentDragInfo());
-    EXPECT_TRUE(dw_->IsDragging());
-    for (size_t i = 1; i < infos.size(); ++i) {
-        dw_->ContinueDrag(infos[i]);
-        EXPECT_EQ(infos[i], dw_->GetCurrentDragInfo());
+    if (dw_->IsInteractionEnabled()) {
+        dw_->StartDrag(infos[0]);
+        EXPECT_EQ(infos[0], dw_->GetCurrentDragInfo());
         EXPECT_TRUE(dw_->IsDragging());
+        for (size_t i = 1; i < infos.size(); ++i) {
+            dw_->ContinueDrag(infos[i]);
+            EXPECT_EQ(infos[i], dw_->GetCurrentDragInfo());
+            EXPECT_TRUE(dw_->IsDragging());
+        }
+        dw_->EndDrag();
+        EXPECT_FALSE(dw_->IsDragging());
     }
-    dw_->EndDrag();
-    EXPECT_FALSE(dw_->IsDragging());
 }

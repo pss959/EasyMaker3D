@@ -36,7 +36,8 @@ class AxisWidget : public CompositeWidget {
     /// These functions should not be called during a drag.
     ///@{
 
-    /// Sets whether translation is enabled for the AxisWidget.
+    /// Sets whether translation is enabled for the AxisWidget. It is enabled
+    /// by default.
     void SetTranslationEnabled(bool enabled);
 
     /// Sets the size of the widget to the given radius.

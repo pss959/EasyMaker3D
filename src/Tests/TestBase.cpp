@@ -98,6 +98,14 @@ std::string TestBase::ReadDataFile(const std::string &file_name,
     return s;
 }
 
+std::string TestBase::ReadResourceFile(const std::string &file_path) {
+    std::string s;
+    const FilePath path = FilePath::Join(FilePath::GetResourceBasePath(),
+                                         FilePath(file_path));
+    EXPECT_TRUE(Util::ReadFile(path, s)) << "Path: " << path.ToString();
+    return s;
+}
+
 bool TestBase::VectorsClose2(const Vector2f &v0, const Vector2f &v1) {
     return ion::math::VectorsAlmostEqual(v0, v1, kClose);
 }

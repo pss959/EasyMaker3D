@@ -79,11 +79,15 @@ class TestBase : public ::testing::Test {
     // Creates and returns a default UnitConversion instance.
     static UnitConversionPtr GetDefaultUC();
 
-    /// Reads the named test file and returns the contents as a string. Asserts
-    /// if the file cannot be opened. If add_data_extension is true, this adds
-    /// the default data file extension.
+    /// Reads the named file from the Tests/Data directory and returns the
+    /// contents as a string. Asserts if the file cannot be opened. If
+    /// add_data_extension is true, this adds the default data file extension.
     std::string ReadDataFile(const std::string &file_name,
                              bool add_data_extension = true);
+
+    /// Reads the file on the given path from the resources directory and
+    /// returns the contents as a string. Asserts if the file cannot be opened.
+    std::string ReadResourceFile(const std::string &file_path);
 
     // Convenience that returns a Rotationf from axis and angle (degree)
     // values.
