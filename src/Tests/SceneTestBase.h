@@ -14,6 +14,9 @@ class SceneTestBase : public TestBaseWithTypes {
     // this value is used in lots of tests.
     static const float MS;
 
+    // The destructor resets any static state.
+    virtual ~SceneTestBase();
+
     // Builds a string defining a Scene with the given root node contents
     // (between the curly braces).
     std::string BuildSceneString(const std::string &contents);

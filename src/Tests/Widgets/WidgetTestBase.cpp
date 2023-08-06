@@ -4,19 +4,42 @@
 #include "Place/DragInfo.h"
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
+#include "Widgets/CompositeWidget.h"
 #include "Widgets/DraggableWidget.h"
 
 WidgetTestBase::DragTester::DragTester(const DraggableWidgetPtr &dw,
                                        const WidgetPtr &hw) {
-    ASSERT(dw);
-    dw_ = dw;
-    base_info_.ray.direction        = -Vector3f::AxisZ();
-    base_info_.grip_guide_direction = -Vector3f::AxisX();
-    base_info_.grip_position        =  Point3f::Zero();
-    base_info_.path_to_widget       = SG::NodePath(dw_);
+    Init_(dw);
+
+    base_info_.path_to_widget = SG::NodePath(dw_);
 
     // Use hw for the Hit path widget if specified.
     base_info_.hit.path = hw ? SG::NodePath(hw) : base_info_.path_to_widget;
+}
+
+WidgetTestBase::DragTester::DragTester(const CompositeWidgetPtr &cw,
+                                       const std::vector<std::string> &names) {
+    ASSERT(! names.empty());
+    CompositeWidgetPtr cur_cw = cw;
+    SG::NodePath path(cw);
+    for (size_t i = 0; i < names.size(); ++i) {
+        auto sub = cur_cw->GetSubWidget(names[i]);
+        path.push_back(sub);
+        if (i + 1 < names.size()) {
+            // Another composite widget.
+            cur_cw = std::dynamic_pointer_cast<CompositeWidget>(sub);
+            ASSERT(cur_cw);
+        }
+        else {
+            // Last name is a DraggableWidget.
+            Init_(std::dynamic_pointer_cast<DraggableWidget>(sub));
+        }
+    }
+    base_info_.path_to_widget = path;
+}
+
+void WidgetTestBase::DragTester::SetIsModifiedMode(bool m) {
+    base_info_.is_modified_mode = m;
 }
 
 void WidgetTestBase::DragTester::SetLinearPrecision(float p) {
@@ -142,6 +165,14 @@ void WidgetTestBase::DragTester::ApplyGripRotationDrag(
     }
 
     ApplyDrag_(infos);
+}
+
+void WidgetTestBase::DragTester::Init_(const DraggableWidgetPtr &dw) {
+    ASSERT(dw);
+    dw_ = dw;
+    base_info_.ray.direction        = -Vector3f::AxisZ();
+    base_info_.grip_guide_direction = -Vector3f::AxisX();
+    base_info_.grip_position        =  Point3f::Zero();
 }
 
 void WidgetTestBase::DragTester::ApplyDrag_(const std::vector<DragInfo> &infos) {

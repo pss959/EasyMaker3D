@@ -12,6 +12,14 @@ TEST_F(IconWidgetTest, Defaults) {
     EXPECT_FALSE(iw->IsToggle());
 }
 
+TEST_F(IconWidgetTest, Fields) {
+    auto iw = ReadTypedItem<IconWidget>(
+        "IconWidget { action: \"kDelete\", import_path: \"DeleteIcon.off\" }");
+    EXPECT_EQ(Action::kDelete,  iw->GetAction());
+    EXPECT_EQ("DeleteIcon.off", iw->GetImportPath());
+    EXPECT_EQ(1U,               iw->GetShapes().size());
+}
+
 TEST_F(IconWidgetTest, ActiveHovering) {
     // SupportsActiveHovering() should be true only for toggles Use hover
     // scaling to check.

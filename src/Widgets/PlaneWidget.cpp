@@ -19,6 +19,9 @@ void PlaneWidget::CreationDone() {
             this, [&](bool){ UpdatePlane_(true); });
         translator_->GetValueChanged().AddObserver(
             this, [&](Widget &, const float &){ UpdatePlane_(false); });
+
+        plane_.normal   = rotator_->GetDirection();
+        plane_.distance = translator_->GetValue();
     }
 }
 

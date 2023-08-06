@@ -1,12 +1,18 @@
 #include "Tests/SceneTestBase.h"
 
 #include "Parser/Parser.h"
+#include "SG/ColorMap.h"
 #include "SG/FileMap.h"
 #include "SG/Reader.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
 const float SceneTestBase::MS = TK::kInitialModelScale;
+
+SceneTestBase::~SceneTestBase() {
+    SG::ColorMap::Reset();
+    ResetContext();
+}
 
 std::string SceneTestBase::BuildSceneString(const std::string &contents) {
     const std::string header = R"(

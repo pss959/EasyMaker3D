@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "Base/Memory.h"
 #include "Place/DragInfo.h"
 #include "SG/Search.h"
@@ -7,6 +10,7 @@
 #include "Tests/Testing.h"
 #include "Util/String.h"
 
+DECL_SHARED_PTR(CompositeWidget);
 DECL_SHARED_PTR(DraggableWidget);
 DECL_SHARED_PTR(Widget);
 
@@ -26,8 +30,18 @@ class WidgetTestBase : public SceneTestBase {
         DragTester(const DraggableWidgetPtr &dw,
                    const WidgetPtr &hw = WidgetPtr());
 
+        // This constructor is passed a CompositeWidget and a vector of
+        // sub-widget names used to find the actual DraggableWidget. All but
+        // the last name must refer to CompositeWidget sub-widgets, and the
+        // last one must be a DraggableWidget sub-widget. The path_to_widget is
+        // set to the entire path from the CompositeWidget to the last
+        // sub-widget.
+        DragTester(const CompositeWidgetPtr &cw,
+                   const std::vector<std::string> &names);
+
         // Each of these sets a value that will be copied into all DragInfo
         // instances.
+        void SetIsModifiedMode(bool m);
         void SetLinearPrecision(float p);
         void SetAngularPrecision(float p);
         void SetRayDirection(const Vector3f &dir);
@@ -66,6 +80,7 @@ class WidgetTestBase : public SceneTestBase {
         DraggableWidgetPtr dw_;
         DragInfo           base_info_;  // Base DragInfo for setting values.
 
+        void Init_(const DraggableWidgetPtr &dw);
         void ApplyDrag_(const std::vector<DragInfo> &infos);
     };
 
