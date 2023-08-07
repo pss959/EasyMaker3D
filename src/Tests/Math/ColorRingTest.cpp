@@ -45,7 +45,7 @@ TEST_F(ColorRingTest, GetPointForColor) {
         return ColorRing::GetPointForColor(c);
     };
 
-/// Macro for testing points with a larger tolerance.
+// Macro for testing points with a larger tolerance.
 #define EXPECT_CPTS_CLOSE_(EXP, P) EXPECT_PRED3(PointsClose2T, EXP, P, .025f)
 
     EXPECT_CPTS_CLOSE_(GetPoint_(0, 0),   to_point("#e6acacff"));

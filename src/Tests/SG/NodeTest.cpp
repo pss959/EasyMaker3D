@@ -5,6 +5,7 @@
 #include "SG/Node.h"
 #include "SG/UnscopedNode.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 #include "Util/Assert.h"
 
 class NodeTest : public SceneTestBase {};
@@ -104,7 +105,7 @@ TEST_F(NodeTest, Shapes) {
 
     // Call SetUpIon() first so that shape addition and clearing also tests the
     // Ion shape handling.
-    SetUpIonForNode(*node);
+    node->SetUpIon(GetIonContext(), std::vector<ion::gfx::ShaderProgramPtr>());
 
     auto box0 = CreateObject<SG::Box>();
     auto box1 = CreateObject<SG::Box>();
@@ -128,7 +129,8 @@ TEST_F(NodeTest, Children) {
     SG::NodePtr d      = CreateObject<SG::Node>("D");
 
     // Call SetUpIon() first so that this also tests Ion Node handling.
-    SetUpIonForNode(*parent);
+    parent->SetUpIon(GetIonContext(),
+                     std::vector<ion::gfx::ShaderProgramPtr>());
 
     auto test_it = [&](const std::string &expected) {
         EXPECT_EQ(expected.size(), parent->GetChildCount());

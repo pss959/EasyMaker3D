@@ -9,6 +9,7 @@
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 

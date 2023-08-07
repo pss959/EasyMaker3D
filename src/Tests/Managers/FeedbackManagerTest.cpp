@@ -4,6 +4,7 @@
 #include "Managers/FeedbackManager.h"
 #include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 // Derived Feedback classes to allow testing.
 class TestFeedback : public Feedback {

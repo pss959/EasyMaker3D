@@ -1,10 +1,10 @@
 #include "Tests/SceneTestBase.h"
 
-#include "Parser/Parser.h"
 #include "SG/ColorMap.h"
 #include "SG/FileMap.h"
 #include "SG/Reader.h"
 #include "Tests/TempFile.h"
+#include "Tests/Testing.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
@@ -14,19 +14,6 @@ SceneTestBase::~SceneTestBase() {
     scene_.reset();
     SG::ColorMap::Reset();
     ResetContext();
-}
-
-std::string SceneTestBase::BuildSceneString(const std::string &contents) {
-    const std::string header = R"(
-Scene {
-  render_passes: [
-    LightingPass "Lighting" {
-      shader_programs: [<"programs/BaseColor.emd">]
-    }
-  ],
-  root_node: Node "Root" {
-)";
-    return header + contents + "}}";
 }
 
 SG::ScenePtr SceneTestBase::ReadScene(const std::string &input,
@@ -40,6 +27,36 @@ SG::ScenePtr SceneTestBase::ReadScene(const std::string &input,
     if (scene && set_up_ion)
         scene->SetUpIon(ion_context_);
     return scene;
+}
+
+SG::ScenePtr SceneTestBase::BuildAndReadScene(const std::string &contents,
+                                              bool set_up_ion) {
+    const std::string header = R"(
+Scene {
+  render_passes: [
+    LightingPass "Lighting" {
+      shader_programs: [<"programs/BaseColor.emd">]
+    }
+  ],
+  root_node: Node "Root" {
+)";
+    return ReadScene(header + contents + "}}", set_up_ion);
+}
+
+SG::IonContextPtr SceneTestBase::GetIonContext() {
+    if (! ion_context_)
+        InitIonContext_();
+    return ion_context_;
+}
+
+void SceneTestBase::AddNodeToRealScene_(const SG::NodePtr &node) {
+    EXPECT_NOT_NULL(node);
+
+    scene_ = ReadScene(ReadDataFile("RealScene.emd"), true);
+
+    /// This will set up Ion in the Node.
+    scene_->GetRootNode()->AddChild(node);
+    EXPECT_NOT_NULL(node->GetIonNode().Get());
 }
 
 void SceneTestBase::InitIonContext_() {

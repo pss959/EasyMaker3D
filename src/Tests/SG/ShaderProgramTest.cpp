@@ -2,6 +2,7 @@
 #include "SG/Exception.h"
 #include "SG/FileMap.h"
 #include "SG/ShaderProgram.h"
+#include "Tests/Testing.h"
 #include "Util/String.h"
 
 class ShaderProgramTest : public SceneTestBase {};

@@ -12,7 +12,7 @@ class ClipboardManagerTest : public SceneTestBase {
   protected:
     ClipboardManager mgr;
 
-    /// Vector to use for passing Models to ClipboardManager.
+    // Vector to use for passing Models to ClipboardManager.
     std::vector<ModelPtr> models;
 };
 

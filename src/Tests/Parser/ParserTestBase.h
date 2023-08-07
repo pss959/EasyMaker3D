@@ -7,6 +7,7 @@
 #include "Parser/Object.h"
 #include "Parser/Parser.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 #include "Base/Memory.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains

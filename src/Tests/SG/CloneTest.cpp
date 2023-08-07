@@ -5,6 +5,7 @@
 #include "SG/Torus.h"
 #include "SG/Uniform.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 class CloneTest : public SceneTestBase {};
 

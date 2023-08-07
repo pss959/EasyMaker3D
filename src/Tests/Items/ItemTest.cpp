@@ -50,8 +50,8 @@ TEST_F(ItemTest, Border) {
 
     // This calls SetUpIon(). Note that the Border needs to have a
     // MutableTriMeshShape for this to work.
-    border = ReadTypedNode<Border>(
-        "Border { shapes: [ MutableTriMeshShape {} ] }", true);
+    border = ParseAndSetUpNode<Border>(
+        "Border { shapes: [ MutableTriMeshShape {} ] }");
     border->SetSize(Vector2f(20, 10));
     size = border->GetScaledBounds().GetSize();
     // There should be a real mesh installed with size 1x1. (The actual size is

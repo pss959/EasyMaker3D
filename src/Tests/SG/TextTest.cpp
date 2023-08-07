@@ -9,6 +9,7 @@
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/TempFile.h"
+#include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
 #include "Util/Assert.h"
 #include "Util/General.h"

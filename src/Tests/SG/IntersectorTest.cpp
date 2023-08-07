@@ -5,6 +5,7 @@
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 #include "Util/String.h"
 
 class IntersectorTest : public SceneTestBase {
@@ -27,6 +28,16 @@ class IntersectorTest : public SceneTestBase {
         SG::ScenePtr scene = ReadScene(input, true);
         return SG::Intersector::IntersectScene(*scene, ray);
     }
+
+    // Reads a scene with the given root node contents from a string and
+    // intersects it with the given ray.
+    SG::Hit IntersectContents(const std::string &contents, const Ray &ray) {
+        ResetContext();  // Avoid context pollution.
+        // Call SetUpIon() so that meshes are installed in some shapes.
+        SG::ScenePtr scene = BuildAndReadScene(contents, true);
+        return SG::Intersector::IntersectScene(*scene, ray);
+    }
+
     // Reads a scene from a string and intersects the graph rooted by the named
     // Node with the given ray.
     SG::Hit IntersectGraph(const std::string &input, const std::string &name,
@@ -39,8 +50,7 @@ class IntersectorTest : public SceneTestBase {
 };
 
 TEST_F(IntersectorTest, EmptyScene) {
-    const std::string input = BuildSceneString("");
-    const SG::Hit hit = IntersectScene(input, Ray(Point3f(0, 20, 0),
+    const SG::Hit hit = IntersectContents("", Ray(Point3f(0, 20, 0),
                                                   Vector3f(0, 0, -1)));
     EXPECT_FALSE(hit.IsValid());
     EXPECT_TRUE(hit.path.empty());
@@ -308,13 +318,11 @@ TEST_F(IntersectorTest, Cone3) {
     },
   ]
 )";
-    const std::string input = BuildSceneString(contents);
-
     // Points straight down. Should hit the cone at (1,0,0) / distance = 10.
     const Ray ray(Point3f(1, 10, 0), Vector3f(0, -1, 0));
 
     SG::Hit hit;
-    hit = IntersectScene(input, ray);
+    hit = IntersectContents(contents, ray);
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_EQ("Cone", hit.path.back()->GetName());
@@ -340,10 +348,9 @@ TEST_F(IntersectorTest, Cone4) {
     },
   ]
 )";
-    const std::string input = BuildSceneString(contents);
-
     SG::Hit hit;
-    hit = IntersectScene(input, Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
+    hit = IntersectContents(contents,
+                            Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     ASSERT_NOT_NULL(hit.shape);
@@ -364,14 +371,14 @@ TEST_F(IntersectorTest, NonIntersectingShapes) {
     },
   ]
 )";
-    const std::string input = BuildSceneString(contents);
     SG::Hit hit;
-    hit = IntersectScene(input, Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
+    hit = IntersectContents(contents,
+                            Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
     EXPECT_FALSE(hit.IsValid());
 }
 
 TEST_F(IntersectorTest, ImportedShape) {
-    const std::string contents = R"(
+    std::string contents = R"(
   children: [
     Node {
       shapes: [
@@ -384,12 +391,12 @@ TEST_F(IntersectorTest, ImportedShape) {
   ]
 )";
 
-    const std::string input = BuildSceneString(
-        Util::ReplaceString(contents, "<PATH>",
-                            GetDataPath("Shapes/shape.off").ToString()));
+    contents = Util::ReplaceString(contents, "<PATH>",
+                                   GetDataPath("Shapes/shape.off").ToString());
 
     SG::Hit hit;
-    hit = IntersectScene(input, Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
+    hit = IntersectContents(contents,
+                            Ray(Point3f(0, 0, 20), Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     ASSERT_NOT_NULL(hit.shape);
@@ -400,7 +407,7 @@ TEST_F(IntersectorTest, ImportedShape) {
 }
 
 TEST_F(IntersectorTest, ImportedShapeWithProxy) {
-    const std::string contents = R"(
+    std::string contents = R"(
   children: [
     Node {
       shapes: [
@@ -415,14 +422,14 @@ TEST_F(IntersectorTest, ImportedShapeWithProxy) {
   ]
 )";
 
-    const std::string input1 = BuildSceneString(
-        Util::ReplaceString(contents, "<PATH>",
-                            GetDataPath("Shapes/shape.off").ToString()));
+    contents = Util::ReplaceString(contents, "<PATH>",
+                                   GetDataPath("Shapes/shape.off").ToString());
 
     // This ray should hit the bounds of the proxy shape Box (which is twice as
     // large as the ImportedShape) but not the ImportedShape itself.
     SG::Hit hit;
-    hit = IntersectScene(input1, Ray(Point3f(.8f, 0, 20), Vector3f(0, 0, -1)));
+    hit = IntersectContents(contents,
+                            Ray(Point3f(.8f, 0, 20), Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     ASSERT_NOT_NULL(hit.shape);
@@ -430,9 +437,10 @@ TEST_F(IntersectorTest, ImportedShapeWithProxy) {
 
     // Turn on use_bounds_proxy and there should be no hit, since the node
     // bounds do not include the proxy shape.
-    const std::string input2 = Util::ReplaceString(
-        input1, "use_bounds_proxy: False", "use_bounds_proxy: True");
-    hit = IntersectScene(input2, Ray(Point3f(.8f, 0, 20), Vector3f(0, 0, -1)));
+    const std::string contents2 = Util::ReplaceString(
+        contents, "use_bounds_proxy: False", "use_bounds_proxy: True");
+    hit = IntersectContents(contents2,
+                            Ray(Point3f(.8f, 0, 20), Vector3f(0, 0, -1)));
     EXPECT_FALSE(hit.IsValid());
 }
 

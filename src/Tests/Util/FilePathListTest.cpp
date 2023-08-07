@@ -1,7 +1,7 @@
 #include "Tests/Testing.h"
 #include "Util/FilePathList.h"
 
-/// Derived FilePathList class that simulates a file system for testing.
+// Derived FilePathList class that simulates a file system for testing.
 class TestFPL_ : public FilePathList {
   public:
     virtual bool IsValidDirectory(const FilePath &path) const {

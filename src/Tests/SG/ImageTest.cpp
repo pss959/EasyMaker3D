@@ -3,6 +3,7 @@
 #include "SG/FileImage.h"
 #include "SG/IonContext.h"
 #include "SG/ProceduralImage.h"
+#include "Tests/Testing.h"
 
 class ImageTest : public SceneTestBase {};
 

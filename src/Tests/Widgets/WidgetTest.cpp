@@ -4,8 +4,10 @@
 #include "Util/Assert.h"
 #include "Widgets/Widget.h"
 
+/// Class that defines and sets up a TestWidget type.
 class WidgetTest : public SceneTestBase {
   protected:
+    /// Derived Widget class that allows changes to active hovering.
     class TestWidget : public Widget {
       public:
         void AllowActiveHovering() { can_active_hover_ = true; }
@@ -21,26 +23,23 @@ class WidgetTest : public SceneTestBase {
     };
     typedef std::shared_ptr<TestWidget> TestWidgetPtr;
 
-    WidgetTest();
-    TestWidgetPtr CreateTestWidget(bool set_up_ion);
+    WidgetTest() {
+        Parser::Registry::AddType<TestWidget>("TestWidget");
+    }
+
+    /// Creates a TestWidget with hover scaling enabled.
+    TestWidgetPtr CreateTestWidget() {
+        return ParseAndSetUpNode<TestWidget>(
+            "TestWidget \"TW\" { hover_scale: 2 2 2 }");
+    }
 };
-
-WidgetTest::WidgetTest() {
-    Parser::Registry::AddType<TestWidget>("TestWidget");
-}
-
-WidgetTest::TestWidgetPtr WidgetTest::CreateTestWidget(bool set_up_ion) {
-    // Create a TestWidget with hover scaling enabled.
-    return ReadTypedNode<TestWidget>("TestWidget \"TW\" { hover_scale: 2 2 2 }",
-                                     set_up_ion);
-}
 
 // ----------------------------------------------------------------------------
 // Tests.
 // ----------------------------------------------------------------------------
 
 TEST_F(WidgetTest, InteractionEnabled) {
-    auto tw = CreateTestWidget(true);  // Need true to test color setting.
+    auto tw = CreateTestWidget();
     EXPECT_TRUE(tw->IsInteractionEnabled());
     tw->SetInteractionEnabled(false);
     EXPECT_FALSE(tw->IsInteractionEnabled());
@@ -49,7 +48,7 @@ TEST_F(WidgetTest, InteractionEnabled) {
 }
 
 TEST_F(WidgetTest, Active) {
-    auto tw = CreateTestWidget(false);
+    auto tw = CreateTestWidget();
 
     // Set a function to invoke when activating or deactivating.
     std::string activation_string = "X";
@@ -83,7 +82,7 @@ TEST_F(WidgetTest, Active) {
 
 TEST_F(WidgetTest, Hover) {
     // Changing colors in a Widget requires a scene with RenderPasses set up.
-    auto tw = CreateTestWidget(true);
+    auto tw = CreateTestWidget();
 
     EXPECT_FALSE(tw->IsHovering());
     tw->StartHovering();
@@ -146,7 +145,7 @@ TEST_F(WidgetTest, Hover) {
 }
 
 TEST_F(WidgetTest, Colors) {
-    auto tw = CreateTestWidget(true);
+    auto tw = CreateTestWidget();
 
     // Default colors.
     EXPECT_EQ(SG::ColorMap::SGetColor("WidgetActiveColor"),
@@ -172,7 +171,7 @@ TEST_F(WidgetTest, Colors) {
 }
 
 TEST_F(WidgetTest, Tooltip) {
-    auto tw = CreateTestWidget(true);
+    auto tw = CreateTestWidget();
     std::string s;
     const auto func = [&](Widget &w, const std::string &str, bool show){
         EXPECT_EQ(&w, tw.get());
@@ -197,7 +196,7 @@ TEST_F(WidgetTest, Tooltip) {
 }
 
 TEST_F(WidgetTest, PlaceTarget) {
-    auto tw = CreateTestWidget(false);
+    auto tw = CreateTestWidget();
     EXPECT_FALSE(tw->CanReceiveTarget());
 
     // Base Widget class does not support target placement.

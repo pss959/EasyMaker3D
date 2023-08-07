@@ -10,6 +10,7 @@
 #include "SG/Reader.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/TempFile.h"
+#include "Tests/Testing.h"
 #include "Util/String.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains the
@@ -44,11 +45,11 @@ class ReaderTest : public SceneTestBase {
         return CompareStrings(FixString(expected), FixString(out.str()));
     }
 
-    // Calls ReadScene(), then prints the resulting Ion graph to a string,
-    // comparing with the expected string.
-    bool ReadSceneAndCompareIon(const std::string &input,
+    // Calls BuildAndReadScene(), then prints the resulting Ion graph to a
+    // string, comparing with the expected string.
+    bool ReadSceneAndCompareIon(const std::string &contents,
                                 const std::string &expected) {
-        SG::ScenePtr scene = ReadScene(input);
+        SG::ScenePtr scene = BuildAndReadScene(contents);
         EXPECT_NOT_NULL(scene.get());
 
         std::ostringstream out;
@@ -85,8 +86,7 @@ TEST_F(ReaderTest, EmptyScene) {
 }
 
 TEST_F(ReaderTest, RootNode) {
-    const std::string input = BuildSceneString("");
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene("");
     EXPECT_NULL(scene->GetGantry());
     EXPECT_NOT_NULL(scene->GetRootNode());
     EXPECT_EQ("Root", scene->GetRootNode()->GetName());
@@ -113,12 +113,11 @@ TEST_F(ReaderTest, Instances) {
 }
 
 TEST_F(ReaderTest, SetUpIonRootNode) {
-    const std::string input = BuildSceneString("");
     const std::string expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
         "}\n";
-    EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
+    EXPECT_TRUE(ReadSceneAndCompareIon("", expected));
 }
 
 TEST_F(ReaderTest, IonTransform) {
@@ -153,8 +152,7 @@ R"(ION Node "Root" {
 }
 )";
 
-    const std::string input = BuildSceneString(contents);
-    EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
+    EXPECT_TRUE(ReadSceneAndCompareIon(contents, expected));
 }
 
 TEST_F(ReaderTest, OneChild) {
@@ -172,8 +170,7 @@ R"(ION Node "Root" {
 }
 )";
 
-    const std::string input = BuildSceneString(contents);
-    EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
+    EXPECT_TRUE(ReadSceneAndCompareIon(contents, expected));
 }
 
 TEST_F(ReaderTest, TwoChildrenAndNames) {
@@ -194,8 +191,7 @@ R"(ION Node "Root" {
   }
 }
 )";
-    const std::string input = BuildSceneString(contents);
-    EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
+    EXPECT_TRUE(ReadSceneAndCompareIon(contents, expected));
 }
 
 TEST_F(ReaderTest, Box) {
@@ -265,8 +261,7 @@ R"(ION Node "Root" {
   }
 }
 )";
-    const std::string input = BuildSceneString(contents);
-    EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
+    EXPECT_TRUE(ReadSceneAndCompareIon(contents, expected));
 }
 
 TEST_F(ReaderTest, Cylinder) {
@@ -350,8 +345,7 @@ R"(ION Node "Root" {
   }
 }
 )";
-    const std::string input = BuildSceneString(contents);
-    EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
+    EXPECT_TRUE(ReadSceneAndCompareIon(contents, expected));
 }
 
 TEST_F(ReaderTest, EmptyPass) {

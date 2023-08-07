@@ -7,14 +7,14 @@
 #include "Math/Types.h"
 #include "Util/FilePath.h"
 
-// Base test fixture that supplies some useful functions for tests.
+/// Base test fixture that supplies some useful functions for tests.
 class TestBase : public ::testing::Test {
  protected:
     // ------------------------------------------------------------------------
     // Test introspection.
     // ------------------------------------------------------------------------
 
-    // Returns the name of the current test case.
+    /// Returns the name of the current test case.
     std::string GetTestCaseName() const;
 
     /// Returns the name of the current test.
@@ -39,10 +39,10 @@ class TestBase : public ::testing::Test {
     // Comparison helpers.
     // ------------------------------------------------------------------------
 
-    // Close enough for most floating-point comparisons.
+    /// Close enough for most floating-point comparisons.
     static constexpr float kClose = 1e-4f;
 
-    // FP testing predicates from Ion.
+    /// FP testing predicates from Ion.
     static bool VectorsClose2(const Vector2f &v0, const Vector2f &v1);
     static bool PointsClose2(const Point2f &p0, const Point2f &p1);
     static bool VectorsClose(const Vector3f &v0, const Vector3f &v1);
@@ -50,7 +50,7 @@ class TestBase : public ::testing::Test {
     static bool RotationsClose(const Rotationf &r0, const Rotationf &r1);
     static bool MatricesClose(const Matrix4f &m0, const Matrix4f &m1);
 
-    // FP testing predicates from Ion with custom tolerance.
+    /// FP testing predicates from Ion with custom tolerance.
     static bool VectorsClose2T(const Vector2f &v0, const Vector2f &v1, float t);
     static bool PointsClose2T(const Point2f &p0, const Point2f &p1, float t);
     static bool VectorsCloseT(const Vector3f &v0, const Vector3f &v1, float t);
@@ -59,12 +59,12 @@ class TestBase : public ::testing::Test {
                                 float t_degrees);
     static bool MatricesCloseT(const Matrix4f &m0, const Matrix4f &m1, float t);
 
-    // Compares two strings for equality with verbose results on failure.
+    /// Compares two strings for equality with verbose results on failure.
     static bool CompareStrings(const std::string &expected,
                                const std::string &actual);
 
-    // Compares two data buffers for equality with verbose results on
-    // failure. The buffers are assumed to have the same size.
+    /// Compares two data buffers for equality with verbose results on
+    /// failure. The buffers are assumed to have the same size.
     static bool CompareData(const void *expected, size_t size,
                             const void *actual);
 
@@ -72,24 +72,24 @@ class TestBase : public ::testing::Test {
     // TriMesh helpers.
     // ------------------------------------------------------------------------
 
-    // Loads a TriMesh from an STL file.
+    /// Loads a TriMesh from an STL file.
     static TriMesh LoadTriMesh(const std::string &file_name);
 
-    // Returns true if the given TriMesh contains a point close to the given
-    // one.
+    /// Returns true if the given TriMesh contains a point close to the given
+    /// one.
     static bool MeshHasPoint(const TriMesh &mesh, const Point3f &p);
 
-    // Validates a TriMesh.
+    /// Validates a TriMesh.
     static void ValidateMesh(const TriMesh &mesh, string desc);
 
     // ------------------------------------------------------------------------
     // Other conveniences.
     // ------------------------------------------------------------------------
 
-    // Returns a Rotationf from axis and angle (degree) values.
+    /// Returns a Rotationf from axis and angle (degree) values.
     static Rotationf BuildRotation(const Vector3f &axis, float deg);
     static Rotationf BuildRotation(float x, float y, float z, float deg);
 
-    // Fixes a string by removing line feeds. Needed for Windows.
+    /// Fixes a string by removing line feeds. Needed for Windows.
     static std::string FixString(const std::string &s);
 };

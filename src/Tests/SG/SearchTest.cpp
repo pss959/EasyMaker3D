@@ -7,6 +7,7 @@
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 #include "Util/Assert.h"
 
 class SearchTest : public SceneTestBase {};
@@ -33,9 +34,8 @@ TEST_F(SearchTest, OneLevel) {
 }
 
 TEST_F(SearchTest, TwoLevel) {
-    const std::string input =
-        BuildSceneString("children: [ Node \"SomeChild\" {} ] ");
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene =
+        BuildAndReadScene("children: [ Node \"SomeChild\" {} ] ");
     EXPECT_NOT_NULL(scene);
 
     SG::NodePtr node = SG::FindNodeInScene(*scene, "SomeChild", true);
@@ -81,8 +81,7 @@ TEST_F(SearchTest, MultiLevel) {
     },
   ]
 )";
-    const std::string input = BuildSceneString(contents);
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene(contents);
     EXPECT_NOT_NULL(scene);
 
     SG::NodePath path = SG::FindNodePathInScene(*scene, "Level1b");
@@ -168,8 +167,7 @@ TEST_F(SearchTest, FindNodes) {
     },
   ]
 )";
-    const std::string input = BuildSceneString(contents);
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene(contents);
     EXPECT_NOT_NULL(scene);
 
     auto func1 = [](const SG::Node &node){
@@ -222,8 +220,7 @@ TEST_F(SearchTest, FindShape) {
     },
   ]
 )";
-    const std::string input = BuildSceneString(contents);
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene(contents);
     EXPECT_NOT_NULL(scene);
 
     auto node = SG::FindNodeInScene(*scene, "N");
@@ -244,8 +241,7 @@ TEST_F(SearchTest, FindShape) {
 }
 
 TEST_F(SearchTest, AssertErrors) {
-    const std::string input = BuildSceneString("");
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene("");
     EXPECT_NOT_NULL(scene);
     EXPECT_NOT_NULL(scene->GetRootNode());
 

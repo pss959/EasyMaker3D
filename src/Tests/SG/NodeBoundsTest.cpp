@@ -4,20 +4,18 @@
 #include "SG/Node.h"
 #include "SG/Torus.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 class NodeBoundsTest : public SceneTestBase {};
 
 TEST_F(NodeBoundsTest, NoShapes) {
-    const std::string input = BuildSceneString("");
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene("");
     EXPECT_NOT_NULL(scene->GetRootNode());
     EXPECT_TRUE(scene->GetRootNode()->GetBounds().IsEmpty());
 }
 
 TEST_F(NodeBoundsTest, Box) {
-    const std::string input =
-        BuildSceneString("shapes: [Box { size: 2 3 4 }],");
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene("shapes: [Box { size: 2 3 4 }],");
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
@@ -26,9 +24,8 @@ TEST_F(NodeBoundsTest, Box) {
 }
 
 TEST_F(NodeBoundsTest, Cylinder) {
-    const std::string input = BuildSceneString(
+    SG::ScenePtr scene = BuildAndReadScene(
         "shapes: [Cylinder { height: 6, top_radius: 4, bottom_radius: 3 }],");
-    SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
@@ -37,9 +34,8 @@ TEST_F(NodeBoundsTest, Cylinder) {
 }
 
 TEST_F(NodeBoundsTest, Ellipsoid) {
-    const std::string input =
-        BuildSceneString("shapes: [Ellipsoid { size: 6 7 8 }],");
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene =
+        BuildAndReadScene("shapes: [Ellipsoid { size: 6 7 8 }],");
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
@@ -48,10 +44,9 @@ TEST_F(NodeBoundsTest, Ellipsoid) {
 }
 
 TEST_F(NodeBoundsTest, RegularPolygon) {
-    const std::string input = BuildSceneString(
+    SG::ScenePtr scene = BuildAndReadScene(
         "shapes: [RegularPolygon { plane_normal: \"kNegativeY\","
         " sides: 11 }],");
-    SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
@@ -60,9 +55,8 @@ TEST_F(NodeBoundsTest, RegularPolygon) {
 }
 
 TEST_F(NodeBoundsTest, Rectangle) {
-    const std::string input = BuildSceneString(
+    SG::ScenePtr scene = BuildAndReadScene(
         "shapes: [Rectangle { plane_normal: \"kNegativeZ\", size: 3 4 }],");
-    SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
@@ -71,9 +65,8 @@ TEST_F(NodeBoundsTest, Rectangle) {
 }
 
 TEST_F(NodeBoundsTest, CombineShapes) {
-    const std::string input = BuildSceneString(
+    SG::ScenePtr scene = BuildAndReadScene(
         "shapes: [Box { size: 2 3 4 }, Box { size: 8 1 6 }],");
-    SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
@@ -87,9 +80,7 @@ TEST_F(NodeBoundsTest, TransformedRoot) {
   translation: 100 200 300,
   shapes: [Box { size: 2 3 4 }],
 )";
-
-    const std::string input = BuildSceneString(contents);
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene(contents);
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
@@ -115,8 +106,7 @@ TEST_F(NodeBoundsTest, TransformedChild) {
     },
   ],
 )";
-    const std::string input = BuildSceneString(contents);
-    SG::ScenePtr scene = ReadScene(input);
+    SG::ScenePtr scene = BuildAndReadScene(contents);
     EXPECT_NOT_NULL(scene->GetRootNode());
     Bounds bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());

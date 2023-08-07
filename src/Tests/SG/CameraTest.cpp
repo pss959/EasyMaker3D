@@ -2,6 +2,7 @@
 #include "SG/Gantry.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
+#include "Tests/Testing.h"
 
 class CameraTest : public SceneTestBase {};
 

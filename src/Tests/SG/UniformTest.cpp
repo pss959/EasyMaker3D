@@ -1,9 +1,10 @@
-#include "SceneTestBase.h"
 #include "SG/Material.h"
 #include "SG/Scene.h"
 #include "SG/Texture.h"
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
+#include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 class UniformTest : public SceneTestBase {};
 
@@ -46,7 +47,7 @@ TEST_F(UniformTest, UniformBlock) {
   ],
 )";
 
-    auto scene = ReadScene(BuildSceneString(contents), false);
+    auto scene = BuildAndReadScene(contents, false);
     EXPECT_NOT_NULL(scene->GetRootNode());
     EXPECT_EQ(1U, scene->GetRootNode()->GetUniformBlocks().size());
     auto block = scene->GetRootNode()->GetUniformBlocks()[0];

@@ -1,4 +1,5 @@
-#include "ParserTestBase.h"
+#include "Tests/Parser/ParserTestBase.h"
+#include "Tests/Testing.h"
 
 class CopyTest : public ParserTestBase {};
 

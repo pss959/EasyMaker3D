@@ -11,7 +11,7 @@ TestBaseWithTypes::~TestBaseWithTypes() {
     UnregisterTypes();
 }
 
-Parser::ObjectPtr TestBaseWithTypes::ParseItem_(const std::string &input) {
+Parser::ObjectPtr TestBaseWithTypes::ParseObject_(const std::string &input) {
     Parser::Parser parser;
     return parser.ParseFromString(input);
 }

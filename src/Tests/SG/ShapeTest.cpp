@@ -7,7 +7,8 @@
 #include "SG/Polygon.h"
 #include "SG/Torus.h"
 #include "SG/Tube.h"
-#include "SceneTestBase.h"
+#include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 class ShapeTest : public SceneTestBase {};
 

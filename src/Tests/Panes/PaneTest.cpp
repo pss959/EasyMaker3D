@@ -190,5 +190,5 @@ TEST_F(PaneTest, Switcher) {
               sw->GetPanes()[1]->GetTranslation());
 }
 
-/// \todo Test all Pane functions that issue PaneChanged() to make sure sizes
-/// update.
+// TODO Test all Pane functions that issue PaneChanged() to make sure sizes
+// update.
