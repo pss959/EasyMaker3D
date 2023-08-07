@@ -1,4 +1,4 @@
-SpinWidget "Spin" {
+SpinWidget "SpinWidget" {
   children: [
     # AxisWidget to change the spin axis.
     <"nodes/Widgets/AxisWidget.emd">,

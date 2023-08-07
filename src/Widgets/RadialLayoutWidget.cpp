@@ -135,8 +135,8 @@ void RadialLayoutWidget::SetColors_() {
 void RadialLayoutWidget::RadiusChanged_() {
     const float new_radius = start_radius_ * ring_->GetScaleFactor();
     const float precision = ring_->GetCurrentDragInfo().linear_precision;
-    radius_ = std::max(RoundToPrecision(new_radius, precision),
-                       TK::kRLWRingMinOuterRadius);
+    radius_ = std::max(precision > 0 ? RoundToPrecision(new_radius, precision) :
+                       new_radius, TK::kRLWRingMinOuterRadius);
     UpdateRing_();
     UpdateSpokes_();
     UpdateArc_();
@@ -150,10 +150,11 @@ void RadialLayoutWidget::SpokeChanged_(bool is_start) {
     // Compute the new full angle and apply precision.
     const Anglef angle =
         NormalizedAngle(start_rot_angle_ + widget->GetRotationAngle());
-    Anglef new_angle = Anglef::FromDegrees(RoundToPrecision(angle.Degrees(),
-                                                            precision));
-    if (new_angle.Degrees() == 360)
-        new_angle = Anglef::FromDegrees(0);
+    float new_deg = precision > 0 ?
+        RoundToPrecision(angle.Degrees(), precision) : angle.Degrees();
+    if (new_deg == 360)
+        new_deg = 0;
+    const Anglef new_angle = Anglef::FromDegrees(new_deg);
 
     // When the start spoke is moved, both spokes rotate together.
     if (is_start) {
@@ -186,6 +187,8 @@ void RadialLayoutWidget::SpokeChanged_(bool is_start) {
 }
 
 Anglef RadialLayoutWidget::GetCrossoverAngle_(const Anglef &new_end_angle) {
+    ASSERT(arc_.arc_angle.Radians() != 0);
+
     // Returns the smaller signed angle between two angles.
     const auto deg_diff = [](const Anglef &from_angle, const Anglef &to_angle){
         float deg = (to_angle - from_angle).Degrees();
@@ -196,17 +199,11 @@ Anglef RadialLayoutWidget::GetCrossoverAngle_(const Anglef &new_end_angle) {
     const float prev_diff_deg = deg_diff(arc_.start_angle, end_angle_);
     const float  new_diff_deg = deg_diff(arc_.start_angle, new_end_angle);
 
-    bool use_angle = false;
-
-    // If there is no current arc, treat this as a crossover.
-    if (arc_.arc_angle.Radians() == 0)
-        use_angle = true;
-
     // Check for a sign change in the subtended angles. The sign can change
     // near 0 or near 180. Ignore changes near 180.
-    else use_angle = (std::abs(new_diff_deg) < 90 &&
-                      ((prev_diff_deg <= 0 && new_diff_deg > 0) ||
-                       (prev_diff_deg >= 0 && new_diff_deg < 0)));
+    const bool use_angle = (std::abs(new_diff_deg) < 90 &&
+                            ((prev_diff_deg <= 0 && new_diff_deg > 0) ||
+                             (prev_diff_deg >= 0 && new_diff_deg < 0)));
 
     return use_angle ? Anglef::FromDegrees(new_diff_deg) : Anglef();
 }

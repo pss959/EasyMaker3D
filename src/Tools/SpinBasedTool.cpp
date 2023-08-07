@@ -33,7 +33,8 @@ void SpinBasedTool::CreationDone() {
     Tool::CreationDone();
 
     if (! IsTemplate()) {
-        spin_widget_ = SG::FindTypedNodeUnderNode<SpinWidget>(*this, "Spin");
+        spin_widget_ = SG::FindTypedNodeUnderNode<SpinWidget>(*this,
+                                                              "SpinWidget");
 
         // Set up callbacks.
         spin_widget_->GetActivation().AddObserver(

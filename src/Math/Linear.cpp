@@ -7,6 +7,7 @@
 
 #include <algorithm>
 
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 
 // ----------------------------------------------------------------------------
@@ -202,6 +203,11 @@ Matrix4f GetViewMatrix(const Frustum &frustum) {
 // General linear algebra functions.
 // ----------------------------------------------------------------------------
 
+float RoundToPrecision(float value, float precision) {
+    ASSERT(precision > 0);
+    return precision * std::roundf(value / precision);
+}
+
 bool AreClose(float a, float b, float tolerance) {
     return std::abs(b - a) <= tolerance;
 }
@@ -297,6 +303,13 @@ template int GetMaxAbsElementIndex(const VectorBase<4, float> &v);
 
 Vector3f GetAxis(Dim dim, float scale) {
     return GetAxis(Util::EnumInt(dim), scale);
+}
+
+Vector3f GetAxis(int dim, float scale) {
+    ASSERT(dim >= 0 && dim <= 2);
+    Vector3f axis = Vector3f::Zero();
+    axis[dim] = scale;
+    return axis;
 }
 
 Anglef AbsAngle(const Anglef &angle) {

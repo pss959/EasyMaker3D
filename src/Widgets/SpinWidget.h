@@ -19,6 +19,7 @@ DECL_SHARED_PTR(SpinWidget);
 ///   - "Axis": An AxisWidget allowing the rotation axis to be rotated and
 ///     translated.
 ///   - "Ring": A DiscWidget providing rotation.
+///   - "Offset" A Slider1DWidget used to change the offset value.
 ///
 /// The GetSpinChanged() Notifier can be used to track changes.
 ///

@@ -17,10 +17,12 @@ DECL_SHARED_PTR(TextNode);
 
 /// RadialLayoutWidget is a derived CompositeWidget used for setting up radial
 /// layout - it allows the user to define a circle with adjustable radius and
-/// optional start and end angles. The widget contains the following geometry:
-///   - A ring (torus) with a DiscWidget attached to it for scaling the radius.
-///   - Two radial spokes with DiscWidgets attached to them for rotating the
-///     start and end angles.
+/// optional start and end angles.
+///
+/// The widget contains the following named sub-widgets:
+///   - "Ring":       A DiscWidget allowing the radius to be scaled.
+///   - "StartSpoke": A DiscWidget allowing the start angle to be rotated.
+///   - "EndSpoke":   A DiscWidget allowing the end angle to be rotated.
 ///
 /// To avoid clutter, the spokes are hidden when the radius is small. The
 /// spokes default to both be positioned at 0 degrees, meaning that the entire

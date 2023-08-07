@@ -4,6 +4,7 @@
 
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "Util/Assert.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
 

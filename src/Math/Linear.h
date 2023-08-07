@@ -5,7 +5,6 @@
 #include "Enums/Dim.h"
 #include "Math/Spin.h"
 #include "Math/Types.h"
-#include "Util/Assert.h"
 
 /// \file
 /// This file defines some basic linear algebra functions.
@@ -136,9 +135,7 @@ template <>           inline Vector2f OneInit() { return Vector2f(1, 1); }
 /// RoundToPrecision(1.2345f, .01f)
 /// \endcode
 /// will return 1.23f.
-inline float RoundToPrecision(float value, float precision) {
-    return precision * std::roundf(value / precision);
-}
+float RoundToPrecision(float value, float precision);
 
 /// Returns true if two values are close enough to each other within a
 /// tolerance.
@@ -194,12 +191,7 @@ Vector3f GetAxis(Dim dim, float scale = 1.f);
 
 /// Returns the coordinate axis for the given dimension (0, 1, or 2). The scale
 /// value (default 1) is used for the axis length.
-inline Vector3f GetAxis(int dim, float scale = 1.f) {
-    ASSERT(dim >= 0 && dim <= 2);
-    Vector3f axis = Vector3f::Zero();
-    axis[dim] = scale;
-    return axis;
-}
+Vector3f GetAxis(int dim, float scale = 1.f);
 
 /// Returns the absolute value of an angle.
 Anglef AbsAngle(const Anglef &angle);
