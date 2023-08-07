@@ -12,7 +12,9 @@ main_test_sources = [
     'SceneTestBase.cpp',
     'Session/SessionTestBase.cpp',
     'Sim/SimTestBase.cpp',
+    'TempFile.cpp',
     'TestBase.cpp',
+    'TestBaseWithTypes.cpp',
     'TestMain.cpp',     # Mainline to run tests.
 ]
 

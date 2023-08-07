@@ -1,5 +1,7 @@
 #include "ParserTestBase.h"
 
+#include "Tests/TempFile.h"
+
 class FieldTest : public ParserTestBase {};
 
 TEST_F(FieldTest, Initialization) {

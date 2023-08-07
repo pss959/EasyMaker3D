@@ -19,14 +19,14 @@ TEST_F(ItemTest, AppInfo) {
     EXPECT_EQ(TK::kVersionString, info->GetVersion());
     EXPECT_NOT_NULL(info->GetSessionState());
 
-    info = ReadTypedItem<AppInfo>(
+    info = ParseObject<AppInfo>(
         "AppInfo { version: \"1.2.3\", session_state: SessionState {} }");
     EXPECT_EQ("1.2.3", info->GetVersion());
     EXPECT_NOT_NULL(info->GetSessionState());
 
-    TEST_THROW(ReadTypedItem<AppInfo>("AppInfo {}"),
+    TEST_THROW(ParseObject<AppInfo>("AppInfo {}"),
                Parser::Exception, "Missing version field data");
-    TEST_THROW(ReadTypedItem<AppInfo>("AppInfo { version: \"Something\" }"),
+    TEST_THROW(ParseObject<AppInfo>("AppInfo { version: \"Something\" }"),
                Parser::Exception, "Missing session_state data");
 }
 

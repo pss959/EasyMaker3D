@@ -9,6 +9,7 @@
 #include "SG/Node.h"
 #include "SG/Reader.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/TempFile.h"
 #include "Util/String.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains the
@@ -93,12 +94,12 @@ TEST_F(ReaderTest, RootNode) {
 }
 
 TEST_F(ReaderTest, Settings) {
-    const std::string input = ReadDataFile("Settings");
+    const std::string input = ReadDataFile("Settings.emd");
     EXPECT_TRUE(ParseStringAndCompare(input, input));
 }
 
 TEST_F(ReaderTest, AllTypes) {
-    const std::string input = ReadDataFile("AllTypes");
+    const std::string input = ReadDataFile("AllTypes.emd");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 
     // Create Ion data for this scene to test all shapes.
@@ -107,7 +108,7 @@ TEST_F(ReaderTest, AllTypes) {
 }
 
 TEST_F(ReaderTest, Instances) {
-    const std::string input = ReadDataFile("Instances");
+    const std::string input = ReadDataFile("Instances.emd");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 }
 

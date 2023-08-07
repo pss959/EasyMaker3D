@@ -5,20 +5,13 @@
 
 #include "App/ScriptedApp.h"
 #include "Tests/Testing.h"
+#include "Tests/UnitTestTypeChanger.h"
 #include "Util/FilePath.h"
 
-SimTestBase::SimTestBase() {
-    // Override the unit test setting.
-    prev_app_type_ = Util::app_type;
-    Util::app_type = Util::AppType::kSimTest;
-}
-
-SimTestBase::~SimTestBase() {
-    // Restore the unit test setting.
-    Util::app_type = prev_app_type_;
-}
-
 void SimTestBase::RunScript(const std::string &script_name) {
+    // Change the app type temporarily.
+    UnitTestTypeChanger uttc(Util::AppType::kSimTest);
+
     // Execute RunScriptAndExit_() as a death test so it exits and cleans up.
     // Ion has some static variables that need to be reset for each execution;
     // calling _exit() is the easiest way to reset everything for each
@@ -27,6 +20,9 @@ void SimTestBase::RunScript(const std::string &script_name) {
 }
 
 void SimTestBase::RunScriptAndExit_(const std::string &script_name) {
+    // Change the app type temporarily.
+    UnitTestTypeChanger uttc(Util::AppType::kSimTest);
+
     // If the script was executed successfully, let the derived class test the
     // results.
     bool ok = RunScript_(script_name);

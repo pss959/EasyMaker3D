@@ -1,4 +1,5 @@
 #include "ParserTestBase.h"
+#include "Tests/TempFile.h"
 #include "Util/FilePath.h"
 
 class IncludeTest : public ParserTestBase {};

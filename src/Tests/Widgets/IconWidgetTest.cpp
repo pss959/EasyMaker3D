@@ -13,7 +13,7 @@ TEST_F(IconWidgetTest, Defaults) {
 }
 
 TEST_F(IconWidgetTest, Fields) {
-    auto iw = ReadTypedItem<IconWidget>(
+    auto iw = ParseObject<IconWidget>(
         "IconWidget { action: \"kDelete\", import_path: \"DeleteIcon.off\" }");
     EXPECT_EQ(Action::kDelete,  iw->GetAction());
     EXPECT_EQ("DeleteIcon.off", iw->GetImportPath());
@@ -23,10 +23,10 @@ TEST_F(IconWidgetTest, Fields) {
 TEST_F(IconWidgetTest, ActiveHovering) {
     // SupportsActiveHovering() should be true only for toggles Use hover
     // scaling to check.
-    auto iw = ReadTypedItem<IconWidget>("IconWidget { hover_scale: 2 2 2 }");
+    auto iw = ParseObject<IconWidget>("IconWidget { hover_scale: 2 2 2 }");
 
     // Need to set up Ion for hovering.
-    auto scene = ReadScene(ReadDataFile("RealScene"), true);
+    auto scene = ReadScene(ReadDataFile("RealScene.emd"));
     scene->GetRootNode()->AddChild(iw);
 
     iw->SetActive(true);

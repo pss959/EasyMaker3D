@@ -5,6 +5,7 @@
 #include "Math/MeshValidation.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
+#include "Util/Assert.h"
 
 class BevelerTest : public TestBase {
   protected:

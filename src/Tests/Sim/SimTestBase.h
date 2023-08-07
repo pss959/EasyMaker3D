@@ -10,9 +10,6 @@
 // results.
 class SimTestBase : public SceneTestBase {
  protected:
-    SimTestBase();
-    virtual ~SimTestBase();
-
     // Application::Context used for the session. This is useful only after
     // RunScript() is called.
     Application::Context context;
@@ -28,8 +25,6 @@ class SimTestBase : public SceneTestBase {
     virtual void TestResults() = 0;
 
   private:
-    Util::AppType prev_app_type_;  // Saves the previous setting.
-
     // Calls RunScript_() and  calls TestResults() if successful. Exits
     // afterwards.
     void RunScriptAndExit_(const std::string &script_name);

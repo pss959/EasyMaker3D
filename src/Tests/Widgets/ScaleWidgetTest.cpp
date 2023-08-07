@@ -21,7 +21,7 @@ ScaleWidget "TestScaleWidget" {
   ],
 }
 )";
-    auto sw = ReadTypedItem<ScaleWidget>(
+    auto sw = ParseObject<ScaleWidget>(
         Util::ReplaceString(input, "<UMM>",
                             use_modified_mode ? "True" : "False"));
     EXPECT_NOT_NULL(sw);

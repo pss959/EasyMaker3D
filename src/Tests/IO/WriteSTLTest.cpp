@@ -6,11 +6,17 @@
 #include "Models/BoxModel.h"
 #include "Models/TextModel.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/TempFile.h"
 #include "Tests/Testing.h"
 #include "Util/String.h"
 
 class WriteSTLTest : public SceneTestBase {
   protected:
+    // Returns a default UnitConversion instance.
+    static UnitConversionPtr GetDefaultUC() {
+        return CreateObject<UnitConversion>();
+    }
+
     // Writes the given Model in the given format with the given
     // UnitConversion, returning the string representing the contents of the
     // output file.
@@ -40,7 +46,7 @@ TEST_F(WriteSTLTest, TextBox) {
     auto box = Model::CreateModel<BoxModel>();
     box->SetScale(Vector3f(2, 3, 4));
 
-    const std::string expected = ReadDataFile("exportedTextBox.stl", false);
+    const std::string expected = ReadDataFile("exportedTextBox.stl");
     const std::string actual   = WriteModelAsSTL(box, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
@@ -51,7 +57,7 @@ TEST_F(WriteSTLTest, BinaryBox) {
     auto box = Model::CreateModel<BoxModel>();
     box->SetScale(Vector3f(2, 3, 4));
 
-    const std::string expected = ReadDataFile("exportedBinaryBox.stl", false);
+    const std::string expected = ReadDataFile("exportedBinaryBox.stl");
     const std::string actual   = WriteModelAsSTL(box, FileFormat::kBinarySTL);
 
     // Compare as binary strings.
@@ -71,7 +77,7 @@ TEST_F(WriteSTLTest, TextBoxConv) {
     conv->SetFromUnits(UnitConversion::Units::kMillimeters);
     conv->SetToUnits(UnitConversion::Units::kMeters);
 
-    const std::string expected = ReadDataFile("exportedTextBox.stl", false);
+    const std::string expected = ReadDataFile("exportedTextBox.stl");
     const std::string actual   = WriteConvModelAsSTL(box, *conv,
                                                      FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
@@ -83,7 +89,7 @@ TEST_F(WriteSTLTest, TextF) {
     f->SetUniformScale(10);
     f->SetTextString("F");
 
-    const std::string expected = ReadDataFile("exportedTextF.stl", false);
+    const std::string expected = ReadDataFile("exportedTextF.stl");
     const std::string actual   = WriteModelAsSTL(f, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }

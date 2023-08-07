@@ -3,12 +3,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <fstream>
-#include <random>
 
 #include <ion/math/matrixutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "App/RegisterTypes.h"
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
 #include "Tests/Testing.h"
@@ -16,84 +14,32 @@
 #include "Util/Enum.h"
 #include "Util/Read.h"
 #include "Util/String.h"
-#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
-// Helper functions.
+// Test introspection.
 // ----------------------------------------------------------------------------
 
-// Returns a string of random characters of the given length. This is used
-// because std::filesystem has no current way of generating a unique file name,
-// and I don't want to depend on boost::filesystem. This was stolen from the
-// internet.
-static std::string RandomString_(size_t length) {
-    auto random_char = []() -> char {
-        const char alphanumeric[] =
-            "0123456789"
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "abcdefghijklmnopqrstuvwxyz";
-            ;
-        return alphanumeric[rand() % (sizeof(alphanumeric) - 1)];
-    };
-    std::string str(length, '\0');
-    std::generate_n(str.begin(), length, random_char);
-    return str;
+std::string TestBase::GetTestCaseName() const {
+    const auto info = ::testing::UnitTest::GetInstance()->current_test_info();
+    return info->test_case_name();
 }
 
-// Returns a unique file name for temporary files of the form 'NNNN-NNNN-NNNN'.
-static std::string GetTempFileName_() {
-    return RandomString_(4) + "-" + RandomString_(4) + "-" + RandomString_(4);
+std::string TestBase::GetTestName() const {
+    const auto info = ::testing::UnitTest::GetInstance()->current_test_info();
+    return info->name();
 }
 
 // ----------------------------------------------------------------------------
-// TestBase::TempFile implementation.
-// ----------------------------------------------------------------------------
-
-TestBase::TempFile::TempFile(const std::string &input_string) {
-    path_ = FilePath::Join(FilePath::GetTempFilePath(),
-                           FilePath(GetTempFileName_()));
-
-    std::ofstream out(path_.ToNativeString());
-    ASSERT(out.is_open());
-    out << input_string;
-    out.close();
-}
-
-TestBase::TempFile::~TempFile() {
-    path_.Remove();
-}
-
-std::string TestBase::TempFile::GetContents() const {
-    std::string s;
-    EXPECT_TRUE(Util::ReadFile(path_, s));
-    return s;
-}
-
-void TestBase::TempFile::SetContents(const std::string &new_contents) {
-    std::ofstream out(path_.ToNativeString());
-    ASSERT(out.is_open());
-    out << new_contents;
-    out.close();
-}
-
-// ----------------------------------------------------------------------------
-// TestBase implementation.
+// Finding and reading files.
 // ----------------------------------------------------------------------------
 
 FilePath TestBase::GetDataPath(const std::string &file_name) {
     return FilePath::Join(FilePath::GetTestDataPath(), FilePath(file_name));
 }
 
-UnitConversionPtr TestBase::GetDefaultUC() {
-    RegisterTypes();
-    return CreateObject<UnitConversion>();
-}
-
-std::string TestBase::ReadDataFile(const std::string &file_name,
-                                   bool add_data_extension) {
+std::string TestBase::ReadDataFile(const std::string &file_name) {
     std::string s;
-    const FilePath path = GetDataPath(
-        add_data_extension ? file_name + TK::kDataFileSuffix : file_name);
+    const FilePath path = GetDataPath(file_name);
     EXPECT_TRUE(Util::ReadFile(path, s)) << "Path: " << path.ToString();
     return s;
 }
@@ -105,6 +51,10 @@ std::string TestBase::ReadResourceFile(const std::string &file_path) {
     EXPECT_TRUE(Util::ReadFile(path, s)) << "Path: " << path.ToString();
     return s;
 }
+
+// ----------------------------------------------------------------------------
+// Comparison helpers.
+// ----------------------------------------------------------------------------
 
 bool TestBase::VectorsClose2(const Vector2f &v0, const Vector2f &v1) {
     return ion::math::VectorsAlmostEqual(v0, v1, kClose);
@@ -158,35 +108,6 @@ bool TestBase::RotationsCloseT(const Rotationf &r0, const Rotationf &r1,
 
 bool TestBase::MatricesCloseT(const Matrix4f &m0, const Matrix4f &m1, float t) {
     return ion::math::MatricesAlmostEqual(m0, m1, t);
-}
-
-TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
-    const FilePath path = GetDataPath(file_name);
-    std::string error;
-    TriMesh mesh = ReadSTLFile(path, 1, error);
-    ASSERTM(! mesh.points.empty(),
-            "Loaded from " + path.ToString() + ": " + error);
-    ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");
-    return mesh;
-}
-
-void TestBase::ValidateMesh(const TriMesh &mesh, string desc) {
-    const MeshValidityCode ret = ValidateTriMesh(mesh);
-    EXPECT_ENUM_EQ(MeshValidityCode::kValid, ret)
-        << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
-}
-
-bool TestBase::MeshHasPoint(const TriMesh &mesh, const Point3f &p) {
-    const auto is_close =
-        [&p](const Point3f &mp){ return PointsClose(p, mp); };
-    return std::any_of(mesh.points.begin(), mesh.points.end(), is_close);
-}
-
-std::string TestBase::FixString(const std::string &s) {
-    const char lf = '\r';
-    std::string fs = s;
-    fs.erase(std::remove(fs.begin(), fs.end(), lf), fs.end());
-    return fs;
 }
 
 bool TestBase::CompareStrings(const std::string &expected,
@@ -246,13 +167,46 @@ bool TestBase::CompareData(const void *expected, size_t size,
 }
 
 // ----------------------------------------------------------------------------
-// TestBaseWithTypes functions.
+// TriMesh helpers.
 // ----------------------------------------------------------------------------
 
-TestBaseWithTypes::TestBaseWithTypes() {
-    RegisterTypes();
+TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
+    const FilePath path = GetDataPath(file_name);
+    std::string error;
+    TriMesh mesh = ReadSTLFile(path, 1, error);
+    ASSERTM(! mesh.points.empty(),
+            "Loaded from " + path.ToString() + ": " + error);
+    ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");
+    return mesh;
 }
 
-TestBaseWithTypes::~TestBaseWithTypes() {
-    UnregisterTypes();
+void TestBase::ValidateMesh(const TriMesh &mesh, string desc) {
+    const MeshValidityCode ret = ValidateTriMesh(mesh);
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, ret)
+        << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
+}
+
+bool TestBase::MeshHasPoint(const TriMesh &mesh, const Point3f &p) {
+    const auto is_close =
+        [&p](const Point3f &mp){ return PointsClose(p, mp); };
+    return std::any_of(mesh.points.begin(), mesh.points.end(), is_close);
+}
+
+// ----------------------------------------------------------------------------
+// Other conveniences.
+// ----------------------------------------------------------------------------
+
+Rotationf TestBase::BuildRotation(const Vector3f &axis, float deg) {
+    return Rotationf::FromAxisAndAngle(axis, Anglef::FromDegrees(deg));
+}
+
+Rotationf TestBase::BuildRotation(float x, float y, float z, float deg) {
+    return BuildRotation(Vector3f(x, y, z), deg);
+}
+
+std::string TestBase::FixString(const std::string &s) {
+    const char lf = '\r';
+    std::string fs = s;
+    fs.erase(std::remove(fs.begin(), fs.end(), lf), fs.end());
+    return fs;
 }

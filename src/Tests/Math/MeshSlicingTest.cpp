@@ -95,9 +95,9 @@ void MeshSlicingTest::DumpTriMesh(const std::string &file_name,
         const int dim0 = data.dim;
         const int dim1 = (dim0 + 1) % 3;
         const int dim2 = (dim0 + 2) % 3;
-        ASSERT(dim0 >= 0 && dim0 <= 2);
-        ASSERT(dim1 >= 0 && dim1 <= 2);
-        ASSERT(dim2 >= 0 && dim2 <= 2);
+        ASSERT_TRUE(dim0 >= 0 && dim0 <= 2);
+        ASSERT_TRUE(dim1 >= 0 && dim1 <= 2);
+        ASSERT_TRUE(dim2 >= 0 && dim2 <= 2);
         for (size_t i = 0; i < data.fractions.size(); ++i) {
             const float frac = data.fractions[i];
             const std::string fid = "SPF" + Util::ToString(i);

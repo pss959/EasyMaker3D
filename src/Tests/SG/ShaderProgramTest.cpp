@@ -26,7 +26,7 @@ ShaderProgram "SP" {
   vertex_source: ShaderSource { path: "Shadow_vp.glsl" },
 }
 )";
-    prog = ReadTypedItem<SG::ShaderProgram>(input0);
+    prog = ParseObject<SG::ShaderProgram>(input0);
     prog->SetUpIon(fm, *sm);
     EXPECT_NOT_NULL(prog->GetIonShaderProgram().Get());
 
@@ -36,7 +36,7 @@ ShaderProgram "SP" {
   vertex_source: ShaderSource { path: "Bogus.glsl" }
 }
 )";
-    prog = ReadTypedItem<SG::ShaderProgram>(input1);
+    prog = ParseObject<SG::ShaderProgram>(input1);
     EXPECT_NOT_NULL(prog);
     TEST_THROW(prog->SetUpIon(fm, *sm), SG::Exception, "Unable to read shader");
 
@@ -47,7 +47,7 @@ ShaderProgram "SP" {
   inherit_from: "NoSuchProgram",
 }
 )";
-    prog = ReadTypedItem<SG::ShaderProgram>(input2);
+    prog = ParseObject<SG::ShaderProgram>(input2);
     EXPECT_NOT_NULL(prog);
     TEST_THROW(prog->SetUpIon(fm, *sm), SG::Exception, "Unknown shader");
 }

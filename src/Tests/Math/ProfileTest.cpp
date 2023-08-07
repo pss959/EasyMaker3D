@@ -1,6 +1,7 @@
 ﻿#include "Math/Profile.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
+#include "Util/Assert.h"
 
 class ProfileTest : public TestBase {
 };

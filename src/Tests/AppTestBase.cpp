@@ -3,6 +3,7 @@
 #include "App/Application.h"
 #include "Managers/SceneContext.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 // ----------------------------------------------------------------------------
 // Derived Application class that provides functions for testing via the

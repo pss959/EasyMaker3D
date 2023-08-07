@@ -6,12 +6,13 @@
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
+#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Tuning.h"
 
 class PaneTest : public SceneTestBase {
   protected:
     SG::ScenePtr ReadPaneScene() {
-        const std::string input = ReadDataFile("Panes");
+        const std::string input = ReadDataFile("Panes.emd");
         return ReadScene(input);
     }
     PanePtr FindPaneOrAssert(ContainerPane &ctr, const std::string &name) {

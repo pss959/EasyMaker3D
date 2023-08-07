@@ -92,7 +92,7 @@ class WidgetTestBase : public SceneTestBase {
                                        const std::string &widget_name) {
         const std::string contents = "children: [ <\"" + file_name + "\"> ]";
         const auto input = Util::ReplaceString(
-            ReadDataFile("RealScene"), "#<CONTENTS>", contents);
+            ReadDataFile("RealScene.emd"), "#<CONTENTS>", contents);
         scene_ = ReadScene(input, true);   // True => sets up grid image.
         auto w = SG::FindTypedNodeInScene<T>(*scene_, widget_name);
         EXPECT_NOT_NULL(w);

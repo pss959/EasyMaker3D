@@ -4,6 +4,7 @@
 #include "SG/ColorMap.h"
 #include "SG/FileMap.h"
 #include "SG/Reader.h"
+#include "Tests/TempFile.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
@@ -49,10 +50,4 @@ void SceneTestBase::InitIonContext_() {
         ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager));
     ion_context_->SetFontManager(
         ion::text::FontManagerPtr(new ion::text::FontManager));
-}
-
-Parser::ObjectPtr SceneTestBase::ReadItem_(const std::string &input) {
-    TempFile file(input);
-    Parser::Parser parser;
-    return parser.ParseFromString(input);
 }

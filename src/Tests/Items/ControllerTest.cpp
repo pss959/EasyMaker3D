@@ -16,4 +16,3 @@ TEST_F(ControllerTest, Default) {
     ion::gfx::ImagePtr image;
     EXPECT_FALSE(cont->GetCustomModelData(mesh, image));
 }
-

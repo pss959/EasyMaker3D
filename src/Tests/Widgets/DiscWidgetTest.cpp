@@ -19,7 +19,7 @@ TEST_F(DiscWidgetTest, Defaults) {
 }
 
 TEST_F(DiscWidgetTest, RotationInField) {
-    TEST_THROW(ReadTypedItem<DiscWidget>("DiscWidget { rotation: 0 1 0 10 }"),
+    TEST_THROW(ParseObject<DiscWidget>("DiscWidget { rotation: 0 1 0 10 }"),
                Parser::Exception, "Rotation will be ignored");
 }
 
@@ -84,7 +84,7 @@ TEST_F(DiscWidgetTest, DragEdgeOnRotate) {
 }
 
 TEST_F(DiscWidgetTest, DragScaleOnly) {
-    auto dw = ReadTypedItem<DiscWidget>("DiscWidget { mode: \"kScaleOnly\" }");
+    auto dw = ParseObject<DiscWidget>("DiscWidget { mode: \"kScaleOnly\" }");
     EXPECT_EQ(DiscWidget::Mode::kScaleOnly, dw->GetMode());
 
     // Dragging from Z=2 to Z=4 should scale by 2.
@@ -96,8 +96,7 @@ TEST_F(DiscWidgetTest, DragScaleOnly) {
 }
 
 TEST_F(DiscWidgetTest, DragRotateOnly) {
-    auto dw =
-        ReadTypedItem<DiscWidget>("DiscWidget { mode: \"kRotationOnly\" }");
+    auto dw = ParseObject<DiscWidget>("DiscWidget { mode: \"kRotationOnly\" }");
 
     // Dragging along +X offset from center should rotate counterclockwise.
     DragTester dt(dw);
@@ -154,7 +153,7 @@ TEST_F(DiscWidgetTest, ClampAngle) {
 
 TEST_F(DiscWidgetTest, AccumulateAngle) {
     auto dw =
-        ReadTypedItem<DiscWidget>("DiscWidget { angle_mode: \"kAccumulate\" }");
+        ParseObject<DiscWidget>("DiscWidget { angle_mode: \"kAccumulate\" }");
 
     // Similar to the above test, but the angle should accumulate.
     // Positive direction.

@@ -26,7 +26,7 @@ TEST_F(PointTargetWidgetTest, Defaults) {
 }
 
 TEST_F(PointTargetWidgetTest, NotValid) {
-    TEST_THROW(ReadTypedItem<PointTargetWidget>("PointTargetWidget {}"),
+    TEST_THROW(ParseObject<PointTargetWidget>("PointTargetWidget {}"),
                Parser::Exception, "Missing target");
 }
 

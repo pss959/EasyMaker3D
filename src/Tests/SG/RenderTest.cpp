@@ -12,6 +12,7 @@
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/UnitTestTypeChanger.h"
 
 class RenderTest : public SceneTestBase {
   protected:
@@ -103,7 +104,7 @@ void RenderTest::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
 // ----------------------------------------------------------------------------
 
 TEST_F(RenderTest, RealScene) {
-    auto scene = SetUpScene("RealScene");
+    auto scene = SetUpScene("RealScene.emd");
 
     // Add a TextNode to test text rendering.
     auto text = CreateObject<SG::TextNode>();
@@ -112,7 +113,7 @@ TEST_F(RenderTest, RealScene) {
 
     // Add a node to test RenderPass management.
     auto pass_node =
-        ReadTypedItem<SG::Node>("Node { shader_names: [\"ShadowDepth\"] }");
+        ParseObject<SG::Node>("Node { shader_names: [\"ShadowDepth\"] }");
     scene->GetRootNode()->AddChild(pass_node);
 
     // Add a render-disabled node with a Shape to test shape disabling.
@@ -143,6 +144,6 @@ TEST_F(RenderTest, RealSceneWithFBTarget) {
     create_fbo(fb_target.rendered_fbo);
     create_fbo(fb_target.resolved_fbo);
 
-    SetUpScene("RealScene");
+    SetUpScene("RealScene.emd");
     RenderScene(&fb_target);
 }

@@ -1,4 +1,5 @@
 #include "ParserTestBase.h"
+#include "Tests/TempFile.h"
 
 class ParsingTest : public ParserTestBase {
   protected:

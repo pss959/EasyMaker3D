@@ -21,7 +21,7 @@ IconSwitcherWidget {
   ]
 }
 )";
-    auto isw = ReadTypedItem<IconSwitcherWidget>(input);
+    auto isw = ParseObject<IconSwitcherWidget>(input);
     EXPECT_EQ(3U, isw->GetChildren().size());
     EXPECT_EQ(-1, isw->GetIndex());
     EXPECT_FALSE(isw->GetChildren()[0]->IsEnabled());
@@ -60,7 +60,7 @@ IconSwitcherWidget {
   ]
 }
 )";
-    auto isw = ReadTypedItem<IconSwitcherWidget>(input);
+    auto isw = ParseObject<IconSwitcherWidget>(input);
     isw->SetIndex(1);
     isw->FitIntoCube(12, Point3f(10, 10, 10));
 

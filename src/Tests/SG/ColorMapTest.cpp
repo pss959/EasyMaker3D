@@ -3,7 +3,7 @@
 #include "Parser/Parser.h"
 #include "Math/Types.h"
 #include "SG/ColorMap.h"
-#include "Tests/TestBase.h"
+#include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
 #include "Util/General.h"

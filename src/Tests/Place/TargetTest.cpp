@@ -1,6 +1,6 @@
 #include "Place/EdgeTarget.h"
 #include "Place/PointTarget.h"
-#include "Tests/TestBase.h"
+#include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
 class TargetTest : public TestBaseWithTypes {};

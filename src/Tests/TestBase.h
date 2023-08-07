@@ -4,99 +4,43 @@
 
 #include "gtest/gtest.h"
 
-#include "Items/UnitConversion.h"
 #include "Math/Types.h"
-#include "Parser/Registry.h"
 #include "Util/FilePath.h"
-#include "Util/General.h"
 
-/// Base test fixture that supplies some useful functions for tests.
+// Base test fixture that supplies some useful functions for tests.
 class TestBase : public ::testing::Test {
  protected:
-    /// Class that creates a temporary file in the constructor and removes it
-    /// in the destructor. Used for tests.
-    class TempFile {
-      public:
-        /// Creates a temporary file with the given contents.
-        TempFile(const std::string &input_string);
+    // ------------------------------------------------------------------------
+    // Test introspection.
+    // ------------------------------------------------------------------------
 
-        /// Removes the temporary file.
-        ~TempFile();
-
-        /// Returns the path to the temporary file.
-        const FilePath GetPath() { return path_; }
-
-        /// Returns the contents of the file as a string.
-        std::string GetContents() const;
-
-        // Modifies the contents.
-        void SetContents(const std::string &new_contents);
-
-      private:
-        FilePath path_;
-    };
-
-    /// Class that temporarily changes Util::app_type for a test that needs to
-    /// pretend it is not a regular unit test. The new type applies while this
-    /// is in scope.
-    class UnitTestTypeChanger {
-      public:
-        UnitTestTypeChanger(Util::AppType type) {
-            prev_type_     = Util::app_type;
-            Util::app_type = type;
-        }
-        ~UnitTestTypeChanger() { Util::app_type = prev_type_; }
-      private:
-        Util::AppType prev_type_;
-    };
-
-    // Close enough.
-    static constexpr float kClose = 1e-4f;
-
-    /// Returns the name of the current test case.
-    std::string GetTestCaseName() const {
-        const auto info =
-            ::testing::UnitTest::GetInstance()->current_test_info();
-        return info->test_case_name();
-    }
+    // Returns the name of the current test case.
+    std::string GetTestCaseName() const;
 
     /// Returns the name of the current test.
-    std::string GetTestName() const {
-        const auto info =
-            ::testing::UnitTest::GetInstance()->current_test_info();
-        return info->name();
-    }
+    std::string GetTestName() const;
 
-    // Convenience to create an Object of the templated type.
-    template <typename T>
-    static std::shared_ptr<T> CreateObject(const std::string &name = "") {
-        return Parser::Registry::CreateObject<T>(name);
-    }
+    // ------------------------------------------------------------------------
+    // Finding and reading files.
+    // ------------------------------------------------------------------------
 
-    /// Returns a FilePath to the named test file (in the Data directory).
-    FilePath GetDataPath(const std::string &file_name);
-
-    // Creates and returns a default UnitConversion instance.
-    static UnitConversionPtr GetDefaultUC();
+    /// Returns a FilePath to the named file below the Tests/Data directory.
+    static FilePath GetDataPath(const std::string &file_name);
 
     /// Reads the named file from the Tests/Data directory and returns the
-    /// contents as a string. Asserts if the file cannot be opened. If
-    /// add_data_extension is true, this adds the default data file extension.
-    std::string ReadDataFile(const std::string &file_name,
-                             bool add_data_extension = true);
+    /// contents as a string. Asserts if the file cannot be opened.
+    static std::string ReadDataFile(const std::string &file_name);
 
     /// Reads the file on the given path from the resources directory and
     /// returns the contents as a string. Asserts if the file cannot be opened.
-    std::string ReadResourceFile(const std::string &file_path);
+    static std::string ReadResourceFile(const std::string &file_path);
 
-    // Convenience that returns a Rotationf from axis and angle (degree)
-    // values.
-    static Rotationf BuildRotation(const Vector3f &axis, float deg) {
-        return Rotationf::FromAxisAndAngle(axis, Anglef::FromDegrees(deg));
-    }
-    static Rotationf BuildRotation(float x, float y, float z, float deg) {
-        return BuildRotation(Vector3f(x, y, z), deg);
-    }
+    // ------------------------------------------------------------------------
+    // Comparison helpers.
+    // ------------------------------------------------------------------------
+
+    // Close enough for most floating-point comparisons.
+    static constexpr float kClose = 1e-4f;
 
     // FP testing predicates from Ion.
     static bool VectorsClose2(const Vector2f &v0, const Vector2f &v1);
@@ -115,19 +59,6 @@ class TestBase : public ::testing::Test {
                                 float t_degrees);
     static bool MatricesCloseT(const Matrix4f &m0, const Matrix4f &m1, float t);
 
-    // Loads a TriMesh from an STL file.
-    TriMesh LoadTriMesh(const std::string &file_name);
-
-    // Returns true if the given TriMesh contains a point close to the given
-    // one.
-    static bool MeshHasPoint(const TriMesh &mesh, const Point3f &p);
-
-    // Validates a TriMesh.
-    static void ValidateMesh(const TriMesh &mesh, string desc);
-
-    // Fixes a string by removing line feeds. Needed for Windows.
-    static std::string FixString(const std::string &s);
-
     // Compares two strings for equality with verbose results on failure.
     static bool CompareStrings(const std::string &expected,
                                const std::string &actual);
@@ -136,12 +67,29 @@ class TestBase : public ::testing::Test {
     // failure. The buffers are assumed to have the same size.
     static bool CompareData(const void *expected, size_t size,
                             const void *actual);
-};
 
-// Derived TestBase class that automatically registers and unregisters known
-// types on construction and destruction.
-class TestBaseWithTypes : public TestBase {
-  protected:
-    TestBaseWithTypes();
-    virtual ~TestBaseWithTypes();
+    // ------------------------------------------------------------------------
+    // TriMesh helpers.
+    // ------------------------------------------------------------------------
+
+    // Loads a TriMesh from an STL file.
+    static TriMesh LoadTriMesh(const std::string &file_name);
+
+    // Returns true if the given TriMesh contains a point close to the given
+    // one.
+    static bool MeshHasPoint(const TriMesh &mesh, const Point3f &p);
+
+    // Validates a TriMesh.
+    static void ValidateMesh(const TriMesh &mesh, string desc);
+
+    // ------------------------------------------------------------------------
+    // Other conveniences.
+    // ------------------------------------------------------------------------
+
+    // Returns a Rotationf from axis and angle (degree) values.
+    static Rotationf BuildRotation(const Vector3f &axis, float deg);
+    static Rotationf BuildRotation(float x, float y, float z, float deg);
+
+    // Fixes a string by removing line feeds. Needed for Windows.
+    static std::string FixString(const std::string &s);
 };

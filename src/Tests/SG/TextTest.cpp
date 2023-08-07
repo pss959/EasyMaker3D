@@ -8,6 +8,8 @@
 #include "SG/LayoutOptions.h"
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/TempFile.h"
+#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
@@ -151,7 +153,7 @@ TEST_F(TextTest, LayoutOptions) {
 }
 
 TEST_F(TextTest, InvalidTextNode) {
-    TEST_THROW(ReadTypedItem<SG::TextNode>(R"(TextNode { text: "" })"),
+    TEST_THROW(ParseObject<SG::TextNode>(R"(TextNode { text: "" })"),
                Parser::Exception, "Empty text string");
 }
 
@@ -198,8 +200,7 @@ TEST_F(TextTest, BadFont) {
     }
 
     // Create a TextNode with a very small maximum image size.
-    auto text2 = ReadTypedItem<SG::TextNode>(
-        R"(TextNode { max_image_size: 4 })");
+    auto text2 = ParseObject<SG::TextNode>("TextNode { max_image_size: 4 }");
     TEST_THROW(SetUpIonText(text2, context), SG::Exception,
                "Unable to create font image");
 }

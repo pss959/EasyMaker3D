@@ -22,7 +22,7 @@ TEST_F(EdgeTargetWidgetTest, Defaults) {
 }
 
 TEST_F(EdgeTargetWidgetTest, NotValid) {
-    TEST_THROW(ReadTypedItem<EdgeTargetWidget>("EdgeTargetWidget {}"),
+    TEST_THROW(ParseObject<EdgeTargetWidget>("EdgeTargetWidget {}"),
                Parser::Exception, "Missing target");
 
     const std::string input = R"(
@@ -32,7 +32,7 @@ EdgeTargetWidget {
     position1:   1 0 0,
   }
 })";
-    TEST_THROW(ReadTypedItem<EdgeTargetWidget>(input),
+    TEST_THROW(ParseObject<EdgeTargetWidget>(input),
                Parser::Exception, "Length is zero");
 }
 

@@ -1,7 +1,7 @@
 #include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "SG/Object.h"
-#include "Tests/TestBase.h"
+#include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
 // Named this with SG prefix to distinguish tests from Parser::Object.

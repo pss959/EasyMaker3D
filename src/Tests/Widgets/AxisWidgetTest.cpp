@@ -7,7 +7,7 @@
 class AxisWidgetTest : public WidgetTestBase {
   protected:
     AxisWidgetPtr GetAxisWidget() {
-        return ReadTypedItem<AxisWidget>(
+        return ParseObject<AxisWidget>(
             ReadResourceFile("nodes/Widgets/AxisWidget.emd"));
     }
 };

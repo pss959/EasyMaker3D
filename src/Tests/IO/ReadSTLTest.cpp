@@ -1,11 +1,17 @@
 ﻿#include "IO/STLReader.h"
+#include "Items/UnitConversion.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
-#include "Tests/TestBase.h"
+#include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
-class ReadSTLTest : public TestBase {
+class ReadSTLTest : public TestBaseWithTypes {
   protected:
+    // Returns a default UnitConversion instance.
+    static UnitConversionPtr GetDefaultUC() {
+        return CreateObject<UnitConversion>();
+    }
+
     // Loads a TriMesh from an STL file and validates it.
     TriMesh LoadTriMesh(const std::string &file_name,
                         const UnitConversion &conv) {

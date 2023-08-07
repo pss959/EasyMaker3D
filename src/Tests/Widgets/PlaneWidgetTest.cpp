@@ -6,7 +6,7 @@
 class PlaneWidgetTest : public WidgetTestBase {
   protected:
     PlaneWidgetPtr GetPlaneWidget() {
-        return ReadTypedItem<PlaneWidget>(
+        return ParseObject<PlaneWidget>(
             ReadResourceFile("nodes/Widgets/PlaneWidget.emd"));
     }
 };

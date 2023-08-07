@@ -69,7 +69,7 @@ ImportedShape {
             Util::ReplaceString(Util::ReplaceString(contents, "<PATH>",
                                                     path.ToString()),
                                 "<TCT>", Util::EnumName(tct));
-        imp = ReadTypedItem<SG::ImportedShape>(input);
+        imp = ParseObject<SG::ImportedShape>(input);
         EXPECT_NOT_NULL(imp);
         shape = imp->SetUpIon();
         EXPECT_NOT_NULL(shape.Get());

@@ -48,7 +48,7 @@ TEST_F(IntersectorTest, EmptyScene) {
 }
 
 TEST_F(IntersectorTest, Sphere) {
-    const std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes.emd");
 
     // Intersect from front. Sphere is at (-100,0,0) with radius 5.
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -80,7 +80,7 @@ TEST_F(IntersectorTest, Sphere) {
 }
 
 TEST_F(IntersectorTest, Cone) {
-    const std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes.emd");
 
     // Intersect from front. Cone is at (100,0,0).
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -96,7 +96,7 @@ TEST_F(IntersectorTest, Cone) {
 }
 
 TEST_F(IntersectorTest, Torus) {
-    const std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes.emd");
 
     // Intersect from front. Torus is at origin with outer radius 1.2 and inner
     // radius .2.
@@ -116,7 +116,7 @@ TEST_F(IntersectorTest, Torus) {
 }
 
 TEST_F(IntersectorTest, Rectangles) {
-    const std::string input = ReadDataFile("Rectangles");
+    const std::string input = ReadDataFile("Rectangles.emd");
 
     // The scene is translated 10 units in X.
     // Intersect rays from the center to all 5 rectangles.
@@ -166,7 +166,7 @@ TEST_F(IntersectorTest, Rectangles) {
 }
 
 TEST_F(IntersectorTest, HiddenParent) {
-    const std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes.emd");
 
     // The parent Ellipsoid is large and encompasses the two child Ellipsoids.
     // The parent should not be intersected, and its translation should not be
@@ -191,7 +191,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
     // Because the translation is inside the shape, it is included in the local
     // coordinates.
 
-    const std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes.emd");
 
     // Intersect from front:
     //   Box      is at ( 4,0,0).
@@ -273,7 +273,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
 }
 
 TEST_F(IntersectorTest, Cone2) {
-    const std::string input = ReadDataFile("Shapes");
+    const std::string input = ReadDataFile("Shapes.emd");
     SG::Hit hit;
     hit = IntersectGraph(input, "ConeTest",
                          Ray(Point3f(0, 8, 20), Vector3f(0, 0, -1)));

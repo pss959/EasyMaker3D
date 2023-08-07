@@ -1,3 +1,4 @@
+#include "Tests/TempFile.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Read.h"

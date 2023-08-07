@@ -1,6 +1,7 @@
 #include "ParserTestBase.h"
 
 #include "Parser/Registry.h"
+#include "Tests/TempFile.h"
 #include "Util/Enum.h"
 
 // ----------------------------------------------------------------------------

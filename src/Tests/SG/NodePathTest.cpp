@@ -5,7 +5,7 @@
 #include "SG/NodePath.h"
 #include "SG/TextNode.h"
 #include "SG/UnscopedNode.h"
-#include "Tests/TestBase.h"
+#include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
 class NodePathTest : public TestBaseWithTypes {};

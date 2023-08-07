@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "SG/FileMap.h"
+#include "Tests/TempFile.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Delay.h"

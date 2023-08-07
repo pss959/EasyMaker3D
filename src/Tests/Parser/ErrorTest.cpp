@@ -1,4 +1,5 @@
 #include "ParserTestBase.h"
+#include "Tests/TempFile.h"
 
 // ----------------------------------------------------------------------------
 // Parser error tests. These do not use the ParserTestBase functions that catch

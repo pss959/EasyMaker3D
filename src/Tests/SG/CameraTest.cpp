@@ -31,7 +31,7 @@ Gantry {
 },
 )";
 
-    auto gantry = ReadTypedItem<SG::Gantry>(input);
+    auto gantry = ParseObject<SG::Gantry>(input);
     EXPECT_NOT_NULL(gantry);
 
     EXPECT_EQ(2U, gantry->GetCameras().size());

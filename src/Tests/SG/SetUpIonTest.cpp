@@ -50,7 +50,7 @@ TEST_F(SetUpIonTest, EmptyScene) {
 }
 
 TEST_F(SetUpIonTest, IonContext) {
-    const std::string input = ReadDataFile("FullScene");
+    const std::string input = ReadDataFile("FullScene.emd");
     auto scene = ReadScene(input, true);
     auto context = GetIonContext();
     EXPECT_NOT_NULL(context);
@@ -60,7 +60,7 @@ TEST_F(SetUpIonTest, IonContext) {
 }
 
 TEST_F(SetUpIonTest, NodeColors) {
-    const std::string input = ReadDataFile("FullScene");
+    const std::string input = ReadDataFile("FullScene.emd");
     auto scene = ReadScene(input, true);
     EXPECT_NOT_NULL(scene.get());
     auto root = scene->GetRootNode();
@@ -78,7 +78,7 @@ TEST_F(SetUpIonTest, NodeColors) {
 }
 
 TEST_F(SetUpIonTest, Texture) {
-    const std::string input = ReadDataFile("FullScene");
+    const std::string input = ReadDataFile("FullScene.emd");
     auto scene = ReadScene(input, true);
 
     // The first UniformBlock in the root node has a Texture.
@@ -112,7 +112,7 @@ TEST_F(SetUpIonTest, Texture) {
 }
 
 TEST_F(SetUpIonTest, Uniforms) {
-    const std::string input = ReadDataFile("FullScene");
+    const std::string input = ReadDataFile("FullScene.emd");
     SG::ScenePtr scene = ReadScene(input, true);
     EXPECT_NOT_NULL(scene.get());
 

@@ -1,7 +1,7 @@
 #include "Place/DragInfo.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
-#include "Tests/TestBase.h"
+#include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
 class DragInfoTest : public TestBaseWithTypes {};
