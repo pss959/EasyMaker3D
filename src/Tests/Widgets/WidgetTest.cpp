@@ -23,9 +23,6 @@ class WidgetTest : public SceneTestBase {
 
     WidgetTest();
     TestWidgetPtr CreateTestWidget(bool set_up_ion);
-
-  private:
-    SG::ScenePtr scene_;  // Saves scene from CreateTestWidget().
 };
 
 WidgetTest::WidgetTest() {
@@ -34,18 +31,8 @@ WidgetTest::WidgetTest() {
 
 WidgetTest::TestWidgetPtr WidgetTest::CreateTestWidget(bool set_up_ion) {
     // Create a TestWidget with hover scaling enabled.
-    const std::string input = "TestWidget \"TW\" { hover_scale: 2 2 2 }";
-    auto tw = ReadTypedItem<TestWidget>(input);
-    EXPECT_NOT_NULL(tw);
-    EXPECT_EQ("TW", tw->GetName());
-
-    if (set_up_ion) {
-       const std::string input = ReadDataFile("RealScene");
-        scene_ = ReadScene(input, true);
-        // This will set up Ion in the TestWidget.
-        scene_->GetRootNode()->AddChild(tw);
-    }
-    return tw;
+    return ReadTypedNode<TestWidget>("TestWidget \"TW\" { hover_scale: 2 2 2 }",
+                                     set_up_ion);
 }
 
 // ----------------------------------------------------------------------------

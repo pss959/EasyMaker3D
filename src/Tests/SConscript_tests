@@ -50,6 +50,10 @@ test_source_dict = {
         'ReadSTLTest',
         'WriteSTLTest',
     ],
+    'Items' : [
+        'ControllerTest',
+        'ItemTest',
+    ],
     'Managers' : [
         'ClipboardManagerTest',
         'FeedbackManagerTest',

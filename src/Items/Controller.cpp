@@ -86,6 +86,10 @@ void Controller::SetGripGuideType(GripGuideType type) {
     }
 }
 
+GripGuideType Controller::GetGripGuideType() const {
+    return cur_guide_ ? cur_guide_->GetGripGuideType() : GripGuideType::kNone;
+}
+
 Vector3f Controller::GetGuideDirection() const {
     // Point away from the palm.
     return hand_ == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX();

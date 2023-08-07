@@ -64,9 +64,7 @@ class Controller : public SG::Node {
     void SetGripGuideType(GripGuideType type);
 
     /// Returns the current grip guide type.
-    GripGuideType GetGripGuideType() const {
-        return cur_guide_->GetGripGuideType();
-    }
+    GripGuideType GetGripGuideType() const;
 
     /// Returns the direction of the controller guide. When the controller grip
     /// is not active, the direction is based on the Hand and the current

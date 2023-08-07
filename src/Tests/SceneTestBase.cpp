@@ -10,6 +10,7 @@
 const float SceneTestBase::MS = TK::kInitialModelScale;
 
 SceneTestBase::~SceneTestBase() {
+    scene_.reset();
     SG::ColorMap::Reset();
     ResetContext();
 }

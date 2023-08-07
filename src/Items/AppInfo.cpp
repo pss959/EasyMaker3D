@@ -12,7 +12,7 @@ void AppInfo::AddFields() {
 
 bool AppInfo::IsValid(std::string &details) {
     if (! Parser::Object::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (version_.GetValue().empty()) {
         details = "Missing version field data";
         return false;

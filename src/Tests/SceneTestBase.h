@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concepts>
+
 #include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
@@ -26,13 +28,32 @@ class SceneTestBase : public TestBaseWithTypes {
     // is true (the default), this sets up Ion for the scene.
     SG::ScenePtr ReadScene(const std::string &input, bool set_up_ion = true);
 
-    // Creates a TempFile containing the given input, tries to read an SG item
-    // of the templated type from it, and returns the item after removing the
+    // Creates a TempFile containing the given input, tries to read an object
+    // of the templated type from it, and returns the object after removing the
     // file. Returns a null pointer on failure. Note that this does not set up
     // Ion for any items.
     template <typename T>
     std::shared_ptr<T> ReadTypedItem(const std::string &input) {
         return std::dynamic_pointer_cast<T>(ReadItem_(input));
+    }
+
+    // Creates an instance of an object derived from SG::Node by parsing it
+    // from the given string. If set_up_ion is true, this also reads the Scene
+    // from "RealScene.emd" and adds the object as a child to it, saving the
+    // Scene from being destroyed. The object is returned.
+    template <typename T>
+    std::shared_ptr<T> ReadTypedNode(const std::string &input,
+                                     bool set_up_ion) {
+        static_assert(std::derived_from<T, SG::Node> == true);
+        auto node = ReadTypedItem<T>(input);
+        EXPECT_NOT_NULL(node);
+        if (set_up_ion) {
+            scene_ = ReadScene(ReadDataFile("RealScene"), true);
+            // This will set up Ion in the Node.
+            scene_->GetRootNode()->AddChild(node);
+            EXPECT_NOT_NULL(node->GetIonNode().Get());
+        }
+        return node;
     }
 
     // Sets up and returns an IonContext for use in initializing Ion objects.
@@ -55,6 +76,7 @@ class SceneTestBase : public TestBaseWithTypes {
     }
 
   private:
+    SG::ScenePtr      scene_;  // Saves scene from ReadTypedNode().
     SG::IonContextPtr ion_context_;
 
     // Sets up the IonContext for use in initializing Ion objects.
