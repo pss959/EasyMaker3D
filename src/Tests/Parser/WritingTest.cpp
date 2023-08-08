@@ -1,6 +1,5 @@
-#include "ParserTestBase.h"
-
 #include "Parser/Writer.h"
+#include "Tests/Parser/ParserTestBase.h"
 
 class WritingTest : public ParserTestBase {};
 

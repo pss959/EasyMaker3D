@@ -1,9 +1,10 @@
 #include "Parser/Exception.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Widgets/GenericWidget.h"
 
-class GenericWidgetTest : public WidgetTestBase {};
+class GenericWidgetTest : public SceneTestBase {};
 
 TEST_F(GenericWidgetTest, NotifyDrag) {
     auto gw = CreateObject<GenericWidget>();

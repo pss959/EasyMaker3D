@@ -1,5 +1,5 @@
-#include "SceneTestBase.h"
 #include "SG/StateTable.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
 class StateTableTest : public SceneTestBase {};

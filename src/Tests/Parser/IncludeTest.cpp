@@ -1,4 +1,4 @@
-#include "ParserTestBase.h"
+#include "Tests/Parser/ParserTestBase.h"
 #include "Tests/TempFile.h"
 #include "Util/FilePath.h"
 

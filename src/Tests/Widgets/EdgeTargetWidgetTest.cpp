@@ -2,10 +2,11 @@
 #include "Place/DragInfo.h"
 #include "Place/EdgeTarget.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/TargetWidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
+#include "Tests/Widgets/TargetSceneTestBase.h"
 #include "Widgets/EdgeTargetWidget.h"
 
-class EdgeTargetWidgetTest : public TargetWidgetTestBase {
+class EdgeTargetWidgetTest : public TargetSceneTestBase {
   protected:
     EdgeTargetWidgetPtr GetEdgeTargetWidget() {
         return GetWidgetOfType<EdgeTargetWidget>("nodes/EdgeTarget.emd",

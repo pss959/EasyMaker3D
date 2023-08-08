@@ -1,4 +1,4 @@
-#include "ParserTestBase.h"
+#include "Tests/Parser/ParserTestBase.h"
 
 class ScopingTest : public ParserTestBase {};
 

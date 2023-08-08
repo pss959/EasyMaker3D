@@ -58,8 +58,8 @@ StageWidget "Stage" {
             },
             Node "TargetParent" {
               children: [
-                <"nodes/PointTarget.emd">,
-                <"nodes/EdgeTarget.emd">,
+                <"nodes/Widgets/PointTargetWidget.emd">,
+                <"nodes/Widgets/EdgeTargetWidget.emd">,
               ]
             },
             # BuildVolume has to come last for transparency.

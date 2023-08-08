@@ -1,9 +1,10 @@
 #include "Parser/Exception.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Widgets/DiscWidget.h"
 
-class DiscWidgetTest : public WidgetTestBase {};
+class DiscWidgetTest : public SceneTestBase {};
 
 TEST_F(DiscWidgetTest, Defaults) {
     auto dw = CreateObject<DiscWidget>();

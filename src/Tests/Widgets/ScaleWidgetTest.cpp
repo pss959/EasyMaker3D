@@ -1,11 +1,12 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/ScaleWidget.h"
 
-class ScaleWidgetTest : public WidgetTestBase {
+class ScaleWidgetTest : public SceneTestBase {
   protected:
     ScaleWidgetPtr GetScaleWidget(bool use_modified_mode = false);
 };

@@ -1,4 +1,4 @@
-PointTargetWidget "PointTarget" {
+PointTargetWidget "PointTargetWidget" {
   shapes: [
     Ellipsoid {   # Base sphere.
       size:             .8 .8 .8,

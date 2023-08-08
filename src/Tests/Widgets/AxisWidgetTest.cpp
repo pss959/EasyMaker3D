@@ -1,10 +1,11 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Widgets/AxisWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
-class AxisWidgetTest : public WidgetTestBase {
+class AxisWidgetTest : public SceneTestBase {
   protected:
     AxisWidgetPtr GetAxisWidget() {
         return ParseObject<AxisWidget>(

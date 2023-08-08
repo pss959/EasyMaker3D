@@ -1,7 +1,7 @@
-#include "SceneTestBase.h"
 #include "SG/Exception.h"
 #include "SG/FileMap.h"
 #include "SG/ShaderProgram.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/String.h"
 

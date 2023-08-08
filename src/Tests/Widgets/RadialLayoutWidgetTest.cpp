@@ -1,13 +1,14 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Widgets/RadialLayoutWidget.h"
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
-class RadialLayoutWidgetTest : public WidgetTestBase {
+class RadialLayoutWidgetTest : public SceneTestBase {
   protected:
     RadialLayoutWidgetPtr GetRadialLayoutWidget() {
-        return GetWidgetOfType<RadialLayoutWidget>(
+        return ReadAndSetUpNode<RadialLayoutWidget>(
             "nodes/Widgets/RadialLayoutWidget.emd", "RadialLayoutWidget");
     }
 };

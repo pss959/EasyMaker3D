@@ -11,7 +11,7 @@ Node "NodeViewerRoot" {
 
     # -------------------------  Add the node(s) to be viewed below here.
     #<"nodes/ModelRoot.emd">
-    #<"nodes/PointTarget.emd">
+    #<"nodes/Widgets/PointTargetWidget.emd">
     <"nodes/Tools/BendTool.emd">
     #<"nodes/Tools/ScaleTool.emd">
     #<"nodes/Tools/TwistTool.emd">

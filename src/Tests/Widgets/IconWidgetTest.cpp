@@ -1,8 +1,8 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
 #include "Widgets/IconWidget.h"
 
-class IconWidgetTest : public WidgetTestBase {};
+class IconWidgetTest : public SceneTestBase {};
 
 TEST_F(IconWidgetTest, Defaults) {
     auto iw = CreateObject<IconWidget>();

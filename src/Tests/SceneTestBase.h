@@ -5,6 +5,7 @@
 #include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
+#include "SG/Search.h"
 #include "Tests/TestBaseWithTypes.h"
 
 /// This is a base class for any test that has to read a scene from a file or
@@ -40,6 +41,17 @@ class SceneTestBase : public TestBaseWithTypes {
         return node;
     }
 
+    /// Similar to ParseAndSetUpNode(), but uses an include statement for the
+    /// named file as the contents of the scene, then searches for and returns
+    /// the named instance of the templated type.
+    template <typename T>
+    std::shared_ptr<T> ReadAndSetUpNode(const std::string &file_name,
+                                        const std::string &instance_name) {
+        static_assert(std::derived_from<T, SG::Node> == true);
+        ReadSceneWithInclude_(file_name);
+        return SG::FindTypedNodeInScene<T>(*scene_, instance_name);
+    }
+
     /// Sets up and returns an IonContext for use in initializing Ion objects.
     /// This context is also set up if necessary by ReadScene() and persists
     /// until the SceneTestBase instance is destroyed.
@@ -58,4 +70,7 @@ class SceneTestBase : public TestBaseWithTypes {
 
     /// Does most of the work for ParseAndSetUpNode().
     void AddNodeToRealScene_(const SG::NodePtr &node);
+
+    /// Does most of the work for ReadAndSetUpNode().
+    void ReadSceneWithInclude_(const std::string &file_name);
 };

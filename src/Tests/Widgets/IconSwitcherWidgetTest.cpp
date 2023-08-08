@@ -1,9 +1,9 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
 #include "Util/Assert.h"
 #include "Widgets/IconSwitcherWidget.h"
 
-class IconSwitcherWidgetTest : public WidgetTestBase {};
+class IconSwitcherWidgetTest : public SceneTestBase {};
 
 TEST_F(IconSwitcherWidgetTest, Defaults) {
     auto isw = CreateObject<IconSwitcherWidget>();

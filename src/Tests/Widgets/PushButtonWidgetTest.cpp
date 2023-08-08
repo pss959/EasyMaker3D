@@ -1,9 +1,9 @@
 #include "Place/ClickInfo.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
 #include "Widgets/PushButtonWidget.h"
 
-class PushButtonWidgetTest : public WidgetTestBase {};
+class PushButtonWidgetTest : public SceneTestBase {};
 
 TEST_F(PushButtonWidgetTest, Defaults) {
     auto pbw = CreateObject<PushButtonWidget>();

@@ -1,4 +1,4 @@
-#include "Session/SessionTestBase.h"
+#include "Tests/Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 
 class CopyBeveledSessionTest : public SessionTestBase {};

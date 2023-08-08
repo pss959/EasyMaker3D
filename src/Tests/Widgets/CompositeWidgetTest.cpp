@@ -1,14 +1,14 @@
 #include "SG/ColorMap.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
 #include "Util/Assert.h"
 #include "Widgets/SpinWidget.h"
 
-class CompositeWidgetTest : public WidgetTestBase {
+class CompositeWidgetTest : public SceneTestBase {
   protected:
     SpinWidgetPtr GetSpinWidget() {
-        return GetWidgetOfType<SpinWidget>("nodes/Widgets/SpinWidget.emd",
-                                           "SpinWidget");
+        return ReadAndSetUpNode<SpinWidget>("nodes/Widgets/SpinWidget.emd",
+                                            "SpinWidget");
     }
 };
 

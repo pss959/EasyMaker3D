@@ -1,5 +1,5 @@
 #include "Parser/Registry.h"
-#include "ParserTestBase.h"
+#include "Tests/Parser/ParserTestBase.h"
 #include "Util/General.h"
 
 class RegistryTest : public ParserTestBase {};

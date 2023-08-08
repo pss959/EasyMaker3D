@@ -1,4 +1,4 @@
-#include "Session/SessionTestBase.h"
+#include "Tests/Session/SessionTestBase.h"
 
 #include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"

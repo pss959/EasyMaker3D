@@ -1,4 +1,4 @@
-EdgeTargetWidget "EdgeTarget" {
+EdgeTargetWidget "EdgeTargetWidget" {
   # Each part is a separate Node so it can be transformed independently.
   children: [
     Node "End0" {

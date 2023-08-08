@@ -1,5 +1,5 @@
 #include "Parser/InstanceStore.h"
-#include "ParserTestBase.h"
+#include "Tests/Parser/ParserTestBase.h"
 #include "Util/Assert.h"
 
 class InstanceStoreTest : public ParserTestBase {};

@@ -1,9 +1,10 @@
 #include "Parser/Exception.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Widgets/SphereWidget.h"
 
-class SphereWidgetTest : public WidgetTestBase {};
+class SphereWidgetTest : public SceneTestBase {};
 
 TEST_F(SphereWidgetTest, Defaults) {
     auto sw = CreateObject<SphereWidget>();

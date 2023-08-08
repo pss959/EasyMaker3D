@@ -6,6 +6,7 @@
 #include "Tests/TempFile.h"
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
+#include "Util/String.h"
 #include "Util/Tuning.h"
 
 const float SceneTestBase::MS = TK::kInitialModelScale;
@@ -49,6 +50,16 @@ SG::IonContextPtr SceneTestBase::GetIonContext() {
     return ion_context_;
 }
 
+void SceneTestBase::InitIonContext_() {
+    ASSERT(! ion_context_);
+    ion_context_.reset(new SG::IonContext);
+    ion_context_->SetFileMap(SG::FileMapPtr(new SG::FileMap()));
+    ion_context_->SetShaderManager(
+        ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager));
+    ion_context_->SetFontManager(
+        ion::text::FontManagerPtr(new ion::text::FontManager));
+}
+
 void SceneTestBase::AddNodeToRealScene_(const SG::NodePtr &node) {
     EXPECT_NOT_NULL(node);
 
@@ -59,12 +70,11 @@ void SceneTestBase::AddNodeToRealScene_(const SG::NodePtr &node) {
     EXPECT_NOT_NULL(node->GetIonNode().Get());
 }
 
-void SceneTestBase::InitIonContext_() {
-    ASSERT(! ion_context_);
-    ion_context_.reset(new SG::IonContext);
-    ion_context_->SetFileMap(SG::FileMapPtr(new SG::FileMap()));
-    ion_context_->SetShaderManager(
-        ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager));
-    ion_context_->SetFontManager(
-        ion::text::FontManagerPtr(new ion::text::FontManager));
+void SceneTestBase::ReadSceneWithInclude_(const std::string &file_name) {
+    const std::string contents = "children: [ <\"" + file_name + "\"> ]";
+
+    const auto input = Util::ReplaceString(
+        ReadDataFile("RealScene.emd"), "#<CONTENTS>", contents);
+
+    scene_ = ReadScene(input, true);
 }

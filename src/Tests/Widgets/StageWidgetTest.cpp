@@ -1,12 +1,12 @@
 #include "Place/DragInfo.h"
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
 #include "Widgets/StageWidget.h"
 
-class StageWidgetTest : public WidgetTestBase {
+class StageWidgetTest : public SceneTestBase {
   protected:
     StageWidgetPtr GetStageWidget() {
-        return GetWidgetOfType<StageWidget>("nodes/Stage.emd", "Stage");
+        return ReadAndSetUpNode<StageWidget>("nodes/Stage.emd", "Stage");
     }
 };
 

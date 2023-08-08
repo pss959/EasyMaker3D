@@ -1,9 +1,10 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Util/Assert.h"
 #include "Widgets/Slider1DWidget.h"
 
-class Slider1DWidgetTest : public WidgetTestBase {};
+class Slider1DWidgetTest : public SceneTestBase {};
 
 TEST_F(Slider1DWidgetTest, Defaults) {
     auto sw = CreateObject<Slider1DWidget>();

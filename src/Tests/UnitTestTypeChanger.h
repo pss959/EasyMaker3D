@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Util/General.h"
 
 /// Class that temporarily changes the global Util::app_type variable for a

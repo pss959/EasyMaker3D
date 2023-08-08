@@ -1,9 +1,10 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Widgets/AxisWidget.h"
 #include "Widgets/PlaneWidget.h"
 
-class PlaneWidgetTest : public WidgetTestBase {
+class PlaneWidgetTest : public SceneTestBase {
   protected:
     PlaneWidgetPtr GetPlaneWidget() {
         return ParseObject<PlaneWidget>(

@@ -1,6 +1,6 @@
 #include "Managers/SceneContext.h"
 #include "Models/RootModel.h"
-#include "Session/SessionTestBase.h"
+#include "Tests/Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 
 class PasteSessionTest : public SessionTestBase {};

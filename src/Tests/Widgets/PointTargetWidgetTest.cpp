@@ -2,12 +2,13 @@
 #include "Place/DragInfo.h"
 #include "Place/PointTarget.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/TargetWidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
+#include "Tests/Widgets/TargetSceneTestBase.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/PointTargetWidget.h"
 #include "Widgets/RadialLayoutWidget.h"
 
-class PointTargetWidgetTest : public TargetWidgetTestBase {
+class PointTargetWidgetTest : public TargetSceneTestBase {
   protected:
     PointTargetWidgetPtr GetPointTargetWidget() {
         return GetWidgetOfType<PointTargetWidget>("nodes/PointTarget.emd",

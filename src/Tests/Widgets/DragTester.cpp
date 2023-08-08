@@ -1,14 +1,14 @@
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 
 #include "Math/Linear.h"
-#include "Place/DragInfo.h"
+#include "SG/CoordConv.h"
+#include "SG/NodePath.h"
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
 #include "Widgets/CompositeWidget.h"
 #include "Widgets/DraggableWidget.h"
 
-WidgetTestBase::DragTester::DragTester(const DraggableWidgetPtr &dw,
-                                       const WidgetPtr &hw) {
+DragTester::DragTester(const DraggableWidgetPtr &dw, const WidgetPtr &hw) {
     Init_(dw);
 
     base_info_.path_to_widget = SG::NodePath(dw_);
@@ -17,8 +17,8 @@ WidgetTestBase::DragTester::DragTester(const DraggableWidgetPtr &dw,
     base_info_.hit.path = hw ? SG::NodePath(hw) : base_info_.path_to_widget;
 }
 
-WidgetTestBase::DragTester::DragTester(const CompositeWidgetPtr &cw,
-                                       const std::vector<std::string> &names) {
+DragTester::DragTester(const CompositeWidgetPtr &cw,
+                       const std::vector<std::string> &names) {
     ASSERT(! names.empty());
     CompositeWidgetPtr cur_cw = cw;
     SG::NodePath path(cw);
@@ -40,25 +40,24 @@ WidgetTestBase::DragTester::DragTester(const CompositeWidgetPtr &cw,
     base_info_.hit.path       = path;
 }
 
-void WidgetTestBase::DragTester::SetIsModifiedMode(bool m) {
+void DragTester::SetIsModifiedMode(bool m) {
     base_info_.is_modified_mode = m;
 }
 
-void WidgetTestBase::DragTester::SetLinearPrecision(float p) {
+void DragTester::SetLinearPrecision(float p) {
     base_info_.linear_precision = p;
 }
 
-void WidgetTestBase::DragTester::SetAngularPrecision(float p) {
+void DragTester::SetAngularPrecision(float p) {
     base_info_.angular_precision = p;
 }
 
-void WidgetTestBase::DragTester::SetRayDirection(const Vector3f &dir) {
+void DragTester::SetRayDirection(const Vector3f &dir) {
     base_info_.ray.direction = dir;
 }
 
-void WidgetTestBase::DragTester::ApplyMouseDrag(const Point3f &p0,
-                                                const Point3f &p1,
-                                                size_t count_between) {
+void DragTester::ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
+                                size_t count_between) {
     DragInfo info = base_info_;
     info.trigger  = Trigger::kPointer;
 
@@ -84,7 +83,7 @@ void WidgetTestBase::DragTester::ApplyMouseDrag(const Point3f &p0,
     ApplyDrag_(infos);
 }
 
-void WidgetTestBase::DragTester::ApplyGripDrag(const Point3f &p0,
+void DragTester::ApplyGripDrag(const Point3f &p0,
                                                const Point3f &p1,
                                                size_t count_between) {
     DragInfo info = base_info_;
@@ -108,7 +107,7 @@ void WidgetTestBase::DragTester::ApplyGripDrag(const Point3f &p0,
     ApplyDrag_(infos);
 }
 
-void WidgetTestBase::DragTester::ApplyTouchDrag(const Point3f &p0,
+void DragTester::ApplyTouchDrag(const Point3f &p0,
                                                 const Point3f &p1,
                                                 size_t count_between) {
     DragInfo info = base_info_;
@@ -132,13 +131,13 @@ void WidgetTestBase::DragTester::ApplyTouchDrag(const Point3f &p0,
     ApplyDrag_(infos);
 }
 
-void WidgetTestBase::DragTester::ApplyGripRotationDrag(
+void DragTester::ApplyGripRotationDrag(
     const Vector3f &guide_dir, const Rotationf &r0,
     const Rotationf &r1, size_t count_between) {
     ApplyGripRotationDrag(guide_dir, r0, r1, r1, count_between);
 }
 
-void WidgetTestBase::DragTester::ApplyGripRotationDrag(
+void DragTester::ApplyGripRotationDrag(
     const Vector3f &guide_dir, const Rotationf &r0, const Rotationf &r1,
     const Rotationf &r2, size_t count_between) {
     DragInfo info = base_info_;
@@ -169,7 +168,7 @@ void WidgetTestBase::DragTester::ApplyGripRotationDrag(
     ApplyDrag_(infos);
 }
 
-void WidgetTestBase::DragTester::Init_(const DraggableWidgetPtr &dw) {
+void DragTester::Init_(const DraggableWidgetPtr &dw) {
     ASSERT(dw);
     dw_ = dw;
     base_info_.ray.direction        = -Vector3f::AxisZ();
@@ -177,7 +176,7 @@ void WidgetTestBase::DragTester::Init_(const DraggableWidgetPtr &dw) {
     base_info_.grip_position        =  Point3f::Zero();
 }
 
-void WidgetTestBase::DragTester::ApplyDrag_(const std::vector<DragInfo> &infos) {
+void DragTester::ApplyDrag_(const std::vector<DragInfo> &infos) {
     ASSERT_LE(2U, infos.size());
     EXPECT_FALSE(dw_->IsDragging());
     if (dw_->IsInteractionEnabled()) {

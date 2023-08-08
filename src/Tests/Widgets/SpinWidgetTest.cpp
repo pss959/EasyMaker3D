@@ -1,12 +1,13 @@
+#include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/WidgetTestBase.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Widgets/SpinWidget.h"
 
-class SpinWidgetTest : public WidgetTestBase {
+class SpinWidgetTest : public SceneTestBase {
   protected:
     SpinWidgetPtr GetSpinWidget() {
-        return GetWidgetOfType<SpinWidget>("nodes/Widgets/SpinWidget.emd",
-                                           "SpinWidget");
+        return ReadAndSetUpNode<SpinWidget>("nodes/Widgets/SpinWidget.emd",
+                                            "SpinWidget");
     }
 };
 

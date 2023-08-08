@@ -929,8 +929,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up targets in the TargetManager.
     MGR_(target)->InitTargets(
-        SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"),
-        SG::FindTypedNodeInScene<EdgeTargetWidget>(scene, "EdgeTarget"));
+        SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTargetWidget"),
+        SG::FindTypedNodeInScene<EdgeTargetWidget>(scene,  "EdgeTargetWidget"));
 
     // Hook up the exit sign.
     auto exit_sign =
