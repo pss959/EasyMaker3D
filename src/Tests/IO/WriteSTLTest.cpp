@@ -10,16 +10,17 @@
 #include "Tests/Testing.h"
 #include "Util/String.h"
 
+/// \ingroup Tests
 class WriteSTLTest : public SceneTestBase {
   protected:
-    // Returns a default UnitConversion instance.
+    /// Returns a default UnitConversion instance.
     static UnitConversionPtr GetDefaultUC() {
         return CreateObject<UnitConversion>();
     }
 
-    // Writes the given Model in the given format with the given
-    // UnitConversion, returning the string representing the contents of the
-    // output file.
+    /// Writes the given Model in the given format with the given
+    /// UnitConversion, returning the string representing the contents of the
+    /// output file.
     std::string WriteConvModelAsSTL(const ModelPtr &model,
                                     const UnitConversion &conv,
                                     FileFormat format) {
@@ -33,7 +34,8 @@ class WriteSTLTest : public SceneTestBase {
         return tmp.GetContents();
     }
 
-    // Same as above, but uses the default (identity) UnitConversion.
+    // Same as WriteConvModelAsSTL(), but uses the default (identity)
+    // UnitConversion.
     std::string WriteModelAsSTL(const ModelPtr &model, FileFormat format) {
         UnitConversionPtr conv = GetDefaultUC();
         return WriteConvModelAsSTL(model, *conv, format);

@@ -4,9 +4,10 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class TriangulationTest : public TestBase {
   protected:
-    // Makes sure all result triangles are counterclockwise.
+    /// Verifies that all result triangles are counterclockwise.
     static void ValidateOrientation(const std::vector<Point2f> &points,
                                     const std::vector<GIndex> &indices) {
         EXPECT_EQ(0U, indices.size() % 3U);
@@ -20,6 +21,8 @@ class TriangulationTest : public TestBase {
     }
 
   private:
+    /// Returns true if the triangle formed by three points is
+    /// counterclockwise.
     static bool IsCCW_(const Point2f &p0, const Point2f &p1, const Point2f &p2) {
         // Use 2D cross product; the sign indicates whether the angle is
         // positive (CCW) or negative (CW).

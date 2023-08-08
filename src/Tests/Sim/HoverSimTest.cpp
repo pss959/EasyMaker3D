@@ -6,6 +6,7 @@
 #include "Tools/Tool.h"
 #include "Widgets/Widget.h"
 
+/// \ingroup Tests
 class HoverSimTest_ : public SimTestBase {
   protected:
     virtual void TestResults() override {

@@ -4,6 +4,7 @@
 #include "Tests/Widgets/DragTester.h"
 #include "Widgets/GenericWidget.h"
 
+/// \ingroup Tests
 class GenericWidgetTest : public SceneTestBase {};
 
 TEST_F(GenericWidgetTest, NotifyDrag) {

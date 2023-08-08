@@ -15,9 +15,10 @@
 #include "Util/General.h"
 #include "Util/Tuning.h"
 
+/// \ingroup Tests
 class TextTest : public SceneTestBase {
   protected:
-    // Sets up Ion for a text node using the given context.
+    /// Sets up Ion for a text node using the given context.
     void SetUpIonText(const SG::TextNodePtr &text,
                       const SG::IonContextPtr &context) {
         text->SetUpIon(context, std::vector<ion::gfx::ShaderProgramPtr>());

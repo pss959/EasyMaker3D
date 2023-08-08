@@ -6,6 +6,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+/// \ingroup Tests
 class LinearTest : public TestBase {};
 
 // ----------------------------------------------------------------------------

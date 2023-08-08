@@ -8,6 +8,7 @@
 #include "Util/FilePath.h"
 
 /// Base test fixture that supplies some useful functions for tests.
+/// \ingroup Tests
 class TestBase : public ::testing::Test {
  protected:
     // ------------------------------------------------------------------------

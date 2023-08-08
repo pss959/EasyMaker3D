@@ -4,8 +4,8 @@
 #include "Models/RevSurfModel.h"
 #include "Tests/SceneTestBase.h"
 
-class RevSurfModelTest : public SceneTestBase {
-};
+/// \ingroup Tests
+class RevSurfModelTest : public SceneTestBase {};
 
 TEST_F(RevSurfModelTest, DefaultProfile) {
     RevSurfModelPtr rsm = Model::CreateModel<RevSurfModel>();

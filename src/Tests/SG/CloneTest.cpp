@@ -7,6 +7,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class CloneTest : public SceneTestBase {};
 
 TEST_F(CloneTest, DefaultNode) {

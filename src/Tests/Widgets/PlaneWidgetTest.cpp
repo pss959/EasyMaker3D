@@ -4,6 +4,7 @@
 #include "Widgets/AxisWidget.h"
 #include "Widgets/PlaneWidget.h"
 
+/// \ingroup Tests
 class PlaneWidgetTest : public SceneTestBase {
   protected:
     PlaneWidgetPtr GetPlaneWidget() {

@@ -5,6 +5,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class ImageTest : public SceneTestBase {};
 
 TEST_F(ImageTest, DefaultFileImage) {

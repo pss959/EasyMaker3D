@@ -6,8 +6,8 @@
 #include "Util/General.h"
 #include "Util/Tuning.h"
 
-class TaperedModelTest : public SceneTestBase {
-};
+/// \ingroup Tests
+class TaperedModelTest : public SceneTestBase {};
 
 TEST_F(TaperedModelTest, TaperProfile) {
     // Tests valid and invalid Taper Profiles.

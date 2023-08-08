@@ -1,6 +1,7 @@
 #include "Tests/Parser/ParserTestBase.h"
 #include "Util/String.h"
 
+/// \ingroup Tests
 class ObjectTest : public ParserTestBase {};
 
 TEST_F(ObjectTest, Default) {

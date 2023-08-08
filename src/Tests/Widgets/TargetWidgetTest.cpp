@@ -11,51 +11,36 @@
 #include "Widgets/PointTargetWidget.h"
 #include "Widgets/RadialLayoutWidget.h"
 
-// ----------------------------------------------------------------------------
-// TestTargetWidget class.
-// ----------------------------------------------------------------------------
-
-/// This is a derived Widget class that supports target placement, always
-/// returning fixed results for testing.
-class TestTargetWidget : public Widget {
-  public:
-    virtual bool CanReceiveTarget() const override { return true; }
-    virtual void PlacePointTarget(const DragInfo &info,
-                                  Point3f &position, Vector3f &direction,
-                                  Dimensionality &snapped_dims) override;
-    virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
-                                 Point3f &position0,
-                                 Point3f &position1) override;
-  protected:
-    TestTargetWidget() {}
-
-  private:
-    friend class Parser::Registry;
-};
-
-void TestTargetWidget::PlacePointTarget(const DragInfo &info,
-                                        Point3f &position, Vector3f &direction,
-                                        Dimensionality &snapped_dims) {
-    position     = Point3f(1, 2, 3);
-    direction    = Vector3f(-1, 0, 0);
-    snapped_dims = Dimensionality("XZ");
-}
-
-void TestTargetWidget::PlaceEdgeTarget(const DragInfo &info,
-                                       float current_length,
-                                       Point3f &position0, Point3f &position1) {
-    position0 = Point3f(1, 2, 3);
-    position1 = Point3f(4, 5, 6);
-}
-
-DECL_SHARED_PTR(TestTargetWidget);
-
-// ----------------------------------------------------------------------------
-// TargetWidgetTest class.
-// ----------------------------------------------------------------------------
-
+/// \ingroup Tests
 class TargetWidgetTest : public SceneTestBase {
   protected:
+    /// Derived Widget class that supports target placement, always returning
+    /// fixed results for testing.
+    class TestTargetWidget : public Widget {
+      public:
+        virtual bool CanReceiveTarget() const override { return true; }
+        virtual void PlacePointTarget(const DragInfo &info,
+                                      Point3f &position, Vector3f &direction,
+                                      Dimensionality &snapped_dims) override {
+            position     = Point3f(1, 2, 3);
+            direction    = Vector3f(-1, 0, 0);
+            snapped_dims = Dimensionality("XZ");
+        }
+        virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
+                                     Point3f &position0,
+                                     Point3f &position1) override {
+            position0 = Point3f(1, 2, 3);
+            position1 = Point3f(4, 5, 6);
+        }
+
+      protected:
+        TestTargetWidget() {}
+
+      private:
+        friend class Parser::Registry;
+    };
+    DECL_SHARED_PTR(TestTargetWidget);
+
     TargetWidgetTest() {
         Parser::Registry::AddType<TestTargetWidget>("TestTargetWidget");
     }
@@ -70,10 +55,6 @@ class TargetWidgetTest : public SceneTestBase {
             "nodes/Widgets/EdgeTargetWidget.emd", "EdgeTargetWidget");
     }
 };
-
-// ----------------------------------------------------------------------------
-// PointTargetWidget tests.
-// ----------------------------------------------------------------------------
 
 TEST_F(TargetWidgetTest, PointTargetDefaults) {
     auto ptw = GetPointTargetWidget();

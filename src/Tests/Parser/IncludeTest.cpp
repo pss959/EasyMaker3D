@@ -2,6 +2,7 @@
 #include "Tests/TempFile.h"
 #include "Util/FilePath.h"
 
+/// \ingroup Tests
 class IncludeTest : public ParserTestBase {};
 
 TEST_F(IncludeTest, Includes) {

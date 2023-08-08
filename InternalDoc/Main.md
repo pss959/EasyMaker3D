@@ -35,6 +35,7 @@ $(VERSION_STRING).
 @defgroup Place     Classes related to placing models in the scene
 @defgroup SG        Scene graph classes
 @defgroup Selection Interactive selection-related classes
+@defgroup Tests     Classes and functions for internal unit tests
 @defgroup Tools     Interactive tool classes
 @defgroup Trackers  Interaction trackers used by MainHandler
 @defgroup Utility   Utility classes and functions

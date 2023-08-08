@@ -3,6 +3,7 @@
 #include "Tests/Widgets/DragTester.h"
 #include "Widgets/SpinWidget.h"
 
+/// \ingroup Tests
 class SpinWidgetTest : public SceneTestBase {
   protected:
     SpinWidgetPtr GetSpinWidget() {

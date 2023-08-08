@@ -6,6 +6,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class NodeBoundsTest : public SceneTestBase {};
 
 TEST_F(NodeBoundsTest, NoShapes) {

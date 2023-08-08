@@ -9,10 +9,7 @@
 #include "Util/String.h"
 #include "Util/Tuning.h"
 
-// ----------------------------------------------------------------------------
-// ClipSessionTest base class - provides helpers for tests.
-// ----------------------------------------------------------------------------
-
+/// \ingroup Tests
 class ClipSessionTest : public SessionTestBase {
   protected:
     struct ModelData {
@@ -32,7 +29,7 @@ class ClipSessionTest : public SessionTestBase {
     void Compare1(const ModelData &expected, ClippedModel &cm);
     void CompareN(const std::vector<ModelData> &expected);
 
-    // Convenience function
+    /// Convenience function
     static Rotationf GetXRot() { return BuildRotation(Vector3f::AxisX(), 90); }
 };
 

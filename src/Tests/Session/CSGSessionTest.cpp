@@ -4,6 +4,7 @@
 #include "Tests/Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class CSGSessionTest : public SessionTestBase {};
 
 TEST_F(CSGSessionTest, Logo) {

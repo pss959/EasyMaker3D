@@ -7,13 +7,15 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
-class CurvesTest : public TestBase {};
-
-// Convenience to create a CircleArc with start and arc angles in degrees.
-static CircleArc GetArc_(float start_deg, float arc_deg) {
-    return CircleArc(Anglef::FromDegrees(start_deg),
-                     Anglef::FromDegrees(arc_deg));
-}
+/// \ingroup Tests
+class CurvesTest : public TestBase {
+  protected:
+    /// Convenience to create a CircleArc with start and arc angles in degrees.
+    static CircleArc GetArc_(float start_deg, float arc_deg) {
+        return CircleArc(Anglef::FromDegrees(start_deg),
+                         Anglef::FromDegrees(arc_deg));
+    }
+};
 
 TEST_F(CurvesTest, CircleArc) {
     CircleArc arc;

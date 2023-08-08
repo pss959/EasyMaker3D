@@ -1,16 +1,18 @@
 #include "Tests/Testing.h"
 #include "Util/Flags.h"
 
-namespace {
-
-// Enum used for testing.
-enum class TestFlags : uint32_t {
-    kF1 = (1 << 0),
-    kF2 = (1 << 1),
-    kF3 = (1 << 2),
+/// \ingroup Tests
+class FlagsTest : public ::testing::Test {
+  protected:
+    /// Enum used for testing.
+    enum class TestFlags : uint32_t {
+        kF1 = (1 << 0),
+        kF2 = (1 << 1),
+        kF3 = (1 << 2),
+    };
 };
 
-TEST(FlagsTest, FlagsSetAndHas) {
+TEST_F(FlagsTest, FlagsSetAndHas) {
     Util::Flags<TestFlags> flags;
     EXPECT_FALSE(flags.HasAny());
     EXPECT_FALSE(flags.Has(TestFlags::kF1));
@@ -39,7 +41,7 @@ TEST(FlagsTest, FlagsSetAndHas) {
     EXPECT_FALSE(flags.HasOnly(TestFlags::kF3));
 }
 
-TEST(FlagsTest, SetAll) {
+TEST_F(FlagsTest, SetAll) {
     Util::Flags<TestFlags> flags;
     flags.SetAll(true);
     EXPECT_TRUE(flags.Has(TestFlags::kF1));
@@ -51,7 +53,7 @@ TEST(FlagsTest, SetAll) {
     EXPECT_FALSE(flags.Has(TestFlags::kF3));
 }
 
-TEST(FlagsTest, FlagsReset) {
+TEST_F(FlagsTest, FlagsReset) {
     Util::Flags<TestFlags> flags;
     EXPECT_FALSE(flags.HasAny());
     EXPECT_FALSE(flags.Has(TestFlags::kF1));
@@ -67,7 +69,7 @@ TEST(FlagsTest, FlagsReset) {
     EXPECT_TRUE(flags.Has(TestFlags::kF3));
 }
 
-TEST(FlagsTest, FlagsHasAnyFrom) {
+TEST_F(FlagsTest, FlagsHasAnyFrom) {
     Util::Flags<TestFlags> flags1;
     Util::Flags<TestFlags> flags2;
     EXPECT_FALSE(flags1.HasAnyFrom(flags2));
@@ -86,7 +88,7 @@ TEST(FlagsTest, FlagsHasAnyFrom) {
     EXPECT_TRUE(flags1.HasAnyFrom(flags2));
 }
 
-TEST(FlagsTest, ToFromString) {
+TEST_F(FlagsTest, ToFromString) {
     Util::Flags<TestFlags> flags;
     EXPECT_EQ("", flags.ToString());
     flags.Set(TestFlags::kF3);
@@ -102,7 +104,7 @@ TEST(FlagsTest, ToFromString) {
     EXPECT_FALSE(Util::Flags<TestFlags>::FromString("kF3|kF9", flags2));
 }
 
-TEST(FlagsTest, MoreThanMax) {
+TEST_F(FlagsTest, MoreThanMax) {
     // magic_enum has a maximum value of 128 for enum values. This is normally
     // not a problem, but for bit-shifted flags it can be. This tests that
     // case.
@@ -124,7 +126,7 @@ TEST(FlagsTest, MoreThanMax) {
     EXPECT_EQ("kF1|kF2|kF3|kF4|kF5|kF6|kF7|kF8|kF9|kF10", flags.ToString());
 }
 
-TEST(FlagsTest, Equality) {
+TEST_F(FlagsTest, Equality) {
     Util::Flags<TestFlags> f0, f1;
     EXPECT_TRUE(f0 == f1);
     EXPECT_FALSE(f0 != f1);
@@ -150,5 +152,3 @@ TEST(FlagsTest, Equality) {
     EXPECT_FALSE(f0 != f1);
     EXPECT_EQ(f0, f1);
 }
-
-}  // anonymous namespace

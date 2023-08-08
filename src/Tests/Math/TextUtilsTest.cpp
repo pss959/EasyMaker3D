@@ -7,8 +7,10 @@
 #include "Util/General.h"
 #include "Util/Tuning.h"
 
+/// \ingroup Tests
 class TextUtilsTest : public TestBase {
   protected:
+    /// Verifies that the given Polygon's border counts match \p border_counts.
     void TestPoly(const Polygon &poly, std::vector<size_t> border_counts) {
         EXPECT_EQ(border_counts.size(), poly.GetBorderCounts().size());
         for (size_t i = 0; i < border_counts.size(); ++i)

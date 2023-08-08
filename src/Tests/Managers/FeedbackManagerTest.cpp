@@ -6,28 +6,33 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
-// Derived Feedback classes to allow testing.
-class TestFeedback : public Feedback {
-  public:
-    bool is_active = false;
-    virtual void SetColor(const Color &color) override {}
-    virtual void Activate()   override { is_active = true;  }
-    virtual void Deactivate() override { is_active = false; }
-};
-class AFeedback : public TestFeedback {
+/// \ingroup Tests
+class FeedbackManagerTest : public SceneTestBase {
   protected:
-    AFeedback() {}
-    friend class Parser::Registry;
-};
-class BFeedback : public TestFeedback {
-  protected:
-    BFeedback() {}
-    friend class Parser::Registry;
-};
-typedef std::shared_ptr<AFeedback> AFeedbackPtr;
-typedef std::shared_ptr<BFeedback> BFeedbackPtr;
+    /// Derived Feedback class for testing FeedbackManager to Feedback interface.
+    class TestFeedback : public Feedback {
+      public:
+        bool is_active = false;
+        virtual void SetColor(const Color &color) override {}
+        virtual void Activate()   override { is_active = true;  }
+        virtual void Deactivate() override { is_active = false; }
+    };
 
-class FeedbackManagerTest : public SceneTestBase {};
+    class AFeedback : public TestFeedback {
+      protected:
+        AFeedback() {}
+        friend class Parser::Registry;
+    };
+
+    class BFeedback : public TestFeedback {
+      protected:
+        BFeedback() {}
+        friend class Parser::Registry;
+    };
+
+    typedef std::shared_ptr<AFeedback> AFeedbackPtr;
+    typedef std::shared_ptr<BFeedback> BFeedbackPtr;
+};
 
 TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     Parser::Registry::AddType<AFeedback>("AFeedback");

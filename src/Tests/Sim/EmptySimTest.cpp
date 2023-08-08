@@ -3,6 +3,7 @@
 #include "Tests/Sim/SimTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class EmptySimTest_ : public SimTestBase {
   protected:
     virtual void TestResults() override {

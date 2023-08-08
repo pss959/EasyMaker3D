@@ -6,6 +6,7 @@
 
 /// Class that creates a temporary file in the constructor and removes it in
 /// the destructor.
+/// \ingroup Tests
 class TempFile {
   public:
     /// Creates a temporary file with the given contents.

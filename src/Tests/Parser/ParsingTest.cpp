@@ -1,10 +1,11 @@
 #include "Tests/Parser/ParserTestBase.h"
 #include "Tests/TempFile.h"
 
+/// \ingroup Tests
 class ParsingTest : public ParserTestBase {
   protected:
-    // Tries parsing a value of a given type in a string and comparing with an
-    // expected field value.
+    /// Tries parsing a value of a given type in a string and comparing with an
+    /// expected field value.
     template <typename T>
     bool TryValue(Parser::TField<T> Simple::* field, T expected,
                   const std::string &str){

@@ -8,9 +8,10 @@
 #include "Tests/Testing.h"
 #include "Util/String.h"
 
+/// \ingroup Tests
 class IntersectorTest : public SceneTestBase {
   protected:
-    // Derived Node class that uses a bounds proxy.
+    /// Derived Node class that uses a bounds proxy.
     class ProxyNode : public SG::Node {
       protected:
         ProxyNode() {}
@@ -21,7 +22,7 @@ class IntersectorTest : public SceneTestBase {
         friend class Parser::Registry;
     };
 
-    // Reads a scene from a string and intersects it with the given ray.
+    /// Reads a scene from a string and intersects it with the given ray.
     SG::Hit IntersectScene(const std::string &input, const Ray &ray) {
         ResetContext();  // Avoid context pollution.
         // Call SetUpIon() so that meshes are installed in some shapes.
@@ -29,8 +30,8 @@ class IntersectorTest : public SceneTestBase {
         return SG::Intersector::IntersectScene(*scene, ray);
     }
 
-    // Reads a scene with the given root node contents from a string and
-    // intersects it with the given ray.
+    /// Reads a scene with the given root node contents from a string and
+    /// intersects it with the given ray.
     SG::Hit IntersectContents(const std::string &contents, const Ray &ray) {
         ResetContext();  // Avoid context pollution.
         // Call SetUpIon() so that meshes are installed in some shapes.
@@ -38,8 +39,8 @@ class IntersectorTest : public SceneTestBase {
         return SG::Intersector::IntersectScene(*scene, ray);
     }
 
-    // Reads a scene from a string and intersects the graph rooted by the named
-    // Node with the given ray.
+    /// Reads a scene from a string and intersects the graph rooted by the named
+    /// Node with the given ray.
     SG::Hit IntersectGraph(const std::string &input, const std::string &name,
                            const Ray &ray) {
         ResetContext();  // Avoid context pollution.

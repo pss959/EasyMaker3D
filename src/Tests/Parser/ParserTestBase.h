@@ -18,14 +18,58 @@
     TEST_THROW(STMT, Parser::Exception, PATTERN)
 
 // ----------------------------------------------------------------------------
-// Classes for testing parsing.
+// Parser test base class.
 // ----------------------------------------------------------------------------
 
-enum class SimpleEnum { kE1, kE2, kE3 };
-enum class FlagEnum   { kF1 = 0x1, kF2 = 0x2, kF3 = 0x4 };
+/// Base class that sets up a Parser.
+/// \ingroup Tests
+class ParserTestBase : public SceneTestBase {
+ protected:
+    enum class SimpleEnum { kE1, kE2, kE3 };
+    enum class FlagEnum   { kF1 = 0x1, kF2 = 0x2, kF3 = 0x4 };
 
-// Class with all non-object parser value types.
-class Simple : public Parser::Object {
+    // These nested classes are all defined below.
+    class Simple;
+    class Derived;
+    class Full;
+    class Other;
+    class Unscoped;
+
+    // Shorthand.
+    DECL_SHARED_PTR(Simple);
+    DECL_SHARED_PTR(Derived);
+    DECL_SHARED_PTR(Full);
+    DECL_SHARED_PTR(Other);
+
+    Parser::Parser parser;
+
+    // The constructor calls InitTestClasses() by default.
+    ParserTestBase();
+
+    // Sets up the Parser to use all of the classes defined above.
+    void InitTestClasses();
+
+    // Returns a string used to initialize all fields in a Simple instance.
+    static std::string GetSimpleInput();
+
+    // Returns a string used to initialize all fields in a Full instance.
+    static std::string GetFullInput();
+
+    // Parses the given string, checking for exceptions. Returns a null
+    // ObjectPtr on failure.
+    Parser::ObjectPtr ParseString(const std::string &input);
+
+    // Sets up a temporary file containing the given input string, parses it,
+    // and returns the result. Returns a null ObjectPtr on failure.
+    Parser::ObjectPtr ParseFile(const std::string &input);
+};
+
+// ----------------------------------------------------------------------------
+// Nested classes for testing parsing.
+// ----------------------------------------------------------------------------
+
+/// Class with all non-object parser value types.
+class ParserTestBase::Simple : public Parser::Object {
   public:
     virtual void AddFields() override;
 
@@ -47,8 +91,8 @@ class Simple : public Parser::Object {
     friend class Parser::Registry;
 };
 
-// Derived class that adds Object and ObjectList value types.
-class Derived : public Simple {
+/// Derived class that adds Object and ObjectList value types.
+class ParserTestBase::Derived : public Simple {
   public:
     // Makes this publicly available.
     bool IsCreationDone2() const { return IsCreationDone(); }
@@ -63,8 +107,8 @@ class Derived : public Simple {
     friend class Parser::Registry;
 };
 
-// Class with a field for each supported type.
-class Full : public Parser::Object {
+/// Class with a field for each supported type.
+class ParserTestBase::Full : public Parser::Object {
   public:
     virtual void AddFields() override;
 
@@ -102,15 +146,15 @@ class Full : public Parser::Object {
     friend class Parser::Registry;
 };
 
-// Class used for testing type and other errors.
-class Other : public Parser::Object {
+/// Class used for testing type and other errors.
+class ParserTestBase::Other : public Parser::Object {
   protected:
     Other() {}
     friend class Parser::Registry;
 };
 
-// Class used to test overriding IsScoped() and unnamed object errors.
-class Unscoped : public Parser::Object {
+/// Class used to test overriding IsScoped() and unnamed object errors.
+class ParserTestBase::Unscoped : public Parser::Object {
   public:
     virtual bool IsScoped() const override { return false; }
     virtual bool IsNameRequired() const override { return true; }
@@ -118,39 +162,4 @@ class Unscoped : public Parser::Object {
     Unscoped() {}
     virtual bool IsValid(std::string &details) override;
     friend class Parser::Registry;
-};
-
-// Shorthand.
-DECL_SHARED_PTR(Simple);
-DECL_SHARED_PTR(Derived);
-DECL_SHARED_PTR(Full);
-DECL_SHARED_PTR(Other);
-
-// ----------------------------------------------------------------------------
-// Base class that sets up a Parser.
-// ----------------------------------------------------------------------------
-
-class ParserTestBase : public SceneTestBase {
- protected:
-    Parser::Parser parser;
-
-    // The constructor calls InitTestClasses() by default.
-    ParserTestBase();
-
-    // Sets up the Parser to use all of the classes defined above.
-    void InitTestClasses();
-
-    // Returns a string used to initialize all fields in a Simple instance.
-    static std::string GetSimpleInput();
-
-    // Returns a string used to initialize all fields in a Full instance.
-    static std::string GetFullInput();
-
-    // Parses the given string, checking for exceptions. Returns a null
-    // ObjectPtr on failure.
-    Parser::ObjectPtr ParseString(const std::string &input);
-
-    // Sets up a temporary file containing the given input string, parses it,
-    // and returns the result. Returns a null ObjectPtr on failure.
-    Parser::ObjectPtr ParseFile(const std::string &input);
 };

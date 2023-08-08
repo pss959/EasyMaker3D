@@ -3,6 +3,7 @@
 #include "Tests/Testing.h"
 #include "Widgets/StageWidget.h"
 
+/// \ingroup Tests
 class StageWidgetTest : public SceneTestBase {
   protected:
     StageWidgetPtr GetStageWidget() {

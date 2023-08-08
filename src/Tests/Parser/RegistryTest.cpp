@@ -2,6 +2,7 @@
 #include "Tests/Parser/ParserTestBase.h"
 #include "Util/General.h"
 
+/// \ingroup Tests
 class RegistryTest : public ParserTestBase {};
 
 TEST_F(RegistryTest, GetAllTypeNames) {

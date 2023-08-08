@@ -4,6 +4,7 @@
 #include "Util/Read.h"
 #include "Util/String.h"
 
+/// \ingroup Tests
 class ReadTest : public TestBase {};
 
 TEST_F(ReadTest, NoIncludes) {

@@ -5,6 +5,7 @@
 #include "Widgets/Widget.h"
 
 /// Class that defines and sets up a TestWidget type.
+/// \ingroup Tests
 class WidgetTest : public SceneTestBase {
   protected:
     /// Derived Widget class that allows changes to active hovering.

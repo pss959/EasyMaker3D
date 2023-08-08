@@ -6,6 +6,7 @@
 #include "Tests/Testing.h"
 #include "Util/Delay.h"
 
+/// \ingroup Tests
 class FileMapTest : public TestBase {};
 
 TEST_F(FileMapTest, AddAndFind) {

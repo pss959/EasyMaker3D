@@ -16,23 +16,24 @@
 // MeshSlicingTest fixture.
 // ----------------------------------------------------------------------------
 
+/// \ingroup Tests
 class MeshSlicingTest : public TestBase {
   protected:
-    // Data passed to DumpTriMesh.
-    //
-    // For example, to dump the original (unsliced) mesh:
-    //   DumpData data;
-    //   data.fractions = fractions;
-    //   data.dim = Util::EnumInt(sm.axis);
-    //   data.range = sm.range;
-    //   DumpTriMesh("unsliced", mesh, data);
-    //
-    // Or to dump the result (sliced) mesh with borders highlighted:
-    //   DumpData data;
-    //   data.add_face_labels = false;
-    //   data.add_edge_labels = false;
-    //   data.highlight_borders = true;
-    //   DumpTriMesh("sliced", sm.mesh, data);
+    /// Data passed to DumpTriMesh.
+    ///
+    /// For example, to dump the original (unsliced) mesh:
+    ///   DumpData data;
+    ///   data.fractions = fractions;
+    ///   data.dim = Util::EnumInt(sm.axis);
+    ///   data.range = sm.range;
+    ///   DumpTriMesh("unsliced", mesh, data);
+    ///
+    /// Or to dump the result (sliced) mesh with borders highlighted:
+    ///   DumpData data;
+    ///   data.add_face_labels = false;
+    ///   data.add_edge_labels = false;
+    ///   data.highlight_borders = true;
+    ///   DumpTriMesh("sliced", sm.mesh, data);
     struct DumpData {
         bool add_face_labels   = true;
         bool add_edge_labels   = true;
@@ -47,10 +48,10 @@ class MeshSlicingTest : public TestBase {
         bool highlight_borders = false;
     };
 
-    // Enables slicing logging.
+    //// Enables slicing logging.
     void EnableSliceLogging() { EnableKLog("X"); }
 
-    // This can be used in tests to dump a TriMesh in 3dv format to /tmp.
+    /// This can be used in tests to dump a TriMesh in 3dv format to /tmp.
     void DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
                      const DumpData &data);
 };

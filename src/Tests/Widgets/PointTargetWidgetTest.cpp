@@ -8,6 +8,7 @@
 #include "Widgets/PointTargetWidget.h"
 #include "Widgets/RadialLayoutWidget.h"
 
+/// \ingroup Tests
 class PointTargetWidgetTest : public TargetSceneTestBase {
   protected:
     PointTargetWidgetPtr GetPointTargetWidget() {

@@ -2,6 +2,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class StateTableTest : public SceneTestBase {};
 
 TEST_F(StateTableTest, DefaultStateTable) {

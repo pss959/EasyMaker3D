@@ -3,6 +3,7 @@
 #include "Util/Assert.h"
 #include "Widgets/IconSwitcherWidget.h"
 
+/// \ingroup Tests
 class IconSwitcherWidgetTest : public SceneTestBase {};
 
 TEST_F(IconSwitcherWidgetTest, Defaults) {

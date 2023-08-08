@@ -2,6 +2,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class AnimationTest : public TestBase {};
 
 TEST_F(AnimationTest, Dampen) {

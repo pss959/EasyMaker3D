@@ -5,6 +5,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class PolyMeshTest : public TestBase {};
 
 TEST_F(PolyMeshTest, Box) {

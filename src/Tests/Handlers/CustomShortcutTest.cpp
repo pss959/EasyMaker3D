@@ -3,11 +3,11 @@
 #include "Tests/Testing.h"
 #include "Util/String.h"
 
+/// \ingroup Tests
 class CustomShortcutTest : public TestBase {
   protected:
-    // ShortcutHandler and error string common to all tests.
-    ShortcutHandler sh;
-    std::string     error;
+    ShortcutHandler sh;     ///< ShortcutHandler common to all tests.
+    std::string     error;  ///< Error string common to all tests.
 
     bool AddInput(const std::string &input) {
         return sh.AddCustomShortcutsFromString(input, error);

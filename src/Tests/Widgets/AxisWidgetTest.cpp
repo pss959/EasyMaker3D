@@ -5,6 +5,7 @@
 #include "Widgets/Slider2DWidget.h"
 #include "Widgets/SphereWidget.h"
 
+/// \ingroup Tests
 class AxisWidgetTest : public SceneTestBase {
   protected:
     AxisWidgetPtr GetAxisWidget() {

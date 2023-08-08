@@ -4,6 +4,7 @@
 #include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class DragInfoTest : public TestBaseWithTypes {};
 
 TEST_F(DragInfoTest, DragInfo) {

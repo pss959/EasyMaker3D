@@ -4,6 +4,7 @@
 #include "Util/Read.h"
 #include "Util/Write.h"
 
+/// \ingroup Tests
 class WriteTest : public TestBase {};
 
 TEST_F(WriteTest, WriteString) {

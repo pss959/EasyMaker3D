@@ -1,20 +1,24 @@
 #include "Tests/Testing.h"
 #include "Util/FilePathList.h"
 
-// Derived FilePathList class that simulates a file system for testing.
-class TestFPL_ : public FilePathList {
-  public:
-    virtual bool IsValidDirectory(const FilePath &path) const {
-        const std::string fn = path.GetFileName();
-        return fn.contains("DIR");
-    }
-    virtual bool IsExistingFile(const FilePath &path) const {
-        return path.GetFileName().contains("FILE");
-    }
+/// \ingroup Tests
+class FilePathListTest : public ::testing::Test {
+  protected:
+    /// Derived FilePathList class that simulates a file system for testing.
+    class TestFPL : public FilePathList {
+      public:
+        virtual bool IsValidDirectory(const FilePath &path) const {
+            const std::string fn = path.GetFileName();
+            return fn.contains("DIR");
+        }
+        virtual bool IsExistingFile(const FilePath &path) const {
+            return path.GetFileName().contains("FILE");
+        }
+    };
 };
 
-TEST(FilePathListTest, Basics) {
-    TestFPL_ fpl;
+TEST_F(FilePathListTest, Basics) {
+    TestFPL fpl;
     fpl.Init(FilePath("/abc/def"));
     EXPECT_EQ("/abc/def", fpl.GetCurrent().ToString());
     EXPECT_FALSE(fpl.IsValidDirectory("/abc/def"));
@@ -28,8 +32,8 @@ TEST(FilePathListTest, Basics) {
     EXPECT_TRUE(fpl.IsExistingFile(fpl.GetCurrent()));
 }
 
-TEST(FilePathListTest, Directions) {
-    TestFPL_ fpl;
+TEST_F(FilePathListTest, Directions) {
+    TestFPL fpl;
     fpl.Init(FilePath("/DIR0/DIR1"));
     EXPECT_TRUE(fpl.CanGoInDirection(FilePathList::Direction::kUp));
     EXPECT_FALSE(fpl.CanGoInDirection(FilePathList::Direction::kForward));

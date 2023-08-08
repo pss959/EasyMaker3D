@@ -2,6 +2,7 @@
 #include "Tests/Testing.h"
 #include "Widgets/IconWidget.h"
 
+/// \ingroup Tests
 class IconWidgetTest : public SceneTestBase {};
 
 TEST_F(IconWidgetTest, Defaults) {

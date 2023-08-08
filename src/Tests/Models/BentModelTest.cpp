@@ -8,8 +8,8 @@
 #include "Tests/SceneTestBase.h"
 #include "Util/Tuning.h"
 
-class BentModelTest : public SceneTestBase {
-};
+/// \ingroup Tests
+class BentModelTest : public SceneTestBase {};
 
 TEST_F(BentModelTest, DefaultBend) {
     // 10x2x2 box at (0,1,0).

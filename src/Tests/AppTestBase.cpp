@@ -5,11 +5,9 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-// ----------------------------------------------------------------------------
-// Derived Application class that provides functions for testing via the
-// Application's protected interface.
-// ----------------------------------------------------------------------------
-
+/// Derived Application class that provides functions for testing via the
+/// Application's protected interface.
+/// \ingroup Tests
 class AppTestBase::TestingApp_ : public Application {
   public:
     void InitForTests();
@@ -27,10 +25,6 @@ void AppTestBase::TestingApp_::InitForTests() {
     ASSERT(GetContext().scene_context);
     ASSERT(GetContext().scene_context->frustum);
 }
-
-// ----------------------------------------------------------------------------
-// AppTestBase functions.
-// ----------------------------------------------------------------------------
 
 AppTestBase::AppTestBase() : app_(new TestingApp_) {
     Util::app_type = Util::AppType::kUnitTest;

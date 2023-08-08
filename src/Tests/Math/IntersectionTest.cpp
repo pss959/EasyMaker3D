@@ -4,6 +4,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class IntersectionTest : public TestBase {};
 
 TEST_F(IntersectionTest, RayBoundsIntersect) {

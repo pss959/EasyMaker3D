@@ -5,7 +5,8 @@
 
 DECL_SHARED_PTR(DummyCommand);
 
-// Dummy Command class for testing.
+/// Dummy derived Command class for testing.
+/// \ingroup Tests
 class DummyCommand : public Command {
   public:
     virtual std::string GetDescription() const override { return "DUMMY!"; }
@@ -17,6 +18,7 @@ class DummyCommand : public Command {
     friend class Parser::Registry;
 };
 
+/// \ingroup Tests
 class CommandListTest : public SceneTestBase {
   protected:
     CommandListTest() {

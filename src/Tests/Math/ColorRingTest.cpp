@@ -6,20 +6,25 @@
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
 
-// Returns a point within the ring.
-static Point2f GetPoint_(float rad_frac, float deg) {
-    const float r =
-        Lerp(rad_frac, TK::kColorRingInnerRadius, TK::kColorRingOuterRadius);
-    const Anglef angle = Anglef::FromDegrees(deg);
-    return Point2f(r * ion::math::Cosine(angle), -r * ion::math::Sine(angle));
-}
+/// \ingroup Tests
+class ColorRingTest : public TestBase {
+  protected:
+    /// Returns a point within the ColorRing.
+    static Point2f GetPoint_(float rad_frac, float deg) {
+        const float r = Lerp(rad_frac,
+                             TK::kColorRingInnerRadius,
+                             TK::kColorRingOuterRadius);
+        const Anglef angle = Anglef::FromDegrees(deg);
+        return Point2f( r * ion::math::Cosine(angle),
+                       -r * ion::math::Sine(angle));
+    }
 
-// Returns the color as a hex string for a point within the ring.
-static std::string GetString_(float rad_frac, float deg) {
-    return ColorRing::GetColorForPoint(GetPoint_(rad_frac, deg)).ToHexString();
+    /// Returns the color as a hex string for a point within the ColorRing.
+    static std::string GetString_(float rad_frac, float deg) {
+        const auto pt = GetPoint_(rad_frac, deg);
+        return ColorRing::GetColorForPoint(pt).ToHexString();
+    }
 };
-
-class ColorRingTest : public TestBase {};
 
 TEST_F(ColorRingTest, GetColorForPoint) {
     // Use hex strings to avoid floating point errors.

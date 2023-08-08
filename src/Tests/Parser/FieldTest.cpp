@@ -1,6 +1,7 @@
 #include "Tests/Parser/ParserTestBase.h"
 #include "Tests/TempFile.h"
 
+/// \ingroup Tests
 class FieldTest : public ParserTestBase {};
 
 TEST_F(FieldTest, Initialization) {

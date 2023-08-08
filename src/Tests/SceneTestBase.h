@@ -11,7 +11,8 @@
 #include "Tests/TestBaseWithTypes.h"
 
 /// This is a base class for any test that has to read a scene from a file or
-/// string. It helps se
+/// string and possibly set up Ion data structures for the resulting scene.
+/// \ingroup Tests
 class SceneTestBase : public TestBaseWithTypes {
  protected:
     /// Default PrimitiveModel base scale. This is a shorthand convenience
@@ -74,8 +75,8 @@ class SceneTestBase : public TestBaseWithTypes {
     void ResetContext() { ion_context_.reset(); }
 
   private:
-    SG::ScenePtr      scene_;        /// Saves scene from ParseAndSetUpNode().
-    SG::IonContextPtr ion_context_;  /// IonContext used for SetUpIon().
+    SG::ScenePtr      scene_;        ///< Saves scene from ParseAndSetUpNode().
+    SG::IonContextPtr ion_context_;  ///< IonContext used for SetUpIon().
 
     /// Sets up the IonContext for use in initializing Ion objects.
     void InitIonContext_();

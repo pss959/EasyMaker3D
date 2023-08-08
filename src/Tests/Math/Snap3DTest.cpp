@@ -2,6 +2,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class Snap3DTest : public TestBase {};
 
 TEST_F(Snap3DTest, SnapToBounds) {

@@ -3,6 +3,7 @@
 #include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class TargetTest : public TestBaseWithTypes {};
 
 TEST_F(TargetTest, PointTarget) {

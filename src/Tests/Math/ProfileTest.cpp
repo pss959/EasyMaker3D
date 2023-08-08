@@ -3,8 +3,8 @@
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
 
-class ProfileTest : public TestBase {
-};
+/// \ingroup Tests
+class ProfileTest : public TestBase {};
 
 TEST_F(ProfileTest, Default) {
     // The default constructor creates an invalid Profile.

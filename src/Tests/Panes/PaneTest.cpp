@@ -9,6 +9,7 @@
 #include "Tests/UnitTestTypeChanger.h"
 #include "Util/Tuning.h"
 
+/// \ingroup Tests
 class PaneTest : public SceneTestBase {
   protected:
     SG::ScenePtr ReadPaneScene() {

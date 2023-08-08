@@ -13,9 +13,10 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
+/// \ingroup Tests
 class SetUpIonTest : public SceneTestBase {
   protected:
-    // Class that allows GetIonContext() to be called.
+    /// Class that allows GetIonContext() to be called.
     class TestNode : public SG::Node {
       public:
         using SG::Node::GetIonContext;
@@ -24,8 +25,8 @@ class SetUpIonTest : public SceneTestBase {
         friend class Parser::Registry;
     };
 
-    // Returns the named Uniform from the given UniformBlock. Asserts if it is
-    // not found.
+    /// Returns the named Uniform from the given UniformBlock. Asserts if it is
+    /// not found.
     SG::UniformPtr FindUniform(const SG::UniformBlock &block,
                                const std::string &name) {
         const auto &uniforms = block.GetUniforms();

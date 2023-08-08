@@ -8,6 +8,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
+/// \ingroup Tests
 class ColorMapTest : public TestBaseWithTypes {};
 
 TEST_F(ColorMapTest, Default) {

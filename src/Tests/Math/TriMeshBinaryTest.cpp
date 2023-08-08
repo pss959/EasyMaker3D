@@ -3,6 +3,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class TriMeshBinaryTest : public TestBase {};
 
 TEST_F(TriMeshBinaryTest, Empty) {

@@ -4,8 +4,8 @@
 #include "Tests/SceneTestBase.h"
 #include "Util/Tuning.h"
 
-class ModelTest : public SceneTestBase {
-};
+/// \ingroup Tests
+class ModelTest : public SceneTestBase {};
 
 TEST_F(ModelTest, Use) {
     ModelPtr box = Model::CreateModel<BoxModel>();

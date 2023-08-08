@@ -4,11 +4,14 @@
 #include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
-// Named this with SG prefix to distinguish tests from Parser::Object.
+// Note: this class is named with an "SG" prefix to distinguish tests from
+// those for Parser::Object.
+
+/// \ingroup Tests
 class SGObjectTest : public TestBaseWithTypes {
   protected:
-    // Derived SG::Object that makes ChangeName() and the Observe API public
-    // and implements ProcessChange() to increment a count.
+    /// Derived SG::Object that makes ChangeName() and the Observe API public
+    /// and implements ProcessChange() to increment a count.
     class TestObject : public SG::Object {
       public:
         size_t change_count = 0;
@@ -17,7 +20,7 @@ class SGObjectTest : public TestBaseWithTypes {
         using SG::Object::Unobserve;
         using SG::Object::IsObserving;
 
-        // Causes ProcessChange() to be called.
+        /// Causes ProcessChange() to be called.
         void ChangeMe() { ProcessChange(SG::Change::kGeometry, *this); }
 
       protected:

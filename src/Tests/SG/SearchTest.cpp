@@ -10,6 +10,7 @@
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
 
+/// \ingroup Tests
 class SearchTest : public SceneTestBase {};
 
 TEST_F(SearchTest, EmptyScene) {

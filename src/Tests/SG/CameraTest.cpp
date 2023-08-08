@@ -4,6 +4,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class CameraTest : public SceneTestBase {};
 
 TEST_F(CameraTest, DefaultGantry) {

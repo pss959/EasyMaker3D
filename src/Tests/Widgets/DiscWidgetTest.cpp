@@ -4,6 +4,7 @@
 #include "Tests/Widgets/DragTester.h"
 #include "Widgets/DiscWidget.h"
 
+/// \ingroup Tests
 class DiscWidgetTest : public SceneTestBase {};
 
 TEST_F(DiscWidgetTest, Defaults) {

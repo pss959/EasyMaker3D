@@ -11,12 +11,14 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class MeshUtilsTest : public TestBase {
   protected:
+    /// Size used for TriMesh created in BuildTestMesh().
     static constexpr float kMeshSize = 10;
 
-    // Builds and returns a test mesh containing 4 points and 2 triangles
-    // forming a square: -10 to +10 in X and Y, 0 in Z.
+    /// Builds and returns a test mesh containing 4 points and 2 triangles
+    /// forming a square: -10 to +10 in X and Y, 0 in Z.
     static TriMesh BuildTestMesh() {
         TriMesh mesh;
         mesh.points.assign({ Point3f(-kMeshSize, -kMeshSize, 0),

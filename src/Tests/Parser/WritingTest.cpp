@@ -1,6 +1,7 @@
 #include "Parser/Writer.h"
 #include "Tests/Parser/ParserTestBase.h"
 
+/// \ingroup Tests
 class WritingTest : public ParserTestBase {};
 
 TEST_F(WritingTest, WriteDerived) {

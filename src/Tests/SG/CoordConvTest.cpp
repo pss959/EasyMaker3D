@@ -7,9 +7,10 @@
 #include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class CoordConvTest : public TestBaseWithTypes {
   public:
-    // Creates and returns a named Node to add to a NodePath.
+    /// Creates and returns a named Node to add to a NodePath.
     SG::NodePtr CreateNode(const std::string &name) {
         return CreateObject<SG::Node>(name);
     }

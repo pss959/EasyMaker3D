@@ -5,14 +5,15 @@
 #include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class ReadSTLTest : public TestBaseWithTypes {
   protected:
-    // Returns a default UnitConversion instance.
+    /// Returns a default UnitConversion instance.
     static UnitConversionPtr GetDefaultUC() {
         return CreateObject<UnitConversion>();
     }
 
-    // Loads a TriMesh from an STL file and validates it.
+    /// Loads a TriMesh from an STL file and validates it.
     TriMesh LoadTriMesh(const std::string &file_name,
                         const UnitConversion &conv) {
         const FilePath path = GetDataPath(file_name);

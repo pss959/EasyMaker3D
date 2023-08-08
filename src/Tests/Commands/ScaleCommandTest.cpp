@@ -9,10 +9,11 @@
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
 
+/// \ingroup Tests
 class ScaleCommandTest : public AppTestBase {
   protected:
-    // Convenience to create and return a default BoxModel after verifying that
-    // it has a default scale and translation.
+    /// Convenience to create and return a default BoxModel after verifying
+    /// that it has a default scale and translation.
     ModelPtr CreateBox() {
         auto cpc = CreateCommand<CreatePrimitiveModelCommand>();
         cpc->SetType(PrimitiveType::kBox);
@@ -26,8 +27,8 @@ class ScaleCommandTest : public AppTestBase {
         return box;
     }
 
-    // Convenience to create and return a default TorusModel after verifying
-    // that it has a default scale and translation.
+    /// Convenience to create and return a default TorusModel after verifying
+    /// that it has a default scale and translation.
     ModelPtr CreateTorus() {
         auto cpc = CreateCommand<CreatePrimitiveModelCommand>();
         cpc->SetType(PrimitiveType::kTorus);
@@ -42,7 +43,7 @@ class ScaleCommandTest : public AppTestBase {
         return torus;
     }
 
-    // Convenience to create and execute a ScaleCommand.
+    /// Convenience to create and execute a ScaleCommand.
     void ApplyScaleCommand(const Model &model, ScaleCommand::Mode mode,
                            const Vector3f &ratios) {
         auto sc = CreateCommand<ScaleCommand>();
@@ -53,7 +54,7 @@ class ScaleCommandTest : public AppTestBase {
         context.command_manager->AddAndDo(sc);
     }
 
-    // Convenience to apply a RotateCommand to rotate 90 degrees around Z.
+    /// Convenience to apply a RotateCommand to rotate 90 degrees around Z.
     void ApplyRotateCommand(const Model &model) {
         auto rc = CreateCommand<RotateCommand>();
         rc->SetModelNames(std::vector<std::string>(1, model.GetName()));

@@ -4,8 +4,8 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
-class MeshClippingTest : public TestBase {
-};
+/// \ingroup Tests
+class MeshClippingTest : public TestBase {};
 
 TEST_F(MeshClippingTest, ClipMesh) {
     // Build a 10x10x10 box centered on the origin and clip off the top half.

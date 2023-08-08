@@ -7,11 +7,12 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
-// These tests can be used in conjunction with valgrind/callgrind to
-// investigate slow parts of the application. These are filtered out by default
-// in TestMain.cpp and can be run by setting the gtest filter to include them.
-class TimingTest : public SceneTestBase {
-};
+/// These tests can be used in conjunction with valgrind/callgrind to
+/// investigate slow parts of the application. These are filtered out by
+/// default in TestMain.cpp and can be run by setting the gtest filter to
+/// include them.
+/// \ingroup Tests
+class TimingTest : public SceneTestBase {};
 
 TEST_F(TimingTest, ChangeCylinder) {
     // Test changing cylinder radius and validating its mesh. This used to be

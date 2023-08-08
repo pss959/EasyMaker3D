@@ -6,6 +6,7 @@
 #include "Tests/Widgets/TargetSceneTestBase.h"
 #include "Widgets/EdgeTargetWidget.h"
 
+/// \ingroup Tests
 class EdgeTargetWidgetTest : public TargetSceneTestBase {
   protected:
     EdgeTargetWidgetPtr GetEdgeTargetWidget() {

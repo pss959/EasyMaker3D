@@ -10,6 +10,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class ShapeTest : public SceneTestBase {};
 
 TEST_F(ShapeTest, ImportedShape) {

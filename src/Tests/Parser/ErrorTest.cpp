@@ -6,6 +6,7 @@
 // exceptions.
 // ----------------------------------------------------------------------------
 
+/// \ingroup Tests
 class ErrorTest : public ParserTestBase {};
 
 TEST_F(ErrorTest, BadFile) {

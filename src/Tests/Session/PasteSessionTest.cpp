@@ -3,6 +3,7 @@
 #include "Tests/Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class PasteSessionTest : public SessionTestBase {};
 
 TEST_F(PasteSessionTest, Paste) {

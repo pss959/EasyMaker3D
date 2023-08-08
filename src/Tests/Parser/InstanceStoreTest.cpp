@@ -2,6 +2,7 @@
 #include "Tests/Parser/ParserTestBase.h"
 #include "Util/Assert.h"
 
+/// \ingroup Tests
 class InstanceStoreTest : public ParserTestBase {};
 
 TEST_F(InstanceStoreTest, Store) {
@@ -29,10 +30,10 @@ TEST_F(InstanceStoreTest, Store) {
     EXPECT_NOT_NULL(sp1.get());
     EXPECT_NOT_NULL(dp0.get());
     EXPECT_NOT_NULL(dp1.get());
-    EXPECT_EQ("Simple_0",  sp0->GetName());
-    EXPECT_EQ("Simple_1",  sp1->GetName());
-    EXPECT_EQ("Derived_0", dp0->GetName());
-    EXPECT_EQ("Derived_1", dp1->GetName());
+    EXPECT_EQ("ParserTestBase::Simple_0",  sp0->GetName());
+    EXPECT_EQ("ParserTestBase::Simple_1",  sp1->GetName());
+    EXPECT_EQ("ParserTestBase::Derived_0", dp0->GetName());
+    EXPECT_EQ("ParserTestBase::Derived_1", dp1->GetName());
 
     // Release and re-acquire should return the same instance.
     store.Release(sp0);

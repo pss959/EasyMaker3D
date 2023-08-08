@@ -5,8 +5,8 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
-class FrustumTest : public TestBase {
-};
+/// \ingroup Tests
+class FrustumTest : public TestBase {};
 
 TEST_F(FrustumTest, SetSymmetricFOV) {
     Frustum f;

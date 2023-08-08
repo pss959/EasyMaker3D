@@ -179,6 +179,9 @@ These modules are arranged (roughly) in a hierarchy shown in this diagram:
 
 @dotfile moduledependencies.dot
 
+In addition, there is a \ref Tests "Tests" module that includes classes and
+functions used only for internal unit tests.
+
 The following sections describe some of these modules in more detail, starting
 from the innermost.
 

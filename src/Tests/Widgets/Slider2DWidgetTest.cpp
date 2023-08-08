@@ -4,6 +4,7 @@
 #include "Util/Assert.h"
 #include "Widgets/Slider2DWidget.h"
 
+/// \ingroup Tests
 class Slider2DWidgetTest : public SceneTestBase {};
 
 TEST_F(Slider2DWidgetTest, Defaults) {

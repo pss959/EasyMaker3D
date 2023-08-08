@@ -5,6 +5,7 @@
 #include "Tests/Testing.h"
 #include "Util/String.h"
 
+/// \ingroup Tests
 class ShaderProgramTest : public SceneTestBase {};
 
 TEST_F(ShaderProgramTest, DefaultShaderProgram) {

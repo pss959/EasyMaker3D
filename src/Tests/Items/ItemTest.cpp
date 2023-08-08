@@ -8,6 +8,7 @@
 
 // Most Items are simple enough that they can all be tested in one file.
 
+/// \ingroup Tests
 class ItemTest : public SceneTestBase {};
 
 TEST_F(ItemTest, AppInfo) {

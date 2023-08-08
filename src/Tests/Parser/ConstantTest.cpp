@@ -1,5 +1,6 @@
 #include "Tests/Parser/ParserTestBase.h"
 
+/// \ingroup Tests
 class ConstantTest : public ParserTestBase {};
 
 TEST_F(ConstantTest, Constants) {

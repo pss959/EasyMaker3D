@@ -4,6 +4,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class PrecisionStoreTest : public TestBase {};
 
 TEST_F(PrecisionStoreTest, PrecisionStore) {

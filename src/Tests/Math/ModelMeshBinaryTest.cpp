@@ -3,9 +3,10 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class ModelMeshBinaryTest : public TestBase {
   protected:
-    // Creates and returns a ModelMesh with nonsense data.
+    /// Creates and returns a ModelMesh with nonsense data.
     ModelMesh CreateModelMesh() {
         ModelMesh mesh;
         for (size_t i = 0; i < 12U; ++i) {

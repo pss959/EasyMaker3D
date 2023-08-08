@@ -13,8 +13,8 @@
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
 
-class MeshBuildingTest : public TestBase {
-};
+/// \ingroup Tests
+class MeshBuildingTest : public TestBase {};
 
 TEST_F(MeshBuildingTest, Tetrahedron) {
     const TriMesh mesh = BuildTetrahedronMesh(10);

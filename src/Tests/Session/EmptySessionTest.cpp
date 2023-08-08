@@ -5,6 +5,7 @@
 #include "Tests/Session/SessionTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class EmptySessionTest : public SessionTestBase {};
 
 TEST_F(EmptySessionTest, Load) {

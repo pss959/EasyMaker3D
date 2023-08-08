@@ -15,6 +15,7 @@ DECL_SHARED_PTR(Widget);
 /// testing derived DraggableWidget classes. The Apply functions each apply a
 /// drag operation to a DraggableWidget: it calls StartDrag() with the first
 /// DragInfo, ContinueDrag() with the rest, and then EndDrag().
+/// \ingroup Tests
 class DragTester {
   public:
     /// The constructor is passed the DraggableWidget that will be tested.

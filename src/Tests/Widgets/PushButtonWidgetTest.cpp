@@ -3,6 +3,7 @@
 #include "Tests/Testing.h"
 #include "Widgets/PushButtonWidget.h"
 
+/// \ingroup Tests
 class PushButtonWidgetTest : public SceneTestBase {};
 
 TEST_F(PushButtonWidgetTest, Defaults) {

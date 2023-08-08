@@ -8,6 +8,7 @@
 #include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class NodePathTest : public TestBaseWithTypes {};
 
 TEST_F(NodePathTest, Default) {

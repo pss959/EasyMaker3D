@@ -4,6 +4,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class Snap2DTest : public TestBase {};
 
 TEST_F(Snap2DTest, ToleranceAngle) {

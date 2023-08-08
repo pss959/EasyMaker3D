@@ -14,6 +14,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/UnitTestTypeChanger.h"
 
+/// \ingroup Tests
 class RenderTest : public SceneTestBase {
   protected:
     RenderTest() {
@@ -21,14 +22,13 @@ class RenderTest : public SceneTestBase {
         uttc_.reset(new UnitTestTypeChanger(Util::AppType::kInteractive));
     }
 
-    // Framebuffer width and height.
-    const size_t kWidth  = 1280;
-    const size_t kHeight = 1024;
+    const size_t kWidth  = 1280;  ///< Framebuffer width.
+    const size_t kHeight = 1024;  ///< Framebuffer height.
 
-    // Sets up to render the scene read from the named data file.
+    /// Sets up to render the scene read from the named data file.
     SG::ScenePtr SetUpScene(const std::string &file_name);
 
-    // Renders the scene using the given FBTarget, which may be null.
+    /// Renders the scene using the given FBTarget, which may be null.
     void RenderScene(const FBTarget *fb_target);
 
   private:

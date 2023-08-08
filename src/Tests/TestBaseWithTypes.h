@@ -10,6 +10,7 @@
 /// Derived TestBase class that automatically registers and unregisters known
 /// types on construction and destruction and provides some conveniences for
 /// creating instances of known types.
+/// \ingroup Tests
 class TestBaseWithTypes : public TestBase {
   protected:
     TestBaseWithTypes();

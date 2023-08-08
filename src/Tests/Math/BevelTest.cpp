@@ -2,6 +2,7 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class BevelTest : public TestBase {};
 
 TEST_F(BevelTest, DefaultBevel) {

@@ -1,6 +1,7 @@
 #include "Tests/Parser/ParserTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class CopyTest : public ParserTestBase {};
 
 TEST_F(CopyTest, CopyContentsFrom) {

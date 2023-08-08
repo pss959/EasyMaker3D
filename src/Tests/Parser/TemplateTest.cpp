@@ -1,5 +1,6 @@
 #include "Tests/Parser/ParserTestBase.h"
 
+/// \ingroup Tests
 class TemplateTest : public ParserTestBase {};
 
 TEST_F(TemplateTest, Templates) {

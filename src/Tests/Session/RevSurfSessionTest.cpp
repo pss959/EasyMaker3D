@@ -7,9 +7,10 @@
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
 
+/// \ingroup Tests
 class RevSurfSessionTest : public SessionTestBase {
   protected:
-    // Convenience function
+    /// Convenience function
     static Rotationf GetXRot() { return BuildRotation(Vector3f::AxisX(), 90); }
 };
 

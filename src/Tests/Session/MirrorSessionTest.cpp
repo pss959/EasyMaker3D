@@ -6,6 +6,7 @@
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
 
+/// \ingroup Tests
 class MirrorSessionTest : public SessionTestBase {};
 
 TEST_F(MirrorSessionTest, ThreeCylinders) {

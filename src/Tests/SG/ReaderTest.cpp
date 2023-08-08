@@ -17,10 +17,11 @@
 // given string pattern.
 #define TEST_THROW_(STMT, PATTERN) TEST_THROW(STMT, Parser::Exception, PATTERN)
 
+/// \ingroup Tests
 class ReaderTest : public SceneTestBase {
  protected:
-    // Parses the given input string, then writes the resulting data to a
-    // string, comparing with the expected output string.
+    /// Parses the given input string, then writes the resulting data to a
+    /// string, comparing with the expected output string.
     bool ParseStringAndCompare(const std::string &input,
                                const std::string &expected) {
         Parser::Parser parser;
@@ -32,8 +33,8 @@ class ReaderTest : public SceneTestBase {
         return CompareStrings(FixString(expected), FixString(out.str()));
     }
 
-    // Calls ReadScene(), then prints the resulting SG to a string, comparing
-    // with the expected output string.
+    /// Calls ReadScene(), then prints the resulting SG to a string, comparing
+    /// with the expected output string.
     bool ReadSceneAndCompare(const std::string &input,
                              const std::string &expected) {
         SG::ScenePtr scene = ReadScene(input, false);
@@ -45,8 +46,8 @@ class ReaderTest : public SceneTestBase {
         return CompareStrings(FixString(expected), FixString(out.str()));
     }
 
-    // Calls BuildAndReadScene(), then prints the resulting Ion graph to a
-    // string, comparing with the expected string.
+    /// Calls BuildAndReadScene(), then prints the resulting Ion graph to a
+    /// string, comparing with the expected string.
     bool ReadSceneAndCompareIon(const std::string &contents,
                                 const std::string &expected) {
         SG::ScenePtr scene = BuildAndReadScene(contents);

@@ -6,6 +6,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class UniformTest : public SceneTestBase {};
 
 TEST_F(UniformTest, DefaultUniformBlock) {

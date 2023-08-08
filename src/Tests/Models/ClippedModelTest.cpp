@@ -4,8 +4,8 @@
 #include "Models/CylinderModel.h"
 #include "Tests/SceneTestBase.h"
 
-class ClippedModelTest : public SceneTestBase {
-};
+/// \ingroup Tests
+class ClippedModelTest : public SceneTestBase {};
 
 TEST_F(ClippedModelTest, DefaultPlane) {
     // 8x8x8 box at (0,4,0).

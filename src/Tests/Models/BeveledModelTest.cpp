@@ -4,8 +4,8 @@
 #include "Models/TextModel.h"
 #include "Tests/SceneTestBase.h"
 
-class BeveledModelTest : public SceneTestBase {
-};
+/// \ingroup Tests
+class BeveledModelTest : public SceneTestBase {};
 
 TEST_F(BeveledModelTest, DefaultBevel) {
     ModelPtr box = Model::CreateModel<BoxModel>();

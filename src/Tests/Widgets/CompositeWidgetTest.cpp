@@ -4,6 +4,7 @@
 #include "Util/Assert.h"
 #include "Widgets/SpinWidget.h"
 
+/// \ingroup Tests
 class CompositeWidgetTest : public SceneTestBase {
   protected:
     SpinWidgetPtr GetSpinWidget() {

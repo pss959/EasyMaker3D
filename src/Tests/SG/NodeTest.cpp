@@ -8,6 +8,7 @@
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
 
+/// \ingroup Tests
 class NodeTest : public SceneTestBase {};
 
 TEST_F(NodeTest, DefaultNode) {

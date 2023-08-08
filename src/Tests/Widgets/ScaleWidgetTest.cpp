@@ -6,6 +6,7 @@
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/ScaleWidget.h"
 
+/// \ingroup Tests
 class ScaleWidgetTest : public SceneTestBase {
   protected:
     ScaleWidgetPtr GetScaleWidget(bool use_modified_mode = false);

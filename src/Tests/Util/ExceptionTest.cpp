@@ -4,6 +4,7 @@
 #include "Util/ExceptionBase.h"
 #include "Util/FilePath.h"
 
+/// \ingroup Tests
 class TestException : public ExceptionBase {
   public:
     explicit TestException(const std::string &msg) :

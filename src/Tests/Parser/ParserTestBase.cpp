@@ -8,10 +8,10 @@
 // Test class functions.
 // ----------------------------------------------------------------------------
 
-Simple::~Simple() {
+ParserTestBase::Simple::~Simple() {
 }
 
-void Simple::AddFields() {
+void ParserTestBase::Simple::AddFields() {
     AddField(bool_val.Init("bool_val", false));
     AddField(int_val.Init("int_val", 0));
     AddField(uint_val.Init("uint_val", 0));
@@ -27,21 +27,21 @@ void Simple::AddFields() {
     AddField(strs_val.Init("strs_val"));
 }
 
-Derived::Derived() {
+ParserTestBase::Derived::Derived() {
     hidden_int.SetHidden(true);
 }
 
-void Derived::AddFields() {
+void ParserTestBase::Derived::AddFields() {
     Simple::AddFields();
     AddField(simple.Init("simple"));
     AddField(simple_list.Init("simple_list"));
     AddField(hidden_int.Init("hidden_int", 12));
 }
 
-Full::~Full() {
+ParserTestBase::Full::~Full() {
 }
 
-void Full::AddFields() {
+void ParserTestBase::Full::AddFields() {
     AddField(b.Init("b",       false));
     AddField(i.Init("i",       0));
     AddField(u.Init("u",       0));
@@ -72,7 +72,7 @@ void Full::AddFields() {
     AddField(ca.Init("ca"));
 }
 
-bool Unscoped::IsValid(std::string &details) {
+bool ParserTestBase::Unscoped::IsValid(std::string &details) {
     if (GetName() == "INVALID") {
         details = "invalid name";
         return false;

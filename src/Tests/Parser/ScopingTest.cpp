@@ -1,5 +1,6 @@
 #include "Tests/Parser/ParserTestBase.h"
 
+/// \ingroup Tests
 class ScopingTest : public ParserTestBase {};
 
 TEST_F(ScopingTest, Scoping) {

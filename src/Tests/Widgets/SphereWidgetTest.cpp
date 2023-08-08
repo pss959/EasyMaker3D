@@ -4,6 +4,7 @@
 #include "Tests/Widgets/DragTester.h"
 #include "Widgets/SphereWidget.h"
 
+/// \ingroup Tests
 class SphereWidgetTest : public SceneTestBase {};
 
 TEST_F(SphereWidgetTest, Defaults) {

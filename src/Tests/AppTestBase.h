@@ -6,10 +6,11 @@
 #include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
 
-// This is a base class for any test that requires an Application instance.
+/// This is a base class for any test that requires an Application instance.
+/// \ingroup Tests
 class AppTestBase : public SceneTestBase {
  protected:
-    // Application::Context used for the session.
+    /// Application::Context used for the session.
     Application::Context context;
 
     AppTestBase();

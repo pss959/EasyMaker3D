@@ -2,10 +2,11 @@
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 
+/// \ingroup Tests
 class EventTest : public TestBase {
   protected:
-    // Convenience to build Event::Modifiers flags from a string containing
-    // character codes.
+    /// Convenience to build Event::Modifiers flags from a string containing
+    /// character codes.
     Event::Modifiers GetMods(const std::string &mod_str) {
         Event::Modifiers mods;
         for (const char c: mod_str) {

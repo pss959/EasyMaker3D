@@ -7,6 +7,7 @@
 #include "Util/General.h"
 #include "Util/Read.h"
 
+/// \ingroup Tests
 class ControllerTest : public SceneTestBase {
   protected:
     /// Reads the Controller template if necessary and returns a clone of it
@@ -41,10 +42,12 @@ class ControllerTest : public SceneTestBase {
     bool IsGripHoverOn(const Controller &c) {
         return IsOn_(c, "GripHoverHighlight");
     }
+    ///@}
 
   private:
     ControllerPtr ct_;  ///< Controller template.
 
+    /// Returns true if the named part is enabled.
     bool IsOn_(const Controller &c, const std::string &part) {
         return SG::FindNodeUnderNode(c, part)->IsEnabled();
     }

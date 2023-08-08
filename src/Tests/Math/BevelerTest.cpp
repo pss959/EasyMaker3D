@@ -7,9 +7,10 @@
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
 
+/// \ingroup Tests
 class BevelerTest : public TestBase {
   protected:
-    // Returns a 2-point Bevel with optional scale and max_angle settings.
+    /// Returns a 2-point Bevel with optional scale and max_angle settings.
     static Bevel GetDefaultBevel(float scale = 1, float max_angle = 120) {
         Bevel bevel;
         bevel.max_angle = Anglef::FromDegrees(max_angle);
@@ -17,8 +18,8 @@ class BevelerTest : public TestBase {
         return bevel;
     }
 
-    // Returns a Bevel with the given number of total points (3-6) and
-    // optional scale and max_angle settings.
+    /// Returns a Bevel with the given number of total points (3-6) and
+    /// optional scale and max_angle settings.
     static Bevel GetBevel(size_t np, float scale = 1, float max_angle = 120) {
         static const Point2f pts[4]{
             { .4f, .8f }, { .5f, .8f }, { .8f, .6f }, { .9f, .2f }
@@ -45,8 +46,8 @@ class BevelerTest : public TestBase {
         return bevel;
     }
 
-    // Runs a bevel test on the given input TriMesh with the given Bevel. The
-    // expected number of resulting points and triangles are supplied.
+    /// Runs a bevel test on the given input TriMesh with the given Bevel. The
+    /// expected number of resulting points and triangles are supplied.
     void TestBevel(const TriMesh &m, const Bevel &bevel,
                    size_t expected_point_count, size_t expected_tri_count) {
         SCOPED_TRACE(GetTestName() + " " + bevel.ToString());

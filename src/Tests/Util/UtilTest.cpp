@@ -3,57 +3,62 @@
 #include "Tests/Testing.h"
 #include "Util/General.h"
 
-// Dummy classes for testing casts.
-class Base_ {
-  public:
-    virtual ~Base_() {}  // Makes it polymorphic.
-};
-class Derived_ : public Base_ {
+/// \ingroup Tests
+class UtilTest : public ::testing::Test {
+  protected:
+    /// Dummy base class for testing casts.
+    class Base {
+      public:
+        virtual ~Base() {}  // Makes it polymorphic.
+    };
+
+    /// Dummy derived class for testing casts.
+    class Derived : public Base {};
 };
 
-TEST(UtilTest, IsInUnitTest) {
+TEST_F(UtilTest, IsInUnitTest) {
     EXPECT_EQ(Util::AppType::kUnitTest, Util::app_type);
 }
 
-TEST(UtilTest, Casts) {
+TEST_F(UtilTest, Casts) {
     // Make sure basic casts work.
     {
-        Derived_ d1;
-        Derived_ d2;
-        Base_    *bp = &d1;
-        Derived_ *dp = &d2;
-        EXPECT_EQ(&d1, dynamic_cast<Derived_ *>(bp));
-        EXPECT_EQ(&d2, dynamic_cast<Base_ *>(dp));
+        Derived d1;
+        Derived d2;
+        Base    *bp = &d1;
+        Derived *dp = &d2;
+        EXPECT_EQ(&d1, dynamic_cast<Derived *>(bp));
+        EXPECT_EQ(&d2, dynamic_cast<Base *>(dp));
     }
 
-    std::shared_ptr<Base_>    bp(new Derived_);
-    std::shared_ptr<Derived_> dp(new Derived_);
+    std::shared_ptr<Base>    bp(new Derived);
+    std::shared_ptr<Derived> dp(new Derived);
     EXPECT_EQ(1, bp.use_count());
     EXPECT_EQ(1, dp.use_count());
 
-    std::shared_ptr<Base_> bdp = std::dynamic_pointer_cast<Base_>(dp);
+    std::shared_ptr<Base> bdp = std::dynamic_pointer_cast<Base>(dp);
     EXPECT_NOT_NULL(bdp);
     EXPECT_EQ(dp, bdp);
     EXPECT_EQ(2,  dp.use_count());
     EXPECT_EQ(2, bdp.use_count());
 
-    std::shared_ptr<Derived_> dbp = std::dynamic_pointer_cast<Derived_>(bp);
+    std::shared_ptr<Derived> dbp = std::dynamic_pointer_cast<Derived>(bp);
     EXPECT_NOT_NULL(dbp);
     EXPECT_EQ(bp, dbp);
     EXPECT_EQ(2,  bp.use_count());
     EXPECT_EQ(2, dbp.use_count());
 }
 
-TEST(UtilTest, IsA) {
-    std::shared_ptr<Base_>    bp(new Derived_);
-    std::shared_ptr<Derived_> dp(new Derived_);
-    EXPECT_TRUE(Util::IsA<Base_>(bp));
-    EXPECT_TRUE(Util::IsA<Base_>(dp));
-    EXPECT_TRUE(Util::IsA<Derived_>(bp));
-    EXPECT_TRUE(Util::IsA<Derived_>(bp));
+TEST_F(UtilTest, IsA) {
+    std::shared_ptr<Base>    bp(new Derived);
+    std::shared_ptr<Derived> dp(new Derived);
+    EXPECT_TRUE(Util::IsA<Base>(bp));
+    EXPECT_TRUE(Util::IsA<Base>(dp));
+    EXPECT_TRUE(Util::IsA<Derived>(bp));
+    EXPECT_TRUE(Util::IsA<Derived>(bp));
 }
 
-TEST(UtilTest, Contains) {
+TEST_F(UtilTest, Contains) {
     const std::vector<int> v{0, 2, 4, 6, 8};
     EXPECT_TRUE(Util::Contains(v, 0));
     EXPECT_TRUE(Util::Contains(v, 2));
@@ -62,7 +67,7 @@ TEST(UtilTest, Contains) {
     EXPECT_FALSE(Util::Contains(v, 9));
 }
 
-TEST(UtilTest, GetKeysAndValues) {
+TEST_F(UtilTest, GetKeysAndValues) {
     std::unordered_map<std::string, int> map;
     map["hello"] = 13;
     map["abc"]   = 9;
@@ -84,7 +89,7 @@ TEST(UtilTest, GetKeysAndValues) {
     EXPECT_EQ(31, values[3]);
 }
 
-TEST(UtilTest, FindAll) {
+TEST_F(UtilTest, FindAll) {
     const std::vector<int> ints{ 1, 2, 3, 4, 5, 6, 7, 8 };
     const std::vector<int> evens =
         Util::FindAll<int>(ints, [](const int &i){ return i % 2 == 0; });
@@ -95,7 +100,7 @@ TEST(UtilTest, FindAll) {
     EXPECT_EQ(8, evens[3]);
 }
 
-TEST(UtilTest, ConvertVector) {
+TEST_F(UtilTest, ConvertVector) {
     std::vector<int> ints{ 1, 2, 3, 4, 5 };
     std::vector<float> floats = Util::ConvertVector<float, int>(
         ints, [](const int &i){ return .5f * i; });
@@ -107,7 +112,7 @@ TEST(UtilTest, ConvertVector) {
     EXPECT_EQ(2.5f, floats[4]);
 }
 
-TEST(UtilTest, AppendVector) {
+TEST_F(UtilTest, AppendVector) {
     std::vector<int>       v0{ 1, 2 };
     const std::vector<int> v1{ 3, 4, 5 };
     Util::AppendVector(v1, v0);
@@ -119,8 +124,8 @@ TEST(UtilTest, AppendVector) {
     EXPECT_EQ(5, v0[4]);
 }
 
-TEST(UtilTest, CreateTemporarySharedPtr) {
-    std::shared_ptr<Derived_> dp(new Derived_);
+TEST_F(UtilTest, CreateTemporarySharedPtr) {
+    std::shared_ptr<Derived> dp(new Derived);
     EXPECT_EQ(1, dp.use_count());
     {
         // tp should not affect the reference count.
