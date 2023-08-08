@@ -1,0 +1,11 @@
+# Not really a node, but used in the Root node and in tests.
+UniformBlock {
+  pass_name: $SHADOW_PASS,
+  uniforms: [
+    Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
+
+    # Real values for these are set in the ShadowPass code.
+    Uniform "uLightMatrix" { mat4_val: $MAT4_0 },
+    Uniform "uModelMatrix" { mat4_val: $MAT4_0 },
+  ],
+},

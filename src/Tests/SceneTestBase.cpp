@@ -24,10 +24,10 @@ SG::ScenePtr SceneTestBase::ReadScene(const std::string &input,
 
     TempFile file(input);
     SG::Reader reader;
-    auto scene = reader.ReadScene(file.GetPath(), ion_context_->GetFileMap());
-    if (scene && set_up_ion)
-        scene->SetUpIon(ion_context_);
-    return scene;
+    scene_ = reader.ReadScene(file.GetPath(), ion_context_->GetFileMap());
+    if (scene_ && set_up_ion)
+        scene_->SetUpIon(ion_context_);
+    return scene_;
 }
 
 SG::ScenePtr SceneTestBase::BuildAndReadScene(const std::string &contents,
@@ -42,6 +42,21 @@ Scene {
   root_node: Node "Root" {
 )";
     return ReadScene(header + contents + "}}", set_up_ion);
+}
+
+SG::ScenePtr SceneTestBase::ReadSceneWithIncludes(
+    const std::vector<std::string> &inc_file_names) {
+
+    std::string contents = "children: [\n";
+    for (const auto &inc: inc_file_names) {
+        contents += "  <\"" + inc + "\">,\n";
+    }
+    contents += "],\n";
+
+    const std::string input = Util::ReplaceString(
+        ReadDataFile("RealScene.emd"), "#<CONTENTS>", contents);
+
+    return ReadScene(input, true);
 }
 
 SG::IonContextPtr SceneTestBase::GetIonContext() {
@@ -63,18 +78,11 @@ void SceneTestBase::InitIonContext_() {
 void SceneTestBase::AddNodeToRealScene_(const SG::NodePtr &node) {
     EXPECT_NOT_NULL(node);
 
-    scene_ = ReadScene(ReadDataFile("RealScene.emd"), true);
+    ReadScene(ReadDataFile("RealScene.emd"), true);
+    EXPECT_NOT_NULL(scene_);
+    EXPECT_NOT_NULL(scene_->GetRootNode());
 
     /// This will set up Ion in the Node.
     scene_->GetRootNode()->AddChild(node);
     EXPECT_NOT_NULL(node->GetIonNode().Get());
-}
-
-void SceneTestBase::ReadSceneWithInclude_(const std::string &file_name) {
-    const std::string contents = "children: [ <\"" + file_name + "\"> ]";
-
-    const auto input = Util::ReplaceString(
-        ReadDataFile("RealScene.emd"), "#<CONTENTS>", contents);
-
-    scene_ = ReadScene(input, true);
 }

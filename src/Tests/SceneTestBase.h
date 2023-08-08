@@ -1,6 +1,8 @@
 #pragma once
 
 #include <concepts>
+#include <string>
+#include <vector>
 
 #include "SG/IonContext.h"
 #include "SG/Node.h"
@@ -30,6 +32,12 @@ class SceneTestBase : public TestBaseWithTypes {
     SG::ScenePtr BuildAndReadScene(const std::string &contents,
                                    bool set_up_ion = true);
 
+
+    /// Calls ReadScene() for "RealScene.emd" after inserting include
+    /// statements for each of the given files as children of the root node.
+    SG::ScenePtr ReadSceneWithIncludes(
+        const std::vector<std::string> &inc_file_names);
+
     /// Parses an instance of an object derived from SG::Node from the given
     /// string, adds it as a child of the "RealScene.emd" Scene, and calls
     /// SetUpIon() for the Scene. Returns the instance.
@@ -48,9 +56,13 @@ class SceneTestBase : public TestBaseWithTypes {
     std::shared_ptr<T> ReadAndSetUpNode(const std::string &file_name,
                                         const std::string &instance_name) {
         static_assert(std::derived_from<T, SG::Node> == true);
-        ReadSceneWithInclude_(file_name);
+        scene_ = ReadSceneWithIncludes(std::vector<std::string>(1, file_name));
         return SG::FindTypedNodeInScene<T>(*scene_, instance_name);
     }
+
+    /// Returns the Scene read in by any of the above scene-reading functions.
+    /// This will be null if none was called successfully.
+    SG::ScenePtr GetScene() const { return scene_; }
 
     /// Sets up and returns an IonContext for use in initializing Ion objects.
     /// This context is also set up if necessary by ReadScene() and persists

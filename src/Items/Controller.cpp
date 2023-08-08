@@ -63,6 +63,8 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     proc_image->RegenerateImage();
 
     // Adjust positioning of feedback based on the model.
+    ASSERT(guide_parent_);
+    ASSERT(touch_node_);
     pointer_start_point_ = custom_model.pointer_pos;
     guide_parent_->SetTranslation(custom_model.grip_pos);
     touch_node_->SetTranslation(custom_model.touch_pos);

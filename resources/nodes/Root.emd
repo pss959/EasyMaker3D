@@ -19,74 +19,8 @@ Node "Root" {
   shader_names: ["ShadowDepth", "Lighting"],
 
   blocks: [
-    UniformBlock {
-      pass_name: $SHADOW_PASS,
-      uniforms: [
-        Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
-
-        # Real values for these are set in the ShadowPass code.
-        Uniform "uLightMatrix" { mat4_val: $MAT4_0 },
-        Uniform "uModelMatrix" { mat4_val: $MAT4_0 },
-      ],
-    },
-    UniformBlock {
-      pass_name: $LIGHTING_PASS,
-      # These textures are used in Templates as well as other nodes.
-      textures: [
-        # Default texture with a default sampler. Both can be used anywhere
-        # they are needed.
-        Texture "Default Texture" {
-          uniform_name: "uTexture",
-          image:   FileImage { path: "White.jpg" },
-          sampler: Sampler "DefaultSampler" {},
-        },
-
-        # ShadowMap Texture used for shaders in Lighting pass.
-        Texture "ShadowMap Texture" {
-          $LCT,  # One per light.
-          uniform_name: "uLightShadowMap",
-          sampler: Sampler "ShadowMapSampler" {
-            auto_mipmaps: True,
-            min_filter:   "kLinearMipmapLinear",
-            mag_filter:   "kLinear",
-          },
-        },
-
-        # Defines the texture atlas FileImage used for icons.
-        Texture "IconAtlasTexture" {
-          is_static: True,
-          uniform_name: "uTexture",
-          image: <"nodes/IconAtlas.emd">,
-          sampler: USE "DefaultSampler",
-        },
-      ],
-      uniforms: [
-        # Define default values for these. Other nodes may override them.
-        Uniform "uBaseColor"        { vec4f_val: "#b3b3b3" }
-        Uniform "uEmissiveColor"    { vec4f_val: "#000000" },
-        Uniform "uSmoothness"       { float_val: 0 },
-        Uniform "uMetalness"        { float_val: 0 },
-        Uniform "uAmbientIntens"    { float_val: .3 },
-        Uniform "uShowTexture"      { int_val: 0 },
-        Uniform "uTextureScale"     { vec2f_val: 1 1 },
-        Uniform "uTextureOffset"    { vec2f_val: 0 0 },
-        Uniform "uReceiveShadows"   { int_val: 1 },  # Receive by default.
-        Uniform "uTwoSidedLighting" { int_val: 0 },
-
-        # Real values will be set for these by the LightingPass object.
-        Uniform "uViewportSize"     { vec2i_val:       0 0 },
-        Uniform "uViewPos"          { vec3f_val:       0 0 0 },
-        Uniform "uLightCount"       { int_val:         0 },
-        Uniform "uProjectionMatrix" { mat4_val:        $MAT4_0 },
-        Uniform "uViewMatrix"       { mat4_val:        $MAT4_0 },
-        Uniform "uLightPos"         { $LCT, vec3f_val: 0 0 0 },
-        Uniform "uLightColor"       { $LCT, vec4f_val: "#000000" },
-        Uniform "uLightMatrix"      { $LCT, mat4_val:  $MAT4_0 },
-
-        # For FixedLighting:
-        Uniform "uShowTexture"      { int_val: 0 },
-      ],
-    },
+    <"nodes/RootShadowBlock.emd">,
+    <"nodes/RootLightingBlock.emd">,
   ],
 
   children: [
