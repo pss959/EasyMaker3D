@@ -13,17 +13,12 @@ class ControllerTest : public SceneTestBase {
     /// Reads the Controller template if necessary and returns a clone of it
     /// after adding it to the scene (to set up Ion in it) and setting its
     /// Hand.
-    ControllerPtr GetController(Hand hand,
-                                ControllerPtr ctemplate = ControllerPtr()) {
-        // Use the supplied template or read one if necessary.
-        ControllerPtr ct = ctemplate;
-        if (! ct) {
-            if (! ct_)
-                ct_ = ReadAndSetUpNode<Controller>(
-                    "nodes/templates/Controller.emd", "T_Controller");
-            ct = ct_;
-        }
-        auto c = ct->CloneTyped<Controller>(true, Util::EnumToWord(hand));
+    ControllerPtr GetController(Hand hand) {
+        if (! ct_)
+            ct_ = ReadRealNode<Controller>(
+                R"(children: [ <"nodes/templates/Controller.emd"> ])",
+                "T_Controller");
+        auto c = ct_->CloneTyped<Controller>(true, Util::EnumToWord(hand));
         GetScene()->GetRootNode()->AddChild(c);
         c->SetHand(hand);
         return c;
@@ -242,18 +237,26 @@ TEST_F(ControllerTest, Attach) {
 
 TEST_F(ControllerTest, AttachRadialMenu) {
     // Need to add the controller and the RadialMenu.
-    std::vector<std::string> incs {
-        "nodes/templates/Controller.emd",
-        "nodes/templates/RadialMenu.emd",
-    };
-    auto scene = ReadSceneWithIncludes(incs);
+    const std::string contents = R"(
+  children: [
+    Node {
+      TEMPLATES: [
+         <"nodes/templates/RadialMenu.emd">,
+         <"nodes/templates/Controller.emd">,
+      ],
+      children: [
+         CLONE "T_RadialMenu" "TestMenu"  {},
+         CLONE "T_Controller" "TestLeft"  {},
+         CLONE "T_Controller" "TestRight" {},
+      ],
+    }
+  ]
+)";
+    auto scene = ReadRealScene(contents);
 
-    auto mt = SG::FindTypedNodeInScene<RadialMenu>(*scene, "T_RadialMenu");
-    auto ct = SG::FindTypedNodeInScene<Controller>(*scene, "T_Controller");
-
-    auto menu = mt->CloneTyped<RadialMenu>(true, "TestMenu");
-    auto lc   = GetController(Hand::kLeft,  ct);
-    auto rc   = GetController(Hand::kRight, ct);
+    auto menu = SG::FindTypedNodeInScene<RadialMenu>(*scene, "TestMenu");
+    auto lc   = SG::FindTypedNodeInScene<Controller>(*scene, "TestLeft");
+    auto rc   = SG::FindTypedNodeInScene<Controller>(*scene, "TestRight");
 
     lc->AttachRadialMenu(menu);
     EXPECT_NOT_NULL(SG::FindNodeUnderNode(*lc, "TestMenu"));

@@ -1,6 +1,7 @@
 #include "Items/AppInfo.h"
 #include "Items/Border.h"
 #include "Items/BuildVolume.h"
+#include "Items/Frame.h"
 #include "Parser/Exception.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
@@ -51,8 +52,12 @@ TEST_F(ItemTest, Border) {
 
     // This calls SetUpIon(). Note that the Border needs to have a
     // MutableTriMeshShape for this to work.
-    border = ParseAndSetUpNode<Border>(
-        "Border { shapes: [ MutableTriMeshShape {} ] }");
+    const std::string contents = R"(
+  children: [
+    Border "TestBorder" { shapes: [ MutableTriMeshShape {} ] }
+  ],
+)";
+    border = ReadRealNode<Border>(contents, "TestBorder");
     border->SetSize(Vector2f(20, 10));
     size = border->GetScaledBounds().GetSize();
     // There should be a real mesh installed with size 1x1. (The actual size is
@@ -84,4 +89,39 @@ TEST_F(ItemTest, BuildVolume) {
     EXPECT_TRUE(bv->IsActive());
     EXPECT_EQ(Vector3f(20, 30, 40), bv->GetScale());
     EXPECT_EQ(Vector3f(0,  15,  0), bv->GetTranslation());
+}
+
+TEST_F(ItemTest, Frame) {
+    auto frame = CreateObject<Frame>();
+    EXPECT_NULL(frame->GetFramed());
+    EXPECT_EQ(Vector3f(0, 0, 0), frame->GetBounds().GetSize());
+
+    // Create a frame around a Box.
+    const std::string contents = R"(
+  children: [
+    Node {
+      TEMPLATES: [ <"nodes/templates/Frame.emd"> ],
+      children: [
+        CLONE "T_Frame" "TestFrame" {
+          width:  2,
+          depth:  3,
+          framed: Node "Box" {
+            shapes: [ Box { size: 10 20 30 } ]
+          },
+        }
+      ],
+    }
+  ]
+    )";
+
+    frame = ReadRealNode<Frame>(contents, "TestFrame");
+
+    EXPECT_NOT_NULL(frame->GetFramed());
+    EXPECT_EQ("Box", frame->GetFramed()->GetName());
+    EXPECT_VECS_CLOSE(Vector3f(14, 24, 3), frame->GetBounds().GetSize());
+
+    TEST_THROW(ParseObject<Frame>("Frame { width: 0 }"),
+               Parser::Exception, "Non-positive width or depth");
+    TEST_THROW(ParseObject<Frame>("Frame { width: 2, depth: -2 }"),
+               Parser::Exception, "Non-positive width or depth");
 }

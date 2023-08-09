@@ -30,8 +30,8 @@ class WidgetTest : public SceneTestBase {
 
     /// Creates a TestWidget with hover scaling enabled.
     TestWidgetPtr CreateTestWidget() {
-        return ParseAndSetUpNode<TestWidget>(
-            "TestWidget \"TW\" { hover_scale: 2 2 2 }");
+        return ReadRealNode<TestWidget>(
+            R"(children: [TestWidget "TW" { hover_scale: 2 2 2 } ])", "TW");
     }
 };
 

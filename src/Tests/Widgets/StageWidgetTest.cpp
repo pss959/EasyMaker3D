@@ -7,7 +7,8 @@
 class StageWidgetTest : public SceneTestBase {
   protected:
     StageWidgetPtr GetStageWidget() {
-        return ReadAndSetUpNode<StageWidget>("nodes/Stage.emd", "Stage");
+        return ReadRealNode<StageWidget>(
+            R"(children: [<"nodes/Stage.emd">])", "Stage");
     }
 };
 

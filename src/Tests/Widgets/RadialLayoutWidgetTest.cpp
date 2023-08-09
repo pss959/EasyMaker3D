@@ -9,8 +9,9 @@
 class RadialLayoutWidgetTest : public SceneTestBase {
   protected:
     RadialLayoutWidgetPtr GetRadialLayoutWidget() {
-        return ReadAndSetUpNode<RadialLayoutWidget>(
-            "nodes/Widgets/RadialLayoutWidget.emd", "RadialLayoutWidget");
+        return ReadRealNode<RadialLayoutWidget>(
+            R"(children: [<"nodes/Widgets/RadialLayoutWidget.emd">])",
+            "RadialLayoutWidget");
     }
 };
 

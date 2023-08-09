@@ -46,13 +46,15 @@ class TargetWidgetTest : public SceneTestBase {
     }
 
     PointTargetWidgetPtr GetPointTargetWidget() {
-        return ReadAndSetUpNode<PointTargetWidget>(
-            "nodes/Widgets/PointTargetWidget.emd", "PointTargetWidget");
+        return ReadRealNode<PointTargetWidget>(
+            R"(children: [<"nodes/Widgets/PointTargetWidget.emd">])",
+            "PointTargetWidget");
     }
 
     EdgeTargetWidgetPtr GetEdgeTargetWidget() {
-        return ReadAndSetUpNode<EdgeTargetWidget>(
-            "nodes/Widgets/EdgeTargetWidget.emd", "EdgeTargetWidget");
+        return ReadRealNode<EdgeTargetWidget>(
+            R"(children: [<"nodes/Widgets/EdgeTargetWidget.emd">])",
+            "EdgeTargetWidget");
     }
 };
 

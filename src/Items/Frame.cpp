@@ -17,7 +17,7 @@ void Frame::AddFields() {
 
 bool Frame::IsValid(std::string &details) {
     if (! SG::Node::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     if (width_ <= 0 || depth_ <= 0) {
         details = "Non-positive width or depth";

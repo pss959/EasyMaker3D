@@ -34,31 +34,18 @@ class SceneTestBase : public TestBaseWithTypes {
                                    bool set_up_ion = true);
 
 
-    /// Calls ReadScene() for "RealScene.emd" after inserting include
-    /// statements for each of the given files as children of the root node.
-    SG::ScenePtr ReadSceneWithIncludes(
-        const std::vector<std::string> &inc_file_names);
+    /// Calls ReadScene() for "RealScene.emd" after inserting the given
+    /// contents within the root node. Calls SetUpIon() on the results.
+    SG::ScenePtr ReadRealScene(const std::string &contents);
 
-    /// Parses an instance of an object derived from SG::Node from the given
-    /// string, adds it as a child of the "RealScene.emd" Scene, and calls
-    /// SetUpIon() for the Scene. Returns the instance.
+    /// Calls ReadRealScene() with the given contents, then searches for and
+    /// returns the named Node of the templated type.
     template <typename T>
-    std::shared_ptr<T> ParseAndSetUpNode(const std::string &input) {
+    std::shared_ptr<T> ReadRealNode(const std::string &contents,
+                                    const std::string &node_name) {
         static_assert(std::derived_from<T, SG::Node> == true);
-        auto node = ParseObject<T>(input);
-        AddNodeToRealScene_(node);
-        return node;
-    }
-
-    /// Similar to ParseAndSetUpNode(), but uses an include statement for the
-    /// named file as the contents of the scene, then searches for and returns
-    /// the named instance of the templated type.
-    template <typename T>
-    std::shared_ptr<T> ReadAndSetUpNode(const std::string &file_name,
-                                        const std::string &instance_name) {
-        static_assert(std::derived_from<T, SG::Node> == true);
-        scene_ = ReadSceneWithIncludes(std::vector<std::string>(1, file_name));
-        return SG::FindTypedNodeInScene<T>(*scene_, instance_name);
+        scene_ = ReadRealScene(contents);
+        return SG::FindTypedNodeInScene<T>(*scene_, node_name);
     }
 
     /// Returns the Scene read in by any of the above scene-reading functions.
@@ -75,15 +62,9 @@ class SceneTestBase : public TestBaseWithTypes {
     void ResetContext() { ion_context_.reset(); }
 
   private:
-    SG::ScenePtr      scene_;        ///< Saves scene from ParseAndSetUpNode().
+    SG::ScenePtr      scene_;        ///< Saves scene from ReadScene().
     SG::IonContextPtr ion_context_;  ///< IonContext used for SetUpIon().
 
     /// Sets up the IonContext for use in initializing Ion objects.
     void InitIonContext_();
-
-    /// Does most of the work for ParseAndSetUpNode().
-    void AddNodeToRealScene_(const SG::NodePtr &node);
-
-    /// Does most of the work for ReadAndSetUpNode().
-    void ReadSceneWithInclude_(const std::string &file_name);
 };

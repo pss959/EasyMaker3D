@@ -44,18 +44,9 @@ Scene {
     return ReadScene(header + contents + "}}", set_up_ion);
 }
 
-SG::ScenePtr SceneTestBase::ReadSceneWithIncludes(
-    const std::vector<std::string> &inc_file_names) {
-
-    std::string contents = "children: [\n";
-    for (const auto &inc: inc_file_names) {
-        contents += "  <\"" + inc + "\">,\n";
-    }
-    contents += "],\n";
-
+SG::ScenePtr SceneTestBase::ReadRealScene(const std::string &contents) {
     const std::string input = Util::ReplaceString(
         ReadDataFile("RealScene.emd"), "#<CONTENTS>", contents);
-
     return ReadScene(input, true);
 }
 
@@ -73,16 +64,4 @@ void SceneTestBase::InitIonContext_() {
         ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager));
     ion_context_->SetFontManager(
         ion::text::FontManagerPtr(new ion::text::FontManager));
-}
-
-void SceneTestBase::AddNodeToRealScene_(const SG::NodePtr &node) {
-    EXPECT_NOT_NULL(node);
-
-    ReadScene(ReadDataFile("RealScene.emd"), true);
-    EXPECT_NOT_NULL(scene_);
-    EXPECT_NOT_NULL(scene_->GetRootNode());
-
-    /// This will set up Ion in the Node.
-    scene_->GetRootNode()->AddChild(node);
-    EXPECT_NOT_NULL(node->GetIonNode().Get());
 }

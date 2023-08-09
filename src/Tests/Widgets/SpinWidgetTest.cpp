@@ -7,8 +7,8 @@
 class SpinWidgetTest : public SceneTestBase {
   protected:
     SpinWidgetPtr GetSpinWidget() {
-        return ReadAndSetUpNode<SpinWidget>("nodes/Widgets/SpinWidget.emd",
-                                            "SpinWidget");
+        return ReadRealNode<SpinWidget>(
+            R"(children: [<"nodes/Widgets/SpinWidget.emd">])", "SpinWidget");
     }
 };
 
