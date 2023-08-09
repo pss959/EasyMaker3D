@@ -232,7 +232,6 @@ lib_sources = list(chain(
         'Frame',
         'GripGuide',
         'Grippable',
-        'Icon',
         'Inspector',
         'PaneBackground',
         'PrecisionControl',

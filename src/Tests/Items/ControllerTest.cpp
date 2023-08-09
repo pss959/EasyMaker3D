@@ -257,6 +257,8 @@ TEST_F(ControllerTest, AttachRadialMenu) {
     auto menu = SG::FindTypedNodeInScene<RadialMenu>(*scene, "TestMenu");
     auto lc   = SG::FindTypedNodeInScene<Controller>(*scene, "TestLeft");
     auto rc   = SG::FindTypedNodeInScene<Controller>(*scene, "TestRight");
+    lc->SetHand(Hand::kLeft);
+    rc->SetHand(Hand::kRight);
 
     lc->AttachRadialMenu(menu);
     EXPECT_NOT_NULL(SG::FindNodeUnderNode(*lc, "TestMenu"));

@@ -1,11 +1,19 @@
+#include <ion/math/vectorutils.h>
+
 #include "Items/AppInfo.h"
 #include "Items/Border.h"
 #include "Items/BuildVolume.h"
+#include "Items/Controller.h"
 #include "Items/Frame.h"
+#include "Items/Inspector.h"
+#include "Items/PaneBackground.h"
+#include "Items/PrecisionControl.h"
 #include "Parser/Exception.h"
+#include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
+#include "Widgets/IconWidget.h"
 
 // Most Items are simple enough that they can all be tested in one file.
 
@@ -124,4 +132,84 @@ TEST_F(ItemTest, Frame) {
                Parser::Exception, "Non-positive width or depth");
     TEST_THROW(ParseObject<Frame>("Frame { width: 2, depth: -2 }"),
                Parser::Exception, "Non-positive width or depth");
+}
+
+TEST_F(ItemTest, Inspector) {
+    // Read the Inspector, a Controller, and a test Node.
+    const std::string contents = R"(
+  children: [
+    Node {
+      TEMPLATES: [<"nodes/templates/Controller.emd">],
+      children: [
+         CLONE "T_Controller" "TCont" {},
+         <"nodes/Inspector.emd">,
+        Node "TestNode" { shapes: [ Box { size: 3 4 5 } ] },
+      ],
+    }
+  ]
+)";
+
+    auto scene = ReadRealScene(contents);
+    auto inspector  = SG::FindTypedNodeInScene<Inspector>(*scene,  "Inspector");
+    auto controller = SG::FindTypedNodeInScene<Controller>(*scene, "TCont");
+    auto node       = SG::FindNodeInScene(*scene,                  "TestNode");
+
+    size_t deact_count = 0;
+    auto deact = [&](){ ++deact_count; };
+    inspector->SetDeactivationFunc(deact);
+
+    EXPECT_FALSE(inspector->IsEnabled());
+    inspector->Activate(node, ControllerPtr());
+    EXPECT_TRUE(inspector->IsEnabled());
+    EXPECT_EQ(0U, deact_count);
+    inspector->Deactivate();
+    EXPECT_FALSE(inspector->IsEnabled());
+    EXPECT_EQ(1U, deact_count);
+
+    Frustum frust;
+    inspector->SetPositionForView(frust);
+    EXPECT_VECS_CLOSE(
+        frust.GetViewDirection(),
+        ion::math::Normalized(Point3f(inspector->GetTranslation()) -
+                              frust.position));
+
+    // Inspector has to be activated for ApplyScaleChange().
+    inspector->Activate(node, ControllerPtr());
+    const auto size = inspector->GetScaledBounds().GetSize();
+    inspector->ApplyScaleChange(1);
+    EXPECT_LT(size[0], inspector->GetScaledBounds().GetSize()[0]);
+    EXPECT_LT(size[1], inspector->GetScaledBounds().GetSize()[1]);
+    EXPECT_LT(size[2], inspector->GetScaledBounds().GetSize()[2]);
+
+    // These have no testable affect.
+    inspector->ApplyRotation(BuildRotation(0, 1, 0, 40));
+    inspector->ShowEdges(true);
+
+    inspector->Deactivate();
+    EXPECT_EQ(2U, deact_count);
+
+    // Attach to a controller.
+    inspector->Activate(node, controller);
+    inspector->Deactivate();
+    EXPECT_EQ(3U, deact_count);
+}
+
+TEST_F(ItemTest, PaneBackground) {
+    auto pbg = CreateObject<PaneBackground>();
+    EXPECT_EQ(Color::Black(), pbg->GetColor());
+
+    pbg = ReadRealNode<PaneBackground>(
+        R"(children: [ PaneBackground "BG" { color: "#ffff00ff" } ] )", "BG");
+    EXPECT_EQ(Color(1, 1, 0), pbg->GetColor());
+}
+
+TEST_F(ItemTest, PrecisionControl) {
+    auto pc = ReadRealNode<PrecisionControl>(
+        R"(children: [ <"nodes/PrecisionControl.emd">])", "PrecisionControl");
+    EXPECT_EQ(2U, pc->GetIcons().size());
+    EXPECT_EQ("IncreasePrecision", pc->GetIcons()[0]->GetName());
+    EXPECT_EQ("DecreasePrecision", pc->GetIcons()[1]->GetName());
+
+    // This has no testable affect.
+    pc->Update(.1f, 5);
 }

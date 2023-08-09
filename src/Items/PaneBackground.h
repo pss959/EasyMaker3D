@@ -15,6 +15,8 @@ class PaneBackground : public SG::Node {
   public:
     virtual void PostSetUpIon() override;
 
+    const Color & GetColor() const { return color_; }
+
   protected:
     PaneBackground();
 
