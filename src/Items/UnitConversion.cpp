@@ -16,7 +16,7 @@ float UnitConversion::GetConversionFactor(Units target_units) {
       case Units::kMeters:        return .01f;
       case Units::kInches:        return .393701f;
       case Units::kFeet:          return .0328084f;
-      default:                    return 1.f;
+      default:                    return 1.f;  // LCOV_EXCL_LINE [cannot happen]
     }
 }
 

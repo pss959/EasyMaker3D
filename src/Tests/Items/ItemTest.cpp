@@ -8,6 +8,9 @@
 #include "Items/Inspector.h"
 #include "Items/PaneBackground.h"
 #include "Items/PrecisionControl.h"
+#include "Items/SessionState.h"
+#include "Items/Shelf.h"
+#include "Items/UnitConversion.h"
 #include "Parser/Exception.h"
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
@@ -212,4 +215,92 @@ TEST_F(ItemTest, PrecisionControl) {
 
     // This has no testable affect.
     pc->Update(.1f, 5);
+}
+
+TEST_F(ItemTest, SessionState) {
+    auto ss = CreateObject<SessionState>();
+
+    EXPECT_FALSE(ss->IsPointTargetVisible());
+    EXPECT_FALSE(ss->IsEdgeTargetVisible());
+    EXPECT_FALSE(ss->AreEdgesShown());
+    EXPECT_FALSE(ss->IsBuildVolumeVisible());
+    EXPECT_FALSE(ss->IsAxisAligned());
+
+    ss->SetPointTargetVisible(true);
+    ss->SetEdgeTargetVisible(true);
+    ss->SetEdgesShown(true);
+    ss->SetBuildVolumeVisible(true);
+    ss->SetAxisAligned(true);
+    EXPECT_TRUE(ss->IsPointTargetVisible());
+    EXPECT_TRUE(ss->IsEdgeTargetVisible());
+    EXPECT_TRUE(ss->AreEdgesShown());
+    EXPECT_TRUE(ss->IsBuildVolumeVisible());
+    EXPECT_TRUE(ss->IsAxisAligned());
+
+    ss->SetEdgesShown(false);
+    auto copy = CreateObject<SessionState>();
+    copy->CopyFrom(*ss);
+    EXPECT_TRUE(copy->IsPointTargetVisible());
+    EXPECT_TRUE(copy->IsEdgeTargetVisible());
+    EXPECT_FALSE(copy->AreEdgesShown());
+    EXPECT_TRUE(copy->IsBuildVolumeVisible());
+    EXPECT_TRUE(copy->IsAxisAligned());
+    EXPECT_TRUE(copy->IsSameAs(*ss));
+    copy->SetAxisAligned(false);
+    EXPECT_FALSE(copy->IsSameAs(*ss));
+}
+
+TEST_F(ItemTest, UnitConversion) {
+    auto uc = CreateObject<UnitConversion>();
+    EXPECT_EQ(UnitConversion::Units::kCentimeters, uc->GetFromUnits());
+    EXPECT_EQ(UnitConversion::Units::kCentimeters, uc->GetToUnits());
+    EXPECT_EQ(1, uc->GetFactor());
+
+    uc->SetFromUnits(UnitConversion::Units::kMeters);
+    EXPECT_EQ(UnitConversion::Units::kMeters,      uc->GetFromUnits());
+    EXPECT_EQ(UnitConversion::Units::kCentimeters, uc->GetToUnits());
+    EXPECT_EQ(100, uc->GetFactor());
+
+    uc->SetToUnits(UnitConversion::Units::kMillimeters);
+    EXPECT_EQ(UnitConversion::Units::kMeters,      uc->GetFromUnits());
+    EXPECT_EQ(UnitConversion::Units::kMillimeters, uc->GetToUnits());
+    EXPECT_EQ(1000, uc->GetFactor());
+
+    auto copy = CreateObject<UnitConversion>();
+    copy->CopyFrom(*uc);
+    EXPECT_EQ(UnitConversion::Units::kMeters,      copy->GetFromUnits());
+    EXPECT_EQ(UnitConversion::Units::kMillimeters, copy->GetToUnits());
+    EXPECT_EQ(1000, copy->GetFactor());
+
+    EXPECT_EQ(1, UnitConversion::GetConversionFactor(
+                  UnitConversion::Units::kCentimeters));
+    EXPECT_EQ(10, UnitConversion::GetConversionFactor(
+                  UnitConversion::Units::kMillimeters));
+    EXPECT_EQ(.01f, UnitConversion::GetConversionFactor(
+                  UnitConversion::Units::kMeters));
+    EXPECT_CLOSE(.393701f, UnitConversion::GetConversionFactor(
+                  UnitConversion::Units::kInches));
+    EXPECT_CLOSE(.0328084f, UnitConversion::GetConversionFactor(
+                     UnitConversion::Units::kFeet));
+}
+
+TEST_F(ItemTest, Shelf) {
+    auto shelf = CreateObject<Shelf>();
+    EXPECT_TRUE(shelf->GetIcons().empty());
+
+    const std::string contents = R"(
+  children: [
+    <"nodes/Shelf.emd">,
+    CLONE "Shelf" "TestShelf" {
+      icons: [
+        IconWidget "Icon0" { shapes: [ Box { size: 1 1 1 } ] },
+        IconWidget "Icon1" { shapes: [ Box { size: 2 2 2 } ] },
+        IconWidget "Icon2" { shapes: [ Box { size: 4 4 4 } ] },
+      ]
+    }
+  ],
+)";
+    shelf = ReadRealNode<Shelf>(contents, "TestShelf");
+    EXPECT_EQ(3U, shelf->GetIcons().size());
+    shelf->LayOutIcons(Point3f(0, 0, 100));
 }

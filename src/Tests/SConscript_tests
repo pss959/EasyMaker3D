@@ -54,8 +54,10 @@ test_source_dict = {
     ],
     'Items' : [
         'ControllerTest',
+        'GrippableTest',
         'ItemTest',
         'RadialMenuTest',
+        'SettingsTest',
     ],
     'Managers' : [
         'ClipboardManagerTest',
