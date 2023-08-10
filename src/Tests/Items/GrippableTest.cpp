@@ -17,7 +17,6 @@ class GrippableTest : public SceneTestBase {
             return node_.get();
         }
         virtual void UpdateGripInfo(GripInfo &info) override {
-            // XXXX
         }
         virtual void ActivateGrip(Hand hand, bool is_active) override {
             Grippable::ActivateGrip(hand, is_active);

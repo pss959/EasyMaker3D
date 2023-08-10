@@ -95,3 +95,12 @@ TEST_F(WriteSTLTest, TextF) {
     const std::string actual   = WriteModelAsSTL(f, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
+
+TEST_F(WriteSTLTest, Errors) {
+    auto box  = Model::CreateModel<BoxModel>();
+    auto conv = GetDefaultUC();
+
+    EXPECT_FALSE(WriteSTLFile(std::vector<TriMesh>{ box->GetMesh() },
+                              "/no/such/path/to/file.stl",
+                              FileFormat::kTextSTL, conv->GetFactor()));
+}

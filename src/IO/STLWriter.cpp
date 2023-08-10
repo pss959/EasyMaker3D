@@ -230,5 +230,5 @@ bool WriteSTLFile(const std::vector<TriMesh> &meshes, const FilePath &path,
         return writer.Write(meshes, path, conversion_factor);
     }
 
-    return true;
+    return false;  // LCOV_EXCL_LINE [cannot happen]
 }

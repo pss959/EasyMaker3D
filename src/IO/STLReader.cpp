@@ -219,10 +219,9 @@ TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
     // Split the data into lines. Ignore whitespace and trim each line.
     const std::vector<std::string> lines = SplitIntoLines_(data);
     int cur_line = 0;
-    if (! lines[cur_line].starts_with("solid"))
-        Throw(1, "Expected 'solid'");
-
     TriMesh mesh;
+
+    // Line 0 is known to start with "solid" (from the IsTextSTL_() test).
 
     // Read facets.
     while (lines[++cur_line].starts_with("facet")) {

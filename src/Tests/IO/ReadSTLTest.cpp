@@ -2,6 +2,7 @@
 #include "Items/UnitConversion.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "Tests/TempFile.h"
 #include "Tests/TestBaseWithTypes.h"
 #include "Tests/Testing.h"
 
@@ -14,9 +15,9 @@ class ReadSTLTest : public TestBaseWithTypes {
     }
 
     /// Loads a TriMesh from an STL file and validates it.
-    TriMesh LoadTriMesh(const std::string &file_name,
-                        const UnitConversion &conv) {
-        const FilePath path = GetDataPath(file_name);
+    TriMesh LoadFromFile(const std::string &file_name,
+                         const UnitConversion &conv = *GetDefaultUC()) {
+        const auto path = GetDataPath(file_name);
         std::string error;
         TriMesh mesh = ReadSTLFile(path, conv.GetFactor(), error);
         ASSERTM(! mesh.points.empty(),
@@ -24,10 +25,23 @@ class ReadSTLTest : public TestBaseWithTypes {
         ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");
         return mesh;
     }
+
+    /// Loads a TriMesh from a string and validates it.
+    TriMesh LoadFromString(const std::string &str,
+                           const UnitConversion &conv = *GetDefaultUC()) {
+        TempFile tmp(str);
+        const auto &path = tmp.GetPath();
+        std::string error;
+        TriMesh mesh = ReadSTLFile(path, conv.GetFactor(), error);
+        ASSERTM(! mesh.points.empty(),
+                "Loaded from string: " + error);
+        ValidateMesh(mesh, "Loaded from string");
+        return mesh;
+    }
 };
 
 TEST_F(ReadSTLTest, TextBox) {
-    const TriMesh mesh = LoadTriMesh("box.stl", *GetDefaultUC());
+    const TriMesh mesh = LoadFromFile("box.stl");
     EXPECT_EQ(Bounds(Vector3f(8, 8, 8)), ComputeMeshBounds(mesh));
 
     // Validate triangle orientation. The first normal should be (-1, 0, 0).
@@ -41,12 +55,12 @@ TEST_F(ReadSTLTest, TextBoxConversion) {
     UnitConversionPtr conv = GetDefaultUC();
     conv->SetFromUnits(UnitConversion::Units::kMeters);
     conv->SetToUnits(UnitConversion::Units::kMillimeters);
-    const TriMesh mesh = LoadTriMesh("box.stl", *conv);
+    const TriMesh mesh = LoadFromFile("box.stl", *conv);
     EXPECT_EQ(Bounds(Vector3f(8000, 8000, 8000)), ComputeMeshBounds(mesh));
 }
 
 TEST_F(ReadSTLTest, BinaryBox) {
-    const TriMesh mesh = LoadTriMesh("binarybox.stl", *GetDefaultUC());
+    const TriMesh mesh = LoadFromFile("binarybox.stl");
     EXPECT_EQ(Bounds(Vector3f(10, 10, 10)), ComputeMeshBounds(mesh));
 }
 
@@ -54,21 +68,97 @@ TEST_F(ReadSTLTest, BinaryBoxConversion) {
     UnitConversionPtr conv = GetDefaultUC();
     conv->SetFromUnits(UnitConversion::Units::kMeters);
     conv->SetToUnits(UnitConversion::Units::kMillimeters);
-    const TriMesh mesh = LoadTriMesh("binarybox.stl", *conv);
+    const TriMesh mesh = LoadFromFile("binarybox.stl", *conv);
     EXPECT_EQ(Bounds(Vector3f(10000, 10000, 10000)), ComputeMeshBounds(mesh));
 }
 
 TEST_F(ReadSTLTest, BinaryBoxSolid) {
     // Reads a file that is binary but that starts with "solid" to test that it
     // is recognized properly as binary.
-    const TriMesh mesh = LoadTriMesh("binaryboxsolid.stl", *GetDefaultUC());
+    const TriMesh mesh = LoadFromFile("binaryboxsolid.stl");
     EXPECT_EQ(Bounds(Vector3f(10, 10, 10)), ComputeMeshBounds(mesh));
 }
 
 TEST_F(ReadSTLTest, BinarySpoon) {
     // Validate the spoon used for import in the documentation.
     const TriMesh mesh =
-        LoadTriMesh("../../../PublicDoc/snaps/stl/Spoon.stl",
-                    *GetDefaultUC());
+        LoadFromFile("../../../PublicDoc/snaps/stl/Spoon.stl");
     EXPECT_FALSE(ComputeMeshBounds(mesh).IsEmpty());
 }
+
+TEST_F(ReadSTLTest, Errors) {
+    TEST_THROW(LoadFromFile("nosuchfile.stl"), ExceptionBase, "Unable to open");
+
+    {
+        const std::string s =
+            "solid EasyMaker3D_Export\n"
+            "endsolid EasyMaker3D_Export";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "No mesh data");
+    }
+
+    {
+        const std::string s =
+            "solid EasyMaker3D_Export\n"
+            "  blah foo bar\n"
+            "endsolid EasyMaker3D_Export\n";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "Expected 'endsolid'");
+    }
+
+    {
+        const std::string s =
+            "solid EasyMaker3D_Export\n"
+            "  facet normal 1 0 0\n"
+            "    blah\n";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "Expected 'outer loop'");
+    }
+
+    {
+        const std::string s =
+            "solid EasyMaker3D_Export\n"
+            "  facet normal 1 0 0\n"
+            "    outer loop\n"
+            "      shmertex\n";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "Expected 'vertex'");
+    }
+
+    {
+        const std::string s =
+            "solid EasyMaker3D_Export\n"
+            "  facet normal 1 0 0\n"
+            "    outer loop\n"
+            "      vertex a b c\n";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "Invalid vertex");
+    }
+
+    {
+        const std::string s =
+            "solid EasyMaker3D_Export\n"
+            "  facet normal 1 0 0\n"
+            "    outer loop\n"
+            "      vertex 0 0 0\n"
+            "      vertex 0 1 0\n"
+            "      vertex 1 1 0\n"
+            "    nonsense\n";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "Expected 'endloop'");
+    }
+
+    {
+        const std::string s =
+            "solid EasyMaker3D_Export\n"
+            "  facet normal 1 0 0\n"
+            "    outer loop\n"
+            "      vertex 0 0 0\n"
+            "      vertex 0 1 0\n"
+            "      vertex 1 1 0\n"
+            "    endloop\n"
+            "  notendfacet\n";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "Expected 'endfacet'");
+    }
+
+    {
+        // This is not recognized as valid text:
+        const std::string s = "XYZZYXX";
+        TEST_THROW(LoadFromString(s), ExceptionBase, "Not enough binary data");
+    }
+}
+
