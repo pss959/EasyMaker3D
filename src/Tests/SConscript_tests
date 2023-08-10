@@ -100,10 +100,13 @@ test_source_dict = {
         'BeveledModelTest',
         'CSGModelTest',
         'ClippedModelTest',
+        'CylinderModelTest',
         'HullModelTest',
         'ModelTest',
         'RevSurfModelTest',
+        'SphereModelTest',
         'TaperedModelTest',
+        'TorusModelTest',
     ],
     'Panes' : [
         'PaneTest',

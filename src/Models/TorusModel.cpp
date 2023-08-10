@@ -14,7 +14,7 @@ void TorusModel::AddFields() {
 
 bool TorusModel::IsValid(std::string &details) {
     if (! PrimitiveModel::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (inner_radius_ <= 0 || outer_radius_ <= 0) {
         details = "Non-positive radius";
         return false;

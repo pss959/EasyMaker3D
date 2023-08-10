@@ -1,8 +1,8 @@
-﻿#include "Tests/Testing.h"
-#include "Math/Profile.h"
+﻿#include "Math/Profile.h"
 #include "Models/BoxModel.h"
 #include "Models/RevSurfModel.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 /// \ingroup Tests
 class RevSurfModelTest : public SceneTestBase {};

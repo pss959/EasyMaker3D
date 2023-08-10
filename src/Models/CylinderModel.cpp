@@ -15,9 +15,13 @@ void CylinderModel::AddFields() {
 
 bool CylinderModel::IsValid(std::string &details) {
     if (! PrimitiveModel::IsValid(details))
+        return false;  // LCOV_EXCL_LINE [cannot happen]
+    if (top_radius_ < 0 || bottom_radius_ < 0) {
+        details = "Negative radius";
         return false;
-    if (top_radius_ <= 0 || bottom_radius_ <= 0) {
-        details = "Non-positive radius";
+    }
+    if (top_radius_ == 0 && bottom_radius_ == 0) {
+        details = "At least one radius must be positive";
         return false;
     }
     return true;
