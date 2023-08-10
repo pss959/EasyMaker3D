@@ -74,3 +74,18 @@ TEST_F(ClippedModelTest, Cylinder) {
     std::string reason;
     EXPECT_TRUE(clipped->IsMeshValid(reason));
 }
+
+TEST_F(ClippedModelTest, IsValid) {
+    TEST_THROW(ParseObject<ClippedModel>("ClippedModel {}"),
+               Parser::Exception, "No operand model");
+
+    TEST_THROW(ParseObject<ClippedModel>(
+                   "ClippedModel { operand_model: BoxModel {},"
+                   " plane: 0 0 0 10 }"),
+               Parser::Exception, "Zero-length plane normal");
+
+    // This should not throw.
+    auto clipped = ParseObject<ClippedModel>(
+        "ClippedModel { operand_model: BoxModel {} }");
+    EXPECT_NOT_NULL(clipped);
+}

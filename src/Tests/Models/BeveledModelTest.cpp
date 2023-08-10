@@ -17,6 +17,7 @@ TEST_F(BeveledModelTest, DefaultBevel) {
 
     BeveledModelPtr beveled = Model::CreateModel<BeveledModel>();
     beveled->SetOperandModel(box);
+    EXPECT_EQ(Bevel(), beveled->GetBevel());
 
     // Make sure the BeveledModel is considered visible.
     beveled->SetStatus(Model::Status::kUnselected);
@@ -31,6 +32,47 @@ TEST_F(BeveledModelTest, DefaultBevel) {
     EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
     EXPECT_EQ(Vector3f(1, 1, 1), beveled->GetScale());
     EXPECT_EQ(Vector3f(0, 4, 0), beveled->GetTranslation());
+}
+
+TEST_F(BeveledModelTest, IsValid) {
+    TEST_THROW(ParseObject<BeveledModel>("BeveledModel {}"),
+               Parser::Exception, "No operand model");
+
+    TEST_THROW(ParseObject<BeveledModel>(
+                   "BeveledModel { operand_model: BoxModel {},"
+                   " bevel_scale: -1 }"),
+               Parser::Exception, "Non-positive scale value");
+
+    TEST_THROW(ParseObject<BeveledModel>(
+                   "BeveledModel { operand_model: BoxModel {},"
+                   " profile_points: [2 2] }"),  // Point out of (0,1) range.
+               Parser::Exception, "Invalid profile");
+
+    // This should not throw.
+    auto beveled = ParseObject<BeveledModel>(
+        "BeveledModel { operand_model: BoxModel {} }");
+    EXPECT_NOT_NULL(beveled);
+}
+
+TEST_F(BeveledModelTest, SetBevel) {
+    ModelPtr box = Model::CreateModel<BoxModel>();
+    box->SetUniformScale(4);
+    box->SetTranslation(Vector3f(0, 4, 0));
+
+    BeveledModelPtr beveled = Model::CreateModel<BeveledModel>();
+    beveled->SetOperandModel(box);
+
+    // Make sure the BeveledModel is considered visible.
+    beveled->SetStatus(Model::Status::kUnselected);
+
+    Bevel bevel;
+    bevel.profile.AppendPoint(Point2f(.75f, .75f));
+    beveled->SetBevel(bevel);
+    EXPECT_EQ(bevel, beveled->GetBevel());
+
+    TriMesh mesh = beveled->GetMesh();
+    EXPECT_EQ(48U, mesh.points.size());
+    EXPECT_EQ(92U, mesh.GetTriangleCount());
 }
 
 TEST_F(BeveledModelTest, ScaleChanges) {

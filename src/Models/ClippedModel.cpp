@@ -13,7 +13,7 @@ bool ClippedModel::IsValid(std::string &details) {
     if (! ConvertedModel::IsValid(details))
         return false;
     if (! IsValidVector(GetPlane().normal)) {
-        details = "zero-length plane normal";
+        details = "Zero-length plane normal";
         return false;
     }
     return true;
