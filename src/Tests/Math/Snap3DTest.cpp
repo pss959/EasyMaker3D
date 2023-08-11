@@ -14,27 +14,21 @@ TEST_F(Snap3DTest, SnapToBounds) {
 
     p.Set(0, 0, 0);
     dims = Snap3D::SnapToBounds(bounds, p, tolerance);
-    EXPECT_EQ(0, dims.GetCount());
+    EXPECT_EQ("", dims.GetAsString());
     EXPECT_EQ(Point3f(0, 0, 0), p);
 
     p.Set(0, 0, 5.8f);
     dims = Snap3D::SnapToBounds(bounds, p, tolerance);
-    EXPECT_EQ(1, dims.GetCount());
-    EXPECT_TRUE(dims.HasDimension(2));
+    EXPECT_EQ("Z", dims.GetAsString());
     EXPECT_EQ(Point3f(0, 0, 6), p);
 
     p.Set(-.8f, 0, 6.2f);
     dims = Snap3D::SnapToBounds(bounds, p, tolerance);
-    EXPECT_EQ(2, dims.GetCount());
-    EXPECT_TRUE(dims.HasDimension(0));
-    EXPECT_TRUE(dims.HasDimension(2));
+    EXPECT_EQ("XZ", dims.GetAsString());
     EXPECT_EQ(Point3f(-1, 0, 6), p);
 
     p.Set(-.8f, 1.6f, 6.2f);
     dims = Snap3D::SnapToBounds(bounds, p, tolerance);
-    EXPECT_EQ(3, dims.GetCount());
-    EXPECT_TRUE(dims.HasDimension(0));
-    EXPECT_TRUE(dims.HasDimension(1));
-    EXPECT_TRUE(dims.HasDimension(2));
+    EXPECT_EQ("XYZ", dims.GetAsString());
     EXPECT_EQ(Point3f(-1, 1.5f, 6), p);
 }

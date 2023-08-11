@@ -1,8 +1,8 @@
-﻿#include "Tests/Testing.h"
+﻿#include "Models/BeveledModel.h"
 #include "Models/BoxModel.h"
-#include "Models/BeveledModel.h"
 #include "Models/TextModel.h"
 #include "Tests/SceneTestBase.h"
+#include "Tests/Testing.h"
 
 /// \ingroup Tests
 class BeveledModelTest : public SceneTestBase {};
@@ -73,6 +73,34 @@ TEST_F(BeveledModelTest, SetBevel) {
     TriMesh mesh = beveled->GetMesh();
     EXPECT_EQ(48U, mesh.points.size());
     EXPECT_EQ(92U, mesh.GetTriangleCount());
+}
+
+TEST_F(BeveledModelTest, ChangeOperandModel) {
+    ModelPtr box0 = Model::CreateModel<BoxModel>();
+    ModelPtr box1 = Model::CreateModel<BoxModel>();
+    box0->SetUniformScale(4);
+    box1->SetUniformScale(6);
+    box0->SetTranslation(Vector3f(0, 4, 0));
+    box1->SetTranslation(Vector3f(0, 6, 0));
+
+    BeveledModelPtr beveled = Model::CreateModel<BeveledModel>();
+    beveled->SetOperandModel(box0);
+    EXPECT_EQ(box0, beveled->GetOperandModel());
+    beveled->SetStatus(Model::Status::kUnselected);
+
+    auto bounds = beveled->GetBounds();
+    EXPECT_EQ(Vector3f(8, 8, 8), bounds.GetSize());
+    EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
+    EXPECT_EQ(Vector3f(1, 1, 1), beveled->GetScale());
+    EXPECT_EQ(Vector3f(0, 4, 0), beveled->GetTranslation());
+
+    beveled->SetOperandModel(box1);
+    bounds = beveled->GetBounds();
+    EXPECT_EQ(box1, beveled->GetOperandModel());
+    EXPECT_EQ(Vector3f(12, 12, 12), bounds.GetSize());
+    EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
+    EXPECT_EQ(Vector3f(1, 1, 1), beveled->GetScale());
+    EXPECT_EQ(Vector3f(0, 6, 0), beveled->GetTranslation());
 }
 
 TEST_F(BeveledModelTest, ScaleChanges) {

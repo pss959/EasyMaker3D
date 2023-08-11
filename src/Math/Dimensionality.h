@@ -74,16 +74,21 @@ class Dimensionality {
         return count_ != 1 ? -1 : (dimensions_[0] ? 0 : dimensions_[1] ? 1 : 2);
     }
 
+    /// Does the opposite of the constructor taking a string. Useful for
+    /// testing.
+    std::string GetAsString() const {
+        std::string s;
+        for (int dim = 0; dim < 3; ++dim)
+            if (dimensions_[dim])
+                s += static_cast<char>('X' + dim);
+        return s;
+    }
+
     /// For debugging.
     std::string ToString() const {
         if (count_ == 0)
             return "DIMS[0]";
-        std::string s = "DIMS[" + Util::ToString(count_) + ":";
-        for (int dim = 0; dim < 3; ++dim)
-            if (dimensions_[dim])
-                s += static_cast<char>('X' + dim);
-        s += ']';
-        return s;
+        return "DIMS[" + Util::ToString(count_) + ":" + GetAsString() + "]";
     }
 
   private:

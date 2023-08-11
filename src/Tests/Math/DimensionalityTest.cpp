@@ -137,3 +137,14 @@ TEST(DimensionalityTest, StringConstructor) {
     }
     TEST_THROW(Dimensionality d("UV"), AssertException, "Invalid character");
 }
+
+TEST(DimensionalityTest, GetAsString) {
+    EXPECT_EQ("",    Dimensionality("").GetAsString());
+    EXPECT_EQ("X",   Dimensionality("X").GetAsString());
+    EXPECT_EQ("Y",   Dimensionality("Y").GetAsString());
+    EXPECT_EQ("Z",   Dimensionality("Z").GetAsString());
+    EXPECT_EQ("XY",  Dimensionality("XY").GetAsString());
+    EXPECT_EQ("XY",  Dimensionality("YX").GetAsString());
+    EXPECT_EQ("XYZ", Dimensionality("XYZ").GetAsString());
+    EXPECT_EQ("XYZ", Dimensionality("YZX").GetAsString());
+}

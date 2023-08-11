@@ -16,14 +16,7 @@
 #include "Util/Tuning.h"
 
 /// \ingroup Tests
-class TextTest : public SceneTestBase {
-  protected:
-    /// Sets up Ion for a text node using the given context.
-    void SetUpIonText(const SG::TextNodePtr &text,
-                      const SG::IonContextPtr &context) {
-        text->SetUpIon(context, std::vector<ion::gfx::ShaderProgramPtr>());
-    }
-};
+class TextTest : public SceneTestBase {};
 
 TEST_F(TextTest, DefaultTextNode) {
     auto text = CreateObject<SG::TextNode>();
@@ -39,8 +32,7 @@ TEST_F(TextTest, DefaultTextNode) {
     EXPECT_EQ(3,              text->GetHalfSmoothWidth());
     EXPECT_NULL(text->GetLayoutOptions());
 
-    auto context = GetIonContext();
-    SetUpIonText(text, context);
+    SetUpIonForNode(*text);
     EXPECT_NOT_NULL(text->GetIonNode().Get());
 
     // No font image set up in regular unit tests.
@@ -63,8 +55,7 @@ TEST_F(TextTest, SetUpFont) {
     EXPECT_EQ(Vector2f::Zero(), text->GetTextSize());
     TEST_THROW(text->GetLineSpacingFactor(), AssertException, "font_image");
 
-    auto context = GetIonContext();
-    SetUpIonText(text, context);
+    SetUpIonForNode(*text);
 
     EXPECT_VECS_CLOSE(Vector3f(.65625f, .59375f, 0),
                       text->GetTextBounds().GetSize());
@@ -150,8 +141,7 @@ TEST_F(TextTest, LayoutOptions) {
     auto text = CreateObject<SG::TextNode>();
     text->SetLayoutOptions(layout);
 
-    auto context = GetIonContext();
-    SetUpIonText(text, context);
+    SetUpIonForNode(*text);
 }
 
 TEST_F(TextTest, InvalidTextNode) {
@@ -169,8 +159,7 @@ TEST_F(TextTest, BadText) {
     text->SetText("\t");
 
     // Force a build.
-    auto context = GetIonContext();
-    TEST_THROW(SetUpIonText(text, context), SG::Exception,
+    TEST_THROW(SetUpIonForNode(*text), SG::Exception,
                "Unable to build Ion text");
 }
 
@@ -185,11 +174,10 @@ TEST_F(TextTest, BadFont) {
 
     auto text = CreateObject<SG::TextNode>();
     text->SetText("A");
-    auto context = GetIonContext();
 
     // Use a nonexistent font name and force a build.
     text->SetFontName("NoSuchFont");
-    TEST_THROW(SetUpIonText(text, context), SG::Exception, "does not exist");
+    TEST_THROW(SetUpIonForNode(*text), SG::Exception, "does not exist");
 
     {
         // Use the bad font, forcing a rebuild. This test generates an Ion
@@ -203,6 +191,6 @@ TEST_F(TextTest, BadFont) {
 
     // Create a TextNode with a very small maximum image size.
     auto text2 = ParseObject<SG::TextNode>("TextNode { max_image_size: 4 }");
-    TEST_THROW(SetUpIonText(text2, context), SG::Exception,
+    TEST_THROW(SetUpIonForNode(*text2), SG::Exception,
                "Unable to create font image");
 }

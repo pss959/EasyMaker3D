@@ -336,14 +336,11 @@ void Model::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     SetRotation(from_model.GetRotation());
     SetTranslation(from_model.GetTranslation());
 
-    // Copy the shape contents.
-    if (shape_) {
-        shape_->CopyFrom(*from_model.shape_);
-    }
-    else {
-        shape_ = from_model.shape_->CloneTyped<SG::MutableTriMeshShape>(false);
-        AddShape(shape_);
-    }
+    // Set up a shape. Note that CopyContentsFrom() is called before
+    // CreationDone() for a clone, so the shape is not yet set up.
+    ASSERT(! shape_);
+    shape_ = from_model.shape_->CloneTyped<SG::MutableTriMeshShape>(false);
+    AddShape(shape_);
 
     // Copy the base name if there is one. Otherwise, just use the name.
     base_name_ = from_model.base_name_.empty() ?

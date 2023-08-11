@@ -57,18 +57,6 @@ class Model : public ClickableWidget {
 
     virtual void CreationDone() override;
 
-    /// Returns true if the given string is valid for use as a Model name. The
-    /// string may not begin or end with whitespace and must contain at least
-    /// one valid character.
-    static bool IsValidName(const std::string &name);
-
-    /// Changes the name of the Model to the given name. The is_user_edit
-    /// indicates whether this change was the result of user editing, meaning
-    /// that the name should be left alone. (For example, changing the
-    /// operation in a CSGModel can change the name, but should not if the user
-    /// already edited it.) Returns true if the name was changed.
-    bool ChangeModelName(const std::string &new_name, bool is_user_edit);
-
     /// Sets the level of the Model. It is 0 by default, so only derived
     /// classes that can have child models should need to change it.
     virtual void SetLevel(int level) { level_ = level; }
@@ -107,12 +95,6 @@ class Model : public ClickableWidget {
     /// Returns the number of times this Model was selected.
     size_t GetSelectionCount() const { return selection_count_; }
 
-    /// For a Model instance that is a clone, this returns the name of the
-    /// Model it was cloned from. It is used to create new cloned names so that
-    /// the addition of suffixes does not get out of hand. It will be null for
-    /// non-clones.
-    const string & GetBaseName() const { return base_name_; }
-
     /// Convenience that creates a Model of the given target type with an
     /// optional name. Returns a null pointer if the cast fails.
     template <typename T> static std::shared_ptr<T> CreateModel(
@@ -129,6 +111,28 @@ class Model : public ClickableWidget {
     const std::vector<Parser::Field *> GetModelFields() const {
         return model_fields_;
     }
+
+    // ------------------------------------------------------------------------
+    // Naming.
+    // ------------------------------------------------------------------------
+
+    /// Returns true if the given string is valid for use as a Model name. The
+    /// string may not begin or end with whitespace and must contain at least
+    /// one valid character.
+    static bool IsValidName(const std::string &name);
+
+    /// Changes the name of the Model to the given name. The is_user_edit
+    /// indicates whether this change was the result of user editing, meaning
+    /// that the name should be left alone. (For example, changing the
+    /// operation in a CSGModel can change the name, but should not if the user
+    /// already edited it.) Returns true if the name was changed.
+    bool ChangeModelName(const std::string &new_name, bool is_user_edit);
+
+    /// For a Model instance that is a clone, this returns the name of the
+    /// Model it was cloned from. It is used to create new cloned names so that
+    /// the addition of suffixes does not get out of hand. It will be null for
+    /// non-clones.
+    const string & GetBaseName() const { return base_name_; }
 
     // ------------------------------------------------------------------------
     // Placement.
@@ -163,7 +167,7 @@ class Model : public ClickableWidget {
     size_t GetTriangleCount() const { return GetMesh().GetTriangleCount(); }
 
     // ------------------------------------------------------------------------
-    // Color and other uniform handling.
+    // Color handling.
     // ------------------------------------------------------------------------
 
     /// Returns a pseudo-random color to use for the next Model within the

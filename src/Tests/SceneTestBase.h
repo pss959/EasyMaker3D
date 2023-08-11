@@ -61,6 +61,9 @@ class SceneTestBase : public TestBaseWithTypes {
     /// within tests.
     void ResetContext() { ion_context_.reset(); }
 
+    /// Uses the IonContext to call SetUpIon() for a Node.
+    void SetUpIonForNode(SG::Node &node);
+
   private:
     SG::ScenePtr      scene_;        ///< Saves scene from ReadScene().
     SG::IonContextPtr ion_context_;  ///< IonContext used for SetUpIon().

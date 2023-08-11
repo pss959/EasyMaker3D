@@ -10,7 +10,7 @@ void ConvertedModel::AddFields() {
 
 bool ConvertedModel::IsValid(std::string &details) {
     if (! OperatorModel::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! operand_model_.GetValue()) {
         details = "No operand model specified";
         return false;

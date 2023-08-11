@@ -15,7 +15,7 @@ void ExtrudedModel::AddFields() {
 
 bool ExtrudedModel::IsValid(std::string &details) {
     if (! PrimitiveModel::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     // Construct and validate the Profile if points were specified.
     if (profile_points_.WasSet()) {

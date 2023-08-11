@@ -56,6 +56,10 @@ SG::IonContextPtr SceneTestBase::GetIonContext() {
     return ion_context_;
 }
 
+void SceneTestBase::SetUpIonForNode(SG::Node &node) {
+    node.SetUpIon(GetIonContext(), std::vector<ion::gfx::ShaderProgramPtr>());
+}
+
 void SceneTestBase::InitIonContext_() {
     ASSERT(! ion_context_);
     ion_context_.reset(new SG::IonContext);
