@@ -13,6 +13,12 @@ void RootModel::UpdateAddedChildModel(Model &child) {
     ParentModel::UpdateAddedChildModel(child);
     child.SetUse(Model::Use::kInScene);
     child.SetStatus(Model::Status::kUnselected);
+    top_level_changed_.Notify();
+}
+
+void RootModel::UpdateRemovedChildModel(Model &child) {
+    ParentModel::UpdateRemovedChildModel(child);
+    top_level_changed_.Notify();
 }
 
 void RootModel::Reset() {

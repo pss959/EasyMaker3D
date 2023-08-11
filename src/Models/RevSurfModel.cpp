@@ -15,8 +15,7 @@ void RevSurfModel::AddFields() {
 
 bool RevSurfModel::IsValid(std::string &details) {
     if (! PrimitiveModel::IsValid(details))
-        return false;
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     // Construct and validate the Profile if points were specified.
     if (profile_points_.WasSet()) {
         if (! CreateProfile(profile_points_).IsValid()) {
@@ -24,12 +23,10 @@ bool RevSurfModel::IsValid(std::string &details) {
             return false;
         }
     }
-
     if (sweep_angle_.GetValue().Radians() == 0) {
         details = "Zero sweep angle";
         return false;
     }
-
     return true;
 }
 

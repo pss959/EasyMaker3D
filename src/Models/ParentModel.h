@@ -11,7 +11,7 @@ DECL_SHARED_PTR(ParentModel);
 /// \ingroup Models
 class ParentModel : public Model {
   public:
-    /// Redefines this to alsp update the level of the child Models.
+    /// Redefines this to also update the level of the child Models.
     virtual void SetLevel(int level) override;
 
     /// Redefines this to also recurse on the child Models.

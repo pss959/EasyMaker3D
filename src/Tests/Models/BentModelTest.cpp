@@ -40,6 +40,20 @@ TEST_F(BentModelTest, DefaultBend) {
     EXPECT_EQ(Vector3f::Zero(),  bent->GetObjectCenterOffset());
 }
 
+TEST_F(BentModelTest, IsValid) {
+    TEST_THROW(ParseObject<BentModel>("BentModel {}"),
+               Parser::Exception, "No operand model specified");
+
+    TEST_THROW(ParseObject<BentModel>(
+                   "BentModel { operand_model: BoxModel {}, axis: 0 0 0 }"),
+               Parser::Exception, "Zero-length spin axis");
+
+    // This should not throw.
+    auto bent = ParseObject<BentModel>(
+        "BentModel { operand_model: BoxModel {}, axis: 0 1 0 }");
+    EXPECT_NOT_NULL(bent);
+}
+
 TEST_F(BentModelTest, Bend90) {
     // 10x2x2 box at (0,1,0).
     ModelPtr box = Model::CreateModel<BoxModel>();

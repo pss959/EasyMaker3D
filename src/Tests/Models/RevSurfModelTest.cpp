@@ -11,6 +11,7 @@ TEST_F(RevSurfModelTest, DefaultProfile) {
     RevSurfModelPtr rsm = Model::CreateModel<RevSurfModel>();
     EXPECT_EQ(RevSurfModel::CreateDefaultProfile(), rsm->GetProfile());
     EXPECT_EQ(360, rsm->GetSweepAngle().Degrees());
+    EXPECT_TRUE(rsm->CanSetComplexity());
 
     const TriMesh mesh = rsm->GetMesh();
     EXPECT_EQ(40U, mesh.points.size());
@@ -22,6 +23,21 @@ TEST_F(RevSurfModelTest, DefaultProfile) {
     EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
     EXPECT_EQ(Vector3f(1, 1, 1), rsm->GetScale());
     EXPECT_EQ(Vector3f(0, 0, 0), rsm->GetTranslation());
+}
+
+TEST_F(RevSurfModelTest, IsValid) {
+    TEST_THROW(ParseObject<RevSurfModel>(
+                   "RevSurfModel { sweep_angle: 0 }"),
+               Parser::Exception, "Zero sweep angle");
+
+    TEST_THROW(ParseObject<RevSurfModel>(
+                   "RevSurfModel { profile_points: [] }"),  // < 3 points.
+               Parser::Exception, "Invalid profile");
+
+    // This should not throw.
+    auto rsm = ParseObject<RevSurfModel>(
+        "RevSurfModel { profile_points: [1 .6] }");
+    EXPECT_NOT_NULL(rsm);
 }
 
 TEST_F(RevSurfModelTest, Profile4Points) {

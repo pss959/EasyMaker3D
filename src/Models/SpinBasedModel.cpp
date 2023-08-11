@@ -17,7 +17,7 @@ bool SpinBasedModel::IsValid(std::string &details) {
     if (! ScaledConvertedModel::IsValid(details))
         return false;
     if (! IsValidVector(axis_)) {
-        details = "zero-length spin axis";
+        details = "Zero-length spin axis";
         return false;
     }
     return true;

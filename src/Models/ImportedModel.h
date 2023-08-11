@@ -21,6 +21,11 @@ class ImportedModel : public PrimitiveModel {
     /// Sets the UnitConversion to use when importing STL data.
     void SetUnitConversion(const UnitConversion &conv);
 
+    /// Returns the UnitConversion used when importing STL data.
+    const UnitConversion & GetUnitConversion() const {
+        return *unit_conversion_;
+    }
+
     /// Sets the path to the STL file as a string. This will cause the STL data
     /// to be imported to create the Mesh.
     void SetPath(const std::string &path);

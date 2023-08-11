@@ -86,10 +86,6 @@ TEST_F(ModelTest, Selection) {
     EXPECT_EQ(2U, box->GetSelectionCount());
 }
 
-TEST_F(ModelTest, Cloning) {
-    // XXXX
-}
-
 // ----------------------------------------------------------------------------
 // Naming.
 // ----------------------------------------------------------------------------
@@ -237,9 +233,10 @@ TEST_F(ModelTest, PlacePointTarget) {
     box->SetUniformScale(8);
     stage->AddChild(box);
 
+    EXPECT_TRUE(box->CanReceiveTarget());
+
     // This is required to get the BoxModel to update matrices.
     box->SetStatus(Model::Status::kUnselected);
-
 
     DragInfo info;
     info.path_to_stage  = SG::NodePath(stage);
@@ -297,6 +294,8 @@ TEST_F(ModelTest, PlaceEdgeTarget) {
     auto box   = Model::CreateModel<BoxModel>();
     box->SetUniformScale(8);
     stage->AddChild(box);
+
+    EXPECT_TRUE(box->CanReceiveTarget());
 
     // This is required to get the BoxModel to update matrices and mesh.
     box->SetStatus(Model::Status::kUnselected);
