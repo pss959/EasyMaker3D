@@ -45,6 +45,9 @@ test_source_dict = {
         'EnumTest',
         'HandTest',
     ],
+    'Feedback' : [
+        'FeedbackTest',
+    ],
     'Handlers' : [
         'CustomShortcutTest',
     ],
