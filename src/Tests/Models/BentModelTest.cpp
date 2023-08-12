@@ -6,7 +6,6 @@
 #include "Models/CylinderModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"
-#include "Util/Tuning.h"
 
 /// \ingroup Tests
 class BentModelTest : public SceneTestBase {};

@@ -9,6 +9,22 @@
 /// \ingroup Tests
 class TaperedModelTest : public SceneTestBase {};
 
+TEST_F(TaperedModelTest, IsValid) {
+    TEST_THROW(ParseObject<TaperedModel>("TaperedModel {}"),
+               Parser::Exception, "No operand model specified");
+
+    TEST_THROW(ParseObject<TaperedModel>(
+                   "TaperedModel { operand_model: BoxModel {},"
+                   " profile_points: [0 0] }"),  // < 2 points.
+               Parser::Exception, "Invalid profile");
+
+    // This should not throw.
+    auto tapered = ParseObject<TaperedModel>(
+        "TaperedModel { operand_model: BoxModel {},"
+        " profile_points: [ 0 1, 1 0 ] }");
+    EXPECT_NOT_NULL(tapered);
+}
+
 TEST_F(TaperedModelTest, TaperProfile) {
     // Tests valid and invalid Taper Profiles.
     Profile prof;

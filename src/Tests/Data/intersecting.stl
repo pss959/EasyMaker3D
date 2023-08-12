@@ -1,0 +1,198 @@
+solid EasyMaker3D_Export
+  facet normal 0.0556317 -0.422651 -0.904583
+    outer loop
+      vertex -2 2 0
+      vertex 0.2611 -1.9829 2
+      vertex -1.7218 -2.2439 2
+    endloop
+  endfacet
+  facet normal -0.662536 0 0.74903
+    outer loop
+      vertex -2 2 0
+      vertex -2 -2 0
+      vertex 0.2611 -1.9829 2
+    endloop
+  endfacet
+  facet normal 0.129255 -0.98199 0.137798
+    outer loop
+      vertex -1.7218 -2.2439 2
+      vertex 0.2611 -1.9829 2
+      vertex 2.4495 -1.4142 4
+    endloop
+  endfacet
+  facet normal 0.129311 -0.981991 0.137737
+    outer loop
+      vertex 0.2611 -1.9829 2
+      vertex 2.2439 -1.7218 2
+      vertex 2.4495 -1.4142 4
+    endloop
+  endfacet
+  facet normal 0.12931 -0.981983 -0.137795
+    outer loop
+      vertex 0.2611 -1.9829 2
+      vertex -2 -2 0
+      vertex 2.2439 -1.7218 2
+    endloop
+  endfacet
+  facet normal 0.956712 0.256356 -0.137778
+    outer loop
+      vertex 2.4495 -1.4142 4
+      vertex 2.2439 -1.7218 2
+      vertex 1.4142 2.4495 4
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -1.4142 -2.4495 4
+      vertex 2.4495 -1.4142 4
+      vertex 1.4142 2.4495 4
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -1.4142 -2.4495 4
+      vertex 1.4142 2.4495 4
+      vertex -2.4495 1.4142 4
+    endloop
+  endfacet
+  facet normal -0.12931 0.981983 -0.137795
+    outer loop
+      vertex 2 2 0
+      vertex -2.2439 1.7218 2
+      vertex -0.2611 1.9829 2
+    endloop
+  endfacet
+  facet normal 0.662536 0 0.74903
+    outer loop
+      vertex 2 2 0
+      vertex -0.2611 1.9829 2
+      vertex 2 -2 0
+    endloop
+  endfacet
+  facet normal -0.0556553 0.422648 0.904584
+    outer loop
+      vertex -2.2439 1.7218 2
+      vertex -1.4142 -2.4495 4
+      vertex -0.2611 1.9829 2
+    endloop
+  endfacet
+  facet normal -0.0556306 0.422643 0.904587
+    outer loop
+      vertex -0.2611 1.9829 2
+      vertex -1.4142 -2.4495 4
+      vertex 1.7218 2.2439 2
+    endloop
+  endfacet
+  facet normal -0.0556317 0.422651 -0.904583
+    outer loop
+      vertex -0.2611 1.9829 2
+      vertex 1.7218 2.2439 2
+      vertex 2 -2 0
+    endloop
+  endfacet
+  facet normal -0.411771 -0.110336 -0.904583
+    outer loop
+      vertex -1.4142 -2.4495 4
+      vertex -2.4495 1.4142 4
+      vertex 1.7218 2.2439 2
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 2 -2 0
+      vertex -2 2 0
+      vertex 2 2 0
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 2 -2 0
+      vertex -2 -2 0
+      vertex -2 2 0
+    endloop
+  endfacet
+  facet normal 0.42264 0.0556543 -0.904587
+    outer loop
+      vertex -2 -2 0
+      vertex 1.7218 2.2439 2
+      vertex 1.9829 0.2611 2
+    endloop
+  endfacet
+  facet normal 0 -0.426298 0.904583
+    outer loop
+      vertex -2 -2 0
+      vertex 2 -2 0
+      vertex 1.7218 2.2439 2
+    endloop
+  endfacet
+  facet normal 0.422648 0.0556553 0.904584
+    outer loop
+      vertex 1.9829 0.2611 2
+      vertex 1.7218 2.2439 2
+      vertex -2.4495 1.4142 4
+    endloop
+  endfacet
+  facet normal 0.98199 0.129255 0.137798
+    outer loop
+      vertex 2.2439 -1.7218 2
+      vertex 1.9829 0.2611 2
+      vertex 1.4142 2.4495 4
+    endloop
+  endfacet
+  facet normal 0.422651 0.0556317 -0.904583
+    outer loop
+      vertex 2.2439 -1.7218 2
+      vertex -2 -2 0
+      vertex 1.9829 0.2611 2
+    endloop
+  endfacet
+  facet normal -0.171484 0.639972 -0.749019
+    outer loop
+      vertex 1.4142 2.4495 4
+      vertex 1.9829 0.2611 2
+      vertex -2.4495 1.4142 4
+    endloop
+  endfacet
+  facet normal -0.981991 -0.129311 0.137737
+    outer loop
+      vertex -1.9829 -0.2611 2
+      vertex -1.7218 -2.2439 2
+      vertex -1.4142 -2.4495 4
+    endloop
+  endfacet
+  facet normal -0.981983 -0.12931 -0.137795
+    outer loop
+      vertex -1.9829 -0.2611 2
+      vertex -2 2 0
+      vertex -1.7218 -2.2439 2
+    endloop
+  endfacet
+  facet normal 0.256356 -0.956712 -0.137778
+    outer loop
+      vertex -1.4142 -2.4495 4
+      vertex -1.7218 -2.2439 2
+      vertex 2.4495 -1.4142 4
+    endloop
+  endfacet
+  facet normal -0.981999 -0.129256 -0.137734
+    outer loop
+      vertex -2 2 0
+      vertex -1.9829 -0.2611 2
+      vertex -2.2439 1.7218 2
+    endloop
+  endfacet
+  facet normal 0 0.990464 0.137774
+    outer loop
+      vertex -2 2 0
+      vertex -2.2439 1.7218 2
+      vertex 2 2 0
+    endloop
+  endfacet
+  facet normal -0.98199 -0.129255 0.137798
+    outer loop
+      vertex -1.9829 -0.2611 2
+      vertex -1.4142 -2.4495 4
+      vertex -2.2439 1.7218 2
+    endloop
+  endfacet
+endsolid EasyMaker3D_Export

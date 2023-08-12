@@ -111,7 +111,9 @@ test_source_dict = {
         'RootModelTest',
         'SphereModelTest',
         'TaperedModelTest',
+        'TextModelTest',
         'TorusModelTest',
+        'TwistedModelTest',
     ],
     'Panes' : [
         'PaneTest',

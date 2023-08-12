@@ -1,4 +1,5 @@
 ﻿#include "Items/UnitConversion.h"
+#include "Math/MeshValidation.h"
 #include "Models/ImportedModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"
@@ -7,7 +8,7 @@
 class ImportedModelTest : public SceneTestBase {};
 
 TEST_F(ImportedModelTest, Defaults) {
-    ImportedModelPtr imported = Model::CreateModel<ImportedModel>();
+    auto imported = Model::CreateModel<ImportedModel>();
     EXPECT_FALSE(imported->CanSetComplexity());
     EXPECT_TRUE(imported->GetPath().empty());
     EXPECT_EQ(UnitConversion::Units::kCentimeters,
@@ -17,7 +18,7 @@ TEST_F(ImportedModelTest, Defaults) {
 }
 
 TEST_F(ImportedModelTest, UnitConversion) {
-    ImportedModelPtr imported = Model::CreateModel<ImportedModel>();
+    auto imported = Model::CreateModel<ImportedModel>();
     imported->SetUnitConversion(*UnitConversion::CreateWithUnits(
                                     UnitConversion::Units::kFeet,
                                     UnitConversion::Units::kInches));
@@ -28,7 +29,7 @@ TEST_F(ImportedModelTest, UnitConversion) {
 }
 
 TEST_F(ImportedModelTest, Import) {
-    ImportedModelPtr imported = Model::CreateModel<ImportedModel>();
+    auto imported = Model::CreateModel<ImportedModel>();
 
     // Note that calling GetMesh() forces the file to be loaded.
 
@@ -53,4 +54,13 @@ TEST_F(ImportedModelTest, Import) {
     imported->GetMesh();
     EXPECT_TRUE(imported->WasLoadedSuccessfully());
     EXPECT_TRUE(imported->GetErrorMessage().contains("Unable to open"));
+
+    // Test mesh validation for error cases.
+    imported->SetPath(GetDataPath("unclosed.stl").ToString());
+    EXPECT_ENUM_EQ(MeshValidityCode::kNotClosed,
+                   ValidateTriMesh(imported->GetMesh()));
+
+    imported->SetPath(GetDataPath("intersecting.stl").ToString());
+    EXPECT_ENUM_EQ(MeshValidityCode::kSelfIntersecting,
+                   ValidateTriMesh(imported->GetMesh()));
 }

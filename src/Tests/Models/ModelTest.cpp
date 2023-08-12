@@ -224,6 +224,17 @@ TEST_F(ModelTest, Mesh) {
 }
 
 // ----------------------------------------------------------------------------
+// Update.
+// ----------------------------------------------------------------------------
+
+TEST_F(ModelTest, UpdateForRenderPass) {
+    // Need a real node with uniforms set up.
+    auto box = ReadRealNode<BoxModel>(
+        R"(children: [ BoxModel "Boxy" {} ])", "Boxy");
+    box->UpdateForRenderPass("Shadow");
+}
+
+// ----------------------------------------------------------------------------
 // Target interface.
 // ----------------------------------------------------------------------------
 

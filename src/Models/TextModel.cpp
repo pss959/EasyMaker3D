@@ -52,18 +52,15 @@ void TextModel::AddFields() {
 
 bool TextModel::IsValid(std::string &details) {
     if (! PrimitiveModel::IsValid(details))
-        return false;
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (font_name_.WasSet() && ! IsValidFontName(GetFontName())) {
         details = "Unknown font name";
         return false;
     }
-
     if (GetTextString().empty()) {
         details = "Empty text string";
         return false;
     }
-
     return true;
 }
 

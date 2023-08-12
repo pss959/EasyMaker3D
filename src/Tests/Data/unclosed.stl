@@ -1,0 +1,72 @@
+solid EasyMaker3D_Export
+  facet normal -1 0 0
+    outer loop
+      vertex -4 -4 -4
+      vertex -4 -4 4
+      vertex -4 4 -4
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -4 4 -4
+      vertex -4 -4 4
+      vertex -4 4 4
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -4 -4 4
+      vertex 4 -4 4
+      vertex -4 4 4
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -4 4 4
+      vertex 4 -4 4
+      vertex 4 4 4
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 4 -4 -4
+      vertex 4 4 -4
+      vertex 4 -4 4
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 4 4 4
+      vertex 4 -4 4
+      vertex 4 4 -4
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex -4 -4 -4
+      vertex 4 4 -4
+      vertex 4 -4 -4
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex -4 4 -4
+      vertex 4 4 -4
+      vertex -4 -4 -4
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -4 4 -4
+      vertex 4 4 4
+      vertex 4 4 -4
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -4 4 -4
+      vertex -4 4 4
+      vertex 4 4 4
+    endloop
+  endfacet
+endsolid EasyMaker3D_Export
