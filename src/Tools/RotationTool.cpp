@@ -336,7 +336,7 @@ void RotationTool::Deactivate_(const Dimensionality &dims) {
 
 void RotationTool::StartRotation_(const Dimensionality &dims) {
     ASSERT(! command_);
-    command_ = CreateCommand<RotateCommand>();
+    command_ = Command::CreateCommand<RotateCommand>();
     command_->SetFromSelection(GetSelection());
     command_->SetIsInPlace(is_in_place_);
     command_->SetIsAxisAligned(IsAxisAligned());

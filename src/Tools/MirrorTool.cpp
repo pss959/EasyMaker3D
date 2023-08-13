@@ -22,7 +22,7 @@ Range1f MirrorTool::GetTranslationRange() const {
 }
 
 ChangePlaneCommandPtr MirrorTool::CreateChangePlaneCommand() const {
-    return CreateCommand<ChangeMirrorCommand>();
+    return Command::CreateCommand<ChangeMirrorCommand>();
 }
 
 Point3f MirrorTool::GetTranslationFeedbackBasePoint() const {

@@ -159,11 +159,6 @@ class Tool : public Grippable {
         return true;
     }
 
-    /// Creates a Command of the templated and named type.
-    template <typename T> static std::shared_ptr<T> CreateCommand() {
-        return Parser::Registry::CreateObject<T>();
-    }
-
     /// Returns a SG::CoordConv instance for converting between object, local,
     /// and stage coordinates (the root coordinates for the SG::CoordConv) for
     /// the attached Model.

@@ -169,7 +169,7 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     // If this is the first change, create the ChangeCylinderCommand and start
     // the drag.
     if (! command_) {
-        command_ = CreateCommand<ChangeCylinderCommand>();
+        command_ = Command::CreateCommand<ChangeCylinderCommand>();
         command_->SetFromSelection(GetSelection());
         command_->SetIsTopRadius(scaler == top_scaler_);
         GetDragStarted().Notify(*this);

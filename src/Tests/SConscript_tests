@@ -39,11 +39,15 @@ test_source_dict = {
     ],
     'Commands' : [
         'CommandListTest',
+        'MultiModelCommandTest',
         'ScaleCommandTest',
     ],
     'Enums' : [
         'EnumTest',
         'HandTest',
+    ],
+    'Executors' : [
+        'ScaleExecutorTest',
     ],
     'Feedback' : [
         'FeedbackTest',

@@ -14,5 +14,5 @@ Spin BendTool::GetObjectSpinFromModel() const {
 }
 
 ChangeSpinCommandPtr BendTool::CreateChangeSpinCommand() const {
-    return CreateCommand<ChangeBendCommand>();
+    return Command::CreateCommand<ChangeBendCommand>();
 }

@@ -35,7 +35,7 @@ Range1f ClipTool::GetTranslationRange() const {
 }
 
 ChangePlaneCommandPtr ClipTool::CreateChangePlaneCommand() const {
-    return CreateCommand<ChangeClipCommand>();
+    return Command::CreateCommand<ChangeClipCommand>();
 }
 
 Point3f ClipTool::GetTranslationFeedbackBasePoint() const {

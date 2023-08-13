@@ -5,6 +5,7 @@
 
 #include "Base/Memory.h"
 #include "Parser/Object.h"
+#include "Parser/Registry.h"
 #include "Selection/Selection.h"
 
 DECL_SHARED_PTR(Command);
@@ -111,6 +112,11 @@ class Command : public Parser::Object {
     /// Sets the (derived) ExecData instance in the command. The Command takes
     /// ownership of the instance.
     void SetExecData(ExecData *data) { exec_data_.reset(data); }
+
+    /// Creates a Command of the templated and named type.
+    template <typename T> static std::shared_ptr<T> CreateCommand() {
+        return Parser::Registry::CreateObject<T>();
+    }
 
   protected:
     /// Returns a description of the Model with the given name for use in

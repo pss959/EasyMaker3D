@@ -33,7 +33,7 @@ void TextTool::PanelChanged(const std::string &key,
     auto model = std::dynamic_pointer_cast<TextModel>(GetModelAttachedTo());
     ASSERT(model);
 
-    auto command = CreateCommand<ChangeTextCommand>();
+    auto command = Command::CreateCommand<ChangeTextCommand>();
     command->SetFromSelection(GetSelection());
     if (panel.GetTextString() != model->GetTextString())
         command->SetNewTextString(panel.GetTextString());

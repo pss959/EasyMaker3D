@@ -14,5 +14,5 @@ Spin TwistTool::GetObjectSpinFromModel() const {
 }
 
 ChangeSpinCommandPtr TwistTool::CreateChangeSpinCommand() const {
-    return CreateCommand<ChangeTwistCommand>();
+    return Command::CreateCommand<ChangeTwistCommand>();
 }

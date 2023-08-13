@@ -84,7 +84,7 @@ void ColorTool::FindParts_() {
 
 void ColorTool::Clicked_(const ClickInfo &info) {
     ASSERT(! command_);
-    command_ = CreateCommand<ChangeColorCommand>();
+    command_ = Command::CreateCommand<ChangeColorCommand>();
     command_->SetFromSelection(GetSelection());
     command_->SetNewColor(GetRingColor_(info.hit.point));
     GetContext().command_manager->AddAndDo(command_);
@@ -97,7 +97,7 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
     // the end of a drag.
     if (is_start) {
         ASSERT(! command_);
-        command_ = CreateCommand<ChangeColorCommand>();
+        command_ = Command::CreateCommand<ChangeColorCommand>();
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
         start_ring_pt_ = Point3f(marker_->GetTranslation());

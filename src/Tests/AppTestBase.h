@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "App/Application.h"
-#include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
 
 /// This is a base class for any test that requires an Application instance.
@@ -18,11 +17,6 @@ class AppTestBase : public SceneTestBase {
 
     // Overrides this to initialize the Application.
     void SetUp() override;
-
-    // Creates a Command of the templated and named type.
-    template <typename T> static std::shared_ptr<T> CreateCommand() {
-        return Parser::Registry::CreateObject<T>();
-    }
 
   private:
     class TestingApp_;

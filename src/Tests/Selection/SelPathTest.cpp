@@ -1,6 +1,6 @@
 #include "Selection/SelPath.h"
+#include "Tests/SelectionTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Selection/SelectionTestBase.h"
 #include "Util/Assert.h"
 
 class SelPathTest : public SelectionTestBase {};

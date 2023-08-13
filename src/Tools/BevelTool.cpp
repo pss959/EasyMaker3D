@@ -24,7 +24,7 @@ void BevelTool::PanelChanged(const std::string &key,
     switch (type) {
         using enum ToolPanel::InteractionType;
       case kDragStart:
-        command_ = CreateCommand<ChangeBevelCommand>();
+        command_ = Command::CreateCommand<ChangeBevelCommand>();
         command_->SetFromSelection(GetSelection());
         start_bevel_ = panel.GetBevel();
         break;
@@ -49,7 +49,7 @@ void BevelTool::PanelChanged(const std::string &key,
       case kImmediate:
         // User clicked on profile to add a point.
         ASSERT(key == "Profile");
-        command_ = CreateCommand<ChangeBevelCommand>();
+        command_ = Command::CreateCommand<ChangeBevelCommand>();
         command_->SetFromSelection(GetSelection());
         command_->SetBevel(panel.GetBevel());
         GetContext().command_manager->AddAndDo(command_);

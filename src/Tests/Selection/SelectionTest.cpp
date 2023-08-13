@@ -1,6 +1,6 @@
 #include "Selection/Selection.h"
+#include "Tests/SelectionTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Selection/SelectionTestBase.h"
 #include "Util/Assert.h"
 
 class SelectionTest : public SelectionTestBase {};

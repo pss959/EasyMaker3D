@@ -190,7 +190,7 @@ void TorusTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     // If this is the first change, create the ChangeTorusCommand and start
     // the drag.
     if (! command_) {
-        command_ = CreateCommand<ChangeTorusCommand>();
+        command_ = Command::CreateCommand<ChangeTorusCommand>();
         command_->SetFromSelection(GetSelection());
         command_->SetIsInnerRadius(is_inner);
         GetDragStarted().Notify(*this);

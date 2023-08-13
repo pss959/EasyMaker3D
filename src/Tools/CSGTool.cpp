@@ -25,7 +25,7 @@ void CSGTool::PanelChanged(const std::string &key,
 
     CSGToolPanel &panel = GetTypedPanel<CSGToolPanel>();
 
-    auto command = CreateCommand<ChangeCSGOperationCommand>();
+    auto command = Command::CreateCommand<ChangeCSGOperationCommand>();
     command->SetFromSelection(GetSelection());
     command->SetNewOperation(panel.GetOperation());
     GetContext().command_manager->AddAndDo(command);

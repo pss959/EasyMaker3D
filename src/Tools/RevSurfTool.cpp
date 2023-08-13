@@ -41,7 +41,7 @@ void RevSurfTool::PanelChanged(const std::string &key,
     switch (type) {
         using enum ToolPanel::InteractionType;
       case kDragStart:
-        command_ = CreateCommand<ChangeRevSurfCommand>();
+        command_ = Command::CreateCommand<ChangeRevSurfCommand>();
         command_->SetFromSelection(GetSelection());
         break;
 
@@ -70,7 +70,7 @@ void RevSurfTool::PanelChanged(const std::string &key,
       case kImmediate:
         // User clicked on profile to add a point.
         ASSERT(key == "Profile");
-        command_ = CreateCommand<ChangeRevSurfCommand>();
+        command_ = Command::CreateCommand<ChangeRevSurfCommand>();
         command_->SetFromSelection(GetSelection());
         command_->SetProfile(panel.GetProfile());
         command_->SetSweepAngle(panel.GetSweepAngle());

@@ -310,7 +310,7 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
 
     // If this is the first change, create the ScaleCommand and start the drag.
     if (! command_) {
-        command_ = CreateCommand<ScaleCommand>();
+        command_ = Command::CreateCommand<ScaleCommand>();
         command_->SetFromSelection(GetSelection());
         command_->SetMode(GetMode_(scaler));
         GetDragStarted().Notify(*this);

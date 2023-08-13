@@ -8,6 +8,7 @@
 #include "Tests/SceneTestBase.h"
 
 /// Base class for tests dealing with selections and SelPath instances.
+/// \ingroup Tests
 class SelectionTestBase : public SceneTestBase {
   protected:
     using ModelVec = std::vector<ModelPtr>;  ///< Shorthand.

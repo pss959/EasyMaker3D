@@ -74,7 +74,7 @@ void ImportTool::PanelChanged(const std::string &key,
         }
         else {
             // This is a change to an existing ImportedModel.
-            auto cimc = CreateCommand<ChangeImportedModelCommand>();
+            auto cimc = Command::CreateCommand<ChangeImportedModelCommand>();
             cimc->SetFromSelection(GetSelection());
             cimc->SetNewPath(path);
             context.command_manager->AddAndDo(cimc);

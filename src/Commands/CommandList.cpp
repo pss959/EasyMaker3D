@@ -12,7 +12,7 @@ void CommandList::AddFields() {
 
 bool CommandList::IsValid(std::string &details) {
     if (! Parser::Object::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! app_info_.GetValue()) {
         details = "Missing app_info field";
         return false;

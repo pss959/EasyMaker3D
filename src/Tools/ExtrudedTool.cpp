@@ -40,7 +40,7 @@ void ExtrudedTool::PanelChanged(const std::string &key,
     switch (type) {
         using enum ToolPanel::InteractionType;
       case kDragStart:
-        command_ = CreateCommand<ChangeExtrudedCommand>();
+        command_ = Command::CreateCommand<ChangeExtrudedCommand>();
         command_->SetFromSelection(GetSelection());
         break;
 
@@ -68,7 +68,7 @@ void ExtrudedTool::PanelChanged(const std::string &key,
       case kImmediate:
         // User clicked on profile to add a point.
         ASSERT(key == "Profile");
-        command_ = CreateCommand<ChangeExtrudedCommand>();
+        command_ = Command::CreateCommand<ChangeExtrudedCommand>();
         command_->SetFromSelection(GetSelection());
         command_->SetProfile(panel.GetProfile());
         GetContext().command_manager->AddAndDo(command_);

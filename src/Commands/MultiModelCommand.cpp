@@ -12,15 +12,14 @@ void MultiModelCommand::AddFields() {
 
 bool MultiModelCommand::IsValid(std::string &details) {
     if (! Command::IsValid(details))
-        return false;
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (GetModelNames().empty()) {
-        details = "missing model names";
+        details = "Missing model names";
         return false;
     }
     for (const auto &name: GetModelNames()) {
         if (! Model::IsValidName(name)) {
-            details = "invalid model name: '" + name + "'";
+            details = "Invalid model name: '" + name + "'";
             return false;
         }
     }
