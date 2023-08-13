@@ -175,6 +175,10 @@ test_source_dict = {
         'TextTest',
         'UniformTest',
     ],
+    'Selection' : [
+        'SelPathTest',
+        'SelectionTest',
+    ],
     'Sim' : [
         'EmptySimTest',
         'HoverSimTest',
