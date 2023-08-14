@@ -79,16 +79,9 @@ TEST_F(MirroredModelTest, SyncTransforms) {
 }
 
 TEST_F(MirroredModelTest, IsValid) {
-    TEST_THROW(ParseObject<MirroredModel>("MirroredModel {}"),
-               Parser::Exception, "No operand model");
-
-    TEST_THROW(ParseObject<MirroredModel>(
-                   "MirroredModel { operand_model: BoxModel {},"
-                   " plane_normal: 0 0 0 }"),
-               Parser::Exception, "Zero-length plane normal");
-
-    // This should not throw.
-    auto mirrored = ParseObject<MirroredModel>(
-        "MirroredModel { operand_model: BoxModel {} }");
-    EXPECT_NOT_NULL(mirrored);
+    TestInvalid("MirroredModel {}", "No operand model");
+    TestInvalid("MirroredModel { operand_model: BoxModel {},"
+                " plane_normal: 0 0 0 }",
+                "Zero-length plane normal");
+    TestValid("MirroredModel { operand_model: BoxModel {} }");
 }

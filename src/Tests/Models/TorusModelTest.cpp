@@ -40,14 +40,8 @@ TEST_F(TorusModelTest, SetRadii) {
 }
 
 TEST_F(TorusModelTest, IsValid) {
-    TEST_THROW(ParseObject<TorusModel>("TorusModel { inner_radius: -1 }"),
-               Parser::Exception, "Non-positive radius");
-    TEST_THROW(ParseObject<TorusModel>(
-                   "TorusModel { inner_radius: 1, outer_radius: 1.2 }"),
-               Parser::Exception, "Outer radius too small");
-
-    // This should not throw.
-    auto tm = ParseObject<TorusModel>(
-        "TorusModel { inner_radius: .2, outer_radius: 4 }");
-    EXPECT_NOT_NULL(tm);
+    TestInvalid("TorusModel { inner_radius: -1 }", "Non-positive radius");
+    TestInvalid("TorusModel { inner_radius: 1, outer_radius: 1.2 }",
+                "Outer radius too small");
+    TestValid("TorusModel { inner_radius: .2, outer_radius: 4 }");
 }

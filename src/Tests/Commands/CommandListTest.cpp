@@ -80,20 +80,13 @@ TEST_F(CommandListTest, IsValid) {
   app_info: AppInfo { version: "1.0.0", session_state: SessionState {} }
 )";
 
-    TEST_THROW(ParseObject<CommandList>("CommandList {}"),
-               Parser::Exception, "Missing app_info field");
-    TEST_THROW(ParseObject<CommandList>(
-                   "CommandList { " + app_str + ", current_index: 1 }"),
-               Parser::Exception, "Invalid current_index");
-    TEST_THROW(ParseObject<CommandList>(
-                   "CommandList { " + app_str +
-                   ", commands: [ PasteCommand {} ], current_index: 2 }"),
-               Parser::Exception, "Invalid current_index");
-
-    // This should not throw.
-    auto cl = ParseObject<CommandList>(
-        "CommandList { " + app_str + ", current_index: 0 }");
-    EXPECT_NOT_NULL(cl);
+    TestInvalid("CommandList {}", "Missing app_info field");
+    TestInvalid("CommandList { " + app_str + ", current_index: 1 }",
+                "Invalid current_index");
+    TestInvalid("CommandList { " + app_str +
+                ", commands: [ PasteCommand {} ], current_index: 2 }",
+                "Invalid current_index");
+    TestValid("CommandList { " + app_str + ", current_index: 0 }");
 }
 
 TEST_F(CommandListTest, AppInfo) {

@@ -46,7 +46,7 @@ FileImage {
   ],
 },
 )";
-    auto im = ParseObject<SG::Image>(input);
+    auto im = ParseTypedObject<SG::Image>(input);
 
     EXPECT_NOT_NULL(im);
 

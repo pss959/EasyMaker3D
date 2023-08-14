@@ -32,15 +32,14 @@ TEST_F(ItemTest, AppInfo) {
     EXPECT_EQ(TK::kVersionString, info->GetVersion());
     EXPECT_NOT_NULL(info->GetSessionState());
 
-    info = ParseObject<AppInfo>(
+    info = ParseTypedObject<AppInfo>(
         "AppInfo { version: \"1.2.3\", session_state: SessionState {} }");
     EXPECT_EQ("1.2.3", info->GetVersion());
     EXPECT_NOT_NULL(info->GetSessionState());
 
-    TEST_THROW(ParseObject<AppInfo>("AppInfo {}"),
-               Parser::Exception, "Missing version field data");
-    TEST_THROW(ParseObject<AppInfo>("AppInfo { version: \"Something\" }"),
-               Parser::Exception, "Missing session_state data");
+    TestInvalid("AppInfo {}", "Missing version field data");
+    TestInvalid(R"(AppInfo { version: "Something" })",
+                "Missing session_state data");
 }
 
 TEST_F(ItemTest, Border) {
@@ -131,10 +130,8 @@ TEST_F(ItemTest, Frame) {
     EXPECT_EQ("Box", frame->GetFramed()->GetName());
     EXPECT_VECS_CLOSE(Vector3f(14, 24, 3), frame->GetBounds().GetSize());
 
-    TEST_THROW(ParseObject<Frame>("Frame { width: 0 }"),
-               Parser::Exception, "Non-positive width or depth");
-    TEST_THROW(ParseObject<Frame>("Frame { width: 2, depth: -2 }"),
-               Parser::Exception, "Non-positive width or depth");
+    TestInvalid("Frame { width: 0 }",            "Non-positive width or depth");
+    TestInvalid("Frame { width: 2, depth: -2 }", "Non-positive width or depth");
 }
 
 TEST_F(ItemTest, Inspector) {

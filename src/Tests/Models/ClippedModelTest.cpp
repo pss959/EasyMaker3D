@@ -76,16 +76,8 @@ TEST_F(ClippedModelTest, Cylinder) {
 }
 
 TEST_F(ClippedModelTest, IsValid) {
-    TEST_THROW(ParseObject<ClippedModel>("ClippedModel {}"),
-               Parser::Exception, "No operand model");
-
-    TEST_THROW(ParseObject<ClippedModel>(
-                   "ClippedModel { operand_model: BoxModel {},"
-                   " plane: 0 0 0 10 }"),
-               Parser::Exception, "Zero-length plane normal");
-
-    // This should not throw.
-    auto clipped = ParseObject<ClippedModel>(
-        "ClippedModel { operand_model: BoxModel {} }");
-    EXPECT_NOT_NULL(clipped);
+    TestInvalid("ClippedModel {}", "No operand model");
+    TestInvalid("ClippedModel { operand_model: BoxModel {}, plane: 0 0 0 10 }",
+                "Zero-length plane normal");
+    TestValid("ClippedModel { operand_model: BoxModel {} }");
 }

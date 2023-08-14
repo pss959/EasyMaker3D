@@ -38,7 +38,10 @@ test_source_dict = {
         'VirtualKeyboardTest',
     ],
     'Commands' : [
+        'ChangeBendCommandTest',
+        'ChangeBevelCommandTest',
         'CommandListTest',
+        'CommandTestBase',
         'MultiModelCommandTest',
         'ScaleCommandTest',
     ],

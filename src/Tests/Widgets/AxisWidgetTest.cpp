@@ -9,7 +9,7 @@
 class AxisWidgetTest : public SceneTestBase {
   protected:
     AxisWidgetPtr GetAxisWidget() {
-        return ParseObject<AxisWidget>(
+        return ParseTypedObject<AxisWidget>(
             ReadResourceFile("nodes/Widgets/AxisWidget.emd"));
     }
 };

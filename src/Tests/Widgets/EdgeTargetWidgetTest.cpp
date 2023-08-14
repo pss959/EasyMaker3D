@@ -24,18 +24,9 @@ TEST_F(EdgeTargetWidgetTest, Defaults) {
 }
 
 TEST_F(EdgeTargetWidgetTest, NotValid) {
-    TEST_THROW(ParseObject<EdgeTargetWidget>("EdgeTargetWidget {}"),
-               Parser::Exception, "Missing target");
-
-    const std::string input = R"(
-EdgeTargetWidget {
-  target: EdgeTarget {
-    position0:   1 0 0,
-    position1:   1 0 0,
-  }
-})";
-    TEST_THROW(ParseObject<EdgeTargetWidget>(input),
-               Parser::Exception, "Length is zero");
+    TestInvalid("EdgeTargetWidget {}", "Missing target");
+    TestInvalid("EdgeTargetWidget { target: EdgeTarget {"
+                " position0: 1 0 0, position1: 1 0 0 } }", "Length is zero");
 }
 
 TEST_F(EdgeTargetWidgetTest, SetTarget) {

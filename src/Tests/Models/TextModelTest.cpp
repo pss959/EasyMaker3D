@@ -31,14 +31,9 @@ TEST_F(TextModelTest, Set) {
 }
 
 TEST_F(TextModelTest, IsValid) {
-    TEST_THROW(ParseObject<TextModel>(R"(TextModel { font_name: "Blah" })"),
-               Parser::Exception, "Unknown font name");
-    TEST_THROW(ParseObject<TextModel>(R"(TextModel {})"),
-               Parser::Exception, "Empty text string");
-
-    // This should not throw.
-    auto text = ParseObject<TextModel>(R"(TextModel { text: "Something" })");
-    EXPECT_NOT_NULL(text);
+    TestInvalid(R"(TextModel { font_name: "Blah" })", "Unknown font name");
+    TestInvalid("TextModel {}",                       "Empty text string");
+    TestValid(R"(TextModel { text: "Something" })");
 }
 
 TEST_F(TextModelTest, Mesh) {

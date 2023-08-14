@@ -28,8 +28,7 @@ TEST_F(PointTargetWidgetTest, Defaults) {
 }
 
 TEST_F(PointTargetWidgetTest, NotValid) {
-    TEST_THROW(ParseObject<PointTargetWidget>("PointTargetWidget {}"),
-               Parser::Exception, "Missing target");
+    TestInvalid("PointTargetWidget {}", "Missing target");
 }
 
 TEST_F(PointTargetWidgetTest, SetTarget) {

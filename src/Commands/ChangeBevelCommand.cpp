@@ -30,7 +30,6 @@ bool ChangeBevelCommand::IsValid(std::string &details) {
         details = "Maximum angle is out of range";
         return false;
     }
-
     return true;
 }
 

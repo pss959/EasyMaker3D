@@ -39,14 +39,8 @@ TEST_F(CylinderModelTest, SetRadii) {
 }
 
 TEST_F(CylinderModelTest, IsValid) {
-    TEST_THROW(ParseObject<CylinderModel>("CylinderModel { top_radius: -1 }"),
-               Parser::Exception, "Negative radius");
-    TEST_THROW(ParseObject<CylinderModel>(
-                   "CylinderModel { top_radius: 0, bottom_radius: 0 }"),
-               Parser::Exception, "At least one radius must be positive");
-
-    // This should not throw.
-    auto cm = ParseObject<CylinderModel>(
-        "CylinderModel { top_radius: 0, bottom_radius: 2 }");
-    EXPECT_NOT_NULL(cm);
+    TestInvalid("CylinderModel { top_radius: -1 }", "Negative radius");
+    TestInvalid("CylinderModel { top_radius: 0, bottom_radius: 0 }",
+                "At least one radius must be positive");
+    TestValid("CylinderModel { top_radius: 0, bottom_radius: 2 }");
 }

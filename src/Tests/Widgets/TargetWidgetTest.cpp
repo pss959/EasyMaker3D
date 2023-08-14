@@ -69,8 +69,7 @@ TEST_F(TargetWidgetTest, PointTargetDefaults) {
 }
 
 TEST_F(TargetWidgetTest, PointTargetNotValid) {
-    TEST_THROW(ParseObject<PointTargetWidget>("PointTargetWidget {}"),
-               Parser::Exception, "Missing target");
+    TestInvalid("PointTargetWidget {}", "Missing target");
 }
 
 TEST_F(TargetWidgetTest, PointTargetSetTarget) {
@@ -151,18 +150,9 @@ TEST_F(TargetWidgetTest, EdgeTargetDefaults) {
 }
 
 TEST_F(TargetWidgetTest, EdgeTargetNotValid) {
-    TEST_THROW(ParseObject<EdgeTargetWidget>("EdgeTargetWidget {}"),
-               Parser::Exception, "Missing target");
-
-    const std::string input = R"(
-EdgeTargetWidget {
-  target: EdgeTarget {
-    position0:   1 0 0,
-    position1:   1 0 0,
-  }
-})";
-    TEST_THROW(ParseObject<EdgeTargetWidget>(input),
-               Parser::Exception, "Length is zero");
+    TestInvalid("EdgeTargetWidget {}", "Missing target");
+    TestInvalid("EdgeTargetWidget { target: EdgeTarget {"
+                " position0: 1 0 0, position1: 1 0 0 } }", "Length is zero");
 }
 
 TEST_F(TargetWidgetTest, EdgeTargetSetTarget) {

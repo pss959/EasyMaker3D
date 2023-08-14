@@ -53,14 +53,8 @@ TEST_F(CSGModelTest, TwoBoxes) {
 }
 
 TEST_F(CSGModelTest, IsValid) {
-    TEST_THROW(ParseObject<CSGModel>("CSGModel {}"),
-               Parser::Exception, "Only 0 operand model(s)");
-    TEST_THROW(ParseObject<CSGModel>(
-                   "CSGModel { operand_models: [ BoxModel {} ]}"),
-               Parser::Exception, "Only 1 operand model(s)");
-
-    // This should not throw.
-    auto csg = ParseObject<CSGModel>(
-        "CSGModel { operand_models: [ BoxModel {}, BoxModel {} ] }");
-    EXPECT_NOT_NULL(csg);
+    TestInvalid("CSGModel {}", "Only 0 operand model(s)");
+    TestInvalid("CSGModel { operand_models: [ BoxModel {} ]}",
+                "Only 1 operand model(s)");
+    TestValid("CSGModel { operand_models: [ BoxModel {}, BoxModel {} ] }");
 }

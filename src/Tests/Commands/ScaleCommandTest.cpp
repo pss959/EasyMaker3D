@@ -1,10 +1,10 @@
 ﻿#include "Commands/ScaleCommand.h"
 #include "Math/Types.h"
-#include "Tests/SceneTestBase.h"
+#include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ScaleCommandTest : public SceneTestBase {};
+class ScaleCommandTest : public CommandTestBase {};
 
 TEST_F(ScaleCommandTest, Default) {
     auto sc = Command::CreateCommand<ScaleCommand>();
@@ -22,41 +22,27 @@ TEST_F(ScaleCommandTest, Set) {
 }
 
 TEST_F(ScaleCommandTest, IsValid) {
-    TEST_THROW(ParseObject<ScaleCommand>("ScaleCommand {}"),
-               Parser::Exception, "Missing model names");
-    TEST_THROW(ParseObject<ScaleCommand>(
-                   R"(ScaleCommand { model_names: [ " BadName" ] })"),
-               Parser::Exception, "Invalid model name");
-    TEST_THROW(ParseObject<ScaleCommand>(
-                   R"(ScaleCommand { model_names: [ "Box" ], ratios: 1 0 2 })"),
-               Parser::Exception, "Invalid scale by zero");
-    TEST_THROW(ParseObject<ScaleCommand>(
-                   R"(ScaleCommand { model_names: [ "Box" ],
-                          mode: "kCenterSymmetric", ratios: 1 1 -1 })"),
-               Parser::Exception, "Invalid negative symmetric scale");
-    TEST_THROW(ParseObject<ScaleCommand>(
-                   R"(ScaleCommand { model_names: [ "Box" ],
-                          mode: "kBaseSymmetric", ratios: 1 -1 1 })"),
-               Parser::Exception, "Invalid negative symmetric scale");
-
-    // This should not throw.
-    auto sc = ParseObject<ScaleCommand>(
-        R"(ScaleCommand { model_names: ["Box"], ratios: -1 1 2 })");
-    EXPECT_NOT_NULL(sc);
+    TestInvalid("ScaleCommand {}", "Missing model names");
+    TestInvalid(R"(ScaleCommand { model_names: [ " BadName" ] })",
+                "Invalid model name");
+    TestInvalid(R"(ScaleCommand { model_names: [ "Box" ], ratios: 1 0 2 })",
+                "Invalid scale by zero");
+    TestInvalid(R"(ScaleCommand { model_names: [ "Box" ],
+                    mode: "kCenterSymmetric", ratios: 1 1 -1 })",
+                "Invalid negative symmetric scale");
+    TestInvalid(R"(ScaleCommand { model_names: [ "Box" ],
+                      mode: "kBaseSymmetric", ratios: 1 -1 1 })",
+                "Invalid negative symmetric scale");
+    TestValid(R"(ScaleCommand { model_names: ["Box"], ratios: -1 1 2 })");
 }
 
 TEST_F(ScaleCommandTest, GetDescription) {
-    auto sc = ParseObject<ScaleCommand>(
-        R"(ScaleCommand { model_names: ["Box"], ratios: 1 2 3 })");
-    EXPECT_EQ(R"(Scaled Model "Box" asymmetrically)", sc->GetDescription());
-
-    sc = ParseObject<ScaleCommand>(
-        R"(ScaleCommand { model_names: ["A", "B"], mode: "kBaseSymmetric" })");
-    EXPECT_EQ(R"(Scaled 2 Models symmetrically about the base center)",
-              sc->GetDescription());
-
-    sc = ParseObject<ScaleCommand>(
-        R"(ScaleCommand { model_names: ["Hello"], mode: "kCenterSymmetric" })");
-    EXPECT_EQ(R"(Scaled Model "Hello" symmetrically about the center)",
-              sc->GetDescription());
+    TestDesc(R"(ScaleCommand { model_names: ["Box"], ratios: 1 2 3 })",
+             R"(Scaled Model "Box" asymmetrically)");
+    TestDesc(
+        R"(ScaleCommand { model_names: ["A", "B"], mode: "kBaseSymmetric" })",
+        R"(Scaled 2 Models symmetrically about the base center)");
+    TestDesc(
+        R"(ScaleCommand { model_names: ["Hello"], mode: "kCenterSymmetric" })",
+        R"(Scaled Model "Hello" symmetrically about the center)");
 }

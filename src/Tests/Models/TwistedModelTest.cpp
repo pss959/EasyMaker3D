@@ -39,17 +39,10 @@ TEST_F(TwistedModelTest, DefaultTwist) {
 }
 
 TEST_F(TwistedModelTest, IsValid) {
-    TEST_THROW(ParseObject<TwistedModel>("TwistedModel {}"),
-               Parser::Exception, "No operand model specified");
-
-    TEST_THROW(ParseObject<TwistedModel>(
-                   "TwistedModel { operand_model: BoxModel {}, axis: 0 0 0 }"),
-               Parser::Exception, "Zero-length spin axis");
-
-    // This should not throw.
-    auto twisted = ParseObject<TwistedModel>(
-        "TwistedModel { operand_model: BoxModel {}, axis: 0 1 0 }");
-    EXPECT_NOT_NULL(twisted);
+    TestInvalid("TwistedModel {}", "No operand model specified");
+    TestInvalid("TwistedModel { operand_model: BoxModel {}, axis: 0 0 0 }",
+                "Zero-length spin axis");
+    TestValid("TwistedModel { operand_model: BoxModel {}, axis: 0 1 0 }");
 }
 
 TEST_F(TwistedModelTest, Twist90) {

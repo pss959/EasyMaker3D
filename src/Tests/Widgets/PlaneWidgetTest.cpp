@@ -8,7 +8,7 @@
 class PlaneWidgetTest : public SceneTestBase {
   protected:
     PlaneWidgetPtr GetPlaneWidget() {
-        return ParseObject<PlaneWidget>(
+        return ParseTypedObject<PlaneWidget>(
             ReadResourceFile("nodes/Widgets/PlaneWidget.emd"));
     }
 };

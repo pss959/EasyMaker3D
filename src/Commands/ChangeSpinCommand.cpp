@@ -9,13 +9,16 @@ void ChangeSpinCommand::AddFields() {
     AddField(angle_.Init("angle"));
     AddField(offset_.Init("offset"));
     MultiModelCommand::AddFields();
+
+    // Use default settings.
+    SetSpin(Spin());
 }
 
 bool ChangeSpinCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! IsValidVector(axis_)) {
-        details = "zero-length spin axis vector";
+        details = "Zero-length spin axis vector";
         return false;
     }
     return true;

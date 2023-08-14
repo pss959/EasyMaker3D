@@ -205,7 +205,7 @@ TEST_F(ControllerTest, CustomModel) {
 }
 
 TEST_F(ControllerTest, Attach) {
-    auto box = ParseObject<SG::Node>("Node { shapes: [ Box {} ] }");
+    auto box = ParseTypedObject<SG::Node>("Node { shapes: [ Box {} ] }");
     const Vector3f  box_trans(10, 20, 30);
     const Rotationf box_rot = BuildRotation(0, 1, 0, 45);
     box->SetTranslation(box_trans);

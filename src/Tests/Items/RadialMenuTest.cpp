@@ -20,7 +20,7 @@ TEST_F(RadialMenuTest, RadialMenuInfoDefault) {
 }
 
 TEST_F(RadialMenuTest, RadialMenuInfoActions) {
-    auto info = ParseObject<RadialMenuInfo>(
+    auto info = ParseTypedObject<RadialMenuInfo>(
         R"(RadialMenuInfo { count: "kCount2" })");
     EXPECT_EQ(RadialMenuInfo::Count::kCount2, info->GetCount());
     EXPECT_EQ(Action::kNone, info->GetButtonAction(0));

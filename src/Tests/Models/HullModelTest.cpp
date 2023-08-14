@@ -105,11 +105,6 @@ TEST_F(HullModelTest, AddRemove) {
 }
 
 TEST_F(HullModelTest, IsValid) {
-    TEST_THROW(ParseObject<HullModel>("HullModel {}"),
-               Parser::Exception, "Only 0 operand model(s)");
-
-    // This should not throw.
-    auto hull = ParseObject<HullModel>(
-        "HullModel { operand_models: [ BoxModel {} ] }");
-    EXPECT_NOT_NULL(hull);
+    TestInvalid("HullModel {}", "Only 0 operand model(s)");
+    TestValid("HullModel { operand_models: [ BoxModel {} ] }");
 }

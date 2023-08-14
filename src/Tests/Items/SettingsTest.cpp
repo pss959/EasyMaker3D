@@ -49,9 +49,9 @@ TEST_F(SettingsTest, SetAndCopy) {
     settings->SetImportUnitsConversion(*imconv);
     settings->SetExportUnitsConversion(*exconv);
     settings->SetBuildVolumeSize(Vector3f(3, 4, 5));
-    auto linfo = ParseObject<RadialMenuInfo>(
+    auto linfo = ParseTypedObject<RadialMenuInfo>(
         R"(RadialMenuInfo { count: "kCount2", actions: ["kUndo", "kRedo"] })");
-    auto rinfo = ParseObject<RadialMenuInfo>(
+    auto rinfo = ParseTypedObject<RadialMenuInfo>(
         R"(RadialMenuInfo { count: "kCount2", actions: ["kRedo", "kUndo"] })");
     settings->SetLeftRadialMenuInfo(*linfo);
     settings->SetRightRadialMenuInfo(*rinfo);

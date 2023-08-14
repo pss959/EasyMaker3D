@@ -20,7 +20,7 @@ TEST_F(Slider1DWidgetTest, Defaults) {
 }
 
 TEST_F(Slider1DWidgetTest, Set) {
-    auto sw = ParseObject<Slider1DWidget>(
+    auto sw = ParseTypedObject<Slider1DWidget>(
         "Slider1DWidget { is_normalized: True, initial_value: 4.2 }");
 
     EXPECT_TRUE(sw->IsNormalized());
@@ -51,7 +51,7 @@ TEST_F(Slider1DWidgetTest, Drag) {
 }
 
 TEST_F(Slider1DWidgetTest, DragNormalized) {
-    auto sw = ParseObject<Slider1DWidget>(
+    auto sw = ParseTypedObject<Slider1DWidget>(
         "Slider1DWidget { is_normalized: True }");
     sw->SetRange(-10, 10);
 

@@ -34,12 +34,6 @@ TEST_F(ExtrudedModelTest, SetProfile) {
 }
 
 TEST_F(ExtrudedModelTest, IsValid) {
-    TEST_THROW(ParseObject<ExtrudedModel>(
-                   "ExtrudedModel { profile_points: [2 2] }"),
-               Parser::Exception, "Invalid profile");
-
-    // This should not throw.
-    auto tm = ParseObject<ExtrudedModel>(
-        "ExtrudedModel { profile_points: [.2 .2, .8 .2, .2 .8] }");
-    EXPECT_NOT_NULL(tm);
+    TestInvalid("ExtrudedModel { profile_points: [2 2] }", "Invalid profile");
+    TestValid("ExtrudedModel { profile_points: [.2 .2, .8 .2, .2 .8] }");
 }

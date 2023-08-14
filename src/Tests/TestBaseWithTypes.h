@@ -25,16 +25,27 @@ class TestBaseWithTypes : public TestBase {
         return Parser::Registry::CreateObject<T>(name);
     }
 
+    /// Tries to parse an object of some type (derived from Parser::Object)
+    /// from the given string. Returns a null pointer on failure.
+    static Parser::ObjectPtr ParseObject(const std::string &input);
+
     /// Tries to parse an object of the templated type (derived from
     /// Parser::Object) from the given string. Returns a null pointer on
     /// failure.
     template <typename T>
-    std::shared_ptr<T> ParseObject(const std::string &input) {
+    static std::shared_ptr<T> ParseTypedObject(const std::string &input) {
         static_assert(std::derived_from<T, Parser::Object> == true);
-        return std::dynamic_pointer_cast<T>(ParseObject_(input));
+        return std::dynamic_pointer_cast<T>(ParseObject(input));
     }
 
-  private:
-    /// Parses an object from a string.
-    static Parser::ObjectPtr ParseObject_(const std::string &input);
+    /// This can be used for testing the IsValid() function for classes derived
+    /// from Parser::Object. It verifies that parsing the given string returns
+    /// a valid (non-null) instance.
+    void TestValid(const std::string &str);
+
+    /// This can be used for testing the IsValid() function for classes derived
+    /// from Parser::Object. It verifies that a Parser::Exception is thrown
+    /// containing the given error message when the given string is parsed.
+    void TestInvalid(const std::string &str, const std::string &error);
 };
+

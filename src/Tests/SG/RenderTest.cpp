@@ -112,8 +112,8 @@ TEST_F(RenderTest, RealScene) {
     scene->GetRootNode()->AddChild(text);
 
     // Add a node to test RenderPass management.
-    auto pass_node =
-        ParseObject<SG::Node>("Node { shader_names: [\"ShadowDepth\"] }");
+    auto pass_node = ParseTypedObject<SG::Node>(
+        R"(Node { shader_names: ["ShadowDepth"] })");
     scene->GetRootNode()->AddChild(pass_node);
 
     // Add a render-disabled node with a Shape to test shape disabling.

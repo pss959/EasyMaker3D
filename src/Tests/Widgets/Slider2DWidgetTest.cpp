@@ -20,18 +20,18 @@ TEST_F(Slider2DWidgetTest, Defaults) {
 }
 
 TEST_F(Slider2DWidgetTest, Planes) {
-    auto sw = ParseObject<Slider2DWidget>(
-        "Slider2DWidget { principal_plane: \"kXZ\" }");
+    auto sw = ParseTypedObject<Slider2DWidget>(
+        R"(Slider2DWidget { principal_plane: "kXZ" })");
 
     EXPECT_EQ(Slider2DWidget::PrincipalPlane::kXZ, sw->GetPrincipalPlane());
 
-    sw = ParseObject<Slider2DWidget>(
-        "Slider2DWidget { principal_plane: \"kYZ\" }");
+    sw = ParseTypedObject<Slider2DWidget>(
+        R"(Slider2DWidget { principal_plane: "kYZ" })");
     EXPECT_EQ(Slider2DWidget::PrincipalPlane::kYZ, sw->GetPrincipalPlane());
 }
 
 TEST_F(Slider2DWidgetTest, Set) {
-    auto sw = ParseObject<Slider2DWidget>(
+    auto sw = ParseTypedObject<Slider2DWidget>(
         "Slider2DWidget { is_normalized: True, initial_value: 1.3 4.2 }");
 
     EXPECT_TRUE(sw->IsNormalized());
@@ -56,7 +56,7 @@ TEST_F(Slider2DWidgetTest, Drag) {
 }
 
 TEST_F(Slider2DWidgetTest, DragNormalized) {
-    auto sw = ParseObject<Slider2DWidget>(
+    auto sw = ParseTypedObject<Slider2DWidget>(
         "Slider2DWidget { is_normalized: True }");
     sw->SetRange(Vector2f(-10, -10), Vector2f(10, 10));
 

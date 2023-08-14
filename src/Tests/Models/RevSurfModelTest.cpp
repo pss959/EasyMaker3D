@@ -26,18 +26,10 @@ TEST_F(RevSurfModelTest, DefaultProfile) {
 }
 
 TEST_F(RevSurfModelTest, IsValid) {
-    TEST_THROW(ParseObject<RevSurfModel>(
-                   "RevSurfModel { sweep_angle: 0 }"),
-               Parser::Exception, "Zero sweep angle");
-
-    TEST_THROW(ParseObject<RevSurfModel>(
-                   "RevSurfModel { profile_points: [] }"),  // < 3 points.
-               Parser::Exception, "Invalid profile");
-
-    // This should not throw.
-    auto rsm = ParseObject<RevSurfModel>(
-        "RevSurfModel { profile_points: [1 .6] }");
-    EXPECT_NOT_NULL(rsm);
+    TestInvalid("RevSurfModel { sweep_angle: 0 }", "Zero sweep angle");
+    TestInvalid("RevSurfModel { profile_points: [] }",  // < 3 points.
+                "Invalid profile");
+    TestValid("RevSurfModel { profile_points: [1 .6] }");
 }
 
 TEST_F(RevSurfModelTest, Profile4Points) {

@@ -35,23 +35,13 @@ TEST_F(BeveledModelTest, DefaultBevel) {
 }
 
 TEST_F(BeveledModelTest, IsValid) {
-    TEST_THROW(ParseObject<BeveledModel>("BeveledModel {}"),
-               Parser::Exception, "No operand model");
-
-    TEST_THROW(ParseObject<BeveledModel>(
-                   "BeveledModel { operand_model: BoxModel {},"
-                   " bevel_scale: -1 }"),
-               Parser::Exception, "Non-positive scale value");
-
-    TEST_THROW(ParseObject<BeveledModel>(
-                   "BeveledModel { operand_model: BoxModel {},"
-                   " profile_points: [2 2] }"),  // Point out of (0,1) range.
-               Parser::Exception, "Invalid profile");
-
-    // This should not throw.
-    auto beveled = ParseObject<BeveledModel>(
-        "BeveledModel { operand_model: BoxModel {} }");
-    EXPECT_NOT_NULL(beveled);
+    TestInvalid("BeveledModel {}", "No operand model");
+    TestInvalid("BeveledModel { operand_model: BoxModel {}, bevel_scale: -1 }",
+                "Non-positive scale value");
+    TestInvalid("BeveledModel { operand_model: BoxModel {},"
+                " profile_points: [1 2] }",  // Point out of (0,1) range.
+                "Invalid profile");
+    TestValid("BeveledModel { operand_model: BoxModel {} }");
 }
 
 TEST_F(BeveledModelTest, SetBevel) {

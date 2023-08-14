@@ -145,8 +145,7 @@ TEST_F(TextTest, LayoutOptions) {
 }
 
 TEST_F(TextTest, InvalidTextNode) {
-    TEST_THROW(ParseObject<SG::TextNode>(R"(TextNode { text: "" })"),
-               Parser::Exception, "Empty text string");
+    TestInvalid(R"(TextNode { text: "" })", "Empty text string");
 }
 
 TEST_F(TextTest, BadText) {
@@ -190,7 +189,8 @@ TEST_F(TextTest, BadFont) {
     }
 
     // Create a TextNode with a very small maximum image size.
-    auto text2 = ParseObject<SG::TextNode>("TextNode { max_image_size: 4 }");
+    auto text2 = ParseTypedObject<SG::TextNode>(
+        "TextNode { max_image_size: 4 }");
     TEST_THROW(SetUpIonForNode(*text2), SG::Exception,
                "Unable to create font image");
 }
