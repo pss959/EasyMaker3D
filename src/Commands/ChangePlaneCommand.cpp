@@ -12,7 +12,7 @@ bool ChangePlaneCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! IsValidVector(GetPlane().normal)) {
-        details = "zero-length plane normal";
+        details = "Zero-length plane normal";
         return false;
     }
     return true;

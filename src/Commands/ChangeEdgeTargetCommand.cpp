@@ -11,7 +11,7 @@ void ChangeEdgeTargetCommand::AddFields() {
 
 bool ChangeEdgeTargetCommand::IsValid(std::string &details) {
     if (! Command::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! old_target_.GetValue()) {
         details = "Missing old target";
         return false;
@@ -42,12 +42,12 @@ std::string ChangeEdgeTargetCommand::GetDescription() const {
     return "Changed the edge target";
 }
 
-void ChangeEdgeTargetCommand::SetOldTarget(const EdgeTarget &pt) {
+void ChangeEdgeTargetCommand::SetOldTarget(const EdgeTarget &target) {
     ASSERT(old_target_.GetValue());
-    old_target_.GetValue()->CopyFrom(pt);
+    old_target_.GetValue()->CopyFrom(target);
 }
 
-void ChangeEdgeTargetCommand::SetNewTarget(const EdgeTarget &pt) {
+void ChangeEdgeTargetCommand::SetNewTarget(const EdgeTarget &target) {
     ASSERT(new_target_.GetValue());
-    new_target_.GetValue()->CopyFrom(pt);
+    new_target_.GetValue()->CopyFrom(target);
 }

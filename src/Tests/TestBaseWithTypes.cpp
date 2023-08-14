@@ -19,8 +19,14 @@ Parser::ObjectPtr TestBaseWithTypes::ParseObject(const std::string &input) {
 }
 
 void TestBaseWithTypes::TestValid(const std::string &str) {
-    auto obj = ParseObject(str);
-    EXPECT_NOT_NULL(obj);
+    try {
+        auto obj = ParseObject(str);
+        EXPECT_NOT_NULL(obj);
+    }
+    catch (std::exception &ex) {
+        EXPECT_TRUE(false) << "Parsing '" << str
+                           << "' failed with exception " << ex.what();
+    }
 }
 
 void TestBaseWithTypes::TestInvalid(const std::string &str,

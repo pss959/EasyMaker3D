@@ -20,10 +20,10 @@ class ChangeEdgeTargetCommand : public Command {
     const EdgeTargetPtr & GetNewTarget() const { return new_target_; }
 
     /// Sets the old EdgeTarget.
-    void SetOldTarget(const EdgeTarget &pt);
+    void SetOldTarget(const EdgeTarget &target);
 
     /// Sets the new EdgeTarget.
-    void SetNewTarget(const EdgeTarget &pt);
+    void SetNewTarget(const EdgeTarget &target);
 
   protected:
     ChangeEdgeTargetCommand() {}

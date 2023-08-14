@@ -492,7 +492,10 @@ test_env = lib_env.Clone()
 
 # Make the build relative to the top directory.
 test_env.Append(
-    CPPPATH = ['#submodules/googletest/googletest/include'],
+    CPPPATH = [
+        '#submodules/googletest/googletest/include',
+        '#submodules/googletest/googlemock/include',
+    ],
     LIBPATH = ['#/$BUILD_DIR/docopt.cpp', '#/$BUILD_DIR/googletest'],
     LIBS    = ['docopt', 'gtest', 'pthread'],
 

@@ -8,21 +8,14 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class CurvesTest : public TestBase {
-  protected:
-    /// Convenience to create a CircleArc with start and arc angles in degrees.
-    static CircleArc GetArc_(float start_deg, float arc_deg) {
-        return CircleArc(Anglef::FromDegrees(start_deg),
-                         Anglef::FromDegrees(arc_deg));
-    }
-};
+class CurvesTest : public TestBase {};
 
 TEST_F(CurvesTest, CircleArc) {
     CircleArc arc;
     EXPECT_EQ(Anglef::FromDegrees(0),   arc.start_angle);
     EXPECT_EQ(Anglef::FromDegrees(360), arc.arc_angle);
 
-    CircleArc arc2 = GetArc_(40, -120);
+    CircleArc arc2(40, -120);
     EXPECT_EQ(Anglef::FromDegrees(40),   arc2.start_angle);
     EXPECT_EQ(Anglef::FromDegrees(-120), arc2.arc_angle);
 
@@ -73,14 +66,14 @@ TEST_F(CurvesTest, GetCircleArcPoints) {
     EXPECT_EQ(0U, pts.size());
 
     // 10 points with radius 0 on 90 degree arc.
-    pts = GetCircleArcPoints(10, 0, GetArc_(30, 90));
+    pts = GetCircleArcPoints(10, 0, CircleArc(30, 90));
     EXPECT_EQ(10U, pts.size());
     EXPECT_TRUE(std::all_of(
                     pts.begin(), pts.end(),
                     [](const Point2f &p){ return p == Point2f::Zero(); }));
 
     // 20 points with radius 10 on 90 degree arc.
-    pts = GetCircleArcPoints(20, 10, GetArc_(30, 90));
+    pts = GetCircleArcPoints(20, 10, CircleArc(30, 90));
     EXPECT_EQ(20U, pts.size());
     EXPECT_TRUE(std::all_of(
                     pts.begin(), pts.end(),

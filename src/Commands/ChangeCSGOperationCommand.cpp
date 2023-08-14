@@ -12,14 +12,13 @@ void ChangeCSGOperationCommand::AddFields() {
 bool ChangeCSGOperationCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-
     if (GetResultNames().empty()) {
-        details = "missing result names";
+        details = "Missing result names";
         return false;
     }
     for (const auto &name: GetResultNames()) {
         if (! Model::IsValidName(name)) {
-            details = "invalid result model name: '" + name + "'";
+            details = "Invalid result model name: '" + name + "'";
             return false;
         }
     }
@@ -27,6 +26,6 @@ bool ChangeCSGOperationCommand::IsValid(std::string &details) {
 }
 
 std::string ChangeCSGOperationCommand::GetDescription() const {
-    return "Change the CSG operation of " + GetModelsDesc(GetModelNames()) +
+    return "Changed the CSG operation of " + GetModelsDesc(GetModelNames()) +
         " to " + new_operation_.GetEnumWords();
 }

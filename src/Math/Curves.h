@@ -26,6 +26,11 @@ struct CircleArc {
     CircleArc(const Anglef &start, const Anglef &arc) :
         start_angle(start), arc_angle(arc) {}
 
+    /// Convenience constructor taking start angle and arc angle in degrees.
+    CircleArc(float start_degrees, float arc_degrees) :
+        CircleArc(Anglef::FromDegrees(start_degrees),
+                  Anglef::FromDegrees(arc_degrees)) {}
+
     /// Equality operator.
     bool operator==(const CircleArc &ca) const = default;
 };

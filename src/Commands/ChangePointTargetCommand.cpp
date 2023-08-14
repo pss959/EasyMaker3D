@@ -11,7 +11,7 @@ void ChangePointTargetCommand::AddFields() {
 
 bool ChangePointTargetCommand::IsValid(std::string &details) {
     if (! Command::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! old_target_.GetValue()) {
         details = "Missing old target";
         return false;

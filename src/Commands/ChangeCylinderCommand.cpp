@@ -5,7 +5,7 @@
 
 void ChangeCylinderCommand::AddFields() {
     AddField(is_top_radius_.Init("is_top_radius", true));
-    AddField(new_radius_.Init("new_radius"));
+    AddField(new_radius_.Init("new_radius", 0));
 
     MultiModelCommand::AddFields();
 }

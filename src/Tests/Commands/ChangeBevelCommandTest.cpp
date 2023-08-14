@@ -1,5 +1,6 @@
 #include "Commands/ChangeBevelCommand.h"
 #include "Math/Types.h"
+#include "Models/BeveledModel.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"
 
@@ -13,9 +14,8 @@ TEST_F(ChangeBevelCommandTest, Default) {
 
 TEST_F(ChangeBevelCommandTest, Set) {
     Bevel bevel;
-    bevel.profile = Profile::CreateFixedProfile(
-        Point2f(0, 1), Point2f(1, 0),
-        2, Profile::PointVec{ Point2f(.4f, .5f) });
+    bevel.profile =
+        BeveledModel::CreateProfile(Profile::PointVec{ Point2f(.4f, .5f) });
     bevel.scale     = 2.4f;
     bevel.max_angle = Anglef::FromDegrees(90);
 

@@ -17,7 +17,7 @@ class ChangePlaneCommand : public MultiModelCommand {
     /// Sets the Plane (in stage coordinates).
     void SetPlane(const Plane &plane);
 
-    /// Returns the Plane (in stage coordinates).
+    /// Returns the Plane (in stage coordinates). The default is the XY plane.
     const Plane & GetPlane() const { return plane_; }
 
   protected:

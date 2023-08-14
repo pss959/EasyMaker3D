@@ -41,15 +41,9 @@ TEST_F(FeedbackTest, AngularFeedback) {
     auto arc  = SG::FindNodeUnderNode(*af,                    "Arc");
     auto text = SG::FindTypedNodeUnderNode<SG::TextNode>(*af, "Text");
 
-    // Convenience to set up a CircleArc.
-    auto ca = [](float start_deg, float arc_deg){
-        return CircleArc(Anglef::FromDegrees(start_deg),
-                         Anglef::FromDegrees(arc_deg));
-    };
-
     // Feedback for rotation around Z axis.
     af->SetColor(Color(0, 1, 1));
-    af->SubtendArc(Point3f(0, 5, 2), 4, 2, Vector3f::AxisZ(), ca(0, 90));
+    af->SubtendArc(Point3f(0, 5, 2), 4, 2, Vector3f::AxisZ(), CircleArc(0, 90));
     EXPECT_EQ(Vector3f(0, 9, 2),                  af->GetTranslation());
     EXPECT_EQ(Rotationf::Identity(),              af->GetRotation());
     EXPECT_PTS_CLOSE(Point3f(12,       0,    0),  stl->GetBounds().GetCenter());
@@ -66,7 +60,8 @@ TEST_F(FeedbackTest, AngularFeedback) {
 
     // Feedback for rotation around Y axis.
     af->SetColor(Color(1, 0, 1));
-    af->SubtendArc(Point3f(4, 10, -6), 2, 1, Vector3f::AxisZ(), ca(90, -180));
+    af->SubtendArc(Point3f(4, 10, -6), 2, 1, Vector3f::AxisZ(),
+                   CircleArc(90, -180));
     EXPECT_EQ(Vector3f(4, 12, -6),               af->GetTranslation());
     EXPECT_EQ(Rotationf::Identity(),             af->GetRotation());
     EXPECT_PTS_CLOSE(Point3f(0,      12,    0),  stl->GetBounds().GetCenter());
