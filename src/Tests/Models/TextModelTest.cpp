@@ -31,9 +31,10 @@ TEST_F(TextModelTest, Set) {
 }
 
 TEST_F(TextModelTest, IsValid) {
-    TestInvalid(R"(TextModel { font_name: "Blah" })", "Unknown font name");
-    TestInvalid("TextModel {}",                       "Empty text string");
-    TestValid(R"(TextModel { text: "Something" })");
+    SetParseTypeName("TextModel");
+    TestInvalid(R"(font_name: "Blah")", "Unknown font name");
+    TestInvalid("",                     "Empty text string");
+    TestValid(R"(text: "Something")");
 }
 
 TEST_F(TextModelTest, Mesh) {

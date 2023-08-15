@@ -76,8 +76,9 @@ TEST_F(ClippedModelTest, Cylinder) {
 }
 
 TEST_F(ClippedModelTest, IsValid) {
-    TestInvalid("ClippedModel {}", "No operand model");
-    TestInvalid("ClippedModel { operand_model: BoxModel {}, plane: 0 0 0 10 }",
+    SetParseTypeName("ClippedModel");
+    TestInvalid("", "No operand model");
+    TestInvalid("operand_model: BoxModel {}, plane: 0 0 0 10",
                 "Zero-length plane normal");
-    TestValid("ClippedModel { operand_model: BoxModel {} }");
+    TestValid("operand_model: BoxModel {}");
 }

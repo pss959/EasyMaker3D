@@ -34,6 +34,7 @@ TEST_F(ExtrudedModelTest, SetProfile) {
 }
 
 TEST_F(ExtrudedModelTest, IsValid) {
-    TestInvalid("ExtrudedModel { profile_points: [2 2] }", "Invalid profile");
-    TestValid("ExtrudedModel { profile_points: [.2 .2, .8 .2, .2 .8] }");
+    SetParseTypeName("ExtrudedModel");
+    TestInvalid("profile_points: [2 2]", "Invalid profile");
+    TestValid("profile_points: [.2 .2, .8 .2, .2 .8]");
 }

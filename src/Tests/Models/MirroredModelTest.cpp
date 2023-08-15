@@ -79,9 +79,9 @@ TEST_F(MirroredModelTest, SyncTransforms) {
 }
 
 TEST_F(MirroredModelTest, IsValid) {
-    TestInvalid("MirroredModel {}", "No operand model");
-    TestInvalid("MirroredModel { operand_model: BoxModel {},"
-                " plane_normal: 0 0 0 }",
+    SetParseTypeName("MirroredModel");
+    TestInvalid("", "No operand model");
+    TestInvalid("operand_model: BoxModel {}, plane_normal: 0 0 0",
                 "Zero-length plane normal");
-    TestValid("MirroredModel { operand_model: BoxModel {} }");
+    TestValid("operand_model: BoxModel {}");
 }

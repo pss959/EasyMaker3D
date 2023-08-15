@@ -1,7 +1,7 @@
 #include "Commands/ChangeComplexityCommand.h"
 
 void ChangeComplexityCommand::AddFields() {
-    AddField(new_complexity_.Init("new_complexity"));
+    AddField(new_complexity_.Init("new_complexity", 0));
 
     MultiModelCommand::AddFields();
 }

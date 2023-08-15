@@ -39,10 +39,11 @@ TEST_F(TwistedModelTest, DefaultTwist) {
 }
 
 TEST_F(TwistedModelTest, IsValid) {
-    TestInvalid("TwistedModel {}", "No operand model specified");
-    TestInvalid("TwistedModel { operand_model: BoxModel {}, axis: 0 0 0 }",
+    SetParseTypeName("TwistedModel");
+    TestInvalid("", "No operand model specified");
+    TestInvalid("operand_model: BoxModel {}, axis: 0 0 0",
                 "Zero-length spin axis");
-    TestValid("TwistedModel { operand_model: BoxModel {}, axis: 0 1 0 }");
+    TestValid("operand_model: BoxModel {}, axis: 0 1 0");
 }
 
 TEST_F(TwistedModelTest, Twist90) {

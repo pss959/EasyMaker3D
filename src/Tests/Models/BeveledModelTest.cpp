@@ -35,13 +35,13 @@ TEST_F(BeveledModelTest, DefaultBevel) {
 }
 
 TEST_F(BeveledModelTest, IsValid) {
-    TestInvalid("BeveledModel {}", "No operand model");
-    TestInvalid("BeveledModel { operand_model: BoxModel {}, bevel_scale: -1 }",
+    SetParseTypeName("BeveledModel");
+    TestInvalid("", "No operand model");
+    TestInvalid("operand_model: BoxModel {}, bevel_scale: -1",
                 "Non-positive scale value");
-    TestInvalid("BeveledModel { operand_model: BoxModel {},"
-                " profile_points: [1 2] }",  // Point out of (0,1) range.
-                "Invalid profile");
-    TestValid("BeveledModel { operand_model: BoxModel {} }");
+    TestInvalid("operand_model: BoxModel {}, profile_points: [1 2]",
+                "Invalid profile");   // Point out of (0,1) range.
+    TestValid("operand_model: BoxModel {}");
 }
 
 TEST_F(BeveledModelTest, SetBevel) {

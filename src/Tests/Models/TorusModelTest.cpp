@@ -40,8 +40,9 @@ TEST_F(TorusModelTest, SetRadii) {
 }
 
 TEST_F(TorusModelTest, IsValid) {
-    TestInvalid("TorusModel { inner_radius: -1 }", "Non-positive radius");
-    TestInvalid("TorusModel { inner_radius: 1, outer_radius: 1.2 }",
+    SetParseTypeName("TorusModel");
+    TestInvalid("inner_radius: -1", "Non-positive radius");
+    TestInvalid("inner_radius: 1, outer_radius: 1.2",
                 "Outer radius too small");
-    TestValid("TorusModel { inner_radius: .2, outer_radius: 4 }");
+    TestValid("inner_radius: .2, outer_radius: 4");
 }

@@ -68,10 +68,6 @@ TEST_F(TargetWidgetTest, PointTargetDefaults) {
     EXPECT_EQ(CircleArc(),       pt.GetArc());
 }
 
-TEST_F(TargetWidgetTest, PointTargetNotValid) {
-    TestInvalid("PointTargetWidget {}", "Missing target");
-}
-
 TEST_F(TargetWidgetTest, PointTargetSetTarget) {
     auto pt = CreateObject<PointTarget>();
     pt->SetPosition(Point3f(1, 2, 3));
@@ -147,12 +143,6 @@ TEST_F(TargetWidgetTest, EdgeTargetDefaults) {
     const auto &et = etw->GetEdgeTarget();
     EXPECT_EQ(Point3f::Zero(),  et.GetPosition0());
     EXPECT_EQ(Point3f(0, 4, 0), et.GetPosition1());
-}
-
-TEST_F(TargetWidgetTest, EdgeTargetNotValid) {
-    TestInvalid("EdgeTargetWidget {}", "Missing target");
-    TestInvalid("EdgeTargetWidget { target: EdgeTarget {"
-                " position0: 1 0 0, position1: 1 0 0 } }", "Length is zero");
 }
 
 TEST_F(TargetWidgetTest, EdgeTargetSetTarget) {

@@ -24,9 +24,10 @@ TEST_F(EdgeTargetWidgetTest, Defaults) {
 }
 
 TEST_F(EdgeTargetWidgetTest, NotValid) {
-    TestInvalid("EdgeTargetWidget {}", "Missing target");
-    TestInvalid("EdgeTargetWidget { target: EdgeTarget {"
-                " position0: 1 0 0, position1: 1 0 0 } }", "Length is zero");
+    SetParseTypeName("EdgeTargetWidget");
+    TestInvalid("", "Missing target");
+    TestInvalid("target: EdgeTarget { position0: 1 0 0, position1: 1 0 0 }",
+                "Length is zero");
 }
 
 TEST_F(EdgeTargetWidgetTest, SetTarget) {

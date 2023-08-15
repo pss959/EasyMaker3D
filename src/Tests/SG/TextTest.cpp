@@ -145,7 +145,8 @@ TEST_F(TextTest, LayoutOptions) {
 }
 
 TEST_F(TextTest, InvalidTextNode) {
-    TestInvalid(R"(TextNode { text: "" })", "Empty text string");
+    SetParseTypeName("TextNode");
+    TestInvalid(R"(text: "")", "Empty text string");
 }
 
 TEST_F(TextTest, BadText) {

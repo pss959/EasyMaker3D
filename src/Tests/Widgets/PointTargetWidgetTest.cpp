@@ -28,7 +28,8 @@ TEST_F(PointTargetWidgetTest, Defaults) {
 }
 
 TEST_F(PointTargetWidgetTest, NotValid) {
-    TestInvalid("PointTargetWidget {}", "Missing target");
+    SetParseTypeName("PointTargetWidget");
+    TestInvalid("", "Missing target");
 }
 
 TEST_F(PointTargetWidgetTest, SetTarget) {

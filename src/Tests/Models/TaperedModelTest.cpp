@@ -9,15 +9,6 @@
 /// \ingroup Tests
 class TaperedModelTest : public SceneTestBase {};
 
-TEST_F(TaperedModelTest, IsValid) {
-    TestInvalid("TaperedModel {}", "No operand model specified");
-    TestInvalid("TaperedModel { operand_model: BoxModel {},"
-                " profile_points: [0 0] }",  // < 2 points.
-                "Invalid profile");
-    TestValid("TaperedModel { operand_model: BoxModel {},"
-              " profile_points: [ 0 1, 1 0 ] }");
-}
-
 TEST_F(TaperedModelTest, TaperProfile) {
     // Tests valid and invalid Taper Profiles.
     Profile prof;
@@ -175,4 +166,12 @@ TEST_F(TaperedModelTest, TaperSlice) {
         EXPECT_TRUE(Util::Contains(mesh.points, makept(-1,  1, -1)));
         EXPECT_TRUE(Util::Contains(mesh.points, makept(-1,  1,  1)));
     }
+}
+
+TEST_F(TaperedModelTest, IsValid) {
+    SetParseTypeName("TaperedModel");
+    TestInvalid("", "No operand model specified");
+    TestInvalid("operand_model: BoxModel {}, profile_points: [0 0]",
+                "Invalid profile");   // < 2 points.
+    TestValid("operand_model: BoxModel {}, profile_points: [ 0 1, 1 0 ]");
 }

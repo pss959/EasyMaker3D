@@ -37,9 +37,9 @@ TEST_F(ItemTest, AppInfo) {
     EXPECT_EQ("1.2.3", info->GetVersion());
     EXPECT_NOT_NULL(info->GetSessionState());
 
-    TestInvalid("AppInfo {}", "Missing version field data");
-    TestInvalid(R"(AppInfo { version: "Something" })",
-                "Missing session_state data");
+    SetParseTypeName("AppInfo");
+    TestInvalid("", "Missing version field data");
+    TestInvalid(R"(version: "Something")", "Missing session_state data");
 }
 
 TEST_F(ItemTest, Border) {
@@ -130,8 +130,9 @@ TEST_F(ItemTest, Frame) {
     EXPECT_EQ("Box", frame->GetFramed()->GetName());
     EXPECT_VECS_CLOSE(Vector3f(14, 24, 3), frame->GetBounds().GetSize());
 
-    TestInvalid("Frame { width: 0 }",            "Non-positive width or depth");
-    TestInvalid("Frame { width: 2, depth: -2 }", "Non-positive width or depth");
+    SetParseTypeName("Frame");
+    TestInvalid("width: 0",            "Non-positive width or depth");
+    TestInvalid("width: 2, depth: -2", "Non-positive width or depth");
 }
 
 TEST_F(ItemTest, Inspector) {

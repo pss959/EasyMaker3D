@@ -105,6 +105,7 @@ TEST_F(HullModelTest, AddRemove) {
 }
 
 TEST_F(HullModelTest, IsValid) {
-    TestInvalid("HullModel {}", "Only 0 operand model(s)");
-    TestValid("HullModel { operand_models: [ BoxModel {} ] }");
+    SetParseTypeName("HullModel");
+    TestInvalid("", "Only 0 operand model(s)");
+    TestValid("operand_models: [ BoxModel {} ]");
 }

@@ -26,10 +26,10 @@ TEST_F(RevSurfModelTest, DefaultProfile) {
 }
 
 TEST_F(RevSurfModelTest, IsValid) {
-    TestInvalid("RevSurfModel { sweep_angle: 0 }", "Zero sweep angle");
-    TestInvalid("RevSurfModel { profile_points: [] }",  // < 3 points.
-                "Invalid profile");
-    TestValid("RevSurfModel { profile_points: [1 .6] }");
+    SetParseTypeName("RevSurfModel");
+    TestInvalid("sweep_angle: 0", "Zero sweep angle");
+    TestInvalid("profile_points: []", "Invalid profile");  // < 3 points.
+    TestValid("profile_points: [1 .6]");
 }
 
 TEST_F(RevSurfModelTest, Profile4Points) {

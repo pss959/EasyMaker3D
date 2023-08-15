@@ -21,8 +21,8 @@ TEST_F(DiscWidgetTest, Defaults) {
 }
 
 TEST_F(DiscWidgetTest, RotationInField) {
-    TestInvalid("DiscWidget { rotation: 0 1 0 10 }",
-                "Rotation will be ignored");
+    SetParseTypeName("DiscWidget");
+    TestInvalid("rotation: 0 1 0 10", "Rotation will be ignored");
 }
 
 TEST_F(DiscWidgetTest, NoMotion) {

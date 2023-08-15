@@ -40,10 +40,11 @@ TEST_F(BentModelTest, DefaultBend) {
 }
 
 TEST_F(BentModelTest, IsValid) {
-    TestInvalid("BentModel {}", "No operand model specified");
-    TestInvalid("BentModel { operand_model: BoxModel {}, axis: 0 0 0 }",
+    SetParseTypeName("BentModel");
+    TestInvalid("", "No operand model specified");
+    TestInvalid("operand_model: BoxModel {}, axis: 0 0 0 }",
                 "Zero-length spin axis");
-    TestValid("BentModel { operand_model: BoxModel {}, axis: 0 1 0 }");
+    TestValid("operand_model: BoxModel {}, axis: 0 1 0");
 }
 
 TEST_F(BentModelTest, Bend90) {

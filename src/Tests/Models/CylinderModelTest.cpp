@@ -39,8 +39,9 @@ TEST_F(CylinderModelTest, SetRadii) {
 }
 
 TEST_F(CylinderModelTest, IsValid) {
-    TestInvalid("CylinderModel { top_radius: -1 }", "Negative radius");
-    TestInvalid("CylinderModel { top_radius: 0, bottom_radius: 0 }",
+    SetParseTypeName("CylinderModel");
+    TestInvalid("top_radius: -1", "Negative radius");
+    TestInvalid("top_radius: 0, bottom_radius: 0",
                 "At least one radius must be positive");
-    TestValid("CylinderModel { top_radius: 0, bottom_radius: 2 }");
+    TestValid("top_radius: 0, bottom_radius: 2");
 }

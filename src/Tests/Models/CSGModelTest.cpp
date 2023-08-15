@@ -53,8 +53,8 @@ TEST_F(CSGModelTest, TwoBoxes) {
 }
 
 TEST_F(CSGModelTest, IsValid) {
-    TestInvalid("CSGModel {}", "Only 0 operand model(s)");
-    TestInvalid("CSGModel { operand_models: [ BoxModel {} ]}",
-                "Only 1 operand model(s)");
-    TestValid("CSGModel { operand_models: [ BoxModel {}, BoxModel {} ] }");
+    SetParseTypeName("CSGModel");
+    TestInvalid("", "Only 0 operand model(s)");
+    TestInvalid("operand_models: [BoxModel {}]", "Only 1 operand model(s)");
+    TestValid("operand_models: [BoxModel {}, BoxModel {}]");
 }
