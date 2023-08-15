@@ -11,14 +11,13 @@ void ConvertCommand::AddFields() {
 bool ConvertCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-
     if (GetResultNames().empty()) {
-        details = "missing result names";
+        details = "Missing result names";
         return false;
     }
     for (const auto &name: GetResultNames()) {
         if (! Model::IsValidName(name)) {
-            details = "invalid result model name: '" + name + "'";
+            details = "Invalid result model name: '" + name + "'";
             return false;
         }
     }

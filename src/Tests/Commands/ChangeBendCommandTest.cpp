@@ -1,5 +1,5 @@
 ﻿#include "Commands/ChangeBendCommand.h"
-#include "Math/Types.h"
+#include "Math/Spin.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"
 

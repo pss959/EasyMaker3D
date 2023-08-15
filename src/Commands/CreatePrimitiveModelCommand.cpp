@@ -9,5 +9,5 @@ void CreatePrimitiveModelCommand::AddFields() {
 }
 
 std::string CreatePrimitiveModelCommand::GetDescription() const {
-    return "Create " + type_.GetEnumWords() + " Model " + GetResultName();
+    return BuildDescription(type_.GetEnumWords());
 }

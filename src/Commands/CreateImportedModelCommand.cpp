@@ -15,5 +15,5 @@ void CreateImportedModelCommand::CreationDone() {
 }
 
 std::string CreateImportedModelCommand::GetDescription() const {
-    return "Create Imported Model " + GetResultName();
+    return BuildDescription("imported");
 }

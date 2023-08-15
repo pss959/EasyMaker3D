@@ -14,18 +14,15 @@ void ChangeTorusCommand::AddFields() {
 bool ChangeTorusCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (is_inner_radius_) {
-        if (new_radius_ < TK::kMinTorusInnerRadius) {
-            details = "Inner radius is smaller than minimum";
-            return false;
-        }
+    if (is_inner_radius_ && new_radius_ < TK::kMinTorusInnerRadius) {
+        details = "Inner radius is smaller than minimum";
+        return false;
     }
-    else {
-        if (new_radius_ < TorusModel::GetMinOuterRadiusForInnerRadius(
-                TK::kMinTorusInnerRadius)) {
-            details = "Outer radius is smaller than minimum";
-            return false;
-        }
+    if (! is_inner_radius_ &&
+        new_radius_ <
+        TorusModel::GetMinOuterRadiusForInnerRadius(TK::kMinTorusInnerRadius)) {
+        details = "Outer radius is smaller than minimum";
+        return false;
     }
     return true;
 }

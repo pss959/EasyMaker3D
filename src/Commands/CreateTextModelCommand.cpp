@@ -9,5 +9,5 @@ void CreateTextModelCommand::AddFields() {
 }
 
 std::string CreateTextModelCommand::GetDescription() const {
-    return "Create 3D Text Model " + GetResultName();
+    return BuildDescription("3D text");
 }

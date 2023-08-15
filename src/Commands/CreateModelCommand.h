@@ -53,6 +53,9 @@ class CreateModelCommand : public Command {
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
 
+    /// Useful convenience for building description strings.
+    std::string BuildDescription(const std::string &type) const;
+
   private:
     /// \name Parsed Fields
     ///@{

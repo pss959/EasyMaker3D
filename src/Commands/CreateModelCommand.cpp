@@ -15,9 +15,9 @@ void CreateModelCommand::AddFields() {
 
 bool CreateModelCommand::IsValid(std::string &details) {
     if (! Command::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! Model::IsValidName(result_name_)) {
-        details = "invalid model name";
+        details = "Invalid model name";
         return false;
     }
     return true;
@@ -26,4 +26,9 @@ bool CreateModelCommand::IsValid(std::string &details) {
 void CreateModelCommand::SetResultName(const std::string &name) {
     ASSERT(Model::IsValidName(name));
     result_name_ = name;
+}
+
+std::string CreateModelCommand::BuildDescription(
+    const std::string &model_type) const {
+    return "Created " + model_type + " Model \"" + GetResultName() + "\"";
 }
