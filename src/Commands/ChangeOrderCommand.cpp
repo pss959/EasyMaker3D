@@ -7,6 +7,6 @@ void ChangeOrderCommand::AddFields() {
 }
 
 std::string ChangeOrderCommand::GetDescription() const {
-    return "Moved model " + GetModelDesc(GetModelName()) +
+    return "Moved " + GetModelDesc(GetModelName()) +
         (IsPrevious() ? " earlier" : " later") + " in the order";
 }

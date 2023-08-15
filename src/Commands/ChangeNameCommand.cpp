@@ -13,7 +13,7 @@ bool ChangeNameCommand::IsValid(std::string &details) {
     if (! SingleModelCommand::IsValid(details))
         return false;
     if (! Model::IsValidName(new_name_)) {
-        details = "invalid new model name";
+        details = "Invalid new model name";
         return false;
     }
     return true;

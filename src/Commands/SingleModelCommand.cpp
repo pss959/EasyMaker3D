@@ -11,13 +11,11 @@ void SingleModelCommand::AddFields() {
 
 bool SingleModelCommand::IsValid(std::string &details) {
     if (! Command::IsValid(details))
-        return false;
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! Model::IsValidName(model_name_)) {
-        details = "invalid model name";
+        details = "Invalid model name";
         return false;
     }
-
     return true;
 }
 

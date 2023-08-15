@@ -6,6 +6,16 @@ void ChangeImportedModelCommand::AddFields() {
     SingleModelCommand::AddFields();
 }
 
+bool ChangeImportedModelCommand::IsValid(std::string &details) {
+    if (! SingleModelCommand::IsValid(details))
+        return false;
+    if (GetNewPath().empty()) {
+        details = "Missing new path to model";
+        return false;
+    }
+    return true;
+}
+
 void ChangeImportedModelCommand::CreationDone() {
     SingleModelCommand::CreationDone();
     if (new_path_.WasSet())

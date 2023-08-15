@@ -16,7 +16,11 @@ bool ChangeTextCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (new_font_name_.WasSet() && ! IsValidFontName(new_font_name_)) {
-        details = "invalid new font name";
+        details = "Invalid new font name";
+        return false;
+    }
+    if (new_text_string_.WasSet() && new_text_string_.GetValue().empty()) {
+        details = "Empty new text string";
         return false;
     }
     return true;

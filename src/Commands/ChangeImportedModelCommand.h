@@ -25,6 +25,7 @@ class ChangeImportedModelCommand : public SingleModelCommand {
     ChangeImportedModelCommand() {}
 
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
   private:
