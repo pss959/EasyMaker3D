@@ -4,7 +4,10 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeColorCommandTest : public CommandTestBase {};
+class ChangeColorCommandTest : public CommandTestBase {
+  protected:
+    ChangeColorCommandTest() { SetParseTypeName("ChangeColorCommand"); }
+};
 
 TEST_F(ChangeColorCommandTest, Default) {
     auto ccc = Command::CreateCommand<ChangeColorCommand>();
@@ -18,15 +21,12 @@ TEST_F(ChangeColorCommandTest, Set) {
 }
 
 TEST_F(ChangeColorCommandTest, IsValid) {
-    TestInvalid("ChangeColorCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeColorCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestValid(R"(ChangeColorCommand { model_names: ["Box"] })");
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestValid(R"(model_names: ["Box"])");
 }
 
 TEST_F(ChangeColorCommandTest, GetDescription) {
-    TestDesc(R"(ChangeColorCommand { model_names: ["Box"] })",
-             R"(Changed the color of Model "Box")");
-    TestDesc(R"(ChangeColorCommand { model_names: ["A", "B"] })",
-             "Changed the color of 2 Models");
+    TestDesc(R"(model_names: ["Box"])", R"(Changed the color of Model "Box")");
+    TestDesc(R"(model_names: ["A", "B"])", "Changed the color of 2 Models");
 }

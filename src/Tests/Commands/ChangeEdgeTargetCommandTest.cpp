@@ -4,7 +4,12 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeEdgeTargetCommandTest : public CommandTestBase {};
+class ChangeEdgeTargetCommandTest : public CommandTestBase {
+  protected:
+    ChangeEdgeTargetCommandTest() {
+        SetParseTypeName("ChangeEdgeTargetCommand");
+    }
+};
 
 TEST_F(ChangeEdgeTargetCommandTest, Default) {
     auto cetc = Command::CreateCommand<ChangeEdgeTargetCommand>();
@@ -34,15 +39,12 @@ TEST_F(ChangeEdgeTargetCommandTest, Set) {
 }
 
 TEST_F(ChangeEdgeTargetCommandTest, IsValid) {
-    TestInvalid("ChangeEdgeTargetCommand {}", "Missing old target");
-    TestInvalid("ChangeEdgeTargetCommand { old_target: EdgeTarget {} }",
-                "Missing new target");
-    TestValid(R"(ChangeEdgeTargetCommand { old_target: EdgeTarget{},
-                   new_target: EdgeTarget {} })");
+    TestInvalid("", "Missing old target");
+    TestInvalid("old_target: EdgeTarget {}", "Missing new target");
+    TestValid(R"(old_target: EdgeTarget {}, new_target: EdgeTarget {})");
 }
 
 TEST_F(ChangeEdgeTargetCommandTest, GetDescription) {
-    TestDesc(R"(ChangeEdgeTargetCommand { old_target: EdgeTarget{},
-                   new_target: EdgeTarget {} })",
+    TestDesc(R"(old_target: EdgeTarget{}, new_target: EdgeTarget {})",
              "Changed the edge target");
 }

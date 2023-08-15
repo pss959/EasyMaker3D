@@ -6,6 +6,8 @@
 /// \ingroup Tests
 class ChangeExtrudedCommandTest : public CommandTestBase {
   protected:
+    ChangeExtrudedCommandTest() { SetParseTypeName("ChangeExtrudedCommand"); }
+
     /// Convenient string with valid profile points.
     const std::string ppts = "profile_points: [.2 .4, .8 .6, .4 .8]";
 };
@@ -24,20 +26,16 @@ TEST_F(ChangeExtrudedCommandTest, Set) {
 }
 
 TEST_F(ChangeExtrudedCommandTest, IsValid) {
-    TestInvalid("ChangeExtrudedCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeExtrudedCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestInvalid(R"(ChangeExtrudedCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestInvalid(R"(ChangeExtrudedCommand { model_names: ["Ext"] })",
-                "Invalid profile");
-    TestValid(R"(ChangeExtrudedCommand { model_names: ["Ext"], )" + ppts + "}");
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestInvalid(R"(model_names: ["Ext"])", "Invalid profile");
+    TestValid(R"(model_names: ["Ext"], )" + ppts);
 }
 
 TEST_F(ChangeExtrudedCommandTest, GetDescription) {
-    TestDesc(R"(ChangeExtrudedCommand { model_names: ["Ext"], )" + ppts + "}",
+    TestDesc(R"(model_names: ["Ext"], )" + ppts,
              R"(Changed the profile in Model "Ext")");
-    TestDesc(R"(ChangeExtrudedCommand { model_names: ["Ext0", "Ext1"], )" +
-             ppts + "}",
+    TestDesc(R"(model_names: ["Ext0", "Ext1"], )" + ppts,
              "Changed the profile in 2 Models");
 }

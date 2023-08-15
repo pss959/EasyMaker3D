@@ -3,7 +3,12 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeComplexityCommandTest : public CommandTestBase {};
+class ChangeComplexityCommandTest : public CommandTestBase {
+  protected:
+    ChangeComplexityCommandTest() {
+        SetParseTypeName("ChangeComplexityCommand");
+    }
+};
 
 TEST_F(ChangeComplexityCommandTest, Default) {
     auto ccc = Command::CreateCommand<ChangeComplexityCommand>();
@@ -17,15 +22,14 @@ TEST_F(ChangeComplexityCommandTest, Set) {
 }
 
 TEST_F(ChangeComplexityCommandTest, IsValid) {
-    TestInvalid("ChangeComplexityCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeComplexityCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestValid(R"(ChangeComplexityCommand { model_names: ["Box"] })");
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestValid(R"(model_names: ["Box"])");
 }
 
 TEST_F(ChangeComplexityCommandTest, GetDescription) {
-    TestDesc(R"(ChangeComplexityCommand { model_names: ["Box"] })",
+    TestDesc(R"(model_names: ["Box"])",
              R"(Changed the complexity of Model "Box")");
-    TestDesc(R"(ChangeComplexityCommand { model_names: ["A", "B"] })",
+    TestDesc(R"(model_names: ["A", "B"])",
              "Changed the complexity of 2 Models");
 }

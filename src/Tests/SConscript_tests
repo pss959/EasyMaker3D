@@ -48,6 +48,8 @@ test_source_dict = {
         'ChangeEdgeTargetCommandTest',
         'ChangeExtrudedCommandTest',
         'ChangePointTargetCommandTest',
+        'ChangeRevSurfCommandTest',
+        'ChangeTaperCommandTest',
         'CommandListTest',
         'CommandTestBase',
         'MultiModelCommandTest',

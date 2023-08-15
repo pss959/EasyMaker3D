@@ -3,7 +3,12 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeCSGOperationCommandTest : public CommandTestBase {};
+class ChangeCSGOperationCommandTest : public CommandTestBase {
+  protected:
+    ChangeCSGOperationCommandTest() {
+        SetParseTypeName("ChangeCSGOperationCommand");
+    }
+};
 
 TEST_F(ChangeCSGOperationCommandTest, Default) {
     auto ccc = Command::CreateCommand<ChangeCSGOperationCommand>();
@@ -22,23 +27,17 @@ TEST_F(ChangeCSGOperationCommandTest, Set) {
 }
 
 TEST_F(ChangeCSGOperationCommandTest, IsValid) {
-    TestInvalid("ChangeCSGOperationCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeCSGOperationCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestInvalid(R"(ChangeCSGOperationCommand { model_names: ["X"] })",
-                "Missing result names");
-    TestInvalid(R"(ChangeCSGOperationCommand { model_names: ["X"],
-                    result_names: [" BadName "] })",
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestInvalid(R"(model_names: ["X"])", "Missing result names");
+    TestInvalid(R"(model_names: ["X"], result_names: [" BadName "])",
                 "Invalid result model name");
-    TestValid(R"(ChangeCSGOperationCommand { model_names: ["A", "B"],
-                     result_names: ["C", "D"] })");
+    TestValid(R"(model_names: ["A", "B"], result_names: ["C", "D"])");
 }
 
 TEST_F(ChangeCSGOperationCommandTest, GetDescription) {
-    TestDesc(R"(ChangeCSGOperationCommand { model_names: ["Box"],
-                    result_names: ["X"] })",
+    TestDesc(R"(model_names: ["Box"], result_names: ["X"])",
              R"(Changed the CSG operation of Model "Box" to Union)");
-    TestDesc(R"(ChangeCSGOperationCommand { model_names: ["A", "B"],
-                    result_names: ["X", "Y"] })",
+    TestDesc(R"(model_names: ["A", "B"], result_names: ["X", "Y"])",
              "Changed the CSG operation of 2 Models to Union");
 }

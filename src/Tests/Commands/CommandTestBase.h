@@ -8,7 +8,8 @@
 class CommandTestBase : public SceneTestBase {
   protected:
     /// This can be used for testing the GetDescription() function for derived
-    /// Command classes. It parses the Command in the given string and verifies
-    /// that GetDescription() starts with \p desc_start.
-    void TestDesc(const std::string &str, const std::string &desc_start);
+    /// Command classes. It parses a Command of the type passed to
+    /// TestBaseWithTypes::SetParseTypeName() with the given contents and
+    /// verifies that GetDescription() starts with \p desc_start.
+    void TestDesc(const std::string &contents, const std::string &desc_start);
 };

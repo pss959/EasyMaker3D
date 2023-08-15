@@ -3,7 +3,10 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeCylinderCommandTest : public CommandTestBase {};
+class ChangeCylinderCommandTest : public CommandTestBase {
+  protected:
+    ChangeCylinderCommandTest() { SetParseTypeName("ChangeCylinderCommand"); }
+};
 
 TEST_F(ChangeCylinderCommandTest, Default) {
     auto ccc = Command::CreateCommand<ChangeCylinderCommand>();
@@ -20,16 +23,14 @@ TEST_F(ChangeCylinderCommandTest, Set) {
 }
 
 TEST_F(ChangeCylinderCommandTest, IsValid) {
-    TestInvalid("ChangeCylinderCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeCylinderCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestValid(R"(ChangeCylinderCommand { model_names: ["Cyl"] })");
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestValid(R"(model_names: ["Cyl"])");
 }
 
 TEST_F(ChangeCylinderCommandTest, GetDescription) {
-    TestDesc(R"(ChangeCylinderCommand { model_names: ["Cyl"] })",
+    TestDesc(R"(model_names: ["Cyl"])",
              R"(Changed the top radius of Model "Cyl")");
-    TestDesc(R"(ChangeCylinderCommand { model_names: ["Cyl0", "Cyl1"],
-                   is_top_radius: False })",
+    TestDesc(R"(model_names: ["Cyl0", "Cyl1"], is_top_radius: False)",
              "Changed the bottom radius of 2 Models");
 }

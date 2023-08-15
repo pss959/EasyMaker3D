@@ -35,6 +35,7 @@ class CommandListTest : public SceneTestBase {
   protected:
     CommandListTest() {
         Parser::Registry::AddType<DummyCommand>("DummyCommand");
+        SetParseTypeName("CommandList");
     }
     DummyCommandPtr CreateDummyCommand() {
         return Parser::Registry::CreateObject<DummyCommand>();
@@ -80,13 +81,11 @@ TEST_F(CommandListTest, IsValid) {
   app_info: AppInfo { version: "1.0.0", session_state: SessionState {} }
 )";
 
-    TestInvalid("CommandList {}", "Missing app_info field");
-    TestInvalid("CommandList { " + app_str + ", current_index: 1 }",
+    TestInvalid("", "Missing app_info field");
+    TestInvalid(app_str + ", current_index: 1", "Invalid current_index");
+    TestInvalid(app_str + ", commands: [ PasteCommand {} ], current_index: 2",
                 "Invalid current_index");
-    TestInvalid("CommandList { " + app_str +
-                ", commands: [ PasteCommand {} ], current_index: 2 }",
-                "Invalid current_index");
-    TestValid("CommandList { " + app_str + ", current_index: 0 }");
+    TestValid(app_str + ", current_index: 0");
 }
 
 TEST_F(CommandListTest, AppInfo) {

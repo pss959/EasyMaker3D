@@ -4,7 +4,10 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeClipCommandTest : public CommandTestBase {};
+class ChangeClipCommandTest : public CommandTestBase {
+  protected:
+    ChangeClipCommandTest() { SetParseTypeName("ChangeClipCommand"); }
+};
 
 TEST_F(ChangeClipCommandTest, Default) {
     auto ccc = Command::CreateCommand<ChangeClipCommand>();
@@ -19,17 +22,16 @@ TEST_F(ChangeClipCommandTest, Set) {
 }
 
 TEST_F(ChangeClipCommandTest, IsValid) {
-    TestInvalid("ChangeClipCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeClipCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestInvalid(R"(ChangeClipCommand { model_names: ["X"], plane: 0 0 0 10 })",
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestInvalid(R"(model_names: ["X"], plane: 0 0 0 10)",
                 "Zero-length plane normal");
-    TestValid(R"(ChangeClipCommand { model_names: ["X"], plane: 1 0 0 2 })");
+    TestValid(R"(model_names: ["X"], plane: 1 0 0 2)");
 }
 
 TEST_F(ChangeClipCommandTest, GetDescription) {
-    TestDesc(R"(ChangeClipCommand { model_names: ["Box"] })",
+    TestDesc(R"(model_names: ["Box"])",
              R"(Changed the clip plane of Model "Box" to )");
-    TestDesc(R"(ChangeClipCommand { model_names: ["A", "B"] })",
+    TestDesc(R"(model_names: ["A", "B"])",
              "Changed the clip plane of 2 Models to ");
 }

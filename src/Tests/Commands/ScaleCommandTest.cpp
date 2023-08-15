@@ -4,7 +4,10 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ScaleCommandTest : public CommandTestBase {};
+class ScaleCommandTest : public CommandTestBase {
+  protected:
+    ScaleCommandTest() { SetParseTypeName("ScaleCommand"); }
+};
 
 TEST_F(ScaleCommandTest, Default) {
     auto sc = Command::CreateCommand<ScaleCommand>();
@@ -22,27 +25,24 @@ TEST_F(ScaleCommandTest, Set) {
 }
 
 TEST_F(ScaleCommandTest, IsValid) {
-    TestInvalid("ScaleCommand {}", "Missing model names");
-    TestInvalid(R"(ScaleCommand { model_names: [ " BadName" ] })",
-                "Invalid model name");
-    TestInvalid(R"(ScaleCommand { model_names: [ "Box" ], ratios: 1 0 2 })",
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [ " BadName" ])", "Invalid model name");
+    TestInvalid(R"(model_names: [ "Box" ], ratios: 1 0 2)",
                 "Invalid scale by zero");
-    TestInvalid(R"(ScaleCommand { model_names: [ "Box" ],
-                    mode: "kCenterSymmetric", ratios: 1 1 -1 })",
+    TestInvalid(R"(model_names: [ "Box" ],
+                   mode: "kCenterSymmetric", ratios: 1 1 -1)",
                 "Invalid negative symmetric scale");
-    TestInvalid(R"(ScaleCommand { model_names: [ "Box" ],
-                      mode: "kBaseSymmetric", ratios: 1 -1 1 })",
+    TestInvalid(R"(model_names: [ "Box" ],
+                   mode: "kBaseSymmetric", ratios: 1 -1 1)",
                 "Invalid negative symmetric scale");
-    TestValid(R"(ScaleCommand { model_names: ["Box"], ratios: -1 1 2 })");
+    TestValid(R"(model_names: ["Box"], ratios: -1 1 2)");
 }
 
 TEST_F(ScaleCommandTest, GetDescription) {
-    TestDesc(R"(ScaleCommand { model_names: ["Box"], ratios: 1 2 3 })",
+    TestDesc(R"(model_names: ["Box"], ratios: 1 2 3)",
              R"(Scaled Model "Box" asymmetrically)");
-    TestDesc(
-        R"(ScaleCommand { model_names: ["A", "B"], mode: "kBaseSymmetric" })",
-        R"(Scaled 2 Models symmetrically about the base center)");
-    TestDesc(
-        R"(ScaleCommand { model_names: ["Hello"], mode: "kCenterSymmetric" })",
-        R"(Scaled Model "Hello" symmetrically about the center)");
+    TestDesc(R"(model_names: ["A", "B"], mode: "kBaseSymmetric")",
+             R"(Scaled 2 Models symmetrically about the base center)");
+    TestDesc(R"(model_names: ["Hello"], mode: "kCenterSymmetric")",
+             R"(Scaled Model "Hello" symmetrically about the center)");
 }

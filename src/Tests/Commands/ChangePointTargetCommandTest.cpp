@@ -4,7 +4,12 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangePointTargetCommandTest : public CommandTestBase {};
+class ChangePointTargetCommandTest : public CommandTestBase {
+  protected:
+    ChangePointTargetCommandTest() {
+        SetParseTypeName("ChangePointTargetCommand");
+    }
+};
 
 TEST_F(ChangePointTargetCommandTest, Default) {
     auto def_pt = CreateObject<PointTarget>("Default");
@@ -42,15 +47,12 @@ TEST_F(ChangePointTargetCommandTest, Set) {
 }
 
 TEST_F(ChangePointTargetCommandTest, IsValid) {
-    TestInvalid("ChangePointTargetCommand {}", "Missing old target");
-    TestInvalid("ChangePointTargetCommand { old_target: PointTarget {} }",
-                "Missing new target");
-    TestValid(R"(ChangePointTargetCommand { old_target: PointTarget{},
-                   new_target: PointTarget {} })");
+    TestInvalid("", "Missing old target");
+    TestInvalid("old_target: PointTarget {}", "Missing new target");
+    TestValid("old_target: PointTarget{}, new_target: PointTarget {}");
 }
 
 TEST_F(ChangePointTargetCommandTest, GetDescription) {
-    TestDesc(R"(ChangePointTargetCommand { old_target: PointTarget{},
-                   new_target: PointTarget {} })",
+    TestDesc("old_target: PointTarget{}, new_target: PointTarget {}",
              "Changed the point target");
 }

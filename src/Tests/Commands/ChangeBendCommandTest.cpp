@@ -1,10 +1,13 @@
 ﻿#include "Commands/ChangeBendCommand.h"
 #include "Math/Types.h"
-#include "Tests/SceneTestBase.h"
+#include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeBendCommandTest : public SceneTestBase {};
+class ChangeBendCommandTest : public CommandTestBase {
+  protected:
+    ChangeBendCommandTest() { SetParseTypeName("ChangeBendCommand"); }
+};
 
 TEST_F(ChangeBendCommandTest, Default) {
     auto cbc = Command::CreateCommand<ChangeBendCommand>();
@@ -24,20 +27,14 @@ TEST_F(ChangeBendCommandTest, Set) {
 }
 
 TEST_F(ChangeBendCommandTest, IsValid) {
-    TestInvalid("ChangeBendCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeBendCommand { model_names: [ " BadName" ] })",
-                "Invalid model name");
-    TestInvalid(R"(ChangeBendCommand { model_names: ["X"], axis: 0 0 0 })",
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [ " BadName" ])", "Invalid model name");
+    TestInvalid(R"(model_names: ["X"], axis: 0 0 0)",
                 "Zero-length spin axis vector");
-    TestValid(R"(ChangeBendCommand { model_names: ["Box"] })");
+    TestValid(R"(model_names: ["Box"])");
 }
 
 TEST_F(ChangeBendCommandTest, GetDescription) {
-    auto cbc = ParseTypedObject<ChangeBendCommand>(
-        R"(ChangeBendCommand { model_names: ["Box"] })");
-    EXPECT_EQ(R"(Bent Model "Box")", cbc->GetDescription());
-
-    cbc = ParseTypedObject<ChangeBendCommand>(
-        R"(ChangeBendCommand { model_names: ["A", "B"] })");
-    EXPECT_EQ(R"(Bent 2 Models)", cbc->GetDescription());
+    TestDesc(R"(model_names: ["Box"])",    R"(Bent Model "Box")");
+    TestDesc(R"(model_names: ["A", "B"])",   "Bent 2 Models");
 }

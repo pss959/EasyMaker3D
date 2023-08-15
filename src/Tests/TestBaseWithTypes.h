@@ -38,14 +38,32 @@ class TestBaseWithTypes : public TestBase {
         return std::dynamic_pointer_cast<T>(ParseObject(input));
     }
 
+    /// Sets the type name to use for parsing in TestValid() and TestInvalid().
+    void SetParseTypeName(const std::string &type_name) {
+        parse_type_name_ = type_name;
+    }
+
+    /// Returns the name passed to SetParseTypeName().
+    const std::string & GetParseTypeName() const { return parse_type_name_; }
+
     /// This can be used for testing the IsValid() function for classes derived
-    /// from Parser::Object. It verifies that parsing the given string returns
-    /// a valid (non-null) instance.
-    void TestValid(const std::string &str);
+    /// from Parser::Object. It verifies that parsing an object of the type set
+    /// by SetParseTypeName() with the given contents returns a valid
+    /// (non-null) instance. This asserts if SetParseTypeName() was not called.
+    void TestValid(const std::string &contents);
 
     /// This can be used for testing the IsValid() function for classes derived
     /// from Parser::Object. It verifies that a Parser::Exception is thrown
-    /// containing the given error message when the given string is parsed.
-    void TestInvalid(const std::string &str, const std::string &error);
+    /// containing the given error message when parsing an object of the type set
+    /// by SetParseTypeName() with the given contents.
+    void TestInvalid(const std::string &contents, const std::string &error);
+
+    /// Convenience that builds a string using the name passed to
+    /// GetParseTypeName() and the given contents. This asserts if
+    /// SetParseTypeName() was not called.
+    std::string BuildParseString(const std::string &contents) const;
+
+  private:
+    std::string parse_type_name_;
 };
 

@@ -5,7 +5,10 @@
 #include "Tests/Testing.h"
 
 /// \ingroup Tests
-class ChangeBevelCommandTest : public CommandTestBase {};
+class ChangeBevelCommandTest : public CommandTestBase {
+  protected:
+    ChangeBevelCommandTest() { SetParseTypeName("ChangeBevelCommand"); }
+};
 
 TEST_F(ChangeBevelCommandTest, Default) {
     auto cbc = Command::CreateCommand<ChangeBevelCommand>();
@@ -25,24 +28,20 @@ TEST_F(ChangeBevelCommandTest, Set) {
 }
 
 TEST_F(ChangeBevelCommandTest, IsValid) {
-    TestInvalid("ChangeBevelCommand {}", "Missing model names");
-    TestInvalid(R"(ChangeBevelCommand { model_names: [" BadName"] })",
-                "Invalid model name");
-    TestInvalid(R"(ChangeBevelCommand { model_names: ["X"],
-                     profile_points: [2 1] })",
+    TestInvalid("", "Missing model names");
+    TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
+    TestInvalid(R"(model_names: ["X"], profile_points: [2 1])",
                 "Invalid profile");
-    TestInvalid(R"(ChangeBevelCommand {model_names: ["X"], bevel_scale: 0 })",
+    TestInvalid(R"(model_names: ["X"], bevel_scale: 0)",
                 "Bevel scale is not positive");
-    TestInvalid(R"(ChangeBevelCommand { model_names: ["X"], max_angle: -1 })",
+    TestInvalid(R"(model_names: ["X"], max_angle: -1)",
                 "Maximum angle is out of range");
-    TestInvalid(R"(ChangeBevelCommand { model_names: ["X"], max_angle: 181 })",
+    TestInvalid(R"(model_names: ["X"], max_angle: 181)",
                 "Maximum angle is out of range");
-    TestValid(R"(ChangeBevelCommand { model_names: ["Box"] })");
+    TestValid(R"(model_names: ["Box"])");
 }
 
 TEST_F(ChangeBevelCommandTest, GetDescription) {
-    TestDesc(R"(ChangeBevelCommand { model_names: ["Box"] })",
-             R"(Changed the bevel of Model "Box")");
-    TestDesc(R"(ChangeBevelCommand { model_names: ["A", "B"] })",
-             "Changed the bevel of 2 Models");
+    TestDesc(R"(model_names: ["Box"])", R"(Changed the bevel of Model "Box")");
+    TestDesc(R"(model_names: ["A", "B"])", "Changed the bevel of 2 Models");
 }

@@ -5,8 +5,9 @@
 
 #include "Commands/Command.h"
 
-void CommandTestBase::TestDesc(const std::string &str,
+void CommandTestBase::TestDesc(const std::string &contents,
                                const std::string &desc_start) {
-    auto cmd = ParseTypedObject<Command>(str);
+    ASSERT_FALSE(GetParseTypeName().empty());
+    auto cmd = ParseTypedObject<Command>(BuildParseString(contents));
     EXPECT_THAT(cmd->GetDescription(), ::testing::StartsWith(desc_start));
 }
