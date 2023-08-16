@@ -28,7 +28,7 @@ void TextPane::AddFields() {
 
 bool TextPane::IsValid(std::string &details) {
     if (! LeafPane::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (GetText().empty()) {
         details = "Empty text string";
         return false;
@@ -119,9 +119,10 @@ void TextPane::PostSetUpIon() {
     // information in SetUpIon(). So now there should be a valid size to set
     // up.
     if (GetLayoutSize() != Vector2f::Zero())
-        SetLayoutSize(GetLayoutSize());
+        SetLayoutSize(GetLayoutSize());  // LCOV_EXCL_LINE [cannot happen]
 }
 
+// LCOV_EXCL_START [debug only]
 std::string TextPane::ToString(bool is_brief) const {
     // Add the text size (from the TextNode) and the text string.
     std::string s = text_.GetValue();
@@ -130,6 +131,7 @@ std::string TextPane::ToString(bool is_brief) const {
     return LeafPane::ToString(is_brief) +
         " TS=" + Math::ToString(text_size_, .01f) + " '" + s + "'";
 }
+// LCOV_EXCL_STOP
 
 Vector2f TextPane::ComputeBaseSize() const {
     ASSERT(text_node_);

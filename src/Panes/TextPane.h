@@ -29,29 +29,48 @@ class TextPane : public LeafPane {
     /// SG::TextNode.
     void SetText(const std::string &text);
 
+    /// Returns the current text string.
+    const std::string & GetText() const { return text_; }
+
     /// Sets the color to use for the text.
     void SetColor(const Color &color);
+
+    /// Returns the color to use for the text.
+    const Color & GetColor() const { return color_; }
 
     /// Sets the name of the font to use for the text.
     void SetFontName(const std::string &font_name);
 
+    /// Returns the name of the font to use for the text.
+    const std::string & GetFontName() const { return font_name_; }
+
     /// Sets the font size to use for the text.
     void SetFontSize(float font_size);
 
+    /// Returns the font size to use for the text.
+    float GetFontSize() const { return font_size_; }
+
     /// Sets the character spacing for the text.
     void SetCharacterSpacing(float spacing);
+
+    /// Returns the character spacing used for the text.
+    float GetCharacterSpacing() const { return char_spacing_; }
 
     /// Sets the offset to use for the text. This offset is added to the
     /// translation computed for the text and is independent of alignment and
     /// sizing.
     void SetOffset(const Vector2f &offset) { offset_ = offset; }
 
+    /// Returns the offset to use for the text.
+    const Vector2f & GetOffset() { return offset_; }
+
     /// Sets a flag indicating whether the text is resizable in response to
     /// expanding height.
     void SetTextResizable(bool resizable) { resize_text_ = resizable; }
 
-    /// Returns the current text string.
-    const std::string & GetText() const { return text_; }
+    /// Returns a flag indicating whether the text is resizable in response to
+    /// expanding height. The default is true.
+    bool IsTextResizable() const { return resize_text_; }
 
     /// Redefines this to update the size and placement of the text if
     /// necesssary.

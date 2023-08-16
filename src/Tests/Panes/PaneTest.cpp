@@ -23,23 +23,6 @@ class PaneTest : public SceneTestBase {
     }
 };
 
-TEST_F(PaneTest, Text) {
-    // Override this setting for this test; need to build font images.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
-    SG::ScenePtr scene = ReadPaneScene();
-    TextPanePtr text = SG::FindTypedNodeInScene<TextPane>(*scene, "Text");
-    text->SetText("ABC");
-    text->SetFontSize(22);
-    EXPECT_EQ(Vector2f(44.6875f, 22.f), text->GetBaseSize());
-
-    text->SetFontSize(44);
-    EXPECT_EQ(Vector2f(89.375, 44.f), text->GetBaseSize());
-
-    text->SetLayoutSize(Vector2f(100, 60));
-    EXPECT_EQ(Vector2f(100, 60), text->GetLayoutSize());
-}
-
 TEST_F(PaneTest, VBox) {
     SG::ScenePtr scene = ReadPaneScene();
     BoxPanePtr vbox = SG::FindTypedNodeInScene<BoxPane>(*scene, "VBox");

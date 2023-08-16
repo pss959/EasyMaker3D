@@ -153,6 +153,7 @@ test_source_dict = {
     ],
     'Panes' : [
         'PaneTest',
+        'TextPaneTest',
     ],
     'Parser' : [
         'ConstantTest',
