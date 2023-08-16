@@ -23,3 +23,7 @@ bool ConvertCommand::IsValid(std::string &details) {
     }
     return true;
 }
+
+std::string ConvertCommand::BuildDescription(const std::string &op) const {
+    return "Applied " + op + " to " + GetModelsDesc(GetModelNames());
+}

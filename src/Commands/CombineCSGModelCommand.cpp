@@ -17,6 +17,5 @@ bool CombineCSGModelCommand::IsValid(std::string &details) {
 }
 
 std::string CombineCSGModelCommand::GetDescription() const {
-    return "Create CSG Model " + GetResultName() + " from " +
-        GetModelsDesc(GetModelNames());
+    return BuildDescription("CSG");
 }

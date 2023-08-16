@@ -18,8 +18,6 @@ class CombineHullModelCommand : public CombineCommand {
   protected:
     CombineHullModelCommand() {}
 
-    virtual bool IsValid(std::string &details) override;
-
   private:
     friend class Parser::Registry;
 };
