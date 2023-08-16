@@ -1,11 +1,11 @@
-#include "Executors/CreateCSGExecutor.h"
+#include "Executors/CombineCSGExecutor.h"
 
-#include "Commands/CreateCSGModelCommand.h"
+#include "Commands/CombineCSGModelCommand.h"
 #include "Models/CSGModel.h"
 
-CombinedModelPtr CreateCSGExecutor::CreateCombinedModel(
+CombinedModelPtr CombineCSGExecutor::CreateCombinedModel(
     Command &command, const std::string &name) {
-    CreateCSGModelCommand &cc = GetTypedCommand<CreateCSGModelCommand>(command);
+    CombineCSGModelCommand &cc = GetTypedCommand<CombineCSGModelCommand>(command);
     const CSGOperation op = cc.GetOperation();
 
     CSGModelPtr csg = Model::CreateModel<CSGModel>(

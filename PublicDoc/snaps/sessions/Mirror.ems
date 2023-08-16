@@ -33,7 +33,7 @@ CommandList {
       translation: 1 0 0,
       model_names: ["Cylinder_1"],
     },
-    CreateCSGModelCommand {
+    CombineCSGModelCommand {
       operation: "kDifference",
       result_name: "Difference_1",
       model_names: ["Box_1", "Cylinder_1"],

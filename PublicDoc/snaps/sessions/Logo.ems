@@ -96,7 +96,7 @@ CommandList {
       arc: 0 360,
       model_names: ["Hole", "Hole_A", "Hole_B", "Hole_C", "Hole_D", "Hole_E", "Hole_F", "Hole_G", "Hole_H", "Hole_I", "Hole_J", "Hole_K", "Hole_L", "Hole_M", "Hole_N"],
     },
-    CreateCSGModelCommand {
+    CombineCSGModelCommand {
       operation: "kDifference",
       result_name: "Difference_1",
       model_names: ["Base", "Hole", "Hole_A", "Hole_B", "Hole_C", "Hole_D", "Hole_E", "Hole_F", "Hole_G", "Hole_H", "Hole_I", "Hole_J", "Hole_K", "Hole_L", "Hole_M", "Hole_N"],
@@ -154,7 +154,7 @@ CommandList {
       mode: "kBaseSymmetric",
       model_names: ["RevSurf_1"],
     },
-    CreateCSGModelCommand {
+    CombineCSGModelCommand {
       operation: "kUnion",
       result_name: "Union_1",
       model_names: ["RevSurf_1", "Difference_1"],

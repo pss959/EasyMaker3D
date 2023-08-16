@@ -17,7 +17,7 @@ CommandList { # 0x55e6231a1290
       translation: 7 0 0,
       model_names: ["Cylinder_1"],
     },
-    CreateHullModelCommand { # 0x55e62608c840
+    CombineHullModelCommand { # 0x55e62608c840
       result_name: "Hull_1",
       model_names: ["Cylinder_1"],
     },

@@ -5,18 +5,18 @@
 
 namespace Parser { class Registry; }
 
-DECL_SHARED_PTR(CreateHullModelCommand);
+DECL_SHARED_PTR(CombineHullModelCommand);
 
-/// CreateHullModelCommand is used to create a HullModel from one or more
+/// CombineHullModelCommand is used to create a HullModel from one or more
 /// operand Models.
 ///
 /// \ingroup Commands
-class CreateHullModelCommand : public CombineCommand {
+class CombineHullModelCommand : public CombineCommand {
   public:
     virtual std::string GetDescription() const override;
 
   protected:
-    CreateHullModelCommand() {}
+    CombineHullModelCommand() {}
 
     virtual bool IsValid(std::string &details) override;
 

@@ -17,6 +17,8 @@
 #include "Executors/ChangeTextExecutor.h"
 #include "Executors/ChangeTorusExecutor.h"
 #include "Executors/ChangeTwistExecutor.h"
+#include "Executors/CombineCSGExecutor.h"
+#include "Executors/CombineHullExecutor.h"
 #include "Executors/ConvertBendExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/ConvertClipExecutor.h"
@@ -24,9 +26,7 @@
 #include "Executors/ConvertTaperExecutor.h"
 #include "Executors/ConvertTwistExecutor.h"
 #include "Executors/CopyExecutor.h"
-#include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreateExtrudedExecutor.h"
-#include "Executors/CreateHullExecutor.h"
 #include "Executors/CreateImportedExecutor.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/CreateRevSurfExecutor.h"
@@ -63,6 +63,8 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeTextExecutor);
     ADDEXEC_(ChangeTorusExecutor);
     ADDEXEC_(ChangeTwistExecutor);
+    ADDEXEC_(CombineCSGExecutor);
+    ADDEXEC_(CombineHullExecutor);
     ADDEXEC_(ConvertBendExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(ConvertClipExecutor);
@@ -70,9 +72,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ConvertTaperExecutor);
     ADDEXEC_(ConvertTwistExecutor);
     ADDEXEC_(CopyExecutor);
-    ADDEXEC_(CreateCSGExecutor);
     ADDEXEC_(CreateExtrudedExecutor);
-    ADDEXEC_(CreateHullExecutor);
     ADDEXEC_(CreateImportedExecutor);
     ADDEXEC_(CreatePrimitiveExecutor);
     ADDEXEC_(CreateRevSurfExecutor);

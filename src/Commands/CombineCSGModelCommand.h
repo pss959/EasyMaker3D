@@ -6,13 +6,13 @@
 
 namespace Parser { class Registry; }
 
-DECL_SHARED_PTR(CreateCSGModelCommand);
+DECL_SHARED_PTR(CombineCSGModelCommand);
 
-/// CreateCSGModelCommand is used to create a CSG Model of a
+/// CombineCSGModelCommand is used to create a CSG Model of a
 /// specific type.
 ///
 /// \ingroup Commands
-class CreateCSGModelCommand : public CombineCommand {
+class CombineCSGModelCommand : public CombineCommand {
   public:
     virtual std::string GetDescription() const override;
 
@@ -23,7 +23,7 @@ class CreateCSGModelCommand : public CombineCommand {
     CSGOperation GetOperation() const { return operation_; }
 
   protected:
-    CreateCSGModelCommand() {}
+    CombineCSGModelCommand() {}
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;

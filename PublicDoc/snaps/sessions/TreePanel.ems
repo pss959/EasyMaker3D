@@ -29,7 +29,7 @@ CommandList {
       mode: "kAsymmetric",
       model_names: ["Cylinder_1"],
     },
-    CreateHullModelCommand {
+    CombineHullModelCommand {
       result_name: "Hull_1",
       model_names: ["Cylinder_1", "Torus_1"],
     },

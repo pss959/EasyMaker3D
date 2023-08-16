@@ -9,6 +9,8 @@
 #include "Base/HelpMap.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
+#include "Commands/CombineCSGModelCommand.h"
+#include "Commands/CombineHullModelCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBendCommand.h"
 #include "Commands/ConvertBevelCommand.h"
@@ -17,9 +19,7 @@
 #include "Commands/ConvertTaperCommand.h"
 #include "Commands/ConvertTwistCommand.h"
 #include "Commands/CopyCommand.h"
-#include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateExtrudedModelCommand.h"
-#include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/CreateRevSurfModelCommand.h"
@@ -970,7 +970,7 @@ void ActionProcessor::Impl_::MoveUpOrDown_(bool is_up) {
 }
 
 void ActionProcessor::Impl_::CreateCSGModel_(CSGOperation op) {
-    auto ccc = CreateCommand_<CreateCSGModelCommand>();
+    auto ccc = CreateCommand_<CombineCSGModelCommand>();
     ccc->SetOperation(op);
     ccc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(ccc);
@@ -983,7 +983,7 @@ void ActionProcessor::Impl_::CreateExtrudedModel_() {
 }
 
 void ActionProcessor::Impl_::CreateHullModel_() {
-    auto chc = CreateCommand_<CreateHullModelCommand>();
+    auto chc = CreateCommand_<CombineHullModelCommand>();
     chc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(chc);
 }

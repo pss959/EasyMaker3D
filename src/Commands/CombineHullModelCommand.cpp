@@ -1,6 +1,6 @@
-#include "Commands/CreateHullModelCommand.h"
+#include "Commands/CombineHullModelCommand.h"
 
-bool CreateHullModelCommand::IsValid(std::string &details) {
+bool CombineHullModelCommand::IsValid(std::string &details) {
     if (! CombineCommand::IsValid(details))
         return false;
     if (GetModelNames().size() < 1U) {
@@ -10,7 +10,7 @@ bool CreateHullModelCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string CreateHullModelCommand::GetDescription() const {
+std::string CombineHullModelCommand::GetDescription() const {
     return "Create convex hull model " + GetResultName() + " from " +
         GetModelsDesc(GetModelNames());
 }

@@ -2,13 +2,13 @@
 
 #include "Executors/CombineExecutorBase.h"
 
-/// CreateCSGExecutor executes the CreateCSGModelCommand.
+/// CombineHullExecutor executes the CombineHullModelCommand.
 ///
 /// \ingroup Executors
-class CreateCSGExecutor : public CombineExecutorBase {
+class CombineHullExecutor : public CombineExecutorBase {
   public:
     virtual std::string GetCommandTypeName() const override {
-        return "CreateCSGModelCommand";
+        return "CombineHullModelCommand";
     }
 
   protected:

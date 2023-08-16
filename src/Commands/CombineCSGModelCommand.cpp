@@ -1,12 +1,12 @@
-#include "Commands/CreateCSGModelCommand.h"
+#include "Commands/CombineCSGModelCommand.h"
 
-void CreateCSGModelCommand::AddFields() {
+void CombineCSGModelCommand::AddFields() {
     AddField(operation_.Init("operation", CSGOperation::kUnion));
 
     CombineCommand::AddFields();
 }
 
-bool CreateCSGModelCommand::IsValid(std::string &details) {
+bool CombineCSGModelCommand::IsValid(std::string &details) {
     if (! CombineCommand::IsValid(details))
         return false;
     if (GetModelNames().size() < 2U) {
@@ -16,7 +16,7 @@ bool CreateCSGModelCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string CreateCSGModelCommand::GetDescription() const {
+std::string CombineCSGModelCommand::GetDescription() const {
     return "Create CSG Model " + GetResultName() + " from " +
         GetModelsDesc(GetModelNames());
 }
