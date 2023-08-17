@@ -38,11 +38,6 @@ TEST_F(OtherCommandTest, PasteCommand) {
     auto pc = Command::CreateCommand<PasteCommand>();
     EXPECT_TRUE(pc->GetParentName().empty());
 
-    // PasteCommand requires SetModelsForDescription() to be called before a
-    // valid description is available.
-    TEST_THROW(pc->GetDescription(), AssertException,
-               "SetModelsForDescription() was never called");
-
     auto a = Model::CreateModel<BoxModel>("A");
     auto b = Model::CreateModel<BoxModel>("B");
     pc->SetModelsForDescription(std::vector<ModelPtr>{ a });

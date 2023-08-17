@@ -891,7 +891,11 @@ void ActionProcessor::Impl_::CopySelection_() {
 }
 
 void ActionProcessor::Impl_::PasteFromClipboard_(bool is_into) {
+    // Set the Model names in the PasteCommand so that it can have a useful
+    // description.
     auto pc = CreateCommand_<PasteCommand>();
+    pc->SetModelsForDescription(context_->clipboard_manager->Get());
+
     if (is_into) {
         // The target of the paste-into is the current selection, which must be
         // a ParentModel.

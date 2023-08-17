@@ -11,10 +11,6 @@ void PasteCommand::AddFields() {
 }
 
 Str PasteCommand::GetDescription() const {
-#if XXXX
-    ASSERTM(! model_names_.empty(),
-            "SetModelsForDescription() was never called");
-#endif
     Str desc = "Pasted " + GetModelsDesc(model_names_);
     const auto &parent = parent_name_.GetValue();
     if (! parent.empty())
