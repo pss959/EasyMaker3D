@@ -14,7 +14,7 @@ DECL_SHARED_PTR(LinearLayoutCommand);
 /// \ingroup Commands
 class LinearLayoutCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the offset in the command from an EdgeTarget instance.
     void SetFromTarget(const EdgeTarget &target);

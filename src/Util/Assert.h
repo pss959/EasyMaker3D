@@ -24,13 +24,12 @@
 /// \ingroup Utility
 class AssertException : public ExceptionBase {
   public:
-    AssertException(const std::string &expr, const std::source_location &loc,
-                    const std::string &msg) :
+    AssertException(const Str &expr, const std::source_location &loc,
+                    const Str &msg) :
         ExceptionBase(BuildMessage_(expr, loc, msg)) {}
   private:
-    static std::string BuildMessage_(const std::string &expr,
-                                     const std::source_location &loc,
-                                     const std::string &msg);
+    static Str BuildMessage_(const Str &expr, const std::source_location &loc,
+                             const Str &msg);
 };
 
    /// Additional Assert macro that takes an optional message.

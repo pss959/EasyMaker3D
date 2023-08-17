@@ -43,7 +43,7 @@ class FeedbackManager : public Parser::InstanceStore {
     /// Same as Activate(), but assigns a key to the instance that can be used
     /// to find it later to deactivate it.
     template <typename T>
-    std::shared_ptr<T> ActivateWithKey(const std::string &key) {
+    std::shared_ptr<T> ActivateWithKey(const Str &key) {
         std::shared_ptr<T> instance = Activate<T>();
         AddActiveInstance_(key, instance);
         return instance;
@@ -57,7 +57,7 @@ class FeedbackManager : public Parser::InstanceStore {
 
     /// Same as Deactivate(), but looks up the Feedback instance by key.
     /// Asserts if it is not found.
-    template <typename T> void DeactivateWithKey(const std::string &key) {
+    template <typename T> void DeactivateWithKey(const Str &key) {
         auto instance = FindActiveInstance_(key);
         RemoveActiveInstance_(key, instance);
         ASSERT(std::dynamic_pointer_cast<T>(instance));
@@ -81,7 +81,7 @@ class FeedbackManager : public Parser::InstanceStore {
 
     /// This stores the active instances for all types of Feedback, keyed by
     /// user-defined string.
-    std::unordered_map<std::string, FeedbackPtr> active_instances_;
+    std::unordered_map<Str, FeedbackPtr> active_instances_;
 
     /// Activates an instance and adds it to the appropriate parent.
     void ActivateInstance_(const FeedbackPtr &instance);
@@ -90,14 +90,12 @@ class FeedbackManager : public Parser::InstanceStore {
     void DeactivateInstance_(const FeedbackPtr &instance);
 
     /// Associates an active instance with a key.
-    void AddActiveInstance_(const std::string &key,
-                            const FeedbackPtr &instance);
+    void AddActiveInstance_(const Str &key, const FeedbackPtr &instance);
 
     /// Removes the association of an active instance with a key.
-    void RemoveActiveInstance_(const std::string &key,
-                               const FeedbackPtr &instance);
+    void RemoveActiveInstance_(const Str &key, const FeedbackPtr &instance);
 
     /// Returns the active instance with the given key, or a null pointer if
     /// there is none.
-    FeedbackPtr FindActiveInstance_(const std::string &key);
+    FeedbackPtr FindActiveInstance_(const Str &key);
 };

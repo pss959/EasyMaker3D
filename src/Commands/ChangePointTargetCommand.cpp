@@ -9,7 +9,7 @@ void ChangePointTargetCommand::AddFields() {
     Command::AddFields();
 }
 
-bool ChangePointTargetCommand::IsValid(std::string &details) {
+bool ChangePointTargetCommand::IsValid(Str &details) {
     if (! Command::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! old_target_.GetValue()) {
@@ -38,7 +38,7 @@ void ChangePointTargetCommand::CreationDone() {
     }
 }
 
-std::string ChangePointTargetCommand::GetDescription() const {
+Str ChangePointTargetCommand::GetDescription() const {
     return "Changed the point target";
 }
 

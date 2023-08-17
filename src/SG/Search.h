@@ -31,12 +31,12 @@ NodePath FindNodePathInScene(const Scene &scene, const Node &node);
 
 /// Finds the named node in a scene, returning a path from the root node of the
 /// scene to it. Returns an empty NodePath if not found.
-NodePath FindNodePathInScene(const Scene &scene, const std::string &name,
+NodePath FindNodePathInScene(const Scene &scene, const Str &name,
                              bool ok_if_not_found = false);
 
 /// Finds the named node in a scene, returning a pointer to it. Returns a null
 /// pointer if not found.
-NodePtr FindNodeInScene(const Scene &scene, const std::string &name,
+NodePtr FindNodeInScene(const Scene &scene, const Str &name,
                         bool ok_if_not_found = false);
 
 /// Searches under the given root node for the given node, returning a path
@@ -46,18 +46,18 @@ NodePath FindNodePathUnderNode(const NodePtr &root, const Node &node);
 /// Searches under the given root node for a node with the given name,
 /// returning a path from the root to the found node. Returns an empty NodePath
 /// if not found.
-NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
+NodePath FindNodePathUnderNode(const NodePtr &root, const Str &name,
                                bool ok_if_not_found = false);
 
 /// Searches under the given root node (exclusively) for a node with the given
 /// name, returning a pointer to it. Returns a null pointer if not found.
-NodePtr FindNodeUnderNode(const Node &root, const std::string &name,
+NodePtr FindNodeUnderNode(const Node &root, const Str &name,
                           bool ok_if_not_found = false);
 
 /// Templated version of FindNodeInScene() that casts the returned NodePtr to
 /// the templated type (derived from Node). This always asserts on failure.
 template <typename T> std::shared_ptr<T> FindTypedNodeInScene(
-    const Scene &scene, const std::string &name) {
+    const Scene &scene, const Str &name) {
     NodePtr node = FindNodeInScene(scene, name, false);
     std::shared_ptr<T> typed_node = std::dynamic_pointer_cast<T>(node);
     ASSERTM(typed_node, "Typed Node '" + name + "' not found in scene");
@@ -67,7 +67,7 @@ template <typename T> std::shared_ptr<T> FindTypedNodeInScene(
 /// Templated version of FindNodeUnderNode() that casts the returned NodePtr to
 /// the templated type (derived from Node). This always asserts on failure.
 template <typename T> std::shared_ptr<T> FindTypedNodeUnderNode(
-    const Node &root, const std::string &name) {
+    const Node &root, const Str &name) {
     std::shared_ptr<T> typed_node = std::dynamic_pointer_cast<T>(
         FindNodeUnderNode(root, name, false));
     ASSERTM(typed_node, "Typed Node '" + name + "' not found under " +
@@ -78,14 +78,13 @@ template <typename T> std::shared_ptr<T> FindTypedNodeUnderNode(
 /// Searches under the given root node (exclusively) for the first node with
 /// the given type name, returning a pointer to it. Returns a null pointer if
 /// not found.
-NodePtr FindFirstTypedNodeUnderNode(const Node &root,
-                                    const std::string &type_name);
+NodePtr FindFirstTypedNodeUnderNode(const Node &root, const Str &type_name);
 
 /// Templated version of FindFirstTypedNodeUnderNode() that casts the returned
 /// NodePtr to the templated type (derived from Node). This always asserts on
 /// failure.
 template <typename T> std::shared_ptr<T> FindFirstTypedNodeUnderNode(
-    const Node &root, const std::string &type_name) {
+    const Node &root, const Str &type_name) {
     std::shared_ptr<T> typed_node = std::dynamic_pointer_cast<T>(
         FindFirstTypedNodeUnderNode(root, type_name));
     ASSERTM(typed_node, "Node of type '" + type_name + "' not found under " +
@@ -108,12 +107,12 @@ std::vector<NodePath> FindNodePaths(const SG::NodePtr &root,
 
 /// Searches for a Shape with the given name in the given Node, returning a
 /// pointer to it. Returns a null pointer if not found.
-ShapePtr FindShapeInNode(const Node &node, const std::string &name);
+ShapePtr FindShapeInNode(const Node &node, const Str &name);
 
 /// Templated version of FindShapeInNode() that casts the returned ShapePtr to
 /// the templated type (derived from Shape). This always asserts on failure.
 template <typename T> std::shared_ptr<T> FindTypedShapeInNode(
-    const Node &node, const std::string &name) {
+    const Node &node, const Str &name) {
     std::shared_ptr<T> shape =
         std::dynamic_pointer_cast<T>(FindShapeInNode(node, name));
     ASSERTM(shape, "Typed Shape with name '" + name + "' not found in " +

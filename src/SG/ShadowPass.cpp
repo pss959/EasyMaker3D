@@ -77,7 +77,7 @@ void ShadowPass::SetShaderUniforms_(RenderData &data, Node &node) {
     if (! were_uniforms_created_) {
         auto &reg = *ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
         const Matrix4f ident = Matrix4f::Identity();
-        auto mat_func = [&ion_block, &reg, &ident](const std::string &name){
+        auto mat_func = [&ion_block, &reg, &ident](const Str &name){
             ion_block.AddUniform(reg.Create<ion::gfx::Uniform>(name, ident));
             ion_block.SetUniformByName(name, ident);
         };

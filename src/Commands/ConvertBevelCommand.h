@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ConvertBevelCommand);
 /// \ingroup Commands
 class ConvertBevelCommand : public ConvertCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ConvertBevelCommand() {}

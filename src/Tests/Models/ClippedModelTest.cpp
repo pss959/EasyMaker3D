@@ -71,7 +71,7 @@ TEST_F(ClippedModelTest, Cylinder) {
                             Vector3f(5.96047e-08f, 1, 1.19209e-07f)));
     clipped->SetOperandModel(cyl);
 
-    std::string reason;
+    Str reason;
     EXPECT_TRUE(clipped->IsMeshValid(reason));
 }
 

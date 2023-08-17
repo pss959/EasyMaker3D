@@ -582,7 +582,7 @@ TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape) {
     return mesh;
 }
 
-void WriteMeshAsOFF(const TriMesh &mesh, const std::string &description,
+void WriteMeshAsOFF(const TriMesh &mesh, const Str &description,
                     std::ostream &out) {
     out << "OFF\n";
     out << "# " << description << ":\n";

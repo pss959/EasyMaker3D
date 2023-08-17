@@ -7,7 +7,7 @@
 /// \ingroup Tests
 class CheckboxPaneTest : public PaneTestBase {
   protected:
-    CheckboxPanePtr GetCheckboxPane(const std::string &contents = "") {
+    CheckboxPanePtr GetCheckboxPane(const Str &contents = "") {
         return ReadRealPane<CheckboxPane>("CheckboxPane", contents);
     }
 };

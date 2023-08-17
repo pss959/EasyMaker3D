@@ -16,7 +16,7 @@ double UTime::SecondsSince(const UTime &start) const {
     return std::chrono::duration<double>(time_ - start.time_).count();
 }
 
-std::string UTime::ToString() const {
+Str UTime::ToString() const {
     auto sctp =
         std::chrono::time_point_cast<std::chrono::system_clock::duration>(
             time_ - std::filesystem::file_time_type::clock::now()

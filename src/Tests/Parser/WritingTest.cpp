@@ -33,7 +33,7 @@ TEST_F(WritingTest, WriteDerived) {
     dp->angle_val   = ang;
     dp->rot_val     = rot;
     dp->ints_val    = std::vector<int>{ 3, -2 };
-    dp->strs_val    = std::vector<std::string>{ "Hello", "There" };
+    dp->strs_val    = StrVec{ "Hello", "There" };
     dp->simple      = sp0;
     dp->simple_list = std::vector<SimplePtr>{ sp1, sp2 };
     dp->hidden_int  = 6;
@@ -45,7 +45,7 @@ TEST_F(WritingTest, WriteDerived) {
         writer.WriteObject(*dp);
     }
 
-    const std::string kExpected =
+    const Str kExpected =
         "# A header comment\n"
         "Derived {\n"
         "  bool_val: True,\n"
@@ -119,7 +119,7 @@ TEST_F(WritingTest, WriteFull) {
         writer.WriteObject(*fp);
     }
 
-    const std::string kExpected =
+    const Str kExpected =
         "Full {\n"
         "  b: True,\n"
         "  i: -13,\n"
@@ -179,7 +179,7 @@ TEST_F(WritingTest, ObjectFunc) {
         writer.WriteObjectConditional(*dp, obj_func);
     }
 
-    const std::string kExpected =
+    const Str kExpected =
         "Derived {\n"
         "  simple_list: [\n"
         "    Simple \"SP1\" {\n"
@@ -210,7 +210,7 @@ TEST_F(WritingTest, Addresses) {
         writer.WriteObject(*dp);
     }
 
-    const std::string kExpected =
+    const Str kExpected =
         "Derived { # " + daddr + "\n"
         "  simple: Simple \"SP1\" { # " + saddr + "\n"
         "  },\n"

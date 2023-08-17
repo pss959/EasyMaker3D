@@ -1,5 +1,5 @@
 #include "Commands/DeleteCommand.h"
 
-std::string DeleteCommand::GetDescription() const {
+Str DeleteCommand::GetDescription() const {
     return "Deleted " + GetModelsDesc(GetModelNames());
 }

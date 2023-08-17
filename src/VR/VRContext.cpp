@@ -142,9 +142,9 @@ class VRContext::Impl_ {
     bool LoadActions_();
     void InitActionSet_();
     void InitActions_();
-    vr::VRActionHandle_t GetHandAction_(Hand hand, const std::string &name,
+    vr::VRActionHandle_t GetHandAction_(Hand hand, const Str &name,
                                         bool is_input);
-    vr::VRActionHandle_t GetAction_(const std::string &path);
+    vr::VRActionHandle_t GetAction_(const Str &path);
     bool WereBindingsLoadedSuccessfully_();
     void InitEyeRendering_(Renderer &renderer, Eye_ &eye);
     void UpdateEyes_(const Point3f &base_position);
@@ -162,8 +162,7 @@ class VRContext::Impl_ {
 
 #if ENABLE_DEBUG_FEATURES
     void ReportAllBindings_();
-    void ReportBindings_(const std::string &path,
-                         const vr::VRActionHandle_t &action);
+    void ReportBindings_(const Str &path, const vr::VRActionHandle_t &action);
 #endif
 };
 
@@ -451,15 +450,15 @@ void VRContext::Impl_::InitActions_() {
 }
 
 vr::VRActionHandle_t VRContext::Impl_::GetHandAction_(
-    Hand hand, const std::string &name, bool is_input) {
-    std::string path = "/actions/default/";
+    Hand hand, const Str &name, bool is_input) {
+    Str path = "/actions/default/";
     path += is_input ? "in/" : "out/";
     path += hand == Hand::kLeft ? "L" : "R";
     path += name;
     return GetAction_(path);
 }
 
-vr::VRActionHandle_t VRContext::Impl_::GetAction_(const std::string &path) {
+vr::VRActionHandle_t VRContext::Impl_::GetAction_(const Str &path) {
     auto &vin = *vr::VRInput();
 
     vr::VRActionHandle_t action;
@@ -510,8 +509,8 @@ void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
     using ion::gfx::Texture;
     using ion::gfx::TexturePtr;
 
-    const std::string eye_str = std::string("VR ") +
-        (eye.eye == vr::Eye_Left ? "L" : "R") + " Eye ";
+    const Str eye_str =
+        Str("VR ") + (eye.eye == vr::Eye_Left ? "L" : "R") + " Eye ";
 
     const auto w = window_size_[0];
     const auto h = window_size_[1];
@@ -796,7 +795,7 @@ void VRContext::Impl_::ReportAllBindings_() {
     }
 }
 
-void VRContext::Impl_::ReportBindings_(const std::string &path,
+void VRContext::Impl_::ReportBindings_(const Str &path,
                                        const vr::VRActionHandle_t &action) {
     auto &vin = *vr::VRInput();
 

@@ -4,7 +4,7 @@
 class ScopingTest : public ParserTestBase {};
 
 TEST_F(ScopingTest, Scoping) {
-    const std::string input =
+    const Str input =
         "Derived \"D1\" {\n"             // dp1
         "  simple: Simple \"S1\" {},\n"  // sp1
         "  simple_list: [\n"

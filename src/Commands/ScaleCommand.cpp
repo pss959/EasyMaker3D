@@ -7,7 +7,7 @@ void ScaleCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ScaleCommand::IsValid(std::string &details) {
+bool ScaleCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     const Vector3f ratios = GetRatios();
@@ -23,7 +23,7 @@ bool ScaleCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ScaleCommand::GetDescription() const {
+Str ScaleCommand::GetDescription() const {
     const Mode mode = GetMode();
     return "Scaled " + GetModelsDesc(GetModelNames()) +
         (mode == Mode::kAsymmetric ? " asymmetrically" :

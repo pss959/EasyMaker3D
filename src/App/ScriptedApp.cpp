@@ -63,7 +63,7 @@ class ScriptedApp::Emitter_ : public IEmitter {
     void AddDragPoint(DIPhase phase, const Point2f &pos);
 
     /// Adds a key press/release to simulate.
-    void AddKey(const std::string &key, const KModifiers &modifiers);
+    void AddKey(const Str &key, const KModifiers &modifiers);
 
     /// Adds a controller position.
     void AddControllerPos(Hand hand, const Point3f &pos, const Rotationf &rot);
@@ -154,7 +154,8 @@ void ScriptedApp::Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
     events_.push_back(event);
 }
 
-void ScriptedApp::Emitter_::AddKey(const std::string &key, const KModifiers &modifiers) {
+void ScriptedApp::Emitter_::AddKey(const Str &key,
+                                   const KModifiers &modifiers) {
     Event event;
     event.device    = Event::Device::kKeyboard;
     event.key_name  = key;
@@ -442,7 +443,7 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
     return true;
 }
 
-bool ScriptedApp::LoadSession_(const std::string &file_name) {
+bool ScriptedApp::LoadSession_(const Str &file_name) {
     // Empty file name means start a new session.
     if (file_name.empty()) {
         GetContext().session_manager->NewSession();
@@ -451,7 +452,7 @@ bool ScriptedApp::LoadSession_(const std::string &file_name) {
     else {
         const FilePath path("PublicDoc/snaps/sessions/" + file_name +
                             TK::kSessionFileSuffix);
-        std::string error;
+        Str error;
         if (! GetContext().session_manager->LoadSession(path, error)) {
             std::cerr << "*** Error loading session from '"
                       << path.ToString() << "':" << error << "\n";
@@ -462,7 +463,7 @@ bool ScriptedApp::LoadSession_(const std::string &file_name) {
     return true;
 }
 
-bool ScriptedApp::SetHand_(Hand hand, const std::string &controller_type) {
+bool ScriptedApp::SetHand_(Hand hand, const Str &controller_type) {
     const auto &sc = *GetContext().scene_context;
     auto &controller = hand == Hand::kLeft ?
         *sc.left_controller : *sc.right_controller;
@@ -472,13 +473,13 @@ bool ScriptedApp::SetHand_(Hand hand, const std::string &controller_type) {
         return true;
     }
 
-    const std::string file_start = "models/controllers/" + controller_type +
+    const Str file_start = "models/controllers/" + controller_type +
         "_" + Util::EnumToWord(hand);
 
-    const std::string mesh_file = file_start + ".tri";
-    const std::string tex_file  = file_start + ".jpg";
+    const Str mesh_file = file_start + ".tri";
+    const Str tex_file  = file_start + ".jpg";
 
-    std::string mesh_data;
+    Str mesh_data;
     Controller::CustomModel cm;
     if (! Util::ReadFile(mesh_file, mesh_data) ||
         ! cm.mesh.FromBinaryString(mesh_data)) {
@@ -528,8 +529,7 @@ void ScriptedApp::SetTouchMode_(bool is_on) {
     sc.right_controller->SetTouchMode(is_on);
 }
 
-bool ScriptedApp::TakeSnapshot_(const Range2f &rect,
-                                const std::string &file_name) {
+bool ScriptedApp::TakeSnapshot_(const Range2f &rect, const Str &file_name) {
     const auto &minp = rect.GetMinPoint();
     const auto  size = rect.GetSize();
 
@@ -553,7 +553,7 @@ bool ScriptedApp::TakeSnapshot_(const Range2f &rect,
     return true;
 }
 
-bool ScriptedApp::GetObjRect_(const std::string &object_name, float margin,
+bool ScriptedApp::GetObjRect_(const Str &object_name, float margin,
                               Range2f &rect) {
     // Search in the scene for the object.
     const auto &sc = *GetContext().scene_context;
@@ -588,8 +588,7 @@ bool ScriptedApp::GetObjRect_(const std::string &object_name, float margin,
     return true;
 }
 
-void ScriptedApp::BuildSelection_(const std::vector<std::string> &names,
-                                  Selection &selection) {
+void ScriptedApp::BuildSelection_(const StrVec &names, Selection &selection) {
     selection.Clear();
     const auto &root_model = GetContext().scene_context->root_model;
     for (const auto &name: names) {

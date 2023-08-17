@@ -7,8 +7,7 @@
 #include "Models/MirroredModel.h"
 #include "Util/Assert.h"
 
-ConvertedModelPtr ConvertMirrorExecutor::CreateConvertedModel(
-    const std::string &name) {
+ConvertedModelPtr ConvertMirrorExecutor::CreateConvertedModel(const Str &name) {
     return Model::CreateModel<MirroredModel>(
         name.empty() ? CreateUniqueName("Mirrored") : name);
 }

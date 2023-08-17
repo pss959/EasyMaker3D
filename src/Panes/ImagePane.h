@@ -12,19 +12,19 @@ DECL_SHARED_PTR(ImagePane);
 /// \ingroup Panes
 class ImagePane : public LeafPane {
   public:
-    virtual std::string ToString(bool is_brief) const override;
+    virtual Str ToString(bool is_brief) const override;
 
   protected:
     ImagePane() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> path_;
+    Parser::TField<Str> path_;
     ///@}
 
     friend class Parser::Registry;

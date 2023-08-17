@@ -29,7 +29,7 @@ template <> void ValueWriter::WriteValue(const float &value) {
     out_ << value;
 }
 
-template <> void ValueWriter::WriteValue(const std::string &value) {
+template <> void ValueWriter::WriteValue(const Str &value) {
     out_ << '"' << value << '"';
 }
 

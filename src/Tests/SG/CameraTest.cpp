@@ -16,7 +16,7 @@ TEST_F(CameraTest, DefaultGantry) {
 }
 
 TEST_F(CameraTest, Cameras) {
-    const std::string input = R"(
+    const Str input = R"(
 Gantry {
   cameras: [
     WindowCamera {

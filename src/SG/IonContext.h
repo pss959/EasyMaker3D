@@ -54,7 +54,7 @@ class IonContext {
     const ion::text::FontManagerPtr & GetFontManager();
 
     /// Adds the name of a render pass.
-    void AddPassName(const std::string &pass_name) {
+    void AddPassName(const Str &pass_name) {
         pass_names_.push_back(pass_name);
     }
 
@@ -63,15 +63,15 @@ class IonContext {
 
     /// Returns the index for the pass with the given name. Returns -1 if the
     /// pass name is not valid.
-    int GetPassIndex(const std::string &name) const;
+    int GetPassIndex(const Str &name) const;
 
     /// Adds an Ion ShaderProgram associated with the given name and pass name.
-    void AddShaderProgram(const std::string &name, const std::string &pass_name,
+    void AddShaderProgram(const Str &name, const Str &pass_name,
                           const ion::gfx::ShaderProgramPtr &program);
 
     /// Returns a reference to a ProgramInfo for the shader with the given
     /// name. It will assert if there is no such shader.
-    const ProgramInfo & GetShaderProgramInfo(const std::string &name) const;
+    const ProgramInfo & GetShaderProgramInfo(const Str &name) const;
 
     /// Convenience that returns the Ion ShaderInputRegistry to use for the
     /// render pass with the given name. If the name is empty, this will be the
@@ -79,7 +79,7 @@ class IonContext {
     /// the render pass from the given vector. This asserts if the pass name
     /// does not match an existing pass.
     ion::gfx::ShaderInputRegistryPtr GetRegistryForPass(
-        const std::string &pass_name,
+        const Str &pass_name,
         const std::vector<ion::gfx::ShaderProgramPtr> &programs) const;
 
     /// Resets the IonContext. This clears out the pass and program information
@@ -92,10 +92,10 @@ class IonContext {
     FileMapPtr                      file_map_;
 
     /// Names of render passes.
-    std::vector<std::string> pass_names_;
+    StrVec pass_names_;
 
     /// Maps every known shader name to a corresponding ProgramInfo struct.
-    std::unordered_map<std::string, ProgramInfo> program_map_;
+    std::unordered_map<Str, ProgramInfo> program_map_;
 };
 
 }  // namespace SG

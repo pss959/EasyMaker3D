@@ -7,7 +7,7 @@ HelpMap::HelpMap() {
     const size_t action_count = Util::EnumCount<Action>();
     help_strings_.resize(action_count);
 
-    auto set_hs = [&](Action action, const std::string &str){
+    auto set_hs = [&](Action action, const Str &str){
         help_strings_[Util::EnumInt(action)] = str;
     };
 
@@ -136,6 +136,6 @@ HelpMap::HelpMap() {
            "TOGGLE: Show or hide the right radial menu");
 }
 
-const std::string & HelpMap::GetHelpString(Action action) const {
+const Str & HelpMap::GetHelpString(Action action) const {
     return help_strings_[Util::EnumInt(action)];
 }

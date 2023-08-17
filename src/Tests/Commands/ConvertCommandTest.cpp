@@ -14,11 +14,10 @@
 class ConvertCommandTest : public CommandTestBase {
   protected:
     /// Tests the named command.
-    void TestCommand(const std::string &type_name, const std::string &action);
+    void TestCommand(const Str &type_name, const Str &action);
 };
 
-void ConvertCommandTest::TestCommand(const std::string &type_name,
-                                     const std::string &action) {
+void ConvertCommandTest::TestCommand(const Str &type_name, const Str &action) {
     SetParseTypeName(type_name);
     TestInvalid("", "Missing model names");
     TestInvalid(R"(model_names: [ " BadName" ])", "Invalid model name");
@@ -37,7 +36,7 @@ TEST_F(ConvertCommandTest, ResultNames) {
     // Need to use a derived concrete class here.
     auto cbc = Command::CreateCommand<ConvertBendCommand>();
     EXPECT_TRUE(cbc->GetResultNames().empty());
-    cbc->SetResultNames(std::vector<std::string>{ "Abc", "Def" });
+    cbc->SetResultNames(StrVec{ "Abc", "Def" });
     EXPECT_EQ(2U,    cbc->GetResultNames().size());
     EXPECT_EQ("Abc", cbc->GetResultNames()[0]);
     EXPECT_EQ("Def", cbc->GetResultNames()[1]);

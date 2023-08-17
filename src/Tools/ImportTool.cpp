@@ -33,8 +33,7 @@ void ImportTool::InitPanel() {
     panel.SetHighlightPath(cur_path, " [CURRENT PATH]");
 }
 
-void ImportTool::PanelChanged(const std::string &key,
-                              ToolPanel::InteractionType type) {
+void ImportTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
     const Context &context = GetContext();
     auto model = std::dynamic_pointer_cast<ImportedModel>(GetModelAttachedTo());
     ASSERT(model);
@@ -59,7 +58,7 @@ void ImportTool::PanelChanged(const std::string &key,
 
     else if (key == "Accept") {
         auto &panel = GetTypedPanel<ImportToolPanel>();
-        const std::string &path = panel.GetPath().ToString();
+        const Str &path = panel.GetPath().ToString();
 
         if (is_initial_import) {
             // Accepting the initial path means officially creating the

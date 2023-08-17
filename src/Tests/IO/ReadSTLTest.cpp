@@ -15,10 +15,10 @@ class ReadSTLTest : public TestBaseWithTypes {
     }
 
     /// Loads a TriMesh from an STL file and validates it.
-    TriMesh LoadFromFile(const std::string &file_name,
+    TriMesh LoadFromFile(const Str &file_name,
                          const UnitConversion &conv = *GetDefaultUC()) {
         const auto path = GetDataPath(file_name);
-        std::string error;
+        Str error;
         TriMesh mesh = ReadSTLFile(path, conv.GetFactor(), error);
         ASSERTM(! mesh.points.empty(),
                 "Loaded from " + path.ToString() + ": " + error);
@@ -27,11 +27,11 @@ class ReadSTLTest : public TestBaseWithTypes {
     }
 
     /// Loads a TriMesh from a string and validates it.
-    TriMesh LoadFromString(const std::string &str,
+    TriMesh LoadFromString(const Str &str,
                            const UnitConversion &conv = *GetDefaultUC()) {
         TempFile tmp(str);
         const auto &path = tmp.GetPath();
-        std::string error;
+        Str error;
         TriMesh mesh = ReadSTLFile(path, conv.GetFactor(), error);
         ASSERTM(! mesh.points.empty(),
                 "Loaded from string: " + error);
@@ -90,14 +90,14 @@ TEST_F(ReadSTLTest, Errors) {
     TEST_THROW(LoadFromFile("nosuchfile.stl"), ExceptionBase, "Unable to open");
 
     {
-        const std::string s =
+        const Str s =
             "solid EasyMaker3D_Export\n"
             "endsolid EasyMaker3D_Export";
         TEST_THROW(LoadFromString(s), ExceptionBase, "No mesh data");
     }
 
     {
-        const std::string s =
+        const Str s =
             "solid EasyMaker3D_Export\n"
             "  blah foo bar\n"
             "endsolid EasyMaker3D_Export\n";
@@ -105,7 +105,7 @@ TEST_F(ReadSTLTest, Errors) {
     }
 
     {
-        const std::string s =
+        const Str s =
             "solid EasyMaker3D_Export\n"
             "  facet normal 1 0 0\n"
             "    blah\n";
@@ -113,7 +113,7 @@ TEST_F(ReadSTLTest, Errors) {
     }
 
     {
-        const std::string s =
+        const Str s =
             "solid EasyMaker3D_Export\n"
             "  facet normal 1 0 0\n"
             "    outer loop\n"
@@ -122,7 +122,7 @@ TEST_F(ReadSTLTest, Errors) {
     }
 
     {
-        const std::string s =
+        const Str s =
             "solid EasyMaker3D_Export\n"
             "  facet normal 1 0 0\n"
             "    outer loop\n"
@@ -131,7 +131,7 @@ TEST_F(ReadSTLTest, Errors) {
     }
 
     {
-        const std::string s =
+        const Str s =
             "solid EasyMaker3D_Export\n"
             "  facet normal 1 0 0\n"
             "    outer loop\n"
@@ -143,7 +143,7 @@ TEST_F(ReadSTLTest, Errors) {
     }
 
     {
-        const std::string s =
+        const Str s =
             "solid EasyMaker3D_Export\n"
             "  facet normal 1 0 0\n"
             "    outer loop\n"
@@ -157,7 +157,7 @@ TEST_F(ReadSTLTest, Errors) {
 
     {
         // This is not recognized as valid text:
-        const std::string s = "XYZZYXX";
+        const Str s = "XYZZYXX";
         TEST_THROW(LoadFromString(s), ExceptionBase, "Not enough binary data");
     }
 }

@@ -1,5 +1,5 @@
 #include "Commands/ConvertBevelCommand.h"
 
-std::string ConvertBevelCommand::GetDescription() const {
+Str ConvertBevelCommand::GetDescription() const {
     return BuildDescription("bevel");
 }

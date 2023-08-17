@@ -9,7 +9,7 @@ void ClippedModel::AddFields() {
     ConvertedModel::AddFields();
 }
 
-bool ClippedModel::IsValid(std::string &details) {
+bool ClippedModel::IsValid(Str &details) {
     if (! ConvertedModel::IsValid(details))
         return false;
     if (! IsValidVector(GetPlane().normal)) {

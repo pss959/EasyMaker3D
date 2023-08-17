@@ -21,7 +21,7 @@ TEST_F(ErrorTest, ObjectTypeConflict) {
 TEST_F(ErrorTest, BadReference) {
     TempFile file1("");
     TempFile file2("Simple \"Child2\" {}");
-    const std::string input =
+    const Str input =
         "Derived { \n"
         "  simple_list: [\n"
         "      Simple \"Child1\" {},\n"
@@ -33,7 +33,7 @@ TEST_F(ErrorTest, BadReference) {
 
 TEST_F(ErrorTest, SyntaxErrors) {
     // Parse from a string after resetting the Parser to avoid pollution.
-    auto parse_str = [&](const std::string &s){
+    auto parse_str = [&](const Str &s){
         parser.Reset();
         return parser.ParseFromString(s);
     };

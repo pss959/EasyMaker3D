@@ -2,6 +2,6 @@
 
 #include "Util/Enum.h"
 
-std::string CreateExtrudedModelCommand::GetDescription() const {
+Str CreateExtrudedModelCommand::GetDescription() const {
     return BuildDescription("extruded");
 }

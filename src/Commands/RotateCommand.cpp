@@ -8,7 +8,7 @@ void RotateCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-std::string RotateCommand::GetDescription() const {
+Str RotateCommand::GetDescription() const {
     return "Rotated " + GetModelsDesc(GetModelNames()) +
         (IsInPlace() ? " (in place)" : "");
 }

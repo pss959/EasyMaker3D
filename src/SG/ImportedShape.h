@@ -37,8 +37,7 @@ class ImportedShape : public TriMeshShape {
 
     /// Constructs and returns an ImportedShape that uses the given file path
     /// and normal type.
-    static ImportedShapePtr CreateFrom(const std::string &path,
-                                       NormalType normal_type);
+    static ImportedShapePtr CreateFrom(const Str &path, NormalType normal_type);
 
     /// Returns the path that the shape was read from.
     FilePath GetFilePath() const { return path_.GetValue(); }
@@ -63,7 +62,7 @@ class ImportedShape : public TriMeshShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>      path_;
+    Parser::TField<Str>              path_;
     Parser::EnumField<NormalType>    normal_type_;
     Parser::EnumField<TexCoordsType> tex_coords_type_;
     Parser::ObjectField<Shape>       proxy_shape_;

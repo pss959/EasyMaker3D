@@ -174,11 +174,11 @@ class STLBinaryWriter_ : public STLWriter_ {
     }
 };
 
-void STLBinaryWriter_::WriteHeader(std::ostream &out, 
+void STLBinaryWriter_::WriteHeader(std::ostream &out,
                                    const std::vector<TriMesh> &meshes) {
     // Create an 80-byte header.
-    std::string header = TK::kApplicationName + "_Export";
-    header += std::string(80 - header.size(), ' ');
+    Str header = TK::kApplicationName + "_Export";
+    header += Str(80 - header.size(), ' ');
     out.write(&header[0], 80);
 
     // Write the total number of triangles as 4 bytes.

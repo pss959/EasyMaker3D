@@ -35,7 +35,7 @@ TEST_F(ColorMapTest, Default) {
 
 TEST_F(ColorMapTest, Resource) {
     // Read a ColorMap with required dimension colors and a few others.
-    const std::string input =
+    const Str input =
         "ColorMap {\n"
         "  named_colors: [\n"
         "    NamedColor \"DimensionColorX\" { color: 1 0 0 1 }\n"

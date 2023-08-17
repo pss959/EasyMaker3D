@@ -18,10 +18,9 @@
 /// Exceptions thrown during reading.
 class STLException_ : public ExceptionBase {
   public:
-    STLException_(const FilePath &path, int line_number,
-                  const std::string &msg) :
+    STLException_(const FilePath &path, int line_number, const Str &msg) :
         ExceptionBase(path, line_number, msg) {}
-    STLException_(const FilePath &path, const std::string &msg) :
+    STLException_(const FilePath &path, const Str &msg) :
         ExceptionBase(path, msg) {}
 };
 
@@ -44,7 +43,7 @@ static uint32_t ToUint32_(const char *p) {
 
 /// Returns true if the data in the given string most likely represents text
 /// STL.
-static bool IsTextSTL_(const std::string &data) {
+static bool IsTextSTL_(const Str &data) {
     // An STL text file must start with the word "solid" after optional
     // whitespace. However, some binary files also start with "solid" (see
     // Thingiverse, for example). So do a more comprehensive test.
@@ -87,7 +86,7 @@ class STLReaderBase_ {
   public:
     /// Reads a mesh from the data, throwing an exception on error. The path is
     /// just for error messages.
-    TriMesh ReadMesh(const FilePath &path, const std::string &data,
+    TriMesh ReadMesh(const FilePath &path, const Str &data,
                      float conversion_factor) {
         path_              = path;
         conversion_factor_ = conversion_factor;
@@ -102,7 +101,7 @@ class STLReaderBase_ {
     STLReaderBase_() : point_map_(0) {}  /// \todo Maybe use precision?
 
     /// Derived classes implement this to do the real work.
-    virtual TriMesh ReadMeshImpl(const std::string &data) = 0;
+    virtual TriMesh ReadMeshImpl(const Str &data) = 0;
 
     /// Adds a point to the Point3fMap, converting it first and returning the
     /// resulting index.
@@ -114,12 +113,12 @@ class STLReaderBase_ {
     std::vector<Point3f> GetPoints() const { return point_map_.GetPoints(); }
 
     /// Throws an exception with the given line number and message.
-    void Throw(int line, const std::string &msg) {
+    void Throw(int line, const Str &msg) {
         throw STLException_(path_, line, msg);
     }
 
     /// Throws an exception with no line number.
-    void Throw(const std::string &msg) { throw STLException_(path_, msg); }
+    void Throw(const Str &msg) { throw STLException_(path_, msg); }
 
   private:
     FilePath   path_;               ///< For error messages.
@@ -139,7 +138,7 @@ class STLReaderBase_ {
 
 class BinarySTLReader_ : public STLReaderBase_ {
   protected:
-    virtual TriMesh ReadMeshImpl(const std::string &data) override;
+    virtual TriMesh ReadMeshImpl(const Str &data) override;
 
   private:
     const unsigned char *data_;    ///< Input data string as unsigned chars.
@@ -164,7 +163,7 @@ class BinarySTLReader_ : public STLReaderBase_ {
     }
 };
 
-TriMesh BinarySTLReader_::ReadMeshImpl(const std::string &data) {
+TriMesh BinarySTLReader_::ReadMeshImpl(const Str &data) {
     TriMesh mesh;
 
     data_ = reinterpret_cast<const unsigned char *>(data.c_str());
@@ -207,17 +206,17 @@ TriMesh BinarySTLReader_::ReadMeshImpl(const std::string &data) {
 
 class TextSTLReader_ : public STLReaderBase_ {
   protected:
-    virtual TriMesh ReadMeshImpl(const std::string &data) override;
+    virtual TriMesh ReadMeshImpl(const Str &data) override;
 
   private:
     /// Splits data string into lines, trims whitespace, and removes blank
     /// lines.
-    static std::vector<std::string> SplitIntoLines_(const std::string &data);
+    static StrVec SplitIntoLines_(const Str &data);
 };
 
-TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
+TriMesh TextSTLReader_::ReadMeshImpl(const Str &data) {
     // Split the data into lines. Ignore whitespace and trim each line.
-    const std::vector<std::string> lines = SplitIntoLines_(data);
+    const StrVec lines = SplitIntoLines_(data);
     int cur_line = 0;
     TriMesh mesh;
 
@@ -232,7 +231,7 @@ TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
             if (! lines[++cur_line].starts_with("vertex"))
                 Throw(cur_line + 1, "Expected 'vertex'");
             std::istringstream in(lines[cur_line]);
-            std::string v;
+            Str v;
             Point3f p;
             if (! (in >> v >> p[0] >> p[1] >> p[2]))
                 Throw(cur_line + 1, "Invalid vertex");
@@ -251,16 +250,15 @@ TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
     return mesh;
 }
 
-std::vector<std::string>
-TextSTLReader_::SplitIntoLines_(const std::string &data) {
-    std::vector<std::string> lines = ion::base::SplitString(data, "\n");
+StrVec TextSTLReader_::SplitIntoLines_(const Str &data) {
+    StrVec lines = ion::base::SplitString(data, "\n");
 
     // Trim whitespace.
     for (auto &line: lines)
         line = ion::base::TrimStartAndEndWhitespace(line);
 
     // Delete blank lines, which should now be empty.
-    std::erase_if(lines, [](const std::string &s){ return s.empty(); });
+    std::erase_if(lines, [](const Str &s){ return s.empty(); });
 
     return lines;
 }
@@ -270,12 +268,12 @@ TextSTLReader_::SplitIntoLines_(const std::string &data) {
 // ----------------------------------------------------------------------------
 
 TriMesh ReadSTLFile(const FilePath &path, float conversion_factor,
-                    std::string &error_message) {
+                    Str &error_message) {
     TriMesh mesh;
 
     try {
         // Read the file into a string.
-        std::string data;
+        Str data;
         if (Util::ReadFile(path, data)) {
             if (IsTextSTL_(data))
                 mesh = TextSTLReader_().ReadMesh(path, data, conversion_factor);

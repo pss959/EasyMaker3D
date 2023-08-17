@@ -51,14 +51,14 @@ class Object {
     virtual ~Object() {}
 
     /// Returns the type name for the object.
-    const std::string & GetTypeName() const { return type_name_; }
+    const Str & GetTypeName() const { return type_name_; }
 
     /// Returns the name assigned to the object, which may be empty.
-    const std::string & GetName() const { return name_; }
+    const Str & GetName() const { return name_; }
 
     /// Handy function that returns a string describing the object, including
     /// its name (if it has one) and address.
-    std::string GetDesc() const;
+    Str GetDesc() const;
 
     /// Returns true if this Object instance was created as a template (in the
     /// TEMPLATES field of some Object).
@@ -73,8 +73,7 @@ class Object {
     /// Creates a clone of this instance and casts to the templated type.
     /// Asserts if it fails.
     template <typename T>
-    std::shared_ptr<T> CloneTyped(bool is_deep,
-                                  const std::string &name = "") const {
+    std::shared_ptr<T> CloneTyped(bool is_deep, const Str &name = "") const {
         std::shared_ptr<T> clone =
             std::dynamic_pointer_cast<T>(Clone_(name, is_deep, true));
         ASSERT(clone);
@@ -101,7 +100,7 @@ class Object {
 
     /// Returns the field with the given name, or a null pointer if none has
     /// that name.
-    Field * FindField(const std::string &name) const;
+    Field * FindField(const Str &name) const;
 
     /// Access to all fields, for Writer mostly.
     const std::vector<Field*> & GetFields() const { return fields_; }
@@ -110,7 +109,7 @@ class Object {
     bool WasAnyFieldSet() const;
 
     /// Converts to a string for debugging.
-    std::string ToString() const { return GetDesc(); }
+    Str ToString() const { return GetDesc(); }
 
   protected:
     /// The constructor is protected to make this abstract.
@@ -146,7 +145,7 @@ class Object {
     /// have been parsed. If there is anything wrong with the instance, this
     /// should fill details with useful error information and return false. The
     /// base class defines this to just return true.
-    virtual bool IsValid(std::string &details) { return true; }
+    virtual bool IsValid(Str &details) { return true; }
 
     /// This is called for each instance (including templates) after cloning is
     /// done and after all fields have been parsed (unless IsValid() returned
@@ -173,10 +172,10 @@ class Object {
     void AddField(Field &field) { fields_.push_back(&field); }
 
     /// Sets the name in an instance.
-    void SetName(const std::string &name) { name_ = name; }
+    void SetName(const Str &name) { name_ = name; }
 
     /// Sets the type name for the object.
-    void SetTypeName(const std::string &type_name) { type_name_ = type_name; }
+    void SetTypeName(const Str &type_name) { type_name_ = type_name; }
 
   private:
     /// Type of instance.
@@ -187,8 +186,8 @@ class Object {
         kRegular,   ///< Neither a template nor a clone.
     };
 
-    std::string   type_name_;  ///< Name of the object's type.
-    std::string   name_;       ///< Optional name assigned in file.
+    Str type_name_;  ///< Name of the object's type.
+    Str name_;       ///< Optional name assigned in file.
 
     /// Type of instance, set just before CreationDone() is called.
     InstanceType_ instance_type_ = InstanceType_::kUnknown;
@@ -207,16 +206,14 @@ class Object {
     Object & operator=(const Object &obj) = delete;
 
     /// Sets up an instance initially.
-    void SetUp_(const std::string &type_name, const std::string &name,
-                bool is_complete);
+    void SetUp_(const Str &type_name, const Str &name, bool is_complete);
 
     /// Returns a clone of the Object (or derived class). If is_deep is true,
     /// this does a deep clone, meaning that all fields containing Objects have
     /// their Objects cloned as well. The name (if not empty) is used for the
     /// clone instead of copying the name. If is_complete is true, this also
     /// calls CreationDone().
-    ObjectPtr Clone_(const std::string &name, bool is_deep,
-                     bool is_complete) const;
+    ObjectPtr Clone_(const Str &name, bool is_deep, bool is_complete) const;
 
     /// Indicates that an instance is complete, calling CreationDone().
     void CompleteInstance_(InstanceType_ instance_type);

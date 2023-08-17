@@ -7,7 +7,7 @@
 /// \ingroup Tests
 class TextPaneTest : public PaneTestBase {
   protected:
-    TextPanePtr GetTextPane(const std::string &contents = "") {
+    TextPanePtr GetTextPane(const Str &contents = "") {
         return ReadRealPane<TextPane>("TextPane", contents);
     }
 };

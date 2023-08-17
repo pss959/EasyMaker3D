@@ -18,7 +18,7 @@ TEST_F(IncludeTest, Includes) {
     parser.SetBasePath(base_path);
     const auto path2 = file2.GetPath().MakeRelativeTo(base_path);
 
-    const std::string input =
+    const Str input =
         "Derived \"ParentName\" { \n"
         "  simple_list: [\n"
         "      <\"" + path1.ToString() + "\">,\n"

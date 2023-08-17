@@ -18,10 +18,10 @@ class CreateModelCommand : public Command {
   public:
     /// Returns the name of the resulting Model. This will be empty unless this
     /// Command was read from a file and a name was specified.
-    const std::string & GetResultName() const { return result_name_; }
+    const Str & GetResultName() const { return result_name_; }
 
     /// Sets the name of the resulting Model.
-    void SetResultName(const std::string &name);
+    void SetResultName(const Str &name);
 
     /// Returns the initial (uniform) scale applied to the new Model. This is 1
     /// by default.
@@ -51,15 +51,15 @@ class CreateModelCommand : public Command {
     CreateModelCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
     /// Useful convenience for building description strings.
-    std::string BuildDescription(const std::string &type) const;
+    Str BuildDescription(const Str &type) const;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> result_name_;
+    Parser::TField<Str> result_name_;
     Parser::TField<float>       initial_scale_;
     Parser::TField<Point3f>     target_position_;
     Parser::TField<Vector3f>    target_direction_;

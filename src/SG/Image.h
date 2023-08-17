@@ -21,7 +21,7 @@ class Image : public Object {
     ion::gfx::ImagePtr SetUpIon(const IonContextPtr &ion_context);
 
     /// Returns the named SubImage if it exists, or a null pointer otherwise.
-    SubImagePtr FindSubImage(const std::string &name) const;
+    SubImagePtr FindSubImage(const Str &name) const;
 
     /// Returns the Ion image. This is null until SetUpIon() is called.
     const ion::gfx::ImagePtr & GetIonImage() { return ion_image_; }
@@ -44,7 +44,7 @@ class Image : public Object {
 
   private:
     /// Type of map storing SubImage data.
-    typedef std::unordered_map<std::string, SubImagePtr> SubImageMap_;
+    typedef std::unordered_map<Str, SubImagePtr> SubImageMap_;
 
     /// \name Parsed Fields
     ///@{

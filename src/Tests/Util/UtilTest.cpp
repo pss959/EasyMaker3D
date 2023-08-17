@@ -68,13 +68,13 @@ TEST_F(UtilTest, Contains) {
 }
 
 TEST_F(UtilTest, GetKeysAndValues) {
-    std::unordered_map<std::string, int> map;
+    std::unordered_map<Str, int> map;
     map["hello"] = 13;
     map["abc"]   = 9;
     map["squid"] = 31;
     map["blort"] = 5;
 
-    std::vector<std::string> keys = Util::GetKeys(map);
+    StrVec keys = Util::GetKeys(map);
     std::sort(keys.begin(), keys.end());
     EXPECT_EQ("abc",   keys[0]);
     EXPECT_EQ("blort", keys[1]);

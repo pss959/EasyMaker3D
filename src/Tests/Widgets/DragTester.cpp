@@ -17,8 +17,7 @@ DragTester::DragTester(const DraggableWidgetPtr &dw, const WidgetPtr &hw) {
     base_info_.hit.path = hw ? SG::NodePath(hw) : base_info_.path_to_widget;
 }
 
-DragTester::DragTester(const CompositeWidgetPtr &cw,
-                       const std::vector<std::string> &names) {
+DragTester::DragTester(const CompositeWidgetPtr &cw, const StrVec &names) {
     ASSERT(! names.empty());
     CompositeWidgetPtr cur_cw = cw;
     SG::NodePath path(cw);

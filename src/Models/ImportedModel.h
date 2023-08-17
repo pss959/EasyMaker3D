@@ -28,10 +28,10 @@ class ImportedModel : public PrimitiveModel {
 
     /// Sets the path to the STL file as a string. This will cause the STL data
     /// to be imported to create the Mesh.
-    void SetPath(const std::string &path);
+    void SetPath(const Str &path);
 
     /// Returns the path to the STL file as a string.
-    const std::string & GetPath() const { return path_; }
+    const Str & GetPath() const { return path_; }
 
     /// Returns true if STL data was ever successfully loaded. This is used to
     /// tell whether to initialize the ImportedModel's position.
@@ -39,7 +39,7 @@ class ImportedModel : public PrimitiveModel {
 
     /// Returns the error message resulting from importing the STL data from
     /// the current path. This will be empty if the import was successful.
-    const std::string & GetErrorMessage() const { return import_error_; }
+    const Str & GetErrorMessage() const { return import_error_; }
 
   protected:
     ImportedModel();
@@ -47,12 +47,12 @@ class ImportedModel : public PrimitiveModel {
     virtual TriMesh BuildMesh() override;
 
     /// Redefines this to add import-specific reasons.
-    virtual bool ValidateMesh(TriMesh &mesh, std::string &reason) override;
+    virtual bool ValidateMesh(TriMesh &mesh, Str &reason) override;
 
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<std::string> path_;
+    Parser::TField<Str> path_;
     ///@}
 
     /// UnitConversion used for converting imported STL data.
@@ -62,7 +62,7 @@ class ImportedModel : public PrimitiveModel {
     bool was_loaded_successfully_ = false;
 
     /// When the ImportedModel is invalid, this stores the reason.
-    std::string import_error_;
+    Str import_error_;
 
     friend class Parser::Registry;
 };

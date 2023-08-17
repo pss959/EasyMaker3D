@@ -9,7 +9,7 @@ void CombinedModel::AddFields() {
     OperatorModel::AddFields();
 }
 
-bool CombinedModel::IsValid(std::string &details) {
+bool CombinedModel::IsValid(Str &details) {
     if (! OperatorModel::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     const size_t min = GetMinChildCount();

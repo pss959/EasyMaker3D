@@ -10,7 +10,7 @@ void IconPane::AddFields() {
     LeafPane::AddFields();
 }
 
-bool IconPane::IsValid(std::string &details) {
+bool IconPane::IsValid(Str &details) {
     if (! LeafPane::IsValid(details))
         return false;
 
@@ -32,7 +32,7 @@ void IconPane::CreationDone() {
     }
 }
 
-void IconPane::SetIconName(const std::string &name) {
+void IconPane::SetIconName(const Str &name) {
     ASSERT(! name.empty());
     ASSERT(! GetUniformBlocks().empty());
     auto &block = GetUniformBlocks()[0];
@@ -40,7 +40,7 @@ void IconPane::SetIconName(const std::string &name) {
     block->SetSubImageName(name);
 }
 
-std::string IconPane::ToString(bool is_brief) const {
+Str IconPane::ToString(bool is_brief) const {
     // Add the icon name.
     return LeafPane::ToString(is_brief) + " '" + icon_name_.GetValue() + "'";
 }

@@ -111,7 +111,7 @@ void RadialMenu::SimulateButtonPress() {
     }
 }
 
-void RadialMenu::InitCircle_(const std::string &name, float radius) {
+void RadialMenu::InitCircle_(const Str &name, float radius) {
     auto circles = SG::FindNodeUnderNode(*this, "Circles");
     auto tube    = SG::FindTypedShapeInNode<SG::Tube>(*circles, name);
 
@@ -129,7 +129,7 @@ void RadialMenu::InitCircle_(const std::string &name, float radius) {
 
 void RadialMenu::InitButton_(size_t count, size_t index, Button_ &button) {
     // Create a clone of the button template.
-    const std::string name = "Button_" + Util::ToString(index);
+    const Str name = "Button_" + Util::ToString(index);
     auto but = button_->CloneTyped<PushButtonWidget>(true, name);
 
     // Set up the geometry.

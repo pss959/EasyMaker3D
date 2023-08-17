@@ -13,7 +13,7 @@ void TaperedModel::AddFields() {
     ConvertedModel::AddFields();
 }
 
-bool TaperedModel::IsValid(std::string &details) {
+bool TaperedModel::IsValid(Str &details) {
     if (! ConvertedModel::IsValid(details))
         return false;
 

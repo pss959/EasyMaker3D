@@ -25,10 +25,10 @@ TEST_F(ObjectTest, GetNameAndDesc) {
     auto dp1 = Parser::Registry::CreateObject<Derived>();
     auto dp2 = Parser::Registry::CreateObject<Derived>("Buddy");
 
-    const std::string addr1 = Util::ToString(dp1.get());
-    const std::string addr2 = Util::ToString(dp2.get());
-    const std::string desc1 = "Derived ("         + addr1 + ")";
-    const std::string desc2 = "Derived 'Buddy' (" + addr2 + ")";
+    const Str addr1 = Util::ToString(dp1.get());
+    const Str addr2 = Util::ToString(dp2.get());
+    const Str desc1 = "Derived ("         + addr1 + ")";
+    const Str desc2 = "Derived 'Buddy' (" + addr2 + ")";
 
     EXPECT_EQ("",      dp1->GetName());
     EXPECT_EQ("Buddy", dp2->GetName());

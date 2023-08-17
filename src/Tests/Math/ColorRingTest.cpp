@@ -20,7 +20,7 @@ class ColorRingTest : public TestBase {
     }
 
     /// Returns the color as a hex string for a point within the ColorRing.
-    static std::string GetString_(float rad_frac, float deg) {
+    static Str GetString_(float rad_frac, float deg) {
         const auto pt = GetPoint_(rad_frac, deg);
         return ColorRing::GetColorForPoint(pt).ToHexString();
     }
@@ -44,7 +44,7 @@ TEST_F(ColorRingTest, GetColorForPoint) {
 
 TEST_F(ColorRingTest, GetPointForColor) {
     // Reverse of above.
-    const auto to_point = [](const std::string &hex){
+    const auto to_point = [](const Str &hex){
         Color c;
         EXPECT_TRUE(c.FromHexString(hex));
         return ColorRing::GetPointForColor(c);

@@ -7,11 +7,10 @@
 /// \ingroup Executors
 class ConvertTwistExecutor : public ConvertExecutorBase {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ConvertTwistCommand";
     }
 
   protected:
-    virtual ConvertedModelPtr CreateConvertedModel(
-        const std::string &name) override;
+    virtual ConvertedModelPtr CreateConvertedModel(const Str &name) override;
 };

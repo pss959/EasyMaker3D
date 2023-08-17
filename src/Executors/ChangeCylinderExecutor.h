@@ -10,7 +10,7 @@
 /// \ingroup Executors
 class ChangeCylinderExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ChangeCylinderCommand";
     }
 

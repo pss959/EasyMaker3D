@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ChangeOrderCommand);
 /// \ingroup Commands
 class ChangeOrderCommand : public SingleModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the direction - if true, the Model is moved to the previous
     /// position as opposed to the next position.

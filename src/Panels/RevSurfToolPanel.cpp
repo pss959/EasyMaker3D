@@ -74,13 +74,13 @@ void RevSurfToolPanel::UpdatePrecision_() {
                                      Vector2f::Zero());
 }
 
-void RevSurfToolPanel::Activate_(const std::string &key, bool is_activation) {
+void RevSurfToolPanel::Activate_(const Str &key, bool is_activation) {
     is_dragging_ = is_activation;
     ReportChange(key, is_activation ? InteractionType::kDragStart :
                  InteractionType::kDragEnd);
 }
 
-void RevSurfToolPanel::Change_(const std::string &key) {
+void RevSurfToolPanel::Change_(const Str &key) {
     ReportChange(key, is_dragging_ ? InteractionType::kDrag :
                  InteractionType::kImmediate);
 }

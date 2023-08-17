@@ -94,7 +94,7 @@ void Settings::SetRadialMenusMode(RadialMenusMode mode) {
 }
 
 void Settings::SetToDefaults_() {
-    const std::string home = FilePath::GetHomeDirPath().ToString();
+    const Str home = FilePath::GetHomeDirPath().ToString();
 
     // last_session_path_ stays empty.
     session_directory_ = home;

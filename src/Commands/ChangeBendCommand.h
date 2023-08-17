@@ -14,7 +14,7 @@ DECL_SHARED_PTR(ChangeBendCommand);
 /// \ingroup Commands
 class ChangeBendCommand : public ChangeSpinCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ChangeBendCommand() {}

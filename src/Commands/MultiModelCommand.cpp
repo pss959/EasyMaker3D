@@ -10,7 +10,7 @@ void MultiModelCommand::AddFields() {
     Command::AddFields();
 }
 
-bool MultiModelCommand::IsValid(std::string &details) {
+bool MultiModelCommand::IsValid(Str &details) {
     if (! Command::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (GetModelNames().empty()) {
@@ -29,7 +29,7 @@ bool MultiModelCommand::IsValid(std::string &details) {
 void MultiModelCommand::SetFromSelection(const Selection &sel) {
     ASSERT(sel.HasAny());
     SetModelNames(
-        Util::ConvertVector<std::string, SelPath>(
+        Util::ConvertVector<Str, SelPath>(
             sel.GetPaths(),
             [](const SelPath &path){ return path.GetModel()->GetName(); }));
 }

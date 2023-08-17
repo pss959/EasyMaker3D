@@ -27,8 +27,8 @@
 namespace {
 
 /// Returns a string property from OpenVR.
-static std::string GetStringProperty_(vr::TrackedDeviceIndex_t device,
-                                      vr::TrackedDeviceProperty prop) {
+static Str GetStringProperty_(vr::TrackedDeviceIndex_t device,
+                              vr::TrackedDeviceProperty prop) {
     auto &vsys = *vr::VRSystem();
 
     const uint32_t len =
@@ -41,9 +41,9 @@ static std::string GetStringProperty_(vr::TrackedDeviceIndex_t device,
 }
 
 /// Returns the name of the SteamVR model with the given handle.
-static std::string GetModelName_(vr::VRInputValueHandle_t handle) {
+static Str GetModelName_(vr::VRInputValueHandle_t handle) {
     auto &vin = *vr::VRInput();
-    std::string name;
+    Str name;
     vr::InputOriginInfo_t info;
     if (vin.GetOriginTrackedDeviceInfo(handle, &info, sizeof(info)) ==
         vr::VRInputError_None) {
@@ -57,7 +57,7 @@ static std::string GetModelName_(vr::VRInputValueHandle_t handle) {
 }
 
 /// Reports successful loading of the named model.
-static void ReportModelLoad_(const std::string &name) {
+static void ReportModelLoad_(const Str &name) {
     auto &vmod = *vr::VRRenderModels();
     const size_t comp_count = vmod.GetComponentCount(name.c_str());
     KLOG('v', "Loaded controller model '" << name << "' with "
@@ -70,7 +70,7 @@ static void ReportModelLoad_(const std::string &name) {
 }
 
 /// Loads the named SteamVR model, returning a handle to it.
-static vr::RenderModel_t * LoadModel_(const std::string &name) {
+static vr::RenderModel_t * LoadModel_(const Str &name) {
     auto &vmod = *vr::VRRenderModels();
 
     vr::RenderModel_t       *model = nullptr;
@@ -121,7 +121,7 @@ static void FixNormals_(ModelMesh &mmesh) {
 }
 
 /// Builds and returns a ModelMesh from the given SteamVR model.
-static ModelMesh BuildMesh_(const std::string &name, vr::RenderModel_t &model) {
+static ModelMesh BuildMesh_(const Str &name, vr::RenderModel_t &model) {
     auto to_point3 = [](const vr::HmdVector3_t &p){
         return Point3f(p.v[0], p.v[1], p.v[2]);
     };
@@ -217,7 +217,7 @@ bool VRModelLoader::LoadControllerModel(uint64_t handle, Hand hand,
     auto &vmod   = *vr::VRRenderModels();
     bool success = false;
 
-    const std::string name = GetModelName_(handle);
+    const Str name = GetModelName_(handle);
     if (! name.empty()) {
         if (vr::RenderModel_t *model = LoadModel_(name)) {
             if (vr::RenderModel_TextureMap_t *tex =

@@ -87,7 +87,7 @@ class DiscWidget : public DraggableWidget {
     DiscWidget() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// Action being performed during a drag.

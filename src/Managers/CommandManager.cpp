@@ -12,7 +12,7 @@ CommandManager::CommandManager() :
     ResetCommandList();
 }
 
-void CommandManager::RegisterFunction(const std::string &type_name,
+void CommandManager::RegisterFunction(const Str &type_name,
                                       const CommandFunc &func) {
     ASSERT(! command_registry_.contains(type_name));
     command_registry_[type_name] = func;

@@ -41,14 +41,12 @@ class ScriptedApp : public Application {
     Emitter_Ptr     emitter_;  ///< Simulates mouse and key events.
 
     bool ProcessInstruction_(const SnapScript::Instr &instr);
-    bool LoadSession_(const std::string &file_name);
-    bool SetHand_(Hand hand, const std::string &controller_type);
+    bool LoadSession_(const Str &file_name);
+    bool SetHand_(Hand hand, const Str &controller_type);
     void SetTouchMode_(bool is_on);
-    bool TakeSnapshot_(const Range2f &rect, const std::string &file_name);
-    bool GetObjRect_(const std::string &object_name, float margin,
-                     Range2f &rect);
-    void BuildSelection_(const std::vector<std::string> &names,
-                         Selection &selection);
+    bool TakeSnapshot_(const Range2f &rect, const Str &file_name);
+    bool GetObjRect_(const Str &object_name, float margin, Range2f &rect);
+    void BuildSelection_(const StrVec &names, Selection &selection);
 
     template <typename T>
     const T & GetTypedInstr_(const SnapScript::Instr &instr) {

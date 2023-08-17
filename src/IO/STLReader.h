@@ -13,4 +13,4 @@ struct TriMesh;
 ///
 /// \ingroup IO
 TriMesh ReadSTLFile(const FilePath &path, float conversion_factor,
-                    std::string &error_message);
+                    Str &error_message);

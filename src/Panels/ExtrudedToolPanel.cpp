@@ -43,7 +43,7 @@ void ExtrudedToolPanel::InitInterface() {
     sides_slider_->SetValue(8);
     sides_text_->SetInitialText("8");
 
-    auto validate = [&](const std::string &s){ return ValidateSidesText_(s); };
+    auto validate = [&](const Str &s){ return ValidateSidesText_(s); };
     sides_text_->SetValidationFunc(validate);
 
     sides_slider_->GetValueChanged().AddObserver(
@@ -57,7 +57,7 @@ void ExtrudedToolPanel::UpdatePrecision_() {
                                      Vector2f::Zero());
 }
 
-bool ExtrudedToolPanel::ValidateSidesText_(const std::string &text) {
+bool ExtrudedToolPanel::ValidateSidesText_(const Str &text) {
     int n;
     if (Util::StringToInteger(text, n) && n >= 3 && n <= 100) {
         sides_slider_->SetValue(n);
@@ -77,13 +77,13 @@ void ExtrudedToolPanel::SetToPolygon_() {
     ReportChange("Profile", InteractionType::kImmediate);
 }
 
-void ExtrudedToolPanel::Activate_(const std::string &key, bool is_activation) {
+void ExtrudedToolPanel::Activate_(const Str &key, bool is_activation) {
     is_dragging_ = is_activation;
     ReportChange(key, is_activation ? InteractionType::kDragStart :
                  InteractionType::kDragEnd);
 }
 
-void ExtrudedToolPanel::Change_(const std::string &key) {
+void ExtrudedToolPanel::Change_(const Str &key) {
     ReportChange(key, is_dragging_ ? InteractionType::kDrag :
                  InteractionType::kImmediate);
 }

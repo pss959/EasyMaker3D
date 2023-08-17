@@ -8,7 +8,7 @@ void ChangePlaneCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ChangePlaneCommand::IsValid(std::string &details) {
+bool ChangePlaneCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! IsValidVector(GetPlane().normal)) {

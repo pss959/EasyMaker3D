@@ -22,7 +22,7 @@ class TreePanel : public Panel {
 
     /// Sets the name of the session to display at the top along with a string
     /// representing modifications made in the current session.
-    void SetSessionString(const std::string &str);
+    void SetSessionString(const Str &str);
 
     /// Sets the RootModel that defines the current set of models.
     void SetRootModel(const RootModelPtr &root_model);
@@ -36,7 +36,7 @@ class TreePanel : public Panel {
     virtual void SetContext(const ContextPtr &context) override;
 
     /// Defines this to update contents if necessary.
-    virtual void UpdateForRenderPass(const std::string &pass_name) override;
+    virtual void UpdateForRenderPass(const Str &pass_name) override;
 
   protected:
     TreePanel();

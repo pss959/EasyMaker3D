@@ -4,7 +4,7 @@
 #include "Models/HullModel.h"
 
 CombinedModelPtr CombineHullExecutor::CreateCombinedModel(
-    Command &command, const std::string &name) {
+    Command &command, const Str &name) {
     return Model::CreateModel<HullModel>(name.empty() ?
                                          CreateUniqueName("Hull") : name);
 }

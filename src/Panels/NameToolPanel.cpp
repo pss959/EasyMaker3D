@@ -5,12 +5,12 @@
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 
-void NameToolPanel::SetName(const std::string &name) {
+void NameToolPanel::SetName(const Str &name) {
     input_pane_->SetInitialText(name);
     original_name_ = name;
 }
 
-std::string NameToolPanel::GetName() const {
+Str NameToolPanel::GetName() const {
     return input_pane_->GetText();
 }
 
@@ -20,7 +20,7 @@ void NameToolPanel::InitInterface() {
     message_pane_ = root_pane->FindTypedPane<TextPane>("Message");
 
     // Set up validation of Model names.
-    auto validate = [&](const std::string &name){ return ValidateName_(name); };
+    auto validate = [&](const Str &name){ return ValidateName_(name); };
     input_pane_->SetValidationFunc(validate);
 
     AddButtonFunc("Apply",
@@ -34,10 +34,10 @@ void NameToolPanel::UpdateInterface() {
     message_pane_->SetText("");
 }
 
-bool NameToolPanel::ValidateName_(const std::string &name) {
-    const bool  is_changed = name != original_name_;
-    bool        is_valid = true;
-    std::string msg;
+bool NameToolPanel::ValidateName_(const Str &name) {
+    const bool is_changed = name != original_name_;
+    bool       is_valid = true;
+    Str        msg;
 
     if (! Model::IsValidName(name)) {
         is_valid = false;

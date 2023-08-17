@@ -10,10 +10,12 @@ void PasteCommand::AddFields() {
     Command::AddFields();
 }
 
-std::string PasteCommand::GetDescription() const {
+Str PasteCommand::GetDescription() const {
+#if XXXX
     ASSERTM(! model_names_.empty(),
             "SetModelsForDescription() was never called");
-    std::string desc = "Pasted " + GetModelsDesc(model_names_);
+#endif
+    Str desc = "Pasted " + GetModelsDesc(model_names_);
     const auto &parent = parent_name_.GetValue();
     if (! parent.empty())
         desc += " into Model \"" + parent + "\"";
@@ -22,6 +24,6 @@ std::string PasteCommand::GetDescription() const {
 
 void PasteCommand::SetModelsForDescription(
     const std::vector<ModelPtr> &models) {
-    model_names_ = Util::ConvertVector<std::string, ModelPtr>(
+    model_names_ = Util::ConvertVector<Str, ModelPtr>(
         models, [](const ModelPtr &m){ return m->GetName(); });
 }

@@ -15,7 +15,7 @@ void SliderPane::AddFields() {
     LeafPane::AddFields();
 }
 
-bool SliderPane::IsValid(std::string &details) {
+bool SliderPane::IsValid(Str &details) {
     if (! LeafPane::IsValid(details))
         return false;
     if (range_.WasSet()) {

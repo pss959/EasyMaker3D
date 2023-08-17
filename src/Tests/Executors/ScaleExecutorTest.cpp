@@ -47,7 +47,7 @@ class ScaleExecutorTest : public AppTestBase {
     void ApplyScaleCommand(const Model &model, ScaleCommand::Mode mode,
                            const Vector3f &ratios) {
         auto sc = Command::CreateCommand<ScaleCommand>();
-        sc->SetModelNames(std::vector<std::string>(1, model.GetName()));
+        sc->SetModelNames(StrVec(1, model.GetName()));
         sc->SetMode(mode);
         sc->SetRatios(ratios);
 
@@ -57,7 +57,7 @@ class ScaleExecutorTest : public AppTestBase {
     /// Convenience to apply a RotateCommand to rotate 90 degrees around Z.
     void ApplyRotateCommand(const Model &model) {
         auto rc = Command::CreateCommand<RotateCommand>();
-        rc->SetModelNames(std::vector<std::string>(1, model.GetName()));
+        rc->SetModelNames(StrVec(1, model.GetName()));
         rc->SetRotation(BuildRotation(0, 0, 1, 90));
         context.command_manager->AddAndDo(rc);
     }

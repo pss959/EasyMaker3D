@@ -185,8 +185,7 @@ void Controller::ShowGripHover(bool show, const Point3f &pt,
 }
 
 void Controller::ShowTouch(bool is_start) {
-    const std::string color_name =
-        is_start ? "TouchActiveColor" : "TouchInactiveColor";
+    const Str color_name = is_start ? "TouchActiveColor" : "TouchInactiveColor";
     touch_tip_node_->SetBaseColor(SG::ColorMap::SGetColor(color_name));
     Vibrate(.1f);
 }

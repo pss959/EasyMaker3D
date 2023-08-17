@@ -31,7 +31,7 @@ void ExtrudedTool::InitPanel() {
     UpdatePrecision_();
 }
 
-void ExtrudedTool::PanelChanged(const std::string &key,
+void ExtrudedTool::PanelChanged(const Str &key,
                                 ToolPanel::InteractionType type) {
     PanelTool::PanelChanged(key, type);
 

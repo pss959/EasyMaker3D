@@ -7,13 +7,12 @@
 /// \ingroup Executors
 class ConvertClipExecutor : public ConvertExecutorBase {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ConvertClipCommand";
     }
 
   protected:
-    virtual ConvertedModelPtr CreateConvertedModel(
-        const std::string &name) override;
+    virtual ConvertedModelPtr CreateConvertedModel(const Str &name) override;
 
     /// Redefines this to use the primary ClippedModel's plane for all
     /// secondary selections.

@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ConvertTaperCommand);
 /// \ingroup Commands
 class ConvertTaperCommand : public ConvertCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ConvertTaperCommand() {}

@@ -136,8 +136,7 @@ void ScaleTool::FindParts_() {
     // The feedback is stored when activated.
 }
 
-void ScaleTool::InitScaler_(size_t index, const std::string &name,
-                            const Vector3f &vec) {
+void ScaleTool::InitScaler_(size_t index, const Str &name, const Vector3f &vec) {
     ASSERT(parts_);
     auto &scaler = parts_->scalers[index];
 

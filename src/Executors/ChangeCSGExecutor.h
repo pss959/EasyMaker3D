@@ -11,7 +11,7 @@
 /// \ingroup Executors
 class ChangeCSGExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ChangeCSGOperationCommand";
     }
 
@@ -25,8 +25,8 @@ class ChangeCSGExecutor : public Executor {
         struct PerModel {
             SelPath      path_to_model;
             CSGOperation old_operation;
-            std::string  old_name;
-            std::string  new_name;
+            Str          old_name;
+            Str          new_name;
             Vector3f     old_translation;
         };
         std::vector<PerModel> per_model;

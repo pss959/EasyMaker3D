@@ -42,7 +42,7 @@ class RevSurfModel : public PrimitiveModel {
   protected:
     RevSurfModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
     virtual TriMesh BuildMesh() override;
 

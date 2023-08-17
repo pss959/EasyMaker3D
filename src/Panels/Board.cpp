@@ -35,7 +35,7 @@ class Board::Impl_ {
                   const BoardAgent::ResultFunc &result_func);
     void PushPanel(const PanelPtr &panel,
                    const BoardAgent::ResultFunc &result_func);
-    bool PopPanel(const std::string &result);
+    bool PopPanel(const Str &result);
     PanelPtr GetCurrentPanel() const;
     void SetPanelScale(float scale);
     void Show(bool shown);
@@ -190,7 +190,7 @@ void Board::Impl_::PushPanel(const PanelPtr &panel,
     ReplacePanel_(cur_panel, panel);
 }
 
-bool Board::Impl_::PopPanel(const std::string &result) {
+bool Board::Impl_::PopPanel(const Str &result) {
     ASSERT(! panel_stack_.empty());
 
     // Copy the info so the pop() does not affect the rest of the code.
@@ -748,7 +748,7 @@ void Board::PushPanel(const PanelPtr &panel,
     impl_->PushPanel(panel, result_func);
 }
 
-bool Board::PopPanel(const std::string &result) {
+bool Board::PopPanel(const Str &result) {
     return impl_->PopPanel(result);
 }
 
@@ -770,7 +770,7 @@ void Board::PostSetUpIon() {
     impl_->InitCanvas();
 }
 
-void Board::UpdateForRenderPass(const std::string &pass_name) {
+void Board::UpdateForRenderPass(const Str &pass_name) {
     impl_->UpdateSizeIfNecessary();
     Grippable::UpdateForRenderPass(pass_name);
 }

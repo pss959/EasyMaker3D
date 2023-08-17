@@ -16,7 +16,7 @@ void BeveledModel::AddFields() {
     ScaledConvertedModel::AddFields();
 }
 
-bool BeveledModel::IsValid(std::string &details) {
+bool BeveledModel::IsValid(Str &details) {
     if (! ScaledConvertedModel::IsValid(details))
         return false;
     if (bevel_scale_ <= 0) {

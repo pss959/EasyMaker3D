@@ -27,8 +27,7 @@ class SetUpIonTest : public SceneTestBase {
 
     /// Returns the named Uniform from the given UniformBlock. Asserts if it is
     /// not found.
-    SG::UniformPtr FindUniform(const SG::UniformBlock &block,
-                               const std::string &name) {
+    SG::UniformPtr FindUniform(const SG::UniformBlock &block, const Str &name) {
         const auto &uniforms = block.GetUniforms();
         const auto match = [&](const auto &u){ return u->GetName() == name; };
         const auto it = std::find_if(uniforms.begin(), uniforms.end(), match);
@@ -52,7 +51,7 @@ TEST_F(SetUpIonTest, EmptyScene) {
 }
 
 TEST_F(SetUpIonTest, IonContext) {
-    const std::string input = ReadDataFile("FullScene.emd");
+    const Str input = ReadDataFile("FullScene.emd");
     auto scene = ReadScene(input, true);
     auto context = GetIonContext();
     EXPECT_NOT_NULL(context);
@@ -62,7 +61,7 @@ TEST_F(SetUpIonTest, IonContext) {
 }
 
 TEST_F(SetUpIonTest, NodeColors) {
-    const std::string input = ReadDataFile("FullScene.emd");
+    const Str input = ReadDataFile("FullScene.emd");
     auto scene = ReadScene(input, true);
     EXPECT_NOT_NULL(scene.get());
     auto root = scene->GetRootNode();
@@ -80,7 +79,7 @@ TEST_F(SetUpIonTest, NodeColors) {
 }
 
 TEST_F(SetUpIonTest, Texture) {
-    const std::string input = ReadDataFile("FullScene.emd");
+    const Str input = ReadDataFile("FullScene.emd");
     auto scene = ReadScene(input, true);
 
     // The first UniformBlock in the root node has a Texture.
@@ -114,7 +113,7 @@ TEST_F(SetUpIonTest, Texture) {
 }
 
 TEST_F(SetUpIonTest, Uniforms) {
-    const std::string input = ReadDataFile("FullScene.emd");
+    const Str input = ReadDataFile("FullScene.emd");
     SG::ScenePtr scene = ReadScene(input, true);
     EXPECT_NOT_NULL(scene.get());
 
@@ -134,7 +133,7 @@ TEST_F(SetUpIonTest, Uniforms) {
 
     // There should be 4 Uniforms set up for the Material.
     EXPECT_EQ(4U, block0->GetUniforms().size());
-    const std::vector<std::string> material_uniform_names{
+    const StrVec material_uniform_names{
         "uBaseColor", "uEmissiveColor", "uSmoothness", "uMetalness" };
     for (const auto &u: block0->GetUniforms())
         EXPECT_TRUE(Util::Contains(material_uniform_names, u->GetName()));

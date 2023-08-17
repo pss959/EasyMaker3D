@@ -102,7 +102,7 @@ void RotationTool::FindParts_() {
 
     // Initialize axis rotators.
     for (int dim = 0; dim < 3; ++dim ) {
-        std::string name = ".AxisRotator";
+        Str name = ".AxisRotator";
         name[0] = 'X' + dim;
         auto rotator = SG::FindTypedNodeUnderNode<DiscWidget>(*this, name);
         parts_->axis_rotators[dim] = rotator;

@@ -1,5 +1,5 @@
 #include "Commands/ChangeBendCommand.h"
 
-std::string ChangeBendCommand::GetDescription() const {
+Str ChangeBendCommand::GetDescription() const {
     return "Bent " + GetModelsDesc(GetModelNames());
 }

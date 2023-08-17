@@ -62,8 +62,7 @@ void ScaleWidget::SetMaxValue(float value) {
     UpdateSlidersAndStick_();
 }
 
-void ScaleWidget::SubWidgetActivated(const std::string &name,
-                                     bool is_activation) {
+void ScaleWidget::SubWidgetActivated(const Str &name, bool is_activation) {
     const auto slider = name == "MinSlider" ? min_slider_ : max_slider_;
 
     if (is_activation) {

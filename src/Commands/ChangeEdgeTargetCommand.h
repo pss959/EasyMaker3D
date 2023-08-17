@@ -11,7 +11,7 @@ DECL_SHARED_PTR(ChangeEdgeTargetCommand);
 /// \ingroup Commands
 class ChangeEdgeTargetCommand : public Command {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Returns the old EdgeTarget.
     const EdgeTargetPtr & GetOldTarget() const { return old_target_; }
@@ -29,7 +29,7 @@ class ChangeEdgeTargetCommand : public Command {
     ChangeEdgeTargetCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
   private:

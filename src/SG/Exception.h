@@ -9,7 +9,7 @@ namespace SG {
 /// \ingroup SG
 class Exception : public ExceptionBase {
   public:
-    Exception(const std::string &msg) : ExceptionBase(msg) {}
+    Exception(const Str &msg) : ExceptionBase(msg) {}
 };
 
 }  // namespace SG

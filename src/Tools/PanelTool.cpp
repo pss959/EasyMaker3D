@@ -17,7 +17,7 @@ void PanelTool::Attach() {
 
     // Attach the PanelChanged callback to Panel interaction.
     panel_->GetInteraction().AddObserver(
-        this, [&](const std::string &key, ToolPanel::InteractionType type){
+        this, [&](const Str &key, ToolPanel::InteractionType type){
             if (type == ToolPanel::InteractionType::kDragStart)
                 GetDragStarted().Notify(*this);
             PanelChanged(key, type);

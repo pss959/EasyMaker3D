@@ -19,7 +19,7 @@ DECL_SHARED_PTR(TextPane);
 /// \ingroup Panes
 class TextKeyPane : public KeyPane {
   public:
-    virtual TextAction GetAction(std::string &chars) const override;
+    virtual TextAction GetAction(Str &chars) const override;
 
     /// Defines this to change the text label based on the current shift state.
     virtual void ProcessShift(bool is_shifted) override;
@@ -28,22 +28,22 @@ class TextKeyPane : public KeyPane {
     TextKeyPane() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> text_;
-    Parser::TField<std::string> shifted_text_;
-    Parser::TField<std::string> label_;
+    Parser::TField<Str> text_;
+    Parser::TField<Str> shifted_text_;
+    Parser::TField<Str> label_;
     ///@}
 
     /// Stores the TextPane inside the TextKeyPane.
     TextPanePtr text_pane_;
 
     /// Returns the text to insert when the key is pressed.
-    std::string GetText_() const;
+    Str GetText_() const;
 
     friend class Parser::Registry;
 };

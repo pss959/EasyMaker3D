@@ -14,7 +14,7 @@ DECL_SHARED_PTR(RotateCommand);
 /// \ingroup Commands
 class RotateCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Returns the rotation being applied, which is in stage coordinates if
     /// IsAxisAligned() is true or in the local coordinate of the primary Model

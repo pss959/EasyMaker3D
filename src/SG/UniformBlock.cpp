@@ -19,7 +19,7 @@ namespace {
 template <typename T>
 static void SetUniformValue_(const std::vector<SG::UniformPtr> &uniforms,
                              ion::gfx::UniformBlockPtr ion_block,
-                             const std::string &name, const T &value) {
+                             const Str &name, const T &value) {
     ASSERT(ion_block);
 
     for (const auto &uniform: uniforms) {
@@ -50,12 +50,12 @@ void UniformBlock::AddFields() {
     Object::AddFields();
 }
 
-void UniformBlock::SetPassName(const std::string &name) {
+void UniformBlock::SetPassName(const Str &name) {
     ASSERT(GetPassName().empty());
     pass_name_ = name;
 }
 
-void UniformBlock::SetSubImageName(const std::string &name) {
+void UniformBlock::SetSubImageName(const Str &name) {
     sub_image_name_ = name;
     if (ion_uniform_block_) {
         for (const auto &tex: GetTextures())
@@ -125,25 +125,25 @@ void UniformBlock::SetEmissiveColor(const Color &color) {
     ion_uniform_block_->SetUniformValue(ecu_->GetIonIndex(), color);
 }
 
-void UniformBlock::SetIntUniformValue(const std::string &name, int value) {
+void UniformBlock::SetIntUniformValue(const Str &name, int value) {
     SetUniformValue_<int>(GetUniforms(), ion_uniform_block_, name, value);
 }
 
-void UniformBlock::SetFloatUniformValue(const std::string &name, float value) {
+void UniformBlock::SetFloatUniformValue(const Str &name, float value) {
     SetUniformValue_<float>(GetUniforms(), ion_uniform_block_, name, value);
 }
 
-void UniformBlock::SetVector3fUniformValue(const std::string &name,
+void UniformBlock::SetVector3fUniformValue(const Str &name,
                                            const Vector3f &value) {
     SetUniformValue_<Vector3f>(GetUniforms(), ion_uniform_block_, name, value);
 }
 
-void UniformBlock::SetVector4fUniformValue(const std::string &name,
+void UniformBlock::SetVector4fUniformValue(const Str &name,
                                            const Vector4f &value) {
     SetUniformValue_<Vector4f>(GetUniforms(), ion_uniform_block_, name, value);
 }
 
-void UniformBlock::SetMatrix4fUniformValue(const std::string &name,
+void UniformBlock::SetMatrix4fUniformValue(const Str &name,
                                            const Matrix4f &value) {
     SetUniformValue_<Matrix4f>(GetUniforms(), ion_uniform_block_, name, value);
 }
@@ -165,8 +165,8 @@ void UniformBlock::AddTextureUniform_(const Texture &tex) {
     ASSERT(tex.GetIonTexture());
 
     // Bypass the SG::Uniform code, since there is no version for textures.
-    const std::string &name  = tex.GetUniformName();
-    const int          count = tex.GetCount();
+    const Str &name  = tex.GetUniformName();
+    const int  count = tex.GetCount();
     ion::gfx::Uniform u;
     if (count > 1) {
         std::vector<ion::gfx::TexturePtr> texvec(count, tex.GetIonTexture());
@@ -186,7 +186,7 @@ void UniformBlock::AddTextureUniform_(const Texture &tex) {
 void UniformBlock::UpdateSubImage_(const Texture &tex) {
     ASSERT(ion_uniform_block_);
     ASSERT(tex.GetImage());
-    const std::string &sub_image_name = GetSubImageName();
+    const Str &sub_image_name = GetSubImageName();
     const auto sub = tex.GetImage()->FindSubImage(sub_image_name);
     ASSERTM(sub, "SubImage '" + sub_image_name + "'");
 
@@ -194,7 +194,7 @@ void UniformBlock::UpdateSubImage_(const Texture &tex) {
     // there is no SG equivalent needed for these uniforms, so they are just
     // handled directly here. Also note that this is a rare change, so there is
     // no need to save the index.
-    auto set_uniform = [&](const std::string &name, const Vector2f &value){
+    auto set_uniform = [&](const Str &name, const Vector2f &value){
         const size_t index = ion_uniform_block_->GetUniformIndex(name);
         if (index == ion::base::kInvalidIndex)
             ion_uniform_block_->AddUniform(
@@ -206,8 +206,8 @@ void UniformBlock::UpdateSubImage_(const Texture &tex) {
     set_uniform("uTextureOffset", sub->GetTextureOffset());
 }
 
-UniformPtr UniformBlock::CreateAndAddUniform_(const std::string &name,
-                                              const std::string &field_name) {
+UniformPtr UniformBlock::CreateAndAddUniform_(const Str &name,
+                                              const Str &field_name) {
     ASSERT(ion_uniform_block_);
     UniformPtr u = Parser::Registry::CreateObject<Uniform>(name);
     u->SetFieldName(field_name);

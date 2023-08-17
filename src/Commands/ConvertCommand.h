@@ -14,26 +14,22 @@ DECL_SHARED_PTR(ConvertCommand);
 class ConvertCommand : public MultiModelCommand {
   public:
     /// Sets the new names of the resulting ConvertedModels.
-    void SetResultNames(const std::vector<std::string> &names) {
-        result_names_ = names;
-    }
+    void SetResultNames(const StrVec &names) { result_names_ = names; }
 
     /// Returns the new names of the resulting ConvertedModels.
-    const std::vector<std::string> & GetResultNames() const {
-        return result_names_;
-    }
+    const StrVec & GetResultNames() const { return result_names_; }
 
   protected:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
     /// Useful convenience for building description strings.
-    std::string BuildDescription(const std::string &op) const;
+    Str BuildDescription(const Str &op) const;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<std::string> result_names_;
+    Parser::VField<Str> result_names_;
     ///@}
 
     friend class Parser::Registry;

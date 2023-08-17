@@ -17,7 +17,7 @@ void Scene::AddFields() {
     Object::AddFields();
 }
 
-bool Scene::IsValid(std::string &details) {
+bool Scene::IsValid(Str &details) {
     if (! Object::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
 

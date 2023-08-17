@@ -5,7 +5,7 @@
 class CopyTest : public ParserTestBase {};
 
 TEST_F(CopyTest, CopyContentsFrom) {
-    const std::string input = GetSimpleInput();
+    const Str input = GetSimpleInput();
 
     Parser::ObjectPtr obj1 = ParseString(input);
     Parser::ObjectPtr obj2 = obj1->CloneTyped<Simple>(true, "TestObj2");
@@ -35,7 +35,7 @@ TEST_F(CopyTest, CopyContentsFrom) {
     EXPECT_EQ(6,  ints[0]);
     EXPECT_EQ(5,  ints[1]);
     EXPECT_EQ(-2, ints[2]);
-    const std::vector<std::string> &strs = sp->strs_val.GetValue();
+    const StrVec &strs = sp->strs_val.GetValue();
     EXPECT_EQ(2U,  strs.size());
     EXPECT_EQ("A", strs[0]);
     EXPECT_EQ("B", strs[1]);

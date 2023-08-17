@@ -15,7 +15,7 @@ namespace Util {
 
 /// Writes the given string to the given FilePath. Returns false if the file
 /// could not be written.
-bool WriteString(const FilePath &path, const std::string &s);
+bool WriteString(const FilePath &path, const Str &s);
 
 /// Writes an Ion Image to file with the given path. Returns false if the file
 /// could not be written. If flip_vertically is true, the written image is

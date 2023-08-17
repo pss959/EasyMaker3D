@@ -52,8 +52,8 @@ SessionManager::GetModifications() const {
     return mods;
 }
 
-std::string SessionManager::GetSessionString() const {
-    std::string session_string = ! current_session_name_.empty() ?
+Str SessionManager::GetSessionString() const {
+    Str session_string = ! current_session_name_.empty() ?
         current_session_name_ : "<Untitled Session>";
 
     const auto mods = GetModifications();
@@ -70,8 +70,8 @@ std::string SessionManager::GetSessionString() const {
     return session_string;
 }
 
-bool SessionManager::SaveSessionWithComments(
-    const FilePath &path, const std::vector<std::string> &comments) {
+bool SessionManager::SaveSessionWithComments(const FilePath &path,
+                                             const StrVec &comments) {
 
     KLOG('w', "Saving session to '" << path.ToNativeString() << "'");
     std::ofstream out(path.ToNativeString());
@@ -98,14 +98,14 @@ void SessionManager::NewSession() {
 }
 
 bool SessionManager::SaveSession(const FilePath &path) {
-    return SaveSessionWithComments(path, std::vector<std::string>());
+    return SaveSessionWithComments(path, StrVec());
 }
 
-bool SessionManager::LoadSession(const FilePath &path, std::string &error) {
+bool SessionManager::LoadSession(const FilePath &path, Str &error) {
     return LoadSessionSafe_(path, &error);
 }
 
-std::string SessionManager::GetModelNameForExport() const {
+Str SessionManager::GetModelNameForExport() const {
     const auto &sel = selection_manager_->GetSelection();
     return sel.HasAny() ? sel.GetPrimary().GetModel()->GetName() : "";
 }
@@ -124,11 +124,11 @@ bool SessionManager::Export(const FilePath &path, FileFormat format,
     return WriteSTLFile(meshes, path, format, conv.GetFactor());
 }
 
-const std::string & SessionManager::GetPreviousSessionName() const {
+const Str & SessionManager::GetPreviousSessionName() const {
     return previous_session_name_;
 }
 
-const std::string & SessionManager::GetCurrentSessionName() const {
+const Str & SessionManager::GetCurrentSessionName() const {
     return current_session_name_;
 }
 
@@ -141,8 +141,7 @@ void SessionManager::ResetSession_() {
     SaveOriginalSessionState_();
 }
 
-bool SessionManager::LoadSessionSafe_(const FilePath &path,
-                                      std::string *error) {
+bool SessionManager::LoadSessionSafe_(const FilePath &path, Str *error) {
     ResetSession_();
     KLOG('w', "Loading session from '" << path.ToString() << "'");
     try {
@@ -182,6 +181,6 @@ void SessionManager::SaveOriginalSessionState_() {
     original_session_state_->CopyFrom(*command_manager_->GetSessionState());
 }
 
-std::string SessionManager::GetSessionNameFromPath_(const FilePath &path) {
+Str SessionManager::GetSessionNameFromPath_(const FilePath &path) {
     return path.GetFileName(true);  // Removes extension.
 }

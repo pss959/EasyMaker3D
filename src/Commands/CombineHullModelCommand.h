@@ -13,7 +13,7 @@ DECL_SHARED_PTR(CombineHullModelCommand);
 /// \ingroup Commands
 class CombineHullModelCommand : public CombineCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     CombineHullModelCommand() {}

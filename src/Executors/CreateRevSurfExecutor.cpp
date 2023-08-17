@@ -8,7 +8,7 @@ ModelPtr CreateRevSurfExecutor::CreateModel(Command &command) {
     CreateRevSurfModelCommand &crc =
         GetTypedCommand<CreateRevSurfModelCommand>(command);
 
-    std::string name = crc.GetResultName();
+    Str name = crc.GetResultName();
     if (name.empty()) {
         name = CreateUniqueName("RevSurf");
         crc.SetResultName(name);

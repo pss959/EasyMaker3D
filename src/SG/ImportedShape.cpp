@@ -20,7 +20,7 @@ void ImportedShape::AddFields() {
     TriMeshShape::AddFields();
 }
 
-ImportedShapePtr ImportedShape::CreateFrom(const std::string &path,
+ImportedShapePtr ImportedShape::CreateFrom(const Str &path,
                                            NormalType normal_type) {
     ImportedShapePtr imp = Parser::Registry::CreateObject<ImportedShape>();
     imp->path_        = path;

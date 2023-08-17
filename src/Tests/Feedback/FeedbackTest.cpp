@@ -16,7 +16,7 @@
 class FeedbackTest : public SceneTestBase {
   protected:
     /// Returns contents for a real scene that includes feedback.
-    static std::string GetFeedbackContents() {
+    static Str GetFeedbackContents() {
         return R"(
 children: [<"nodes/templates/Border.emd">,
            <"nodes/Feedback.emd">]

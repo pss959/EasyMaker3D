@@ -13,7 +13,7 @@ class ScaleWidgetTest : public SceneTestBase {
 };
 
 ScaleWidgetPtr ScaleWidgetTest::GetScaleWidget(bool use_modified_mode) {
-    const std::string input = R"(
+    const Str input = R"(
 ScaleWidget "TestScaleWidget" {
   use_modified_mode: <UMM>,
   children: [
@@ -93,8 +93,8 @@ TEST_F(ScaleWidgetTest, DragAsymmetric) {
             ++min_count;
     });
 
-    DragTester dtmin(sw, std::vector<std::string>{ "MinSlider" });
-    DragTester dtmax(sw, std::vector<std::string>{ "MaxSlider" });
+    DragTester dtmin(sw, StrVec{ "MinSlider" });
+    DragTester dtmax(sw, StrVec{ "MaxSlider" });
 
     // Scale by dragging the min slider.
     dtmin.ApplyMouseDrag(Point3f(4, 0, 0), Point3f(-2, 0, 0));
@@ -127,8 +127,8 @@ TEST_F(ScaleWidgetTest, DragSymmetric) {
             ++min_count;
     });
 
-    DragTester dtmin(sw, std::vector<std::string>{ "MinSlider" });
-    DragTester dtmax(sw, std::vector<std::string>{ "MaxSlider" });
+    DragTester dtmin(sw, StrVec{ "MinSlider" });
+    DragTester dtmax(sw, StrVec{ "MaxSlider" });
     dtmin.SetIsModifiedMode(true);
     dtmax.SetIsModifiedMode(true);
 

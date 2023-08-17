@@ -1,5 +1,5 @@
 #include "Commands/ConvertClipCommand.h"
 
-std::string ConvertClipCommand::GetDescription() const {
+Str ConvertClipCommand::GetDescription() const {
     return BuildDescription("clip");
 }

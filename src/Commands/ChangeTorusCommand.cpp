@@ -11,7 +11,7 @@ void ChangeTorusCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ChangeTorusCommand::IsValid(std::string &details) {
+bool ChangeTorusCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (is_inner_radius_ && new_radius_ < TK::kMinTorusInnerRadius) {
@@ -27,8 +27,8 @@ bool ChangeTorusCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ChangeTorusCommand::GetDescription() const {
-    return std::string("Changed the ") +
+Str ChangeTorusCommand::GetDescription() const {
+    return Str("Changed the ") +
         (is_inner_radius_.GetValue() ? "inner" : "outer") + " radius of " +
         GetModelsDesc(GetModelNames());
 }

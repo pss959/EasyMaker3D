@@ -6,6 +6,6 @@ void TranslateCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-std::string TranslateCommand::GetDescription() const {
+Str TranslateCommand::GetDescription() const {
     return "Translated " + GetModelsDesc(GetModelNames());
 }

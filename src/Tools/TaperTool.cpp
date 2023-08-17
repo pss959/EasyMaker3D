@@ -15,8 +15,7 @@ void TaperTool::InitPanel() {
     GetTypedPanel<TaperToolPanel>().SetTaper(model->GetTaper());
 }
 
-void TaperTool::PanelChanged(const std::string &key,
-                             ToolPanel::InteractionType type) {
+void TaperTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
     PanelTool::PanelChanged(key, type);
 
     TaperToolPanel &panel = GetTypedPanel<TaperToolPanel>();

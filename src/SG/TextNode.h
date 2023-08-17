@@ -33,30 +33,28 @@ class TextNode : public Node {
   public:
     ~TextNode();
 
-    const std::string & GetText()            const { return text_; }
-    const std::string & GetFontName()        const { return font_name_; }
-    unsigned int        GetFontSize()        const { return font_size_; }
-    unsigned int        GetSDFPadding()      const { return sdf_padding_; }
-    unsigned int        GetMaxImageSize()    const { return max_image_size_; }
-    const Color &       GetColor()           const { return color_; }
-    const Color &       GetOutlineColor()    const { return outline_color_; }
-    float               GetOutlineWidth()    const { return outline_width_; }
-    float               GetHalfSmoothWidth() const {
-        return half_smooth_width_;
-    }
+    const Str &   GetText()            const { return text_; }
+    const Str &   GetFontName()        const { return font_name_; }
+    unsigned int  GetFontSize()        const { return font_size_; }
+    unsigned int  GetSDFPadding()      const { return sdf_padding_; }
+    unsigned int  GetMaxImageSize()    const { return max_image_size_; }
+    const Color & GetColor()           const { return color_; }
+    const Color & GetOutlineColor()    const { return outline_color_; }
+    float         GetOutlineWidth()    const { return outline_width_; }
+    float         GetHalfSmoothWidth() const { return half_smooth_width_; }
     const LayoutOptionsPtr GetLayoutOptions() const { return layout_options_; }
 
-    void SetFontName(const std::string &font_name);
+    void SetFontName(const Str &font_name);
     void SetFontSize(unsigned int font_size);
 
     /// Updates the text string.
-    void SetText(const std::string &new_text);
+    void SetText(const Str &new_text);
 
     /// Updates the text color.
     void SetTextColor(const Color &color);
 
     /// Updates the text string and sets it to the given color.
-    void SetTextWithColor(const std::string &new_text, const Color &color);
+    void SetTextWithColor(const Str &new_text, const Color &color);
 
     /// Sets the LayoutOptions.
     void SetLayoutOptions(const LayoutOptionsPtr &opts);
@@ -81,7 +79,7 @@ class TextNode : public Node {
         const std::vector<ion::gfx::ShaderProgramPtr> &programs) override;
 
     /// Redefines this to also rebuild the text if necessary.
-    virtual void UpdateForRenderPass(const std::string &pass_name) override;
+    virtual void UpdateForRenderPass(const Str &pass_name) override;
 
     /// Sets the scale and rotation fields so the text faces the positive Z
     /// axis and is a reasonable size. This is passed a matrix used to convert
@@ -94,7 +92,7 @@ class TextNode : public Node {
     TextNode() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     /// Redefines this to use the bounds of the text rectangle.
@@ -106,8 +104,8 @@ class TextNode : public Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>        text_;
-    Parser::TField<std::string>        font_name_;
+    Parser::TField<Str>                text_;
+    Parser::TField<Str>                font_name_;
     Parser::TField<unsigned int>       font_size_;
     Parser::TField<unsigned int>       sdf_padding_;
     Parser::TField<unsigned int>       max_image_size_;

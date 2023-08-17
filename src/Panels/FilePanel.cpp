@@ -39,14 +39,14 @@ class FilePanel::Impl_ {
     /// \name Setup functions.
     ///@{
     void Reset();
-    void SetTitle(const std::string &title) { title_ = title; }
+    void SetTitle(const Str &title) { title_ = title; }
     void SetTargetType(TargetType type) { target_type_ = type; }
     void SetInitialPath(const FilePath &path) { initial_path_ = path; }
     void SetFileFormats(const std::vector<FileFormat> &formats) {
         file_formats_ = formats;
     }
-    void SetExtension(const std::string &extension) { extension_ = extension; }
-    void SetHighlightPath(const FilePath &path, const std::string &annotation) {
+    void SetExtension(const Str &extension) { extension_ = extension; }
+    void SetHighlightPath(const FilePath &path, const Str &annotation) {
         highlight_path_       = path;
         highlight_annotation_ = annotation;
     }
@@ -89,10 +89,10 @@ class FilePanel::Impl_ {
     TargetType              target_type_;
     FilePath                initial_path_;
     std::vector<FileFormat> file_formats_;
-    std::string             title_;
-    std::string             extension_;
+    Str                     title_;
+    Str                     extension_;
     FilePath                highlight_path_;
-    std::string             highlight_annotation_;
+    Str                     highlight_annotation_;
     int                     highlighted_index_ = -1;  ///< -1 if no highlight.
 
     FilePath                result_path_;
@@ -120,9 +120,9 @@ class FilePanel::Impl_ {
     void    SelectFile_(const FilePath &path);
     void    InitFocus_();
     void    UpdateFiles_(bool scroll_to_highlighted_file);
-    int     CreateFileButtons_(const std::vector<std::string> &names,
-                               bool are_dirs, std::vector<PanePtr> &buttons);
-    PanePtr CreateFileButton_(size_t index, const std::string &name,
+    int     CreateFileButtons_(const StrVec &names, bool are_dirs,
+                               std::vector<PanePtr> &buttons);
+    PanePtr CreateFileButton_(size_t index, const Str &name,
                               bool is_dir, bool is_highlighted);
     void    UpdateButtons_(PathStatus_ path_status);
     void    FocusFileButton_();
@@ -205,7 +205,7 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
 
     // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<FilePathList::Direction>()) {
-        const std::string name = Util::EnumToWords(dir);
+        const Str name = Util::EnumToWords(dir);
         auto but = root_pane.FindTypedPane<ButtonPane>(name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
@@ -218,7 +218,7 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     root_pane.RemovePane(file_button_pane_);
 
     // Install a validation function for the TextInputPane.
-    input_pane_->SetValidationFunc([&](const std::string &path_string){
+    input_pane_->SetValidationFunc([&](const Str &path_string){
         const PathStatus_ status = GetPathStatus_(path_string);
         UpdateButtons_(status);
         return status != PathStatus_::kInvalid;
@@ -234,7 +234,7 @@ void FilePanel::Impl_::UpdateInterface() {
         format_pane_->SetEnabled(false);
     }
     else {
-        const auto choices = Util::ConvertVector<std::string, FileFormat>(
+        const auto choices = Util::ConvertVector<Str, FileFormat>(
             file_formats_,
             [](const FileFormat &f){ return Util::EnumToWords(f); });
         format_pane_->SetChoices(choices, 0);
@@ -298,7 +298,7 @@ void FilePanel::Impl_::OpenPath_(const FilePath &path) {
 }
 
 void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
-    std::string path_string = path.ToString();
+    Str path_string = path.ToString();
     if (! path_string.ends_with(FilePath::GetSeparator()))
         path_string += FilePath::GetSeparator();
 
@@ -331,8 +331,8 @@ void FilePanel::Impl_::InitFocus_() {
 void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     // Get sorted lists of directories and files in the current directory.
     const bool include_hidden = hidden_files_pane_->GetState();
-    std::vector<std::string> subdirs;
-    std::vector<std::string> files;
+    StrVec subdirs;
+    StrVec files;
     path_list_->GetContents(subdirs, files, extension_, include_hidden);
 
     // Ignore files if target must be a directory.
@@ -366,11 +366,10 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     }
 }
 
-int FilePanel::Impl_::CreateFileButtons_(
-    const std::vector<std::string> &names,
-    bool are_dirs, std::vector<PanePtr> &buttons) {
+int FilePanel::Impl_::CreateFileButtons_(const StrVec &names, bool are_dirs,
+                                         std::vector<PanePtr> &buttons) {
 
-    auto is_highlighted_path = [&](const std::string &name){
+    auto is_highlighted_path = [&](const Str &name){
         return highlight_path_ &&
             FilePath::Join(path_list_->GetCurrent(), name) == highlight_path_;
     };
@@ -389,15 +388,14 @@ int FilePanel::Impl_::CreateFileButtons_(
     return highlighted_index;
 }
 
-PanePtr FilePanel::Impl_::CreateFileButton_(size_t index,
-                                            const std::string &name,
+PanePtr FilePanel::Impl_::CreateFileButton_(size_t index, const Str &name,
                                             bool is_dir, bool is_highlighted) {
     auto but = file_button_pane_->CloneTyped<ButtonPane>(
         true, (is_dir ? "Dir_" : "File_") + Util::ToString(index));
     auto text = but->FindTypedPane<TextPane>("ButtonText");
     text->SetText(is_highlighted ? name + highlight_annotation_ : name);
 
-    const std::string color_name = is_highlighted ? "FileHighlightColor" :
+    const Str color_name = is_highlighted ? "FileHighlightColor" :
         is_dir ? "FileDirectoryColor" : "FileColor";
     text->SetColor(SG::ColorMap::SGetColor(color_name));
 
@@ -486,7 +484,7 @@ void FilePanel::InitInterface() {
     // The Impl_ class cannot call protected functions, so these need to be
     // done here.
     for (auto dir: Util::EnumValues<FilePathList::Direction>()) {
-        const std::string name = Util::EnumToWords(dir);
+        const Str name = Util::EnumToWords(dir);
         AddButtonFunc(name, [this, dir](){ impl_->GoInDirection(dir); });
     }
 
@@ -498,7 +496,7 @@ void FilePanel::UpdateInterface() {
     impl_->UpdateInterface();
 }
 
-void FilePanel::SetTitle(const std::string &title) {
+void FilePanel::SetTitle(const Str &title) {
     impl_->SetTitle(title);
 }
 
@@ -514,12 +512,12 @@ void FilePanel::SetFileFormats(const std::vector<FileFormat> &formats) {
     impl_->SetFileFormats(formats);
 }
 
-void FilePanel::SetExtension(const std::string &extension) {
+void FilePanel::SetExtension(const Str &extension) {
     impl_->SetExtension(extension);
 }
 
 void FilePanel::SetHighlightPath(const FilePath &path,
-                                 const std::string &annotation) {
+                                 const Str &annotation) {
     impl_->SetHighlightPath(path, annotation);
 }
 
@@ -535,7 +533,7 @@ void FilePanel::UpdateForPaneSizeChange() {
     impl_->UpdateForPaneSizeChange(GetFocusedPane());
 }
 
-void FilePanel::ProcessResult(const std::string &result) {
+void FilePanel::ProcessResult(const Str &result) {
     ReportChange(result, InteractionType::kImmediate);
     Close(result);
 }
@@ -546,9 +544,9 @@ void FilePanel::TryAcceptPath_() {
     }
     else {
         // There is a conflict. Ask the user what to do.
-        const std::string msg = "File \"" + impl_->GetPath().ToString() +
+        const Str msg = "File \"" + impl_->GetPath().ToString() +
             "\" exists.\nDo you want to overwrite it?";
-        auto func = [&](const std::string &answer){
+        auto func = [&](const Str &answer){
             if (answer == "Yes")
                 ProcessResult("Accept");
             // Otherwise, remain open for more interaction.

@@ -39,7 +39,7 @@ class CombinedModel : public OperatorModel {
 
   protected:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     /// Defines this to call GetCombinedMesh() on the derived class.

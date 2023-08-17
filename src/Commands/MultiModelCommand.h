@@ -12,25 +12,21 @@
 class MultiModelCommand : public Command {
   public:
     /// Sets the Model names.
-    void SetModelNames(const std::vector<std::string> &names) {
-        model_names_ = names;
-    }
+    void SetModelNames(const StrVec &names) { model_names_ = names; }
 
     /// Sets the Model names from all Models in the given selection.
     void SetFromSelection(const Selection &sel);
 
     /// Returns the names of the operand Models.
-    const std::vector<std::string> & GetModelNames() const {
-        return model_names_;
-    }
+    const StrVec & GetModelNames() const { return model_names_; }
 
   protected:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<std::string> model_names_;
+    Parser::VField<Str> model_names_;
     ///@}
 };

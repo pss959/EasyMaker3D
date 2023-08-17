@@ -8,7 +8,7 @@
 CompositeWidget::CompositeWidget() {
 }
 
-WidgetPtr CompositeWidget::AddSubWidget(const std::string &name) {
+WidgetPtr CompositeWidget::AddSubWidget(const Str &name) {
     WidgetPtr widget = SG::FindTypedNodeUnderNode<Widget>(*this, name);
 
     // Propagate activation notification to observers of the CompositeWidget.
@@ -25,33 +25,30 @@ WidgetPtr CompositeWidget::AddSubWidget(const std::string &name) {
     return widget;
 }
 
-void CompositeWidget::SubWidgetActivated(const std::string &name,
-                                         bool is_activation) {
+void CompositeWidget::SubWidgetActivated(const Str &name, bool is_activation) {
     GetActivation().Notify(*this, is_activation);
 }
 
-void CompositeWidget::HighlightSubWidget(const std::string &name,
-                                         const Color &color) {
+void CompositeWidget::HighlightSubWidget(const Str &name, const Color &color) {
     SubWidget_ &sub = FindSubWidget_(name);
     sub.widget->SetActiveColor(color);
     sub.widget->SetInactiveColor(color);
 }
 
-void CompositeWidget::UnhighlightSubWidget(const std::string &name) {
+void CompositeWidget::UnhighlightSubWidget(const Str &name) {
     SubWidget_ &sub = FindSubWidget_(name);
     sub.widget->SetActiveColor(sub.active_color);
     sub.widget->SetInactiveColor(sub.inactive_color);
 }
 
-CompositeWidget::SubWidget_ & CompositeWidget::FindSubWidget_(
-    const std::string &name) {
+CompositeWidget::SubWidget_ & CompositeWidget::FindSubWidget_(const Str &name) {
     SubWidget_ *sub = FindSubWidgetRecursive_(name);
     ASSERTM(sub, "No sub-widget named " + name);
     return *sub;
 }
 
 CompositeWidget::SubWidget_ * CompositeWidget::FindSubWidgetRecursive_(
-    const std::string &name) {
+    const Str &name) {
 
     const auto matches_name = [&name](const SubWidget_ &sub){
         return sub.widget->GetName() == name;

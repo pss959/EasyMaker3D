@@ -14,13 +14,13 @@ namespace Debug {
 class Timer {
   public:
     /// The Timer is given a name to output in Report().
-    explicit Timer(const std::string &name);
+    explicit Timer(const Str &name);
 
     /// Resets the timer to 0 and removes all current timepoints.
     void Reset();
 
     /// Adds a named timepoint.
-    void AddTimePoint(const std::string &name);
+    void AddTimePoint(const Str &name);
 
     /// Reports on all timepoints and the total time since Reset() to stdout.
     void Report();
@@ -31,12 +31,12 @@ class Timer {
 
   private:
     struct TimePoint_ {
-        std::string name;
-        UTime       time;
+        Str   name;
+        UTime time;
         TimePoint_() {}
-        TimePoint_(const std::string &n, const UTime &t) : name(n), time(t) {}
+        TimePoint_(const Str &n, const UTime &t) : name(n), time(t) {}
     };
-    const std::string       name_;
+    const Str               name_;
     UTime                   reset_time_;
     std::vector<TimePoint_> timepoints_;
 };

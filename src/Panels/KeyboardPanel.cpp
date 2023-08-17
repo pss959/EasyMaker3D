@@ -33,7 +33,7 @@ void KeyboardPanel::FindKeyPanes_(const PanePtr &pane) {
 }
 
 void KeyboardPanel::ProcessKey_(const KeyPane &key_pane) {
-    std::string chars;
+    Str chars;
     const auto action = key_pane.GetAction(chars);
 
     // Special case for shift keys, which are toggles that affect the state of
@@ -62,7 +62,7 @@ void KeyboardPanel::ProcessKey_(const KeyPane &key_pane) {
 void KeyboardPanel::ProcessShiftKey_(const KeyPane &shift_key_pane) {
     const bool is_shifted = shift_key_pane.GetButton().GetToggleState();
 
-    std::string chars;
+    Str chars;
     for (auto &key_pane: key_panes_) {
         // Update the toggle state for other shift keys.
         if (key_pane->GetAction(chars) == TextAction::kToggleShift) {

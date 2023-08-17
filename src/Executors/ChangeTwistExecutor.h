@@ -7,7 +7,7 @@
 /// \ingroup Executors
 class ChangeTwistExecutor : public ChangeSpinExecutor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ChangeTwistCommand";
     }
 

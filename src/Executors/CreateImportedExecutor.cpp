@@ -10,7 +10,7 @@ ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
     CreateImportedModelCommand &cic =
         GetTypedCommand<CreateImportedModelCommand>(command);
 
-    std::string name = cic.GetResultName();
+    Str name = cic.GetResultName();
     if (name.empty()) {
         name = CreateUniqueName("Imported");
         cic.SetResultName(name);

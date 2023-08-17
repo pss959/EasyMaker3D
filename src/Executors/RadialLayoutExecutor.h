@@ -12,7 +12,7 @@ class RadialLayoutCommand;
 /// \ingroup Executors
 class RadialLayoutExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "RadialLayoutCommand";
     }
 

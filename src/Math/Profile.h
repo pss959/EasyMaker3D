@@ -123,7 +123,7 @@ class Profile {
     bool operator==(const Profile &p) const = default;
 
     /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    Str ToString() const;
 
   private:
     Type     type_;

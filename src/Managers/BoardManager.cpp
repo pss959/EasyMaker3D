@@ -47,11 +47,11 @@ BoardPtr BoardManager::GetCurrentBoard() const {
     return boards_.empty() ? BoardPtr() : boards_.back();
 }
 
-PanelPtr BoardManager::GetPanel(const std::string &name) const {
+PanelPtr BoardManager::GetPanel(const Str &name) const {
     return panel_manager_->GetPanel(name);
 }
 
-void BoardManager::ClosePanel(const std::string &result) {
+void BoardManager::ClosePanel(const Str &result) {
     // Use the most current active Board.
     ASSERT(! boards_.empty());
     auto &board = boards_.back();

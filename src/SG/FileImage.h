@@ -36,7 +36,7 @@ class FileImage : public Image {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> path_;
+    Parser::TField<Str> path_;
     ///@}
 
     friend class Parser::Registry;

@@ -20,7 +20,7 @@ class TooltipFeedback : public Feedback {
     virtual bool IsInWorldCoordinates() const override { return true; }
 
     /// Sets the text to display
-    void SetText(const std::string &text);
+    void SetText(const Str &text);
 
     /// Returns the size of the text in object coordinates. This works only
     /// after SetText() is called.

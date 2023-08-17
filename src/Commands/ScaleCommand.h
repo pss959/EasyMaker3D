@@ -26,7 +26,7 @@ class ScaleCommand : public MultiModelCommand {
         kBaseSymmetric,
     };
 
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Returns the change in scale factors, expressed as ratios applied to the
     /// current scale factors. A value of 1 in any dimension means that that
@@ -48,7 +48,7 @@ class ScaleCommand : public MultiModelCommand {
     ScaleCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields

@@ -16,13 +16,13 @@ TestBaseWithTypes::~TestBaseWithTypes() {
     UnregisterTypes();
 }
 
-Parser::ObjectPtr TestBaseWithTypes::ParseObject(const std::string &input) {
+Parser::ObjectPtr TestBaseWithTypes::ParseObject(const Str &input) {
     Parser::Parser parser;
     return parser.ParseFromString(input);
 }
 
-void TestBaseWithTypes::TestValid(const std::string &contents) {
-    const std::string str = BuildParseString(contents);
+void TestBaseWithTypes::TestValid(const Str &contents) {
+    const Str str = BuildParseString(contents);
     try {
         auto obj = ParseObject(str);
         EXPECT_NOT_NULL(obj);
@@ -33,10 +33,9 @@ void TestBaseWithTypes::TestValid(const std::string &contents) {
     }
 }
 
-void TestBaseWithTypes::TestInvalid(const std::string &contents,
-                                    const std::string &error) {
+void TestBaseWithTypes::TestInvalid(const Str &contents, const Str &error) {
     // Don't use TEST_THROW here; this creates a better message on failure.
-    const std::string str = BuildParseString(contents);
+    const Str str = BuildParseString(contents);
     EXPECT_THROW({
             try {
                 ParseObject(str);
@@ -49,8 +48,7 @@ void TestBaseWithTypes::TestInvalid(const std::string &contents,
         }, Parser::Exception);
 }
 
-std::string TestBaseWithTypes::BuildParseString(
-    const std::string &contents) const {
+Str TestBaseWithTypes::BuildParseString(const Str &contents) const {
     ASSERTM(! parse_type_name_.empty(), "SetParseTypeName() was not called");
     return parse_type_name_ + " { " + contents + " }";
 }

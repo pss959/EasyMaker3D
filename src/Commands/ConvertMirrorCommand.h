@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ConvertMirrorCommand);
 /// \ingroup Commands
 class ConvertMirrorCommand : public ConvertCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ConvertMirrorCommand() {}

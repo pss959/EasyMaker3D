@@ -13,18 +13,18 @@ class Args {
   public:
     /// The constructor is passed argc and argv from the command line along
     /// with the Docopt usage string.
-    Args(int argc, const char **argv, const std::string &usage);
+    Args(int argc, const char **argv, const Str &usage);
 
     /// Returns the value of the string argument with the given name. Returns
     /// an empty string if there is no such argument.
-    std::string GetString(const std::string &name) const;
+    Str GetString(const Str &name) const;
 
     /// Returns the value of the bool argument with the given name. Returns
     /// false if there is no such argument.
-    bool GetBool(const std::string &name) const;
+    bool GetBool(const Str &name) const;
 
   private:
-    std::map<std::string, docopt::value> args_;
+    std::map<Str, docopt::value> args_;
 
-    const docopt::value & GetArg_(const std::string &name) const;
+    const docopt::value & GetArg_(const Str &name) const;
 };

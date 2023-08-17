@@ -15,7 +15,7 @@ class KeyPane : public ButtonPane {
     /// Returns the action to perform. If the action is TextAction::kInsert,
     /// the characters to insert are stored in chars, which is otherwise left
     /// alone.
-    virtual TextAction GetAction(std::string &chars) const = 0;
+    virtual TextAction GetAction(Str &chars) const = 0;
 
     /// Responds to a change in the current shift state. The base class defines
     /// this to do nothing.

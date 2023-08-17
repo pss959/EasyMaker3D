@@ -127,13 +127,13 @@ class Panel : public SG::Node {
     typedef std::function<void(void)> MessageFunc;
 
     /// Type of function that is invoked by AskQuestion().
-    typedef std::function<void(const std::string &)> QuestionFunc;
+    typedef std::function<void(const Str &)> QuestionFunc;
 
     Panel();
     ~Panel() override;
 
     virtual void AddFields();
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     /// Allows derived tool classes to access the Context.
@@ -172,15 +172,15 @@ class Panel : public SG::Node {
 
     /// Convenience that finds the ButtonPane with the given name and sets it
     /// to invoke the given function when clicked.
-    void AddButtonFunc(const std::string &name, const ButtonFunc &func);
+    void AddButtonFunc(const Str &name, const ButtonFunc &func);
 
     /// Convenience that sets the text in the TextPane inside the ButtonPane
     /// with the given name. Asserts if it is not found.
-    void SetButtonText(const std::string &name, const std::string &text);
+    void SetButtonText(const Str &name, const Str &text);
 
     /// Convenience that enables or disables the ButtonPane with the given
     /// name. Asserts if it is not found.
-    void EnableButton(const std::string &name, bool enabled);
+    void EnableButton(const Str &name, bool enabled);
 
     /// \name Focus management.
     ///@{
@@ -189,7 +189,7 @@ class Panel : public SG::Node {
     void SetFocus(const PanePtr &pane);
 
     /// Sets the focus to the named Pane. Asserts if there is no such Pane.
-    void SetFocus(const std::string &name);
+    void SetFocus(const Str &name);
 
     /// Returns the currently focused Pane, or null if there is none.
     PanePtr GetFocusedPane() const;
@@ -202,27 +202,26 @@ class Panel : public SG::Node {
 
     /// Convenience that opens a DialogPanel to display the given message along
     /// with an "OK" button that invokes the given function (if not null).
-    void DisplayMessage(const std::string &message,
-                        const MessageFunc &func);
+    void DisplayMessage(const Str &message, const MessageFunc &func);
 
     /// Convenience that opens a DialogPanel to ask the given question and get
     /// a "Yes" or "No" result, which is passed to the given function. The
     /// is_no_default flag indicates which button should be focused by default.
-    void AskQuestion(const std::string &question, const QuestionFunc &func,
+    void AskQuestion(const Str &question, const QuestionFunc &func,
                      bool is_no_default);
 
     /// Convenience that calls Close on the BoardAgent. Derived classes can
     /// modify this behavior.
-    virtual void Close(const std::string &result);
+    virtual void Close(const Str &result);
 
     /// Uses the BoardAgent to get the named Panel. Asserts if the name is not
     /// known.
-    PanelPtr GetPanel(const std::string &name) const;
+    PanelPtr GetPanel(const Str &name) const;
 
     /// Same as GetPanel(), but requires that the Panel is of the given derived
     /// type. Asserts if not found.
     template <typename T>
-    std::shared_ptr<T> GetTypedPanel(const std::string &name) const {
+    std::shared_ptr<T> GetTypedPanel(const Str &name) const {
         auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
         ASSERT(panel);
         return panel;

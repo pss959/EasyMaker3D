@@ -20,7 +20,7 @@ void DiscWidget::AddFields() {
     Widget::AddFields();
 }
 
-bool DiscWidget::IsValid(std::string &details) {
+bool DiscWidget::IsValid(Str &details) {
     if (! Widget::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
 

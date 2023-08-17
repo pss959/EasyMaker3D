@@ -15,7 +15,7 @@ void DropdownPane::AddFields() {
     BoxPane::AddFields();
 }
 
-bool DropdownPane::IsValid(std::string &details) {
+bool DropdownPane::IsValid(Str &details) {
     if (! BoxPane::IsValid(details))
         return false;
     const auto &choices = choices_.GetValue();
@@ -65,8 +65,7 @@ void DropdownPane::CreationDone() {
     }
 }
 
-void DropdownPane::SetChoices(const std::vector<std::string> &choices,
-                              size_t index) {
+void DropdownPane::SetChoices(const StrVec &choices, size_t index) {
     choices_ = choices;
     if (choices.empty()) {
         choice_index_ = -1;
@@ -99,7 +98,7 @@ void DropdownPane::SetChoice(size_t index) {
     menu_button_panes_[choice_index_]->GetButton().SetActive(true);
 }
 
-void DropdownPane::SetChoiceFromString(const std::string &choice) {
+void DropdownPane::SetChoiceFromString(const Str &choice) {
     const auto &choices = choices_.GetValue();
     const auto it = std::find(choices.begin(), choices.end(), choice);
     ASSERTM(it != choices.end(), "No such choice: " + choice);
@@ -151,7 +150,7 @@ bool DropdownPane::HandleEvent(const Event &event) {
     bool handled = false;
     // Handle events only if active (choice Pane is visible).
     if (IsActive() && event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
+        const Str key_string = event.GetKeyString();
 
         // Up/down keys change selected choice.
         if (key_string == "Up") {
@@ -192,7 +191,7 @@ void DropdownPane::UpdateMenuPane_() {
     // Clone the menu ButtonPane for each choice.
     const auto &choices = choices_.GetValue();
     for (size_t i = 0; i < choices.size(); ++i) {
-        const std::string &choice = choices[i];
+        const Str &choice = choices[i];
         auto but = menu_button_pane_->CloneTyped<ButtonPane>(true);
         auto text = but->FindTypedPane<TextPane>("ButtonText");
         text->SetText(choice);

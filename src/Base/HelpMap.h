@@ -14,9 +14,9 @@ class HelpMap {
     HelpMap();
 
     /// Returns the string for the given Action.
-    const std::string & GetHelpString(Action action) const;
+    const Str & GetHelpString(Action action) const;
 
   private:
     /// Help string for each Action.
-    std::vector<std::string> help_strings_;
+    StrVec help_strings_;
 };

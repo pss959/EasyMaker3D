@@ -36,7 +36,7 @@ struct NodePath : public std::vector<NodePtr> {
 
     /// Converts to a string to help with debugging. If add_types is true, the
     /// path includes the type of each Node.
-    std::string ToString(bool add_types = false) const;
+    Str ToString(bool add_types = false) const;
 
     /// \name Path Searching
     ///@{

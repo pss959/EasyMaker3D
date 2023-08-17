@@ -18,31 +18,31 @@ class NameManager : public NameAgent {
     void Reset();
 
     /// Adds a name, asserting that it is unique.
-    void Add(const std::string &name);
+    void Add(const Str &name);
 
     /// Removes a name, asserting that it was in there.
-    void Remove(const std::string &name);
+    void Remove(const Str &name);
 
     /// Returns true if the given name is known.
-    virtual bool Find(const std::string &name) const override;
+    virtual bool Find(const Str &name) const override;
 
     /// Creates and adds a new and unique name using the given prefix. For
     // example, passing a prefix of "Sphere" may create "Sphere_1" or another
     // name that is not already used.
-    std::string Create(const std::string &prefix);
+    Str Create(const Str &prefix);
 
     /// Creates a name for a clone. The general strategy is to append an
     // underscore and capital letter (to distinguish from basic numbering
     // scheme).
-    std::string CreateClone(const std::string &basename);
+    Str CreateClone(const Str &basename);
 
     /// Returns a sorted vector of all stored names.
-    std::vector<std::string> GetAllNames() const;
+    StrVec GetAllNames() const;
 
   private:
     /// Stores unique names.
-    std::unordered_set<std::string> name_set_;
+    std::unordered_set<Str> name_set_;
 
     /// Given i >= 0, returns "A", "B", ..., "Z", "AA", "AB", etc.
-    static std::string GetLetterSuffix_(int n);
+    static Str GetLetterSuffix_(int n);
 };

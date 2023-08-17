@@ -46,8 +46,8 @@ class TaperToolPanel : public ToolPanel {
     /// Currently selected Axis.
     Dim axis_ = Dim::kY;
 
-    void Activate_(const std::string &key, bool is_activation);
-    void Change_(const std::string &key);
+    void Activate_(const Str &key, bool is_activation);
+    void Change_(const Str &key);
 
     friend class Parser::Registry;
 };

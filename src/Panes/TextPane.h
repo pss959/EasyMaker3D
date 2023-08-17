@@ -27,10 +27,10 @@ class TextPane : public LeafPane {
 
     /// Sets the text string. If the string is empty, this disables the
     /// SG::TextNode.
-    void SetText(const std::string &text);
+    void SetText(const Str &text);
 
     /// Returns the current text string.
-    const std::string & GetText() const { return text_; }
+    const Str & GetText() const { return text_; }
 
     /// Sets the color to use for the text.
     void SetColor(const Color &color);
@@ -39,10 +39,10 @@ class TextPane : public LeafPane {
     const Color & GetColor() const { return color_; }
 
     /// Sets the name of the font to use for the text.
-    void SetFontName(const std::string &font_name);
+    void SetFontName(const Str &font_name);
 
     /// Returns the name of the font to use for the text.
-    const std::string & GetFontName() const { return font_name_; }
+    const Str & GetFontName() const { return font_name_; }
 
     /// Sets the font size to use for the text.
     void SetFontSize(float font_size);
@@ -82,13 +82,13 @@ class TextPane : public LeafPane {
 
     virtual void PostSetUpIon() override;
 
-    virtual std::string ToString(bool is_brief) const override;
+    virtual Str ToString(bool is_brief) const override;
 
   protected:
     TextPane() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     /// Redefines this to use the font size, padding, etc.
@@ -103,9 +103,9 @@ class TextPane : public LeafPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>   text_;
+    Parser::TField<Str>           text_;
     Parser::TField<Color>         color_;
-    Parser::TField<std::string>   font_name_;
+    Parser::TField<Str>           font_name_;
     Parser::TField<float>         font_size_;
     Parser::TField<bool>          resize_text_;
     Parser::EnumField<HAlignment> halignment_;

@@ -47,8 +47,7 @@ class ScaleTool : public Tool {
     ScaleCommandPtr command_;
 
     void FindParts_();
-    void InitScaler_(size_t index, const std::string &name,
-                     const Vector3f &vec);
+    void InitScaler_(size_t index, const Str &name, const Vector3f &vec);
     void UpdateGeometry_();
 
     void ScalerActivated_(size_t index, bool is_activation);

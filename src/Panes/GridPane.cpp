@@ -19,7 +19,7 @@ void GridPane::AddFields() {
     ContainerPane::AddFields();
 }
 
-bool GridPane::IsValid(std::string &details) {
+bool GridPane::IsValid(Str &details) {
     if (! ContainerPane::IsValid(details))
         return false;
 
@@ -41,7 +41,7 @@ void GridPane::CreationDone() {
     }
 }
 
-std::string GridPane::ToString(bool is_brief) const {
+Str GridPane::ToString(bool is_brief) const {
     return Pane::ToString(is_brief) + " " +
         Util::ToString(row_count_) + "R x " +
         Util::ToString(column_count_) + "C";
@@ -98,7 +98,7 @@ void GridPane::LayOutSubPanes() {
     }
 }
 
-bool GridPane::CheckDim_(int dim, std::string &details) {
+bool GridPane::CheckDim_(int dim, Str &details) {
     ASSERT(dim == 0 || dim == 1);
     const size_t count = dim == 0 ? column_count_      : row_count_;
     const auto  &field = dim == 0 ? expanding_columns_ : expanding_rows_;
@@ -111,7 +111,7 @@ bool GridPane::CheckDim_(int dim, std::string &details) {
     return true;
 }
 
-bool GridPane::CheckPanes_(std::string &details) {
+bool GridPane::CheckPanes_(Str &details) {
     // Validate the Pane count.
     const size_t cell_count = row_count_.GetValue() * column_count_.GetValue();
     const auto &panes = GetPanes();

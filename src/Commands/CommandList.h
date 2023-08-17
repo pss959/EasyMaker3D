@@ -89,7 +89,7 @@ class CommandList : public Parser::Object {
     CommandList() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields

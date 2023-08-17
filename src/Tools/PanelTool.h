@@ -32,7 +32,7 @@ class PanelTool : public Tool {
 
     /// Derived classes must implement to return the name of the type of Panel
     /// to open when attaching to a Model of the appropriate type.
-    virtual std::string GetPanelName() const = 0;
+    virtual Str GetPanelName() const = 0;
 
     /// This is called when a Panel is opened. The base class defines it to do
     /// nothing. Derived classes can redefine it to set up the Panel from the
@@ -41,7 +41,7 @@ class PanelTool : public Tool {
 
     /// This is called by ToolPanel::ReportChange() when interaction occurs.
     /// The default implementation does nothing.
-    virtual void PanelChanged(const std::string &key,
+    virtual void PanelChanged(const Str &key,
                               ToolPanel::InteractionType type) {}
 
   private:

@@ -12,7 +12,7 @@ void EdgeTargetWidget::AddFields() {
     TargetWidgetBase::AddFields();
 }
 
-bool EdgeTargetWidget::IsValid(std::string &details) {
+bool EdgeTargetWidget::IsValid(Str &details) {
     if (! TargetWidgetBase::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     const auto &target = target_.GetValue();

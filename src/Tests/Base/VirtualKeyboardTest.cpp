@@ -36,12 +36,12 @@ TEST(VirtualKeyboardTest, ActiveAndVisible) {
 }
 
 TEST(VirtualKeyboardTest, EditText) {
-    bool        got_action = false;
-    TextAction  last_action;
-    std::string last_insertion;
+    bool       got_action = false;
+    TextAction last_action;
+    Str        last_insertion;
 
     // Editing callbacks.
-    const auto insert = [&](const std::string &s){ last_insertion = s; };
+    const auto insert = [&](const Str &s){ last_insertion = s; };
     const auto action = [&](TextAction act){
         got_action  = true;
         last_action = act;

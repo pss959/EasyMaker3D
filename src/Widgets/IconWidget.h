@@ -20,7 +20,7 @@ class IconWidget : public PushButtonWidget {
     /// Returns the path to the file containing a shape to import for the
     /// icon. If this is not empty, the imported shape is added to the icon in
     /// addition to any other shapes.
-    const std::string & GetImportPath() const { return import_path_; }
+    const Str & GetImportPath() const { return import_path_; }
 
     /// Sizes and translates the icon to fit into a cube with the given size in
     /// each dimension and center point. The front of the icon should be flush
@@ -43,8 +43,8 @@ class IconWidget : public PushButtonWidget {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Action>   action_;
-    Parser::TField<std::string> import_path_;
+    Parser::EnumField<Action> action_;
+    Parser::TField<Str>       import_path_;
     ///@}
 
     friend class Parser::Registry;

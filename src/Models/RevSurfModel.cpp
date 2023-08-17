@@ -13,7 +13,7 @@ void RevSurfModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
-bool RevSurfModel::IsValid(std::string &details) {
+bool RevSurfModel::IsValid(Str &details) {
     if (! PrimitiveModel::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     // Construct and validate the Profile if points were specified.

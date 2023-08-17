@@ -381,6 +381,8 @@ lib_env.Append(
         '$ION_LIB_NAME',
     ],
     COMMON_FLAGS = [
+        # Force-include this file so it is always available.
+        '-include', 'src/Util/BasicTypes.h',
         '-Wextra',
         '-Wmissing-declarations',
         '-Wold-style-cast',

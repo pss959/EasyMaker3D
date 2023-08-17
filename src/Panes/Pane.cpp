@@ -56,12 +56,12 @@ void Pane::SetLayoutSize(const Vector2f &size) {
     }
 }
 
-std::string Pane::ToString(bool is_brief) const {
+Str Pane::ToString(bool is_brief) const {
     auto tostr2 = [&](const Vector2f &v){ return Math::ToString(v, .01f); };
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
-    const std::string base_size_star = base_size_may_have_changed_ ? "*" : "";
+    const Str base_size_star = base_size_may_have_changed_ ? "*" : "";
 
-    std::string s = (IsEnabled() ? "" : "x:") + GetDesc();
+    Str s = (IsEnabled() ? "" : "x:") + GetDesc();
 
     if (is_brief) {
         // Add the upper-left point and size relative to the parent's
@@ -86,7 +86,7 @@ std::string Pane::ToString(bool is_brief) const {
     }
     else {
         s +=
-            std::string(HasBackground() ? " BG" : "") +
+            Str(HasBackground() ? " BG" : "") +
             " MS="  + tostr2(GetMinSize()) +
             " BS="  + tostr2(GetCurrentBaseSize()) + base_size_star +
             " LS="  + tostr2(GetLayoutSize()) +

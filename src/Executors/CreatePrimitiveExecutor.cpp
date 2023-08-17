@@ -12,7 +12,7 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
     CreatePrimitiveModelCommand &cc =
         GetTypedCommand<CreatePrimitiveModelCommand>(command);
 
-    std::string name = cc.GetResultName();
+    Str name = cc.GetResultName();
     if (name.empty()) {
         name = CreateUniqueName(Util::EnumToWord(cc.GetType()));
         cc.SetResultName(name);

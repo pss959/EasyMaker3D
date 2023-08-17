@@ -25,7 +25,7 @@ class Scanner {
 
     /// Typedef for the constant substitution function passed to the
     /// constructor.
-    typedef std::function<std::string(const std::string &)> ConstantSubstFunc;
+    typedef std::function<Str(const Str &)> ConstantSubstFunc;
 
     /// Typedef for the function passed to scan Objects.
     typedef std::function<ObjectPtr()>     ObjectFunc;
@@ -48,7 +48,7 @@ class Scanner {
     void PushInputStream(const FilePath &path, std::istream &in);
 
     /// Pushes an input stream created to scan the given string.
-    void PushStringInput(const std::string &input_string);
+    void PushStringInput(const Str &input_string);
 
     /// Stops scanning from the current input stream, returning to the previous
     /// one.
@@ -59,7 +59,7 @@ class Scanner {
 
     /// Scans a name, which must consist only of alphanumeric characters or
     /// underscores, and must not start with a numeric character.
-    std::string ScanName(const std::string &for_what);
+    Str ScanName(const Str &for_what);
 
     /// Scans a boolean value, which is any case-insensitive version of "true',
     /// "t", "false", or "f".
@@ -76,7 +76,7 @@ class Scanner {
 
     /// Scans a double-quoted string. This does not (yet) handle escape
     /// sequences.
-    std::string ScanQuotedString();
+    Str ScanQuotedString();
 
     /// Scans an RGB color in any supported format:
     ///   - "#RRGGBB"    (hex)
@@ -119,7 +119,7 @@ class Scanner {
 
     /// Throws an Exception with the given message. Adds the current file path
     /// and line number to the message.
-    void Throw(const std::string &msg);
+    void Throw(const Str &msg);
 
   private:
     /// Constant substitution function passed to the constructor.
@@ -136,7 +136,7 @@ class Scanner {
     ObjectListFunc object_list_scan_func_;
 
     /// Scans and returns a string possibly containing a valid numeric value.
-    std::string ScanNumericString_();
+    Str ScanNumericString_();
 
     /// Skips all whitespace, including comments. Looks for newlines,
     /// incrementing the current line counter.

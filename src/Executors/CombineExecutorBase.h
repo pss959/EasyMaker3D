@@ -19,7 +19,7 @@ class CombineExecutorBase : public Executor {
     /// CombinedModel. If the given name is not empty, it should be used for
     /// the new CombinedModel.
     virtual CombinedModelPtr CreateCombinedModel(
-        Command &command, const std::string &name) = 0;
+        Command &command, const Str &name) = 0;
 
   private:
     /// Derived Command::ExecData class that stores everything needed to undo

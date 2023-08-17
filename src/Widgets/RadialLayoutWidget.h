@@ -80,7 +80,7 @@ class RadialLayoutWidget : public CompositeWidget {
     RadialLayoutWidget() {}
 
     virtual void CreationDone() override;
-    virtual void SubWidgetActivated(const std::string &name,
+    virtual void SubWidgetActivated(const Str &name,
                                     bool is_activation) override;
 
   private:
@@ -148,7 +148,7 @@ class RadialLayoutWidget : public CompositeWidget {
         return Rotationf::FromAxisAndAngle(Vector3f::AxisY(), angle);
     }
 
-    static std::string GetAngleText_(const Anglef &angle);
+    static Str GetAngleText_(const Anglef &angle);
 
     friend class Parser::Registry;
 };

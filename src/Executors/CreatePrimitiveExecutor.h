@@ -7,7 +7,7 @@
 /// \ingroup Executors
 class CreatePrimitiveExecutor : public ModelExecutorBase {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "CreatePrimitiveModelCommand";
     }
 

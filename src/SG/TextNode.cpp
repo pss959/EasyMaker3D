@@ -25,8 +25,7 @@ namespace SG {
 // ----------------------------------------------------------------------------
 
 // Creates a FontImage key string from the font name and image size.
-static const std::string BuildFontImageKey_(const std::string &font_name,
-                                            size_t image_size) {
+static const Str BuildFontImageKey_(const Str &font_name, size_t image_size) {
     return font_name + '/' + ion::base::ValueToString(image_size);
 }
 
@@ -56,7 +55,7 @@ void TextNode::AddFields() {
     Node::AddFields();
 }
 
-bool TextNode::IsValid(std::string &details) {
+bool TextNode::IsValid(Str &details) {
     if (! Node::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (GetText().empty()) {
@@ -81,7 +80,7 @@ void TextNode::CreationDone() {
     }
 }
 
-void TextNode::SetFontName(const std::string &font_name) {
+void TextNode::SetFontName(const Str &font_name) {
     if (font_name != font_name_.GetValue()) {
         font_name_ = font_name;
         if (GetIonContext() && Util::app_type != Util::AppType::kUnitTest)
@@ -97,7 +96,7 @@ void TextNode::SetFontSize(unsigned int font_size) {
     }
 }
 
-void TextNode::SetText(const std::string &new_text) {
+void TextNode::SetText(const Str &new_text) {
     ASSERT(! new_text.empty());
     text_ = new_text;
     needs_rebuild_ = true;
@@ -108,8 +107,7 @@ void TextNode::SetTextColor(const Color &color) {
     needs_rebuild_ = true;
 }
 
-void TextNode::SetTextWithColor(const std::string &new_text,
-                                const Color &color) {
+void TextNode::SetTextWithColor(const Str &new_text, const Color &color) {
     ASSERT(! new_text.empty());
     text_  = new_text;
     color_ = color;
@@ -172,7 +170,7 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     return ion_node;
 }
 
-void TextNode::UpdateForRenderPass(const std::string &pass_name) {
+void TextNode::UpdateForRenderPass(const Str &pass_name) {
     Node::UpdateForRenderPass(pass_name);
     if (needs_rebuild_)
         BuildText_();
@@ -269,8 +267,8 @@ bool TextNode::BuildText_() {
 
 FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
     // See if the FontImage was already cached.
-    const std::string &font_name = GetFontName();
-    const std::string key = BuildFontImageKey_(font_name, max_image_size_);
+    const Str &font_name = GetFontName();
+    const Str key = BuildFontImageKey_(font_name, max_image_size_);
     FontImagePtr image = font_manager.GetCachedFontImage(key);
     if (! image) {
         // Create the font.

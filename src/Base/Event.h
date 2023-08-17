@@ -78,11 +78,11 @@ struct Event {
 
     /// Identifying string for a key press or release. This does not include
     /// modifiers.
-    std::string       key_name;
+    Str               key_name;
 
     /// Text string for a key press or release, including modifiers. This will
     /// be empty for some keys.
-    std::string       key_text;
+    Str               key_text;
 
     /// Current keyboard modifiers for a key press or release.
     Modifiers         modifiers;
@@ -119,30 +119,27 @@ struct Event {
 
     /// Convenience function that builds a string representing a key press or
     /// release with all modifiers in the event. (Example: "Shift-Ctrl-a".)
-    std::string GetKeyString() const;
+    Str GetKeyString() const;
 
     /// Convenience function that does the reverse of BuildKeyString(); it
     /// parses the given string and sets the \p modifiers and \p key_name from
     /// it. Returns false and sets the error message on error.
-    static bool ParseKeyString(const std::string &key_string,
-                               Modifiers &modifiers, std::string &key_name,
-                               std::string &error);
+    static bool ParseKeyString(const Str &key_string, Modifiers &modifiers,
+                               Str &key_name, Str &error);
 
     /// Convenience function that builds a string representing the #key_text
     /// for the given modifiers and key name.
-    static std::string BuildKeyText(const Modifiers &modifiers,
-                                    const std::string &key_name);
+    static Str BuildKeyText(const Modifiers &modifiers, const Str &key_name);
 
     /// Convenience function that builds a string representing a key press or
     /// release with the given modifiers and key code. (Example:
     /// "Shift-Ctrl-a".)
-    static std::string BuildKeyString(const Modifiers &modifiers,
-                                      const std::string &key_name);
+    static Str BuildKeyString(const Modifiers &modifiers, const Str &key_name);
 
     /// Convenience function that builds a string representing a Controller
     /// button press or release. (Example: "L:Center" or "R:Menu".)
-    std::string GetControllerButtonString() const;
+    Str GetControllerButtonString() const;
 
     /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    Str ToString() const;
 };

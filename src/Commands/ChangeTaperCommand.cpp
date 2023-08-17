@@ -12,7 +12,7 @@ void ChangeTaperCommand::AddFields() {
     SetTaper(Taper());
 }
 
-bool ChangeTaperCommand::IsValid(std::string &details) {
+bool ChangeTaperCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! Taper::IsValidProfile(GetTaper().profile)) {
@@ -22,7 +22,7 @@ bool ChangeTaperCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ChangeTaperCommand::GetDescription() const {
+Str ChangeTaperCommand::GetDescription() const {
     return "Changed the taper of " + GetModelsDesc(GetModelNames());
 }
 

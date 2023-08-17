@@ -7,13 +7,13 @@
 class CustomShortcutTest : public TestBase {
   protected:
     ShortcutHandler sh;     ///< ShortcutHandler common to all tests.
-    std::string     error;  ///< Error string common to all tests.
+    Str             error;  ///< Error string common to all tests.
 
-    bool AddInput(const std::string &input) {
+    bool AddInput(const Str &input) {
         return sh.AddCustomShortcutsFromString(input, error);
     }
 
-    void TestErrorString(const std::string &pattern) {
+    void TestErrorString(const Str &pattern) {
         TestString(error, pattern);
     }
 
@@ -21,13 +21,13 @@ class CustomShortcutTest : public TestBase {
         TestString(error, "line " + Util::ToString(line));
     }
 
-    void TestShortcutString(Action action, const std::string &pattern) {
-        std::string ks, cs;
+    void TestShortcutString(Action action, const Str &pattern) {
+        Str ks, cs;
         sh.GetShortcutStrings(action, ks, cs);
         TestString(ks, pattern);
     }
 
-    void TestString(const std::string &s, const std::string &pattern) {
+    void TestString(const Str &s, const Str &pattern) {
         EXPECT_TRUE(s.contains(pattern))
             << " s = '" << s << "' pattern = '" << pattern << "'";
     }
@@ -40,7 +40,7 @@ TEST_F(CustomShortcutTest, Empty) {
 }
 
 TEST_F(CustomShortcutTest, Comments) {
-    const std::string input =
+    const Str input =
         "# Hello there\n"
         "     # Otherwise blank   \n"
         "##############\n";
@@ -49,7 +49,7 @@ TEST_F(CustomShortcutTest, Comments) {
 }
 
 TEST_F(CustomShortcutTest, Valid) {
-    const std::string input =
+    const Str input =
         "# Header comment\n"
         "  a Cut\n"
         "  b        Copy\n"

@@ -19,7 +19,7 @@ TEST_F(ChangeCSGOperationCommandTest, Default) {
 TEST_F(ChangeCSGOperationCommandTest, Set) {
     auto ccc = Command::CreateCommand<ChangeCSGOperationCommand>();
     ccc->SetNewOperation(CSGOperation::kDifference);
-    ccc->SetResultNames(std::vector<std::string>{ "Abc", "Def" });
+    ccc->SetResultNames(StrVec{ "Abc", "Def" });
     EXPECT_ENUM_EQ(CSGOperation::kDifference, ccc->GetNewOperation());
     EXPECT_EQ(2U, ccc->GetResultNames().size());
     EXPECT_EQ("Abc", ccc->GetResultNames()[0]);

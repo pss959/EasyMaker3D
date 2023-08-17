@@ -21,7 +21,7 @@ class DummyCommand : public Command {
     virtual bool HasUndoEffect()         const override { return undo_redo_; }
     virtual bool HasRedoEffect()         const override { return undo_redo_; }
     virtual bool ShouldBeAddedAsOrphan() const override { return orphan_;    }
-    virtual std::string GetDescription() const override { return "DUMMY!";   }
+    virtual Str  GetDescription()        const override { return "DUMMY!";   }
   protected:
     DummyCommand() {}
   private:
@@ -77,7 +77,7 @@ TEST_F(CommandListTest, Command) {
 
 TEST_F(CommandListTest, IsValid) {
     // Valid AppInfo string.
-    const std::string app_str = R"(
+    const Str app_str = R"(
   app_info: AppInfo { version: "1.0.0", session_state: SessionState {} }
 )";
 

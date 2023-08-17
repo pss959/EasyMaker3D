@@ -6,6 +6,6 @@ void ChangeColorCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-std::string ChangeColorCommand::GetDescription() const {
+Str ChangeColorCommand::GetDescription() const {
     return "Changed the color of " + GetModelsDesc(GetModelNames());
 }

@@ -36,7 +36,7 @@ class Parser {
     /// Parses the contents of the given string, returning the root Object in
     /// the parse graph. This will never return null; any error will result in
     /// a Parser::Exception being thrown.
-    ObjectPtr ParseFromString(const std::string &str);
+    ObjectPtr ParseFromString(const Str &str);
 
     /// Returns a vector of all path dependencies created by included files
     /// found during parsing.

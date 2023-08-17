@@ -71,7 +71,7 @@ class Polygon {
     void Translate(const Vector2f &trans);
 
     /// Dumps the Polygon to stdout for debugging.
-    void Dump(const std::string &when) const;
+    void Dump(const Str &when) const;
 
   private:
     /// Points are stored in order, with the counterclockwise outer border

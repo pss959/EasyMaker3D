@@ -32,7 +32,7 @@ void RevSurfTool::InitPanel() {
     UpdatePrecision_();
 }
 
-void RevSurfTool::PanelChanged(const std::string &key,
+void RevSurfTool::PanelChanged(const Str &key,
                                ToolPanel::InteractionType type) {
     PanelTool::PanelChanged(key, type);
 

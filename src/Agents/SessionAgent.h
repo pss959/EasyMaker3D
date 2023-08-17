@@ -27,11 +27,11 @@ class SessionAgent {
 
     /// Loads an existing session from the given path. Returns false and sets
     /// error to an informative string if anything fails.
-    virtual bool LoadSession(const FilePath &path, std::string &error) = 0;
+    virtual bool LoadSession(const FilePath &path, Str &error) = 0;
 
     /// Returns the name of the Model that can be exported, or an empty string
     /// if there is none.
-    virtual std::string GetModelNameForExport() const = 0;
+    virtual Str GetModelNameForExport() const = 0;
 
     /// Exports the current Model to the given path in the given format using
     /// the given ConversionInfo.  Returns true if all went well.
@@ -39,8 +39,8 @@ class SessionAgent {
                         const UnitConversion &conv) = 0;
 
     /// Returns the name of the previous session, which may be empty.
-    virtual const std::string & GetPreviousSessionName() const = 0;
+    virtual const Str & GetPreviousSessionName() const = 0;
 
     /// Returns the name of the current session, which may be empty.
-    virtual const std::string & GetCurrentSessionName() const  = 0;
+    virtual const Str & GetCurrentSessionName() const  = 0;
 };

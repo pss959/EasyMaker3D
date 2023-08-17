@@ -21,9 +21,6 @@
 /// \ingroup App
 class SnapScript {
   public:
-    /// Handy typedef for multiple words or names.
-    typedef std::vector<std::string> Words;
-
     /// Base Instruction struct.
     struct Instr {
         /// Types of instructions.
@@ -53,68 +50,68 @@ class SnapScript {
         virtual ~Instr() {}   // Makes deletion work properly.
     };
     struct ActionInstr : public Instr {
-        Action      action;
+        Action    action;
     };
     struct ClickInstr : public Instr {
-        Point2f     pos;
+        Point2f   pos;
     };
     struct DragInstr : public Instr {
         enum class Phase { kStart, kContinue, kEnd };
-        Phase       phase;
-        Point2f     pos;
+        Phase     phase;
+        Point2f   pos;
     };
     struct HandInstr : public Instr {
-        Hand        hand;
-        std::string controller;
+        Hand      hand;
+        Str       controller;
     };
     struct HandPosInstr : public Instr {
-        Hand        hand;
-        Point3f     pos;
-        Rotationf   rot;
+        Hand      hand;
+        Point3f   pos;
+        Rotationf rot;
     };
     struct HeadsetInstr : public Instr {
-        bool        is_on;
+        bool      is_on;
     };
     struct HoverInstr : public Instr {
-        Point2f     pos;
+        Point2f   pos;
     };
     struct KeyInstr : public Instr {
         Event::Modifiers modifiers;
-        std::string      key_name;
+        Str              key_name;
     };
     struct LoadInstr : public Instr {
-        std::string file_name;
+        Str       file_name;
     };
     struct ModInstr : public Instr {
-        bool        is_on;
+        bool      is_on;
     };
     struct SelectInstr : public Instr {
-        Words       names;
+        StrVec    names;
     };
     struct SettingsInstr : public Instr {
-        std::string file_name;
+        Str       file_name;
     };
     struct SnapInstr : public Instr {
-        Range2f     rect;
-        std::string file_name;
+        Range2f   rect;
+        Str       file_name;
     };
     struct SnapObjInstr : public Instr {
-        std::string object_name;
-        float       margin;
-        std::string file_name;
+        Str       object_name;
+        float     margin;
+        Str       file_name;
     };
     struct StageInstr : public Instr {
-        float       scale;
-        Anglef      angle;
+        float     scale;
+        Anglef    angle;
     };
     struct StopInstr : public Instr {
         // No data.
     };
     struct TouchInstr : public Instr {
-        bool        is_on;
+        bool      is_on;
     };
     struct ViewInstr : public Instr {
-        Vector3f    dir;
+        Vector3f  dir;
     };
 
     DECL_SHARED_PTR(Instr);
@@ -151,32 +148,32 @@ class SnapScript {
     size_t                line_number_;
     std::vector<InstrPtr> instructions_;
 
-    bool ProcessLine_(const std::string &line);
-    bool GetInstructionType_(const std::string &word, Instr::Type &type);
+    bool ProcessLine_(const Str &line);
+    bool GetInstructionType_(const Str &word, Instr::Type &type);
 
-    InstrPtr ProcessAction_(const Words &words);
-    InstrPtr ProcessClick_(const Words &words);
-    InstrPtr ProcessDrag_(const Words &words);
-    InstrPtr ProcessHand_(const Words &words);
-    InstrPtr ProcessHandPos_(const Words &words);
-    InstrPtr ProcessHeadset_(const Words &words);
-    InstrPtr ProcessHover_(const Words &words);
-    InstrPtr ProcessKey_(const Words &words);
-    InstrPtr ProcessLoad_(const Words &words);
-    InstrPtr ProcessMod_(const Words &words);
-    InstrPtr ProcessSelect_(const Words &words);
-    InstrPtr ProcessSettings_(const Words &words);
-    InstrPtr ProcessSnap_(const Words &words);
-    InstrPtr ProcessSnapObj_(const Words &words);
-    InstrPtr ProcessStage_(const Words &words);
-    InstrPtr ProcessStop_(const Words &words);
-    InstrPtr ProcessTouch_(const Words &words);
-    InstrPtr ProcessView_(const Words &words);
+    InstrPtr ProcessAction_(const StrVec &words);
+    InstrPtr ProcessClick_(const StrVec &words);
+    InstrPtr ProcessDrag_(const StrVec &words);
+    InstrPtr ProcessHand_(const StrVec &words);
+    InstrPtr ProcessHandPos_(const StrVec &words);
+    InstrPtr ProcessHeadset_(const StrVec &words);
+    InstrPtr ProcessHover_(const StrVec &words);
+    InstrPtr ProcessKey_(const StrVec &words);
+    InstrPtr ProcessLoad_(const StrVec &words);
+    InstrPtr ProcessMod_(const StrVec &words);
+    InstrPtr ProcessSelect_(const StrVec &words);
+    InstrPtr ProcessSettings_(const StrVec &words);
+    InstrPtr ProcessSnap_(const StrVec &words);
+    InstrPtr ProcessSnapObj_(const StrVec &words);
+    InstrPtr ProcessStage_(const StrVec &words);
+    InstrPtr ProcessStop_(const StrVec &words);
+    InstrPtr ProcessTouch_(const StrVec &words);
+    InstrPtr ProcessView_(const StrVec &words);
 
-    bool Error_(const std::string &message);
+    bool Error_(const Str &message);
 
-    static bool ParseVector3f_(const Words &words, size_t index,  Vector3f &v);
-    static bool ParseFloat_(const std::string &s, float &f);
-    static bool ParseFloat01_(const std::string &s, float &f);
-    static bool ParseN_(const std::string &s, size_t &n);
+    static bool ParseVector3f_(const StrVec &words, size_t index,  Vector3f &v);
+    static bool ParseFloat_(const Str &s, float &f);
+    static bool ParseFloat01_(const Str &s, float &f);
+    static bool ParseN_(const Str &s, size_t &n);
 };

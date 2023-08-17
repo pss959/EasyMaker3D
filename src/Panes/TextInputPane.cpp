@@ -48,10 +48,10 @@ struct TextInputPane::Range_ {
 class TextInputPane::State_ {
   public:
     /// Sets the text string.
-    void SetText(const std::string &text) { text_ = text; }
+    void SetText(const Str &text) { text_ = text; }
 
     /// Returns the current text string.
-    const std::string & GetText() const { return text_; }
+    const Str & GetText() const { return text_; }
 
     /// Returns the count of characters in the text.
     size_t GetCharCount() const { return GetText().size(); }
@@ -124,12 +124,12 @@ class TextInputPane::State_ {
 
     void Validate() const;
 
-    std::string ToString() const;
+    Str ToString() const;
 
   private:
-    std::string text_;            ///< Displayed text
-    size_t      cursor_pos_ = 0;  ///< Character position of cursor.
-    Range_      sel_range_;       ///< Selection start/end character positions.
+    Str    text_;            ///< Displayed text
+    size_t cursor_pos_ = 0;  ///< Character position of cursor.
+    Range_ sel_range_;       ///< Selection start/end character positions.
 };
 
 TextInputPane::Range_
@@ -178,7 +178,7 @@ void TextInputPane::State_::Validate() const {
 #endif
 }
 
-std::string TextInputPane::State_::ToString() const {
+Str TextInputPane::State_::ToString() const {
     return "POS " + Util::ToString(cursor_pos_) +
         " SEL(" + Util::ToString(sel_range_.start) + "," +
         Util::ToString(sel_range_.end) + ") '" + text_ + "'";
@@ -291,8 +291,8 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     void SetValidationFunc(const ValidationFunc &func) {
         validation_func_ = func;
     }
-    void SetInitialText(const std::string &text);
-    std::string GetText() const;
+    void SetInitialText(const Str &text);
+    Str  GetText() const;
 
     // IPaneInteractor interface.
     virtual void SetVirtualKeyboard(const VirtualKeyboardPtr &vk) override {
@@ -315,7 +315,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
 
   private:
     /// Maps key string sequences to actions.
-    static std::unordered_map<std::string, TextAction> s_action_map_;
+    static std::unordered_map<Str, TextAction> s_action_map_;
 
     /// Saves the VirtualKeyboard.
     VirtualKeyboardPtr virtual_keyboard_;
@@ -330,7 +330,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     SG::NodePtr    selection_;     ///< Selection.
     SG::NodePtr    background_;    ///< Pane background.
 
-    std::string    initial_text_;        ///< Initial text string.
+    Str            initial_text_;        ///< Initial text string.
     const float    padding_;             ///< Padding around text.
     bool           is_active_ = false;   ///< True while active (editing).
     size_t         drag_sel_start_ = 0;  ///< Start position of drag selection.
@@ -352,11 +352,11 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     State_ & GetState_() { return stack_.GetTop(); }
 
     /// Sets the displayed text to the given string.
-    void SetText_(const std::string &text);
+    void SetText_(const Str &text);
 
     /// Sets the displayed text to be the given string and pushes an entry on
     /// the stack so the change can be undone.
-    void PushText_(const std::string &new_text);
+    void PushText_(const Str &new_text);
 
     void Finish_(bool is_accept);
 
@@ -372,7 +372,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     /// Inserts the given characters to replace the current selection if there
     /// is any or at the current cursor position otherwise. The cursor is moved
     /// to after the last inserted character.
-    void InsertChars_(const std::string &chars);
+    void InsertChars_(const Str &chars);
 
     /// Changes the selection to encompass the given Range_ and updates the
     /// cursor based on the change.
@@ -412,7 +412,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     friend class Parser::Registry;
 };
 
-std::unordered_map<std::string, TextAction> TextInputPane::Impl_::s_action_map_;
+std::unordered_map<Str, TextAction> TextInputPane::Impl_::s_action_map_;
 
 TextInputPane::Impl_::Impl_(ContainerPane &root_pane, float padding) :
     root_pane_(root_pane),
@@ -439,7 +439,7 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane, float padding) :
             ProcessDrag_(info, is_start); });
 }
 
-void TextInputPane::Impl_::SetInitialText(const std::string &text) {
+void TextInputPane::Impl_::SetInitialText(const Str &text) {
     initial_text_ = text;
     stack_.Init();
     SetText_(text);
@@ -449,7 +449,7 @@ void TextInputPane::Impl_::SetInitialText(const std::string &text) {
     }
 }
 
-std::string TextInputPane::Impl_::GetText() const {
+Str TextInputPane::Impl_::GetText() const {
     return GetState_().GetText();
 }
 
@@ -471,7 +471,7 @@ void TextInputPane::Impl_::Deactivate() {
 
     // If the current text is not valid, undo everything. Do this while still
     // considered active so the text updates.
-    const std::string text = GetState_().GetText();
+    const Str text = GetState_().GetText();
     const bool is_valid = ! validation_func_ || validation_func_(text);
     if (! is_valid) {
         while (stack_.Undo())
@@ -491,7 +491,7 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
     if (is_active_) {
         if (event.flags.Has(Event::Flag::kKeyPress)) {
             // Check first for a key sequence in the action map.
-            const std::string key_string = event.GetKeyString();
+            const Str key_string = event.GetKeyString();
             const auto it = s_action_map_.find(key_string);
             if (it != s_action_map_.end()) {
                 ProcessAction_(it->second);
@@ -542,8 +542,7 @@ void TextInputPane::Impl_::InitActionMap_() {
 void TextInputPane::Impl_::AttachToVirtualKeyboard_() {
     ASSERT(virtual_keyboard_);
     auto &vk = *virtual_keyboard_;
-    vk.GetInsertion().AddObserver(
-        this, [&](const std::string &s){ InsertChars_(s); });
+    vk.GetInsertion().AddObserver(this, [&](const Str &s){ InsertChars_(s); });
     vk.GetAction().AddObserver(
         this, [&](TextAction action){ ProcessAction_(action); });
     vk.SetIsActive(true);
@@ -557,7 +556,7 @@ void TextInputPane::Impl_::DetachFromVirtualKeyboard_() {
     vk.GetAction().RemoveObserver(this);
 }
 
-void TextInputPane::Impl_::SetText_(const std::string &text) {
+void TextInputPane::Impl_::SetText_(const Str &text) {
     GetState_().SetText(text);
 
     ASSERT(text_pane_);
@@ -565,7 +564,7 @@ void TextInputPane::Impl_::SetText_(const std::string &text) {
     UpdateBackgroundColor_();
 }
 
-void TextInputPane::Impl_::PushText_(const std::string &new_text) {
+void TextInputPane::Impl_::PushText_(const Str &new_text) {
     stack_.Push();
     SetText_(new_text);
 }
@@ -699,7 +698,7 @@ TextInputPane::Impl_::GetRangeForAction_(TextAction action) const {
 void TextInputPane::Impl_::DeleteRange_(const Range_ &range) {
     // Ignore empty ranges.
     if (! range.IsEmpty()) {
-        std::string text = GetState_().GetText();
+        Str text = GetState_().GetText();
         ASSERT(range.end <= text.size());
         text.erase(text.begin() + range.start, text.begin() + range.end);
 
@@ -709,9 +708,9 @@ void TextInputPane::Impl_::DeleteRange_(const Range_ &range) {
     }
 }
 
-void TextInputPane::Impl_::InsertChars_(const std::string &chars) {
+void TextInputPane::Impl_::InsertChars_(const Str &chars) {
     const State_ &state = GetState_();
-    std::string text = state.GetText();
+    Str text = state.GetText();
 
     size_t insert_pos = state.GetCursorPos();
 
@@ -822,9 +821,9 @@ void TextInputPane::Impl_::UpdateCharWidth_() {
 void TextInputPane::Impl_::UpdateBackgroundColor_() {
     // Have to wait for Ion to be set up first.
     if (root_pane_.GetIonNode()) {
-        std::string color_name;
+        Str color_name;
         if (is_active_) {
-            const std::string text = GetState_().GetText();
+            const Str text = GetState_().GetText();
             const bool is_valid = ! validation_func_ || validation_func_(text);
             color_name = is_valid ?
                 "TextInputActiveColor" : "TextInputErrorColor";
@@ -937,11 +936,11 @@ void TextInputPane::SetValidationFunc(const ValidationFunc &func) {
     impl_->SetValidationFunc(func);
 }
 
-void TextInputPane::SetInitialText(const std::string &text) {
+void TextInputPane::SetInitialText(const Str &text) {
     impl_->SetInitialText(text);
 }
 
-std::string TextInputPane::GetText() const {
+Str TextInputPane::GetText() const {
     return impl_->GetText();
 }
 

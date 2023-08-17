@@ -62,7 +62,7 @@ class ToolBox : public Grippable {
 
     /// Sets the name of the general Tool to use by default. Asserts if there
     /// is no such Tool.
-    void SetDefaultGeneralTool(const std::string &name);
+    void SetDefaultGeneralTool(const Str &name);
 
     /// Resets the ToolBox completely (for reload).
     void Reset();
@@ -80,7 +80,7 @@ class ToolBox : public Grippable {
 
     /// Returns true if the named general tool can be used for the given
     /// selection.
-    bool CanUseGeneralTool(const std::string &name, const Selection &sel);
+    bool CanUseGeneralTool(const Str &name, const Selection &sel);
 
     /// Returns true if a specialized tool can be used for the given selection.
     bool CanUseSpecializedTool(const Selection &sel);
@@ -90,7 +90,7 @@ class ToolBox : public Grippable {
     ToolPtr GetSpecializedToolForSelection(const Selection &sel);
 
     /// Switches to using the named general tool for the selection.
-    void UseGeneralTool(const std::string &name, const Selection &sel);
+    void UseGeneralTool(const Str &name, const Selection &sel);
 
     /// Switches to using a specialized tool if possible and necessary for the
     /// given selection.
@@ -145,7 +145,7 @@ class ToolBox : public Grippable {
     virtual void             UpdateGripInfo(GripInfo &info) override;
 
   private:
-    typedef std::unordered_map<std::string, ToolPtr> ToolNameMap_;
+    typedef std::unordered_map<Str,     ToolPtr> ToolNameMap_;
     typedef std::unordered_map<Model *, ToolPtr>     ActiveToolMap_;
 
     /// Node to use as the parent of all active Tools.
@@ -184,7 +184,7 @@ class ToolBox : public Grippable {
     Parser::InstanceStorePtr passive_tool_store_;
 
     /// Finds and returns the named general Tool.
-    ToolPtr GetGeneralTool_(const std::string &name) const;
+    ToolPtr GetGeneralTool_(const Str &name) const;
 
     /// Attaches the given tool to the primary selection and sets it up.
     void UseTool_(const ToolPtr &tool, const Selection &sel);

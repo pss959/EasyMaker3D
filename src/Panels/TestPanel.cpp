@@ -15,7 +15,7 @@ void TestPanel::UpdateInterface() {
 
 void TestPanel::FindButtonPanes_(const PanePtr &pane) {
     if (auto but_pane = std::dynamic_pointer_cast<ButtonPane>(pane)) {
-        const std::string &name = but_pane->GetName();
+        const Str &name = but_pane->GetName();
         auto report = [&](){ std::cerr << "== Clicked " << name << "\n"; };
         AddButtonFunc(but_pane->GetName(), report);
     }

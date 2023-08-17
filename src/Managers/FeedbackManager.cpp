@@ -45,7 +45,7 @@ void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
         stage_parent_node_->RemoveChild(instance);
 }
 
-void FeedbackManager::AddActiveInstance_(const std::string &key,
+void FeedbackManager::AddActiveInstance_(const Str &key,
                                          const FeedbackPtr &instance) {
     ASSERTM(! active_instances_.contains(key), key);
     KLOG('D', "Adding active instance " << instance->GetDesc()
@@ -53,7 +53,7 @@ void FeedbackManager::AddActiveInstance_(const std::string &key,
     active_instances_[key] = instance;
 }
 
-void FeedbackManager::RemoveActiveInstance_(const std::string &key,
+void FeedbackManager::RemoveActiveInstance_(const Str &key,
                                             const FeedbackPtr &instance) {
     ASSERTM(active_instances_.contains(key), key);
     KLOG('D', "Removing active instance " << instance->GetDesc()
@@ -61,7 +61,7 @@ void FeedbackManager::RemoveActiveInstance_(const std::string &key,
     active_instances_.erase(key);
 }
 
-FeedbackPtr FeedbackManager::FindActiveInstance_(const std::string &key) {
+FeedbackPtr FeedbackManager::FindActiveInstance_(const Str &key) {
     const auto it = active_instances_.find(key);
     if (it != active_instances_.end())
         return it->second;

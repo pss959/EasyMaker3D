@@ -19,7 +19,7 @@ TEST_F(TimingTest, ChangeCylinder) {
     // very slow before setting up to always build all CGAL-related code with
     // optimized flags.
     auto cyl = Model::CreateModel<CylinderModel>();
-    std::string reason;
+    Str reason;
     for (int i = 0; i < 100; ++i) {
         cyl->SetTopRadius(i * .001f);
         EXPECT_TRUE(cyl->IsMeshValid(reason));
@@ -56,7 +56,7 @@ TEST_F(TimingTest, Twist) {
     tw->SetComplexity(.8f);
     timer.AddTimePoint("TwistedModel complexity set");
 
-    std::string reason;
+    Str reason;
     EXPECT_TRUE(tw->IsMeshValid(reason));
     timer.AddTimePoint("TwistedModel first mesh access");
 

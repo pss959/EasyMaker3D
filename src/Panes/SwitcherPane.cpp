@@ -20,7 +20,7 @@ void SwitcherPane::SetIndex(int index) {
     UpdateIndex_(index, false);
 }
 
-std::string SwitcherPane::ToString(bool is_brief) const {
+Str SwitcherPane::ToString(bool is_brief) const {
     // Add the current index
     return Pane::ToString(is_brief) + " IX=" + Util::ToString(GetIndex());
 }

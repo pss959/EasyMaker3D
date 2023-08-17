@@ -51,7 +51,7 @@ void RadialMenuPanel::UpdateInterface() {
 
     // Select the correct mode radio button.
     mode_index_ = Util::EnumInt(GetSettings().GetRadialMenusMode());
-    const std::string mode_name = "Mode" + Util::ToString(mode_index_);
+    const Str mode_name = "Mode" + Util::ToString(mode_index_);
     GetPane()->FindTypedPane<RadioButtonPane>(mode_name)->SetState(true);
 
     // Update the controller panes.
@@ -65,7 +65,7 @@ void RadialMenuPanel::UpdateInterface() {
 }
 
 BoxPane & RadialMenuPanel::GetControllerPane_(Hand hand) {
-    const std::string name = Util::EnumToWord(hand) + "ControllerPane";
+    const Str name = Util::EnumToWord(hand) + "ControllerPane";
     return *GetPane()->FindTypedPane<BoxPane>(name);
 }
 
@@ -96,7 +96,7 @@ void RadialMenuPanel::UpdateControllerPane_(Hand hand,
     const auto &pane = GetControllerPane_(hand);
 
     // Set the correct number of buttons.
-    const std::string &count_name = Util::EnumToWord(info.GetCount());
+    const Str &count_name = Util::EnumToWord(info.GetCount());
     pane.FindTypedPane<RadioButtonPane>(count_name)->SetState(true);
 
     // Update the RadialMenu.
@@ -141,7 +141,7 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
     auto ap = GetTypedPanel<ActionPanel>("ActionPanel");
     ap->SetAction(info->GetButtonAction(index));
 
-    auto result_func = [ap, info, menu, index](const std::string &result){
+    auto result_func = [ap, info, menu, index](const Str &result){
         if (result == "Accept") {
             const Action action = ap->GetAction();
             info->SetButtonAction(index, action);

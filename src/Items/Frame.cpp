@@ -15,7 +15,7 @@ void Frame::AddFields() {
     SG::Node::AddFields();
 }
 
-bool Frame::IsValid(std::string &details) {
+bool Frame::IsValid(Str &details) {
     if (! SG::Node::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
 
@@ -41,8 +41,7 @@ void Frame::FitToSize(const Vector2f &size) const {
     const float xl = size[0] + 2 * width_;  // Extra long Top/Bottom.
 
     // Update the 4 frame pieces: Top, Bottom, Left, Right.
-    auto set = [this](int index, const std::string &name,
-                      float sx, float tx, float ty){
+    auto set = [this](int index, const Str &name, float sx, float tx, float ty){
         auto piece = GetChild(index);
         ASSERT(piece->GetName() == name);
         piece->SetScale(Vector3f(sx, width_, depth_));

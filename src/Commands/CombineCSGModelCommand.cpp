@@ -6,7 +6,7 @@ void CombineCSGModelCommand::AddFields() {
     CombineCommand::AddFields();
 }
 
-bool CombineCSGModelCommand::IsValid(std::string &details) {
+bool CombineCSGModelCommand::IsValid(Str &details) {
     if (! CombineCommand::IsValid(details))
         return false;
     if (GetModelNames().size() < 2U) {
@@ -16,6 +16,6 @@ bool CombineCSGModelCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string CombineCSGModelCommand::GetDescription() const {
+Str CombineCSGModelCommand::GetDescription() const {
     return BuildDescription("CSG");
 }

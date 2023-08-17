@@ -63,7 +63,7 @@ void CylinderTool::Detach() {
     cylinder_model_.reset();
 }
 
-ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
+ScaleWidgetPtr CylinderTool::InitScaler_(const Str &name) {
     auto scaler = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
 
     scaler->SetMode(ScaleWidget::Mode::kSymmetric);

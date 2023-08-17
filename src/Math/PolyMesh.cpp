@@ -30,10 +30,10 @@ typedef PolyMesh::VertexVec VertexVec;
 typedef PolyMesh::IndexVec  IndexVec;
 
 /// Maps an Edge ID to an Edge instance.
-typedef std::unordered_map<std::string, Edge *> EdgeMap_;
+typedef std::unordered_map<Str, Edge *> EdgeMap_;
 
 /// Returns a unique hash key for an edge between two vertices.
-static std::string EdgeHashKey_(const Vertex &v0, const Vertex &v1) {
+static Str EdgeHashKey_(const Vertex &v0, const Vertex &v1) {
     return v0.id + "_" + v1.id;
 }
 
@@ -74,8 +74,8 @@ static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
     // See if there is already an edge between these two vertices in the map.
     // If so, just add the duplicate edge to maintain closed-surface integrity.
     // CGAL probably won't like this, but it's better than a hole.
-    const std::string key     = EdgeHashKey_(*edge.v0, *edge.v1);
-    const std::string opp_key = EdgeHashKey_(*edge.v1, *edge.v0);
+    const Str key     = EdgeHashKey_(*edge.v0, *edge.v1);
+    const Str opp_key = EdgeHashKey_(*edge.v1, *edge.v0);
     if (edge_map.contains(key)) {
         // Remove the edge and its opposite, if it is there.
         edge_map.erase(key);
@@ -211,7 +211,7 @@ static IndexVec GetTriangleIndices_(const PolyMesh &poly_mesh) {
 // PolyMesh::Feature class functions.
 // ----------------------------------------------------------------------------
 
-PolyMesh::Feature::Feature(const std::string &prefix, int index) :
+PolyMesh::Feature::Feature(const Str &prefix, int index) :
     id(prefix + Util::ToString(index)) {
 }
 
@@ -442,19 +442,19 @@ TriMesh PolyMesh::ToTriMesh() const {
 // ----------------------------------------------------------------------------
 
 // LCOV_EXCL_START
-std::string PolyMesh::Vertex::ToString() const {
+Str PolyMesh::Vertex::ToString() const {
     return id + ": " + Util::ToString(point);
 }
 
-std::string PolyMesh::Edge::ToString() const {
+Str PolyMesh::Edge::ToString() const {
     return id + " from " + v0->id + " to " + v1->id +
         ", face " + face->id +
         ", opp " + (opposite_edge ? opposite_edge->id : "NULL");
 }
 
-std::string PolyMesh::Face::ToString(bool on_one_line) const {
+Str PolyMesh::Face::ToString(bool on_one_line) const {
     auto edge_string = [&](const EdgeVec &ev){
-        std::string s = "[";
+        Str s = "[";
         for (auto &e: ev)
             s+= " " + e->id;
         s += " ] [";
@@ -466,7 +466,7 @@ std::string PolyMesh::Face::ToString(bool on_one_line) const {
         return s;
     };
 
-    std::string fs = id + ": " + edge_string(outer_edges);
+    Str fs = id + ": " + edge_string(outer_edges);
     if (! hole_edges.empty()) {
         fs += " { HOLES:";
         for (size_t i = 0; i < hole_edges.size(); ++i)
@@ -479,7 +479,7 @@ std::string PolyMesh::Face::ToString(bool on_one_line) const {
     return fs;
 }
 
-void PolyMesh::Dump(const std::string &when) const {
+void PolyMesh::Dump(const Str &when) const {
     std::cout << "=== " << when << ": PolyMesh with "
               << vertices.size() << " vertices:\n";
     for (auto &v: vertices)

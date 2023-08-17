@@ -28,8 +28,8 @@ constexpr size_t EnumCount() {
 
 /// Converts an enum value to a string.
 template <typename EnumType>
-std::string EnumName(EnumType e) {
-    return std::string(magic_enum::enum_name<EnumType>(e));
+Str EnumName(EnumType e) {
+    return Str(magic_enum::enum_name<EnumType>(e));
 }
 
 /// Converts an enum value to an int.
@@ -61,7 +61,7 @@ std::vector<EnumType> EnumValues() {
 /// Accesses an enum value from a string. Returns false if the string does
 /// represent a valid value.
 template <typename EnumType>
-bool EnumFromString(const std::string &s, EnumType &result) {
+bool EnumFromString(const Str &s, EnumType &result) {
     auto val = magic_enum::enum_cast<EnumType>(s);
     if (val.has_value()) {
         result = val.value();
@@ -73,14 +73,14 @@ bool EnumFromString(const std::string &s, EnumType &result) {
 /// Convenience that converts an enum value to a string and then removes the
 /// leading "k".
 template <typename EnumType>
-std::string EnumToWord(EnumType e) {
+Str EnumToWord(EnumType e) {
     return RemoveFirstN(EnumName(e), 1);
 }
 
 /// Convenience that converts an enum value to a string and then splits it from
 /// camel case to separate words, removing the leading "k".
 template <typename EnumType>
-std::string EnumToWords(EnumType e) {
+Str EnumToWords(EnumType e) {
     return SplitCamelCase(EnumName(e), true);
 }
 

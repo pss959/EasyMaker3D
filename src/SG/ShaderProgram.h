@@ -26,10 +26,10 @@ class ShaderProgram : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
 
-    const std::string & GetInheritFrom()    const { return inherit_from_;     }
-    ShaderSourcePtr     GetVertexSource()   const { return vertex_source_;    }
-    ShaderSourcePtr     GetGeometrySource() const { return geometry_source_;  }
-    ShaderSourcePtr     GetFragmentSource() const { return fragment_source_;  }
+    const Str &     GetInheritFrom()    const { return inherit_from_;     }
+    ShaderSourcePtr GetVertexSource()   const { return vertex_source_;    }
+    ShaderSourcePtr GetGeometrySource() const { return geometry_source_;  }
+    ShaderSourcePtr GetFragmentSource() const { return fragment_source_;  }
     const std::vector<UniformDefPtr> & GetUniformDefs() const {
         return uniform_defs_;
     }
@@ -53,7 +53,7 @@ class ShaderProgram : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>         inherit_from_;
+    Parser::TField<Str>                inherit_from_;
     Parser::ObjectField<ShaderSource>   vertex_source_;
     Parser::ObjectField<ShaderSource>   geometry_source_;
     Parser::ObjectField<ShaderSource>   fragment_source_;
@@ -69,8 +69,7 @@ class ShaderProgram : public Object {
 
     /// Creates a StringComposer for the given shader source and returns it.
     ion::gfxutils::ShaderSourceComposerPtr CreateComposer_(
-        const std::string &suffix, FileMap &file_map,
-        const ShaderSourcePtr &source);
+        const Str &suffix, FileMap &file_map, const ShaderSourcePtr &source);
 
     friend class Parser::Registry;
 };

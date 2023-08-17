@@ -230,10 +230,10 @@ struct Beveler_::Ring_ {
     }
 
     /// Converts to a string for debugging.
-    std::string ToString() const {
-        return std::string("Ring " + Util::ToString(level) + " PPS=" +
-                           Util::ToString(points_per_side) + ": " +
-                           Util::JoinItems(indices));
+    Str ToString() const {
+        return Str("Ring " + Util::ToString(level) + " PPS=" +
+                   Util::ToString(points_per_side) + ": " +
+                   Util::JoinItems(indices));
     }
 };
 

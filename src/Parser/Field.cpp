@@ -37,7 +37,7 @@ template <> size_t Field::ScanValue<size_t>(Scanner &scanner) {
     return scanner.ScanUInteger();
 }
 
-template <> std::string Field::ScanValue<std::string>(Scanner &scanner) {
+template <> Str Field::ScanValue<Str>(Scanner &scanner) {
     return scanner.ScanQuotedString();
 }
 

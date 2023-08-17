@@ -13,7 +13,7 @@ void CylinderModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
-bool CylinderModel::IsValid(std::string &details) {
+bool CylinderModel::IsValid(Str &details) {
     if (! PrimitiveModel::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (top_radius_ < 0 || bottom_radius_ < 0) {

@@ -9,7 +9,7 @@ void ChangeEdgeTargetCommand::AddFields() {
     Command::AddFields();
 }
 
-bool ChangeEdgeTargetCommand::IsValid(std::string &details) {
+bool ChangeEdgeTargetCommand::IsValid(Str &details) {
     if (! Command::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! old_target_.GetValue()) {
@@ -38,7 +38,7 @@ void ChangeEdgeTargetCommand::CreationDone() {
     }
 }
 
-std::string ChangeEdgeTargetCommand::GetDescription() const {
+Str ChangeEdgeTargetCommand::GetDescription() const {
     return "Changed the edge target";
 }
 

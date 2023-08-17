@@ -34,7 +34,7 @@ DECL_SHARED_PTR(Widget);
 class Widget : public SG::Node {
   public:
     /// Typedef for function that can be invoked to show or hide a Tooltip.
-    typedef std::function<void(Widget &widget, const std::string &,
+    typedef std::function<void(Widget &widget, const Str &,
                                bool show)> TooltipFunc;
 
     /// Returns a Notifier that is invoked when the widget is activated or
@@ -94,7 +94,7 @@ class Widget : public SG::Node {
     /// Sets a prefix string to use for all special color names accessed from
     /// the ColorMap. The base class defines this as "Widget". This should be
     /// called before PostSetUpIon() is called for the instance.
-    void SetColorNamePrefix(const std::string &prefix) {
+    void SetColorNamePrefix(const Str &prefix) {
         color_name_prefix_ = prefix;
     }
 
@@ -110,7 +110,7 @@ class Widget : public SG::Node {
 
     /// Sets the tooltip text to display when hovered long enough. The default
     /// text is empty, which disables tooltips.
-    void SetTooltipText(const std::string &text) { tooltip_text_ = text; }
+    void SetTooltipText(const Str &text) { tooltip_text_ = text; }
 
     ///@}
 
@@ -164,12 +164,12 @@ class Widget : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color>       inactive_color_;
-    Parser::TField<Color>       active_color_;
-    Parser::TField<Color>       disabled_color_;
-    Parser::TField<Color>       hover_color_;
-    Parser::TField<Vector3f>    hover_scale_;
-    Parser::TField<std::string> tooltip_text_;
+    Parser::TField<Color>    inactive_color_;
+    Parser::TField<Color>    active_color_;
+    Parser::TField<Color>    disabled_color_;
+    Parser::TField<Color>    hover_color_;
+    Parser::TField<Vector3f> hover_scale_;
+    Parser::TField<Str>      tooltip_text_;
     ///@}
 
     /// Set to true if interaction is enabled. This is true by default.
@@ -189,7 +189,7 @@ class Widget : public SG::Node {
 
     /// Prefix string used for all special color names accessed from the
     /// ColorMap.
-    std::string color_name_prefix_{ "Widget" };
+    Str         color_name_prefix_{ "Widget" };
 
     /// Notifies when the widget is activated or deactivated.
     Util::Notifier<Widget&, bool> activation_;
@@ -205,8 +205,7 @@ class Widget : public SG::Node {
 
     /// If the given field has a value set, this returns it. Otherwise, it
     /// looks up the named special color in the ColorMap.
-    Color GetColor_(const Parser::TField<Color> &field,
-                    const std::string &name) const;
+    Color GetColor_(const Parser::TField<Color> &field, const Str &name) const;
 
     /// Activates or deactivates the Tooltip object. Creates it first if
     /// necessary.

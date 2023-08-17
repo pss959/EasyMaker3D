@@ -52,7 +52,7 @@ TEST_F(FieldTest, AccessAndModify) {
     dp->angle_val   = ang;
     dp->rot_val     = rot;
     dp->ints_val    = std::vector<int>{ 3, -2 };
-    dp->strs_val    = std::vector<std::string>{ "Hello", "There" };
+    dp->strs_val    = StrVec{ "Hello", "There" };
     dp->simple      = sp0;
     dp->simple_list = std::vector<SimplePtr>{ sp1, sp2 };
     dp->hidden_int  = 6;
@@ -103,7 +103,7 @@ TEST_F(FieldTest, ReplaceValue) {
 }
 
 TEST_F(FieldTest, WasSet) {
-    const std::string input =
+    const Str input =
         "Simple {\n"
         "  bool_val:  True,\n"
         "  float_val: 19,\n"
@@ -124,7 +124,7 @@ TEST_F(FieldTest, WasSet) {
 }
 
 TEST_F(FieldTest, OverwriteField) {
-    const std::string input =
+    const Str input =
         "Simple {\n"
         "  int_val: 13,\n"
         "  int_val: 19,\n"

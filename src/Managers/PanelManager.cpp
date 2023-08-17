@@ -8,7 +8,7 @@ void PanelManager::Reset() {
 
 void PanelManager::FindAllPanels(const SG::Scene &scene,
                                  const Panel::ContextPtr &context) {
-    auto add_panel = [this, &scene, &context](const std::string &name) {
+    auto add_panel = [this, &scene, &context](const Str &name) {
         auto panel = SG::FindTypedNodeInScene<Panel>(scene, name);
         panel->SetContext(context);
         ASSERTM(! panel_map_.contains(name),
@@ -38,7 +38,7 @@ void PanelManager::FindAllPanels(const SG::Scene &scene,
 #endif
 }
 
-PanelPtr PanelManager::GetPanel(const std::string &name) const {
+PanelPtr PanelManager::GetPanel(const Str &name) const {
     ASSERTM(panel_map_.contains(name), "No panel named " + name);
     return panel_map_.at(name);
 }

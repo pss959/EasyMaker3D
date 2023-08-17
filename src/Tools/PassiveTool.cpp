@@ -41,12 +41,12 @@ void PassiveTool::CreateParts_() {
 
     // Create instances of all corners and edges.
     for (int c = 0; c < 8; ++c) {
-        const std::string name = "Corner_" + Util::ToString(c);
+        const Str name = "Corner_" + Util::ToString(c);
         corners_[c] = corner->CloneTyped<SG::Node>(true, name);
         AddChild(corners_[c]);
     }
     for (int e = 0; e < 12; ++e) {
-        const std::string name = "Edge_" + Util::ToString(e);
+        const Str name = "Edge_" + Util::ToString(e);
         edges_[e] = edge->CloneTyped<SG::Node>(true, name);
         AddChild(edges_[e]);
     }

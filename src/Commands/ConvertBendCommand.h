@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ConvertBendCommand);
 /// \ingroup Commands
 class ConvertBendCommand : public ConvertCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ConvertBendCommand() {}

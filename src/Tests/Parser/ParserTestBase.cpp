@@ -72,7 +72,7 @@ void ParserTestBase::Full::AddFields() {
     AddField(ca.Init("ca"));
 }
 
-bool ParserTestBase::Unscoped::IsValid(std::string &details) {
+bool ParserTestBase::Unscoped::IsValid(Str &details) {
     if (GetName() == "INVALID") {
         details = "invalid name";
         return false;
@@ -96,7 +96,7 @@ void ParserTestBase::InitTestClasses() {
     Parser::Registry::AddType<Unscoped>("Unscoped");
 }
 
-std::string ParserTestBase::GetSimpleInput() {
+Str ParserTestBase::GetSimpleInput() {
     return
         "# Full-line comment\n"
         "Simple \"TestObj\" {\n"
@@ -116,7 +116,7 @@ std::string ParserTestBase::GetSimpleInput() {
         "}\n";
 }
 
-std::string ParserTestBase::GetFullInput() {
+Str ParserTestBase::GetFullInput() {
     return
         "Full \"TestFull\" {\n"
         "  b: True,\n"
@@ -150,7 +150,7 @@ std::string ParserTestBase::GetFullInput() {
         "}\n";
 }
 
-Parser::ObjectPtr ParserTestBase::ParseString(const std::string &input) {
+Parser::ObjectPtr ParserTestBase::ParseString(const Str &input) {
     Parser::ObjectPtr obj;
     try {
         obj = parser.ParseFromString(input);
@@ -162,7 +162,7 @@ Parser::ObjectPtr ParserTestBase::ParseString(const std::string &input) {
     return obj;
 }
 
-Parser::ObjectPtr ParserTestBase::ParseFile(const std::string &input) {
+Parser::ObjectPtr ParserTestBase::ParseFile(const Str &input) {
     TempFile tmp_file(input);
     Parser::ObjectPtr obj;
     try {

@@ -2,6 +2,6 @@
 
 #include "Util/Enum.h"
 
-std::string CreateRevSurfModelCommand::GetDescription() const {
+Str CreateRevSurfModelCommand::GetDescription() const {
     return BuildDescription("surface of revolution");
 }

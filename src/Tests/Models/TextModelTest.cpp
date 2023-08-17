@@ -20,7 +20,7 @@ TEST_F(TextModelTest, Defaults) {
 TEST_F(TextModelTest, Set) {
     auto text = Model::CreateModel<TextModel>();
 
-    const std::string font = "DejaVu Sans Mono-Book";
+    const Str font = "DejaVu Sans Mono-Book";
     text->SetTextString("Hello");
     text->SetFontName(font);
     text->SetCharSpacing(1.5f);

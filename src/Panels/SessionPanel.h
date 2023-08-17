@@ -23,7 +23,7 @@ class SessionPanel : public Panel {
 
     /// Redefines this interpret "Cancel" to either start a new session or
     /// continue the current session.
-    virtual void Close(const std::string &result) override;
+    virtual void Close(const Str &result) override;
 
   private:
     /// Reasons to open a FilePanel to choose a file.
@@ -34,7 +34,7 @@ class SessionPanel : public Panel {
     };
 
     /// Stores the session file suffix for convenience.
-    std::string suffix_;
+    Str suffix_;
 
     void OpenHelp_();
     void OpenSettings_();

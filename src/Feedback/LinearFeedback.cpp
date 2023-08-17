@@ -72,7 +72,7 @@ class LinearFeedback::Impl_ {
 // ----------------------------------------------------------------------------
 
 void LinearFeedback::Impl_::InitParts() {
-    auto get_line_func = [&](const std::string &name){
+    auto get_line_func = [&](const Str &name){
         SG::NodePtr n = SG::FindNodeUnderNode(root_node_, name);
         return SG::FindTypedShapeInNode<SG::Tube>(*n, "Line");
     };

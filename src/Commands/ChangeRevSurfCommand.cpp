@@ -11,7 +11,7 @@ void ChangeRevSurfCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ChangeRevSurfCommand::IsValid(std::string &details) {
+bool ChangeRevSurfCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! GetProfile().IsValid()) {
@@ -26,7 +26,7 @@ bool ChangeRevSurfCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ChangeRevSurfCommand::GetDescription() const {
+Str ChangeRevSurfCommand::GetDescription() const {
     return "Changed the profile or sweep angle in " +
         GetModelsDesc(GetModelNames());
 }

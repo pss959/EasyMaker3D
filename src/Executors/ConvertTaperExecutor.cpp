@@ -3,7 +3,7 @@
 #include "Models/TaperedModel.h"
 
 ConvertedModelPtr ConvertTaperExecutor::CreateConvertedModel(
-    const std::string &name) {
+    const Str &name) {
     return Model::CreateModel<TaperedModel>(
         name.empty() ? CreateUniqueName("Tapered") : name);
 }

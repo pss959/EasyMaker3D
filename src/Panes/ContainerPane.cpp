@@ -32,7 +32,7 @@ void ContainerPane::CreationDone() {
     }
 }
 
-PanePtr ContainerPane::FindPane(const std::string &name) const {
+PanePtr ContainerPane::FindPane(const Str &name) const {
     // Note that this cannot check "this" because it has to return a shared_ptr.
     for (const auto &pane: GetPanes()) {
         if (pane->GetName() == name)

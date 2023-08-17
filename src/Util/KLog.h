@@ -20,12 +20,12 @@ class KLogger : public std::ostream {
   public:
     /// Sets a string containing all active character keys: only these keys
     /// will cause printing in subsequent log messages.
-    static void SetKeyString(const std::string &key_string) {
+    static void SetKeyString(const Str &key_string) {
         key_string_ = key_string;
     }
 
     /// Appends to the string set by SetKeyString().
-    static void AppendKeyString(const std::string &key_string) {
+    static void AppendKeyString(const Str &key_string) {
         key_string_ += key_string;
     }
 
@@ -45,13 +45,13 @@ class KLogger : public std::ostream {
 
   private:
     /// A message key must be present in this string for the message to appear.
-    static std::string key_string_;
+    static Str    key_string_;
 
     /// Current render count for log messages.
     static size_t render_count_;
 
     /// This will be true if the message should be printed.
-    const bool do_print_;
+    const bool    do_print_;
 
     /// Returns true if printing should occur for the given key character.
     static bool ShouldPrint_(char key);

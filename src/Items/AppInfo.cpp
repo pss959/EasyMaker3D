@@ -10,7 +10,7 @@ void AppInfo::AddFields() {
     Parser::Object::AddFields();
 }
 
-bool AppInfo::IsValid(std::string &details) {
+bool AppInfo::IsValid(Str &details) {
     if (! Parser::Object::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (version_.GetValue().empty()) {

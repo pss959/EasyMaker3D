@@ -18,7 +18,7 @@ namespace Parser { class Registry; }
 class ImportToolPanel : public FilePanel {
   public:
     /// Displays the given import error and waits for a response.
-    void DisplayImportError(const std::string &message);
+    void DisplayImportError(const Str &message);
 
   protected:
     ImportToolPanel() {}
@@ -27,7 +27,7 @@ class ImportToolPanel : public FilePanel {
     virtual bool IsCloseable() const override { return false; }
 
     /// Redefines this to not close the panel.
-    virtual void ProcessResult(const std::string &result) override;
+    virtual void ProcessResult(const Str &result) override;
 
   private:
     friend class Parser::Registry;

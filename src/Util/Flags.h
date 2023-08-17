@@ -59,8 +59,8 @@ class Flags {
 
     /// Converts the value to a string formed by putting a bitwise-or '|'
     /// between all set flags.
-    std::string ToString() const {
-        std::string s;
+    Str ToString() const {
+        Str s;
         for (auto f: Util::EnumValuesArray<EnumClass>()) {
             if (Has(f)) {
                 if (! s.empty())
@@ -73,10 +73,10 @@ class Flags {
 
     /// Parses a string in the format returned by ToString, setting the
     /// corresponding flags in the given instance. Returns false on error.
-    static bool FromString(const std::string &str, Flags<EnumClass> &flags) {
+    static bool FromString(const Str &str, Flags<EnumClass> &flags) {
         EnumClass e;
-        for (const std::string &word: ion::base::SplitString(str, "|")) {
-            const std::string &es = ion::base::TrimStartAndEndWhitespace(word);
+        for (const Str &word: ion::base::SplitString(str, "|")) {
+            const Str &es = ion::base::TrimStartAndEndWhitespace(word);
             if (! EnumFromString<EnumClass>(es, e))
                 return false;
             flags.Set(e);

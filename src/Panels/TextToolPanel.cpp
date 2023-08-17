@@ -16,14 +16,14 @@ void TextToolPanel::InitInterface() {
     message_pane_ = root_pane->FindTypedPane<TextPane>("Message");
 
     // Set up font choices in the dropdown.
-    std::vector<std::string> font_names = GetAvailableFontNames();
+    const StrVec font_names = GetAvailableFontNames();
     font_pane_->SetChoices(font_names, 0);
 
     // Set up interaction.
     text_pane_->SetValidationFunc(
-        [&](const std::string &str){ return ValidateText_(str); });
+        [&](const Str &str){ return ValidateText_(str); });
     font_pane_->GetChoiceChanged().AddObserver(
-        this, [&](const std::string &choice){ ChangeFont_(choice); });
+        this, [&](const Str &choice){ ChangeFont_(choice); });
     spacing_pane_->GetValueChanged().AddObserver(
         this, [&](float val){ ChangeSpacing_(val); });
 
@@ -36,8 +36,7 @@ void TextToolPanel::UpdateInterface() {
     EnableButton("Apply", false);  // Wait for a change.
 }
 
-void TextToolPanel::SetValues(const std::string &text,
-                              const std::string &font_name,
+void TextToolPanel::SetValues(const Str &text, const Str &font_name,
                               float char_spacing) {
     // Update each Pane.
     text_pane_->SetInitialText(text);
@@ -55,11 +54,11 @@ void TextToolPanel::SetValues(const std::string &text,
     initial_spacing_   = char_spacing;
 }
 
-std::string TextToolPanel::GetTextString() const {
+Str TextToolPanel::GetTextString() const {
     return text_pane_->GetText();
 }
 
-const std::string & TextToolPanel::GetFontName() const {
+const Str & TextToolPanel::GetFontName() const {
     return font_pane_->GetChoice();
 }
 
@@ -67,9 +66,9 @@ float TextToolPanel::GetCharSpacing() const {
     return spacing_pane_->GetValue();
 }
 
-bool TextToolPanel::ValidateText_(const std::string &text) {
+bool TextToolPanel::ValidateText_(const Str &text) {
     display_pane_->SetText(text);
-    std::string reason;
+    Str reason;
     const bool ok = IsValidStringForFont(GetFontName(), text, reason);
     message_pane_->SetText(ok ? "" : reason);
     // Do this last so that errors can be detected.
@@ -82,7 +81,7 @@ void TextToolPanel::ChangeSpacing_(float spacing) {
     UpdateButton_();
 }
 
-void TextToolPanel::ChangeFont_(const std::string &font_name) {
+void TextToolPanel::ChangeFont_(const Str &font_name) {
     display_pane_->SetFontName(font_name);
     UpdateButton_();
 }

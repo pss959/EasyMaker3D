@@ -41,7 +41,7 @@ class SettingsPanel : public Panel {
 
     /// Saves the name of the button that opened a FilePanel so it can be
     /// initialized properly.
-    std::string file_panel_target_;
+    Str file_panel_target_;
 
     /// This is set to true so that changes to Pane values do not cause the
     /// EnableDefaultAndCurrentButtons_() function to change anything.
@@ -53,25 +53,25 @@ class SettingsPanel : public Panel {
     void InitConversion_();
 
     /// Sets the named item to its default value.
-    void SetToDefault_(const std::string &name);
+    void SetToDefault_(const Str &name);
 
     /// Sets the named item to its current value.
-    void SetToCurrent_(const std::string &name);
+    void SetToCurrent_(const Str &name);
 
     /// Updates the enable status of the Default and Current buttons.
     void EnableDefaultAndCurrentButtons_();
 
     /// Sets the named item to the value in the given Settings instance.
-    void UpdateFromSettings_(const Settings &settings, const std::string &name);
+    void UpdateFromSettings_(const Settings &settings, const Str &name);
 
     /// Opens a FilePanel to get the named path item.
-    void OpenFilePanel_(const std::string &item_name);
+    void OpenFilePanel_(const Str &item_name);
 
     /// Initializes a FilePanel to select a path for the named item.
-    void InitFilePanel_(FilePanel &file_panel, const std::string &item_name);
+    void InitFilePanel_(FilePanel &file_panel, const Str &item_name);
 
     /// Accepts an item by the user in the FilePanel.
-    void AcceptFileItem_(const std::string &item_name, const FilePath &path);
+    void AcceptFileItem_(const Str &item_name, const FilePath &path);
 
     /// Opens a RadialMenuPanel.
     void OpenRadialMenuPanel_();
@@ -80,5 +80,5 @@ class SettingsPanel : public Panel {
     void AcceptSettings_();
 
     /// Parses a size value from a string. Returns false on error.
-    static bool ParseSize_(const std::string &s, float &size);
+    static bool ParseSize_(const Str &s, float &size);
 };

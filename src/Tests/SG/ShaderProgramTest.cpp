@@ -23,7 +23,7 @@ TEST_F(ShaderProgramTest, DefaultShaderProgram) {
     TEST_THROW(prog->SetUpIon(fm, *sm), SG::Exception, "No vertex program");
 
     // Create an instance with a valid vertex shader source.
-    const std::string input0 = R"(
+    const Str input0 = R"(
 ShaderProgram "SP" {
   vertex_source: ShaderSource { path: "Shadow_vp.glsl" },
 }
@@ -33,7 +33,7 @@ ShaderProgram "SP" {
     EXPECT_NOT_NULL(prog->GetIonShaderProgram().Get());
 
     // Create an instance with a bogus vertex shader source.
-    const std::string input1 = R"(
+    const Str input1 = R"(
 ShaderProgram "SP" {
   vertex_source: ShaderSource { path: "Bogus.glsl" }
 }
@@ -43,7 +43,7 @@ ShaderProgram "SP" {
     TEST_THROW(prog->SetUpIon(fm, *sm), SG::Exception, "Unable to read shader");
 
     // Create an instance with bad inheritance.
-    const std::string input2 = R"(
+    const Str input2 = R"(
 ShaderProgram "SP" {
   vertex_source: ShaderSource { path: "Shadow_vp.glsl" },
   inherit_from: "NoSuchProgram",

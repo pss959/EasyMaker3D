@@ -16,8 +16,7 @@ void NameTool::InitPanel() {
     GetTypedPanel<NameToolPanel>().SetName(GetModelAttachedTo()->GetName());
 }
 
-void NameTool::PanelChanged(const std::string &key,
-                            ToolPanel::InteractionType type) {
+void NameTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
     // The NameToolPanel has only one type of change.
     ASSERT(key == "Name");
     ASSERT(type == ToolPanel::InteractionType::kImmediate);

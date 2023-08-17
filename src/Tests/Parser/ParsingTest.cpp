@@ -8,7 +8,7 @@ class ParsingTest : public ParserTestBase {
     /// expected field value.
     template <typename T>
     bool TryValue(Parser::TField<T> Simple::* field, T expected,
-                  const std::string &str){
+                  const Str &str){
         Parser::ObjectPtr obj = ParseString(str);
         if (! obj)
             return false;
@@ -19,7 +19,7 @@ class ParsingTest : public ParserTestBase {
 };
 
 TEST_F(ParsingTest, StringAndFile) {
-    const std::string input = GetSimpleInput();
+    const Str input = GetSimpleInput();
 
     // Set up a temporary file with the input string.
     TempFile tmp_file(input);
@@ -53,7 +53,7 @@ TEST_F(ParsingTest, StringAndFile) {
         EXPECT_EQ(6,  ints[0]);
         EXPECT_EQ(5,  ints[1]);
         EXPECT_EQ(-2, ints[2]);
-        const std::vector<std::string> &strs = sp->strs_val.GetValue();
+        const StrVec &strs = sp->strs_val.GetValue();
         EXPECT_EQ(2U,  strs.size());
         EXPECT_EQ("A", strs[0]);
         EXPECT_EQ("B", strs[1]);
@@ -76,7 +76,7 @@ TEST_F(ParsingTest, StringAndFile) {
 }
 
 TEST_F(ParsingTest, Derived) {
-    const std::string input =
+    const Str input =
         "# Full-line comment\n"
         "Derived \"TestObj\" {\n"
         "  int_val:   13, # In-line comment\n"
@@ -172,7 +172,7 @@ TEST_F(ParsingTest, Full) {
 }
 
 TEST_F(ParsingTest, BoolParsing) {
-    auto try_func = [&](bool expected, const std::string &str){
+    auto try_func = [&](bool expected, const Str &str){
         return TryValue(&Simple::bool_val, expected, str); };
 
     EXPECT_TRUE(try_func(false, "Simple { bool_val: F }"));
@@ -187,7 +187,7 @@ TEST_F(ParsingTest, BoolParsing) {
 }
 
 TEST_F(ParsingTest, IntParsing) {
-    auto try_func = [&](int expected, const std::string &str){
+    auto try_func = [&](int expected, const Str &str){
         return TryValue(&Simple::int_val, expected, str); };
 
     EXPECT_TRUE(try_func(10,   "Simple { int_val: 10 }"));
@@ -196,7 +196,7 @@ TEST_F(ParsingTest, IntParsing) {
 }
 
 TEST_F(ParsingTest, UIntParsing) {
-    auto try_func = [&](unsigned int expected, const std::string &str){
+    auto try_func = [&](unsigned int expected, const Str &str){
         return TryValue(&Simple::uint_val, expected, str); };
 
     EXPECT_TRUE(try_func(10,   "Simple { uint_val: 10 }"));
@@ -206,7 +206,7 @@ TEST_F(ParsingTest, UIntParsing) {
 }
 
 TEST_F(ParsingTest, StringParsing) {
-    auto try_func = [&](const std::string &expected, const std::string &str){
+    auto try_func = [&](const Str &expected, const Str &str){
         return TryValue(&Simple::str_val, expected, str); };
 
     EXPECT_TRUE(try_func("Hello",   "Simple { str_val: \"Hello\" }"));
@@ -219,7 +219,7 @@ TEST_F(ParsingTest, StringParsing) {
 }
 
 TEST_F(ParsingTest, ColorParsing) {
-    auto try_func = [&](const Color &expected, const std::string &str){
+    auto try_func = [&](const Color &expected, const Str &str){
         return TryValue(&Simple::color_val, expected, str); };
 
     EXPECT_TRUE(try_func(Color(1, 1, 1, 1),

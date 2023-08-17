@@ -260,7 +260,7 @@ TEST_F(ModelTest, PlacePointTarget) {
     // note that the object bounds range from -1 to 1 in all dimensions.
     auto test_pt = [&](const Point3f &p, const Vector3f &n, bool use_bounds,
                        const Point3f &exp_pos, const Vector3f &exp_dir,
-                       const std::string &exp_dims){
+                       const Str &exp_dims){
         info.is_modified_mode = use_bounds;
         info.hit.point        = p;
         info.hit.bounds_point = p;

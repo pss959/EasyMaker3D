@@ -13,25 +13,25 @@ DECL_SHARED_PTR(ChangeImportedModelCommand);
 /// \ingroup Commands
 class ChangeImportedModelCommand : public SingleModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the new path for the ImportedModel as a string.
-    void SetNewPath(const std::string &path) { new_path_ = FixPath(path); }
+    void SetNewPath(const Str &path) { new_path_ = FixPath(path); }
 
     /// Returns the new path for the ImportedModel as a string.
-    const std::string & GetNewPath() const { return new_path_; }
+    const Str & GetNewPath() const { return new_path_; }
 
   protected:
     ChangeImportedModelCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> new_path_;
+    Parser::TField<Str> new_path_;
     ///@}
 
     friend class Parser::Registry;

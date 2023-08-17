@@ -101,7 +101,7 @@ FileMap::FileMap() : dep_map_(new DependencyMap_) {
 FileMap::~FileMap() {
 }
 
-void FileMap::AddString(const FilePath &path, const std::string &s) {
+void FileMap::AddString(const FilePath &path, const Str &s) {
     KLOG('A', "Adding string " << &s << " with size " << s.size()
          << " for path '" << path.ToString() << "'");
     string_map_[path] = s;
@@ -115,8 +115,8 @@ void FileMap::AddImage(const FilePath &path, const ion::gfx::ImagePtr &image) {
     dep_map_->AddLoadTime(path);
 }
 
-std::string FileMap::FindString(const FilePath &path) {
-    return FindItem_<std::string>(path, string_map_);
+Str FileMap::FindString(const FilePath &path) {
+    return FindItem_<Str>(path, string_map_);
 }
 
 ion::gfx::ImagePtr FileMap::FindImage(const FilePath &path) {

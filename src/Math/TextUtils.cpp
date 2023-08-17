@@ -23,20 +23,18 @@ namespace {
 class FontManager_ {
   public:
     // Each of these implements the public function with the same name.
-    std::vector<std::string> GetAvailableFontNames();
-    bool IsValidFontName(const std::string &font_name);
-    bool IsValidStringForFont(const std::string &font_name,
-                              const std::string &str, std::string &reason);
-    FilePath GetFontPath(const std::string &font_name);
-    void AddFontPath(const std::string &font_name, const FilePath &path);
-    std::vector<Polygon> GetTextOutlines(const std::string &font_name,
-                                         const std::string &text,
-                                         float complexity,
-                                         float char_spacing);
+    StrVec GetAvailableFontNames();
+    bool IsValidFontName(const Str &font_name);
+    bool IsValidStringForFont(const Str &font_name, const Str &str,
+                              Str &reason);
+    FilePath GetFontPath(const Str &font_name);
+    void AddFontPath(const Str &font_name, const FilePath &path);
+    std::vector<Polygon> GetTextOutlines(const Str &font_name, const Str &text,
+                                         float complexity, float char_spacing);
 
   private:
-    typedef std::unordered_map<std::string, FilePath> PathMap_;
-    typedef std::unordered_map<std::string, FT_Face>  FaceMap_;
+    typedef std::unordered_map<Str, FilePath> PathMap_;
+    typedef std::unordered_map<Str, FT_Face>  FaceMap_;
 
     bool     is_initialized_ = false;
     PathMap_ path_map_;  ///< Maps font names to FilePath instances.
@@ -64,21 +62,20 @@ class FontManager_ {
 
 static FontManager_ s_font_manager_;
 
-std::vector<std::string> FontManager_::GetAvailableFontNames() {
+StrVec FontManager_::GetAvailableFontNames() {
     Init_();
-    std::vector<std::string> names = Util::GetKeys(face_map_);
+    StrVec names = Util::GetKeys(face_map_);
     std::sort(names.begin(), names.end());
     return names;
 }
 
-bool FontManager_::IsValidFontName(const std::string &font_name) {
+bool FontManager_::IsValidFontName(const Str &font_name) {
     Init_();
     return face_map_.contains(font_name);
 }
 
-bool FontManager_::IsValidStringForFont(const std::string &font_name,
-                                        const std::string &str,
-                                        std::string &reason) {
+bool FontManager_::IsValidStringForFont(const Str &font_name, const Str &str,
+                                        Str &reason) {
     Init_();
     if (str.empty()) {
         reason = "Empty string";
@@ -94,7 +91,7 @@ bool FontManager_::IsValidStringForFont(const std::string &font_name,
     // Make sure each character appears in the font face.
     FT_Face face = it->second;
     bool any_non_space = false;
-    std::string bad_chars;
+    Str bad_chars;
     for (auto c: str) {
         if (! std::isspace(c))
             any_non_space = true;
@@ -115,20 +112,19 @@ bool FontManager_::IsValidStringForFont(const std::string &font_name,
     return true;
 }
 
-FilePath FontManager_::GetFontPath(const std::string &font_name) {
+FilePath FontManager_::GetFontPath(const Str &font_name) {
     Init_();
     const auto it = path_map_.find(font_name);
     return it == path_map_.end() ? FilePath() : it->second;
 }
 
-void FontManager_::AddFontPath(const std::string &font_name,
-                               const FilePath &path) {
+void FontManager_::AddFontPath(const Str &font_name, const FilePath &path) {
     ASSERT(Util::app_type == Util::AppType::kUnitTest);
     path_map_[font_name] = path;
 }
 
-std::vector<Polygon> FontManager_::GetTextOutlines(const std::string &font_name,
-                                                   const std::string &text,
+std::vector<Polygon> FontManager_::GetTextOutlines(const Str &font_name,
+                                                   const Str &text,
                                                    float complexity,
                                                    float char_spacing) {
     Init_();
@@ -162,8 +158,8 @@ void FontManager_::Init_() {
 
     // Access all font files.
     const FilePath dir_path = FilePath::GetResourcePath("fonts", FilePath());
-    std::vector<std::string> subdirs;
-    std::vector<std::string> files;
+    StrVec subdirs;
+    StrVec files;
     dir_path.GetContents(subdirs, files, ".ttf", false);
 
     for (const auto &f: files) {
@@ -174,8 +170,7 @@ void FontManager_::Init_() {
         FT_Face face;
         if (FT_New_Face(lib, path.ToString().c_str(), 0, &face) == FT_Err_Ok &&
             CanLoadFace_(face)) {
-            const std::string name =
-                std::string(face->family_name) + "-" + face->style_name;
+            const Str name = Str(face->family_name) + "-" + face->style_name;
             KLOG('z', "Loaded font '" << name << " from path '"
                  << path.ToString() << "'");
             ASSERTM(! face_map_.contains(name), name);
@@ -250,32 +245,29 @@ float FontManager_::AddGlyphPolygons_(FT_Face face, char c, float x_start,
 // Public functions.
 // ----------------------------------------------------------------------------
 
-std::vector<std::string> GetAvailableFontNames() {
+StrVec GetAvailableFontNames() {
     return s_font_manager_.GetAvailableFontNames();
 }
 
-bool IsValidFontName(const std::string &font_name) {
+bool IsValidFontName(const Str &font_name) {
     return s_font_manager_.IsValidFontName(font_name);
 }
 
-bool IsValidStringForFont(const std::string &font_name, const std::string &str,
-                          std::string &reason) {
+bool IsValidStringForFont(const Str &font_name, const Str &str, Str &reason) {
     return s_font_manager_.IsValidStringForFont(font_name, str, reason);
 }
 
-FilePath GetFontPath(const std::string &font_name) {
+FilePath GetFontPath(const Str &font_name) {
     return s_font_manager_.GetFontPath(font_name);
 }
 
-void AddFontPath(const std::string &font_name, const FilePath &path) {
+void AddFontPath(const Str &font_name, const FilePath &path) {
     ASSERT(Util::app_type == Util::AppType::kUnitTest);
     s_font_manager_.AddFontPath(font_name, path);
 }
 
-std::vector<Polygon> GetTextOutlines(const std::string &font_name,
-                                     const std::string &text,
-                                     float complexity,
-                                     float char_spacing) {
+std::vector<Polygon> GetTextOutlines(const Str &font_name, const Str &text,
+                                     float complexity, float char_spacing) {
     return s_font_manager_.GetTextOutlines(font_name, text, complexity,
                                            char_spacing);
 }

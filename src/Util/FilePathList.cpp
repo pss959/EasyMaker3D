@@ -63,9 +63,8 @@ const FilePath & FilePathList::AddPath(const FilePath &path) {
 }
 
 // LCOV_EXCL_START
-void FilePathList::GetContents(std::vector<std::string> &subdirs,
-                               std::vector<std::string> &files,
-                               const std::string &extension,
+void FilePathList::GetContents(StrVec &subdirs, StrVec &files,
+                               const Str &extension,
                                bool include_hidden) const {
     // If the current path is a directory, use it. Otherwise, use its parent.
     FilePath dir = GetCurrent();

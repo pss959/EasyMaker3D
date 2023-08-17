@@ -21,16 +21,16 @@ DECL_SHARED_PTR(PasteCommand);
 /// \ingroup Commands
 class PasteCommand : public Command {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the name of the ParentModel to paste the Models into. The name is
     /// empty by default, meaning that Models are pasted as top-level Models.
-    void SetParentName(const std::string &name) { parent_name_ = name; }
+    void SetParentName(const Str &name) { parent_name_ = name; }
 
     /// Returns the name of the ParentModel to paste the Models into. The name
     /// is empty by default, meaning that Models are pasted as top-level
     /// Models.
-    std::string GetParentName() const { return parent_name_; }
+    Str GetParentName() const { return parent_name_; }
 
     /// This can be used to set the Models that were pasted for use by
     /// GetDescription(). Otherwise, there would be no way to show what was
@@ -45,11 +45,11 @@ class PasteCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> parent_name_;
+    Parser::TField<Str> parent_name_;
     ///@}
 
     /// Stores the names of Models for GetDescription().
-    std::vector<std::string> model_names_;
+    StrVec model_names_;
 
     friend class Parser::Registry;
 };

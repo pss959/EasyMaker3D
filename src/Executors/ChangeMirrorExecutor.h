@@ -7,7 +7,7 @@
 /// \ingroup Executors
 class ChangeMirrorExecutor : public ChangePlaneExecutor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ChangeMirrorCommand";
     }
 

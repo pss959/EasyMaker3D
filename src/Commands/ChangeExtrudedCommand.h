@@ -15,7 +15,7 @@ DECL_SHARED_PTR(ChangeExtrudedCommand);
 /// \ingroup Commands
 class ChangeExtrudedCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the new Profile points from the given Profile.
     void SetProfile(const Profile &profile);
@@ -27,7 +27,7 @@ class ChangeExtrudedCommand : public MultiModelCommand {
     ChangeExtrudedCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields

@@ -39,7 +39,7 @@ static CNefPolyhedron BuildNefPolyhedron_(const TriMesh &mesh) {
 #if DO_NEF_CHECK
 // This can be used to validate a CNefPolyhedron if errors occur.
 static void
-CheckNef_(CNefPolyhedron &nef, std::string what) {
+CheckNef_(CNefPolyhedron &nef, Str what) {
     if (! nef.is_valid(false, 1))
         std::cerr << "*** CNefPolyhedron " << what << " is NOT valid\n";
     else if (! nef.is_simple())

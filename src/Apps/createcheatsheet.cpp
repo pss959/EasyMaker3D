@@ -51,8 +51,8 @@ static void WriteHeader_() {
     std::cout << kHeaderString;
 }
 
-static std::string WrapShortcut_(const std::string &str) {
-    std::string new_str = str;
+static Str WrapShortcut_(const Str &str) {
+    Str new_str = str;
 
     if (! new_str.empty()) {
         // Replace space so it is visible.
@@ -68,16 +68,16 @@ static std::string WrapShortcut_(const std::string &str) {
 
 static void WriteAction_(ActionCategory cat, Action action,
                          const ShortcutHandler &sh, const HelpMap &hm) {
-    const std::string category_name = Util::EnumToWords(cat);
-    const std::string action_name   = Util::EnumToWords(action);
-    const std::string icon_name     = Util::EnumToWord(action);
-    const std::string ref = Util::ReplaceString(
+    const Str category_name = Util::EnumToWords(cat);
+    const Str action_name   = Util::EnumToWords(action);
+    const Str icon_name     = Util::EnumToWord(action);
+    const Str ref = Util::ReplaceString(
         Util::ToLowerCase(Util::EnumToWords(action)), " ", "-");
-    const std::string desc =
+    const Str desc =
         Util::ReplaceString(hm.GetHelpString(action), "\n", " ");
 
     // Get the shortcuts from the ShortcutHandler.
-    std::string ks, cs;
+    Str ks, cs;
     sh.GetShortcutStrings(action, ks, cs);
     ks = WrapShortcut_(ks);
     cs = WrapShortcut_(cs);

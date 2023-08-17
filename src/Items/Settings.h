@@ -110,7 +110,7 @@ class Settings : public Parser::Object {
     virtual void AddFields() override;
 
   private:
-    typedef Parser::TField<std::string>         PathField_;
+    typedef Parser::TField<Str>                 PathField_;
     typedef Parser::ObjectField<RadialMenuInfo> RadialMenuField_;
     typedef Parser::ObjectField<UnitConversion> UnitsField_;
     typedef Parser::TField<Vector3f>            VolumeField_;

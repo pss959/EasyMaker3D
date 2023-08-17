@@ -21,29 +21,28 @@ class ShortcutHandler::Parser_ {
   public:
     /// Processes shortcuts from the given file contents, adding to the given
     /// map. Sets error and returns false if anything goes wrong.
-    bool AddShortcuts(const std::string &contents, ActionMap_ &action_map,
-                      std::string &error);
+    bool AddShortcuts(const Str &contents, ActionMap_ &action_map, Str &error);
 
   private:
     /// Current line number during parsing (starting at 1).
-    int         line_number_ = 0;
+    int line_number_ = 0;
 
     /// Stores any current error string.
-    std::string error_;
+    Str error_;
 
     /// Parses a single line of input.
-    bool ParseLine_(const std::string &line, ActionMap_ &action_map);
+    bool ParseLine_(const Str &line, ActionMap_ &action_map);
 
     /// Reports an error.
-    bool Error_(const std::string &what) {
+    bool Error_(const Str &what) {
         error_ = what  + " on line " + Util::ToString(line_number_);
         return false;
     };
 };
 
-bool ShortcutHandler::Parser_::AddShortcuts(const std::string &contents,
+bool ShortcutHandler::Parser_::AddShortcuts(const Str &contents,
                                             ActionMap_ &action_map,
-                                            std::string &error) {
+                                            Str &error) {
     error.clear();
 
     // Split into lines.
@@ -66,25 +65,25 @@ bool ShortcutHandler::Parser_::AddShortcuts(const std::string &contents,
     return true;
 }
 
-bool ShortcutHandler::Parser_::ParseLine_(const std::string &line,
+bool ShortcutHandler::Parser_::ParseLine_(const Str &line,
                                           ActionMap_ &action_map) {
     using ion::base::SplitString;
 
     // Split into words.
-    const std::vector<std::string> words = SplitString(line, " \t");
+    const StrVec words = SplitString(line, " \t");
     if (words.size() != 2U)
         return Error_("Syntax error");
 
     // The shortcut key string comes first. Let the Event class parse it to
     // check for errors.
     Event::Modifiers modifiers;
-    std::string      key_name;
+    Str              key_name;
     if (! Event::ParseKeyString(words[0], modifiers, key_name, error_))
         return Error_(error_);
 
     // The scond word is the action to perform. A valid action string has the
     // same name as the corresponding action enum without the leading "k".
-    const std::string &action_name = words[1];
+    const Str &action_name = words[1];
     Action action;
     if (! Util::EnumFromString("k" + action_name, action))
         return Error_("Invalid action name: \"" + action_name + "\"");
@@ -166,11 +165,11 @@ ShortcutHandler::ShortcutHandler() {
 }
 
 bool ShortcutHandler::AddCustomShortcutsFromFile(const FilePath &path,
-                                                 std::string &error) {
+                                                 Str &error) {
     // See if there is a "shortcuts.txt" file in the current directory. If not,
     // there is nothing to add and no error.
     if (path.Exists() && ! path.IsDirectory()) {
-        std::string contents;
+        Str contents;
         if (! Util::ReadFile(path, contents)) {
             error = "Unable to read from " + path.ToString();
             return false;
@@ -180,23 +179,21 @@ bool ShortcutHandler::AddCustomShortcutsFromFile(const FilePath &path,
     return true;
 }
 
-bool ShortcutHandler::AddCustomShortcutsFromString(const std::string &contents,
-                                                   std::string &error) {
+bool ShortcutHandler::AddCustomShortcutsFromString(const Str &contents,
+                                                   Str &error) {
     Parser_ parser;
     return parser.AddShortcuts(contents, action_map_, error);
 }
 
-void ShortcutHandler::GetShortcutStrings(Action action,
-                                         std::string &keyboard_string,
-                                         std::string &controller_string) const {
+void ShortcutHandler::GetShortcutStrings(Action action, Str &keyboard_string,
+                                         Str &controller_string) const {
     keyboard_string.clear();
     controller_string.clear();
     for (const auto &it: action_map_) {
         if (it.second == action) {
             const bool is_controller =
                 it.first.starts_with("L:") || it.first.starts_with("R:");
-            std::string &str =
-                is_controller ? controller_string : keyboard_string;
+            Str &str = is_controller ? controller_string : keyboard_string;
             if (! str.empty())
                 str += ", ";
             str += it.first;
@@ -206,13 +203,13 @@ void ShortcutHandler::GetShortcutStrings(Action action,
 
 bool ShortcutHandler::HandleEvent(const Event &event) {
     // Handle special key presses.
-    const std::string key_string = event.GetKeyString();
+    const Str key_string = event.GetKeyString();
     if (event.flags.Has(Event::Flag::kKeyPress) &&
         ! key_string.empty() && HandleShortcutString_(key_string))
         return true;
 
     // Handle special Controller button presses.
-    const std::string cb_string = event.GetControllerButtonString();
+    const Str cb_string = event.GetControllerButtonString();
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         ! cb_string.empty() && HandleShortcutString_(cb_string))
         return true;
@@ -220,7 +217,7 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
     return false;
 }
 
-bool ShortcutHandler::HandleShortcutString_(const std::string &str) {
+bool ShortcutHandler::HandleShortcutString_(const Str &str) {
     if (are_app_shortcuts_enabled) {
         auto it = action_map_.find(str);
         if (it != action_map_.end()) {

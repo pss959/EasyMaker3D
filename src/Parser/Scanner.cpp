@@ -32,7 +32,7 @@ class Scanner::Input_ {
         }
     }
     void PushFile(const FilePath &path, std::istream *input) {
-        KLOG('f', std::string(2 * open_file_count_, ' ')
+        KLOG('f', Str(2 * open_file_count_, ' ')
              << "Parsing file \""
              << path.MakeRelativeTo(FilePath::GetResourceBasePath()).ToString()
              << "\"");
@@ -44,7 +44,7 @@ class Scanner::Input_ {
         streams_.push_back(st);
         ++open_file_count_;
     }
-    void PushString(const std::string &s, const std::string &desc) {
+    void PushString(const Str &s, const Str &desc) {
         Stream_ st;
         st.sstream  = new std::istringstream(s);
         st.stream   = st.sstream;
@@ -169,7 +169,7 @@ void Scanner::PushInputStream(const FilePath &path, std::istream &in) {
     input_.PushFile(path, &in);
 }
 
-void Scanner::PushStringInput(const std::string &input_string) {
+void Scanner::PushStringInput(const Str &input_string) {
     input_.PushString(input_string, "");
 }
 
@@ -184,9 +184,9 @@ FilePath Scanner::GetCurrentPath() {
     return path;
 }
 
-std::string Scanner::ScanName(const std::string &for_what) {
+Str Scanner::ScanName(const Str &for_what) {
     SkipWhiteSpace_();
-    std::string s = "";
+    Str s = "";
     char c;
     while (input_.Get(c)) {
         if (isalnum(c) || c == '_') {
@@ -207,7 +207,7 @@ std::string Scanner::ScanName(const std::string &for_what) {
 bool Scanner::ScanBool() {
     SkipWhiteSpace_();
     bool val = false;
-    std::string s;
+    Str s;
     char c;
     while (input_.Get(c) && isalpha(c))
         s += c;
@@ -229,7 +229,7 @@ bool Scanner::ScanBool() {
 
 int Scanner::ScanInteger() {
     // Integers may be signed and are always base 10.
-    std::string s = ScanNumericString_();
+    Str s = ScanNumericString_();
     int n;
     if (Util::StringToInteger(s, n))
         return n;
@@ -239,7 +239,7 @@ int Scanner::ScanInteger() {
 
 unsigned Scanner::ScanUInteger() {
     // Unsigned integers may not be signed and may be base 8, 10, or 16.
-    std::string s = ScanNumericString_();
+    Str s = ScanNumericString_();
     if (! s.empty() && s[0] != '-' && s[0] != '+') {
         // Figure out the base.
         int base = 10;
@@ -263,7 +263,7 @@ unsigned Scanner::ScanUInteger() {
 }
 
 float Scanner::ScanFloat() {
-    std::string s = ScanNumericString_();
+    Str s = ScanNumericString_();
     if (! s.empty()) {
         try {
             size_t chars_processed;
@@ -277,8 +277,8 @@ float Scanner::ScanFloat() {
     return 0.f;  // LCOV_EXCL_LINE
 }
 
-std::string Scanner::ScanQuotedString() {
-    std::string s;
+Str Scanner::ScanQuotedString() {
+    Str s;
     ScanExpectedChar('"');
     while (true) {
         char c;
@@ -313,7 +313,7 @@ Color Scanner::ScanColor() {
 
     // Check for quoted "#RRGGBB" and "#RRGGBBAA" formats
     if (PeekChar() == '"') {
-        const std::string s = ScanQuotedString();
+        const Str s = ScanQuotedString();
         if (! color.FromHexString(s))
             Throw("Invalid color format: '" + s + "'");
     }
@@ -340,9 +340,9 @@ void Scanner::ScanExpectedChar(char expected_c) {
     if (input_.Get(c) && c == expected_c)
         return;
     if (input_.IsAtEOF())
-        Throw(std::string("Expected '") + expected_c + "', got EOF");
+        Throw(Str("Expected '") + expected_c + "', got EOF");
     else
-        Throw(std::string("Expected '") + expected_c + "', got '" + c + "'");
+        Throw(Str("Expected '") + expected_c + "', got '" + c + "'");
 }
 
 char Scanner::PeekChar() {
@@ -350,7 +350,7 @@ char Scanner::PeekChar() {
     return static_cast<char>(input_.Peek());
 }
 
-void Scanner::Throw(const std::string &msg) {
+void Scanner::Throw(const Str &msg) {
     FilePath path;
     int line = 0;
     input_.GetCurrentPathAndLine(path, line);
@@ -360,10 +360,10 @@ void Scanner::Throw(const std::string &msg) {
         throw Exception(msg);
 }
 
-std::string Scanner::ScanNumericString_() {
+Str Scanner::ScanNumericString_() {
     SkipWhiteSpace_();
     // Read letters, digits, and +/-/. characters into a string.
-    std::string s;
+    Str  s;
     char c;
     while (input_.Get(c)) {
         if (isalnum(c) || c == '+' || c == '-' || c == '.')
@@ -391,7 +391,7 @@ void Scanner::SkipWhiteSpace_() {
             // Check for constant token substitution.
             if (c == '$') {
                 // Get the name of the constant.
-                std::string name = ScanName("constant");
+                Str name = ScanName("constant");
                 ASSERT(constant_substitution_func_);
 
                 // Push the substituted value string on top of the input.

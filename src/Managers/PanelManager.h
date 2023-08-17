@@ -24,19 +24,19 @@ class PanelManager {
                        const Panel::ContextPtr &context);
 
     /// Returns the named Panel. Asserts if the name is not known.
-    PanelPtr GetPanel(const std::string &name) const;
+    PanelPtr GetPanel(const Str &name) const;
 
     /// Same as GetPanel(), but requires that the Panel is of the given derived
     /// type. Asserts if not found.
     template <typename T>
-    std::shared_ptr<T> GetTypedPanel(const std::string &name) const {
+    std::shared_ptr<T> GetTypedPanel(const Str &name) const {
         auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
         ASSERT(panel);
         return panel;
     }
 
   private:
-    typedef std::unordered_map<std::string, PanelPtr> PanelMap_;
+    typedef std::unordered_map<Str, PanelPtr> PanelMap_;
 
     /// Maps panel name to panel instance.
     PanelMap_ panel_map_;

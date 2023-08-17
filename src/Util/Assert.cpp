@@ -4,10 +4,10 @@
 
 #include "Util/String.h"
 
-std::string AssertException::BuildMessage_(const std::string &expr,
-                                           const std::source_location &loc,
-                                           const std::string &msg) {
-    std::string message = std::string(loc.file_name()) + ":" +
+Str AssertException::BuildMessage_(const Str &expr,
+                                   const std::source_location &loc,
+                                   const Str &msg) {
+    Str message = Str(loc.file_name()) + ":" +
         Util::ToString(loc.line()) + ": Assertion failed: " + expr;
     if (! msg.empty())
         message += ": " + msg;

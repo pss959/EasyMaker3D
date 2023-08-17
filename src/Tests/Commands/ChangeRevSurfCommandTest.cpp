@@ -10,7 +10,7 @@ class ChangeRevSurfCommandTest : public CommandTestBase {
     ChangeRevSurfCommandTest() { SetParseTypeName("ChangeRevSurfCommand"); }
 
     /// Convenient string with valid profile points.
-    const std::string ppts = "profile_points: [.6 .5, .4 .2]";
+    const Str ppts = "profile_points: [.6 .5, .4 .2]";
 };
 
 TEST_F(ChangeRevSurfCommandTest, Default) {

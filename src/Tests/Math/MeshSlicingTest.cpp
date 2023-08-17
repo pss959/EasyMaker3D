@@ -52,11 +52,11 @@ class MeshSlicingTest : public TestBase {
     void EnableSliceLogging() { EnableKLog("X"); }
 
     /// This can be used in tests to dump a TriMesh in 3dv format to /tmp.
-    void DumpTriMesh(const std::string &file_name, const TriMesh &mesh,
+    void DumpTriMesh(const Str &file_name, const TriMesh &mesh,
                      const DumpData &data);
 };
 
-void MeshSlicingTest::DumpTriMesh(const std::string &file_name,
+void MeshSlicingTest::DumpTriMesh(const Str &file_name,
                                   const TriMesh &mesh, const DumpData &data) {
     Debug::Dump3dv d("/tmp/" + file_name + ".3dv", "From MeshSlicingTest");
     const auto sz = .8f * ComputeMeshBounds(mesh).GetSize();
@@ -101,7 +101,7 @@ void MeshSlicingTest::DumpTriMesh(const std::string &file_name,
         ASSERT_TRUE(dim2 >= 0 && dim2 <= 2);
         for (size_t i = 0; i < data.fractions.size(); ++i) {
             const float frac = data.fractions[i];
-            const std::string fid = "SPF" + Util::ToString(i);
+            const Str fid = "SPF" + Util::ToString(i);
             const float val =
                 Lerp(frac, data.range.GetMinPoint(), data.range.GetMaxPoint());
             for (int j = 0; j < 4; ++j) {
@@ -111,8 +111,8 @@ void MeshSlicingTest::DumpTriMesh(const std::string &file_name,
                 p[dim2] = (j == 0 || j == 3) ? -sz[dim2] : sz[dim2];
                 d.AddVertex(fid + "_" + Util::ToString(j), p);
             }
-            d.AddFace(fid, std::vector<std::string>{
-                    fid + "_0", fid + "_1", fid + "_2", fid + "_3"});
+            d.AddFace(fid,
+                      StrVec{fid + "_0", fid + "_1", fid + "_2", fid + "_3"});
         }
     }
 };

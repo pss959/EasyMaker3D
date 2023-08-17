@@ -28,7 +28,7 @@ void Uniform::AddFields() {
     Object::AddFields();
 }
 
-void Uniform::SetFieldName(const std::string &name) {
+void Uniform::SetFieldName(const Str &name) {
     ASSERT(last_field_set_.empty());
     last_field_set_ = name;
 }
@@ -81,7 +81,7 @@ void Uniform::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
 
 IonUniform Uniform::CreateIonUniform_(const ShaderInputRegistry &reg) const {
     IonUniform u;
-    const std::string &name = GetName();
+    const Str &name = GetName();
 
 #define TEST_(NAME) if (last_field_set_ == #NAME)                       \
         u = reg.Create<IonUniform>(name, NAME ## _.GetValue())
@@ -109,7 +109,7 @@ IonUniform Uniform::CreateIonUniform_(const ShaderInputRegistry &reg) const {
 
 IonUniform Uniform::CreateIonArrayUniform_(
     const ShaderInputRegistry &reg) const {
-    const std::string &name = GetName();
+    const Str &name = GetName();
     const int count = count_;
 
     IonUniform u;

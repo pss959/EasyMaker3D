@@ -17,8 +17,7 @@ void CSGTool::InitPanel() {
     GetTypedPanel<CSGToolPanel>().SetOperation(model->GetOperation());
 }
 
-void CSGTool::PanelChanged(const std::string &key,
-                           ToolPanel::InteractionType type) {
+void CSGTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
     // The CSGToolPanel has only one type of change.
     ASSERT(key == "Operation");
     ASSERT(type == ToolPanel::InteractionType::kImmediate);

@@ -113,7 +113,7 @@ TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);
 /// Writes the given TriMesh in OFF format to the given stream. The description
 /// is written as a comment. Note: OFF does not contain normals or texture
 /// coords.
-void WriteMeshAsOFF(const TriMesh &mesh, const std::string &description,
+void WriteMeshAsOFF(const TriMesh &mesh, const Str &description,
                     std::ostream &out);
 
 ///@}

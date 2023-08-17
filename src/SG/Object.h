@@ -72,7 +72,7 @@ class Object : public Parser::Object {
     ///@}
 
     /// Allows derived classes to change the name of the Object.
-    void ChangeName(const std::string &new_name) {
+    void ChangeName(const Str &new_name) {
         SetName(new_name);
     }
 

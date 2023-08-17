@@ -8,12 +8,11 @@ namespace Parser {
 Registry::TypeNameMap_ Registry::type_name_map_;
 Registry::CreationMap_ Registry::creation_map_;
 
-std::vector<std::string> Registry::GetAllTypeNames() {
+StrVec Registry::GetAllTypeNames() {
     return Util::GetKeys(creation_map_);
 }
 
-void Registry::AddType_(const std::string &type_name,
-                        const std::type_info &info,
+void Registry::AddType_(const Str &type_name, const std::type_info &info,
                         const CreationFunc &creation_func) {
     if (creation_map_.contains(type_name))
         throw Exception("Object type registered more than once: '" +
@@ -22,16 +21,15 @@ void Registry::AddType_(const std::string &type_name,
     type_name_map_[std::type_index(info)] = type_name;
 }
 
-std::string Registry::FindTypeName_(const std::type_info &info) {
+Str Registry::FindTypeName_(const std::type_info &info) {
     auto it = type_name_map_.find(std::type_index(info));
     if (it == type_name_map_.end())
         throw Exception("Unknown object with typeid '" +
-                        std::string(info.name()) + "'");
+                        Str(info.name()) + "'");
     return it->second;
 }
 
-ObjectPtr Registry::CreateObjectOfType_(const std::string &type_name,
-                                        const std::string &name,
+ObjectPtr Registry::CreateObjectOfType_(const Str &type_name, const Str &name,
                                         bool is_complete) {
     // Look up and call the CreationFunc.
     auto it = creation_map_.find(type_name);

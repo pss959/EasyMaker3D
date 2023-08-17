@@ -14,6 +14,6 @@ void CreateImportedModelCommand::CreationDone() {
         path_ = FixPath(GetPath());
 }
 
-std::string CreateImportedModelCommand::GetDescription() const {
+Str CreateImportedModelCommand::GetDescription() const {
     return BuildDescription("imported");
 }

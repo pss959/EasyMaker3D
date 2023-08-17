@@ -43,7 +43,7 @@ class ControllerTest : public SceneTestBase {
     ControllerPtr ct_;  ///< Controller template.
 
     /// Returns true if the named part is enabled.
-    bool IsOn_(const Controller &c, const std::string &part) {
+    bool IsOn_(const Controller &c, const Str &part) {
         return SG::FindNodeUnderNode(c, part)->IsEnabled();
     }
 };
@@ -179,14 +179,14 @@ TEST_F(ControllerTest, ShowTouchAndVibrate) {
 }
 
 TEST_F(ControllerTest, CustomModel) {
-    const auto test_hand = [&](Hand hand, const std::string &name){
+    const auto test_hand = [&](Hand hand, const Str &name){
         auto c = GetController(hand);
 
         // Read the Controller model data.
-        const std::string model = "models/controllers/Vive_" + name;
-        const std::string mesh_file = model + ".tri";
-        const std::string tex_file  = model + ".jpg";
-        std::string mesh_data;
+        const Str model = "models/controllers/Vive_" + name;
+        const Str mesh_file = model + ".tri";
+        const Str tex_file  = model + ".jpg";
+        Str       mesh_data;
         Controller::CustomModel cm;
         EXPECT_TRUE(Util::ReadFile(mesh_file, mesh_data));
         EXPECT_TRUE(cm.mesh.FromBinaryString(mesh_data));
@@ -237,7 +237,7 @@ TEST_F(ControllerTest, Attach) {
 
 TEST_F(ControllerTest, AttachRadialMenu) {
     // Need to add the controller and the RadialMenu.
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node {
       TEMPLATES: [

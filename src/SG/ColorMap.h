@@ -40,7 +40,7 @@ class ColorMap : public Object {
 
     /// Returns the color corresponding to the given name. Asserts if it is not
     /// found.
-    Color GetColor(const std::string &name) const;
+    Color GetColor(const Str &name) const;
 
     /// Returns a color used to represent the given dimension.
     Color GetColorForDimension(int dim) const;
@@ -51,7 +51,7 @@ class ColorMap : public Object {
     /// instance.
     ///@{
 
-    static Color SGetColor(const std::string &name);
+    static Color SGetColor(const Str &name);
     static Color SGetColorForDimension(int dim);
 
     ///@}
@@ -69,7 +69,7 @@ class ColorMap : public Object {
     ///@}
 
     /// Maps special color name to Color.
-    std::unordered_map<std::string, Color> map_;
+    std::unordered_map<Str, Color> map_;
 
     /// Static instance - the most recent one created.
     static const ColorMap *s_instance;

@@ -19,7 +19,7 @@ void IconSwitcherWidget::SetIndex(int index) {
     UpdateIndex_(index, false);
 }
 
-void IconSwitcherWidget::SetIndexByName(const std::string &name) {
+void IconSwitcherWidget::SetIndexByName(const Str &name) {
     const auto &children = GetChildren();
     for (int i = 0; i < static_cast<int>(children.size()); ++i) {
         if (children[i]->GetName() == name) {

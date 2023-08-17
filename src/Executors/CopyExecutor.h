@@ -7,7 +7,7 @@
 /// \ingroup Executors
 class CopyExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "CopyCommand";
     }
 

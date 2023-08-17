@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ChangeCylinderCommand);
 /// \ingroup Commands
 class ChangeCylinderCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets a flag indicating which radius is being changed. The default is
     /// true.

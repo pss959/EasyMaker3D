@@ -32,7 +32,7 @@ class SpinBasedModel : public ScaledConvertedModel {
   protected:
     SpinBasedModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
   private:

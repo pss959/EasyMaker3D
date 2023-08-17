@@ -37,7 +37,7 @@ void TaperToolPanel::InitInterface() {
 
 void TaperToolPanel::UpdateInterface() {
     // Turn on the correct radio button.
-    const std::string axis_name = Util::EnumToWord(ToUserDim(axis_));
+    const Str axis_name = Util::EnumToWord(ToUserDim(axis_));
     GetPane()->FindTypedPane<RadioButtonPane>(axis_name)->SetState(true);
 }
 
@@ -66,13 +66,13 @@ ClickableWidgetPtr TaperToolPanel::GetGripWidget(const Point2f &panel_point) {
     return profile_pane_->GetGripWidget(panel_point);
 }
 
-void TaperToolPanel::Activate_(const std::string &key, bool is_activation) {
+void TaperToolPanel::Activate_(const Str &key, bool is_activation) {
     is_dragging_ = is_activation;
     ReportChange(key, is_activation ? InteractionType::kDragStart :
                  InteractionType::kDragEnd);
 }
 
-void TaperToolPanel::Change_(const std::string &key) {
+void TaperToolPanel::Change_(const Str &key) {
     ReportChange(key, is_dragging_ ? InteractionType::kDrag :
                  InteractionType::kImmediate);
 }

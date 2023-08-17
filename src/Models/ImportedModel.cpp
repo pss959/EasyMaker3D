@@ -22,7 +22,7 @@ void ImportedModel::SetUnitConversion(const UnitConversion &conv) {
     unit_conversion_->CopyFrom(conv);
 }
 
-void ImportedModel::SetPath(const std::string &path) {
+void ImportedModel::SetPath(const Str &path) {
     path_ = path;
     ProcessChange(SG::Change::kGeometry, *this);
 
@@ -34,7 +34,7 @@ TriMesh ImportedModel::BuildMesh() {
     import_error_.clear();
 
     TriMesh mesh;
-    const std::string &path = GetPath();
+    const Str &path = GetPath();
 
     // The path will be empty if this Model was just created or there is an
     // error in the session file it was read from. In either case, treat this
@@ -59,7 +59,7 @@ TriMesh ImportedModel::BuildMesh() {
     return mesh;
 }
 
-bool ImportedModel::ValidateMesh(TriMesh &mesh, std::string &reason) {
+bool ImportedModel::ValidateMesh(TriMesh &mesh, Str &reason) {
     // If there was an import error, return it.
     if (! import_error_.empty()) {
         reason = import_error_;

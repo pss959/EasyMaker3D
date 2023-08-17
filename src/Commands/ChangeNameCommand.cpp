@@ -9,7 +9,7 @@ void ChangeNameCommand::AddFields() {
     SingleModelCommand::AddFields();
 }
 
-bool ChangeNameCommand::IsValid(std::string &details) {
+bool ChangeNameCommand::IsValid(Str &details) {
     if (! SingleModelCommand::IsValid(details))
         return false;
     if (! Model::IsValidName(new_name_)) {
@@ -19,11 +19,11 @@ bool ChangeNameCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ChangeNameCommand::GetDescription() const {
+Str ChangeNameCommand::GetDescription() const {
     return "Changed the name of " + GetModelDesc(GetModelName());
 }
 
-void ChangeNameCommand::SetNewName(const std::string &new_name) {
+void ChangeNameCommand::SetNewName(const Str &new_name) {
     ASSERT(Model::IsValidName(new_name));
     new_name_ = new_name;
 }

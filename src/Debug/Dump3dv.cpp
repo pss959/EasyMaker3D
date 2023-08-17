@@ -16,14 +16,14 @@ namespace {
 
 /// \name Colors.
 ///@{
-constinit const std::string kEdgeColor{"1 1 0 1"};
-constinit const std::string kEdgeLabelColor{"1 1 0 1"};
-constinit const std::string kFaceLabelColor{".7 .9 .8 1"};
-constinit const std::string kHighlightEdgeColor{".4 .9 1 1"};
-constinit const std::string kHighlightEdgeLabelColor{"1 .8 .8 1"};
-constinit const std::string kHighlightFaceLabelColor{"1 .5 .9 1"};
-constinit const std::string kHighlightVertexLabelColor{"1 .5 .5 1"};
-constinit const std::string kVertexLabelColor{"1 1 1 1"};
+constinit const Str kEdgeColor{"1 1 0 1"};
+constinit const Str kEdgeLabelColor{"1 1 0 1"};
+constinit const Str kFaceLabelColor{".7 .9 .8 1"};
+constinit const Str kHighlightEdgeColor{".4 .9 1 1"};
+constinit const Str kHighlightEdgeLabelColor{"1 .8 .8 1"};
+constinit const Str kHighlightFaceLabelColor{"1 .5 .9 1"};
+constinit const Str kHighlightVertexLabelColor{"1 .5 .5 1"};
+constinit const Str kVertexLabelColor{"1 1 1 1"};
 ///@}
 
 /// Outputs a Point3f with rounded precision.
@@ -85,7 +85,7 @@ static Point3f GetPolyMeshCenter_(const PolyMesh &mesh) {
 
 namespace Debug {
 
-Dump3dv::Dump3dv(const FilePath &path, const std::string &header) {
+Dump3dv::Dump3dv(const FilePath &path, const Str &header) {
     out_.open(path.ToNativeString());
     if (! out_) {
         std::cerr << "*** Dump3dv unable to open "
@@ -158,10 +158,10 @@ void Dump3dv::AddTriMesh(const TriMesh &mesh,
     out_ << "\n#  Triangles as faces:\n";
     for (size_t i = 0; i < inds.size(); i += 3) {
         AltFaceColor_(i / 3);
-        std::string vids;
+        Str vids;
         for (int j = 0; j < 3; ++j) {
             const int vi = inds[i + j];
-            const std::string vid = IID_("F", i) + "_" + IID_("V", vi);
+            const Str vid = IID_("F", i) + "_" + IID_("V", vi);
             AddVertex_(vid, pts[vi]);
             vids += " " + vid;
         }
@@ -241,10 +241,10 @@ void Dump3dv::AddPolyMesh(const PolyMesh &mesh,
         if (f.is_merged)
             continue;
         AltFaceColor_(i);
-        std::string vids;
+        Str vids;
         auto add_face_verts = [&](const PolyMesh::EdgeVec &edges){
             for (const auto &e: edges) {
-                const std::string vid = ID_(f.id) + "_" + ID_(e->v0->id);
+                const Str vid = ID_(f.id) + "_" + ID_(e->v0->id);
                 AddVertex_(vid, e->v0->point);
                 vids += " " + vid;
             }
@@ -310,28 +310,26 @@ void Dump3dv::AddPolyMesh(const PolyMesh &mesh,
     }
 }
 
-void Dump3dv::AddVertex(const std::string &id, const Point3f &point) {
+void Dump3dv::AddVertex(const Str &id, const Point3f &point) {
     AddVertex_(id, point);
     if (label_flags_.Has(LabelFlag::kVertexLabels))
         AddLabel_(point, id);
 }
 
-void Dump3dv::AddEdge(const std::string &id,
-                      const std::string &v0_id, const std::string &v1_id) {
+void Dump3dv::AddEdge(const Str &id, const Str &v0_id, const Str &v1_id) {
     out_ << "l " << id << ' ' << v0_id << ' ' << v1_id << "\n";
 }
 
-void Dump3dv::AddFace(const std::string &id,
-                      const std::vector<std::string> &vids) {
+void Dump3dv::AddFace(const Str &id, const StrVec &vids) {
     AltFaceColor_(0);
     out_ << "f " << id << " " << Util::JoinItems(vids, " ") << "\n";
 }
 
-void Dump3dv::AddVertex_(const std::string &id, const Point3f &p) {
+void Dump3dv::AddVertex_(const Str &id, const Point3f &p) {
     out_ << "v " << id << p << "\n";
 }
 
-void Dump3dv::AddLabel_(const Point3f &pos, const std::string &text) {
+void Dump3dv::AddLabel_(const Point3f &pos, const Str &text) {
     Point3f label_pos = pos + extra_label_offset_;
 
     // If there is already a label at this position, keep adding the offset.
@@ -343,7 +341,7 @@ void Dump3dv::AddLabel_(const Point3f &pos, const std::string &text) {
 }
 
 void Dump3dv::AddRotatedLabel_(const Point3f &pos, const Vector3f &dir,
-                               const std::string &text) {
+                               const Str &text) {
     Point3f label_pos = pos + extra_label_offset_;
 
     // If there is already a label at this position, keep adding the offset.
@@ -380,11 +378,11 @@ void Dump3dv::AltFaceColor_(size_t i) {
          << " " << kAlpha << "\n";
 }
 
-std::string Dump3dv::ID_(const std::string &id) {
+Str Dump3dv::ID_(const Str &id) {
     return extra_prefix_ + id;
 }
 
-std::string Dump3dv::IID_(const std::string &prefix, int index) {
+Str Dump3dv::IID_(const Str &prefix, int index) {
     return ID_(prefix + Util::ToString(index));
 }
 

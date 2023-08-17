@@ -23,7 +23,7 @@ TriMesh CSGModel::CombineMeshes(const std::vector<TriMesh> &meshes) {
     KLOG('C', "CSGModel " << GetName() << " applying "
          << Util::EnumName(operation_.GetValue()) << " to "
          << Util::JoinItems(
-             Util::ConvertVector<std::string, ModelPtr>(
+             Util::ConvertVector<Str, ModelPtr>(
                  GetOperandModels(),
                  [](const ModelPtr &p){ return p->ToString(); })));
 

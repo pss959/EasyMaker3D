@@ -8,7 +8,7 @@ void LinearLayoutCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-std::string LinearLayoutCommand::GetDescription() const {
+Str LinearLayoutCommand::GetDescription() const {
     return "Linear layout of " + GetModelsDesc(GetModelNames());
 }
 

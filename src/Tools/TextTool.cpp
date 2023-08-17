@@ -16,14 +16,13 @@ void TextTool::InitPanel() {
     auto model = std::dynamic_pointer_cast<TextModel>(GetModelAttachedTo());
     ASSERT(model);
     auto &panel = GetTypedPanel<TextToolPanel>();
-    std::string font_name = model->GetFontName();
+    Str font_name = model->GetFontName();
     if (font_name.empty())
         font_name = TK::k3DFont;
     panel.SetValues(model->GetTextString(), font_name, model->GetCharSpacing());
 }
 
-void TextTool::PanelChanged(const std::string &key,
-                            ToolPanel::InteractionType type) {
+void TextTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
     ASSERT(key == "Apply");
     ASSERT(type == ToolPanel::InteractionType::kImmediate);
     TextToolPanel &panel = GetTypedPanel<TextToolPanel>();

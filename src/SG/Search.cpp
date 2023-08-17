@@ -27,7 +27,7 @@ static bool SearchPath_(NodePath &cur_path, const Node &node) {
 }
 
 /// This recursive function does most of the work for path searching by name.
-static bool SearchPath_(NodePath &cur_path, const std::string &name) {
+static bool SearchPath_(NodePath &cur_path, const Str &name) {
     const NodePtr &cur_node = cur_path.back();
     if (! cur_node->IsFlagEnabled(Node::Flag::kSearch))
         return false;
@@ -44,8 +44,7 @@ static bool SearchPath_(NodePath &cur_path, const std::string &name) {
 
 /// This recursive function does most of the work for non-path searching by
 /// name.
-static NodePtr SearchNameUnderNode_(const Node &cur_node,
-                                    const std::string &name) {
+static NodePtr SearchNameUnderNode_(const Node &cur_node, const Str &name) {
     NodePtr found;
     if (cur_node.IsFlagEnabled(Node::Flag::kSearch)) {
         for (const auto &kid: cur_node.GetAllChildren()) {
@@ -61,7 +60,7 @@ static NodePtr SearchNameUnderNode_(const Node &cur_node,
 /// This recursive function does most of the work for non-path searching by
 /// type name.
 static NodePtr SearchTypeUnderNode_(const Node &cur_node,
-                                    const std::string &type_name) {
+                                    const Str &type_name) {
     NodePtr found;
     if (cur_node.IsFlagEnabled(Node::Flag::kSearch)) {
         for (const auto &kid: cur_node.GetAllChildren()) {
@@ -113,7 +112,7 @@ NodePath FindNodePathInScene(const Scene &scene, const Node &node) {
     return NodePath();
 }
 
-NodePath FindNodePathInScene(const Scene &scene, const std::string &name,
+NodePath FindNodePathInScene(const Scene &scene, const Str &name,
                              bool ok_if_not_found) {
     if (scene.GetRootNode())
         return FindNodePathUnderNode(scene.GetRootNode(), name,
@@ -124,7 +123,7 @@ NodePath FindNodePathInScene(const Scene &scene, const std::string &name,
     return NodePath();
 }
 
-NodePtr FindNodeInScene(const Scene &scene, const std::string &name,
+NodePtr FindNodeInScene(const Scene &scene, const Str &name,
                         bool ok_if_not_found) {
     NodePath path = FindNodePathInScene(scene, name, ok_if_not_found);
     if (! path.empty())
@@ -139,7 +138,7 @@ NodePath FindNodePathUnderNode(const NodePtr &root, const Node &node) {
     return cur_path;
 }
 
-NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
+NodePath FindNodePathUnderNode(const NodePtr &root, const Str &name,
                                bool ok_if_not_found) {
     NodePath cur_path(root);
     if (! SearchPath_(cur_path, name)) {
@@ -152,7 +151,7 @@ NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
     return cur_path;
 }
 
-NodePtr FindNodeUnderNode(const Node &root, const std::string &name,
+NodePtr FindNodeUnderNode(const Node &root, const Str &name,
                           bool ok_if_not_found) {
     NodePtr found = SearchNameUnderNode_(root, name);
     if (found)
@@ -164,8 +163,7 @@ NodePtr FindNodeUnderNode(const Node &root, const std::string &name,
     return NodePtr();
 }
 
-NodePtr FindFirstTypedNodeUnderNode(const Node &root,
-                                    const std::string &type_name) {
+NodePtr FindFirstTypedNodeUnderNode(const Node &root, const Str &type_name) {
     return SearchTypeUnderNode_(root, type_name);
 }
 
@@ -198,7 +196,7 @@ std::vector<NodePath> FindNodePaths(const SG::NodePtr &root,
     return paths;
 }
 
-ShapePtr FindShapeInNode(const Node &node, const std::string &name) {
+ShapePtr FindShapeInNode(const Node &node, const Str &name) {
     for (auto &shape: node.GetShapes())
         if (shape->GetName() == name)
             return shape;

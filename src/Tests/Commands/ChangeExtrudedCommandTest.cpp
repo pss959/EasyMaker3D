@@ -9,7 +9,7 @@ class ChangeExtrudedCommandTest : public CommandTestBase {
     ChangeExtrudedCommandTest() { SetParseTypeName("ChangeExtrudedCommand"); }
 
     /// Convenient string with valid profile points.
-    const std::string ppts = "profile_points: [.2 .4, .8 .6, .4 .8]";
+    const Str ppts = "profile_points: [.2 .4, .8 .6, .4 .8]";
 };
 
 TEST_F(ChangeExtrudedCommandTest, Default) {

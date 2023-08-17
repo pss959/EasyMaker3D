@@ -16,22 +16,22 @@ class CombineCommand : public MultiModelCommand {
   public:
     /// Returns the name of the resulting CombinedModel. This will be empty
     /// unless this Command was read from a file and a name was specified.
-    const std::string & GetResultName() const { return result_name_; }
+    const Str & GetResultName() const { return result_name_; }
 
     /// Sets the name of the resulting CombinedModel.
-    void SetResultName(const std::string &name);
+    void SetResultName(const Str &name);
 
   protected:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
     /// Useful convenience for building description strings.
-    std::string BuildDescription(const std::string &type) const;
+    Str BuildDescription(const Str &type) const;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> result_name_;
+    Parser::TField<Str> result_name_;
     ///@}
 
     friend class Parser::Registry;

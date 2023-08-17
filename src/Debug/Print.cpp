@@ -99,8 +99,8 @@ class Surrounder_ {
 // Generic helper functions.
 // ----------------------------------------------------------------------------
 
-static std::string Indent_(int level, bool add_horiz = true) {
-    std::string s;
+static Str Indent_(int level, bool add_horiz = true) {
+    Str s;
     for (int i = 1; i < level; ++i)
         s += "| ";
     if (level >= 1)
@@ -108,9 +108,9 @@ static std::string Indent_(int level, bool add_horiz = true) {
     return s;
 }
 
-static std::string GetDesc_(const SG::Object &obj) {
+static Str GetDesc_(const SG::Object &obj) {
     // Start with regular description string.
-    std::string s = obj.GetDesc();
+    Str s = obj.GetDesc();
 
     // If a Node, add disabled flags.
     if (const SG::Node *node = dynamic_cast<const SG::Node *>(&obj)) {
@@ -139,12 +139,12 @@ static bool PrintPath_(const SG::NodePath &path) {
 
 static Matrix4f PrintBounds_(const SG::Node &node, const Matrix4f &wsm,
                              int level, const Matrix4f &start_matrix) {
-    std::string indent = Indent_(level);
+    Str indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
 
     auto print_bounds = [indent, ctm, wsm](const SG::Object &obj,
                                            const Bounds &bounds,
-                                           const std::string &extra){
+                                           const Str &extra){
         const Bounds wbounds = TransformBounds(bounds,  ctm);
         const Bounds sbounds = TransformBounds(wbounds, wsm);
         std::cout << indent << extra << GetDesc_(obj) << "\n"
@@ -171,7 +171,7 @@ static void PrintBoundsRecursive_(const SG::Node &node, const Matrix4f &wsm,
 
 static Matrix4f PrintLocations_(const SG::Node &node, const Matrix4f &wsm,
                                 int level, const Matrix4f &start_matrix) {
-    std::string indent = Indent_(level);
+    Str indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
 
     const auto lloc = Point3f::Zero() + node.GetTranslation();
@@ -211,7 +211,7 @@ static void PrintMatricesRecursive_(const SG::Node &node, int level,
 }
 
 static void PrintTransformFields_(const SG::Node &node, int level) {
-    const std::string ind = Indent_(level + 1);
+    const Str ind = Indent_(level + 1);
     if (node.GetScale() != Vector3f(1, 1, 1))
         std::cout << ind << "scale:       " << node.GetScale() << "\n";
     if (! node.GetRotation().IsIdentity())
@@ -234,7 +234,7 @@ static void PrintTransformsRecursive_(const SG::Node &node, int level) {
 static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
                                  std::unordered_set<const SG::Object *> &done) {
     const bool was_node_seen = done.find(&node) != done.end();
-    const std::string extra = is_extra ? " [EXTRA]" : "";
+    const Str extra = is_extra ? " [EXTRA]" : "";
     std::cout << Indent_(level);
     if (was_node_seen) {
         if (node.GetName().empty())

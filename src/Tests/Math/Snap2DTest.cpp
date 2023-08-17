@@ -19,7 +19,7 @@ TEST_F(Snap2DTest, SnapPointBetween) {
     s.SetToleranceAngle(Anglef::FromDegrees(10));
 
     // Tests snapping to a diagonal from (0,0) to (1,1).
-    const auto test_diag = [&](const std::string &desc,
+    const auto test_diag = [&](const Str &desc,
                                float x, float y, Snap2D::Result r,
                                float exp_x, float exp_y){
         SCOPED_TRACE("DIAG " + desc);
@@ -47,7 +47,7 @@ TEST_F(Snap2DTest, SnapPointBetween) {
     test_diag("diag", .51f, .49f, Snap2D::Result::kBoth, .5f, .5f);
 
     // Tests snapping to a vertical line from (0,0) to (0,1).
-    const auto test_vert = [&](const std::string &desc,
+    const auto test_vert = [&](const Str &desc,
                                float x, float y, Snap2D::Result r,
                                float exp_x, float exp_y){
         Point2f p(x, y);

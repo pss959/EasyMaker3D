@@ -11,5 +11,5 @@ class CommandTestBase : public SceneTestBase {
     /// Command classes. It parses a Command of the type passed to
     /// TestBaseWithTypes::SetParseTypeName() with the given contents and
     /// verifies that GetDescription() starts with \p desc_start.
-    void TestDesc(const std::string &contents, const std::string &desc_start);
+    void TestDesc(const Str &contents, const Str &desc_start);
 };

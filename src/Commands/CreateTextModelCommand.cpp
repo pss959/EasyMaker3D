@@ -8,6 +8,6 @@ void CreateTextModelCommand::AddFields() {
     CreateModelCommand::AddFields();
 }
 
-std::string CreateTextModelCommand::GetDescription() const {
+Str CreateTextModelCommand::GetDescription() const {
     return BuildDescription("3D text");
 }

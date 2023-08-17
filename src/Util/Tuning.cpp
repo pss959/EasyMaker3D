@@ -6,18 +6,18 @@ namespace TK {
 
 /// Strings passed in through the compiler from SCons cannot have spaces, so
 /// they have been replaced with underscores. This restores the spaces.
-static std::string FixString_(const std::string &s) {
+static Str FixString_(const Str &s) {
     return ion::base::ReplaceString(s, "_", " ");
 }
 
 // Application Settings (values passed in from SCons)
-const std::string kApplicationName   = FixString_(APP_NAME);
-const std::string kCopyright         = FixString_(COPYRIGHT);
-const std::string kDataFileSuffix    = FixString_(DATA_SUFFIX);
-const std::string kSessionFileSuffix = FixString_(SESSION_SUFFIX);
-const std::string kVersionString     = FixString_(VERSION_STRING);
-const std::string kPublicDocBaseURL  = FixString_(PUBLIC_DOC_BASE_URL);
-const std::string kGithubURL         = FixString_(GITHUB_URL);
+const Str kApplicationName   = FixString_(APP_NAME);
+const Str kCopyright         = FixString_(COPYRIGHT);
+const Str kDataFileSuffix    = FixString_(DATA_SUFFIX);
+const Str kSessionFileSuffix = FixString_(SESSION_SUFFIX);
+const Str kVersionString     = FixString_(VERSION_STRING);
+const Str kPublicDocBaseURL  = FixString_(PUBLIC_DOC_BASE_URL);
+const Str kGithubURL         = FixString_(GITHUB_URL);
 
 // Save Ion data except in release mode.
 #if ENABLE_DEBUG_FEATURES

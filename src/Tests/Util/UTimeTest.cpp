@@ -34,7 +34,7 @@ TEST(UTimeTest, SecondsSince) {
 
 TEST(UTimeTest, ToString) {
     const UTime ut;
-    const std::string ts = ut.ToString();
+    const Str   ts = ut.ToString();
     std::ostringstream out;
     out << ut;
 

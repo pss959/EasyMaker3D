@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ChangeComplexityCommand);
 /// \ingroup Commands
 class ChangeComplexityCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the new complexity.
     void SetNewComplexity(float new_complexity) {

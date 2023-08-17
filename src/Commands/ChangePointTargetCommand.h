@@ -11,7 +11,7 @@ DECL_SHARED_PTR(ChangePointTargetCommand);
 /// \ingroup Commands
 class ChangePointTargetCommand : public Command {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Returns the old PointTarget.
     const PointTargetPtr & GetOldTarget() const { return old_target_; }
@@ -29,7 +29,7 @@ class ChangePointTargetCommand : public Command {
     ChangePointTargetCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
   private:

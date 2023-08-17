@@ -13,7 +13,7 @@ TEST_F(IconSwitcherWidgetTest, Defaults) {
 
 TEST_F(IconSwitcherWidgetTest, Switch) {
     // Create an instance with 3 children.
-    const std::string input = R"(
+    const Str input = R"(
 IconSwitcherWidget {
   children: [
     IconWidget "IW0" {},
@@ -53,7 +53,7 @@ IconSwitcherWidget {
 
 TEST_F(IconSwitcherWidgetTest, FitIntoCube) {
     // Create an instance with children of different sizes.
-    const std::string input = R"(
+    const Str input = R"(
 IconSwitcherWidget {
   children: [
     IconWidget "IW0" { shapes: [ Box { size: 1 2 3 } ] },

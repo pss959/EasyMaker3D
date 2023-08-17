@@ -8,7 +8,7 @@ class SettingsTest : public SceneTestBase {};
 
 TEST_F(SettingsTest, Default) {
     auto settings = Settings::CreateDefault();
-    const std::string home = FilePath::GetHomeDirPath().ToString();
+    const Str home = FilePath::GetHomeDirPath().ToString();
     EXPECT_FALSE(settings->GetLastSessionPath());
     EXPECT_EQ(home, settings->GetSessionDirectory().ToString());
     EXPECT_EQ(home, settings->GetImportDirectory().ToString());

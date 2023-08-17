@@ -22,7 +22,7 @@ void SettingsPanel::InitInterface() {
     InitConversion_();
 
     // Shorthand for default and current buttons.
-    auto def_cur = [&](const std::string &name){
+    auto def_cur = [&](const Str &name){
         AddButtonFunc("Default" + name, [&, name](){ SetToDefault_(name); });
         AddButtonFunc("Current" + name, [&, name](){ SetToCurrent_(name); });
     };
@@ -72,7 +72,7 @@ void SettingsPanel::InitDirectories_() {
     import_pane_  = root_pane->FindTypedPane<TextInputPane>("ImportDir");
 
     // Set up directory validation.
-    auto validator = [&](const std::string &s){
+    auto validator = [&](const Str &s){
         EnableDefaultAndCurrentButtons_();
         return FilePath(s).IsDirectory();
     };
@@ -99,7 +99,7 @@ void SettingsPanel::InitBuildVolume_() {
         root_pane->FindTypedPane<TextInputPane>("BuildVolumeHeight");
 
     // Set up size validation.
-    auto validator = [&](const std::string &s){
+    auto validator = [&](const Str &s){
         EnableDefaultAndCurrentButtons_();
         float size;
         return ParseSize_(s, size);
@@ -115,27 +115,27 @@ void SettingsPanel::InitConversion_() {
     import_from_pane_ = root_pane->FindTypedPane<DropdownPane>("ImportFrom");
     import_to_pane_   = root_pane->FindTypedPane<DropdownPane>("ImportTo");
 
-    const std::vector<std::string> units =
-        Util::ConvertVector<std::string, UnitConversion::Units>(
+    const StrVec units =
+        Util::ConvertVector<Str, UnitConversion::Units>(
             Util::EnumValues<UnitConversion::Units>(),
             [](const UnitConversion::Units &u){ return Util::EnumToWords(u); });
     export_from_pane_->SetChoices(units, 0);
     export_to_pane_->SetChoices(units, 0);
     import_from_pane_->SetChoices(units, 0);
     import_to_pane_->SetChoices(units, 0);
-    auto upd = [&](const std::string &){ EnableDefaultAndCurrentButtons_(); };
+    auto upd = [&](const Str &){ EnableDefaultAndCurrentButtons_(); };
     export_from_pane_->GetChoiceChanged().AddObserver(this, upd);
     export_to_pane_->GetChoiceChanged().AddObserver(this, upd);
     import_from_pane_->GetChoiceChanged().AddObserver(this, upd);
     import_to_pane_->GetChoiceChanged().AddObserver(this, upd);
 }
 
-void SettingsPanel::SetToDefault_(const std::string &name) {
+void SettingsPanel::SetToDefault_(const Str &name) {
     UpdateFromSettings_(*default_settings_, name);
     EnableDefaultAndCurrentButtons_();
 }
 
-void SettingsPanel::SetToCurrent_(const std::string &name) {
+void SettingsPanel::SetToCurrent_(const Str &name) {
     UpdateFromSettings_(GetSettings(), name);
     EnableDefaultAndCurrentButtons_();
 }
@@ -147,7 +147,7 @@ void SettingsPanel::EnableDefaultAndCurrentButtons_() {
     const Settings &ds = *default_settings_;
     const Settings &cs = GetSettings();
 
-    auto update_dir = [&](const std::string &name,
+    auto update_dir = [&](const Str &name,
                           const TextInputPane &pane, const FilePath &path){
         EnableButton(name, pane.GetText() != path.ToString());
     };
@@ -197,7 +197,7 @@ void SettingsPanel::EnableDefaultAndCurrentButtons_() {
 }
 
 void SettingsPanel::UpdateFromSettings_(const Settings &settings,
-                                        const std::string &name) {
+                                        const Str &name) {
     auto set_dd = [](DropdownPane &pane, UnitConversion::Units unit){
         pane.SetChoice(Util::EnumInt(unit));
     };
@@ -232,11 +232,11 @@ void SettingsPanel::UpdateFromSettings_(const Settings &settings,
     }
 }
 
-void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
+void SettingsPanel::OpenFilePanel_(const Str &item_name) {
     auto fp = GetTypedPanel<FilePanel>("FilePanel");
     InitFilePanel_(*fp, item_name);
 
-    auto result_func = [&, fp, item_name](const std::string &result){
+    auto result_func = [&, fp, item_name](const Str &result){
         if (result == "Accept")
             AcceptFileItem_(item_name, fp->GetPath());
     };
@@ -244,8 +244,8 @@ void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
 }
 
 void SettingsPanel::InitFilePanel_(FilePanel &file_panel,
-                                   const std::string &item_name) {
-    const std::string file_desc =
+                                   const Str &item_name) {
+    const Str file_desc =
         item_name == "SessionDir" ? "Session" :
         item_name == "ExportDir"  ? "STL Export" : "STL Import";
 
@@ -256,7 +256,7 @@ void SettingsPanel::InitFilePanel_(FilePanel &file_panel,
     file_panel.SetInitialPath(FilePath(input->GetText()));
 }
 
-void SettingsPanel::AcceptFileItem_(const std::string &item_name,
+void SettingsPanel::AcceptFileItem_(const Str &item_name,
                                     const FilePath &path) {
     auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, item_name);
     input->SetInitialText(path.ToString());
@@ -272,7 +272,7 @@ void SettingsPanel::AcceptSettings_() {
     SettingsPtr new_settings = Settings::CreateCopy(GetSettings());
 
     // Access from directory input.
-    auto get_dir = [&](const std::string &name){
+    auto get_dir = [&](const Str &name){
         auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
         return FilePath(input->GetText());
     };
@@ -310,7 +310,7 @@ void SettingsPanel::AcceptSettings_() {
     Close("Accept");
 }
 
-bool SettingsPanel::ParseSize_(const std::string &s, float &size) {
+bool SettingsPanel::ParseSize_(const Str &s, float &size) {
     size_t pos;
     try {
         size = std::stof(s, &pos);

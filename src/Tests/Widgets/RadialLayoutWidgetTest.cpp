@@ -43,9 +43,9 @@ TEST_F(RadialLayoutWidgetTest, Drag) {
     size_t count = 0;
     rlw->GetChanged().AddObserver("key", [&](){ ++count; });
 
-    DragTester dtr(rlw, std::vector<std::string>{ "Ring"       });
-    DragTester dts(rlw, std::vector<std::string>{ "StartSpoke" });
-    DragTester dte(rlw, std::vector<std::string>{ "EndSpoke"   });
+    DragTester dtr(rlw, StrVec{ "Ring"       });
+    DragTester dts(rlw, StrVec{ "StartSpoke" });
+    DragTester dte(rlw, StrVec{ "EndSpoke"   });
 
     // Drag to change the radius.
     dtr.SetRayDirection(-Vector3f::AxisY());

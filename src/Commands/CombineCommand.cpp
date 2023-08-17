@@ -8,7 +8,7 @@ void CombineCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool CombineCommand::IsValid(std::string &details) {
+bool CombineCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! Model::IsValidName(result_name_)) {
@@ -18,12 +18,12 @@ bool CombineCommand::IsValid(std::string &details) {
     return true;
 }
 
-void CombineCommand::SetResultName(const std::string &name) {
+void CombineCommand::SetResultName(const Str &name) {
     ASSERT(Model::IsValidName(name));
     result_name_ = name;
 }
 
-std::string CombineCommand::BuildDescription(const std::string &type) const {
+Str CombineCommand::BuildDescription(const Str &type) const {
     return "Created " + type + " model \"" + GetResultName() + "\" from " +
         GetModelsDesc(GetModelNames());
 }

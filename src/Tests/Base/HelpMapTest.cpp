@@ -4,7 +4,7 @@
 
 TEST(HelpMapTest, GetHelpString) {
     HelpMap hm;
-    const auto test_act = [&](Action act, const std::string &s){
+    const auto test_act = [&](Action act, const Str &s){
         return(hm.GetHelpString(act).starts_with(s));
     };
 

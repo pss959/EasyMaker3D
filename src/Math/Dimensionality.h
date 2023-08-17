@@ -25,7 +25,7 @@ class Dimensionality {
     /// Convenience constructor that returns an instance set to the dimensions
     /// in the given string, which must contain only the characters 'X', 'Y',
     /// and 'Z'.
-    explicit Dimensionality(const std::string &s) {
+    explicit Dimensionality(const Str &s) {
         Clear();
         for (char c: s) {
             ASSERTM(c == 'X' || c == 'Y' || c == 'Z', "Invalid character");
@@ -76,8 +76,8 @@ class Dimensionality {
 
     /// Does the opposite of the constructor taking a string. Useful for
     /// testing.
-    std::string GetAsString() const {
-        std::string s;
+    Str GetAsString() const {
+        Str s;
         for (int dim = 0; dim < 3; ++dim)
             if (dimensions_[dim])
                 s += static_cast<char>('X' + dim);
@@ -85,7 +85,7 @@ class Dimensionality {
     }
 
     /// For debugging.
-    std::string ToString() const {
+    Str ToString() const {
         if (count_ == 0)
             return "DIMS[0]";
         return "DIMS[" + Util::ToString(count_) + ":" + GetAsString() + "]";

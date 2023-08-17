@@ -6,7 +6,7 @@
 /// \ingroup Tests
 class ButtonPaneTest : public PaneTestBase {
   protected:
-    ButtonPanePtr GetButtonPane(const std::string &contents = "") {
+    ButtonPanePtr GetButtonPane(const Str &contents = "") {
         return ReadRealPane<ButtonPane>("ButtonPane", contents);
     }
 };

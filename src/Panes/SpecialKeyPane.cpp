@@ -11,7 +11,7 @@ void SpecialKeyPane::AddFields() {
     KeyPane::AddFields();
 }
 
-bool SpecialKeyPane::IsValid(std::string &details) {
+bool SpecialKeyPane::IsValid(Str &details) {
     if (! KeyPane::IsValid(details))
         return false;
 

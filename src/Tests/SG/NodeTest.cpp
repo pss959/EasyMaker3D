@@ -132,9 +132,9 @@ TEST_F(NodeTest, Children) {
     // Call SetUpIon() first so that this also tests Ion Node handling.
     SetUpIonForNode(*parent);
 
-    auto test_it = [&](const std::string &expected) {
+    auto test_it = [&](const Str &expected) {
         EXPECT_EQ(expected.size(), parent->GetChildCount());
-        std::string actual;
+        Str actual;
         for (size_t i = 0; i < parent->GetChildCount(); ++i)
             actual += parent->GetChild(i)->GetName();
         EXPECT_EQ(expected, actual);

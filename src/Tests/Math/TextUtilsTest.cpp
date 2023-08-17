@@ -33,13 +33,13 @@ TEST_F(TextUtilsTest, IsValidFontName) {
 }
 
 TEST_F(TextUtilsTest, IsValidStringForFont) {
-    auto test_good = [](const std::string &str){
-        std::string reason;
+    auto test_good = [](const Str &str){
+        Str reason;
         EXPECT_TRUE(IsValidStringForFont("Arial-Regular", str, reason));
         EXPECT_TRUE(reason.empty());
     };
-    auto test_bad = [](const std::string &str, const std::string &exp_reason){
-        std::string reason;
+    auto test_bad = [](const Str &str, const Str &exp_reason){
+        Str reason;
         EXPECT_FALSE(IsValidStringForFont("Arial-Regular", str, reason));
         EXPECT_FALSE(reason.empty());
         EXPECT_EQ(exp_reason, reason);
@@ -49,7 +49,7 @@ TEST_F(TextUtilsTest, IsValidStringForFont) {
     test_good(" A Q R !?!@#$%^&*()");
 
     // Bad font.
-    std::string fr;
+    Str fr;
     EXPECT_FALSE(IsValidStringForFont("No-Such-Font", "ABC", fr));
     EXPECT_EQ("Invalid font name: No-Such-Font", fr);
 
@@ -74,7 +74,7 @@ TEST_F(TextUtilsTest, GetFontPath) {
 
 TEST_F(TextUtilsTest, SingleCharOutlines) {
     // Use the default font.
-    const std::string &name = TK::k3DFont;
+    const Str &name = TK::k3DFont;
 
     std::vector<Polygon> polys;
 
@@ -104,7 +104,7 @@ TEST_F(TextUtilsTest, SingleCharOutlines) {
 
 TEST_F(TextUtilsTest, TwoCharOutlines) {
     // Use the default font.
-    const std::string &name = TK::k3DFont;
+    const Str &name = TK::k3DFont;
 
     std::vector<Polygon> polys;
 

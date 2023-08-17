@@ -7,7 +7,7 @@ class EventTest : public TestBase {
   protected:
     /// Convenience to build Event::Modifiers flags from a string containing
     /// character codes.
-    Event::Modifiers GetMods(const std::string &mod_str) {
+    Event::Modifiers GetMods(const Str &mod_str) {
         Event::Modifiers mods;
         for (const char c: mod_str) {
             if      (c == 'S') mods.Set(Event::ModifierKey::kShift);
@@ -78,14 +78,11 @@ TEST_F(EventTest, GetKeyString) {
 
 TEST_F(EventTest, ParseKeyString) {
     Event::Modifiers mods;
-    std::string      name;
-    std::string      error;
+    Str              name;
+    Str              error;
 
-    const auto test_s = [&](const std::string &s,
-                            bool exp_ok,
-                            const std::string &exp_mod_str,
-                            const std::string &exp_name,
-                            const std::string &exp_error_pattern){
+    const auto test_s = [&](const Str &s, bool exp_ok, const Str &exp_mod_str,
+                            const Str &exp_name, const Str &exp_error_pattern){
         Event::Modifiers exp_mods = GetMods(exp_mod_str);
         const bool ok = Event::ParseKeyString(s, mods, name, error);
         EXPECT_EQ(exp_ok, ok);

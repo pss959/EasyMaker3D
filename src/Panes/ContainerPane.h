@@ -28,12 +28,12 @@ class ContainerPane : public Pane {
 
     /// Searches recursively for the contained Pane with the given name.
     /// Returns null if it is not found.
-    PanePtr FindPane(const std::string &name) const;
+    PanePtr FindPane(const Str &name) const;
 
     /// Searches recursively for the contained Pane with the given type and
     /// name. Asserts if it is not found.
     template <typename T>
-    std::shared_ptr<T> FindTypedPane(const std::string &name) const {
+    std::shared_ptr<T> FindTypedPane(const Str &name) const {
         auto pane = FindPane(name);
         ASSERTM(pane, "Pane '" + name + "' not found in " + GetDesc());
         auto typed_pane = std::dynamic_pointer_cast<T>(pane);

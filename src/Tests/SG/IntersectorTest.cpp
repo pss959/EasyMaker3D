@@ -23,7 +23,7 @@ class IntersectorTest : public SceneTestBase {
     };
 
     /// Reads a scene from a string and intersects it with the given ray.
-    SG::Hit IntersectScene(const std::string &input, const Ray &ray) {
+    SG::Hit IntersectScene(const Str &input, const Ray &ray) {
         ResetContext();  // Avoid context pollution.
         // Call SetUpIon() so that meshes are installed in some shapes.
         SG::ScenePtr scene = ReadScene(input, true);
@@ -32,7 +32,7 @@ class IntersectorTest : public SceneTestBase {
 
     /// Reads a scene with the given root node contents from a string and
     /// intersects it with the given ray.
-    SG::Hit IntersectContents(const std::string &contents, const Ray &ray) {
+    SG::Hit IntersectContents(const Str &contents, const Ray &ray) {
         ResetContext();  // Avoid context pollution.
         // Call SetUpIon() so that meshes are installed in some shapes.
         SG::ScenePtr scene = BuildAndReadScene(contents, true);
@@ -41,8 +41,7 @@ class IntersectorTest : public SceneTestBase {
 
     /// Reads a scene from a string and intersects the graph rooted by the named
     /// Node with the given ray.
-    SG::Hit IntersectGraph(const std::string &input, const std::string &name,
-                           const Ray &ray) {
+    SG::Hit IntersectGraph(const Str &input, const Str &name, const Ray &ray) {
         ResetContext();  // Avoid context pollution.
         SG::ScenePtr scene = ReadScene(input, true);
         auto node = SG::FindNodeInScene(*scene, name);
@@ -59,7 +58,7 @@ TEST_F(IntersectorTest, EmptyScene) {
 }
 
 TEST_F(IntersectorTest, Sphere) {
-    const std::string input = ReadDataFile("Shapes.emd");
+    const Str input = ReadDataFile("Shapes.emd");
 
     // Intersect from front. Sphere is at (-100,0,0) with radius 5.
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -91,7 +90,7 @@ TEST_F(IntersectorTest, Sphere) {
 }
 
 TEST_F(IntersectorTest, Cone) {
-    const std::string input = ReadDataFile("Shapes.emd");
+    const Str input = ReadDataFile("Shapes.emd");
 
     // Intersect from front. Cone is at (100,0,0).
     SG::Hit hit = IntersectGraph(input, "Primitives",
@@ -107,7 +106,7 @@ TEST_F(IntersectorTest, Cone) {
 }
 
 TEST_F(IntersectorTest, Torus) {
-    const std::string input = ReadDataFile("Shapes.emd");
+    const Str input = ReadDataFile("Shapes.emd");
 
     // Intersect from front. Torus is at origin with outer radius 1.2 and inner
     // radius .2.
@@ -127,7 +126,7 @@ TEST_F(IntersectorTest, Torus) {
 }
 
 TEST_F(IntersectorTest, Rectangles) {
-    const std::string input = ReadDataFile("Rectangles.emd");
+    const Str input = ReadDataFile("Rectangles.emd");
 
     // The scene is translated 10 units in X.
     // Intersect rays from the center to all 5 rectangles.
@@ -177,7 +176,7 @@ TEST_F(IntersectorTest, Rectangles) {
 }
 
 TEST_F(IntersectorTest, HiddenParent) {
-    const std::string input = ReadDataFile("Shapes.emd");
+    const Str input = ReadDataFile("Shapes.emd");
 
     // The parent Ellipsoid is large and encompasses the two child Ellipsoids.
     // The parent should not be intersected, and its translation should not be
@@ -202,7 +201,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
     // Because the translation is inside the shape, it is included in the local
     // coordinates.
 
-    const std::string input = ReadDataFile("Shapes.emd");
+    const Str input = ReadDataFile("Shapes.emd");
 
     // Intersect from front:
     //   Box      is at ( 4,0,0).
@@ -284,7 +283,7 @@ TEST_F(IntersectorTest, TranslatedShapes) {
 }
 
 TEST_F(IntersectorTest, Cone2) {
-    const std::string input = ReadDataFile("Shapes.emd");
+    const Str input = ReadDataFile("Shapes.emd");
     SG::Hit hit;
     hit = IntersectGraph(input, "ConeTest",
                          Ray(Point3f(0, 8, 20), Vector3f(0, 0, -1)));
@@ -305,7 +304,7 @@ TEST_F(IntersectorTest, Cone3) {
     // the wrong side of the apex.
 
     // This is a 90-degree cone with the apex at (0,1,0) and the base at Y=-1.
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node "Cone" {
       shapes: [
@@ -335,7 +334,7 @@ TEST_F(IntersectorTest, Cone3) {
 
 TEST_F(IntersectorTest, Cone4) {
     // Test upside-down cone for completeness.
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node "Cone" {
       shapes: [
@@ -362,7 +361,7 @@ TEST_F(IntersectorTest, Cone4) {
 }
 
 TEST_F(IntersectorTest, NonIntersectingShapes) {
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node {
       shapes: [
@@ -379,7 +378,7 @@ TEST_F(IntersectorTest, NonIntersectingShapes) {
 }
 
 TEST_F(IntersectorTest, ImportedShape) {
-    std::string contents = R"(
+    Str contents = R"(
   children: [
     Node {
       shapes: [
@@ -408,7 +407,7 @@ TEST_F(IntersectorTest, ImportedShape) {
 }
 
 TEST_F(IntersectorTest, ImportedShapeWithProxy) {
-    std::string contents = R"(
+    Str contents = R"(
   children: [
     Node {
       shapes: [
@@ -438,7 +437,7 @@ TEST_F(IntersectorTest, ImportedShapeWithProxy) {
 
     // Turn on use_bounds_proxy and there should be no hit, since the node
     // bounds do not include the proxy shape.
-    const std::string contents2 = Util::ReplaceString(
+    const Str contents2 = Util::ReplaceString(
         contents, "use_bounds_proxy: False", "use_bounds_proxy: True");
     hit = IntersectContents(contents2,
                             Ray(Point3f(.8f, 0, 20), Vector3f(0, 0, -1)));
@@ -448,7 +447,7 @@ TEST_F(IntersectorTest, ImportedShapeWithProxy) {
 TEST_F(IntersectorTest, BoundsProxy) {
     Parser::Registry::AddType<ProxyNode>("ProxyNode");
 
-    const std::string input = R"(
+    const Str input = R"(
 Scene {
   root_node: ProxyNode "Proxy" {
     translation: 10 0 0,

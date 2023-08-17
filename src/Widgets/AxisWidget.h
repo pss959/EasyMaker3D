@@ -80,7 +80,7 @@ class AxisWidget : public CompositeWidget {
 
     virtual void CreationDone() override;
 
-    virtual void SubWidgetActivated(const std::string &name,
+    virtual void SubWidgetActivated(const Str &name,
                                     bool is_activation) override;
 
   private:

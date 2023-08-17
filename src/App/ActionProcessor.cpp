@@ -79,7 +79,7 @@ namespace {
 
 /// Returns true if all Models in the given Selection have valid meshes.
 static bool AreAllMeshesValid_(const Selection &sel) {
-    std::string reason;
+    Str reason;
     for (const auto &sel_path: sel.GetPaths())
         if (! sel_path.GetModel()->IsMeshValid(reason))
             return false;
@@ -155,8 +155,8 @@ class ActionProcessor::Impl_ {
     void SetQuitFunc(const QuitFunc &func) { quit_func_ = func; }
     void SetReloadFunc(const ReloadFunc &func) { reload_func_ = func; }
     void ProcessUpdate();
-    std::string GetHelpTooltip(Action action);
-    std::string GetRegularTooltip(Action action);
+    Str  GetHelpTooltip(Action action);
+    Str  GetRegularTooltip(Action action);
     bool CanApplyAction(Action action) const;
     void ApplyAction(Action action);
     bool GetToggleState(Action action) const { return GetToggleState_(action); }
@@ -182,7 +182,7 @@ class ActionProcessor::Impl_ {
     void SetToggleState_(Action action, bool state);
 
     /// Returns a tooltip string for an Action that requires context to set up.
-    std::string GetUpdatedTooltip_(Action action);
+    Str  GetUpdatedTooltip_(Action action);
 
     /// Updates all is_action_enabled_ flags that can vary.
     void UpdateEnabledFlags_();
@@ -196,7 +196,7 @@ class ActionProcessor::Impl_ {
     void OpenInfoPanel_();
 
     /// Opens the named application Panel.
-    void OpenAppPanel_(const std::string &name);
+    void OpenAppPanel_(const Str &name);
 
     /// Deletes the current selection.
     void DeleteSelection_();
@@ -294,14 +294,14 @@ void ActionProcessor::Impl_::ProcessUpdate() {
     UpdateEnabledFlags_();
 }
 
-std::string ActionProcessor::Impl_::GetHelpTooltip(Action action) {
+Str ActionProcessor::Impl_::GetHelpTooltip(Action action) {
     return help_map_.GetHelpString(action);
 }
 
-std::string ActionProcessor::Impl_::GetRegularTooltip(Action action) {
+Str ActionProcessor::Impl_::GetRegularTooltip(Action action) {
     // If there is a context-sensitive version of the tooltip, use it.
     // Otherwise, use the help string.
-    std::string str = GetUpdatedTooltip_(action);
+    Str str = GetUpdatedTooltip_(action);
     if (str.empty())
         str = GetHelpTooltip(action);
 
@@ -639,9 +639,9 @@ void ActionProcessor::Impl_::SetToggleState_(Action action, bool state) {
     }
 }
 
-std::string ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
+Str ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
     // Helper string when needed.
-    std::string s;
+    Str s;
 
     // For switching between "Hide" and "Show".
     auto hide_show = [](bool visible){ return visible ? "Hide" : "Show"; };
@@ -777,9 +777,8 @@ void ActionProcessor::Impl_::UpdateEnabledFlags_() {
                  ! Util::IsA<HullModel>(sel.GetPrimary().GetModel())));
 
     auto enable_tool = [&](Action action){
-        const std::string &name = Util::EnumToWord(action);
-        set_enabled(action,
-                    context_->tool_box->CanUseGeneralTool(name, sel));
+        const Str &name = Util::EnumToWord(action);
+        set_enabled(action, context_->tool_box->CanUseGeneralTool(name, sel));
     };
     enable_tool(Action::kColorTool);
     enable_tool(Action::kComplexityTool);
@@ -872,7 +871,7 @@ void ActionProcessor::Impl_::OpenInfoPanel_() {
     OpenAppPanel_("InfoPanel");
 }
 
-void ActionProcessor::Impl_::OpenAppPanel_(const std::string &name) {
+void ActionProcessor::Impl_::OpenAppPanel_(const Str &name) {
     auto  panel = context_->board_manager->GetPanel(name);
     auto &board = context_->scene_context->app_board;
     board->SetPanel(panel);
@@ -1142,7 +1141,7 @@ void ActionProcessor::ProcessUpdate() {
     impl_->ProcessUpdate();
 }
 
-std::string ActionProcessor::GetActionTooltip(Action action, bool for_help) {
+Str ActionProcessor::GetActionTooltip(Action action, bool for_help) {
     return for_help ? impl_->GetHelpTooltip(action) :
         impl_->GetRegularTooltip(action);
 }

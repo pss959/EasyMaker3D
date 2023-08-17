@@ -8,7 +8,7 @@ void ConvertCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ConvertCommand::IsValid(std::string &details) {
+bool ConvertCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (GetResultNames().empty()) {
@@ -24,6 +24,6 @@ bool ConvertCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ConvertCommand::BuildDescription(const std::string &op) const {
+Str ConvertCommand::BuildDescription(const Str &op) const {
     return "Applied " + op + " to " + GetModelsDesc(GetModelNames());
 }

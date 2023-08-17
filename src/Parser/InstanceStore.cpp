@@ -40,8 +40,7 @@ void InstanceStore::MakeAvailable_(const BasePtr_ &instance,
     available_instances_[key].push_front(instance);
 }
 
-std::string InstanceStore::CreateName_(const std::type_index &key,
-                                         size_t index) {
+Str InstanceStore::CreateName_(const std::type_index &key, size_t index) {
     return Util::Demangle(key.name()) + "_" + Util::ToString(index);
 }
 

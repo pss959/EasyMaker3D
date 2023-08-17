@@ -10,7 +10,7 @@ void CommandList::AddFields() {
     Parser::Object::AddFields();
 }
 
-bool CommandList::IsValid(std::string &details) {
+bool CommandList::IsValid(Str &details) {
     if (! Parser::Object::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! app_info_.GetValue()) {

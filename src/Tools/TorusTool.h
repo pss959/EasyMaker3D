@@ -48,7 +48,7 @@ class TorusTool : public Tool {
     ChangeTorusCommandPtr command_;
 
     /// Initializes and returns a ScaleWidget scaler.
-    ScaleWidgetPtr InitScaler_(const std::string &name, bool is_inner);
+    ScaleWidgetPtr InitScaler_(const Str &name, bool is_inner);
 
     /// Updates both scalers based on the attached TorusModel.
     void UpdateScalers_();

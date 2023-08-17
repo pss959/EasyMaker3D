@@ -8,17 +8,16 @@ void Command::AddOrphanedCommands(const std::vector<CommandPtr> &commands) {
     Util::AppendVector(commands, orphaned_commands_);
 }
 
-std::string Command::GetModelDesc(const std::string &model_name) {
+Str Command::GetModelDesc(const Str &model_name) {
     return "Model \"" + model_name + "\"";
 }
 
-std::string Command::GetModelsDesc(
-    const std::vector<std::string> &model_names) {
+Str Command::GetModelsDesc(const StrVec &model_names) {
     return model_names.size() == 1 ? GetModelDesc(model_names[0]) :
         Util::ToString(model_names.size()) + " Models";
 }
 
-std::string Command::FixPath(const std::string &path_string) {
+Str Command::FixPath(const Str &path_string) {
     const FilePath path(path_string);
     return path.IsAbsolute() ? path_string : path.GetAbsolute().ToString();
 }

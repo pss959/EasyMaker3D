@@ -26,7 +26,7 @@ class RenderTest : public SceneTestBase {
     const size_t kHeight = 1024;  ///< Framebuffer height.
 
     /// Sets up to render the scene read from the named data file.
-    SG::ScenePtr SetUpScene(const std::string &file_name);
+    SG::ScenePtr SetUpScene(const Str &file_name);
 
     /// Renders the scene using the given FBTarget, which may be null.
     void RenderScene(const FBTarget *fb_target);
@@ -40,8 +40,8 @@ class RenderTest : public SceneTestBase {
     void UpdateNodeForRenderPass_(const SG::RenderPass &pass, SG::Node &node);
 };
 
-SG::ScenePtr RenderTest::SetUpScene(const std::string &file_name) {
-    const std::string input = ReadDataFile(file_name);
+SG::ScenePtr RenderTest::SetUpScene(const Str &file_name) {
+    const Str input = ReadDataFile(file_name);
     scene_ = ReadScene(input, true);
 
     auto gl_context = ion::gfx::testing::FakeGlContext::Create(kWidth, kHeight);

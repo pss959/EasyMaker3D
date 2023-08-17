@@ -8,6 +8,6 @@ void CreatePrimitiveModelCommand::AddFields() {
     CreateModelCommand::AddFields();
 }
 
-std::string CreatePrimitiveModelCommand::GetDescription() const {
+Str CreatePrimitiveModelCommand::GetDescription() const {
     return BuildDescription(type_.GetEnumWords());
 }

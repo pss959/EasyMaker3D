@@ -65,7 +65,7 @@ class Board : public Grippable, public Touchable {
     /// Pops the current Panel, passing the given string to the result function
     /// (if any). Returns true if there are more Panels left on the
     /// stack. Asserts if there is no current Panel.
-    bool PopPanel(const std::string &result);
+    bool PopPanel(const Str &result);
 
     /// Returns the Panel currently displayed in the board or null if there is
     /// none.
@@ -90,7 +90,7 @@ class Board : public Grippable, public Touchable {
     void PostSetUpIon() override;
 
     /// Defines this to resize if necessary.
-    virtual void UpdateForRenderPass(const std::string &pass_name) override;
+    virtual void UpdateForRenderPass(const Str &pass_name) override;
 
     /// Sets up the Board for use with controller touches in VR. The position
     /// of the camera is supplied so the Board can scale and position itself

@@ -98,8 +98,8 @@ void Profile::RemovePoint(size_t index) {
     points_.erase(points_.begin() + index);
 }
 
-std::string Profile::ToString() const {
-    return std::string("PROF[") + Util::EnumName(type_) +
+Str Profile::ToString() const {
+    return Str("PROF[") + Util::EnumName(type_) +
         " MN=" + Util::ToString(min_count_) + " <" +
         " CT=" + Util::ToString(points_.size()) +
         Util::JoinItems(points_, ", ") + ">]";

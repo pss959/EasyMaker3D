@@ -14,7 +14,7 @@ DECL_SHARED_PTR(CreateExtrudedModelCommand);
 /// \ingroup Commands
 class CreateExtrudedModelCommand : public CreateModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     CreateExtrudedModelCommand() {}

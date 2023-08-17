@@ -62,12 +62,12 @@ class Scene  : public Object {
     Scene() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>         log_key_string_;
+    Parser::TField<Str>                 log_key_string_;
     Parser::ObjectField<ColorMap>       color_map_;
     Parser::ObjectField<Gantry>         gantry_;
     Parser::ObjectListField<PointLight> lights_;

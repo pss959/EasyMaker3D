@@ -90,7 +90,7 @@ Vector3f Color::ToHSV() const {
     return Vector3f(hue, sat, val);
 }
 
-std::string Color::ToHexString() const {
+Str Color::ToHexString() const {
     auto to_hex = [](float f){
         std::ostringstream out;
         out << std::hex << std::setfill('0') << std::setw(2)
@@ -101,7 +101,7 @@ std::string Color::ToHexString() const {
     return "#" + to_hex(v[0]) + to_hex(v[1]) + to_hex(v[2]) + to_hex(v[3]);
 }
 
-bool Color::FromHexString(const std::string &str) {
+bool Color::FromHexString(const Str &str) {
     if (str[0] != '#' || (str.size() != 7U && str.size() != 9U))
         return false;
 
@@ -311,7 +311,7 @@ Point2f Frustum::ProjectToImageRect(const Point3f &pt) const {
 // TriMesh functions.
 // ----------------------------------------------------------------------------
 
-std::string TriMesh::ToBinaryString() const {
+Str TriMesh::ToBinaryString() const {
     const size_t pc = points.size();
     const size_t tc = GetTriangleCount();
 
@@ -323,7 +323,7 @@ std::string TriMesh::ToBinaryString() const {
     return bb.Build();
 }
 
-bool TriMesh::FromBinaryString(const std::string &str) {
+bool TriMesh::FromBinaryString(const Str &str) {
     points.clear();
     indices.clear();
 
@@ -363,7 +363,7 @@ bool TriMesh::FromBinaryString(const std::string &str) {
 // ModelMesh functions.
 // ----------------------------------------------------------------------------
 
-std::string ModelMesh::ToBinaryString() const {
+Str ModelMesh::ToBinaryString() const {
     const size_t pc = points.size();
     const size_t tc = GetTriangleCount();
 
@@ -380,7 +380,7 @@ std::string ModelMesh::ToBinaryString() const {
     return bb.Build();
 }
 
-bool ModelMesh::FromBinaryString(const std::string &str) {
+bool ModelMesh::FromBinaryString(const Str &str) {
     points.clear();
     indices.clear();
     normals.clear();
@@ -446,22 +446,22 @@ namespace {
 
 /// Overrides the standard Ion string printing version to be more compact and
 /// to round to a reasonable precision.
-template <typename T> std::string ToString_(const T &t) {
+template <typename T> Str ToString_(const T &t) {
     return Util::ToString(t);
 }
-template <> std::string ToString_(const float &f) {
+template <> Str ToString_(const float &f) {
     return Math::ToString(f, .001f);
 }
-template <> std::string ToString_(const Point3f &t) {
+template <> Str ToString_(const Point3f &t) {
     return Math::ToString(t, .001f);
 }
-template <> std::string ToString_(const Vector3f &t) {
+template <> Str ToString_(const Vector3f &t) {
     return Math::ToString(t, .001f);
 }
-template <> std::string ToString_(const Anglef &a) {
+template <> Str ToString_(const Anglef &a) {
     return Math::ToString(a.Degrees(), .1f);
 }
-template <> std::string ToString_(const Rotationf &r) {
+template <> Str ToString_(const Rotationf &r) {
     Vector3f axis;
     Anglef   angle;
     r.GetAxisAndAngle(&axis, &angle);
@@ -470,7 +470,7 @@ template <> std::string ToString_(const Rotationf &r) {
 
 }  // anonymous namespace
 
-std::string Bounds::ToString(bool use_min_max) const {
+Str Bounds::ToString(bool use_min_max) const {
     if (use_min_max)
         return ("B["   + ToString_(GetMinPoint()) +
                 " => " + ToString_(GetMaxPoint()) + "]");
@@ -479,15 +479,15 @@ std::string Bounds::ToString(bool use_min_max) const {
                 " s="   + ToString_(GetSize())    + "]");
 }
 
-std::string Plane::ToString() const {
+Str Plane::ToString() const {
     return "PL [n=" + ToString_(normal) + " d=" + ToString_(distance) + "]";
 }
 
-std::string Ray::ToString() const {
+Str Ray::ToString() const {
     return "RAY [o=" + ToString_(origin) + " d=" + ToString_(direction) + "]";
 }
 
-std::string Frustum::ToString() const {
+Str Frustum::ToString() const {
     return ("FR [vp="  + ToString_(viewport) +
             " p="      + ToString_(position) +
             " o="      + ToString_(orientation) +
@@ -500,10 +500,10 @@ std::string Frustum::ToString() const {
             "]");
 }
 
-std::string TriMesh::ToString() const {
+Str TriMesh::ToString() const {
     const size_t pc = points.size();
     const size_t tc = GetTriangleCount();
-    std::string s = "TriMesh with " + ToString_(pc) + " points and " +
+    Str s = "TriMesh with " + ToString_(pc) + " points and " +
         ToString_(tc) + " triangles:\n";
     for (size_t i = 0; i < pc; ++i)
         s += "   [" + ToString_(i) + "] " + ToString_(points[i]) + "\n";

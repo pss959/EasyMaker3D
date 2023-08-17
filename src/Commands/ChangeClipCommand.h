@@ -14,7 +14,7 @@ DECL_SHARED_PTR(ChangeClipCommand);
 /// \ingroup Commands
 class ChangeClipCommand : public ChangePlaneCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ChangeClipCommand() {}

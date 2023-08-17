@@ -6,7 +6,7 @@ void ChangeImportedModelCommand::AddFields() {
     SingleModelCommand::AddFields();
 }
 
-bool ChangeImportedModelCommand::IsValid(std::string &details) {
+bool ChangeImportedModelCommand::IsValid(Str &details) {
     if (! SingleModelCommand::IsValid(details))
         return false;
     if (GetNewPath().empty()) {
@@ -22,6 +22,6 @@ void ChangeImportedModelCommand::CreationDone() {
         new_path_ = FixPath(GetNewPath());
 }
 
-std::string ChangeImportedModelCommand::GetDescription() const {
+Str ChangeImportedModelCommand::GetDescription() const {
     return "Changed the import path in " + GetModelDesc(GetModelName());
 }

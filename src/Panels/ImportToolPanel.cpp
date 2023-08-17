@@ -1,9 +1,9 @@
 #include "Panels/ImportToolPanel.h"
 
-void ImportToolPanel::DisplayImportError(const std::string &message) {
+void ImportToolPanel::DisplayImportError(const Str &message) {
     DisplayMessage(message, nullptr);
 }
 
-void ImportToolPanel::ProcessResult(const std::string &result) {
+void ImportToolPanel::ProcessResult(const Str &result) {
     ReportChange(result, InteractionType::kImmediate);
 }

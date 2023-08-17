@@ -28,7 +28,7 @@ class Registry {
     /// The unique name to use for the class and a function that can be used to
     /// create an instance are supplied.
     template <typename T>
-    static void AddType(const std::string &type_name) {
+    static void AddType(const Str &type_name) {
         // Make sure the class does not have a public default constructor.
         ASSERTM(! std::is_default_constructible<T>::value,
                 "Class " + type_name + " has a public constructor");
@@ -39,8 +39,8 @@ class Registry {
     /// instance, and returns it. Throws an Exception if the type was not
     /// registered. The new object is assigned the given name. The new object
     /// is assumed to be complete unless false is passed for is_complete.
-    static ObjectPtr CreateObjectOfType(const std::string &type_name,
-                                        const std::string &name = "",
+    static ObjectPtr CreateObjectOfType(const Str &type_name,
+                                        const Str &name = "",
                                         bool is_complete = true) {
         return CreateObjectOfType_(type_name, name, is_complete);
     }
@@ -50,8 +50,8 @@ class Registry {
     /// registered. Returns a null pointer if the cast fails. The new object is
     /// assigned the given name.
     template <typename T>
-    static std::shared_ptr<T> CreateObject(const std::string &name = "") {
-        const std::string &type_name = FindTypeName_(typeid(T));
+    static std::shared_ptr<T> CreateObject(const Str &name = "") {
+        const Str &type_name = FindTypeName_(typeid(T));
         return std::dynamic_pointer_cast<T>(
             CreateObjectOfType_(type_name, name, true));
     }
@@ -66,14 +66,14 @@ class Registry {
     static size_t GetTypeNameCount() { return creation_map_.size(); }
 
     /// Returns a vector containing all registered type names.
-    static std::vector<std::string> GetAllTypeNames();
+    static StrVec GetAllTypeNames();
 
   private:
     /// Convenience typedef for the map from typeid to type name.
-    typedef std::unordered_map<std::type_index, std::string> TypeNameMap_;
+    typedef std::unordered_map<std::type_index, Str> TypeNameMap_;
 
     /// Convenience typedef for the map from type name to creation function.
-    typedef std::unordered_map<std::string, CreationFunc> CreationMap_;
+    typedef std::unordered_map<Str, CreationFunc> CreationMap_;
 
     /// Stores the association between C++ typeid and type names.
     static TypeNameMap_ type_name_map_;
@@ -82,19 +82,17 @@ class Registry {
     static CreationMap_ creation_map_;
 
     /// Implements the AddType_() function using the name of the type.
-    static void AddType_(const std::string &type_name,
-                         const std::type_info &info,
+    static void AddType_(const Str &type_name, const std::type_info &info,
                          const CreationFunc &creation_func);
 
     /// Returns the name of the type with the given info. Throws an exception
     /// if it is not found.
-    static std::string FindTypeName_(const std::type_info &info);
+    static Str FindTypeName_(const std::type_info &info);
 
     /// This is used by both CreateObjectOfType() and
     /// CreateObjectForParsing_(). If is_complete is true, CreationDone() is
     /// called for the new instance.
-    static ObjectPtr CreateObjectOfType_(const std::string &type_name,
-                                         const std::string &name,
+    static ObjectPtr CreateObjectOfType_(const Str &type_name, const Str &name,
                                          bool is_complete);
 
     // Allow Object and Parser to call CreateObjectOfType_().

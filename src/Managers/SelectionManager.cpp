@@ -245,7 +245,7 @@ bool SelectionManager::GetSelectionInDirection_(Direction dir,
 void SelectionManager::SelectionChanged_(Operation op) {
 #if ENABLE_DEBUG_FEATURES
     auto sel_string = [&](){
-        std::string s;
+        Str s;
         for (const auto &sel_path: selection_.GetPaths()) {
             const auto model = sel_path.GetModel();
             if (! s.empty())

@@ -50,7 +50,7 @@ class ConvertedModel : public OperatorModel {
 
   protected:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     /// Redefines this to copy the operand Model.

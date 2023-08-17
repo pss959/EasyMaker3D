@@ -11,7 +11,7 @@
 class CombineCommandTest : public CommandTestBase {
   protected:
     /// Tests the named command.
-    void TestCommand(const std::string &type_name, const std::string &action);
+    void TestCommand(const Str &type_name, const Str &action);
 };
 
 TEST_F(CombineCommandTest, ResultName) {

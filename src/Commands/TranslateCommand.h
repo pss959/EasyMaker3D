@@ -12,7 +12,7 @@ DECL_SHARED_PTR(TranslateCommand);
 /// \ingroup Commands
 class TranslateCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Returns the translation vector.
     const Vector3f & GetTranslation() const { return translation_; }

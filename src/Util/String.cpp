@@ -9,7 +9,7 @@
 
 namespace Util {
 
-std::string ToString(bool b, bool shorten) {
+Str ToString(bool b, bool shorten) {
     std::ostringstream out;
     if (shorten)
         out << (b ? "T" : "F");
@@ -18,21 +18,21 @@ std::string ToString(bool b, bool shorten) {
     return out.str();
 }
 
-std::string ToUpperCase(const std::string &s) {
-    std::string u;
+Str ToUpperCase(const Str &s) {
+    Str u;
     std::transform(s.begin(), s.end(), std::back_inserter(u),
                    [](unsigned char c){ return std::toupper(c); });
     return u;
 }
 
-std::string ToLowerCase(const std::string &s) {
-    std::string u;
+Str ToLowerCase(const Str &s) {
+    Str u;
     std::transform(s.begin(), s.end(), std::back_inserter(u),
                    [](unsigned char c){ return std::tolower(c); });
     return u;
 }
 
-bool StringsEqualNoCase(const std::string &s1, const std::string &s2) {
+bool StringsEqualNoCase(const Str &s1, const Str &s2) {
     auto compare_chars = [](const char &c1, const char &c2){
         return c1 == c2 || std::toupper(c1) == std::toupper(c2);
     };
@@ -40,8 +40,7 @@ bool StringsEqualNoCase(const std::string &s1, const std::string &s2) {
         std::equal(s1.begin(), s1.end(), s2.begin(), compare_chars);
 }
 
-bool CompareStrings(const std::string &s1, const std::string &s2,
-                    size_t &index) {
+bool CompareStrings(const Str &s1, const Str &s2, size_t &index) {
     if (s1 == s2)
         return true;
     for (size_t i = 0; i < s1.size(); ++i) {
@@ -55,24 +54,21 @@ bool CompareStrings(const std::string &s1, const std::string &s2,
     return false;
 }
 
-std::string ReplaceString(const std::string &s,
-                          const std::string &from,
-                          const std::string &to) {
+Str ReplaceString(const Str &s, const Str &from, const Str &to) {
     return ion::base::ReplaceString(s, from, to);
 }
 
-std::string JoinStrings(const std::vector<std::string> &strings,
-                        const std::string &glue) {
+Str JoinStrings(const StrVec &strings, const Str &glue) {
     return ion::base::JoinStrings(strings, glue);
 }
 
-std::string RemoveFirstN(const std::string &s, size_t n) {
+Str RemoveFirstN(const Str &s, size_t n) {
     const size_t nn = std::min(n, s.length());
     return s.substr(nn, s.length() - nn);
 }
 
-std::string SplitCamelCase(const std::string &s, bool remove_first) {
-    std::string ss;
+Str SplitCamelCase(const Str &s, bool remove_first) {
+    Str ss;
 
     // A string of 2 or more upper-case letters followed by a lower-case letter
     // also represents a split. For example, "CSGUnion" -> "CSG Union".
@@ -102,7 +98,7 @@ std::string SplitCamelCase(const std::string &s, bool remove_first) {
     return ss;
 }
 
-bool StringToInteger(const std::string &s, int &n) {
+bool StringToInteger(const Str &s, int &n) {
     // Integers may be signed and are always base 10.
     if (! s.empty() && ! std::isspace(s[0])) {
         try {
@@ -116,13 +112,13 @@ bool StringToInteger(const std::string &s, int &n) {
     return false;
 }
 
-std::string Demangle(const std::string &mangled_name) {
+Str Demangle(const Str &mangled_name) {
     int status = 0 ;
     char *demangled = __cxxabiv1::__cxa_demangle(
         mangled_name.c_str(), nullptr, nullptr, &status);
     if (! demangled)
         return mangled_name;
-    std::string ret(demangled);
+    Str ret(demangled);
     free(demangled);
     return ret;
 }

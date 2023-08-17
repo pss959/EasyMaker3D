@@ -44,7 +44,7 @@ class CylinderTool : public Tool {
     ChangeCylinderCommandPtr command_;
 
     /// Initializes and returns a ScaleWidget scaler.
-    ScaleWidgetPtr InitScaler_(const std::string &name);
+    ScaleWidgetPtr InitScaler_(const Str &name);
 
     /// Updates both scalers based on the attached CylinderModel.
     void UpdateScalers_();

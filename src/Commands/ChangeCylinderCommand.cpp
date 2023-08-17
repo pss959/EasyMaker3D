@@ -10,8 +10,8 @@ void ChangeCylinderCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-std::string ChangeCylinderCommand::GetDescription() const {
-    return std::string("Changed the ") +
+Str ChangeCylinderCommand::GetDescription() const {
+    return Str("Changed the ") +
         (is_top_radius_.GetValue() ? "top" : "bottom") + " radius of " +
         GetModelsDesc(GetModelNames());
 }

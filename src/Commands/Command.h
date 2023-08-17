@@ -90,7 +90,7 @@ class Command : public Parser::Object {
 
     /// Returns a string describing the Command instance. This can be used, for
     /// example, for Undo/Redo tooltips.
-    virtual std::string GetDescription() const = 0;
+    virtual Str GetDescription() const = 0;
 
     /// Returns false if a command has no effect for an Undo operation, this
     /// returns false. The base class defines this to return true.
@@ -121,17 +121,16 @@ class Command : public Parser::Object {
   protected:
     /// Returns a description of the Model with the given name for use in
     /// GetDescription().
-    static std::string GetModelDesc(const std::string &model_name);
+    static Str GetModelDesc(const Str &model_name);
 
     /// Returns a description of a vector of Models with the given names for
     /// use in GetDescription().
-    static std::string GetModelsDesc(
-        const std::vector<std::string> &model_names);
+    static Str GetModelsDesc(const StrVec &model_names);
 
     /// "Fixes" a path if necessary to make it absolute. This is a hedge
     /// against someone editing a session file and using a relative path and is
     /// also needed for the snapimage application to allow for relative import.
-    static std::string FixPath(const std::string &path_string);
+    static Str FixPath(const Str &path_string);
 
   private:
     /// True when the Command is finalized after interaction.

@@ -16,17 +16,17 @@ DECL_SHARED_PTR(TextModel);
 class TextModel : public PrimitiveModel {
   public:
     /// Sets the text string to use.
-    void SetTextString(const std::string &text);
+    void SetTextString(const Str &text);
 
     /// Returns the current text string.
-    const std::string & GetTextString() const { return text_; }
+    const Str & GetTextString() const { return text_; }
 
     /// Sets the name to the font to use. An empty name (the default) results
     /// in the default font being used.
-    void SetFontName(const std::string &name);
+    void SetFontName(const Str &name);
 
     /// Returns the name of the current font.
-    const std::string & GetFontName() const { return font_name_; }
+    const Str & GetFontName() const { return font_name_; }
 
     /// Sets the character spacing.
     void SetCharSpacing(float spacing);
@@ -40,19 +40,19 @@ class TextModel : public PrimitiveModel {
   protected:
     TextModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual TriMesh BuildMesh() override;
 
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<std::string> text_;
-    Parser::TField<std::string> font_name_;
-    Parser::TField<float>       char_spacing_;
+    Parser::TField<Str>   text_;
+    Parser::TField<Str>   font_name_;
+    Parser::TField<float> char_spacing_;
     ///@}
 
     /// Validates the given text string, asserting on error.
-    void ValidateText_(const std::string &font_name, const std::string &text);
+    void ValidateText_(const Str &font_name, const Str &text);
 
     friend class Parser::Registry;
 };

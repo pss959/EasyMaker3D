@@ -34,7 +34,7 @@ TEST_F(AxisWidgetTest, Set) {
 TEST_F(AxisWidgetTest, Rotate) {
     auto aw = GetAxisWidget();
 
-    DragTester dt(aw, std::vector<std::string>{ "Rotator" });
+    DragTester dt(aw, StrVec{ "Rotator" });
 
     // Rotating around Y should have no effect on the direction.
     dt.ApplyGripRotationDrag(Vector3f::AxisX(),
@@ -55,7 +55,7 @@ TEST_F(AxisWidgetTest, Translate) {
     auto aw = GetAxisWidget();
     aw->SetTranslationRange(Range2f(Point2f(-100, -100), Point2f(100, 100)));
 
-    DragTester dt(aw, std::vector<std::string>{ "Translator" });
+    DragTester dt(aw, StrVec{ "Translator" });
     dt.SetRayDirection(-Vector3f::AxisY());
     EXPECT_EQ(Vector3f(0, 1, 0), aw->GetDirection());
     EXPECT_EQ(Point3f(0, 0, 0),  aw->GetPosition());

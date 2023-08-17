@@ -7,11 +7,11 @@
 /// \ingroup Executors
 class CombineHullExecutor : public CombineExecutorBase {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "CombineHullModelCommand";
     }
 
   protected:
-    virtual CombinedModelPtr CreateCombinedModel(
-        Command &command, const std::string &name) override;
+    virtual CombinedModelPtr CreateCombinedModel(Command &command,
+                                                 const Str &name) override;
 };

@@ -36,11 +36,11 @@ void ShutDown();
 ///@}
 
 /// Potentially handles a debugging shortcut, returning true if handled.
-bool HandleShortcut(const std::string &str);
+bool HandleShortcut(const Str &str);
 
 /// Displays the given text string in the debug text area. If the text string
 /// is empty, this turns off the text string.
-void DisplayDebugText(const std::string &text);
+void DisplayDebugText(const Str &text);
 
 /// Displays the debug sphere at the given location with the given diameter,
 /// both in stage coordinates.

@@ -28,28 +28,28 @@ namespace TK {
 ///@{
 
 /// Name of the application.
-extern const std::string kApplicationName;
+extern const Str  kApplicationName;
 
 /// Copyright string.
-extern const std::string kCopyright;
+extern const Str  kCopyright;
 
 /// Suffix to use for data (node/scene/etc) files (including the dot).
-extern const std::string kDataFileSuffix;
+extern const Str  kDataFileSuffix;
 
 /// Suffix to use for session files (including the dot).
-extern const std::string kSessionFileSuffix;
+extern const Str  kSessionFileSuffix;
 
 /// Application version as a string.
-extern const std::string kVersionString;
+extern const Str  kVersionString;
 
 /// Base URL of public documentation.
-extern const std::string kPublicDocBaseURL;
+extern const Str  kPublicDocBaseURL;
 
 /// URL of Github repository.
-extern const std::string kGithubURL;
+extern const Str  kGithubURL;
 
 /// Whether to preserve data in Ion objects (to help debug).
-extern const bool        kSaveIonData;
+extern const bool kSaveIonData;
 
 ///@}
 

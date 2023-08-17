@@ -32,14 +32,14 @@ class Application {
   public:
     /// Application options.
     struct Options {
-        Vector2i    window_size;
-        bool        do_ion_remote      = false;
-        bool        fullscreen         = false;
-        bool        enable_vr          = false;
-        bool        ignore_vr          = false;
-        bool        set_up_touch       = false;
-        bool        show_session_panel = true;
-        std::string session_file_name;
+        Vector2i window_size;
+        bool     do_ion_remote      = false;
+        bool     fullscreen         = false;
+        bool     enable_vr          = false;
+        bool     ignore_vr          = false;
+        bool     set_up_touch       = false;
+        bool     show_session_panel = true;
+        Str      session_file_name;
     };
 
     /// Application context with all managers and the SceneContext.
@@ -92,8 +92,8 @@ class Application {
 
     /// Tells the SessionManager to save the current session to the given file
     /// with the given crash message and stack trace.
-    void SaveCrashSession(const FilePath &path, const std::string &message,
-                          const std::vector<std::string> &stack);
+    void SaveCrashSession(const FilePath &path, const Str &message,
+                          const StrVec &stack);
 
     /// Shuts down (especially VR which does not like to be crashed out of.
     void Shutdown();

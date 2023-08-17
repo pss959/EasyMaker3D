@@ -6,18 +6,18 @@
 
 namespace Parser {
 
-std::string Object::GetDesc() const {
-    std::string s = GetTypeName();
+Str Object::GetDesc() const {
+    Str s = GetTypeName();
     if (! GetName().empty())
         s += " '" + GetName() + "'";
     if (IsClone() || IsTemplate())
-        s += std::string(" [") + (IsTemplate() ? "T" : "") +
+        s += Str(" [") + (IsTemplate() ? "T" : "") +
             (IsClone() ? "C" : "") + "]";
     s += " (" + Util::ToString(this) + ")";
     return s;
 }
 
-Field * Object::FindField(const std::string &name) const {
+Field * Object::FindField(const Str &name) const {
     for (auto &field: fields_)
         if (field->GetName() == name)
             return field;
@@ -41,8 +41,7 @@ void Object::CopyContentsFrom(const Object &from, bool is_deep) {
         clone_fields[i]->CopyFrom(*from_fields[i], is_deep);
 }
 
-void Object::SetUp_(const std::string &type_name, const std::string &name,
-                    bool is_complete) {
+void Object::SetUp_(const Str &type_name, const Str &name, bool is_complete) {
     ASSERT(instance_type_ == InstanceType_::kUnknown);
     SetTypeName(type_name);
     SetName(name);
@@ -52,7 +51,7 @@ void Object::SetUp_(const std::string &type_name, const std::string &name,
         CompleteInstance_(InstanceType_::kRegular);
 }
 
-ObjectPtr Object::Clone_(const std::string &name, bool is_deep,
+ObjectPtr Object::Clone_(const Str &name, bool is_deep,
                          bool is_complete) const {
     // Create the clone.
     ObjectPtr clone = Registry::CreateObjectOfType_(

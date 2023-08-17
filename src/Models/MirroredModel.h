@@ -34,7 +34,7 @@ class MirroredModel : public ConvertedModel {
   protected:
     MirroredModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual TriMesh ConvertMesh(const TriMesh &mesh) override;
 
     /// Overrides this to deal with the difference in translation.

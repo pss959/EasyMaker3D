@@ -32,7 +32,7 @@ class BeveledModel : public ScaledConvertedModel {
   protected:
     BeveledModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     virtual TriMesh ConvertMesh(const TriMesh &mesh) override;

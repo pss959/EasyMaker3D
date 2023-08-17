@@ -52,7 +52,7 @@ class AngularFeedback::Impl_ {
 // ----------------------------------------------------------------------------
 
 void AngularFeedback::Impl_::InitParts() {
-    auto get_tube_func = [&](const std::string &name){
+    auto get_tube_func = [&](const Str &name){
         SG::NodePtr n = SG::FindNodeUnderNode(root_node_, name);
         return SG::FindTypedShapeInNode<SG::Tube>(*n, "Line");
     };

@@ -28,7 +28,7 @@ class FileMap {
     /// associating it with its file path. This sets the load time for the data
     /// to the current time.
     ///@{
-    void AddString(const FilePath &path, const std::string &s);
+    void AddString(const FilePath &path, const Str &s);
     void AddImage(const FilePath &path,  const ion::gfx::ImagePtr &image);
     ///@}
 
@@ -39,7 +39,7 @@ class FileMap {
     /// returned if no data was found or if it was but its file has changed
     /// since it was loaded.
     ///@{
-    std::string        FindString(const FilePath &path);
+    Str                FindString(const FilePath &path);
     ion::gfx::ImagePtr FindImage(const FilePath &path);
     ///@}
 
@@ -51,7 +51,7 @@ class FileMap {
     /// Convenient alias for a map from a FilePath to an item.
     template <typename T> using PathMap_ = std::unordered_map<FilePath, T>;
 
-    PathMap_<std::string>        string_map_;
+    PathMap_<Str>                string_map_;
     PathMap_<ion::gfx::ImagePtr> image_map_;
 
     class DependencyMap_;

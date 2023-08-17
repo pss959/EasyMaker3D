@@ -60,14 +60,14 @@ TEST_F(ShapeTest, ImportedShapeCreateFrom) {
     EXPECT_NOT_NULL(shape.Get());
 
     // Try each type of tex coord mapping.
-    const std::string contents = R"(
+    const Str contents = R"(
 ImportedShape {
   path:            "<PATH>",
   tex_coords_type: "<TCT>",
 }
 )";
     for (const auto tct: Util::EnumValues<SG::TriMeshShape::TexCoordsType>()) {
-        const std::string input =
+        const Str input =
             Util::ReplaceString(Util::ReplaceString(contents, "<PATH>",
                                                     path.ToString()),
                                 "<TCT>", Util::EnumName(tct));

@@ -62,7 +62,7 @@ TEST_F(ItemTest, Border) {
 
     // This calls SetUpIon(). Note that the Border needs to have a
     // MutableTriMeshShape for this to work.
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Border "TestBorder" { shapes: [ MutableTriMeshShape {} ] }
   ],
@@ -107,7 +107,7 @@ TEST_F(ItemTest, Frame) {
     EXPECT_EQ(Vector3f(0, 0, 0), frame->GetBounds().GetSize());
 
     // Create a frame around a Box.
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node {
       TEMPLATES: [ <"nodes/templates/Frame.emd"> ],
@@ -137,7 +137,7 @@ TEST_F(ItemTest, Frame) {
 
 TEST_F(ItemTest, Inspector) {
     // Read the Inspector, a Controller, and a test Node.
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node {
       TEMPLATES: [<"nodes/templates/Controller.emd">],
@@ -286,7 +286,7 @@ TEST_F(ItemTest, Shelf) {
     auto shelf = CreateObject<Shelf>();
     EXPECT_TRUE(shelf->GetIcons().empty());
 
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     <"nodes/Shelf.emd">,
     CLONE "Shelf" "TestShelf" {

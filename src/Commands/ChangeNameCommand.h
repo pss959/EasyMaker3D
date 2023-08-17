@@ -13,24 +13,24 @@ DECL_SHARED_PTR(ChangeNameCommand);
 /// \ingroup Commands
 class ChangeNameCommand : public SingleModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the new name.
-    void SetNewName(const std::string &new_name);
+    void SetNewName(const Str &new_name);
 
     /// Returns the new name.
-    const std::string & GetNewName() const { return new_name_; }
+    const Str & GetNewName() const { return new_name_; }
 
   protected:
     ChangeNameCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> new_name_;
+    Parser::TField<Str> new_name_;
     ///@}
 
     friend class Parser::Registry;

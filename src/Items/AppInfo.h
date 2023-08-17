@@ -16,7 +16,7 @@ DECL_SHARED_PTR(AppInfo);
 /// \ingroup Items
 class AppInfo : public Parser::Object {
   public:
-    const std::string     & GetVersion()      const { return version_; }
+    const Str             & GetVersion()      const { return version_; }
     const SessionStatePtr & GetSessionState() const { return session_state_; }
 
     /// Creates an instance with default values. This uses the current version
@@ -27,12 +27,12 @@ class AppInfo : public Parser::Object {
     AppInfo() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>       version_;
+    Parser::TField<Str>               version_;
     Parser::ObjectField<SessionState> session_state_;
     ///@}
 

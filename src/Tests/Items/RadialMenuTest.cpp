@@ -92,7 +92,7 @@ TEST_F(RadialMenuTest, RadialMenuInfoActions) {
 }
 
 TEST_F(RadialMenuTest, RadialMenu) {
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node {
       TEMPLATES: [ <"nodes/templates/RadialMenu.emd"> ],

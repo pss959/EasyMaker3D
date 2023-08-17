@@ -22,23 +22,23 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
   public:
     /// Returns a Notifier that is invoked when the user selects a new choice.
     /// It is passed the new choice string.
-    Util::Notifier<const std::string &> & GetChoiceChanged() {
+    Util::Notifier<const Str &> & GetChoiceChanged() {
         return choice_changed_;
     }
 
     /// Sets the dropdown to contain the given choice strings and the starting
     /// index into them.
-    void SetChoices(const std::vector<std::string> &choices, size_t index);
+    void SetChoices(const StrVec &choices, size_t index);
 
     /// Sets the index of the current choice. Does not notify.
     void SetChoice(size_t index);
 
     /// Sets the current choice to the one matching the given string. Does not
     /// notify. Asserts if the choice is not a valid one.
-    void SetChoiceFromString(const std::string &choice);
+    void SetChoiceFromString(const Str &choice);
 
     /// Returns the current choice.
-    const std::string & GetChoice() const { return choice_; }
+    const Str & GetChoice() const { return choice_; }
 
     /// Returns the index of the current choice.
     int GetChoiceIndex() const { return choice_index_; }
@@ -69,7 +69,7 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     DropdownPane() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     /// Redefines this to use the size of the largest choice string.
@@ -78,35 +78,35 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<std::string> choices_;
-    Parser::TField<int>         choice_index_;
+    Parser::VField<Str> choices_;
+    Parser::TField<int> choice_index_;
     ///@}
 
     /// Notifies when the choice changes.
-    Util::Notifier<const std::string &> choice_changed_;
+    Util::Notifier<const Str &> choice_changed_;
 
     /// Current choice string. Empty when no valid choice.
-    std::string                choice_;
+    Str                         choice_;
 
     /// TextPane displaying current choice.
-    TextPanePtr                text_pane_;
+    TextPanePtr                 text_pane_;
 
     /// ButtonPane that is clicked to show or hide the choice menu.
-    ButtonPanePtr              activation_button_pane_;
+    ButtonPanePtr               activation_button_pane_;
 
     /// ScrollingPane used to display menu of choices.
-    ScrollingPanePtr           menu_pane_;
+    ScrollingPanePtr            menu_pane_;
 
     /// ButtonPane used to represent a menu choice. A clone is made for each
     /// choice in the menu.
-    ButtonPanePtr              menu_button_pane_;
+    ButtonPanePtr               menu_button_pane_;
 
     /// Cloned ButtonPane for each menu choice.
-    std::vector<ButtonPanePtr> menu_button_panes_;
+    std::vector<ButtonPanePtr>  menu_button_panes_;
 
     /// This width is added to the width of the widest menu choice string to
     /// get the full base size of the DropdownPane.
-    float                      menu_extra_width_ = 0;
+    float                       menu_extra_width_ = 0;
 
     /// Updates menu choice buttons when necessary.
     void UpdateMenuPane_();

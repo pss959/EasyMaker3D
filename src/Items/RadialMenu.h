@@ -79,7 +79,7 @@ class RadialMenu : public SG::Node {
     /// Button last highlighted by HighlightButton(). May be null.
     Button_ *             highlighted_button_ = nullptr;
 
-    void InitCircle_(const std::string &name, float radius);
+    void InitCircle_(const Str &name, float radius);
     void InitButton_(size_t count, size_t index, Button_ &button);
     static std::vector<Point2f> GetButtonPoints_(size_t count, size_t index,
                                                  Point2f &center);

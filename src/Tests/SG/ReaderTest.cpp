@@ -22,8 +22,7 @@ class ReaderTest : public SceneTestBase {
  protected:
     /// Parses the given input string, then writes the resulting data to a
     /// string, comparing with the expected output string.
-    bool ParseStringAndCompare(const std::string &input,
-                               const std::string &expected) {
+    bool ParseStringAndCompare(const Str &input, const Str &expected) {
         Parser::Parser parser;
         Parser::ObjectPtr root = parser.ParseFromString(input);
 
@@ -35,8 +34,7 @@ class ReaderTest : public SceneTestBase {
 
     /// Calls ReadScene(), then prints the resulting SG to a string, comparing
     /// with the expected output string.
-    bool ReadSceneAndCompare(const std::string &input,
-                             const std::string &expected) {
+    bool ReadSceneAndCompare(const Str &input, const Str &expected) {
         SG::ScenePtr scene = ReadScene(input, false);
         EXPECT_NOT_NULL(scene.get());
 
@@ -48,8 +46,7 @@ class ReaderTest : public SceneTestBase {
 
     /// Calls BuildAndReadScene(), then prints the resulting Ion graph to a
     /// string, comparing with the expected string.
-    bool ReadSceneAndCompareIon(const std::string &contents,
-                                const std::string &expected) {
+    bool ReadSceneAndCompareIon(const Str &contents, const Str &expected) {
         SG::ScenePtr scene = BuildAndReadScene(contents);
         EXPECT_NOT_NULL(scene.get());
 
@@ -95,12 +92,12 @@ TEST_F(ReaderTest, RootNode) {
 }
 
 TEST_F(ReaderTest, Settings) {
-    const std::string input = ReadDataFile("Settings.emd");
+    const Str input = ReadDataFile("Settings.emd");
     EXPECT_TRUE(ParseStringAndCompare(input, input));
 }
 
 TEST_F(ReaderTest, AllTypes) {
-    const std::string input = ReadDataFile("AllTypes.emd");
+    const Str input = ReadDataFile("AllTypes.emd");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 
     // Create Ion data for this scene to test all shapes.
@@ -109,12 +106,12 @@ TEST_F(ReaderTest, AllTypes) {
 }
 
 TEST_F(ReaderTest, Instances) {
-    const std::string input = ReadDataFile("Instances.emd");
+    const Str input = ReadDataFile("Instances.emd");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 }
 
 TEST_F(ReaderTest, SetUpIonRootNode) {
-    const std::string expected =
+    const Str expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
         "}\n";
@@ -122,13 +119,13 @@ TEST_F(ReaderTest, SetUpIonRootNode) {
 }
 
 TEST_F(ReaderTest, IonTransform) {
-    const std::string contents = R"(
+    const Str contents = R"(
   scale:       2 3 4,
   rotation:    0 1 0 -90,
   translation: 100 200 300,
 )";
 
-    const std::string expected =
+    const Str expected =
 R"(ION Node "Root" {
   Enabled: true
   ION UniformBlock {
@@ -157,12 +154,12 @@ R"(ION Node "Root" {
 }
 
 TEST_F(ReaderTest, OneChild) {
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node "ChildX" {}
   ]
 )";
-    const std::string expected =
+    const Str expected =
 R"(ION Node "Root" {
   Enabled: true
   ION Node "ChildX" {
@@ -175,13 +172,13 @@ R"(ION Node "Root" {
 }
 
 TEST_F(ReaderTest, TwoChildrenAndNames) {
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node "AChild" {},
     Node "AnotherChild" {},
   ]
 )";
-    const std::string expected =
+    const Str expected =
 R"(ION Node "Root" {
   Enabled: true
   ION Node "AChild" {
@@ -196,14 +193,14 @@ R"(ION Node "Root" {
 }
 
 TEST_F(ReaderTest, Box) {
-    const std::string contents = R"(
+    const Str contents = R"(
   shapes: [
     Box "Box1" {
       size: 1 2 3,
     }
   ]
 )";
-    const std::string expected =
+    const Str expected =
 R"(ION Node "Root" {
   Enabled: true
   ION Shape "Box1" {
@@ -266,7 +263,7 @@ R"(ION Node "Root" {
 }
 
 TEST_F(ReaderTest, Cylinder) {
-    const std::string contents = R"(
+    const Str contents = R"(
   shapes: [
     Cylinder "Cyl1" {
       top_radius:       2,
@@ -280,7 +277,7 @@ TEST_F(ReaderTest, Cylinder) {
     }
   ]
 )";
-    const std::string expected =
+    const Str expected =
 R"(ION Node "Root" {
   Enabled: true
   ION Shape "Cyl1" {
@@ -350,7 +347,7 @@ R"(ION Node "Root" {
 }
 
 TEST_F(ReaderTest, EmptyPass) {
-    const std::string input = R"(
+    const Str input = R"(
 Scene "MyScene" {
   render_passes: [
     LightingPass "Lighting" {}

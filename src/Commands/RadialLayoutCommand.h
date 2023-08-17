@@ -16,7 +16,7 @@ DECL_SHARED_PTR(RadialLayoutCommand);
 /// \ingroup Commands
 class RadialLayoutCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the fields in the command from a PointTarget instance.
     void SetFromTarget(const PointTarget &target);

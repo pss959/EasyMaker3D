@@ -16,25 +16,25 @@ class TestBase : public ::testing::Test {
     // ------------------------------------------------------------------------
 
     /// Returns the name of the current test case.
-    std::string GetTestCaseName() const;
+    Str GetTestCaseName() const;
 
     /// Returns the name of the current test.
-    std::string GetTestName() const;
+    Str GetTestName() const;
 
     // ------------------------------------------------------------------------
     // Finding and reading files.
     // ------------------------------------------------------------------------
 
     /// Returns a FilePath to the named file below the Tests/Data directory.
-    static FilePath GetDataPath(const std::string &file_name);
+    static FilePath GetDataPath(const Str &file_name);
 
     /// Reads the named file from the Tests/Data directory and returns the
     /// contents as a string. Asserts if the file cannot be opened.
-    static std::string ReadDataFile(const std::string &file_name);
+    static Str ReadDataFile(const Str &file_name);
 
     /// Reads the file on the given path from the resources directory and
     /// returns the contents as a string. Asserts if the file cannot be opened.
-    static std::string ReadResourceFile(const std::string &file_path);
+    static Str ReadResourceFile(const Str &file_path);
 
     // ------------------------------------------------------------------------
     // Comparison helpers.
@@ -61,8 +61,7 @@ class TestBase : public ::testing::Test {
     static bool MatricesCloseT(const Matrix4f &m0, const Matrix4f &m1, float t);
 
     /// Compares two strings for equality with verbose results on failure.
-    static bool CompareStrings(const std::string &expected,
-                               const std::string &actual);
+    static bool CompareStrings(const Str &expected, const Str &actual);
 
     /// Compares two data buffers for equality with verbose results on
     /// failure. The buffers are assumed to have the same size.
@@ -74,7 +73,7 @@ class TestBase : public ::testing::Test {
     // ------------------------------------------------------------------------
 
     /// Loads a TriMesh from an STL file.
-    static TriMesh LoadTriMesh(const std::string &file_name);
+    static TriMesh LoadTriMesh(const Str &file_name);
 
     /// Returns true if the given TriMesh contains a point close to the given
     /// one.
@@ -92,5 +91,5 @@ class TestBase : public ::testing::Test {
     static Rotationf BuildRotation(float x, float y, float z, float deg);
 
     /// Fixes a string by removing line feeds. Needed for Windows.
-    static std::string FixString(const std::string &s);
+    static Str FixString(const Str &s);
 };

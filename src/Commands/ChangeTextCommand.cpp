@@ -12,7 +12,7 @@ void ChangeTextCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ChangeTextCommand::IsValid(std::string &details) {
+bool ChangeTextCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (new_font_name_.WasSet() && ! IsValidFontName(new_font_name_)) {
@@ -26,16 +26,16 @@ bool ChangeTextCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ChangeTextCommand::GetDescription() const {
+Str ChangeTextCommand::GetDescription() const {
     return "Changed the text or options in " + GetModelsDesc(GetModelNames());
 }
 
-void ChangeTextCommand::SetNewTextString(const std::string &new_text) {
+void ChangeTextCommand::SetNewTextString(const Str &new_text) {
     ASSERT(! new_text.empty());
     new_text_string_ = new_text;
 }
 
-void ChangeTextCommand::SetNewFontName(const std::string &name) {
+void ChangeTextCommand::SetNewFontName(const Str &name) {
     ASSERT(IsValidFontName(name));
     new_font_name_ = name;
 }

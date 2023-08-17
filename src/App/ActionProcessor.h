@@ -75,7 +75,7 @@ class ActionProcessor : public ActionAgent {
 
     /// Returns the tooltip string for an action. If for_help is true, the
     /// string will be a generic description for a help display.
-    std::string GetActionTooltip(Action action, bool for_help = false);
+    Str GetActionTooltip(Action action, bool for_help = false);
 
     /// Returns true if the given Action can be applied.
     virtual bool CanApplyAction(Action action) const override;

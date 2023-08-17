@@ -32,7 +32,7 @@ class Parser::Impl_ {
 
     /// Parses the contents of the given string, returning the root Object in
     /// the parse graph.
-    ObjectPtr ParseFromString(const std::string &str);
+    ObjectPtr ParseFromString(const Str &str);
 
     /// Returns a vector of all path dependencies created by included files
     /// found during parsing.
@@ -45,10 +45,10 @@ class Parser::Impl_ {
 
   private:
     /// Convenience typedef for a map storing constants (name -> value).
-    typedef std::unordered_map<std::string, std::string> ConstantsMap_;
+    typedef std::unordered_map<Str, Str> ConstantsMap_;
 
     /// Convenience typedef for a map storing objects keyed by some name.
-    typedef std::unordered_map<std::string, ObjectPtr> ObjectMap_;
+    typedef std::unordered_map<Str, ObjectPtr> ObjectMap_;
 
     /// This struct is stored in the object_stack_. It maintains a pointer to
     /// the Object and everything scoped by it:
@@ -101,7 +101,7 @@ class Parser::Impl_ {
     /// Parses and returns the contents of an Object. The type name is
     /// supplied. If obj_to_clone is not null, the new object should be cloned
     /// from it instead of being created from scratch.
-    ObjectPtr ParseObjectContents_(const std::string &type_name,
+    ObjectPtr ParseObjectContents_(const Str &type_name,
                                    ObjectPtr obj_to_clone, bool is_template);
 
     /// Parses a collection of Object instances (in square brackets, separated
@@ -128,30 +128,30 @@ class Parser::Impl_ {
     /// Looks through all active scopes for an Object with the given name.
     /// If can_be_template is true, Templates are searched as well.
     /// Returns null if not found.
-    ObjectPtr FindObject_(const std::string &name, bool can_be_template);
+    ObjectPtr FindObject_(const Str &name, bool can_be_template);
 
     /// Parses the fields of the given Object, storing values in the instance.
     void ParseFields_(Object &obj);
 
     /// Function used by Scanner to get the value string to substitute for a
     /// constant with the given name.
-    std::string SubstituteConstant_(const std::string &name) const;
+    Str SubstituteConstant_(const Str &name) const;
 
     /// Throws an exception using the Scanner.
-    void Throw_(const std::string &msg) const;
+    void Throw_(const Str &msg) const;
 
     /// Builds a name key for an object from its type name and name.
-    static std::string BuildObjectNameKey_(const std::string &obj_type_name,
-                                           const std::string &obj_name) {
+    static Str BuildObjectNameKey_(const Str &obj_type_name,
+                                   const Str &obj_name) {
         return obj_type_name + '/' + obj_name;
     }
 
     /// Returns a string describing the current ObjectScope_ for error
     /// messages.
-    std::string GetScopeDesc_() const;
+    Str GetScopeDesc_() const;
 
     /// Returns a string representing the current ObjectScope_ stack.
-    std::string GetScopeStackString_() const;
+    Str GetScopeStackString_() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -160,7 +160,7 @@ class Parser::Impl_ {
 
 Parser::Impl_::Impl_() :
     base_path_(FilePath::GetResourceBasePath()),
-    scanner_(new Scanner([&](const std::string &s){
+    scanner_(new Scanner([&](const Str &s){
         return SubstituteConstant_(s); })) {
     scanner_->SetObjectFunction([&](){ return ParseObject_(false); });
     scanner_->SetObjectListFunction([&](){ return ParseObjectList_(false); });
@@ -174,7 +174,7 @@ ObjectPtr Parser::Impl_::ParseFile(const FilePath &path) {
     return ParseFromFile_(path, false);
 }
 
-ObjectPtr Parser::Impl_::ParseFromString(const std::string &str) {
+ObjectPtr Parser::Impl_::ParseFromString(const Str &str) {
     scanner_->Clear();
     scanner_->PushStringInput(str);
     ObjectPtr obj = ParseObject_(false);
@@ -206,7 +206,7 @@ ObjectPtr Parser::Impl_::ParseObject_(bool is_template) {
     if (scanner_->PeekChar() == '<')
         return ParseIncludedFile_(is_template);
 
-    std::string type_name = scanner_->ScanName("object type");
+    Str type_name = scanner_->ScanName("object type");
 
     // Special handling for USE and CLONE keywords.
     ObjectPtr obj;
@@ -222,7 +222,7 @@ ObjectPtr Parser::Impl_::ParseObject_(bool is_template) {
 ObjectPtr Parser::Impl_::ParseUse_() {
     // Syntax is:   USE "name"
     //    name must refer to an Object in scope.
-    const std::string name = scanner_->ScanQuotedString();
+    const Str name = scanner_->ScanQuotedString();
     if (name.empty())
         Throw_("Missing Object name for USE in " + GetScopeDesc_());
     ObjectPtr obj = FindObject_(name, false);
@@ -235,7 +235,7 @@ ObjectPtr Parser::Impl_::ParseUse_() {
 ObjectPtr Parser::Impl_::ParseClone_(bool is_template) {
     // Syntax is:   CLONE "name"
     //    name must refer to a Template or Object in scope.
-    const std::string name = scanner_->ScanQuotedString();
+    const Str name = scanner_->ScanQuotedString();
     if (name.empty())
         Throw_("Missing Template or Object name for CLONE in " +
                GetScopeDesc_());
@@ -248,11 +248,11 @@ ObjectPtr Parser::Impl_::ParseClone_(bool is_template) {
     return obj;
 }
 
-ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
+ObjectPtr Parser::Impl_::ParseObjectContents_(const Str &type_name,
                                               ObjectPtr obj_to_clone,
                                               bool is_template) {
     // If the next character is a quotation mark, parse the name.
-    std::string obj_name;
+    Str obj_name;
     if (scanner_->PeekChar() == '"')
         obj_name = scanner_->ScanQuotedString();
 
@@ -287,7 +287,7 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
 
     // Let the derived class check for errors. Do not validate Templates.
     if (! is_template) {
-        std::string details;
+        Str details;
         if (! obj->IsValid(details))
             Throw_(obj->GetDesc() + " has error: " + details);
     }
@@ -330,7 +330,7 @@ ObjectListPtr Parser::Impl_::ParseObjectList_(bool are_templates) {
 
 ObjectPtr Parser::Impl_::ParseIncludedFile_(bool is_template) {
     scanner_->ScanExpectedChar('<');
-    std::string path = scanner_->ScanQuotedString();
+    Str path = scanner_->ScanQuotedString();
     scanner_->ScanExpectedChar('>');
     if (path.empty())
         Throw_("Invalid empty path for included file");
@@ -345,8 +345,7 @@ ObjectPtr Parser::Impl_::ParseIncludedFile_(bool is_template) {
     return ParseFromFile_(fp, is_template);
 }
 
-ObjectPtr Parser::Impl_::FindObject_(const std::string &name,
-                                     bool can_be_template) {
+ObjectPtr Parser::Impl_::FindObject_(const Str &name, bool can_be_template) {
     // Look in all open scopes, starting at the top of the stack (reverse
     // iteration).
     for (auto it = std::rbegin(scope_stack_);
@@ -377,7 +376,7 @@ void Parser::Impl_::ParseFields_(Object &obj) {
     bool any_real_field_parsed = false;
 
     while (true) {
-        std::string field_name = scanner_->ScanName("field name");
+        Str field_name = scanner_->ScanName("field name");
         scanner_->ScanExpectedChar(':');
 
         // Special cases.
@@ -416,7 +415,7 @@ void Parser::Impl_::ParseFields_(Object &obj) {
         }
         // If there was no comma, there must be a closing brace.
         else if (c != '}') {
-            Throw_(std::string("Expected ',' or '}', got '") + c + "'");
+            Throw_(Str("Expected ',' or '}', got '") + c + "'");
         }
 
         // If the next character is a closing brace, stop.
@@ -452,9 +451,9 @@ void Parser::Impl_::ParseConstants_() {
             break;
 
         // Parse   name: "string value"
-        std::string name = scanner_->ScanName("constant name");
+        Str name = scanner_->ScanName("constant name");
         scanner_->ScanExpectedChar(':');
-        std::string value = scanner_->ScanQuotedString();
+        Str value = scanner_->ScanQuotedString();
 
         scope.constants_map[name] = value;
 
@@ -478,7 +477,7 @@ void Parser::Impl_::ParseTemplates_() {
         scope.templates_map[obj->GetName()] = obj;
 }
 
-std::string Parser::Impl_::SubstituteConstant_(const std::string &name) const {
+Str Parser::Impl_::SubstituteConstant_(const Str &name) const {
     // Look up the Constant in all active scopes, starting at the top (reverse
     // iteration).
     for (auto it = std::rbegin(scope_stack_);
@@ -493,23 +492,23 @@ std::string Parser::Impl_::SubstituteConstant_(const std::string &name) const {
     return "";  // LCOV_EXCL_LINE
 }
 
-void Parser::Impl_::Throw_(const std::string &msg) const {
+void Parser::Impl_::Throw_(const Str &msg) const {
     scanner_->Throw(msg);
 }
 
-std::string Parser::Impl_::GetScopeDesc_() const {
+Str Parser::Impl_::GetScopeDesc_() const {
     if (scope_stack_.empty())
         return "Top-level scope";
     else
         return "Scope " + GetScopeStackString_();
 }
 
-std::string Parser::Impl_::GetScopeStackString_() const {
-    std::string s;
+Str Parser::Impl_::GetScopeStackString_() const {
+    Str s;
     for (const auto &scope: scope_stack_) {
         if (! s.empty())
             s += "/";
-        const std::string n = scope.object->GetName();
+        const Str n = scope.object->GetName();
         s += n.empty() ? "*" : n;
     }
     return s;
@@ -533,7 +532,7 @@ ObjectPtr Parser::ParseFile(const FilePath &path) {
     return impl_->ParseFile(path);
 }
 
-ObjectPtr Parser::ParseFromString(const std::string &str) {
+ObjectPtr Parser::ParseFromString(const Str &str) {
     return impl_->ParseFromString(str);
 }
 

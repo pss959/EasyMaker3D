@@ -38,8 +38,7 @@ class CommandManager {
     CommandManager();
 
     /// Registers a function to invoke to execute the named type of command.
-    void RegisterFunction(const std::string &type_name,
-                          const CommandFunc &func);
+    void RegisterFunction(const Str &type_name, const CommandFunc &func);
 
     /// This is used when reading Commands from a file. It executes all
     /// Commands in the given CommandList adter resetting all state.
@@ -101,7 +100,7 @@ class CommandManager {
 
   private:
     /// Registry mapping Command type name to CommandFunc to execute.
-    std::unordered_map<std::string, CommandFunc> command_registry_;
+    std::unordered_map<Str, CommandFunc> command_registry_;
 
     /// Pre-Do function to invoke.
     AuxFunc pre_do_func_;

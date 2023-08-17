@@ -17,8 +17,8 @@ bool Event::IsTrackpadButton(Button button) {
         button == Event::Button::kDown;
 }
 
-std::string Event::GetKeyString() const {
-    std::string s;
+Str Event::GetKeyString() const {
+    Str s;
     if (device == Device::kKeyboard &&
         (flags.Has(Event::Flag::kKeyPress) ||
          flags.Has(Event::Flag::kKeyRelease))) {
@@ -27,9 +27,8 @@ std::string Event::GetKeyString() const {
     return s;
 }
 
-bool Event::ParseKeyString(const std::string &key_string,
-                           Modifiers &modifiers, std::string &key_name,
-                           std::string &error) {
+bool Event::ParseKeyString(const Str &key_string, Modifiers &modifiers,
+                           Str &key_name, Str &error) {
     using ion::base::CompareCaseInsensitive;
     using ion::base::SplitString;
 
@@ -38,11 +37,11 @@ bool Event::ParseKeyString(const std::string &key_string,
     error.clear();
 
     // Split the string into parts by "-".
-    const std::vector<std::string> parts = SplitString(key_string, "-");
+    const StrVec parts = SplitString(key_string, "-");
 
     // All but the last part should be a valid modifier.
     for (size_t i = 0; i + 1 < parts.size(); ++i) {
-        const std::string &mod = parts[i];
+        const Str &mod = parts[i];
         if      (CompareCaseInsensitive(mod, "shift") == 0)
             modifiers.Set(Event::ModifierKey::kShift);
         else if (CompareCaseInsensitive(mod, "ctrl") == 0)
@@ -70,9 +69,8 @@ bool Event::ParseKeyString(const std::string &key_string,
     return true;
 }
 
-std::string Event::BuildKeyText(const Modifiers &modifiers,
-                                const std::string &key_name) {
-    std::string text;
+Str Event::BuildKeyText(const Modifiers &modifiers, const Str &key_name) {
+    Str text;
 
     // Control and Alt cannot be present for regular text, and the key must
     // have a known name,
@@ -126,9 +124,8 @@ std::string Event::BuildKeyText(const Modifiers &modifiers,
     return text;
 }
 
-std::string Event::BuildKeyString(const Modifiers &modifiers,
-                                  const std::string &key_name) {
-    std::string s;
+Str Event::BuildKeyString(const Modifiers &modifiers, const Str &key_name) {
+    Str s;
     if (modifiers.Has(ModifierKey::kShift))
         s+= "Shift-";
     if (modifiers.Has(ModifierKey::kControl))
@@ -139,8 +136,8 @@ std::string Event::BuildKeyString(const Modifiers &modifiers,
     return s;
 }
 
-std::string Event::GetControllerButtonString() const {
-    std::string s;
+Str Event::GetControllerButtonString() const {
+    Str s;
     if ((device == Device::kLeftController ||
          device == Device::kRightController) &&
         (flags.Has(Event::Flag::kButtonPress) ||
@@ -152,8 +149,8 @@ std::string Event::GetControllerButtonString() const {
 }
 
 // LCOV_EXCL_START
-std::string Event::ToString() const {
-    std::string s = "=== Event [" + Util::ToString(serial, 5) +
+Str Event::ToString() const {
+    Str s = "=== Event [" + Util::ToString(serial, 5) +
         "] dev=" + Util::EnumName(device) +
         " flags=" + flags.ToString();
 

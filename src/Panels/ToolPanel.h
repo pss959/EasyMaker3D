@@ -35,7 +35,7 @@ class ToolPanel : public Panel {
 
     /// Returns a Notifier that is invoked when interaction occurs in the
     /// ToolPanel.
-    Util::Notifier<const std::string &, InteractionType> & GetInteraction() {
+    Util::Notifier<const Str &, InteractionType> & GetInteraction() {
         return interaction_;
     }
 
@@ -48,7 +48,7 @@ class ToolPanel : public Panel {
 
     /// Derived classes should call this when interaction occurs within the
     /// ToolPanel.
-    void ReportChange(const std::string &key, InteractionType type);
+    void ReportChange(const Str &key, InteractionType type);
 
     /// Redefines this to return false so the stage can be resized even when a
     /// ToolPanel is active.
@@ -56,10 +56,10 @@ class ToolPanel : public Panel {
 
     /// Overrides this to do nothing if IsCloseable() returns false; most
     /// derived ToolPanel classes should never be closed directly.
-    virtual void Close(const std::string &result) override;
+    virtual void Close(const Str &result) override;
 
   private:
-    Util::Notifier<const std::string &, InteractionType> interaction_;
+    Util::Notifier<const Str &, InteractionType> interaction_;
 
     friend class Parser::Registry;
 };

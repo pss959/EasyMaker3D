@@ -131,13 +131,13 @@ void Widget::ChangeHoverState_(bool hover) {
 }
 
 Color Widget::GetColor_(const Parser::TField<Color> &field,
-                        const std::string &name) const {
+                        const Str &name) const {
     return field.WasSet() ? field :
         SG::ColorMap::SGetColor(color_name_prefix_ + name);
 }
 
 void Widget::ActivateTooltip_(bool is_active) {
-    const std::string text = tooltip_text_;
+    const Str text = tooltip_text_;
 
     // Nothing to do if there is no tooltip string or tooltip function.
     if (tooltip_func_ && ! text.empty())

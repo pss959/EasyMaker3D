@@ -34,7 +34,7 @@ template <typename... ARGS> class Notifier {
 
     /// Adds an observer function to invoke. This asserts if the key is already
     /// in use.
-    void AddObserver(const std::string &key, const ObserverFunc &func) {
+    void AddObserver(const Str &key, const ObserverFunc &func) {
         ASSERTM(FindObserverIndex_(key) == -1, "Duplicate Observer key " + key);
         ObserverData_ data;
         data.key        = key;
@@ -45,7 +45,7 @@ template <typename... ARGS> class Notifier {
 
     /// Removes the observer function with the given key. Asserts if it is not
     /// found.
-    void RemoveObserver(const std::string &key) {
+    void RemoveObserver(const Str &key) {
         const int index = FindObserverIndex_(key);
         ASSERTM(index >= 0, "No Observer with key " + key);
         observers_.erase(observers_.begin() + index);
@@ -54,21 +54,21 @@ template <typename... ARGS> class Notifier {
     /// Enables or disables the observer with the given key. A disabled
     /// observer will not be notified of changes. Observers are enabled by
     /// default.
-    void EnableObserver(const std::string &key, bool is_enabled) {
+    void EnableObserver(const Str &key, bool is_enabled) {
         const int index = FindObserverIndex_(key);
         ASSERTM(index >= 0, "No Observer with key " + key);
         observers_[index].is_enabled = is_enabled;
     }
 
     /// Returns true if the observer with the given key is enabled.
-    bool IsObserverEnabled(const std::string &key) const {
+    bool IsObserverEnabled(const Str &key) const {
         const int index = FindObserverIndex_(key);
         ASSERTM(index >= 0, "No Observer with key " + key);
         return observers_[index].is_enabled;
     }
 
     /// Returns true if there is an observer for the given key.
-    bool HasObserver(const std::string &key) const {
+    bool HasObserver(const Str &key) const {
         return FindObserverIndex_(key) >= 0;
     }
 
@@ -124,7 +124,7 @@ template <typename... ARGS> class Notifier {
   private:
     /// Data stored for each observer.
     struct ObserverData_ {
-        std::string  key;         ///< Key string identifying the observer.
+        Str          key;         ///< Key string identifying the observer.
         ObserverFunc func;        ///< The observer function to invoke.
         bool         is_enabled;  ///< Whether to nofify the observer.
     };
@@ -140,7 +140,7 @@ template <typename... ARGS> class Notifier {
 
     /// Returns the index of the ObserverData_ with the given key, or -1 if it
     /// is not found.
-    int FindObserverIndex_(const std::string &key) const {
+    int FindObserverIndex_(const Str &key) const {
         auto it = std::find_if(
             observers_.begin(), observers_.end(),
             [key](const ObserverData_ &data){ return data.key == key; });

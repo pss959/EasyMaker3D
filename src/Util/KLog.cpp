@@ -6,16 +6,16 @@ class DummyStream_ : public std::ostream {};
 
 static DummyStream_ s_dummy_stream_;
 
-std::string KLogger::key_string_;
-size_t      KLogger::render_count_ = 0;
+Str    KLogger::key_string_;
+size_t KLogger::render_count_ = 0;
 
 bool KLogger::HasKeyCharacter(char key) {
-    return key_string_.find_first_of(key) != std::string::npos;
+    return key_string_.contains(key);
 }
 
 void KLogger::ToggleLogging() {
     auto pos = key_string_.find_first_of('!');
-    if (pos != std::string::npos)
+    if (pos != Str::npos)
         key_string_.erase(pos, 1);
     else
         key_string_ += '!';

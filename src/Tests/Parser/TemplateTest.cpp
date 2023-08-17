@@ -4,7 +4,7 @@
 class TemplateTest : public ParserTestBase {};
 
 TEST_F(TemplateTest, Templates) {
-    const std::string input =
+    const Str input =
         "Derived {\n"
         "  TEMPLATES: [\n"
         "    Simple \"T_1\" {\n"
@@ -45,7 +45,7 @@ TEST_F(TemplateTest, Templates) {
     EXPECT_TRUE(inst1->IsClone());
     EXPECT_TRUE(inst2->IsClone());
 
-    const std::string bad_input =
+    const Str bad_input =
         "Derived {\n"
         "  int_val: 12,\n"
         "  TEMPLATES: [ Simple \"TempName\" {} ],\n"

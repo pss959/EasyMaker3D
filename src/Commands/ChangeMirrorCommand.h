@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ChangeMirrorCommand);
 /// \ingroup Commands
 class ChangeMirrorCommand : public ChangePlaneCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ChangeMirrorCommand() {}

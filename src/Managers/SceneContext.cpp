@@ -28,13 +28,12 @@ namespace {
 
 /// Shorthand.
 template <typename T>
-static std::shared_ptr<T> FindTyped_(const SG::Scene &scene,
-                                     const std::string &name) {
+static std::shared_ptr<T> FindTyped_(const SG::Scene &scene, const Str &name) {
     return SG::FindTypedNodeInScene<T>(scene, name);
 }
 
 /// Shorthand.
-static SG::NodePtr FindNamed_(const SG::Scene &scene, const std::string &name) {
+static SG::NodePtr FindNamed_(const SG::Scene &scene, const Str &name) {
     return SG::FindNodeInScene(scene, name);
 }
 

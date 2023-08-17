@@ -11,7 +11,7 @@
 class CoordConvTest : public TestBaseWithTypes {
   public:
     /// Creates and returns a named Node to add to a NodePath.
-    SG::NodePtr CreateNode(const std::string &name) {
+    SG::NodePtr CreateNode(const Str &name) {
         return CreateObject<SG::Node>(name);
     }
 

@@ -16,6 +16,12 @@ void PasteExecutor::Execute(Command &command, Command::Op operation) {
         std::dynamic_pointer_cast<ParentModel>(data.path_to_parent.GetModel());
     ASSERT(parent);
 
+
+    // Tell the PasteCommand about the models so it can have an accurate
+    // description string.
+    PasteCommand &pc = GetTypedCommand<PasteCommand>(command);
+    pc.SetModelsForDescription(data.models);
+
     Selection sel;
     if (operation == Command::Op::kDo) {
         for (auto &model: data.models) {
@@ -74,8 +80,7 @@ void PasteExecutor::SetUpPastedModel_(Model &model) {
 
     // Assign a unique name. Pass true for is_user_edit so that the unique name
     // is always used.
-    const std::string new_name =
-        context.name_manager->CreateClone(model.GetBaseName());
+    const Str new_name = context.name_manager->CreateClone(model.GetBaseName());
     model.ChangeModelName(new_name, true);
     context.name_manager->Add(new_name);
 

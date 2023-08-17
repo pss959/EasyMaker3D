@@ -13,7 +13,7 @@ void ExtrudedModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
-bool ExtrudedModel::IsValid(std::string &details) {
+bool ExtrudedModel::IsValid(Str &details) {
     if (! PrimitiveModel::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
 

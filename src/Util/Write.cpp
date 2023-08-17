@@ -11,7 +11,7 @@
 
 namespace Util {
 
-bool WriteString(const FilePath &path, const std::string &s) {
+bool WriteString(const FilePath &path, const Str &s) {
     std::ofstream out(path.ToNativeString());
     if (! out)
         return false;

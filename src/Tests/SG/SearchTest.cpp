@@ -25,7 +25,7 @@ TEST_F(SearchTest, EmptyScene) {
 }
 
 TEST_F(SearchTest, OneLevel) {
-    const std::string input = "Scene {}";
+    const Str input = "Scene {}";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
     EXPECT_NULL(scene->GetRootNode());
@@ -59,7 +59,7 @@ TEST_F(SearchTest, TwoLevel) {
 }
 
 TEST_F(SearchTest, MultiLevel) {
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node "Level1a" {
       children: [
@@ -142,7 +142,7 @@ TEST_F(SearchTest, MultiLevel) {
 }
 
 TEST_F(SearchTest, FindNodes) {
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node "FindMe0" {}
     Node "FindMe1" {
@@ -211,7 +211,7 @@ TEST_F(SearchTest, FindNodes) {
 }
 
 TEST_F(SearchTest, FindShape) {
-    const std::string contents = R"(
+    const Str contents = R"(
   children: [
     Node "N" {
       shapes: [

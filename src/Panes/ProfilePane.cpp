@@ -358,7 +358,7 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
             const size_t index = i + (is_fixed ? 1 : 0);
 
             // No need for a deep clone for these.
-            const std::string name = "MovablePoint_" + Util::ToString(index);
+            const Str name = "MovablePoint_" + Util::ToString(index);
             auto slider =
                 movable_slider_->CloneTyped<Slider2DWidget>(false, name);
             slider->SetScale(start_point_->GetScale());

@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ChangeTorusCommand);
 /// \ingroup Commands
 class ChangeTorusCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets a flag indicating which radius is being changed. The default is
     /// true.
@@ -33,7 +33,7 @@ class ChangeTorusCommand : public MultiModelCommand {
     ChangeTorusCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields

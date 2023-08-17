@@ -112,8 +112,8 @@ class  Application::Impl_ {
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
 
-    void SaveCrashSession(const FilePath &path, const std::string &message,
-                          const std::vector<std::string> &stack);
+    void SaveCrashSession(const FilePath &path, const Str &message,
+                          const StrVec &stack);
 
     void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
 
@@ -420,8 +420,8 @@ bool Application::Impl_::Init(const Application::Options &options) {
     tool_context_.reset(new Tool::Context);
 
     // Set up the tooltip function for use in all Widgets and Models.
-    tooltip_func_ = [&](Widget &widget, const std::string &text, bool show){
-        const std::string key = Util::ToString(&widget);
+    tooltip_func_ = [&](Widget &widget, const Str &text, bool show){
+        const Str key = Util::ToString(&widget);
         if (show) {
             auto tf = MGR_(feedback)->ActivateWithKey<TooltipFeedback>(key);
             tf->SetText(text);
@@ -454,13 +454,13 @@ bool Application::Impl_::Init(const Application::Options &options) {
     // Try to read shortcuts from a "shortcuts.txt" file in the current
     // directory. Quit on error after showing an error message.
     const FilePath path("shortcuts.txt");
-    std::string errors;
+    Str errors;
     if (! shortcut_handler_->AddCustomShortcutsFromFile(path, errors)) {
         auto dp = MGR_(board)->GetTypedPanel<DialogPanel>("DialogPanel");
         dp->SetMessage("Error in custom shortcut file:\n" + errors);
         dp->SetSingleResponse("OK");
         auto board = SC_->app_board;
-        board->SetPanel(dp, [&](const std::string &){ TryQuit_(); });
+        board->SetPanel(dp, [&](const Str &){ TryQuit_(); });
         MGR_(board)->ShowBoard(board, true);
         return true;  // Continue so that the user sees the message.
     }
@@ -576,10 +576,10 @@ void Application::Impl_::ReloadScene() {
     }
 }
 
-void Application::Impl_::SaveCrashSession(
-    const FilePath &path, const std::string &message,
-    const std::vector<std::string> &stack) {
-    std::vector<std::string> comments;
+void Application::Impl_::SaveCrashSession(const FilePath &path,
+                                          const Str &message,
+                                          const StrVec &stack) {
+    StrVec comments;
     comments.reserve(stack.size() + 2);
     comments.push_back(message);
     comments.push_back("---- Stack Trace:");
@@ -1228,7 +1228,7 @@ void Application::Impl_::UpdateIcons_() {
     // Special case for the ToggleSpecializedToolIcon.
     const auto &sel = MGR_(selection)->GetSelection();
     const auto tool = tool_box_->GetSpecializedToolForSelection(sel);
-    const std::string tool_name = tool ? tool->GetTypeName() : "Null";
+    const Str tool_name = tool ? tool->GetTypeName() : "Null";
     toggle_specialized_tool_icon_->SetIndexByName(tool_name + "Icon");
     toggle_specialized_tool_icon_->SetToggleState(
         tool_box_->IsUsingSpecializedTool());
@@ -1270,7 +1270,7 @@ void Application::Impl_::TryQuit_() {
     run_state_ = RunState_::kQuitRequested;
 
     // Open a DialogPanel to verify that the user wants to quit.
-    auto func = [&](const std::string &s){
+    auto func = [&](const Str &s){
         run_state_ = s == "Yes" ? RunState_::kQuitting : RunState_::kRunning;
     };
     auto dp = MGR_(board)->GetTypedPanel<DialogPanel>("DialogPanel");
@@ -1522,9 +1522,8 @@ bool Application::IsVREnabled() const {
     return impl_->IsVREnabled();
 }
 
-void Application::SaveCrashSession(const FilePath &path,
-                                   const std::string &message,
-                                   const std::vector<std::string> &stack) {
+void Application::SaveCrashSession(const FilePath &path, const Str &message,
+                                   const StrVec &stack) {
     impl_->SaveCrashSession(path, message, stack);
 }
 

@@ -208,7 +208,7 @@ Bounds Node::GetScaledBounds() const {
     return ScaleBounds(GetBounds(), GetScale());
 }
 
-UniformBlock & Node::GetUniformBlockForPass(const std::string &pass_name) {
+UniformBlock & Node::GetUniformBlockForPass(const Str &pass_name) {
     const UniformBlockPtr block = FindUniformBlockForPass_(pass_name);
     return block ? *block : *AddUniformBlock_(pass_name);
 }
@@ -271,7 +271,7 @@ ion::gfx::NodePtr Node::SetUpIon(
     return ion_node_;
 }
 
-void Node::UpdateForRenderPass(const std::string &pass_name) {
+void Node::UpdateForRenderPass(const Str &pass_name) {
     ASSERTM(ion_node_, GetDesc() + " not set up for rendering");
 
     // Each of these updates if necessary.
@@ -412,7 +412,7 @@ void Node::UpdateMatrices_() const {
 }
 
 UniformBlockPtr Node::FindUniformBlockForPass_(
-    const std::string &pass_name) const {
+    const Str &pass_name) const {
     for (auto &block: GetUniformBlocks()) {
         if (block->GetPassName() == pass_name)
             return block;
@@ -420,7 +420,7 @@ UniformBlockPtr Node::FindUniformBlockForPass_(
     return UniformBlockPtr();
 }
 
-UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
+UniformBlockPtr Node::AddUniformBlock_(const Str &pass_name) {
     // Restrict the UniformBlock to the named pass.
     UniformBlockPtr block = Parser::Registry::CreateObject<UniformBlock>();
     block->SetPassName(pass_name);

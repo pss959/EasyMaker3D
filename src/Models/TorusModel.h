@@ -51,7 +51,7 @@ class TorusModel : public PrimitiveModel {
   protected:
     TorusModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual TriMesh BuildMesh() override;
 
   private:

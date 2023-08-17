@@ -22,8 +22,7 @@ namespace Util {
 ///
 /// anywhere in the file with the contents of reading that file, which is
 /// relative to the containing file's path.
-bool ReadFile(const FilePath &path, std::string &s,
-              bool allow_includes = false);
+bool ReadFile(const FilePath &path, Str &s, bool allow_includes = false);
 
 /// Reads the contents of an image file with the given path and returns an Ion
 /// Image representing it. Returns a null pointer if the file could not be

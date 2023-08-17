@@ -10,7 +10,7 @@
 /// \ingroup Executors
 class ChangeOrderExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ChangeOrderCommand";
     }
 

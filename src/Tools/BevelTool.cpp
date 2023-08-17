@@ -15,8 +15,7 @@ void BevelTool::InitPanel() {
     GetTypedPanel<BevelToolPanel>().SetBevel(model->GetBevel());
 }
 
-void BevelTool::PanelChanged(const std::string &key,
-                             ToolPanel::InteractionType type) {
+void BevelTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
     PanelTool::PanelChanged(key, type);
 
     BevelToolPanel &panel = GetTypedPanel<BevelToolPanel>();

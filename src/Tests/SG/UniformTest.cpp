@@ -28,7 +28,7 @@ TEST_F(UniformTest, DefaultUniformBlock) {
 }
 
 TEST_F(UniformTest, UniformBlock) {
-    const std::string contents = R"(
+    const Str contents = R"(
   blocks: [
     UniformBlock {
       pass_name: "Lighting",

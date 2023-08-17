@@ -14,7 +14,7 @@ DECL_SHARED_PTR(ChangeBevelCommand);
 /// \ingroup Commands
 class ChangeBevelCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets all the fields from the given Bevel.
     void SetBevel(const Bevel &bevel);
@@ -26,7 +26,7 @@ class ChangeBevelCommand : public MultiModelCommand {
     ChangeBevelCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields

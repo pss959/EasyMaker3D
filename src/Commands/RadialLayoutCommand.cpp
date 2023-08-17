@@ -11,7 +11,7 @@ void RadialLayoutCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-std::string RadialLayoutCommand::GetDescription() const {
+Str RadialLayoutCommand::GetDescription() const {
     return "Radial layout of " + GetModelsDesc(GetModelNames());
 }
 

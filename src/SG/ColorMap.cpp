@@ -27,19 +27,19 @@ void ColorMap::CreationDone() {
     s_instance = this;
 }
 
-Color ColorMap::GetColor(const std::string &name) const {
+Color ColorMap::GetColor(const Str &name) const {
     ASSERTM(map_.contains(name), "Missing color: " + name);
     return map_.at(name);
 }
 
 Color ColorMap::GetColorForDimension(int dim) const {
     ASSERT(dim >= 0 && dim <= 2);
-    std::string name = "DimensionColor";
+    Str name = "DimensionColor";
     name += 'X' + dim;
     return GetColor(name);
 }
 
-Color ColorMap::SGetColor(const std::string &name) {
+Color ColorMap::SGetColor(const Str &name) {
     return s_instance ? s_instance->GetColor(name) : Color::White();
 }
 

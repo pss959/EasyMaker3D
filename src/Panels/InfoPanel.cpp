@@ -23,16 +23,16 @@ namespace {
 /// Each of these converts a value of some type to a printable string.
 ///@{
 
-static std::string ToString_(float f) {
+static Str ToString_(float f) {
     return Math::ToString(f, .01f);
 }
-static std::string ToString_(const Point3f &p) {
+static Str ToString_(const Point3f &p) {
     return Math::ToString(ToPrintCoords(p), .01f);
 }
-static std::string ToString_(const Vector3f &v) {
+static Str ToString_(const Vector3f &v) {
     return Math::ToString(ToPrintCoords(v), .01f);
 }
-static std::string ToString_(const Anglef &a) {
+static Str ToString_(const Anglef &a) {
     return Math::ToString(a.Degrees(), .01f);
 }
 
@@ -86,7 +86,7 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
                  "", "Model \"" + model.GetName() + "\"");
 
     const TriMesh &mesh = model.GetMesh();
-    std::string reason;
+    Str reason;
     if (! model.IsMeshValid(reason))
         AddTextPane_(panes, TextType_::kError, "Invalid mesh", reason);
     AddTextPane_(panes, TextType_::kNormal,
@@ -138,20 +138,19 @@ void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,
 }
 
 void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
-                             const std::string &label,
-                             const std::string &text) {
+                             const Str &label, const Str &text) {
     // Labels use this many characters.
-    std::string sized_label = label;
+    Str sized_label = label;
     if (! sized_label.empty()) {
         sized_label += ":";
         sized_label.append(TK::kInfoPanelLabelWidth - sized_label.size(), ' ');
     }
 
-    const std::string name = "Line" + Util::ToString(panes.size());
+    const Str name = "Line" + Util::ToString(panes.size());
 
-    std::string font_name;
-    Color       color;
-    Vector2f    offset(0, 0);  // Offset in world coords, not Panel coords.
+    Str      font_name;
+    Color    color;
+    Vector2f offset(0, 0);  // Offset in world coords, not Panel coords.
 
     switch (type) {
       case TextType_::kHeader:

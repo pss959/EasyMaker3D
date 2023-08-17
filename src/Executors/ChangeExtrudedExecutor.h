@@ -12,7 +12,7 @@
 /// \ingroup Executors
 class ChangeExtrudedExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ChangeExtrudedCommand";
     }
 

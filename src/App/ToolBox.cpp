@@ -31,7 +31,7 @@ void ToolBox::AddTools(const std::vector<ToolPtr> &tools) {
     };
 
     for (auto &tool: tools) {
-        const std::string &type_name = tool->GetTypeName();
+        const Str &type_name = tool->GetTypeName();
 
         // Special case for the PassiveTool.
         if (PassiveToolPtr pt = std::dynamic_pointer_cast<PassiveTool>(tool)) {
@@ -57,7 +57,7 @@ void ToolBox::AddTools(const std::vector<ToolPtr> &tools) {
     ASSERT(passive_tool_store_->HasOriginal<PassiveTool>());
 }
 
-void ToolBox::SetDefaultGeneralTool(const std::string &name) {
+void ToolBox::SetDefaultGeneralTool(const Str &name) {
     ASSERT(! current_general_tool_);
     auto tool = tool_name_map_.at(name);
     ASSERT(tool);
@@ -92,7 +92,7 @@ void ToolBox::ResetSession() {
     is_using_specialized_tool_ = false;
 }
 
-bool ToolBox::CanUseGeneralTool(const std::string &name, const Selection &sel) {
+bool ToolBox::CanUseGeneralTool(const Str &name, const Selection &sel) {
     // There has to be at least one Model selected and the correct tool has to
     // support attaching to the selection.
     return sel.HasAny() && GetGeneralTool_(name)->CanBeUsedFor(sel);
@@ -111,7 +111,7 @@ ToolPtr ToolBox::GetSpecializedToolForSelection(const Selection &sel) {
     return it != specialized_tools_.end() ? *it : ToolPtr();
 }
 
-void ToolBox::UseGeneralTool(const std::string &name, const Selection &sel) {
+void ToolBox::UseGeneralTool(const Str &name, const Selection &sel) {
     UseTool_(GetGeneralTool_(name), sel);
 }
 
@@ -218,7 +218,7 @@ void ToolBox::UpdateGripInfo(GripInfo &info) {
         tool->UpdateGripInfo(info);
 }
 
-ToolPtr ToolBox::GetGeneralTool_(const std::string &name) const {
+ToolPtr ToolBox::GetGeneralTool_(const Str &name) const {
     ASSERT(tool_name_map_.contains(name));
     auto tool = tool_name_map_.at(name);
     ASSERT(tool);

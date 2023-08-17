@@ -64,7 +64,7 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
             operand_models.push_back(data->paths_to_models.back().GetModel());
         }
 
-        std::string name = cc.GetResultName();
+        Str name = cc.GetResultName();
         const auto &result = CreateCombinedModel(command, name);
         result->SetOperandModels(operand_models);
 

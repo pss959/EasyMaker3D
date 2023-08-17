@@ -22,14 +22,13 @@ namespace Parser { class Registry; }
 class TextToolPanel : public ToolPanel {
   public:
     /// Initializes the text string, font name, and character spacing.
-    void SetValues(const std::string &text, const std::string &font_name,
-                   float char_spacing);
+    void SetValues(const Str &text, const Str &font_name, float char_spacing);
 
     /// Returns the current text string after possible editing.
-    std::string GetTextString() const;
+    Str GetTextString() const;
 
     /// Returns the current font name after possible editing.
-    const std::string & GetFontName() const;
+    const Str & GetFontName() const;
 
     /// Returns the character spacing after possible editing.
     float GetCharSpacing() const;
@@ -48,12 +47,12 @@ class TextToolPanel : public ToolPanel {
     TextPanePtr      message_pane_;
 
     // Original settings to be able to detect changes.
-    std::string initial_text_;
-    std::string initial_font_name_;
-    float       initial_spacing_;
+    Str   initial_text_;
+    Str   initial_font_name_;
+    float initial_spacing_;
 
-    bool ValidateText_(const std::string &text);
-    void ChangeFont_(const std::string &font_name);
+    bool ValidateText_(const Str &text);
+    void ChangeFont_(const Str &font_name);
     void ChangeSpacing_(float spacing);
     void UpdateButton_();
 

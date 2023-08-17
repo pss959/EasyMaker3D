@@ -20,7 +20,7 @@ int main() {
     RegisterTypes();
 
     // Get the names of all types and sort them.
-    std::vector<std::string> names = Parser::Registry::GetAllTypeNames();
+    StrVec names = Parser::Registry::GetAllTypeNames();
     std::sort(names.begin(), names.end());
 
     for (auto &name: names) {
@@ -30,7 +30,7 @@ int main() {
         ASSERT(obj);
         const auto &fields = obj->GetFields();
 
-        std::vector<std::string> field_names;
+        StrVec field_names;
         for (const auto &field: fields)
             field_names.push_back(field->GetName());
         std::sort(field_names.begin(), field_names.end());

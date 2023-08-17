@@ -53,34 +53,31 @@ class CrashHandler_ {
 
 #if ! RELEASE_BUILD
     void HandleAssertion(const AssertException &ex) {
-        HandleCrash_(std::string("Caught assertion:\n") + ex.what(),
+        HandleCrash_(Str("Caught assertion:\n") + ex.what(),
                      ex.GetStackTrace());
     }
 #endif
 
     void HandleException(const std::exception &ex) {
-        StackTrace_ stack;
+        StrVec stack;
         if (const ExceptionBase *exb = dynamic_cast<const ExceptionBase *>(&ex))
             stack = exb->GetStackTrace();
 
-        HandleCrash_(std::string("Caught exception:\n") + ex.what(), stack);
+        HandleCrash_(Str("Caught exception:\n") + ex.what(), stack);
     }
 
   private:
-    typedef std::vector<std::string> StackTrace_;  ///< Shorthand.
-
     Application &app_;
 
     /// Handles a crash of any type - the cause and stack trace (if available)
     /// are passed in.
-    void HandleCrash_(const std::string &cause, const StackTrace_ &stack);
+    void HandleCrash_(const Str &cause, const StrVec &stack);
 
     /// Returns a path to a file to save the crash data to.
     static FilePath GetCrashFilePath_();
 };
 
-void CrashHandler_::HandleCrash_(const std::string &cause,
-                                 const StackTrace_ &stack) {
+void CrashHandler_::HandleCrash_(const Str &cause, const StrVec &stack) {
 #if ! RELEASE_BUILD
     // Non-release version also prints to stderr.
     std::cerr << "*** " << cause << "\n";
@@ -203,8 +200,8 @@ int main(int argc, const char *argv[]) {
     // This is the main application.
     Util::is_in_main_app = true;
 
-    const std::string usage = Util::ReplaceString(kUsageString, "<NAME>",
-                                                  TK::kApplicationName);
+    const Str usage = Util::ReplaceString(kUsageString, "<NAME>",
+                                          TK::kApplicationName);
     Args args(argc, argv, usage);
 
     Application::Options options;

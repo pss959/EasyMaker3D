@@ -45,13 +45,13 @@ NodePath NodePath::Stitch(const NodePath &p0, const NodePath &p1) {
     return stitched;
 }
 
-std::string NodePath::ToString(bool add_types) const {
+Str NodePath::ToString(bool add_types) const {
     if (empty())
         return "<EMPTY>";
-    std::string s = "<";
+    Str s = "<";
     for (size_t i = 0; i < size(); ++i) {
         const auto &node = *(*this)[i];
-        const std::string &name = node.GetName();
+        const Str &name = node.GetName();
         if (i > 0)
             s += '/';
         if (name.empty())

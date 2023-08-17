@@ -1,6 +1,6 @@
 #include "Commands/ChangeClipCommand.h"
 
-std::string ChangeClipCommand::GetDescription() const {
+Str ChangeClipCommand::GetDescription() const {
     return "Changed the clip plane of " + GetModelsDesc(GetModelNames()) +
         " to " + GetPlane().ToString();
 }

@@ -5,7 +5,7 @@
 std::vector<FeedbackPtr> FindFeedback(const SG::Node &root_node) {
     std::vector<FeedbackPtr> feedback;
 
-    auto add_feedback = [&](const std::string &type_name){
+    auto add_feedback = [&](const Str &type_name){
         feedback.push_back(SG::FindTypedNodeUnderNode<Feedback>(root_node,
                                                                 type_name));
     };

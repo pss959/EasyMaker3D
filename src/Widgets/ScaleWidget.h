@@ -91,7 +91,7 @@ class ScaleWidget : public CompositeWidget {
 
     virtual void AddFields() override;
     virtual void CreationDone() override;
-    virtual void SubWidgetActivated(const std::string &name,
+    virtual void SubWidgetActivated(const Str &name,
                                     bool is_activation) override;
 
   private:

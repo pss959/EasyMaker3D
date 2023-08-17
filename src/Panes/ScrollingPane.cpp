@@ -13,7 +13,7 @@ void ScrollingPane::AddFields() {
     BoxPane::AddFields();
 }
 
-bool ScrollingPane::IsValid(std::string &details) {
+bool ScrollingPane::IsValid(Str &details) {
     if (! ContainerPane::IsValid(details))
         return false;
     if (! contents_.GetValue()) {
@@ -85,7 +85,7 @@ bool ScrollingPane::HandleEvent(const Event &event) {
 
     // Handle up and down keys to scroll.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
+        const Str key_string = event.GetKeyString();
         if (key_string == "Up") {
             ScrollBy(-TK::kScrollingPaneKeyScrollAmount);
             handled = true;

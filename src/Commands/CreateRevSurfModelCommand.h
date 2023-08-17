@@ -14,7 +14,7 @@ DECL_SHARED_PTR(CreateRevSurfModelCommand);
 /// \ingroup Commands
 class CreateRevSurfModelCommand : public CreateModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     CreateRevSurfModelCommand() {}

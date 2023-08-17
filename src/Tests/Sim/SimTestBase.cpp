@@ -8,7 +8,7 @@
 #include "Tests/UnitTestTypeChanger.h"
 #include "Util/FilePath.h"
 
-void SimTestBase::RunScript(const std::string &script_name) {
+void SimTestBase::RunScript(const Str &script_name) {
     // Change the app type temporarily.
     UnitTestTypeChanger uttc(Util::AppType::kSimTest);
 
@@ -19,7 +19,7 @@ void SimTestBase::RunScript(const std::string &script_name) {
     EXPECT_EXIT(RunScriptAndExit_(script_name), testing::ExitedWithCode(0), "");
 }
 
-void SimTestBase::RunScriptAndExit_(const std::string &script_name) {
+void SimTestBase::RunScriptAndExit_(const Str &script_name) {
     // Change the app type temporarily.
     UnitTestTypeChanger uttc(Util::AppType::kSimTest);
 
@@ -36,7 +36,7 @@ void SimTestBase::RunScriptAndExit_(const std::string &script_name) {
     _exit(ok ? 0 : 1);
 }
 
-bool SimTestBase::RunScript_(const std::string &file_name) {
+bool SimTestBase::RunScript_(const Str &file_name) {
     ScriptedApp::Options options;
 
     // Hardwire all options.

@@ -15,7 +15,7 @@ void PointTargetWidget::AddFields() {
     TargetWidgetBase::AddFields();
 }
 
-bool PointTargetWidget::IsValid(std::string &details) {
+bool PointTargetWidget::IsValid(Str &details) {
     if (! TargetWidgetBase::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! target_.GetValue()) {

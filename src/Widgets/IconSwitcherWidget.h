@@ -25,7 +25,7 @@ class IconSwitcherWidget : public IconWidget {
 
     /// Convenience that set the index to that of the child with the given
     /// name. Asserts if it is not found.
-    void SetIndexByName(const std::string &name);
+    void SetIndexByName(const Str &name);
 
     /// Redefines this to also make all child icons a consistent size.
     virtual void FitIntoCube(float size, const Point3f &center) override;

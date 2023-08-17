@@ -35,7 +35,7 @@ class Writer::Impl_ {
         write_addresses_ = write_addresses;
     }
 
-    void WriteComment(const std::string &comment) {
+    void WriteComment(const Str &comment) {
         out_ << "# " << comment << "\n";
     }
 
@@ -77,7 +77,7 @@ class Writer::Impl_ {
     void WriteObjFooter_();
     void WriteObjAddress_(const Object &obj);
 
-    std::string Indent_() {
+    Str Indent_() {
         return Util::Spaces(TK::kParserWriterIndent * cur_depth_);
     }
 };
@@ -180,7 +180,7 @@ void Writer::SetAddressFlag(bool write_addresses) {
     impl_->SetAddressFlag(write_addresses);
 }
 
-void Writer::WriteComment(const std::string &comment) {
+void Writer::WriteComment(const Str &comment) {
     impl_->WriteComment(comment);
 }
 

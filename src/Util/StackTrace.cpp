@@ -23,8 +23,7 @@ namespace Util {
 // ----------------------------------------------------------------------------
 // Windows version.
 // ----------------------------------------------------------------------------
-static std::vector<std::string> GetStackTrace_(size_t count,
-                                               size_t num_to_skip) {
+static StrVec GetStackTrace_(size_t count, size_t num_to_skip) {
     const auto process = GetCurrentProcess();
     const auto thread  = GetCurrentThread();
 
@@ -46,7 +45,7 @@ static std::vector<std::string> GetStackTrace_(size_t count,
     frame.AddrStack.Offset = context.Rsp;
     frame.AddrStack.Mode   = AddrModeFlat;
 
-    std::vector<std::string> lines;
+    StrVec lines;
     lines.reserve(count);
     for (size_t i = num_to_skip; i < count; i++) {
         // This returns false when the end of the stack is reached.
@@ -60,11 +59,11 @@ static std::vector<std::string> GetStackTrace_(size_t count,
         symbol->MaxNameLen   = MAX_SYM_NAME;
 
         DWORD64 displacement = 0;
-        std::string sym_name = "???";
+        Str sym_name = "???";
         if (SymFromAddr(process, frame.AddrPC.Offset, &displacement, symbol)) {
             // Demangle. For some reason, the leading underscore is missing on
             // Windows, so add it in first.
-            sym_name = Util::Demangle(std::string("_") + symbol->Name);
+            sym_name = Util::Demangle(Str("_") + symbol->Name);
         }
         lines.push_back("[" + Util::ToString(i - num_to_skip) + "]: " +
                         sym_name);
@@ -80,8 +79,7 @@ static std::vector<std::string> GetStackTrace_(size_t count,
 // ----------------------------------------------------------------------------
 // Reasonable version.
 // ----------------------------------------------------------------------------
-static std::vector<std::string> GetStackTrace_(size_t count,
-                                               size_t num_to_skip) {
+static StrVec GetStackTrace_(size_t count, size_t num_to_skip) {
     void *array[count];
     size_t size;
 
@@ -90,16 +88,16 @@ static std::vector<std::string> GetStackTrace_(size_t count,
 
     char **syms = backtrace_symbols(array, size);
 
-    std::vector<std::string> lines;
+    StrVec lines;
     for (size_t i = num_to_skip; i < size; ++i) {
         // The symbol from backtrace_symbols() is of this form:
         //   object(name+offset) [address]
         // Demangle the name part.
-        std::string sym = syms[i];
-        std::string::size_type open  = sym.find('(');
-        std::string::size_type plus  = sym.find('+', open);
-        if (open != std::string::npos && plus != std::string::npos) {
-            const std::string name = sym.substr(open + 1, plus - open - 1);
+        Str sym = syms[i];
+        Str::size_type open  = sym.find('(');
+        Str::size_type plus  = sym.find('+', open);
+        if (open != Str::npos && plus != Str::npos) {
+            const Str name = sym.substr(open + 1, plus - open - 1);
             sym = Util::ReplaceString(sym, name, Util::Demangle(name));
         }
         lines.push_back("[" + Util::ToString(i - num_to_skip) + "]: " + sym);
@@ -109,7 +107,7 @@ static std::vector<std::string> GetStackTrace_(size_t count,
 
 #endif
 
-std::vector<std::string> GetStackTrace(size_t count) {
+StrVec GetStackTrace(size_t count) {
     // Skip GetStackTrace() and GetStackTrace_() at the top of the stack.
     return GetStackTrace_(count, 2);
 }

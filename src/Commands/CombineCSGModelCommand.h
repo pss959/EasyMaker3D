@@ -14,7 +14,7 @@ DECL_SHARED_PTR(CombineCSGModelCommand);
 /// \ingroup Commands
 class CombineCSGModelCommand : public CombineCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the CSG operation.
     void SetOperation(CSGOperation operation) { operation_ = operation; }
@@ -26,7 +26,7 @@ class CombineCSGModelCommand : public CombineCommand {
     CombineCSGModelCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields

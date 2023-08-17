@@ -13,7 +13,7 @@ void CreateModelCommand::AddFields() {
     Command::AddFields();
 }
 
-bool CreateModelCommand::IsValid(std::string &details) {
+bool CreateModelCommand::IsValid(Str &details) {
     if (! Command::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! Model::IsValidName(result_name_)) {
@@ -23,12 +23,12 @@ bool CreateModelCommand::IsValid(std::string &details) {
     return true;
 }
 
-void CreateModelCommand::SetResultName(const std::string &name) {
+void CreateModelCommand::SetResultName(const Str &name) {
     ASSERT(Model::IsValidName(name));
     result_name_ = name;
 }
 
-std::string CreateModelCommand::BuildDescription(
-    const std::string &model_type) const {
+Str CreateModelCommand::BuildDescription(
+    const Str &model_type) const {
     return "Created " + model_type + " Model \"" + GetResultName() + "\"";
 }

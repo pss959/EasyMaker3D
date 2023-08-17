@@ -4,7 +4,7 @@
 class ConstantTest : public ParserTestBase {};
 
 TEST_F(ConstantTest, Constants) {
-    const std::string input =
+    const Str input =
         "Simple {\n"
         "  CONSTANTS: [\n"
         "     FOO: \"123\",\n"
@@ -24,7 +24,7 @@ TEST_F(ConstantTest, Constants) {
     EXPECT_EQ(Vector3f(2.5f, 123.f, 5.f), sp->vec3f_val);
     EXPECT_EQ(456.f, sp->float_val);
 
-    const std::string bad_input =
+    const Str bad_input =
         "Simple {\n"
         "  int_val: 12,\n"
         "  CONSTANTS: [ FOO: \"123\" ],\n"

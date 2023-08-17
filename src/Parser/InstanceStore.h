@@ -44,7 +44,7 @@ class InstanceStore {
             std::dynamic_pointer_cast<T>(GetAvailableInstance_(key));
         if (! instance) {
             auto &data = original_map_[key];
-            const std::string name = CreateName_(key, data.count++);
+            const Str name = CreateName_(key, data.count++);
             instance = data.original->CloneTyped<T>(true, name);
         }
         return instance;
@@ -87,7 +87,7 @@ class InstanceStore {
     void MakeAvailable_(const BasePtr_ &instance, const std::type_index &key);
 
     /// Creates a unique name for an instance of the given type using the index.
-    static std::string CreateName_(const std::type_index &key, size_t index);
+    static Str CreateName_(const std::type_index &key, size_t index);
 };
 
 }  // namespace Parser

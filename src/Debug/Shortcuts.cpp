@@ -78,29 +78,29 @@ class ShortcutMap_ {
 
     /// Returns the Action corresponding to the given shortcut string, which
     /// may be kNone.
-    Action GetAction(const std::string &str) const {
+    Action GetAction(const Str &str) const {
         return action_map_.contains(str) ? action_map_.at(str) : Action::kNone;
     }
 
     /// Returns the help string to print.
-    const std::string & GetHelpString() const { return help_string_; }
+    const Str & GetHelpString() const { return help_string_; }
 
   private:
     /// Struct storing info for each Action.
     struct ActionData_ {
-        std::string shortcut;
-        Action      action;
-        std::string help_string;
+        Str    shortcut;
+        Action action;
+        Str    help_string;
     };
 
     /// Returns a vector of ActionData_ instances for all actions.
     static std::vector<ActionData_> GetData_();
 
     /// Maps shortcut string to an Action.
-    std::unordered_map<std::string, Action> action_map_;
+    std::unordered_map<Str, Action> action_map_;
 
     /// Help string printed for the Action_::kPrintHelp shortcut.
-    std::string help_string_;
+    Str help_string_;
 
     void InitActionMap_(const std::vector<ActionData_> &data);
     void InitHelpString_(const std::vector<ActionData_> &data);
@@ -191,8 +191,8 @@ void ShortcutMap_::InitActionMap_(const std::vector<ActionData_> &data) {
 
 void ShortcutMap_::InitHelpString_(const std::vector<ActionData_> &data) {
     // Terminal colors.
-    const std::string kColor  = "\033[36m";  // Cyan.
-    const std::string kNormal = "\033[0m";
+    const Str kColor  = "\033[36m";  // Cyan.
+    const Str kNormal = "\033[0m";
 
     help_string_ = "-----------------------------------------------------\n"
         "Debugging help shortcuts:\n"
@@ -256,10 +256,10 @@ static void DumpControllerModel_(const Controller &controller) {
     if (! controller.GetCustomModelData(mesh, image))
         return;
 
-    const std::string name = Util::EnumToWord(controller.GetHand());
+    const Str name = Util::EnumToWord(controller.GetHand());
 
-    const std::string mfn = name + "_mesh.tri";
-    const std::string tfn = name + "_tex.jpg";
+    const Str mfn = name + "_mesh.tri";
+    const Str tfn = name + "_tex.jpg";
     if (! Util::WriteString(mfn, mesh.ToBinaryString()) ||
         ! Util::WriteImage(tfn, *image, true)) {
         std::cerr << "*** Unable to dump" << name
@@ -290,7 +290,7 @@ static void PrintTouchedWidget_() {
 }
 
 /// Does all of the work for HandleShortcut().
-static bool HandleShortcut_(const std::string &str) {
+static bool HandleShortcut_(const Str &str) {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
     const SG::Node &root = *scene_context_->scene->GetRootNode();
@@ -443,11 +443,11 @@ void ShutDown() {
     limit_path_.clear();
 }
 
-bool HandleShortcut(const std::string &str) {
+bool HandleShortcut(const Str &str) {
     return HandleShortcut_(str);
 }
 
-void DisplayDebugText(const std::string &text) {
+void DisplayDebugText(const Str &text) {
     ASSERT(scene_context_);
     const auto &dt = scene_context_->debug_text;
     ASSERT(dt);

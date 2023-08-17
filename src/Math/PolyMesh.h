@@ -90,7 +90,7 @@ struct PolyMesh {
     TriMesh ToTriMesh() const;
 
     /// Dumps the PolyMesh to stdout for debugging.
-    void Dump(const std::string &when) const;
+    void Dump(const Str &when) const;
 
     /// Do not allow copy construction or assignment; pointers would be wrong.
     PolyMesh(const PolyMesh &)             = delete;
@@ -104,9 +104,9 @@ struct PolyMesh {
 /// Base for Vertex, Edge, and Face. It stores a unique string ID.
 struct PolyMesh::Feature {
     /// String identifier for the feature. This is set at constructon.
-    std::string id;
+    Str id;
   protected:
-    Feature(const std::string &prefix, int index);
+    Feature(const Str &prefix, int index);
 };
 
 // ----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ struct PolyMesh::Vertex : public PolyMesh::Feature {
     Vertex(int id, const Point3f &p) : Feature("V", id) { point = p; }
 
     /// Converts to a string for debugging.
-    std::string ToString() const;
+    Str ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     Edge & PreviousEdgeAroundVertex() const;
 
     /// Converts to a string for debugging.
-    std::string ToString() const;
+    Str ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -213,7 +213,7 @@ struct PolyMesh::Face : public PolyMesh::Feature {
     void ReindexEdges();
 
     /// Converts to a string for debugging.
-    std::string ToString(bool on_one_line = true) const;
+    Str ToString(bool on_one_line = true) const;
 
   private:
     /// Normal to the face, computed only when necessary.

@@ -26,12 +26,11 @@
 /// documentation images are consistent and predictable.
 class MockFilePathList_ : public FilePathList {
     /// Redefines this to simulate files.
-    virtual void GetContents(std::vector<std::string> &subdirs,
-                             std::vector<std::string> &files,
-                             const std::string &extension,
+    virtual void GetContents(StrVec &subdirs, StrVec &files,
+                             const Str &extension,
                              bool include_hidden) const override;
     virtual bool IsValidDirectory(const FilePath &path) const {
-        const std::string fn = path.GetFileName();
+        const Str fn = path.GetFileName();
         return fn.starts_with("Dir") || fn == "stl" || fn == "maker";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
@@ -39,9 +38,8 @@ class MockFilePathList_ : public FilePathList {
     }
 };
 
-void MockFilePathList_::GetContents(std::vector<std::string> &subdirs,
-                                    std::vector<std::string> &files,
-                                    const std::string &extension,
+void MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
+                                    const Str &extension,
                                     bool include_hidden) const {
     const FilePath dir = GetCurrent();
     // Special case for dummy path used in doc.
@@ -110,7 +108,7 @@ int main(int argc, const char *argv[]) {
         return -1;
 
     // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
-    const auto set_mock = [&](const std::string &panel_name){
+    const auto set_mock = [&](const Str &panel_name){
         const auto &panel_mgr = *app.GetContext().panel_manager;
         auto panel = panel_mgr.GetTypedPanel<FilePanel>(panel_name);
         panel->SetFilePathList(new MockFilePathList_);

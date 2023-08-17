@@ -13,8 +13,8 @@
 namespace {
 
 /// Returns words from the given line, processing in-line comments.
-static std::vector<std::string> GetWords_(const std::string &line) {
-    std::vector<std::string> words = ion::base::SplitString(line, " \t");
+static StrVec GetWords_(const Str &line) {
+    StrVec words = ion::base::SplitString(line, " \t");
 
     // Check for comments.
     for (size_t i = 0; i < words.size(); ++i) {
@@ -49,7 +49,7 @@ static Rotationf ComputeHandRotation_(Hand hand, const Vector3f &laser_dir,
 bool SnapScript::ReadScript(const FilePath &path) {
     instructions_.clear();
 
-    std::string contents;
+    Str contents;
     if (! Util::ReadFile(path, contents)) {
         std::cerr << "*** Unable to read script file '"
                   << path.ToString() << "'\n";
@@ -69,7 +69,7 @@ bool SnapScript::ReadScript(const FilePath &path) {
     return true;
 }
 
-bool SnapScript::ProcessLine_(const std::string &line) {
+bool SnapScript::ProcessLine_(const Str &line) {
     // Skip empty lines and comments.
     if (line.empty() || line[0] == '#')
         return true;
@@ -110,8 +110,7 @@ bool SnapScript::ProcessLine_(const std::string &line) {
     return true;
 }
 
-bool SnapScript::GetInstructionType_(const std::string &word,
-                                     Instr::Type &type) {
+bool SnapScript::GetInstructionType_(const Str &word, Instr::Type &type) {
     for (auto t: Util::EnumValues<Instr::Type>()) {
         if (Util::ToLowerCase(Util::EnumToWord(t)) == word) {
             type = t;
@@ -121,7 +120,7 @@ bool SnapScript::GetInstructionType_(const std::string &word,
     return false;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessAction_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessAction_(const StrVec &words) {
     ActionInstrPtr ainst;
     Action         action;
     if (words.size() != 2U) {
@@ -137,7 +136,7 @@ SnapScript::InstrPtr SnapScript::ProcessAction_(const Words &words) {
     return ainst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessClick_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessClick_(const StrVec &words) {
     ClickInstrPtr cinst;
     float x, y;
     if (words.size() != 3U) {
@@ -153,7 +152,7 @@ SnapScript::InstrPtr SnapScript::ProcessClick_(const Words &words) {
     return cinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessDrag_(const StrVec &words) {
     using DIPhase = DragInstr::Phase;
 
     DragInstrPtr dinst;
@@ -178,7 +177,7 @@ SnapScript::InstrPtr SnapScript::ProcessDrag_(const Words &words) {
     return dinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessHand_(const StrVec &words) {
     HandInstrPtr hinst;
     Vector3f     pos, dir;
     if (words.size() != 3U) {
@@ -200,7 +199,7 @@ SnapScript::InstrPtr SnapScript::ProcessHand_(const Words &words) {
     return hinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessHandPos_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessHandPos_(const StrVec &words) {
     HandPosInstrPtr hinst;
     Vector3f        pos;
     Vector3f        laser_dir;
@@ -229,7 +228,7 @@ SnapScript::InstrPtr SnapScript::ProcessHandPos_(const Words &words) {
     return hinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessHeadset_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessHeadset_(const StrVec &words) {
     HeadsetInstrPtr hinst;
     if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
         Error_("Bad syntax for headset instruction");
@@ -241,7 +240,7 @@ SnapScript::InstrPtr SnapScript::ProcessHeadset_(const Words &words) {
     return hinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessHover_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessHover_(const StrVec &words) {
     HoverInstrPtr hinst;
     float x, y;
     if (words.size() != 3U) {
@@ -257,7 +256,7 @@ SnapScript::InstrPtr SnapScript::ProcessHover_(const Words &words) {
     return hinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessKey_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessKey_(const StrVec &words) {
     KeyInstrPtr kinst;
     if (words.size() != 2U) {
         Error_("Bad syntax for key instruction");
@@ -265,7 +264,7 @@ SnapScript::InstrPtr SnapScript::ProcessKey_(const Words &words) {
     else {
         // words[1] is the key string
         kinst.reset(new KeyInstr);
-        std::string error;
+        Str error;
         if (! Event::ParseKeyString(words[1], kinst->modifiers,
                                     kinst->key_name, error)) {
             Error_(error + " in key instruction");
@@ -275,7 +274,7 @@ SnapScript::InstrPtr SnapScript::ProcessKey_(const Words &words) {
     return kinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessLoad_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessLoad_(const StrVec &words) {
     LoadInstrPtr linst;
     if (words.size() > 2U) {
         Error_("Bad syntax for load instruction");
@@ -288,7 +287,7 @@ SnapScript::InstrPtr SnapScript::ProcessLoad_(const Words &words) {
     return linst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessMod_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessMod_(const StrVec &words) {
     ModInstrPtr minst;
     if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
         Error_("Bad syntax for mod instruction");
@@ -300,14 +299,14 @@ SnapScript::InstrPtr SnapScript::ProcessMod_(const Words &words) {
     return minst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessSelect_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessSelect_(const StrVec &words) {
     // No names is a valid selection (deselects all).
     SelectInstrPtr sinst(new SelectInstr);
     sinst->names.insert(sinst->names.begin(), words.begin() + 1, words.end());
     return sinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessSettings_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessSettings_(const StrVec &words) {
     SettingsInstrPtr sinst;
     if (words.size() != 2U) {
         Error_("Bad syntax for settings instruction");
@@ -319,7 +318,7 @@ SnapScript::InstrPtr SnapScript::ProcessSettings_(const Words &words) {
     return sinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessSnap_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessSnap_(const StrVec &words) {
     SnapInstrPtr sinst;
     float x, y, w, h;
     if (words.size() != 6U) {
@@ -340,7 +339,7 @@ SnapScript::InstrPtr SnapScript::ProcessSnap_(const Words &words) {
     return sinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessSnapObj_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessSnapObj_(const StrVec &words) {
     SnapObjInstrPtr sinst;
     float margin = 0;
     if (words.size() < 3U || words.size() > 4U) {
@@ -358,7 +357,7 @@ SnapScript::InstrPtr SnapScript::ProcessSnapObj_(const Words &words) {
     return sinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessStage_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessStage_(const StrVec &words) {
     StageInstrPtr sinst;
     float scale, angle;
     if (words.size() != 3U) {
@@ -375,7 +374,7 @@ SnapScript::InstrPtr SnapScript::ProcessStage_(const Words &words) {
     return sinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessStop_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessStop_(const StrVec &words) {
     StopInstrPtr sinst;
     if (words.size() != 1U) {
         Error_("Bad syntax for stop instruction");
@@ -386,7 +385,7 @@ SnapScript::InstrPtr SnapScript::ProcessStop_(const Words &words) {
     return sinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessTouch_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessTouch_(const StrVec &words) {
     TouchInstrPtr tinst;
     if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
         Error_("Bad syntax for touch instruction");
@@ -398,7 +397,7 @@ SnapScript::InstrPtr SnapScript::ProcessTouch_(const Words &words) {
     return tinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessView_(const Words &words) {
+SnapScript::InstrPtr SnapScript::ProcessView_(const StrVec &words) {
     ViewInstrPtr vinst;
     Vector3f     dir;
     if (words.size() != 4U) {
@@ -415,20 +414,20 @@ SnapScript::InstrPtr SnapScript::ProcessView_(const Words &words) {
     return vinst;
 }
 
-bool SnapScript::Error_(const std::string &message) {
+bool SnapScript::Error_(const Str &message) {
     std::cerr << "*** " << message << " on line " << line_number_
               << " in '" << file_path_.ToString() << "'\n";
     return false;
 }
 
-bool SnapScript::ParseVector3f_(const Words &words, size_t index,
+bool SnapScript::ParseVector3f_(const StrVec &words, size_t index,
                                 Vector3f &v) {
     return (ParseFloat_(words[index + 0], v[0]) &&
             ParseFloat_(words[index + 1], v[1]) &&
             ParseFloat_(words[index + 2], v[2]));
 }
 
-bool SnapScript::ParseFloat_(const std::string &s, float &f) {
+bool SnapScript::ParseFloat_(const Str &s, float &f) {
     try {
         size_t chars_processed;
         f = std::stof(s, &chars_processed);
@@ -441,12 +440,12 @@ bool SnapScript::ParseFloat_(const std::string &s, float &f) {
     }
 }
 
-bool SnapScript::ParseFloat01_(const std::string &s, float &f) {
+bool SnapScript::ParseFloat01_(const Str &s, float &f) {
     // Make sure the number is in range.
     return ParseFloat_(s, f) && f >= 0.f && f <= 1.f;
 }
 
-bool SnapScript::ParseN_(const std::string &s, size_t &n) {
+bool SnapScript::ParseN_(const Str &s, size_t &n) {
     try {
         size_t chars_processed;
         n = std::stoll(s, &chars_processed, 10);

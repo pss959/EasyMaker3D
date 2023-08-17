@@ -13,20 +13,20 @@ DECL_SHARED_PTR(ChangeTextCommand);
 /// \ingroup Commands
 class ChangeTextCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the new text string.
-    void SetNewTextString(const std::string &text);
+    void SetNewTextString(const Str &text);
 
     /// Returns the new text string.
-    const std::string & GetNewTextString() const { return new_text_string_; }
+    const Str & GetNewTextString() const { return new_text_string_; }
 
     /// Sets the new font name.
-    void SetNewFontName(const std::string &name);
+    void SetNewFontName(const Str &name);
 
     /// Returns the name of the new font. If this is empty, the font is not
     /// changed.
-    const std::string & GetNewFontName() const { return new_font_name_; }
+    const Str & GetNewFontName() const { return new_font_name_; }
 
     /// Sets the new character spacing.
     void SetNewCharSpacing(float spacing);
@@ -38,14 +38,14 @@ class ChangeTextCommand : public MultiModelCommand {
     ChangeTextCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> new_text_string_;
-    Parser::TField<std::string> new_font_name_;
-    Parser::TField<float>       new_char_spacing_;
+    Parser::TField<Str>   new_text_string_;
+    Parser::TField<Str>   new_font_name_;
+    Parser::TField<float> new_char_spacing_;
     ///@}
 
     friend class Parser::Registry;

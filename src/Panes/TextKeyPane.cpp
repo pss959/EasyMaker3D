@@ -10,7 +10,7 @@ void TextKeyPane::AddFields() {
     KeyPane::AddFields();
 }
 
-bool TextKeyPane::IsValid(std::string &details) {
+bool TextKeyPane::IsValid(Str &details) {
     if (! KeyPane::IsValid(details))
         return false;
 
@@ -35,19 +35,19 @@ void TextKeyPane::CreationDone() {
     }
 }
 
-TextAction TextKeyPane::GetAction(std::string &chars) const {
+TextAction TextKeyPane::GetAction(Str &chars) const {
     chars = GetText_();
     return TextAction::kInsert;
 }
 
 void TextKeyPane::ProcessShift(bool is_shifted) {
-    const std::string &label = label_;
+    const Str &label = label_;
     if (! label.empty())
         text_pane_->SetText(label);
     else
         text_pane_->SetText(is_shifted ? shifted_text_ : text_);
 }
 
-std::string TextKeyPane::GetText_() const {
+Str TextKeyPane::GetText_() const {
     return text_pane_->GetText();
 }

@@ -7,7 +7,7 @@ ModelPtr CreateExtrudedExecutor::CreateModel(Command &command) {
     CreateExtrudedModelCommand &cec =
         GetTypedCommand<CreateExtrudedModelCommand>(command);
 
-    std::string name = cec.GetResultName();
+    Str name = cec.GetResultName();
     if (name.empty()) {
         name = CreateUniqueName("Extruded");
         cec.SetResultName(name);

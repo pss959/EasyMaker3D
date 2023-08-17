@@ -13,7 +13,7 @@ void SpinBasedModel::AddFields() {
     ScaledConvertedModel::AddFields();
 }
 
-bool SpinBasedModel::IsValid(std::string &details) {
+bool SpinBasedModel::IsValid(Str &details) {
     if (! ScaledConvertedModel::IsValid(details))
         return false;
     if (! IsValidVector(axis_)) {

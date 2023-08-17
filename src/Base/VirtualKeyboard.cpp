@@ -23,7 +23,7 @@ void VirtualKeyboard::SetIsVisible(bool flag) {
         show_hide_func_(is_shown);
 }
 
-void VirtualKeyboard::InsertText(const std::string &s) {
+void VirtualKeyboard::InsertText(const Str &s) {
     if (IsShown_())
         insertion_.Notify(s);
 }

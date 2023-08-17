@@ -8,40 +8,40 @@
 class ReadTest : public TestBase {};
 
 TEST_F(ReadTest, NoIncludes) {
-    const std::string contents =
+    const Str contents =
         "This is test input for Util::ReadFile().\n"
         "\n"
         "   @include \"IncludeThis.txt\"\n"
         "\n"
         "That's all!\n";
     TempFile tmp_file(contents);
-    std::string s;
+    Str s;
     EXPECT_TRUE(Util::ReadFile(tmp_file.GetPath(), s, false));
     EXPECT_EQ(contents, FixString(s));
 }
 
 TEST_F(ReadTest, YesIncludes) {
     // Contents of included file.
-    const std::string included =
+    const Str included =
         "Some text.\n"
         "Some more text.\n";
 
     // Contents of read file. The <INCLUDED> is replaced with the path to the
     // included temp file.
-    const std::string contents =
+    const Str contents =
         "This is test input for Util::ReadFile().\n"
         "\n"
         "   @include \"<INCLUDED>\"\n"
         "\n"
         "That's all!\n";
-    const std::string expected = Util::ReplaceString(
+    const Str expected = Util::ReplaceString(
         contents, "@include \"<INCLUDED>\"", included);
 
     TempFile tmp_inc(included);
     TempFile tmp_file(Util::ReplaceString(contents, "<INCLUDED>",
                                           tmp_inc.GetPath().ToString()));
 
-    std::string s;
+    Str s;
     EXPECT_TRUE(Util::ReadFile(tmp_file.GetPath(), s, true));
     EXPECT_EQ(expected, FixString(s));
 }
@@ -50,25 +50,25 @@ TEST_F(ReadTest, IncludeErrors) {
     {
         // No open quote.
         TempFile tmp_file("  @include  \n");
-        std::string s;
+        Str s;
         EXPECT_FALSE(Util::ReadFile(tmp_file.GetPath(), s, true));
     }
     {
         // Bad stuff after @include.
         TempFile tmp_file("  @include somefile \n");
-        std::string s;
+        Str s;
         EXPECT_FALSE(Util::ReadFile(tmp_file.GetPath(), s, true));
     }
     {
         // No close quote.
         TempFile tmp_file("  @include \"somefile\n");
-        std::string s;
+        Str s;
         EXPECT_FALSE(Util::ReadFile(tmp_file.GetPath(), s, true));
     }
     {
         // No such file to include.
         TempFile tmp_file("  @include \"/file/does/not/exist.txt\"\n");
-        std::string s;
+        Str s;
         EXPECT_FALSE(Util::ReadFile(tmp_file.GetPath(), s, true));
     }
 }
@@ -87,9 +87,7 @@ TEST_F(ReadTest, ReadBadImage) {
 
 TEST_F(ReadTest, ReadShape) {
     // Read a shape in each supported format.
-    const std::vector<std::string> extensions{
-        "3ds", "dae", "lwo", "obj", "off"
-    };
+    const StrVec extensions{ "3ds", "dae", "lwo", "obj", "off" };
     for (const auto &ext: extensions) {
         auto read_it = [&](bool use_normals, bool use_tex_coords){
             auto shape = Util::ReadShape(GetDataPath("Shapes/shape." + ext),

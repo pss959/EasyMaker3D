@@ -24,13 +24,13 @@ class ToolFinder_ {
     }
 
     /// Adds the tool with the given type name.
-    void AddTool(const std::string &type_name) {
+    void AddTool(const Str &type_name) {
         auto tool = SG::FindTypedNodeUnderNode<Tool>(tool_root_, type_name);
         tools_.push_back(tool);
     }
 
     /// Adds all tools from the named shelf.
-    void AddToolsFromShelf(const std::string &shelf_name);
+    void AddToolsFromShelf(const Str &shelf_name);
 
     /// Returns the resulting vector of Tools.
     const std::vector<ToolPtr> GetTools() const { return tools_; }
@@ -42,7 +42,7 @@ class ToolFinder_ {
     std::vector<ToolPtr> tools_;  ///< All Tools that were found.
 };
 
-void ToolFinder_::AddToolsFromShelf(const std::string &shelf_name) {
+void ToolFinder_::AddToolsFromShelf(const Str &shelf_name) {
     // Add Tools in the order they are found on the shelf. This is important
     // for general Tools so that switching is consistent.
     const Shelf &shelf = *SG::FindTypedNodeInScene<Shelf>(scene_, shelf_name);

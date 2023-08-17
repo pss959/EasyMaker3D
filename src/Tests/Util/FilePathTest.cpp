@@ -5,7 +5,7 @@
 #include "Util/UTime.h"
 
 // Helper function that returns this source file as a string.
-static std::string GetSourceFile_() {
+static Str GetSourceFile_() {
     return std::source_location::current().file_name();
 }
 
@@ -24,7 +24,7 @@ TEST(FilePathTest, Assign) {
     EXPECT_EQ(p1, p2);
     // Assign from string.
     FilePath p3;
-    p3 = std::string("/abc/def");
+    p3 = Str("/abc/def");
     EXPECT_EQ(p1, p3);
 }
 
@@ -171,7 +171,7 @@ TEST(FilePathTest, Join) {
 }
 
 TEST(FilePathTest, GetHashValue) {
-    const std::string ps = "/abc/def";
+    const Str ps = "/abc/def";
     const FilePath p(ps);
     const auto hashval = std::filesystem::hash_value(std::filesystem::path(ps));
     EXPECT_EQ(hashval, p.GetHashValue());

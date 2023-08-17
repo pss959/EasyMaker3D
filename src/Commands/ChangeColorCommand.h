@@ -14,7 +14,7 @@ DECL_SHARED_PTR(ChangeColorCommand);
 /// \ingroup Commands
 class ChangeColorCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the new color.
     void SetNewColor(const Color &new_color) { new_color_ = new_color; }

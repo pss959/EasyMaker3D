@@ -41,7 +41,7 @@ class VirtualKeyboard {
     bool IsVisible() const { return is_visible_; }
 
     /// Inserts the given string into the current text.
-    void InsertText(const std::string &s);
+    void InsertText(const Str &s);
 
     /// Processes the given TextAction. (The action should not be
     /// TextAction::kInsert, which should use the InsertText() function.)
@@ -50,7 +50,7 @@ class VirtualKeyboard {
     /// Returns a Notifier that is invoked when the user touches a key on the
     /// VirtualKeyboard that inserts one or more characters. A string
     /// containing the character(s) is supplied.
-    Util::Notifier<const std::string &> & GetInsertion() { return insertion_; }
+    Util::Notifier<const Str &> & GetInsertion() { return insertion_; }
 
     /// Returns a Notifier that is invoked when the user presses any key that
     /// performs an action other than insertion.
@@ -62,9 +62,9 @@ class VirtualKeyboard {
     bool         is_visible_ = false;
 
     /// Notifies when the user inserts one or more characters.
-    Util::Notifier<const std::string &> insertion_;
+    Util::Notifier<const Str &> insertion_;
     /// Notifies when the user performs some other action.
-    Util::Notifier<TextAction>          action_;
+    Util::Notifier<TextAction>  action_;
 
     /// Returns true if the VirtualKeyboard is shown and should therefore
     /// notify any of its observers.

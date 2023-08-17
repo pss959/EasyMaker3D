@@ -35,7 +35,7 @@ TEST_F(ImageTest, FileImage) {
 }
 
 TEST_F(ImageTest, SubImage) {
-    const std::string input = R"(
+    const Str input = R"(
 FileImage {
   path: "Frame.jpg",
   sub_images: [

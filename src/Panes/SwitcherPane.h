@@ -22,7 +22,7 @@ class SwitcherPane : public ContainerPane {
     /// displayed, this returns -1.
     int GetIndex() const { return index_; }
 
-    virtual std::string ToString(bool is_brief) const override;
+    virtual Str ToString(bool is_brief) const override;
 
   protected:
     SwitcherPane() {}

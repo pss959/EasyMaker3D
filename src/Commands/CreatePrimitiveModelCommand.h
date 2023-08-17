@@ -14,7 +14,7 @@ DECL_SHARED_PTR(CreatePrimitiveModelCommand);
 /// \ingroup Commands
 class CreatePrimitiveModelCommand : public CreateModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the type of Model.
     void SetType(PrimitiveType type) { type_ = type; }

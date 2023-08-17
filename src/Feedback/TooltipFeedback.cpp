@@ -23,7 +23,7 @@ class TooltipFeedback::Impl_ {
     static void SetDelay(float seconds) { delay_ = seconds; }
 
     void InitParts();
-    void SetText(const std::string &text);
+    void SetText(const Str &text);
     Vector3f GetTextSize() const;
     void Activate();
     void Deactivate();
@@ -59,7 +59,7 @@ void TooltipFeedback::Impl_::InitParts() {
     border_     = SG::FindTypedNodeUnderNode<Border>(root_node_, "Border");
 }
 
-void TooltipFeedback::Impl_::SetText(const std::string &text) {
+void TooltipFeedback::Impl_::SetText(const Str &text) {
     text_->SetText(text);
 
     // Compute the number of lines in the text and use that to scale it to
@@ -120,7 +120,7 @@ void TooltipFeedback::SetDelay(float seconds) {
     Impl_::SetDelay(seconds);
 }
 
-void TooltipFeedback::SetText(const std::string &text) {
+void TooltipFeedback::SetText(const Str &text) {
     impl_->SetText(text);
 }
 

@@ -28,11 +28,11 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     context_ = context;
 }
 
-std::string Executor::CreateUniqueName(const std::string &prefix) {
+Str Executor::CreateUniqueName(const Str &prefix) {
     return context_->name_manager->Create(prefix);
 }
 
-SelPath Executor::FindPathToModel(const std::string &name) {
+SelPath Executor::FindPathToModel(const Str &name) {
     return SelPath(SG::FindNodePathUnderNode(GetContext().root_model,
                                              name, false));
 }

@@ -10,6 +10,6 @@
 namespace Util {
 
 /// Opens the given URL in a browser.
-void OpenURL(const std::string &url);
+void OpenURL(const Str &url);
 
 }  // namespace Util

@@ -17,13 +17,13 @@ DECL_SHARED_PTR(GridPane);
 /// \ingroup Panes
 class GridPane : public ContainerPane {
   public:
-    virtual std::string ToString(bool is_brief) const override;
+    virtual Str ToString(bool is_brief) const override;
 
   protected:
     GridPane() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     virtual Vector2f ComputeBaseSize() const override;
@@ -51,8 +51,8 @@ class GridPane : public ContainerPane {
 
     DimData_ dim_data_[2];  ///< Column, row data.
 
-    bool CheckDim_(int dim, std::string &details);
-    bool CheckPanes_(std::string &details);
+    bool CheckDim_(int dim, Str &details);
+    bool CheckPanes_(Str &details);
     void SetUpDim_(int dim);
 
     /// Returns a vector of sizes to use for all rows or columns to fit the

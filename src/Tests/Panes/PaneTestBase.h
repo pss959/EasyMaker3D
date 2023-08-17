@@ -3,6 +3,7 @@
 #include <concepts>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "Panes/Pane.h"
 #include "Tests/SceneTestBase.h"
@@ -16,16 +17,18 @@ class PaneTestBase : public SceneTestBase {
     /// derived Pane of the templated type and name; returns the derived Pane
     /// instance. A string with the contents of the Pane is supplied. This
     /// assumes the template file name and name for the derived type are the
-    /// same as the class name.
+    /// same as the class name. If the \p extra_type_names vector is not empty,
+    /// this adds the named templates first.
     template <typename T>
-    std::shared_ptr<T> ReadRealPane(const std::string &type_name,
-                                    const std::string &pane_contents) {
+    std::shared_ptr<T> ReadRealPane(const Str &type_name,
+                                    const Str &pane_contents,
+                                    const StrVec &extra_type_names = StrVec()) {
         static_assert(std::derived_from<T, Pane> == true);
         return ReadRealNode<T>(GetContentsString_(type_name, pane_contents),
                                type_name);
     }
 
   private:
-    static std::string GetContentsString_(const std::string &type_name,
-                                          const std::string &pane_contents);
+    static Str GetContentsString_(const Str &type_name,
+                                  const Str &pane_contents);
 };

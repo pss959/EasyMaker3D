@@ -20,5 +20,5 @@ struct Spin {
     bool operator==(const Spin &s) const = default;
 
     /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    Str ToString() const;
 };

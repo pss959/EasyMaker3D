@@ -52,7 +52,7 @@
 // Exception handling.
 // ----------------------------------------------------------------------------
 
-static void HandleEx_(const std::string &when, const std::exception &ex) {
+static void HandleEx_(const Str &when, const std::exception &ex) {
 #if RELEASE_BUILD
     std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
 #else
@@ -248,7 +248,7 @@ bool Application_::HandleEvent_(const Event &event) {
 
     // Handle key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
+        const Str key_string = event.GetKeyString();
 #if ENABLE_DEBUG_FEATURES
         if (key_string == "Alt-r") {
             ReloadScene_();
@@ -310,13 +310,13 @@ void Application_::SetUpScene_() {
 #endif
 
     // Add node if requested.
-    const std::string name = args_.GetString("--add");
+    const Str name = args_.GetString("--add");
     if (! name.empty())
         path_to_node_.back()->AddChild(SG::FindNodeInScene(*scene_, name));
 
     // Set up board and panel if requested.
-    const std::string board_name = args_.GetString("--board");
-    const std::string panel_name = args_.GetString("--panel");
+    const Str board_name = args_.GetString("--board");
+    const Str panel_name = args_.GetString("--panel");
     if (! board_name.empty() && ! panel_name.empty()) {
         auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
 

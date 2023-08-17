@@ -98,7 +98,7 @@ class Model : public ClickableWidget {
     /// Convenience that creates a Model of the given target type with an
     /// optional name. Returns a null pointer if the cast fails.
     template <typename T> static std::shared_ptr<T> CreateModel(
-        const std::string &name = "") {
+        const Str &name = "") {
         return Parser::Registry::CreateObject<T>(name);
     }
 
@@ -119,14 +119,14 @@ class Model : public ClickableWidget {
     /// Returns true if the given string is valid for use as a Model name. The
     /// string may not begin or end with whitespace and must contain at least
     /// one valid character.
-    static bool IsValidName(const std::string &name);
+    static bool IsValidName(const Str &name);
 
     /// Changes the name of the Model to the given name. The is_user_edit
     /// indicates whether this change was the result of user editing, meaning
     /// that the name should be left alone. (For example, changing the
     /// operation in a CSGModel can change the name, but should not if the user
     /// already edited it.) Returns true if the name was changed.
-    bool ChangeModelName(const std::string &new_name, bool is_user_edit);
+    bool ChangeModelName(const Str &new_name, bool is_user_edit);
 
     /// For a Model instance that is a clone, this returns the name of the
     /// Model it was cloned from. It is used to create new cloned names so that
@@ -202,7 +202,7 @@ class Model : public ClickableWidget {
 
     /// Returns true if the Mesh in the Model is valid. If not, the reason
     /// string will be set to the reason it is not considered valid.
-    bool IsMeshValid(std::string &reason) const;
+    bool IsMeshValid(Str &reason) const;
 
     /// Returns true if the Mesh in the Model is stale, meaning that it needs
     /// to be rebuilt.
@@ -230,7 +230,7 @@ class Model : public ClickableWidget {
 
     /// Redefines this to also make sure the mesh is up to data if the Model is
     /// visible,
-    virtual void UpdateForRenderPass(const std::string &pass_name) override;
+    virtual void UpdateForRenderPass(const Str &pass_name) override;
 
     // ------------------------------------------------------------------------
     // Target Interface.
@@ -275,7 +275,7 @@ class Model : public ClickableWidget {
     /// mesh is still invalid, this sets the reason string to a useful message
     /// and returns false. The base class defines this to use CGAL to validate
     /// and/or repair the mesh.
-    virtual bool ValidateMesh(TriMesh &mesh, std::string &reason);
+    virtual bool ValidateMesh(TriMesh &mesh, Str &reason);
 
     /// Derived classes can call this to indicate that the mesh needs to be
     /// rebuilt by a call to RebuildMesh().
@@ -311,7 +311,7 @@ class Model : public ClickableWidget {
     /// was cloned from. It is used to create new cloned names so that the
     /// addition of suffixes does not get out of hand. It will be null for
     /// non-clones.
-    std::string base_name_;
+    Str base_name_;
 
     /// Current complexity.
     float complexity_;
@@ -330,7 +330,7 @@ class Model : public ClickableWidget {
 
     /// If the mesh is valid, this is empty. Otherwise, it contains the reason
     /// it is not considered valid.
-    std::string reason_for_invalid_mesh_ = "Never built";
+    Str reason_for_invalid_mesh_ = "Never built";
 
     /// Offset added to the mesh in object coordinates to center it. Typically
     /// the zero vector except for some derived classes that call

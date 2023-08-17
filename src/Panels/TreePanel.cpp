@@ -35,7 +35,7 @@
 class TreePanel::Impl_ {
   public:
     void Reset();
-    void SetSessionString(const std::string &str);
+    void SetSessionString(const Str &str);
     void SetRootModel(const RootModelPtr &root_model) {
         root_model_ = root_model;
     }
@@ -198,8 +198,8 @@ class TreePanel::Impl_::ModelRow_ {
     void Show_();
     void Hide_();
 
-    std::string GetFontNameForModel_(const Model &model);
-    Color       GetColorForModel_(const Model &model);
+    Str   GetFontNameForModel_(const Model &model);
+    Color GetColorForModel_(const Model &model);
 };
 
 // ----------------------------------------------------------------------------
@@ -390,7 +390,7 @@ void TreePanel::Impl_::Reset() {
         UpdateModelRows_();
 }
 
-void TreePanel::Impl_::SetSessionString(const std::string &str) {
+void TreePanel::Impl_::SetSessionString(const Str &str) {
     ASSERT(session_text_pane_);
     if (session_text_pane_->GetText() != str)
         session_text_pane_->SetText(str);
@@ -661,9 +661,9 @@ void TreePanel::Impl_::ModelRow_::UpdateVisibility() {
     vis_switcher_pane_->SetIndex(Util::EnumInt(vis_state_));
 }
 
-std::string TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
+Str TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
     const Model &model) {
-    std::string font_name = "Verdana-Regular";
+    Str font_name = "Verdana-Regular";
 
     // Use bold for selected models.
     if (model.IsSelected())
@@ -677,7 +677,7 @@ std::string TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
 }
 
 Color TreePanel::Impl_::ModelRow_::GetColorForModel_(const Model &model) {
-    std::string color_name;
+    Str color_name;
     switch (model.GetStatus()) {
         using enum Model::Status;
       case kUnselected:      color_name = "Default";       break;
@@ -703,7 +703,7 @@ void TreePanel::Reset() {
     impl_->Reset();
 }
 
-void TreePanel::SetSessionString(const std::string &str) {
+void TreePanel::SetSessionString(const Str &str) {
     impl_->SetSessionString(str);
 }
 
@@ -720,7 +720,7 @@ void TreePanel::SetContext(const ContextPtr &context) {
     impl_->SetAgents(context->action_agent, context->selection_agent);
 }
 
-void TreePanel::UpdateForRenderPass(const std::string &pass_name) {
+void TreePanel::UpdateForRenderPass(const Str &pass_name) {
     impl_->UpdateModels();
 }
 

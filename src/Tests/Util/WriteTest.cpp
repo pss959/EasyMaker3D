@@ -12,7 +12,7 @@ TEST_F(WriteTest, WriteString) {
     // by Util::WriteString().
     TempFile tmp_file("Wrong contents\n");
     EXPECT_TRUE(Util::WriteString(tmp_file.GetPath(), "New contents\n"));
-    std::string s;
+    Str s;
     EXPECT_TRUE(Util::ReadFile(tmp_file.GetPath(), s));
     EXPECT_EQ("New contents\n", s);
 

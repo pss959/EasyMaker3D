@@ -34,7 +34,7 @@ class PointTargetWidget : public TargetWidgetBase {
     PointTargetWidget() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
     virtual void PlaceTarget(Widget &widget, const DragInfo &info) override;

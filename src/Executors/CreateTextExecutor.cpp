@@ -7,7 +7,7 @@ ModelPtr CreateTextExecutor::CreateModel(Command &command) {
     CreateTextModelCommand &ctc =
         GetTypedCommand<CreateTextModelCommand>(command);
 
-    std::string name = ctc.GetResultName();
+    Str name = ctc.GetResultName();
     if (name.empty()) {
         name = CreateUniqueName("Text");
         ctc.SetResultName(name);

@@ -8,7 +8,7 @@ class FilePathListTest : public ::testing::Test {
     class TestFPL : public FilePathList {
       public:
         virtual bool IsValidDirectory(const FilePath &path) const {
-            const std::string fn = path.GetFileName();
+            const Str fn = path.GetFileName();
             return fn.contains("DIR");
         }
         virtual bool IsExistingFile(const FilePath &path) const {

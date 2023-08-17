@@ -13,7 +13,7 @@ DECL_SHARED_PTR(CopyCommand);
 /// \ingroup Commands
 class CopyCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
     virtual bool HasUndoEffect() const { return false; }
     virtual bool HasRedoEffect() const { return false; }
 

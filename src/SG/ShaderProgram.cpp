@@ -87,7 +87,7 @@ ShaderInputRegistryPtr ShaderProgram::CreateRegistry_(
 }
 
 ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::CreateComposer_(
-    const std::string &suffix, FileMap &file_map,
+    const Str &suffix, FileMap &file_map,
     const ShaderSourcePtr &source) {
     ShaderSourceComposerPtr composer;
 
@@ -96,7 +96,7 @@ ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::CreateComposer_(
         // Check to see if the source was already loaded.
         const FilePath path =
             FilePath::GetFullResourcePath("shaders", source->GetFilePath());
-        std::string str = file_map.FindString(path);
+        Str str = file_map.FindString(path);
 
         // Read the file if necessary. Allow includes.
         if (str.empty()) {

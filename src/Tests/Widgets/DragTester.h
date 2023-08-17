@@ -29,8 +29,7 @@ class DragTester {
     /// must refer to CompositeWidget sub-widgets, and the last one must be a
     /// DraggableWidget sub-widget. The path_to_widget is set to the entire
     /// path from the CompositeWidget to the last sub-widget.
-    DragTester(const CompositeWidgetPtr &cw,
-               const std::vector<std::string> &names);
+    DragTester(const CompositeWidgetPtr &cw, const StrVec &names);
 
     /// \name Set-up functions.
     /// Each of these sets a value that will be copied into all DragInfo

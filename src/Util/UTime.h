@@ -31,7 +31,7 @@ class UTime {
     double SecondsSince(const UTime &start) const;
 
     /// Allows output of UTime values.
-    std::string ToString() const;
+    Str ToString() const;
 
   private:
     /// Wrapped std::filesystem::file_time_type.

@@ -48,12 +48,12 @@ class RenderPass : public Object {
     /// starting with the given prefix string. This is used by derived classes
     /// to find the nodes to set uniforms in.
     static std::vector<NodePtr> FindNodesMatchingShaderName(
-        const NodePtr &root, const std::string &prefix);
+        const NodePtr &root, const Str &prefix);
 
     /// Sets a uniform by name in an Ion UniformBlock, asserting if it
     /// fails. Returns true if successful.
     template <typename T>
-    bool SetIonUniform(ion::gfx::UniformBlock &block, const std::string &name,
+    bool SetIonUniform(ion::gfx::UniformBlock &block, const Str &name,
                        const T &value) {
         bool ok = block.SetUniformByName(name, value);
         ASSERTM(ok, "Setting uniform " + name + " in " + GetDesc());
@@ -63,7 +63,7 @@ class RenderPass : public Object {
     /// Sets one value in an array uniform by name in an Ion UniformBlock,
     /// asserting if it fails. Returns true if successful.
     template <typename T>
-    bool SetIonUniformAt(ion::gfx::UniformBlock &block, const std::string &name,
+    bool SetIonUniformAt(ion::gfx::UniformBlock &block, const Str &name,
                          size_t index, const T &value) {
         bool ok = block.SetUniformByNameAt(name, index, value);
         // Handle the case where the uniform has a single value and the index

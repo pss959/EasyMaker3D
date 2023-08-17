@@ -61,7 +61,7 @@ void BevelToolPanel::InitInterface() {
     auto &root_pane = GetPane();
     profile_pane_ = root_pane->FindTypedPane<ProfilePane>("Profile");
 
-    auto find_slider = [&](const std::string &name){
+    auto find_slider = [&](const Str &name){
         auto lsp = root_pane->FindTypedPane<LabeledSliderPane>(name);
         return lsp->GetSliderPane();
     };
@@ -89,13 +89,13 @@ void BevelToolPanel::InitInterface() {
         this, [&](float){ Change_("MaxAngle"); });
 }
 
-void BevelToolPanel::Activate_(const std::string &key, bool is_activation) {
+void BevelToolPanel::Activate_(const Str &key, bool is_activation) {
     is_dragging_ = is_activation;
     ReportChange(key, is_activation ? InteractionType::kDragStart :
                  InteractionType::kDragEnd);
 }
 
-void BevelToolPanel::Change_(const std::string &key) {
+void BevelToolPanel::Change_(const Str &key) {
     ReportChange(key, is_dragging_ ? InteractionType::kDrag :
                  InteractionType::kImmediate);
 }

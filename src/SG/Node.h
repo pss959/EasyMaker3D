@@ -109,9 +109,7 @@ class Node : public Object {
     /// empty, the Node just uses whatever shaders it inherits. Otherwise, it
     /// overrides whichever shaders are specified (according to their pass
     /// names).
-    const std::vector<std::string> & GetShaderNames() const {
-        return shader_names_;
-    }
+    const StrVec & GetShaderNames() const { return shader_names_; }
 
     /// Returns a flag indicating that the Node bounds should be used for
     /// intersection testing rather than testing shapes and children. This can
@@ -123,7 +121,7 @@ class Node : public Object {
     /// empty, meaning that it should be traversed for all render passes. If it
     /// is not empty, it (and its subgraph) should not be traversed for a
     /// different render pass.
-    const std::string & GetPassName() const { return pass_name_; }
+    const Str & GetPassName() const { return pass_name_; }
 
     /// \name Uniform Functions.
     ///@{
@@ -236,7 +234,7 @@ class Node : public Object {
     /// Returns a UniformBlock that matches the given pass name (which may be
     /// empty for pass-independent blocks). This creates the block if it is not
     /// found.
-    UniformBlock & GetUniformBlockForPass(const std::string &pass_name);
+    UniformBlock & GetUniformBlockForPass(const Str &pass_name);
 
     /// Sets up the Ion data in this Node. The IonContext is supplied, as is
     /// the Ion ShaderProgram to use for each RenderPass. Returns the resulting
@@ -258,7 +256,7 @@ class Node : public Object {
     /// to enable or disable the Node, UniformBlocks, ShaderProgram, and Shapes
     /// for rendering the given pass, based on disabled flags and pass-specific
     /// behavior. Derived classes can add other update code.
-    virtual void UpdateForRenderPass(const std::string &pass_name);
+    virtual void UpdateForRenderPass(const Str &pass_name);
 
   protected:
     Node() {}
@@ -274,7 +272,7 @@ class Node : public Object {
     IonContextPtr GetIonContext() const { return ion_context_; }
 
     /// Allow derived classes to set a specific pass for rendering.
-    void SetPassName(const std::string &pass_name) { pass_name_ = pass_name; }
+    void SetPassName(const Str &pass_name) { pass_name_ = pass_name; }
 
     /// Sets the flag indicating that the Node bounds should be used for
     /// intersection testing rather than testing shapes and children.
@@ -294,11 +292,11 @@ class Node : public Object {
     /// \name Parsed Fields
     ///@{
     Parser::FlagField<Flag>               disabled_flags_;
-    Parser::TField<std::string>           pass_name_;
+    Parser::TField<Str>                   pass_name_;
     Parser::TField<Vector3f>              scale_;
     Parser::TField<Rotationf>             rotation_;
     Parser::TField<Vector3f>              translation_;
-    Parser::VField<std::string>           shader_names_;
+    Parser::VField<Str>                   shader_names_;
     Parser::TField<bool>                  use_bounds_proxy_;
     Parser::ObjectField<StateTable>       state_table_;
     Parser::ObjectListField<UniformBlock> blocks_;
@@ -343,11 +341,10 @@ class Node : public Object {
     void UpdateMatrices_() const;
 
     /// Returns an existing UniformBlock for the named pass or null.
-    UniformBlockPtr FindUniformBlockForPass_(
-        const std::string &pass_name) const;
+    UniformBlockPtr FindUniformBlockForPass_(const Str &pass_name) const;
 
     /// Creates, adds, and returns a UniformBlock instance for the named pass.
-    UniformBlockPtr AddUniformBlock_(const std::string &pass_name);
+    UniformBlockPtr AddUniformBlock_(const Str &pass_name);
 
     friend class Parser::Registry;
 };

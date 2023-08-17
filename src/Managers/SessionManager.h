@@ -48,31 +48,30 @@ class SessionManager : public SessionAgent {
 
     /// Returns a string representing the current session: the name of the
     /// session and characters representing the current modifications.
-    std::string GetSessionString() const;
+    Str GetSessionString() const;
 
     /// Saves the current session to the file specified by path. The given
     /// vector of strings, if any, is written as header comments. Returns true
     /// if all went well.
-    bool SaveSessionWithComments(const FilePath &path,
-                                 const std::vector<std::string> &comments);
+    bool SaveSessionWithComments(const FilePath &path, const StrVec &comments);
 
     // SessionAgent interface implementation.
     virtual void NewSession() override;
     virtual bool CanSaveSession() const override;
     virtual bool SaveSession(const FilePath &path) override;
-    virtual bool LoadSession(const FilePath &path, std::string &error) override;
-    virtual std::string GetModelNameForExport() const override;
+    virtual bool LoadSession(const FilePath &path, Str &error) override;
+    virtual Str GetModelNameForExport() const override;
     virtual bool Export(const FilePath &path, FileFormat format,
                         const UnitConversion &conv) override;
-    virtual const std::string & GetPreviousSessionName() const override;
-    virtual const std::string & GetCurrentSessionName() const override;
+    virtual const Str & GetPreviousSessionName() const override;
+    virtual const Str & GetCurrentSessionName() const override;
 
   private:
     ActionAgentPtr      action_agent_;
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
-    std::string         previous_session_name_;  ///< From previous run.
-    std::string         current_session_name_;   ///< After load or save.
+    Str                 previous_session_name_;  ///< From previous run.
+    Str                 current_session_name_;   ///< After load or save.
 
     /// This saves the original SessionState. The current state is compared to
     /// this to determine if a change was made, allowing the session to be
@@ -85,11 +84,11 @@ class SessionManager : public SessionAgent {
     /// Loads a session from a path. If error is not null, this stores an error
     /// message in at and returns false if anything went wrong. Otherwise, it
     /// just throws the exception.
-    bool LoadSessionSafe_(const FilePath &path, std::string *error);
+    bool LoadSessionSafe_(const FilePath &path, Str *error);
 
     /// Changes the original session state to the current session state.
     void SaveOriginalSessionState_();
 
     /// Returns the name of a session from a FilePath.
-    static std::string GetSessionNameFromPath_(const FilePath &path);
+    static Str GetSessionNameFromPath_(const FilePath &path);
 };

@@ -21,7 +21,7 @@ void IconWidget::CreationDone() {
         SetColorNamePrefix("Icon");
 
         // Add imported shape.
-        const std::string &path = GetImportPath();
+        const Str &path = GetImportPath();
         if (! path.empty()) {
             auto shape = SG::ImportedShape::CreateFrom(
                 path, SG::ImportedShape::NormalType::kFaceNormals);

@@ -13,10 +13,10 @@
 class PaneTest : public SceneTestBase {
   protected:
     SG::ScenePtr ReadPaneScene() {
-        const std::string input = ReadDataFile("Panes.emd");
+        const Str input = ReadDataFile("Panes.emd");
         return ReadScene(input);
     }
-    PanePtr FindPaneOrAssert(ContainerPane &ctr, const std::string &name) {
+    PanePtr FindPaneOrAssert(ContainerPane &ctr, const Str &name) {
         PanePtr pane = ctr.FindPane(name);
         ASSERT(pane);
         return pane;
@@ -106,7 +106,7 @@ TEST_F(PaneTest, Dropdown) {
     SG::ScenePtr scene = ReadPaneScene();
     auto dd = SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");
 
-    std::vector<std::string> choices{ "Abcd", "Efgh Ijklmn", "Op Qrstu" };
+    StrVec choices{ "Abcd", "Efgh Ijklmn", "Op Qrstu" };
     dd->SetChoices(choices, 2);
     dd->SetLayoutSize(Vector2f(100, 20));
 

@@ -17,7 +17,7 @@ void RadialLayoutWidget::CreationDone() {
     CompositeWidget::CreationDone();
 
     if (! IsTemplate()) {
-        auto get_text = [&](const std::string &name){
+        auto get_text = [&](const Str &name){
             return SG::FindTypedNodeUnderNode<SG::TextNode>(*this, name);
         };
 
@@ -89,7 +89,7 @@ void RadialLayoutWidget::PostSetUpIon() {
     SetColors_();
 }
 
-void RadialLayoutWidget::SubWidgetActivated(const std::string &name,
+void RadialLayoutWidget::SubWidgetActivated(const Str &name,
                                             bool is_activation) {
     if (name == "Ring") {
         if (is_activation)
@@ -109,7 +109,7 @@ void RadialLayoutWidget::SubWidgetActivated(const std::string &name,
 }
 
 void RadialLayoutWidget::SetColors_() {
-    auto get_color = [](const std::string &name){
+    auto get_color = [](const Str &name){
         return SG::ColorMap::SGetColor(name);
     };
 
@@ -284,7 +284,7 @@ void RadialLayoutWidget::UpdateArc_() {
     update_angle(*arc_angle_text_,   aa, aa_pos);
 }
 
-std::string RadialLayoutWidget::GetAngleText_(const Anglef &angle) {
+Str RadialLayoutWidget::GetAngleText_(const Anglef &angle) {
     // Round the angle to the nearest degree.
     const float deg = RoundToPrecision(std::abs(angle.Degrees()), 1);
     return Util::ToString(deg) + TK::kDegreeSign;

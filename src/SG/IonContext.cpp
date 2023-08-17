@@ -36,7 +36,7 @@ const ion::text::FontManagerPtr & IonContext::GetFontManager() {
     return font_manager_;
 }
 
-int IonContext::GetPassIndex(const std::string &name) const {
+int IonContext::GetPassIndex(const Str &name) const {
     int index = -1;
     for (size_t i = 0; i < pass_names_.size(); ++i) {
         if (pass_names_[i] == name) {
@@ -47,8 +47,7 @@ int IonContext::GetPassIndex(const std::string &name) const {
     return index;
 }
 
-void IonContext::AddShaderProgram(const std::string &name,
-                                  const std::string &pass_name,
+void IonContext::AddShaderProgram(const Str &name, const Str &pass_name,
                                   const ion::gfx::ShaderProgramPtr &program) {
     ASSERT(! name.empty());
     ASSERT(program);
@@ -62,14 +61,14 @@ void IonContext::AddShaderProgram(const std::string &name,
 }
 
 const IonContext::ProgramInfo & IonContext::GetShaderProgramInfo(
-    const std::string &name) const {
+    const Str &name) const {
     auto it = program_map_.find(name);
     ASSERTM(it != program_map_.end(), "Program: " + name);
     return it->second;
 }
 
 ion::gfx::ShaderInputRegistryPtr IonContext::GetRegistryForPass(
-    const std::string &pass_name,
+    const Str &pass_name,
     const std::vector<ion::gfx::ShaderProgramPtr> &programs) const {
     if (pass_name.empty())
         return ion::gfx::ShaderInputRegistry::GetGlobalRegistry();

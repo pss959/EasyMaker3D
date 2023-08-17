@@ -15,7 +15,7 @@ DECL_SHARED_PTR(ChangeTaperCommand);
 /// \ingroup Commands
 class ChangeTaperCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets all the fields from the given Taper.
     void SetTaper(const Taper &taper);
@@ -27,7 +27,7 @@ class ChangeTaperCommand : public MultiModelCommand {
     ChangeTaperCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields

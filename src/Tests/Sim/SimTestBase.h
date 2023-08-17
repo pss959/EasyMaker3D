@@ -20,7 +20,7 @@ class SimTestBase : public SceneTestBase {
     /// TestResults() if the script is run successfully. The script name (with
     /// no extension) should be found in the "Scripts" subdirectory of the test
     /// data directory.
-    void RunScript(const std::string &script_name);
+    void RunScript(const Str &script_name);
 
     /// Derived classes must implement this function to check results after
     /// executing the script.
@@ -29,9 +29,9 @@ class SimTestBase : public SceneTestBase {
   private:
     /// Calls RunScript_() and calls TestResults() if successful. Exits
     /// afterwards.
-    void RunScriptAndExit_(const std::string &script_name);
+    void RunScriptAndExit_(const Str &script_name);
 
     /// Loads and runs the named script, then calls TestResults() if
     /// successful.
-    bool RunScript_(const std::string &script_name);
+    bool RunScript_(const Str &script_name);
 };

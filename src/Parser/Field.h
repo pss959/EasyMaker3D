@@ -26,7 +26,7 @@ class Field {
     virtual ~Field() {}
 
     /// Returns the name for the field.
-    const std::string & GetName() const { return name_; }
+    const Str & GetName() const { return name_; }
 
     /// Returns true if the field was parsed or otherwise set.
     bool WasSet() const { return was_set_; }
@@ -55,7 +55,7 @@ class Field {
 
   protected:
     /// Sets the field name. This should be called exactly once.
-    void InitName(const std::string &name) {
+    void InitName(const Str &name) {
         ASSERT(name_.empty());
         name_ = name;
     }
@@ -74,9 +74,9 @@ class Field {
     void ScanValues(Scanner &scanner, const std::function<void()> &scan_func);
 
   private:
-    std::string name_;               ///< Name of the field.
-    bool        is_hidden_ = false;  ///< True if field should not be written.
-    bool        was_set_   = false;  ///< Whether the field was parsed or set.
+    Str  name_;               ///< Name of the field.
+    bool is_hidden_ = false;  ///< True if field should not be written.
+    bool was_set_   = false;  ///< Whether the field was parsed or set.
 
     friend class Parser;
 };
@@ -87,13 +87,13 @@ class TypedField : public Field {
   public:
     /// Initializes the field to have the given name, leaving the value in its
     /// default state.
-    TypedField<T> & Init(const std::string &name) {
+    TypedField<T> & Init(const Str &name) {
         InitName(name);
         return *this;
     }
 
     /// Initializes the field to have the given name and initial value.
-    TypedField<T> & Init(const std::string &name, const T &def_val) {
+    TypedField<T> & Init(const Str &name, const T &def_val) {
         InitName(name);
         value_ = def_val;
         return *this;
@@ -185,7 +185,7 @@ template <typename T> class VField : public TypedField<std::vector<T>> {
 template <typename E> class EnumField : public TypedField<E> {
   public:
     virtual void ParseValue(Scanner &scanner) override {
-        const std::string &str = scanner.ScanQuotedString();
+        const Str &str = scanner.ScanQuotedString();
         if (! Util::EnumFromString<E>(str, TypedField<E>::value_))
             scanner.Throw("Invalid value for enum: '" + str + "'");
     }
@@ -195,7 +195,7 @@ template <typename E> class EnumField : public TypedField<E> {
     }
 
     /// Convenience function to convert the enum stored in the field to words.
-    std::string GetEnumWords() const {
+    Str GetEnumWords() const {
         return Util::EnumToWords(TypedField<E>::value_);
     }
 
@@ -212,7 +212,7 @@ template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
     typedef Util::Flags<E> FlagType;
 
     virtual void ParseValue(Scanner &scanner) override {
-        const std::string &str = scanner.ScanQuotedString();
+        const Str &str = scanner.ScanQuotedString();
         if (! FlagType::FromString(str, TypedField<FlagType>::value_))
             scanner.Throw("Invalid value for flag enum: '" + str + "'");
     }

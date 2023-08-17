@@ -17,8 +17,7 @@ SceneTestBase::~SceneTestBase() {
     ResetContext();
 }
 
-SG::ScenePtr SceneTestBase::ReadScene(const std::string &input,
-                                      bool set_up_ion) {
+SG::ScenePtr SceneTestBase::ReadScene(const Str &input, bool set_up_ion) {
     if (! ion_context_)
         InitIonContext_();
 
@@ -30,9 +29,9 @@ SG::ScenePtr SceneTestBase::ReadScene(const std::string &input,
     return scene_;
 }
 
-SG::ScenePtr SceneTestBase::BuildAndReadScene(const std::string &contents,
+SG::ScenePtr SceneTestBase::BuildAndReadScene(const Str &contents,
                                               bool set_up_ion) {
-    const std::string header = R"(
+    const Str header = R"(
 Scene {
   render_passes: [
     LightingPass "Lighting" {
@@ -44,8 +43,8 @@ Scene {
     return ReadScene(header + contents + "}}", set_up_ion);
 }
 
-SG::ScenePtr SceneTestBase::ReadRealScene(const std::string &contents) {
-    const std::string input = Util::ReplaceString(
+SG::ScenePtr SceneTestBase::ReadRealScene(const Str &contents) {
+    const Str input = Util::ReplaceString(
         ReadDataFile("RealScene.emd"), "#<CONTENTS>", contents);
     return ReadScene(input, true);
 }

@@ -50,18 +50,17 @@
 
 /// Tests that an exception of the given type is thrown by the given statement
 /// and that the exception's message contains the given string pattern.
-#define TEST_THROW(STMT, EXCEPTION_TYPE, PATTERN)                             \
-    EXPECT_THROW({                                                            \
-            try {                                                             \
-                STMT;                                                         \
-            }                                                                 \
-            catch (const EXCEPTION_TYPE &ex) {                                \
-                EXPECT_TRUE(std::string(ex.what()).find(PATTERN) !=           \
-                            std::string::npos) <<                             \
-                    "Exception string:" << ex.what()                          \
-                                        << "\nvs. pattern: " << (PATTERN);    \
-                throw;                                                        \
-            }                                                                 \
+#define TEST_THROW(STMT, EXCEPTION_TYPE, PATTERN)                       \
+    EXPECT_THROW({                                                      \
+            try {                                                       \
+                STMT;                                                   \
+            }                                                           \
+            catch (const EXCEPTION_TYPE &ex) {                          \
+                EXPECT_TRUE(Str(ex.what()).contains(PATTERN))           \
+                    << "Exception string:" << ex.what()                 \
+                    << "\nvs. pattern: " << (PATTERN);                  \
+                throw;                                                  \
+            }                                                           \
         }, EXCEPTION_TYPE)
 
 // ----------------------------------------------------------------------------
@@ -69,6 +68,6 @@
 // ----------------------------------------------------------------------------
 
 /// Enables KLogging for the given key string.
-inline void EnableKLog(const std::string &s) {
+inline void EnableKLog(const Str &s) {
     KLogger::SetKeyString(s);
 }

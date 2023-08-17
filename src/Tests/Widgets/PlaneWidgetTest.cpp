@@ -30,7 +30,7 @@ TEST_F(PlaneWidgetTest, RotateAxis) {
     auto pw = GetPlaneWidget();
 
     // Dive into the PlaneWidget to get the actual DraggableWidget.
-    DragTester dt(pw, std::vector<std::string>{ "Axis", "Rotator" });
+    DragTester dt(pw, StrVec{ "Axis", "Rotator" });
 
     // Rotating around Y should have no effect on the plane.
     dt.ApplyGripRotationDrag(Vector3f::AxisX(),
@@ -50,7 +50,7 @@ TEST_F(PlaneWidgetTest, Translate) {
     auto pw = GetPlaneWidget();
 
     // Dive into the PlaneWidget to get the actual DraggableWidget.
-    DragTester dt(pw, std::vector<std::string>{ "PlaneTranslator" });
+    DragTester dt(pw, StrVec{ "PlaneTranslator" });
 
     pw->SetSize(2);
     pw->SetTranslationRange(Range1f(-10, 10));
@@ -83,8 +83,8 @@ TEST_F(PlaneWidgetTest, Notify) {
             ++trans_count;
     });
 
-    DragTester dtr(pw, std::vector<std::string>{ "Axis", "Rotator" });
-    DragTester dtt(pw, std::vector<std::string>{ "PlaneTranslator" });
+    DragTester dtr(pw, StrVec{ "Axis", "Rotator" });
+    DragTester dtt(pw, StrVec{ "PlaneTranslator" });
 
     // Rotate twice.
     dtr.ApplyGripRotationDrag(Vector3f::AxisX(),

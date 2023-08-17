@@ -5,19 +5,18 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
-void DialogPanel::SetMessage(const std::string &msg) {
+void DialogPanel::SetMessage(const Str &msg) {
     message_->SetText(msg);
 }
 
-void DialogPanel::SetSingleResponse(const std::string &text) {
+void DialogPanel::SetSingleResponse(const Str &text) {
     text0_->SetText(text);
     button0_->SetEnabled(true);
     button1_->SetEnabled(false);
     SetFocus(button0_);
 }
 
-void DialogPanel::SetChoiceResponse(const std::string &text0,
-                                    const std::string &text1,
+void DialogPanel::SetChoiceResponse(const Str &text0, const Str &text1,
                                     bool focus_first) {
     text0_->SetText(text0);
     text1_->SetText(text1);
@@ -38,7 +37,7 @@ void DialogPanel::InitInterface() {
     AddButtonFunc("Button1", [&](){ Close(text1_->GetText()); });
 }
 
-void DialogPanel::Close(const std::string &result) {
+void DialogPanel::Close(const Str &result) {
     Panel::Close(result);
     ResetSize();
 }

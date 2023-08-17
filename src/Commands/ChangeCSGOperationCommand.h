@@ -14,7 +14,7 @@ DECL_SHARED_PTR(ChangeCSGOperationCommand);
 /// \ingroup Commands
 class ChangeCSGOperationCommand : public MultiModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the CSG operation to change to.
     void SetNewOperation(CSGOperation operation) { new_operation_ = operation; }
@@ -23,26 +23,22 @@ class ChangeCSGOperationCommand : public MultiModelCommand {
     CSGOperation GetNewOperation() const { return new_operation_; }
 
     /// Sets the new names of the resulting Models.
-    void SetResultNames(const std::vector<std::string> &names) {
-        result_names_ = names;
-    }
+    void SetResultNames(const StrVec &names) { result_names_ = names; }
 
     /// Returns the new names of the resulting Models.
-    const std::vector<std::string> & GetResultNames() const {
-        return result_names_;
-    }
+    const StrVec & GetResultNames() const { return result_names_; }
 
   protected:
     ChangeCSGOperationCommand() {}
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
     Parser::EnumField<CSGOperation> new_operation_;
-    Parser::VField<std::string>     result_names_;
+    Parser::VField<Str>     result_names_;
     ///@}
 
     friend class Parser::Registry;

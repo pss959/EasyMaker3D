@@ -17,11 +17,11 @@ namespace Util {
 
 /// Replaces \@include directives in the string with the contents of the
 /// included file. Returns false on error.
-static bool ReplaceIncludes_(const FilePath &base_path, std::string &s) {
-    const std::string inc_str = "@include ";
+static bool ReplaceIncludes_(const FilePath &base_path, Str &s) {
+    const Str inc_str = "@include ";
     while (true) {
         const size_t pos = s.find(inc_str);
-        if (pos == std::string::npos)
+        if (pos == Str::npos)
             break;
 
         // Find the quoted file path.
@@ -38,13 +38,13 @@ static bool ReplaceIncludes_(const FilePath &base_path, std::string &s) {
         // If missing end quote, bad.
         if (q1_pos == s.size() || s[q1_pos] != '"')
             return false;
-        const std::string path_str = s.substr(q0_pos + 1, q1_pos - q0_pos - 1);
+        const Str path_str = s.substr(q0_pos + 1, q1_pos - q0_pos - 1);
 
         // Construct a relative path if necessary.
         const FilePath path = FilePath(path_str).AppendRelative(base_path);
 
         // Read the file and replace the string.
-        std::string contents;
+        Str contents;
         if (! ReadFile(path, contents, true))
             return false;
         s.replace(pos, q1_pos - pos + 1, contents);
@@ -56,7 +56,7 @@ static bool ReplaceIncludes_(const FilePath &base_path, std::string &s) {
 // Public functions.
 // ----------------------------------------------------------------------------
 
-bool ReadFile(const FilePath &path, std::string &s, bool allow_includes) {
+bool ReadFile(const FilePath &path, Str &s, bool allow_includes) {
     bool ok = ion::port::ReadDataFromFile(path.ToString(), &s);
     if (ok && allow_includes)
         ok = ReplaceIncludes_(path, s);
@@ -64,7 +64,7 @@ bool ReadFile(const FilePath &path, std::string &s, bool allow_includes) {
 }
 
 ion::gfx::ImagePtr ReadImage(const FilePath &path, bool flip_vertically) {
-    std::string data;
+    Str data;
     ion::gfx::ImagePtr image;
     if (ReadFile(path, data)) {
         image = ion::image::ConvertFromExternalImageData(
@@ -81,7 +81,7 @@ ion::gfx::ShapePtr ReadShape(const FilePath &path,
     ion::gfx::ShapePtr shape;
 
     // Determine the format from the extension.
-    const std::string &ext = path.GetExtension();
+    const Str &ext = path.GetExtension();
 
     ExternalShapeSpec spec;
     spec.format = ExternalShapeSpec::kUnknown;
@@ -117,7 +117,7 @@ ion::gfx::ShapePtr ReadShape(const FilePath &path,
         spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
 
         // Open the file.
-        const std::string native_path = path.ToNativeString();
+        const Str native_path = path.ToNativeString();
         KLOG('f', "Reading Shape from \"" << native_path << "\"");
         std::ifstream in(native_path);
         if (in.fail()) {

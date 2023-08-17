@@ -11,7 +11,7 @@ void LabeledSliderPane::AddFields() {
     BoxPane::AddFields();
 }
 
-bool LabeledSliderPane::IsValid(std::string &details) {
+bool LabeledSliderPane::IsValid(Str &details) {
     if (! BoxPane::IsValid(details))
         return false;
     if (range_.WasSet()) {
@@ -40,7 +40,7 @@ void LabeledSliderPane::CreationDone() {
         UpdateText_(slider_pane->GetValue());
 
         // Access the min/max text panes and set them up.
-        auto set_up_text = [&](const std::string &name, float val){
+        auto set_up_text = [&](const Str &name, float val){
             FindTypedPane<TextPane>(name)->SetText(Util::ToString(val));
         };
         const auto &range = range_.GetValue();

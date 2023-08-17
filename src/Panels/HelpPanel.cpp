@@ -24,7 +24,7 @@ void HelpPanel::UpdateInterface() {
     SetFocus("Done");
 }
 
-void HelpPanel::OpenPage_(const std::string &page_name) {
+void HelpPanel::OpenPage_(const Str &page_name) {
     Util::OpenURL(TK::kPublicDocBaseURL + "/" + TK::kVersionString + "/" +
                   page_name);
 }

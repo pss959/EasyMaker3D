@@ -35,10 +35,8 @@ class FilePathList {
 
     /// Uses FilePath::GetContents() on the current path if it is a directory
     /// or its parent directory otherwise.
-    virtual void GetContents(std::vector<std::string> &subdirs,
-                             std::vector<std::string> &files,
-                             const std::string &extension,
-                             bool include_hidden) const;
+    virtual void GetContents(StrVec &subdirs, StrVec &files,
+                             const Str &extension, bool include_hidden) const;
 
     /// Returns true if the given FilePath represents a valid directory.
     virtual bool IsValidDirectory(const FilePath &path) const;

@@ -10,7 +10,7 @@ void ChangeExtrudedCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ChangeExtrudedCommand::IsValid(std::string &details) {
+bool ChangeExtrudedCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! GetProfile().IsValid()) {
@@ -20,7 +20,7 @@ bool ChangeExtrudedCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ChangeExtrudedCommand::GetDescription() const {
+Str ChangeExtrudedCommand::GetDescription() const {
     return "Changed the profile in " + GetModelsDesc(GetModelNames());
 }
 

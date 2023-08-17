@@ -56,11 +56,11 @@ protected:
     SliderPanePtr    sides_slider_;
 
     void UpdatePrecision_();
-    bool ValidateSidesText_(const std::string &text);
+    bool ValidateSidesText_(const Str &text);
     void UpdateSidesFromSlider_(size_t sides);
     void SetToPolygon_();
-    void Activate_(const std::string &key, bool is_activation);
-    void Change_(const std::string &key);
+    void Activate_(const Str &key, bool is_activation);
+    void Change_(const Str &key);
 
     friend class Parser::Registry;
 };

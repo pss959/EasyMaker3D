@@ -12,7 +12,7 @@ class ScaleCommand;
 /// \ingroup Executors
 class ScaleExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ScaleCommand";
     }
 

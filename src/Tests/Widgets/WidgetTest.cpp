@@ -52,7 +52,7 @@ TEST_F(WidgetTest, Active) {
     auto tw = CreateTestWidget();
 
     // Set a function to invoke when activating or deactivating.
-    std::string activation_string = "X";
+    Str activation_string = "X";
     const auto func = [&](Widget &w, bool is_act){
         activation_string += is_act ? "A" : "D";
     };
@@ -173,8 +173,8 @@ TEST_F(WidgetTest, Colors) {
 
 TEST_F(WidgetTest, Tooltip) {
     auto tw = CreateTestWidget();
-    std::string s;
-    const auto func = [&](Widget &w, const std::string &str, bool show){
+    Str s;
+    const auto func = [&](Widget &w, const Str &str, bool show){
         EXPECT_EQ(&w, tw.get());
         if (show)
             s += str;

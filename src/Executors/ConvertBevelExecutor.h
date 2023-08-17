@@ -7,11 +7,10 @@
 /// \ingroup Executors
 class ConvertBevelExecutor : public ConvertExecutorBase {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ConvertBevelCommand";
     }
 
   protected:
-    virtual ConvertedModelPtr CreateConvertedModel(
-        const std::string &name) override;
+    virtual ConvertedModelPtr CreateConvertedModel(const Str &name) override;
 };

@@ -6,6 +6,6 @@ void ChangeComplexityCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-std::string ChangeComplexityCommand::GetDescription() const {
+Str ChangeComplexityCommand::GetDescription() const {
     return "Changed the complexity of " + GetModelsDesc(GetModelNames());
 }

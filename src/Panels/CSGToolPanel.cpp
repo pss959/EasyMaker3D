@@ -33,6 +33,6 @@ void CSGToolPanel::InitInterface() {
 
 void CSGToolPanel::UpdateInterface() {
     // Turn on the correct radio button.
-    const std::string op_name = Util::EnumToWord(operation_);
+    const Str op_name = Util::EnumToWord(operation_);
     GetPane()->FindTypedPane<RadioButtonPane>(op_name)->SetState(true);
 }

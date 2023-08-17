@@ -20,7 +20,7 @@ class HelpPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
-    void OpenPage_(const std::string &page_name);
+    void OpenPage_(const Str &page_name);
     void OpenIssue_();
 
     friend class Parser::Registry;

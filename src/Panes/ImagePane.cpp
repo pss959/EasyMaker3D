@@ -12,7 +12,7 @@ void ImagePane::AddFields() {
     LeafPane::AddFields();
 }
 
-bool ImagePane::IsValid(std::string &details) {
+bool ImagePane::IsValid(Str &details) {
     if (! LeafPane::IsValid(details))
         return false;
 
@@ -39,7 +39,7 @@ void ImagePane::CreationDone() {
     }
 }
 
-std::string ImagePane::ToString(bool is_brief) const {
+Str ImagePane::ToString(bool is_brief) const {
     // Add the image path.
     return LeafPane::ToString(is_brief) + " '" + path_.GetValue() + "'";
 }

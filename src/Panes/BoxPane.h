@@ -27,7 +27,7 @@ class BoxPane : public ContainerPane {
     /// Returns the spacing. The default is 0.
     float GetSpacing() const { return spacing_; }
 
-    virtual std::string ToString(bool is_brief) const override;
+    virtual Str ToString(bool is_brief) const override;
 
   protected:
     BoxPane() {}

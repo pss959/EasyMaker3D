@@ -31,7 +31,7 @@ std::ostream & operator<<(std::ostream &out, const Duration_ &d) {
 
 namespace Debug {
 
-Timer::Timer(const std::string &name) : name_(name) {
+Timer::Timer(const Str &name) : name_(name) {
     // Avoid unnecessary allocations.
     timepoints_.reserve(100);
     Reset();
@@ -42,7 +42,7 @@ void Timer::Reset() {
     timepoints_.clear();
 }
 
-void Timer::AddTimePoint(const std::string &name) {
+void Timer::AddTimePoint(const Str &name) {
     timepoints_.emplace_back(name, UTime::Now());
 }
 

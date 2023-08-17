@@ -14,7 +14,7 @@ void ChangeSpinCommand::AddFields() {
     SetSpin(Spin());
 }
 
-bool ChangeSpinCommand::IsValid(std::string &details) {
+bool ChangeSpinCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (! IsValidVector(axis_)) {

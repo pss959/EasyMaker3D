@@ -89,7 +89,7 @@ void TranslationTool::FindParts_() {
 
     // Find all of the necessary parts.
     for (int dim = 0; dim < 3; ++dim) {
-        std::string dim_name = "X";
+        Str dim_name = "X";
         dim_name[0] += dim;
 
         Parts_::DimParts &dp = parts_->dim_parts[dim];

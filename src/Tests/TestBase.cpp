@@ -19,12 +19,12 @@
 // Test introspection.
 // ----------------------------------------------------------------------------
 
-std::string TestBase::GetTestCaseName() const {
+Str TestBase::GetTestCaseName() const {
     const auto info = ::testing::UnitTest::GetInstance()->current_test_info();
     return info->test_case_name();
 }
 
-std::string TestBase::GetTestName() const {
+Str TestBase::GetTestName() const {
     const auto info = ::testing::UnitTest::GetInstance()->current_test_info();
     return info->name();
 }
@@ -33,19 +33,19 @@ std::string TestBase::GetTestName() const {
 // Finding and reading files.
 // ----------------------------------------------------------------------------
 
-FilePath TestBase::GetDataPath(const std::string &file_name) {
+FilePath TestBase::GetDataPath(const Str &file_name) {
     return FilePath::Join(FilePath::GetTestDataPath(), FilePath(file_name));
 }
 
-std::string TestBase::ReadDataFile(const std::string &file_name) {
-    std::string s;
+Str TestBase::ReadDataFile(const Str &file_name) {
+    Str s;
     const FilePath path = GetDataPath(file_name);
     EXPECT_TRUE(Util::ReadFile(path, s)) << "Path: " << path.ToString();
     return s;
 }
 
-std::string TestBase::ReadResourceFile(const std::string &file_path) {
-    std::string s;
+Str TestBase::ReadResourceFile(const Str &file_path) {
+    Str s;
     const FilePath path = FilePath::Join(FilePath::GetResourceBasePath(),
                                          FilePath(file_path));
     EXPECT_TRUE(Util::ReadFile(path, s)) << "Path: " << path.ToString();
@@ -110,8 +110,7 @@ bool TestBase::MatricesCloseT(const Matrix4f &m0, const Matrix4f &m1, float t) {
     return ion::math::MatricesAlmostEqual(m0, m1, t);
 }
 
-bool TestBase::CompareStrings(const std::string &expected,
-                              const std::string &actual) {
+bool TestBase::CompareStrings(const Str &expected, const Str &actual) {
     size_t index;
     if (! Util::CompareStrings(actual, expected, index)) {
         // Outputs a character that causes strings to be different.
@@ -170,9 +169,9 @@ bool TestBase::CompareData(const void *expected, size_t size,
 // TriMesh helpers.
 // ----------------------------------------------------------------------------
 
-TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
+TriMesh TestBase::LoadTriMesh(const Str &file_name) {
     const FilePath path = GetDataPath(file_name);
-    std::string error;
+    Str error;
     TriMesh mesh = ReadSTLFile(path, 1, error);
     ASSERTM(! mesh.points.empty(),
             "Loaded from " + path.ToString() + ": " + error);
@@ -204,9 +203,9 @@ Rotationf TestBase::BuildRotation(float x, float y, float z, float deg) {
     return BuildRotation(Vector3f(x, y, z), deg);
 }
 
-std::string TestBase::FixString(const std::string &s) {
+Str TestBase::FixString(const Str &s) {
     const char lf = '\r';
-    std::string fs = s;
+    Str fs = s;
     fs.erase(std::remove(fs.begin(), fs.end(), lf), fs.end());
     return fs;
 }

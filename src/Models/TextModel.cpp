@@ -50,7 +50,7 @@ void TextModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
-bool TextModel::IsValid(std::string &details) {
+bool TextModel::IsValid(Str &details) {
     if (! PrimitiveModel::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (font_name_.WasSet() && ! IsValidFontName(GetFontName())) {
@@ -64,14 +64,14 @@ bool TextModel::IsValid(std::string &details) {
     return true;
 }
 
-void TextModel::SetTextString(const std::string &text) {
+void TextModel::SetTextString(const Str &text) {
     ASSERT(! text.empty());
     ValidateText_(font_name_, text);
     text_ = text;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-void TextModel::SetFontName(const std::string &name) {
+void TextModel::SetFontName(const Str &name) {
     ASSERT(IsValidFontName(name));
     ValidateText_(name, text_);
     font_name_ = name;
@@ -104,8 +104,7 @@ TriMesh TextModel::BuildMesh() {
             MeshCombiningOperation::kConcatenate));
 }
 
-void TextModel::ValidateText_(const std::string &font_name,
-                              const std::string &text) {
-    std::string reason;
+void TextModel::ValidateText_(const Str &font_name, const Str &text) {
+    Str reason;
     ASSERTM(IsValidStringForFont(font_name, text, reason), reason);
 }

@@ -26,7 +26,7 @@ ion::gfx::ImagePtr Image::SetUpIon(const IonContextPtr &ion_context) {
     return ion_image_;
 }
 
-SubImagePtr Image::FindSubImage(const std::string &name) const {
+SubImagePtr Image::FindSubImage(const Str &name) const {
     SubImagePtr sub;
     const auto it = sub_image_map_.find(name);
     if (it != sub_image_map_.end())

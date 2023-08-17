@@ -8,7 +8,7 @@ void ConvertedModel::AddFields() {
     OperatorModel::AddFields();
 }
 
-bool ConvertedModel::IsValid(std::string &details) {
+bool ConvertedModel::IsValid(Str &details) {
     if (! OperatorModel::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! operand_model_.GetValue()) {

@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ChangeTwistCommand);
 /// \ingroup Commands
 class ChangeTwistCommand : public ChangeSpinCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ChangeTwistCommand() {}

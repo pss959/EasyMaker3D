@@ -45,8 +45,8 @@ class BevelToolPanel : public ToolPanel {
     SliderPanePtr  scale_slider_;
     SliderPanePtr  angle_slider_;
 
-    void Activate_(const std::string &key, bool is_activation);
-    void Change_(const std::string &key);
+    void Activate_(const Str &key, bool is_activation);
+    void Change_(const Str &key);
 
     friend class Parser::Registry;
 };

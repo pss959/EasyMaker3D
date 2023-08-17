@@ -13,5 +13,5 @@ DECL_SHARED_PTR(NameAgent);
 class NameAgent {
   public:
     /// Returns true if the given name is known.
-    virtual bool Find(const std::string &name) const = 0;
+    virtual bool Find(const Str &name) const = 0;
 };

@@ -9,7 +9,7 @@ void MirroredModel::AddFields() {
     ConvertedModel::AddFields();
 }
 
-bool MirroredModel::IsValid(std::string &details) {
+bool MirroredModel::IsValid(Str &details) {
     if (! ConvertedModel::IsValid(details))
         return false;
     if (! IsValidVector(GetPlaneNormal())) {

@@ -21,9 +21,8 @@ class WriteSTLTest : public SceneTestBase {
     /// Writes the given Model in the given format with the given
     /// UnitConversion, returning the string representing the contents of the
     /// output file.
-    std::string WriteConvModelAsSTL(const ModelPtr &model,
-                                    const UnitConversion &conv,
-                                    FileFormat format) {
+    Str WriteConvModelAsSTL(const ModelPtr &model, const UnitConversion &conv,
+                            FileFormat format) {
         const TriMesh mesh = TransformMesh(model->GetMesh(),
                                            model->GetModelMatrix());
 
@@ -36,7 +35,7 @@ class WriteSTLTest : public SceneTestBase {
 
     // Same as WriteConvModelAsSTL(), but uses the default (identity)
     // UnitConversion.
-    std::string WriteModelAsSTL(const ModelPtr &model, FileFormat format) {
+    Str WriteModelAsSTL(const ModelPtr &model, FileFormat format) {
         UnitConversionPtr conv = GetDefaultUC();
         return WriteConvModelAsSTL(model, *conv, format);
     }
@@ -48,8 +47,8 @@ TEST_F(WriteSTLTest, TextBox) {
     auto box = Model::CreateModel<BoxModel>();
     box->SetScale(Vector3f(2, 3, 4));
 
-    const std::string expected = ReadDataFile("exportedTextBox.stl");
-    const std::string actual   = WriteModelAsSTL(box, FileFormat::kTextSTL);
+    const Str expected = ReadDataFile("exportedTextBox.stl");
+    const Str actual   = WriteModelAsSTL(box, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
 
@@ -59,8 +58,8 @@ TEST_F(WriteSTLTest, BinaryBox) {
     auto box = Model::CreateModel<BoxModel>();
     box->SetScale(Vector3f(2, 3, 4));
 
-    const std::string expected = ReadDataFile("exportedBinaryBox.stl");
-    const std::string actual   = WriteModelAsSTL(box, FileFormat::kBinarySTL);
+    const Str expected = ReadDataFile("exportedBinaryBox.stl");
+    const Str actual   = WriteModelAsSTL(box, FileFormat::kBinarySTL);
 
     // Compare as binary strings.
     ASSERT_EQ(expected.size(), actual.size());
@@ -79,8 +78,8 @@ TEST_F(WriteSTLTest, TextBoxConv) {
     conv->SetFromUnits(UnitConversion::Units::kMillimeters);
     conv->SetToUnits(UnitConversion::Units::kMeters);
 
-    const std::string expected = ReadDataFile("exportedTextBox.stl");
-    const std::string actual   = WriteConvModelAsSTL(box, *conv,
+    const Str expected = ReadDataFile("exportedTextBox.stl");
+    const Str actual   = WriteConvModelAsSTL(box, *conv,
                                                      FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
@@ -91,8 +90,8 @@ TEST_F(WriteSTLTest, TextF) {
     f->SetUniformScale(10);
     f->SetTextString("F");
 
-    const std::string expected = ReadDataFile("exportedTextF.stl");
-    const std::string actual   = WriteModelAsSTL(f, FileFormat::kTextSTL);
+    const Str expected = ReadDataFile("exportedTextF.stl");
+    const Str actual   = WriteModelAsSTL(f, FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
 

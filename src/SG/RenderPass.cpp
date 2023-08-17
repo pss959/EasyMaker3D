@@ -26,11 +26,11 @@ ShaderProgramPtr RenderPass::GetDefaultShaderProgram() const {
 }
 
 std::vector<NodePtr> RenderPass::FindNodesMatchingShaderName(
-    const NodePtr &root, const std::string &prefix) {
+    const NodePtr &root, const Str &prefix) {
     auto match = [&](const SG::Node &node){
         const auto &names = node.GetShaderNames();
         const auto find =
-            [&](const std::string &name){ return name.starts_with(prefix); };
+            [&](const Str &name){ return name.starts_with(prefix); };
         return std::find_if(names.begin(), names.end(), find) != names.end();
     };
     return SG::FindUniqueNodes(root, match);

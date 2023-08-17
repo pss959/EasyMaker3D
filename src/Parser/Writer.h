@@ -25,7 +25,7 @@ class Writer {
     void SetAddressFlag(bool write_addresses);
 
     /// Writes a string as a comment to the stream.
-    void WriteComment(const std::string &comment);
+    void WriteComment(const Str &comment);
 
     /// Writes the given Object to the stream.
     void WriteObject(const Object &obj);

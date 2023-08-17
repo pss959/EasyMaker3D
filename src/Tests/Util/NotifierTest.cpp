@@ -2,7 +2,7 @@
 #include "Util/Notifier.h"
 
 TEST(NotifierTest, OneObserver) {
-    const std::string key = "some key";
+    const Str key = "some key";
 
     int count = 0;
 
@@ -43,8 +43,8 @@ TEST(NotifierTest, OneObserver) {
 }
 
 TEST(NotifierTest, TwoObservers) {
-    const std::string key0 = "some key";
-    const std::string key1 = "another key";
+    const Str key0 = "some key";
+    const Str key1 = "another key";
 
     int count = 0;
 

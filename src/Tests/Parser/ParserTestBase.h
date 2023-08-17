@@ -50,18 +50,18 @@ class ParserTestBase : public SceneTestBase {
     void InitTestClasses();
 
     // Returns a string used to initialize all fields in a Simple instance.
-    static std::string GetSimpleInput();
+    static Str GetSimpleInput();
 
     // Returns a string used to initialize all fields in a Full instance.
-    static std::string GetFullInput();
+    static Str GetFullInput();
 
     // Parses the given string, checking for exceptions. Returns a null
     // ObjectPtr on failure.
-    Parser::ObjectPtr ParseString(const std::string &input);
+    Parser::ObjectPtr ParseString(const Str &input);
 
     // Sets up a temporary file containing the given input string, parses it,
     // and returns the result. Returns a null ObjectPtr on failure.
-    Parser::ObjectPtr ParseFile(const std::string &input);
+    Parser::ObjectPtr ParseFile(const Str &input);
 };
 
 // ----------------------------------------------------------------------------
@@ -77,7 +77,7 @@ class ParserTestBase::Simple : public Parser::Object {
     Parser::TField<int>            int_val;
     Parser::TField<unsigned int>  uint_val;
     Parser::TField<float>        float_val;
-    Parser::TField<std::string>    str_val;
+    Parser::TField<Str>            str_val;
     Parser::EnumField<SimpleEnum> enum_val;
     Parser::FlagField<FlagEnum>   flag_val;
     Parser::TField<Vector3f>     vec3f_val;
@@ -85,7 +85,7 @@ class ParserTestBase::Simple : public Parser::Object {
     Parser::TField<Anglef>       angle_val;
     Parser::TField<Rotationf>      rot_val;
     Parser::VField<int>           ints_val;
-    Parser::VField<std::string>   strs_val;
+    Parser::VField<Str>           strs_val;
   protected:
     virtual ~Simple();
     friend class Parser::Registry;
@@ -117,7 +117,7 @@ class ParserTestBase::Full : public Parser::Object {
     Parser::TField<unsigned int>  u;
     Parser::TField<size_t>        z;
     Parser::TField<float>         f;
-    Parser::TField<std::string>   s;
+    Parser::TField<Str>           s;
     Parser::EnumField<SimpleEnum> e;
     Parser::FlagField<FlagEnum>   g;
     Parser::TField<Vector2f>      v2f;
@@ -160,6 +160,6 @@ class ParserTestBase::Unscoped : public Parser::Object {
     virtual bool IsNameRequired() const override { return true; }
   protected:
     Unscoped() {}
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     friend class Parser::Registry;
 };

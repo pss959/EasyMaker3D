@@ -83,16 +83,16 @@ struct Color : public Vector4f {
     Vector3f ToHSV() const;
 
     /// Converts the color to a hex string in the format "#RRGGBBAA".
-    std::string ToHexString() const;
+    Str ToHexString() const;
 
     /// Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
     /// storing the results in this instance. Returns false on error.
-    bool FromHexString(const std::string &str);
+    bool FromHexString(const Str &str);
 
     /// Equality operator.
     bool operator==(const Color &c) const = default;
 
-    std::string ToString() const { return ToHexString(); }
+    Str ToString() const { return ToHexString(); }
 };
 
 // ----------------------------------------------------------------------------
@@ -152,7 +152,7 @@ struct Bounds : public Range3f {
 
     /// Converts to a string to help with debugging. If use_min_max is true,
     /// the min/max values are printed rather than the center and size.
-    std::string ToString(bool use_min_max = false) const;
+    Str ToString(bool use_min_max = false) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -205,7 +205,7 @@ struct Plane {
     bool operator==(const Plane &p) const = default;
 
     /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    Str ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -233,7 +233,7 @@ struct Ray {
     bool operator==(const Ray &r) const = default;
 
     /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    Str ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -305,7 +305,7 @@ struct Frustum {
     Point2f ProjectToImageRect(const Point3f &pt) const;
 
     /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    Str ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -334,7 +334,7 @@ struct TriMesh {
     size_t GetTriangleCount() const { return indices.size() / 3; }
 
     /// Converts to a (potentially very long) string to help with debugging.
-    std::string ToString() const;
+    Str ToString() const;
 
     /// Converts to a binary data string for compact output. The format is:
     ///   - *vertex_count*   : uint32
@@ -343,11 +343,11 @@ struct TriMesh {
     ///   - [*indices*]      : uint32 each
     ///
     /// The endianness of the host computer is used.
-    std::string ToBinaryString() const;
+    Str ToBinaryString() const;
 
     /// Fills in this TriMesh from the contents of a binary string. Returns
     /// false on error.
-    bool FromBinaryString(const std::string &str);
+    bool FromBinaryString(const Str &str);
 };
 
 // ----------------------------------------------------------------------------
@@ -373,11 +373,11 @@ struct ModelMesh : public TriMesh {
     ///   - [*indices*]      : uint32 each
     ///
     /// The endianness of the host computer is used.
-    std::string ToBinaryString() const;
+    Str ToBinaryString() const;
 
     /// Fills in this ModelMesh from the contents of a binary string. Returns
     /// false on error.
-    bool FromBinaryString(const std::string &str);
+    bool FromBinaryString(const Str &str);
 };
 
 // ----------------------------------------------------------------------------
@@ -388,7 +388,7 @@ struct ModelMesh : public TriMesh {
 template <typename T>
 concept Stringable = requires(T v)
 {
-    {v.ToString()} -> std::convertible_to<std::string>;
+    {v.ToString()} -> std::convertible_to<Str>;
 };
 
 

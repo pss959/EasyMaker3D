@@ -14,7 +14,7 @@ class SessionTestBase : public AppTestBase {
     /// Loads a session from the named file (with no extension) in the
     /// "Sessions" subdirectory of the test data directory. Returns false on
     /// error.
-    bool LoadSession(const std::string &file_name);
+    bool LoadSession(const Str &file_name);
 
     /// Convenience that selects the given Model, which must be found under the
     /// RootModel in the SceneContext.

@@ -14,13 +14,13 @@ DECL_SHARED_PTR(CreateTextModelCommand);
 /// \ingroup Commands
 class CreateTextModelCommand : public CreateModelCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
     /// Sets the text string to display.
-    void SetText(const std::string &text) { text_ = text; }
+    void SetText(const Str &text) { text_ = text; }
 
     /// Returns the text string.
-    const std::string & GetText() const { return text_; }
+    const Str & GetText() const { return text_; }
 
   protected:
     CreateTextModelCommand() {}
@@ -30,7 +30,7 @@ class CreateTextModelCommand : public CreateModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> text_;
+    Parser::TField<Str> text_;
     ///@}
 
     friend class Parser::Registry;

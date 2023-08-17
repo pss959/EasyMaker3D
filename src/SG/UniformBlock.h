@@ -32,11 +32,11 @@ class UniformBlock : public Object {
   public:
     /// Sets the render pass name for this UniformBlock. The default name is
     /// empty, meaning that it is valid for all render passes.
-    void SetPassName(const std::string &name);
+    void SetPassName(const Str &name);
 
     /// Returns the render pass name for this UniformBlock. If it is empty, it
     /// is valid for all render passes.
-    const std::string & GetPassName() const { return pass_name_; }
+    const Str & GetPassName() const { return pass_name_; }
 
     /// Returns the Material in the UniformBlock.
     const MaterialPtr & GetMaterial() const { return material_; }
@@ -46,11 +46,11 @@ class UniformBlock : public Object {
 
     /// Sets the name of the sub-image to access in each of the textures. If no
     /// name is specified, the entire texture image is used.
-    void SetSubImageName(const std::string &name);
+    void SetSubImageName(const Str &name);
 
     /// Returns the name of the sub-image to access in each of the textures. If
     /// no name is specified, the entire texture image is used.
-    const std::string & GetSubImageName() const { return sub_image_name_; }
+    const Str & GetSubImageName() const { return sub_image_name_; }
 
     /// Returns the non-texture uniforms in the UniformBlock.
     const std::vector<UniformPtr> & GetUniforms() const { return uniforms_; }
@@ -86,22 +86,18 @@ class UniformBlock : public Object {
     /// other Uniform of a specific type in the block. The Uniform must already
     /// exist in the block.
     ///@{
-    void SetIntUniformValue(const std::string &name, int value);
-    void SetFloatUniformValue(const std::string &name, float value);
-    void SetVector3fUniformValue(const std::string &name,
-                                 const Vector3f &value);
-    void SetVector4fUniformValue(const std::string &name,
-                                 const Vector4f &value);
-    void SetMatrix4fUniformValue(const std::string &name,
-                                 const Matrix4f &value);
+    void SetIntUniformValue(const Str &name, int value);
+    void SetFloatUniformValue(const Str &name, float value);
+    void SetVector3fUniformValue(const Str &name, const Vector3f &value);
+    void SetVector4fUniformValue(const Str &name, const Vector4f &value);
+    void SetMatrix4fUniformValue(const Str &name, const Matrix4f &value);
 
     ///@}
 
     /// This can be used to creates a Uniform with the given name and field
     /// name and adds its Ion Uniform to the block. This should not be called
     /// before SetUpIon().
-    void CreateAndAddUniform(const std::string &name,
-                             const std::string &field_name) {
+    void CreateAndAddUniform(const Str &name, const Str &field_name) {
         CreateAndAddUniform_(name, field_name);
     }
 
@@ -113,10 +109,10 @@ class UniformBlock : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>      pass_name_;
+    Parser::TField<Str>              pass_name_;
     Parser::ObjectField<Material>    material_;
     Parser::ObjectListField<Texture> textures_;
-    Parser::TField<std::string>      sub_image_name_;
+    Parser::TField<Str>              sub_image_name_;
     Parser::ObjectListField<Uniform> uniforms_;
     ///@}
 
@@ -147,8 +143,7 @@ class UniformBlock : public Object {
 
     /// Creates a Uniform with the given name and field name and adds its Ion
     /// Uniform to the block. Returns the new Uniform.
-    UniformPtr CreateAndAddUniform_(const std::string &name,
-                                    const std::string &field_name);
+    UniformPtr CreateAndAddUniform_(const Str &name, const Str &field_name);
 
     /// Adds the given Uniform to the Ion UniformBlock. If it is one of the
     /// special uniforms, this saves it.

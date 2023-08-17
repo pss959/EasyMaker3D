@@ -70,7 +70,7 @@ void TorusTool::Detach() {
     torus_model_.reset();
 }
 
-ScaleWidgetPtr TorusTool::InitScaler_(const std::string &name, bool is_inner) {
+ScaleWidgetPtr TorusTool::InitScaler_(const Str &name, bool is_inner) {
     auto scaler = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
 
     scaler->SetMode(ScaleWidget::Mode::kSymmetric);

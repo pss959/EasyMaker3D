@@ -13,7 +13,7 @@ DECL_SHARED_PTR(ConvertClipCommand);
 /// \ingroup Commands
 class ConvertClipCommand : public ConvertCommand {
   public:
-    virtual std::string GetDescription() const override;
+    virtual Str GetDescription() const override;
 
   protected:
     ConvertClipCommand() {}

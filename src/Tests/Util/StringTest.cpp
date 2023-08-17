@@ -64,7 +64,7 @@ TEST(StringTest, ReplaceString) {
 }
 
 TEST(StringTest, JoinStrings) {
-    std::vector<std::string> v{ "ABC", "DEF", "GHI" };
+    StrVec v{ "ABC", "DEF", "GHI" };
     EXPECT_EQ("ABC DEF GHI",   Util::JoinStrings(v));
     EXPECT_EQ("ABCDEFGHI",     Util::JoinStrings(v, ""));
     EXPECT_EQ("ABC, DEF, GHI", Util::JoinStrings(v, ", "));
@@ -78,7 +78,7 @@ TEST(StringTest, JoinItems) {
 }
 
 TEST(StringTest, RemoveFirstN) {
-    const std::string s = "abcdefghi";
+    const Str s = "abcdefghi";
     EXPECT_EQ("abcdefghi", Util::RemoveFirstN(s, 0));
     EXPECT_EQ("bcdefghi",  Util::RemoveFirstN(s, 1));
     EXPECT_EQ("cdefghi",   Util::RemoveFirstN(s, 2));

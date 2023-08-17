@@ -43,7 +43,7 @@ class Panel::Focuser_ {
 
     /// The constructor is passed a description string to use for log
     /// messages and a function to invoke to see if a sub-Pane can be focused.
-    Focuser_(const std::string &desc, const CanFocusFunc &can_focus_func) :
+    Focuser_(const Str &desc, const CanFocusFunc &can_focus_func) :
         desc_(desc), can_focus_func_(can_focus_func) {
         ASSERT(! desc.empty());
         ASSERT(can_focus_func);
@@ -88,7 +88,7 @@ class Panel::Focuser_ {
     };
 
     /// String used for log messages.
-    const std::string desc_;
+    const Str desc_;
 
     /// Function that returns true if a Pane can be focused.
     CanFocusFunc can_focus_func_;
@@ -276,7 +276,7 @@ void Panel::AddFields() {
     SG::Node::AddFields();
 }
 
-bool Panel::IsValid(std::string &details) {
+bool Panel::IsValid(Str &details) {
     if (! SG::Node::IsValid(details))
         return false;
 
@@ -465,19 +465,19 @@ const Settings & Panel::GetSettings() const {
     return GetContext().settings_agent->GetSettings();
 }
 
-void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
+void Panel::AddButtonFunc(const Str &name, const ButtonFunc &func) {
     auto but_pane = GetPane()->FindTypedPane<ButtonPane>(name);
     auto &clicked = but_pane->GetButton().GetClicked();
     clicked.AddObserver(this, [func](const ClickInfo &){ func(); });
 }
 
-void Panel::SetButtonText(const std::string &name, const std::string &text) {
+void Panel::SetButtonText(const Str &name, const Str &text) {
     auto but_pane  = GetPane()->FindTypedPane<ButtonPane>(name);
     auto text_pane = but_pane->FindTypedPane<TextPane>("ButtonText");
     text_pane->SetText(text);
 }
 
-void Panel::EnableButton(const std::string &name, bool enabled) {
+void Panel::EnableButton(const Str &name, bool enabled) {
     auto but_pane = GetPane()->FindTypedPane<ButtonPane>(name);
     but_pane->SetInteractionEnabled(enabled);
 }
@@ -486,7 +486,7 @@ void Panel::SetFocus(const PanePtr &pane) {
     focuser_->SetFocus(pane);
 }
 
-void Panel::SetFocus(const std::string &name) {
+void Panel::SetFocus(const Str &name) {
     SetFocus(GetPane()->FindPane(name));
 }
 
@@ -494,20 +494,19 @@ PanePtr Panel::GetFocusedPane() const {
     return focuser_->GetFocusedPane();
 }
 
-void Panel::DisplayMessage(const std::string &message,
-                           const MessageFunc &func) {
+void Panel::DisplayMessage(const Str &message, const MessageFunc &func) {
     auto dp = GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage(message);
     dp->SetSingleResponse("OK");
 
-    auto result_func = [func](const std::string &){
+    auto result_func = [func](const Str &){
         if (func)
             func();
     };
     context_->board_agent->PushPanel(dp, result_func);
 }
 
-void Panel::AskQuestion(const std::string &question, const QuestionFunc &func,
+void Panel::AskQuestion(const Str &question, const QuestionFunc &func,
                         bool is_no_default) {
     ASSERT(func);
 
@@ -518,11 +517,11 @@ void Panel::AskQuestion(const std::string &question, const QuestionFunc &func,
     context_->board_agent->PushPanel(dp, func);
 }
 
-void Panel::Close(const std::string &result) {
+void Panel::Close(const Str &result) {
     context_->board_agent->ClosePanel(result);
 }
 
-PanelPtr Panel::GetPanel(const std::string &name) const {
+PanelPtr Panel::GetPanel(const Str &name) const {
     return context_->board_agent->GetPanel(name);
 }
 
@@ -547,7 +546,7 @@ void Panel::FindInteractivePanes_(const PanePtr &pane,
 }
 
 bool Panel::ProcessKeyPress_(const Event &event) {
-    const std::string key_string = event.GetKeyString();
+    const Str key_string = event.GetKeyString();
     bool handled = false;
 
     // Enter key activates the focused Pane (if any) if not already active.

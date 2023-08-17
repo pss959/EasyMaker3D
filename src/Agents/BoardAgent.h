@@ -16,14 +16,14 @@ DECL_SHARED_PTR(BoardAgent);
 /// \ingroup Agents
 class BoardAgent {
   public:
-    typedef std::function<void(const std::string &)> ResultFunc;
+    typedef std::function<void(const Str &)> ResultFunc;
 
     /// Returns the named Panel. Asserts if the name is not known.
-    virtual PanelPtr GetPanel(const std::string &name) const = 0;
+    virtual PanelPtr GetPanel(const Str &name) const = 0;
 
     /// Closes the currently open Panel, passing the given string to the result
     /// function.
-    virtual void ClosePanel(const std::string &result) = 0;
+    virtual void ClosePanel(const Str &result) = 0;
 
     /// Temporarily replaces the currently open Panel with the given
     /// Panel. When the replacement Panel is closed, the replaced Panel is

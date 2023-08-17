@@ -13,7 +13,7 @@ void ChangeBevelCommand::AddFields() {
     MultiModelCommand::AddFields();
 }
 
-bool ChangeBevelCommand::IsValid(std::string &details) {
+bool ChangeBevelCommand::IsValid(Str &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     const Bevel bevel = GetBevel();
@@ -33,7 +33,7 @@ bool ChangeBevelCommand::IsValid(std::string &details) {
     return true;
 }
 
-std::string ChangeBevelCommand::GetDescription() const {
+Str ChangeBevelCommand::GetDescription() const {
     return "Changed the bevel of " + GetModelsDesc(GetModelNames());
 }
 

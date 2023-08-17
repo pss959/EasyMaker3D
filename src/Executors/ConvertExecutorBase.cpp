@@ -95,7 +95,7 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
 
         // Update the names in the command if necessary.
         if (cc.GetResultNames().empty()) {
-            std::vector<std::string> names;
+            StrVec names;
             for (const auto &pm: data->per_model)
                 names.push_back(pm.converted_model->GetName());
             cc.SetResultNames(names);

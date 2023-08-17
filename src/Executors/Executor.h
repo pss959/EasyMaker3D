@@ -53,7 +53,7 @@ class Executor {
 
     /// Derived classes implement this to return the name of the type of
     /// derived Command that they execute.
-    virtual std::string GetCommandTypeName() const = 0;
+    virtual Str GetCommandTypeName() const = 0;
 
     /// Each derived class must implement this function to execute the given
     // command according to the CommandOperation.
@@ -80,10 +80,10 @@ class Executor {
     }
 
     /// Uses the NameManager to create a unique name with the given prefix.
-    std::string CreateUniqueName(const std::string &prefix);
+    Str CreateUniqueName(const Str &prefix);
 
     /// Returns a SelPath to the model with the given name.
-    SelPath FindPathToModel(const std::string &name);
+    SelPath FindPathToModel(const Str &name);
 
     /// Attaches a click callback to the given model to change selection and
     /// sets up its tooltip.

@@ -1,5 +1,5 @@
 #include "Commands/ConvertTwistCommand.h"
 
-std::string ConvertTwistCommand::GetDescription() const {
+Str ConvertTwistCommand::GetDescription() const {
     return BuildDescription("twist");
 }

@@ -17,7 +17,7 @@ class TextInputPane : public BoxPane {
   public:
     /// Typedef for a function that is used to determine whether the current
     /// input text is valid. The current text is supplied.
-    typedef std::function<bool(const std::string &)> ValidationFunc;
+    typedef std::function<bool(const Str &)> ValidationFunc;
 
     /// Sets a function that is used to determine whether the current text is
     /// valid. If this function is not null and returns false, the background
@@ -25,11 +25,11 @@ class TextInputPane : public BoxPane {
     void SetValidationFunc(const ValidationFunc &func);
 
     /// Sets the initial text to display.
-    void SetInitialText(const std::string &text);
+    void SetInitialText(const Str &text);
 
     /// Returns the current text. This will be empty until the TextInputPane is
     /// fully set up.
-    std::string GetText() const;
+    Str GetText() const;
 
     virtual void SetLayoutSize(const Vector2f &size) override;
     virtual IPaneInteractor * GetInteractor() override;
@@ -49,7 +49,7 @@ class TextInputPane : public BoxPane {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> initial_text_;
+    Parser::TField<Str> initial_text_;
     ///@}
 
     friend class Parser::Registry;

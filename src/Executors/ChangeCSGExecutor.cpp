@@ -40,10 +40,10 @@ ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
 
         // If the command was read in, there should be result names already
         // stored in the command. If not, create them.
-        std::vector<std::string> result_names = ccc.GetResultNames();
+        StrVec result_names = ccc.GetResultNames();
         if (result_names.empty()) {
             result_names.reserve(model_names.size());
-            const std::string prefix = Util::EnumToWord(ccc.GetNewOperation());
+            const Str prefix = Util::EnumToWord(ccc.GetNewOperation());
             for (size_t i = 0; i < model_names.size(); ++i)
                 result_names.push_back(CreateUniqueName(prefix));
             ccc.SetResultNames(result_names);

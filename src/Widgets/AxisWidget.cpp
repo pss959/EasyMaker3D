@@ -73,8 +73,7 @@ Point3f AxisWidget::GetPosition() const {
                    rotator_->GetRotation() * translator_->GetTranslation());
 }
 
-void AxisWidget::SubWidgetActivated(const std::string &name,
-                                    bool is_activation) {
+void AxisWidget::SubWidgetActivated(const Str &name, bool is_activation) {
     if (name == "Translator" && ! is_activation) {
         // When the Slider2DWidget is deactivated, transfer the translation
         // from the Slider2DWidget to the AxisWidget and reset the

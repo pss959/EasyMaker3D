@@ -35,7 +35,7 @@ class Uniform : public Object {
 
     /// Returns the name of the last field whose value was set. This will be
     /// empty if none was set.
-    const std::string & GetLastFieldSet() const { return last_field_set_; }
+    const Str & GetLastFieldSet() const { return last_field_set_; }
 
     /// \name Value Access
     /// Only one of these will return the actual value of the uniform,
@@ -61,7 +61,7 @@ class Uniform : public Object {
     /// Sets the name of the field that will be used to create the Ion value.
     /// This should be called only if no value has been set; it asserts if that
     /// is not the case.
-    void SetFieldName(const std::string &name);
+    void SetFieldName(const Str &name);
 
     /// Creates a corresponding Ion Uniform using the given Ion registry and
     /// adds it to the given UniformBlock. Returns the resulting index.
@@ -111,7 +111,7 @@ class Uniform : public Object {
 
     /// Stores the name of the last field set, which contains the correct
     /// uniform value.
-    std::string last_field_set_;
+    Str last_field_set_;
 
     /// Ion Uniform index. This is invalid until the Uniform is added to an Ion
     /// UniformBlock

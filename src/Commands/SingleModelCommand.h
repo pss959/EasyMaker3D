@@ -15,15 +15,15 @@ class SingleModelCommand : public Command {
     void SetFromSelection(const Selection &sel);
 
     /// Returns the name of the operand Model.
-    const std::string & GetModelName() const { return model_name_; }
+    const Str & GetModelName() const { return model_name_; }
 
   protected:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> model_name_;
+    Parser::TField<Str> model_name_;
     ///@}
 };

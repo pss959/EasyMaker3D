@@ -20,10 +20,10 @@ namespace Parser { class Registry; }
 class NameToolPanel : public ToolPanel {
   public:
     /// Sets the initial Name to edit. This initializes the Panel for editing.
-    void SetName(const std::string &name);
+    void SetName(const Str &name);
 
     /// Returns the current name after possible editing.
-    std::string GetName() const;
+    Str GetName() const;
 
   protected:
     NameToolPanel() {}
@@ -34,9 +34,9 @@ class NameToolPanel : public ToolPanel {
   private:
     TextInputPanePtr input_pane_;
     TextPanePtr      message_pane_;
-    std::string      original_name_;
+    Str              original_name_;
 
-    bool ValidateName_(const std::string &name);
+    bool ValidateName_(const Str &name);
 
     friend class Parser::Registry;
 };

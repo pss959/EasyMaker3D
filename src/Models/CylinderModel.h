@@ -35,7 +35,7 @@ class CylinderModel : public PrimitiveModel {
   protected:
     CylinderModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual bool IsValid(Str &details) override;
     virtual TriMesh BuildMesh() override;
     virtual void CreationDone() override;
 

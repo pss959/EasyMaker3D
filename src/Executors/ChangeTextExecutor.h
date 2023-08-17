@@ -11,7 +11,7 @@
 /// \ingroup Executors
 class ChangeTextExecutor : public Executor {
   public:
-    virtual std::string GetCommandTypeName() const override {
+    virtual Str GetCommandTypeName() const override {
         return "ChangeTextCommand";
     }
 
@@ -23,10 +23,10 @@ class ChangeTextExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.
         struct PerModel {
-            SelPath     path_to_model;
-            std::string old_text_string;
-            std::string old_font_name;
-            float       old_char_spacing;
+            SelPath path_to_model;
+            Str     old_text_string;
+            Str     old_font_name;
+            float   old_char_spacing;
         };
         std::vector<PerModel> per_model;
     };

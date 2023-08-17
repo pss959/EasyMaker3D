@@ -76,7 +76,7 @@ TEST_F(NodeBoundsTest, CombineShapes) {
 }
 
 TEST_F(NodeBoundsTest, TransformedRoot) {
-    const std::string contents = R"(
+    const Str contents = R"(
   scale: 3 4 5,
   translation: 100 200 300,
   shapes: [Box { size: 2 3 4 }],
@@ -96,7 +96,7 @@ TEST_F(NodeBoundsTest, TransformedRoot) {
 }
 
 TEST_F(NodeBoundsTest, TransformedChild) {
-    const std::string contents = R"(
+    const Str contents = R"(
   scale: 2 2 2,
   translation: 10 20 30,
   children: [

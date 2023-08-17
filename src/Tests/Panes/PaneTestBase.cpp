@@ -1,8 +1,8 @@
 #include "Tests/Panes/PaneTestBase.h"
 
-std::string PaneTestBase::GetContentsString_(const std::string &type_name,
-                                             const std::string &pane_contents) {
-    const std::string s = R"(
+Str PaneTestBase::GetContentsString_(const Str &type_name,
+                                     const Str &pane_contents) {
+    const Str s = R"(
   children: [
     Node {
       CONSTANTS: [

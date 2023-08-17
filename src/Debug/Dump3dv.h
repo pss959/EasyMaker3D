@@ -46,13 +46,13 @@ class Dump3dv {
 
     /// The constructor is passed the file to dump to and a string to put in
     /// the header comment.
-    Dump3dv(const FilePath &path, const std::string &header);
+    Dump3dv(const FilePath &path, const Str &header);
 
     /// The destructor finishes the dumped file.
     ~Dump3dv();
 
     /// Sets an extra prefix to add to all ID's in subsequent items.
-    void SetExtraPrefix(const std::string &extra_prefix) {
+    void SetExtraPrefix(const Str &extra_prefix) {
         extra_prefix_ = extra_prefix;
     }
 
@@ -94,49 +94,48 @@ class Dump3dv {
 
     /// Adds a vertex to dump. Also adds a label if the vertex labeling flag is
     /// set.
-    void AddVertex(const std::string &id, const Point3f &point);
+    void AddVertex(const Str &id, const Point3f &point);
 
     /// Adds an edge between two vertices to dump. Also adds a label if the
     /// edge labeling flag is set.
-    void AddEdge(const std::string &id,
-                 const std::string &v0_id, const std::string &v1_id);
+    void AddEdge(const Str &id, const Str &v0_id, const Str &v1_id);
 
     /// Adds a face joining the given vertices to dump. Adds a label if the
     /// face labeling flag is set.
-    void AddFace(const std::string &id, const std::vector<std::string> &vids);
+    void AddFace(const Str &id, const StrVec &vids);
 
   private:
     std::ofstream out_;
-    LabelFlags    label_flags_;
-    float         label_font_size_;
-    Vector3f      coincident_label_offset_{0, 0, .1f};
-    Vector3f      extra_label_offset_{0, 0, 0};
+    LabelFlags label_flags_;
+    float      label_font_size_;
+    Vector3f   coincident_label_offset_{0, 0, .1f};
+    Vector3f   extra_label_offset_{0, 0, 0};
 
     /// Used to detect coincident labels.
-    Point3fMap    label_point_map_{.001f};
+    Point3fMap label_point_map_{.001f};
 
     /// Current extra prefix to add to IDs.
-    std::string   extra_prefix_;
+    Str        extra_prefix_;
 
     /// Adds a 3dv vertex statement.
-    void AddVertex_(const std::string &id, const Point3f &p);
+    void AddVertex_(const Str &id, const Point3f &p);
 
     /// Adds a 3dv text statement to show a label.
-    void AddLabel_(const Point3f &pos, const std::string &text);
+    void AddLabel_(const Point3f &pos, const Str &text);
 
     /// Adds a 3dv rotated text statement to show a label facing in the given
     /// direction.
     void AddRotatedLabel_(const Point3f &pos, const Vector3f &dir,
-                          const std::string &text);
+                          const Str &text);
 
     /// Outputs an alternating color for a face depending on an index.
     void AltFaceColor_(size_t i);
 
     /// Creates an ID string from a string, adding the extra prefix.
-    std::string ID_(const std::string &id);
+    Str ID_(const Str &id);
 
     /// Creates an ID string from a prefix and index, adding the extra prefix.
-    std::string IID_(const std::string &prefix, int index);
+    Str IID_(const Str &prefix, int index);
 };
 
 }  // namespace Debug

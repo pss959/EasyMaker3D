@@ -16,24 +16,24 @@ class FilePath : private std::filesystem::path {
     /// Constructor from a string.
     FilePath(const char *path)        : BaseType_(path) {}
     /// Constructor from a string.
-    FilePath(const std::string &path) : BaseType_(path) {}
+    FilePath(const Str &path) : BaseType_(path) {}
 
     /// Assignment operator.
     FilePath & operator=(const char *path);
     /// Assignment operator.
-    FilePath & operator=(const std::string &path);
+    FilePath & operator=(const Str &path);
 
     /// Clears to initial (empty) state.
     void Clear() { clear(); }
 
     /// Converts to a string. Note that this always uses the canonical form
     /// with forward slashes as separators and no drive letters.
-    std::string ToString() const;
+    Str ToString() const;
 
     /// Converts to a string native to the operating system. This should be
     /// used instead of ToString() when the path is to be used to open a file
     /// for reading or writing.
-    std::string ToNativeString() const;
+    Str ToNativeString() const;
 
     /// Returns true if the file specified by the path exists.
     bool Exists() const;
@@ -54,14 +54,14 @@ class FilePath : private std::filesystem::path {
 
     /// Returns the file at the end of the path, if any. If remove_extension is
     /// true, this returns just the part before the extension, if any.
-    std::string GetFileName(bool remove_extension = false) const;
+    Str GetFileName(bool remove_extension = false) const;
 
     /// Returns the extension of the file at the end of the path (including the
     /// dot), if any.
-    std::string GetExtension() const;
+    Str GetExtension() const;
 
     /// Adds the given extension (not including the dot) to the path.
-    void AddExtension(const std::string &extension);
+    void AddExtension(const Str &extension);
 
     /// If this FilePath is relative, this appends it after the given base path
     /// and returns the result. If the base path is a file, this uses its
@@ -87,9 +87,7 @@ class FilePath : private std::filesystem::path {
     /// empty. If extension is empty, only files with a matching extension are
     /// added. If include_hidden is true, this includes hidden files and
     /// subdirectories.
-    void GetContents(std::vector<std::string> &subdirs,
-                     std::vector<std::string> &files,
-                     const std::string &extension,
+    void GetContents(StrVec &subdirs, StrVec &files, const Str &extension,
                      bool include_hidden) const;
 
     /// Removes the file with the path. Used primarily for removing temporary
@@ -122,12 +120,12 @@ class FilePath : private std::filesystem::path {
     /// subdirectory. If the sub_path is empty, this returns the resource
     /// directory. Otherwise, it creates a path to the sub_path relative to the
     /// subdirectory.
-    static FilePath GetResourcePath(const std::string &type_name,
+    static FilePath GetResourcePath(const Str &type_name,
                                     const FilePath &sub_path);
 
     /// If the given path is absolute, this returns it. Otherwise, returns the
     /// result of calling GetResourcePath().
-    static FilePath GetFullResourcePath(const std::string &subdir,
+    static FilePath GetFullResourcePath(const Str &subdir,
                                         const FilePath &path);
 
     /// Returns a path to the user's home directory, which is OS-dependent.
@@ -135,7 +133,7 @@ class FilePath : private std::filesystem::path {
 
     /// Returns a path to the settings directory, which is OS-dependent. The
     /// name of the application is supplied.
-    static FilePath GetSettingsDirPath(const std::string &app_name);
+    static FilePath GetSettingsDirPath(const Str &app_name);
 
     /// Returns a path to the test data directory, which comes from the
     /// TEST_DATA_DIR environment variable.
@@ -145,7 +143,7 @@ class FilePath : private std::filesystem::path {
     static FilePath GetTempFilePath();
 
     /// Returns the separator to use for parts of a path.
-    static std::string GetSeparator();
+    static Str GetSeparator();
 
     /// Returns a hash value for use in std::hash.
     std::size_t GetHashValue() const { return hash_value(*this); }

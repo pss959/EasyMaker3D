@@ -47,10 +47,10 @@ TEST_F(SpinWidgetTest, SetSize) {
 TEST_F(SpinWidgetTest, Notify) {
     auto sw = GetSpinWidget();
 
-    DragTester dtar(sw, std::vector<std::string>{ "Axis", "Rotator"    });
-    DragTester dtat(sw, std::vector<std::string>{ "Axis", "Translator" });
-    DragTester dtrr(sw, std::vector<std::string>{ "Ring" });
-    DragTester dtof(sw, std::vector<std::string>{ "Offset" });
+    DragTester dtar(sw, StrVec{ "Axis", "Rotator"    });
+    DragTester dtat(sw, StrVec{ "Axis", "Translator" });
+    DragTester dtrr(sw, StrVec{ "Ring" });
+    DragTester dtof(sw, StrVec{ "Offset" });
 
     SpinWidget::ChangeType last_type;
     Spin                   spin;

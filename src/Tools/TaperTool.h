@@ -16,12 +16,12 @@ class TaperTool : public PanelTool {
     virtual bool IsSpecialized() const override { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
 
-    virtual std::string GetPanelName() const override {
+    virtual Str GetPanelName() const override {
         return "TaperToolPanel";
     }
 
     virtual void InitPanel() override;
-    virtual void PanelChanged(const std::string &key,
+    virtual void PanelChanged(const Str &key,
                               ToolPanel::InteractionType type) override;
 
   private:

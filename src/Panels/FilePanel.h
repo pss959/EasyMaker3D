@@ -38,7 +38,7 @@ class FilePanel : public ToolPanel {
     void Reset();
 
     /// Sets the title displayed in the panel. The default is "Select a File".
-    void SetTitle(const std::string &title);
+    void SetTitle(const Str &title);
 
     /// Sets the type of file target. The default is TargetType::kDirectory.
     void SetTargetType(TargetType type);
@@ -55,13 +55,13 @@ class FilePanel : public ToolPanel {
     /// Sets the file extension that files must match to be shown in the
     /// browser and that will be appended to user-entered names if necessary.
     /// An empty string (the default) removes any name restriction.
-    void SetExtension(const std::string &extension);
+    void SetExtension(const Str &extension);
 
     /// Indicates that the given path is to be highlighted with red text and
     /// the given annotation string if it appears in the directory/file
     /// list. The annotation will appear after the special path. The default is
     /// empty for both, which turns off highlighting.
-    void SetHighlightPath(const FilePath &path, const std::string &annotation);
+    void SetHighlightPath(const FilePath &path, const Str &annotation);
 
     /// Accesses the resulting file path. This is empty if no file was selected
     /// or if the panel was canceled.
@@ -94,7 +94,7 @@ class FilePanel : public ToolPanel {
     /// This is called when a response button is clicked. The base class
     /// defines this to Call ReportChange() with the given result and close the
     /// FilePanel with the result.
-    virtual void ProcessResult(const std::string &result);
+    virtual void ProcessResult(const Str &result);
 
   private:
     class Impl_;

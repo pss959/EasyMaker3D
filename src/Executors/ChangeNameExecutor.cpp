@@ -6,7 +6,7 @@
 
 void ChangeNameExecutor::Execute(Command &command, Command::Op operation) {
     ChangeNameCommand &cnc = GetTypedCommand<ChangeNameCommand>(command);
-    std::string from_name, to_name;
+    Str from_name, to_name;
     if (operation == Command::Op::kDo) {
         from_name = cnc.GetModelName();
         to_name   = cnc.GetNewName();

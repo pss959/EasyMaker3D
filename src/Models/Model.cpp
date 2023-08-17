@@ -118,13 +118,13 @@ void Model::CreationDone() {
     }
 }
 
-bool Model::IsValidName(const std::string &name) {
+bool Model::IsValidName(const Str &name) {
     return ! name.empty() &&
         ! std::isspace(name.front()) &&
         ! std::isspace(name.back());
 }
 
-bool Model::ChangeModelName(const std::string &new_name, bool is_user_edit) {
+bool Model::ChangeModelName(const Str &new_name, bool is_user_edit) {
     // Do nothing if trying to override a user edit.
     if (is_user_name_ && ! is_user_edit)
         return false;
@@ -231,7 +231,7 @@ const TriMesh & Model::GetCurrentMesh() const {
     return shape_->GetMesh();
 }
 
-bool Model::IsMeshValid(std::string &reason) const {
+bool Model::IsMeshValid(Str &reason) const {
     // Make sure the mesh is up to date.
     RebuildMeshIfStaleAndShown_(true);
     reason = is_mesh_valid_ ? "" : reason_for_invalid_mesh_;
@@ -249,7 +249,7 @@ void Model::PostSetUpIon() {
     UpdateColor_();
 }
 
-void Model::UpdateForRenderPass(const std::string &pass_name) {
+void Model::UpdateForRenderPass(const Str &pass_name) {
     ClickableWidget::UpdateForRenderPass(pass_name);
     RebuildMeshIfStaleAndShown_(true);
 }
@@ -298,7 +298,7 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
     }
 }
 
-bool Model::ValidateMesh(TriMesh &mesh, std::string &reason) {
+bool Model::ValidateMesh(TriMesh &mesh, Str &reason) {
     KLOG('B', GetDesc() << " validating mesh");
     ASSERT(shape_);
     bool is_valid = false;

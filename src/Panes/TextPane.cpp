@@ -26,7 +26,7 @@ void TextPane::AddFields() {
     LeafPane::AddFields();
 }
 
-bool TextPane::IsValid(std::string &details) {
+bool TextPane::IsValid(Str &details) {
     if (! LeafPane::IsValid(details))
         return false;  // LCOV_EXCL_LINE [cannot happen]
     if (GetText().empty()) {
@@ -52,7 +52,7 @@ void TextPane::CreationDone() {
     }
 }
 
-void TextPane::SetText(const std::string &text) {
+void TextPane::SetText(const Str &text) {
     if (text != GetText()) {
         text_ = text;
         if (text_node_) {
@@ -74,7 +74,7 @@ void TextPane::SetColor(const Color &color) {
         text_node_->SetTextWithColor(text_, color_);
 }
 
-void TextPane::SetFontName(const std::string &font_name) {
+void TextPane::SetFontName(const Str &font_name) {
     if (font_name != font_name_.GetValue()) {
         font_name_ = font_name;
         if (text_node_)
@@ -123,9 +123,9 @@ void TextPane::PostSetUpIon() {
 }
 
 // LCOV_EXCL_START [debug only]
-std::string TextPane::ToString(bool is_brief) const {
+Str TextPane::ToString(bool is_brief) const {
     // Add the text size (from the TextNode) and the text string.
-    std::string s = text_.GetValue();
+    Str s = text_.GetValue();
     if (s.size() > 16U)
         s = s.substr(0, 13U) + "...";
     return LeafPane::ToString(is_brief) +
@@ -175,7 +175,7 @@ Vector2f TextPane::ComputeUnpaddedBaseSize_() const {
 
     // The base height is based solely on the font_size, padding, line_spacing,
     // and number of lines of text.
-    const std::string &text = text_.GetValue();
+    const Str &text = text_.GetValue();
     const size_t line_count = 1 + std::count(text.begin(), text.end(), '\n');
 
     Vector2f base_size(0, 0);
