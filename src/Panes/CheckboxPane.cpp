@@ -13,8 +13,10 @@ void CheckboxPane::AddFields() {
 }
 
 void CheckboxPane::SetState(bool new_state) {
-    state_ = new_state;
-    UpdateState_();
+    if (state_ != new_state) {
+        state_ = new_state;
+        UpdateState_();
+    }
 }
 
 void CheckboxPane::CreationDone() {

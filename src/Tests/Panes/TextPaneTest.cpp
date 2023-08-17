@@ -1,31 +1,14 @@
 ﻿#include "Panes/TextPane.h"
-#include "Tests/SceneTestBase.h"
+#include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
-#include "Util/String.h"
 #include "Util/Tuning.h"
 
 /// \ingroup Tests
-class TextPaneTest : public SceneTestBase {
+class TextPaneTest : public PaneTestBase {
   protected:
-#if XXXX
-    /// Returns a string that can be passed to a function
-    std::string BuildContents(const std::string &text_contents) {
-    }
-#endif
-
-    TextPanePtr GetTextPane(const std::string &text_contents = "") {
-        const std::string s = R"(
-  children: [
-    Node {
-      TEMPLATES: [<"nodes/templates/Panes/TextPane.emd">],
-      children: [CLONE "T_TextPane" "TextPane" { <TEXTCONTENTS> }],
-    }
-  ]
-)";
-        const std::string contents =
-            Util::ReplaceString(s, "<TEXTCONTENTS>", text_contents);
-        return ReadRealNode<TextPane>(contents, "TextPane");
+    TextPanePtr GetTextPane(const std::string &contents = "") {
+        return ReadRealPane<TextPane>("TextPane", contents);
     }
 };
 
@@ -103,7 +86,6 @@ TEST_F(TextPaneTest, IsValid) {
 }
 
 TEST_F(TextPaneTest, Notify) {
-    EnableKLog("q"); // XXXX
     auto text = GetTextPane();
 
     size_t change_count = 0;

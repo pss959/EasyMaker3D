@@ -152,7 +152,10 @@ test_source_dict = {
         'TwistedModelTest',
     ],
     'Panes' : [
+        'ButtonPaneTest',
+        'CheckboxPaneTest',
         'PaneTest',
+        'PaneTestBase',
         'TextPaneTest',
     ],
     'Parser' : [
