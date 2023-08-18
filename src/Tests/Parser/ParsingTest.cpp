@@ -44,8 +44,9 @@ TEST_F(ParsingTest, StringAndFile) {
         EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF1));
         EXPECT_FALSE(sp->flag_val.GetValue().Has(FlagEnum::kF2));
         EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF3));
-        EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), sp->vec3f_val);
-        EXPECT_EQ(Color(.2f, .3f, .4f, 1.f), sp->color_val);
+        EXPECT_EQ(Vector3f(2, 3, 4.5f), sp->vec3f_val);
+        EXPECT_EQ(Vector4f(2, 3, 4.5f, 5), sp->vec4f_val);
+        EXPECT_EQ(Color(.2f, .3f, .4f, 1), sp->color_val);
         EXPECT_EQ(Anglef::FromDegrees(90), sp->angle_val);
         EXPECT_EQ(BuildRotation(0, 1, 0, 180), sp->rot_val);
         const std::vector<int> &ints = sp->ints_val.GetValue();
@@ -67,6 +68,7 @@ TEST_F(ParsingTest, StringAndFile) {
         EXPECT_TRUE(sp->enum_val.WasSet());
         EXPECT_TRUE(sp->flag_val.WasSet());
         EXPECT_TRUE(sp->vec3f_val.WasSet());
+        EXPECT_TRUE(sp->vec4f_val.WasSet());
         EXPECT_TRUE(sp->color_val.WasSet());
         EXPECT_TRUE(sp->angle_val.WasSet());
         EXPECT_TRUE(sp->rot_val.WasSet());
@@ -76,22 +78,25 @@ TEST_F(ParsingTest, StringAndFile) {
 }
 
 TEST_F(ParsingTest, Derived) {
-    const Str input =
-        "# Full-line comment\n"
-        "Derived \"TestObj\" {\n"
-        "  int_val:   13, # In-line comment\n"
-        "  float_val: 3.4,\n"
-        "  str_val:   \"A quoted string\",\n"
-        "  vec3f_val: 2 3 4.5,\n"
-        "  simple: Simple \"Nested\" {\n"
-        "     int_val: 271,\n"
-        "  },\n"
-        "  simple_list: [\n"
-        "     Simple \"Nested1\" {},\n"
-        "     Simple \"Nested2\" {},\n"
-        "  ],\n"
-        "  hidden_int: 5,\n"
-        "}\n";
+    const Str input = R"(
+        # Full-line comment
+        Derived "TestObj" {
+          int_val:   13, # In-line comment
+          float_val: 3.4,
+          str_val:   "A quoted string",
+          vec3f_val: 2 3 4.5,
+          vec4f_val: "#aabbccdd",  # Scan as a color.
+          vec4f_val: 2 3 4.5 5,
+          simple: Simple "Nested" {
+             int_val: 271,
+          },
+          simple_list: [
+             Simple "Nested1" {},
+             Simple "Nested2" {},
+          ],
+          hidden_int: 5,
+        }"
+)";
 
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
@@ -102,7 +107,8 @@ TEST_F(ParsingTest, Derived) {
     EXPECT_EQ(13,   dp->int_val);
     EXPECT_EQ(3.4f, dp->float_val);
     EXPECT_EQ("A quoted string", dp->str_val.GetValue());
-    EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), dp->vec3f_val);
+    EXPECT_EQ(Vector3f(2, 3, 4.5f), dp->vec3f_val);
+    EXPECT_EQ(Vector4f(2, 3, 4.5f, 5), dp->vec4f_val);
 
     const SimplePtr simp = dp->simple;
     EXPECT_NOT_NULL(simp);

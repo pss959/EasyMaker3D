@@ -81,6 +81,7 @@ class ParserTestBase::Simple : public Parser::Object {
     Parser::EnumField<SimpleEnum> enum_val;
     Parser::FlagField<FlagEnum>   flag_val;
     Parser::TField<Vector3f>     vec3f_val;
+    Parser::TField<Vector4f>     vec4f_val;
     Parser::TField<Color>        color_val;
     Parser::TField<Anglef>       angle_val;
     Parser::TField<Rotationf>      rot_val;

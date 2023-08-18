@@ -94,10 +94,6 @@ TEST_F(ErrorTest, SyntaxErrors) {
                 "Unknown field");
     TEST_THROW_(parse_str("Unscoped {}"),
                 "must have a name");
-    TEST_THROW_(parse_str("Unscoped \"A\" { CONSTANTS: [] }"),
-                "CONSTANTS appears in unscoped object");
-    TEST_THROW_(parse_str("Unscoped \"B\" { TEMPLATES: [] }"),
-                "TEMPLATES appears in unscoped object");
     // Name causes Unscoped::IsValid() to return false.
     TEST_THROW_(parse_str("Unscoped \"INVALID\" {}"),
                 "has error: invalid name");

@@ -20,6 +20,7 @@ void ParserTestBase::Simple::AddFields() {
     AddField(enum_val.Init("enum_val", SimpleEnum::kE1));
     AddField(flag_val.Init("flag_val"));
     AddField(vec3f_val.Init("vec3f_val"));
+    AddField(vec4f_val.Init("vec4f_val"));
     AddField(color_val.Init("color_val"));
     AddField(angle_val.Init("angle_val"));
     AddField(rot_val.Init("rot_val"));
@@ -108,6 +109,7 @@ Str ParserTestBase::GetSimpleInput() {
         "  enum_val:  \"kE2\",\n"
         "  flag_val:  \"kF3| kF1\",\n"
         "  vec3f_val: 2 3 4.5,\n"
+        "  vec4f_val: 2 3 4.5 5,\n"
         "  color_val: .2 .3 .4 1,\n"
         "  angle_val: 90,\n"
         "  rot_val:   0 1 0 180,\n"
