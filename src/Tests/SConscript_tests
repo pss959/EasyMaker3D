@@ -154,6 +154,7 @@ test_source_dict = {
     'Panes' : [
         'ButtonPaneTest',
         'CheckboxPaneTest',
+        'DropdownPaneTest',
         'PaneTest',
         'PaneTestBase',
         'TextPaneTest',

@@ -1,0 +1,41 @@
+# This defines templates for all Pane classes.
+UnscopedNode {
+  CONSTANTS: [
+    # Shorthand for instantiating pane templates.
+    BG:     "CLONE \"T_PaneBackground\" \"Background\"",
+    BORDER: "CLONE \"T_Border\" \"Border\"",
+
+    # Other shorthand.
+    CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",
+    RESIZE_WH:   "resize_width: True, resize_height: True",
+  ],
+  TEMPLATES: [
+    # Pane base types.
+    <"nodes/templates/Panes/ProfilePaneBase.emd">,
+    # Pane dependencies.
+    <"nodes/templates/Border.emd">,
+    <"nodes/templates/PaneBackground.emd">,
+    # Basic Pane templates.
+    <"nodes/templates/Panes/ButtonPane.emd">,
+    <"nodes/templates/Panes/CheckboxPane.emd">,
+    <"nodes/templates/Panes/ClipPane.emd">,
+    <"nodes/templates/Panes/IconPane.emd">,
+    <"nodes/templates/Panes/ImagePane.emd">,
+    <"nodes/templates/Panes/ProfilePane.emd">,
+    <"nodes/templates/Panes/RadioButtonPane.emd">,
+    <"nodes/templates/Panes/SliderPane.emd">,
+    <"nodes/templates/Panes/TaperProfilePane.emd">,
+    <"nodes/templates/Panes/TextPane.emd">,
+    <"nodes/templates/Panes/TextInputPane.emd">,
+    # These have to come after TextPane.
+    <"nodes/templates/Panes/SpecialKeyPane.emd">,
+    <"nodes/templates/Panes/TextKeyPane.emd">,
+    # This has to come after SliderPane.
+    <"nodes/templates/Panes/ScrollingPane.emd">,
+    # This has to come after TextPane, ScrollingPane, & ButtonPane.
+    <"nodes/templates/Panes/DropdownPane.emd">,
+    # These have to come after TextPane & SliderPane.
+    <"nodes/templates/Panes/LabeledHSliderPane.emd">,
+    <"nodes/templates/Panes/LabeledVSliderPane.emd">,
+  ]
+}

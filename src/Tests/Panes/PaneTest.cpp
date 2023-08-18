@@ -12,6 +12,7 @@
 /// \ingroup Tests
 class PaneTest : public SceneTestBase {
   protected:
+    // XXXX Get rid of this class and Panes.emd
     SG::ScenePtr ReadPaneScene() {
         const Str input = ReadDataFile("Panes.emd");
         return ReadScene(input);

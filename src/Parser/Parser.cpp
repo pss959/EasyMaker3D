@@ -381,15 +381,11 @@ void Parser::Impl_::ParseFields_(Object &obj) {
 
         // Special cases.
         if (field_name == "CONSTANTS") {
-            if (! obj.IsScoped())
-                Throw_("CONSTANTS appears in unscoped object " + obj.GetDesc());
             if (any_real_field_parsed)
                 Throw_("CONSTANTS appears after fields in " + obj.GetDesc());
             ParseConstants_();
         }
         else if (field_name == "TEMPLATES") {
-            if (! obj.IsScoped())
-                Throw_("TEMPLATES appears in unscoped object " + obj.GetDesc());
             if (any_real_field_parsed)
                 Throw_("TEMPLATES appears after fields in " + obj.GetDesc());
             ParseTemplates_();

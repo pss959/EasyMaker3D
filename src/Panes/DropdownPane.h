@@ -37,7 +37,8 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     /// notify. Asserts if the choice is not a valid one.
     void SetChoiceFromString(const Str &choice);
 
-    /// Returns the current choice.
+    /// Returns the current choice. This will be "." until valid choices are
+    /// set.
     const Str & GetChoice() const { return choice_; }
 
     /// Returns the index of the current choice.

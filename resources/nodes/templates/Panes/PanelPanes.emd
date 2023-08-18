@@ -1,0 +1,44 @@
+# Defines templates that are clones of Panes in AllPanes.emd.
+UnscopedNode {
+  TEMPLATES: [
+    # Title text pane.
+    CLONE "T_TextPane" "T_TitleTextPane" {
+      padding:      2,
+      font_size:    16,
+      resize_width: True,
+      $CENTER_TEXT,
+    }
+
+    # Button that expands to full width.
+    CLONE "T_ButtonPane" "T_FullButton" {
+      resize_width: True,
+      padding: 6,
+    },
+    # Text for T_FullButton.
+    CLONE "T_TextPane" "T_FullButtonText" {
+      font_size:    14,
+      resize_width: True,
+      $CENTER_TEXT,
+    },
+
+    # Button used for response at bottom of Panel.
+    CLONE "T_ButtonPane" "T_ResponseButton" {
+      padding: 4,
+    },
+    # Text for T_ResponseButton.
+    CLONE "T_TextPane" "T_ResponseButtonText" {
+      font_size: 14,
+      $CENTER_TEXT,
+    },
+
+    # Box used to enclose response buttons.
+    BoxPane "T_ResponseButtonBox" {
+      orientation: "kHorizontal",
+      resize_width: True,
+      spacing: 10,
+      panes: [
+        SpacerPane { resize_width: True },
+      ]
+    },
+  ],
+}

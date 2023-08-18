@@ -2,83 +2,16 @@
 Node "Panels" {
   CONSTANTS: [
     # Shorthand for instantiating pane templates.
-    BG:         "CLONE \"T_PaneBackground\" \"Background\"",
-    BORDER:     "CLONE \"T_Border\" \"Border\"",
     BUTTONTEXT: "CLONE \"T_TextPane\" \"ButtonText\"",
-
-    # Other shorthand.
-    CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",
-    RESIZE_WH:   "resize_width: True, resize_height: True",
-  ],
-
-  TEMPLATES: [
-    # Pane base types.
-    <"nodes/templates/Panes/ProfilePaneBase.emd">,
-    # Basic Pane templates.
-    <"nodes/templates/Panes/ButtonPane.emd">,
-    <"nodes/templates/Panes/CheckboxPane.emd">,
-    <"nodes/templates/Panes/ClipPane.emd">,
-    <"nodes/templates/Panes/IconPane.emd">,
-    <"nodes/templates/Panes/ImagePane.emd">,
-    <"nodes/templates/Panes/ProfilePane.emd">,
-    <"nodes/templates/Panes/RadioButtonPane.emd">,
-    <"nodes/templates/Panes/SliderPane.emd">,
-    <"nodes/templates/Panes/TaperProfilePane.emd">,
-    <"nodes/templates/Panes/TextPane.emd">,
-    <"nodes/templates/Panes/TextInputPane.emd">,
-    # These have to come after TextPane.
-    <"nodes/templates/Panes/SpecialKeyPane.emd">,
-    <"nodes/templates/Panes/TextKeyPane.emd">,
-    # This has to come after SliderPane.
-    <"nodes/templates/Panes/ScrollingPane.emd">,
-    # This has to come after TextPane, ScrollingPane, & ButtonPane.
-    <"nodes/templates/Panes/DropdownPane.emd">,
-    # These have to come after TextPane & SliderPane.
-    <"nodes/templates/Panes/LabeledHSliderPane.emd">,
-    <"nodes/templates/Panes/LabeledVSliderPane.emd">,
-
-    # Title text pane.
-    CLONE "T_TextPane" "T_TitleTextPane" {
-      padding:      2,
-      font_size:    16,
-      resize_width: True,
-      $CENTER_TEXT,
-    }
-
-    # Button that expands to full width.
-    CLONE "T_ButtonPane" "T_FullButton" {
-      resize_width: True,
-      padding: 6,
-    },
-    # Text for T_FullButton.
-    CLONE "T_TextPane" "T_FullButtonText" {
-      font_size:    14,
-      resize_width: True,
-      $CENTER_TEXT,
-    },
-
-    # Button used for response at bottom of Panel.
-    CLONE "T_ButtonPane" "T_ResponseButton" {
-      padding: 4,
-    },
-    # Text for T_ResponseButton.
-    CLONE "T_TextPane" "T_ResponseButtonText" {
-      font_size: 14,
-      $CENTER_TEXT,
-    },
-
-    # Box used to enclose response buttons.
-    BoxPane "T_ResponseButtonBox" {
-      orientation: "kHorizontal",
-      resize_width: True,
-      spacing: 10,
-      panes: [
-        SpacerPane { resize_width: True },
-      ]
-    },
   ],
 
   children: [
+    # Defines all Pane templates used in Panels.
+    <"nodes/templates/Panes/AllPanes.emd">,
+
+    # Defines all Pane templates used in Panels.
+    <"nodes/templates/Panes/PanelPanes.emd">,
+
     ActionPanel "ActionPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/ActionPane.emd">,
