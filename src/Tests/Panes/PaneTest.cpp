@@ -1,7 +1,6 @@
 ﻿#include "Panes/BoxPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/ScrollingPane.h"
-#include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
@@ -98,81 +97,6 @@ TEST_F(PaneTest, HBox) {
     EXPECT_EQ(Vector2f(15,    8), spacer1->GetLayoutSize());
     EXPECT_EQ(Vector2f(201, 108), spacer2->GetLayoutSize());
     EXPECT_EQ(Vector2f(1,     1), spacer3->GetLayoutSize());
-}
-
-TEST_F(PaneTest, Dropdown) {
-    // Override this setting for this test; need to build font images.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
-    SG::ScenePtr scene = ReadPaneScene();
-    auto dd = SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");
-
-    StrVec choices{ "Abcd", "Efgh Ijklmn", "Op Qrstu" };
-    dd->SetChoices(choices, 2);
-    dd->SetLayoutSize(Vector2f(100, 20));
-
-    EXPECT_EQ(2, dd->GetChoiceIndex());
-    EXPECT_EQ("Op Qrstu", dd->GetChoice());
-
-    // The base size of the DropdownPane is the size of the largest choice.
-    EXPECT_EQ(Vector2f(88.425f, 20), dd->GetBaseSize());
-
-    // Changing the choice should not affect the base size.
-    dd->SetChoice(0);
-    EXPECT_EQ(0, dd->GetChoiceIndex());
-    EXPECT_EQ("Abcd", dd->GetChoice());
-    EXPECT_EQ(Vector2f(88.425f, 20), dd->GetBaseSize());
-
-    // Each choice button in the dropdown should have a non-zero layout size.
-    for (const auto &but: dd->GetMenuPane().GetContentsPane()->GetPanes()) {
-        const Vector2f &ls = but->GetLayoutSize();
-        EXPECT_NE(0, ls[0]);
-        EXPECT_NE(0, ls[1]);
-    }
-
-    dd->SetChoice(1);
-    EXPECT_EQ(1, dd->GetChoiceIndex());
-    EXPECT_EQ("Efgh Ijklmn", dd->GetChoice());
-
-    dd->SetChoiceFromString("Op Qrstu");
-    EXPECT_EQ(2, dd->GetChoiceIndex());
-    EXPECT_EQ("Op Qrstu", dd->GetChoice());
-}
-
-TEST_F(PaneTest, Switcher) {
-    SG::ScenePtr scene = ReadPaneScene();
-
-    bool changed = false;
-
-    // SwitcherPane with 3 10x10 buttons.
-    auto sw = SG::FindTypedNodeInScene<SwitcherPane>(*scene, "Switcher");
-    EXPECT_EQ(3U, sw->GetPanes().size());
-    sw->GetContentsChanged().AddObserver("TEST", [&changed]{ changed = true; });
-    const Vector2f v10x10(10, 10);
-
-    sw->SetLayoutSize(v10x10);
-    EXPECT_EQ(v10x10, sw->GetBaseSize());
-    EXPECT_EQ(v10x10, sw->GetLayoutSize());
-
-    EXPECT_EQ(-1, sw->GetIndex());
-    EXPECT_FALSE(changed);
-    EXPECT_EQ(v10x10, sw->GetBaseSize());
-    EXPECT_FALSE(sw->GetPanes()[0]->IsEnabled());
-    EXPECT_FALSE(sw->GetPanes()[1]->IsEnabled());
-    EXPECT_FALSE(sw->GetPanes()[2]->IsEnabled());
-
-    sw->SetIndex(1);
-    EXPECT_TRUE(changed);
-    EXPECT_EQ(v10x10, sw->GetBaseSize());
-    EXPECT_FALSE(sw->GetPanes()[0]->IsEnabled());
-    EXPECT_TRUE(sw->GetPanes()[1]->IsEnabled());
-    EXPECT_FALSE(sw->GetPanes()[2]->IsEnabled());
-
-    sw->SetLayoutSize(v10x10);
-    EXPECT_EQ(v10x10, sw->GetPanes()[1]->GetBaseSize());
-    EXPECT_EQ(v10x10, sw->GetPanes()[1]->GetLayoutSize());
-    EXPECT_EQ(Vector3f(0, 0, TK::kPaneZOffset),
-              sw->GetPanes()[1]->GetTranslation());
 }
 
 // TODO Test all Pane functions that issue PaneChanged() to make sure sizes

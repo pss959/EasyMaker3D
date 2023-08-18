@@ -12,13 +12,11 @@ void IconPane::AddFields() {
 
 bool IconPane::IsValid(Str &details) {
     if (! LeafPane::IsValid(details))
-        return false;
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (icon_name_.GetValue().empty()) {
         details = "No icon name specified";
         return false;
     }
-
     return true;
 }
 
@@ -40,7 +38,9 @@ void IconPane::SetIconName(const Str &name) {
     block->SetSubImageName(name);
 }
 
+// LCOV_EXCL_START [debug only]
 Str IconPane::ToString(bool is_brief) const {
     // Add the icon name.
     return LeafPane::ToString(is_brief) + " '" + icon_name_.GetValue() + "'";
 }
+// LCOV_EXCL_STOP

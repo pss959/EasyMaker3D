@@ -50,5 +50,5 @@ void TestBaseWithTypes::TestInvalid(const Str &contents, const Str &error) {
 
 Str TestBaseWithTypes::BuildParseString(const Str &contents) const {
     ASSERTM(! parse_type_name_.empty(), "SetParseTypeName() was not called");
-    return parse_type_name_ + " { " + contents + " }";
+    return parse_type_name_ + R"("Name" { )" + contents + " }";
 }

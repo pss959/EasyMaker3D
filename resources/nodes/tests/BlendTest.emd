@@ -19,7 +19,7 @@ Node {
         UniformBlock {
           pass_name: $LIGHTING_PASS,
           textures: [
-            Texture "ImagePane Texture" {
+            Texture {
               uniform_name: "uTexture",
               image: FileImage "Image" {
                 path: "Icons/DropdownArrow.png",

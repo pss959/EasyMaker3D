@@ -1,4 +1,6 @@
-﻿#include "Panes/DropdownPane.h"
+﻿#include "Base/Event.h"
+#include "Panes/DropdownPane.h"
+#include "Panes/ScrollingPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
@@ -33,47 +35,127 @@ TEST_F(DropdownPaneTest, SetChoices) {
     EXPECT_EQ(1,             dd->GetChoiceIndex());
     EXPECT_EQ("Efgh Ijklmn", dd->GetChoice());
 
+    dd->SetChoices(StrVec(), 10);  // Index should be ignored.
+    EXPECT_EQ(-1,  dd->GetChoiceIndex());
+    EXPECT_EQ(".", dd->GetChoice());
+
     TEST_THROW(dd->SetChoiceFromString("Bad Choice"), AssertException,
                "No such choice");
 }
 
-#if XXXX
-TEST_F(DropdownPaneTest, Dropdown) {
-    // Override this setting for this test; need to build font images.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
+TEST_F(DropdownPaneTest, IsValid) {
+    SetParseTypeName("DropdownPane");
+    TestInvalid(R"(choices: ["A", "B"])", "No initial choice");
+    TestInvalid(R"(choices: ["A", "B"], choice_index: 2)",
+                "Choice index out of range");
+}
 
-    SG::ScenePtr scene = ReadPaneScene();
-    auto dd = SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");
+TEST_F(DropdownPaneTest, Activate) {
+    auto dd = GetDropdownPane(R"(choices: ["A", "B", "C"], choice_index: 2)");
+    EXPECT_EQ(2,   dd->GetChoiceIndex());
+    EXPECT_EQ("C", dd->GetChoice());
 
-    StrVec choices{ "Abcd", "Efgh Ijklmn", "Op Qrstu" };
-    dd->SetChoices(choices, 2);
+    EXPECT_FALSE(dd->IsActive());
+
+    dd->Activate();
+    EXPECT_TRUE(dd->IsActive());
+
+    dd->Deactivate();
+    EXPECT_FALSE(dd->IsActive());
+}
+
+TEST_F(DropdownPaneTest, LayoutSize) {
+    auto dd = GetDropdownPane(R"(choices: ["A", "B", "C"], choice_index: 1)");
+
     dd->SetLayoutSize(Vector2f(100, 20));
 
-    EXPECT_EQ(2, dd->GetChoiceIndex());
-    EXPECT_EQ("Op Qrstu", dd->GetChoice());
-
     // The base size of the DropdownPane is the size of the largest choice.
-    EXPECT_EQ(Vector2f(88.425f, 20), dd->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(28.8f, 20), dd->GetBaseSize());
 
     // Changing the choice should not affect the base size.
     dd->SetChoice(0);
-    EXPECT_EQ(0, dd->GetChoiceIndex());
-    EXPECT_EQ("Abcd", dd->GetChoice());
-    EXPECT_EQ(Vector2f(88.425f, 20), dd->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(28.8f, 20), dd->GetBaseSize());
 
-    // Each choice button in the dropdown should have a non-zero layout size.
+    // Each choice button in the dropdown should have a positive layout size.
     for (const auto &but: dd->GetMenuPane().GetContentsPane()->GetPanes()) {
         const Vector2f &ls = but->GetLayoutSize();
-        EXPECT_NE(0, ls[0]);
-        EXPECT_NE(0, ls[1]);
+        EXPECT_LT(0, ls[0]);
+        EXPECT_LT(0, ls[1]);
     }
-
-    dd->SetChoice(1);
-    EXPECT_EQ(1, dd->GetChoiceIndex());
-    EXPECT_EQ("Efgh Ijklmn", dd->GetChoice());
-
-    dd->SetChoiceFromString("Op Qrstu");
-    EXPECT_EQ(2, dd->GetChoiceIndex());
-    EXPECT_EQ("Op Qrstu", dd->GetChoice());
 }
-#endif
+
+TEST_F(DropdownPaneTest, HandleEvent) {
+    auto dd = GetDropdownPane(R"(choices: ["A", "B", "C"], choice_index: 1)");
+    EXPECT_EQ(1,   dd->GetChoiceIndex());
+    EXPECT_EQ("B", dd->GetChoice());
+
+    Str    cur_choice;
+    size_t change_count = 0;
+
+    dd->GetChoiceChanged().AddObserver("key", [&](const Str &c){
+        cur_choice = c;
+        ++change_count;
+    });
+
+    Event event;
+    event.device = Event::Device::kKeyboard;
+    event.flags.Set(Event::Flag::kKeyPress);
+    event.key_name = "Up";
+
+    // Nothing happens when not active.
+    EXPECT_FALSE(dd->HandleEvent(event));
+    EXPECT_EQ(1,   dd->GetChoiceIndex());
+    EXPECT_EQ("B", dd->GetChoice());
+
+    dd->Activate();
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_EQ(0,   dd->GetChoiceIndex());
+    EXPECT_EQ("A", dd->GetChoice());
+
+    // Cannot go up past 0.
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_EQ(0,   dd->GetChoiceIndex());
+    EXPECT_EQ("A", dd->GetChoice());
+
+    event.key_name = "Down";
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_EQ(1,   dd->GetChoiceIndex());
+    EXPECT_EQ("B", dd->GetChoice());
+
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_EQ(2,   dd->GetChoiceIndex());
+    EXPECT_EQ("C", dd->GetChoice());
+
+    // Cannot go down past last choice.
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_EQ(2,   dd->GetChoiceIndex());
+    EXPECT_EQ("C", dd->GetChoice());
+
+    // Space or Enter changes the current choice and deactivates.
+    EXPECT_EQ(0U, change_count);
+    EXPECT_EQ("", cur_choice);
+    event.key_name = " ";
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_EQ(1U,  change_count);
+    EXPECT_EQ("C", cur_choice);
+    EXPECT_FALSE(dd->IsActive());
+
+    dd->Activate();
+    event.key_name = "Up";
+    EXPECT_TRUE(dd->HandleEvent(event));
+    event.key_name = "Enter";
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_EQ(2U,  change_count);
+    EXPECT_EQ("B", cur_choice);
+    EXPECT_FALSE(dd->IsActive());
+
+    // Other keys are not handled.
+    dd->Activate();
+    event.key_name = "a";
+    EXPECT_FALSE(dd->HandleEvent(event));
+
+    // Escape closes the DropdownPane to deactivate.
+    event.key_name = "Escape";
+    EXPECT_TRUE(dd->HandleEvent(event));
+    EXPECT_FALSE(dd->IsActive());
+}

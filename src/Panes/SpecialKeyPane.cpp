@@ -13,17 +13,15 @@ void SpecialKeyPane::AddFields() {
 
 bool SpecialKeyPane::IsValid(Str &details) {
     if (! KeyPane::IsValid(details))
-        return false;
-
-    // Do not use this class for inserting characters.
-    if (action_ == TextAction::kInsert) {
-        details = "SpecialKeyPane action should not be kInsert";
-        return false;
-    }
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     // Either icon_name_ or label_ must be non-empty.
     if (icon_name_.GetValue().empty() && label_.GetValue().empty()) {
         details = "No icon_name or label specified";
+        return false;
+    }
+    // Do not use this class for inserting characters.
+    if (action_ == TextAction::kInsert) {
+        details = "SpecialKeyPane action should not be kInsert";
         return false;
     }
 

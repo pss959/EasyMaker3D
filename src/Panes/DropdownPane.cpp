@@ -17,19 +17,16 @@ void DropdownPane::AddFields() {
 
 bool DropdownPane::IsValid(Str &details) {
     if (! BoxPane::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     const auto &choices = choices_.GetValue();
-    if (choice_index_ < 0) {
-        if (! choices.empty()) {
-            details = "No initial choice.";
-            return false;
-        }
+    if (choice_index_ < 0 && ! choices.empty()) {
+        details = "No initial choice.";
+        return false;
     }
-    else {
-        if (static_cast<size_t>(choice_index_) >= choices.size()) {
-            details = "Choice index out of range.";
-            return false;
-        }
+    if (choice_index_ >= 0 &&
+        static_cast<size_t>(choice_index_) >= choices.size()) {
+        details = "Choice index out of range.";
+        return false;
     }
     return true;
 }

@@ -20,7 +20,6 @@ UnscopedNode {
     <"nodes/templates/Panes/CheckboxPane.emd">,
     <"nodes/templates/Panes/ClipPane.emd">,
     <"nodes/templates/Panes/IconPane.emd">,
-    <"nodes/templates/Panes/ImagePane.emd">,
     <"nodes/templates/Panes/ProfilePane.emd">,
     <"nodes/templates/Panes/RadioButtonPane.emd">,
     <"nodes/templates/Panes/SliderPane.emd">,

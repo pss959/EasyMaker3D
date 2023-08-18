@@ -19,7 +19,6 @@ TEST_F(CheckboxPaneTest, Defaults) {
     EXPECT_EQ(cbox->GetBorder(), cbox->GetFocusBorder());
 }
 
-
 TEST_F(CheckboxPaneTest, SetAndNotify) {
     auto cbox = GetCheckboxPane();
 

@@ -5,7 +5,6 @@
 #include "Panes/DropdownPane.h"
 #include "Panes/GridPane.h"
 #include "Panes/IconPane.h"
-#include "Panes/ImagePane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
 #include "Panes/RadioButtonPane.h"
@@ -33,7 +32,6 @@ void RegisterPaneTypes_() {
     REGISTER_TYPE_(DropdownPane);
     REGISTER_TYPE_(GridPane);
     REGISTER_TYPE_(IconPane);
-    REGISTER_TYPE_(ImagePane);
     REGISTER_TYPE_(LabeledSliderPane);
     REGISTER_TYPE_(ProfilePane);
     REGISTER_TYPE_(RadioButtonPane);

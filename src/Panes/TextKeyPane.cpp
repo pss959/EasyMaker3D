@@ -12,8 +12,7 @@ void TextKeyPane::AddFields() {
 
 bool TextKeyPane::IsValid(Str &details) {
     if (! KeyPane::IsValid(details))
-        return false;
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (text_.GetValue().empty()) {
         details = "No text specified";
         return false;
@@ -22,7 +21,6 @@ bool TextKeyPane::IsValid(Str &details) {
         details = "No shifted text specified";
         return false;
     }
-
     return true;
 }
 

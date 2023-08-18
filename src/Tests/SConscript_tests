@@ -155,8 +155,11 @@ test_source_dict = {
         'ButtonPaneTest',
         'CheckboxPaneTest',
         'DropdownPaneTest',
+        'IconPaneTest',
+        'KeyPaneTest',
         'PaneTest',
         'PaneTestBase',
+        'SwitcherPaneTest',
         'TextPaneTest',
     ],
     'Parser' : [

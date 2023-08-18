@@ -20,10 +20,12 @@ void SwitcherPane::SetIndex(int index) {
     UpdateIndex_(index, false);
 }
 
+// LCOV_EXCL_START [debug only]
 Str SwitcherPane::ToString(bool is_brief) const {
     // Add the current index
     return Pane::ToString(is_brief) + " IX=" + Util::ToString(GetIndex());
 }
+// LCOV_EXCL_STOP
 
 Vector2f SwitcherPane::ComputeBaseSize() const {
     // Start with the minimum size of this Pane.
