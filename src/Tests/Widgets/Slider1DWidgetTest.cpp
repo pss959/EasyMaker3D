@@ -36,8 +36,7 @@ TEST_F(Slider1DWidgetTest, Set) {
     EXPECT_EQ(-3,    sw->GetMinValue());
     EXPECT_EQ(12.5f, sw->GetMaxValue());
 
-
-   TEST_THROW(sw->SetDimension(3), AssertException, "dim");
+    TEST_THROW(sw->SetDimension(3), AssertException, "dim");
 }
 
 TEST_F(Slider1DWidgetTest, Drag) {

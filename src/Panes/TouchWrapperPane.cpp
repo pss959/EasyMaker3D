@@ -11,16 +11,14 @@ WidgetPtr TouchWrapperPane::GetIntersectedWidget(const IntersectionFunc &func,
     WidgetPtr best_widget =
         BoxPane::GetIntersectedWidget(func, closest_distance);
 
-    // Find and test all Widgets wrapped by this Pane. Note that the set of
-    // wrapped Widgets can change, so storing them in the instance is not that
-    // effective.
+    // Find and test all enabled Widgets wrapped by this Pane. Note that the
+    // set of wrapped Widgets can change, so storing them in the instance is
+    // not that effective.
     for (const auto &widget: FindWrappedWidgets_()) {
-        if (widget->IsInteractionEnabled()) {
-            float dist;
-            if (func(*widget, dist) && dist < closest_distance) {
-                closest_distance = dist;
-                best_widget = widget;
-            }
+        float dist;
+        if (func(*widget, dist) && dist < closest_distance) {
+            closest_distance = dist;
+            best_widget = widget;
         }
     }
     return best_widget;

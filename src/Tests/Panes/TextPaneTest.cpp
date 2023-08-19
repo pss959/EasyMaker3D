@@ -75,6 +75,10 @@ TEST_F(TextPaneTest, Text) {
     EXPECT_VECS_CLOSE2(Vector2f(89.375, 94.875f), text->GetBaseSize());
 
     EXPECT_VECS_CLOSE2(Vector2f(60, 63.6923f), text->GetTextSize());
+
+    // Change the text and make sure the base size updates.
+    text->SetText("abcdefgh");
+    EXPECT_VECS_CLOSE2(Vector2f(182.875f, 44), text->GetBaseSize());
 }
 
 TEST_F(TextPaneTest, IsValid) {

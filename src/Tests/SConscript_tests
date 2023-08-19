@@ -159,8 +159,10 @@ test_source_dict = {
         'KeyPaneTest',
         'PaneTest',
         'PaneTestBase',
+        'SliderPaneTest',
         'SwitcherPaneTest',
         'TextPaneTest',
+        'TouchWrapperPaneTest',
     ],
     'Parser' : [
         'ConstantTest',

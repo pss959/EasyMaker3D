@@ -35,6 +35,10 @@ class SliderPane : public LeafPane, public IPaneInteractor {
     /// Sets the range (min/max) for the value produced by the slider.
     void SetRange(const Vector2f &range) { range_ = range; }
 
+    /// Returns the range (min/max) for the value produced by the slider. The
+    /// default is (0, 1).
+    const Vector2f & GetRange() const { return range_; }
+
     /// Sets the precision for the slider.
     void SetPrecision(float precision) { precision_ = precision; }
 
