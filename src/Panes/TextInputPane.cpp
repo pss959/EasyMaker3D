@@ -178,11 +178,13 @@ void TextInputPane::State_::Validate() const {
 #endif
 }
 
+// LCOV_EXCL_START [debug only]
 Str TextInputPane::State_::ToString() const {
     return "POS " + Util::ToString(cursor_pos_) +
         " SEL(" + Util::ToString(sel_range_.start) + "," +
         Util::ToString(sel_range_.end) + ") '" + text_ + "'";
 }
+// LCOV_EXCL_STOP
 
 // ----------------------------------------------------------------------------
 // TextInputPane::Stack_ class.
@@ -270,6 +272,7 @@ void TextInputPane::Stack_::Validate() const {
 #endif
 }
 
+// LCOV_EXCL_START [debug only]
 void TextInputPane::Stack_::Dump() const {
 #if ENABLE_DEBUG_FEATURES
     ASSERT(! stack_.empty());
@@ -279,6 +282,7 @@ void TextInputPane::Stack_::Dump() const {
         std::cerr << "---  [" << i << "] " << stack_[i].ToString() << "\n";
 #endif
 }
+// LCOV_EXCL_STOP
 
 // ----------------------------------------------------------------------------
 // TextInputPane::Impl_ class.
@@ -293,6 +297,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     }
     void SetInitialText(const Str &text);
     Str  GetText() const;
+    bool IsTextValid() const { return is_valid_; }
 
     // IPaneInteractor interface.
     virtual void SetVirtualKeyboard(const VirtualKeyboardPtr &vk) override {
@@ -332,6 +337,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
 
     Str            initial_text_;        ///< Initial text string.
     const float    padding_;             ///< Padding around text.
+    bool           is_valid_  = true;    ///< Whether current text is valid.
     bool           is_active_ = false;   ///< True while active (editing).
     size_t         drag_sel_start_ = 0;  ///< Start position of drag selection.
 
@@ -456,8 +462,7 @@ Str TextInputPane::Impl_::GetText() const {
 void TextInputPane::Impl_::Activate() {
     if (! is_active_) {
         is_active_ = true;
-        if (! char_width_)
-            UpdateCharWidth_();
+        ASSERT(char_width_ > 0);
         UpdateFromState_();
 
         if (virtual_keyboard_)
@@ -472,7 +477,7 @@ void TextInputPane::Impl_::Deactivate() {
     // If the current text is not valid, undo everything. Do this while still
     // considered active so the text updates.
     const Str text = GetState_().GetText();
-    const bool is_valid = ! validation_func_ || validation_func_(text);
+    bool is_valid = ! validation_func_ || validation_func_(text);
     if (! is_valid) {
         while (stack_.Undo())
             ;
@@ -494,8 +499,11 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
             const Str key_string = event.GetKeyString();
             const auto it = s_action_map_.find(key_string);
             if (it != s_action_map_.end()) {
-                ProcessAction_(it->second);
-                ret = true;
+                auto act = it->second;
+                ProcessAction_(act);
+                // Do NOT return true for kAccept and kCancel actions; they may
+                // also be handled elsewhere.
+                ret = act != TextAction::kAccept && act != TextAction::kCancel;
             }
 
             // Otherwise, insert the text if it is text.
@@ -524,12 +532,15 @@ void TextInputPane::Impl_::InitActionMap_() {
     s_action_map_["Ctrl-d"]         = TextAction::kDeleteNext;
     s_action_map_["Ctrl-e"]         = TextAction::kMoveToEnd;
     s_action_map_["Ctrl-f"]         = TextAction::kMoveNext;
+    s_action_map_["Ctrl-h"]         = TextAction::kDeletePrevious;
     s_action_map_["Ctrl-k"]         = TextAction::kDeleteToEnd;
     s_action_map_["Ctrl-z"]         = TextAction::kUndo;
     s_action_map_["Down"]           = TextAction::kMoveToEnd;
-    s_action_map_["Left"]           = TextAction::kMovePrevious;
+    s_action_map_["Enter"]          = TextAction::kAccept;
+    s_action_map_["Escape"]         = TextAction::kCancel;
     s_action_map_["Left"]           = TextAction::kMovePrevious;
     s_action_map_["Right"]          = TextAction::kMoveNext;
+    s_action_map_["Shift-Ctrl-a"]   = TextAction::kSelectNone;
     s_action_map_["Shift-Ctrl-k"]   = TextAction::kDeleteToStart;
     s_action_map_["Shift-Ctrl-z"]   = TextAction::kRedo;
     s_action_map_["Shift-Down"]     = TextAction::kSelectToEnd;
@@ -688,8 +699,9 @@ TextInputPane::Impl_::GetRangeForAction_(TextAction action) const {
         range = state.GetModifiedSelectionRange(true, 0);
         break;
 
-      default:
+      default:  // LCOV_EXCL_START [cannot happen]
         ASSERTM(false, "Invalid action: " + Util::EnumName(action));
+        // LCOV_EXCL_STOP
     }
 
     return range;
@@ -824,8 +836,8 @@ void TextInputPane::Impl_::UpdateBackgroundColor_() {
         Str color_name;
         if (is_active_) {
             const Str text = GetState_().GetText();
-            const bool is_valid = ! validation_func_ || validation_func_(text);
-            color_name = is_valid ?
+            is_valid_ = ! validation_func_ || validation_func_(text);
+            color_name = is_valid_ ?
                 "TextInputActiveColor" : "TextInputErrorColor";
         }
         else {
@@ -871,6 +883,7 @@ void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
         // Convert the X coordinate to a character position and process the
         // selection change.
         const size_t pos = XToCharPos_(x);
+
         if (is_start) {
             ClearSelection_();
             drag_sel_start_ = pos;
@@ -942,6 +955,10 @@ void TextInputPane::SetInitialText(const Str &text) {
 
 Str TextInputPane::GetText() const {
     return impl_->GetText();
+}
+
+bool TextInputPane::IsTextValid() const {
+    return impl_->IsTextValid();
 }
 
 void TextInputPane::SetLayoutSize(const Vector2f &size) {

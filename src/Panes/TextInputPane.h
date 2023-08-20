@@ -3,8 +3,6 @@
 #include "Base/Memory.h"
 #include "Panes/BoxPane.h"
 
-class VirtualKeyboard;
-
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(TextInputPane);
@@ -30,6 +28,9 @@ class TextInputPane : public BoxPane {
     /// Returns the current text. This will be empty until the TextInputPane is
     /// fully set up.
     Str GetText() const;
+
+    /// Returns true if the text is currently marked as valid.
+    bool IsTextValid() const;
 
     virtual void SetLayoutSize(const Vector2f &size) override;
     virtual IPaneInteractor * GetInteractor() override;

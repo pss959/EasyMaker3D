@@ -13,7 +13,7 @@ void LabeledSliderPane::AddFields() {
 
 bool LabeledSliderPane::IsValid(Str &details) {
     if (! BoxPane::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (range_.WasSet()) {
         const auto &range = range_.GetValue();
         if (range[0] >= range[1]) {

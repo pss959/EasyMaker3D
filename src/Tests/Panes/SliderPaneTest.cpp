@@ -1,4 +1,5 @@
-﻿#include "Panes/SliderPane.h"
+﻿#include "Panes/LabeledSliderPane.h"
+#include "Panes/SliderPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/Widgets/DragTester.h"
@@ -99,4 +100,48 @@ TEST_F(SliderPaneTest, DragWithPrecision) {
     EXPECT_EQ(1U,   act_count);
     EXPECT_EQ(1U, deact_count);
     EXPECT_EQ(5.6f, cur_val);
+}
+
+TEST_F(SliderPaneTest, DragVertical) {
+    auto slider = GetSliderPane(R"(orientation: "kVertical")");
+    slider->SetRange(Vector2f(0, 10));
+    slider->SetLayoutSize(Vector2f(400, 20));
+
+    auto sw = std::dynamic_pointer_cast<Slider1DWidget>(
+        slider->GetActivationWidget());
+    EXPECT_NOT_NULL(sw);
+
+    size_t   act_count = 0;
+    size_t deact_count = 0;
+    float      cur_val = -100;
+    slider->GetActivation().AddObserver("key", [&](bool is_act){
+        if (is_act)
+            ++act_count;
+        else
+            ++deact_count;
+    });
+    slider->GetValueChanged().AddObserver("key", [&](float v){ cur_val = v; });
+
+    EXPECT_EQ(0U,   act_count);
+    EXPECT_EQ(0U, deact_count);
+    EXPECT_EQ(-100, cur_val);
+
+    DragTester dt(sw);
+    dt.SetRayDirection(-Vector3f::AxisZ());
+    dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
+    EXPECT_CLOSE(.555556f, sw->GetValue());
+    EXPECT_CLOSE(5.55556f, slider->GetValue());
+
+    EXPECT_EQ(1U,   act_count);
+    EXPECT_EQ(1U, deact_count);
+    EXPECT_CLOSE(5.55556f, cur_val);
+}
+
+TEST_F(SliderPaneTest, LabeledSliderPane) {
+    auto lhsp = ReadRealPane<LabeledSliderPane>("LabeledHSliderPane", "");
+    EXPECT_NOT_NULL(lhsp->GetSliderPane());
+
+    SetParseTypeName("LabeledSliderPane");
+    TestInvalid("range: 1 1", "Empty or negative range");
+    TestInvalid("range: 2 1", "Empty or negative range");
 }
