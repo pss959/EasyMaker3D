@@ -2,6 +2,7 @@
 
 #include "Math/Profile.h"
 #include "Panes/ProfilePane.h"
+#include "Panes/TaperProfilePane.h"
 #include "Place/ClickInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
@@ -275,10 +276,6 @@ TEST_F(ProfilePaneTest, DragWithPrecision) {
     EXPECT_EQ(Vector3f(.3f, -.5f, 0), mp->GetTranslation());
 }
 
-TEST_F(ProfilePaneTest, ClosedProfile) {
-    // XXXX
-}
-
 TEST_F(ProfilePaneTest, DragClosedWithSnapping) {
     // Tests closed profile and 2D snapping.
 
@@ -369,4 +366,43 @@ TEST_F(ProfilePaneTest, SetLayoutSize) {
     // size change.
     pp->SetLayoutSize(Vector2f(400, 400));
     EXPECT_EQ(Vector3f(.5f * scale[0], .5f * scale[1], 1), mp->GetScale());
+}
+
+TEST_F(ProfilePaneTest, TaperProfilePane) {
+    auto tpp = ReadRealPane<TaperProfilePane>("TaperProfilePane", "");
+    const Profile prof(Profile::Type::kOpen, 2,
+                       Profile::PointVec{Point2f(0, 1), Point2f(1, 0)});
+    EXPECT_TRUE(prof.IsValid());
+    tpp->SetProfile(prof);
+    SetUpHoverAndDrag(tpp, false);
+
+    // Drag start point.
+    {
+        auto mp =
+            SG::FindTypedNodeUnderNode<DraggableWidget>(*tpp, "MovablePoint_0");
+        DragTester dt(mp);
+        dt.SetRayDirection(-Vector3f::AxisZ());
+        dt.ApplyMouseDrag(Point3f(-.5f, .5f, 0), Point3f(-.4f, .5f, 0));
+        EXPECT_PTS_CLOSE2(Point2f(.1f, 1), tpp->GetProfile().GetPoints()[0]);
+    }
+
+    // Hover and click to create the middle point.
+    {
+        aw->UpdateHoverPoint(Point3f(0, 0, 0));
+        EXPECT_TRUE(npw->IsEnabled());
+        ClickInfo info;  // Contents do not matter.
+        npw->Click(info);
+        EXPECT_EQ(3U, tpp->GetProfile().GetPointCount());
+        EXPECT_PTS_CLOSE2(Point2f(.5f, .5f), tpp->GetProfile().GetPoints()[1]);
+    }
+
+    // Drag end point.
+    {
+        auto mp =
+            SG::FindTypedNodeUnderNode<DraggableWidget>(*tpp, "MovablePoint_2");
+        DragTester dt(mp);
+        dt.SetRayDirection(-Vector3f::AxisZ());
+        dt.ApplyMouseDrag(Point3f(.5f, -.5f, 0), Point3f(.4f, -.5f, 0));
+        EXPECT_PTS_CLOSE2(Point2f(.9f, 0), tpp->GetProfile().GetPoints()[2]);
+    }
 }
