@@ -43,10 +43,8 @@ class ProfilePane::Impl_ {
     // Sets colors on certain parts. This has to be done after Ion is set up.
     void SetColors();
 
-    Util::Notifier<bool> & GetActivation() { return activation_; }
-    Util::Notifier<const Profile &> & GetProfileChanged() {
-        return profile_changed_;
-    }
+    Util::Notifier<bool> & GetActivation()     { return activation_;      }
+    Util::Notifier<>     & GetProfileChanged() { return profile_changed_; }
     void SetProfile(const Profile &profile);
     const Profile & GetProfile() const { return profile_; }
     void SetPointPrecision(const Vector2f &xy_precision) {
@@ -72,7 +70,7 @@ class ProfilePane::Impl_ {
     Util::Notifier<bool> activation_;
 
     /// Notifies when any interactive change is made to the Profile.
-    Util::Notifier<const Profile &> profile_changed_;
+    Util::Notifier<>     profile_changed_;
 
     // Parts
     SG::NodePtr       start_point_;     ///< Fixed start point indicator.
@@ -404,7 +402,7 @@ void ProfilePane::Impl_::NewPointClicked_(const ClickInfo &info) {
         profile_.InsertPoint(start_index + 1, pt);
         CreateMovablePoints_();
         UpdateLine_(true);
-        profile_changed_.Notify(profile_);
+        profile_changed_.Notify();
     }
 }
 
@@ -461,7 +459,7 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
             profile_.RemovePoint(index);
             CreateMovablePoints_();
             UpdateLine_(true);
-            profile_changed_.Notify(profile_);
+            profile_changed_.Notify();
         }
         else {
             // Update the ranges for all movable point sliders.
@@ -496,7 +494,7 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
     // Update the point in the Profile.
     profile_.SetPoint(index, snapped_pos);
     UpdateLine_(false);
-    profile_changed_.Notify(profile_);
+    profile_changed_.Notify();
 
     // Highlight the delete spot if the point is over it.
     if (delete_spot_->IsEnabled())
@@ -521,6 +519,7 @@ bool ProfilePane::Impl_::SnapPoint_(size_t index, Point2f &point) {
         break;
       case Snap2D::Result::kBoth:
         line_points = Profile::PointVec{ prev_pos, point, next_pos };
+        break;
     }
     SetLinePoints_(line_points, *snapped_line_, 1.1 * TK::kPaneZOffset);
 
@@ -705,7 +704,7 @@ Util::Notifier<bool> & ProfilePane::GetActivation() {
     return impl_->GetActivation();
 }
 
-Util::Notifier<const Profile &> & ProfilePane::GetProfileChanged() {
+Util::Notifier<> & ProfilePane::GetProfileChanged() {
     return impl_->GetProfileChanged();
 }
 

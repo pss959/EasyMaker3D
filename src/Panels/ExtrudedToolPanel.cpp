@@ -38,7 +38,7 @@ void ExtrudedToolPanel::InitInterface() {
     profile_pane_->GetActivation().AddObserver(
         this, [&](bool is_act){ Activate_("Profile", is_act); });
     profile_pane_->GetProfileChanged().AddObserver(
-        this, [&](const Profile &){ Change_("Profile"); });
+        this, [&](){ Change_("Profile"); });
 
     sides_slider_->SetValue(8);
     sides_text_->SetInitialText("8");

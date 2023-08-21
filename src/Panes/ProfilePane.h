@@ -13,10 +13,8 @@ class Slider2DWidget;
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(ProfilePane);
 
-/// ProfilePane is a derived LeafPane that supports editing of 2D Profiles. It
-/// is not marked as being interactive because it cannot do anything with
-/// keyboard focus and all interaction is through Widgets that already receive
-/// events.
+/// ProfilePane is a derived LeafPane that supports editing of 2D Profiles. All
+/// interaction is through Widgets that already receive events.
 ///
 /// \ingroup Panes
 class ProfilePane : public LeafPane, public IPaneInteractor {
@@ -26,14 +24,14 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     /// or deactivation.
     Util::Notifier<bool> & GetActivation();
 
-    /// Returns a Notifier that is invoked when the Profile changes. It is
-    /// passed the new Profile.
-    Util::Notifier<const Profile &> & GetProfileChanged();
+    /// Returns a Notifier that is invoked when the Profile changes.
+    Util::Notifier<> & GetProfileChanged();
 
     /// Sets the Profile to edit. This initializes the ProfilePane for editing.
     void SetProfile(const Profile &profile);
 
-    /// Returns the Profile, which may have been edited.
+    /// Returns the Profile, which may have been edited. The default Profile is
+    /// fixed from (0, 1) to (1, 0).
     const Profile & GetProfile() const;
 
     /// Sets the precision in X and Y to round points to. Passing zero for

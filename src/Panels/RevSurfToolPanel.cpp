@@ -61,7 +61,7 @@ void RevSurfToolPanel::InitInterface() {
     profile_pane_->GetActivation().AddObserver(
         this, [&](bool is_act){ Activate_("Profile", is_act); });
     profile_pane_->GetProfileChanged().AddObserver(
-        this, [&](const Profile &){ Change_("Profile"); });
+        this, [&](){ Change_("Profile"); });
 
     sweep_angle_slider_->GetActivation().AddObserver(
         this, [&](bool is_act){ Activate_("SweepAngle", is_act); });

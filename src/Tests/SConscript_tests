@@ -159,6 +159,7 @@ test_source_dict = {
         'KeyPaneTest',
         'PaneTest',
         'PaneTestBase',
+        'ProfilePaneTest',
         'RadioButtonPaneTest',
         'SliderPaneTest',
         'SwitcherPaneTest',

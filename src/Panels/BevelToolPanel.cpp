@@ -76,7 +76,7 @@ void BevelToolPanel::InitInterface() {
     profile_pane_->GetActivation().AddObserver(
         this, [&](bool is_act){ Activate_("Profile", is_act); });
     profile_pane_->GetProfileChanged().AddObserver(
-        this, [&](const Profile &){ Change_("Profile"); });
+        this, [&](){ Change_("Profile"); });
 
     scale_slider_->GetActivation().AddObserver(
         this, [&](bool is_act){ Activate_("Scale", is_act); });

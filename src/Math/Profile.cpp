@@ -100,7 +100,7 @@ void Profile::RemovePoint(size_t index) {
 
 Str Profile::ToString() const {
     return Str("PROF[") + Util::EnumName(type_) +
-        " MN=" + Util::ToString(min_count_) + " <" +
-        " CT=" + Util::ToString(points_.size()) +
+        " MN=" + Util::ToString(min_count_) +
+        " <CT=" + Util::ToString(points_.size()) + " " +
         Util::JoinItems(points_, ", ") + ">]";
 }
