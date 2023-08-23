@@ -141,12 +141,15 @@ TEST_F(BoxPaneTest, Touch) {
   orientation: "kHorizontal",
   panes: [
     CLONE "T_ButtonPane" "Button0" { min_size: 20 20 },
-    CLONE "T_ButtonPane" "Button1" { min_size: 80 20 },
+    CLONE "T_ButtonPane" "Button1" { min_size:  0 20 },  # Disabled below.
+    CLONE "T_ButtonPane" "Button2" { min_size: 80 20 },
   ]
 )";
     auto box = GetBoxPane(contents);
     auto but0 = SG::FindTypedNodeUnderNode<ButtonPane>(*box, "Button0");
     auto but1 = SG::FindTypedNodeUnderNode<ButtonPane>(*box, "Button1");
+    auto but2 = SG::FindTypedNodeUnderNode<ButtonPane>(*box, "Button2");
+    but1->SetInteractionEnabled(false);
     box->SetLayoutSize(Vector2f(60, 20));
 
     TouchInfo info;
@@ -163,12 +166,12 @@ TEST_F(BoxPaneTest, Touch) {
     ASSERT_NOT_NULL(tw);
     EXPECT_EQ(&but0->GetButton(), tw.get());
 
-    // Touch the middle of Button1.
+    // Touch the middle of Button2.
     dist = 1000;
     info.position.Set(.5f, 0, z);
     tw = box->GetTouchedWidget(info, dist);
     ASSERT_NOT_NULL(tw);
-    EXPECT_EQ(&but1->GetButton(), tw.get());
+    EXPECT_EQ(&but2->GetButton(), tw.get());
 
     // Miss completely.
     dist = 1000;
