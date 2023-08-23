@@ -17,8 +17,8 @@ DECL_SHARED_PTR(Widget);
 class TouchWrapperPane : public BoxPane {
   public:
     /// Redefines this to test Widgets wrapped by this instance.
-    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
-                                           float &closest_distance) override;
+    virtual WidgetPtr GetTouchedWidget(const TouchInfo &info,
+                                       float &closest_distance) override;
 
   protected:
     TouchWrapperPane() {}

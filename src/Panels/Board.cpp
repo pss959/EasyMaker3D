@@ -10,6 +10,7 @@
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
 #include "Panels/Panel.h"
+#include "Place/TouchInfo.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -310,11 +311,12 @@ WidgetPtr Board::Impl_::GetTouchedWidget(const Point3f &touch_pos,
                                                   root_node_.GetTranslation());
         float dist = 0;
         if (SphereBoundsIntersect(touch_pos, radius, world_bounds, dist)) {
-            // Compute the matrix from panel to world coordinates for the Panel.
-            auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
-            const SG::CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
-            const Matrix4f p2w = cc.GetObjectToRootMatrix();
-            widget = panel->GetIntersectedPaneWidget(touch_pos, radius, p2w);
+            TouchInfo info;
+            info.position = touch_pos;
+            info.radius   = radius;
+            info.root_node =
+                Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
+            widget = panel->GetTouchedPaneWidget(info);
         }
     }
     return widget;

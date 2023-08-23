@@ -1,6 +1,11 @@
 #include "Widgets/Widget.h"
 
+#include "Math/Intersection.h"
+#include "Math/Linear.h"
+#include "Place/TouchInfo.h"
 #include "SG/ColorMap.h"
+#include "SG/CoordConv.h"
+#include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 
@@ -85,6 +90,31 @@ void Widget::PlacePointTarget(const DragInfo &info,
 void Widget::PlaceEdgeTarget(const DragInfo &info, float current_length,
                              Point3f &position0, Point3f &position1) {
     ASSERTM(false, "Widget::PlaceEdgeTarget() should not be called");
+}
+
+bool Widget::IsTouched(const TouchInfo &info, float &distance) const {
+    // Do nothing if interaction is not enabled.
+    if (! IsInteractionEnabled())
+        return false;
+
+    // Convert the Widget's bounds into coordinates of the touch sphere.
+    ASSERT(info.root_node);
+    const SG::NodePath path = SG::FindNodePathUnderNode(info.root_node, *this);
+    const auto bounds = TransformBounds(
+        GetBounds(), SG::CoordConv(path).GetObjectToRootMatrix());
+
+    // Test for a touch sphere intersection with the bounds.
+    float dist;
+    if (SphereBoundsIntersect(info.position, info.radius, bounds, dist)) {
+        KLOG('U', "Touched " << GetDesc()
+             << " with bounds " << bounds << " at pos " << info.position);
+        distance = dist;
+        return true;
+    }
+    KLOG('U', "Missed touch on " << GetDesc()
+         << " with bounds " << bounds << " at pos " << info.position);
+
+    return false;
 }
 
 void Widget::PostSetUpIon() {

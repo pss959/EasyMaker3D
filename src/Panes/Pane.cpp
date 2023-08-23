@@ -106,17 +106,16 @@ void Pane::SetMinSize(const Vector2f &size) {
     }
 }
 
-WidgetPtr Pane::GetIntersectedWidget(const IntersectionFunc &func,
-                                     float &closest_distance) {
+WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
+                                 float &closest_distance) {
     WidgetPtr intersected_widget;
     if (const auto interactor = GetInteractor()) {
         const auto widget = interactor->GetActivationWidget();
-        if (widget && widget->IsInteractionEnabled()) {
-            float dist;
-            if (func(*widget, dist) && dist < closest_distance) {
-                closest_distance = dist;
-                intersected_widget = widget;
-            }
+        float dist;
+        if (widget && widget->IsTouched(info, dist) &&
+            dist < closest_distance) {
+            closest_distance = dist;
+            intersected_widget = widget;
         }
     }
     return intersected_widget;

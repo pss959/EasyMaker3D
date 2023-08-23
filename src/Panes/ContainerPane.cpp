@@ -93,16 +93,16 @@ void ContainerPane::SetLayoutSize(const Vector2f &size) {
     }
 }
 
-WidgetPtr ContainerPane::GetIntersectedWidget(const IntersectionFunc &func,
-                                              float &closest_distance) {
+WidgetPtr ContainerPane::GetTouchedWidget(const TouchInfo &info,
+                                          float &closest_distance) {
     // Let the base class test this Pane.
-    WidgetPtr best_widget = Pane::GetIntersectedWidget(func, closest_distance);
+    WidgetPtr best_widget = Pane::GetTouchedWidget(info, closest_distance);
 
     // Try enabled contained Panes as well.
     for (auto &pane: GetPanes()) {
         if (pane->IsEnabled()) {
-            if (WidgetPtr widget =
-                pane->GetIntersectedWidget(func, closest_distance))
+            auto widget = pane->GetTouchedWidget(info, closest_distance);
+            if (widget)
                 best_widget = widget;
         }
     }

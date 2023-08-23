@@ -4,13 +4,7 @@
 #include "Util/Tuning.h"
 
 /// \ingroup Tests
-class SwitcherPaneTest : public PaneTestBase {
-  protected:
-    // SwitcherPane has no template, so this just creates an instance.
-    SwitcherPanePtr GetSwitcherPane(const Str &contents = "") {
-        return ReadRealNode<SwitcherPane>(contents, "SwitcherPane");
-    }
-};
+class SwitcherPaneTest : public PaneTestBase {};
 
 TEST_F(SwitcherPaneTest, Switching) {
     // SwitcherPane has no template, so just create an instance.
@@ -26,7 +20,7 @@ TEST_F(SwitcherPaneTest, Switching) {
     }
   ]
 )";
-    auto sw = GetSwitcherPane(contents);
+    auto sw = ReadRealNode<SwitcherPane>(contents, "SwitcherPane");
     EXPECT_EQ(3U, sw->GetPanes().size());
     EXPECT_EQ(-1, sw->GetIndex());
 

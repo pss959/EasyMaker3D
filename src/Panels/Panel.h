@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace SG { class CoordConv; }
+struct TouchInfo;
 DECL_SHARED_PTR(ActionAgent);
 DECL_SHARED_PTR(BoardAgent);
 DECL_SHARED_PTR(Border);
@@ -98,13 +98,10 @@ class Panel : public SG::Node {
     /// Panel to set up navigation and anything else it needs.
     void SetIsShown(bool is_shown);
 
-    /// Returns the Widget from an interactive Pane that is intersected by a
-    /// sphere at the given position with the given radius, both in world
-    /// coordinates. If more than one Widget is intersected by the sphere, the
-    /// closest one is returned.  The matrix from panel to world coordinates is
-    /// supplied. This is used for touch interaction.
-    WidgetPtr GetIntersectedPaneWidget(const Point3f &pos, float radius,
-                                       const Matrix4f &panel_to_world);
+    /// Returns the Widget from an interactive Pane that should respond to a
+    /// touch represented by the given TouchInfo. If more than one Widget is
+    /// touched, the closest one is returned.
+    WidgetPtr GetTouchedPaneWidget(const TouchInfo &info);
 
     /// Returns true if the derived class supports grip hovering. The base
     /// class defines this to always return false.
@@ -259,10 +256,6 @@ class Panel : public SG::Node {
 
     /// This is invoked when the contents of the root Pane have changed.
     void ProcessPaneContentsChange_();
-
-    /// Returns an SG::CoordConv for the given Node relative to this Panel. The
-    /// Node must be found somewhere under the Panel.
-    SG::CoordConv GetCoordConv_(const SG::Node &node);
 
     /// Returns true if the given Pane can be focused.
     bool CanFocusPane_(Pane &pane) const;

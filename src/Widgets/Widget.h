@@ -11,7 +11,7 @@
 #include "Util/Notifier.h"
 
 struct DragInfo;
-
+struct TouchInfo;
 DECL_SHARED_PTR(Widget);
 
 /// Widget is an abstract base class for all interactive widgets. It is derived
@@ -141,6 +141,16 @@ class Widget : public SG::Node {
     /// The base class defines this to assert.
     virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
                                  Point3f &position0, Point3f &position1);
+
+    ///@}
+
+    /// \name Touch interaction.
+    ///@{
+
+    /// Returns true if the Widget is intersected by the sphere represented by
+    /// a TouchInfo. If so, it sets \p distance to the distance of the
+    /// intersection.
+    bool IsTouched(const TouchInfo &info, float &distance) const;
 
     ///@}
 

@@ -52,8 +52,7 @@ class ProfilePane::Impl_ {
     }
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
-    WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
-                                   float &closest_distance);
+    WidgetPtr GetTouchedWidget(const TouchInfo &info, float &closest_distance);
 
   private:
     SG::Node           &root_node_;
@@ -291,8 +290,8 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     return widget;
 }
 
-WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
-                                                   float &closest_distance) {
+WidgetPtr ProfilePane::Impl_::GetTouchedWidget(const TouchInfo &info,
+                                               float &closest_distance) {
     const auto &points = profile_.GetPoints();
 
     // Test movable points.
@@ -300,7 +299,7 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
     for (size_t i = 0; i < points.size(); ++i) {
         if (auto slider = GetMovableSlider_(i)) {
             float dist;
-            if (func(*slider, dist) && dist < closest_distance) {
+            if (slider->IsTouched(info, dist) && dist < closest_distance) {
                 closest_distance = dist;
                 intersected_widget = slider;
             }
@@ -314,7 +313,7 @@ WidgetPtr ProfilePane::Impl_::GetIntersectedWidget(const IntersectionFunc &func,
             const Point2f mp = .5f * (points[i - 1] + points[i]);
             new_point_->SetTranslation(FromProfile3_(mp, TK::kPaneZOffset));
             float dist;
-            if (func(*new_point_, dist) && dist < closest_distance) {
+            if (new_point_->IsTouched(info, dist) && dist < closest_distance) {
                 closest_distance = dist;
                 new_point_->SetEnabled(true);
                 intersected_widget = new_point_;
@@ -729,9 +728,9 @@ ClickableWidgetPtr ProfilePane::GetGripWidget(const Point2f &p) {
     return impl_->GetGripWidget(p);
 }
 
-WidgetPtr ProfilePane::GetIntersectedWidget(const IntersectionFunc &func,
-                                            float &closest_distance) {
-    return impl_->GetIntersectedWidget(func, closest_distance);
+WidgetPtr ProfilePane::GetTouchedWidget(const TouchInfo &info,
+                                        float &closest_distance) {
+    return impl_->GetTouchedWidget(info, closest_distance);
 }
 
 IPaneInteractor * ProfilePane::GetInteractor() {

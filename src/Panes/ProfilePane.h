@@ -49,8 +49,8 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
 
     /// Redefines this to test the movable point sliders and also midpoints for
     /// touch interaction.
-    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
-                                           float &closest_distance) override;
+    virtual WidgetPtr GetTouchedWidget(const TouchInfo &info,
+                                       float &closest_distance) override;
 
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override;

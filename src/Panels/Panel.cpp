@@ -13,7 +13,6 @@
 #include "Agents/SettingsAgent.h"
 #include "Base/VirtualKeyboard.h"
 #include "Items/Border.h"
-#include "Math/Intersection.h"
 #include "Math/Linear.h"
 #include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
@@ -417,22 +416,9 @@ void Panel::SetIsShown(bool is_shown) {
     }
 }
 
-WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
-                                          const Matrix4f &panel_to_world) {
-    // This intersection function is used by Panes to see if the touch sphere
-    // intersects a Node (typically a Widget). It converts the Node's bounds
-    // into world coordinates, which is where the touch sphere is defined.
-    const Pane::IntersectionFunc intersect_func = [&](const SG::Node &node,
-                                                      float &dist){
-        const SG::CoordConv cc = GetCoordConv_(node);
-        const Matrix4f p2w = panel_to_world * cc.GetObjectToRootMatrix();
-        const auto bounds = TransformBounds(node.GetBounds(), p2w);
-        return SphereBoundsIntersect(pos, radius, bounds, dist);
-    };
-
-    // Recurse on all Panes.
+WidgetPtr Panel::GetTouchedPaneWidget(const TouchInfo &info) {
     float closest_dist = std::numeric_limits<float>::max();
-    return GetPane()->GetIntersectedWidget(intersect_func, closest_dist);
+    return GetPane()->GetTouchedWidget(info, closest_dist);
 }
 
 void Panel::PostSetUpIon() {
@@ -583,13 +569,6 @@ bool Panel::ProcessKeyPress_(const Event &event) {
 
 void Panel::ProcessPaneContentsChange_() {
     UpdateInteractivePanes_();
-}
-
-SG::CoordConv Panel::GetCoordConv_(const SG::Node &node) {
-    // Create an std::shared_ptr that does not delete this.
-    auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
-    const SG::NodePath path = SG::FindNodePathUnderNode(np, node);
-    return SG::CoordConv(path);
 }
 
 bool Panel::CanFocusPane_(Pane &pane) const {

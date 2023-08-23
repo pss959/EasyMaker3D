@@ -380,6 +380,7 @@ these:
 | t      | Threads for delayed execution                   |
 | T      | Tool initialization, selection, and attachment  |
 | u      | Ion uniform processing                          |
+| U      | Widget controller touch intersections           |
 | v      | VR system status                                |
 | V      | VR input bindings                               |
 | w      | Session reading and writing                     |
@@ -389,7 +390,6 @@ these:
 | y      | Model status changes                            |
 | z      | Font loading                                    |
 | 0      | Mesh cleaning                                   |
-| &nbsp; | &nbsp;                                          |
 </div>
 </div>
 

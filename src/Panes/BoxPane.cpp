@@ -14,10 +14,12 @@ void BoxPane::AddFields() {
     ContainerPane::AddFields();
 }
 
+// LCOV_EXCL_START [debug only]
 Str BoxPane::ToString(bool is_brief) const {
     return Pane::ToString(is_brief) +
         (GetOrientation() == Orientation::kVertical ? " [V]" : " [H]");
 }
+// LCOV_EXCL_STOP
 
 Vector2f BoxPane::ComputeBaseSize() const {
     // Get the base sizes of all enabled contained Panes.

@@ -1,4 +1,5 @@
 ﻿#include "Panes/TouchWrapperPane.h"
+#include "Place/TouchInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
@@ -13,7 +14,7 @@ class TouchWrapperPaneTest : public PaneTestBase {
     }
 };
 
-TEST_F(TouchWrapperPaneTest, GetIntersectedWidget) {
+TEST_F(TouchWrapperPaneTest, Touch) {
     // TouchWrapperPane has no template, so just create an instance.
     const Str contents = R"(
   children: [
@@ -24,17 +25,17 @@ TEST_F(TouchWrapperPaneTest, GetIntersectedWidget) {
     }
   ]
 )";
-    auto tw = GetTouchWrapperPane(contents);
-    EXPECT_TRUE(tw->GetPanes().empty());
+    auto twp = GetTouchWrapperPane(contents);
+    EXPECT_TRUE(twp->GetPanes().empty());
 
-    auto inter_func = [](const SG::Node &n, float &d){
-        d = 10;
-        return true;
-    };
+    TouchInfo info;
+    info.position.Set(0, 0, 0);
+    info.radius = 1;
+    info.root_node = twp;
 
     float dist = 100;
-    auto w = tw->GetIntersectedWidget(inter_func, dist);
+    auto w = twp->GetTouchedWidget(info, dist);
     EXPECT_NOT_NULL(w);
     EXPECT_EQ("But", w->GetName());
-    EXPECT_EQ(10, dist);
+    EXPECT_EQ(0, dist);
 }

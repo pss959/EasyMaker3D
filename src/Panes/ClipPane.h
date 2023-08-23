@@ -24,8 +24,8 @@ class ClipPane : public BoxPane {
 
     /// Redefines this to also test child Panes that are not completely clipped
     /// by the ClipPane.
-    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
-                                           float &closest_distance) override;
+    virtual WidgetPtr GetTouchedWidget(const TouchInfo &info,
+                                       float &closest_distance) override;
 
   protected:
     ClipPane() {}

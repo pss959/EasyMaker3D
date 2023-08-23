@@ -152,6 +152,7 @@ test_source_dict = {
         'TwistedModelTest',
     ],
     'Panes' : [
+        'BoxPaneTest',
         'ButtonPaneTest',
         'CheckboxPaneTest',
         'DropdownPaneTest',
@@ -162,6 +163,7 @@ test_source_dict = {
         'ProfilePaneTest',
         'RadioButtonPaneTest',
         'SliderPaneTest',
+        'SpacerPaneTest',
         'SwitcherPaneTest',
         'TextInputPaneTest',
         'TextPaneTest',

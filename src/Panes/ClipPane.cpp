@@ -25,10 +25,10 @@ Vector2f ClipPane::GetContentsOffset() const {
     return Vector2f(trans[0], trans[1]);
 }
 
-WidgetPtr ClipPane::GetIntersectedWidget(const IntersectionFunc &func,
-                                         float &closest_distance) {
+WidgetPtr ClipPane::GetTouchedWidget(const TouchInfo &info,
+                                     float &closest_distance) {
     // Let the base Pane class test this Pane.
-    WidgetPtr best_widget = Pane::GetIntersectedWidget(func, closest_distance);
+    WidgetPtr best_widget = Pane::GetTouchedWidget(info, closest_distance);
 
     // Try unclipped contained Panes as well. This is the same as in the
     // ContainerPane version, except that this skips contained Panes that do
@@ -44,8 +44,8 @@ WidgetPtr ClipPane::GetIntersectedWidget(const IntersectionFunc &func,
         pane_rect.Set(pane_rect.GetMinPoint() + offset,
                       pane_rect.GetMaxPoint() + offset);
         if (pane_rect.IntersectsRange(clip_rect)) {
-            if (WidgetPtr widget =
-                pane->GetIntersectedWidget(func, closest_distance))
+            auto widget = pane->GetTouchedWidget(info, closest_distance);
+            if (widget)
                 best_widget = widget;
         }
     }

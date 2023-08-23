@@ -4,6 +4,7 @@
 #include "Panes/ProfilePane.h"
 #include "Panes/TaperProfilePane.h"
 #include "Place/ClickInfo.h"
+#include "Place/TouchInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/Widgets/DragTester.h"
@@ -123,42 +124,30 @@ TEST_F(ProfilePaneTest, GripHover) {
     EXPECT_EQ(Vector3f(.25f, -.25f, TK::kPaneZOffset), npw->GetTranslation());
 }
 
-TEST_F(ProfilePaneTest, TouchHover) {
-    // Tests the GetIntersectedWidget() function used for touch-hovering.
+TEST_F(ProfilePaneTest, Touch) {
     auto pp = GetProfilePane();
     SetUpHoverAndDrag(pp);
 
     EXPECT_FALSE(npw->IsEnabled());
 
-    // Intersection function that returns true if the given (Widget) Node's
-    // translation is close to the target translation.
-    Point3f target(0, 0, 0);
-    const float kCloseEnough = .1f;
-    auto inter_func = [&](const SG::Node &n, float &d){
-        const float dist =
-            ion::math::Distance(Point3f(n.GetTranslation()), target);
-        if (dist < kCloseEnough) {
-            d = dist;
-            return true;
-        }
-        return false;
-    };
+    TouchInfo info;
+    info.radius = .01f;
+    info.root_node = pp;
 
+    // Set the position to the middle (movable point). This should return it.
     float dist = 1000;
-
-    // Set the target to the middle (movable point). This should return it.
-    target.Set(0, 0, 0);
-    auto iw = pp->GetIntersectedWidget(inter_func, dist);
+    info.position.Set(0, 0, 0);
+    auto iw = pp->GetTouchedWidget(info, dist);
     EXPECT_NOT_NULL(iw);
     EXPECT_EQ("MovablePoint_1", iw->GetName());
     EXPECT_EQ(Vector3f(0, 0, 0), iw->GetTranslation());
     EXPECT_FALSE(npw->IsEnabled());
 
-    // Set the target near the midpoint of the top segment. Should show a new
+    // Set the position near the midpoint of the top segment. Should show a new
     // point.
     dist = 1000;
-    target.Set(-.25f, .25f, 0);
-    iw = pp->GetIntersectedWidget(inter_func, dist);
+    info.position.Set(-.25f, .25f, 0);
+    iw = pp->GetTouchedWidget(info, dist);
     EXPECT_EQ(npw, iw);
     EXPECT_TRUE(npw->IsEnabled());
     EXPECT_EQ(Vector3f(-.25f, .25f, TK::kPaneZOffset), npw->GetTranslation());
@@ -168,14 +157,14 @@ TEST_F(ProfilePaneTest, TouchHover) {
 
     // Miss everything.
     dist = 1000;
-    target.Set(-.4f, -.2f, 0);
-    iw = pp->GetIntersectedWidget(inter_func, dist);
+    info.position.Set(-.4f, -.2f, 0);
+    iw = pp->GetTouchedWidget(info, dist);
     EXPECT_NULL(iw);
 
     // Repeat with the midpoint of the bottom segment.
     dist = 1000;
-    target.Set(.25f, -.25f, 0);
-    iw = pp->GetIntersectedWidget(inter_func, dist);
+    info.position.Set(.25f, -.25f, 0);
+    iw = pp->GetTouchedWidget(info, dist);
     EXPECT_EQ(npw, iw);
     EXPECT_TRUE(npw->IsEnabled());
     EXPECT_EQ(Vector3f(.25f, -.25f, TK::kPaneZOffset), npw->GetTranslation());

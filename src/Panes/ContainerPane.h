@@ -59,8 +59,8 @@ class ContainerPane : public Pane {
     }
 
     /// Redefines this to also test child Panes.
-    virtual WidgetPtr GetIntersectedWidget(const IntersectionFunc &func,
-                                           float &closest_distance) override;
+    virtual WidgetPtr GetTouchedWidget(const TouchInfo &info,
+                                       float &closest_distance) override;
 
   protected:
     ContainerPane() {}
