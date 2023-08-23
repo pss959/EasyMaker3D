@@ -15,7 +15,7 @@ void ScrollingPane::AddFields() {
 
 bool ScrollingPane::IsValid(Str &details) {
     if (! ContainerPane::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (! contents_.GetValue()) {
         details = "Missing contents pane";
         return false;

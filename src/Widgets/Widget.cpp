@@ -105,14 +105,13 @@ bool Widget::IsTouched(const TouchInfo &info, float &distance) const {
 
     // Test for a touch sphere intersection with the bounds.
     float dist;
+    KLOG('U', "Testing touch on " << GetDesc() << " with bounds " << bounds);
     if (SphereBoundsIntersect(info.position, info.radius, bounds, dist)) {
-        KLOG('U', "Touched " << GetDesc()
-             << " with bounds " << bounds << " at pos " << info.position);
+        KLOG('U', "  Touched at pos " << info.position << " and dist " << dist);
         distance = dist;
         return true;
     }
-    KLOG('U', "Missed touch on " << GetDesc()
-         << " with bounds " << bounds << " at pos " << info.position);
+    KLOG('U', "  Missed touch at pos " << info.position);
 
     return false;
 }

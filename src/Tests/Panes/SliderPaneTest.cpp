@@ -1,4 +1,6 @@
-﻿#include "Panes/LabeledSliderPane.h"
+﻿#include "Base/Event.h"
+#include "Base/VirtualKeyboard.h"
+#include "Panes/LabeledSliderPane.h"
 #include "Panes/SliderPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
@@ -23,6 +25,16 @@ TEST_F(SliderPaneTest, Defaults) {
     EXPECT_TRUE(Util::IsA<Slider1DWidget>(slider->GetActivationWidget()));
     // Cannot focus on a SliderPane.
     EXPECT_NULL(slider->GetFocusBorder());
+
+    // These should fall back to the default IPaneInteractor versions, which do
+    // nothing.
+    VirtualKeyboardPtr vk(new VirtualKeyboard);
+    slider->SetVirtualKeyboard(vk);
+    slider->SetFocus(true);
+    slider->Activate();
+    slider->Deactivate();
+    EXPECT_FALSE(slider->IsActive());
+    EXPECT_FALSE(slider->HandleEvent(Event()));
 }
 
 TEST_F(SliderPaneTest, IsValid) {

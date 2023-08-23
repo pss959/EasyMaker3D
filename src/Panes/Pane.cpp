@@ -56,6 +56,7 @@ void Pane::SetLayoutSize(const Vector2f &size) {
     }
 }
 
+// LCOV_EXCL_START [debug only]
 Str Pane::ToString(bool is_brief) const {
     auto tostr2 = [&](const Vector2f &v){ return Math::ToString(v, .01f); };
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
@@ -97,6 +98,7 @@ Str Pane::ToString(bool is_brief) const {
     }
     return s;
 }
+// LCOV_EXCL_STOP
 
 void Pane::SetMinSize(const Vector2f &size) {
     if (min_size_ != size) {

@@ -48,6 +48,10 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     /// ScrollingPane) is visible.
     void ScrollToShowSubPane(const Pane &sub_pane);
 
+    /// Returns the current scroll position as a fraction from 0 (top) to 1
+    /// (bottom).
+    float GetScrollPosition() const { return scroll_pos_; }
+
   protected:
     ScrollingPane() {}
 

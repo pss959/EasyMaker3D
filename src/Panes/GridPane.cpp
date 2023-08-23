@@ -21,13 +21,11 @@ void GridPane::AddFields() {
 
 bool GridPane::IsValid(Str &details) {
     if (! ContainerPane::IsValid(details))
-        return false;
-
+        return false;  // LCOV_EXCL_LINE [cannot happen]
     if (row_count_ <= 0 || column_count_ <= 0) {
         details = "Non-positive row or column count";
         return false;
     }
-
     return CheckDim_(0, details) && CheckDim_(1, details) &&
         CheckPanes_(details);
 }
@@ -41,11 +39,13 @@ void GridPane::CreationDone() {
     }
 }
 
+// LCOV_EXCL_START [debug only]
 Str GridPane::ToString(bool is_brief) const {
     return Pane::ToString(is_brief) + " " +
         Util::ToString(row_count_) + "R x " +
         Util::ToString(column_count_) + "C";
 }
+// LCOV_EXCL_STOP
 
 Vector2f GridPane::ComputeBaseSize() const {
     Vector2f base_size;

@@ -4,6 +4,7 @@
 #include "Place/TouchInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
+#include "Util/General.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
 #include "Widgets/Widget.h"
@@ -83,6 +84,13 @@ TEST_F(BoxPaneTest, LayoutVBox) {
     EXPECT_EQ(Vector2f(108, 201), sp1->GetLayoutSize());
     EXPECT_EQ(Vector2f(1,     1), sp2->GetLayoutSize());
     EXPECT_EQ(Vector2f(0,     0), sp3->GetLayoutSize());
+
+    const auto panes = box->GetPotentialInteractiveSubPanes();
+    EXPECT_EQ(4U, panes.size());
+    EXPECT_TRUE(Util::Contains(panes, sp0));
+    EXPECT_TRUE(Util::Contains(panes, sp1));
+    EXPECT_TRUE(Util::Contains(panes, sp2));
+    EXPECT_TRUE(Util::Contains(panes, sp3));
 }
 
 TEST_F(BoxPaneTest, LayoutHBox) {
