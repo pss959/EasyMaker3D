@@ -2,6 +2,7 @@
 
 #include "Tests/Testing.h"
 #include "Util/General.h"
+#include "Util/URL.h"
 
 /// \ingroup Tests
 class UtilTest : public ::testing::Test {
@@ -133,4 +134,14 @@ TEST_F(UtilTest, CreateTemporarySharedPtr) {
         EXPECT_EQ(1, dp.use_count());
     }
     EXPECT_EQ(1, dp.use_count());
+}
+
+TEST_F(UtilTest, OpenURL) {
+    Str last_url;
+    auto func = [&](const Str &url){ last_url = url; };
+
+    Util::SetOpenURLFunc(func);
+    EXPECT_EQ("", last_url);
+    Util::OpenURL("https://this.iswrong.com/bad.html");
+    EXPECT_EQ("https://this.iswrong.com/bad.html", last_url);
 }

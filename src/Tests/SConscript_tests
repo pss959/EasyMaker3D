@@ -72,7 +72,6 @@ test_source_dict = {
         'TranslateCommandTest',
     ],
     'Enums' : [
-        'EnumTest',
         'HandTest',
     ],
     'Executors' : [
@@ -248,6 +247,7 @@ test_source_dict = {
         'AlarmTest',
         'AssertTest',
         'DelayTest',
+        'EnumTest',
         'ExceptionTest',
         'FilePathListTest',
         'FilePathTest',
