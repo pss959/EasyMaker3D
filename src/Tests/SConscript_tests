@@ -156,6 +156,8 @@ test_source_dict = {
         'CSGToolPanelTest',
         'DialogPanelTest',
         'ExtrudedToolPanelTest',
+        'HelpPanelTest',
+        'InfoPanelTest',
         'PanelTestBase',
     ],
     'Panes' : [

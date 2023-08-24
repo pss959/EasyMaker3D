@@ -138,10 +138,15 @@ TEST_F(UtilTest, CreateTemporarySharedPtr) {
 
 TEST_F(UtilTest, OpenURL) {
     Str last_url;
-    auto func = [&](const Str &url){ last_url = url; };
+    Util::SetOpenURLFunc([&](const Str &url){ last_url = url; });
 
-    Util::SetOpenURLFunc(func);
     EXPECT_EQ("", last_url);
-    Util::OpenURL("https://this.iswrong.com/bad.html");
-    EXPECT_EQ("https://this.iswrong.com/bad.html", last_url);
+
+    Str url = "https://this.iswrong.com/bad.html";
+    Util::OpenURL(url);
+    EXPECT_EQ(url, last_url);
+
+    url = "http://some.other.org/weird.html";
+    Util::OpenURL(url);
+    EXPECT_EQ(url, last_url);
 }
