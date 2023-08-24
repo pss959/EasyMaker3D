@@ -151,6 +151,12 @@ test_source_dict = {
         'TorusModelTest',
         'TwistedModelTest',
     ],
+    'Panels' : [
+        'ActionPanelTest',
+        'BevelToolPanelTest',
+        'CSGToolPanelTest',
+        'PanelTestBase',
+    ],
     'Panes' : [
         'BoxPaneTest',
         'ButtonPaneTest',

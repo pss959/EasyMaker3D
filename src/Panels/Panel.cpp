@@ -126,9 +126,10 @@ void Panel::Focuser_::SetFocus(const PanePtr &pane) {
     ASSERT(pane);
     ASSERT(pane->GetInteractor());
     const PanePtr focused_pane = GetFocusedPane();
+
     if (pane != focused_pane) {
         auto it = std::find(panes_.begin(), panes_.end(), pane);
-        ASSERTM(it != panes_.end(), desc_);
+        ASSERTM(it != panes_.end(), desc_ + " and " + pane->GetDesc());
         ChangeFocus_(focused_pane, pane);
         focused_index_ = it - panes_.begin();
     }
@@ -409,7 +410,8 @@ bool Panel::HandleEvent(const Event &event) {
 }
 
 void Panel::SetIsShown(bool is_shown) {
-    if (is_shown) {
+    if (is_shown != is_shown_) {
+        is_shown_ = is_shown;
         // Let the derived class update any UI.
         UpdateInterface();
         focuser_->InitFocus();

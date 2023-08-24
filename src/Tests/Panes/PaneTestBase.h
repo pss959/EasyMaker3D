@@ -2,14 +2,13 @@
 
 #include <concepts>
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "Panes/Pane.h"
 #include "Tests/SceneTestBase.h"
 
 /// Base class for Pane tests; it provides some conveniences to simplify and
 /// clarify tests.
+///
 /// \ingroup Tests
 class PaneTestBase : public SceneTestBase {
   protected:

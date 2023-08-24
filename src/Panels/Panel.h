@@ -98,6 +98,10 @@ class Panel : public SG::Node {
     /// Panel to set up navigation and anything else it needs.
     void SetIsShown(bool is_shown);
 
+    /// Returns a flag indicating whether the Panel is shown. The default is
+    /// false.
+    bool IsShown() const { return is_shown_; }
+
     /// Returns the Widget from an interactive Pane that should respond to a
     /// touch represented by the given TouchInfo. If more than one Widget is
     /// touched, the closest one is returned.
@@ -239,6 +243,9 @@ class Panel : public SG::Node {
     std::unique_ptr<Focuser_> focuser_;
 
     ContextPtr context_;
+
+    /// True while the Panel is shown.
+    bool is_shown_ = false;
 
     /// Set to true if the Panel size may have changed.
     bool size_may_have_changed_ = false;
