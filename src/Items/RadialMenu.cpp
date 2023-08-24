@@ -117,7 +117,7 @@ void RadialMenu::InitCircle_(const Str &name, float radius) {
 
     // Create a closed circle.
     std::vector<Point2f> circle_points =
-        GetCirclePoints(TK::kRadialMenuCirclePointCount, 1, true);
+        GetCirclePoints(TK::kRadialMenuCirclePointCount, 1, true, true);
     circle_points.push_back(circle_points[0]);
 
     tube->SetPoints(

@@ -25,6 +25,13 @@ TEST_F(ExtrudedModelTest, SetProfile) {
     EXPECT_EQ(6U, mesh.points.size());
     EXPECT_EQ(8U, mesh.GetTriangleCount());
 
+    // Try a regular polygon Profile (triangle).
+    extruded->SetProfile(ExtrudedModel::CreateRegularPolygonProfile(3));
+    EXPECT_TRUE(extruded->GetProfile().IsValid());
+    mesh = extruded->GetMesh();
+    EXPECT_EQ(6U,  mesh.points.size());
+    EXPECT_EQ(8U, mesh.GetTriangleCount());
+
     // Try a regular polygon Profile (square).
     extruded->SetProfile(ExtrudedModel::CreateRegularPolygonProfile(4));
     EXPECT_TRUE(extruded->GetProfile().IsValid());

@@ -36,10 +36,13 @@ struct CircleArc {
 };
 
 /// Returns a vector of N 2D points ranging clockwise or counterclockwise
-/// around a circle with the given radius.
+/// around a circle with the given radius. If scale_to_bounds is true, this
+/// scales the resulting points so their bounds are as close as possible to the
+/// desired diameter.
 ///
 /// \ingroup Math
-std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise);
+std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise,
+                                     bool scale_to_bounds);
 
 /// Returns a vector of N 2D points forming a counterclockwise circular arc
 /// with the given radius and angles.

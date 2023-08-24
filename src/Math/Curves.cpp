@@ -4,7 +4,8 @@
 
 #include "Math/Linear.h"
 
-std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise) {
+std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise,
+                                     bool scale_to_bounds) {
     std::vector<Point2f> points;
     points.resize(n);
     for (int i = 0; i < n; ++i) {
@@ -15,9 +16,10 @@ std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise) {
             points[i][1] = -points[i][1];
     }
 
-    // Make sure the bounds of the circle are as close as possible to the
-    // desired diameter.
-    ScalePointsToSize(2 * radius * Vector2f(1, 1), points);
+    // If requested, make sure the bounds of the circle are as close as
+    // possible to the desired diameter.
+    if (scale_to_bounds)
+        ScalePointsToSize(2 * radius * Vector2f(1, 1), points);
 
     return points;
 }

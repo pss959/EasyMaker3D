@@ -53,7 +53,7 @@ Profile ExtrudedModel::CreateRegularPolygonProfile(size_t side_count) {
     // Generate points around a circle and offset them to put them in the range
     // (0,1).
     Profile::PointVec pts =
-        GetCirclePoints(side_count, TK::kExtrudedModelRadius, false);
+        GetCirclePoints(side_count, TK::kExtrudedModelRadius, false, false);
 
     for (auto &pt: pts)
         pt += Vector2f(.5f, .5f);

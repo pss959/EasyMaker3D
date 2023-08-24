@@ -75,7 +75,7 @@ std::vector<Point3f> RadialLayoutExecutor::GetModelPositions_(
     const float arc_degrees = arc.arc_angle.Degrees();
     std::vector<Point2f> arc_points_2d;
     if (std::abs(arc_degrees) == 360) {  // Full circle.
-        arc_points_2d = GetCirclePoints(count, rlc.GetRadius(), false);
+        arc_points_2d = GetCirclePoints(count, rlc.GetRadius(), false, true);
         if (arc_degrees < 0) {  // Clockwise
             for (auto &p: arc_points_2d)
                 p[1] = -p[1];

@@ -30,18 +30,18 @@ TEST_F(CurvesTest, GetCirclePoints) {
     using ion::math::Length;
 
     // No points.
-    auto pts = GetCirclePoints(0, 0, true);
+    auto pts = GetCirclePoints(0, 0, true, false);
     EXPECT_EQ(0U, pts.size());
 
     // 10 points with radius 0.
-    pts = GetCirclePoints(10, 0, true);
+    pts = GetCirclePoints(10, 0, true, false);
     EXPECT_EQ(10U, pts.size());
     EXPECT_TRUE(std::all_of(
                     pts.begin(), pts.end(),
                     [](const Point2f &p){ return p == Point2f::Zero(); }));
 
     // 20 points with radius 10.
-    pts = GetCirclePoints(20, 10, true);
+    pts = GetCirclePoints(20, 10, true, false);
     EXPECT_EQ(20U, pts.size());
     EXPECT_TRUE(std::all_of(
                     pts.begin(), pts.end(),
@@ -50,12 +50,30 @@ TEST_F(CurvesTest, GetCirclePoints) {
                     }));
 
     // Same, in reverse direction.
-    auto pts2 = GetCirclePoints(20, 10, false);
+    auto pts2 = GetCirclePoints(20, 10, false, false);
     EXPECT_EQ(20U, pts2.size());
     for (int i = 0; i < 20; ++i) {
         // Should be the same point with Y negated.
         EXPECT_EQ(Point2f(pts[i][0], -pts[i][1]), pts2[i]);
     }
+}
+
+TEST_F(CurvesTest, GetCirclePointsScaleToBounds) {
+    // 3-point circle has radically different size with/without scaling to
+    // bounds.
+    auto pts2 = GetCirclePoints(3, 10, false, false);
+    EXPECT_EQ(3U, pts2.size());
+    Range2f bounds;
+    for (const auto &p: pts2)
+        bounds.ExtendByPoint(p);
+    EXPECT_VECS_CLOSE2(Vector2f(15, 17.3205f), bounds.GetSize());
+
+    pts2 = GetCirclePoints(3, 10, false, true);
+    EXPECT_EQ(3U, pts2.size());
+    bounds.MakeEmpty();
+    for (const auto &p: pts2)
+        bounds.ExtendByPoint(p);
+    EXPECT_VECS_CLOSE2(Vector2f(20, 20), bounds.GetSize());
 }
 
 TEST_F(CurvesTest, GetCircleArcPoints) {
