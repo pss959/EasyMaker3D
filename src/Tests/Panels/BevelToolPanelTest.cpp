@@ -17,6 +17,7 @@ TEST_F(BevelToolPanelTest, Defaults) {
               bevel.profile);
     EXPECT_EQ(1,   bevel.scale);
     EXPECT_EQ(120, bevel.max_angle.Degrees());
+    EXPECT_NULL(panel->GetFocusedPane());
 }
 
 TEST_F(BevelToolPanelTest, SetBevel) {
@@ -53,8 +54,8 @@ TEST_F(BevelToolPanelTest, Change) {
         });
 
     // Drag the scale slider.
-    auto sc =
-        FindPane<LabeledSliderPane>(*panel, "ScaleSlider")->GetSliderPane();
+    auto sc = FindTypedPane<LabeledSliderPane>(
+        *panel, "ScaleSlider")->GetSliderPane();
     auto sw =
         std::dynamic_pointer_cast<Slider1DWidget>(sc->GetActivationWidget());
     {
@@ -68,7 +69,8 @@ TEST_F(BevelToolPanelTest, Change) {
     }
 
     // Drag the max_angle slider.
-    sc = FindPane<LabeledSliderPane>(*panel, "AngleSlider")->GetSliderPane();
+    sc = FindTypedPane<LabeledSliderPane>(
+        *panel, "AngleSlider")->GetSliderPane();
     sw = std::dynamic_pointer_cast<Slider1DWidget>(sc->GetActivationWidget());
     {
         DragTester dt(sw);
@@ -86,7 +88,8 @@ TEST_F(BevelToolPanelTest, GetGripWidget) {
     EXPECT_TRUE(panel->CanGripHover());
 
     auto get_sw = [&](const Str &name){
-        auto sp = FindPane<LabeledSliderPane>(*panel, name)->GetSliderPane();
+        auto sp = FindTypedPane<LabeledSliderPane>(
+            *panel, name)->GetSliderPane();
         return sp->GetActivationWidget();
     };
 

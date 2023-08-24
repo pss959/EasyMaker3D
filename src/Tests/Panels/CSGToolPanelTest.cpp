@@ -9,6 +9,7 @@ class CSGToolPanelTest : public PanelTestBase {};
 TEST_F(CSGToolPanelTest, Defaults) {
     auto panel = ReadRealPanel<CSGToolPanel>("CSGToolPanel");
     EXPECT_EQ(CSGOperation::kUnion, panel->GetOperation());
+    EXPECT_NULL(panel->GetFocusedPane());
 }
 
 TEST_F(CSGToolPanelTest, SetOperation) {
@@ -36,7 +37,7 @@ TEST_F(CSGToolPanelTest, Change) {
         });
 
     // Toggle one of the radio buttons.
-    auto but = FindPane<RadioButtonPane>(*panel, "Intersection");
+    auto but = FindTypedPane<RadioButtonPane>(*panel, "Intersection");
     but->SetState(true);
     EXPECT_EQ(1U, change_count);
 }

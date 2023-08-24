@@ -102,6 +102,9 @@ class Panel : public SG::Node {
     /// false.
     bool IsShown() const { return is_shown_; }
 
+    /// Returns the currently focused Pane, or null if there is none.
+    PanePtr GetFocusedPane() const;
+
     /// Returns the Widget from an interactive Pane that should respond to a
     /// touch represented by the given TouchInfo. If more than one Widget is
     /// touched, the closest one is returned.
@@ -191,9 +194,6 @@ class Panel : public SG::Node {
 
     /// Sets the focus to the named Pane. Asserts if there is no such Pane.
     void SetFocus(const Str &name);
-
-    /// Returns the currently focused Pane, or null if there is none.
-    PanePtr GetFocusedPane() const;
 
     /// This is called after focus changes to the given Pane. The base class
     /// implements this to do nothing.

@@ -418,6 +418,10 @@ void Panel::SetIsShown(bool is_shown) {
     }
 }
 
+PanePtr Panel::GetFocusedPane() const {
+    return focuser_->GetFocusedPane();
+}
+
 WidgetPtr Panel::GetTouchedPaneWidget(const TouchInfo &info) {
     float closest_dist = std::numeric_limits<float>::max();
     return GetPane()->GetTouchedWidget(info, closest_dist);
@@ -476,10 +480,6 @@ void Panel::SetFocus(const PanePtr &pane) {
 
 void Panel::SetFocus(const Str &name) {
     SetFocus(GetPane()->FindPane(name));
-}
-
-PanePtr Panel::GetFocusedPane() const {
-    return focuser_->GetFocusedPane();
 }
 
 void Panel::DisplayMessage(const Str &message, const MessageFunc &func) {

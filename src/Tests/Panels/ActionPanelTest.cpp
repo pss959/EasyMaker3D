@@ -8,6 +8,7 @@ class ActionPanelTest : public PanelTestBase {};
 TEST_F(ActionPanelTest, Defaults) {
     auto panel = ReadRealPanel<ActionPanel>("ActionPanel");
     EXPECT_EQ(Action::kNone, panel->GetAction());
+    EXPECT_NULL(panel->GetFocusedPane());
 }
 
 TEST_F(ActionPanelTest, SetAction) {
@@ -21,4 +22,5 @@ TEST_F(ActionPanelTest, Show) {
     EXPECT_FALSE(panel->IsShown());
     panel->SetIsShown(true);
     EXPECT_TRUE(panel->IsShown());
+    EXPECT_EQ(FindPane(*panel, "Cancel"), panel->GetFocusedPane());
 }
