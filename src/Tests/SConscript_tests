@@ -158,7 +158,9 @@ test_source_dict = {
         'ExtrudedToolPanelTest',
         'HelpPanelTest',
         'InfoPanelTest',
+        'NameToolPanelTest',
         'PanelTestBase',
+        'ToolPanelTestBase',
     ],
     'Panes' : [
         'BoxPaneTest',

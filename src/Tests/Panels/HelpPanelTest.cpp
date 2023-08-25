@@ -4,26 +4,28 @@
 #include "Util/Tuning.h"
 #include "Util/URL.h"
 
-class HelpPanelTest : public PanelTestBase {};
+/// \ingroup Tests
+class HelpPanelTest : public PanelTestBase {
+  protected:
+    HelpPanelPtr panel;
+    HelpPanelTest() { panel = InitPanel<HelpPanel>("HelpPanel"); }
+};
 
 TEST_F(HelpPanelTest, Defaults) {
-    auto panel = ReadRealPanel<HelpPanel>("HelpPanel");
     EXPECT_NULL(panel->GetFocusedPane());
 }
 
 TEST_F(HelpPanelTest, Show) {
-    auto panel = ReadRealPanel<HelpPanel>("HelpPanel");
     EXPECT_FALSE(panel->IsShown());
     panel->SetIsShown(true);
     EXPECT_TRUE(panel->IsShown());
-    EXPECT_EQ(FindPane(*panel, "Done"), panel->GetFocusedPane());
+    EXPECT_EQ(FindPane("Done"), panel->GetFocusedPane());
 }
 
 TEST_F(HelpPanelTest, OpenURLs) {
     Str last_url;
     Util::SetOpenURLFunc([&](const Str &url){ last_url = url; });
 
-    auto panel = ReadRealPanel<HelpPanel>("HelpPanel");
     panel->SetIsShown(true);
 
     auto doc_url = [](const Str &page){
@@ -33,16 +35,16 @@ TEST_F(HelpPanelTest, OpenURLs) {
     panel->SetIsShown(true);
     EXPECT_TRUE(panel->IsShown());
 
-    ClickButtonPane(*panel, "UserGuide");
+    ClickButtonPane("UserGuide");
     EXPECT_EQ(doc_url("UserGuide"), last_url);
 
-    ClickButtonPane(*panel, "CheatSheet");
+    ClickButtonPane("CheatSheet");
     EXPECT_EQ(doc_url("CheatSheet"), last_url);
 
-    ClickButtonPane(*panel, "Issue");
+    ClickButtonPane("Issue");
     EXPECT_EQ(TK::kGithubURL + "/issues", last_url);
 
-    ClickButtonPane(*panel, "Done");
+    ClickButtonPane("Done");
     EXPECT_FALSE(panel->IsShown());
     EXPECT_EQ("Done", GetCloseResult());
 }

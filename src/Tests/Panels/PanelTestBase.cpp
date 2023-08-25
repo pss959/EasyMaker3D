@@ -1,21 +1,30 @@
 #include "Tests/Panels/PanelTestBase.h"
 
 #include "Agents/BoardAgent.h"
+#include "Managers/NameManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/ContainerPane.h"
+#include "Panes/TextInputPane.h"
 #include "Place/ClickInfo.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
 #include "Util/String.h"
 #include "Widgets/PushButtonWidget.h"
 
+// ----------------------------------------------------------------------------
+// PanelTestBase::TestBoardAgent class.
+// ----------------------------------------------------------------------------
+
 /// Derived BoardAgent that saves the result of calling Close() on a Panel. An
 /// instance of this is set in the test context.
+///
+/// \ingroup Tests
 class PanelTestBase::TestBoardAgent : public BoardAgent {
   public:
-    Panel *cur_panel = nullptr;  ///< Currently-open Panel.
-    Str    close_result;         ///< Result passed to ClosePanel().
+    PanelPtr cur_panel;     ///< Currently-open Panel.
+    Str      close_result;  ///< Result passed to ClosePanel().
 
     virtual PanelPtr GetPanel(const Str &name) const override {
         ASSERTM(false, "TestBoardAgent::GetPanel called for " + name);
@@ -25,7 +34,7 @@ class PanelTestBase::TestBoardAgent : public BoardAgent {
         ASSERT(cur_panel);
         cur_panel->SetIsShown(false);
         close_result = result;
-        cur_panel = nullptr;
+        cur_panel.reset();
     }
 
     virtual void PushPanel(const PanelPtr &panel,
@@ -35,24 +44,49 @@ class PanelTestBase::TestBoardAgent : public BoardAgent {
     }
 };
 
-PanelTestBase::PanelTestBase() : test_board_agent_(new TestBoardAgent) {}
+// ----------------------------------------------------------------------------
+// PanelTestBase functions.
+// ----------------------------------------------------------------------------
+
+PanelTestBase::PanelTestBase(bool need_text) : need_text_(need_text) {
+    test_board_agent_.reset(new TestBoardAgent);
+
+    // Create and store a test Context.
+    test_context_.reset(new Panel::Context);
+    test_context_->board_agent = test_board_agent_;
+    test_context_->name_agent.reset(new NameManager);
+}
+
 PanelTestBase::~PanelTestBase() {}
 
-PanePtr PanelTestBase::FindPane(const Panel &panel, const Str &name) {
-    return SG::FindTypedNodeUnderNode<Pane>(*panel.GetPane(), name);
+PanePtr PanelTestBase::FindPane(const Str &name) {
+    ASSERT(panel_);
+    return SG::FindTypedNodeUnderNode<Pane>(*panel_->GetPane(), name);
 }
 
-void PanelTestBase::ClickButtonPane(const Panel &panel, const Str &name) {
-    auto but_pane = FindTypedPane<ButtonPane>(panel, name);
+ButtonPanePtr PanelTestBase::ClickButtonPane(const Str &name) {
+    ASSERT(panel_);
+    auto but_pane = FindTypedPane<ButtonPane>(name);
     ClickInfo info;  // Contents do not matter.
     but_pane->GetButton().Click(info);
-
+    return but_pane;
 }
 
-void PanelTestBase::ToggleCheckboxPane(const Panel &panel, const Str &name) {
-    auto cbox_pane = FindTypedPane<CheckboxPane>(panel, name);
+CheckboxPanePtr PanelTestBase::ToggleCheckboxPane(const Str &name) {
+    ASSERT(panel_);
+    auto cbox_pane = FindTypedPane<CheckboxPane>(name);
     ClickInfo info;  // Contents do not matter.
     cbox_pane->GetActivationWidget()->Click(info);
+    return cbox_pane;
+}
+
+TextInputPanePtr PanelTestBase::SetTextInput(const Str &name, const Str &text) {
+    ASSERT(panel_);
+    auto input_pane = FindTypedPane<TextInputPane>(name);
+    input_pane->GetInteractor()->Activate();
+    input_pane->SetInitialText(text);
+    input_pane->GetInteractor()->Deactivate();
+    return input_pane;
 }
 
 Str PanelTestBase::GetCloseResult() {
@@ -70,10 +104,8 @@ Str PanelTestBase::GetContentsString_() {
 )";
 }
 
-void PanelTestBase::SetTestContext_(Panel &panel) {
-    Panel::ContextPtr pc(new Panel::Context);
-    pc->board_agent = test_board_agent_;
-    panel.SetTestContext(pc);
-    test_board_agent_->cur_panel = &panel;
+void PanelTestBase::StorePanelWithContext_(const PanelPtr &panel) {
+    panel_ = panel;
+    panel_->SetTestContext(test_context_);
+    test_board_agent_->cur_panel = panel;
 }
-

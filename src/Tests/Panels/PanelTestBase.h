@@ -1,12 +1,17 @@
 #pragma once
 
 #include <concepts>
-#include <memory>
 
+#include "Base/Memory.h"
 #include "Panes/Pane.h"
 #include "Panels/Panel.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/UnitTestTypeChanger.h"
+#include "Util/Assert.h"
+
+DECL_SHARED_PTR(ButtonPane);
+DECL_SHARED_PTR(CheckboxPane);
+DECL_SHARED_PTR(TextInputPane);
 
 /// Base class for Panel tests; it provides some conveniences to simplify and
 /// clarify tests.
@@ -14,48 +19,75 @@
 /// \ingroup Tests
 class PanelTestBase : public SceneTestBase {
   protected:
-    PanelTestBase();
+    /// The constructor is passed a flag indicating whether there are any
+    /// text-based Panes that need fonts set up (which slows things down).
+    explicit PanelTestBase(bool need_text = false);
     virtual ~PanelTestBase();
 
-    /// Calls ReadRealScene() using a contents string that sets up for a
-    /// derived Panel of the templated type and name, sets up a test context in
-    /// it, and returns the derived Panel instance.
-    template <typename T>
-    std::shared_ptr<T> ReadRealPanel(const Str &type_name) {
+    /// Sets up to test a Panel of the templated type and name. This sets up a
+    /// test Context in the Panel and stores it for later use. The derived
+    /// Panel is returned.
+    template <typename T> std::shared_ptr<T> InitPanel(const Str &type_name) {
+        UnitTestTypeChanger uttc(need_text_ ? Util::AppType::kInteractive :
+                                 Util::AppType::kUnitTest);
         static_assert(std::derived_from<T, Panel> == true);
         auto panel = ReadRealNode<T>(GetContentsString_(), type_name);
-        SetTestContext_(*panel);
+        StorePanelWithContext_(panel);
         return panel;
     }
 
-    /// Finds and returns the sub-pane in the Panel with the given
-    /// name. Asserts if not found.
-    PanePtr FindPane(const Panel &panel, const Str &name);
+    /// Returns the test Context created for the Panel.
+    Panel::Context & GetContext() { return *test_context_; }
+
+    /// \name Pane access helpers
+    ///@{
+
+    /// Finds and returns the sub-pane in the Panel with the given name.
+    /// Asserts if not found.
+    PanePtr FindPane(const Str &name);
 
     /// Finds and returns the sub-pane in the Panel with the given name and
     /// type. Asserts if not found.
     template <typename T>
-    std::shared_ptr<T> FindTypedPane(const Panel &panel, const Str &name) {
+    std::shared_ptr<T> FindTypedPane(const Str &name) {
         static_assert(std::derived_from<T, Pane> == true);
-        auto pane = std::dynamic_pointer_cast<T>(FindPane(panel, name));
-        EXPECT_NOT_NULL(pane);
+        auto pane = std::dynamic_pointer_cast<T>(FindPane(name));
+        ASSERT(pane);
         return pane;
     }
 
-    /// Convenience that finds a ButtonPane with the given name in a Panel and
-    /// simulates a click on it.
-    void ClickButtonPane(const Panel &panel, const Str &name);
+    ///@}
 
-    /// Convenience that finds a CheckboxPane with the given name in a Panel
-    /// and toggles it.
-    void ToggleCheckboxPane(const Panel &panel, const Str &name);
+    /// \name Pane interaction helpers
+    ///@{
 
-    /// Returns the result of the last call to Close() and resets to empty.
+    /// Convenience that finds a ButtonPane with the given name in the Panel
+    /// and simulates a click on it. Returns the ButtonPane.
+    ButtonPanePtr ClickButtonPane(const Str &name);
+
+    /// Convenience that finds a CheckboxPane with the given name in the Panel
+    /// and toggles it. Returns the CheckboxPane.
+    CheckboxPanePtr ToggleCheckboxPane(const Str &name);
+
+    /// Convenience that finds a TextInputPane with the given name in the Panel
+    /// and sets it to contain the given text string. Returns the
+    /// TextInputPane.
+    TextInputPanePtr SetTextInput(const Str &name, const Str &text);
+
+    /// Returns the result of the last call to Close() on the Panel and resets
+    /// to empty.
     Str GetCloseResult();
 
+    ///@}
+
   private:
-    class TestBoardAgent;
-    std::shared_ptr<TestBoardAgent> test_board_agent_;
-    static Str  GetContentsString_();
-    void SetTestContext_(Panel &panel);
+    DECL_SHARED_PTR(TestBoardAgent);
+
+    const bool        need_text_ = false;
+    PanelPtr          panel_;
+    Panel::ContextPtr test_context_;
+    TestBoardAgentPtr test_board_agent_;
+
+    static Str        GetContentsString_();
+    void              StorePanelWithContext_(const PanelPtr &panel);
 };

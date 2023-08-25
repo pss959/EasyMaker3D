@@ -2,15 +2,22 @@
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
 #include "Panes/SliderPane.h"
-#include "Tests/Panels/PanelTestBase.h"
+#include "Tests/Panels/ToolPanelTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/Widgets/DragTester.h"
 #include "Widgets/Slider1DWidget.h"
 
-class BevelToolPanelTest : public PanelTestBase {};
+/// \ingroup Tests
+class BevelToolPanelTest : public ToolPanelTestBase {
+  protected:
+    BevelToolPanelPtr panel;
+    BevelToolPanelTest() {
+        panel = InitPanel<BevelToolPanel>("BevelToolPanel");
+        ObserveChanges(*panel);
+    }
+};
 
 TEST_F(BevelToolPanelTest, Defaults) {
-    auto panel = ReadRealPanel<BevelToolPanel>("BevelToolPanel");
     const Bevel bevel = panel->GetBevel();
     EXPECT_EQ(Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2,
                                           Profile::PointVec()),
@@ -27,35 +34,19 @@ TEST_F(BevelToolPanelTest, SetBevel) {
     bevel.scale = 2.5f;
     bevel.max_angle = Anglef::FromDegrees(135);
 
-    auto panel = ReadRealPanel<BevelToolPanel>("BevelToolPanel");
     panel->SetBevel(bevel);
     EXPECT_EQ(bevel, panel->GetBevel());
 }
 
 TEST_F(BevelToolPanelTest, Show) {
-    auto panel = ReadRealPanel<BevelToolPanel>("BevelToolPanel");
     EXPECT_FALSE(panel->IsShown());
     panel->SetIsShown(true);
     EXPECT_TRUE(panel->IsShown());
 }
 
 TEST_F(BevelToolPanelTest, Change) {
-    auto panel = ReadRealPanel<BevelToolPanel>("BevelToolPanel");
-
-    size_t                     change_count = 0;
-    Str                        change_name;
-    ToolPanel::InteractionType change_type;
-
-    panel->GetInteraction().AddObserver(
-        "key", [&](const Str &name, ToolPanel::InteractionType type){
-            ++change_count;
-            change_name = name;
-            change_type = type;
-        });
-
     // Drag the scale slider.
-    auto sc = FindTypedPane<LabeledSliderPane>(
-        *panel, "ScaleSlider")->GetSliderPane();
+    auto sc = FindTypedPane<LabeledSliderPane>("ScaleSlider")->GetSliderPane();
     auto sw =
         std::dynamic_pointer_cast<Slider1DWidget>(sc->GetActivationWidget());
     {
@@ -63,33 +54,30 @@ TEST_F(BevelToolPanelTest, Change) {
         dt.SetRayDirection(-Vector3f::AxisZ());
         dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
         // Drag start/continue/end = 3 changes.
-        EXPECT_EQ(3U,                                   change_count);
-        EXPECT_EQ("Scale",                              change_name);
-        EXPECT_EQ(ToolPanel::InteractionType::kDragEnd, change_type);
+        EXPECT_EQ(3U,         GetChangeInfo().count);
+        EXPECT_EQ("Scale",    GetChangeInfo().name);
+        EXPECT_EQ("kDragEnd", GetChangeInfo().type);
     }
 
     // Drag the max_angle slider.
-    sc = FindTypedPane<LabeledSliderPane>(
-        *panel, "AngleSlider")->GetSliderPane();
+    sc = FindTypedPane<LabeledSliderPane>("AngleSlider")->GetSliderPane();
     sw = std::dynamic_pointer_cast<Slider1DWidget>(sc->GetActivationWidget());
     {
         DragTester dt(sw);
         dt.SetRayDirection(-Vector3f::AxisZ());
         dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
         // Drag start/continue/end = 3 changes.
-        EXPECT_EQ(6U,                                   change_count);
-        EXPECT_EQ("MaxAngle",                           change_name);
-        EXPECT_EQ(ToolPanel::InteractionType::kDragEnd, change_type);
+        EXPECT_EQ(6U,         GetChangeInfo().count);
+        EXPECT_EQ("MaxAngle", GetChangeInfo().name);
+        EXPECT_EQ("kDragEnd", GetChangeInfo().type);
     }
 }
 
 TEST_F(BevelToolPanelTest, GetGripWidget) {
-    auto panel = ReadRealPanel<BevelToolPanel>("BevelToolPanel");
     EXPECT_TRUE(panel->CanGripHover());
 
     auto get_sw = [&](const Str &name){
-        auto sp = FindTypedPane<LabeledSliderPane>(
-            *panel, name)->GetSliderPane();
+        auto sp = FindTypedPane<LabeledSliderPane>(name)->GetSliderPane();
         return sp->GetActivationWidget();
     };
 

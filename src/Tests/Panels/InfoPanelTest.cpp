@@ -8,20 +8,19 @@
 #include "Selection/Selection.h"
 #include "Tests/Panels/PanelTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 
-class InfoPanelTest : public PanelTestBase {};
+/// \ingroup Tests
+class InfoPanelTest : public PanelTestBase {
+  protected:
+    InfoPanelPtr panel;
+    InfoPanelTest() { panel = InitPanel<InfoPanel>("InfoPanel"); }
+};
 
 TEST_F(InfoPanelTest, Defaults) {
-    auto panel = ReadRealPanel<InfoPanel>("InfoPanel");
     EXPECT_NULL(panel->GetFocusedPane());
 }
 
 TEST_F(InfoPanelTest, Show) {
-    // Override this setting; the XXXX needs to build font images.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
-    auto panel = ReadRealPanel<InfoPanel>("InfoPanel");
     EXPECT_FALSE(panel->IsShown());
 
     // Create two Models, one with an invalid mesh.
@@ -48,9 +47,9 @@ TEST_F(InfoPanelTest, Show) {
 
     panel->SetIsShown(true);
     EXPECT_TRUE(panel->IsShown());
-    EXPECT_EQ(FindPane(*panel, "Done"), panel->GetFocusedPane());
+    EXPECT_EQ(FindPane("Done"), panel->GetFocusedPane());
 
-    ClickButtonPane(*panel, "Done");
+    ClickButtonPane("Done");
     EXPECT_FALSE(panel->IsShown());
     EXPECT_EQ("Done", GetCloseResult());
 }

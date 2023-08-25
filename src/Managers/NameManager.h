@@ -18,7 +18,7 @@ class NameManager : public NameAgent {
     void Reset();
 
     /// Adds a name, asserting that it is unique.
-    void Add(const Str &name);
+    virtual void Add(const Str &name) override;
 
     /// Removes a name, asserting that it was in there.
     void Remove(const Str &name);
