@@ -4,7 +4,6 @@
 #include "Panes/SliderPane.h"
 #include "Tests/Panels/ToolPanelTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/Widgets/DragTester.h"
 #include "Widgets/Slider1DWidget.h"
 
 /// \ingroup Tests
@@ -19,9 +18,7 @@ class BevelToolPanelTest : public ToolPanelTestBase {
 
 TEST_F(BevelToolPanelTest, Defaults) {
     const Bevel bevel = panel->GetBevel();
-    EXPECT_EQ(Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2,
-                                          Profile::PointVec()),
-              bevel.profile);
+    EXPECT_EQ(ProfilePane::CreateDefaultProfile(), bevel.profile);
     EXPECT_EQ(1,   bevel.scale);
     EXPECT_EQ(120, bevel.max_angle.Degrees());
     EXPECT_NULL(panel->GetFocusedPane());
@@ -45,32 +42,17 @@ TEST_F(BevelToolPanelTest, Show) {
 }
 
 TEST_F(BevelToolPanelTest, Change) {
-    // Drag the scale slider.
-    auto sc = FindTypedPane<LabeledSliderPane>("ScaleSlider")->GetSliderPane();
-    auto sw =
-        std::dynamic_pointer_cast<Slider1DWidget>(sc->GetActivationWidget());
-    {
-        DragTester dt(sw);
-        dt.SetRayDirection(-Vector3f::AxisZ());
-        dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
-        // Drag start/continue/end = 3 changes.
-        EXPECT_EQ(3U,         GetChangeInfo().count);
-        EXPECT_EQ("Scale",    GetChangeInfo().name);
-        EXPECT_EQ("kDragEnd", GetChangeInfo().type);
-    }
+    // Drag the scale slider. Drag start/continue/end = 3 changes.
+    DragSlider("ScaleSlider", Vector2f(.5f, 0));
+    EXPECT_EQ(3U,         GetChangeInfo().count);
+    EXPECT_EQ("Scale",    GetChangeInfo().name);
+    EXPECT_EQ("kDragEnd", GetChangeInfo().type);
 
     // Drag the max_angle slider.
-    sc = FindTypedPane<LabeledSliderPane>("AngleSlider")->GetSliderPane();
-    sw = std::dynamic_pointer_cast<Slider1DWidget>(sc->GetActivationWidget());
-    {
-        DragTester dt(sw);
-        dt.SetRayDirection(-Vector3f::AxisZ());
-        dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
-        // Drag start/continue/end = 3 changes.
-        EXPECT_EQ(6U,         GetChangeInfo().count);
-        EXPECT_EQ("MaxAngle", GetChangeInfo().name);
-        EXPECT_EQ("kDragEnd", GetChangeInfo().type);
-    }
+    DragSlider("AngleSlider", Vector2f(.5f, 0));
+    EXPECT_EQ(6U,         GetChangeInfo().count);
+    EXPECT_EQ("MaxAngle", GetChangeInfo().name);
+    EXPECT_EQ("kDragEnd", GetChangeInfo().type);
 }
 
 TEST_F(BevelToolPanelTest, GetGripWidget) {

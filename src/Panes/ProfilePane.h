@@ -31,8 +31,12 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     void SetProfile(const Profile &profile);
 
     /// Returns the Profile, which may have been edited. The default Profile is
-    /// fixed from (0, 1) to (1, 0).
+    /// returned by CreateDefaultProfile().
     const Profile & GetProfile() const;
+
+    /// Creates and returns the default Profile used for the ProfilePane: fixed
+    /// from (0, 1) to (1, 0).
+    static Profile CreateDefaultProfile();
 
     /// Sets the precision in X and Y to round points to. Passing zero for
     /// either turns off rounding in that dimension. The default is 0 for both.

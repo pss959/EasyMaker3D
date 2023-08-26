@@ -96,8 +96,5 @@ Node "Panels" {
       is_movable: False,
       pane: <"nodes/TopPanes/TreePane.emd">,
     },
-
-    # XXXX For testing only.
-    #<"nodes/tests/TestPanel.emd">,
   ]
 }

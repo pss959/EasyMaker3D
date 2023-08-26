@@ -17,14 +17,6 @@ Node "NodeViewerRoot" {
     #<"nodes/Tools/TwistTool.emd">
     #<"nodes/templates/Controller.emd">
     #<"nodes/templates/RadialMenu.emd">
-    #<"nodes/tests/AtlasTest.emd">
-    #<"nodes/tests/BlendTest.emd">
-    #<"nodes/tests/DiscWidgetTest.emd">
-    #<"nodes/tests/RadialLayoutWidgetTest.emd">
-    #<"nodes/tests/SliderTest.emd">
-    #<"nodes/tests/SphereWidgetTest.emd">
-    #<"nodes/tests/StencilTest.emd">
-    #<"nodes/tests/ViewTest.emd">
 
     # Uncomment one of these to test out a Board with a Panel.
     # CLONE "T_Board" "AppBoard" {}

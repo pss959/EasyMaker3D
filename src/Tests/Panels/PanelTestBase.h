@@ -11,6 +11,8 @@
 
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(CheckboxPane);
+DECL_SHARED_PTR(RadioButtonPane);
+DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(TextInputPane);
 
 /// Base class for Panel tests; it provides some conveniences to simplify and
@@ -68,6 +70,15 @@ class PanelTestBase : public SceneTestBase {
     /// Convenience that finds a CheckboxPane with the given name in the Panel
     /// and toggles it. Returns the CheckboxPane.
     CheckboxPanePtr ToggleCheckboxPane(const Str &name);
+
+    /// Convenience that finds a RadioButtonPane with the given name in the
+    /// Panel and sets its state to true. Returns the RadioButtonPane.
+    RadioButtonPanePtr ActivateRadioButtonPane(const Str &name);
+
+    /// Convenience that finds a LabeledSliderPane with the given name in the
+    /// Panel and performs a mouse drag by the given vector. Returns the
+    /// SliderPane inside the LabeledSliderPane.
+    SliderPanePtr DragSlider(const Str &name, const Vector2f &vec);
 
     /// Convenience that finds a TextInputPane with the given name in the Panel
     /// and sets it to contain the given text string. Returns the

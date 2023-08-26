@@ -20,6 +20,5 @@ Node "Main" {
     <"nodes/Inspector.emd">,
     <"nodes/Room.emd">,
     <"nodes/Debugging.emd">,
-    #<"nodes/tests/TestObjects.emd">,
   ],
 }

@@ -5,13 +5,18 @@
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/ContainerPane.h"
+#include "Panes/LabeledSliderPane.h"
+#include "Panes/RadioButtonPane.h"
+#include "Panes/SliderPane.h"
 #include "Panes/TextInputPane.h"
 #include "Place/ClickInfo.h"
 #include "SG/Search.h"
+#include "Tests/Widgets/DragTester.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/String.h"
 #include "Widgets/PushButtonWidget.h"
+#include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------
 // PanelTestBase::TestBoardAgent class.
@@ -78,6 +83,24 @@ CheckboxPanePtr PanelTestBase::ToggleCheckboxPane(const Str &name) {
     ClickInfo info;  // Contents do not matter.
     cbox_pane->GetActivationWidget()->Click(info);
     return cbox_pane;
+}
+
+RadioButtonPanePtr PanelTestBase::ActivateRadioButtonPane(const Str &name) {
+    ASSERT(panel_);
+    auto rbut_pane = FindTypedPane<RadioButtonPane>(name);
+    rbut_pane->SetState(true);
+    return rbut_pane;
+}
+
+SliderPanePtr PanelTestBase::DragSlider(const Str &name, const Vector2f &vec) {
+    auto lsp = FindTypedPane<LabeledSliderPane>(name)->GetSliderPane();
+    auto s1w =
+        std::dynamic_pointer_cast<Slider1DWidget>(lsp->GetActivationWidget());
+
+    DragTester dt(s1w);
+    dt.SetRayDirection(-Vector3f::AxisZ());
+    dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(vec[0], vec[1], 0));
+    return lsp;
 }
 
 TextInputPanePtr PanelTestBase::SetTextInput(const Str &name, const Str &text) {

@@ -230,8 +230,7 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node,
     delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(size[0], size[1]));
 
     // Start with a valid Fixed Profile.
-    SetProfile(Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2,
-                                           Profile::PointVec()));
+    SetProfile(ProfilePane::CreateDefaultProfile());
 }
 
 void ProfilePane::Impl_::SetColors() {
@@ -713,6 +712,11 @@ void ProfilePane::SetProfile(const Profile &profile) {
 
 const Profile & ProfilePane::GetProfile() const {
     return impl_->GetProfile();
+}
+
+Profile ProfilePane::CreateDefaultProfile() {
+    return Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2,
+                                       Profile::PointVec());
 }
 
 void ProfilePane::SetPointPrecision(const Vector2f &xy_precision) {

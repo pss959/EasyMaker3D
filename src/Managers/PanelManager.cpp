@@ -33,9 +33,6 @@ void PanelManager::FindAllPanels(const SG::Scene &scene,
     add_panel("SettingsPanel");
     add_panel("TaperToolPanel");
     add_panel("TextToolPanel");
-#if ENABLE_DEBUG_FEATURES
-    // add_panel("TestPanel");  // Add to help with testing/debugging.
-#endif
 }
 
 PanelPtr PanelManager::GetPanel(const Str &name) const {

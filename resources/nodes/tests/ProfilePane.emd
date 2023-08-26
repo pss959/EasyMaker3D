@@ -1,5 +1,0 @@
-BoxPane "ProfilePaneTest" {
-  min_size: 400 300,
-  padding:  20,
-  panes: [ CLONE "T_ProfilePane" "ProfilePane" {} ],
-}

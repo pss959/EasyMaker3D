@@ -31,9 +31,8 @@ TEST_F(CSGToolPanelTest, Show) {
 }
 
 TEST_F(CSGToolPanelTest, Change) {
-    // Toggle one of the radio buttons.
-    auto but = FindTypedPane<RadioButtonPane>("Intersection");
-    but->SetState(true);
+    ActivateRadioButtonPane("Intersection");
+    EXPECT_EQ(CSGOperation::kIntersection, panel->GetOperation());
     EXPECT_EQ(1U,           GetChangeInfo().count);
     EXPECT_EQ("Operation",  GetChangeInfo().name);
     EXPECT_EQ("kImmediate", GetChangeInfo().type);

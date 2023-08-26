@@ -26,9 +26,7 @@ class ExtrudedToolPanelTestWithText : public ExtrudedToolPanelTest {
 };
 
 TEST_F(ExtrudedToolPanelTest, Defaults) {
-    EXPECT_EQ(Profile::CreateFixedProfile(Point2f(0, 1), Point2f(1, 0), 2,
-                                          Profile::PointVec()),
-              panel->GetProfile());
+    EXPECT_EQ(ProfilePane::CreateDefaultProfile(), panel->GetProfile());
     EXPECT_NULL(panel->GetFocusedPane());
 }
 

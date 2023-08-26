@@ -5,7 +5,4 @@ RootModel "ModelRoot" {
 
   # Start with default uniforms for the Faceted shader.
   blocks: [ USE "T_DefaultFacetedUniforms" ],
-
-  # Uncomment this to test models in nodeviewer.
-  #children: [ <"nodes/tests/TestModels.emd"> ]
 }

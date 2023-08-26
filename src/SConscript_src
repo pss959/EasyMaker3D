@@ -540,7 +540,6 @@ if lib_env['MODE'] != 'rel':
         'Debug/Dump3dv.cpp',
         'Debug/Print.cpp',
         'Debug/Shortcuts.cpp',
-        'Panels/TestPanel.cpp',
     ]
 
 # -----------------------------------------------------------------------------
