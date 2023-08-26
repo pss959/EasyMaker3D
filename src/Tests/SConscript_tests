@@ -162,6 +162,7 @@ test_source_dict = {
         'PanelTestBase',
         'RevSurfToolPanelTest',
         'TaperToolPanelTest',
+        'TextToolPanelTest',
         'ToolPanelTestBase',
     ],
     'Panes' : [

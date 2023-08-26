@@ -5,14 +5,13 @@
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/ContainerPane.h"
+#include "Panes/DropdownPane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/RadioButtonPane.h"
 #include "Panes/SliderPane.h"
 #include "Panes/TextInputPane.h"
 #include "Place/ClickInfo.h"
-#include "SG/Search.h"
 #include "Tests/Widgets/DragTester.h"
-#include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/String.h"
 #include "Widgets/PushButtonWidget.h"
@@ -64,13 +63,11 @@ PanelTestBase::PanelTestBase(bool need_text) : need_text_(need_text) {
 
 PanelTestBase::~PanelTestBase() {}
 
-PanePtr PanelTestBase::FindPane(const Str &name) {
-    ASSERT(panel_);
-    return SG::FindTypedNodeUnderNode<Pane>(*panel_->GetPane(), name);
+bool PanelTestBase::IsButtonPaneEnabled(const Str &name) {
+    return FindTypedPane<ButtonPane>(name)->IsInteractionEnabled();
 }
 
 ButtonPanePtr PanelTestBase::ClickButtonPane(const Str &name) {
-    ASSERT(panel_);
     auto but_pane = FindTypedPane<ButtonPane>(name);
     ClickInfo info;  // Contents do not matter.
     but_pane->GetButton().Click(info);
@@ -78,15 +75,20 @@ ButtonPanePtr PanelTestBase::ClickButtonPane(const Str &name) {
 }
 
 CheckboxPanePtr PanelTestBase::ToggleCheckboxPane(const Str &name) {
-    ASSERT(panel_);
     auto cbox_pane = FindTypedPane<CheckboxPane>(name);
     ClickInfo info;  // Contents do not matter.
     cbox_pane->GetActivationWidget()->Click(info);
     return cbox_pane;
 }
 
+DropdownPanePtr PanelTestBase::ChangeDropdownChoice(const Str &name,
+                                                    const Str &choice) {
+    auto dd_pane = FindTypedPane<DropdownPane>(name);
+    dd_pane->SetChoiceFromString(choice, true);  // Notify = true.
+    return dd_pane;
+}
+
 RadioButtonPanePtr PanelTestBase::ActivateRadioButtonPane(const Str &name) {
-    ASSERT(panel_);
     auto rbut_pane = FindTypedPane<RadioButtonPane>(name);
     rbut_pane->SetState(true);
     return rbut_pane;
@@ -104,7 +106,6 @@ SliderPanePtr PanelTestBase::DragSlider(const Str &name, const Vector2f &vec) {
 }
 
 TextInputPanePtr PanelTestBase::SetTextInput(const Str &name, const Str &text) {
-    ASSERT(panel_);
     auto input_pane = FindTypedPane<TextInputPane>(name);
     input_pane->GetInteractor()->Activate();
     input_pane->SetInitialText(text);

@@ -30,12 +30,14 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     /// index into them.
     void SetChoices(const StrVec &choices, size_t index);
 
-    /// Sets the index of the current choice. Does not notify.
-    void SetChoice(size_t index);
+    /// Sets the index of the current choice. Notifies only if \p should_notify
+    /// is true.
+    void SetChoice(size_t index, bool should_notify = false);
 
-    /// Sets the current choice to the one matching the given string. Does not
-    /// notify. Asserts if the choice is not a valid one.
-    void SetChoiceFromString(const Str &choice);
+    /// Sets the current choice to the one matching the given string. Notifies
+    /// only if \p should_notify is true. Asserts if the choice is not a valid
+    /// one.
+    void SetChoiceFromString(const Str &choice, bool should_notify = false);
 
     /// Returns the current choice. This will be "." until valid choices are
     /// set.

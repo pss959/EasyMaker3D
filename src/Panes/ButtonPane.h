@@ -25,6 +25,9 @@ class ButtonPane : public BoxPane, public IPaneInteractor {
     /// indicate whether the button is enabled.
     void SetInteractionEnabled(bool enabled);
 
+    /// Returns true if the button has interaction enabled.
+    bool IsInteractionEnabled() const;
+
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;

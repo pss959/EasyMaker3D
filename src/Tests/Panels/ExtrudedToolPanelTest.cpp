@@ -12,7 +12,7 @@
 class ExtrudedToolPanelTest : public ToolPanelTestBase {
   protected:
     ExtrudedToolPanelPtr panel;
-    ExtrudedToolPanelTest(bool need_text = false) :
+    explicit ExtrudedToolPanelTest(bool need_text = false) :
         ToolPanelTestBase(need_text) {
         panel = InitPanel<ExtrudedToolPanel>("ExtrudedToolPanel");
         ObserveChanges(*panel);

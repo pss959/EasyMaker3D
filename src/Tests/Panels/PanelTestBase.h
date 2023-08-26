@@ -3,7 +3,7 @@
 #include <concepts>
 
 #include "Base/Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/ContainerPane.h"
 #include "Panels/Panel.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/UnitTestTypeChanger.h"
@@ -11,6 +11,7 @@
 
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(CheckboxPane);
+DECL_SHARED_PTR(DropdownPane);
 DECL_SHARED_PTR(RadioButtonPane);
 DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(TextInputPane);
@@ -46,22 +47,27 @@ class PanelTestBase : public SceneTestBase {
 
     /// Finds and returns the sub-pane in the Panel with the given name.
     /// Asserts if not found.
-    PanePtr FindPane(const Str &name);
+    PanePtr FindPane(const Str &name) {
+        ASSERT(panel_);
+        return panel_->GetPane()->FindPane(name);
+    }
 
     /// Finds and returns the sub-pane in the Panel with the given name and
     /// type. Asserts if not found.
     template <typename T>
     std::shared_ptr<T> FindTypedPane(const Str &name) {
-        static_assert(std::derived_from<T, Pane> == true);
-        auto pane = std::dynamic_pointer_cast<T>(FindPane(name));
-        ASSERT(pane);
-        return pane;
+        ASSERT(panel_);
+        return panel_->GetPane()->FindTypedPane<T>(name);
     }
 
     ///@}
 
     /// \name Pane interaction helpers
     ///@{
+
+    /// Convenience that returns true if the ButtonPane with the given name in
+    /// the Panel has interaction enabled.
+    bool IsButtonPaneEnabled(const Str &name);
 
     /// Convenience that finds a ButtonPane with the given name in the Panel
     /// and simulates a click on it. Returns the ButtonPane.
@@ -70,6 +76,10 @@ class PanelTestBase : public SceneTestBase {
     /// Convenience that finds a CheckboxPane with the given name in the Panel
     /// and toggles it. Returns the CheckboxPane.
     CheckboxPanePtr ToggleCheckboxPane(const Str &name);
+
+    /// Convenience that finds a DropdownPane with the given name in the Panel
+    /// and sets its choice to the given string. Returns the DropdownPane.
+    DropdownPanePtr ChangeDropdownChoice(const Str &name, const Str &choice);
 
     /// Convenience that finds a RadioButtonPane with the given name in the
     /// Panel and sets its state to true. Returns the RadioButtonPane.

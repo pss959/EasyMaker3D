@@ -78,7 +78,7 @@ void DropdownPane::SetChoices(const StrVec &choices, size_t index) {
     UpdateMenuPane_();
 }
 
-void DropdownPane::SetChoice(size_t index) {
+void DropdownPane::SetChoice(size_t index, bool should_notify) {
     ASSERT(index < choices_.GetValue().size());
 
     if (choice_index_ < 0 || index != static_cast<size_t>(choice_index_)) {
@@ -93,13 +93,16 @@ void DropdownPane::SetChoice(size_t index) {
 
     // Make sure the current button is active.
     menu_button_panes_[choice_index_]->GetButton().SetActive(true);
+
+    if (should_notify)
+        choice_changed_.Notify(choice_);
 }
 
-void DropdownPane::SetChoiceFromString(const Str &choice) {
+void DropdownPane::SetChoiceFromString(const Str &choice, bool should_notify) {
     const auto &choices = choices_.GetValue();
     const auto it = std::find(choices.begin(), choices.end(), choice);
     ASSERTM(it != choices.end(), "No such choice: " + choice);
-    SetChoice(std::distance(choices.begin(), it));
+    SetChoice(std::distance(choices.begin(), it), should_notify);
 }
 
 const ScrollingPane & DropdownPane::GetMenuPane() const {

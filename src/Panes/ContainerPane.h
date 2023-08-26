@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <vector>
 
 #include "Base/Memory.h"
@@ -34,6 +35,7 @@ class ContainerPane : public Pane {
     /// name. Asserts if it is not found.
     template <typename T>
     std::shared_ptr<T> FindTypedPane(const Str &name) const {
+        static_assert(std::derived_from<T, Pane> == true);
         auto pane = FindPane(name);
         ASSERTM(pane, "Pane '" + name + "' not found in " + GetDesc());
         auto typed_pane = std::dynamic_pointer_cast<T>(pane);

@@ -36,6 +36,10 @@ void ButtonPane::SetInteractionEnabled(bool enabled) {
     GetButton().SetInteractionEnabled(enabled);
 }
 
+bool ButtonPane::IsInteractionEnabled() const {
+    return GetButton().IsInteractionEnabled();
+}
+
 ClickableWidgetPtr ButtonPane::GetActivationWidget() const {
     return button_;
 }

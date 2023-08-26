@@ -9,16 +9,17 @@
 class NameToolPanelTest : public ToolPanelTestBase {
   protected:
     NameToolPanelPtr panel;
-    NameToolPanelTest() { panel = InitPanel<NameToolPanel>("NameToolPanel"); }
+    explicit NameToolPanelTest(bool need_text = false) :
+        ToolPanelTestBase(need_text) {
+        panel = InitPanel<NameToolPanel>("NameToolPanel");
+        ObserveChanges(*panel);
+    }
 };
 
 /// \ingroup Tests
-class NameToolPanelTestWithText : public PanelTestBase {
+class NameToolPanelTestWithText : public NameToolPanelTest {
   protected:
-    NameToolPanelPtr panel;
-    NameToolPanelTestWithText() : PanelTestBase(true) {
-        panel = InitPanel<NameToolPanel>("NameToolPanel");
-    }
+    NameToolPanelTestWithText() : NameToolPanelTest(true) {}
 };
 
 TEST_F(NameToolPanelTest, Defaults) {
@@ -45,6 +46,12 @@ TEST_F(NameToolPanelTestWithText, Change) {
     auto input = SetTextInput("Input", "Some Name");
     EXPECT_EQ("Some Name", input->GetText());
     EXPECT_TRUE(input->IsTextValid());
+
+    // Apply.
+    ClickButtonPane("Apply");
+    EXPECT_EQ(1U,           GetChangeInfo().count);
+    EXPECT_EQ("Name",       GetChangeInfo().name);
+    EXPECT_EQ("kImmediate", GetChangeInfo().type);
 
     auto msg = FindTypedPane<TextPane>("Message");
     input = SetTextInput("Input", " BadName");
