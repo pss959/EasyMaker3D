@@ -158,6 +158,7 @@ test_source_dict = {
         'ExtrudedToolPanelTest',
         'HelpPanelTest',
         'InfoPanelTest',
+        'KeyboardPanelTest',
         'NameToolPanelTest',
         'PanelTestBase',
         'RadialMenuPanelTest',

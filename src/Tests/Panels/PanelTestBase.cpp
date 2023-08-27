@@ -4,6 +4,7 @@
 
 #include "Agents/BoardAgent.h"
 #include "Agents/SettingsAgent.h"
+#include "Base/VirtualKeyboard.h"
 #include "Items/Settings.h"
 #include "Managers/NameManager.h"
 #include "Panes/ButtonPane.h"
@@ -175,6 +176,7 @@ PanelTestBase::PanelTestBase(bool need_text) : need_text_(need_text) {
     test_context_->board_agent = test_board_agent_;
     test_context_->name_agent.reset(new NameManager);
     test_context_->settings_agent = test_settings_agent_;
+    test_context_->virtual_keyboard.reset(new VirtualKeyboard);
 }
 
 PanelTestBase::~PanelTestBase() {}
