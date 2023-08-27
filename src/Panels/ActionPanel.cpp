@@ -34,7 +34,8 @@ void ActionPanel::InitInterface() {
         panes.push_back(header);
 
         for (auto action: action_map.GetActionsInCategory(cat)) {
-            auto but = button_pane->CloneTyped<ButtonPane>(true);
+            auto but = button_pane->CloneTyped<ButtonPane>(
+                true, Util::EnumToWord(action));
             auto icon = but->FindTypedPane<IconPane>("Icon");
             auto text = but->FindTypedPane<TextPane>("Text");
             icon->SetIconName("MI" + Util::EnumToWord(action));

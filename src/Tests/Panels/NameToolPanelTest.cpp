@@ -25,6 +25,7 @@ class NameToolPanelTestWithText : public NameToolPanelTest {
 TEST_F(NameToolPanelTest, Defaults) {
     EXPECT_EQ(".", panel->GetName());
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_FALSE(panel->IsCloseable());
 }
 
 TEST_F(NameToolPanelTest, SetName) {

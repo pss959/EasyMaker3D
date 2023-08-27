@@ -1,6 +1,10 @@
 #include "Tests/Panels/PanelTestBase.h"
 
+#include <stack>
+
 #include "Agents/BoardAgent.h"
+#include "Agents/SettingsAgent.h"
+#include "Items/Settings.h"
 #include "Managers/NameManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
@@ -11,6 +15,7 @@
 #include "Panes/SliderPane.h"
 #include "Panes/TextInputPane.h"
 #include "Place/ClickInfo.h"
+#include "SG/Search.h"
 #include "Tests/Widgets/DragTester.h"
 #include "Util/Enum.h"
 #include "Util/String.h"
@@ -21,32 +26,141 @@
 // PanelTestBase::TestBoardAgent class.
 // ----------------------------------------------------------------------------
 
-/// Derived BoardAgent that saves the result of calling Close() on a Panel. An
-/// instance of this is set in the test context.
+/// Derived BoardAgent that saves a stack of Panels and the results of calling
+/// Close() on them. An instance of this is set in the test context.
 ///
 /// \ingroup Tests
 class PanelTestBase::TestBoardAgent : public BoardAgent {
   public:
-    PanelPtr cur_panel;     ///< Currently-open Panel.
-    Str      close_result;  ///< Result passed to ClosePanel().
+    /// Sets the Scene to use to find other Panels.
+    void SetScene(const SG::ScenePtr &scene) { scene_ = scene; }
+    /// Sets the Panel::Context to use for other Panels.
+    void SetContext(const Panel::ContextPtr &context) { context_ = context; }
 
-    virtual PanelPtr GetPanel(const Str &name) const override {
-        ASSERTM(false, "TestBoardAgent::GetPanel called for " + name);
-    }
-
-    virtual void ClosePanel(const Str &result) override {
-        ASSERT(cur_panel);
-        cur_panel->SetIsShown(false);
-        close_result = result;
-        cur_panel.reset();
-    }
-
+    virtual PanelPtr GetPanel(const Str &name) const override;
+    virtual void ClosePanel(const Str &result) override;
     virtual void PushPanel(const PanelPtr &panel,
-                           const ResultFunc &result_func) override {
-        ASSERTM(false, "TestBoardAgent::PushPanel called for " +
-                panel->GetDesc());
+                           const ResultFunc &result_func) override;
+
+    /// Returns the currently-open panel
+    PanelPtr GetCurrentPanel() {
+        ASSERT(! panel_stack_.empty());
+        return panel_stack_.top().panel;
     }
+
+    /// Returns the last result passed to ClosePanel(), then clears it.
+    Str GetCloseResult();
+
+  private:
+    struct PanelInfo_ {
+        PanelPtr               panel;
+        BoardAgent::ResultFunc result_func;
+    };
+
+    SG::ScenePtr           scene_;         ///< Used to find other Panels.
+    Panel::ContextPtr      context_;       ///< Context for other panels.
+    std::stack<PanelInfo_> panel_stack_;   ///< Stack of currently-open Panels.
+    Str                    close_result_;  ///< Last result of ClosePanel().
 };
+
+PanelPtr PanelTestBase::TestBoardAgent::GetPanel(const Str &name) const {
+    ASSERT(scene_);
+    return SG::FindTypedNodeInScene<Panel>(*scene_, name);
+}
+
+void PanelTestBase::TestBoardAgent::ClosePanel(const Str &result) {
+    ASSERT(! panel_stack_.empty());
+    const auto &info = panel_stack_.top();
+    info.panel->SetIsShown(false);
+
+    if (info.result_func)
+        info.result_func(result);
+
+    panel_stack_.pop();
+    if (! panel_stack_.empty())
+        panel_stack_.top().panel->SetIsShown(true);
+
+    close_result_ = result;
+}
+
+void PanelTestBase::TestBoardAgent::PushPanel(const PanelPtr &panel,
+                                              const ResultFunc &result_func) {
+    const bool is_first_panel = panel_stack_.empty();
+
+    // Hide the previous panel if any.
+    if (! is_first_panel)
+        panel_stack_.top().panel->SetIsShown(false);
+
+    // Push a PanelInfo_ for the new Panel.
+    PanelInfo_ info;
+    info.panel       = panel;
+    info.result_func = result_func;
+    panel_stack_.push(info);
+
+    // Set its context.
+    panel->SetTestContext(context_);
+
+    // Do NOT show the Panel if it is the first one - that allows tests to do
+    // that for the first time.
+    if (! is_first_panel)
+        panel->SetIsShown(true);
+}
+
+Str PanelTestBase::TestBoardAgent::GetCloseResult() {
+    const auto result = close_result_;
+    close_result_.clear();
+    return result;
+}
+
+// ----------------------------------------------------------------------------
+// PanelTestBase::TestSettingsAgent class.
+// ----------------------------------------------------------------------------
+
+/// Derived SettingsAgent that returns a consistent Settings instance for
+/// GetSettings(). An instance of this is set in the test context.
+///
+/// \ingroup Tests
+class PanelTestBase::TestSettingsAgent : public SettingsAgent {
+  public:
+    TestSettingsAgent();
+    virtual const Settings & GetSettings() const override {
+        return *settings_;
+    }
+    virtual void SetSettings(const Settings &new_settings) {
+        settings_->CopyFrom(new_settings);
+    }
+  private:
+    SettingsPtr settings_;
+};
+
+PanelTestBase::TestSettingsAgent::TestSettingsAgent() {
+    auto imconv = UnitConversion::CreateWithUnits(
+        UnitConversion::Units::kFeet, UnitConversion::Units::kInches);
+    auto exconv = UnitConversion::CreateWithUnits(
+        UnitConversion::Units::kInches, UnitConversion::Units::kFeet);
+
+    auto linfo = ParseTypedObject<RadialMenuInfo>(
+        R"(RadialMenuInfo { count: "kCount4",
+            actions: [ "kDelete", "kCut", "kCopy", "kPaste" ] })");
+    auto rinfo = ParseTypedObject<RadialMenuInfo>(
+        R"(RadialMenuInfo { count: "kCount8",
+            actions: [ "kCreateBox", "kCreateCylinder", "kCreateExtruded",
+                       "kCreateImportedModel", "kCreateRevSurf",
+                       "kCreateSphere", "kCreateText", "kCreateTorus" ] })");
+
+    settings_ = Settings::CreateDefault();
+    settings_->SetLastSessionPath("/a/b/c");
+    settings_->SetSessionDirectory("/d/e/f");
+    settings_->SetImportDirectory("/g/h/i");
+    settings_->SetExportDirectory("/j/k/l");
+    settings_->SetTooltipDelay(1.5f);
+    settings_->SetImportUnitsConversion(*imconv);
+    settings_->SetExportUnitsConversion(*exconv);
+    settings_->SetBuildVolumeSize(Vector3f(3, 4, 5));
+    settings_->SetLeftRadialMenuInfo(*linfo);
+    settings_->SetRightRadialMenuInfo(*rinfo);
+    settings_->SetRadialMenusMode(RadialMenusMode::kIndependent);
+}
 
 // ----------------------------------------------------------------------------
 // PanelTestBase functions.
@@ -54,11 +168,13 @@ class PanelTestBase::TestBoardAgent : public BoardAgent {
 
 PanelTestBase::PanelTestBase(bool need_text) : need_text_(need_text) {
     test_board_agent_.reset(new TestBoardAgent);
+    test_settings_agent_.reset(new TestSettingsAgent);
 
     // Create and store a test Context.
     test_context_.reset(new Panel::Context);
     test_context_->board_agent = test_board_agent_;
     test_context_->name_agent.reset(new NameManager);
+    test_context_->settings_agent = test_settings_agent_;
 }
 
 PanelTestBase::~PanelTestBase() {}
@@ -114,9 +230,11 @@ TextInputPanePtr PanelTestBase::SetTextInput(const Str &name, const Str &text) {
 }
 
 Str PanelTestBase::GetCloseResult() {
-    const Str result = test_board_agent_->close_result;
-    test_board_agent_->close_result.clear();
-    return result;
+    return test_board_agent_->GetCloseResult();
+}
+
+PanelPtr PanelTestBase::GetCurrentPanel() {
+    return test_board_agent_->GetCurrentPanel();
 }
 
 Str PanelTestBase::GetContentsString_() {
@@ -129,7 +247,10 @@ Str PanelTestBase::GetContentsString_() {
 }
 
 void PanelTestBase::StorePanelWithContext_(const PanelPtr &panel) {
-    panel_ = panel;
-    panel_->SetTestContext(test_context_);
-    test_board_agent_->cur_panel = panel;
+    // Tell the TestBoardAgent where to find other panels and the context to
+    // use for them.
+    test_board_agent_->SetScene(GetScene());
+    test_board_agent_->SetContext(test_context_);
+
+    test_board_agent_->PushPanel(panel, nullptr);
 }

@@ -26,6 +26,7 @@ TEST_F(TextToolPanelTest, Defaults) {
     EXPECT_EQ("Arial-Bold", panel->GetFontName());
     EXPECT_EQ(0,            panel->GetCharSpacing());
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_FALSE(panel->IsCloseable());
 }
 
 TEST_F(TextToolPanelTest, SetValues) {
@@ -41,12 +42,9 @@ TEST_F(TextToolPanelTest, Show) {
     EXPECT_TRUE(panel->IsShown());
 }
 
-#include "Debug/Print.h" // XXXX
 TEST_F(TextToolPanelTestWithText, Change) {
     panel->SetSize(Vector2f(300, 300));  // Required for text sizing.
     panel->SetIsShown(true);
-
-    // Debug::PrintGraph(*panel); // XXXX
 
     auto input = SetTextInput("Text", "Some Text");
     auto disp  = FindTypedPane<TextPane>("Display");

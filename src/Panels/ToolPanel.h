@@ -39,12 +39,12 @@ class ToolPanel : public Panel {
         return interaction_;
     }
 
-  protected:
-    ToolPanel();
-
     /// Returns a flag indicating whether the ToolPanel can be closed. The
     /// default is false.
-    virtual bool IsCloseable() const;
+    virtual bool IsCloseable() const { return false; }
+
+  protected:
+    ToolPanel();
 
     /// Derived classes should call this when interaction occurs within the
     /// ToolPanel.
@@ -52,7 +52,7 @@ class ToolPanel : public Panel {
 
     /// Redefines this to return false so the stage can be resized even when a
     /// ToolPanel is active.
-    virtual bool ShouldTrapValuatorEvents() const;
+    virtual bool ShouldTrapValuatorEvents() const override { return false; }
 
     /// Overrides this to do nothing if IsCloseable() returns false; most
     /// derived ToolPanel classes should never be closed directly.

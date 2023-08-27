@@ -19,6 +19,7 @@ TEST_F(TaperToolPanelTest, Defaults) {
     EXPECT_ENUM_EQ(Dim::kY, panel->GetTaper().axis);
     EXPECT_EQ(ProfilePane::CreateDefaultProfile(), panel->GetTaper().profile);
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_FALSE(panel->IsCloseable());
 }
 
 TEST_F(TaperToolPanelTest, SetTaper) {

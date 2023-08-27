@@ -79,14 +79,14 @@ class FilePanel : public ToolPanel {
     /// button).
     virtual void UpdateFocus(const PanePtr &pane) override;
 
+    /// Redefines this to return true.
+    virtual bool IsCloseable() const override { return true; }
+
   protected:
     FilePanel();
 
     virtual void InitInterface()   override;
     virtual void UpdateInterface() override;
-
-    /// Redefines this to return true.
-    virtual bool IsCloseable() const override { return true; }
 
     /// Redefines this to scroll to the focused pane, if any.
     virtual void UpdateForPaneSizeChange();

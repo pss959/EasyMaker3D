@@ -17,6 +17,7 @@ class CSGToolPanelTest : public ToolPanelTestBase {
 TEST_F(CSGToolPanelTest, Defaults) {
     EXPECT_EQ(CSGOperation::kUnion, panel->GetOperation());
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_FALSE(panel->IsCloseable());
 }
 
 TEST_F(CSGToolPanelTest, SetOperation) {

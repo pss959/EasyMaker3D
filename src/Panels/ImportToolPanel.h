@@ -20,11 +20,11 @@ class ImportToolPanel : public FilePanel {
     /// Displays the given import error and waits for a response.
     void DisplayImportError(const Str &message);
 
-  protected:
-    ImportToolPanel() {}
-
     /// Redefines this to return false.
     virtual bool IsCloseable() const override { return false; }
+
+  protected:
+    ImportToolPanel() {}
 
     /// Redefines this to not close the panel.
     virtual void ProcessResult(const Str &result) override;

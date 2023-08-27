@@ -23,6 +23,7 @@ TEST_F(RevSurfToolPanelTest, Defaults) {
     EXPECT_EQ(ProfilePane::CreateDefaultProfile(), panel->GetProfile());
     EXPECT_EQ(360, panel->GetSweepAngle().Degrees());
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_FALSE(panel->IsCloseable());
 }
 
 TEST_F(RevSurfToolPanelTest, Set) {

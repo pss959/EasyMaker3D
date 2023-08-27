@@ -28,6 +28,7 @@ class ExtrudedToolPanelTestWithText : public ExtrudedToolPanelTest {
 TEST_F(ExtrudedToolPanelTest, Defaults) {
     EXPECT_EQ(ProfilePane::CreateDefaultProfile(), panel->GetProfile());
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_FALSE(panel->IsCloseable());
 }
 
 TEST_F(ExtrudedToolPanelTest, SetProfile) {

@@ -22,6 +22,7 @@ TEST_F(BevelToolPanelTest, Defaults) {
     EXPECT_EQ(1,   bevel.scale);
     EXPECT_EQ(120, bevel.max_angle.Degrees());
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_FALSE(panel->IsCloseable());
 }
 
 TEST_F(BevelToolPanelTest, SetBevel) {

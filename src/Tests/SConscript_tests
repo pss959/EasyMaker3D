@@ -160,6 +160,7 @@ test_source_dict = {
         'InfoPanelTest',
         'NameToolPanelTest',
         'PanelTestBase',
+        'RadialMenuPanelTest',
         'RevSurfToolPanelTest',
         'TaperToolPanelTest',
         'TextToolPanelTest',
