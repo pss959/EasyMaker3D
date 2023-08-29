@@ -10,7 +10,6 @@ class DialogPanelTest : public PanelTestBase {
     DialogPanelTest() { panel = InitPanel<DialogPanel>("DialogPanel"); }
 };
 
-
 TEST_F(DialogPanelTest, SingleResponse) {
     panel->SetMessage("Some message");
     panel->SetSingleResponse("Cool");

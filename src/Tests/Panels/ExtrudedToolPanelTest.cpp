@@ -45,7 +45,6 @@ TEST_F(ExtrudedToolPanelTest, Show) {
 }
 
 TEST_F(ExtrudedToolPanelTestWithText, Change) {
-    panel->SetSize(Vector2f(300, 300));  // Required for text sizing.
     panel->SetIsShown(true);
 
     // Change the number of sides using text input and the "SetSides" button.

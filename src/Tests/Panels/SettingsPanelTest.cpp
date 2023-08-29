@@ -38,7 +38,6 @@ TEST_F(SettingsPanelTestWithText, Change) {
     const SettingsPtr def_settings = Settings::CreateDefault();
     agent->SetSettings(*def_settings);
 
-    panel->SetSize(Vector2f(400, 400));
     panel->SetIsShown(true);
 
     // Switch to an invalid directory.
@@ -93,7 +92,6 @@ TEST_F(SettingsPanelTestWithText, OpenFilePanel) {
     const SettingsPtr def_settings = Settings::CreateDefault();
     agent->SetSettings(*def_settings);
 
-    panel->SetSize(Vector2f(400, 400));
     panel->SetIsShown(true);
 
     ClickButtonPane("ChooseImportDir");
@@ -126,7 +124,6 @@ TEST_F(SettingsPanelTestWithText, OpenRadialMenuPanel) {
     const SettingsPtr def_settings = Settings::CreateDefault();
     agent->SetSettings(*def_settings);
 
-    panel->SetSize(Vector2f(400, 400));
     panel->SetIsShown(true);
 
     ClickButtonPane("EditRadialMenus");

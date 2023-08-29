@@ -1,6 +1,6 @@
 #include "Tests/Panels/PanelTestBase.h"
 
-#include <stack>
+#include <vector>
 
 #include "Agents/BoardAgent.h"
 #include "Agents/SettingsAgent.h"
@@ -33,6 +33,14 @@
 /// \ingroup Tests
 class PanelTestBase::TestBoardAgent : public BoardAgent {
   public:
+    // If this flag is set, messages are printed to help debug Panel issues.
+    bool debug_panels = false;
+
+    /// The constructor is passed a flag indicating whether to set the size on
+    /// new Panels, which is needed for setting up text and a flag indicating
+    /// whether to print status information for Panels to help with debugging.
+    TestBoardAgent(bool set_sizes) : set_sizes_(set_sizes) {}
+
     /// Sets the Scene to use to find other Panels.
     void SetScene(const SG::ScenePtr &scene) { scene_ = scene; }
     /// Sets the Panel::Context to use for other Panels.
@@ -46,7 +54,7 @@ class PanelTestBase::TestBoardAgent : public BoardAgent {
     /// Returns the currently-open panel
     PanelPtr GetCurrentPanel() {
         ASSERT(! panel_stack_.empty());
-        return panel_stack_.top().panel;
+        return panel_stack_.back().panel;
     }
 
     /// Returns the last result passed to ClosePanel(), then clears it.
@@ -58,59 +66,125 @@ class PanelTestBase::TestBoardAgent : public BoardAgent {
         BoardAgent::ResultFunc result_func;
     };
 
-    SG::ScenePtr           scene_;         ///< Used to find other Panels.
-    Panel::ContextPtr      context_;       ///< Context for other panels.
-    std::stack<PanelInfo_> panel_stack_;   ///< Stack of currently-open Panels.
-    Str                    close_result_;  ///< Last result of ClosePanel().
+    const bool              set_sizes_;     ///< Whether to set Panel sizes.
+    SG::ScenePtr            scene_;         ///< Used to find other Panels.
+    Panel::ContextPtr       context_;       ///< Context for other panels.
+    std::vector<PanelInfo_> panel_stack_;   ///< Stack of currently-open Panels.
+    Str                     close_result_;  ///< Last result of ClosePanel().
+    size_t                  nesting_ = 0;   ///< Level of nesting of operations.
+    bool                    is_first_panel_ = true;
+
+    /// For indenting according to current nesting_ level.
+    Str Indent_() const {
+        return "== [" + Util::ToString(nesting_) + "]" +
+            Util::Spaces(2 * nesting_);
+    }
+
+    /// Prints the current Panel stack for debugging help.
+    void PrintStack_(const Str &when) const;
 };
 
 PanelPtr PanelTestBase::TestBoardAgent::GetPanel(const Str &name) const {
     ASSERT(scene_);
-    return SG::FindTypedNodeInScene<Panel>(*scene_, name);
+    auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, name);
+
+    // Make sure it has a context.
+    panel->SetTestContext(context_);
+    return panel;
 }
 
 void PanelTestBase::TestBoardAgent::ClosePanel(const Str &result) {
     ASSERT(! panel_stack_.empty());
-    const auto &info = panel_stack_.top();
+
+    // Copy PanelInfo_ to protect after pop().
+    const auto info = panel_stack_.back();
+    panel_stack_.pop_back();
+
+    if (debug_panels) {
+        std::cerr << Indent_() << "Closing " << info.panel->GetDesc()
+                  << " with result '" << result << "'\n";
+        std::cerr << Indent_() << "Hiding  " << info.panel->GetDesc() << "\n";
+        PrintStack_("after pop");
+    }
+
     info.panel->SetIsShown(false);
 
-    if (info.result_func)
-        info.result_func(result);
+    if (! panel_stack_.empty()) {
+        const auto &new_panel = panel_stack_.back().panel;
+        if (debug_panels)
+            std::cerr << Indent_() << " Showing "
+                      << new_panel->GetDesc() << "\n";
+        new_panel->SetIsShown(true);
+    }
 
-    panel_stack_.pop();
-    if (! panel_stack_.empty())
-        panel_stack_.top().panel->SetIsShown(true);
+    if (info.result_func) {
+        if (debug_panels)
+            std::cerr << Indent_() << " Invoking result func for "
+                      << info.panel->GetDesc() << "\n";
+        info.result_func(result);
+    }
 
     close_result_ = result;
+
+    if (debug_panels)
+        PrintStack_("after ClosePanel for " + info.panel->GetName());
+
+    ASSERT(nesting_ > 0U);
+    --nesting_;
 }
 
 void PanelTestBase::TestBoardAgent::PushPanel(const PanelPtr &panel,
                                               const ResultFunc &result_func) {
-    const bool is_first_panel = panel_stack_.empty();
+    if (debug_panels)
+        std::cerr << Indent_() << "Pushing " << panel->GetDesc() << "\n";
 
     // Hide the previous panel if any.
-    if (! is_first_panel)
-        panel_stack_.top().panel->SetIsShown(false);
+    if (! panel_stack_.empty()) {
+        if (debug_panels)
+            std::cerr << Indent_() << "Hiding  "
+                      << panel_stack_.back().panel->GetDesc() << "\n";
+        panel_stack_.back().panel->SetIsShown(false);
+    }
 
     // Push a PanelInfo_ for the new Panel.
     PanelInfo_ info;
     info.panel       = panel;
     info.result_func = result_func;
-    panel_stack_.push(info);
+    panel_stack_.push_back(info);
 
-    // Set its context.
+    // Set its context and make sure it has a valid size (needed for
+    // TextInputPanes).
     panel->SetTestContext(context_);
+    if (set_sizes_)
+        panel->SetSize(Vector2f(400, 400));
 
     // Do NOT show the Panel if it is the first one - that allows tests to do
     // that for the first time.
-    if (! is_first_panel)
+    if (! is_first_panel_) {
+        if (debug_panels)
+            std::cerr << Indent_() << " Showing " << panel->GetDesc() << "\n";
         panel->SetIsShown(true);
+    }
+    if (debug_panels)
+        PrintStack_("after PushPanel for " + panel->GetName());
+
+    ++nesting_;
+    is_first_panel_ = false;
 }
 
 Str PanelTestBase::TestBoardAgent::GetCloseResult() {
     const auto result = close_result_;
     close_result_.clear();
     return result;
+}
+
+void PanelTestBase::TestBoardAgent::PrintStack_(const Str &when) const {
+    std::cerr << "....... Top-down Panel stack " << when << ":\n";
+    for (auto it = panel_stack_.rbegin(); it != panel_stack_.rend(); ++it) {
+        std::cerr << "........    " << it->panel->GetDesc()
+                  << (it->panel->IsShown() ? " (Visible)" : " (Hidden)")
+                  << "\n";
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -168,7 +242,7 @@ PanelTestBase::TestSettingsAgent::TestSettingsAgent() {
 // ----------------------------------------------------------------------------
 
 PanelTestBase::PanelTestBase(bool need_text) : need_text_(need_text) {
-    test_board_agent_.reset(new TestBoardAgent);
+    test_board_agent_.reset(new TestBoardAgent(need_text));
     test_settings_agent_.reset(new TestSettingsAgent);
 
     // Create and store a test Context.
@@ -180,6 +254,10 @@ PanelTestBase::PanelTestBase(bool need_text) : need_text_(need_text) {
 }
 
 PanelTestBase::~PanelTestBase() {}
+
+void PanelTestBase::SetPanelDebugFlag(bool b) {
+    test_board_agent_->debug_panels = true;
+}
 
 bool PanelTestBase::IsButtonPaneEnabled(const Str &name) {
     return FindTypedPane<ButtonPane>(name)->IsInteractionEnabled();

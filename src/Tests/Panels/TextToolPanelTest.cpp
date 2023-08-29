@@ -43,7 +43,6 @@ TEST_F(TextToolPanelTest, Show) {
 }
 
 TEST_F(TextToolPanelTestWithText, Change) {
-    panel->SetSize(Vector2f(300, 300));  // Required for text sizing.
     panel->SetIsShown(true);
 
     auto input = SetTextInput("Text", "Some Text");

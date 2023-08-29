@@ -462,7 +462,7 @@ Str TextInputPane::Impl_::GetText() const {
 void TextInputPane::Impl_::Activate() {
     if (! is_active_) {
         is_active_ = true;
-        ASSERT(char_width_ > 0);
+        ASSERTM(char_width_ > 0, "In " + root_pane_.GetDesc());
         UpdateFromState_();
 
         if (virtual_keyboard_)

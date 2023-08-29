@@ -27,6 +27,10 @@ class PanelTestBase : public SceneTestBase {
     explicit PanelTestBase(bool need_text = false);
     virtual ~PanelTestBase();
 
+    /// Sets a flag in the TestBoardAgent that prints useful information about
+    /// Panel status changes to help with debugging.
+    void SetPanelDebugFlag(bool b);
+
     /// Sets up to test a Panel of the templated type and name. This sets up a
     /// test Context in the Panel and stores it for later use. The derived
     /// Panel is returned.
