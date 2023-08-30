@@ -5,6 +5,7 @@
 #include <random>
 
 #include "Util/Assert.h"
+#include "Util/FileSystem.h"
 #include "Util/Read.h"
 
 TempFile::TempFile(const Str &input_string) {
@@ -25,7 +26,9 @@ TempFile::TempFile(const Str &input_string) {
 }
 
 TempFile::~TempFile() {
-    path_.Remove();
+    // Have to use the real FileSystem for this.
+    FileSystem fs;
+    fs.Remove(path_.ToString());
 }
 
 Str TempFile::GetContents() const {

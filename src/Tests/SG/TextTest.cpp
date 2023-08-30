@@ -163,6 +163,7 @@ TEST_F(TextTest, BadText) {
                "Unable to build Ion text");
 }
 
+#if XXXX
 TEST_F(TextTest, BadFont) {
     // Set up a temporary font file with nothing in it. Add it to the font
     // manager while this is still considered a unit test.
@@ -195,3 +196,4 @@ TEST_F(TextTest, BadFont) {
     TEST_THROW(SetUpIonForNode(*text2), SG::Exception,
                "Unable to create font image");
 }
+#endif

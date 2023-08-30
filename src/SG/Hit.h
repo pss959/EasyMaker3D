@@ -17,6 +17,8 @@ struct Hit {
     /// intersection.
     NodePath path;
 
+    // LCOV_EXCL_START [bug in gcovr]
+
     /// Shape within the Node that was intersected. This will be a null pointer
     /// if there was no intersection.
     ShapePtr shape;
@@ -51,6 +53,8 @@ struct Hit {
     /// coordinate system of that node.
     Point3f  bounds_point{ 0, 0, 0 };
 
+    // LCOV_EXCL_STOP
+
     /// Convenience function that indicates whether there was an intersection.
     bool IsValid() const { return ! path.empty(); }
 
@@ -67,7 +71,7 @@ struct Hit {
     }
 
     /// Equality operator.
-    bool operator==(const Hit &h) const = default;
+    bool operator==(const Hit &h) const = default; // LCOV_EXCL_LINE [gcovr bug]
 };
 
 }  // namespace SG

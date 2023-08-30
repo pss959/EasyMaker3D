@@ -57,6 +57,7 @@ static bool ReplaceIncludes_(const FilePath &base_path, Str &s) {
 // ----------------------------------------------------------------------------
 
 bool ReadFile(const FilePath &path, Str &s, bool allow_includes) {
+    std::cerr << "XXXX Reading file '" << path.ToString() << "'\n";
     bool ok = ion::port::ReadDataFromFile(path.ToString(), &s);
     if (ok && allow_includes)
         ok = ReplaceIncludes_(path, s);

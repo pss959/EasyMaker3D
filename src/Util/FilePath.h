@@ -1,22 +1,34 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "Util/UTime.h"
+
+class FileSystem;
 
 /// Represents a path to a file.
 ///
 /// \ingroup Utility
 class FilePath : private std::filesystem::path {
   public:
+    /// Sets a FileSystem instance to use for all file-system-related
+    /// functions. This allows a derived version to be installed for testing.
+    /// An instance of the base FileSystem class is installed by default. A
+    /// null pointer results in the original FileSystem being reinstalled.
+    static void InstallFileSystem(const std::shared_ptr<FileSystem> &fs);
+
+    /// Returns the current FileSystem instance.
+    static const std::shared_ptr<FileSystem> GetInstalledFileSystem();
+
     FilePath() {}
 
     /// Constructor from a string.
-    FilePath(const char *path)        : BaseType_(path) {}
+    FilePath(const char *path) : FSPath_(path) {}
     /// Constructor from a string.
-    FilePath(const Str &path) : BaseType_(path) {}
+    FilePath(const Str &path) : FSPath_(path) {}
 
     /// Assignment operator.
     FilePath & operator=(const char *path);
@@ -94,9 +106,6 @@ class FilePath : private std::filesystem::path {
     /// files for testing.
     void Remove() const;
 
-    /// Copies this file to the given path. Used primarily for testing.
-    void CopyTo(const FilePath &to_path) const;
-
     /// Creates all directories that do not already exist in this path. This
     /// should be called only on a directory path.  Returns false if anything
     /// fails.
@@ -155,7 +164,16 @@ class FilePath : private std::filesystem::path {
     bool operator==(const FilePath &p) const = default;
 
   private:
-    using BaseType_ = std::filesystem::path;
+    using FSPath_ = std::filesystem::path;
+
+    /// Real FileSystem instance.
+    static std::shared_ptr<FileSystem> real_file_system_;
+
+    /// Current FileSystem instance used to handle file-system-related functions.
+    static std::shared_ptr<FileSystem> cur_file_system_;
+
+    /// Creates a FilePath from an std::filesystem::path.
+    static FilePath FromFSPath_(const FSPath_ &fs_path);
 };
 
 // Specialize std::hash() for FilePath.

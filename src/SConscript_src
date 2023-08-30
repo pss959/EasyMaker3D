@@ -471,6 +471,8 @@ lib_sources = list(chain(
         'ExceptionBase',
         'FilePath',
         'FilePathList',
+        'FileSystem',
+        'FontSystem',
         'General',
         'KLog',
         'Read',

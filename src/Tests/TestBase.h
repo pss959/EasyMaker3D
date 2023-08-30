@@ -1,16 +1,45 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "gtest/gtest.h"
 
 #include "Math/Types.h"
 #include "Util/FilePath.h"
+#include "Util/Flags.h"
+
+class FakeFileSystem;
+class FakeFontSystem;
 
 /// Base test fixture that supplies some useful functions for tests.
 /// \ingroup Tests
 class TestBase : public ::testing::Test {
  protected:
+    /// Flags passed to the constructor.
+    enum class Flag : uint32_t {
+        /// Use the real FileSystem instead of a FakeFileSystem for handling
+        /// files. Note that this makes tests sensitive to actual file and
+        /// directory conditions, which is not ideal.
+        kUseRealFiles = 0x1,
+
+        /// Use the real FontSystem instead of a FakeFontSystem for handling
+        /// fonts. Note that this can slow things down a lot and should be used
+        /// only when actual font images are required.
+        kUseRealFonts = 0x2,
+    };
+
+    // ------------------------------------------------------------------------
+    // Constructor and destructor.
+    // ------------------------------------------------------------------------
+
+    /// The constructor installs a FakeFileSystem and FakeFontSystem for tests
+    /// to use unless flags are set.
+    TestBase(const Util::Flags<Flag> &flags = Util::Flags<Flag>());
+
+    /// The destructor restores the real FileSystem and FontSystem instances.
+    virtual ~TestBase();
+
     // ------------------------------------------------------------------------
     // Test introspection.
     // ------------------------------------------------------------------------
@@ -92,4 +121,11 @@ class TestBase : public ::testing::Test {
 
     /// Fixes a string by removing line feeds. Needed for Windows.
     static Str FixString(const Str &s);
+
+  private:
+    /// Stores a FakeFileSystem when needed.
+    std::shared_ptr<FakeFileSystem> fake_file_system_;
+
+    /// Stores a FakeFontSystem when needed.
+    std::shared_ptr<FakeFontSystem> fake_font_system_;
 };

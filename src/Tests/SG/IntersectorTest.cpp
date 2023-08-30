@@ -49,6 +49,20 @@ class IntersectorTest : public SceneTestBase {
     }
 };
 
+TEST_F(IntersectorTest, DefaultHit) {
+    const SG::Hit hit;
+    EXPECT_FALSE(hit.IsValid());
+    EXPECT_TRUE(hit.path.empty());
+    EXPECT_NULL(hit.shape);
+    EXPECT_EQ(Ray(),                hit.world_ray);
+    EXPECT_EQ(0,                    hit.distance);
+    EXPECT_EQ(Point3f::Zero(),      hit.point);
+    EXPECT_EQ(Vector3f::Zero(),     hit.normal);
+    EXPECT_EQ(Vector3i(-1, -1, -1), hit.indices);
+    EXPECT_EQ(Vector3f::Zero(),     hit.barycentric);
+    EXPECT_EQ(Point3f::Zero(),      hit.bounds_point);
+}
+
 TEST_F(IntersectorTest, EmptyScene) {
     const SG::Hit hit = IntersectContents("", Ray(Point3f(0, 20, 0),
                                                   Vector3f(0, 0, -1)));

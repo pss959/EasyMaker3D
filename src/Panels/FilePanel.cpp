@@ -28,10 +28,10 @@ class FilePanel::Impl_ {
 
     /// Sets a FilePathList instance to use instead of a default FilePathList.
     /// This can be called to use a mock version to simulate a file system.
-    void SetFilePathList(FilePathList *list) {
+    void SetFilePathList(FilePathList *list) {  // LCOV_EXCL_START [snaps only]
         ASSERT(list);
         path_list_.reset(list);
-    }
+    }  // LCOV_EXCL_STOP
 
     /// Sets a function used to set focus.
     void SetFocusFunc(const FocusFunc &focus_func) { focus_func_ = focus_func; }

@@ -1,53 +1,29 @@
 #include "Util/FilePath.h"
 
-#ifdef ION_PLATFORM_WINDOWS
-#include <fileapi.h>
-#endif
-
 #include <algorithm>
 
-#include <ion/port/environment.h>
-
+#include "Util/FileSystem.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/KLog.h"
-#include "Util/String.h"
 
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
+std::shared_ptr<FileSystem> FilePath::real_file_system_(new FileSystem);
+std::shared_ptr<FileSystem> FilePath::cur_file_system_ = real_file_system_;
 
-namespace {
-
-/// Platform-dependent path construction.
-static inline FilePath FromPath_(const std::filesystem::path &path) {
-#ifdef ION_PLATFORM_WINDOWS
-    return FilePath(path.string());
-#else
-    return FilePath(path);
-#endif
+void FilePath::InstallFileSystem(const std::shared_ptr<FileSystem> &fs) {
+    cur_file_system_ = fs ? fs : real_file_system_;
 }
 
-/// Access to environment variables.
-static Str GetEnvVar_(const Str &name) {
-    // No regular access to environment in unit tests.
-    return Util::app_type == Util::AppType::kInteractive ?
-        ion::port::GetEnvironmentVariableValue(name) : "/";
+const std::shared_ptr<FileSystem> FilePath::GetInstalledFileSystem() {
+    return cur_file_system_;
 }
-
-}  // anonymous namespace
-
-// ----------------------------------------------------------------------------
-// FilePath functions.
-// ----------------------------------------------------------------------------
 
 FilePath & FilePath::operator=(const char *path) {
-    BaseType_::operator=(path);
+    FSPath_::operator=(path);
     return *this;
 }
 
 FilePath & FilePath::operator=(const Str &path) {
-    BaseType_::operator=(path);
+    FSPath_::operator=(path);
     return *this;
 }
 
@@ -55,49 +31,36 @@ Str FilePath::ToString() const {
     return generic_string();
 }
 
-// LCOV_EXCL_START
 Str FilePath::ToNativeString() const {
-#ifdef ION_PLATFORM_WINDOWS
-    return FilePath(*this).make_preferred().string();
-#else
-    return native();
-#endif
+    return cur_file_system_->ToNativeString(*this);
 }
-// LCOV_EXCL_STOP
 
 bool FilePath::Exists() const {
-    return std::filesystem::exists(*this);
+    return cur_file_system_->Exists(*this);
 }
 
 bool FilePath::IsDirectory() const {
-    return std::filesystem::is_directory(*this);
+    return cur_file_system_->IsDirectory(*this);
 }
 
 bool FilePath::IsAbsolute() const {
-    return is_absolute();
+    return cur_file_system_->IsAbsolute(*this);
 }
 
-// LCOV_EXCL_START
 bool FilePath::IsHidden() const {
-#ifdef ION_PLATFORM_WINDOWS
-    return Exists() && (GetFileAttributes(Util::ToWString(ToString()).c_str()) &
-                        FILE_ATTRIBUTE_HIDDEN);
-#else
-    return Exists() && GetFileName()[0] == '.';
-#endif
+    return cur_file_system_->IsHidden(*this);
 }
-// LCOV_EXCL_STOP
 
 FilePath FilePath::GetParentDirectory() const {
-    return FromPath_(parent_path());
+    return FromFSPath_(parent_path());
 }
 
 Str FilePath::GetFileName(bool remove_extension) const {
-    return FromPath_(remove_extension ? stem() : filename()).ToString();
+    return FromFSPath_(remove_extension ? stem() : filename()).ToString();
 }
 
 Str FilePath::GetExtension() const {
-    return FromPath_(extension()).ToString();
+    return FromFSPath_(extension()).ToString();
 }
 
 void FilePath::AddExtension(const Str &extension) {
@@ -110,90 +73,61 @@ FilePath FilePath::AppendRelative(const FilePath &base_path) const {
 
     // If the base_path exists and is not known to be a directory, remove the
     // last component.
-    else if (std::filesystem::exists(base_path) &&
-             ! std::filesystem::is_directory(base_path))
-        return FromPath_(base_path.parent_path() / *this);
+    else if (cur_file_system_->Exists(base_path) &&
+             ! cur_file_system_->IsDirectory(base_path))
+        return FromFSPath_(base_path.parent_path() / *this);
     else
-        return FromPath_(base_path / *this);
+        return FromFSPath_(base_path / *this);
 }
 
 FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
-    return FromPath_(lexically_proximate(base_path));
+    return FromFSPath_(lexically_proximate(base_path));
 }
 
 FilePath FilePath::GetAbsolute() const {
-    return FromPath_(IsAbsolute() ? lexically_normal() :
-                     (std::filesystem::current_path() / *this));
+    return FromFSPath_(IsAbsolute() ? lexically_normal() :
+                       (cur_file_system_->GetCurrent() / *this));
 }
 
 UTime FilePath::GetModTime() const {
     ASSERT(Exists());
-    return UTime(std::filesystem::last_write_time(*this));
+    return cur_file_system_->GetModTime(*this);
 }
 
-// LCOV_EXCL_START
 void FilePath::GetContents(StrVec &subdirs, StrVec &files, const Str &extension,
                            bool include_hidden) const {
-    subdirs.clear();
-    files.clear();
-
-    if (! IsDirectory())
+    if (! IsDirectory()) {
+        subdirs.clear();
+        files.clear();
         return;
-
-    for (const auto &entry: std::filesystem::directory_iterator(*this)) {
-        if (! include_hidden && FromPath_(entry.path()).IsHidden())
-            continue;
-
-        const auto name = FromPath_(entry.path().filename()).ToString();
-
-        if (entry.is_directory()) {
-            // Filter out "." and "..".
-            if (name != "." && name != "..")
-                subdirs.push_back(name);
-        }
-        else if (entry.is_regular_file()) {
-            if (extension.empty() || entry.path().extension() == extension)
-                files.push_back(name);
-        }
     }
 
-    std::sort(subdirs.begin(), subdirs.end());
-    std::sort(files.begin(),   files.end());
+    cur_file_system_->GetDirectoryContents(*this, subdirs, files,
+                                           include_hidden);
+
+    // Filter out by extension if requested.
+    if (! extension.empty())
+        std::erase_if(files, [&](const Str &f){
+            return FilePath(f).GetExtension() != extension; });
 }
 
 void FilePath::Remove() const {
     KLOG('f', "Removing path \"" << ToString() << "\n");
     ASSERT(Exists());
-    std::filesystem::remove(*this);
-}
-
-void FilePath::CopyTo(const FilePath &to_path) const {
-    std::filesystem::copy(*this, to_path);
+    cur_file_system_->Remove(*this);
 }
 
 bool FilePath::CreateDirectories() const {
     KLOG('f', "Creating directories for path \"" << ToString() << "\"");
-    std::error_code ec;
-    bool ret = std::filesystem::create_directories(*this, ec);
-
-    // Windows has a bug in create_directories(); it returns false with an
-    // error code of 0 if the directory already exists.
-    if (! ret && ec.value() == 0)
-        ret = true;
-
-    // Must be an actual failure or the result is a directory.
-    ASSERT(! ret || IsDirectory());
-
-    return ret;
+    return cur_file_system_->CreateDirectories(*this);
 }
 
 void FilePath::MakeCurrent() const {
-    std::filesystem::current_path(*this);
+    cur_file_system_->MakeCurrent(*this);
 }
-// LCOV_EXCL_STOP
 
 FilePath FilePath::GetCurrent() {
-    return FromPath_(std::filesystem::current_path());
+    return FromFSPath_(cur_file_system_->GetCurrent());
 }
 
 FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
@@ -203,7 +137,6 @@ FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
     return result;
 }
 
-// LCOV_EXCL_START
 FilePath FilePath::GetResourceBasePath() {
     return FilePath(RESOURCE_DIR);
 }
@@ -225,23 +158,11 @@ FilePath FilePath::GetFullResourcePath(const Str &subdir,
 }
 
 FilePath FilePath::GetHomeDirPath() {
-#ifdef ION_PLATFORM_WINDOWS
-    const Str kVarName = "USERPROFILE";
-#else
-    const Str kVarName = "HOME";
-#endif
-    const FilePath dir = GetEnvVar_(kVarName);
-    ASSERTM(dir.Exists(), dir.ToString());
-    return dir;
+    return FromFSPath_(cur_file_system_->GetHomeDirPath());
 }
 
 FilePath FilePath::GetSettingsDirPath(const Str &app_name) {
-#ifdef ION_PLATFORM_WINDOWS
-    FilePath path = GetEnvVar_("APPDATA");
-#else
-    FilePath path = Join(FilePath(GetEnvVar_("HOME")), FilePath(".config"));
-#endif
-    return Join(path, FilePath(app_name));
+    return FromFSPath_(cur_file_system_->GetSettingsDirPath(app_name));
 }
 
 FilePath FilePath::GetTestDataPath() {
@@ -249,14 +170,17 @@ FilePath FilePath::GetTestDataPath() {
 }
 
 FilePath FilePath::GetTempFilePath() {
-    return FromPath_(std::filesystem::temp_directory_path());
+    return FromFSPath_(cur_file_system_->GetTempFilePath());
 }
 
 Str FilePath::GetSeparator() {
+    return cur_file_system_->GetSeparator();
+}
+
+FilePath FilePath::FromFSPath_(const FSPath_ &fs_path) {
 #ifdef ION_PLATFORM_WINDOWS
-    return Util::FromWString(std::wstring(1, preferred_separator));
+    return FilePath(fs_path.string());
 #else
-    return Str(1, preferred_separator);
+    return FilePath(fs_path);
 #endif
 }
-// LCOV_EXCL_STOP

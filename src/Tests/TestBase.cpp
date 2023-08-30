@@ -9,11 +9,36 @@
 
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
+#include "Math/TextUtils.h"
 #include "Tests/Testing.h"
+#include "Tests/Util/FakeFileSystem.h"
+#include "Tests/Util/FakeFontSystem.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Read.h"
 #include "Util/String.h"
+
+// ----------------------------------------------------------------------------
+// Constructor and destructor.
+// ----------------------------------------------------------------------------
+
+TestBase::TestBase(const Util::Flags<Flag> &flags) {
+    if (! flags.Has(Flag::kUseRealFiles)) {
+        fake_file_system_.reset(new FakeFileSystem);
+        FilePath::InstallFileSystem(fake_file_system_);
+    }
+
+    if (! flags.Has(Flag::kUseRealFonts)) {
+        fake_font_system_.reset(new FakeFontSystem);
+        InstallFontSystem(fake_font_system_);
+    }
+}
+
+TestBase::~TestBase() {
+    // Restore real file and font systems.
+    FilePath::InstallFileSystem(std::shared_ptr<FakeFileSystem>());
+    InstallFontSystem(std::shared_ptr<FakeFontSystem>());
+}
 
 // ----------------------------------------------------------------------------
 // Test introspection.
