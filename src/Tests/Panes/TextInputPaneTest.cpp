@@ -5,7 +5,6 @@
 #include "Place/ClickInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Tests/Widgets/DragTester.h"
 #include "Util/Assert.h"
 #include "Widgets/DraggableWidget.h"
@@ -30,9 +29,6 @@ class TextInputPaneTest : public PaneTestBase {
 };
 
 TextInputPane & TextInputPaneTest::GetTextInputPane(const Str &contents) {
-    // Override this setting; the TextInputPane needs to build font images.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
     input_ = ReadRealPane<TextInputPane>("TextInputPane", contents);
 
     input_->SetLayoutSize(Vector2f(200, 20));  // Required for text sizing.

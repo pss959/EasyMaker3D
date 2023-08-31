@@ -12,16 +12,10 @@
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/UnitTestTypeChanger.h"
 
 /// \ingroup Tests
 class RenderTest : public SceneTestBase {
   protected:
-    RenderTest() {
-        // This is required for font setup.
-        uttc_.reset(new UnitTestTypeChanger(Util::AppType::kInteractive));
-    }
-
     const size_t kWidth  = 1280;  ///< Framebuffer width.
     const size_t kHeight = 1024;  ///< Framebuffer height.
 
@@ -32,9 +26,8 @@ class RenderTest : public SceneTestBase {
     void RenderScene(const FBTarget *fb_target);
 
   private:
-    std::unique_ptr<UnitTestTypeChanger> uttc_;
-    SG::ScenePtr   scene_;
-    SG::RenderData data_;
+    SG::ScenePtr          scene_;
+    SG::RenderData        data_;
     ion::gfx::RendererPtr renderer_;
 
     void UpdateNodeForRenderPass_(const SG::RenderPass &pass, SG::Node &node);

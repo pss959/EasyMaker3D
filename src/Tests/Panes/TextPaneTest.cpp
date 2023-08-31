@@ -1,7 +1,6 @@
 ﻿#include "Panes/TextPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Tuning.h"
 
 /// \ingroup Tests
@@ -47,9 +46,6 @@ TEST_F(TextPaneTest, Set) {
 }
 
 TEST_F(TextPaneTest, Text) {
-    // Override this setting for this test; need to build font images.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
     auto text = GetTextPane();
 
     text->SetText("ABC");
@@ -87,9 +83,6 @@ TEST_F(TextPaneTest, Text) {
 }
 
 TEST_F(TextPaneTest, IsValid) {
-    // Override this setting for this test; need to build font images.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
     SetParseTypeName("TextPane");
     TestInvalid(R"(text: "")", "Empty text string");
 }

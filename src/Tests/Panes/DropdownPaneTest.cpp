@@ -3,7 +3,6 @@
 #include "Panes/ScrollingPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests

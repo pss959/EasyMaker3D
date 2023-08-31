@@ -1,7 +1,6 @@
 #include "Commands/ChangeTextCommand.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Tuning.h"
 
 /// \ingroup Tests
@@ -18,8 +17,6 @@ TEST_F(ChangeTextCommandTest, Default) {
 }
 
 TEST_F(ChangeTextCommandTest, Set) {
-    // This is necessary to get the font set up so the name is recognized.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
     auto ctc = Command::CreateCommand<ChangeTextCommand>();
     ctc->SetNewTextString("Hi there!");
     ctc->SetNewFontName(TK::k3DFont);
