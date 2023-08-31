@@ -69,9 +69,6 @@ class FontSystem {
     class Impl_;  // Does most of the work;
     std::unique_ptr<Impl_> impl_;
 
-    /// Real FontSystem instance.
-    static FontSystemPtr real_font_system_;
-
     /// Currently-installed FontSystem instance.
     static FontSystemPtr cur_font_system_;
 };

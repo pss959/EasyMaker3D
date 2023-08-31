@@ -32,18 +32,14 @@ TestBase::TestBase() {
     FontSystem::Install(fake_font_system_);
 }
 
-TestBase::~TestBase() {
-    // Restore real file and font systems.
-    FileSystem::Install(std::shared_ptr<FakeFileSystem>());
-    FontSystem::Install(std::shared_ptr<FakeFontSystem>());
-}
+TestBase::~TestBase() {}
 
 void TestBase::UseRealFileSystem(bool b) {
-    FileSystem::Install(b ? FileSystemPtr() : fake_file_system_);
+    FileSystem::Install(b ? FileSystemPtr(new FileSystem) : fake_file_system_);
 }
 
 void TestBase::UseRealFontSystem(bool b) {
-    FontSystem::Install(b ? FontSystemPtr() : fake_font_system_);
+    FontSystem::Install(b ? FontSystemPtr(new FontSystem) : fake_font_system_);
 }
 
 std::shared_ptr<FakeFileSystem> TestBase::GetFakeFileSystem() {

@@ -14,7 +14,9 @@ class FontSystemTest : public TestBase {
     FontSystemPtr fs;
 
     FontSystemTest() {
-        /// Use a real FontSystem and make it easily accessible in tests.
+        /// Use a real FontSystem and make it easily accessible in tests. Also
+        /// have to use a real FileSystem to read the fonts.
+        UseRealFileSystem(true);
         UseRealFontSystem(true);
         fs = FontSystem::GetInstalled();
     }

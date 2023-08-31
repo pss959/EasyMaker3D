@@ -86,9 +86,6 @@ class FileSystem {
     virtual Str GetSeparator() const;
 
   private:
-    /// Real FileSystem instance.
-    static FileSystemPtr real_file_system_;
-
     /// Currently-installed FileSystem instance.
     static FileSystemPtr cur_file_system_;
 

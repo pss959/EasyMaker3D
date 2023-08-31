@@ -11,11 +11,11 @@
 #include "Util/Assert.h"
 #include "Util/String.h"
 
-FileSystemPtr FileSystem::real_file_system_(new FileSystem);
-FileSystemPtr FileSystem::cur_file_system_ = real_file_system_;
+FileSystemPtr FileSystem::cur_file_system_(new FileSystem);
 
 void FileSystem::Install(const FileSystemPtr &fs) {
-    cur_file_system_ = fs ? fs : real_file_system_;
+    ASSERT(fs);
+    cur_file_system_ = fs;
 }
 
 FileSystemPtr FileSystem::GetInstalled() {
