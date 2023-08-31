@@ -54,36 +54,36 @@ TEST_F(TextPaneTest, Text) {
 
     text->SetText("ABC");
     text->SetFontSize(22);
-    EXPECT_VECS_CLOSE2(Vector2f(44.6875f, 22.f), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(66, 22), text->GetBaseSize());
 
     // Try multi-line text.
     text->SetText("ABC\nDE");
-    EXPECT_VECS_CLOSE2(Vector2f(44.6875f, 47.4375f), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(264, 44), text->GetBaseSize());
 
     text->SetFontSize(44);
-    EXPECT_VECS_CLOSE2(Vector2f(89.375, 94.875f), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
 
     // Repeat with resizable height.
     text->SetHeightResizable(true);
-    EXPECT_VECS_CLOSE2(Vector2f(89.375, 94.875f), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
 
     text->SetLayoutSize(Vector2f(100, 60));
     EXPECT_VECS_CLOSE2(Vector2f(100, 60), text->GetLayoutSize());
 
     // Repeat with smaller aspect ratio.
     text->SetLayoutSize(Vector2f(60, 100));
-    EXPECT_VECS_CLOSE2(Vector2f(89.375, 94.875f), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
 
-    EXPECT_VECS_CLOSE2(Vector2f(60, 63.6923f), text->GetTextSize());
+    EXPECT_VECS_CLOSE2(Vector2f(60, 10), text->GetTextSize());
 
     // Change the text and make sure the base size updates.
     text->SetText("abcdefgh");
-    EXPECT_VECS_CLOSE2(Vector2f(182.875f, 44), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(352, 44), text->GetBaseSize());
 
     // Repeat with fixed height.
     text->SetHeightResizable(false);
     text->SetLayoutSize(Vector2f(200, 60));
-    EXPECT_VECS_CLOSE2(Vector2f(182.875f, 44), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(352, 44), text->GetBaseSize());
 }
 
 TEST_F(TextPaneTest, IsValid) {

@@ -8,6 +8,9 @@
 /// \ingroup Tests
 class FakeFontSystem : public FontSystem {
   public:
+    /// Redefines this to return true;
+    virtual bool IsFake() const override { return true; }
+
     /// Returns a vector containing all the current names of fonts in the
     /// resources/fonts directory.
     virtual StrVec GetAvailableFontNames() const override;

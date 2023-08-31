@@ -9,6 +9,7 @@
 #include "SG/Exception.h"
 #include "SG/IonContext.h"
 #include "Util/Assert.h"
+#include "Util/FontSystem.h"
 #include "Util/Tuning.h"
 
 using ion::gfxutils::ShaderManagerPtr;
@@ -81,7 +82,7 @@ void TextNode::CreationDone() {
 void TextNode::SetFontName(const Str &font_name) {
     if (font_name != font_name_.GetValue()) {
         font_name_ = font_name;
-        if (GetIonContext())
+        if (GetIonContext() && ! FontSystem::GetInstalled()->IsFake())
             SetUpFont_();
         needs_rebuild_ = true;
     }
@@ -121,21 +122,26 @@ void TextNode::SetLayoutOptions(const LayoutOptionsPtr &opts) {
 }
 
 float TextNode::GetLineSpacingFactor() const {
-    ASSERT(font_image_);
+    float factor = 1;
+    if (! FontSystem::GetInstalled()->IsFake()) {
+        ASSERT(font_image_);
 
-    // Return the ratio of the line advance height to the font size.
-    const auto &font = font_image_->GetFont();
-    return font->GetFontMetrics().line_advance_height / font->GetSizeInPixels();
+        // Use the ratio of the line advance height to the font size.
+        const auto &font = font_image_->GetFont();
+        factor = font->GetFontMetrics().line_advance_height /
+            font->GetSizeInPixels();
+    }
+    return factor;
 }
 
 const Bounds & TextNode::GetTextBounds() {
-    if (needs_rebuild_ && font_image_)
+    if (needs_rebuild_)
         BuildText_();
     return text_bounds_;
 }
 
 const Vector2f & TextNode::GetTextSize() {
-    if (needs_rebuild_ && font_image_)
+    if (needs_rebuild_)
         BuildText_();
     return text_size_;
 }
@@ -147,20 +153,22 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     auto ion_node = Node::SetUpIon(ion_context, programs);
     ASSERT(ion_node);
 
-    SetUpFont_();
+    if (! FontSystem::GetInstalled()->IsFake()) {
+        SetUpFont_();
 
-    // Build the text.
-    if (BuildText_()) {
-        const ion::gfx::NodePtr &text_node = builder_->GetNode();
+        // Build the text.
+        if (BuildText_()) {
+            const ion::gfx::NodePtr &text_node = builder_->GetNode();
 
-        // The OutlineBuilder needs to own its Ion Node, and the base class
-        // owns its Ion Node, so just add the builder's node as a child.
-        text_node->SetLabel(GetName() + " text");
-        ion_node->AddChild(text_node);
-    }
-    else {
-        throw Exception("Unable to build Ion text for " + GetDesc() +
-                        " with text '" + GetText() + "'");
+            // The OutlineBuilder needs to own its Ion Node, and the base class
+            // owns its Ion Node, so just add the builder's node as a child.
+            text_node->SetLabel(GetName() + " text");
+            ion_node->AddChild(text_node);
+        }
+        else {
+            throw Exception("Unable to build Ion text for " + GetDesc() +
+                            " with text '" + GetText() + "'");
+        }
     }
 
     return ion_node;
@@ -224,6 +232,18 @@ void TextNode::SetUpFont_() {
 bool TextNode::BuildText_() {
     ASSERT(needs_rebuild_);
 
+    // If this is in a test, there is no font_image_, so just set the text size
+    // to something reasonable: the number of characters in the text x 1.
+    if (FontSystem::GetInstalled()->IsFake()) {
+        ASSERT(! font_image_);
+        text_size_.Set(text_.GetValue().size(), 1);
+        return true;
+    }
+
+    // If the FontImage is not yet ready, do nothing.
+    if (! font_image_)
+        return true;
+
     // Build the Layout.
     ion::text::LayoutOptions ion_opts;
     if (auto &opts = GetLayoutOptions()) {
@@ -266,7 +286,7 @@ FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
     const Str &font_name = GetFontName();
     const Str key = BuildFontImageKey_(font_name, max_image_size_);
     FontImagePtr image = font_manager.GetCachedFontImage(key);
-    if (! image) {
+    if (! image && ! FontSystem::GetInstalled()->IsFake()) {
         // Create the font.
         const FilePath font_path = GetFontPath(font_name);
         if (! font_path)

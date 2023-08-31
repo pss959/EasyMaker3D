@@ -6,7 +6,6 @@
 #include "Panes/ContainerPane.h"
 #include "Panels/Panel.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Assert.h"
 
 DECL_SHARED_PTR(ButtonPane);
@@ -22,9 +21,8 @@ DECL_SHARED_PTR(TextInputPane);
 /// \ingroup Tests
 class PanelTestBase : public SceneTestBase {
   protected:
-    /// The constructor is passed a flag indicating whether there are any
-    /// text-based Panes that need fonts set up (which slows things down).
-    explicit PanelTestBase(bool need_text = false);
+    /// The constructor sets up the Panel::Context.
+    PanelTestBase();
     virtual ~PanelTestBase();
 
     /// Sets a flag in the TestBoardAgent that prints useful information about
@@ -35,8 +33,6 @@ class PanelTestBase : public SceneTestBase {
     /// test Context in the Panel and stores it for later use. The derived
     /// Panel is returned.
     template <typename T> std::shared_ptr<T> InitPanel(const Str &type_name) {
-        UnitTestTypeChanger uttc(need_text_ ? Util::AppType::kInteractive :
-                                 Util::AppType::kUnitTest);
         static_assert(std::derived_from<T, Panel> == true);
         auto panel = ReadRealNode<T>(GetContentsString_(), type_name);
         StorePanelWithContext_(panel);
@@ -114,7 +110,6 @@ class PanelTestBase : public SceneTestBase {
     DECL_SHARED_PTR(TestBoardAgent);
     DECL_SHARED_PTR(TestSettingsAgent);
 
-    const bool           need_text_ = false;
     Panel::ContextPtr    test_context_;
     TestBoardAgentPtr    test_board_agent_;
     TestSettingsAgentPtr test_settings_agent_;

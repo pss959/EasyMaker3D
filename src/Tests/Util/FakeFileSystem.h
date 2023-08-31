@@ -16,6 +16,9 @@
 /// \ingroup Tests
 class FakeFileSystem : public FileSystem {
   public:
+    /// Redefines this to return true;
+    virtual bool IsFake() const override { return true; }
+
     /// Adds a file to the map.
     void AddFile(const Str &path_str, bool is_hidden = false) const;
 

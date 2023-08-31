@@ -18,9 +18,6 @@ class ToolPanelTestBase : public PanelTestBase {
         Str    type;       ///< Type (ToolPanel::InteractionType as string).
     };
 
-    explicit ToolPanelTestBase(bool need_text = false) :
-        PanelTestBase(need_text) {}
-
     /// Adds an Observer to the ToolPanel's GetInteraction() Notifier that
     /// saves information about the last change.
     void ObserveChanges(ToolPanel &panel);

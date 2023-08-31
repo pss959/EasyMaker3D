@@ -9,7 +9,7 @@
 class FilePanelTest : public PanelTestBase {
   protected:
     FilePanelPtr panel;
-    explicit FilePanelTest(bool need_text = false) : PanelTestBase(need_text) {
+    FilePanelTest() {
         panel = InitPanel<FilePanel>("FilePanel");
 
         // Set up some directories in the FakeFileSystem to make the direction
@@ -20,12 +20,6 @@ class FilePanelTest : public PanelTestBase {
         fs->AddDir("/a/b");
         fs->AddDir("/a/b/c");
     }
-};
-
-/// \ingroup Tests
-class FilePanelTestWithText : public FilePanelTest {
-  protected:
-    FilePanelTestWithText() : FilePanelTest(true) {}
 };
 
 TEST_F(FilePanelTest, Defaults) {
@@ -68,7 +62,7 @@ TEST_F(FilePanelTest, Directions) {
 }
 
 #if XXXX  // Need to add these to do something useful.
-TEST_F(FilePanelTestWithText, Change) {
+TEST_F(FilePanelTest, Change) {
     auto agent = GetContext().file_agent;
 
     // Use default file.
@@ -122,7 +116,7 @@ TEST_F(FilePanelTestWithText, Change) {
     EXPECT_EQ(13, agent->GetFile().GetBuildVolumeSize()[1]);
 }
 
-TEST_F(FilePanelTestWithText, OpenFilePanel) {
+TEST_F(FilePanelTest, OpenFilePanel) {
     auto agent = GetContext().file_agent;
 
     // Use default file.
@@ -154,7 +148,7 @@ TEST_F(FilePanelTestWithText, OpenFilePanel) {
               agent->GetFile().GetImportDirectory());
 }
 
-TEST_F(FilePanelTestWithText, OpenRadialMenuPanel) {
+TEST_F(FilePanelTest, OpenRadialMenuPanel) {
     auto agent = GetContext().file_agent;
 
     // Use default file.

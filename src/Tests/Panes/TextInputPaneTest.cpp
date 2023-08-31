@@ -224,6 +224,7 @@ TEST_F(TextInputPaneTest, ClickAndDrag) {
     auto &input = GetTextInputPane();
     input.SetInitialText("Abcdefghijklmnop");
     input.GetInteractor()->Activate();
+    EXPECT_EQ("Abcdefghijklmnop", input.GetText());
 
     auto dw = std::dynamic_pointer_cast<DraggableWidget>(
         input.GetInteractor()->GetActivationWidget());
@@ -233,18 +234,18 @@ TEST_F(TextInputPaneTest, ClickAndDrag) {
     dt.SetRayDirection(-Vector3f::AxisZ());
 
     // Drag to the right should select some characters. Replace them with "X".
-    dt.ApplyMouseDrag(Point3f(-.2f, 0, 0), Point3f(.2f, 0, 0));
+    dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
     ProcessKey("X");
     EXPECT_EQ("AbcdefghX", input.GetText());
 
     // Try a touch drag.
-    dt.ApplyTouchDrag(Point3f(-.2f, 0, 0), Point3f(-.25f, 0, 0));
+    dt.ApplyTouchDrag(Point3f(0, 0, 0), Point3f(-.1f, 0, 0));
     ProcessKey("Y");
     EXPECT_EQ("AbcdefYX", input.GetText());
 
     // Clicking in a different spot and deleting the next character.
     ClickInfo info;
-    info.hit.point.Set(-.4f, 0, 0);
+    info.hit.point.Set(-.35f, 0, 0);
     dw->Click(info);
     ProcessKey("Ctrl-d");
     EXPECT_EQ("AbdefYX", input.GetText());
@@ -252,7 +253,7 @@ TEST_F(TextInputPaneTest, ClickAndDrag) {
     // Drag to the roughly same place is like a click.
     dt.ApplyMouseDrag(Point3f(-.2f, 0, 0), Point3f(-.201f, 0, 0));
     ProcessKey("Z");
-    EXPECT_EQ("AbdefYXZ", input.GetText());
+    EXPECT_EQ("AbdefZYX", input.GetText());
 }
 
 TEST_F(TextInputPaneTest, VirtualKeyboard) {

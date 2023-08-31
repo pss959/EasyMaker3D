@@ -9,16 +9,9 @@
 class SettingsPanelTest : public PanelTestBase {
   protected:
     SettingsPanelPtr panel;
-    explicit SettingsPanelTest(bool need_text = false) :
-        PanelTestBase(need_text) {
+    SettingsPanelTest() {
         panel = InitPanel<SettingsPanel>("SettingsPanel");
     }
-};
-
-/// \ingroup Tests
-class SettingsPanelTestWithText : public SettingsPanelTest {
-  protected:
-    SettingsPanelTestWithText() : SettingsPanelTest(true) {}
 };
 
 TEST_F(SettingsPanelTest, Defaults) {
@@ -31,7 +24,7 @@ TEST_F(SettingsPanelTest, Show) {
     EXPECT_TRUE(panel->IsShown());
 }
 
-TEST_F(SettingsPanelTestWithText, Change) {
+TEST_F(SettingsPanelTest, Change) {
     auto agent = GetContext().settings_agent;
 
     // Use default settings.
@@ -85,7 +78,7 @@ TEST_F(SettingsPanelTestWithText, Change) {
     EXPECT_EQ(13, agent->GetSettings().GetBuildVolumeSize()[1]);
 }
 
-TEST_F(SettingsPanelTestWithText, OpenFilePanel) {
+TEST_F(SettingsPanelTest, OpenFilePanel) {
     auto agent = GetContext().settings_agent;
 
     // Use default settings.
@@ -118,7 +111,7 @@ TEST_F(SettingsPanelTestWithText, OpenFilePanel) {
               agent->GetSettings().GetImportDirectory().ToString());
 }
 
-TEST_F(SettingsPanelTestWithText, OpenRadialMenuPanel) {
+TEST_F(SettingsPanelTest, OpenRadialMenuPanel) {
     auto agent = GetContext().settings_agent;
 
     // Use default settings.

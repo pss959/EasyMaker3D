@@ -36,11 +36,6 @@ class PanelTestBase::TestBoardAgent : public BoardAgent {
     // If this flag is set, messages are printed to help debug Panel issues.
     bool debug_panels = false;
 
-    /// The constructor is passed a flag indicating whether to set the size on
-    /// new Panels, which is needed for setting up text and a flag indicating
-    /// whether to print status information for Panels to help with debugging.
-    TestBoardAgent(bool set_sizes) : set_sizes_(set_sizes) {}
-
     /// Sets the Scene to use to find other Panels.
     void SetScene(const SG::ScenePtr &scene) { scene_ = scene; }
     /// Sets the Panel::Context to use for other Panels.
@@ -66,7 +61,6 @@ class PanelTestBase::TestBoardAgent : public BoardAgent {
         BoardAgent::ResultFunc result_func;
     };
 
-    const bool              set_sizes_;     ///< Whether to set Panel sizes.
     SG::ScenePtr            scene_;         ///< Used to find other Panels.
     Panel::ContextPtr       context_;       ///< Context for other panels.
     std::vector<PanelInfo_> panel_stack_;   ///< Stack of currently-open Panels.
@@ -155,8 +149,7 @@ void PanelTestBase::TestBoardAgent::PushPanel(const PanelPtr &panel,
     // Set its context and make sure it has a valid size (needed for
     // TextInputPanes).
     panel->SetTestContext(context_);
-    if (set_sizes_)
-        panel->SetSize(Vector2f(400, 400));
+    panel->SetSize(Vector2f(400, 400));
 
     // Do NOT show the Panel if it is the first one - that allows tests to do
     // that for the first time.
@@ -241,8 +234,8 @@ PanelTestBase::TestSettingsAgent::TestSettingsAgent() {
 // PanelTestBase functions.
 // ----------------------------------------------------------------------------
 
-PanelTestBase::PanelTestBase(bool need_text) : need_text_(need_text) {
-    test_board_agent_.reset(new TestBoardAgent(need_text));
+PanelTestBase::PanelTestBase() {
+    test_board_agent_.reset(new TestBoardAgent);
     test_settings_agent_.reset(new TestSettingsAgent);
 
     // Create and store a test Context.

@@ -25,6 +25,9 @@ class FileSystem {
     /// Returns the current FileSystem instance.
     static FileSystemPtr GetInstalled();
 
+    /// Returns whether this is a FakeFileSystem. The base class returns false.
+    virtual bool IsFake() const { return false; }
+
     /// Converts a path to a string native to the operating system. This should
     /// be used when a path is to be used to open a file for reading or
     /// writing.

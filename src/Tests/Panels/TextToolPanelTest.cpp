@@ -8,17 +8,10 @@
 class TextToolPanelTest : public ToolPanelTestBase {
   protected:
     TextToolPanelPtr panel;
-    explicit TextToolPanelTest(bool need_text = false) :
-        ToolPanelTestBase(need_text) {
+    TextToolPanelTest() {
         panel = InitPanel<TextToolPanel>("TextToolPanel");
         ObserveChanges(*panel);
     }
-};
-
-/// \ingroup Tests
-class TextToolPanelTestWithText : public TextToolPanelTest {
-  protected:
-    TextToolPanelTestWithText() : TextToolPanelTest(true) {}
 };
 
 TEST_F(TextToolPanelTest, Defaults) {
@@ -42,7 +35,7 @@ TEST_F(TextToolPanelTest, Show) {
     EXPECT_TRUE(panel->IsShown());
 }
 
-TEST_F(TextToolPanelTestWithText, Change) {
+TEST_F(TextToolPanelTest, Change) {
     panel->SetIsShown(true);
 
     auto input = SetTextInput("Text", "Some Text");

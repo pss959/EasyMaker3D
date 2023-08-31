@@ -40,6 +40,9 @@ class FontSystem {
     FontSystem();
     ~FontSystem();
 
+    /// Returns whether this is a FakeFontSystem. The base class returns false.
+    virtual bool IsFake() const { return false; }
+
     /// Returns a vector containing the names of all available fonts. This
     /// loads all of the known fonts.
     virtual StrVec GetAvailableFontNames() const;

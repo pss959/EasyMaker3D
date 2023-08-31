@@ -8,7 +8,6 @@
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Delay.h"
 #include "Util/General.h"
 
@@ -168,9 +167,6 @@ TEST_F(FeedbackTest, LinearFeedback) {
 }
 
 TEST_F(FeedbackTest, TooltipFeedback) {
-    // Use this to make sure the font in the text node is set up.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
     // Need to read the real thing.
     auto tf = ReadRealNode<TooltipFeedback>(GetFeedbackContents(),
                                             "TooltipFeedback");
@@ -180,7 +176,7 @@ TEST_F(FeedbackTest, TooltipFeedback) {
     tf->SetText("Help string");
     tf->SetColor(Color(1, 0, 1));
 
-    EXPECT_VECS_CLOSE(Vector3f(5.98125f, 1.55f, 1), tf->GetTextSize());
+    EXPECT_VECS_CLOSE(Vector3f(12.1f, 1.6f, 1), tf->GetTextSize());
 
     // Activating will happen after the delay.
     EXPECT_FALSE(tf->IsEnabled());

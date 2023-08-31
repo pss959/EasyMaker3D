@@ -9,17 +9,10 @@
 class NameToolPanelTest : public ToolPanelTestBase {
   protected:
     NameToolPanelPtr panel;
-    explicit NameToolPanelTest(bool need_text = false) :
-        ToolPanelTestBase(need_text) {
+    NameToolPanelTest() {
         panel = InitPanel<NameToolPanel>("NameToolPanel");
         ObserveChanges(*panel);
     }
-};
-
-/// \ingroup Tests
-class NameToolPanelTestWithText : public NameToolPanelTest {
-  protected:
-    NameToolPanelTestWithText() : NameToolPanelTest(true) {}
 };
 
 TEST_F(NameToolPanelTest, Defaults) {
@@ -40,7 +33,7 @@ TEST_F(NameToolPanelTest, Show) {
     EXPECT_TRUE(panel->IsShown());
 }
 
-TEST_F(NameToolPanelTestWithText, Change) {
+TEST_F(NameToolPanelTest, Change) {
     panel->SetIsShown(true);
 
     auto input = SetTextInput("Input", "Some Name");

@@ -12,17 +12,10 @@
 class ExtrudedToolPanelTest : public ToolPanelTestBase {
   protected:
     ExtrudedToolPanelPtr panel;
-    explicit ExtrudedToolPanelTest(bool need_text = false) :
-        ToolPanelTestBase(need_text) {
+    explicit ExtrudedToolPanelTest() {
         panel = InitPanel<ExtrudedToolPanel>("ExtrudedToolPanel");
         ObserveChanges(*panel);
     }
-};
-
-/// \ingroup Tests
-class ExtrudedToolPanelTestWithText : public ExtrudedToolPanelTest {
-  protected:
-    ExtrudedToolPanelTestWithText() : ExtrudedToolPanelTest(true) {}
 };
 
 TEST_F(ExtrudedToolPanelTest, Defaults) {
@@ -44,7 +37,7 @@ TEST_F(ExtrudedToolPanelTest, Show) {
     EXPECT_TRUE(panel->IsShown());
 }
 
-TEST_F(ExtrudedToolPanelTestWithText, Change) {
+TEST_F(ExtrudedToolPanelTest, Change) {
     panel->SetIsShown(true);
 
     // Change the number of sides using text input and the "SetSides" button.

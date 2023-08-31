@@ -37,17 +37,10 @@ class SessionPanelTest : public PanelTestBase {
     SessionPanelPtr     panel;
     TestSessionAgentPtr session_agent;
 
-    explicit SessionPanelTest(bool need_text = false) :
-        PanelTestBase(need_text), session_agent(new TestSessionAgent) {
+    SessionPanelTest() : session_agent(new TestSessionAgent) {
         GetContext().session_agent = session_agent;
         panel = InitPanel<SessionPanel>("SessionPanel");
     }
-};
-
-/// \ingroup Tests
-class SessionPanelTestWithText : public SessionPanelTest {
-  protected:
-    SessionPanelTestWithText() : SessionPanelTest(true) {}
 };
 
 // ----------------------------------------------------------------------------
@@ -249,7 +242,7 @@ TEST_F(SessionPanelTest, Continue) {
     EXPECT_EQ("Done", GetCloseResult());
 }
 
-TEST_F(SessionPanelTestWithText, Load) {
+TEST_F(SessionPanelTest, Load) {
     auto &agent = *session_agent;
 
     panel->SetIsShown(true);
@@ -285,7 +278,7 @@ TEST_F(SessionPanelTestWithText, Load) {
     EXPECT_EQ("Load", agent.last_op);
 }
 
-TEST_F(SessionPanelTestWithText, LoadFail) {
+TEST_F(SessionPanelTest, LoadFail) {
     auto &agent = *session_agent;
 
     panel->SetIsShown(true);
@@ -368,7 +361,7 @@ TEST_F(SessionPanelTest, Save) {
     EXPECT_EQ("Save", agent.last_op);
 }
 
-TEST_F(SessionPanelTestWithText, SaveAs) {
+TEST_F(SessionPanelTest, SaveAs) {
     auto &agent = *session_agent;
     panel->SetIsShown(true);
 
@@ -387,7 +380,7 @@ TEST_F(SessionPanelTestWithText, SaveAs) {
     EXPECT_EQ("Save", agent.last_op);
 }
 
-TEST_F(SessionPanelTestWithText, Export) {
+TEST_F(SessionPanelTest, Export) {
     auto &agent = *session_agent;
 
     agent.export_name = "SomeModel";
@@ -409,7 +402,7 @@ TEST_F(SessionPanelTestWithText, Export) {
     EXPECT_EQ("Export", agent.last_op);
 }
 
-TEST_F(SessionPanelTestWithText, ExportFail) {
+TEST_F(SessionPanelTest, ExportFail) {
     auto &agent = *session_agent;
 
     agent.export_name = "SomeModel";
