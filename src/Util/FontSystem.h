@@ -5,6 +5,9 @@
 
 #include "Util/FilePath.h"
 
+class FontSystem;
+typedef std::shared_ptr<FontSystem> FontSystemPtr;
+
 /// The FontSystem class is a singleton that manages system fonts. Most of
 /// these functions are virtual to allow derived classes to redefine them for
 /// testing.
@@ -25,6 +28,14 @@ class FontSystem {
         /// Bezier curves (false).
         std::function<void (float, float, bool)> add_point_func;
     };
+
+    /// Sets a FontSystem instance to use for all font-related functions. This
+    /// allows a derived version to be installed for testing. An instance of
+    /// the base FontSystem class is installed by default.
+    static void Install(const FontSystemPtr &fs);
+
+    /// Returns the current FontSystem instance.
+    static FontSystemPtr GetInstalled();
 
     FontSystem();
     ~FontSystem();
@@ -54,4 +65,10 @@ class FontSystem {
   private:
     class Impl_;  // Does most of the work;
     std::unique_ptr<Impl_> impl_;
+
+    /// Real FontSystem instance.
+    static FontSystemPtr real_font_system_;
+
+    /// Currently-installed FontSystem instance.
+    static FontSystemPtr cur_font_system_;
 };

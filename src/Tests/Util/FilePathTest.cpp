@@ -13,11 +13,7 @@ class FilePathTest : public TestBase {
     /// Make the FakeFileSystem easily accessible to tests.
     std::shared_ptr<FakeFileSystem> fs;
 
-    FilePathTest() {
-        fs = std::dynamic_pointer_cast<FakeFileSystem>(
-            FilePath::GetInstalledFileSystem());
-        ASSERT(fs);
-    }
+    FilePathTest() { fs = GetFakeFileSystem(); }
 };
 
 TEST_F(FilePathTest, Assign) {

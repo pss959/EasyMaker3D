@@ -94,11 +94,11 @@ TEST_F(TextToolPanelTestWithText, Change) {
                      panel->GetCharSpacing());
 
     // Change to invalid text.
-    const Str bad_text = "¶¡§";  // Characters not in font.
+    const Str bad_text = "¶¡§";  // Invalid characters for FakeFontSystem.
     input = SetTextInput("Text", bad_text);
     EXPECT_FALSE(input->IsTextValid());
     EXPECT_EQ(bad_text, input->GetText());
     EXPECT_EQ(bad_text, disp->GetText());
-    EXPECT_TRUE(msg->GetText().contains("invalid character(s) for the font"));
+    EXPECT_TRUE(msg->GetText().contains("Invalid character"));
     EXPECT_FALSE(IsButtonPaneEnabled("Apply"));
 }

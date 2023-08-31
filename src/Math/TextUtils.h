@@ -1,23 +1,14 @@
 #pragma once
 
-#include <memory>
-#include <string>
 #include <vector>
 
 #include "Math/Polygon.h"
 #include "Util/FilePath.h"
 
-class FontSystem;
-
 /// \file
 /// This file defines functions for doing math with fonts and text.
 ///
 /// \ingroup Math
-
-/// Sets a FontSystem instance to use for all font-related functions. This
-/// allows a derived version to be installed for testing. An instance of the
-/// base FontSystem class is installed by default.
-void InstallFontSystem(const std::shared_ptr<FontSystem> &fs);
 
 /// Returns a vector containing the names of all available fonts. This loads
 /// all of the known fonts.

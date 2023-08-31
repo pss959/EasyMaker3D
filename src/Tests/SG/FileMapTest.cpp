@@ -7,7 +7,11 @@
 #include "Util/Delay.h"
 
 /// \ingroup Tests
-class FileMapTest : public TestBase {};
+class FileMapTest : public TestBase {
+  protected:
+    // Need to use a real FileSystem for files to be read.
+    FileMapTest() { UseRealFileSystem(true); }
+};
 
 TEST_F(FileMapTest, AddAndFind) {
     SG::FileMap fm;

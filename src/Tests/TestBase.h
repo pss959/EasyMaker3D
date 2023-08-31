@@ -7,7 +7,6 @@
 
 #include "Math/Types.h"
 #include "Util/FilePath.h"
-#include "Util/Flags.h"
 
 class FakeFileSystem;
 class FakeFontSystem;
@@ -16,29 +15,36 @@ class FakeFontSystem;
 /// \ingroup Tests
 class TestBase : public ::testing::Test {
  protected:
-    /// Flags passed to the constructor.
-    enum class Flag : uint32_t {
-        /// Use the real FileSystem instead of a FakeFileSystem for handling
-        /// files. Note that this makes tests sensitive to actual file and
-        /// directory conditions, which is not ideal.
-        kUseRealFiles = 0x1,
-
-        /// Use the real FontSystem instead of a FakeFontSystem for handling
-        /// fonts. Note that this can slow things down a lot and should be used
-        /// only when actual font images are required.
-        kUseRealFonts = 0x2,
-    };
-
     // ------------------------------------------------------------------------
-    // Constructor and destructor.
+    // Constructor, destructor, and setup.
     // ------------------------------------------------------------------------
 
     /// The constructor installs a FakeFileSystem and FakeFontSystem for tests
-    /// to use unless flags are set.
-    TestBase(const Util::Flags<Flag> &flags = Util::Flags<Flag>());
+    /// to use.
+    TestBase();
 
     /// The destructor restores the real FileSystem and FontSystem instances.
     virtual ~TestBase();
+
+    /// If the flag is true, this installs a real FileSystem; otherwise, it
+    /// restores the FakeFileSystem. Note that using a real FileSystem makes
+    /// tests sensitive to actual file and directory conditions, which is not
+    /// ideal in most cases.
+    void UseRealFileSystem(bool b);
+
+    /// If the flag is true, this installs a real FontSystem; otherwise, it
+    /// restores the FakeFontSystem. Note that using a real FontSystem can slow
+    /// things down considerably and should be used only when actual font
+    /// images or outlines are required.
+    void UseRealFontSystem(bool b);
+
+    /// Convenience that returns the FakeFileSystem when it is in use. Asserts
+    /// if it is not.
+    std::shared_ptr<FakeFileSystem> GetFakeFileSystem();
+
+    /// Convenience that returns the FakeFontSystem when it is in use. Asserts
+    /// if it is not.
+    std::shared_ptr<FakeFontSystem> GetFakeFontSystem();
 
     // ------------------------------------------------------------------------
     // Test introspection.

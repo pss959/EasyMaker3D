@@ -223,6 +223,17 @@ float FontSystem::Impl_::AddGlyphOutlines_(FT_Face face, char c, float x_start,
 // FontSystem functions.
 // ----------------------------------------------------------------------------
 
+FontSystemPtr FontSystem::real_font_system_(new FontSystem);
+FontSystemPtr FontSystem::cur_font_system_ = real_font_system_;
+
+void FontSystem::Install(const FontSystemPtr &fs) {
+    cur_font_system_ = fs ? fs : real_font_system_;
+}
+
+FontSystemPtr FontSystem::GetInstalled() {
+    return cur_font_system_;
+}
+
 FontSystem::FontSystem() : impl_(new Impl_) {}
 
 FontSystem::~FontSystem() {}

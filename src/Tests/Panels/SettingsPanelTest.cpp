@@ -113,8 +113,9 @@ TEST_F(SettingsPanelTestWithText, OpenFilePanel) {
     // Clicking the Accept button in the SettingsPanel should change the stored
     // settings.
     ClickButtonPane("Accept");
-    EXPECT_EQ(def_settings->GetImportDirectory().GetParentDirectory(),
-              agent->GetSettings().GetImportDirectory());
+    auto imp_path = def_settings->GetImportDirectory();
+    EXPECT_EQ(imp_path.GetParentDirectory().ToString() + "/",
+              agent->GetSettings().GetImportDirectory().ToString());
 }
 
 TEST_F(SettingsPanelTestWithText, OpenRadialMenuPanel) {

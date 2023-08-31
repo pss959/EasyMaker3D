@@ -10,13 +10,15 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/TempFile.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
 
 /// \ingroup Tests
-class TextTest : public SceneTestBase {};
+class TextTest : public SceneTestBase {
+  protected:
+    TextTest() { UseRealFontSystem(true); }
+};
 
 TEST_F(TextTest, DefaultTextNode) {
     auto text = CreateObject<SG::TextNode>();
@@ -35,18 +37,13 @@ TEST_F(TextTest, DefaultTextNode) {
     SetUpIonForNode(*text);
     EXPECT_NOT_NULL(text->GetIonNode().Get());
 
-    // No font image set up in regular unit tests.
-    TEST_THROW(text->GetLineSpacingFactor(), AssertException, "font_image");
-
-    // No size until set up with a font.
-    EXPECT_EQ(Vector3f::Zero(), text->GetTextBounds().GetSize());
-    EXPECT_EQ(Vector2f::Zero(), text->GetTextSize());
+    EXPECT_CLOSE(1.15625f, text->GetLineSpacingFactor());
+    EXPECT_VECS_CLOSE(Vector3f(.65625f, .59375f, 0),
+                      text->GetTextBounds().GetSize());
+    EXPECT_VECS_CLOSE2(Vector2f(.21875f, .09375f), text->GetTextSize());
 }
 
 TEST_F(TextTest, SetUpFont) {
-    // Use this to make sure the font is set up.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
     auto text = CreateObject<SG::TextNode>();
     text->SetLayoutOptions(CreateObject<SG::LayoutOptions>());
 
@@ -117,9 +114,6 @@ TEST_F(TextTest, LayoutOptions) {
     typedef SG::LayoutOptions::HAlignment HAlignment;
     typedef SG::LayoutOptions::VAlignment VAlignment;
 
-    // Use this to make sure the font is set up.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
     // Set up LayoutOptions.
     auto layout = CreateObject<SG::LayoutOptions>();
     EXPECT_EQ(HAlignment::kAlignLeft,     layout->GetHAlignment());
@@ -150,9 +144,6 @@ TEST_F(TextTest, InvalidTextNode) {
 }
 
 TEST_F(TextTest, BadText) {
-    // Use this to make sure the font is set up.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
-
     auto text = CreateObject<SG::TextNode>();
 
     // Set the text to not have any valid glyphs.
@@ -169,9 +160,6 @@ TEST_F(TextTest, BadFont) {
     // manager while this is still considered a unit test.
     TempFile tmp("");
     AddFontPath("BadFont", tmp.GetPath());
-
-    // Use this to make sure the font is set up.
-    UnitTestTypeChanger uttc(Util::AppType::kInteractive);
 
     auto text = CreateObject<SG::TextNode>();
     text->SetText("A");

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Math/Types.h"
+#include "Util/FontSystem.h"
 
 class Polygon;
 
@@ -25,6 +26,11 @@ class PolygonBuilder {
     void BeginBorder(size_t point_count);
     void AddPoint(const Point2f &pos, bool is_on_curve);
     void AddPolygons(std::vector<Polygon> &polys, float complexity);
+
+    /// Sets up to use a PolygonBuilder to store text character outlines. This
+    /// returns a FontSystem::OutlineFuncs instance that adds to the
+    /// PolygonBuilder.
+    FontSystem::OutlineFuncs SetUpForText();
 
   private:
     class Impl_;

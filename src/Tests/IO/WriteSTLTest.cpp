@@ -86,6 +86,7 @@ TEST_F(WriteSTLTest, TextBoxConv) {
 
 TEST_F(WriteSTLTest, TextF) {
     // Text "F" to make sure STL orientation is correct.
+    UseRealFontSystem(true);
     auto f = Model::CreateModel<TextModel>();
     f->SetUniformScale(10);
     f->SetTextString("F");

@@ -6,17 +6,6 @@
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 
-std::shared_ptr<FileSystem> FilePath::real_file_system_(new FileSystem);
-std::shared_ptr<FileSystem> FilePath::cur_file_system_ = real_file_system_;
-
-void FilePath::InstallFileSystem(const std::shared_ptr<FileSystem> &fs) {
-    cur_file_system_ = fs ? fs : real_file_system_;
-}
-
-const std::shared_ptr<FileSystem> FilePath::GetInstalledFileSystem() {
-    return cur_file_system_;
-}
-
 FilePath & FilePath::operator=(const char *path) {
     FSPath_::operator=(path);
     return *this;
@@ -32,23 +21,23 @@ Str FilePath::ToString() const {
 }
 
 Str FilePath::ToNativeString() const {
-    return cur_file_system_->ToNativeString(*this);
+    return GetFS_().ToNativeString(*this);
 }
 
 bool FilePath::Exists() const {
-    return cur_file_system_->Exists(*this);
+    return GetFS_().Exists(*this);
 }
 
 bool FilePath::IsDirectory() const {
-    return cur_file_system_->IsDirectory(*this);
+    return GetFS_().IsDirectory(*this);
 }
 
 bool FilePath::IsAbsolute() const {
-    return cur_file_system_->IsAbsolute(*this);
+    return GetFS_().IsAbsolute(*this);
 }
 
 bool FilePath::IsHidden() const {
-    return cur_file_system_->IsHidden(*this);
+    return GetFS_().IsHidden(*this);
 }
 
 FilePath FilePath::GetParentDirectory() const {
@@ -73,8 +62,8 @@ FilePath FilePath::AppendRelative(const FilePath &base_path) const {
 
     // If the base_path exists and is not known to be a directory, remove the
     // last component.
-    else if (cur_file_system_->Exists(base_path) &&
-             ! cur_file_system_->IsDirectory(base_path))
+    else if (GetFS_().Exists(base_path) &&
+             ! GetFS_().IsDirectory(base_path))
         return FromFSPath_(base_path.parent_path() / *this);
     else
         return FromFSPath_(base_path / *this);
@@ -86,12 +75,12 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
 
 FilePath FilePath::GetAbsolute() const {
     return FromFSPath_(IsAbsolute() ? lexically_normal() :
-                       (cur_file_system_->GetCurrent() / *this));
+                       (GetFS_().GetCurrent() / *this));
 }
 
 UTime FilePath::GetModTime() const {
     ASSERT(Exists());
-    return cur_file_system_->GetModTime(*this);
+    return GetFS_().GetModTime(*this);
 }
 
 void FilePath::GetContents(StrVec &subdirs, StrVec &files, const Str &extension,
@@ -102,7 +91,7 @@ void FilePath::GetContents(StrVec &subdirs, StrVec &files, const Str &extension,
         return;
     }
 
-    cur_file_system_->GetDirectoryContents(*this, subdirs, files,
+    GetFS_().GetDirectoryContents(*this, subdirs, files,
                                            include_hidden);
 
     // Filter out by extension if requested.
@@ -114,20 +103,20 @@ void FilePath::GetContents(StrVec &subdirs, StrVec &files, const Str &extension,
 void FilePath::Remove() const {
     KLOG('f', "Removing path \"" << ToString() << "\n");
     ASSERT(Exists());
-    cur_file_system_->Remove(*this);
+    GetFS_().Remove(*this);
 }
 
 bool FilePath::CreateDirectories() const {
     KLOG('f', "Creating directories for path \"" << ToString() << "\"");
-    return cur_file_system_->CreateDirectories(*this);
+    return GetFS_().CreateDirectories(*this);
 }
 
 void FilePath::MakeCurrent() const {
-    cur_file_system_->MakeCurrent(*this);
+    GetFS_().MakeCurrent(*this);
 }
 
 FilePath FilePath::GetCurrent() {
-    return FromFSPath_(cur_file_system_->GetCurrent());
+    return FromFSPath_(GetFS_().GetCurrent());
 }
 
 FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
@@ -158,11 +147,11 @@ FilePath FilePath::GetFullResourcePath(const Str &subdir,
 }
 
 FilePath FilePath::GetHomeDirPath() {
-    return FromFSPath_(cur_file_system_->GetHomeDirPath());
+    return FromFSPath_(GetFS_().GetHomeDirPath());
 }
 
 FilePath FilePath::GetSettingsDirPath(const Str &app_name) {
-    return FromFSPath_(cur_file_system_->GetSettingsDirPath(app_name));
+    return FromFSPath_(GetFS_().GetSettingsDirPath(app_name));
 }
 
 FilePath FilePath::GetTestDataPath() {
@@ -170,11 +159,15 @@ FilePath FilePath::GetTestDataPath() {
 }
 
 FilePath FilePath::GetTempFilePath() {
-    return FromFSPath_(cur_file_system_->GetTempFilePath());
+    return FromFSPath_(GetFS_().GetTempFilePath());
 }
 
 Str FilePath::GetSeparator() {
-    return cur_file_system_->GetSeparator();
+    return GetFS_().GetSeparator();
+}
+
+FileSystem & FilePath::GetFS_() {
+    return *FileSystem::GetInstalled();
 }
 
 FilePath FilePath::FromFSPath_(const FSPath_ &fs_path) {

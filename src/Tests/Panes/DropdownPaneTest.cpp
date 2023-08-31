@@ -70,11 +70,11 @@ TEST_F(DropdownPaneTest, LayoutSize) {
     dd->SetLayoutSize(Vector2f(100, 20));
 
     // The base size of the DropdownPane is the size of the largest choice.
-    EXPECT_VECS_CLOSE2(Vector2f(28.8f, 20), dd->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(37.425f, 20), dd->GetBaseSize());
 
     // Changing the choice should not affect the base size.
     dd->SetChoice(0);
-    EXPECT_VECS_CLOSE2(Vector2f(28.8f, 20), dd->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(37.425f, 20), dd->GetBaseSize());
 
     // Each choice button in the dropdown should have a positive layout size.
     for (const auto &but: dd->GetMenuPane().GetContentsPane()->GetPanes()) {

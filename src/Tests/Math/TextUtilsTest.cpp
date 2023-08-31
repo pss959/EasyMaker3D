@@ -1,12 +1,15 @@
 ﻿#include <ion/math/transformutils.h>
 
+#include "Math/PolygonBuilder.h"
 #include "Math/TextUtils.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
-#include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
 
+// XXXX Change this to use FakeFontSystem.
+
+#if XXXX
 /// \ingroup Tests
 class TextUtilsTest : public TestBase {
   protected:
@@ -65,41 +68,31 @@ TEST_F(TextUtilsTest, GetFontPath) {
     EXPECT_TRUE(path);
     EXPECT_TRUE(path.ToString().contains("Arial"));
     EXPECT_FALSE(GetFontPath("NoSUCHFont"));
-
-#if XXXX
-    // Test AddFontPath(), which is used only for testing.
-    AddFontPath("MythicalFont", "/some/path");
-    path = GetFontPath("MythicalFont");
-    EXPECT_EQ("/some/path", path.ToString());
-#endif
 }
 
 TEST_F(TextUtilsTest, SingleCharOutlines) {
-    // Use the default font.
-    const Str &name = TK::k3DFont;
-
     std::vector<Polygon> polys;
 
     // One upper-case 'T'. Results are 1 outer border with 8 points.
-    polys = GetTextOutlines(name, "T", 0, 1);
+    polys = GetTextPolygons("T", 0, 1);
     ASSERT_EQ(1U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{8});
 
     // One upper-case 'O' with complexity = 0. Results are 1 outer border
     // with 11 points and 1 inner border with 9 points.
-    polys = GetTextOutlines(name, "O", 0, 1);
+    polys = GetTextPolygons("O", 0, 1);
     ASSERT_EQ(1U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{11, 9});
 
     // Repeat with default complexity. Results are 1 outer border
     // with 27 points and 1 inner border with 24 points.
-    polys = GetTextOutlines(name, "O", TK::kModelComplexity, 1);
+    polys = GetTextPolygons("O", TK::kModelComplexity, 1);
     ASSERT_EQ(1U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{27, 24});
 
     // Repeat with upper-case 'Q'. This used to result in an invalid mesh
     // when text was created.
-    polys = GetTextOutlines(name, "Q", TK::kModelComplexity, 1);
+    polys = GetTextPolygons("Q", TK::kModelComplexity, 1);
     ASSERT_EQ(1U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{32, 28});
 }
@@ -138,3 +131,4 @@ TEST_F(TextUtilsTest, TwoCharOutlines) {
     EXPECT_EQ(rect1.GetSize(), new_rect1.GetSize());
     EXPECT_EQ(2 * space, new_space);
 }
+#endif

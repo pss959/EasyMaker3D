@@ -3,14 +3,22 @@
 #include "Panes/TextInputPane.h"
 #include "Tests/Panels/PanelTestBase.h"
 #include "Tests/Testing.h"
+#include "Tests/Util/FakeFileSystem.h"
 
 /// \ingroup Tests
 class FilePanelTest : public PanelTestBase {
   protected:
     FilePanelPtr panel;
-    explicit FilePanelTest(bool need_text = false) :
-        PanelTestBase(need_text) {
+    explicit FilePanelTest(bool need_text = false) : PanelTestBase(need_text) {
         panel = InitPanel<FilePanel>("FilePanel");
+
+        // Set up some directories in the FakeFileSystem to make the direction
+        // button enabling consistent.
+        UseRealFileSystem(false);
+        auto fs = GetFakeFileSystem();
+        fs->AddDir("/a");
+        fs->AddDir("/a/b");
+        fs->AddDir("/a/b/c");
     }
 };
 
@@ -42,18 +50,24 @@ TEST_F(FilePanelTest, Directions) {
     panel->SetInitialPath("/a/b/c");
     panel->SetIsShown(true);
 
-    ClickButtonPane("Up");
-    EXPECT_EQ("/a/b", panel->GetPath().ToString());
-    ClickButtonPane("Back");
-    EXPECT_EQ("/a/b/c", panel->GetPath().ToString());
-    ClickButtonPane("Forward");
-    EXPECT_EQ("/a/b", panel->GetPath().ToString());
-    ClickButtonPane("Home");
-    EXPECT_EQ("", panel->GetPath().ToString());
+    auto input = FindTypedPane<TextInputPane>("Input");
 
+    EXPECT_EQ("/a/b/c/", input->GetText());
+    EXPECT_TRUE(IsButtonPaneEnabled("Up"));
+    ClickButtonPane("Up");
+    EXPECT_EQ("/a/b/", input->GetText());
+    EXPECT_TRUE(IsButtonPaneEnabled("Back"));
+    ClickButtonPane("Back");
+    EXPECT_EQ("/a/b/c/", input->GetText());
+    EXPECT_TRUE(IsButtonPaneEnabled("Forward"));
+    ClickButtonPane("Forward");
+    EXPECT_EQ("/a/b/", input->GetText());
+    EXPECT_TRUE(IsButtonPaneEnabled("Home"));
+    ClickButtonPane("Home");
+    EXPECT_EQ("/home/user", input->GetText());
 }
 
-#if XXXX
+#if XXXX  // Need to add these to do something useful.
 TEST_F(FilePanelTestWithText, Change) {
     auto agent = GetContext().file_agent;
 

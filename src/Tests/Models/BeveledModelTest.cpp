@@ -123,6 +123,7 @@ TEST_F(BeveledModelTest, ScaleChanges) {
 }
 
 TEST_F(BeveledModelTest, Text) {
+    UseRealFontSystem(true);
     TextModelPtr text = Model::CreateModel<TextModel>();
     text->SetTextString("ABC");
 

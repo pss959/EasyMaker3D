@@ -19,25 +19,45 @@
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
-// Constructor and destructor.
+// Constructor, destructor, and setup.
 // ----------------------------------------------------------------------------
 
-TestBase::TestBase(const Util::Flags<Flag> &flags) {
-    if (! flags.Has(Flag::kUseRealFiles)) {
-        fake_file_system_.reset(new FakeFileSystem);
-        FilePath::InstallFileSystem(fake_file_system_);
-    }
+TestBase::TestBase() {
+    // Install a FakeFileSystem and FakeFontSystem. These can be changed later
+    // if necessary.
+    fake_file_system_.reset(new FakeFileSystem);
+    FileSystem::Install(fake_file_system_);
 
-    if (! flags.Has(Flag::kUseRealFonts)) {
-        fake_font_system_.reset(new FakeFontSystem);
-        InstallFontSystem(fake_font_system_);
-    }
+    fake_font_system_.reset(new FakeFontSystem);
+    FontSystem::Install(fake_font_system_);
 }
 
 TestBase::~TestBase() {
     // Restore real file and font systems.
-    FilePath::InstallFileSystem(std::shared_ptr<FakeFileSystem>());
-    InstallFontSystem(std::shared_ptr<FakeFontSystem>());
+    FileSystem::Install(std::shared_ptr<FakeFileSystem>());
+    FontSystem::Install(std::shared_ptr<FakeFontSystem>());
+}
+
+void TestBase::UseRealFileSystem(bool b) {
+    FileSystem::Install(b ? FileSystemPtr() : fake_file_system_);
+}
+
+void TestBase::UseRealFontSystem(bool b) {
+    FontSystem::Install(b ? FontSystemPtr() : fake_font_system_);
+}
+
+std::shared_ptr<FakeFileSystem> TestBase::GetFakeFileSystem() {
+    auto fs = std::dynamic_pointer_cast<FakeFileSystem>(
+        FileSystem::GetInstalled());
+    ASSERTM(fs, "FakeFileSystem is not installed");
+    return fs;
+}
+
+std::shared_ptr<FakeFontSystem> TestBase::GetFakeFontSystem() {
+    auto fs = std::dynamic_pointer_cast<FakeFontSystem>(
+        FontSystem::GetInstalled());
+    ASSERTM(fs, "FakeFontSystem is not installed");
+    return fs;
 }
 
 // ----------------------------------------------------------------------------

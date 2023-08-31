@@ -19,6 +19,10 @@ class SceneTestBase : public TestBaseWithTypes {
     /// since this value is used in lots of tests.
     static const float MS;
 
+    /// The constructor uses a real FileSystem by default so that reading scene
+    /// files works properly. This can be overridden when necessary.
+    SceneTestBase() { UseRealFileSystem(true); }
+
     /// The destructor resets any static state.
     virtual ~SceneTestBase();
 
@@ -31,7 +35,6 @@ class SceneTestBase : public TestBaseWithTypes {
     /// root node (between the curly braces), building the rest of the Scene
     /// around it first.
     SG::ScenePtr BuildAndReadScene(const Str &contents, bool set_up_ion = true);
-
 
     /// Calls ReadScene() for "RealScene.emd" after inserting the given
     /// contents within the root node. Calls SetUpIon() on the results.

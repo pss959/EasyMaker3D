@@ -8,7 +8,6 @@
 #include "Math/MeshUtils.h"
 #include "Math/Polygon.h"
 #include "Math/Profile.h"
-#include "Math/TextUtils.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
@@ -206,14 +205,4 @@ TEST_F(MeshBuildingTest, ExtrudedWithHole) {
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 5, 0),     bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(6, 10, 10), bounds.GetSize());
-}
-
-TEST_F(MeshBuildingTest, ExtrudedText) {
-    std::cerr << "XXXX Need to use FakeFontSystem here\n";
-#if XXXX
-    std::vector<Polygon> polys = GetTextOutlines(TK::k3DFont, "A", 0, 1);
-    EXPECT_EQ(1U, polys.size());
-    const TriMesh mesh = BuildExtrudedMesh(polys[0], 10);
-    EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
-#endif
 }

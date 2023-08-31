@@ -252,3 +252,12 @@ void PolygonBuilder::AddPolygons(std::vector<Polygon> &polys,
                                  float complexity) {
     impl_->AddPolygons(polys, complexity);
 }
+
+FontSystem::OutlineFuncs PolygonBuilder::SetUpForText() {
+    FontSystem::OutlineFuncs funcs;
+    funcs.begin_outline_func = [&](size_t nc){ BeginOutline(nc); };
+    funcs.begin_border_func  = [&](size_t np){ BeginBorder(np);  };
+    funcs.add_point_func     = [&](float x, float y, bool is_on_curve){
+        AddPoint(Point2f(x, y), is_on_curve); };
+    return funcs;
+}

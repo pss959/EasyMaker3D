@@ -2,6 +2,7 @@
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
+#include "Util/Tuning.h"
 
 /// \ingroup Tests
 class ChangeTextCommandTest : public CommandTestBase {
@@ -21,10 +22,10 @@ TEST_F(ChangeTextCommandTest, Set) {
     UnitTestTypeChanger uttc(Util::AppType::kInteractive);
     auto ctc = Command::CreateCommand<ChangeTextCommand>();
     ctc->SetNewTextString("Hi there!");
-    ctc->SetNewFontName("FontA");
+    ctc->SetNewFontName(TK::k3DFont);
     ctc->SetNewCharSpacing(2.1f);
     EXPECT_EQ("Hi there!", ctc->GetNewTextString());
-    EXPECT_EQ("FontA",     ctc->GetNewFontName());
+    EXPECT_EQ(TK::k3DFont, ctc->GetNewFontName());
     EXPECT_EQ(2.1f,        ctc->GetNewCharSpacing());
 }
 

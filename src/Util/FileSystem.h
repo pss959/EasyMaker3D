@@ -1,8 +1,12 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 
 #include "Util/UTime.h"
+
+class FileSystem;
+typedef std::shared_ptr<FileSystem> FileSystemPtr;
 
 /// Wrappers around file system utilities. Most of these functions are virtual
 /// to allow derived classes to redefine them for testing.
@@ -11,6 +15,15 @@
 class FileSystem {
   public:
     using Path = std::filesystem::path;
+
+    /// Sets a FileSystem instance to use for all file-system-related
+    /// functions. This allows a derived version to be installed for testing.
+    /// An instance of the base FileSystem class is installed by default. A
+    /// null pointer results in the original FileSystem being reinstalled.
+    static void Install(const FileSystemPtr &fs);
+
+    /// Returns the current FileSystem instance.
+    static FileSystemPtr GetInstalled();
 
     /// Converts a path to a string native to the operating system. This should
     /// be used when a path is to be used to open a file for reading or
@@ -70,6 +83,12 @@ class FileSystem {
     virtual Str GetSeparator() const;
 
   private:
+    /// Real FileSystem instance.
+    static FileSystemPtr real_file_system_;
+
+    /// Currently-installed FileSystem instance.
+    static FileSystemPtr cur_file_system_;
+
     /// OS-dependent access to environment variables.
     static Str GetEnvVar_(const Str &name);
 };

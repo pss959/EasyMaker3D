@@ -38,7 +38,9 @@ TEST_F(TextModelTest, IsValid) {
 }
 
 TEST_F(TextModelTest, Mesh) {
-    // Need a real set-up TextModel for GetMesh() to work.
+    // Need the real FontSystem and a real set-up TextModel for GetMesh() to
+    // work.
+    UseRealFontSystem(true);
     auto text = ReadRealNode<TextModel>(
         R"(children: [ TextModel "TestText" { text: "HI" } ])", "TestText");
 

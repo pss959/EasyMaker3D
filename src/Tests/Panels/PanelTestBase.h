@@ -110,8 +110,6 @@ class PanelTestBase : public SceneTestBase {
     /// Returns the currently-open Panel.
     PanelPtr GetCurrentPanel();
 
-    ///@}
-
   private:
     DECL_SHARED_PTR(TestBoardAgent);
     DECL_SHARED_PTR(TestSettingsAgent);

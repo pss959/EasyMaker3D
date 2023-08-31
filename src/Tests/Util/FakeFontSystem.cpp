@@ -1,12 +1,22 @@
 #include "Tests/Util/FakeFontSystem.h"
 
+#include "Util/General.h"
+
 StrVec FakeFontSystem::GetAvailableFontNames() const {
-    return StrVec{ "FontA", "FontB", "FontC" };
+    // This should to be kept in sync with resources/fonts if it ever changes.
+    return StrVec{
+        "Arial-Bold",
+        "Arial-Regular",
+        "DejaVu Sans Mono-Book",
+        "Verdana-Bold",
+        "Verdana-Bold-Italic",
+        "Verdana-Italic",
+        "Verdana-Regular",
+    };
 }
 
 bool FakeFontSystem::IsValidFontName(const Str &font_name) const {
-    return font_name == "FontA" || font_name == "FontB" ||
-        font_name == "FontC";
+    return Util::Contains(GetAvailableFontNames(), font_name);
 }
 
 bool FakeFontSystem::IsValidStringForFont(const Str &font_name, const Str &str,
@@ -21,8 +31,9 @@ bool FakeFontSystem::IsValidStringForFont(const Str &font_name, const Str &str,
         return false;
     }
 
-    const Str letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    if (str.find_first_not_of(letters) != std::string::npos) {
+    const Str valid =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+    if (str.find_first_not_of(valid) != std::string::npos) {
         reason = "Invalid character";
         return false;
     }
@@ -30,13 +41,10 @@ bool FakeFontSystem::IsValidStringForFont(const Str &font_name, const Str &str,
     return true;
 }
 
-FilePath FakeFontSystem::GetFontPath(const Str &font_name) const {
-    return IsValidFontName(font_name) ?
-        FilePath("/fonts/" + font_name + ".ttf") : FilePath();
-}
-
+#include "Util/Assert.h" // XXXX
 void FakeFontSystem::GetTextOutlines(const Str &font_name, const Str &text,
                                      float char_spacing,
                                      const OutlineFuncs &funcs) const {
     // XXXX
+    ASSERTM(false, "FakeFontSystem::GetTextOutlines() called");
 }

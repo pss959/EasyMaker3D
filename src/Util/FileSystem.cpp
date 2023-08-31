@@ -9,8 +9,18 @@
 #include <ion/port/environment.h>
 
 #include "Util/Assert.h"
-#include "Util/General.h"
 #include "Util/String.h"
+
+FileSystemPtr FileSystem::real_file_system_(new FileSystem);
+FileSystemPtr FileSystem::cur_file_system_ = real_file_system_;
+
+void FileSystem::Install(const FileSystemPtr &fs) {
+    cur_file_system_ = fs ? fs : real_file_system_;
+}
+
+FileSystemPtr FileSystem::GetInstalled() {
+    return cur_file_system_;
+}
 
 Str FileSystem::ToNativeString(const Path &path) const {
 #ifdef ION_PLATFORM_WINDOWS
@@ -134,8 +144,6 @@ Str FileSystem::GetSeparator() const {
 }
 
 Str FileSystem::GetEnvVar_(const Str &name) {
-    // This should not be used in unit tests.
-    ASSERT(Util::app_type != Util::AppType::kInteractive);
     return ion::port::GetEnvironmentVariableValue(name);
 }
 // LCOV_EXCL_STOP

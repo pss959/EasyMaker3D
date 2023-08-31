@@ -14,15 +14,6 @@ class FileSystem;
 /// \ingroup Utility
 class FilePath : private std::filesystem::path {
   public:
-    /// Sets a FileSystem instance to use for all file-system-related
-    /// functions. This allows a derived version to be installed for testing.
-    /// An instance of the base FileSystem class is installed by default. A
-    /// null pointer results in the original FileSystem being reinstalled.
-    static void InstallFileSystem(const std::shared_ptr<FileSystem> &fs);
-
-    /// Returns the current FileSystem instance.
-    static const std::shared_ptr<FileSystem> GetInstalledFileSystem();
-
     FilePath() {}
 
     /// Constructor from a string.
@@ -166,11 +157,8 @@ class FilePath : private std::filesystem::path {
   private:
     using FSPath_ = std::filesystem::path;
 
-    /// Real FileSystem instance.
-    static std::shared_ptr<FileSystem> real_file_system_;
-
-    /// Current FileSystem instance used to handle file-system-related functions.
-    static std::shared_ptr<FileSystem> cur_file_system_;
+    /// Shortcut to get the current FileSystem instance.
+    static FileSystem & GetFS_();
 
     /// Creates a FilePath from an std::filesystem::path.
     static FilePath FromFSPath_(const FSPath_ &fs_path);
