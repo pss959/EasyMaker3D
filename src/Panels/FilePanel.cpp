@@ -348,7 +348,9 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     // Cannot have both a subdir and file highlighted.
     ASSERT(hl_subdir_index < 0 || hl_file_index < 0);
     highlighted_index_ = hl_subdir_index >= 0 ? hl_subdir_index :
+        // LCOV_EXCL_START [gcovr bug]
         hl_file_index >= 0 ? subdirs.size() + hl_file_index : -1;
+        // LCOV_EXCL_STOP
 
     // Install the buttons.
     ASSERT(file_list_pane_->GetContentsPane());
@@ -454,16 +456,24 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
 
     // Allow the Impl_ to set the focused Pane, which requires calling the
     // protected SetFocus() function.
-    auto focus_func = [&](const PanePtr &pane) { SetFocus(pane); };
+    auto focus_func = [&](const PanePtr &pane){
+        // First update the size of the FilePanel. This will ensure that its
+        // size is correct and any new buttons are installed properly before
+        // trying to focus them.
+        UpdateSize();
+        SetFocus(pane);
+    };
     impl_->SetFocusFunc(focus_func);
 }
 
 FilePanel::~FilePanel() {
 }
 
+// LCOV_EXCL_START [snaps only]
 void FilePanel::SetFilePathList(FilePathList *list) {
     impl_->SetFilePathList(list);
 }
+// LCOV_EXCL_STOP
 
 void FilePanel::Reset() {
     impl_->Reset();

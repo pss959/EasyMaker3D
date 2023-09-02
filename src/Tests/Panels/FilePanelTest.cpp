@@ -1,3 +1,4 @@
+#include "Base/Event.h"
 #include "Enums/FileFormat.h"
 #include "Panels/FilePanel.h"
 #include "Panes/TextInputPane.h"
@@ -19,7 +20,10 @@ class FilePanelTest : public PanelTestBase {
         fs->AddDir("/a");
         fs->AddDir("/a/b");
         fs->AddDir("/a/b/c");
+        fs->AddFile("/a/b/c/d.jpg");
+        fs->AddFile("/a/b/c/d.stl");
     }
+    ~FilePanelTest() {}
 };
 
 TEST_F(FilePanelTest, Defaults) {
@@ -29,7 +33,7 @@ TEST_F(FilePanelTest, Defaults) {
 TEST_F(FilePanelTest, Show) {
     panel->SetTitle("A Title");
     panel->SetTargetType(FilePanel::TargetType::kDirectory);
-    panel->SetInitialPath("/a/b/c");
+    panel->SetInitialPath("/a/b");
     panel->SetFileFormats(std::vector<FileFormat>{
             FileFormat::kTextSTL, FileFormat::kBinarySTL });
     panel->SetExtension(".stl");
@@ -38,6 +42,25 @@ TEST_F(FilePanelTest, Show) {
     EXPECT_FALSE(panel->IsShown());
     panel->SetIsShown(true);
     EXPECT_TRUE(panel->IsShown());
+
+    // Resize to make sure focus stays put.
+    const auto fp = panel->GetFocusedPane();
+    EXPECT_NOT_NULL(fp);
+    panel->SetSize(panel->GetSize() + Vector2f(10, 0));
+    EXPECT_EQ(fp, panel->GetFocusedPane());
+}
+
+TEST_F(FilePanelTest, Scroll) {
+    panel->SetInitialPath("/a/b/c");
+    panel->SetIsShown(true);
+
+    Event event;
+    event.device = Event::Device::kMouse;
+    EXPECT_FALSE(panel->HandleEvent(event));
+
+    event.flags.Set(Event::Flag::kPosition1D);
+    event.position1D = -1;
+    EXPECT_TRUE(panel->HandleEvent(event));
 }
 
 TEST_F(FilePanelTest, Directions) {
@@ -56,128 +79,109 @@ TEST_F(FilePanelTest, Directions) {
     EXPECT_TRUE(IsButtonPaneEnabled("Forward"));
     ClickButtonPane("Forward");
     EXPECT_EQ("/a/b/", input->GetText());
+
+    // Click on a directory buttons.
+    ClickButtonPane("Dir_0");
+    EXPECT_EQ("/a/b/c/", input->GetText());
+
     EXPECT_TRUE(IsButtonPaneEnabled("Home"));
     ClickButtonPane("Home");
     EXPECT_EQ("/home/user", input->GetText());
 }
 
-#if XXXX  // Need to add these to do something useful.
-TEST_F(FilePanelTest, Change) {
-    auto agent = GetContext().file_agent;
+TEST_F(FilePanelTest, ChooseDirectory) {
+    panel->SetTitle("Title");
+    panel->SetTargetType(FilePanel::TargetType::kDirectory);
+    panel->SetInitialPath("/a/b/c");
+    panel->SetHighlightPath("/a/b/c", "ANNOTATION");
 
-    // Use default file.
-    const FilePtr def_file = File::CreateDefault();
-    agent->SetFile(*def_file);
-
-    panel->SetIsShown(true);
-
-    // Switch to an invalid directory.
-    EXPECT_FALSE(IsButtonPaneEnabled("DefaultSessionDir"));
-    EXPECT_FALSE(IsButtonPaneEnabled("CurrentSessionDir"));
-    auto input = SetTextInput("SessionDir", "/bad/dir");
-    EXPECT_EQ("/bad/dir", input->GetText());
-    EXPECT_FALSE(input->IsTextValid());
-    EXPECT_TRUE(IsButtonPaneEnabled("DefaultSessionDir"));
-    EXPECT_TRUE(IsButtonPaneEnabled("CurrentSessionDir"));
-
-    // Restore to current value (same as default).
-    ClickButtonPane("CurrentSessionDir");
-    EXPECT_EQ(def_file->GetSessionDirectory(), input->GetText());
-    EXPECT_FALSE(IsButtonPaneEnabled("DefaultSessionDir"));
-    EXPECT_FALSE(IsButtonPaneEnabled("CurrentSessionDir"));
-
-    // Repeat using Default button.
-    input = SetTextInput("ExportDir", "/another/bad/dir");
-    EXPECT_EQ("/another/bad/dir", input->GetText());
-    EXPECT_FALSE(input->IsTextValid());
-    EXPECT_TRUE(IsButtonPaneEnabled("DefaultExportDir"));
-    EXPECT_TRUE(IsButtonPaneEnabled("CurrentExportDir"));
-    ClickButtonPane("DefaultExportDir");
-    EXPECT_EQ(def_file->GetExportDirectory(), input->GetText());
-    EXPECT_FALSE(IsButtonPaneEnabled("DefaultExportDir"));
-    EXPECT_FALSE(IsButtonPaneEnabled("CurrentExportDir"));
-
-
-    // Try an invalid build volume size.
-    input = SetTextInput("BuildVolumeDepth", "xx");
-    EXPECT_FALSE(input->IsTextValid());
-    input = SetTextInput("BuildVolumeDepth", "21");
-    EXPECT_TRUE(input->IsTextValid());
-
-    // Change a dropdown and build volume size and accept changes.
-    auto dd = ChangeDropdownChoice("ExportTo", "Feet");
-    EXPECT_TRUE(IsButtonPaneEnabled("DefaultExportConversion"));
-    EXPECT_TRUE(IsButtonPaneEnabled("CurrentExportConversion"));
-    input = SetTextInput("BuildVolumeDepth", "13");
-    ClickButtonPane("Accept");
-    EXPECT_ENUM_EQ(
-        UnitConversion::Units::kFeet,
-        agent->GetFile().GetExportUnitsConversion().GetToUnits());
-    EXPECT_EQ(13, agent->GetFile().GetBuildVolumeSize()[1]);
-}
-
-TEST_F(FilePanelTest, OpenFilePanel) {
-    auto agent = GetContext().file_agent;
-
-    // Use default file.
-    const FilePtr def_file = File::CreateDefault();
-    agent->SetFile(*def_file);
-
-    panel->SetIsShown(true);
-
-    ClickButtonPane("ChooseImportDir");
-
-    // The FilePanel should be hidden and the FilePanel should be shown.
     EXPECT_FALSE(panel->IsShown());
-    auto file_panel = GetCurrentPanel();
-    EXPECT_EQ("FilePanel", file_panel->GetTypeName());
-    EXPECT_TRUE(file_panel->IsShown());
+    panel->SetIsShown(true);
+    EXPECT_TRUE(panel->IsShown());
 
-    // Change the path to the parent directory and Accept the FilePanel. This
-    // should close it with result "Accept" and reopen the FilePanel.
+    // Change the path to the parent directory and Accept the FilePanel.
     ClickButtonPane("Up");
     ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
-    EXPECT_FALSE(file_panel->IsShown());
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_FALSE(panel->IsShown());
 
-    // Clicking the Accept button in the FilePanel should change the stored
-    // file.
-    ClickButtonPane("Accept");
-    EXPECT_EQ(def_file->GetImportDirectory().GetParentDirectory(),
-              agent->GetFile().GetImportDirectory());
+    // Test the results.
+    EXPECT_EQ("/a/b", panel->GetPath().ToString());
 }
 
-TEST_F(FilePanelTest, OpenRadialMenuPanel) {
-    auto agent = GetContext().file_agent;
+TEST_F(FilePanelTest, ChooseNewFile) {
+    panel->SetTitle("Title");
+    panel->SetTargetType(FilePanel::TargetType::kNewFile);
+    panel->SetInitialPath("/a/b/c");
+    panel->SetFileFormats(std::vector<FileFormat>{
+            FileFormat::kTextSTL, FileFormat::kBinarySTL });
+    panel->SetExtension(".stl");
+    panel->SetHighlightPath("/a/b/c", "ANNOTATION");
 
-    // Use default file.
-    const FilePtr def_file = File::CreateDefault();
-    agent->SetFile(*def_file);
-
-    panel->SetIsShown(true);
-
-    ClickButtonPane("EditRadialMenus");
-
-    // The FilePanel should be hidden and the RadialMenuPanel should be
-    // shown.
     EXPECT_FALSE(panel->IsShown());
-    auto menu_panel = GetCurrentPanel();
-    EXPECT_EQ("RadialMenuPanel", menu_panel->GetTypeName());
-    EXPECT_TRUE(menu_panel->IsShown());
+    panel->SetIsShown(true);
+    EXPECT_TRUE(panel->IsShown());
 
-    // Change the mode and Accept the RadialMenuPanel. This should close it
-    // with result "Accept" and reopen the FilePanel.
-    ActivateRadioButtonPane("Mode3");
+    // Change the format dropdown.
+    ChangeDropdownChoice("Format", "Binary STL");
+
+    // Cannot accept a directory.
+    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
+
+    // Enter a file name with the wrong extension. Should be acceptable.
+    SetTextInput("Input", "/a/b/c/test.jpg");
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+
+    // Enter a file name with the correct extension. Should be acceptable.
+    SetTextInput("Input", "/a/b/c/test.stl");
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+
+    // Enter a file name with no extension. Should be acceptable.
+    SetTextInput("Input", "/a/b/c/test");
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+
+    // Accept it and test the results.
     ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
-    EXPECT_FALSE(menu_panel->IsShown());
+    EXPECT_FALSE(panel->IsShown());
+    EXPECT_EQ("/a/b/c/test.stl",      panel->GetPath().ToString());
+    EXPECT_EQ(FileFormat::kBinarySTL, panel->GetFileFormat());
+}
+
+TEST_F(FilePanelTest, ChooseExistingFile) {
+    panel->SetTitle("Title");
+    panel->SetTargetType(FilePanel::TargetType::kExistingFile);
+    panel->SetInitialPath("/a/b/c");
+    panel->SetFileFormats(std::vector<FileFormat>{
+            FileFormat::kTextSTL, FileFormat::kBinarySTL });
+    panel->SetExtension(".stl");
+    panel->SetHighlightPath("/a/b/c", "ANNOTATION");
+
+    EXPECT_FALSE(panel->IsShown());
+    panel->SetIsShown(true);
     EXPECT_TRUE(panel->IsShown());
 
-    // Clicking the Accept button in the FilePanel should change the stored
-    // file.
+    // Cannot accept a directory.
+    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
+
+    // Enter a file name with no extension. Should not be acceptable.
+    SetTextInput("Input", "/a/b/c/test");
+    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
+
+    // Enter an existing file name with the wrong extension. Should be
+    // acceptable.
+    SetTextInput("Input", "/a/b/c/d.jpg");
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+
+    // Enter an existing file name with the correct extension. Should be
+    // acceptable.
+    SetTextInput("Input", "/a/b/c/d.stl");
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+
+    // Accept it and test the results.
     ClickButtonPane("Accept");
-    EXPECT_ENUM_EQ(RadialMenusMode::kIndependent,
-                   agent->GetFile().GetRadialMenusMode());
+    EXPECT_EQ("Accept", GetCloseResult());
+    EXPECT_FALSE(panel->IsShown());
+    EXPECT_EQ("/a/b/c/d.stl",     panel->GetPath().ToString());
+    EXPECT_EQ(FileFormat::kTextSTL,  panel->GetFileFormat());
 }
-#endif

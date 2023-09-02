@@ -12,7 +12,7 @@ bool SessionTestBase::LoadSession(const Str &file_name) {
     ASSERT(context.session_manager);
     const FilePath path = FilePath::Join(
         FilePath::Join(FilePath::GetTestDataPath(), "Sessions"),
-        file_name + TK::kSessionFileSuffix);
+        file_name + TK::kSessionFileExtension);
     Str error;
     EXPECT_TRUE(context.session_manager->LoadSession(path, error)) << error;
     return error.empty();

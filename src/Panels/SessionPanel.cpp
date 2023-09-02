@@ -10,7 +10,7 @@
 #include "Util/Tuning.h"
 
 void SessionPanel::InitInterface() {
-    suffix_ = TK::kSessionFileSuffix;
+    extension_ = TK::kSessionFileExtension;
 
     AddButtonFunc("Help",     [this](){ OpenHelp_();         });
     AddButtonFunc("Settings", [this](){ OpenSettings_();     });
@@ -126,10 +126,10 @@ void SessionPanel::LoadSession_() {
     auto fp = GetTypedPanel<FilePanel>("FilePanel");
     const auto &settings = GetSettings();
     fp->Reset();
-    fp->SetTitle("Select a session file (" + suffix_ + ") to load");
+    fp->SetTitle("Select a session file (" + extension_ + ") to load");
     fp->SetInitialPath(settings.GetSessionDirectory());
     fp->SetTargetType(FilePanel::TargetType::kExistingFile);
-    fp->SetExtension(suffix_);
+    fp->SetExtension(extension_);
     fp->SetHighlightPath(settings.GetLastSessionPath(), " [CURRENT SESSION]");
 
     auto result_func = [&, fp](const Str &result){
@@ -169,10 +169,10 @@ void SessionPanel::SaveSession_(bool use_current_file) {
         auto fp = GetTypedPanel<FilePanel>("FilePanel");
         const auto &settings = GetSettings();
         fp->Reset();
-        fp->SetTitle("Enter a session file (" + suffix_ + ") to save to");
+        fp->SetTitle("Enter a session file (" + extension_ + ") to save to");
         fp->SetInitialPath(settings.GetSessionDirectory());
         fp->SetTargetType(FilePanel::TargetType::kNewFile);
-        fp->SetExtension(suffix_);
+        fp->SetExtension(extension_);
         fp->SetHighlightPath(settings.GetLastSessionPath(),
                             " [CURRENT SESSION]");
 

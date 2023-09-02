@@ -33,11 +33,11 @@ extern const Str  kApplicationName;
 /// Copyright string.
 extern const Str  kCopyright;
 
-/// Suffix to use for data (node/scene/etc) files (including the dot).
-extern const Str  kDataFileSuffix;
+/// Extension to use for data (node/scene/etc) files.
+extern const Str  kDataFileExtension;
 
-/// Suffix to use for session files (including the dot).
-extern const Str  kSessionFileSuffix;
+/// Extension to use for session files.
+extern const Str  kSessionFileExtension;
 
 /// Application version as a string.
 extern const Str  kVersionString;

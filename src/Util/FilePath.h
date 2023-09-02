@@ -63,7 +63,8 @@ class FilePath : private std::filesystem::path {
     /// dot), if any.
     Str GetExtension() const;
 
-    /// Adds the given extension (not including the dot) to the path.
+    /// Adds the given extension (which should start with a dot) to the
+    /// path. If the extension is already there, this does nothing.
     void AddExtension(const Str &extension);
 
     /// If this FilePath is relative, this appends it after the given base path

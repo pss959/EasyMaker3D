@@ -246,7 +246,16 @@ PanelTestBase::PanelTestBase() {
     test_context_->virtual_keyboard.reset(new VirtualKeyboard);
 }
 
-PanelTestBase::~PanelTestBase() {}
+PanelTestBase::~PanelTestBase() {
+    // Reset pointers so instances are freed up. (There are some circular
+    // dependencies.)
+    test_context_->board_agent.reset();
+    test_context_->name_agent.reset();
+    test_context_->settings_agent.reset();
+    test_context_.reset();
+    test_board_agent_.reset();
+    test_settings_agent_.reset();
+}
 
 void PanelTestBase::SetPanelDebugFlag(bool b) {
     test_board_agent_->debug_panels = true;

@@ -33,8 +33,8 @@ class SessionPanel : public Panel {
         kExport,
     };
 
-    /// Stores the session file suffix for convenience.
-    Str suffix_;
+    /// Stores the session file extension for convenience.
+    Str extension_;
 
     void OpenHelp_();
     void OpenSettings_();

@@ -87,10 +87,10 @@ TEST_F(ReadTest, ReadBadImage) {
 
 TEST_F(ReadTest, ReadShape) {
     // Read a shape in each supported format.
-    const StrVec extensions{ "3ds", "dae", "lwo", "obj", "off" };
+    const StrVec extensions{ ".3ds", ".dae", ".lwo", ".obj", ".off" };
     for (const auto &ext: extensions) {
         auto read_it = [&](bool use_normals, bool use_tex_coords){
-            auto shape = Util::ReadShape(GetDataPath("Shapes/shape." + ext),
+            auto shape = Util::ReadShape(GetDataPath("Shapes/shape" + ext),
                                          use_normals, use_tex_coords);
             EXPECT_NOT_NULL(shape.Get());
         };

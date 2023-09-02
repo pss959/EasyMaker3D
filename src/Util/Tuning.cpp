@@ -11,13 +11,13 @@ static Str FixString_(const Str &s) {
 }
 
 // Application Settings (values passed in from SCons)
-const Str kApplicationName   = FixString_(APP_NAME);
-const Str kCopyright         = FixString_(COPYRIGHT);
-const Str kDataFileSuffix    = FixString_(DATA_SUFFIX);
-const Str kSessionFileSuffix = FixString_(SESSION_SUFFIX);
-const Str kVersionString     = FixString_(VERSION_STRING);
-const Str kPublicDocBaseURL  = FixString_(PUBLIC_DOC_BASE_URL);
-const Str kGithubURL         = FixString_(GITHUB_URL);
+const Str kApplicationName      = FixString_(APP_NAME);
+const Str kCopyright            = FixString_(COPYRIGHT);
+const Str kDataFileExtension    = FixString_(DATA_EXTENSION);
+const Str kSessionFileExtension = FixString_(SESSION_EXTENSION);
+const Str kVersionString        = FixString_(VERSION_STRING);
+const Str kPublicDocBaseURL     = FixString_(PUBLIC_DOC_BASE_URL);
+const Str kGithubURL            = FixString_(GITHUB_URL);
 
 // Save Ion data except in release mode.
 #if ENABLE_DEBUG_FEATURES

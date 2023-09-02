@@ -386,8 +386,8 @@ bool Application::Impl_::Init(const Application::Options &options) {
     // Make sure the scene loads properly and has all of the necessary items
     // (in the SceneContext) before doing anything else.
     SC_.reset(new SceneContext);
-    const FilePath scene_path =
-        FilePath::GetResourcePath("scenes", "workshop" + TK::kDataFileSuffix);
+    const FilePath scene_path = FilePath::GetResourcePath(
+        "scenes", "workshop" + TK::kDataFileExtension);
     SG::ScenePtr scene = loader_->LoadScene(scene_path);
     if (! scene) {
 #if RELEASE_BUILD

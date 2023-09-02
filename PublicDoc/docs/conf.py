@@ -8,11 +8,11 @@ from os      import environ
 from os.path import abspath
 from sys     import path as sys_path
 
-project = environ.get('PROJECT',   '<Unknown Project>')
-version = environ.get('VERSION',   '<Unknown Version>')
-suffix  = environ.get('SUFFIX',    '<Unknown Suffix>')  # For session files.
-copyrt  = environ.get('COPYRIGHT', '<Unknown Copyright>')
-release = version
+project   = environ.get('PROJECT',   '<Unknown Project>')
+version   = environ.get('VERSION',   '<Unknown Version>')
+extension = environ.get('EXTENSION', '<Unknown Extension>') # For session files.
+copyrt    = environ.get('COPYRIGHT', '<Unknown Copyright>')
+release   = version
 
 # External links.
 download_site = (
@@ -52,9 +52,9 @@ exclude_patterns = [
 # configuration subsitutions here first and include the init file that sets up
 # roles and substitutions.
 rst_prolog = f"""
-.. |project| replace:: {project}
-.. |version| replace:: {release}
-.. |suffix|  replace:: {suffix}
+.. |project|   replace:: {project}
+.. |version|   replace:: {release}
+.. |extension| replace:: {extension}
 .. _download_site: {download_site}
 .. include:: /init.rst
 """

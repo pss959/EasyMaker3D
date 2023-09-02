@@ -125,11 +125,24 @@ TEST_F(FilePathTest, GetExtension) {
 }
 
 TEST_F(FilePathTest, AddExtension) {
-    FilePath p = "/abc/def/ghi";
-    p.AddExtension(".qrs");
-    EXPECT_EQ(".qrs", p.GetExtension());
-    p.AddExtension("tuv");
-    EXPECT_EQ(".tuv", p.GetExtension());
+    FilePath p = "/abc/def/ghi.qrs";
+    p.AddExtension(".qrs");  // Should do nothing.
+    EXPECT_EQ("/abc/def/ghi.qrs",     p.ToString());
+    EXPECT_EQ(".qrs",                 p.GetExtension());
+
+    p = "/abc/def/ghi...";
+    p.AddExtension(".qrs");  // Should remove trailing dots first.
+    EXPECT_EQ("/abc/def/ghi.qrs",     p.ToString());
+    EXPECT_EQ(".qrs",                 p.GetExtension());
+
+    p.AddExtension(".tuv");  // Should append.
+    EXPECT_EQ("/abc/def/ghi.qrs.tuv", p.ToString());
+    EXPECT_EQ(".tuv",                 p.GetExtension());
+
+    // Bad extensions.
+    TEST_THROW(p.AddExtension(""),    AssertException, "extension");
+    TEST_THROW(p.AddExtension("."),   AssertException, "extension");
+    TEST_THROW(p.AddExtension("foo"), AssertException, "extension");
 }
 
 TEST_F(FilePathTest, AppendRelative) {

@@ -62,7 +62,7 @@ const FilePath & FilePathList::AddPath(const FilePath &path) {
     return GetCurrent();
 }
 
-// LCOV_EXCL_START
+// XXXX  TEST THESE!
 void FilePathList::GetContents(StrVec &subdirs, StrVec &files,
                                const Str &extension,
                                bool include_hidden) const {
@@ -92,6 +92,7 @@ FilePath FilePathList::MakeAbsolute_(const FilePath &path) {
     return FilePath::Join(dir, path);
 }
 
+// LCOV_EXCL_START
 void FilePathList::Dump() {
     for (size_t i = 0; i < paths_.size(); ++i)
         std::cout << "[" << i << "] " << paths_[i].ToString()

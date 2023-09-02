@@ -10,8 +10,8 @@ app_name = 'EasyMaker3D'
 app_dict = {
     'APP_NAME'            : app_name,
     'COPYRIGHT'           : '2021-2023 Paul S. Strauss',
-    'DATA_SUFFIX'         : '.emd',
-    'SESSION_SUFFIX'      : '.ems',
+    'DATA_EXTENSION'      : '.emd',
+    'SESSION_EXTENSION'   : '.ems',
     'VERSION_STRING'      : version_string,
     'PUBLIC_DOC_BASE_URL' : f'https://pss959.github.io/{app_name}',
     'GITHUB_URL'          : f'https://github.com/pss959/{app_name}',

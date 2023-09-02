@@ -109,9 +109,9 @@ Certain other program state (such as whether :ref:`targets <ug-targets>` and
 session and will be restored when a session is loaded.
 
 The name of the current session file, if any, is displayed at the top of the
-:ref:`Tree Panel <ug-tree-panel>` (without the "|suffix|" suffix). The name is
-followed by :ref:`a string indicating whether the scene or settings have been
-modified <ug-session-name>`.
+:ref:`Tree Panel <ug-tree-panel>` (without the "|extension|" extension). The
+name is followed by :ref:`a string indicating whether the scene or settings
+have been modified <ug-session-name>`.
 
 .. _ug-coordinate-system:
 .. _ug-dimension-colors:

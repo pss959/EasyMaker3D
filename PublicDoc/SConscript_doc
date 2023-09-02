@@ -84,7 +84,7 @@ env.Append(
     ENV = {
         'PROJECT'   : app_dict['APP_NAME'],
         'VERSION'   : app_dict['VERSION_STRING'],
-        'SUFFIX'    : app_dict['SESSION_SUFFIX'],
+        'EXTENSION' : app_dict['SESSION_EXTENSION'],
         'COPYRIGHT' : app_dict['COPYRIGHT'],
         'BASE_URL'  : app_dict['PUBLIC_DOC_BASE_URL'],
     },

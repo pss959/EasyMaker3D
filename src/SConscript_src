@@ -55,8 +55,8 @@ def BuildObject_(env, source):
         defs += [
             ('APP_NAME',            QuoteDictDef_('APP_NAME')),
             ('COPYRIGHT',           QuoteDictDef_('COPYRIGHT')),
-            ('DATA_SUFFIX',         QuoteDictDef_('DATA_SUFFIX')),
-            ('SESSION_SUFFIX',      QuoteDictDef_('SESSION_SUFFIX')),
+            ('DATA_EXTENSION',      QuoteDictDef_('DATA_EXTENSION')),
+            ('SESSION_EXTENSION',   QuoteDictDef_('SESSION_EXTENSION')),
             ('VERSION_STRING',      QuoteDictDef_('VERSION_STRING')),
             ('PUBLIC_DOC_BASE_URL', QuoteDictDef_('PUBLIC_DOC_BASE_URL')),
             ('GITHUB_URL',          QuoteDictDef_('GITHUB_URL')),

@@ -160,8 +160,8 @@ Application_::~Application_() {
 }
 
 bool Application_::InitScene() {
-    const FilePath scene_path =
-        FilePath::GetResourcePath("scenes", "nodeviewer" + TK::kDataFileSuffix);
+    const FilePath scene_path = FilePath::GetResourcePath(
+        "scenes", "nodeviewer" + TK::kDataFileExtension);
     scene_ = loader_.LoadScene(scene_path);
     if (! scene_)
         return false;

@@ -53,7 +53,15 @@ Str FilePath::GetExtension() const {
 }
 
 void FilePath::AddExtension(const Str &extension) {
-    replace_extension(extension);
+    ASSERT(extension.starts_with('.') && extension.size() > 1U);
+    Str s = ToString();
+    // If the extension is already present, do nothing.
+    if (! s.ends_with(extension)) {
+        // Remove any trailing dots and slashes
+        while (s.ends_with('.') || s.ends_with('/'))
+            s.resize(s.size() - 1);
+        *this = FromFSPath_(s + extension);
+    }
 }
 
 FilePath FilePath::AppendRelative(const FilePath &base_path) const {
