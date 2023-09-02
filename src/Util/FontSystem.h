@@ -19,6 +19,8 @@ class FontSystem {
     /// outlines for GetTextOutlines(). An outline consists of some number of
     /// borders, each of which consists of a number of 2D points.
     struct OutlineFuncs {
+        /// Begins a new character.
+        std::function<void ()>                   begin_character_func;
         /// Begins an outline, given the nunber of borders in it.
         std::function<void (size_t)>             begin_outline_func;
         /// Begins a border, given the nunber of points in it.

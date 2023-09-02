@@ -1,5 +1,4 @@
 #include "Tests/Testing.h"
-#include "Enums/Action.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
 #include "Util/General.h"
@@ -77,26 +76,4 @@ TEST_F(EnumTest, EnumToWords) {
     EXPECT_EQ("An Other",  Util::EnumToWords(TestEnum::kAnOther));
     EXPECT_EQ("ABC More",  Util::EnumToWords(TestEnum::kABCMore));
     EXPECT_EQ("Also",      Util::EnumToWords(TestEnum::kAlso));
-}
-
-TEST_F(EnumTest, IsToggleAction) {
-    const std::vector toggles{
-        Action::kToggleSpecializedTool,
-        Action::kTogglePointTarget,
-        Action::kToggleEdgeTarget,
-        Action::kToggleAxisAligned,
-        Action::kToggleInspector,
-        Action::kToggleBuildVolume,
-        Action::kToggleShowEdges,
-        Action::kToggleLeftRadialMenu,
-        Action::kToggleRightRadialMenu,
-    };
-    for (const auto action: Util::EnumValues<Action>()) {
-        if (Util::Contains(toggles, action)) {
-            EXPECT_TRUE(IsToggleAction(action));
-        }
-        else {
-            EXPECT_FALSE(IsToggleAction(action));
-        }
-    }
 }

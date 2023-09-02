@@ -43,10 +43,11 @@ Scene {
     return ReadScene(header + contents + "}}", set_up_ion);
 }
 
-SG::ScenePtr SceneTestBase::ReadRealScene(const Str &contents) {
+SG::ScenePtr SceneTestBase::ReadRealScene(const Str &contents,
+                                          bool set_up_ion) {
     const Str input = Util::ReplaceString(
         ReadDataFile("RealScene.emd"), "#<CONTENTS>", contents);
-    return ReadScene(input, true);
+    return ReadScene(input, set_up_ion);
 }
 
 SG::IonContextPtr SceneTestBase::GetIonContext() {

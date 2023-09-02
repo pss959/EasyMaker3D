@@ -132,6 +132,7 @@ void FontSystem::Impl_::Init_() {
         return;
 
     // Initialize the Freetype2 library.
+    KLOG('z', "Initializing the Freetype2 library");
     FT_Library lib;
     if (FT_Init_FreeType(&lib) != FT_Err_Ok) {
         // LCOV_EXCL_START
@@ -152,15 +153,17 @@ void FontSystem::Impl_::Init_() {
         // Create a new font face and make sure it can be loaded. If so, add it
         // to the maps.
         FT_Face face;
-        if (FT_New_Face(lib, path.ToString().c_str(), 0, &face) == FT_Err_Ok &&
-            CanLoadFace_(face)) {
-            const Str name = Str(face->family_name) + "-" + face->style_name;
-            KLOG('z', "Loaded font '" << name << " from path '"
-                 << path.ToString() << "'");
-            ASSERTM(! face_map_.contains(name), name);
-            path_map_[name] = path;
-            face_map_[name] = face;
-        }
+        const bool ok =
+            FT_New_Face(lib, path.ToString().c_str(), 0, &face) == FT_Err_Ok &&
+            CanLoadFace_(face);
+        ASSERTM(ok, "Failed to load font from path " + path);
+
+        const Str name = Str(face->family_name) + "-" + face->style_name;
+        KLOG('z', "Loaded font '" << name << " from path '"
+             << path.ToString() << "'");
+        ASSERTM(! face_map_.contains(name), name);
+        path_map_[name] = path;
+        face_map_[name] = face;
     }
 
     is_initialized_ = true;

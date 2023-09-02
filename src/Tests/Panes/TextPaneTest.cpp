@@ -45,6 +45,16 @@ TEST_F(TextPaneTest, Set) {
     EXPECT_EQ("", text->GetText());
 }
 
+TEST_F(TextPaneTest, UnsetBaseSize) {
+    // Need a real FontSystem and FileSystem for this to work.
+    UseRealFileSystem(true);
+    UseRealFontSystem(true);
+    // Do NOT call SetUpIon() - this tests that case.
+    auto text = ReadRealPane<TextPane>("TextPane", "", false);
+    EXPECT_EQ(Vector2f(1, 1), text->GetMinSize());
+    EXPECT_EQ(Vector2f(1, 1), text->GetBaseSize());
+}
+
 TEST_F(TextPaneTest, Text) {
     auto text = GetTextPane();
 
@@ -66,11 +76,10 @@ TEST_F(TextPaneTest, Text) {
     text->SetLayoutSize(Vector2f(100, 60));
     EXPECT_VECS_CLOSE2(Vector2f(100, 60), text->GetLayoutSize());
 
-    // Repeat with smaller aspect ratio.
-    text->SetLayoutSize(Vector2f(60, 100));
+    // Repeat with larger aspect ratio.
+    text->SetLayoutSize(Vector2f(400, 60));
     EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
-
-    EXPECT_VECS_CLOSE2(Vector2f(60, 10), text->GetTextSize());
+    EXPECT_VECS_CLOSE2(Vector2f(360, 60), text->GetTextSize());
 
     // Change the text and make sure the base size updates.
     text->SetText("abcdefgh");

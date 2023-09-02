@@ -1,25 +1,14 @@
 ﻿#include <ion/math/transformutils.h>
 
-#include "Math/PolygonBuilder.h"
 #include "Math/TextUtils.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
+#include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
 
-// XXXX Change this to use FakeFontSystem.
-
-#if XXXX
 /// \ingroup Tests
-class TextUtilsTest : public TestBase {
-  protected:
-    /// Verifies that the given Polygon's border counts match \p border_counts.
-    void TestPoly(const Polygon &poly, std::vector<size_t> border_counts) {
-        EXPECT_EQ(border_counts.size(), poly.GetBorderCounts().size());
-        for (size_t i = 0; i < border_counts.size(); ++i)
-            EXPECT_EQ(border_counts[i], poly.GetBorderCounts()[i]);
-    }
-};
+class TextUtilsTest : public TestBase {};
 
 TEST_F(TextUtilsTest, GetAvailableFontNames) {
     const auto names = GetAvailableFontNames();
@@ -36,6 +25,7 @@ TEST_F(TextUtilsTest, IsValidFontName) {
 }
 
 TEST_F(TextUtilsTest, IsValidStringForFont) {
+    // Note that this uses the FakeFontSystem rules.
     auto test_good = [](const Str &str){
         Str reason;
         EXPECT_TRUE(IsValidStringForFont("Arial-Regular", str, reason));
@@ -49,86 +39,77 @@ TEST_F(TextUtilsTest, IsValidStringForFont) {
     };
 
     test_good("Abcd");
-    test_good(" A Q R !?!@#$%^&*()");
+    test_good(" A Q R 024345");
 
     // Bad font.
     Str fr;
     EXPECT_FALSE(IsValidStringForFont("No-Such-Font", "ABC", fr));
-    EXPECT_EQ("Invalid font name: No-Such-Font", fr);
+    EXPECT_EQ("Invalid font", fr);
 
-    test_bad("", "Empty string");
-    test_bad(" \t\n ", "String has only space characters");
-    test_bad("¶¡§",
-             "String contains invalid character(s) for the font:"
-             " [\xC2\xB6\xC2\xA1\xC2\xA7]");
+    test_bad("",    "Empty string");
+    test_bad(",+*", "Invalid character");
 }
 
 TEST_F(TextUtilsTest, GetFontPath) {
     auto path = GetFontPath("Arial-Regular");
     EXPECT_TRUE(path);
-    EXPECT_TRUE(path.ToString().contains("Arial"));
+    EXPECT_EQ("/fonts/Arial-Regular.ttf", path.ToString());
     EXPECT_FALSE(GetFontPath("NoSUCHFont"));
 }
 
-TEST_F(TextUtilsTest, SingleCharOutlines) {
-    std::vector<Polygon> polys;
-
-    // One upper-case 'T'. Results are 1 outer border with 8 points.
-    polys = GetTextPolygons("T", 0, 1);
-    ASSERT_EQ(1U, polys.size());
-    TestPoly(polys[0], std::vector<size_t>{8});
-
-    // One upper-case 'O' with complexity = 0. Results are 1 outer border
-    // with 11 points and 1 inner border with 9 points.
-    polys = GetTextPolygons("O", 0, 1);
-    ASSERT_EQ(1U, polys.size());
-    TestPoly(polys[0], std::vector<size_t>{11, 9});
-
-    // Repeat with default complexity. Results are 1 outer border
-    // with 27 points and 1 inner border with 24 points.
-    polys = GetTextPolygons("O", TK::kModelComplexity, 1);
-    ASSERT_EQ(1U, polys.size());
-    TestPoly(polys[0], std::vector<size_t>{27, 24});
-
-    // Repeat with upper-case 'Q'. This used to result in an invalid mesh
-    // when text was created.
-    polys = GetTextPolygons("Q", TK::kModelComplexity, 1);
-    ASSERT_EQ(1U, polys.size());
-    TestPoly(polys[0], std::vector<size_t>{32, 28});
-}
-
-TEST_F(TextUtilsTest, TwoCharOutlines) {
+TEST_F(TextUtilsTest, GetTextOutlines) {
     // Use the default font.
     const Str &name = TK::k3DFont;
 
+    // All characters are 1x2 rectangles.
+    auto get_rect = [](float llx){
+        return Range2f(Point2f(llx, 0), Point2f(llx + 1, 2));
+    };
+
     std::vector<Polygon> polys;
 
-    // Two upper-case 'T's. Results are 2 polygons, each with 1 outer border
-    // with 8 points.
-    polys = GetTextOutlines(name, "TT", 0, 1);
-    ASSERT_EQ(2U, polys.size());
-    TestPoly(polys[0], std::vector<size_t>{8});
-    TestPoly(polys[1], std::vector<size_t>{8});
+    // 1 character. char_spacing does not matter.
+    polys = GetTextOutlines(name, "X", 0, 1);
+    ASSERT_EQ(1U, polys.size());
+    EXPECT_EQ(1U, polys[0].GetBorderCounts().size());
+    EXPECT_EQ(4U, polys[0].GetBorderCounts()[0]);
+    EXPECT_EQ(get_rect(0), polys[0].GetBoundingRect());
 
-    // Character spacing test. First determine what the default space between
-    // the two T's is.
-    const Range2f rect0 = polys[0].GetBoundingRect();
-    const Range2f rect1 = polys[1].GetBoundingRect();
-    const float space = rect1.GetCenter()[0] - rect0.GetCenter()[0];
-    EXPECT_LT(0, space);
-
-    // Lay out the text again with double the character spacing. Everything
-    // should be the same except for the space between the characters (distance
-    // between the centers).
-    polys = GetTextOutlines(name, "TT", 0, 2);
+    // 2 characters. char_spacing of 1.
+    polys = GetTextOutlines(name, "XX", 0, 1);
     ASSERT_EQ(2U, polys.size());
-    TestPoly(polys[0], std::vector<size_t>{8});
-    TestPoly(polys[1], std::vector<size_t>{8});
-    const Range2f new_rect0 = polys[0].GetBoundingRect();
-    const Range2f new_rect1 = polys[1].GetBoundingRect();
-    const float new_space = new_rect1.GetCenter()[0] - new_rect0.GetCenter()[0];
-    EXPECT_EQ(rect0.GetSize(), new_rect0.GetSize());
-    EXPECT_EQ(rect1.GetSize(), new_rect1.GetSize());
-    EXPECT_EQ(2 * space, new_space);
+    for (int i = 0; i < 2; ++i) {
+        EXPECT_EQ(1U, polys[i].GetBorderCounts().size());
+        EXPECT_EQ(4U, polys[i].GetBorderCounts()[0]);
+        EXPECT_EQ(get_rect(i * 1), polys[i].GetBoundingRect());
+    }
+
+    // 3 characters. char_spacing of 2.
+    polys = GetTextOutlines(name, "XXX", 0, 2);
+    ASSERT_EQ(3U, polys.size());
+    for (int i = 0; i < 3; ++i) {
+        EXPECT_EQ(1U, polys[i].GetBorderCounts().size());
+        EXPECT_EQ(4U, polys[i].GetBorderCounts()[0]);
+        EXPECT_EQ(get_rect(i * 2), polys[i].GetBoundingRect());
+    }
 }
-#endif
+
+TEST_F(TextUtilsTest, GetRealTextOutlines) {
+    // Use a real FontSystem to test text with holes. Also need a real
+    // FileSystem to get the font files.
+    UseRealFileSystem(true);
+    UseRealFontSystem(true);
+
+    // Single hole ("O"). This should produce a polygon with 2 borders.
+    auto polys = GetTextOutlines(TK::k3DFont, "O", 0, 1);
+    ASSERT_EQ(1U,  polys.size());
+    EXPECT_EQ(2U,  polys[0].GetBorderCounts().size());
+    EXPECT_EQ(11U, polys[0].GetBorderCounts()[0]);
+
+    // Two holes ("B"). This should produce a polygon with 3 borders. Use a
+    // non-zero complexity to test curve math.
+    polys = GetTextOutlines(TK::k3DFont, "B", .4f, 1);
+    ASSERT_EQ(1U,  polys.size());
+    EXPECT_EQ(3U,  polys[0].GetBorderCounts().size());
+    EXPECT_EQ(26U, polys[0].GetBorderCounts()[0]);
+}

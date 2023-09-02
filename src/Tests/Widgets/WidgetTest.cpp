@@ -1,4 +1,5 @@
 #include "Place/DragInfo.h"
+#include "Place/TouchInfo.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Assert.h"
@@ -208,4 +209,27 @@ TEST_F(WidgetTest, PlaceTarget) {
                AssertException, "should not be called");
     TEST_THROW(tw->PlaceEdgeTarget(DragInfo(), 10, pos0, pos1),
                AssertException, "should not be called");
+}
+
+TEST_F(WidgetTest, IsTouched) {
+    auto tw = CreateTestWidget();
+
+    TouchInfo info;
+    float     dist = 1000;
+
+    // Cannot touch a non-interactive Widget.
+    tw->SetInteractionEnabled(false);
+    EXPECT_FALSE(tw->IsTouched(info, dist));
+
+    tw->SetInteractionEnabled(true);
+
+    // Miss the Widget.
+    info.root_node = tw;
+    info.position.Set(100, 0, 0);
+    info.radius = 1;
+    EXPECT_FALSE(tw->IsTouched(info, dist));
+
+    // Intersect the Widget.
+    info.position.Set(0, 0, 0);
+    EXPECT_TRUE(tw->IsTouched(info, dist));
 }

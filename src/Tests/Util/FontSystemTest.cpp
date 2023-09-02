@@ -19,6 +19,7 @@ class FontSystemTest : public TestBase {
         UseRealFileSystem(true);
         UseRealFontSystem(true);
         fs = FontSystem::GetInstalled();
+        EXPECT_FALSE(fs->IsFake());
     }
 
     /// Uses a PolygonBuilder to create Polygon instances representing text
@@ -119,16 +120,12 @@ TEST_F(FontSystemTest, SingleCharOutlines) {
     TestPoly(polys[0], std::vector<size_t>{32, 28});
 }
 
-#if XXXX
 TEST_F(FontSystemTest, TwoCharOutlines) {
-    // Use the default font.
-    const Str &name = TK::k3DFont;
-
     std::vector<Polygon> polys;
 
     // Two upper-case 'T's. Results are 2 polygons, each with 1 outer border
     // with 8 points.
-    polys = GetTextPolygons(name, "TT", 0, 1);
+    polys = GetTextPolygons("TT", 0, 1);
     ASSERT_EQ(2U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{8});
     TestPoly(polys[1], std::vector<size_t>{8});
@@ -143,7 +140,7 @@ TEST_F(FontSystemTest, TwoCharOutlines) {
     // Lay out the text again with double the character spacing. Everything
     // should be the same except for the space between the characters (distance
     // between the centers).
-    polys = GetTextPolygons(name, "TT", 0, 2);
+    polys = GetTextPolygons("TT", 0, 2);
     ASSERT_EQ(2U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{8});
     TestPoly(polys[1], std::vector<size_t>{8});
@@ -154,4 +151,3 @@ TEST_F(FontSystemTest, TwoCharOutlines) {
     EXPECT_EQ(rect1.GetSize(), new_rect1.GetSize());
     EXPECT_EQ(2 * space, new_space);
 }
-#endif

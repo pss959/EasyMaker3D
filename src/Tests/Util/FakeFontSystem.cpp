@@ -41,10 +41,25 @@ bool FakeFontSystem::IsValidStringForFont(const Str &font_name, const Str &str,
     return true;
 }
 
-#include "Util/Assert.h" // XXXX
+FilePath FakeFontSystem::GetFontPath(const Str &font_name) const {
+    return IsValidFontName(font_name) ?
+        FilePath("/fonts/" + font_name + ".ttf") : FilePath();
+}
+
 void FakeFontSystem::GetTextOutlines(const Str &font_name, const Str &text,
                                      float char_spacing,
                                      const OutlineFuncs &funcs) const {
-    // XXXX
-    ASSERTM(false, "FakeFontSystem::GetTextOutlines() called");
+    // Create a 1x2 rectangle for each character. Note that this has to be
+    // clockwise to be consistent with what PolygonBuilder expects (because of
+    // Freetype2).
+    float x = 0;
+    for (size_t i = 0; i < text.size(); ++i) {
+        funcs.begin_outline_func(1);
+        funcs.begin_border_func(4);
+        funcs.add_point_func(x,     0, true);
+        funcs.add_point_func(x,     2, true);
+        funcs.add_point_func(x + 1, 2, true);
+        funcs.add_point_func(x + 1, 0, true);
+        x += char_spacing;
+    }
 }

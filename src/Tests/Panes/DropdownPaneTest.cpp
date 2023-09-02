@@ -26,17 +26,36 @@ TEST_F(DropdownPaneTest, Defaults) {
 TEST_F(DropdownPaneTest, SetChoices) {
     auto dd = GetDropdownPane();
 
+    // Test notification for some of these.
+    Str    cur_choice;
+    size_t change_count = 0;
+    dd->GetChoiceChanged().AddObserver("key", [&](const Str &c){
+        cur_choice = c;
+        ++change_count;
+    });
+    EXPECT_EQ(0U,  change_count);
+    EXPECT_EQ("",  cur_choice);
+
+    // Should not notify.
     dd->SetChoices(StrVec{"Abcd", "Efgh Ijklmn", "Op Qrstu"}, 2);
     EXPECT_EQ(2,          dd->GetChoiceIndex());
     EXPECT_EQ("Op Qrstu", dd->GetChoice());
+    EXPECT_EQ(0U,         change_count);
+    EXPECT_EQ("",         cur_choice);
 
-    dd->SetChoiceFromString("Efgh Ijklmn");
+    // Should notify.
+    dd->SetChoiceFromString("Efgh Ijklmn", true);  // Notify.
     EXPECT_EQ(1,             dd->GetChoiceIndex());
     EXPECT_EQ("Efgh Ijklmn", dd->GetChoice());
+    EXPECT_EQ(1U,            change_count);
+    EXPECT_EQ("Efgh Ijklmn", cur_choice);
 
+    // Should not notify.
     dd->SetChoices(StrVec(), 10);  // Index should be ignored.
-    EXPECT_EQ(-1,  dd->GetChoiceIndex());
-    EXPECT_EQ(".", dd->GetChoice());
+    EXPECT_EQ(-1,            dd->GetChoiceIndex());
+    EXPECT_EQ(".",           dd->GetChoice());
+    EXPECT_EQ(1U,            change_count);
+    EXPECT_EQ("Efgh Ijklmn", cur_choice);
 
     TEST_THROW(dd->SetChoiceFromString("Bad Choice"), AssertException,
                "No such choice");
@@ -90,7 +109,6 @@ TEST_F(DropdownPaneTest, HandleEvent) {
 
     Str    cur_choice;
     size_t change_count = 0;
-
     dd->GetChoiceChanged().AddObserver("key", [&](const Str &c){
         cur_choice = c;
         ++change_count;

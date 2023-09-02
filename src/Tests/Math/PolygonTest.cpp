@@ -105,39 +105,45 @@ TEST_F(PolygonTest, Hole) {
 }
 
 TEST_F(PolygonTest, TwoHoles) {
+    // Store the outer border and add hole borders separately to test
+    // AddHoleBorder().
     const std::vector<Point2f> points{
         // Outer border.
         Point2f(-3, -5),
         Point2f( 3, -5),
         Point2f( 3,  5),
         Point2f(-3,  5),
-        // Top Hole (clockwise).
+    };
+    const std::vector<Point2f> top_hole{  // Top Hole (clockwise).
         Point2f(-1,  1),
         Point2f(-1,  3),
         Point2f( 1,  3),
         Point2f( 1,  1),
-        // Bottom Hole (clockwise).
+    };
+    const std::vector<Point2f> bottom_hole{  // Bottom Hole (clockwise).
         Point2f(-1, -3),
         Point2f(-1, -1),
         Point2f( 1, -1),
         Point2f( 1, -3),
     };
     const std::vector<size_t> border_counts{ 4, 4, 4 };
-    const Polygon poly(points, border_counts);
+    Polygon poly(points);
+    poly.AddHoleBorder(top_hole);
+    poly.AddHoleBorder(bottom_hole);
 
-    EXPECT_EQ(12U,        poly.GetPoints().size());
-    EXPECT_EQ(points[0],  poly.GetPoints()[0]);
-    EXPECT_EQ(points[1],  poly.GetPoints()[1]);
-    EXPECT_EQ(points[2],  poly.GetPoints()[2]);
-    EXPECT_EQ(points[3],  poly.GetPoints()[3]);
-    EXPECT_EQ(points[4],  poly.GetPoints()[4]);
-    EXPECT_EQ(points[5],  poly.GetPoints()[5]);
-    EXPECT_EQ(points[6],  poly.GetPoints()[6]);
-    EXPECT_EQ(points[7],  poly.GetPoints()[7]);
-    EXPECT_EQ(points[8],  poly.GetPoints()[8]);
-    EXPECT_EQ(points[9],  poly.GetPoints()[9]);
-    EXPECT_EQ(points[10], poly.GetPoints()[10]);
-    EXPECT_EQ(points[11], poly.GetPoints()[11]);
+    EXPECT_EQ(12U,            poly.GetPoints().size());
+    EXPECT_EQ(points[0],      poly.GetPoints()[0]);
+    EXPECT_EQ(points[1],      poly.GetPoints()[1]);
+    EXPECT_EQ(points[2],      poly.GetPoints()[2]);
+    EXPECT_EQ(points[3],      poly.GetPoints()[3]);
+    EXPECT_EQ(top_hole[0],    poly.GetPoints()[4]);
+    EXPECT_EQ(top_hole[1],    poly.GetPoints()[5]);
+    EXPECT_EQ(top_hole[2],    poly.GetPoints()[6]);
+    EXPECT_EQ(top_hole[3],    poly.GetPoints()[7]);
+    EXPECT_EQ(bottom_hole[0], poly.GetPoints()[8]);
+    EXPECT_EQ(bottom_hole[1], poly.GetPoints()[9]);
+    EXPECT_EQ(bottom_hole[2], poly.GetPoints()[10]);
+    EXPECT_EQ(bottom_hole[3], poly.GetPoints()[11]);
 
     EXPECT_EQ(3U, poly.GetBorderCounts().size());
     EXPECT_EQ(4U, poly.GetBorderCounts()[0]);
@@ -150,17 +156,17 @@ TEST_F(PolygonTest, TwoHoles) {
     EXPECT_EQ(points[2], poly.GetOuterBorderPoints()[2]);
     EXPECT_EQ(points[3], poly.GetOuterBorderPoints()[3]);
 
-    EXPECT_EQ(2U,         poly.GetHoleCount());
-    EXPECT_EQ(4U,         poly.GetHolePoints(0).size());
-    EXPECT_EQ(points[4],  poly.GetHolePoints(0)[0]);
-    EXPECT_EQ(points[5],  poly.GetHolePoints(0)[1]);
-    EXPECT_EQ(points[6],  poly.GetHolePoints(0)[2]);
-    EXPECT_EQ(points[7],  poly.GetHolePoints(0)[3]);
-    EXPECT_EQ(4U,         poly.GetHolePoints(1).size());
-    EXPECT_EQ(points[8],  poly.GetHolePoints(1)[0]);
-    EXPECT_EQ(points[9],  poly.GetHolePoints(1)[1]);
-    EXPECT_EQ(points[10], poly.GetHolePoints(1)[2]);
-    EXPECT_EQ(points[11], poly.GetHolePoints(1)[3]);
+    EXPECT_EQ(2U,             poly.GetHoleCount());
+    EXPECT_EQ(4U,             poly.GetHolePoints(0).size());
+    EXPECT_EQ(top_hole[0],    poly.GetHolePoints(0)[0]);
+    EXPECT_EQ(top_hole[1],    poly.GetHolePoints(0)[1]);
+    EXPECT_EQ(top_hole[2],    poly.GetHolePoints(0)[2]);
+    EXPECT_EQ(top_hole[3],    poly.GetHolePoints(0)[3]);
+    EXPECT_EQ(4U,             poly.GetHolePoints(1).size());
+    EXPECT_EQ(bottom_hole[0], poly.GetHolePoints(1)[0]);
+    EXPECT_EQ(bottom_hole[1], poly.GetHolePoints(1)[1]);
+    EXPECT_EQ(bottom_hole[2], poly.GetHolePoints(1)[2]);
+    EXPECT_EQ(bottom_hole[3], poly.GetHolePoints(1)[3]);
 
     EXPECT_EQ(Range2f(Point2f(-3, -5), Point2f(3, 5)), poly.GetBoundingRect());
 }

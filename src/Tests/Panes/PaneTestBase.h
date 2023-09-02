@@ -17,10 +17,11 @@ class PaneTestBase : public SceneTestBase {
     /// instance. A string with the contents of the Pane is supplied.
     template <typename T>
     std::shared_ptr<T> ReadRealPane(const Str &type_name,
-                                    const Str &pane_contents) {
+                                    const Str &pane_contents,
+                                    bool set_up_ion = true) {
         static_assert(std::derived_from<T, Pane> == true);
         return ReadRealNode<T>(GetContentsString_(type_name, pane_contents),
-                               type_name);
+                               type_name, set_up_ion);
     }
 
   private:

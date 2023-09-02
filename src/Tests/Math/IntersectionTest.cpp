@@ -7,6 +7,15 @@
 /// \ingroup Tests
 class IntersectionTest : public TestBase {};
 
+TEST_F(IntersectionTest, Ray) {
+    const Ray r0(Point3f(-4, -3, 6), Vector3f(-1, 0, 0));
+    const Ray r1(Point3f(-4, -3, 6), Vector3f(-1, 0, 0));
+    const Ray r2(Point3f(-4, -3, 6), Vector3f( 1, 0, 0));
+    EXPECT_EQ(r0, r0);
+    EXPECT_EQ(r0, r1);
+    EXPECT_NE(r0, r2);
+}
+
 TEST_F(IntersectionTest, RayBoundsIntersect) {
     // Also tests RayBoundsIntersectFace().
 

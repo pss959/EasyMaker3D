@@ -30,6 +30,9 @@ TestBase::TestBase() {
 
     fake_font_system_.reset(new FakeFontSystem);
     FontSystem::Install(fake_font_system_);
+
+    EXPECT_TRUE(fake_file_system_->IsFake());
+    EXPECT_TRUE(fake_font_system_->IsFake());
 }
 
 TestBase::~TestBase() {}

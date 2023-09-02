@@ -18,6 +18,7 @@ class FileSystemTest : public TestBase {
         /// Use a real FileSystem and make it easily accessible in tests.
         UseRealFileSystem(true);
         fs = FileSystem::GetInstalled();
+        EXPECT_FALSE(fs->IsFake());
     }
 
     /// Returns this source file as a string.

@@ -22,9 +22,18 @@ class PolygonBuilder {
   public:
     PolygonBuilder();
     ~PolygonBuilder();
+
+    /// Begins a new outline containing the given number of borders.
     void BeginOutline(size_t border_count);
+
+    /// Begins a new outline border containing the given number of points.
     void BeginBorder(size_t point_count);
+
+    /// Adds a point to the current border.
     void AddPoint(const Point2f &pos, bool is_on_curve);
+
+    /// Adds the resulting polygon(s) to the given vector, using \p complexity
+    /// to compute any curves.
     void AddPolygons(std::vector<Polygon> &polys, float complexity);
 
     /// Sets up to use a PolygonBuilder to store text character outlines. This

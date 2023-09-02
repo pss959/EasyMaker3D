@@ -25,7 +25,12 @@ class FakeFontSystem : public FontSystem {
     virtual bool IsValidStringForFont(const Str &font_name, const Str &str,
                                       Str &reason) const override;
 
-    /// Creates a constant rectangle outline for each character.
+    /// If the font is valid, this returns the path "/fonts/<font_name>.ttf".
+    /// If not, this returns an empty path.
+    virtual FilePath GetFontPath(const Str &font_name) const override;
+
+    /// Creates a constant 1x2 rectangle outline for each character with \p
+    /// char_spacing between them.
     virtual void GetTextOutlines(const Str &font_name, const Str &text,
                                  float char_spacing,
                                  const OutlineFuncs &funcs) const override;

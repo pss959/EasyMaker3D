@@ -72,7 +72,7 @@ test_source_dict = {
         'TranslateCommandTest',
     ],
     'Enums' : [
-        'HandTest',
+        'ActionTest',
     ],
     'Executors' : [
         'ScaleExecutorTest',
@@ -207,6 +207,7 @@ test_source_dict = {
         'WritingTest',
     ],
     'Place' : [
+        'ClickInfoTest',
         'DragInfoTest',
         'PrecisionStoreTest',
         'TargetTest',

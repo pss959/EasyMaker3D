@@ -293,9 +293,7 @@ FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
             throw Exception("Font '" + font_name + "' does not exist");
         FontPtr font = font_manager.AddFontFromFilePath(
             font_name, font_path.ToString(), font_size_, sdf_padding_);
-        if (! font)
-            throw Exception("Unable to create font from path '" +
-                            font_path.ToString() + "'");
+        ASSERTM(font, "Unable to create font from path " + font_path);
 
         // Create a StaticFontImage for all targeted characters.
         ion::text::GlyphSet glyph_set(ion::base::AllocatorPtr(nullptr));
@@ -303,8 +301,7 @@ FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
         // Add the degree sign:
         glyph_set.insert(font->GetDefaultGlyphForChar(0xb0));
         ion::text::StaticFontImagePtr sfi(
-            new ion::text::StaticFontImage(font, max_image_size_,
-                                           glyph_set));
+            new ion::text::StaticFontImage(font, max_image_size_, glyph_set));
 
         if (sfi->GetImageData().texture &&
             sfi->GetImageData().texture->HasImage(0)) {

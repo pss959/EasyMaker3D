@@ -50,17 +50,27 @@ class IntersectorTest : public SceneTestBase {
 };
 
 TEST_F(IntersectorTest, DefaultHit) {
-    const SG::Hit hit;
-    EXPECT_FALSE(hit.IsValid());
-    EXPECT_TRUE(hit.path.empty());
-    EXPECT_NULL(hit.shape);
-    EXPECT_EQ(Ray(),                hit.world_ray);
-    EXPECT_EQ(0,                    hit.distance);
-    EXPECT_EQ(Point3f::Zero(),      hit.point);
-    EXPECT_EQ(Vector3f::Zero(),     hit.normal);
-    EXPECT_EQ(Vector3i(-1, -1, -1), hit.indices);
-    EXPECT_EQ(Vector3f::Zero(),     hit.barycentric);
-    EXPECT_EQ(Point3f::Zero(),      hit.bounds_point);
+    const SG::Hit hit0;
+    const SG::Hit hit1;
+    SG::Hit       hit2;
+
+    // Default values.
+    EXPECT_FALSE(hit0.IsValid());
+    EXPECT_TRUE(hit0.path.empty());
+    EXPECT_NULL(hit0.shape);
+    EXPECT_EQ(Ray(),                hit0.world_ray);
+    EXPECT_EQ(0,                    hit0.distance);
+    EXPECT_EQ(Point3f::Zero(),      hit0.point);
+    EXPECT_EQ(Vector3f::Zero(),     hit0.normal);
+    EXPECT_EQ(Vector3i(-1, -1, -1), hit0.indices);
+    EXPECT_EQ(Vector3f::Zero(),     hit0.barycentric);
+    EXPECT_EQ(Point3f::Zero(),      hit0.bounds_point);
+
+    // Equality and inequality.
+    hit2.point.Set(0, 0, 1);
+    EXPECT_EQ(hit0, hit0);
+    EXPECT_EQ(hit0, hit1);
+    EXPECT_NE(hit0, hit2);
 }
 
 TEST_F(IntersectorTest, EmptyScene) {

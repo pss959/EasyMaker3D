@@ -25,7 +25,7 @@ struct ClickInfo {
     bool            is_modified_mode = false;
 
     /// Widget the click is on (may be null);
-    ClickableWidget *widget;
+    ClickableWidget *widget = nullptr;
 
     /// Equality operator.
     bool operator==(const ClickInfo &ci) const = default;

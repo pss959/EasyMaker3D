@@ -50,3 +50,14 @@ TEST_F(DragInfoTest, DragInfo) {
               info.GetObjectToStageMatrix());
     EXPECT_EQ(Point3f(-1, -2, -3), info.GetLocalGripPosition());
 }
+
+TEST_F(DragInfoTest, Equality) {
+    const DragInfo info0;
+    const DragInfo info1;
+    DragInfo       info2;
+
+    info2.is_modified_mode = true;
+    EXPECT_EQ(info0, info0);
+    EXPECT_EQ(info0, info1);
+    EXPECT_NE(info0, info2);
+}

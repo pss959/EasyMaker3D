@@ -37,15 +37,18 @@ class SceneTestBase : public TestBaseWithTypes {
     SG::ScenePtr BuildAndReadScene(const Str &contents, bool set_up_ion = true);
 
     /// Calls ReadScene() for "RealScene.emd" after inserting the given
-    /// contents within the root node. Calls SetUpIon() on the results.
-    SG::ScenePtr ReadRealScene(const Str &contents);
+    /// contents within the root node. Calls SetUpIon() on the results if
+    /// requested.
+    SG::ScenePtr ReadRealScene(const Str &contents, bool set_up_ion = true);
 
     /// Calls ReadRealScene() with the given contents, then searches for and
-    /// returns the named Node of the templated type.
+    /// returns the named Node of the templated type. Calls SetUpIon() if
+    /// requested/
     template <typename T>
-    std::shared_ptr<T> ReadRealNode(const Str &contents, const Str &node_name) {
+    std::shared_ptr<T> ReadRealNode(const Str &contents, const Str &node_name,
+                                    bool set_up_ion = true) {
         static_assert(std::derived_from<T, SG::Node> == true);
-        scene_ = ReadRealScene(contents);
+        scene_ = ReadRealScene(contents, set_up_ion);
         return SG::FindTypedNodeInScene<T>(*scene_, node_name);
     }
 

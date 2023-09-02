@@ -17,6 +17,7 @@ TEST_F(ButtonPaneTest, Defaults) {
     EXPECT_EQ(but.get(),         but->GetInteractor());
     EXPECT_EQ(&but->GetButton(), but->GetActivationWidget().get());
     EXPECT_EQ(but->GetBorder(),  but->GetFocusBorder());
+    EXPECT_TRUE(but->IsInteractionEnabled());
 }
 
 TEST_F(ButtonPaneTest, InteractionEnabled) {
