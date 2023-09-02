@@ -410,8 +410,8 @@ bool Panel::HandleEvent(const Event &event) {
 }
 
 void Panel::SetIsShown(bool is_shown) {
-    if (is_shown != is_shown_) {
-        is_shown_ = is_shown;
+    is_shown_ = is_shown;
+    if (is_shown) {
         // Let the derived class update any UI.
         UpdateInterface();
         focuser_->InitFocus();
