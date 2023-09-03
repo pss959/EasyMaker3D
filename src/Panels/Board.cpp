@@ -120,7 +120,8 @@ class Board::Impl_ {
                         const BoardAgent::ResultFunc &result_func);
 
     /// Replaces one Panel with another. Either (but not both) may be null.
-    void ReplacePanel_(const PanelPtr &cur_panel, const PanelPtr &new_panel);
+    void ReplacePanel_(const PanelPtr &cur_panel, const PanelPtr &new_panel,
+                       bool is_pop);
 
     // Move and size slider callbacks.
     void MoveActivated_(bool is_xy, bool is_activation);
@@ -174,7 +175,7 @@ void Board::Impl_::SetPanel(const PanelPtr &panel,
     ASSERT(panel_stack_.empty());
     KLOG('g', root_node_.GetDesc() << " SetPanel to " << panel->GetDesc());
     PushPanelInfo_(panel, result_func);
-    ReplacePanel_(nullptr, panel);
+    ReplacePanel_(nullptr, panel, false);
 }
 
 void Board::Impl_::PushPanel(const PanelPtr &panel,
@@ -188,7 +189,7 @@ void Board::Impl_::PushPanel(const PanelPtr &panel,
     ASSERT(cur_panel);
 
     PushPanelInfo_(panel, result_func);
-    ReplacePanel_(cur_panel, panel);
+    ReplacePanel_(cur_panel, panel, false);
 }
 
 bool Board::Impl_::PopPanel(const Str &result) {
@@ -206,7 +207,7 @@ bool Board::Impl_::PopPanel(const Str &result) {
              << cur_panel->GetDesc());
     }
 
-    ReplacePanel_(info.panel, cur_panel);
+    ReplacePanel_(info.panel, cur_panel, true);
 
     if (info.result_func)
         info.result_func(result);
@@ -228,7 +229,8 @@ void Board::Impl_::SetPanelScale(float scale) {
 
 void Board::Impl_::Show(bool shown) {
     if (auto cur_panel = GetCurrentPanel())
-        cur_panel->SetIsShown(shown);
+        cur_panel->SetStatus(shown ? Panel::Status::kVisible :
+                             Panel::Status::kUnattached);
 }
 
 void Board::Impl_::UpdateSizeIfNecessary() {
@@ -375,13 +377,16 @@ void Board::Impl_::PushPanelInfo_(const PanelPtr &panel,
 }
 
 void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
-                                 const PanelPtr &new_panel) {
+                                 const PanelPtr &new_panel, bool is_pop) {
     ASSERT(cur_panel || new_panel);
 
-    if (cur_panel)
+    if (cur_panel) {
+        cur_panel->SetStatus(is_pop ? Panel::Status::kUnattached :
+                             Panel::Status::kHidden);
         canvas_->RemoveChild(cur_panel);
-
+    }
     if (new_panel) {
+        new_panel->SetStatus(Panel::Status::kVisible);
         canvas_->AddChild(new_panel);
 
         // Ask the Panel whether to show sliders.

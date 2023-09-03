@@ -39,9 +39,9 @@ TEST_F(FilePanelTest, Show) {
     panel->SetExtension(".stl");
     panel->SetHighlightPath("/a/b/c", "ANNOTATION");
 
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Resize to make sure focus stays put.
     const auto fp = panel->GetFocusedPane();
@@ -52,7 +52,7 @@ TEST_F(FilePanelTest, Show) {
 
 TEST_F(FilePanelTest, Scroll) {
     panel->SetInitialPath("/a/b/c");
-    panel->SetIsShown(true);
+    panel->SetStatus(Panel::Status::kVisible);
 
     Event event;
     event.device = Event::Device::kMouse;
@@ -65,7 +65,7 @@ TEST_F(FilePanelTest, Scroll) {
 
 TEST_F(FilePanelTest, Directions) {
     panel->SetInitialPath("/a/b/c");
-    panel->SetIsShown(true);
+    panel->SetStatus(Panel::Status::kVisible);
 
     auto input = FindTypedPane<TextInputPane>("Input");
 
@@ -95,15 +95,15 @@ TEST_F(FilePanelTest, ChooseDirectory) {
     panel->SetInitialPath("/a/b/c");
     panel->SetHighlightPath("/a/b/c", "ANNOTATION");
 
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Change the path to the parent directory and Accept the FilePanel.
     ClickButtonPane("Up");
     ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 
     // Test the results.
     EXPECT_EQ("/a/b", panel->GetPath().ToString());
@@ -118,9 +118,9 @@ TEST_F(FilePanelTest, ChooseNewFile) {
     panel->SetExtension(".stl");
     panel->SetHighlightPath("/a/b/c", "ANNOTATION");
 
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Change the format dropdown.
     ChangeDropdownChoice("Format", "Binary STL");
@@ -142,10 +142,10 @@ TEST_F(FilePanelTest, ChooseNewFile) {
 
     // Accept it and test the results.
     ClickButtonPane("Accept");
-    EXPECT_EQ("Accept", GetCloseResult());
-    EXPECT_FALSE(panel->IsShown());
-    EXPECT_EQ("/a/b/c/test.stl",      panel->GetPath().ToString());
-    EXPECT_EQ(FileFormat::kBinarySTL, panel->GetFileFormat());
+    EXPECT_EQ("Accept",                   GetCloseResult());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    EXPECT_EQ("/a/b/c/test.stl",          panel->GetPath().ToString());
+    EXPECT_EQ(FileFormat::kBinarySTL,     panel->GetFileFormat());
 }
 
 TEST_F(FilePanelTest, ChooseExistingFile) {
@@ -157,9 +157,9 @@ TEST_F(FilePanelTest, ChooseExistingFile) {
     panel->SetExtension(".stl");
     panel->SetHighlightPath("/a/b/c", "ANNOTATION");
 
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Cannot accept a directory.
     EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
@@ -180,8 +180,50 @@ TEST_F(FilePanelTest, ChooseExistingFile) {
 
     // Accept it and test the results.
     ClickButtonPane("Accept");
+    EXPECT_EQ("Accept",                   GetCloseResult());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    EXPECT_EQ("/a/b/c/d.stl",             panel->GetPath().ToString());
+    EXPECT_EQ(FileFormat::kTextSTL,       panel->GetFileFormat());
+}
+
+TEST_F(FilePanelTest, OverwriteFile) {
+    panel->SetTitle("Title");
+    panel->SetTargetType(FilePanel::TargetType::kNewFile);
+    panel->SetInitialPath("/a/b/c");
+    panel->SetHighlightPath("/a/b/c", "ANNOTATION");
+    panel->SetStatus(Panel::Status::kVisible);
+
+    // Enter an existing file name.
+    SetTextInput("Input", "/a/b/c/d.stl");
+
+    // Accept it. This should bring up a DialogPanel asking whether to
+    // overwrite the file.
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    ClickButtonPane("Accept");
+    EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
+    auto dialog = GetCurrentPanel();
+    EXPECT_EQ("DialogPanel", dialog->GetTypeName());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
+
+    // Click "No" in the dialog -> should restore the FilePanel.
+    ClickButtonPane("Button0");  // "No"
+    EXPECT_EQ("No", GetCloseResult());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
+
+    // Accept again and this time click "Yes" in the dialog -> should close the
+    // DialogPanel and FilePanel.
+#if XXXX
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    ClickButtonPane("Accept");
+    EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
+    dialog = GetCurrentPanel();
+    EXPECT_EQ("DialogPanel", dialog->GetTypeName());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
+    ClickButtonPane("Button1");  // "Yes"
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Accept", GetCloseResult());
-    EXPECT_FALSE(panel->IsShown());
-    EXPECT_EQ("/a/b/c/d.stl",     panel->GetPath().ToString());
-    EXPECT_EQ(FileFormat::kTextSTL,  panel->GetFileFormat());
+    EXPECT_EQ("/a/b/c/d.stl", panel->GetPath().ToString());
+#endif
 }

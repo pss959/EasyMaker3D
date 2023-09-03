@@ -36,6 +36,13 @@ DECL_SHARED_PTR(Widget);
 /// \ingroup Panels
 class Panel : public SG::Node {
   public:
+    /// Enum indicating Panel attachment and visibility status.
+    enum class Status {
+        kUnattached,   ///< Not attached to a Board, not visible.
+        kVisible,      ///< Attached to a Board and visible.
+        kHidden,       ///< Attached to a Board, hidden by another Panel.
+    };
+
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
         ActionAgentPtr      action_agent;
@@ -94,13 +101,11 @@ class Panel : public SG::Node {
     /// class defines this to handle escape key, navigation, etc..
     virtual bool HandleEvent(const Event &event);
 
-    /// Sets a flag indicating whether the Panel is shown. This allows the
-    /// Panel to set up navigation and anything else it needs.
-    void SetIsShown(bool is_shown);
+    /// Sets the attachment/visibility status.
+    void SetStatus(Status status);
 
-    /// Returns a flag indicating whether the Panel is shown. The default is
-    /// false.
-    bool IsShown() const { return is_shown_; }
+    /// Returns the current attachment/visibility status.
+    Status GetStatus() const { return status_; }
 
     /// Returns the currently focused Pane, or null if there is none.
     PanePtr GetFocusedPane() const;
@@ -148,9 +153,9 @@ class Panel : public SG::Node {
     /// base class defines this to do nothing.
     virtual void InitInterface() {}
 
-    /// This is called before the Panel is shown. It allows derived classes to
-    /// update interface items, such as enabling or disabling buttons. The base
-    /// class defines this to do nothing.
+    /// This is called before the Panel is shown after being attached. It
+    /// allows derived classes to update interface items, such as enabling or
+    /// disabling buttons. The base class defines this to do nothing.
     virtual void UpdateInterface() {}
 
     /// This is called when the size of the contained Pane may have changed,
@@ -244,8 +249,8 @@ class Panel : public SG::Node {
 
     ContextPtr context_;
 
-    /// True while the Panel is shown.
-    bool is_shown_ = false;
+    /// Current attachment/visibility status.
+    Status status_ = Status::kUnattached;
 
     /// Set to true if the Panel size may have changed.
     bool size_may_have_changed_ = false;

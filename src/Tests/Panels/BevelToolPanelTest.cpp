@@ -37,9 +37,9 @@ TEST_F(BevelToolPanelTest, SetBevel) {
 }
 
 TEST_F(BevelToolPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 }
 
 TEST_F(BevelToolPanelTest, Change) {

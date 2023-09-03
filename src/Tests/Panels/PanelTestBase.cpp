@@ -101,14 +101,14 @@ void PanelTestBase::TestBoardAgent::ClosePanel(const Str &result) {
         PrintStack_("after pop");
     }
 
-    info.panel->SetIsShown(false);
+    info.panel->SetStatus(Panel::Status::kUnattached);
 
     if (! panel_stack_.empty()) {
         const auto &new_panel = panel_stack_.back().panel;
         if (debug_panels)
             std::cerr << Indent_() << " Showing "
                       << new_panel->GetDesc() << "\n";
-        new_panel->SetIsShown(true);
+        new_panel->SetStatus(Panel::Status::kVisible);
     }
 
     if (info.result_func) {
@@ -137,7 +137,7 @@ void PanelTestBase::TestBoardAgent::PushPanel(const PanelPtr &panel,
         if (debug_panels)
             std::cerr << Indent_() << "Hiding  "
                       << panel_stack_.back().panel->GetDesc() << "\n";
-        panel_stack_.back().panel->SetIsShown(false);
+        panel_stack_.back().panel->SetStatus(Panel::Status::kHidden);
     }
 
     // Push a PanelInfo_ for the new Panel.
@@ -156,7 +156,7 @@ void PanelTestBase::TestBoardAgent::PushPanel(const PanelPtr &panel,
     if (! is_first_panel_) {
         if (debug_panels)
             std::cerr << Indent_() << " Showing " << panel->GetDesc() << "\n";
-        panel->SetIsShown(true);
+        panel->SetStatus(Panel::Status::kVisible);
     }
     if (debug_panels)
         PrintStack_("after PushPanel for " + panel->GetName());
@@ -175,8 +175,7 @@ void PanelTestBase::TestBoardAgent::PrintStack_(const Str &when) const {
     std::cerr << "....... Top-down Panel stack " << when << ":\n";
     for (auto it = panel_stack_.rbegin(); it != panel_stack_.rend(); ++it) {
         std::cerr << "........    " << it->panel->GetDesc()
-                  << (it->panel->IsShown() ? " (Visible)" : " (Hidden)")
-                  << "\n";
+                  << "(" << Util::EnumToWord(it->panel->GetStatus()) << ")\n";
     }
 }
 

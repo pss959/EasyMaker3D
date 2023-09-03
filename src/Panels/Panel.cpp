@@ -40,12 +40,19 @@ class Panel::Focuser_ {
     /// Function that returns true if a Pane can be focused.
     typedef std::function<bool(Pane &)> CanFocusFunc;
 
+    /// Function to call when focus changes to a new Pane.
+    typedef std::function<void(const PanePtr &)> ChangeFocusFunc;
+
     /// The constructor is passed a description string to use for log
     /// messages and a function to invoke to see if a sub-Pane can be focused.
-    Focuser_(const Str &desc, const CanFocusFunc &can_focus_func) :
-        desc_(desc), can_focus_func_(can_focus_func) {
+    Focuser_(const Str &desc, const CanFocusFunc &can_focus_func,
+             const ChangeFocusFunc &change_focus_func) :
+        desc_(desc),
+        can_focus_func_(can_focus_func),
+        change_focus_func_(change_focus_func) {
         ASSERT(! desc.empty());
         ASSERT(can_focus_func);
+        ASSERT(change_focus_func);
     }
 
     /// Sets the VirtualKeyboard instance to pass along to interactive Panes.
@@ -91,6 +98,9 @@ class Panel::Focuser_ {
 
     /// Function that returns true if a Pane can be focused.
     CanFocusFunc can_focus_func_;
+
+    /// Function to invoke when a Pane is focused.
+    ChangeFocusFunc change_focus_func_;
 
     /// VirtualKeyboard instance to pass to interactive Panes.
     VirtualKeyboardPtr virtual_keyboard_;
@@ -255,6 +265,8 @@ void Panel::Focuser_::ChangeFocus_(const PanePtr &old_pane,
         border->SetEnabled(true);
         border->SetWidth(TK::kFocusedPaneBorderWidth);
         border->SetColor(SG::ColorMap::SGetColor("PaneFocusColor"));
+
+        change_focus_func_(new_pane);
     }
 }
 
@@ -292,8 +304,10 @@ void Panel::CreationDone() {
     SG::Node::CreationDone();
 
     if (! IsTemplate()) {
+        auto    can_focus_func = [&](Pane &p){ return CanFocusPane_(p); };
+        auto change_focus_func = [&](const PanePtr &p){ UpdateFocus(p); };
         focuser_.reset(
-            new Focuser_(GetDesc(), [&](Pane &p){ return CanFocusPane_(p); }));
+            new Focuser_(GetDesc(), can_focus_func, change_focus_func));
 
         // Add the root Pane as a child.
         ASSERTM(GetPane(), GetDesc());
@@ -409,9 +423,9 @@ bool Panel::HandleEvent(const Event &event) {
     return handled;
 }
 
-void Panel::SetIsShown(bool is_shown) {
-    is_shown_ = is_shown;
-    if (is_shown) {
+void Panel::SetStatus(Status status) {
+    status_ = status;
+    if (status == Status::kVisible) {
         // Let the derived class update any UI.
         UpdateInterface();
         focuser_->InitFocus();

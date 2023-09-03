@@ -19,9 +19,9 @@ TEST_F(SettingsPanelTest, Defaults) {
 }
 
 TEST_F(SettingsPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 }
 
 TEST_F(SettingsPanelTest, Change) {
@@ -31,7 +31,7 @@ TEST_F(SettingsPanelTest, Change) {
     const SettingsPtr def_settings = Settings::CreateDefault();
     agent->SetSettings(*def_settings);
 
-    panel->SetIsShown(true);
+    panel->SetStatus(Panel::Status::kVisible);
 
     // Switch to an invalid directory.
     EXPECT_FALSE(IsButtonPaneEnabled("DefaultSessionDir"));
@@ -85,23 +85,23 @@ TEST_F(SettingsPanelTest, OpenFilePanel) {
     const SettingsPtr def_settings = Settings::CreateDefault();
     agent->SetSettings(*def_settings);
 
-    panel->SetIsShown(true);
+    panel->SetStatus(Panel::Status::kVisible);
 
     ClickButtonPane("ChooseImportDir");
 
     // The SettingsPanel should be hidden and the FilePanel should be shown.
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto file_panel = GetCurrentPanel();
     EXPECT_EQ("FilePanel", file_panel->GetTypeName());
-    EXPECT_TRUE(file_panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
 
     // Change the path to the parent directory and Accept the FilePanel. This
     // should close it with result "Accept" and reopen the SettingsPanel.
     ClickButtonPane("Up");
     ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
-    EXPECT_FALSE(file_panel->IsShown());
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, file_panel->GetStatus());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Clicking the Accept button in the SettingsPanel should change the stored
     // settings.
@@ -118,24 +118,24 @@ TEST_F(SettingsPanelTest, OpenRadialMenuPanel) {
     const SettingsPtr def_settings = Settings::CreateDefault();
     agent->SetSettings(*def_settings);
 
-    panel->SetIsShown(true);
+    panel->SetStatus(Panel::Status::kVisible);
 
     ClickButtonPane("EditRadialMenus");
 
     // The SettingsPanel should be hidden and the RadialMenuPanel should be
     // shown.
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto menu_panel = GetCurrentPanel();
     EXPECT_EQ("RadialMenuPanel", menu_panel->GetTypeName());
-    EXPECT_TRUE(menu_panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, menu_panel->GetStatus());
 
     // Change the mode and Accept the RadialMenuPanel. This should close it
     // with result "Accept" and reopen the SettingsPanel.
     ActivateRadioButtonPane("Mode3");
     ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
-    EXPECT_FALSE(menu_panel->IsShown());
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, menu_panel->GetStatus());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Clicking the Accept button in the SettingsPanel should change the stored
     // settings.

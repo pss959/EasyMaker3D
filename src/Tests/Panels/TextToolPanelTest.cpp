@@ -30,13 +30,13 @@ TEST_F(TextToolPanelTest, SetValues) {
 }
 
 TEST_F(TextToolPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 }
 
 TEST_F(TextToolPanelTest, Change) {
-    panel->SetIsShown(true);
+    panel->SetStatus(Panel::Status::kVisible);
 
     auto input = SetTextInput("Text", "Some Text");
     auto disp  = FindTypedPane<TextPane>("Display");

@@ -32,9 +32,9 @@ TEST_F(TaperToolPanelTest, SetTaper) {
 }
 
 TEST_F(TaperToolPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 }
 
 TEST_F(TaperToolPanelTest, Change) {

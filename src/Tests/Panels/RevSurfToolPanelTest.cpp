@@ -36,9 +36,9 @@ TEST_F(RevSurfToolPanelTest, Set) {
 }
 
 TEST_F(RevSurfToolPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 }
 
 TEST_F(RevSurfToolPanelTest, Change) {

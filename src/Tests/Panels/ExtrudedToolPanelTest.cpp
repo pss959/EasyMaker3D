@@ -32,13 +32,13 @@ TEST_F(ExtrudedToolPanelTest, SetProfile) {
 }
 
 TEST_F(ExtrudedToolPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 }
 
 TEST_F(ExtrudedToolPanelTest, Change) {
-    panel->SetIsShown(true);
+    panel->SetStatus(Panel::Status::kVisible);
 
     // Change the number of sides using text input and the "SetSides" button.
     auto st = SetTextInput("SidesText", "12");

@@ -16,9 +16,9 @@ TEST_F(HelpPanelTest, Defaults) {
 }
 
 TEST_F(HelpPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
     EXPECT_EQ(FindPane("Done"), panel->GetFocusedPane());
 }
 
@@ -26,14 +26,12 @@ TEST_F(HelpPanelTest, OpenURLs) {
     Str last_url;
     Util::SetOpenURLFunc([&](const Str &url){ last_url = url; });
 
-    panel->SetIsShown(true);
-
     auto doc_url = [](const Str &page){
         return TK::kPublicDocBaseURL + "/" + TK::kVersionString + "/" + page;
     };
 
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     ClickButtonPane("UserGuide");
     EXPECT_EQ(doc_url("UserGuide"), last_url);
@@ -45,6 +43,6 @@ TEST_F(HelpPanelTest, OpenURLs) {
     EXPECT_EQ(TK::kGithubURL + "/issues", last_url);
 
     ClickButtonPane("Done");
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Done", GetCloseResult());
 }

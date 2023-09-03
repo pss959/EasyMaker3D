@@ -20,14 +20,14 @@ TEST_F(DialogPanelTest, SingleResponse) {
     EXPECT_EQ(but0, panel->GetFocusedPane());
 
     // Show the panel.
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Close the panel by simulating a click on the "Cool" button.
     ClickButtonPane("Button0");
     EXPECT_EQ("Cool", GetCloseResult());
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 }
 
 TEST_F(DialogPanelTest, ChoiceResponse) {
@@ -40,12 +40,12 @@ TEST_F(DialogPanelTest, ChoiceResponse) {
     EXPECT_EQ(but1, panel->GetFocusedPane());
 
     // Show the panel.
-    EXPECT_FALSE(panel->IsShown());
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Close the panel by simulating a click on the "Sad" button.
     ClickButtonPane("Button1");
     EXPECT_EQ("Sad", GetCloseResult());
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 }

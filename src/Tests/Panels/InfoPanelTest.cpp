@@ -21,7 +21,7 @@ TEST_F(InfoPanelTest, Defaults) {
 }
 
 TEST_F(InfoPanelTest, Show) {
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 
     // Create two Models, one with an invalid mesh.
     auto root = Model::CreateModel<RootModel>("Root");
@@ -45,11 +45,11 @@ TEST_F(InfoPanelTest, Show) {
     info.edge_target  = et.get();
     panel->SetInfo(info);
 
-    panel->SetIsShown(true);
-    EXPECT_TRUE(panel->IsShown());
+    panel->SetStatus(Panel::Status::kVisible);
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
     EXPECT_EQ(FindPane("Done"), panel->GetFocusedPane());
 
     ClickButtonPane("Done");
-    EXPECT_FALSE(panel->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Done", GetCloseResult());
 }
