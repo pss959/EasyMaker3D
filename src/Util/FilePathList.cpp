@@ -62,7 +62,6 @@ const FilePath & FilePathList::AddPath(const FilePath &path) {
     return GetCurrent();
 }
 
-// XXXX  TEST THESE!
 void FilePathList::GetContents(StrVec &subdirs, StrVec &files,
                                const Str &extension,
                                bool include_hidden) const {
