@@ -424,11 +424,16 @@ bool Panel::HandleEvent(const Event &event) {
 }
 
 void Panel::SetStatus(Status status) {
-    status_ = status;
-    if (status == Status::kVisible) {
-        // Let the derived class update any UI.
-        UpdateInterface();
-        focuser_->InitFocus();
+    if (status_ != status) {
+        KLOG('g', GetDesc() << " status now " << Util::EnumName(status));
+
+        // If changing from unattached to visible, let the derived class update
+        // any UI.
+        if (status_ == Status::kUnattached && status == Status::kVisible) {
+            UpdateInterface();
+            focuser_->InitFocus();
+        }
+        status_ = status;
     }
 }
 

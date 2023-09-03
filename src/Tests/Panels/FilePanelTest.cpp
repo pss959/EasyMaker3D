@@ -213,7 +213,6 @@ TEST_F(FilePanelTest, OverwriteFile) {
 
     // Accept again and this time click "Yes" in the dialog -> should close the
     // DialogPanel and FilePanel.
-#if XXXX
     EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
     ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
@@ -223,7 +222,6 @@ TEST_F(FilePanelTest, OverwriteFile) {
     ClickButtonPane("Button1");  // "Yes"
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
-    EXPECT_EQ("Accept", GetCloseResult());
+    EXPECT_EQ("Yes", GetCloseResult());
     EXPECT_EQ("/a/b/c/d.stl", panel->GetPath().ToString());
-#endif
 }
