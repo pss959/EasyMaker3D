@@ -191,6 +191,8 @@ for rfile in redirect_files:
     abs_to_path   = join(env.Dir('$OUTPUT_DIR').abspath, to_path)
     redirects.append(env.AddRedirect(target=abs_from_path, source=abs_to_path))
 
-public_doc = [redirects, index]
+env.Depends(redirects, doc)
+
+public_doc = [doc, redirects, index]
 
 Return('public_doc')
