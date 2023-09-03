@@ -98,58 +98,59 @@ void ParserTestBase::InitTestClasses() {
 }
 
 Str ParserTestBase::GetSimpleInput() {
-    return
-        "# Full-line comment\n"
-        "Simple \"TestObj\" {\n"
-        "  bool_val:  true,\n"
-        "  int_val:   -13, # In-line comment\n"
-        "  uint_val:  67,\n"
-        "  float_val: 3.4,\n"
-        "  str_val:   \"A quoted string\",\n"
-        "  enum_val:  \"kE2\",\n"
-        "  flag_val:  \"kF3| kF1\",\n"
-        "  vec3f_val: 2 3 4.5,\n"
-        "  vec4f_val: 2 3 4.5 5,\n"
-        "  color_val: .2 .3 .4 1,\n"
-        "  angle_val: 90,\n"
-        "  rot_val:   0 1 0 180,\n"
-        "  ints_val:  [6, 5, -2],\n"
-        "  strs_val:  [\"A\", \"B\"],\n"
-        "}\n";
+    return R"(
+        # Full-line comment
+        Simple "TestObj" {
+          bool_val:  true,
+          int_val:   -13, # In-line comment
+          uint_val:  67,
+          float_val: 3.4,
+          str_val:   "A quoted string",
+          enum_val:  "kE2",
+          flag_val:  "kF3| kF1",
+          vec3f_val: 2 3 4.5,
+          vec4f_val: 2 3 4.5 5,
+          color_val: .2 .3 .4 1,
+          angle_val: 90,
+          rot_val:   0 1 0 180,
+          ints_val:  [6, 5],
+          ints_val:  [-2],  # Accumulates.
+          strs_val:  ["A", "B"],
+        })";
 }
 
 Str ParserTestBase::GetFullInput() {
-    return
-        "Full \"TestFull\" {\n"
-        "  b: True,\n"
-        "  i: -6,\n"
-        "  u: 93,\n"
-        "  z: 1234,\n"
-        "  f: 3.5,\n"
-        "  s: \"A B C\",\n"
-        "  e: \"kE2\",\n"
-        "  g: \"kF3|kF1\",\n"
-        "  v2f: 3 -2.5,\n"
-        "  v3f: 3 -2.5 7,\n"
-        "  v4f: 3 -2.5 7 -2,\n"
-        "  v2i: 3 -2,\n"
-        "  v3i: 3 -2 8,\n"
-        "  v4i: 3 -2 8 9,\n"
-        "  v2ui: 3 2,\n"
-        "  v3ui: 3 2 8,\n"
-        "  v4ui: 3 2 8 9,\n"
-        "  p2f: 3 -2.5,\n"
-        "  p3f: 3 -2.5 7,\n"
-        "  p2i: 3 -2,\n"
-        "  c: \"#aabbccdd\",\n"
-        "  a: -105,\n"
-        "  r: 0 0 1 -80,\n"
-        "  m2: 1 2 3 4,\n"
-        "  m3: 1 2 3 4 5 6 7 8 9,\n"
-        "  m4: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16,\n"
-        "  pl: 0 1 0 4.5,\n"
-        "  ca: 15 -250,\n"
-        "}\n";
+    return R"(
+        Full "TestFull" {
+          b: True,
+          i: -6,
+          u: 93,
+          z: 1234,
+          f: 3.5,
+          s: "A B C",
+          e: "kE2",
+          g: "kF3|kF1",
+          v2f: 3 -2.5,
+          v3f: 3 -2.5 7,
+          v4f: 3 -2.5 7 -2,
+          v2i: 3 -2,
+          v3i: 3 -2 8,
+          v4i: 3 -2 8 9,
+          v2ui: 3 2,
+          v3ui: 3 2 8,
+          v4ui: 3 2 8 9,
+          p2f: 3 -2.5,
+          p3f: 3 -2.5 7,
+          p2i: 3 -2,
+          c: "#aabbccdd",
+          a: -105,
+          r: 0 0 1 -80,
+          m2: 1 2 3 4,
+          m3: 1 2 3 4 5 6 7 8 9,
+          m4: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16,
+          pl: 0 1 0 4.5,
+          ca: 15 -250,
+        })";
 }
 
 Parser::ObjectPtr ParserTestBase::ParseString(const Str &input) {
