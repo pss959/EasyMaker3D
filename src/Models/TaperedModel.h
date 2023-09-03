@@ -22,7 +22,8 @@ class TaperedModel : public ConvertedModel {
     const Taper & GetTaper() const { return taper_; }
 
     /// Convenience that creates a valid TaperedModel Profile from the given
-    /// vector of Profile points.
+    /// vector of Profile points. If there are no points, this uses the default
+    /// Taper profile.
     static Profile CreateProfile(const Profile::PointVec &points);
 
   protected:

@@ -4,12 +4,9 @@
 #include "Parser/Registry.h"
 
 void ChangeTaperCommand::AddFields() {
-    AddField(axis_.Init("axis"));
+    AddField(axis_.Init("axis", Taper().axis));
     AddField(profile_points_.Init("profile_points"));
     MultiModelCommand::AddFields();
-
-    // Use default settings.
-    SetTaper(Taper());
 }
 
 bool ChangeTaperCommand::IsValid(Str &details) {

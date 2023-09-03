@@ -50,7 +50,8 @@ void TaperedModel::SetTaper(const Taper &taper) {
 }
 
 Profile TaperedModel::CreateProfile(const Profile::PointVec &points) {
-    return Profile(Profile::Type::kOpen, 2, points);
+    return points.empty() ? Taper::CreateDefaultProfile() :
+        Profile(Profile::Type::kOpen, 2, points);
 }
 
 TriMesh TaperedModel::ConvertMesh(const TriMesh &mesh) {

@@ -29,7 +29,12 @@ TEST_F(ChangeTaperCommandTest, IsValid) {
     TestInvalid(R"(model_names: [" BadName"])", "Invalid model name");
     TestInvalid(R"(model_names: ["X"], profile_points: [2 1])",
                 "Invalid profile");
+    TestInvalid(R"(model_names: ["X"], profile_points: [0 1])",
+                "Invalid profile");
+    TestInvalid(R"(model_names: ["X"], profile_points: [0 1, .1 1])",
+                "Invalid profile");
     TestValid(R"(model_names: ["Box"])");
+    TestValid(R"(model_names: ["Box"], profile_points: [.1 1, .4 .5, .2 0])");
 }
 
 TEST_F(ChangeTaperCommandTest, GetDescription) {
