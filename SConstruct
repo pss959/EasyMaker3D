@@ -54,8 +54,10 @@ platform  = base_env['PLATFORM']
 # -----------------------------------------------------------------------------
 
 # Build the Ion library.
-ion_env = envs['ion']
-ion_lib = SConscript('ionsrc/SConscript_ion', exports=['ion_env'],
+ion_env      = envs['ion']
+ion_test_env = envs['iontest']
+ion_lib = SConscript('ionsrc/SConscript_ion',
+                     exports=['ion_env', 'ion_test_env'],
                      variant_dir=f'{build_dir}/ionsrc', duplicate=False)
 
 # Build submodules.

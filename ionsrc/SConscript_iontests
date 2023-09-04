@@ -1,23 +1,4 @@
-Import('ion_env', 'ion_lib')
-
-# -----------------------------------------------------------------------------
-# Environment setup.
-# -----------------------------------------------------------------------------
-
-ion_test_env = ion_env.Clone()
-
-ion_test_env.Append(
-    CPPPATH = [
-        '#submodules/googletest/googletest/include',
-        '#submodules/googletest/googlemock/include',
-    ],
-    LIBPATH = ['#/$BUILD_DIR/googletest'],
-    LIBS    = [ion_lib, 'gtest_main', 'gtest'],
-    CXXFLAGS = [
-        '-Wno-nonnull-compare',   # Not sure why DCHECK triggers this.
-        '-Wno-unused-function',   # Some tests define unused static functions.
-    ],
-)
+Import('ion_env', 'ion_lib', 'ion_test_env')
 
 # -----------------------------------------------------------------------------
 # Test source files.
@@ -183,7 +164,7 @@ ion_test = ion_test_env.Program(f'IonTest',
                                 ion_test_sources + iad_sources + gmock_sources)
 
 # Build and run tests in 'dbg' mode only!
-if ion_env['MODE'] == 'dbg':
+if ion_test_env['MODE'] == 'dbg':
     # The 'IonTests' alias builds all Ion tests.
     ion_test_env.Alias('IonTests', ion_test)
 

@@ -290,9 +290,10 @@ ion_env = base_env.Clone()
 
 ion_env.Append(
     COMMON_FLAGS = [
+        '-Wno-array-bounds',       # Disable warning in tracinghelper.cc.
+        '-Wno-deprecated-declarations',  # Needed for absl files.
         '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
         '-Wno-unused-result',      # Disable warnings for fread() calls.
-        '-Wno-array-bounds',       # Disable warning in tracinghelper.cc.
     ],
     CPPPATH = [
         '$SYS_INCLUDE_DIR/jsoncpp',  # Use JSONCPP from system.
@@ -340,6 +341,25 @@ else:
     )
     if platform == 'mac':
         ion_env.AddPackages(['GL'])
+
+# -----------------------------------------------------------------------------
+# Ion test library environment.
+# -----------------------------------------------------------------------------
+
+ion_test_env = ion_env.Clone()
+
+ion_test_env.Append(
+    CPPPATH = [
+        '#submodules/googletest/googletest/include',
+        '#submodules/googletest/googlemock/include',
+    ],
+    LIBPATH = ['#/$BUILD_DIR/googletest'],
+    LIBS    = ['$ION_LIB_NAME', 'gtest_main', 'gtest'],
+    CXXFLAGS = [
+        '-Wno-nonnull-compare',   # Not sure why DCHECK triggers this.
+        '-Wno-unused-function',   # Some tests define unused static functions.
+    ],
+)
 
 # -----------------------------------------------------------------------------
 # Main application library environment.
@@ -515,11 +535,12 @@ if platform == 'windows':
 # -----------------------------------------------------------------------------
 
 envs = {
-    'app'  : app_env,
-    'base' : base_env,
-    'ion'  : ion_env,
-    'lib'  : lib_env,
-    'test' : test_env,
+    'app'      : app_env,
+    'base'     : base_env,
+    'ion'      : ion_env,
+    'iontest'  : ion_test_env,
+    'lib'      : lib_env,
+    'test'     : test_env,
 }
 
 Return('envs')

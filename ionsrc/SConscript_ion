@@ -1,4 +1,4 @@
-Import('ion_env')
+Import('ion_env', 'ion_test_env')
 
 # -----------------------------------------------------------------------------
 # Environment setup.
@@ -384,7 +384,8 @@ ion_lib = ion_env.SharedLibrary(
 # ---------------------------------
 # Building tests. This works in 'dbg' mode only!
 
-SConscript('SConscript_iontests', exports=['ion_env', 'ion_lib'])
+SConscript('SConscript_iontests',
+           exports=['ion_env', 'ion_lib', 'ion_test_env'])
 
 Return('ion_lib')
 
