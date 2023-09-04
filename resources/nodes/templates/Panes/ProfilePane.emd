@@ -1,7 +1,6 @@
 ProfilePane "T_ProfilePane" {
   min_size:      300 300,
-  resize_width:  True,
-  resize_height: True,
+  resize_flags: "kWidth|kHeight",
 
   children: [ CLONE "T_ProfilePaneBase" {} ]
 },

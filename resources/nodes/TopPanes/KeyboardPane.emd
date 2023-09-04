@@ -2,20 +2,18 @@ BoxPane "KeyboardPane" {
   TEMPLATES: [
     BoxPane "T_Row" {
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       spacing: 6,
     },
     CLONE "T_TextKeyPane" "T_TKey" {
       min_size:     36 36,
-      resize_width: False,
-      resize_height: True,
+      resize_flags: "kHeight",
     },
     CLONE "T_SpecialKeyPane" "T_SKey" {
       min_size:     36 36,
-      resize_width: False,
-      resize_height: True,
+      resize_flags: "kHeight",
     },
-    SpacerPane "T_Spacer" { resize_width: True },
+    SpacerPane "T_Spacer" { resize_flags: "kWidth" },
   ],
 
   background: $BG     { color: "#a7b5e9" },

@@ -343,43 +343,21 @@ void Panel::SetTestContext(const ContextPtr &context) {
 void Panel::SetSize(const Vector2f &size) {
     // Can set the size only if it has not been set or the Panel is resizable.
     ASSERT(GetSize() == Vector2f::Zero() || IsResizable());
-    if (auto pane = GetPane())
+    if (auto pane = GetPane()) {
         pane->SetLayoutSize(size);
-}
-
-Vector2f Panel::GetSize() const {
-    if (auto pane = GetPane())
-        return pane->GetLayoutSize();
-    return Vector2f::Zero();
-}
-
-Vector2f Panel::UpdateSize() {
-    auto pane = GetPane();
-    ASSERT(pane);
-
-    // Do this until the base size is not changing any more.
-    Vector2f size;
-    while (true) {
-        // Make sure the layout size is at least as large as the base
-        // size. This also makes sure the base sizes in all Panes are up to
-        // date.
-        size = MaxComponents(pane->GetBaseSize(), pane->GetLayoutSize());
-        KLOG('p', GetDesc() << " updating size to " << size);
-
-        // Lay out the Panes again to make sure they are the correct size.
-        pane->SetLayoutSize(size);
-
-        // Stop if there are no more base size changes.
-        if (pane->IsBaseSizeUpToDate())
-            break;
+        size_may_have_changed_ = false;
     }
+}
 
-    // Let the derived class know the Pane size may have changed.
-    UpdateForPaneSizeChange();
-
-    size_may_have_changed_ = false;
-
-    return size;
+Vector2f Panel::GetSize() {
+    if (auto pane = GetPane()) {
+        if (size_may_have_changed_) {
+            UpdateSize_();
+            size_may_have_changed_ = false;
+        }
+        return pane->GetLayoutSize();
+    }
+    return Vector2f::Zero();
 }
 
 Vector2f Panel::GetMinSize() const {
@@ -455,21 +433,15 @@ void Panel::PostSetUpIon() {
     // Detect root Pane base size changes.
     auto &root_pane = GetPane();
     root_pane->GetBaseSizeChanged().AddObserver(
-        this, [&](){ size_may_have_changed_ = true; });
-
-    // Update when root Pane contents change.
-    root_pane->GetContentsChanged().AddObserver(
-        this, [&](){ ProcessPaneContentsChange_(); });
+        this, [&](){
+            size_may_have_changed_ = true;
+            size_changed_.Notify();
+        });
 }
 
 Panel::Context & Panel::GetContext() const {
     ASSERT(context_);
     return *context_;
-}
-
-void Panel::ResetSize() {
-    if (auto pane = GetPane())
-        pane->ResetLayoutSize();
 }
 
 const Settings & Panel::GetSettings() const {
@@ -532,6 +504,28 @@ PanelPtr Panel::GetPanel(const Str &name) const {
     return context_->board_agent->GetPanel(name);
 }
 
+void Panel::UpdateSize_() {
+    auto pane = GetPane();
+    ASSERT(pane);
+
+    // Do this until the base size is not changing any more.
+    Vector2f size;
+    while (true) {
+        // Make sure the layout size is at least as large as the base
+        // size. This also makes sure the base sizes in all Panes are up to
+        // date.
+        size = MaxComponents(pane->GetBaseSize(), pane->GetLayoutSize());
+        KLOG('p', GetDesc() << " updating size to " << size);
+
+        // Lay out the Panes if necessary.
+        if (pane->GetLayoutSize() != size)
+            pane->SetLayoutSize(size);
+    }
+
+    // Let the derived class know the Pane size may have changed.
+    UpdateForPaneSizeChange();
+}
+
 void Panel::UpdateInteractivePanes_() {
     if (auto &vk = GetContext().virtual_keyboard)
         focuser_->SetVirtualKeyboard(vk);
@@ -586,10 +580,6 @@ bool Panel::ProcessKeyPress_(const Event &event) {
     }
 
     return handled;
-}
-
-void Panel::ProcessPaneContentsChange_() {
-    UpdateInteractivePanes_();
 }
 
 bool Panel::CanFocusPane_(Pane &pane) const {

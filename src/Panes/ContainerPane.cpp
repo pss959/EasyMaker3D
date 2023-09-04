@@ -58,9 +58,8 @@ void ContainerPane::RemovePane(const PanePtr &pane) {
     ASSERT(index < panes.size());
     panes_.Remove(index);
 
-    // Notify that size and contents may have changed.
+    // Notify that size may have changed.
     BaseSizeChanged();
-    ContentsChanged();
 }
 
 void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
@@ -75,22 +74,16 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     for (const auto &pane: GetPanes())
         parent.AddExtraChild(pane);
 
-    // Notify that size and contents may have changed.
+    // Notify that size may have changed.
     BaseSizeChanged();
-    ContentsChanged();
 }
 
 void ContainerPane::SetLayoutSize(const Vector2f &size) {
-    if (size != GetLayoutSize() || need_to_lay_out_) {
-        Pane::SetLayoutSize(size);
-        KLOG('p', "Laying out Panes for " << GetDesc()
-             << " with size " << size);
+    Pane::SetLayoutSize(size);
+    KLOG('p', "Laying out Panes for " << GetDesc() << " with size " << size);
 
-        // Let the derived class update the layout size in contained Panes.
-        LayOutSubPanes();
-
-        need_to_lay_out_ = false;
-    }
+    // Let the derived class update the layout size in contained Panes.
+    LayOutSubPanes();
 }
 
 WidgetPtr ContainerPane::GetTouchedWidget(const TouchInfo &info,
@@ -138,24 +131,12 @@ Vector2f ContainerPane::AdjustPaneSize(const Pane &pane, const Vector2f &size) {
     return Vector2f(std::max(min[0], size[0]), std::max(min[1], size[1]));
 }
 
-void ContainerPane::ContentsChanged() {
-    // Need to Lay out the sub panes again.
-    if (! need_to_lay_out_) {
-        need_to_lay_out_ = true;
-        contents_changed_.Notify();
-    }
-}
-
 void ContainerPane::ObservePanes_() {
-    // Get notified when the base size or contents of any contained Pane may
-    // have changed.
+    // Get notified when the base size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
         KLOG('o', "CP: " << GetDesc() << " observing " << pane->GetDesc());
         pane->GetBaseSizeChanged().AddObserver(
             this, [&](){ BaseSizeChanged(); });
-        if (auto ctr = std::dynamic_pointer_cast<ContainerPane>(pane))
-            ctr->GetContentsChanged().AddObserver(
-                this, [&](){ ContentsChanged(); });
     }
 }
 
@@ -163,8 +144,6 @@ void ContainerPane::UnobservePanes_() {
     for (auto &pane: GetPanes()) {
         KLOG('o', "CP: " << GetDesc() << " unobserving " << pane->GetDesc());
         pane->GetBaseSizeChanged().RemoveObserver(this);
-        if (auto ctr = std::dynamic_pointer_cast<ContainerPane>(pane))
-            ctr->GetContentsChanged().RemoveObserver(this);
     }
 }
 

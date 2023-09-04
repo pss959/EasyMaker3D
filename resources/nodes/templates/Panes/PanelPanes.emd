@@ -5,19 +5,19 @@ UnscopedNode {
     CLONE "T_TextPane" "T_TitleTextPane" {
       padding:      2,
       font_size:    16,
-      resize_width: True,
+      resize_flags: "kWidth",
       $CENTER_TEXT,
     }
 
     # Button that expands to full width.
     CLONE "T_ButtonPane" "T_FullButton" {
-      resize_width: True,
+      resize_flags: "kWidth",
       padding: 6,
     },
     # Text for T_FullButton.
     CLONE "T_TextPane" "T_FullButtonText" {
       font_size:    14,
-      resize_width: True,
+      resize_flags: "kWidth",
       $CENTER_TEXT,
     },
 
@@ -34,10 +34,10 @@ UnscopedNode {
     # Box used to enclose response buttons.
     BoxPane "T_ResponseButtonBox" {
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       spacing: 10,
       panes: [
-        SpacerPane { resize_width: True },
+        SpacerPane { resize_flags: "kWidth" },
       ]
     },
   ],

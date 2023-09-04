@@ -456,13 +456,7 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
 
     // Allow the Impl_ to set the focused Pane, which requires calling the
     // protected SetFocus() function.
-    auto focus_func = [&](const PanePtr &pane){
-        // First update the size of the FilePanel. This will ensure that its
-        // size is correct and any new buttons are installed properly before
-        // trying to focus them.
-        UpdateSize();
-        SetFocus(pane);
-    };
+    auto focus_func = [&](const PanePtr &pane){ SetFocus(pane); };
     impl_->SetFocusFunc(focus_func);
 }
 

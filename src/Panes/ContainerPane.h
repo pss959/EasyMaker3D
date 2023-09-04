@@ -14,15 +14,15 @@ DECL_SHARED_PTR(ContainerPane);
 /// or more other Pane instances (as opposed to LeafPane). It stores a
 /// collection of sub-panes in the "panes" field.
 ///
+/// The protected LayOutSubPanes() function is used to compute and set the size
+/// and position of all contained Panes. It should be called whenever a change
+/// is made to the size of the ContainerPane or if something changed in one of
+/// the contained Panes to warrant laying out again.
+///
 /// \ingroup Panes
 class ContainerPane : public Pane {
   public:
     virtual ~ContainerPane();
-
-    /// Returns a Notifier invoked when the contents of this ContainerPane may
-    /// have changed. Note that this propagates upward through ContainerPane
-    /// instances.
-    Util::Notifier<> & GetContentsChanged() { return contents_changed_; }
 
     /// Returns a vector of all contained Panes.
     const std::vector<PanePtr> & GetPanes() const { return panes_.GetValue(); }
@@ -95,23 +95,11 @@ class ContainerPane : public Pane {
     /// minimum size of the given Pane.
     static Vector2f AdjustPaneSize(const Pane &pane, const Vector2f &size);
 
-    /// This is invoked when the contents of this Pane may have changed,
-    /// notifying observers.
-    void ContentsChanged();
-
   private:
     /// \name Parsed Fields
     ///@{
     Parser::ObjectListField<Pane> panes_;
     ///@}
-
-    /// Notifies when a possible change is made to the contents of this
-    /// ContainerPane.
-    Util::Notifier<> contents_changed_;
-
-    /// This flag is set when contents changed, meaning that the contained
-    /// panes probably need to be layed out again.
-    bool need_to_lay_out_ = false;
 
     void ObservePanes_();
     void UnobservePanes_();

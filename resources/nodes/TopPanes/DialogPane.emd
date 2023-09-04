@@ -9,8 +9,7 @@ BoxPane "DialogPane" {
       padding:       4,
       font_size:     12,
       min_size:      100 100,
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
     },
 
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {

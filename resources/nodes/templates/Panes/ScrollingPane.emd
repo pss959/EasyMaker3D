@@ -4,18 +4,16 @@ ScrollingPane "T_ScrollingPane" {
   spacing:     2,
   panes: [
     BoxPane "ContentsParent" {  # Contents are added to this.
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
     }
     BoxPane "ScrollBar" {
       background: $BG { color: "#386992" },
       min_size: 16 1,
-      resize_height: True,
+      resize_flags: "kHeight",
       panes: [
         SliderPane "Slider" {
           orientation: "kVertical",
-          resize_width:  True,
-          resize_height: True,
+          resize_flags: "kWidth|kHeight",
           children: [
             Node {
               children: [

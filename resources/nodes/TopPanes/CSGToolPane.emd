@@ -10,18 +10,18 @@ BoxPane "CSGToolPane" {
     BoxPane {
       background: $BG { color: "#bbbbdd" },
       border: $BORDER { width: 2, color: "#000066" },
-      resize_width: True,
+      resize_flags: "kWidth",
       padding: 10,
       spacing: 10,
       panes: [
         CLONE "T_TextPane" {
-          resize_width: True,
+          resize_flags: "kWidth",
           halignment:   "kAlignHCenter",
           font_size:    12,
           text:         "CSG Operation"
         },
         GridPane {
-          resize_width: True,
+          resize_flags: "kWidth",
           row_count:      3,
           column_count:   2,
           row_spacing:    10,

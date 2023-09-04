@@ -22,7 +22,7 @@ BoxPane "BevelToolPane" {
         },
         # Max angle slider on the right.
         BoxPane {
-          resize_height: True,
+          resize_flags: "kHeight",
           panes: [
             CLONE "T_TextPane" {
               font_size: 12,
@@ -38,10 +38,10 @@ BoxPane "BevelToolPane" {
         # Scale slider on the bottom.
         BoxPane {
           orientation: "kHorizontal",
-          resize_width: True,
+          resize_flags: "kWidth",
           panes: [
             CLONE "T_TextPane" {
-              resize_height: True,
+              resize_flags: "kHeight",
               valignment: "kAlignBaseline",
               font_size: 12,
               text: "Scale"

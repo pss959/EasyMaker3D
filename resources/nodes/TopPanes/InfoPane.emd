@@ -11,12 +11,10 @@ BoxPane "InfoPane" {
       background: $BG { color: "#ccccbb" },
       border:     $BORDER { width: 2, color: "#000000" },
       min_size: 300 100,
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       contents: CLONE "T_ClipPane" "Contents" {
         border: $BORDER { width: 1 },
-        resize_width:  True,
-        resize_height: True,
+        resize_flags: "kWidth|kHeight",
       },
     },
 
@@ -31,7 +29,7 @@ BoxPane "InfoPane" {
     # Template for text pane to add to ScrollingPane contents.
     CLONE "T_TextPane" "InfoText" {
       font_size:      13,
-      resize_width:   True,
+      resize_flags:   "kWidth",
       padding:        2,
       disabled_flags: "kTraversal",
       halignment:     "kAlignLeft",

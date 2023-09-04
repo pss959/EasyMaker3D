@@ -1,8 +1,7 @@
 DropdownPane "T_DropdownPane" {
   TEMPLATES: [
     CLONE "T_TextPane" "T_ChoiceText" {
-      resize_width: False,
-      resize_height: False,
+      resize_flags: "",
       font_size: 12,
       halignment: "kAlignLeft",
     },
@@ -13,16 +12,15 @@ DropdownPane "T_DropdownPane" {
   panes: [
     CLONE "T_ButtonPane" "ButtonPane" {
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       padding: 4,
       spacing: 10,
       panes: [
         CLONE "T_ChoiceText" "CurrentChoiceText" {
-          resize_width: True
+          resize_flags: "kWidth"
         },
         CLONE "T_IconPane" "Arrow" {
-          resize_width:  False,
-          resize_height: False,
+          resize_flags: "",
           min_size: 10 5,
           icon_name: "DropdownArrowIcon",
         },
@@ -33,8 +31,7 @@ DropdownPane "T_DropdownPane" {
     CLONE "T_ScrollingPane" "MenuPane" {
       disabled_flags: "kTraversal",
       contents: CLONE "T_ClipPane" "Contents" {
-        resize_width:  True,
-        resize_height: True,
+        resize_flags: "kWidth|kHeight",
       },
     },
 
@@ -44,7 +41,7 @@ DropdownPane "T_DropdownPane" {
       disabled_flags: "kTraversal",
       orientation: "kHorizontal",
       border: $BORDER { width: .5, color: "#000000" },
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         SpacerPane { min_size: 4 1 },
         CLONE "T_ChoiceText" "ButtonText" { padding: 2 }

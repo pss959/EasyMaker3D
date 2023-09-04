@@ -11,8 +11,7 @@
 
 void Pane::AddFields() {
     AddField(min_size_.Init("min_size",           Vector2f(1, 1)));
-    AddField(resize_width_.Init("resize_width",   false));
-    AddField(resize_height_.Init("resize_height", false));
+    AddField(resize_flags_.Init("resize_flags"));
     AddField(background_.Init("background"));
     AddField(border_.Init("border"));
 
@@ -32,11 +31,12 @@ void Pane::CreationDone() {
         }
 
         // Assume the base size needs to be computed at least once.
-        BaseSizeChanged();
+        base_size_may_have_changed_ = true;
     }
 }
 
 const Vector2f & Pane::GetBaseSize() const {
+    // Recompute the base size if necessary.
     if (base_size_may_have_changed_) {
         const Vector2f new_base_size = ComputeBaseSize();
         if (new_base_size != base_size_)
@@ -48,12 +48,29 @@ const Vector2f & Pane::GetBaseSize() const {
 
 void Pane::SetLayoutSize(const Vector2f &size) {
     ASSERTM(size[0] > 0 && size[1] > 0, "for " + GetDesc());
+    ASSERTM(size[0] >= base_size_[0] && size[1] >= base_size_[1],
+            "for " + GetDesc());
     if (layout_size_ != size) {
         layout_size_ = size;
         KLOG('p', "Layout size for " << GetDesc() << " now " << size);
         if (auto border = border_.GetValue())
             border->SetSize(size);
     }
+}
+
+WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
+                                 float &closest_distance) {
+    WidgetPtr intersected_widget;
+    if (const auto interactor = GetInteractor()) {
+        const auto widget = interactor->GetActivationWidget();
+        float dist;
+        if (widget && widget->IsTouched(info, dist) &&
+            dist < closest_distance) {
+            closest_distance = dist;
+            intersected_widget = widget;
+        }
+    }
+    return intersected_widget;
 }
 
 // LCOV_EXCL_START [debug only]
@@ -93,8 +110,7 @@ Str Pane::ToString(bool is_brief) const {
             " LS="  + tostr2(GetLayoutSize()) +
             " SC="  + tostr3(GetScale()) +
             " TR="  + tostr3(GetTranslation()) +
-            " RS=[" + Util::ToString(IsWidthResizable(),  true) +
-            ","     + Util::ToString(IsHeightResizable(), true) + "]";
+            " RS=[" + GetResizeFlags().ToString() + "]";
     }
     return s;
 }
@@ -106,21 +122,6 @@ void Pane::SetMinSize(const Vector2f &size) {
         min_size_ = size;
         BaseSizeChanged();
     }
-}
-
-WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
-                                 float &closest_distance) {
-    WidgetPtr intersected_widget;
-    if (const auto interactor = GetInteractor()) {
-        const auto widget = interactor->GetActivationWidget();
-        float dist;
-        if (widget && widget->IsTouched(info, dist) &&
-            dist < closest_distance) {
-            closest_distance = dist;
-            intersected_widget = widget;
-        }
-    }
-    return intersected_widget;
 }
 
 void Pane::BaseSizeChanged() {

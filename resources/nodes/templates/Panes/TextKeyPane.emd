@@ -10,8 +10,7 @@ TextKeyPane "T_TextKeyPane" {
   panes: [
     CLONE "T_TextPane" "Text" {
       $CENTER_TEXT,
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       resize_text:   False,
       padding: 4,
       font_size: 16,

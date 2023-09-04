@@ -1,13 +1,13 @@
 BoxPane "SettingsPane" {
   CONSTANTS: [
-    BUT_FIELDS: "$CENTER_TEXT, resize_height: False, padding: 4"
+    BUT_FIELDS: "$CENTER_TEXT, resize_flags: \"kWidth\", padding: 4"
   ],
 
   TEMPLATES: [
     BoxPane "T_DirBox" {
       orientation:  "kHorizontal",
       spacing:      4,
-      resize_width: True,
+      resize_flags: "kWidth",
     },
 
     CLONE "T_ButtonPane" "T_ChooseButton" {
@@ -33,22 +33,22 @@ BoxPane "SettingsPane" {
     }
 
     CLONE "T_TextPane" "T_InputLabel" {
-      font_size:     12,
-      resize_height: True,
-      halignment:    "kAlignRight",
-      valignment:    "kAlignVCenter",
+      font_size:    12,
+      resize_flags: "kHeight",
+      halignment:   "kAlignRight",
+      valignment:   "kAlignVCenter",
     }
 
-    SpacerPane "T_Justify" { resize_width: True },  # To justify labels.
-    SpacerPane "T_Spacer0" { min_size: 8 1 }        # After input label.
-    SpacerPane "T_Spacer1" { min_size: 16 1 }        # Between inputs.
+    SpacerPane "T_Justify" { resize_flags: "kWidth" },  # To justify labels.
+    SpacerPane "T_Spacer0" { min_size: 8 1 }            # After input label.
+    SpacerPane "T_Spacer1" { min_size: 16 1 }           # Between inputs.
   ],
 
   background: $BG { color: "#ddbbaa" },
   padding: 8,
   spacing: 14,
   min_size: 500 200,
-  resize_width: True,
+  resize_flags: "kWidth",
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Application Settings" },
     GridPane {
@@ -57,7 +57,7 @@ BoxPane "SettingsPane" {
       column_spacing:    2,
       row_spacing:       12,
       expanding_columns: [1],  # Settings part of each row expands.
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         # === Row 0.
         CLONE "T_Label" { text: "Session Directory:" },
@@ -167,7 +167,7 @@ BoxPane "SettingsPane" {
                 }
               ],
             }
-            SpacerPane { resize_width: True },
+            SpacerPane { resize_flags: "kWidth" },
           ],
         },
         SpacerPane {},

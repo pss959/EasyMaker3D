@@ -1,13 +1,13 @@
 LabeledSliderPane "T_LabeledHSliderPane" {
   TEMPLATES: [
     CLONE "T_TextPane" "T_LSPTextPane" {
-      resize_width: True,
+      resize_flags: "kWidth",
       font_size:   10,
       valignment: "kAlignTop",
     }
   ],
   padding: 2,
-  resize_width: True,
+  resize_flags: "kWidth",
   panes: [
     # Top row: slider.
     CLONE "T_SliderPane" "Slider" {},
@@ -15,7 +15,7 @@ LabeledSliderPane "T_LabeledHSliderPane" {
     # Bottom row: text.
     BoxPane {
       orientation:  "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         SpacerPane { min_size: 4 1 },
         CLONE "T_LSPTextPane" "MinText"     { halignment: "kAlignLeft" },

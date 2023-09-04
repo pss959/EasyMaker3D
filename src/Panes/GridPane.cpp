@@ -76,13 +76,14 @@ void GridPane::LayOutSubPanes() {
 
             // If the Pane does not resize, use its base size (centered in the
             // cell). Otherwise, use the full cell size.
+            const auto &resize_flags = pane.GetResizeFlags();
             Vector2f offset(0, 0);
             Vector2f pane_size = pane.GetBaseSize();
-            if (pane.IsWidthResizable())
+            if (resize_flags.Has(Pane::ResizeFlag::kWidth))
                 pane_size[0] = cell_size[0];
             else
                 offset[0] = .5f * (cell_size[0] - pane_size[0]);
-            if (pane.IsHeightResizable())
+            if (resize_flags.Has(Pane::ResizeFlag::kHeight))
                 pane_size[1] = cell_size[1];
             else
                 offset[1] = -.5f * (cell_size[1] - pane_size[1]);

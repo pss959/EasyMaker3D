@@ -32,7 +32,7 @@ BoxPane "ExtrudedToolPane" {
       # sides.
       orientation:  "kHorizontal",
       spacing:      8,
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         CLONE "T_ButtonPane" "SetSides" {
           padding: 6,
@@ -42,18 +42,18 @@ BoxPane "ExtrudedToolPane" {
           padding: 2,
           panes: [
             CLONE "T_TextInputPane" "SidesText" {
-              resize_width: False,
+              resize_flags: "",
               min_size: 40 1,
             },
           ]
         },
         CLONE "T_TextPane" {
-          resize_height: True,
+          resize_flags: "kHeight",
           font_size: 12,
           text: "Sides",
         },
         CLONE "T_LabeledHSliderPane" "SidesSlider" {
-          resize_height: True,
+          resize_flags: "kHeight",
           range:     3 60,
           precision: 1,
         },

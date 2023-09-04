@@ -7,7 +7,7 @@ UnscopedNode {
 
     # Other shorthand.
     CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",
-    RESIZE_WH:   "resize_width: True, resize_height: True",
+    RESIZE_WH:   "resize_flags: \"kWidth|kHeight\"",
   ],
   TEMPLATES: [
     # Pane base types.

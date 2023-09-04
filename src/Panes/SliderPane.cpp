@@ -44,10 +44,10 @@ void SliderPane::CreationDone() {
         // Process the orientation.
         ASSERT(GetChildCount() == 1U);
         if (GetOrientation() == Orientation::kHorizontal) {
-            SetWidthResizable(true);
+            SetResizeFlags(GetResizeFlags().Add(ResizeFlag::kWidth));
         }
         else {
-            SetHeightResizable(true);
+            SetResizeFlags(GetResizeFlags().Add(ResizeFlag::kHeight));
             GetChild(0)->SetRotation(
                 Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
                                             Anglef::FromDegrees(90)));

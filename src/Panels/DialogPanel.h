@@ -30,14 +30,11 @@ class DialogPanel : public Panel {
     void SetChoiceResponse(const Str &text0, const Str &text1,
                            bool focus_first);
 
-    /// Redefines this to reset the size so the next invocation uses the proper
-    /// size.
-    virtual void Close(const Str &result) override;
-
   protected:
     DialogPanel() {}
 
     virtual void InitInterface() override;
+    virtual void UpdateInterface() override;
 
   private:
     TextPanePtr   message_;

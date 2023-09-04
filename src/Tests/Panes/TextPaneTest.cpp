@@ -70,7 +70,7 @@ TEST_F(TextPaneTest, Text) {
     EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
 
     // Repeat with resizable height.
-    text->SetHeightResizable(true);
+    text->SetResizeFlags(text->GetResizeFlags().Add(Pane::ResizeFlag::kHeight));
     EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
 
     text->SetLayoutSize(Vector2f(100, 60));
@@ -86,7 +86,8 @@ TEST_F(TextPaneTest, Text) {
     EXPECT_VECS_CLOSE2(Vector2f(352, 44), text->GetBaseSize());
 
     // Repeat with fixed height.
-    text->SetHeightResizable(false);
+    text->SetResizeFlags(
+        text->GetResizeFlags().Remove(Pane::ResizeFlag::kHeight));
     text->SetLayoutSize(Vector2f(200, 60));
     EXPECT_VECS_CLOSE2(Vector2f(352, 44), text->GetBaseSize());
 }

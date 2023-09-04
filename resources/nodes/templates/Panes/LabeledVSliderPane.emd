@@ -9,7 +9,7 @@ LabeledSliderPane "T_LabeledVSliderPane" {
   ],
   orientation: "kHorizontal",
   padding: 2,
-  resize_height: True,
+  resize_flags: "kHeight",
   panes: [
     # Left side: slider.
     CLONE "T_SliderPane" "Slider" { orientation: "kVertical" },
@@ -17,14 +17,13 @@ LabeledSliderPane "T_LabeledVSliderPane" {
     # Right side: text.
     BoxPane {
       orientation:  "kVertical",
-      resize_width: True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       panes: [
         SpacerPane { min_size: 1 4 },
         CLONE "T_LSPTextPane" "MaxText"     {},
-        SpacerPane { resize_height: True },
+        SpacerPane { resize_flags: "kHeight" },
         CLONE "T_LSPTextPane" "CurrentText" { color: "#3333dd" },
-        SpacerPane { resize_height: True },
+        SpacerPane { resize_flags: "kHeight" },
         CLONE "T_LSPTextPane" "MinText"     {},
         SpacerPane { min_size: 1 4 },
       ]

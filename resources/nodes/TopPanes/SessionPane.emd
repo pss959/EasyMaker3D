@@ -14,12 +14,12 @@ BoxPane "SessionPane" {
         },
       ],
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         CLONE "T_IconButton" "Help" {
           panes: [ CLONE "T_Icon" { icon_name: "HelpIcon" } ]
         },
-        SpacerPane { resize_width: True },
+        SpacerPane { resize_flags: "kWidth" },
         CLONE "T_IconButton" "Settings" {
           panes: [ CLONE "T_Icon" { icon_name: "SettingsIcon" } ]
         },
@@ -27,8 +27,7 @@ BoxPane "SessionPane" {
     },
     BoxPane {   # Main action buttons.
       CONSTANTS: [BUTTON_TEXT: "CLONE \"T_FullButtonText\" \"ButtonText\""],
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       spacing: 8,
       panes: [
         CLONE "T_FullButton" "Continue" {

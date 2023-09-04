@@ -235,9 +235,10 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
     // Fraction of the pane covered by the text.
     Vector2f pane_fraction;
 
-    // If IsHeightResizable() and resize_text_ are both true, text is scaled up
+    // If Pane height is resizable and resize_text_ is true, text is scaled up
     // in Y from the specified font size.
-    const bool resize_text_height = IsHeightResizable() && resize_text_;
+    const bool resize_text_height =
+        GetResizeFlags().Has(ResizeFlag::kHeight) && resize_text_;
 
     // If the height of the text can be resized, there are two cases, based on
     // the aspect ratios of the text and the unpadded Pane size:

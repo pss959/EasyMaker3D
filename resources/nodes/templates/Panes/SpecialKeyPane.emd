@@ -10,15 +10,13 @@ SpecialKeyPane "T_SpecialKeyPane" {
   panes: [
     CLONE "T_TextPane" "Text" {  # Disabled in code if icon_name is used.
       $CENTER_TEXT,
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       resize_text:   False,
       padding: 4,
       font_size: 16,
     },
     CLONE "T_IconPane" "Icon" {  # Disabled in code if no icon_name.
-      resize_width: True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       icon_name: "DotIcon",
     }
   ]

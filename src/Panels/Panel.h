@@ -7,6 +7,7 @@
 #include "Base/Memory.h"
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
+#include "Util/Notifier.h"
 
 #include <vector>
 
@@ -55,6 +56,9 @@ class Panel : public SG::Node {
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
+    /// \name Initialization
+    ///@{
+
     /// Sets a Context that can be used by derived Panel classes during their
     /// operation. Derived classes can add their own behavior, but must call
     /// this version.
@@ -64,9 +68,14 @@ class Panel : public SG::Node {
     /// present in the Context.
     void SetTestContext(const ContextPtr &context);
 
-    /// Returns true if the size of this Panel may have changed since it was
-    /// last set.
-    bool SizeMayHaveChanged() const { return size_may_have_changed_; }
+    ///@}
+
+    /// \name Size and Position
+    ///@{
+
+    /// Returns a Notifier invoked when the size of this Panel changed due to
+    /// an interactive resize or a change within the Pane hierarchy.
+    Util::Notifier<> & GetSizeChanged() { return size_changed_; }
 
     /// Returns the root ContainerPane for the Panel.
     const ContainerPanePtr & GetPane() const { return pane_; }
@@ -85,17 +94,15 @@ class Panel : public SG::Node {
     void SetSize(const Vector2f &size);
 
     /// Returns the current size of the Panel, which is the size of the root
-    /// Pane if it has one, or zero otherwise.
-    Vector2f GetSize() const;
-
-    /// Makes sure everything in the Panel is up to date with its current size
-    /// and returns the updated size. This needs to be called when contents may
-    /// have changed.
-    Vector2f UpdateSize();
+    /// Pane if it has one, or zero otherwise. Updates the size first if
+    /// necessary.
+    Vector2f GetSize();
 
     /// Returns the minimum size of the Panel, which is the base size of the
     /// root Pane if it has one, or zero otherwise.
     Vector2f GetMinSize() const;
+
+    ///@}
 
     /// This is called by a Board to potentially handle an event. The base
     /// class defines this to handle escape key, navigation, etc..
@@ -163,10 +170,6 @@ class Panel : public SG::Node {
     /// size-dependent. THis will be called at least once when the original
     /// Pane size is determined. The base class defines this to do nothing.
     virtual void UpdateForPaneSizeChange() {}
-
-    /// Allows derived classes to reset the Panel size to zero so that the next
-    /// time it is opened the base size is used.
-    void ResetSize();
 
     /// Indicates whether the Panel should trap valuator events, so that the
     /// scroll wheel does not affect anything else in the app. The base class
@@ -252,8 +255,14 @@ class Panel : public SG::Node {
     /// Current attachment/visibility status.
     Status status_ = Status::kUnattached;
 
-    /// Set to true if the Panel size may have changed.
     bool size_may_have_changed_ = false;
+
+    /// Notifies when a change is made to the size of this Panel.
+    Util::Notifier<> size_changed_;
+
+    /// Makes sure everything in the Panel is up to date with its current size.
+    /// This needs to be called when the Pane sizes may have changed.
+    void UpdateSize_();
 
     /// Finds all interactive Panes and sets up the Focuser_.
     void UpdateInteractivePanes_();
@@ -265,9 +274,6 @@ class Panel : public SG::Node {
 
     /// Handles an event with a key press.
     bool ProcessKeyPress_(const Event &event);
-
-    /// This is invoked when the contents of the root Pane have changed.
-    void ProcessPaneContentsChange_();
 
     /// Returns true if the given Pane can be focused.
     bool CanFocusPane_(Pane &pane) const;

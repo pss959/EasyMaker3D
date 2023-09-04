@@ -106,6 +106,7 @@ class Board::Impl_ {
     float             panel_scale_ = TK::kPanelToWorldScale;
     bool              is_move_enabled_ = true;
     bool              is_size_enabled_ = true;
+    bool              size_may_have_changed_ = false;
     Vector3f          start_pos_;               ///< Used for computing motion.
 
     // Grip state.
@@ -130,7 +131,7 @@ class Board::Impl_ {
     void Size_();
 
     /// Updates the Board in response to a size change in the given Panel.
-    void UpdateSizeFromPanel_(const Panel &panel);
+    void UpdateSizeFromPanel_(const Vector2f &panel_size);
 
     /// Updates the sizes of the canvas and the Frame.
     void UpdateCanvasAndFrame_();
@@ -235,12 +236,13 @@ void Board::Impl_::Show(bool shown) {
 
 void Board::Impl_::UpdateSizeIfNecessary() {
     if (auto cur_panel = GetCurrentPanel()) {
-        if (cur_panel->SizeMayHaveChanged()) {
+        if (size_may_have_changed_) {
             // Make sure the Panel has the correct size and update the Board
             // size to match if necessary.
             KLOG('q', root_node_.GetDesc() << "detected Panel size change");
-            if (cur_panel->UpdateSize() != panel_size_)
-                UpdateSizeFromPanel_(*cur_panel);
+            if (cur_panel->GetSize() != panel_size_)
+                UpdateSizeFromPanel_(cur_panel->GetSize());
+            size_may_have_changed_ = false;
         }
     }
 }
@@ -384,6 +386,7 @@ void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
         cur_panel->SetStatus(is_pop ? Panel::Status::kUnattached :
                              Panel::Status::kHidden);
         canvas_->RemoveChild(cur_panel);
+        cur_panel->GetSizeChanged().RemoveObserver(this);
     }
     if (new_panel) {
         new_panel->SetStatus(Panel::Status::kVisible);
@@ -398,7 +401,12 @@ void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
         if (new_panel->GetSize() == Vector2f::Zero())
             new_panel->SetSize(new_panel->GetMinSize());
         else
-            UpdateSizeFromPanel_(*new_panel);
+            UpdateSizeFromPanel_(new_panel->GetSize());
+
+        // Track size changes.
+        size_may_have_changed_ = false;
+        new_panel->GetSizeChanged().AddObserver(
+            this, [&](){ size_may_have_changed_ = true; });
     }
 }
 
@@ -525,11 +533,11 @@ void Board::Impl_::Size_() {
     UpdateCanvasAndFrame_();
 }
 
-void Board::Impl_::UpdateSizeFromPanel_(const Panel &panel) {
+void Board::Impl_::UpdateSizeFromPanel_(const Vector2f &panel_size) {
     ASSERT(canvas_);
 
     // Use the Panel's new size.
-    panel_size_ = panel.GetSize();
+    panel_size_ = panel_size;
     world_size_ = panel_scale_ * panel_size_;
 
     KLOG('p', root_node_.GetDesc() << " setting size to " << panel_size_);

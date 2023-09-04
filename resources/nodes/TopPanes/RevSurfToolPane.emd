@@ -29,17 +29,17 @@ BoxPane "RevSurfToolPane" {
     # Sweep angle slider on the bottom.
     BoxPane {
       orientation:  "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         CLONE "T_TextPane" {
-          resize_height: True,
+          resize_flags: "kHeight",
           valignment: "kAlignBaseline",
           font_size: 12,
           text: "Sweep Angle"
         },
         SpacerPane { min_size: 4 1 },
         CLONE "T_LabeledHSliderPane" "SweepAngleSlider" {
-          resize_width: True,
+          resize_flags: "kWidth",
           range:        1 360,
           precision:    .5
         },

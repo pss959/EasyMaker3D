@@ -51,7 +51,8 @@ class BoxPane : public ContainerPane {
 
     /// Returns true if the given Pane expands in the given dimension.
     static bool Expands_(const Pane &pane, int dim) {
-        return dim == 0 ? pane.IsWidthResizable() : pane.IsHeightResizable();
+        return pane.GetResizeFlags().Has(
+            dim == 0 ? Pane::ResizeFlag::kWidth : Pane::ResizeFlag::kHeight);
     }
 
     friend class Parser::Registry;

@@ -14,7 +14,7 @@ BoxPane "HelpPane" {
       border:     $BORDER { width: 2 },
       background: $BG     { color: "#cedbef" },
       padding: 10,
-      resize_width: True,
+      resize_flags: "kWidth",
       font_name: "Verdana-Italic",
       font_size: 14,
       line_spacing: 1.4,
@@ -24,12 +24,12 @@ BoxPane "HelpPane" {
     CLONE "T_VSpacer" {}
 
     CLONE "T_FullButton" "UserGuide" {
-      resize_width:  True,
+      resize_flags: "kWidth",
       panes: [ $BUTTON_TEXT { text: "Open User Guide in browser" }]
     },
 
     CLONE "T_FullButton" "CheatSheet" {
-      resize_width:  True,
+      resize_flags: "kWidth",
       panes: [ $BUTTON_TEXT { text: "Open Cheat Sheet in browser" }]
     },
 

@@ -9,7 +9,7 @@ BoxPane "ActionPane" {
     # Pane used as a category heading.
     CLONE "T_TextPane" "CategoryHeader" {
       font_size: 12,
-      resize_width: True,
+      resize_flags: "kWidth",
       padding: 4,
       $CENTER_TEXT,
     },
@@ -18,7 +18,7 @@ BoxPane "ActionPane" {
     CLONE "T_ButtonPane" "ActionButton" {
       is_toggle:   True,
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       spacing: 8,
       padding: 2,
       panes: [
@@ -29,7 +29,7 @@ BoxPane "ActionPane" {
         CLONE "T_TextPane" "Text" {
           halignment: "kAlignLeft",
           valignment: "kAlignVCenter",
-          resize_height: True,
+          resize_flags: "kHeight",
           font_size:  10,
         },
       ],
@@ -41,13 +41,11 @@ BoxPane "ActionPane" {
       border:        $BORDER { width: 2, color: "#000000" },
       padding:       2,
       min_size:      300 400,
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       contents: CLONE "T_ClipPane" "Contents" {
         border: $BORDER { width: 1 },
         padding:       2,
-        resize_width:  True,
-        resize_height: True,
+        resize_flags: "kWidth|kHeight",
       },
     }
 

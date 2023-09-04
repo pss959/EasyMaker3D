@@ -1,7 +1,6 @@
 TaperProfilePane "T_TaperProfilePane" {
-  min_size:      300 300,
-  resize_width:  True,
-  resize_height: True,
+  min_size:     300 300,
+  resize_flags: "kWidth|kHeight",
 
   children: [ CLONE "T_ProfilePaneBase" {} ]
 }

@@ -37,7 +37,7 @@ void DialogPanel::InitInterface() {
     AddButtonFunc("Button1", [&](){ Close(text1_->GetText()); });
 }
 
-void DialogPanel::Close(const Str &result) {
-    Panel::Close(result);
-    ResetSize();
+void DialogPanel::UpdateInterface() {
+    // Always recompute the layout size, since it may be smaller now.
+    GetSizeChanged().Notify();
 }

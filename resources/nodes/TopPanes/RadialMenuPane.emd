@@ -6,26 +6,26 @@ BoxPane "RadialMenuPane" {
 
   TEMPLATES: [
     CLONE "T_TextPane" "T_BoxTitle" {
-      resize_width: True,
+      resize_flags: "kWidth",
       halignment:   "kAlignHCenter",
       font_size:    12,
     },
     CLONE "T_TextPane" "T_SmallTitle" {
-      resize_width: True,
+      resize_flags: "kWidth",
       halignment:   "kAlignHCenter",
       font_size:    10,
     },
-    SpacerPane "T_HSpacer" { resize_width: True },
+    SpacerPane "T_HSpacer" { resize_flags: "kWidth" },
     BoxPane "T_CountPane" {
       orientation:  "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       spacing:      6,
     },
     BoxPane "T_ControllerPane" {
       orientation: "kHorizontal",
       panes: [
         BoxPane {
-          resize_width: True,
+          resize_flags: "kWidth",
           spacing:      2,
           panes: [
             CLONE "T_SmallTitle" { text: "Button Count" },
@@ -78,7 +78,7 @@ BoxPane "RadialMenuPane" {
     # Radio buttons for the menu mode.
     BoxPane {
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         CLONE "T_HSpacer" {},
         BoxPane {

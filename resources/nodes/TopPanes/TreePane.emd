@@ -21,7 +21,7 @@ BoxPane "TreePane" {
     # Switcher for visibility buttons.
     SwitcherPane "T_VisSwitcher" {
       min_size:  8 8,
-      resize_height: True,
+      resize_flags: "kHeight",
       panes: [
         $ICON { $VIEW_BUTTON_VALS, icon_name: "DotIcon" },  # No-op
         CLONE "T_ViewButton" "HideButton" {
@@ -36,7 +36,7 @@ BoxPane "TreePane" {
     # Switcher for expand/collapse buttons.
     SwitcherPane "T_ExpSwitcher" {
       min_size:  8 8,
-      resize_height: True,
+      resize_flags: "kHeight",
       panes: [
         $ICON { $VIEW_BUTTON_VALS, icon_name: "DotIcon" },  # No-op
         CLONE "T_ViewButton" "CollapseButton" {
@@ -52,12 +52,11 @@ BoxPane "TreePane" {
     # clone of T_ButtonPane because it has no border and a different inactive
     # color.
     ButtonPane "T_ModelButton" {
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       panes: [
         CLONE "T_TextPane" "Text" {
           font_size: 8,
-          resize_width: True,
+          resize_flags: "kWidth",
           halignment: "kAlignLeft",
         }
       ],
@@ -80,7 +79,7 @@ BoxPane "TreePane" {
     BoxPane "SessionRow" {
       border:     $BORDER { width: 1 },
       orientation: "kHorizontal",
-      resize_width:  True,
+      resize_flags: "kWidth",
       padding: 1,
       spacing: 4,
       min_size: 1 12,
@@ -89,7 +88,7 @@ BoxPane "TreePane" {
         CLONE "T_TextPane" "SessionString" {
           background: $BG { color: "#e4bbe4" },
           font_size: 10,
-          resize_width: True,
+          resize_flags: "kWidth",
           halignment: "kAlignLeft",
         },
         CLONE "T_ActionButton" "MoveUp" {
@@ -104,10 +103,10 @@ BoxPane "TreePane" {
     # Basis for creating each Model row in the scrolling area.
     BoxPane "ModelRow" {
       disabled_flags: "kTraversal",
-      orientation: "kHorizontal",
-      resize_width:  True,
-      min_size: 1 10,
-      spacing: 1,
+      orientation:    "kHorizontal",
+      resize_flags:   "kWidth",
+      min_size:       1 10,
+      spacing:        1,
       panes: [
         CLONE "T_VisSwitcher" "VisSwitcher" {},
         CLONE "T_ExpSwitcher" "ExpSwitcher" {},
@@ -120,14 +119,12 @@ BoxPane "TreePane" {
     # Scrolling tree view of Models.
     CLONE "T_ScrollingPane" "Scroller" {
       border:        $BORDER { width: 1 },
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       contents: CLONE "T_ClipPane" "Contents" {
         border: $BORDER { width: 1 },
         padding: 2,
         spacing: .2,
-        resize_width:  True,
-        resize_height: True,
+        resize_flags: "kWidth|kHeight",
       },
     },
   ],

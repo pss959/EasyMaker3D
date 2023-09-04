@@ -15,17 +15,17 @@ BoxPane "TaperToolPane" {
     # Axis radio buttons on the bottom.
     BoxPane {
       TEMPLATES: [
-        CLONE "T_TextPane" "T_Label" { resize_height: True },
+        CLONE "T_TextPane" "T_Label" { resize_flags: "kHeight" },
         SpacerPane "T_Spacer1" { min_size: 20 1 },  # Between axes.
         SpacerPane "T_Spacer2" { min_size:  4 1 },  # Between label and button.
       ],
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       panes: [
         CLONE "T_Label" { text: "Taper Along Axis:" },
         CLONE "T_Spacer1" {},
 
-        CLONE "T_RadioButtonPane" "X" { resize_height: True },
+        CLONE "T_RadioButtonPane" "X" { resize_flags: "kHeight" },
         CLONE "T_Spacer2" {},
         CLONE "T_Label" { text: "X" },
 

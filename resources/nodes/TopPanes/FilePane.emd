@@ -12,7 +12,7 @@ BoxPane "FilePane" {
         ICON_SIZE: "min_size: 24 24"
       ],
       orientation: "kHorizontal",
-      resize_width: True,
+      resize_flags: "kWidth",
       spacing: 2,
       panes: [
         # Icon buttons.
@@ -39,7 +39,7 @@ BoxPane "FilePane" {
         CLONE "T_TextPane" "FormatLabel" {
           padding: 2,
           min_size: 1 18,
-          resize_width:  True,
+          resize_flags: "kWidth",
           halignment: "kAlignRight",
           valignment: "kAlignVCenter",
           text: "File Format",
@@ -56,14 +56,12 @@ BoxPane "FilePane" {
       background: $BG { color: "#6688aa" },
       border:     $BORDER { width: 2, color: "#000000" },
       min_size: 200 100,  # Clipped area will never be smaller than this.
-      resize_width:  True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
       contents: CLONE "T_ClipPane" "Contents" {
         border:        $BORDER { width: 1 },
         padding:       2,
         spacing:       0,
-        resize_width:  True,
-        resize_height: True,
+        resize_flags: "kWidth|kHeight",
       },
     },
 
@@ -75,7 +73,7 @@ BoxPane "FilePane" {
         CLONE "T_CheckboxPane" "HiddenFiles" {},
         CLONE "T_TextPane" {
           min_size:      100 10,
-          resize_height: True,
+          resize_flags: "kHeight",
           padding:       2,
           halignment:    "kAlignLeft",
           valignment:    "kAlignVCenter",
@@ -102,13 +100,12 @@ BoxPane "FilePane" {
       orientation: "kHorizontal",
       border: $BORDER { width: .5, color: "#000000" },
       padding: 2,
-      resize_width: true,
+      resize_flags: "kWidth",
       panes: [
         SpacerPane { min_size: 4 1 },
         $BUTTONTEXT {
           min_size: 1 10,
-          resize_width:  True,
-          resize_height: True,
+          resize_flags: "kWidth|kHeight",
           halignment:    "kAlignLeft",
         }
       ],
