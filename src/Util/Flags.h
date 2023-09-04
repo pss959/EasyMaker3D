@@ -13,6 +13,8 @@ namespace Util {
 template <typename EnumClass>
 class Flags {
   public:
+    using FlagsType = Flags<EnumClass>;
+
     Flags()  {}
     ~Flags() {}
 
@@ -53,8 +55,15 @@ class Flags {
     }
 
     /// Returns true if any of the flags overlap.
-    bool HasAnyFrom(const Flags<EnumClass> &other_flags) const {
+    bool HasAnyFrom(const FlagsType &other_flags) const {
         return flags_ & other_flags.flags_;
+    }
+
+    /// Adds a flag to an existing instance and returns the result.
+    FlagsType AddFlag(EnumClass flag) const {
+        Flags f = *this;
+        f.Set(flag);
+        return f;
     }
 
     /// Converts the value to a string formed by putting a bitwise-or '|'
@@ -73,7 +82,7 @@ class Flags {
 
     /// Parses a string in the format returned by ToString, setting the
     /// corresponding flags in the given instance. Returns false on error.
-    static bool FromString(const Str &str, Flags<EnumClass> &flags) {
+    static bool FromString(const Str &str, FlagsType &flags) {
         EnumClass e;
         for (const Str &word: ion::base::SplitString(str, "|")) {
             const Str &es = ion::base::TrimStartAndEndWhitespace(word);
@@ -85,7 +94,7 @@ class Flags {
     }
 
     /// Equality operator.
-    bool operator==(const Flags<EnumClass> &f) const = default;
+    bool operator==(const FlagsType &f) const = default;
 
   private:
     uint32_t flags_ = 0;
