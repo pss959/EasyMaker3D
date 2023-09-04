@@ -62,14 +62,16 @@ void ActionPanel::UpdateInterface() {
     // Highlight the current button.
     ChangeHighlight_(current_action_, true);
 
-    // Scroll to the current button.
-    auto sp = GetPane()->FindTypedPane<ScrollingPane>("ScrollingPane");
-    sp->ScrollToShowSubPane(*button_map_[current_action_]);
-
     SetFocus("Cancel");
 }
 
 void ActionPanel::ChangeHighlight_(Action action, bool state) {
     ASSERT(button_map_.contains(action));
     button_map_[action]->GetButton().SetToggleState(state);
+
+    // Scroll to the highlighted button.
+    if (state) {
+        auto sp = GetPane()->FindTypedPane<ScrollingPane>("ScrollingPane");
+        sp->ScrollToShowSubPane(*button_map_[action]);
+    }
 }

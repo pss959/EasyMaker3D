@@ -139,7 +139,6 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
     RadialMenuPtr     menu = hand == Hand::kLeft ? left_menu_ : right_menu_;
 
     auto ap = GetTypedPanel<ActionPanel>("ActionPanel");
-    ap->SetAction(info->GetButtonAction(index));
 
     auto result_func = [ap, info, menu, index](const Str &result){
         if (result == "Accept") {
@@ -149,6 +148,9 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
         }
     };
     GetContext().board_agent->PushPanel(ap, result_func);
+
+    // Do this after the ActionPanel is visible so it scrolls properly.
+    ap->SetAction(info->GetButtonAction(index));
 }
 
 void RadialMenuPanel::AcceptEdits_() {
