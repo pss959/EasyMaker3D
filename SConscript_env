@@ -353,13 +353,15 @@ ion_test_env.Append(
         '#submodules/googletest/googletest/include',
         '#submodules/googletest/googlemock/include',
     ],
-    LIBPATH = ['#/$BUILD_DIR/googletest'],
+    LIBPATH = ['#/$BUILD_DIR/ionsrc', '#/$BUILD_DIR/googletest'],
     LIBS    = ['$ION_LIB_NAME', 'gtest_main', 'gtest'],
     CXXFLAGS = [
         '-Wno-nonnull-compare',   # Not sure why DCHECK triggers this.
         '-Wno-unused-function',   # Some tests define unused static functions.
     ],
 )
+
+AddRpath_(ion_test_env, '$BUILD_DIR/ionsrc', make_abs=True)
 
 # -----------------------------------------------------------------------------
 # Main application library environment.
