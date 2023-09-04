@@ -60,9 +60,16 @@ class Flags {
     }
 
     /// Adds a flag to an existing instance and returns the result.
-    FlagsType AddFlag(EnumClass flag) const {
+    FlagsType Add(EnumClass flag) const {
         Flags f = *this;
         f.Set(flag);
+        return f;
+    }
+
+    /// Removes a flag to an existing instance and returns the result.
+    FlagsType Remove(EnumClass flag) const {
+        Flags f = *this;
+        f.Reset(flag);
         return f;
     }
 
