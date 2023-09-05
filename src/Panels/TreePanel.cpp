@@ -50,7 +50,7 @@ class TreePanel::Impl_ {
         UpdateButtons_();
     }
 
-    void InitInterface(ContainerPane &root_pane);
+    void InitInterface(Pane &root_pane);
     void UpdateInterface();
 
     void SetAgents(const ActionAgentPtr &action_agent,
@@ -396,18 +396,19 @@ void TreePanel::Impl_::SetSessionString(const Str &str) {
         session_text_pane_->SetText(str);
 }
 
-void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
-    scrolling_pane_ = root_pane.FindTypedPane<ScrollingPane>("Scroller");
+void TreePanel::Impl_::InitInterface(Pane &root_pane) {
+    scrolling_pane_ = root_pane.FindTypedSubPane<ScrollingPane>("Scroller");
 
     // Set up the session row text.
-    auto session_row_pane = root_pane.FindTypedPane<ContainerPane>("SessionRow");
+    auto session_row_pane =
+        root_pane.FindTypedSubPane<ContainerPane>("SessionRow");
     session_text_pane_ =
-        session_row_pane->FindTypedPane<TextPane>("SessionString");
+        session_row_pane->FindTypedSubPane<TextPane>("SessionString");
 
     // And its visibility switch with show/hide callbacks.
-    auto vsp = session_row_pane->FindTypedPane<SwitcherPane>("VisSwitcher");
-    auto show = vsp->FindTypedPane<ButtonPane>("ShowButton");
-    auto hide = vsp->FindTypedPane<ButtonPane>("HideButton");
+    auto vsp = session_row_pane->FindTypedSubPane<SwitcherPane>("VisSwitcher");
+    auto show = vsp->FindTypedSubPane<ButtonPane>("ShowButton");
+    auto hide = vsp->FindTypedSubPane<ButtonPane>("HideButton");
     show->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &){ root_model_->ShowAllModels(); });
     hide->GetButton().GetClicked().AddObserver(
@@ -424,14 +425,15 @@ void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
                 action_agent_->ApplyAction(is_up ? Action::kMovePrevious :
                                            Action::kMoveNext); });
     };
-    move_up_pane_   = session_row_pane->FindTypedPane<ButtonPane>("MoveUp");
-    move_down_pane_ = session_row_pane->FindTypedPane<ButtonPane>("MoveDown");
+    move_up_pane_ = session_row_pane->FindTypedSubPane<ButtonPane>("MoveUp");
+    move_down_pane_ =
+        session_row_pane->FindTypedSubPane<ButtonPane>("MoveDown");
     add_but(*move_up_pane_,   true);
     add_but(*move_down_pane_, false);
 
     // ModelRow_ instances will be created and added later. Save the Pane used
     // to create them
-    model_row_pane_ = root_pane.FindTypedPane<ContainerPane>("ModelRow");
+    model_row_pane_ = root_pane.FindTypedSubPane<ContainerPane>("ModelRow");
 
     // Set up rectangle selection. Turn off intersections with all buttons
     // during a drag so that the rectangle selection Widget is hit.
@@ -468,7 +470,7 @@ void TreePanel::Impl_::UpdateModelRows_() {
                      height, model_rows);
 
     // Create Panes for each row and replace the contents of the ScrollingPane.
-    std::vector<PanePtr> row_panes;
+    Pane::PaneVec row_panes;
     for (const auto &row: model_rows)
         row_panes.push_back(row->GetRowPane());
     ASSERT(scrolling_pane_->GetContentsPane());
@@ -594,11 +596,13 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane, size_t index,
     row_pane_ = pane.CloneTyped<ContainerPane>(
         true, "ModelRow_" + Util::ToString(index));
 
-    vis_switcher_pane_ = row_pane_->FindTypedPane<SwitcherPane>("VisSwitcher");
-    exp_switcher_pane_ = row_pane_->FindTypedPane<SwitcherPane>("ExpSwitcher");
-    spacer_pane_       = row_pane_->FindTypedPane<SpacerPane>("Spacer");
-    button_pane_       = row_pane_->FindTypedPane<ButtonPane>("ModelButton");
-    text_pane_         = button_pane_->FindTypedPane<TextPane>("Text");
+    vis_switcher_pane_ =
+        row_pane_->FindTypedSubPane<SwitcherPane>("VisSwitcher");
+    exp_switcher_pane_ =
+        row_pane_->FindTypedSubPane<SwitcherPane>("ExpSwitcher");
+    spacer_pane_       = row_pane_->FindTypedSubPane<SpacerPane>("Spacer");
+    button_pane_       = row_pane_->FindTypedSubPane<ButtonPane>("ModelButton");
+    text_pane_         = button_pane_->FindTypedSubPane<TextPane>("Text");
 
     const auto &model = sel_path_.GetModel();
     ASSERT(! model->GetName().empty());
@@ -627,8 +631,8 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane, size_t index,
 void TreePanel::Impl_::ModelRow_::SetShowHideFunc(const RowFunc &func) {
     ASSERT(func);
     show_hide_func_ = func;
-    auto show = vis_switcher_pane_->FindTypedPane<ButtonPane>("ShowButton");
-    auto hide = vis_switcher_pane_->FindTypedPane<ButtonPane>("HideButton");
+    auto show = vis_switcher_pane_->FindTypedSubPane<ButtonPane>("ShowButton");
+    auto hide = vis_switcher_pane_->FindTypedSubPane<ButtonPane>("HideButton");
     show->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &){ show_hide_func_(*this, true); });
     hide->GetButton().GetClicked().AddObserver(
@@ -638,8 +642,10 @@ void TreePanel::Impl_::ModelRow_::SetShowHideFunc(const RowFunc &func) {
 void TreePanel::Impl_::ModelRow_::SetExpandCollapseFunc(const RowFunc &func) {
     ASSERT(func);
     expand_collapse_func_ = func;
-    auto exp = exp_switcher_pane_->FindTypedPane<ButtonPane>("ExpandButton");
-    auto col = exp_switcher_pane_->FindTypedPane<ButtonPane>("CollapseButton");
+    auto exp =
+        exp_switcher_pane_->FindTypedSubPane<ButtonPane>("ExpandButton");
+    auto col =
+        exp_switcher_pane_->FindTypedSubPane<ButtonPane>("CollapseButton");
     exp->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &){ expand_collapse_func_(*this, true); });
     col->GetButton().GetClicked().AddObserver(

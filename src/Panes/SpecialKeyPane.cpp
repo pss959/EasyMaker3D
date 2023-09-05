@@ -33,8 +33,8 @@ void SpecialKeyPane::CreationDone() {
 
     if (! IsTemplate()) {
         // Access the TextPane and IconPane.
-        auto text_pane = FindTypedPane<TextPane>("Text");
-        auto icon_pane = FindTypedPane<IconPane>("Icon");
+        auto text_pane = FindTypedSubPane<TextPane>("Text");
+        auto icon_pane = FindTypedSubPane<IconPane>("Icon");
 
         // Disable the IconPane or TextPane depending on whether there is an
         // icon name.

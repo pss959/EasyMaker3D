@@ -32,20 +32,6 @@ void ContainerPane::CreationDone() {
     }
 }
 
-PanePtr ContainerPane::FindPane(const Str &name) const {
-    // Note that this cannot check "this" because it has to return a shared_ptr.
-    for (const auto &pane: GetPanes()) {
-        if (pane->GetName() == name)
-            return pane;
-        // Recurse if this is a ContainerPane.
-        if (auto ctr = std::dynamic_pointer_cast<ContainerPane>(pane)) {
-            if (PanePtr found = ctr->FindPane(name))
-                return found;
-        }
-    }
-    return PanePtr();
-}
-
 void ContainerPane::RemovePane(const PanePtr &pane) {
     const auto &panes = GetPanes();
     size_t index = panes.size();
@@ -62,7 +48,7 @@ void ContainerPane::RemovePane(const PanePtr &pane) {
     BaseSizeChanged();
 }
 
-void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
+void ContainerPane::ReplacePanes(const PaneVec &panes) {
     ASSERT(IsCreationDone());
 
     SG::Node &parent = GetExtraChildParent();
@@ -76,30 +62,6 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
 
     // Notify that size may have changed.
     BaseSizeChanged();
-}
-
-void ContainerPane::SetLayoutSize(const Vector2f &size) {
-    Pane::SetLayoutSize(size);
-    KLOG('p', "Laying out Panes for " << GetDesc() << " with size " << size);
-
-    // Let the derived class update the layout size in contained Panes.
-    LayOutSubPanes();
-}
-
-WidgetPtr ContainerPane::GetTouchedWidget(const TouchInfo &info,
-                                          float &closest_distance) {
-    // Let the base class test this Pane.
-    WidgetPtr best_widget = Pane::GetTouchedWidget(info, closest_distance);
-
-    // Try enabled contained Panes as well.
-    for (auto &pane: GetPanes()) {
-        if (pane->IsEnabled()) {
-            auto widget = pane->GetTouchedWidget(info, closest_distance);
-            if (widget)
-                best_widget = widget;
-        }
-    }
-    return best_widget;
 }
 
 void ContainerPane::PositionSubPane(Pane &sub_pane, const Point2f &upper_left,

@@ -67,9 +67,9 @@ void SettingsPanel::UpdateInterface() {
 
 void SettingsPanel::InitDirectories_() {
     auto &root_pane = GetPane();
-    session_pane_ = root_pane->FindTypedPane<TextInputPane>("SessionDir");
-    export_pane_  = root_pane->FindTypedPane<TextInputPane>("ExportDir");
-    import_pane_  = root_pane->FindTypedPane<TextInputPane>("ImportDir");
+    session_pane_ = root_pane->FindTypedSubPane<TextInputPane>("SessionDir");
+    export_pane_  = root_pane->FindTypedSubPane<TextInputPane>("ExportDir");
+    import_pane_  = root_pane->FindTypedSubPane<TextInputPane>("ImportDir");
 
     // Set up directory validation.
     auto validator = [&](const Str &s){
@@ -83,8 +83,8 @@ void SettingsPanel::InitDirectories_() {
 
 void SettingsPanel::InitTooltipSlider_() {
     auto &root_pane = GetPane();
-    auto pane = root_pane->FindTypedPane<ContainerPane>("TooltipDelay");
-    tooltip_delay_slider_pane_ = pane->FindTypedPane<SliderPane>("Slider");
+    auto pane = root_pane->FindTypedSubPane<ContainerPane>("TooltipDelay");
+    tooltip_delay_slider_pane_ = pane->FindTypedSubPane<SliderPane>("Slider");
     tooltip_delay_slider_pane_->GetValueChanged().AddObserver(
         this, [&](float){ EnableDefaultAndCurrentButtons_(); });
 }
@@ -92,11 +92,11 @@ void SettingsPanel::InitTooltipSlider_() {
 void SettingsPanel::InitBuildVolume_() {
     auto &root_pane = GetPane();
     build_volume_panes_[0] =
-        root_pane->FindTypedPane<TextInputPane>("BuildVolumeWidth");
+        root_pane->FindTypedSubPane<TextInputPane>("BuildVolumeWidth");
     build_volume_panes_[1] =
-        root_pane->FindTypedPane<TextInputPane>("BuildVolumeDepth");
+        root_pane->FindTypedSubPane<TextInputPane>("BuildVolumeDepth");
     build_volume_panes_[2] =
-        root_pane->FindTypedPane<TextInputPane>("BuildVolumeHeight");
+        root_pane->FindTypedSubPane<TextInputPane>("BuildVolumeHeight");
 
     // Set up size validation.
     auto validator = [&](const Str &s){
@@ -110,10 +110,10 @@ void SettingsPanel::InitBuildVolume_() {
 
 void SettingsPanel::InitConversion_() {
     auto &root_pane = GetPane();
-    export_from_pane_ = root_pane->FindTypedPane<DropdownPane>("ExportFrom");
-    export_to_pane_   = root_pane->FindTypedPane<DropdownPane>("ExportTo");
-    import_from_pane_ = root_pane->FindTypedPane<DropdownPane>("ImportFrom");
-    import_to_pane_   = root_pane->FindTypedPane<DropdownPane>("ImportTo");
+    export_from_pane_ = root_pane->FindTypedSubPane<DropdownPane>("ExportFrom");
+    export_to_pane_   = root_pane->FindTypedSubPane<DropdownPane>("ExportTo");
+    import_from_pane_ = root_pane->FindTypedSubPane<DropdownPane>("ImportFrom");
+    import_to_pane_   = root_pane->FindTypedSubPane<DropdownPane>("ImportTo");
 
     const StrVec units =
         Util::ConvertVector<Str, UnitConversion::Units>(

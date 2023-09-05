@@ -29,11 +29,11 @@ void ScrollingPane::CreationDone() {
     if (! IsTemplate()) {
         // Access the BoxPane that holds the contents and store the contents
         // Pane in it as a regular pane so that it can be handled normally.
-        auto parent = FindTypedPane<BoxPane>("ContentsParent");
-        parent->ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
+        auto parent = FindTypedSubPane<BoxPane>("ContentsParent");
+        parent->ReplacePanes(PaneVec(1, GetContentsPane()));
 
         // Hook up the slider.
-        slider_pane_ = FindTypedPane<SliderPane>("Slider");
+        slider_pane_ = FindTypedSubPane<SliderPane>("Slider");
         slider_pane_->GetValueChanged().AddObserver(
             this, [&](float val){ ScrollTo(1 - val); });
 
@@ -44,7 +44,7 @@ void ScrollingPane::CreationDone() {
 }
 
 float ScrollingPane::GetScrollBarWidth() const {
-    return FindPane("ScrollBar")->GetMinSize()[0];
+    return FindSubPane("ScrollBar")->GetMinSize()[0];
 }
 
 void ScrollingPane::SetLayoutSize(const Vector2f &size) {

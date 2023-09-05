@@ -44,11 +44,11 @@ ClickableWidgetPtr RevSurfToolPanel::GetGripWidget(const Point2f &panel_point) {
 }
 
 void RevSurfToolPanel::InitInterface() {
-    auto &root_pane = GetPane();
-    snap_checkbox_ = root_pane->FindTypedPane<CheckboxPane>("SnapToPrecision");
-    profile_pane_  = root_pane->FindTypedPane<ProfilePane>("Profile");
+    auto &root = GetPane();
+    snap_checkbox_ = root->FindTypedSubPane<CheckboxPane>("SnapToPrecision");
+    profile_pane_  = root->FindTypedSubPane<ProfilePane>("Profile");
 
-    auto lsp = root_pane->FindTypedPane<LabeledSliderPane>("SweepAngleSlider");
+    auto lsp = root->FindTypedSubPane<LabeledSliderPane>("SweepAngleSlider");
     sweep_angle_slider_ = lsp->GetSliderPane();
 
     // Set up the initial slider value.

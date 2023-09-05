@@ -65,7 +65,7 @@ class FilePanel::Impl_ {
     ///@}
 
     bool HandleEvent(const Event &event, const PanePtr &focused_pane);
-    void InitInterface(ContainerPane &root_pane);
+    void InitInterface(ContainerPane &root);
     void UpdateInterface();
     void UpdateForPaneSizeChange(const PanePtr &focused_pane);
 
@@ -121,7 +121,7 @@ class FilePanel::Impl_ {
     void    InitFocus_();
     void    UpdateFiles_(bool scroll_to_highlighted_file);
     int     CreateFileButtons_(const StrVec &names, bool are_dirs,
-                               std::vector<PanePtr> &buttons);
+                               Pane::PaneVec &buttons);
     PanePtr CreateFileButton_(size_t index, const Str &name,
                               bool is_dir, bool is_highlighted);
     void    UpdateButtons_(PathStatus_ path_status);
@@ -192,21 +192,21 @@ bool FilePanel::Impl_::HandleEvent(const Event &event,
     return false;
 }
 
-void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
-    title_pane_         = root_pane.FindTypedPane<TextPane>("Title");
-    input_pane_         = root_pane.FindTypedPane<TextInputPane>("Input");
-    file_list_pane_     = root_pane.FindTypedPane<ScrollingPane>("FileList");
-    hidden_files_pane_  = root_pane.FindTypedPane<CheckboxPane>("HiddenFiles");
-    accept_button_pane_ = root_pane.FindTypedPane<ButtonPane>("Accept");
-    cancel_button_pane_ = root_pane.FindTypedPane<ButtonPane>("Cancel");
-    file_button_pane_   = root_pane.FindTypedPane<ButtonPane>("FileButton");
-    format_label_pane_  = root_pane.FindPane("FormatLabel");
-    format_pane_        = root_pane.FindTypedPane<DropdownPane>("Format");
+void FilePanel::Impl_::InitInterface(ContainerPane &root) {
+    title_pane_         = root.FindTypedSubPane<TextPane>("Title");
+    input_pane_         = root.FindTypedSubPane<TextInputPane>("Input");
+    file_list_pane_     = root.FindTypedSubPane<ScrollingPane>("FileList");
+    hidden_files_pane_  = root.FindTypedSubPane<CheckboxPane>("HiddenFiles");
+    accept_button_pane_ = root.FindTypedSubPane<ButtonPane>("Accept");
+    cancel_button_pane_ = root.FindTypedSubPane<ButtonPane>("Cancel");
+    file_button_pane_   = root.FindTypedSubPane<ButtonPane>("FileButton");
+    format_label_pane_  = root.FindSubPane("FormatLabel");
+    format_pane_        = root.FindTypedSubPane<DropdownPane>("Format");
 
     // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<FilePathList::Direction>()) {
         const Str name = Util::EnumToWords(dir);
-        auto but = root_pane.FindTypedPane<ButtonPane>(name);
+        auto but = root.FindTypedSubPane<ButtonPane>(name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
 
@@ -215,7 +215,7 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
         this, [&](){ UpdateFiles_(true); });
 
     // Remove the FileButton from the list of Panes so it does not show up.
-    root_pane.RemovePane(file_button_pane_);
+    root.RemovePane(file_button_pane_);
 
     // Install a validation function for the TextInputPane.
     input_pane_->SetValidationFunc([&](const Str &path_string){
@@ -341,7 +341,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
 
     // Create buttons for each of them and determine which if any is
     // highlighted.
-    std::vector<PanePtr> buttons;
+    Pane::PaneVec buttons;
     const int hl_subdir_index = CreateFileButtons_(subdirs, true,  buttons);
     const int hl_file_index   = CreateFileButtons_(files,   false, buttons);
 
@@ -369,7 +369,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
 }
 
 int FilePanel::Impl_::CreateFileButtons_(const StrVec &names, bool are_dirs,
-                                         std::vector<PanePtr> &buttons) {
+                                         Pane::PaneVec &buttons) {
 
     auto is_highlighted_path = [&](const Str &name){
         return highlight_path_ &&
@@ -394,7 +394,7 @@ PanePtr FilePanel::Impl_::CreateFileButton_(size_t index, const Str &name,
                                             bool is_dir, bool is_highlighted) {
     auto but = file_button_pane_->CloneTyped<ButtonPane>(
         true, (is_dir ? "Dir_" : "File_") + Util::ToString(index));
-    auto text = but->FindTypedPane<TextPane>("ButtonText");
+    auto text = but->FindTypedSubPane<TextPane>("ButtonText");
     text->SetText(is_highlighted ? name + highlight_annotation_ : name);
 
     const Str color_name = is_highlighted ? "FileHighlightColor" :
@@ -483,7 +483,9 @@ void FilePanel::UpdateFocus(const PanePtr &pane) {
 }
 
 void FilePanel::InitInterface() {
-    impl_->InitInterface(*GetPane());
+    auto root = std::dynamic_pointer_cast<ContainerPane>(GetPane());
+    ASSERT(root);
+    impl_->InitInterface(*root);
 
     // The Impl_ class cannot call protected functions, so these need to be
     // done here.

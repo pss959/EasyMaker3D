@@ -59,10 +59,10 @@ ClickableWidgetPtr BevelToolPanel::GetGripWidget(const Point2f &panel_point) {
 
 void BevelToolPanel::InitInterface() {
     auto &root_pane = GetPane();
-    profile_pane_ = root_pane->FindTypedPane<ProfilePane>("Profile");
+    profile_pane_ = root_pane->FindTypedSubPane<ProfilePane>("Profile");
 
     auto find_slider = [&](const Str &name){
-        auto lsp = root_pane->FindTypedPane<LabeledSliderPane>(name);
+        auto lsp = root_pane->FindTypedSubPane<LabeledSliderPane>(name);
         return lsp->GetSliderPane();
     };
     scale_slider_ = find_slider("ScaleSlider");

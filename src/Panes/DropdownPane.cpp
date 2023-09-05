@@ -40,10 +40,10 @@ void DropdownPane::CreationDone() {
         else
             choice_ = ".";  // Cannot be empty.
 
-        text_pane_              = FindTypedPane<TextPane>("CurrentChoiceText");
-        menu_pane_              = FindTypedPane<ScrollingPane>("MenuPane");
-        menu_button_pane_       = FindTypedPane<ButtonPane>("MenuButton");
-        activation_button_pane_ = FindTypedPane<ButtonPane>("ButtonPane");
+        text_pane_          = FindTypedSubPane<TextPane>("CurrentChoiceText");
+        menu_pane_              = FindTypedSubPane<ScrollingPane>("MenuPane");
+        menu_button_pane_       = FindTypedSubPane<ButtonPane>("MenuButton");
+        activation_button_pane_ = FindTypedSubPane<ButtonPane>("ButtonPane");
 
         // Get the width of the ButtonPane that shows the current text when it
         // has no text and also the width of the scroll bar. The larger of
@@ -193,7 +193,7 @@ void DropdownPane::UpdateMenuPane_() {
     for (size_t i = 0; i < choices.size(); ++i) {
         const Str &choice = choices[i];
         auto but = menu_button_pane_->CloneTyped<ButtonPane>(true);
-        auto text = but->FindTypedPane<TextPane>("ButtonText");
+        auto text = but->FindTypedSubPane<TextPane>("ButtonText");
         text->SetText(choice);
         but->GetButton().GetClicked().AddObserver(
             this, [&, i](const ClickInfo &){ ChoiceButtonClicked_(i); });

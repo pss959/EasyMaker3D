@@ -109,7 +109,7 @@ TEST_F(SessionPanelTest, ButtonState) {
     agent.export_name = "";
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("(No previous session)",
-              cont->FindTypedPane<TextPane>("ButtonText")->GetText());
+              cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
     EXPECT_FALSE(IsButtonPaneEnabled("Continue"));
     EXPECT_TRUE(IsButtonPaneEnabled("Load"));
     EXPECT_FALSE(IsButtonPaneEnabled("Save"));
@@ -124,7 +124,7 @@ TEST_F(SessionPanelTest, ButtonState) {
     agent.export_name = "";
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue previous session [Prev.ems]",
-              cont->FindTypedPane<TextPane>("ButtonText")->GetText());
+              cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
     EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
     EXPECT_TRUE(IsButtonPaneEnabled("Load"));
     EXPECT_FALSE(IsButtonPaneEnabled("Save"));
@@ -141,7 +141,7 @@ TEST_F(SessionPanelTest, ButtonState) {
     agent.export_name = "SomeModel";
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue current session [Cur.ems]",
-              cont->FindTypedPane<TextPane>("ButtonText")->GetText());
+              cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
     EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
     EXPECT_TRUE(IsButtonPaneEnabled("Load"));
     EXPECT_TRUE(IsButtonPaneEnabled("Save"));
@@ -157,7 +157,7 @@ TEST_F(SessionPanelTest, ButtonState) {
     agent.export_name = "";
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue current session",
-              cont->FindTypedPane<TextPane>("ButtonText")->GetText());
+              cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
     EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
     EXPECT_TRUE(IsButtonPaneEnabled("Load"));
     EXPECT_FALSE(IsButtonPaneEnabled("Save"));
@@ -178,7 +178,7 @@ TEST_F(SessionPanelTest, ButtonFocusContinue) {
     agent.cur_name  = "";
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue previous session [Prev.ems]",
-              cont->FindTypedPane<TextPane>("ButtonText")->GetText());
+              cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
     EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
     EXPECT_TRUE(IsButtonPaneEnabled("Load"));
     EXPECT_FALSE(IsButtonPaneEnabled("Save"));

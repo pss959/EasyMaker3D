@@ -24,11 +24,11 @@ ClickableWidgetPtr ExtrudedToolPanel::GetGripWidget(const Point2f &panel_point) 
 }
 
 void ExtrudedToolPanel::InitInterface() {
-    auto &root_pane = GetPane();
-    snap_checkbox_ = root_pane->FindTypedPane<CheckboxPane>("SnapToPrecision");
-    profile_pane_  = root_pane->FindTypedPane<ProfilePane>("Profile");
-    sides_text_    = root_pane->FindTypedPane<TextInputPane>("SidesText");
-    const auto &ss = root_pane->FindTypedPane<LabeledSliderPane>("SidesSlider");
+    auto &root = GetPane();
+    snap_checkbox_ = root->FindTypedSubPane<CheckboxPane>("SnapToPrecision");
+    profile_pane_  = root->FindTypedSubPane<ProfilePane>("Profile");
+    sides_text_    = root->FindTypedSubPane<TextInputPane>("SidesText");
+    const auto &ss = root->FindTypedSubPane<LabeledSliderPane>("SidesSlider");
     sides_slider_  = ss->GetSliderPane();
 
     // Detect changes to everything.

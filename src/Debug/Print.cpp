@@ -14,7 +14,6 @@
 #include "Math/MeshUtils.h"
 #include "Math/ToString.h"
 #include "Models/ParentModel.h"
-#include "Panes/ContainerPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/Pane.h"
 #include "Panes/ScrollingPane.h"
@@ -273,10 +272,8 @@ static void PrintNodesAndShapesRecursive_(
 static void PrintPaneTree_(const Pane &pane, int level, bool is_brief) {
     std::cout << Indent_(level) << pane.ToString(is_brief) << "\n";
 
-    // Recurse on ContainerPanes.
-    if (const auto *cp = dynamic_cast<const ContainerPane *>(&pane))
-        for (const auto &subpane: cp->GetPanes())
-            PrintPaneTree_(*subpane, level + 1, is_brief);
+    for (const auto &subpane: pane.GetSubPanes())
+        PrintPaneTree_(*subpane, level + 1, is_brief);
 
     // Special case for DropdownPane.
     if (const auto *dp = dynamic_cast<const DropdownPane *>(&pane))

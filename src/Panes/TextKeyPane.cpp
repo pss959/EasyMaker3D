@@ -28,7 +28,7 @@ void TextKeyPane::CreationDone() {
     KeyPane::CreationDone();
 
     if (! IsTemplate()) {
-        text_pane_ = FindTypedPane<TextPane>("Text");
+        text_pane_ = FindTypedSubPane<TextPane>("Text");
         ProcessShift(false);
     }
 }

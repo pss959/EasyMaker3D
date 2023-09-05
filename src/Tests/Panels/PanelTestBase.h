@@ -3,7 +3,7 @@
 #include <concepts>
 
 #include "Base/Memory.h"
-#include "Panes/ContainerPane.h"
+#include "Panes/Pane.h"
 #include "Panels/Panel.h"
 #include "Tests/SceneTestBase.h"
 #include "Util/Assert.h"
@@ -50,7 +50,7 @@ class PanelTestBase : public SceneTestBase {
     PanePtr FindPane(const Str &name) {
         auto panel = GetCurrentPanel();
         ASSERT(panel);
-        return panel->GetPane()->FindPane(name);
+        return panel->GetPane()->FindSubPane(name);
     }
 
     /// Finds and returns the sub-pane in the Panel with the given name and
@@ -59,7 +59,7 @@ class PanelTestBase : public SceneTestBase {
     std::shared_ptr<T> FindTypedPane(const Str &name) {
         auto panel = GetCurrentPanel();
         ASSERT(panel);
-        return panel->GetPane()->FindTypedPane<T>(name);
+        return panel->GetPane()->FindTypedSubPane<T>(name);
     }
 
     ///@}

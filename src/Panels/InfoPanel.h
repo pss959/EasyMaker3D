@@ -5,6 +5,7 @@
 
 #include "Base/Memory.h"
 #include "Panels/Panel.h"
+#include "Panes/Pane.h"
 #include "Selection/Selection.h"
 
 DECL_SHARED_PTR(ContainerPane);
@@ -59,21 +60,20 @@ class InfoPanel : public Panel {
     PanePtr          separator_pane_;
 
     /// Adds text for a Model represented by a SelPath.
-    void AddModelInfo_(std::vector<PanePtr> &panes, const SelPath &sel_path);
+    void AddModelInfo_(Pane::PaneVec &panes, const SelPath &sel_path);
 
     /// Adds text for a PointTarget.
-    void AddPointTargetInfo_(std::vector<PanePtr> &panes,
-                             const PointTarget &pt);
+    void AddPointTargetInfo_(Pane::PaneVec &panes, const PointTarget &pt);
 
     /// Adds text for a EdgeTarget.
-    void AddEdgeTargetInfo_(std::vector<PanePtr> &panes, const EdgeTarget &et);
+    void AddEdgeTargetInfo_(Pane::PaneVec &panes, const EdgeTarget &et);
 
     /// Adds a clone of the title or main TextPane with the given text.
-    void AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
+    void AddTextPane_(Pane::PaneVec &panes, TextType_ type,
                       const Str &label, const Str &text);
 
     /// Adds a clone of the separator pane if panes is not empty.
-    void AddSeparator_(std::vector<PanePtr> &panes);
+    void AddSeparator_(Pane::PaneVec &panes);
 
     friend class Parser::Registry;
 };

@@ -133,6 +133,39 @@ class Pane : public SG::Node {
 
     ///@}
 
+    /// \name Pane hierarchy functions
+    ///@{
+
+    /// Returns a vector of all sub-Panes. The base class defines this to
+    /// return an empty vector.
+    virtual PaneVec GetSubPanes() const { return PaneVec(); }
+
+    /// Returns a vector of all sub-Panes that should be checked for
+    /// interaction when setting up a Panel. The base class defines this to
+    /// just return all sub-Panes.
+    virtual PaneVec GetPotentialInteractiveSubPanes() const {
+        return GetSubPanes();
+    }
+
+    /// Searches recursively for a sub-Pane with the given name.  Returns null
+    /// if it is not found.
+    PanePtr FindSubPane(const Str &name) const;
+
+    /// Searches recursively for the sub-Pane with the given type and name.
+    /// Asserts if it is not found.
+    template <typename T>
+    std::shared_ptr<T> FindTypedSubPane(const Str &name) const {
+        static_assert(std::derived_from<T, Pane> == true);
+        auto pane = FindSubPane(name);
+        ASSERTM(pane, "Pane '" + name + "' not found in " + GetDesc());
+        auto typed_pane = std::dynamic_pointer_cast<T>(pane);
+        ASSERTM(typed_pane, "Wrong type for Pane '" + name +
+                "' in " + GetDesc());
+        return typed_pane;
+    }
+
+    ///@}
+
     /// Returns a string representing the Pane for debugging. Derived classes
     /// can add info. If is_brief is true, this returns just the description
     /// and current layout size along with any derived identifying data.
@@ -165,6 +198,10 @@ class Pane : public SG::Node {
     /// borders and background. The base class defines this to return the Pane
     /// itself.
     virtual SG::Node & GetAuxParent() { return *this; }
+
+    /// Derived classes may implement this to lay out sub-Panes when the layout
+    /// size of this Pane changes. The base class does nothing.
+    virtual void LayOutSubPanes() {}
 
   private:
     /// \name Parsed Fields

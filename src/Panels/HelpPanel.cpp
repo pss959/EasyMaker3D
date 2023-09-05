@@ -15,7 +15,7 @@ void HelpPanel::InitInterface() {
 
     // Set the description text.
     auto &root_pane = GetPane();
-    auto desc_pane  = root_pane->FindTypedPane<TextPane>("Description");
+    auto desc_pane  = root_pane->FindTypedSubPane<TextPane>("Description");
     desc_pane->SetText(TK::kApplicationName + " Version " + TK::kVersionString +
                        "\nCopyright " + TK::kCopyright);
 }

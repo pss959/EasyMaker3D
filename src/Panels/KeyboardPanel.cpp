@@ -4,7 +4,6 @@
 
 #include "Base/VirtualKeyboard.h"
 #include "Panes/ButtonPane.h"
-#include "Panes/ContainerPane.h"
 #include "Panes/KeyPane.h"
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
@@ -24,12 +23,8 @@ void KeyboardPanel::InitInterface() {
 void KeyboardPanel::FindKeyPanes_(const PanePtr &pane) {
     if (KeyPanePtr key_pane = std::dynamic_pointer_cast<KeyPane>(pane))
         key_panes_.push_back(key_pane);
-
-    // Recurse if this is a ContainerPane.
-    if (ContainerPanePtr ctr = std::dynamic_pointer_cast<ContainerPane>(pane)) {
-        for (const auto &sub_pane: ctr->GetPanes())
-            FindKeyPanes_(sub_pane);
-    }
+    for (const auto &sub_pane: pane->GetSubPanes())
+        FindKeyPanes_(sub_pane);
 }
 
 void KeyboardPanel::ProcessKey_(const KeyPane &key_pane) {

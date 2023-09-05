@@ -22,11 +22,11 @@ void ActionPanel::SetAction(Action action) {
 
 void ActionPanel::InitInterface() {
     auto &root_pane = GetPane();
-    auto header_pane = root_pane->FindTypedPane<TextPane>("CategoryHeader");
-    auto button_pane = root_pane->FindTypedPane<ButtonPane>("ActionButton");
-    auto contents_pane = root_pane->FindTypedPane<ContainerPane>("Contents");
+    auto header_pane = root_pane->FindTypedSubPane<TextPane>("CategoryHeader");
+    auto button_pane = root_pane->FindTypedSubPane<ButtonPane>("ActionButton");
+    auto contents_pane = root_pane->FindTypedSubPane<ContainerPane>("Contents");
 
-    std::vector<PanePtr> panes;
+    Pane::PaneVec panes;
     ActionMap action_map;
     for (auto cat: Util::EnumValues<ActionCategory>()) {
         auto header = header_pane->CloneTyped<TextPane>(true);
@@ -36,8 +36,8 @@ void ActionPanel::InitInterface() {
         for (auto action: action_map.GetActionsInCategory(cat)) {
             auto but = button_pane->CloneTyped<ButtonPane>(
                 true, Util::EnumToWord(action));
-            auto icon = but->FindTypedPane<IconPane>("Icon");
-            auto text = but->FindTypedPane<TextPane>("Text");
+            auto icon = but->FindTypedSubPane<IconPane>("Icon");
+            auto text = but->FindTypedSubPane<TextPane>("Text");
             icon->SetIconName("MI" + Util::EnumToWord(action));
             text->SetText(Util::EnumToWords(action));
             but->GetButton().GetClicked().AddObserver(
@@ -71,7 +71,7 @@ void ActionPanel::ChangeHighlight_(Action action, bool state) {
 
     // Scroll to the highlighted button.
     if (state) {
-        auto sp = GetPane()->FindTypedPane<ScrollingPane>("ScrollingPane");
+        auto sp = GetPane()->FindTypedSubPane<ScrollingPane>("ScrollingPane");
         sp->ScrollToShowSubPane(*button_map_[action]);
     }
 }

@@ -56,21 +56,47 @@ void Pane::SetLayoutSize(const Vector2f &size) {
         if (auto border = border_.GetValue())
             border->SetSize(size);
     }
+
+    // Let any derived class update the layout size in contained Panes.
+    LayOutSubPanes();
 }
 
 WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
                                  float &closest_distance) {
-    WidgetPtr intersected_widget;
+    WidgetPtr best_widget;
     if (const auto interactor = GetInteractor()) {
         const auto widget = interactor->GetActivationWidget();
         float dist;
         if (widget && widget->IsTouched(info, dist) &&
             dist < closest_distance) {
             closest_distance = dist;
-            intersected_widget = widget;
+            best_widget = widget;
         }
     }
-    return intersected_widget;
+
+    // Try enabled sub-Panes as well.
+    for (auto &pane: GetSubPanes()) {
+        if (pane->IsEnabled()) {
+            auto widget = pane->GetTouchedWidget(info, closest_distance);
+            if (widget)
+                best_widget = widget;
+        }
+    }
+
+    return best_widget;
+}
+
+PanePtr Pane::FindSubPane(const Str &name) const {
+    PanePtr found;
+    for (const auto &pane: GetSubPanes()) {
+        if (pane->GetName() == name)
+            found = pane;
+        else
+            found = pane->FindSubPane(name);
+        if (found)
+            break;
+    }
+    return found;
 }
 
 // LCOV_EXCL_START [debug only]

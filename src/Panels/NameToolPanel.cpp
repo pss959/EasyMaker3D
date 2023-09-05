@@ -16,8 +16,8 @@ Str NameToolPanel::GetName() const {
 
 void NameToolPanel::InitInterface() {
     auto &root_pane = GetPane();
-    input_pane_   = root_pane->FindTypedPane<TextInputPane>("Input");
-    message_pane_ = root_pane->FindTypedPane<TextPane>("Message");
+    input_pane_   = root_pane->FindTypedSubPane<TextInputPane>("Input");
+    message_pane_ = root_pane->FindTypedSubPane<TextPane>("Message");
 
     // Set up validation of Model names.
     auto validate = [&](const Str &name){ return ValidateName_(name); };

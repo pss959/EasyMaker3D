@@ -429,7 +429,7 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane, float padding) :
         InitActionMap_();
 
     // Find all the parts.
-    text_pane_  = root_pane_.FindTypedPane<TextPane>("TextPane");
+    text_pane_  = root_pane_.FindTypedSubPane<TextPane>("TextPane");
     cursor_     = SG::FindNodeUnderNode(root_pane_, "Cursor");
     selection_  = SG::FindNodeUnderNode(root_pane_, "Selection");
     background_ = SG::FindNodeUnderNode(root_pane_, "Background");

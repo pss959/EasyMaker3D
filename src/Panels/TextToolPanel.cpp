@@ -8,12 +8,12 @@
 
 void TextToolPanel::InitInterface() {
     auto &root_pane = GetPane();
-    text_pane_    = root_pane->FindTypedPane<TextInputPane>("Text");
-    font_pane_    = root_pane->FindTypedPane<DropdownPane>("Font");
-    auto spp      = root_pane->FindTypedPane<ContainerPane>("Spacing");
-    spacing_pane_ = spp->FindTypedPane<SliderPane>("Slider");
-    display_pane_ = root_pane->FindTypedPane<TextPane>("Display");
-    message_pane_ = root_pane->FindTypedPane<TextPane>("Message");
+    text_pane_    = root_pane->FindTypedSubPane<TextInputPane>("Text");
+    font_pane_    = root_pane->FindTypedSubPane<DropdownPane>("Font");
+    auto spp      = root_pane->FindTypedSubPane<ContainerPane>("Spacing");
+    spacing_pane_ = spp->FindTypedSubPane<SliderPane>("Slider");
+    display_pane_ = root_pane->FindTypedSubPane<TextPane>("Display");
+    message_pane_ = root_pane->FindTypedSubPane<TextPane>("Message");
 
     // Set up font choices in the dropdown.
     const StrVec font_names = GetAvailableFontNames();

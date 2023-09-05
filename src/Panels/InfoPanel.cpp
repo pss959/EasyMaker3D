@@ -49,7 +49,7 @@ void InfoPanel::SetInfo(const Info &info) {
 
     // Create a vector containing a clone of the TextPane for each line of
     // information.
-    std::vector<PanePtr> panes;
+    Pane::PaneVec panes;
 
     for (const auto &sel_path: info.selection.GetPaths())
         AddModelInfo_(panes, sel_path);
@@ -64,9 +64,9 @@ void InfoPanel::SetInfo(const Info &info) {
 
 void InfoPanel::InitInterface() {
     auto &root_pane = GetPane();
-    contents_pane_  = root_pane->FindTypedPane<ContainerPane>("Contents");
-    text_pane_      = root_pane->FindTypedPane<TextPane>("InfoText");
-    separator_pane_ = root_pane->FindPane("InfoSeparator");
+    contents_pane_  = root_pane->FindTypedSubPane<ContainerPane>("Contents");
+    text_pane_      = root_pane->FindTypedSubPane<TextPane>("InfoText");
+    separator_pane_ = root_pane->FindSubPane("InfoSeparator");
 
     AddButtonFunc("Done", [this](){ Close("Done");     });
 }
@@ -75,8 +75,7 @@ void InfoPanel::UpdateInterface() {
     SetFocus("Done");
 }
 
-void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
-                              const SelPath &sel_path) {
+void InfoPanel::AddModelInfo_(Pane::PaneVec &panes, const SelPath &sel_path) {
     AddSeparator_(panes);
 
     ASSERT(sel_path.GetModel());
@@ -105,7 +104,7 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
                  ToString_(center[0]) + " " + ToString_(center[2]));
 }
 
-void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
+void InfoPanel::AddPointTargetInfo_(Pane::PaneVec &panes,
                                     const PointTarget &pt) {
     AddSeparator_(panes);
 
@@ -122,8 +121,7 @@ void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
                  "Arc Angle",   ToString_(pt.GetArc().arc_angle));
 }
 
-void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,
-                                   const EdgeTarget &et) {
+void InfoPanel::AddEdgeTargetInfo_(Pane::PaneVec &panes, const EdgeTarget &et) {
     AddSeparator_(panes);
 
     AddTextPane_(panes, TextType_::kHeader, "", "Edge Target");
@@ -137,7 +135,7 @@ void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,
                  "Length",     ToString_(et.GetLength()));
 }
 
-void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
+void InfoPanel::AddTextPane_(Pane::PaneVec &panes, TextType_ type,
                              const Str &label, const Str &text) {
     // Labels use this many characters.
     Str sized_label = label;
@@ -178,7 +176,7 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
     panes.push_back(pane);
 }
 
-void InfoPanel::AddSeparator_(std::vector<PanePtr> &panes) {
+void InfoPanel::AddSeparator_(Pane::PaneVec &panes) {
     if (! panes.empty()) {
         auto sep = separator_pane_->CloneTyped<Pane>(true);
         sep->SetEnabled(true);

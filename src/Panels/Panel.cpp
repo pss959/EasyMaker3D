@@ -62,7 +62,7 @@ class Panel::Focuser_ {
 
     /// Sets the interactive Pane instances that can potentially be focused.
     /// This also initializes the Panes for interaction.
-    void SetPanes(const std::vector<PanePtr> &panes);
+    void SetPanes(const Pane::PaneVec &panes);
 
     /// Initializes focus if there is no Pane focused already.
     void InitFocus() {
@@ -106,7 +106,7 @@ class Panel::Focuser_ {
     VirtualKeyboardPtr virtual_keyboard_;
 
     /// All Panes in the Panel that are potentially able to receive focus.
-    std::vector<PanePtr> panes_;
+    Pane::PaneVec panes_;
 
     /// Index into panes_ of the current Pane with focus. This is -1 if there
     /// is none.
@@ -126,7 +126,7 @@ class Panel::Focuser_ {
     void ChangeFocus_(const PanePtr &old_pane, const PanePtr &new_pane);
 };
 
-void Panel::Focuser_::SetPanes(const std::vector<PanePtr> &panes) {
+void Panel::Focuser_::SetPanes(const Pane::PaneVec &panes) {
     panes_ = panes;
     for (auto &pane: panes_)
         InitPaneInteraction_(pane);
@@ -449,19 +449,19 @@ const Settings & Panel::GetSettings() const {
 }
 
 void Panel::AddButtonFunc(const Str &name, const ButtonFunc &func) {
-    auto but_pane = GetPane()->FindTypedPane<ButtonPane>(name);
+    auto but_pane = GetPane()->FindTypedSubPane<ButtonPane>(name);
     auto &clicked = but_pane->GetButton().GetClicked();
     clicked.AddObserver(this, [func](const ClickInfo &){ func(); });
 }
 
 void Panel::SetButtonText(const Str &name, const Str &text) {
-    auto but_pane  = GetPane()->FindTypedPane<ButtonPane>(name);
-    auto text_pane = but_pane->FindTypedPane<TextPane>("ButtonText");
+    auto but_pane  = GetPane()->FindTypedSubPane<ButtonPane>(name);
+    auto text_pane = but_pane->FindTypedSubPane<TextPane>("ButtonText");
     text_pane->SetText(text);
 }
 
 void Panel::EnableButton(const Str &name, bool enabled) {
-    auto but_pane = GetPane()->FindTypedPane<ButtonPane>(name);
+    auto but_pane = GetPane()->FindTypedSubPane<ButtonPane>(name);
     but_pane->SetInteractionEnabled(enabled);
 }
 
@@ -470,7 +470,7 @@ void Panel::SetFocus(const PanePtr &pane) {
 }
 
 void Panel::SetFocus(const Str &name) {
-    SetFocus(GetPane()->FindPane(name));
+    SetFocus(GetPane()->FindSubPane(name));
 }
 
 void Panel::DisplayMessage(const Str &message, const MessageFunc &func) {
@@ -529,21 +529,17 @@ void Panel::UpdateSize_() {
 void Panel::UpdateInteractivePanes_() {
     if (auto &vk = GetContext().virtual_keyboard)
         focuser_->SetVirtualKeyboard(vk);
-    std::vector<PanePtr> interactive_panes;
+    Pane::PaneVec interactive_panes;
     FindInteractivePanes_(GetPane(), interactive_panes);
     focuser_->SetPanes(interactive_panes);
 }
 
-void Panel::FindInteractivePanes_(const PanePtr &pane,
-                                  std::vector<PanePtr> &panes) {
+void Panel::FindInteractivePanes_(const PanePtr &pane, Pane::PaneVec &panes) {
     if (pane->GetInteractor())
         panes.push_back(pane);
 
-    // Recurse if the Pane is a ContainerPane.
-    if (ContainerPanePtr ctr = std::dynamic_pointer_cast<ContainerPane>(pane)) {
-        for (auto &sub_pane: ctr->GetPotentialInteractiveSubPanes())
-            FindInteractivePanes_(sub_pane, panes);
-    }
+    for (auto &sub_pane: pane->GetPotentialInteractiveSubPanes())
+        FindInteractivePanes_(sub_pane, panes);
 }
 
 bool Panel::ProcessKeyPress_(const Event &event) {

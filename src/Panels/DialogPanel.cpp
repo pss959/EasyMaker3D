@@ -27,11 +27,11 @@ void DialogPanel::SetChoiceResponse(const Str &text0, const Str &text1,
 
 void DialogPanel::InitInterface() {
     auto &root_pane = *GetPane();
-    message_ = root_pane.FindTypedPane<TextPane>("Message");
-    button0_ = root_pane.FindTypedPane<ButtonPane>("Button0");
-    button1_ = root_pane.FindTypedPane<ButtonPane>("Button1");
-    text0_   = button0_->FindTypedPane<TextPane>("ButtonText");
-    text1_   = button1_->FindTypedPane<TextPane>("ButtonText");
+    message_ = root_pane.FindTypedSubPane<TextPane>("Message");
+    button0_ = root_pane.FindTypedSubPane<ButtonPane>("Button0");
+    button1_ = root_pane.FindTypedSubPane<ButtonPane>("Button1");
+    text0_   = button0_->FindTypedSubPane<TextPane>("ButtonText");
+    text1_   = button1_->FindTypedSubPane<TextPane>("ButtonText");
 
     AddButtonFunc("Button0", [&](){ Close(text0_->GetText()); });
     AddButtonFunc("Button1", [&](){ Close(text1_->GetText()); });

@@ -35,7 +35,7 @@ TEST_F(ScrollingPaneTest, Scroll) {
     // spacers to test ScrollToShowSubPane().
     auto scp = GetScrollingPane("min_size: 100 400");
     auto spp = ParseTypedObject<SpacerPane>("SpacerPane { min_size: 100 50 }");
-    std::vector<PanePtr> spacers;
+    Pane::PaneVec spacers;
     for (size_t i = 0; i < 40; ++i)
         spacers.push_back(spp->CloneTyped<SpacerPane>(true));
     scp->GetContentsPane()->ReplacePanes(spacers);

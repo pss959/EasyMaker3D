@@ -29,19 +29,19 @@ void LabeledSliderPane::CreationDone() {
 
     if (! IsTemplate()) {
         // Copy range and precision to the SliderPane.
-        auto slider_pane = FindTypedPane<SliderPane>("Slider");
+        auto slider_pane = FindTypedSubPane<SliderPane>("Slider");
         slider_pane->SetRange(range_);
         slider_pane->SetPrecision(precision_);
 
         // Access the current text pane and add a slider callback to update it.
-        cur_text_pane_ = FindTypedPane<TextPane>("CurrentText");
+        cur_text_pane_ = FindTypedSubPane<TextPane>("CurrentText");
         slider_pane->GetValueChanged().AddObserver(
             this, [&](float v){ UpdateText_(v); });
         UpdateText_(slider_pane->GetValue());
 
         // Access the min/max text panes and set them up.
         auto set_up_text = [&](const Str &name, float val){
-            FindTypedPane<TextPane>(name)->SetText(Util::ToString(val));
+            FindTypedSubPane<TextPane>(name)->SetText(Util::ToString(val));
         };
         const auto &range = range_.GetValue();
         set_up_text("MinText", range[0]);
@@ -50,7 +50,7 @@ void LabeledSliderPane::CreationDone() {
 }
 
 SliderPanePtr LabeledSliderPane::GetSliderPane() const {
-    return FindTypedPane<SliderPane>("Slider");
+    return FindTypedSubPane<SliderPane>("Slider");
 }
 
 void LabeledSliderPane::UpdateText_(float new_value) {

@@ -7,7 +7,7 @@
 
 void TaperToolPanel::InitInterface() {
     const auto &root_pane = GetPane();
-    profile_pane_ = root_pane->FindTypedPane<TaperProfilePane>("Profile");
+    profile_pane_ = root_pane->FindTypedSubPane<TaperProfilePane>("Profile");
 
     // Detect changes to everything.
     profile_pane_->GetActivation().AddObserver(
@@ -17,9 +17,9 @@ void TaperToolPanel::InitInterface() {
 
     // Set up radio buttons.
     std::vector<RadioButtonPanePtr> buts;
-    buts.push_back(root_pane->FindTypedPane<RadioButtonPane>("X"));
-    buts.push_back(root_pane->FindTypedPane<RadioButtonPane>("Y"));
-    buts.push_back(root_pane->FindTypedPane<RadioButtonPane>("Z"));
+    buts.push_back(root_pane->FindTypedSubPane<RadioButtonPane>("X"));
+    buts.push_back(root_pane->FindTypedSubPane<RadioButtonPane>("Y"));
+    buts.push_back(root_pane->FindTypedSubPane<RadioButtonPane>("Z"));
     RadioButtonPane::CreateGroup(buts, 0);
 
     // Detect changes to the axis.
@@ -38,7 +38,7 @@ void TaperToolPanel::InitInterface() {
 void TaperToolPanel::UpdateInterface() {
     // Turn on the correct radio button.
     const Str axis_name = Util::EnumToWord(ToUserDim(axis_));
-    GetPane()->FindTypedPane<RadioButtonPane>(axis_name)->SetState(true);
+    GetPane()->FindTypedSubPane<RadioButtonPane>(axis_name)->SetState(true);
 }
 
 void TaperToolPanel::SetTaper(const Taper &taper) {

@@ -5,7 +5,7 @@
 
 #include "Base/Event.h"
 #include "Base/Memory.h"
-#include "Panes/ContainerPane.h"
+#include "Panes/Pane.h"
 #include "SG/Node.h"
 #include "Util/Notifier.h"
 
@@ -28,7 +28,7 @@ DECL_SHARED_PTR(Widget);
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
 /// It can be attached to a Board to appear in the scene. A Panel wraps a tree
-/// of Pane instances. The root of the tree is a ContainerPane of some type.
+/// of Pane instances.
 ///
 /// The coordinate system used in Panels and Panes assumes 1 unit is
 /// approximately the size of a pixel in a full-screen window. It is up to the
@@ -77,8 +77,8 @@ class Panel : public SG::Node {
     /// an interactive resize or a change within the Pane hierarchy.
     Util::Notifier<> & GetSizeChanged() { return size_changed_; }
 
-    /// Returns the root ContainerPane for the Panel.
-    const ContainerPanePtr & GetPane() const { return pane_; }
+    /// Returns the root Pane for the Panel.
+    const PanePtr & GetPane() const { return pane_; }
 
     /// Returns true if the Board containing the Panel should be movable. The
     /// base class defines this to return true.
@@ -243,9 +243,9 @@ class Panel : public SG::Node {
 
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<ContainerPane> pane_;
-    Parser::TField<bool>               is_movable_;
-    Parser::TField<bool>               is_resizable_;
+    Parser::ObjectField<Pane> pane_;
+    Parser::TField<bool>      is_movable_;
+    Parser::TField<bool>      is_resizable_;
     ///@}
 
     std::unique_ptr<Focuser_> focuser_;
@@ -269,8 +269,7 @@ class Panel : public SG::Node {
 
     /// Recursively finds all interactive Panes under the given one (inclusive)
     /// and adds them to the given vector.
-    void FindInteractivePanes_(const PanePtr &pane,
-                               std::vector<PanePtr> &panes);
+    void FindInteractivePanes_(const PanePtr &pane, Pane::PaneVec &panes);
 
     /// Handles an event with a key press.
     bool ProcessKeyPress_(const Event &event);

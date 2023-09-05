@@ -25,44 +25,16 @@ class ContainerPane : public Pane {
     virtual ~ContainerPane();
 
     /// Returns a vector of all contained Panes.
-    const std::vector<PanePtr> & GetPanes() const { return panes_.GetValue(); }
-
-    /// Searches recursively for the contained Pane with the given name.
-    /// Returns null if it is not found.
-    PanePtr FindPane(const Str &name) const;
-
-    /// Searches recursively for the contained Pane with the given type and
-    /// name. Asserts if it is not found.
-    template <typename T>
-    std::shared_ptr<T> FindTypedPane(const Str &name) const {
-        static_assert(std::derived_from<T, Pane> == true);
-        auto pane = FindPane(name);
-        ASSERTM(pane, "Pane '" + name + "' not found in " + GetDesc());
-        auto typed_pane = std::dynamic_pointer_cast<T>(pane);
-        ASSERTM(typed_pane, "Wrong type for Pane '" + name +
-                "' in " + GetDesc());
-        return typed_pane;
-    }
+    const PaneVec & GetPanes() const { return panes_.GetValue(); }
 
     /// Removes the given Pane. Asserts if it is not found.
     void RemovePane(const PanePtr &pane);
 
     /// Replaces all contained Panes with new ones.
-    void ReplacePanes(const std::vector<PanePtr> &panes);
+    void ReplacePanes(const PaneVec &panes);
 
-    /// Redefines this to let the derived class lay out contained panes.
-    virtual void SetLayoutSize(const Vector2f &size) override;
-
-    /// Returns a vector of all sub-panes that should be checked for
-    /// interaction when setting up a Panel. The ContainerPane class defines
-    /// this to just return all sub_panes.
-    virtual std::vector<PanePtr> GetPotentialInteractiveSubPanes() const {
-        return GetPanes();
-    }
-
-    /// Redefines this to also test child Panes.
-    virtual WidgetPtr GetTouchedWidget(const TouchInfo &info,
-                                       float &closest_distance) override;
+    /// Redefines this to return all contained Panes.
+    virtual PaneVec GetSubPanes() const override { return GetPanes(); }
 
   protected:
     ContainerPane() {}
@@ -72,7 +44,7 @@ class ContainerPane : public Pane {
 
     /// Derived classes must implement this to lay out contained Panes when the
     /// layout size of the ContainerPane changes.
-    virtual void LayOutSubPanes() = 0;
+    virtual void LayOutSubPanes() override = 0;
 
     /// Returns the SG::Node to add panes to as extra children. The base class
     /// defines this to return the ContainerPane itself.

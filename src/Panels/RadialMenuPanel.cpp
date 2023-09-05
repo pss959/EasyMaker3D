@@ -15,14 +15,14 @@
 #include "Util/Enum.h"
 
 void RadialMenuPanel::InitInterface() {
-    const auto &root_pane = GetPane();
+    const auto &root = GetPane();
 
     // Set up mode radio buttons.
     std::vector<RadioButtonPanePtr> mode_buttons;
-    mode_buttons.push_back(root_pane->FindTypedPane<RadioButtonPane>("Mode0"));
-    mode_buttons.push_back(root_pane->FindTypedPane<RadioButtonPane>("Mode1"));
-    mode_buttons.push_back(root_pane->FindTypedPane<RadioButtonPane>("Mode2"));
-    mode_buttons.push_back(root_pane->FindTypedPane<RadioButtonPane>("Mode3"));
+    mode_buttons.push_back(root->FindTypedSubPane<RadioButtonPane>("Mode0"));
+    mode_buttons.push_back(root->FindTypedSubPane<RadioButtonPane>("Mode1"));
+    mode_buttons.push_back(root->FindTypedSubPane<RadioButtonPane>("Mode2"));
+    mode_buttons.push_back(root->FindTypedSubPane<RadioButtonPane>("Mode3"));
     RadioButtonPane::CreateGroup(mode_buttons, 0);
 
     for (auto &but: mode_buttons)
@@ -52,7 +52,7 @@ void RadialMenuPanel::UpdateInterface() {
     // Select the correct mode radio button.
     mode_index_ = Util::EnumInt(GetSettings().GetRadialMenusMode());
     const Str mode_name = "Mode" + Util::ToString(mode_index_);
-    GetPane()->FindTypedPane<RadioButtonPane>(mode_name)->SetState(true);
+    GetPane()->FindTypedSubPane<RadioButtonPane>(mode_name)->SetState(true);
 
     // Update the controller panes.
     UpdateControllerPane_(Hand::kLeft,  *left_info_);
@@ -66,7 +66,7 @@ void RadialMenuPanel::UpdateInterface() {
 
 BoxPane & RadialMenuPanel::GetControllerPane_(Hand hand) {
     const Str name = Util::EnumToWord(hand) + "ControllerPane";
-    return *GetPane()->FindTypedPane<BoxPane>(name);
+    return *GetPane()->FindTypedSubPane<BoxPane>(name);
 }
 
 RadialMenuPtr RadialMenuPanel::InitControllerPane_(Hand hand) {
@@ -74,9 +74,9 @@ RadialMenuPtr RadialMenuPanel::InitControllerPane_(Hand hand) {
 
     // Set up button count radio buttons.
     std::vector<RadioButtonPanePtr> count_buttons;
-    count_buttons.push_back(pane.FindTypedPane<RadioButtonPane>("Count2"));
-    count_buttons.push_back(pane.FindTypedPane<RadioButtonPane>("Count4"));
-    count_buttons.push_back(pane.FindTypedPane<RadioButtonPane>("Count8"));
+    count_buttons.push_back(pane.FindTypedSubPane<RadioButtonPane>("Count2"));
+    count_buttons.push_back(pane.FindTypedSubPane<RadioButtonPane>("Count4"));
+    count_buttons.push_back(pane.FindTypedSubPane<RadioButtonPane>("Count8"));
     RadioButtonPane::CreateGroup(count_buttons, 0);
 
     for (auto &but: count_buttons)
@@ -97,7 +97,7 @@ void RadialMenuPanel::UpdateControllerPane_(Hand hand,
 
     // Set the correct number of buttons.
     const Str &count_name = Util::EnumToWord(info.GetCount());
-    pane.FindTypedPane<RadioButtonPane>(count_name)->SetState(true);
+    pane.FindTypedSubPane<RadioButtonPane>(count_name)->SetState(true);
 
     // Update the RadialMenu.
     auto menu = SG::FindTypedNodeUnderNode<RadialMenu>(pane, "RadialMenu");
