@@ -396,12 +396,12 @@ void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
         is_move_enabled_ = new_panel->IsMovable();
         is_size_enabled_ = new_panel->IsResizable();
 
-        // If the Panel size was never set, set it now. Otherwise, update the
-        // Board to the Panel's current size.
+        // If the Panel size was never set, set it now.
         if (new_panel->GetSize() == Vector2f::Zero())
             new_panel->SetSize(new_panel->GetMinSize());
-        else
-            UpdateSizeFromPanel_(new_panel->GetSize());
+
+        // Update the Board to the Panel's current size.
+        UpdateSizeFromPanel_(new_panel->GetSize());
 
         // Track size changes.
         size_may_have_changed_ = false;
