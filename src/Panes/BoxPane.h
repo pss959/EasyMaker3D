@@ -45,15 +45,5 @@ class BoxPane : public ContainerPane {
     Parser::TField<float>          padding_;
     ///@}
 
-    /// Computes the amount of extra size to add for expanding Panes in the
-    /// given dimension, given the total size in that dimension.
-    float ComputeExtraSize_(int dim, float size);
-
-    /// Returns true if the given Pane expands in the given dimension.
-    static bool Expands_(const Pane &pane, int dim) {
-        return pane.GetResizeFlags().Has(
-            dim == 0 ? Pane::ResizeFlag::kWidth : Pane::ResizeFlag::kHeight);
-    }
-
     friend class Parser::Registry;
 };

@@ -348,6 +348,7 @@ lib_sources = list(chain(
         'IconPane',
         'LabeledSliderPane',
         'Pane',
+        'PaneLayout',
         'ProfilePane',
         'RadioButtonPane',
         'ScrollingPane',

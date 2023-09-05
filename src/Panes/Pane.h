@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 #include "Base/Memory.h"
 #include "Items/Border.h"
@@ -46,6 +47,9 @@ class Pane : public SG::Node {
     /// Flag indicating a resizable dimension.
     enum class ResizeFlag { kWidth, kHeight };
     using ResizeFlags = Util::Flags<ResizeFlag>;
+
+    // Shorthand.
+    using PaneVec = std::vector<PanePtr>;
 
     /// \name Size query.
     ///@{
