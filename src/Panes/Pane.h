@@ -45,7 +45,7 @@ DECL_SHARED_PTR(Widget);
 class Pane : public SG::Node {
   public:
     /// Flag indicating a resizable dimension.
-    enum class ResizeFlag { kWidth, kHeight };
+    enum class ResizeFlag { kWidth = 0x1, kHeight = 0x2 };
     using ResizeFlags = Util::Flags<ResizeFlag>;
 
     // Shorthand.

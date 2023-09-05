@@ -99,8 +99,7 @@ TEST_F(GridPaneTest, Layout) {
   TEMPLATES: [
     SpacerPane "T_SP" {
       min_size: 10 10,
-      resize_width: True,
-      resize_height: True,
+      resize_flags: "kWidth|kHeight",
     }
   ],
   row_count:         2,

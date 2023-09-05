@@ -50,9 +50,10 @@ TEST_F(BoxPaneTest, LayoutVBox) {
   spacing: 10,
   panes: [
     SpacerPane "Spacer0" { min_size: 8 15 },
-    SpacerPane "Spacer1" { resize_width: True, resize_height: True },
+    SpacerPane "Spacer1" { resize_flags: "kWidth|kHeight" },
     SpacerPane "Spacer2" {},
-    SpacerPane "Spacer3" { resize_height: True, disabled_flags: "kTraversal" },
+    SpacerPane "Spacer3" { resize_flags: "kHeight",
+                           disabled_flags: "kTraversal" },
   ]
 )";
     auto box = GetBoxPane(contents);
@@ -100,9 +101,10 @@ TEST_F(BoxPaneTest, LayoutHBox) {
   spacing: 10,
   panes: [
     SpacerPane "Spacer0" { min_size: 15 8 },
-    SpacerPane "Spacer1" { resize_width: True, resize_height: True },
+    SpacerPane "Spacer1" { resize_flags: "kWidth|kHeight" },
     SpacerPane "Spacer2" {},
-    SpacerPane "Spacer3" { resize_width: True, disabled_flags: "kTraversal" },
+    SpacerPane "Spacer3" { resize_flags: "kWidth",
+                           disabled_flags: "kTraversal" },
   ]
 )";
     auto box = GetBoxPane(contents);
