@@ -73,13 +73,13 @@ TEST_F(TextPaneTest, Text) {
     text->SetResizeFlags(text->GetResizeFlags().Add(Pane::ResizeFlag::kHeight));
     EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
 
-    text->SetLayoutSize(Vector2f(100, 60));
-    EXPECT_VECS_CLOSE2(Vector2f(100, 60), text->GetLayoutSize());
+    text->SetLayoutSize(Vector2f(600, 90));
+    EXPECT_VECS_CLOSE2(Vector2f(600, 90), text->GetLayoutSize());
 
     // Repeat with larger aspect ratio.
-    text->SetLayoutSize(Vector2f(400, 60));
+    text->SetLayoutSize(Vector2f(800, 90));
     EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
-    EXPECT_VECS_CLOSE2(Vector2f(360, 60), text->GetTextSize());
+    EXPECT_VECS_CLOSE2(Vector2f(540, 90), text->GetTextSize());
 
     // Change the text and make sure the base size updates.
     text->SetText("abcdefgh");
@@ -88,7 +88,7 @@ TEST_F(TextPaneTest, Text) {
     // Repeat with fixed height.
     text->SetResizeFlags(
         text->GetResizeFlags().Remove(Pane::ResizeFlag::kHeight));
-    text->SetLayoutSize(Vector2f(200, 60));
+    text->SetLayoutSize(Vector2f(800, 90));
     EXPECT_VECS_CLOSE2(Vector2f(352, 44), text->GetBaseSize());
 }
 

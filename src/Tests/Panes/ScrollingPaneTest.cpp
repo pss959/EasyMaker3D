@@ -40,10 +40,10 @@ TEST_F(ScrollingPaneTest, Scroll) {
         spacers.push_back(spp->CloneTyped<SpacerPane>(true));
     scp->GetContentsPane()->ReplacePanes(spacers);
 
-    scp->SetLayoutSize(Vector2f(200, 400));
-    EXPECT_EQ(Vector2f(118,  400), scp->GetBaseSize());
-    EXPECT_EQ(Vector2f(200,  400), scp->GetLayoutSize());
-    EXPECT_EQ(Vector2f(100,  400), scp->GetContentsPane()->GetBaseSize());
+    scp->SetLayoutSize(Vector2f(200, 200));
+    EXPECT_EQ(Vector2f(118,  200), scp->GetBaseSize());
+    EXPECT_EQ(Vector2f(200,  200), scp->GetLayoutSize());
+    EXPECT_EQ(Vector2f(100,  200), scp->GetContentsPane()->GetBaseSize());
     EXPECT_EQ(Vector2f(100, 2000), scp->GetContentsPane()->GetUnclippedSize());
     EXPECT_EQ(0, scp->GetScrollPosition());
 
@@ -59,7 +59,7 @@ TEST_F(ScrollingPaneTest, Scroll) {
     // ScrollBy() is relative to the scrolling speed and layout size.
     scp->ScrollBy(.4f);
     EXPECT_CLOSE(.04f, scp->GetScrollPosition());
-    scp->SetLayoutSize(Vector2f(200, 200));
+    scp->SetLayoutSize(Vector2f(200, 400));
     scp->ScrollTo(0);
     scp->ScrollBy(.8f);
     EXPECT_CLOSE(.035555f, scp->GetScrollPosition());

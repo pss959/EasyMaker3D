@@ -86,6 +86,14 @@ WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
     return best_widget;
 }
 
+void Pane::GetFocusableSubPanes(Pane::PaneVec &panes) const {
+    for (auto &sub_pane: GetSubPanes()) {
+        if (sub_pane->GetInteractor())
+            panes.push_back(sub_pane);
+        sub_pane->GetFocusableSubPanes(panes);
+    }
+}
+
 PanePtr Pane::FindSubPane(const Str &name) const {
     PanePtr found;
     for (const auto &pane: GetSubPanes()) {

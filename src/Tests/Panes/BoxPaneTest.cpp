@@ -57,10 +57,10 @@ TEST_F(BoxPaneTest, LayoutVBox) {
   ]
 )";
     auto box = GetBoxPane(contents);
-    auto sp0 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer0");
-    auto sp1 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer1");
-    auto sp2 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer2");
-    auto sp3 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer3");
+    auto sp0 = box->FindTypedSubPane<SpacerPane>("Spacer0");
+    auto sp1 = box->FindTypedSubPane<SpacerPane>("Spacer1");
+    auto sp2 = box->FindTypedSubPane<SpacerPane>("Spacer2");
+    auto sp3 = box->FindTypedSubPane<SpacerPane>("Spacer3");
 
     const Vector2f base_size((2 * 4) + 8,
                              (2 * 4) + (2 * 10) + (1 + 15 + 1));
@@ -85,13 +85,6 @@ TEST_F(BoxPaneTest, LayoutVBox) {
     EXPECT_EQ(Vector2f(108, 201), sp1->GetLayoutSize());
     EXPECT_EQ(Vector2f(1,     1), sp2->GetLayoutSize());
     EXPECT_EQ(Vector2f(0,     0), sp3->GetLayoutSize());
-
-    const auto panes = box->GetPotentialInteractiveSubPanes();
-    EXPECT_EQ(4U, panes.size());
-    EXPECT_TRUE(Util::Contains(panes, sp0));
-    EXPECT_TRUE(Util::Contains(panes, sp1));
-    EXPECT_TRUE(Util::Contains(panes, sp2));
-    EXPECT_TRUE(Util::Contains(panes, sp3));
 }
 
 TEST_F(BoxPaneTest, LayoutHBox) {
@@ -108,10 +101,10 @@ TEST_F(BoxPaneTest, LayoutHBox) {
   ]
 )";
     auto box = GetBoxPane(contents);
-    auto sp0 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer0");
-    auto sp1 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer1");
-    auto sp2 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer2");
-    auto sp3 = SG::FindTypedNodeUnderNode<SpacerPane>(*box, "Spacer3");
+    auto sp0 = box->FindTypedSubPane<SpacerPane>("Spacer0");
+    auto sp1 = box->FindTypedSubPane<SpacerPane>("Spacer1");
+    auto sp2 = box->FindTypedSubPane<SpacerPane>("Spacer2");
+    auto sp3 = box->FindTypedSubPane<SpacerPane>("Spacer3");
 
     const Vector2f base_size((2 * 4) + (2 * 10) + (1 + 15 + 1),
                              (2 * 4) + 8);
@@ -138,6 +131,32 @@ TEST_F(BoxPaneTest, LayoutHBox) {
     EXPECT_EQ(Vector2f(0,     0), sp3->GetLayoutSize());
 }
 
+TEST_F(BoxPaneTest, GetFocusableSubPanes) {
+    const Str contents = R"(
+  orientation: "kHorizontal",
+  panes: [
+    CLONE "T_ButtonPane" "Button0" { min_size: 20 20 },
+    CLONE "T_ButtonPane" "Button1" { min_size:  0 20 },  # Disabled below.
+    CLONE "T_ButtonPane" "Button2" { min_size: 80 20 },
+  ]
+)";
+    auto box  = GetBoxPane(contents);
+    auto but0 = box->FindTypedSubPane<ButtonPane>("Button0");
+    auto but1 = box->FindTypedSubPane<ButtonPane>("Button1");
+    auto but2 = box->FindTypedSubPane<ButtonPane>("Button2");
+
+    // This should have no effect on the results below; the disabled button is
+    // still potentially focusable.
+    but1->SetInteractionEnabled(false);
+
+    Pane::PaneVec panes;
+    box->GetFocusableSubPanes(panes);
+    EXPECT_EQ(3U, panes.size());
+    EXPECT_TRUE(Util::Contains(panes, but0));
+    EXPECT_TRUE(Util::Contains(panes, but1));
+    EXPECT_TRUE(Util::Contains(panes, but2));
+}
+
 TEST_F(BoxPaneTest, Touch) {
     const Str contents = R"(
   orientation: "kHorizontal",
@@ -147,10 +166,10 @@ TEST_F(BoxPaneTest, Touch) {
     CLONE "T_ButtonPane" "Button2" { min_size: 80 20 },
   ]
 )";
-    auto box = GetBoxPane(contents);
-    auto but0 = SG::FindTypedNodeUnderNode<ButtonPane>(*box, "Button0");
-    auto but1 = SG::FindTypedNodeUnderNode<ButtonPane>(*box, "Button1");
-    auto but2 = SG::FindTypedNodeUnderNode<ButtonPane>(*box, "Button2");
+    auto box  = GetBoxPane(contents);
+    auto but0 = box->FindTypedSubPane<ButtonPane>("Button0");
+    auto but1 = box->FindTypedSubPane<ButtonPane>("Button0");
+    auto but2 = box->FindTypedSubPane<ButtonPane>("Button0");
     but1->SetInteractionEnabled(false);
     box->SetLayoutSize(Vector2f(60, 20));
 

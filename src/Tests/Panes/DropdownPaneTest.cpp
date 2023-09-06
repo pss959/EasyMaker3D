@@ -20,7 +20,9 @@ TEST_F(DropdownPaneTest, Defaults) {
     EXPECT_EQ(dd.get(),         dd->GetInteractor());
     EXPECT_NOT_NULL(dd->GetActivationWidget());
     EXPECT_EQ(dd->GetBorder(),  dd->GetFocusBorder());
-    EXPECT_TRUE(dd->GetPotentialInteractiveSubPanes().empty());
+    Pane::PaneVec panes;
+    dd->GetFocusableSubPanes(panes);
+    EXPECT_TRUE(panes.empty());
 }
 
 TEST_F(DropdownPaneTest, SetChoices) {

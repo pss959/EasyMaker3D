@@ -327,9 +327,9 @@ void Panel::SetContext(const ContextPtr &context) {
 
     context_ = context;
 
-    // The context is required for UpdateInteractivePanes_() to work, so do it
+    // The context is required for UpdateFocusablePanes() to work, so do it
     // now.
-    UpdateInteractivePanes_();
+    UpdateFocusablePanes();
 }
 
 void Panel::SetTestContext(const ContextPtr &context) {
@@ -337,7 +337,7 @@ void Panel::SetTestContext(const ContextPtr &context) {
     context_ = context;
 
     // Same as in SetContext().
-    UpdateInteractivePanes_();
+    UpdateFocusablePanes();
 }
 
 void Panel::SetSize(const Vector2f &size) {
@@ -353,6 +353,7 @@ Vector2f Panel::GetSize() {
     if (auto pane = GetPane()) {
         if (size_may_have_changed_) {
             UpdateSize_();
+            UpdateFocusablePanes();
             size_may_have_changed_ = false;
         }
         return pane->GetLayoutSize();
@@ -465,6 +466,14 @@ void Panel::EnableButton(const Str &name, bool enabled) {
     but_pane->SetInteractionEnabled(enabled);
 }
 
+void Panel::UpdateFocusablePanes() {
+    if (auto &vk = GetContext().virtual_keyboard)
+        focuser_->SetVirtualKeyboard(vk);
+    Pane::PaneVec panes;
+    GetPane()->GetFocusableSubPanes(panes);
+    focuser_->SetPanes(panes);
+}
+
 void Panel::SetFocus(const PanePtr &pane) {
     focuser_->SetFocus(pane);
 }
@@ -524,22 +533,6 @@ void Panel::UpdateSize_() {
 
     // Let the derived class know the Pane size may have changed.
     UpdateForPaneSizeChange();
-}
-
-void Panel::UpdateInteractivePanes_() {
-    if (auto &vk = GetContext().virtual_keyboard)
-        focuser_->SetVirtualKeyboard(vk);
-    Pane::PaneVec interactive_panes;
-    FindInteractivePanes_(GetPane(), interactive_panes);
-    focuser_->SetPanes(interactive_panes);
-}
-
-void Panel::FindInteractivePanes_(const PanePtr &pane, Pane::PaneVec &panes) {
-    if (pane->GetInteractor())
-        panes.push_back(pane);
-
-    for (auto &sub_pane: pane->GetPotentialInteractiveSubPanes())
-        FindInteractivePanes_(sub_pane, panes);
 }
 
 bool Panel::ProcessKeyPress_(const Event &event) {

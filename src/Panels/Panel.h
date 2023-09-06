@@ -197,6 +197,10 @@ class Panel : public SG::Node {
     /// \name Focus management.
     ///@{
 
+    /// Finds all interactive Panes that can be focused. Derived classes can
+    /// call this when focusable Panes are added or removed.
+    void UpdateFocusablePanes();
+
     /// Sets the focus to the given Pane. Asserts if there is no such Pane.
     void SetFocus(const PanePtr &pane);
 
@@ -263,13 +267,6 @@ class Panel : public SG::Node {
     /// Makes sure everything in the Panel is up to date with its current size.
     /// This needs to be called when the Pane sizes may have changed.
     void UpdateSize_();
-
-    /// Finds all interactive Panes and sets up the Focuser_.
-    void UpdateInteractivePanes_();
-
-    /// Recursively finds all interactive Panes under the given one (inclusive)
-    /// and adds them to the given vector.
-    void FindInteractivePanes_(const PanePtr &pane, Pane::PaneVec &panes);
 
     /// Handles an event with a key press.
     bool ProcessKeyPress_(const Event &event);

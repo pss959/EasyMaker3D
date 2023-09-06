@@ -22,7 +22,7 @@
 
 class FilePanel::Impl_ {
   public:
-    typedef std::function<void(const PanePtr &)> FocusFunc;
+    typedef std::function<void(const PanePtr &, bool)> FocusFunc;
 
     Impl_();
 
@@ -33,7 +33,9 @@ class FilePanel::Impl_ {
         path_list_.reset(list);
     }  // LCOV_EXCL_STOP
 
-    /// Sets a function used to set focus.
+    /// Sets a function used to set focus. The function is passed a PanePtr for
+    /// the Pane to focus and a flag indicating whether UpdateFocusablePanes()
+    /// needs to be called first.
     void SetFocusFunc(const FocusFunc &focus_func) { focus_func_ = focus_func; }
 
     /// \name Setup functions.
@@ -125,7 +127,7 @@ class FilePanel::Impl_ {
     PanePtr CreateFileButton_(size_t index, const Str &name,
                               bool is_dir, bool is_highlighted);
     void    UpdateButtons_(PathStatus_ path_status);
-    void    FocusFileButton_();
+    void    FocusFileButton_(bool need_to_update_first);
     void    ScrollToViewFileButton_(size_t index);
 
     /// If the given Pane is a file button, this sets index to its index and
@@ -321,11 +323,11 @@ void FilePanel::Impl_::InitFocus_() {
     // first button in the file list if there are any. If neither is true,
     // focus on the Cancel button.
     if (accept_button_pane_->GetButton().IsInteractionEnabled())
-        focus_func_(accept_button_pane_);
+        focus_func_(accept_button_pane_, false);
     else if (! file_list_pane_->GetContentsPane()->GetPanes().empty())
-        FocusFileButton_();
+        FocusFileButton_(false);
     else
-        focus_func_(cancel_button_pane_);
+        focus_func_(cancel_button_pane_, false);
 }
 
 void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
@@ -360,11 +362,11 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     // the scroll.
     if (scroll_to_highlighted_file && highlighted_index_ >= 0) {
         ScrollToViewFileButton_(highlighted_index_);
-        FocusFileButton_();
+        FocusFileButton_(true);
     }
     else {
         file_list_pane_->ScrollTo(0);
-        focus_func_(cancel_button_pane_);
+        focus_func_(cancel_button_pane_, true);
     }
 }
 
@@ -420,14 +422,14 @@ void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
     }
 }
 
-void FilePanel::Impl_::FocusFileButton_() {
+void FilePanel::Impl_::FocusFileButton_(bool need_to_update_first) {
     // If there is a highlighted path, focus it. Otherwise, focus the first
     // button.
     const size_t index = highlighted_index_ < 0 ? 0 :
         static_cast<size_t>(highlighted_index_);
     const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
     ASSERT(index < panes.size());
-    focus_func_(panes[index]);
+    focus_func_(panes[index], need_to_update_first);
 }
 
 void FilePanel::Impl_::ScrollToViewFileButton_(size_t index) {
@@ -456,7 +458,11 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
 
     // Allow the Impl_ to set the focused Pane, which requires calling the
     // protected SetFocus() function.
-    auto focus_func = [&](const PanePtr &pane){ SetFocus(pane); };
+    auto focus_func = [&](const PanePtr &pane, bool need_to_update_first){
+        if (need_to_update_first)
+            UpdateFocusablePanes();
+        SetFocus(pane);
+    };
     impl_->SetFocusFunc(focus_func);
 }
 

@@ -140,12 +140,10 @@ class Pane : public SG::Node {
     /// return an empty vector.
     virtual PaneVec GetSubPanes() const { return PaneVec(); }
 
-    /// Returns a vector of all sub-Panes that should be checked for
-    /// interaction when setting up a Panel. The base class defines this to
-    /// just return all sub-Panes.
-    virtual PaneVec GetPotentialInteractiveSubPanes() const {
-        return GetSubPanes();
-    }
+    /// Adds all sub-Panes (at any level) that are focusable to the given
+    /// vector. The base class defines this to add all sub-Panes that have an
+    /// IPaneInteractor, recursively.
+    virtual void GetFocusableSubPanes(PaneVec &panes) const;
 
     /// Searches recursively for a sub-Pane with the given name.  Returns null
     /// if it is not found.
@@ -217,7 +215,7 @@ class Pane : public SG::Node {
 
     /// Flag that is set when the base_size_changed_ Notifier is triggered.
     /// Mutable because this can be set by the (const) GetBaseSize() function.
-    mutable bool     base_size_may_have_changed_ = false;
+    mutable bool     base_size_may_have_changed_ = true;
 
     /// Notifies when a possible change is made to the base size of this Pane.
     Util::Notifier<> base_size_changed_;
