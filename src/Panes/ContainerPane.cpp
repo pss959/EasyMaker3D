@@ -45,7 +45,7 @@ void ContainerPane::RemovePane(const PanePtr &pane) {
     panes_.Remove(index);
 
     // Notify that size may have changed.
-    BaseSizeChanged();
+    MarkLayoutAsChanged();
 }
 
 void ContainerPane::ReplacePanes(const PaneVec &panes) {
@@ -61,7 +61,7 @@ void ContainerPane::ReplacePanes(const PaneVec &panes) {
         parent.AddExtraChild(pane);
 
     // Notify that size may have changed.
-    BaseSizeChanged();
+    MarkLayoutAsChanged();
 }
 
 void ContainerPane::PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
@@ -97,15 +97,15 @@ void ContainerPane::ObservePanes_() {
     // Get notified when the base size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
         KLOG('o', "CP: " << GetDesc() << " observing " << pane->GetDesc());
-        pane->GetBaseSizeChanged().AddObserver(
-            this, [&](){ BaseSizeChanged(); });
+        pane->GetLayoutChanged().AddObserver(
+            this, [&](){ MarkLayoutAsChanged(); });
     }
 }
 
 void ContainerPane::UnobservePanes_() {
     for (auto &pane: GetPanes()) {
         KLOG('o', "CP: " << GetDesc() << " unobserving " << pane->GetDesc());
-        pane->GetBaseSizeChanged().RemoveObserver(this);
+        pane->GetLayoutChanged().RemoveObserver(this);
     }
 }
 

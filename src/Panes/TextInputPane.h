@@ -32,7 +32,7 @@ class TextInputPane : public BoxPane {
     /// Returns true if the text is currently marked as valid.
     bool IsTextValid() const;
 
-    virtual void SetLayoutSize(const Vector2f &size) override;
+    virtual void UpdateForLayoutSize(const Vector2f &size) override;
     virtual IPaneInteractor * GetInteractor() override;
 
   protected:

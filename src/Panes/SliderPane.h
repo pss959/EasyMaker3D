@@ -53,7 +53,7 @@ class SliderPane : public LeafPane, public IPaneInteractor {
     void SetValue(float new_value);
 
     /// Redefines this to also keep the thumb the correct size.
-    virtual void SetLayoutSize(const Vector2f &size) override;
+    virtual void UpdateForLayoutSize(const Vector2f &size) override;
 
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }

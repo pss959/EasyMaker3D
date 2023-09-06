@@ -64,7 +64,7 @@ void TextPane::SetText(const Str &text) {
                 text_node_->SetTextWithColor(text_, color_);
             }
         }
-        BaseSizeChanged();
+        MarkLayoutAsChanged();
     }
 }
 
@@ -79,14 +79,14 @@ void TextPane::SetFontName(const Str &font_name) {
         font_name_ = font_name;
         if (text_node_)
             text_node_->SetFontName(font_name);
-        BaseSizeChanged();
+        MarkLayoutAsChanged();
     }
 }
 
 void TextPane::SetFontSize(float font_size) {
     if (font_size != font_size_.GetValue()) {
         font_size_ = font_size;
-        BaseSizeChanged();
+        MarkLayoutAsChanged();
     }
 }
 
@@ -98,12 +98,12 @@ void TextPane::SetCharacterSpacing(float spacing) {
             ASSERT(opts);
             opts->SetGlyphSpacing(GetGlyphSpacing_(spacing));
         }
-        BaseSizeChanged();
+        MarkLayoutAsChanged();
     }
 }
 
-void TextPane::SetLayoutSize(const Vector2f &size) {
-    LeafPane::SetLayoutSize(size);
+void TextPane::UpdateForLayoutSize(const Vector2f &size) {
+    LeafPane::UpdateForLayoutSize(size);
 
     // The size is now known, so fix the transform in the TextNode if it has
     // been set up.
@@ -144,13 +144,6 @@ Vector2f TextPane::ComputeBaseSize() const {
     return MaxComponents(GetMinSize(), unpadded_base_size_ + padding);
 }
 
-void TextPane::SetBaseSize(const Vector2f &new_base_size) {
-    LeafPane::SetBaseSize(new_base_size);
-    if (text_node_->GetTextSize() != Vector2f::Zero() &&
-        GetLayoutSize() != Vector2f::Zero())
-        UpdateTextTransform_(GetLayoutSize());
-}
-
 bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
     if (! LeafPane::ProcessChange(change, obj)) {
         return false;
@@ -159,7 +152,7 @@ bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
         // This TextPane observes the child SG::TextNode, so if a
         // non-appearance change is detected, there may be a size change.
         if (change != SG::Change::kAppearance)
-            BaseSizeChanged();
+            MarkLayoutAsChanged();
         return true;
     }
 }

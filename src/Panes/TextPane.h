@@ -74,7 +74,7 @@ class TextPane : public LeafPane {
 
     /// Redefines this to update the size and placement of the text if
     /// necesssary.
-    virtual void SetLayoutSize(const Vector2f &size) override;
+    virtual void UpdateForLayoutSize(const Vector2f &size) override;
 
     /// Returns the current size of the text as it appears in the pane (not
     /// including padding). This will be zero until SetSize() is called.
@@ -93,9 +93,6 @@ class TextPane : public LeafPane {
 
     /// Redefines this to use the font size, padding, etc.
     virtual Vector2f ComputeBaseSize() const override;
-
-    /// Redefines this to also update the transform in the TextNode.
-    virtual void SetBaseSize(const Vector2f &new_base_size) override;
 
     /// Redefines this to also indicate that the TextPane size may have changed.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;

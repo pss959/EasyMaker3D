@@ -372,7 +372,7 @@ these:
 | o      | Notification observer changes                   |
 | p      | Pane sizing                                     |
 | P      | Object parsing                                  |
-| q      | Pane size notification                          |
+| q      | Pane change notification                        |
 | r      | Ion registries                                  |
 | R      | Rendering                                       |
 | s      | Parser name scoping and resolution              |

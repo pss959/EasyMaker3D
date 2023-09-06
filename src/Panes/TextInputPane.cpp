@@ -961,12 +961,9 @@ bool TextInputPane::IsTextValid() const {
     return impl_->IsTextValid();
 }
 
-void TextInputPane::SetLayoutSize(const Vector2f &size) {
-    const float cur_width = GetLayoutSize()[0];
-    BoxPane::SetLayoutSize(size);
-    const float new_width = GetLayoutSize()[0];
-    if (new_width != cur_width)
-        impl_->UpdateForWidthChange();
+void TextInputPane::UpdateForLayoutSize(const Vector2f &size) {
+    BoxPane::UpdateForLayoutSize(size);
+    impl_->UpdateForWidthChange();
 }
 
 IPaneInteractor * TextInputPane::GetInteractor() {

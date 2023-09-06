@@ -66,8 +66,8 @@ void SliderPane::SetValue(float new_value) {
     UpdateSliderValue_(new_value);
 }
 
-void SliderPane::SetLayoutSize(const Vector2f &size) {
-    LeafPane::SetLayoutSize(size);
+void SliderPane::UpdateForLayoutSize(const Vector2f &size) {
+    LeafPane::UpdateForLayoutSize(size);
 
     // Keep the thumb the same relative size.
     ASSERT(thumb_);

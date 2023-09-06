@@ -223,7 +223,7 @@ void DropdownPane::UpdateMenuPane_() {
     // Set the layout size of the menu Pane to its base size.
     menu_pane_->SetLayoutSize(menu_pane_->GetBaseSize());
 
-    BaseSizeChanged();
+    MarkLayoutAsChanged();
 }
 
 void DropdownPane::ChoiceButtonClicked_(size_t index) {

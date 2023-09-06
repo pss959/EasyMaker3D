@@ -45,7 +45,7 @@ class ProfilePane : public LeafPane, public IPaneInteractor {
     void SetPointPrecision(const Vector2f &xy_precision);
 
     /// Redefines this to maintain the aspect ratio of items in the Pane.
-    virtual void SetLayoutSize(const Vector2f &size) override;
+    virtual void UpdateForLayoutSize(const Vector2f &size) override;
 
     /// Returns the ClickableWidget to grip hover for the given point,
     /// which is normalized to (0,1) in both dimensions.

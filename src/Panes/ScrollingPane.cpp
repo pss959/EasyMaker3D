@@ -47,8 +47,8 @@ float ScrollingPane::GetScrollBarWidth() const {
     return FindSubPane("ScrollBar")->GetMinSize()[0];
 }
 
-void ScrollingPane::SetLayoutSize(const Vector2f &size) {
-    BoxPane::SetLayoutSize(size);
+void ScrollingPane::UpdateForLayoutSize(const Vector2f &size) {
+    BoxPane::UpdateForLayoutSize(size);
 
     // Compute the scroll factor. If the unclipped size of the contents is not
     // larger than the size of the clip rectangle, then there is no

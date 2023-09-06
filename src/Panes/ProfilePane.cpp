@@ -723,8 +723,8 @@ void ProfilePane::SetPointPrecision(const Vector2f &xy_precision) {
     impl_->SetPointPrecision(xy_precision);
 }
 
-void ProfilePane::SetLayoutSize(const Vector2f &size) {
-    LeafPane::SetLayoutSize(size);
+void ProfilePane::UpdateForLayoutSize(const Vector2f &size) {
+    LeafPane::UpdateForLayoutSize(size);
     impl_->AdjustSize(GetBaseSize(), size);
 }
 

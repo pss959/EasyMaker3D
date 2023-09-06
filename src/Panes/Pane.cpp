@@ -30,18 +30,19 @@ void Pane::CreationDone() {
             border->SetTranslation(Vector3f(0, 0, TK::kPaneZOffset));
         }
 
-        // Assume the base size needs to be computed at least once.
-        base_size_may_have_changed_ = true;
+        // Assume the layout needs to be computed at least once.
+        was_layout_changed_ = true;
     }
 }
 
 const Vector2f & Pane::GetBaseSize() const {
     // Recompute the base size if necessary.
-    if (base_size_may_have_changed_) {
+    if (was_layout_changed_) {
         const Vector2f new_base_size = ComputeBaseSize();
-        if (new_base_size != base_size_)
-            const_cast<Pane *>(this)->SetBaseSize(new_base_size);
-        base_size_may_have_changed_ = false;
+        if (new_base_size != base_size_) {
+            const_cast<Pane *>(this)->base_size_ = new_base_size;
+            KLOG('p', "Base size for " << GetDesc() << " now = " << base_size_);
+        }
     }
     return base_size_;
 }
@@ -57,8 +58,13 @@ void Pane::SetLayoutSize(const Vector2f &size) {
             border->SetSize(size);
     }
 
-    // Let any derived class update the layout size in contained Panes.
+    // Let any derived class update the layout size in contained Panes and
+    // respond to the new size.
     LayOutSubPanes();
+    UpdateForLayoutSize(size);
+
+    was_layout_changed_ = false;
+    KLOG('q', "Cleared layout change flag for " << GetDesc());
 }
 
 WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
@@ -111,7 +117,7 @@ PanePtr Pane::FindSubPane(const Str &name) const {
 Str Pane::ToString(bool is_brief) const {
     auto tostr2 = [&](const Vector2f &v){ return Math::ToString(v, .01f); };
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
-    const Str base_size_star = base_size_may_have_changed_ ? "*" : "";
+    const Str base_size_star = was_layout_changed_ ? "*" : "";
 
     Str s = (IsEnabled() ? "" : "x:") + GetDesc();
 
@@ -154,19 +160,14 @@ void Pane::SetMinSize(const Vector2f &size) {
     if (min_size_ != size) {
         KLOG('p', "MinSize for " << GetDesc() << " now " << size);
         min_size_ = size;
-        BaseSizeChanged();
+        MarkLayoutAsChanged();
     }
 }
 
-void Pane::BaseSizeChanged() {
-    if (! base_size_may_have_changed_) {
-        base_size_may_have_changed_ = true;
-        KLOG('q', "Base size changed for " << GetDesc());
-        base_size_changed_.Notify();
+void Pane::MarkLayoutAsChanged() {
+    if (! was_layout_changed_) {
+        KLOG('q', GetDesc() << " marked as changed");
+        was_layout_changed_ = true;
+        layout_changed_.Notify();
     }
-}
-
-void Pane::SetBaseSize(const Vector2f &new_base_size) {
-    base_size_ = new_base_size;
-    KLOG('p', "Base size for " << GetDesc() << " now = " << base_size_);
 }

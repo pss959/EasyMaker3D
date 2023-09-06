@@ -433,7 +433,7 @@ void Panel::PostSetUpIon() {
 
     // Detect root Pane base size changes.
     auto &root_pane = GetPane();
-    root_pane->GetBaseSizeChanged().AddObserver(
+    root_pane->GetLayoutChanged().AddObserver(
         this, [&](){
             size_may_have_changed_ = true;
             size_changed_.Notify();
@@ -519,17 +519,18 @@ void Panel::UpdateSize_() {
 
     // Do this until the base size is not changing any more.
     Vector2f size;
-    while (true) {
+    do {
         // Make sure the layout size is at least as large as the base
         // size. This also makes sure the base sizes in all Panes are up to
         // date.
         size = MaxComponents(pane->GetBaseSize(), pane->GetLayoutSize());
         KLOG('p', GetDesc() << " updating size to " << size);
 
-        // Lay out the Panes if necessary.
-        if (pane->GetLayoutSize() != size)
-            pane->SetLayoutSize(size);
+        // Lay out the Panes.
+        pane->SetLayoutSize(size);
     }
+    // Stop if the Pane has no more changes.
+    while (pane->WasLayoutChanged());
 
     // Let the derived class know the Pane size may have changed.
     UpdateForPaneSizeChange();

@@ -37,9 +37,9 @@ DECL_SHARED_PTR(Widget);
 ///    smaller than the base size, but can be larger if the Pane is resizable.
 ///
 /// Pane layouts are recomputed only when necessary. Any action in a derived
-/// class that might cause a change to the base size of a Pane causes the
-/// GetBaseSizeChanged() Notifier to trigger; this can be used to detect the
-/// need to update the layout.
+/// class that might cause a change to the base size or contents of a Pane
+/// causes the GetChanged() Notifier to trigger; this can be used to detect the
+/// need to update the layout and anything else.
 ///
 /// \ingroup Panes
 class Pane : public SG::Node {
@@ -54,10 +54,14 @@ class Pane : public SG::Node {
     /// \name Size query.
     ///@{
 
-    /// Returns a Notifier invoked when the base size of this Pane may have
-    /// changed. Note that this propagates upward through ContainerPane
-    /// instances.
-    Util::Notifier<> & GetBaseSizeChanged() { return base_size_changed_; }
+    /// Returns a Notifier invoked when the base size or contents of this Pane
+    /// may have changed, potentially requiring a layout update. Note that this
+    /// propagates upward through ContainerPane instances.
+    Util::Notifier<> & GetLayoutChanged() { return layout_changed_; }
+
+    /// Returns a flag indicating whether the layout for the Pane may have
+    /// changed since the last time SetLayoutSize() was called.
+    bool WasLayoutChanged() const { return was_layout_changed_; }
 
     /// Returns flags indicating which dimensions are resizable.
     const ResizeFlags GetResizeFlags() const { return resize_flags_; }
@@ -80,9 +84,8 @@ class Pane : public SG::Node {
     /// Sets flags indicating which dimensions are resizable.
     void SetResizeFlags(const ResizeFlags &flags) { resize_flags_ = flags; }
 
-    /// Sets the layout size of the Pane. Derived classes may add other
-    /// behavior, but should call this one.
-    virtual void SetLayoutSize(const Vector2f &size);
+    /// Sets the layout size of the Pane.
+    void SetLayoutSize(const Vector2f &size);
 
     /// Returns the current layout size of the Pane.
     const Vector2f & GetLayoutSize() const { return layout_size_; }
@@ -178,19 +181,18 @@ class Pane : public SG::Node {
     /// Allows derived classes to set the minimum size of the Pane.
     void SetMinSize(const Vector2f &size);
 
-    /// This is invoked when the base size of this Pane may have changed. If
-    /// this is the first such change since the last time the base size was
-    /// updated, this sets a flag and notifies observers.
-    void BaseSizeChanged();
+    /// This can be called by any Pane class when the base size or contents of
+    /// this Pane may have changed. This sets a flag and notifies
+    /// GetLayoutChanged() observers if the flag is not already set.
+    void MarkLayoutAsChanged();
 
     /// This is called when the base size is potentially out of date. It
     /// computes and returns the new base size for the Pane.
     virtual Vector2f ComputeBaseSize() const = 0;
 
-    /// This is called to when a new base size is computed. The base class
-    /// defines this to store the new size. Derived classes can add their own
-    /// behavior in addition to calling this.
-    virtual void SetBaseSize(const Vector2f &new_base_size);
+    /// Updates anything inside the Pane whem the layout size has changed. The
+    /// base class defines this to do nothing.
+    virtual void UpdateForLayoutSize(const Vector2f &size) {}
 
     /// Returns the SG::Node to add auxiliary items to as children, such as
     /// borders and background. The base class defines this to return the Pane
@@ -213,12 +215,12 @@ class Pane : public SG::Node {
     /// Current base size of the Pane.
     Vector2f         base_size_{0, 0};
 
-    /// Flag that is set when the base_size_changed_ Notifier is triggered.
-    /// Mutable because this can be set by the (const) GetBaseSize() function.
-    mutable bool     base_size_may_have_changed_ = true;
+    /// Flag that is set when MarkLayoutAsChanged() is called.
+    bool             was_layout_changed_ = false;
 
-    /// Notifies when a possible change is made to the base size of this Pane.
-    Util::Notifier<> base_size_changed_;
+    /// Notifies when a possible change is made to the base size or contents of
+    /// this Pane.
+    Util::Notifier<> layout_changed_;
 
     /// Current layout size of this pane.
     Vector2f         layout_size_{0, 0};

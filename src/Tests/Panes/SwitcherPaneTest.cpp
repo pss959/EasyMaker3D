@@ -25,7 +25,7 @@ TEST_F(SwitcherPaneTest, Switching) {
     EXPECT_EQ(-1, sw->GetIndex());
 
     size_t change_count = 0;
-    sw->GetBaseSizeChanged().AddObserver("key", [&]{ ++change_count; });
+    sw->GetLayoutChanged().AddObserver("key", [&]{ ++change_count; });
 
     const Vector2f v10x10(10, 10);
     sw->SetLayoutSize(v10x10);

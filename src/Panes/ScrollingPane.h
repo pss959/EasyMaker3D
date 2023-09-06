@@ -30,7 +30,7 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     void SetScrollAreaSize(const Vector2f &size) { SetMinSize(size); }
 
     /// Defines this to also update scrolling and the thumb.
-    virtual void SetLayoutSize(const Vector2f &size) override;
+    virtual void UpdateForLayoutSize(const Vector2f &size) override;
 
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }
