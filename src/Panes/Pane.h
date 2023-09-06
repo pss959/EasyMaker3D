@@ -123,6 +123,11 @@ class Pane : public SG::Node {
     virtual WidgetPtr GetTouchedWidget(const TouchInfo &info,
                                        float &closest_distance);
 
+    /// This is used by GetTouchedWidget() to determine if a sub-Pane is
+    /// touchable. The base class implements this to return true if the
+    /// sub-Pane is enabled.
+    virtual bool IsSubPaneTouchable(const Pane &sub_pane) const;
+
     ///@}
 
     /// \name Appearance functions

@@ -25,31 +25,17 @@ Vector2f ClipPane::GetContentsOffset() const {
     return Vector2f(trans[0], trans[1]);
 }
 
-WidgetPtr ClipPane::GetTouchedWidget(const TouchInfo &info,
-                                     float &closest_distance) {
-    // Let the base Pane class test this Pane.
-    WidgetPtr best_widget = Pane::GetTouchedWidget(info, closest_distance);
+bool ClipPane::IsSubPaneTouchable(const Pane &sub_pane) const {
+    if (! Pane::IsSubPaneTouchable(sub_pane))
+        return false;
 
-    // Try unclipped contained Panes as well. This is the same as in the
-    // ContainerPane version, except that this skips contained Panes that do
-    // not overlap the clip area. Do all the math in 2D because the Z
-    // coordinates may differ.
-    const Range2f &clip_rect = ToRange2f(GetBounds());
+    // Determine if sub_pane lies completely outside the clip rectangle.
+    Range2f sub_rect = ToRange2f(TransformBounds(sub_pane.GetBounds(),
+                                                 sub_pane.GetModelMatrix()));
     const Vector2f offset = GetContentsOffset();
-    for (auto &pane: GetPanes()) {
-        if (! pane->IsEnabled())
-            continue;
-        Range2f pane_rect = ToRange2f(TransformBounds(pane->GetBounds(),
-                                                      pane->GetModelMatrix()));
-        pane_rect.Set(pane_rect.GetMinPoint() + offset,
-                      pane_rect.GetMaxPoint() + offset);
-        if (pane_rect.IntersectsRange(clip_rect)) {
-            auto widget = pane->GetTouchedWidget(info, closest_distance);
-            if (widget)
-                best_widget = widget;
-        }
-    }
-    return best_widget;
+    sub_rect.Set(sub_rect.GetMinPoint() + offset,
+                 sub_rect.GetMaxPoint() + offset);
+    return sub_rect.IntersectsRange(ToRange2f(GetBounds()));
 }
 
 Vector2f ClipPane::ComputeBaseSize() const {

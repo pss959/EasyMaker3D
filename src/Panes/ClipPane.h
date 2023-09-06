@@ -22,10 +22,9 @@ class ClipPane : public BoxPane {
     /// Returns the current offset of the clipped contents.
     Vector2f GetContentsOffset() const;
 
-    /// Redefines this to also test child Panes that are not completely clipped
-    /// by the ClipPane.
-    virtual WidgetPtr GetTouchedWidget(const TouchInfo &info,
-                                       float &closest_distance) override;
+    /// Redefines this to make sure the sub-Pane is not completely clipped by
+    /// the ClipPane.
+    virtual bool IsSubPaneTouchable(const Pane &sub_pane) const override;
 
   protected:
     ClipPane() {}

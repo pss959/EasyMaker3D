@@ -82,7 +82,7 @@ WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
 
     // Try enabled sub-Panes as well.
     for (auto &pane: GetSubPanes()) {
-        if (pane->IsEnabled()) {
+        if (IsSubPaneTouchable(*pane)) {
             auto widget = pane->GetTouchedWidget(info, closest_distance);
             if (widget)
                 best_widget = widget;
@@ -90,6 +90,10 @@ WidgetPtr Pane::GetTouchedWidget(const TouchInfo &info,
     }
 
     return best_widget;
+}
+
+bool Pane::IsSubPaneTouchable(const Pane &sub_pane) const {
+    return sub_pane.IsEnabled();
 }
 
 void Pane::GetFocusableSubPanes(Pane::PaneVec &panes) const {

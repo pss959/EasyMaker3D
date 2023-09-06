@@ -168,10 +168,10 @@ TEST_F(BoxPaneTest, Touch) {
 )";
     auto box  = GetBoxPane(contents);
     auto but0 = box->FindTypedSubPane<ButtonPane>("Button0");
-    auto but1 = box->FindTypedSubPane<ButtonPane>("Button0");
-    auto but2 = box->FindTypedSubPane<ButtonPane>("Button0");
+    auto but1 = box->FindTypedSubPane<ButtonPane>("Button1");
+    auto but2 = box->FindTypedSubPane<ButtonPane>("Button2");
     but1->SetInteractionEnabled(false);
-    box->SetLayoutSize(Vector2f(60, 20));
+    box->SetLayoutSize(box->GetBaseSize());
 
     TouchInfo info;
     info.radius = .01f;
