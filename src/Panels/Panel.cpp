@@ -137,12 +137,13 @@ void Panel::Focuser_::SetFocus(const PanePtr &pane) {
     ASSERT(pane->GetInteractor());
     const PanePtr focused_pane = GetFocusedPane();
 
-    if (pane != focused_pane) {
-        auto it = std::find(panes_.begin(), panes_.end(), pane);
-        ASSERTM(it != panes_.end(), desc_ + " and " + pane->GetDesc());
-        ChangeFocus_(focused_pane, pane);
-        focused_index_ = it - panes_.begin();
-    }
+    // Do this even if the specified Pane is the same as focused_pane. This
+    // allows some Panels (such as the FilePanel) to refocus on the same Pane
+    // under certain circumstances.
+    auto it = std::find(panes_.begin(), panes_.end(), pane);
+    ASSERTM(it != panes_.end(), desc_ + " and " + pane->GetDesc());
+    ChangeFocus_(focused_pane, pane);
+    focused_index_ = it - panes_.begin();
 }
 
 void Panel::Focuser_::MoveFocus(Direction dir) {
@@ -346,6 +347,9 @@ void Panel::SetSize(const Vector2f &size) {
     if (auto pane = GetPane()) {
         pane->SetLayoutSize(size);
         size_may_have_changed_ = false;
+
+        // Let the derived class know the Pane size may have changed.
+        UpdateForPaneSizeChange();
     }
 }
 
