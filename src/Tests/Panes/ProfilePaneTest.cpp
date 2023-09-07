@@ -348,12 +348,12 @@ TEST_F(ProfilePaneTest, SetLayoutSize) {
     auto mp =
         SG::FindTypedNodeUnderNode<DraggableWidget>(*pp, "MovablePoint_1");
 
-    pp->SetLayoutSize(Vector2f(200, 200));
+    pp->SetLayoutSize(pp->GetBaseSize());
     const auto scale = mp->GetScale();
 
-    // The widget should have been resized in X and Y to compensate for the
-    // size change.
-    pp->SetLayoutSize(Vector2f(400, 400));
+    // Scale twice the size; the widget should have been resized in X and Y to
+    // compensate for the size change.
+    pp->SetLayoutSize(2 * pp->GetLayoutSize());
     EXPECT_EQ(Vector3f(.5f * scale[0], .5f * scale[1], 1), mp->GetScale());
 }
 

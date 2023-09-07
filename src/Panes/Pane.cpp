@@ -48,6 +48,9 @@ const Vector2f & Pane::GetBaseSize() const {
 }
 
 void Pane::SetLayoutSize(const Vector2f &size) {
+    // Make sure the base size is up to date.
+    GetBaseSize();
+
     ASSERTM(size[0] > 0 && size[1] > 0, "for " + GetDesc());
     ASSERTM(size[0] >= base_size_[0] && size[1] >= base_size_[1],
             "for " + GetDesc());

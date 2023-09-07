@@ -11,7 +11,8 @@ class ScrollingPaneTest : public PaneTestBase {
     ScrollingPanePtr GetScrollingPane(const Str &clip_contents = "") {
         // ScrollingPane requires a ClipPane for the "contents" field.
         const Str contents =
-            R"(contents: CLONE "T_ClipPane" "CP" { )" + clip_contents + " }";
+            R"(min_size: 200 200,
+               contents: CLONE "T_ClipPane" "CP" { )" + clip_contents + " }";
         return ReadRealPane<ScrollingPane>("ScrollingPane", contents);
     }
 };
@@ -41,9 +42,9 @@ TEST_F(ScrollingPaneTest, Scroll) {
     scp->GetContentsPane()->ReplacePanes(spacers);
 
     scp->SetLayoutSize(Vector2f(200, 200));
-    EXPECT_EQ(Vector2f(118,  200), scp->GetBaseSize());
+    EXPECT_EQ(Vector2f(200,  200), scp->GetBaseSize());
     EXPECT_EQ(Vector2f(200,  200), scp->GetLayoutSize());
-    EXPECT_EQ(Vector2f(100,  200), scp->GetContentsPane()->GetBaseSize());
+    EXPECT_EQ(Vector2f(100,  400), scp->GetContentsPane()->GetBaseSize());
     EXPECT_EQ(Vector2f(100, 2000), scp->GetContentsPane()->GetUnclippedSize());
     EXPECT_EQ(0, scp->GetScrollPosition());
 
@@ -58,11 +59,11 @@ TEST_F(ScrollingPaneTest, Scroll) {
 
     // ScrollBy() is relative to the scrolling speed and layout size.
     scp->ScrollBy(.4f);
-    EXPECT_CLOSE(.04f, scp->GetScrollPosition());
+    EXPECT_CLOSE(.01778f, scp->GetScrollPosition());
     scp->SetLayoutSize(Vector2f(200, 400));
     scp->ScrollTo(0);
     scp->ScrollBy(.8f);
-    EXPECT_CLOSE(.035555f, scp->GetScrollPosition());
+    EXPECT_CLOSE(.08f, scp->GetScrollPosition());
 
     scp->ScrollToShowSubPane(*spacers[0]);
     EXPECT_CLOSE(0,    scp->GetScrollPosition());
@@ -79,7 +80,7 @@ TEST_F(ScrollingPaneTest, Scroll) {
     event.flags.Set(Event::Flag::kKeyPress);
     event.key_name = "Up";
     EXPECT_TRUE(scp->HandleEvent(event));
-    EXPECT_CLOSE(.22778f, scp->GetScrollPosition());
+    EXPECT_CLOSE(.2f, scp->GetScrollPosition());
 
     event.key_name = "Down";
     EXPECT_TRUE(scp->HandleEvent(event));
@@ -89,5 +90,5 @@ TEST_F(ScrollingPaneTest, Scroll) {
     event.flags.Set(Event::Flag::kPosition1D);
     event.position1D = -.4f;
     EXPECT_TRUE(scp->HandleEvent(event));
-    EXPECT_CLOSE(.24822f, scp->GetScrollPosition());
+    EXPECT_CLOSE(.246f, scp->GetScrollPosition());
 }

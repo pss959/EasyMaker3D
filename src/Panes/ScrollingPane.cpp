@@ -130,6 +130,10 @@ void ScrollingPane::ScrollToShowSubPane(const Pane &sub_pane) {
     ScrollTo(fraction <= min ? 0 : fraction >= 1 - min ? 1 : fraction);
 }
 
+Vector2f ScrollingPane::ComputeBaseSize() const {
+    return GetMinSize();
+}
+
 void ScrollingPane::UpdateScroll_() {
     auto &contents = GetContentsPane();
     Vector2f trans = contents->GetContentsOffset();

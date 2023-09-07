@@ -59,6 +59,10 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
+    /// Redefines this to use just the minimum size of the ScrollingPane,
+    /// ignoring the ClipPane size.
+    virtual Vector2f ComputeBaseSize() const override;
+
   private:
     /// \name Parsed Fields
     ///@{

@@ -149,7 +149,7 @@ void PanelTestBase::TestBoardAgent::PushPanel(const PanelPtr &panel,
     // Set its context and make sure it has a valid size (needed for
     // TextInputPanes).
     panel->SetTestContext(context_);
-    panel->SetSize(Vector2f(400, 400));
+    panel->SetSize(panel->GetPane()->GetBaseSize());
 
     // Do NOT show the Panel if it is the first one - that allows tests to do
     // that for the first time.
