@@ -76,10 +76,10 @@ TEST_F(TextPaneTest, Text) {
     text->SetLayoutSize(Vector2f(600, 90));
     EXPECT_VECS_CLOSE2(Vector2f(600, 90), text->GetLayoutSize());
 
-    // Repeat with larger aspect ratio.
-    text->SetLayoutSize(Vector2f(800, 90));
-    EXPECT_VECS_CLOSE2(Vector2f(528, 88), text->GetBaseSize());
-    EXPECT_VECS_CLOSE2(Vector2f(540, 90), text->GetTextSize());
+    // Repeat with smaller aspect ratio.
+    text->SetLayoutSize(Vector2f(600, 200));
+    EXPECT_VECS_CLOSE2(Vector2f(528,  88), text->GetBaseSize());
+    EXPECT_VECS_CLOSE2(Vector2f(600, 100), text->GetTextSize());
 
     // Change the text and make sure the base size updates.
     text->SetText("abcdefgh");

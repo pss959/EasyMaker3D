@@ -153,17 +153,17 @@ void FontSystem::Impl_::Init_() {
         // Create a new font face and make sure it can be loaded. If so, add it
         // to the maps.
         FT_Face face;
-        if (FT_New_Face(lib, path.ToString().c_str(), 0, &face) == FT_Err_Ok &&
-            CanLoadFace_(face)) {
+        const bool load_ok =
+            FT_New_Face(lib, path.ToString().c_str(), 0, &face) == FT_Err_Ok &&
+            CanLoadFace_(face);
+        ASSERTM(load_ok, "Failed to load font from path " + path);
+        if (load_ok) {
             const Str name = Str(face->family_name) + "-" + face->style_name;
             KLOG('z', "Loaded font '" << name << " from path '"
                  << path.ToString() << "'");
             ASSERTM(! face_map_.contains(name), name);
             path_map_[name] = path;
             face_map_[name] = face;
-        }
-        else {
-            ASSERTM(false, "Failed to load font from path " + path);
         }
     }
 

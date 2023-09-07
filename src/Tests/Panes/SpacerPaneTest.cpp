@@ -19,6 +19,8 @@ TEST_F(SpacerPaneTest, SetSpace) {
     EXPECT_EQ(Vector2f(10, 20), sp->GetBaseSize());
     EXPECT_EQ(Vector2f(10, 20), sp->GetCurrentBaseSize());
 
+    EXPECT_TRUE(sp->WasLayoutChanged());
     sp->SetLayoutSize(Vector2f(40, 30));
+    EXPECT_FALSE(sp->WasLayoutChanged());
     EXPECT_EQ(Vector2f(40, 30), sp->GetLayoutSize());
 }
