@@ -32,9 +32,6 @@ class TreePanel : public Panel {
     /// update its display.
     void ModelsChanged();
 
-    /// Defines this to also set up the Impl_ instance.
-    virtual void SetContext(const ContextPtr &context) override;
-
     /// Defines this to update contents if necessary.
     virtual void UpdateForRenderPass(const Str &pass_name) override;
 
@@ -43,6 +40,9 @@ class TreePanel : public Panel {
 
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
+
+    /// Redefines this to also set up the Impl_ from the Context.
+    virtual void ProcessContext() override;
 
   private:
     class Impl_;

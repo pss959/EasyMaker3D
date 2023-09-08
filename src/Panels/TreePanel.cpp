@@ -721,11 +721,6 @@ void TreePanel::ModelsChanged() {
     impl_->ModelsChanged();
 }
 
-void TreePanel::SetContext(const ContextPtr &context) {
-    Panel::SetContext(context);
-    impl_->SetAgents(context->action_agent, context->selection_agent);
-}
-
 void TreePanel::UpdateForRenderPass(const Str &pass_name) {
     impl_->UpdateModels();
 }
@@ -736,4 +731,13 @@ void TreePanel::InitInterface() {
 
 void TreePanel::UpdateInterface() {
     impl_->UpdateInterface();
+}
+
+void TreePanel::ProcessContext() {
+    Panel::ProcessContext();
+
+    auto &context = GetContext();
+    ASSERT(context.action_agent);
+    ASSERT(context.selection_agent);
+    impl_->SetAgents(context.action_agent, context.selection_agent);
 }

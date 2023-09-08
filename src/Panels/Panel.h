@@ -60,9 +60,8 @@ class Panel : public SG::Node {
     ///@{
 
     /// Sets a Context that can be used by derived Panel classes during their
-    /// operation. Derived classes can add their own behavior, but must call
-    /// this version.
-    virtual void SetContext(const ContextPtr &context);
+    /// operation.
+    void SetContext(const ContextPtr &context);
 
     /// Version of SetContext() used for testing - not all parts need to be
     /// present in the Context.
@@ -151,6 +150,11 @@ class Panel : public SG::Node {
     virtual void AddFields();
     virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
+
+    /// This is called after a Context is installed. The base class defines
+    /// this to call UpdateFocusablePanes(). Derived classes should call this
+    /// version in addition to doing their own work.
+    virtual void ProcessContext();
 
     /// Allows derived tool classes to access the Context.
     Context & GetContext() const;

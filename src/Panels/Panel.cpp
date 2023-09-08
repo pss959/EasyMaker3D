@@ -317,7 +317,10 @@ void Panel::CreationDone() {
 }
 
 void Panel::SetContext(const ContextPtr &context) {
-    ASSERT(! context_);  // Call only once.
+    // This should be called only once.
+    ASSERT(! context_);
+
+    // Verify that all needed instances exist.
     ASSERT(context);
     ASSERT(context->action_agent);
     ASSERT(context->board_agent);
@@ -327,18 +330,14 @@ void Panel::SetContext(const ContextPtr &context) {
     ASSERT(context->settings_agent);
 
     context_ = context;
-
-    // The context is required for UpdateFocusablePanes() to work, so do it
-    // now.
-    UpdateFocusablePanes();
+    ProcessContext();
 }
 
 void Panel::SetTestContext(const ContextPtr &context) {
+    // Not all agents are necessarily needed for testing.
     ASSERT(context);
     context_ = context;
-
-    // Same as in SetContext().
-    UpdateFocusablePanes();
+    ProcessContext();
 }
 
 void Panel::SetSize(const Vector2f &size) {
@@ -442,6 +441,12 @@ void Panel::PostSetUpIon() {
             size_may_have_changed_ = true;
             size_changed_.Notify();
         });
+}
+
+void Panel::ProcessContext() {
+    // The context is required for UpdateFocusablePanes() to work, so do it
+    // now.
+    UpdateFocusablePanes();
 }
 
 Panel::Context & Panel::GetContext() const {

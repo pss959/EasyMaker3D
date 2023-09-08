@@ -157,6 +157,7 @@ test_source_dict = {
         'ExtrudedToolPanelTest',
         'FilePanelTest',
         'HelpPanelTest',
+        'ImportToolPanelTest',
         'InfoPanelTest',
         'KeyboardPanelTest',
         'NameToolPanelTest',
@@ -168,6 +169,7 @@ test_source_dict = {
         'TaperToolPanelTest',
         'TextToolPanelTest',
         'ToolPanelTestBase',
+        'TreePanelTest',
     ],
     'Panes' : [
         'BoxPaneTest',
