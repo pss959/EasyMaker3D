@@ -56,7 +56,7 @@ void DragTester::SetRayDirection(const Vector3f &dir) {
 }
 
 void DragTester::ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
-                                size_t count_between) {
+                                size_t count_between, bool finish_off_widget) {
     DragInfo info = base_info_;
     info.trigger  = Trigger::kPointer;
 
@@ -78,6 +78,9 @@ void DragTester::ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
     for (size_t i = 0; i < count_between; ++i)
         add_pt(Lerp((i + 1) * delta, p0, p1));
     add_pt(p1);
+
+    if (finish_off_widget)
+        infos.back().hit.path.clear();
 
     ApplyDrag_(infos);
 }

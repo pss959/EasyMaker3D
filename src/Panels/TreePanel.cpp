@@ -1,6 +1,7 @@
 #include "Panels/TreePanel.h"
 
 #include <functional>
+#include <ranges>
 #include <unordered_map>
 #include <vector>
 
@@ -331,9 +332,12 @@ void TreePanel::Impl_::RectSelect_::ContinueDrag_(const DragInfo &info) {
 }
 
 void TreePanel::Impl_::RectSelect_::FinishDrag_() {
-    // Get all active Models while deactivating buttons.
+    // Any row that was intersected by the rectangle has its Model button
+    // active. Collect the Models for these buttons while deactivating them.
+    // Do this in reverse order of rows so that ancestor Models are selected
+    // over descendents.
     Selection sel;
-    for (const auto &row: model_rows_) {
+    for (const auto &row: model_rows_ | std::views::reverse) {
         auto &but = row->GetModelButtonPane()->GetButton();
         if (but.IsActive()) {
             but.SetActive(false);
@@ -504,7 +508,7 @@ void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path, float y_top,
 
     // Compute the Y range for the row.
     const float height = model_row_pane_->GetBaseSize()[1];
-    const Range1f y_range(y_top - (index + 1) * height,
+    const Range1f y_range(y_top - (index + 1) * height, // LCOV_EXCL_LINE [bug]
                           y_top - index * height);
 
     ModelRowPtr_ row(new ModelRow_(*model_row_pane_, index,
@@ -692,7 +696,9 @@ Color TreePanel::Impl_::ModelRow_::GetColorForModel_(const Model &model) {
       case kHiddenByUser:    color_name = "HiddenByUser";  break;
       case kAncestorShown:
       case kDescendantShown: color_name = "HiddenByModel"; break;
+      // LCOV_EXCL_START [cannot happen]
       default: ASSERTM(false, model.GetDesc() + " has invalid status");
+      // LCOV_EXCL_STOP
     }
     return SG::ColorMap::SGetColor("TreePanel" + color_name + "Color");
 }

@@ -43,9 +43,11 @@ class DragTester {
 
     /// Applies a mouse drag between two points in local coordinates of the
     /// DraggableWidget. If count_between is non-zero, this interpolates the
-    /// given number of points for the drag.
+    /// given number of points for the drag. If \p finish_off_widget is true,
+    /// the last DragInfo will have an empty path.
     void ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
-                        size_t count_between = 0);
+                        size_t count_between = 0,
+                        bool finish_off_widget = false);
 
     /// Applies a grip position drag between two points in local coordinates of
     /// the DraggableWidget. If count_between is non-zero, this interpolates
