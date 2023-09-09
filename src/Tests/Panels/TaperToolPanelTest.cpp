@@ -20,6 +20,8 @@ TEST_F(TaperToolPanelTest, Defaults) {
     EXPECT_EQ(ProfilePane::CreateDefaultProfile(), panel->GetTaper().profile);
     EXPECT_NULL(panel->GetFocusedPane());
     EXPECT_FALSE(panel->IsCloseable());
+    EXPECT_TRUE(panel->IsMovable());
+    EXPECT_TRUE(panel->IsResizable());
 }
 
 TEST_F(TaperToolPanelTest, SetTaper) {

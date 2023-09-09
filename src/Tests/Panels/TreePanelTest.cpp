@@ -190,6 +190,10 @@ void TreePanelTest::ClickExpButton(int row_index) {
 TEST_F(TreePanelTest, Defaults) {
     EXPECT_NULL(panel->GetFocusedPane());
     EXPECT_EQ(".", FindTypedPane<TextPane>("SessionString")->GetText());
+    EXPECT_FALSE(panel->IsMovable());
+    EXPECT_FALSE(panel->IsResizable());
+    EXPECT_FALSE(panel->CanGripHover());
+    EXPECT_NULL(panel->GetGripWidget(Point2f(0, 0)));
 }
 
 TEST_F(TreePanelTest, Show) {

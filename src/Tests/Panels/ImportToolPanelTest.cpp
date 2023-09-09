@@ -15,6 +15,10 @@ class ImportToolPanelTest : public ToolPanelTestBase {
 TEST_F(ImportToolPanelTest, Defaults) {
     EXPECT_NULL(panel->GetFocusedPane());
     EXPECT_FALSE(panel->IsCloseable());
+    EXPECT_TRUE(panel->IsMovable());
+    EXPECT_TRUE(panel->IsResizable());
+    EXPECT_FALSE(panel->CanGripHover());
+    EXPECT_NULL(panel->GetGripWidget(Point2f(0, 0)));
 }
 
 TEST_F(ImportToolPanelTest, Show) {

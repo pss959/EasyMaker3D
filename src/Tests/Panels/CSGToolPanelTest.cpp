@@ -18,6 +18,10 @@ TEST_F(CSGToolPanelTest, Defaults) {
     EXPECT_EQ(CSGOperation::kUnion, panel->GetOperation());
     EXPECT_NULL(panel->GetFocusedPane());
     EXPECT_FALSE(panel->IsCloseable());
+    EXPECT_TRUE(panel->IsMovable());
+    EXPECT_FALSE(panel->IsResizable());
+    EXPECT_FALSE(panel->CanGripHover());
+    EXPECT_NULL(panel->GetGripWidget(Point2f(0, 0)));
 }
 
 TEST_F(CSGToolPanelTest, SetOperation) {

@@ -160,9 +160,8 @@ class Panel : public SG::Node {
     Context & GetContext() const;
 
     /// This is called when the Panel is first created. It allows derived
-    /// classes to initialize interface items, such as registering buttons. The
-    /// base class defines this to do nothing.
-    virtual void InitInterface() {}
+    /// classes to initialize interface items, such as registering buttons.
+    virtual void InitInterface() = 0;
 
     /// This is called before the Panel is shown after being attached. It
     /// allows derived classes to update interface items, such as enabling or

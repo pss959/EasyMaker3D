@@ -22,6 +22,8 @@ TEST_F(ExtrudedToolPanelTest, Defaults) {
     EXPECT_EQ(ProfilePane::CreateDefaultProfile(), panel->GetProfile());
     EXPECT_NULL(panel->GetFocusedPane());
     EXPECT_FALSE(panel->IsCloseable());
+    EXPECT_TRUE(panel->IsMovable());
+    EXPECT_TRUE(panel->IsResizable());
 }
 
 TEST_F(ExtrudedToolPanelTest, SetProfile) {

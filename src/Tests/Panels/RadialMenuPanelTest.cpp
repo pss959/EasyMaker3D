@@ -21,6 +21,10 @@ class RadialMenuPanelTest : public PanelTestBase {
 
 TEST_F(RadialMenuPanelTest, Defaults) {
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_TRUE(panel->IsMovable());
+    EXPECT_FALSE(panel->IsResizable());
+    EXPECT_FALSE(panel->CanGripHover());
+    EXPECT_NULL(panel->GetGripWidget(Point2f(0, 0)));
 }
 
 TEST_F(RadialMenuPanelTest, Show) {

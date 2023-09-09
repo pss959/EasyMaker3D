@@ -1,4 +1,5 @@
 #include "Agents/NameAgent.h"
+#include "Base/Event.h"
 #include "Panels/NameToolPanel.h"
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
@@ -19,6 +20,10 @@ TEST_F(NameToolPanelTest, Defaults) {
     EXPECT_EQ(".", panel->GetName());
     EXPECT_NULL(panel->GetFocusedPane());
     EXPECT_FALSE(panel->IsCloseable());
+    EXPECT_TRUE(panel->IsMovable());
+    EXPECT_TRUE(panel->IsResizable());
+    EXPECT_FALSE(panel->CanGripHover());
+    EXPECT_NULL(panel->GetGripWidget(Point2f(0, 0)));
 }
 
 TEST_F(NameToolPanelTest, SetName) {
@@ -31,6 +36,12 @@ TEST_F(NameToolPanelTest, Show) {
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
+
+    // All ToolPanel classes should Ignore valuator events.
+    Event event;
+    event.flags.Set(Event::Flag::kPosition1D);
+    event.position1D = -.4f;
+    EXPECT_FALSE(panel->HandleEvent(event));
 }
 
 TEST_F(NameToolPanelTest, Change) {

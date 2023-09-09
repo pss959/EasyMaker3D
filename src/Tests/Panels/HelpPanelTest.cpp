@@ -1,3 +1,4 @@
+#include "Base/Event.h"
 #include "Panels/HelpPanel.h"
 #include "Tests/Panels/PanelTestBase.h"
 #include "Tests/Testing.h"
@@ -13,6 +14,10 @@ class HelpPanelTest : public PanelTestBase {
 
 TEST_F(HelpPanelTest, Defaults) {
     EXPECT_NULL(panel->GetFocusedPane());
+    EXPECT_TRUE(panel->IsMovable());
+    EXPECT_FALSE(panel->IsResizable());
+    EXPECT_FALSE(panel->CanGripHover());
+    EXPECT_NULL(panel->GetGripWidget(Point2f(0, 0)));
 }
 
 TEST_F(HelpPanelTest, Show) {
@@ -20,6 +25,12 @@ TEST_F(HelpPanelTest, Show) {
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
     EXPECT_EQ(FindPane("Done"), panel->GetFocusedPane());
+
+    // All non-ToolPanel Panel classes should trap valuator events.
+    Event event;
+    event.flags.Set(Event::Flag::kPosition1D);
+    event.position1D = -.4f;
+    EXPECT_TRUE(panel->HandleEvent(event));
 }
 
 TEST_F(HelpPanelTest, OpenURLs) {
