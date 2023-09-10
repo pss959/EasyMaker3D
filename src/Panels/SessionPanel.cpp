@@ -113,7 +113,7 @@ void SessionPanel::ContinueSession_() {
         Str error;
         if (! session_agent.LoadSession(session_path, error)) {
             DisplayMessage("Could not load session from '" +
-                           session_path.ToString() + "':\n" + error, nullptr);
+                           session_path.ToString() + "':\n" + error);
         }
         else {
             Close("Done");
@@ -248,7 +248,7 @@ void SessionPanel::ReallyLoadSessionFromPath_(const FilePath &path) {
     }
     else {
         DisplayMessage("Could not load session from '" +
-                       path.ToString() + "':\n" + error, nullptr);
+                       path.ToString() + "':\n" + error);
     }
 }
 
@@ -266,7 +266,7 @@ void SessionPanel::ExportToPath_(const FilePath &path, FileFormat format) {
     const UnitConversion &conv = GetSettings().GetExportUnitsConversion();
     if (! GetContext().session_agent->Export(path, format, conv)) {
         DisplayMessage("Could not export selection to '" +
-                       path.ToString() + "'", nullptr);
+                       path.ToString() + "'");
     }
 }
 

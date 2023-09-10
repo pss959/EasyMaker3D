@@ -291,7 +291,7 @@ void Panel::AddFields() {
 
 bool Panel::IsValid(Str &details) {
     if (! SG::Node::IsValid(details))
-        return false;
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     if (! GetPane()) {
         details = "Missing Pane for " + GetDesc();
@@ -316,6 +316,7 @@ void Panel::CreationDone() {
     }
 }
 
+// LCOV_EXCL_START [only SetTestContext() is used in tests]
 void Panel::SetContext(const ContextPtr &context) {
     // This should be called only once.
     ASSERT(! context_);
@@ -332,6 +333,7 @@ void Panel::SetContext(const ContextPtr &context) {
     context_ = context;
     ProcessContext();
 }
+// LCOV_EXCL_STOP
 
 void Panel::SetTestContext(const ContextPtr &context) {
     // Not all agents are necessarily needed for testing.
@@ -353,21 +355,17 @@ void Panel::SetSize(const Vector2f &size) {
 }
 
 Vector2f Panel::GetSize() {
-    if (auto pane = GetPane()) {
-        if (size_may_have_changed_) {
-            UpdateSize_();
-            UpdateFocusablePanes();
-            size_may_have_changed_ = false;
-        }
-        return pane->GetLayoutSize();
+    auto pane = GetPane();
+    if (size_may_have_changed_) {
+        UpdateSize_();
+        UpdateFocusablePanes();
+        size_may_have_changed_ = false;
     }
-    return Vector2f::Zero();
+    return pane->GetLayoutSize();
 }
 
 Vector2f Panel::GetMinSize() const {
-    if (auto pane = GetPane())
-        return pane->GetBaseSize();
-    return Vector2f::Zero();
+    return GetPane()->GetBaseSize();
 }
 
 bool Panel::HandleEvent(const Event &event) {
@@ -376,9 +374,11 @@ bool Panel::HandleEvent(const Event &event) {
     if (GetContext().virtual_keyboard &&
         (event.flags.Has(Event::Flag::kButtonPress) ||
          event.flags.Has(Event::Flag::kButtonRelease)) &&
-        event.button == Event::Button::kHeadset)
+        event.button == Event::Button::kHeadset) {
         GetContext().virtual_keyboard->SetIsVisible(
             event.flags.Has(Event::Flag::kButtonPress));
+        return true;
+    }
 
     bool handled = false;
 
@@ -387,7 +387,7 @@ bool Panel::HandleEvent(const Event &event) {
         ASSERT(focused_pane->GetInteractor());
         handled = focused_pane->GetInteractor()->HandleEvent(event);
         if (handled) {
-            KLOG('h', focused_pane->GetName() << " in "
+            KLOG('h', focused_pane->GetName() << " in " // LCOV_EXCL_LINE [bug]
                  << GetName() << " handled event");
         }
     }
@@ -491,16 +491,11 @@ void Panel::SetFocus(const Str &name) {
     SetFocus(GetPane()->FindSubPane(name));
 }
 
-void Panel::DisplayMessage(const Str &message, const MessageFunc &func) {
+void Panel::DisplayMessage(const Str &message) {
     auto dp = GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage(message);
     dp->SetSingleResponse("OK");
-
-    auto result_func = [func](const Str &){
-        if (func)
-            func();
-    };
-    context_->board_agent->PushPanel(dp, result_func);
+    context_->board_agent->PushPanel(dp, nullptr);
 }
 
 void Panel::AskQuestion(const Str &question, const QuestionFunc &func,
@@ -524,7 +519,6 @@ PanelPtr Panel::GetPanel(const Str &name) const {
 
 void Panel::UpdateSize_() {
     auto pane = GetPane();
-    ASSERT(pane);
 
     // Do this until the base size is not changing any more.
     Vector2f size;

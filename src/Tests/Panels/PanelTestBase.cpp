@@ -318,11 +318,11 @@ PanelPtr PanelTestBase::GetCurrentPanel() {
     return test_board_agent_->GetCurrentPanel();
 }
 
-Str PanelTestBase::GetContentsString_() {
+Str PanelTestBase::GetContentsString_(const Str &extra_contents) {
     return R"(
   children: [
     <"nodes/templates/RadialMenu.emd">, # Required for RadialMenuPanel
-    <"nodes/Panels.emd">,
+    <"nodes/Panels.emd">,)" + extra_contents + R"(
   ]
 )";
 }

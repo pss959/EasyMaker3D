@@ -138,9 +138,6 @@ class Panel : public SG::Node {
     /// Defines a function that is invoked when a button is clicked.
     typedef std::function<void(void)> ButtonFunc;
 
-    /// Type of function that is invoked by DisplayMessage().
-    typedef std::function<void(void)> MessageFunc;
-
     /// Type of function that is invoked by AskQuestion().
     typedef std::function<void(const Str &)> QuestionFunc;
 
@@ -217,8 +214,8 @@ class Panel : public SG::Node {
     ///@}
 
     /// Convenience that opens a DialogPanel to display the given message along
-    /// with an "OK" button that invokes the given function (if not null).
-    void DisplayMessage(const Str &message, const MessageFunc &func);
+    /// with an "OK" button that closes the panel.
+    void DisplayMessage(const Str &message);
 
     /// Convenience that opens a DialogPanel to ask the given question and get
     /// a "Yes" or "No" result, which is passed to the given function. The

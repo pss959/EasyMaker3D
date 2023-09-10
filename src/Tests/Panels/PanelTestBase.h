@@ -31,10 +31,13 @@ class PanelTestBase : public SceneTestBase {
 
     /// Sets up to test a Panel of the templated type and name. This sets up a
     /// test Context in the Panel and stores it for later use. The derived
-    /// Panel is returned.
-    template <typename T> std::shared_ptr<T> InitPanel(const Str &type_name) {
+    /// Panel is returned. The \p extra_contents string is added after
+    /// Panels.emd.
+    template <typename T> std::shared_ptr<T> InitPanel(
+        const Str &type_name, const Str &extra_contents = "") {
         static_assert(std::derived_from<T, Panel> == true);
-        auto panel = ReadRealNode<T>(GetContentsString_(), type_name);
+        auto panel = ReadRealNode<T>(GetContentsString_(extra_contents),
+                                     type_name);
         StorePanelWithContext_(panel);
         return panel;
     }
@@ -114,6 +117,6 @@ class PanelTestBase : public SceneTestBase {
     TestBoardAgentPtr    test_board_agent_;
     TestSettingsAgentPtr test_settings_agent_;
 
-    static Str        GetContentsString_();
-    void              StorePanelWithContext_(const PanelPtr &panel);
+    static Str GetContentsString_(const Str &extra_contents);
+    void       StorePanelWithContext_(const PanelPtr &panel);
 };
