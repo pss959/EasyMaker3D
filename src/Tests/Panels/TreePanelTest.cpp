@@ -60,14 +60,9 @@ class TreePanelTest : public PanelTestBase {
     };
     DECL_SHARED_PTR(TestActionAgent);
 
-    /// Derived SelectionAgent that allows for testing of Selection processing.
-    /// XXXX Use SelectionManager as is?
-    class TestSelectionAgent : public SelectionManager {};
-    DECL_SHARED_PTR(TestSelectionAgent);
-
-    TreePanelPtr          panel;
-    TestActionAgentPtr    action_agent;
-    TestSelectionAgentPtr selection_agent;
+    TreePanelPtr        panel;
+    TestActionAgentPtr  action_agent;
+    SelectionManagerPtr selection_agent;
 
     Str scope_string;   ///< Used in TestModelRow() for scoping help.
 
@@ -102,7 +97,7 @@ class TreePanelTest : public PanelTestBase {
 };
 
 TreePanelTest::TreePanelTest() : action_agent(new TestActionAgent),
-                                 selection_agent(new TestSelectionAgent) {
+                                 selection_agent(new SelectionManager) {
     GetContext().action_agent    = action_agent;
     GetContext().selection_agent = selection_agent;
     panel = InitPanel<TreePanel>("TreePanel");
