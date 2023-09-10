@@ -260,6 +260,13 @@ void PanelTestBase::SetPanelDebugFlag(bool b) {
     test_board_agent_->debug_panels = true;
 }
 
+void PanelTestBase::StoreContext() {
+    // Tell the TestBoardAgent where to find other panels and the context to
+    // use for them.
+    test_board_agent_->SetScene(GetScene());
+    test_board_agent_->SetContext(test_context_);
+}
+
 bool PanelTestBase::IsButtonPaneEnabled(const Str &name) {
     return FindTypedPane<ButtonPane>(name)->IsInteractionEnabled();
 }
@@ -328,10 +335,6 @@ Str PanelTestBase::GetContentsString_(const Str &extra_contents) {
 }
 
 void PanelTestBase::StorePanelWithContext_(const PanelPtr &panel) {
-    // Tell the TestBoardAgent where to find other panels and the context to
-    // use for them.
-    test_board_agent_->SetScene(GetScene());
-    test_board_agent_->SetContext(test_context_);
-
+    StoreContext();
     test_board_agent_->PushPanel(panel, nullptr);
 }

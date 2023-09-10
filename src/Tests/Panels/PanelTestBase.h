@@ -42,6 +42,9 @@ class PanelTestBase : public SceneTestBase {
         return panel;
     }
 
+    /// Stores the TestContext in the Scene and TestBoardAgent.
+    void StoreContext();
+
     /// Returns the test Context created for the Panel.
     Panel::Context & GetContext() { return *test_context_; }
 

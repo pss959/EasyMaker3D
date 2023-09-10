@@ -760,10 +760,12 @@ void Board::SetPanel(const PanelPtr &panel,
 
 void Board::PushPanel(const PanelPtr &panel,
                       const BoardAgent::ResultFunc &result_func) {
+    ASSERT(GetBehavior() != Behavior::kPermanent);
     impl_->PushPanel(panel, result_func);
 }
 
 bool Board::PopPanel(const Str &result) {
+    ASSERT(GetBehavior() != Behavior::kPermanent);
     return impl_->PopPanel(result);
 }
 

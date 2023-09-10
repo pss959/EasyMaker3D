@@ -29,10 +29,10 @@ class Board : public Grippable, public Touchable {
         /// and no other Boards affect it.
         kPermanent,
         /// The Board becomes visible when shown and hides all other Boards
-        /// that are not Behavior::kPermanent.
+        /// that are not Behavior::kPermanent. (Default)
         kReplaces,
         /// The Board becomes visible when shown, but leaves all all other
-        /// Boards in their current state. (Default)
+        /// Boards in their current state.
         kAugments,
     };
 
@@ -40,7 +40,8 @@ class Board : public Grippable, public Touchable {
     Behavior GetBehavior() const { return behavior_; }
 
     /// Returns a flag indicating whether the Board is floating, meaning that
-    /// it should be positioned by the Application to be visible.
+    /// it should be positioned by the Application to be visible. The default
+    /// is false.
     bool IsFloating() const { return is_floating_; }
 
     /// Returns an offset vector that is applied to the position chosen for the
@@ -58,7 +59,7 @@ class Board : public Grippable, public Touchable {
 
     /// Pushes a Panel to display in the board. The ResultFunc is invoked when
     /// the Panel is closed (popped). This asserts if the Board is not already
-    /// showing a Panel.
+    /// showing a Panel. This asserts if the behavior is Behavior::kPermanent.
     void PushPanel(const PanelPtr &panel,
                    const BoardAgent::ResultFunc &result_func);
 
