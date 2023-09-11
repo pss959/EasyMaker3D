@@ -505,6 +505,7 @@ void Board::Impl_::Size_() {
         active_handle = l_grip_state_.is_active ?
             l_grip_state_.hovered_part : r_grip_state_.hovered_part;
     }
+    ASSERT(active_handle);
     const Vector3f offset = active_handle->GetTranslation();
 
     // Use the size of the segment from whichever corner is being dragged to
@@ -760,12 +761,10 @@ void Board::SetPanel(const PanelPtr &panel,
 
 void Board::PushPanel(const PanelPtr &panel,
                       const BoardAgent::ResultFunc &result_func) {
-    ASSERT(GetBehavior() != Behavior::kPermanent);
     impl_->PushPanel(panel, result_func);
 }
 
 bool Board::PopPanel(const Str &result) {
-    ASSERT(GetBehavior() != Behavior::kPermanent);
     return impl_->PopPanel(result);
 }
 

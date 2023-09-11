@@ -8,13 +8,15 @@
 #include "Widgets/CompositeWidget.h"
 #include "Widgets/DraggableWidget.h"
 
-DragTester::DragTester(const DraggableWidgetPtr &dw, const WidgetPtr &hw) {
+DragTester::DragTester(const DraggableWidgetPtr &dw, const SG::NodePtr &part) {
     Init_(dw);
 
     base_info_.path_to_widget = SG::NodePath(dw_);
 
-    // Use hw for the Hit path widget if specified.
-    base_info_.hit.path = hw ? SG::NodePath(hw) : base_info_.path_to_widget;
+    // Use part for the Hit path if specified.
+    base_info_.hit.path = base_info_.path_to_widget;
+    if (part)
+        base_info_.hit.path.push_back(part);
 }
 
 DragTester::DragTester(const CompositeWidgetPtr &cw, const StrVec &names) {
@@ -85,9 +87,8 @@ void DragTester::ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
     ApplyDrag_(infos);
 }
 
-void DragTester::ApplyGripDrag(const Point3f &p0,
-                                               const Point3f &p1,
-                                               size_t count_between) {
+void DragTester::ApplyGripDrag(const Point3f &p0, const Point3f &p1,
+                               size_t count_between) {
     DragInfo info = base_info_;
     info.trigger  = Trigger::kGrip;
 
@@ -109,9 +110,8 @@ void DragTester::ApplyGripDrag(const Point3f &p0,
     ApplyDrag_(infos);
 }
 
-void DragTester::ApplyTouchDrag(const Point3f &p0,
-                                                const Point3f &p1,
-                                                size_t count_between) {
+void DragTester::ApplyTouchDrag(const Point3f &p0, const Point3f &p1,
+                                size_t count_between) {
     DragInfo info = base_info_;
     info.trigger  = Trigger::kTouch;
 
