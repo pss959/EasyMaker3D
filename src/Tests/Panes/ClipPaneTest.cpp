@@ -56,7 +56,7 @@ TEST_F(ClipPaneTest, Touch) {
 
     // Touch the middle of the top button.
     dist = 1000;
-    info.position.Set(-.1f, .25f, z);
+    info.position.Set(-.5f, .5f, z);
     auto tw = cp->GetTouchedWidget(info, dist);
     ASSERT_NOT_NULL(tw);
     EXPECT_EQ(&but0->GetButton(), tw.get());
@@ -64,7 +64,7 @@ TEST_F(ClipPaneTest, Touch) {
     // Touch the middle of the second button. It should miss Button1 because it
     // is not enabled and hit Button2.
     dist = 1000;
-    info.position.Set(-.1f, -.25f, z);
+    info.position.Set(-.5f, -.25f, z);
     tw = cp->GetTouchedWidget(info, dist);
     ASSERT_NOT_NULL(tw);
     EXPECT_EQ(&but2->GetButton(), tw.get());

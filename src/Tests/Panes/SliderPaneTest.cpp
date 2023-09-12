@@ -18,10 +18,10 @@ class SliderPaneTest : public PaneTestBase {
 
 TEST_F(SliderPaneTest, Defaults) {
     auto slider = GetSliderPane();
-    EXPECT_EQ(SliderPane::Orientation::kHorizontal, slider->GetOrientation());
-    EXPECT_EQ(Vector2f(0, 1),       slider->GetRange());
-    EXPECT_EQ(0,                    slider->GetValue());
-    EXPECT_EQ(slider.get(),         slider->GetInteractor());
+    EXPECT_EQ(PaneOrientation::kHorizontal, slider->GetOrientation());
+    EXPECT_EQ(Vector2f(0, 1),               slider->GetRange());
+    EXPECT_EQ(0,                            slider->GetValue());
+    EXPECT_EQ(slider.get(),                 slider->GetInteractor());
     EXPECT_TRUE(Util::IsA<Slider1DWidget>(slider->GetActivationWidget()));
     // Cannot focus on a SliderPane.
     EXPECT_NULL(slider->GetFocusBorder());

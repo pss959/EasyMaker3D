@@ -335,7 +335,7 @@ TEST_F(BoardTest, Touch) {
     EXPECT_NULL(board->GetTouchedWidget(Point3f(-10, 0, 9.4f), .1f));
 
     // This should touch the "Done" button.
-    auto w = board->GetTouchedWidget(Point3f(-.2f, -.1f, 9.4f), .1f);
+    auto w = board->GetTouchedWidget(Point3f(.16f, -.1f, 9.4f), .1f);
     EXPECT_NOT_NULL(w);
     auto but = panel->GetPane()->FindTypedSubPane<ButtonPane>("Done");
     EXPECT_EQ(&but->GetButton(), w.get());

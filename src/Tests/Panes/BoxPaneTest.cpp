@@ -30,18 +30,18 @@ BoxPanePtr BoxPaneTest::GetBoxPane(const Str &contents) {
 
 TEST_F(BoxPaneTest, Defaults) {
     auto box = GetBoxPane();
-    EXPECT_EQ(BoxPane::Orientation::kVertical, box->GetOrientation());
-    EXPECT_EQ(0,                               box->GetPadding());
-    EXPECT_EQ(0,                               box->GetSpacing());
+    EXPECT_EQ(PaneOrientation::kVertical, box->GetOrientation());
+    EXPECT_EQ(0,                          box->GetPadding());
+    EXPECT_EQ(0,                          box->GetSpacing());
     EXPECT_NULL(box->GetInteractor());
 }
 
 TEST_F(BoxPaneTest, Fields) {
     auto box = GetBoxPane(
         R"(orientation: "kHorizontal", padding: 2, spacing: 1.5)");
-    EXPECT_EQ(BoxPane::Orientation::kHorizontal, box->GetOrientation());
-    EXPECT_EQ(2,                                 box->GetPadding());
-    EXPECT_EQ(1.5f,                              box->GetSpacing());
+    EXPECT_EQ(PaneOrientation::kHorizontal, box->GetOrientation());
+    EXPECT_EQ(2,                            box->GetPadding());
+    EXPECT_EQ(1.5f,                         box->GetSpacing());
 }
 
 TEST_F(BoxPaneTest, LayoutVBox) {
@@ -161,8 +161,8 @@ TEST_F(BoxPaneTest, Touch) {
     const Str contents = R"(
   orientation: "kHorizontal",
   panes: [
-    CLONE "T_ButtonPane" "Button0" { min_size: 20 20 },
-    CLONE "T_ButtonPane" "Button1" { min_size:  0 20 },  # Disabled below.
+    CLONE "T_ButtonPane" "Button0" { min_size: 10 20 },
+    CLONE "T_ButtonPane" "Button1" { min_size: 10 20 },  # Disabled below.
     CLONE "T_ButtonPane" "Button2" { min_size: 80 20 },
   ]
 )";
@@ -182,14 +182,14 @@ TEST_F(BoxPaneTest, Touch) {
 
     // Touch the middle of Button0.
     dist = 1000;
-    info.position.Set(-.3333f, 0, z);
+    info.position.Set(-.5f, 0.5, z);
     auto tw = box->GetTouchedWidget(info, dist);
     ASSERT_NOT_NULL(tw);
     EXPECT_EQ(&but0->GetButton(), tw.get());
 
     // Touch the middle of Button2.
     dist = 1000;
-    info.position.Set(.5f, 0, z);
+    info.position.Set(-.3f, .5f, z);
     tw = box->GetTouchedWidget(info, dist);
     ASSERT_NOT_NULL(tw);
     EXPECT_EQ(&but2->GetButton(), tw.get());

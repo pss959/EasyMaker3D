@@ -8,7 +8,7 @@
 #include "Widgets/Slider1DWidget.h"
 
 void SliderPane::AddFields() {
-    AddField(orientation_.Init("orientation", Orientation::kHorizontal));
+    AddField(orientation_.Init("orientation", PaneOrientation::kHorizontal));
     AddField(range_.Init("range",             Vector2f(0, 1)));
     AddField(precision_.Init("precision",     0));
 
@@ -43,7 +43,7 @@ void SliderPane::CreationDone() {
 
         // Process the orientation.
         ASSERT(GetChildCount() == 1U);
-        if (GetOrientation() == Orientation::kHorizontal) {
+        if (GetOrientation() == PaneOrientation::kHorizontal) {
             SetResizeFlags(GetResizeFlags().Add(ResizeFlag::kWidth));
         }
         else {
@@ -71,7 +71,7 @@ void SliderPane::UpdateForLayoutSize(const Vector2f &size) {
 
     // Keep the thumb the same relative size.
     ASSERT(thumb_);
-    if (GetOrientation() == Orientation::kHorizontal)
+    if (GetOrientation() == PaneOrientation::kHorizontal)
         thumb_->SetScale(Vector3f(1.f / size[0], 1.f / size[1], 1.f));
     else
         thumb_->SetScale(Vector3f(1.f / size[1], 1.f / size[0], 1.f));

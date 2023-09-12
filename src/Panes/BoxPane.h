@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Enums/PaneOrientation.h"
 #include "Base/Memory.h"
 #include "Panes/ContainerPane.h"
 
@@ -13,13 +14,8 @@ DECL_SHARED_PTR(BoxPane);
 /// \ingroup Panes
 class BoxPane : public ContainerPane {
   public:
-    enum class Orientation {
-        kVertical,    ///< Contained elements are laid out vertically.
-        kHorizontal,  ///< Contained elements are laid out horizontally.
-    };
-
-    /// Returns the orientation. The default is Orientation::kVertical.
-    Orientation GetOrientation() const { return orientation_; }
+    /// Returns the orientation. The default is PaneOrientation::kVertical.
+    PaneOrientation GetOrientation() const { return orientation_; }
 
     /// Returns the padding. The default is 0.
     float GetPadding() const { return padding_; }
@@ -40,9 +36,9 @@ class BoxPane : public ContainerPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Orientation> orientation_;
-    Parser::TField<float>          spacing_;
-    Parser::TField<float>          padding_;
+    Parser::EnumField<PaneOrientation> orientation_;
+    Parser::TField<float>              spacing_;
+    Parser::TField<float>              padding_;
     ///@}
 
     friend class Parser::Registry;

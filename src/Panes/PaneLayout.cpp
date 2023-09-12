@@ -1,7 +1,10 @@
 #include "Panes/PaneLayout.h"
 
 #include "Math/Linear.h"
+#include "Panes/ContainerPane.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
+#include "Util/KLog.h"
 #include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
@@ -11,51 +14,60 @@
 class PaneLayout::Impl_ {
   public:
     /// The constructor stores all the value for easy access.
-    Impl_(const Pane::PaneVec &panes, float padding, float spacing);
+    Impl_(const ContainerPane &container, float padding, float spacing);
 
-    /// Computes the size for a horizontal or vertical layout.
-    Vector2f ComputeSize_(int dim);
+    /// Computes the size for a linear horizontal or vertical layout.
+    Vector2f ComputeLinearSize(PaneOrientation dir);
 
-    /// Implements layout horizontally or vertically.
-    void LayOutLinearly(int dim, const Vector2f &size, float z_offset);
+    /// Implements linear layout horizontally or vertically.
+    void LayOutLinearly(PaneOrientation dir, const Vector2f &size,
+                        float z_offset);
 
   private:
-    const Pane::PaneVec &panes_;    ///< Panes to lay out.
-    const float          padding_;  ///< Padding inside rectangle.
-    const float          spacing_;  ///< Spacing between Panes.
+    const ContainerPane &container_;  ///< ContainerPane to lay out.
+    const float          padding_;    ///< Padding inside rectangle.
+    const float          spacing_;    ///< Spacing between Panes.
 
     /// Computes the amount of extra size to add for expanding Panes in the
     /// given dimension, given the total size in that dimension.
     float ComputeExtraSize_(int dim, float size);
 
     /// Sets the scale and translation of a Pane so that it has the correct
-    /// size and position relative to the given size, based on the given
-    /// upper-left corner position and the Pane's current layout size, which is
-    /// assumed to be up to date.
-    void PositionPane_(Pane &pane, const Vector2f &size,
-                       const Point2f &upper_left, float z_offset);
+    /// size and position relative to the given parent size, based on the given
+    /// new size and upper-left corner position.
+    void PositionPane_(Pane &pane, const Vector2f &pane_size,
+                       const Vector2f &parent_size, const Point2f &upper_left,
+                       float z_offset);
 
     /// Returns true if the given Pane expands in the given dimension.
     static bool PaneExpands_(const Pane &pane, int dim);
+
+    /// Returns the dimension for the PaneOrientation.
+    static int GetDim(PaneOrientation dir) {
+        const int dim = Util::EnumInt(dir);
+        ASSERT(dim == 0 || dim == 1);  // Keeps compiler happy.
+        return dim;
+    }
 };
 
-PaneLayout::Impl_::Impl_(const Pane::PaneVec &panes,
+PaneLayout::Impl_::Impl_(const ContainerPane &container,
                          float padding, float spacing) :
-    panes_(panes), padding_(padding), spacing_(spacing) {
+    container_(container), padding_(padding), spacing_(spacing) {
 }
 
-Vector2f PaneLayout::Impl_::ComputeSize_(int dim) {
-    ASSERT(dim == 0 || dim == 1);
-
+Vector2f PaneLayout::Impl_::ComputeLinearSize(PaneOrientation dir) {
     // Get the base sizes of all enabled Panes.
+    const auto &panes = container_.GetPanes();
     std::vector<Vector2f> base_sizes;
-    base_sizes.reserve(panes_.size());
-    for (const auto &pane: panes_)
+    base_sizes.reserve(panes.size());
+    for (const auto &pane: panes)
         if (pane->IsEnabled())
             base_sizes.push_back(pane->GetBaseSize());
 
     // Sum the base size in both dimensions.
+    const int dim        = GetDim(dir);
     const int other_dim  = 1 - dim;
+    ASSERT(dim == 0 || dim == 1);  // Keeps compiler happy.
 
     Vector2f size(0, 0);
     for (auto &s: base_sizes) {
@@ -68,15 +80,22 @@ Vector2f PaneLayout::Impl_::ComputeSize_(int dim) {
         size[dim] += (base_sizes.size() - 1) * spacing_;
     size += 2 * Vector2f(padding_, padding_);
 
+    KLOG('L', "Computed size " << size << " for " << container_.GetDesc()
+         << " with direction " << Util::EnumName(dir));
+
     return size;
 }
 
-void PaneLayout::Impl_::LayOutLinearly(int dim, const Vector2f &size,
-                                       float z_offset) {
-    ASSERT(dim == 0 || dim == 1);
-
-    if (panes_.empty())
+void PaneLayout::Impl_::LayOutLinearly(PaneOrientation dir,
+                                       const Vector2f &size, float z_offset) {
+    const auto &panes = container_.GetPanes();
+    if (panes.empty())
         return;
+
+    KLOG('L', "Laying out " << container_.GetDesc()
+         << " with direction " << Util::EnumName(dir) << " into size " << size);
+
+    const int dim = GetDim(dir);
 
     // Compute the extra size to use for resizable Panes.
     const float extra = ComputeExtraSize_(dim, size[dim]);
@@ -87,7 +106,7 @@ void PaneLayout::Impl_::LayOutLinearly(int dim, const Vector2f &size,
     const Point2f box_upper_left(padding_, size[1] - padding_);
     Point2f upper_left = box_upper_left;
     const int other_dim  = 1 - dim;
-    for (const auto &pane: panes_) {
+    for (const auto &pane: panes) {
         if (! pane->IsEnabled())
             continue;
 
@@ -103,15 +122,18 @@ void PaneLayout::Impl_::LayOutLinearly(int dim, const Vector2f &size,
         pane_size = MaxComponents(pane->GetMinSize(),
                                   MaxComponents(base_pane_size, pane_size));
 
-        PositionPane_(*pane, size, upper_left, z_offset);
+        PositionPane_(*pane, pane_size, size, upper_left, z_offset);
 
         pane->SetRelativePositionInParent(upper_left - box_upper_left);
+        KLOG('L', "  Abs upper left of " << pane->GetDesc() << " at "
+             << upper_left << ", rel " << (upper_left - box_upper_left));
 
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
 
         // Do this last so that any changes caused by the above functions are
         // cleared.
         pane->SetLayoutSize(pane_size);
+        KLOG('L', "  Size of " << pane->GetDesc() << " set to " << pane_size);
     }
 }
 
@@ -121,7 +143,7 @@ float PaneLayout::Impl_::ComputeExtraSize_(int dim, float size) {
     size_t active_count = 0;
     size_t resize_count = 0;
     float  sum          = 0;
-    for (const auto &pane: panes_) {
+    for (const auto &pane: container_.GetPanes()) {
         if (pane->IsEnabled()) {
             ++active_count;
             sum += pane->GetBaseSize()[dim];
@@ -137,17 +159,18 @@ float PaneLayout::Impl_::ComputeExtraSize_(int dim, float size) {
     return (size - (sum + spacing + padding)) / resize_count;
 }
 
-void PaneLayout::Impl_::PositionPane_(Pane &pane, const Vector2f &size,
+void PaneLayout::Impl_::PositionPane_(Pane &pane, const Vector2f &pane_size,
+                                      const Vector2f &parent_size,
                                       const Point2f &upper_left,
                                       float z_offset) {
     // Compute the relative size as a fraction.
-    const Vector2f &pane_size = pane.GetLayoutSize();
-    const Vector2f rel_size   = pane_size / size;
+    const Vector2f rel_size = pane_size / parent_size;
 
     // Compute the offset of the Pane's center from its upper-left corner and
     // use that to compute the relative position of the Pane's center.
     const Vector2f center_offset = Vector2f(.5f, -.5f) * pane_size;
-    const Point2f  rel_center = (upper_left + center_offset) / Point2f(size);
+    const Point2f  rel_center    =
+        (upper_left + center_offset) / Point2f(parent_size);
 
     // Update the scale and translation of the Pane. Offset in Z if requested.
     pane.SetScale(Vector3f(rel_size, 1));
@@ -165,28 +188,16 @@ bool PaneLayout::Impl_::PaneExpands_(const Pane &pane, int dim) {
 // PaneLayout functions.
 // ----------------------------------------------------------------------------
 
-Vector2f PaneLayout::ComputeHorizontalSize(const Pane::PaneVec &panes,
-                                           float padding, float spacing) {
-    return Impl_(panes, padding, spacing).ComputeSize_(0);
+Vector2f PaneLayout::ComputeLinearSize(const ContainerPane &container,
+                                       PaneOrientation dir,
+                                       float padding, float spacing) {
+    return Impl_(container, padding, spacing).ComputeLinearSize(dir);
 }
 
-Vector2f PaneLayout::ComputeVerticalSize(const Pane::PaneVec &panes,
-                                         float padding, float spacing) {
-    return Impl_(panes, padding, spacing).ComputeSize_(1);
-}
-
-void PaneLayout::LayOutHorizontally(const Pane::PaneVec &panes,
-                                    const Vector2f &size,
-                                    float padding, float spacing,
-                                    bool offset_forward) {
+void PaneLayout::LayOutLinearly(const ContainerPane &container,
+                                PaneOrientation dir,
+                                const Vector2f &size, float padding,
+                                float spacing, bool offset_forward) {
     const float z_offset = offset_forward ? TK::kPaneZOffset : 0;
-    Impl_(panes, padding, spacing).LayOutLinearly(0, size, z_offset);
-}
-
-void PaneLayout::LayOutVertically(const Pane::PaneVec &panes,
-                                  const Vector2f &size,
-                                  float padding, float spacing,
-                                  bool offset_forward) {
-    const float z_offset = offset_forward ? TK::kPaneZOffset : 0;
-    Impl_(panes, padding, spacing).LayOutLinearly(1, size, z_offset);
+    Impl_(container, padding, spacing).LayOutLinearly(dir, size, z_offset);
 }

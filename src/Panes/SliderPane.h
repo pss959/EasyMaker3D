@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Memory.h"
+#include "Enums/PaneOrientation.h"
 #include "Math/Types.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
@@ -16,11 +17,6 @@ DECL_SHARED_PTR(Slider1DWidget);
 /// \ingroup Panes
 class SliderPane : public LeafPane, public IPaneInteractor {
   public:
-    enum class Orientation {
-        kHorizontal,  ///< Slider has minimum at left, maximum at right.
-        kVertical,    ///< Slider has minimum at bottom, maximum at top.
-    };
-
     /// Returns a Notifier that is invoked when the slider is activated or
     /// deactivated. It is passed a flag that is true for activation.
     Util::Notifier<bool> &  GetActivation() { return activation_; }
@@ -29,8 +25,8 @@ class SliderPane : public LeafPane, public IPaneInteractor {
     /// changes, taking precision into account. It is passed the new value.
     Util::Notifier<float> & GetValueChanged() { return value_changed_; }
 
-    /// Returns the orientation. The default is Orientation::kHorizontal.
-    Orientation GetOrientation() const { return orientation_; }
+    /// Returns the orientation. The default is PaneOrientation::kHorizontal.
+    PaneOrientation GetOrientation() const { return orientation_; }
 
     /// Sets the range (min/max) for the value produced by the slider.
     void SetRange(const Vector2f &range) { range_ = range; }
@@ -52,9 +48,6 @@ class SliderPane : public LeafPane, public IPaneInteractor {
     /// precision applied. This does not notify observers.
     void SetValue(float new_value);
 
-    /// Redefines this to also keep the thumb the correct size.
-    virtual void UpdateForLayoutSize(const Vector2f &size) override;
-
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;
@@ -67,12 +60,15 @@ class SliderPane : public LeafPane, public IPaneInteractor {
     virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
+    /// Redefines this to also keep the thumb the same relative size.
+    virtual void UpdateForLayoutSize(const Vector2f &size) override;
+
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Orientation> orientation_;
-    Parser::TField<Vector2f>       range_;
-    Parser::TField<float>          precision_;
+    Parser::EnumField<PaneOrientation> orientation_;
+    Parser::TField<Vector2f>           range_;
+    Parser::TField<float>              precision_;
     ///@}
 
     Slider1DWidgetPtr slider_;

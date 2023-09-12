@@ -361,6 +361,7 @@ these:
 | k      | Clicks on objects                               |
 | K      | VirtualKeyboard state changes                   |
 | l      | PolyMeshBuilder construction                    |
+| L      | Pane layout                                     |
 | m      | Changes to matrices in SG Nodes                 |
 | M      | Model structure and visibility changes          |
 </div>
@@ -390,6 +391,7 @@ these:
 | y      | Model status changes                            |
 | z      | Font loading                                    |
 | 0      | Mesh cleaning                                   |
+| &nbsp; | &nbsp;                                          |
 </div>
 </div>
 
