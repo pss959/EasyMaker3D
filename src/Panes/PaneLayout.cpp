@@ -103,12 +103,15 @@ void PaneLayout::Impl_::LayOutLinearly(int dim, const Vector2f &size,
         pane_size = MaxComponents(pane->GetMinSize(),
                                   MaxComponents(base_pane_size, pane_size));
 
-        pane->SetLayoutSize(pane_size);
         PositionPane_(*pane, size, upper_left, z_offset);
 
         pane->SetRelativePositionInParent(upper_left - box_upper_left);
 
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
+
+        // Do this last so that any changes caused by the above functions are
+        // cleared.
+        pane->SetLayoutSize(pane_size);
     }
 }
 

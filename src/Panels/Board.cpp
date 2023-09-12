@@ -252,6 +252,7 @@ void Board::Impl_::SetUpForTouch(const Point3f &cam_pos,
     // Origin == disable.
     if (cam_pos == Point3f::Zero()) {
         is_set_up_for_touch_ = false;
+        root_node_.SetTranslation(Vector3f::Zero());
     }
     else {
         ASSERT(cam_pos[2] != 0);
@@ -315,12 +316,19 @@ WidgetPtr Board::Impl_::GetTouchedWidget(const Point3f &touch_pos,
                                                   root_node_.GetTranslation());
         float dist = 0;
         if (SphereBoundsIntersect(touch_pos, radius, world_bounds, dist)) {
+            KLOG('U', "Touch on " << root_node_.GetDesc()
+                 << " with " << panel->GetDesc());
             TouchInfo info;
             info.position = touch_pos;
             info.radius   = radius;
             info.root_node =
                 Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
             widget = panel->GetTouchedPaneWidget(info);
+        }
+        else {
+            KLOG('U', "Missed touch on " << root_node_.GetDesc()
+                 << " with " << panel->GetDesc()
+                 << ": " << touch_pos << " vs " << world_bounds);
         }
     }
     return widget;

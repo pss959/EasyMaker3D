@@ -3,12 +3,15 @@
 #include "Math/Linear.h"
 #include "Panels/Board.h"
 #include "Panels/HelpPanel.h"
+#include "Panes/ButtonPane.h"
+#include "Panes/TextPane.h"
 #include "SG/Search.h"
 #include "Tests/Panels/PanelTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/Widgets/DragTester.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
+#include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider2DWidget.h"
 
 /// \ingroup Tests
@@ -87,9 +90,13 @@ TEST_F(BoardTest, Panels) {
 TEST_F(BoardTest, PanelScale) {
     InitBoard();
 
+    // Set up for touch to make sure it is handle.
+    board->SetUpForTouch(Point3f(0, 0, 10));
+
     auto canvas = SG::FindNodeUnderNode(*board, "Canvas");
 
-    auto panel = GetContext().board_agent->GetPanel("HelpPanel");
+    // Need a resizable Panel for this.
+    auto panel = GetContext().board_agent->GetPanel("InfoPanel");
     board->SetPanel(panel, nullptr);
 
     const auto canvas_scale = ToVector2f(canvas->GetScale());
@@ -99,6 +106,14 @@ TEST_F(BoardTest, PanelScale) {
     board->PopPanel("Done");
     board->SetPanel(panel, nullptr);
     EXPECT_EQ(2 * canvas_scale, ToVector2f(canvas->GetScale()));
+
+    // Cause the Panel width to change and make sure the Board updates.
+    const auto canvas_size = ToVector2f(canvas->GetScaledBounds().GetSize());
+    auto title = panel->GetPane()->FindTypedSubPane<TextPane>("Title");
+    title->SetText("Some text that causes a width change");
+    board->UpdateForRenderPass("");  // Causes size change to take effect.
+    EXPECT_LT(canvas_size[0], canvas->GetScaledBounds().GetSize()[0]);
+    EXPECT_EQ(canvas_size[1], canvas->GetScaledBounds().GetSize()[1]);
 }
 
 TEST_F(BoardTest, Show) {
@@ -168,10 +183,15 @@ TEST_F(BoardTest, DragSize) {
     // Use the top-right handle of the size slider.
     auto sz = SG::FindTypedNodeUnderNode<Slider2DWidget>(*board, "SizeSlider");
     auto pt = SG::FindNodeUnderNode(*sz, "TopRight");
-
-    DragTester dt(sz, pt);
-    dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(4, 4, 0));
+    DragTester dttr(sz, pt);
+    dttr.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(4, 4, 0));
     EXPECT_EQ(Vector2f(750, 750), panel->GetSize());
+
+    // Repeat with bottom-right handle.
+    pt = SG::FindNodeUnderNode(*sz, "BottomRight");
+    DragTester dtbl(sz, pt);
+    dtbl.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(4, -4, 0));
+    EXPECT_EQ(Vector2f(900, 900), panel->GetSize());
 }
 
 TEST_F(BoardTest, Grip) {
@@ -187,8 +207,9 @@ TEST_F(BoardTest, Grip) {
 
     auto xy = SG::FindTypedNodeUnderNode<Slider2DWidget>(*board,
                                                          "XYMoveSlider");
+    auto xz = SG::FindTypedNodeUnderNode<Slider2DWidget>(*board,
+                                                         "XZMoveSlider");
     auto sz = SG::FindTypedNodeUnderNode<Slider2DWidget>(*board, "SizeSlider");
-    auto pt = SG::FindNodeUnderNode(*sz, "TopRight");
 
     EXPECT_NULL(board->GetGrippableNode());  // Not shown.
     board->Show(true);
@@ -256,7 +277,8 @@ TEST_F(BoardTest, Grip) {
     EXPECT_EQ(Vector3f(40, 40, 0), board->GetTranslation());
     board->ActivateGrip(Hand::kRight, false);
 
-    // Hover the top-right size handle and drag it
+    // Hover the top-right size handle and drag it.
+    auto pt = SG::FindNodeUnderNode(*sz, "TopRight");
     info.guide_direction = ion::math::Normalized(Vector3f(-1, -1, 0));
     board->UpdateGripInfo(info);
     board->ActivateGrip(Hand::kRight, true);
@@ -266,6 +288,34 @@ TEST_F(BoardTest, Grip) {
     }
     EXPECT_EQ(Vector2f(1950, 1950), panel->GetSize());
     board->ActivateGrip(Hand::kRight, false);
+
+    // Repeat with the bottom-right size handle.
+    pt = SG::FindNodeUnderNode(*sz, "BottomRight");
+    info.guide_direction = ion::math::Normalized(Vector3f(-1, 1, 0));
+    board->UpdateGripInfo(info);
+    board->ActivateGrip(Hand::kRight, true);
+    {
+        DragTester dt(sz, pt);
+        dt.ApplyGripDrag(Point3f(0, 0, 0), Point3f(1, -1, 0));
+    }
+    EXPECT_EQ(Vector2f(3300, 3300), panel->GetSize());
+    board->ActivateGrip(Hand::kRight, false);
+
+    // Use the left controller to hover the XZ slider and drag it. Use a
+    // direction that is just angled enough to not delegate to the Panel.
+    const auto rot = Rotationf::FromAxisAndAngle(
+        Vector3f(1, 0, 0), TK::kMaxGripHoverDirAngle + Anglef::FromDegrees(1));
+    info.guide_direction = rot * -Vector3f::AxisZ();
+    info.event.device = Event::Device::kLeftController;
+    board->UpdateGripInfo(info);
+    board->ActivateGrip(Hand::kLeft, true);
+    {
+        // The XZ slider is rotated, so translate in Y to translate in Z.
+        DragTester dt(xz);
+        dt.ApplyGripDrag(Point3f(0, 0, 0), Point3f(0, 2, 0));
+    }
+    EXPECT_EQ(Vector3f(40, 40, 40), board->GetTranslation());
+    board->ActivateGrip(Hand::kLeft, false);
 }
 
 TEST_F(BoardTest, Touch) {
@@ -274,12 +324,43 @@ TEST_F(BoardTest, Touch) {
     board->SetPath(SG::NodePath(board));
     auto panel = GetContext().board_agent->GetPanel("InfoPanel");
     board->SetPanel(panel, nullptr);
+    board->Show(true);
+
+    // Note: touch points are in world coordinates.
 
     board->SetUpForTouch(Point3f(0, 0, 10));
     EXPECT_EQ(Rotationf::Identity(), board->GetRotation());
-    EXPECT_EQ(Vector3f(0, 0, 9.4f), board->GetTranslation());
+    EXPECT_EQ(Vector3f(0, 0, 9.4f),  board->GetTranslation());
 
-    EXPECT_NULL(board->GetTouchedWidget(Point3f(0, 0, 20), 1));
+    EXPECT_NULL(board->GetTouchedWidget(Point3f(-10, 0, 9.4f), .1f));
 
-    // XXXXX
+    // This should touch the "Done" button.
+    auto w = board->GetTouchedWidget(Point3f(-.2f, -.1f, 9.4f), .1f);
+    EXPECT_NOT_NULL(w);
+    auto but = panel->GetPane()->FindTypedSubPane<ButtonPane>("Done");
+    EXPECT_EQ(&but->GetButton(), w.get());
+
+    // These should have no effect while the Board is set up for touch.
+    const auto rot = board->GetRotation();
+    const auto tr  = board->GetTranslation();
+    board->SetOrientation(Vector3f(0, 1, 0));
+    board->SetPosition(Point3f(1, 2, 3));
+    EXPECT_EQ(rot, board->GetRotation());
+    EXPECT_EQ(tr,  board->GetTranslation());
+
+    // Disable touch for the Board.
+    board->SetUpForTouch(Point3f(0, 0, 0));  // Turns it off.
+    EXPECT_EQ(Rotationf::Identity(), board->GetRotation());
+    EXPECT_EQ(Vector3f(0, 0, 0),     board->GetTranslation());
+
+    // These should now work.
+    board->SetOrientation(-Vector3f::AxisY());
+    EXPECT_VECS_CLOSE(Vector3f::AxisY(),
+                      board->GetRotation() * Vector3f::AxisZ());
+    EXPECT_EQ(Vector3f::Zero(), board->GetTranslation());
+
+    board->SetPosition(Point3f(10, 20, 30));
+    EXPECT_VECS_CLOSE(Vector3f::AxisY(),
+                      board->GetRotation() * Vector3f::AxisZ());
+    EXPECT_EQ(Vector3f(10, 20, 30), board->GetTranslation());
 }
