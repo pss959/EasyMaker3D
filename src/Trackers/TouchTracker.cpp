@@ -68,6 +68,11 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     return false;
 }
 
+void TouchTracker::FillActivationDragInfo(DragInfo &info) {
+    info.trigger        = Trigger::kTouch;
+    info.touch_position = activation_pos_;
+}
+
 bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     if (! event.flags.Has(Event::Flag::kTouch) || event.device != GetDevice())
         return false;
@@ -78,11 +83,6 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     const Point2f p1 = ToPoint2f(event.touch_position3D);
     const float distance = ion::math::Distance(p0, p1);
     return motion_scale * distance > TK::kMinTouchControllerDistance;
-}
-
-void TouchTracker::FillActivationDragInfo(DragInfo &info) {
-    info.trigger        = Trigger::kTouch;
-    info.touch_position = activation_pos_;
 }
 
 void TouchTracker::FillEventDragInfo(const Event &event, DragInfo &info) {

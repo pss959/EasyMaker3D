@@ -20,6 +20,12 @@ void PointerTracker::StopHovering() {
         UpdateWidgetHovering(current_widget_, WidgetPtr());
 }
 
+void PointerTracker::FillActivationDragInfo(DragInfo &info) {
+    info.trigger = Trigger::kPointer;
+    info.ray     = activation_ray_;
+    info.hit     = activation_hit_;
+}
+
 bool PointerTracker::MovedEnoughForDrag(const Event &event) {
     using ion::math::Normalized;
     using ion::math::AngleBetween;
@@ -32,12 +38,6 @@ bool PointerTracker::MovedEnoughForDrag(const Event &event) {
     const Vector3f d0 = Normalized(activation_ray_.direction);
     const Vector3f d1 = Normalized(current_ray_.direction);
     return AngleBetween(d0, d1) > GetMinRayAngleChange();
-}
-
-void PointerTracker::FillActivationDragInfo(DragInfo &info) {
-    info.trigger = Trigger::kPointer;
-    info.ray     = activation_ray_;
-    info.hit     = activation_hit_;
 }
 
 void PointerTracker::FillEventDragInfo(const Event &event, DragInfo &info) {

@@ -286,18 +286,7 @@ void GLFWViewer::InitIonCallbacks_() {
 
 void GLFWViewer::UpdateFrustum_() {
     ASSERT(camera_);
-    auto &frustum = *frustum_;
-    frustum.viewport     = Viewport::BuildWithSize(Point2i(0, 0),
-                                                   GetWindowSizePixels_());
-    frustum.position     = camera_->GetPosition();
-    frustum.position[1] += camera_->GetHeight();
-    frustum.orientation  = camera_->GetOrientation();
-    frustum.pnear        = camera_->GetNear();
-    frustum.pfar         = camera_->GetFar();
-
-    // Create a symmetric FOV.
-    frustum.SetSymmetricFOV(camera_->GetFOV(),
-                            GetAspectRatio(frustum.viewport));
+    camera_->BuildFrustum(GetWindowSizePixels_(), *frustum_);
 }
 
 Vector2i GLFWViewer::GetWindowSizeScreenCoords_() const {

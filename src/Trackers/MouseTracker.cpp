@@ -52,7 +52,7 @@ Anglef MouseTracker::GetMinRayAngleChange() const {
 }
 
 void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
-#if ENABLE_DEBUG_FEATURES
+#if ENABLE_DEBUG_FEATURES  // LCOV_EXCL_START [debug only]
     if (debug_sphere_) {
         auto &ds = *debug_sphere_;
         if (hit.IsValid()) {
@@ -67,5 +67,5 @@ void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
     }
     if (hit.IsValid())
         Debug::SetLimitPath(hit.path);
-#endif
+#endif  // LCOV_EXCL_STOP
 }

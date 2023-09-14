@@ -47,6 +47,10 @@ class WindowCamera : public Camera {
         return orientation_.GetValue() * -Vector3f::AxisZ();
     }
 
+    /// Convenience that stores the WindowCamera's view frustum for the given
+    /// window size (in pixels) in the given Frustum .
+    void BuildFrustum(const Vector2i window_size, Frustum &frustum) const;
+
     virtual Point3f GetCurrentPosition() const override { return position_; }
 
   protected:

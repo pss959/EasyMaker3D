@@ -22,8 +22,8 @@ class PointerTracker : public Tracker {
 
     virtual void UpdateHovering(const Event &event) override;
     virtual void StopHovering() override;
-    virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillActivationDragInfo(DragInfo &info) override;
+    virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) override;
     virtual void FillClickInfo(ClickInfo &info) override;
     virtual void Reset() override;

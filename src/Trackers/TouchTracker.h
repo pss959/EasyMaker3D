@@ -29,8 +29,8 @@ class TouchTracker : public Tracker {
     virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
     virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
     virtual float GetClickTimeout() const override { return 0; }  // Not used.
-    virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillActivationDragInfo(DragInfo &info) override;
+    virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) override;
     virtual void FillClickInfo(ClickInfo &info) override;
     virtual void Reset() override;

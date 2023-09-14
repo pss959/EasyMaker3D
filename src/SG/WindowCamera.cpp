@@ -14,4 +14,17 @@ void WindowCamera::AddFields() {
     Camera::AddFields();
 }
 
+void WindowCamera::BuildFrustum(const Vector2i window_size,
+                                Frustum &frustum) const {
+    frustum.viewport     = Viewport::BuildWithSize(Point2i(0, 0), window_size);
+    frustum.position     = GetPosition();
+    frustum.position[1] += GetHeight();
+    frustum.orientation  = GetOrientation();
+    frustum.pnear        = GetNear();
+    frustum.pfar         = GetFar();
+
+    // Create a symmetric FOV.
+    frustum.SetSymmetricFOV(GetFOV(), GetAspectRatio(frustum.viewport));
+}
+
 }  // namespace SG

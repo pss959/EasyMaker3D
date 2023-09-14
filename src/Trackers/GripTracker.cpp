@@ -71,6 +71,13 @@ float GripTracker::GetClickTimeout() const {
     return TK::kGripClickTimeout;
 }
 
+void GripTracker::FillActivationDragInfo(DragInfo &info) {
+    info.trigger              = Trigger::kGrip;
+    info.grip_guide_direction = GetController()->GetGuideDirection();
+    info.grip_position        = activation_data_.position;
+    info.grip_orientation     = activation_data_.orientation;
+}
+
 bool GripTracker::MovedEnoughForDrag(const Event &event) {
     // Get the grip data; no need for GripInfo.
     Data_ data;
@@ -90,13 +97,6 @@ bool GripTracker::MovedEnoughForDrag(const Event &event) {
     const Rotationf &r1 = data.orientation;
     const auto angle = AbsAngle(RotationAngle(RotationDifference(r0, r1)));
     return motion_scale * angle > TK::kMinGripOrientationAngleChange;
-}
-
-void GripTracker::FillActivationDragInfo(DragInfo &info) {
-    info.trigger              = Trigger::kGrip;
-    info.grip_guide_direction = GetController()->GetGuideDirection();
-    info.grip_position        = activation_data_.position;
-    info.grip_orientation     = activation_data_.orientation;
 }
 
 void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {

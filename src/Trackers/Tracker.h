@@ -74,14 +74,13 @@ class Tracker {
     /// Different devices may not be as easy to click quickly.
     virtual float GetClickTimeout() const = 0;
 
-    /// Returns true if the given Event represents enough motion to consider
-    /// this a drag. This should be called only after SetActive(true) is
-    /// called.
-    virtual bool MovedEnoughForDrag(const Event &event) = 0;
-
     /// Sets up the pointer-based fields or grip-based fields in the given
     /// DragInfo from the activation data.
     virtual void FillActivationDragInfo(DragInfo &info) = 0;
+
+    /// Returns true if the given Event represents enough motion to consider
+    /// this a drag. This should be called only after activation.
+    virtual bool MovedEnoughForDrag(const Event &event) = 0;
 
     /// Sets up the pointer-based fields or grip-based fields in the given
     /// DragInfo with data from the given Event.

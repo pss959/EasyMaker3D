@@ -61,6 +61,20 @@ Gantry {
     EXPECT_EQ(0, wcam.GetHeight());
     EXPECT_EQ(0, vcam.GetHeight());
 
+    // Build a frustum from the WindowCamera.
+    Frustum fr;
+    wcam.BuildFrustum(Vector2i(100, 100), fr);
+    const Anglef a = Anglef::FromDegrees(22.5f);
+    EXPECT_EQ(Vector2i(100, 100), fr.viewport.GetSize());
+    EXPECT_EQ(Point3f(1, 2, 3),   fr.position);
+    EXPECT_EQ(rot0,               fr.orientation);
+    EXPECT_EQ(-a,                 fr.fov_left);
+    EXPECT_EQ( a,                 fr.fov_right);
+    EXPECT_EQ(-a,                 fr.fov_down);
+    EXPECT_EQ( a,                 fr.fov_up);
+    EXPECT_EQ(2,                  fr.pnear);
+    EXPECT_EQ(10,                 fr.pfar);
+
     // Setting the gantry height should update the cameras.
     gantry->SetHeight(10);
     EXPECT_EQ(10, gantry->GetHeight());
