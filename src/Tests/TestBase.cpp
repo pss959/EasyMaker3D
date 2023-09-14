@@ -7,6 +7,7 @@
 #include <ion/math/matrixutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "Debug/Shortcuts.h"
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
 #include "Math/TextUtils.h"
@@ -35,7 +36,9 @@ TestBase::TestBase() {
     EXPECT_TRUE(fake_font_system_->IsFake());
 }
 
-TestBase::~TestBase() {}
+TestBase::~TestBase() {
+    Debug::ShutDown();
+}
 
 void TestBase::UseRealFileSystem(bool b) {
     FileSystem::Install(b ? FileSystemPtr(new FileSystem) : fake_file_system_);
