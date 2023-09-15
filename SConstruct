@@ -126,3 +126,10 @@ if mode == 'rel':
     }
     rel = SConscript('SConscript_release', exports=['rel_dict'])
     app_env.Alias('Release', rel)
+
+# -----------------------------------------------------------------------------
+# Creating or updating TAGS file for emacs.
+# -----------------------------------------------------------------------------
+
+tags = base_env.Command('TAGS', [], 'etags -R ionsrc/ion/ src/')
+base_env.AlwaysBuild(tags)
