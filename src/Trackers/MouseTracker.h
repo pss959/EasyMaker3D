@@ -17,7 +17,7 @@ class MouseTracker : public PointerTracker {
     void SetFrustum(const FrustumPtr &frustum) { frustum_ = frustum; }
 
     /// Sets the SG::Node containing the sphere used to help with debugging.
-    void SetDebugSphere(const SG::NodePtr &ds) { debug_sphere_ = ds; }
+    void SetDebugSphere(const SG::NodePtr &ds);
 
     virtual Event::Device GetDevice() const override;
     virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;

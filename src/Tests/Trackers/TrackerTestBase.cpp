@@ -9,40 +9,35 @@
 #include "Util/Assert.h"
 #include "Widgets/GenericWidget.h"
 
-// XXXX Move this to data file?
-static Str input = R"(
-Scene "TrackerScene" {
-  CONSTANTS: [
-    LIGHTING_PASS: "\"Lighting\"",
-  ],
-  gantry: Gantry {
-    cameras: [
-      WindowCamera {  # Needed to set up frustum
-        position:  0 0 10,
-        fov:       45,
-        near:      .1,
-        far:       100,
-      },
-    ],
-  },
-  root_node: Node "Root" {
+static const Str kContents = R"(
     children: [
       <"nodes/templates/Controller.emd">,
       <"nodes/Controllers.emd">,
-      GenericWidget "GW" {
+      GenericWidget "LeftGW" {
         disabled_flags: "kRender",  # Just for interaction.
+        translation: -1 0 0,
+        shapes: [ Rectangle { size: 2 2 } ]
+      },
+      GenericWidget "RightGW" {
+        disabled_flags: "kRender",  # Just for interaction.
+        translation: 1 0 0,
         shapes: [ Rectangle { size: 2 2 } ]
       },
     ],
-  },
-}
 )";
 
 void TrackerTestBase::InitTrackerScene(Tracker &tracker) {
-    scene_ = ReadScene(input, false);   // Do NOT set up Ion.
+    scene_ = ReadRealScene(kContents);
 
     auto lc = SG::FindTypedNodeInScene<Controller>(*scene_, "LeftController");
     auto rc = SG::FindTypedNodeInScene<Controller>(*scene_, "RightController");
+
+    // Set up the WindowCamera with useful settings.
+    auto wincam = GetWindowCamera();
+    wincam->SetPosition(Point3f(0, 0, 10.1f));
+    wincam->SetOrientation(Rotationf::Identity());
+    wincam->SetFOV(Anglef::FromDegrees(45));
+    wincam->SetNearAndFar(.1f, 100);
 
     tracker.Init(scene_, lc, rc);
 }
@@ -59,6 +54,10 @@ SG::WindowCameraPtr TrackerTestBase::GetWindowCamera() const {
     return wincam;
 }
 
-WidgetPtr TrackerTestBase::GetWidget() const {
-    return SG::FindTypedNodeInScene<Widget>(*scene_, "GW");
+GenericWidgetPtr TrackerTestBase::GetLeftWidget() const {
+    return SG::FindTypedNodeInScene<GenericWidget>(*scene_, "LeftGW");
+}
+
+GenericWidgetPtr TrackerTestBase::GetRightWidget() const {
+    return SG::FindTypedNodeInScene<GenericWidget>(*scene_, "RightGW");
 }

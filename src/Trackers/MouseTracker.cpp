@@ -9,6 +9,12 @@ MouseTracker::MouseTracker(Actuator actuator) : PointerTracker(actuator) {
     ASSERT(actuator == Actuator::kMouse);
 }
 
+// LCOV_EXCL_START [debug only]
+void MouseTracker::SetDebugSphere(const SG::NodePtr &ds) {
+    debug_sphere_ = ds;
+}
+// LCOV_EXCL_STOP
+
 Event::Device MouseTracker::GetDevice() const {
     return Event::Device::kMouse;
 }

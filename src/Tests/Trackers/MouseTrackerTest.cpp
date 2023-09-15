@@ -1,10 +1,13 @@
 #include "Base/Event.h"
+#include "Place/ClickInfo.h"
+#include "Place/DragInfo.h"
 #include "SG/WindowCamera.h"
-#include "Trackers/MouseTracker.h"
 #include "Tests/Testing.h"
 #include "Tests/Trackers/TrackerTestBase.h"
+#include "Trackers/MouseTracker.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
+#include "Widgets/GenericWidget.h"
 
 // ----------------------------------------------------------------------------
 // MouseTrackerTest class.
@@ -40,7 +43,7 @@ Event MouseTrackerTest::GetEvent(bool is_press) {
 }
 
 // ----------------------------------------------------------------------------
-// MouseTrackerTest Tests.
+// MouseTrackerTest Tests. Also tests PointerTracker.
 // ----------------------------------------------------------------------------
 
 TEST_F(MouseTrackerTest, Defaults) {
@@ -108,30 +111,65 @@ TEST_F(MouseTrackerTest, ActivationWidget) {
     MouseTracker mt(Actuator::kMouse);
     InitForActivation(mt);
 
-    // Set up an event that will intersect the GenericWidget. (Shoot a ray
-    // through the center of the frustum.)
+    // Set up an event that will intersect the left GenericWidget.
+    Event event = GetEvent(true);
+    event.flags.Set(Event::Flag::kPosition2D);
+    event.position2D.Set(.3f, .5f);
+
+    auto lw = GetLeftWidget();
+
+    WidgetPtr widget;
+    EXPECT_TRUE(mt.IsActivation(event, widget));
+    EXPECT_EQ(lw, widget);
+}
+
+TEST_F(MouseTrackerTest, Hover) {
+    MouseTracker mt(Actuator::kMouse);
+    InitForActivation(mt);
+
+    // Set up an event that will intersect the left GenericWidget.
     Event event = GetEvent(true);
     event.flags.Set(Event::Flag::kPosition2D);
     event.position2D.Set(.5f, .5f);
 
-    auto gw = GetWidget();
+    auto lw = GetLeftWidget();
+    EXPECT_FALSE(lw->IsHovering());
+    mt.UpdateHovering(event);
+    EXPECT_TRUE(lw->IsHovering());
 
-    WidgetPtr widget;
-    EXPECT_TRUE(mt.IsActivation(event, widget));
-    EXPECT_EQ(gw, widget);
+    mt.StopHovering();
+    EXPECT_FALSE(lw->IsHovering());
+
+    // Cannot hover a disabled Widget.
+    lw->SetInteractionEnabled(false);
+    mt.UpdateHovering(event);
+    EXPECT_FALSE(lw->IsHovering());
 }
 
-
-TEST_F(MouseTrackerTest, Drag) {
+TEST_F(MouseTrackerTest, ClickDrag) {
     MouseTracker mt(Actuator::kMouse);
     InitForActivation(mt);
+
+    auto rw = GetRightWidget();
 
     // Activate to set the activation info.
     Event event = GetEvent(true);
     event.flags.Set(Event::Flag::kPosition2D);
-    event.position2D.Set(.5f, .5f);
+    event.position2D.Set(.6f, .5f);
     WidgetPtr widget;
     EXPECT_TRUE(mt.IsActivation(event, widget));
+
+    // Update a ClickInfo.
+    ClickInfo cinfo;
+    mt.FillClickInfo(cinfo);
+    EXPECT_EQ(Event::Device::kMouse, cinfo.device);
+    EXPECT_EQ(rw.get(),              cinfo.widget);
+
+    // Update a DragInfo.
+    DragInfo dinfo;
+    mt.FillActivationDragInfo(dinfo);
+    EXPECT_EQ(Trigger::kPointer, dinfo.trigger);
+    EXPECT_EQ(rw,                dinfo.hit.path.back());
 
     // Not a drag if no position.
     event.flags.Reset(Event::Flag::kPosition2D);
@@ -139,10 +177,17 @@ TEST_F(MouseTrackerTest, Drag) {
     event.flags.Set(Event::Flag::kPosition2D);
 
     // Not a drag if not far enough.
-    event.position2D.Set(.5001f, .5f);
+    event.position2D.Set(.6001f, .5f);
     EXPECT_FALSE(mt.MovedEnoughForDrag(event));
 
     // Drag if far enough.
-    event.position2D.Set(.6f, .5f);
+    event.position2D.Set(.7f, .5f);
     EXPECT_TRUE(mt.MovedEnoughForDrag(event));
+
+    // Update the DragInfo.
+    mt.FillEventDragInfo(event, dinfo);
+    EXPECT_EQ(Trigger::kPointer, dinfo.trigger);
+    EXPECT_EQ(rw,                dinfo.hit.path.back());
+
+    mt.Reset();
 }

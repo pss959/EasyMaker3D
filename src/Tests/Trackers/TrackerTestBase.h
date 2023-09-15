@@ -4,7 +4,7 @@
 #include "Tests/SceneTestBase.h"
 
 class Tracker;
-DECL_SHARED_PTR(Widget);
+DECL_SHARED_PTR(GenericWidget);
 namespace SG {
 DECL_SHARED_PTR(Scene);
 DECL_SHARED_PTR(WindowCamera);
@@ -26,8 +26,11 @@ class TrackerTestBase : public SceneTestBase {
     /// Returns the WindowCamera from the Scene.
     SG::WindowCameraPtr GetWindowCamera() const;
 
-    /// Returns the GenericWidget from the Scene as a WidgetPtr.
-    WidgetPtr GetWidget() const;
+    /// Returns the left GenericWidget from the Scene.
+    GenericWidgetPtr GetLeftWidget() const;
+
+    /// Returns the right GenericWidget from the Scene.
+    GenericWidgetPtr GetRightWidget() const;
 
   private:
     SG::ScenePtr scene_;
