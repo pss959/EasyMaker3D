@@ -261,6 +261,7 @@ test_source_dict = {
     ],
     'Trackers' : [
         'MouseTrackerTest',
+        'PinchTrackerTest',
         'TrackerTestBase',
     ],
     'Util' : [

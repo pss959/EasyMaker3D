@@ -51,7 +51,7 @@ void IonContext::AddShaderProgram(const Str &name, const Str &pass_name,
                                   const ion::gfx::ShaderProgramPtr &program) {
     ASSERT(! name.empty());
     ASSERT(program);
-    ASSERT(! program_map_.contains(name));
+    ASSERTM(! program_map_.contains(name), name);
     int index = GetPassIndex(pass_name);
     ASSERTM(index >= 0, "Cannot get index for pass " + pass_name);
     ProgramInfo info;

@@ -24,7 +24,7 @@ class MouseTrackerTest : public TrackerTestBase {
 };
 
 void MouseTrackerTest::InitForActivation(MouseTracker &mt) {
-    // Set up a scene with a GenericWidget.
+    // Set up a scene with GenericWidgets.
     InitTrackerScene(mt);
 
     // Set up the frustum in the MouseTracker.
@@ -134,6 +134,15 @@ TEST_F(MouseTrackerTest, Hover) {
 
     auto lw = GetLeftWidget();
     EXPECT_FALSE(lw->IsHovering());
+    mt.UpdateHovering(event);
+    EXPECT_TRUE(lw->IsHovering());
+
+    // Install a path filter that ignores the GenericWidgets.
+    auto filter = [](const SG::NodePath &){ return false; };
+    mt.SetPathFilter(filter);
+    mt.UpdateHovering(event);
+    EXPECT_FALSE(lw->IsHovering());
+    mt.SetPathFilter(nullptr);
     mt.UpdateHovering(event);
     EXPECT_TRUE(lw->IsHovering());
 

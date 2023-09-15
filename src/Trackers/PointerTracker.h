@@ -38,9 +38,8 @@ class PointerTracker : public Tracker {
     virtual Anglef GetMinRayAngleChange() const = 0;
 
     /// Once an intersection is found with the current Ray, this is called to
-    /// let derived classes update state based on the SG::Hit. This class
-    /// defines it to do nothing.
-    virtual void ProcessCurrentHit(const SG::Hit &hit) {}
+    /// let derived classes update state based on the SG::Hit.
+    virtual void ProcessCurrentHit(const SG::Hit &hit) = 0;
 
     /// If there is a Widget pointed to by the given Event, this sets the
     /// current Widget to it and returns it. Otherwise, it returns null. If \p

@@ -27,18 +27,19 @@ static const Str kContents = R"(
 )";
 
 void TrackerTestBase::InitTrackerScene(Tracker &tracker) {
-    scene_ = ReadRealScene(kContents);
+    if (! scene_) {
+        scene_ = ReadRealScene(kContents);
+
+        // Set up the WindowCamera with useful settings.
+        auto wincam = GetWindowCamera();
+        wincam->SetPosition(Point3f(0, 0, 10.1f));
+        wincam->SetOrientation(Rotationf::Identity());
+        wincam->SetFOV(Anglef::FromDegrees(45));
+        wincam->SetNearAndFar(.1f, 100);
+    }
 
     auto lc = SG::FindTypedNodeInScene<Controller>(*scene_, "LeftController");
     auto rc = SG::FindTypedNodeInScene<Controller>(*scene_, "RightController");
-
-    // Set up the WindowCamera with useful settings.
-    auto wincam = GetWindowCamera();
-    wincam->SetPosition(Point3f(0, 0, 10.1f));
-    wincam->SetOrientation(Rotationf::Identity());
-    wincam->SetFOV(Anglef::FromDegrees(45));
-    wincam->SetNearAndFar(.1f, 100);
-
     tracker.Init(scene_, lc, rc);
 }
 
