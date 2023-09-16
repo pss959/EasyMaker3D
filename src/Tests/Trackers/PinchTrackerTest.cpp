@@ -1,8 +1,6 @@
 #include "Base/Event.h"
-#include "Enums/Hand.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
-#include "SG/WindowCamera.h"
 #include "Tests/Testing.h"
 #include "Tests/Trackers/TrackerTestBase.h"
 #include "Trackers/PinchTracker.h"
