@@ -186,9 +186,9 @@ class ION_API Image : public base::Notifier {
     kRgb11f_11f_10f_RevHalf,
     /// RGB color image, 5 bits red and blue, 6 bits green, uint8 data.
     kRgb565Byte,
-    /// RGB color image, 5 bits red and blue, 6 bits green,
+    /// RGB color image, 5 bits red and blue, 6 bits green, packed 565 uint16
+    /// data.
     kRgb565Short,
-    packed 565 uint16 data.
     /// RGBA color+alpha image, 5 bits per color, 1 bit alpha, uint8 data.
     kRgb5a1Byte,
     /// RGBA color+alpha image, 5 bits per color, 1 bit alpha, packed 5551

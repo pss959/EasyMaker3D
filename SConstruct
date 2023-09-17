@@ -60,6 +60,8 @@ ion_lib = SConscript('ionsrc/SConscript_ion',
                      exports=['ion_env', 'ion_test_env'],
                      variant_dir=f'{build_dir}/ionsrc', duplicate=False)
 
+ion_env.Alias('IonLib', ion_lib)
+
 # Build submodules.
 SConscript('submodules/SConscript_submodules', exports=['base_env'])
 
