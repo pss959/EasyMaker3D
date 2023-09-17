@@ -24,7 +24,7 @@ limitations under the License.
 #include "ion/profile/timelineevent.h"
 #include "json/value.h"
 
-// This node type represents a time range event from a WTF trace in a timeline.
+/// This node type represents a time range event from a WTF trace in a timeline.
 class TimelineRange : public TimelineEvent {
  public:
   TimelineRange(const std::string& name, uint32 begin, uint32 duration,

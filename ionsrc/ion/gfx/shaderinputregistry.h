@@ -41,98 +41,98 @@ namespace gfx {
 
 class ShaderInputRegistry;
 
-// Convenience typedef for shared pointer to a ShaderInputRegistry.
+/// Convenience typedef for shared pointer to a ShaderInputRegistry.
 using ShaderInputRegistryPtr = base::SharedPtr<ShaderInputRegistry>;
 
-// A ShaderInputRegistry acts as a namespace for shader inputs (uniforms and
-// attributes). It isolates users from dealing with input locations. Shaders
-// using the same ShaderInputRegistry are expected to have matching types and
-// meanings for inputs that have identical names. A registry must be specified
-// for each ShaderProgram instance that is created.
-//
-// The registry provides Create<Attribute>() and Create<Uniform>() functions,
-// which are the only way to construct valid Attribute and Uniform instances.
-// By design, there is no way to delete inputs from a registry. The registry
-// must be kept alive as long as any inputs created from it might be used.
-//
-// A registry must be specified for each ShaderProgram instance that is
-// created.  There is also a ShaderInputRegistry instance representing some
-// predefined attributes and uniforms, returned by GetGlobalRegistry(). It
-// contains specs for the following attributes as buffer object elements:
-//
-//   vec3 aVertex:
-//           The vertex position.
-//
-//   vec3 aColor:
-//           The vertex color.
-//
-//   vec3 aNormal:
-//           The normal direction.
-//
-//   vec2 aTexCoords:
-//           Texture coordinates.
-//
-// and specs for the following uniforms:
-//
-//   ivec2 uViewportSize:
-//           Replaces the active viewport size (in pixels).
-//           Default Value: (0,0)
-//
-//   mat4 uProjectionMatrix:
-//           Replaces the current projection matrix.
-//           Default Value: Identity
-//
-//   mat4 uModelviewMatrix:
-//           Accumulates into the current modelview matrix.
-//           Default Value: Identity
-//
-//   vec4 uBaseColor:
-//           Replaces the base color for shapes.
-//           Default Value:  (1,1,1,1)
-//
-//
+/// A ShaderInputRegistry acts as a namespace for shader inputs (uniforms and
+/// attributes). It isolates users from dealing with input locations. Shaders
+/// using the same ShaderInputRegistry are expected to have matching types and
+/// meanings for inputs that have identical names. A registry must be specified
+/// for each ShaderProgram instance that is created.
+///
+/// The registry provides Create<Attribute>() and Create<Uniform>() functions,
+/// which are the only way to construct valid Attribute and Uniform instances.
+/// By design, there is no way to delete inputs from a registry. The registry
+/// must be kept alive as long as any inputs created from it might be used.
+///
+/// A registry must be specified for each ShaderProgram instance that is
+/// created.  There is also a ShaderInputRegistry instance representing some
+/// predefined attributes and uniforms, returned by GetGlobalRegistry(). It
+/// contains specs for the following attributes as buffer object elements:
+///
+///   vec3 aVertex:
+///           The vertex position.
+///
+///   vec3 aColor:
+///           The vertex color.
+///
+///   vec3 aNormal:
+///           The normal direction.
+///
+///   vec2 aTexCoords:
+///           Texture coordinates.
+///
+/// and specs for the following uniforms:
+///
+///   ivec2 uViewportSize:
+///           Replaces the active viewport size (in pixels).
+///           Default Value: (0,0)
+///
+///   mat4 uProjectionMatrix:
+///           Replaces the current projection matrix.
+///           Default Value: Identity
+///
+///   mat4 uModelviewMatrix:
+///           Accumulates into the current modelview matrix.
+///           Default Value: Identity
+///
+///   vec4 uBaseColor:
+///           Replaces the base color for shapes.
+///           Default Value:  (1,1,1,1)
+///
+///
 class ION_API ShaderInputRegistry : public ResourceHolder {
  public:
-  // Changes that affect this resource.
+  /// Changes that affect this resource.
   enum {
     kUniformAdded = kNumBaseChanges,
     kNumChanges
   };
 
-  // This type defines a function that is used to combine values for two
-  // instances of a registered shader input. During traversal, the ShaderState
-  // class manages a stack of values for each shader input. By default, each new
-  // value for a shader input just replaces the previous value. This function
-  // can be defined to change that behavior. For example, it can be used to
-  // maintain a cumulative transformation matrix in a Uniform variable. The
-  // function is set in the Spec for a shader input and is NULL by default,
-  // meaning that standard value replacement should be used.
-  //
-  // The callback is passed a reference to the two shader inputs to combine
-  // (old_value and new_value) and should return the resulting combined shader
-  // input.
-  //
-  // Using a struct since we can't use alias templates (C++11).
+  /// This type defines a function that is used to combine values for two
+  /// instances of a registered shader input. During traversal, the ShaderState
+  /// class manages a stack of values for each shader input. By default, each new
+  /// value for a shader input just replaces the previous value. This function
+  /// can be defined to change that behavior. For example, it can be used to
+  /// maintain a cumulative transformation matrix in a Uniform variable. The
+  /// function is set in the Spec for a shader input and is NULL by default,
+  /// meaning that standard value replacement should be used.
+  ///
+  /// The callback is passed a reference to the two shader inputs to combine
+  /// (old_value and new_value) and should return the resulting combined shader
+  /// input.
+  ///
+  /// Using a struct since we can't use alias templates (C++11).
   template <typename T>
   struct CombineFunction {
     typedef std::function<const T(const T& old_value, const T& new_value)> Type;
   };
 
-  // A GenerateFunction is similar to a CombineFunction, above, but generates
-  // additional inputs based on the value of a single input. Note that a
-  // GenerateFunction is applied _after_ a CombineFunction. A GenerateFunction
-  // can be used, for example, to generate a rotation matrix (3x3) out of a
-  // general transformation matrix (4x4), or to extract angles out of a matrix
-  // (e.g., as a Vector3). Note that Specs for all generated inputs must already
-  // be Add()ed to the same registry as the passed input.
-  //
-  // Using a struct since we can't use alias templates (C++11).
+  /// A GenerateFunction is similar to a CombineFunction, above, but generates
+  /// additional inputs based on the value of a single input. Note that a
+  /// GenerateFunction is applied _after_ a CombineFunction. A GenerateFunction
+  /// can be used, for example, to generate a rotation matrix (3x3) out of a
+  /// general transformation matrix (4x4), or to extract angles out of a matrix
+  /// (e.g., as a Vector3). Note that Specs for all generated inputs must already
+  /// be Add()ed to the same registry as the passed input.
+  ///
+  /// Using a struct since we can't use alias templates (C++11).
   template <typename T>
   struct GenerateFunction {
     typedef std::function<std::vector<T>(const T& current_value)> Type;
   };
 
-  // This struct is stored for each registered ShaderInput.
+  /// This struct is stored for each registered ShaderInput.
   template <typename T>
   struct Spec {
     explicit Spec(
@@ -151,18 +151,18 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
           combine_function(combine_function_in),
           generate_function(generate_function_in) {}
 
-    std::string name;                  // Name of the shader input argument.
-    typename T::ValueType value_type;  // Type of the value of the shader input.
-    std::string doc_string;            // String describing its use.
-    size_t index;                      // Unique index within registry.
-    size_t registry_id;                // Id of the owning registry.
-    // The registry that created this spec. This is a raw pointer since when the
-    // registry is destroyed, the spec will be as well.
+    std::string name;                  /// Name of the shader input argument.
+    typename T::ValueType value_type;  /// Type of the value of the shader input.
+    std::string doc_string;            /// String describing its use.
+    size_t index;                      /// Unique index within registry.
+    size_t registry_id;                /// Id of the owning registry.
+    /// The registry that created this spec. This is a raw pointer since when the
+    /// registry is destroyed, the spec will be as well.
     ShaderInputRegistry* registry;
 
-    // Function used to combine values.
+    /// Function used to combine values.
     typename CombineFunction<T>::Type combine_function;
-    // Function used to generate values.
+    /// Function used to generate values.
     typename GenerateFunction<T>::Type generate_function;
   };
 
@@ -171,34 +171,34 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
 
   ShaderInputRegistry();
 
-  // Each ShaderInputRegistry instance is assigned a unique integer ID. This
-  // returns that ID.
+  /// Each ShaderInputRegistry instance is assigned a unique integer ID. This
+  /// returns that ID.
   size_t GetId() const { return id_; }
 
-  // Includes another ShaderInputRegistry in this one. This is similar to a
-  // "using namespace" declaration in C++. Any shader that uses the current
-  // registry may also Create() inputs from an included registry. If there is a
-  // name conflict (the passed registry defines an input also defined by this
-  // registry or its includes), an error is printed and the registry is not
-  // included. Returns whether the registry was included.
+  /// Includes another ShaderInputRegistry in this one. This is similar to a
+  /// "using namespace" declaration in C++. Any shader that uses the current
+  /// registry may also Create() inputs from an included registry. If there is a
+  /// name conflict (the passed registry defines an input also defined by this
+  /// registry or its includes), an error is printed and the registry is not
+  /// included. Returns whether the registry was included.
   bool Include(const ShaderInputRegistryPtr& reg);
 
-  // Includes the global registry in this registry. See the above comment for
-  // Include() for failure conditions. Returns whether the global registry was
-  // included.
+  /// Includes the global registry in this registry. See the above comment for
+  /// Include() for failure conditions. Returns whether the global registry was
+  /// included.
   bool IncludeGlobalRegistry();
 
-  // Returns the vector of included registries.
+  /// Returns the vector of included registries.
   const base::AllocVector<ShaderInputRegistryPtr>& GetIncludes() const {
     return includes_;
   }
 
-  // Returns whether the inputs in this registry and its includes are unique.
-  // Any duplicate inputs are logged as warnings.
+  /// Returns whether the inputs in this registry and its includes are unique.
+  /// Any duplicate inputs are logged as warnings.
   bool CheckInputsAreUnique() const;
 
-  // Adds a type specification to the registry. This returns false if one
-  // already exists with the same name in this or any included registry.
+  /// Adds a type specification to the registry. This returns false if one
+  /// already exists with the same name in this or any included registry.
   template <typename T> bool Add(const Spec<T>& spec) {
     size_t array_index = 0;
     std::string name;
@@ -226,12 +226,12 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
     }
   }
 
-  // Returns if a Spec for an input of the passed name exists in the registry or
-  // its includes.
+  /// Returns if a Spec for an input of the passed name exists in the registry or
+  /// its includes.
   bool Contains(const std::string& name) const;
 
-  // Returns the Spec for an input, or NULL if there isn't yet one. The returned
-  // pointer is not guaranteed to be persistent if Add() is called again.
+  /// Returns the Spec for an input, or NULL if there isn't yet one. The returned
+  /// pointer is not guaranteed to be persistent if Add() is called again.
   template <typename T> const Spec<T>* Find(const std::string& name) const {
     const size_t num_includes = includes_.size();
     for (size_t i = 0; i < num_includes; ++i) {
@@ -254,15 +254,15 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
     }
   }
 
-  // Returns a vector of all Specs of type T added to this registry.
+  /// Returns a vector of all Specs of type T added to this registry.
   template <typename T> const base::AllocDeque<Spec<T> >& GetSpecs() const;
 
-  // Constructs a ShaderInput with the given name and value. If the name is not
-  // found in the registry or its includes, the input is added to this registry.
-  // If the name is found and the value is of the same type, a copy of the
-  // existing instance is returned. If the name is found and the type is
-  // inconsistent, logs an error and returns an invalid ShaderInput instance
-  // (i.e., calling IsValid() on it will return false).
+  /// Constructs a ShaderInput with the given name and value. If the name is not
+  /// found in the registry or its includes, the input is added to this registry.
+  /// If the name is found and the value is of the same type, a copy of the
+  /// existing instance is returned. If the name is found and the type is
+  /// inconsistent, logs an error and returns an invalid ShaderInput instance
+  /// (i.e., calling IsValid() on it will return false).
   template <typename ShaderInputType, typename T>
   const ShaderInputType Create(const std::string& name_in, const T& value) {
     // Determine the correct type that will allow a T to be stored.
@@ -284,9 +284,9 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
     }
     return input;
   }
-  // Constructs a ShaderInput with the given name and value. The input must
-  // already exist in the registry or one of its includes, otherwise an invalid
-  // instance is returned.
+  /// Constructs a ShaderInput with the given name and value. The input must
+  /// already exist in the registry or one of its includes, otherwise an invalid
+  /// instance is returned.
   template <typename ShaderInputType, typename T>
   const ShaderInputType Create(const std::string& name_in,
                                const T& value) const {
@@ -307,13 +307,13 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
     return input;
   }
 
-  // Constructs an array Uniform with the given name and values, using the
-  // passed allocator to construct the values in the returned Uniform. If values
-  // is NULL then the array is still created but values are left unset as 0s. If
-  // the name is not found in the registry or its includes, the input is added
-  // to this registry, but if the value type is inconsistent with the registered
-  // type, this logs an error and returns an invalid ShaderInput instance (i.e.,
-  // calling IsValid() on it will return false).
+  /// Constructs an array Uniform with the given name and values, using the
+  /// passed allocator to construct the values in the returned Uniform. If values
+  /// is NULL then the array is still created but values are left unset as 0s. If
+  /// the name is not found in the registry or its includes, the input is added
+  /// to this registry, but if the value type is inconsistent with the registered
+  /// type, this logs an error and returns an invalid ShaderInput instance (i.e.,
+  /// calling IsValid() on it will return false).
   template <typename T>
   const Uniform CreateArrayUniform(const std::string& name_in, const T* values,
                                    size_t count,
@@ -355,42 +355,42 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
     return input;
   }
 
-  // Convenience function that returns a pointer to the Spec associated with an
-  // Attribute or Uniform instance. These return NULL if the Attribute or
-  // Uniform is not valid.
+  /// Convenience function that returns a pointer to the Spec associated with an
+  /// Attribute or Uniform instance. These return NULL if the Attribute or
+  /// Uniform is not valid.
   template <typename T>
   static const Spec<T>* GetSpec(const T& input) {
     return !input.IsValid() ? nullptr :
         &input.GetRegistry().template GetSpecs<T>()[input.GetIndexInRegistry()];
   }
 
-  // Returns the ShaderInputRegistry instance representing all supported global
-  // uniforms and attributes.
+  /// Returns the ShaderInputRegistry instance representing all supported global
+  /// uniforms and attributes.
   static const ShaderInputRegistryPtr& GetGlobalRegistry();
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~ShaderInputRegistry() override;
 
  private:
-  // StaticData contains some of the static member data for the
-  // ShaderInputRegistry class.
+  /// StaticData contains some of the static member data for the
+  /// ShaderInputRegistry class.
   class StaticData;
-  // StaticGlobalRegistryData contains a static instance of ShaderInputRegistry.
-  // It needs to be in its own class since the ShaderInputRegistry constructor
-  // depends on StaticData.
+  /// StaticGlobalRegistryData contains a static instance of ShaderInputRegistry.
+  /// It needs to be in its own class since the ShaderInputRegistry constructor
+  /// depends on StaticData.
   class StaticGlobalRegistryData;
 
-  // Returns the StaticData instance, creating it first if necessary in a
-  // thread-safe way.
+  /// Returns the StaticData instance, creating it first if necessary in a
+  /// thread-safe way.
   static StaticData* GetStaticData();
 
-  // Returns the StaticGlobalRegistryData instance, creating it first if
-  // necessary in a thread-safe way.
+  /// Returns the StaticGlobalRegistryData instance, creating it first if
+  /// necessary in a thread-safe way.
   static StaticGlobalRegistryData* GetStaticGlobalRegistryData();
 
-  // Updates the size of the largest registry.
+  /// Updates the size of the largest registry.
   static void UpdateLargestRegistrySize(size_t size);
 
   struct SpecMapEntry {
@@ -411,18 +411,18 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
   };
   typedef base::AllocMap<const std::string, SpecMapEntry> SpecMapType;
 
-  // Returns a map of all Specs added to the registry and its includes.
+  /// Returns a map of all Specs added to the registry and its includes.
   const SpecMapType GetAllSpecEntries() const;
 
-  // Get an editable vector of specs of type T in this registry only.
+  /// Get an editable vector of specs of type T in this registry only.
   template <typename T>
   base::AllocDeque<Spec<T> >* GetMutableSpecs();
 
-  // If the name corresponds to a registered input and the type matches its
-  // type, this sets index to the index of the input and returns true.
-  // Otherwise, it logs an error and returns false. The passed size specifies
-  // the size if the shader input is an array type; passing 0 means that the
-  // input is not an array.
+  /// If the name corresponds to a registered input and the type matches its
+  /// type, this sets index to the index of the input and returns true.
+  /// Otherwise, it logs an error and returns false. The passed size specifies
+  /// the size if the shader input is an array type; passing 0 means that the
+  /// input is not an array.
   template <typename T>
   bool ValidateNameAndType(const std::string& name,
                            const typename T::ValueType value_type, size_t size,
@@ -450,8 +450,8 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
     }
   }
 
-  // Parses an input name into a string name and integral index. Returns whether
-  // the parsing was successful.
+  /// Parses an input name into a string name and integral index. Returns whether
+  /// the parsing was successful.
   bool ParseShaderInputName(const std::string& input, std::string* name,
                             size_t* index) const {
     // Try to find an array specification.
@@ -474,20 +474,20 @@ class ION_API ShaderInputRegistry : public ResourceHolder {
     return true;
   }
 
-  // Vectors of added Specs.
+  /// Vectors of added Specs.
   Field<base::AllocDeque<UniformSpec> > uniform_specs_;
   base::AllocDeque<AttributeSpec> attribute_specs_;
 
-  // Vector of included registries.
+  /// Vector of included registries.
   base::AllocVector<ShaderInputRegistryPtr> includes_;
 
-  // Maps shader input name to the index of the Spec within the vector.
+  /// Maps shader input name to the index of the Spec within the vector.
   SpecMapType spec_map_;
 
-  // Unique registry ID.
+  /// Unique registry ID.
   size_t id_;
 
-  // Make sure unique ID's remain unique.
+  /// Make sure unique ID's remain unique.
   DISALLOW_COPY_AND_ASSIGN(ShaderInputRegistry);
 };
 

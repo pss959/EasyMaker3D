@@ -23,11 +23,11 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// A CubeMapTexture object represents the image data and mipmaps associated with
-// the six faces of a cube map.
+/// A CubeMapTexture object represents the image data and mipmaps associated with
+/// the six faces of a cube map.
 class ION_API CubeMapTexture : public TextureBase {
  public:
-  // Changes that affect this resource.
+  /// Changes that affect this resource.
   enum Changes {
     kNegativeXSubImageChanged = TextureBase::kNumChanges,
     kNegativeYSubImageChanged,
@@ -45,7 +45,7 @@ class ION_API CubeMapTexture : public TextureBase {
     kNumChanges = kPositiveZMipmapChanged + kMipmapSlotCount
   };
 
-  // The names of faces of the cube map.
+  /// The names of faces of the cube map.
   enum CubeFace {
     kNegativeX,
     kNegativeY,
@@ -57,7 +57,7 @@ class ION_API CubeMapTexture : public TextureBase {
 
   CubeMapTexture();
 
-  // See comments in TextureBase::Face.
+  /// See comments in TextureBase::Face.
   void SetImage(CubeFace face, size_t level, const ImagePtr& image) {
     if (GetImmutableImage().Get())
       LOG(ERROR) << "ION: SetImage() called on immutable texture \""
@@ -95,20 +95,20 @@ class ION_API CubeMapTexture : public TextureBase {
   }
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~CubeMapTexture() override;
 
   void ClearNonImmutableImages() override;
 
  private:
-  // Called when a Texture that this depends on changes.
+  /// Called when a Texture that this depends on changes.
   void OnNotify(const base::Notifier* notifier) override;
 
-  // The cube map faces.
+  /// The cube map faces.
   Face* faces_;
-  // The actual faces. We explicitly declare them here since we cannot array
-  // initialize them directly without C++11.
+  /// The actual faces. We explicitly declare them here since we cannot array
+  /// initialize them directly without C++11.
   Face facenx_;
   Face faceny_;
   Face facenz_;
@@ -117,7 +117,7 @@ class ION_API CubeMapTexture : public TextureBase {
   Face facepz_;
 };
 
-// Convenience typedef for shared pointer to a CubeMapTexture.
+/// Convenience typedef for shared pointer to a CubeMapTexture.
 using CubeMapTexturePtr = base::SharedPtr<CubeMapTexture>;
 
 }  // namespace gfx

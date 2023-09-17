@@ -27,14 +27,14 @@ limitations under the License.
 namespace ion {
 namespace analytics {
 
-// The Benchmark class provides types and utilities to make it easier to create
-// performance benchmarks. It facilitates tracking constant values (such as
-// number of frames) and accumulation of per-sample variables (such as
-// triangles per frames or frames per second).
+/// The Benchmark class provides types and utilities to make it easier to create
+/// performance benchmarks. It facilitates tracking constant values (such as
+/// number of frames) and accumulation of per-sample variables (such as
+/// triangles per frames or frames per second).
 class ION_API Benchmark {
  public:
-  // This struct stores information about a measurement computed by
-  // benchmarking. It is used to describe the value in benchmark reports.
+  /// This struct stores information about a measurement computed by
+  /// benchmarking. It is used to describe the value in benchmark reports.
   struct Descriptor {
     Descriptor(std::string id_in,
                std::string group_in,
@@ -44,14 +44,14 @@ class ION_API Benchmark {
           group(std::move(group_in)),
           description(std::move(description_in)),
           units(std::move(units_in)) {}
-    std::string id;            // (Unique) identifying name.
-    std::string group;         // Group the measurement belongs to.
-    std::string description;   // Readable description.
-    std::string units;         // Description of units.
+    std::string id;            ///< (Unique) identifying name.
+    std::string group;         ///< Group the measurement belongs to.
+    std::string description;   ///< Readable description.
+    std::string units;         ///< Description of units.
   };
 
-  // A variant of the above structure that can be trivially destructed. Only use
-  // this when all parameters are string constants.
+  /// A variant of the above structure that can be trivially destructed. Only use
+  /// this when all parameters are string constants.
   struct StaticDescriptor {
     StaticDescriptor(const char* id_in,
                const char* group_in,
@@ -61,7 +61,7 @@ class ION_API Benchmark {
           group(group_in),
           description(description_in),
           units(units_in) {}
-    // Silence ClangTidy, since we actually want this conversion to be implicit.
+    /// Silence ClangTidy, since we actually want this conversion to be implicit.
     operator Descriptor() const {  // NOLINT
       return Descriptor(id, group, description, units);
     }
@@ -71,7 +71,7 @@ class ION_API Benchmark {
     const char* units;
   };
 
-  // This struct represents a number that is constant over all samples.
+  /// This struct represents a number that is constant over all samples.
   struct Constant {
     Constant(const Descriptor& descriptor_in, double value_in)
         : descriptor(descriptor_in),
@@ -80,9 +80,9 @@ class ION_API Benchmark {
     double value;
   };
 
-  // This struct represents a single timestamped value of a variable. To save
-  // space, the timestamp (in milliseconds) is relative to an initial timestamp
-  // so that it can be stored in 32 bits.
+  /// This struct represents a single timestamped value of a variable. To save
+  /// space, the timestamp (in milliseconds) is relative to an initial timestamp
+  /// so that it can be stored in 32 bits.
   struct Sample {
     Sample(uint32 time_offset_ms_in, double value_in)
         : time_offset_ms(time_offset_ms_in),
@@ -91,8 +91,8 @@ class ION_API Benchmark {
     double value;
   };
 
-  // This struct represents a variable: a number that may vary over samples,
-  // such as a count or timing. It stores all of the samples.
+  /// This struct represents a variable: a number that may vary over samples,
+  /// such as a count or timing. It stores all of the samples.
   struct SampledVariable {
     explicit SampledVariable(const Descriptor& descriptor_in)
         : descriptor(descriptor_in) {}
@@ -100,8 +100,8 @@ class ION_API Benchmark {
     std::vector<Sample> samples;
   };
 
-  // This struct represents accumulated values for a variable. It uses less
-  // space than a SampledVariable.
+  /// This struct represents accumulated values for a variable. It uses less
+  /// space than a SampledVariable.
   struct AccumulatedVariable {
     AccumulatedVariable(const Descriptor& descriptor_in, size_t samples_in,
                         double minimum_in, double maximum_in,
@@ -113,50 +113,50 @@ class ION_API Benchmark {
           mean(mean_in),
           standard_deviation(standard_deviation_in) {}
     Descriptor descriptor;
-    size_t samples;             // Number of samples taken.
-    double minimum;             // Minimum value.
-    double maximum;             // Maximum value.
-    double mean;                // Average (mean) value.
-    double standard_deviation;  // Standard deviation of value.
+    size_t samples;             /// Number of samples taken.
+    double minimum;             /// Minimum value.
+    double maximum;             /// Maximum value.
+    double mean;                /// Average (mean) value.
+    double standard_deviation;  /// Standard deviation of value.
   };
 
-  // This class aids in creation of a benchmarked SampledVariable.
+  /// This class aids in creation of a benchmarked SampledVariable.
   class ION_API VariableSampler {
    public:
     explicit VariableSampler(const Descriptor& descriptor)
         : variable_(descriptor) {}
 
-    // Adds one sample of the SampledVariable's value.
+    /// Adds one sample of the SampledVariable's value.
     void AddSample(double value);
 
-    // Returns the resulting SampledVariable.
+    /// Returns the resulting SampledVariable.
     const SampledVariable Get() { return variable_; }
 
    private:
     SampledVariable variable_;
 
-    // This times the samples.
+    /// This times the samples.
     ion::port::Timer timer_;
   };
 
-  // This class aids in accumulation of a benchmarked AccumulatedVariable.
+  /// This class aids in accumulation of a benchmarked AccumulatedVariable.
   class ION_API VariableAccumulator {
    public:
     explicit VariableAccumulator(const Descriptor& descriptor);
 
-    // Adds one sample of the Variable's value.
+    /// Adds one sample of the Variable's value.
     void AddSample(double value);
 
-    // Returns the resulting Variable.
+    /// Returns the resulting Variable.
     const AccumulatedVariable Get();
 
    private:
     AccumulatedVariable variable_;
-    double m2_;  // Needed by Welford's algorithm.
+    double m2_;  /// Needed by Welford's algorithm.
   };
 
-  // Each of these adds a measurement of a specific type to the benchmark
-  // results.
+  /// Each of these adds a measurement of a specific type to the benchmark
+  /// results.
   void AddConstant(const Constant& constant) { constants_.push_back(constant); }
   void AddSampledVariable(const SampledVariable& variable) {
     sampled_variables_.push_back(variable);
@@ -165,7 +165,7 @@ class ION_API Benchmark {
     accumulated_variables_.push_back(variable);
   }
 
-  // Each of these returns the results for a given type of measurement.
+  /// Each of these returns the results for a given type of measurement.
   const std::vector<Constant>& GetConstants() const { return constants_; }
   const std::vector<SampledVariable>& GetSampledVariables() const {
     return sampled_variables_;
@@ -174,8 +174,8 @@ class ION_API Benchmark {
     return accumulated_variables_;
   }
 
-  // Converts a SampledVariable to an AccumulatedVariable by accumulating all
-  // of the samples.
+  /// Converts a SampledVariable to an AccumulatedVariable by accumulating all
+  /// of the samples.
   static const AccumulatedVariable AccumulateSampledVariable(
       const SampledVariable& sampled_variable);
 

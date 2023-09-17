@@ -23,17 +23,17 @@ limitations under the License.
 namespace ion {
 namespace portgfx {
 
-// Returns whether the currently bound OpenGL implementation supports the named
-// extension. Names are generally of the form GL_<BODY>_name, where <BODY> is
-// usually one of APPLE, AMD, ARB, ATI, EXT, INTEL, KHR, NV, OES, SGI[SX],
-// WEBGL. For maximum compatibility with various implementations, it is often
-// best to only pass the name without the GL or <BODY>.
+/// Returns whether the currently bound OpenGL implementation supports the named
+/// extension. Names are generally of the form GL_[BODY]_name, where [BODY] is
+/// usually one of APPLE, AMD, ARB, ATI, EXT, INTEL, KHR, NV, OES, SGI[SX],
+/// WEBGL. For maximum compatibility with various implementations, it is often
+/// best to only pass the name without the GL or [BODY].
 ION_API bool IsExtensionSupported(const std::string& unprefixed_extension,
                                   const std::string& extensions_string);
 
-// A convenience wrapper around the above which takes the unprefixed extension
-// directly as a C string.
-// Note that to call this function a valid OpenGL context must be bound.
+/// A convenience wrapper around the above which takes the unprefixed extension
+/// directly as a C string.
+/// Note that to call this function a valid OpenGL context must be bound.
 ION_API bool IsExtensionSupported(const char* unprefixed_extension);
 
 }  // namespace portgfx

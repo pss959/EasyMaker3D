@@ -27,14 +27,14 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// This corresponds to the OpenGL concept of a "transform feedback object",
-// which can be used to capture the data produced by the vertex shader.
-// For now, this is limited to single-buffer capture (INTERLEAVED_ATTRIBS),
-// although we may extend this in the future.
+/// This corresponds to the OpenGL concept of a "transform feedback object",
+/// which can be used to capture the data produced by the vertex shader.
+/// For now, this is limited to single-buffer capture (INTERLEAVED_ATTRIBS),
+/// although we may extend this in the future.
 class ION_API TransformFeedback : public ResourceHolder {
  public:
-  // By convention, types that descend from ResourceHolder have a Changes enum,
-  // with one constant per Field.
+  /// By convention, types that descend from ResourceHolder have a Changes enum,
+  /// with one constant per Field.
   enum Changes { kCaptureBufferChanged = kNumBaseChanges, kNumChanges };
 
   TransformFeedback()
@@ -49,13 +49,13 @@ class ION_API TransformFeedback : public ResourceHolder {
   BufferObjectPtr GetCaptureBuffer() const { return capture_buffer_.Get(); }
 
  private:
-  // Note that we are not overriding OnNotify, which we'd need to do if we cared
-  // about when the captured buffer contents change.
+  /// Note that we are not overriding OnNotify, which we'd need to do if we cared
+  /// about when the captured buffer contents change.
   ~TransformFeedback() override = default;
   Field<BufferObjectPtr> capture_buffer_;
 };
 
-// Convenience typedef for shared pointer to a TransformFeedback.
+/// Convenience typedef for shared pointer to a TransformFeedback.
 using TransformFeedbackPtr = base::SharedPtr<TransformFeedback>;
 
 }  // namespace gfx

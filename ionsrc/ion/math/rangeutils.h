@@ -18,10 +18,9 @@ limitations under the License.
 #ifndef ION_MATH_RANGEUTILS_H_
 #define ION_MATH_RANGEUTILS_H_
 
-//
-// This file contains free functions that define generic operations on the
-// Range class.
-//
+/// \file
+/// This file contains free functions that define generic operations on the
+/// Range class.
 
 #include <algorithm>
 
@@ -30,9 +29,9 @@ limitations under the License.
 namespace ion {
 namespace math {
 
-// Returns the union of two Range instances. If either Range is empty, this
-// returns the other range. Otherwise, it returns the smallest Range containing
-// both.
+/// Returns the union of two Range instances. If either Range is empty, this
+/// returns the other range. Otherwise, it returns the smallest Range containing
+/// both.
 template <int Dimension, typename T>
 Range<Dimension, T> RangeUnion(const Range<Dimension, T>& r0,
                                const Range<Dimension, T>& r1) {
@@ -41,9 +40,9 @@ Range<Dimension, T> RangeUnion(const Range<Dimension, T>& r0,
   return result;
 }
 
-// Returns the intersection of two Range instances. If either Range is empty,
-// this returns an empty range. Otherwise, it returns the largest Range
-// contained by both.
+/// Returns the intersection of two Range instances. If either Range is empty,
+/// this returns an empty range. Otherwise, it returns the largest Range
+/// contained by both.
 template <int Dimension, typename T>
 Range<Dimension, T> RangeIntersection(const Range<Dimension, T>& r0,
                                       const Range<Dimension, T>& r1) {
@@ -55,7 +54,7 @@ Range<Dimension, T> RangeIntersection(const Range<Dimension, T>& r0,
     for (int i = 0; i < Dimension; ++i) {
       result_min[i] = std::max(r0.GetMinPoint()[i], r1.GetMinPoint()[i]);
       result_max[i] = std::min(r0.GetMaxPoint()[i], r1.GetMaxPoint()[i]);
-      // Stop if the result is empty.
+      /// Stop if the result is empty.
       if (result_min[i] > result_max[i])
         return Range<Dimension, T>();
     }
@@ -63,8 +62,8 @@ Range<Dimension, T> RangeIntersection(const Range<Dimension, T>& r0,
   }
 }
 
-// Returns the NVolume of a Range, which is the product of its sizes in all
-// dimensions. Returns 0 if the Range is empty.
+/// Returns the NVolume of a Range, which is the product of its sizes in all
+/// dimensions. Returns 0 if the Range is empty.
 template <int Dimension, typename T>
 T NVolume(const Range<Dimension, T>& r) {
   if (r.IsEmpty()) {
@@ -79,8 +78,8 @@ T NVolume(const Range<Dimension, T>& r) {
   }
 }
 
-// Returns true if all dimensions of the two ranges are equal within the
-// threshold.
+/// Returns true if all dimensions of the two ranges are equal within the
+/// threshold.
 template <int Dimension, typename T>
 bool RangesAlmostEqual(const Range<Dimension, T>& r0,
                        const Range<Dimension, T>& r1,
@@ -100,9 +99,9 @@ bool RangesAlmostEqual(const Range<Dimension, T>& r0,
   return true;
 }
 
-// Returns a Range that is the input Range scaled uniformly about its center by
-// the given factor. If the factor is not positive, this returns an empty
-// Range.
+/// Returns a Range that is the input Range scaled uniformly about its center by
+/// the given factor. If the factor is not positive, this returns an empty
+/// Range.
 template <int Dimension, typename T>
 Range<Dimension, T> ScaleRange(const Range<Dimension, T>& r, T scale_factor) {
   typedef Range<Dimension, T> RangeType;
@@ -115,9 +114,9 @@ Range<Dimension, T> ScaleRange(const Range<Dimension, T>& r, T scale_factor) {
   return scaled;
 }
 
-// Returns a Range that is the input Range scaled nonuniformly about its center
-// by the given per-dimension factors. If any factor is not positive, this
-// returns an empty Range.
+/// Returns a Range that is the input Range scaled nonuniformly about its center
+/// by the given per-dimension factors. If any factor is not positive, this
+/// returns an empty Range.
 template <int Dimension, typename T>
 Range<Dimension, T> ScaleRangeNonUniformly(
     const Range<Dimension, T>& r, const Vector<Dimension, T> scale_factors) {
@@ -138,12 +137,12 @@ Range<Dimension, T> ScaleRangeNonUniformly(
   return scaled;
 }
 
-// Modulate a Range by a Vector.  Each dimension of the Range is modulated
-// by the corresponding dimension in the Vector.  The modulation is done using
-// the multiplication operator defined for the Vector, in the space of the
-// Vector's type.  For example, if an integral Range is scaled by a floating
-// point Vector, the modulation will occur using floating point multiply.  If
-// any factor is not positive, this returns an empty Range.
+/// Modulate a Range by a Vector.  Each dimension of the Range is modulated
+/// by the corresponding dimension in the Vector.  The modulation is done using
+/// the multiplication operator defined for the Vector, in the space of the
+/// Vector's type.  For example, if an integral Range is scaled by a floating
+/// point Vector, the modulation will occur using floating point multiply.  If
+/// any factor is not positive, this returns an empty Range.
 template <int Dimension, typename T1, typename T2>
 Range<Dimension, T1> ModulateRange(const Range<Dimension, T1>& r,
                                    const Vector<Dimension, T2> modulation) {

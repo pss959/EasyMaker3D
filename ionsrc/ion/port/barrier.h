@@ -32,46 +32,46 @@ limitations under the License.
 namespace ion {
 namespace port {
 
-// The Barrier class defines a multi-thread barrier that allows N threads to
-// synchronize execution. For example, if you create a Barrier for 3 threads
-// and have each of the three threads call Wait() on it, then execution of each
-// waiting thread will proceed once all 3 have called Wait().
+/// The Barrier class defines a multi-thread barrier that allows N threads to
+/// synchronize execution. For example, if you create a Barrier for 3 threads
+/// and have each of the three threads call Wait() on it, then execution of each
+/// waiting thread will proceed once all 3 have called Wait().
 class Barrier {
  public:
-  // Constructs an instance that will wait for thread_count threads. If
-  // thread_count is not positive, the Barrier will do nothing and IsValid()
-  // will return false.
+  /// Constructs an instance that will wait for thread_count threads. If
+  /// thread_count is not positive, the Barrier will do nothing and IsValid()
+  /// will return false.
   explicit Barrier(uint32 thread_count);
   ~Barrier();
 
-  // Returns true if a valid barrier was created by the constructor. If this
-  // returns false, the Wait() function is a no-op.
+  /// Returns true if a valid barrier was created by the constructor. If this
+  /// returns false, the Wait() function is a no-op.
   bool IsValid() const { return is_valid_; }
 
-  // Causes the current thread to wait at the barrier.
+  /// Causes the current thread to wait at the barrier.
   void Wait();
 
  private:
 #if defined(ION_PLATFORM_WINDOWS)
-  // See section 3.6.5-3.6.7 of The Little Book of Semaphores
-  // http://greenteapress.com/semaphores/downey08semaphores.pdf
+  /// See section 3.6.5-3.6.7 of The Little Book of Semaphores
+  /// http:///greenteapress.com/semaphores/downey08semaphores.pdf
   void WaitInternal(int32 increment, int32 limit, HANDLE turnstile);
 
   const int32 thread_count_;
   std::atomic<int32> wait_count_;
   HANDLE turnstile1_;
   HANDLE turnstile2_;
-  // Counts threads inside the turnstile to prevent handle destruction race.
+  /// Counts threads inside the turnstile to prevent handle destruction race.
   HANDLE exit_turnstile_;
 
 #elif defined(_POSIX_BARRIERS) && (_POSIX_BARRIERS > 0)
   pthread_barrier_t barrier_;
-  // pthread_barrier_wait() modifies state after unblocking, so we need a bit
-  // more synchronization to make sure we don't destroy the barrier too soon.
+  /// pthread_barrier_wait() modifies state after unblocking, so we need a bit
+  /// more synchronization to make sure we don't destroy the barrier too soon.
   std::atomic<int32> ref_count_;
 
 #else
-  // See comments in source code.
+  /// See comments in source code.
   pthread_cond_t condition1_;
   pthread_cond_t condition2_;
   pthread_cond_t exit_condition_;
@@ -82,7 +82,7 @@ class Barrier {
   int32 ref_count_;
 #endif
 
-  // This is set to true if a valid barrier was created in the constructor.
+  /// This is set to true if a valid barrier was created in the constructor.
   const bool is_valid_;
 
   DISALLOW_COPY_AND_ASSIGN(Barrier);

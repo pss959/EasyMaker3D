@@ -26,21 +26,21 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// FullAllocationTracker is a derived AllocationTracker class that keeps track
-// of all active allocations and also provides tracing facilities for
-// debugging and error checking of leaked allocations.
+/// FullAllocationTracker is a derived AllocationTracker class that keeps track
+/// of all active allocations and also provides tracing facilities for
+/// debugging and error checking of leaked allocations.
 class ION_API FullAllocationTracker : public AllocationTracker {
  public:
   FullAllocationTracker();
 
-  // Sets an output stream to use for tracing allocations and deallocations. If
-  // the stream is non-NULL, tracing is enabled, and a message is printed to
-  // the stream for each allocation or deallocation. The default is a NULL
-  // stream.
+  /// Sets an output stream to use for tracing allocations and deallocations. If
+  /// the stream is non-NULL, tracing is enabled, and a message is printed to
+  /// the stream for each allocation or deallocation. The default is a NULL
+  /// stream.
   void SetTracingStream(std::ostream* s) { tracing_ostream_ = s; }
   std::ostream* GetTracingStream() const { return tracing_ostream_; }
 
-  // AllocationTracker interface implementations.
+  /// AllocationTracker interface implementations.
   void TrackAllocation(const Allocator& allocator,
                        size_t requested_size, const void* memory) override;
   void TrackDeallocation(const Allocator& allocator,
@@ -56,21 +56,21 @@ class ION_API FullAllocationTracker : public AllocationTracker {
   AllocationSizeTrackerPtr GetGpuTracker() override;
 
  protected:
-  // The destructor is protected because all instances should be managed
-  // through SharedPtr. This logs an error for each allocation that is still
-  // active.
+  /// The destructor is protected because all instances should be managed
+  /// through SharedPtr. This logs an error for each allocation that is still
+  /// active.
   ~FullAllocationTracker() override;
 
  private:
-  // Helper class that does most of the work, hiding the implementation.
+  /// Helper class that does most of the work, hiding the implementation.
   class Helper;
   std::unique_ptr<Helper> helper_;
 
-  // Output stream for tracing. NULL when tracing is disabled.
+  /// Output stream for tracing. NULL when tracing is disabled.
   std::ostream* tracing_ostream_;
 };
 
-// Convenience typedef for shared pointer to a FullAllocationTracker.
+/// Convenience typedef for shared pointer to a FullAllocationTracker.
 typedef SharedPtr<FullAllocationTracker> FullAllocationTrackerPtr;
 
 }  // namespace base

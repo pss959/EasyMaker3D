@@ -25,22 +25,22 @@ limitations under the License.
 namespace ion {
 namespace remote {
 
-// SettingHandler serves files related to Settings, including an interface for
-// viewing and modifying them.
-//
-// /   or /index.html        - Settings editor interface.
-// /get_all_settings         - Gets a string representing all Settings and their
-//                             type descriptors and values (see below).
-// /set_setting_value?name=name&value=value
-//                           - Sets the value of a Setting and returns its
-//                             string representation.
-//
-// The get_all_settings string contains the names, type descriptors, and values
-// of all settings. The type descriptor is used to customize the interface for
-// a Setting. The handler recognizes the following types of type descriptor
-// strings:
-//    "bool"                      Displayed as a checkbox.
-//    "enum:choice1|choice2|..."  Displayed as a drop-down list.
+/// SettingHandler serves files related to Settings, including an interface for
+/// viewing and modifying them.
+///
+/// /   or /index.html        - Settings editor interface.
+/// /get_all_settings         - Gets a string representing all Settings and their
+///                             type descriptors and values (see below).
+/// /set_setting_value?name=name&value=value
+///                           - Sets the value of a Setting and returns its
+///                             string representation.
+///
+/// The get_all_settings string contains the names, type descriptors, and values
+/// of all settings. The type descriptor is used to customize the interface for
+/// a Setting. The handler recognizes the following types of type descriptor
+/// strings:
+///    "bool"                      Displayed as a checkbox.
+///    "enum:choice1|choice2|..."  Displayed as a drop-down list.
 class ION_API SettingHandler : public HttpServer::RequestHandler {
  public:
   SettingHandler();

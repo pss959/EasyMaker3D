@@ -23,45 +23,45 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// This template class can be used to map between two kinds of indices when
-// the following assumptions apply:
-//  - There are N potential values for both types of index.
-//  - The N values of OrderedIndexType range from 0 to N-1 and are presented in
-//    order.
-//  - The N values of UnorderedIndexType are in an unspecified range and may or
-//    may not be presented in order.
-//
-// Mapping from an OrderedIndexType to an UnorderedIndexType is constant-time,
-// while mapping the other way around is linear.
-//
-// This class is very light-weight and is intended to be constructed as a
-// temporary variable when needed.
+/// This template class can be used to map between two kinds of indices when
+/// the following assumptions apply:
+///  - There are N potential values for both types of index.
+///  - The N values of OrderedIndexType range from 0 to N-1 and are presented in
+///    order.
+///  - The N values of UnorderedIndexType are in an unspecified range and may or
+///    may not be presented in order.
+///
+/// Mapping from an OrderedIndexType to an UnorderedIndexType is constant-time,
+/// while mapping the other way around is linear.
+///
+/// This class is very light-weight and is intended to be constructed as a
+/// temporary variable when needed.
 template <typename OrderedIndexType, typename UnorderedIndexType>
 class IndexMap {
  public:
-  // The map is initialized with an array of N UnorderedIndexType values that
-  // directly correspond to a 0-based array of OrderedIndexType, in the same
-  // order. It is assumed that the lifetime of the passed array is at least as
-  // long as the IndexMap instance's, since the IndexMap does not copy the
-  // array values.
+  /// The map is initialized with an array of N UnorderedIndexType values that
+  /// directly correspond to a 0-based array of OrderedIndexType, in the same
+  /// order. It is assumed that the lifetime of the passed array is at least as
+  /// long as the IndexMap instance's, since the IndexMap does not copy the
+  /// array values.
   IndexMap(const UnorderedIndexType unordered_indices[], size_t count)
       : unordered_indices_(unordered_indices),
         count_(count) {}
 
-  // Returns the count passed to the constructor.
+  /// Returns the count passed to the constructor.
   size_t GetCount() const { return count_; }
 
-  // Returns the UnorderedIndexType corresponding to the given OrderedIndexType
-  // value. This is a constant-time operation.
+  /// Returns the UnorderedIndexType corresponding to the given OrderedIndexType
+  /// value. This is a constant-time operation.
   UnorderedIndexType GetUnorderedIndex(OrderedIndexType ordered_index) const {
     DCHECK_LE(0, static_cast<int>(ordered_index));
     DCHECK_GT(count_, static_cast<size_t>(ordered_index));
     return unordered_indices_[ordered_index];
   }
 
-  // Returns the OrderedIndexType corresponding to the given UnorderedIndexType
-  // value. This is a linear-time operation. This will DCHECK if the index is
-  // not found.
+  /// Returns the OrderedIndexType corresponding to the given UnorderedIndexType
+  /// value. This is a linear-time operation. This will DCHECK if the index is
+  /// not found.
   OrderedIndexType GetOrderedIndex(UnorderedIndexType unordered_index) const {
     int ordered_index = -1;
     for (size_t i = 0; i < count_; ++i) {

@@ -25,10 +25,10 @@ limitations under the License.
 namespace ion {
 namespace remote {
 
-// CallTraceHandler serves a snapshot of the current call trace.
-//
-// /call.wtf-trace  - Access the raw binary trace snapshot
-//                    in Web Tracing Framework .wtf-trace format.
+/// CallTraceHandler serves a snapshot of the current call trace.
+///
+/// /call.wtf-trace  - Access the raw binary trace snapshot
+///                    in Web Tracing Framework .wtf-trace format.
 class ION_API CallTraceHandler : public HttpServer::RequestHandler {
  public:
   CallTraceHandler();

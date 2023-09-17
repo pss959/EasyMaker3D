@@ -34,69 +34,68 @@ limitations under the License.
 namespace ion {
 namespace gfxutils {
 
-// These functions must be specialized for every type used in a vertex. Ion
-// has implementations for the following types:
-//   int8, int16, int32
-//   uint8, uint16, uint32
-//   float
-//   All VectorBase types defined in ion/math/vector.h
+/// These functions must be specialized for every type used in a vertex. Ion
+/// has implementations for the following types:
+///   int8, int16, int32
+///   uint8, uint16, uint32
+///   float
+///   All VectorBase types defined in ion/math/vector.h
 template <typename T> ION_API
 gfx::BufferObject::ComponentType GetComponentType();
 template <typename T> ION_API size_t GetComponentCount();
 
-// BufferToAttributeBinder is a simple interface to insert a set of Attributes
-// containing BufferObjectElements into a AttributeArray, and also create the
-// corresponding Elements in the BufferObject. Use BindAndNormalize() to bind a
-// fixed-point Attribute that should have its data normalized, and Bind()
-// otherwise.
-//
-// Example Usage:
-//
-// struct Vertex {  // Vertex structure.
-//   Vector3f position;
-//   Vector3ui8 normal;
-//   int id;
-//   float temperature;
-// };
-// Vertex v;
-// BufferToAttributeBinder<Vertex> binder = BufferToAttributeBinder<Vertex>(v)
-//       .Bind(v.position, "aPosition")
-//       .BindAndNormalize(v.normal, "aNormal")
-//       .Bind(v.id, "aId")
-//       .Bind(v.temperature, "aTemperature");
-// ...
-// ShaderInputRegistryPtr reg(new ShaderInputRegistry);
-// AttributeArrayPtr vertex_array(new AttributeArray);
-// BufferObjectPtr buffer_object(new BufferObject);
-// ... (initialization of objects)
-// binder.Apply(reg, vertex_array, buffer_object);
-//
-// The same Binder can be used with other objects that need to share the same
-// structure, as long as the registries are compatible (they must contain the
-// attribute names passed to the binder through Bind()):
-// ShaderInputRegistry reg2;
-// AttributeArrayPtr vertex_array2(new AttributeArray);
-// binder.Apply(reg2, vertex_array2, buffer_object);
-//
-// A different BufferObject may also be used:
-// BufferObjectPtr buffer_object2(new BufferObject);
-// binder.Apply(reg2, vertex_array2, buffer_object2);
-//
-// A simpler shorthand is possible if the binder is only needed for a single
-// AttributeArray and BufferObject pair:
-// ...
-// ShaderInputRegistryPtr reg2(new ShaderInputRegistry);
-// AttributeArrayPtr vertex_array(new AttributeArray);
-// BufferObjectPtr buffer_object(new BufferObject);
-// ... (initialization of objects)
-// Vertex v;
-// BufferToAttributeBinder<Vertex>(v)
-//       .Bind(v.position, "aPosition")
-//       .BindAndNormalize(v.normal, "aNormal")
-//       .Bind(v.id, "aId")
-//       .Bind(v.temperature, "aTemperature")
-//       .Apply(reg2, vertex_array, buffer_object);
-
+/// BufferToAttributeBinder is a simple interface to insert a set of Attributes
+/// containing BufferObjectElements into a AttributeArray, and also create the
+/// corresponding Elements in the BufferObject. Use BindAndNormalize() to bind a
+/// fixed-point Attribute that should have its data normalized, and Bind()
+/// otherwise.
+///
+/// Example Usage:
+///
+/// struct Vertex {  /// Vertex structure.
+///   Vector3f position;
+///   Vector3ui8 normal;
+///   int id;
+///   float temperature;
+/// };
+/// Vertex v;
+/// BufferToAttributeBinder<Vertex> binder = BufferToAttributeBinder<Vertex>(v)
+///       .Bind(v.position, "aPosition")
+///       .BindAndNormalize(v.normal, "aNormal")
+///       .Bind(v.id, "aId")
+///       .Bind(v.temperature, "aTemperature");
+/// ...
+/// ShaderInputRegistryPtr reg(new ShaderInputRegistry);
+/// AttributeArrayPtr vertex_array(new AttributeArray);
+/// BufferObjectPtr buffer_object(new BufferObject);
+/// ... (initialization of objects)
+/// binder.Apply(reg, vertex_array, buffer_object);
+///
+/// The same Binder can be used with other objects that need to share the same
+/// structure, as long as the registries are compatible (they must contain the
+/// attribute names passed to the binder through Bind()):
+/// ShaderInputRegistry reg2;
+/// AttributeArrayPtr vertex_array2(new AttributeArray);
+/// binder.Apply(reg2, vertex_array2, buffer_object);
+///
+/// A different BufferObject may also be used:
+/// BufferObjectPtr buffer_object2(new BufferObject);
+/// binder.Apply(reg2, vertex_array2, buffer_object2);
+///
+/// A simpler shorthand is possible if the binder is only needed for a single
+/// AttributeArray and BufferObject pair:
+/// ...
+/// ShaderInputRegistryPtr reg2(new ShaderInputRegistry);
+/// AttributeArrayPtr vertex_array(new AttributeArray);
+/// BufferObjectPtr buffer_object(new BufferObject);
+/// ... (initialization of objects)
+/// Vertex v;
+/// BufferToAttributeBinder<Vertex>(v)
+///       .Bind(v.position, "aPosition")
+///       .BindAndNormalize(v.normal, "aNormal")
+///       .Bind(v.id, "aId")
+///       .Bind(v.temperature, "aTemperature")
+///       .Apply(reg2, vertex_array, buffer_object);
 template <typename T>
 class BufferToAttributeBinder {
  public:
@@ -123,11 +122,11 @@ class BufferToAttributeBinder {
     }
   }
 
-  // Validates that the bindings within the binder are consistent with a packed
-  // struct, logging warning messages if they are not. The passed registry is
-  // required to determine if the bindings are valid. Returns whether the struct
-  // is tightly packed. Note that this will log warnings and return false if
-  // called for a struct that contains fields not bound by this binder.
+  /// Validates that the bindings within the binder are consistent with a packed
+  /// struct, logging warning messages if they are not. The passed registry is
+  /// required to determine if the bindings are valid. Returns whether the struct
+  /// is tightly packed. Note that this will log warnings and return false if
+  /// called for a struct that contains fields not bound by this binder.
   bool AreBindingsPacked(const gfx::ShaderInputRegistry& reg) {
     // Track the overall struct size based on the sizes of the individual
     // bindings.
@@ -253,8 +252,8 @@ class BufferToAttributeBinder {
     return *this;
   }
 
-  // Returns whether the binding at i is tightly packed and sets closest to the
-  // index of the closest binding before i.
+  /// Returns whether the binding at i is tightly packed and sets closest to the
+  /// index of the closest binding before i.
   bool IsBindingPacked(size_t i, size_t* closest) {
     bool packed = false;
     // Track the index of the closest binding before this one, and the

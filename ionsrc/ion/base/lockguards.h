@@ -25,28 +25,29 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// This file contains utility classes for automatically locking and unlocking
-// mutexes.
+/// \file
+/// This file contains utility classes for automatically locking and unlocking
+/// mutexes.
 
-// Selects whether a lock should be acquired immediately when constructing
-// a guard, or only when Lock() is called on the guard.
+/// Selects whether a lock should be acquired immediately when constructing
+/// a guard, or only when Lock() is called on the guard.
 enum LockAction {
   kAcquireLock,
   kDeferLock
 };
 
-// Base class of guards that lock a mutex when created and unlock when
-// destroyed.
+/// Base class of guards that lock a mutex when created and unlock when
+/// destroyed.
 template <class MutexT>
 class ION_API GenericLockGuardBase {
  public:
-  // Returns whether this guard has locked the mutex; returns false even if
-  // another guard has it locked. Use MutexT::IsLocked() to determine if
-  // the mutex itself is locked.
+  /// Returns whether this guard has locked the mutex; returns false even if
+  /// another guard has it locked. Use MutexT::IsLocked() to determine if
+  /// the mutex itself is locked.
   bool IsLocked() const { return is_locked_; }
 
-  // Locks the mutex if it is not already locked by this guard. This function
-  // blocks if the mutex is locked elsewhere (e.g., by another guard).
+  /// Locks the mutex if it is not already locked by this guard. This function
+  /// blocks if the mutex is locked elsewhere (e.g., by another guard).
   void Lock() {
     if (!is_locked_) {
       mutex_.Lock();
@@ -54,10 +55,10 @@ class ION_API GenericLockGuardBase {
     }
   }
 
-  // Attempts to lock the mutex if the mutex is not already locked by this
-  // guard. This function never blocks. Returns true if the mutex was
-  // successfully locked or if this guard has already locked it, and false
-  // otherwise.
+  /// Attempts to lock the mutex if the mutex is not already locked by this
+  /// guard. This function never blocks. Returns true if the mutex was
+  /// successfully locked or if this guard has already locked it, and false
+  /// otherwise.
   bool TryLock() {
     if (!is_locked_) {
       is_locked_ = mutex_.TryLock();
@@ -65,7 +66,7 @@ class ION_API GenericLockGuardBase {
     return is_locked_;
   }
 
-  // Releases a lock on the mutex if it was previously locked by this guard.
+  /// Releases a lock on the mutex if it was previously locked by this guard.
   void Unlock() {
     if (is_locked_) {
       mutex_.Unlock();
@@ -74,16 +75,16 @@ class ION_API GenericLockGuardBase {
   }
 
  protected:
-  // The constructor is protected since this is an abstract base class.
+  /// The constructor is protected since this is an abstract base class.
   explicit GenericLockGuardBase(MutexT* m) : mutex_(*m), is_locked_(false) {}
 
-  // This destructor intentionally non-virtual for speed.
-  // Any subclasses should also call Unlock() in their destructors.
+  /// This destructor intentionally non-virtual for speed.
+  /// Any subclasses should also call Unlock() in their destructors.
   ~GenericLockGuardBase() { Unlock(); }
 
-  // The mutex used for locking.
+  /// The mutex used for locking.
   MutexT& mutex_;
-  // Whether the mutex is currently locked by this guard.
+  /// Whether the mutex is currently locked by this guard.
   bool is_locked_;
 
  private:
@@ -108,13 +109,13 @@ class ION_API GenericLockGuard : public GenericLockGuardBase<MutexT> {
   DISALLOW_IMPLICIT_CONSTRUCTORS(GenericLockGuard);
 };
 
-// A TryLockGuard attempts to lock a mutex when created, and if successful,
-// will unlock it when destroyed. Use IsLocked() to determine if the initial
-// lock was successful. A TryLockGuard never blocks.
+/// A TryLockGuard attempts to lock a mutex when created, and if successful,
+/// will unlock it when destroyed. Use IsLocked() to determine if the initial
+/// lock was successful. A TryLockGuard never blocks.
 template <class MutexT>
 class ION_API GenericTryLockGuard : public GenericLockGuardBase<MutexT> {
  public:
-  // The passed pointer must be non-NULL.
+  /// The passed pointer must be non-NULL.
   explicit GenericTryLockGuard(MutexT* m) : GenericLockGuardBase<MutexT>(m) {
     this->TryLock();
   }
@@ -123,13 +124,13 @@ class ION_API GenericTryLockGuard : public GenericLockGuardBase<MutexT> {
   DISALLOW_IMPLICIT_CONSTRUCTORS(GenericTryLockGuard);
 };
 
-// An UnlockGuard is the reverse of a LockGuard; it unlocks a mutex when created
-// and locks it when destroyed. Note that the destructor of an UnlockGuard may
-// block waiting to acquire the mutex lock.
+/// An UnlockGuard is the reverse of a LockGuard; it unlocks a mutex when created
+/// and locks it when destroyed. Note that the destructor of an UnlockGuard may
+/// block waiting to acquire the mutex lock.
 template <class MutexT>
 class ION_API GenericUnlockGuard {
  public:
-  // The passed pointer must be non-NULL.
+  /// The passed pointer must be non-NULL.
   explicit GenericUnlockGuard(MutexT* m) : mutex_(*m) {
     mutex_.Unlock();
   }

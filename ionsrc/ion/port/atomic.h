@@ -18,17 +18,17 @@ limitations under the License.
 #ifndef ION_PORT_ATOMIC_H_
 #define ION_PORT_ATOMIC_H_
 
-// QNX (gcc 4.4.2) and NaCl x86 gcc (4.4.3) do not include the C++ <atomic>
-// header, but do provide the older <cstdatomic>
+/// QNX (gcc 4.4.2) and NaCl x86 gcc (4.4.3) do not include the C++ <atomic>
+/// header, but do provide the older <cstdatomic>
 #if defined(ION_PLATFORM_QNX) || \
     (defined(ION_PLATFORM_NACL) && \
      !(defined(ION_ARCH_ARM) || defined(__clang__)))
 #  include <cstdatomic>
 
-// For some reason, cstdatomic declares but does not define atomic<T*>::store().
-// Either omitting the declaration or providing the definition would allow it
-// to work properly. We provide it here. If a future toolchain upgrade causes
-// this to break, further condition it or remove it at that time.
+/// For some reason, cstdatomic declares but does not define atomic<T*>::store().
+/// Either omitting the declaration or providing the definition would allow it
+/// to work properly. We provide it here. If a future toolchain upgrade causes
+/// this to break, further condition it or remove it at that time.
 namespace std {
 template<typename _Tp>
 void atomic<_Tp*>::store(_Tp* __v, memory_order __m) volatile {

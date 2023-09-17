@@ -31,20 +31,20 @@ limitations under the License.
 namespace ion {
 namespace remote {
 
-// TracingHandler serves files related to OpenGL tracing. It can generate a
-// tree of OpenGL calls made during frames. The TracingHandler installs a
-// tracing stream in the GraphicsManager while the handler is actively tracing
-// and restores the previous stream when it is not active.
-//
-// /   or /index.html        - Tracing display interface
-// /clear                    - Clears the current trace string, returns "clear".
-// /trace_next_frame         - Returns a string containing the OpenGL trace,
-//                             first appending the trace of the next frame.
+/// TracingHandler serves files related to OpenGL tracing. It can generate a
+/// tree of OpenGL calls made during frames. The TracingHandler installs a
+/// tracing stream in the GraphicsManager while the handler is actively tracing
+/// and restores the previous stream when it is not active.
+///
+/// /   or /index.html        - Tracing display interface
+/// /clear                    - Clears the current trace string, returns "clear".
+/// /trace_next_frame         - Returns a string containing the OpenGL trace,
+///                             first appending the trace of the next frame.
 class ION_API TracingHandler : public HttpServer::RequestHandler {
  public:
-  // The constructor is passed a Frame instance that allows the handler to know
-  // when frames begin and end and the Renderer that is issuing the graphics
-  // calls.
+  /// The constructor is passed a Frame instance that allows the handler to know
+  /// when frames begin and end and the Renderer that is issuing the graphics
+  /// calls.
   TracingHandler(const gfxutils::FramePtr& frame,
                  const gfx::RendererPtr& renderer);
 
@@ -57,31 +57,31 @@ class ION_API TracingHandler : public HttpServer::RequestHandler {
  private:
   class TraceRequest;
 
-  // Traces the next frame.  Returns an HTML representation of all frames traced
-  // since the last request to clear.
+  /// Traces the next frame.  Returns an HTML representation of all frames traced
+  /// since the last request to clear.
   std::string TraceNextFrame(std::string resources_to_delete,
                              bool block_until_frame_rendered);
 
-  // Frame callbacks.
+  /// Frame callbacks.
   void BeginFrame(const gfxutils::Frame& frame);
   void EndFrame(const gfxutils::Frame& frame);
 
-  // Frame passed to constructor.
+  /// Frame passed to constructor.
   gfxutils::FramePtr frame_;
-  // Renderer passed to constructor.
+  /// Renderer passed to constructor.
   gfx::RendererPtr renderer_;
 
-  // Mutex for |pending_requests_|.
+  /// Mutex for |pending_requests_|.
   std::mutex pending_requests_mutex_;
-  // List of TraceRequest instances pending for the next frame.
+  /// List of TraceRequest instances pending for the next frame.
   std::list<TraceRequest*> pending_requests_;
 
-  // List of outstanding TraceRequests being processed for this frame.
+  /// List of outstanding TraceRequests being processed for this frame.
   std::list<TraceRequest*> frame_active_requests_;
 
-  // Mutex for |html_string_|.
+  /// Mutex for |html_string_|.
   std::mutex html_string_mutex_;
-  // String containing the HTML to display.
+  /// String containing the HTML to display.
   std::string html_string_;
 };
 

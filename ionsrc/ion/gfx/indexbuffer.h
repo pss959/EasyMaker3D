@@ -23,15 +23,15 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// An IndexBuffer is a type of BufferObject that contains the element indices of
-// an array, e.g., a vertex index array.
+/// An IndexBuffer is a type of BufferObject that contains the element indices of
+/// an array, e.g., a vertex index array.
 class ION_API IndexBuffer : public BufferObject {
  public:
   IndexBuffer();
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~IndexBuffer() override;
 };
 

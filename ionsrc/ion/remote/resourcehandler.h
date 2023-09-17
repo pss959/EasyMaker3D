@@ -26,14 +26,14 @@ limitations under the License.
 namespace ion {
 namespace remote {
 
-// ResourceHandler serves files related to OpenGL resources.
-//
-// /   or /index.html    - Resource inspector interface
-// /resources_by_type?types=t1,t2...
-//                       - Gets a JSON struct representing all of the GL
-//                             resources of the queried types
-// /texture_data&id=#    - Gets a PNG image of the texture with the passed
-//                             OpenGL texture ID
+/// ResourceHandler serves files related to OpenGL resources.
+///
+/// /   or /index.html    - Resource inspector interface
+/// /resources_by_type?types=t1,t2...
+///                       - Gets a JSON struct representing all of the GL
+///                             resources of the queried types
+/// /texture_data&id=#    - Gets a PNG image of the texture with the passed
+///                             OpenGL texture ID
 class ION_API ResourceHandler : public HttpServer::RequestHandler {
  public:
   explicit ResourceHandler(const gfx::RendererPtr& renderer);

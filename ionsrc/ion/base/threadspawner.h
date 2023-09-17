@@ -26,35 +26,35 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// A ThreadSpawner instance launches a new thread in its constructor and waits
-// for the thread to finish in its destructor.
-// NOTE: this class is deprecated. Use std::thread directly instead.
+/// A ThreadSpawner instance launches a new thread in its constructor and waits
+/// for the thread to finish in its destructor.
+/// NOTE: this class is deprecated. Use std::thread directly instead.
 class ThreadSpawner {
  public:
-  // Creates a ThreadSpawner instance that runs the given function. The thread
-  // is given the specified name if thread naming is supported.
+  /// Creates a ThreadSpawner instance that runs the given function. The thread
+  /// is given the specified name if thread naming is supported.
   ThreadSpawner(const std::string& name, port::ThreadFuncPtr func_ptr);
   ThreadSpawner(const std::string& name, const port::ThreadStdFunc& func);
 
-  // The destructor calls Join() to wait for the thread to finish.
+  /// The destructor calls Join() to wait for the thread to finish.
   ~ThreadSpawner();
 
-  // Waits for the thread to finish. This is called automatically by the
-  // destructor.
+  /// Waits for the thread to finish. This is called automatically by the
+  /// destructor.
   void Join();
 
-  // Returns the name of the thread supplied to the constructor.
+  /// Returns the name of the thread supplied to the constructor.
   const std::string& GetName() const { return name_; }
 
-  // Returns the ThreadId for the thread. This will be port::kInvalidThreadId
-  // if the thread has not yet spawned, if there was an error spawning the
-  // thread, or if Join() has already completed.
+  /// Returns the ThreadId for the thread. This will be port::kInvalidThreadId
+  /// if the thread has not yet spawned, if there was an error spawning the
+  /// thread, or if Join() has already completed.
   std::thread::id GetId() const { return thread_.get_id(); }
 
  private:
-  // Thread name.
+  /// Thread name.
   const std::string name_;
-  // The actual thread.
+  /// The actual thread.
   std::thread thread_;
 };
 

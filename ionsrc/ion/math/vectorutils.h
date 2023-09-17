@@ -18,10 +18,9 @@ limitations under the License.
 #ifndef ION_MATH_VECTORUTILS_H_
 #define ION_MATH_VECTORUTILS_H_
 
-//
-// This file contains free functions that operate on Vector and Point
-// instances.
-//
+/// \file
+/// This file contains free functions that operate on Vector and Point
+/// instances.
 
 #include <algorithm>
 #include <limits>
@@ -34,8 +33,8 @@ limitations under the License.
 namespace ion {
 namespace math {
 
-// Returns a vector with the specified coordinate removed, yielding a vector
-// that is one dimension smaller.
+/// Returns a vector with the specified coordinate removed, yielding a vector
+/// that is one dimension smaller.
 template <int Dimension, typename T>
 Vector<Dimension - 1, T> WithoutDimension(const Vector<Dimension, T>& v,
                                           int dim) {
@@ -46,8 +45,8 @@ Vector<Dimension - 1, T> WithoutDimension(const Vector<Dimension, T>& v,
   return result;
 }
 
-// Returns a point with the specified coordinate removed, yielding a point
-// that is one dimension smaller.
+/// Returns a point with the specified coordinate removed, yielding a point
+/// that is one dimension smaller.
 template <int Dimension, typename T>
 Point<Dimension - 1, T> WithoutDimension(const Point<Dimension, T>& v,
                                          int dim) {
@@ -58,7 +57,7 @@ Point<Dimension - 1, T> WithoutDimension(const Point<Dimension, T>& v,
   return result;
 }
 
-// Returns the dot (inner) product of two Vectors.
+/// Returns the dot (inner) product of two Vectors.
 template <int Dimension, typename T>
 T Dot(const Vector<Dimension, T>& v0, const Vector<Dimension, T>& v1) {
   return vector_internal::Unroller<T>::Dot(
@@ -66,8 +65,8 @@ T Dot(const Vector<Dimension, T>& v0, const Vector<Dimension, T>& v1) {
       typename base::ScalarSequenceGenerator<int, Dimension>::Sequence{});
 }
 
-// Returns the 3-dimensional cross product of 2 Vectors. Note that this is
-// defined only for 3-dimensional Vectors.
+/// Returns the 3-dimensional cross product of 2 Vectors. Note that this is
+/// defined only for 3-dimensional Vectors.
 template <typename T>
 Vector<3, T> Cross(const Vector<3, T>& v0, const Vector<3, T>& v1) {
   return Vector<3, T>(v0[1] * v1[2] - v0[2] * v1[1],
@@ -75,41 +74,41 @@ Vector<3, T> Cross(const Vector<3, T>& v0, const Vector<3, T>& v1) {
                       v0[0] * v1[1] - v0[1] * v1[0]);
 }
 
-// Returns the cross product of |v0| and |v1| aka the determinant of the 2x2
-// matrix described by |v0.x v0.y|
-//                     |v1.x v1.y|.
+/// Returns the cross product of |v0| and |v1| aka the determinant of the 2x2
+/// matrix described by |v0.x v0.y|
+///                     |v1.x v1.y|.
 template <typename T>
 T Cross(const Vector<2, T>& v0, const Vector<2, T>& v1) {
   return (v0[0] * v1[1] - v0[1] * v1[0]);
 }
 
-// Returns the square of the length of a Vector.
+/// Returns the square of the length of a Vector.
 template <int Dimension, typename T>
 T LengthSquared(const Vector<Dimension, T>& v) {
   return Dot(v, v);
 }
 
-// Returns the geometric length of a Vector.
+/// Returns the geometric length of a Vector.
 template <int Dimension, typename T>
 T Length(const Vector<Dimension, T>& v) {
   return static_cast<T>(Sqrt(LengthSquared(v)));
 }
 
-// Returns the square of the distance between two Points.
+/// Returns the square of the distance between two Points.
 template <int Dimension, typename T>
 T DistanceSquared(const Point<Dimension, T>& p0,
                   const Point<Dimension, T>& p1) {
   return LengthSquared(p0 - p1);
 }
 
-// Returns the geometric distance between two Points.
+/// Returns the geometric distance between two Points.
 template <int Dimension, typename T>
 T Distance(const Point<Dimension, T>& p0, const Point<Dimension, T>& p1) {
   return Length(p0 - p1);
 }
 
-// Normalizes a Vector to unit length. If the vector has no length, this leaves
-// the Vector untouched and returns false.
+/// Normalizes a Vector to unit length. If the vector has no length, this leaves
+/// the Vector untouched and returns false.
 template <int Dimension, typename T>
 bool Normalize(Vector<Dimension, T>* v) {
   DCHECK(v);
@@ -122,8 +121,8 @@ bool Normalize(Vector<Dimension, T>* v) {
   }
 }
 
-// Returns a unit-length version of a Vector. If the given Vector has no
-// length, this returns a Zero() Vector.
+/// Returns a unit-length version of a Vector. If the given Vector has no
+/// length, this returns a Zero() Vector.
 template <int Dimension, typename T>
 Vector<Dimension, T> Normalized(const Vector<Dimension, T>& v) {
   Vector<Dimension, T> result = v;
@@ -133,17 +132,17 @@ Vector<Dimension, T> Normalized(const Vector<Dimension, T>& v) {
     return Vector<Dimension, T>::Zero();
 }
 
-// Returns an unnormalized Vector2 that is orthonormal to the passed one. If the
-// passed vector has length 0, then a zero-length vector is returned.
+/// Returns an unnormalized Vector2 that is orthonormal to the passed one. If the
+/// passed vector has length 0, then a zero-length vector is returned.
 template <typename T>
 Vector<2, T> Orthogonal(const Vector<2, T>& v) {
   return Vector<2, T>(-v[1], v[0]);
 }
 
-// Returns an unnormalized Vector3 that is orthonormal to the passed one. If the
-// passed vector has length 0, then a zero-length vector is returned. The
-// returned vector is not guaranteed to be in any particular direction, just
-// that it is perpendicular to v.
+/// Returns an unnormalized Vector3 that is orthonormal to the passed one. If the
+/// passed vector has length 0, then a zero-length vector is returned. The
+/// returned vector is not guaranteed to be in any particular direction, just
+/// that it is perpendicular to v.
 template <typename T>
 Vector<3, T> Orthogonal(const Vector<3, T>& v) {
   static const T kTolerance = static_cast<T>(0.0001);
@@ -156,17 +155,17 @@ Vector<3, T> Orthogonal(const Vector<3, T>& v) {
   return n;
 }
 
-// Returns a normalized Vector that is orthonormal to the passed one. If the
-// passed vector has length 0, then a zero-length vector is returned. The
-// returned vector is not guaranteed to be in any particular direction, just
-// that it is perpendicular to v.
+/// Returns a normalized Vector that is orthonormal to the passed one. If the
+/// passed vector has length 0, then a zero-length vector is returned. The
+/// returned vector is not guaranteed to be in any particular direction, just
+/// that it is perpendicular to v.
 template <int Dimension, typename T>
 Vector<Dimension, T> Orthonormal(const Vector<Dimension, T>& v) {
   return Normalized(Orthogonal(v));
 }
 
-// Returns the Vector resulting from projecting of one Vector onto another.
-// This will return a Zero() Vector if onto_v has zero length.
+/// Returns the Vector resulting from projecting of one Vector onto another.
+/// This will return a Zero() Vector if onto_v has zero length.
 template <int Dimension, typename T>
 Vector<Dimension, T> Projection(const Vector<Dimension, T>& v,
                                 const Vector<Dimension, T>& onto_v) {
@@ -175,15 +174,15 @@ Vector<Dimension, T> Projection(const Vector<Dimension, T>& v,
       (Dot(v, onto_v) / len_squared) * onto_v;
 }
 
-// Returns a Vector in the same direction as the passed vector but with the
-// passed length. If the input vector has zero length, however, then the
-// returned vector also has zero length.
+/// Returns a Vector in the same direction as the passed vector but with the
+/// passed length. If the input vector has zero length, however, then the
+/// returned vector also has zero length.
 template <int Dimension, typename T>
 Vector<Dimension, T> Rescale(const Vector<Dimension, T>& v, T length) {
   return Normalized(v) * length;
 }
 
-// Returns true if all elements of two Vectors are equal within a tolerance.
+/// Returns true if all elements of two Vectors are equal within a tolerance.
 template <int Dimension, typename T>
 bool AlmostEqual(const Vector<Dimension, T>& v0,
                  const Vector<Dimension, T>& v1, T tolerance) {
@@ -193,15 +192,15 @@ bool AlmostEqual(const Vector<Dimension, T>& v0,
   return true;
 }
 
-// Deprecated alias for AlmostEqual with vector parameters.
+/// Deprecated alias for AlmostEqual with vector parameters.
 template <int Dimension, typename T>
 bool VectorsAlmostEqual(const Vector<Dimension, T>& v0,
                         const Vector<Dimension, T>& v1, T tolerance) {
   return AlmostEqual(v0, v1, tolerance);
 }
 
-// Returns a Point in which each element is the minimum of the corresponding
-// elements of two Points. This is useful for computing bounding boxes.
+/// Returns a Point in which each element is the minimum of the corresponding
+/// elements of two Points. This is useful for computing bounding boxes.
 template <int Dimension, typename T>
 Point<Dimension, T> MinBoundPoint(const Point<Dimension, T>& p0,
                                   const Point<Dimension, T>& p1) {
@@ -213,8 +212,8 @@ Point<Dimension, T> MinBoundPoint(const Point<Dimension, T>& p0,
   return min_point;
 }
 
-// Returns a Point in which each element is the maximum of the corresponding
-// elements of two Points. This is useful for computing bounding boxes.
+/// Returns a Point in which each element is the maximum of the corresponding
+/// elements of two Points. This is useful for computing bounding boxes.
 template <int Dimension, typename T>
 Point<Dimension, T> MaxBoundPoint(const Point<Dimension, T>& p0,
                                   const Point<Dimension, T>& p1) {
@@ -226,7 +225,7 @@ Point<Dimension, T> MaxBoundPoint(const Point<Dimension, T>& p0,
   return max_point;
 }
 
-// Returns the closest point to p on the line segment defined by start and end.
+/// Returns the closest point to p on the line segment defined by start and end.
 template <int Dimension, typename T>
 Point<Dimension, T> ClosestPointOnSegment(const Point<Dimension, T>& p,
                                           const Point<Dimension, T>& start,
@@ -248,8 +247,8 @@ Point<Dimension, T> ClosestPointOnSegment(const Point<Dimension, T>& p,
   }
 }
 
-// Returns the squared distance from a Point to a line segment described by two
-// Points.
+/// Returns the squared distance from a Point to a line segment described by two
+/// Points.
 template <int Dimension, typename T>
 T DistanceSquaredToSegment(const Point<Dimension, T>& p,
                            const Point<Dimension, T>& start,
@@ -257,7 +256,7 @@ T DistanceSquaredToSegment(const Point<Dimension, T>& p,
   return DistanceSquared(p, ClosestPointOnSegment(p, start, end));
 }
 
-// Returns the distance from a Point to a line segment described by two Points.
+/// Returns the distance from a Point to a line segment described by two Points.
 template <int Dimension, typename T>
 T DistanceToSegment(const Point<Dimension, T>& p,
                     const Point<Dimension, T>& start,
@@ -265,7 +264,7 @@ T DistanceToSegment(const Point<Dimension, T>& p,
   return Distance(p, ClosestPointOnSegment(p, start, end));
 }
 
-// Returns true if all elements of two Points are equal within a tolerance.
+/// Returns true if all elements of two Points are equal within a tolerance.
 template <int Dimension, typename T>
 bool AlmostEqual(const Point<Dimension, T>& v0,
                  const Point<Dimension, T>& v1, T tolerance) {
@@ -275,29 +274,29 @@ bool AlmostEqual(const Point<Dimension, T>& v0,
   return true;
 }
 
-// Alias for AlmostEqual with point parameters.
+/// Alias for AlmostEqual with point parameters.
 template <int Dimension, typename T>
 bool PointsAlmostEqual(const Point<Dimension, T>& v0,
                        const Point<Dimension, T>& v1, T tolerance) {
   return AlmostEqual(v0, v1, tolerance);
 }
 
-// Computes the result of swizzling a Vector or Point (or anything else derived
-// from VectorBase). The swizzle_string determines the contents of the output
-// vector. Each character in the string must be one of {x,y,z,w} or {r,g,b,a}
-// or {s,t,p,q}, upper- or lower-case, specifying a component of the input
-// vector. Extra components in the string are ignored; missing components in
-// the string result in an error. This returns false on error.
-//
-// For example:
-//   Vec3d v3(1.0, 2.0, 3.0);
-//   Vec2d v2;
-//   Vec4d v4;
-//   Swizzle(v3, "xz", &v2);    // v2 is set to (1.0, 3.0).
-//   Swizzle(v3, "BBYX", &v4);  // v4 is set to (3.0, 3.0, 2.0, 1.0).
-//   Swizzle(v3, "xyz", &v2);   // v2 is set to (1.0, 2.0); 'z' is ignored.
-//   Swizzle(v3, "xw", &v2);    // Returns false: v3 has no "w" component.
-//   Swizzle(v3, "x", &v2);     // Returns false: string is missing a component.
+/// Computes the result of swizzling a Vector or Point (or anything else derived
+/// from VectorBase). The swizzle_string determines the contents of the output
+/// vector. Each character in the string must be one of {x,y,z,w} or {r,g,b,a}
+/// or {s,t,p,q}, upper- or lower-case, specifying a component of the input
+/// vector. Extra components in the string are ignored; missing components in
+/// the string result in an error. This returns false on error.
+///
+/// For example:
+///   Vec3d v3(1.0, 2.0, 3.0);
+///   Vec2d v2;
+///   Vec4d v4;
+///   Swizzle(v3, "xz", &v2);    /// v2 is set to (1.0, 3.0).
+///   Swizzle(v3, "BBYX", &v4);  /// v4 is set to (3.0, 3.0, 2.0, 1.0).
+///   Swizzle(v3, "xyz", &v2);   /// v2 is set to (1.0, 2.0); 'z' is ignored.
+///   Swizzle(v3, "xw", &v2);    /// Returns false: v3 has no "w" component.
+///   Swizzle(v3, "x", &v2);     /// Returns false: string is missing a component.
 template <int InDimension, int OutDimension, typename T>
 bool Swizzle(const VectorBase<InDimension, T>& input,
              const char* swizzle_string, VectorBase<OutDimension, T>* output) {
@@ -332,7 +331,7 @@ bool Swizzle(const VectorBase<InDimension, T>& input,
   return true;
 }
 
-// Returns true if all components of VectorBase v are finite, otherwise false.
+/// Returns true if all components of VectorBase v are finite, otherwise false.
 template <int Dimension, typename T>
 bool IsVectorFinite(const VectorBase<Dimension, T>& v) {
   for (int i = 0; i < Dimension; ++i) {

@@ -68,8 +68,8 @@ class ConstantValue {
     std::call_once(populated_flag_, getter_, gm, this);
   }
 
-  // Returns the value of this, but only queries the passed GraphicsManager for
-  // the value if it is not already set.
+  /// Returns the value of this, but only queries the passed GraphicsManager for
+  /// the value if it is not already set.
   const ConstantVariant& GetValue(GraphicsManager* gm) {
     Initialize(gm);
     return value_;
@@ -82,7 +82,7 @@ class ConstantValue {
     });
   }
 
-  // The below functions are used to query particular capability values.
+  /// The below functions are used to query particular capability values.
   static void GetEnumVector(GraphicsManager* gm, ConstantValue* cv) {
     GraphicsManager::ErrorSilencer silencer(gm);
     GLint count = 0;
@@ -108,7 +108,7 @@ class ConstantValue {
 
  private:
   GLenum enum1_;
-  GLenum enum2_;  // Second enum for shader precision, count enum for vectors.
+  GLenum enum2_;  ///< Second enum for shader precision, count enum for vectors.
   ConstantVariant value_;
   Getter getter_;
   std::once_flag populated_flag_;
@@ -183,7 +183,7 @@ void ConstantValue::Query<math::Vector3i>(GraphicsManager* gm,
 class GraphicsManager::ConstantCache {
  public:
   ConstantCache() {
-    // Generate most entries using gllimits.inc.
+    /// Generate most entries using gllimits.inc.
 #define ION_WRAP_GL_VALUE(name, s, gl_enum, Type, i) \
   constants_[k##name] = \
       ConstantValue(gl_enum, GL_NONE, ConstantValue::Query<Type>);
@@ -192,7 +192,7 @@ class GraphicsManager::ConstantCache {
       ConstantValue(gl_enum, gl_count_enum, ConstantValue::GetEnumVector);
 #include "ion/gfx/glconstants.inc"
 
-    // Handle shader precision formats separately.
+    /// Handle shader precision formats separately.
 #define ION_DOUBLE_CAP(index, enum1, enum2, getter) \
   constants_[index] = ConstantValue(enum1, enum2, ConstantValue::getter)
 
@@ -231,12 +231,12 @@ class GraphicsManager::ConstantCache {
     }
   }
 
-  // Gets the constant value using a query.
+  /// Gets the constant value using a query.
   const ConstantValue::ConstantVariant& GetValue(
       GraphicsManager* gm, GraphicsManager::Constant cap) {
     return constants_[cap].GetValue(gm);
   }
-  // Sets a fixed value and prevents the OpenGL query from being executed.
+  /// Sets a fixed value and prevents the OpenGL query from being executed.
   template <typename T>
   void SetValue(GraphicsManager::Constant cname, T value) {
     constants_[cname].SetValue(value);
@@ -248,12 +248,13 @@ class GraphicsManager::ConstantCache {
 
 //-----------------------------------------------------------------------------
 //
-// GraphicsManager::Feature represents a subset of OpenGL functionality that
-// includes zero or more functions. A feature is complete when all functions
-// that are part of it exist in the implementation.
+// GraphicsManager::Feature
 //
 //-----------------------------------------------------------------------------
 
+/// GraphicsManager::Feature represents a subset of OpenGL functionality that
+/// includes zero or more functions. A feature is complete when all functions
+/// that are part of it exist in the implementation.
 class GraphicsManager::Feature {
  public:
   Feature()
@@ -284,12 +285,12 @@ class GraphicsManager::Feature {
 #endif  // COV_NF_END
 
  private:
-  // The result of support checks done in InitGlInfo() that does not take
-  // into account whether any functions are missing.
+  /// The result of support checks done in InitGlInfo() that does not take
+  /// into account whether any functions are missing.
   bool supported_;
-  // Enable status set by the GraphicsManager or the application. By default,
-  // all supported features are enabled. Enabling an unsupported feature has
-  // no effect.
+  /// Enable status set by the GraphicsManager or the application. By default,
+  /// all supported features are enabled. Enabling an unsupported feature has
+  /// no effect.
   bool enabled_;
   std::vector<std::string> available_functions_;
   std::vector<std::string> missing_functions_;

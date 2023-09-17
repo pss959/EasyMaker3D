@@ -21,6 +21,7 @@ Str ToString(float f, float precision);
 /// \ingroup Math
 Str ToString(const VectorBase<2, float> &v, float precision);
 
+#if ! DOXYGEN  // Doxygen cannot handle the template overload with typedef?
 /// Converts a vector with output precision.
 ///
 /// \ingroup math
@@ -35,5 +36,6 @@ Str ToString(const Rotationf &r);
 ///
 /// \ingroup math
 Str ToString(const Matrix4f &m, float precision);
+#endif
 
 }  // namespace Math

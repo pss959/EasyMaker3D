@@ -27,7 +27,7 @@ namespace android {
 
 namespace {
 
-// Stack-allocate this to clear any pending JNI exceptions at end of scope.
+/// Stack-allocate this to clear any pending JNI exceptions at end of scope.
 class ScopedExceptionClearer {
  public:
   explicit ScopedExceptionClearer(JNIEnv* env): env_(env) {}

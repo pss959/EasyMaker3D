@@ -34,24 +34,24 @@ typedef int ion_socket_t;
 namespace ion {
 namespace remote {
 
-// Returns a wildcard sockaddr_storage structure for the given family and port.
+/// Returns a wildcard sockaddr_storage structure for the given family and port.
 sockaddr_storage MakeWildcard(int family, int port);
 
-// Returns a loopback sockaddr_storage structure for the given family and port.
+/// Returns a loopback sockaddr_storage structure for the given family and port.
 sockaddr_storage MakeLoopback(int family, int port);
 
-// Returns a sockaddr_storage structure for the given family and port with the
-// passed address.
+/// Returns a sockaddr_storage structure for the given family and port with the
+/// passed address.
 sockaddr_storage MakeAddress(int family, int port, const char* address);
 
-// Obtains either an ipv6 or ipv4 socket for use with the passed |protocol|.
-// The family (AF_INET or AF_INET6) is returned in |family_out|.
+/// Obtains either an ipv6 or ipv4 socket for use with the passed |protocol|.
+/// The family (AF_INET or AF_INET6) is returned in |family_out|.
 int GetSocket(int protocol, sockaddr_storage* addr);
 
-// Retrieves the port from the passed address.
+/// Retrieves the port from the passed address.
 int GetPort(const sockaddr_storage& addr);
 
-// Returns the length the passed storage depending on its family.
+/// Returns the length the passed storage depending on its family.
 socklen_t GetSockaddrLength(const sockaddr_storage& addr);
 
 }  // namespace remote

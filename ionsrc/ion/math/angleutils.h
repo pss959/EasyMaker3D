@@ -18,7 +18,8 @@ limitations under the License.
 #ifndef ION_MATH_ANGLEUTILS_H_
 #define ION_MATH_ANGLEUTILS_H_
 
-// This file contains math utility functions associated with the Angle class.
+/// \file
+/// This file contains math utility functions associated with the Angle class.
 
 #include <algorithm>
 #include <cmath>
@@ -31,69 +32,69 @@ limitations under the License.
 namespace ion {
 namespace math {
 
-// Returns the inverse cosine of the given value.
+/// Returns the inverse cosine of the given value.
 template <typename T>
 inline Angle<T> ArcCosine(T v) {
   return Angle<T>::FromRadians(acos(v));
 }
-// float specialization of ArcCosine.
+/// float specialization of ArcCosine.
 template <>
 inline Angle<float> ArcCosine(float v) {
   return Angle<float>::FromRadians(acosf(v));
 }
 
-// Returns the inverse sine of the given value.
+/// Returns the inverse sine of the given value.
 template <typename T>
 inline Angle<T> ArcSine(T v) {
   return Angle<T>::FromRadians(asin(v));
 }
-// float specialization of ArcSine.
+/// float specialization of ArcSine.
 template <>
 inline Angle<float> ArcSine(float v) {
   return Angle<float>::FromRadians(asinf(v));
 }
 
-// Returns the inverse tangent of the given value.
+/// Returns the inverse tangent of the given value.
 template <typename T>
 inline Angle<T> ArcTangent(T v) {
   return Angle<T>::FromRadians(atan(v));
 }
-// float specialization of ArcTan.
+/// float specialization of ArcTan.
 template <>
 inline Angle<float> ArcTangent(float v) {
   return Angle<float>::FromRadians(atanf(v));
 }
 
-// Returns the four-quadrant inverse tangent of the given values.
+/// Returns the four-quadrant inverse tangent of the given values.
 template <typename T>
 inline Angle<T> ArcTangent2(T y, T x) {
   return Angle<T>::FromRadians(atan2(y, x));
 }
-// float specialization of ArcTangent2.
+/// float specialization of ArcTangent2.
 template <>
 inline Angle<float> ArcTangent2(float y, float x) {
   return Angle<float>::FromRadians(atan2f(y, x));
 }
 
-// ion::math::Angle specialization of Cosine.
+/// ion::math::Angle specialization of Cosine.
 template <typename T>
 inline T Cosine(const ion::math::Angle<T>& angle) {
   return Cosine(angle.Radians());
 }
 
-// ion::math::Angle specialization of Sine.
+/// ion::math::Angle specialization of Sine.
 template <typename T>
 inline T Sine(const ion::math::Angle<T>& angle) {
   return Sine(angle.Radians());
 }
 
-// ion::math::Angle specialization of Tangent.
+/// ion::math::Angle specialization of Tangent.
 template <typename T>
 inline T Tangent(const ion::math::Angle<T>& angle) {
   return Tangent(angle.Radians());
 }
 
-// Returns the angle between two unit vectors.
+/// Returns the angle between two unit vectors.
 template <int Dimension, typename T>
 inline Angle<T> AngleBetween(const ion::math::Vector<Dimension, T>& a,
                              const ion::math::Vector<Dimension, T>& b) {
@@ -111,8 +112,8 @@ inline Angle<T> AngleBetween(const ion::math::Vector<Dimension, T>& a,
   return ArcCosine(Clamp(Dot(a, b), -kOne, kOne));
 }
 
-// Wraps the angle around an interval of [0, 2PI).
-// E.g. 2PI gets wrapped to 0, and -2PI gets wrapped to 0.
+/// Wraps the angle around an interval of [0, 2PI).
+/// E.g. 2PI gets wrapped to 0, and -2PI gets wrapped to 0.
 template <typename T>
 inline Angle<T> WrapTwoPi(const Angle<T>& a) {
   static const T kTwoPi = static_cast<T>(2 * M_PI);
@@ -129,11 +130,11 @@ inline Angle<T> WrapTwoPi(const Angle<T>& a) {
   return Angle<T>::FromRadians(radians);
 }
 
-// Returns a Lerp between angles, taking the closest-path around the
-// range.
-//
-// The return value will always be in the range [0, 2PI).
-// Note: AngleLerp performs extrapolation for t outside [0, 1].
+/// Returns a Lerp between angles, taking the closest-path around the
+/// range.
+///
+/// The return value will always be in the range [0, 2PI).
+/// Note: AngleLerp performs extrapolation for t outside [0, 1].
 template <typename T>
 inline Angle<T> AngleLerp(Angle<T> from_angle, Angle<T> to_angle, double t) {
   T from = WrapTwoPi(from_angle).Radians();

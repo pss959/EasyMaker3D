@@ -21,19 +21,19 @@ limitations under the License.
 namespace ion {
 namespace port {
 
-// If a debugger is attached, this function interrupts the program execution and
-// causes any attached debugger to break. It does so by raising SIGINT on Posix
-// platforms and __debugbreak on Windows.
-//
-// Currently this is supported for Linux, Mac, iOS, Android and Windows, but
-// adding support for more operating systems is encouraged.
+/// If a debugger is attached, this function interrupts the program execution and
+/// causes any attached debugger to break. It does so by raising SIGINT on Posix
+/// platforms and __debugbreak on Windows.
+///
+/// Currently this is supported for Linux, Mac, iOS, Android and Windows, but
+/// adding support for more operating systems is encouraged.
 ION_API void Break();
 
-// Calls Break() if running in a debugger, abort() otherwise.  The abort occurs
-// on any platform.
+/// Calls Break() if running in a debugger, abort() otherwise.  The abort occurs
+/// on any platform.
 ION_API void BreakOrAbort();
 
-// Returns whether a debugger is attached to this process.
+/// Returns whether a debugger is attached to this process.
 ION_API bool IsDebuggerAttached();
 
 }  // namespace port

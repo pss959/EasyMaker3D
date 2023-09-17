@@ -65,30 +65,31 @@ static bool IsSizeValid(const Vector2f& target_size) {
 
 //-----------------------------------------------------------------------------
 //
-// Each FreeTypeManager encapsulates a FT_Library instance, which uses the
-// supplied Ion Allocator for memory management.
+// FreeTypeManager
 //
 //-----------------------------------------------------------------------------
 
+/// Each FreeTypeManager encapsulates a FT_Library instance, which uses the
+/// supplied Ion Allocator for memory management.
 class FreeTypeManager {
  public:
   explicit FreeTypeManager(const base::AllocatorPtr& allocator);
   ~FreeTypeManager();
 
-  // Returns the FreeTypeManager corresponding to |allocator| (or kLongTerm if
-  // allocator is null).  If the FreeTypeManager does not exist, one is created.
+  /// Returns the FreeTypeManager corresponding to |allocator| (or kLongTerm if
+  /// allocator is null).  If the FreeTypeManager does not exist, one is created.
   static FreeTypeManager* GetManagerForAllocator(
       const base::AllocatorPtr& allocator) {
-    // Declare FreeTypeManagerMap as a mapping from allocators to managers, and
-    // a mutex to synchronize access to it.
+    /// Declare FreeTypeManagerMap as a mapping from allocators to managers, and
+    /// a mutex to synchronize access to it.
     typedef std::unordered_map<base::Allocator*,
                                std::unique_ptr<FreeTypeManager>>
         FreeTypeManagerMap;
     ION_DECLARE_SAFE_STATIC_POINTER(FreeTypeManagerMap, map);
     ION_DECLARE_SAFE_STATIC_POINTER(std::mutex, mutex);
 
-    // Determine the allocator that will actually be used to look up the
-    // FreeTypeManager in the map.
+    /// Determine the allocator that will actually be used to look up the
+    /// FreeTypeManager in the map.
     base::AllocatorPtr allocator_to_use =
         allocator.Get()
             ? allocator
@@ -105,27 +106,27 @@ class FreeTypeManager {
     return it->second.get();
   }
 
-  // Initializes and returns an FT_Face for a font represented by FreeType
-  // data. If simulate_library_failure is true, this simulates a failure to
-  // initialize the FreeType library. Returns nullptr on error.
+  /// Initializes and returns an FT_Face for a font represented by FreeType
+  /// data. If simulate_library_failure is true, this simulates a failure to
+  /// initialize the FreeType library. Returns nullptr on error.
   FT_Face InitFont(const void* data, size_t data_size,
                    bool simulate_library_failure);
 
-  // Loads a glyph for a specific FT_Face font. Returns false on error.
+  /// Loads a glyph for a specific FT_Face font. Returns false on error.
   bool LoadGlyph(FT_Face face, uint32 glyph_index);
 
-  // Frees up the memory used by a Font.
+  /// Frees up the memory used by a Font.
   void FreeFont(FT_Face face);
 
  private:
-  // FreeType memory management functions. The FreeTypeManager instance is
-  // passed as the "user" pointer in the FT_Memory structure.
+  /// FreeType memory management functions. The FreeTypeManager instance is
+  /// passed as the "user" pointer in the FT_Memory structure.
   static void* Allocate(FT_Memory mem, long size);  // NOLINT
   static void Free(FT_Memory mem, void* ptr);
   static void* Realloc(FT_Memory mem, long cur_size, long new_size,  // NOLINT
                        void* ptr);
 
-  // Returns the Allocator to use based on the "user" pointer in mem.
+  /// Returns the Allocator to use based on the "user" pointer in mem.
   static const base::AllocatorPtr& GetAllocator(FT_Memory mem) {
     DCHECK(mem);
     DCHECK(mem->user);
@@ -135,13 +136,13 @@ class FreeTypeManager {
     return mgr->allocator_;
   }
 
-  // The Allocator for the FreeTypeManager and all its Fonts.
+  /// The Allocator for the FreeTypeManager and all its Fonts.
   base::AllocatorPtr allocator_;
-  // Sets up FreeType to use an Ion Allocator to manage memory.
+  /// Sets up FreeType to use an Ion Allocator to manage memory.
   FT_MemoryRec_ ft_mem_;
-  // The shared FT_Library instance.
+  /// The shared FT_Library instance.
   FT_Library ft_lib_;
-  // Protects shared access to the Allocator and FT_Library.
+  /// Protects shared access to the Allocator and FT_Library.
   std::mutex mutex_;
 };
 
@@ -289,73 +290,74 @@ static GlyphIndex BuildGlyphIndex(uint32 glyph, uint32 face) {
 
 //-----------------------------------------------------------------------------
 //
-// FreeTypeFont::Helper class:
-// - implements FreeType-specific aspects of Font;
-// - owns FT_Face's lifecycle; and
-// - presents the interface that ICU Paragraph Layout requires.
+// FreeTypeFont::Helper
 //
 //-----------------------------------------------------------------------------
 
+/// FreeTypeFont::Helper class:
+/// - implements FreeType-specific aspects of Font;
+/// - owns FT_Face's lifecycle; and
+/// - presents the interface that ICU Paragraph Layout requires.
 class FreeTypeFont::Helper
 #if defined(ION_USE_ICU)
     : public icu::LEFontInstance
 #endif
 {
  public:
-  // This struct stores all information for a single glyph in the font.
+  /// This struct stores all information for a single glyph in the font.
   struct GlyphMetaData : public Allocatable {
-    // Returns true if glyph x- *or* y-size is zero.
+    /// Returns true if glyph x- *or* y-size is zero.
     bool IsZeroSize() const { return metrics.IsZeroSize(); }
 
-    // Metrics for the glyph.
+    /// Metrics for the glyph.
     GlyphMetrics metrics;
-    // Control points for the glyph, if the font supports this.
+    /// Control points for the glyph, if the font supports this.
     ControlPoints control_points;
   };
 
-  // The constructor is passed an Allocator to use for FreeType structures.
+  /// The constructor is passed an Allocator to use for FreeType structures.
   explicit Helper(FreeTypeFont* owning_font)
       : glyph_metadata_map_(owning_font->GetAllocator()),
         owning_font_(owning_font),
         allocator_(owning_font_->GetAllocator()),
 #if defined(ION_USE_ICU)
         font_tables_(allocator_),
-#endif  // ION_USE_ICU
+#endif  /// ION_USE_ICU
         ft_face_(nullptr),
         manager_(FreeTypeManager::GetManagerForAllocator(allocator_)) {
   }
   ~Helper() { FreeFont(); }
 
-  // Initializes the font from FreeType data. Logs messages and returns false
-  // on error. If simulate_library_failure is true, this simulates a failure to
-  // initialize the FreeType library. This should not be called more than once.
+  /// Initializes the font from FreeType data. Logs messages and returns false
+  /// on error. If simulate_library_failure is true, this simulates a failure to
+  /// initialize the FreeType library. This should not be called more than once.
   bool Init(const void* data, size_t data_size, bool simulate_library_failure);
 
-  // Loads a glyph from FreeType and fills in either or both of glyph_data and
-  // glyph_grid, when not null.  size_in_pixels is used to scale the glyph.
-  // Returns true if a glyph was loaded; will resort to fallback faces if the
-  // glyph is not found in the main face.
+  /// Loads a glyph from FreeType and fills in either or both of glyph_data and
+  /// glyph_grid, when not null.  size_in_pixels is used to scale the glyph.
+  /// Returns true if a glyph was loaded; will resort to fallback faces if the
+  /// glyph is not found in the main face.
   bool LoadGlyph(GlyphIndex glyph_index, GlyphMetaData* glyph_meta,
                  Font::GlyphGrid* glyph_grid) const;
 
-  // Returns a FontMetrics for this font.
+  /// Returns a FontMetrics for this font.
   const FontMetrics GetFontMetrics() const;
 
-  // Returns the kerning amount in X and Y for a given character pair.
+  /// Returns the kerning amount in X and Y for a given character pair.
   const math::Vector2f GetKerning(CharIndex char_index0,
                                   CharIndex char_index1) const;
 
   GlyphIndex GetDefaultGlyphForChar(CharIndex char_index) const;
 
-  // Returns the GlyphData for the indexed character. Returns an invalid
-  // reference if the index does not refer to a glyph in the font or one of
-  // the fallback fonts.
+  /// Returns the GlyphData for the indexed character. Returns an invalid
+  /// reference if the index does not refer to a glyph in the font or one of
+  /// the fallback fonts.
   const GlyphMetaData& GetGlyphMetaData(GlyphIndex glyph_index) const;
 
-  // Frees up the FreeType font data structures.
+  /// Frees up the FreeType font data structures.
   void FreeFont();
 
-  // Adds a fallback face to this font.
+  /// Adds a fallback face to this font.
   void AddFallbackFace(const std::weak_ptr<Helper>& fallback);
 
 #if defined(ION_USE_ICU)
@@ -380,42 +382,42 @@ class FreeTypeFont::Helper
 #endif
 
  private:
-  // Queries the owning font size, and correctly set the FreeType font size or
-  // scale based upon that.
+  /// Queries the owning font size, and correctly set the FreeType font size or
+  /// scale based upon that.
   void SetFontSizeLocked() const;
 
-  // Queries for the FreeType glyph index assosiated with |char_index| in the
-  // font ft_face_.
+  /// Queries for the FreeType glyph index assosiated with |char_index| in the
+  /// font ft_face_.
   uint32 GetGlyphForChar(CharIndex char_index) const;
 
-  // If ft_face_ contains glyphs for at least one of |char_index0| or
-  // |char_index1| this function sets the kerning value for the character pair
-  // in |kern| and returns true. If ft_face_ contains glyphs for neither, this
-  // function returns false without modifying |kern|.
+  /// If ft_face_ contains glyphs for at least one of |char_index0| or
+  /// |char_index1| this function sets the kerning value for the character pair
+  /// in |kern| and returns true. If ft_face_ contains glyphs for neither, this
+  /// function returns false without modifying |kern|.
   bool GetKerningNoFallback(CharIndex char_index0, CharIndex char_index1,
                             math::Vector2f* kern) const;
 
-  // Queries FreeType for the kerning value associated to |char_index0| and
-  // |char_index1| in ft_face_.
+  /// Queries FreeType for the kerning value associated to |char_index0| and
+  /// |char_index1| in ft_face_.
   const math::Vector2f GetKerningLocked(CharIndex char_index0,
                                         CharIndex char_index1) const;
 
-  // As LoadGlyph above, but assumes mutex_ has been locked.
+  /// As LoadGlyph above, but assumes mutex_ has been locked.
   bool LoadGlyphLocked(GlyphIndex glyph_index, GlyphMetaData* glyph_meta,
                        Font::GlyphGrid* glyph_grid) const;
 
-  // As LoadGlyphLocked, but does not fallback on failure.
+  /// As LoadGlyphLocked, but does not fallback on failure.
   bool LoadGlyphLockedNoFallback(GlyphIndex glyph_index,
                                  GlyphMetaData* glyph_meta,
                                  Font::GlyphGrid* glyph_grid) const;
 
-  // Convenience typedef for the map storing GlyphData instances.
+  /// Convenience typedef for the map storing GlyphData instances.
   typedef base::AllocMap<GlyphIndex, GlyphMetaData> GlyphMetaDataMap;
 
-  // Grid for each glyph in the font, keyed by glyph index. Mutable so that it
-  // can be changed from within GetGlyphMetaData, which must be const as it is
-  // called from getGlyphAdvance, which is const because it is an override of
-  // a const LEFontInstance method.
+  /// Grid for each glyph in the font, keyed by glyph index. Mutable so that it
+  /// can be changed from within GetGlyphMetaData, which must be const as it is
+  /// called from getGlyphAdvance, which is const because it is an override of
+  /// a const LEFontInstance method.
   mutable GlyphMetaDataMap glyph_metadata_map_;
 
   FreeTypeFont* owning_font_;

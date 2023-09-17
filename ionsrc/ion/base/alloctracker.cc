@@ -66,8 +66,8 @@ class AllocTracker::Helper {
         size_map_(internal_allocator_) {}
   ~Helper() {}
 
-  // These functions manage a map of currently-allocated pointers to their
-  // sizes to allow counting allocated bytes.
+  /// These functions manage a map of currently-allocated pointers to their
+  /// sizes to allow counting allocated bytes.
   void AddSize(void* ptr, size_t size) {
     size_map_[ptr] = size;
   }
@@ -82,13 +82,13 @@ class AllocTracker::Helper {
   }
 
  private:
-  // This is an Ion Allocator that uses the AllocTracker.
+  /// This is an Ion Allocator that uses the AllocTracker.
   class InternalAllocator : public ion::base::Allocator {
    public:
     virtual void* Allocate(size_t size) {
-      // There is a bootstrapping problem that occurs if anything is allocated
-      // during construction of the AllocTracker singleton instance. If the
-      // AllocTracker pointer is not yet set, just use malloc.
+      /// There is a bootstrapping problem that occurs if anything is allocated
+      /// during construction of the AllocTracker singleton instance. If the
+      /// AllocTracker pointer is not yet set, just use malloc.
       if (AllocTracker* tracker = GetTracker()) {
         return tracker->New(size, kInternalAlloc);
       } else {
@@ -104,11 +104,11 @@ class AllocTracker::Helper {
   };
   typedef ion::base::SharedPtr<InternalAllocator> InternalAllocatorPtr;
 
-  // This is used for allocating the SizeMap. Otherwise, it would use global
-  // new, which would be bad.
+  /// This is used for allocating the SizeMap. Otherwise, it would use global
+  /// new, which would be bad.
   InternalAllocatorPtr internal_allocator_;
 
-  // Tracks sizes (in bytes) of open allocations, keyed by pointer.
+  /// Tracks sizes (in bytes) of open allocations, keyed by pointer.
   typedef ion::base::AllocMap<void*, size_t> SizeMap;
   SizeMap size_map_;
 };

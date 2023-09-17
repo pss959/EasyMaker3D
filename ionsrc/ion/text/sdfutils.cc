@@ -37,32 +37,33 @@ typedef Array2<double> Grid;
 
 //-----------------------------------------------------------------------------
 //
-// The DistanceComputer class implements the main functions to compute signed
-// distance fields.
-//
-// This code is an implementation of the algorithm described at
-// <http://contourtextures.wikidot.com>. The advantage of this algorithm over
-// other SDF generators is that it uses an antialiased rendered font instead of
-// a bitmapped font. A bitmapped font would have to be rendered at much higher
-// resolution to achieve the same quality as provided here.
+// DistanceComputer
 //
 //-----------------------------------------------------------------------------
 
+/// The DistanceComputer class implements the main functions to compute signed
+/// distance fields.
+///
+/// This code is an implementation of the algorithm described at
+/// <http:///contourtextures.wikidot.com>. The advantage of this algorithm over
+/// other SDF generators is that it uses an antialiased rendered font instead of
+/// a bitmapped font. A bitmapped font would have to be rendered at much higher
+/// resolution to achieve the same quality as provided here.
 class DistanceComputer {
  public:
   DistanceComputer() {}
   ~DistanceComputer() {}
 
-  // Computes and returns a Grid containing signed distances for a Grid
-  // representing a grayscale image.  Each pixel's value ("signed distance") is
-  // the distance from the center of that pixel to the nearest boundary/edge,
-  // signed so that pixels inside the boundary are negative and those outside
-  // the boundary are positive.
+  /// Computes and returns a Grid containing signed distances for a Grid
+  /// representing a grayscale image.  Each pixel's value ("signed distance") is
+  /// the distance from the center of that pixel to the nearest boundary/edge,
+  /// signed so that pixels inside the boundary are negative and those outside
+  /// the boundary are positive.
   const Grid Compute(const Grid& image);
 
  private:
-  // This struct is used to pass most of the current data to the main
-  // computation functions.
+  /// This struct is used to pass most of the current data to the main
+  /// computation functions.
   struct Data {
     Data(const Grid& image_in, const Array2<Vector2d>& gradients_in)
         : image(image_in),
@@ -70,7 +71,7 @@ class DistanceComputer {
           cur_pixel(0, 0),
           any_distance_changed(false) {}
 
-    // Convenience access functions.
+    /// Convenience access functions.
     void SetCurDistance(double dist) {
       distances.Set(cur_pixel[0], cur_pixel[1], dist);
     }
@@ -84,51 +85,51 @@ class DistanceComputer {
       return distances_to_edges.Get(pixel[0], pixel[1]);
     }
 
-    // The original monochrome image data, as doubles (0 - 1).
+    /// The original monochrome image data, as doubles (0 - 1).
     const Grid& image;
-    // Local gradients in X and Y.
+    /// Local gradients in X and Y.
     const Array2<Vector2d>& gradients;
-    // Current pixel distances in X and Y to edges.
+    /// Current pixel distances in X and Y to edges.
     Array2<Vector2i> distances_to_edges;
-    // Final distance values.
+    /// Final distance values.
     Grid distances;
-    // Indices of the current pixel being operated on.
+    /// Indices of the current pixel being operated on.
     Vector2i cur_pixel;
-    // This is set to true when a value in the distances grid is modified.
+    /// This is set to true when a value in the distances grid is modified.
     bool any_distance_changed;
   };
 
-  // Computes the local gradients of an image in the X and Y dimensions and
-  // returns them as an Array2<Vector2d>.
+  /// Computes the local gradients of an image in the X and Y dimensions and
+  /// returns them as an Array2<Vector2d>.
   static const Array2<Vector2d> ComputeGradients(const Grid& image);
 
-  // Applies a 3x3 filter kernel to an image pixel to get the gradients.
+  /// Applies a 3x3 filter kernel to an image pixel to get the gradients.
   static const Vector2d FilterPixel(const Grid& image, size_t x, size_t y);
 
-  // Creates and initializes a grid containing the distances.
+  /// Creates and initializes a grid containing the distances.
   static const Grid InitializeDistanceGrid(
       const Grid& image, const Array2<Vector2d>& gradients);
 
-  // Approximates the distance to an image edge from a pixel using the pixel
-  // value and the local gradient.
+  /// Approximates the distance to an image edge from a pixel using the pixel
+  /// value and the local gradient.
   static double ApproximateDistanceToEdge(double value,
                                           const Vector2d& gradient);
 
-  // Computes and returns the distances.
+  /// Computes and returns the distances.
   static void ComputeDistances(Data* data);
 
-  // Computes the distance from data->cur_pixel to an edge pixel based on the
-  // information at the pixel at (data->cur_pixel + offset). If the new
-  // distance is smaller than the current distance (dist), this modifies dist
-  // and sets data->any_distance_changed to true.
+  /// Computes the distance from data->cur_pixel to an edge pixel based on the
+  /// information at the pixel at (data->cur_pixel + offset). If the new
+  /// distance is smaller than the current distance (dist), this modifies dist
+  /// and sets data->any_distance_changed to true.
   static void UpdateDistance(Data* data, const Vector2i& offset, double* dist);
 
-  // Computes the new distance from a pixel to an edge pixel based on previous
-  // information.
+  /// Computes the new distance from a pixel to an edge pixel based on previous
+  /// information.
   static double ComputeDistanceToEdge(Data* data, const Vector2i& pixel,
                                       const Vector2d& vec_to_edge_pixel);
 
-  // Represents a large distance during computation.
+  /// Represents a large distance during computation.
   static const double kLargeDistance;
 };
 

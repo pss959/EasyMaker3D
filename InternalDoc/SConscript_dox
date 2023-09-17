@@ -3,12 +3,12 @@
 # subdirectory of the build directory.
 # -----------------------------------------------------------------------------
 
-Import('app_dict', 'doc_build_dir')
+Import('app_dict', 'base_env', 'doc_build_dir')
 
-env = Environment(
+env = base_env.Clone(
     ABS_BUILD_DIR = Dir(f'#{doc_build_dir}').abspath,
     OUTPUT_DIR    = '$ABS_BUILD_DIR/InternalDoc',
-    DOXYGEN       = '/local/inst/doxygen-1.9.6/bin/doxygen',  # Latest version.
+    DOXYGEN       = '/local/inst/doxygen-1.9.8/bin/doxygen',  # Latest version.
 )
 
 # Set up environment variables for Doxyfile to access.
@@ -18,23 +18,12 @@ env.Append(
         'COPYRIGHT'        : app_dict['COPYRIGHT'],
         'VERSION_STRING'   : app_dict['VERSION_STRING'],
         'OUTPUT_DIRECTORY' : env.subst('$OUTPUT_DIR'),
+        'ION_DOC_DIR'      : env.subst('$OUTPUT_DIR/../IonDoc'),
     }
 )
 
-# Recursive function to find all files of certain types for Doxygen input. This
-# allows dependencies to be set up correctly.
-def FindSources_(root_dir, patterns):
-    from fnmatch import filter as fnfilter
-    from os      import walk
-    from os.path import join
-    sources = []
-    for root, dirnames, filenames in walk(root_dir):
-        for pattern in patterns:
-            sources += [join(root, fn) for fn in fnfilter(filenames, pattern)]
-    return sources
-
-dox_files = FindSources_('.',      ['*'])
-src_files = FindSources_('../src', ['*.h', '*.cpp'])
+dox_files = env.FindSources('.',      ['*'])
+src_files = env.FindSources('../src', ['*.h', '*.cpp'])
 
 # Create the dot diagram showing module dependencies.
 dep_dot_file    = env.File('./include/moduledependencies.dot').abspath
@@ -47,4 +36,8 @@ doc = env.Command('$OUTPUT_DIR/html/index.html',
                   dox_files + src_files + [dep_dot_file],
                   ['echo = Building internal doc for version: $VERSION_STRING',
                    '$DOXYGEN InternalDoc/Doxyfile'])
+
+# IonDoc has to be built first to create the Ion.tag file.
+env.Depends(doc, 'IonDoc')
+
 Return('doc')

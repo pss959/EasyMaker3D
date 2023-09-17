@@ -27,9 +27,9 @@ limitations under the License.
 namespace ion {
 namespace gfxutils {
 
-// Class that allows blocking until a callback is called and automagically
-// destroys itself after both Callback() and WaitForCompletion() have executed.
-// This is accomplished by holding two references to itself.
+/// Class that allows blocking until a callback is called and automagically
+/// destroys itself after both Callback() and WaitForCompletion() have executed.
+/// This is accomplished by holding two references to itself.
 template <typename T> class ResourceCallback : public base::Referent {
  public:
   using RefPtr = base::SharedPtr<ResourceCallback<T>>;
@@ -38,13 +38,13 @@ template <typename T> class ResourceCallback : public base::Referent {
     wait_holder_.Reset(this);
   }
 
-  // Returns the data received by Callback().
+  /// Returns the data received by Callback().
   const std::vector<T>& GetData() const { return data_; }
 
-  // This function is compatible with ResourceManager::InfoCallback, and should
-  // be used as the callback passed to ResourceManager's Request() functions. It
-  // will be called after the request has been serviced and with the requested
-  // data.
+  /// This function is compatible with ResourceManager::InfoCallback, and should
+  /// be used as the callback passed to ResourceManager's Request() functions. It
+  /// will be called after the request has been serviced and with the requested
+  /// data.
   void Callback(const std::vector<T>& data) {
     // Store the data.
     data_ = data;
@@ -81,7 +81,7 @@ template <typename T> class ResourceCallback : public base::Referent {
   }
 
  protected:
-  // The constructor is protected because this class is derived from Referent.
+  /// The constructor is protected because this class is derived from Referent.
   ~ResourceCallback() override {
     DCHECK(callback_holder_.Get() == nullptr);
     DCHECK(wait_holder_.Get() == nullptr);

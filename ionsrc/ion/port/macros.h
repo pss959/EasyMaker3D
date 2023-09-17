@@ -18,12 +18,12 @@ limitations under the License.
 #ifndef ION_PORT_MACROS_H_
 #define ION_PORT_MACROS_H_
 
-// ION_DISALLOW_ASSIGN_ONLY is specifically for working around a bug where a
-// copy only type cannot be used in std::vector due to gcc bug 49836.
-// It should be the last thing in a class declaration.
-// The defined operator must not actually be called.
-// 
-// libstdc++ 4.6 or earlier.
+/// ION_DISALLOW_ASSIGN_ONLY is specifically for working around a bug where a
+/// copy only type cannot be used in std::vector due to gcc bug 49836.
+/// It should be the last thing in a class declaration.
+/// The defined operator must not actually be called.
+///
+/// libstdc++ 4.6 or earlier.
 #if (defined(ION_PLATFORM_NACL) && !defined(ION_PLATFORM_PNACL)) || \
     (defined(ION_PLATFORM_LINUX) && !defined(ION_GOOGLE_INTERNAL)) || \
     defined(ION_PLATFORM_QNX)
@@ -39,7 +39,7 @@ limitations under the License.
   void operator=(const TypeName&)
 #endif
 
-// Make ION_PRETTY_FUNCTION available on all platforms.
+/// Make ION_PRETTY_FUNCTION available on all platforms.
 #if defined(_MSC_VER)
 #define ION_PRETTY_FUNCTION __FUNCSIG__
 #else

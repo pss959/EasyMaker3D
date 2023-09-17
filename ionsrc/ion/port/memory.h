@@ -23,10 +23,10 @@ limitations under the License.
 namespace ion {
 namespace port {
 
-// Return size of the current process in bytes.
+/// Return size of the current process in bytes.
 ION_API uint64 GetProcessResidentMemorySize();
 
-// Return the hardware RAM size in bytes.
+/// Return the hardware RAM size in bytes.
 ION_API uint64 GetSystemMemorySize();
 
 }  // namespace port

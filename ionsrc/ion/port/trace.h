@@ -18,25 +18,25 @@ limitations under the License.
 #ifndef ION_PORT_TRACE_H_
 #define ION_PORT_TRACE_H_
 
-// If the target platform is android, use the ION_ATRACE_* macros to assist in
-// performing a systrace, otherwise define them as no-ops.
+/// If the target platform is android, use the ION_ATRACE_* macros to assist in
+/// performing a systrace, otherwise define them as no-ops.
 
-// The ION_ATRACE_TAG macro can be defined before including this header to trace
-// using one of the tags defined below.  It must be defined to one of the
-// following ION_ATRACE_TAG_* macros.  The trace tag is used to filter tracing
-// in userland to avoid some of the runtime cost of tracing when it is not
-// desired.
-//
-// Defining ION_ATRACE_TAG to be ION_ATRACE_TAG_ALWAYS will result in the
-// tracing always being enabled - this should ONLY be done for debug code, as
-// userland tracing has a performance cost even when the trace is not being
-// recorded.  Defining ION_ATRACE_TAG to be ION_ATRACE_TAG_NEVER or leaving
-// ION_ATRACE_TAG undefined will result in the tracing always being disabled.
-//
-// These tags must be kept in sync with
-//   frameworks/base/core/java/android/os/Trace.java.
-#define ION_ATRACE_TAG_NEVER 0          // This tag is never enabled.
-#define ION_ATRACE_TAG_ALWAYS (1 << 0)  // This tag is always enabled.
+/// The ION_ATRACE_TAG macro can be defined before including this header to trace
+/// using one of the tags defined below.  It must be defined to one of the
+/// following ION_ATRACE_TAG_* macros.  The trace tag is used to filter tracing
+/// in userland to avoid some of the runtime cost of tracing when it is not
+/// desired.
+///
+/// Defining ION_ATRACE_TAG to be ION_ATRACE_TAG_ALWAYS will result in the
+/// tracing always being enabled - this should ONLY be done for debug code, as
+/// userland tracing has a performance cost even when the trace is not being
+/// recorded.  Defining ION_ATRACE_TAG to be ION_ATRACE_TAG_NEVER or leaving
+/// ION_ATRACE_TAG undefined will result in the tracing always being disabled.
+///
+/// These tags must be kept in sync with
+///   frameworks/base/core/java/android/os/Trace.java.
+#define ION_ATRACE_TAG_NEVER 0          ///< This tag is never enabled.
+#define ION_ATRACE_TAG_ALWAYS (1 << 0)  ///< This tag is always enabled.
 #define ION_ATRACE_TAG_GRAPHICS (1 << 1)
 #define ION_ATRACE_TAG_INPUT (1 << 2)
 #define ION_ATRACE_TAG_VIEW (1 << 3)
@@ -70,8 +70,8 @@ limitations under the License.
 #error ION_ATRACE_TAG must be defined to one of the tags defined in port/trace.h
 #endif
 
-// ION_ATRACE_PROD_* macros are always traced. The non-PROD versions are only
-// traced in non-production builds (!ION_PRODUCTION).
+/// ION_ATRACE_PROD_* macros are always traced. The non-PROD versions are only
+/// traced in non-production builds (!ION_PRODUCTION).
 #if ION_PRODUCTION
   #define ION_ATRACE_INIT()
   #define ION_ATRACE_CALL()

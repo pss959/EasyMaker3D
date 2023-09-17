@@ -35,46 +35,46 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// ResourceHolder is an internal base class for objects that hold resources
-// managed by an outside entity, such as ResourceManager, allowing the
-// resources to be associated opaquely with an instance of the object. This
-// association is done explicitly with a globally unique size_t index.
-// Additionally, the outside entity can manage multiple resources for a single
-// ResourceHolder by giving them ResourceKeys that are unique within a given
-// index. Note that the internal mapping between indices and sets of resources
-// is not sparse, so using large indices will needlessly waste memory.
-//
-// For example, a BufferObject may opaquely contain a derived ResourceBase
-// managing a VBO; when the BufferObject instance is destroyed, the VBO can be
-// released to OpenGL at some point in the future. Similarly, if the contents
-// of the BufferObject are modified, the BufferObject can call its
-// ResourceBases' OnChanged() methods so that they can respond.
+/// ResourceHolder is an internal base class for objects that hold resources
+/// managed by an outside entity, such as ResourceManager, allowing the
+/// resources to be associated opaquely with an instance of the object. This
+/// association is done explicitly with a globally unique size_t index.
+/// Additionally, the outside entity can manage multiple resources for a single
+/// ResourceHolder by giving them ResourceKeys that are unique within a given
+/// index. Note that the internal mapping between indices and sets of resources
+/// is not sparse, so using large indices will needlessly waste memory.
+///
+/// For example, a BufferObject may opaquely contain a derived ResourceBase
+/// managing a VBO; when the BufferObject instance is destroyed, the VBO can be
+/// released to OpenGL at some point in the future. Similarly, if the contents
+/// of the BufferObject are modified, the BufferObject can call its
+/// ResourceBases' OnChanged() methods so that they can respond.
 class ION_API ResourceHolder : public base::Notifier {
  public:
-  // All ResourceHolders derived from this should start their own change enums
-  // from kNumBaseChanges.
+  /// All ResourceHolders derived from this should start their own change enums
+  /// from kNumBaseChanges.
   enum BaseChanges {
     kLabelChanged,
     kResourceChanged,
     kNumBaseChanges
   };
 
-  // Sets the resource at the passed index and key. The size of the internal
-  // vector is automatically managed so that it has the smallest possible size.
+  /// Sets the resource at the passed index and key. The size of the internal
+  /// vector is automatically managed so that it has the smallest possible size.
   void SetResource(size_t index, ResourceKey key, ResourceBase* resource) const;
 
-  // Returns the Resource at the given index and key, or nullptr if no resource
-  // was previously set at that location.
+  /// Returns the Resource at the given index and key, or nullptr if no resource
+  /// was previously set at that location.
   ResourceBase* GetResource(size_t index, ResourceKey key) const;
 
-  // Returns the number of resources that this holder holds. Note that this is
-  // not necessarily the number of indices that have non-null resources. This
-  // can be used as a fast trivial check to see if the holder has any resources.
+  /// Returns the number of resources that this holder holds. Note that this is
+  /// not necessarily the number of indices that have non-null resources. This
+  /// can be used as a fast trivial check to see if the holder has any resources.
   int GetResourceCount() const {
     return resource_count_;
   }
 
-  // Returns the total amount of GPU memory used by this Holder's resource.
+  /// Returns the total amount of GPU memory used by this Holder's resource.
   size_t GetGpuMemoryUsed() const {
     base::ReadLock read_lock(&overflow_lock_);
     base::ReadGuard guard(&read_lock);
@@ -84,28 +84,28 @@ class ION_API ResourceHolder : public base::Notifier {
     return total;
   }
 
-  // Returns/sets the label of this.
+  /// Returns/sets the label of this.
   const std::string& GetLabel() const { return label_.Get(); }
   void SetLabel(const std::string& label) { label_.Set(label); }
 
-  // The number of resource indices for which resources are stored inline and
-  // don't require a mutex to access.
+  /// The number of resource indices for which resources are stored inline and
+  /// don't require a mutex to access.
   static const size_t kInlineResourceGroups = 4;
 
-  // Allow other classes to trigger notifications.
+  /// Allow other classes to trigger notifications.
   using Notifier::Notify;
 
  protected:
-  // Base class for Fields (see below).
+  /// Base class for Fields (see below).
   class FieldBase {
    public:
     virtual ~FieldBase();
 
-    // Get the change bit.
+    /// Get the change bit.
     int GetBit() const { return change_bit_; }
 
    protected:
-    // The constructor is protected because this is an abstract base class.
+    /// The constructor is protected because this is an abstract base class.
     FieldBase(const int change_bit, ResourceHolder* holder)
         : change_bit_(change_bit),
           holder_(holder) {
@@ -120,7 +120,7 @@ class ION_API ResourceHolder : public base::Notifier {
       }
     }
 
-    // Trigger a change for a specific bit.
+    /// Trigger a change for a specific bit.
     void OnChanged(const int bit) {
       if (holder_) {
         holder_->OnChanged(bit);
@@ -135,8 +135,8 @@ class ION_API ResourceHolder : public base::Notifier {
     DISALLOW_IMPLICIT_CONSTRUCTORS(FieldBase);
   };
 
-  // A generic field that represents some state in the resource.  When the
-  // Field value changes, it tells the resource that something has changed.
+  /// A generic field that represents some state in the resource.  When the
+  /// Field value changes, it tells the resource that something has changed.
   template <typename T>
   class Field : public FieldBase {
    public:
@@ -150,25 +150,25 @@ class ION_API ResourceHolder : public base::Notifier {
 
     ~Field() override {}
 
-    // Checks if a proposed value is valid.  Descendant classes can override
-    // this to provide validation (e.g. range checking).
+    /// Checks if a proposed value is valid.  Descendant classes can override
+    /// this to provide validation (e.g. range checking).
     virtual bool IsValid(const T& value) {
       return true;
     }
 
-    // Gets a const version of the current value.
+    /// Gets a const version of the current value.
     const T& Get() const { return value_; }
 
-    // Gets an editable version of the current value.  Since the caller could
-    // do anything with the reference, also notify the resource.
+    /// Gets an editable version of the current value.  Since the caller could
+    /// do anything with the reference, also notify the resource.
     T* GetMutable() {
       OnChanged();
       return &value_;
     }
 
-    // Sets the value of the Field if it is valid and tells the resource what
-    // has changed. If the value is not valid, an error message is logged.
-    // Returns whether the set occurred.
+    /// Sets the value of the Field if it is valid and tells the resource what
+    /// has changed. If the value is not valid, an error message is logged.
+    /// Returns whether the set occurred.
     bool Set(const T& value) {
       if (!IsValid(value)) {
         LOG(ERROR) << "***ION: invalid value passed to Field::Set()";
@@ -184,7 +184,7 @@ class ION_API ResourceHolder : public base::Notifier {
     T value_;
   };
 
-  // A Field that has a limited valid range of values.
+  /// A Field that has a limited valid range of values.
   template <typename T>
   class RangedField : public Field<T> {
    public:
@@ -198,7 +198,7 @@ class ION_API ResourceHolder : public base::Notifier {
 
     ~RangedField() override {}
 
-    // Check if the proposed value falls within the correct range.
+    /// Check if the proposed value falls within the correct range.
     bool IsValid(const T& value) override {
       return value >= min_value_ && value <= max_value_;
     }
@@ -210,11 +210,11 @@ class ION_API ResourceHolder : public base::Notifier {
     DISALLOW_IMPLICIT_CONSTRUCTORS(RangedField);
   };
 
-  // A Field that holds a vector of up to some number of values. The maximum
-  // is necessary for VectorFields that relate to GL state, such as Attributes;
-  // different platforms support different numbers of shader attributes, and
-  // this allows Ion to gracefully inform users (with an error message) if they
-  // try to add too many.
+  /// A Field that holds a vector of up to some number of values. The maximum
+  /// is necessary for VectorFields that relate to GL state, such as Attributes;
+  /// different platforms support different numbers of shader attributes, and
+  /// this allows Ion to gracefully inform users (with an error message) if they
+  /// try to add too many.
   template <typename T>
   class VectorField : public FieldBase {
    public:
@@ -229,8 +229,8 @@ class ION_API ResourceHolder : public base::Notifier {
 
     ~VectorField() override {}
 
-    // Adds a value to the vector. If too many Adds have occurred, then an
-    // error message is printed instead.
+    /// Adds a value to the vector. If too many Adds have occurred, then an
+    /// error message is printed instead.
     void Add(const T& value) {
       if (entries_.size() >= max_entries_) {
         LOG(ERROR) << "***ION: Too many entries added to VectorField"
@@ -238,27 +238,27 @@ class ION_API ResourceHolder : public base::Notifier {
       } else {
         entries_.push_back(
             Entry(GetBit() + static_cast<int>(entries_.size()), value));
-        // Notify the resource that an entry has been added.
+        /// Notify the resource that an entry has been added.
         OnChanged(entries_.back().bit);
       }
     }
 
-    // Removes an element from the VectorField, replacing it with the last entry
-    // in the VectorField. If there is only one entry in the VectorField then it
-    // is cleared. OnChanged() is called on the moved entry, as it may have
-    // changed before the call to Remove().
+    /// Removes an element from the VectorField, replacing it with the last entry
+    /// in the VectorField. If there is only one entry in the VectorField then it
+    /// is cleared. OnChanged() is called on the moved entry, as it may have
+    /// changed before the call to Remove().
     void Remove(size_t i) {
       if (i < entries_.size()) {
         entries_[i].value = entries_.back().value;
         entries_.resize(entries_.size() - 1U);
-        // Call OnChanged() if the removal did not empty the vector.
+        /// Call OnChanged() if the removal did not empty the vector.
         if (!entries_.empty())
           OnChanged(entries_[i].bit);
       }
     }
 
-    // Gets a const reference to a value, if the index is valid, otherwise
-    // returns an InvalidReference.
+    /// Gets a const reference to a value, if the index is valid, otherwise
+    /// returns an InvalidReference.
     const T& Get(const size_t i) const {
       if (i < entries_.size()) {
         return entries_[i].value;
@@ -268,7 +268,7 @@ class ION_API ResourceHolder : public base::Notifier {
       }
     }
 
-    // Gets a non-const pointer to a value and triggers the change.
+    /// Gets a non-const pointer to a value and triggers the change.
     T* GetMutable(const size_t i) {
       if (i < entries_.size()) {
         OnChanged(entries_[i].bit);
@@ -279,9 +279,9 @@ class ION_API ResourceHolder : public base::Notifier {
       }
     }
 
-    // If the index i is valid, sets the value at index i and tells the resource
-    // what has changed. If the index is not valid, an error message is logged.
-    // Returns whether the set occurred.
+    /// If the index i is valid, sets the value at index i and tells the resource
+    /// what has changed. If the index is not valid, an error message is logged.
+    /// Returns whether the set occurred.
     bool Set(const size_t i, const T& value) {
       if (i < entries_.size()) {
         if (value != entries_[i].value) {
@@ -295,10 +295,10 @@ class ION_API ResourceHolder : public base::Notifier {
       return false;
     }
 
-    // Returns the number of entries in this.
+    /// Returns the number of entries in this.
     size_t GetCount() const { return entries_.size(); }
 
-    // Removes all entries from this.
+    /// Removes all entries from this.
     void Clear() { std::fill(entries_.begin(), entries_.end(), Entry()); }
 
    private:
@@ -322,14 +322,14 @@ class ION_API ResourceHolder : public base::Notifier {
     DISALLOW_IMPLICIT_CONSTRUCTORS(VectorField);
   };
 
-  // The constructor is protected because this is an abstract base class.
+  /// The constructor is protected because this is an abstract base class.
   ResourceHolder();
 
-  // The destructor invokes the resource callback. It is protected because all
-  // base::Referent classes must have protected or private destructors.
+  /// The destructor invokes the resource callback. It is protected because all
+  /// base::Referent classes must have protected or private destructors.
   ~ResourceHolder() override;
 
-  // Forwards OnChanged to all resources.
+  /// Forwards OnChanged to all resources.
   void OnChanged(int bit) const {
     // We use a read lock since Holders should not be modified from multiple
     // threads simultaneously.
@@ -349,15 +349,15 @@ class ION_API ResourceHolder : public base::Notifier {
   // Allow Renderer internals to modify change bits.
   friend class Renderer;
 
-  // Adds a field to the field list.
+  /// Adds a field to the field list.
   void AddField(FieldBase* field) { fields_.push_back(field); }
 
   typedef base::AllocUnorderedMap<ResourceKey, ResourceBase*> ResourceMap;
 
   struct ResourceGroup {
-    // Default constructor only exists to allow default initialization
-    // of std::array. The default-constructed object is immediately replaced by
-    // std::fill.
+    /// Default constructor only exists to allow default initialization
+    /// of std::array. The default-constructed object is immediately replaced by
+    /// std::fill.
     ResourceGroup()
         : map(base::AllocatorPtr()), cached_resource(nullptr),
           cached_resource_key(~0) {}
@@ -366,12 +366,12 @@ class ION_API ResourceHolder : public base::Notifier {
     bool IsEmpty() const {
       return cached_resource == nullptr && map.empty();
     }
-    // map is only used when we have > 1 resources so in the common case of
-    // a single resource we avoid the hash lookup.
+    /// map is only used when we have > 1 resources so in the common case of
+    /// a single resource we avoid the hash lookup.
     ResourceMap map;
-    // Used in the common case when there is only a single resource or if we
-    // have multiple resources, acts as a cache to potentially bypass a hash
-    // lookup.
+    /// Used in the common case when there is only a single resource or if we
+    /// have multiple resources, acts as a cache to potentially bypass a hash
+    /// lookup.
     ResourceBase* cached_resource;
     ResourceKey cached_resource_key;
   };
@@ -396,26 +396,26 @@ class ION_API ResourceHolder : public base::Notifier {
     resource->OnDestroyed();
   }
 
-  // The resource vector is declared as mutable because it is really a cache
-  // of some external state. This allows SetResource() to be const, meaning
-  // that a const ResourceHolder instance can have resources cached in it.
-  // Use fixed-sized array to avoid locking when growing resources.
+  /// The resource vector is declared as mutable because it is really a cache
+  /// of some external state. This allows SetResource() to be const, meaning
+  /// that a const ResourceHolder instance can have resources cached in it.
+  /// Use fixed-sized array to avoid locking when growing resources.
   mutable std::array<ResourceGroup, kInlineResourceGroups> resources_;
-  // When there are more than kInlineResourceGroups in the program, we use this
-  // vector for resources belonging to additional Renderers.
+  /// When there are more than kInlineResourceGroups in the program, we use this
+  /// vector for resources belonging to additional Renderers.
   mutable base::AllocVector<ResourceGroup> overflow_resources_;
-  // Protect access to overflow_resources_. The lock is mutable so that we can
-  // lock in const functions.
+  /// Protect access to overflow_resources_. The lock is mutable so that we can
+  /// lock in const functions.
   mutable base::ReadWriteLock overflow_lock_;
-  // Track the number of resources. It is mutable so that we update counts in
-  // const functions.
+  /// Track the number of resources. It is mutable so that we update counts in
+  /// const functions.
   mutable std::atomic<int> resource_count_;
 
-  // List of fields that the ResourceHolder contains.
+  /// List of fields that the ResourceHolder contains.
   base::AllocVector<FieldBase*> fields_;
 
-  // An identifying name for this holder that can appear in debug streams and
-  // printouts of a scene.
+  /// An identifying name for this holder that can appear in debug streams and
+  /// printouts of a scene.
   Field<std::string> label_;
 };
 

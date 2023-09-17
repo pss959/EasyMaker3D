@@ -67,12 +67,12 @@ namespace ion {
 namespace portgfx {
 namespace {
 
-// X11 and GLX entry points used in GlxContext are dynamically loaded at
-// runtime, because test code may run on Linux on a headless (i.e. without X11)
-// machine. Such tests do not expect to be able to do any rendering, so we still
-// want to be able to link, load, and execute the test binary.  Attempting to
-// create a GlxContext will fail but this is to be expected and handled
-// gracefully.
+/// X11 and GLX entry points used in GlxContext are dynamically loaded at
+/// runtime, because test code may run on Linux on a headless (i.e. without X11)
+/// machine. Such tests do not expect to be able to do any rendering, so we still
+/// want to be able to link, load, and execute the test binary.  Attempting to
+/// create a GlxContext will fail but this is to be expected and handled
+/// gracefully.
 struct EntryPoints {
 #define ENTRYPOINT_DECL(x) decltype(&::x) x;
   ITERATE_X11_LIST(ENTRYPOINT_DECL)

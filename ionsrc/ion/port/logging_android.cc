@@ -23,7 +23,7 @@ limitations under the License.
 
 namespace {
 
-// Customized from ion/base/stringutils SplitStringWithoutSkipping.
+/// Customized from ion/base/stringutils SplitStringWithoutSkipping.
 std::vector<std::string> SplitStringOnLineBreaks(const std::string& str) {
   std::vector<std::string> strings;
 
@@ -48,7 +48,7 @@ class AndroidLogEntryWriter : public ion::port::LogEntryWriter {
   AndroidLogEntryWriter() {}
   virtual ~AndroidLogEntryWriter() {}
 
-  // LogEntryWriter impl.
+  /// LogEntryWriter impl.
   virtual void Write(ion::port::LogSeverity severity,
                      const std::string& message) {
     android_LogPriority priority;
@@ -81,7 +81,7 @@ class AndroidLogEntryWriter : public ion::port::LogEntryWriter {
     fprintf(stderr, "%s %s\n", GetSeverityName(severity), message.c_str());
   }
 
-  // Sets the logging tag.  Android supports a maximum of 23 characters.
+  /// Sets the logging tag.  Android supports a maximum of 23 characters.
   static void SetTag(const char* tag) {
     strncpy(tag_, tag, 23U);
   }

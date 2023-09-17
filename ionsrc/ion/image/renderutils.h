@@ -28,17 +28,17 @@ limitations under the License.
 namespace ion {
 namespace image {
 
-// Creates and returns an Image representing a Texture. This uses the Renderer
-// to render the Texture into a new Image that is created using allocator. The
-// new Image will have dimensions width x height, which do not have to be the
-// same as the dimensions of the texture. The Renderer must be the same one
-// that was used previously to render a shape using the Texture.
+/// Creates and returns an Image representing a Texture. This uses the Renderer
+/// to render the Texture into a new Image that is created using allocator. The
+/// new Image will have dimensions width x height, which do not have to be the
+/// same as the dimensions of the texture. The Renderer must be the same one
+/// that was used previously to render a shape using the Texture.
 ION_API const gfx::ImagePtr RenderTextureImage(
     const gfx::TexturePtr& texture, uint32 width, uint32 height,
     const gfx::RendererPtr& renderer, const base::AllocatorPtr& allocator);
 
-// This is similar to RenderTextureImage(), but instead operates on one face of
-// a CubeMapTexture.
+/// This is similar to RenderTextureImage(), but instead operates on one face of
+/// a CubeMapTexture.
 ION_API const gfx::ImagePtr RenderCubeMapTextureFaceImage(
     const gfx::CubeMapTexturePtr& cubemap, gfx::CubeMapTexture::CubeFace face,
     uint32 width, uint32 height,

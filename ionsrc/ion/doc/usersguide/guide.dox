@@ -24,41 +24,8 @@ namespace ion {  // Avoids putting "ion::" in front of all types.
 // -----------------------------------------------------------------------------
 
 /*! \page UsersGuide Ion Users Guide
-
-\section UG_TOC Table of Contents
-<ul>
-  <li>\ref UG_Intro</li>
-  <ul>
-    <li>\ref UG_WhatIsIon
-    <li>\ref UG_AboutThisGuide
-  </ul>
-  <li>\ref UG_Libraries</li>
-  <ul>
-    <li>\ref UG_CoreLibraries
-    <li>\ref UG_OptionalLibraries
-  </ul>
-  <li>\ref UG_Building
-  <li>\ref UG_MainClasses</li>
-  <ul>
-    <li>\ref UG_SceneConstruction
-    <li>\ref UG_SceneRendering
-    <li>\ref UG_SmartPointers
-  </ul>
-  <li>\ref UG_Rectangle_Example</li>
-  <li>\ref UG_Shaders_Example</li>
-  <li>\ref UG_Texture_Example</li>
-  <li>\ref UG_Shape_Example</li>
-  <li>\ref UG_Hierarchy_Example</li>
-  <li>\ref UG_Multipass_Example</li>
-  <li>\ref UG_Mapped_Example</li>
-  <li>\ref UG_Sharing_Example</li>
-  <li>\ref UG_Text_Example</li>
-  <li>\ref UG_DevelopmentTools</li>
-</ul>
-
-<hr> <!------------------------------------------------------------------------>
+\tableofcontents
 \section UG_Intro Introduction
-
 \subsection UG_WhatIsIon What Is Ion?
 
 Ion is a set of C++ libraries that make it easier to develop cross-platform
@@ -84,7 +51,7 @@ Note that all classes and functions mentioned in this guide are assumed to be
 in the "ion" namespace. For example, the gfx::Shader class is fully
 namespace-qualified as ion::gfx::Shader.
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 \section UG_Libraries Ion Libraries
 
 Ion is organized into a set of core libraries that provide the main
@@ -157,11 +124,11 @@ user interface that lets you interact with your application. For example, you
 can modify application-specific settings, examine OpenGL resource use, and edit
 shader code on the fly.
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 \section UG_Building Building an Application with Ion
 \todo Fill this in with open-source building info.
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 \section UG_MainClasses The Main Ion Classes
 
 This section provides a brief overview of the main Ion classes. It is not
@@ -269,7 +236,7 @@ base::SharedPtr may be replaced with <tt>std::shared_ptr</tt> in the
 future. However, if you use the typedefs, this change should not be very
 noticeable.
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 <img style="float: right; width: 180px; margin-left: 20px"
  src="rectangle_thumbnail.png" alt="Rectangle Thumbnail">
 
@@ -376,7 +343,7 @@ program to terminate.
 We will modify this program in the subsequent sections to illustrate more Ion
 features.
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 <img style="float: right; width: 180px; margin-left: 20px"
  src="shaders_thumbnail.png" alt="Shaders Thumbnail">
 
@@ -460,7 +427,7 @@ our new registry to create the uniforms:
 
 The rest of the code is identical to that in the previous example.
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 <img style="float: right; width: 180px; margin-left: 20px"
  src="texture_thumbnail.png" alt="Texture Thumbnail">
 
@@ -586,7 +553,7 @@ Then we add uniforms to the node:
 \skipline uTextureMatrix
 \skipline uSampler
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 <img style="float: right; width: 180px; margin-left: 20px"
  src="shape_thumbnail.png" alt="Shape Thumbnail">
 
@@ -753,7 +720,7 @@ modelview matrix values to create a different view:
 \skip proj
 \until AxisY
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 <img style="float: right; width: 180px; margin-left: 20px"
  src="hierarchy_thumbnail.png" alt="Hierarchy Thumbnail">
 
@@ -781,7 +748,7 @@ they will inherit state from it. All of the nodes have some state associated
 with them: state tables, shaders, and uniform values. Each node also has one
 shape (magenta) that illustrate the effects of the state present at the node.
 
-\diafile hierarchy.dia
+\image html hierarchy.svg
 
 Here are some rules about how state is inherited through a scene:
 
@@ -894,19 +861,19 @@ Finally, we put all the pieces together in the \c BuildGraph() function:
 \skip BuildGraph
 \until }
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 \section UG_Multipass_Example Example 6: Using Framebuffer Objects for Multipass Rendering
 \todo Write this!
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 \section UG_Mapped_Example Example 7: Using Mapped Buffers
 \todo Write this!
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 \section UG_Sharing_Example Example 8: Sharing Objects
 \todo Write this!
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 <img style="float: right; width: 180px; margin-left: 20px"
  src="text_thumbnail.png" alt="Text Thumbnail">
 
@@ -1062,7 +1029,7 @@ In a real, interactive application, you may want to keep the text::Builder
 instance around to be able to make modifications to the text, such as changing
 its color or changing what string is displayed.
 
-<hr> <!------------------------------------------------------------------------>
+<hr> <!-- ----------------------------------------------------------------- -->
 \section UG_DevelopmentTools Development Tools
 \todo Write this!
 

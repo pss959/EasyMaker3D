@@ -42,12 +42,12 @@ using gfx::ShaderPtr;
 }  // anonymous namespace
 
 
-// Class that contains the details of ShaderManager's implementation.
+/// Class that contains the details of ShaderManager's implementation.
 class ShaderManager::ShaderManagerData : public base::Allocatable {
  public:
-  // Helper struct that stores the latest info log for a shader program, a
-  // WeakPtr to the program itself, and the composers used to construct the
-  // program's shaders.
+  /// Helper struct that stores the latest info log for a shader program, a
+  /// WeakPtr to the program itself, and the composers used to construct the
+  /// program's shaders.
   struct ProgramInfo {
     ProgramInfo() : program(ShaderProgramPtr()) {}
     explicit ProgramInfo(const ShaderProgramPtr& program_in)
@@ -65,7 +65,7 @@ class ShaderManager::ShaderManagerData : public base::Allocatable {
       : programs_(owner) {}
   ~ShaderManagerData() override {}
 
-  // Adds a ProgramInfo to the map of infos.
+  /// Adds a ProgramInfo to the map of infos.
   void AddProgramInfo(const std::string& name, const ProgramInfo& info) {
     std::lock_guard<std::mutex> guard(mutex_);
     if (FindProgramInfo(name) != programs_.end()) {
@@ -75,8 +75,8 @@ class ShaderManager::ShaderManagerData : public base::Allocatable {
     programs_[name] = info;
   }
 
-  // This and the below functions follow the same interface as their
-  // counterparts in ShaderManager. See shadermanager.h for detailed comments.
+  /// This and the below functions follow the same interface as their
+  /// counterparts in ShaderManager. See shadermanager.h for detailed comments.
   const ShaderProgramPtr GetShaderProgram(const std::string& name) {
     std::lock_guard<std::mutex> guard(mutex_);
     ProgramMap::iterator it = FindProgramInfo(name);

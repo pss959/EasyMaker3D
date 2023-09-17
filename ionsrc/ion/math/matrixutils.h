@@ -18,11 +18,10 @@ limitations under the License.
 #ifndef ION_MATH_MATRIXUTILS_H_
 #define ION_MATH_MATRIXUTILS_H_
 
-//
-// This file contains operators and free functions that define generic Matrix
-// operations. See transformutils.h for Matrix operations that are specific to
-// 3D transformations.
-//
+/// \file
+/// This file contains operators and free functions that define generic Matrix
+/// operations. See transformutils.h for Matrix operations that are specific to
+/// 3D transformations.
 
 #include "ion/math/matrix.h"
 #include "ion/math/utils.h"
@@ -37,8 +36,8 @@ namespace math {
 
 namespace internal {
 
-// Multiplies a matrix and some type of column vector (Vector or Point) to
-// produce another column vector of the same type.
+/// Multiplies a matrix and some type of column vector (Vector or Point) to
+/// produce another column vector of the same type.
 template <int Dimension, typename T, typename VectorType>
 VectorType MultiplyMatrixAndVector(const Matrix<Dimension, T>& m,
                                    const VectorType& v) {
@@ -56,7 +55,7 @@ VectorType MultiplyMatrixAndVector(const Matrix<Dimension, T>& m,
 // Public functions.
 //-----------------------------------------------------------------------------
 
-// Returns the transpose of a matrix.
+/// Returns the transpose of a matrix.
 template <int Dimension, typename T>
 Matrix<Dimension, T> Transpose(const Matrix<Dimension, T>& m) {
   Matrix<Dimension, T> result;
@@ -67,23 +66,23 @@ Matrix<Dimension, T> Transpose(const Matrix<Dimension, T>& m) {
   return result;
 }
 
-// Multiplies a Matrix and a column Vector of the same Dimension to produce
-// another column Vector.
+/// Multiplies a Matrix and a column Vector of the same Dimension to produce
+/// another column Vector.
 template <int Dimension, typename T>
 inline Vector<Dimension, T> operator*(const Matrix<Dimension, T>& m,
                                       const Vector<Dimension, T>& v) {
   return internal::MultiplyMatrixAndVector(m, v);
 }
 
-// Multiplies a Matrix and a Point of the same Dimension to produce another
-// Point.
+/// Multiplies a Matrix and a Point of the same Dimension to produce another
+/// Point.
 template <int Dimension, typename T>
 inline Point<Dimension, T> operator*(const Matrix<Dimension, T>& m,
                                      const Point<Dimension, T>& p) {
   return internal::MultiplyMatrixAndVector(m, p);
 }
 
-// Returns a particular row of a matrix as a vector.
+/// Returns a particular row of a matrix as a vector.
 template <int Dimension, typename T>
 Vector<Dimension, T> Row(const Matrix<Dimension, T>& m, int row) {
   Vector<Dimension, T> result;
@@ -94,7 +93,7 @@ Vector<Dimension, T> Row(const Matrix<Dimension, T>& m, int row) {
   return result;
 }
 
-// Returns a particular column of a matrix as a vector.
+/// Returns a particular column of a matrix as a vector.
 template <int Dimension, typename T>
 Vector<Dimension, T> Column(const Matrix<Dimension, T>& m, int col) {
   Vector<Dimension, T> result;
@@ -105,8 +104,8 @@ Vector<Dimension, T> Column(const Matrix<Dimension, T>& m, int col) {
   return result;
 }
 
-// Returns a matrix with the specified row and column removed, yielding a matrix
-// that is one dimension smaller.
+/// Returns a matrix with the specified row and column removed, yielding a matrix
+/// that is one dimension smaller.
 template <int Dimension, typename T>
 Matrix<Dimension - 1, T> WithoutDimension(const Matrix<Dimension, T>& m,
                                           int dim) {
@@ -120,8 +119,8 @@ Matrix<Dimension - 1, T> WithoutDimension(const Matrix<Dimension, T>& m,
   return result;
 }
 
-// Returns a matrix expanded by an identity row and column in the specified
-// dimension, yielding a matrix which is one dimension larger.
+/// Returns a matrix expanded by an identity row and column in the specified
+/// dimension, yielding a matrix which is one dimension larger.
 template <int Dimension, typename T>
 Matrix<Dimension + 1, T> WithIdentityDimension(const Matrix<Dimension, T>& m,
                                                int dim) {
@@ -141,49 +140,49 @@ Matrix<Dimension + 1, T> WithIdentityDimension(const Matrix<Dimension, T>& m,
   return result;
 }
 
-// Returns the determinant of the matrix. This function is defined for all the
-// typedef'ed Matrix types.
+/// Returns the determinant of the matrix. This function is defined for all the
+/// typedef'ed Matrix types.
 template <int Dimension, typename T> ION_API
 T Determinant(const Matrix<Dimension, T>& m);
 
-// Returns the signed cofactor matrix (adjunct) of the matrix. This function is
-// defined for all the typedef'ed Matrix types.
+/// Returns the signed cofactor matrix (adjunct) of the matrix. This function is
+/// defined for all the typedef'ed Matrix types.
 template <int Dimension, typename T> ION_API
 Matrix<Dimension, T> CofactorMatrix(const Matrix<Dimension, T>& m);
 
-// Returns the adjugate of the matrix, which is defined as the transpose of the
-// cofactor matrix. This function is defined for all the typedef'ed Matrix
-// types.  The determinant of the matrix is computed as a side effect, so it is
-// returned in the determinant parameter if it is not null.
+/// Returns the adjugate of the matrix, which is defined as the transpose of the
+/// cofactor matrix. This function is defined for all the typedef'ed Matrix
+/// types.  The determinant of the matrix is computed as a side effect, so it is
+/// returned in the determinant parameter if it is not null.
 template <int Dimension, typename T> ION_API
 Matrix<Dimension, T> AdjugateWithDeterminant(
     const Matrix<Dimension, T>& m, T* determinant);
 
-// Returns the adjugate of the matrix, which is defined as the transpose of the
-// cofactor matrix. This function is defined for all the typedef'ed Matrix
-// types.
+/// Returns the adjugate of the matrix, which is defined as the transpose of the
+/// cofactor matrix. This function is defined for all the typedef'ed Matrix
+/// types.
 template <int Dimension, typename T>
 Matrix<Dimension, T> Adjugate(const Matrix<Dimension, T>& m) {
   return AdjugateWithDeterminant<Dimension, T>(m, nullptr);
 }
 
-// Returns the inverse of the matrix. This function is defined for all the
-// typedef'ed Matrix types.  The determinant of the matrix is computed as a
-// side effect, so it is returned in the determinant parameter if it is not
-// null. If the determinant is 0, the returned matrix has all zeroes.
+/// Returns the inverse of the matrix. This function is defined for all the
+/// typedef'ed Matrix types.  The determinant of the matrix is computed as a
+/// side effect, so it is returned in the determinant parameter if it is not
+/// null. If the determinant is 0, the returned matrix has all zeroes.
 template <int Dimension, typename T> ION_API
 Matrix<Dimension, T> InverseWithDeterminant(
     const Matrix<Dimension, T>& m, T* determinant);
 
-// Returns the inverse of the matrix. This function is defined for all the
-// typedef'ed Matrix types. If the determinant of the matrix is 0, the returned
-// matrix has all zeroes.
+/// Returns the inverse of the matrix. This function is defined for all the
+/// typedef'ed Matrix types. If the determinant of the matrix is 0, the returned
+/// matrix has all zeroes.
 template <int Dimension, typename T>
 inline Matrix<Dimension, T> Inverse(const Matrix<Dimension, T>& m) {
   return InverseWithDeterminant<Dimension, T>(m, nullptr);
 }
 
-// Returns true if all elements of two matrices are equal within a tolerance.
+/// Returns true if all elements of two matrices are equal within a tolerance.
 template <int Dimension, typename T>
 bool AlmostEqual(const Matrix<Dimension, T>& m0,
                  const Matrix<Dimension, T>& m1, T tolerance) {
@@ -196,22 +195,22 @@ bool AlmostEqual(const Matrix<Dimension, T>& m0,
   return true;
 }
 
-// Alias for AlmostEqual with matrix parameters.
+/// Alias for AlmostEqual with matrix parameters.
 template <int Dimension, typename T>
 bool MatricesAlmostEqual(const Matrix<Dimension, T>& m0,
                          const Matrix<Dimension, T>& m1, T tolerance) {
   return AlmostEqual(m0, m1, tolerance);
 }
 
-// Returns true if the dot product of all column vector pairs in the matrix
-// is less than a provided tolerance, and if all column vectors have unit
-// length. Return false otherwise.
+/// Returns true if the dot product of all column vector pairs in the matrix
+/// is less than a provided tolerance, and if all column vectors have unit
+/// length. Return false otherwise.
 template <int Dimension, typename T>
 bool MatrixAlmostOrthogonal(const Matrix<Dimension, T>& m, T tolerance);
 
-// Scales the rightmost column of a 4x4 Matrix (except for the bottom-right
-// element) by a constant scalar. This can be used to exaggerate translation
-// effects in an affine transformation.
+/// Scales the rightmost column of a 4x4 Matrix (except for the bottom-right
+/// element) by a constant scalar. This can be used to exaggerate translation
+/// effects in an affine transformation.
 template <typename T>
 inline static void ScaleTranslationComponent(Matrix<4, T>* matrix, T scale) {
   (*matrix)(0, 3) *= scale;

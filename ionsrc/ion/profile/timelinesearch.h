@@ -28,28 +28,28 @@ limitations under the License.
 
 typedef std::function<bool(const TimelineNode*)> Predicate;
 
-// Search all nodes in a timeline that match a predicate. Threads are visited in
-// arbitray order (actually the order in which their TraceRecorders were
-// created). Nodes under a thread are visited in order of increasing begin
-// timestamps.
+/// Search all nodes in a timeline that match a predicate. Threads are visited in
+/// arbitray order (actually the order in which their TraceRecorders were
+/// created). Nodes under a thread are visited in order of increasing begin
+/// timestamps.
 class TimelineSearch {
  public:
-  // Searches nodes by type.
+  /// Searches nodes by type.
   TimelineSearch(const Timeline& timeline, TimelineNode::Type node_type);
-  // Searches nodes by type and name.
+  /// Searches nodes by type and name.
   TimelineSearch(const Timeline& timeline, TimelineNode::Type node_type,
                  const std::string& node_name);
-  // Searches nodes by type and time range. Only nodes that start and end in
-  // the given range are returned.
+  /// Searches nodes by type and time range. Only nodes that start and end in
+  /// the given range are returned.
   TimelineSearch(const Timeline& timeline, TimelineNode::Type node_type,
                  uint32 begin, uint32 end);
-  // Searches nodes by type, name and time range. Only nodes that start and end
-  // in the given range are returned.
+  /// Searches nodes by type, name and time range. Only nodes that start and end
+  /// in the given range are returned.
   TimelineSearch(const Timeline& timeline, TimelineNode::Type node_type,
                  const std::string& node_name, uint32 begin, uint32 end);
-  // Searches threads by id. Returned nodes are guaranteed to be threads.
+  /// Searches threads by id. Returned nodes are guaranteed to be threads.
   TimelineSearch(const Timeline& timeline, std::thread::id thread_id);
-  // Searches by arbitrary predicate.
+  /// Searches by arbitrary predicate.
   TimelineSearch(const Timeline& timeline, const Predicate& predicate);
 
   class const_iterator {

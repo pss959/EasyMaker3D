@@ -77,8 +77,8 @@ class IonRootHandler : public HttpServer::RequestHandler {
   }
 };
 
-// Override / to redirect to /ion so that when clients connect to the root they
-// will not get a 404.
+/// Override / to redirect to /ion so that when clients connect to the root they
+/// will not get a 404.
 class RootHandler : public HttpServer::RequestHandler {
  public:
   RootHandler() : RequestHandler("/") {}

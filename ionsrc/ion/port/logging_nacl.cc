@@ -44,14 +44,14 @@ static PP_LogLevel GetPPLogLevelFromSeverity(ion::port::LogSeverity severity) {
   }
 }
 
-// A logger class that pipes messages logged using the LOG macros to the Chrome
-// developer console.
+/// A logger class that pipes messages logged using the LOG macros to the Chrome
+/// developer console.
 class NaClLogEntryWriter : public ion::port::LogEntryWriter {
  public:
   NaClLogEntryWriter() {}
   virtual ~NaClLogEntryWriter() {}
 
-  // LogEntryWriter impl.
+  /// LogEntryWriter impl.
   virtual void Write(ion::port::LogSeverity severity,
                      const std::string& message) {
     // Don't cache the module so we aren't dependent on initialization order.

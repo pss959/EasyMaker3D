@@ -19,11 +19,20 @@
 # macro substitution for doxygen input files. The input file is named on the
 # command line; output goes to standard output.
 
+# Set this to 1 to use the GitHub URLs or 0 to use local ones.
+declare -r use_github=0
+
 # These are the tokens that are replaced:
 declare -A tokens
-tokens["CODE_URL"]="https://github.com/google/ion/tree/master/ion"
-tokens["ION_URL"]="https://github.com/google/ion"
-tokens["ION_UG_URL"]="https://google.github.io/ion/_users_guide.html"
+if [[ $use_github == 1 ]] ; then
+  tokens["CODE_URL"]="https://github.com/google/ion/tree/master/ion"
+  tokens["ION_URL"]="https://github.com/google/ion"
+  tokens["ION_UG_URL"]="https://google.github.io/ion/_users_guide.html"
+else
+  tokens["CODE_URL"]="."
+  tokens["ION_URL"]="."
+  tokens["ION_UG_URL"]="./_users_guide.html"
+fi
 
 # Set up the arguments for replace_strings.py:
 declare args="--input $1"

@@ -29,43 +29,44 @@ limitations under the License.
 #include "ion/base/static_assert.h"
 #include "ion/port/atomic.h"
 
-// Use the below ION_DECLARE_STATIC_* macros to safely initialize a local static
-// pointer variable with 4- or 8-byte size. These macros will not work for
-// global statics, and these macros are not necessary for POD (Plain Old
-// Datatype) variables.
-//
-// For example, to safely create a function that returns a singleton instance:
-//   MySingletonClass* GetSingleton() {
-//     ION_DECLARE_SAFE_STATIC_POINTER_WITH_CONSTRUCTOR(
-//         MySingletonClass, s_singleton, (new MySingletonClass(arg1, arg2)));
-//     return s_singleton;
-//   }
-// The macro declares s_singleton with the right type and initializes it with
-// the passed constructor.
-//
-// Some more examples:
-//
-//   // Declare foo_ptr as a pointer to a single int.
-//   ION_DECLARE_SAFE_STATIC_POINTER(int, foo_ptr);
-//   // Declare foo_array as an int* of 10 ints.
-//   ION_DECLARE_SAFE_STATIC_ARRAY(int, foo_array, 10);
-//   // Declare foo_struct as a pointer to MyStructDeletedSecond.
-//   ION_DECLARE_SAFE_STATIC_POINTER(MyStructDeletedSecond, foo_struct);
-//   // Declare foo_struct2 as a pointer to MyStructDeletedFirst, calling a
-//   // non-default constructor. The constructor must be in parentheses for the
-//   // macro to expand correctly.
-//   ION_DECLARE_SAFE_STATIC_POINTER_WITH_CONSTRUCTOR(
-//       MyStructDeletedFirst, foo_struct2, (new MyStructDeletedFirst(2)));
-//
-// All pointer-types initialized with ION_DECLARE_STATIC_* are added to a static
-// vector of pointers through the StaticDeleter class, below. StaticDeleter is
-// derived from Shareable so it can be managed by a SharedPtr. When it is
-// destroyed as the program exits it cleans up any pointers that were added to
-// it in the reverse order they were created. This ensures proper dependency
-// handling.
+/// \file
+/// Use the below ION_DECLARE_STATIC_* macros to safely initialize a local static
+/// pointer variable with 4- or 8-byte size. These macros will not work for
+/// global statics, and these macros are not necessary for POD (Plain Old
+/// Datatype) variables.
+///
+/// For example, to safely create a function that returns a singleton instance:
+///   MySingletonClass* GetSingleton() {
+///     ION_DECLARE_SAFE_STATIC_POINTER_WITH_CONSTRUCTOR(
+///         MySingletonClass, s_singleton, (new MySingletonClass(arg1, arg2)));
+///     return s_singleton;
+///   }
+/// The macro declares s_singleton with the right type and initializes it with
+/// the passed constructor.
+///
+/// Some more examples:
+///
+///   /// Declare foo_ptr as a pointer to a single int.
+///   ION_DECLARE_SAFE_STATIC_POINTER(int, foo_ptr);
+///   /// Declare foo_array as an int* of 10 ints.
+///   ION_DECLARE_SAFE_STATIC_ARRAY(int, foo_array, 10);
+///   /// Declare foo_struct as a pointer to MyStructDeletedSecond.
+///   ION_DECLARE_SAFE_STATIC_POINTER(MyStructDeletedSecond, foo_struct);
+///   /// Declare foo_struct2 as a pointer to MyStructDeletedFirst, calling a
+///   /// non-default constructor. The constructor must be in parentheses for the
+///   /// macro to expand correctly.
+///   ION_DECLARE_SAFE_STATIC_POINTER_WITH_CONSTRUCTOR(
+///       MyStructDeletedFirst, foo_struct2, (new MyStructDeletedFirst(2)));
+///
+/// All pointer-types initialized with ION_DECLARE_STATIC_* are added to a static
+/// vector of pointers through the StaticDeleter class, below. StaticDeleter is
+/// derived from Shareable so it can be managed by a SharedPtr. When it is
+/// destroyed as the program exits it cleans up any pointers that were added to
+/// it in the reverse order they were created. This ensures proper dependency
+/// handling.
 
-// Uses AtomicCompareAndSwap to uniquely set the value of variable with
-// new_variable. If the swap fails then destroys new_variable.
+/// Uses AtomicCompareAndSwap to uniquely set the value of variable with
+/// new_variable. If the swap fails then destroys new_variable.
 #define ION_SAFE_ASSIGN_STATIC_POINTER(                          \
     type, variable, new_variable, add_func, destroyer) \
   type null = nullptr;                                           \
@@ -75,7 +76,7 @@ limitations under the License.
     destroyer new_variable;                                      \
   }
 
-// Declares and thread-safely assigns the value of a static variable.
+/// Declares and thread-safely assigns the value of a static variable.
 #define ION_DECLARE_SAFE_STATIC(                                         \
     type, variable, constructor, add_func, destroyer)                    \
   static std::atomic<type> atomic_##variable; /* Zero-initialized */     \
@@ -95,7 +96,7 @@ limitations under the License.
 //
 //------------------------------------------------------------------------------
 
-// Declares a static array variable.
+/// Declares a static array variable.
 #define ION_DECLARE_SAFE_STATIC_ARRAY(type, variable, count)            \
   ION_DECLARE_SAFE_STATIC(                                              \
       type*,                                                            \
@@ -104,7 +105,7 @@ limitations under the License.
       ion::base::StaticDeleterDeleter::GetInstance()->AddArrayToDelete, \
       delete[])
 
-// Declare a static non-array pointer and calls a default constructor.
+/// Declare a static non-array pointer and calls a default constructor.
 #define ION_DECLARE_SAFE_STATIC_POINTER(type, variable)                   \
   ION_DECLARE_SAFE_STATIC(                                                \
       type*,                                                              \
@@ -113,9 +114,9 @@ limitations under the License.
       ion::base::StaticDeleterDeleter::GetInstance()->AddPointerToDelete, \
       delete)
 
-// Declare a static non-array pointer and calls a non-default constructor. The
-// constructor parameter must be enclosed in parenthesis for the macro to expand
-// correctly.
+/// Declare a static non-array pointer and calls a non-default constructor. The
+/// constructor parameter must be enclosed in parenthesis for the macro to expand
+/// correctly.
 #define ION_DECLARE_SAFE_STATIC_POINTER_WITH_CONSTRUCTOR(                 \
     type, variable, constructor)                                          \
   ION_DECLARE_SAFE_STATIC(                                                \
@@ -125,7 +126,7 @@ limitations under the License.
       ion::base::StaticDeleterDeleter::GetInstance()->AddPointerToDelete, \
       delete)
 
-// Declare a static array variable with initialzer list.
+/// Declare a static array variable with initialzer list.
 #define ION_DECLARE_SAFE_STATIC_ARRAY_WITH_INITIALIZERS(type, variable, count, \
                                                         ...)                   \
   ION_DECLARE_SAFE_STATIC(                                                     \
@@ -148,11 +149,11 @@ class StaticDeleterBase {
   std::string type_name_;
 };
 
-// This class should not be used directly. Only use it through one of the above
-// ION_DECLARE_STATIC_* defines.
-//
-// StaticDeleter is a convenience class that holds a static pointer that needs
-// to be deleted at shutdown.
+/// This class should not be used directly. Only use it through one of the above
+/// ION_DECLARE_STATIC_* defines.
+///
+/// StaticDeleter is a convenience class that holds a static pointer that needs
+/// to be deleted at shutdown.
 template <typename T> class StaticDeleter : public StaticDeleterBase {
  public:
   StaticDeleter(const std::string& name, T* pointer_to_delete)
@@ -160,17 +161,17 @@ template <typename T> class StaticDeleter : public StaticDeleterBase {
         pointer_to_delete_(pointer_to_delete) {}
 
  private:
-  // The destructor is private because all base::Shareable classes must have
-  // protected or private destructors.
+  /// The destructor is private because all base::Shareable classes must have
+  /// protected or private destructors.
   ~StaticDeleter() override {
     delete pointer_to_delete_;
   }
 
-  // Vector of pointers to delete at destruction.
+  /// Vector of pointers to delete at destruction.
   T* pointer_to_delete_;
 };
 
-// Specialization for arrays.
+/// Specialization for arrays.
 template <typename T> class StaticDeleter<T[]> : public StaticDeleterBase {
  public:
   StaticDeleter(const std::string& name, T* pointer_to_delete)
@@ -178,71 +179,71 @@ template <typename T> class StaticDeleter<T[]> : public StaticDeleterBase {
         pointer_to_delete_(pointer_to_delete) {}
 
  private:
-  // The destructor is private because all base::Shareable classes must have
-  // protected or private destructors.
+  /// The destructor is private because all base::Shareable classes must have
+  /// protected or private destructors.
   ~StaticDeleter() override {
     delete [] pointer_to_delete_;
   }
 
-  // Vector of array pointers to delete at destruction.
+  /// Vector of array pointers to delete at destruction.
   T* pointer_to_delete_;
 };
 
-// StaticDeleterDeleter is an internal class that holds and deletes
-// StaticDeleters; it should not be used directly. Though it is an internal
-// class, it must be decorated since it is required by StaticDeleters that may
-// be instantiated in other translation units. The single StaticDeleterDeleter
-// is destroyed at program shutdown, and destroys all StaticDeleters in the
-// reverse order they were created with the above macros.
+/// StaticDeleterDeleter is an internal class that holds and deletes
+/// StaticDeleters; it should not be used directly. Though it is an internal
+/// class, it must be decorated since it is required by StaticDeleters that may
+/// be instantiated in other translation units. The single StaticDeleterDeleter
+/// is destroyed at program shutdown, and destroys all StaticDeleters in the
+/// reverse order they were created with the above macros.
 class ION_API StaticDeleterDeleter : public Shareable {
  public:
   StaticDeleterDeleter();
   ~StaticDeleterDeleter() override;
 
-  // Adds a regular pointer to be deleted when this class is destroyed.
+  /// Adds a regular pointer to be deleted when this class is destroyed.
   template <typename T>
   void AddPointerToDelete(const std::string& name, T* ptr) {
     std::lock_guard<std::mutex> locker(mutex_);
     deleters_.push_back(new StaticDeleter<T>(name, ptr));
   }
-  // Adds an array pointer to be deleted when this class is destroyed.
+  /// Adds an array pointer to be deleted when this class is destroyed.
   template <typename T>
   void AddArrayToDelete(const std::string& name, T* ptr) {
     std::lock_guard<std::mutex> locker(mutex_);
     deleters_.push_back(new StaticDeleter<T[]>(name, ptr));
   }
 
-  // Returns a pointer to the global instance.
+  /// Returns a pointer to the global instance.
   static StaticDeleterDeleter* GetInstance();
 
-  // Returns the deleter at the passed index. Returns nullptr if the index is
-  // invalid.
+  /// Returns the deleter at the passed index. Returns nullptr if the index is
+  /// invalid.
   const StaticDeleterBase* GetDeleterAt(size_t index) const {
     return index < deleters_.size() ? deleters_[index] : nullptr;
   }
 
-  // Returns the number of deleters in this.
+  /// Returns the number of deleters in this.
   size_t GetDeleterCount() const { return deleters_.size(); }
 
-  // Call this function once, and only once, at the end of a program, to
-  // explicitly destroy all StaticDeleters (including the StaticDeleterDeleter
-  // instance). Any attempt to access pointers declared with the macros in this
-  // file will fail after this call. Even if this function is never called,
-  // however, the static instance will still be destroyed at program shutdown,
-  // it will just probably happen after any memory trackers are destroyed,
-  // causing them to report erroneous leaks.
+  /// Call this function once, and only once, at the end of a program, to
+  /// explicitly destroy all StaticDeleters (including the StaticDeleterDeleter
+  /// instance). Any attempt to access pointers declared with the macros in this
+  /// file will fail after this call. Even if this function is never called,
+  /// however, the static instance will still be destroyed at program shutdown,
+  /// it will just probably happen after any memory trackers are destroyed,
+  /// causing them to report erroneous leaks.
   static void DestroyInstance();
 
  private:
-  // Needed for construction order and thread safety--see impl notes.
-  // Must only be called from GetInstance(). The string parameter is
-  // ignored but needed for consistency with AddPointerToDelete.
+  /// Needed for construction order and thread safety--see impl notes.
+  /// Must only be called from GetInstance(). The string parameter is
+  /// ignored but needed for consistency with AddPointerToDelete.
   static void SetInstancePtr(const std::string&,
                              StaticDeleterDeleter* instance);
 
   std::vector<StaticDeleterBase*> deleters_;
 
-  // Mutex to lock the pointer vector.
+  /// Mutex to lock the pointer vector.
   std::mutex mutex_;
 };
 

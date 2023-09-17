@@ -24,13 +24,13 @@ limitations under the License.
 namespace ion {
 namespace profile {
 
-// A timeline metric processes a timeline, computes a set of metrics and adds
-// them to a Benchmark object. Instances of this class need to be registerd with
-// the CallTraceManager.
+/// A timeline metric processes a timeline, computes a set of metrics and adds
+/// them to a Benchmark object. Instances of this class need to be registerd with
+/// the CallTraceManager.
 class TimelineMetric {
  public:
   virtual ~TimelineMetric() {}
-  // Run the metric on the |timeline| and add results to |benchmark|.
+  /// Run the metric on the |timeline| and add results to |benchmark|.
   virtual void Run(const Timeline& timeline,
                    analytics::Benchmark* benchmark) const = 0;
 };

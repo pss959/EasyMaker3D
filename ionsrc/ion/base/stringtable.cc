@@ -56,13 +56,13 @@ size_t HashString(const char* string, size_t len) {
 }  // namespace
 
 struct StringTable::StringEntry {
-  // The stored string.
+  /// The stored string.
   std::unique_ptr<const char[]> string;
 
-  // This string's StringIndex.
+  /// This string's StringIndex.
   StringIndex index;
 
-  // The next StringEntry in the hashmap, as indexed by |hash_array_|.
+  /// The next StringEntry in the hashmap, as indexed by |hash_array_|.
   StringIndex hash_next;
 };
 

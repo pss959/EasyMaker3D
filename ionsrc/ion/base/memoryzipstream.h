@@ -28,49 +28,49 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// A MemoryZipStream represents ZIP data in memory; the data may represent one
-// or more files or directories in ZIP format.
+/// A MemoryZipStream represents ZIP data in memory; the data may represent one
+/// or more files or directories in ZIP format.
 class MemoryZipStream : public Allocatable {
  public:
   typedef AllocVector<uint8> DataVector;
 
-  // Helper struct to track the zip stream.
+  /// Helper struct to track the zip stream.
   struct ZipStreamInfo;
 
-  // Constructs an empty MemoryZipStream.
+  /// Constructs an empty MemoryZipStream.
   MemoryZipStream();
-  // Constructs a MemoryZipStream using pre-existing zip data. This will make a
-  // copy of the data. If the data is not valid zip data then errors will occur
-  // when trying to decompress files. No additional validation is done.
+  /// Constructs a MemoryZipStream using pre-existing zip data. This will make a
+  /// copy of the data. If the data is not valid zip data then errors will occur
+  /// when trying to decompress files. No additional validation is done.
   explicit MemoryZipStream(const DataVector& data);
-  // Constructs a MemoryZipStream using pre-existing zip data. This will take
-  // ownership of the data via a vector swap(). If the data is not valid zip
-  // data then errors will occur when trying to decompress files. No additional
-  // validation is done.
+  /// Constructs a MemoryZipStream using pre-existing zip data. This will take
+  /// ownership of the data via a vector swap(). If the data is not valid zip
+  /// data then errors will occur when trying to decompress files. No additional
+  /// validation is done.
   explicit MemoryZipStream(DataVector* data);
   ~MemoryZipStream() override;
 
-  // Compresses and adds a vector of data to this, associating it with the
-  // passed filename. The filename may be any relative path, e.g.,
-  // "foo/bar/bat.ext".
+  /// Compresses and adds a vector of data to this, associating it with the
+  /// passed filename. The filename may be any relative path, e.g.,
+  /// "foo/bar/bat.ext".
   void AddFile(const std::string& filename, const DataVector& data);
-  // Compresses and adds string data to this, associating it with the passed
-  // filename. The filename may be any relative path, e.g.,
-  // "foo/bar/bat.ext".
+  /// Compresses and adds string data to this, associating it with the passed
+  /// filename. The filename may be any relative path, e.g.,
+  /// "foo/bar/bat.ext".
   void AddFile(const std::string& filename, const std::string& data);
 
-  // Returns whether this contains filename.
+  /// Returns whether this contains filename.
   bool ContainsFile(const std::string& filename);
 
-  // Returns the file data for filename. If the file does not exist, then the
-  // returned vector is empty.
+  /// Returns the file data for filename. If the file does not exist, then the
+  /// returned vector is empty.
   const DataVector GetFileData(const std::string& filename);
 
-  // Gets the memory buffer backing this.
+  /// Gets the memory buffer backing this.
   const DataVector& GetData() const;
 
  private:
-  // Initializes the callbacks used to work with zip streams.
+  /// Initializes the callbacks used to work with zip streams.
   void InitCallbacks();
 
   std::unique_ptr<ZipStreamInfo> info_;

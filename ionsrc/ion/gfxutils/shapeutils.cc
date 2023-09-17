@@ -59,27 +59,27 @@ namespace {
 //
 //-----------------------------------------------------------------------------
 
-// Vertex with just position.
+/// Vertex with just position.
 struct VertexP {
   VertexP() : position(Point3f::Zero()) {}
   Point3f position;
 };
 
-// Vertex with position and texture coordinates.
+/// Vertex with position and texture coordinates.
 struct VertexPT {
   VertexPT() : position(Point3f::Zero()), texture_coords(Point2f::Zero()) {}
   Point3f position;
   Point2f texture_coords;
 };
 
-// Vertex with position and surface normal.
+/// Vertex with position and surface normal.
 struct VertexPN {
   VertexPN() : position(Point3f::Zero()), normal(Vector3f::Zero()) {}
   Point3f position;
   Vector3f normal;
 };
 
-// Vertex with position, texture coordinates, and surface normal.
+/// Vertex with position, texture coordinates, and surface normal.
 struct VertexPTN {
   VertexPTN() :
       position(Point3f::Zero()),

@@ -84,10 +84,11 @@ typedef ResourceManager::TextureInfo TextureInfo;
 
 //-----------------------------------------------------------------------------
 //
-// Helper class for consistent indentation.
+// Indent
 //
 //-----------------------------------------------------------------------------
 
+/// Helper class for consistent indentation.
 class Indent {
  public:
   explicit Indent(size_t spaces) : indent_(spaces, ' '), spaces_(spaces) {}
@@ -108,7 +109,7 @@ class Indent {
   const size_t spaces_;
 };
 
-// Escapes ", \, and \n.
+/// Escapes ", \, and \n.
 static const std::string EscapeJson(const std::string& str) {
   std::string ret = base::ReplaceString(str, "\\", "\\\\");
   ret = base::ReplaceString(ret, "\"", "\\\"");
@@ -118,12 +119,13 @@ static const std::string EscapeJson(const std::string& str) {
 
 //-----------------------------------------------------------------------------
 //
-// Helper class derived from TextureImageCallback that first renders textures
-// into images so that the images show up correctly regardless of whether the
-// textures' images had data wiped.
+// RenderTextureCallback
 //
 //-----------------------------------------------------------------------------
 
+/// Helper class derived from TextureImageCallback that first renders textures
+/// into images so that the images show up correctly regardless of whether the
+/// textures' images had data wiped.
 class RenderTextureCallback : public TextureImageCallback {
  public:
   using RefPtr = base::SharedPtr<RenderTextureCallback>;
@@ -131,20 +133,20 @@ class RenderTextureCallback : public TextureImageCallback {
   explicit RenderTextureCallback(const RendererPtr& renderer)
       : TextureImageCallback(), renderer_(renderer) {}
 
-  // Renders texture images and then calls the version in the base class.
+  /// Renders texture images and then calls the version in the base class.
   void Callback(const std::vector<TextureImageInfo>& data);
 
  private:
-  // The constructor is private because this class is derived from Referent.
+  /// The constructor is private because this class is derived from Referent.
   ~RenderTextureCallback() override {}
 
-  // Each of these uses the renderer to render images from a Texture or
-  // CubeMapTexture in the passed TextureImageInfo, replacing the images in it.
+  /// Each of these uses the renderer to render images from a Texture or
+  /// CubeMapTexture in the passed TextureImageInfo, replacing the images in it.
   void RenderTextureImage(const RendererPtr& renderer, TextureImageInfo* info);
   void RenderCubeMapTextureImages(const RendererPtr& renderer,
                                   TextureImageInfo* info);
 
-  // Renderer used to render images.
+  /// Renderer used to render images.
   const RendererPtr& renderer_;
 };
 

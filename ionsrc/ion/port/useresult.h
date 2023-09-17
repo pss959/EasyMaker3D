@@ -18,11 +18,11 @@ limitations under the License.
 #ifndef ION_PORT_USERESULT_H_
 #define ION_PORT_USERESULT_H_
 
-// Helper macro to make compiler emit a warning when the result of a function
-// goes unused. To use, declare start your function declaration with the macro.
-// Example:
-//   ION_USE_RESULT int FunctionReturningImportantResult();
-// This should work with GCC, Clang and MSVC (note:clang defines __GNUC__).
+/// Helper macro to make compiler emit a warning when the result of a function
+/// goes unused. To use, declare start your function declaration with the macro.
+/// Example:
+///   ION_USE_RESULT int FunctionReturningImportantResult();
+/// This should work with GCC, Clang and MSVC (note:clang defines __GNUC__).
 #if defined(__GNUC__)
 #define ION_USE_RESULT __attribute__ ((warn_unused_result))
 #elif defined(_MSC_VER) && (_MSC_VER >= 1700)

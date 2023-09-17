@@ -28,44 +28,44 @@ limitations under the License.
 namespace ion {
 namespace math {
 
-// A simple class to represent angles. The fundamental angular unit is radians,
-// with conversion provided to and from degrees.
+/// A simple class to represent angles. The fundamental angular unit is radians,
+/// with conversion provided to and from degrees.
 template <typename T>
 class Angle {
  public:
-  // The default constructor creates an angle of 0 (in any unit).
+  /// The default constructor creates an angle of 0 (in any unit).
   Angle() : radians_(0) {}
 
-  // Copy constructor from an instance of any value type that is compatible (via
-  // static_cast) with this instance's type.
+  /// Copy constructor from an instance of any value type that is compatible (via
+  /// static_cast) with this instance's type.
   template <typename U>
   explicit Angle(const Angle<U> other)
       : radians_(static_cast<T>(other.Radians())) {}
 
-  // Create a angle from radians (no conversion).
+  /// Create a angle from radians (no conversion).
   static Angle FromRadians(const T& angle) {
     return Angle(angle);
   }
 
-  // Create a angle from degrees (requires conversion).
+  /// Create a angle from degrees (requires conversion).
   static Angle FromDegrees(const T& angle) {
     return Angle(DegreesToRadians(angle));
   }
 
-  // Get the angle in degrees or radians.
+  /// Get the angle in degrees or radians.
   T Radians() const { return radians_; }
   T Degrees() const {  return RadiansToDegrees(radians_); }
 
-  // Unary negation operator.
+  /// Unary negation operator.
   const Angle operator-() const { return Angle::FromRadians(-radians_); }
 
-  // Self-modifying operators.
+  /// Self-modifying operators.
   void operator+=(const Angle& a) { radians_ += a.radians_; }
   void operator-=(const Angle& a) { radians_ -= a.radians_; }
   void operator*=(T s) { radians_ *= s; }
   void operator/=(T s) { radians_ /= s; }
 
-  // Binary operators.
+  /// Binary operators.
   friend Angle operator+(const Angle& a0, const Angle& a1) {
     return FromRadians(a0.radians_ + a1.radians_);
   }
@@ -82,7 +82,7 @@ class Angle {
     return FromRadians(a.radians_ / s);
   }
 
-  // Exact equality and inequality comparisons.
+  /// Exact equality and inequality comparisons.
   friend bool operator==(const Angle& a0, const Angle& a1) {
     return a0.radians_ == a1.radians_;
   }
@@ -90,7 +90,7 @@ class Angle {
     return a0.radians_ != a1.radians_;
   }
 
-  // Comparisons.
+  /// Comparisons.
   friend bool operator<(const Angle& a0, const Angle& a1) {
     return a0.radians_ < a1.radians_;
   }
@@ -124,7 +124,7 @@ class Angle {
 };
 
 
-// An Angle is streamed as degrees.
+/// An Angle is streamed as degrees.
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const Angle<T>& a) {
   return out << +a.Degrees() << " deg";
@@ -146,7 +146,7 @@ std::istream& operator>>(std::istream& in, Angle<T>& a) {
   return in;
 }
 
-// Tests whether two angles are close enough.
+/// Tests whether two angles are close enough.
 template <typename T>
 bool AlmostEqual(const Angle<T>& a, const Angle<T>& b,
                  const Angle<T>& tolerance) {

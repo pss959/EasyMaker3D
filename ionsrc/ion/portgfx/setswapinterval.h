@@ -21,10 +21,10 @@ limitations under the License.
 namespace ion {
 namespace portgfx {
 
-// Sets the swap interval of the current GL context on the default display
-// device. Note that this function does nothing on iOS, Android, and Asmjs.
-// The function returns whether the swap interval was successfully set, and
-// always returns true on platforms where it does nothing.
+/// Sets the swap interval of the current GL context on the default display
+/// device. Note that this function does nothing on iOS, Android, and Asmjs.
+/// The function returns whether the swap interval was successfully set, and
+/// always returns true on platforms where it does nothing.
 ION_API bool SetSwapInterval(int interval);
 
 }  // namespace portgfx

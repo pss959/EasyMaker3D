@@ -83,10 +83,11 @@ using gfx::UniformBlockPtr;
 
 //-----------------------------------------------------------------------------
 //
-// Struct that allows unsigned values (masks) to be printed properly as hex.
+// Mask
 //
 //-----------------------------------------------------------------------------
 
+/// Struct that allows unsigned values (masks) to be printed properly as hex.
 struct Mask {
   explicit Mask(uint32 value_in) : value(value_in) {}
   const uint32 value;
@@ -98,10 +99,11 @@ std::ostream& operator<<(std::ostream& out, const Mask& mask) {
 
 //-----------------------------------------------------------------------------
 //
-// Struct that allows pointers to be printed, with NULL printed as "NULL".
+// Pointer
 //
 //-----------------------------------------------------------------------------
 
+/// Struct that allows pointers to be printed, with NULL printed as "NULL".
 struct Pointer {
   explicit Pointer(const void* pointer_in) : pointer(pointer_in) {}
   const void* pointer;
@@ -304,15 +306,16 @@ static const std::string GetBufferAttributeValue(const AttributeArray& aa,
 
 //-----------------------------------------------------------------------------
 //
-// The Tree class holds an intermediate form of an Ion graph, making the actual
-// output formatting much simpler.
+// Tree
 //
 //-----------------------------------------------------------------------------
 
+/// The Tree class holds an intermediate form of an Ion graph, making the actual
+/// output formatting much simpler.
 class Tree {
  public:
-  // A Table stores a multi-row value for a field (such as a Matrix). The first
-  // column may be used for row labels, in which case has_label_column is true.
+  /// A Table stores a multi-row value for a field (such as a Matrix). The first
+  /// column may be used for row labels, in which case has_label_column is true.
   class Table : public base::Array2<std::string> {
    public:
     Table(size_t num_columns, size_t num_rows, bool has_label_column)
@@ -325,8 +328,8 @@ class Tree {
     bool has_label_column_;
   };
 
-  // A StringField represents a field (name/value pair) in which the value has
-  // been converted to a string; this is used for most fields.
+  /// A StringField represents a field (name/value pair) in which the value has
+  /// been converted to a string; this is used for most fields.
   struct StringField {
     StringField(const std::string& name_in, const std::string& value_in)
         : name(name_in), value(value_in) {}
@@ -334,7 +337,7 @@ class Tree {
     std::string value;
   };
 
-  // A TableField represents a field in which the value is a Table.
+  /// A TableField represents a field in which the value is a Table.
   struct TableField {
     TableField(const std::string& name_in, const Table& table_in)
         : name(name_in), table(table_in) {}
@@ -342,17 +345,17 @@ class Tree {
     Table table;
   };
 
-  // An ObjectField represents a field in which the value is another Object;
-  // the index of the Object within the Tree is specified.
+  /// An ObjectField represents a field in which the value is another Object;
+  /// the index of the Object within the Tree is specified.
   struct ObjectField {
     ObjectField(const std::string& name_in, size_t object_index_in)
         : name(name_in), object_index(object_index_in) {}
     std::string name;
-    size_t object_index;  // Index of object in vector.
+    size_t object_index;  ///< Index of object in vector.
   };
 
-  // An Object represents an item optionally containing fields and other
-  // objects.
+  /// An Object represents an item optionally containing fields and other
+  /// objects.
   struct Object {
     Object(const void* pointer_in, const std::string& type_in,
            const std::string& label_in, bool is_inside_field_in)
@@ -382,8 +385,8 @@ class Tree {
     const size_t index = all_objects_.size();
     all_objects_.push_back(Object(pointer, type, label, is_inside_field));
 
-    // If the object is already inside a field, there's no need to add it to
-    // another object.
+    /// If the object is already inside a field, there's no need to add it to
+    /// another object.
     if (!is_inside_field) {
       if (cur_objects_.empty()) {
         root_objects_.push_back(index);
@@ -406,22 +409,22 @@ class Tree {
     cur_objects_.pop_back();
   }
 
-  // Adds a checkbox button for enabling/disabling a Node's visibility.
+  /// Adds a checkbox button for enabling/disabling a Node's visibility.
   void AddNodeButton(const std::string& name, const std::string& node_label,
                      const std::string& command, bool checked) {
     GetCurObject()->has_enable_field = true;
     GetCurObject()->is_enabled = checked;
   }
 
-  // Adds a field as a StringField by first converting the given value to a
-  // string; this should work for anything that ValueToString() can handle.
+  /// Adds a field as a StringField by first converting the given value to a
+  /// string; this should work for anything that ValueToString() can handle.
   template <typename T>
   void AddField(const std::string& name, const T& value) {
     AddStringField(name, ValueToString(value));
   }
 
-  // For enum types which provide a specialization of
-  // base::EnumHelper::EnumData, this method should be preferred.
+  /// For enum types which provide a specialization of
+  /// base::EnumHelper::EnumData, this method should be preferred.
   template <typename E>
   void AddEnumField(const std::string& name, E enumvalue) {
     AddStringField(name, base::EnumHelper::GetString(enumvalue));
@@ -454,40 +457,41 @@ class Tree {
     return &all_objects_[cur_objects_.back()];
   }
 
-  std::vector<Object> all_objects_;   // All objects added to the Tree.
-  std::vector<size_t> root_objects_;  // Indices of all root objects.
-  std::vector<size_t> cur_objects_;   // Stack of indices of open objects.
+  std::vector<Object> all_objects_;   ///< All objects added to the Tree.
+  std::vector<size_t> root_objects_;  ///< Indices of all root objects.
+  std::vector<size_t> cur_objects_;   ///< Stack of indices of open objects.
 };
 
 //-----------------------------------------------------------------------------
 //
-// Helper class that creates a string from multiple inline fields, each of
-// which is added as "name=value".
+// MultiField
 //
 //-----------------------------------------------------------------------------
 
+/// Helper class that creates a string from multiple inline fields, each of
+/// which is added as "name=value".
 class MultiField {
  public:
   MultiField() : is_first_(true) {}
 
-  // Adds a field of any serializable type.
+  /// Adds a field of any serializable type.
   template <typename T>
   MultiField& Add(const std::string& name, const T& value) {
     return AddField(name, ValueToString(value));
   }
 
-  // Special version for enums that specialize base::EnumHelper::EnumData.
+  /// Special version for enums that specialize base::EnumHelper::EnumData.
   template <typename E>
   MultiField& AddEnum(const std::string& name, E enumvalue) {
     return AddField(name, base::EnumHelper::GetString(enumvalue));
   }
 
-  // Special version for strings that should not be quoted.
+  /// Special version for strings that should not be quoted.
   MultiField& AddString(const std::string& name, const std::string& value) {
     return AddField(name, value);
   }
 
-  // Adds a value only if a condition is true.
+  /// Adds a value only if a condition is true.
   template <typename T>
   MultiField& AddIf(bool cond, const std::string& name, const T& value) {
     if (cond) {
@@ -496,7 +500,7 @@ class MultiField {
     return *this;
   }
 
-  // Returns the resulting string.
+  /// Returns the resulting string.
   const std::string Get() const { return out_.str(); }
 
  private:
@@ -519,7 +523,7 @@ class MultiField {
 //
 //-----------------------------------------------------------------------------
 
-// Returns a Tree::Table representing a math::Matrix.
+/// Returns a Tree::Table representing a math::Matrix.
 template <int Dimension, typename T>
 static const Tree::Table BuildMatrixTable(const math::Matrix<Dimension, T>& m) {
   Tree::Table table(Dimension, Dimension, false);
@@ -531,7 +535,7 @@ static const Tree::Table BuildMatrixTable(const math::Matrix<Dimension, T>& m) {
   return table;
 }
 
-// Returns a Tree::Table representing the values in an IndexBuffer.
+/// Returns a Tree::Table representing the values in an IndexBuffer.
 static const Tree::Table GetIndexBufferTable(
     const IndexBuffer& ib, const BufferObject::Spec& spec) {
   // Get the BufferObject data.
@@ -569,10 +573,11 @@ static const Tree::Table GetIndexBufferTable(
 
 //-----------------------------------------------------------------------------
 //
-// The TreeBuilder class builds a Tree from an Ion graph.
+// TreeBuilder
 //
 //-----------------------------------------------------------------------------
 
+/// The TreeBuilder class builds a Tree from an Ion graph.
 class TreeBuilder {
  public:
   TreeBuilder(bool address_printing_enabled,
@@ -587,7 +592,7 @@ class TreeBuilder {
   }
 
  private:
-  // Base helper class that begins and ends a Tree::Object within a scope.
+  /// Base helper class that begins and ends a Tree::Object within a scope.
   class ScopedObjectBase {
    public:
     ScopedObjectBase(Tree* tree, const void* object, const std::string& type,
@@ -603,7 +608,7 @@ class TreeBuilder {
     const size_t object_index_;
   };
 
-  // Scoped object for any type that supports GetLabel().
+  /// Scoped object for any type that supports GetLabel().
   template <typename T> class ScopedLabeledObject : public ScopedObjectBase {
    public:
     ScopedLabeledObject(Tree* tree, const T* object, const std::string& type,
@@ -613,25 +618,27 @@ class TreeBuilder {
                            is_inside_field) {}
   };
 
-  // Unlabeled scoped object.
+  /// Unlabeled scoped object.
   class ScopedObject : public ScopedObjectBase {
    public:
     ScopedObject(Tree* tree, const void* object, const std::string& type)
         : ScopedObjectBase(tree, object, type, "", false) {}
   };
 
-  // This is used for a container object that does not correspond to a real Ion
-  // object.
+  /// This is used for a container object that does not correspond to a real Ion
+  /// object.
   class ContainerObject : public ScopedObjectBase {
    public:
-    // The empty type indicates that this is a container object.
+    /// The empty type indicates that this is a container object.
     explicit ContainerObject(Tree* tree)
         : ScopedObjectBase(tree, nullptr, "", "", true) {}
   };
 
-  // Each of these functions adds an Object, fields, or other type to the
-  // currently-open Object in the Tree. A return type of size_t indicates that
-  // the function returns the index of the added Object within the Tree.
+  /// \name Addition functions
+  /// Each of these functions adds an Object, fields, or other type to the
+  /// currently-open Object in the Tree. A return type of size_t indicates that
+  /// the function returns the index of the added Object within the Tree.
+  ///@{
   void AddNode(const Node& node);
   void AddStateTable(const StateTable& st);
   void AddImageFields(const Image& image, const char* face);
@@ -647,6 +654,7 @@ class TreeBuilder {
   void AddAttribute(const Attribute& attribute, bool is_enabled);
   void AddNonbufferAttributeValueField(const Attribute& attribute);
   void AddBufferAttributeValues(const AttributeArray& aa);
+  ///@}
 
   Tree tree_;
   bool address_printing_enabled_;
@@ -1240,10 +1248,11 @@ void TreeBuilder::AddBufferAttributeValues(const AttributeArray& aa) {
 
 //-----------------------------------------------------------------------------
 //
-// The TextTreePrinter class prints a Tree in text format.
+// TextTreePrinter
 //
 //-----------------------------------------------------------------------------
 
+/// The TextTreePrinter class prints a Tree in text format.
 class TextTreePrinter {
  public:
   TextTreePrinter(std::ostream& out, const Tree& tree,  // NOLINT
@@ -1263,10 +1272,10 @@ class TextTreePrinter {
   void PrintLabeledTable(const Tree::Table& table, size_t extra_indent);
   void PrintUnlabeledTable(const Tree::Table& table, size_t extra_indent);
 
-  // Prints the proper indentation for the current line.
+  /// Prints the proper indentation for the current line.
   void Indent() { IndentExtra(0); }
 
-  // Same as Indent(), but adds extra indentation.
+  /// Same as Indent(), but adds extra indentation.
   void IndentExtra(size_t extra) {
     const size_t num_spaces = 2 * indent_level_ + extra;
     for (size_t i = 0; i < num_spaces; ++i)
@@ -1403,10 +1412,11 @@ void TextTreePrinter::PrintUnlabeledTable(const Tree::Table& table,
 
 //-----------------------------------------------------------------------------
 //
-// The HtmlTreePrinter class prints a Tree in HTML format.
+// HtmlTreePrinter
 //
 //-----------------------------------------------------------------------------
 
+/// The HtmlTreePrinter class prints a Tree in HTML format.
 class HtmlTreePrinter {
  public:
   HtmlTreePrinter(std::ostream& out, const Tree& tree,  // NOLINT
@@ -1416,7 +1426,7 @@ class HtmlTreePrinter {
         address_printing_enabled_(address_printing_enabled) {}
   void Print();
 
-  // Resets the static object counter.
+  /// Resets the static object counter.
   static void ResetObjectCounter() { object_counter_ = 0; }
 
  private:
@@ -1433,8 +1443,8 @@ class HtmlTreePrinter {
   std::ostream& out_;
   const Tree& tree_;
   bool address_printing_enabled_;
-  // This counter is static so that each list ID is unique even when printing
-  // multiple trees with different HtmlTreePrinter instances.
+  /// This counter is static so that each list ID is unique even when printing
+  /// multiple trees with different HtmlTreePrinter instances.
   static size_t object_counter_;
 };
 

@@ -30,67 +30,67 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// Abstract base class that inherits from Referent, and adds the ability
-// for instances to be referenced by a WeakReferentPtr.  Any WeakReferentPtr
-// will Acquire only nullptr after the last ReferentPtr (a.k.a. "strong
-// reference") to the instance goes away.
-//
-// All Referent usage guidelines (regarding copying, private/protected
-// destructors, etc.) also apply to WeakReferent.
+/// Abstract base class that inherits from Referent, and adds the ability
+/// for instances to be referenced by a WeakReferentPtr.  Any WeakReferentPtr
+/// will Acquire only nullptr after the last ReferentPtr (a.k.a. "strong
+/// reference") to the instance goes away.
+///
+/// All Referent usage guidelines (regarding copying, private/protected
+/// destructors, etc.) also apply to WeakReferent.
 class WeakReferent : public Referent {
  protected:
   WeakReferent() : proxy_(nullptr) {}
 
-  // The destructor is protected to disallow creating instances on the stack.
+  /// The destructor is protected to disallow creating instances on the stack.
   ~WeakReferent() override {
     DCHECK(proxy_.load() == nullptr);
   }
 
  private:
-  // A Proxy accesses the strong reference count for a WeakReferent, and also
-  // has a reference count for itself. When the reference count of the held
-  // WeakReferent goes from 1 to 0, it notifies the proxy that it has been
-  // orphaned through SetOrphaned(). This sets the proxy's pointer to nullptr,
-  // so any WeakReferentPtrs that hold the proxy will be notified that the
-  // instance is no longer available. The WeakReferent pointer is actually
-  // deleted by the WeakReferent, below. Proxy contains a reference count is so
-  // that it will be deleted when all references to it (both from
-  // WeakReferentPtrs and from Referents) are destroyed.
+  /// A Proxy accesses the strong reference count for a WeakReferent, and also
+  /// has a reference count for itself. When the reference count of the held
+  /// WeakReferent goes from 1 to 0, it notifies the proxy that it has been
+  /// orphaned through SetOrphaned(). This sets the proxy's pointer to nullptr,
+  /// so any WeakReferentPtrs that hold the proxy will be notified that the
+  /// instance is no longer available. The WeakReferent pointer is actually
+  /// deleted by the WeakReferent, below. Proxy contains a reference count is so
+  /// that it will be deleted when all references to it (both from
+  /// WeakReferentPtrs and from Referents) are destroyed.
   class Proxy : public Allocatable, public Shareable {
    public:
     explicit Proxy(WeakReferent* ptr) : ptr_(ptr) { DCHECK(ptr_); }
 
-    // Gets the underlying WeakReferent.
+    /// Gets the underlying WeakReferent.
     WeakReferent* Get() const {
       DCHECK(mutex_.IsLocked());
       return ptr_;
     }
 
-    // Gets the underlying WeakReferent without locking a mutex.
+    /// Gets the underlying WeakReferent without locking a mutex.
     WeakReferent* GetUnsynchronized() const {
       return ptr_;
     }
 
-    // Sets the pointer to nullptr, as all strong references (SharedPtrs) have
-    // gone away.
+    /// Sets the pointer to nullptr, as all strong references (SharedPtrs) have
+    /// gone away.
     void SetOrphaned() {
       DCHECK(mutex_.IsLocked());
       ptr_ = nullptr;
     }
 
-    // Mutex which must be locked while calling Get() or SetOrphaned().
+    /// Mutex which must be locked while calling Get() or SetOrphaned().
     SpinMutex* GetMutex() const { return &mutex_; }
 
    private:
-    // The actual WeakReferent.
+    /// The actual WeakReferent.
     WeakReferent* ptr_;
 
-    // Used to synchronize access to the Proxy during WeakReferentPtr::Acquire()
-    // and Referent::DecrementRefCount().
+    /// Used to synchronize access to the Proxy during WeakReferentPtr::Acquire()
+    /// and Referent::DecrementRefCount().
     mutable SpinMutex mutex_;
   };
 
-  // Return a lazily-created Proxy.
+  /// Return a lazily-created Proxy.
   Proxy* GetProxy() const {
     // If there is already a proxy, use it.
     Proxy* proxy = proxy_.load(std::memory_order_acquire);
@@ -124,10 +124,10 @@ class WeakReferent : public Referent {
     }
   }
 
-  // Reference counting interface. DecrementRefCount is different enough from
-  // the Shareable implementation that we don't call back to it, just override.
-  // Note that this function is private because only SharedPtr
-  // and WeakReferentPtr should modify the reference count.
+  /// Reference counting interface. DecrementRefCount is different enough from
+  /// the Shareable implementation that we don't call back to it, just override.
+  /// Note that this function is private because only SharedPtr
+  /// and WeakReferentPtr should modify the reference count.
   void OnZeroRefCount() const override {
     // No more strong references to this WeakReferent exist, so we can go ahead
     // and destroy it.  However, if there are any WeakReferentPtrs that refer
@@ -154,10 +154,10 @@ class WeakReferent : public Referent {
     delete this;
   }
 
-  // Make this available to Referent's friends.
+  /// Make this available to Referent's friends.
   std::atomic<int>& GetRefCountRef() { return ref_count_; }
 
-  // A wrapper around the proxy for weak references.
+  /// A wrapper around the proxy for weak references.
   mutable std::atomic<Proxy*> proxy_;
 
   // Allow ReferentPtr (via SharedPtr) and WeakReferentPtr to modify the
@@ -168,17 +168,17 @@ class WeakReferent : public Referent {
   DISALLOW_COPY_AND_ASSIGN(WeakReferent);
 };
 
-// A WeakReferentPtr is a weak reference to an instance of some class derived
-// from Referent. It returns a ReferentPtr instance through the Acquire() call,
-// which is the only way to access the underlying instance. This ReferentPtr
-// will only be valid (non-null) if there are valid ReferentPtrs that still
-// point to the underlying instance. Note that a WeakReferentPtr requires a
-// ReferentPtr to the instance to already exist; WeakReferentPtrs are useless on
-// their own, and will free any non-ref'd pointers passed to them (see Reset(),
-// below).
-//
-// Like SharedPtr, WeakReferentPtr is not thread-safe; synchronization must be
-// used to ensure that an instance can only be accessed by one thread at a time.
+/// A WeakReferentPtr is a weak reference to an instance of some class derived
+/// from Referent. It returns a ReferentPtr instance through the Acquire() call,
+/// which is the only way to access the underlying instance. This ReferentPtr
+/// will only be valid (non-null) if there are valid ReferentPtrs that still
+/// point to the underlying instance. Note that a WeakReferentPtr requires a
+/// ReferentPtr to the instance to already exist; WeakReferentPtrs are useless on
+/// their own, and will free any non-ref'd pointers passed to them (see Reset(),
+/// below).
+///
+/// Like SharedPtr, WeakReferentPtr is not thread-safe; synchronization must be
+/// used to ensure that an instance can only be accessed by one thread at a time.
 template <typename T>
 class WeakReferentPtr {
  public:
@@ -189,16 +189,16 @@ class WeakReferentPtr {
   explicit WeakReferentPtr(const ReferentPtrType& ref_ptr) {
     Reset(ref_ptr.Get());
   }
-  // Copy constructor.
+  /// Copy constructor.
   WeakReferentPtr(const WeakReferentPtr& other)
       : proxy_(other.proxy_) {}
 
-  // Attempts to construct a ReferentPtr of the reference. This is required to
-  // perform operations on the pointer. The construction is successful only if
-  // there are already existing ReferentPtrs to the instance. If successful, the
-  // returned ReferentPtr will have the normal lifetime guarantees. If it fails,
-  // it returns a null ReferentPtr, meaning that the Referent has already been
-  // deleted.
+  /// Attempts to construct a ReferentPtr of the reference. This is required to
+  /// perform operations on the pointer. The construction is successful only if
+  /// there are already existing ReferentPtrs to the instance. If successful, the
+  /// returned ReferentPtr will have the normal lifetime guarantees. If it fails,
+  /// it returns a null ReferentPtr, meaning that the Referent has already been
+  /// deleted.
   ReferentPtrType Acquire() const {
     // This will be returned at the end after the code below sets it or doesn't.
     ReferentPtrType result;
@@ -247,30 +247,30 @@ class WeakReferentPtr {
     return result;
   }
 
-  // Set this WeakPointer to not refer to anything.
+  /// Set this WeakPointer to not refer to anything.
   void Reset() {
     Reset(nullptr);
   }
 
-  // Allow assignment from a SharedPtr of the same type.
+  /// Allow assignment from a SharedPtr of the same type.
   WeakReferentPtr<T>& operator=(const ReferentPtrType& p) {
     Reset(p.Get());
     return *this;
   }
 
-  // The equality operator returns true if the proxies are the same.
+  /// The equality operator returns true if the proxies are the same.
   bool operator==(const WeakReferentPtr& p) const {
     return p.proxy_ == proxy_;
   }
 
-  // The inequality operator returns true if the proxies differ.
+  /// The inequality operator returns true if the proxies differ.
   bool operator!=(const WeakReferentPtr& p) const {
     return p.proxy_ != proxy_;
   }
 
-  // This function returns the reference count of the underlying referent that
-  // points to. This function performs no synchronization, and should only be
-  // considered accurate when called from the underlying referent's destructor.
+  /// This function returns the reference count of the underlying referent that
+  /// points to. This function performs no synchronization, and should only be
+  /// considered accurate when called from the underlying referent's destructor.
   int GetUnderlyingRefCountUnsynchronized() const {
     if (WeakReferent::Proxy* proxy = proxy_.Get()) {
       if (WeakReferent* referent = proxy->GetUnsynchronized()) {
@@ -281,9 +281,9 @@ class WeakReferentPtr {
   }
 
  private:
-  // Changes the pointer to point to the given referent, which may be null.
+  /// Changes the pointer to point to the given referent, which may be null.
   void Reset(T* new_referent) {
-    // Potentially free previous value.
+    /// Potentially free previous value.
     proxy_ = nullptr;
     if (new_referent) {
       if (new_referent->GetRefCount() == 0)

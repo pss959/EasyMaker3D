@@ -20,7 +20,7 @@ limitations under the License.
 
 #include <string>
 
-// This appears to be a macro in some versions of Visual Studio.
+/// This appears to be a macro in some versions of Visual Studio.
 #ifdef ERROR
 #  undef ERROR
 #endif
@@ -36,8 +36,8 @@ enum LogSeverity {
   DFATAL,
 };
 
-// Abstract class which can be overridden to integrate Ion logging with other
-// logging systems.
+/// Abstract class which can be overridden to integrate Ion logging with other
+/// logging systems.
 class ION_API LogEntryWriter {
  public:
   virtual ~LogEntryWriter() {}
@@ -45,19 +45,19 @@ class ION_API LogEntryWriter {
   virtual void Write(LogSeverity severity, const std::string& message) = 0;
 
  protected:
-  // Convenient way to map a severity-code to a printable represenation.
+  /// Convenient way to map a severity-code to a printable represenation.
   const char* GetSeverityName(LogSeverity severity) const;
 };
 
-// Instantiate a *new* LogEntryWriter of the default type for the current
-// platform... don't call this repeatedly or you'll leak memory!
-// Note that this function must be safe to execute before the entry to main(),
-// and thus the constructor must not perform any nontrivial initialization.
+/// Instantiate a *new* LogEntryWriter of the default type for the current
+/// platform... don't call this repeatedly or you'll leak memory!
+/// Note that this function must be safe to execute before the entry to main(),
+/// and thus the constructor must not perform any nontrivial initialization.
 ION_API LogEntryWriter* CreateDefaultLogEntryWriter();
 
-// Sets the tag prepended to all logging messages on supported platforms. This
-// function is not guaranteed to be thread-safe and should not be called while
-// another thread is writing a log message.
+/// Sets the tag prepended to all logging messages on supported platforms. This
+/// function is not guaranteed to be thread-safe and should not be called while
+/// another thread is writing a log message.
 ION_API void SetLoggingTag(const char* tag);
 
 }  // namespace port

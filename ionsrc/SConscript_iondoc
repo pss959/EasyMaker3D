@@ -1,0 +1,27 @@
+# -----------------------------------------------------------------------------
+# Generates Ion Doxygen documentation in the "IonDoc/html" subdirectory of
+# the build directory.
+# -----------------------------------------------------------------------------
+
+Import('base_env')
+
+env = base_env.Clone(
+    OUTPUT_DIR = Dir(f'#/build/IonDoc').abspath,
+)
+
+# Set up environment variables for doxyfile to access.
+env.Append(
+    ENV = { 'OUTPUT_DIRECTORY' : env.subst('$OUTPUT_DIR') }
+)
+
+doxygen = '/local/inst/doxygen-1.9.8/bin/doxygen'  # Latest version.
+
+dox_files = env.FindSources('./ion/doc', ['*.dox'])
+src_files = env.FindSources('./ion',     ['*.h', '*.cc'])
+
+ion_doc = env.Command('$OUTPUT_DIR/html/index.html', dox_files + src_files,
+                      ['echo Building Ion doxygen doc',
+                       f'{doxygen} ./dev/doxyfile'],
+                      chdir='./ionsrc/ion')
+
+Return('ion_doc')

@@ -23,11 +23,11 @@ limitations under the License.
 namespace ion {
 namespace port {
 
-// Returns the value of the named environment variable. Returns an empty string
-// if the variable does not exist.
+/// Returns the value of the named environment variable. Returns an empty string
+/// if the variable does not exist.
 ION_API const std::string GetEnvironmentVariableValue(const std::string& name);
 
-// Sets the named environment variable to the passed value.
+/// Sets the named environment variable to the passed value.
 ION_API void SetEnvironmentVariableValue(const std::string& name,
                                          const std::string& value);
 

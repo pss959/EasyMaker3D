@@ -61,17 +61,17 @@ static const Uniform CombineMatrices(const Uniform& old_value,
 
 class ShaderInputRegistry::StaticData {
  public:
-  // Only one instance of this class should be created using this constructor.
+  /// Only one instance of this class should be created using this constructor.
   StaticData()
       : registry_count_(0), largest_registry_size_(0) {}
 
-  // Gets a unique identifier for a registry.
+  /// Gets a unique identifier for a registry.
   int32_t GetUniqueId() const {
     return ++registry_count_;
   }
 
-  // Sets the size of the largest registry if size is larger than the currently
-  // held size.
+  /// Sets the size of the largest registry if size is larger than the currently
+  /// held size.
   void UpdateLargestRegistrySize(int32_t size) const {
     int32_t largest_size = largest_registry_size_.load();
     bool succeeded = false;
@@ -86,10 +86,10 @@ class ShaderInputRegistry::StaticData {
   }
 
  private:
-  // The number of registries that have been created.
+  /// The number of registries that have been created.
   mutable std::atomic<int32_t> registry_count_;
 
-  // The number of entries in the largest registry.
+  /// The number of entries in the largest registry.
   mutable std::atomic<int32_t> largest_registry_size_;
 };
 
@@ -101,7 +101,7 @@ class ShaderInputRegistry::StaticData {
 
 class ShaderInputRegistry::StaticGlobalRegistryData {
  public:
-  // Only one instance of this class should be created using this constructor.
+  /// Only one instance of this class should be created using this constructor.
   StaticGlobalRegistryData()
       : global_registry_(new(base::kLongTerm) ShaderInputRegistry) {
     global_registry_->Add(AttributeSpec(
@@ -125,13 +125,13 @@ class ShaderInputRegistry::StaticGlobalRegistryData {
         "uBaseColor", kFloatVector4Uniform, "Base color for shapes."));
   }
 
-  // Gets the global registry.
+  /// Gets the global registry.
   const ShaderInputRegistryPtr& GetGlobalRegistry() const {
     return global_registry_;
   }
 
  private:
-  // Global registry.
+  /// Global registry.
   ShaderInputRegistryPtr global_registry_;
 };
 

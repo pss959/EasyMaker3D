@@ -50,8 +50,8 @@ class FullAllocationTracker::Helper : public Allocatable {
 
   ~Helper() override;
 
-  // Adds an allocation to the vector and the active allocation map. Returns
-  // the index into the vector.
+  /// Adds an allocation to the vector and the active allocation map. Returns
+  /// the index into the vector.
   size_t AddAllocation(const void* memory, size_t size) {
     std::lock_guard<std::mutex> lock(mutex_);
     const size_t index = allocations_.size();
@@ -63,8 +63,8 @@ class FullAllocationTracker::Helper : public Allocatable {
     return index;
   }
 
-  // Removes an allocation as active. Returns its index in the vector or
-  // kInvalidIndex if it is not found.
+  /// Removes an allocation as active. Returns its index in the vector or
+  /// kInvalidIndex if it is not found.
   size_t RemoveAllocation(const void* memory) {
     std::lock_guard<std::mutex> lock(mutex_);
     ActiveMap::iterator it = active_map_.find(memory);
@@ -83,19 +83,19 @@ class FullAllocationTracker::Helper : public Allocatable {
     }
   }
 
-  // Returns the total number of allocations ever made with this allocator.
+  /// Returns the total number of allocations ever made with this allocator.
   size_t GetAllocationCount() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return allocations_.size();
   }
 
-  // Returns the total number of deallocations ever made with this allocator.
+  /// Returns the total number of deallocations ever made with this allocator.
   size_t GetDeallocationCount() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return deallocation_count_;
   }
 
-  // Returns the total number of bytes ever allocated.
+  /// Returns the total number of bytes ever allocated.
   size_t GetAllocatedBytesCount() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return allocated_bytes_count_;
@@ -106,19 +106,19 @@ class FullAllocationTracker::Helper : public Allocatable {
     return deallocated_bytes_count_;
   }
 
-  // Returns the number of active allocations.
+  /// Returns the number of active allocations.
   size_t GetActiveAllocationCount() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return active_map_.size();
   }
 
-  // Returns the total amount of memory in bytes used by active allocations.
+  /// Returns the total amount of memory in bytes used by active allocations.
   size_t GetActiveAllocationBytesCount() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return active_memory_bytes_count_;
   }
 
-  // Returns the number of bytes in the indexed allocation.
+  /// Returns the number of bytes in the indexed allocation.
   size_t GetAllocationBytesCount(size_t index) const {
     std::lock_guard<std::mutex> lock(mutex_);
     DCHECK_LT(index, allocations_.size());
@@ -126,15 +126,15 @@ class FullAllocationTracker::Helper : public Allocatable {
   }
 
  private:
-  // Data stored for each allocation.
+  /// Data stored for each allocation.
   struct Allocation {
     Allocation(const void* memory_in, size_t size_in)
         : memory(memory_in), size(size_in) {}
-    const void* memory;  // Pointer to allocated memory chunk.
-    size_t size;         // Number of bytes allocated.
+    const void* memory;  ///< Pointer to allocated memory chunk.
+    size_t size;         ///< Number of bytes allocated.
   };
 
-  // Returns a vector containing all active allocations, sorted by pointer.
+  /// Returns a vector containing all active allocations, sorted by pointer.
   const AllocVector<Allocation> GetActiveAllocations() const {
     std::lock_guard<std::mutex> lock(mutex_);
     // Copy all current allocations into a vector. We have to loop over the map
@@ -152,31 +152,31 @@ class FullAllocationTracker::Helper : public Allocatable {
     return vec;
   }
 
-  // This is used for sorting the vector of AllocationData instances returned
-  // by GetActiveAllocations.
+  /// This is used for sorting the vector of AllocationData instances returned
+  /// by GetActiveAllocations.
   static bool CompareAllocations(const Allocation& a0, const Allocation& a1) {
     return a0.memory < a1.memory;
   }
 
-  // Vector keeping track of every single allocation made with this instance.
+  /// Vector keeping track of every single allocation made with this instance.
   AllocVector<Allocation> allocations_;
 
-  // Map of all active allocations (allocated but not deallocated yet). The key
-  // is the pointer and the value is the index into the allocations_ vector.
+  /// Map of all active allocations (allocated but not deallocated yet). The key
+  /// is the pointer and the value is the index into the allocations_ vector.
   typedef AllocMap<const void*, size_t> ActiveMap;
   ActiveMap active_map_;
 
-  // Total number of deallocations made so far.
+  /// Total number of deallocations made so far.
   size_t deallocation_count_;
 
-  // Total number of bytes allocated and deallocated.
+  /// Total number of bytes allocated and deallocated.
   size_t allocated_bytes_count_;
   size_t deallocated_bytes_count_;
 
-  // Count of total active allocated memory (in bytes).
+  /// Count of total active allocated memory (in bytes).
   size_t active_memory_bytes_count_;
 
-  // Mutex protecting the vector and map;
+  /// Mutex protecting the vector and map;
   mutable std::mutex mutex_;
 };
 

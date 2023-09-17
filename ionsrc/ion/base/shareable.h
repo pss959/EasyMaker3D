@@ -32,46 +32,46 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// Shareable is an abstract base class for any object that can be shared via
-// the SharedPtr class. It supports the reference counting interface required
-// by SharedPtr.
+/// Shareable is an abstract base class for any object that can be shared via
+/// the SharedPtr class. It supports the reference counting interface required
+/// by SharedPtr.
 class Shareable {
  public:
-  // GetRefCount() is part of the interface necessary for SharedPtr.
+  /// GetRefCount() is part of the interface necessary for SharedPtr.
   int GetRefCount() const { return ref_count_; }
 
 #if defined(ION_TRACK_SHAREABLE_REFERENCES)
-  // Returns a debug string for all current references to this Shareable. The
-  // string contains the address of the Shareable address as well as the address
-  // of each current SharedPtr and a stacktrace for the point where the
-  // reference was added. An empty string implies either reference tracking is
-  // disabled or there are no outstanding references.
+  /// Returns a debug string for all current references to this Shareable. The
+  /// string contains the address of the Shareable address as well as the address
+  /// of each current SharedPtr and a stacktrace for the point where the
+  /// reference was added. An empty string implies either reference tracking is
+  /// disabled or there are no outstanding references.
   std::string GetReferencesDebugString() const;
 #endif
 
  protected:
 #if defined(ION_TRACK_SHAREABLE_REFERENCES)
-  // If ION_TRACK_SHAREABLE_REFERENCES is defined via the build configuration,
-  // reference tracking is possible on a per-Shareable basis.  When enabled for
-  // a particular Shareable, a stack-trace is recorded each time a SharedPtr
-  // references the Shareable, and is removed when the reference disappears. At
-  // any time, you can query the stack-traces where all of the current
-  // references to the Shareable were obtained.
+  /// If ION_TRACK_SHAREABLE_REFERENCES is defined via the build configuration,
+  /// reference tracking is possible on a per-Shareable basis.  When enabled for
+  /// a particular Shareable, a stack-trace is recorded each time a SharedPtr
+  /// references the Shareable, and is removed when the reference disappears. At
+  /// any time, you can query the stack-traces where all of the current
+  /// references to the Shareable were obtained.
   Shareable() : ref_count_(0), track_references_enabled_(false) {}
-  // Adjust setting of reference tracking by a child class, after construction
-  // of the Shareable, but before any references have been created.
+  /// Adjust setting of reference tracking by a child class, after construction
+  /// of the Shareable, but before any references have been created.
   void SetTrackReferencesEnabled(bool track_references_enabled);
 #else
   Shareable() : ref_count_(0) {}
 #endif
 
-  // The destructor is protected because all instances should be managed
-  // through SharedPtr.
+  /// The destructor is protected because all instances should be managed
+  /// through SharedPtr.
   virtual ~Shareable() { DCHECK_EQ(ref_count_.load(), 0); }
 
  private:
-  // These are part of the interface necessary for SharedPtr. They are private
-  // to prevent anyone messing with the reference count.
+  /// These are part of the interface necessary for SharedPtr. They are private
+  /// to prevent anyone messing with the reference count.
   void IncrementRefCount(const void* ref) const {
     ++ref_count_;
 #if defined(ION_TRACK_SHAREABLE_REFERENCES)
@@ -97,8 +97,8 @@ class Shareable {
 
   virtual void OnZeroRefCount() const { delete this; }
 
-  // The reference count is atomic to provide thread safety. It is mutable so
-  // that const instances can be managed.
+  /// The reference count is atomic to provide thread safety. It is mutable so
+  /// that const instances can be managed.
   mutable std::atomic<int> ref_count_;
 
 #if defined(ION_TRACK_SHAREABLE_REFERENCES)

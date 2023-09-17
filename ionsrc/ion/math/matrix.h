@@ -30,16 +30,16 @@ limitations under the License.
 namespace ion {
 namespace math {
 
-// The Matrix class defines a square N-dimensional matrix. Elements are stored
-// in row-major order.
+/// The Matrix class defines a square N-dimensional matrix. Elements are stored
+/// in row-major order.
 template <int Dimension, typename T>
 class Matrix {
  public:
-  // The dimension of the matrix (number of elements in a row or column).
+  /// The dimension of the matrix (number of elements in a row or column).
   enum { kDimension = Dimension };
   typedef T ValueType;
 
-  // The default constructor zero-initializes all elements.
+  /// The default constructor zero-initializes all elements.
   constexpr Matrix() : elem_() {}
 
   // Dimension-specific constructors that are passed individual element values.
@@ -50,21 +50,21 @@ class Matrix {
                    T m10, T m11, T m12, T m13, T m20, T m21, T m22, T m23,
                    T m30, T m31, T m32, T m33);
 
-  // Constructor that reads elements from a linear array of the correct size.
+  /// Constructor that reads elements from a linear array of the correct size.
   explicit Matrix(const T array[Dimension * Dimension]);
 
-  // Copy constructor from an instance of the same Dimension and any value type
-  // that is compatible (via static_cast) with this instance's type.
+  /// Copy constructor from an instance of the same Dimension and any value type
+  /// that is compatible (via static_cast) with this instance's type.
   template <typename U>
   constexpr explicit Matrix(const Matrix<Dimension, U>& other);
 
-  // Returns a Matrix containing all zeroes.
+  /// Returns a Matrix containing all zeroes.
   static Matrix Zero();
 
-  // Returns an identity Matrix.
+  /// Returns an identity Matrix.
   static Matrix Identity();
 
-  // Mutable element accessors.
+  /// Mutable element accessors.
   T& operator()(int row, int col) {
     CheckIndices(row, col);
     return elem_[row][col];
@@ -74,7 +74,7 @@ class Matrix {
     return elem_[row];
   }
 
-  // Read-only element accessors.
+  /// Read-only element accessors.
   const T& operator()(int row, int col) const {
     CheckIndices(row, col);
     return elem_[row][col];
@@ -84,37 +84,37 @@ class Matrix {
     return elem_[row];
   }
 
-  // Return a pointer to the data for interfacing with libraries.
+  /// Return a pointer to the data for interfacing with libraries.
   T* Data() { return &elem_[0][0]; }
   const T* Data() const { return &elem_[0][0]; }
 
-  // Self-modifying multiplication operators.
+  /// Self-modifying multiplication operators.
   void operator*=(T s) { MultiplyScalar(s); }
   void operator*=(const Matrix& m) { *this = Product(*this, m); }
 
-  // Unary operators.
+  /// Unary operators.
   Matrix operator-() const { return Negation(); }
 
-  // Binary scale operators.
+  /// Binary scale operators.
   friend Matrix operator*(const Matrix& m, T s) { return Scale(m, s); }
   friend Matrix operator*(T s, const Matrix& m) { return Scale(m, s); }
 
-  // Binary matrix addition.
+  /// Binary matrix addition.
   friend Matrix operator+(const Matrix& lhs, const Matrix& rhs) {
     return Addition(lhs, rhs);
   }
 
-  // Binary matrix subtraction.
+  /// Binary matrix subtraction.
   friend Matrix operator-(const Matrix& lhs, const Matrix& rhs) {
     return Subtraction(lhs, rhs);
   }
 
-  // Binary multiplication operator.
+  /// Binary multiplication operator.
   friend Matrix operator*(const Matrix& m0, const Matrix& m1) {
     return Product(m0, m1);
   }
 
-  // Exact equality and inequality comparisons.
+  /// Exact equality and inequality comparisons.
   friend bool operator==(const Matrix& m0, const Matrix& m1) {
     return AreEqual(m0, m1);
   }
@@ -123,12 +123,12 @@ class Matrix {
   }
 
  private:
-  // Helper constructor that takes a ScalarSequence to index a raw matrix.
+  /// Helper constructor that takes a ScalarSequence to index a raw matrix.
   template <typename U, size_t... index>
   constexpr Matrix(base::ScalarSequence<size_t, index...>,
                    const Matrix<Dimension, U>& other);
 
-  // Validates indices for accessors.
+  /// Validates indices for accessors.
   void CheckIndices(int row, int col) const {
     // Check that the indices are in range. Use a single DCHECK statement with a
     // conjunction rather than multiple DCHECK_GE and DCHECK_LT statements,
@@ -149,7 +149,7 @@ class Matrix {
   T elem_[Dimension][Dimension];
 };
 
-// Prints a Matrix to a stream.
+/// Prints a Matrix to a stream.
 template <int Dimension, typename T>
 std::ostream& operator<<(std::ostream& out, const Matrix<Dimension, T>& m) {
   out << "M[";
@@ -165,7 +165,7 @@ std::ostream& operator<<(std::ostream& out, const Matrix<Dimension, T>& m) {
   return out << "]";
 }
 
-// Reads a Matrix from a stream.
+/// Reads a Matrix from a stream.
 template <int Dimension, typename T>
 std::istream& operator>>(std::istream& in, Matrix<Dimension, T>& m) {
   Matrix<Dimension, T> mm;
@@ -216,8 +216,7 @@ constexpr Matrix<Dimension, T>::Matrix(T m00, T m01, T m02, T m03, T m10, T m11,
 template <int Dimension, typename T>
 Matrix<Dimension, T>::Matrix(const T array[Dimension * Dimension]) {
 #if defined(ION_PLATFORM_WINDOWS) && defined(ION_ARCH_X86_64)
-  // 
-  // memory alignment with x64_opt build using MSVC. Please see the bug
+  // Memory alignment with x64_opt build using MSVC. Please see the bug
   // report for more detail and the bug reproduction steps.
   if ((reinterpret_cast<size_t>(&array[0]) & 0xF) != 0) {
     // |array| is NOT 16-byte aligned, avoid calling memcpy().

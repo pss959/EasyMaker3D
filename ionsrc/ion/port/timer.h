@@ -29,8 +29,8 @@ namespace port {
 class Timer {
  public:
 #if defined(ION_PLATFORM_WINDOWS)
-  // The Microsoft implementation of steady_clock is not actually steady in
-  // Visual Studio 2013.  This is patterned after the implementation in VS 2015.
+  /// The Microsoft implementation of steady_clock is not actually steady in
+  /// Visual Studio 2013.  This is patterned after the implementation in VS 2015.
   struct steady_clock {
     typedef int64 rep;
     typedef std::nano period;
@@ -42,8 +42,8 @@ class Timer {
   };
 
 #else
-  // Use the high_resolution_clock if it is steady, otherwise use the
-  // steady_clock.
+  /// Use the high_resolution_clock if it is steady, otherwise use the
+  /// steady_clock.
   typedef std::conditional<std::chrono::high_resolution_clock::is_steady,
                            std::chrono::high_resolution_clock,
                            std::chrono::steady_clock>::type steady_clock;
@@ -53,24 +53,24 @@ class Timer {
 
   Timer() { Reset(); }
 
-  // Resets the timer.
+  /// Resets the timer.
   void Reset();
 
-  // Returns the elapsed time since construction or the last Reset().
+  /// Returns the elapsed time since construction or the last Reset().
   Clock::duration Get() const;
 
-  // Returns the elapsed time since construction or the last Reset() in seconds.
-  // Convenience wrapper for Get().
+  /// Returns the elapsed time since construction or the last Reset() in seconds.
+  /// Convenience wrapper for Get().
   double GetInS() const;
 
-  // Returns the elapsed time since construction or the last Reset() in
-  // milliseconds.  Convenience wrapper for Get().
+  /// Returns the elapsed time since construction or the last Reset() in
+  /// milliseconds.  Convenience wrapper for Get().
   double GetInMs() const;
 
-  // Sleeps for the passed number of seconds.
+  /// Sleeps for the passed number of seconds.
   static void SleepNSeconds(unsigned int seconds);
 
-  // Sleeps for n milliseconds.
+  /// Sleeps for n milliseconds.
   static void SleepNMilliseconds(unsigned int milliseconds);
 
  private:

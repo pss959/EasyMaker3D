@@ -91,10 +91,16 @@ if platform == 'linux':
     for app in apps.values():
         app_env.Depends(app, 'Icons')
 
+    # Internal (Doxygen-generated) Ion web documentation.
+    base_env.Alias('IonDoc',
+                   SConscript('ionsrc/SConscript_iondoc',
+                              exports=['base_env']))
+
     # Internal (Doxygen-generated) web documentation.
     base_env.Alias('InternalDoc',
                    SConscript('InternalDoc/SConscript_dox',
-                              exports=['app_dict', 'doc_build_dir']))
+                              exports=['app_dict', 'base_env',
+                                       'doc_build_dir']))
     # Public (Sphinx-generated) web documentation. This requires the
     # 'snapimage' application.
     snapimage = apps['snapimage'][0]

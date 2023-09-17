@@ -18,13 +18,13 @@ limitations under the License.
 #ifndef ION_BASE_ZIPASSETMANAGERMACROS_H_
 #define ION_BASE_ZIPASSETMANAGERMACROS_H_
 
-// Use the ION_REGISTER_ASSETS macro with the namespace from which to register
-// assets. For example:
-//   ION_REGISTER_ASSETS(ZipAssetTest);
-// will expand to:
-// namespace ZipAssetTest { bool RegisterAssets(); bool RegisterAssetsOnce(); }
-// The namespace name is the name of the IAD (not the file name, rather the
-// defined name inside of the IAD file).
+/// Use the ION_REGISTER_ASSETS macro with the namespace from which to register
+/// assets. For example:
+///   ION_REGISTER_ASSETS(ZipAssetTest);
+/// will expand to:
+/// namespace ZipAssetTest { bool RegisterAssets(); bool RegisterAssetsOnce(); }
+/// The namespace name is the name of the IAD (not the file name, rather the
+/// defined name inside of the IAD file).
 #define ION_REGISTER_ASSETS(n) \
   namespace n {                 \
   bool RegisterAssets();        \

@@ -26,10 +26,10 @@ limitations under the License.
 namespace ion {
 namespace image {
 
-// Converts an existing Image to data in JPEG format using the provided
-// |quality| setting, returning a vector.  If |flip_vertically| is true, the
-// resulting image is inverted in the Y dimension. The vector will be empty if
-// the conversion is not possible for any reason.
+/// Converts an existing Image to data in JPEG format using the provided
+/// |quality| setting, returning a vector.  If |flip_vertically| is true, the
+/// resulting image is inverted in the Y dimension. The vector will be empty if
+/// the conversion is not possible for any reason.
 ION_API const std::vector<uint8> ConvertToJpeg(
     const gfx::ImagePtr& image, bool flip_vertically, int quality);
 

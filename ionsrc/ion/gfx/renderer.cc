@@ -382,7 +382,7 @@ const ImagePtr GetTextureImageOrMipmap(const Texture& tex) {
   return image;
 }
 
-// Wrapper class to force obtaining a VertexArrayEmulatorResource.
+/// Wrapper class to force obtaining a VertexArrayEmulatorResource.
 class AttributeArrayEmulator : public AttributeArray {
  public:
   AttributeArrayEmulator() {}
@@ -524,16 +524,17 @@ struct Renderer::HolderToResource<TransformFeedback> {
 
 //-----------------------------------------------------------------------------
 //
-// The Renderer::ResourceManager class manages all OpenGL resources used by the
-// Renderer, and is 1:1 with its owning Renderer. It holds all existing
-// resources so they can be released and cleaned up when necessary.
+// Renderer::ResourceManager
 //
 //-----------------------------------------------------------------------------
 
+/// The Renderer::ResourceManager class manages all OpenGL resources used by
+/// the Renderer, and is 1:1 with its owning Renderer. It holds all existing
+/// resources so they can be released and cleaned up when necessary.
 class Renderer::ResourceManager : public gfx::ResourceManager {
  public:
-  // This is an abstract base class for all resources that can be managed by
-  // this manager. It adds an index that makes some operations more efficient.
+  /// This is an abstract base class for all resources that can be managed by
+  /// this manager. It adds an index that makes some operations more efficient.
   class Resource : public ResourceBase, public Allocatable {
    public:
     // Returns the ResourceManager that owns this Resource.
@@ -557,8 +558,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     virtual void Unbind(ResourceBinder* rb) = 0;
     virtual ResourceType GetType() const = 0;
 
-    // Sets the amount of memory used by this Resource. Also updates the running
-    // totals in the ResourceManager and optional GPU memory tracker.
+    /// Sets the amount of memory used by this Resource. Also updates the running
+    /// totals in the ResourceManager and optional GPU memory tracker.
     void SetUsedGpuMemory(size_t count) {
       // Remove any old memory information from the ResourceManager and add in
       // the new usage.
@@ -589,9 +590,9 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
       gpu_memory_used_ = count;
     }
 
-    // Returns, creating if necessary, a typed resource from a holder. If a
-    // resource is created, the passed GL id is used; the default id of 0 means
-    // that a new one will be retrieved from OpenGL.
+    /// Returns, creating if necessary, a typed resource from a holder. If a
+    /// resource is created, the passed GL id is used; the default id of 0 means
+    /// that a new one will be retrieved from OpenGL.
     template <typename HolderType>
     typename HolderToResource<HolderType>::ResourceType* GetResource(
         const HolderType* holder, ResourceBinder* binder, GLuint gl_id = 0) {
@@ -614,8 +615,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     void SetIndex(size_t index) { index_ = index; }
     size_t GetIndex() const { return index_; }
 
-    // Updates the AllocationSizeTracker. Both allocation and de-allocation are
-    // tracked.
+    /// Updates the AllocationSizeTracker. Both allocation and de-allocation are
+    /// tracked.
     void UpdateAllocationSizeTracker(
         const base::AllocationSizeTrackerPtr& tracker, size_t count,
         size_t old_used) {
@@ -623,14 +624,14 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
       if (old_used) tracker->TrackDeallocationSize(old_used);
     }
 
-    // This is the index within the resources vector in the manager.
+    /// This is the index within the resources vector in the manager.
     size_t index_;
 
-    // The ResourceManager that owns this resource. It by definition has a
-    // longer lifetime than this.
+    /// The ResourceManager that owns this resource. It by definition has a
+    /// longer lifetime than this.
     ResourceManager* resource_manager_;
 
-    // The amount of GPU memory this Resource uses.
+    /// The amount of GPU memory this Resource uses.
     std::atomic<size_t> gpu_memory_used_;
 
     friend class ResourceBinder;
@@ -640,8 +641,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
   typedef base::AllocVector<Resource*> ResourceVector;
 
   class ResourceAccessor;
-  // Container for holding resources. It contains a ResourceVector and a mutex
-  // for locking access to it.
+  /// Container for holding resources. It contains a ResourceVector and a mutex
+  /// for locking access to it.
   class ResourceContainer : public Allocatable {
    public:
     ResourceContainer() : resources_(*this) {}
@@ -652,16 +653,16 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     ResourceVector resources_;
   };
 
-  // Container for accessing resources. There is a special copy constructor that
-  // allows these to be copied safely without releasing the mutex lock on the
-  // ResourceContainer.
+  /// Container for accessing resources. There is a special copy constructor that
+  /// allows these to be copied safely without releasing the mutex lock on the
+  /// ResourceContainer.
   class ResourceAccessor {
    public:
     explicit ResourceAccessor(ResourceContainer& container)  // NOLINT
         : container_(container),
           lock_(container_.mutex_) {}
 
-    // Returns the ResourceVector that the container in this holds.
+    /// Returns the ResourceVector that the container in this holds.
     ResourceVector& GetResources() { return container_.resources_; }
 
    private:
@@ -669,8 +670,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     std::unique_lock<std::mutex> lock_;
   };
 
-  // The constructor is passed a GraphicsManager to use for querying resource
-  // information.
+  /// The constructor is passed a GraphicsManager to use for querying resource
+  /// information.
   explicit ResourceManager(const GraphicsManagerPtr& gm)
       : gfx::ResourceManager(gm),
         resource_index_(AcquireOrReleaseResourceIndex(false, 0U)),
@@ -691,22 +692,22 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     ResourceAccessor(resources_[kTransformFeedback]).GetResources().reserve(1U);
   }
 
-  // The destructor releases and deletes all resources.
+  /// The destructor releases and deletes all resources.
   ~ResourceManager() override {
     DestroyOrAbandonAllResources(false);
     AcquireOrReleaseResourceIndex(true, resource_index_);
   }
 
-  // Returns the resource index for this. Use it to get and set resources in
-  // ResourceHolders.
+  /// Returns the resource index for this. Use it to get and set resources in
+  /// ResourceHolders.
   size_t GetResourceIndex() const { return resource_index_; }
 
-  // Enable or disable checking the context stamp on every resource
-  // accessibility check.
+  /// Enable or disable checking the context stamp on every resource
+  /// accessibility check.
   void EnableResourceAccessCheck(bool enabled) { check_stamp_ = enabled; }
 
   bool AreResourcesAccessible() const {
-    if (!gl_context_) return true;  // No resources created yet
+    if (!gl_context_) return true;  /// No resources created yet
     if (check_stamp_ && gl_context_->DoesCurrentContextMatch()) {
       return true;
     }
@@ -717,27 +718,27 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     return current_share_group == gl_context_->GetShareGroupId();
   }
 
-  // Returns a ResourceAccessor for the Resources of the specified type.
+  /// Returns a ResourceAccessor for the Resources of the specified type.
   ResourceAccessor AccessResources(ResourceType type) {
     ResourceAccessor accessor(resources_[type]);
     return accessor;
   }
 
-  // Returns a key that uniquely identifies a GL resource associated
-  // with an Ion object. Whenever a single Ion object must be represented
-  // with multiple GL resources (e.g., when the GL resource cannot be shared
-  // between threads and must be created anew for each thread), this function
-  // should return a unique key for each instance of the GL resource.
+  /// Returns a key that uniquely identifies a GL resource associated
+  /// with an Ion object. Whenever a single Ion object must be represented
+  /// with multiple GL resources (e.g., when the GL resource cannot be shared
+  /// between threads and must be created anew for each thread), this function
+  /// should return a unique key for each instance of the GL resource.
   template <typename T>
   ResourceKey GetResourceKey(ResourceBinder* resource_binder,
                              const ResourceHolder* holder) {
     return reinterpret_cast<ResourceKey>(this);
   }
 
-  // Returns all keys that may have resources assigned. This is required
-  // to make info requests work correctly. The key may depend on the state
-  // of holders in the scene graph (which is the case for shader programs),
-  // and the scene graph is not available when processing info requests.
+  /// Returns all keys that may have resources assigned. This is required
+  /// to make info requests work correctly. The key may depend on the state
+  /// of holders in the scene graph (which is the case for shader programs),
+  /// and the scene graph is not available when processing info requests.
   template <typename T>
   std::vector<ResourceKey> GetAllResourceKeys(ResourceBinder* resource_binder) {
     std::vector<ResourceKey> keys;
@@ -745,34 +746,34 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     return keys;
   }
 
-  // Returns, creating if necessary, a typed resource from a holder.
+  /// Returns, creating if necessary, a typed resource from a holder.
   template <typename HolderType>
   typename HolderToResource<HolderType>::ResourceType* GetResource(
       const HolderType* holder, ResourceBinder* resource_binder,
       GLuint gl_id = 0);
 
-  // Increases the count of memory usage of the passed type.
+  /// Increases the count of memory usage of the passed type.
   void IncreaseGpuMemoryUsage(ResourceType type, size_t count) {
     memory_usage_[type].value += count;
   }
 
-  // Decreases the amount of memory usage of the passed type.
+  /// Decreases the amount of memory usage of the passed type.
   void DecreaseGpuMemoryUsage(ResourceType type, size_t count) {
     DCHECK_LE(count, memory_usage_[type].value.load());
     memory_usage_[type].value -= count;
   }
 
-  // Returns the amount of memory usage of the passed type.
+  /// Returns the amount of memory usage of the passed type.
   size_t GetGpuMemoryUsage(ResourceType type) const {
     return memory_usage_[type].value.load();
   }
 
-  // Disassociates the passed resource from any VertexArrayResources that use
-  // it. This is necessary to prevent the binding of an already deleted element
-  // array.
+  /// Disassociates the passed resource from any VertexArrayResources that use
+  /// it. This is necessary to prevent the binding of an already deleted element
+  /// array.
   void DisassociateElementBufferFromArrays(BufferResource* resource);
 
-  // Adds a resource to manage, specialized by type.
+  /// Adds a resource to manage, specialized by type.
   void AddResource(Resource* resource) {
     if (!gl_context_)
       gl_context_ = portgfx::GlContext::GetCurrent();
@@ -782,15 +783,15 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     resources.push_back(resource);
   }
 
-  // Marks a resource to release at the next convenient time.
+  /// Marks a resource to release at the next convenient time.
   void MarkForRelease(Resource* resource) {
     std::lock_guard<std::mutex> locker(release_mutex_);
     DCHECK(resource);
     resources_to_release_.push_back(resource);
   }
 
-  // Removes a resource from the vector that holds ownership. The caller is
-  // responsible for deleting the resource and reclaiming memory.
+  /// Removes a resource from the vector that holds ownership. The caller is
+  /// responsible for deleting the resource and reclaiming memory.
   void DestroyResource(Resource* resource) {
     DCHECK(resource);
 
@@ -816,8 +817,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     }
   }
 
-  // Marks the Resources contained in the passed holder for release. A current
-  // binder is necessary to retrieve the resource since its type is unknown.
+  /// Marks the Resources contained in the passed holder for release. A current
+  /// binder is necessary to retrieve the resource since its type is unknown.
   template <typename HolderType>
   void ReleaseResources(const HolderType* holder, ResourceBinder* binder) {
     typedef typename HolderToResource<HolderType>::ResourceType ResourceType;
@@ -834,7 +835,7 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     }
   }
 
-  // Marks all Resources of the passed type for release.
+  /// Marks all Resources of the passed type for release.
   void ReleaseTypedResources(ResourceType type) {
     ResourceAccessor accessor(resources_[type]);
     ResourceVector& resources = accessor.GetResources();
@@ -843,7 +844,7 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     }
   }
 
-  // Releases all resources waiting to be released, then deletes them.
+  /// Releases all resources waiting to be released, then deletes them.
   void ProcessReleases(ResourceBinder* resource_binder) {
     // This can't be strictly 2-pass because deleting items may cause a resource
     // holder to be ready for release.  Loop until we have no more items to
@@ -877,8 +878,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     }
   }
 
-  // Delete all resources owned by this manager. Used for cleaning up on
-  // destruction and when abandoning resources.
+  /// Delete all resources owned by this manager. Used for cleaning up on
+  /// destruction and when abandoning resources.
   void DestroyOrAbandonAllResources(bool force_abandon) {
     {
       std::lock_guard<std::mutex> lock(release_mutex_);
@@ -901,8 +902,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     portgfx::GlContext::MakeCurrent(gl_context_);
   }
 
-  // Process any outstanding requests for data, e.g., PlatformInfo and
-  // TextureImageInfo requests.
+  /// Process any outstanding requests for data, e.g., PlatformInfo and
+  /// TextureImageInfo requests.
   template <typename T> void ProcessDataRequests()  {
     std::lock_guard<std::mutex> guard(this->request_mutex_);
     std::vector<DataRequest<T> >& requests = *GetDataRequestVector<T>();
@@ -913,13 +914,13 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
       FillDataFromRenderer(requests[i].id, &info);
       FillInfoFromOpenGL(&info);
       infos[0] = info;
-      // Execute the callback.
+      /// Execute the callback.
       requests[i].callback(infos);
     }
     requests.clear();
   }
 
-  // Process any outstanding requests for a particular Resource type.
+  /// Process any outstanding requests for a particular Resource type.
   template <typename HolderType, typename InfoType>
   void ProcessInfoRequests(ResourceContainer* resource_container,
                            ResourceBinder* resource_binder) {
@@ -933,7 +934,7 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     requests.clear();
   }
 
-  // Process a single request for information about a particular Resource.
+  /// Process a single request for information about a particular Resource.
   template <typename HolderType, typename InfoType>
   void ProcessInfoRequest(const ResourceRequest<HolderType, InfoType>& request,
                           ResourceContainer* resource_container,
@@ -967,8 +968,8 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     request.callback(infos);
   }
 
-  // Fills an info struct with information about the passed resource and
-  // appends it to the passed vector of infos.
+  /// Fills an info struct with information about the passed resource and
+  /// appends it to the passed vector of infos.
   template <typename InfoType, typename ResourceType>
   void AppendResourceInfo(std::vector<InfoType>* infos,
                           ResourceType* resource, ResourceBinder* rb) {
@@ -984,21 +985,21 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     infos->push_back(info);
   }
 
-  // Fills in resource info fields from a resource.
+  /// Fills in resource info fields from a resource.
   template <typename InfoType, typename ResourceType>
   void FillInfoFromResource(InfoType* info, ResourceType* resource,
                             ResourceBinder* rb) {}
 
-  // Fills in data info fields from the renderer.
+  /// Fills in data info fields from the renderer.
   template <typename InfoType>
   void FillDataFromRenderer(GLuint id, InfoType* info);
 
-  // Process any outstanding requests for information about Resources.
+  /// Process any outstanding requests for information about Resources.
   void ProcessResourceInfoRequests(ResourceBinder* resource_binder);
 
  private:
-  // Wrapper struct for std::atomic<size_t> that is copy-constructable. This
-  // allows the value to be used in an STL container.
+  /// Wrapper struct for std::atomic<size_t> that is copy-constructable. This
+  /// allows the value to be used in an STL container.
   struct AtomicSizeT {
     AtomicSizeT() : value(0U) {}
     AtomicSizeT(const AtomicSizeT& other) : value(other.value.load()) {}
@@ -1009,9 +1010,9 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     std::atomic<size_t> value;
   };
 
-  // Returns a unique index for a ResourceManager to use when getting and
-  // setting resources in ResourceHolders, or releases the index for reuse if
-  // is_release is true.
+  /// Returns a unique index for a ResourceManager to use when getting and
+  /// setting resources in ResourceHolders, or releases the index for reuse if
+  /// is_release is true.
   static size_t AcquireOrReleaseResourceIndex(bool is_release, size_t index) {
     using IndexArray = std::vector<bool>;
     ION_DECLARE_SAFE_STATIC_POINTER(std::mutex, mutex);
@@ -1046,50 +1047,50 @@ class Renderer::ResourceManager : public gfx::ResourceManager {
     }
   }
 
-  // Resource creation helper.
+  /// Resource creation helper.
   template <typename HolderType>
   typename HolderToResource<HolderType>::ResourceType* CreateResource(
       const HolderType* holder, ResourceBinder* binder, ResourceKey key,
       GLuint gl_id);
 
-  // The unique index of this.
+  /// The unique index of this.
   size_t resource_index_;
 
-  // Stores all managed resources.
+  /// Stores all managed resources.
   ResourceContainer resources_[kNumResourceTypes];
 
-  // Stores memory usage by resource type.
+  /// Stores memory usage by resource type.
   base::AllocVector<AtomicSizeT> memory_usage_;
 
-  // Stores all resources that need to be released at the next convenient
-  // time. Because the objects holding the resources may be modified or deleted
-  // in any thread, it's possible that the graphics state is not available to
-  // free the OpenGL resources at that time.
+  /// Stores all resources that need to be released at the next convenient
+  /// time. Because the objects holding the resources may be modified or deleted
+  /// in any thread, it's possible that the graphics state is not available to
+  /// free the OpenGL resources at that time.
   ResourceVector resources_to_release_;
 
-  // For locking access to resources_to_release_. This is needed since multiple
-  // threads may destroy resources at the same time as holders are destroyed.
+  /// For locking access to resources_to_release_. This is needed since multiple
+  /// threads may destroy resources at the same time as holders are destroyed.
   std::mutex release_mutex_;
 
-  // The GL context that was current when the first resource in this manager was
-  // created. Ensures that the GlContext object does not disappear if it's
-  // a wrapper.
-  // 
+  /// The GL context that was current when the first resource in this manager was
+  /// created. Ensures that the GlContext object does not disappear if it's
+  /// a wrapper.
   portgfx::GlContextPtr gl_context_;
 
-  // Whether to always check the context stamp when checking for resource
-  // availability.
+  /// Whether to always check the context stamp when checking for resource
+  /// availability.
   bool check_stamp_;
 };
 
 //-----------------------------------------------------------------------------
 //
-// The Renderer::ResourceBinder manages the binding state of all OpenGL
-// resources for a particular OpenGL context. Only a single thread should be
-// working with one ResourceBinder at one time.
+// Renderer::ResourceBinder
 //
 //-----------------------------------------------------------------------------
 
+/// The Renderer::ResourceBinder manages the binding state of all OpenGL
+/// resources for a particular OpenGL context. Only a single thread should be
+/// working with one ResourceBinder at one time.
 class Renderer::ResourceBinder : public Allocatable {
  public:
   typedef base::AllocVector<Uniform> UniformStack;
@@ -1107,26 +1108,25 @@ class Renderer::ResourceBinder : public Allocatable {
   typedef ResourceBinding<TransformFeedbackResource> TransformFeedbackBinding;
   typedef ResourceBinding<VertexArrayResource> VertexArrayBinding;
 
-  // An ImageUnit represents an OpenGL image unit.
+  /// An ImageUnit represents an OpenGL image unit.
   struct ImageUnit {
     ImageUnit() : sampler(0U), resource(nullptr), unit_index(-1),
                   next(nullptr), prev(nullptr), available(true) {}
     GLuint sampler;
     TextureResource* resource;
-    // Unit can be inferred but is cached for debugging.
+    /// Unit can be inferred but is cached for debugging.
     int unit_index;
-    // Linked list of ImageUnits where first is LRU and last is MRU.
-    // 
-    // following linked list code.
+    /// Linked list of ImageUnits where first is LRU and last is MRU.
+    /// following linked list code.
     ImageUnit* next;
     ImageUnit* prev;
-    // If true, unit is available for reuse.
+    /// If true, unit is available for reuse.
     bool available;
   };
 
-  // A StreamAnnotator annotates the Renderer's GraphicsManager's tracing stream
-  // output using passed labels to help identify what resources lead to what
-  // OpenGL calls. In production builds it should optimize away to nothing.
+  /// A StreamAnnotator annotates the Renderer's GraphicsManager's tracing stream
+  /// output using passed labels to help identify what resources lead to what
+  /// OpenGL calls. In production builds it should optimize away to nothing.
 #if ION_PRODUCTION
   class StreamAnnotator : public base::Allocatable {
    public:
@@ -1143,8 +1143,8 @@ class Renderer::ResourceBinder : public Allocatable {
           gl_supports_markers_(
               gm_->IsFeatureAvailable(GraphicsManager::kDebugMarker)) {}
 
-    // Pushes a label onto the tracing stack and outputs it if the contained
-    // GraphicsManager has a tracing stream.
+    /// Pushes a label onto the tracing stack and outputs it if the contained
+    /// GraphicsManager has a tracing stream.
     void Push(const std::string& marker) {
       intptr_t context_id = portgfx::GlContext::GetCurrentId();
       stream_.EnterScope(context_id, marker);
@@ -1153,7 +1153,7 @@ class Renderer::ResourceBinder : public Allocatable {
                              marker.c_str());
     }
 
-    // Pops the last label (if there is one) off of the tracing stack.
+    /// Pops the last label (if there is one) off of the tracing stack.
     void Pop() {
       intptr_t context_id = portgfx::GlContext::GetCurrentId();
       if (stream_.Depth(context_id) > 0) {
@@ -1184,7 +1184,7 @@ class Renderer::ResourceBinder : public Allocatable {
     ResourceBinder* rb_;
   };
 
-  // The constructor is passed a GraphicsManager for updating GL object state.
+  /// The constructor is passed a GraphicsManager for updating GL object state.
   explicit ResourceBinder(const GraphicsManagerPtr& gm)
       : graphics_manager_(gm),
         stream_annotator_(new (GetAllocator()) StreamAnnotator(gm)),
@@ -1229,86 +1229,86 @@ class Renderer::ResourceBinder : public Allocatable {
 
   ~ResourceBinder() override {}
 
-  // Saves the currently bound GL framebuffer as the default framebuffer.
+  /// Saves the currently bound GL framebuffer as the default framebuffer.
   void UpdateDefaultFramebufferFromOpenGL() {
     GetGraphicsManager()->GetIntegerv(GL_FRAMEBUFFER_BINDING,
                                       GetSavedId(Renderer::kSaveFramebuffer));
   }
 
-  // Returns the GraphicsManager used for the instance.
+  /// Returns the GraphicsManager used for the instance.
   const GraphicsManagerPtr& GetGraphicsManager() const {
     return graphics_manager_;
   }
 
-  // Gets/sets the current ResourceManager, which must remain valid as long as
-  // this is operating on its resources.
+  /// Gets/sets the current ResourceManager, which must remain valid as long as
+  /// this is operating on its resources.
   ResourceManager* GetResourceManager() const { return resource_manager_; }
   void SetResourceManager(ResourceManager* manager) {
     resource_manager_ = manager;
   }
 
-  // Returns the stream annotator for debug tracing.
+  /// Returns the stream annotator for debug tracing.
   StreamAnnotator* GetStreamAnnotator() const {
     return stream_annotator_.get();
   }
 
-  // Returns the last bound FramebufferObject.
+  /// Returns the last bound FramebufferObject.
   const FramebufferObjectPtr GetCurrentFramebuffer() const {
     return current_fbo_.Acquire();
   }
 
-  // Stores a weak reference to the currently bound FramebufferObject.
+  /// Stores a weak reference to the currently bound FramebufferObject.
   void SetCurrentFramebuffer(const FramebufferObjectPtr& fbo) {
     current_fbo_ = base::WeakReferentPtr<FramebufferObject>(fbo);
   }
 
-  // Returns the currently active shader program resource.
+  /// Returns the currently active shader program resource.
   ShaderProgramResource* GetActiveShaderProgram() const {
     return active_shader_.resource;
   }
 
-  // Returns the currently active transform feedback object.
+  /// Returns the currently active transform feedback object.
   TransformFeedbackResource* GetActiveTransformFeedback() const {
     return active_transform_feedback_.resource;
   }
 
-  // Returns the currently active framebuffer resource.
+  /// Returns the currently active framebuffer resource.
   FramebufferResource* GetActiveFramebuffer() const {
     return active_framebuffer_.resource;
   }
 
-  // Returns the currently active vertex array resource.
+  /// Returns the currently active vertex array resource.
   VertexArrayResource* GetActiveVertexArray() const {
     return active_vertex_array_.resource;
   }
 
-  // Sets the currently active vertex array resource to the passed resource.
-  // Normal VertexArrayResources must use BindVertexArray(). When we are using
-  // emulated vertex arrays, however, we still need to track the latest bound
-  // state to avoid duplicate calls.
+  /// Sets the currently active vertex array resource to the passed resource.
+  /// Normal VertexArrayResources must use BindVertexArray(). When we are using
+  /// emulated vertex arrays, however, we still need to track the latest bound
+  /// state to avoid duplicate calls.
   void SetActiveVertexArray(VertexArrayResource* resource) {
     active_vertex_array_.resource = resource;
   }
 
-  // Returns the StateTable that the Renderer believes to represent the current
-  // state of OpenGL.
+  /// Returns the StateTable that the Renderer believes to represent the current
+  /// state of OpenGL.
   StateTable* GetStateTable() const { return gl_state_table_.Get(); }
 
-  // Binds the passed buffer to target if it is not already bound there.
+  /// Binds the passed buffer to target if it is not already bound there.
   void BindBuffer(BufferObject::Target target, GLuint id,
                   BufferResource* resource);
   void BindBufferIndexed(BufferObject::IndexedTarget target, GLuint index,
                          GLuint id, BufferResource* resource);
 
-  // Binds the passed framebuffer if it is not already bound there.
+  /// Binds the passed framebuffer if it is not already bound there.
   void BindFramebuffer(GLuint id, FramebufferResource* fbo);
 
-  // Makes the passed program active if it is not already active. Returns
-  // whether the program was bound.
+  /// Makes the passed program active if it is not already active. Returns
+  /// whether the program was bound.
   bool BindProgram(GLuint id, ShaderProgramResource* resource);
 
-  // Binds a sampler to the passed image unit if it is not already bound
-  // there.
+  /// Binds a sampler to the passed image unit if it is not already bound
+  /// there.
   void BindSamplerToUnit(GLuint id, GLuint unit) {
     DCHECK_LT(unit, image_units_.size());
     if (!id || id != image_units_[unit].sampler) {
@@ -1317,32 +1317,32 @@ class Renderer::ResourceBinder : public Allocatable {
     }
   }
 
-  // Activates the passed texture unit, if it is not already activated.
+  /// Activates the passed texture unit, if it is not already activated.
   void ActivateUnit(GLuint unit_index);
 
-  // Returns the 'best' image unit for txr, given desired_index. If txr is
-  // already bound to desired_index or desired_index is available,
-  // returns desired_index. Otherwise returns the first available, least
-  // recently used unit's index. If no units are available,
-  // returns the LRU unit's index.
+  /// Returns the 'best' image unit for txr, given desired_index. If txr is
+  /// already bound to desired_index or desired_index is available,
+  /// returns desired_index. Otherwise returns the first available, least
+  /// recently used unit's index. If no units are available,
+  /// returns the LRU unit's index.
   int ObtainImageUnit(TextureResource* txr, int desired_index);
 
-  // Makes unit available for reuse.
+  /// Makes unit available for reuse.
   void ReleaseImageUnit(int unit_index) {
     DCHECK_LE(0, unit_index);
     if (unit_index < static_cast<int>(image_units_.size()))
       image_units_[unit_index].available = true;
   }
 
-  // Makes unit unavailable for reuse and makes unit the least recently used
-  // unit.
+  /// Makes unit unavailable for reuse and makes unit the least recently used
+  /// unit.
   void UseImageUnit(int unit_index, TextureResource* txr);
 
-  // Binds a texture to the passed target at the passed image unit if it is not
-  // already bound there.
+  /// Binds a texture to the passed target at the passed image unit if it is not
+  /// already bound there.
   void BindTextureToUnit(TextureResource* resource, GLuint unit_index);
 
-  // Bind the given transform feedback object if it is not already bound.
+  /// Bind the given transform feedback object if it is not already bound.
   void BindTransformFeedback(GLuint id, TransformFeedbackResource* tf);
 
   bool WasTextureEvicted(TextureResource* resource) {
@@ -1354,8 +1354,8 @@ class Renderer::ResourceBinder : public Allocatable {
       return false;
     return true;
   }
-  // Returns the image unit to which the texture was last bound, or -1
-  // if the texture was not bound anywhere yet.
+  /// Returns the image unit to which the texture was last bound, or -1
+  /// if the texture was not bound anywhere yet.
   int GetLastBoundUnit(TextureResource* resource) {
     std::lock_guard<std::mutex> guard(texture_bindings_mutex_);
     auto found = texture_last_bindings_.find(resource);
@@ -1369,24 +1369,24 @@ class Renderer::ResourceBinder : public Allocatable {
     texture_last_bindings_[resource] = unit;
   }
 
-  // Clears the entry in the map used to track texture unit binding.
+  /// Clears the entry in the map used to track texture unit binding.
   void ClearAssignedImageUnit(TextureResource* resource) {
     std::lock_guard<std::mutex> guard(texture_bindings_mutex_);
     texture_last_bindings_.erase(resource);
   }
 
-  // Binds the passed vertex array if it is not already bound.
+  /// Binds the passed vertex array if it is not already bound.
   void BindVertexArray(GLuint id, VertexArrayResource* resource);
 
-  // Clears the buffer bound to target if it is already bound there.
+  /// Clears the buffer bound to target if it is already bound there.
   void ClearBufferBinding(BufferObject::Target target, GLuint id) {
     if (!id || id == active_buffers_[target].gl_id) {
       active_buffers_[target] = BufferBinding();
     }
   }
 
-  // Checks all cached buffer bindings for the passed ID and clears them if
-  // equal. When 0 is passed, clears all buffer bindings.
+  /// Checks all cached buffer bindings for the passed ID and clears them if
+  /// equal. When 0 is passed, clears all buffer bindings.
   void ClearBufferBindings(GLuint id) {
     for (auto& binding : active_buffers_) {
       if (!id || id == binding.gl_id) {
@@ -1402,7 +1402,7 @@ class Renderer::ResourceBinder : public Allocatable {
     }
   }
 
-  // Clears the framebuffer binding if it is already bound.
+  /// Clears the framebuffer binding if it is already bound.
   void ClearFramebufferBinding(GLuint id) {
     if (!id || id == active_framebuffer_.gl_id) {
       active_framebuffer_.gl_id = kInvalidGluint;
@@ -1410,14 +1410,14 @@ class Renderer::ResourceBinder : public Allocatable {
     }
   }
 
-  // Clears the passed program binding if it is being used.
+  /// Clears the passed program binding if it is being used.
   void ClearProgramBinding(GLuint id) {
     if (!id || id == active_shader_.gl_id) {
       active_shader_ = ShaderProgramBinding();
     }
   }
 
-  // Clears the passed sampler from all image units it is bound to.
+  /// Clears the passed sampler from all image units it is bound to.
   void ClearSamplerBindings(GLuint id) {
     const size_t count = image_units_.size();
     for (size_t i = 0; i < count; ++i)
@@ -1425,25 +1425,25 @@ class Renderer::ResourceBinder : public Allocatable {
         image_units_[i].sampler = 0;
   }
 
-  // Clears the texture bound to the passed image unit if it is already bound
-  // there.  If the id is 0, unconditionally clears the image unit.
+  /// Clears the texture bound to the passed image unit if it is already bound
+  /// there.  If the id is 0, unconditionally clears the image unit.
   void ClearTextureBinding(GLuint id, GLuint unit_index);
 
-  // Clears the specified texture from a range of image units.  If the id is 0,
-  // unconditionally clears the range of image units.
+  /// Clears the specified texture from a range of image units.  If the id is 0,
+  /// unconditionally clears the range of image units.
   void ClearTextureBindings(GLuint id, GLuint start_unit = 0);
 
-  // Clears the transform feedback binding if it is already bound.
+  /// Clears the transform feedback binding if it is already bound.
   void ClearTransformFeedbackBinding(GLuint id) {
     if (!id || id == active_transform_feedback_.gl_id) {
       active_transform_feedback_ = TransformFeedbackBinding();
     }
   }
 
-  // Clears the passed vertex array if it is already bound.
+  /// Clears the passed vertex array if it is already bound.
   void ClearVertexArrayBinding(GLuint id);
 
-  // Clears all non-framebuffer cached bindings.
+  /// Clears all non-framebuffer cached bindings.
   void ClearNonFramebufferCachedBindings();
 
   template <typename HolderType>
@@ -1451,17 +1451,17 @@ class Renderer::ResourceBinder : public Allocatable {
     if (holder) {
       if (typename HolderToResource<HolderType>::ResourceType* resource =
           resource_manager_->GetResource(holder, this)) {
-        // Update and bind the resource.
+        /// Update and bind the resource.
         resource->Update(this);
         resource->Bind(this);
       }
     }
   }
 
-  // Operation type for updating resources. Traversal with this operation
-  // will create or update resources for ShaderPrograms, Textures, Shapes,
-  // ShaderInputRegistries and vertex arrays that require it. Any
-  // disabled subtrees are skipped.
+  /// Operation type for updating resources. Traversal with this operation
+  /// will create or update resources for ShaderPrograms, Textures, Shapes,
+  /// ShaderInputRegistries and vertex arrays that require it. Any
+  /// disabled subtrees are skipped.
   struct CreateOrUpdateOp {
     template <typename HolderType>
     static void Process(ResourceBinder* rb, const HolderType* holder,
@@ -1484,8 +1484,8 @@ class Renderer::ResourceBinder : public Allocatable {
     }
   };
 
-  // Operation type for requesting a forced update, which marks all
-  // resources in the node graph as modified.
+  /// Operation type for requesting a forced update, which marks all
+  /// resources in the node graph as modified.
   struct RequestUpdateOp {
     template <typename HolderType>
     static void Process(ResourceBinder* rb, const HolderType* holder,
@@ -1498,9 +1498,9 @@ class Renderer::ResourceBinder : public Allocatable {
     }
   };
 
-  // Intermediary type that takes care of special cases in processing resource
-  // holders. The main reason for the existence of this class is that function
-  // templates cannot be partially specialized, while classes can.
+  /// Intermediary type that takes care of special cases in processing resource
+  /// holders. The main reason for the existence of this class is that function
+  /// templates cannot be partially specialized, while classes can.
   template <typename Operation, typename HolderType>
   struct OperationImpl {
     static void Process(ResourceBinder* rb, const HolderType* holder,
@@ -1509,7 +1509,7 @@ class Renderer::ResourceBinder : public Allocatable {
     }
   };
 
-  // Special case for vertex arrays.
+  /// Special case for vertex arrays.
   template <typename Operation>
   struct OperationImpl<Operation, AttributeArray> {
     static void Process(ResourceBinder* rb, const AttributeArray* aa,
@@ -1538,57 +1538,57 @@ class Renderer::ResourceBinder : public Allocatable {
     }
   };
 
-  // Convenience template to invoke Process from the correct OperationImpl.
-  // This eventually invokes the correct Process function in either
-  // CreateOrUpdateOp or RequestUpdateOp.
+  /// Convenience template to invoke Process from the correct OperationImpl.
+  /// This eventually invokes the correct Process function in either
+  /// CreateOrUpdateOp or RequestUpdateOp.
   template <typename Operation, typename HolderType>
   void Process(const HolderType* holder, GLuint gl_id) {
     OperationImpl<Operation, HolderType>::Process(this, holder, gl_id);
   }
 
-  // Generic function that performs an operation on all holders in a node
-  // graph. The actual operation performed is determined by the specialization
-  // of the Process() function for the Operation type. The recursive part
-  // of the function is defined in Visit().
+  /// Generic function that performs an operation on all holders in a node
+  /// graph. The actual operation performed is determined by the specialization
+  /// of the Process() function for the Operation type. The recursive part
+  /// of the function is defined in Visit().
   template <typename Operation>
   void Traverse(const NodePtr& node, ShaderProgram* default_shader);
 
-  // Generic function for processing the resources associated with a shape.
+  /// Generic function for processing the resources associated with a shape.
   template <typename Operation>
   void VisitShape(const ShapePtr& shape);
 
-  // Makes the passed StateTable the active tracked state by making the proper
-  // OpenGL calls.
+  /// Makes the passed StateTable the active tracked state by making the proper
+  /// OpenGL calls.
   void ProcessStateTable(const StateTablePtr& state_table);
 
-  // Returns an image of the specified format that contains the contents of the
-  // hardware framebuffer. The passed range specifies the area to be read. The
-  // passed range specifies the area to be read. The Allocator is used when
-  // creating the Image.
+  /// Returns an image of the specified format that contains the contents of the
+  /// hardware framebuffer. The passed range specifies the area to be read. The
+  /// passed range specifies the area to be read. The Allocator is used when
+  /// creating the Image.
   const ImagePtr ReadImage(const math::Range2i& range, Image::Format format,
                            const base::AllocatorPtr& allocator);
 
-  // Sends a uniform value to OpenGL.
+  /// Sends a uniform value to OpenGL.
   void SendUniform(const Uniform& uniform, int location, GraphicsManager* gm);
 
-  // Pushes uniforms in the passed list onto UniformStacks.
+  /// Pushes uniforms in the passed list onto UniformStacks.
   void PushUniforms(const base::AllocVector<Uniform>& uniforms);
 
-  // Pops the uniforms in the passed list, restoring their values in the shadow
-  // state.
+  /// Pops the uniforms in the passed list, restoring their values in the shadow
+  /// state.
   void PopUniforms(const base::AllocVector<Uniform>& uniforms);
 
-  // Returns a pointer to the saved framebuffer.
+  /// Returns a pointer to the saved framebuffer.
   GLint* GetSavedId(Renderer::Flag flag) {
     DCHECK_LE(kSaveActiveTexture, flag);
     DCHECK_LE(flag, kSaveVertexArray);
     return &saved_ids_[flag - kSaveActiveTexture];
   }
 
-  // Returns the number of texture bindings (image units) that are supported.
+  /// Returns the number of texture bindings (image units) that are supported.
   size_t GetImageUnitCount() const { return image_units_.size(); }
 
-  // Sets the maximum image unit for this binder to use.
+  /// Sets the maximum image unit for this binder to use.
   void SetImageUnitRange(const Range1i& units);
 
   void MapBufferObjectDataRange(const BufferObjectPtr& buffer,
@@ -1596,17 +1596,17 @@ class Renderer::ResourceBinder : public Allocatable {
                                 const math::Range1ui& range_in);
   void UnmapBufferObjectData(const BufferObjectPtr& buffer);
 
-  // Draws the scene rooted at node.
+  /// Draws the scene rooted at node.
   void DrawScene(const NodePtr& node, const Flags& flags,
                  ShaderProgram* default_shader);
 
-  // Returns whether this is currently processing info requests. This is used to
-  // prevent spurious errors from being generated.
+  /// Returns whether this is currently processing info requests. This is used to
+  /// prevent spurious errors from being generated.
   bool IsProcessingInfoRequests() const { return processing_info_requests_; }
 
-  // Gets a ResourceKey for looking up the vertex array resource associated
-  // with the currently active shader program. The key needs to be unique
-  // across different ResourceBinders.
+  /// Gets a ResourceKey for looking up the vertex array resource associated
+  /// with the currently active shader program. The key needs to be unique
+  /// across different ResourceBinders.
   ResourceKey GetVertexArrayKey() {
     auto key_iterator = vertex_array_keys_.find(GetActiveShaderProgram());
     if (key_iterator == vertex_array_keys_.end()) {
@@ -1624,8 +1624,8 @@ class Renderer::ResourceBinder : public Allocatable {
     return keys;
   }
 
-  // Releases the vertex array key of a shader. To be called when the shader
-  // is destroyed.
+  /// Releases the vertex array key of a shader. To be called when the shader
+  /// is destroyed.
   void EraseVertexArrayKey(ShaderProgramResource *shader) {
     vertex_array_keys_.erase(shader);
   }
@@ -1637,45 +1637,45 @@ class Renderer::ResourceBinder : public Allocatable {
   // Gets the hash key for Resource types. By default this is just the
   // ResourceBinder.
 
-  // Draws a single Node.
+  /// Draws a single Node.
   void DrawNode(const Node& node, GraphicsManager* gm);
-  // Draws a single Shape.
+  /// Draws a single Shape.
   void DrawShape(const Shape& shape, GraphicsManager* gm);
-  // Draws a single Shape that has an IndexBuffer.
+  /// Draws a single Shape that has an IndexBuffer.
   void DrawIndexedShape(const Shape& shape, const IndexBuffer& ib,
                         GraphicsManager* gm);
-  // Draws a single Shape that has no IndexBuffer.
+  /// Draws a single Shape that has no IndexBuffer.
   void DrawNonindexedShape(const Shape& shape, size_t vertex_count,
                            GraphicsManager* gm);
 
-  // Marks the passed attachment's texture targets, if any, as having been
-  // implicitly changed by a draw into a framebuffer.
+  /// Marks the passed attachment's texture targets, if any, as having been
+  /// implicitly changed by a draw into a framebuffer.
   void MarkAttachmentImplicitlyChanged(
     const FramebufferObject::Attachment& attachment);
 
-  // Generic function that recursively processes all holders in a node graph.
-  // Private, since it depends on setup done by the Traverse() function.
+  /// Generic function that recursively processes all holders in a node graph.
+  /// Private, since it depends on setup done by the Traverse() function.
   template <typename Operation>
   void Visit(const NodePtr& node);
 
-  // Initializes image_units_ restricting unit usage to [first, last].
+  /// Initializes image_units_ restricting unit usage to [first, last].
   void InitImageUnits(int first, int last);
 
-  // The GraphicsManager used for this instance.
+  /// The GraphicsManager used for this instance.
   GraphicsManagerPtr graphics_manager_;
 
-  // Annotates tracing streams.
+  /// Annotates tracing streams.
   std::unique_ptr<StreamAnnotator> stream_annotator_;
 
-  // The last FramebufferObject bound to this Renderer.
+  /// The last FramebufferObject bound to this Renderer.
   base::WeakReferentPtr<FramebufferObject> current_fbo_;
 
-  // Tracks which sampler and texture are bound to what unit.
+  /// Tracks which sampler and texture are bound to what unit.
   base::AllocVector<ImageUnit> image_units_;
   Range1i image_unit_range_;
-  ImageUnit* lru_unit_;  // Least recently used.
-  ImageUnit* mru_unit_;  // Most recently used.
-  // Keeps track of the last binding place of each texture.
+  ImageUnit* lru_unit_;  ///< Least recently used.
+  ImageUnit* mru_unit_;  ///< Most recently used.
+  /// Keeps track of the last binding place of each texture.
   base::AllocUnorderedMap<TextureResource*, GLuint> texture_last_bindings_;
   std::mutex texture_bindings_mutex_;
   GLuint active_image_unit_;
@@ -1685,56 +1685,56 @@ class Renderer::ResourceBinder : public Allocatable {
   std::array<std::vector<BufferBinding>, BufferObject::kNumIndexedTargets>
       active_indexed_buffers_;
 
-  // Tracks which framebuffer is currently bound.
-  // Please note that if active_framebuffer_.gl_id equals
-  // kInvalidGluint(static_cast<GLuint>(-1)), then it is invalid framebuffer.
+  /// Tracks which framebuffer is currently bound.
+  /// Please note that if active_framebuffer_.gl_id equals
+  /// kInvalidGluint(static_cast<GLuint>(-1)), then it is invalid framebuffer.
   FramebufferBinding active_framebuffer_;
 
-  // Tracks which shader program is currently active.
+  /// Tracks which shader program is currently active.
   ShaderProgramBinding active_shader_;
 
-  // Tracks the currently-bound transform feedback.
+  /// Tracks the currently-bound transform feedback.
   TransformFeedbackBinding active_transform_feedback_;
 
-  // Tracks which vertex array is currently bound.
+  /// Tracks which vertex array is currently bound.
   VertexArrayBinding active_vertex_array_;
 
-  // Storage for GL object IDs that are saved when kSave* flags are set, and
-  // restored when kRestore* flags are set.
+  /// Storage for GL object IDs that are saved when kSave* flags are set, and
+  /// restored when kRestore* flags are set.
   GLint
       saved_ids_[Renderer::kSaveVertexArray - Renderer::kSaveActiveTexture + 1];
   StateTablePtr saved_state_table_;
 
-  // The ResourceManager that owns the Resources this is operating on. This must
-  // be set using SetResourceManager().
+  /// The ResourceManager that owns the Resources this is operating on. This must
+  /// be set using SetResourceManager().
   ResourceManager* resource_manager_;
 
-  // The currently active shader program during scene graph traversal.
+  /// The currently active shader program during scene graph traversal.
   ShaderProgram* current_shader_program_;
 
-  // This set is used to keep track of ResourceKeys for vertex arrays which
-  // are unique across different shader programs and ResourceBinders.
-  // The key is simply the address of the corresponding element stored
-  // in the set. std::set is used instead of std::unordered_set, since
-  // iterators into the latter can be invalidated by insertions.
+  /// This set is used to keep track of ResourceKeys for vertex arrays which
+  /// are unique across different shader programs and ResourceBinders.
+  /// The key is simply the address of the corresponding element stored
+  /// in the set. std::set is used instead of std::unordered_set, since
+  /// iterators into the latter can be invalidated by insertions.
   base::AllocSet<ShaderProgramResource*> vertex_array_keys_;
 
-  // StateTable representing the global OpenGL state.
+  /// StateTable representing the global OpenGL state.
   StateTablePtr gl_state_table_;
-  // StateTable representing the client traversal state.
+  /// StateTable representing the client traversal state.
   StateTablePtr client_state_table_;
-  // Storage for saving StateTables encountered during traversal.
+  /// Storage for saving StateTables encountered during traversal.
   base::AllocVector<StateTablePtr> traversal_state_tables_;
   size_t current_traversal_index_;
 
-  // Whether this is currently processing info requests.
+  /// Whether this is currently processing info requests.
   bool processing_info_requests_;
 
   friend class InfoRequestGuard;
 };
 
-// VertexArrayResources must be created per shader program. This will also
-// be unique across multiple ResourceBinders.
+/// VertexArrayResources must be created per shader program. This will also
+/// be unique across multiple ResourceBinders.
 template <>
 ResourceKey Renderer::ResourceManager::GetResourceKey<
     Renderer::VertexArrayResource>(ResourceBinder* resource_binder,
@@ -1822,8 +1822,8 @@ void Renderer::ResourceManager::ProcessResourceInfoRequests(
   ProcessDataRequests<TextureImageInfo>();
 }
 
-// Helper class that wraps a push and pop of a marker onto a stream annotator.
-// It should optimize away to nothing in production builds.
+/// Helper class that wraps a push and pop of a marker onto a stream annotator.
+/// It should optimize away to nothing in production builds.
 #if ION_PRODUCTION
 class Renderer::ScopedLabel {
  public:
@@ -1869,16 +1869,18 @@ class Renderer::ScopedLabel {
 
 //-----------------------------------------------------------------------------
 //
-// Renderer-specific base Resource class. This is derived from the
-// ResourceManager's Resource class so instances can be managed. The class
-// stores the ResourceHolder object that owns the resource (in an opaque way).
-// It communicates with the ResourceManager to make sure resources are released
-// and destroyed when appropriate.
+// Renderer::Resource
 //
-// The NumModifiedBits template parameter determines the size of the modified
-// state bitset.
 //-----------------------------------------------------------------------------
 
+/// Renderer-specific base Resource class. This is derived from the
+/// ResourceManager's Resource class so instances can be managed. The class
+/// stores the ResourceHolder object that owns the resource (in an opaque way).
+/// It communicates with the ResourceManager to make sure resources are released
+/// and destroyed when appropriate.
+///
+/// The NumModifiedBits template parameter determines the size of the modified
+/// state bitset.
 template <int NumModifiedBits>
 class Renderer::Resource : public Renderer::ResourceManager::Resource {
  public:
@@ -1924,12 +1926,13 @@ class Renderer::Resource : public Renderer::ResourceManager::Resource {
     return GetResourceManager()->GetGraphicsManager().Get();
   }
 
-  // Returns whether the resource has a valid holder.
+  /// Returns whether the resource has a valid holder.
   bool HasHolder() const { return GetHolder() != nullptr; }
 
   void Release(bool can_make_gl_calls) override { DetachFromHolder(); }
 
-  // Modified bit accessors.
+  /// \name Modified bit accessors.
+  ///@{
   void OnChanged(const int bit) override { modified_bits_.set(bit); }
 
   void ResetModifiedBit(int bit) { modified_bits_.reset(bit); }
@@ -1941,9 +1944,9 @@ class Renderer::Resource : public Renderer::ResourceManager::Resource {
   void SetModifiedBits() { modified_bits_.set(); }
 
   bool TestModifiedBit(int bit) const { return modified_bits_.test(bit); }
+  ///@}
 
-  // Returns whether any bits in the range [low_bit, high_bit] are set.
-  // 
+  /// Returns whether any bits in the range [low_bit, high_bit] are set.
   bool TestModifiedBitRange(int low_bit, int high_bit) const {
     std::bitset<NumModifiedBits> mask;
     // Set mask to all 1s.
@@ -1964,9 +1967,9 @@ class Renderer::Resource : public Renderer::ResourceManager::Resource {
 
   friend class ResourceBinder;
 
-  // The OpenGL ID for this Resource.
+  /// The OpenGL ID for this Resource.
   GLuint id_;
-  // Whether this Resource manages the OpenGL object ID and should delete it.
+  /// Whether this Resource manages the OpenGL object ID and should delete it.
   const bool resource_owns_gl_id_;
 
  private:
@@ -2008,8 +2011,8 @@ class Renderer::SamplerResource : public Resource<Sampler::kNumChanges> {
   void Update(ResourceBinder* rb) override;
   ResourceType GetType() const override { return kSampler; }
 
-  // Sampler objects are never bound in the traditional sense, instead they are
-  // attached to image units (through BindToUnit()).
+  /// Sampler objects are never bound in the traditional sense, instead they are
+  /// attached to image units (through BindToUnit()).
   void Bind(ResourceBinder* rb) { Update(rb); }
   void Unbind(ResourceBinder* rb) override;
 
@@ -2119,8 +2122,8 @@ void Renderer::SamplerResource::Release(bool can_make_gl_calls) {
 //
 //-----------------------------------------------------------------------------
 
-// We use CubeMapTexture::kNumChanges since it has the most changes, and this
-// resource class represents everything derived from TextureBase.
+/// We use CubeMapTexture::kNumChanges since it has the most changes, and this
+/// resource class represents everything derived from TextureBase.
 class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
  public:
   TextureResource(ResourceBinder* rb, ResourceManager* rm,
@@ -2148,9 +2151,9 @@ class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
     DCHECK(id_ == 0U || !portgfx::GlContext::GetCurrent());
   }
 
-  // Updates this TextureResource and binds it to a new unit.
+  /// Updates this TextureResource and binds it to a new unit.
   void Update(ResourceBinder* rb) override;
-  // Updates this TextureResource and binds it to the passed unit.
+  /// Updates this TextureResource and binds it to the passed unit.
   void UpdateWithUnit(ResourceBinder* rb, GLuint unit);
   void Release(bool can_make_gl_calls) override;
 
@@ -2172,14 +2175,14 @@ class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
     return static_cast<const T&>(*(this->GetHolder()));
   }
 
-  // Binds the texture object in OpenGL to a new unit.  Use BindToUnit() when
-  // possible for performance.
+  /// Binds the texture object in OpenGL to a new unit.  Use BindToUnit() when
+  /// possible for performance.
   void Bind(ResourceBinder* rb);
-  // Binds the texture object in OpenGL to the passed unit.
+  /// Binds the texture object in OpenGL to the passed unit.
   void BindToUnit(ResourceBinder* rb, GLuint unit);
   void Unbind(ResourceBinder* rb) override;
 
-  // Returns whether the "multisample enabled" bit has changed.
+  /// Returns whether the "multisample enabled" bit has changed.
   bool SetMultisampleEnabledByRenderer(bool multisample_enabled_by_renderer) {
     const bool changed = multisample_enabled_by_renderer_ !=
         multisample_enabled_by_renderer;
@@ -2188,15 +2191,15 @@ class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
   }
 
  protected:
-  // Returns whether the texture is complete and can be updated.
+  /// Returns whether the texture is complete and can be updated.
   bool IsComplete() const;
 
-  // Updates the texture's image data.
+  /// Updates the texture's image data.
   void UpdateCubeMapImageState(GraphicsManager* gm);
   void UpdateTextureImageState(GraphicsManager* gm, bool multisample,
                                bool multisample_changed);
 
-  // Creates an immutable texture with TexStorage?D().
+  /// Creates an immutable texture with TexStorage?D().
   void CreateImmutableTexture(const Image& image, const bool multisample,
                               const size_t samples,
                               const bool fixed_sample_locations, size_t levels,
@@ -2226,7 +2229,8 @@ class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
   GLenum gl_target_;
   int last_uploaded_components_;
 
-  // State shadowed from TextureBase's Sampler.
+  /// \name State shadowed from TextureBase's Sampler.
+  ///@{
   bool auto_mipmapping_enabled_;
   float max_anisotropy_;
   float min_lod_;
@@ -2238,12 +2242,13 @@ class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
   Sampler::WrapMode wrap_r_;
   Sampler::WrapMode wrap_s_;
   Sampler::WrapMode wrap_t_;
+  ///@}
 
-  // Tracking whether multisampling has been enabled by the renderer.
+  /// Tracking whether multisampling has been enabled by the renderer.
   bool multisample_enabled_by_renderer_;
 
  private:
-  // Updates the texture target to use with OpenGL.
+  /// Updates the texture target to use with OpenGL.
   void UpdateTextureTarget(GraphicsManager* gm, const bool multisample) {
     // Determine the texture target.
     const TextureBase& base = GetTexture<TextureBase>();
@@ -2269,8 +2274,8 @@ class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
     }
   }
 
-  // Sets the texture targets for a non-cubemap texture based on an image
-  // and whether multisampling is enabled.
+  /// Sets the texture targets for a non-cubemap texture based on an image
+  /// and whether multisampling is enabled.
   void UpdateTextureTypeFromImage(const Image& image, bool multisample) {
     if (image.GetType() == Image::kEgl) {
       if (image.GetDimensions() == Image::k2d) {
@@ -2305,7 +2310,7 @@ class Renderer::TextureResource : public Resource<CubeMapTexture::kNumChanges> {
     }
   }
 
-  // Sets the texture targets for a cubemap based on an image.
+  /// Sets the texture targets for a cubemap based on an image.
   void UpdateCubeMapTextureTypeFromImage(const Image& image) {
     if (image.GetType() == Image::kEgl) {
       gl_target_ = GL_TEXTURE_2D;
@@ -3107,12 +3112,12 @@ class Renderer::ShaderResource : public Resource<Shader::kNumChanges> {
     DCHECK(id_ == 0U || !portgfx::GlContext::GetCurrent());
   }
 
-  // Updates the resource and returns whether anything changed.
+  /// Updates the resource and returns whether anything changed.
   virtual bool UpdateShader(ResourceBinder* rb);
   void Release(bool can_make_gl_calls) override;
   ResourceType GetType() const override { return kShader; }
 
-  // Sets the type of shader (e.g., GL_VERTEX_SHADER, GL_FRAGMENT_SHADER).
+  /// Sets the type of shader (e.g., GL_VERTEX_SHADER, GL_FRAGMENT_SHADER).
   void SetShaderType(GLenum type) { shader_type_ = type; }
 
   const Shader& GetShader() const {
@@ -3124,7 +3129,7 @@ class Renderer::ShaderResource : public Resource<Shader::kNumChanges> {
   void Update(ResourceBinder* rb) override {}
 
  private:
-  // The type of shader.
+  /// The type of shader.
   GLenum shader_type_;
 };
 
@@ -3175,15 +3180,14 @@ void Renderer::ShaderResource::Release(bool can_make_gl_calls) {
 
 //-----------------------------------------------------------------------------
 //
-// Renderer::ShaderInputRegistryResource class.
-//
-// A ShaderInputRegistryResource tracks the values of uniforms belonging to one
-// ShaderInputRegistry when a Node tree is traversed. It handles overriding and
-// combining uniform values in child nodes. Unlike the other Resource classes,
-// it does create or own any GL objects.
+// Renderer::ShaderInputRegistryResource
 //
 //-----------------------------------------------------------------------------
 
+/// A ShaderInputRegistryResource tracks the values of uniforms belonging to one
+/// ShaderInputRegistry when a Node tree is traversed. It handles overriding and
+/// combining uniform values in child nodes. Unlike the other Resource classes,
+/// it does create or own any GL objects.
 class Renderer::ShaderInputRegistryResource
     : public Resource<ShaderInputRegistry::kNumChanges> {
  public:
@@ -3198,8 +3202,8 @@ class Renderer::ShaderInputRegistryResource
   ~ShaderInputRegistryResource() override {}
   ResourceType GetType() const override { return kShaderInputRegistry; }
 
-  // Registers a ShaderProgramResource as interested in changes to the
-  // |index_in_registry|th uniform.
+  /// Registers a ShaderProgramResource as interested in changes to the
+  /// |index_in_registry|th uniform.
   void SetUniformCacheInfo(size_t index_in_registry,
                            ShaderProgramResource* spr,
                            size_t uniform_cache_index) {
@@ -3214,7 +3218,7 @@ class Renderer::ShaderInputRegistryResource
     return uniform_stacks_[index_in_registry]->GetUniformCacheInfo(spr);
   }
 
-  // Detaches spr from the |index_in_registry|th UniformStack.
+  /// Detaches spr from the |index_in_registry|th UniformStack.
   void DetachShaderProgramResource(
       ShaderProgramResource* spr, size_t index_in_registry) {
     DCHECK_LT(index_in_registry, uniform_stacks_.size());
@@ -3223,20 +3227,20 @@ class Renderer::ShaderInputRegistryResource
   }
 
   void Unbind(ResourceBinder* rb) override {
-    // Clear the uniform cache. Do not leave stacks in an invalid state
-    // (e.g. too few stacks, invalid state of a stack), since unbinding
-    // does not mark a resource as modified.
+    /// Clear the uniform cache. Do not leave stacks in an invalid state
+    /// (e.g. too few stacks, invalid state of a stack), since unbinding
+    /// does not mark a resource as modified.
     for (auto& stack : uniform_stacks_)
       stack->Clear();
   }
 
-  // Returns the latest uniform stored at the passed index.
+  /// Returns the latest uniform stored at the passed index.
   const Uniform& GetUniform(size_t index) const {
     DCHECK_LT(index, uniform_stacks_.size());
     return *uniform_stacks_[index]->GetTop();
   }
 
-  // Sets the initial value of a Uniform. The Uniform must be valid.
+  /// Sets the initial value of a Uniform. The Uniform must be valid.
   void SetInitialValue(const Uniform& u) {
     DCHECK_EQ(&u.GetRegistry(), &GetRegistry());
     DCHECK_LT(u.GetIndexInRegistry(), uniform_stacks_.size());
@@ -3244,7 +3248,7 @@ class Renderer::ShaderInputRegistryResource
     uis.SetBottom(u);
   }
 
-  // Pushes a Uniform onto the shadow state.
+  /// Pushes a Uniform onto the shadow state.
   void PushUniform(const Uniform& u) {
     DCHECK_EQ(&u.GetRegistry(), &GetRegistry());
     DCHECK_LT(u.GetIndexInRegistry(), uniform_stacks_.size());
@@ -3290,7 +3294,7 @@ class Renderer::ShaderInputRegistryResource
       }
     }
   }
-  // Pops a Uniform off of the shadow state.
+  /// Pops a Uniform off of the shadow state.
   void PopUniform(const Uniform& uniform) {
     DCHECK_EQ(&uniform.GetRegistry(), &GetRegistry());
     DCHECK_LT(uniform.GetIndexInRegistry(), uniform_stacks_.size());
@@ -3313,10 +3317,10 @@ class Renderer::ShaderInputRegistryResource
   }
 
  private:
-  // This class is needed to properly construct the stack of AllocVectors with
-  // an allocator and wraps access to the stack. Note that we normally keep
-  // pointers to Uniforms for performance and only copy combined or merged
-  // Uniforms.
+  /// This class is needed to properly construct the stack of AllocVectors with
+  /// an allocator and wraps access to the stack. Note that we normally keep
+  /// pointers to Uniforms for performance and only copy combined or merged
+  /// Uniforms.
   class UniformStack : public Allocatable {
    public:
     explicit UniformStack(ShaderInputRegistryResource* sirr)
@@ -3423,17 +3427,17 @@ class Renderer::ShaderInputRegistryResource
 
     ShaderInputRegistryResource* sirr_;
     base::AllocVector<const Uniform*> uniform_stack_;
-    // Temporary storage needed to hold Uniforms that have been combined or
-    // merged during traversal. Otherwise we just keep pointers to Uniforms to
-    // avoid expensive copying. Use a deque-like UniformStack to ensure that
-    // pointers to Uniforms in the deque remain valid.
+    /// Temporary storage needed to hold Uniforms that have been combined or
+    /// merged during traversal. Otherwise we just keep pointers to Uniforms to
+    /// avoid expensive copying. Use a deque-like UniformStack to ensure that
+    /// pointers to Uniforms in the deque remain valid.
     base::AllocDeque<Uniform> temp_stack_;
-    // Whether the stack is in default state.
+    /// Whether the stack is in default state.
     bool pristine_;
-    // ShaderProgramResource which is notified via OnUniformChanged whenever
-    // the uniform changes in the stack.
+    /// ShaderProgramResource which is notified via OnUniformChanged whenever
+    /// the uniform changes in the stack.
     ShaderProgramResource* shader_program_resource_;
-    // Index in shader_program_resource_'s UniformCacheEntry vector.
+    /// Index in shader_program_resource_'s UniformCacheEntry vector.
     size_t uniform_cache_index_;
   };
 
@@ -3505,12 +3509,12 @@ class Renderer::ShaderProgramResource
   void Update(ResourceBinder* rb) override;
   ResourceType GetType() const override { return kShaderProgram; }
 
-  // Obtain/release image units for all texture uniforms used by this shader
-  // program.
+  /// Obtain/release image units for all texture uniforms used by this shader
+  /// program.
   void ObtainImageUnits(ResourceBinder* rb);
   void ReleaseImageUnits(ResourceBinder* rb);
 
-  // Binds or unbinds the ShaderProgram object in OpenGL.
+  /// Binds or unbinds the ShaderProgram object in OpenGL.
   bool Bind(ResourceBinder* rb);
   void Unbind(ResourceBinder* rb) override;
 
@@ -3526,7 +3530,8 @@ class Renderer::ShaderProgramResource
     }
   }
 
-  // Return the resources of the shader stages.
+  /// \name Return the resources of the shader stages.
+  ///@{
   ShaderResource* GetVertexResource() const { return vertex_resource_; }
   ShaderResource* GetGeometryResource() const { return geometry_resource_; }
   ShaderResource* GetFragmentResource() const { return fragment_resource_; }
@@ -3534,6 +3539,7 @@ class Renderer::ShaderProgramResource
   ShaderResource* GetTessEvaluationResource() const {
     return tess_eval_resource_;
   }
+  ///@}
 
  private:
   struct UniformCacheEntry {
@@ -4208,13 +4214,13 @@ class Renderer::BufferResource : public Resource<BufferObject::kNumChanges> {
   void Update(ResourceBinder* rb) override;
   ResourceType GetType() const override { return kBufferObject; }
 
-  // Binds the buffer "somewhere", i.e., to its initial bind target.
+  /// Binds the buffer "somewhere", i.e., to its initial bind target.
   void Bind(ResourceBinder* rb);
-  // Binds the buffer to a specific bind point.
+  /// Binds the buffer to a specific bind point.
   void BindToTarget(ResourceBinder* rb, BufferObject::Target target);
   void Unbind(ResourceBinder* rb) override;
 
-  // Returns the buffer target to which this buffer was most recently bound.
+  /// Returns the buffer target to which this buffer was most recently bound.
   GLenum GetGlTarget() const {
     return base::EnumHelper::GetConstant(latest_target_);
   }
@@ -4244,7 +4250,7 @@ class Renderer::BufferResource : public Resource<BufferObject::kNumChanges> {
   }
 
   BufferObject::Target initial_target_;
-  // The target where this buffer was most recently bound.
+  /// The target where this buffer was most recently bound.
   BufferObject::Target latest_target_;
   bool was_used_as_element_buffer_;
 };
@@ -4590,13 +4596,13 @@ class Renderer::FramebufferResource
 
   void UpdateMemoryUsage(const FramebufferObject& fbo);
 
-  // Renderbuffer attachment ids.
+  /// Renderbuffer attachment ids.
   base::AllocVector<GLuint> color_ids_;
   GLuint depth_id_;
   GLuint stencil_id_;
-  // Whether the depth_id_ is also attached to the stencil attachment.
+  /// Whether the depth_id_ is also attached to the stencil attachment.
   bool packed_depth_stencil_;
-  // Whether all attachments use implicit multisampling.
+  /// Whether all attachments use implicit multisampling.
   bool implicit_multisample_;
 };
 
@@ -5084,13 +5090,13 @@ class Renderer::VertexArrayResource
   void Release(bool can_make_gl_calls) override;
   ResourceType GetType() const override { return kAttributeArray; }
 
-  // Unbinds or binds and checks the buffer objects of the VAO in OpenGL.
-  // BindAndCheckBuffers() returns whether the vertex array was successfully
-  // bound. A call to BindAndCheckBuffers() might fail if a buffer object
-  // referenced by an attributes does not have any data, or if a resource cannot
-  // be created by OpenGL. Set force_bind to true to bind the array object even
-  // if no shader is active; this is needed to get an array's resource
-  // information.
+  /// Unbinds or binds and checks the buffer objects of the VAO in OpenGL.
+  /// BindAndCheckBuffers() returns whether the vertex array was successfully
+  /// bound. A call to BindAndCheckBuffers() might fail if a buffer object
+  /// referenced by an attributes does not have any data, or if a resource cannot
+  /// be created by OpenGL. Set force_bind to true to bind the array object even
+  /// if no shader is active; this is needed to get an array's resource
+  /// information.
   virtual bool BindAndCheckBuffers(bool force_bind, ResourceBinder* rb);
   void Unbind(ResourceBinder* rb) override;
 
@@ -5110,19 +5116,19 @@ class Renderer::VertexArrayResource
 
   virtual bool UpdateAndCheckBuffers(ResourceBinder* rb);
 
-  // Binds all single-valued attributes from the associated AttributeArray.
+  /// Binds all single-valued attributes from the associated AttributeArray.
   void BindSimpleAttributes();
 
-  // Binds a BufferObjectElement attribute. Returns if the binding was
-  // successful. Binding might fail if a buffer object contained in an Attribute
-  // or its data container are nullptr, or if a resource cannot be created by
-  // OpenGL. The number of slots that the attribute requires is also assigned
-  // if the binding is successful.
+  /// Binds a BufferObjectElement attribute. Returns if the binding was
+  /// successful. Binding might fail if a buffer object contained in an Attribute
+  /// or its data container are nullptr, or if a resource cannot be created by
+  /// OpenGL. The number of slots that the attribute requires is also assigned
+  /// if the binding is successful.
   bool BindBufferObjectElementAttribute(GLuint attribute_index,
                                         const Attribute& a, GLuint* slots,
                                         ResourceBinder* rb);
 
-  // Clears the vertex count. It will be updated as attributes are bound.
+  /// Clears the vertex count. It will be updated as attributes are bound.
   void ResetVertexCount() {
     vertex_count_ = std::numeric_limits<std::size_t>::max();
   }
@@ -5148,21 +5154,21 @@ class Renderer::VertexArrayResource
     GLuint slots;
     bool enabled;
   };
-  // Buffer attribute information.
+  /// Buffer attribute information.
   base::AllocVector<BufferAttributeInfo> buffer_attribute_infos_;
-  // Simple attribute indices.
+  /// Simple attribute indices.
   base::AllocVector<GLuint> simple_attribute_indices_;
 
  private:
-  // Prevent other classes from calling Bind() and Update(). They should use
-  // BindAndCheckBuffers() and UpdateAndCheckBuffers() instead.
+  /// Prevent other classes from calling Bind() and Update(). They should use
+  /// BindAndCheckBuffers() and UpdateAndCheckBuffers() instead.
   virtual void Bind(ResourceBinder* rb) {
     Update(rb);
     BindAndCheckBuffers(true, rb);
   }
   void Update(ResourceBinder* rb) override {}
 
-  // Populates the vectors of indices of buffer and simple attributes.
+  /// Populates the vectors of indices of buffer and simple attributes.
   void PopulateAttributeIndices(ResourceBinder* rb);
 
   size_t vertex_count_;
@@ -5478,7 +5484,7 @@ class Renderer::VertexArrayEmulatorResource
 
  private:
   typedef base::InlinedAllocVector<GLuint, kAttributeSlotCount> IndexVector;
-  // Sorted vector of indices that contain buffer attributes.
+  /// Sorted vector of indices that contain buffer attributes.
   IndexVector sorted_buffer_indices_;
 };
 
@@ -5911,6 +5917,7 @@ ION_API void Renderer::BindResource(T* holder) {
   }
 }
 
+#if ! DOXYGEN
 // Explicitly instantiate.
 template ION_API void Renderer::BindResource<BufferObject>(
     BufferObject*);  // NOLINT
@@ -5924,6 +5931,7 @@ template ION_API void Renderer::BindResource<Sampler>(Sampler*);  // NOLINT
 template ION_API void Renderer::BindResource<ShaderProgram>(
     ShaderProgram*);                                              // NOLINT
 template ION_API void Renderer::BindResource<Texture>(Texture*);  // NOLINT
+#endif
 
 template <typename T>
 ION_API void Renderer::CreateOrUpdateResource(T* holder) {
@@ -5932,6 +5940,7 @@ ION_API void Renderer::CreateOrUpdateResource(T* holder) {
     resource_binder->Process<ResourceBinder::CreateOrUpdateOp>(holder, 0U);
 }
 
+#if ! DOXYGEN
 // Explicitly instantiate.
 template ION_API void Renderer::CreateOrUpdateResource<AttributeArray>(
     AttributeArray*);  // NOLINT
@@ -5951,6 +5960,7 @@ template ION_API void Renderer::CreateOrUpdateResource<ShaderProgram>(
     ShaderProgram*);  // NOLINT
 template ION_API void Renderer::CreateOrUpdateResource<Texture>(
     Texture*);  // NOLINT
+#endif
 
 void Renderer::ProcessStateTable(const StateTablePtr& state_table) {
   ResourceBinder* resource_binder = GetOrCreateInternalResourceBinder(__LINE__);
@@ -6111,6 +6121,7 @@ ION_API void Renderer::RequestForcedUpdate(T* holder) {
     resource_binder->Process<ResourceBinder::RequestUpdateOp>(holder, 0U);
 }
 
+#if ! DOXYGEN
 // Explicitly instantiate.
 template ION_API void Renderer::RequestForcedUpdate<AttributeArray>(
     AttributeArray*);  // NOLINT
@@ -6130,6 +6141,7 @@ template ION_API void Renderer::RequestForcedUpdate<ShaderInputRegistry>(
     ShaderInputRegistry*);  // NOLINT
 template ION_API void Renderer::RequestForcedUpdate<Texture>(
     Texture*);  // NOLINT
+#endif
 
 void Renderer::RequestForcedUpdates(const NodePtr& node) {
   if (!node.Get() || !node->IsEnabled())
@@ -6737,6 +6749,7 @@ void Renderer::ClearResources(const T* holder) {
     resource_manager_->ReleaseResources(holder, resource_binder);
 }
 
+#if ! DOXYGEN
 // Explicitly instantiate.
 template ION_API void Renderer::ClearResources<AttributeArray>(
     const AttributeArray*);
@@ -6751,6 +6764,7 @@ template ION_API void Renderer::ClearResources<Shader>(const Shader*);
 template ION_API void Renderer::ClearResources<ShaderProgram>(
     const ShaderProgram*);
 template ION_API void Renderer::ClearResources<Texture>(const Texture*);
+#endif
 
 void Renderer::ClearAllResources(bool force_abandon) {
   resource_manager_->DestroyOrAbandonAllResources(force_abandon);
@@ -7678,6 +7692,7 @@ void Renderer::ResourceManager::FillInfoFromResource(
   info->active = resource->IsCapturing();
 }
 
+#if ! DOXYGEN
 // Instantiate the GetResource() function for supported resource types.
 template Renderer::BufferResource* Renderer::ResourceManager::GetResource(
     const BufferObject*, Renderer::ResourceBinder*, GLuint);
@@ -7699,6 +7714,7 @@ Renderer::ResourceManager::GetResource(const TransformFeedback*,
                                        Renderer::ResourceBinder*, GLuint);
 template Renderer::VertexArrayResource* Renderer::ResourceManager::GetResource(
     const AttributeArray*, Renderer::ResourceBinder*, GLuint);
+#endif
 
 }  // namespace gfx
 }  // namespace ion

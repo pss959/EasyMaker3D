@@ -33,7 +33,7 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// The UniformType enum defines all supported uniform shader argument types.
+/// The UniformType enum defines all supported uniform shader argument types.
 enum UniformType {
   // Scalar types.
   kFloatUniform,
@@ -69,34 +69,34 @@ typedef base::Variant<
     math::Matrix2f, math::Matrix3f, math::Matrix4f,
     CubeMapTexturePtr, TexturePtr> UniformValueType;
 
-// A Uniform instance represents a uniform shader argument. A Variant is used to
-// store the actual type-specific value, and the interface is based on that.
-// The Uniform class is designed to be lightweight enough that instances can be
-// copied quickly, so they can be stored in vectors, used in stacks, and so on.
+/// A Uniform instance represents a uniform shader argument. A Variant is used to
+/// store the actual type-specific value, and the interface is based on that.
+/// The Uniform class is designed to be lightweight enough that instances can be
+/// copied quickly, so they can be stored in vectors, used in stacks, and so on.
 class ION_API Uniform : public ShaderInput<UniformValueType, UniformType> {
  public:
-  // The default constructor creates an invalid Uniform instance, which
-  // should never be used as is. IsValid() will return false for such an
-  // instance.
+  /// The default constructor creates an invalid Uniform instance, which
+  /// should never be used as is. IsValid() will return false for such an
+  /// instance.
   Uniform() {}
   ~Uniform() {}
 
-  // Returns a string containing "uniform".
+  /// Returns a string containing "uniform".
   static const char* GetShaderInputTypeName();
 
-  // Returns a string representing a uniform type.
+  /// Returns a string representing a uniform type.
   static const char* GetValueTypeName(const ValueType type);
 
-  // Returns the type for a templated value type. This is instantiated
-  // for all supported types
+  /// Returns the type for a templated value type. This is instantiated
+  /// for all supported types
   template <typename T> static ValueType GetTypeByValue();
 
-  // Returns the tag for this input type.
+  /// Returns the tag for this input type.
   static Tag GetTag() { return kUniform; }
 
-  // Merges the value of this with replacement if both have the same type.
-  // This is useful for merging partial array uniforms. replacement will replace
-  // values in this if the array ranges overlap.
+  /// Merges the value of this with replacement if both have the same type.
+  /// This is useful for merging partial array uniforms. replacement will replace
+  /// values in this if the array ranges overlap.
   void MergeValuesFrom(const Uniform& other);
 
   bool operator==(const Uniform& other) const;
@@ -104,8 +104,8 @@ class ION_API Uniform : public ShaderInput<UniformValueType, UniformType> {
     return !(*this == other);
   }
 
-  // Merges replacement and base into merged. Returns true if a merge was
-  // needed, false otherwise in which case replacement completely replaces base.
+  /// Merges replacement and base into merged. Returns true if a merge was
+  /// needed, false otherwise in which case replacement completely replaces base.
   static bool GetMerged(
       const Uniform& base, const Uniform& replacement, Uniform* merged);
 

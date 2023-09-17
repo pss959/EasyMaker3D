@@ -26,25 +26,24 @@ limitations under the License.
 namespace ion {
 namespace gfxutils {
 
-// The Printer class can be used for debugging. It prints ION scene graphs to
-// a stream.
+/// The Printer class can be used for debugging. It prints ION scene graphs to
+/// a stream.
 class ION_API Printer {
  public:
-  // Available output formats.
-  //
+  /// Available output formats.
   enum Format {
-    kText,   // Regular text format.
-    kHtml,   // HTML format (a tree of nested objects).
+    kText,   ///< Regular text format.
+    kHtml,   ///< HTML format (a tree of nested objects).
   };
   Printer();
   ~Printer();
 
-  // Sets/returns the printed format. The default is kText.
+  /// Sets/returns the printed format. The default is kText.
   void SetFormat(Format format) { format_ = format; }
   Format GetFormat() const { return format_; }
 
-  // Sets/returns a flag indicating whether shape contents should be written.
-  // The default is false.
+  /// Sets/returns a flag indicating whether shape contents should be written.
+  /// The default is false.
   void EnableFullShapePrinting(bool enable) {
     full_shape_printing_enabled_ = enable;
   }
@@ -52,8 +51,8 @@ class ION_API Printer {
     return full_shape_printing_enabled_;
   }
 
-  // Sets/returns a flag indicating whether the addresses of objects should be
-  // written. The default is true.
+  /// Sets/returns a flag indicating whether the addresses of objects should be
+  /// written. The default is true.
   void EnableAddressPrinting(bool enable) {
     address_printing_enabled_ = enable;
   }
@@ -61,9 +60,9 @@ class ION_API Printer {
     return address_printing_enabled_;
   }
 
-  // Sets a tolerance for floating-point values to be "cleaned", meaning that
-  // values closer than this value to zero will be printed as 0. The default is
-  // 0, meaning that no cleaning will be done.
+  /// Sets a tolerance for floating-point values to be "cleaned", meaning that
+  /// values closer than this value to zero will be printed as 0. The default is
+  /// 0, meaning that no cleaning will be done.
   void SetFloatCleanTolerance(float tolerance) {
       float_clean_tolerance_ = tolerance;
   }
@@ -71,7 +70,7 @@ class ION_API Printer {
       return float_clean_tolerance_;
   }
 
-  // Prints the scene graph rooted by the given node.
+  /// Prints the scene graph rooted by the given node.
   void PrintScene(const gfx::NodePtr& node, std::ostream& out);  // NOLINT
 
  private:

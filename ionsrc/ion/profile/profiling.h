@@ -18,8 +18,9 @@ limitations under the License.
 #ifndef ION_PROFILE_PROFILING_H_
 #define ION_PROFILE_PROFILING_H_
 
-// This file contains classes and macros related to run-time performance
-// profiling.
+/// \file
+/// This file contains classes and macros related to run-time performance
+/// profiling.
 
 #include "ion/base/staticsafedeclare.h"
 #include "ion/profile/calltracemanager.h"
@@ -28,30 +29,30 @@ limitations under the License.
 namespace ion {
 namespace profile {
 
-// Get the global, static instance of CallTraceManager.
+/// Get the global, static instance of CallTraceManager.
 ION_API CallTraceManager* GetCallTraceManager();
 
 }  // namespace profile
 }  // namespace ion
 
-// Some levels of indirection required to make C preprocessor recursively expand
-// __LINE__ macro in presence of ## operator.
+/// Some levels of indirection required to make C preprocessor recursively expand
+/// __LINE__ macro in presence of ## operator.
 #define ION_PROFILING_PASTE1(x, y) x ## y
 #define ION_PROFILING_PASTE2(x, y) ION_PROFILING_PASTE1(x, y)
 #define ION_PROFILING_PASTE3(x) ION_PROFILING_PASTE2(x, __LINE__)
 
-// This macro can be used at the top of a function scope to declare the
-// function and create a DefaultScopedTracer instance to automatically mark
-// the entry and exit points of the function.
+/// This macro can be used at the top of a function scope to declare the
+/// function and create a DefaultScopedTracer instance to automatically mark
+/// the entry and exit points of the function.
 #define ION_PROFILE_FUNCTION(func_name)                             \
   ::ion::profile::ScopedTracer ION_PROFILING_PASTE3(scope_tracer_)( \
       ::ion::profile::GetCallTraceManager()->GetTraceRecorder(), func_name)
 
-// A version of ION_PROFILE_FUNCTION which allows attaching a single key/value
-// pair to the scope. value must be in JSON format, e.g. "\"my_string\"" for a
-// string value, "18" for the integer value 18,
-// "{ \"name\": \"my_name\", \"count\": 17 }" for an object with two key value
-// pairs.
+/// A version of ION_PROFILE_FUNCTION which allows attaching a single key/value
+/// pair to the scope. value must be in JSON format, e.g. "\"my_string\"" for a
+/// string value, "18" for the integer value 18,
+/// "{ \"name\": \"my_name\", \"count\": 17 }" for an object with two key value
+/// pairs.
 #define ION_PROFILE_FUNCTION_ANNOTATED(func_name, key, value) \
     ION_PROFILE_FUNCTION(func_name);                          \
     ::ion::profile::GetCallTraceManager()->GetTraceRecorder() \
@@ -65,9 +66,9 @@ ION_API CallTraceManager* GetCallTraceManager();
         ::ion::profile::GetCallTraceManager()->GetTraceRecorder(),          \
         ++(*ION_PROFILING_PASTE3(frame_number_)));
 
-// Use this macro to annotate a name/value pair in the current scope (opened by,
-// e.g., ION_PROFILE_FUNCTION().) |value| can be a string (char* or
-// std::string), boolean, or numerical values.
+/// Use this macro to annotate a name/value pair in the current scope (opened by,
+/// e.g., ION_PROFILE_FUNCTION().) |value| can be a string (char* or
+/// std::string), boolean, or numerical values.
 #define ION_ANNOTATE(name, value) ::ion::profile::GetCallTraceManager()-> \
     GetTraceRecorder()->AnnotateCurrentScopeWithJsonSafeValue(name, value);
 

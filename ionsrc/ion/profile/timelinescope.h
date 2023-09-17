@@ -24,8 +24,8 @@ limitations under the License.
 #include "ion/profile/timelineevent.h"
 #include "json/value.h"
 
-// This node type represents a custom scope event from a WTF trace in a
-// timeline.
+/// This node type represents a custom scope event from a WTF trace in a
+/// timeline.
 class TimelineScope : public TimelineEvent {
  public:
   TimelineScope(const std::string& name, uint32 begin, uint32 duration,

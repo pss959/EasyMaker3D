@@ -26,25 +26,25 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// Convenience typedefs for shared pointers to a ComputeProgram.
+/// Convenience typedefs for shared pointers to a ComputeProgram.
 class ComputeProgram;
 using ComputeProgramPtr = base::SharedPtr<ComputeProgram>;
 typedef base::WeakReferentPtr<ComputeProgram> ComputeProgramWeakPtr;
 
-// A ComputeProgram represents an OpenGL program that consists of a compute
-// shader. It can be used to compute arbitrary data.
+/// A ComputeProgram represents an OpenGL program that consists of a compute
+/// shader. It can be used to compute arbitrary data.
 class ION_API ComputeProgram : public ProgramBase {
  public:
-  // Changes that affect the resource.
+  /// Changes that affect the resource.
   enum Changes {
     kComputeShaderChanged = kNumBaseChanges,
     kNumChanges
   };
 
-  // A valid ShaderInputRegistryPtr must be passed to the constructor.
+  /// A valid ShaderInputRegistryPtr must be passed to the constructor.
   explicit ComputeProgram(const ShaderInputRegistryPtr& registry);
 
-  // Sets/returns the compute shader.
+  /// Sets/returns the compute shader.
   void SetComputeShader(const ShaderPtr& shader) {
     if (Shader* old_shader = compute_shader_.Get().Get())
       old_shader->RemoveReceiver(this);
@@ -56,12 +56,12 @@ class ION_API ComputeProgram : public ProgramBase {
     return compute_shader_.Get();
   }
 
-  // Convenience function that builds and returns a new ComputeProgram instance
-  // that uses the given ShaderInputRegistry and that points to a new compute
-  // Shader instance whose source is specified as a string. The ComputeProgram's
-  // label is set to id_string and the Shader labels are set to id_string +
-  // " compute shader". The allocator is used for both the ComputeProgram and
-  // the Shader.
+  /// Convenience function that builds and returns a new ComputeProgram instance
+  /// that uses the given ShaderInputRegistry and that points to a new compute
+  /// Shader instance whose source is specified as a string. The ComputeProgram's
+  /// label is set to id_string and the Shader labels are set to id_string +
+  /// " compute shader". The allocator is used for both the ComputeProgram and
+  /// the Shader.
   static ComputeProgramPtr BuildFromStrings(
       const std::string& id_string,
       const ShaderInputRegistryPtr& registry_ptr,
@@ -69,12 +69,12 @@ class ION_API ComputeProgram : public ProgramBase {
       const base::AllocatorPtr& allocator);
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~ComputeProgram() override;
 
  private:
-  // Called when one of the Shaders of this changes.
+  /// Called when one of the Shaders of this changes.
   void OnNotify(const base::Notifier* notifier) override;
 
   Field<ShaderPtr> compute_shader_;

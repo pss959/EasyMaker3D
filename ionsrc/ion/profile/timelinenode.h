@@ -24,7 +24,7 @@ limitations under the License.
 
 #include "base/integral_types.h"
 
-// Base class for nodes in a Timeline (see timeline.h).
+/// Base class for nodes in a Timeline (see timeline.h).
 class TimelineNode {
  public:
   typedef std::vector<std::unique_ptr<TimelineNode>> Children;
@@ -35,9 +35,9 @@ class TimelineNode {
                const uint32 duration);
   virtual ~TimelineNode();
 
-  // Add a node to the children. It becomes the last child.
+  /// Add a node to the children. It becomes the last child.
   void AddChild(std::unique_ptr<TimelineNode> child);
-  // Update the duration of the event given a new end timestamp.
+  /// Update the duration of the event given a new end timestamp.
   void UpdateDuration(const uint32 end) { duration_ = end - begin_; }
 
   const std::string& GetName() const { return name_; }
@@ -56,15 +56,15 @@ class TimelineNode {
   }
 
  private:
-  // Name of the event.
+  /// Name of the event.
   std::string name_;
-  // Time at the beginning of the event.
+  /// Time at the beginning of the event.
   uint32 begin_;
-  // Duration of the event.
+  /// Duration of the event.
   uint32 duration_;
-  // Parent of this event.
+  /// Parent of this event.
   TimelineNode* parent_;
-  // Children of this event (e.g. nested scopes)
+  /// Children of this event (e.g. nested scopes)
   Children children_;
 };
 

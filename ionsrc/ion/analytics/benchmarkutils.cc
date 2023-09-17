@@ -41,7 +41,7 @@ static const int kValueWidth = 12;
 static const int kValuePrecision = 6;
 static const double kTolerance(1e-6);
 
-// This type is used to output a string with a given width with operator<<().
+/// This type is used to output a string with a given width with operator<<().
 struct Str {
   Str(const std::string& str_in, int width_in) : str(str_in), width(width_in) {}
   const std::string& str;
@@ -51,8 +51,8 @@ std::ostream& operator<<(std::ostream& out, const Str& s) {
   return out << std::setw(s.width) << s.str;
 }
 
-// This type is used to output a double with a given width and precision with
-// operator<<().
+/// This type is used to output a double with a given width and precision with
+/// operator<<().
 struct Double {
   Double(double value_in, int width_in, int precision_in)
   : value(value_in),
@@ -67,8 +67,8 @@ std::ostream& operator<<(std::ostream& out, const Double& d) {
              << std::setprecision(d.precision) << d.value;
 }
 
-// Returns a set containing IDs of all items (Constant, SampledVariable, or
-// AccumulatedVariable) from a vector in a Benchmark.
+/// Returns a set containing IDs of all items (Constant, SampledVariable, or
+/// AccumulatedVariable) from a vector in a Benchmark.
 template <typename T>
 static const std::set<std::string> GetBenchmarkIdSet(
     const std::vector<T>& items) {
@@ -79,7 +79,7 @@ static const std::set<std::string> GetBenchmarkIdSet(
   return ids;
 }
 
-// Specialized function to add an item when merging.
+/// Specialized function to add an item when merging.
 template <typename T> static void AddItem(const T& item, Benchmark* b) {
   DCHECK(false) << "Unspecialized AddItem() called";
 }
@@ -95,8 +95,8 @@ template <> inline void AddItem(const Benchmark::AccumulatedVariable& item,
   b->AddAccumulatedVariable(item);
 }
 
-// Merges constants or variables from one Benchmark to another. Returns the
-// number of conflicts (items found in both from_items and the "to" Benchmark).
+/// Merges constants or variables from one Benchmark to another. Returns the
+/// number of conflicts (items found in both from_items and the "to" Benchmark).
 template <typename T>
 static size_t MergeBenchmarkItems(const std::string& item_type,
                                   const std::vector<T>& from_items,

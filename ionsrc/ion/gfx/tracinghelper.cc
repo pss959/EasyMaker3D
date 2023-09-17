@@ -371,6 +371,7 @@ const std::string TracingHelper::ToString(const char* arg_type,
   return AnyToString(arg);
 }
 
+#if ! DOXYGEN
 // Explicitly instantiate all the other unspecialized versions.
 template ION_API const std::string TracingHelper::ToString(
     const char*, const float*);
@@ -416,6 +417,7 @@ template ION_API const std::string TracingHelper::ToString(
     const char*, GLsync);
 template ION_API const std::string TracingHelper::ToString(const char*,
                                                            GLDEBUGPROC);
+#endif
 
 #endif  // ION_PRODUCTION
 

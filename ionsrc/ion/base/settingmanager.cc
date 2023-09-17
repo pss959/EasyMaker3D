@@ -38,11 +38,11 @@ static const char kListenerKey[] = "SettingManager";
 
 class SettingManager::SettingData : public Shareable {
  public:
-  // Listener function that notifies all listeners for a setting's groups that
-  // the setting has changed.
+  /// Listener function that notifies all listeners for a setting's groups that
+  /// the setting has changed.
   void SettingListener(SettingBase* setting);
 
-  // The below functions implement SettingManager.
+  /// The below functions implement SettingManager.
   SettingBase* GetSetting(const std::string& name);
   void RegisterSetting(SettingBase* setting);
   void UnregisterSetting(SettingBase* setting);
@@ -56,28 +56,28 @@ class SettingManager::SettingData : public Shareable {
 
   const SettingMap& GetAllSettings() { return settings_; }
 
-  // The body of UnregisterSetting that must be called while mutex_ is locked.
-  // This is to allow unregistration of old settings when a duplicate one is
-  // registered.
+  /// The body of UnregisterSetting that must be called while mutex_ is locked.
+  /// This is to allow unregistration of old settings when a duplicate one is
+  /// registered.
   void UnregisterSettingLocked(SettingBase* setting);
 
  private:
-  // Maps a setting name to the groups it is contained within.
+  /// Maps a setting name to the groups it is contained within.
   typedef std::map<std::string, std::vector<std::string> > GroupMap;
 
-  // Container for all settings that belong to a particular group, and the
-  // listeners of that group.
+  /// Container for all settings that belong to a particular group, and the
+  /// listeners of that group.
   struct SettingGroupInfo {
     typedef std::map<std::string, SettingBase::ListenerInfo> ListenerMap;
     std::set<SettingBase*> settings;
     ListenerMap listeners;
   };
-  // Maps a group name to a set of settings.
+  /// Maps a group name to a set of settings.
   typedef std::map<std::string, SettingGroupInfo> SettingGroupMap;
 
   typedef base::SharedPtr<SettingData> SettingDataPtr;
 
-  // The destructor is private since this is derived from base::Referent.
+  /// The destructor is private since this is derived from base::Referent.
   ~SettingData() override {}
 
   std::mutex mutex_;

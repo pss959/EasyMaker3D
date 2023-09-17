@@ -29,17 +29,17 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// Collection of per-context call traces for a particular GraphicsManager.
-// Stores an indentation depth and output stream for each active GlContext.
-// The stream is initially disabled and can be enabled via "StartTracing".
-// For now, this is hardcoded to use stringstreams. In the future we may wish
-// to make this into a base class, allowing clients to subclass it to use
-// custom streams.  In addition to the per-context string streams, calls
-// can be dumped out to the INFO log; this is useful when connected to
-// an Android device.
+/// Collection of per-context call traces for a particular GraphicsManager.
+/// Stores an indentation depth and output stream for each active GlContext.
+/// The stream is initially disabled and can be enabled via "StartTracing".
+/// For now, this is hardcoded to use stringstreams. In the future we may wish
+/// to make this into a base class, allowing clients to subclass it to use
+/// custom streams.  In addition to the per-context string streams, calls
+/// can be dumped out to the INFO log; this is useful when connected to
+/// an Android device.
 class ION_API TracingStream {
  public:
-  // Helper class that ensures that each log entry contains one call.
+  /// Helper class that ensures that each log entry contains one call.
   class Proxy {
    public:
     Proxy(TracingStream* ts, bool active)
@@ -54,8 +54,8 @@ class ION_API TracingStream {
         : tracing_stream_(other.tracing_stream_),
           active_(other.active_) {
       other.active_ = false;
-      // operator<< is used, since calling str(const std::string&) does not
-      // seem to have any effect on MSVC.
+      /// operator<< is used, since calling str(const std::string&) does not
+      /// seem to have any effect on MSVC.
       output_stream_ << other.output_stream_.str();
     }
 
@@ -70,45 +70,45 @@ class ION_API TracingStream {
     bool active_;
   };
 
-  // In addition to the per-context string streams, clients can provide
-  // a custom forwarding stream, similar to the Unix 'tee' command.
-  // This is especially useful in unit tests.
+  /// In addition to the per-context string streams, clients can provide
+  /// a custom forwarding stream, similar to the Unix 'tee' command.
+  /// This is especially useful in unit tests.
   void SetForwardedStream(std::ostream* forwarded_stream);
 
-  // Retrieve the current forwarding stream, or null if one isn't attached.
+  /// Retrieve the current forwarding stream, or null if one isn't attached.
   std::ostream* GetForwardedStream() const;
 
-  // Clear the stream for every context (does not reset the indentation levels).
+  /// Clear the stream for every context (does not reset the indentation levels).
   void Clear();
 
-  // Fetch the call trace log for a particular context.
+  /// Fetch the call trace log for a particular context.
   std::string String(intptr_t context_id) const;
 
-  // Fetch the call trace log for the current GL context.
+  /// Fetch the call trace log for the current GL context.
   std::string String() const;
 
-  // Get a list of ids for all contexts that made GL calls during the trace.
+  /// Get a list of ids for all contexts that made GL calls during the trace.
   std::vector<intptr_t> Keys() const;
 
-  // Enable tracing from all contexts.
+  /// Enable tracing from all contexts.
   void StartTracing();
 
-  // Disable tracing from all contexts.
+  /// Disable tracing from all contexts.
   void StopTracing();
 
-  // Check if tracing is enabled.
+  /// Check if tracing is enabled.
   bool IsTracing() const;
 
-  // Send output to the INFO log when tracing, optionally for all GL contexts.
+  /// Send output to the INFO log when tracing, optionally for all GL contexts.
   void EnableLogging(intptr_t context_id = 0LL);
 
-  // Stop sending output to the INFO log, optionally for all GL contexts.
+  /// Stop sending output to the INFO log, optionally for all GL contexts.
   void DisableLogging(intptr_t context_id = 0LL);
 
   bool IsLogging() const;
 
-  // Called within Ion to append a string to the stream associated with
-  // the given GL context.
+  /// Called within Ion to append a string to the stream associated with
+  /// the given GL context.
   void Append(intptr_t context_id, const std::string& s);
 
   template <typename T>
@@ -116,20 +116,20 @@ class ION_API TracingStream {
 
   std::string GetIndent();
 
-  // Called within Ion to increase the indentation level.
+  /// Called within Ion to increase the indentation level.
   void EnterScope(intptr_t context_id, const std::string& marker);
 
-  // Called within Ion to decrease the indentation level.
+  /// Called within Ion to decrease the indentation level.
   void ExitScope(intptr_t context_id);
 
-  // Get the number of scopes that have been entered but not exited.
+  /// Get the number of scopes that have been entered but not exited.
   int Depth(intptr_t context_id) const;
 
 #if !ION_PRODUCTION
 
  private:
   std::ostream* forwarded_stream_ = nullptr;
-  // These three maps really do need to be independent.
+  /// These three maps really do need to be independent.
   std::map<intptr_t, std::ostringstream> streams_;
   std::map<intptr_t, int> depths_;
   std::map<intptr_t, bool> logging_;

@@ -32,7 +32,7 @@ namespace base {
 
 namespace internal_variant_utils {
 
-// Taken from util/gtl/emptytype.h.
+/// Taken from util/gtl/emptytype.h.
 template<int N = 0> class EmptyType {};
 struct TrueType {
   static const bool value = true;
@@ -44,7 +44,7 @@ struct FalseType {
 template<typename T> struct is_emptytype : FalseType {};
 template<int N> struct is_emptytype<EmptyType<N> > : TrueType {};
 
-// Simplification of util/gtl/manual_constructor.h.
+/// Simplification of util/gtl/manual_constructor.h.
 template <typename Type>
 class ManualConstructor {
  public:
@@ -111,7 +111,7 @@ class ManualConstructor {
  private:
   ION_ALIGN(16) char space_[sizeof(Type)];
 #if ION_DEBUG
-  Type* val_;  // Allows examination of actual value in a debugger.
+  Type* val_;  ///< Allows examination of actual value in a debugger.
 #endif
 };
 

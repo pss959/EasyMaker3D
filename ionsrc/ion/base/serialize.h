@@ -34,11 +34,12 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// This file defines two public functions: StringToValue() and ValueToString().
-// These functions serialize data types to std::strings and from
-// std::istringstreams, and also support most STL containers. Serializing custom
-// types requires defining only the insertion and extraction operators (<< and
-// >>)
+/// \file
+/// This file defines two public functions: StringToValue() and ValueToString().
+/// These functions serialize data types to std::strings and from
+/// std::istringstreams, and also support most STL containers. Serializing custom
+/// types requires defining only the insertion and extraction operators (<< and
+/// >>)
 
 //-----------------------------------------------------------------------------
 //
@@ -58,7 +59,7 @@ inline bool StringToValue(std::istringstream& in, T* val) {  // NOLINT
   }
 }
 
-// Specialize for bools.
+/// Specialize for bools.
 template <>
 inline bool StringToValue(std::istringstream& in, bool* val) {  // NOLINT
   std::string value;
@@ -71,7 +72,7 @@ inline bool StringToValue(std::istringstream& in, bool* val) {  // NOLINT
   }
 }
 
-// Overload for reading double quoted strings.
+/// Overload for reading double quoted strings.
 template <typename T, typename U, typename V>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::basic_string<T, U, V>* val) {
@@ -97,7 +98,7 @@ inline bool StringToValue(std::istringstream& in,  // NOLINT
   }
 }
 
-// Overload for std::pair types.
+/// Overload for std::pair types.
 template <typename T, typename U>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::pair<const T, U>* val) {
@@ -114,7 +115,7 @@ inline bool StringToValue(std::istringstream& in,  // NOLINT
   }
 }
 
-// Overload for std::chrono::duration types.
+/// Overload for std::chrono::duration types.
 template <typename R, typename P>
 inline bool StringToValue(std::istringstream& in,
                           std::chrono::duration<R, P>* val) {
@@ -145,8 +146,8 @@ inline bool StringToValue(std::istringstream& in,
   return true;
 }
 
-// Constructs a STL container from a stream. If any errors occur then the
-// stream's failure bit is set and val is not modified.
+/// Constructs a STL container from a stream. If any errors occur then the
+/// stream's failure bit is set and val is not modified.
 template <typename ContainerType>
 inline bool StringToStlContainer(std::istringstream& in,  // NOLINT
                                  ContainerType* val) {
@@ -176,57 +177,57 @@ inline bool StringToStlContainer(std::istringstream& in,  // NOLINT
   return !in.fail();
 }
 
-// Overload for std::unordered_map.
+/// Overload for std::unordered_map.
 template <typename T, typename U, typename V, typename W, typename X>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::unordered_map<T, U, V, W, X>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::map.
+/// Overload for std::map.
 template <typename T, typename U, typename V, typename W>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::map<T, U, V, W>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::unordered_set.
+/// Overload for std::unordered_set.
 template <typename T, typename U, typename V, typename W>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::unordered_set<T, U, V, W>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::set.
+/// Overload for std::set.
 template <typename T, typename U, typename V>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::set<T, U, V>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::deque.
+/// Overload for std::deque.
 template <typename T, typename U>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::deque<T, U>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::list.
+/// Overload for std::list.
 template <typename T, typename U>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::list<T, U>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Overload for std::vector.
+/// Overload for std::vector.
 template <typename T, typename U>
 inline bool StringToValue(std::istringstream& in,  // NOLINT
                           std::vector<T, U>* val) {
   return StringToStlContainer(in, val);
 }
 
-// Convenience function that converts a std::string to a T, constructing the
-// istringstream automatically.
+/// Convenience function that converts a std::string to a T, constructing the
+/// istringstream automatically.
 template <typename T>
 inline bool StringToValue(const std::string& s, T* val) {
   std::istringstream in(s);
@@ -239,7 +240,7 @@ inline bool StringToValue(const std::string& s, T* val) {
 //
 //-----------------------------------------------------------------------------
 
-// Serializes a generic value to a string.
+/// Serializes a generic value to a string.
 template <typename T>
 inline std::string ValueToString(const T& val) {
   std::ostringstream out;
@@ -247,7 +248,7 @@ inline std::string ValueToString(const T& val) {
   return out.str();
 }
 
-// Specialize for bools.
+/// Specialize for bools.
 template <>
 inline std::string ValueToString(const bool& val) {
   std::ostringstream out;
@@ -255,7 +256,7 @@ inline std::string ValueToString(const bool& val) {
   return out.str();
 }
 
-// Specialize for printing significant digits of floating point numbers.
+/// Specialize for printing significant digits of floating point numbers.
 template <>
 inline std::string ValueToString(const float& val) {
   std::ostringstream out;
@@ -271,7 +272,7 @@ inline std::string ValueToString(const double& val) {
   return out.str();
 }
 
-// Overload for writing double quoted strings.
+/// Overload for writing double quoted strings.
 template <typename T, typename U, typename V>
 inline std::string ValueToString(const std::basic_string<T, U, V>& val) {
   std::ostringstream out;
@@ -279,13 +280,13 @@ inline std::string ValueToString(const std::basic_string<T, U, V>& val) {
   return out.str();
 }
 
-// Overload for writing double quoted C-strings.
+/// Overload for writing double quoted C-strings.
 template <>
 inline std::string ValueToString(const char* const& val) {
   return ValueToString(std::string(val));
 }
 
-// Overload for std::pair types.
+/// Overload for std::pair types.
 template <typename T, typename U>
 inline std::string ValueToString(const std::pair<const T, U>& val) {
   std::ostringstream out;
@@ -293,7 +294,7 @@ inline std::string ValueToString(const std::pair<const T, U>& val) {
   return out.str();
 }
 
-// Overload for std::chrono::duration types.
+/// Overload for std::chrono::duration types.
 template <typename R, typename P>
 inline std::string ValueToString(const std::chrono::duration<R, P>& val) {
   using std::chrono::duration;
@@ -330,7 +331,7 @@ inline std::string ValueToString(const std::chrono::duration<R, P>& val) {
   return out.str();
 }
 
-// Serializes an STL container to a string.
+/// Serializes an STL container to a string.
 template <typename ContainerType>
 inline std::string StlContainerToString(const ContainerType& c) {
   std::ostringstream out;
@@ -345,43 +346,43 @@ inline std::string StlContainerToString(const ContainerType& c) {
   return out.str();
 }
 
-// Overload for std::unordered_map.
+/// Overload for std::unordered_map.
 template <typename T, typename U, typename V, typename W, typename X>
 inline std::string ValueToString(const std::unordered_map<T, U, V, W, X>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::map.
+/// Overload for std::map.
 template <typename T, typename U, typename V, typename W>
 inline std::string ValueToString(const std::map<T, U, V, W>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::unordered_set.
+/// Overload for std::unordered_set.
 template <typename T, typename U, typename V, typename W>
 inline std::string ValueToString(const std::unordered_set<T, U, V, W>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::set.
+/// Overload for std::set.
 template <typename T, typename U, typename V>
 inline std::string ValueToString(const std::set<T, U, V>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::deque.
+/// Overload for std::deque.
 template <typename T, typename U>
 inline std::string ValueToString(const std::deque<T, U>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::list.
+/// Overload for std::list.
 template <typename T, typename U>
 inline std::string ValueToString(const std::list<T, U>& val) {
   return StlContainerToString(val);
 }
 
-// Overload for std::vector.
+/// Overload for std::vector.
 template <typename T, typename U>
 inline std::string ValueToString(const std::vector<T, U>& val) {
   return StlContainerToString(val);

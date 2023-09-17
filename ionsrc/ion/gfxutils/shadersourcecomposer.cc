@@ -54,10 +54,12 @@ static const std::string GetZipAssetFileData(const std::string& filename) {
 
 //-----------------------------------------------------------------------------
 //
-// Helper class for loading file-like resources that may contain $input
-// directives.
+// ShaderSourceComposer::IncludeDirectiveHelper
 //
 //-----------------------------------------------------------------------------
+
+/// Helper class for loading file-like resources that may contain $input
+/// directives.
 class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
  public:
   IncludeDirectiveHelper(const base::Allocatable& owner,
@@ -190,8 +192,8 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
     return base::JoinStrings(output_source, "\n");
   }
 
-  // Returns the source of the passed filename, if is a dependency of the
-  // source.
+  /// Returns the source of the passed filename, if is a dependency of the
+  /// source.
   const std::string GetDependencySource(const std::string& dependency) {
     if (DependsOn(dependency)) {
       source_time_(dependency, &used_files_[dependency].timestamp);
@@ -201,19 +203,19 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
     }
   }
 
-  // Sets the source of dependency if this depends on it.
+  /// Sets the source of dependency if this depends on it.
   bool SetDependencySource(const std::string& dependency,
                            const std::string& source) {
     return DependsOn(dependency) ? source_saver_(dependency, source) : false;
   }
 
-  // Returns whether this composer depends on the passed filename.
+  /// Returns whether this composer depends on the passed filename.
   bool DependsOn(const std::string& dependency) const {
     return file_to_id_.find(dependency) != file_to_id_.end();
   }
 
-  // Returns the name of the filename identified by id, if it was used,
-  // otherwise returns an empty string.
+  /// Returns the name of the filename identified by id, if it was used,
+  /// otherwise returns an empty string.
   const std::string GetDependencyName(unsigned int id) const {
     std::string name;
     IdToFileMap::const_iterator it = id_to_file_.find(id);
@@ -222,7 +224,7 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
     return name;
   }
 
-  // Returns all of the filenames used by this composer.
+  /// Returns all of the filenames used by this composer.
   const std::vector<std::string> GetDependencyNames() const {
     std::vector<std::string> names(file_to_id_.size());
     size_t i = 0;
@@ -233,7 +235,7 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
   }
 
  private:
-  // Helper struct that contains $input information found during file parsing.
+  /// Helper struct that contains $input information found during file parsing.
   struct InputInfo {
     explicit InputInfo(const std::string& file_name)
         : name(file_name), lines(), id(-1), line(-1) {}
@@ -243,7 +245,7 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
     size_t line;
   };
 
-  // Helper struct that contains the last modification time of a file.
+  /// Helper struct that contains the last modification time of a file.
   struct FileInfo {
     FileInfo() {}
     explicit FileInfo(std::chrono::system_clock::time_point timestamp)
@@ -256,7 +258,7 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
   typedef base::AllocMap<unsigned int, std::string> IdToFileMap;
   typedef base::AllocMap<std::string, FileInfo> FileInfoMap;
 
-  // Uses the base and search paths to construct a filename.
+  /// Uses the base and search paths to construct a filename.
   const std::string BuildFilename(const std::string& filename) {
     const std::string base_path = base_path_.empty() ?
         "" : base_path_ + '/';
@@ -265,17 +267,17 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
     return base_path + search_path + filename;
   }
 
-  // Returns a #line directive given a line number and file id.
+  /// Returns a #line directive given a line number and file id.
   std::string GetLineDirectiveString(size_t line, unsigned int file_id) {
     std::stringstream str;
     str << "#line " << line << " " << file_id;
     return str.str();
   }
 
-  // Parses the lines of input from a file and looks for $input directives. If
-  // a new $input is found, returns false to tell the caller the current file
-  // is not done yet. If no $inputs are found, then this file is complete, and
-  // this returns true.
+  /// Parses the lines of input from a file and looks for $input directives. If
+  /// a new $input is found, returns false to tell the caller the current file
+  /// is not done yet. If no $inputs are found, then this file is complete, and
+  /// this returns true.
   bool ParseInputLines(std::stack<InputInfo>* stack, InputInfo* info,
                        std::vector<std::string>* output_lines) {
     // Parse all lines of the $input.
@@ -325,32 +327,32 @@ class ShaderSourceComposer::IncludeDirectiveHelper : public base::Allocatable {
     return true;
   }
 
-  // Map filenames to ids and vice versa.
+  /// Map filenames to ids and vice versa.
   FileToIdMap file_to_id_;
   IdToFileMap id_to_file_;
 
-  // The top-level filename that contains the shader's source.
+  /// The top-level filename that contains the shader's source.
   std::string filename_;
-  // The base path of the top-level filename.
+  /// The base path of the top-level filename.
   std::string search_path_;
-  // The base path to be prepended to all filenames.
+  /// The base path to be prepended to all filenames.
   std::string base_path_;
-  // A function to get a source string given a filename.
+  /// A function to get a source string given a filename.
   SourceLoader source_loader_;
-  // A function to update a source string given a filename.
+  /// A function to update a source string given a filename.
   SourceSaver source_saver_;
-  // A function that returns the last time a dependency was modified.
+  /// A function that returns the last time a dependency was modified.
   SourceModificationTime source_time_;
-  // Whether to insert #line directives when an $input directive is found.
+  /// Whether to insert #line directives when an $input directive is found.
   bool insert_line_directives_;
-  // The set of filenames that this shader depends on, and information about
-  // them.
+  /// The set of filenames that this shader depends on, and information about
+  /// them.
   FileInfoMap used_files_;
 };
 
-// Helper for StringComposer that plays a role similar to base::ZipAssetManager
-// because it manages a globally-available set of id-string pairs.  This enables
-// proper handling of $input directives.
+/// Helper for StringComposer that plays a role similar to base::ZipAssetManager
+/// because it manages a globally-available set of id-string pairs.  This enables
+/// proper handling of $input directives.
 class StringComposerRegistry {
  public:
   static const std::string GetStringContent(const std::string& label) {
@@ -391,17 +393,17 @@ class StringComposerRegistry {
 
   typedef std::map<std::string, StringInfo> InfoMap;
 
-  // The constructor is private since this is a singleton class.
+  /// The constructor is private since this is a singleton class.
   StringComposerRegistry() {}
 
-  // This ensures that the registry will be safely destroyed when the program
-  // exits.
+  /// This ensures that the registry will be safely destroyed when the program
+  /// exits.
   static StringComposerRegistry* GetRegistry() {
     ION_DECLARE_SAFE_STATIC_POINTER(StringComposerRegistry, s_registry);
     return s_registry;
   }
 
-  // Mutex to guard access to the singleton.
+  /// Mutex to guard access to the singleton.
   std::mutex mutex_;
 
   InfoMap strings_;

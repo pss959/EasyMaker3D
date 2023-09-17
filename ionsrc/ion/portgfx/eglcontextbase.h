@@ -26,20 +26,20 @@ limitations under the License.
 namespace ion {
 namespace portgfx {
 
-// This class wraps an EGL context in an ion::portgfx::GlContext implementation.
-// This implementation exposes some of the EGL calls as virtual functions, so
-// that subclasses are able to modify their behaviors.  This implementation
-// provides the basis for supporting:
-//
-// * EGL on Android
-// * EGL on Linux
-// * EGL on asm.js
-// * EGL on ANGLE on Windows
+/// This class wraps an EGL context in an ion::portgfx::GlContext implementation.
+/// This implementation exposes some of the EGL calls as virtual functions, so
+/// that subclasses are able to modify their behaviors.  This implementation
+/// provides the basis for supporting:
+///
+/// * EGL on Android
+/// * EGL on Linux
+/// * EGL on asm.js
+/// * EGL on ANGLE on Windows
 class EglContextBase : public GlContext {
  public:
   ~EglContextBase() override;
 
-  // GlContext implementation.
+  /// GlContext implementation.
   bool IsValid() const override;
   void SwapBuffers() override;
   bool MakeContextCurrentImpl() override;
@@ -52,8 +52,8 @@ class EglContextBase : public GlContext {
                  const GlContextSpec& spec);
   bool InitWrapped();
 
-  // Some platforms require special handling for these entry points.  The
-  // default implementations use vanilla EGL.
+  /// Some platforms require special handling for these entry points.  The
+  /// default implementations use vanilla EGL.
   virtual EGLDisplay EglGetDisplay(void* native_display) const;
   virtual EGLSurface EglCreateSurface(EGLDisplay display, EGLConfig config,
                                       const GlContextSpec& spec) const = 0;
@@ -67,21 +67,21 @@ class EglContextBase : public GlContext {
  protected:
   explicit EglContextBase(bool is_owned_context);
 
-  // Destroys the EGL context owned by this GlContext, if owned.  Made
-  // accessible to subclasses here which need control over the order of
-  // destruction.
+  /// Destroys the EGL context owned by this GlContext, if owned.  Made
+  /// accessible to subclasses here which need control over the order of
+  /// destruction.
   void Destroy();
 
-  // The (potentially) owned state.
+  /// The (potentially) owned state.
   EGLSurface surface_;
   EGLContext context_;
 
-  // The unowned state.
+  /// The unowned state.
   EGLDisplay display_;
   EGLSurface draw_surface_;
   EGLSurface read_surface_;
 
-  // Whether the "owned state" is actually owned.
+  /// Whether the "owned state" is actually owned.
   const bool is_owned_context_;
 };
 

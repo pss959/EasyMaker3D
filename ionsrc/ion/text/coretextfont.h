@@ -27,27 +27,27 @@ limitations under the License.
 namespace ion {
 namespace text {
 
-// This represents a single CoreText font. However, when asked to render
-// characters not in the CoreText font, it will fall back to other system
-// CoreText fonts, and therefore can be used to render characters supported by
-// any font in the OS.
+/// This represents a single CoreText font. However, when asked to render
+/// characters not in the CoreText font, it will fall back to other system
+/// CoreText fonts, and therefore can be used to render characters supported by
+/// any font in the OS.
 class ION_API CoreTextFont : public Font {
  public:
-  // Constructs an instance using the given name. If |data| is non-NULL and
-  // |data_size| non-zero, |data| will be read as TrueType data of length
-  // |data_size| to build the font. Otherwise the OS will be asked to build a
-  // font with the given |name|. This will try to match the name, or fall back
-  // to the a default system font. For a list of available fonts see (for
-  // example) iosfonts.com.
+  /// Constructs an instance using the given name. If |data| is non-NULL and
+  /// |data_size| non-zero, |data| will be read as TrueType data of length
+  /// |data_size| to build the font. Otherwise the OS will be asked to build a
+  /// font with the given |name|. This will try to match the name, or fall back
+  /// to the a default system font. For a list of available fonts see (for
+  /// example) iosfonts.com.
   CoreTextFont(const std::string& name, size_t size_in_pixels,
                size_t sdf_padding, const void* data, size_t data_size);
 
-  // Returns the name of the backing system font. This can be used to check what
-  // font the system used when trying to match the |name| parameter used in the
-  // CoreTextFont constructor.
+  /// Returns the name of the backing system font. This can be used to check what
+  /// font the system used when trying to match the |name| parameter used in the
+  /// CoreTextFont constructor.
   std::string GetCTFontName() const;
 
-  // Font overrides.
+  /// Font overrides.
   GlyphIndex GetDefaultGlyphForChar(CharIndex char_index) const override;
   const Layout BuildLayout(const std::string& text,
                            const LayoutOptions& options) const override;
@@ -60,12 +60,12 @@ class ION_API CoreTextFont : public Font {
                      GlyphGrid* glyph_grid) const override;
 
  private:
-  // Helper class that does most of the work, hiding the implementation.
+  /// Helper class that does most of the work, hiding the implementation.
   class Helper;
   std::unique_ptr<Helper> helper_;
 };
 
-// Convenience typedef for shared pointer to a CoreTextFont.
+/// Convenience typedef for shared pointer to a CoreTextFont.
 using CoreTextFontPtr = base::SharedPtr<CoreTextFont>;
 
 }  // namespace text

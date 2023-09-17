@@ -23,29 +23,29 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// kInvalidIndex is a size_t value that is very unlikely to be a valid index.
-// It can be used to indicate an invalid return value from a function returning
-// an index.
+/// kInvalidIndex is a size_t value that is very unlikely to be a valid index.
+/// It can be used to indicate an invalid return value from a function returning
+/// an index.
 extern ION_API const size_t kInvalidIndex;
 
-// InvalidReference() returns a const reference to an invalid instance of type
-// T. It can be used to indicate an invalid return value from a function
-// returning a const reference to a T.
+/// InvalidReference() returns a const reference to an invalid instance of type
+/// T. It can be used to indicate an invalid return value from a function
+/// returning a const reference to a T.
 template <typename T> static const T& InvalidReference() {
   return *reinterpret_cast<const T*>(&kInvalidIndex);
 }
 
-// IsInvalidReference() returns true if a passed const reference of type T
-// has an address of InvalidReference<T>(). A return value of false does not
-// guarantee that a reference is valid, just that it is not an InvalidReference.
+/// IsInvalidReference() returns true if a passed const reference of type T
+/// has an address of InvalidReference<T>(). A return value of false does not
+/// guarantee that a reference is valid, just that it is not an InvalidReference.
 template <typename T> bool IsInvalidReference(const T& value) {
   return &value == &InvalidReference<T>();
 }
 
-// InvalidEnumValue() returns an invalid enum value, assuming that -1 is not a
-// valid value. This can be used for initializing enum variables or for testing.
+/// InvalidEnumValue() returns an invalid enum value, assuming that -1 is not a
+/// valid value. This can be used for initializing enum variables or for testing.
 template <typename EnumType> EnumType InvalidEnumValue() {
-  // Some compilers choke when casting a const invalid value to an enum.
+  /// Some compilers choke when casting a const invalid value to an enum.
   int bad_value = -1;
   return static_cast<EnumType>(bad_value);
 }

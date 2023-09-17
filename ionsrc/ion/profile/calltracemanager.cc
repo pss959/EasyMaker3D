@@ -34,8 +34,8 @@ namespace profile {
 
 namespace {
 
-// WTF trace chunk header. Contains information about the parts contained
-// within the chunk.
+/// WTF trace chunk header. Contains information about the parts contained
+/// within the chunk.
 struct ChunkInfo {
   uint32 id;
   uint32 type;
@@ -45,15 +45,15 @@ struct ChunkInfo {
   uint32 part_count;
 };
 
-// WTF trace part header. Contains information about the type of the part,
-// and the length of the data within the part.
+/// WTF trace part header. Contains information about the type of the part,
+/// and the length of the data within the part.
 struct PartInfo {
   uint32 type;
   uint32 offset;
   uint32 length;
 };
 
-// Round up to nearest integer divisible by four.
+/// Round up to nearest integer divisible by four.
 static uint32 UpToNearestFour(uint32 n) {
   if (n % 4 == 0) {
     return n;
@@ -61,13 +61,13 @@ static uint32 UpToNearestFour(uint32 n) {
   return n + (4 - (n % 4));
 }
 
-// Represents an abstract "part" in WTF trace format. A part could either be a
-// file header, a string table, or a buffer of trace events. Usually the first
-// "chunk" of a WTF trace file contains the file header part, and the second
-// "chunk" contains a string table along with a list of trace event definitions,
-// and the third chunk a string table along with the list of actual events.
-// For more information, consult the WTF trace format documentation:
-// https://github.com/google/tracing-framework/blob/master/docs/wtf-trace.md
+/// Represents an abstract "part" in WTF trace format. A part could either be a
+/// file header, a string table, or a buffer of trace events. Usually the first
+/// "chunk" of a WTF trace file contains the file header part, and the second
+/// "chunk" contains a string table along with a list of trace event definitions,
+/// and the third chunk a string table along with the list of actual events.
+/// For more information, consult the WTF trace format documentation:
+/// https://github.com/google/tracing-framework/blob/master/docs/wtf-trace.md
 class Part {
  public:
   virtual ~Part() {}
@@ -76,9 +76,9 @@ class Part {
 
   virtual void AppendToBuffer(base::BufferBuilder* output) const = 0;
 
-  // All part data within a chunk is aligned to 4b boundaries. This function
-  // helps compute the size of the part so that it is padded to be a multiple
-  // of 4 bytes.
+  /// All part data within a chunk is aligned to 4b boundaries. This function
+  /// helps compute the size of the part so that it is padded to be a multiple
+  /// of 4 bytes.
   uint32 GetAlignedSizeInBytes() const {
     return UpToNearestFour(GetRawSizeInBytes());
   }

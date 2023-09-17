@@ -20,14 +20,14 @@ limitations under the License.
 
 #include <cstddef>
 
-// QNX (gcc 4.4.2) and NaCl x86 gcc (4.4.3) do not define nullptr or nullptr_t,
-// We define nullptr via the build system so nullptr can be used without this
-// compatibility header.  For nullptr_t or kNullFunction, however, you need to
-// include this header.
+/// QNX (gcc 4.4.2) and NaCl x86 gcc (4.4.3) do not define nullptr or nullptr_t,
+/// We define nullptr via the build system so nullptr can be used without this
+/// compatibility header.  For nullptr_t or kNullFunction, however, you need to
+/// include this header.
 #if defined(ION_PLATFORM_QNX) ||   \
     (defined(ION_PLATFORM_NACL) && \
      !(defined(ION_ARCH_ARM) || defined(__clang__)))
-// If the build system didn't define nullptr, define it now.
+/// If the build system didn't define nullptr, define it now.
 #  ifndef nullptr
 #    define nullptr NULL
 #  endif

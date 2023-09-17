@@ -17,27 +17,30 @@ limitations under the License.
 
 // ----------------------------------------------------------------------------
 // Discrepancy
-//   Measures how much a sequence of numbers deviates from a uniformly
-//   distributed sequence.
-//
-// Discrepancy has traditionally been used to measure the quality of samples for
-// Monte Carlo integration. It is also a good metric for measuring rendering
-// performance, specifically the worst case performance.  When applied to a
-// series of timestamps, discrepancy essentially measures the duration of the
-// worst stretch of bad frames adjusted for good frames inbetween. In contrast
-// to histogram based metrics, it takes the temporal order of the frames into
-// account, i.e. it does coalesce consecutive bad frames. Given the timestamps
-// series A and B, for example:
-// A = +++++++++++++++++ +++++++
-// B = +++++++ +++++++++++ +++++
-// C = ++++++++++ + ++++++++++++
-// The discrepancy of C will be roughly twice the discrepancy of B. Note that
-// discrepancy is not meant to measure the average case; The discrepancy of B
-// is approximately the same as the discrepancy of A. The metric is therefore
-// most useful in combination with the average frame time (or frames/second).
-//
-// The implementation in this file is a C++ port of the python code in Chrome's
-// telemetry framework.
+// ----------------------------------------------------------------------------
+
+/// \file
+/// Measures how much a sequence of numbers deviates from a uniformly
+/// distributed sequence.
+///
+/// Discrepancy has traditionally been used to measure the quality of samples for
+/// Monte Carlo integration. It is also a good metric for measuring rendering
+/// performance, specifically the worst case performance.  When applied to a
+/// series of timestamps, discrepancy essentially measures the duration of the
+/// worst stretch of bad frames adjusted for good frames inbetween. In contrast
+/// to histogram based metrics, it takes the temporal order of the frames into
+/// account, i.e. it does coalesce consecutive bad frames. Given the timestamps
+/// series A and B, for example:
+/// A = +++++++++++++++++ +++++++
+/// B = +++++++ +++++++++++ +++++
+/// C = ++++++++++ + ++++++++++++
+/// The discrepancy of C will be roughly twice the discrepancy of B. Note that
+/// discrepancy is not meant to measure the average case; The discrepancy of B
+/// is approximately the same as the discrepancy of A. The metric is therefore
+/// most useful in combination with the average frame time (or frames/second).
+///
+/// The implementation in this file is a C++ port of the python code in Chrome's
+/// telemetry framework.
 
 #ifndef ION_ANALYTICS_DISCREPANCY_H_
 #define ION_ANALYTICS_DISCREPANCY_H_
@@ -50,20 +53,20 @@ limitations under the License.
 namespace ion {
 namespace analytics {
 
-// Helper class for transforming samples between the time domain and the
-// (unitless) normalized domain used for discrepancy calculation.
-//
-// For N input values the first output value becomes 0.5/N and the last value
-// becomes (N-0.5)/N. E.g. for four uniformly distributed input numbers, the
-// output will be (* marks the location of an output sample):
-// 0   1/8  1/4  3/8  1/2  5/8  3/4  7/8   1
-// |    *    |    *    |    *    |    *    |
-//
-// Background: The discrepancy of the sequence i/(N-1); i=0, ..., N-1 is 2/N,
-// twice the discrepancy of the sequence (i+1/2)/N; i=0, ..., N-1. In our case
-// we don't want to distinguish between these two cases, as our original domain
-// is not bounded (it is for Monte Carlo integration, where discrepancy was
-// originally used).
+/// Helper class for transforming samples between the time domain and the
+/// (unitless) normalized domain used for discrepancy calculation.
+///
+/// For N input values the first output value becomes 0.5/N and the last value
+/// becomes (N-0.5)/N. E.g. for four uniformly distributed input numbers, the
+/// output will be (* marks the location of an output sample):
+/// 0   1/8  1/4  3/8  1/2  5/8  3/4  7/8   1
+/// |    *    |    *    |    *    |    *    |
+///
+/// Background: The discrepancy of the sequence i/(N-1); i=0, ..., N-1 is 2/N,
+/// twice the discrepancy of the sequence (i+1/2)/N; i=0, ..., N-1. In our case
+/// we don't want to distinguish between these two cases, as our original domain
+/// is not bounded (it is for Monte Carlo integration, where discrepancy was
+/// originally used).
 class SampleMapping {
  public:
   SampleMapping(double time_begin, double time_end, size_t num_samples) {
@@ -77,32 +80,32 @@ class SampleMapping {
     inv_scale_ = 1.0 / scale_;
   }
 
-  // Maps a sample from time domain to normalized (unitless) domain.
+  /// Maps a sample from time domain to normalized (unitless) domain.
   double NormalizedFromTime(double time_sample) const {
     return normalized_begin_ + scale_ * (time_sample - time_begin_);
   }
 
-  // Maps a sample back from normalized (unitless) domain to time domain.
+  /// Maps a sample back from normalized (unitless) domain to time domain.
   double TimeFromNormalized(double normalized_sample) const {
     return time_begin_ + inv_scale_ * (normalized_sample - normalized_begin_);
   }
 
-  // Maps a duration back from normalized (unitless) domain to time domain.
+  /// Maps a duration back from normalized (unitless) domain to time domain.
   double DurationFromLength(double length) const { return length * inv_scale_; }
 
  private:
-  // Timestamp of the first sample.
+  /// Timestamp of the first sample.
   double time_begin_;
-  // Normalized (unitless) coordiate of the first sample.
+  /// Normalized (unitless) coordiate of the first sample.
   double normalized_begin_;
-  // Scale factor going from time domain to normalized domain.
+  /// Scale factor going from time domain to normalized domain.
   double scale_;
-  // Scale factor going from normalized domain back to time domain.
+  /// Scale factor going from normalized domain back to time domain.
   double inv_scale_;
 };
 
-// Sorts a sequence of numbers and normalizes it to the range [0, 1] using
-// the given |sample_mapping|.
+/// Sorts a sequence of numbers and normalizes it to the range [0, 1] using
+/// the given |sample_mapping|.
 template <class InputIterator>
 std::vector<double> NormalizeSamples(InputIterator first, InputIterator last,
                                      const SampleMapping& sample_mapping) {
@@ -114,49 +117,49 @@ std::vector<double> NormalizeSamples(InputIterator first, InputIterator last,
   return result;
 }
 
-// Normalize all samples in a container
+/// Normalize all samples in a container
 template <class ContainerType>
 std::vector<double> NormalizeSamples(const ContainerType& samples,
                                      const SampleMapping& sample_mapping) {
   return NormalizeSamples(samples.begin(), samples.end(), sample_mapping);
 }
 
-// Result of a discrepancy computation, including the value measured and the
-// bounds of the interval where that value was measured. Used to diagnose edge
-// cases where the value alone provides insufficient information.
+/// Result of a discrepancy computation, including the value measured and the
+/// bounds of the interval where that value was measured. Used to diagnose edge
+/// cases where the value alone provides insufficient information.
 struct IntervalDiscrepancy {
-  // Default constructor, initializing all values to zero.
+  /// Default constructor, initializing all values to zero.
   IntervalDiscrepancy()
       : discrepancy(0.0), begin(0.0), end(0.0), num_samples(0) {}
-  // Constructor.
+  /// Constructor.
   IntervalDiscrepancy(double discrepancy, double begin, double end,
                       size_t num_samples)
       : discrepancy(discrepancy),
         begin(begin),
         end(end),
         num_samples(num_samples) {}
-  // The discrepancy of the samples in the interval.
+  /// The discrepancy of the samples in the interval.
   double discrepancy;
-  // The beginning of the interval where the value was measured.
+  /// The beginning of the interval where the value was measured.
   double begin;
-  // The end of the interval where the value was measured.
+  /// The end of the interval where the value was measured.
   double end;
-  // The number of samples in the interval from begin to end. The interval might
-  // be open or closed. Discrepancy checks both cases and reports the worst
-  // case.
+  /// The number of samples in the interval from begin to end. The interval might
+  /// be open or closed. Discrepancy checks both cases and reports the worst
+  /// case.
   size_t num_samples;
 };
 
-// Computes the discrepancy of a sequence of numbers in the range [0,1].
-//
-// The numbers must be sorted. We define the discrepancy of an empty sequence to
-// be zero. This implementation only considers sampling densities lower than the
-// average for the discrepancy. The original mathematical definition also
-// considers higher densities.
-//
-// http://en.wikipedia.org/wiki/Equidistributed_sequence
-// http://en.wikipedia.org/wiki/Low-discrepancy_sequence
-// http://mathworld.wolfram.com/Discrepancy.html
+/// Computes the discrepancy of a sequence of numbers in the range [0,1].
+///
+/// The numbers must be sorted. We define the discrepancy of an empty sequence to
+/// be zero. This implementation only considers sampling densities lower than the
+/// average for the discrepancy. The original mathematical definition also
+/// considers higher densities.
+///
+/// http://en.wikipedia.org/wiki/Equidistributed_sequence
+/// http://en.wikipedia.org/wiki/Low-discrepancy_sequence
+/// http://mathworld.wolfram.com/Discrepancy.html
 template <class InputIterator>
 IntervalDiscrepancy Discrepancy(InputIterator first, InputIterator last) {
   IntervalDiscrepancy largest_interval_discrepancy;
@@ -243,24 +246,24 @@ IntervalDiscrepancy Discrepancy(InputIterator first, InputIterator last) {
   return largest_interval_discrepancy;
 }
 
-// Compute analytic discrepancy of entire container.
+/// Compute analytic discrepancy of entire container.
 template <class ContainerType>
 IntervalDiscrepancy Discrepancy(const ContainerType& samples) {
   return Discrepancy(samples.begin(), samples.end());
 }
 
-// A discrepancy-based metric for measuring the irregularity of timestamps
-//
-// TimestampsDiscrepancy quantifies the largest area of irregularity observed
-// in
-// a series of timestamps.
-//
-// Absolute discrepancy is scaled to have the same unit as the input sequence
-// (raw discrepancy is unitless in the range [0,1]).  This means that the
-// value
-// doesn't change if additional 'good' frames are added to the sequence, which
-// is useful when benchmark runs of different durations are compared. E.g. the
-// absolute discrepancies of {0, 2, 3, 4} and {0, 2, 3, 4, 5} are identical.
+/// A discrepancy-based metric for measuring the irregularity of timestamps
+///
+/// TimestampsDiscrepancy quantifies the largest area of irregularity observed
+/// in
+/// a series of timestamps.
+///
+/// Absolute discrepancy is scaled to have the same unit as the input sequence
+/// (raw discrepancy is unitless in the range [0,1]).  This means that the
+/// value
+/// doesn't change if additional 'good' frames are added to the sequence, which
+/// is useful when benchmark runs of different durations are compared. E.g. the
+/// absolute discrepancies of {0, 2, 3, 4} and {0, 2, 3, 4, 5} are identical.
 template <class RandomIt>
 IntervalDiscrepancy AbsoluteTimestampDiscrepancy(RandomIt first,
                                                  RandomIt last) {
@@ -286,7 +289,7 @@ IntervalDiscrepancy AbsoluteTimestampDiscrepancy(RandomIt first,
   return largest_interval_discrepancy;
 }
 
-// Compute absolute discrepancy of entire container analytically.
+/// Compute absolute discrepancy of entire container analytically.
 template <class ContainerType>
 IntervalDiscrepancy AbsoluteTimestampDiscrepancy(
     const ContainerType& timestamps) {

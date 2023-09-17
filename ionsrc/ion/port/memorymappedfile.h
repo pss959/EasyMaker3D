@@ -28,24 +28,24 @@ limitations under the License.
 namespace ion {
 namespace port {
 
-// Read-only in-memory view of an entire file on disk.
+/// Read-only in-memory view of an entire file on disk.
 class ION_API MemoryMappedFile {
  public:
-  // Maps the file at |path|.  In case of error GetData() will be NULL.
-  // Mappings start at offset 0, extend the length of the file, and are
-  // read-only.
+  /// Maps the file at |path|.  In case of error GetData() will be NULL.
+  /// Mappings start at offset 0, extend the length of the file, and are
+  /// read-only.
   explicit MemoryMappedFile(const std::string& path);
   ~MemoryMappedFile();
 
-  // Returns a pointer to the head of the mapped region.
+  /// Returns a pointer to the head of the mapped region.
   const void* GetData() const;
 
-  // Returns the length of the mapped region.
+  /// Returns the length of the mapped region.
   size_t GetLength() const;
 
  private:
-  void* data_;  // Beginning of the mapped region.
-  size_t length_;  // Length of the mapped region.
+  void* data_;  /// Beginning of the mapped region.
+  size_t length_;  /// Length of the mapped region.
 #if defined(ION_PLATFORM_WINDOWS)
   HANDLE mapping_;
 #endif

@@ -57,41 +57,41 @@ using math::Vector2ui;
 //
 //-----------------------------------------------------------------------------
 
-// An SdfGrid is a 2D array of doubles representing a signed-distance field.
+/// An SdfGrid is a 2D array of doubles representing a signed-distance field.
 typedef base::Array2<double> SdfGrid;
 
-// An SdfGridMap maps a GlyphIndex (font specific index) to an SdfGrid
-// representing the glyph. The SdfGrid is a copy of the SDF grid in
-// the Font so that the FontImage can normalize the copy (based on the full
-// FontImage) without affecting the Font's version.
+/// An SdfGridMap maps a GlyphIndex (font specific index) to an SdfGrid
+/// representing the glyph. The SdfGrid is a copy of the SDF grid in
+/// the Font so that the FontImage can normalize the copy (based on the full
+/// FontImage) without affecting the Font's version.
 typedef base::AllocMap<GlyphIndex, SdfGrid> SdfGridMap;
 
-// Convenience typedef for a TexRectMap.
+/// Convenience typedef for a TexRectMap.
 typedef FontImage::ImageData::TexRectMap TexRectMap;
 
-// This struct wraps an ImageData and contains other items (BinPacker, counts,
-// etc.) that help choose the best ImageData to add to.
+/// This struct wraps an ImageData and contains other items (BinPacker, counts,
+/// etc.) that help choose the best ImageData to add to.
 struct ImageDataWrapper  {
   explicit ImageDataWrapper(const base::AllocatorPtr& allocator)
       : image_data(allocator),
         packed_area(0),
         used_area_fraction(0.f) {}
 
-  // The wrapped ImageData instance.
+  /// The wrapped ImageData instance.
   FontImage::ImageData image_data;
 
-  // BinPacker used to pack glyphs into the FontImage.
+  /// BinPacker used to pack glyphs into the FontImage.
   BinPacker bin_packer;
 
-  // Area (in pixels) of the glyphs already packed into the ImageData.
+  /// Area (in pixels) of the glyphs already packed into the ImageData.
   size_t packed_area;
 
-  // Fraction of area used.
+  /// Fraction of area used.
   float used_area_fraction;
 };
 
-// This struct wraps the Texture and sub-image data it needs for deferred
-// updates.
+/// This struct wraps the Texture and sub-image data it needs for deferred
+/// updates.
 struct DeferredUpdate : Texture::SubImage {
   DeferredUpdate() {}
 
@@ -100,7 +100,7 @@ struct DeferredUpdate : Texture::SubImage {
       : Texture::SubImage(level_in, offset_in, image_in),
         texture(texture_in) {}
 
-  // The Texture to add sub-image data to.
+  /// The Texture to add sub-image data to.
   TexturePtr texture;
 };
 
@@ -529,30 +529,31 @@ const FontImage::ImageData StaticFontImage::InitImageData(
 
 //-----------------------------------------------------------------------------
 //
-// DynamicFontImage::Helper contains an ImageData along
-// with other items that help choose the best ImageData to add to.
+// DynamicFontImage::Helper
 //
 //-----------------------------------------------------------------------------
 
+/// DynamicFontImage::Helper contains an ImageData along with other items that
+/// help choose the best ImageData to add to.
 class DynamicFontImage::Helper : public Allocatable {
  public:
   Helper() : image_data_wrappers_(*this), deferred_updates_(*this) {}
 
-  // Returns the vector of ImageDataWrappers.
+  /// Returns the vector of ImageDataWrappers.
   base::AllocVector<ImageDataWrapper>& GetImageDataWrappers() {
     return image_data_wrappers_;
   }
 
-  // Returns the vector of DeferredUpdates.
+  /// Returns the vector of DeferredUpdates.
   base::AllocVector<DeferredUpdate>& GetDeferredUpdates() {
     return deferred_updates_;
   }
 
  private:
-  // Vector of ImageDataWrapper instances.
+  /// Vector of ImageDataWrapper instances.
   base::AllocVector<ImageDataWrapper> image_data_wrappers_;
 
-  // Vector of DeferredUpdate instances.
+  /// Vector of DeferredUpdate instances.
   base::AllocVector<DeferredUpdate> deferred_updates_;
 };
 

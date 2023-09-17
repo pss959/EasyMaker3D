@@ -18,8 +18,9 @@ limitations under the License.
 #ifndef ION_BASE_SIGNAL_H_
 #define ION_BASE_SIGNAL_H_
 
-// Type-safe, thread-safe callback list mechanism modeled after libsigc++ and
-// Boost.Signal.
+// \file
+/// Type-safe, thread-safe callback list mechanism modeled after libsigc++ and
+/// Boost.Signal.
 
 #include <functional>
 #include <list>
@@ -31,50 +32,50 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// The generic template is empty, only the specialization for function types
-// with void return is fully defined.
+/// The generic template is empty, only the specialization for function types
+/// with void return is fully defined.
 template <typename Function> class Signal {};
 
-// Type-erased class representing an association between a signal and a slot.
-// After calling Disconnect() or destroying this object, the slot will no longer
-// be invoked on signal emission.
+/// Type-erased class representing an association between a signal and a slot.
+/// After calling Disconnect() or destroying this object, the slot will no longer
+/// be invoked on signal emission.
 class Connection {
  public:
   Connection() {}
   void Disconnect() { entry_.reset(); }
 
-  // Detaches the slot from the connection object. Once this method is called,
-  // destruction of the Connection object will not cause the associated slot to
-  // be disconnected. It will keep being called on every emission until the
-  // signal is destroyed.
+  /// Detaches the slot from the connection object. Once this method is called,
+  /// destruction of the Connection object will not cause the associated slot to
+  /// be disconnected. It will keep being called on every emission until the
+  /// signal is destroyed.
   void Detach();
 
  private:
   struct SlotEntry {
-    // Technically this could be a pure virtual destructor, but that leads to
-    // linker errors in ~ConcreteSlotEntry() about undefined ~SlotEntry().
+    /// Technically this could be a pure virtual destructor, but that leads to
+    /// linker errors in ~ConcreteSlotEntry() about undefined ~SlotEntry().
     virtual ~SlotEntry() {}
     virtual void Detach() = 0;
   };
   explicit Connection(SlotEntry* entry) : entry_(entry) {}
   std::unique_ptr<SlotEntry> entry_;
 
-  // Allow any Signal class to call the private constructor.
+  /// Allow any Signal class to call the private constructor.
   template <typename> friend class Signal;
 };
 
-// Type-safe callback list. A Signal can be connected to any number of slots,
-// which are all invoked when the Emit() function is called on the Signal.
-// Currently, only functions with void return type are supported.
+/// Type-safe callback list. A Signal can be connected to any number of slots,
+/// which are all invoked when the Emit() function is called on the Signal.
+/// Currently, only functions with void return type are supported.
 template <typename... Args>
 class Signal<void(Args...)> {
  public:
-  // Type of the object used as the slot (callback).
+  /// Type of the object used as the slot (callback).
   using Slot = std::function<void(Args...)>;
 
   Signal() : data_(std::make_shared<SignalData>()) {}
 
-  // Connects a slot to be invoked when the signal is emitted.
+  /// Connects a slot to be invoked when the signal is emitted.
   ION_USE_RESULT Connection Connect(const Slot& slot) {
     std::lock_guard<std::mutex> guard(data_->mutex);
     auto slot_it = data_->slots.insert(data_->slots.end(), slot);
@@ -86,7 +87,7 @@ class Signal<void(Args...)> {
     return Connection(new ConcreteSlotEntry(data_, --data_->slots.end()));
   }
 
-  // Emits a signal, invoking all registered slots.
+  /// Emits a signal, invoking all registered slots.
   void Emit(Args&&... args) const {
     std::lock_guard<std::mutex> guard(data_->mutex);
     for (auto& slot : data_->slots) {
@@ -94,8 +95,8 @@ class Signal<void(Args...)> {
     }
   }
 
-  // Emits a signal, invoking all registered slots. This variant also works when
-  // the emission may connect and disconnect slots from this signal.
+  /// Emits a signal, invoking all registered slots. This variant also works when
+  /// the emission may connect and disconnect slots from this signal.
   void SafeEmit(Args&&... args) const {
     // We recursively invoke EmitInternal() to essentially copy the slots to the
     // stack and then invoke them before returning from the recursive function.
@@ -111,13 +112,13 @@ class Signal<void(Args...)> {
   using Iterator = typename SlotList::iterator;
   using ReverseIterator = typename SlotList::reverse_iterator;
 
-  // Internal data of a signal. Accessed via shared_ptr for thread safety.
+  /// Internal data of a signal. Accessed via shared_ptr for thread safety.
   struct SignalData {
     SlotList slots;
     std::mutex mutex;
   };
 
-  // The concrete, function type specific implementation of slot disconnection.
+  /// The concrete, function type specific implementation of slot disconnection.
   class ConcreteSlotEntry : public Connection::SlotEntry {
    public:
     ConcreteSlotEntry(const std::shared_ptr<SignalData>& data,

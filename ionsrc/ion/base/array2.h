@@ -26,22 +26,22 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// Simple rectangular 2D array class with range-checked indexing, templatized
-// by the element type.
+/// Simple rectangular 2D array class with range-checked indexing, templatized
+/// by the element type.
 template <typename T> class Array2 : public Allocatable {
  public:
-  // The default constructor creates an empty (0x0) array.
+  /// The default constructor creates an empty (0x0) array.
   Array2() : width_(0), height_(0), data_(GetAllocator()) {}
 
-  // Constructor that creates an array of specified size with undefined
-  // elements.
+  /// Constructor that creates an array of specified size with undefined
+  /// elements.
   Array2(size_t width, size_t height)
       : width_(width), height_(height), data_(GetAllocator()) {
     data_.resize(width * height);
   }
 
-  // Constructor that creates an array of specified size with elements all set
-  // to initial_value.
+  /// Constructor that creates an array of specified size with elements all set
+  /// to initial_value.
   Array2(size_t width, size_t height, const T& initial_value)
       : width_(width),
         height_(height),
@@ -54,8 +54,8 @@ template <typename T> class Array2 : public Allocatable {
   size_t GetHeight() const { return height_; }
   size_t GetSize() const { return data_.size(); }
 
-  // Sets one element of the array. Does nothing but log an error message and
-  // return false if the indices are not valid.
+  /// Sets one element of the array. Does nothing but log an error message and
+  /// return false if the indices are not valid.
   bool Set(size_t column, size_t row, const T& val) {
     const size_t index = GetIndex(column, row);
     if (index == base::kInvalidIndex) {
@@ -66,24 +66,24 @@ template <typename T> class Array2 : public Allocatable {
     }
   }
 
-  // Returns the indexed element of the array. Logs an error message and
-  // returns an invalid reference if the indices are not valid.
+  /// Returns the indexed element of the array. Logs an error message and
+  /// returns an invalid reference if the indices are not valid.
   const T& Get(size_t column, size_t row) const {
     const size_t index = GetIndex(column, row);
     return index == base::kInvalidIndex ?
         base::InvalidReference<T>() : data_[index];
   }
 
-  // Returns a pointer the indexed element of the array. Logs an error message
-  // and returns a NULL pointer if the indices are not valid.
+  /// Returns a pointer the indexed element of the array. Logs an error message
+  /// and returns a NULL pointer if the indices are not valid.
   T* GetMutable(size_t column, size_t row) {
     const size_t index = GetIndex(column, row);
     return index == base::kInvalidIndex ? nullptr : &data_[index];
   }
 
  private:
-  // Converts column and row into a vector index. Logs an error and returns
-  // base::kInvalidIndex if the indices are bad.
+  /// Converts column and row into a vector index. Logs an error and returns
+  /// base::kInvalidIndex if the indices are bad.
   size_t GetIndex(size_t column, size_t row) const {
     if (column >= width_ || row >= height_) {
       LOG(ERROR) << "Bad indices (" << column << ", " << row

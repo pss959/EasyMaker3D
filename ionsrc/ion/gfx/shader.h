@@ -27,39 +27,39 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// Base class for Shader and ProgramBase objects.
+/// Base class for Shader and ProgramBase objects.
 class ION_API ShaderBase : public ResourceHolder {
  public:
-  // Sets/returns a string documenting the shader program for help.
+  /// Sets/returns a string documenting the shader program for help.
   void SetDocString(const std::string& s) { doc_string_ = s; }
   const std::string& GetDocString() const { return doc_string_; }
 
-  // Sets/returns the latest info log.
+  /// Sets/returns the latest info log.
   void SetInfoLog(const std::string& info_log) const {
     info_log_ = info_log;
   }
   const std::string GetInfoLog() const { return info_log_; }
 
  protected:
-  // The constructor is protected since this is a base class.
+  /// The constructor is protected since this is a base class.
   ShaderBase();
 
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~ShaderBase() override;
 
  private:
   std::string doc_string_;
 
-  // The info log is mutable so that it be set on const references in Renderer.
+  /// The info log is mutable so that it be set on const references in Renderer.
   mutable std::string info_log_;
 };
 
-// A Shader represents an OpenGL shader stage. It contains the source code of
-// its shader as a string.
+/// A Shader represents an OpenGL shader stage. It contains the source code of
+/// its shader as a string.
 class ION_API Shader : public ShaderBase {
  public:
-  // Changes that affect the resource.
+  /// Changes that affect the resource.
   enum Changes {
     kSourceChanged = kNumBaseChanges,
     kNumChanges
@@ -68,7 +68,7 @@ class ION_API Shader : public ShaderBase {
   Shader();
   explicit Shader(const std::string& source);
 
-  // Sets/returns the source of the shader.
+  /// Sets/returns the source of the shader.
   void SetSource(const std::string& source) {
     source_.Set(source);
   }
@@ -77,14 +77,14 @@ class ION_API Shader : public ShaderBase {
   }
 
  private:
-  // The destructor is private because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is private because all base::Referent classes must have
+  /// protected or private destructors.
   ~Shader() override;
 
   Field<std::string> source_;
 };
 
-// Convenience typedef for shared pointers to Shaders.
+/// Convenience typedef for shared pointers to Shaders.
 using ShaderPtr = base::SharedPtr<Shader>;
 
 }  // namespace gfx

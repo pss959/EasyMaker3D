@@ -28,15 +28,15 @@ limitations under the License.
 namespace ion {
 namespace portgfx {
 
-// This utility class creates and holds a Win32 window.  This is useful for
-// clients to create graphics contexts.
+/// This utility class creates and holds a Win32 window.  This is useful for
+/// clients to create graphics contexts.
 class WindowWin32 {
  public:
-  // Create a window with default geometry.  Specifically, this uses
-  // CW_USEDEFAULT for x, w, width, and height.
+  /// Create a window with default geometry.  Specifically, this uses
+  /// CW_USEDEFAULT for x, w, width, and height.
   static std::unique_ptr<WindowWin32> Create();
 
-  // Create a window with specified geometry.
+  /// Create a window with specified geometry.
   static std::unique_ptr<WindowWin32> Create(int x, int y, int w, int h);
   ~WindowWin32();
 
@@ -46,10 +46,10 @@ class WindowWin32 {
  private:
   WindowWin32();
 
-  // The window.
+  /// The window.
   HWND hwnd_;
 
-  // The window's device context.
+  /// The window's device context.
   HDC hdc_;
 };
 

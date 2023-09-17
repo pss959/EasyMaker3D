@@ -31,11 +31,12 @@ using math::Vector2ui;
 
 //-----------------------------------------------------------------------------
 //
-// The BinPacker::Skyline is an internal helper class that implements
-// the Skyline Bottom-Left bin-packing algorithm.
+// BinPacker::Skyline
 //
 //-----------------------------------------------------------------------------
 
+/// BinPacker::Skyline is an internal helper class that implements the Skyline
+/// Bottom-Left bin-packing algorithm.
 class BinPacker::Skyline {
  public:
   // For convenience.
@@ -47,39 +48,39 @@ class BinPacker::Skyline {
 
   const Vector2ui& GetBinSize() const { return bin_size_; }
 
-  // Inserts a single rectangle into the bin, setting its position. Returns
-  // false if the rectangle does not fit.
+  /// Inserts a single rectangle into the bin, setting its position. Returns
+  /// false if the rectangle does not fit.
   bool Insert(Rectangle* rect);
 
  private:
-  // A Level represents one level (horizontal line segment) of the skyline.
+  /// A Level represents one level (horizontal line segment) of the skyline.
   struct Level {
     Level() : x(0), y(0), width(0) {}
     Level(int x_in, int y_in, int width_in)
         : x(x_in), y(y_in), width(width_in) {}
 
-    int32 x;       // Leftmost X position.
-    int32 y;       // Y coordinate of the Skyline level.
-    int32 width;   // Skyline width.
+    int32 x;       /// Leftmost X position.
+    int32 y;       /// Y coordinate of the Skyline level.
+    int32 width;   /// Skyline width.
   };
 
-  // Returns the index of the best skyline level in which a rectangle of the
-  // given size would fit, or base::kInvalidIndex if it can't fit at all. If it
-  // fits, it sets rect->bottom_left to the correct position for the rectangle.
+  /// Returns the index of the best skyline level in which a rectangle of the
+  /// given size would fit, or base::kInvalidIndex if it can't fit at all. If it
+  /// fits, it sets rect->bottom_left to the correct position for the rectangle.
   bool FindLevel(Rectangle* rect, size_t* level_index) const;
 
-  // Adds a level to the skyline starting at the given index.
-  // 
-  // improve comments here and within functions.
+  /// Adds a level to the skyline starting at the given index.
+  ///
+  /// improve comments here and within functions.
   void AddLevel(size_t index, const Rectangle& rect);
 
-  // If a rectangle of the given size fits in the indexed level, this adds it
-  // to all levels it intersects and sets y to the top of topmost level it
-  // intersected. Returns false if the rectangle did not fit.
+  /// If a rectangle of the given size fits in the indexed level, this adds it
+  /// to all levels it intersects and sets y to the top of topmost level it
+  /// intersected. Returns false if the rectangle did not fit.
   bool RectangleFits(size_t level_index, const Vector2ui& size,
                      int32* y) const;
 
-  // Merges all skyline levels that are at the same height.
+  /// Merges all skyline levels that are at the same height.
   void MergeLevels();
 
   const Vector2ui bin_size_;

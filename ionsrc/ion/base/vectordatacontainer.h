@@ -26,43 +26,43 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// VectorDataContainer is a special kind of DataContainer that is backed by an
-// AllocVector. Accessing its underlying AllocVector provides a mechanism for a
-// DataContainer with resizeable storage. Note that unlike a regular
-// DataContainer, a VectorDataContainer can be created directly, but is
-// templated on the type of the data.
+/// VectorDataContainer is a special kind of DataContainer that is backed by an
+/// AllocVector. Accessing its underlying AllocVector provides a mechanism for a
+/// DataContainer with resizeable storage. Note that unlike a regular
+/// DataContainer, a VectorDataContainer can be created directly, but is
+/// templated on the type of the data.
 template <typename T>
 class ION_API VectorDataContainer : public DataContainer {
  public:
   explicit VectorDataContainer(bool is_wipeable)
       : DataContainer(kNullFunction, is_wipeable), vector_(*this) {}
 
-  // Returns a const reference to the vector backing this instance.
+  /// Returns a const reference to the vector backing this instance.
   const AllocVector<T>& GetVector() const { return vector_; }
 
-  // Returns a pointer to the vector backing this instance.
+  /// Returns a pointer to the vector backing this instance.
   AllocVector<T>* GetMutableVector() { return &vector_; }
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~VectorDataContainer() override {}
 
  private:
-  // Actually delete data.
-  // Note: vector::clear() is not required to reduce capacity, just size. On
-  // C++-11, the proper sequence is clear() followed by
-  // shrink_to_fit(). Pre-C++-11, over-writing the vector with an empty one is
-  // the proper way to reduce capacity.
+  /// Actually delete data.
+  /// Note: vector::clear() is not required to reduce capacity, just size. On
+  /// C++-11, the proper sequence is clear() followed by
+  /// shrink_to_fit(). Pre-C++-11, over-writing the vector with an empty one is
+  /// the proper way to reduce capacity.
   void InternalWipeData() override { vector_ = AllocVector<T>(GetAllocator()); }
 
-  // Returns the data pointer of this instance, which is only valid if the
-  // internal vector has data.
+  /// Returns the data pointer of this instance, which is only valid if the
+  /// internal vector has data.
   void* GetDataPtr() const override {
     return vector_.empty() ? nullptr : &vector_[0];
   }
 
-  // The actual data.
+  /// The actual data.
   mutable AllocVector<T> vector_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(VectorDataContainer);

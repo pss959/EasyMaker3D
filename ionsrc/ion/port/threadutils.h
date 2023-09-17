@@ -32,10 +32,10 @@ namespace ion {
 namespace port {
 
 #if defined(ION_PLATFORM_WINDOWS)
-// Defines a type that is used to access thread-local storage.
+/// Defines a type that is used to access thread-local storage.
 typedef DWORD ThreadLocalStorageKey;
 #else
-// Defines a type that is used to access thread-local storage.
+/// Defines a type that is used to access thread-local storage.
 typedef pthread_key_t ThreadLocalStorageKey;
 #endif
 
@@ -45,16 +45,16 @@ typedef pthread_key_t ThreadLocalStorageKey;
 //
 //-----------------------------------------------------------------------------
 
-// These types define a function that is called when a thread is spawned. They
-// are supposed to return false if an error occurred. One is easiest to use if
-// you have pointer to a simple function that does not take any arguments. The
-// std::function version can be useful to package up a function that takes
-// arbitrary arguments.
+/// These types define a function that is called when a thread is spawned. They
+/// are supposed to return false if an error occurred. One is easiest to use if
+/// you have pointer to a simple function that does not take any arguments. The
+/// std::function version can be useful to package up a function that takes
+/// arbitrary arguments.
 typedef bool (*ThreadFuncPtr)();
 typedef std::function<bool()> ThreadStdFunc;
 
-// Defines an invalid thread-local storage key that can be used as an initial
-// value or to indicate an error.
+/// Defines an invalid thread-local storage key that can be used as an initial
+/// value or to indicate an error.
 static const ThreadLocalStorageKey kInvalidThreadLocalStorageKey =
     static_cast<ThreadLocalStorageKey>(-1);
 
@@ -64,18 +64,17 @@ static const ThreadLocalStorageKey kInvalidThreadLocalStorageKey =
 //
 //-----------------------------------------------------------------------------
 
-// Returns true if the platform supports named threads.
-// 
+/// Returns true if the platform supports named threads.
 ION_API bool IsThreadNamingSupported();
 
-// Returns the maximum length of a thread name if restricted by the platform.
-// Otherwise, returns 0.
+/// Returns the maximum length of a thread name if restricted by the platform.
+/// Otherwise, returns 0.
 ION_API size_t GetMaxThreadNameLength();
 
-// Sets the name of the current thread. Does nothing but return false if
-// IsThreadNamingSupported() returns false.  The thread name will be truncated
-// if GetMaxThreadNameLength() is non-zero and the length of the name exceeds
-// it.
+/// Sets the name of the current thread. Does nothing but return false if
+/// IsThreadNamingSupported() returns false.  The thread name will be truncated
+/// if GetMaxThreadNameLength() is non-zero and the length of the name exceeds
+/// it.
 ION_API bool SetThreadName(const std::string& name);
 
 //-----------------------------------------------------------------------------
@@ -84,20 +83,20 @@ ION_API bool SetThreadName(const std::string& name);
 //
 //-----------------------------------------------------------------------------
 
-// Creates and returns a key that can be used to define thread-local storage
-// areas. This returns kInvalidThreadLocalStorageKey if an error occurs.
+/// Creates and returns a key that can be used to define thread-local storage
+/// areas. This returns kInvalidThreadLocalStorageKey if an error occurs.
 ION_API ThreadLocalStorageKey CreateThreadLocalStorageKey();
 
-// Associates ptr with the thread-local storage area indicated by key. Returns
-// false on error.
+/// Associates ptr with the thread-local storage area indicated by key. Returns
+/// false on error.
 ION_API bool SetThreadLocalStorage(ThreadLocalStorageKey key, void* ptr);
 
-// Returns the pointer to the thread-local storage area indicated by
-// key. Returns nullptr on error or if no thread-local storage was set.
+/// Returns the pointer to the thread-local storage area indicated by
+/// key. Returns nullptr on error or if no thread-local storage was set.
 ION_API void* GetThreadLocalStorage(ThreadLocalStorageKey key);
 
-// Deletes a key returned by CreateThreadLocalStorageKey(). Returns false on
-// error.
+/// Deletes a key returned by CreateThreadLocalStorageKey(). Returns false on
+/// error.
 ION_API bool DeleteThreadLocalStorageKey(ThreadLocalStorageKey key);
 
 }  // namespace port

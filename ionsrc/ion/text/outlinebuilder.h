@@ -25,35 +25,35 @@ limitations under the License.
 namespace ion {
 namespace text {
 
-// OutlineBuilder is a derived Builder class that can render text with outlines.
-//
-// The Node returned by Builder::BuildNode() contains the following uniforms:
-//   uSdfPadding       [float, derived from Font]
-//     Number of pixels used to pad SDF images.
-//   uSdfSampler       [sampler2D, derived from FontImage]
-//     Sampler for the SDF texture.
-//   uTextColor:       [VectorBase4f, default (1,1,1,1)]
-//     Foreground color of the text.
-//   uOutlineColor:    [VectorBase4f, default (0,0,0,0)]
-//     Color of the text outline.
-//   uOutlineWidth:    [float, default 2]
-//     Outline width in font pixels, where 0 means no outlines.
-//   uHalfSmoothWidth: [float, default 3]
-//     Half the number of pixels over which edges are smoothed on each side of
-//     outlines for antialiasing.
-//
-// The shaders in the returned node require the global registry's
-// uViewportSize, uProjectionMatrix, and uModelviewMatrix uniforms to be set to
-// the proper values.
+/// OutlineBuilder is a derived Builder class that can render text with outlines.
+///
+/// The Node returned by Builder::BuildNode() contains the following uniforms:
+///   uSdfPadding       [float, derived from Font]
+///     Number of pixels used to pad SDF images.
+///   uSdfSampler       [sampler2D, derived from FontImage]
+///     Sampler for the SDF texture.
+///   uTextColor:       [VectorBase4f, default (1,1,1,1)]
+///     Foreground color of the text.
+///   uOutlineColor:    [VectorBase4f, default (0,0,0,0)]
+///     Color of the text outline.
+///   uOutlineWidth:    [float, default 2]
+///     Outline width in font pixels, where 0 means no outlines.
+///   uHalfSmoothWidth: [float, default 3]
+///     Half the number of pixels over which edges are smoothed on each side of
+///     outlines for antialiasing.
+///
+/// The shaders in the returned node require the global registry's
+/// uViewportSize, uProjectionMatrix, and uModelviewMatrix uniforms to be set to
+/// the proper values.
 class ION_API OutlineBuilder : public Builder {
  public:
   OutlineBuilder(const FontImagePtr& font_image,
                  const gfxutils::ShaderManagerPtr& shader_manager,
                  const base::AllocatorPtr& allocator);
 
-  // These convenience functions can be used to modify uniform values in the
-  // built Node returned by GetNode(). Each returns false if the Node is NULL
-  // or the uniform does not exist in it.
+  /// These convenience functions can be used to modify uniform values in the
+  /// built Node returned by GetNode(). Each returns false if the Node is NULL
+  /// or the uniform does not exist in it.
   bool SetSdfPadding(float padding);
   bool SetTextColor(const math::VectorBase4f& color);
   bool SetOutlineColor(const math::VectorBase4f& color);
@@ -61,11 +61,11 @@ class ION_API OutlineBuilder : public Builder {
   bool SetHalfSmoothWidth(float width);
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~OutlineBuilder() override;
 
-  // Required Builder functions.
+  /// Required Builder functions.
   const gfx::ShaderInputRegistryPtr GetShaderInputRegistry() override;
   void GetShaderStrings(std::string* id_string,
                         std::string* vertex_source,
@@ -79,7 +79,7 @@ class ION_API OutlineBuilder : public Builder {
                                           size_t* num_vertices) override;
 
  private:
-  // A Vertex in the AttributeArray for the text.
+  /// A Vertex in the AttributeArray for the text.
   struct Vertex {
     Vertex() {}
     Vertex(const math::Point3f& position_in,
@@ -90,14 +90,14 @@ class ION_API OutlineBuilder : public Builder {
           font_pixel_vec(font_pixel_vec_in) {}
     math::Point3f position;
     math::Point2f texture_coords;
-    // Vector from the bottom-left to top-right corner of a font pixel. This
-    // allows the shaders to convert from font pixels to screen pixels. This is
-    // constant for most (flat) text layouts, but could vary for other layouts.
+    /// Vector from the bottom-left to top-right corner of a font pixel. This
+    /// allows the shaders to convert from font pixels to screen pixels. This is
+    /// constant for most (flat) text layouts, but could vary for other layouts.
     math::Vector3f font_pixel_vec;
   };
 };
 
-// Convenience typedef for shared pointer to an OutlineBuilder.
+/// Convenience typedef for shared pointer to an OutlineBuilder.
 using OutlineBuilderPtr = base::SharedPtr<OutlineBuilder>;
 
 }  // namespace text

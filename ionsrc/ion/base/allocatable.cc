@@ -30,68 +30,68 @@ namespace base {
 
 //-----------------------------------------------------------------------------
 //
-// Allocatable::Helper class definition.
-//
-// This is effectively a per-thread singleton that is used to work around holes
-// in C++'s allocation implementation. The two main problems are:
-//
-//  1) During allocation, the new function calls operator new first, then calls
-//     the constructor(s) for the created object(s). We want those objects to
-//     know which Allocator was used in the call to operator new, but C++ does
-//     not provide this information or any way to access it.
-//
-//  2) An object's destructor is called before the call to its operator delete.
-//     If any instance-specific information (such as the Allocator used to
-//     create the object) is required by delete, C++ does not provide any way
-//     to get it.
-//
-// Therefore, this static instance stores such information in the interval
-// between operator new and the constructor(s), and between the destructor(s)
-// and operator delete. An AllocationData instance is used for the former, and
-// a DeallocationData instance is used for the latter. Because the compiler is
-// free to interleave calls to the operators and constructors/destructors,
-// there may be multiple active allocations or deallocations, so a vector of
-// each type of data is maintained.
-//
-// When Allocatable::New() is called, it adds an AllocationData instance to the
-// allocations_ vector. The constructor for the new Allocatable object accesses
-// that instance and uses its Allocator to set up the object, then removes the
-// instance from the vector.
-//
-// The deallocations_ vector is used similarly. When an Allocatable destructor
-// is invoked, it adds a DeallocationData instance to the vector. When Delete()
-// is called afterwards, it finds the correct DeallocationData instance in the
-// vector and uses its Allocator.
-//
-// Unfortunately, there is no general way to make this work for array
-// allocations. At the time new[] is called, only the start address and size of
-// the allocated memory chunk are known. These could be saved in an
-// AllocationData, and it is fairly easy to detect when a constructor within
-// that chunk is called. However, there is no good way to determine when the
-// constructors for all of the instances in the array have been called, meaning
-// that the AllocationData can be removed. Different compilers store the array
-// count in different places, and those places are not generally accessible in
-// the Allocatable constructor, especially when multiple inheritance and
-// nonstandard pointer alignment are taken into consideration.
-//
-// This class is NOT thread-safe. It is stored by the Allocatable class in a
-// singleton that wraps the thread-local storage for each instance to avoid
-// contention between threads.
+// Allocatable::Helper
 //
 //-----------------------------------------------------------------------------
 
+/// Allocatable::Helper is effectively a per-thread singleton that is used to
+/// work around holes in C++'s allocation implementation. The two main problems
+/// are:
+///
+///  1) During allocation, the new function calls operator new first, then calls
+///     the constructor(s) for the created object(s). We want those objects to
+///     know which Allocator was used in the call to operator new, but C++ does
+///     not provide this information or any way to access it.
+///
+///  2) An object's destructor is called before the call to its operator delete.
+///     If any instance-specific information (such as the Allocator used to
+///     create the object) is required by delete, C++ does not provide any way
+///     to get it.
+///
+/// Therefore, this static instance stores such information in the interval
+/// between operator new and the constructor(s), and between the destructor(s)
+/// and operator delete. An AllocationData instance is used for the former, and
+/// a DeallocationData instance is used for the latter. Because the compiler is
+/// free to interleave calls to the operators and constructors/destructors,
+/// there may be multiple active allocations or deallocations, so a vector of
+/// each type of data is maintained.
+///
+/// When Allocatable::New() is called, it adds an AllocationData instance to the
+/// allocations_ vector. The constructor for the new Allocatable object accesses
+/// that instance and uses its Allocator to set up the object, then removes the
+/// instance from the vector.
+///
+/// The deallocations_ vector is used similarly. When an Allocatable destructor
+/// is invoked, it adds a DeallocationData instance to the vector. When Delete()
+/// is called afterwards, it finds the correct DeallocationData instance in the
+/// vector and uses its Allocator.
+///
+/// Unfortunately, there is no general way to make this work for array
+/// allocations. At the time new[] is called, only the start address and size of
+/// the allocated memory chunk are known. These could be saved in an
+/// AllocationData, and it is fairly easy to detect when a constructor within
+/// that chunk is called. However, there is no good way to determine when the
+/// constructors for all of the instances in the array have been called, meaning
+/// that the AllocationData can be removed. Different compilers store the array
+/// count in different places, and those places are not generally accessible in
+/// the Allocatable constructor, especially when multiple inheritance and
+/// nonstandard pointer alignment are taken into consideration.
+///
+/// This class is NOT thread-safe. It is stored by the Allocatable class in a
+/// singleton that wraps the thread-local storage for each instance to avoid
+/// contention between threads.
 class Allocatable::Helper {
  public:
-  // Only one instance of this class should be created, using this constructor.
-  // The Helper's std::vectors keep references to their Allocators, but it's
-  // possible that their allocators have to be destroyed before the Helper goes
-  // away at program shutdown. Using the MallocAllocator disallows this
-  // possibility, since it is the default allocator and can be used until the
-  // end of the program.
+  /// Only one instance of this class should be created, using this constructor.
+  /// The Helper's std::vectors keep references to their Allocators, but it's
+  /// possible that their allocators have to be destroyed before the Helper goes
+  /// away at program shutdown. Using the MallocAllocator disallows this
+  /// possibility, since it is the default allocator and can be used until the
+  /// end of the program.
   Helper()
       : placement_allocator_(nullptr) {}
 
-  // Adds an AllocationData instance to the allocations_ vector.
+  /// Adds an AllocationData instance to the allocations_ vector.
   void AddAllocationData(const void* memory_ptr, size_t size,
                          Allocator* allocator) {
     const void* end_ptr = reinterpret_cast<const uint8*>(memory_ptr) + size;
@@ -99,7 +99,7 @@ class Allocatable::Helper {
                                           allocator, AllocationData::kNew));
   }
 
-  // Adds an AllocationData instance to the allocations_ vector.
+  /// Adds an AllocationData instance to the allocations_ vector.
   void AddPlacementAllocationData(const void* memory_ptr, size_t size,
                                   Allocator* allocator) {
     const void* end_ptr = reinterpret_cast<const uint8*>(memory_ptr) + size;
@@ -108,36 +108,36 @@ class Allocatable::Helper {
                                           AllocationData::kPlacement));
   }
 
-  // Adds a DeallocationData instance to the deallocations_ vector.
+  /// Adds a DeallocationData instance to the deallocations_ vector.
   void AddDeallocationData(const void *memory_ptr, Allocator* allocator) {
     deallocations_.push_back(DeallocationData(memory_ptr, allocator));
   }
 
-  // If instance_ptr (which typically corresponds to an Allocatable instance)
-  // is within the memory range of any current AllocationData, this sets
-  // allocator_out to its Allocator, sets memory_ptr_out to the address of the
-  // memory chunk containing it, and returns true. Otherwise, it just returns
-  // false.
+  /// If instance_ptr (which typically corresponds to an Allocatable instance)
+  /// is within the memory range of any current AllocationData, this sets
+  /// allocator_out to its Allocator, sets memory_ptr_out to the address of the
+  /// memory chunk containing it, and returns true. Otherwise, it just returns
+  /// false.
   bool FindAllocationData(const void* instance_ptr, Allocator** allocator_out,
                           const void** memory_ptr_out);
 
-  // Finds the current DeallocationData whose memory pointer is equal to
-  // memory_ptr, then removes it and returns its Allocator. This should never
-  // return NULL.
+  /// Finds the current DeallocationData whose memory pointer is equal to
+  /// memory_ptr, then removes it and returns its Allocator. This should never
+  /// return NULL.
   const AllocatorPtr FindDeallocationData(const void* memory_ptr);
 
-  // Returns the placement Allocator.
+  /// Returns the placement Allocator.
   Allocator* GetPlacementAllocator() {
     return placement_allocator_;
   }
 
-  // Sets the placement Allocator.
+  /// Sets the placement Allocator.
   void SetPlacementAllocator(Allocator* allocator) {
     placement_allocator_ = allocator;
   }
 
  private:
-  // A memory address range in an AllocationData instance.
+  /// A memory address range in an AllocationData instance.
   struct MemoryRange {
     MemoryRange(const void* min_in, const void* max_in)
         : min_address(min_in), max_address(max_in) {}
@@ -145,8 +145,8 @@ class Allocatable::Helper {
     const void* max_address;
   };
 
-  // Stores data about an allocation to communicate to Allocatable constructors
-  // for all instances within an allocated chunk of memory.
+  /// Stores data about an allocation to communicate to Allocatable constructors
+  /// for all instances within an allocated chunk of memory.
   struct AllocationData {
     enum AllocationType {
       kNew,
@@ -157,33 +157,33 @@ class Allocatable::Helper {
         : memory_range(memory_range_in),
           allocator(allocator_in),
           allocation_type(allocation_type_in) {}
-    // The range in memory of the allocated data.
+    /// The range in memory of the allocated data.
     MemoryRange memory_range;
-    // The Allocator that was used to allocate the memory.
+    /// The Allocator that was used to allocate the memory.
     Allocator* allocator;
-    // Whether this is a placement allocation or not. Placement allocations
-    // can store an allocator, but should not be used with Delete, since the
-    // memory was allocated by another mechanism.
+    /// Whether this is a placement allocation or not. Placement allocations
+    /// can store an allocator, but should not be used with Delete, since the
+    /// memory was allocated by another mechanism.
     AllocationType allocation_type;
   };
 
-  // Stores data about a deallocation to communicate to Delete().
+  /// Stores data about a deallocation to communicate to Delete().
   struct DeallocationData {
     DeallocationData(const void* memory_ptr_in, Allocator* allocator_in)
         : memory_ptr(memory_ptr_in), allocator(allocator_in) {}
-    // Pointer to the beginning of the allocated memory.
+    /// Pointer to the beginning of the allocated memory.
     const void* memory_ptr;
-    // The Allocator that was used to allocate the memory. This is a SharedPtr
-    // rather than a raw pointer to ensure that the Allocator instance outlives
-    // the Allocatable (just in case the Allocatable holds the last reference).
+    /// The Allocator that was used to allocate the memory. This is a SharedPtr
+    /// rather than a raw pointer to ensure that the Allocator instance outlives
+    /// the Allocatable (just in case the Allocatable holds the last reference).
     AllocatorPtr allocator;
   };
 
-  // Allocation and deallocation data vectors. These cannot be AllocVectors
-  // since on some platforms instantiating an AllocVector causes an allocation,
-  // which results in continuously trying to recreate the Helper. Note that
-  // these vectors are nearly always very small, usually only a few elements
-  // long.
+  /// Allocation and deallocation data vectors. These cannot be AllocVectors
+  /// since on some platforms instantiating an AllocVector causes an allocation,
+  /// which results in continuously trying to recreate the Helper. Note that
+  /// these vectors are nearly always very small, usually only a few elements
+  /// long.
   std::vector<AllocationData> allocations_;
   std::vector<DeallocationData> deallocations_;
   Allocator* placement_allocator_;

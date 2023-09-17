@@ -41,51 +41,52 @@ namespace {
 
 //-----------------------------------------------------------------------------
 //
-// Helper class that parses OpenGL tracing output and categorizes each line,
-// then constructs HTML that represents the structured output.
+// TracingHtmlHelper
 //
 //-----------------------------------------------------------------------------
 
+/// Helper class that parses OpenGL tracing output and categorizes each line,
+/// then constructs HTML that represents the structured output.
 class TracingHtmlHelper {
  public:
   TracingHtmlHelper();
   ~TracingHtmlHelper();
 
-  // This takes the section header for an OpenGL trace and the string
-  // containing the tracing output, and appends to a string containing
-  // the HTML for the structured output.
+  /// This takes the section header for an OpenGL trace and the string
+  /// containing the tracing output, and appends to a string containing
+  /// the HTML for the structured output.
   void AddHtml(const std::string& header, const std::string& trace_string,
                std::string* html_string);
 
  private:
-  // This struct represents a parsed line in the OpenGL trace.
+  /// This struct represents a parsed line in the OpenGL trace.
   struct ParsedLine {
-    // Type of line.
+    /// Type of line.
     enum Type {
-      kLabel,  // A label for some Ion object.
-      kCall,   // A call to an OpenGL function.
-      kError,  // An OpenGL error message.
-      kOther,  // Any other line.
+      kLabel,  ///< A label for some Ion object.
+      kCall,   ///< A call to an OpenGL function.
+      kError,  ///< An OpenGL error message.
+      kOther,  ///< Any other line.
     };
 
     ParsedLine() : type(kCall), level(0) {}
 
-    Type type;         // Type of line.
-    int level;         // Indentation level of line.
-    std::string text;  // Tracing text with indentation stripped out.
+    Type type;         ///< Type of line.
+    int level;         ///< Indentation level of line.
+    std::string text;  ///< Tracing text with indentation stripped out.
   };
 
-  // Parses a tracing string, returning a vector of ParsedLine instances.
+  /// Parses a tracing string, returning a vector of ParsedLine instances.
   const std::vector<ParsedLine> ParseLines(const std::string& trace_string);
 
-  // Parses a single line of a tracing string, returning a ParsedLine instance.
+  /// Parses a single line of a tracing string, returning a ParsedLine instance.
   const ParsedLine ParseLine(const std::string& line);
 
-  // Adds HTML for parsed lines to the stream.
+  /// Adds HTML for parsed lines to the stream.
   void AddHtmlForLines(const std::vector<ParsedLine>& parsed_lines,
                        std::ostringstream& s);  // NOLINT
 
-  // Adds HTML for an OpenGL call to the stream, adding syntax coloring.
+  /// Adds HTML for an OpenGL call to the stream, adding syntax coloring.
   void AddHtmlForCall(const std::string& line,
                       std::ostringstream& s);  // NOLINT
 };
@@ -309,12 +310,12 @@ class TracingHandler::TraceRequest {
   uint64 GetFrameCounter() const { return frame_counter_; }
 
  private:
-  // String containing the names of renderer resources to delete before the next
-  // frame (may be empty).
+  /// String containing the names of renderer resources to delete before the next
+  /// frame (may be empty).
   const std::string resources_to_delete_;
-  // Stores the frame counter when this request was added.
+  /// Stores the frame counter when this request was added.
   uint64 frame_counter_;
-  // For blocking until the request is complete.
+  /// For blocking until the request is complete.
   port::Semaphore complete_;
 };
 

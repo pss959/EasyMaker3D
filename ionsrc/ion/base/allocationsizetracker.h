@@ -25,20 +25,20 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// AllocationSizeTracker is an abstract base class for objects that track
-// memory.
+/// AllocationSizeTracker is an abstract base class for objects that track
+/// memory.
 class AllocationSizeTracker : public AllocationTracker {
  public:
-  // TrackAllocationSize() increments the currently tracked allocation size and
-  // the number of allocations.
+  /// TrackAllocationSize() increments the currently tracked allocation size and
+  /// the number of allocations.
   virtual void TrackAllocationSize(size_t allocation_size) = 0;
 
-  // TrackDeallocationSize() decrements the current tracked allocation size and
-  // increments the number of deallocations.
+  /// TrackDeallocationSize() decrements the current tracked allocation size and
+  /// increments the number of deallocations.
   virtual void TrackDeallocationSize(size_t deallocation_size) = 0;
 };
 
-// Convenience typedef for shared pointer to a AllocationSizeTracker.
+/// Convenience typedef for shared pointer to a AllocationSizeTracker.
 typedef SharedPtr<AllocationSizeTracker> AllocationSizeTrackerPtr;
 
 }  // namespace base

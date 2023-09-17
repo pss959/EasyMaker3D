@@ -8,16 +8,16 @@
 namespace ion {
 namespace portgfx {
 
-// The CallbackContext can be used in applications where the GL context is
-// managed by a higher-level library such as GLFW. It implements an
-// ion::portgfx::GlContext by delegating all of the work via callbacks. All
-// callbacks must be set before a CallbackContext can be created successfully.
+/// The CallbackContext can be used in applications where the GL context is
+/// managed by a higher-level library such as GLFW. It implements an
+/// ion::portgfx::GlContext by delegating all of the work via callbacks. All
+/// callbacks must be set before a CallbackContext can be created successfully.
 class ION_API CallbackContext : public GlContext {
  public:
-  // Opaque context id.
+  /// Opaque context id.
   typedef void* ContextID;
 
-  // GlContext callback typedefs.
+  /// GlContext callback typedefs.
   typedef std::function<ContextID(void)> InitCB;
   typedef std::function<bool(void)> IsValidCB;
   typedef std::function<void*(const char*, uint32_t)> GetProcAddressCB;
@@ -26,13 +26,13 @@ class ION_API CallbackContext : public GlContext {
   typedef std::function<void(void)> ClearCurrentCB;
   typedef std::function<uintptr_t(void)> GetCurrentCB;
 
-  // Sets the callback to initialize the context. It must return a ContextID
-  // that is passed to other functions.
+  /// Sets the callback to initialize the context. It must return a ContextID
+  /// that is passed to other functions.
   static void SetInitCB(const InitCB &cb) {
     init_cb_ = cb;
   }
 
-  // Each of these sets the callback for a GlContext function.
+  /// Each of these sets the callback for a GlContext function.
   static void SetIsValidCB(const IsValidCB &cb) {
     is_valid_cb_ = cb;
   }
@@ -52,7 +52,7 @@ class ION_API CallbackContext : public GlContext {
     get_current_cb_ = cb;
   }
 
-  // GlContext implementation.
+  /// GlContext implementation.
   bool IsValid() const override { return is_valid_cb_(); }
   void* GetProcAddress(const char* proc_name, uint32_t flags) const override {
     return get_proc_address_cb_(proc_name, flags);
@@ -63,7 +63,7 @@ class ION_API CallbackContext : public GlContext {
 
   GlContextPtr CreateGlContextInShareGroupImpl(
       const GlContextSpec& spec) override {
-    // Not supported.
+    /// Not supported.
     LOG(ERROR) << "CallbackContext does not support contexts in share group";
     return GlContextPtr();
   }
@@ -75,10 +75,10 @@ class ION_API CallbackContext : public GlContext {
   }
 
  private:
-  // ID returned by the initialization callback.
+  /// ID returned by the initialization callback.
   ContextID id_ = nullptr;
 
-  // Callbacks.
+  /// Callbacks.
   static InitCB init_cb_;
   static IsValidCB is_valid_cb_;
   static GetProcAddressCB get_proc_address_cb_;

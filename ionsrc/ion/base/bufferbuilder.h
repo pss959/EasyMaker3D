@@ -28,8 +28,8 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// This class incrementally builds a byte buffer, returning it in the form of an
-// std::string when Build() is called.
+/// This class incrementally builds a byte buffer, returning it in the form of
+/// an std::string when Build() is called.
 class ION_API BufferBuilder {
  public:
   BufferBuilder();
@@ -41,7 +41,7 @@ class ION_API BufferBuilder {
   void swap(BufferBuilder& other);
   friend void swap(BufferBuilder& lhs, BufferBuilder& rhs) { lhs.swap(rhs); }
 
-  // Append a POD type T.
+  /// Append a POD type T.
   template <typename T>
   typename std::enable_if<std::is_standard_layout<T>::value &&
                           std::is_trivial<T>::value &&
@@ -60,36 +60,38 @@ class ION_API BufferBuilder {
     buffers_tail_->header.filled_size += sizeof(T);
   }
 
-  // Append another BufferBuilder.
+  /// Append another BufferBuilder.
   void Append(BufferBuilder other);
 
-  // Append an array of |count| instances of type T.
+  /// Append an array of |count| instances of type T.
   template <typename T>
   void AppendArray(const T* t, size_t count) {
     return AppendBytes(reinterpret_cast<const char*>(t), sizeof(T) * count);
   }
 
-  // Return the total size of the buffer so far.
+  /// Return the total size of the buffer so far.
   size_t Size() const;
 
-  // Return the buffer built so far, as a string.
+  /// Return the buffer built so far, as a string.
   std::string Build() const;
 
  private:
-  // BufferBuilder is meant to be used on performance-critical paths, so we
-  // use a Buffer struct with an intrusive linked-list, rather than an
-  // std::list.
+  /// BufferBuilder is meant to be used on performance-critical paths, so we
+  /// use a Buffer struct with an intrusive linked-list, rather than an
+  /// std::list.
   struct Buffer {
-    // Header structure for Buffer instances.
+#if ! DOXYGEN  // For some reason the Buffer is not exposed, but Header is!
+    /// Header structure for Buffer instances.
     struct Header {
       Header() : filled_size(0) {}
       std::unique_ptr<Buffer> next;
       size_t filled_size;
     };
+#endif
 
-    // To maintain the size of Buffer exactly as requested, we make the |buffer|
-    // char array exactly the right size to fill the rest of the requested size,
-    // after the Header structure is included.
+    /// To maintain the size of Buffer exactly as requested, we make the |buffer|
+    /// char array exactly the right size to fill the rest of the requested size,
+    /// after the Header structure is included.
     static constexpr size_t kBufferSize = 4096 - sizeof(Header);
 
     Header header;

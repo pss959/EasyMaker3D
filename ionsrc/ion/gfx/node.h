@@ -33,37 +33,37 @@ namespace gfx {
 class Node;
 using NodePtr = base::SharedPtr<Node>;
 
-// A Node instance represents a node in a scene graph. It can have any or all
-// of the following:
-//   - Shapes to draw.
-//   - A shader program to apply to all shapes in the node's subgraph.
-//   - Uniform variables (including textures) used by shaders in the
-//     node's subgraph.
-//   - UniformBlocks containing Uniforms. These are sent _after_ the uniforms
-//     above.
-//   - Child nodes.
+/// A Node instance represents a node in a scene graph. It can have any or all
+/// of the following:
+///   - Shapes to draw.
+///   - A shader program to apply to all shapes in the node's subgraph.
+///   - Uniform variables (including textures) used by shaders in the
+///     node's subgraph.
+///   - UniformBlocks containing Uniforms. These are sent _after_ the uniforms
+///     above.
+///   - Child nodes.
 class ION_API Node : public base::Referent, public UniformHolder {
  public:
   Node();
 
-  // Returns/sets the label of this.
+  /// Returns/sets the label of this.
   const std::string& GetLabel() const { return label_; }
   void SetLabel(const std::string& label) { label_ = label; }
 
-  // StateTable management.
+  /// StateTable management.
   void SetStateTable(const StateTablePtr& state_table) {
     state_table_ = state_table;
   }
   const StateTablePtr& GetStateTable() const { return state_table_; }
 
-  // Shader program management.
+  /// Shader program management.
   void SetShaderProgram(const ShaderProgramPtr& shader_program) {
     shader_program_ = shader_program;
   }
   const ShaderProgramPtr& GetShaderProgram() const { return shader_program_; }
 
-  // UniformBlock management. NULL blocks are not added, and
-  // ReplaceUniformBlock() does nothing if the index is invalid.
+  /// UniformBlock management. NULL blocks are not added, and
+  /// ReplaceUniformBlock() does nothing if the index is invalid.
   void AddUniformBlock(const UniformBlockPtr& block) {
     if (block.Get())
       uniform_blocks_.push_back(block);
@@ -77,11 +77,11 @@ class ION_API Node : public base::Referent, public UniformHolder {
     return uniform_blocks_;
   }
 
-  // Child node management.  NULL children are not added, and ReplaceChild()
-  // Shape management.  NULL shapes are not added, and ReplaceShape() does
-  // nothing if the index is invalid. AddShape returns the index of the Shape
-  // added, or base::kInvaidIndex if the Shape is NULL. Note that the index may
-  // change if RemoveShape[At]() is called.
+  /// Child node management.  NULL children are not added, and ReplaceChild()
+  /// Shape management.  NULL shapes are not added, and ReplaceShape() does
+  /// nothing if the index is invalid. AddShape returns the index of the Shape
+  /// added, or base::kInvaidIndex if the Shape is NULL. Note that the index may
+  /// change if RemoveShape[At]() is called.
   size_t AddShape(const ShapePtr& shape) {
     size_t index = base::kInvalidIndex;
     if (shape.Get()) {
@@ -94,8 +94,8 @@ class ION_API Node : public base::Referent, public UniformHolder {
     if (index < shapes_.size() && shape.Get())
       shapes_[index] = shape;
   }
-  // Removes all instances of the shape if it is contained in this' shapes. Note
-  // that this is not an efficient operation if this contains many Shapes.
+  /// Removes all instances of the shape if it is contained in this' shapes. Note
+  /// that this is not an efficient operation if this contains many Shapes.
   void RemoveShape(const ShapePtr& shape) {
     for (auto it = shapes_.begin(); it != shapes_.end();) {
       if (*it == shape)
@@ -104,8 +104,8 @@ class ION_API Node : public base::Referent, public UniformHolder {
         ++it;
     }
   }
-  // Removes the Shape at the passed index if the index is valid. Note that this
-  // is not an efficient operation if this contains many Shapes.
+  /// Removes the Shape at the passed index if the index is valid. Note that this
+  /// is not an efficient operation if this contains many Shapes.
   void RemoveShapeAt(size_t index) {
     if (index < shapes_.size()) {
       auto it = shapes_.begin() + static_cast<std::ptrdiff_t>(index);
@@ -115,10 +115,10 @@ class ION_API Node : public base::Referent, public UniformHolder {
   void ClearShapes() { shapes_.clear(); }
   const base::AllocVector<ShapePtr>& GetShapes() const { return shapes_; }
 
-  // Child node management.  NULL children are not added, and ReplaceChild()
-  // does nothing if the index is invalid. AddChild() returns the index of the
-  // child added, or base::kInvalidIndex if the child is NULL. Note that the
-  // index may change after a call to RemoveChild[At]().
+  /// Child node management.  NULL children are not added, and ReplaceChild()
+  /// does nothing if the index is invalid. AddChild() returns the index of the
+  /// child added, or base::kInvalidIndex if the child is NULL. Note that the
+  /// index may change after a call to RemoveChild[At]().
   size_t AddChild(const NodePtr& child) {
     size_t index = base::kInvalidIndex;
     if (child.Get()) {
@@ -131,9 +131,9 @@ class ION_API Node : public base::Referent, public UniformHolder {
     if (index < children_.size() && child.Get())
       children_[index] = child;
   }
-  // Removes all instances of child from this' children if it is actually a
-  // child of this. Note that this is not an efficient operation if there are
-  // many children.
+  /// Removes all instances of child from this' children if it is actually a
+  /// child of this. Note that this is not an efficient operation if there are
+  /// many children.
   void RemoveChild(const NodePtr& child) {
     for (auto it = children_.begin(); it != children_.end();) {
       if (*it == child)
@@ -142,8 +142,8 @@ class ION_API Node : public base::Referent, public UniformHolder {
         ++it;
     }
   }
-  // Removes the child Node at the passed index if the index is valid. Note that
-  // this is not an efficient operation if there are many children.
+  /// Removes the child Node at the passed index if the index is valid. Note that
+  /// this is not an efficient operation if there are many children.
   void RemoveChildAt(size_t index) {
     if (index < children_.size()) {
       auto it = children_.begin() + static_cast<std::ptrdiff_t>(index);
@@ -154,8 +154,8 @@ class ION_API Node : public base::Referent, public UniformHolder {
   const base::AllocVector<NodePtr>& GetChildren() const { return children_; }
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~Node() override;
 
  private:
@@ -164,8 +164,8 @@ class ION_API Node : public base::Referent, public UniformHolder {
   base::AllocVector<ShapePtr> shapes_;
   base::AllocVector<NodePtr> children_;
   base::AllocVector<UniformBlockPtr> uniform_blocks_;
-  // An identifying name for this Node that can appear in debug streams and
-  // printouts of a scene.
+  /// An identifying name for this Node that can appear in debug streams and
+  /// printouts of a scene.
   std::string label_;
 };
 

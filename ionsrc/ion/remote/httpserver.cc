@@ -39,7 +39,7 @@ namespace remote {
 
 #if !ION_PRODUCTION
 
-// Encapsulates the websocket interface.
+/// Encapsulates the websocket interface.
 class HttpServer::WebsocketHelper {
  public:
   explicit WebsocketHelper(mg_connection* conn)
@@ -77,9 +77,9 @@ class HttpServer::WebsocketHelper {
   int ReceiveData(uint8 bits, char* data, size_t data_len);
   void SendData(Opcode opcode, const char* data, size_t data_len);
 
-  // Since we're already friends with HttpServer, this static method
-  // allows eg: WebsocketData() to access HttpServer::FindWebsocket()
-  // without making it public.
+  /// Since we're already friends with HttpServer, this static method
+  /// allows eg: WebsocketData() to access HttpServer::FindWebsocket()
+  /// without making it public.
   static WebsocketHelper* FindWebsocket(HttpServer* server,
                                         mg_connection* connection) {
     return server->FindWebsocket(connection);
@@ -92,10 +92,10 @@ class HttpServer::WebsocketHelper {
   mg_connection* connection_;
   WebsocketPtr websocket_;
   bool ready_;
-  // Accumulates fragmented messages until a fragment with the FIN bit arrives.
+  /// Accumulates fragmented messages until a fragment with the FIN bit arrives.
   std::vector<char> continuation_;
-  // If currently accumulating a fragmented message, remember whether the
-  // message is in binary or text mode.
+  /// If currently accumulating a fragmented message, remember whether the
+  /// message is in binary or text mode.
   bool binary_;
   std::mutex mutex_;
 };

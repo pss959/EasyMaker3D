@@ -29,148 +29,147 @@ limitations under the License.
 namespace ion {
 namespace math {
 
-// Encapsulates a generalized, asymmetric field of view with four half angles.
-// Each half angle denotes the angle between the corresponding frustum plane.
-// Together with a near and far plane, a FieldOfView forms the frustum of an
-// off-axis perspective projection.
+/// Encapsulates a generalized, asymmetric field of view with four half angles.
+/// Each half angle denotes the angle between the corresponding frustum plane.
+/// Together with a near and far plane, a FieldOfView forms the frustum of an
+/// off-axis perspective projection.
 template <typename T>
 class FieldOfView {
  public:
-  // The default constructor sets an angle of 0 (in any unit) for all four
-  // half-angles.
+  /// The default constructor sets an angle of 0 (in any unit) for all four
+  /// half-angles.
   FieldOfView();
 
-  // Constructs a FieldOfView from four angles.
+  /// Constructs a FieldOfView from four angles.
   FieldOfView(const Angle<T>& left, const Angle<T>& right,
               const Angle<T>& bottom, const Angle<T>& top);
 
-  // Constructs a FieldOfView by extracting the four frustum planes from the
-  // projection matrix.
+  /// Constructs a FieldOfView by extracting the four frustum planes from the
+  /// projection matrix.
   static FieldOfView<T> FromProjectionMatrix(const Matrix<4, T>& m);
 
-  // Constructs a FieldOfView from four values tan(alpha) for each half-angle
-  // alpha.  Note that these are tangents of signed angles, so to construct
-  // a field of view that is 45 degrees from in each direction, you would pass
-  // -1, 1, -1, 1.
+  /// Constructs a FieldOfView from four values tan(alpha) for each half-angle
+  /// alpha.  Note that these are tangents of signed angles, so to construct
+  /// a field of view that is 45 degrees from in each direction, you would pass
+  /// -1, 1, -1, 1.
   static FieldOfView<T> FromTangents(const T& left, const T& right,
                                      const T& bottom, const T& top);
 
-  // Constructs a FieldOfView from four values tan(alpha) for each half-angle
-  // alpha, represented as a range.  Note that these are tangents of signed
-  // angles, so to construct a field of view that is 45 degrees from in each
-  // direction, you would pass Range2f(Point2f(-1, -1), Point2f(1, 1)).
+  /// Constructs a FieldOfView from four values tan(alpha) for each half-angle
+  /// alpha, represented as a range.  Note that these are tangents of signed
+  /// angles, so to construct a field of view that is 45 degrees from in each
+  /// direction, you would pass Range2f(Point2f(-1, -1), Point2f(1, 1)).
   static FieldOfView<T> FromTangents(const Range<2, T>& tangents);
 
-  // Shorthand for constructing a field of view from four angles in radians.
+  /// Shorthand for constructing a field of view from four angles in radians.
   static FieldOfView<T> FromRadians(const T& left, const T& right,
                                     const T& bottom, const T& top);
 
-  // Shorthand for constructing a field of view from four angles in degrees.
+  /// Shorthand for constructing a field of view from four angles in degrees.
   static FieldOfView<T> FromDegrees(const T& left, const T& right,
                                     const T& bottom, const T& top);
 
-  // Copy constructor from an instance of the same Dimension and any value type
-  // that is compatible (via static_cast) with this instance's type.
+  /// Copy constructor from an instance of the same Dimension and any value type
+  /// that is compatible (via static_cast) with this instance's type.
   template <typename U>
   explicit FieldOfView(const FieldOfView<U>& fov);
 
-  // Resets the FieldOfView based on a total field of view in both dimensions,
-  // and an optical center for the projection. The optical center is defined
-  // as the intersection of the optical axis with the image plane. Note that the
-  // optical center is invariant in world space. This method sets
-  // left/right/up/down so that the optical center appears at the given
-  // |optical_center_ndc| with respect to the window defined by those bounds.
-  //
-  // Returns true if a valid configuration was provided. If the provided
-  // configuration was invalid, the FieldOfView object remains unchanged and
-  // this method returns false.
-  //
-  // Note that the aspect ratio implied by the requested fov_x and fov_y will
-  // not necessarily be preserved.
+  /// Resets the FieldOfView based on a total field of view in both dimensions,
+  /// and an optical center for the projection. The optical center is defined
+  /// as the intersection of the optical axis with the image plane. Note that the
+  /// optical center is invariant in world space. This method sets
+  /// left/right/up/down so that the optical center appears at the given
+  /// |optical_center_ndc| with respect to the window defined by those bounds.
+  ///
+  /// Returns true if a valid configuration was provided. If the provided
+  /// configuration was invalid, the FieldOfView object remains unchanged and
+  /// this method returns false.
+  ///
+  /// Note that the aspect ratio implied by the requested fov_x and fov_y will
+  /// not necessarily be preserved.
   bool SetFromTotalFovAndOpticalCenter(const Angle<T>& fov_x,
                                        const Angle<T>& fov_y,
                                        const Point<2, T>& optical_center_ndc);
 
-  // Constructs a FieldOfView based on a centered field of view and an optical
-  // center for the projection. The optical center is defined as the
-  // intersection of the optical axis with the image plane. Note that the
-  // optical center is invariant in world space. This method sets
-  // left/right/up/down so that the optical center appears at the given
-  // |optical_center_ndc| with respect to the window defined by those bounds.
-  //
-  // The centered FOV is not necessarily the actual FOV. It is defined as what
-  // the fov would be if the camera were kept the same perpendicular distance
-  // from the viewing plane but the optical center were the center of the
-  // screen.
-  //
-  //           -1   p_ndc    0            1
-  //            +-----*------*------------+
-  //             \ \  |      |            /
-  //              \  \|      |        //
-  //               \  |\     |    / /
-  //                \ |   \  |/  /
-  //                 \|   / \|/
-  //                  *      *
-  //                 eye    eye_centered
-  //
-  // In the diagram above, the centered_fov is the angle at eye_centered.
-  // The centered FOV allows us to maintain the size of objects on the map.
+  /// Constructs a FieldOfView based on a centered field of view and an optical
+  /// center for the projection. The optical center is defined as the
+  /// intersection of the optical axis with the image plane. Note that the
+  /// optical center is invariant in world space. This method sets
+  /// left/right/up/down so that the optical center appears at the given
+  /// |optical_center_ndc| with respect to the window defined by those bounds.
+  ///
+  /// The centered FOV is not necessarily the actual FOV. It is defined as what
+  /// the fov would be if the camera were kept the same perpendicular distance
+  /// from the viewing plane but the optical center were the center of the
+  /// screen.
+  ///
+  ///           -1   p_ndc    0            1
+  ///            +-----*------*------------+
+  ///             \ \  |      |            /
+  ///              \  \|      |        ///
+  ///               \  |\     |    / /
+  ///                \ |   \  |/  /
+  ///                 \|   / \|/
+  ///                  *      *
+  ///                 eye    eye_centered
+  ///
+  /// In the diagram above, the centered_fov is the angle at eye_centered.
+  /// The centered FOV allows us to maintain the size of objects on the map.
   static FieldOfView<T> FromCenteredFovAndOpticalCenter(
       const Angle<T>& fov_x, const Angle<T>& fov_y,
       const Point<2, T>& optical_center_ndc);
 
-  // Returns the optical center of a projection that is created using this
-  // FieldOfView.
+  /// Returns the optical center of a projection that is created using this
+  /// FieldOfView.
   Point<2, T> GetOpticalCenter() const;
 
-  // Computes the projection matrix corresponding to the frustum defined by
-  // the four half angles and the two planes |near_p| and |far_p|.
-  // 
+  /// Computes the projection matrix corresponding to the frustum defined by
+  /// the four half angles and the two planes |near_p| and |far_p|.
   Matrix<4, T> GetProjectionMatrix(T near_p, T far_p) const;
 
-  // Computes the projection matrix corresponding to the infinite frustum
-  // defined by the four half angles, the near plane |near_p| and the far
-  // clip plane at infinity. The optional epsilon |far_epsilon| assists
-  // with clipping artifacts when using the matrix with GPU clipping; see
-  // PerspectiveMatrixFromInfiniteFrustum.
+  /// Computes the projection matrix corresponding to the infinite frustum
+  /// defined by the four half angles, the near plane |near_p| and the far
+  /// clip plane at infinity. The optional epsilon |far_epsilon| assists
+  /// with clipping artifacts when using the matrix with GPU clipping; see
+  /// PerspectiveMatrixFromInfiniteFrustum.
   Matrix<4, T> GetInfiniteFarProjectionMatrix(T near_p, T far_epsilon) const;
 
-  // Gets the tangents of field of view angles as a range. For the purposes of
-  // this method, the left and bottom angles are negated before taking the
-  // tangent. For example, a field of view with all angles equal to 45 degrees
-  // will return a range from -1 to 1 in both dimensions.
+  /// Gets the tangents of field of view angles as a range. For the purposes of
+  /// this method, the left and bottom angles are negated before taking the
+  /// tangent. For example, a field of view with all angles equal to 45 degrees
+  /// will return a range from -1 to 1 in both dimensions.
   Range<2, T> GetTangents() const;
 
-  // Accessors for all four half-angles.
+  /// Accessors for all four half-angles.
   Angle<T> GetLeft() const { return left_; }
   Angle<T> GetRight() const { return right_; }
   Angle<T> GetBottom() const { return bottom_; }
   Angle<T> GetTop() const { return top_; }
 
-  // Setters for all four half-angles.
+  /// Setters for all four half-angles.
   void SetLeft(const Angle<T>& left) { left_ = left; }
   void SetRight(const Angle<T>& right) { right_ = right; }
   void SetBottom(const Angle<T>& bottom) { bottom_ = bottom; }
   void SetTop(const Angle<T>& top) { top_ = top; }
 
-  // Gets the centered FOV in each dimension. It is defined as what
-  // the FOV would be if the camera were kept the same perpendicular distance
-  // from the viewing plane but the optical center were the center of the
-  // screen.
+  /// Gets the centered FOV in each dimension. It is defined as what
+  /// the FOV would be if the camera were kept the same perpendicular distance
+  /// from the viewing plane but the optical center were the center of the
+  /// screen.
   Angle<T> GetCenteredFovX() const;
   Angle<T> GetCenteredFovY() const;
 
-  // This is used for printing FOV objects to a stream.
+  /// This is used for printing FOV objects to a stream.
   void Print(std::ostream& out) const;  // NOLINT
 
-  // This is used for reading FOV objects from a stream.
+  /// This is used for reading FOV objects from a stream.
   void Read(std::istream& in);  // NOLINT
 
-  // Returns true iff all four angles are zero (which is the case after using
-  // the default constructor).
+  /// Returns true iff all four angles are zero (which is the case after using
+  /// the default constructor).
   bool IsZero() const;
 
-  // Exact equality and inequality comparisons.
+  /// Exact equality and inequality comparisons.
   friend bool operator==(const FieldOfView& fov0, const FieldOfView& fov1) {
     return AreEqual(fov0, fov1);
   }
@@ -180,20 +179,20 @@ class FieldOfView {
   }
 
  private:
-  // Computes the two half-angles between the optical axis and the two frustum
-  // planes in one dimension. |optical_center_ndc| specifies the location of
-  // the optical center on the near plane, and |total_fov| specifies the sum of
-  // the half-angles along that dimension.
+  /// Computes the two half-angles between the optical axis and the two frustum
+  /// planes in one dimension. |optical_center_ndc| specifies the location of
+  /// the optical center on the near plane, and |total_fov| specifies the sum of
+  /// the half-angles along that dimension.
   static bool ComputeHalfAnglesForTotalFovAndOpticalCenter1d(
       const Angle<T>& total_fov, const T optical_center_ndc,
       Angle<T>* angle1_out, Angle<T>* angle2_out);
 
-  // Computes the two half-angles between the optical axis and the two frustum
-  // planes in one dimension. |optical_center_ndc| specifies the location of
-  // the optical center on the near plane, and |centered_fov| specifies the
-  // centered fov desired (i.e., what the fov would be if the camera were kept
-  // the same perpendicular distance from the viewing plane but the optical
-  // center were the center of the screen).
+  /// Computes the two half-angles between the optical axis and the two frustum
+  /// planes in one dimension. |optical_center_ndc| specifies the location of
+  /// the optical center on the near plane, and |centered_fov| specifies the
+  /// centered fov desired (i.e., what the fov would be if the camera were kept
+  /// the same perpendicular distance from the viewing plane but the optical
+  /// center were the center of the screen).
   static void ComputeHalfAnglesForCenteredFovAndOpticalCenter1d(
       const Angle<T>& centered_fov, const T optical_center_ndc,
       Angle<T>* angle1_out, Angle<T>* angle2_out);

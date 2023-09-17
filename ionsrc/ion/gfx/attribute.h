@@ -29,7 +29,7 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// The AttributeType enum defines all supported attribute shader argument types.
+/// The AttributeType enum defines all supported attribute shader argument types.
 enum AttributeType {
   // Scalar types.
   kFloatAttribute,
@@ -55,52 +55,52 @@ typedef base::Variant<float, math::VectorBase2f, math::VectorBase3f,
 class ION_API Attribute :
     public ShaderInput<AttributeValueType, AttributeType> {
  public:
-  // The default constructor creates an invalid Attribute instance, which
-  // should never be used as is. IsValid() will return false for such an
-  // instance.
+  /// The default constructor creates an invalid Attribute instance, which
+  /// should never be used as is. IsValid() will return false for such an
+  /// instance.
   Attribute()
       : ShaderInput<AttributeValueType, AttributeType>(),
         normalize_(false),
         divisor_(0) {}
   ~Attribute() {}
 
-  // Returns a string containing "attribute".
+  /// Returns a string containing "attribute".
   static const char* GetShaderInputTypeName();
 
-  // Returns a string representing a attribute type.
+  /// Returns a string representing a attribute type.
   static const char* GetValueTypeName(const ValueType type);
 
-  // Returns the type for a templated value type. This is instantiated
-  // for all supported types
+  /// Returns the type for a templated value type. This is instantiated
+  /// for all supported types
   template <typename T> static ValueType GetTypeByValue();
 
-  // Returns the tag for this input type.
+  /// Returns the tag for this input type.
   static Tag GetTag() { return kAttribute; }
 
-  // Checks and sets whether integer values should be mapped to the range [-1,1]
-  // (for signed values) or [0,1] (for unsigned values) when they are accessed
-  // and converted to floating point. If this is false, values will be converted
-  // to floats directly without any normalization. Note that the normalization
-  // is performed by the graphics hardware on the fly. By default data is not
-  // normalized.
+  /// Checks and sets whether integer values should be mapped to the range [-1,1]
+  /// (for signed values) or [0,1] (for unsigned values) when they are accessed
+  /// and converted to floating point. If this is false, values will be converted
+  /// to floats directly without any normalization. Note that the normalization
+  /// is performed by the graphics hardware on the fly. By default data is not
+  /// normalized.
   bool IsFixedPointNormalized() const { return normalize_; }
   void SetFixedPointNormalized(bool normalize) { normalize_ = normalize; }
 
   bool operator==(const Attribute& other) const;
-  // Needed for Field::Set().
+  /// Needed for Field::Set().
   bool operator!=(const Attribute& other) const {
     return !(*this == other);
   }
 
-  // Sets/Gets the attribute divisor.
+  /// Sets/Gets the attribute divisor.
   unsigned int GetDivisor() const { return divisor_; }
   void SetDivisor(unsigned int divisor) { divisor_ = divisor; }
 
  private:
-  // Whether the attribute should be normalized when sent to the GL.
+  /// Whether the attribute should be normalized when sent to the GL.
   bool normalize_;
-  // The rate at which new values of the instanced attribute are presented to
-  // the shader during instanced rendering.
+  /// The rate at which new values of the instanced attribute are presented to
+  /// the shader during instanced rendering.
   unsigned int divisor_;
 };
 

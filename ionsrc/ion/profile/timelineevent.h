@@ -24,14 +24,14 @@ limitations under the License.
 #include "ion/profile/timelinenode.h"
 #include "json/value.h"
 
-// TimelineEvent is a node in a Timeline that corresponds to a trace event (or a
-// start/end pair of events)
+/// TimelineEvent is a node in a Timeline that corresponds to a trace event (or a
+/// start/end pair of events)
 class TimelineEvent : public TimelineNode {
  public:
   TimelineEvent(const std::string& name, const uint32 begin,
                 const uint32 duration, const Json::Value& args);
 
-  // Set the argument name and value.
+  /// Set the argument name and value.
   void SetArgs(const Json::Value& args) { args_ = args; }
 
   Type GetType() const override { return Type::kEvent; }
@@ -39,7 +39,7 @@ class TimelineEvent : public TimelineNode {
   Json::Value& GetArgs() { return args_; }
 
  private:
-  // Arbitrary metadata as Json value.
+  /// Arbitrary metadata as Json value.
   Json::Value args_;
 };
 

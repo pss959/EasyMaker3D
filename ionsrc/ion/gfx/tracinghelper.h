@@ -24,28 +24,28 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-// This internal class is used by the GraphicsManager to print argument values
-// when tracing OpenGL calls.
+/// This internal class is used by the GraphicsManager to print argument values
+/// when tracing OpenGL calls.
 class ION_API TracingHelper {
  public:
   using GlEnumMap = std::unordered_map<int, const char*>;
 
   TracingHelper() {}
 
-  // This templated function is used to print each OpenGL function argument in
-  // a more readable way. The unspecialized version just converts the type to a
-  // string in the conventional way. There are specialized versions to handle
-  // quoting strings, replacing numbers with names, etc..
+  /// This templated function is used to print each OpenGL function argument in
+  /// a more readable way. The unspecialized version just converts the type to a
+  /// string in the conventional way. There are specialized versions to handle
+  /// quoting strings, replacing numbers with names, etc..
   template <typename T> const std::string ToString(const char* arg_type, T arg);
 
  private:
-  // Implemented in tracinghelperenums.cc.
+  /// Implemented in tracinghelperenums.cc.
   static GlEnumMap* CreateGlEnumMap();
   static const GlEnumMap& GetGlEnumMap();
 };
 
 #if !ION_PRODUCTION
-// Specialize the ToString() function for types that have special processing.
+/// Specialize the ToString() function for types that have special processing.
 template <> ION_API const std::string TracingHelper::ToString(
     const char* arg_type, char* arg);
 template <> ION_API const std::string TracingHelper::ToString(

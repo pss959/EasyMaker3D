@@ -25,25 +25,25 @@ limitations under the License.
 #include "ion/profile/timelineevent.h"
 #include "ion/profile/timelinenode.h"
 
-// A hierarchical representation of tracing data.
-//
-// Example usage:
-//   Timeline timeline = ion::profile::GetCallTraceManager()->GetTimeline();
-//
-//   // Iterate over all nodes (skips the root).
-//   for (auto node : timeline) {
-//     // Do something with the node
-//     std::cout << node->GetName() << " "
-//               << node->GetDuration() << std::endl;
-//   }
-//
-//   // Search for events named "Foo" and iterate over them.
-//   TimelineSearch search(timeline, "Foo");
-//   for (auto event : search) {
-//     // Do something with the event
-//     std::cout << event->GetName() << " "
-//               << event->GetDuration() << std::endl;
-//   }
+/// A hierarchical representation of tracing data.
+///
+/// Example usage:
+///   Timeline timeline = ion::profile::GetCallTraceManager()->GetTimeline();
+///
+///   /// Iterate over all nodes (skips the root).
+///   for (auto node : timeline) {
+///     /// Do something with the node
+///     std::cout << node->GetName() << " "
+///               << node->GetDuration() << std::endl;
+///   }
+///
+///   /// Search for events named "Foo" and iterate over them.
+///   TimelineSearch search(timeline, "Foo");
+///   for (auto event : search) {
+///     /// Do something with the event
+///     std::cout << event->GetName() << " "
+///               << event->GetDuration() << std::endl;
+///   }
 class Timeline {
  public:
   Timeline() : root_(new TimelineNode("root")) {}
@@ -51,8 +51,8 @@ class Timeline {
       : root_(std::move(root)) {}
   Timeline(Timeline&& other) : root_(std::move(other.root_)) {}
 
-  // Traverses the hierarchy in pre-order. Events are visited in increasing
-  // begin-timestamp order.
+  /// Traverses the hierarchy in pre-order. Events are visited in increasing
+  /// begin-timestamp order.
   class const_iterator {
    public:
     const_iterator(const TimelineNode* node, const TimelineNode* root)
@@ -71,15 +71,15 @@ class Timeline {
     const TimelineNode* root_;
   };
 
-  // Returns a const iterator over the timeline. The root node is skipped.
+  /// Returns a const iterator over the timeline. The root node is skipped.
   const_iterator begin() const  {
     return ++const_iterator(root_.get(), root_.get());
   }
-  // Returns a const iterator to the end of the timeline.
+  /// Returns a const iterator to the end of the timeline.
   const_iterator end() const { return const_iterator(nullptr, root_.get()); }
 
-  // Returns a pointer to the root node. The root node is not an event and is
-  // skipped by the iterator.
+  /// Returns a pointer to the root node. The root node is not an event and is
+  /// skipped by the iterator.
   const TimelineNode* GetRoot() const { return root_.get(); }
 
  private:

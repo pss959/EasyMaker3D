@@ -259,8 +259,8 @@ void ApplyToTree(const NodePtr& node, FUNCTOR& f) {  // NOLINT
   }
 }
 
-// NullifyViewport is a functor that insures all viewport states are "Null",
-// i.e., minimal size, which is actualy (0,0)--(1,1) (a 1 pixel viewport).
+/// NullifyViewport is a functor that insures all viewport states are "Null",
+/// i.e., minimal size, which is actualy (0,0)--(1,1) (a 1 pixel viewport).
 struct MinifyViewport {
   void operator()(const NodePtr& node) {
     DCHECK(node.Get());
@@ -274,7 +274,7 @@ struct MinifyViewport {
   }
 };
 
-// Disable depth test, turns off depth test for nodes that have a state table.
+/// Disable depth test, turns off depth test for nodes that have a state table.
 struct DisableDepthTest {
   void operator()(const NodePtr& node) {
     DCHECK(node.Get());
@@ -284,7 +284,7 @@ struct DisableDepthTest {
   }
 };
 
-// Functor that clears all shapes from a scene graph.
+/// Functor that clears all shapes from a scene graph.
 struct RemoveGeometry {
   void operator()(const NodePtr& node) {
     DCHECK(node.Get());
@@ -292,7 +292,7 @@ struct RemoveGeometry {
   }
 };
 
-// Functor that counts the number of nodes and total primitives rendered.
+/// Functor that counts the number of nodes and total primitives rendered.
 struct CountPrimitives {
   void operator()(const NodePtr& node) {
     DCHECK(node.Get());

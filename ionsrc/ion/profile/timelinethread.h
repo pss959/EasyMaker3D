@@ -23,7 +23,7 @@ limitations under the License.
 
 #include "ion/profile/timelinenode.h"
 
-// TimelineThread is a timeline node that stores all events for a thread.
+/// TimelineThread is a timeline node that stores all events for a thread.
 class TimelineThread : public TimelineNode {
  public:
   TimelineThread(const std::string& thread_name, std::thread::id thread_id)

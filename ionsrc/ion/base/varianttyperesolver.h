@@ -32,8 +32,8 @@ namespace internal {
 //
 //-----------------------------------------------------------------------------
 
-// This struct contains a Type typedef that is T iff T is the same as Base or
-// is derived from it and void otherwise.
+/// This struct contains a Type typedef that is T iff T is the same as Base or
+/// is derived from it and void otherwise.
 template <typename T, typename Base>
 struct IsSameOrDerivedFrom {
   typedef typename ConditionalType<IsSameType<Base, T>::value ||
@@ -41,10 +41,10 @@ struct IsSameOrDerivedFrom {
                                    T, void>::Type Type;
 };
 
-// This struct is specialized for each of the defined types supported by a
-// Variant. The Type defined in exactly one of these is used as the resolved
-// type. If no specialized version matches (because the TypeToResolve is not
-// compatible with any of the defined types), Type will be void.
+/// This struct is specialized for each of the defined types supported by a
+/// Variant. The Type defined in exactly one of these is used as the resolved
+/// type. If no specialized version matches (because the TypeToResolve is not
+/// compatible with any of the defined types), Type will be void.
 template <typename VariantType, typename TypeToResolve, typename Base = void>
 struct ResolverHelper {
   typedef void Type;
@@ -106,31 +106,32 @@ ION_SPECIALIZE_VARIANT_RESOLVER_HELPER(Type40);
 
 //-----------------------------------------------------------------------------
 //
-// The VariantTypeResolver struct allows users of the Variant class to
-// determine which type defined by a particular Variant can be used to store a
-// value of a particular type. For a defined Variant type T,
-// VariantTypeResolver<VariantType, T>::Type will be T if T is one of the
-// defined types or is a type derived from one of the defined types. Note that
-// other type conversions are not allowed.
-//
-// For example, suppose you have:
-//    typedef Variant<int, double, BaseClass> MyVariant;
-//
-// Then:
-//    VariantTypeResolver<MyVariant, int>::Type
-//        will be int because int is one of the defined types.
-//    VariantTypeResolver<MyVariant, double>::Type
-//        will be double for the same reason.
-//    VariantTypeResolver<MyVariant, float>::Type
-//        will be void, because float is not one of the defined types (and no
-//        conversions are allowed).
-//    VariantTypeResolver<MyVariant, BaseClass>::Type
-//        will be BaseClass.
-//    VariantTypeResolver<MyVariant, DerivedClass>::Type
-//        will be BaseClass if DerivedClass is derived from BaseClass.
+// VariantTypeResolver
 //
 //-----------------------------------------------------------------------------
 
+/// The VariantTypeResolver struct allows users of the Variant class to
+/// determine which type defined by a particular Variant can be used to store a
+/// value of a particular type. For a defined Variant type T,
+/// VariantTypeResolver<VariantType, T>::Type will be T if T is one of the
+/// defined types or is a type derived from one of the defined types. Note that
+/// other type conversions are not allowed.
+///
+/// For example, suppose you have:
+///    typedef Variant<int, double, BaseClass> MyVariant;
+///
+/// Then:
+///    VariantTypeResolver<MyVariant, int>::Type
+///        will be int because int is one of the defined types.
+///    VariantTypeResolver<MyVariant, double>::Type
+///        will be double for the same reason.
+///    VariantTypeResolver<MyVariant, float>::Type
+///        will be void, because float is not one of the defined types (and no
+///        conversions are allowed).
+///    VariantTypeResolver<MyVariant, BaseClass>::Type
+///        will be BaseClass.
+///    VariantTypeResolver<MyVariant, DerivedClass>::Type
+///        will be BaseClass if DerivedClass is derived from BaseClass.
 template <typename VariantType, typename TypeToResolve>
 struct VariantTypeResolver {
   typedef typename internal::ResolverHelper<

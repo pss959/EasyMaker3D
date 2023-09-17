@@ -20,16 +20,16 @@ limitations under the License.
 
 #include "base/integral_types.h"
 
-// The following guarantees declaration of the byte swap functions.
+/// The following guarantees declaration of the byte swap functions.
 #if defined(ION_PLATFORM_WINDOWS)
 #include <stdlib.h>  // NOLINT(build/include)
 #elif defined(ION_PLATFORM_MAC) || defined(ION_PLATFORM_IOS)
-// Mac OS X / Darwin features.
+/// Mac OS X / Darwin features.
 #include <libkern/OSByteOrder.h>
 #endif
 
-// Some C libraries provide macros for these symbols, e.g. in byteswap.h, and
-// the macros interfere with defining the inline function with that name.
+/// Some C libraries provide macros for these symbols, e.g. in byteswap.h, and
+/// the macros interfere with defining the inline function with that name.
 
 #ifdef bswap_16
 #undef bswap_16

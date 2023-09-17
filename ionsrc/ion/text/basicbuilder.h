@@ -25,34 +25,34 @@ limitations under the License.
 namespace ion {
 namespace text {
 
-// BasicBuilder is a derived Builder class that uses a very basic shader to
-// render text.
-//
-// The Node returned by Builder::BuildNode() contains the following uniforms:
-//   uSdfPadding       [float, derived from Font]
-//     Number of pixels used to pad SDF images.
-//   uSdfSampler       [sampler2D, derived from FontImage]
-//     Sampler for the SDF texture.
-//   uTextColor:       [VectorBase4f, default (1,1,1,1)]
-//     Foreground color of the text.
+/// BasicBuilder is a derived Builder class that uses a very basic shader to
+/// render text.
+///
+/// The Node returned by Builder::BuildNode() contains the following uniforms:
+///   uSdfPadding       [float, derived from Font]
+///     Number of pixels used to pad SDF images.
+///   uSdfSampler       [sampler2D, derived from FontImage]
+///     Sampler for the SDF texture.
+///   uTextColor:       [VectorBase4f, default (1,1,1,1)]
+///     Foreground color of the text.
 class ION_API BasicBuilder : public Builder {
  public:
   BasicBuilder(const FontImagePtr& font_image,
                const gfxutils::ShaderManagerPtr& shader_manager,
                const base::AllocatorPtr& allocator);
 
-  // These convenience functions can be used to modify uniform values in the
-  // built Node returned by GetNode(). Each returns false if the Node is NULL
-  // or the uniform does not exist in it.
+  /// These convenience functions can be used to modify uniform values in the
+  /// built Node returned by GetNode(). Each returns false if the Node is NULL
+  /// or the uniform does not exist in it.
   bool SetSdfPadding(float padding);
   bool SetTextColor(const math::VectorBase4f& color);
 
  protected:
-  // The destructor is protected because all base::Referent classes must have
-  // protected or private destructors.
+  /// The destructor is protected because all base::Referent classes must have
+  /// protected or private destructors.
   ~BasicBuilder() override;
 
-  // Required Builder functions.
+  /// Required Builder functions.
   const gfx::ShaderInputRegistryPtr GetShaderInputRegistry() override;
   void GetShaderStrings(std::string* id_string,
                         std::string* vertex_source,
@@ -66,7 +66,7 @@ class ION_API BasicBuilder : public Builder {
                                           size_t* num_vertices) override;
 
  private:
-  // A Vertex in the AttributeArray for the text.
+  /// A Vertex in the AttributeArray for the text.
   struct Vertex {
     Vertex() {}
     Vertex(const math::Point3f& position_in,
@@ -77,7 +77,7 @@ class ION_API BasicBuilder : public Builder {
   };
 };
 
-// Convenience typedef for shared pointer to a BasicBuilder.
+/// Convenience typedef for shared pointer to a BasicBuilder.
 using BasicBuilderPtr = base::SharedPtr<BasicBuilder>;
 
 }  // namespace text

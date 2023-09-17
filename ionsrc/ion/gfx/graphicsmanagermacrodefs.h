@@ -18,8 +18,9 @@ limitations under the License.
 #ifndef ION_GFX_GRAPHICSMANAGERMACRODEFS_H_
 #define ION_GFX_GRAPHICSMANAGERMACRODEFS_H_
 
-// This file defines some magic preprocessor macros for wrapping
-// OpenGL functions easily in the GraphicsManager class.
+/// \file
+/// This file defines some magic preprocessor macros for wrapping
+/// OpenGL functions easily in the GraphicsManager class.
 
 #if defined(ION_ANALYTICS_ENABLED)
 #  include "ion/profile/profiling.h"
@@ -64,9 +65,9 @@ limitations under the License.
     }                                                                         \
   }
 
-// In production builds, just invoke the function directly. Since tracing is
-// disabled in production builds, however, any tests that rely on tracing must
-// be disabled or they will fail.
+/// In production builds, just invoke the function directly. Since tracing is
+/// disabled in production builds, however, any tests that rely on tracing must
+/// be disabled or they will fail.
 #define ION_WRAP_PROD_GL_FUNC(name, return_type, typed_args, args, trace) \
  public:                                                                  \
   /* Invokes the wrapped function. */                                     \
@@ -100,11 +101,11 @@ limitations under the License.
   ION_DECLARE_GL_WRAPPER(group, name, return_type, typed_args, args)
 #endif
 
-// Logs an argument to the TracingHelper.
+/// Logs an argument to the TracingHelper.
 #define ION_TRACE_ARG(name, type, arg) \
   #arg << " = " << tracing_helper_.ToString(#type, arg)
 
-// Do not wrap glGetError, since it needs special handling.
+/// Do not wrap glGetError, since it needs special handling.
 #define ION_WRAP_SKIP_GetError
 
 #endif  // ION_GFX_GRAPHICSMANAGERMACRODEFS_H_

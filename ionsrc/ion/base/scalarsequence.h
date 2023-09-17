@@ -24,7 +24,7 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// A variadic template containing a sequence of scalars.
+/// A variadic template containing a sequence of scalars.
 template <typename T, T... values>
 struct ScalarSequence {
   static constexpr std::size_t kCount = sizeof...(values);
@@ -34,8 +34,8 @@ struct ScalarSequence {
   static constexpr ArrayType ToArray() { return ArrayType({{values...}}); }
 };
 
-// Scalar sequence generator, generating an ScalarSequence starting at 0 'count'
-// times, increasing at values of 'step'.
+/// Scalar sequence generator, generating an ScalarSequence starting at 0 'count'
+/// times, increasing at values of 'step'.
 template <typename T, std::size_t count, T step = 1, std::size_t index = 0,
           T... values>
 struct ScalarSequenceGenerator {
@@ -44,7 +44,7 @@ struct ScalarSequenceGenerator {
                                        index * step>::Sequence;
 };
 
-// Terminator case for scalar sequence generation.
+/// Terminator case for scalar sequence generation.
 template <typename T, std::size_t count, T step, T... values>
 struct ScalarSequenceGenerator<T, count, step, count, values...> {
   using Sequence = ScalarSequence<T, values...>;

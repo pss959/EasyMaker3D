@@ -26,37 +26,37 @@ limitations under the License.
 namespace ion {
 namespace remote {
 
-// ShaderHandler serves files related to shaders, their dependencies, and the
-// shader editor.
-//
-// Shader-related pages have a proc-like structure. For example, if there
-// are shaders shader1 and shader2 (with respective dependencies
-// shader1_v_source, shader1_f_source, and shader2_v_source, shader2_f_source),
-// are registered with the ShaderManager, then the following paths are valid
-// (note that the paths are relative to the handler's root):
-// /                                      - List of shaders
-// /shader1                           - Lists info log and shader stages
-// /shader1/|info log|                - shader1's link info log
-// /shader1/vertex                    - Lists dependencies and info log
-// /shader1/vertex/|info log|         - shader1's vertex shader info log
-// /shader1/vertex/shader1_v_source   - Text of shader1_v_source
-// /shader1/fragment/|info log|       - shader1's fragment shader info log
-// /shader1/fragment/shader1_f_source - Text of shader1_f_source
-// /shader2                           - Lists info log and shader stages
-// /shader2/|info log|                - shader2's link info log
-// /shader2/vertex                    - Lists dependencies and info log
-// /shader2/vertex/|info log|         - shader2's vertex shader info log
-// /shader2/vertex/shader2_v_source   - Text of shader2_v_source
-// /shader2/fragment/|info log|       - shader2's fragment shader info log
-// /shader2/fragment/shader2_f_source - Text of shader2_f_source
-//
-// /shader_editor serves the shader editor. It allows run-time editing
-// of shaders by modifiying their dependencies directly. See the online help
-// on the served page for more information.
+/// ShaderHandler serves files related to shaders, their dependencies, and the
+/// shader editor.
+///
+/// Shader-related pages have a proc-like structure. For example, if there
+/// are shaders shader1 and shader2 (with respective dependencies
+/// shader1_v_source, shader1_f_source, and shader2_v_source, shader2_f_source),
+/// are registered with the ShaderManager, then the following paths are valid
+/// (note that the paths are relative to the handler's root):
+/// /                                      - List of shaders
+/// /shader1                           - Lists info log and shader stages
+/// /shader1/|info log|                - shader1's link info log
+/// /shader1/vertex                    - Lists dependencies and info log
+/// /shader1/vertex/|info log|         - shader1's vertex shader info log
+/// /shader1/vertex/shader1_v_source   - Text of shader1_v_source
+/// /shader1/fragment/|info log|       - shader1's fragment shader info log
+/// /shader1/fragment/shader1_f_source - Text of shader1_f_source
+/// /shader2                           - Lists info log and shader stages
+/// /shader2/|info log|                - shader2's link info log
+/// /shader2/vertex                    - Lists dependencies and info log
+/// /shader2/vertex/|info log|         - shader2's vertex shader info log
+/// /shader2/vertex/shader2_v_source   - Text of shader2_v_source
+/// /shader2/fragment/|info log|       - shader2's fragment shader info log
+/// /shader2/fragment/shader2_f_source - Text of shader2_f_source
+///
+/// /shader_editor serves the shader editor. It allows run-time editing
+/// of shaders by modifiying their dependencies directly. See the online help
+/// on the served page for more information.
 class ION_API ShaderHandler : public HttpServer::RequestHandler {
  public:
-  // A ShaderHandler requires a valid ShaderManager as well as a Renderer to
-  // notify of changes made to shaders in the shader manager.
+  /// A ShaderHandler requires a valid ShaderManager as well as a Renderer to
+  /// notify of changes made to shaders in the shader manager.
   ShaderHandler(const gfxutils::ShaderManagerPtr& shader_manager,
                 const gfx::RendererPtr& renderer);
   ~ShaderHandler() override;

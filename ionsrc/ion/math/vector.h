@@ -18,11 +18,10 @@ limitations under the License.
 #ifndef ION_MATH_VECTOR_H_
 #define ION_MATH_VECTOR_H_
 
-//
-// This file defines geometric N-dimensional Vector and Point classes. Each
-// class in this file is templatized on dimension (number of elements) and
-// scalar value type.
-//
+/// \file
+/// This file defines geometric N-dimensional Vector and Point classes. Each
+/// class in this file is templatized on dimension (number of elements) and
+/// scalar value type.
 
 #include <functional>
 #include <type_traits>
@@ -40,21 +39,21 @@ namespace math {
 // VectorBase.
 //-----------------------------------------------------------------------------
 
-// VectorBase is a base class for the Vector and Point classes.
+/// VectorBase is a base class for the Vector and Point classes.
 template <int Dimension, typename T>
 class VectorBase {
  public:
-  // The dimension of the vector (number of elements).
+  /// The dimension of the vector (number of elements).
   enum { kDimension = Dimension };
   typedef T ValueType;
 
-  // Sets the vector values.
-  void Set(T e0);                    // Only when Dimension == 1.
-  void Set(T e0, T e1);              // Only when Dimension == 2.
-  void Set(T e0, T e1, T e2);        // Only when Dimension == 3.
-  void Set(T e0, T e1, T e2, T e3);  // Only when Dimension == 4.
+  /// Sets the vector values.
+  void Set(T e0);                    ///< Only when Dimension == 1.
+  void Set(T e0, T e1);              ///< Only when Dimension == 2.
+  void Set(T e0, T e1, T e2);        ///< Only when Dimension == 3.
+  void Set(T e0, T e1, T e2, T e3);  ///< Only when Dimension == 4.
 
-  // Mutable element accessor.
+  /// Mutable element accessor.
   T& operator[](int index) {
     // Check that the index is in range. Use a single DCHECK statement with a
     // conjunction rather than multiple DCHECK_GE and DCHECK_LT statements,
@@ -64,7 +63,7 @@ class VectorBase {
     return elem_[index];
   }
 
-  // Read-only element accessor.
+  /// Read-only element accessor.
   const T& operator[](int index) const {
     // Check that the index is in range. Use a single DCHECK statement with a
     // conjunction rather than multiple DCHECK_GE and DCHECK_LT statements,
@@ -74,14 +73,14 @@ class VectorBase {
     return elem_[index];
   }
 
-  // Returns true if all values in two instances are equal.
+  /// Returns true if all values in two instances are equal.
   static bool AreValuesEqual(const VectorBase& v0, const VectorBase& v1);
 
-  // Returns a pointer to the data for interfacing with other libraries.
+  /// Returns a pointer to the data for interfacing with other libraries.
   T* Data() { return &elem_[0]; }
   const T* Data() const { return &elem_[0]; }
 
-  // This is used for printing Vectors and Points to a stream.
+  /// This is used for printing Vectors and Points to a stream.
   void Print(std::ostream& out, const char tag) const {  // NOLINT
     out << tag << "[";
     for (int i = 0; i < Dimension; ++i) {
@@ -92,7 +91,7 @@ class VectorBase {
     out << "]";
   }
 
-  // This is used for reading Vectors and Points from a stream.
+  /// This is used for reading Vectors and Points from a stream.
   template <char tag>
   void Read(std::istream& in) {  // NOLINT
     VectorBase v;
@@ -108,21 +107,21 @@ class VectorBase {
   }
 
  protected:
-  // The default constructor zero-initializes all elements.
+  /// The default constructor zero-initializes all elements.
   VectorBase() noexcept : elem_() {}
 
-  constexpr explicit VectorBase(T e0);           // Only when Dimension == 1.
-  constexpr VectorBase(T e0, T e1);              // Only when Dimension == 2.
-  constexpr VectorBase(T e0, T e1, T e2);        // Only when Dimension == 3.
-  constexpr VectorBase(T e0, T e1, T e2, T e3);  // Only when Dimension == 4.
+  constexpr explicit VectorBase(T e0);           /// Only when Dimension == 1.
+  constexpr VectorBase(T e0, T e1);              /// Only when Dimension == 2.
+  constexpr VectorBase(T e0, T e1, T e2);        /// Only when Dimension == 3.
+  constexpr VectorBase(T e0, T e1, T e2, T e3);  /// Only when Dimension == 4.
 
-  // Constructor for an instance of dimension N from an instance of dimension
-  // N-1 and a scalar of the correct type. This is defined only when Dimension
-  // is at least 2.
+  /// Constructor for an instance of dimension N from an instance of dimension
+  /// N-1 and a scalar of the correct type. This is defined only when Dimension
+  /// is at least 2.
   constexpr VectorBase(const VectorBase<Dimension - 1, T>& v, T s);
 
-  // Copy constructor from an instance of the same Dimension and any value type
-  // that is compatible (via static_cast) with this instance's type.
+  /// Copy constructor from an instance of the same Dimension and any value type
+  /// that is compatible (via static_cast) with this instance's type.
   template <typename U>
   constexpr explicit VectorBase(const VectorBase<Dimension, U>& v);
 
@@ -131,8 +130,8 @@ class VectorBase {
   // constructors into separate initialization scopes, we avoid the problems
   // with that compiler.
 
-  // Constructor helper to create a VectorBase of a different type, but same
-  // dimensionality.
+  /// Constructor helper to create a VectorBase of a different type, but same
+  /// dimensionality.
   template <typename U>
   struct InitCast {
     static constexpr VectorBase<Dimension, T> Invoke(
@@ -150,8 +149,8 @@ class VectorBase {
     }
   };
 
-  // Constructor helper to create a VectorBase from a lower-demension vector of
-  // the same type, with an extra parameter.
+  /// Constructor helper to create a VectorBase from a lower-demension vector of
+  /// the same type, with an extra parameter.
   struct InitRaiseDimension {
     static constexpr VectorBase<Dimension, T> Invoke(
         const VectorBase<Dimension - 1, T>& source, T s) {
@@ -169,10 +168,10 @@ class VectorBase {
     }
   };
 
-  // Returns an instance containing all zeroes.
+  /// Returns an instance containing all zeroes.
   static VectorBase Zero();
 
-  // Returns an instance with all elements set to the given value.
+  /// Returns an instance with all elements set to the given value.
   static VectorBase Fill(T value);
 
   //
@@ -180,53 +179,53 @@ class VectorBase {
   // functions and operators.
   //
 
-  // Self-modifying addition.
+  /// Self-modifying addition.
   void Add(const VectorBase& v);
-  // Self-modifying subtraction.
+  /// Self-modifying subtraction.
   void Subtract(const VectorBase& v);
-  // Self-modifying multiplication by a scalar.
+  /// Self-modifying multiplication by a scalar.
   void Multiply(T s);
-  // Self-modifying division by a scalar.
+  /// Self-modifying division by a scalar.
   void Divide(T s);
 
-  // Unary negation.
+  /// Unary negation.
   VectorBase Negation() const;
 
-  // Binary component-wise multiplication.
+  /// Binary component-wise multiplication.
   static VectorBase Product(const VectorBase& v0, const VectorBase& v1);
-  // Binary component-wise division.
+  /// Binary component-wise division.
   static VectorBase Quotient(const VectorBase& v0, const VectorBase& v1);
-  // Binary component-wise addition.
+  /// Binary component-wise addition.
   static VectorBase Sum(const VectorBase& v0, const VectorBase& v1);
-  // Binary component-wise subtraction.
+  /// Binary component-wise subtraction.
   static VectorBase Difference(const VectorBase& v0, const VectorBase& v1);
-  // Binary multiplication by a scalar.
+  /// Binary multiplication by a scalar.
   static VectorBase Scale(const VectorBase& v, T s);
-  // Binary division by a scalar.
+  /// Binary division by a scalar.
   static VectorBase Divide(const VectorBase& v, T s);
-  // Reciprocal and multiplication by a scalar, i.e., s / v.
+  /// Reciprocal and multiplication by a scalar, i.e., s / v.
   static VectorBase LeftDivide(T s, const VectorBase& v);
 
-  // Helper struct to aid in Axis functions. It is a struct to allow partial
-  // template specialization.
+  /// Helper struct to aid in Axis functions. It is a struct to allow partial
+  /// template specialization.
   template <int Dim, typename U>
   struct StaticHelper;
 
  private:
-  // Constructor taking elements from a lower dimension vector, and adding an
-  // extra dimension supplied by a parameter.  This constructor is used by the
-  // regular dimesional conversion constructor, as a utility for constexpr
-  // support.
+  /// Constructor taking elements from a lower dimension vector, and adding an
+  /// extra dimension supplied by a parameter.  This constructor is used by the
+  /// regular dimesional conversion constructor, as a utility for constexpr
+  /// support.
   template <size_t... index>
   constexpr explicit VectorBase(base::ScalarSequence<size_t, index...>,
                                 const VectorBase<Dimension - 1, T>& v, T last);
 
-  // Constructor converting a indexable type to a vector of another type, using
-  // a ScalarSequence as a variadic index into the source vector.
+  /// Constructor converting a indexable type to a vector of another type, using
+  /// a ScalarSequence as a variadic index into the source vector.
   template <typename U, size_t... index>
   constexpr VectorBase(base::ScalarSequence<size_t, index...>, const U& v);
 
-  // Element storage.
+  /// Element storage.
   T elem_[Dimension];
 };
 

@@ -84,6 +84,18 @@ def AddRpath_(env, path, make_abs=False):
     full_path = Dir(env.subst(path)).abspath if make_abs else path
     env.Append(RPATH = [full_path])
 
+# Recursive function to find all files of certain types (for Doxygen
+# input). This allows dependencies to be set up correctly.
+def FindSources_(env, root_dir, patterns):
+    from fnmatch import filter as fnfilter
+    from os      import walk
+    from os.path import join
+    sources = []
+    for root, dirnames, filenames in walk(root_dir):
+        for pattern in patterns:
+            sources += [join(root, fn) for fn in fnfilter(filenames, pattern)]
+    return sources
+
 # -----------------------------------------------------------------------------
 # Platform setup.
 # -----------------------------------------------------------------------------
@@ -149,6 +161,9 @@ base_env.AddMethod(MakeBrief_, 'MakeBrief')
 
 # Allow ParseConfig() to be called easily for packages.
 base_env.AddMethod(ParseConfig_, 'AddPackages')
+
+# Allow FindSources_() to be called.
+base_env.AddMethod(FindSources_, 'FindSources')
 
 # -----------------------------------------------------------------------------
 # Add common platform-specific items to base_env.

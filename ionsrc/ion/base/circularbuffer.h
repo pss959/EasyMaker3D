@@ -27,8 +27,8 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// Simple circular buffer class that has fixed capacity and does not grow
-// automatically.
+/// Simple circular buffer class that has fixed capacity and does not grow
+/// automatically.
 template<typename T>
 class CircularBuffer : public ion::base::Allocatable {
  public:
@@ -40,28 +40,26 @@ class CircularBuffer : public ion::base::Allocatable {
   using reference = typename Buffer::reference;
   using const_reference = typename Buffer::const_reference;
 
-  // Create CircularBuffer with maximum size |capacity| allocated from
-  // |alloc|. If |do_reserve| is true, the full buffer capacity is allocated at
-  // the time of instantiation.
+  /// Create CircularBuffer with maximum size |capacity| allocated from
+  /// |alloc|. If |do_reserve| is true, the full buffer capacity is allocated at
+  /// the time of instantiation.
   CircularBuffer(
       size_t capacity, const ion::base::AllocatorPtr& alloc, bool do_reserve);
 
-  // Copy constructor for CircularBuffer with optional parameter to initialise
-  // to a new size.
-  // @param circular_buffer The source buffer to copy from.
-  // @param alloc Allocator for the circular buffer.
-  // @param capacity If 0, this buffer will use the same capacity as the source
-  //     buffer, otherwise it will use the capacity provided.  If a value
-  //     is passed that is non zero and less than the source buffer's
-  //     capacity this object will be undefined, and will DCHECK in debug.
+  /// Copy constructor for CircularBuffer with optional parameter to initialise
+  /// to a new size.
+  /// @param source_buffer The source buffer to copy from.
+  /// @param alloc Allocator for the circular buffer.
+  /// @param capacity If 0, this buffer will use the same capacity as the source
+  ///     buffer, otherwise it will use the capacity provided.  If a value
+  ///     is passed that is non zero and less than the source buffer's
+  ///     capacity this object will be undefined, and will DCHECK in debug.
   CircularBuffer(const CircularBuffer& source_buffer,
                  const ion::base::AllocatorPtr& alloc, size_t capacity = 0);
 
-  // Add an item to the buffer. If the buffer is at full capacity, this
-  // overwrites the oldest element in the buffer.
+  /// Add an item to the buffer. If the buffer is at full capacity, this
+  /// overwrites the oldest element in the buffer.
   void AddItem(const T& item) {
-    // 
-    // vector.
     if (buffer_.size() < capacity_) {
       buffer_.push_back(item);
     } else {
@@ -74,48 +72,48 @@ class CircularBuffer : public ion::base::Allocatable {
     ++num_items_;
   }
 
-  // Drops the oldest num_item items from the buffer.
-  // The size of the buffer must be larger than num_items when calling this.
-  // @param num_items_to_drop The number of items to drop.
+  /// Drops the oldest num_item items from the buffer.
+  /// The size of the buffer must be larger than num_items when calling this.
+  /// @param num_items_to_drop The number of items to drop.
   void DropOldestItems(size_t num_items_to_drop = 1) {
     DCHECK_GE(num_items_, num_items_to_drop);
     head_pos_ = (head_pos_ + num_items_to_drop) % capacity_;
     num_items_ -= num_items_to_drop;
   }
 
-  // Drops the oldest item from the buffer.
-  // The size of the buffer must be non-zero when calling this.
+  /// Drops the oldest item from the buffer.
+  /// The size of the buffer must be non-zero when calling this.
   void DropOldestItem() {
     DropOldestItems(1);
   }
 
-  // Return the item at position i. A position of 0 refers to the oldest item
-  // recorded in the buffer, while the position (GetSize() - 1) is the newest.
+  /// Return the item at position i. A position of 0 refers to the oldest item
+  /// recorded in the buffer, while the position (GetSize() - 1) is the newest.
   const_reference GetItem(size_t i) const {
     DCHECK_LT(i, buffer_.size());
     DCHECK_LT(i, capacity_);
     return buffer_[(head_pos_ + i) % capacity_];
   }
 
-  // Get the current number of items in the buffer.
+  /// Get the current number of items in the buffer.
   size_t GetSize() const { return num_items_; }
 
-  // Get the total capacity of the buffer.
+  /// Get the total capacity of the buffer.
   size_t GetCapacity() const { return capacity_; }
 
-  // Returns true if the number of elements held equals the capacity.
+  /// Returns true if the number of elements held equals the capacity.
   bool IsFull() const { return num_items_ == capacity_; }
 
-  // Returns true if there are no elements in the buffer.
+  /// Returns true if there are no elements in the buffer.
   bool IsEmpty() const { return num_items_ == 0; }
 
-  // Returns the first (oldest) item in the buffer.
+  /// Returns the first (oldest) item in the buffer.
   const T& GetOldest() const { return GetItem(0); }
 
-  // Returns the last (newest) item in the buffer.
+  /// Returns the last (newest) item in the buffer.
   const T& GetNewest() const { return GetItem(num_items_ - 1); }
 
-  // Clear the buffer.
+  /// Clear the buffer.
   void Clear() {
     buffer_.clear();
     num_items_ = 0;
@@ -123,15 +121,15 @@ class CircularBuffer : public ion::base::Allocatable {
     next_pos_ = 0;
   }
 
-  // Base class for iterator types.  Currently the only iterator supported is
-  // ConstIterator, but there may be a non-const iterator in the future if
-  // CircularBuffer supports a non-const GetItem.
-  // This class uses the CRTP style, where the derived type is known to this
-  // base class.  This enables the implementation of common operators in the
-  // base class, where those operators return values and references to the
-  // derived type.
-  // In addition, TContainer is given as a template parameter, as it may be
-  // a pointer to a const or non-const CircularBuffer.
+  /// Base class for iterator types.  Currently the only iterator supported is
+  /// ConstIterator, but there may be a non-const iterator in the future if
+  /// CircularBuffer supports a non-const GetItem.
+  /// This class uses the CRTP style, where the derived type is known to this
+  /// base class.  This enables the implementation of common operators in the
+  /// base class, where those operators return values and references to the
+  /// derived type.
+  /// In addition, TContainer is given as a template parameter, as it may be
+  /// a pointer to a const or non-const CircularBuffer.
   template <typename TDerived, typename TContainer>
   class IteratorBase {
    public:
@@ -226,8 +224,8 @@ class CircularBuffer : public ion::base::Allocatable {
     size_t index_;
   };
 
-  // ConstIterator is the constant iterator class.  It is mostly implemented
-  // within IteratorBase.
+  /// ConstIterator is the constant iterator class.  It is mostly implemented
+  /// within IteratorBase.
   class ConstIterator
       : public IteratorBase<ConstIterator, const CircularBuffer> {
    public:
@@ -256,52 +254,52 @@ class CircularBuffer : public ion::base::Allocatable {
     }
   };
 
-  // Support C++ standard typedefs for iterators.
+  /// Support C++ standard typedefs for iterators.
   using const_iterator = ConstIterator;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  // Retrieves the begin const iterator for the CircularBuffer.
+  /// Retrieves the begin const iterator for the CircularBuffer.
   const_iterator cbegin() const { return ConstIterator(this, 0); }
 
-  // Retrieves the end const iterator for the CircularBuffer.
+  /// Retrieves the end const iterator for the CircularBuffer.
   const_iterator cend() const { return ConstIterator(this, GetSize()); }
 
-  // Retrieves the begin const iterator for the CircularBuffer.
+  /// Retrieves the begin const iterator for the CircularBuffer.
   const_iterator begin() const { return cbegin(); }
 
-  // Retrieves the end const iterator for the CircularBuffer.
+  /// Retrieves the end const iterator for the CircularBuffer.
   const_iterator end() const { return cend(); }
 
-  // Retrieves the begin const reverse iterator for the CircularBuffer.
+  /// Retrieves the begin const reverse iterator for the CircularBuffer.
   const_reverse_iterator crbegin() const {
     return std::reverse_iterator<const_iterator>(cend());
   }
 
-  // Retrieves the end const reverse iterator for the CircularBuffer.
+  /// Retrieves the end const reverse iterator for the CircularBuffer.
   const_reverse_iterator crend() const {
     return std::reverse_iterator<const_iterator>(cbegin());
   }
 
-  // Retrieves the begin const reverse iterator for the CircularBuffer.
+  /// Retrieves the begin const reverse iterator for the CircularBuffer.
   const_reverse_iterator rbegin() const { return crbegin(); }
 
-  // Retrieves the end const reverse iterator for the CircularBuffer.
+  /// Retrieves the end const reverse iterator for the CircularBuffer.
   const_reverse_iterator rend() const { return crend(); }
 
  private:
-  // Maximum buffer capacity.
+  /// Maximum buffer capacity.
   const size_t capacity_;
 
-  // The number of items stored in the buffer.
+  /// The number of items stored in the buffer.
   size_t num_items_;
 
-  // The "head" of the buffer (the oldest element).
+  /// The "head" of the buffer (the oldest element).
   size_t head_pos_;
 
-  // The next "free" position in the buffer to write to.
+  /// The next "free" position in the buffer to write to.
   size_t next_pos_;
 
-  // Underlying vector.
+  /// Underlying vector.
   Buffer buffer_;
 };
 

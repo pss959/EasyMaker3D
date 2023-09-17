@@ -27,8 +27,8 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-// Wrapper struct around a zlib function info struct and the backing store of
-// the zipfile.
+/// Wrapper struct around a zlib function info struct and the backing store of
+/// the zipfile.
 struct MemoryZipStream::ZipStreamInfo : public Allocatable {
   ZipStreamInfo() : position(0U), buffer(GetAllocator()) {}
   zlib_filefunc_def def;

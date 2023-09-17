@@ -25,38 +25,40 @@ limitations under the License.
 namespace ion {
 namespace base {
 
-//
-// A NullLogEntryWriter can be used completely disable all logging
-// programmatically as long as it exists. In this way it is similar to a
-// LogChecker, but does not actually send log messages anywhere. Note that this
-// does NOT prevent FATAL, DFATAL, or DCHECKs from calling the currently
-// installed break handler.
-//
-// You can disable logging for a scope like this:
-//   {
-//     NullLogEntryWriter null_logger;
-//     ...  // Very verbose code.
-//   }  // Old writer is restored when the null logger passes out of scope.
-//
-// Alternatively, managing the life of the instance can disable logging for
-// longer periods, for example:
-//     #if ION_PRODUCTION
-//     std::unique_ptr<NullLogEntryWriter> null_logger(new NullLogEntryWriter);
-//     #endif
-// could be used to completely disable logging in an application when building
-// for production mode.
-//
+/// A NullLogEntryWriter can be used completely disable all logging
+/// programmatically as long as it exists. In this way it is similar to a
+/// LogChecker, but does not actually send log messages anywhere. Note that this
+/// does NOT prevent FATAL, DFATAL, or DCHECKs from calling the currently
+/// installed break handler.
+///
+/// You can disable logging for a scope like this:
+/// \code
+///   {
+///     NullLogEntryWriter null_logger;
+///     ...  // Very verbose code.
+///   }  // Old writer is restored when the null logger passes out of scope.
+/// \endcode
+///
+/// Alternatively, managing the life of the instance can disable logging for
+/// longer periods, for example:
+/// \code
+///     #if ION_PRODUCTION
+///     std::unique_ptr<NullLogEntryWriter> null_logger(new NullLogEntryWriter);
+///     #endif
+/// \endcode
+/// could be used to completely disable logging in an application when building
+/// for production mode.
 class ION_API NullLogEntryWriter : public port::LogEntryWriter {
  public:
   NullLogEntryWriter() : previous_writer_(GetLogEntryWriter()) {
     SetLogEntryWriter(this);
   }
   ~NullLogEntryWriter() override {
-    // Restore the old log-writer.
+    /// Restore the old log-writer.
     SetLogEntryWriter(previous_writer_);
   }
 
-  // LogEntryWriter impl.
+  /// LogEntryWriter impl.
   void Write(port::LogSeverity severity, const std::string& message) override {}
 
  private:
