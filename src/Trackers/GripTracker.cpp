@@ -26,8 +26,7 @@ Event::Device GripTracker::GetDevice() const {
 
 void GripTracker::UpdateHovering(const Event &event) {
     WidgetPtr widget;
-    if (UpdateCurrentData_(event, widget) && widget != current_widget_ &&
-        (! widget || widget->IsInteractionEnabled())) {
+    if (UpdateCurrentData_(event, widget) && widget != current_widget_) {
         UpdateWidgetHovering(current_widget_, widget);
         current_widget_ = widget;
     }
@@ -36,8 +35,10 @@ void GripTracker::UpdateHovering(const Event &event) {
 }
 
 void GripTracker::StopHovering() {
-    if (current_widget_)
+    if (current_widget_) {
         UpdateWidgetHovering(current_widget_, WidgetPtr());
+        current_widget_.reset();
+    }
     GetController()->ShowGripHover(false, Point3f::Zero(), Color::White());
 }
 

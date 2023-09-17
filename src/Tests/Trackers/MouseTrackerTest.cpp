@@ -52,9 +52,9 @@ TEST_F(MouseTrackerTest, Defaults) {
                "Actuator::kMouse");
 
     MouseTracker mt(Actuator::kMouse);
-    EXPECT_EQ(Actuator::kMouse,       mt.GetActuator());
-    EXPECT_EQ(Event::Device::kMouse,  mt.GetDevice());
-    EXPECT_EQ(TK::kMouseClickTimeout, mt.GetClickTimeout());
+    EXPECT_ENUM_EQ(Actuator::kMouse,      mt.GetActuator());
+    EXPECT_ENUM_EQ(Event::Device::kMouse, mt.GetDevice());
+    EXPECT_EQ(TK::kMouseClickTimeout,     mt.GetClickTimeout());
 }
 
 TEST_F(MouseTrackerTest, IsActivation) {
@@ -171,14 +171,14 @@ TEST_F(MouseTrackerTest, ClickDrag) {
     // Update a ClickInfo.
     ClickInfo cinfo;
     mt.FillClickInfo(cinfo);
-    EXPECT_EQ(Event::Device::kMouse, cinfo.device);
-    EXPECT_EQ(rw.get(),              cinfo.widget);
+    EXPECT_ENUM_EQ(Event::Device::kMouse, cinfo.device);
+    EXPECT_EQ(rw.get(),                   cinfo.widget);
 
     // Update a DragInfo.
     DragInfo dinfo;
     mt.FillActivationDragInfo(dinfo);
-    EXPECT_EQ(Trigger::kPointer, dinfo.trigger);
-    EXPECT_EQ(rw,                dinfo.hit.path.back());
+    EXPECT_ENUM_EQ(Trigger::kPointer, dinfo.trigger);
+    EXPECT_EQ(rw,                     dinfo.hit.path.back());
 
     // Not a drag if no position.
     event.flags.Reset(Event::Flag::kPosition2D);
@@ -195,8 +195,8 @@ TEST_F(MouseTrackerTest, ClickDrag) {
 
     // Update the DragInfo.
     mt.FillEventDragInfo(event, dinfo);
-    EXPECT_EQ(Trigger::kPointer, dinfo.trigger);
-    EXPECT_EQ(rw,                dinfo.hit.path.back());
+    EXPECT_ENUM_EQ(Trigger::kPointer, dinfo.trigger);
+    EXPECT_EQ(rw,                     dinfo.hit.path.back());
 
     mt.Reset();
 }

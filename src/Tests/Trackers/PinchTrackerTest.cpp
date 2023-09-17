@@ -63,14 +63,14 @@ TEST_F(PinchTrackerTest, Defaults) {
     TEST_THROW(PinchTracker(Actuator::kMouse), AssertException, "actuator");
 
     PinchTracker lpt(Actuator::kLeftPinch);
-    EXPECT_EQ(Actuator::kLeftPinch,           lpt.GetActuator());
-    EXPECT_EQ(Event::Device::kLeftController, lpt.GetDevice());
-    EXPECT_EQ(TK::kPinchClickTimeout,         lpt.GetClickTimeout());
+    EXPECT_ENUM_EQ(Actuator::kLeftPinch,           lpt.GetActuator());
+    EXPECT_ENUM_EQ(Event::Device::kLeftController, lpt.GetDevice());
+    EXPECT_EQ(TK::kPinchClickTimeout,              lpt.GetClickTimeout());
 
     PinchTracker rpt(Actuator::kRightPinch);
-    EXPECT_EQ(Actuator::kRightPinch,           rpt.GetActuator());
-    EXPECT_EQ(Event::Device::kRightController, rpt.GetDevice());
-    EXPECT_EQ(TK::kPinchClickTimeout,         rpt.GetClickTimeout());
+    EXPECT_ENUM_EQ(Actuator::kRightPinch,           rpt.GetActuator());
+    EXPECT_ENUM_EQ(Event::Device::kRightController, rpt.GetDevice());
+    EXPECT_EQ(TK::kPinchClickTimeout,               rpt.GetClickTimeout());
 }
 
 TEST_F(PinchTrackerTest, IsActivation) {
@@ -263,19 +263,19 @@ TEST_F(PinchTrackerTest, ClickDrag) {
     ClickInfo lcinfo, rcinfo;
     lpt.FillClickInfo(lcinfo);
     rpt.FillClickInfo(rcinfo);
-    EXPECT_EQ(Event::Device::kLeftController,  lcinfo.device);
-    EXPECT_EQ(Event::Device::kRightController, rcinfo.device);
-    EXPECT_EQ(lw.get(),                        lcinfo.widget);
-    EXPECT_EQ(rw.get(),                        rcinfo.widget);
+    EXPECT_ENUM_EQ(Event::Device::kLeftController,  lcinfo.device);
+    EXPECT_ENUM_EQ(Event::Device::kRightController, rcinfo.device);
+    EXPECT_EQ(lw.get(),                             lcinfo.widget);
+    EXPECT_EQ(rw.get(),                             rcinfo.widget);
 
     // Update DragInfos.
     DragInfo ldinfo, rdinfo;
     lpt.FillActivationDragInfo(ldinfo);
     rpt.FillActivationDragInfo(rdinfo);
-    EXPECT_EQ(Trigger::kPointer, ldinfo.trigger);
-    EXPECT_EQ(Trigger::kPointer, rdinfo.trigger);
-    EXPECT_EQ(lw,                ldinfo.hit.path.back());
-    EXPECT_EQ(rw,                rdinfo.hit.path.back());
+    EXPECT_ENUM_EQ(Trigger::kPointer, ldinfo.trigger);
+    EXPECT_ENUM_EQ(Trigger::kPointer, rdinfo.trigger);
+    EXPECT_EQ(lw,                     ldinfo.hit.path.back());
+    EXPECT_EQ(rw,                     rdinfo.hit.path.back());
 
     // Not a drag if no position.
     levent.flags.Reset(Event::Flag::kPosition3D);
@@ -301,8 +301,8 @@ TEST_F(PinchTrackerTest, ClickDrag) {
     // GenericWidgets.
     lpt.FillEventDragInfo(levent, ldinfo);
     rpt.FillEventDragInfo(revent, rdinfo);
-    EXPECT_EQ(Trigger::kPointer,  ldinfo.trigger);
-    EXPECT_EQ(Trigger::kPointer,  rdinfo.trigger);
+    EXPECT_ENUM_EQ(Trigger::kPointer,  ldinfo.trigger);
+    EXPECT_ENUM_EQ(Trigger::kPointer,  rdinfo.trigger);
     EXPECT_FALSE(ldinfo.hit.IsValid());
     EXPECT_FALSE(rdinfo.hit.IsValid());
 

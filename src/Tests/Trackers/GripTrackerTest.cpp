@@ -21,6 +21,11 @@ class GripTrackerTest : public TrackerTestBase {
     class TestGrippable;
     DECL_SHARED_PTR(TestGrippable);
 
+    /// TestGrippable instance used to set up a GripInfo for the left hand.
+    TestGrippablePtr ltg;
+    /// TestGrippable instance used to set up a GripInfo for the right hand.
+    TestGrippablePtr rtg;
+
     GripTrackerTest();
 
     /// Sets up the scene in a GripTracker.
@@ -34,8 +39,6 @@ class GripTrackerTest : public TrackerTestBase {
     static Event GetWidgetEvent(const GripTracker &gt);
 
   private:
-    /// TestGrippable instance used to set up a GripInfo.
-    TestGrippablePtr tg_;
 };
 
 // ----------------------------------------------------------------------------
@@ -76,17 +79,19 @@ void GripTrackerTest::InitForActivation(GripTracker &gt) {
     // Set up a scene with GenericWidgets.
     InitTrackerScene(gt);
 
-    // Use a TestGrippable..
-    auto tg = CreateObject<TestGrippable>();
+    // Create and use a TestGrippable..
+    TestGrippablePtr tg = CreateObject<TestGrippable>();
     if (gt.GetActuator() == Actuator::kLeftGrip) {
         tg->widget = GetLeftWidget();
         tg->target = Point3f(-1, 0, 0);
         tg->color  = Color(1, 0, 0);
+        ltg = tg;
     }
     else {
         tg->widget = GetRightWidget();
         tg->target = Point3f(1, 0, 0);
         tg->color  = Color(0, 0, 1);
+        rtg = tg;
     }
 
     gt.SetGrippable(tg, SG::NodePath(tg));
@@ -123,14 +128,14 @@ TEST_F(GripTrackerTest, Defaults) {
     TEST_THROW(GripTracker(Actuator::kMouse), AssertException, "actuator");
 
     GripTracker lgt(Actuator::kLeftGrip);
-    EXPECT_EQ(Actuator::kLeftGrip,            lgt.GetActuator());
-    EXPECT_EQ(Event::Device::kLeftController, lgt.GetDevice());
-    EXPECT_EQ(TK::kGripClickTimeout,          lgt.GetClickTimeout());
+    EXPECT_ENUM_EQ(Actuator::kLeftGrip,            lgt.GetActuator());
+    EXPECT_ENUM_EQ(Event::Device::kLeftController, lgt.GetDevice());
+    EXPECT_EQ(TK::kGripClickTimeout,               lgt.GetClickTimeout());
 
     GripTracker rgt(Actuator::kRightGrip);
-    EXPECT_EQ(Actuator::kRightGrip,            rgt.GetActuator());
-    EXPECT_EQ(Event::Device::kRightController, rgt.GetDevice());
-    EXPECT_EQ(TK::kGripClickTimeout,           rgt.GetClickTimeout());
+    EXPECT_ENUM_EQ(Actuator::kRightGrip,            rgt.GetActuator());
+    EXPECT_ENUM_EQ(Event::Device::kRightController, rgt.GetDevice());
+    EXPECT_EQ(TK::kGripClickTimeout,                rgt.GetClickTimeout());
 }
 
 TEST_F(GripTrackerTest, IsActivation) {
@@ -273,10 +278,39 @@ TEST_F(GripTrackerTest, Hover) {
     EXPECT_TRUE(lw->IsHovering());
     EXPECT_TRUE(rw->IsHovering());
 
+    // This causes each TestGrippable to return a null widget.
+    ltg->widget.reset();
+    rtg->widget.reset();
+    lgt.UpdateHovering(levent);
+    rgt.UpdateHovering(revent);
+    EXPECT_FALSE(lw->IsHovering());
+    EXPECT_FALSE(rw->IsHovering());
+
+    // Restore the real widgets.
+    ltg->widget = lw;
+    rtg->widget = rw;
+    lgt.UpdateHovering(levent);
+    rgt.UpdateHovering(revent);
+    EXPECT_TRUE(lw->IsHovering());
+    EXPECT_TRUE(rw->IsHovering());
+
     lgt.StopHovering();
     rgt.StopHovering();
     EXPECT_FALSE(lw->IsHovering());
     EXPECT_FALSE(rw->IsHovering());
+
+    // Test that activation stops hovering.
+    lgt.UpdateHovering(levent);
+    rgt.UpdateHovering(revent);
+    EXPECT_TRUE(lw->IsHovering());
+    EXPECT_TRUE(rw->IsHovering());
+    WidgetPtr lwidget, rwidget;
+    EXPECT_TRUE(lgt.IsActivation(levent, lwidget));
+    EXPECT_TRUE(rgt.IsActivation(revent, rwidget));
+    EXPECT_FALSE(lw->IsHovering());
+    EXPECT_FALSE(rw->IsHovering());
+    EXPECT_TRUE(lgt.IsDeactivation(GetEvent(lgt, false), lwidget));
+    EXPECT_TRUE(rgt.IsDeactivation(GetEvent(rgt, false), rwidget));
 
     // Cannot hover a disabled Widget.
     lw->SetInteractionEnabled(false);
@@ -287,7 +321,6 @@ TEST_F(GripTrackerTest, Hover) {
     EXPECT_FALSE(rw->IsHovering());
 }
 
-#if XXXX
 TEST_F(GripTrackerTest, ClickDrag) {
     GripTracker lgt(Actuator::kLeftGrip);
     GripTracker rgt(Actuator::kRightGrip);
@@ -310,19 +343,25 @@ TEST_F(GripTrackerTest, ClickDrag) {
     ClickInfo lcinfo, rcinfo;
     lgt.FillClickInfo(lcinfo);
     rgt.FillClickInfo(rcinfo);
-    EXPECT_EQ(Event::Device::kLeftController,  lcinfo.device);
-    EXPECT_EQ(Event::Device::kRightController, rcinfo.device);
-    EXPECT_EQ(lw.get(),                        lcinfo.widget);
-    EXPECT_EQ(rw.get(),                        rcinfo.widget);
+    EXPECT_ENUM_EQ(Event::Device::kLeftController,  lcinfo.device);
+    EXPECT_ENUM_EQ(Event::Device::kRightController, rcinfo.device);
+    EXPECT_EQ(lw.get(),                             lcinfo.widget);
+    EXPECT_EQ(rw.get(),                             rcinfo.widget);
 
     // Update DragInfos.
     DragInfo ldinfo, rdinfo;
     lgt.FillActivationDragInfo(ldinfo);
     rgt.FillActivationDragInfo(rdinfo);
-    EXPECT_EQ(Trigger::kPointer, ldinfo.trigger);
-    EXPECT_EQ(Trigger::kPointer, rdinfo.trigger);
-    EXPECT_EQ(lw,                ldinfo.hit.path.back());
-    EXPECT_EQ(rw,                rdinfo.hit.path.back());
+    EXPECT_ENUM_EQ(Trigger::kGrip, ldinfo.trigger);
+    EXPECT_ENUM_EQ(Trigger::kGrip, rdinfo.trigger);
+    EXPECT_FALSE(ldinfo.hit.IsValid());
+    EXPECT_FALSE(rdinfo.hit.IsValid());
+    EXPECT_EQ(Vector3f(-1, 0, 0),          ldinfo.grip_guide_direction);
+    EXPECT_EQ(Vector3f(-1, 0, 0),          rdinfo.grip_guide_direction);
+    EXPECT_EQ(Point3f(0, 0, 10),           ldinfo.grip_position);
+    EXPECT_EQ(Point3f(0, 0, 10),           rdinfo.grip_position);
+    EXPECT_EQ(BuildRotation(0, 1, 0, -90), ldinfo.grip_orientation);
+    EXPECT_EQ(BuildRotation(0, 1, 0, -90), rdinfo.grip_orientation);
 
     // Not a drag if no position.
     levent.flags.Reset(Event::Flag::kPosition3D);
@@ -333,27 +372,29 @@ TEST_F(GripTrackerTest, ClickDrag) {
     revent.flags.Set(Event::Flag::kPosition3D);
 
     // Not a drag if not far enough.
-    levent.orientation = BuildRotation(0, 1, 0,  11);
-    revent.orientation = BuildRotation(0, 1, 0, -11);
+    levent.orientation = BuildRotation(0, 1, 0, -91);
+    revent.orientation = BuildRotation(0, 1, 0, -92);
     EXPECT_FALSE(lgt.MovedEnoughForDrag(levent));
     EXPECT_FALSE(rgt.MovedEnoughForDrag(revent));
 
-    // Drag if far enough.
-    levent.orientation = BuildRotation(0, 1, 0,  15);
-    revent.orientation = BuildRotation(0, 1, 0, -15);
+    // Drag if far enough. (Left changes rotation, right changes position.)
+    levent.orientation = BuildRotation(0, 1, 0, -110);
+    revent.position3D  = revent.position3D + Vector3f(.1f, 0, 0);
     EXPECT_TRUE(lgt.MovedEnoughForDrag(levent));
     EXPECT_TRUE(rgt.MovedEnoughForDrag(revent));
 
-    // Update the DragInfo. Note that the angle change is enough to miss the
-    // GenericWidgets.
+    // Update the DragInfo.
     lgt.FillEventDragInfo(levent, ldinfo);
     rgt.FillEventDragInfo(revent, rdinfo);
-    EXPECT_EQ(Trigger::kPointer,  ldinfo.trigger);
-    EXPECT_EQ(Trigger::kPointer,  rdinfo.trigger);
-    EXPECT_FALSE(ldinfo.hit.IsValid());
-    EXPECT_FALSE(rdinfo.hit.IsValid());
+    EXPECT_ENUM_EQ(Trigger::kGrip,          ldinfo.trigger);
+    EXPECT_ENUM_EQ(Trigger::kGrip,          rdinfo.trigger);
+    EXPECT_EQ(Vector3f(-1, 0, 0),           ldinfo.grip_guide_direction);
+    EXPECT_EQ(Vector3f(-1, 0, 0),           rdinfo.grip_guide_direction);
+    EXPECT_EQ(Point3f(0,   0, 10),          ldinfo.grip_position);
+    EXPECT_EQ(Point3f(.1f, 0, 10),          rdinfo.grip_position);
+    EXPECT_EQ(BuildRotation(0, 1, 0, -110), ldinfo.grip_orientation);
+    EXPECT_EQ(BuildRotation(0, 1, 0,  -92), rdinfo.grip_orientation);
 
     lgt.Reset();
     rgt.Reset();
 }
-#endif
