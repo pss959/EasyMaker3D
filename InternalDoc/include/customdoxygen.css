@@ -12,6 +12,11 @@
     font-size: 10pt;
 }
 
+/* Fade color of test-related classes in nav bar. */
+[class*="Test"], [class*="Dummy"] {
+    color: #888888;
+}
+
 .contents .textblock h1,
 .contents .textblock h2,
 .contents .textblock h3,
