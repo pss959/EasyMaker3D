@@ -39,11 +39,15 @@ class ShortcutHandler : public Handler {
     void GetShortcutStrings(Action action, Str &keyboard_string,
                             Str &controller_string) const;
 
-    /// Enables or disables application shortcuts. This has no effect on
-    /// debugging shortcuts so they are always available. (As opposed to
-    /// calling SetEnabled(false), which would disable all shortcuts.)
+    /// Enables or disables application shortcuts.
     void SetAppShortcutsEnabled(bool enabled) {
         are_app_shortcuts_enabled = enabled;
+    }
+
+    /// Enables or disables debugging shortcuts. (Has effect only when
+    /// ENABLE_DEBUG_FEATURES is defined as true.)
+    void SetDebugShortcutsEnabled(bool enabled) {
+        are_debug_shortcuts_enabled = enabled;
     }
 
     // ------------------------------------------------------------------------
@@ -63,6 +67,9 @@ class ShortcutHandler : public Handler {
 
     /// Indicates whether application shortcuts are enabled.
     bool are_app_shortcuts_enabled = true;
+
+    /// Indicates whether debug shortcuts are enabled.
+    bool are_debug_shortcuts_enabled = true;
 
     /// Handles a string representing a potential keyboard key or controller
     /// button shortcut.

@@ -229,11 +229,11 @@ bool ShortcutHandler::HandleShortcutString_(const Str &str) {
         }
     }
 
-#if ENABLE_DEBUG_FEATURES
-    // Special cases for debugging shortcuts, which are always enabled.
-    if (Debug::HandleShortcut(str))
+#if ENABLE_DEBUG_FEATURES  // LCOV_EXCL_START [debug only]
+    // Special cases for debugging shortcuts.
+    if (are_debug_shortcuts_enabled && Debug::HandleShortcut(str))
         return true;
-#endif
+#endif                     // LCOV_EXCL_STOP
 
     return false;
 }
