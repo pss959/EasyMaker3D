@@ -29,8 +29,8 @@ class TouchTrackerTest : public TrackerTestBase {
     GenericWidgetPtr lgw;  ///< Left GenericWidget.
     GenericWidgetPtr rgw;  ///< Right GenericWidget.
 
-    WidgetPtr        lrw;  ///< Returned Widget for left controller.
-    WidgetPtr        rrw;  ///< Returned Widget for left controller.
+    WidgetPtr        ltw;  ///< Widget returned by left tracker.
+    WidgetPtr        rtw;  ///< Widget returned by right tracker.
 
     /// The constructor sets up the left and right TouchTracker instances with
     /// a scene and TestTouchable instances.
@@ -39,8 +39,6 @@ class TouchTrackerTest : public TrackerTestBase {
     /// Returns an Event for a touch for the controller associated with the
     /// TouchTracker at the position (0, 0, \p z).
     static Event GetEvent(const TouchTracker &ttr, float z = 0);
-
-  private:
 };
 
 // ----------------------------------------------------------------------------
@@ -93,7 +91,7 @@ Event TouchTrackerTest::GetEvent(const TouchTracker &ttr, float z) {
 }
 
 // ----------------------------------------------------------------------------
-// TouchTrackerTest Tests. Also tests PointerTracker.
+// TouchTrackerTest Tests.
 // ----------------------------------------------------------------------------
 
 TEST_F(TouchTrackerTest, Defaults) {
@@ -112,115 +110,115 @@ TEST_F(TouchTrackerTest, Defaults) {
 }
 
 TEST_F(TouchTrackerTest, IsActivation) {
-    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), lrw));
-    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rrw));
-    EXPECT_EQ(lgw, lrw);
-    EXPECT_EQ(rgw, rrw);
+    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), ltw));
+    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rtw));
+    EXPECT_EQ(lgw, ltw);
+    EXPECT_EQ(rgw, rtw);
 
     // No touch flag.
     Event levent = GetEvent(lt);
     Event revent = GetEvent(rt);
     levent.flags.Reset(Event::Flag::kTouch);
     revent.flags.Reset(Event::Flag::kTouch);
-    EXPECT_FALSE(lt.IsActivation(levent, lrw));
-    EXPECT_FALSE(rt.IsActivation(revent, rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsActivation(levent, ltw));
+    EXPECT_FALSE(rt.IsActivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong device.
     levent = GetEvent(lt);
     revent = GetEvent(rt);
     levent.device = Event::Device::kHeadset;
     revent.device = Event::Device::kHeadset;
-    EXPECT_FALSE(lt.IsActivation(levent, lrw));
-    EXPECT_FALSE(rt.IsActivation(revent, rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsActivation(levent, ltw));
+    EXPECT_FALSE(rt.IsActivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong hand.
     levent = GetEvent(rt);
     revent = GetEvent(lt);
-    EXPECT_FALSE(lt.IsActivation(levent, lrw));
-    EXPECT_FALSE(rt.IsActivation(revent, rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsActivation(levent, ltw));
+    EXPECT_FALSE(rt.IsActivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 }
 
 TEST_F(TouchTrackerTest, IsDeactivation) {
     // IsDeactivation() requires that the TouchTracker was activated.
-    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), lrw));
-    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rrw));
+    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), ltw));
+    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rtw));
 
     // Deactivation requires changing the Z position enough to simulate a
     // touch AND hitting a different Widget or no Widget.
 
     // Not enough motion.
-    EXPECT_FALSE(lt.IsDeactivation(GetEvent(lt, .01f), lrw));
-    EXPECT_FALSE(rt.IsDeactivation(GetEvent(rt, .01f), rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsDeactivation(GetEvent(lt, .01f), ltw));
+    EXPECT_FALSE(rt.IsDeactivation(GetEvent(rt, .01f), rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Enough motion, but hit same Widget.
-    EXPECT_FALSE(lt.IsDeactivation(GetEvent(lt, 1), lrw));
-    EXPECT_FALSE(rt.IsDeactivation(GetEvent(rt, 1), rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsDeactivation(GetEvent(lt, 1), ltw));
+    EXPECT_FALSE(rt.IsDeactivation(GetEvent(rt, 1), rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Enough motion, hit no widget => deactivate and return touched Widget.
     ltt->widget.reset();
     rtt->widget.reset();
-    EXPECT_TRUE(lt.IsDeactivation(GetEvent(lt, 10), lrw));
-    EXPECT_TRUE(rt.IsDeactivation(GetEvent(rt, 10), rrw));
-    EXPECT_EQ(lgw, lrw);
-    EXPECT_EQ(rgw, rrw);
+    EXPECT_TRUE(lt.IsDeactivation(GetEvent(lt, 10), ltw));
+    EXPECT_TRUE(rt.IsDeactivation(GetEvent(rt, 10), rtw));
+    EXPECT_EQ(lgw, ltw);
+    EXPECT_EQ(rgw, rtw);
 
     // Activate again.
     ltt->widget = lgw;
     rtt->widget = rgw;
-    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), lrw));
-    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rrw));
+    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), ltw));
+    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rtw));
 
     // Enough motion, hit different widget.
     ltt->widget = rgw;
     rtt->widget = lgw;
-    EXPECT_TRUE(lt.IsDeactivation(GetEvent(lt, 10), lrw));
-    EXPECT_TRUE(rt.IsDeactivation(GetEvent(rt, 10), rrw));
-    EXPECT_EQ(rgw, lrw);
-    EXPECT_EQ(lgw, rrw);
+    EXPECT_TRUE(lt.IsDeactivation(GetEvent(lt, 10), ltw));
+    EXPECT_TRUE(rt.IsDeactivation(GetEvent(rt, 10), rtw));
+    EXPECT_EQ(rgw, ltw);
+    EXPECT_EQ(lgw, rtw);
 
     // Activate again.
     ltt->widget = lgw;
     rtt->widget = rgw;
-    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), lrw));
-    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rrw));
+    EXPECT_TRUE(lt.IsActivation(GetEvent(lt), ltw));
+    EXPECT_TRUE(rt.IsActivation(GetEvent(rt), rtw));
 
     // No touch flag.
     Event levent = GetEvent(lt);
     Event revent = GetEvent(rt);
     levent.flags.Reset(Event::Flag::kTouch);
     revent.flags.Reset(Event::Flag::kTouch);
-    EXPECT_FALSE(lt.IsDeactivation(levent, lrw));
-    EXPECT_FALSE(rt.IsDeactivation(revent, rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsDeactivation(levent, ltw));
+    EXPECT_FALSE(rt.IsDeactivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong device.
     levent = GetEvent(lt);
     revent = GetEvent(rt);
     levent.device = Event::Device::kHeadset;
     revent.device = Event::Device::kHeadset;
-    EXPECT_FALSE(lt.IsDeactivation(levent, lrw));
-    EXPECT_FALSE(rt.IsDeactivation(revent, rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsDeactivation(levent, ltw));
+    EXPECT_FALSE(rt.IsDeactivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong hand.
     levent = GetEvent(rt);
     revent = GetEvent(lt);
-    EXPECT_FALSE(lt.IsDeactivation(levent, lrw));
-    EXPECT_FALSE(rt.IsDeactivation(revent, rrw));
-    EXPECT_NULL(lrw);
-    EXPECT_NULL(rrw);
+    EXPECT_FALSE(lt.IsDeactivation(levent, ltw));
+    EXPECT_FALSE(rt.IsDeactivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 }
 
 TEST_F(TouchTrackerTest, Hover) {
@@ -241,8 +239,8 @@ TEST_F(TouchTrackerTest, ClickDrag) {
     // Activate to set the activation info.
     Event levent = GetEvent(lt, 2);
     Event revent = GetEvent(rt, 2);
-    EXPECT_TRUE(lt.IsActivation(levent, lrw));
-    EXPECT_TRUE(rt.IsActivation(revent, rrw));
+    EXPECT_TRUE(lt.IsActivation(levent, ltw));
+    EXPECT_TRUE(rt.IsActivation(revent, rtw));
 
     // Update ClickInfos.
     ClickInfo lcinfo, rcinfo;

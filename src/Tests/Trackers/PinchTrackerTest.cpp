@@ -15,8 +15,18 @@
 /// \ingroup Tests
 class PinchTrackerTest : public TrackerTestBase {
   protected:
-    /// Sets up the scene in a PinchTracker.
-    void InitForActivation(PinchTracker &pt);
+    PinchTracker     lpt;  ///< PinchTracker for left controller.
+    PinchTracker     rpt;  ///< PinchTracker for right controller.
+
+    GenericWidgetPtr lgw;  ///< Left GenericWidget.
+    GenericWidgetPtr rgw;  ///< Right GenericWidget.
+
+    WidgetPtr        ltw;  ///< Widget returned by left tracker.
+    WidgetPtr        rtw;  ///< Widget returned by right tracker.
+
+    /// The constructor sets up the left and right PinchTracker instances with
+    /// a scene.
+    PinchTrackerTest();
 
     /// Returns an Event for a pinch press or release for the controller
     /// associated with the PinchTracker.
@@ -26,9 +36,15 @@ class PinchTrackerTest : public TrackerTestBase {
     static Event GetWidgetEvent(const PinchTracker &pt);
 };
 
-void PinchTrackerTest::InitForActivation(PinchTracker &pt) {
+PinchTrackerTest::PinchTrackerTest() : lpt(Actuator::kLeftPinch),
+                                       rpt(Actuator::kRightPinch) {
     // Set up a scene with GenericWidgets.
-    InitTrackerScene(pt);
+    InitTrackerScene(lpt);
+    InitTrackerScene(rpt);
+
+    // Access the GenericWidget pointers.
+    lgw = GetLeftWidget();
+    rgw = GetRightWidget();
 }
 
 Event PinchTrackerTest::GetEvent(const PinchTracker &pt, bool is_press) {
@@ -74,190 +90,150 @@ TEST_F(PinchTrackerTest, Defaults) {
 }
 
 TEST_F(PinchTrackerTest, IsActivation) {
-    PinchTracker lpt(Actuator::kLeftPinch);
-    PinchTracker rpt(Actuator::kRightPinch);
-    WidgetPtr    lwidget, rwidget;
-
-    InitForActivation(lpt);
-    InitForActivation(rpt);
-
-    EXPECT_TRUE(lpt.IsActivation(GetEvent(lpt, true), lwidget));
-    EXPECT_TRUE(rpt.IsActivation(GetEvent(rpt, true), rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_TRUE(lpt.IsActivation(GetEvent(lpt, true), ltw));
+    EXPECT_TRUE(rpt.IsActivation(GetEvent(rpt, true), rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong device.
     Event levent = GetEvent(lpt, true);
     Event revent = GetEvent(rpt, true);
     levent.device = Event::Device::kHeadset;
     revent.device = Event::Device::kHeadset;
-    EXPECT_FALSE(lpt.IsActivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsActivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsActivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsActivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong button.
     levent = GetEvent(lpt, true);
     revent = GetEvent(rpt, true);
     levent.button = Event::Button::kGrip;
     revent.button = Event::Button::kGrip;
-    EXPECT_FALSE(lpt.IsActivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsActivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsActivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsActivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong hand.
     levent = GetEvent(rpt, true);
     revent = GetEvent(lpt, true);
-    EXPECT_FALSE(lpt.IsActivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsActivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsActivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsActivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Not a press.
     levent = GetEvent(lpt, false);
     revent = GetEvent(rpt, false);
-    EXPECT_FALSE(lpt.IsActivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsActivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsActivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsActivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 }
 
 TEST_F(PinchTrackerTest, IsDeactivation) {
-    PinchTracker lpt(Actuator::kLeftPinch);
-    PinchTracker rpt(Actuator::kRightPinch);
-    WidgetPtr    lwidget, rwidget;
-
-    InitForActivation(lpt);
-    InitForActivation(rpt);
-
-    EXPECT_TRUE(lpt.IsDeactivation(GetEvent(lpt, false), lwidget));
-    EXPECT_TRUE(rpt.IsDeactivation(GetEvent(rpt, false), rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_TRUE(lpt.IsDeactivation(GetEvent(lpt, false), ltw));
+    EXPECT_TRUE(rpt.IsDeactivation(GetEvent(rpt, false), rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong device.
     Event levent = GetEvent(lpt, false);
     Event revent = GetEvent(rpt, false);
     levent.device = Event::Device::kHeadset;
     revent.device = Event::Device::kHeadset;
-    EXPECT_FALSE(lpt.IsDeactivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsDeactivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsDeactivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsDeactivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong button.
     levent = GetEvent(lpt, false);
     revent = GetEvent(rpt, false);
     levent.button = Event::Button::kGrip;
     revent.button = Event::Button::kGrip;
-    EXPECT_FALSE(lpt.IsDeactivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsDeactivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsDeactivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsDeactivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Wrong hand.
     levent = GetEvent(rpt, false);
     revent = GetEvent(lpt, false);
-    EXPECT_FALSE(lpt.IsDeactivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsDeactivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsDeactivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsDeactivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 
     // Not a press.
     levent = GetEvent(lpt, true);
     revent = GetEvent(rpt, true);
-    EXPECT_FALSE(lpt.IsDeactivation(levent, lwidget));
-    EXPECT_FALSE(rpt.IsDeactivation(revent, rwidget));
-    EXPECT_NULL(lwidget);
-    EXPECT_NULL(rwidget);
+    EXPECT_FALSE(lpt.IsDeactivation(levent, ltw));
+    EXPECT_FALSE(rpt.IsDeactivation(revent, rtw));
+    EXPECT_NULL(ltw);
+    EXPECT_NULL(rtw);
 }
 
 TEST_F(PinchTrackerTest, ActivationWidget) {
-    PinchTracker lpt(Actuator::kLeftPinch);
-    PinchTracker rpt(Actuator::kRightPinch);
-    InitForActivation(lpt);
-    InitForActivation(rpt);
-
     // Set up events that will intersect the left and right GenericWidgets.
     Event levent = GetWidgetEvent(lpt);
     Event revent = GetWidgetEvent(rpt);
 
-    auto lw = GetLeftWidget();
-    auto rw = GetRightWidget();
-
-    WidgetPtr lwidget, rwidget;
-    EXPECT_TRUE(lpt.IsActivation(levent, lwidget));
-    EXPECT_TRUE(rpt.IsActivation(revent, rwidget));
-    EXPECT_EQ(lw, lwidget);
-    EXPECT_EQ(rw, rwidget);
+    EXPECT_TRUE(lpt.IsActivation(levent, ltw));
+    EXPECT_TRUE(rpt.IsActivation(revent, rtw));
+    EXPECT_EQ(lgw, ltw);
+    EXPECT_EQ(rgw, rtw);
 }
 
 TEST_F(PinchTrackerTest, Hover) {
-    PinchTracker lpt(Actuator::kLeftPinch);
-    PinchTracker rpt(Actuator::kRightPinch);
-    InitForActivation(lpt);
-    InitForActivation(rpt);
-
     // Set up events that will intersect the left/right GenericWidgets.
     Event levent = GetWidgetEvent(lpt);
     Event revent = GetWidgetEvent(rpt);
 
-    auto lw = GetLeftWidget();
-    auto rw = GetRightWidget();
-
-    EXPECT_FALSE(lw->IsHovering());
-    EXPECT_FALSE(rw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
     lpt.UpdateHovering(levent);
     rpt.UpdateHovering(revent);
-    EXPECT_TRUE(lw->IsHovering());
-    EXPECT_TRUE(rw->IsHovering());
+    EXPECT_TRUE(lgw->IsHovering());
+    EXPECT_TRUE(rgw->IsHovering());
 
     // Move off the GenericWidgets and back.
     levent.orientation = BuildRotation(0, 1, 0,  20);
     revent.orientation = BuildRotation(0, 1, 0, -20);
     lpt.UpdateHovering(levent);
     rpt.UpdateHovering(revent);
-    EXPECT_FALSE(lw->IsHovering());
-    EXPECT_FALSE(rw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
     levent.orientation = BuildRotation(0, 1, 0,  1);
     revent.orientation = BuildRotation(0, 1, 0, -1);
     lpt.UpdateHovering(levent);
     rpt.UpdateHovering(revent);
-    EXPECT_TRUE(lw->IsHovering());
-    EXPECT_TRUE(rw->IsHovering());
+    EXPECT_TRUE(lgw->IsHovering());
+    EXPECT_TRUE(rgw->IsHovering());
 
     lpt.StopHovering();
     rpt.StopHovering();
-    EXPECT_FALSE(lw->IsHovering());
-    EXPECT_FALSE(rw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
 
     // Cannot hover a disabled Widget.
-    lw->SetInteractionEnabled(false);
-    rw->SetInteractionEnabled(false);
+    lgw->SetInteractionEnabled(false);
+    rgw->SetInteractionEnabled(false);
     lpt.UpdateHovering(levent);
     rpt.UpdateHovering(revent);
-    EXPECT_FALSE(lw->IsHovering());
-    EXPECT_FALSE(rw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
 }
 
 TEST_F(PinchTrackerTest, ClickDrag) {
-    PinchTracker lpt(Actuator::kLeftPinch);
-    PinchTracker rpt(Actuator::kRightPinch);
-    InitForActivation(lpt);
-    InitForActivation(rpt);
-
     // Set up events that will intersect the left/right GenericWidgets.
     Event levent = GetWidgetEvent(lpt);
     Event revent = GetWidgetEvent(rpt);
 
-    auto lw = GetLeftWidget();
-    auto rw = GetRightWidget();
-
     // Activate to set the activation info.
-    WidgetPtr lwidget, rwidget;
-    EXPECT_TRUE(lpt.IsActivation(levent, lwidget));
-    EXPECT_TRUE(rpt.IsActivation(revent, rwidget));
+    EXPECT_TRUE(lpt.IsActivation(levent, ltw));
+    EXPECT_TRUE(rpt.IsActivation(revent, rtw));
 
     // Update ClickInfos.
     ClickInfo lcinfo, rcinfo;
@@ -265,8 +241,8 @@ TEST_F(PinchTrackerTest, ClickDrag) {
     rpt.FillClickInfo(rcinfo);
     EXPECT_ENUM_EQ(Event::Device::kLeftController,  lcinfo.device);
     EXPECT_ENUM_EQ(Event::Device::kRightController, rcinfo.device);
-    EXPECT_EQ(lw.get(),                             lcinfo.widget);
-    EXPECT_EQ(rw.get(),                             rcinfo.widget);
+    EXPECT_EQ(lgw.get(),                            lcinfo.widget);
+    EXPECT_EQ(rgw.get(),                            rcinfo.widget);
 
     // Update DragInfos.
     DragInfo ldinfo, rdinfo;
@@ -274,8 +250,8 @@ TEST_F(PinchTrackerTest, ClickDrag) {
     rpt.FillActivationDragInfo(rdinfo);
     EXPECT_ENUM_EQ(Trigger::kPointer, ldinfo.trigger);
     EXPECT_ENUM_EQ(Trigger::kPointer, rdinfo.trigger);
-    EXPECT_EQ(lw,                     ldinfo.hit.path.back());
-    EXPECT_EQ(rw,                     rdinfo.hit.path.back());
+    EXPECT_EQ(lgw,                     ldinfo.hit.path.back());
+    EXPECT_EQ(rgw,                     rdinfo.hit.path.back());
 
     // Not a drag if no position.
     levent.flags.Reset(Event::Flag::kPosition3D);

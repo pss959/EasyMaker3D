@@ -16,14 +16,21 @@
 /// \ingroup Tests
 class MouseTrackerTest : public TrackerTestBase {
   protected:
-    /// Sets up the scene and frustum in a MouseTracker.
-    void InitForActivation(MouseTracker &mt);
+    MouseTracker     mt;   ///< MouseTracker
+
+    GenericWidgetPtr lgw;  ///< Left GenericWidget.
+    GenericWidgetPtr rgw;  ///< Right GenericWidget.
+
+    WidgetPtr        tw;   ///< Widget returned by tracker.
+
+    /// The constructor sets up the MouseTracker with a scene.
+    MouseTrackerTest();
 
     /// Returns an Event for a mouse press or release.
     static Event GetEvent(bool is_press);
 };
 
-void MouseTrackerTest::InitForActivation(MouseTracker &mt) {
+MouseTrackerTest::MouseTrackerTest() : mt(Actuator::kMouse) {
     // Set up a scene with GenericWidgets.
     InitTrackerScene(mt);
 
@@ -31,6 +38,10 @@ void MouseTrackerTest::InitForActivation(MouseTracker &mt) {
     FrustumPtr frustum(new Frustum);
     GetWindowCamera()->BuildFrustum(Vector2i(100, 100), *frustum);
     mt.SetFrustum(frustum);
+
+    // Access the GenericWidget pointers.
+    lgw = GetLeftWidget();
+    rgw = GetRightWidget();
 }
 
 Event MouseTrackerTest::GetEvent(bool is_press) {
@@ -58,127 +69,106 @@ TEST_F(MouseTrackerTest, Defaults) {
 }
 
 TEST_F(MouseTrackerTest, IsActivation) {
-    MouseTracker mt(Actuator::kMouse);
-    WidgetPtr    widget;
-
-    EXPECT_TRUE(mt.IsActivation(GetEvent(true), widget));
-    EXPECT_NULL(widget);
+    EXPECT_TRUE(mt.IsActivation(GetEvent(true), tw));
+    EXPECT_NULL(tw);
 
     // Wrong device.
     Event event = GetEvent(true);
     event.device = Event::Device::kHeadset;
-    EXPECT_FALSE(mt.IsActivation(event, widget));
-    EXPECT_NULL(widget);
+    EXPECT_FALSE(mt.IsActivation(event, tw));
+    EXPECT_NULL(tw);
 
     // Wrong button.
     event = GetEvent(true);
     event.button = Event::Button::kMouse2;
-    EXPECT_FALSE(mt.IsActivation(event, widget));
-    EXPECT_NULL(widget);
+    EXPECT_FALSE(mt.IsActivation(event, tw));
+    EXPECT_NULL(tw);
 
     // Not a press.
     event = GetEvent(false);
-    EXPECT_FALSE(mt.IsActivation(event, widget));
-    EXPECT_NULL(widget);
+    EXPECT_FALSE(mt.IsActivation(event, tw));
+    EXPECT_NULL(tw);
 }
 
 TEST_F(MouseTrackerTest, IsDeactivation) {
-    MouseTracker mt(Actuator::kMouse);
-    WidgetPtr    widget;
-
-    EXPECT_TRUE(mt.IsDeactivation(GetEvent(false), widget));
-    EXPECT_NULL(widget);
+    EXPECT_TRUE(mt.IsDeactivation(GetEvent(false), tw));
+    EXPECT_NULL(tw);
 
     // Wrong device.
     Event event = GetEvent(false);
     event.device = Event::Device::kHeadset;
-    EXPECT_FALSE(mt.IsDeactivation(event, widget));
-    EXPECT_NULL(widget);
+    EXPECT_FALSE(mt.IsDeactivation(event, tw));
+    EXPECT_NULL(tw);
 
     // Wrong button.
     event = GetEvent(false);
     event.button = Event::Button::kMouse2;
-    EXPECT_FALSE(mt.IsDeactivation(event, widget));
-    EXPECT_NULL(widget);
+    EXPECT_FALSE(mt.IsDeactivation(event, tw));
+    EXPECT_NULL(tw);
 
     // Not a press.
     event = GetEvent(true);
-    EXPECT_FALSE(mt.IsDeactivation(event, widget));
-    EXPECT_NULL(widget);
+    EXPECT_FALSE(mt.IsDeactivation(event, tw));
+    EXPECT_NULL(tw);
 }
 
 TEST_F(MouseTrackerTest, ActivationWidget) {
-    MouseTracker mt(Actuator::kMouse);
-    InitForActivation(mt);
-
     // Set up an event that will intersect the left GenericWidget.
     Event event = GetEvent(true);
     event.flags.Set(Event::Flag::kPosition2D);
     event.position2D.Set(.3f, .5f);
 
-    auto lw = GetLeftWidget();
-
     WidgetPtr widget;
-    EXPECT_TRUE(mt.IsActivation(event, widget));
-    EXPECT_EQ(lw, widget);
+    EXPECT_TRUE(mt.IsActivation(event, tw));
+    EXPECT_EQ(lgw, tw);
 }
 
 TEST_F(MouseTrackerTest, Hover) {
-    MouseTracker mt(Actuator::kMouse);
-    InitForActivation(mt);
-
     // Set up an event that will intersect the left GenericWidget.
     Event event = GetEvent(true);
     event.flags.Set(Event::Flag::kPosition2D);
     event.position2D.Set(.5f, .5f);
 
-    auto lw = GetLeftWidget();
-    EXPECT_FALSE(lw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
     mt.UpdateHovering(event);
-    EXPECT_TRUE(lw->IsHovering());
+    EXPECT_TRUE(lgw->IsHovering());
 
     // Install a path filter that ignores the GenericWidgets.
     auto filter = [](const SG::NodePath &){ return false; };
     mt.SetPathFilter(filter);
     mt.UpdateHovering(event);
-    EXPECT_FALSE(lw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
     mt.SetPathFilter(nullptr);
     mt.UpdateHovering(event);
-    EXPECT_TRUE(lw->IsHovering());
+    EXPECT_TRUE(lgw->IsHovering());
 
     mt.StopHovering();
-    EXPECT_FALSE(lw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
 
     // Cannot hover a disabled Widget.
-    lw->SetInteractionEnabled(false);
+    lgw->SetInteractionEnabled(false);
     mt.UpdateHovering(event);
-    EXPECT_FALSE(lw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
 }
 
 TEST_F(MouseTrackerTest, ClickDrag) {
-    MouseTracker mt(Actuator::kMouse);
-    InitForActivation(mt);
-
-    auto rw = GetRightWidget();
-
     // Activate to set the activation info.
     Event event = GetEvent(true);
     event.flags.Set(Event::Flag::kPosition2D);
     event.position2D.Set(.6f, .5f);
-    WidgetPtr widget;
-    EXPECT_TRUE(mt.IsActivation(event, widget));
+    EXPECT_TRUE(mt.IsActivation(event, tw));
 
     // Update a ClickInfo.
     ClickInfo cinfo;
     mt.FillClickInfo(cinfo);
     EXPECT_ENUM_EQ(Event::Device::kMouse, cinfo.device);
-    EXPECT_EQ(rw.get(),                   cinfo.widget);
+    EXPECT_EQ(rgw.get(),                  cinfo.widget);
 
     // Update a DragInfo.
     DragInfo dinfo;
     mt.FillActivationDragInfo(dinfo);
     EXPECT_ENUM_EQ(Trigger::kPointer, dinfo.trigger);
-    EXPECT_EQ(rw,                     dinfo.hit.path.back());
+    EXPECT_EQ(rgw,                    dinfo.hit.path.back());
 
     // Not a drag if no position.
     event.flags.Reset(Event::Flag::kPosition2D);
@@ -196,7 +186,7 @@ TEST_F(MouseTrackerTest, ClickDrag) {
     // Update the DragInfo.
     mt.FillEventDragInfo(event, dinfo);
     EXPECT_ENUM_EQ(Trigger::kPointer, dinfo.trigger);
-    EXPECT_EQ(rw,                     dinfo.hit.path.back());
+    EXPECT_EQ(rgw,                    dinfo.hit.path.back());
 
     mt.Reset();
 }
