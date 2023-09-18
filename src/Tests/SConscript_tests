@@ -263,6 +263,7 @@ test_source_dict = {
         'GripTrackerTest',
         'MouseTrackerTest',
         'PinchTrackerTest',
+        'TouchTrackerTest',
         'TrackerTestBase',
     ],
     'Util' : [

@@ -3,7 +3,6 @@
 #include "Items/Grippable.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
-#include "SG/WindowCamera.h"
 #include "Tests/Testing.h"
 #include "Tests/Trackers/TrackerTestBase.h"
 #include "Trackers/GripTracker.h"

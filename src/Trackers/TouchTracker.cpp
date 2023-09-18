@@ -9,6 +9,7 @@
 #include "Place/DragInfo.h"
 #include "SG/Intersector.h"
 #include "SG/Search.h"
+#include "Util/Assert.h"
 #include "Util/Tuning.h"
 #include "Widgets/ClickableWidget.h"
 #include "Widgets/Touchable.h"
@@ -25,6 +26,8 @@ Event::Device TouchTracker::GetDevice() const {
 
 bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     // A Touchable has to be present for this to activate.
+    auto controller = GetController();
+    ASSERT(controller);
     const float radius = GetController()->GetTouchRadius();
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {
@@ -36,6 +39,7 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
             return true;
         }
     }
+    widget.reset();
     return false;
 }
 
@@ -65,6 +69,7 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
             return true;
         }
     }
+    widget.reset();
     return false;
 }
 
@@ -104,7 +109,8 @@ void TouchTracker::Reset() {
 }
 
 bool TouchTracker::GetTouchPos_(const Event &event, Point3f &pos) const {
-    if (event.flags.Has(Event::Flag::kTouch) && event.device == GetDevice()) {
+    if (event.flags.Has(Event::Flag::kTouch) &&
+        event.device == GetDevice()) {
         pos = event.touch_position3D;
         return true;
     }

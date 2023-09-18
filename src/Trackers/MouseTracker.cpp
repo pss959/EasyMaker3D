@@ -26,6 +26,7 @@ bool MouseTracker::IsActivation(const Event &event, WidgetPtr &widget) {
         widget = GetCurrentWidget(event, true);
         return true;
     }
+    widget.reset();
     return false;
 }
 
@@ -36,6 +37,7 @@ bool MouseTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
         widget = GetCurrentWidget(event, false);
         return true;
     }
+    widget.reset();
     return false;
 }
 

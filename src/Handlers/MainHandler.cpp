@@ -219,9 +219,6 @@ class MainHandler::Impl_ {
     static bool IsDraggableWidget_(const WidgetPtr &widget) {
         return std::dynamic_pointer_cast<DraggableWidget>(widget).get();
     }
-
-    /// Returns the Widget, if any, touched at the given 3D location.
-    WidgetPtr GetTouchedWidget_(const Point3f &pt);
 };
 
 // ----------------------------------------------------------------------------

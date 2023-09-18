@@ -55,6 +55,7 @@ bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
         widget = current_widget_;
         return true;
     }
+    widget.reset();
     return false;
 }
 
@@ -65,6 +66,7 @@ bool GripTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
         UpdateCurrentData_(event, widget);
         return true;
     }
+    widget.reset();
     return false;
 }
 

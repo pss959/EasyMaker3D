@@ -22,6 +22,7 @@ bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
         UpdateControllers_(true);
         return true;
     }
+    widget.reset();
     return false;
 }
 
@@ -32,6 +33,7 @@ bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
         UpdateControllers_(false);
         return true;
     }
+    widget.reset();
     return false;
 }
 

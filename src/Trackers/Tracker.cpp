@@ -26,10 +26,10 @@ void Tracker::Init(const SG::ScenePtr &scene,
     }
 }
 
-bool Tracker::IsLeft() const {
+bool Tracker::IsLeft() const {  // LCOV_EXCL_START [cannot happen]
     ASSERTM(false, "Base Tracker::IsLeft() should not be called");
     return false;
-}
+}                               // LCOV_EXCL_STOP
 
 Point3f Tracker::ToControllerCoords(const Point3f &p) const {
     const SG::NodePath &path = IsLeft() ?
