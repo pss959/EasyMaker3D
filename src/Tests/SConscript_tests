@@ -80,7 +80,9 @@ test_source_dict = {
         'FeedbackTest',
     ],
     'Handlers' : [
+        'BoardHandlerTest',
         'ShortcutHandlerTest',
+        'ViewHandlerTest',
     ],
     'IO' : [
         'ReadSTLTest',

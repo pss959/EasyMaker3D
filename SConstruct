@@ -141,3 +141,4 @@ if mode == 'rel':
 
 tags = base_env.Command('TAGS', [], 'etags -R ionsrc/ion/ src/')
 base_env.AlwaysBuild(tags)
+base_env.Alias("Tags", tags)

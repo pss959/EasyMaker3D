@@ -61,6 +61,7 @@ class ShortcutHandlerTest : public TestBase {
 };
 
 TEST_F(ShortcutHandlerTest, HandleEvent) {
+    sh.SetAppShortcutsEnabled(true);
     // Don't let Debug shortcuts interfere with testing; they require much more
     // setup to actually do anything.
     sh.SetDebugShortcutsEnabled(false);
