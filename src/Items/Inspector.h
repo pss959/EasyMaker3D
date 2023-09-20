@@ -44,6 +44,12 @@ class Inspector : public SG::Node {
     /// Controller.
     void ApplyRotation(const Rotationf &rot);
 
+    /// Returns the current scale applied to the inspected object.
+    float GetCurrentScale() const;
+
+    /// Returns the current rotation applied to the inspected object.
+    Rotationf GetCurrentRotation() const;
+
     /// Sets whether edges are shown for inspected objects.
     void ShowEdges(bool show);
 

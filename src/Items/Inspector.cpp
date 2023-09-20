@@ -78,6 +78,14 @@ void Inspector::ApplyRotation(const Rotationf &rot) {
         transformer_->SetRotation(rot);
 }
 
+float Inspector::GetCurrentScale() const {
+    return transformer_->GetScale()[0];
+}
+
+Rotationf Inspector::GetCurrentRotation() const {
+    return transformer_->GetRotation();
+}
+
 void Inspector::ShowEdges(bool show) {
     auto &block = transformer_->GetUniformBlockForPass("Lighting");
     block.SetFloatUniformValue("uEdgeWidth", show ? 1 : 0);

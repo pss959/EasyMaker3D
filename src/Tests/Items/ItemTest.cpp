@@ -174,16 +174,25 @@ TEST_F(ItemTest, Inspector) {
         ion::math::Normalized(Point3f(inspector->GetTranslation()) -
                               frust.position));
 
+    EXPECT_EQ(1,                     inspector->GetCurrentScale());
+    EXPECT_EQ(Rotationf::Identity(), inspector->GetCurrentRotation());
+
     // Inspector has to be activated for ApplyScaleChange().
     inspector->Activate(node, ControllerPtr());
     const auto size = inspector->GetScaledBounds().GetSize();
     inspector->ApplyScaleChange(1);
+    EXPECT_CLOSE(1.06f,              inspector->GetCurrentScale());
+    EXPECT_EQ(Rotationf::Identity(), inspector->GetCurrentRotation());
     EXPECT_LT(size[0], inspector->GetScaledBounds().GetSize()[0]);
     EXPECT_LT(size[1], inspector->GetScaledBounds().GetSize()[1]);
     EXPECT_LT(size[2], inspector->GetScaledBounds().GetSize()[2]);
 
-    // These have no testable affect.
-    inspector->ApplyRotation(BuildRotation(0, 1, 0, 40));
+    const auto rot = BuildRotation(0, 1, 0, 40);
+    inspector->ApplyRotation(rot);
+    EXPECT_CLOSE(1.06f, inspector->GetCurrentScale());
+    EXPECT_EQ(rot,      inspector->GetCurrentRotation());
+
+    // This has no testable effect.
     inspector->ShowEdges(true);
 
     inspector->Deactivate();

@@ -82,6 +82,7 @@ test_source_dict = {
     'Handlers' : [
         'BoardHandlerTest',
         'ControllerHandlerTest',
+        'InspectorHandlerTest',
         'ShortcutHandlerTest',
         'ViewHandlerTest',
     ],

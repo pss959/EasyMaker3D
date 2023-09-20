@@ -39,6 +39,9 @@ TEST_F(ControllerHandlerTest, Events) {
     ch.SetControllers(lc, rc);
     ch.SetRadialMenus(lm, rm);
 
+    // Use offsets to test the offset accumulation.
+    ch.SetRenderOffsets(Vector3f(0, 2, 0), Vector3f(0, 3, 0));
+
     Event levent, revent;
     EXPECT_FALSE(ch.HandleEvent(levent));
     EXPECT_EQ(Vector3f(0, 0, 0),     lc->GetTranslation());
@@ -60,13 +63,13 @@ TEST_F(ControllerHandlerTest, Events) {
     levent.orientation = BuildRotation(0, 0, 0, -10);
     revent.orientation = BuildRotation(0, 0, 0,  10);
     EXPECT_FALSE(ch.HandleEvent(levent));
-    EXPECT_EQ(Vector3f(-1, 0, 0),          lc->GetTranslation());
+    EXPECT_EQ(Vector3f(-1, 2, 0),          lc->GetTranslation());
     EXPECT_EQ(Vector3f( 0, 0, 0),          rc->GetTranslation());
     EXPECT_EQ(BuildRotation(0, 0, 0, -10), lc->GetRotation());
     EXPECT_EQ(Rotationf::Identity(),       rc->GetRotation());
     EXPECT_FALSE(ch.HandleEvent(revent));
-    EXPECT_EQ(Vector3f(-1, 0, 0),          lc->GetTranslation());
-    EXPECT_EQ(Vector3f( 1, 0, 0),          rc->GetTranslation());
+    EXPECT_EQ(Vector3f(-1, 2, 0),          lc->GetTranslation());
+    EXPECT_EQ(Vector3f( 1, 3, 0),          rc->GetTranslation());
     EXPECT_EQ(BuildRotation(0, 0, 0, -10), lc->GetRotation());
     EXPECT_EQ(BuildRotation(0, 0, 0,  10), rc->GetRotation());
 
