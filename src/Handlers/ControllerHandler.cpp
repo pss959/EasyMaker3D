@@ -26,6 +26,7 @@ bool ControllerHandler::HandleEvent(const Event &event) {
 }
 
 void ControllerHandler::UpdateController_(const Event &event) {
+    ASSERT(l_controller_ && r_controller_);
     const bool is_left = event.device == Event::Device::kLeftController;
     Controller &controller = is_left ? *l_controller_   : *r_controller_;
     const Vector3f &offset = is_left ? l_render_offset_ : r_render_offset_;
@@ -41,6 +42,7 @@ void ControllerHandler::UpdateController_(const Event &event) {
 }
 
 bool ControllerHandler::UpdateRadialMenu_(const Event &event) {
+    ASSERT(l_radial_menu_ && r_radial_menu_);
     RadialMenu &menu = event.device == Event::Device::kLeftController ?
         *l_radial_menu_ : *r_radial_menu_;
 
