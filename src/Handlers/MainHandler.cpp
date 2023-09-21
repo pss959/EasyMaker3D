@@ -266,7 +266,7 @@ void MainHandler::Impl_::ProcessUpdate(bool is_modified_mode) {
     UpdateGrippable_();
 
     // If the click alarm finishes and not in the middle of another click or
-    // drag, process the click. If not, then clear _activeData.
+    // drag, process the click. If not, then reset the click.
     if (click_state_.alarm.IsFinished()) {
         if (IsWaiting()) {
             if (click_state_.count > 0)
@@ -550,6 +550,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
     ASSERT(state_ == State_::kDragging);
     ASSERT(moved_enough_for_drag_);
     ASSERT(cur_tracker_);
+    ASSERT(precision_store_);
 
     // Set common items in DragInfo.
     drag_info_.is_modified_mode = is_modified_mode || click_state_.count > 1;

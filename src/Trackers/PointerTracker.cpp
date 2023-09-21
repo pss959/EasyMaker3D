@@ -72,6 +72,8 @@ WidgetPtr PointerTracker::GetCurrentWidget(const Event &event,
 }
 
 bool PointerTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
+    widget.reset();
+
     Ray ray;
     if (! GetRay(event, ray))
         return false;
