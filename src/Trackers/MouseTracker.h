@@ -20,6 +20,7 @@ class MouseTracker : public PointerTracker {
     void SetDebugSphere(const SG::NodePtr &ds);
 
     /// Allows the click timeout to be set (mostly to speed up testing).
+    /// Setting this to 0 restores the usual value.
     static void SetClickTimeout(float seconds);
 
     virtual Event::Device GetDevice() const override;

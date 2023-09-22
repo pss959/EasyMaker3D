@@ -15,6 +15,17 @@
 /// \ingroup Tests
 class MainHandlerTest : public SceneTestBase {
   protected:
+    /// Shorter MouseTracker click timeout to speed up tests.
+    static constexpr float kTimeout = .001f;
+
+    /// Sets the MouseTracker click timeout to #kTimeout while an instance of
+    /// this is in scope and restores it to its usual value afterwards.
+    class TimeoutShortener {
+      public:
+        TimeoutShortener()  { MouseTracker::SetClickTimeout(kTimeout); }
+        ~TimeoutShortener() { MouseTracker::SetClickTimeout(0); }
+    };
+
     PrecisionStorePtr prec;
     GenericWidgetPtr  widget;
 
@@ -156,9 +167,8 @@ TEST_F(MainHandlerTest, Click) {
     MainHandler mh(false);  // No VR.
     InitHandler(mh);
 
-    // Set a shorter timeout for the MouseTracker to speed up the test.
-    const float kTimeout = .001f;
-    MouseTracker::SetClickTimeout(kTimeout);
+    // Set a shorter timeout for the MouseTracker while this is in scope.
+    TimeoutShortener ts;
 
     size_t  click_count = 0;
     Widget *click_widget = nullptr;
@@ -217,9 +227,8 @@ TEST_F(MainHandlerTest, DoubleClick) {
     MainHandler mh(false);  // No VR.
     InitHandler(mh);
 
-    // Set a shorter timeout for the MouseTracker to speed up the test.
-    const float kTimeout = .001f;
-    MouseTracker::SetClickTimeout(kTimeout);
+    // Set a shorter timeout for the MouseTracker while this is in scope.
+    TimeoutShortener ts;
 
     size_t  click_count  = 0;
     Widget *click_widget = nullptr;

@@ -17,7 +17,7 @@ void MouseTracker::SetDebugSphere(const SG::NodePtr &ds) {
 }
 
 void MouseTracker::SetClickTimeout(float seconds) {
-    s_click_timeout_ = seconds;
+    s_click_timeout_ = seconds ? seconds : TK::kMouseClickTimeout;
 }
 // LCOV_EXCL_STOP
 
