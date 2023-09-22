@@ -4,6 +4,7 @@
 #include "Place/DragInfo.h"
 #include "Tests/Testing.h"
 #include "Tests/Trackers/TrackerTestBase.h"
+#include "Tests/Trackers/TestTouchable.h"
 #include "Trackers/TouchTracker.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -17,9 +18,6 @@
 /// \ingroup Tests
 class TouchTrackerTest : public TrackerTestBase {
   protected:
-    class TestTouchable;
-    DECL_SHARED_PTR(TestTouchable);
-
     TouchTracker     lt;   ///< TouchTracker for left controller.
     TouchTracker     rt;   ///< TouchTracker for right controller.
 
@@ -40,24 +38,6 @@ class TouchTrackerTest : public TrackerTestBase {
     /// TouchTracker at the position (0, 0, \p z).
     static Event GetEvent(const TouchTracker &ttr, float z = 0);
 };
-
-// ----------------------------------------------------------------------------
-// TouchTrackerTest::TestTouchable class.
-// ----------------------------------------------------------------------------
-
-/// Derived Touchable class used for testing the TouchTracker.
-class TouchTrackerTest::TestTouchable : public Touchable {
-  public:
-    GenericWidgetPtr widget;  ///< Widget returned by GetTouchedWidget().
-
-    virtual WidgetPtr GetTouchedWidget(const Point3f &, float) const override {
-        return widget;
-    }
-};
-
-// ----------------------------------------------------------------------------
-// TouchTrackerTest functions.
-// ----------------------------------------------------------------------------
 
 TouchTrackerTest::TouchTrackerTest() : lt(Actuator::kLeftTouch),
                                        rt(Actuator::kRightTouch) {

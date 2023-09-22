@@ -5,21 +5,15 @@
 #include "Place/DragInfo.h"
 #include "Tests/Testing.h"
 #include "Tests/Trackers/TrackerTestBase.h"
+#include "Tests/Trackers/TestGrippable.h"
 #include "Trackers/GripTracker.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 #include "Widgets/GenericWidget.h"
 
-// ----------------------------------------------------------------------------
-// GripTrackerTest class.
-// ----------------------------------------------------------------------------
-
 /// \ingroup Tests
 class GripTrackerTest : public TrackerTestBase {
   protected:
-    class TestGrippable;
-    DECL_SHARED_PTR(TestGrippable);
-
     GripTracker      lgt;  ///< GripTracker for left controller.
     GripTracker      rgt;  ///< GripTracker for right controller.
 
@@ -43,36 +37,6 @@ class GripTrackerTest : public TrackerTestBase {
     /// Returns an Event that will intersect the left or right GenericWidget.
     static Event GetWidgetEvent(const GripTracker &gt);
 };
-
-// ----------------------------------------------------------------------------
-// GripTrackerTest::TestGrippable class.
-// ----------------------------------------------------------------------------
-
-/// Derived Grippable class used for testing the GripTracker.
-class GripTrackerTest::TestGrippable : public Grippable {
-  public:
-    GenericWidgetPtr widget;  ///< Widget to set in GripInfo.
-    Point3f          target;  ///< Target point to set in GripInfo.
-    Color            color;   ///< Color to set in GripInfo.
-
-    virtual const SG::Node * GetGrippableNode() const override { return this; }
-
-    virtual void UpdateGripInfo(GripInfo &info) override {
-        info.widget       = widget;
-        info.target_point = target;
-        info.color        = color;
-    }
-
-  protected:
-    TestGrippable() {}
-
-  private:
-    friend class Parser::Registry;
-};
-
-// ----------------------------------------------------------------------------
-// GripTrackerTest functions.
-// ----------------------------------------------------------------------------
 
 GripTrackerTest::GripTrackerTest() : lgt(Actuator::kLeftGrip),
                                      rgt(Actuator::kRightGrip) {

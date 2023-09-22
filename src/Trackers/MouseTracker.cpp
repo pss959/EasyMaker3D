@@ -5,6 +5,8 @@
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
+static float s_click_timeout_ = TK::kMouseClickTimeout;
+
 MouseTracker::MouseTracker(Actuator actuator) : PointerTracker(actuator) {
     ASSERT(actuator == Actuator::kMouse);
 }
@@ -12,6 +14,10 @@ MouseTracker::MouseTracker(Actuator actuator) : PointerTracker(actuator) {
 // LCOV_EXCL_START [debug only]
 void MouseTracker::SetDebugSphere(const SG::NodePtr &ds) {
     debug_sphere_ = ds;
+}
+
+void MouseTracker::SetClickTimeout(float seconds) {
+    s_click_timeout_ = seconds;
 }
 // LCOV_EXCL_STOP
 
@@ -42,7 +48,7 @@ bool MouseTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
 }
 
 float MouseTracker::GetClickTimeout() const {
-    return TK::kMouseClickTimeout;
+    return s_click_timeout_;
 }
 
 bool MouseTracker::GetRay(const Event &event, Ray &ray) {

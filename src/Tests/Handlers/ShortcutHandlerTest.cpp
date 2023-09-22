@@ -107,6 +107,9 @@ TEST_F(ShortcutHandlerTest, HandleEvent) {
     event.button = Event::Button::kUp;
     EXPECT_TRUE(sh.HandleEvent(event));
     EXPECT_ENUM_EQ(Action::kIncreasePrecision, taa->last_action);
+
+    // Has no effect.
+    sh.Reset();
 }
 
 TEST_F(ShortcutHandlerTest, CustomEmpty) {

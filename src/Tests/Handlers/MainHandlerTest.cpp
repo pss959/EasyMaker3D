@@ -6,8 +6,10 @@
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
+#include "Tests/Trackers/TestGrippable.h"
+#include "Tests/Trackers/TestTouchable.h"
+#include "Trackers/MouseTracker.h"
 #include "Util/Delay.h"
-#include "Util/Tuning.h"
 #include "Widgets/GenericWidget.h"
 
 /// \ingroup Tests
@@ -20,8 +22,9 @@ class MainHandlerTest : public SceneTestBase {
     /// the GenericWidget.
     void InitHandler(MainHandler &mh);
 
-    /// Returns a mouse press or release event that will hit the GenericWidget.
-    Event GetWidgetEvent(bool is_press);
+    /// Returns a mouse press or release event. The default \p x and \p y will
+    /// hit the GenericWidget.
+    Event GetWidgetEvent(bool is_press, float x = .5f, float y = .5f);
 
     /// Returns a mouse drag event to the given point.
     Event GetDragEvent(float x, float y);
@@ -40,8 +43,14 @@ void MainHandlerTest::InitHandler(MainHandler &mh) {
         CLONE "T_RadialMenu" "LeftMenu"  {},
         CLONE "T_RadialMenu" "RightMenu" {},
 
-        # Button to test clicking.
+        # GenericWidget to test clicking/dragging.
         GenericWidget "TestWidget" { shapes: [ Box {} ] },
+
+        # Button to test non-draggable widget.
+        PushButtonWidget "TestButton" {
+          translation: 0 4 0,
+          shapes: [ Box {} ]
+        },
       ],
     }
   ]
@@ -66,14 +75,14 @@ void MainHandlerTest::InitHandler(MainHandler &mh) {
     mh.SetPrecisionStore(prec);
 }
 
-Event MainHandlerTest::GetWidgetEvent(bool is_press) {
+Event MainHandlerTest::GetWidgetEvent(bool is_press, float x, float y) {
     Event event;
     event.device = Event::Device::kMouse;
     event.flags.Set(is_press ? Event::Flag::kButtonPress :
                     Event::Flag::kButtonRelease);
     event.flags.Set(Event::Flag::kPosition2D);
     event.button = Event::Button::kMouse1;
-    event.position2D.Set(.5f, .5f);
+    event.position2D.Set(x, y);
     return event;
 }
 
@@ -127,9 +136,29 @@ TEST_F(MainHandlerTest, Valuator) {
     EXPECT_EQ(-.1f,                                last_val);
 }
 
+TEST_F(MainHandlerTest, Hover) {
+    MainHandler mh(false);  // No VR.
+    InitHandler(mh);
+
+    // Move over the Widget to hover it. MainHandler should not mark this event
+    // as handled.
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.5f, .5f)));
+    EXPECT_TRUE(mh.IsWaiting());
+    EXPECT_TRUE(widget->IsHovering());
+
+    // Move off of the Widget.
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(0, 0)));
+    EXPECT_TRUE(mh.IsWaiting());
+    EXPECT_FALSE(widget->IsHovering());
+}
+
 TEST_F(MainHandlerTest, Click) {
     MainHandler mh(false);  // No VR.
     InitHandler(mh);
+
+    // Set a shorter timeout for the MouseTracker to speed up the test.
+    const float kTimeout = .001f;
+    MouseTracker::SetClickTimeout(kTimeout);
 
     size_t  click_count = 0;
     Widget *click_widget = nullptr;
@@ -148,7 +177,7 @@ TEST_F(MainHandlerTest, Click) {
 
     // Wait long enough for this to be processed as a click and update the
     // MainHandler so it times out.
-    Util::DelayThread(TK::kMouseClickTimeout + .0001f);
+    Util::DelayThread(kTimeout + .0001f);
     mh.ProcessUpdate(false);
 
     EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
@@ -156,14 +185,80 @@ TEST_F(MainHandlerTest, Click) {
     EXPECT_EQ(widget.get(), click_widget);
     EXPECT_TRUE(mh.IsWaiting());
 
+    // Wait after the click deactivation this time and make sure the click is
+    // still processed.
+    click_count  = 0;
+    click_widget = nullptr;
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_EQ(0U, click_count);
+    EXPECT_FALSE(mh.IsWaiting());
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_EQ(0U, click_count);  // Not counted until timeout.
+    EXPECT_NULL(click_widget);
+    EXPECT_FALSE(mh.IsWaiting());
+    Util::DelayThread(kTimeout + .0001f);
+    mh.ProcessUpdate(false);
+    EXPECT_EQ(1U, click_count);
+    EXPECT_EQ(widget.get(), click_widget);
+    EXPECT_TRUE(mh.IsWaiting());
+
     // Test using a PathFilter to not hit the Widget so there is no click.
     mh.SetPathFilter([](const SG::NodePath &){ return false; });
     EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
-    Util::DelayThread(TK::kMouseClickTimeout + .0001f);
+    Util::DelayThread(kTimeout + .0001f);
     mh.ProcessUpdate(false);
     EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
     EXPECT_EQ(2U, click_count);
     EXPECT_NULL(click_widget);
+    EXPECT_TRUE(mh.IsWaiting());
+}
+
+TEST_F(MainHandlerTest, DoubleClick) {
+    MainHandler mh(false);  // No VR.
+    InitHandler(mh);
+
+    // Set a shorter timeout for the MouseTracker to speed up the test.
+    const float kTimeout = .001f;
+    MouseTracker::SetClickTimeout(kTimeout);
+
+    size_t  click_count  = 0;
+    Widget *click_widget = nullptr;
+    bool    is_mod_click = false;
+    auto click_func = [&](const ClickInfo &info){
+        ++click_count;
+        click_widget = info.widget;
+        is_mod_click = info.is_modified_mode;
+    };
+    mh.GetClicked().AddObserver("key", click_func);
+
+    EXPECT_EQ(0U, click_count);
+    EXPECT_NULL(click_widget);
+    EXPECT_FALSE(is_mod_click);
+
+    // First click.
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_EQ(0U, click_count);  // Not a click until release.
+    EXPECT_NULL(click_widget);
+    EXPECT_FALSE(is_mod_click);
+    EXPECT_FALSE(mh.IsWaiting());
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+
+    // Second click.
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_EQ(0U, click_count);  // Not a click until release.
+    EXPECT_NULL(click_widget);
+    EXPECT_FALSE(is_mod_click);
+    EXPECT_FALSE(mh.IsWaiting());
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+
+    // Wait so the click finishes.
+    Util::DelayThread(kTimeout + .0001f);
+    mh.ProcessUpdate(false);
+
+    // Double-click should turn on modified-click mode.
+    EXPECT_EQ(1U, click_count);
+    EXPECT_EQ(widget.get(), click_widget);
+    EXPECT_TRUE(is_mod_click);
     EXPECT_TRUE(mh.IsWaiting());
 }
 
@@ -195,15 +290,22 @@ TEST_F(MainHandlerTest, Drag) {
     EXPECT_EQ(0U, drag_count);
     EXPECT_EQ(0U, drag_end_count);
 
+    // Not enough motion to cause a drag.
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.501f, .5f)));
+    EXPECT_FALSE(mh.IsWaiting());
+    EXPECT_EQ(0U, drag_start_count);
+    EXPECT_EQ(0U, drag_count);
+    EXPECT_EQ(0U, drag_end_count);
+
     // Enough motion to cause a drag.
-    EXPECT_TRUE(mh.HandleEvent(GetDragEvent(.6f, 0)));
+    EXPECT_TRUE(mh.HandleEvent(GetDragEvent(.6f, .5f)));
     EXPECT_FALSE(mh.IsWaiting());
     EXPECT_EQ(1U, drag_start_count);
     EXPECT_EQ(1U, drag_count);
     EXPECT_EQ(0U, drag_end_count);
 
     // More motion.
-    EXPECT_TRUE(mh.HandleEvent(GetDragEvent(.8f, 0)));
+    EXPECT_TRUE(mh.HandleEvent(GetDragEvent(.8f, .5f)));
     EXPECT_FALSE(mh.IsWaiting());
     EXPECT_EQ(1U, drag_start_count);
     EXPECT_EQ(2U, drag_count);
@@ -214,6 +316,14 @@ TEST_F(MainHandlerTest, Drag) {
     EXPECT_EQ(1U, drag_start_count);
     EXPECT_EQ(2U, drag_count);
     EXPECT_EQ(1U, drag_end_count);
+
+    // No drag can happen on a non-DraggableWidget (PushButtonWidget).
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true, .5f, .8f)));
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.6f, .8f)));
+    EXPECT_EQ(1U, drag_start_count);
+    EXPECT_EQ(2U, drag_count);
+    EXPECT_EQ(1U, drag_end_count);
+    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false, .6f, .8f)));
 }
 
 TEST_F(MainHandlerTest, Reset) {
@@ -223,4 +333,35 @@ TEST_F(MainHandlerTest, Reset) {
     EXPECT_FALSE(mh.IsWaiting());
     mh.Reset();
     EXPECT_TRUE(mh.IsWaiting());
+}
+
+TEST_F(MainHandlerTest, VR) {
+    MainHandler mh(true);  // Enable VR.
+    InitHandler(mh);
+
+    Parser::Registry::AddType<TestGrippable>("TestGrippable");
+    auto tg = CreateObject<TestGrippable>();
+    TestTouchablePtr tt(new TestTouchable);
+    mh.AddGrippable(tg);
+    mh.SetTouchable(tt);
+
+    // Repeat the hover test.
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.5f, .5f)));
+    EXPECT_TRUE(mh.IsWaiting());
+    EXPECT_TRUE(widget->IsHovering());
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(0, 0)));
+    EXPECT_TRUE(mh.IsWaiting());
+    EXPECT_FALSE(widget->IsHovering());
+
+    // Repeat with a path filter.
+    mh.SetPathFilter([](const SG::NodePath &){ return false; });
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.5f, .5f)));
+    EXPECT_TRUE(mh.IsWaiting());
+    EXPECT_FALSE(widget->IsHovering());
+    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(0, 0)));
+    EXPECT_TRUE(mh.IsWaiting());
+    EXPECT_FALSE(widget->IsHovering());
+
+    // Update to make sure the Grippable is processed.
+    mh.ProcessUpdate(false);
 }
