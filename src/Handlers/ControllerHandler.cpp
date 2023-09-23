@@ -36,7 +36,7 @@ void ControllerHandler::UpdateController_(const Event &event) {
     const bool is_active = event.position3D != Point3f::Zero();
     controller.SetEnabled(is_active);
     if (is_active) {
-        controller.SetTranslation(event.position3D + offset);
+        controller.TranslateTo(event.position3D + offset);
         controller.SetRotation(event.orientation);
     }
 }

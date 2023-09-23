@@ -44,7 +44,7 @@ TEST_F(NodeTest, Transform) {
     // Other ways to set values.
     node->SetUniformScale(12);
     EXPECT_EQ(Vector3f(12, 12, 12), node->GetScale());
-    node->SetTranslation(Point3f(4, -2, 1));
+    node->TranslateTo(Point3f(4, -2, 1));
     EXPECT_EQ(Vector3f(4, -2, 1), node->GetTranslation());
 
     // Copy.

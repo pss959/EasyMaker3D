@@ -45,7 +45,7 @@ void SpinWidget::SetSpin(const Spin &spin) {
 
     ring_transform_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
                                                        spin.axis));
-    ring_transform_->SetTranslation(spin.center);
+    ring_transform_->TranslateTo(spin.center);
 }
 
 void SpinWidget::SetSize(float radius) {
@@ -81,7 +81,7 @@ void SpinWidget::UpdateSpin_(ChangeType type) {
 
     ring_transform_->SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
                                                        spin_.axis));
-    ring_transform_->SetTranslation(spin_.center);
+    ring_transform_->TranslateTo(spin_.center);
 
     spin_changed_.Notify(type);
 }

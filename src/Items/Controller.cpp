@@ -66,8 +66,8 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     ASSERT(guide_parent_);
     ASSERT(touch_node_);
     pointer_start_point_ = custom_model.pointer_pos;
-    guide_parent_->SetTranslation(custom_model.grip_pos);
-    touch_node_->SetTranslation(custom_model.touch_pos);
+    guide_parent_->TranslateTo(custom_model.grip_pos);
+    touch_node_->TranslateTo(custom_model.touch_pos);
 
     // Recompute values that depend on the geometry.
     UpdateForGeometry_();
@@ -149,7 +149,7 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
             const float distance = ion::math::Distance(pointer_start_point_, pt);
             const float scale = 1 + (distance - 1) * TK::kPinchHoverScale;
             pointer_hover_node_->SetUniformScale(scale);
-            pointer_hover_node_->SetTranslation(pt);
+            pointer_hover_node_->TranslateTo(pt);
 
             // Make the pointer end at the sphere.
             end_pt = pt;
@@ -206,7 +206,7 @@ void Controller::AttachObject(const SG::NodePtr &object,
                                                     Anglef::FromDegrees(-90)));
 
     // Offset from the center of the controller.
-    object->SetTranslation(model_node_->GetScaledBounds().GetCenter() + trans);
+    object->TranslateTo(model_node_->GetScaledBounds().GetCenter() + trans);
 
     AddChild(object);
 }

@@ -264,7 +264,7 @@ void RadialLayoutWidget::UpdateArc_() {
                             const Point3f &pos) {
         text_node.SetWorldScaleAndRotation(text_matrix_, TK::kRLWTextScale,
                                            text_rotation_);
-        text_node.SetTranslation(pos);
+        text_node.TranslateTo(pos);
         text_node.SetText(GetAngleText_(angle));
     };
 

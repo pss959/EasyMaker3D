@@ -41,6 +41,6 @@ void ConvertMirrorExecutor::InitConvertedModel(ConvertedModel &model,
             TransformPlane(object_plane, cc.GetObjectToRootMatrix());
         const Point3f center =
             cc.LocalToRoot(Point3f(mm.GetOperandModel()->GetTranslation()));
-        mm.SetTranslation(cc.RootToLocal(stage_plane.MirrorPoint(center)));
+        mm.TranslateTo(cc.RootToLocal(stage_plane.MirrorPoint(center)));
     }
 }

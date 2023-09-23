@@ -280,7 +280,7 @@ void Board::Impl_::SetOrientation(const Vector3f &view_dir) {
 void Board::Impl_::SetPosition(const Point3f &pos) {
     // Do nothing if set up for touch interaction.
     if (! IsSetUpForTouch_())
-        root_node_.SetTranslation(pos);
+        root_node_.TranslateTo(pos);
 }
 
 void Board::Impl_::UpdateGripInfo(GripInfo &info) {

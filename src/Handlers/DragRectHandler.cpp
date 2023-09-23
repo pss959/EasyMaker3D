@@ -24,10 +24,8 @@ bool DragRectHandler::HandleEvent(const Event &event) {
         else if (event.flags.Has(Event::Flag::kPosition2D)) {
             const Point3f cur_point3 = GetPoint3_(event);
             const Vector3f size = cur_point3 - start_point3_;
-            rect_->SetScale(
-                Vector3f(std::abs(size[0]), std::abs(size[1]), 1));
-            rect_->SetTranslation(
-                .5f * (start_point3_ + cur_point3));
+            rect_->SetScale(Vector3f(std::abs(size[0]), std::abs(size[1]), 1));
+            rect_->TranslateTo(.5f * (start_point3_ + cur_point3));
             handled = true;
         }
     }

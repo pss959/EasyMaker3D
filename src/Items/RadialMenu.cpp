@@ -140,7 +140,7 @@ void RadialMenu::InitButton_(size_t count, size_t index, Button_ &button) {
     auto icon    = SG::FindNodeUnderNode(*but, "Icon");
     auto line    = SG::FindTypedShapeInNode<SG::PolyLine>(*border, "Line");
     auto polygon = SG::FindTypedShapeInNode<SG::Polygon>(*area,    "Polygon");
-    icon->SetTranslation(Point3f(center, .1f));
+    icon->TranslateTo(Point3f(center, .1f));
     polygon->SetPolygon(Polygon(points));
 
     // Close the loop, move the points slightly outward, and convert to 3D for

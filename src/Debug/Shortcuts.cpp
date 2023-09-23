@@ -472,7 +472,7 @@ void DisplayDebugSphereWorld(const Point3f &pos, float diameter) {
     ds.SetEnabled(true);
     ds.SetFlagEnabled(SG::Node::Flag::kRender, true);
     ds.SetUniformScale(diameter);
-    ds.SetTranslation(pos);
+    ds.TranslateTo(pos);
 }
 
 }  // namespace Debug

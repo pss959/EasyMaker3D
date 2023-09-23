@@ -70,7 +70,7 @@ void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
     if (debug_sphere_) {
         auto &ds = *debug_sphere_;
         if (hit.IsValid()) {
-            ds.SetTranslation(hit.GetWorldPoint());
+            ds.TranslateTo(hit.GetWorldPoint());
             ds.SetEnabled(true);
             Debug::DisplayDebugText(hit.path.ToString());
         }

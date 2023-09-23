@@ -277,7 +277,7 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     GetClosestMidPoint_(p, mid_pt, closest_mid_dist);
 
     if (closest_pt < 0 || closest_mid_dist < closest_pt_dist) {
-        new_point_->SetTranslation(FromProfile3_(mid_pt, TK::kPaneZOffset));
+        new_point_->TranslateTo(FromProfile3_(mid_pt, TK::kPaneZOffset));
         new_point_->SetEnabled(true);
         widget = new_point_;
     }
@@ -310,7 +310,7 @@ WidgetPtr ProfilePane::Impl_::GetTouchedWidget(const TouchInfo &info,
         new_point_->SetEnabled(true);
         for (size_t i = 1; i < points.size(); ++i) {
             const Point2f mp = .5f * (points[i - 1] + points[i]);
-            new_point_->SetTranslation(FromProfile3_(mp, TK::kPaneZOffset));
+            new_point_->TranslateTo(FromProfile3_(mp, TK::kPaneZOffset));
             float dist;
             if (new_point_->IsTouched(info, dist) && dist < closest_distance) {
                 closest_distance = dist;
@@ -330,8 +330,8 @@ void ProfilePane::Impl_::PositionFixedPoints_() {
     const bool is_fixed = profile_.GetType() == Profile::Type::kFixed;
     if (is_fixed) {
         const auto &pts = profile_.GetPoints();
-        start_point_->SetTranslation(FromProfile3_(pts.front()));
-        end_point_->SetTranslation(FromProfile3_(pts.back()));
+        start_point_->TranslateTo(FromProfile3_(pts.front()));
+        end_point_->TranslateTo(FromProfile3_(pts.back()));
     }
     start_point_->SetEnabled(is_fixed);
     end_point_->SetEnabled(is_fixed);
@@ -384,7 +384,7 @@ void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
     size_t start_index;
     if (IsNearProfileSegment_(pt, start_index) &&
         can_insert_point_func_(profile_, start_index)) {
-        new_point_->SetTranslation(FromProfile3_(pt, TK::kPaneZOffset));
+        new_point_->TranslateTo(FromProfile3_(pt, TK::kPaneZOffset));
         new_point_->SetEnabled(true);
     }
     else {
@@ -487,7 +487,7 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
     const bool should_snap =
         GetMovableSlider_(index)->GetCurrentDragInfo().is_modified_mode;
     snap_feedback_->SetEnabled(should_snap && SnapPoint_(index, snapped_pos));
-    snapped_point_->SetTranslation(FromProfile3_(snapped_pos, 0));
+    snapped_point_->TranslateTo(FromProfile3_(snapped_pos, 0));
 
     // Update the point in the Profile.
     profile_.SetPoint(index, snapped_pos);
@@ -632,7 +632,7 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
 
     // Position the delete rectangle and the delete spot widget.
     delete_rect_ = BuildRange(pt, delete_rect_.GetSize());
-    delete_spot_->SetTranslation(FromProfile3_(pt, 0));
+    delete_spot_->TranslateTo(FromProfile3_(pt, 0));
 }
 
 size_t ProfilePane::Impl_::GetClosestMovablePoint_(const Point2f &p,

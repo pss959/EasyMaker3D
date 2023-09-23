@@ -72,7 +72,7 @@ void AngularFeedback::Impl_::SubtendArc(const Point3f &center,
     root_node_.SetRotation(Rotationf::RotateInto(Vector3f::AxisZ(), axis));
 
     // Position based on the center and offset.
-    root_node_.SetTranslation(center + Vector3f(0, up_offset, 0));
+    root_node_.TranslateTo(center + Vector3f(0, up_offset, 0));
 
     // Modify the angles if necessary.
     const float rounded_degrees =

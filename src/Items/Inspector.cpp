@@ -57,8 +57,8 @@ void Inspector::Deactivate() {
 }
 
 void Inspector::SetPositionForView(const Frustum &frustum) {
-    SetTranslation(frustum.position +
-                   TK::kInspectorViewDistance * frustum.GetViewDirection());
+    TranslateTo(frustum.position +
+                TK::kInspectorViewDistance * frustum.GetViewDirection());
 }
 
 void Inspector::ApplyScaleChange(float delta) {

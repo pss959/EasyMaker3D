@@ -421,7 +421,7 @@ void Application_::UpdateIntersectionSphere_(const Event &event) {
         const bool got_hit = ! hit_.path.empty();
         intersection_sphere_->SetEnabled(got_hit);
         if (got_hit)
-            intersection_sphere_->SetTranslation(hit_.GetWorldPoint());
+            intersection_sphere_->TranslateTo(hit_.GetWorldPoint());
     }
 }
 

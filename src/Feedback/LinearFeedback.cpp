@@ -107,7 +107,7 @@ void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
     // Update the text. Do not let it go below the minimum.
     Point3f text_pos = frame.p1 + frame.text_height * frame.up_direction;
     text_pos[1] = std::max(text_pos[1], TK::kLinearFeedbackMinTextY);
-    parts_.text->SetTranslation(text_pos);
+    parts_.text->TranslateTo(text_pos);
     parts_.text->SetTextWithColor(
         Util::ToString(std::roundf(100 * frame.length) / 100), color_);
 

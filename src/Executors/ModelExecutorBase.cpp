@@ -112,7 +112,7 @@ bool ModelExecutorBase::AnimateModel_(const ModelPtr &model,
     else {
         // The animation has completed. Make sure the Model is in the correct
         // spot and select it.
-        model->SetTranslation(end_pos);
+        model->TranslateTo(end_pos);
         SelectModel_(model);
         return false;
     }

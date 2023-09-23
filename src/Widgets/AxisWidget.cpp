@@ -58,8 +58,8 @@ void AxisWidget::SetDirection(const Vector3f &direction) {
 void AxisWidget::SetPosition(const Point3f &position) {
     // This may be called during translation, so make sure to take the current
     // offset into account.
-    SetTranslation(position -
-                   rotator_->GetRotation() * translator_->GetTranslation());
+    TranslateTo(position -
+                rotator_->GetRotation() * translator_->GetTranslation());
 }
 
 Vector3f AxisWidget::GetDirection() const {
@@ -78,7 +78,7 @@ void AxisWidget::SubWidgetActivated(const Str &name, bool is_activation) {
         // When the Slider2DWidget is deactivated, transfer the translation
         // from the Slider2DWidget to the AxisWidget and reset the
         // Slider2DWidget without notifying.
-        SetTranslation(GetPosition());
+        TranslateTo(GetPosition());
         rotator_parts_->SetTranslation(Vector3f::Zero());
         translator_->GetValueChanged().EnableObserver(this, false);
         translator_->SetValue(Vector2f::Zero());

@@ -100,7 +100,7 @@ void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {
 }
 
 void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {
-    SetTranslation(target.GetPosition());
+    TranslateTo(target.GetPosition());
     SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
                                       target.GetDirection()));
     UpdateLayoutWidget_();

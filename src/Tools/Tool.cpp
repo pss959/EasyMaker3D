@@ -113,7 +113,7 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     // Move the Tool to the center of the Model in stage coordinates.
     const Bounds &obj_bounds = model.GetBounds();
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    SetTranslation(osm * obj_bounds.GetCenter());
+    TranslateTo(osm * obj_bounds.GetCenter());
 
     // If aligned, use the size of the stage bounds for the Model.  Otherwise,
     // use the scale (including all ancestors) applied to the size of the
@@ -133,8 +133,7 @@ Vector3f Tool::MatchOperandModelAndGetSize(bool use_operand_model_size) {
     // Translate the Tool so that it is centered on the operand mesh.
     const Bounds &operand_bounds = cm->GetOperandModel()->GetBounds();
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
-    SetTranslation(osm * operand_bounds.GetCenter() -
-                   cm->GetLocalCenterOffset());
+    TranslateTo(osm * operand_bounds.GetCenter() - cm->GetLocalCenterOffset());
 
     // Return the size of the ConvertedModel's or operand Model's mesh in stage
     // coordinates.

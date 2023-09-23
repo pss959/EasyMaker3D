@@ -25,7 +25,7 @@ void ChangeMirrorExecutor::SetModelPlane(Model &model, const Plane &plane,
         // Translate to the other side of the stage plane.
         const Point3f center =
             cc->LocalToRoot(Point3f(mm.GetOperandModel()->GetTranslation()));
-        mm.SetTranslation(cc->RootToLocal(plane.MirrorPoint(center)));
+        mm.TranslateTo(cc->RootToLocal(plane.MirrorPoint(center)));
     }
     else {
         mm.SetPlaneNormal(plane.normal);

@@ -372,7 +372,7 @@ void TreePanel::Impl_::RectSelect_::UpdateLines_(bool is_visible,
     if (is_visible && p0 != p1) {
         const Vector2f size(Clamp(std::abs(p1[0] - p0[0]), .01f, 1.f),
                             Clamp(std::abs(p1[1] - p0[1]), .01f, 1.f));
-        lines_->SetTranslation(.5f * (p0 + p1));
+        lines_->TranslateTo(.5f * (p0 + p1));
         lines_->SetScale(Vector3f(size, 1));
         lines_->SetSize(size);
     }
