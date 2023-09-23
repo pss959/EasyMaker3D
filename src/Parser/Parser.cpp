@@ -3,6 +3,7 @@
 #include <fstream>
 #include <functional>
 #include <istream>
+#include <ranges>
 #include <unordered_map>
 
 #include "Parser/ObjectList.h"
@@ -348,9 +349,7 @@ ObjectPtr Parser::Impl_::ParseIncludedFile_(bool is_template) {
 ObjectPtr Parser::Impl_::FindObject_(const Str &name, bool can_be_template) {
     // Look in all open scopes, starting at the top of the stack (reverse
     // iteration).
-    for (auto it = std::rbegin(scope_stack_);
-         it != std::rend(scope_stack_); ++it) {
-        const auto &scope = *it;
+    for (const auto &scope: scope_stack_ | std::views::reverse) {
         if (can_be_template) {
             auto ti = scope.templates_map.find(name);
             if (ti != scope.templates_map.end()) {
@@ -476,9 +475,7 @@ void Parser::Impl_::ParseTemplates_() {
 Str Parser::Impl_::SubstituteConstant_(const Str &name) const {
     // Look up the Constant in all active scopes, starting at the top (reverse
     // iteration).
-    for (auto it = std::rbegin(scope_stack_);
-         it != std::rend(scope_stack_); ++it) {
-        const auto &scope = *it;
+    for (const auto &scope: scope_stack_ | std::views::reverse) {
         auto ci = scope.constants_map.find(name);
         if (ci != scope.constants_map.end())
             return ci->second;

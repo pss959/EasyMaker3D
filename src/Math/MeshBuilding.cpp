@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <functional>
+#include <ranges>
 #include <vector>
 
 #include <ion/math/transformutils.h>
@@ -83,11 +84,11 @@ class TriHelper_ {
     void AddTris(const std::vector<GIndex> indices,
                  const std::function<GIndex(GIndex)> &func, bool reverse) {
         if (reverse) {
-            for (auto it = indices.rbegin(); it != indices.rend(); ++it)
-                indices_.push_back(func(*it));
+            for (const auto &i: indices | std::views::reverse)
+                indices_.push_back(func(i));
         }
         else {
-            for (GIndex i: indices)
+            for (const auto &i: indices)
                 indices_.push_back(func(i));
         }
     }

@@ -1,5 +1,7 @@
 ﻿#include "Managers/BoardManager.h"
 
+#include <ranges>
+
 #include "Managers/PanelManager.h"
 #include "Panels/Board.h"
 #include "Util/Assert.h"
@@ -102,8 +104,7 @@ void BoardManager::UpdateBoards_(const BoardPtr &board) {
         boards_.pop_back();
 
         if (behavior == Board::Behavior::kReplaces) {
-            for (auto it = boards_.rbegin(); it != boards_.rend(); ++it) {
-                auto &bd = *it;
+            for (const auto &bd: boards_ | std::views::reverse) {
                 ChangeBoardVisibility_(*bd, true);
                 if (bd->GetBehavior() != Board::Behavior::kAugments)
                     break;

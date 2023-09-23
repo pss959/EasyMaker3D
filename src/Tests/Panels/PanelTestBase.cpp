@@ -1,5 +1,6 @@
 #include "Tests/Panels/PanelTestBase.h"
 
+#include <ranges>
 #include <vector>
 
 #include "Agents/BoardAgent.h"
@@ -173,9 +174,9 @@ Str PanelTestBase::TestBoardAgent::GetCloseResult() {
 
 void PanelTestBase::TestBoardAgent::PrintStack_(const Str &when) const {
     std::cerr << "....... Top-down Panel stack " << when << ":\n";
-    for (auto it = panel_stack_.rbegin(); it != panel_stack_.rend(); ++it) {
-        std::cerr << "........    " << it->panel->GetDesc()
-                  << "(" << Util::EnumToWord(it->panel->GetStatus()) << ")\n";
+    for (const auto &info: panel_stack_ | std::views::reverse) {
+        std::cerr << "........    " << info.panel->GetDesc()
+                  << "(" << Util::EnumToWord(info.panel->GetStatus()) << ")\n";
     }
 }
 

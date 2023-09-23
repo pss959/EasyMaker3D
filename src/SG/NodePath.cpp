@@ -79,9 +79,9 @@ bool NodePath::ContainsNode(const Node &node) const {
 
 NodePtr NodePath::FindNodeUpwards(
     const std::function<bool(const Node &node)> &pred) const {
-    for (auto it = rbegin(); it != rend(); ++it) {
-        if (pred(**it))
-            return *it;
+    for (const auto &p: *this | std::views::reverse) {
+        if (pred(*p))
+            return p;
     }
     return NodePtr();
 }

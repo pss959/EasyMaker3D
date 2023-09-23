@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -47,9 +48,8 @@ struct NodePath : public std::vector<NodePtr> {
     /// Searches upward in the path for a Node that is of the given type,
     /// returning it or a null pointer.
     template <typename T> std::shared_ptr<T> FindNodeUpwards() const {
-        for (auto it = rbegin(); it != rend(); ++it) {
-            std::shared_ptr<T> t = std::dynamic_pointer_cast<T>(*it);
-            if (t)
+        for (const auto &p: *this | std::views::reverse) {
+            if (std::shared_ptr<T> t = std::dynamic_pointer_cast<T>(p))
                 return t;
         }
         return std::shared_ptr<T>(nullptr);

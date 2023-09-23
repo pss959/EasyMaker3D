@@ -1,6 +1,7 @@
 #include "Parser/Scanner.h"
 
 #include <cctype>
+#include <ranges>
 #include <sstream>
 #include <vector>
 
@@ -61,10 +62,10 @@ class Scanner::Input_ {
         streams_.pop_back();
     }
     bool GetCurrentPathAndLine(FilePath &path, int &line) {
-        for (auto it = streams_.rbegin(); it != streams_.rend(); ++it) {
-            if (it->sstream == nullptr) {
-                path = it->path;
-                line = it->cur_line;
+        for (const auto &st: streams_ | std::views::reverse) {
+            if (! st.sstream) {
+                path = st.path;
+                line = st.cur_line;
                 return true;
             }
         }

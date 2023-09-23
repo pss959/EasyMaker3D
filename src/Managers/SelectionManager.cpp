@@ -1,5 +1,7 @@
 #include "Managers/SelectionManager.h"
 
+#include <ranges>
+
 #include "Place/ClickInfo.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
@@ -113,8 +115,7 @@ Selection SelectionManager::CleanSelection_(const Selection &sel) {
     std::vector<SelPath> clean_paths;
     clean_paths.reserve(sel.GetCount());
     const auto &paths = sel.GetPaths();
-    for (auto it = paths.rbegin(); it != paths.rend(); ++it) {
-        const auto &path = *it;
+    for (const auto &path: paths | std::views::reverse) {
         // Add the path if its Model is not a duplicate, ancestor, or
         // descendant of a Model already in the clean list.
         bool add_it = true;
@@ -132,8 +133,8 @@ Selection SelectionManager::CleanSelection_(const Selection &sel) {
     // Add paths in reverse order (to restore original order) to a new
     // Selection.
     Selection clean_sel;
-    for (auto it = clean_paths.rbegin(); it != clean_paths.rend(); ++it)
-        clean_sel.Add(*it);
+    for (const auto &path: clean_paths | std::views::reverse)
+        clean_sel.Add(path);
     return clean_sel;
 }
 

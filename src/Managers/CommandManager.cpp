@@ -1,5 +1,7 @@
 #include "Managers/CommandManager.h"
 
+#include <ranges>
+
 #include "Commands/CommandList.h"
 #include "Items/SessionState.h"
 #include "Parser/Registry.h"
@@ -120,12 +122,11 @@ void CommandManager::ExecuteForValidation_(const CommandPtr &command) {
     // Process orphaned commands first, if any.
     const auto &ocs = command->GetOrphanedCommands();
     if (! ocs.empty()) {
-        // Execute all orphaned commands and then undo them.
+        // Execute all orphaned commands (in reverse order) and then undo them.
         for (const auto &oc: ocs)
             ExecuteForValidation_(oc);
-        for (auto it = ocs.rbegin(); it != ocs.rend(); ++it) {
-            Command &oc = **it;
-            if (oc.HasUndoEffect())
+        for (const auto &oc: ocs | std::views::reverse) {
+            if (oc->HasUndoEffect())
                 Undo();
         }
         // Make sure the undone commands are not added as orphans again.
