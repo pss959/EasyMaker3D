@@ -341,9 +341,11 @@ test_env.Alias('Tests', test_program)
 # The TESTCATEGORIES argument can be used to limit the test categories to
 # run. It is a comma-separated list of categories. The TESTFILTER argument is
 # passed as '--gtest_filter' to the test program to further filter the test
-# names.
+# names. The KLOG argument passes the given string to KLogger::SetKeyString()
+# for the test.
 test_categories_arg = ARGUMENTS.get('TESTCATEGORIES')
 test_filter_arg     = ARGUMENTS.get('TESTFILTER')
+klog_arg            = ARGUMENTS.get('KLOG')
 
 # Verify categories and collect test names.
 categories = test_categories_arg.split(',') if test_categories_arg else []
@@ -362,8 +364,9 @@ if test_filter_arg:
                    else test_filter_arg)
 
 test_args = ' '.join([
-  '--gtest_catch_exceptions=0',   # Let exceptions be handled outside gtest.
-  ('--gtest_filter="%s"' % test_filter) if test_filter else '',
+    '--gtest_catch_exceptions=0',   # Let exceptions be handled outside gtest.
+    ('--gtest_filter="%s"' % test_filter) if test_filter else '',
+    ('--klog="%s"'         % klog_arg)    if klog_arg    else '',
 ])
 
 test_env.Alias('RunTests', test_program, f'$RUN_PROGRAM $SOURCE {test_args}')

@@ -13,6 +13,19 @@ int main(int argc, char **argv) {
 
     try {
         ::testing::InitGoogleTest(&argc, argv);
+
+        // Handle other arguments.
+        for (int i = 1; i < argc; ++i) {
+            const Str arg = argv[i];
+            if (arg.starts_with("--klog=")) {
+                KLogger::SetKeyString(arg.substr(6));
+            }
+            else {
+                std::cerr << "*** Unknown argument: '" << arg << "\n";
+                return -1;
+            }
+        }
+
         return RUN_ALL_TESTS();
     }
     catch (AssertException &ex) {
