@@ -4,6 +4,7 @@
 #include <numeric>
 
 #include "Math/Linear.h"
+#include "Panes/PaneLayout.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
 
@@ -30,15 +31,6 @@ bool GridPane::IsValid(Str &details) {
         CheckPanes_(details);
 }
 
-void GridPane::CreationDone() {
-    ContainerPane::CreationDone();
-
-    if (! IsTemplate()) {
-        SetUpDim_(0);
-        SetUpDim_(1);
-    }
-}
-
 // LCOV_EXCL_START [debug only]
 Str GridPane::ToString(bool is_brief) const {
     return Pane::ToString(is_brief) + " " +
@@ -48,55 +40,13 @@ Str GridPane::ToString(bool is_brief) const {
 // LCOV_EXCL_STOP
 
 Vector2f GridPane::ComputeBaseSize() const {
-    Vector2f base_size;
-    ComputeBaseSizes_(0, base_size[0]);
-    ComputeBaseSizes_(1, base_size[1]);
-    return AdjustPaneSize(*this, base_size);
+    return PaneLayout::ComputeGridSize(*this, padding_,
+                                       GetData_(0), GetData_(1));
 }
 
 void GridPane::LayOutSubPanes() {
-    const Vector2f size = GetLayoutSize();
-
-    // Compute the sizes for all rows and columns.
-    Vector2f base_size;
-    const auto col_sizes = ComputeSizes_(0, size[0], base_size[0]);
-    const auto row_sizes = ComputeSizes_(1, size[1], base_size[1]);
-
-    // Compute positions relative to the upper-left corner of the grid. Note
-    // that Y decreases downward.
-    const auto &panes = GetPanes();
-    const Point2f grid_upper_left(padding_, size[1] - padding_);
-    Point2f  upper_left = grid_upper_left;
-    Vector2f cell_size(0, 0);
-    for (size_t row = 0; row < dim_data_[1].count; ++row) {
-        cell_size[1] = row_sizes[row];
-        for (size_t col = 0; col < dim_data_[0].count; ++col) {
-            cell_size[0] = col_sizes[col];
-            auto &pane = *panes[GetCellIndex_(row, col)];
-
-            // If the Pane does not resize, use its base size (centered in the
-            // cell). Otherwise, use the full cell size.
-            const auto &resize_flags = pane.GetResizeFlags();
-            Vector2f offset(0, 0);
-            Vector2f pane_size = pane.GetBaseSize();
-            if (resize_flags.Has(Pane::ResizeFlag::kWidth))
-                pane_size[0] = cell_size[0];
-            else
-                offset[0] = .5f * (cell_size[0] - pane_size[0]);
-            if (resize_flags.Has(Pane::ResizeFlag::kHeight))
-                pane_size[1] = cell_size[1];
-            else
-                offset[1] = -.5f * (cell_size[1] - pane_size[1]);
-
-            pane.SetLayoutSize(pane_size);
-            PositionSubPane(pane, upper_left + offset);
-            pane.SetRelativePositionInParent(upper_left - grid_upper_left);
-
-            upper_left[0] += cell_size[0] + column_spacing_;
-        }
-        upper_left[0] = grid_upper_left[0];
-        upper_left[1] -= cell_size[1] + row_spacing_;
-    }
+    PaneLayout::LayOutGrid(*this, GetLayoutSize(), padding_,
+                           GetData_(0), GetData_(1));
 }
 
 bool GridPane::CheckDim_(int dim, Str &details) {
@@ -124,69 +74,17 @@ bool GridPane::CheckPanes_(Str &details) {
     return true;
 }
 
-void GridPane::SetUpDim_(int dim) {
+PaneLayout::GridData GridPane::GetData_(int dim) const {
     ASSERT(dim == 0 || dim == 1);
-    DimData_ &data = dim_data_[dim];
+    PaneLayout::GridData data;
 
     const auto &field = dim == 0 ? expanding_columns_ : expanding_rows_;
     data.count        = dim == 0 ? column_count_      : row_count_;
     data.spacing      = dim == 0 ? column_spacing_    : row_spacing_;
 
     data.expands.resize(data.count, false);
-    data.expand_count = 0;
+    for (int index: field.GetValue())
+        data.expands[index] = true;
 
-    for (int index: field.GetValue()) {
-        if (! data.expands[index]) {
-            data.expands[index] = true;
-            ++data.expand_count;
-        }
-    }
-}
-
-std::vector<float> GridPane::ComputeSizes_(int dim, float size,
-                                           float &base_size) const {
-    // Start with the base size for each row or column, computed as the largest
-    // base size for any cell in that row or column.
-    const std::vector<float> base_sizes = ComputeBaseSizes_(dim, base_size);
-
-    // If nothing to expand, done.
-    const DimData_ &data = dim_data_[dim];
-    if (data.expand_count == 0)
-        return base_sizes;
-
-    // Add extra to the rows/columns that are supposed to expand.
-    const float extra = (size - base_size) / data.expand_count;
-    std::vector<float> sizes = base_sizes;
-    for (size_t i = 0; i < data.count; ++i) {
-        if (data.expands[i])
-            sizes[i] += extra;
-    }
-    return sizes;
-}
-
-std::vector<float> GridPane::ComputeBaseSizes_(int dim, float &total) const {
-    // For any column (dim = 0), the base size is the largest width of any cell
-    // in that column. For any row, it is the largest height of any cell in
-    // that row. This iterates over the other dimension to compute the
-    // maximum. Note that this does NOT take padding and spacing into account.
-    const size_t count       = dim_data_[dim].count;
-    const size_t other_count = dim_data_[1 - dim].count;
-    std::vector<float> base_sizes(count);
-    const auto &panes = GetPanes();
-    for (size_t i = 0; i < count; ++i) {
-        base_sizes[i] = 0;
-        for (size_t j = 0; j < other_count; ++j) {
-            const size_t cell_index =
-                dim == 0 ? GetCellIndex_(j, i) : GetCellIndex_(i, j);
-            base_sizes[i] = std::max(base_sizes[i],
-                                     panes[cell_index]->GetBaseSize()[dim]);
-        }
-    }
-
-    // Compute the total base size in this dimension as the sum of the
-    // individual base cell sizes plus padding and spacing.
-    total = 2 * padding_ + (count - 1) * dim_data_[dim].spacing +
-        std::accumulate(base_sizes.begin(), base_sizes.end(), 0.f);
-
-    return base_sizes;
+    return data;
 }
