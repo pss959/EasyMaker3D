@@ -117,17 +117,19 @@ void SliderPane::UpdateSliderValue_(float value) {
     // Apply precision and clamp.
     const float adjusted = AdjustValue_(value);
 
-    if (adjusted != cur_value_) {
-        cur_value_ = adjusted;
+    // Do this even if the new value is the same, because something else (such
+    // as the slider range) may have changed.
+    const bool is_change = adjusted != cur_value_;
+    cur_value_ = adjusted;
 
-        // Update the slider so it is in the correct spot without notifying the
-        // SliderPane.
-        const Vector2f &range = range_.GetValue();
-        slider_->GetValueChanged().EnableObserver(this, false);
-        slider_->SetValue((adjusted - range[0]) / (range[1] - range[0]));
-        slider_->GetValueChanged().EnableObserver(this, true);
+    // Update the slider so it is in the correct spot without notifying the
+    // SliderPane.
+    const Vector2f &range = range_.GetValue();
+    slider_->GetValueChanged().EnableObserver(this, false);
+    slider_->SetValue((adjusted - range[0]) / (range[1] - range[0]));
+    slider_->GetValueChanged().EnableObserver(this, true);
 
-        // Notify observers.
+    // Notify observers if this is a change.
+    if (is_change)
         value_changed_.Notify(adjusted);
-    }
 }
