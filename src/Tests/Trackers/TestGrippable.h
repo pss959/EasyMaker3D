@@ -6,7 +6,7 @@ DECL_SHARED_PTR(ClickableWidget);
 /// Derived Grippable class used for easier testing. It allows the values set
 /// in UpdateGripInfo() to be set as public member variables.
 ///
-/// \ingroup
+/// \ingroup Tests
 class TestGrippable : public Grippable {
   public:
     ClickableWidgetPtr widget;  ///< Widget to set in GripInfo.

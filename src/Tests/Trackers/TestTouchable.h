@@ -6,7 +6,7 @@ DECL_SHARED_PTR(Widget);
 /// Derived Touchable class used for easier testing. It allows the Widget
 /// returned by GetTouchedWidget() to be set as a public member variable.
 ///
-/// \ingroup
+/// \ingroup Tests
 class TestTouchable : public Touchable {
   public:
     WidgetPtr widget;  ///< Widget returned by GetTouchedWidget().
