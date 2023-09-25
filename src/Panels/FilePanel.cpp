@@ -22,7 +22,7 @@
 
 class FilePanel::Impl_ {
   public:
-    typedef std::function<void(const PanePtr &, bool)> FocusFunc;
+    typedef std::function<void(const PanePtr &)> FocusFunc;
 
     Impl_();
 
@@ -34,8 +34,7 @@ class FilePanel::Impl_ {
     }  // LCOV_EXCL_STOP
 
     /// Sets a function used to set focus. The function is passed a PanePtr for
-    /// the Pane to focus and a flag indicating whether UpdateFocusablePanes()
-    /// needs to be called first.
+    /// the Pane to focus.
     void SetFocusFunc(const FocusFunc &focus_func) { focus_func_ = focus_func; }
 
     /// \name Setup functions.
@@ -70,9 +69,10 @@ class FilePanel::Impl_ {
     void InitInterface(ContainerPane &root);
     void UpdateInterface();
 
-    /// Makes sure that the focused Pane is in view. If the Pane is a file
-    /// button and is out of view in the ScrollingPane, scrolls to view it.
-    void UpdateFocus(const PanePtr &pane);
+    /// Changes the focus to the given Pane and makes sure that the Pane is in
+    /// view: if the Pane is a file button and is not visible in the
+    /// ScrollingPane, it scrolls to view it.
+    void SetFocus(const PanePtr &pane);
 
   private:
     /// Status of the current path displayed in the input pane.
@@ -94,14 +94,15 @@ class FilePanel::Impl_ {
     Str                     extension_;
     FilePath                highlight_path_;
     Str                     highlight_annotation_;
-    int                     highlighted_index_ = -1;  ///< -1 if no highlight.
+    PanePtr                 highlighted_button_pane_;
 
     FilePath                result_path_;
     FileFormat              file_format_;
 
     std::shared_ptr<FilePathList> path_list_;
 
-    // Various parts.
+    /// \name Various parts.
+    ///@{
     TextPanePtr      title_pane_;
     TextInputPanePtr input_pane_;
     ScrollingPanePtr file_list_pane_;
@@ -111,27 +112,39 @@ class FilePanel::Impl_ {
     CheckboxPanePtr  hidden_files_pane_;
     ButtonPanePtr    accept_button_pane_;
     ButtonPanePtr    cancel_button_pane_;
+    ///@}
 
     // Directional buttons.
     ButtonPanePtr dir_button_panes_[Util::EnumCount<FilePathList::Direction>()];
 
-    PathStatus_ GetPathStatus_(const FilePath &path);
-    void    OpenPath_(const FilePath &path);
-    void    OpenDirectory_(const FilePath &path);
-    void    SelectFile_(const FilePath &path);
-    void    InitFocus_();
-    void    UpdateFiles_(bool scroll_to_highlighted_file);
-    int     CreateFileButtons_(const StrVec &names, bool are_dirs,
-                               Pane::PaneVec &buttons);
-    PanePtr CreateFileButton_(size_t index, const Str &name,
-                              bool is_dir, bool is_highlighted);
-    void    UpdateButtons_(PathStatus_ path_status);
-    void    FocusFileButton_(bool need_to_update_first);
-    void    ScrollToViewFileButton_(size_t index);
+    /// Returns a PathStatus_ for the given FilePath.
+    PathStatus_ GetPathStatus_(const FilePath &path) const;
 
-    /// If the given Pane is a file button, this sets index to its index and
-    /// returns true. Otherwise, returns false.
-    bool    GetFileButtonIndex_(const Pane &pane, size_t &index) const;
+    /// Sets the FilePanel to show the given FilePath, which may be a file or
+    /// directory. This is called when a file button or direction button is
+    /// clicked.
+    void ShowPath_(const FilePath &path);
+
+    /// Updates the state of direction and result buttons when the path
+    /// changes. The status of the current path is supplied.
+    void UpdateButtons_(PathStatus_ path_status);
+
+    /// Updates the files and directories displayed in the FilePanel.
+    void UpdateFiles_();
+
+    /// Creates a single ButtonPane for a file or directory.
+    PanePtr CreateFileButton_(size_t index, const Str &name, bool is_dir);
+
+    /// Updates focus based on the current state. This also scrolls if
+    /// necessary to view the focused Pane.
+    void UpdateFocus_();
+
+    /// Returns true if the given directory or file name matches the given
+    /// path.
+    bool MatchesPath_(const Str &name, const FilePath &path) const;
+
+    /// Returns true if the given Pane is a file button.
+    bool IsFileButton_(const Pane &pane) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -155,7 +168,7 @@ void FilePanel::Impl_::Reset() {
 }
 
 void FilePanel::Impl_::GoInDirection(FilePathList::Direction dir) {
-    OpenPath_(path_list_->GoInDirection(dir));
+    ShowPath_(path_list_->GoInDirection(dir));
 }
 
 bool FilePanel::Impl_::AcceptPath() {
@@ -211,9 +224,13 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root) {
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
 
-    // Update the file list when the user toggles "Show Hidden Files".
-    hidden_files_pane_->GetStateChanged().AddObserver(
-        this, [&](){ UpdateFiles_(true); });
+    // When the user toggles "Show Hidden Files", update the file list and
+    // focused Pane.
+    auto hf_func = [&](){
+        UpdateFiles_();
+        UpdateFocus_();
+    };
+    hidden_files_pane_->GetStateChanged().AddObserver(this, hf_func);
 
     // Remove the FileButton from the list of Panes so it does not show up.
     root.RemovePane(file_button_pane_);
@@ -245,23 +262,20 @@ void FilePanel::Impl_::UpdateInterface() {
 
     path_list_->Init(initial_path_);
 
-    // Open the initial path to set up the file area.
-    OpenPath_(initial_path_);
+    // Show the initial path to set up the file area.
+    ShowPath_(initial_path_);
 
     UpdateButtons_(GetPathStatus_(path_list_->GetCurrent()));
 }
 
-void FilePanel::Impl_::UpdateFocus(const PanePtr &pane) {
+void FilePanel::Impl_::SetFocus(const PanePtr &pane) {
     // Scroll to view a file button if necessary.
-    if (pane) {
-        size_t index;
-        if (GetFileButtonIndex_(*pane, index))
-            ScrollToViewFileButton_(index);
-    }
+    if (pane && IsFileButton_(*pane))
+        file_list_pane_->ScrollToShowSubPane(*pane);
 }
 
 FilePanel::Impl_::PathStatus_
-FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
+FilePanel::Impl_::GetPathStatus_(const FilePath &path) const {
     const bool is_dir = path_list_->IsValidDirectory(path);
     PathStatus_ status;
     switch (target_type_) {
@@ -283,125 +297,24 @@ FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
     return status;
 }
 
-void FilePanel::Impl_::OpenPath_(const FilePath &path) {
+void FilePanel::Impl_::ShowPath_(const FilePath &path) {
     ASSERT(path.IsAbsolute());
-    if (path_list_->IsValidDirectory(path))
-        OpenDirectory_(path);
-    else
-        SelectFile_(path);
-}
 
-void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
+    // Update the string in the TextInputPane.
     Str path_string = path.ToString();
-    if (! path_string.ends_with(FilePath::GetSeparator()))
+    if (path_list_->IsValidDirectory(path) &&
+        ! path_string.ends_with(FilePath::GetSeparator()))
         path_string += FilePath::GetSeparator();
-
     input_pane_->SetInitialText(path_string);
 
-    UpdateFiles_(true);
+    // Update the direction and result buttons.
     UpdateButtons_(GetPathStatus_(path));
-    InitFocus_();
-}
 
-void FilePanel::Impl_::SelectFile_(const FilePath &path) {
-    input_pane_->SetInitialText(path.ToString());
-    UpdateFiles_(true);
-    UpdateButtons_(GetPathStatus_(path));
-    InitFocus_();
-}
+    // Update the file buttons.
+    UpdateFiles_();
 
-void FilePanel::Impl_::InitFocus_() {
-    // Focus on the Accept button if it is enabled. Otherwise, focus on the
-    // first button in the file list if there are any. If neither is true,
-    // focus on the Cancel button.
-    if (accept_button_pane_->GetButton().IsInteractionEnabled())
-        focus_func_(accept_button_pane_, false);
-    else if (! file_list_pane_->GetContentsPane()->GetPanes().empty())
-        FocusFileButton_(false);
-    else
-        focus_func_(cancel_button_pane_, false);
-}
-
-void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
-    // Get sorted lists of directories and files in the current directory.
-    const bool include_hidden = hidden_files_pane_->GetState();
-    StrVec subdirs;
-    StrVec files;
-    path_list_->GetContents(subdirs, files, extension_, include_hidden);
-
-    // Ignore files if target must be a directory.
-    if (target_type_ == TargetType::kDirectory)
-        files.clear();
-
-    // Create buttons for each of them and determine which if any is
-    // highlighted.
-    Pane::PaneVec buttons;
-    const int hl_subdir_index = CreateFileButtons_(subdirs, true,  buttons);
-    const int hl_file_index   = CreateFileButtons_(files,   false, buttons);
-
-    // Cannot have both a subdir and file highlighted.
-    ASSERT(hl_subdir_index < 0 || hl_file_index < 0);
-    highlighted_index_ = hl_subdir_index >= 0 ? hl_subdir_index :
-        // LCOV_EXCL_START [gcovr bug]
-        hl_file_index >= 0 ? subdirs.size() + hl_file_index : -1;
-        // LCOV_EXCL_STOP
-
-    // Install the buttons.
-    ASSERT(file_list_pane_->GetContentsPane());
-    file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
-
-    // Scroll to and focus on the highlighted file, if any. Otherwise, reset
-    // the scroll.
-    if (scroll_to_highlighted_file && highlighted_index_ >= 0) {
-        ScrollToViewFileButton_(highlighted_index_);
-        FocusFileButton_(true);
-    }
-    else {
-        file_list_pane_->ScrollTo(0);
-        focus_func_(cancel_button_pane_, true);
-    }
-}
-
-int FilePanel::Impl_::CreateFileButtons_(const StrVec &names, bool are_dirs,
-                                         Pane::PaneVec &buttons) {
-
-    auto is_highlighted_path = [&](const Str &name){
-        return highlight_path_ &&
-            FilePath::Join(path_list_->GetCurrent(), name) == highlight_path_;
-    };
-
-    size_t cur_index         = 0;
-    int    highlighted_index = -1;
-    for (const auto &name: names) {
-        const bool is_highlighted = is_highlighted_path(name);
-        buttons.push_back(
-            CreateFileButton_(cur_index, name, are_dirs, is_highlighted));
-        if (is_highlighted)
-            highlighted_index = cur_index;
-        ++cur_index;
-    }
-
-    return highlighted_index;
-}
-
-PanePtr FilePanel::Impl_::CreateFileButton_(size_t index, const Str &name,
-                                            bool is_dir, bool is_highlighted) {
-    auto but = file_button_pane_->CloneTyped<ButtonPane>(
-        true, (is_dir ? "Dir_" : "File_") + Util::ToString(index));
-    auto text = but->FindTypedSubPane<TextPane>("ButtonText");
-    text->SetText(is_highlighted ? name + highlight_annotation_ : name);
-
-    const Str color_name = is_highlighted ? "FileHighlightColor" :
-        is_dir ? "FileDirectoryColor" : "FileColor";
-    text->SetColor(SG::ColorMap::SGetColor(color_name));
-
-    but->GetButton().GetClicked().AddObserver(
-        this, [this, name](const ClickInfo &){
-            OpenPath_(path_list_->AddPath(name));
-        });
-    but->SetEnabled(true);
-
-    return but;
+    // Update the focus.
+    UpdateFocus_();
 }
 
 void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
@@ -414,31 +327,115 @@ void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
     }
 }
 
-void FilePanel::Impl_::FocusFileButton_(bool need_to_update_first) {
-    // If there is a highlighted path, focus it. Otherwise, focus the first
+void FilePanel::Impl_::UpdateFiles_() {
+    // Get sorted lists of directories and files in the current directory.
+    const bool include_hidden = hidden_files_pane_->GetState();
+    StrVec subdirs;
+    StrVec files;
+    path_list_->GetContents(subdirs, files, extension_, include_hidden);
+
+    // Ignore files if target must be a directory.
+    if (target_type_ == TargetType::kDirectory)
+        files.clear();
+
+    // This will be set by CreateFileButton_() if there is a highlighted
     // button.
-    const size_t index = highlighted_index_ < 0 ? 0 :
-        static_cast<size_t>(highlighted_index_);
-    const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
-    ASSERT(index < panes.size());
-    focus_func_(panes[index], need_to_update_first);
+    highlighted_button_pane_.reset();
+
+    // Create buttons for each directory and file.
+    Pane::PaneVec buttons;
+    for (size_t index = 0; const auto &name: subdirs)
+        buttons.push_back(CreateFileButton_(index, name, true));
+    for (size_t index = 0; const auto &name: files)
+        buttons.push_back(CreateFileButton_(index, name, false));
+
+    // Populate the scrolling file list with the buttons.
+    ASSERT(file_list_pane_->GetContentsPane());
+    file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 }
 
-void FilePanel::Impl_::ScrollToViewFileButton_(size_t index) {
-    const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
-    file_list_pane_->ScrollToShowSubPane(*panes[index]);
+PanePtr FilePanel::Impl_::CreateFileButton_(size_t index, const Str &name,
+                                            bool is_dir) {
+    const bool is_highlighted = MatchesPath_(name, highlight_path_);
+    const Str  but_name = (is_dir ? "Dir_" : "File_") + Util::ToString(index);
+
+    auto but = file_button_pane_->CloneTyped<ButtonPane>(true, but_name);
+    auto text = but->FindTypedSubPane<TextPane>("ButtonText");
+    text->SetText(is_highlighted ? name + highlight_annotation_ : name);
+
+    const Str color_name = is_highlighted ? "FileHighlightColor" :
+        is_dir ? "FileDirectoryColor" : "FileColor";
+    text->SetColor(SG::ColorMap::SGetColor(color_name));
+
+    auto click_func = [&, name](const ClickInfo &){
+        ShowPath_(path_list_->AddPath(name));
+    };
+    but->GetButton().GetClicked().AddObserver(this, click_func);
+    but->SetEnabled(true);
+
+    if (is_highlighted)
+        highlighted_button_pane_ = but;
+
+    return but;
 }
 
-bool FilePanel::Impl_::GetFileButtonIndex_(const Pane &pane,
-                                           size_t &index) const {
-    const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
-    for (size_t i = 0; i < panes.size(); ++i) {
-        if (panes[i].get() == &pane) {
-            index = i;
-            return true;
+void FilePanel::Impl_::UpdateFocus_() {
+    // Access the file buttons.
+    const auto &buttons = file_list_pane_->GetContentsPane()->GetPanes();
+
+    // Focus on one of these Panes (in this priority order):
+    //   - The button for the current path (if there is one).
+    //   - The button for the highlighted path (if there is one).
+    //   - The Accept button (if enabled).
+    //   - The Cancel button.
+    const auto &cur_path = path_list_->GetCurrent();
+    PanePtr pane_to_focus;
+    bool is_file_button = false;
+    for (const auto &but: buttons) {
+        const auto &text =
+            but->FindTypedSubPane<TextPane>("ButtonText")->GetText();
+        if (MatchesPath_(text, cur_path)) {
+            // Current path always takes priority.
+            pane_to_focus = but;
+            is_file_button = true;
+            break;
+        }
+        else if (but == highlighted_button_pane_) {
+            // If current path is not found, this is used.
+            pane_to_focus = but;
         }
     }
-    return false;
+    if (! pane_to_focus) {
+        // Neither was found.
+        if (! buttons.empty())
+            pane_to_focus = buttons[0];
+        else if (accept_button_pane_->GetButton().IsInteractionEnabled())
+            pane_to_focus = accept_button_pane_;
+        else
+            pane_to_focus = cancel_button_pane_;
+    }
+    ASSERT(pane_to_focus);
+    focus_func_(pane_to_focus);
+
+    // If the focused Pane is a file button, make sure it is
+    // visible. Otherwise, scroll to the top.
+    if (is_file_button)
+        file_list_pane_->ScrollToShowSubPane(*pane_to_focus);
+    else
+        file_list_pane_->ScrollTo(0);
+}
+
+bool FilePanel::Impl_::MatchesPath_(const Str &name,
+                                    const FilePath &path) const {
+    return path &&
+        FilePath(name).AppendRelative(path_list_->GetCurrent()) == path;
+}
+
+bool FilePanel::Impl_::IsFileButton_(const Pane &pane) const {
+    const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
+    return std::find_if(panes.begin(), panes.end(),
+                        [&](const PanePtr &p){ return p.get() == &pane; }) !=
+        panes.end();
 }
 
 // ----------------------------------------------------------------------------
@@ -450,9 +447,8 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
 
     // Allow the Impl_ to set the focused Pane, which requires calling the
     // protected SetFocus() function.
-    auto focus_func = [&](const PanePtr &pane, bool need_to_update_first){
-        if (need_to_update_first)
-            UpdateFocusablePanes();
+    auto focus_func = [&](const PanePtr &pane){
+        UpdateFocusablePanes();
         SetFocus(pane);
     };
     impl_->SetFocusFunc(focus_func);
@@ -477,7 +473,7 @@ bool FilePanel::HandleEvent(const Event &event) {
 }
 
 void FilePanel::UpdateFocus(const PanePtr &pane) {
-    impl_->UpdateFocus(pane);
+    impl_->SetFocus(pane);
 }
 
 void FilePanel::InitInterface() {
@@ -534,7 +530,7 @@ FileFormat FilePanel::GetFileFormat() const {
 }
 
 void FilePanel::UpdateForPaneSizeChange() {
-    impl_->UpdateFocus(GetFocusedPane());
+    impl_->SetFocus(GetFocusedPane());
 }
 
 void FilePanel::ProcessResult(const Str &result) {
