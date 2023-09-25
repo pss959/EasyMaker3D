@@ -86,11 +86,13 @@ Gantry {
     const auto rot1 = BuildRotation(1, 0, 0, 45);
     wcam.SetPosition(Point3f(3, 4, 5));
     wcam.SetOrientation(rot1);
+    wcam.SetFOV(Anglef::FromDegrees(80));
+    wcam.SetNearAndFar(4, 20);
     EXPECT_EQ(Point3f(3, 4, 5),          wcam.GetPosition());
     EXPECT_EQ(rot1,                      wcam.GetOrientation());
-    EXPECT_EQ(Anglef::FromDegrees(45),   wcam.GetFOV());
-    EXPECT_EQ(2,                         wcam.GetNear());
-    EXPECT_EQ(10,                        wcam.GetFar());
+    EXPECT_EQ(Anglef::FromDegrees(80),   wcam.GetFOV());
+    EXPECT_EQ(4,                         wcam.GetNear());
+    EXPECT_EQ(20,                        wcam.GetFar());
     EXPECT_EQ(rot1 * -Vector3f::AxisZ(), wcam.GetViewDirection());
     EXPECT_EQ(Point3f(3, 4, 5),          wcam.GetCurrentPosition());
 }
