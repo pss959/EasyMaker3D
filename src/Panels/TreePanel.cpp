@@ -254,7 +254,7 @@ class TreePanel::Impl_::RectSelect_ {
     SG::NodePtr      root_node_;    ///< Root above Widget and feedback.
     GenericWidgetPtr widget_;       ///< Initiates the selection drag.
     BorderPtr        lines_;        ///< For visible rectangle feedback.
-    Range1f          y_range_;      ///< Starting/ending Y values for drag.
+    float            y_start_;      ///< Starting Y value for drag.
     Point3f          start_point_;  ///< Starting intersection point.
 
     bool             is_modified_mode_ = false;
@@ -305,7 +305,7 @@ void TreePanel::Impl_::RectSelect_::StartDrag_(const DragInfo &info) {
     start_end_func_(true);
 
     // Convert the hit point into Pane coordinates and save the Y value.
-    y_range_.SetMinPoint(ToPaneCoordsY_(info.hit.point));
+    y_start_ = ToPaneCoordsY_(info.hit.point);
 
     start_point_ = info.hit.point;
     UpdateLines_(true, info.hit.point, info.hit.point);
@@ -316,11 +316,12 @@ void TreePanel::Impl_::RectSelect_::ContinueDrag_(const DragInfo &info) {
     if (! info.hit.path.ContainsNode(*widget_))
         return;
 
-    y_range_.SetMaxPoint(ToPaneCoordsY_(info.hit.point));
+    const float y_end = ToPaneCoordsY_(info.hit.point);
+    const Range1f y_range = y_start_ < y_end ?
+        Range1f(y_start_, y_end) : Range1f(y_end, y_start_);
 
     // Find all rows intersected in Y by the rectangle selection and set those
     // buttons active.
-    const Range1f y_range = FixRange_(y_range_);
     for (const auto &row: model_rows_) {
         const bool is_intersected = y_range.IntersectsRange(row->GetYRange());
         row->GetModelButtonPane()->GetButton().SetActive(is_intersected);
