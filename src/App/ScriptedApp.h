@@ -21,7 +21,7 @@ class ScriptedApp : public Application {
         SnapScript script;
         bool       nosnap = false;  ///< Ignore image snapping instructions.
         bool       remain = false;  ///< Leave the window up after.
-        bool       report = false;   ///< Report each instruction when executed.
+        bool       report = false;  ///< Report each instruction when executed.
     };
 
     bool Init(const Options &options);
@@ -42,6 +42,7 @@ class ScriptedApp : public Application {
 
     bool ProcessInstruction_(const SnapScript::Instr &instr);
     bool LoadSession_(const Str &file_name);
+    bool FocusPane_(const Str &pane_name);
     bool SetHand_(Hand hand, const Str &controller_type);
     void SetTouchMode_(bool is_on);
     bool TakeSnapshot_(const Range2f &rect, const Str &file_name);

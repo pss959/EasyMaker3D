@@ -419,6 +419,10 @@ void Panel::SetStatus(Status status) {
     }
 }
 
+void Panel::SetFocusedPane(const PanePtr &pane) {
+    focuser_->SetFocus(pane);
+}
+
 PanePtr Panel::GetFocusedPane() const {
     return focuser_->GetFocusedPane();
 }

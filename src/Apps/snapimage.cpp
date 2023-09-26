@@ -68,13 +68,14 @@ R"(snapimage: Reads a script with instructions on how to create snapshot images
  for public documentation. See SnapScript.h for script details.
     Usage:
       snapimage [--fullscreen] [--klog=<klog_string>]
-                [--remain] [--nosnap] SCRIPT
+                [--nosnap] [--remain] [--report] SCRIPT
 
     Options:
       --fullscreen    Start with a full-screen window.
       --klog=<string> String to pass to KLogger::SetKeyString().
       --nosnap        Ignore snap commands (useful for testing).
       --remain        Keep the window alive after script processing.
+      --report        Report each instruction of script processing.
 
     Script files are relative to PublicDoc/snaps/scripts.
     Image files are placed in PublicDoc/docs/images.
@@ -97,7 +98,7 @@ int main(int argc, const char *argv[]) {
     options.fullscreen         = args.GetBool("--fullscreen");
     options.nosnap             = args.GetBool("--nosnap");
     options.remain             = args.GetBool("--remain");
-    options.report             = true;
+    options.report             = args.GetBool("--report");
     options.show_session_panel = false;
 
     // Note that this must have the same aspect ratio as fullscreen.

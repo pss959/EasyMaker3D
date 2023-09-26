@@ -14,6 +14,7 @@
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"
 #include "Items/Settings.h"
+#include "Managers/BoardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/PanelManager.h"
 #include "Managers/SceneContext.h"
@@ -348,6 +349,11 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
           emitter_->AddDragPoint(dinst.phase, dinst.pos);
           break;
       }
+      case kFocus: {
+          const auto &finst = GetTypedInstr_<SnapScript::FocusInstr>(instr);
+          FocusPane_(finst.pane_name);
+          break;
+      }
       case kHand: {
           const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
           if (! SetHand_(hinst.hand, hinst.controller))
@@ -460,6 +466,28 @@ bool ScriptedApp::LoadSession_(const Str &file_name) {
         }
         std::cout << "    Loaded session from '" << path.ToString() << "'\n";
     }
+    return true;
+}
+
+bool ScriptedApp::FocusPane_(const Str &pane_name) {
+    // Access the current Board.
+    auto board = GetContext().board_manager->GetCurrentBoard();
+    if (! board) {
+        std::cerr << "*** No current board for focusing pane\n";
+        return false;
+    }
+    auto panel = board->GetCurrentPanel();
+    if (! panel) {
+        std::cerr << "*** No current panel for focusing pane\n";
+        return false;
+    }
+    auto pane = panel->GetPane()->FindSubPane(pane_name);
+    if (! pane || ! pane->GetInteractor()) {
+        std::cerr << "*** Could not find interactive pane '" << pane_name
+                  << "' in current board\n";
+        return false;
+    }
+    panel->SetFocusedPane(pane);
     return true;
 }
 
