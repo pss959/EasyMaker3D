@@ -133,6 +133,28 @@ TEST_F(BoardTest, Show) {
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 }
 
+TEST_F(BoardTest, ShowFirst) {
+    InitBoard();
+
+    // Test that showing the Board before SetPanel() still causes the Panel to
+    // become visible.
+    auto panel = GetContext().board_agent->GetPanel("HelpPanel");
+
+    EXPECT_FALSE(board->IsShown());
+
+    board->Show(true);
+    EXPECT_TRUE(board->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+
+    board->SetPanel(panel, nullptr);
+    EXPECT_TRUE(board->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
+
+    board->Show(false);
+    EXPECT_FALSE(board->IsShown());
+    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+}
+
 TEST_F(BoardTest, Transform) {
     InitBoard();
 

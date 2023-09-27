@@ -257,7 +257,7 @@ void Panel::Focuser_::ChangeFocus_(const PanePtr &old_pane,
     if (new_pane) {
         KLOG('F', desc_ << " adding focus to " << new_pane->GetDesc());
         auto border = new_pane->GetInteractor()->GetFocusBorder();
-        ASSERT(border);
+        ASSERTM(border, new_pane->GetDesc());
         // Save state.
         prev_state_.is_enabled = border->IsEnabled();
         prev_state_.width      = border->GetWidth();

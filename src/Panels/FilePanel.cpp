@@ -239,6 +239,7 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root) {
     input_pane_->SetValidationFunc([&](const Str &path_string){
         const PathStatus_ status = GetPathStatus_(path_string);
         UpdateButtons_(status);
+        UpdateFocus_();
         return status != PathStatus_::kInvalid;
     });
 }
@@ -345,9 +346,9 @@ void FilePanel::Impl_::UpdateFiles_() {
     // Create buttons for each directory and file.
     Pane::PaneVec buttons;
     for (size_t index = 0; const auto &name: subdirs)
-        buttons.push_back(CreateFileButton_(index, name, true));
+        buttons.push_back(CreateFileButton_(index++, name, true));
     for (size_t index = 0; const auto &name: files)
-        buttons.push_back(CreateFileButton_(index, name, false));
+        buttons.push_back(CreateFileButton_(index++, name, false));
 
     // Populate the scrolling file list with the buttons.
     ASSERT(file_list_pane_->GetContentsPane());
