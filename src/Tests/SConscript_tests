@@ -74,6 +74,9 @@ test_source_dict = {
         'ActionTest',
     ],
     'Executors' : [
+        'ChangeColorExecutorTest',
+        'ChangeNameExecutorTest',
+        'ExecutorTestBase',
         'ScaleExecutorTest',
     ],
     'Feedback' : [

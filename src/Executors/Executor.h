@@ -45,6 +45,10 @@ class Executor {
     /// during operation.
     void SetContext(ContextPtr &context);
 
+    /// Version of SetContext() used for testing - not all parts need to be
+    /// present in the Context.
+    void SetTestContext(const ContextPtr &context);
+
     /// Returns the Context passed to SetContext().
     const Context & GetContext() const {
         ASSERT(context_);

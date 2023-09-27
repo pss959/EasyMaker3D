@@ -28,6 +28,12 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     context_ = context;
 }
 
+void Executor::SetTestContext(const ContextPtr &context) {
+    // Not all agents are necessarily needed for testing.
+    ASSERT(context);
+    context_ = context;
+}
+
 Str Executor::CreateUniqueName(const Str &prefix) {
     return context_->name_manager->Create(prefix);
 }
