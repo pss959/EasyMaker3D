@@ -103,6 +103,7 @@ class Board::Impl_ {
     Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
     Vector2f          panel_size_{0, 0};  ///< Board size in panel coordinates.
 
+    bool              is_shown_ = false;
     float             panel_scale_ = TK::kPanelToWorldScale;
     bool              is_move_enabled_ = true;
     bool              is_size_enabled_ = true;
@@ -232,6 +233,7 @@ void Board::Impl_::Show(bool shown) {
     if (auto cur_panel = GetCurrentPanel())
         cur_panel->SetStatus(shown ? Panel::Status::kVisible :
                              Panel::Status::kUnattached);
+    is_shown_ = shown;
 }
 
 void Board::Impl_::UpdateSizeIfNecessary() {
@@ -397,7 +399,9 @@ void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
         cur_panel->GetSizeChanged().RemoveObserver(this);
     }
     if (new_panel) {
-        new_panel->SetStatus(Panel::Status::kVisible);
+        // Set the new panel to visible if the Board is shown.
+        if (is_shown_)
+            new_panel->SetStatus(Panel::Status::kVisible);
         canvas_->AddChild(new_panel);
 
         // Ask the Panel whether to show sliders.

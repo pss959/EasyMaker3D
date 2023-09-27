@@ -141,7 +141,7 @@ TEST_F(PanelTest, FocusEvents) {
     EXPECT_TRUE(panel->HandleEvent(event));
     EXPECT_EQ(but2, panel->GetFocusedPane());
 
-    // Disable Button0 and Button1; Tab and Shift-Tabe should stay on Button2.
+    // Disable Button0 and Button1; Tab and Shift-Tab should stay on Button2.
     but0->SetInteractionEnabled(false);
     but1->SetInteractionEnabled(false);
     EXPECT_TRUE(panel->HandleEvent(event));
@@ -149,6 +149,12 @@ TEST_F(PanelTest, FocusEvents) {
     event.modifiers.SetAll(false);
     EXPECT_TRUE(panel->HandleEvent(event));
     EXPECT_EQ(but2, panel->GetFocusedPane());
+
+    // Test direct change to focus. [Note: SetFocusedPane() is public so that
+    // SnapScript can make changes, but the main app does not use it.]
+    but0->SetInteractionEnabled(true);
+    panel->SetFocusedPane(but0);
+    EXPECT_EQ(but0, panel->GetFocusedPane());
 }
 
 TEST_F(PanelTest, GetTouchedPaneWidget) {

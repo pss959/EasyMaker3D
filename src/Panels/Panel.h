@@ -113,6 +113,9 @@ class Panel : public SG::Node {
     /// Returns the current attachment/visibility status.
     Status GetStatus() const { return status_; }
 
+    /// Changes the focus to the given Pane.
+    void SetFocusedPane(const PanePtr &pane);
+
     /// Returns the currently focused Pane, or null if there is none.
     PanePtr GetFocusedPane() const;
 

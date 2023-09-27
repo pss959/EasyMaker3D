@@ -85,6 +85,7 @@ bool SnapScript::ProcessLine_(const Str &line) {
       case kAction:   instr = ProcessAction_(words);   break;
       case kClick:    instr = ProcessClick_(words);    break;
       case kDrag:     instr = ProcessDrag_(words);     break;
+      case kFocus:    instr = ProcessFocus_(words);    break;
       case kHand:     instr = ProcessHand_(words);     break;
       case kHandPos:  instr = ProcessHandPos_(words);  break;
       case kHeadset:  instr = ProcessHeadset_(words);  break;
@@ -175,6 +176,18 @@ SnapScript::InstrPtr SnapScript::ProcessDrag_(const StrVec &words) {
         dinst->pos.Set(x, y);
     }
     return dinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessFocus_(const StrVec &words) {
+    FocusInstrPtr finst;
+    if (words.size() != 2U) {
+        Error_("Bad syntax for focus instruction");
+    }
+    else {
+        finst.reset(new FocusInstr);
+        finst->pane_name = words[1];
+    }
+    return finst;
 }
 
 SnapScript::InstrPtr SnapScript::ProcessHand_(const StrVec &words) {

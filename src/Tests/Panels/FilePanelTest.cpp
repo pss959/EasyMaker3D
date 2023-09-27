@@ -2,29 +2,76 @@
 #include "Enums/FileFormat.h"
 #include "Panels/FilePanel.h"
 #include "Panes/TextInputPane.h"
+#include "Panes/TextPane.h"
 #include "Tests/Panels/PanelTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/Util/FakeFileSystem.h"
 
+// ----------------------------------------------------------------------------
+// FilePanelTest class.
+// ----------------------------------------------------------------------------
+
 /// \ingroup Tests
 class FilePanelTest : public PanelTestBase {
   protected:
-    FilePanelPtr panel;
-    FilePanelTest() {
-        panel = InitPanel<FilePanel>("FilePanel");
+    FilePanelPtr panel;  ///< FilePanel set up in constructor.
 
-        // Set up some directories in the FakeFileSystem to make the direction
-        // button enabling consistent.
-        UseRealFileSystem(false);
-        auto fs = GetFakeFileSystem();
-        fs->AddDir("/a");
-        fs->AddDir("/a/b");
-        fs->AddDir("/a/b/c");
-        fs->AddFile("/a/b/c/d.jpg");
-        fs->AddFile("/a/b/c/d.stl");
-    }
+    FilePanelTest();
     ~FilePanelTest() {}
+
+    /// Tests that the contents of the FilePanel contains only file buttons
+    /// for the named subdirectories and files.
+    void TestFiles(const Str &when, const StrVec &subdirs, const StrVec &files);
 };
+
+FilePanelTest::FilePanelTest() {
+    panel = InitPanel<FilePanel>("FilePanel");
+
+    // Set up some directories in the FakeFileSystem to make the direction
+    // button enabling consistent.
+    UseRealFileSystem(false);
+    auto fs = GetFakeFileSystem();
+    fs->AddDir("/a");
+    fs->AddDir("/a/b");
+    fs->AddDir("/a/b/c");
+    fs->AddDir("/a/b/c/subdir0");
+    fs->AddDir("/a/b/c/subdir1");
+    fs->AddFile("/a/b/c/file0.jpg");
+    fs->AddFile("/a/b/c/file1.stl");
+    fs->AddFile("/a/b/c/hidden0.txt", true);
+    fs->AddFile("/a/b/c/hidden1.txt", true);
+}
+
+void FilePanelTest::TestFiles(const Str &when,
+                              const StrVec &subdirs, const StrVec &files) {
+    auto get_fb = [&](const Str &prefix, size_t index){
+        return panel->GetPane()->FindSubPane(prefix + Util::ToString(index));
+    };
+
+    // Subdirs.
+    for (size_t i = 0; i < subdirs.size(); ++i) {
+        auto but = get_fb("Dir_", i);
+        EXPECT_NOT_NULL(but) << " " << when << " subdir " << i;
+        auto text = but->FindTypedSubPane<TextPane>("ButtonText");
+        EXPECT_EQ(subdirs[i], text->GetText()) << when << " subdir " << i;
+    }
+    // Make sure there are no more subdirs.
+    EXPECT_NULL(get_fb("Dir_", subdirs.size())) << " " << when;
+
+    // Files
+    for (size_t i = 0; i < subdirs.size(); ++i) {
+        auto but = get_fb("File_", i);
+        EXPECT_NOT_NULL(but) << " " << when << " file " << i;
+        auto text = but->FindTypedSubPane<TextPane>("ButtonText");
+        EXPECT_EQ(files[i], text->GetText()) << when << " file " << i;
+    }
+    // Make sure there are no more subdirs.
+    EXPECT_NULL(get_fb("File_", files.size())) << " " << when;
+}
+
+// ----------------------------------------------------------------------------
+// FilePanelTest tests.
+// ----------------------------------------------------------------------------
 
 TEST_F(FilePanelTest, Defaults) {
     EXPECT_NULL(panel->GetFocusedPane());
@@ -91,6 +138,32 @@ TEST_F(FilePanelTest, Directions) {
     EXPECT_TRUE(IsButtonPaneEnabled("Home"));
     ClickButtonPane("Home");
     EXPECT_EQ("/home/user", input->GetText());
+}
+
+TEST_F(FilePanelTest, HiddenFiles) {
+    panel->SetInitialPath("/a/b/c");
+    panel->SetTargetType(FilePanel::TargetType::kExistingFile);
+    panel->SetStatus(Panel::Status::kVisible);
+
+    auto input = FindTypedPane<TextInputPane>("Input");
+
+    // Verify that only non-hidden subdirs and files are visible. There should
+    // be two directories and two files.
+    TestFiles("Before showing hidden",
+              StrVec{ "subdir0", "subdir1" },
+              StrVec{ "file0.jpg", "file1.stl" });
+
+    // Show hidden files. There should now be two more files.
+    ToggleCheckboxPane("HiddenFiles");
+    TestFiles("After showing hidden",
+              StrVec{ "subdir0", "subdir1" },
+              StrVec{ "file0.jpg", "file1.stl", "hidden0.txt", "hidden1.txt" });
+
+    // Toggle again; should make files hidden again.
+    ToggleCheckboxPane("HiddenFiles");
+    TestFiles("After hiding again",
+              StrVec{ "subdir0", "subdir1" },
+              StrVec{ "file0.jpg", "file1.stl" });
 }
 
 TEST_F(FilePanelTest, ChooseDirectory) {
@@ -168,25 +241,29 @@ TEST_F(FilePanelTest, ChooseExistingFile) {
     // Cannot accept a directory.
     EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
 
+    // Click on an existing file name with the correct extension. Should be
+    // acceptable. This should also focus on the file button for this file.
+    ClickButtonPane("File_0");
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    const auto but = panel->GetFocusedPane();
+    EXPECT_NOT_NULL(but);
+    auto text = but->FindTypedSubPane<TextPane>("ButtonText");
+    EXPECT_EQ("file1.stl", text->GetText());
+
     // Enter a file name with no extension. Should not be acceptable.
     SetTextInput("Input", "/a/b/c/test");
     EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
 
     // Enter an existing file name with the wrong extension. Should be
     // acceptable.
-    SetTextInput("Input", "/a/b/c/d.jpg");
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
-
-    // Enter an existing file name with the correct extension. Should be
-    // acceptable.
-    SetTextInput("Input", "/a/b/c/d.stl");
+    SetTextInput("Input", "/a/b/c/file0.jpg");
     EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
 
     // Accept it and test the results.
     ClickButtonPane("Accept");
     EXPECT_EQ("Accept",                   GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
-    EXPECT_EQ("/a/b/c/d.stl",             panel->GetPath().ToString());
+    EXPECT_EQ("/a/b/c/file1.stl",         panel->GetPath().ToString());
     EXPECT_EQ(FileFormat::kTextSTL,       panel->GetFileFormat());
 }
 
@@ -198,7 +275,7 @@ TEST_F(FilePanelTest, OverwriteFile) {
     panel->SetStatus(Panel::Status::kVisible);
 
     // Enter an existing file name.
-    SetTextInput("Input", "/a/b/c/d.stl");
+    SetTextInput("Input", "/a/b/c/file1.stl");
 
     // Accept it. This should bring up a DialogPanel asking whether to
     // overwrite the file.
@@ -227,5 +304,5 @@ TEST_F(FilePanelTest, OverwriteFile) {
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Yes", GetCloseResult());
-    EXPECT_EQ("/a/b/c/d.stl", panel->GetPath().ToString());
+    EXPECT_EQ("/a/b/c/file1.stl", panel->GetPath().ToString());
 }
