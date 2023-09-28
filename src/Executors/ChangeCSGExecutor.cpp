@@ -1,6 +1,7 @@
 #include "Executors/ChangeCSGExecutor.h"
 
 #include "Commands/ChangeCSGOperationCommand.h"
+#include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/CSGModel.h"
 
@@ -10,22 +11,30 @@ void ChangeCSGExecutor::Execute(Command &command, Command::Op operation) {
     ChangeCSGOperationCommand &ccc =
         GetTypedCommand<ChangeCSGOperationCommand>(command);
 
+    auto &context = GetContext();
+
     for (auto &pm: data.per_model) {
         CSGModel &csg = GetTypedModel<CSGModel>(pm.path_to_model);
+        Str from_name, to_name;
         if (operation == Command::Op::kDo) {
             const Vector3f old_offset = csg.GetLocalCenterOffset();
             csg.SetOperation(ccc.GetNewOperation());
-            csg.ChangeModelName(pm.new_name, false);
+            from_name = pm.old_name;
+            to_name   = pm.new_name;
             csg.SetTranslation(pm.old_translation -
                                old_offset + csg.GetLocalCenterOffset());
         }
         else {  // Undo.
             csg.SetOperation(pm.old_operation);
-            csg.ChangeModelName(pm.old_name, false);
+            from_name = pm.new_name;
+            to_name   = pm.old_name;
             csg.SetTranslation(pm.old_translation);
         }
+        csg.ChangeModelName(to_name, false);
+        context.name_manager->Remove(from_name);
+        context.name_manager->Add(to_name);
     }
-    GetContext().selection_manager->ReselectAll();
+    context.selection_manager->ReselectAll();
 }
 
 ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
@@ -39,14 +48,25 @@ ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
         ASSERT(! model_names.empty());
 
         // If the command was read in, there should be result names already
-        // stored in the command. If not, create them.
+        // stored in the command. If not, create unique names.
         StrVec result_names = ccc.GetResultNames();
         if (result_names.empty()) {
+            auto &nm = *GetContext().name_manager;
             result_names.reserve(model_names.size());
             const Str prefix = Util::EnumToWord(ccc.GetNewOperation());
-            for (size_t i = 0; i < model_names.size(); ++i)
-                result_names.push_back(CreateUniqueName(prefix));
+            // Temporarily add each new name so that all subsequent names will
+            // be unique.
+            for (size_t i = 0; i < model_names.size(); ++i) {
+                const Str name = CreateUniqueName(prefix);
+                result_names.push_back(name);
+                nm.Add(name);
+            }
             ccc.SetResultNames(result_names);
+
+            // Remove all of the new names; they will be readded when Execute()
+            // is called.
+            for (const auto &name: result_names)
+                nm.Remove(name);
         }
         ASSERT(result_names.size() == model_names.size());
 

@@ -74,8 +74,12 @@ test_source_dict = {
         'ActionTest',
     ],
     'Executors' : [
+        'ChangeBendExecutorTest',
+        'ChangeBevelExecutorTest',
+        'ChangeCSGExecutorTest',
         'ChangeColorExecutorTest',
         'ChangeNameExecutorTest',
+        'ChangeTwistExecutorTest',
         'ExecutorTestBase',
         'ScaleExecutorTest',
     ],

@@ -1,5 +1,6 @@
 #include "Commands/ChangeNameCommand.h"
 #include "Executors/ChangeNameExecutor.h"
+#include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/BoxModel.h"
 #include "Models/RootModel.h"
@@ -24,6 +25,7 @@ TEST_F(ChangeNameExecutorTest, ChangeName) {
 
     auto box = Model::CreateModel<BoxModel>("Box_0");
     context.root_model->AddChildModel(box);
+    context.name_manager->Add("Box_0");
 
     context.selection_manager->SelectAll();
 

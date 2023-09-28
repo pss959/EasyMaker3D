@@ -38,7 +38,7 @@ class ChangeCSGOperationCommand : public MultiModelCommand {
     /// \name Parsed Fields
     ///@{
     Parser::EnumField<CSGOperation> new_operation_;
-    Parser::VField<Str>     result_names_;
+    Parser::VField<Str>             result_names_;
     ///@}
 
     friend class Parser::Registry;
