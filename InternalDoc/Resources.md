@@ -65,30 +65,30 @@ An input file contains a single object. An object is of the form:
 A field contains either a single value or a multiple values of a specific
 type. The current list of field types is:
 
-| Underlying Type | Format                                           | Examples                        |
-| :-------------: | :----------------------------------------------- | ------------------------------- |
-| bool            | **True** or **False**                            | True                            |
-| float           | *value*                                          | -12.4                           |
-| int             | *value*                                          | -16                             |
-| unsigned int    | *value*                                          | 27                              |
-| string          | *quoted string*                                  | "Example text."                 |
-| #Anglef         | degrees                                          | 112.5                           |
-| #Color          | *r g b a* or <b>\"\#</b><i>RRGGBBAA</i><b>\"</b> | .2 .4 .1 1 *or* "#d34577ff"     |
-| #Matrix2f       | *4 floats*                                       | 1 0 0 1                         |
-| #Matrix3f       | *9 floats*                                       | 1 0 0 0 1 0 0 0 1               |
-| #Matrix4f       | *16 floats*                                      | 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 |
-| #Plane          | *distance normal_x normal_y normal_z*            | .5 0 1 0                        |
-| #Point3f        | *x y z*                                          | -1 3.1 4                        |
-| #Rotationf      | *axis_x axis_y axis_z degrees*                   | 0 1 0  -90                      |
-| #Vector2f       | *x y* (float)                                    | 1 -2.5                          |
-| #Vector2i       | *x y* (int)                                      | -3 4                            |
-| #Vector2ui      | *x y* (unsigned int)                             | 3 6                             |
-| #Vector3f       | *x y z* (float)                                  | 1 -2 .4                         |
-| #Vector3i       | *x y z* (int)                                    | 1 -4 6                          |
-| #Vector3ui      | *x y z* (unsigned int)                           | 5 2 1                           |
-| #Vector4f       | *x y z w* (float)                                | 1 -2 .4 .2                      |
-| #Vector4i       | *x y z w* (int)                                  | -3 1 -4 6                       |
-| #Vector4ui      | *x y z w* (unsigned int)                         | 6 4 1 2                         |
+| Underlying Type | Format                                           | Examples                          |
+| :-------------: | :----------------------------------------------- | --------------------------------- |
+| bool            | **True** or **False**                            | `True`                            |
+| float           | *value*                                          | `-12.4`                           |
+| int             | *value*                                          | `-16`                             |
+| unsigned int    | *value*                                          | `27`                              |
+| string          | *quoted string*                                  | `"Example text."`                 |
+| #Anglef         | degrees                                          | `112.5`                           |
+| #Color          | *r g b a* or <b>\"\#</b><i>RRGGBBAA</i><b>\"</b> | `.2 .4 .1 1` *or* `"#d34577ff"`   |
+| #Matrix2f       | *4 floats*                                       | `1 0 0 1`                         |
+| #Matrix3f       | *9 floats*                                       | `1 0 0 0 1 0 0 0 1`               |
+| #Matrix4f       | *16 floats*                                      | `1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1` |
+| #Plane          | *normal_x normal_y normal_z distance*            | `0 1 0 .5`                        |
+| #Point3f        | *x y z*                                          | `-1 3.1 4`                        |
+| #Rotationf      | *axis_x axis_y axis_z degrees*                   | `0 1 0  -90`                      |
+| #Vector2f       | *x y* (float)                                    | `1 -2.5`                          |
+| #Vector2i       | *x y* (int)                                      | `-3 4`                            |
+| #Vector2ui      | *x y* (unsigned int)                             | `3 6`                             |
+| #Vector3f       | *x y z* (float)                                  | `1 -2 .4`                         |
+| #Vector3i       | *x y z* (int)                                    | `1 -4 6`                          |
+| #Vector3ui      | *x y z* (unsigned int)                           | `5 2 1`                           |
+| #Vector4f       | *x y z w* (float)                                | `1 -2 .4 .2`                      |
+| #Vector4i       | *x y z w* (int)                                  | `-3 1 -4 6`                       |
+| #Vector4ui      | *x y z w* (unsigned int)                         | `6 4 1 2`                         |
 
 Some fields contain one or more other objects. These are typically defined to
 hold a specific derived object class.
