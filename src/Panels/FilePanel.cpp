@@ -145,6 +145,10 @@ class FilePanel::Impl_ {
 
     /// Returns true if the given Pane is a file button.
     bool IsFileButton_(const Pane &pane) const;
+
+    /// Adds the extension, if any, to the given path if necessary, returning
+    /// the result.
+    FilePath AddExtension_(const FilePath &path) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -175,9 +179,7 @@ bool FilePanel::Impl_::AcceptPath() {
     // Set the result path. If the TextInputPane has a different path and it is
     // valid, use it. Otherwise, use the current path.
     result_path_ = path_list_->GetCurrent();
-    FilePath input_path(input_pane_->GetText());
-    if (! extension_.empty() && input_path.GetExtension() != extension_)
-        input_path.AddExtension(extension_);
+    const FilePath input_path = AddExtension_(input_pane_->GetText());
     if (input_path != result_path_ &&
         GetPathStatus_(input_path) == PathStatus_::kAcceptable)
         result_path_ = input_path;
@@ -239,7 +241,6 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root) {
     input_pane_->SetValidationFunc([&](const Str &path_string){
         const PathStatus_ status = GetPathStatus_(path_string);
         UpdateButtons_(status);
-        UpdateFocus_();
         return status != PathStatus_::kInvalid;
     });
 }
@@ -285,7 +286,7 @@ FilePanel::Impl_::GetPathStatus_(const FilePath &path) const {
         break;
 
       case TargetType::kExistingFile:
-        status = path_list_->IsExistingFile(path) ?
+        status = path_list_->IsExistingFile(AddExtension_(path)) ?
             (is_dir ? PathStatus_::kValid : PathStatus_::kAcceptable) :
             PathStatus_::kInvalid;
         break;
@@ -437,6 +438,13 @@ bool FilePanel::Impl_::IsFileButton_(const Pane &pane) const {
     return std::find_if(panes.begin(), panes.end(),
                         [&](const PanePtr &p){ return p.get() == &pane; }) !=
         panes.end();
+}
+
+FilePath FilePanel::Impl_::AddExtension_(const FilePath &path) const {
+    FilePath ext_path = path;
+    if (! extension_.empty() && ext_path.GetExtension() != extension_)
+        ext_path.AddExtension(extension_);
+    return ext_path;
 }
 
 // ----------------------------------------------------------------------------

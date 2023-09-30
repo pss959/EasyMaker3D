@@ -254,12 +254,14 @@ TEST_F(FilePanelTest, ChooseExistingFile) {
     SetTextInput("Input", "/a/b/c/test");
     EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
 
-    // Enter an existing file name with the wrong extension. Should be
+    // Enter an existing file name with the wrong extension. Should not be
     // acceptable.
     SetTextInput("Input", "/a/b/c/file0.jpg");
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
 
-    // Accept it and test the results.
+    // Enter and accept a valid file name and test the results.
+    SetTextInput("Input", "/a/b/c/file1.stl");
+    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
     ClickButtonPane("Accept");
     EXPECT_EQ("Accept",                   GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
