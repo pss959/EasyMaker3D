@@ -22,6 +22,7 @@ class ChangeImportedExecutor : public Executor {
     struct ExecData_ : public Command::ExecData {
         ImportedModelPtr imported_model;
         Str              old_path;
+        Vector3f         old_translation;
     };
 
     /// Creates and stores a ExecData_ in the given command if necessary,

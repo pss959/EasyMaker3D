@@ -9,25 +9,34 @@ Plane ChangeMirrorExecutor::GetModelPlane(const Model &model) const {
     return Plane(0, static_cast<const MirroredModel &>(model).GetPlaneNormal());
 }
 
-void ChangeMirrorExecutor::SetModelPlane(Model &model, const Plane &plane,
-                                         const SG::CoordConv *cc) const {
+void ChangeMirrorExecutor::UpdateModel(Model &model,
+                                       const PlaneData &data) const {
     ASSERT(dynamic_cast<MirroredModel *>(&model));
     auto &mm = static_cast<MirroredModel &>(model);
 
-    if (cc) {
-        // Convert the plane from stage coordinates into object coordinates.
-        const Plane object_plane =
-            TransformPlane(plane, cc->GetRootToObjectMatrix());
+    // Convert the new plane from stage coordinates into object coordinates.
+    const Plane new_object_plane =
+        TransformPlane(data.new_stage_plane, data.cc.GetRootToObjectMatrix());
 
-        // Set the plane in the MirroredModel.
-        mm.SetPlaneNormal(object_plane.normal);
+    // Set the plane normal in the MirroredModel.
+    mm.SetPlaneNormal(new_object_plane.normal);
 
-        // Translate to the other side of the stage plane.
-        const Point3f center =
-            cc->LocalToRoot(Point3f(mm.GetOperandModel()->GetTranslation()));
-        mm.TranslateTo(cc->RootToLocal(plane.MirrorPoint(center)));
-    }
-    else {
-        mm.SetPlaneNormal(plane.normal);
-    }
+    // Update the translation for the MirroredModel. If the center of the
+    // operand Model mirrored across the old Plane is not the same as (or close
+    // to) the old translation of the MirroredModel, this means that the
+    // MirroredModel was translated after conversion. Compute the difference
+    // between the two and add that back in to the new translation.
+    const auto obj_center = Point3f(mm.GetOperandModel()->GetTranslation());
+    const auto diff = Point3f(data.old_translation) -
+        data.old_object_plane.MirrorPoint(obj_center);
+    const auto stage_center   = data.cc.LocalToRoot(obj_center);
+    const auto stage_mirrored = data.new_stage_plane.MirrorPoint(stage_center);
+    mm.TranslateTo(data.cc.RootToLocal(stage_mirrored) + diff);
+}
+
+void ChangeMirrorExecutor::SetModelPlane(Model &model,
+                                         const Plane &plane) const {
+    ASSERT(dynamic_cast<MirroredModel *>(&model));
+    auto &mm = static_cast<MirroredModel &>(model);
+    mm.SetPlaneNormal(plane.normal);
 }

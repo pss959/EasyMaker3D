@@ -14,6 +14,7 @@ class ChangeMirrorExecutor : public ChangePlaneExecutor {
   protected:
     // Required ChangePlaneExecutor functions:
     virtual Plane GetModelPlane(const Model &model) const override;
-    virtual void  SetModelPlane(Model &model, const Plane &plane,
-                                const SG::CoordConv *cc) const override;
+    virtual void UpdateModel(Model &model,
+                             const PlaneData &data) const override;
+    virtual void SetModelPlane(Model &model, const Plane &plane) const override;
 };

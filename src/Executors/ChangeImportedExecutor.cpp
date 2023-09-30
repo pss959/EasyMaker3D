@@ -20,11 +20,12 @@ void ChangeImportedExecutor::Execute(Command &command, Command::Op operation) {
     }
     else {  // Undo.
         data.imported_model->SetPath(data.old_path);
+        data.imported_model->SetTranslation(data.old_translation);
     }
 
     // Do NOT reselect if there is a model error - that would cause the error
     // message dialog to go away.
-    if (! data.imported_model->GetErrorMessage().empty())
+    if (data.imported_model->GetErrorMessage().empty())
         GetContext().selection_manager->ReselectAll();
 }
 
@@ -40,8 +41,9 @@ ChangeImportedExecutor::ExecData_ & ChangeImportedExecutor::GetExecData_(
         ImportedModelPtr im =
             std::dynamic_pointer_cast<ImportedModel>(path_to_model.GetModel());
         ASSERT(im);
-        data->imported_model = im;
-        data->old_path       = im->GetPath();
+        data->imported_model  = im;
+        data->old_path        = im->GetPath();
+        data->old_translation = im->GetTranslation();
 
         command.SetExecData(data);
     }

@@ -9,27 +9,28 @@ Plane ChangeClipExecutor::GetModelPlane(const Model &model) const {
     return static_cast<const ClippedModel &>(model).GetPlane();
 }
 
-void ChangeClipExecutor::SetModelPlane(Model &model, const Plane &plane,
-                                       const SG::CoordConv *cc) const {
+void ChangeClipExecutor::UpdateModel(Model &model,
+                                     const PlaneData &data) const {
     ASSERT(dynamic_cast<ClippedModel *>(&model));
     auto &cm = static_cast<ClippedModel &>(model);
 
-    if (cc) {
-        // Save the current translation without offset compensation.
-        const Vector3f trans = cm.GetTranslation() - cm.GetLocalCenterOffset();
+    // Save the current translation without offset compensation.
+    const Vector3f trans = cm.GetTranslation() - cm.GetLocalCenterOffset();
 
-        // Convert the plane from stage coordinates into object coordinates.
-        const Plane object_plane = TransformPlane(
-            TranslatePlane(plane, cm.GetLocalCenterOffset()),
-            cc->GetRootToObjectMatrix());
+    // Convert the new plane from stage coordinates into object coordinates.
+    const Plane new_object_plane = TransformPlane(
+        TranslatePlane(data.new_stage_plane, cm.GetLocalCenterOffset()),
+        data.cc.GetRootToObjectMatrix());
 
-        // Set the plane in the ClippedModel.
-        cm.SetPlane(object_plane);
+    // Set the plane in the ClippedModel.
+    cm.SetPlane(new_object_plane);
 
-        // Compensate for any new centering translation.
-        cm.SetTranslation(trans + cm.GetLocalCenterOffset());
-    }
-    else {
-        cm.SetPlane(plane);
-    }
+    // Compensate for any new centering translation.
+    cm.SetTranslation(trans + cm.GetLocalCenterOffset());
+}
+
+void ChangeClipExecutor::SetModelPlane(Model &model, const Plane &plane) const {
+    ASSERT(dynamic_cast<ClippedModel *>(&model));
+    auto &cm = static_cast<ClippedModel &>(model);
+    cm.SetPlane(plane);
 }

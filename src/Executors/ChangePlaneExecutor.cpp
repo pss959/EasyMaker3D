@@ -2,6 +2,7 @@
 
 #include "Commands/ChangePlaneCommand.h"
 #include "Managers/SelectionManager.h"
+#include "Math/Linear.h"
 #include "Models/Model.h"
 
 void ChangePlaneExecutor::Execute(Command &command, Command::Op operation) {
@@ -11,12 +12,17 @@ void ChangePlaneExecutor::Execute(Command &command, Command::Op operation) {
     for (auto &pm: data.per_model) {
         auto &model = *pm.path_to_model.GetModel();
         if (operation == Command::Op::kDo) {
-            // Let the derived class update the plane and translation.
+            // Let the derived class update the plane and whatever else is
+            // necessary.
             const auto cc = pm.path_to_model.GetCoordConv();
-            SetModelPlane(model, cpc.GetPlane(), &cc);
+            PlaneData data(cc);
+            data.old_object_plane = pm.old_object_plane;
+            data.new_stage_plane  = cpc.GetPlane();
+            data.old_translation  = pm.old_translation;
+            UpdateModel(model, data);
         }
         else {
-            SetModelPlane(model, pm.old_object_plane, nullptr);
+            SetModelPlane(model, pm.old_object_plane);
             model.SetTranslation(pm.old_translation);
         }
     }
