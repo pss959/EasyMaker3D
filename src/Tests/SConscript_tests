@@ -91,6 +91,8 @@ test_source_dict = {
         'ChangeTextExecutorTest',
         'ChangeTorusExecutorTest',
         'ChangeTwistExecutorTest',
+        'CombineCSGExecutorTest',
+        'CombineHullExecutorTest',
         'ExecutorTestBase',
         'ScaleExecutorTest',
     ],

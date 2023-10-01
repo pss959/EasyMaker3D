@@ -39,7 +39,8 @@ TEST_F(ChangeCSGExecutorTest, TypeName) {
 }
 
 TEST_F(ChangeCSGExecutorTest, ChangeCSGWithoutNames) {
-    // Set up a ChangeCSGOperationCommand without result names.
+    // Set up a ChangeCSGOperationCommand without result names. This cannot be
+    // created by parsing because having no result names is a parse error.
     auto cmd = Command::CreateCommand<ChangeCSGOperationCommand>();
     cmd->SetModelNames(StrVec{ "Union_0", "Intersection_1" });
     cmd->SetNewOperation(CSGOperation::kDifference);
