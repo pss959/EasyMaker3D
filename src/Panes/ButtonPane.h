@@ -28,9 +28,18 @@ class ButtonPane : public BoxPane, public IPaneInteractor {
     /// Returns true if the button has interaction enabled.
     bool IsInteractionEnabled() const;
 
+    /// Sets a flag indicating whether the ButtonPane should be focused when
+    /// activated. The default is true.
+    void SetShouldFocusOnActivation(bool b) { should_focus_on_activation_ = b; }
+
+    /// Returns a flag indicating whether the ButtonPane should be focused when
+    /// activated. The default is true.
+    bool ShouldFocusOnActivation() const { return should_focus_on_activation_; }
+
     // IPaneInteractor interface.
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;
+    virtual bool CanFocus(FocusReason reason) const override;
     virtual BorderPtr GetFocusBorder() const override;
 
   protected:
@@ -53,6 +62,8 @@ class ButtonPane : public BoxPane, public IPaneInteractor {
     ///@{
     Parser::TField<bool> is_toggle_;
     ///@}
+
+    bool should_focus_on_activation_ = true;
 
     mutable PushButtonWidgetPtr button_;
 

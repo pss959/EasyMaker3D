@@ -369,6 +369,11 @@ PanePtr FilePanel::Impl_::CreateFileButton_(size_t index, const Str &name,
         is_dir ? "FileDirectoryColor" : "FileColor";
     text->SetColor(SG::ColorMap::SGetColor(color_name));
 
+    // Set the ButtonPane to NOT accept a focus change on activation. If it
+    // did, a mouse press on a file button would change the focus with a
+    // potential scrolling change, which would be very annoying.
+    but->SetShouldFocusOnActivation(false);
+
     auto click_func = [&, name](const ClickInfo &){
         ShowPath_(path_list_->AddPath(name));
     };

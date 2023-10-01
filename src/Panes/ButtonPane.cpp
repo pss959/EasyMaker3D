@@ -44,6 +44,12 @@ ClickableWidgetPtr ButtonPane::GetActivationWidget() const {
     return button_;
 }
 
+bool ButtonPane::CanFocus(FocusReason reason) const {
+    // Don't focus on this ButtonPane when activated if the flag is false.
+    return GetButton().IsInteractionEnabled() &&
+        (reason != FocusReason::kActivation || should_focus_on_activation_);
+}
+
 BorderPtr ButtonPane::GetFocusBorder() const {
     return GetButton().IsInteractionEnabled() ? GetBorder() : BorderPtr();
 }

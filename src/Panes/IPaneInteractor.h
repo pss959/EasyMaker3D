@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Base/Memory.h"
+#include "Enums/FocusReason.h"
 
 struct Event;
 DECL_SHARED_PTR(Border);
@@ -26,6 +27,13 @@ class IPaneInteractor {
     /// navigate focus to it and hit the Enter or Space key. The default is to
     /// return null.
     virtual ClickableWidgetPtr GetActivationWidget() const { return nullptr; }
+
+    /// Returns true if the Pane can be focused for the given reason. The
+    /// default is to return true for any reason if GetFocusBorder() returns a
+    /// non-null border.
+    virtual bool CanFocus(FocusReason reason) const {
+        return GetFocusBorder().get();
+    }
 
     /// Returns a Border to highlight to focus the Pane for interaction if
     /// possible, or null if it is not possible. Note that some Pane classes

@@ -183,7 +183,7 @@ void Panel::Focuser_::ActivatePane(const PanePtr &pane, bool is_click) {
 
     // Make sure the Pane is still able to interact. It may have been disabled
     // by another observer.
-    if (! interactor.GetFocusBorder()) {
+    if (! interactor.CanFocus(FocusReason::kMove)) {
         MoveFocus(Focuser_::Direction::kDown);
         return;
     }
@@ -220,7 +220,7 @@ void Panel::Focuser_::InitPaneInteraction_(const PanePtr &pane) {
         if (! clickable->GetActivation().HasObserver(this)) {
             auto func = [&, pane](Widget &, bool is_act){
                 if (is_act) {
-                    if (interactor.GetFocusBorder())
+                    if (interactor.CanFocus(FocusReason::kActivation))
                         SetFocus(pane);
                     ActivatePane(pane, true);
                 }
@@ -234,7 +234,7 @@ void Panel::Focuser_::FocusFirstPane_() {
     // Use the first focusable interactive pane by default.
     ASSERT(focused_index_ < 0);
     for (size_t i = 0; i < panes_.size(); ++i) {
-        if (panes_[i]->GetInteractor()->GetFocusBorder()) {
+        if (panes_[i]->GetInteractor()->CanFocus(FocusReason::kInitialFocus)) {
             focused_index_ = i;
             KLOG('F', desc_ << " focused on "
                  << panes_[0]->GetDesc() << " to start");
@@ -580,8 +580,8 @@ bool Panel::ProcessKeyPress_(const Event &event) {
 }
 
 bool Panel::CanFocusPane_(Pane &pane) const {
-    // The Pane has to have a focus border.
-    if (! pane.GetInteractor()->GetFocusBorder())
+    // The Pane has to be able to receive focus.
+    if (! pane.GetInteractor()->CanFocus(FocusReason::kMove))
         return false;
 
     // The Pane and all ancestors have to be enabled.
