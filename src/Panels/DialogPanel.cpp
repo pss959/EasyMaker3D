@@ -38,6 +38,8 @@ void DialogPanel::InitInterface() {
 }
 
 void DialogPanel::UpdateInterface() {
-    // Always recompute the layout size, since it may be smaller now.
-    GetSizeChanged().Notify();
+    // Always start with the smallest allowable size, since the previous size
+    // may have been for a larger message.
+    auto pane = GetPane();
+    pane->SetLayoutSize(pane->GetBaseSize());
 }

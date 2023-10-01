@@ -70,6 +70,9 @@ void ImportTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
             ASSERT(cimc);
             cimc->SetPath(path);
             model->SetPath(path);
+
+            // Access the ImportedModel's mesh so errors are detected.
+            model->GetMesh();
         }
         else {
             // This is a change to an existing ImportedModel.
