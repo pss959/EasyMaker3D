@@ -18,6 +18,10 @@ TEST_F(ButtonPaneTest, Defaults) {
     EXPECT_EQ(&but->GetButton(), but->GetActivationWidget().get());
     EXPECT_EQ(but->GetBorder(),  but->GetFocusBorder());
     EXPECT_TRUE(but->IsInteractionEnabled());
+    EXPECT_TRUE(but->ShouldFocusOnActivation());
+    EXPECT_TRUE(but->CanFocus(FocusReason::kInitialFocus));
+    EXPECT_TRUE(but->CanFocus(FocusReason::kActivation));
+    EXPECT_TRUE(but->CanFocus(FocusReason::kMove));
 }
 
 TEST_F(ButtonPaneTest, InteractionEnabled) {
@@ -31,4 +35,10 @@ TEST_F(ButtonPaneTest, InteractionEnabled) {
     but->SetInteractionEnabled(true);
     EXPECT_TRUE(but->GetButton().IsInteractionEnabled());
     EXPECT_EQ(but->GetBorder(), but->GetFocusBorder());
+
+    but->SetShouldFocusOnActivation(false);
+    EXPECT_FALSE(but->ShouldFocusOnActivation());
+    EXPECT_TRUE(but->CanFocus(FocusReason::kInitialFocus));
+    EXPECT_FALSE(but->CanFocus(FocusReason::kActivation));
+    EXPECT_TRUE(but->CanFocus(FocusReason::kMove));
 }

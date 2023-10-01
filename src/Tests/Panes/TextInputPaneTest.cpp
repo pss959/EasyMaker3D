@@ -60,9 +60,13 @@ TEST_F(TextInputPaneTest, Defaults) {
     auto &input = GetTextInputPane();
     EXPECT_EQ(".", input.GetText());
     EXPECT_TRUE(input.IsTextValid());
-    EXPECT_NOT_NULL(input.GetInteractor());
-    EXPECT_NOT_NULL(input.GetInteractor()->GetActivationWidget());
-    EXPECT_EQ(input.GetBorder(), input.GetInteractor()->GetFocusBorder());
+    auto inter = input.GetInteractor();
+    EXPECT_NOT_NULL(inter);
+    EXPECT_NOT_NULL(inter->GetActivationWidget());
+    EXPECT_EQ(input.GetBorder(), inter->GetFocusBorder());
+    EXPECT_TRUE(inter->CanFocus(FocusReason::kInitialFocus));
+    EXPECT_TRUE(inter->CanFocus(FocusReason::kActivation));
+    EXPECT_TRUE(inter->CanFocus(FocusReason::kMove));
 }
 
 TEST_F(TextInputPaneTest, InitialText) {
