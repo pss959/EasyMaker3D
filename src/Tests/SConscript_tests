@@ -107,7 +107,9 @@ test_source_dict = {
         'CreateRevSurfExecutorTest',
         'CreateTextExecutorTest',
         'ExecutorTestBase',
+        'RotateExecutorTest',
         'ScaleExecutorTest',
+        'TranslateExecutorTest',
     ],
     'Feedback' : [
         'FeedbackTest',

@@ -14,6 +14,7 @@
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
 
+// LCOV_EXCL_START [only SetTestContext() is used in tests]
 void Executor::SetContext(std::shared_ptr<Context> &context) {
     // Make sure the Context has all fields set.
     ASSERT(context);
@@ -27,6 +28,7 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     ASSERT(context->tooltip_func);
     context_ = context;
 }
+// LCOV_EXCL_STOP
 
 void Executor::SetTestContext(const ContextPtr &context) {
     // Not all agents are necessarily needed for testing.
