@@ -35,8 +35,10 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
       case PrimitiveType::kTorus:
         pm = Model::CreateModel<TorusModel>(name);
         break;
+      // LCOV_EXCL_START [cannot happen]
       default:
         ASSERTM(false, "Bad Primitive type");
+      // LCOV_EXCL_STOP
     }
 
     return pm;

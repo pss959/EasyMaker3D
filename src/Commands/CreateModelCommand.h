@@ -59,7 +59,7 @@ class CreateModelCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Str> result_name_;
+    Parser::TField<Str>         result_name_;
     Parser::TField<float>       initial_scale_;
     Parser::TField<Point3f>     target_position_;
     Parser::TField<Vector3f>    target_direction_;

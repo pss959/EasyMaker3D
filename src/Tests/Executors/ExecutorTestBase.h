@@ -19,5 +19,6 @@ class ExecutorTestBase : public SceneTestBase {
 
     /// Sets up a test Executor::Context with a RootModel and SelectionManager
     /// and stores it in the given Executor. Returns the context.
-    Executor::Context & InitContext(Executor &exec);
+    Executor::Context & InitContext(Executor &exec,
+                                    const Str &extra_contents = "");
 };
