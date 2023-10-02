@@ -1,138 +1,137 @@
-﻿#include "Commands/CreatePrimitiveModelCommand.h"
-#include "Commands/RotateCommand.h"
-#include "Commands/ScaleCommand.h"
-#include "Managers/CommandManager.h"
-#include "Managers/SceneContext.h"
-#include "Math/Types.h"
+﻿#include "Commands/ScaleCommand.h"
+#include "Executors/ScaleExecutor.h"
+#include "Managers/SelectionManager.h"
+#include "Models/BoxModel.h"
 #include "Models/RootModel.h"
-#include "Tests/AppTestBase.h"
+#include "Tests/Executors/ExecutorTestBase.h"
 #include "Tests/Testing.h"
-#include "Util/Tuning.h"
 
 /// \ingroup Tests
-class ScaleExecutorTest : public AppTestBase {
+class ScaleExecutorTest : public ExecutorTestBase {
   protected:
-    /// Convenience to create and return a default BoxModel after verifying
-    /// that it has a default scale and translation.
-    ModelPtr CreateBox() {
-        auto cpc = Command::CreateCommand<CreatePrimitiveModelCommand>();
-        cpc->SetType(PrimitiveType::kBox);
-        context.command_manager->AddAndDo(cpc);
+    BoxModelPtr box0, box1;
 
-        const auto &rm = *context.scene_context->root_model;
-        EXPECT_LE(1U, rm.GetChildModelCount());
-        const auto box = rm.GetChildModel(rm.GetChildModelCount() - 1);
-        EXPECT_EQ(Vector3f(MS, MS, MS), box->GetScale());
-        EXPECT_EQ(Vector3f(0,  MS,  0), box->GetTranslation());
-        return box;
-    }
-
-    /// Convenience to create and return a default TorusModel after verifying
-    /// that it has a default scale and translation.
-    ModelPtr CreateTorus() {
-        auto cpc = Command::CreateCommand<CreatePrimitiveModelCommand>();
-        cpc->SetType(PrimitiveType::kTorus);
-        context.command_manager->AddAndDo(cpc);
-
-        const auto &rm = *context.scene_context->root_model;
-        EXPECT_LE(1U, rm.GetChildModelCount());
-        const auto torus = rm.GetChildModel(rm.GetChildModelCount() - 1);
-        const float hh = MS * TK::kTorusInnerRadius;
-        EXPECT_EQ(Vector3f(MS, MS, MS), torus->GetScale());
-        EXPECT_VECS_CLOSE(Vector3f(0,  hh,  0), torus->GetTranslation());
-        return torus;
-    }
-
-    /// Convenience to create and execute a ScaleCommand.
-    void ApplyScaleCommand(const Model &model, ScaleCommand::Mode mode,
-                           const Vector3f &ratios) {
-        auto sc = Command::CreateCommand<ScaleCommand>();
-        sc->SetModelNames(StrVec(1, model.GetName()));
-        sc->SetMode(mode);
-        sc->SetRatios(ratios);
-
-        context.command_manager->AddAndDo(sc);
-    }
-
-    /// Convenience to apply a RotateCommand to rotate 90 degrees around Z.
-    void ApplyRotateCommand(const Model &model) {
-        auto rc = Command::CreateCommand<RotateCommand>();
-        rc->SetModelNames(StrVec(1, model.GetName()));
-        rc->SetRotation(BuildRotation(0, 0, 1, 90));
-        context.command_manager->AddAndDo(rc);
-    }
+    /// Creates and adds a couple of BoxModel instances with different scales.
+    /// Translates box0 to the left by 10 and box1 to the right by 10 and in Y
+    /// to rest on Y=0. Selects both.
+    void InitBoxes(ScaleExecutor &exec);
 };
 
-TEST_F(ScaleExecutorTest, CenterSymmetric) {
-    // Create a Box.
-    const auto &box = *CreateBox();
+void ScaleExecutorTest::InitBoxes(ScaleExecutor &exec) {
+    auto context = InitContext(exec);
 
-    // Apply a symmetric scale about the center.
-    ApplyScaleCommand(box, ScaleCommand::Mode::kCenterSymmetric,
-                      Vector3f(2, 3, 4));
-    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
-    EXPECT_EQ(Vector3f(0, MS, 0),               box.GetTranslation());
+    box0 = Model::CreateModel<BoxModel>("Box_0");
+    box1 = Model::CreateModel<BoxModel>("Box_1");
+    box0->SetScale(Vector3f(1, 2, 3));
+    box1->SetScale(Vector3f(2, 3, 4));
+    box0->SetTranslation(Vector3f(-10, 2, 0));
+    box1->SetTranslation(Vector3f( 10, 3, 0));
+    context.root_model->AddChildModel(box0);
+    context.root_model->AddChildModel(box1);
 
-    // Rotate 90 degrees around Z and apply another scale.
-    ApplyRotateCommand(box);
-    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
-    EXPECT_EQ(Vector3f(0, MS, 0),   box.GetTranslation());
-    ApplyScaleCommand(box, ScaleCommand::Mode::kCenterSymmetric,
-                      Vector3f(10, 20, 30));
-    EXPECT_EQ(Vector3f(20 * MS, 60 * MS, 120 * MS), box.GetScale());
-    EXPECT_EQ(Vector3f(0, MS, 0),                   box.GetTranslation());
+    context.selection_manager->SelectAll();
 }
 
-TEST_F(ScaleExecutorTest, BaseSymmetric) {
-    // Create a Box and apply a symmetric scale about the center of the Model
-    // base.
-    const auto &box = *CreateBox();
-    ApplyScaleCommand(box, ScaleCommand::Mode::kBaseSymmetric,
-                      Vector3f(2, 3, 4));
-    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
-    EXPECT_EQ(Vector3f(0,      3 * MS, 0),      box.GetTranslation());
-
-    // Try the same thing with a Torus.
-    const auto &torus = *CreateTorus();
-    ApplyScaleCommand(torus, ScaleCommand::Mode::kBaseSymmetric,
-                      Vector3f(2, 3, 4));
-    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS), box.GetScale());
-    EXPECT_VECS_CLOSE(Vector3f(0, 3 * MS * TK::kTorusInnerRadius, 0),
-                      torus.GetTranslation());
+TEST_F(ScaleExecutorTest, TypeName) {
+    ScaleExecutor exec;
+    EXPECT_EQ("ScaleCommand", exec.GetCommandTypeName());
 }
 
-TEST_F(ScaleExecutorTest, BaseSymmetricRotated) {
-    // Create a Box.
-    const auto &box = *CreateBox();
+TEST_F(ScaleExecutorTest, ScaleAsymmetric) {
+    auto cmd = ParseCommand<ScaleCommand>(
+        "ScaleCommand",
+        R"(model_names: ["Box_0", "Box_1"],
+           mode: "kAsymmetric", ratios: 3 4 5)");
 
-    // Rotate 90 degrees around Z and then apply the scale. The translation
-    // should accommodate the change in X size (which is now along the Y axis).
-    ApplyRotateCommand(box);
-    EXPECT_EQ(Vector3f(MS, MS, MS), box.GetScale());
-    EXPECT_EQ(Vector3f(0, MS, 0),  box.GetTranslation());
-    ApplyScaleCommand(box, ScaleCommand::Mode::kBaseSymmetric,
-                      Vector3f(10, 20, 30));
-    EXPECT_EQ(Vector3f(10 * MS, 20 * MS, 30 * MS), box.GetScale());
-    EXPECT_EQ(Vector3f(0,       10 * MS, 0),       box.GetTranslation());
+    ScaleExecutor exec;
+    InitBoxes(exec);
+
+    EXPECT_EQ(Vector3f(1, 2, 3),              box0->GetScale());
+    EXPECT_EQ(Vector3f(2, 3, 4),              box1->GetScale());
+    EXPECT_EQ(Vector3f(-10, 2, 0),            box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 3, 0),            box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
+
+    exec.Execute(*cmd, Command::Op::kDo);
+    EXPECT_EQ(Vector3f(3,   8, 15),           box0->GetScale());
+    EXPECT_EQ(Vector3f(6,  12, 20),           box1->GetScale());
+    EXPECT_EQ(Vector3f(-8,  8, 12),           box0->GetTranslation());
+    EXPECT_EQ(Vector3f(14, 12, 16),           box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
+
+    exec.Execute(*cmd, Command::Op::kUndo);
+    EXPECT_EQ(Vector3f(1, 2, 3),              box0->GetScale());
+    EXPECT_EQ(Vector3f(2, 3, 4),              box1->GetScale());
+    EXPECT_EQ(Vector3f(-10, 2, 0),            box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 3, 0),            box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
 }
 
-TEST_F(ScaleExecutorTest, Asymmetric) {
-    // Create a Box.
-    const auto &box = *CreateBox();
+TEST_F(ScaleExecutorTest, ScaleCenterSymmetric) {
+    auto cmd = ParseCommand<ScaleCommand>(
+        "ScaleCommand",
+        R"(model_names: ["Box_0", "Box_1"],
+           mode: "kCenterSymmetric", ratios: 3 4 5)");
 
-    // Apply an asymmetric scale relative to the minimum side in X (-2) and Y
-    // (0) and the maximum side (2) in Z.
-    ApplyScaleCommand(box, ScaleCommand::Mode::kAsymmetric, Vector3f(2, 3, -4));
-    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS),  box.GetScale());
-    EXPECT_EQ(Vector3f(MS,     3 * MS, -3 * MS), box.GetTranslation());
+    ScaleExecutor exec;
+    InitBoxes(exec);
 
-    // Rotate 90 degrees around Z and apply another scale.
-    ApplyRotateCommand(box);
-    EXPECT_EQ(Vector3f(2 * MS, 3 * MS, 4 * MS),  box.GetScale());
-    EXPECT_EQ(Vector3f(MS,     3 * MS, -3 * MS), box.GetTranslation());
-    ApplyScaleCommand(box, ScaleCommand::Mode::kAsymmetric,
-                      Vector3f(10, 20, 30));
-    EXPECT_EQ(Vector3f(20 * MS,  60 * MS, 120 * MS), box.GetScale());
-    EXPECT_VECS_CLOSE(Vector3f(-56 * MS, 21 * MS, 113 * MS),
-                      box.GetTranslation());
+    EXPECT_EQ(Vector3f(1, 2, 3),              box0->GetScale());
+    EXPECT_EQ(Vector3f(2, 3, 4),              box1->GetScale());
+    EXPECT_EQ(Vector3f(-10, 2, 0),            box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 3, 0),            box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
+
+    exec.Execute(*cmd, Command::Op::kDo);
+    EXPECT_EQ(Vector3f(3,  8, 15),            box0->GetScale());
+    EXPECT_EQ(Vector3f(6, 12, 20),            box1->GetScale());
+    EXPECT_EQ(Vector3f(-10, 2, 0),            box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 3, 0),            box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
+
+    exec.Execute(*cmd, Command::Op::kUndo);
+    EXPECT_EQ(Vector3f(1, 2, 3),              box0->GetScale());
+    EXPECT_EQ(Vector3f(2, 3, 4),              box1->GetScale());
+    EXPECT_EQ(Vector3f(-10, 2, 0),            box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 3, 0),            box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
+}
+
+TEST_F(ScaleExecutorTest, ScaleBaseSymmetric) {
+    auto cmd = ParseCommand<ScaleCommand>(
+        "ScaleCommand",
+        R"(model_names: ["Box_0", "Box_1"],
+           mode: "kBaseSymmetric", ratios: 3 4 5)");
+
+    ScaleExecutor exec;
+    InitBoxes(exec);
+
+    EXPECT_EQ(Vector3f(1, 2, 3),              box0->GetScale());
+    EXPECT_EQ(Vector3f(2, 3, 4),              box1->GetScale());
+    EXPECT_EQ(Vector3f(-10, 2, 0),            box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 3, 0),            box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
+
+    exec.Execute(*cmd, Command::Op::kDo);
+    EXPECT_EQ(Vector3f(3,  8, 15),            box0->GetScale());
+    EXPECT_EQ(Vector3f(6, 12, 20),            box1->GetScale());
+    EXPECT_EQ(Vector3f(-10,  8, 0),           box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 12, 0),           box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
+
+    exec.Execute(*cmd, Command::Op::kUndo);
+    EXPECT_EQ(Vector3f(1, 2, 3),              box0->GetScale());
+    EXPECT_EQ(Vector3f(2, 3, 4),              box1->GetScale());
+    EXPECT_EQ(Vector3f(-10, 2, 0),            box0->GetTranslation());
+    EXPECT_EQ(Vector3f( 10, 3, 0),            box1->GetTranslation());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,   box0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kSecondary, box1->GetStatus());
 }
