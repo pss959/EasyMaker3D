@@ -73,6 +73,7 @@ type. The current list of field types is:
 | unsigned int    | *value*                                          | `27`                              |
 | string          | *quoted string*                                  | `"Example text."`                 |
 | #Anglef         | degrees                                          | `112.5`                           |
+| #CircleArc      | *start_degrees* *arc_degrees*                    | `45 -270`                         |
 | #Color          | *r g b a* or <b>\"\#</b><i>RRGGBBAA</i><b>\"</b> | `.2 .4 .1 1` *or* `"#d34577ff"`   |
 | #Matrix2f       | *4 floats*                                       | `1 0 0 1`                         |
 | #Matrix3f       | *9 floats*                                       | `1 0 0 0 1 0 0 0 1`               |
