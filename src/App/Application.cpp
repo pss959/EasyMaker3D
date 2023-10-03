@@ -503,7 +503,7 @@ bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     // application shortcuts (main app only).
     const bool is_app_panel_shown = SC_->app_board->IsShown();
     SC_->work_hider->SetEnabled(! is_app_panel_shown);
-    if (Util::is_in_main_app)
+    if (Util::app_type == Util::AppType::kMainApp)
         shortcut_handler_->SetAppShortcutsEnabled(! is_app_panel_shown);
 
     // Put controllers in touch mode if the AppBoard, KeyBoard, or

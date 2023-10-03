@@ -82,6 +82,8 @@ R"(snapimage: Reads a script with instructions on how to create snapshot images
 )";
 
 int main(int argc, const char *argv[]) {
+    Util::app_type = Util::AppType::kInteractive;
+
     Args args(argc, argv, kUsageString);
 
     ScriptedApp::Options options;

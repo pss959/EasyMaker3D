@@ -535,6 +535,8 @@ R"(nodeviewer: a test program for viewing nodes
 
 int main(int argc, const char** argv)
 {
+    Util::app_type = Util::AppType::kInteractive;
+
     Args args(argc, argv, kUsageString);
 
     KLogger::SetKeyString(args.GetString("--klog"));

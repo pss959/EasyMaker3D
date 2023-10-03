@@ -198,7 +198,7 @@ R"(<NAME>: A VR-enabled application for creating models for 3D printing.
 
 int main(int argc, const char *argv[]) {
     // This is the main application.
-    Util::is_in_main_app = true;
+    Util::app_type = Util::AppType::kMainApp;
 
     const Str usage = Util::ReplaceString(kUsageString, "<NAME>",
                                           TK::kApplicationName);

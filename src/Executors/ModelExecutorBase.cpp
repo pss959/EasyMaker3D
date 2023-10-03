@@ -13,6 +13,10 @@
 #include "Util/General.h"
 #include "Util/Tuning.h"
 
+ModelExecutorBase::ModelExecutorBase() {
+    animation_duration_ = TK::kModelAnimationDuration;
+}
+
 void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
     // If this is the first time this was executed, may need to animate. Note
     // that this has to be called before setting the ExecData_ in the command.
@@ -60,9 +64,9 @@ void ModelExecutorBase::InitModelTransform_(Model &model,
     if (command.GetInitialScale() != 1)
         model.SetUniformScale(command.GetInitialScale());
 
-    // If the CommandManager is in the middle of validating commands (while
-    // loading a session), use the information in the command.
-    if (GetContext().command_manager->IsValidating()) {
+    // If the command is being validated (while loading a session), use the
+    // target information in the command.
+    if (command.IsValidating()) {
         model.MoveBottomCenterTo(command.GetTargetPosition(),
                                  command.GetTargetDirection());
     }
@@ -84,7 +88,8 @@ bool ModelExecutorBase::ShouldAnimateModel_(const Command &command) {
     // Animation occurs only in the main app the first time a command was
     // executed, unless it was read from a file.
     const bool is_first_time = ! command.GetExecData();
-    return Util::is_in_main_app && is_first_time && ! command.IsValidating();
+    return Util::app_type == Util::AppType::kMainApp &&
+        is_first_time && ! command.IsValidating();
 }
 
 void ModelExecutorBase::AnimateModelPlacement_(const ModelPtr &model) {
@@ -102,7 +107,7 @@ void ModelExecutorBase::AnimateModelPlacement_(const ModelPtr &model) {
 bool ModelExecutorBase::AnimateModel_(const ModelPtr &model,
                                       const Point3f &end_pos, float time) {
     const Point3f start_pos = end_pos + GetAxis(1, TK::kModelAnimationHeight);
-    const float duration = TK::kModelAnimationDuration;
+    const float duration = animation_duration_;
     if (time < duration) {
         // Animation still running.
         model->SetTranslation(

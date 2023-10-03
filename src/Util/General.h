@@ -16,19 +16,17 @@ namespace Util {
 /// Enum indicating application status. This is used to determine whether code
 /// is running inside a unit test or simulation test.
 enum class AppType {
-    kInteractive,  ///< Regular interactive application (default).
+    kMainApp,      ///< The main application (default).
+    kInteractive,  ///< Other interactive application.
     kUnitTest,     ///< Non-interactive unit test.
     kSimTest,      ///< Interactive simulation unit test.
 };
 
 /// Enum indicating application status. This is used to determine whether code
 /// is running inside a unit test or simulation test. This is initialized to
-/// AppType::kInteractive and is changed at the beginning of unit tests.
+/// AppType::kMainApp and is changed at the beginning of other applications and
+/// unit tests.
 extern AppType app_type;
-
-/// Flag indicating whether code is running inside the main application. It is
-/// initialized to false and is set to true at the beginning of the main app.
-extern bool is_in_main_app;
 
 /// Convenience that returns true if the given std::shared_ptr holds a pointer
 /// to an instance of the given class.

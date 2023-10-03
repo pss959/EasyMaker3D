@@ -14,7 +14,12 @@ class ModelExecutorBase : public Executor {
   public:
     virtual void Execute(Command &command, Command::Op operation) override;
 
+    /// Allows testing of model placement animation with a shorter duration.
+    void SetAnimationDuration(float seconds) { animation_duration_ = seconds; }
+
   protected:
+    ModelExecutorBase();
+
     /// Derived classes are required to implement this to actually create the
     /// Model.
     virtual ModelPtr CreateModel(Command &command) = 0;
@@ -25,6 +30,10 @@ class ModelExecutorBase : public Executor {
     struct ExecData_ : public Command::ExecData {
         ModelPtr model;   ///< The model that was created.
     };
+
+    /// Duration used for model animation. Initialized to the usual value from
+    /// Util/Tuning.h but can be overridden in unit tests.
+    float animation_duration_;
 
     /// Initializes a newly-created Model. This does the following:
     ///   - Sets the rotation and translation based on the CreateModelCommand
