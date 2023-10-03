@@ -27,4 +27,8 @@ class OperatorModel : public ParentModel {
     /// Derived classes must define this to create the mesh from the operand
     /// Model(s).
     virtual TriMesh BuildMeshFromOperands() = 0;
+
+    /// Redefines this to not copy child Models.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
 };

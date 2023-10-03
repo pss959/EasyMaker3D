@@ -2,6 +2,7 @@
 #include "Models/HullModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"
+#include "Util/General.h"
 
 /// \ingroup Tests
 class HullModelTest : public SceneTestBase {};
@@ -108,4 +109,22 @@ TEST_F(HullModelTest, IsValid) {
     SetParseTypeName("HullModel");
     TestInvalid("", "Only 0 operand model(s)");
     TestValid("operand_models: [ BoxModel {} ]");
+}
+
+TEST_F(HullModelTest, Copy) {
+    auto box = Model::CreateModel<BoxModel>();
+    box->SetUniformScale(4);
+    box->SetTranslation(Vector3f(0, 4, 0));
+
+    auto hull = Model::CreateModel<HullModel>();
+    hull->SetOperandModels(std::vector<ModelPtr>{ box });
+    hull->SetStatus(Model::Status::kUnselected);
+
+    auto copy = hull->CloneTyped<HullModel>(true);
+    EXPECT_EQ(1U, copy->GetOperandModels().size());
+    EXPECT_TRUE(Util::IsA<BoxModel>(copy->GetOperandModels()[0]));
+    EXPECT_NE(hull->GetOperandModels()[0], copy->GetOperandModels()[0]);
+    EXPECT_EQ(hull->GetScale(),            copy->GetScale());
+    EXPECT_EQ(hull->GetRotation(),         copy->GetRotation());
+    EXPECT_EQ(hull->GetTranslation(),      copy->GetTranslation());
 }

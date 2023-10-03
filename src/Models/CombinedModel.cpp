@@ -1,6 +1,7 @@
 #include "Models/CombinedModel.h"
 
 #include "Math/MeshUtils.h"
+#include "Util/General.h"
 #include "Util/String.h"
 
 void CombinedModel::AddFields() {
@@ -66,6 +67,16 @@ void CombinedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     OperatorModel::ReplaceChildModel(index, new_child);
     ModelPtr child = GetChildModel(index);
     operand_models_.GetValue()[index] = child;
+}
+
+void CombinedModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    OperatorModel::CopyContentsFrom(from, is_deep);
+
+    // Clone the operand Models.
+    const CombinedModel &from_cm = static_cast<const CombinedModel &>(from);
+    SetOperandModels(Util::ConvertVector<ModelPtr, ModelPtr>(
+                         from_cm.GetOperandModels(),
+                         [&](const ModelPtr &m){ return m->CreateClone(); }));
 }
 
 TriMesh CombinedModel::BuildMeshFromOperands() {

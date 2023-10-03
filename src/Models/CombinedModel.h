@@ -42,6 +42,10 @@ class CombinedModel : public OperatorModel {
     virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
+    /// Redefines this to copy the operand Models.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
     /// Defines this to call GetCombinedMesh() on the derived class.
     virtual TriMesh BuildMeshFromOperands() override;
 

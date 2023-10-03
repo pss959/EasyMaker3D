@@ -25,3 +25,8 @@ TriMesh OperatorModel::BuildMesh() {
     // Recenter the mesh.
     return CenterMesh(mesh);
 }
+
+void OperatorModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    // Skip over ParentModel so that children are not copied.
+    Model::CopyContentsFrom(from, is_deep);
+}

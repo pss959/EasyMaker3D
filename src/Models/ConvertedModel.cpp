@@ -82,7 +82,7 @@ void ConvertedModel::SetStatus(Status status) {
 
 void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
                                       bool is_deep) {
-    Model::CopyContentsFrom(from, is_deep);
+    OperatorModel::CopyContentsFrom(from, is_deep);
 
     // Clone the operand Model.
     const ConvertedModel &from_cm = static_cast<const ConvertedModel &>(from);
