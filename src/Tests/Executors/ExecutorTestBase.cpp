@@ -7,14 +7,18 @@
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/RootModel.h"
+#include "Widgets/EdgeTargetWidget.h"
+#include "Widgets/PointTargetWidget.h"
 
 Executor::Context & ExecutorTestBase::InitContext(Executor &exec,
-                                                  const Str &extra_contents) {
+                                                  bool init_targets) {
     Executor::ContextPtr context(new Executor::Context);
 
-    Str contents = R"(children: [<"nodes/ModelRoot.emd">])";
-    if (! extra_contents.empty())
-        contents += ", " + extra_contents;
+    const Str contents = init_targets ? R"(
+  children: [<"nodes/ModelRoot.emd">,
+             <"nodes/Widgets/PointTargetWidget.emd">,
+             <"nodes/Widgets/EdgeTargetWidget.emd">])" :
+  R"(children: [<"nodes/ModelRoot.emd">])";
 
     auto root = ReadRealNode<RootModel>(contents, "ModelRoot");
 
@@ -29,6 +33,15 @@ Executor::Context & ExecutorTestBase::InitContext(Executor &exec,
     context->selection_manager->SetRootModel(root);
 
     exec.SetTestContext(context);
+
+    // Install the target widgets in the TargetManager if requested.
+    if (init_targets) {
+        auto ptw = SG::FindTypedNodeInScene<PointTargetWidget>(
+            *GetScene(), "PointTargetWidget");
+        auto etw = SG::FindTypedNodeInScene<EdgeTargetWidget>(
+            *GetScene(), "EdgeTargetWidget");
+        context->target_manager->InitTargets(ptw, etw);
+    }
 
     return *context;
 }

@@ -8,8 +8,6 @@
 #include "Place/PointTarget.h"
 #include "Tests/Executors/ExecutorTestBase.h"
 #include "Tests/Testing.h"
-#include "Widgets/EdgeTargetWidget.h"
-#include "Widgets/PointTargetWidget.h"
 
 /// \ingroup Tests
 class CreatePrimitiveExecutorTest : public ExecutorTestBase {};
@@ -73,20 +71,8 @@ TEST_F(CreatePrimitiveExecutorTest, CreatePrimitiveAtTarget) {
         "CreatePrimitiveModelCommand",
         R"(type: "kSphere", result_name: "Sphere_0")");
 
-    // Make sure the target widgets are available.
-    const Str extra_contents =
-        R"(children: [<"nodes/Widgets/PointTargetWidget.emd">,
-                      <"nodes/Widgets/EdgeTargetWidget.emd">])";
-
     CreatePrimitiveExecutor exec;
-    auto context = InitContext(exec, extra_contents);
-
-    // Install the target widgets in the TargetManager.
-    auto ptw = SG::FindTypedNodeInScene<PointTargetWidget>(
-        *GetScene(), "PointTargetWidget");
-    auto etw = SG::FindTypedNodeInScene<EdgeTargetWidget>(
-        *GetScene(), "EdgeTargetWidget");
-    context.target_manager->InitTargets(ptw, etw);
+    auto context = InitContext(exec, true);  // Need targets.
 
     // Set up a PointTarget in the TargetManager.
     PointTargetPtr pt = CreateObject<PointTarget>();

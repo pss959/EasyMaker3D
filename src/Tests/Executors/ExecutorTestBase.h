@@ -18,7 +18,8 @@ class ExecutorTestBase : public SceneTestBase {
     }
 
     /// Sets up a test Executor::Context with a RootModel and SelectionManager
-    /// and stores it in the given Executor. Returns the context.
-    Executor::Context & InitContext(Executor &exec,
-                                    const Str &extra_contents = "");
+    /// and stores it in the given Executor. Returns the context. If \p
+    /// init_targets is true, this also sets up the TargetManager in the
+    /// context with target widgets.
+    Executor::Context & InitContext(Executor &exec, bool init_targets = false);
 };

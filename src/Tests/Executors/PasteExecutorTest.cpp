@@ -111,9 +111,6 @@ TEST_F(PasteExecutorTest, PasteHierarchy) {
         context.root_model->GetChildModel(0));
     EXPECT_NOT_NULL(hcopy);
     EXPECT_EQ("Hull_0_A", hcopy->GetName());
-    for (const auto &m: hcopy->GetOperandModels())
-        std::cerr << "XXXX     ******** " << m->GetDesc() << "\n";
-
 
     EXPECT_EQ(1U,         hcopy->GetOperandModels().size());
     EXPECT_EQ("OpBox_A",  hcopy->GetOperandModels()[0]->GetName());
