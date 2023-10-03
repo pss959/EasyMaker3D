@@ -16,7 +16,6 @@ void PasteExecutor::Execute(Command &command, Command::Op operation) {
         std::dynamic_pointer_cast<ParentModel>(data.path_to_parent.GetModel());
     ASSERT(parent);
 
-
     // Tell the PasteCommand about the models so it can have an accurate
     // description string.
     PasteCommand &pc = GetTypedCommand<PasteCommand>(command);
