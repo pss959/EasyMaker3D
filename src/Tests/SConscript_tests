@@ -140,7 +140,9 @@ test_source_dict = {
         'SettingsTest',
     ],
     'Managers' : [
+        'AnimationManagerTest',
         'ClipboardManagerTest',
+        'CommandManagerTest',
         'FeedbackManagerTest',
         'NameManagerTest',
     ],

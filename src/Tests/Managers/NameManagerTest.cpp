@@ -66,7 +66,7 @@ TEST(NameManagerTest, CreateClone) {
     EXPECT_EQ(name + "_C", n3);
 }
 
-TEST(NameManager, GetAllNames) {
+TEST(NameManagerTest, GetAllNames) {
     NameManager nm;
     nm.Add("This is");
     nm.Add("A fun test");

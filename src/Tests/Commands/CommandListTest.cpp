@@ -1,44 +1,19 @@
 ﻿#include "Commands/Command.h"
 #include "Commands/CommandList.h"
+#include "Tests/Commands/TestCommand.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/FilePath.h"
-
-DECL_SHARED_PTR(DummyCommand);
-
-/// Dummy derived Command class for testing.
-/// \ingroup Tests
-class DummyCommand : public Command {
-  public:
-    using Command::FixPath;  // Make this callable.
-
-    /// Sets a flag indicating whether the command should be added as an orphan.
-    void SetShouldBeAddedAsOrphan(bool b) { orphan_ = b; }
-
-    /// Sets a flag indicating whether the command has undo/redo effect.
-    void SetHasUndoRedoEffect(bool b) { undo_redo_ = b; }
-
-    virtual bool HasUndoEffect()         const override { return undo_redo_; }
-    virtual bool HasRedoEffect()         const override { return undo_redo_; }
-    virtual bool ShouldBeAddedAsOrphan() const override { return orphan_;    }
-    virtual Str  GetDescription()        const override { return "DUMMY!";   }
-  protected:
-    DummyCommand() {}
-  private:
-    bool undo_redo_ = true;   ///< For testing undo/redo effects.
-    bool orphan_    = false;  ///< For testing orphaned commands.
-    friend class Parser::Registry;
-};
 
 /// \ingroup Tests
 class CommandListTest : public SceneTestBase {
   protected:
     CommandListTest() {
-        Parser::Registry::AddType<DummyCommand>("DummyCommand");
+        Parser::Registry::AddType<TestCommand>("TestCommand");
         SetParseTypeName("CommandList");
     }
-    DummyCommandPtr CreateDummyCommand() {
-        return Parser::Registry::CreateObject<DummyCommand>();
+    TestCommandPtr CreateTestCommand() {
+        return Parser::Registry::CreateObject<TestCommand>();
     }
 };
 
@@ -50,29 +25,29 @@ TEST_F(CommandListTest, Defaults) {
 }
 
 TEST_F(CommandListTest, Command) {
-    // Use DummyCommand to test basic Command interface.
-    auto dc = CreateDummyCommand();
-    EXPECT_FALSE(dc->IsFinalized());
-    EXPECT_FALSE(dc->IsValidating());
-    EXPECT_FALSE(dc->GetSelection().HasAny());
-    EXPECT_TRUE(dc->GetOrphanedCommands().empty());
-    EXPECT_NULL(dc->GetExecData());
-    EXPECT_TRUE(dc->Command::HasUndoEffect());
-    EXPECT_TRUE(dc->Command::HasRedoEffect());
-    EXPECT_FALSE(dc->Command::ShouldBeAddedAsOrphan());
+    // Use TestCommand to test basic Command interface.
+    auto tc = CreateTestCommand();
+    EXPECT_FALSE(tc->IsFinalized());
+    EXPECT_FALSE(tc->IsValidating());
+    EXPECT_FALSE(tc->GetSelection().HasAny());
+    EXPECT_TRUE(tc->GetOrphanedCommands().empty());
+    EXPECT_NULL(tc->GetExecData());
+    EXPECT_TRUE(tc->Command::HasUndoEffect());
+    EXPECT_TRUE(tc->Command::HasRedoEffect());
+    EXPECT_FALSE(tc->Command::ShouldBeAddedAsOrphan());
 
-    dc->SetIsFinalized();
-    EXPECT_TRUE(dc->IsFinalized());
+    tc->SetIsFinalized();
+    EXPECT_TRUE(tc->IsFinalized());
 
-    dc->SetIsValidating(true);
-    EXPECT_TRUE(dc->IsValidating());
+    tc->SetIsValidating(true);
+    EXPECT_TRUE(tc->IsValidating());
 
     std::unique_ptr<Command::ExecData> data;
-    dc->SetExecData(data.get());
-    EXPECT_EQ(data.get(), dc->GetExecData());
+    tc->SetExecData(data.get());
+    EXPECT_EQ(data.get(), tc->GetExecData());
 
-    EXPECT_EQ("/a/b/c",                        DummyCommand::FixPath("/a/b/c"));
-    EXPECT_EQ(FilePath("a/b/c").GetAbsolute(), DummyCommand::FixPath("a/b/c"));
+    EXPECT_EQ("/a/b/c",                        TestCommand::FixPath("/a/b/c"));
+    EXPECT_EQ(FilePath("a/b/c").GetAbsolute(), TestCommand::FixPath("a/b/c"));
 }
 
 TEST_F(CommandListTest, IsValid) {
@@ -97,37 +72,37 @@ TEST_F(CommandListTest, AppInfo) {
 TEST_F(CommandListTest, AddRemoveCommand) {
     auto cl = Parser::Registry::CreateObject<CommandList>();
 
-    auto dc1 = CreateDummyCommand();
-    cl->AddCommand(dc1);
+    auto tc1 = CreateTestCommand();
+    cl->AddCommand(tc1);
     EXPECT_EQ(1U,  cl->GetCommandCount());
     EXPECT_EQ(1U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
 
-    auto dc2 = CreateDummyCommand();
-    cl->AddCommand(dc2);
+    auto tc2 = CreateTestCommand();
+    cl->AddCommand(tc2);
     EXPECT_EQ(2U,  cl->GetCommandCount());
     EXPECT_EQ(2U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
-    EXPECT_EQ(dc2, cl->GetCommand(1));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
+    EXPECT_EQ(tc2, cl->GetCommand(1));
 
-    auto dc3 = CreateDummyCommand();
-    cl->AddCommand(dc3);
+    auto tc3 = CreateTestCommand();
+    cl->AddCommand(tc3);
     EXPECT_EQ(3U,  cl->GetCommandCount());
     EXPECT_EQ(3U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
-    EXPECT_EQ(dc2, cl->GetCommand(1));
-    EXPECT_EQ(dc3, cl->GetCommand(2));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
+    EXPECT_EQ(tc2, cl->GetCommand(1));
+    EXPECT_EQ(tc3, cl->GetCommand(2));
 
     cl->RemoveLastCommand();
     EXPECT_EQ(2U,  cl->GetCommandCount());
     EXPECT_EQ(2U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
-    EXPECT_EQ(dc2, cl->GetCommand(1));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
+    EXPECT_EQ(tc2, cl->GetCommand(1));
 
     cl->RemoveLastCommand();
     EXPECT_EQ(1U,  cl->GetCommandCount());
     EXPECT_EQ(1U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
 
     cl->Reset();
     EXPECT_EQ(0U, cl->GetCommandCount());
@@ -140,62 +115,62 @@ TEST_F(CommandListTest, UndoRedo) {
     EXPECT_FALSE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
 
-    auto dc1 = CreateDummyCommand();
-    cl->AddCommand(dc1);
+    auto tc1 = CreateTestCommand();
+    cl->AddCommand(tc1);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
-    EXPECT_EQ(dc1, cl->GetCommandToUndo());
+    EXPECT_EQ(tc1, cl->GetCommandToUndo());
 
-    auto dc2 = CreateDummyCommand();
-    cl->AddCommand(dc2);
+    auto tc2 = CreateTestCommand();
+    cl->AddCommand(tc2);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
-    EXPECT_EQ(dc2, cl->GetCommandToUndo());
+    EXPECT_EQ(tc2, cl->GetCommandToUndo());
 
     auto c = cl->ProcessUndo();
-    EXPECT_EQ(dc2, c);
+    EXPECT_EQ(tc2, c);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_TRUE(cl->CanRedo());
-    EXPECT_EQ(dc1, cl->GetCommandToUndo());
-    EXPECT_EQ(dc2, cl->GetCommandToRedo());
+    EXPECT_EQ(tc1, cl->GetCommandToUndo());
+    EXPECT_EQ(tc2, cl->GetCommandToRedo());
 
     c = cl->ProcessUndo();
-    EXPECT_EQ(dc1, c);
+    EXPECT_EQ(tc1, c);
     EXPECT_FALSE(cl->CanUndo());
     EXPECT_TRUE(cl->CanRedo());
-    EXPECT_EQ(dc1, cl->GetCommandToRedo());
+    EXPECT_EQ(tc1, cl->GetCommandToRedo());
 
     c = cl->ProcessRedo();
-    EXPECT_EQ(dc1, c);
+    EXPECT_EQ(tc1, c);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_TRUE(cl->CanRedo());
-    EXPECT_EQ(dc1, cl->GetCommandToUndo());
-    EXPECT_EQ(dc2, cl->GetCommandToRedo());
+    EXPECT_EQ(tc1, cl->GetCommandToUndo());
+    EXPECT_EQ(tc2, cl->GetCommandToRedo());
 
     c = cl->ProcessRedo();
-    EXPECT_EQ(dc2, c);
+    EXPECT_EQ(tc2, c);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
-    EXPECT_EQ(dc2, cl->GetCommandToUndo());
+    EXPECT_EQ(tc2, cl->GetCommandToUndo());
 
     // Test commands that have no undo/redo effect.
-    auto dc3 = CreateDummyCommand();
-    dc3->SetHasUndoRedoEffect(false);
-    cl->AddCommand(dc3);
+    auto tc3 = CreateTestCommand();
+    tc3->SetHasUndoRedoEffect(false);
+    cl->AddCommand(tc3);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
-    EXPECT_EQ(dc2, cl->GetCommandToUndo());
+    EXPECT_EQ(tc2, cl->GetCommandToUndo());
 
     cl->ProcessUndo();
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_TRUE(cl->CanRedo());
-    EXPECT_EQ(dc1, cl->GetCommandToUndo());
-    EXPECT_EQ(dc2, cl->GetCommandToRedo());
+    EXPECT_EQ(tc1, cl->GetCommandToUndo());
+    EXPECT_EQ(tc2, cl->GetCommandToRedo());
 
     cl->ProcessRedo();
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
-    EXPECT_EQ(dc2, cl->GetCommandToUndo());
+    EXPECT_EQ(tc2, cl->GetCommandToUndo());
 }
 
 TEST_F(CommandListTest, Changes) {
@@ -203,36 +178,36 @@ TEST_F(CommandListTest, Changes) {
     EXPECT_FALSE(cl->DidCommandsChange());
     EXPECT_FALSE(cl->AreAnyChanges());
 
-    auto dc1 = CreateDummyCommand();
-    cl->AddCommand(dc1);
+    auto tc1 = CreateTestCommand();
+    cl->AddCommand(tc1);
     EXPECT_TRUE(cl->DidCommandsChange());
     EXPECT_TRUE(cl->AreAnyChanges());
 
-    auto dc2 = CreateDummyCommand();
-    cl->AddCommand(dc2);
+    auto tc2 = CreateTestCommand();
+    cl->AddCommand(tc2);
     EXPECT_TRUE(cl->DidCommandsChange());
     EXPECT_TRUE(cl->AreAnyChanges());
 
     EXPECT_EQ(2U,  cl->GetCommandCount());
     EXPECT_EQ(2U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
-    EXPECT_EQ(dc2, cl->GetCommand(1));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
+    EXPECT_EQ(tc2, cl->GetCommand(1));
 
     cl->ClearChanges();
     EXPECT_EQ(2U,  cl->GetCommandCount());
     EXPECT_EQ(2U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
-    EXPECT_EQ(dc2, cl->GetCommand(1));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
+    EXPECT_EQ(tc2, cl->GetCommand(1));
     EXPECT_FALSE(cl->DidCommandsChange());
     EXPECT_FALSE(cl->AreAnyChanges());
 
-    auto dc3 = CreateDummyCommand();
-    cl->AddCommand(dc3);
+    auto tc3 = CreateTestCommand();
+    cl->AddCommand(tc3);
     EXPECT_EQ(3U,  cl->GetCommandCount());
     EXPECT_EQ(3U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
-    EXPECT_EQ(dc2, cl->GetCommand(1));
-    EXPECT_EQ(dc3, cl->GetCommand(2));
+    EXPECT_EQ(tc1, cl->GetCommand(0));
+    EXPECT_EQ(tc2, cl->GetCommand(1));
+    EXPECT_EQ(tc3, cl->GetCommand(2));
     EXPECT_TRUE(cl->DidCommandsChange());
     EXPECT_TRUE(cl->AreAnyChanges());
 
@@ -240,14 +215,14 @@ TEST_F(CommandListTest, Changes) {
     cl->ClearChanges();
     EXPECT_EQ(3U,  cl->GetCommandCount());
     EXPECT_EQ(2U,  cl->GetCurrentIndex());
-    EXPECT_EQ(dc1, cl->GetCommand(0));
-    EXPECT_EQ(dc2, cl->GetCommand(1));
-    EXPECT_EQ(dc3, cl->GetCommand(2));
-    EXPECT_EQ(dc3, c);
+    EXPECT_EQ(tc1, cl->GetCommand(0));
+    EXPECT_EQ(tc2, cl->GetCommand(1));
+    EXPECT_EQ(tc3, cl->GetCommand(2));
+    EXPECT_EQ(tc3, c);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_TRUE(cl->CanRedo());
-    EXPECT_EQ(dc2, cl->GetCommandToUndo());
-    EXPECT_EQ(dc3, cl->GetCommandToRedo());
+    EXPECT_EQ(tc2, cl->GetCommandToUndo());
+    EXPECT_EQ(tc3, cl->GetCommandToRedo());
     EXPECT_FALSE(cl->DidCommandsChange());
     EXPECT_FALSE(cl->AreAnyChanges());
 }
@@ -255,38 +230,38 @@ TEST_F(CommandListTest, Changes) {
 TEST_F(CommandListTest, NonOrphans) {
     auto cl = Parser::Registry::CreateObject<CommandList>();
 
-    auto dc1 = CreateDummyCommand();
-    cl->AddCommand(dc1);
+    auto tc1 = CreateTestCommand();
+    cl->AddCommand(tc1);
 
-    auto dc2 = CreateDummyCommand();
-    dc2->SetShouldBeAddedAsOrphan(false);
-    cl->AddCommand(dc2);
+    auto tc2 = CreateTestCommand();
+    tc2->SetShouldBeAddedAsOrphan(false);
+    cl->AddCommand(tc2);
 
-    // Undo should not cause dc2 to become an orphan.
+    // Undo should not cause tc2 to become an orphan.
     cl->ProcessUndo();
 
-    // dc2 should not be added as an orphaned command to dc3.
-    auto dc3 = CreateDummyCommand();
-    cl->AddCommand(dc3);
-    EXPECT_TRUE(dc3->GetOrphanedCommands().empty());
+    // tc2 should not be added as an orphaned command to tc3.
+    auto tc3 = CreateTestCommand();
+    cl->AddCommand(tc3);
+    EXPECT_TRUE(tc3->GetOrphanedCommands().empty());
 }
 
 TEST_F(CommandListTest, Orphans) {
     auto cl = Parser::Registry::CreateObject<CommandList>();
 
-    auto dc1 = CreateDummyCommand();
-    cl->AddCommand(dc1);
+    auto tc1 = CreateTestCommand();
+    cl->AddCommand(tc1);
 
-    auto dc2 = CreateDummyCommand();
-    dc2->SetShouldBeAddedAsOrphan(true);
-    cl->AddCommand(dc2);
+    auto tc2 = CreateTestCommand();
+    tc2->SetShouldBeAddedAsOrphan(true);
+    cl->AddCommand(tc2);
 
-    // Undo should cause dc2 to become an orphan.
+    // Undo should cause tc2 to become an orphan.
     cl->ProcessUndo();
 
-    // dc2 should be added as an orphaned command to dc3.
-    auto dc3 = CreateDummyCommand();
-    cl->AddCommand(dc3);
-    EXPECT_EQ(1U,  dc3->GetOrphanedCommands().size());
-    EXPECT_EQ(dc2, dc3->GetOrphanedCommands()[0]);
+    // tc2 should be added as an orphaned command to tc3.
+    auto tc3 = CreateTestCommand();
+    cl->AddCommand(tc3);
+    EXPECT_EQ(1U,  tc3->GetOrphanedCommands().size());
+    EXPECT_EQ(tc2, tc3->GetOrphanedCommands()[0]);
 }
