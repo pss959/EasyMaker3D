@@ -332,6 +332,10 @@ test_source_dict = {
         'UtilTest',
         'WriteTest',
     ],
+    'Viewers' : [
+        'GLFWViewerTest',
+        'VRViewerTest',
+    ],
     'Widgets' : [
         'AxisWidgetTest',
         'CompositeWidgetTest',

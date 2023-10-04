@@ -128,30 +128,20 @@ class GLFWViewer : public Viewer, public IEmitter {
     static void ErrorCallback_(int error, const char *description);
 
     /// GLFW keyboard character callback.
-    static void CharCallback_(GLFWwindow *window, unsigned int codepoint) {
-        GetInstance_(window).ProcessChar_(codepoint);
-    }
+    static void CharCallback_(GLFWwindow *window, unsigned int codepoint);
 
     /// GLFW keyboard callback.
     static void KeyCallback_(GLFWwindow *window, int key,
-                             int scancode, int action, int mods) {
-        GetInstance_(window).ProcessKey_(key, action, mods);
-    }
+                             int scancode, int action, int mods);
 
     /// GLFW mouse button callback.
     static void ButtonCallback_(GLFWwindow *window, int button,
-                                int action, int mods) {
-        GetInstance_(window).ProcessButton_(button, action, mods);
-    }
+                                int action, int mods);
 
     /// GLFW cursor position callback.
-    static void CursorCallback_(GLFWwindow *window, double xpos, double ypos) {
-        GetInstance_(window).ProcessCursor_(xpos, ypos);
-    }
+    static void CursorCallback_(GLFWwindow *window, double xpos, double ypos);
 
     /// GLFW scroll callback.
     static void ScrollCallback_(GLFWwindow *window,
-                                double xoffset, double yoffset) {
-        GetInstance_(window).ProcessScroll_(xoffset, yoffset);
-    }
+                                double xoffset, double yoffset);
 };

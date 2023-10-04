@@ -20,6 +20,11 @@
 #include "Util/Tuning.h"
 #include "Viewers/IRenderer.h"
 
+/// \todo Create an interface class for GLFW functions and use a fake version
+/// to test all of this.
+
+// LCOV_EXCL_START [need fake GLFW interface]
+
 // ----------------------------------------------------------------------------
 // Static helper functions.
 // ----------------------------------------------------------------------------
@@ -152,6 +157,8 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
     return event;
 }
 
+// LCOV_EXCL_STOP
+
 // ----------------------------------------------------------------------------
 // GLFWViewer implementation.
 // ----------------------------------------------------------------------------
@@ -174,8 +181,10 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
 #endif
 
     if (! glfwInit()) {
+        // LCOV_EXCL_START [cannot happen]
         std::cerr << "*** GLFW initialization failed!\n";
         return false;
+        // LCOV_EXCL_STOP
     }
 
     glfwSetErrorCallback(ErrorCallback_);
@@ -189,8 +198,10 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
                                nullptr, nullptr);
     if (! window_) {
+        // LCOV_EXCL_START [cannot happen]
         std::cerr << "*** GLFW window creation failed!\n";
         return false;
+        // LCOV_EXCL_STOP
     }
 
     // Set up Ion callbacks.
@@ -202,7 +213,7 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     // unmaximize it and move it around if they want. True fullscreen mode is
     // kind of annoying in that respect.
     if (fullscreen)
-        glfwMaximizeWindow(window_);
+        glfwMaximizeWindow(window_);  // LCOV_EXCL_LINE [not tested]
 
     glfwSetCharCallback(window_,        CharCallback_);
     glfwSetKeyCallback(window_,         KeyCallback_);
@@ -217,6 +228,8 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
 
     return true;
 }
+
+// LCOV_EXCL_START [need fake GLFW interface]
 
 void GLFWViewer::Render(const SG::Scene &scene, IRenderer &renderer) {
     UpdateFrustum_();
@@ -296,6 +309,8 @@ Vector2i GLFWViewer::GetWindowSizeScreenCoords_() const {
     return Vector2i(width, height);
 }
 
+// LCOV_EXCL_STOP
+
 Vector2i GLFWViewer::GetWindowSizePixels_() const {
     ASSERT(window_);
     int width, height;
@@ -305,6 +320,8 @@ Vector2i GLFWViewer::GetWindowSizePixels_() const {
     glfwGetFramebufferSize(window_, &width, &height);
     return Vector2i(width, height);
 }
+
+// LCOV_EXCL_START [need fake GLFW interface]
 
 void GLFWViewer::ProcessChar_(unsigned int codepoint) {
     /// \todo This is unused for now. Remove if never needed.
@@ -445,3 +462,28 @@ GLFWViewer & GLFWViewer::GetInstance_(GLFWwindow *window) {
 void GLFWViewer::ErrorCallback_(int error, const char *description) {
     std::cerr << "*** GLFW Error " << error << ": " << description << "\n";
 }
+
+void GLFWViewer::CharCallback_(GLFWwindow *window, unsigned int codepoint) {
+    GetInstance_(window).ProcessChar_(codepoint);
+}
+
+void GLFWViewer::KeyCallback_(GLFWwindow *window, int key,
+                              int scancode, int action, int mods) {
+    GetInstance_(window).ProcessKey_(key, action, mods);
+}
+
+void GLFWViewer::ButtonCallback_(GLFWwindow *window, int button,
+                                 int action, int mods) {
+    GetInstance_(window).ProcessButton_(button, action, mods);
+}
+
+void GLFWViewer::CursorCallback_(GLFWwindow *window, double xpos, double ypos) {
+    GetInstance_(window).ProcessCursor_(xpos, ypos);
+}
+
+void GLFWViewer::ScrollCallback_(GLFWwindow *window,
+                                 double xoffset, double yoffset) {
+    GetInstance_(window).ProcessScroll_(xoffset, yoffset);
+}
+
+// LCOV_EXCL_STOP
