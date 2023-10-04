@@ -59,10 +59,6 @@ void CommandManager::AddAndDo(const CommandPtr &command) {
     // Mark the command as being finalized.
     command->SetIsFinalized();
 
-    // Invoke the pre-Do function.
-    if (pre_do_func_)
-        pre_do_func_(*command);
-
     // Execute it.
     KLOG('x', "Executing " << command->GetDescription());
     Execute_(*command, Command::Op::kDo);
@@ -81,8 +77,6 @@ void CommandManager::Undo() {
     const CommandPtr &command = command_list_->ProcessUndo();
     KLOG('x', "Undoing " << command->GetDescription());
     Execute_(*command, Command::Op::kUndo);
-    if (post_undo_func_)
-        post_undo_func_(*command);
 }
 
 void CommandManager::UndoAndPurge() {
@@ -97,8 +91,6 @@ const CommandPtr & CommandManager::GetLastCommand() const {
 void CommandManager::Redo() {
     ASSERT(command_list_->CanRedo());
     const CommandPtr &command = command_list_->ProcessRedo();
-    if (pre_do_func_)
-        pre_do_func_(*command);
     KLOG('x', "Redoing " << command->GetDescription());
     Execute_(*command, Command::Op::kDo);
 }

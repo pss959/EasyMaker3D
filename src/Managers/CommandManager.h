@@ -28,9 +28,6 @@ class CommandManager {
     /// Typedef for command functions.
     typedef std::function<void(Command &, Command::Op)> CommandFunc;
 
-    /// Typedef for pre-do and post-undo auxiliary functions.
-    typedef std::function<void(Command &)> AuxFunc;
-
     // ------------------------------------------------------------------------
     // Registration and initialization.
     // ------------------------------------------------------------------------
@@ -41,7 +38,7 @@ class CommandManager {
     void RegisterFunction(const Str &type_name, const CommandFunc &func);
 
     /// This is used when reading Commands from a file. It executes all
-    /// Commands in the given CommandList adter resetting all state.
+    /// Commands in the given CommandList after resetting all state.
     void ProcessCommandList(const CommandListPtr &command_list);
 
     /// Resets the CommandList to its default (empty) state.
@@ -50,15 +47,6 @@ class CommandManager {
     /// Convenience that returns the SessionState from the AppInfo in the
     /// CommandList.
     const SessionStatePtr & GetSessionState() const;
-
-    /// Sets an auxiliary function to invoke just before doing or redoing a
-    /// Command. It is null by default. The function is passed the Command
-    /// being done or redone.
-    void SetPreDoFunc(const AuxFunc &func) { pre_do_func_ = func; }
-
-    /// Sets an auxiliary function to invoke just after undoing a Command. It
-    /// is null by default. The function is passed the Command being undone.
-    void SetPostUndoFunc(const AuxFunc &func) { post_undo_func_ = func; }
 
     // ------------------------------------------------------------------------
     // Command storage and execution.
@@ -101,12 +89,6 @@ class CommandManager {
   private:
     /// Registry mapping Command type name to CommandFunc to execute.
     std::unordered_map<Str, CommandFunc> command_registry_;
-
-    /// Pre-Do function to invoke.
-    AuxFunc pre_do_func_;
-
-    /// Post-Undo function to invoke.
-    AuxFunc post_undo_func_;
 
     /// CommandList that manages the Command instances.
     CommandListPtr command_list_;
