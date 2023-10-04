@@ -121,7 +121,7 @@ class  Application::Impl_ {
     void SetAskBeforeQuitting(bool ask) { ask_before_quitting_ = ask; }
     void AddEmitter(const IEmitterPtr &emitter);
     Vector2i GetWindowSize() const;
-    Renderer & GetRenderer() { return *renderer_; }
+    IRenderer & GetRenderer() { return *renderer_; }
     void ForceTouchMode(bool is_on) { force_touch_mode_on_ = is_on; }
     void EnableMouseMotionEvents(bool enable) {
         glfw_viewer_->EnableMouseMotionEvents(enable);
@@ -627,7 +627,8 @@ bool Application::Impl_::InitViewers_() {
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
     if (! options_.ignore_vr && vr_context_->InitSystem()) {
-        const auto render_func = [&](const SG::Scene &scene, Renderer &renderer,
+        const auto render_func = [&](const SG::Scene &scene,
+                                     IRenderer &renderer,
                                      const Point3f &base_position){
             vr_context_->Render(scene, renderer, base_position);
         };
@@ -1547,7 +1548,7 @@ Vector2i Application::GetWindowSize() const {
     return impl_->GetWindowSize();
 }
 
-Renderer & Application::GetRenderer() {
+IRenderer & Application::GetRenderer() {
     return impl_->GetRenderer();
 }
 

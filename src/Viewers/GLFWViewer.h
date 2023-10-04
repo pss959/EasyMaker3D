@@ -48,7 +48,7 @@ class GLFWViewer : public Viewer, public IEmitter {
     /// option into account.
     Vector2i GetWindowSize() const { return GetWindowSizePixels_(); }
 
-    virtual void Render(const SG::Scene &scene, Renderer &renderer);
+    virtual void Render(const SG::Scene &scene, IRenderer &renderer);
 
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override;

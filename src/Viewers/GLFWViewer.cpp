@@ -18,7 +18,7 @@
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
-#include "Viewers/Renderer.h"
+#include "Viewers/IRenderer.h"
 
 // ----------------------------------------------------------------------------
 // Static helper functions.
@@ -218,7 +218,7 @@ bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     return true;
 }
 
-void GLFWViewer::Render(const SG::Scene &scene, Renderer &renderer) {
+void GLFWViewer::Render(const SG::Scene &scene, IRenderer &renderer) {
     UpdateFrustum_();
 
     glfwMakeContextCurrent(window_);

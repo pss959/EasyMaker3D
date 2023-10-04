@@ -19,7 +19,7 @@ class VRViewer : public Viewer, public IEmitter {
   public:
     /// Type for a function used to render into the VRViewer. It is passed the
     /// Scene, Renderer, and a base position for VR viewing.
-    typedef std::function<void(const SG::Scene &, Renderer &,
+    typedef std::function<void(const SG::Scene &, IRenderer &,
                                const Point3f &)> RenderFunc;
 
     /// Type for a function used to emit events. It is passed the base position
@@ -35,7 +35,7 @@ class VRViewer : public Viewer, public IEmitter {
     /// Sets the VRCamera to update.
     void SetCamera(const SG::VRCameraPtr &camera) { camera_ = camera; }
 
-    virtual void Render(const SG::Scene &scene, Renderer &renderer) override;
+    virtual void Render(const SG::Scene &scene, IRenderer &renderer) override;
 
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override {}

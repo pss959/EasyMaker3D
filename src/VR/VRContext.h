@@ -8,7 +8,7 @@
 #include "Math/Types.h"
 
 struct Event;
-class  Renderer;
+class  IRenderer;
 
 namespace SG { class Scene; }
 
@@ -38,10 +38,10 @@ class VRContext {
 
     /// Initializes rendering. This must be called once before the first call
     /// to Render().
-    void InitRendering(Renderer &renderer);
+    void InitRendering(IRenderer &renderer);
 
     /// Renders.
-    void Render(const SG::Scene &scene, Renderer &renderer,
+    void Render(const SG::Scene &scene, IRenderer &renderer,
                 const Point3f &base_position);
 
     /// Emits events from all input devices.

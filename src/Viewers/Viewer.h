@@ -2,7 +2,7 @@
 
 #include "Base/Memory.h"
 
-class Renderer;
+class IRenderer;
 DECL_SHARED_PTR(Viewer);
 namespace SG { class Scene; }
 
@@ -14,5 +14,5 @@ class Viewer {
     virtual ~Viewer() {}
 
     /// Renders a Scene using the given renderer.
-    virtual void Render(const SG::Scene &scene, Renderer &renderer) = 0;
+    virtual void Render(const SG::Scene &scene, IRenderer &renderer) = 0;
 };

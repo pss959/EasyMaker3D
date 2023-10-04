@@ -1,21 +1,14 @@
 #pragma once
 
-#include <ion/gfx/image.h>
-#include <ion/gfxutils/shadermanager.h>
-
-#include "Base/Memory.h"
-#include "Math/Types.h"
+#include "Viewers/IRenderer.h"
 
 DECL_SHARED_PTR(Renderer);
 
-struct FBTarget;
-struct Frustum;
-namespace SG { class Scene; }
-
-/// A Renderer is used by Viewer classes to render a scene.
+/// Renderer is a derived IRenderer that is used by Viewer classes to actually
+/// render a scene.
 ///
 /// \ingroup Viewers
-class Renderer {
+class Renderer : public IRenderer {
   public:
     /// The constructor passed an Ion ShaderManager and a flag indicating
     /// whether to set up Ion remote debugging.
@@ -24,39 +17,14 @@ class Renderer {
 
     ~Renderer();
 
-    /// Resets everything (e.g., after a reload). The new Scene is supplied for
-    /// setting up remote debugging.
-    void Reset(const SG::Scene &scene);
-
-    /// \name Frame management.
-    ///@{
-
-    /// Begins a new frame. This and EndFrame() should bracket all
-    /// RenderScene() calls representing the current frame.
-    void BeginFrame();
-
-    /// Ends the current frame. This and BeginFrame() should bracket all
-    /// RenderScene() calls representing the current frame.
-    void EndFrame();
-
-    /// Returns the current frame count. The count is reset to 0 when Reset()
-    /// is called.
-    uint64 GetFrameCount() const;
-
-    ///@}
-
-    /// Renders the given Scene using the given Frustum. If fb_target is not
-    /// null, it is used instead of the default target.
-    void RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                     const FBTarget *fb_target = nullptr);
-
-    /// Given an FBTarget, this returns the OpenGL ID of the resolved
-    /// framebuffer texture. Returns 0 on error.
-    uint32 GetResolvedTextureID(const FBTarget &fb_target);
-
-    /// Reads a rectangle of pixels from the GLFWViewer window and returns them
-    /// in an Ion Image in kRGB888 format.
-    ion::gfx::ImagePtr ReadImage(const Range2i &rect);
+    virtual void Reset(const SG::Scene &scene) override;
+    virtual void BeginFrame() override;
+    virtual void EndFrame() override;
+    virtual uint64 GetFrameCount() const override;
+    virtual void RenderScene(const SG::Scene &scene, const Frustum &frustum,
+                             const FBTarget *fb_target = nullptr) override;
+    virtual uint32 GetResolvedTextureID(const FBTarget &fb_target) override;
+    virtual ion::gfx::ImagePtr ReadImage(const Range2i &rect) override;
 
   private:
     class Impl_; // This class does most of the work.

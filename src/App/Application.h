@@ -5,8 +5,8 @@
 
 class Controller;
 class FilePath;
+class IRenderer;
 class LogHandler;
-class Renderer;
 
 DECL_SHARED_PTR(ActionProcessor);
 DECL_SHARED_PTR(AnimationManager);
@@ -117,8 +117,8 @@ class Application {
     /// fullscreen option into account.
     Vector2i GetWindowSize() const;
 
-    /// Returns the Renderer.
-    Renderer & GetRenderer();
+    /// Returns the IRenderer.
+    IRenderer & GetRenderer();
 
     /// Allows derived classes to force touch mode to be on.
     void ForceTouchMode(bool is_on);

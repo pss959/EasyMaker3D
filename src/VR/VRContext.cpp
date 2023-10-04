@@ -22,7 +22,7 @@
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
 #include "VR/VRModelLoader.h"
-#include "Viewers/Renderer.h"
+#include "Viewers/IRenderer.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -51,8 +51,8 @@ class VRContext::Impl_ {
     bool LoadControllerModel(Hand hand, Controller::CustomModel &model);
     void SetControllers(const ControllerPtr &l_controller,
                         const ControllerPtr &r_controller);
-    void InitRendering(Renderer &renderer);
-    void Render(const SG::Scene &scene, Renderer &renderer,
+    void InitRendering(IRenderer &renderer);
+    void Render(const SG::Scene &scene, IRenderer &renderer,
                 const Point3f &base_position);
     void EmitEvents(std::vector<Event> &events, const Point3f &base_position);
     bool IsHeadSetOn() const { return is_headset_on_; }
@@ -80,7 +80,7 @@ class VRContext::Impl_ {
         Vector3f      offset;       ///< Difference in position from HMD.
         Point3f       position;     ///< Absolute position.
         Rotationf     orientation;  ///< Absolute orientation.
-        FBTarget      fb_target;    ///< For passing framebuffers to Renderer.
+        FBTarget      fb_target;    ///< For passing framebuffers to IRenderer.
     };
 
     /// OpenVR action handles and other data per Hand.
@@ -146,9 +146,9 @@ class VRContext::Impl_ {
                                         bool is_input);
     vr::VRActionHandle_t GetAction_(const Str &path);
     bool WereBindingsLoadedSuccessfully_();
-    void InitEyeRendering_(Renderer &renderer, Eye_ &eye);
+    void InitEyeRendering_(IRenderer &renderer, Eye_ &eye);
     void UpdateEyes_(const Point3f &base_position);
-    void RenderEye_(Eye_ &eye, const SG::Scene &scene, Renderer &renderer);
+    void RenderEye_(Eye_ &eye, const SG::Scene &scene, IRenderer &renderer);
     void VibrateController_(Hand hand, float duration);
     void AddButtonEvent_(Hand hand, Button_ but, std::vector<Event> &events);
     void AddHandPoseToEvent_(Hand hand, const Point3f &base_position,
@@ -205,7 +205,7 @@ void VRContext::Impl_::SetControllers(const ControllerPtr &l_controller,
         [&](float duration){ VibrateController_(Hand::kRight, duration); });
 }
 
-void VRContext::Impl_::InitRendering(Renderer &renderer) {
+void VRContext::Impl_::InitRendering(IRenderer &renderer) {
     KLOG('v', "Initializing VR rendering");
 
     // Set up VR for rendering.
@@ -219,7 +219,7 @@ void VRContext::Impl_::InitRendering(Renderer &renderer) {
     InitEyeRendering_(renderer, r_eye_);
 }
 
-void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
+void VRContext::Impl_::Render(const SG::Scene &scene, IRenderer &renderer,
                               const Point3f &base_position) {
     // Make sure the eyes are positioned and rotated correctly.
     UpdateEyes_(base_position);
@@ -500,7 +500,7 @@ bool VRContext::Impl_::WereBindingsLoadedSuccessfully_() {
     return false;
 }
 
-void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
+void VRContext::Impl_::InitEyeRendering_(IRenderer &renderer, Eye_ &eye) {
     using ion::gfx::FramebufferObject;
     using ion::gfx::Image;
     using ion::gfx::ImagePtr;
@@ -578,7 +578,7 @@ void VRContext::Impl_::UpdateEyes_(const Point3f &base_position) {
 }
 
 void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
-                                  Renderer &renderer) {
+                                  IRenderer &renderer) {
     auto &sys  = *vr::VRSystem();
     auto &comp = *vr::VRCompositor();
 
@@ -846,11 +846,11 @@ void VRContext::SetControllers(const ControllerPtr &l_controller,
     impl_->SetControllers(l_controller, r_controller);
 }
 
-void VRContext::InitRendering(Renderer &renderer) {
+void VRContext::InitRendering(IRenderer &renderer) {
     impl_->InitRendering(renderer);
 }
 
-void VRContext::Render(const SG::Scene &scene, Renderer &renderer,
+void VRContext::Render(const SG::Scene &scene, IRenderer &renderer,
                        const Point3f &base_position) {
     impl_->Render(scene, renderer, base_position);
 }
