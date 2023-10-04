@@ -441,7 +441,7 @@ TriMesh PolyMesh::ToTriMesh() const {
 // Debugging aids.
 // ----------------------------------------------------------------------------
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 Str PolyMesh::Vertex::ToString() const {
     return id + ": " + Util::ToString(point);
 }

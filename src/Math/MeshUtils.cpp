@@ -409,8 +409,8 @@ void CleanMesh(TriMesh &mesh) {
     }
 }
 
-// LCOV_EXCL_START
 // Too much of the to/from Ion code is not easily testable.
+// LCOV_EXCL_START [not testable]
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,
                                      bool alloc_tex_coords, bool is_dynamic) {
     ion::gfx::ShapePtr shape(new ion::gfx::Shape);

@@ -235,7 +235,7 @@ int Scanner::ScanInteger() {
     if (Util::StringToInteger(s, n))
         return n;
     Throw("Invalid integer value");
-    return 0;  // LCOV_EXCL_LINE
+    return 0;  // LCOV_EXCL_LINE [cannot happen]
 }
 
 unsigned Scanner::ScanUInteger() {
@@ -260,7 +260,7 @@ unsigned Scanner::ScanUInteger() {
         catch (std::exception &) {} // Fall through to Throw_ below.
     }
     Throw("Invalid unsigned integer value");
-    return 0;  // LCOV_EXCL_LINE
+    return 0;  // LCOV_EXCL_LINE [cannot happen]
 }
 
 float Scanner::ScanFloat() {
@@ -275,7 +275,7 @@ float Scanner::ScanFloat() {
         catch (std::exception &) {} // Fall through to Throw_ below.
     }
     Throw("Invalid float value");
-    return 0.f;  // LCOV_EXCL_LINE
+    return 0.f;  // LCOV_EXCL_LINE [cannot happen]
 }
 
 Str Scanner::ScanQuotedString() {

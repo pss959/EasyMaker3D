@@ -440,7 +440,7 @@ bool ModelMesh::FromBinaryString(const Str &str) {
 // Debugging aids.
 // ----------------------------------------------------------------------------
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 
 namespace {
 

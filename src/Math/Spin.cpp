@@ -2,7 +2,7 @@
 
 #include "Util/String.h"
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 Str Spin::ToString() const {
     Str s = "SP[ C=" + Util::ToString(center) +
         " D=" + Util::ToString(axis) +

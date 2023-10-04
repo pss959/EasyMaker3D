@@ -22,8 +22,10 @@ bool FilePathList::CanGoInDirection(Direction dir) const {
       case Direction::kHome:
         return GetCurrent() != FilePath::GetHomeDirPath();
     }
-    ASSERT(false);  // LCOV_EXCL_LINE
-    return false;   // LCOV_EXCL_LINE
+    // LCOV_EXCL_START [cannot happen]
+    ASSERT(false);
+    return false;
+    // LCOV_EXCL_STOP
 }
 
 const FilePath & FilePathList::GoInDirection(Direction dir) {
@@ -41,8 +43,10 @@ const FilePath & FilePathList::GoInDirection(Direction dir) {
       case Direction::kHome:
         AddPath(FilePath::GetHomeDirPath());
         break;
-      default:          // LCOV_EXCL_LINE
-        ASSERT(false);  // LCOV_EXCL_LINE
+      // LCOV_EXCL_START [cannot happen]
+      default:
+        ASSERT(false);
+      // LCOV_EXCL_STOP
     }
     return GetCurrent();
 }
@@ -91,7 +95,7 @@ FilePath FilePathList::MakeAbsolute_(const FilePath &path) {
     return FilePath::Join(dir, path);
 }
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 void FilePathList::Dump() {
     for (size_t i = 0; i < paths_.size(); ++i)
         std::cout << "[" << i << "] " << paths_[i].ToString()

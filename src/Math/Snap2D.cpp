@@ -94,7 +94,7 @@ void Snap2D::SnapPointToDirection_(Direction_ direction,
           point_to_snap = fixed_point + len * GetVector_(direction);
           break;
       }
-      default: break;  // LCOV_EXCL_LINE
+      default: break;  // LCOV_EXCL_LINE [cannot happen]
     }
 }
 
@@ -110,7 +110,7 @@ Vector2f Snap2D::GetVector_(Direction_ direction) {
       case kNW: v.Set(-1,  1); break;
       case kSE: v.Set( 1, -1); break;
       case kSW: v.Set(-1, -1); break;
-      default:  v.Set( 0,  0); break;  // LCOV_EXCL_LINE
+      default:  v.Set( 0,  0); break;  // LCOV_EXCL_LINE [cannot happen]
     }
     return v;
 }

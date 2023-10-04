@@ -32,7 +32,7 @@ bool Taper::IsValidProfile(const Profile &prof) {
     return true;
 }
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 Str Taper::ToString() const {
     return "TAP [ " + Util::EnumName(axis) + " / " + profile.ToString();
 }

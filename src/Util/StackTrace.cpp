@@ -112,7 +112,7 @@ StrVec GetStackTrace(size_t count) {
     return GetStackTrace_(count, 2);
 }
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 void PrintStackTrace(size_t count) {
     // Skip PrintStackTrace() and GetStackTrace_() at the top of the stack.
     for (const auto &line: GetStackTrace_(count, 2))

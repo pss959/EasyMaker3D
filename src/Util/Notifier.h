@@ -111,7 +111,7 @@ template <typename... ARGS> class Notifier {
     void EnableAll(bool enable) { is_enabled_ = enable; }
 
     /// Dumps the current observer state to stderr for help with debugging.
-    void Dump() {  // LCOV_EXCL_START
+    void Dump() {  // LCOV_EXCL_START [debug only]
         std::cerr << "Notifier " << this << " with observer count = "
                   << observers_.size() << ":\n";
         for (size_t i = 0; i < observers_.size(); ++i) {

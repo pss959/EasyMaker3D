@@ -135,7 +135,7 @@ void FontSystem::Impl_::Init_() {
     KLOG('z', "Initializing the Freetype2 library");
     FT_Library lib;
     if (FT_Init_FreeType(&lib) != FT_Err_Ok) {
-        // LCOV_EXCL_START
+        // LCOV_EXCL_START [cannot happen]
         ASSERTM(false, "Unable to initialize FreeType2");
         return;
         // LCOV_EXCL_STOP
@@ -174,14 +174,14 @@ bool FontSystem::Impl_::CanLoadFace_(FT_Face face) {
     // Load the glyph for 'A'.
     FT_UInt glyph_index = FT_Get_Char_Index(face, 'A');
     if (FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_SCALE) != FT_Err_Ok)
-        return false;  // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     FT_Glyph glyph;
     if (FT_Get_Glyph(face->glyph, &glyph) != FT_Err_Ok)
-        return false;  // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
-        return false;  // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE [cannot happen]
 
     return true;
 }

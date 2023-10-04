@@ -69,7 +69,7 @@ std::vector<Point2f> Polygon::RemoveDups_(const std::vector<Point2f> &points) {
     return clean_points;
 }
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 void Polygon::Dump(const Str &when) const {
     std::cout << "=== " << when << ": Polygon with "
               << points_.size() << " points:\n";

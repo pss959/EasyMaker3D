@@ -292,7 +292,7 @@ void ShapeHelper_::GetTextureDimensions_(SG::TriMeshShape::TexCoordsType type,
       case kTexCoordsYZ: dim0 = 1; dim1 = 2; break;
       case kTexCoordsZX: dim0 = 2; dim1 = 0; break;
       case kTexCoordsZY: dim0 = 2; dim1 = 1; break;
-      default: ASSERT(false);  // LCOV_EXCL_LINE
+      default: ASSERT(false);  // LCOV_EXCL_LINE [cannot happen]
     }
 }
 

@@ -148,7 +148,7 @@ Str Event::GetControllerButtonString() const {
     return s;
 }
 
-// LCOV_EXCL_START
+// LCOV_EXCL_START [debug only]
 Str Event::ToString() const {
     Str s = "=== Event [" + Util::ToString(serial, 5) +
         "] dev=" + Util::EnumName(device) +

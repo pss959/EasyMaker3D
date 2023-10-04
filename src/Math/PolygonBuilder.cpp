@@ -199,7 +199,9 @@ size_t PolygonBuilder::Impl_::FindContainingBorderIndex_(
         if (outer_borders[i].bounds.ContainsPoint(hole_pt))
             return i;
     }
-    ASSERTM(false, "Can't find outer border containing hole"); // LCOV_EXCL_LINE
+    // LCOV_EXCL_START [cannot happen]
+    ASSERTM(false, "Can't find outer border containing hole");
+    // LCOV_EXCL_STOP
     return 0;
 }
 

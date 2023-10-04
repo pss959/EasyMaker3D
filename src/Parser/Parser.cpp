@@ -482,7 +482,7 @@ Str Parser::Impl_::SubstituteConstant_(const Str &name) const {
     }
     // If we get here, the constant was not found.
     Throw_("Missing constant with name '" + name + "'");
-    return "";  // LCOV_EXCL_LINE
+    return "";  // LCOV_EXCL_LINE [cannot happen]
 }
 
 void Parser::Impl_::Throw_(const Str &msg) const {
