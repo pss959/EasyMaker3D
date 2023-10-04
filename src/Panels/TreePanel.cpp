@@ -662,6 +662,9 @@ void TreePanel::Impl_::ModelRow_::SetModelFunc(const RowFunc &func) {
     button_pane_->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &info){
             model_func_(*this, info.is_modified_mode); });
+
+    // Also disable focus change on activation for these buttons.
+    button_pane_->SetShouldFocusOnActivation(false);
 }
 
 void TreePanel::Impl_::ModelRow_::UpdateVisibility() {
