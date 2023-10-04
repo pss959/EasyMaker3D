@@ -8,7 +8,6 @@ mode     = test_env['MODE']
 
 # Source files with base testing classes and test mainline.
 main_test_sources = [
-    'AppTestBase.cpp',
     'SceneTestBase.cpp',
     'Session/SessionTestBase.cpp',
     'Sim/SimTestBase.cpp',
