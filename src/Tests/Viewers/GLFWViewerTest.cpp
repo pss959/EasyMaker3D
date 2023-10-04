@@ -3,6 +3,7 @@
 #include "Tests/Testing.h"
 #include "Viewers/GLFWViewer.h"
 
+/// \ingroup Tests
 class GLFWViewerTest : public SceneTestBase {};
 
 TEST_F(GLFWViewerTest, Camera) {

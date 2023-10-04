@@ -6,7 +6,9 @@
 #include "Viewers/IRenderer.h"
 #include "Viewers/VRViewer.h"
 
-// XXXX
+/// Fake implementation of IRenderer interface.
+///
+/// \ingroup Tests
 class FakeRenderer : public IRenderer {
     virtual void Reset(const SG::Scene &scene) override {}
     virtual void BeginFrame() override {}
@@ -24,6 +26,7 @@ class FakeRenderer : public IRenderer {
 
 // ----------------------------------------------------------------------------
 
+/// \ingroup Tests
 class VRViewerTest : public SceneTestBase {};
 
 TEST_F(VRViewerTest, RenderAndEmit) {
