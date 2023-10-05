@@ -39,22 +39,26 @@ TEST_F(ChangeClipExecutorTest, ChangeClip) {
     const auto old_plane0 = clipped0->GetPlane();
     const auto old_plane1 = clipped1->GetPlane();
 
-    // XXXX Test changes in translation...
-
+    EXPECT_EQ(Vector3f(0, -.5f, 0),           clipped0->GetTranslation());
+    EXPECT_EQ(Vector3f(0, -.5f, 0),           clipped1->GetTranslation());
     EXPECT_ENUM_EQ(Model::Status::kPrimary,   clipped0->GetStatus());
     EXPECT_ENUM_EQ(Model::Status::kSecondary, clipped1->GetStatus());
 
     Plane expected(.5f, Vector3f(1, 0, 0));
 
     exec.Execute(*cmd, Command::Op::kDo);
-    EXPECT_EQ(expected, clipped0->GetPlane());
-    EXPECT_EQ(expected, clipped1->GetPlane());
+    EXPECT_EQ(expected,                       clipped0->GetPlane());
+    EXPECT_EQ(expected,                       clipped1->GetPlane());
+    EXPECT_EQ(Vector3f(-.25f, 0, 0),          clipped0->GetTranslation());
+    EXPECT_EQ(Vector3f(-.25f, 0, 0),          clipped1->GetTranslation());
     EXPECT_ENUM_EQ(Model::Status::kPrimary,   clipped0->GetStatus());
     EXPECT_ENUM_EQ(Model::Status::kSecondary, clipped1->GetStatus());
 
     exec.Execute(*cmd, Command::Op::kUndo);
-    EXPECT_EQ(old_plane0, clipped0->GetPlane());
-    EXPECT_EQ(old_plane1, clipped1->GetPlane());
+    EXPECT_EQ(Vector3f(0, -.5f, 0),           clipped0->GetTranslation());
+    EXPECT_EQ(Vector3f(0, -.5f, 0),           clipped1->GetTranslation());
+    EXPECT_EQ(old_plane0,                     clipped0->GetPlane());
+    EXPECT_EQ(old_plane1,                     clipped1->GetPlane());
     EXPECT_ENUM_EQ(Model::Status::kPrimary,   clipped0->GetStatus());
     EXPECT_ENUM_EQ(Model::Status::kSecondary, clipped1->GetStatus());
 }
