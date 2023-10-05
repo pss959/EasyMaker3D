@@ -1,6 +1,7 @@
 ﻿#include "Managers/PanelManager.h"
 
 #include "SG/Search.h"
+#include "Util/General.h"
 
 void PanelManager::Reset() {
     panel_map_.clear();
@@ -10,7 +11,12 @@ void PanelManager::FindAllPanels(const SG::Scene &scene,
                                  const Panel::ContextPtr &context) {
     auto add_panel = [this, &scene, &context](const Str &name) {
         auto panel = SG::FindTypedNodeInScene<Panel>(scene, name);
-        panel->SetContext(context);
+        if (Util::app_type == Util::AppType::kUnitTest)
+            panel->SetTestContext(context);
+        // LCOV_EXCL_START [only SetTestContext() is used in tests]
+        else
+            panel->SetContext(context);
+        // LCOV_EXCL_STOP
         ASSERTM(! panel_map_.contains(name),
                 "Multiple panels with name " + name);
         panel_map_[name] = panel;

@@ -141,10 +141,12 @@ test_source_dict = {
     ],
     'Managers' : [
         'AnimationManagerTest',
+        'BoardManagerTest',
         'ClipboardManagerTest',
         'CommandManagerTest',
         'FeedbackManagerTest',
         'NameManagerTest',
+        'PanelManagerTest',
     ],
     'Math' : [
         'AnimationTest',
