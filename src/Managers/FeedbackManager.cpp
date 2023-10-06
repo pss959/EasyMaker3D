@@ -1,7 +1,6 @@
 #include "Managers/FeedbackManager.h"
 
-#include <forward_list>
-#include <typeindex>
+#include <algorithm>
 #include <unordered_map>
 
 #include "SG/CoordConv.h"
@@ -18,6 +17,12 @@ void FeedbackManager::SetParentNodes(const SG::NodePtr &world_parent,
 void FeedbackManager::SetSceneBoundsFunc(const SceneBoundsFunc &func) {
     ASSERT(func);
     scene_bounds_func_ = func;
+
+    // Update any active instances.
+    for (auto &item: unkeyed_active_instances_)
+        item->SetSceneBoundsFunc(func);
+    for (auto &item: keyed_active_instances_)
+        item.second->SetSceneBoundsFunc(func);
 }
 
 void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
@@ -32,10 +37,19 @@ void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
     auto &parent = instance->IsInWorldCoordinates() ?
         world_parent_node_ : stage_parent_node_;
     parent->AddChild(instance);
+
+    unkeyed_active_instances_.push_back(instance);
 }
 
 void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
     ASSERT(instance);
+
+    // Remove from active instances.
+    auto it = std::find(unkeyed_active_instances_.begin(),
+                        unkeyed_active_instances_.end(), instance);
+    ASSERT(it != unkeyed_active_instances_.end());
+    unkeyed_active_instances_.erase(it);
+
     KLOG('D', "Deactivating instance " << instance->GetDesc());
     instance->Deactivate();
 
@@ -45,25 +59,25 @@ void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
         stage_parent_node_->RemoveChild(instance);
 }
 
-void FeedbackManager::AddActiveInstance_(const Str &key,
-                                         const FeedbackPtr &instance) {
-    ASSERTM(! active_instances_.contains(key), key);
+void FeedbackManager::AddKeyedActiveInstance_(const Str &key,
+                                              const FeedbackPtr &instance) {
+    ASSERTM(! keyed_active_instances_.contains(key), key);
     KLOG('D', "Adding active instance " << instance->GetDesc()
          << " with key " << key);
-    active_instances_[key] = instance;
+    keyed_active_instances_[key] = instance;
 }
 
-void FeedbackManager::RemoveActiveInstance_(const Str &key,
-                                            const FeedbackPtr &instance) {
-    ASSERTM(active_instances_.contains(key), key);
+void FeedbackManager::RemoveKeyedActiveInstance_(const Str &key,
+                                                 const FeedbackPtr &instance) {
+    ASSERTM(keyed_active_instances_.contains(key), key);
     KLOG('D', "Removing active instance " << instance->GetDesc()
          << " with key " << key);
-    active_instances_.erase(key);
+    keyed_active_instances_.erase(key);
 }
 
-FeedbackPtr FeedbackManager::FindActiveInstance_(const Str &key) {
-    const auto it = active_instances_.find(key);
-    if (it != active_instances_.end())
+FeedbackPtr FeedbackManager::FindKeyedActiveInstance_(const Str &key) {
+    const auto it = keyed_active_instances_.find(key);
+    if (it != keyed_active_instances_.end())
         return it->second;
     return FeedbackPtr();
 }
