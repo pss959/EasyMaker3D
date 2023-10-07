@@ -14,9 +14,9 @@
 /// \ingroup Tests
 class TargetWidgetTest : public SceneTestBase {
   protected:
-    /// Derived Widget class that supports target placement, always returning
-    /// fixed results for testing.
-    class TestTargetWidget : public Widget {
+    /// Derived Widget class that supports receiving target placement, always
+    /// returning fixed results for testing.
+    class TestReceiverWidget : public Widget {
       public:
         virtual bool CanReceiveTarget() const override { return true; }
         virtual void PlacePointTarget(const DragInfo &info,
@@ -34,15 +34,15 @@ class TargetWidgetTest : public SceneTestBase {
         }
 
       protected:
-        TestTargetWidget() {}
+        TestReceiverWidget() {}
 
       private:
         friend class Parser::Registry;
     };
-    DECL_SHARED_PTR(TestTargetWidget);
+    DECL_SHARED_PTR(TestReceiverWidget);
 
     TargetWidgetTest() {
-        Parser::Registry::AddType<TestTargetWidget>("TestTargetWidget");
+        Parser::Registry::AddType<TestReceiverWidget>("TestReceiverWidget");
     }
 
     PointTargetWidgetPtr GetPointTargetWidget() {
@@ -91,12 +91,12 @@ TEST_F(TargetWidgetTest, PointTargetSetTarget) {
 }
 
 TEST_F(TargetWidgetTest, PointTargetDrag) {
-    auto ttw = CreateObject<TestTargetWidget>();
+    auto trw = CreateObject<TestReceiverWidget>();
     auto ptw = GetPointTargetWidget();
 
     ptw->SetStageToWorldMatrix(Matrix4f::Identity());
 
-    DragTester dt(ptw, ttw);
+    DragTester dt(ptw, trw);
     dt.SetRayDirection(-Vector3f::AxisZ());
     dt.ApplyMouseDrag(Point3f(0, 1, 2), Point3f(6, 1.5f, 2));
 
@@ -105,13 +105,13 @@ TEST_F(TargetWidgetTest, PointTargetDrag) {
 }
 
 TEST_F(TargetWidgetTest, PointTargetDragSnapFeedback) {
-    auto ttw = CreateObject<TestTargetWidget>();
+    auto trw = CreateObject<TestReceiverWidget>();
     auto ptw = GetPointTargetWidget();
 
     ptw->SetSnapFeedbackPoint(Point3f(1, 1, 1));
     ptw->ShowSnapFeedback(true);
 
-    DragTester dt(ptw, ttw);
+    DragTester dt(ptw, trw);
     dt.SetRayDirection(-Vector3f::AxisZ());
     dt.ApplyMouseDrag(Point3f(0, 1, 2), Point3f(6, 1.5f, 2));
 
@@ -170,12 +170,12 @@ TEST_F(TargetWidgetTest, EdgeTargetSetTarget) {
 }
 
 TEST_F(TargetWidgetTest, EdgeTargetDrag) {
-    auto ttw = CreateObject<TestTargetWidget>();
+    auto trw = CreateObject<TestReceiverWidget>();
     auto etw = GetEdgeTargetWidget();
 
     etw->SetStageToWorldMatrix(Matrix4f::Identity());
 
-    DragTester dt(etw, ttw);
+    DragTester dt(etw, trw);
     dt.SetRayDirection(-Vector3f::AxisZ());
     dt.ApplyMouseDrag(Point3f(0, 1, 2), Point3f(6, 1.5f, 2));
 

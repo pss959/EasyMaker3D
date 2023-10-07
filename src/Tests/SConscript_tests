@@ -148,6 +148,8 @@ test_source_dict = {
         'FeedbackManagerTest',
         'NameManagerTest',
         'PanelManagerTest',
+        'SelectionManagerTest',
+        'TargetManagerTest',
     ],
     'Math' : [
         'AnimationTest',

@@ -75,8 +75,8 @@ class TargetManager {
     /// to targets during drag operations.
     ///@{
 
-    /// Any Tool that uses a snapping during a drag operation should call this
-    /// to indicate the beginning of an interactive operation that involves
+    /// Any Tool that uses snapping during a drag operation should call this to
+    /// indicate the beginning of an interactive operation that involves
     /// snapping.
     void StartSnapping();
 
