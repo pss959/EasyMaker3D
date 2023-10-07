@@ -243,9 +243,6 @@ bool ScriptedApp::Init(const Options &options) {
 
     const auto &context = GetContext();
 
-    // Do NOT write out settings that change because of a script.
-    context.settings_manager->SetWriteFlag(false);
-
     // Turn off controllers until they are specifically added.
     context.scene_context->left_controller->SetEnabled(false);
     context.scene_context->right_controller->SetEnabled(false);
@@ -269,9 +266,10 @@ bool ScriptedApp::Init(const Options &options) {
     // Use default settings file so that state is deterministic.
     const FilePath path("PublicDoc/snaps/settings/Settings" +
                         TK::kDataFileExtension);
-    if (! context.settings_manager->ReplaceSettings(path)) {
+    Str error;
+    if (! context.settings_manager->SetPath(path, false, error)) {
         std::cerr << "*** Unable to load default settings from "
-                  << path.ToString() << "\n";
+                  << path.ToString() << ": " << error << "\n";
         return false;
     }
     // Tell the SessionManager to update its previous path.
@@ -402,8 +400,12 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
           const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
           const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
                               TK::kDataFileExtension);
-          if (! GetContext().settings_manager->ReplaceSettings(path))
+          Str error;
+          if (! GetContext().settings_manager->SetPath(path, false, error)) {
+              std::cerr << "*** Unable to load settings from "
+                        << path.ToString() << ": " << error << "\n";
               return false;
+          }
           break;
       }
       case kSnap: {

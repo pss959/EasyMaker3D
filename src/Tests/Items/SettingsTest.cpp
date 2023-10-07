@@ -1,7 +1,7 @@
+#include "Items/Settings.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
-#include "Items/Settings.h"
 
 /// \ingroup Tests
 class SettingsTest : public SceneTestBase {};

@@ -296,6 +296,9 @@ class  Application::Impl_ {
     /// Sets up the given Widget to display a tooltip.
     void InitTooltip_(Widget &widget);
 
+    /// Loads settings from the user's settings file. Returns false on error.
+    bool LoadSettings_();
+
     void SelectionChanged_(const Selection &sel,
                            SelectionManager::Operation op);
 
@@ -465,7 +468,9 @@ bool Application::Impl_::Init(const Application::Options &options) {
         return true;  // Continue so that the user sees the message.
     }
 
-    if (options.show_session_panel)
+    // Load settings if possible. If this fails, it will show an error message
+    // and quit.
+    if (LoadSettings_() && options.show_session_panel)
         ShowInitialPanel_();
 
     // Tell the ActionProcessor how to quit.
@@ -1161,6 +1166,26 @@ void Application::Impl_::ShowInitialPanel_() {
 void Application::Impl_::InitTooltip_(Widget &widget) {
     ASSERT(tooltip_func_);
     widget.SetTooltipFunc(tooltip_func_);
+}
+
+bool Application::Impl_::LoadSettings_() {
+    const auto settings_path = FilePath::Join(
+        FilePath::GetSettingsDirPath(TK::kApplicationName),
+        "settings" + TK::kDataFileExtension);
+
+    Str error;
+    if (MGR_(settings)->SetPath(settings_path, true, error))
+        return true;
+
+    // If there is an error, display a message in a DialogPanel and quit.
+    auto dp = MGR_(board)->GetTypedPanel<DialogPanel>("DialogPanel");
+    dp->SetMessage("Error reading settings from " +
+                   settings_path.ToString() + ":\n" + error);
+    dp->SetSingleResponse("OK");
+    SC_->app_board->SetPanel(dp, [&](const Str &){
+        run_state_ = RunState_::kQuitting; });
+    MGR_(board)->ShowBoard(SC_->app_board, true);
+    return false;
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

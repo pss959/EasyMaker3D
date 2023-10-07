@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Util/FilePath.h"
+namespace Parser { class Object; }
 
 /// Class that creates a temporary file in the constructor and removes it in
 /// the destructor.
@@ -10,7 +11,11 @@
 class TempFile {
   public:
     /// Creates a temporary file with the given contents.
-    TempFile(const Str &input_string);
+    explicit TempFile(const Str &input_string);
+
+    /// Creates a temporary file containing the result of using a
+    /// Parser::Writer to write the given object.
+    explicit TempFile(const Parser::Object &obj);
 
     /// Removes the temporary file.
     ~TempFile();
@@ -27,6 +32,7 @@ class TempFile {
   private:
     FilePath path_;
 
-    static Str RandomString_(size_t length);
+    static FilePath GetRandomFilePath_();
+    static Str      RandomString_(size_t length);
 };
 

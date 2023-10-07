@@ -12,78 +12,59 @@
 #include "Util/Tuning.h"
 
 SettingsManager::SettingsManager() {
-    // See if there is a file with settings.
-    const auto path = GetSettingsFilePath_(
-        FilePath::GetSettingsDirPath(TK::kApplicationName));
-    if (path.Exists())
-        settings_ = ReadSettings_(path);
-    if (! settings_)
-        settings_ = Settings::CreateDefault();
+    settings_ = Settings::CreateDefault();
+}
+
+bool SettingsManager::SetPath(const FilePath &path, bool save_on_set,
+                              Str &error) {
+    path_        = path;
+    save_on_set_ = save_on_set;
+
+    if (! path.Exists()) {
+        error = path.ToString() + " does not exist";
+        return false;
+    }
+    return LoadSettings_(path, error);
 }
 
 void SettingsManager::SetSettings(const Settings &new_settings) {
     settings_->CopyFrom(new_settings);
-    if (write_settings_)
-        WriteSettings_();
+    if (path_ && save_on_set_)
+        SaveSettings_(path_);
     if (change_func_)
         change_func_(new_settings);
 }
 
-bool SettingsManager::ReplaceSettings(const FilePath &path) {
-    if (! path.Exists()) {
-        std::cerr << "*** Unable to read settings from '"
-                  << path.ToString() << "': no such file\n";
-        return false;
-    }
-    if (SettingsPtr new_settings = ReadSettings_(path)) {
-        settings_ = new_settings;
-        return true;
-    }
-    return false;
-}
-
-SettingsPtr SettingsManager::ReadSettings_(const FilePath &path) {
+bool SettingsManager::LoadSettings_(const FilePath &path, Str &error) {
     KLOG('f', "Reading settings from \"" << path.ToString() << "\"");
-    SettingsPtr settings;
+    SettingsPtr new_settings;
     try {
         Parser::Parser parser;
         auto obj = parser.ParseFile(path);
         ASSERT(obj);
-        settings = std::dynamic_pointer_cast<Settings>(obj);
-        if (! settings)
-            std::cerr << "*** Unable to read settings from '"
-                      << path.ToString() << "':\n Got " << obj->GetDesc()
-                      << " instead of Settings\n";
+        new_settings = std::dynamic_pointer_cast<Settings>(obj);
+        if (! new_settings) {
+            error = "Got " + obj->GetTypeName() + " instead of Settings\n";
+            return false;
+        }
     }
     catch (const Parser::Exception &ex) {
-        std::cerr << "*** Unable to read settings from '"
-                  << path.ToString() << "':\n" << ex.what() << "\n";
+        error = ex.what();
+        return false;
     }
-    return settings;
+    settings_ = new_settings;
+    return true;
 }
 
-void SettingsManager::WriteSettings_() {
-    // Make sure the directory path exists.
-    const auto dir_path = FilePath::GetSettingsDirPath(TK::kApplicationName);
-    if (! dir_path.CreateDirectories()) {
-        std::cerr << "*** Unable to create settings directory '"
-                  << dir_path.ToString() << "'\n";
-        return;
+void SettingsManager::SaveSettings_(const FilePath &path) {
+    // Create directories if necessary.
+    const auto dir_path = path.GetParentDirectory();
+    if (dir_path.CreateDirectories()) {
+        std::ofstream out(path.ToNativeString());
+        if (out) {
+            KLOG('f', "Writing settings to \"" << path.ToString() << "\"");
+            Parser::Writer writer(out);
+            writer.WriteObject(*settings_);
+        }
     }
-
-    const auto path = GetSettingsFilePath_(dir_path);
-    KLOG('f', "Writing settings to \"" << path.ToString() << "\"");
-    std::ofstream out(path.ToNativeString());
-    if (out.fail()) {
-        std::cerr << "*** Unable to write settings to '"
-                  << path.ToString() << "'\n";
-        return;
-    }
-
-    Parser::Writer writer(out);
-    writer.WriteObject(*settings_);
-}
-
-FilePath SettingsManager::GetSettingsFilePath_(const FilePath &dir_path) {
-    return FilePath::Join(dir_path, "settings" + TK::kDataFileExtension);
 }

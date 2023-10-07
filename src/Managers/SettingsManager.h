@@ -19,35 +19,30 @@ class SettingsManager : public SettingsAgent {
     /// Typedef for function that is invoked when settings change.
     typedef std::function<void(const Settings &)> ChangeFunc;
 
+    /// The constructor installs default settings.
     SettingsManager();
 
-    /// Sets a flag indicating whether changing the settings updates the saved
-    /// settings file. The default is true.
-    void SetWriteFlag(bool write_settings) { write_settings_ = write_settings; }
+    /// Sets the path to the settings file to load to initialize settings. If
+    /// the path is to an existing file, this reads the settings from it.  If
+    /// \p save_on_set is true, future calls to SetSettings() will save the new
+    /// settings to the same path. This returns false if the path is not an
+    /// existing file or if settings could not be read from it; the reason for
+    /// the failure is stored in the \p error string.
+    bool SetPath(const FilePath &path, bool save_on_set, Str &error);
 
     /// Sets a function that is invoked when the current settings change.
     void SetChangeFunc(const ChangeFunc &func) { change_func_ = func; }
 
-    /// Returns the current settings (read-only).
+    // SettingsAgent functions.
     virtual const Settings & GetSettings() const override { return *settings_; }
-
-    /// Updates the settings to new values and notifies the change function, if
-    /// any. Writes out the new settings if the write flag is set.
     virtual void SetSettings(const Settings &new_settings) override;
 
-    /// Replaces current settings with those read from the given file. Returns
-    /// false on any error.
-    bool ReplaceSettings(const FilePath &path);
-
  private:
-    bool        write_settings_ = true;
+    FilePath    path_;
+    bool        save_on_set_ = false;
     ChangeFunc  change_func_;
     SettingsPtr settings_;
 
-    SettingsPtr ReadSettings_(const FilePath &path);
-    void        WriteSettings_();
-
-    /// Returns the path to the settings file in the directory with the given
-    /// path.
-    static FilePath GetSettingsFilePath_(const FilePath &dir_path);
+    bool LoadSettings_(const FilePath &path, Str &error);
+    void SaveSettings_(const FilePath &path);
 };

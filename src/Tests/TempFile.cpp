@@ -4,24 +4,25 @@
 #include <fstream>
 #include <random>
 
+#include "Parser/Writer.h"
 #include "Util/Assert.h"
 #include "Util/FileSystem.h"
 #include "Util/Read.h"
 
 TempFile::TempFile(const Str &input_string) {
-    // Generate a random file name. This is used because: std::filesystem has
-    // no current way of generating a unique file name, std::tmpnam() is marked
-    // as "dangerous", std::tmpfile() has no good way of returning the file
-    // name, and I don't want to depend on boost::filesystem. This was stolen
-    // from the internet.
-    const Str name =
-        RandomString_(4) + "-" + RandomString_(4) + "-" + RandomString_(4);
-
-    path_ = FilePath::Join(FilePath::GetTempFilePath(), FilePath(name));
-
+    path_ = GetRandomFilePath_();
     std::ofstream out(path_.ToNativeString());
     ASSERTM(out.is_open(), "Could not open temp file: " + path_.ToString());
     out << input_string;
+    out.close();
+}
+
+TempFile::TempFile(const Parser::Object &obj) {
+    path_ = GetRandomFilePath_();
+    std::ofstream out(path_.ToNativeString());
+    ASSERTM(out.is_open(), "Could not open temp file: " + path_.ToString());
+    Parser::Writer writer(out);
+    writer.WriteObject(obj);
     out.close();
 }
 
@@ -43,6 +44,18 @@ void TempFile::SetContents(const Str &new_contents) {
     ASSERT(out.is_open());
     out << new_contents;
     out.close();
+}
+
+FilePath TempFile::GetRandomFilePath_() {
+    // Generate a random file name. This is used because: std::filesystem has
+    // no current way of generating a unique file name, std::tmpnam() is marked
+    // as "dangerous", std::tmpfile() has no good way of returning the file
+    // name, and I don't want to depend on boost::filesystem. This was stolen
+    // from the internet.
+    const Str name =
+        RandomString_(4) + "-" + RandomString_(4) + "-" + RandomString_(4);
+
+    return FilePath::Join(FilePath::GetTempFilePath(), FilePath(name));
 }
 
 Str TempFile::RandomString_(size_t length) {
