@@ -148,6 +148,7 @@ test_source_dict = {
         'FeedbackManagerTest',
         'NameManagerTest',
         'PanelManagerTest',
+        'SceneContextTest',
         'SelectionManagerTest',
         'SessionManagerTest',
         'SettingsManagerTest',
