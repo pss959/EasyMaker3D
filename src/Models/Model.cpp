@@ -211,8 +211,8 @@ Color Model::GetNextColor() {
 }
 
 void Model::ResetColors() {
-    ASSERT(color_set_);
-    color_set_->Reset();
+    if (color_set_)
+        color_set_->Reset();
 }
 
 void Model::SetColor(const Color &new_color) {

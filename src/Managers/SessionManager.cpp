@@ -102,7 +102,7 @@ bool SessionManager::SaveSession(const FilePath &path) {
 }
 
 bool SessionManager::LoadSession(const FilePath &path, Str &error) {
-    return LoadSessionSafe_(path, &error);
+    return LoadSessionSafe_(path, error);
 }
 
 Str SessionManager::GetModelNameForExport() const {
@@ -137,11 +137,12 @@ void SessionManager::ResetSession_() {
     current_session_name_.clear();
 
     action_agent_->Reset();
+    command_manager_->GetCommandList()->ClearChanges();
     Model::ResetColors();
     SaveOriginalSessionState_();
 }
 
-bool SessionManager::LoadSessionSafe_(const FilePath &path, Str *error) {
+bool SessionManager::LoadSessionSafe_(const FilePath &path, Str &error) {
     ResetSession_();
     KLOG('w', "Loading session from '" << path.ToString() << "'");
     try {
@@ -161,10 +162,7 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path, Str *error) {
     }
     catch (const Parser::Exception &ex) {
         KLOG('w', "Loading threw exception: " << ex.what());
-        if (error)
-            *error = ex.what();
-        else
-            throw;
+        error = ex.what();
         return false;
     }
     KLOG('w', "Loading was successful: "

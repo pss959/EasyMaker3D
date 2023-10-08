@@ -18,10 +18,6 @@ class CommandManagerTest : public TestBaseWithTypes {
     CommandManagerTest();
 
     void InitManager(CommandManager &cm);
-
-    TestCommandPtr CreateTestCommand(const Str &name) {
-        return Parser::Registry::CreateObject<TestCommand>(name);
-    }
 };
 
 CommandManagerTest::CommandManagerTest() {
@@ -66,8 +62,8 @@ TEST_F(CommandManagerTest, ProcessCommandList) {
     expected_is_validating = true;  // ProcessCommandList() validates.
 
     auto cl = Parser::Registry::CreateObject<CommandList>();
-    auto tc0 = CreateTestCommand("TC0");
-    auto tc1 = CreateTestCommand("TC1");
+    auto tc0 = TestCommand::Create("TC0");
+    auto tc1 = TestCommand::Create("TC1");
     cl->AddCommand(tc0);
     cl->AddCommand(tc1);
     cm.ProcessCommandList(cl);
@@ -106,9 +102,9 @@ TEST_F(CommandManagerTest, ProcessCommandListWithOrphans) {
     expected_is_validating = true;  // ProcessCommandList() validates.
 
     auto cl = Parser::Registry::CreateObject<CommandList>();
-    auto tc0 = CreateTestCommand("TC0");
-    auto tc1 = CreateTestCommand("TC1");
-    auto tc2 = CreateTestCommand("TC2");
+    auto tc0 = TestCommand::Create("TC0");
+    auto tc1 = TestCommand::Create("TC1");
+    auto tc2 = TestCommand::Create("TC2");
     tc1->SetShouldBeAddedAsOrphan(true);
     cl->AddCommand(tc0);
     cl->AddCommand(tc1);
@@ -137,9 +133,9 @@ TEST_F(CommandManagerTest, UndoRedo) {
     EXPECT_NOT_NULL(cm.GetCommandList());
     auto &mcl = *cm.GetCommandList();
 
-    auto tc0 = CreateTestCommand("TC0");
-    auto tc1 = CreateTestCommand("TC1");
-    auto tc2 = CreateTestCommand("TC2");
+    auto tc0 = TestCommand::Create("TC0");
+    auto tc1 = TestCommand::Create("TC1");
+    auto tc2 = TestCommand::Create("TC2");
 
     EXPECT_FALSE(cm.CanUndo());
     EXPECT_FALSE(cm.CanRedo());

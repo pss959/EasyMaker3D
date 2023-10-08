@@ -149,6 +149,7 @@ test_source_dict = {
         'NameManagerTest',
         'PanelManagerTest',
         'SelectionManagerTest',
+        'SessionManagerTest',
         'SettingsManagerTest',
         'TargetManagerTest',
     ],

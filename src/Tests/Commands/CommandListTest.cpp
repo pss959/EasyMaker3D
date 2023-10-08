@@ -12,9 +12,6 @@ class CommandListTest : public SceneTestBase {
         Parser::Registry::AddType<TestCommand>("TestCommand");
         SetParseTypeName("CommandList");
     }
-    TestCommandPtr CreateTestCommand() {
-        return Parser::Registry::CreateObject<TestCommand>();
-    }
 };
 
 TEST_F(CommandListTest, Defaults) {
@@ -26,7 +23,7 @@ TEST_F(CommandListTest, Defaults) {
 
 TEST_F(CommandListTest, Command) {
     // Use TestCommand to test basic Command interface.
-    auto tc = CreateTestCommand();
+    auto tc = TestCommand::Create();
     EXPECT_FALSE(tc->IsFinalized());
     EXPECT_FALSE(tc->IsValidating());
     EXPECT_FALSE(tc->GetSelection().HasAny());
@@ -72,20 +69,20 @@ TEST_F(CommandListTest, AppInfo) {
 TEST_F(CommandListTest, AddRemoveCommand) {
     auto cl = Parser::Registry::CreateObject<CommandList>();
 
-    auto tc1 = CreateTestCommand();
+    auto tc1 = TestCommand::Create();
     cl->AddCommand(tc1);
     EXPECT_EQ(1U,  cl->GetCommandCount());
     EXPECT_EQ(1U,  cl->GetCurrentIndex());
     EXPECT_EQ(tc1, cl->GetCommand(0));
 
-    auto tc2 = CreateTestCommand();
+    auto tc2 = TestCommand::Create();
     cl->AddCommand(tc2);
     EXPECT_EQ(2U,  cl->GetCommandCount());
     EXPECT_EQ(2U,  cl->GetCurrentIndex());
     EXPECT_EQ(tc1, cl->GetCommand(0));
     EXPECT_EQ(tc2, cl->GetCommand(1));
 
-    auto tc3 = CreateTestCommand();
+    auto tc3 = TestCommand::Create();
     cl->AddCommand(tc3);
     EXPECT_EQ(3U,  cl->GetCommandCount());
     EXPECT_EQ(3U,  cl->GetCurrentIndex());
@@ -115,13 +112,13 @@ TEST_F(CommandListTest, UndoRedo) {
     EXPECT_FALSE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
 
-    auto tc1 = CreateTestCommand();
+    auto tc1 = TestCommand::Create();
     cl->AddCommand(tc1);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
     EXPECT_EQ(tc1, cl->GetCommandToUndo());
 
-    auto tc2 = CreateTestCommand();
+    auto tc2 = TestCommand::Create();
     cl->AddCommand(tc2);
     EXPECT_TRUE(cl->CanUndo());
     EXPECT_FALSE(cl->CanRedo());
@@ -154,7 +151,7 @@ TEST_F(CommandListTest, UndoRedo) {
     EXPECT_EQ(tc2, cl->GetCommandToUndo());
 
     // Test commands that have no undo/redo effect.
-    auto tc3 = CreateTestCommand();
+    auto tc3 = TestCommand::Create();
     tc3->SetHasUndoRedoEffect(false);
     cl->AddCommand(tc3);
     EXPECT_TRUE(cl->CanUndo());
@@ -178,12 +175,12 @@ TEST_F(CommandListTest, Changes) {
     EXPECT_FALSE(cl->DidCommandsChange());
     EXPECT_FALSE(cl->AreAnyChanges());
 
-    auto tc1 = CreateTestCommand();
+    auto tc1 = TestCommand::Create();
     cl->AddCommand(tc1);
     EXPECT_TRUE(cl->DidCommandsChange());
     EXPECT_TRUE(cl->AreAnyChanges());
 
-    auto tc2 = CreateTestCommand();
+    auto tc2 = TestCommand::Create();
     cl->AddCommand(tc2);
     EXPECT_TRUE(cl->DidCommandsChange());
     EXPECT_TRUE(cl->AreAnyChanges());
@@ -201,7 +198,7 @@ TEST_F(CommandListTest, Changes) {
     EXPECT_FALSE(cl->DidCommandsChange());
     EXPECT_FALSE(cl->AreAnyChanges());
 
-    auto tc3 = CreateTestCommand();
+    auto tc3 = TestCommand::Create();
     cl->AddCommand(tc3);
     EXPECT_EQ(3U,  cl->GetCommandCount());
     EXPECT_EQ(3U,  cl->GetCurrentIndex());
@@ -230,10 +227,10 @@ TEST_F(CommandListTest, Changes) {
 TEST_F(CommandListTest, NonOrphans) {
     auto cl = Parser::Registry::CreateObject<CommandList>();
 
-    auto tc1 = CreateTestCommand();
+    auto tc1 = TestCommand::Create();
     cl->AddCommand(tc1);
 
-    auto tc2 = CreateTestCommand();
+    auto tc2 = TestCommand::Create();
     tc2->SetShouldBeAddedAsOrphan(false);
     cl->AddCommand(tc2);
 
@@ -241,7 +238,7 @@ TEST_F(CommandListTest, NonOrphans) {
     cl->ProcessUndo();
 
     // tc2 should not be added as an orphaned command to tc3.
-    auto tc3 = CreateTestCommand();
+    auto tc3 = TestCommand::Create();
     cl->AddCommand(tc3);
     EXPECT_TRUE(tc3->GetOrphanedCommands().empty());
 }
@@ -249,10 +246,10 @@ TEST_F(CommandListTest, NonOrphans) {
 TEST_F(CommandListTest, Orphans) {
     auto cl = Parser::Registry::CreateObject<CommandList>();
 
-    auto tc1 = CreateTestCommand();
+    auto tc1 = TestCommand::Create();
     cl->AddCommand(tc1);
 
-    auto tc2 = CreateTestCommand();
+    auto tc2 = TestCommand::Create();
     tc2->SetShouldBeAddedAsOrphan(true);
     cl->AddCommand(tc2);
 
@@ -260,7 +257,7 @@ TEST_F(CommandListTest, Orphans) {
     cl->ProcessUndo();
 
     // tc2 should be added as an orphaned command to tc3.
-    auto tc3 = CreateTestCommand();
+    auto tc3 = TestCommand::Create();
     cl->AddCommand(tc3);
     EXPECT_EQ(1U,  tc3->GetOrphanedCommands().size());
     EXPECT_EQ(tc2, tc3->GetOrphanedCommands()[0]);

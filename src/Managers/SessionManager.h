@@ -81,10 +81,9 @@ class SessionManager : public SessionAgent {
     /// Resets the current session.
     void ResetSession_();
 
-    /// Loads a session from a path. If error is not null, this stores an error
-    /// message in at and returns false if anything went wrong. Otherwise, it
-    /// just throws the exception.
-    bool LoadSessionSafe_(const FilePath &path, Str *error);
+    /// Loads a session from a path. Stores a message in \p error and returns
+    /// false if anything went wrong.
+    bool LoadSessionSafe_(const FilePath &path, Str &error);
 
     /// Changes the original session state to the current session state.
     void SaveOriginalSessionState_();
