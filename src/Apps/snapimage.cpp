@@ -10,6 +10,7 @@
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/FilePathList.h"
+#include "Util/General.h"
 #include "Util/KLog.h"
 
 /// \file
