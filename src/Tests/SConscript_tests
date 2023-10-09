@@ -315,6 +315,10 @@ test_source_dict = {
     'Timing' : [
         'TimingTest',
     ],
+    'Tools' : [
+        'ColorToolTest',
+        'ToolTestBase',
+    ],
     'Trackers' : [
         'GripTrackerTest',
         'MouseTrackerTest',

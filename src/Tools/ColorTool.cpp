@@ -119,6 +119,9 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
             const auto &p1 = info->grip_position;
             ring_pt = start_ring_pt_ + TK::kColorToolGripDragScale * (p1 - p0);
         }
+        else {
+            got_pos = false;
+        }
         ASSERT(command_);
         if (got_pos) {
             command_->SetNewColor(GetRingColor_(ring_pt));
