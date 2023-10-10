@@ -1,5 +1,7 @@
 #include "Tests/Tools/ToolTestBase.h"
 
+#include "Commands/CommandList.h"
+#include "Feedback/FindFeedback.h"
 #include "Managers/BoardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -21,6 +23,18 @@ void ToolTestBase::AddDummyCommandFunction(const Str &name) {
         name, [](Command &, Command::Op){});
 }
 
+void ToolTestBase::CheckNoCommands() {
+    const auto &cl = *context->command_manager->GetCommandList();
+    EXPECT_EQ(0U, cl.GetCommandCount());
+}
+
+void ToolTestBase::SetEdgeTargetLength(float length) {
+    auto et = CreateObject<EdgeTarget>();
+    et->SetPositions(Point3f(0, 0, 0), Point3f(length, 0, 0));
+    context->target_manager->SetEdgeTarget(*et);
+    context->target_manager->SetEdgeTargetVisible(true);
+}
+
 Str ToolTestBase::GetContentsString_(const Str &name) {
     // Have to set up a Board and target Widgets in addition to the named Tool.
     const Str str = R"(
@@ -29,15 +43,18 @@ Str ToolTestBase::GetContentsString_(const Str &name) {
       TEMPLATES: [
         <"nodes/templates/Frame.emd">,
         <"nodes/templates/Board.emd">
+        <"nodes/templates/Border.emd">,
+        <"nodes/templates/PaneBackground.emd">,
+        <"nodes/templates/RadialMenu.emd">,
       ],
       children: [
-        <"nodes/Tools/<NAME>.emd">,         # Has to be first.
-        <"nodes/templates/RadialMenu.emd">, # Required for RadialMenuPanel.
+        <"nodes/Tools/<NAME>.emd">,         # Has to precede Panels.
         <"nodes/Panels.emd">,
         <"nodes/ModelRoot.emd">,
         <"nodes/Widgets/PointTargetWidget.emd">,
         <"nodes/Widgets/EdgeTargetWidget.emd">,
         CLONE "T_Board" "TestBoard" {},
+        <"nodes/Feedback.emd">,
       ]
     }
   ]
@@ -50,7 +67,8 @@ void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     ASSERT(tool);
     context.reset(new Tool::Context);
 
-    auto &scene = *GetScene();
+    auto       &scene = *GetScene();
+    const auto &root  = scene.GetRootNode();
 
     PanelManagerPtr pm(new PanelManager);
     context->board_manager.reset(new BoardManager(pm));
@@ -65,6 +83,15 @@ void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     context->path_to_parent_node = SG::NodePath(tool);
     context->camera_position.Set(0, 0, 10);
 
+    // Set up the FeedbackManager.
+    context->feedback_manager->SetParentNodes(root, root);
+    context->feedback_manager->SetSceneBoundsFunc(
+        [&](){ return context->root_model->GetBounds(); });
+    context->feedback_manager->SetPathToStage(SG::NodePath(root));
+    for (auto &fb: FindFeedback(*root))
+        context->feedback_manager->AddOriginal<Feedback>(fb);
+
+    // Set up the TargetManager.
     auto ptw = SG::FindTypedNodeInScene<PointTargetWidget>(
         scene, "PointTargetWidget");
     auto etw = SG::FindTypedNodeInScene<EdgeTargetWidget>(
@@ -72,4 +99,10 @@ void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     context->target_manager->InitTargets(ptw, etw);
 
     tool->SetContext(context);
+}
+
+const Command * ToolTestBase::CheckOneCommand_() {
+    const auto &cl = *context->command_manager->GetCommandList();
+    EXPECT_EQ(1U, cl.GetCommandCount());
+    return cl.GetCommand(0).get();
 }

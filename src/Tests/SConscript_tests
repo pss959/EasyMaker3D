@@ -317,6 +317,8 @@ test_source_dict = {
     ],
     'Tools' : [
         'ColorToolTest',
+        'ComplexityToolTest',
+        'CylinderToolTest',
         'ToolTestBase',
     ],
     'Trackers' : [
