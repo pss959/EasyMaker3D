@@ -12,6 +12,7 @@ class Dimensionality;
 ///
 /// \ingroup Tools
 class ScaleTool : public Tool {
+  public:
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
