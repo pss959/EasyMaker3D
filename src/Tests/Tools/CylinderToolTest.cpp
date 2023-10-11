@@ -32,6 +32,7 @@ class CylinderToolTest : public ToolTestBase {
 CylinderToolTest::CylinderToolTest() {
     // Initialize the CylinderTool.
     tool = InitTool<CylinderTool>("CylinderTool");
+    EXPECT_TRUE(tool->IsSpecialized());
 
     // Access its ScaleWidgets.
     top_scaler = SG::FindTypedNodeUnderNode<ScaleWidget>(

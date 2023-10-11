@@ -8,6 +8,9 @@
 ///
 /// \ingroup Tools
 class NameTool : public PanelTool {
+    /// NameTool is a rare PanelTool that is not specialized.
+    virtual bool IsSpecialized() const override { return false; }
+
   protected:
     NameTool() {}
 

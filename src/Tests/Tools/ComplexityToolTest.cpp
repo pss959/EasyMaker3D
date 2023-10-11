@@ -29,6 +29,7 @@ class ComplexityToolTest : public ToolTestBase {
 ComplexityToolTest::ComplexityToolTest() {
     // Initialize the ComplexityTool.
     tool = InitTool<ComplexityTool>("ComplexityTool");
+    EXPECT_FALSE(tool->IsSpecialized());
 
     // Access its DraggableWidget.
     widget = SG::FindTypedNodeUnderNode<DraggableWidget>(*tool, "Slider");

@@ -14,6 +14,8 @@
 /// \ingroup Tools
 class CylinderTool : public Tool {
   public:
+    virtual bool IsSpecialized() const override { return true; }
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
@@ -24,7 +26,6 @@ class CylinderTool : public Tool {
 
     virtual void CreationDone() override;
 
-    virtual bool IsSpecialized() const override { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
     virtual void Attach() override;
     virtual void Detach() override;

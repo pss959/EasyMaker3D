@@ -10,6 +10,10 @@
 ///
 /// \ingroup Tools
 class PanelTool : public Tool {
+  public:
+    /// Most Panel-based tools are specialized.
+    virtual bool IsSpecialized() const { return true; }
+
   protected:
     /// Defines this to access the correct Panel (using GetPanelTypeName() for
     /// the type), attach it to the tool Board, and to store it in the

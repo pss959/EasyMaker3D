@@ -12,7 +12,6 @@ class ExtrudedTool : public PanelTool {
   protected:
     ExtrudedTool() {}
 
-    virtual bool IsSpecialized() const override { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
     virtual void Attach() override;
     virtual void Detach() override;

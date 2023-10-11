@@ -13,7 +13,6 @@ class BevelTool : public PanelTool {
   protected:
     BevelTool() {}
 
-    virtual bool IsSpecialized() const override { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
 
     virtual Str GetPanelName() const override {

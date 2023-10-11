@@ -26,6 +26,11 @@ class ToolTestBase : public SceneTestBase {
         return tool;
     }
 
+    /// Registers a function with the CommandManager for the named Command that
+    /// is invoked only for Command::Op::kDo.
+    void AddCommandFunction(const Str &name,
+                            const std::function<void(const Command &)> &func);
+
     /// Registers a dummy Executor function with the CommandManager for the
     /// named Command that does nothing.
     void AddDummyCommandFunction(const Str &name);

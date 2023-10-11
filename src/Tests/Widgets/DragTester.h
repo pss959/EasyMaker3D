@@ -48,7 +48,18 @@ class DragTester {
     /// the last DragInfo will have an empty path.
     void ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
                         size_t count_between = 0,
-                        bool finish_off_widget = false);
+                        bool finish_off_widget = false) {
+        ApplyMultiMouseDrag(std::vector<Point3f>{ p0, p1 }, count_between,
+                            finish_off_widget);
+    }
+
+    /// Same as ApplyMouseDrag() but allows for multiple points to be
+    /// specified. If count_between is non-zero, this interpolates the given
+    /// number of points for each pair of points in the vector. If \p
+    /// finish_off_widget is true, the last DragInfo will have an empty path.
+    void ApplyMultiMouseDrag(const std::vector<Point3f> &pts,
+                             size_t count_between = 0,
+                             bool finish_off_widget = false);
 
     /// Applies a grip position drag between two points in local coordinates of
     /// the DraggableWidget. If count_between is non-zero, this interpolates

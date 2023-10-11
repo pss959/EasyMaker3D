@@ -21,6 +21,9 @@ DECL_SHARED_PTR(LinearFeedback);
 /// \ingroup Tools
 class PlaneBasedTool : public Tool {
   public:
+    /// All Plane-based tools are specialized.
+    virtual bool IsSpecialized() const override { return true; }
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------

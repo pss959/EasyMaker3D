@@ -11,7 +11,6 @@ class ImportTool : public PanelTool {
   protected:
     ImportTool() {}
 
-    virtual bool IsSpecialized() const { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
     virtual Str GetPanelName() const override {
         return "ImportToolPanel";

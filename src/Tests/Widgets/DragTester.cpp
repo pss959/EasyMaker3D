@@ -57,8 +57,10 @@ void DragTester::SetRayDirection(const Vector3f &dir) {
     base_info_.ray.direction = dir;
 }
 
-void DragTester::ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
-                                size_t count_between, bool finish_off_widget) {
+void DragTester::ApplyMultiMouseDrag(const std::vector<Point3f> &pts,
+                                     size_t count_between,
+                                     bool finish_off_widget) {
+    ASSERT(pts.size() >= 2U);
     DragInfo info = base_info_;
     info.trigger  = Trigger::kPointer;
 
@@ -75,11 +77,14 @@ void DragTester::ApplyMouseDrag(const Point3f &p0, const Point3f &p1,
         infos.push_back(info);
     };
 
-    add_pt(p0);
     const float delta = 1.f / (count_between + 1);
-    for (size_t i = 0; i < count_between; ++i)
-        add_pt(Lerp((i + 1) * delta, p0, p1));
-    add_pt(p1);
+    for (size_t i = 0; i < pts.size(); ++i) {
+        add_pt(pts[i]);
+        if (count_between > 0 && i + 1 < pts.size()) {
+            for (size_t j = 0; j < count_between; ++j)
+                add_pt(Lerp((j + 1) * delta, pts[i], pts[i + 1]));
+        }
+    }
 
     if (finish_off_widget)
         infos.back().hit.path.clear();

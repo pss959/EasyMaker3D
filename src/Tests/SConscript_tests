@@ -320,6 +320,7 @@ test_source_dict = {
         'ComplexityToolTest',
         'CylinderToolTest',
         'ToolTestBase',
+        'TorusToolTest',
     ],
     'Trackers' : [
         'GripTrackerTest',

@@ -30,6 +30,7 @@ class ColorToolTest : public ToolTestBase {
 ColorToolTest::ColorToolTest() {
     // Initialize the ColorTool.
     tool = InitTool<ColorTool>("ColorTool");
+    EXPECT_FALSE(tool->IsSpecialized());
 
     // Access its DraggableWidget.
     widget = SG::FindTypedNodeUnderNode<DraggableWidget>(*tool, "Widget");

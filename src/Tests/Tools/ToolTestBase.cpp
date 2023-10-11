@@ -17,6 +17,17 @@
 #include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/PointTargetWidget.h"
 
+void ToolTestBase::AddCommandFunction(
+    const Str &name, const std::function<void(const Command &)> &func) {
+    ASSERT(context);
+    ASSERT(func);
+    auto exec_func = [&, func](Command &cmd, Command::Op op){
+        if (op == Command::Op::kDo)
+            func(cmd);
+    };
+    context->command_manager->RegisterFunction(name, exec_func);
+}
+
 void ToolTestBase::AddDummyCommandFunction(const Str &name) {
     ASSERT(context);
     context->command_manager->RegisterFunction(
