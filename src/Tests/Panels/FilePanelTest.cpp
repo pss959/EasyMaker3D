@@ -121,22 +121,22 @@ TEST_F(FilePanelTest, Directions) {
     auto input = FindTypedPane<TextInputPane>("Input");
 
     EXPECT_EQ("/a/b/c/", input->GetText());
-    EXPECT_TRUE(IsButtonPaneEnabled("Up"));
-    ClickButtonPane("Up");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Up"));
+    pi.ClickButtonPane("Up");
     EXPECT_EQ("/a/b/", input->GetText());
-    EXPECT_TRUE(IsButtonPaneEnabled("Back"));
-    ClickButtonPane("Back");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Back"));
+    pi.ClickButtonPane("Back");
     EXPECT_EQ("/a/b/c/", input->GetText());
-    EXPECT_TRUE(IsButtonPaneEnabled("Forward"));
-    ClickButtonPane("Forward");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Forward"));
+    pi.ClickButtonPane("Forward");
     EXPECT_EQ("/a/b/", input->GetText());
 
     // Click on a directory buttons.
-    ClickButtonPane("Dir_0");
+    pi.ClickButtonPane("Dir_0");
     EXPECT_EQ("/a/b/c/", input->GetText());
 
-    EXPECT_TRUE(IsButtonPaneEnabled("Home"));
-    ClickButtonPane("Home");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Home"));
+    pi.ClickButtonPane("Home");
     EXPECT_EQ("/home/user", input->GetText());
 }
 
@@ -154,13 +154,13 @@ TEST_F(FilePanelTest, HiddenFiles) {
               StrVec{ "file0.jpg", "file1.stl" });
 
     // Show hidden files. There should now be two more files.
-    ToggleCheckboxPane("HiddenFiles");
+    pi.ToggleCheckboxPane("HiddenFiles");
     TestFiles("After showing hidden",
               StrVec{ "subdir0", "subdir1" },
               StrVec{ "file0.jpg", "file1.stl", "hidden0.txt", "hidden1.txt" });
 
     // Toggle again; should make files hidden again.
-    ToggleCheckboxPane("HiddenFiles");
+    pi.ToggleCheckboxPane("HiddenFiles");
     TestFiles("After hiding again",
               StrVec{ "subdir0", "subdir1" },
               StrVec{ "file0.jpg", "file1.stl" });
@@ -177,8 +177,8 @@ TEST_F(FilePanelTest, ChooseDirectory) {
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Change the path to the parent directory and Accept the FilePanel.
-    ClickButtonPane("Up");
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Up");
+    pi.ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 
@@ -200,29 +200,29 @@ TEST_F(FilePanelTest, ChooseNewFile) {
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Change the format dropdown.
-    ChangeDropdownChoice("Format", "Binary STL");
+    pi.ChangeDropdownChoice("Format", "Binary STL");
 
     // Cannot accept a directory.
-    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Accept"));
 
     // Enter a file name with the wrong extension. Should be acceptable.
-    SetTextInput("Input", "/a/b/c/test.jpg");
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    pi.SetTextInput("Input", "/a/b/c/test.jpg");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
 
     // Enter a file name with the correct extension. Should be acceptable.
-    SetTextInput("Input", "/a/b/c/test.stl");
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    pi.SetTextInput("Input", "/a/b/c/test.stl");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
 
     // Enter a file name with no extension. Should be acceptable.
-    SetTextInput("Input", "/a/b/c/test");
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    pi.SetTextInput("Input", "/a/b/c/test");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
 
     // Accept it and test the results.
-    ClickButtonPane("Accept");
-    EXPECT_EQ("Accept",                   GetCloseResult());
+    pi.ClickButtonPane("Accept");
+    EXPECT_EQ("Accept",                        GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
-    EXPECT_EQ("/a/b/c/test.stl",          panel->GetPath().ToString());
-    EXPECT_EQ(FileFormat::kBinarySTL,     panel->GetFileFormat());
+    EXPECT_EQ("/a/b/c/test.stl",               panel->GetPath().ToString());
+    EXPECT_EQ(FileFormat::kBinarySTL,          panel->GetFileFormat());
 }
 
 TEST_F(FilePanelTest, ChooseExistingFile) {
@@ -239,34 +239,34 @@ TEST_F(FilePanelTest, ChooseExistingFile) {
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Cannot accept a directory.
-    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Accept"));
 
     // Click on an existing file name with the correct extension. Should be
     // acceptable. This should also focus on the file button for this file.
-    ClickButtonPane("File_0");
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    pi.ClickButtonPane("File_0");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
     const auto but = panel->GetFocusedPane();
     EXPECT_NOT_NULL(but);
     auto text = but->FindTypedSubPane<TextPane>("ButtonText");
     EXPECT_EQ("file1.stl", text->GetText());
 
     // Enter a file name with no extension. Should not be acceptable.
-    SetTextInput("Input", "/a/b/c/test");
-    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
+    pi.SetTextInput("Input", "/a/b/c/test");
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Accept"));
 
     // Enter an existing file name with the wrong extension. Should not be
     // acceptable.
-    SetTextInput("Input", "/a/b/c/file0.jpg");
-    EXPECT_FALSE(IsButtonPaneEnabled("Accept"));
+    pi.SetTextInput("Input", "/a/b/c/file0.jpg");
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Accept"));
 
     // Enter and accept a valid file name and test the results.
-    SetTextInput("Input", "/a/b/c/file1.stl");
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
-    ClickButtonPane("Accept");
-    EXPECT_EQ("Accept",                   GetCloseResult());
+    pi.SetTextInput("Input", "/a/b/c/file1.stl");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
+    pi.ClickButtonPane("Accept");
+    EXPECT_EQ("Accept",                        GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
-    EXPECT_EQ("/a/b/c/file1.stl",         panel->GetPath().ToString());
-    EXPECT_EQ(FileFormat::kTextSTL,       panel->GetFileFormat());
+    EXPECT_EQ("/a/b/c/file1.stl",              panel->GetPath().ToString());
+    EXPECT_EQ(FileFormat::kTextSTL,            panel->GetFileFormat());
 }
 
 TEST_F(FilePanelTest, OverwriteFile) {
@@ -277,32 +277,32 @@ TEST_F(FilePanelTest, OverwriteFile) {
     panel->SetStatus(Panel::Status::kVisible);
 
     // Enter an existing file name.
-    SetTextInput("Input", "/a/b/c/file1.stl");
+    pi.SetTextInput("Input", "/a/b/c/file1.stl");
 
     // Accept it. This should bring up a DialogPanel asking whether to
     // overwrite the file.
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
-    ClickButtonPane("Accept");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto dialog = GetCurrentPanel();
     EXPECT_EQ("DialogPanel", dialog->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
 
     // Click "No" in the dialog -> should restore the FilePanel.
-    ClickButtonPane("Button0");  // "No"
+    pi.ClickButtonPane("Button0");  // "No"
     EXPECT_EQ("No", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Accept again and this time click "Yes" in the dialog -> should close the
     // DialogPanel and FilePanel.
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
-    ClickButtonPane("Accept");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     dialog = GetCurrentPanel();
     EXPECT_EQ("DialogPanel", dialog->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
-    ClickButtonPane("Button1");  // "Yes"
+    pi.ClickButtonPane("Button1");  // "Yes"
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Yes", GetCloseResult());

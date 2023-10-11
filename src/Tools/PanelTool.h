@@ -14,6 +14,10 @@ class PanelTool : public Tool {
     /// Most Panel-based tools are specialized.
     virtual bool IsSpecialized() const { return true; }
 
+    /// Returns the ToolPanel for the PanelTool. This will be null when the
+    /// PanelTool is not attached.
+    const ToolPanelPtr & GetPanel() const { return panel_; }
+
   protected:
     /// Defines this to access the correct Panel (using GetPanelTypeName() for
     /// the type), attach it to the tool Board, and to store it in the

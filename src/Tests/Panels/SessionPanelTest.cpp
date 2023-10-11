@@ -114,10 +114,10 @@ TEST_F(SessionPanelTest, ButtonState) {
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("(No previous session)",
               cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
-    EXPECT_FALSE(IsButtonPaneEnabled("Continue"));
-    EXPECT_TRUE(IsButtonPaneEnabled("Load"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Save"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Export"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Continue"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Load"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Save"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Export"));
     EXPECT_EQ(FindPane("New"), panel->GetFocusedPane());
     panel->SetStatus(Panel::Status::kUnattached);
 
@@ -129,10 +129,10 @@ TEST_F(SessionPanelTest, ButtonState) {
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue previous session [Prev.ems]",
               cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
-    EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
-    EXPECT_TRUE(IsButtonPaneEnabled("Load"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Save"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Export"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Continue"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Load"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Save"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Export"));
     // Focus should not have changed.
     EXPECT_EQ(FindPane("New"), panel->GetFocusedPane());
     panel->SetStatus(Panel::Status::kUnattached);
@@ -146,10 +146,10 @@ TEST_F(SessionPanelTest, ButtonState) {
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue current session [Cur.ems]",
               cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
-    EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
-    EXPECT_TRUE(IsButtonPaneEnabled("Load"));
-    EXPECT_TRUE(IsButtonPaneEnabled("Save"));
-    EXPECT_TRUE(IsButtonPaneEnabled("Export"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Continue"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Load"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Save"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Export"));
     // Focus should not have changed.
     EXPECT_EQ(FindPane("New"), panel->GetFocusedPane());
     panel->SetStatus(Panel::Status::kUnattached);
@@ -162,10 +162,10 @@ TEST_F(SessionPanelTest, ButtonState) {
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue current session",
               cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
-    EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
-    EXPECT_TRUE(IsButtonPaneEnabled("Load"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Save"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Export"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Continue"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Load"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Save"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Export"));
     // Focus should not have changed.
     EXPECT_EQ(FindPane("New"), panel->GetFocusedPane());
     panel->SetStatus(Panel::Status::kUnattached);
@@ -183,33 +183,33 @@ TEST_F(SessionPanelTest, ButtonFocusContinue) {
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_EQ("Continue previous session [Prev.ems]",
               cont->FindTypedSubPane<TextPane>("ButtonText")->GetText());
-    EXPECT_TRUE(IsButtonPaneEnabled("Continue"));
-    EXPECT_TRUE(IsButtonPaneEnabled("Load"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Save"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Export"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Continue"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Load"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Save"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Export"));
     EXPECT_EQ(FindPane("Continue"), panel->GetFocusedPane());
 }
 
 TEST_F(SessionPanelTest, OpenOtherPanels) {
     // Click the "Help" button: the SessionPanel should be hidden and the
     // HelpPanel should be shown.
-    ClickButtonPane("Help");
+    pi.ClickButtonPane("Help");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto help_panel = GetCurrentPanel();
     EXPECT_EQ("HelpPanel", help_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, help_panel->GetStatus());
-    ClickButtonPane("Done");
+    pi.ClickButtonPane("Done");
     EXPECT_EQ("Done", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, help_panel->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Repeat with the "Settings" button.
-    ClickButtonPane("Settings");
+    pi.ClickButtonPane("Settings");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto settings_panel = GetCurrentPanel();
     EXPECT_EQ("SettingsPanel", settings_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, settings_panel->GetStatus());
-    ClickButtonPane("Cancel");
+    pi.ClickButtonPane("Cancel");
     EXPECT_EQ("Cancel", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, settings_panel->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
@@ -227,20 +227,20 @@ TEST_F(SessionPanelTest, Continue) {
 
     // An unsuccessful load should show a DialogPanel with the error message.
     agent.load_ok = false;
-    ClickButtonPane("Continue");
+    pi.ClickButtonPane("Continue");
     EXPECT_EQ("Load", agent.last_op);
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto dialog = GetCurrentPanel();
     EXPECT_EQ("DialogPanel", dialog->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
-    ClickButtonPane("Button0");
+    pi.ClickButtonPane("Button0");
     EXPECT_EQ("OK", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // A successful load should close the SessionPanel.
     agent.load_ok = true;
-    ClickButtonPane("Continue");
+    pi.ClickButtonPane("Continue");
     EXPECT_EQ("Load", agent.last_op);
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Done", GetCloseResult());
@@ -256,19 +256,19 @@ TEST_F(SessionPanelTest, Load) {
     agent.save_ok  = true;
 
     // Clicking the Load button should show a FilePanel.
-    ClickButtonPane("Load");
+    pi.ClickButtonPane("Load");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto file_panel = GetCurrentPanel();
     EXPECT_EQ("FilePanel", file_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
 
     // This has to be a valid file for the Accept button to be enabled.
-    SetTextInput("Input", GetDataPath("Sessions/Empty.ems").ToString());
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    pi.SetTextInput("Input", GetDataPath("Sessions/Empty.ems").ToString());
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
 
     // Accepting the file to load should close the FilePanel and open the
     // DialogPanel.
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, file_panel->GetStatus());
     auto dialog = GetCurrentPanel();
@@ -277,7 +277,7 @@ TEST_F(SessionPanelTest, Load) {
 
     // Click the "Yes" button to really load the session and close the
     // SessionPanel.
-    ClickButtonPane("Button1");  // "Yes".
+    pi.ClickButtonPane("Button1");  // "Yes".
     EXPECT_EQ("Yes", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
@@ -291,18 +291,18 @@ TEST_F(SessionPanelTest, LoadFail) {
 
     // Clicking the Load button should show a FilePanel.
     agent.load_ok = false;
-    ClickButtonPane("Load");
+    pi.ClickButtonPane("Load");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto file_panel = GetCurrentPanel();
     EXPECT_EQ("FilePanel", file_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
 
     // This has to be a valid file for the Accept button to be enabled.
-    SetTextInput("Input", GetDataPath("Sessions/Empty.ems").ToString());
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
+    pi.SetTextInput("Input", GetDataPath("Sessions/Empty.ems").ToString());
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
 
     // Accepting the file to load should show the error DialogPanel.
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, file_panel->GetStatus());
     auto dialog = GetCurrentPanel();
@@ -343,12 +343,12 @@ TEST_F(SessionPanelTest, NewAfterChanges) {
 
     // If there are changes, ask before starting a new session. If the answer
     // is "Yes", close the SessionPanel as Done.
-    ClickButtonPane("New");
+    pi.ClickButtonPane("New");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto dialog = GetCurrentPanel();
     EXPECT_EQ("DialogPanel", dialog->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
-    ClickButtonPane("Button1");  // "Yes"
+    pi.ClickButtonPane("Button1");  // "Yes"
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("New", agent.last_op);
@@ -363,7 +363,7 @@ TEST_F(SessionPanelTest, Save) {
 
     panel->SetStatus(Panel::Status::kVisible);
 
-    ClickButtonPane("Save");
+    pi.ClickButtonPane("Save");
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Save", agent.last_op);
 }
@@ -373,15 +373,15 @@ TEST_F(SessionPanelTest, SaveAs) {
     panel->SetStatus(Panel::Status::kVisible);
 
     // Clicking the SaveAs button should show a FilePanel.
-    ClickButtonPane("SaveAs");
+    pi.ClickButtonPane("SaveAs");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto file_panel = GetCurrentPanel();
     EXPECT_EQ("FilePanel", file_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
     // This has to be a new file for the Accept button to be enabled.
-    SetTextInput("Input", GetDataPath("NewFile.ems").ToString());
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
-    ClickButtonPane("Accept");
+    pi.SetTextInput("Input", GetDataPath("NewFile.ems").ToString());
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, file_panel->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Save", agent.last_op);
@@ -395,15 +395,15 @@ TEST_F(SessionPanelTest, Export) {
     panel->SetStatus(Panel::Status::kVisible);
 
     // Clicking the Export button should show a FilePanel.
-    ClickButtonPane("Export");
+    pi.ClickButtonPane("Export");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto file_panel = GetCurrentPanel();
     EXPECT_EQ("FilePanel", file_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
     // This has to be a new file for the Accept button to be enabled.
-    SetTextInput("Input", GetDataPath("NewExportFile.stl").ToString());
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
-    ClickButtonPane("Accept");
+    pi.SetTextInput("Input", GetDataPath("NewExportFile.stl").ToString());
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, file_panel->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Export", agent.last_op);
@@ -418,15 +418,15 @@ TEST_F(SessionPanelTest, ExportFail) {
 
     // Clicking the Export button should show a FilePanel.
     agent.export_ok = false;
-    ClickButtonPane("Export");
+    pi.ClickButtonPane("Export");
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
     auto file_panel = GetCurrentPanel();
     EXPECT_EQ("FilePanel", file_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
     // This has to be a new file for the Accept button to be enabled.
-    SetTextInput("Input", GetDataPath("NewExportFile.stl").ToString());
-    EXPECT_TRUE(IsButtonPaneEnabled("Accept"));
-    ClickButtonPane("Accept");
+    pi.SetTextInput("Input", GetDataPath("NewExportFile.stl").ToString());
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, file_panel->GetStatus());
     EXPECT_EQ("Export", agent.last_op);
 
@@ -434,7 +434,7 @@ TEST_F(SessionPanelTest, ExportFail) {
     auto dialog = GetCurrentPanel();
     EXPECT_EQ("DialogPanel", dialog->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
-    ClickButtonPane("Button0");
+    pi.ClickButtonPane("Button0");
     EXPECT_EQ("OK", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());

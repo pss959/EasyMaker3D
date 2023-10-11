@@ -485,34 +485,34 @@ TEST_F(TreePanelTest, MoveUpDown) {
     // enabled.
     action_agent->can_move_up = action_agent->can_move_down = false;
     UpdatePanel();
-    EXPECT_FALSE(IsButtonPaneEnabled("MoveUp"));
-    EXPECT_FALSE(IsButtonPaneEnabled("MoveDown"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("MoveUp"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("MoveDown"));
 
     // Select Hull1 - MoveUp would be enabled.
     ClickModelButton(3);
     action_agent->can_move_up = true;
     UpdatePanel();
-    EXPECT_TRUE(IsButtonPaneEnabled("MoveUp"));
-    EXPECT_FALSE(IsButtonPaneEnabled("MoveDown"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("MoveUp"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("MoveDown"));
 
     // Click on the MoveUp button. They should swap enabling and the action
     // should have been applied.
     EXPECT_ENUM_EQ(Action::kNone, action_agent->last_action);
-    ClickButtonPane("MoveUp");
+    pi.ClickButtonPane("MoveUp");
     action_agent->can_move_up   = false;
     action_agent->can_move_down = true;
     UpdatePanel();
-    EXPECT_FALSE(IsButtonPaneEnabled("MoveUp"));
-    EXPECT_TRUE(IsButtonPaneEnabled("MoveDown"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("MoveUp"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("MoveDown"));
     EXPECT_ENUM_EQ(Action::kMovePrevious, action_agent->last_action);
 
     // Repeat with MoveDown.
-    ClickButtonPane("MoveDown");
+    pi.ClickButtonPane("MoveDown");
     action_agent->can_move_up   = true;
     action_agent->can_move_down = false;
     UpdatePanel();
-    EXPECT_TRUE(IsButtonPaneEnabled("MoveUp"));
-    EXPECT_FALSE(IsButtonPaneEnabled("MoveDown"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("MoveUp"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("MoveDown"));
     EXPECT_ENUM_EQ(Action::kMoveNext, action_agent->last_action);
 }
 

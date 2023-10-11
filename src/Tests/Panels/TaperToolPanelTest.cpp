@@ -60,7 +60,7 @@ TEST_F(TaperToolPanelTest, Change) {
     EXPECT_VECS_CLOSE2(Vector2f(.2f, .5f), ToVector2f(sw->GetTranslation()));
 
     // Change the dimension.
-    ActivateRadioButtonPane("Y");  // User "Y" axis == app "Z" axis.
+    pi.ActivateRadioButtonPane("Y");  // User "Y" axis == app "Z" axis.
     EXPECT_ENUM_EQ(Dim::kZ, panel->GetTaper().axis);
     EXPECT_EQ(4U,           GetChangeInfo().count);
     EXPECT_EQ("Axis",       GetChangeInfo().name);

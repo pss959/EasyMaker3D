@@ -37,16 +37,16 @@ TEST_F(HelpPanelTest, OpenURLs) {
     panel->SetStatus(Panel::Status::kVisible);
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
-    ClickButtonPane("UserGuide");
+    pi.ClickButtonPane("UserGuide");
     EXPECT_EQ(doc_url("UserGuide"), last_url);
 
-    ClickButtonPane("CheatSheet");
+    pi.ClickButtonPane("CheatSheet");
     EXPECT_EQ(doc_url("CheatSheet"), last_url);
 
-    ClickButtonPane("Issue");
+    pi.ClickButtonPane("Issue");
     EXPECT_EQ(TK::kGithubURL + "/issues", last_url);
 
-    ClickButtonPane("Done");
+    pi.ClickButtonPane("Done");
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Done", GetCloseResult());
 }

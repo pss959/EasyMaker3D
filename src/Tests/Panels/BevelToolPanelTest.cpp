@@ -46,13 +46,13 @@ TEST_F(BevelToolPanelTest, Show) {
 
 TEST_F(BevelToolPanelTest, Change) {
     // Drag the scale slider. Drag start/continue/end = 3 changes.
-    DragSlider("ScaleSlider", Vector2f(.5f, 0));
+    pi.DragSlider("ScaleSlider", Vector2f(.5f, 0));
     EXPECT_EQ(3U,         GetChangeInfo().count);
     EXPECT_EQ("Scale",    GetChangeInfo().name);
     EXPECT_EQ("kDragEnd", GetChangeInfo().type);
 
     // Drag the max_angle slider.
-    DragSlider("AngleSlider", Vector2f(.5f, 0));
+    pi.DragSlider("AngleSlider", Vector2f(.5f, 0));
     EXPECT_EQ(6U,         GetChangeInfo().count);
     EXPECT_EQ("MaxAngle", GetChangeInfo().name);
     EXPECT_EQ("kDragEnd", GetChangeInfo().type);

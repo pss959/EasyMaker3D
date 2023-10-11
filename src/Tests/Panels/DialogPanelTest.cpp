@@ -25,7 +25,7 @@ TEST_F(DialogPanelTest, SingleResponse) {
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Close the panel by simulating a click on the "Cool" button.
-    ClickButtonPane("Button0");
+    pi.ClickButtonPane("Button0");
     EXPECT_EQ("Cool", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 }
@@ -45,7 +45,7 @@ TEST_F(DialogPanelTest, ChoiceResponse) {
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Close the panel by simulating a click on the "Sad" button.
-    ClickButtonPane("Button1");
+    pi.ClickButtonPane("Button1");
     EXPECT_EQ("Sad", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
 }

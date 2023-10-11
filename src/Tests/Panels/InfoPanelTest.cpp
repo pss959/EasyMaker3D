@@ -53,7 +53,7 @@ TEST_F(InfoPanelTest, Show) {
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
     EXPECT_EQ(FindPane("Done"), panel->GetFocusedPane());
 
-    ClickButtonPane("Done");
+    pi.ClickButtonPane("Done");
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
     EXPECT_EQ("Done", GetCloseResult());
 }

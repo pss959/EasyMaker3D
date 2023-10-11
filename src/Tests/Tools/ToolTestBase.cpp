@@ -5,6 +5,7 @@
 #include "Managers/BoardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
+#include "Managers/NameManager.h"
 #include "Managers/PanelManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
@@ -46,9 +47,9 @@ void ToolTestBase::SetEdgeTargetLength(float length) {
     context->target_manager->SetEdgeTargetVisible(true);
 }
 
-Str ToolTestBase::GetContentsString_(const Str &name) {
-    // Have to set up a Board and target Widgets in addition to the named Tool.
-    const Str str = R"(
+Str ToolTestBase::GetContentsString_() {
+    // Have to set up a Board and target Widgets in addition to the Tools.
+    return R"(
   children: [
     Node {
       TEMPLATES: [
@@ -59,7 +60,8 @@ Str ToolTestBase::GetContentsString_(const Str &name) {
         <"nodes/templates/RadialMenu.emd">,
       ],
       children: [
-        <"nodes/Tools/<NAME>.emd">,         # Has to precede Panels.
+        <"nodes/DimensionColors.emd">,
+        <"nodes/Tools.emd">,             # Has to precede Panels.
         <"nodes/Panels.emd">,
         <"nodes/ModelRoot.emd">,
         <"nodes/Widgets/PointTargetWidget.emd">,
@@ -70,8 +72,6 @@ Str ToolTestBase::GetContentsString_(const Str &name) {
     }
   ]
 )";
-
-    return Util::ReplaceString(str, "<NAME>", name);
 }
 
 void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
@@ -108,6 +108,12 @@ void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     auto etw = SG::FindTypedNodeInScene<EdgeTargetWidget>(
         scene, "EdgeTargetWidget");
     context->target_manager->InitTargets(ptw, etw);
+
+    // Set up the PanelManager including a Panel::Context that contains the
+    // bare minimum for tests.
+    Panel::ContextPtr pc(new Panel::Context);
+    pc->name_agent.reset(new NameManager);
+    pm->FindAllPanels(scene, pc);
 
     tool->SetContext(context);
 }

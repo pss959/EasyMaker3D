@@ -47,24 +47,24 @@ TEST_F(NameToolPanelTest, Show) {
 TEST_F(NameToolPanelTest, Change) {
     panel->SetStatus(Panel::Status::kVisible);
 
-    auto input = SetTextInput("Input", "Some Name");
+    auto input = pi.SetTextInput("Input", "Some Name");
     EXPECT_EQ("Some Name", input->GetText());
     EXPECT_TRUE(input->IsTextValid());
 
     // Apply.
-    ClickButtonPane("Apply");
+    pi.ClickButtonPane("Apply");
     EXPECT_EQ(1U,           GetChangeInfo().count);
     EXPECT_EQ("Name",       GetChangeInfo().name);
     EXPECT_EQ("kImmediate", GetChangeInfo().type);
 
     auto msg = FindTypedPane<TextPane>("Message");
-    input = SetTextInput("Input", " BadName");
+    input = pi.SetTextInput("Input", " BadName");
     EXPECT_EQ(" BadName", input->GetText());
     EXPECT_FALSE(input->IsTextValid());
     EXPECT_TRUE(msg->GetText().contains("Invalid name"));
 
     GetContext().name_agent->Add("DupName");
-    input = SetTextInput("Input", "DupName");
+    input = pi.SetTextInput("Input", "DupName");
     EXPECT_EQ("DupName", input->GetText());
     EXPECT_FALSE(input->IsTextValid());
     EXPECT_TRUE(msg->GetText().contains("Name is in use"));

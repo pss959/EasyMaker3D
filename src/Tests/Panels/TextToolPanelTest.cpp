@@ -42,7 +42,7 @@ TEST_F(TextToolPanelTest, Show) {
 TEST_F(TextToolPanelTest, Change) {
     panel->SetStatus(Panel::Status::kVisible);
 
-    auto input = SetTextInput("Text", "Some Text");
+    auto input = pi.SetTextInput("Text", "Some Text");
     auto disp  = FindTypedPane<TextPane>("Display");
     auto msg   = FindTypedPane<TextPane>("Message");
 
@@ -53,7 +53,7 @@ TEST_F(TextToolPanelTest, Change) {
     EXPECT_TRUE(msg->GetText().empty());
 
     // Apply.
-    ClickButtonPane("Apply");
+    pi.ClickButtonPane("Apply");
     EXPECT_EQ(1U,           GetChangeInfo().count);
     EXPECT_EQ("Apply",      GetChangeInfo().name);
     EXPECT_EQ("kImmediate", GetChangeInfo().type);
@@ -63,11 +63,11 @@ TEST_F(TextToolPanelTest, Change) {
                      panel->GetCharSpacing());
 
     // Change to font.
-    ChangeDropdownChoice("Font", "Verdana-Regular");
+    pi.ChangeDropdownChoice("Font", "Verdana-Regular");
     EXPECT_EQ("Verdana-Regular", panel->GetFontName());
 
     // Apply.
-    ClickButtonPane("Apply");
+    pi.ClickButtonPane("Apply");
     EXPECT_EQ(2U,           GetChangeInfo().count);
     EXPECT_EQ("Apply",      GetChangeInfo().name);
     EXPECT_EQ("kImmediate", GetChangeInfo().type);
@@ -77,11 +77,11 @@ TEST_F(TextToolPanelTest, Change) {
                      panel->GetCharSpacing());
 
     // Change character spacing.
-    DragSlider("Spacing", Vector2f(.4f, 0));
+    pi.DragSlider("Spacing", Vector2f(.4f, 0));
     EXPECT_CLOSE(2.1f, panel->GetCharSpacing());
 
     // Apply.
-    ClickButtonPane("Apply");
+    pi.ClickButtonPane("Apply");
     EXPECT_EQ(3U,           GetChangeInfo().count);
     EXPECT_EQ("Apply",      GetChangeInfo().name);
     EXPECT_EQ("kImmediate", GetChangeInfo().type);
@@ -92,10 +92,10 @@ TEST_F(TextToolPanelTest, Change) {
 
     // Change to invalid text.
     const Str bad_text = "¶¡§";  // Invalid characters for FakeFontSystem.
-    input = SetTextInput("Text", bad_text);
+    input = pi.SetTextInput("Text", bad_text);
     EXPECT_FALSE(input->IsTextValid());
     EXPECT_EQ(bad_text, input->GetText());
     EXPECT_EQ(bad_text, disp->GetText());
     EXPECT_TRUE(msg->GetText().contains("Invalid character"));
-    EXPECT_FALSE(IsButtonPaneEnabled("Apply"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Apply"));
 }

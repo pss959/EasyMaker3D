@@ -56,8 +56,8 @@ TEST_F(RadialMenuPanelTest, Change) {
 
     // Choose an action and Accept the ActionPanel. This should close it with
     // result "Accept" and reopen the RadialMenuPanel.
-    ClickButtonPane("Undo");
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Undo");
+    pi.ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, action_panel->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
@@ -67,7 +67,7 @@ TEST_F(RadialMenuPanelTest, Change) {
     const auto &settings = GetContext().settings_agent->GetSettings();
     EXPECT_ENUM_EQ(Action::kPaste,
                    settings.GetLeftRadialMenuInfo().GetButtonAction(3));
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(Action::kUndo,
                    settings.GetLeftRadialMenuInfo().GetButtonAction(3));
 }

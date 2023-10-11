@@ -36,7 +36,7 @@ TEST_F(CSGToolPanelTest, Show) {
 }
 
 TEST_F(CSGToolPanelTest, Change) {
-    ActivateRadioButtonPane("Intersection");
+    pi.ActivateRadioButtonPane("Intersection");
     EXPECT_EQ(CSGOperation::kIntersection, panel->GetOperation());
     EXPECT_EQ(1U,           GetChangeInfo().count);
     EXPECT_EQ("Operation",  GetChangeInfo().name);

@@ -38,44 +38,44 @@ TEST_F(SettingsPanelTest, Change) {
     panel->SetStatus(Panel::Status::kVisible);
 
     // Switch to an invalid directory.
-    EXPECT_FALSE(IsButtonPaneEnabled("DefaultSessionDir"));
-    EXPECT_FALSE(IsButtonPaneEnabled("CurrentSessionDir"));
-    auto input = SetTextInput("SessionDir", "/bad/dir");
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("DefaultSessionDir"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("CurrentSessionDir"));
+    auto input = pi.SetTextInput("SessionDir", "/bad/dir");
     EXPECT_EQ("/bad/dir", input->GetText());
     EXPECT_FALSE(input->IsTextValid());
-    EXPECT_TRUE(IsButtonPaneEnabled("DefaultSessionDir"));
-    EXPECT_TRUE(IsButtonPaneEnabled("CurrentSessionDir"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("DefaultSessionDir"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("CurrentSessionDir"));
 
     // Restore to current value (same as default).
-    ClickButtonPane("CurrentSessionDir");
+    pi.ClickButtonPane("CurrentSessionDir");
     EXPECT_EQ(def_settings->GetSessionDirectory(), input->GetText());
-    EXPECT_FALSE(IsButtonPaneEnabled("DefaultSessionDir"));
-    EXPECT_FALSE(IsButtonPaneEnabled("CurrentSessionDir"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("DefaultSessionDir"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("CurrentSessionDir"));
 
     // Repeat using Default button.
-    input = SetTextInput("ExportDir", "/another/bad/dir");
+    input = pi.SetTextInput("ExportDir", "/another/bad/dir");
     EXPECT_EQ("/another/bad/dir", input->GetText());
     EXPECT_FALSE(input->IsTextValid());
-    EXPECT_TRUE(IsButtonPaneEnabled("DefaultExportDir"));
-    EXPECT_TRUE(IsButtonPaneEnabled("CurrentExportDir"));
-    ClickButtonPane("DefaultExportDir");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("DefaultExportDir"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("CurrentExportDir"));
+    pi.ClickButtonPane("DefaultExportDir");
     EXPECT_EQ(def_settings->GetExportDirectory(), input->GetText());
-    EXPECT_FALSE(IsButtonPaneEnabled("DefaultExportDir"));
-    EXPECT_FALSE(IsButtonPaneEnabled("CurrentExportDir"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("DefaultExportDir"));
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("CurrentExportDir"));
 
 
     // Try an invalid build volume size.
-    input = SetTextInput("BuildVolumeDepth", "xx");
+    input = pi.SetTextInput("BuildVolumeDepth", "xx");
     EXPECT_FALSE(input->IsTextValid());
-    input = SetTextInput("BuildVolumeDepth", "21");
+    input = pi.SetTextInput("BuildVolumeDepth", "21");
     EXPECT_TRUE(input->IsTextValid());
 
     // Change a dropdown and build volume size and accept changes.
-    auto dd = ChangeDropdownChoice("ExportTo", "Feet");
-    EXPECT_TRUE(IsButtonPaneEnabled("DefaultExportConversion"));
-    EXPECT_TRUE(IsButtonPaneEnabled("CurrentExportConversion"));
-    input = SetTextInput("BuildVolumeDepth", "13");
-    ClickButtonPane("Accept");
+    auto dd = pi.ChangeDropdownChoice("ExportTo", "Feet");
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("DefaultExportConversion"));
+    EXPECT_TRUE(pi.IsButtonPaneEnabled("CurrentExportConversion"));
+    input = pi.SetTextInput("BuildVolumeDepth", "13");
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(
         UnitConversion::Units::kFeet,
         agent->GetSettings().GetExportUnitsConversion().GetToUnits());
@@ -91,7 +91,7 @@ TEST_F(SettingsPanelTest, OpenFilePanel) {
 
     panel->SetStatus(Panel::Status::kVisible);
 
-    ClickButtonPane("ChooseImportDir");
+    pi.ClickButtonPane("ChooseImportDir");
 
     // The SettingsPanel should be hidden and the FilePanel should be shown.
     EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
@@ -101,15 +101,15 @@ TEST_F(SettingsPanelTest, OpenFilePanel) {
 
     // Change the path to the parent directory and Accept the FilePanel. This
     // should close it with result "Accept" and reopen the SettingsPanel.
-    ClickButtonPane("Up");
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Up");
+    pi.ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, file_panel->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Clicking the Accept button in the SettingsPanel should change the stored
     // settings.
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Accept");
     auto imp_path = def_settings->GetImportDirectory();
     EXPECT_EQ(imp_path.GetParentDirectory().ToString() + "/",
               agent->GetSettings().GetImportDirectory().ToString());
@@ -124,7 +124,7 @@ TEST_F(SettingsPanelTest, OpenRadialMenuPanel) {
 
     panel->SetStatus(Panel::Status::kVisible);
 
-    ClickButtonPane("EditRadialMenus");
+    pi.ClickButtonPane("EditRadialMenus");
 
     // The SettingsPanel should be hidden and the RadialMenuPanel should be
     // shown.
@@ -135,15 +135,15 @@ TEST_F(SettingsPanelTest, OpenRadialMenuPanel) {
 
     // Change the mode and Accept the RadialMenuPanel. This should close it
     // with result "Accept" and reopen the SettingsPanel.
-    ActivateRadioButtonPane("Mode3");
-    ClickButtonPane("Accept");
+    pi.ActivateRadioButtonPane("Mode3");
+    pi.ClickButtonPane("Accept");
     EXPECT_EQ("Accept", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, menu_panel->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());
 
     // Clicking the Accept button in the SettingsPanel should change the stored
     // settings.
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Accept");
     EXPECT_ENUM_EQ(RadialMenusMode::kIndependent,
                    agent->GetSettings().GetRadialMenusMode());
 }

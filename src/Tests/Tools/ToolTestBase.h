@@ -21,7 +21,7 @@ class ToolTestBase : public SceneTestBase {
     /// name and the name of the Tool object itself.
     template <typename T> std::shared_ptr<T> InitTool(const Str &name) {
         static_assert(std::derived_from<T, Tool> == true);
-        auto tool = ReadRealNode<T>(GetContentsString_(name), name);
+        auto tool = ReadRealNode<T>(GetContentsString_(), name);
         SetUpTool_(tool);
         return tool;
     }
@@ -53,7 +53,7 @@ class ToolTestBase : public SceneTestBase {
     void SetEdgeTargetLength(float length);
 
   private:
-    static Str GetContentsString_(const Str &name);
+    static Str GetContentsString_();
 
     /// Sets up a Tool with a Tool::Context.
     void SetUpTool_(const ToolPtr &tool);

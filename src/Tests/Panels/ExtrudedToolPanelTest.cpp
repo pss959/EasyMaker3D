@@ -43,10 +43,10 @@ TEST_F(ExtrudedToolPanelTest, Change) {
     panel->SetStatus(Panel::Status::kVisible);
 
     // Change the number of sides using text input and the "SetSides" button.
-    auto st = SetTextInput("SidesText", "12");
+    auto st = pi.SetTextInput("SidesText", "12");
     EXPECT_EQ("12", st->GetText());
     EXPECT_TRUE(st->IsTextValid());
-    ClickButtonPane("SetSides");
+    pi.ClickButtonPane("SetSides");
     EXPECT_EQ(12U, panel->GetProfile().GetPointCount());
     EXPECT_EQ(1U,           GetChangeInfo().count);
     EXPECT_EQ("Profile",    GetChangeInfo().name);
@@ -67,7 +67,7 @@ TEST_F(ExtrudedToolPanelTest, Change) {
 
     // Drag with precision turned on.
     panel->SetPrecision(Vector2f(.1f, .1f));
-    ToggleCheckboxPane("SnapToPrecision");
+    pi.ToggleCheckboxPane("SnapToPrecision");
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.23f, -.19f, 0));
     // Drag start/continue/end = 3 changes.
     EXPECT_EQ(7U,         GetChangeInfo().count);
@@ -76,7 +76,7 @@ TEST_F(ExtrudedToolPanelTest, Change) {
     EXPECT_VECS_CLOSE2(Vector2f(.3f, -.2f), ToVector2f(sw->GetTranslation()));
 
     // Check for invalid sides text.
-    st = SetTextInput("SidesText", "abc");
+    st = pi.SetTextInput("SidesText", "abc");
     EXPECT_FALSE(st->IsTextValid());
 }
 

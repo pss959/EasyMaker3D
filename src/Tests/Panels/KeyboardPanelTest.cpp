@@ -48,18 +48,18 @@ TEST_F(KeyboardPanelTest, Keys) {
     EXPECT_ENUM_EQ(TextAction::kCancel, last_action);
     EXPECT_EQ("",                       last_insertion);
 
-    ClickButtonPane("Key_j");
+    pi.ClickButtonPane("Key_j");
     EXPECT_ENUM_EQ(TextAction::kInsert, last_action);
     EXPECT_EQ("j",                      last_insertion);
 
-    ClickButtonPane("Key_left");
+    pi.ClickButtonPane("Key_left");
     EXPECT_ENUM_EQ(TextAction::kMovePrevious, last_action);
     EXPECT_EQ("",                             last_insertion);
 
     // The shift key changes internal state but does not result in an action.
     // Subsequent keys should be shifted.
-    ClickButtonPane("Key_lshift");
-    ClickButtonPane("Key_q");
+    pi.ClickButtonPane("Key_lshift");
+    pi.ClickButtonPane("Key_q");
     EXPECT_ENUM_EQ(TextAction::kInsert, last_action);
     EXPECT_EQ("Q",                      last_insertion);
 }

@@ -29,7 +29,7 @@ TEST_F(ImportToolPanelTest, Show) {
 
 TEST_F(ImportToolPanelTest, Apply) {
     panel->SetStatus(Panel::Status::kVisible);
-    ClickButtonPane("Accept");
+    pi.ClickButtonPane("Accept");
     EXPECT_EQ(1U,           GetChangeInfo().count);
     EXPECT_EQ("Accept",     GetChangeInfo().name);
     EXPECT_EQ("kImmediate", GetChangeInfo().type);
@@ -46,7 +46,7 @@ TEST_F(ImportToolPanelTest, Error) {
     EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
 
     // Closing the dialog should restore the ImportToolPanel.
-    ClickButtonPane("Button0");
+    pi.ClickButtonPane("Button0");
     EXPECT_EQ("OK", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, panel->GetStatus());

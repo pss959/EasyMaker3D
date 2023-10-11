@@ -49,7 +49,7 @@ TEST_F(RevSurfToolPanelTest, Change) {
         RevSurfModel::CreateProfile(Profile::PointVec{Point2f(.8f, .5f)}));
 
     // Drag the sweep angle slider.
-    DragSlider("SweepAngleSlider", Vector2f(-.5f, 0));
+    pi.DragSlider("SweepAngleSlider", Vector2f(-.5f, 0));
     EXPECT_EQ(3U,           GetChangeInfo().count);
     EXPECT_EQ("SweepAngle", GetChangeInfo().name);
     EXPECT_EQ("kDragEnd",   GetChangeInfo().type);
@@ -70,7 +70,7 @@ TEST_F(RevSurfToolPanelTest, Change) {
 
     // Drag with precision turned on.
     panel->SetPrecision(Vector2f(.1f, .1f));
-    ToggleCheckboxPane("SnapToPrecision");
+    pi.ToggleCheckboxPane("SnapToPrecision");
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.23f, -.19f, 0));
     // Drag start/continue/end = 3 changes.
     EXPECT_EQ(9U,         GetChangeInfo().count);
