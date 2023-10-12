@@ -318,12 +318,15 @@ test_source_dict = {
     ],
     'Tools' : [
         'BendToolTest',
+        'BevelToolTest',
+        'CSGToolTest',
         'ColorToolTest',
         'ComplexityToolTest',
         'CylinderToolTest',
         'NameToolTest',
         'ToolTestBase',
         'TorusToolTest',
+        'TwistToolTest',
     ],
     'Trackers' : [
         'GripTrackerTest',
