@@ -320,6 +320,7 @@ test_source_dict = {
         'BendToolTest',
         'BevelToolTest',
         'CSGToolTest',
+        'ClipToolTest',
         'ColorToolTest',
         'ComplexityToolTest',
         'CylinderToolTest',

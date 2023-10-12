@@ -52,9 +52,6 @@ class PlaneBasedTool : public Tool {
     /// coordinates) for translation feedback.
     virtual Point3f GetTranslationFeedbackBasePoint() const = 0;
 
-    /// Returns the current Plane in object coordinates.
-    Plane GetObjectPlane() const;
-
   private:
     /// Command used to modify all affected Models.
     ChangePlaneCommandPtr command_;

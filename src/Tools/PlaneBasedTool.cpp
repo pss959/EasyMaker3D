@@ -21,6 +21,7 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
+#include "Widgets/AxisWidget.h"
 #include "Widgets/PlaneWidget.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/SphereWidget.h"
@@ -55,7 +56,10 @@ void PlaneBasedTool::UpdateGripInfo(GripInfo &info) {
         info.guide_type = GripGuideType::kBasic;
     }
     else {
-        widget          = plane_widget_->GetSubWidget("AxisWidget");
+        auto axis_widget = std::dynamic_pointer_cast<AxisWidget>(
+            plane_widget_->GetSubWidget("Axis"));
+        ASSERT(axis_widget);
+        widget          = axis_widget->GetSubWidget("Rotator");
         info.guide_type = GripGuideType::kRotation;
     }
     info.widget = std::dynamic_pointer_cast<ClickableWidget>(widget);
@@ -83,14 +87,6 @@ void PlaneBasedTool::Attach() {
 }
 
 void PlaneBasedTool::Detach() {
-}
-
-Plane PlaneBasedTool::GetObjectPlane() const {
-    // Use the distance from the PlaneWidget's plane, since that is based on
-    // the actual plane translation.
-    return Plane(plane_widget_->GetPlane().distance,
-                 TransformNormal(stage_plane_.normal,
-                                 GetStageCoordConv().GetRootToObjectMatrix()));
 }
 
 void PlaneBasedTool::Activate_(bool is_activation) {
