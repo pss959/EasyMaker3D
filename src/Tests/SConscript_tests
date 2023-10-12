@@ -317,6 +317,7 @@ test_source_dict = {
         'TimingTest',
     ],
     'Tools' : [
+        'BendToolTest',
         'ColorToolTest',
         'ComplexityToolTest',
         'CylinderToolTest',

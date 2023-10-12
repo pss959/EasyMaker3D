@@ -92,11 +92,6 @@ void SpinBasedTool::Attach() {
 void SpinBasedTool::Detach() {
 }
 
-Spin SpinBasedTool::GetObjectSpin() const {
-    return TransformSpin(spin_widget_->GetSpin(),
-                         GetStageCoordConv().GetRootToObjectMatrix());
-}
-
 void SpinBasedTool::Activate_(bool is_activation) {
     const auto &context = GetContext();
 
@@ -150,6 +145,8 @@ void SpinBasedTool::SpinChanged_(SpinWidget::ChangeType type) {
     spin_widget_->UnhighlightSubWidget("Rotator");
     spin_widget_->UnhighlightSubWidget("Translator");
 
+    stage_spin_ = GetStageSpinFromWidget_();
+
     // Try snapping unless modified dragging.
     const bool is_snapped = ! context.is_modified_mode &&
         (type == SpinWidget::ChangeType::kAxis   ? SnapAxis_() :
@@ -160,10 +157,8 @@ void SpinBasedTool::SpinChanged_(SpinWidget::ChangeType type) {
         UpdateSpinWidget_();
     }
     else {
-        // If not snapped, update the current Spin and match it.
-        stage_spin_ = GetStageSpinFromWidget_();
-
-        // Apply precision to the angle and offset unless modified dragging.
+        // If not snapped, apply precision to the angle and offset unless
+        // modified dragging.
         if (! context.is_modified_mode) {
             if (type == SpinWidget::ChangeType::kAngle)
                 stage_spin_.angle =

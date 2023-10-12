@@ -47,9 +47,6 @@ class SpinBasedTool : public Tool {
     /// ChangeSpinCommand that will be used to modify the selected Model(s).
     virtual ChangeSpinCommandPtr CreateChangeSpinCommand() const = 0;
 
-    /// Returns the current Spin in object coordinates.
-    Spin GetObjectSpin() const;
-
   private:
     /// Command used to modify all affected Models.
     ChangeSpinCommandPtr command_;

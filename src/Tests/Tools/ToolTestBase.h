@@ -48,6 +48,10 @@ class ToolTestBase : public SceneTestBase {
         return *cmd;
     }
 
+    /// Convenience that set up the PointTarget in the TargetManager with the
+    /// given position and direction and enables it.
+    void SetPointTarget(const Point3f &pos, const Vector3f &dir);
+
     /// Convenience that set up the EdgeTarget in the TargetManager with the
     /// given length and enables it.
     void SetEdgeTargetLength(float length);

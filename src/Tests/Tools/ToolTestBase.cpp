@@ -40,6 +40,14 @@ void ToolTestBase::CheckNoCommands() {
     EXPECT_EQ(0U, cl.GetCommandCount());
 }
 
+void ToolTestBase::SetPointTarget(const Point3f &pos, const Vector3f &dir) {
+    auto pt = CreateObject<PointTarget>();
+    pt->SetPosition(pos);
+    pt->SetDirection(dir);
+    context->target_manager->SetPointTarget(*pt);
+    context->target_manager->SetPointTargetVisible(true);
+}
+
 void ToolTestBase::SetEdgeTargetLength(float length) {
     auto et = CreateObject<EdgeTarget>();
     et->SetPositions(Point3f(0, 0, 0), Point3f(length, 0, 0));
