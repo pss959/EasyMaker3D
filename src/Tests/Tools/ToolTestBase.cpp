@@ -18,6 +18,13 @@
 #include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/PointTargetWidget.h"
 
+void ToolTestBase::TearDown() {
+    // Make sure the Board has at most one Panel or assertions will fail.
+    Str result;
+    while (context->board->GetPanelCount() > 1U)
+        context->board->PopPanel(result);
+}
+
 void ToolTestBase::AddCommandFunction(
     const Str &name, const std::function<void(const Command &)> &func) {
     ASSERT(context);
@@ -120,14 +127,15 @@ void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     // Set up the PanelManager including a Panel::Context that contains the
     // bare minimum for tests.
     Panel::ContextPtr pc(new Panel::Context);
+    pc->board_agent = context->board_manager;
     pc->name_agent.reset(new NameManager);
     pm->FindAllPanels(scene, pc);
 
     tool->SetContext(context);
 }
 
-const Command * ToolTestBase::CheckOneCommand_() {
+const Command * ToolTestBase::CheckNCommands_(size_t count) {
     const auto &cl = *context->command_manager->GetCommandList();
-    EXPECT_EQ(1U, cl.GetCommandCount());
-    return cl.GetCommand(0).get();
+    EXPECT_EQ(count, cl.GetCommandCount());
+    return cl.GetCommand(count - 1).get();
 }

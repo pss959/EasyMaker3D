@@ -91,7 +91,7 @@ void ImportTool::PanelChanged(const Str &key, ToolPanel::InteractionType type) {
     }
 
     else {
-        PanelTool::PanelChanged(key, type);
+        PanelTool::PanelChanged(key, type);  // LCOV_EXCL_LINE [cannot happen]
     }
 
     if (is_done)

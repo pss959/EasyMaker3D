@@ -68,6 +68,9 @@ class Board : public Grippable, public Touchable {
     /// stack. Asserts if there is no current Panel.
     bool PopPanel(const Str &result);
 
+    /// Returns the number of Panels currently in the stack.
+    size_t GetPanelCount() const;
+
     /// Returns the Panel currently displayed in the board or null if there is
     /// none.
     PanelPtr GetCurrentPanel() const;

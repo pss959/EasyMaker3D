@@ -88,13 +88,7 @@ TEST_F(ReadSTLTest, BinarySpoon) {
 
 TEST_F(ReadSTLTest, Errors) {
     TEST_THROW(LoadFromFile("nosuchfile.stl"), ExceptionBase, "Unable to open");
-
-    {
-        const Str s =
-            "solid EasyMaker3D_Export\n"
-            "endsolid EasyMaker3D_Export";
-        TEST_THROW(LoadFromString(s), ExceptionBase, "No mesh data");
-    }
+    TEST_THROW(LoadFromFile("nomesh.stl"), ExceptionBase, "No mesh data");
 
     {
         const Str s =

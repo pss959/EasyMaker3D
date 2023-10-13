@@ -37,6 +37,7 @@ class Board::Impl_ {
     void PushPanel(const PanelPtr &panel,
                    const BoardAgent::ResultFunc &result_func);
     bool PopPanel(const Str &result);
+    size_t GetPanelCount() const { return panel_stack_.size(); }
     PanelPtr GetCurrentPanel() const;
     void SetPanelScale(float scale);
     void Show(bool shown);
@@ -778,6 +779,10 @@ void Board::PushPanel(const PanelPtr &panel,
 
 bool Board::PopPanel(const Str &result) {
     return impl_->PopPanel(result);
+}
+
+size_t Board::GetPanelCount() const {
+    return impl_->GetPanelCount();
 }
 
 PanelPtr Board::GetCurrentPanel() const {
