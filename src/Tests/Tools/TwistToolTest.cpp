@@ -59,7 +59,7 @@ TEST_F(TwistToolTest, UpdateGripInfo) {
     // Close to axis direction uses the axis rotator.
     info.guide_direction.Set(0, 1, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kRotation,        info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kRotation,   info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),         info.target_point);
     EXPECT_EQ(widget->GetSubWidget("Rotator"), info.widget);
     EXPECT_EQ(default_color,                   info.color);
@@ -67,7 +67,7 @@ TEST_F(TwistToolTest, UpdateGripInfo) {
     // Close to perpendicular uses the axis translator.
     info.guide_direction.Set(1, 0, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,              info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,         info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),            info.target_point);
     EXPECT_EQ(widget->GetSubWidget("Translator"), info.widget);
     EXPECT_EQ(default_color,                      info.color);
@@ -75,10 +75,10 @@ TEST_F(TwistToolTest, UpdateGripInfo) {
     // Any other direction uses the spin ring.
     info.guide_direction = ion::math::Normalized(Vector3f(1, 1, 1));
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kRotation,     info.guide_type);
-    EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      info.target_point);
-    EXPECT_EQ(widget->GetSubWidget("Ring"), info.widget);
-    EXPECT_EQ(default_color,                info.color);
+    EXPECT_ENUM_EQ(GripGuideType::kRotation, info.guide_type);
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 0),       info.target_point);
+    EXPECT_EQ(widget->GetSubWidget("Ring"),  info.widget);
+    EXPECT_EQ(default_color,                 info.color);
 }
 
 TEST_F(TwistToolTest, DragCenter) {

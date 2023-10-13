@@ -77,7 +77,7 @@ TEST_F(TorusToolTest, UpdateGripInfo) {
     // This should select the min part of the inner scaler.
     info.guide_direction.Set(0, 1, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,        info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,   info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(3, -1, 0),     info.target_point);
     EXPECT_EQ(inner_scaler->GetMinSlider(), info.widget);
     EXPECT_EQ(default_color,                info.color);
@@ -85,7 +85,7 @@ TEST_F(TorusToolTest, UpdateGripInfo) {
     // This should select the max part of the inner scaler.
     info.guide_direction.Set(0, -1, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,        info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,   info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(3, 1, 0),      info.target_point);
     EXPECT_EQ(inner_scaler->GetMaxSlider(), info.widget);
     EXPECT_EQ(default_color,                info.color);
@@ -93,7 +93,7 @@ TEST_F(TorusToolTest, UpdateGripInfo) {
     // This should select the min part of the outer scaler.
     info.guide_direction.Set(1, 0, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,        info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,   info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(-4, 0, 0),     info.target_point);
     EXPECT_EQ(outer_scaler->GetMinSlider(), info.widget);
     EXPECT_EQ(default_color,                info.color);
@@ -101,7 +101,7 @@ TEST_F(TorusToolTest, UpdateGripInfo) {
     // This should select the max part of the outer scaler.
     info.guide_direction.Set(-1, 0, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,        info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,   info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(4, 0, 0),      info.target_point);
     EXPECT_EQ(outer_scaler->GetMaxSlider(), info.widget);
     EXPECT_EQ(default_color,                info.color);

@@ -15,6 +15,7 @@
 class ToolTestBase : public SceneTestBase {
   protected:
     Tool::ContextPtr context;
+    SG::NodePtr      tool_parent;  ///< Parent node of Tool.
 
     virtual void TearDown() override;
 

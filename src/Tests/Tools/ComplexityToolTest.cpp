@@ -58,7 +58,7 @@ TEST_F(ComplexityToolTest, UpdateGripInfo) {
     const auto default_color = info.color;
 
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,       info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,  info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(-4.8f, 4, 0), info.target_point);
     EXPECT_EQ(widget,                      info.widget);
     EXPECT_EQ(default_color,               info.color);
@@ -95,4 +95,15 @@ TEST_F(ComplexityToolTest, TouchDrag) {
 
     const auto &cmd = CheckOneCommand<ChangeComplexityCommand>();
     EXPECT_CLOSE(.2625f, cmd.GetNewComplexity());
+}
+
+TEST_F(ComplexityToolTest, FaceCamera) {
+    // Faces along +Z by default.
+    EXPECT_EQ(Rotationf::Identity(), tool->GetRotation());
+
+    // Change the rotation in the parent; the ColorTool should rotate to
+    // compensate.
+    tool_parent->SetRotation(BuildRotation(0, 1, 0, 30));
+    tool->Update();
+    EXPECT_EQ(BuildRotation(0, 1, 0, -30), tool->GetRotation());
 }

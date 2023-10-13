@@ -55,7 +55,7 @@ ColorToolTest::ColorToolTest() {
 TEST_F(ColorToolTest, UpdateGripInfo) {
     Grippable::GripInfo info;
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,        info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,   info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(3.2f, 7, .1f), info.target_point);
     EXPECT_EQ(widget,                       info.widget);
     EXPECT_EQ(model->GetColor(),            info.color);
@@ -111,4 +111,15 @@ TEST_F(ColorToolTest, TouchDrag) {
     DragTester dt(widget);
     dt.ApplyTouchDrag(Point3f(0, 0, .1f), Point3f(.5f, .6f, .1f));
     CheckNoCommands();
+}
+
+TEST_F(ColorToolTest, FaceCamera) {
+    // Faces along +Z by default.
+    EXPECT_EQ(Rotationf::Identity(), tool->GetRotation());
+
+    // Change the rotation in the parent; the ColorTool should rotate to
+    // compensate.
+    tool_parent->SetRotation(BuildRotation(0, 1, 0, 30));
+    tool->Update();
+    EXPECT_EQ(BuildRotation(0, 1, 0, -30), tool->GetRotation());
 }

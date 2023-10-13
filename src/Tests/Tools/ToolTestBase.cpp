@@ -91,10 +91,17 @@ Str ToolTestBase::GetContentsString_() {
 
 void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     ASSERT(tool);
-    context.reset(new Tool::Context);
 
     auto       &scene = *GetScene();
     const auto &root  = scene.GetRootNode();
+
+    // Create a parent Node for the Tool. This allows for coordinate conversion
+    // testing.
+    tool_parent = CreateObject<SG::Node>("ToolParent");
+    tool_parent->AddChild(tool);
+
+    // Set up the Tool::Context.
+    context.reset(new Tool::Context);
 
     PanelManagerPtr pm(new PanelManager);
     context->board_manager.reset(new BoardManager(pm));
@@ -106,7 +113,7 @@ void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     context->root_model = SG::FindTypedNodeInScene<RootModel>(scene,
                                                               "ModelRoot");
     context->board = SG::FindTypedNodeInScene<Board>(scene, "TestBoard");
-    context->path_to_parent_node = SG::NodePath(tool);
+    context->path_to_parent_node = SG::NodePath(tool_parent);
     context->camera_position.Set(0, 0, 10);
 
     // Set up the FeedbackManager.

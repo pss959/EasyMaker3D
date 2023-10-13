@@ -68,7 +68,7 @@ TEST_F(CylinderToolTest, UpdateGripInfo) {
     info.guide_direction.Set(-1, 0, 0);
     info.event.position3D.Set(0, 1, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,         info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,    info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(2.06f, 1, 0),   info.target_point);
     EXPECT_EQ(top_scaler->GetMaxSlider(),    info.widget);
     EXPECT_EQ(default_color,                 info.color);
@@ -77,7 +77,7 @@ TEST_F(CylinderToolTest, UpdateGripInfo) {
     info.guide_direction.Set(1, 1, 0);
     info.event.position3D.Set(0, -.4f, 0);
     tool->UpdateGripInfo(info);
-    EXPECT_EQ(GripGuideType::kBasic,         info.guide_type);
+    EXPECT_ENUM_EQ(GripGuideType::kBasic,    info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(-3.06f, -1, 0), info.target_point);
     EXPECT_EQ(bot_scaler->GetMinSlider(),    info.widget);
     EXPECT_EQ(default_color,                 info.color);
