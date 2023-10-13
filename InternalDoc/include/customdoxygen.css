@@ -13,7 +13,8 @@
 }
 
 /* Fade color of test-related classes in nav bar. */
-[class*="Test"], [class*="Dummy"] {
+[class*="Test"], [class*="Fake"],
+[class*="TempFile"], [class*="PanelInteractor"] {
     color: #888888;
 }
 
