@@ -1,5 +1,3 @@
-#include <ion/math/vectorutils.h>
-
 #include "Commands/ChangeTwistCommand.h"
 #include "Models/TwistedModel.h"
 #include "Models/BoxModel.h"
@@ -73,7 +71,7 @@ TEST_F(TwistToolTest, UpdateGripInfo) {
     EXPECT_EQ(default_color,                      info.color);
 
     // Any other direction uses the spin ring.
-    info.guide_direction = ion::math::Normalized(Vector3f(1, 1, 1));
+    info.guide_direction = Normalized(1, 1, 1);
     tool->UpdateGripInfo(info);
     EXPECT_ENUM_EQ(GripGuideType::kRotation, info.guide_type);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),       info.target_point);
@@ -110,7 +108,7 @@ TEST_F(TwistToolTest, DragAngle) {
 
     // Use grip-dragging here; easier to rotate.
     DragTester dt(widget, StrVec{ "Ring" });
-    dt.ApplyGripRotationDrag(ion::math::Normalized(Vector3f(1, 1, 1)),
+    dt.ApplyGripRotationDrag(Normalized(1, 1, 1),
                              BuildRotation(1, 0, 0, 0),
                              BuildRotation(1, 0, 0, 45));
 

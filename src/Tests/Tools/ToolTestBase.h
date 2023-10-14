@@ -79,6 +79,9 @@ class ToolTestBase : public SceneTestBase {
 
     ///@}
 
+    /// Sets the axis-aligned flag in the SessionState.
+    void SetIsAxisAligned(bool is_aligned);
+
   private:
     static Str GetContentsString_();
 

@@ -1,5 +1,3 @@
-#include <ion/math/vectorutils.h>
-
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"
@@ -25,8 +23,8 @@ class GrippableTest : public SceneTestBase {
 
         /// For testing GetBestAxis() and GetBestDirIndex().
         static int GetAxis(const Vector3f &dir, bool &is_opposite) {
-            return GetBestAxis(ion::math::Normalized(dir),
-                               Anglef::FromDegrees(5), is_opposite);
+            return GetBestAxis(Normalized(dir), Anglef::FromDegrees(5),
+                               is_opposite);
         }
 
         // Make these publicly callable.

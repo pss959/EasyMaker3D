@@ -62,6 +62,10 @@ void ToolTestBase::SetEdgeTargetLength(float length) {
     context->target_manager->SetEdgeTargetVisible(true);
 }
 
+void ToolTestBase::SetIsAxisAligned(bool is_aligned) {
+    context->command_manager->GetSessionState()->SetAxisAligned(is_aligned);
+}
+
 Str ToolTestBase::GetContentsString_() {
     // Have to set up a Board and target Widgets in addition to the Tools.
     return R"(

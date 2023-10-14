@@ -12,6 +12,7 @@ class FakeFileSystem;
 class FakeFontSystem;
 
 /// Base test fixture that supplies some useful functions for tests.
+///
 /// \ingroup Tests
 class TestBase : public ::testing::Test {
  protected:
@@ -121,8 +122,14 @@ class TestBase : public ::testing::Test {
     // Other conveniences.
     // ------------------------------------------------------------------------
 
+    /// Returns a Normalized Vector3f.
+    static Vector3f Normalized(const Vector3f &v);
+    /// Returns a Normalized Vector3f from components.
+    static Vector3f Normalized(float x, float y, float z);
+
     /// Returns a Rotationf from axis and angle (degree) values.
     static Rotationf BuildRotation(const Vector3f &axis, float deg);
+    /// Returns a Rotationf from axis components and angle (degree) values.
     static Rotationf BuildRotation(float x, float y, float z, float deg);
 
     /// Fixes a string by removing line feeds. Needed for Windows.

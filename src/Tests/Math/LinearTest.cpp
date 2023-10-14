@@ -60,13 +60,12 @@ TEST_F(LinearTest, TransformNormal) {
     using ion::math::Cross;
     using ion::math::Dot;
     using ion::math::Length;
-    using ion::math::Normalized;
 
     // Shorthand.
     const Vector3f x = Vector3f::AxisX();
     const Vector3f y = Vector3f::AxisY();
     const Vector3f z = Vector3f::AxisZ();
-    const Vector3f v = Normalized(Vector3f(1, 2, 3));
+    const Vector3f v = Normalized(1, 2, 3);
 
     // Identity.
     EXPECT_VECS_CLOSE(x, TransformNormal(x, Matrix4f::Identity()));
@@ -148,7 +147,7 @@ TEST_F(LinearTest, TransformPlane) {
     const Point3f p1 = p0 + 10 * pl.normal;
     const Point3f tp0 = tm * p0;
     const Point3f tp1 = tm * p1;
-    EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
+    EXPECT_VECS_CLOSE(tpl.normal, Normalized(tp1 - tp0));
 }
 TEST_F(LinearTest, TransformPlane2) {
     // Rotate and translate a plane not at the origin.
@@ -167,7 +166,7 @@ TEST_F(LinearTest, TransformPlane2) {
     const Point3f p1 = p0 + 10 * pl.normal;
     const Point3f tp0 = tm * p0;
     const Point3f tp1 = tm * p1;
-    EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
+    EXPECT_VECS_CLOSE(tpl.normal, Normalized(tp1 - tp0));
 }
 
 TEST_F(LinearTest, TransformPlane3) {
@@ -185,7 +184,7 @@ TEST_F(LinearTest, TransformPlane3) {
     const Point3f p1 = p0 + 10 * pl.normal;
     const Point3f tp0 = tm * p0;
     const Point3f tp1 = tm * p1;
-    EXPECT_VECS_CLOSE(tpl.normal, ion::math::Normalized(tp1 - tp0));
+    EXPECT_VECS_CLOSE(tpl.normal, Normalized(tp1 - tp0));
 }
 
 TEST_F(LinearTest, TransformPlane4) {
@@ -345,9 +344,6 @@ TEST_F(LinearTest, RoundToPrecision) {
 }
 
 TEST_F(LinearTest, AreClose) {
-    const auto nvec = [](float x, float y, float z){
-        return ion::math::Normalized(Vector3f(x, y, z)); };
-
     EXPECT_TRUE(AreClose(12.f,  12.01f, .02f));
     EXPECT_FALSE(AreClose(12.f, 12.02f, .01f));
 
@@ -361,16 +357,19 @@ TEST_F(LinearTest, AreClose) {
                           Anglef::FromDegrees(1)));
 
     // This uses angles.
-    EXPECT_TRUE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .1f, 0),
+    EXPECT_TRUE(AreDirectionsClose(Normalized(1, 0, 0), Normalized(1, .1f, 0),
                                    Anglef::FromDegrees(10)));
-    EXPECT_FALSE(AreDirectionsClose(nvec(1, 0, 0), nvec(1, .5f, 0),
+    EXPECT_FALSE(AreDirectionsClose(Normalized(1, 0, 0), Normalized(1, .5f, 0),
                                     Anglef::FromDegrees(10)));
 
-    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, 1, 0),
+    EXPECT_TRUE(AreAlmostPerpendicular(Normalized(1, 0, 0),
+                                       Normalized(0, 1, 0),
                                        Anglef::FromDegrees(1)));
-    EXPECT_TRUE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(0, -1, 0),
+    EXPECT_TRUE(AreAlmostPerpendicular(Normalized(1, 0, 0),
+                                       Normalized(0, -1, 0),
                                        Anglef::FromDegrees(1)));
-    EXPECT_FALSE(AreAlmostPerpendicular(nvec(1, 0, 0), nvec(.2f, 1, 0),
+    EXPECT_FALSE(AreAlmostPerpendicular(Normalized(1, 0, 0),
+                                        Normalized(.2f, 1, 0),
                                         Anglef::FromDegrees(1)));
 }
 
@@ -447,8 +446,7 @@ TEST_F(LinearTest, NormalizedAngle) {
 TEST_F(LinearTest, RotationAngleAndAxis) {
     const Rotationf rot = BuildRotation(1, 2, 3, 12);
     EXPECT_CLOSE(12.f, RotationAngle(rot).Degrees());
-    EXPECT_VECS_CLOSE(ion::math::Normalized(Vector3f(1, 2, 3)),
-                      RotationAxis(rot));
+    EXPECT_VECS_CLOSE(Normalized(1, 2, 3), RotationAxis(rot));
 }
 
 TEST_F(LinearTest, RotationFromMatrix) {

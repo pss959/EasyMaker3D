@@ -1,5 +1,3 @@
-#include <ion/math/vectorutils.h>
-
 #include "Math/Linear.h"
 #include "Panels/Board.h"
 #include "Panels/HelpPanel.h"
@@ -277,12 +275,12 @@ TEST_F(BoardTest, Grip) {
     EXPECT_EQ(Point3f(0, -18.5f, 0), info.target_point);
 
     // Angled should grab one of the size handles.
-    info.guide_direction = ion::math::Normalized(Vector3f(-1, -1, 0));
+    info.guide_direction = Normalized(-1, -1, 0);
     board->UpdateGripInfo(info);
     EXPECT_NOT_NULL(info.widget);
     EXPECT_EQ("SizeSlider",            info.widget->GetName());
     EXPECT_EQ(Point3f(18.5, 18.5f, 0), info.target_point);
-    info.guide_direction = ion::math::Normalized(Vector3f(1, 1, 0));
+    info.guide_direction = Normalized(1, 1, 0);
     board->UpdateGripInfo(info);
     EXPECT_NOT_NULL(info.widget);
     EXPECT_EQ("SizeSlider",              info.widget->GetName());
@@ -301,7 +299,7 @@ TEST_F(BoardTest, Grip) {
 
     // Hover the top-right size handle and drag it.
     auto pt = SG::FindNodeUnderNode(*sz, "TopRight");
-    info.guide_direction = ion::math::Normalized(Vector3f(-1, -1, 0));
+    info.guide_direction = Normalized(-1, -1, 0);
     board->UpdateGripInfo(info);
     board->ActivateGrip(Hand::kRight, true);
     {
@@ -313,7 +311,7 @@ TEST_F(BoardTest, Grip) {
 
     // Repeat with the bottom-right size handle.
     pt = SG::FindNodeUnderNode(*sz, "BottomRight");
-    info.guide_direction = ion::math::Normalized(Vector3f(-1, 1, 0));
+    info.guide_direction = Normalized(-1, 1, 0);
     board->UpdateGripInfo(info);
     board->ActivateGrip(Hand::kRight, true);
     {

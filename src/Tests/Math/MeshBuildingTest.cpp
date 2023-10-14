@@ -46,7 +46,7 @@ TEST_F(MeshBuildingTest, Cylinder) {
         const Vector3f norm = ComputeNormal(p0, p1, p2);
         // Make sure the vector from the center to a point is in the same rough
         // direction as the triangle normal.
-        const Vector3f vec = ion::math::Normalized(p0 - Point3f::Zero());
+        const Vector3f vec = Normalized(p0 - Point3f::Zero());
         EXPECT_GT(ion::math::Dot(norm, vec), 0);
     }
 }

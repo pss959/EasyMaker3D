@@ -1,5 +1,4 @@
 #include <ion/math/angleutils.h>
-#include <ion/math/vectorutils.h>
 
 #include "Math/Types.h"
 #include "Tests/TestBase.h"
@@ -70,26 +69,22 @@ TEST_F(FrustumTest, BuildRay) {
     ray = f.BuildRay(Point2f(0, 0));
     EXPECT_PTS_CLOSE(Point3f(-2, -2, 8), ray.origin);
     // Ray should pass from position through origin.
-    EXPECT_VECS_CLOSE(ion::math::Normalized(ray.origin - f.position),
-                      ray.direction);
+    EXPECT_VECS_CLOSE(Normalized(ray.origin - f.position), ray.direction);
 
     // Ray in the lower-right corner
     ray = f.BuildRay(Point2f(1, 0));
     EXPECT_PTS_CLOSE(Point3f(2, -2, 8), ray.origin);
-    EXPECT_VECS_CLOSE(ion::math::Normalized(ray.origin - f.position),
-                      ray.direction);
+    EXPECT_VECS_CLOSE(Normalized(ray.origin - f.position), ray.direction);
 
     // Ray in the upper-left corner
     ray = f.BuildRay(Point2f(0, 1));
     EXPECT_PTS_CLOSE(Point3f(-2, 2, 8), ray.origin);
-    EXPECT_VECS_CLOSE(ion::math::Normalized(ray.origin - f.position),
-                      ray.direction);
+    EXPECT_VECS_CLOSE(Normalized(ray.origin - f.position), ray.direction);
 
     // Ray in the upper-right corner
     ray = f.BuildRay(Point2f(1, 1));
     EXPECT_PTS_CLOSE(Point3f(2, 2, 8), ray.origin);
-    EXPECT_VECS_CLOSE(ion::math::Normalized(ray.origin - f.position),
-                      ray.direction);
+    EXPECT_VECS_CLOSE(Normalized(ray.origin - f.position), ray.direction);
 }
 
 TEST_F(FrustumTest, BuildRayTransformed) {

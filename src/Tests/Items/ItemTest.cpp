@@ -1,5 +1,3 @@
-#include <ion/math/vectorutils.h>
-
 #include "Items/AppInfo.h"
 #include "Items/Border.h"
 #include "Items/BuildVolume.h"
@@ -171,8 +169,7 @@ TEST_F(ItemTest, Inspector) {
     inspector->SetPositionForView(frust);
     EXPECT_VECS_CLOSE(
         frust.GetViewDirection(),
-        ion::math::Normalized(Point3f(inspector->GetTranslation()) -
-                              frust.position));
+        Normalized(Point3f(inspector->GetTranslation()) - frust.position));
 
     EXPECT_EQ(1,                     inspector->GetCurrentScale());
     EXPECT_EQ(Rotationf::Identity(), inspector->GetCurrentRotation());

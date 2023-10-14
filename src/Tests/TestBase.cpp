@@ -242,6 +242,14 @@ bool TestBase::MeshHasPoint(const TriMesh &mesh, const Point3f &p) {
 // Other conveniences.
 // ----------------------------------------------------------------------------
 
+Vector3f TestBase::Normalized(const Vector3f &v) {
+    return ion::math::Normalized(v);
+}
+
+Vector3f TestBase::Normalized(float x, float y, float z) {
+    return ion::math::Normalized(Vector3f(x, y, z));
+}
+
 Rotationf TestBase::BuildRotation(const Vector3f &axis, float deg) {
     return Rotationf::FromAxisAndAngle(axis, Anglef::FromDegrees(deg));
 }
