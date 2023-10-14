@@ -81,6 +81,7 @@ TEST_F(ImportToolTest, Accept) {
     pi.ClickButtonPane("Accept");
 
     const auto &cmd1 = CheckLastCommand<ChangeImportedModelCommand>(2U);
+    EXPECT_EQ("Imported",   cmd1.GetModelName());
     EXPECT_EQ(import_path1, cmd1.GetNewPath());
 
     // Changing the path to a bad file should also add a command and should
@@ -90,6 +91,7 @@ TEST_F(ImportToolTest, Accept) {
     pi.ClickButtonPane("Accept");
 
     const auto &cmd2 = CheckLastCommand<ChangeImportedModelCommand>(3U);
+    EXPECT_EQ("Imported",   cmd2.GetModelName());
     EXPECT_EQ(import_path2, cmd2.GetNewPath());
 }
 

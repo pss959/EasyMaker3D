@@ -84,7 +84,8 @@ TEST_F(MirrorToolTest, DragPlane) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(0, 2, 0));
 
     const auto &cmd = CheckOneCommand<ChangeMirrorCommand>();
-    EXPECT_CLOSE(2, cmd.GetPlane().distance);
+    EXPECT_EQ(StrVec{ "Mirrored" }, cmd.GetModelNames());
+    EXPECT_CLOSE(2,                 cmd.GetPlane().distance);
 }
 
 TEST_F(MirrorToolTest, SnapNormalToTarget) {
@@ -100,7 +101,8 @@ TEST_F(MirrorToolTest, SnapNormalToTarget) {
                              BuildRotation(0, 0, 1, 98));
 
     const auto &cmd = CheckOneCommand<ChangeMirrorCommand>();
-    EXPECT_EQ(Vector3f(0, 1, 0), cmd.GetPlane().normal);
+    EXPECT_EQ(StrVec{ "Mirrored" }, cmd.GetModelNames());
+    EXPECT_EQ(Vector3f(0, 1, 0),    cmd.GetPlane().normal);
 }
 
 TEST_F(MirrorToolTest, SnapNormalToPrincipalAxis) {
@@ -114,7 +116,8 @@ TEST_F(MirrorToolTest, SnapNormalToPrincipalAxis) {
                              BuildRotation(0, 0, 1, -98));
 
     const auto &cmd = CheckOneCommand<ChangeMirrorCommand>();
-    EXPECT_EQ(Vector3f(0, -1, 0), cmd.GetPlane().normal);
+    EXPECT_EQ(StrVec{ "Mirrored" }, cmd.GetModelNames());
+    EXPECT_EQ(Vector3f(0, -1, 0),   cmd.GetPlane().normal);
 }
 
 TEST_F(MirrorToolTest, SnapPlaneToTarget) {
@@ -126,5 +129,6 @@ TEST_F(MirrorToolTest, SnapPlaneToTarget) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(0, 1.8f, 0));
 
     const auto &cmd = CheckOneCommand<ChangeMirrorCommand>();
-    EXPECT_EQ(2, cmd.GetPlane().distance);
+    EXPECT_EQ(StrVec{ "Mirrored" }, cmd.GetModelNames());
+    EXPECT_EQ(2,                    cmd.GetPlane().distance);
 }

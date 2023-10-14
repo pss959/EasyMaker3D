@@ -72,7 +72,8 @@ TEST_F(ComplexityToolTest, PointerDrag) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.8f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeComplexityCommand>();
-    EXPECT_EQ(.25f, cmd.GetNewComplexity());
+    EXPECT_EQ(StrVec{ "Sphere" }, cmd.GetModelNames());
+    EXPECT_EQ(.25f,               cmd.GetNewComplexity());
 }
 
 TEST_F(ComplexityToolTest, GripDrag) {
@@ -83,7 +84,8 @@ TEST_F(ComplexityToolTest, GripDrag) {
     dt.ApplyGripDrag(Point3f(0, 0, 0), Point3f(1, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeComplexityCommand>();
-    EXPECT_EQ(1, cmd.GetNewComplexity());
+    EXPECT_EQ(StrVec{ "Sphere" }, cmd.GetModelNames());
+    EXPECT_EQ(1,                  cmd.GetNewComplexity());
 }
 
 TEST_F(ComplexityToolTest, TouchDrag) {
@@ -94,7 +96,8 @@ TEST_F(ComplexityToolTest, TouchDrag) {
     dt.ApplyTouchDrag(Point3f(0, 0, 0), Point3f(1, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeComplexityCommand>();
-    EXPECT_CLOSE(.2625f, cmd.GetNewComplexity());
+    EXPECT_EQ(StrVec{ "Sphere" }, cmd.GetModelNames());
+    EXPECT_CLOSE(.2625f,          cmd.GetNewComplexity());
 }
 
 TEST_F(ComplexityToolTest, FaceCamera) {

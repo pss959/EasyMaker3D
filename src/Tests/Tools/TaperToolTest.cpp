@@ -32,7 +32,7 @@ TaperToolTest::TaperToolTest() {
 
     // Create and add a TaperedModel.
     auto box = Model::CreateModel<BoxModel>("Box");
-    model    = Model::CreateModel<TaperedModel>("Taper");
+    model    = Model::CreateModel<TaperedModel>("Tapered");
     model->SetOperandModel(box);
     context->root_model->AddChildModel(model);
 
@@ -64,7 +64,8 @@ TEST_F(TaperToolTest, AddPoint) {
     npw->Click(info);
 
     const auto &cmd = CheckOneCommand<ChangeTaperCommand>();
-    EXPECT_EQ(3U, cmd.GetTaper().profile.GetPointCount());
+    EXPECT_EQ(StrVec{ "Tapered" }, cmd.GetModelNames());
+    EXPECT_EQ(3U,                  cmd.GetTaper().profile.GetPointCount());
 }
 
 TEST_F(TaperToolTest, DragPoint) {
@@ -76,6 +77,7 @@ TEST_F(TaperToolTest, DragPoint) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.2f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTaperCommand>();
-    EXPECT_EQ(2U,     cmd.GetTaper().profile.GetPointCount());
-    EXPECT_CLOSE(.2f, cmd.GetTaper().profile.GetPoints()[0][0]);
+    EXPECT_EQ(StrVec{ "Tapered" }, cmd.GetModelNames());
+    EXPECT_EQ(2U,                  cmd.GetTaper().profile.GetPointCount());
+    EXPECT_CLOSE(.2f,              cmd.GetTaper().profile.GetPoints()[0][0]);
 }

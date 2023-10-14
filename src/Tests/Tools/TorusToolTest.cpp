@@ -115,6 +115,7 @@ TEST_F(TorusToolTest, PointerDrag) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTorusCommand>();
+    EXPECT_EQ(StrVec{ "Torus" }, cmd.GetModelNames());
     EXPECT_FALSE(cmd.IsInnerRadius());
     EXPECT_EQ(4.5f, cmd.GetNewRadius());
 }
@@ -127,6 +128,7 @@ TEST_F(TorusToolTest, GripDrag) {
     dt.ApplyGripDrag(Point3f(0, 0, 0), Point3f(-.1f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTorusCommand>();
+    EXPECT_EQ(StrVec{ "Torus" }, cmd.GetModelNames());
     EXPECT_FALSE(cmd.IsInnerRadius());
     EXPECT_EQ(12, cmd.GetNewRadius());
 }
@@ -139,6 +141,7 @@ TEST_F(TorusToolTest, TouchDrag) {
     dt.ApplyTouchDrag(Point3f(0, 0, 0), Point3f(-1, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTorusCommand>();
+    EXPECT_EQ(StrVec{ "Torus" }, cmd.GetModelNames());
     EXPECT_TRUE(cmd.IsInnerRadius());
     EXPECT_EQ(2, cmd.GetNewRadius());
 }
@@ -152,6 +155,7 @@ TEST_F(TorusToolTest, SnapRadiusToTarget) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(1.2f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTorusCommand>();
+    EXPECT_EQ(StrVec{ "Torus" }, cmd.GetModelNames());
     EXPECT_TRUE(cmd.IsInnerRadius());
     EXPECT_EQ(3, cmd.GetNewRadius());
 }
@@ -164,6 +168,7 @@ TEST_F(TorusToolTest, SnapDiameterToTarget) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(2, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTorusCommand>();
+    EXPECT_EQ(StrVec{ "Torus" }, cmd.GetModelNames());
     EXPECT_FALSE(cmd.IsInnerRadius());
     EXPECT_EQ(6, cmd.GetNewRadius());
 }
@@ -185,6 +190,7 @@ TEST_F(TorusToolTest, RestoreOuterRadius) {
         });
 
     const auto &cmd = CheckOneCommand<ChangeTorusCommand>();
+    EXPECT_EQ(StrVec{ "Torus" }, cmd.GetModelNames());
     EXPECT_TRUE(cmd.IsInnerRadius());
     EXPECT_EQ(1.5f, cmd.GetNewRadius());
     EXPECT_EQ(4,    model->GetOuterRadius());

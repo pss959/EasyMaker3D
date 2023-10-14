@@ -70,6 +70,7 @@ TEST_F(ColorToolTest, Click) {
     widget->Click(info);
 
     const auto &cmd = CheckOneCommand<ChangeColorCommand>();
+    EXPECT_EQ(StrVec{ "Box" }, cmd.GetModelNames());
     EXPECT_EQ(ColorRing::GetColorForPoint(Point2f(.8f, .8f)),
               cmd.GetNewColor());
 }
@@ -82,6 +83,7 @@ TEST_F(ColorToolTest, PointerDrag) {
     dt.ApplyMouseDrag(Point3f(0, 0, .1f), Point3f(.8f, .8f, .1f));
 
     const auto &cmd = CheckOneCommand<ChangeColorCommand>();
+    EXPECT_EQ(StrVec{ "Box" }, cmd.GetModelNames());
     EXPECT_EQ(ColorRing::GetColorForPoint(Point2f(.8f, .8f)),
               cmd.GetNewColor());
 
@@ -101,6 +103,7 @@ TEST_F(ColorToolTest, GripDrag) {
     dt.ApplyGripDrag(Point3f(0, 0, .1f), Point3f(s * -1.6f, s * -.8f, .1f));
 
     const auto &cmd = CheckOneCommand<ChangeColorCommand>();
+    EXPECT_EQ(StrVec{ "Box" }, cmd.GetModelNames());
     EXPECT_EQ(ColorRing::GetColorForPoint(Point2f(-.8f, -.8f)),
               cmd.GetNewColor());
 }

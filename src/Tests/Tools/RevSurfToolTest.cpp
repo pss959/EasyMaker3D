@@ -62,7 +62,8 @@ TEST_F(RevSurfToolTest, AddPoint) {
     npw->Click(info);
 
     const auto &cmd = CheckOneCommand<ChangeRevSurfCommand>();
-    EXPECT_EQ(4U, cmd.GetProfile().GetPointCount());
+    EXPECT_EQ(StrVec{ "RevSurf" }, cmd.GetModelNames());
+    EXPECT_EQ(4U,                  cmd.GetProfile().GetPointCount());
 }
 
 TEST_F(RevSurfToolTest, DragPoint) {
@@ -74,6 +75,7 @@ TEST_F(RevSurfToolTest, DragPoint) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.2f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeRevSurfCommand>();
-    EXPECT_EQ(3U,  cmd.GetProfile().GetPointCount());
-    EXPECT_EQ(.7f, cmd.GetProfile().GetPoints()[1][0]);
+    EXPECT_EQ(StrVec{ "RevSurf" }, cmd.GetModelNames());
+    EXPECT_EQ(3U,                  cmd.GetProfile().GetPointCount());
+    EXPECT_EQ(.7f,                 cmd.GetProfile().GetPoints()[1][0]);
 }

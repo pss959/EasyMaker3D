@@ -31,7 +31,7 @@ BevelToolTest::BevelToolTest() {
 
     // Create and add a BeveledModel.
     auto box = Model::CreateModel<BoxModel>("Box");
-    model    = Model::CreateModel<BeveledModel>("Bevel");
+    model    = Model::CreateModel<BeveledModel>("Beveled");
     model->SetOperandModel(box);
     context->root_model->AddChildModel(model);
 
@@ -53,7 +53,8 @@ TEST_F(BevelToolTest, ChangeScale) {
     pi.DragSlider("ScaleSlider", Vector2f(.5f, 0));
 
     const auto &cmd = CheckOneCommand<ChangeBevelCommand>();
-    EXPECT_CLOSE(3.21f, cmd.GetBevel().scale);
+    EXPECT_EQ(StrVec{ "Beveled" }, cmd.GetModelNames());
+    EXPECT_CLOSE(3.21f,            cmd.GetBevel().scale);
 }
 
 TEST_F(BevelToolTest, AddPoint) {
@@ -74,5 +75,6 @@ TEST_F(BevelToolTest, AddPoint) {
     npw->Click(info);
 
     const auto &cmd = CheckOneCommand<ChangeBevelCommand>();
-    EXPECT_EQ(3U, cmd.GetBevel().profile.GetPointCount());
+    EXPECT_EQ(StrVec{ "Beveled" }, cmd.GetModelNames());
+    EXPECT_EQ(3U,                  cmd.GetBevel().profile.GetPointCount());
 }

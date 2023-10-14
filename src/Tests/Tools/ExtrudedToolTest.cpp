@@ -52,7 +52,8 @@ TEST_F(ExtrudedToolTest, DragPoint) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.2f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeExtrudedCommand>();
-    EXPECT_EQ(1, cmd.GetProfile().GetPoints()[0][0]);
+    EXPECT_EQ(StrVec{ "Extruded" }, cmd.GetModelNames());
+    EXPECT_EQ(1,                    cmd.GetProfile().GetPoints()[0][0]);
 }
 
 TEST_F(ExtrudedToolTest, SetSides) {
@@ -64,5 +65,6 @@ TEST_F(ExtrudedToolTest, SetSides) {
     pi.ClickButtonPane("SetSides");
 
     const auto &cmd = CheckOneCommand<ChangeExtrudedCommand>();
-    EXPECT_EQ(11U, cmd.GetProfile().GetPointCount());
+    EXPECT_EQ(StrVec{ "Extruded" }, cmd.GetModelNames());
+    EXPECT_EQ(11U,                  cmd.GetProfile().GetPointCount());
 }

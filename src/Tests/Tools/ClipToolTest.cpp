@@ -83,7 +83,8 @@ TEST_F(ClipToolTest, DragPlane) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(0, 2, 0));
 
     const auto &cmd = CheckOneCommand<ChangeClipCommand>();
-    EXPECT_EQ(2, cmd.GetPlane().distance);
+    EXPECT_EQ(StrVec{ "Clipped" }, cmd.GetModelNames());
+    EXPECT_EQ(2,                   cmd.GetPlane().distance);
 }
 
 TEST_F(ClipToolTest, SnapNormalToTarget) {
@@ -99,7 +100,8 @@ TEST_F(ClipToolTest, SnapNormalToTarget) {
                              BuildRotation(0, 0, 1, 98));
 
     const auto &cmd = CheckOneCommand<ChangeClipCommand>();
-    EXPECT_EQ(Vector3f(1, 0, 0), cmd.GetPlane().normal);
+    EXPECT_EQ(StrVec{ "Clipped" }, cmd.GetModelNames());
+    EXPECT_EQ(Vector3f(1, 0, 0),   cmd.GetPlane().normal);
 }
 
 TEST_F(ClipToolTest, SnapNormalToPrincipalAxis) {
@@ -113,7 +115,8 @@ TEST_F(ClipToolTest, SnapNormalToPrincipalAxis) {
                              BuildRotation(0, 0, 1, 98));
 
     const auto &cmd = CheckOneCommand<ChangeClipCommand>();
-    EXPECT_EQ(Vector3f(-1, 0, 0), cmd.GetPlane().normal);
+    EXPECT_EQ(StrVec{ "Clipped" }, cmd.GetModelNames());
+    EXPECT_EQ(Vector3f(-1, 0, 0),  cmd.GetPlane().normal);
 }
 
 TEST_F(ClipToolTest, SnapPlaneToTarget) {
@@ -125,5 +128,6 @@ TEST_F(ClipToolTest, SnapPlaneToTarget) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(0, 1.8f, 0));
 
     const auto &cmd = CheckOneCommand<ChangeClipCommand>();
-    EXPECT_EQ(2, cmd.GetPlane().distance);
+    EXPECT_EQ(StrVec{ "Clipped" }, cmd.GetModelNames());
+    EXPECT_EQ(2,                   cmd.GetPlane().distance);
 }

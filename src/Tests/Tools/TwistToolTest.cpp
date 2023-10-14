@@ -87,7 +87,8 @@ TEST_F(TwistToolTest, DragCenter) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(1, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTwistCommand>();
-    EXPECT_EQ(Point3f(1, 0, 0), cmd.GetSpin().center);
+    EXPECT_EQ(StrVec{ "Twisted" }, cmd.GetModelNames());
+    EXPECT_EQ(Point3f(1, 0, 0),    cmd.GetSpin().center);
 }
 
 TEST_F(TwistToolTest, DragAxis) {
@@ -100,7 +101,8 @@ TEST_F(TwistToolTest, DragAxis) {
                              BuildRotation(0, 0, 1, 100));
 
     const auto &cmd = CheckOneCommand<ChangeTwistCommand>();
-    EXPECT_EQ(Vector3f(-1, 0, 0), cmd.GetSpin().axis);
+    EXPECT_EQ(StrVec{ "Twisted" }, cmd.GetModelNames());
+    EXPECT_EQ(Vector3f(-1, 0, 0),  cmd.GetSpin().axis);
 }
 
 TEST_F(TwistToolTest, DragAngle) {
@@ -113,7 +115,8 @@ TEST_F(TwistToolTest, DragAngle) {
                              BuildRotation(1, 0, 0, 45));
 
     const auto &cmd = CheckOneCommand<ChangeTwistCommand>();
-    EXPECT_CLOSE(45, cmd.GetSpin().angle.Degrees());
+    EXPECT_EQ(StrVec{ "Twisted" }, cmd.GetModelNames());
+    EXPECT_CLOSE(45,               cmd.GetSpin().angle.Degrees());
 }
 
 TEST_F(TwistToolTest, DragOffset) {
@@ -123,7 +126,8 @@ TEST_F(TwistToolTest, DragOffset) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(0, 1, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTwistCommand>();
-    EXPECT_CLOSE(1, cmd.GetSpin().offset);
+    EXPECT_EQ(StrVec{ "Twisted" }, cmd.GetModelNames());
+    EXPECT_CLOSE(1,                cmd.GetSpin().offset);
 }
 
 TEST_F(TwistToolTest, SnapAxisToTarget) {
@@ -139,7 +143,8 @@ TEST_F(TwistToolTest, SnapAxisToTarget) {
                              BuildRotation(0, 0, 1, 98));
 
     const auto &cmd = CheckOneCommand<ChangeTwistCommand>();
-    EXPECT_EQ(Vector3f(1, 0, 0), cmd.GetSpin().axis);
+    EXPECT_EQ(StrVec{ "Twisted" }, cmd.GetModelNames());
+    EXPECT_EQ(Vector3f(1, 0, 0),   cmd.GetSpin().axis);
 }
 
 
@@ -153,5 +158,6 @@ TEST_F(TwistToolTest, SnapCenterToTarget) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(1.9f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeTwistCommand>();
-    EXPECT_EQ(Point3f(2, 0, 0), cmd.GetSpin().center);
+    EXPECT_EQ(StrVec{ "Twisted" }, cmd.GetModelNames());
+    EXPECT_EQ(Point3f(2, 0, 0),    cmd.GetSpin().center);
 }

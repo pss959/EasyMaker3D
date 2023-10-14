@@ -91,6 +91,7 @@ TEST_F(CylinderToolTest, PointerDrag) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.5f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeCylinderCommand>();
+    EXPECT_EQ(StrVec{ "Cylinder" }, cmd.GetModelNames());
     EXPECT_TRUE(cmd.IsTopRadius());
     EXPECT_EQ(2.5f, cmd.GetNewRadius());
 }
@@ -103,6 +104,7 @@ TEST_F(CylinderToolTest, GripDrag) {
     dt.ApplyGripDrag(Point3f(0, 0, 0), Point3f(-.1f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeCylinderCommand>();
+    EXPECT_EQ(StrVec{ "Cylinder" }, cmd.GetModelNames());
     EXPECT_FALSE(cmd.IsTopRadius());
     EXPECT_EQ(11, cmd.GetNewRadius());
 }
@@ -115,6 +117,7 @@ TEST_F(CylinderToolTest, TouchDrag) {
     dt.ApplyTouchDrag(Point3f(0, 0, 0), Point3f(-1, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeCylinderCommand>();
+    EXPECT_EQ(StrVec{ "Cylinder" }, cmd.GetModelNames());
     EXPECT_TRUE(cmd.IsTopRadius());
     EXPECT_EQ(3, cmd.GetNewRadius());
 }
@@ -128,6 +131,7 @@ TEST_F(CylinderToolTest, SnapRadiusToTarget) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.89f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeCylinderCommand>();
+    EXPECT_EQ(StrVec{ "Cylinder" }, cmd.GetModelNames());
     EXPECT_TRUE(cmd.IsTopRadius());
     EXPECT_EQ(3, cmd.GetNewRadius());
 }
@@ -140,6 +144,7 @@ TEST_F(CylinderToolTest, SnapDiameterToTarget) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(.28f, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeCylinderCommand>();
+    EXPECT_EQ(StrVec{ "Cylinder" }, cmd.GetModelNames());
     EXPECT_FALSE(cmd.IsTopRadius());
     EXPECT_EQ(3.5f, cmd.GetNewRadius());
 }
@@ -158,6 +163,7 @@ TEST_F(CylinderToolTest, MinRadius) {
     dt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(-6, 0, 0));
 
     const auto &cmd = CheckOneCommand<ChangeCylinderCommand>();
+    EXPECT_EQ(StrVec{ "Cylinder" }, cmd.GetModelNames());
     EXPECT_FALSE(cmd.IsTopRadius());
     EXPECT_EQ(.5f * prec, cmd.GetNewRadius());
 }

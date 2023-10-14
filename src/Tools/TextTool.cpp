@@ -18,7 +18,7 @@ void TextTool::InitPanel() {
     auto &panel = GetTypedPanel<TextToolPanel>();
     Str font_name = model->GetFontName();
     if (font_name.empty())
-        font_name = TK::k3DFont;
+        font_name = TK::k3DFont;  // LCOV_EXCL_LINE [cannot happen]
     panel.SetValues(model->GetTextString(), font_name, model->GetCharSpacing());
 }
 

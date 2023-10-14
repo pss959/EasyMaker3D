@@ -50,5 +50,6 @@ TEST_F(NameToolTest, Apply) {
     pi.ClickButtonPane("Apply");
 
     const auto &cmd = CheckOneCommand<ChangeNameCommand>();
+    EXPECT_EQ("Box",       cmd.GetModelName());
     EXPECT_EQ("Some Name", cmd.GetNewName());
 }

@@ -91,6 +91,7 @@ TEST_F(RotationToolTest, AxisRotate) {
     dt.ApplyMouseDrag(Point3f(0, 0, 1), Point3f(1, 0, 1));
 
     const auto &cmd = CheckOneCommand<RotateCommand>();
+    EXPECT_EQ(StrVec{ "Box" },                    cmd.GetModelNames());
     EXPECT_ROTS_CLOSE(BuildRotation(0, 1, 0, 45), cmd.GetRotation());
     EXPECT_FALSE(cmd.IsInPlace());
     EXPECT_FALSE(cmd.IsAxisAligned());
@@ -109,6 +110,7 @@ TEST_F(RotationToolTest, FreeRotate) {
                              BuildRotation(1, 0, 0, 45));
 
     const auto &cmd = CheckOneCommand<RotateCommand>();
+    EXPECT_EQ(StrVec{ "Box" },                    cmd.GetModelNames());
     EXPECT_ROTS_CLOSE(BuildRotation(1, 0, 0, 45), cmd.GetRotation());
     EXPECT_TRUE(cmd.IsInPlace());
     EXPECT_TRUE(cmd.IsAxisAligned());
@@ -125,6 +127,7 @@ TEST_F(RotationToolTest, SnapToTarget) {
                              BuildRotation(1, 0, 0, 88.8));
 
     const auto &cmd = CheckOneCommand<RotateCommand>();
+    EXPECT_EQ(StrVec{ "Box" },                    cmd.GetModelNames());
     EXPECT_ROTS_CLOSE(BuildRotation(0, 1, 0, 90), cmd.GetRotation());
     EXPECT_FALSE(cmd.IsInPlace());
     EXPECT_FALSE(cmd.IsAxisAligned());
@@ -141,6 +144,7 @@ TEST_F(RotationToolTest, NoSnapToTarget) {
                              BuildRotation(1, 0, 0, 60));
 
     const auto &cmd = CheckOneCommand<RotateCommand>();
+    EXPECT_EQ(StrVec{ "Box" },                    cmd.GetModelNames());
     EXPECT_ROTS_CLOSE(BuildRotation(0, 1, 0, 60), cmd.GetRotation());
     EXPECT_FALSE(cmd.IsInPlace());
     EXPECT_FALSE(cmd.IsAxisAligned());

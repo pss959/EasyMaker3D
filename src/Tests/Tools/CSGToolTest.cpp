@@ -52,5 +52,6 @@ TEST_F(CSGToolTest, ChangeOperation) {
     pi.ActivateRadioButtonPane("Intersection");
 
     const auto &cmd = CheckOneCommand<ChangeCSGOperationCommand>();
+    EXPECT_EQ(StrVec{ "CSG" },             cmd.GetModelNames());
     EXPECT_EQ(CSGOperation::kIntersection, cmd.GetNewOperation());
 }
