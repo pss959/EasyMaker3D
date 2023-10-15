@@ -266,10 +266,10 @@ bool ScriptedApp::Init(const Options &options) {
     // Use default settings file so that state is deterministic.
     const FilePath path("PublicDoc/snaps/settings/Settings" +
                         TK::kDataFileExtension);
-    Str error;
-    if (! context.settings_manager->SetPath(path, false, error)) {
+    if (! context.settings_manager->SetPath(path, false)) {
         std::cerr << "*** Unable to load default settings from "
-                  << path.ToString() << ": " << error << "\n";
+                  << path.ToString() << ": "
+                  << context.settings_manager->GetLoadError() << "\n";
         return false;
     }
     // Tell the SessionManager to update its previous path.
@@ -400,10 +400,11 @@ bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
           const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
           const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
                               TK::kDataFileExtension);
-          Str error;
-          if (! GetContext().settings_manager->SetPath(path, false, error)) {
+          auto &settings_manager = *GetContext().settings_manager;
+          if (! settings_manager.SetPath(path, false)) {
               std::cerr << "*** Unable to load settings from "
-                        << path.ToString() << ": " << error << "\n";
+                        << path.ToString() << ": "
+                        << settings_manager.GetLoadError() << "\n";
               return false;
           }
           break;

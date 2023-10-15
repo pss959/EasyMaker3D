@@ -105,9 +105,9 @@ TEST_F(SettingsManagerTest, Load) {
 
     // Load the temporary file.
     SettingsManager sm;
-    Str error;
-    EXPECT_TRUE(sm.SetPath(tmp.GetPath(), false, error));  // No save on set.
-    EXPECT_TRUE(error.empty());
+    EXPECT_TRUE(sm.SetPath(tmp.GetPath(), false));  // No save on set.
+    EXPECT_TRUE(sm.GetLoadError().empty());
+    EXPECT_EQ(tmp.GetPath(), sm.GetPath());
     TestSettings(*settings, sm.GetSettings());
 }
 
@@ -117,23 +117,22 @@ TEST_F(SettingsManagerTest, LoadFail) {
 
     SettingsManager sm;
 
-    // Bad path.
-    Str error;
-    EXPECT_FALSE(sm.SetPath("/no/such/path", false, error));
-    EXPECT_TRUE(error.contains("does not exist"));
+    // Nonexistent file does not result in an error.
+    EXPECT_TRUE(sm.SetPath("/no/such/path", false));
+    EXPECT_TRUE(sm.GetLoadError().empty());
 
     // Parse error.
     {
         TempFile tmp("Blah blah blah");
-        EXPECT_FALSE(sm.SetPath(tmp.GetPath(), false, error));
-        EXPECT_TRUE(error.contains("Blah"));
+        EXPECT_FALSE(sm.SetPath(tmp.GetPath(), false));
+        EXPECT_TRUE(sm.GetLoadError().contains("Blah"));
     }
 
     // Wrong type of object.
     {
         TempFile tmp("UnitConversion {}");
-        EXPECT_FALSE(sm.SetPath(tmp.GetPath(), false, error));
-        EXPECT_TRUE(error.contains("Got UnitConversion instead of Settings"));
+        EXPECT_FALSE(sm.SetPath(tmp.GetPath(), false));
+        EXPECT_TRUE(sm.GetLoadError().contains("Got UnitConversion"));
     }
 }
 
@@ -169,8 +168,8 @@ TEST_F(SettingsManagerTest, Save) {
     // Load the temporary file and pass true for save_on_set.
     SettingsManager sm;
     Str error;
-    EXPECT_TRUE(sm.SetPath(tmp1.GetPath(), true, error));
-    EXPECT_TRUE(error.empty());
+    EXPECT_TRUE(sm.SetPath(tmp1.GetPath(), true));
+    EXPECT_TRUE(sm.GetLoadError().empty());
     TestSettings(*def_settings, sm.GetSettings());
 
     // Set to new known settings.
@@ -180,7 +179,7 @@ TEST_F(SettingsManagerTest, Save) {
 
     // The temporary file should now contain the new settings.
     TempFile tmp2(tmp1.GetContents());
-    EXPECT_TRUE(sm.SetPath(tmp2.GetPath(), false, error));
-    EXPECT_TRUE(error.empty());
+    EXPECT_TRUE(sm.SetPath(tmp2.GetPath(), false));
+    EXPECT_TRUE(sm.GetLoadError().empty());
     TestSettings(*settings, sm.GetSettings());
 }

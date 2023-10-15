@@ -15,16 +15,12 @@ SettingsManager::SettingsManager() {
     settings_ = Settings::CreateDefault();
 }
 
-bool SettingsManager::SetPath(const FilePath &path, bool save_on_set,
-                              Str &error) {
+bool SettingsManager::SetPath(const FilePath &path, bool save_on_set) {
     path_        = path;
     save_on_set_ = save_on_set;
 
-    if (! path.Exists()) {
-        error = path.ToString() + " does not exist";
-        return false;
-    }
-    return LoadSettings_(path, error);
+    load_error_.clear();
+    return path.Exists() ? LoadSettings_(path, load_error_) : true;
 }
 
 void SettingsManager::SetSettings(const Settings &new_settings) {
@@ -38,6 +34,7 @@ void SettingsManager::SetSettings(const Settings &new_settings) {
 bool SettingsManager::LoadSettings_(const FilePath &path, Str &error) {
     KLOG('f', "Reading settings from \"" << path.ToString() << "\"");
     SettingsPtr new_settings;
+    error.clear();
     try {
         Parser::Parser parser;
         auto obj = parser.ParseFile(path);
