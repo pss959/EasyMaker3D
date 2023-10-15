@@ -18,6 +18,9 @@ class PanelTool : public Tool {
     /// PanelTool is not attached.
     const ToolPanelPtr & GetPanel() const { return panel_; }
 
+    // Redefines this to just update the position.
+    virtual void ReattachToSelection() override;
+
   protected:
     /// Defines this to access the correct Panel (using GetPanelTypeName() for
     /// the type), attach it to the tool Board, and to store it in the
@@ -26,9 +29,6 @@ class PanelTool : public Tool {
 
     /// Defines this to detach the Panel and close the Board.
     virtual void Detach() override;
-
-    // Redefines this to just update the position.
-    virtual void ReattachToSelection() override;
 
     /// Convenience that returns the attached Panel as the given type. Asserts
     /// if the PanelTool is not currently attached or if the type is wrong.
@@ -42,10 +42,9 @@ class PanelTool : public Tool {
     /// to open when attaching to a Model of the appropriate type.
     virtual Str GetPanelName() const = 0;
 
-    /// This is called when a Panel is opened. The base class defines it to do
-    /// nothing. Derived classes can redefine it to set up the Panel from the
-    /// attached Model.
-    virtual void InitPanel() {};
+    /// Derived classes must define this to set up the Panel from the attached
+    /// Model when the Panel is opened.
+    virtual void InitPanel() = 0;
 
     /// This is called by ToolPanel::ReportChange() when interaction occurs.
     /// The default implementation does nothing.

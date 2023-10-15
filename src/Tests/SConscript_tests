@@ -325,6 +325,7 @@ test_source_dict = {
         'ComplexityToolTest',
         'CylinderToolTest',
         'ExtrudedToolTest',
+        'FindToolsTest',
         'ImportToolTest',
         'MirrorToolTest',
         'NameToolTest',

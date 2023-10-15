@@ -153,19 +153,23 @@ int Tool::SnapToAxis(Vector3f &dir) {
     const Matrix4f m = IsAxisAligned() ? Matrix4f::Identity() :
         GetStageCoordConv().GetObjectToRootMatrix();
 
+    int snapped_dim = -1;
+
     Rotationf rot;
     for (int dim = 0; dim < 3; ++dim) {
         const Vector3f axis = ion::math::Normalized(m * GetAxis(dim));
         if (tm.ShouldSnapDirections(dir, axis, rot)) {
             dir = axis;
-            return dim;
+            snapped_dim = dim;
+            break;
         }
         else if (tm.ShouldSnapDirections(dir, -axis, rot)) {
             dir = -axis;
-            return dim;
+            snapped_dim = dim;
+            break;
         }
     }
-    return -1;
+    return snapped_dim;
 }
 
 Point3f Tool::GetPositionAboveModel(float distance, bool over_front) const {

@@ -1,4 +1,5 @@
 #include "Commands/ChangeCylinderCommand.h"
+#include "Models/BoxModel.h"
 #include "Models/CylinderModel.h"
 #include "Models/RootModel.h"
 #include "Place/PrecisionStore.h"
@@ -56,6 +57,31 @@ CylinderToolTest::CylinderToolTest() {
     EXPECT_NOT_NULL(tool->GetModelAttachedTo());
 
     AddDummyCommandFunction("ChangeCylinderCommand");
+}
+
+TEST_F(CylinderToolTest, CanBeUsedFor) {
+    // Test that the Tool cannot be attached unless all selected models are
+    // CylinderModels.
+    tool->DetachFromSelection();
+
+    // Create and add a non-CylinderModel (BoxModel).
+    auto box = Model::CreateModel<BoxModel>("Box");
+    context->root_model->AddChildModel(box);
+
+    const SelPath box_path(context->root_model, box);
+    const SelPath cyl_path(context->root_model, model);
+
+    Selection sel;
+    sel.Add(cyl_path);
+    sel.Add(box_path);
+    EXPECT_FALSE(tool->CanBeUsedFor(sel));
+
+    sel.Clear();
+    sel.Add(cyl_path);
+    EXPECT_TRUE(tool->CanBeUsedFor(sel));
+
+    // Have to be attached when the destructor is called.
+    tool->AttachToSelection(sel, 0);
 }
 
 TEST_F(CylinderToolTest, UpdateGripInfo) {

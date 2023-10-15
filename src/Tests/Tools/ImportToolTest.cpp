@@ -60,10 +60,15 @@ TEST_F(ImportToolTest, Accept) {
     const Str import_path1 = GetDataPath("binarybox.stl").ToString();
     const Str import_path2 = GetDataPath("nomesh.stl").ToString();
 
+    // Test that Tool::Finish() is called.
+    size_t completion_count = 0;
+    tool->SetSpecializedCompletionFunc([&](){ ++completion_count; });
+
     // Accepting a change to the initial import causes the path in the previous
     // CreateImportedModelCommand to be modified, so add it first.
     auto cimc = Command::CreateCommand<CreateImportedModelCommand>();
     context->command_manager->AddAndDo(cimc);
+    EXPECT_EQ(0U, completion_count);
 
     // Change the path and hit the "Accept" button. Should not add a command,
     // but should update the CreateImportedModelCommand.
@@ -71,6 +76,7 @@ TEST_F(ImportToolTest, Accept) {
     pi.SetTextInput("Input", import_path0);
     EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
     pi.ClickButtonPane("Accept");
+    EXPECT_EQ(1U, completion_count);
 
     const auto &cmd0 = CheckOneCommand<CreateImportedModelCommand>();
     EXPECT_EQ(import_path0, cmd0.GetPath());
@@ -79,16 +85,18 @@ TEST_F(ImportToolTest, Accept) {
     pi.SetTextInput("Input", import_path1);
     EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
     pi.ClickButtonPane("Accept");
+    EXPECT_EQ(2U, completion_count);
 
     const auto &cmd1 = CheckLastCommand<ChangeImportedModelCommand>(2U);
     EXPECT_EQ("Imported",   cmd1.GetModelName());
     EXPECT_EQ(import_path1, cmd1.GetNewPath());
 
     // Changing the path to a bad file should also add a command and should
-    // display an error dialog.
+    // display an error dialog and not call Finish().
     pi.SetTextInput("Input", import_path2);  // Not a closed solid.
     EXPECT_TRUE(pi.IsButtonPaneEnabled("Accept"));
     pi.ClickButtonPane("Accept");
+    EXPECT_EQ(2U, completion_count);
 
     const auto &cmd2 = CheckLastCommand<ChangeImportedModelCommand>(3U);
     EXPECT_EQ("Imported",   cmd2.GetModelName());
@@ -96,16 +104,23 @@ TEST_F(ImportToolTest, Accept) {
 }
 
 TEST_F(ImportToolTest, Cancel) {
+    // Test that Tool::Finish() is called.
+    size_t completion_count = 0;
+    tool->SetSpecializedCompletionFunc([&](){ ++completion_count; });
+
     // Canceling a change to the initial import causes the
     // CreateImportedModelCommand to be undone and purged, so add it first so
     // it can be undone.
     auto cimc = Command::CreateCommand<CreateImportedModelCommand>();
     context->command_manager->AddAndDo(cimc);
 
-    // Change the path and hit the "Cancel" button. Should not add a command.
+    // Change the path and hit the "Cancel" button. Should not add a command
+    // and should call Finish().
+    EXPECT_EQ(0U, completion_count);
     PanelInteractor pi(tool->GetPanel());
     pi.SetTextInput("Input", "/a/b/c/test.stl");  // Does not matter.
     pi.ClickButtonPane("Cancel");
+    EXPECT_EQ(1U, completion_count);
 
     // The CreateImportedModelCommand should have been undone and purged.
     CheckNoCommands();
