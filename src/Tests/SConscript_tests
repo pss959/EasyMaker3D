@@ -331,10 +331,12 @@ test_source_dict = {
         'PassiveToolTest',
         'RevSurfToolTest',
         'RotationToolTest',
+        'ScaleToolTest',
         'TaperToolTest',
         'TextToolTest',
         'ToolTestBase',
         'TorusToolTest',
+        'TranslationToolTest',
         'TwistToolTest',
     ],
     'Trackers' : [

@@ -51,7 +51,6 @@ RotationToolTest::RotationToolTest() {
 TEST_F(RotationToolTest, UpdateGripInfo) {
     Grippable::GripInfo info;
 
-    // RotationTool does not change the color.
     const auto default_color = info.color;
 
     // Close to any principal axis chooses the axis rotator.
