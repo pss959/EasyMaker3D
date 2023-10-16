@@ -1,13 +1,42 @@
+#include "Base/IWindowSystem.h"
 #include "SG/WindowCamera.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Viewers/GLFWViewer.h"
 
 /// \ingroup Tests
-class GLFWViewerTest : public SceneTestBase {};
+class GLFWViewerTest : public SceneTestBase {
+  public:
+    /// Derived IWindowSystem class used for testing without relying on GLFW.
+    class TestWindowSystem : public IWindowSystem {
+        virtual bool Init(const ErrorFunc &error_func) override {
+            return true;
+        }
+        virtual void Terminate() override  {}
+        virtual bool CreateWindow(const Vector2i &size, const Str &title) {
+            win_size_ = size;
+            return true;
+        };
+        virtual void SetWindowPosition(const Vector2i &pos) override {}
+        virtual void SetFullScreen() override {}
+        virtual Vector2i GetWindowSize() override { return win_size_; }
+        virtual Vector2i GetFramebufferSize() override { return win_size_; }
+        virtual void PreRender() override {}
+        virtual void PostRender() override {}
+        virtual bool WasWindowClosed() override { return false; }
+        virtual void RetrieveEvents(const EventOptions &options,
+                                    std::vector<Event> &events) override {
+        }
+        virtual void FlushPendingEvents() override {}
+        virtual bool IsShiftKeyPressed() override { return false; }
+      private:
+        Vector2i win_size_;
+    };
+    DECL_SHARED_PTR(TestWindowSystem);
+};
 
 TEST_F(GLFWViewerTest, Camera) {
-    auto cam   = ParseTypedObject<SG::WindowCamera>(R"(
+    auto cam = ParseTypedObject<SG::WindowCamera>(R"(
     WindowCamera {
       position: 1 2 3,
       orientation: 0 1 0 30,
@@ -16,7 +45,10 @@ TEST_F(GLFWViewerTest, Camera) {
       far: 10,
     })");
 
+    TestWindowSystemPtr tws(new TestWindowSystem);
+
     GLFWViewer viewer;
+    viewer.SetWindowSystem(tws);
     viewer.Init(Vector2i(600, 600), false);  // Square aspect ratio.
     EXPECT_EQ(Vector2i(600, 600), viewer.GetWindowSize());
 

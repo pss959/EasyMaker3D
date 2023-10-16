@@ -97,6 +97,7 @@ lib_sources = list(chain(
     PlaceInDir_('Base', [
         'ActionMap',
         'Event',
+        'GLFWWindowSystem',
         'HelpMap',
         'Procedural',
         'VirtualKeyboard',
