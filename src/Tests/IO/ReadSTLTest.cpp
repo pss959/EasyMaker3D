@@ -4,7 +4,7 @@
 #include "Math/MeshUtils.h"
 #include "Tests/TempFile.h"
 #include "Tests/TestBaseWithTypes.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 
 /// \ingroup Tests
 class ReadSTLTest : public TestBaseWithTypes {
@@ -88,7 +88,7 @@ TEST_F(ReadSTLTest, BinarySpoon) {
 
 TEST_F(ReadSTLTest, Errors) {
     TEST_THROW(LoadFromFile("nosuchfile.stl"), ExceptionBase, "Unable to open");
-    TEST_THROW(LoadFromFile("nomesh.stl"), ExceptionBase, "No mesh data");
+    TEST_THROW(LoadFromFile("nomesh.stl"),     ExceptionBase, "No mesh data");
 
     {
         const Str s =

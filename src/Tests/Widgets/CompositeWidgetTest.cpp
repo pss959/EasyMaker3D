@@ -1,6 +1,6 @@
 #include "SG/ColorMap.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 #include "Widgets/SpinWidget.h"
 
@@ -23,8 +23,7 @@ TEST_F(CompositeWidgetTest, GetSubWidget) {
     EXPECT_NOT_NULL(sw->GetSubWidget("Translator"));
 
     // Not a sub-widget.
-    TEST_THROW(sw->GetSubWidget("NoSuchWidget"),
-               AssertException, "No sub-widget");
+    TEST_ASSERT(sw->GetSubWidget("NoSuchWidget"), "No sub-widget");
 }
 
 TEST_F(CompositeWidgetTest, Highlight) {

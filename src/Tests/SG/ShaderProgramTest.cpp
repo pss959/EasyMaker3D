@@ -2,7 +2,7 @@
 #include "SG/FileMap.h"
 #include "SG/ShaderProgram.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/String.h"
 
 /// \ingroup Tests

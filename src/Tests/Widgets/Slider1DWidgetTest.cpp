@@ -1,5 +1,5 @@
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Tests/Widgets/DragTester.h"
 #include "Util/Assert.h"
 #include "Widgets/Slider1DWidget.h"
@@ -36,7 +36,7 @@ TEST_F(Slider1DWidgetTest, Set) {
     EXPECT_EQ(-3,    sw->GetMinValue());
     EXPECT_EQ(12.5f, sw->GetMaxValue());
 
-    TEST_THROW(sw->SetDimension(3), AssertException, "dim");
+    TEST_ASSERT(sw->SetDimension(3), "dim");
 }
 
 TEST_F(Slider1DWidgetTest, Drag) {

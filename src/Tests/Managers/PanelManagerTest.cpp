@@ -1,6 +1,6 @@
 ﻿#include "Managers/PanelManager.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -19,7 +19,7 @@ TEST_F(PanelManagerTest, GetPanel) {
 
     PanelManager pm;
 
-    TEST_THROW(pm.GetPanel("ActionPanel"), AssertException, "No panel");
+    TEST_ASSERT(pm.GetPanel("ActionPanel"), "No panel");
 
     Panel::ContextPtr context(new Panel::Context);  // Contents do not matter.
     pm.FindAllPanels(*scene, context);
@@ -42,5 +42,5 @@ TEST_F(PanelManagerTest, GetPanel) {
     EXPECT_NOT_NULL(pm.GetPanel("TextToolPanel"));
 
     pm.Reset();
-    TEST_THROW(pm.GetPanel("ActionPanel"), AssertException, "No panel");
+    TEST_ASSERT(pm.GetPanel("ActionPanel"), "No panel");
 }

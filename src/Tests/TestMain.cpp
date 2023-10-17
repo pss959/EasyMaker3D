@@ -2,6 +2,7 @@
 
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 #include "Util/String.h"
 
 int main(int argc, char **argv) {

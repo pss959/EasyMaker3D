@@ -47,7 +47,7 @@ TEST_F(InstanceStoreTest, Store) {
                 (spa == sp1 && spb == sp0));
 
     // Cannot acquire an instance for an uninitialized class.
-    TEST_THROW(store.Acquire<Other>(), AssertException, "contains");
+    TEST_ASSERT(store.Acquire<Other>(), "contains");
 
     store.Reset();
     EXPECT_FALSE(store.HasOriginal<Simple>());

@@ -3,7 +3,7 @@
 #include "Items/Grippable.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Tests/Trackers/TrackerTestBase.h"
 #include "Tests/Trackers/TestGrippable.h"
 #include "Trackers/GripTracker.h"
@@ -91,7 +91,7 @@ Event GripTrackerTest::GetWidgetEvent(const GripTracker &gt) {
 
 TEST_F(GripTrackerTest, Defaults) {
     // Constructing with the wrong Actuator should assert.
-    TEST_THROW(GripTracker(Actuator::kMouse), AssertException, "actuator");
+    TEST_ASSERT(GripTracker(Actuator::kMouse), "actuator");
 
     GripTracker lgt(Actuator::kLeftGrip);
     EXPECT_ENUM_EQ(Actuator::kLeftGrip,             lgt.GetActuator());

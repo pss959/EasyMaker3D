@@ -2,7 +2,7 @@
 #include "Math/Types.h"
 #include "Selection/Selection.h"
 #include "Tests/SelectionTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -22,7 +22,7 @@ TEST_F(MultiModelCommandTest, SetFromSelection) {
     auto dc = Command::CreateCommand<DeleteCommand>();
 
     Selection sel;
-    TEST_THROW(dc->SetFromSelection(sel), AssertException, "HasAny");
+    TEST_ASSERT(dc->SetFromSelection(sel), "HasAny");
 
     // Create a selection with one Model.
     sel.Add(BuildSelPath(ModelVec{ root, par0 }));

@@ -1,10 +1,11 @@
 #pragma once
 
-#include <string>
-
 #include "gtest/gtest.h"
 #include "Util/Enum.h"
-#include "Util/KLog.h"
+
+/// \file
+/// This file contains basic macros for tests. Most are wrappers around
+/// googletest macros that make the test code simpler and clearer.
 
 // ----------------------------------------------------------------------------
 // Handy macros.
@@ -47,27 +48,3 @@
 /// Macro for testing enums with better error messages.
 #define EXPECT_ENUM_EQ(EXP, E) EXPECT_EQ(EXP, E) \
     << "Enums differ: " << Util::EnumName(EXP) << " vs. " << Util::EnumName(E)
-
-/// Tests that an exception of the given type is thrown by the given statement
-/// and that the exception's message contains the given string pattern.
-#define TEST_THROW(STMT, EXCEPTION_TYPE, PATTERN)                       \
-    EXPECT_THROW({                                                      \
-            try {                                                       \
-                STMT;                                                   \
-            }                                                           \
-            catch (const EXCEPTION_TYPE &ex) {                          \
-                EXPECT_TRUE(Str(ex.what()).contains(PATTERN))           \
-                    << "Exception string:" << ex.what()                 \
-                    << "\nvs. pattern: " << (PATTERN);                  \
-                throw;                                                  \
-            }                                                           \
-        }, EXCEPTION_TYPE)
-
-// ----------------------------------------------------------------------------
-// Handy functions.
-// ----------------------------------------------------------------------------
-
-/// Enables KLogging for the given key string.
-inline void EnableKLog(const Str &s) {
-    KLogger::SetKeyString(s);
-}

@@ -2,7 +2,7 @@
 #include "Panes/DropdownPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Tests/Panes/PaneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -59,8 +59,7 @@ TEST_F(DropdownPaneTest, SetChoices) {
     EXPECT_EQ(1U,            change_count);
     EXPECT_EQ("Efgh Ijklmn", cur_choice);
 
-    TEST_THROW(dd->SetChoiceFromString("Bad Choice"), AssertException,
-               "No such choice");
+    TEST_ASSERT(dd->SetChoiceFromString("Bad Choice"), "No such choice");
 }
 
 TEST_F(DropdownPaneTest, IsValid) {

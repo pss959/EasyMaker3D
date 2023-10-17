@@ -1,7 +1,7 @@
 #include <source_location>
 
 #include "Tests/TestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Tests/Util/FakeFileSystem.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
@@ -140,9 +140,9 @@ TEST_F(FilePathTest, AddExtension) {
     EXPECT_EQ(".tuv",                 p.GetExtension());
 
     // Bad extensions.
-    TEST_THROW(p.AddExtension(""),    AssertException, "extension");
-    TEST_THROW(p.AddExtension("."),   AssertException, "extension");
-    TEST_THROW(p.AddExtension("foo"), AssertException, "extension");
+    TEST_ASSERT(p.AddExtension(""),    "extension");
+    TEST_ASSERT(p.AddExtension("."),   "extension");
+    TEST_ASSERT(p.AddExtension("foo"), "extension");
 }
 
 TEST_F(FilePathTest, AppendRelative) {

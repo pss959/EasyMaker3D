@@ -10,7 +10,7 @@
 #include "SG/Reader.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/TempFile.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/String.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains the

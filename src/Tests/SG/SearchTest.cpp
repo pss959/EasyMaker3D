@@ -7,7 +7,7 @@
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -20,8 +20,7 @@ TEST_F(SearchTest, EmptyScene) {
     EXPECT_TRUE(SG::FindNodePathInScene(*scene, *node).empty());
     EXPECT_TRUE(SG::FindNodePathInScene(*scene, "NotFound", true).empty());
 
-    TEST_THROW(SG::FindNodePathInScene(*scene, "Anything"),
-               AssertException, "not found");
+    TEST_ASSERT(SG::FindNodePathInScene(*scene, "Anything"), "not found");
 }
 
 TEST_F(SearchTest, OneLevel) {
@@ -129,16 +128,14 @@ TEST_F(SearchTest, MultiLevel) {
     EXPECT_TRUE(SG::FindNodePathUnderNode(node, "NotFound", true).empty());
 
     // Wrong type.
-    TEST_THROW(SG::FindTypedNodeInScene<SG::TextNode>(*scene, "Level1a"),
-               AssertException, "Typed Node");
-    TEST_THROW(SG::FindTypedNodeUnderNode<SG::TextNode>(*node, "Level2c"),
-               AssertException, "Typed Node");
+    TEST_ASSERT(SG::FindTypedNodeInScene<SG::TextNode>(*scene, "Level1a"),
+                "Typed Node");
+    TEST_ASSERT(SG::FindTypedNodeUnderNode<SG::TextNode>(*node, "Level2c"),
+                "Typed Node");
 
     // Search fails because of disabled flag.
-    TEST_THROW(SG::FindNodeInScene(*scene, "Level1c"),
-               AssertException, "not found");
-    TEST_THROW(SG::FindNodeInScene(*scene, "Level2e"),
-               AssertException, "not found");
+    TEST_ASSERT(SG::FindNodeInScene(*scene, "Level1c"), "not found");
+    TEST_ASSERT(SG::FindNodeInScene(*scene, "Level2e"), "not found");
 }
 
 TEST_F(SearchTest, FindNodes) {
@@ -237,8 +234,8 @@ TEST_F(SearchTest, FindShape) {
 
     // Errors.
     EXPECT_NULL(SG::FindShapeInNode(*node, "NoSuchShape"));
-    TEST_THROW(SG::FindTypedShapeInNode<SG::Box>(*node, "CylShape"),
-               AssertException, "Typed Shape");
+    TEST_ASSERT(SG::FindTypedShapeInNode<SG::Box>(*node, "CylShape"),
+                "Typed Shape");
 }
 
 TEST_F(SearchTest, AssertErrors) {
@@ -246,12 +243,10 @@ TEST_F(SearchTest, AssertErrors) {
     EXPECT_NOT_NULL(scene);
     EXPECT_NOT_NULL(scene->GetRootNode());
 
-    TEST_THROW(SG::FindNodeInScene(*scene, "Anything"),
-               AssertException, "not found");
-    TEST_THROW(SG::FindNodePathInScene(*scene, "Anything"),
-               AssertException, "not found");
-    TEST_THROW(SG::FindNodePathUnderNode(scene->GetRootNode(), "Anything"),
-               AssertException, "not found under node");
-    TEST_THROW(SG::FindNodeUnderNode(*scene->GetRootNode(), "Anything"),
-               AssertException, "not found under node");
+    TEST_ASSERT(SG::FindNodeInScene(*scene, "Anything"), "not found");
+    TEST_ASSERT(SG::FindNodePathInScene(*scene, "Anything"), "not found");
+    TEST_ASSERT(SG::FindNodePathUnderNode(scene->GetRootNode(), "Anything"),
+                "not found under node");
+    TEST_ASSERT(SG::FindNodeUnderNode(*scene->GetRootNode(), "Anything"),
+                "not found under node");
 }

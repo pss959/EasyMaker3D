@@ -1,6 +1,6 @@
 #include "Selection/SelPath.h"
 #include "Tests/SelectionTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 class SelPathTest : public SelectionTestBase {};
@@ -8,9 +8,9 @@ class SelPathTest : public SelectionTestBase {};
 TEST_F(SelPathTest, Default) {
     SelPath path;
     EXPECT_TRUE(path.empty());
-    TEST_THROW(path.Validate(),       AssertException, "empty");
-    TEST_THROW(path.GetModel(),       AssertException, "empty");
-    TEST_THROW(path.GetParentModel(), AssertException, "size");
+    TEST_ASSERT(path.Validate(),       "empty");
+    TEST_ASSERT(path.GetModel(),       "empty");
+    TEST_ASSERT(path.GetParentModel(), "size");
 }
 
 TEST_F(SelPathTest, WithRootAndChild) {

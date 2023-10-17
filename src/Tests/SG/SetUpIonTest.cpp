@@ -9,7 +9,7 @@
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
@@ -153,8 +153,7 @@ TEST_F(SetUpIonTest, Uniforms) {
     block0->SetMatrix4fUniformValue("UM4", Matrix4f::Identity());
 
     // Test bad uniform name.
-    TEST_THROW(block0->SetIntUniformValue("NoSuch", 12),
-               AssertException, "No such uniform");
+    TEST_ASSERT(block0->SetIntUniformValue("NoSuch", 12), "No such uniform");
 
     // Test changing the sub-image name in UniformBlock.
     EXPECT_EQ("Sub1", block0->GetSubImageName());

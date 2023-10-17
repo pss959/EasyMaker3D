@@ -1,7 +1,7 @@
 #include "Base/Event.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Tests/Trackers/TrackerTestBase.h"
 #include "Trackers/PinchTracker.h"
 #include "Util/Assert.h"
@@ -76,7 +76,7 @@ Event PinchTrackerTest::GetWidgetEvent(const PinchTracker &pt) {
 
 TEST_F(PinchTrackerTest, Defaults) {
     // Constructing with the wrong Actuator should assert.
-    TEST_THROW(PinchTracker(Actuator::kMouse), AssertException, "actuator");
+    TEST_ASSERT(PinchTracker(Actuator::kMouse), "actuator");
 
     PinchTracker lpt(Actuator::kLeftPinch);
     EXPECT_ENUM_EQ(Actuator::kLeftPinch,           lpt.GetActuator());

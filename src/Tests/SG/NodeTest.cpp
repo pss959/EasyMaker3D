@@ -5,7 +5,7 @@
 #include "SG/Node.h"
 #include "SG/UnscopedNode.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -172,7 +172,7 @@ TEST_F(NodeTest, Children) {
     parent->RemoveChild(b);
     test_it("ACD");
 
-    TEST_THROW(parent->RemoveChild(b), AssertException, "index >= 0");
+    TEST_ASSERT(parent->RemoveChild(b), "index >= 0");
 
     parent->ClearChildren();
     test_it("");

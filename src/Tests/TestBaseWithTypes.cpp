@@ -5,7 +5,7 @@
 #include "App/RegisterTypes.h"
 #include "Parser/Exception.h"
 #include "Parser/Parser.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 TestBaseWithTypes::TestBaseWithTypes() {
@@ -41,7 +41,7 @@ void TestBaseWithTypes::TestInvalid(const Str &contents, const Str &error) {
                 ParseObject(str);
             }
             catch (const Parser::Exception &ex) {
-                EXPECT_THAT(ex.what(), ::testing::HasSubstr(error))
+                EXPECT_STR_HAS(ex.what(), error)
                     << "\nFor input: '" << str << "'";
                 throw;
             }

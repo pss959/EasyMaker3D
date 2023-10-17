@@ -1,6 +1,6 @@
 #include "Selection/Selection.h"
 #include "Tests/SelectionTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 class SelectionTest : public SelectionTestBase {};
@@ -9,7 +9,7 @@ TEST_F(SelectionTest, Default) {
     Selection sel;
     EXPECT_FALSE(sel.HasAny());
     EXPECT_EQ(0U, sel.GetCount());
-    TEST_THROW(sel.GetPrimary(), AssertException, "HasAny");
+    TEST_ASSERT(sel.GetPrimary(), "HasAny");
     EXPECT_TRUE(sel.GetPaths().empty());
     EXPECT_TRUE(sel.GetModels().empty());
 }

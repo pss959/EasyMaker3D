@@ -2,7 +2,7 @@
 #include "SG/Node.h"
 #include "SG/Object.h"
 #include "Tests/TestBaseWithTypes.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 
 // Note: this class is named with an "SG" prefix to distinguish tests from
 // those for Parser::Object.
@@ -100,7 +100,7 @@ TEST_F(SGObjectTest, Observers) {
     EXPECT_FALSE(b->IsObserving(*a));
 
     // Test errors.
-    TEST_THROW(a->Unobserve(*b), AssertException, "Failed to Unobserve");
+    TEST_ASSERT(a->Unobserve(*b), "Failed to Unobserve");
     a->Observe(*b);
-    TEST_THROW(a->Observe(*b),   AssertException, "Failed to Observe");
+    TEST_ASSERT(a->Observe(*b),   "Failed to Observe");
 }

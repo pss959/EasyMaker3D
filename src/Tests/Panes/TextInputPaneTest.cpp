@@ -4,7 +4,7 @@
 #include "Panes/TextInputPane.h"
 #include "Place/ClickInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Tests/Widgets/DragTester.h"
 #include "Util/Assert.h"
 #include "Widgets/DraggableWidget.h"
@@ -276,8 +276,8 @@ TEST_F(TextInputPaneTest, VirtualKeyboard) {
     vk->ProcessTextAction(TextAction::kToggleShift);
     EXPECT_EQ("Abcdef", input.GetText());
 
-    TEST_THROW(vk->ProcessTextAction(TextAction::kInsert),
-               AssertException, "kInsert should use InsertText");
+    TEST_ASSERT(vk->ProcessTextAction(TextAction::kInsert),
+               "kInsert should use InsertText");
 
     input.GetInteractor()->Deactivate();
 }

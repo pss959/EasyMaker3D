@@ -10,6 +10,7 @@
 #include "Debug/Dump3dv.h"
 #include "Math/Linear.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -49,7 +50,7 @@ class MeshSlicingTest : public TestBase {
     };
 
     //// Enables slicing logging.
-    void EnableSliceLogging() { EnableKLog("X"); }
+    void EnableSliceLogging() { KLogger::SetKeyString("X"); }
 
     /// This can be used in tests to dump a TriMesh in 3dv format to /tmp.
     void DumpTriMesh(const Str &file_name, const TriMesh &mesh,

@@ -1,6 +1,6 @@
 ﻿#include "Math/Profile.h"
 #include "Tests/TestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -31,12 +31,12 @@ TEST_F(ProfileTest, Fixed0) {
 
     EXPECT_TRUE(p.IsFixedPoint(0));
     EXPECT_TRUE(p.IsFixedPoint(1));
-    TEST_THROW(p.IsFixedPoint(2), AssertException, "index");
+    TEST_ASSERT(p.IsFixedPoint(2), "index");
 
     EXPECT_EQ(p0, p.GetPreviousPoint(1));
     EXPECT_EQ(p1, p.GetNextPoint(0));
-    TEST_THROW(p.GetPreviousPoint(0), AssertException, "index");
-    TEST_THROW(p.GetNextPoint(1),     AssertException, "index");
+    TEST_ASSERT(p.GetPreviousPoint(0), "index");
+    TEST_ASSERT(p.GetNextPoint(1),     "index");
 }
 
 TEST_F(ProfileTest, Fixed1) {
@@ -60,14 +60,14 @@ TEST_F(ProfileTest, Fixed1) {
     EXPECT_TRUE(p.IsFixedPoint(0));
     EXPECT_FALSE(p.IsFixedPoint(1));
     EXPECT_TRUE(p.IsFixedPoint(2));
-    TEST_THROW(p.IsFixedPoint(3), AssertException, "index");
+    TEST_ASSERT(p.IsFixedPoint(3), "index");
 
     EXPECT_EQ(p0, p.GetPreviousPoint(1));
     EXPECT_EQ(pm, p.GetPreviousPoint(2));
     EXPECT_EQ(pm, p.GetNextPoint(0));
     EXPECT_EQ(p1, p.GetNextPoint(1));
-    TEST_THROW(p.GetPreviousPoint(0), AssertException, "index");
-    TEST_THROW(p.GetNextPoint(2),     AssertException, "index");
+    TEST_ASSERT(p.GetPreviousPoint(0), "index");
+    TEST_ASSERT(p.GetNextPoint(2),     "index");
 }
 
 TEST_F(ProfileTest, Closed) {
@@ -88,7 +88,7 @@ TEST_F(ProfileTest, Closed) {
     EXPECT_FALSE(p.IsFixedPoint(1));
     EXPECT_FALSE(p.IsFixedPoint(2));
     EXPECT_FALSE(p.IsFixedPoint(3));
-    TEST_THROW(p.IsFixedPoint(4), AssertException, "index");
+    TEST_ASSERT(p.IsFixedPoint(4), "index");
 
     EXPECT_EQ(pts[3], p.GetPreviousPoint(0));
     EXPECT_EQ(pts[0], p.GetPreviousPoint(1));
@@ -98,8 +98,8 @@ TEST_F(ProfileTest, Closed) {
     EXPECT_EQ(pts[2], p.GetNextPoint(1));
     EXPECT_EQ(pts[3], p.GetNextPoint(2));
     EXPECT_EQ(pts[0], p.GetNextPoint(3));
-    TEST_THROW(p.GetPreviousPoint(4), AssertException, "index");
-    TEST_THROW(p.GetNextPoint(4),     AssertException, "index");
+    TEST_ASSERT(p.GetPreviousPoint(4), "index");
+    TEST_ASSERT(p.GetNextPoint(4),     "index");
 
     // Append a point.
     const Point2f p4(.5f, .5f);
@@ -117,7 +117,7 @@ TEST_F(ProfileTest, Closed) {
     EXPECT_FALSE(p.IsFixedPoint(2));
     EXPECT_FALSE(p.IsFixedPoint(3));
     EXPECT_FALSE(p.IsFixedPoint(4));
-    TEST_THROW(p.IsFixedPoint(5), AssertException, "index");
+    TEST_ASSERT(p.IsFixedPoint(5), "index");
 
     // Append another point by inserting at the end.
     p.InsertPoint(5U, Point2f(.3f, .3f));
@@ -182,11 +182,11 @@ TEST_F(ProfileTest, Edit) {
     EXPECT_EQ(p1,                p.GetPoints()[2]);
 
     // Test error cases:
-    TEST_THROW(p.RemovePoint(0), AssertException, "Fixed");
-    TEST_THROW(p.RemovePoint(2), AssertException, "Fixed");
-    TEST_THROW(p.RemovePoint(1), AssertException, "min_count");
-    TEST_THROW(p.SetPoint(0,    Point2f(.5f, .5f)), AssertException, "Fixed");
-    TEST_THROW(p.SetPoint(2,    Point2f(.5f, .5f)), AssertException, "Fixed");
-    TEST_THROW(p.SetPoint(3,    Point2f(.5f, .5f)), AssertException, "index");
-    TEST_THROW(p.InsertPoint(3, Point2f(.5f, .5f)), AssertException, "index");
+    TEST_ASSERT(p.RemovePoint(0), "Fixed");
+    TEST_ASSERT(p.RemovePoint(2), "Fixed");
+    TEST_ASSERT(p.RemovePoint(1), "min_count");
+    TEST_ASSERT(p.SetPoint(0,    Point2f(.5f, .5f)), "Fixed");
+    TEST_ASSERT(p.SetPoint(2,    Point2f(.5f, .5f)), "Fixed");
+    TEST_ASSERT(p.SetPoint(3,    Point2f(.5f, .5f)), "index");
+    TEST_ASSERT(p.InsertPoint(3, Point2f(.5f, .5f)), "index");
 }

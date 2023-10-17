@@ -3,7 +3,7 @@
 #include "SG/IonContext.h"
 #include "SG/ProceduralImage.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 
 /// \ingroup Tests
 class ImageTest : public SceneTestBase {};

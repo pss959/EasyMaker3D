@@ -8,7 +8,7 @@
 #include "SG/Torus.h"
 #include "SG/Tube.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 
 /// \ingroup Tests
 class ShapeTest : public SceneTestBase {};

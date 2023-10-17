@@ -4,7 +4,7 @@
 #include "Managers/FeedbackManager.h"
 #include "Parser/Registry.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -150,19 +150,16 @@ TEST_F(FeedbackManagerTest, ActivateDeactivateWithKey) {
     auto b = fm.ActivateWithKey<BFeedback>("SomeKeyB");
 
     // No duplicate keys.
-    TEST_THROW(fm.ActivateWithKey<AFeedback>("SomeKeyA"), AssertException,
-               "contains(key)");
+    TEST_ASSERT(fm.ActivateWithKey<AFeedback>("SomeKeyA"), "contains(key)");
 
     // Wrong type for key.
-    TEST_THROW(fm.DeactivateWithKey<BFeedback>("SomeKeyA"), AssertException,
-               "instance");
+    TEST_ASSERT(fm.DeactivateWithKey<BFeedback>("SomeKeyA"), "instance");
 
     fm.DeactivateWithKey<AFeedback>("SomeKeyA");
     fm.DeactivateWithKey<BFeedback>("SomeKeyB");
 
     // Key no longer exists.
-    TEST_THROW(fm.DeactivateWithKey<AFeedback>("SomeKeyA"), AssertException,
-               "instance");
+    TEST_ASSERT(fm.DeactivateWithKey<AFeedback>("SomeKeyA"), "instance");
 }
 
 TEST_F(FeedbackManagerTest, SceneBounds) {
@@ -170,7 +167,7 @@ TEST_F(FeedbackManagerTest, SceneBounds) {
     auto b0 = fm.ActivateWithKey<BFeedback>("BKey");
 
     // No function set.
-    TEST_THROW(a0->GetSceneBounds(), AssertException, "scene_bounds_func_");
+    TEST_ASSERT(a0->GetSceneBounds(), "scene_bounds_func_");
 
     // Setting function should update existing active instances.
     auto sb_func = [](){ return Bounds(Vector3f(10, 20, 30)); };

@@ -3,7 +3,7 @@
 #include "Items/Touchable.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Tests/Trackers/TrackerTestBase.h"
 #include "Tests/Trackers/TestTouchable.h"
 #include "Trackers/TouchTracker.h"
@@ -76,7 +76,7 @@ Event TouchTrackerTest::GetEvent(const TouchTracker &ttr, float z) {
 
 TEST_F(TouchTrackerTest, Defaults) {
     // Constructing with the wrong Actuator should assert.
-    TEST_THROW(TouchTracker(Actuator::kMouse), AssertException, "actuator");
+    TEST_ASSERT(TouchTracker(Actuator::kMouse), "actuator");
 
     TouchTracker lttr(Actuator::kLeftTouch);
     EXPECT_ENUM_EQ(Actuator::kLeftTouch,            lttr.GetActuator());

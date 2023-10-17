@@ -6,7 +6,7 @@
 #include "SG/TextNode.h"
 #include "SG/UnscopedNode.h"
 #include "Tests/TestBaseWithTypes.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 
 /// \ingroup Tests
 class NodePathTest : public TestBaseWithTypes {};

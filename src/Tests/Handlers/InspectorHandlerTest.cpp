@@ -2,7 +2,7 @@
 #include "Handlers/InspectorHandler.h"
 #include "Items/Inspector.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -48,7 +48,7 @@ TEST_F(InspectorHandlerTest, Events) {
     InspectorHandler ih;
 
     // Cannot handle events without an Inspector installed.
-    TEST_THROW(ih.HandleEvent(event), AssertException, "inspector");
+    TEST_ASSERT(ih.HandleEvent(event), "inspector");
     ih.SetInspector(insp);
 
     // Activate the Inspector with a Box node.

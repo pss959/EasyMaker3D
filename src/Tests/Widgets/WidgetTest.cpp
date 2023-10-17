@@ -1,7 +1,7 @@
 #include "Place/DragInfo.h"
 #include "Place/TouchInfo.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 #include "Widgets/Widget.h"
 
@@ -205,10 +205,10 @@ TEST_F(WidgetTest, PlaceTarget) {
     Point3f        pos0, pos1;
     Vector3f       dir;
     Dimensionality dims;
-    TEST_THROW(tw->PlacePointTarget(DragInfo(), pos0, dir, dims),
-               AssertException, "should not be called");
-    TEST_THROW(tw->PlaceEdgeTarget(DragInfo(), 10, pos0, pos1),
-               AssertException, "should not be called");
+    TEST_ASSERT(tw->PlacePointTarget(DragInfo(), pos0, dir, dims),
+                "should not be called");
+    TEST_ASSERT(tw->PlaceEdgeTarget(DragInfo(), 10, pos0, pos1),
+                "should not be called");
 }
 
 TEST_F(WidgetTest, IsTouched) {

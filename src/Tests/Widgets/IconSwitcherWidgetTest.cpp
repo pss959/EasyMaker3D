@@ -1,5 +1,5 @@
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 #include "Widgets/IconSwitcherWidget.h"
 
@@ -47,8 +47,7 @@ IconSwitcherWidget {
     EXPECT_FALSE(isw->GetChildren()[1]->IsEnabled());
     EXPECT_FALSE(isw->GetChildren()[2]->IsEnabled());
 
-    TEST_THROW(isw->SetIndexByName("NoSuchChild"),
-               AssertException, "No child with name");
+    TEST_ASSERT(isw->SetIndexByName("NoSuchChild"), "No child with name");
 }
 
 TEST_F(IconSwitcherWidgetTest, FitIntoCube) {

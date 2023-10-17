@@ -1,4 +1,4 @@
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 TEST(AssertTest, Pass) {
@@ -7,6 +7,6 @@ TEST(AssertTest, Pass) {
 }
 
 TEST(AssertTest, Fail) {
-    TEST_THROW(ASSERT(4 == 3), AssertException, "4 == 3");
-    TEST_THROW(ASSERTM(5 > 6, "Test message"), AssertException, "Test message");
+    TEST_ASSERT(ASSERT(4 == 3), "4 == 3");
+    TEST_ASSERT(ASSERTM(5 > 6, "Test message"), "Test message");
 }

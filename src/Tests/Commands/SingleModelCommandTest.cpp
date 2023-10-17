@@ -2,7 +2,7 @@
 #include "Math/Types.h"
 #include "Selection/Selection.h"
 #include "Tests/SelectionTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 /// \ingroup Tests
@@ -22,7 +22,7 @@ TEST_F(SingleModelCommandTest, SetFromSelection) {
     auto cnc = Command::CreateCommand<ChangeNameCommand>();
 
     Selection sel;
-    TEST_THROW(cnc->SetFromSelection(sel), AssertException, "GetCount() == 1U");
+    TEST_ASSERT(cnc->SetFromSelection(sel), "GetCount() == 1U");
 
     // Create a selection with one Model.
     sel.Add(BuildSelPath(ModelVec{ root, par0 }));
@@ -31,5 +31,5 @@ TEST_F(SingleModelCommandTest, SetFromSelection) {
 
     // More than one Model is an error..
     sel.Add(BuildSelPath(ModelVec{ root, par1, box1 }));
-    TEST_THROW(cnc->SetFromSelection(sel), AssertException, "GetCount() == 1U");
+    TEST_ASSERT(cnc->SetFromSelection(sel), "GetCount() == 1U");
 }

@@ -9,7 +9,7 @@
 #include "SG/TextNode.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/TempFile.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Tuning.h"
@@ -50,7 +50,7 @@ TEST_F(TextTest, SetUpFont) {
     // No sizes or font image until SetUpIon() is called.
     EXPECT_EQ(Vector3f::Zero(), text->GetTextBounds().GetSize());
     EXPECT_EQ(Vector2f::Zero(), text->GetTextSize());
-    TEST_THROW(text->GetLineSpacingFactor(), AssertException, "font_image");
+    TEST_ASSERT(text->GetLineSpacingFactor(), "font_image");
 
     SetUpIonForNode(*text);
 

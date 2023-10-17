@@ -4,7 +4,7 @@
 #include "Math/Types.h"
 #include "SG/ColorMap.h"
 #include "Tests/TestBaseWithTypes.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
@@ -17,20 +17,17 @@ TEST_F(ColorMapTest, Default) {
     EXPECT_EQ(Color::White(), SG::ColorMap::SGetColor("noname"));
 
     // No instance => assertion failure.
-    TEST_THROW(SG::ColorMap::SGetColorForDimension(1), AssertException,
-               "instance");
+    TEST_ASSERT(SG::ColorMap::SGetColorForDimension(1), "instance");
 
     auto cm = CreateObject<SG::ColorMap>();
 
     EXPECT_TRUE(cm->GetNamedColors().empty());
 
-    TEST_THROW(cm->GetColor("badname"), AssertException, "Missing color");
-    TEST_THROW(cm->GetColorForDimension(0), AssertException, "Missing color");
+    TEST_ASSERT(cm->GetColor("badname"),                "Missing color");
+    TEST_ASSERT(cm->GetColorForDimension(0),            "Missing color");
 
-    TEST_THROW(SG::ColorMap::SGetColor("noname"), AssertException,
-               "Missing color");
-    TEST_THROW(SG::ColorMap::SGetColorForDimension(1), AssertException,
-               "Missing color");
+    TEST_ASSERT(SG::ColorMap::SGetColor("noname"),      "Missing color");
+    TEST_ASSERT(SG::ColorMap::SGetColorForDimension(1), "Missing color");
 }
 
 TEST_F(ColorMapTest, Resource) {

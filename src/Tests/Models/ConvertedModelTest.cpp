@@ -3,7 +3,7 @@
 #include "Models/BoxModel.h"
 #include "Models/TextModel.h"
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
@@ -156,12 +156,8 @@ TEST_F(ConvertedModelTest, Errors) {
     // called directly.
     auto box      = Model::CreateModel<BoxModel>();
     auto tapered = Model::CreateModel<TaperedModel>();
-    TEST_THROW(tapered->AddChildModel(box), AssertException,
-               "should not be called");
-    TEST_THROW(tapered->InsertChildModel(0, box), AssertException,
-               "should not be called");
-    TEST_THROW(tapered->RemoveChildModel(0), AssertException,
-               "should not be called");
-    TEST_THROW(tapered->ReplaceChildModel(0, box), AssertException,
-               "should not be called");
+    TEST_ASSERT(tapered->AddChildModel(box),        "should not be called");
+    TEST_ASSERT(tapered->InsertChildModel(0, box),  "should not be called");
+    TEST_ASSERT(tapered->RemoveChildModel(0),       "should not be called");
+    TEST_ASSERT(tapered->ReplaceChildModel(0, box), "should not be called");
 }

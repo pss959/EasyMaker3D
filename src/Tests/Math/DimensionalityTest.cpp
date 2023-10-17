@@ -1,5 +1,5 @@
 #include "Math/Dimensionality.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 TEST(DimensionalityTest, DefaultConstructor) {
@@ -135,7 +135,7 @@ TEST(DimensionalityTest, StringConstructor) {
         EXPECT_TRUE(d.HasDimension(1));
         EXPECT_TRUE(d.HasDimension(2));
     }
-    TEST_THROW(Dimensionality d("UV"), AssertException, "Invalid character");
+    TEST_ASSERT(Dimensionality d("UV"), "Invalid character");
 }
 
 TEST(DimensionalityTest, GetAsString) {

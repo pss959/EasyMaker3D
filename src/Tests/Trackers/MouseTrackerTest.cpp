@@ -2,7 +2,7 @@
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
 #include "SG/WindowCamera.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Tests/Trackers/TrackerTestBase.h"
 #include "Trackers/MouseTracker.h"
 #include "Util/Assert.h"
@@ -59,8 +59,7 @@ Event MouseTrackerTest::GetEvent(bool is_press) {
 
 TEST_F(MouseTrackerTest, Defaults) {
     // Constructing with the wrong Actuator should assert.
-    TEST_THROW(MouseTracker(Actuator::kLeftPinch), AssertException,
-               "Actuator::kMouse");
+    TEST_ASSERT(MouseTracker(Actuator::kLeftPinch), "Actuator::kMouse");
 
     MouseTracker mt(Actuator::kMouse);
     EXPECT_ENUM_EQ(Actuator::kMouse,      mt.GetActuator());

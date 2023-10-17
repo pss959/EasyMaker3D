@@ -2,7 +2,7 @@
 #include "Managers/CommandManager.h"
 #include "Tests/Commands/TestCommand.h"
 #include "Tests/TestBaseWithTypes.h"
-#include "Tests/Testing.h"
+#include "Tests/Testing2.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ TEST_F(CommandManagerTest, UndoRedo) {
 
     EXPECT_FALSE(cm.CanUndo());
     EXPECT_FALSE(cm.CanRedo());
-    TEST_THROW(cm.GetLastCommand(), AssertException, "CanUndo");
+    TEST_ASSERT(cm.GetLastCommand(), "CanUndo");
 
     cm.AddAndDo(tc0);
     EXPECT_EQ((StrVec{ "TC0" }), do_names);
