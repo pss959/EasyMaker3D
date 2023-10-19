@@ -12,7 +12,9 @@
 #include "Util/Tuning.h"
 #include "Viewers/IRenderer.h"
 
-GLFWViewer::GLFWViewer() : ws_(new GLFWWindowSystem), frustum_(new Frustum) {
+GLFWViewer::GLFWViewer(const ErrorFunc &error_func) :
+    error_func_(error_func), ws_(new GLFWWindowSystem), frustum_(new Frustum) {
+    ASSERT(error_func);
 }
 
 GLFWViewer::~GLFWViewer() {
@@ -20,11 +22,8 @@ GLFWViewer::~GLFWViewer() {
 }
 
 bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
-    auto error_func = [](const Str &error){
-        std::cerr << "*** " << error << "\n";  // XXXX
-    };
     const Str title = TK::kApplicationName + " " + TK::kVersionString;
-    if (! ws_->Init(error_func) || ! ws_->CreateWindow(size, title))
+    if (! ws_->Init(error_func_) || ! ws_->CreateWindow(size, title))
         return false;
 
     ws_->SetWindowPosition(Vector2i(600, 100));

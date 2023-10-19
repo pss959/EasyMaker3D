@@ -630,7 +630,10 @@ void Application::Impl_::InitTypes_() {
 
 bool Application::Impl_::InitViewers_() {
     // Required GLFW viewer.
-    glfw_viewer_.reset(new GLFWViewer);
+    auto error_func = [](const Str &error){
+        std::cerr << "*** " << error << "\n";
+    };
+    glfw_viewer_.reset(new GLFWViewer(error_func));
     if (! glfw_viewer_->Init(options_.window_size, options_.fullscreen)) {
         glfw_viewer_.reset();
         return false;

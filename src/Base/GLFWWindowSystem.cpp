@@ -12,6 +12,7 @@
 
 #include "Base/Event.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -264,7 +265,9 @@ void GLFWWindowSystem::RetrieveEvents(const EventOptions &options,
 
     is_mouse_motion_enabled_ = ! options.ignore_mouse_motion;
 
-    // XXXX DO SOMETHING?
+    // Add pending events.
+    Util::AppendVector(pending_events_, events);
+    pending_events_.clear();
 }
 
 void GLFWWindowSystem::FlushPendingEvents() {

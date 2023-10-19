@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "Base/IEmitter.h"
 #include "Base/IWindowSystem.h"
 #include "Base/Memory.h"
@@ -17,7 +19,12 @@ namespace SG { DECL_SHARED_PTR(WindowCamera); }
 /// \ingroup Viewers
 class GLFWViewer : public Viewer, public IEmitter {
   public:
-    GLFWViewer();
+    typedef std::function<void(const Str &)> ErrorFunc;
+
+    /// The constructor is passed a function to call when an error occurs. It
+    /// is passed a string containing the error message.
+    explicit GLFWViewer(const ErrorFunc &error_func);
+
     virtual ~GLFWViewer();
 
     /// Replaces the GLFWWindowSystem used by the GLFWViewer with a different
@@ -65,6 +72,7 @@ class GLFWViewer : public Viewer, public IEmitter {
     }
 
   private:
+    ErrorFunc        error_func_;
     IWindowSystemPtr ws_;
 
     /// Stores the camera used to set up the Frustum.

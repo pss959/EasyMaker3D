@@ -22,7 +22,6 @@
 #include <ion/remote/tracinghandler.h>
 #endif
 
-
 #include "Base/FBTarget.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
