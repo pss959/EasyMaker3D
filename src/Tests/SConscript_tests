@@ -300,6 +300,7 @@ test_source_dict = {
         'SearchTest',
         'SetUpIonTest',
         'ShaderProgramTest',
+        'ShadowPassTest',
         'ShapeTest',
         'StateTableTest',
         'TextTest',

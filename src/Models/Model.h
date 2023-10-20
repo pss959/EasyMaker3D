@@ -108,9 +108,7 @@ class Model : public ClickableWidget {
 
     /// Returns a vector of fields intrinsic to this derived Model instance.
     /// This is used only to print extra information when debugging.
-    const std::vector<Parser::Field *> GetModelFields() const {
-        return model_fields_;
-    }
+    const std::vector<Parser::Field *> GetModelFields() const;
 
     // ------------------------------------------------------------------------
     // Naming.

@@ -178,6 +178,12 @@ ModelPtr Model::CreateClone() const {
     return CloneTyped<Model>(false);
 }
 
+// LCOV_EXCL_START [debug only]
+const std::vector<Parser::Field *> Model::GetModelFields() const {
+    return model_fields_;
+}
+// LCOV_EXCL_STOP
+
 void Model::MoveCenterTo(const Point3f &p) {
     const Point3f obj_center = GetScaledBounds().GetCenter();
     SetTranslation(p - GetRotation() * obj_center);
