@@ -19,15 +19,29 @@ class ToolTestBase : public SceneTestBase {
 
     virtual void TearDown() override;
 
-    /// Creates a Tool of the given type and sets it up with a Tool::Context,
-    /// which it stores in #context. The name is assumed to be both the type
-    /// name and the name of the Tool object itself.
+    /// \name Initialization
+    ///@{
+
+    /// Reads a Scene containing all the Tools and everything necessary to set
+    /// them up. Returns the Scene. Any nodes in the \p extra_children string
+    /// are added to the top-level child Node in the contents.
+    SG::ScenePtr ReadToolScene(const Str &extra_children = "");
+
+    /// Calls ReadToolScene() and then creates a Tool of the given type,
+    /// setting it up with a Tool::Context stored in #context. The name is
+    /// assumed to be both the type name and the name of the Tool object
+    /// itself.
     template <typename T> std::shared_ptr<T> InitTool(const Str &name) {
         static_assert(std::derived_from<T, Tool> == true);
-        auto tool = ReadRealNode<T>(GetContentsString_(), name);
-        SetUpTool_(tool);
+        auto tool = SG::FindTypedNodeInScene<T>(*ReadToolScene(), name);
+        SetUpTool(tool);
         return tool;
     }
+
+    /// Sets up a Tool with a Tool::Context.
+    void SetUpTool(const ToolPtr &tool);
+
+    ///@}
 
     /// \name Command Testing
     /// Each of these can be used to verify that a Tool has added a specific
@@ -83,11 +97,6 @@ class ToolTestBase : public SceneTestBase {
     void SetIsAxisAligned(bool is_aligned);
 
   private:
-    static Str GetContentsString_();
-
-    /// Sets up a Tool with a Tool::Context.
-    void SetUpTool_(const ToolPtr &tool);
-
     /// Verifies that the CommandManager has \p count Commands and returns the
     /// last one.
     const Command * CheckNCommands_(size_t count);

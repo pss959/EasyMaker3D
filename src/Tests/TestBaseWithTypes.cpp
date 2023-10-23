@@ -10,6 +10,9 @@
 
 TestBaseWithTypes::TestBaseWithTypes() {
     RegisterTypes();
+
+    // Test that calling it again does not hurt.
+    RegisterTypes();
 }
 
 TestBaseWithTypes::~TestBaseWithTypes() {

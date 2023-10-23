@@ -48,7 +48,7 @@ class SceneTestBase : public TestBaseWithTypes {
     std::shared_ptr<T> ReadRealNode(const Str &contents, const Str &node_name,
                                     bool set_up_ion = true) {
         static_assert(std::derived_from<T, SG::Node> == true);
-        scene_ = ReadRealScene(contents, set_up_ion);
+        ReadRealScene(contents, set_up_ion);
         return SG::FindTypedNodeInScene<T>(*scene_, node_name);
     }
 

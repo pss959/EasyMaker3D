@@ -1,5 +1,6 @@
-from os      import environ
-from os.path import basename
+from itertools import chain
+from os        import environ
+from os.path   import basename
 
 Import('ion_env', 'test_env')
 
@@ -28,6 +29,10 @@ ion_test_sources = [
 # arrangement assumes that all tests in a source file are named the same as the
 # source file.
 test_source_dict = {
+    'App' : [
+        'SceneLoaderTest',
+        'ToolBoxTest',
+    ],
     'Base' : [
         'ActionMapTest',
         'EventTest',
@@ -335,6 +340,7 @@ test_source_dict = {
         'RotationToolTest',
         'ScaleToolTest',
         'TaperToolTest',
+        'TestToolContext',
         'TextToolTest',
         'ToolTestBase',
         'TorusToolTest',
@@ -460,6 +466,11 @@ all_categories = ', '.join(test_source_dict.keys())
 test_env.Alias('ListTestCategories',
                test_env.Command('phony', [],
                                 f'echo "Test categories: {all_categories}"'))
+
+# Special alias for listing tests.
+all_tests = '\\n '.join(sorted(list(chain(*test_source_dict.values()))))
+test_env.Alias('ListTests',
+               test_env.Command('phony', [], f'echo "Tests:\\n {all_tests}"'))
 
 # -----------------------------------------------------------------------------
 # Generating coverage results. (Linux platform, 'cov' mode only)

@@ -3,6 +3,7 @@
 #include <exception>
 
 #include "SG/Reader.h"
+#include "Util/General.h"
 
 SceneLoader::SceneLoader() :
     file_map_(new SG::FileMap),
@@ -27,8 +28,12 @@ SG::ScenePtr SceneLoader::LoadScene(const FilePath &path) {
         scene_->SetUpIon(ion_context_);
     }
     catch (std::exception &ex) {
-        std::cerr << "*** Caught exception loading scene:\n"
-                  << ex.what() << "\n";
+        // LCOV_EXCL_START [not in tests]
+        if (Util::app_type != Util::AppType::kUnitTest) {
+            std::cerr << "*** Caught exception loading scene:\n"
+                      << ex.what() << "\n";
+        }
+        // LCOV_EXCL_STOP
         scene_.reset();
     }
     return scene_;

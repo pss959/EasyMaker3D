@@ -25,50 +25,9 @@ void ToolTestBase::TearDown() {
         context->board->PopPanel(result);
 }
 
-void ToolTestBase::AddCommandFunction(
-    const Str &name, const std::function<void(const Command &)> &func) {
-    ASSERT(context);
-    ASSERT(func);
-    auto exec_func = [&, func](Command &cmd, Command::Op op){
-        if (op == Command::Op::kDo)
-            func(cmd);
-    };
-    context->command_manager->RegisterFunction(name, exec_func);
-}
-
-void ToolTestBase::AddDummyCommandFunction(const Str &name) {
-    ASSERT(context);
-    context->command_manager->RegisterFunction(
-        name, [](Command &, Command::Op){});
-}
-
-void ToolTestBase::CheckNoCommands() {
-    const auto &cl = *context->command_manager->GetCommandList();
-    EXPECT_EQ(0U, cl.GetCommandCount());
-}
-
-void ToolTestBase::SetPointTarget(const Point3f &pos, const Vector3f &dir) {
-    auto pt = CreateObject<PointTarget>();
-    pt->SetPosition(pos);
-    pt->SetDirection(dir);
-    context->target_manager->SetPointTarget(*pt);
-    context->target_manager->SetPointTargetVisible(true);
-}
-
-void ToolTestBase::SetEdgeTargetLength(float length) {
-    auto et = CreateObject<EdgeTarget>();
-    et->SetPositions(Point3f(0, 0, 0), Point3f(length, 0, 0));
-    context->target_manager->SetEdgeTarget(*et);
-    context->target_manager->SetEdgeTargetVisible(true);
-}
-
-void ToolTestBase::SetIsAxisAligned(bool is_aligned) {
-    context->command_manager->GetSessionState()->SetAxisAligned(is_aligned);
-}
-
-Str ToolTestBase::GetContentsString_() {
+SG::ScenePtr ToolTestBase::ReadToolScene(const Str &extra_children) {
     // Have to set up a Board and target Widgets in addition to the Tools.
-    return R"(
+    const Str contents = R"(
   children: [
     Node {
       TEMPLATES: [
@@ -87,13 +46,15 @@ Str ToolTestBase::GetContentsString_() {
         <"nodes/Widgets/EdgeTargetWidget.emd">,
         CLONE "T_Board" "TestBoard" {},
         <"nodes/Feedback.emd">,
+)" + extra_children + R"(
       ]
     }
   ]
 )";
+    return ReadRealScene(contents);
 }
 
-void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
+void ToolTestBase::SetUpTool(const ToolPtr &tool) {
     ASSERT(tool);
 
     auto       &scene = *GetScene();
@@ -143,6 +104,47 @@ void ToolTestBase::SetUpTool_(const ToolPtr &tool) {
     pm->FindAllPanels(scene, pc);
 
     tool->SetContext(context);
+}
+
+void ToolTestBase::AddCommandFunction(
+    const Str &name, const std::function<void(const Command &)> &func) {
+    ASSERT(context);
+    ASSERT(func);
+    auto exec_func = [&, func](Command &cmd, Command::Op op){
+        if (op == Command::Op::kDo)
+            func(cmd);
+    };
+    context->command_manager->RegisterFunction(name, exec_func);
+}
+
+void ToolTestBase::AddDummyCommandFunction(const Str &name) {
+    ASSERT(context);
+    context->command_manager->RegisterFunction(
+        name, [](Command &, Command::Op){});
+}
+
+void ToolTestBase::CheckNoCommands() {
+    const auto &cl = *context->command_manager->GetCommandList();
+    EXPECT_EQ(0U, cl.GetCommandCount());
+}
+
+void ToolTestBase::SetPointTarget(const Point3f &pos, const Vector3f &dir) {
+    auto pt = CreateObject<PointTarget>();
+    pt->SetPosition(pos);
+    pt->SetDirection(dir);
+    context->target_manager->SetPointTarget(*pt);
+    context->target_manager->SetPointTargetVisible(true);
+}
+
+void ToolTestBase::SetEdgeTargetLength(float length) {
+    auto et = CreateObject<EdgeTarget>();
+    et->SetPositions(Point3f(0, 0, 0), Point3f(length, 0, 0));
+    context->target_manager->SetEdgeTarget(*et);
+    context->target_manager->SetEdgeTargetVisible(true);
+}
+
+void ToolTestBase::SetIsAxisAligned(bool is_aligned) {
+    context->command_manager->GetSessionState()->SetAxisAligned(is_aligned);
 }
 
 const Command * ToolTestBase::CheckNCommands_(size_t count) {
