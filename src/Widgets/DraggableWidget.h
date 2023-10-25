@@ -19,6 +19,17 @@ DECL_SHARED_PTR(DraggableWidget);
 /// \ingroup Widgets
 class DraggableWidget : public ClickableWidget {
   public:
+    /// Returns a Notifier that is invoked when an Event causes the
+    /// DraggableWidget to become or remain hovered. The hovered point on the
+    /// Widget is passed in.
+    Util::Notifier<const Point3f &> & GetHovered() { return hovered_; }
+
+    /// Returns a Notifier that is invoked when the user drags the
+    /// DraggableWidget. It is passed a pointer to DragInfo for the drag, and a
+    /// flag indicating whether this is the start of the drag. The end of the
+    /// drag is indicated by a null DragInfo pointer.
+    Util::Notifier<const DragInfo *, bool> & GetDragged() { return dragged_; }
+
     /// Sets a scale factor to apply to controller motion to scale for
     /// grip-based drags. The default value is TK::kGripDragScale.
     void SetGripDragScale(float scale) { grip_drag_scale_ = scale; }
@@ -56,6 +67,9 @@ class DraggableWidget : public ClickableWidget {
 
     ///@}
 
+    /// Redefines this to invoke the GetHovered() Notifier.
+    virtual void UpdateHoverPoint(const Point3f &point) override;
+
   protected:
     DraggableWidget();
 
@@ -87,6 +101,9 @@ class DraggableWidget : public ClickableWidget {
     Ray WorldToWidget(const Ray &ray) const;
 
   private:
+    Util::Notifier<const Point3f &>        hovered_;
+    Util::Notifier<const DragInfo *, bool> dragged_;
+
     /// Set to true during a drag.
     bool is_dragging_ = false;
 

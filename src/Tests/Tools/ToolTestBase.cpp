@@ -57,51 +57,15 @@ SG::ScenePtr ToolTestBase::ReadToolScene(const Str &extra_children) {
 void ToolTestBase::SetUpTool(const ToolPtr &tool) {
     ASSERT(tool);
 
-    auto       &scene = *GetScene();
-    const auto &root  = scene.GetRootNode();
-
     // Create a parent Node for the Tool. This allows for coordinate conversion
     // testing.
-    tool_parent = CreateObject<SG::Node>("ToolParent");
+    if (! tool_parent)
+        tool_parent = CreateObject<SG::Node>("ToolParent");
     tool_parent->AddChild(tool);
 
-    // Set up the Tool::Context.
-    context.reset(new Tool::Context);
-
-    PanelManagerPtr pm(new PanelManager);
-    context->board_manager.reset(new BoardManager(pm));
-    context->command_manager.reset(new CommandManager);
-    context->feedback_manager.reset(new FeedbackManager);
-    context->precision_store.reset(new PrecisionStore);
-    context->settings_manager.reset(new SettingsManager);
-    context->target_manager.reset(new TargetManager(context->command_manager));
-    context->root_model = SG::FindTypedNodeInScene<RootModel>(scene,
-                                                              "ModelRoot");
-    context->board = SG::FindTypedNodeInScene<Board>(scene, "TestBoard");
-    context->path_to_parent_node = SG::NodePath(tool_parent);
-    context->camera_position.Set(0, 0, 10);
-
-    // Set up the FeedbackManager.
-    context->feedback_manager->SetParentNodes(root, root);
-    context->feedback_manager->SetSceneBoundsFunc(
-        [&](){ return context->root_model->GetBounds(); });
-    context->feedback_manager->SetPathToStage(SG::NodePath(root));
-    for (auto &fb: FindFeedback(*root))
-        context->feedback_manager->AddOriginal<Feedback>(fb);
-
-    // Set up the TargetManager.
-    auto ptw = SG::FindTypedNodeInScene<PointTargetWidget>(
-        scene, "PointTargetWidget");
-    auto etw = SG::FindTypedNodeInScene<EdgeTargetWidget>(
-        scene, "EdgeTargetWidget");
-    context->target_manager->InitTargets(ptw, etw);
-
-    // Set up the PanelManager including a Panel::Context that contains the
-    // bare minimum for tests.
-    Panel::ContextPtr pc(new Panel::Context);
-    pc->board_agent = context->board_manager;
-    pc->name_agent.reset(new NameManager);
-    pm->FindAllPanels(scene, pc);
+    // Set up the Tool::Context if not already done.
+    if (! context)
+        context = CreateContext_(*GetScene());
 
     tool->SetContext(context);
 }
@@ -145,6 +109,47 @@ void ToolTestBase::SetEdgeTargetLength(float length) {
 
 void ToolTestBase::SetIsAxisAligned(bool is_aligned) {
     context->command_manager->GetSessionState()->SetAxisAligned(is_aligned);
+}
+
+Tool::ContextPtr ToolTestBase::CreateContext_(const SG::Scene &scene) {
+    Tool::ContextPtr tc(new Tool::Context);
+
+    PanelManagerPtr pm(new PanelManager);
+    tc->board_manager.reset(new BoardManager(pm));
+    tc->command_manager.reset(new CommandManager);
+    tc->feedback_manager.reset(new FeedbackManager);
+    tc->precision_store.reset(new PrecisionStore);
+    tc->settings_manager.reset(new SettingsManager);
+    tc->target_manager.reset(new TargetManager(tc->command_manager));
+    tc->root_model = SG::FindTypedNodeInScene<RootModel>(scene, "ModelRoot");
+    tc->board = SG::FindTypedNodeInScene<Board>(scene, "TestBoard");
+    tc->path_to_parent_node = SG::NodePath(tool_parent);
+    tc->camera_position.Set(0, 0, 10);
+
+    // Set up the FeedbackManager.
+    const auto &root = scene.GetRootNode();
+    tc->feedback_manager->SetParentNodes(root, root);
+    tc->feedback_manager->SetSceneBoundsFunc(
+        [&](){ return context->root_model->GetBounds(); });
+    tc->feedback_manager->SetPathToStage(SG::NodePath(root));
+    for (auto &fb: FindFeedback(*root))
+        tc->feedback_manager->AddOriginal<Feedback>(fb);
+
+    // Set up the TargetManager.
+    auto ptw = SG::FindTypedNodeInScene<PointTargetWidget>(
+        scene, "PointTargetWidget");
+    auto etw = SG::FindTypedNodeInScene<EdgeTargetWidget>(
+        scene, "EdgeTargetWidget");
+    tc->target_manager->InitTargets(ptw, etw);
+
+    // Set up the PanelManager including a Panel::Context that contains the
+    // bare minimum for tests.
+    Panel::ContextPtr pc(new Panel::Context);
+    pc->board_agent = tc->board_manager;
+    pc->name_agent.reset(new NameManager);
+    pm->FindAllPanels(scene, pc);
+
+    return tc;
 }
 
 const Command * ToolTestBase::CheckNCommands_(size_t count) {

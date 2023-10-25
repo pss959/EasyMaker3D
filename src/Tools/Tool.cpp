@@ -98,6 +98,7 @@ Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     const auto &path_to_parent = context_->path_to_parent_node;
     ASSERT(! path_to_parent.empty());
     auto path = SG::FindNodePathUnderNode(path_to_parent.back(), *local_node);
+    ASSERT(! path.empty());
     auto full_path = SG::NodePath::Stitch(path_to_parent, path);
     return SG::CoordConv(full_path).ObjectToRoot(p);
 }

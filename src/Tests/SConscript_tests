@@ -340,7 +340,6 @@ test_source_dict = {
         'RotationToolTest',
         'ScaleToolTest',
         'TaperToolTest',
-        'TestToolContext',
         'TextToolTest',
         'ToolTestBase',
         'TorusToolTest',

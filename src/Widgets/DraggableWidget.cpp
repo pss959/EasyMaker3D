@@ -14,15 +14,22 @@ void DraggableWidget::StartDrag(const DragInfo &info) {
     KLOG('W', GetDesc() << " StartDrag");
     is_dragging_ = true;
     start_info_ = cur_info_ = info;
+    dragged_.Notify(&info, true);
 }
 
 void DraggableWidget::ContinueDrag(const DragInfo &info) {
     cur_info_ = info;
+    dragged_.Notify(&info, false);
 }
 
 void DraggableWidget::EndDrag() {
     KLOG('W', GetDesc() << " EndDrag");
     is_dragging_ = false;
+    dragged_.Notify(nullptr, false);
+}
+
+void DraggableWidget::UpdateHoverPoint(const Point3f &point) {
+    hovered_.Notify(point);
 }
 
 SG::CoordConv DraggableWidget::GetCoordConv() const {

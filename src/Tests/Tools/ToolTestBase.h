@@ -97,6 +97,9 @@ class ToolTestBase : public SceneTestBase {
     void SetIsAxisAligned(bool is_aligned);
 
   private:
+    /// Creates and returns a Tool::Context that is set up for testing.
+    Tool::ContextPtr CreateContext_(const SG::Scene &scene);
+
     /// Verifies that the CommandManager has \p count Commands and returns the
     /// last one.
     const Command * CheckNCommands_(size_t count);
