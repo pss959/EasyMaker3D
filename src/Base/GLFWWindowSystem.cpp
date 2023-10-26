@@ -180,6 +180,12 @@ void GLFWWindowSystem::Terminate() {
 }
 
 bool GLFWWindowSystem::CreateWindow(const Vector2i &size, const Str &title) {
+    glfwWindowHint(GLFW_OPENGL_PROFILE,         GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,  GL_TRUE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,  3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,  3);
+    glfwWindowHint(GLFW_SAMPLES,                16);
+
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
                                nullptr, nullptr);
     if (! window_) {
@@ -190,12 +196,6 @@ bool GLFWWindowSystem::CreateWindow(const Vector2i &size, const Str &title) {
 
     // Set up Ion callbacks.
     InitIonCallbacks_();
-
-    glfwWindowHint(GLFW_OPENGL_PROFILE,         GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,  GL_TRUE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,  3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,  3);
-    glfwWindowHint(GLFW_SAMPLES,                16);
 
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);

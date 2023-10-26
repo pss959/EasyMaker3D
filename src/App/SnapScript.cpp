@@ -85,6 +85,7 @@ bool SnapScript::ProcessLine_(const Str &line) {
       case kAction:   instr = ProcessAction_(words);   break;
       case kClick:    instr = ProcessClick_(words);    break;
       case kDrag:     instr = ProcessDrag_(words);     break;
+      case kDragP:    instr = ProcessDragP_(words);    break;
       case kFocus:    instr = ProcessFocus_(words);    break;
       case kHand:     instr = ProcessHand_(words);     break;
       case kHandPos:  instr = ProcessHandPos_(words);  break;
@@ -154,23 +155,46 @@ SnapScript::InstrPtr SnapScript::ProcessClick_(const StrVec &words) {
 }
 
 SnapScript::InstrPtr SnapScript::ProcessDrag_(const StrVec &words) {
-    using DIPhase = DragInstr::Phase;
-
     DragInstrPtr dinst;
+    float x0, y0, x1, y1;
+    size_t count = 0;
+    if (words.size() < 5U || words.size() > 6U) {
+        Error_("Bad syntax for drag instruction");
+    }
+    else if (! ParseFloat01_(words[1], x0) || ! ParseFloat01_(words[2], y0) ||
+             ! ParseFloat01_(words[3], x1) || ! ParseFloat01_(words[4], y1)) {
+        Error_("Invalid x or y floats for drag instruction");
+    }
+    else if (words.size() == 6U && ! ParseN_(words[5], count)) {
+        Error_("Invalid count for drag instruction");
+    }
+    else {
+        dinst.reset(new DragInstr);
+        dinst->pos0.Set(x0, y0);
+        dinst->pos1.Set(x1, y1);
+        dinst->count = count;
+    }
+    return dinst;
+}
+
+SnapScript::InstrPtr SnapScript::ProcessDragP_(const StrVec &words) {
+    using DIPhase = DragPInstr::Phase;
+
+    DragPInstrPtr dinst;
     float x, y;
     if (words.size() != 4U) {
-        Error_("Bad syntax for drag instruction");
+        Error_("Bad syntax for dragp instruction");
     }
     else if (words[1] != "start" &&
              words[1] != "continue" &&
              words[1] != "end") {
-        Error_("Invalid phase (start/continue/end) for drag instruction");
+        Error_("Invalid phase (start/continue/end) for dragp instruction");
     }
     else if (! ParseFloat01_(words[2], x) || ! ParseFloat01_(words[3], y)) {
-        Error_("Invalid x or y floats for drag instruction");
+        Error_("Invalid x or y floats for dragp instruction");
     }
     else {
-        dinst.reset(new DragInstr);
+        dinst.reset(new DragPInstr);
         dinst->phase = words[1] == "start" ? DIPhase::kStart :
             words[1] == "continue" ? DIPhase::kContinue : DIPhase::kEnd;
         dinst->pos.Set(x, y);
@@ -428,8 +452,8 @@ SnapScript::InstrPtr SnapScript::ProcessView_(const StrVec &words) {
 }
 
 bool SnapScript::Error_(const Str &message) {
-    std::cerr << "*** " << message << " on line " << line_number_
-              << " in '" << file_path_.ToString() << "'\n";
+    std::cerr << file_path_.ToString() << ":" << line_number_
+              << ": *** " << message << "'\n";
     return false;
 }
 

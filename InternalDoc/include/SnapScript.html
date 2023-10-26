@@ -27,10 +27,18 @@
   </tr>
   <tr>
     <td><b>drag</b></td>
-    <td><code>start</code>|<code>continue</code>|<code>end</code> <i>x
-        y</i></td>
-    <td>Simulates a mouse drag at the given point in normalized window
-      coordinates.</td>
+    <td><i>x0 y0 x1 y1</i> [<i>count</i>]</td>
+    <td>Simulates a mouse drag from <i>(x0,y0)</i> to <i>(x1,y1)</i> in
+      normalized window coordinates. If <i>count</i> is specified, the given
+      number of points are interpolated between them. This also hovers before
+      the first point.</td>
+  </tr>
+  <tr>
+    <td><b>dragp</b></td>
+    <td><code>start</code>|<code>continue</code>|<code>end</code>
+      <i>x y</i></td>
+    <td>Simulates one phase of a mouse drag at the given point in normalized
+      window coordinates.</td>
   </tr>
   <tr>
     <td><b>focus</b></td>
@@ -52,8 +60,8 @@
   </tr>
   <tr>
     <td><b>handpos</b></td>
-    <td><code>L</code>|<code>R</code> <i>posx posy posz laserx lasery laserz
-        guidex guidey guidez</i></td>
+    <td><code>L</code>|<code>R</code>
+      <i>posx posy posz laserx lasery laserz guidex guidey guidez</i></td>
     <td>Moves the controller for the given hand to the given position (relative
       to the default rest position) and rotates so that the laser pointer and
       hover guide align with the given vectors. The hover guide direction can

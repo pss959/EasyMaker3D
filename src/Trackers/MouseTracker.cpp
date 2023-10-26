@@ -3,6 +3,7 @@
 #include "Debug/Shortcuts.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 #include "Util/Tuning.h"
 
 static float s_click_timeout_ = TK::kMouseClickTimeout;
@@ -67,7 +68,7 @@ Anglef MouseTracker::GetMinRayAngleChange() const {
 
 void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
 #if ENABLE_DEBUG_FEATURES  // LCOV_EXCL_START [debug only]
-    if (debug_sphere_) {
+    if (Util::app_type == Util::AppType::kMainApp && debug_sphere_) {
         auto &ds = *debug_sphere_;
         if (hit.IsValid()) {
             ds.TranslateTo(hit.GetWorldPoint());

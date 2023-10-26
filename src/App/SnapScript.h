@@ -28,6 +28,7 @@ class SnapScript {
             kAction,
             kClick,
             kDrag,
+            kDragP,
             kFocus,
             kHand,
             kHandPos,
@@ -57,6 +58,10 @@ class SnapScript {
         Point2f   pos;
     };
     struct DragInstr : public Instr {
+        Point2f   pos0, pos1;
+        size_t    count = 0;
+    };
+    struct DragPInstr : public Instr {
         enum class Phase { kStart, kContinue, kEnd };
         Phase     phase;
         Point2f   pos;
@@ -122,6 +127,7 @@ class SnapScript {
     DECL_SHARED_PTR(ActionInstr);
     DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(DragInstr);
+    DECL_SHARED_PTR(DragPInstr);
     DECL_SHARED_PTR(FocusInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(HandPosInstr);
@@ -159,6 +165,7 @@ class SnapScript {
     InstrPtr ProcessAction_(const StrVec &words);
     InstrPtr ProcessClick_(const StrVec &words);
     InstrPtr ProcessDrag_(const StrVec &words);
+    InstrPtr ProcessDragP_(const StrVec &words);
     InstrPtr ProcessFocus_(const StrVec &words);
     InstrPtr ProcessHand_(const StrVec &words);
     InstrPtr ProcessHandPos_(const StrVec &words);
