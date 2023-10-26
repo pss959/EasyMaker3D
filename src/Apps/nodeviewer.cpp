@@ -29,6 +29,7 @@
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+#include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/Tuning.h"
 #include "Viewers/GLFWViewer.h"
@@ -194,7 +195,10 @@ bool Application_::InitScene() {
 }
 
 bool Application_::InitViewer(const Vector2i &window_size) {
-    glfw_viewer_.reset(new GLFWViewer);
+    auto error_func = [](const Str &error){
+        std::cerr << "*** " << error << "\n";
+    };
+    glfw_viewer_.reset(new GLFWViewer(error_func));
     if (! glfw_viewer_->Init(window_size, false)) {
         glfw_viewer_.reset();
         return false;
