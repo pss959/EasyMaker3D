@@ -59,7 +59,8 @@ void CommandManager::AddAndDo(const CommandPtr &command) {
     // Mark the command as being finalized.
     command->SetIsFinalized();
 
-    // Execute it.
+    // Execute it. Note that the KLOG() may not contain complete information
+    // because executing the Command may add to it.
     KLOG('x', "Executing " << command->GetDescription());
     Execute_(*command, Command::Op::kDo);
 }
