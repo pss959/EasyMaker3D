@@ -1,6 +1,7 @@
 #include "Commands/ChangeNameCommand.h"
 #include "Models/BoxModel.h"
 #include "Models/RootModel.h"
+#include "Panes/TextInputPane.h"
 #include "Tools/NameTool.h"
 #include "Tests/Panels/PanelInteractor.h"
 #include "Tests/Tools/ToolTestBase.h"
@@ -73,6 +74,8 @@ TEST_F(NameToolTest, Apply) {
     const auto &cmd = CheckOneCommand<ChangeNameCommand>();
     EXPECT_EQ("Box",       cmd.GetModelName());
     EXPECT_EQ("Some Name", cmd.GetNewName());
+    EXPECT_TRUE(input->IsTextValid());
+    EXPECT_FALSE(pi.IsButtonPaneEnabled("Apply"));
 }
 
 TEST_F(NameToolTest, Update) {

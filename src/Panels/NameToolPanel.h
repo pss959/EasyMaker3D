@@ -37,6 +37,7 @@ class NameToolPanel : public ToolPanel {
     Str              original_name_;
 
     bool ValidateName_(const Str &name);
+    void Apply_();
 
     friend class Parser::Registry;
 };

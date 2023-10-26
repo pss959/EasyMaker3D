@@ -23,8 +23,7 @@ void NameToolPanel::InitInterface() {
     auto validate = [&](const Str &name){ return ValidateName_(name); };
     input_pane_->SetValidationFunc(validate);
 
-    AddButtonFunc("Apply",
-                  [&](){ ReportChange("Name", InteractionType::kImmediate); });
+    AddButtonFunc("Apply", [&](){ Apply_(); });
 
     // Don't enable the Apply button until a change is made.
     EnableButton("Apply", false);
@@ -53,4 +52,13 @@ bool NameToolPanel::ValidateName_(const Str &name) {
     EnableButton("Apply", is_valid && is_changed);
 
     return is_valid;
+}
+
+void NameToolPanel::Apply_() {
+    // Set the current name as the original.
+    original_name_ = GetName();
+
+    EnableButton("Apply", false);
+
+    ReportChange("Name", InteractionType::kImmediate);
 }

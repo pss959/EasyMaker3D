@@ -48,8 +48,11 @@ TEST_F(NameToolPanelTest, Change) {
     panel->SetStatus(Panel::Status::kVisible);
 
     auto input = pi.SetTextInput("Input", "Some Name");
+    auto msg   = FindTypedPane<TextPane>("Message");
+
     EXPECT_EQ("Some Name", input->GetText());
     EXPECT_TRUE(input->IsTextValid());
+    EXPECT_TRUE(msg->GetText().empty());
 
     // Apply.
     pi.ClickButtonPane("Apply");
@@ -57,7 +60,6 @@ TEST_F(NameToolPanelTest, Change) {
     EXPECT_EQ("Name",       GetChangeInfo().name);
     EXPECT_EQ("kImmediate", GetChangeInfo().type);
 
-    auto msg = FindTypedPane<TextPane>("Message");
     input = pi.SetTextInput("Input", " BadName");
     EXPECT_EQ(" BadName", input->GetText());
     EXPECT_FALSE(input->IsTextValid());
