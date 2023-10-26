@@ -37,6 +37,7 @@ void RootModel::ShowEdges(bool show) {
         are_edges_shown_ = show;
         auto &block = GetUniformBlockForPass("Lighting");
         block.SetFloatUniformValue("uEdgeWidth", show ? 1 : 0);
+        ProcessChange(SG::Change::kAppearance, *this);
     }
 }
 

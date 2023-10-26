@@ -15,10 +15,12 @@ bool KLogger::HasKeyCharacter(char key) {
 
 void KLogger::ToggleLogging() {
     auto pos = key_string_.find_first_of('!');
-    if (pos != Str::npos)
-        key_string_.erase(pos, 1);
-    else
+    const bool is_on = pos == Str::npos;
+    if (is_on)
         key_string_ += '!';
+    else
+        key_string_.erase(pos, 1);
+    std::cerr << "Logging is now " << (is_on ? "OFF" : "ON") << "\n";
 }
 
 KLogger::KLogger(char key) : do_print_(ShouldPrint_(key)) {
