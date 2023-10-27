@@ -169,39 +169,6 @@ void ScriptedApp::Emitter_::AddDragPoints(const Point2f &pos0,
         AddDragPoint(DIPhase::kContinue, Lerp((i + 1) * delta, pos0, pos1));
 
     AddDragPoint(DIPhase::kEnd, pos1);
-
-#if XXXX
-    Event base_event;
-    base_event.is_modified_mode = is_mod_;
-    base_event.device = Event::Device::kMouse;
-    base_event.flags.Set(Event::Flag::kPosition2D);
-
-    // Drag start.
-    Event start = base_event;
-    start.flags.Set(Event::Flag::kButtonPress);
-    start.button     = Event::Button::kMouse1;
-    start.position2D = pos0;
-    events_.push_back(start);
-
-    // Intermediate points (ending with pos1).
-    std::vector<Point2f> pts;
-    const float delta = 1.f / (count + 1);
-    for (size_t i = 0; i < count; ++i)
-        pts.push_back(Lerp((i + 1) * delta, pos0, pos1));
-    pts.push_back(pos1);
-    Event inter = base_event;
-    for (const auto &pt: pts) {
-        inter.position2D = pt;
-        events_.push_back(inter);
-    }
-
-    // Drag end.
-    Event end = base_event;
-    end.flags.Set(Event::Flag::kButtonRelease);
-    end.button     = Event::Button::kMouse1;
-    end.position2D = pos1;
-    events_.push_back(end);
-#endif
 }
 
 void ScriptedApp::Emitter_::AddKey(const Str &key,
@@ -511,18 +478,20 @@ bool ScriptedApp::LoadSession_(const Str &file_name) {
     // Empty file name means start a new session.
     if (file_name.empty()) {
         GetContext().session_manager->NewSession();
-        std::cout << "    Started new session\n";
+        if (options_.report)
+            std::cout << "    Started new session\n";
     }
     else {
         const FilePath path("PublicDoc/snaps/sessions/" + file_name +
                             TK::kSessionFileExtension);
         Str error;
         if (! GetContext().session_manager->LoadSession(path, error)) {
-            std::cerr << "*** Error loading session from '"
-                      << path.ToString() << "':" << error << "\n";
+            std::cerr << "*** Error loading session from '" << path
+                      << "':" << error << "\n";
             return false;
         }
-        std::cout << "    Loaded session from '" << path.ToString() << "'\n";
+        if (options_.report)
+            std::cout << "    Loaded session from '" << path << "'\n";
     }
     return true;
 }
