@@ -265,7 +265,6 @@ if noimages != True:  # Have to compare with True here.
     anns.append(ann)
 
 images = [snaps, anns]
-env.Alias('Snaps',  snaps)
 env.Alias('Images', images)
 
 Return('images')
