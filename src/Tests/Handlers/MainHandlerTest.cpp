@@ -214,12 +214,12 @@ TEST_F(MainHandlerTest, Click) {
 
     // Test using a PathFilter to not hit the Widget so there is no click.
     mh.SetPathFilter([](const SG::NodePath &){ return false; });
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_FALSE(mh.HandleEvent(GetWidgetEvent(true)));
     Util::DelayThread(kTimeout + .0001f);
     mh.ProcessUpdate(false);
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
-    EXPECT_EQ(2U, click_count);
-    EXPECT_NULL(click_widget);
+    EXPECT_FALSE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_EQ(1U, click_count);
+    EXPECT_EQ(widget.get(), click_widget);
     EXPECT_TRUE(mh.IsWaiting());
 }
 

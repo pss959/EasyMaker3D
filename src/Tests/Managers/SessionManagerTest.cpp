@@ -12,6 +12,7 @@
 #include "Tests/SelectionTestBase.h"
 #include "Tests/TempFile.h"
 #include "Tests/Testing.h"
+#include "Util/Tuning.h"
 
 /// \ingroup Tests
 class SessionManagerTest : public SelectionTestBase {
@@ -100,7 +101,7 @@ R"(# Comment line 1
 # Comment line 2
 CommandList {
   app_info: AppInfo {
-    version: "1.7.0",
+    version: ")" + TK::kVersionString + R"(",
     session_state: SessionState {
     },
   },
@@ -124,7 +125,7 @@ TEST_F(SessionManagerTest, LoadSession) {
 R"(# A comment.
 CommandList {
   app_info: AppInfo {
-    version: "1.7.0",
+    version: ")" + TK::kVersionString + R"(",
     session_state: SessionState {},
   },
   commands: [

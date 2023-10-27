@@ -26,8 +26,11 @@ class MouseTrackerTest : public TrackerTestBase {
     /// The constructor sets up the MouseTracker with a scene.
     MouseTrackerTest();
 
-    /// Returns an Event for a mouse press or release.
-    static Event GetEvent(bool is_press);
+    /// Returns an Event for a mouse press, release, or motion. \p action is
+    /// "press", "release", or empty for neither. \p widget is "L" to position
+    /// over the left GenericWidget), "R" for the right GenericWidget, or empty
+    /// for neither.
+    static Event GetEvent(const Str &action, const Str &widget);
 };
 
 MouseTrackerTest::MouseTrackerTest() : mt(Actuator::kMouse) {
@@ -44,12 +47,21 @@ MouseTrackerTest::MouseTrackerTest() : mt(Actuator::kMouse) {
     rgw = GetRightWidget();
 }
 
-Event MouseTrackerTest::GetEvent(bool is_press) {
+Event MouseTrackerTest::GetEvent(const Str &action, const Str &widget) {
     Event event;
     event.device = Event::Device::kMouse;
-    event.button = Event::Button::kMouse1;
-    event.flags.Set(
-        is_press ? Event::Flag::kButtonPress : Event::Flag::kButtonRelease);
+    if (action == "press" || action == "release") {
+        event.button = Event::Button::kMouse1;
+        event.flags.Set(action == "press" ? Event::Flag::kButtonPress :
+                        Event::Flag::kButtonRelease);
+    }
+    event.flags.Set(Event::Flag::kPosition2D);
+    if (widget == "L")
+        event.position2D.Set(.3f, .5f);
+    else if (widget == "R")
+        event.position2D.Set(.6f, .5f);
+    else
+        event.position2D.Set(0, 0);
     return event;
 }
 
@@ -68,94 +80,111 @@ TEST_F(MouseTrackerTest, Defaults) {
 }
 
 TEST_F(MouseTrackerTest, IsActivation) {
-    EXPECT_TRUE(mt.IsActivation(GetEvent(true), tw));
+    // Activation with no Widget.
+    Event event = GetEvent("press", "");
+    EXPECT_TRUE(mt.IsActivation(event, tw));
     EXPECT_NULL(tw);
 
+    // Activation with left GenericWidget.
+    event = GetEvent("press", "L");
+    EXPECT_TRUE(mt.IsActivation(event, tw));
+    EXPECT_EQ(lgw, tw);
+
     // Wrong device.
-    Event event = GetEvent(true);
     event.device = Event::Device::kHeadset;
     EXPECT_FALSE(mt.IsActivation(event, tw));
     EXPECT_NULL(tw);
 
     // Wrong button.
-    event = GetEvent(true);
+    event = GetEvent("press", "");
     event.button = Event::Button::kMouse2;
     EXPECT_FALSE(mt.IsActivation(event, tw));
     EXPECT_NULL(tw);
 
     // Not a press.
-    event = GetEvent(false);
+    event = GetEvent("release", "");
+    EXPECT_FALSE(mt.IsActivation(event, tw));
+    EXPECT_NULL(tw);
+    event = GetEvent("", "");
     EXPECT_FALSE(mt.IsActivation(event, tw));
     EXPECT_NULL(tw);
 }
 
 TEST_F(MouseTrackerTest, IsDeactivation) {
-    EXPECT_TRUE(mt.IsDeactivation(GetEvent(false), tw));
-    EXPECT_NULL(tw);
+    // Deactivation with no Widget.
+    Event event = GetEvent("release", "");
+    EXPECT_TRUE(mt.IsDeactivation(event, tw));
+
+    // Deactivation with right GenericWidget.
+    event = GetEvent("release", "R");
+    EXPECT_TRUE(mt.IsDeactivation(event, tw));
+    EXPECT_EQ(rgw, tw);
 
     // Wrong device.
-    Event event = GetEvent(false);
+    event = GetEvent("release", "");
     event.device = Event::Device::kHeadset;
     EXPECT_FALSE(mt.IsDeactivation(event, tw));
     EXPECT_NULL(tw);
 
     // Wrong button.
-    event = GetEvent(false);
+    event = GetEvent("release", "");
     event.button = Event::Button::kMouse2;
     EXPECT_FALSE(mt.IsDeactivation(event, tw));
     EXPECT_NULL(tw);
 
-    // Not a press.
-    event = GetEvent(true);
+    // Not a release.
+    event = GetEvent("press", "");
+    EXPECT_FALSE(mt.IsDeactivation(event, tw));
+    EXPECT_NULL(tw);
+    event = GetEvent("", "");
     EXPECT_FALSE(mt.IsDeactivation(event, tw));
     EXPECT_NULL(tw);
 }
 
-TEST_F(MouseTrackerTest, ActivationWidget) {
-    // Set up an event that will intersect the left GenericWidget.
-    Event event = GetEvent(true);
-    event.flags.Set(Event::Flag::kPosition2D);
-    event.position2D.Set(.3f, .5f);
-
-    WidgetPtr widget;
-    EXPECT_TRUE(mt.IsActivation(event, tw));
-    EXPECT_EQ(lgw, tw);
-}
-
 TEST_F(MouseTrackerTest, Hover) {
     // Set up an event that will intersect the left GenericWidget.
-    Event event = GetEvent(true);
-    event.flags.Set(Event::Flag::kPosition2D);
-    event.position2D.Set(.5f, .5f);
-
+    Event event = GetEvent("", "L");
     EXPECT_FALSE(lgw->IsHovering());
     mt.UpdateHovering(event);
     EXPECT_TRUE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
 
-    // Install a path filter that ignores the GenericWidgets.
+    // Not over a Widget - stop hovering.
+    event = GetEvent("", "");
+    mt.UpdateHovering(event);
+    EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
+
+    // Install a path filter that always returns false.
     auto filter = [](const SG::NodePath &){ return false; };
     mt.SetPathFilter(filter);
+    event = GetEvent("", "R");
     mt.UpdateHovering(event);
     EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
+
+    // Remove the filter.
     mt.SetPathFilter(nullptr);
     mt.UpdateHovering(event);
-    EXPECT_TRUE(lgw->IsHovering());
+    EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_TRUE(rgw->IsHovering());
 
     mt.StopHovering();
     EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
 
     // Cannot hover a disabled Widget.
-    lgw->SetInteractionEnabled(false);
+    rgw->SetInteractionEnabled(false);
     mt.UpdateHovering(event);
     EXPECT_FALSE(lgw->IsHovering());
+    EXPECT_FALSE(rgw->IsHovering());
 }
 
 TEST_F(MouseTrackerTest, ClickDrag) {
-    // Activate to set the activation info.
-    Event event = GetEvent(true);
-    event.flags.Set(Event::Flag::kPosition2D);
-    event.position2D.Set(.6f, .5f);
+    // Activate the right GenericWidget to set the activation info.
+    Event event = GetEvent("press", "R");
     EXPECT_TRUE(mt.IsActivation(event, tw));
+    EXPECT_EQ(rgw, tw);
 
     // Update a ClickInfo.
     ClickInfo cinfo;
@@ -170,16 +199,17 @@ TEST_F(MouseTrackerTest, ClickDrag) {
     EXPECT_EQ(rgw,                    dinfo.hit.path.back());
 
     // Not a drag if no position.
+    event = GetEvent("", "R");
     event.flags.Reset(Event::Flag::kPosition2D);
     EXPECT_FALSE(mt.MovedEnoughForDrag(event));
-    event.flags.Set(Event::Flag::kPosition2D);
 
     // Not a drag if not far enough.
-    event.position2D.Set(.6001f, .5f);
+    event = GetEvent("", "R");
+    event.position2D[0] += .0001f;
     EXPECT_FALSE(mt.MovedEnoughForDrag(event));
 
     // Drag if far enough.
-    event.position2D.Set(.7f, .5f);
+    event.position2D[0] = .7f;
     EXPECT_TRUE(mt.MovedEnoughForDrag(event));
 
     // Update the DragInfo.
