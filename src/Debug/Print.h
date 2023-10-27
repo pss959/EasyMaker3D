@@ -5,6 +5,7 @@
 #include "Base/Memory.h"
 #include "Math/Types.h"
 
+class Board;
 class CommandList;
 class Model;
 class Pane;
@@ -79,10 +80,15 @@ void PrintNodesAndShapes(const SG::Node &root);
 void PrintNodesAndShapesOnPath(const SG::NodePath &path,
                                bool print_below = true);
 
+/// Prints information about the given Board along with indented tree of Panes
+/// displayed in it. If \p is_brief is true, this just prints the Panes with
+/// their name and current layout position.
+void PrintBoard(const Board &board, bool is_brief = true);
+
 /// Prints an indented tree of Panes starting with the given root Pane. If \p
 /// is_brief is true, this just prints the Panes with their name and current
 /// layout position.
-void PrintPaneTree(const Pane &root, bool is_brief);
+void PrintPaneTree(const Pane &root, bool is_brief = true);
 
 /// Prints an indented tree of Models and their transforms starting with the
 /// given root. If \p is_full is true, all other Model-specific fields are

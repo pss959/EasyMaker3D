@@ -57,8 +57,8 @@ class ShortcutMap_ {
         kPrintMatricesOnPath,
         kPrintModels,
         kPrintModelsFull,
-        kPrintPaneTreeBrief,
-        kPrintPaneTreeFull,
+        kPrintBoardPanesBrief,
+        kPrintBoardPanesFull,
         kPrintDebugSpherePosition,
         kPrintSkeleton,
         kPrintSkeletonOnPath,
@@ -155,10 +155,10 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print all models in the scene" },
         { "Shift-Alt-o", Action::kPrintModelsFull,
           "Print all models in the scene with model-specific fields" },
-        { "Alt-p",       Action::kPrintPaneTreeBrief,
-          "Print a brief pane tree for the current board" },
-        { "Shift-Alt-p", Action::kPrintPaneTreeFull,
-          "Print the full pane tree for the current board" },
+        { "Alt-p",       Action::kPrintBoardPanesBrief,
+          "Print the current board with a brief pane tree" },
+        { "Shift-Alt-p", Action::kPrintBoardPanesFull,
+          "Print the current board with a full pane tree" },
         { "Alt-r",       Action::kReloadScene,
           "Reload the scene from resource files" },
         { "Alt-n",       Action::kPrintSkeleton,
@@ -235,11 +235,6 @@ const Board & GetBoard_() {
         return *sc.tool_board;
     else
         return *sc.wall_board;
-}
-
-/// Returns the top Pane in the current Board.
-const Pane & GetBoardPane_() {
-    return *GetBoard_().GetCurrentPanel()->GetPane();
 }
 
 /// Returns a matrix to convert from world to stage coordinates.
@@ -355,11 +350,11 @@ static bool HandleShortcut_(const Str &str) {
       case kPrintModelsFull:
         Debug::PrintModels(*scene_context_->root_model, true);
         break;
-      case kPrintPaneTreeBrief:
-        Debug::PrintPaneTree(GetBoardPane_(), true);
+      case kPrintBoardPanesBrief:
+        Debug::PrintBoard(GetBoard_(), true);
         break;
-      case kPrintPaneTreeFull:
-        Debug::PrintPaneTree(GetBoardPane_(), false);
+      case kPrintBoardPanesFull:
+        Debug::PrintBoard(GetBoard_(), false);
         break;
       case kPrintSkeleton:
         Debug::PrintNodesAndShapes(root);

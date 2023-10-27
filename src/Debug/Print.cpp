@@ -14,6 +14,8 @@
 #include "Math/MeshUtils.h"
 #include "Math/ToString.h"
 #include "Models/ParentModel.h"
+#include "Panels/Board.h"
+#include "Panels/Panel.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/Pane.h"
 #include "Panes/ScrollingPane.h"
@@ -468,6 +470,14 @@ void PrintNodesAndShapesOnPath(const SG::NodePath &path, bool print_below) {
                 PrintNodesAndShapes_(*node, level++, false, done);
         }
     }
+}
+
+void PrintBoard(const Board &board, bool is_brief) {
+    Surrounder_ surrounder;
+    std::cout << board.GetDesc() << " with behavior "
+              << Util::EnumName(board.GetBehavior())
+              << (board.IsFloating() ? " (floating):\n" : ":\n");
+    PrintPaneTree_(*board.GetCurrentPanel()->GetPane(), 0, is_brief);
 }
 
 void PrintPaneTree(const Pane &root, bool is_brief) {
