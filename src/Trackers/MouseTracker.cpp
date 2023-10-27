@@ -27,25 +27,19 @@ Event::Device MouseTracker::GetDevice() const {
 }
 
 bool MouseTracker::IsActivation(const Event &event, WidgetPtr &widget) {
-    if (event.flags.Has(Event::Flag::kButtonPress) &&
-        event.device == Event::Device::kMouse &&
-        event.button == Event::Button::kMouse1) {
-        widget = GetCurrentWidget(event, true);
-        return true;
-    }
     widget.reset();
-    return false;
+    return (event.flags.Has(Event::Flag::kButtonPress) &&
+            event.device == Event::Device::kMouse &&
+            event.button == Event::Button::kMouse1 &&
+            GetCurrentWidget(event, true, widget));
 }
 
 bool MouseTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
-    if (event.flags.Has(Event::Flag::kButtonRelease) &&
-        event.device == Event::Device::kMouse &&
-        event.button == Event::Button::kMouse1) {
-        widget = GetCurrentWidget(event, false);
-        return true;
-    }
     widget.reset();
-    return false;
+    return (event.flags.Has(Event::Flag::kButtonRelease) &&
+            event.device == Event::Device::kMouse &&
+            event.button == Event::Button::kMouse1 &&
+            GetCurrentWidget(event, false, widget));
 }
 
 float MouseTracker::GetClickTimeout() const {

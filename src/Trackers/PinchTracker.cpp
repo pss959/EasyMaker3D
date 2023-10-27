@@ -16,24 +16,24 @@ Event::Device PinchTracker::GetDevice() const {
 }
 
 bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
+    widget.reset();
     if (event.flags.Has(Event::Flag::kButtonPress) &&
-        event.device == GetDevice() && event.button == Event::Button::kPinch) {
-        widget = GetCurrentWidget(event, true);
+        event.device == GetDevice() && event.button == Event::Button::kPinch &&
+        GetCurrentWidget(event, true, widget)) {
         UpdateControllers_(true);
         return true;
     }
-    widget.reset();
     return false;
 }
 
 bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
+    widget.reset();
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
-        event.device == GetDevice() && event.button == Event::Button::kPinch) {
-        widget = GetCurrentWidget(event, false);
+        event.device == GetDevice() && event.button == Event::Button::kPinch &&
+        GetCurrentWidget(event, false, widget)) {
         UpdateControllers_(false);
         return true;
     }
-    widget.reset();
     return false;
 }
 

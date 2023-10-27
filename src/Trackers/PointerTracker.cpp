@@ -61,14 +61,17 @@ void PointerTracker::Reset() {
     current_widget_.reset();
 }
 
-WidgetPtr PointerTracker::GetCurrentWidget(const Event &event,
-                                           bool is_activation) {
-    UpdateCurrentData_(event, current_widget_);
-    if (is_activation) {
-        activation_ray_ = current_ray_;
-        activation_hit_ = current_hit_;
+bool PointerTracker::GetCurrentWidget(const Event &event, bool is_activation,
+                                      WidgetPtr &widget) {
+    if (UpdateCurrentData_(event, current_widget_)) {
+        if (is_activation) {
+            activation_ray_ = current_ray_;
+            activation_hit_ = current_hit_;
+        }
+        widget = current_widget_;
+        return true;
     }
-    return current_widget_;
+    return false;
 }
 
 bool PointerTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
@@ -80,14 +83,15 @@ bool PointerTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
 
     SG::Hit hit = SG::Intersector::IntersectScene(*GetScene(), ray);
 
+    if (path_filter_ && ! path_filter_(hit.path))
+        return false;
+
     current_ray_ = ray;
     current_hit_ = hit;
 
-    if (! path_filter_ || path_filter_(hit.path)) {
-        widget = hit.path.FindNodeUpwards<Widget>();
-        if (widget && ! widget->IsInteractionEnabled())
-            widget.reset();
-    }
+    widget = hit.path.FindNodeUpwards<Widget>();
+    if (widget && ! widget->IsInteractionEnabled())
+        widget.reset();
 
     // Let the derived class update based on the new Hit.
     ProcessCurrentHit(hit);
