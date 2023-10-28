@@ -108,6 +108,19 @@ TEST_F(MouseTrackerTest, IsActivation) {
     event = GetEvent("", "");
     EXPECT_FALSE(mt.IsActivation(event, tw));
     EXPECT_NULL(tw);
+
+    // Cannot get a ray (no position2D).
+    event = GetEvent("press", "R");
+    event.flags.Reset(Event::Flag::kPosition2D);
+    EXPECT_FALSE(mt.IsActivation(event, tw));
+    EXPECT_NULL(tw);
+
+    // Install a path filter that always returns false.
+    auto filter = [](const SG::NodePath &){ return false; };
+    mt.SetPathFilter(filter);
+    event = GetEvent("press", "R");
+    EXPECT_FALSE(mt.IsActivation(event, tw));
+    EXPECT_NULL(tw);
 }
 
 TEST_F(MouseTrackerTest, IsDeactivation) {

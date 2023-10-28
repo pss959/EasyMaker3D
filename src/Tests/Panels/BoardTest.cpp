@@ -72,17 +72,22 @@ TEST_F(BoardTest, Panels) {
     Str result;
     auto result_func = [&](const Str &res){ result = res; };
 
+    EXPECT_EQ(0U, board->GetPanelCount());
     board->SetPanel(panel0, result_func);
     EXPECT_EQ(panel0, board->GetCurrentPanel());
+    EXPECT_EQ(1U, board->GetPanelCount());
 
     board->PushPanel(panel1, result_func);
     EXPECT_EQ(panel1, board->GetCurrentPanel());
+    EXPECT_EQ(2U, board->GetPanelCount());
 
     EXPECT_TRUE(board->PopPanel("Result0"));
     EXPECT_EQ("Result0", result);
+    EXPECT_EQ(1U, board->GetPanelCount());
 
     EXPECT_FALSE(board->PopPanel("Result1"));
     EXPECT_EQ("Result1", result);
+    EXPECT_EQ(0U, board->GetPanelCount());
 }
 
 TEST_F(BoardTest, PanelScale) {
