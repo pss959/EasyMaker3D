@@ -17,6 +17,7 @@ namespace SG { class Scene; DECL_SHARED_PTR(VRCamera); }
 ///
 /// \ingroup Viewers
 class IVRSystem {
+  public:
     /// \name Startup and Shutdown
     ///@{
 

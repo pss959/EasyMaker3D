@@ -30,6 +30,7 @@ class SessionTestBase::TestingApp_ : public Application {
 void SessionTestBase::TestingApp_::InitForTests() {
     Application::Options options;
     options.window_size.Set(800, 600);
+    options.ignore_vr = true;  // Bypasses VR system init.
     Init(options);
 
     // Make sure the TestContext has what it needs.

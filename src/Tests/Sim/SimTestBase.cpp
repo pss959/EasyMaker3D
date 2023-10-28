@@ -41,7 +41,8 @@ bool SimTestBase::RunScript_(const Str &file_name) {
 
     // Hardwire all options.
     options.do_ion_remote      = false;
-    options.enable_vr          = true;   // So controllers work properly.
+    options.ignore_vr          = true;  // Bypasses real VR system init.
+    options.enable_vr          = true;  // So controllers work properly.
     options.fullscreen         = false;
     options.nosnap             = true;
     options.remain             = false;

@@ -154,8 +154,8 @@ class  Application::Impl_ {
 
     /// \name Other Contexts.
     ///@{
-    Tool::ContextPtr          tool_context_;
-    std::unique_ptr<VRSystem> vr_system_;
+    Tool::ContextPtr           tool_context_;
+    std::unique_ptr<IVRSystem> vr_system_;
     ///@}
 
     /// \name Individual Handlers.
