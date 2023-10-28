@@ -149,13 +149,11 @@ class  Application::Impl_ {
     /// The ToolBox.
     ToolBoxPtr          tool_box_;
 
-    /// Context with managers and SceneContext.
-    Context             context_;
-
-    /// \name Other Contexts.
+    /// \name Systems and Contexts.
     ///@{
-    Tool::ContextPtr           tool_context_;
-    std::unique_ptr<IVRSystem> vr_system_;
+    IVRSystemPtr         vr_system_;
+    Context              context_;  ///< Contains Managers and SceneContext.
+    Tool::ContextPtr     tool_context_;
     ///@}
 
     /// \name Individual Handlers.
@@ -644,14 +642,7 @@ bool Application::Impl_::InitViewers_() {
     // Optional VR viewer.
     vr_system_.reset(new VRSystem);
     if (! options_.ignore_vr && vr_system_->Startup()) {
-        const auto render_func = [&](const SG::Scene &scene,
-                                     IRenderer &renderer){
-            vr_system_->Render(scene, renderer);
-        };
-        const auto emit_func = [&](std::vector<Event> &events){
-            vr_system_->EmitEvents(events);
-        };
-        vr_viewer_.reset(new VRViewer(render_func, emit_func));
+        vr_viewer_.reset(new VRViewer(vr_system_));
         viewers_.push_back(vr_viewer_);
         emitters_.push_back(vr_viewer_);
     }
@@ -893,7 +884,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         view_handler_->SetCamera(SC_->window_camera);
         glfw_viewer_->SetCamera(SC_->window_camera);
         if (IsVREnabled())
-            vr_viewer_->SetCamera(SC_->vr_camera);
+            vr_system_->SetCamera(SC_->vr_camera);
 
         // Store the current camera position in the Tool::Context.
         tool_context_->camera_position =

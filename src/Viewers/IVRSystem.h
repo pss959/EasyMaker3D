@@ -62,3 +62,5 @@ class IVRSystem {
     /// Returns true if the headset is currently being worn.
     virtual bool IsHeadSetOn() const = 0;
 };
+
+DECL_SHARED_PTR(IVRSystem);
