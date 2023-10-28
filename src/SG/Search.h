@@ -21,9 +21,9 @@ namespace SG {
 
 class Scene;
 
-/// Typedef for a function that returns true if a Node matches a specific
+/// Alias for a function that returns true if a Node matches a specific
 /// predicate.
-typedef std::function<bool(const Node &)> NodePredicate;
+using NodePredicate = std::function<bool(const Node &)>;
 
 /// Finds the first path from the root node of the given scene to the given
 /// node. Returns an empty NodePath if not found.

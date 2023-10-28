@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Trackers/PointerTracker.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Frustum);
 namespace SG { DECL_SHARED_PTR(Node); }

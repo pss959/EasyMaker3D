@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
 #include "Panels/ToolPanel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(CheckboxPane);
 DECL_SHARED_PTR(ProfilePane);

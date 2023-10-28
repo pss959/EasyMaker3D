@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "SG/Object.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

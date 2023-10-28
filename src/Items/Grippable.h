@@ -7,13 +7,13 @@
 #include <ion/math/vectorutils.h>
 
 #include "Base/Event.h"
-#include "Base/Memory.h"
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
 #include "SG/ColorMap.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

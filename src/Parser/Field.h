@@ -152,7 +152,7 @@ template <typename T> class TField : public TypedField<T> {
 /// Derived field that stores a vector of values of the templated type.
 template <typename T> class VField : public TypedField<std::vector<T>> {
   public:
-    typedef std::vector<T> VecType;
+    using VecType = std::vector<T>;
 
     virtual void ParseValue(Scanner &scanner) override {
         Field::ScanValues(
@@ -209,7 +209,7 @@ template <typename E> class EnumField : public TypedField<E> {
 /// Derived field that stores a flag enum of some type.
 template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
   public:
-    typedef Util::Flags<E> FlagType;
+    using FlagType = Util::Flags<E>;
 
     virtual void ParseValue(Scanner &scanner) override {
         const Str &str = scanner.ScanQuotedString();
@@ -244,7 +244,7 @@ template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
 template <typename T>
 class ObjectField : public TypedField<std::shared_ptr<T>> {
   public:
-    typedef std::shared_ptr<T> PtrType;
+    using PtrType = std::shared_ptr<T>;
 
     virtual void ParseValue(Scanner &scanner) override {
         ObjectPtr obj = scanner.ScanObject();
@@ -282,8 +282,8 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
 template <typename T>
 class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
   public:
-    typedef std::shared_ptr<T>   PtrType;
-    typedef std::vector<PtrType> ListType;
+    using PtrType  = std::shared_ptr<T>;
+    using ListType = std::vector<PtrType>;
 
     virtual void ParseValue(Scanner &scanner) override {
         ObjectListPtr list = scanner.ScanObjectList();

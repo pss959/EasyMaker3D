@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/Object.h"
+#include "Util/Memory.h"
 
 namespace SG {
 

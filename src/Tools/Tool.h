@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "SG/NodePath.h"
 #include "Selection/Selection.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(Board);
@@ -52,10 +52,10 @@ class Tool : public Grippable {
         /// Position of the camera.
         Point3f             camera_position;
     };
-    typedef std::shared_ptr<Context> ContextPtr;
+    DECL_SHARED_PTR(Context);
 
-    /// Typedef for specialized Tool completion function.
-    typedef std::function<void()> CompletionFunc;
+    /// Alias for specialized Tool completion function.
+    using CompletionFunc = std::function<void()>;
 
     /// Sets a Context that can be used by derived Tool classes during their
     /// operation.

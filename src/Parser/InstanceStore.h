@@ -4,9 +4,9 @@
 #include <typeindex>
 #include <unordered_map>
 
-#include "Base/Memory.h"
 #include "Parser/Object.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 namespace Parser {
 
@@ -56,12 +56,12 @@ class InstanceStore {
     }
 
   private:
-    /// Typedef for base type for any instance.
-    typedef Parser::ObjectPtr BasePtr_;
+    /// Alias for base type for any instance.
+    using BasePtr_ = Parser::ObjectPtr;
 
-    /// Typedef for available instance storage. Use a forward_list to make
+    /// Alias for available instance storage. Use a forward_list to make
     /// insertion and removal easier - no need for random access.
-    typedef std::forward_list<BasePtr_> AvailableList_;
+    using AvailableList_ = std::forward_list<BasePtr_>;
 
     /// Struct storing information for each type of original object.
     struct OriginalData_ {

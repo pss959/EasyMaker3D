@@ -2,9 +2,9 @@
 
 #include <ion/text/layout.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/Object.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -19,8 +19,8 @@ DECL_SHARED_PTR(LayoutOptions);
 /// \ingroup SG
 class LayoutOptions : public Object {
   public:
-    typedef ion::text::HorizontalAlignment HAlignment;
-    typedef ion::text::VerticalAlignment   VAlignment;
+    using HAlignment = ion::text::HorizontalAlignment;
+    using VAlignment = ion::text::VerticalAlignment;
 
     HAlignment       GetHAlignment()    const { return halignment_;    }
     VAlignment       GetVAlignment()    const { return valignment_;    }

@@ -2,13 +2,13 @@
 
 #include <ion/gfx/image.h>
 
-#include "Base/Memory.h"
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
 #include "Enums/Trigger.h"
 #include "Items/GripGuide.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 namespace SG { DECL_SHARED_PTR(Tube); }
@@ -22,7 +22,7 @@ DECL_SHARED_PTR(RadialMenu);
 /// \ingroup Items
 class Controller : public SG::Node {
   public:
-    typedef std::function<void(float)> VibrateFunc;
+    using VibrateFunc = std::function<void(float)>;
 
     /// This struct represents the data necessary for replacing the default
     /// controller model with a custom one.

@@ -32,8 +32,8 @@ class Profile {
         kOpen,    ///< No fixed points, ends are left unconnected.
     };
 
-    /// Convenience typedef.
-    typedef std::vector<Point2f> PointVec;
+    /// Convenience alias.
+    using PointVec = std::vector<Point2f>;
 
     /// The default constructor creates an invalid, undefined Profile.
     Profile();

@@ -7,9 +7,9 @@
 /// types more easily. Using these macros instead of including the headers that
 /// define them decouples code better.
 ///
-/// \ingroup Base
+/// \ingroup Util
 
-/// Declares the given class and a typedef for an std::shared_ptr to the class.
+/// Declares the given class and an alias for an std::shared_ptr to the class.
 ///
-/// \ingroup Base
+/// \ingroup Util
 #define DECL_SHARED_PTR(CL) class CL; using CL ## Ptr = std::shared_ptr<CL>

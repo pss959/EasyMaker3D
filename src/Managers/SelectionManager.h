@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include "Agents/SelectionAgent.h"
-#include "Base/Memory.h"
 #include "Models/RootModel.h"
 #include "Selection/Selection.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(SelectionManager);

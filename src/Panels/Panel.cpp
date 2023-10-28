@@ -38,10 +38,10 @@ class Panel::Focuser_ {
     enum class Direction { kUp, kDown, kLeft, kRight };
 
     /// Function that returns true if a Pane can be focused.
-    typedef std::function<bool(Pane &)> CanFocusFunc;
+    using CanFocusFunc = std::function<bool(Pane &)>;
 
     /// Function to call when focus changes to a new Pane.
-    typedef std::function<void(const PanePtr &)> ChangeFocusFunc;
+    using ChangeFocusFunc = std::function<void(const PanePtr &)>;
 
     /// The constructor is passed a description string to use for log
     /// messages and a function to invoke to see if a sub-Pane can be focused.

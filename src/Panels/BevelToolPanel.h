@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Math/Bevel.h"
 #include "Panels/ToolPanel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(BevelToolPanel);
 DECL_SHARED_PTR(ProfilePane);

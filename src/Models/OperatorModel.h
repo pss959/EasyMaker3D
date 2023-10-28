@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Models/ParentModel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(OperatorModel);
 

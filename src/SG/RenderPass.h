@@ -6,9 +6,9 @@
 #include <ion/gfx/uniformblock.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "Base/Memory.h"
 #include "SG/ShaderProgram.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 struct FBTarget;
 

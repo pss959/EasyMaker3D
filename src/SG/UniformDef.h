@@ -2,8 +2,8 @@
 
 #include <ion/gfx/uniform.h>
 
-#include "Base/Memory.h"
 #include "SG/Object.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -17,7 +17,7 @@ DECL_SHARED_PTR(UniformDef);
 /// \ingroup SG
 class UniformDef : public Object {
   public:
-    typedef ion::gfx::Uniform::ValueType ValueType;
+    using ValueType = ion::gfx::Uniform::ValueType;
 
     virtual bool IsNameRequired() const override { return true; }
 

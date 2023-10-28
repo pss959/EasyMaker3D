@@ -21,7 +21,7 @@ namespace Util {
 /// \ingroup Utility
 template <typename... ARGS> class Notifier {
   public:
-    typedef std::function<void(ARGS...)> ObserverFunc;
+    using ObserverFunc = std::function<void(ARGS...)>;
 
     /// Notifies all observers of a change.
     void Notify(ARGS... args) {

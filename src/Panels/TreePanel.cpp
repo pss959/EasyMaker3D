@@ -82,8 +82,8 @@ class TreePanel::Impl_ {
     class ModelRow_;
     class RectSelect_;
 
-    typedef std::shared_ptr<ModelRow_>              ModelRowPtr_;
-    typedef std::unordered_map<ModelPtr, ExpState_> ExpStateMap_;
+    using ModelRowPtr_ = std::shared_ptr<ModelRow_>;
+    using ExpStateMap_ = std::unordered_map<ModelPtr, ExpState_>;
 
     ActionAgentPtr    action_agent_;
     SelectionAgentPtr selection_agent_;
@@ -136,8 +136,8 @@ class TreePanel::Impl_ {
 /// name of a Model and allows the TreePanel to interact with it.
 class TreePanel::Impl_::ModelRow_ {
   public:
-    /// Typedef for function attached to buttons.
-    typedef std::function<void(ModelRow_ &, bool)> RowFunc;
+    /// Alias for function attached to buttons.
+    using RowFunc = std::function<void(ModelRow_ &, bool)>;
 
     /// Creates a clone of the given ContainerPane and uses it to store
     /// information for Model represented by the SelPath. The ExpState_ to use

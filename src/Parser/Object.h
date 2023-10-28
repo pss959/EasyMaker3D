@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Parser/Field.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 namespace Parser {
 

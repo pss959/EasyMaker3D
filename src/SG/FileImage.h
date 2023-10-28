@@ -4,9 +4,9 @@
 
 #include <ion/gfx/image.h>
 
-#include "Base/Memory.h"
 #include "SG/Image.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

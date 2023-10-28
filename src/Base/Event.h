@@ -61,8 +61,8 @@ struct Event {
         kAlt     = (1 << 2),  ///< Alt key.
     };
 
-    /// Typedef for a collection of ModifierKey flags.
-    typedef Util::Flags<ModifierKey> Modifiers;
+    /// Alias for a collection of ModifierKey flags.
+    using Modifiers = Util::Flags<ModifierKey>;
 
     /// Serial number for the event. Primarily for logging and debugging.
     size_t            serial = 0;

@@ -39,7 +39,7 @@ Point3f Point3fMap::Round_(const Point3f &p) const {
 }
 
 std::vector<Point3f> Point3fMap::GetPoints() const {
-    typedef std::pair<Point3f, GIndex> Pair_;
+    using Pair_ = std::pair<Point3f, GIndex>;
     std::vector<Pair_> pairs(map_.begin(), map_.end());
     std::sort(pairs.begin(), pairs.end(),
               [](const Pair_ &p0,

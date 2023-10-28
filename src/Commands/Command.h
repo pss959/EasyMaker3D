@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Parser/Object.h"
 #include "Parser/Registry.h"
 #include "Selection/Selection.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Command);
 

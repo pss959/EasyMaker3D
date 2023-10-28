@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Panels/Panel.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(ToolPanel);

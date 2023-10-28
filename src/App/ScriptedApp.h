@@ -5,8 +5,8 @@
 
 #include "App/Application.h"
 #include "App/SnapScript.h"
-#include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 
 class Selection;
 

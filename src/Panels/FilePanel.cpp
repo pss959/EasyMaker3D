@@ -22,7 +22,7 @@
 
 class FilePanel::Impl_ {
   public:
-    typedef std::function<void(const PanePtr &)> FocusFunc;
+    using FocusFunc = std::function<void(const PanePtr &)>;
 
     Impl_();
 

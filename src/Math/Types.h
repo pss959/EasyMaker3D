@@ -12,39 +12,39 @@
 #include <ion/math/vector.h>
 
 /// \file
-/// This file defines math-related items, including convenience typedefs for
+/// This file defines math-related items, including convenience aliases for
 /// math-related Ion objects to make them easier to use inside the application.
 ///
 /// \ingroup Math
 
-typedef ion::math::Anglef    Anglef;
-typedef ion::math::Matrix2f  Matrix2f;
-typedef ion::math::Matrix3f  Matrix3f;
-typedef ion::math::Matrix4f  Matrix4f;
-typedef ion::math::Point2f   Point2f;
-typedef ion::math::Point2i   Point2i;
-typedef ion::math::Point3f   Point3f;
-typedef ion::math::Range1f   Range1f;
-typedef ion::math::Range2f   Range2f;
-typedef ion::math::Range2i   Range2i;
-typedef ion::math::Range3f   Range3f;
-typedef ion::math::Rotationf Rotationf;
-typedef ion::math::Vector2f  Vector2f;
-typedef ion::math::Vector2i  Vector2i;
-typedef ion::math::Vector2ui Vector2ui;
-typedef ion::math::Vector3f  Vector3f;
-typedef ion::math::Vector3i  Vector3i;
-typedef ion::math::Vector3ui Vector3ui;
-typedef ion::math::Vector4f  Vector4f;
-typedef ion::math::Vector4i  Vector4i;
-typedef ion::math::Vector4ui Vector4ui;
+using Anglef    = ion::math::Anglef;
+using Matrix2f  = ion::math::Matrix2f;
+using Matrix3f  = ion::math::Matrix3f;
+using Matrix4f  = ion::math::Matrix4f;
+using Point2f   = ion::math::Point2f;
+using Point2i   = ion::math::Point2i;
+using Point3f   = ion::math::Point3f;
+using Range1f   = ion::math::Range1f;
+using Range2f   = ion::math::Range2f;
+using Range2i   = ion::math::Range2i;
+using Range3f   = ion::math::Range3f;
+using Rotationf = ion::math::Rotationf;
+using Vector2f  = ion::math::Vector2f;
+using Vector2i  = ion::math::Vector2i;
+using Vector2ui = ion::math::Vector2ui;
+using Vector3f  = ion::math::Vector3f;
+using Vector3i  = ion::math::Vector3i;
+using Vector3ui = ion::math::Vector3ui;
+using Vector4f  = ion::math::Vector4f;
+using Vector4i  = ion::math::Vector4i;
+using Vector4ui = ion::math::Vector4ui;
 
 template <int DIM, typename T> using VectorBase = ion::math::VectorBase<DIM, T>;
 
-typedef ion::math::Range2i Viewport;  ///< Used for viewing operations.
+using Viewport = ion::math::Range2i;  ///< Used for viewing operations.
 
 /// Type used for any geometry index.
-typedef unsigned int GIndex;
+using GIndex = unsigned int;
 
 // ----------------------------------------------------------------------------
 // Color.

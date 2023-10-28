@@ -3,8 +3,8 @@
 #include <functional>
 
 #include "Base/IEmitter.h"
-#include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 #include "Viewers/Viewer.h"
 
 DECL_SHARED_PTR(VRViewer);
@@ -19,12 +19,12 @@ class VRViewer : public Viewer, public IEmitter {
   public:
     /// Type for a function used to render into the VRViewer. It is passed the
     /// Scene, Renderer, and a base position for VR viewing.
-    typedef std::function<void(const SG::Scene &, IRenderer &,
-                               const Point3f &)> RenderFunc;
+    using RenderFunc =
+        std::function<void(const SG::Scene &, IRenderer &, const Point3f &)>;
 
     /// Type for a function used to emit events. It is passed the base position
     /// for VR viewing.
-    typedef std::function<void(std::vector<Event> &, const Point3f &)> EmitFunc;
+    using EmitFunc = std::function<void(std::vector<Event> &, const Point3f &)>;
 
     /// The constructor is passed a function used to render and a function used
     /// to emit events.

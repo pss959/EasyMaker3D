@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Util/Alarm.h"
+#include "Util/Memory.h"
 
 struct Event;
 DECL_SHARED_PTR(EventManager);

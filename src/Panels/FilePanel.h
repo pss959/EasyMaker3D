@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Enums/FileFormat.h"
 #include "Panels/ToolPanel.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
 class FilePathList;
 DECL_SHARED_PTR(FilePanel);

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Models/CombinedModel.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

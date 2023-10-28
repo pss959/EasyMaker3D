@@ -15,7 +15,7 @@ class Object;
 /// \ingroup Parser
 class Writer {
   public:
-    typedef std::function<bool(const Object &, bool)> ObjectFunc;
+    using ObjectFunc = std::function<bool(const Object &, bool)>;
 
     explicit Writer(std::ostream &out);
     ~Writer();

@@ -10,7 +10,7 @@
 #include "Parser/Parser.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing2.h"
-#include "Base/Memory.h"
+#include "Util/Memory.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains
 // the given string pattern.

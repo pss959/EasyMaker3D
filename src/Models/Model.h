@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
+#include "Util/Memory.h"
 #include "Widgets/ClickableWidget.h"
 
 DECL_SHARED_PTR(Model);

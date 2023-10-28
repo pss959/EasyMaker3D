@@ -2,9 +2,9 @@
 
 #include <algorithm>
 
-#include "Base/Memory.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(PrecisionStore);

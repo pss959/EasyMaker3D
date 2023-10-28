@@ -3,11 +3,11 @@
 #include <functional>
 #include <string>
 
-#include "Base/Memory.h"
 #include "Math/Dimensionality.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 struct DragInfo;
@@ -33,9 +33,9 @@ DECL_SHARED_PTR(Widget);
 /// \ingroup Widgets
 class Widget : public SG::Node {
   public:
-    /// Typedef for function that can be invoked to show or hide a Tooltip.
-    typedef std::function<void(Widget &widget, const Str &,
-                               bool show)> TooltipFunc;
+    /// Alias for function that can be invoked to show or hide a Tooltip.
+    using TooltipFunc =
+        std::function<void(Widget &widget, const Str &, bool show)>;
 
     /// Returns a Notifier that is invoked when the widget is activated or
     /// deactivated. It is passed the Widget and a flag indicating activation

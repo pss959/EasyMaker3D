@@ -2,9 +2,9 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/PrimitiveShape.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -18,7 +18,7 @@ DECL_SHARED_PTR(Rectangle);
 /// \ingroup SG
 class Rectangle : public PrimitiveShape {
   public:
-    typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
+    using PlaneNormal = ion::gfxutils::PlanarShapeSpec::PlaneNormal;
 
     const Vector2f &  GetSize()        const { return size_;         }
     PlaneNormal       GetPlaneNormal() const { return plane_normal_; }

@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 #include "Widgets/Widget.h"
 
 DECL_SHARED_PTR(CompositeWidget);

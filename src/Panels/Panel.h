@@ -4,9 +4,9 @@
 #include <string>
 
 #include "Base/Event.h"
-#include "Base/Memory.h"
 #include "Panes/Pane.h"
 #include "SG/Node.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 #include <vector>
@@ -54,7 +54,7 @@ class Panel : public SG::Node {
         SettingsAgentPtr    settings_agent;
         VirtualKeyboardPtr  virtual_keyboard;  ///< Null if VR not enabled.
     };
-    typedef std::shared_ptr<Context> ContextPtr;
+    DECL_SHARED_PTR(Context);
 
     /// \name Initialization
     ///@{
@@ -139,10 +139,10 @@ class Panel : public SG::Node {
 
   protected:
     /// Defines a function that is invoked when a button is clicked.
-    typedef std::function<void(void)> ButtonFunc;
+    using ButtonFunc = std::function<void(void)>;
 
     /// Type of function that is invoked by AskQuestion().
-    typedef std::function<void(const Str &)> QuestionFunc;
+    using QuestionFunc = std::function<void(const Str &)>;
 
     Panel();
     ~Panel() override;
@@ -246,7 +246,7 @@ class Panel : public SG::Node {
   private:
     class Focuser_;  ///< Handles Pane focus management.
 
-    typedef std::unordered_map<ButtonPanePtr, ButtonFunc> ButtonFuncMap_;
+    using ButtonFuncMap_ = std::unordered_map<ButtonPanePtr, ButtonFunc>;
 
     /// \name Parsed Fields
     ///@{

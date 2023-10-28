@@ -21,16 +21,16 @@ namespace {
 // ----------------------------------------------------------------------------
 
 // Shorthand.
-typedef PolyMesh::Edge      Edge;
-typedef PolyMesh::EdgeVec   EdgeVec;
-typedef PolyMesh::Face      Face;
-typedef PolyMesh::FaceVec   FaceVec;
-typedef PolyMesh::Vertex    Vertex;
-typedef PolyMesh::VertexVec VertexVec;
-typedef PolyMesh::IndexVec  IndexVec;
+using Edge      = PolyMesh::Edge     ;
+using EdgeVec   = PolyMesh::EdgeVec  ;
+using Face      = PolyMesh::Face     ;
+using FaceVec   = PolyMesh::FaceVec  ;
+using Vertex    = PolyMesh::Vertex   ;
+using VertexVec = PolyMesh::VertexVec;
+using IndexVec  = PolyMesh::IndexVec ;
 
 /// Maps an Edge ID to an Edge instance.
-typedef std::unordered_map<Str, Edge *> EdgeMap_;
+using EdgeMap_ = std::unordered_map<Str, Edge *>;
 
 /// Returns a unique hash key for an edge between two vertices.
 static Str EdgeHashKey_(const Vertex &v0, const Vertex &v1) {

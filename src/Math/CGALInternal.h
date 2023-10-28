@@ -20,16 +20,16 @@
 // CGAL types.
 // ----------------------------------------------------------------------------
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel   CKernel;
-typedef CGAL::Polyhedron_3<CKernel>                         CPolyhedron;
-typedef CKernel::Plane_3                                    CPlane3;
-typedef CKernel::Point_2                                    CPoint2;
-typedef CKernel::Point_3                                    CPoint3;
-typedef CPolyhedron::Facet_const_iterator                   CFI;
-typedef CPolyhedron::HalfedgeDS                             CHalfedgeDS;
-typedef CPolyhedron::HalfedgeDS::Vertex                     CVertex;
-typedef CPolyhedron::Halfedge_around_facet_const_circulator CHFC;
-typedef CPolyhedron::Vertex_const_iterator                  CVI;
+using CKernel     = CGAL::Exact_predicates_exact_constructions_kernel  ;
+using CPolyhedron = CGAL::Polyhedron_3<CKernel>;
+using CPlane3     = CKernel::Plane_3;
+using CPoint2     = CKernel::Point_2;
+using CPoint3     = CKernel::Point_3;
+using CFI         = CPolyhedron::Facet_const_iterator;
+using CHalfedgeDS = CPolyhedron::HalfedgeDS;
+using CVertex     = CPolyhedron::HalfedgeDS::Vertex;
+using CHFC        = CPolyhedron::Halfedge_around_facet_const_circulator;
+using CVI         = CPolyhedron::Vertex_const_iterator;
 
 // ----------------------------------------------------------------------------
 // Helper functions.

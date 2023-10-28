@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Models/Model.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ClipboardManager);
 
@@ -28,7 +28,7 @@ class ClipboardManager {
     std::vector<ModelPtr> CreateClones() const { return CloneModels_(models_); }
 
   private:
-    typedef std::vector<ModelPtr> ModelVec_;  ///< For shorthand.
+    using ModelVec_ = std::vector<ModelPtr>;  ///< For shorthand.
 
     ModelVec_ models_;  ///< Models stored in clipboard.
 

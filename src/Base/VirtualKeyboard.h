@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Enums/TextAction.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 // VirtualKeyboard is shared in several places.
@@ -14,7 +14,7 @@ DECL_SHARED_PTR(VirtualKeyboard);
 /// \ingroup Base
 class VirtualKeyboard {
   public:
-    typedef std::function<void(bool)> ShowHideFunc;
+    using ShowHideFunc = std::function<void(bool)>;
 
     /// Sets a function to invoke that implements whatever is necessary to show
     /// or hide the VirtualKeyboard. It is passed a flag that is true for show

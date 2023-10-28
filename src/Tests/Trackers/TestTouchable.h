@@ -1,5 +1,7 @@
-#include "Base/Memory.h"
+#pragma once
+
 #include "Items/Touchable.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Widget);
 

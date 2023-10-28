@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Enums/Dim.h"
 #include "Math/Taper.h"
 #include "Panels/ToolPanel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(TaperToolPanel);
 DECL_SHARED_PTR(TaperProfilePane);

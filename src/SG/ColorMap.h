@@ -4,10 +4,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/NamedColor.h"
 #include "SG/Object.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

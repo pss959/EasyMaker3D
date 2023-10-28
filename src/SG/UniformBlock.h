@@ -3,12 +3,12 @@
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniformblock.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/Material.h"
 #include "SG/Object.h"
 #include "SG/Texture.h"
 #include "SG/Uniform.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

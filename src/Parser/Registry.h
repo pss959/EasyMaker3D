@@ -21,8 +21,8 @@ namespace Parser {
 /// \ingroup Parser
 class Registry {
   public:
-    /// Convenience typedef for the function used to create an object.
-    typedef std::function<Object *()> CreationFunc;
+    /// Convenience alias for the function used to create an object.
+    using CreationFunc = std::function<Object *()>;
 
     /// Registers a derived concrete Parser::Object class that can be parsed.
     /// The unique name to use for the class and a function that can be used to
@@ -69,11 +69,11 @@ class Registry {
     static StrVec GetAllTypeNames();
 
   private:
-    /// Convenience typedef for the map from typeid to type name.
-    typedef std::unordered_map<std::type_index, Str> TypeNameMap_;
+    /// Convenience alias for the map from typeid to type name.
+    using TypeNameMap_ = std::unordered_map<std::type_index, Str>;
 
-    /// Convenience typedef for the map from type name to creation function.
-    typedef std::unordered_map<Str, CreationFunc> CreationMap_;
+    /// Convenience alias for the map from type name to creation function.
+    using CreationMap_ = std::unordered_map<Str, CreationFunc>;
 
     /// Stores the association between C++ typeid and type names.
     static TypeNameMap_ type_name_map_;

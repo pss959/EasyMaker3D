@@ -2,9 +2,9 @@
 
 #include <ion/gfx/statetable.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/Object.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -17,9 +17,9 @@ DECL_SHARED_PTR(StateTable);
 /// \ingroup SG
 class StateTable : public Object {
   public:
-    typedef ion::gfx::StateTable::CullFaceMode        CullFaceMode;
-    typedef ion::gfx::StateTable::BlendEquation       BlendEquation;
-    typedef ion::gfx::StateTable::BlendFunctionFactor BlendFunctionFactor;
+    using CullFaceMode        = ion::gfx::StateTable::CullFaceMode;
+    using BlendEquation       = ion::gfx::StateTable::BlendEquation;
+    using BlendFunctionFactor = ion::gfx::StateTable::BlendFunctionFactor;
 
     /// Sets the line width field.
     void SetLineWidth(float width);

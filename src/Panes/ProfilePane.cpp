@@ -27,14 +27,13 @@
 
 class ProfilePane::Impl_ {
   public:
-    /// Typedef for function to set the range for a movable point
-    /// Slider2DWidget.
-    typedef std::function<Range2f(Slider2DWidget &,
-                                  const Profile &, size_t)> SliderRangeFunc;
+    /// Alias for function to set the range for a movable point Slider2DWidget.
+    using SliderRangeFunc =
+        std::function<Range2f(Slider2DWidget &, const Profile &, size_t)>;
 
-    /// Typedef for function that determines whether a new point can be
-    /// inserted in the Profile at a given index.
-    typedef std::function<bool(const Profile &, size_t)> CanInsertPointFunc;
+    /// Alias for function that determines whether a new point can be inserted
+    /// in the Profile at a given index.
+    using CanInsertPointFunc = std::function<bool(const Profile &, size_t)>;
 
     Impl_(SG::Node &root_node,
           const SliderRangeFunc &slider_range_func,

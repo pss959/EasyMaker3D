@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Items/Border.h"
 #include "Items/PaneBackground.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Util/Flags.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 class  IPaneInteractor;

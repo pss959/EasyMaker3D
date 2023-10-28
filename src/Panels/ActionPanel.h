@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Panels/Panel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ActionPanel);
 DECL_SHARED_PTR(ButtonPane);

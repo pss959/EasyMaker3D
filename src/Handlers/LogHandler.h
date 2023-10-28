@@ -3,9 +3,9 @@
 #include <vector>
 
 #include "Base/Event.h"
-#include "Base/Memory.h"
 #include "Handlers/Handler.h"
 #include "Util/Enum.h"
+#include "Util/Memory.h"
 
 struct Log;
 

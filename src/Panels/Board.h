@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Agents/BoardAgent.h"
-#include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "Items/Touchable.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

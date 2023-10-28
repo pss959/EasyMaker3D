@@ -3,8 +3,8 @@
 #include <functional>
 #include <string>
 
-#include "Base/Memory.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Panel);
 DECL_SHARED_PTR(BoardAgent);
@@ -16,7 +16,7 @@ DECL_SHARED_PTR(BoardAgent);
 /// \ingroup Agents
 class BoardAgent {
   public:
-    typedef std::function<void(const Str &)> ResultFunc;
+    using ResultFunc = std::function<void(const Str &)>;
 
     /// Returns the named Panel. Asserts if the name is not known.
     virtual PanelPtr GetPanel(const Str &name) const = 0;

@@ -3,8 +3,8 @@
 #include <functional>
 
 #include "Agents/SettingsAgent.h"
-#include "Base/Memory.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsManager);
@@ -16,8 +16,8 @@ DECL_SHARED_PTR(SettingsManager);
 /// \ingroup Managers
 class SettingsManager : public SettingsAgent {
   public:
-    /// Typedef for function that is invoked when settings change.
-    typedef std::function<void(const Settings &)> ChangeFunc;
+    /// Alias for function that is invoked when settings change.
+    using ChangeFunc = std::function<void(const Settings &)>;
 
     /// The constructor installs default settings.
     SettingsManager();

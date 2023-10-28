@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 
 namespace SG {
 

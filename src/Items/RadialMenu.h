@@ -3,11 +3,11 @@
 #include <functional>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Math/Curves.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }

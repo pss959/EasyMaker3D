@@ -2,12 +2,12 @@
 
 #include <concepts>
 
-#include "Base/Memory.h"
 #include "Panes/Pane.h"
 #include "Panels/Panel.h"
 #include "Tests/Panels/PanelInteractor.h"
 #include "Tests/SceneTestBase.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 /// Base class for Panel tests; it provides some conveniences to simplify and
 /// clarify tests.

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/NodePath.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(Board);

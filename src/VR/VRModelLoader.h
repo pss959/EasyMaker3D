@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Enums/Hand.h"
 #include "Items/Controller.h"
+#include "Util/Memory.h"
 
 namespace SG { DECL_SHARED_PTR(Node); }
 

@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Enums/FocusReason.h"
+#include "Util/Memory.h"
 
 struct Event;
 DECL_SHARED_PTR(Border);

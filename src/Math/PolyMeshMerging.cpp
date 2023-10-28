@@ -19,11 +19,11 @@ namespace {
 // ----------------------------------------------------------------------------
 
 // Shorthand.
-typedef PolyMesh::Edge      Edge;
-typedef PolyMesh::EdgeVec   EdgeVec;
-typedef PolyMesh::Face      Face;
-typedef PolyMesh::Vertex    Vertex;
-typedef std::vector<GIndex> IndexVec_;
+using Edge      = PolyMesh::Edge     ;
+using EdgeVec   = PolyMesh::EdgeVec  ;
+using Face      = PolyMesh::Face     ;
+using Vertex    = PolyMesh::Vertex   ;
+using IndexVec_ = std::vector<GIndex>;
 
 /// This struct is used to count the number of edges each PolyMesh Vertex is
 // part of, and to store the first two edges. It helps merge the two edges
@@ -36,7 +36,7 @@ struct VertexInfo_ {
 };
 
 /// Maps a Vertex to its VertexInfo_.
-typedef std::unordered_map<Vertex *, VertexInfo_> VertexMap_;
+using VertexMap_ = std::unordered_map<Vertex *, VertexInfo_>;
 
 /// Helper class for finding holes in a merged Face of a PolyMesh that is known
 /// to have holes and storing them properly in the Face.

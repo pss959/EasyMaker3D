@@ -1,4 +1,3 @@
-#include "Base/Memory.h"
 #include "Parser/Exception.h"
 #include "Place/DragInfo.h"
 #include "Place/EdgeTarget.h"
@@ -6,6 +5,7 @@
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Tests/Widgets/DragTester.h"
+#include "Util/Memory.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/PointTargetWidget.h"

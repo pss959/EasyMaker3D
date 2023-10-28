@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Enums/FileFormat.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(SessionAgent);
 class FilePath;

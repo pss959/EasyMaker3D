@@ -2,9 +2,9 @@
 
 #include <unordered_map>
 
-#include "Base/Memory.h"
 #include "Panels/Panel.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(PanelManager);
 namespace SG { class Scene; }
@@ -36,7 +36,7 @@ class PanelManager {
     }
 
   private:
-    typedef std::unordered_map<Str, PanelPtr> PanelMap_;
+    using PanelMap_ = std::unordered_map<Str, PanelPtr>;
 
     /// Maps panel name to panel instance.
     PanelMap_ panel_map_;

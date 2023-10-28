@@ -2,8 +2,8 @@
 
 #include <ion/gfx/sampler.h>
 
-#include "Base/Memory.h"
 #include "SG/Object.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -16,10 +16,10 @@ DECL_SHARED_PTR(Sampler);
 /// \ingroup SG
 class Sampler : public Object {
   public:
-    typedef ion::gfx::Sampler::CompareFunction CompareFunction;
-    typedef ion::gfx::Sampler::CompareMode     CompareMode;
-    typedef ion::gfx::Sampler::FilterMode      FilterMode;
-    typedef ion::gfx::Sampler::WrapMode        WrapMode;
+    using CompareFunction = ion::gfx::Sampler::CompareFunction;
+    using CompareMode     = ion::gfx::Sampler::CompareMode;
+    using FilterMode      = ion::gfx::Sampler::FilterMode;
+    using WrapMode        = ion::gfx::Sampler::WrapMode;
 
     /// \name Field Query Functions
     ///@{

@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "SG/Change.h"
 #include "Tools/PassiveTool.h"
+#include "Util/Memory.h"
 
 class TargetManager;
 
@@ -145,8 +145,8 @@ class ToolBox : public Grippable {
     virtual void             UpdateGripInfo(GripInfo &info) override;
 
   private:
-    typedef std::unordered_map<Str,     ToolPtr> ToolNameMap_;
-    typedef std::unordered_map<Model *, ToolPtr>     ActiveToolMap_;
+    using ToolNameMap_   = std::unordered_map<Str,     ToolPtr>;
+    using ActiveToolMap_ = std::unordered_map<Model *, ToolPtr>;
 
     /// Node to use as the parent of all active Tools.
     SG::NodePtr parent_node_;

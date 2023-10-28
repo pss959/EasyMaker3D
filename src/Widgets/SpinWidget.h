@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Math/Spin.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 #include "Widgets/CompositeWidget.h"
 

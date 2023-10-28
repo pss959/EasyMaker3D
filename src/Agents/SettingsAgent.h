@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsAgent);

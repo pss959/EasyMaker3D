@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Enums/Action.h"
+#include "Util/Memory.h"
 
 class SessionState;
 DECL_SHARED_PTR(ActionAgent);

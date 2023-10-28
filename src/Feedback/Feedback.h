@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Feedback);
 
@@ -13,8 +13,8 @@ DECL_SHARED_PTR(Feedback);
 /// \ingroup Feedback
 class Feedback : public SG::Node {
   public:
-    /// Typedef for function returning scene bounds.
-    typedef std::function<Bounds()> SceneBoundsFunc;
+    /// Alias for function returning scene bounds.
+    using SceneBoundsFunc = std::function<Bounds()>;
 
     /// Sets a function that returns the Bounds of all Models in the
     /// scene. This is used to help determine feedback placement.

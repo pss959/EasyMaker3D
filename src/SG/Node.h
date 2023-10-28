@@ -5,7 +5,6 @@
 
 #include <ion/gfx/node.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Object.h"
@@ -14,6 +13,7 @@
 #include "SG/UniformBlock.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "SG/Camera.h"
 #include "SG/Object.h"
+#include "Util/Memory.h"
 
 class Frustum;
 

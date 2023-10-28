@@ -7,10 +7,10 @@
 #include <ion/text/fontmanager.h>
 #include <ion/text/outlinebuilder.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Node.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

@@ -4,9 +4,9 @@
 #include <vector>
 
 #include "Agents/SessionAgent.h"
-#include "Base/Memory.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ActionAgent);
 DECL_SHARED_PTR(CommandManager);

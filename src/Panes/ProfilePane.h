@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }

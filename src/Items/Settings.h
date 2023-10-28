@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Enums/Hand.h"
 #include "Enums/RadialMenusMode.h"
 #include "Items/RadialMenuInfo.h"
@@ -11,6 +10,7 @@
 #include "Parser/Object.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Settings);
 
@@ -110,10 +110,10 @@ class Settings : public Parser::Object {
     virtual void AddFields() override;
 
   private:
-    typedef Parser::TField<Str>                 PathField_;
-    typedef Parser::ObjectField<RadialMenuInfo> RadialMenuField_;
-    typedef Parser::ObjectField<UnitConversion> UnitsField_;
-    typedef Parser::TField<Vector3f>            VolumeField_;
+    using PathField_       = Parser::TField<Str>;
+    using RadialMenuField_ = Parser::ObjectField<RadialMenuInfo>;
+    using UnitsField_      = Parser::ObjectField<UnitConversion>;
+    using VolumeField_     = Parser::TField<Vector3f>;
 
     /// \name Parsed Fields
     /// Note that there are no default values; they are set in CreationDone()

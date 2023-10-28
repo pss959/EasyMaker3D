@@ -21,7 +21,7 @@ Str ToString(float f, float precision);
 /// \ingroup Math
 Str ToString(const VectorBase<2, float> &v, float precision);
 
-#if ! DOXYGEN  // Doxygen cannot handle the template overload with typedef?
+#if ! DOXYGEN  // Doxygen cannot handle the template overload with alias?
 /// Converts a vector with output precision.
 ///
 /// \ingroup math

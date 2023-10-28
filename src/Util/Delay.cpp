@@ -18,8 +18,8 @@
 
 namespace {
 
-/// Convenience typedef for a function to execute in a delayed thread.
-typedef std::function<void()> ExecFunc_;
+/// Convenience alias for a function to execute in a delayed thread.
+using ExecFunc_ = std::function<void()>;
 
 // ----------------------------------------------------------------------------
 // Thread_ class.
@@ -144,7 +144,7 @@ class ThreadManager_ {
     }
 
   private:
-    typedef std::shared_ptr<Thread_> ThreadPtr_;
+    using ThreadPtr_ = std::shared_ptr<Thread_>;
 
     /// Vector of std::shared_ptr to Thread_ instances. Each Thread_ may or may
     /// not be waiting.

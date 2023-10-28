@@ -3,10 +3,10 @@
 #include <functional>
 
 #include "Base/Event.h"
-#include "Base/Memory.h"
 #include "Handlers/Handler.h"
 #include "Place/ClickInfo.h"
 #include "SG/NodePath.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(Controller);
@@ -37,8 +37,8 @@ class MainHandler : public Handler {
         SG::NodePtr   debug_sphere;
     };
 
-    /// Typedef for function passed to SetPathFilter().
-    typedef std::function<bool(const SG::NodePath &path)> PathFilter;
+    /// Alias for function passed to SetPathFilter().
+    using PathFilter = std::function<bool(const SG::NodePath &path)>;
 
     /// The constructor is passed a flag indicating whether to set up VR
     /// interaction.

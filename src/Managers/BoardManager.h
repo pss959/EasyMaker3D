@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Agents/BoardAgent.h"
-#include "Base/Memory.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Board);
 DECL_SHARED_PTR(BoardManager);

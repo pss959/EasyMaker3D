@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Panels/Panel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(KeyPane);
 DECL_SHARED_PTR(KeyboardPanel);

@@ -17,7 +17,7 @@
 
 namespace {
 
-typedef CGAL::Nef_polyhedron_3<CKernel> CNefPolyhedron;
+using CNefPolyhedron = CGAL::Nef_polyhedron_3<CKernel>;
 
 // ----------------------------------------------------------------------------
 // CGAL conversion functions.

@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Handlers/Handler.h"
+#include "Util/Memory.h"
 
 class FilePath;
 DECL_SHARED_PTR(ActionAgent);
@@ -58,7 +58,7 @@ class ShortcutHandler : public Handler {
   private:
     class Parser_;
 
-    typedef std::unordered_map<Str, Action> ActionMap_;
+    using ActionMap_ = std::unordered_map<Str, Action>;
 
     ActionAgentPtr action_agent_;
 

@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Commands/Command.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(CommandList);
 DECL_SHARED_PTR(CommandManager);
@@ -25,8 +25,8 @@ DECL_SHARED_PTR(SessionState);
 /// \ingroup Managers
 class CommandManager {
   public:
-    /// Typedef for command functions.
-    typedef std::function<void(Command &, Command::Op)> CommandFunc;
+    /// Alias for command functions.
+    using CommandFunc = std::function<void(Command &, Command::Op)>;
 
     // ------------------------------------------------------------------------
     // Registration and initialization.

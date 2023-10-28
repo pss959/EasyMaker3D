@@ -79,7 +79,7 @@ static void HandleEx_(const Str &when, const std::exception &ex) {
 // invokes a function inside the Application_ class.
 class AppHandler_ : public Handler {
   public:
-    typedef std::function<bool(const Event &event)> HandlerFunc;
+    using HandlerFunc = std::function<bool(const Event &event)>;
     explicit AppHandler_(const HandlerFunc &func) : func_(func) {
         ASSERT(func);
     }

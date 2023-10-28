@@ -34,17 +34,17 @@ struct PolyMesh {
     struct Vertex;
     struct Border;
 
-    /// Convenience typedef for a vector of edge pointers.
-    typedef std::vector<Edge *> EdgeVec;
+    /// Convenience alias for a vector of edge pointers.
+    using EdgeVec = std::vector<Edge *>;
 
-    /// Convenience typedef for a vector of face pointers.
-    typedef std::vector<Face *> FaceVec;
+    /// Convenience alias for a vector of face pointers.
+    using FaceVec = std::vector<Face *>;
 
-    /// Convenience typedef for a vector of vertex pointers.
-    typedef std::vector<Vertex *> VertexVec;
+    /// Convenience alias for a vector of vertex pointers.
+    using VertexVec = std::vector<Vertex *>;
 
-    /// Convenience typedef for a vector of GIndex indices.
-    typedef std::vector<GIndex> IndexVec;
+    /// Convenience alias for a vector of GIndex indices.
+    using IndexVec = std::vector<GIndex>;
 
     /// All vertices in the PolyMesh.
     VertexVec vertices;

@@ -27,8 +27,8 @@ class FontSystem::Impl_ {
                          float char_spacing, const OutlineFuncs &funcs);
 
   private:
-    typedef std::unordered_map<Str, FilePath> PathMap_;
-    typedef std::unordered_map<Str, FT_Face>  FaceMap_;
+    using PathMap_ = std::unordered_map<Str, FilePath>;
+    using FaceMap_ = std::unordered_map<Str, FT_Face>;
 
     bool     is_initialized_ = false;
     PathMap_ path_map_;  ///< Maps font names to FilePath instances.

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Enums/TextAction.h"
 #include "Panes/ButtonPane.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(KeyPane);
 

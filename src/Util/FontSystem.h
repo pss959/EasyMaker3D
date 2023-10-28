@@ -1,12 +1,11 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
-class FontSystem;
-typedef std::shared_ptr<FontSystem> FontSystemPtr;
+DECL_SHARED_PTR(FontSystem);
 
 /// The FontSystem class is a singleton that manages system fonts. Most of
 /// these functions are virtual to allow derived classes to redefine them for

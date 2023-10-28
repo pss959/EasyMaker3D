@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Commands/Command.h"
 #include "Place/PointTarget.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ChangePointTargetCommand);
 

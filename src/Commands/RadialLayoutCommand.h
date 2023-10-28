@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
 #include "Math/Curves.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

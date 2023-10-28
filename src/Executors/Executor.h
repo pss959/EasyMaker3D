@@ -2,10 +2,10 @@
 
 #include <functional>
 
-#include "Base/Memory.h"
 #include "Commands/Command.h"
 #include "Selection/SelPath.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 #include "Widgets/Widget.h"
 
 DECL_SHARED_PTR(AnimationManager);
@@ -39,7 +39,7 @@ class Executor {
         // Function to invoke to set up tooltips on Models.
         Widget::TooltipFunc tooltip_func;
     };
-    typedef std::shared_ptr<Context> ContextPtr;
+    DECL_SHARED_PTR(Context);
 
     /// Sets a Context containing managers that can be used by derived classes
     /// during operation.

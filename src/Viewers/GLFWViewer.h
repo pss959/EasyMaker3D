@@ -4,8 +4,8 @@
 
 #include "Base/IEmitter.h"
 #include "Base/IWindowSystem.h"
-#include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 #include "Viewers/Viewer.h"
 
 DECL_SHARED_PTR(Frustum);
@@ -19,7 +19,7 @@ namespace SG { DECL_SHARED_PTR(WindowCamera); }
 /// \ingroup Viewers
 class GLFWViewer : public Viewer, public IEmitter {
   public:
-    typedef std::function<void(const Str &)> ErrorFunc;
+    using ErrorFunc = std::function<void(const Str &)>;
 
     /// The constructor is passed a function to call when an error occurs. It
     /// is passed a string containing the error message.

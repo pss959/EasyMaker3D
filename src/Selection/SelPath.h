@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/CoordConv.h"
 #include "SG/NodePath.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(Model);
 DECL_SHARED_PTR(ParentModel);

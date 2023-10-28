@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Curves.h"
 #include "Math/Types.h"
 #include "SG/TriMeshShape.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Base/Event.h"
-#include "Base/Memory.h"
 #include "Enums/Actuator.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
 #include "SG/NodePath.h"
+#include "Util/Memory.h"
 
 struct ClickInfo;
 struct DragInfo;

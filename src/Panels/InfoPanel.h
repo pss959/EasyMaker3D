@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Panels/Panel.h"
 #include "Panes/Pane.h"
 #include "Selection/Selection.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ContainerPane);
 DECL_SHARED_PTR(EdgeTarget);

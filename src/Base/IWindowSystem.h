@@ -26,7 +26,7 @@ class IWindowSystem {
         bool ignore_mouse_motion = false;
     };
 
-    typedef std::function<void(const Str &)> ErrorFunc;
+    using ErrorFunc = std::function<void(const Str &)>;
 
     /// Initializes the underlying library and sets a function to invoke when
     /// an error is detected by the window system; the function is passed a

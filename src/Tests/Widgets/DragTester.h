@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "Place/DragInfo.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(CompositeWidget);
 DECL_SHARED_PTR(DraggableWidget);

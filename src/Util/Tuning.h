@@ -2,12 +2,12 @@
 
 #include <string>
 
-// Don't want to add a dependency from Util->Math, so just use Ion typedefs
+// Don't want to add a dependency from Util->Math, so just use Ion aliases
 // here.
 #include <ion/math/angle.h>
 #include <ion/math/vector.h>
-typedef ion::math::Anglef   Anglef;
-typedef ion::math::Vector3f Vector3f;
+using Anglef   = ion::math::Anglef;
+using Vector3f = ion::math::Vector3f;
 
 /// \file
 /// This file defines constants that can be modified to tune various aspects of

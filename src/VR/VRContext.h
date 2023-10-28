@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Enums/Hand.h"
 #include "Items/Controller.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 
 struct Event;
 class  IRenderer;

@@ -1,12 +1,11 @@
 #pragma once
 
 #include <filesystem>
-#include <memory>
 
+#include "Util/Memory.h"
 #include "Util/UTime.h"
 
-class FileSystem;
-typedef std::shared_ptr<FileSystem> FileSystemPtr;
+DECL_SHARED_PTR(FileSystem);
 
 /// Wrappers around file system utilities. Most of these functions are virtual
 /// to allow derived classes to redefine them for testing.

@@ -4,11 +4,11 @@
 #include <vector>
 
 #include "Base/Event.h"
-#include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
 /// The SnapScript class is used by the snapimage application to read and store
 /// a script of instructions used to generate images for public documentation.

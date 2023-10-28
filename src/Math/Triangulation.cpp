@@ -54,7 +54,7 @@ class Triangulator_ {
     std::vector<Vertex_> vertices_;
 
     /// Maps Vertex_handle (CVH) to index in vector of Vertex_ instances.
-    typedef std::unordered_map<CVH, GIndex> VMap_;
+    using VMap_ = std::unordered_map<CVH, GIndex>;
     VMap_ vmap_;
 
     /// Stores a Vertex_ instance for each point in the given Polygon.

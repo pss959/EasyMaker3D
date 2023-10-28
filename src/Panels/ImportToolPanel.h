@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Panels/FilePanel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ImportToolPanel);
 

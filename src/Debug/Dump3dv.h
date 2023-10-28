@@ -28,20 +28,20 @@ class Dump3dv {
         kFaceLabels   = (1 << 2),
     };
 
-    typedef Util::Flags<LabelFlag> LabelFlags;
+    using LabelFlags = Util::Flags<LabelFlag>;
 
     /// \name Functions used to highlight certain TriMesh features.
     ///@{
-    typedef std::function<bool(GIndex)>         TFaceHighlightFunc;
-    typedef std::function<bool(GIndex, GIndex)> TEdgeHighlightFunc;
-    typedef std::function<bool(GIndex)>         TVertexHighlightFunc;
+    using TFaceHighlightFunc   = std::function<bool(GIndex)>;
+    using TEdgeHighlightFunc   = std::function<bool(GIndex, GIndex)>;
+    using TVertexHighlightFunc = std::function<bool(GIndex)>;
     ///@}
 
     /// \name Functions used to highlight certain PolyMesh features.
     ///@{
-    typedef std::function<bool(const PolyMesh::Face   &)> PFaceHighlightFunc;
-    typedef std::function<bool(const PolyMesh::Edge   &)> PEdgeHighlightFunc;
-    typedef std::function<bool(const PolyMesh::Vertex &)> PVertexHighlightFunc;
+    using PFaceHighlightFunc   = std::function<bool(const PolyMesh::Face   &)>;
+    using PEdgeHighlightFunc   = std::function<bool(const PolyMesh::Edge   &)>;
+    using PVertexHighlightFunc = std::function<bool(const PolyMesh::Vertex &)>;
     ///@}
 
     /// The constructor is passed the file to dump to and a string to put in

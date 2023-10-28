@@ -2,9 +2,9 @@
 
 #include <ion/gfx/image.h>
 
-#include "Base/Memory.h"
 #include "SG/Object.h"
 #include "SG/SubImage.h"
+#include "Util/Memory.h"
 
 namespace SG {
 
@@ -44,7 +44,7 @@ class Image : public Object {
 
   private:
     /// Type of map storing SubImage data.
-    typedef std::unordered_map<Str, SubImagePtr> SubImageMap_;
+    using SubImageMap_ = std::unordered_map<Str, SubImagePtr>;
 
     /// \name Parsed Fields
     ///@{

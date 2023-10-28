@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Commands/Command.h"
 #include "Items/AppInfo.h"
 #include "Parser/Object.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(CommandList);
 

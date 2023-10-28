@@ -4,9 +4,9 @@
 #include <ostream>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
+#include "Util/Memory.h"
 
 namespace Parser {
 
@@ -20,8 +20,8 @@ DECL_SHARED_PTR(Object);
 /// \ingroup Parser
 class ValueWriter {
   public:
-    typedef std::function<void(const Object &)> ObjFunc;
-    typedef std::function<void(const std::vector<ObjectPtr> &)> ObjListFunc;
+    using ObjFunc     = std::function<void(const Object &)>;
+    using ObjListFunc = std::function<void(const std::vector<ObjectPtr> &)>;
 
     ValueWriter(std::ostream &out, const ObjFunc &obj_func,
                 const ObjListFunc &obj_list_func) :

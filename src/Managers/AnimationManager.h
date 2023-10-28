@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-#include "Base/Memory.h"
+#include "Util/Memory.h"
 #include "Util/UTime.h"
 
 DECL_SHARED_PTR(AnimationManager);
@@ -14,8 +14,8 @@ DECL_SHARED_PTR(AnimationManager);
 /// \ingroup Managers
 class AnimationManager {
   public:
-    /// Typedef for animation function passed to Animate().
-    typedef std::function<bool(float)> AnimationFunc;
+    /// Alias for animation function passed to Animate().
+    using AnimationFunc = std::function<bool(float)>;
 
     /// Starts an animation using the given function. The function is passed
     /// the time in seconds since the animation started. It should return true

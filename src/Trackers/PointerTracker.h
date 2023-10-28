@@ -11,8 +11,8 @@
 /// \ingroup Trackers
 class PointerTracker : public Tracker {
   public:
-    /// Typedef for function passed to SetPathFilter().
-    typedef std::function<bool(const SG::NodePath &path)> PathFilter;
+    /// Alias for function passed to SetPathFilter().
+    using PathFilter = std::function<bool(const SG::NodePath &path)>;
 
     explicit PointerTracker(Actuator actuator) : Tracker(actuator) {}
 

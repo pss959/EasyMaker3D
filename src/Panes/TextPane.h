@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Panes/LeafPane.h"
 #include "SG/LayoutOptions.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 namespace SG { DECL_SHARED_PTR(TextNode); }
@@ -22,8 +22,8 @@ DECL_SHARED_PTR(TextPane);
 /// \ingroup Panes
 class TextPane : public LeafPane {
   public:
-    typedef SG::LayoutOptions::HAlignment HAlignment;
-    typedef SG::LayoutOptions::VAlignment VAlignment;
+    using HAlignment = SG::LayoutOptions::HAlignment;
+    using VAlignment = SG::LayoutOptions::VAlignment;
 
     /// Sets the text string. If the string is empty, this disables the
     /// SG::TextNode.

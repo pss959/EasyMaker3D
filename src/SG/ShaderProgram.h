@@ -6,10 +6,10 @@
 #include <ion/gfx/shaderprogram.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "Base/Memory.h"
 #include "SG/Object.h"
 #include "SG/ShaderSource.h"
 #include "SG/UniformDef.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

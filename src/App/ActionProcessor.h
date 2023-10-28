@@ -4,8 +4,8 @@
 #include <string>
 
 #include "Agents/ActionAgent.h"
-#include "Base/Memory.h"
 #include "Enums/Action.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ActionProcessor);
 DECL_SHARED_PTR(BoardManager);
@@ -26,8 +26,8 @@ DECL_SHARED_PTR(ToolBox);
 /// \ingroup App
 class ActionProcessor : public ActionAgent {
   public:
-    typedef std::function<void()> QuitFunc;
-    typedef std::function<void()> ReloadFunc;
+    using QuitFunc   = std::function<void()>;
+    using ReloadFunc = std::function<void()>;
 
     /// The ActionProcessor::Context stores everything the ActionProcessor
     /// needs to apply actions.
@@ -49,7 +49,7 @@ class ActionProcessor : public ActionAgent {
         // Handlers.
         MainHandlerPtr      main_handler;
     };
-    typedef std::shared_ptr<Context> ContextPtr;
+    DECL_SHARED_PTR(Context);
 
     /// Initializes the ActionProcessor with a Context and a function to call
     /// when the user tries to quit.

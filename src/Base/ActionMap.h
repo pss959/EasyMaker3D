@@ -23,12 +23,12 @@ class ActionMap {
     const std::vector<Action> & GetActionsInCategory(ActionCategory cat) const;
 
   private:
-    /// Typedef for map from each ActionCategory to all Action values in it.
-    typedef std::unordered_map<ActionCategory,
-                               std::vector<Action>> CategoryMap_;
+    /// Alias for map from each ActionCategory to all Action values in it.
+    using CategoryMap_ =
+        std::unordered_map<ActionCategory, std::vector<Action>>;
 
-    /// Typedef for map from each Action to its ActionCategory.
-    typedef std::unordered_map<Action, ActionCategory> ActionMap_;
+    /// Alias for map from each Action to its ActionCategory.
+    using ActionMap_ = std::unordered_map<Action, ActionCategory>;
 
     /// Maps each ActionCategory to all Action values in it.
     const CategoryMap_ category_map_;

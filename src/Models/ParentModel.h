@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Models/Model.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ParentModel);
 

@@ -111,8 +111,8 @@ TEST_F(TextTest, ChangeTextNode) {
 
 TEST_F(TextTest, LayoutOptions) {
     // Shorthand. (Can't use "using" because they are not enum classes.)
-    typedef SG::LayoutOptions::HAlignment HAlignment;
-    typedef SG::LayoutOptions::VAlignment VAlignment;
+    using HAlignment = SG::LayoutOptions::HAlignment;
+    using VAlignment = SG::LayoutOptions::VAlignment;
 
     // Set up LayoutOptions.
     auto layout = CreateObject<SG::LayoutOptions>();

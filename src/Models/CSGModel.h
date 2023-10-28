@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Enums/CSGOperation.h"
 #include "Models/CombinedModel.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(CSGModel);
 

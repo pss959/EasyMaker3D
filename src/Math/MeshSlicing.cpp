@@ -23,7 +23,7 @@ namespace {
 class Slicer_ {
   public:
     /// Shorthand.
-    typedef std::vector<float> FloatVec;
+    using FloatVec = std::vector<float>;
 
     /// Slices the given TriMesh along the given dimension. The \p fractions
     /// vector contains the relative distances in the range (0,1) of the planes
@@ -32,7 +32,7 @@ class Slicer_ {
     SlicedMesh Slice(const TriMesh &mesh, Dim dim, const FloatVec &fractions);
 
   private:
-    typedef std::vector<GIndex> IndexVec_;
+    using IndexVec_ = std::vector<GIndex>;
 
     /// A Tri_ represents a triangle from the original TriMesh to be processed.
     struct Tri_ {

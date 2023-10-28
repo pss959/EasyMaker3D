@@ -86,7 +86,7 @@ static void PrintTriFacet_(const TriMesh &mesh, const CPolyhedron::Facet &f) {
 
 static void ReportSelfIntersections_(const TriMesh &mesh,
                                      const CPolyhedron &poly) {
-    typedef boost::graph_traits<CPolyhedron>::face_descriptor CFD;
+    using CFD = boost::graph_traits<CPolyhedron>::face_descriptor;
     std::vector<std::pair<CFD, CFD>> intersected_tris;
     CGAL::Polygon_mesh_processing::self_intersections(
         faces(poly), poly, std::back_inserter(intersected_tris));

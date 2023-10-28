@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Place/EdgeTarget.h"
+#include "Util/Memory.h"
 #include "Widgets/TargetWidgetBase.h"
 
 DECL_SHARED_PTR(EdgeTargetWidget);

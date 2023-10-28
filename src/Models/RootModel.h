@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "Models/ParentModel.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }

@@ -23,7 +23,7 @@ class WidgetTest : public SceneTestBase {
         bool can_active_hover_ = false;
         friend class Parser::Registry;
     };
-    typedef std::shared_ptr<TestWidget> TestWidgetPtr;
+    using TestWidgetPtr = std::shared_ptr<TestWidget>;
 
     WidgetTest() {
         Parser::Registry::AddType<TestWidget>("TestWidget");

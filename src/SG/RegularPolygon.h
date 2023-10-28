@@ -2,9 +2,9 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/TriMeshShape.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -19,7 +19,7 @@ DECL_SHARED_PTR(RegularPolygon);
 /// \ingroup SG
 class RegularPolygon : public TriMeshShape {
   public:
-    typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
+    using PlaneNormal = ion::gfxutils::PlanarShapeSpec::PlaneNormal;
 
     int         GetSides()       const { return sides_;        }
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }

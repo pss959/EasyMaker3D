@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "Base/Memory.h"
 #include "Enums/Dim.h"
 #include "Math/SlicedMesh.h"
 #include "Math/Types.h"
 #include "Models/SpinBasedModel.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

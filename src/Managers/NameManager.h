@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Agents/NameAgent.h"
-#include "Base/Memory.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(NameManager);
 

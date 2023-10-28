@@ -45,11 +45,11 @@ class Parser::Impl_ {
     void Reset();
 
   private:
-    /// Convenience typedef for a map storing constants (name -> value).
-    typedef std::unordered_map<Str, Str> ConstantsMap_;
+    /// Convenience alias for a map storing constants (name -> value).
+    using ConstantsMap_ = std::unordered_map<Str, Str>;
 
-    /// Convenience typedef for a map storing objects keyed by some name.
-    typedef std::unordered_map<Str, ObjectPtr> ObjectMap_;
+    /// Convenience alias for a map storing objects keyed by some name.
+    using ObjectMap_ = std::unordered_map<Str, ObjectPtr>;
 
     /// This struct is stored in the object_stack_. It maintains a pointer to
     /// the Object and everything scoped by it:

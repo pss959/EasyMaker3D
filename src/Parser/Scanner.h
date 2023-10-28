@@ -5,11 +5,11 @@
 #include <string>
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
 namespace Parser {
 
@@ -23,14 +23,12 @@ class Scanner {
   public:
     class Input_;
 
-    /// Typedef for the constant substitution function passed to the
-    /// constructor.
-    typedef std::function<Str(const Str &)> ConstantSubstFunc;
-
-    /// Typedef for the function passed to scan Objects.
-    typedef std::function<ObjectPtr()>     ObjectFunc;
-    /// Typedef for the function passed to scan lists of Objects.
-    typedef std::function<ObjectListPtr()> ObjectListFunc;
+    /// Alias for the constant substitution function passed to the constructor.
+    using ConstantSubstFunc = std::function<Str(const Str &)>;
+    /// Alias for the function passed to scan Objects.
+    using ObjectFunc        = std::function<ObjectPtr()>;
+    /// Alias for the function passed to scan lists of Objects.
+    using ObjectListFunc    = std::function<ObjectListPtr()>;
 
     /// The constructor is passed a function to invoke to substitute a value
     /// string for a constant of the form "$name". The function is passed the

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Feedback/Feedback.h"
 #include "Math/Types.h"
 #include "Parser/InstanceStore.h"
 #include "SG/NodePath.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(FeedbackManager);
 namespace SG { DECL_SHARED_PTR(Node); }
@@ -16,8 +16,8 @@ namespace SG { DECL_SHARED_PTR(Node); }
 /// \ingroup Managers
 class FeedbackManager : public Parser::InstanceStore {
   public:
-    /// Typedef for function returning scene bounds.
-    typedef std::function<Bounds()> SceneBoundsFunc;
+    /// Alias for function returning scene bounds.
+    using SceneBoundsFunc = std::function<Bounds()>;
 
     /// Sets the SG::Node instances that are to be used as parents for all
     /// active Feedback objects in world and stage coordinates. It is assumed

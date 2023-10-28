@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "SG/Node.h"
+#include "Util/Memory.h"
 #include "Widgets/IconWidget.h"
 
 namespace Parser { class Registry; }

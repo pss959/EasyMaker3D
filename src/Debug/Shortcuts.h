@@ -4,8 +4,8 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(CommandList);
 DECL_SHARED_PTR(LogHandler);

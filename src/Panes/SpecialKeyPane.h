@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "Base/Memory.h"
 #include "Panes/KeyPane.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

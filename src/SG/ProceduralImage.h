@@ -2,8 +2,8 @@
 
 #include <functional>
 
-#include "Base/Memory.h"
 #include "SG/Image.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -18,8 +18,8 @@ DECL_SHARED_PTR(ProceduralImage);
 /// \ingroup SG
 class ProceduralImage : public Image {
   public:
-    /// Typedef for function used to generate an Ion Image.
-    typedef std::function<ion::gfx::ImagePtr()> ImageFunc;
+    /// Alias for function used to generate an Ion Image.
+    using ImageFunc = std::function<ion::gfx::ImagePtr()>;
 
     /// Sets the procedural function to invoke to generate the image.
     void SetFunction(const ImageFunc &func) { func_ = func; }

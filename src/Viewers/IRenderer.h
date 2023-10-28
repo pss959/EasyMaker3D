@@ -3,8 +3,8 @@
 #include <ion/gfx/image.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(IRenderer);
 

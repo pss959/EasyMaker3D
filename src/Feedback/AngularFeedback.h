@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Feedback/Feedback.h"
 #include "Math/Curves.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(AngularFeedback);
 

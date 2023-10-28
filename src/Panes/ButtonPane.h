@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Panes/BoxPane.h"
 #include "Panes/IPaneInteractor.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 

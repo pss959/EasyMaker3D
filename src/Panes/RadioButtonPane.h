@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Base/Memory.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
+#include "Util/Memory.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }

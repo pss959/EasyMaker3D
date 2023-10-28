@@ -9,7 +9,7 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontmanager.h>
 
-#include "Base/Memory.h"
+#include "Util/Memory.h"
 
 namespace SG {
 

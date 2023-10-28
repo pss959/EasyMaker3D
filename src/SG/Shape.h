@@ -2,11 +2,11 @@
 
 #include <ion/gfx/shape.h>
 
-#include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Object.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 namespace SG {
 

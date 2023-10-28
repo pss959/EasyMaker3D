@@ -3,10 +3,10 @@
 #include <concepts>
 #include <functional>
 
-#include "Base/Memory.h"
 #include "Panels/Panel.h"
 #include "Panes/Pane.h"
 #include "Util/Assert.h"
+#include "Util/Memory.h"
 
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(CheckboxPane);

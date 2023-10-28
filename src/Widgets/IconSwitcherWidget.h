@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Base/Memory.h"
+#include "Util/Memory.h"
 #include "Widgets/IconWidget.h"
 
 namespace Parser { class Registry; }

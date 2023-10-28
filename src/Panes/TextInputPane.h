@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/Memory.h"
 #include "Panes/BoxPane.h"
+#include "Util/Memory.h"
 
 namespace Parser { class Registry; }
 
@@ -13,9 +13,9 @@ DECL_SHARED_PTR(TextInputPane);
 /// \ingroup Panes
 class TextInputPane : public BoxPane {
   public:
-    /// Typedef for a function that is used to determine whether the current
+    /// Alias for a function that is used to determine whether the current
     /// input text is valid. The current text is supplied.
-    typedef std::function<bool(const Str &)> ValidationFunc;
+    using ValidationFunc = std::function<bool(const Str &)>;
 
     /// Sets a function that is used to determine whether the current text is
     /// valid. If this function is not null and returns false, the background
