@@ -99,30 +99,6 @@ TEST_F(BevelerTest, BevelCyl2) {
     TestBevel(m, GetBevel(6, 1, 120),    240, 476);
 }
 
-#if XXXX
-RootModel 'ModelRoot' (0x55f34071b0b0) kUnselected
-|-mesh bounds: B[c=[0, 0, 0] s=[0, 0, 0]]
-|-BeveledModel 'Beveled_1' (0x55f347da59a0) kPrimary
-| |-mesh bounds: B[c=[0, 0, 0] s=[4, 4, 4]]
-| |-translation: V[0, 2, 0]
-| |-profile_points: [0.581569 0.787529],
-| |-bevel_scale: 1.99,
-| |-max_angle: 129,
-| |-CylinderModel 'Cylinder_1' (0x55f345532450) [kTraversal] kAncestorShown
-| | |-mesh bounds: B[c=[0, 0, 0] s=[2, 2, 2]]
-| | |-scale:       V[2, 2, 2]
-| | |-translation: V[0, 2, 0]
-| | |-top_radius: 1,
-| | |-bottom_radius: 1,
-
-    ChangeBevelCommand { # 0x55f347f78750
-      profile_points: [0.581569 0.787529],
-      bevel_scale: 1.99,
-      max_angle: 129,
-      model_names: ["Beveled_1"],
-    },
-#endif
-
 TEST_F(BevelerTest, BevelCyl3) {
     // This produces an invalid mesh, but it triggers an edge case in the
     // Beveler code.
