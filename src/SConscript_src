@@ -486,8 +486,8 @@ lib_sources = list(chain(
         'Write',
     ]),
     PlaceInDir_('VR', [
-        'VRContext',
         'VRModelLoader',
+        'VRSystem',
     ]),
     PlaceInDir_('Viewers', [
         'GLFWViewer',
@@ -532,10 +532,10 @@ big_lib_sources = [
     'Math/MeshCombining.cpp',
 ]
 
-# Source files that needs special treatment because of OpenVR
+# Source files that needs special treatment because of OpenVR.
 openvr_lib_sources = [
-    'VR/VRContext.cpp',
     'VR/VRModelLoader.cpp',
+    'VR/VRSystem.cpp',
 ]
 
 # Add non-release sources.

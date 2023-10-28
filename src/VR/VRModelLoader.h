@@ -6,7 +6,7 @@
 
 namespace SG { DECL_SHARED_PTR(Node); }
 
-// VRModelLoader is an internal static class used by VRContext to load SteamVR
+// VRModelLoader is an internal static class used by VRSystem to load SteamVR
 // controller models and convert them to SG Nodes.
 ///
 /// \ingroup VR

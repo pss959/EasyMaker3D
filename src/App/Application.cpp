@@ -78,7 +78,7 @@
 #include "Util/KLog.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
-#include "VR/VRContext.h"
+#include "VR/VRSystem.h"
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/Renderer.h"
 #include "Viewers/VRViewer.h"
@@ -103,7 +103,7 @@ class  Application::Impl_ {
     bool Init(const Application::Options &options);
 
     /// Returns true if VR is enabled (after Init() is called).
-    bool IsVREnabled() const { return vr_context_.get(); }
+    bool IsVREnabled() const { return vr_system_.get(); }
 
     LogHandler & GetLogHandler() const { return *log_handler_; }
 
@@ -115,7 +115,7 @@ class  Application::Impl_ {
     void SaveCrashSession(const FilePath &path, const Str &message,
                           const StrVec &stack);
 
-    void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
+    void Shutdown() { if (IsVREnabled()) vr_system_->Shutdown(); }
 
     const Context & GetContext() const { return context_; }
     void SetAskBeforeQuitting(bool ask) { ask_before_quitting_ = ask; }
@@ -154,8 +154,8 @@ class  Application::Impl_ {
 
     /// \name Other Contexts.
     ///@{
-    Tool::ContextPtr           tool_context_;
-    std::unique_ptr<VRContext> vr_context_;
+    Tool::ContextPtr          tool_context_;
+    std::unique_ptr<VRSystem> vr_system_;
     ///@}
 
     /// \name Individual Handlers.
@@ -379,7 +379,7 @@ Application::Impl_::~Impl_() {
     view_handler_.reset();
     SC_.reset();
     renderer_.reset();
-    vr_context_.reset();
+    vr_system_.reset();
     glfw_viewer_.reset();
 }
 
@@ -419,7 +419,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);
         if (IsVREnabled())
-            vr_context_->InitRendering(*renderer_);
+            vr_system_->InitRendering(*renderer_);
         virtual_keyboard_.reset(new VirtualKeyboard);
     }
 
@@ -642,23 +642,21 @@ bool Application::Impl_::InitViewers_() {
     emitters_.push_back(glfw_viewer_);
 
     // Optional VR viewer.
-    vr_context_.reset(new VRContext);
-    if (! options_.ignore_vr && vr_context_->InitSystem()) {
+    vr_system_.reset(new VRSystem);
+    if (! options_.ignore_vr && vr_system_->Startup()) {
         const auto render_func = [&](const SG::Scene &scene,
-                                     IRenderer &renderer,
-                                     const Point3f &base_position){
-            vr_context_->Render(scene, renderer, base_position);
+                                     IRenderer &renderer){
+            vr_system_->Render(scene, renderer);
         };
-        const auto emit_func = [&](std::vector<Event> &events,
-                                   const Point3f &base_position){
-            vr_context_->EmitEvents(events, base_position);
+        const auto emit_func = [&](std::vector<Event> &events){
+            vr_system_->EmitEvents(events);
         };
         vr_viewer_.reset(new VRViewer(render_func, emit_func));
         viewers_.push_back(vr_viewer_);
         emitters_.push_back(vr_viewer_);
     }
     else {
-        vr_context_.reset();
+        vr_system_.reset();
     }
     return true;
 }
@@ -911,7 +909,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     rc->SetHand(Hand::kRight);
     controller_handler_->SetControllers(lc, rc);
     if (IsVREnabled())
-        vr_context_->SetControllers(lc, rc);
+        vr_system_->SetControllers(lc, rc);
 
     // Enable or disable controllers.
     lc->SetEnabled(IsVREnabled() || options_.enable_vr);
@@ -1009,7 +1007,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 void Application::Impl_::ReplaceControllerModel_(Hand hand) {
     ASSERT(IsVREnabled());
     Controller::CustomModel model;
-    if (vr_context_->LoadControllerModel(hand, model)) {
+    if (vr_system_->LoadControllerModel(hand, model)) {
         auto &controller = hand == Hand::kLeft ?
             *SC_->left_controller :
             *SC_->right_controller;

@@ -1,4 +1,4 @@
-#include "VR/VRContext.h"
+#include "VR/VRSystem.h"
 
 #ifdef ION_PLATFORM_WINDOWS
 #  include "openvr-fixed.h"
@@ -16,6 +16,7 @@
 #include "Base/FBTarget.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
+#include "SG/VRCamera.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
@@ -41,22 +42,22 @@ static Matrix4f ConvertMatrix_(const vr::HmdMatrix34_t &m) {
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
-// VRContext::Impl_ class.
+// VRSystem::Impl_ class.
 // ----------------------------------------------------------------------------
 
-/// This class does most of the work for the VRContext.
-class VRContext::Impl_ {
+/// This class does most of the work for the VRSystem.
+class VRSystem::Impl_ {
   public:
-    bool InitSystem();
+    bool Startup();
+    void Shutdown();
     bool LoadControllerModel(Hand hand, Controller::CustomModel &model);
     void SetControllers(const ControllerPtr &l_controller,
                         const ControllerPtr &r_controller);
     void InitRendering(IRenderer &renderer);
-    void Render(const SG::Scene &scene, IRenderer &renderer,
-                const Point3f &base_position);
-    void EmitEvents(std::vector<Event> &events, const Point3f &base_position);
+    void SetCamera(const SG::VRCameraPtr &cam) { camera_ = cam; }
+    void Render(const SG::Scene &scene, IRenderer &renderer);
+    void EmitEvents(std::vector<Event> &events);
     bool IsHeadSetOn() const { return is_headset_on_; }
-    void Shutdown();
 
   private:
     /// Tracked VR controller buttons. Note that the headset on/off button is
@@ -110,6 +111,9 @@ class VRContext::Impl_ {
         Point3f prev_position{0, 0, 0};
     };
 
+    SG::VRCameraPtr camera_;             ///< SG::Camera used for VR.
+    Point3f         camera_position_;    ///< Cached position of the camera.
+
     // Rendering.
     Vector2ui window_size_;
     Eye_      l_eye_;
@@ -147,12 +151,11 @@ class VRContext::Impl_ {
     vr::VRActionHandle_t GetAction_(const Str &path);
     bool WereBindingsLoadedSuccessfully_();
     void InitEyeRendering_(IRenderer &renderer, Eye_ &eye);
-    void UpdateEyes_(const Point3f &base_position);
+    void UpdateEyes_();
     void RenderEye_(Eye_ &eye, const SG::Scene &scene, IRenderer &renderer);
     void VibrateController_(Hand hand, float duration);
     void AddButtonEvent_(Hand hand, Button_ but, std::vector<Event> &events);
-    void AddHandPoseToEvent_(Hand hand, const Point3f &base_position,
-                             Event &event);
+    void AddHandPoseToEvent_(Hand hand, Event &event);
     void AddThumbPosToEvent_(Hand hand, Event &event);
     Event CreateEventForHand_(Hand hand);
     bool GetButtonState_(const vr::VRActionHandle_t &action);
@@ -167,11 +170,11 @@ class VRContext::Impl_ {
 };
 
 // ----------------------------------------------------------------------------
-// VRContext::Impl_ functions.
+// VRSystem::Impl_ functions.
 // ----------------------------------------------------------------------------
 
-bool VRContext::Impl_::InitSystem() {
-    KLOG('v', "Initializing VR system");
+bool VRSystem::Impl_::Startup() {
+    KLOG('v', "Starting VR system");
 
     // Init VR without requiring hardware to see if there is an HMD present. If
     // that passes, init for real to make sure everything works as expected.
@@ -186,15 +189,20 @@ bool VRContext::Impl_::InitSystem() {
     return InitInput_();
 }
 
-bool VRContext::Impl_::LoadControllerModel(Hand hand,
-                                           Controller::CustomModel &model) {
+void VRSystem::Impl_::Shutdown() {
+    KLOG('v', "Shutting down VR");
+    vr::VR_Shutdown();
+}
+
+bool VRSystem::Impl_::LoadControllerModel(Hand hand,
+                                          Controller::CustomModel &model) {
     auto &controller = controllers_[Util::EnumInt(hand)];
     const auto handle = controller.handle;
     return VRModelLoader::LoadControllerModel(handle, hand, model);
 }
 
-void VRContext::Impl_::SetControllers(const ControllerPtr &l_controller,
-                                      const ControllerPtr &r_controller) {
+void VRSystem::Impl_::SetControllers(const ControllerPtr &l_controller,
+                                     const ControllerPtr &r_controller) {
     controllers_[Util::EnumInt(Hand::kLeft)].controller  = l_controller;
     controllers_[Util::EnumInt(Hand::kRight)].controller = r_controller;
 
@@ -205,7 +213,7 @@ void VRContext::Impl_::SetControllers(const ControllerPtr &l_controller,
         [&](float duration){ VibrateController_(Hand::kRight, duration); });
 }
 
-void VRContext::Impl_::InitRendering(IRenderer &renderer) {
+void VRSystem::Impl_::InitRendering(IRenderer &renderer) {
     KLOG('v', "Initializing VR rendering");
 
     // Set up VR for rendering.
@@ -219,10 +227,13 @@ void VRContext::Impl_::InitRendering(IRenderer &renderer) {
     InitEyeRendering_(renderer, r_eye_);
 }
 
-void VRContext::Impl_::Render(const SG::Scene &scene, IRenderer &renderer,
-                              const Point3f &base_position) {
+void VRSystem::Impl_::Render(const SG::Scene &scene, IRenderer &renderer) {
+    // Update the cached camera position.
+    ASSERT(camera_);
+    camera_position_ = camera_->GetCurrentPosition();
+
     // Make sure the eyes are positioned and rotated correctly.
-    UpdateEyes_(base_position);
+    UpdateEyes_();
 
     // Render each eye into textures.
     RenderEye_(l_eye_, scene, renderer);
@@ -239,8 +250,11 @@ void VRContext::Impl_::Render(const SG::Scene &scene, IRenderer &renderer,
     }
 }
 
-void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
-                                  const Point3f &base_position) {
+void VRSystem::Impl_::EmitEvents(std::vector<Event> &events) {
+    // Update the cached camera position for pose computation.
+    ASSERT(camera_);
+    camera_position_ = camera_->GetCurrentPosition();
+
     // Controller instances must have been set.
     ASSERT(controllers_[0].controller);
     ASSERT(controllers_[1].controller);
@@ -279,18 +293,13 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
 
         // Add hand pose and thumb position to all new events for this Hand.
         for (size_t i = event_count; i < events.size(); ++i) {
-            AddHandPoseToEvent_(hand, base_position, events[i]);
+            AddHandPoseToEvent_(hand, events[i]);
             AddThumbPosToEvent_(hand, events[i]);
         }
     }
 }
 
-void VRContext::Impl_::Shutdown() {
-    KLOG('v', "Shutting down VR");
-    vr::VR_Shutdown();
-}
-
-bool VRContext::Impl_::CheckForHMD_() {
+bool VRSystem::Impl_::CheckForHMD_() {
     // Init without requiring any hardware.
     /// \todo Figure out if there is a way to stifle messages from this.
     auto error = vr::VRInitError_None;
@@ -315,7 +324,7 @@ bool VRContext::Impl_::CheckForHMD_() {
     return true;
 }
 
-bool VRContext::Impl_::InitVR_() {
+bool VRSystem::Impl_::InitVR_() {
     auto error = vr::VRInitError_None;
     vr::VR_Init(&error, vr::VRApplication_Scene);
     if (error != vr::VRInitError_None) {
@@ -335,7 +344,7 @@ bool VRContext::Impl_::InitVR_() {
     return true;
 }
 
-void VRContext::Impl_::InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye) {
+void VRSystem::Impl_::InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye) {
     eye.eye = which_eye;
 
     eye.texture.eType       = vr::TextureType_OpenGL;
@@ -356,7 +365,7 @@ void VRContext::Impl_::InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye) {
     eye.orientation = Rotationf::Identity();
 }
 
-bool VRContext::Impl_::InitInput_() {
+bool VRSystem::Impl_::InitInput_() {
     auto &sys = *vr::VRSystem();
     auto &vin = *vr::VRInput();
 
@@ -400,7 +409,7 @@ bool VRContext::Impl_::InitInput_() {
     return true;
 }
 
-bool VRContext::Impl_::LoadActions_() {
+bool VRSystem::Impl_::LoadActions_() {
     auto &vin = *vr::VRInput();
     // Note: SteamVR seems to require an absolute path for this.
     const auto path =
@@ -417,7 +426,7 @@ bool VRContext::Impl_::LoadActions_() {
     }
 }
 
-void VRContext::Impl_:: InitActionSet_() {
+void VRSystem::Impl_:: InitActionSet_() {
     auto &vin = *vr::VRInput();
     const auto err = vin.GetActionSetHandle("/actions/default",
                                             &action_set_.ulActionSet);
@@ -429,7 +438,7 @@ void VRContext::Impl_:: InitActionSet_() {
     action_set_.nPriority = 0;
 }
 
-void VRContext::Impl_::InitActions_() {
+void VRSystem::Impl_::InitActions_() {
     // Headset on/off button.
     headset_action_ = GetAction_("/actions/default/in/HeadsetOnHead");
 
@@ -449,7 +458,7 @@ void VRContext::Impl_::InitActions_() {
     }
 }
 
-vr::VRActionHandle_t VRContext::Impl_::GetHandAction_(
+vr::VRActionHandle_t VRSystem::Impl_::GetHandAction_(
     Hand hand, const Str &name, bool is_input) {
     Str path = "/actions/default/";
     path += is_input ? "in/" : "out/";
@@ -458,7 +467,7 @@ vr::VRActionHandle_t VRContext::Impl_::GetHandAction_(
     return GetAction_(path);
 }
 
-vr::VRActionHandle_t VRContext::Impl_::GetAction_(const Str &path) {
+vr::VRActionHandle_t VRSystem::Impl_::GetAction_(const Str &path) {
     auto &vin = *vr::VRInput();
 
     vr::VRActionHandle_t action;
@@ -475,7 +484,7 @@ vr::VRActionHandle_t VRContext::Impl_::GetAction_(const Str &path) {
     return action;
 };
 
-bool VRContext::Impl_::WereBindingsLoadedSuccessfully_() {
+bool VRSystem::Impl_::WereBindingsLoadedSuccessfully_() {
     auto &sys = *vr::VRSystem();
     vr::VREvent_t vr_event;
 
@@ -500,7 +509,7 @@ bool VRContext::Impl_::WereBindingsLoadedSuccessfully_() {
     return false;
 }
 
-void VRContext::Impl_::InitEyeRendering_(IRenderer &renderer, Eye_ &eye) {
+void VRSystem::Impl_::InitEyeRendering_(IRenderer &renderer, Eye_ &eye) {
     using ion::gfx::FramebufferObject;
     using ion::gfx::Image;
     using ion::gfx::ImagePtr;
@@ -534,8 +543,7 @@ void VRContext::Impl_::InitEyeRendering_(IRenderer &renderer, Eye_ &eye) {
     sampler->SetWrapS(Sampler::kClampToEdge);
     sampler->SetWrapT(Sampler::kClampToEdge);
     ImagePtr resolved_image(new Image);
-    resolved_image->Set(Image::kRgba8888, w, h,
-                        ion::base::DataContainerPtr());
+    resolved_image->Set(Image::kRgba8888, w, h, ion::base::DataContainerPtr());
     TexturePtr resolved_tex(new Texture);
     resolved_tex->SetLabel(eye_str + "Resolved Texture");
     resolved_tex->SetSampler(sampler);
@@ -550,7 +558,7 @@ void VRContext::Impl_::InitEyeRendering_(IRenderer &renderer, Eye_ &eye) {
         0U, FramebufferObject::Attachment(resolved_tex));
 }
 
-void VRContext::Impl_::UpdateEyes_(const Point3f &base_position) {
+void VRSystem::Impl_::UpdateEyes_() {
     auto &comp = *vr::VRCompositor();
 
     const uint32 kCount = vr::k_unMaxTrackedDeviceCount;
@@ -567,8 +575,8 @@ void VRContext::Impl_::UpdateEyes_(const Point3f &base_position) {
         const Matrix4f m = ConvertMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
         const Rotationf rot = RotationFromMatrix(m);
 
-        head_pos_      = base_position + m * Point3f::Zero();
-        head_y_offset_ = head_pos_[1] - base_position[1];
+        head_pos_      = camera_position_ + m * Point3f::Zero();
+        head_y_offset_ = head_pos_[1] - camera_position_[1];
 
         l_eye_.position    = head_pos_ + m * l_eye_.offset;
         r_eye_.position    = head_pos_ + m * r_eye_.offset;
@@ -577,7 +585,7 @@ void VRContext::Impl_::UpdateEyes_(const Point3f &base_position) {
     }
 }
 
-void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
+void VRSystem::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
                                   IRenderer &renderer) {
     auto &sys  = *vr::VRSystem();
     auto &comp = *vr::VRCompositor();
@@ -608,7 +616,7 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
     comp.Submit(eye.eye, &eye.texture);
 }
 
-void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
+void VRSystem::Impl_::VibrateController_(Hand hand, float duration) {
     auto &action = hand_data_[Util::EnumInt(hand)].vibration;
     ASSERT(action != vr::k_ulInvalidActionHandle);
     vr::VRInput()->TriggerHapticVibrationAction(
@@ -616,7 +624,7 @@ void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
         TK::kVibrationAmplitude, vr::k_ulInvalidInputValueHandle);
 }
 
-void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,
+void VRSystem::Impl_::AddButtonEvent_(Hand hand, Button_ but,
                                        std::vector<Event> &events) {
     auto &vin = *vr::VRInput();
 
@@ -655,9 +663,7 @@ void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,
     }
 }
 
-void VRContext::Impl_::AddHandPoseToEvent_(Hand hand,
-                                           const Point3f &base_position,
-                                           Event &event) {
+void VRSystem::Impl_::AddHandPoseToEvent_(Hand hand, Event &event) {
     auto &vin = *vr::VRInput();
 
     const int hand_index = Util::EnumInt(hand);
@@ -681,13 +687,13 @@ void VRContext::Impl_::AddHandPoseToEvent_(Hand hand,
         const Matrix4f m = ConvertMatrix_(data.pose.mDeviceToAbsoluteTracking);
         const Point3f  rel_hand_pos = m * Point3f::Zero();
 
-        // Make the controller position relative to the base camera position.
-        pos = base_position + rel_hand_pos;
+        // Make the controller position relative to the camera camera position.
+        pos = camera_position_ + rel_hand_pos;
 
         // If the headset is on, make the height relative to the headset
         // height. If the headset is not on, subtract the Y offset designed to
         // make the position consistent with the VR view.
-        pos[1] -= is_headset_on_ ? head_pos_[1] - base_position[1] :
+        pos[1] -= is_headset_on_ ? head_pos_[1] - camera_position_[1] :
             TK::kHeadsetOffControllerYOffset;
 
         // Copy the rotation.
@@ -710,7 +716,7 @@ void VRContext::Impl_::AddHandPoseToEvent_(Hand hand,
     controller.prev_position = pos;
 }
 
-void VRContext::Impl_::AddThumbPosToEvent_(Hand hand, Event &event) {
+void VRSystem::Impl_::AddThumbPosToEvent_(Hand hand, Event &event) {
     auto &vin = *vr::VRInput();
 
     vr::InputAnalogActionData_t data;
@@ -723,14 +729,14 @@ void VRContext::Impl_::AddThumbPosToEvent_(Hand hand, Event &event) {
     }
 }
 
-Event VRContext::Impl_::CreateEventForHand_(Hand hand) {
+Event VRSystem::Impl_::CreateEventForHand_(Hand hand) {
     Event event;
     event.device = hand == Hand::kLeft ?
         Event::Device::kLeftController : Event::Device::kRightController;
     return event;
 }
 
-bool VRContext::Impl_::GetButtonState_(const vr::VRActionHandle_t &action) {
+bool VRSystem::Impl_::GetButtonState_(const vr::VRActionHandle_t &action) {
     ASSERT(action != vr::k_ulInvalidActionHandle);
     auto &vin = *vr::VRInput();
 
@@ -740,7 +746,7 @@ bool VRContext::Impl_::GetButtonState_(const vr::VRActionHandle_t &action) {
     return err == vr::VRInputError_None && data.bActive && data.bState;
 }
 
-bool VRContext::Impl_::HasHeadsetButton_() {
+bool VRSystem::Impl_::HasHeadsetButton_() {
     auto &vin = *vr::VRInput();
     vr::InputBindingInfo_t info[20];
     uint32_t               count;
@@ -749,7 +755,7 @@ bool VRContext::Impl_::HasHeadsetButton_() {
     return err == vr::VRInputError_None && count > 0;
 }
 
-bool VRContext::Impl_::IsHeadsetOn_() {
+bool VRSystem::Impl_::IsHeadsetOn_() {
     bool is_on = false;
     if (has_headset_button_) {
         // If the proximity sensor button is bound, get its state.
@@ -764,7 +770,7 @@ bool VRContext::Impl_::IsHeadsetOn_() {
     return is_on;
 }
 
-Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {
+Event::Button VRSystem::Impl_::GetEventButton_(Button_ but) {
     switch (but) {
       case Button_::kPinch:         return Event::Button::kPinch;
       case Button_::kGrip:          return Event::Button::kGrip;
@@ -780,7 +786,7 @@ Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {
 }
 
 #if ENABLE_DEBUG_FEATURES
-void VRContext::Impl_::ReportAllBindings_() {
+void VRSystem::Impl_::ReportAllBindings_() {
     if (KLogger::HasKeyCharacter('V')) {
         ReportBindings_("/actions/default/in/HeadsetOnHead", headset_action_);
 
@@ -795,7 +801,7 @@ void VRContext::Impl_::ReportAllBindings_() {
     }
 }
 
-void VRContext::Impl_::ReportBindings_(const Str &path,
+void VRSystem::Impl_::ReportBindings_(const Str &path,
                                        const vr::VRActionHandle_t &action) {
     auto &vin = *vr::VRInput();
 
@@ -824,46 +830,48 @@ void VRContext::Impl_::ReportBindings_(const Str &path,
 #endif
 
 // ----------------------------------------------------------------------------
-// VRContext functions.
+// VRSystem functions.
 // ----------------------------------------------------------------------------
 
-VRContext::VRContext() : impl_(new Impl_) {
+VRSystem::VRSystem() : impl_(new Impl_) {
 }
 
-VRContext::~VRContext() {
+VRSystem::~VRSystem() {
 }
 
-bool VRContext::InitSystem() {
-    return impl_->InitSystem();
+bool VRSystem::Startup() {
+    return impl_->Startup();
 }
 
-bool VRContext::LoadControllerModel(Hand hand, Controller::CustomModel &model) {
+void VRSystem::Shutdown() {
+    impl_->Shutdown();
+}
+
+bool VRSystem::LoadControllerModel(Hand hand, Controller::CustomModel &model) {
     return impl_->LoadControllerModel(hand, model);
 }
 
-void VRContext::SetControllers(const ControllerPtr &l_controller,
+void VRSystem::SetControllers(const ControllerPtr &l_controller,
                                const ControllerPtr &r_controller) {
     impl_->SetControllers(l_controller, r_controller);
 }
 
-void VRContext::InitRendering(IRenderer &renderer) {
+void VRSystem::InitRendering(IRenderer &renderer) {
     impl_->InitRendering(renderer);
 }
 
-void VRContext::Render(const SG::Scene &scene, IRenderer &renderer,
-                       const Point3f &base_position) {
-    impl_->Render(scene, renderer, base_position);
+void VRSystem::SetCamera(const SG::VRCameraPtr &cam) {
+    impl_->SetCamera(cam);
 }
 
-void VRContext::EmitEvents(std::vector<Event> &events,
-                           const Point3f &base_position) {
-    impl_->EmitEvents(events, base_position);
+void VRSystem::Render(const SG::Scene &scene, IRenderer &renderer) {
+    impl_->Render(scene, renderer);
 }
 
-bool VRContext::IsHeadSetOn() const {
+void VRSystem::EmitEvents(std::vector<Event> &events) {
+    impl_->EmitEvents(events);
+}
+
+bool VRSystem::IsHeadSetOn() const {
     return impl_->IsHeadSetOn();
-}
-
-void VRContext::Shutdown() {
-    impl_->Shutdown();
 }

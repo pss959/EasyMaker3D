@@ -11,24 +11,21 @@ DECL_SHARED_PTR(VRViewer);
 namespace SG { DECL_SHARED_PTR(VRCamera); }
 
 /// VRViewer is a derived Viewer and IEmitter to view in VR and produce events
-/// from VR devices. It is passed the functions (attached to the VRContext)
+/// from VR devices. It is passed the functions (attached to the IVRSystem)
 /// that perform the rendering and event emitting.
 ///
 /// \ingroup Viewers
 class VRViewer : public Viewer, public IEmitter {
   public:
     /// Type for a function used to render into the VRViewer. It is passed the
-    /// Scene, Renderer, and a base position for VR viewing.
-    using RenderFunc =
-        std::function<void(const SG::Scene &, IRenderer &, const Point3f &)>;
+    /// Scene and Renderer for VR viewing.
+    using RenderFunc = std::function<void(const SG::Scene &, IRenderer &)>;
 
-    /// Type for a function used to emit events. It is passed the base position
-    /// for VR viewing.
-    using EmitFunc = std::function<void(std::vector<Event> &, const Point3f &)>;
+    /// Type for a function used to emit events.
+    using EmitFunc   = std::function<void(std::vector<Event> &)>;
 
     /// The constructor is passed a function used to render and a function used
     /// to emit events.
-    /// the VR system.
     VRViewer(const RenderFunc &render_func, const EmitFunc &emit_func);
     virtual ~VRViewer();
 

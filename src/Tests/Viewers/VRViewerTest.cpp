@@ -21,16 +21,14 @@ TEST_F(VRViewerTest, RenderAndEmit) {
 
     size_t emit_count = 0;
 
-    auto render_func = [&](const SG::Scene &s, IRenderer &r, const Point3f &p){
-        EXPECT_EQ(scene.get(),      &s);
-        EXPECT_EQ(&renderer,        &r);
-        EXPECT_EQ(Point3f(1, 2, 3),  p);
+    auto render_func = [&](const SG::Scene &s, IRenderer &r){
+        EXPECT_EQ(scene.get(), &s);
+        EXPECT_EQ(&renderer,   &r);
         Frustum f;
         renderer.RenderScene(s, f);
     };
-    auto emit_func = [&](std::vector<Event> &e, const Point3f &p){
+    auto emit_func = [&](std::vector<Event> &e){
         EXPECT_TRUE(e.empty());
-        EXPECT_EQ(Point3f(1, 2, 3), p);
         ++emit_count;
     };
 
