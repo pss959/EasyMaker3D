@@ -39,9 +39,10 @@ strict digraph {
 						Math -> Util;
 						Parser	[URL="\ref Parser",
 							group=4];
-						Parser -> Base;
+						Parser -> Math;
 						SG	[URL="\ref SG",
 							group=4];
+						SG -> Base;
 						SG -> Parser;
 					}
 					Feedback	[URL="\ref Feedback",
