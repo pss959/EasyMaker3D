@@ -38,7 +38,7 @@ SpinWidget "SpinWidget" {
             Node "OffsetPosition" {
               children: [
                 Slider1DWidget "Offset" {
-                  dimension: 1,
+                  dimension:      "kY",
                   inactive_color: "#66aa55",
                   shapes: [
                     Cylinder "TopCone" {

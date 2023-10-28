@@ -18,7 +18,6 @@ ComplexityTool "ComplexityTool" {
       ],
     },
     Slider1DWidget "Slider" {
-      dimension:     0,
       min_value:     -8,
       max_value:     8,
       initial_value: 0,

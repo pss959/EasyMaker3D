@@ -1,7 +1,6 @@
 #include "Tests/SceneTestBase.h"
-#include "Tests/Testing2.h"
+#include "Tests/Testing.h"
 #include "Tests/Widgets/DragTester.h"
-#include "Util/Assert.h"
 #include "Widgets/Slider1DWidget.h"
 
 /// \ingroup Tests
@@ -10,7 +9,7 @@ class Slider1DWidgetTest : public SceneTestBase {};
 TEST_F(Slider1DWidgetTest, Defaults) {
     auto sw = CreateObject<Slider1DWidget>();
 
-    EXPECT_EQ(0, sw->GetDimension());
+    EXPECT_EQ(Dim::kX, sw->GetDimension());
     EXPECT_FALSE(sw->IsPrecisionBased());
     EXPECT_FALSE(sw->IsNormalized());
     EXPECT_EQ(0, sw->GetMinValue());
@@ -26,8 +25,8 @@ TEST_F(Slider1DWidgetTest, Set) {
     EXPECT_TRUE(sw->IsNormalized());
     EXPECT_EQ(4.2f, sw->GetInitialValue());
 
-    sw->SetDimension(2);
-    EXPECT_EQ(2, sw->GetDimension());
+    sw->SetDimension(Dim::kZ);
+    EXPECT_EQ(Dim::kZ, sw->GetDimension());
 
     sw->SetIsPrecisionBased(true);
     EXPECT_TRUE(sw->IsPrecisionBased());
@@ -35,8 +34,6 @@ TEST_F(Slider1DWidgetTest, Set) {
     sw->SetRange(-3, 12.5f);
     EXPECT_EQ(-3,    sw->GetMinValue());
     EXPECT_EQ(12.5f, sw->GetMaxValue());
-
-    TEST_ASSERT(sw->SetDimension(3), "dim");
 }
 
 TEST_F(Slider1DWidgetTest, Drag) {
@@ -75,7 +72,7 @@ TEST_F(Slider1DWidgetTest, DragPrecisionBased) {
 TEST_F(Slider1DWidgetTest, DragVertical) {
     auto sw = CreateObject<Slider1DWidget>();
     sw->SetRange(-10, 10);
-    sw->SetDimension(1);
+    sw->SetDimension(Dim::kY);
 
     DragTester dt(sw);
     dt.SetRayDirection(-Vector3f::AxisZ());
@@ -86,7 +83,7 @@ TEST_F(Slider1DWidgetTest, DragVertical) {
 TEST_F(Slider1DWidgetTest, Parallel) {
     auto sw = CreateObject<Slider1DWidget>();
     sw->SetRange(-10, 10);
-    sw->SetDimension(2);
+    sw->SetDimension(Dim::kZ);
 
     DragTester dt(sw);
     dt.SetRayDirection(-Vector3f::AxisZ());

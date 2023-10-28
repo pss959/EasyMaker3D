@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Enums/Dim.h"
 #include "Util/Memory.h"
 #include "Widgets/SliderWidgetBase.h"
 
@@ -7,19 +8,17 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(Slider1DWidget);
 
-// XXXX Change dimension to Axis enum.
-
 /// Slider1DWidget is a derived SliderWidgetBase that provides interaction
 /// along a constrained linear path.
 ///
 /// \ingroup Widgets
 class Slider1DWidget : public SliderWidgetBase<float> {
   public:
-    /// Sets the dimension used for the slider (0, 1, or 2). The default is 0.
-    void SetDimension(int dim);
+    /// Sets the dimension used for the slider. The default is Dim::kX.
+    void SetDimension(Dim dim);
 
-    /// Returns the dimension used for the slider (0, 1, or 2).
-    int GetDimension() const { return dimension_; }
+    /// Returns the dimension used for the slider.
+    Dim GetDimension() const { return dimension_; }
 
     virtual float GetInterpolated() const override;
     virtual float GetRayValue(const Ray &local_ray) override;
@@ -36,7 +35,7 @@ class Slider1DWidget : public SliderWidgetBase<float> {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<int> dimension_;
+    Parser::EnumField<Dim> dimension_;
     ///@}
 
     friend class Parser::Registry;

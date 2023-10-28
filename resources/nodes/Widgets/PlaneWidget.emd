@@ -8,7 +8,7 @@ PlaneWidget "PlaneWidget" {
       children: [
         # Translucent square for translating the plane.
         Slider1DWidget "PlaneTranslator" {
-          dimension: 1,
+          dimension:      "kY",
           inactive_color: "#eecccc22",
           active_color:   "#ffeeee22",
           shapes: [ Box { size: 2 .2 2 } ]

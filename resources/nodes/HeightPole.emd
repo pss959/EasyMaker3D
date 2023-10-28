@@ -24,7 +24,7 @@ PushButtonWidget "HeightPole" {
       ],
     },
     Slider1DWidget "HeightSlider" {
-      dimension:       1,  # Slide up and down.
+      dimension:     "kY",  # Slide up and down.
       min_value:     -60,
       max_value:      65,
       is_normalized: True,
