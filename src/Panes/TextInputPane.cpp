@@ -491,8 +491,6 @@ void TextInputPane::Impl_::Deactivate() {
 bool TextInputPane::Impl_::HandleEvent(const Event &event) {
     bool ret = false;
 
-    /// \todo Handle drag selection.
-
     if (is_active_) {
         if (event.flags.Has(Event::Flag::kKeyPress)) {
             // Check first for a key sequence in the action map.

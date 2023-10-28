@@ -21,7 +21,7 @@ TextInputPane "T_TextInputPane" {
     },
     Node "Cursor" {
       CONSTANTS: [DIAM: "diameter: .03"],
-      disabled_flags: "kTraversal",
+      disabled_flags: "kTraversal|kIntersectAll",
       shader_names: ["BaseColor"],
       blocks: [ UniformBlock {
         pass_name: $LIGHTING_PASS,
@@ -38,7 +38,7 @@ TextInputPane "T_TextInputPane" {
       ],
     },
     Node "Selection" {
-      disabled_flags: "kTraversal",
+      disabled_flags: "kTraversal|kIntersectAll",
       blocks: [ UniformBlock {
         pass_name: $LIGHTING_PASS,
         uniforms: [ Uniform "uBaseColor" { vec4f_val: "#55eeee" } ],
