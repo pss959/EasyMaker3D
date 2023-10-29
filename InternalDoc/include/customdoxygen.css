@@ -95,10 +95,9 @@ div.fragment {
  * other way around so that the initial blank line can be removed with the
  * margin-top setting here.
  */
-#doc-content pre > code {
+#doc-content .fragment {
     font-size:        13px;
     line-height:      15px;
-    margin-top:       -13px;
     margin-left:      50px;
     border:           1px solid var(--fragment-border-color);
     background-color: var(--fragment-background-color);
@@ -110,4 +109,9 @@ div.fragment {
     color:       #ee7788;
     font-family: monospace;
     font-weight: bold;
+}
+
+code {
+    font-size: -1pt;
+    color:     #c7661f;
 }

@@ -175,6 +175,8 @@ subdirectory.
 | Viewers   | \ref Viewers   | Viewer      |
 | Widgets   | \ref Widgets   | Widget      |
 
+### Module Hierarchy
+
 These modules are arranged (roughly) in a hierarchy shown in this diagram:
 
 @dotfile moduledependencies.dot
@@ -305,7 +307,7 @@ preprocessor values from the build system. For example, the
 `TK::kVersionString` constant defines the version string, which is passed in as
 `VERSION_STRING` to the C++ preprocessor from the `SCons` build.
 
-### Runtime Logging
+### Runtime Logging {#KLogging}
 
 The `KLogger` class defines a key-based logging system to help with debugging.
 It works as follows.

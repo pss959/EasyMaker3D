@@ -18,14 +18,25 @@ to.
 For your convenience, some dependencies are already included as submodules in
 the Github repository. They are:
 
-+ [`docopt.cpp`](https://github.com/docopt/docopt.cpp): A port of `docopt` to
-  C++, used for command-line processing.
-+ [`googletest`](https://github.com/google/googletest): Used for unit testing.
-+ [`magic_enum`](https://github.com/Neargye/magic_enum): Adds a bunch of very
-  useful C++ enum-related functions (that really should be built into the
-  language IMO).
-+ [`openvr`](https://github.com/ValveSoftware/openvr): Valve's SDK for VR
-  devices.
+<table class="markdownTable">
+    <tr>
+       <td>[`docopt.cpp`](https://github.com/docopt/docopt.cpp)</td>
+       <td>A port of `docopt` to C++, used for command-line processing.</td>
+    </tr>
+    <tr>
+       <td>[`googletest`](https://github.com/google/googletest)</td>
+       <td>Used for unit testing.</td>
+    </tr>
+    <tr>
+       <td>[`magic_enum`](https://github.com/Neargye/magic_enum)</td>
+       <td>Adds a bunch of very useful C++ enum-related functions (that really
+           should be built into the language IMO).</td>
+    </tr>
+    <tr>
+       <td>[`openvr`](https://github.com/ValveSoftware/openvr)</td>
+       <td>Valve's SDK for VR devices.</td>
+    </tr>
+</table>
 
 In addition, there is a stripped down and modified version of the [Google
 Ion](https://github.com/google/ion) source that provides rendering and other
@@ -35,15 +46,24 @@ features in the `ionsrc` subdirectory.
 
 Install the following packages before building the application:
 
- - `libfreetype-dev libglfw3-dev libjpeg-dev libjsoncpp-dev libminizip-dev
-   libstb-dev libtinyxml2-dev libz-dev`
+    libfreetype-dev
+    libglfw3-dev
+    libjpeg-dev
+    libjsoncpp-dev
+    libminizip-dev
+    libstb-dev
+    libtinyxml2-dev
+    libz-dev
 
 Additionally:
 
- - The `Pillow` Python package (`PIL` replacement) is required to build the 2D
-   radial menu icon resource files (required for the application).
- - The `Sphinx`, `sphinx-rtd-theme`, and `sphinxcontrib-jquery` Python packages
-   are required to build the public documentation.
+ - The [`Pillow`](https://python-pillow.org/) Python package (`PIL`
+   replacement) is required to build the 2D radial menu icon resource files
+   (required for the application).
+ - The [`Sphinx`](https://www.sphinx-doc.org/),
+   [`sphinx-rtd-theme`](https://sphinx-rtd-theme.readthedocs.io), and
+   [`sphinxcontrib-jquery`](https://pypi.org/project/sphinxcontrib-jquery/)
+   Python packages are required to build the public documentation.
  - The `libboost-dev` package is required to run the unit tests.
 
 ### Windows
@@ -52,15 +72,26 @@ To make things easier (i.e., more consistent with the Linux build), the Windows
 build uses [MSYS2](https://www.msys2.org/). Once installing it, use the
 `pacman` command to install the following dependencies:
 
- - `mingw-w64-x86_64-brotli mingw-w64-x86_64-bzip2 mingw-w64-x86_64-cgal`
-   `mingw-w64-x86_64-dlfcn mingw-w64-x86_64-freetype mingw-w64-x86_64-gcc`
-   `mingw-w64-x86_64-glfw mingw-w64-x86_64-graphite2 mingw-w64-x86_64-gtest`
-   `mingw-w64-x86_64-harfbuzz mingw-w64-x86_64-jsoncpp`
-   `mingw-w64-x86_64-libjpeg-turbo mingw-w64-x86_64-libpng`
-   `mingw-w64-x86_64-minizip mingw-w64-x86_64-openxr-sdk`
-   `mingw-w64-x86_64-pkgconf mingw-w64-x86_64-python3`
-   `mingw-w64-x86_64-python3-setuptools mingw-w64-x86_64-scons`
-   `mingw-w64-x86_64-tinyxml2`
+    mingw-w64-x86_64-brotli
+    mingw-w64-x86_64-bzip2
+    mingw-w64-x86_64-cgal
+    mingw-w64-x86_64-dlfcn
+    mingw-w64-x86_64-freetype
+    mingw-w64-x86_64-gcc
+    mingw-w64-x86_64-glfw
+    mingw-w64-x86_64-graphite2
+    mingw-w64-x86_64-gtest
+    mingw-w64-x86_64-harfbuzz
+    mingw-w64-x86_64-jsoncpp
+    mingw-w64-x86_64-libjpeg-turbo
+    mingw-w64-x86_64-libpng
+    mingw-w64-x86_64-minizip 
+    mingw-w64-x86_64-openxr-sdk
+    mingw-w64-x86_64-pkgconf 
+    mingw-w64-x86_64-python3
+    mingw-w64-x86_64-python3-setuptools 
+    mingw-w64-x86_64-scons
+    mingw-w64-x86_64-tinyxml2
 
 Before building, you will need to set the `MSYS2_HOME` environment variable to
 the location of the `MSYS2` installation, conveniently accessed as the output
@@ -72,11 +103,11 @@ To make things easier (i.e., more consistent with the Linux build), the Mac
 build uses [Homebrew](https://brew.sh/). Once installing it, use the `brew`
 command to install the following dependencies:
 
-- ` boost cgal gcc glfw3 jsoncpp libjpeg minizip tinyxml2`
+    boost cgal gcc glfw3 jsoncpp libjpeg minizip tinyxml2
 
 You may need to do this:
 
-        cp /usr/local/Cellar/jpeg/9e/lib/pkgconfig/libjpeg.pc /usr/local/lib/pkgconfig
+    cp /usr/local/Cellar/jpeg/9e/lib/pkgconfig/libjpeg.pc /usr/local/lib/pkgconfig
 
 You may also need to use `brew` to install the `freeglut` package if there are
 build errors related to `OpenGL`.
@@ -90,8 +121,8 @@ There are four different modes you can specify when building the application:
   - **opt** (optimized) is the default mode.
   - **dbg** (debug) adds debugging information to the executable. It is slower
     and takes longer to build, but is very handy when fixing issues.
-  - **cov** (coverage) is used to build [unit tests](#UnitTests) with coverage
-    tracking enabled.
+  - **cov** (coverage) is used to build and run [unit tests](#UnitTests) with
+    coverage tracking enabled.
     
 The `opt` and `dbg` modes include some features that help when developing the
 application. These features are compiled out in `rel` mode.
@@ -99,7 +130,7 @@ application. These features are compiled out in `rel` mode.
 To change which mode is being used, specify the `mode` option when building.
 For example, to build the debugging version:
 
-        scons --mode=dbg ...
+    scons --mode=dbg ...
 
 The build is set up to print brief versions of what it is doing, such as
 `"Compiling foo.cpp"`.  If you want to see each command line in full,
@@ -131,7 +162,7 @@ The targets consist of three main groups:
 following aliases:
 
 | Target          | Results                                               |
-| :-------------: | :---------------------------------------------------- |
+|:---------------:|:------------------------------------------------------|
 | **App**         | Builds the $(APP_NAME) application                    |
 | **Apps**        | Builds all applications                               |
 | **Coverage**    | Builds and runs unit tests, generates coverage report |
@@ -141,7 +172,6 @@ following aliases:
 | **PublicDoc**   | Builds the public documentation                       |
 | **Release**     | Builds the release zip or DMG file (`rel` mode only)  |
 | **RunTests**    | Builds and runs unit tests                            |
-| **Snaps**       | Builds all snapshot images for public documentation   |
 | **Tests**       | Builds unit tests                                     |
 
 Note that some targets are defined only in the Linux build. This can be changed
@@ -152,53 +182,108 @@ fairly easily in the `SCons` files if necessary.
 All of these examples assume you run the command in the top-level $(APP_NAME)
 directory.
 
+Note that the `-j8` option passed to `scons` allows 8 parallel jobs to run to
+speed things up; adjust this number for your particular build host.
+
+### Release
+
+To build the release:
+
     scons -j8 --mode=rel Release
 
-builds the release file and puts it in `build\rel\Release\`. This is all that
-is needed when releasing a new version of the application (along with updating
-the public documentation as needed).
+This creates a file containing the release (Zip or DMG) in the
+`build\rel\Release\` directory. This is all that is needed when releasing a new
+version of the application (along with updating the public documentation as
+needed).
+
+### Application(s)
+
+To build the main application in the default `opt` mode:
 
     scons -j8 App
     
-builds the main application in the default `opt` mode. The `-j8` option allows
-8 parallel jobs to run to speed things up. The result is
-<tt>build/opt/Apps/$(APP_NAME)</tt>.
+The result is <tt>build/opt/Apps/$(APP_NAME)</tt>.
 
     scons -j8 --mode=dbg App
     
 builds the main application in `dbg` mode. The result is
 <tt>build/dbg/Apps/$(APP_NAME)</tt>.
 
-    scons -j8 InternalDoc
+To build the main application and all [auxiliary applications](#BuildTargets):
 
-builds this internal documentation and puts the results in
-`build/InternalDoc/html/`.
+    scons -j8 Apps
 
-    scons PublicDoc
+### Object Files
 
-builds this internal documentation and puts the results in
-`build/PublicDoc/html/`. Note that using more than one parallel job can mess
-things up when creating the images and is not recommended.
+This example shows how to build a single object file (`Util/String.os`, built
+from `Util/String.cpp`) with output containing the full command used to compile
+it. This can be handy to make sure all compiler arguments are correct.
+
+    scons build/opt/Util/String.os --nobrief
+    
+### Tests
+
+To build all unit tests in `opt` mode:
+
+    scons -j8 Tests
+
+To build and run all unit tests in `opt` mode:
 
     scons -j8 RunTests
 
-builds and runs all unit tests in `opt` mode.
+There are two ways to limit the set of tests that are run with the `RunTests`
+target:
 
     scons -j8 RunTests TESTFILTER="*Bevel*"
 
-builds and unit tests in `opt` mode and runs all unit tests that have the
-string "Bevel" in their names.
+runs all unit tests that have the string "Bevel" in their names.
 
-    scons -j8 RunTests TESTFILTER="*Bevel*"
+    scons -j8 RunTests TESTCATEGORIES=Math,Util
 
-builds and unit tests in `opt` mode and runs all unit tests that have the
-string "Bevel" in their names.
+runs all unit tests that are in the `Math` and `Util` categories. The
+categories correspond to [code Modules](#Modules), which also correspond to
+code subdirectories.
 
-    scons build/opt/App/Renderer.os --nobrief
+There is an additional `Timing` category that runs tests with performance
+experiments. These tests are disabled by default in `src/Tests/TestMain.cpp`
+and have to be enabled specifically with the `TESTFILTER` or `TESTCATEGORIES`
+options.
+
+It is sometimes useful to enable [key-based runtime logging](#KLogging) for
+unit tests. The `KLOG` option does this:
+
+    scons -j8 RunTests TESTFILTER="MainHandler*" KLOG="h"
+
+### Code Coverage
+
+The `cov` build mode enables code coverage tracking. To see code coverage for
+all tests, run:
+
+    scons -j8 --mode=cov Coverage
+
+This produces an HTML coverage report in `build/cov/coverage/index.html`.
+
+The `TESTFILTER` and `TESTCATEGORIES` options described above also work for
+coverage, so this command:
+
+    scons -j8 --mode=cov Coverage TESTCATEGORIES=Math
     
-builds the one specified object file (from `Renderer.cpp`) with output
-containing the full command used to compile it. This can be handy to make sure
-all compiler arguments are correct.
+will produce a report after running only the `Math` tests; this can be used to
+determine if all of those tests cover all the lines of code in the `Math`
+module.
+
+### Documentation
+
+To build this internal documentation into `build/InternalDoc/html/`:
+
+    scons -j8 InternalDoc
+
+To build the public documentation into `build/PublicDoc/html/`:
+
+    scons PublicDoc
+
+Note that using more than one parallel job can mess things up when creating the
+images and is not recommended.
 
 ## Build Input Files
 
@@ -206,20 +291,24 @@ In case you need to modify some aspect of the build, the input files to `SCons`
 are as follows:
 
 | File                               | Contents                                                 |
-| ---------------------------------- | -------------------------------------------------------- |
+|------------------------------------|----------------------------------------------------------|
 | `SConstruct`                       | The main input file                                      |
 | `SConscript_env`                   | Sets up `SCons` environments for all modes and platforms |
 | `SConscript_release`               | Rules to build the release file                          |
-| `InternalDoc/SConscript_dox`       | Rules to build the internal documentation.               |
-| `PublicDoc/SConscript_doc`         | Rules to build the public documentation.                 |
+| `InternalDoc/SConscript_dox`       | Rules to build the internal documentation                |
+| `PublicDoc/SConscript_doc`         | Rules to build the public documentation                  |
+| `PublicDoc/SConscript_snaps`       | Rules to build snapshot images for public documentation  |
+| `ionsrc/SConscript_ion`            | Rules to build the `IonLib` library                      |
+| `ionsrc/SConscript_iondoc`         | Rules to build internal documentation for Ion            |
+| `ionsrc/SConscript_iontests`       | Rules to build and run tests for Ion                     |
 | `ionsrc/SConscript_ion`            | Rules to build the `IonLib` library                      |
 | `resources/SConscript_resources`   | Rules to build generated resource files                  |
 | `src/SConscript_src`               | Rules to build the main library                          |
 | `src/Apps/SConscript_apps`         | Rules to build all applications                          |
 | `src/Tests/SConscript_tests`       | Rules to build and run all tests                         |
 | `submodules/SConscript_submodules` | Rules to build all submodules                            |
-| `submodules/SConscript_docopt`     | Rules to build the `docopt` library                      |
-| `submodules/SConscript_googletest` | Rules to build the `gtest` library                       |
+| `submodules/SConscript_docopt`     | Rules to build the `docopt` submodule library            |
+| `submodules/SConscript_googletest` | Rules to build the `gtest` submodule library             |
 
 ## Building a Release {#Release}
 
