@@ -15,7 +15,7 @@ namespace Parser { class Registry; }
 /// BevelToolPanel is a derived ToolPanel class that is used by the BevelTool
 /// for interactive editing of one or more BeveledModel instances.
 ///
-/// ReportChange keys: "Profile", "Scale", "MaxAngle" (all drag-based, but
+/// ReportChange() keys: "Profile", "Scale", "MaxAngle" (all drag-based, but
 /// creation of a new profile point is immediate).
 ///
 /// \ingroup Panels

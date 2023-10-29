@@ -16,7 +16,7 @@ namespace Parser { class Registry; }
 /// TextToolPanel is a derived ToolPanel class thatis used by the TextTool for
 /// interactive editing of a TextModel.
 ///
-/// ReportChange keys: "Apply" (immediate), when the Apply button is clicked.
+/// ReportChange() keys: "Apply" (immediate).
 ///
 /// \ingroup Panels
 class TextToolPanel : public ToolPanel {

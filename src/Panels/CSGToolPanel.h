@@ -13,7 +13,7 @@ namespace Parser { class Registry; }
 /// CSGToolPanel is a derived ToolPanel class that is used by the CSGTool to
 /// interactively change the CSG operation.
 ///
-/// ReportChange keys: "Operation" (immediate).
+/// ReportChange() keys: "Operation" (immediate).
 ///
 /// \ingroup Panels
 class CSGToolPanel : public ToolPanel {

@@ -17,7 +17,7 @@ namespace Parser { class Registry; }
 /// RevSurfToolPanel is a derived ToolPanel class that is used by the
 /// RevSurfTool for interactive editing of one or more RevSurfModel instances.
 ///
-/// ReportChange keys: "Profile", "SweepAngle" (both drag-based, but creation
+/// ReportChange keys(): "Profile", "SweepAngle" (both drag-based, but creation
 /// of a new profile point is immediate).
 ///
 /// \ingroup Panels

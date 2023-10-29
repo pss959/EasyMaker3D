@@ -16,7 +16,7 @@ namespace Parser { class Registry; }
 /// TaperToolPanel is a derived ToolPanel class that is used by the TaperTool
 /// for interactive editing of one or more TaperedModel instances.
 ///
-/// ReportChange keys: "Profile" (drag-based, but creation of a new profile
+/// ReportChange() keys: "Profile" (drag-based, but creation of a new profile
 /// point is immediate) and "Axis" (immediate).
 ///
 /// \ingroup Panels

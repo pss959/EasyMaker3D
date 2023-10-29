@@ -19,8 +19,8 @@ namespace Parser { class Registry; }
 /// ExtrudedTool for interactive editing of one or more ExtrudedModel
 /// instances.
 ///
-/// ReportChange keys: "Profile" (immediate for click to create a new point or
-/// to set to a regular polygon, drag-based otherwise).
+/// ReportChange() keys: "Profile" (immediate for click to create a new point
+/// or to set to a regular polygon, drag-based otherwise).
 ///
 /// \ingroup Panels
 class ExtrudedToolPanel : public ToolPanel {
