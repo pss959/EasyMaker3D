@@ -9,12 +9,11 @@
 #define REPORT_BORDER_EDGES       0  // Useful when is_closed() returns false.
 #define STITCH_BORDERS            1
 
+#include <CGAL/Polygon_mesh_processing/measure.h>
+#include <CGAL/Polygon_mesh_processing/self_intersections.h>
+
 #if STITCH_BORDERS
 #include <CGAL/Polygon_mesh_processing/stitch_borders.h>
-#endif
-
-#if REPAIR_SELF_INTERSECTIONS || REPORT_SELF_INTERSECTIONS
-#include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #endif
 
 // ----------------------------------------------------------------------------
@@ -200,4 +199,10 @@ MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh) {
 std::vector<GIndex> GetBorderEdges(const TriMesh &mesh) {
     CPolyhedron poly = TriMeshToCGALPolyhedron(mesh);
     return GetBorderEdges_(mesh, poly);
+}
+
+float ComputeMeshVolume(const TriMesh &mesh) {
+    const auto volume =
+        CGAL::Polygon_mesh_processing::volume(TriMeshToCGALPolyhedron(mesh));
+    return CGAL::to_double(volume);
 }

@@ -86,7 +86,8 @@ void InfoPanel::AddModelInfo_(Pane::PaneVec &panes, const SelPath &sel_path) {
 
     const TriMesh &mesh = model.GetMesh();
     Str reason;
-    if (! model.IsMeshValid(reason))
+    const bool is_valid = model.IsMeshValid(reason);
+    if (! is_valid)
         AddTextPane_(panes, TextType_::kError, "Invalid mesh", reason);
     AddTextPane_(panes, TextType_::kNormal,
                  "Vertex Count",  Util::ToString(mesh.points.size()));
@@ -102,6 +103,10 @@ void InfoPanel::AddModelInfo_(Pane::PaneVec &panes, const SelPath &sel_path) {
     AddTextPane_(panes, TextType_::kNormal, "Height", ToString_(size[1]));
     AddTextPane_(panes, TextType_::kNormal, "Center",
                  ToString_(center[0]) + " " + ToString_(center[2]));
+    // Cannot compute volume for an invalid mesh.
+    if (is_valid)
+        AddTextPane_(panes, TextType_::kNormal, "Volume",
+                     ToString_(model.ComputeVolume()));
 }
 
 void InfoPanel::AddPointTargetInfo_(Pane::PaneVec &panes,

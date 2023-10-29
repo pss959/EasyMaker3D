@@ -223,6 +223,21 @@ TEST_F(ModelTest, Mesh) {
     EXPECT_GT(m0.indices.size(), m2.indices.size());
 }
 
+TEST_F(ModelTest, Volume) {
+    auto box = Model::CreateModel<BoxModel>();
+
+    // Unscaled BoxModel.
+    EXPECT_EQ(Vector3f(2, 2, 2), box->GetBounds().GetSize());
+    EXPECT_EQ(Vector3f(2, 2, 2), box->GetScaledBounds().GetSize());
+    EXPECT_EQ(8,                 box->ComputeVolume());
+
+    // Scaled BoxModel.
+    box->SetScale(Vector3f(3, 4, 5));
+    EXPECT_EQ(Vector3f(2, 2, 2) , box->GetBounds().GetSize());
+    EXPECT_EQ(Vector3f(6, 8, 10), box->GetScaledBounds().GetSize());
+    EXPECT_EQ(480,                box->ComputeVolume());
+}
+
 // ----------------------------------------------------------------------------
 // Update.
 // ----------------------------------------------------------------------------

@@ -31,4 +31,7 @@ MeshValidityCode ValidateAndRepairTriMesh(TriMesh &mesh);
 /// the returned vector.
 std::vector<GIndex> GetBorderEdges(const TriMesh &mesh);
 
+/// Computes and returns the volume of the given TriMesh, which must be valid.
+float ComputeMeshVolume(const TriMesh &mesh);
+
 ///@}

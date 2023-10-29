@@ -12,8 +12,6 @@
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Polygon_2.h>
-#include <CGAL/Polygon_mesh_processing/clip.h>
 #include <CGAL/Polyhedron_3.h>
 
 // ----------------------------------------------------------------------------

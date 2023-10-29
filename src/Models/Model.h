@@ -219,6 +219,9 @@ class Model : public ClickableWidget {
     /// vector is first transformed by the Model's current transform.
     virtual Vector3f GetLocalCenterOffset() const;
 
+    /// Computes and returns the volume of the Model's mesh.
+    float ComputeVolume() const;
+
     // ------------------------------------------------------------------------
     // Update.
     // ------------------------------------------------------------------------

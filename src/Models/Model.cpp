@@ -250,6 +250,12 @@ Vector3f Model::GetLocalCenterOffset() const {
     return GetModelMatrix() * GetObjectCenterOffset();
 }
 
+float Model::ComputeVolume() const {
+    // Apply the scale to the unscaled volume.
+    const auto scale = GetScale();
+    return scale[0] * scale[1] * scale[2] * ComputeMeshVolume(GetMesh());
+}
+
 void Model::PostSetUpIon() {
     ClickableWidget::PostSetUpIon();
     UpdateColor_();

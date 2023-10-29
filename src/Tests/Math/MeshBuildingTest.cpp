@@ -21,6 +21,7 @@ TEST_F(MeshBuildingTest, Tetrahedron) {
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
     EXPECT_EQ(Vector3f(10, 10, 10), bounds.GetSize());
+    EXPECT_CLOSE(166.6667f, ComputeMeshVolume(mesh));
 }
 
 TEST_F(MeshBuildingTest, Box) {
@@ -29,6 +30,7 @@ TEST_F(MeshBuildingTest, Box) {
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
     EXPECT_EQ(Vector3f(10, 20, 30), bounds.GetSize());
+    EXPECT_CLOSE(6000, ComputeMeshVolume(mesh));
 }
 
 TEST_F(MeshBuildingTest, Cylinder) {
@@ -37,6 +39,7 @@ TEST_F(MeshBuildingTest, Cylinder) {
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds.GetSize());
+    EXPECT_CLOSE(2307.328f, ComputeMeshVolume(mesh));
 
     // Validate orientation of all triangles.
     for (size_t i = 0; i < mesh.GetTriangleCount(); ++i) {
@@ -58,6 +61,7 @@ TEST_F(MeshBuildingTest, CylinderCone) {
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh1));
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds1.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds1.GetSize());
+    EXPECT_CLOSE(1318.4727f, ComputeMeshVolume(mesh1));
 
     // Same, but upside down.
     const TriMesh mesh2   = BuildCylinderMesh(8, 0, 20, 20);
@@ -65,6 +69,7 @@ TEST_F(MeshBuildingTest, CylinderCone) {
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh2));
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds2.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds2.GetSize());
+    EXPECT_CLOSE(1318.4727f, ComputeMeshVolume(mesh2));
 }
 
 TEST_F(MeshBuildingTest, RevSurf) {
@@ -100,6 +105,7 @@ TEST_F(MeshBuildingTest, Sphere) {
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, ValidateTriMesh(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   bounds.GetCenter());
+    EXPECT_CLOSE(266.3633f, ComputeMeshVolume(mesh));
 
     // Need extra large tolerance for this.
     EXPECT_PRED3(VectorsCloseT, Vector3f(8, 8, 8), bounds.GetSize(), .01f);
@@ -191,6 +197,7 @@ TEST_F(MeshBuildingTest, Extruded) {
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 5, 0),    bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(8, 10, 8), bounds.GetSize());
+    EXPECT_CLOSE(320, ComputeMeshVolume(mesh));
 }
 
 TEST_F(MeshBuildingTest, ExtrudedWithHole) {
@@ -205,4 +212,5 @@ TEST_F(MeshBuildingTest, ExtrudedWithHole) {
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 5, 0),     bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(6, 10, 10), bounds.GetSize());
+    EXPECT_CLOSE(480, ComputeMeshVolume(mesh));
 }
