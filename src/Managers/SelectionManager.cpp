@@ -153,15 +153,11 @@ void SelectionManager::DeselectAllModels_(const Selection &sel) {
 void SelectionManager::SelectModel_(const SelPath &path, bool is_primary) {
     Model &model = *path.GetModel();
 
-    // Set the status in the selected Model.
-    model.SetStatus(is_primary ? Model::Status::kPrimary :
-                    Model::Status::kSecondary);
-
     // Set all ancestors to kDescendantShown status. If any was kUnselected,
     // set all of its children that are kAncestorShown to kUnselected.
     const auto &path_models = path.GetAllModels(true);  // Skip the root.
     for (auto &ancestor: path_models) {
-        // Skip the last model.
+        // Skip the end of the path (the selected Model).
         if (ancestor.get() != &model) {
             if (ancestor->GetStatus() == Model::Status::kUnselected) {
                 ParentModelPtr ap =
@@ -191,6 +187,12 @@ void SelectionManager::SelectModel_(const SelPath &path, bool is_primary) {
                 sibling.SetStatus(Model::Status::kUnselected);
         }
     }
+
+    // Set the status in the selected Model. Do this last in case the above
+    // code set it to something else.
+    model.SetStatus(is_primary ? Model::Status::kPrimary :
+                    Model::Status::kSecondary);
+
 }
 
 bool SelectionManager::GetSelectionInDirection_(Direction dir,

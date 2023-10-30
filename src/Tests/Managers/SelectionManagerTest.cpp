@@ -89,6 +89,42 @@ TEST_F(SelectionManagerTest, ChangeSelection) {
     EXPECT_EQ(0U, sm.GetSelection().GetCount());
 }
 
+TEST_F(SelectionManagerTest, ThreeLevel) {
+    // Create and add a 3-level hierarchy: Hull0 -> Hull1 -> Box2.
+    auto hull0 = Model::CreateModel<HullModel>("Hull0");
+    auto hull1 = Model::CreateModel<HullModel>("Hull1");
+    auto box2  = Model::CreateModel<BoxModel>("Box2");
+    hull0->SetOperandModels(std::vector<ModelPtr>{ hull1 });
+    hull1->SetOperandModels(std::vector<ModelPtr>{ box2  });
+    root->AddChildModel(hull0);
+
+    SelPath path0 = BuildSelPath(ModelVec{ root, hull0 });
+    SelPath path1 = BuildSelPath(ModelVec{ root, hull0, hull1 });
+    SelPath path2 = BuildSelPath(ModelVec{ root, hull0, hull1, box2 });
+
+    EXPECT_ENUM_EQ(Model::Status::kUnselected,    hull0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kAncestorShown, hull1->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kAncestorShown, box2->GetStatus());
+
+    // Select Hull0.
+    sm.ChangeModelSelection(path0, false);
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,       hull0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kAncestorShown, hull1->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kAncestorShown, box2->GetStatus());
+
+    // Select Hull1.
+    sm.ChangeModelSelection(path1, false);
+    EXPECT_ENUM_EQ(Model::Status::kDescendantShown, hull0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,         hull1->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kAncestorShown,   box2->GetStatus());
+
+    // Select Box2.
+    sm.ChangeModelSelection(path2, false);
+    EXPECT_ENUM_EQ(Model::Status::kDescendantShown, hull0->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kDescendantShown, hull1->GetStatus());
+    EXPECT_ENUM_EQ(Model::Status::kPrimary,         box2->GetStatus());
+}
+
 TEST_F(SelectionManagerTest, Directions) {
     SelPath ppath0 = BuildSelPath(ModelVec{ root, par0 });
     SelPath ppath1 = BuildSelPath(ModelVec{ root, par1 });
