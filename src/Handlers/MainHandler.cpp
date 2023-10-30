@@ -73,7 +73,7 @@ class MainHandler::Impl_ {
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
     }
-    void SetTouchable(const TouchablePtr &touchable);
+    void SetTouchable(const ITouchablePtr &touchable);
     Util::Notifier<const ClickInfo &> & GetClicked() {
         return clicked_;
     }
@@ -240,7 +240,7 @@ void MainHandler::Impl_::SetContext(const MainHandler::Context &context) {
     mt->SetDebugSphere(context_.debug_sphere);
 }
 
-void MainHandler::Impl_::SetTouchable(const TouchablePtr &touchable) {
+void MainHandler::Impl_::SetTouchable(const ITouchablePtr &touchable) {
     if (IsVREnabled_()) {
         auto set_touchable = [&](Actuator act){
             GetTypedTracker_<TouchTracker>(act).SetTouchable(touchable);
@@ -634,7 +634,7 @@ void MainHandler::SetContext(const Context &context) {
     impl_->SetContext(context);
 }
 
-void MainHandler::SetTouchable(const TouchablePtr &touchable) {
+void MainHandler::SetTouchable(const ITouchablePtr &touchable) {
     impl_->SetTouchable(touchable);
 }
 

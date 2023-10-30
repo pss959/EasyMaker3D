@@ -2,7 +2,7 @@
 
 #include "Agents/BoardAgent.h"
 #include "Items/Grippable.h"
-#include "Items/Touchable.h"
+#include "Items/ITouchable.h"
 #include "Math/Types.h"
 #include "Util/Memory.h"
 
@@ -14,14 +14,14 @@ DECL_SHARED_PTR(Panel);
 /// A Board is a 2D rectangle that can be optionally moved and sized using
 /// slider handles on the edges and corners. It is derived from Grippable
 /// because it allows grip interaction with the slider handles. It is also
-/// derived from Touchable because it supports touch interaction on its
+/// derived from ITouchable because it supports touch interaction on its
 /// interactive Panes.
 ///
 /// Each Board maintains a stack of Panel instances that are active within the
 /// Board.
 ///
 /// \ingroup Panels
-class Board : public Grippable, public Touchable {
+class Board : public Grippable, public ITouchable {
   public:
     /// Defines the visibility behavior of a Board.
     enum class Behavior {
@@ -120,7 +120,7 @@ class Board : public Grippable, public Touchable {
     virtual void ActivateGrip(Hand hand, bool is_active) override;
 
     // ------------------------------------------------------------------------
-    // Touchable interface.
+    // ITouchable interface.
     // ------------------------------------------------------------------------
     virtual WidgetPtr GetTouchedWidget(const Point3f &touch_pos,
                                        float radius) const override;

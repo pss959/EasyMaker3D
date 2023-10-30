@@ -4,7 +4,7 @@
 
 #include "Base/Event.h"
 #include "Items/Controller.h"
-#include "Items/Touchable.h"
+#include "Items/ITouchable.h"
 #include "Math/Linear.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
@@ -25,7 +25,7 @@ Event::Device TouchTracker::GetDevice() const {
 }
 
 bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
-    // A Touchable has to be present for this to activate.
+    // An ITouchable has to be present for this to activate.
     auto controller = GetController();
     ASSERT(controller);
     const float radius = GetController()->GetTouchRadius();

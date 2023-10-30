@@ -12,7 +12,7 @@
 DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(Frustum);
 DECL_SHARED_PTR(Grippable);
-DECL_SHARED_PTR(Touchable);
+DECL_SHARED_PTR(ITouchable);
 DECL_SHARED_PTR(MainHandler);
 DECL_SHARED_PTR(PrecisionStore);
 namespace SG {
@@ -58,9 +58,9 @@ class MainHandler : public Handler {
     /// interaction.
     void AddGrippable(const GrippablePtr &grippable);
 
-    /// Sets an Touchable instance that will be the target of touch clicks and
+    /// Sets an ITouchable instance that will be the target of touch clicks and
     /// drags when in VR.
-    void SetTouchable(const TouchablePtr &touchable);
+    void SetTouchable(const ITouchablePtr &touchable);
 
     /// Returns a Notifier that is invoked when a click is detected. An
     /// Observer is passed a ClickInfo instance containing all relevant data.
