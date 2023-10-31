@@ -21,6 +21,7 @@
 #include "Util/UTime.h"
 #include "Widgets/ClickableWidget.h"
 #include "Widgets/DraggableWidget.h"
+#include "Widgets/IScrollable.h"
 
 namespace {
 
@@ -77,9 +78,6 @@ class MainHandler::Impl_ {
     Util::Notifier<const ClickInfo &> & GetClicked() {
         return clicked_;
     }
-    Util::Notifier<Event::Device, float> & GetValuatorChanged() {
-        return valuator_changed_;
-    }
     Event::Device GetActiveDevice() const {
         return cur_tracker_ ? cur_tracker_->GetDevice() :
             Event::Device::kUnknown;
@@ -124,9 +122,6 @@ class MainHandler::Impl_ {
 
     /// Notifies when a click is detected.
     Util::Notifier<const ClickInfo &> clicked_;
-
-    /// Notifies when a valuator change is detected.
-    Util::Notifier<Event::Device, float> valuator_changed_;
 
     /// Time at which the current device was activated.
     UTime       start_time_;
@@ -182,6 +177,9 @@ class MainHandler::Impl_ {
 
     /// Updates hovering of all Trackers based on the given Event.
     void UpdateHovering_(const Event &event);
+
+    /// Special handling for a valuator (scroll wheel) event.
+    bool HandleValuatorEvent_(const Event &event);
 
     /// If the Event represents an activation of any Tracker, this processes
     /// the activation and returns true.
@@ -282,10 +280,8 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     bool handled = false;
 
     // Valuator events are handled specially.
-    if (event.flags.Has(Event::Flag::kPosition1D)) {
-        valuator_changed_.Notify(event.device, event.position1D);
-        handled = true;
-    }
+    if (event.flags.Has(Event::Flag::kPosition1D))
+        handled = HandleValuatorEvent_(event);
 
     // If not in the middle of a click or drag.
     else if (state_ == State_::kWaiting) {
@@ -399,6 +395,19 @@ void MainHandler::Impl_::UpdateHovering_(const Event &event) {
         for (auto &tracker: trackers_)
             tracker->UpdateHovering(event);
     }
+}
+
+bool MainHandler::Impl_::HandleValuatorEvent_(const Event &event) {
+    // Determine what the mouse is over.
+    auto mt =
+        std::dynamic_pointer_cast<MouseTracker>(GetTracker_(Actuator::kMouse));
+    auto path = mt->GetNodePathForEvent(event);
+
+    // Look upwards in the path for an IScrollable.
+    bool handled = false;
+    if (auto scrollable = path.FindNodeUpwards<IScrollable>())
+        handled = scrollable->ProcessValuator(event.position1D);
+    return handled;
 }
 
 bool MainHandler::Impl_::Activate_(const Event event) {
@@ -644,10 +653,6 @@ void MainHandler::AddGrippable(const GrippablePtr &grippable) {
 
 Util::Notifier<const ClickInfo &> & MainHandler::GetClicked() {
     return impl_->GetClicked();
-}
-
-Util::Notifier<Event::Device, float> & MainHandler::GetValuatorChanged() {
-    return impl_->GetValuatorChanged();
 }
 
 Event::Device MainHandler::GetActiveDevice() const {

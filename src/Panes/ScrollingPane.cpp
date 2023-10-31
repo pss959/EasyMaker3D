@@ -96,12 +96,6 @@ bool ScrollingPane::HandleEvent(const Event &event) {
         }
     }
 
-    // Valuator events scroll as well.
-    if (event.flags.Has(Event::Flag::kPosition1D)) {
-        ScrollBy(TK::kScrollingPaneWheelScrollAmount * event.position1D);
-        handled = true;
-    }
-
     return handled;
 }
 

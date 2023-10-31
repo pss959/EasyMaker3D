@@ -51,11 +51,12 @@ void PointTargetWidget::SetPointTarget(const PointTarget &target) {
     UpdateFromTarget_(target);
 }
 
-void PointTargetWidget::PlaceTarget(Widget &widget, const DragInfo &info) {
+void PointTargetWidget::PlaceTarget(ITargetable &targetable,
+                                    const DragInfo &info) {
     Point3f        position;
     Vector3f       direction;
     Dimensionality snapped_dims;
-    widget.PlacePointTarget(info, position, direction, snapped_dims);
+    targetable.PlacePointTarget(info, position, direction, snapped_dims);
 
     // Update the PointTarget.
     auto &target = *target_.GetValue();

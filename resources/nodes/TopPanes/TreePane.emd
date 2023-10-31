@@ -3,6 +3,7 @@ BoxPane "TreePane" {
     ICON:               "CLONE \"T_IconPane\" \"Icon\"",
     VIEW_BUTTON_VALS:   "$RESIZE_WH",
     ACTION_BUTTON_SIZE: "min_size: 10 10",
+    BORDER_WIDTH:       "1",
     # The background uses BaseColor shader, so it is a little brighter to match
     # the (lit) button colors better.
     PANE_BG_COLOR:      "\"#c0c0c0\"",
@@ -11,11 +12,11 @@ BoxPane "TreePane" {
 
   TEMPLATES: [
     CLONE "T_ButtonPane" "T_ViewButton" {
-      border: $BORDER { width: 1, color: "#666666" },
+      border: $BORDER { width: $BORDER_WIDTH, color: "#666666" },
     },
 
     CLONE "T_ButtonPane" "T_ActionButton" {
-      border: $BORDER { width: 1, color: "#666666" },
+      border: $BORDER { width: $BORDER_WIDTH, color: "#666666" },
     },
 
     # Switcher for visibility buttons.
@@ -48,10 +49,8 @@ BoxPane "TreePane" {
       ]
     },
 
-    # Button used to show the Model name and select it. Note that this is not a
-    # clone of T_ButtonPane because it has no border and a different inactive
-    # color.
-    ButtonPane "T_ModelButton" {
+    # Button used to show the Model name and select it.
+    CLONE "T_ButtonPane" "T_ModelButton" {
       resize_flags: "kWidth|kHeight",
       panes: [
         CLONE "T_TextPane" "Text" {
@@ -77,7 +76,7 @@ BoxPane "TreePane" {
   panes: [
     # The session row is outside the scrolling area so it is always visible.
     BoxPane "SessionRow" {
-      border:     $BORDER { width: 1 },
+      border:     $BORDER { width: $BORDER_WIDTH },
       orientation: "kHorizontal",
       resize_flags: "kWidth",
       padding: 1,
@@ -118,10 +117,10 @@ BoxPane "TreePane" {
 
     # Scrolling tree view of Models.
     CLONE "T_ScrollingPane" "Scroller" {
-      border:        $BORDER { width: 1 },
+      border:        $BORDER { width: $BORDER_WIDTH },
       resize_flags: "kWidth|kHeight",
       contents: CLONE "T_ClipPane" "Contents" {
-        border: $BORDER { width: 1 },
+        border: $BORDER { width: $BORDER_WIDTH },
         padding: 2,
         spacing: .2,
         resize_flags: "kWidth|kHeight",

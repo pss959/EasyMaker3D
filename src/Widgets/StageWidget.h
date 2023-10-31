@@ -2,6 +2,8 @@
 
 #include "Util/Memory.h"
 #include "Widgets/DiscWidget.h"
+#include "Widgets/IScrollable.h"
+#include "Widgets/ITargetable.h"
 
 namespace Parser { class Registry; }
 
@@ -9,7 +11,7 @@ DECL_SHARED_PTR(StageWidget);
 namespace SG { DECL_SHARED_PTR(ProceduralImage); }
 
 /// StageWidget is a derived DiscWidget used for the interactive Stage. It
-/// allows a target to be placed.
+/// implements the ITargetable interface, allowing a target to be placed.
 ///
 /// The StageWidget geometry has an initial size chosen to look good relative
 /// to the room size. However, default stage coordinates (for objects appearing
@@ -18,17 +20,12 @@ namespace SG { DECL_SHARED_PTR(ProceduralImage); }
 /// default.
 ///
 /// \ingroup Widgets
-class StageWidget : public DiscWidget {
+class StageWidget : public DiscWidget, public IScrollable, public ITargetable {
   public:
     /// Sets the radius to use for the StageWidget, defining stage coordinate
     /// scale mapping. If this is never called, the geometric radius of the
     /// StageWidget is used (1-to-1 scale mapping).
     void SetStageRadius(float radius);
-
-    /// Redefines this to update the size of the geometry to keep the stage
-    /// height constant so that the top of the stage is always at Y=0 in world
-    /// coordinates.
-    virtual void ApplyScaleChange(float delta) override;
 
     /// Sets the uniform stage scale factor and rotation angle. This is used to
     /// restore previous state.
@@ -51,11 +48,17 @@ class StageWidget : public DiscWidget {
     }
 
     // ------------------------------------------------------------------------
-    // Target Interface.
+    // IScrollable Interface.
     // ------------------------------------------------------------------------
 
-    /// The Stage can receive Targets.
-    virtual bool CanReceiveTarget() const override { return true; }
+    /// Defines this to update the size of the geometry to keep the stage
+    /// height constant so that the top of the stage is always at Y=0 in world
+    /// coordinates.
+    virtual bool ProcessValuator(float delta) override;
+
+    // ------------------------------------------------------------------------
+    // ITargetable Interface.
+    // ------------------------------------------------------------------------
 
     /// Redefines this to place the point target on the Stage, pointing up,
     /// snapping to grid points.

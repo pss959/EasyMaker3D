@@ -24,10 +24,10 @@ void TargetWidgetBase::StartDrag(const DragInfo &info) {
 void TargetWidgetBase::ContinueDrag(const DragInfo &info) {
     DraggableWidget::ContinueDrag(info);
 
-    // If there is a Widget on the path that can receive a target, let the
-    // derived class tell it how to place the target.
-    if (auto widget = GetReceiver_(info)) {
-        PlaceTarget(*widget, info);
+    // If there is an ITargetable on the path, let the derived class tell it
+    // how to place the target.
+    if (auto targetable = info.hit.path.FindNodeUpwards<ITargetable>()) {
+        PlaceTarget(*targetable, info);
         NotifyChanged();
     }
 }
@@ -58,14 +58,4 @@ void TargetWidgetBase::ShowSnapFeedback(bool is_snapping) {
 
 Color TargetWidgetBase::GetActiveColor() {
     return SG::ColorMap::SGetColor("TargetActiveColor");
-}
-
-WidgetPtr TargetWidgetBase::GetReceiver_(const DragInfo &info) {
-    // Look upwards in the Hit path for a Widget that can receive a target.
-    auto can_receive = [](const Node &n){
-        auto widget = dynamic_cast<const Widget *>(&n);
-        return widget && widget->CanReceiveTarget();
-    };
-    return std::dynamic_pointer_cast<Widget>(
-        info.hit.path.FindNodeUpwards(can_receive));
 }

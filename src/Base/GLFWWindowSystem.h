@@ -93,6 +93,9 @@ class GLFWWindowSystem : public IWindowSystem {
     /// Processes a scroll action.
     void ProcessScroll_(double xoffset, double yoffset);
 
+    /// Stores the current cursor position in an Event.
+    void StoreCurrentCursorPos_(Event &event);
+
     /// Stores the given cursor position in an Event.
     void StoreCursorPos_(double xpos, double ypos, Event &event);
 

@@ -5,10 +5,10 @@
 
 DECL_SHARED_PTR(Widget);
 
-/// ITouchable is an interface class that can be used by a class that can
-/// implement touch activation in VR.
+/// ITouchable is an interface for any class that implements touch with a VR
+/// controller.
 ///
-/// \ingroup Items
+/// \ingroup Widgets
 class ITouchable {
   public:
     /// Returns the Widget, if any, that is touched by a touch sphere at the
@@ -17,3 +17,5 @@ class ITouchable {
     virtual WidgetPtr GetTouchedWidget(const Point3f &touch_pos,
                                        float radius) const = 0;
 };
+
+DECL_SHARED_PTR(ITouchable);

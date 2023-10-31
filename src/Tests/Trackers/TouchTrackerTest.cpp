@@ -1,6 +1,5 @@
 #include "Base/Event.h"
 #include "Enums/Hand.h"
-#include "Items/ITouchable.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
 #include "Tests/Testing2.h"
@@ -10,6 +9,7 @@
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 #include "Widgets/GenericWidget.h"
+#include "Widgets/ITouchable.h"
 
 // ----------------------------------------------------------------------------
 // TouchTrackerTest class.

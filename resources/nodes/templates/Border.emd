@@ -10,5 +10,8 @@ Border "T_Border" {
       uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
     }
   ],
+  state_table: StateTable {
+    depth_test_enabled: False,  # Always draw on top.
+  },
   shapes: [ MutableTriMeshShape {} ],
 }

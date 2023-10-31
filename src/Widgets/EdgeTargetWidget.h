@@ -30,7 +30,8 @@ class EdgeTargetWidget : public TargetWidgetBase {
     virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
-    virtual void PlaceTarget(Widget &widget, const DragInfo &info) override;
+    virtual void PlaceTarget(ITargetable &targetable,
+                             const DragInfo &info) override;
 
   private:
     /// \name Parsed Fields

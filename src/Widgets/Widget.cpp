@@ -81,17 +81,6 @@ Color Widget::GetActiveColor() const {
     return GetColor_(active_color_, "ActiveColor");
 }
 
-void Widget::PlacePointTarget(const DragInfo &info,
-                              Point3f &position, Vector3f &direction,
-                              Dimensionality &snapped_dims) {
-    ASSERTM(false, "Widget::PlacePointTarget() should not be called");
-}
-
-void Widget::PlaceEdgeTarget(const DragInfo &info, float current_length,
-                             Point3f &position0, Point3f &position1) {
-    ASSERTM(false, "Widget::PlaceEdgeTarget() should not be called");
-}
-
 bool Widget::IsTouched(const TouchInfo &info, float &distance) const {
     // Do nothing if interaction is not enabled.
     if (! IsInteractionEnabled())

@@ -20,6 +20,11 @@ class PointerTracker : public Tracker {
     /// MainHandler::SetPathFilter() for details.
     void SetPathFilter(const PathFilter &filter) { path_filter_ = filter; }
 
+    /// Returns the SG::NodePath for the object pointed to by the given Event;
+    /// this will be an empty path if there is no position2D in the Event or if
+    /// the position is not over an intersectable object.
+    SG::NodePath GetNodePathForEvent(const Event &event);
+
     virtual void UpdateHovering(const Event &event) override;
     virtual void StopHovering() override;
     virtual void FillActivationDragInfo(DragInfo &info) override;

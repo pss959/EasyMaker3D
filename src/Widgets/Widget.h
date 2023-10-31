@@ -3,14 +3,12 @@
 #include <functional>
 #include <string>
 
-#include "Math/Dimensionality.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "Util/Memory.h"
 #include "Util/Notifier.h"
 
-struct DragInfo;
 struct TouchInfo;
 DECL_SHARED_PTR(Widget);
 
@@ -111,36 +109,6 @@ class Widget : public SG::Node {
     /// Sets the tooltip text to display when hovered long enough. The default
     /// text is empty, which disables tooltips.
     void SetTooltipText(const Str &text) { tooltip_text_ = text; }
-
-    ///@}
-
-    /// \name Target Interface
-    ///@{
-
-    /// Returns true if a target can be placed on this Widget. The base class
-    /// defines this to return false.
-    virtual bool CanReceiveTarget() const { return false; }
-
-    /// If CanReceiveTarget() returns true, this can be called to place a
-    /// PointTarget on the Widget according to the pointer drag information in
-    /// the given DragInfo. It should set position and direction to place the
-    /// target (in stage coordinates) and set snapped_dims to the dimensions
-    /// (if any) in which the position was snapped to a feature.
-    ///
-    /// The base class defines this to assert.
-    virtual void PlacePointTarget(const DragInfo &info,
-                                  Point3f &position, Vector3f &direction,
-                                  Dimensionality &snapped_dims);
-
-    /// If CanReceiveTarget() returns true, this can be called to place an
-    /// EdgeTarget on the Widget according to the pointer drag information in
-    /// the given DragInfo. It should set position0 and position1 to the
-    /// new endpoints of the target (in stage coordinates). The current edge
-    /// length is passed in for reference.
-    ///
-    /// The base class defines this to assert.
-    virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
-                                 Point3f &position0, Point3f &position1);
 
     ///@}
 

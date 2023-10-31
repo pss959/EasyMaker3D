@@ -24,11 +24,8 @@ void Pane::CreationDone() {
     if (! IsTemplate()) {
         if (auto &background = background_.GetValue())
             GetAuxParent().AddChild(background);
-        if (auto border = border_.GetValue()) {
+        if (auto border = border_.GetValue())
             GetAuxParent().AddChild(border);
-            // Offset the border to avoid Z-fighting
-            border->SetTranslation(Vector3f(0, 0, TK::kPaneZOffset));
-        }
 
         // Assume the layout needs to be computed at least once.
         was_layout_changed_ = true;

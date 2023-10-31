@@ -174,11 +174,6 @@ class Panel : public SG::Node {
     /// Pane size is determined. The base class defines this to do nothing.
     virtual void UpdateForPaneSizeChange() {}
 
-    /// Indicates whether the Panel should trap valuator events, so that the
-    /// scroll wheel does not affect anything else in the app. The base class
-    /// defines this to true.
-    virtual bool ShouldTrapValuatorEvents() const { return true; }
-
     /// Convenience that returns the current application Settings.
     const Settings & GetSettings() const;
 

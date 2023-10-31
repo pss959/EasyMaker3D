@@ -337,7 +337,7 @@ void GLFWWindowSystem::CursorCallback_(GLFWwindow *window,
 }
 
 void GLFWWindowSystem::ScrollCallback_(GLFWwindow *window,
-                                 double xoffset, double yoffset) {
+                                       double xoffset, double yoffset) {
     GetInstance_(window).ProcessScroll_(xoffset, yoffset);
 }
 
@@ -394,9 +394,7 @@ void GLFWWindowSystem::ProcessButton_(int button, int action, int mods) {
         AddModifiers_(mods, event);
 
         // Also store the current position.
-        double xpos, ypos;
-        glfwGetCursorPos(window_, &xpos, &ypos);
-        StoreCursorPos_(xpos, ypos, event);
+        StoreCurrentCursorPos_(event);
 
         pending_events_.push_back(event);
     }
@@ -416,8 +414,19 @@ void GLFWWindowSystem::ProcessScroll_(double xoffset, double yoffset) {
         event.device = Event::Device::kMouse;
         event.flags.Set(Event::Flag::kPosition1D);
         event.position1D = static_cast<float>(yoffset);
+
+        // Store the current cursor position in the event so it can be
+        // correlated to an object that receives the scroll event.
+        StoreCurrentCursorPos_(event);
+
         pending_events_.push_back(event);
     }
+}
+
+void GLFWWindowSystem::StoreCurrentCursorPos_(Event &event) {
+    double xpos, ypos;
+    glfwGetCursorPos(window_, &xpos, &ypos);
+    StoreCursorPos_(xpos, ypos, event);
 }
 
 void GLFWWindowSystem::StoreCursorPos_(double xpos, double ypos, Event &event) {

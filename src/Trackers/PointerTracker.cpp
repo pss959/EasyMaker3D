@@ -5,6 +5,14 @@
 #include "SG/Intersector.h"
 #include "Widgets/ClickableWidget.h"
 
+SG::NodePath PointerTracker::GetNodePathForEvent(const Event &event) {
+    SG::NodePath path;
+    Ray ray;
+    if (GetRay(event, ray))
+        path = SG::Intersector::IntersectScene(*GetScene(), ray).path;
+    return path;
+}
+
 void PointerTracker::UpdateHovering(const Event &event) {
     WidgetPtr widget;
     if (UpdateCurrentData_(event, widget) && widget != current_widget_) {

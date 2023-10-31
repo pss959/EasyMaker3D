@@ -5,6 +5,7 @@
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Util/Memory.h"
+#include "Widgets/IScrollable.h"
 
 namespace Parser { class Registry; }
 
@@ -17,7 +18,7 @@ DECL_SHARED_PTR(Inspector);
 /// can be rotated by moving the mouse.
 ///
 /// \ingroup Items
-class Inspector : public SG::Node {
+class Inspector : public SG::Node, public IScrollable {
   public:
     /// Sets a function to invoke when the Inspector is deactivated.
     void SetDeactivationFunc(const std::function<void()> &func) {
@@ -36,10 +37,6 @@ class Inspector : public SG::Node {
     /// Frustum.
     void SetPositionForView(const Frustum &frustum);
 
-    /// Applies a relative change to the scale of the inspected object if it is
-    /// not attached to a Controller.
-    void ApplyScaleChange(float delta);
-
     /// Applies a rotation to the inspected object if it is not attached to a
     /// Controller.
     void ApplyRotation(const Rotationf &rot);
@@ -54,6 +51,14 @@ class Inspector : public SG::Node {
     void ShowEdges(bool show);
 
     virtual void PostSetUpIon() override;
+
+    // ------------------------------------------------------------------------
+    // IScrollable Interface.
+    // ------------------------------------------------------------------------
+
+    /// Defines this to apply a relative change to the scale of the inspected
+    /// object if it is not attached to a Controller.
+    virtual bool ProcessValuator(float delta) override;
 
   protected:
     Inspector() {}

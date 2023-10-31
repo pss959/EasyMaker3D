@@ -2,9 +2,9 @@
 
 #include "Agents/BoardAgent.h"
 #include "Items/Grippable.h"
-#include "Items/ITouchable.h"
 #include "Math/Types.h"
 #include "Util/Memory.h"
+#include "Widgets/ITouchable.h"
 
 namespace Parser { class Registry; }
 

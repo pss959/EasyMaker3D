@@ -66,11 +66,6 @@ class MainHandler : public Handler {
     /// Observer is passed a ClickInfo instance containing all relevant data.
     Util::Notifier<const ClickInfo &> & GetClicked();
 
-    /// Returns a Notifier that is invoked when a valuator of some sort (such
-    /// as a mouse wheel) changes. It is passed the device and the relative
-    /// change in position.
-    Util::Notifier<Event::Device, float> & GetValuatorChanged();
-
     /// Returns the device that is currently active during a click or drag
     /// operation. Returns Event::Device::kUnknown if there is none.
     Event::Device GetActiveDevice() const;

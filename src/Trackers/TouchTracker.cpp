@@ -4,7 +4,6 @@
 
 #include "Base/Event.h"
 #include "Items/Controller.h"
-#include "Items/ITouchable.h"
 #include "Math/Linear.h"
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
@@ -13,6 +12,7 @@
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 #include "Widgets/ClickableWidget.h"
+#include "Widgets/ITouchable.h"
 
 TouchTracker::TouchTracker(Actuator actuator) : Tracker(actuator) {
     ASSERT(actuator == Actuator::kLeftTouch ||

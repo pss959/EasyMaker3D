@@ -777,13 +777,6 @@ void Application::Impl_::InitToolContext_() {
 void Application::Impl_::InitInteraction_() {
     ASSERT(main_handler_);
 
-    // Set up scroll wheel interaction.
-    auto scroll = [&](Event::Device dev, float value){
-        if (dev == Event::Device::kMouse)
-            SC_->stage->ApplyScaleChange(.1f * value);
-    };
-
-    main_handler_->GetValuatorChanged().AddObserver(this, scroll);
     main_handler_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
 
@@ -867,6 +860,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     board_handler_->AddBoard(SC_->key_board);
     board_handler_->AddBoard(SC_->app_board);
     board_handler_->AddBoard(SC_->tool_board);
+    board_handler_->AddBoard(SC_->wall_board);
 
     MainHandler::Context mc;
     mc.scene            = SC_->scene;

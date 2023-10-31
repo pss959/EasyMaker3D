@@ -5,6 +5,7 @@
 #include "Util/Memory.h"
 #include "Util/Notifier.h"
 #include "Widgets/DraggableWidget.h"
+#include "Widgets/ITargetable.h"
 
 DECL_SHARED_PTR(TargetWidgetBase);
 
@@ -35,9 +36,9 @@ class TargetWidgetBase : public DraggableWidget {
     /// Returns a matrix converting from stage to world coordinates.
     const Matrix4f & GetStageToWorldMatrix() const { return stage_to_world_; }
 
-    /// Derived classes must implement this to tell the given receiver Widget
-    /// to place the target according to the DragInfo.
-    virtual void PlaceTarget(Widget &widget, const DragInfo &info) = 0;
+    /// Derived classes must implement this to tell the given ITargetable to
+    /// place the target according to the DragInfo.
+    virtual void PlaceTarget(ITargetable &targetable, const DragInfo &info) = 0;
 
     /// Indicates that interactive target placement is starting. The base class
     /// implements it to do nothing.
@@ -65,11 +66,4 @@ class TargetWidgetBase : public DraggableWidget {
 
     /// Whether snap feedback is showing or not.
     bool snap_feedback_active_ = false;
-
-    /// Widget returned by last call to GetReceiver().
-    WidgetPtr prev_receiver_;
-
-    /// Returns the Widget that should receive the target based on the given
-    /// DragInfo. This may be null.
-    WidgetPtr GetReceiver_(const DragInfo &info);
 };

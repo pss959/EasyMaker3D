@@ -7,6 +7,7 @@
 #include "Parser/Registry.h"
 #include "Util/Memory.h"
 #include "Widgets/ClickableWidget.h"
+#include "Widgets/ITargetable.h"
 
 DECL_SHARED_PTR(Model);
 namespace SG { DECL_SHARED_PTR(MutableTriMeshShape); }
@@ -21,10 +22,11 @@ namespace SG { DECL_SHARED_PTR(MutableTriMeshShape); }
 /// The mesh should be centered on the origin in object coordinates.
 ///
 /// The Model class is derived from ClickableWidget so that clicking a Model
-/// can be used to select or deselect it.
+/// can be used to select or deselect it. It also implements the ITargetable
+/// interface for receiving PointTarget and EdgeTarget placement.
 ///
 /// \ingroup Models
-class Model : public ClickableWidget {
+class Model : public ClickableWidget, public ITargetable {
   public:
     // ------------------------------------------------------------------------
     // Enums and constants.
@@ -234,11 +236,8 @@ class Model : public ClickableWidget {
     virtual void UpdateForRenderPass(const Str &pass_name) override;
 
     // ------------------------------------------------------------------------
-    // Target Interface.
+    // ITargetable Interface.
     // ------------------------------------------------------------------------
-
-    /// Models can receive Targets.
-    virtual bool CanReceiveTarget() const override { return true; }
 
     /// Redefines this to place the point target on the surface of the Model or
     /// on the bounds if in modified mode. This checks for snapping if close to

@@ -4,6 +4,7 @@
 
 #include "Panels/Panel.h"
 #include "Util/Memory.h"
+#include "Widgets/IScrollable.h"
 
 DECL_SHARED_PTR(RootModel);
 DECL_SHARED_PTR(TreePanel);
@@ -15,7 +16,7 @@ namespace Parser { class Registry; }
 /// interactions with them.
 ///
 /// \ingroup Panels
-class TreePanel : public Panel {
+class TreePanel : public Panel, public IScrollable {
   public:
     /// Resets the TreePanel to initial conditions.
     void Reset();
@@ -32,8 +33,18 @@ class TreePanel : public Panel {
     /// update its display.
     void ModelsChanged();
 
+    /// Redefines this to also check for keys handled by the ScrollingPane.
+    virtual bool HandleEvent(const Event &event) override;
+
     /// Defines this to update contents if necessary.
     virtual void UpdateForRenderPass(const Str &pass_name) override;
+
+    // ------------------------------------------------------------------------
+    // IScrollable Interface.
+    // ------------------------------------------------------------------------
+
+    /// Defines this to scroll the ScrollingPane if possible.
+    virtual bool ProcessValuator(float delta) override;
 
   protected:
     TreePanel();

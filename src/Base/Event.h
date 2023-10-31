@@ -87,8 +87,7 @@ struct Event {
     /// Current keyboard modifiers for a key press or release.
     Modifiers         modifiers;
 
-    /// Relative 1D position change for a thumbwheel or other 1D
-    /// valuator.
+    /// Relative 1D position change for a scroll wheel or other 1D valuator.
     float             position1D = 0;
 
     /// 2D position for a mouse, trackpad, or similar device. Normalized to

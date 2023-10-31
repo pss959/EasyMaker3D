@@ -35,6 +35,11 @@
 
 class TreePanel::Impl_ {
   public:
+    using ChangeFunc = std::function<void()>;
+
+    /// Sets a function to invoke when a change is made to the Model rows.
+    void SetChangeFunc(const ChangeFunc &func) { change_func_ = func; }
+
     void Reset();
     void SetSessionString(const Str &str);
     void SetRootModel(const RootModelPtr &root_model) {
@@ -43,6 +48,9 @@ class TreePanel::Impl_ {
 
     /// Marks models as having changed in some way that requires rebuilding.
     void ModelsChanged() { models_changed_ = true; }
+
+    /// Checks if the ScrollingPane handles the given Event.
+    bool HandleEvent(const Event &event);
 
     /// Updates Model rows if any change was made.
     void UpdateModels() {
@@ -59,6 +67,8 @@ class TreePanel::Impl_ {
         action_agent_    = action_agent;
         selection_agent_ = selection_agent;
     }
+
+    bool ProcessValuator(float delta);
 
   private:
     /// Defines the current visibility state for the session row or for a
@@ -84,6 +94,8 @@ class TreePanel::Impl_ {
 
     using ModelRowPtr_ = std::shared_ptr<ModelRow_>;
     using ExpStateMap_ = std::unordered_map<ModelPtr, ExpState_>;
+
+    ChangeFunc        change_func_;
 
     ActionAgentPtr    action_agent_;
     SelectionAgentPtr selection_agent_;
@@ -401,6 +413,10 @@ void TreePanel::Impl_::SetSessionString(const Str &str) {
         session_text_pane_->SetText(str);
 }
 
+bool TreePanel::Impl_::HandleEvent(const Event &event) {
+    return scrolling_pane_->HandleEvent(event);
+}
+
 void TreePanel::Impl_::InitInterface(Pane &root_pane) {
     scrolling_pane_ = root_pane.FindTypedSubPane<ScrollingPane>("Scroller");
 
@@ -463,6 +479,11 @@ void TreePanel::Impl_::UpdateInterface() {
     rect_select_->SetSelectionAgent(selection_agent_);
 }
 
+bool TreePanel::Impl_::ProcessValuator(float delta) {
+    scrolling_pane_->ScrollBy(TK::kScrollingPaneWheelScrollAmount * delta);
+    return true;
+}
+
 void TreePanel::Impl_::UpdateModelRows_() {
     ASSERT(root_model_);
 
@@ -492,6 +513,9 @@ void TreePanel::Impl_::UpdateModelRows_() {
     rect_select_->SetHeight(height);
 
     models_changed_ = false;
+
+    if (change_func_)
+        change_func_();
 }
 
 void TreePanel::Impl_::UpdateButtons_() {
@@ -712,6 +736,10 @@ Color TreePanel::Impl_::ModelRow_::GetColorForModel_(const Model &model) {
 // ----------------------------------------------------------------------------
 
 TreePanel::TreePanel() : impl_(new Impl_) {
+    // When the Model rows change, let the base class know that focusable Panes
+    // need to be updated.
+    impl_->SetChangeFunc([&](){ UpdateFocusablePanes(); });
+
     Reset();
 }
 
@@ -731,8 +759,16 @@ void TreePanel::ModelsChanged() {
     impl_->ModelsChanged();
 }
 
+bool TreePanel::HandleEvent(const Event &event) {
+    return impl_->HandleEvent(event) || Panel::HandleEvent(event);
+}
+
 void TreePanel::UpdateForRenderPass(const Str &pass_name) {
     impl_->UpdateModels();
+}
+
+bool TreePanel::ProcessValuator(float delta) {
+    return impl_->ProcessValuator(delta);
 }
 
 void TreePanel::InitInterface() {

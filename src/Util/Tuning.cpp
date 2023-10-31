@@ -70,6 +70,7 @@ const float    kPinchHoverScale                  = .8f;
 const float    kScrollingPaneKeyScrollAmount     = .5f;
 const float    kScrollingPaneSpeed               = .4f;
 const float    kScrollingPaneWheelScrollAmount   = .1f;
+const float    kStageScrollFactor                = .1f;
 
 // Model Colors
 const float    kColorRingInnerRadius             = .45f;

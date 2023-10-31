@@ -396,12 +396,6 @@ bool Panel::HandleEvent(const Event &event) {
     if (! handled && event.flags.Has(Event::Flag::kKeyPress))
         handled = ProcessKeyPress_(event);
 
-    // If requested, handle all valuator events so the MainHandler does not get
-    // them.
-    if (! handled && event.flags.Has(Event::Flag::kPosition1D) &&
-        ShouldTrapValuatorEvents())
-        handled = true;
-
     return handled;
 }
 

@@ -181,6 +181,10 @@ extern const float    kScrollingPaneSpeed;
 /// Amount to scroll a ScrollingPane by a unit change in the scroll wheel.
 extern const float    kScrollingPaneWheelScrollAmount;
 
+/// Factor to convert a scroll wheel valuator change to a change in Stage
+/// scale.
+extern const float    kStageScrollFactor;
+
 ///@}
 
 /// \name Model Colors

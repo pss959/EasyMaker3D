@@ -61,17 +61,6 @@ void Inspector::SetPositionForView(const Frustum &frustum) {
                 TK::kInspectorViewDistance * frustum.GetViewDirection());
 }
 
-void Inspector::ApplyScaleChange(float delta) {
-    ASSERT(IsEnabled());
-    if (! attached_controller_) {
-        const float cur_scale = transformer_->GetScale()[0];
-        const float scale =
-            Clamp((1 + TK::kInspectorNonVRScaleMult * delta) * cur_scale,
-                  TK::kInspectorNonVRMinScale, TK::kInspectorNonVRMaxScale);
-        transformer_->SetUniformScale(scale);
-    }
-}
-
 void Inspector::ApplyRotation(const Rotationf &rot) {
     ASSERT(transformer_);
     if (! attached_controller_)
@@ -97,4 +86,18 @@ void Inspector::PostSetUpIon() {
     transformer_ = SG::FindNodeUnderNode(*this, "Transformer");
     scaler_      = SG::FindNodeUnderNode(*this, "Scaler");
     centerer_    = SG::FindNodeUnderNode(*this, "Centerer");
+}
+
+bool Inspector::ProcessValuator(float delta) {
+    ASSERT(IsEnabled());
+    bool handled = false;
+    if (! attached_controller_) {
+        const float cur_scale = transformer_->GetScale()[0];
+        const float scale =
+            Clamp((1 + TK::kInspectorNonVRScaleMult * delta) * cur_scale,
+                  TK::kInspectorNonVRMinScale, TK::kInspectorNonVRMaxScale);
+        transformer_->SetUniformScale(scale);
+        handled = true;
+    }
+    return handled;
 }

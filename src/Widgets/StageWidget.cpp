@@ -10,6 +10,7 @@
 #include "SG/Texture.h"
 #include "SG/UniformBlock.h"
 #include "Util/Assert.h"
+#include "Util/Tuning.h"
 
 void StageWidget::CreationDone() {
     DiscWidget::CreationDone();
@@ -66,18 +67,20 @@ void StageWidget::SetStageRadius(float radius) {
     grid_image_->RegenerateImage();
 }
 
-void StageWidget::ApplyScaleChange(float delta) {
-    // Let the DiscWidget update the scale.
-    DiscWidget::ApplyScaleChange(delta);
-
-    // Adjust the Y scale in the geometry to maintain a constant size.
-    FixGeometryYScale_();
-}
-
 void StageWidget::SetScaleAndRotation(float scale, const Anglef &angle) {
     SetUniformScale(scale);
     SetRotationAngle(angle);
     FixGeometryYScale_();
+}
+
+bool StageWidget::ProcessValuator(float delta) {
+    // Let the DiscWidget update the scale.
+    DiscWidget::ApplyScaleChange(TK::kStageScrollFactor * delta);
+
+    // Adjust the Y scale in the geometry to maintain a constant size.
+    FixGeometryYScale_();
+
+    return true;
 }
 
 void StageWidget::PlacePointTarget(const DragInfo &info,

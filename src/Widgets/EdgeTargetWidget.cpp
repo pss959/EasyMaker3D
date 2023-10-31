@@ -45,10 +45,11 @@ void EdgeTargetWidget::SetEdgeTarget(const EdgeTarget &target) {
     UpdateFromTarget_(target);
 }
 
-void EdgeTargetWidget::PlaceTarget(Widget &widget, const DragInfo &info) {
+void EdgeTargetWidget::PlaceTarget(ITargetable &targetable,
+                                   const DragInfo &info) {
     auto &target = target_.GetValue();
     Point3f position0, position1;
-    widget.PlaceEdgeTarget(info, target->GetLength(), position0, position1);
+    targetable.PlaceEdgeTarget(info, target->GetLength(), position0, position1);
 
     // Update the EdgeTarget.
     target->SetPositions(position0, position1);

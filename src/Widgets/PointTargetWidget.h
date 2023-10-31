@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Dimensionality.h"
 #include "Place/PointTarget.h"
 #include "Util/Memory.h"
 #include "Widgets/TargetWidgetBase.h"
@@ -37,7 +38,8 @@ class PointTargetWidget : public TargetWidgetBase {
     virtual bool IsValid(Str &details) override;
     virtual void CreationDone() override;
 
-    virtual void PlaceTarget(Widget &widget, const DragInfo &info) override;
+    virtual void PlaceTarget(ITargetable &targetable,
+                             const DragInfo &info) override;
     virtual void StartTargetPlacement() override;
     virtual void EndTargetPlacement() override;
     virtual void ShowExtraSnapFeedback(bool is_snapping) override;

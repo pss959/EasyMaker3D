@@ -21,7 +21,7 @@ bool InspectorHandler::HandleEvent(const Event &event) {
 
     // Handle scrolling: scale the inspected object.
     if (event.flags.Has(Event::Flag::kPosition1D)) {
-        inspector_->ApplyScaleChange(event.position1D);
+        inspector_->ProcessValuator(event.position1D);
     }
 
     // Handle mouse motion.

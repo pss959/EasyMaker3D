@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Items/ITouchable.h"
 #include "Util/Memory.h"
+#include "Widgets/ITouchable.h"
 
 DECL_SHARED_PTR(Widget);
 
