@@ -54,19 +54,23 @@ PanelPtr BoardManager::GetPanel(const Str &name) const {
 }
 
 void BoardManager::ClosePanel(const Str &result) {
-    // Use the most current active Board.
-    ASSERT(! boards_.empty());
-    auto &board = boards_.back();
-    ASSERT(board->GetCurrentPanel());
+    // Do not try to close a panel in a permanent Board. When this happens, the
+    // boards_ vector is empty.
+    if (! boards_.empty()) {
+        // Use the most current active Board.
+        auto &board = boards_.back();
+        ASSERT(board->GetCurrentPanel());
+        ASSERT(board->GetBehavior() != Board::Behavior::kPermanent);
 
-    KLOG('g', "Closing " << board->GetCurrentPanel()->GetName()
-         << " with result '" << result
-         << "' in " << board->GetDesc() << " with behavior "
-         << Util::EnumName(board->GetBehavior()));
+        KLOG('g', "Closing " << board->GetCurrentPanel()->GetName()
+             << " with result '" << result
+             << "' in " << board->GetDesc() << " with behavior "
+             << Util::EnumName(board->GetBehavior()));
 
-    // If popping results in an empty Board, hide it.
-    if (! board->PopPanel(result))
-        ShowBoard(board, false);
+        // If popping results in an empty Board, hide it.
+        if (! board->PopPanel(result))
+            ShowBoard(board, false);
+    }
 }
 
 void BoardManager::PushPanel(const PanelPtr &panel,
