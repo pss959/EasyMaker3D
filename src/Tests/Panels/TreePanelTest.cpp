@@ -516,6 +516,26 @@ TEST_F(TreePanelTest, MoveUpDown) {
     EXPECT_ENUM_EQ(Action::kMoveNext, action_agent->last_action);
 }
 
+TEST_F(TreePanelTest, Valuator) {
+    // The TreePanel should pass valuator changes to its ScrollingPane.
+    EXPECT_TRUE(panel->ProcessValuator(-.4f));
+}
+
+TEST_F(TreePanelTest, ScrollEvents) {
+    Event event;
+    event.device = Event::Device::kKeyboard;
+    event.flags.Set(Event::Flag::kKeyPress);
+    event.key_name = "Up";
+    EXPECT_TRUE(panel->HandleEvent(event));
+
+    event.key_name = "Down";
+    EXPECT_TRUE(panel->HandleEvent(event));
+
+    // Other keys are not handled by the ScrollingPane.
+    event.key_name = "Backspace";
+    EXPECT_FALSE(panel->HandleEvent(event));
+}
+
 TEST_F(TreePanelTest, Reset) {
     const auto hier = BuildModelHierarchy();
     panel->SetRootModel(hier.root);

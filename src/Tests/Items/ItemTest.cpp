@@ -177,7 +177,7 @@ TEST_F(ItemTest, Inspector) {
     // Inspector has to be activated for ApplyScaleChange().
     inspector->Activate(node, ControllerPtr());
     const auto size = inspector->GetScaledBounds().GetSize();
-    inspector->ApplyScaleChange(1);
+    EXPECT_TRUE(inspector->ProcessValuator(1));
     EXPECT_CLOSE(1.06f,              inspector->GetCurrentScale());
     EXPECT_EQ(Rotationf::Identity(), inspector->GetCurrentRotation());
     EXPECT_LT(size[0], inspector->GetScaledBounds().GetSize()[0]);

@@ -100,14 +100,6 @@ TEST_F(PanelTest, HeadsetButton) {
     EXPECT_FALSE(vk.IsVisible());
 }
 
-TEST_F(PanelTest, Valuator) {
-    // All non-ToolPanel Panel classes should trap valuator events.
-    Event event;
-    event.flags.Set(Event::Flag::kPosition1D);
-    event.position1D = -.4f;
-    EXPECT_TRUE(panel->HandleEvent(event));
-}
-
 TEST_F(PanelTest, FocusEvents) {
     auto but0 = FindTypedPane<ButtonPane>("Button0");
     auto but1 = FindTypedPane<ButtonPane>("Button1");

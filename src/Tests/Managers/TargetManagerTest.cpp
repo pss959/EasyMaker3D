@@ -12,15 +12,15 @@
 #include "Tests/Widgets/DragTester.h"
 #include "Util/Tuning.h"
 #include "Widgets/EdgeTargetWidget.h"
+#include "Widgets/ITargetable.h"
 #include "Widgets/PointTargetWidget.h"
 
 /// \ingroup Tests
 class TargetManagerTest : public SceneTestBase {
   protected:
     /// Derived Widget class that supports receiving target placement.
-    class TestReceiverWidget : public Widget {
+    class TestTargetableWidget : public Widget, public ITargetable {
       public:
-        virtual bool CanReceiveTarget() const override { return true; }
         virtual void PlacePointTarget(const DragInfo &info,
                                       Point3f &position, Vector3f &direction,
                                       Dimensionality &snapped_dims) override {
@@ -36,12 +36,12 @@ class TargetManagerTest : public SceneTestBase {
         }
 
       protected:
-        TestReceiverWidget() {}
+        TestTargetableWidget() {}
 
       private:
         friend class Parser::Registry;
     };
-    DECL_SHARED_PTR(TestReceiverWidget);
+    DECL_SHARED_PTR(TestTargetableWidget);
 
     CommandManagerPtr    cm;
     TargetManager        tm;
@@ -201,7 +201,7 @@ TEST_F(TargetManagerTest, ChangeTargets) {
     // Test that activating and changing the PointTargetWidget or
     // EdgeTargetWidget causes a command to be added to the CommandManager.
 
-    Parser::Registry::AddType<TestReceiverWidget>("TestReceiverWidget");
+    Parser::Registry::AddType<TestTargetableWidget>("TestTargetableWidget");
 
     // Set up a dummy executor function for the ChangePointTargetCommand and
     // ChangeEdgeTargetCommand. It does not need to do anything.
@@ -227,10 +227,10 @@ TEST_F(TargetManagerTest, ChangeTargets) {
     EXPECT_EQ(0U, deact_count);
     EXPECT_EQ(0U, cm->GetCommandList()->GetCommandCount());
 
-    // Drag the position of the PointTargetWidget using a TestReceiverWidget.
+    // Drag the position of the PointTargetWidget using a TestTargetableWidget.
     // This should create and add a ChangePointTargetCommand.
-    auto trw = CreateObject<TestReceiverWidget>();
-    DragTester pdt(ptw, trw);
+    auto ttw = CreateObject<TestTargetableWidget>();
+    DragTester pdt(ptw, ttw);
     pdt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(2, 0, 0));
     EXPECT_EQ(1U, act_count);
     EXPECT_EQ(1U, deact_count);
@@ -244,9 +244,9 @@ TEST_F(TargetManagerTest, ChangeTargets) {
     cm->ResetCommandList();
     EXPECT_EQ(0U, cm->GetCommandList()->GetCommandCount());
 
-    // Drag the position of the EdgeTargetWidget using a TestReceiverWidget.
+    // Drag the position of the EdgeTargetWidget using a TestTargetableWidget.
     // This should create and add a ChangeEdgeTargetCommand.
-    DragTester edt(etw, trw);
+    DragTester edt(etw, ttw);
     edt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(2, 0, 0));
     EXPECT_EQ(2U, act_count);
     EXPECT_EQ(2U, deact_count);

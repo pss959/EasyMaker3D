@@ -11,10 +11,28 @@
 #include "Trackers/MouseTracker.h"
 #include "Util/Delay.h"
 #include "Widgets/GenericWidget.h"
+#include "Widgets/IScrollable.h"
 
 /// \ingroup Tests
 class MainHandlerTest : public SceneTestBase {
   protected:
+    /// Derived GenericWidget with IScrollable interface for testing valuator
+    /// events.
+    class TestScrollableWidget : public GenericWidget, public IScrollable {
+      public:
+        float last_delta = 0;
+
+        // IScrollable interface.
+        virtual bool ProcessValuator(float delta) override {
+            last_delta = delta;
+            return true;
+        }
+      protected:
+        TestScrollableWidget() {}
+        friend class Parser::Registry;
+    };
+    DECL_SHARED_PTR(TestScrollableWidget);
+
     /// Shorter MouseTracker click timeout to speed up tests.
     static constexpr float kTimeout = .001f;
 
@@ -26,8 +44,8 @@ class MainHandlerTest : public SceneTestBase {
         ~TimeoutShortener() { MouseTracker::SetClickTimeout(0); }
     };
 
-    PrecisionStorePtr prec;
-    GenericWidgetPtr  widget;
+    PrecisionStorePtr       prec;
+    TestScrollableWidgetPtr widget;
 
     /// Sets up a MainHandler with a Context and PrecisionStore and accesses
     /// the GenericWidget.
@@ -54,8 +72,8 @@ void MainHandlerTest::InitHandler(MainHandler &mh) {
         CLONE "T_RadialMenu" "LeftMenu"  {},
         CLONE "T_RadialMenu" "RightMenu" {},
 
-        # GenericWidget to test clicking/dragging.
-        GenericWidget "TestWidget" { shapes: [ Box {} ] },
+        # TestScrollableWidget to test clicking/dragging/valuator.
+        TestScrollableWidget "TestWidget" { shapes: [ Box {} ] },
 
         # Button to test non-draggable widget.
         PushButtonWidget "TestButton" {
@@ -66,11 +84,14 @@ void MainHandlerTest::InitHandler(MainHandler &mh) {
     }
   ]
 )";
+    Parser::Registry::AddType<TestScrollableWidget>("TestScrollableWidget");
+
     FrustumPtr frustum(new Frustum);
     auto scene = ReadRealScene(kContents);
     auto lc = SG::FindTypedNodeInScene<Controller>(*scene, "LeftController");
     auto rc = SG::FindTypedNodeInScene<Controller>(*scene, "RightController");
-    widget  = SG::FindTypedNodeInScene<GenericWidget>(*scene, "TestWidget");
+    widget  = SG::FindTypedNodeInScene<TestScrollableWidget>(*scene,
+                                                             "TestWidget");
 
     // Set up and install a MainHandler::Context.
     MainHandler::Context mc;
@@ -121,30 +142,23 @@ TEST_F(MainHandlerTest, Valuator) {
     MainHandler mh(false);  // No VR.
     InitHandler(mh);
 
-    // Detect Valuator changes.
-    Event::Device last_dev = Event::Device::kUnknown;
-    float         last_val = 0;
-    auto val_func = [&](Event::Device dev, float val){
-        last_dev = dev;
-        last_val = val;
-    };
-    mh.GetValuatorChanged().AddObserver("key", val_func);
-
+    // Valuator event with no 2D position.
     Event event;
     event.device = Event::Device::kMouse;
     event.flags.Set(Event::Flag::kPosition1D);
     event.position1D = .2f;
-    EXPECT_ENUM_EQ(Event::Device::kUnknown,        last_dev);
-    EXPECT_EQ(0,                                   last_val);
-    EXPECT_TRUE(mh.HandleEvent(event));
-    EXPECT_ENUM_EQ(Event::Device::kMouse,          last_dev);
-    EXPECT_EQ(.2f,                                 last_val);
+    EXPECT_FALSE(mh.HandleEvent(event));
 
-    event.device = Event::Device::kLeftController;
-    event.position1D = -.1f;
+    // Valuator event not over any IScrollable.
+    event.flags.Set(Event::Flag::kPosition2D);
+    event.position2D = Point2f(0, 0);
+    EXPECT_FALSE(mh.HandleEvent(event));
+
+    // Test a valuator Event over the TestScrollableWidget.
+    EXPECT_EQ(0, widget->last_delta);
+    event.position2D = Point2f(.5f, .5f);
     EXPECT_TRUE(mh.HandleEvent(event));
-    EXPECT_ENUM_EQ(Event::Device::kLeftController, last_dev);
-    EXPECT_EQ(-.1f,                                last_val);
+    EXPECT_EQ(.2f, widget->last_delta);
 }
 
 TEST_F(MainHandlerTest, Hover) {

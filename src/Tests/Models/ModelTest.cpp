@@ -259,8 +259,6 @@ TEST_F(ModelTest, PlacePointTarget) {
     box->SetUniformScale(8);
     stage->AddChild(box);
 
-    EXPECT_TRUE(box->CanReceiveTarget());
-
     // This is required to get the BoxModel to update matrices.
     box->SetStatus(Model::Status::kUnselected);
 
@@ -320,8 +318,6 @@ TEST_F(ModelTest, PlaceEdgeTarget) {
     auto box   = Model::CreateModel<BoxModel>();
     box->SetUniformScale(8);
     stage->AddChild(box);
-
-    EXPECT_TRUE(box->CanReceiveTarget());
 
     // This is required to get the BoxModel to update matrices and mesh.
     box->SetStatus(Model::Status::kUnselected);

@@ -73,10 +73,20 @@ TEST_F(MouseTrackerTest, Defaults) {
     // Constructing with the wrong Actuator should assert.
     TEST_ASSERT(MouseTracker(Actuator::kLeftPinch), "Actuator::kMouse");
 
-    MouseTracker mt(Actuator::kMouse);
     EXPECT_ENUM_EQ(Actuator::kMouse,      mt.GetActuator());
     EXPECT_ENUM_EQ(Event::Device::kMouse, mt.GetDevice());
     EXPECT_EQ(TK::kMouseClickTimeout,     mt.GetClickTimeout());
+}
+
+TEST_F(MouseTrackerTest, GetNodePathForEvent) {
+    // No path if not over anything.
+    auto path = mt.GetNodePathForEvent(GetEvent("", ""));
+    EXPECT_TRUE(path.empty());
+
+    // Over right GenericWidget.
+    path = mt.GetNodePathForEvent(GetEvent("", "R"));
+    EXPECT_FALSE(path.empty());
+    EXPECT_EQ(rgw, path.back());
 }
 
 TEST_F(MouseTrackerTest, IsActivation) {

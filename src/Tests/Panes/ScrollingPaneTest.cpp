@@ -74,7 +74,7 @@ TEST_F(ScrollingPaneTest, Scroll) {
     scp->ScrollToShowSubPane(*spacers[10]);
     EXPECT_CLOSE(.25f, scp->GetScrollPosition());
 
-    // Handle scrolling events.
+    // Handle scrolling keyboard events.
     Event event;
     event.device = Event::Device::kKeyboard;
     event.flags.Set(Event::Flag::kKeyPress);
@@ -86,9 +86,11 @@ TEST_F(ScrollingPaneTest, Scroll) {
     EXPECT_TRUE(scp->HandleEvent(event));
     EXPECT_CLOSE(.25f, scp->GetScrollPosition());
 
-    event.flags.SetAll(false);
-    event.flags.Set(Event::Flag::kPosition1D);
-    event.position1D = -.4f;
-    EXPECT_TRUE(scp->HandleEvent(event));
-    EXPECT_CLOSE(.246f, scp->GetScrollPosition());
+    // Other keys are not handled by the ScrollingPane.
+    event.key_name = "Backspace";
+    EXPECT_FALSE(scp->HandleEvent(event));
+
+    // Handle valuator changes.
+    EXPECT_TRUE(scp->ProcessValuator(-.4f));
+    EXPECT_CLOSE(.254f, scp->GetScrollPosition());
 }

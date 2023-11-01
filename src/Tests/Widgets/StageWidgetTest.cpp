@@ -39,7 +39,7 @@ TEST_F(StageWidgetTest, Transforms) {
     EXPECT_CLOSE(1, ht);
 
     // Change the stage size.
-    sw->ApplyScaleChange(1);
+    EXPECT_TRUE(sw->ProcessValuator(1));
     EXPECT_VECS_CLOSE(Vector3f(.32f, .32f, .32f), scaler->GetScale());
     ht = sw->GetScale()[1] * scaler->GetScale()[1] * geom->GetScale()[1];
     EXPECT_CLOSE(1, ht);
@@ -47,8 +47,6 @@ TEST_F(StageWidgetTest, Transforms) {
 
 TEST_F(StageWidgetTest, PointTarget) {
     auto sw = GetStageWidget();
-
-    EXPECT_TRUE(sw->CanReceiveTarget());
 
     // Snap the PointTarget to grid points. Snapping relies only on the X and Z
     // of the SG::Hit point location and the linear precision.
@@ -75,8 +73,6 @@ TEST_F(StageWidgetTest, PointTarget) {
 
 TEST_F(StageWidgetTest, EdgeTarget) {
     auto sw = GetStageWidget();
-
-    EXPECT_TRUE(sw->CanReceiveTarget());
 
     // Snap the EdgeTarget to grid edges. Snapping relies only on the X and Z
     // of the SG::Hit point location and the linear precision. The length

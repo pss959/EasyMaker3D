@@ -197,20 +197,6 @@ TEST_F(WidgetTest, Tooltip) {
     EXPECT_EQ("", s);
 }
 
-TEST_F(WidgetTest, PlaceTarget) {
-    auto tw = CreateTestWidget();
-    EXPECT_FALSE(tw->CanReceiveTarget());
-
-    // Base Widget class does not support target placement.
-    Point3f        pos0, pos1;
-    Vector3f       dir;
-    Dimensionality dims;
-    TEST_ASSERT(tw->PlacePointTarget(DragInfo(), pos0, dir, dims),
-                "should not be called");
-    TEST_ASSERT(tw->PlaceEdgeTarget(DragInfo(), 10, pos0, pos1),
-                "should not be called");
-}
-
 TEST_F(WidgetTest, IsTouched) {
     auto tw = CreateTestWidget();
 
