@@ -253,6 +253,29 @@ img {
     padding:     0;
 }
 
+/* Special handling for tables: center header text, enable line wrapping, and*/
+/* highlight captions. */
+.wy-table-responsive table th {
+    text-align: center;
+}
+.wy-table-responsive table td {
+    text-wrap: wrap;
+}
+.wy-table-responsive caption {
+    border: 1px solid darkgray;
+    background-color: #eeeeee;
+}
+.wy-table-responsive .caption-text {
+    font-size:   +2;
+    font-weight: bold;
+}
+
+/* Container that creates 2 columns. */
+.twocolumn {
+    column-count:  2;
+    margin-bottom: 10px;
+}
+
 /* -----------------------------------------------------------------------------
  * Cheat Sheet.
  * -------------------------------------------------------------------------- */

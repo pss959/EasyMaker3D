@@ -276,6 +276,93 @@ Some of the :ref:`2D Panels <ug-panels>` require text input, such as editing
 the name of a model or entering the name of a new file. Using the mouse and
 keyboard is always an option for entering and editing text.
 
+The following keys are treated specially when a text input field is active for
+editing:
+
+.. container:: twocolumn
+
+    .. list-table:: Cursor Motion
+       :align:  center
+       :widths: 30 70
+       :header-rows: 1
+
+       * - Key
+         - Effect
+       * - :shortcut:`Left`
+         - Move the cursor to the
+           previous character.
+       * - :shortcut:`Right`
+         - Move the cursor to the next character.
+       * - :shortcut:`Up`
+         - Move the cursor to the beginning of the text.
+       * - :shortcut:`Down`
+         - Move the cursor to the end of the text.
+       * - :shortcut:`Ctrl-b`
+         - Move the cursor to the previous character.
+       * - :shortcut:`Ctrl-e`
+         - Move the cursor to the end of the text.
+       * - :shortcut:`Ctrl-f`
+         - Move the cursor to the next character.
+
+    .. list-table:: Selecting Characters
+       :align:  center
+       :widths: 30 70
+       :header-rows: 1
+
+       * - Key
+         - Effect
+       * - :shortcut:`Shift-Left`
+         - Select the character before the cursor.
+       * - :shortcut:`Shift-Right`
+         - Select the character after the cursor.
+       * - :shortcut:`Shift-Up`
+         - Select all characters from the cursor to the beginning of the text.
+       * - :shortcut:`Shift-Down`
+         - Select all characters from the cursor to the end of the text.
+       * - :shortcut:`Ctrl-a`
+         - Select all characters.
+       * - :shortcut:`Shift-Ctrl-a`
+         - Deselect all characters.
+
+.. container:: twocolumn
+
+    .. list-table:: Deleting Characters
+       :align:  center
+       :widths: 30 70
+       :header-rows: 1
+
+       * - Key
+         - Effect
+       * - :shortcut:`Backspace`
+         - Delete the selected characters if any; otherwise, delete the character
+           before the cursor.
+       * - :shortcut:`Ctrl-Backspace`
+         - Delete all characters.
+       * - :shortcut:`Ctrl-d`
+         - Delete the character after the cursor.
+       * - :shortcut:`Ctrl-h`
+         - Delete the character before the cursor.
+       * - :shortcut:`Ctrl-k`
+         - Delete all characters after the cursor.
+       * - :shortcut:`Shift-Ctrl-k`
+         - Delete all characters before the cursor.
+
+    .. list-table:: Other
+       :align:  center
+       :widths: 30 70
+       :header-rows: 1
+
+       * - Key
+         - Effect
+       * - :shortcut:`Ctrl-z`
+         - Undo the last change.
+       * - :shortcut:`Shift-Ctrl-z`
+         - Redo the last undone change.
+       * - :shortcut:`Enter`
+         - Accept the current text and deactivate the input field.
+       * - :shortcut:`Escape`
+         - Undo all changes to the current text and deactivate the input field.
+
 .. admonition:: VR Only
 
    If you are wearing the VR headset and activate a text input field, a
