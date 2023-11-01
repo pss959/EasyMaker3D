@@ -124,6 +124,11 @@ void ScrollingPane::ScrollToShowSubPane(const Pane &sub_pane) {
     ScrollTo(fraction <= min ? 0 : fraction >= 1 - min ? 1 : fraction);
 }
 
+bool ScrollingPane::ProcessValuator(float delta) {
+    ScrollBy(-TK::kScrollingPaneWheelScrollAmount * delta);
+    return true;
+}
+
 Vector2f ScrollingPane::ComputeBaseSize() const {
     return GetMinSize();
 }

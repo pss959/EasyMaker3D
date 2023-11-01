@@ -4,6 +4,7 @@
 #include "Panes/ClipPane.h"
 #include "Panes/IPaneInteractor.h"
 #include "Util/Memory.h"
+#include "Widgets/IScrollable.h"
 
 namespace Parser { class Registry; }
 
@@ -17,7 +18,8 @@ DECL_SHARED_PTR(SliderPane);
 /// allowed to be added.
 ///
 /// \ingroup Panes
-class ScrollingPane : public BoxPane, public IPaneInteractor {
+class ScrollingPane : public BoxPane, public IPaneInteractor,
+                      public IScrollable {
   public:
     /// Returns the ClipPane representing the contents of the ScrollingPane.
     const ClipPanePtr & GetContentsPane() const { return contents_; }
@@ -51,6 +53,13 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     /// Returns the current scroll position as a fraction from 0 (top) to 1
     /// (bottom).
     float GetScrollPosition() const { return scroll_pos_; }
+
+    // ------------------------------------------------------------------------
+    // IScrollable Interface.
+    // ------------------------------------------------------------------------
+
+    /// Defines this to scroll the dropdown list if possible.
+    virtual bool ProcessValuator(float delta) override;
 
   protected:
     ScrollingPane() {}
