@@ -328,8 +328,8 @@ TEST_F(BoardTest, Grip) {
 
     // Use the left controller to hover the XZ slider and drag it. Use a
     // direction that is just angled enough to not delegate to the Panel.
-    const auto rot = Rotationf::FromAxisAndAngle(
-        Vector3f(1, 0, 0), TK::kMaxGripHoverDirAngle + Anglef::FromDegrees(1));
+    const auto xza = TK::kMaxPanelGripHoverDirAngle + Anglef::FromDegrees(1);
+    const auto rot = Rotationf::FromAxisAndAngle(Vector3f(1, 0, 0), xza);
     info.guide_direction = rot * -Vector3f::AxisZ();
     info.event.device = Event::Device::kLeftController;
     board->UpdateGripInfo(info);
