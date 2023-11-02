@@ -57,8 +57,9 @@ class GripTracker : public Tracker {
 
     /// If the given Event relates to this Tracker, this updates the current
     /// Data_, stores the intersected Widget, if any, in widget, and returns
-    /// true.
-    bool UpdateCurrentData_(const Event &event, WidgetPtr &widget);
+    /// true. The \p add_info flag is passed to GetGripData_();
+    bool UpdateCurrentData_(const Event &event, bool add_info,
+                            WidgetPtr &widget);
 
     /// If the given event contains data for a grip with the correct
     /// controller, this fills in data and returns true. If add_info is true,

@@ -26,7 +26,7 @@ Event::Device GripTracker::GetDevice() const {
 
 void GripTracker::UpdateHovering(const Event &event) {
     WidgetPtr widget;
-    if (UpdateCurrentData_(event, widget) && widget != current_widget_) {
+    if (UpdateCurrentData_(event, true, widget) && widget != current_widget_) {
         UpdateWidgetHovering(current_widget_, widget);
         current_widget_ = widget;
     }
@@ -45,7 +45,7 @@ void GripTracker::StopHovering() {
 bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         event.device == GetDevice() && event.button == Event::Button::kGrip) {
-        UpdateCurrentData_(event, current_widget_);
+        UpdateCurrentData_(event, true, current_widget_);
         if (current_widget_) {
             if (current_widget_->IsHovering())
                 current_widget_->StopHovering();
@@ -63,7 +63,7 @@ bool GripTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
         event.device == GetDevice() && event.button == Event::Button::kGrip) {
         UpdateControllers_(false);
-        UpdateCurrentData_(event, widget);
+        UpdateCurrentData_(event, false, widget);
         return true;
     }
     widget.reset();
@@ -126,10 +126,11 @@ void GripTracker::Reset() {
     current_widget_.reset();
 }
 
-bool GripTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
+bool GripTracker::UpdateCurrentData_(const Event &event, bool add_info,
+                                     WidgetPtr &widget) {
     // Get the grip data, including the full GripInfo.
     Data_ data;
-    if (! GetGripData_(event, true, data))
+    if (! GetGripData_(event, add_info, data))
         return false;
 
     widget = data.info.widget;

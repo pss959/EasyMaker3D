@@ -10,10 +10,13 @@ void Slider2DWidget::AddFields() {
 }
 
 void Slider2DWidget::PrepareForDrag(const DragInfo &info) {
-    // Set up the intersection plane based on the intersection point.
-    const int dim = GetDimension_();
-    const float distance = WorldToWidget(info.hit.GetWorldPoint())[dim];
-    intersection_plane_ = Plane(distance, GetAxis(dim));
+    // If this is a pointer-based drag, set up the intersection plane based on
+    // the intersection point.
+    if (info.trigger == Trigger::kPointer) {
+        const int dim = GetDimension_();
+        const float distance = WorldToWidget(info.hit.GetWorldPoint())[dim];
+        intersection_plane_ = Plane(distance, GetAxis(dim));
+    }
 }
 
 Vector2f Slider2DWidget::GetInterpolated() const {
