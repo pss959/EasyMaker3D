@@ -550,6 +550,10 @@ extern const Anglef   kMaxDiscWidgetScaleAngle;
 /// direction vector for grip hovering to be active.
 extern const Anglef   kMaxGripHoverDirAngle;
 
+/// Special case of hovering angle for Panel contents vs. board handles. This
+/// is larger to make it easier to interact with Panels.
+extern const Anglef   kMaxPanelGripHoverDirAngle;
+
 /// Precision used to "clean" mesh coordinates that are close to zero or other
 /// integers.
 extern const float    kMeshCleanPrecision;
@@ -646,10 +650,6 @@ extern const float    kWindowAspectRatio;
 
 /// Height to use for the main application window.
 extern const int      kWindowHeight;
-
-/// Change in controller height when the headset is off to approximate the same
-/// position as the controller in the VR view.
-extern const float    kHeadsetOffControllerYOffset;
 
 ///@}
 
