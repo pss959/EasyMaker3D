@@ -130,6 +130,11 @@ class VRSystem::Impl_ {
     /// method is used.
     bool             has_headset_button_ = false;
 
+    /// Saves the name of the device (HMD) manufacturer. This is used to work
+    /// around OpenVR device-dependent tracking weirdness when computing
+    /// relative controller positions.
+    Str              manufacturer_;
+
     // Devices.
     vr::VRInputValueHandle_t headset_handle_ = vr::k_ulInvalidInputValueHandle;
     Controller_              controllers_[2];  // Indexed by Hand enum.
@@ -380,6 +385,12 @@ bool VRSystem::Impl_::InitInput_() {
     // Access the HMD device in case it is needed.
     const uint32_t count = sys.GetSortedTrackedDeviceIndicesOfClass(
         vr::TrackedDeviceClass_HMD, &hmd_index_, 1);
+
+    // Access the manufacturer to work around device-dependent problems.
+    char buf[1024];
+    sys.GetStringTrackedDeviceProperty(
+        hmd_index_, vr::Prop_ManufacturerName_String, buf, 1024);
+    manufacturer_ = buf;
 
     if (count == 1U) {
         // Access HMD and controller handles.
@@ -690,11 +701,16 @@ void VRSystem::Impl_::AddHandPoseToEvent_(Hand hand, Event &event) {
         // Make the controller position relative to the camera camera position.
         pos = camera_position_ + rel_hand_pos;
 
-        // If the headset is on, make the height relative to the headset
-        // height. If the headset is not on, subtract the Y offset designed to
-        // make the position consistent with the VR view.
-        pos[1] -= is_headset_on_ ? head_pos_[1] - camera_position_[1] :
-            TK::kHeadsetOffControllerYOffset;
+        // The height of the relative position of the controller seems to be
+        // correct for the Vive but needs to be adjusted for the Oculus Quest
+        // 2. Who knows why or what other devices need? Not me.
+        if (manufacturer_ == "Oculus") {
+            // If the headset is on, make the height relative to the headset
+            // height. If the headset is not on, subtract the Y offset designed
+            // to make the position consistent with the VR view.
+            pos[1] -= is_headset_on_ ? head_pos_[1] - camera_position_[1] :
+                TK::kHeadsetOffControllerYOffset;
+        }
 
         // Copy the rotation.
         rot = RotationFromMatrix(m);
@@ -788,6 +804,8 @@ Event::Button VRSystem::Impl_::GetEventButton_(Button_ but) {
 #if ENABLE_DEBUG_FEATURES
 void VRSystem::Impl_::ReportAllBindings_() {
     if (KLogger::HasKeyCharacter('V')) {
+        KLOG('V', "VR Device manufacturer: " << manufacturer_);
+
         ReportBindings_("/actions/default/in/HeadsetOnHead", headset_action_);
 
         const auto &lh = hand_data_[Util::EnumInt(Hand::kLeft)];
