@@ -190,6 +190,7 @@ const float    kPinchClickTimeout                = .4f;
 // Tolerances and Precision
 const Anglef   kMaxDiscWidgetScaleAngle          = Anglef::FromDegrees(10);
 const Anglef   kMaxGripHoverDirAngle             = Anglef::FromDegrees(20);
+const Anglef   kMaxPanelGripHoverDirAngle        = Anglef::FromDegrees(30);
 const Anglef   kMinGripOrientationAngleChange    = Anglef::FromDegrees(10);
 const Anglef   kMinMouseRayAngleChange           = Anglef::FromDegrees(1);
 const Anglef   kMinPinchRayAngleChange           = Anglef::FromDegrees(4);

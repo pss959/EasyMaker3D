@@ -639,7 +639,7 @@ bool Board::Impl_::UpdatePanelGripInfo_(GripInfo &info) {
     auto panel = GetCurrentPanel();
     if (panel && panel->CanGripHover() &&
         AreDirectionsClose(info.guide_direction, -Vector3f::AxisZ(),
-                           TK::kMaxGripHoverDirAngle)) {
+                           TK::kMaxPanelGripHoverDirAngle)) {
         // Convert the controller position into Panel coordinates.
         auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
         const SG::CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
