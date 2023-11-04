@@ -24,7 +24,8 @@ FileSystemPtr FileSystem::GetInstalled() {
 
 Str FileSystem::ToNativeString(const Path &path) const {
 #ifdef ION_PLATFORM_WINDOWS
-    return path.make_preferred().string();
+    auto pref_path = path;
+    return pref_path.make_preferred().string();
 #else
     return path.native();
 #endif

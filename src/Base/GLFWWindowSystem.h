@@ -12,7 +12,8 @@ class GLFWWindowSystem : public IWindowSystem {
   public:
     virtual bool Init(const ErrorFunc &error_func) override;
     virtual void Terminate() override;
-    virtual bool CreateWindow(const Vector2i &size, const Str &title) override;
+    virtual bool CreateMainWindow(const Vector2i &size,
+                                  const Str &title) override;
     virtual void SetWindowPosition(const Vector2i &pos) override;
     virtual void SetFullScreen() override;
     virtual Vector2i GetWindowSize() override;
@@ -30,7 +31,7 @@ class GLFWWindowSystem : public IWindowSystem {
     /// GLFW error callback contains nothing to access an instance from.
     static ErrorFunc error_func_;
 
-    /// Stores the GLFWwindow created by CreateWindow().
+    /// Stores the GLFWwindow created by CreateMainWindow().
     GLFWwindow *window_ = nullptr;
 
     /// Stores whether the left shift key is pressed.
