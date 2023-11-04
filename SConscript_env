@@ -182,6 +182,9 @@ if platform == 'windows':
         RUN_PROGRAM = f'$RUN_BASH bin/runwinprogram.bash {mode}',
     )
     base_env.Append(
+        COMMON_FLAGS = [
+            '-Wno-deprecated-declarations',  # Needed for absl files.
+        ],
         CPPDEFINES = [
             'COMPILER_HAS_RVALUEREF',
             'NOGDI',                # Disables "ERROR" macro.
@@ -306,7 +309,6 @@ ion_env = base_env.Clone()
 ion_env.Append(
     COMMON_FLAGS = [
         '-Wno-array-bounds',       # Disable warning in tracinghelper.cc.
-        '-Wno-deprecated-declarations',  # Needed for absl files.
         '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
         '-Wno-unused-result',      # Disable warnings for fread() calls.
     ],
@@ -340,14 +342,20 @@ ion_env.AddPackages(ion_packages)
 
 # Platform-specific settings.
 if platform == 'windows':
+    ion_env.AddPackages(['harfbuzz'])
     ion_env.Append(
         CPPDEFINES = [('ION_API', '__declspec(dllexport)')],
         LINKFLAGS  = ['-static'],   # Use static versions when possible.
         LIBS       = ['gdi32', 'imagehlp', 'opengl32', 'user32', 'Ws2_32'],
-        # There is a dependency cycle between freetype2 and harfbuzz.
-        # Apparently people just work around it. Since LIBS has unique names,
-        # can't add anything twice there, so just add freetype again this way:
-        _LIBFLAGS  = ['-lfreetype'],
+        # pkg-config on Windows does not seem to use the correct dependency
+        # order, even with the "--static" flag.  Since LIBS has unique names,
+        # can't add anything twice there, so just add dependency libs this way:
+        _LIBFLAGS  = [
+            '-liconv',
+            '-lgraphite2',
+            '-lbrotlidec',
+            '-lbrotlicommon',
+        ],
     )
 else:
     ion_env.Append(
@@ -431,7 +439,7 @@ lib_env.Append(
 )
 
 # Add mode-specific items.
-if mode == 'rel' or platform == 'windows':
+if mode == 'rel':
     # The release executable always runs from its own directory.
     AddRpath_(lib_env, lib_env.Literal('\\$$ORIGIN'))
 else:
@@ -513,8 +521,8 @@ app_env.Append(
     # Resource files and directories to avoid adding to a release.
     RESOURCE_EXCLUSIONS = [
         'resources/SConscript_resources',
-        'resources/nodes/tests',
-        'resources/scenes/nodeviewer.mvn',
+        'resources/nodes/NodeViewerRoot.emd',
+        'resources/scenes/nodeviewer.emd',
     ],
 )
 
@@ -542,10 +550,6 @@ test_env.Append(
     ENV     = environ,
 )
 AddRpath_(test_env, Dir(test_env.subst('$BUILD_DIR/googletest')).abspath)
-
-# On Windows, restore the regular spawn function so test output is visible.
-if platform == 'windows':
-    test_env['SPAWN'] = test_env['ORIG_SPAWN']
 
 # -----------------------------------------------------------------------------
 # Mode-specific environment setup.

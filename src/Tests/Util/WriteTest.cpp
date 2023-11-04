@@ -20,6 +20,8 @@ TEST_F(WriteTest, WriteString) {
     EXPECT_FALSE(Util::WriteString("/no/such/file.txt", "New contents\n"));
 }
 
+#ifndef ION_PLATFORM_WINDOWS
+// Image writing is not built on Windows.
 TEST_F(WriteTest, WriteImage) {
     auto image = Util::ReadImage(GetDataPath("testimage.jpg"), false);
     EXPECT_NOT_NULL(image.Get());
@@ -40,3 +42,4 @@ TEST_F(WriteTest, WriteImage) {
     EXPECT_EQ(image->GetDepth(),      copy->GetDepth());
     EXPECT_EQ(image->GetDataSize(),   copy->GetDataSize());
 }
+#endif

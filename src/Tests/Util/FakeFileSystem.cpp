@@ -29,7 +29,7 @@ bool FakeFileSystem::Exists(const Path &path) const {
 }
 
 bool FakeFileSystem::IsDirectory(const Path &path) const {
-    const auto it = file_map_.find(path);
+    const auto it = file_map_.find(path.string());
     return it != file_map_.end() && it->second.is_dir;
 }
 
@@ -38,12 +38,12 @@ bool FakeFileSystem::IsAbsolute(const Path &path) const {
 }
 
 bool FakeFileSystem::IsHidden(const Path &path) const {
-    const auto it = file_map_.find(path);
+    const auto it = file_map_.find(path.string());
     return it != file_map_.end() && it->second.is_hidden;
 }
 
 UTime FakeFileSystem::GetModTime(const Path &path) const {
-    auto it = file_map_.find(path);
+    auto it = file_map_.find(path.string());
     ASSERT(it != file_map_.end());
     return it->second.mod_time;
 }
@@ -92,7 +92,7 @@ bool FakeFileSystem::CreateDirectories(const Path &path) const {
 
     // Make sure each component of the path is a known directory.
     Str cur_path;
-    for (const auto &dir: ion::base::SplitString(path, "/")) {
+    for (const auto &dir: ion::base::SplitString(path.string(), "/")) {
         cur_path += "/" + dir;
         if (! IsDirectory(cur_path))
             AddDir(cur_path);

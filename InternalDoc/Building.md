@@ -83,6 +83,7 @@ build uses [MSYS2](https://www.msys2.org/). Once installing it, use the
     mingw-w64-x86_64-gtest
     mingw-w64-x86_64-harfbuzz
     mingw-w64-x86_64-jsoncpp
+    mingw-w64-x86_64-libiconv
     mingw-w64-x86_64-libjpeg-turbo
     mingw-w64-x86_64-libpng
     mingw-w64-x86_64-minizip 

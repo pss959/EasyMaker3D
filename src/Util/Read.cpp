@@ -116,10 +116,11 @@ ion::gfx::ShapePtr ReadShape(const FilePath &path,
         // Need to access the attribute data.
         spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
 
-        // Open the file.
+        // Open the file. Use binary to work around line ending issues on
+        // Windows.
         const Str native_path = path.ToNativeString();
         KLOG('f', "Reading Shape from \"" << native_path << "\"");
-        std::ifstream in(native_path);
+        std::ifstream in(native_path, std::ios::binary);
         if (in.fail()) {
             KLOG('f', "Failed to open \"" << native_path << "\"");
         }

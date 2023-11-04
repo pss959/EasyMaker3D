@@ -60,7 +60,7 @@ class GLFWViewerTest::TestWindowSystem : public IWindowSystem {
         return init_succeeds;
     }
     virtual void Terminate() override  {}
-    virtual bool CreateWindow(const Vector2i &size, const Str &title) {
+    virtual bool CreateMainWindow(const Vector2i &size, const Str &title) {
         win_size = size;
         return true;
     };

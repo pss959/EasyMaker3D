@@ -174,7 +174,7 @@ TEST_F(SetUpIonTest, Uniforms) {
     TEST_U_("UI2", Vector2i,  GetVector2i,  (1, 2),       (3, 4));
     TEST_U_("UI3", Vector3i,  GetVector3i,  (1, 2, 3),    (3, 4, 5));
     TEST_U_("UI4", Vector4i,  GetVector4i,  (1, 2, 3, 4), (3, 4, 5, 6));
-    TEST_U_("UU1", uint,      GetUInt,      (23U),        (13U));
+    TEST_U_("UU1", uint32,    GetUInt,      (23U),        (13U));
     TEST_U_("UU2", Vector2ui, GetVector2ui, (1, 2),       (3, 4));
     TEST_U_("UU3", Vector3ui, GetVector3ui, (1, 2, 3),    (3, 4, 5));
     TEST_U_("UU4", Vector4ui, GetVector4ui, (1, 2, 3, 4), (3, 4, 5, 6));

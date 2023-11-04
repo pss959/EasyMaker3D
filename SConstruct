@@ -78,9 +78,10 @@ apps = SConscript('src/Apps/SConscript_apps', exports=['app_dict', 'app_env'],
 app_env.Alias('Apps', apps.values())
 app_env.Alias('App',  apps[app_name])
 
-# Build tests.
+# Build tests. Note that on Windows, "app_lib" contains both the DLL and .a, so
+# just use the former.
 test_env = envs['test']
-test_env.Append(LIBS = [app_lib])
+test_env.Append(LIBS = [app_lib[0]] if platform == 'windows' else [app_lib])
 SConscript('src/Tests/SConscript_tests', exports=['ion_env', 'test_env'],
            variant_dir=f'{build_dir}/Tests', duplicate=False)
 

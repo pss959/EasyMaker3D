@@ -26,11 +26,11 @@ namespace base {
 // StlContainer is used as a base for all containers used in place of std
 // equivalents. It provides a Finish() function for cleaning up placement
 // allocation when the container's construction has completed.
-class StlContainer {
+class ION_API StlContainer {
  private:
   // This member is constructed last; it is used to reset placement allocation
   // for the container.
-  struct Finisher { Finisher(); };
+  struct ION_API Finisher { Finisher(); };
   Finisher finisher_;
 };
 

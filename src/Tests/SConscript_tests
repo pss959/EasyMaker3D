@@ -455,21 +455,30 @@ test_args = ' '.join([
     ('--klog="%s"'         % klog_arg)    if klog_arg    else '',
 ])
 
-test_env.Alias('RunTests', test_program, f'$RUN_PROGRAM $SOURCE {test_args}')
+run_test_env = test_env.Clone()
+
+if platform == 'windows':
+    # Restore the regular spawn function so test output is visible.
+    run_test_env['SPAWN'] = run_test_env['ORIG_SPAWN']
+
+run_test_env.Alias('RunTests', test_program,
+                   f'$RUN_PROGRAM $SOURCE {test_args}')
 
 # Make sure test run targets are always considered out of date.
-test_env.AlwaysBuild('RunTests')
+run_test_env.AlwaysBuild('RunTests')
 
 # Special alias for listing test categories.
 all_categories = ', '.join(test_source_dict.keys())
-test_env.Alias('ListTestCategories',
-               test_env.Command('phony', [],
-                                f'echo "Test categories: {all_categories}"'))
+run_test_env.Alias(
+    'ListTestCategories',
+    run_test_env.Command('phony', [],
+                         f'echo "Test categories: {all_categories}"'))
 
 # Special alias for listing tests.
 all_tests = '\\n '.join(sorted(list(chain(*test_source_dict.values()))))
-test_env.Alias('ListTests',
-               test_env.Command('phony', [], f'echo "Tests:\\n {all_tests}"'))
+run_test_env.Alias(
+    'ListTests',
+    run_test_env.Command('phony', [], f'echo "Tests:\\n {all_tests}"'))
 
 # -----------------------------------------------------------------------------
 # Generating coverage results. (Linux platform, 'cov' mode only)
@@ -477,8 +486,8 @@ test_env.Alias('ListTests',
 
 if platform == 'linux' and mode == 'cov':
     config_file   = '#/gcovr.cfg'
-    coverage_file = test_env.File('#$BUILD_DIR/coverage/index.html').abspath
-    gen_coverage = test_env.Command(
+    coverage_file = run_test_env.File('#$BUILD_DIR/coverage/index.html').abspath
+    gen_coverage = run_test_env.Command(
         coverage_file, [test_program, config_file],
         [
             # Run the test.
@@ -489,4 +498,4 @@ if platform == 'linux' and mode == 'cov':
             f'echo === Coverage results in {coverage_file}'
         ])
 
-    test_env.Alias('Coverage', gen_coverage)
+    run_test_env.Alias('Coverage', gen_coverage)

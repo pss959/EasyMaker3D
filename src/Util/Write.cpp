@@ -12,7 +12,8 @@
 namespace Util {
 
 bool WriteString(const FilePath &path, const Str &s) {
-    std::ofstream out(path.ToNativeString());
+    // Use binary to work around line ending issues on Windows.
+    std::ofstream out(path.ToNativeString(), std::ios::binary);
     if (! out)
         return false;
     out << s;
