@@ -687,8 +687,14 @@ void VRSystem::Impl_::AddHandPoseToEvent_(Hand hand, Event &event) {
         const Matrix4f m = ConvertMatrix_(data.pose.mDeviceToAbsoluteTracking);
         const Point3f  rel_hand_pos = m * Point3f::Zero();
 
-        // Make the controller position relative to the camera position.
+        // Make the controller position relative to the camera camera position.
         pos = camera_position_ + rel_hand_pos;
+
+        // If the headset is on, make the height relative to the headset
+        // height. If the headset is not on, subtract the Y offset designed to
+        // make the position consistent with the VR view.
+        pos[1] -= is_headset_on_ ? head_pos_[1] - camera_position_[1] :
+            TK::kHeadsetOffControllerYOffset;
 
         // Copy the rotation.
         rot = RotationFromMatrix(m);

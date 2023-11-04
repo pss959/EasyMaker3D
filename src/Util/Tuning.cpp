@@ -190,7 +190,6 @@ const float    kPinchClickTimeout                = .4f;
 // Tolerances and Precision
 const Anglef   kMaxDiscWidgetScaleAngle          = Anglef::FromDegrees(10);
 const Anglef   kMaxGripHoverDirAngle             = Anglef::FromDegrees(20);
-const Anglef   kMaxPanelGripHoverDirAngle        = Anglef::FromDegrees(30);
 const Anglef   kMinGripOrientationAngleChange    = Anglef::FromDegrees(10);
 const Anglef   kMinMouseRayAngleChange           = Anglef::FromDegrees(1);
 const Anglef   kMinPinchRayAngleChange           = Anglef::FromDegrees(4);
@@ -223,5 +222,6 @@ const float    kVRFarDistance                    = 300;
 const float    kVRNearDistance                   = .1f;
 const float    kWindowAspectRatio                = 16.f / 9.f;  // HD ratio.
 const int      kWindowHeight                     = 600;
+const float    kHeadsetOffControllerYOffset      = .9f;
 
 }  // namespace TK
