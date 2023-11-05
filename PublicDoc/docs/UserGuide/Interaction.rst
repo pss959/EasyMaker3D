@@ -205,6 +205,12 @@ The format of this file is as follows:
 
 Special key names are:
 
+..
+   _Note: Adding the noheader class and adjusting CSS is the only way I found
+   to have a headerless table in RST.
+
+.. rst-class:: noheadertable
+
 ========= ======= ========== ======== ===========
 Backspace Escape  KPDecimal  Left     PrintScreen
 CapsLock  F1-F25  KPDivide   Menu     Right
@@ -289,8 +295,7 @@ editing:
        * - Key
          - Effect
        * - :shortcut:`Left`
-         - Move the cursor to the
-           previous character.
+         - Move the cursor to the previous character.
        * - :shortcut:`Right`
          - Move the cursor to the next character.
        * - :shortcut:`Up`

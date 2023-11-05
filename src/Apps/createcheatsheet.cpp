@@ -10,6 +10,7 @@
 #include "Enums/ActionCategory.h"
 #include "Handlers/ShortcutHandler.h"
 #include "Util/Enum.h"
+#include "Util/General.h"
 #include "Util/String.h"
 
 /// \file
@@ -59,8 +60,13 @@ static Str WrapShortcut_(const Str &str) {
         if (new_str == " ")
             new_str = "Space";
 
-        // Non-empty shortcuts must be wrapped with the role.
-        new_str = ":shortcut:`" + new_str + "`";
+        // Non-empty shortcuts must be wrapped with the role. Split by commas
+        // and rejoin so that each shortcut is wrapped separately.
+        new_str = Util::JoinStrings(
+            Util::ConvertVector<Str, Str>(
+                ion::base::SplitString(new_str, ", "),
+                [](const Str &s){ return ":shortcut:`" + s + "`"; }),
+            ", ");
     }
 
     return new_str;
@@ -84,8 +90,7 @@ static void WriteAction_(ActionCategory cat, Action action,
 
     std::cout
         << "   * - " << category_name << "\n"
-        << "     - " << icon_name << " / :ref:`" << action_name
-        << " <ug-" << ref << ">`\n"
+        << "     - :ref:`" << icon_name << "<ug-" << ref << ">`\n"
         << "     - .. menuicon:: " << icon_name << "\n"
         << "     - " << desc << "\n"
         << "     - " << ks << "\n"

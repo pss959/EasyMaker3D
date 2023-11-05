@@ -270,6 +270,11 @@ img {
     font-weight: bold;
 }
 
+/* Table that has no header; undo color change on thead entries. */
+.noheadertable td {
+    color: #404040;
+}
+
 /* Container that creates 2 columns. */
 .twocolumn {
     column-count:  2;
@@ -304,8 +309,12 @@ img {
     margin-right: auto;    
 }
 
-/* Name and description text should wrap. */
-.cheat-sheet-table tbody td:nth-child(2),
+/* Name text should never wrap. */
+.cheat-sheet-table tbody td:nth-child(2) {
+    text-wrap: nowrap;
+}
+
+/* Description text should wrap. */
 .cheat-sheet-table tbody td:nth-child(4) {
     max-width:   30%;
     word-break:  normal;
@@ -353,12 +362,15 @@ img {
 
 /* Shortcuts use monospace text. */
 .shortcut {
-    padding:     2px;
-    border:      1px solid #1e8a81;
-    color:       #1e8a81;
-    background:  #fdfdfd;
-    font-family: monospace;
-    font-size:   80%;
+    padding:       2px;
+    border:        1px solid #1e8a81;
+    color:         #1e8a81;
+    background:    #fdfdfd;
+    font-family:   monospace;
+    font-size:     80%;
+    text-wrap:     nowrap;
+    display:       inline-block;
+    margin-bottom: 2px;
 }
 
 .strong {
