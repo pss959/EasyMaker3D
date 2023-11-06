@@ -18,6 +18,7 @@ limitations under the License.
 #ifndef ION_PORT_STACKTRACE_H_
 #define ION_PORT_STACKTRACE_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

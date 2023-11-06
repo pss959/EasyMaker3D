@@ -143,8 +143,9 @@ base_env = Environment(
         '-Werror',
         # Works around a compiler bug in std::char_traits: __builtin_memcpy may
         # overlap up to 9223372036854775813 bytes at offset -3
+        '-Wno-deprecated-declarations',  # Needed for absl files.
         '-Wno-restrict',
-        '-Wno-strict-aliasing',  # Ion has issues with this.
+        '-Wno-strict-aliasing',          # Ion has issues with this.
     ],
     CPPDEFINES = [
         # Stuff for Ion.
@@ -182,9 +183,6 @@ if platform == 'windows':
         RUN_PROGRAM = f'$RUN_BASH bin/runwinprogram.bash {mode}',
     )
     base_env.Append(
-        COMMON_FLAGS = [
-            '-Wno-deprecated-declarations',  # Needed for absl files.
-        ],
         CPPDEFINES = [
             'COMPILER_HAS_RVALUEREF',
             'NOGDI',                # Disables "ERROR" macro.
