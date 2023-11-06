@@ -62,7 +62,7 @@ them smaller than that.
    direction, it will highlight the corresponding scale handle.
 
    You can interact with the contents of a panel (if it supports it) by
-   pointing the grip hover guide towards the board. If the controller is low
+   pointing the grip hover guide towards the panel. If the controller is low
    enough (relative to the panel), it will allow you to grip drag the bottom
    bar, as shown here.
 
@@ -93,10 +93,11 @@ etc.) that work pretty much the same as in conventional 2D user interfaces.
     whatever the current panel is doing and dismisses it.
 
 Some panels contain scrolling areas when their contents are too large to
-fit. You can scroll a panel using a scroll wheel, the scrollbar on the right
-(drag with mouse or pinch), or the :shortcut:`Up` and :shortcut:`Down` arrow
-keys (or Up/Down trackpad/joystick buttons on a VR controller). The same is
-true for long dropdown lists.
+fit. You can scroll a panel using a mouse scroll wheel (with the cursor over
+the scrollable element), the scrollbar on the right (drag with mouse or pinch),
+or the :shortcut:`Up` and :shortcut:`Down` arrow keys (or Up/Down
+trackpad/joystick buttons on a VR controller). The same is true for long
+dropdown lists.
 
 .. admonition:: VR Only
 
@@ -221,10 +222,16 @@ Info Panel
 .. incimage:: /images/InfoPanel.jpg 240px right
 
 The :newterm:`Info Panel` shows information about all selected models,
-including the number of vertices, number of triangles, size in all three
-dimensions, and the X/Y coordinates of the center of the model. If any model
-has an :ref:`invalid mesh <ug-model-colors>`, this is noted, along with the
-reason it is considered invalid.
+including:
+
+  - Number of vertices
+  - Number of triangles
+  - Size in all three dimensions (width, depth, height)
+  - X/Y coordinates of the center of the model
+  - Approximate volume
+
+If any selected model has an :ref:`invalid mesh <ug-model-colors>`, this is
+noted, along with the reason it is considered invalid.
 
 If either the :ref:`Point or Edge Target <ug-targets>` is active, the relevant
 information about it will also be shown in the Info Panel.

@@ -362,15 +362,16 @@ img {
 
 /* Shortcuts use monospace text. */
 .shortcut {
-    padding:       2px;
+    padding:       2px 4px 0px 4px;
     border:        1px solid #1e8a81;
     color:         #1e8a81;
     background:    #fdfdfd;
     font-family:   monospace;
-    font-size:     80%;
+    font-size:     70%;
     text-wrap:     nowrap;
     display:       inline-block;
     margin-bottom: 2px;
+    line-height:   150%;
 }
 
 .strong {

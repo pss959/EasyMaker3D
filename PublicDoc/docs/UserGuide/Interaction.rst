@@ -97,7 +97,8 @@ rotation or scale change to the stage applies to the models on it as well.
 
  - Drag it in a circular arc to rotate it.
  - Drag toward or away from the stage center to scale the stage up or down.
- - A mouse scroll wheel can also be used to scale the stage.
+ - A mouse scroll wheel can also be used to scale the stage when the mouse
+   cursor is over the stage or any model or tool displayed on it.
  - :ref:`Modified-clicking <ug-modified-mode>` anywhere on the stage resets it
    to its default size and rotation.
 

@@ -1,6 +1,36 @@
 |appname| Release Notes
 =======================
 
+Release 1.8.0 (November, 2023)
+------------------------------
+
+ - New Features:
+
+   - The Info Panel now shows an approximate volume for the selected models.
+     This can be useful for estimating 3D print times and material use.
+
+   - Scrolling with a mouse scroll wheel is now localized by mouse cursor
+     position, meaning that it can be used in scrolling areas and dropdown
+     lists in panels. Scrolling to change the stage size still works when the
+     cursor is over the stage or any model or tool on it.
+
+ - Bug Fixes:
+
+   - Improved focus management in panels
+
+   - VR controller positioning feedback is now better for different VR
+     systems. (There is an inconsistency in the way OpenVR treats them.)
+
+   - Selecting models in a hierarchy with more than two levels now works
+     correctly.
+
+   - Drag-selecting in text input fields in panels now works correctly.
+
+   - Resizing a Bevel Tool Panel now works properly: the profile area is
+     resized.
+
+   - Many other potential bugs were fixed after extensive unit testing.
+
 Release 1.7.0 (June, 2023)
 ---------------------------
 
