@@ -637,6 +637,10 @@ Translating the mirroring plane results in the primary selection moving to
 compensate. Additionally, all secondary selections are mirrored across the same
 plane, so they will move to the other side of it.
 
+Note that a Mirrored model that is translated from its original position after
+conversion behaves differently because the mirroring is applied in the Mirrored
+models' local coordinates.
+
 |block-image|
 
 .. _ug-rev-surf-tool:
