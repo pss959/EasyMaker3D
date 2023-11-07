@@ -87,6 +87,10 @@ class Panel : public SG::Node {
     /// base class defines this to return false.
     virtual bool IsResizable() const { return is_resizable_; }
 
+    /// Sets a scale factor for the Panel based on the distance of the Board
+    /// from the camera. The default is 1.
+    void SetDistanceScale(float scale);
+
     /// Sets the size of the Panel. This can always be called to set the
     /// initial size and can also be used to resize the Panel if IsResizable()
     /// returns true.

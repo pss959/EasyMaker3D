@@ -3,7 +3,6 @@ BoxPane "TreePane" {
     ICON:               "CLONE \"T_IconPane\" \"Icon\"",
     VIEW_BUTTON_VALS:   "$RESIZE_WH",
     ACTION_BUTTON_SIZE: "min_size: 10 10",
-    BORDER_WIDTH:       "1",
     # The background uses BaseColor shader, so it is a little brighter to match
     # the (lit) button colors better.
     PANE_BG_COLOR:      "\"#c0c0c0\"",
@@ -11,12 +10,15 @@ BoxPane "TreePane" {
   ],
 
   TEMPLATES: [
+    # Border used only to show button focus; invisible otherwise.
+    CLONE "T_Border" "T_FocusBorder" { width: 0, color: $BUTTON_BG_COLOR },
+
     CLONE "T_ButtonPane" "T_ViewButton" {
-      border: $BORDER { width: $BORDER_WIDTH, color: "#666666" },
+      border: CLONE "T_FocusBorder" {},
     },
 
     CLONE "T_ButtonPane" "T_ActionButton" {
-      border: $BORDER { width: $BORDER_WIDTH, color: "#666666" },
+      border: CLONE "T_FocusBorder" {},
     },
 
     # Switcher for visibility buttons.
@@ -50,8 +52,10 @@ BoxPane "TreePane" {
     },
 
     # Button used to show the Model name and select it.
-    CLONE "T_ButtonPane" "T_ModelButton" {
+    ButtonPane "T_ModelButton" {
       resize_flags: "kWidth|kHeight",
+      border: CLONE "T_FocusBorder" {},
+      padding: 1,
       panes: [
         CLONE "T_TextPane" "Text" {
           font_size: 8,
@@ -76,7 +80,7 @@ BoxPane "TreePane" {
   panes: [
     # The session row is outside the scrolling area so it is always visible.
     BoxPane "SessionRow" {
-      border:     $BORDER { width: $BORDER_WIDTH },
+      border: $BORDER {},
       orientation: "kHorizontal",
       resize_flags: "kWidth",
       padding: 1,
@@ -117,10 +121,10 @@ BoxPane "TreePane" {
 
     # Scrolling tree view of Models.
     CLONE "T_ScrollingPane" "Scroller" {
-      border:        $BORDER { width: $BORDER_WIDTH },
+      border: CLONE "T_FocusBorder" {},
       resize_flags: "kWidth|kHeight",
       contents: CLONE "T_ClipPane" "Contents" {
-        border: $BORDER { width: $BORDER_WIDTH },
+        border: $BORDER {},
         padding: 2,
         spacing: .2,
         resize_flags: "kWidth|kHeight",

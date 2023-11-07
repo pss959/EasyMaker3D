@@ -946,7 +946,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
-    wall_board->SetPanelScale(TK::kPanelToWorldScale * 4);  // Far away.
+    wall_board->SetDistanceScale(4);  // Far away.
     wall_board->SetPanel(SC_->tree_panel);
     MGR_(board)->ShowBoard(wall_board, true);
 

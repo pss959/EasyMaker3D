@@ -75,10 +75,9 @@ class Board : public Grippable, public ITouchable {
     /// none.
     PanelPtr GetCurrentPanel() const;
 
-    /// Sets a scale factor to use for the Panel instead of the default value
-    /// of TK::kPanelToWorld. This allows tweaking the content scaling to
-    /// account for Board distance.
-    void SetPanelScale(float scale);
+    /// Sets a scale factor for the Panel based on the distance of the Board
+    /// from the camera. The default is 1.
+    void SetDistanceScale(float scale);
 
     ///@}
 

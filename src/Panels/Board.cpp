@@ -39,7 +39,7 @@ class Board::Impl_ {
     bool PopPanel(const Str &result);
     size_t GetPanelCount() const { return panel_stack_.size(); }
     PanelPtr GetCurrentPanel() const;
-    void SetPanelScale(float scale);
+    void SetDistanceScale(float scale) { distance_scale_ = scale; }
     void Show(bool shown);
     void UpdateSizeIfNecessary();
     void SetUpForTouch(const Point3f &cam_pos, const Vector3f &offset);
@@ -104,10 +104,10 @@ class Board::Impl_ {
     Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
     Vector2f          panel_size_{0, 0};  ///< Board size in panel coordinates.
 
-    bool              is_shown_ = false;
-    float             panel_scale_ = TK::kPanelToWorldScale;
-    bool              is_move_enabled_ = true;
-    bool              is_size_enabled_ = true;
+    float             distance_scale_        = 1;
+    bool              is_shown_              = false;
+    bool              is_move_enabled_       = true;
+    bool              is_size_enabled_       = true;
     bool              size_may_have_changed_ = false;
     Vector3f          start_pos_;               ///< Used for computing motion.
 
@@ -224,10 +224,6 @@ PanelPtr Board::Impl_::GetCurrentPanel() const {
     if (! panel_stack_.empty())
         panel = panel_stack_.top().panel;
     return panel;
-}
-
-void Board::Impl_::SetPanelScale(float scale) {
-    panel_scale_ = scale;
 }
 
 void Board::Impl_::Show(bool shown) {
@@ -410,8 +406,10 @@ void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
         is_size_enabled_ = new_panel->IsResizable();
 
         // If the Panel size was never set, set it now.
-        if (new_panel->GetSize() == Vector2f::Zero())
+        if (new_panel->GetSize() == Vector2f::Zero()) {
+            new_panel->SetDistanceScale(distance_scale_);
             new_panel->SetSize(new_panel->GetMinSize());
+        }
 
         // Update the Board to the Panel's current size.
         UpdateSizeFromPanel_(new_panel->GetSize());
@@ -532,17 +530,21 @@ void Board::Impl_::Size_() {
     for (auto &child: size_slider_->GetChildren())
         child->SetEnabled(child == active_handle);
 
+    // Compute the Panel scale based on the distance scale factor.
+    const float panel_scale = distance_scale_ * TK::kPanelToWorldScale;
+
     // Set the new size in world coordinates and convert to Panel coordinates.
     world_size_ = new_size;
-    panel_size_ = new_size / panel_scale_;
+    panel_size_ = new_size / panel_scale;
 
     // Take the current Panel's min size into account.
     auto cur_panel = GetCurrentPanel();
     ASSERT(cur_panel);
     panel_size_ = MaxComponents(cur_panel->GetMinSize(), panel_size_);
-    world_size_ = panel_scale_ * panel_size_;
+    world_size_ = panel_scale * panel_size_;
 
     // Update the Panel, Canvas, and Frame.
+    cur_panel->SetDistanceScale(distance_scale_);
     cur_panel->SetSize(panel_size_);
     UpdateCanvasAndFrame_();
 }
@@ -551,8 +553,9 @@ void Board::Impl_::UpdateSizeFromPanel_(const Vector2f &panel_size) {
     ASSERT(canvas_);
 
     // Use the Panel's new size.
+    const float panel_scale = distance_scale_ * TK::kPanelToWorldScale;
     panel_size_ = panel_size;
-    world_size_ = panel_scale_ * panel_size_;
+    world_size_ = panel_scale * panel_size_;
 
     KLOG('p', root_node_.GetDesc() << " setting size to " << panel_size_);
 
@@ -789,8 +792,8 @@ PanelPtr Board::GetCurrentPanel() const {
     return impl_->GetCurrentPanel();
 }
 
-void Board::SetPanelScale(float scale) {
-    impl_->SetPanelScale(scale);
+void Board::SetDistanceScale(float scale) {
+    impl_->SetDistanceScale(scale);
 }
 
 void Board::Show(bool shown) {

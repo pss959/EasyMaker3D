@@ -64,6 +64,9 @@ class Panel::Focuser_ {
     /// This also initializes the Panes for interaction.
     void SetPanes(const Pane::PaneVec &panes);
 
+    /// Sets the width to use for focused Pane borders.
+    void SetFocusedBorderWidth(float width) { border_width_ = width; }
+
     /// Initializes focus if there is no Pane focused already.
     void InitFocus() {
         if (focused_index_ < 0)
@@ -111,6 +114,9 @@ class Panel::Focuser_ {
     /// Index into panes_ of the current Pane with focus. This is -1 if there
     /// is none.
     int focused_index_ = -1;
+
+    /// Width to use for focused borders.
+    float border_width_ = 0;
 
     /// Saves the previous state for the focused Pane.
     BorderState_ prev_state_;
@@ -264,7 +270,7 @@ void Panel::Focuser_::ChangeFocus_(const PanePtr &old_pane,
         prev_state_.color      = border->GetColor();
         // Activate.
         border->SetEnabled(true);
-        border->SetWidth(TK::kFocusedPaneBorderWidth);
+        border->SetWidth(border_width_);
         border->SetColor(SG::ColorMap::SGetColor("PaneFocusColor"));
 
         change_focus_func_(new_pane);
@@ -309,6 +315,7 @@ void Panel::CreationDone() {
         auto change_focus_func = [&](const PanePtr &p){ UpdateFocus(p); };
         focuser_.reset(
             new Focuser_(GetDesc(), can_focus_func, change_focus_func));
+        focuser_->SetFocusedBorderWidth(TK::kFocusedPaneBorderWidth);
 
         // Add the root Pane as a child.
         ASSERTM(GetPane(), GetDesc());
@@ -340,6 +347,12 @@ void Panel::SetTestContext(const ContextPtr &context) {
     ASSERT(context);
     context_ = context;
     ProcessContext();
+}
+
+void Panel::SetDistanceScale(float scale) {
+    // Set the width of the border lines based on the scale.
+    focuser_->SetFocusedBorderWidth(
+        TK::kFocusedPaneBorderWidth / std::sqrt(scale));
 }
 
 void Panel::SetSize(const Vector2f &size) {

@@ -42,9 +42,13 @@ class ShortcutMap_ {
     enum class Action {
         kNone,
         kDumpControllerModels,
+        kPrintBoardGraph,
+        kPrintBoardPanesBrief,
+        kPrintBoardPanesFull,
         kPrintBounds,
         kPrintBoundsOnPath,
         kPrintCommands,
+        kPrintDebugSpherePosition,
         kPrintEndNode,
         kPrintFullScene,
         kPrintFullSceneWithAddresses,
@@ -57,13 +61,10 @@ class ShortcutMap_ {
         kPrintMatricesOnPath,
         kPrintModels,
         kPrintModelsFull,
-        kPrintBoardPanesBrief,
-        kPrintBoardPanesFull,
-        kPrintDebugSpherePosition,
         kPrintSkeleton,
         kPrintSkeletonOnPath,
-        kPrintTransforms,
         kPrintTool,
+        kPrintTransforms,
         kPrintTransformsOnPath,
         kPrintView,
         kPrintWidget,
@@ -151,6 +152,10 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print matrices for all nodes in the scene" },
         { "Shift-Alt-m", Action::kPrintMatricesOnPath,
           "Print matrices for all nodes in the current path" },
+        { "Alt-n",       Action::kPrintSkeleton,
+          "Print all nodes and shapes (skeleton) in the scene" },
+        { "Shift-Alt-n", Action::kPrintSkeletonOnPath,
+          "Print all nodes and shapes (skeleton) on the current path" },
         { "Alt-o",       Action::kPrintModels,
           "Print all models in the scene" },
         { "Shift-Alt-o", Action::kPrintModelsFull,
@@ -161,10 +166,6 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print the current board with a full pane tree" },
         { "Alt-r",       Action::kReloadScene,
           "Reload the scene from resource files" },
-        { "Alt-n",       Action::kPrintSkeleton,
-          "Print all nodes and shapes (skeleton) in the scene" },
-        { "Shift-Alt-n", Action::kPrintSkeletonOnPath,
-          "Print all nodes and shapes (skeleton) on the current path" },
         { "Alt-s",       Action::kToggleShadows,
           "Toggle shadows" },
         { "Alt-t",       Action::kPrintTransforms,
@@ -177,6 +178,8 @@ std::vector<ShortcutMap_::ActionData_> ShortcutMap_::GetData_() {
           "Print the current viewing information" },
         { "Alt-w",       Action::kPrintWidget,
           "Print the widget intersected by the debug sphere" },
+        { "Alt-x",       Action::kPrintBoardGraph,
+          "Print the node graph for the current board" },
         { "Alt-.",       Action::kPrintLocations,
           "Print locations for all nodes in the scene" },
         { "Shift-Alt-.", Action::kPrintLocationsOnPath,
@@ -299,6 +302,15 @@ static bool HandleShortcut_(const Str &str) {
         DumpControllerModel_(*scene_context_->left_controller);
         DumpControllerModel_(*scene_context_->right_controller);
         break;
+      case kPrintBoardGraph:
+        Debug::PrintGraph(GetBoard_());
+        break;
+      case kPrintBoardPanesBrief:
+        Debug::PrintBoard(GetBoard_(), true);
+        break;
+      case kPrintBoardPanesFull:
+        Debug::PrintBoard(GetBoard_(), false);
+        break;
       case kPrintBounds:
         Debug::PrintBounds(root, GetWorldToStageMatrix_());
         break;
@@ -350,28 +362,22 @@ static bool HandleShortcut_(const Str &str) {
       case kPrintModelsFull:
         Debug::PrintModels(*scene_context_->root_model, true);
         break;
-      case kPrintBoardPanesBrief:
-        Debug::PrintBoard(GetBoard_(), true);
-        break;
-      case kPrintBoardPanesFull:
-        Debug::PrintBoard(GetBoard_(), false);
-        break;
       case kPrintSkeleton:
         Debug::PrintNodesAndShapes(root);
         break;
       case kPrintSkeletonOnPath:
         Debug::PrintNodesAndShapesOnPath(limit_path_);
         break;
+      case kPrintTool:
+        Debug::PrintTransformsOnPath(
+            SG::FindNodePathInScene(*scene_context_->scene, "ToolParent"),
+            true);
+        break;
       case kPrintTransforms:
         Debug::PrintTransforms(root);
         break;
       case kPrintTransformsOnPath:
         Debug::PrintTransformsOnPath(limit_path_);
-        break;
-      case kPrintTool:
-        Debug::PrintTransformsOnPath(
-            SG::FindNodePathInScene(*scene_context_->scene, "ToolParent"),
-            true);
         break;
       case kPrintView:
         Debug::PrintViewInfo(*scene_context_->frustum, *scene_context_->stage);
