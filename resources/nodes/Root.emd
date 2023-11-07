@@ -14,10 +14,22 @@ Node "Root" {
     MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
   ],
 
+  TEMPLATES: [
+    # Default uniform values for the BaseColor shader.
+    UniformBlock "T_DefaultBaseColorUniforms" {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [
+        Uniform "uZOffset" { float_val: 0 },
+        Uniform "uBaseColor" { vec4f_val: "#ff00ffff" },
+      ],
+    },
+  ],
+
   state_table: StateTable {},  # This is required to set up the viewport.
 
   shader_names: ["ShadowDepth", "Lighting"],
 
+  # Set up default uniforms for shaders.
   blocks: [
     <"nodes/RootShadowBlock.emd">,
     <"nodes/RootLightingBlock.emd">,
@@ -46,7 +58,7 @@ Node "Root" {
             <"nodes/Shelf.emd">,
             <"nodes/Tools.emd">,
           ]
-        }
+        },
 
         # Path that is taken for the Shadow Pass only.
         UnscopedNode "ShadowRoot" {

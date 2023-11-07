@@ -50,6 +50,7 @@ Node "T_ProfilePaneBase" {
               translation: 0 0 .1,
               shader_names: ["BaseColor"],
               blocks: [
+                USE "T_DefaultBaseColorUniforms",
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
                   uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
@@ -81,6 +82,7 @@ Node "T_ProfilePaneBase" {
     Node {  # Non-interactive stuff.
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
+      blocks:       [ USE "T_DefaultBaseColorUniforms" ],
       children: [
         Node "ProfileLine" {
           blocks: [

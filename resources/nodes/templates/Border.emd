@@ -7,11 +7,13 @@ Border "T_Border" {
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,
-      uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
+      uniforms: [
+        Uniform "uBaseColor" { vec4f_val: "#000000" },
+
+        # Offset the border in Z a little to prevent Z fighting.
+        Uniform "uZOffset" { float_val: -.1 },
+      ],
     }
   ],
-  state_table: StateTable {
-    depth_test_enabled: False,  # Always draw on top.
-  },
   shapes: [ MutableTriMeshShape {} ],
 }

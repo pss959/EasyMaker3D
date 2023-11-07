@@ -1,5 +1,7 @@
 #include "SG/Node.h"
 
+#include <ranges>
+
 #include "Math/Linear.h"
 #include "Parser/Registry.h"
 #include "SG/Exception.h"
@@ -411,9 +413,10 @@ void Node::UpdateMatrices_() const {
     }
 }
 
-UniformBlockPtr Node::FindUniformBlockForPass_(
-    const Str &pass_name) const {
-    for (auto &block: GetUniformBlocks()) {
+UniformBlockPtr Node::FindUniformBlockForPass_(const Str &pass_name) const {
+    // Look in reverse order in case there are multiple blocks for the same
+    // pass so that the last one will have the correct value.
+    for (auto &block: GetUniformBlocks() | std::views::reverse) {
         if (block->GetPassName() == pass_name)
             return block;
     }

@@ -7,6 +7,7 @@ Node "Debugging" {
   pass_name:      $LIGHTING_PASS,   # Ignore shadow passes.
   # All of this uses the BaseColor shader.
   shader_names: ["BaseColor"],
+  blocks:       [ USE "T_DefaultBaseColorUniforms" ],
 
   children: [
     # Debugging text set in program. Placed in front of back wall. Turn off

@@ -23,10 +23,13 @@ TextInputPane "T_TextInputPane" {
       CONSTANTS: [DIAM: "diameter: .03"],
       disabled_flags: "kTraversal|kIntersectAll",
       shader_names: ["BaseColor"],
-      blocks: [ UniformBlock {
-        pass_name: $LIGHTING_PASS,
-        uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ff0000" } ],
-      } ],
+      blocks: [
+        USE "T_DefaultBaseColorUniforms",
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ff0000" } ],
+        }
+      ],
       shapes: [
         Tube { $DIAM, points: [0 -.3 0, 0 .3 0] },
         Tube { $DIAM, points: [-.02 -.4  0,

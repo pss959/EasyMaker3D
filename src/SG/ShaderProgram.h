@@ -53,7 +53,7 @@ class ShaderProgram : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Str>                inherit_from_;
+    Parser::TField<Str>                 inherit_from_;
     Parser::ObjectField<ShaderSource>   vertex_source_;
     Parser::ObjectField<ShaderSource>   geometry_source_;
     Parser::ObjectField<ShaderSource>   fragment_source_;

@@ -38,6 +38,7 @@ PointTargetWidget "PointTargetWidget" {
       disabled_flags: "kTraversal",
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
+      blocks:       [ USE "T_DefaultBaseColorUniforms" ],
       shapes: [Tube "FeedbackLine" { diameter: .1, side_count: 4 } ],
     },
   ],

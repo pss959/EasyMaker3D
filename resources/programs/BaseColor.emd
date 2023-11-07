@@ -3,4 +3,9 @@
 ShaderProgram "BaseColor" {
   vertex_source:   ShaderSource { path: "BaseColor_vp.glsl" },
   fragment_source: ShaderSource { path: "BaseColor_fp.glsl" },
+
+  uniform_defs: [
+    # This is used to offset objects in Z to reduce Z fighting.
+    UniformDef "uZOffset" { value_type: "kFloatUniform" },
+  ],
 }

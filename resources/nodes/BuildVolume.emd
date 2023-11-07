@@ -4,6 +4,7 @@ BuildVolume "BuildVolume" {
   children: [
     Node "Edges" {
       shader_names: ["BaseColor"],
+      blocks:       [ USE "T_DefaultBaseColorUniforms" ],
       state_table: StateTable { line_width: 1 },
       blocks: [
         UniformBlock {
