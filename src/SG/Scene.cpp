@@ -1,5 +1,6 @@
 #include "SG/Scene.h"
 
+#include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/ShaderProgram.h"
 #include "Util/KLog.h"
@@ -39,11 +40,12 @@ void Scene::SetFieldParsed(const Parser::Field &field) {
 }
 
 void Scene::SetUpIon(const IonContextPtr &ion_context) {
+    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+    ion_context->ChangeLevel(1);
+
     // First set up all Ion ShaderPrograms in all render passes.
-    for (const auto &pass: GetRenderPasses()) {
-        pass->SetUpIon(ion_context->GetFileMap(),
-                       *ion_context->GetShaderManager());
-    }
+    for (const auto &pass: GetRenderPasses())
+        pass->SetUpIon(ion_context);
 
     // Add the pass names to the IonContext.
     for (const auto &pass: GetRenderPasses()) {
@@ -69,6 +71,8 @@ void Scene::SetUpIon(const IonContextPtr &ion_context) {
     // Now set up the root node.
     if (const NodePtr &root = GetRootNode())
         root->SetUpIon(ion_context, programs);
+
+    ion_context->ChangeLevel(-1);
 }
 
 }  // namespace SG

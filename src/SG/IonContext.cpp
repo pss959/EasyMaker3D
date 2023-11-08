@@ -2,6 +2,7 @@
 
 #include "SG/FileMap.h"
 #include "Util/Assert.h"
+#include "Util/String.h"
 
 namespace SG {
 
@@ -81,6 +82,10 @@ ion::gfx::ShaderInputRegistryPtr IonContext::GetRegistryForPass(
 void IonContext::Reset() {
     pass_names_.clear();
     program_map_.clear();
+}
+
+Str IonContext::GetIndent() const {
+    return Util::Spaces(level_);
 }
 
 }  // namespace SG

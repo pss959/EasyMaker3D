@@ -10,6 +10,7 @@
 
 namespace SG {
 
+DECL_SHARED_PTR(IonContext);
 DECL_SHARED_PTR(Shape);
 struct Hit;
 
@@ -20,7 +21,7 @@ struct Hit;
 class Shape : public Object {
   public:
     /// Creates, stores, and returns the Ion Shape.
-    ion::gfx::ShapePtr SetUpIon();
+    ion::gfx::ShapePtr SetUpIon(const IonContextPtr &ion_context);
 
     /// Returns the Ion Shape for this instance. This will be null until
     /// SetUpIon() is called.

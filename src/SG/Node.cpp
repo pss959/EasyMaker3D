@@ -117,7 +117,7 @@ void Node::AddShape(const ShapePtr &shape) {
 
     // Make sure the shape is set up.
     if (ion_node_)
-        ion_node_->AddShape(shape->SetUpIon());
+        ion_node_->AddShape(shape->SetUpIon(ion_context_));
 
     if (IsCreationDone())
         Observe(*shape);
@@ -224,6 +224,8 @@ ion::gfx::NodePtr Node::SetUpIon(
     if (ion_node_)
         return ion_node_;
 
+    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+
     // Check for changes to transform fields.
     if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
         ProcessChange(Change::kTransform, *this);
@@ -233,6 +235,8 @@ ion::gfx::NodePtr Node::SetUpIon(
 
     ion_context_ = ion_context;
     programs_    = programs;
+
+    ion_context_->ChangeLevel(1);
 
     // Update the programs stored in this Node if any shaders are specified.
     for (const auto &name: GetShaderNames()) {
@@ -244,7 +248,7 @@ ion::gfx::NodePtr Node::SetUpIon(
     if (auto &state_table = GetStateTable()) {
         // Make sure we are OpenGL-compliant here.
         ASSERT(state_table->GetLineWidth() <= 1);
-        ion_node_->SetStateTable(state_table->SetUpIon());
+        ion_node_->SetStateTable(state_table->SetUpIon(ion_context));
     }
 
     // Set up UniformBlocks.
@@ -256,7 +260,7 @@ ion::gfx::NodePtr Node::SetUpIon(
 
     // Set up all Shapes.
     for (const auto &shape: GetShapes())
-        ion_node_->AddShape(shape->SetUpIon());
+        ion_node_->AddShape(shape->SetUpIon(ion_context_));
 
     // Recurse on and add all children.
     for (const auto &child: GetAllChildren())
@@ -269,6 +273,8 @@ ion::gfx::NodePtr Node::SetUpIon(
     GetBounds();
 
     PostSetUpIon();
+
+    ion_context_->ChangeLevel(-1);
 
     return ion_node_;
 }

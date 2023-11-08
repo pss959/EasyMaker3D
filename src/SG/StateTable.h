@@ -10,6 +10,7 @@ namespace Parser { class Registry; }
 
 namespace SG {
 
+DECL_SHARED_PTR(IonContext);
 DECL_SHARED_PTR(StateTable);
 
 /// A StateTable object wraps an Ion StateTable.
@@ -25,7 +26,7 @@ class StateTable : public Object {
     void SetLineWidth(float width);
 
     /// Creates, stores, and returns Ion StateTable.
-    ion::gfx::StateTablePtr SetUpIon();
+    ion::gfx::StateTablePtr SetUpIon(const IonContextPtr &ion_context);
 
     /// Returns the Ion StateTable for this instance. This will be null until
     /// SetUpIon() is called.

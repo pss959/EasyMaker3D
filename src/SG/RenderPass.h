@@ -14,6 +14,7 @@ struct FBTarget;
 
 namespace SG {
 
+DECL_SHARED_PTR(IonContext);
 DECL_SHARED_PTR(Node);
 DECL_SHARED_PTR(RenderPass);
 struct RenderData;
@@ -29,8 +30,7 @@ class RenderPass : public Object {
     }
 
     /// Sets up an Ion ShaderProgram for each ShaderProgram in the RenderPass.
-    void SetUpIon(FileMap &file_map,
-                  ion::gfxutils::ShaderManager &shader_manager);
+    void SetUpIon(const IonContextPtr &ion_context);
 
     /// Convenience that returns the default ShaderProgram for the RenderPass.
     /// This is defined as the first ShaderProgram added to the RenderPass.

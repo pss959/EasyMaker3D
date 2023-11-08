@@ -14,6 +14,7 @@ namespace Parser { class Registry; }
 
 namespace SG {
 
+DECL_SHARED_PTR(IonContext);
 DECL_SHARED_PTR(Uniform);
 
 /// A Uniform object wraps an Ion uniform.
@@ -65,7 +66,8 @@ class Uniform : public Object {
 
     /// Creates a corresponding Ion Uniform using the given Ion registry and
     /// adds it to the given UniformBlock. Returns the resulting index.
-    size_t SetUpIon(const ion::gfx::ShaderInputRegistry &reg,
+    size_t SetUpIon(const IonContextPtr &ion_context,
+                    const ion::gfx::ShaderInputRegistry &reg,
                     ion::gfx::UniformBlock &block);
 
     /// Returns the index of the Ion Uniform within the Ion UniformBlock it was

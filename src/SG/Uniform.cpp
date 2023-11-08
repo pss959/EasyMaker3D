@@ -1,6 +1,8 @@
 #include "SG/Uniform.h"
 
+#include "SG/IonContext.h"
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 
 using ion::gfx::ShaderInputRegistry;
 using IonUniform = ion::gfx::Uniform;
@@ -33,12 +35,15 @@ void Uniform::SetFieldName(const Str &name) {
     last_field_set_ = name;
 }
 
-size_t Uniform::SetUpIon(const ion::gfx::ShaderInputRegistry &reg,
+size_t Uniform::SetUpIon(const IonContextPtr &ion_context,
+                         const ion::gfx::ShaderInputRegistry &reg,
                          ion::gfx::UniformBlock &block) {
     if (ion_index_ == ion::base::kInvalidIndex) {
+        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
         IonUniform iu =
             count_ > 1 ? CreateIonArrayUniform_(reg) : CreateIonUniform_(reg);
-        ASSERTM(iu.IsValid(), GetDesc());
+        ASSERTM(iu.IsValid(), GetDesc() + " in registry " +
+                Util::ToString(&reg));
 
         ion_index_ = block.AddUniform(iu);
         ASSERTM(ion_index_ != ion::base::kInvalidIndex, GetDesc());

@@ -3,6 +3,7 @@
 #include "SG/IonContext.h"
 #include "SG/Uniform.h"
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 
 namespace SG {
 
@@ -20,6 +21,7 @@ void Image::CreationDone() {
 }
 
 ion::gfx::ImagePtr Image::SetUpIon(const IonContextPtr &ion_context) {
+    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
     ion_context_ = ion_context;
     if (! ion_image_)
         ion_image_ = CreateIonImage();

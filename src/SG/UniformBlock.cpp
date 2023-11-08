@@ -4,7 +4,9 @@
 
 #include "Math/Types.h"
 #include "Parser/Registry.h"
+#include "SG/IonContext.h"
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 
 using ion::gfx::ShaderInputRegistry;
 
@@ -69,6 +71,10 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
     const IonContextPtr &ion_context,
     const ion::gfx::ShaderInputRegistryPtr &reg) {
     if (! ion_uniform_block_) {
+        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+        ion_context_ = ion_context;
+        ion_context_->ChangeLevel(1);
+
         ion_uniform_block_.Reset(new ion::gfx::UniformBlock);
         ion_uniform_block_->SetLabel(GetName());
 
@@ -77,7 +83,7 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
         // Create Ion Textures, including their images and samplers, then add
         // them as uniforms.
         for (const auto &tex: GetTextures()) {
-            tex->SetUpIon(ion_context);
+            tex->SetUpIon(ion_context_);
             AddTextureUniform_(*tex);
         }
 
@@ -86,6 +92,8 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
             AddMaterialUniforms_(*GetMaterial());
         for (const auto &uniform: GetUniforms())
             AddIonUniform_(uniform);
+
+        ion_context->ChangeLevel(-1);
     }
     return ion_uniform_block_;
 }
@@ -218,8 +226,9 @@ UniformPtr UniformBlock::CreateAndAddUniform_(const Str &name,
 
 void UniformBlock::AddIonUniform_(const UniformPtr &uniform) {
     ASSERT(uniform);
+    ASSERT(ion_context_);
     ASSERT(ion_uniform_block_);
-    uniform->SetUpIon(*ion_registry_, *ion_uniform_block_);
+    uniform->SetUpIon(ion_context_, *ion_registry_, *ion_uniform_block_);
     ASSERTM(uniform->GetIonIndex() !=
             ion::base::kInvalidIndex, uniform->GetDesc());
 

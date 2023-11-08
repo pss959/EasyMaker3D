@@ -4,6 +4,7 @@
 
 #include "SG/Exception.h"
 #include "SG/FileMap.h"
+#include "SG/IonContext.h"
 #include "Util/KLog.h"
 #include "Util/Read.h"
 
@@ -25,15 +26,19 @@ void ShaderProgram::AddFields() {
     Object::AddFields();
 }
 
-void ShaderProgram::SetUpIon(FileMap &file_map, ShaderManager &shader_manager) {
+void ShaderProgram::SetUpIon(const IonContextPtr &ion_context) {
     // This should be called only once since these are never shared.
     ASSERT(! ion_program_);
 
+    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+
     // Create a ShaderInputRegistry.
+    auto &shader_manager = *ion_context->GetShaderManager();
     ShaderInputRegistryPtr reg = CreateRegistry_(shader_manager);
 
     // Create a StringComposer for each supplied ShaderSource.
     ShaderManager::ShaderSourceComposerSet sscs;
+    auto &file_map = ion_context->GetFileMap();
     sscs.vertex_source_composer   = CreateComposer_(
         "_vp", file_map, GetVertexSource());
     sscs.geometry_source_composer = CreateComposer_(

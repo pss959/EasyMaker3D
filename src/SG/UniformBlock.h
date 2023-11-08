@@ -116,6 +116,8 @@ class UniformBlock : public Object {
     Parser::ObjectListField<Uniform> uniforms_;
     ///@}
 
+    IonContextPtr ion_context_;  ///< Set in SetUpIon().
+
     /// Associated Ion UniformBlock.
     ion::gfx::UniformBlockPtr ion_uniform_block_;
 

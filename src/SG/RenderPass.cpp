@@ -2,9 +2,11 @@
 
 #include <algorithm>
 
+#include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/RenderData.h"
 #include "SG/Search.h"
+#include "Util/KLog.h"
 
 namespace SG {
 
@@ -14,10 +16,12 @@ void RenderPass::AddFields() {
     Object::AddFields();
 }
 
-void RenderPass::SetUpIon(FileMap &file_map,
-                          ion::gfxutils::ShaderManager &shader_manager) {
+void RenderPass::SetUpIon(const IonContextPtr &ion_context) {
+    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+    ion_context->ChangeLevel(1);
     for (auto &program: GetShaderPrograms())
-        program->SetUpIon(file_map, shader_manager);
+        program->SetUpIon(ion_context);
+    ion_context->ChangeLevel(-1);
 }
 
 ShaderProgramPtr RenderPass::GetDefaultShaderProgram() const {

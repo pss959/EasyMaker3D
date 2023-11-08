@@ -3,21 +3,20 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "Math/MeshUtils.h"
+#include "Util/Assert.h"
 
 namespace SG {
 
 void MutableTriMeshShape::ChangeMesh(const TriMesh &mesh) {
+    ASSERT(GetIonShape());
     InstallMesh(mesh);
-    if (! GetIonShape())
-        SetUpIon();
     UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
 }
 
 void MutableTriMeshShape::ChangeModelMesh(const ModelMesh &mesh,
                                           bool use_face_normals) {
+    ASSERT(GetIonShape());
     InstallMesh(mesh);
-    if (! GetIonShape())
-        SetUpIon();
     auto &shape = *GetIonShape();
     UpdateIonShapeFromTriMesh(mesh, shape, true, true);
     if (use_face_normals)

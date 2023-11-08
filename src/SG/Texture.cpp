@@ -1,6 +1,7 @@
 #include "SG/Texture.h"
 
 #include "SG/IonContext.h"
+#include "Util/KLog.h"
 
 namespace SG {
 
@@ -37,13 +38,18 @@ bool Texture::ProcessChange(Change change, const Object &obj) {
 
 ion::gfx::TexturePtr Texture::SetUpIon(const IonContextPtr &ion_context) {
     if (! ion_texture_) {
+        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+        ion_context->ChangeLevel(1);
+
         ion_texture_.Reset(new ion::gfx::Texture);
         ion_texture_->SetLabel(GetName());
 
         if (auto &image = GetImage())
             ion_texture_->SetImage(0U, image->SetUpIon(ion_context));
         if (auto &sampler = GetSampler())
-            ion_texture_->SetSampler(sampler->SetUpIon());
+            ion_texture_->SetSampler(sampler->SetUpIon(ion_context));
+
+        ion_context->ChangeLevel(-1);
     }
     return ion_texture_;
 }

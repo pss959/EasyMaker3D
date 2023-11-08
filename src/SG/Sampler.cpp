@@ -1,5 +1,8 @@
 #include "SG/Sampler.h"
 
+#include "SG/IonContext.h"
+#include "Util/KLog.h"
+
 namespace SG {
 
 void Sampler::AddFields() {
@@ -19,8 +22,9 @@ void Sampler::AddFields() {
     Object::AddFields();
 }
 
-ion::gfx::SamplerPtr Sampler::SetUpIon() {
+ion::gfx::SamplerPtr Sampler::SetUpIon(const IonContextPtr &ion_context) {
     if (! ion_sampler_) {
+        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
         ion_sampler_.Reset(new ion::gfx::Sampler);
         ion_sampler_->SetAutogenerateMipmapsEnabled(auto_mipmaps_);
         ion_sampler_->SetCompareMode(compare_mode_);

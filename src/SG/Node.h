@@ -19,6 +19,7 @@ namespace Parser { class Registry; }
 
 namespace SG {
 
+DECL_SHARED_PTR(IonContext);
 DECL_SHARED_PTR(Node);
 
 /// The Node class represents the main type of object constructing a scene

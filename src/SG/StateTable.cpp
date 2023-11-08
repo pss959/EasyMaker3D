@@ -1,5 +1,8 @@
 #include "SG/StateTable.h"
 
+#include "SG/IonContext.h"
+#include "Util/KLog.h"
+
 namespace SG {
 
 void StateTable::AddFields() {
@@ -34,9 +37,10 @@ void StateTable::SetLineWidth(float width) {
         ion_state_table_->SetLineWidth(line_width_);
 }
 
-ion::gfx::StateTablePtr StateTable::SetUpIon() {
+ion::gfx::StateTablePtr StateTable::SetUpIon(const IonContextPtr &ion_context) {
     ASSERT(! ion_state_table_);
     ion_state_table_.Reset(new ion::gfx::StateTable);
+    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
 
     // Change only the fields that were set. The Ion StateTable does not
     // send values for fields that are not modified.

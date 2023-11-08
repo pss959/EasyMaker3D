@@ -86,10 +86,19 @@ class IonContext {
     /// but leaves the managers and FileMap alone.
     void Reset();
 
+    /// Increments or decrements the current indentation level for logging
+    /// calls to SetUpIon(). Purely for debugging help.
+    void ChangeLevel(int amount) { level_ += amount; }
+
+    /// Returns a string with spaces for the current indentation level for
+    /// logging.
+    Str GetIndent() const;
+
   private:
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::text::FontManagerPtr       font_manager_;
     FileMapPtr                      file_map_;
+    int                             level_ = 0;
 
     /// Names of render passes.
     StrVec pass_names_;

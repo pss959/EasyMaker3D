@@ -9,6 +9,7 @@ namespace Parser { class Registry; }
 
 namespace SG {
 
+DECL_SHARED_PTR(IonContext);
 DECL_SHARED_PTR(Sampler);
 
 /// A Sampler object wraps an Ion sampler.
@@ -37,7 +38,7 @@ class Sampler : public Object {
     ///@}
 
     /// Creates, stores, and returns the Ion Sampler.
-    ion::gfx::SamplerPtr SetUpIon();
+    ion::gfx::SamplerPtr SetUpIon(const IonContextPtr &ion_context);
 
     /// Returns the Ion Sampler for this instance. This will be null
     /// until SetUpIon() is called.

@@ -24,6 +24,7 @@ class MutableTriMeshShape : public TriMeshShape {
     /// Same as ChangeMesh() but takes a ModelMesh with normals and texture
     /// coordinates to be added to the Ion shape. If \p use_face_normals is
     /// true, face normals are generated instead of the default vertex normals.
+    /// This should also not be called before Ion is set up.
     void ChangeModelMesh(const ModelMesh &mesh, bool use_face_normals = false);
 
     /// Returns the current TriMesh.
