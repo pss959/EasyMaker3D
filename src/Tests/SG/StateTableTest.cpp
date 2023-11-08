@@ -34,7 +34,7 @@ TEST_F(StateTableTest, DefaultStateTable) {
     EXPECT_EQ(SG::StateTable::BlendFunctionFactor::kZero, ad);
 
     // SetUpIon() should work.
-    auto ion_st = st->SetUpIon();
+    auto ion_st = st->SetUpIon(GetIonContext());
     EXPECT_NOT_NULL(ion_st.Get());
 }
 
@@ -43,7 +43,7 @@ TEST_F(StateTableTest, LineWidth) {
     EXPECT_EQ(1, st->GetLineWidth());
 
     // Call SetUpIon() so the Ion StateTable is updated as well.
-    auto ion_st = st->SetUpIon();
+    auto ion_st = st->SetUpIon(GetIonContext());
     EXPECT_NOT_NULL(ion_st.Get());
 
     st->SetLineWidth(.6f);

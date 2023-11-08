@@ -392,8 +392,8 @@ these:
 | X      | Mesh slicing                                    |
 | y      | Model status changes                            |
 | z      | Font loading                                    |
+| Z      | Ion setup in SG                                 |
 | 0      | Mesh cleaning                                   |
-| &nbsp; | &nbsp;                                          |
 </div>
 </div>
 

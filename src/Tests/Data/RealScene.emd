@@ -45,7 +45,7 @@ Scene "RealScene" {
     },
   ],
   root_node: Node "Root" {
-    shader_names: ["ShadowDepth", "Lighting", "Faceted"],
+    shader_names: ["ShadowDepth", "Lighting"],
     state_table: StateTable {
       clear_color:        0.4 0.4 0.4 1,
       clear_depth:        0.5,
@@ -57,18 +57,38 @@ Scene "RealScene" {
     blocks: [
       <"nodes/RootShadowBlock.emd">,
       <"nodes/RootLightingBlock.emd">,
-      UniformBlock "T_DefaultFacetedUniforms" {
-        pass_name: $LIGHTING_PASS,
-        uniforms: [
-          Uniform "uBaseColor"          { vec4f_val: "#b3b3b3" },
-          Uniform "uEmissiveColor"      { vec4f_val: 0 0 0 0 },
-          Uniform "uEdgeColor"          { vec4f_val: "#000000" },
-          Uniform "uEdgeWidth"          { float_val: 0 },
-          Uniform "uBuildVolumeSize"    { vec3f_val: 0 0 0 },
-          Uniform "uWorldToStageMatrix" { mat4_val: $MAT4_0 }
+    ],
+    children: [
+      UnscopedNode "FacetedRoot" {
+        shader_names: ["Faceted"],
+        blocks: [
+          UniformBlock "T_DefaultFacetedUniforms" {
+            pass_name: $LIGHTING_PASS,
+            uniforms: [
+              Uniform "uBaseColor"          { vec4f_val: "#b3b3b3" },
+              Uniform "uEmissiveColor"      { vec4f_val: 0 0 0 0 },
+              Uniform "uEdgeColor"          { vec4f_val: "#000000" },
+              Uniform "uEdgeWidth"          { float_val: 0 },
+              Uniform "uBuildVolumeSize"    { vec3f_val: 0 0 0 },
+              Uniform "uWorldToStageMatrix" { mat4_val: $MAT4_0 }
+            ],
+          }
         ],
+      },
+      UnscopedNode "BaseColorRoot" {
+        shader_names: ["BaseColor"],
+        blocks: [
+          UniformBlock "T_DefaultBaseColorUniforms" {
+            pass_name: $LIGHTING_PASS,
+            uniforms: [
+              Uniform "uZOffset" { float_val: 0 },
+              Uniform "uBaseColor" { vec4f_val: "#ff00ffff" },
+            ],
+          },
+        ]
       }
     ],
+
     # The next line can be replaced with a string to add children or other
     # fields to the root node..
     #<CONTENTS>

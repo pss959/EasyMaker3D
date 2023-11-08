@@ -1,5 +1,4 @@
 #include "SG/Exception.h"
-#include "SG/FileMap.h"
 #include "SG/ShaderProgram.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing2.h"
@@ -17,10 +16,10 @@ TEST_F(ShaderProgramTest, DefaultShaderProgram) {
     EXPECT_NULL(prog->GetGeometrySource());
     EXPECT_NULL(prog->GetFragmentSource());
 
+    auto context = GetIonContext();
+
     // SetUpIon() should fail.
-    SG::FileMap fm;
-    ion::gfxutils::ShaderManagerPtr sm(new ion::gfxutils::ShaderManager);
-    TEST_THROW(prog->SetUpIon(fm, *sm), SG::Exception, "No vertex program");
+    TEST_THROW(prog->SetUpIon(context), SG::Exception, "No vertex program");
 
     // Create an instance with a valid vertex shader source.
     const Str input0 = R"(
@@ -29,7 +28,7 @@ ShaderProgram "SP" {
 }
 )";
     prog = ParseTypedObject<SG::ShaderProgram>(input0);
-    prog->SetUpIon(fm, *sm);
+    prog->SetUpIon(context);
     EXPECT_NOT_NULL(prog->GetIonShaderProgram().Get());
 
     // Create an instance with a bogus vertex shader source.
@@ -40,7 +39,7 @@ ShaderProgram "SP" {
 )";
     prog = ParseTypedObject<SG::ShaderProgram>(input1);
     EXPECT_NOT_NULL(prog);
-    TEST_THROW(prog->SetUpIon(fm, *sm), SG::Exception, "Unable to read shader");
+    TEST_THROW(prog->SetUpIon(context), SG::Exception, "Unable to read shader");
 
     // Create an instance with bad inheritance.
     const Str input2 = R"(
@@ -51,5 +50,5 @@ ShaderProgram "SP" {
 )";
     prog = ParseTypedObject<SG::ShaderProgram>(input2);
     EXPECT_NOT_NULL(prog);
-    TEST_THROW(prog->SetUpIon(fm, *sm), SG::Exception, "Unknown shader");
+    TEST_THROW(prog->SetUpIon(context), SG::Exception, "Unknown shader");
 }

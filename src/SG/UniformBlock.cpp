@@ -71,7 +71,8 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
     const IonContextPtr &ion_context,
     const ion::gfx::ShaderInputRegistryPtr &reg) {
     if (! ion_uniform_block_) {
-        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc()
+             << " with registry " << reg.Get());
         ion_context_ = ion_context;
         ion_context_->ChangeLevel(1);
 

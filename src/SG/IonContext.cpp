@@ -2,7 +2,6 @@
 
 #include "SG/FileMap.h"
 #include "Util/Assert.h"
-#include "Util/String.h"
 
 namespace SG {
 
@@ -85,7 +84,7 @@ void IonContext::Reset() {
 }
 
 Str IonContext::GetIndent() const {
-    return Util::Spaces(level_);
+    return Str(2 * level_, '-');
 }
 
 }  // namespace SG

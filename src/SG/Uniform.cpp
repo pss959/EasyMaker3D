@@ -39,7 +39,8 @@ size_t Uniform::SetUpIon(const IonContextPtr &ion_context,
                          const ion::gfx::ShaderInputRegistry &reg,
                          ion::gfx::UniformBlock &block) {
     if (ion_index_ == ion::base::kInvalidIndex) {
-        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
+        KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc()
+             << " with registry " << &reg);
         IonUniform iu =
             count_ > 1 ? CreateIonArrayUniform_(reg) : CreateIonUniform_(reg);
         ASSERTM(iu.IsValid(), GetDesc() + " in registry " +

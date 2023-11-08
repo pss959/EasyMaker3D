@@ -105,7 +105,7 @@ TEST_F(BoardTest, PanelScale) {
     const auto canvas_scale = ToVector2f(canvas->GetScale());
 
     // Change the scale and set the Panel again to get the Board to update.
-    board->SetPanelScale(2 * TK::kPanelToWorldScale);
+    board->SetDistanceScale(2);
     board->PopPanel("Done");
     board->SetPanel(panel, nullptr);
     EXPECT_EQ(2 * canvas_scale, ToVector2f(canvas->GetScale()));

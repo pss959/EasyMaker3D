@@ -26,7 +26,7 @@ TEST_F(ShapeTest, ImportedShape) {
     EXPECT_FALSE(imp->ShouldUseBoundsProxy());
 
     // Empty path creates an error when setting up Ion.
-    TEST_THROW(imp->SetUpIon(), SG::Exception,
+    TEST_THROW(imp->SetUpIon(GetIonContext()), SG::Exception,
                "Unable to open or read shape file");
 }
 
@@ -43,7 +43,7 @@ TEST_F(ShapeTest, ImportedShapeCreateFrom) {
               imp->GetTexCoordsType());
     EXPECT_NULL(imp->GetProxyShape());
     EXPECT_FALSE(imp->ShouldUseBoundsProxy());
-    auto shape = imp->SetUpIon();
+    auto shape = imp->SetUpIon(GetIonContext());
     EXPECT_NOT_NULL(shape.Get());
 
     // Create with vertex normals.
@@ -56,7 +56,7 @@ TEST_F(ShapeTest, ImportedShapeCreateFrom) {
               imp->GetTexCoordsType());
     EXPECT_NULL(imp->GetProxyShape());
     EXPECT_FALSE(imp->ShouldUseBoundsProxy());
-    shape = imp->SetUpIon();
+    shape = imp->SetUpIon(GetIonContext());
     EXPECT_NOT_NULL(shape.Get());
 
     // Try each type of tex coord mapping.
@@ -73,14 +73,14 @@ ImportedShape {
                                 "<TCT>", Util::EnumName(tct));
         imp = ParseTypedObject<SG::ImportedShape>(input);
         EXPECT_NOT_NULL(imp);
-        shape = imp->SetUpIon();
+        shape = imp->SetUpIon(GetIonContext());
         EXPECT_NOT_NULL(shape.Get());
     }
 
     // Bad path creates an error when setting up Ion.
     imp = SG::ImportedShape::CreateFrom(
         "/no/such/path", SG::ImportedShape::NormalType::kFaceNormals);
-    TEST_THROW(imp->SetUpIon(), SG::Exception,
+    TEST_THROW(imp->SetUpIon(GetIonContext()), SG::Exception,
                "Unable to open or read shape file");
 }
 
@@ -91,7 +91,7 @@ TEST_F(ShapeTest, Line) {
     // Default settings.
     EXPECT_EQ(Point3f(0, 0, 0), line->GetEnd0());
     EXPECT_EQ(Point3f(1, 0, 0), line->GetEnd1());
-    EXPECT_NOT_NULL(line->SetUpIon().Get());
+    EXPECT_NOT_NULL(line->SetUpIon(GetIonContext()).Get());
 
     line->SetEndpoints(Point3f(-2, -3, -4), Point3f(2, 3, 4));
     EXPECT_EQ(Point3f(-2, -3, -4), line->GetEnd0());
@@ -102,20 +102,20 @@ TEST_F(ShapeTest, MutableTriMeshShapeTriMesh) {
     auto mtms = CreateObject<SG::MutableTriMeshShape>();
     EXPECT_TRUE(mtms->GetMesh().points.empty());
     EXPECT_TRUE(mtms->GetMesh().indices.empty());
+    EXPECT_NULL(mtms->GetIonShape().Get());
 
-    // Install a new TriMesh. This should call SetUpIon() for the shape.
+    // Install a new TriMesh.
     auto mesh = BuildBoxMesh(Vector3f(2, 3, 4));
     mtms->ChangeMesh(mesh);
     EXPECT_EQ(mesh.points,  mtms->GetMesh().points);
     EXPECT_EQ(mesh.indices, mtms->GetMesh().indices);
-    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
+    EXPECT_NULL(mtms->GetIonShape().Get());
 }
 
 TEST_F(ShapeTest, MutableTriMeshShapeModelMesh) {
     auto mtms = CreateObject<SG::MutableTriMeshShape>();
 
     // Install a ModelMesh with per-vertex texture coordinates and normals.
-    // This should call SetUpIon() for the shape.
     auto mesh = BuildBoxMesh(Vector3f(2, 3, 4));
     ModelMesh mmesh;
     mmesh.points  = mesh.points;
@@ -125,7 +125,7 @@ TEST_F(ShapeTest, MutableTriMeshShapeModelMesh) {
     mtms->ChangeModelMesh(mmesh, false);  // Normal per vertex.
     EXPECT_EQ(mesh.points,  mtms->GetMesh().points);
     EXPECT_EQ(mesh.indices, mtms->GetMesh().indices);
-    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
+    EXPECT_NULL(mtms->GetIonShape().Get());
 
     // Try with per-vertex texture coordinates and per-face normals.
     mmesh.normals.assign(mesh.GetTriangleCount(), Vector3f::AxisY());
@@ -146,7 +146,7 @@ TEST_F(ShapeTest, PolyLine) {
 
     // Default settings.
     EXPECT_TRUE(pline->GetPoints().empty());
-    EXPECT_NOT_NULL(pline->SetUpIon().Get());
+    EXPECT_NOT_NULL(pline->SetUpIon(GetIonContext()).Get());
 
     pline->SetPoints(
         std::vector<Point3f>{ Point3f(-2, -3, -4), Point3f(2, 3, 4) });
@@ -173,7 +173,7 @@ TEST_F(ShapeTest, Polygon) {
     // Default settings.
     EXPECT_TRUE(poly->GetPoints().empty());
     EXPECT_TRUE(poly->GetBorderCounts().empty());
-    EXPECT_NOT_NULL(poly->SetUpIon().Get());
+    EXPECT_NOT_NULL(poly->SetUpIon(GetIonContext()).Get());
 
     // Set to a Math Polygon
     const std::vector<Point2f> pts{
@@ -196,7 +196,7 @@ TEST_F(ShapeTest, Torus) {
     EXPECT_EQ(.1f, torus->GetInnerRadius());
     EXPECT_EQ(20,  torus->GetRingCount());
     EXPECT_EQ(20,  torus->GetSectorCount());
-    EXPECT_NOT_NULL(torus->SetUpIon().Get());
+    EXPECT_NOT_NULL(torus->SetUpIon(GetIonContext()).Get());
 
     // Set fields.
     torus->SetInnerRadius(.5f);
@@ -220,7 +220,7 @@ TEST_F(ShapeTest, Tube) {
     EXPECT_EQ(1, tube->GetDiameter());
     EXPECT_EQ(1, tube->GetTaper());
     EXPECT_EQ(4, tube->GetSideCount());
-    EXPECT_NOT_NULL(tube->SetUpIon().Get());
+    EXPECT_NOT_NULL(tube->SetUpIon(GetIonContext()).Get());
 
     // Set fields.
     tube->SetEndpoints(Point3f(-3, 0, 0), Point3f(4, 2, 1));

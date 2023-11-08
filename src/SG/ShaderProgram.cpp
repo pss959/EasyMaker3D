@@ -30,11 +30,12 @@ void ShaderProgram::SetUpIon(const IonContextPtr &ion_context) {
     // This should be called only once since these are never shared.
     ASSERT(! ion_program_);
 
-    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc());
-
     // Create a ShaderInputRegistry.
     auto &shader_manager = *ion_context->GetShaderManager();
     ShaderInputRegistryPtr reg = CreateRegistry_(shader_manager);
+
+    KLOG('Z', ion_context->GetIndent() << "SetUpIon for " << GetDesc()
+         << " with registry " << reg.Get());
 
     // Create a StringComposer for each supplied ShaderSource.
     ShaderManager::ShaderSourceComposerSet sscs;
