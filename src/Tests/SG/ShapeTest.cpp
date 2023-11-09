@@ -104,16 +104,23 @@ TEST_F(ShapeTest, MutableTriMeshShapeTriMesh) {
     EXPECT_TRUE(mtms->GetMesh().indices.empty());
     EXPECT_NULL(mtms->GetIonShape().Get());
 
-    // Install a new TriMesh.
+    // Set up Ion.
+    EXPECT_NOT_NULL(mtms->SetUpIon(GetIonContext()).Get());
+    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
+
+    // Install a new TriMesh. Should update the Ion Shape as well.
     auto mesh = BuildBoxMesh(Vector3f(2, 3, 4));
     mtms->ChangeMesh(mesh);
     EXPECT_EQ(mesh.points,  mtms->GetMesh().points);
     EXPECT_EQ(mesh.indices, mtms->GetMesh().indices);
-    EXPECT_NULL(mtms->GetIonShape().Get());
+    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
 }
 
 TEST_F(ShapeTest, MutableTriMeshShapeModelMesh) {
+    // Set up Ion.
     auto mtms = CreateObject<SG::MutableTriMeshShape>();
+    EXPECT_NOT_NULL(mtms->SetUpIon(GetIonContext()).Get());
+    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
 
     // Install a ModelMesh with per-vertex texture coordinates and normals.
     auto mesh = BuildBoxMesh(Vector3f(2, 3, 4));
@@ -125,13 +132,14 @@ TEST_F(ShapeTest, MutableTriMeshShapeModelMesh) {
     mtms->ChangeModelMesh(mmesh, false);  // Normal per vertex.
     EXPECT_EQ(mesh.points,  mtms->GetMesh().points);
     EXPECT_EQ(mesh.indices, mtms->GetMesh().indices);
-    EXPECT_NULL(mtms->GetIonShape().Get());
+    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
 
     // Try with per-vertex texture coordinates and per-face normals.
     mmesh.normals.assign(mesh.GetTriangleCount(), Vector3f::AxisY());
     mtms->ChangeModelMesh(mmesh, true);  // Normal per face.
     EXPECT_EQ(mesh.points,  mtms->GetMesh().points);
     EXPECT_EQ(mesh.indices, mtms->GetMesh().indices);
+    EXPECT_NOT_NULL(mtms->GetIonShape().Get());
 
     // Test CopyFrom().
     auto copy = CreateObject<SG::MutableTriMeshShape>();

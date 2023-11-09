@@ -168,7 +168,8 @@ TEST_F(CreatePrimitiveExecutorTest, Animate) {
     EXPECT_ENUM_EQ(Model::Status::kUnselected, model->GetStatus());
     const auto trans = model->GetTranslation();
     EXPECT_EQ(0,              trans[0]);
-    EXPECT_NEAR(.5f * ah + 2, trans[1], .1f * ah);  // Very wide tolerance.
+    // Tolerance here is extra large for coverage builds.
+    EXPECT_NEAR(.5f * ah + 2, trans[1], .2f * ah);
     EXPECT_EQ(0,              trans[2]);
 
     // Wait until the animation is finished.
