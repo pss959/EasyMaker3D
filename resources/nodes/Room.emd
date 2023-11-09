@@ -42,7 +42,7 @@ Node "Room" {
     # Special Board for VirtualKeyboard. Offset below and in front.
     CLONE "T_Board" "KeyBoard" {
       behavior: "kAugments",
-      touch_offset: 0 -.2 .1,
+      touch_offset: 0 -.1 .1,
       rotation: 1 0 0 -30,
     },
 

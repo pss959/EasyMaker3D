@@ -267,6 +267,10 @@ void Board::Impl_::SetUpForTouch(const Point3f &cam_pos,
 
         is_set_up_for_touch_ = true;
     }
+    std::cerr << "XXXX " << root_node_.GetName()
+              << " trans = " << root_node_.GetTranslation()
+              << " from cam pos " << cam_pos
+              << "\n";
 }
 
 void Board::Impl_::SetOrientation(const Vector3f &view_dir) {
