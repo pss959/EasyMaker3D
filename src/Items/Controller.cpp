@@ -38,8 +38,11 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     auto def = SG::FindNodeUnderNode(*this, "DefaultModel");
     def->SetEnabled(false);
 
-    // Build a MutableTriMeshShape from the ModelMesh.
+    // Build a MutableTriMeshShape from the ModelMesh. Make sure to call
+    // SetUpIon() before changing its Mesh.
     auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
+    if (const auto &context = GetIonContext())
+        shape->SetUpIon(context);
     shape->ChangeModelMesh(custom_model.mesh);
 
     // Add the shape to the custom model and enable it.
