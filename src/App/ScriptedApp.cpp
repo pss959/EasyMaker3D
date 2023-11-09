@@ -190,7 +190,7 @@ void ScriptedApp::Emitter_::AddKey(const Str &key,
 }
 
 void ScriptedApp::Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
-                                const Rotationf &rot) {
+                                             const Rotationf &rot) {
     Event event;
     event.device = hand == Hand::kLeft ?
         Event::Device::kLeftController : Event::Device::kRightController;

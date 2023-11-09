@@ -14,7 +14,10 @@ RadialMenu "T_RadialMenu" {
     UnscopedNode "Circles" {
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
-      blocks: [ USE "T_BorderColor" ],
+      blocks: [
+        USE "T_DefaultBaseColorUniforms",
+        USE "T_BorderColor",
+      ],
       state_table: StateTable { line_width: 1 },
       shapes: [
         Tube "Outer" { diameter: .1 },

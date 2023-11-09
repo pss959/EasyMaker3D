@@ -14,17 +14,6 @@ Node "Root" {
     MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
   ],
 
-  TEMPLATES: [
-    # Default uniform values for the BaseColor shader.
-    UniformBlock "T_DefaultBaseColorUniforms" {
-      pass_name: $LIGHTING_PASS,
-      uniforms: [
-        Uniform "uZOffset" { float_val: 0 },
-        Uniform "uBaseColor" { vec4f_val: "#ff00ffff" },
-      ],
-    },
-  ],
-
   state_table: StateTable {},  # This is required to set up the viewport.
 
   shader_names: ["ShadowDepth", "Lighting"],
@@ -36,6 +25,36 @@ Node "Root" {
   ],
 
   children: [
+    # These set up default uniform values for other shaders.
+    UnscopedNode "FacetedRoot" {
+      shader_names: ["Faceted"],
+      blocks: [
+        UniformBlock "T_DefaultFacetedUniforms" {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [
+            Uniform "uBaseColor"          { vec4f_val: "#b3b3b3" },
+            Uniform "uEmissiveColor"      { vec4f_val: 0 0 0 0 },
+            Uniform "uEdgeColor"          { vec4f_val: "#000000" },
+            Uniform "uEdgeWidth"          { float_val: 0 },
+            Uniform "uBuildVolumeSize"    { vec3f_val: 0 0 0 },
+            Uniform "uWorldToStageMatrix" { mat4_val: $MAT4_0 }
+          ],
+        }
+      ],
+    },
+    UnscopedNode "BaseColorRoot" {
+      shader_names: ["BaseColor"],
+      blocks: [
+        UniformBlock "T_DefaultBaseColorUniforms" {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [
+            Uniform "uZOffset" { float_val: 0 },
+            Uniform "uBaseColor" { vec4f_val: "#ff00ffff" },
+          ],
+        },
+      ]
+    },
+
     Node "Passes" {
       TEMPLATES: [
         # Note: order here matters because there are some dependencies.
