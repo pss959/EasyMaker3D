@@ -29,6 +29,10 @@ var all_versions = [
     },
     {
         "version": "1.7.0",
+        "alias":   "",
+    },
+    {
+        "version": "1.8.0",
         "alias":   "latest",
     },
 ]

@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools &mdash; EasyMaker3D 1.8.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=b51e6972"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/js/version_selector.js?v=a351e89a"></script>
+        <script src="../_static/js/versions.js?v=0884d74f"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Panels" href="Panels.html" />
+    <link rel="prev" title="Actions, 3D Icons, and Shelves" href="Actions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Quickstart.html"><span class="appname">EasyMaker3D</span> Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Interaction.html">Interaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CreatingModels.html">Creating Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Selection.html">Selecting Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Precision.html">Precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Actions.html">Actions, 3D Icons, and Shelves</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#attaching-and-switching-tools">Attaching and Switching Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general-tools">General Tools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#color-tool">Color Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#complexity-tool">Complexity Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#name-tool">Name Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rotation-tool">Rotation Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scale-tool">Scale Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#translation-tool">Translation Tool</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#specialized-tools">Specialized Tools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bend-tool">Bend Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bevel-tool">Bevel Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clip-tool">Clip Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csg-tool">CSG Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cylinder-tool">Cylinder Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extruded-tool">Extruded Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#import-tool">Import Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mirror-tool">Mirror Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#revsurf-tool">RevSurf Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#taper-tool">Taper Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text-tool">Text Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torus-tool">Torus Tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#twist-tool">Twist Tool</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Panels.html">Panels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quirks.html">Quirks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+      <li class="breadcrumb-item active">Tools</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="Actions.html" class="btn btn-neutral float-left" title="Actions, 3D Icons, and Shelves" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Panels.html" class="btn btn-neutral float-right" title="Panels" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tools">
+<span id="ug-tools"></span><h1>Tools<a class="headerlink" href="#tools" title="Link to this heading"></a></h1>
+<p><span class="newterm">Tools</span> are interactive objects that attach to <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">selected models</span></a> in the scene to perform a specific type of editing.</p>
+<p>Tools are divided into two categories:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A <span class="newterm">general tool</span> can be attached to any model, regardless of its
+type (except for the <a class="reference internal" href="#ug-complexity-tool"><span class="std std-ref">Complexity Tool</span></a>).</p></li>
+<li><p>A <span class="newterm">specialized tool</span> can be applied only to a model of a specific
+type. It is used to modify unique editable features of that type of model.</p></li>
+</ul>
+</div></blockquote>
+<p>Some tools add interactive 3D handles around or above the primary selection;
+others use 2D <a class="reference internal" href="Panels.html#ug-panels"><span class="std std-ref">panels</span></a> for editing.</p>
+<section id="attaching-and-switching-tools">
+<h2>Attaching and Switching Tools<a class="headerlink" href="#attaching-and-switching-tools" title="Link to this heading"></a></h2>
+<p><span class="appname">EasyMaker3D</span> maintains a <span class="newterm">current general tool</span>, which is usually the
+last general tool that was used. The <a class="reference internal" href="#ug-translation-tool"><span class="std std-ref">Translation Tool</span></a> is the default current general tool when the application
+starts. You can switch to any other enabled general tool by applying the
+corresponding <a class="reference internal" href="Actions.html#ug-tool-actions"><span class="std std-ref">tool action</span></a>. The <span class="action">Switch To Next
+Tool</span> and <span class="action">Switch To Previous Tool</span> actions also allow you to rotate
+through the available general tools.</p>
+<p>If a specialized tool is available for the current selection, you can
+<a class="reference internal" href="Actions.html#ug-toggle-specialized-tool"><span class="std std-ref">toggle between the current general tool and that specialized tool</span></a> with the <span class="action">Toggle Specialized Tool</span>
+action.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <span class="shortcut">Space</span> shortcut is an easy way to apply this action to toggle
+between the current general tool and the specialized tool for the selection,
+if one is available.</p>
+</div>
+<p>As mentioned previously, <a class="reference internal" href="CreatingModels.html#ug-model-creation"><span class="std std-ref">creating a new model</span></a> that
+has a corresponding specialized tool automatically attaches that tool so you
+can edit the model. If the new model has no specialized tool, the current
+general tool will be attached.</p>
+<p>When changing the <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">current selection</span></a>, the following rules
+apply:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If the last attached tool was a specialized tool and all selected models
+support the same specialized tool (not necessarily the current one), that
+tool will be attached to the primary selection.</p></li>
+<li><p>In all other cases, the current general tool will be attached to the
+primary selection.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="general-tools">
+<span id="ug-general-tools"></span><h2>General Tools<a class="headerlink" href="#general-tools" title="Link to this heading"></a></h2>
+<p>With the exception of the <a class="reference internal" href="#ug-complexity-tool"><span class="std std-ref">Complexity Tool</span></a>, any of
+the following general tools can be attached to all selected models.</p>
+<section id="color-tool">
+<span id="ug-color-tool"></span><h3>Color Tool<a class="headerlink" href="#color-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ColorTool.jpg"><img alt="../_images/ColorTool.jpg" src="../_images/ColorTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Color Tool</span> changes the color of all selected models. The
+interface for the tool is placed above the primary selection as shown in this
+image. The disc in the center of the tool shows the current color of the
+primary selection, as does the position of the small marker in the outer
+ring. Clicking or dragging anywhere in the ring moves the marker and changes
+the color of all selected models.</p>
+<p>Colors have no real effect on 3D-printed models, but they can be used to
+distinguish different parts while editing, or just to make things look nicer.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip dragging</span></a> can also be used to change the
+color. The relative position of the controller is used to move the marker
+around the ring.</p>
+</div>
+</section>
+<section id="complexity-tool">
+<span id="ug-complexity-tool"></span><h3>Complexity Tool<a class="headerlink" href="#complexity-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ComplexityToolHigh.jpg"><img alt="../_images/ComplexityToolHigh.jpg" src="../_images/ComplexityToolHigh.jpg" style="width: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ComplexityToolLow.jpg"><img alt="../_images/ComplexityToolLow.jpg" src="../_images/ComplexityToolLow.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Complexity Tool</span> appears above the primary selection and can be
+used to change the number of triangles used in the meshes that represent all
+selected models. For models with curved surfaces, changing the complexity will
+obviously affect the smoothness of the model.</p>
+<p>The tool consists of a single horizontal 3D slider. Dragging the slider handle
+changes the number of triangles used for all affected selected models. These
+images show two positions of the handle applied to a Cylinder model’s
+complexity.</p>
+<p>Some notes about this tool:</p>
+<blockquote id="ug-complexity-model-types">
+<div><ul class="simple">
+<li><p><a class="reference internal" href="CreatingModels.html#ug-show-edges"><span class="std std-ref">Showing model edges</span></a> can help you see the triangles
+more clearly as in these images.</p></li>
+<li><p>You can use complexity to create models representing certain basic
+shapes. For example, the lowest complexity Cylinder model is a triangular
+prism, and the lowest complexity Sphere model is an octohedron.</p></li>
+<li><p>If you want to change the complexity of a child model of a
+<a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">converted model</span></a> or <a class="reference internal" href="CreatingModels.html#ug-combined-models"><span class="std std-ref">combined model</span></a> of any type you can <a class="reference internal" href="Selection.html#ug-select-hierarchy"><span class="std std-ref">select the child or
+children</span></a> and apply the complexity change. The parent
+model will update appropriately when its children are no longer selected.</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Complexity Tool has effect only on the following <a class="reference internal" href="CreatingModels.html#ug-model-types"><span class="std std-ref">types of models</span></a>: Bent, Cylinder, RevSurf (surface of revolution), Sphere,
+Text, Torus, and Twisted. The tool is disabled if the selection contains
+only models of other types.</p>
+</div>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip dragging</span></a> also works; the relative position of
+the controller moves the handle.</p>
+</div>
+</section>
+<section id="name-tool">
+<span id="ug-name-tool"></span><h3>Name Tool<a class="headerlink" href="#name-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/NameTool.jpg"><img alt="../_images/NameTool.jpg" src="../_images/NameTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Name Tool</span> is a panel-based tool that lets you edit the name of
+the model that is the primary selection. A model’s name can help ypu
+distinguish its purpose or role, and is used as the default file name for
+<a class="reference internal" href="Panels.html#ug-export"><span class="std std-ref">STL export</span></a>.  Model names can be seen in the <a class="reference internal" href="Panels.html#ug-tree-panel"><span class="std std-ref">Tree Panel</span></a>.</p>
+<p>When attached to a model, the Name Tool displays a <a class="reference internal" href="Panels.html#ug-name-tool-panel"><span class="std std-ref">Name Tool Panel</span></a> above the model. This panel has a text input field that
+responds to the mouse and keyboard to edit the name along with an “Apply”
+button that applies the changed name to the model. It will not let you apply an
+invalid name (empty or with leading or trailing whitespace) or a name that is
+already used by another model.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p>If you are using the application in VR with the headset on, activating the
+text input field will bring up <a class="reference internal" href="Panels.html#ug-virtual-keyboard-panel"><span class="std std-ref">the virtual keyboard panel</span></a> to allow text to be edited with the
+controllers.</p>
+</div>
+</section>
+<section id="rotation-tool">
+<span id="ug-rotation-tool"></span><h3>Rotation Tool<a class="headerlink" href="#rotation-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RotationTool.jpg"><img alt="../_images/RotationTool.jpg" src="../_images/RotationTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Rotation Tool</span> lets you rotate selected models. It has three
+<a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color-coded</span></a> rings for rotating about the principal
+axes and a translucent central sphere for applying free spherical rotation.</p>
+<p>Color-coded <a class="reference internal" href="Precision.html#ug-feedback"><span class="std std-ref">angular feedback</span></a> shows the current rotation
+angle or angles during an interactive drag with the tool.  The rotation angle
+is snapped to the current <a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">precision level setting</span></a>
+and snaps to the current <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point Target direction</span></a> if the
+target is visible.</p>
+<p>The <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">primary selection</span></a> is always rotated about its center
+point. If multiple models are selected, secondary selections are also rotated
+around the the center of the primary selection. However,
+<a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">modified-dragging</span></a> the Rotation Tool causes each model
+to be rotated in place about its own center.</p>
+<p>The <a class="reference internal" href="Actions.html#ug-toggle-axis-aligned"><span class="std std-ref">Axis-Aligned toggle</span></a> affects how the
+Rotation Tool is attached to the primary selection. If the toggle is not
+active, the rings of the tool will align with the principal axes of the
+selected model. If the toggle is active, the rings will align instead with the
+principal axes of the <a class="reference internal" href="Interaction.html#ug-stage"><span class="std std-ref">stage</span></a>.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RotationToolVRSphere.jpg"><img alt="../_images/RotationToolVRSphere.jpg" src="../_images/RotationToolVRSphere.jpg" style="height: 140px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RotationToolVRZ.jpg"><img alt="../_images/RotationToolVRZ.jpg" src="../_images/RotationToolVRZ.jpg" style="height: 140px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RotationToolVRX.jpg"><img alt="../_images/RotationToolVRX.jpg" src="../_images/RotationToolVRX.jpg" style="height: 140px;" /></a>
+</figure>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip dragging</span></a> uses the orientation of the VR
+controller to define the rotation. A special rotation grip hover guide will
+be used for each controller to show which part of the Rotation Tool will be
+activated for a grip drag, as follows.</p>
+<p>When the ring on the guide is close to aligning with any of the axis rings
+on the Rotation Tool, the guide will show a <a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color-coded connection</span></a> to that ring.  In the left image here, the ring is
+close to aligning with the red X-axis rotation ring of the Rotation Tool, so
+a red connection appears. In the center image, it is close to aligning with
+the blue Z-axis ring. In any other orientation, the guide will show a yellow
+connection to the center sphere as in the right image.</p>
+<p>If a ring is hovered, grip dragging by rotating the controller parallel to
+the ring rotates the model(s) in the same direction. When no ring is
+selected, grip dragging will rotate the model(s) by the free controller
+orientation.</p>
+</div>
+</section>
+<section id="scale-tool">
+<span id="ug-scale-tool"></span><h3>Scale Tool<a class="headerlink" href="#scale-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ScaleTool.jpg"><img alt="../_images/ScaleTool.jpg" src="../_images/ScaleTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Scale Tool</span> lets you change the size of selected models. It has
+fifteen 3D <span class="newterm">scalers</span>, each of which is a resizable stick with an
+interactive handle at each end. The handles are shaped to help indicate how
+they scale the model:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Three <a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color-coded</span></a> scalers are aligned with the
+coordinate axes of the model. These scale (nonuniformly) in a single
+dimension. Each handle of these scalers is a rectangular box that is longer
+in the dimension that will be scaled.</p></li>
+<li><p>Eight scalers cross diagonally through the centers of edges. These scale
+nonuniformly in two dimensions. The handles of these scalers are cylinders
+that are aligned with the two scaled dimensions.</p></li>
+<li><p>Four scalers pass diagonally through the corners of the model’s
+bounds. These scale uniformly in all three dimensions. The handles of these
+scalers are spheres to indicate the uniform scale.</p></li>
+</ul>
+</div></blockquote>
+<p>Any dimension being scaled follows the current <a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">precision level</span></a> and snaps to the current <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Edge Target length</span></a> if the target is active. Color-coded <a class="reference internal" href="Precision.html#ug-feedback"><span class="std std-ref">linear feedback</span></a> shows the current relevant dimension(s) of the primary selection
+during a drag.</p>
+<p>There are two scaling modes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="newterm">Asymmetric scaling</span> resizes the model about the opposite
+point. That is, when you drag a scaler handle, the handle on the other end
+stays fixed. This is the default scaling mode when dragging a handle.</p></li>
+<li><p><span class="newterm">Symmetric scaling</span> resizes the model about its center. When
+dragging a scaler handle in this mode, the handle on the opposite side
+moves the same amount in the other direction.</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Scaling is asymmetric by default.  <a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-dragging</span></a> any scaler handle performs symmetric scaling.</p>
+</div>
+<p>Keep in mind that scaling a model’s height symmetrically can cause it to extend
+under the <a class="reference internal" href="Interaction.html#ug-stage"><span class="std std-ref">stage</span></a>.</p>
+<p>If multiple models are selected, all secondary selections are scaled in place
+in their local orientations by the same ratio applied to the primary
+selection. The <a class="reference internal" href="Actions.html#ug-toggle-axis-aligned"><span class="std std-ref">Axis-Aligned toggle</span></a> has no
+effect on the Scale Tool, since using different axes might cause confusing
+shearing to occur.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ScaleToolVRUniform.jpg"><img alt="../_images/ScaleToolVRUniform.jpg" src="../_images/ScaleToolVRUniform.jpg" style="height: 140px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ScaleToolVRX.jpg"><img alt="../_images/ScaleToolVRX.jpg" src="../_images/ScaleToolVRX.jpg" style="height: 140px;" /></a>
+</figure>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip dragging</span></a> uses the orientation of the VR
+controller to select a scaler handle to activate. The hover guide for each
+controller will show a <a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color-coded</span></a> connection
+to the handle closest to the guide’s orientation, if any.</p>
+<p>In the left image, the hover guide is close to being aligned with the red X
+dimension scaler, so grip dragging will activate that scaler. In the right
+image, the guide is close to aligned with a diagonal uniform scaler, so it
+will be activated for grip dragging.</p>
+</div>
+</section>
+<section id="translation-tool">
+<span id="ug-translation-tool"></span><h3>Translation Tool<a class="headerlink" href="#translation-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TranslationTool.jpg"><img alt="../_images/TranslationTool.jpg" src="../_images/TranslationTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The <span class="newterm">Translation Tool</span> lets you change the position of selected
+models. It has three <a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color-coded</span></a> double-ended 3D
+sliders along each of the principal axes. Dragging the handle at either end
+translates all selected models along the corresponding axis. Color-coded
+<a class="reference internal" href="Precision.html#ug-feedback"><span class="std std-ref">linear feedback</span></a> shows the current translation distance
+during a drag.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Translation distances and feedback follow the current <a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">precision level</span></a> setting. You can change the setting during use of this
+tool for more precise placement.</p>
+</div>
+<p>Translation also snaps to the current <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point Target position</span></a>
+if the target is active. Snapping is done when the minimum, center, or maximum
+value of the primary model’s bounds in the translated dimension is aligned with
+the target’s position.</p>
+<p>The <a class="reference internal" href="Actions.html#ug-toggle-axis-aligned"><span class="std std-ref">Axis-Aligned toggle</span></a> affects how the
+Translation Tool is attached to the primary selection. If the toggle is not
+active, then the sliders will always be aligned with the principal axes of the
+primary model. If the toggle is acive, the sliders will align instead with the
+principal axes of the <a class="reference internal" href="Interaction.html#ug-stage"><span class="std std-ref">stage</span></a>.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TranslationToolVRZ.jpg"><img alt="../_images/TranslationToolVRZ.jpg" src="../_images/TranslationToolVRZ.jpg" style="height: 140px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TranslationToolVRX.jpg"><img alt="../_images/TranslationToolVRX.jpg" src="../_images/TranslationToolVRX.jpg" style="height: 140px;" /></a>
+</figure>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip dragging</span></a> uses the orientation of the VR
+controller to choose a translation axis. The hover guide for each controller
+will show a <a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color-coded</span></a> connection to the
+handle closest to the guide’s orientation, if any, as shown in the images.</p>
+<p><p class="after-image"></p></p>
+</div>
+</section>
+</section>
+<section id="specialized-tools">
+<span id="ug-specialized-tools"></span><h2>Specialized Tools<a class="headerlink" href="#specialized-tools" title="Link to this heading"></a></h2>
+<p>The following sections describe the various specialized tools that are used to
+edit <a class="reference internal" href="CreatingModels.html#ug-model-types"><span class="std std-ref">specific types of models</span></a>. Each specialized tool
+can be attached to the <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">current selection</span></a> only if all
+selected models are of the correct type for that tool.</p>
+<p>For more information about each specialized tool that uses a <a class="reference internal" href="Panels.html#ug-panels"><span class="std std-ref">panel</span></a> for its interface, see the corresponding panel documentation.</p>
+<section id="bend-tool">
+<span id="ug-bend-tool"></span><h3>Bend Tool<a class="headerlink" href="#bend-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BendTool.jpg"><img alt="../_images/BendTool.jpg" src="../_images/BendTool.jpg" style="height: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Bend Tool</span> allows you to bend a model along a
+circular arc relative to an axis. It is enabled when all of the selected models
+are <a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">Bent models</span></a>. You can convert any model to a
+Bent model with the <a class="reference internal" href="Actions.html#ug-convert-twist"><span class="std std-ref">Convert Bend action</span></a>.</p>
+<p>The math for a bend operation is fairly complicated. (Using this tool to see
+how it works is probably much easier than reading about it.) A bend is based on
+the following values:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>An <span class="newterm">axis direction</span> around which the model is bent.</p></li>
+<li><p>An <span class="newterm">axis center</span> that affects the bend radius.</p></li>
+<li><p>A <span class="newterm">bend angle</span> that specifies the amount of bending.</p></li>
+<li><p>An <span class="newterm">offset value</span> that defines how much to offset mesh vertices in
+the axis direction for each 360 degrees of bend. (This can be used to
+create a helix, for example.)</p></li>
+</ul>
+</div></blockquote>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BendToolAfter.jpg"><img alt="../_images/BendToolAfter.jpg" src="../_images/BendToolAfter.jpg" style="width: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BendToolBefore.jpg"><img alt="../_images/BendToolBefore.jpg" src="../_images/BendToolBefore.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The Bend Tool has the following interactive parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>An arrow showing the axis direction. The handles at the ends of the arrow
+can be dragged to rotate the axis direction. The shaft of the arrow can be
+dragged in the plane perpendicular to the axis direction to translate the
+axis center.</p></li>
+<li><p>A spoked ring surrounding the model that can be dragged to change the bend
+angle. Feedback shows the current angle, which is snapped to the current
+<a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">angle precision level setting</span></a>.</p></li>
+<li><p>A double-ended green arrow near the ring that is used to change the offset
+value. Feedback shows the current offset, which is the amount of
+translation applied for each 360 degrees of bend. The offset is snapped to
+the current <a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">precision level setting</span></a>. Note that
+the sign of the offset indicates its direction; this is relative to the
+angle direction, which is positive for counterclockwise angles and negative
+for clockwise ones.</p></li>
+</ul>
+</div></blockquote>
+<p>The above images show a rotated and scaled Cylinder model and the result of
+changing the axis center, bend angle, and offset applied to it. Note that in
+this example the complexity of the Bent model was changed with the
+<a class="reference internal" href="#ug-complexity-tool"><span class="std std-ref">Complexity Tool</span></a> to increase the number of mesh
+vertices in the direction of the bend.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is very easy to create <a class="reference internal" href="CreatingModels.html#ug-model-colors"><span class="std std-ref">invalid models</span></a> with this
+tool, especially when the axis direction is skewed, when the axis center is
+far from the original model, or when the bend angle causes the Bent model to
+overlap itself.</p>
+</div>
+<p>When rotating the axis by dragging the arrow handles, the axis direction will
+snap to the <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point Target direction</span></a> if the target is active
+or to any of the principal axes. If the <a class="reference internal" href="Actions.html#ug-toggle-axis-aligned"><span class="std std-ref">Axis-Aligned toggle</span></a> is active, the principal axes of the <a class="reference internal" href="Interaction.html#ug-stage"><span class="std std-ref">stage</span></a> are used; otherwise, the local axes of the primary model are
+used. The interactive ends of the arrow change color when snapped to either the
+target color or the <a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color corresponding to a principal axis</span></a>.</p>
+<p>When dragging the arrow shaft to translate the axis center, the center snaps to
+the <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point Target position</span></a> if the target is active and also
+to the minimum, center, and maximum coordinates of the unbent primary model in
+both dragging dimensions. This makes it easier to snap the center to important
+points on the unbent model. The arrow shaft will change color to the active
+target color when it is snapped.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-dragging</span></a> when rotating the axis or
+translating the center deactivates any snapping. It also deactivates
+snapping the bend angle or offset value to the current precision level
+during interaction.</p>
+</div>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip-dragging</span></a> works as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If the controller is oriented so that the hover guide is nearly
+parallel to the axis direction (or its opposite), grip dragging will
+let you rotate the axis direction by rotating the controller.</p></li>
+<li><p>If the hover guide is nearly perpendicular to the axis direction,
+grip dragging will translate the axis center (by the arrow shaft).</p></li>
+<li><p>Otherwise, grip dragging will let you change the bend angle by
+rotating the controller.</p></li>
+</ul>
+</div></blockquote>
+<p>Snapping occurs as above unless <a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">modified-dragging</span></a>.</p>
+</div>
+</section>
+<section id="bevel-tool">
+<span id="ug-bevel-tool"></span><h3>Bevel Tool<a class="headerlink" href="#bevel-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/BevelTool.jpg"><img alt="../_images/BevelTool.jpg" src="../_images/BevelTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Bevel Tool</span> is a panel-based tool used to edit the
+bevel profile for one or more <a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">Beveled models</span></a>. A
+Beveled model can be created from another model by applying the <a class="reference internal" href="Actions.html#ug-convert-bevel"><span class="std std-ref">Convert
+Bevel action</span></a>. Attaching the Bevel Tool displays a
+<a class="reference internal" href="Panels.html#ug-bevel-tool-panel"><span class="std std-ref">Bevel Tool Panel</span></a> above the primary selection.
+Changes to the bevel profile in the panel are applied to all selected Beveled
+models.</p>
+<p>See the <a class="reference internal" href="Panels.html#ug-bevel-tool-panel"><span class="std std-ref">Bevel Tool Panel documentation</span></a> for more
+information about this tool.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="clip-tool">
+<span id="ug-clip-tool"></span><h3>Clip Tool<a class="headerlink" href="#clip-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ClipTool.jpg"><img alt="../_images/ClipTool.jpg" src="../_images/ClipTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Clip Tool</span> allows you to slice away parts of selected
+models by using a clipping plane. It is enabled when all of the selected models
+are <a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">Clipped models</span></a>. You can convert any model to a
+Clipped model with the <a class="reference internal" href="Actions.html#ug-convert-clip"><span class="std std-ref">Convert Clip action</span></a>.</p>
+<p>The default clipping plane for a new Clipped model clips away the top half of
+the primary selection, however it is oriented. The Clip Tool is then attached
+to this plane to let you edit it. Whenever the Clip Tool is attached, it aligns
+itself with the clipping plane already applied to the primary model.</p>
+<p>This tool has two interactive parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>An arrow indicating the normal to the clipping plane. The part of the
+selected model(s) on the side of the plane with the head of the arrow is
+clipped away. Dragging either end of the arrow rotates it around its center
+to change the orientation of the clipping plane.</p></li>
+<li><p>A translucent rectangle showing the clipping plane relative to the primary
+selection. This rectangle can be dragged along the direction of the normal
+arrow to translate the clipping plane.</p></li>
+</ul>
+</div></blockquote>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ClipToolActive.jpg"><img alt="../_images/ClipToolActive.jpg" src="../_images/ClipToolActive.jpg" style="width: 260px;" /></a>
+</figure>
+<p>All selected Clipped models are clipped in real time by the current plane while
+you rotate or translate the plane as shown here.</p>
+<p>When rotating the plane by dragging the arrow, the plane normal will snap to
+the <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point Target direction</span></a> if the target is active or to
+any of the principal axes. If the <a class="reference internal" href="Actions.html#ug-toggle-axis-aligned"><span class="std std-ref">Axis-Aligned toggle</span></a> is active, the principal axes of the <a class="reference internal" href="Interaction.html#ug-stage"><span class="std std-ref">stage</span></a> are used; otherwise, the local axes of the primary model are
+used. The interactive ends of the plane normal arrow change color when snapped
+to either the target color or the <a class="reference internal" href="Overview.html#ug-dimension-colors"><span class="std std-ref">color corresponding to a principal axis</span></a>.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ClipToolFeedback.jpg"><img alt="../_images/ClipToolFeedback.jpg" src="../_images/ClipToolFeedback.jpg" style="width: 260px;" /></a>
+</figure>
+<p>When dragging the rectangle to translate the plane, <a class="reference internal" href="Precision.html#ug-feedback"><span class="std std-ref">linear feedback</span></a> shows the current size of the primary model along the plane
+normal as shown here. The plane is limited to the extents of the primary model;
+it cannot be moved completely off this model, since that would leave either
+nothing or the entire model. While translating, the plane snaps to the
+<a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Point Target position</span></a> if the target is active and also to
+the center of the primary selection. The feedback will change color to the
+active target color when it is snapped to either point.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-dragging</span></a> when rotating or translating the
+clipping plane deactivates any snapping.</p>
+</div>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip-dragging</span></a> works for both translation and
+rotation. If the controller is oriented so that the hover guide is nearly
+parallel to the plane normal arrow, grip dragging will translate the plane
+along the normal based on the controller position. Otherwise, grip dragging
+will rotate the plane based on the controller orientation.  Snapping occurs
+as above unless <a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">modified-dragging</span></a>.</p>
+</div>
+</section>
+<section id="csg-tool">
+<span id="ug-csg-tool"></span><h3>CSG Tool<a class="headerlink" href="#csg-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CSGTool.jpg"><img alt="../_images/CSGTool.jpg" src="../_images/CSGTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">CSG Tool</span> is a panel-based tool used to change the
+CSG operation applied to one or more <a class="reference internal" href="CreatingModels.html#ug-combined-models"><span class="std std-ref">CSG models</span></a>. Attaching the CSG Tool displays a <a class="reference internal" href="Panels.html#ug-csg-tool-panel"><span class="std std-ref">CSG Tool Panel</span></a> above the primary selection. Changes to the CSG operation
+in the panel are applied to all selected CSG models.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="cylinder-tool">
+<span id="ug-cylinder-tool"></span><h3>Cylinder Tool<a class="headerlink" href="#cylinder-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CylinderTool.jpg"><img alt="../_images/CylinderTool.jpg" src="../_images/CylinderTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Cylinder Tool</span> is enabled when all of the selected
+models are <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">Cylinder models</span></a>. It allows you to
+change the top and bottom diameters of all selected Cylinder models to create
+cones or truncated cones.</p>
+<p>The Cylinder Tool has two <span class="newterm">scalers</span>, each of which is a resizable
+stick with an interactive handle at each end. The handles work symmetrically;
+dragging either handle changes the corresponding diameter of the selected
+Cylinder models.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CylinderToolActive.jpg"><img alt="../_images/CylinderToolActive.jpg" src="../_images/CylinderToolActive.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The diameter being modified follows the current <a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">precision level</span></a> setting and also snaps to the current <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Edge Target
+length</span></a> if the target is active. <a class="reference internal" href="Precision.html#ug-feedback"><span class="std std-ref">Linear feedback</span></a> shows the current size of the diameter during a drag as shown
+here.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip-dragging</span></a> also works with the scalers. The
+relative vertical position of a controller chooses the top or bottom scaler.</p>
+</div>
+</section>
+<section id="extruded-tool">
+<span id="ug-extruded-tool"></span><h3>Extruded Tool<a class="headerlink" href="#extruded-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ExtrudedTool.jpg"><img alt="../_images/ExtrudedTool.jpg" src="../_images/ExtrudedTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Extruded Tool</span> is a panel-based tool used to edit the
+profile used for one or more <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">Extruded models</span></a>.
+Attaching the Extruded Tool displays a <a class="reference internal" href="Panels.html#ug-extruded-tool-panel"><span class="std std-ref">Extruded Tool Panel</span></a> above the primary selection.  Changes to the
+extrusion profile in the panel are applied to all selected Extruded models.</p>
+<p>See the <a class="reference internal" href="Panels.html#ug-extruded-tool-panel"><span class="std std-ref">Extruded Tool Panel documentation</span></a> for
+more information about this tool.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="import-tool">
+<span id="ug-import-tool"></span><h3>Import Tool<a class="headerlink" href="#import-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ImportToolPanel.jpg"><img alt="../_images/ImportToolPanel.jpg" src="../_images/ImportToolPanel.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Import Tool</span> is a panel-based tool that is enabled if
+there is exactly one <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">Imported model</span></a> selected. It
+has three basic uses:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Choosing the initial file to import the model data from, right after
+creating the Imported model with the <a class="reference internal" href="Actions.html#ug-create-imported-model"><span class="std std-ref">Create Imported Model</span></a> action.</p></li>
+<li><p>Re-importing the model data from the same file after the file has changed.</p></li>
+<li><p>Changing the file to import the model data from.</p></li>
+</ul>
+</div></blockquote>
+<p>The Import Tool displays a <a class="reference internal" href="Panels.html#ug-import-tool-panel"><span class="std std-ref">Import Tool Panel</span></a>
+above the selected model. Accepting the same file for an Imported model will
+re-import the data. Choosing a different file will load the data from that
+file. Any errors during data import will be displayed in a <a class="reference internal" href="Panels.html#ug-dialog-panel"><span class="std std-ref">Dialog Panel</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">mentioned previously</span></a>, many publicly-available
+STL models are not valid solid meshes (watertight, not
+self-intersecting). The <a class="reference internal" href="Panels.html#ug-info-panel"><span class="std std-ref">Info Panel</span></a> can tell you why
+a mesh is considered to be invalid.</p>
+</div>
+<p><p class="after-image"></p></p>
+</section>
+<section id="mirror-tool">
+<span id="ug-mirror-tool"></span><h3>Mirror Tool<a class="headerlink" href="#mirror-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/MirrorToolAfter.jpg"><img alt="../_images/MirrorToolAfter.jpg" src="../_images/MirrorToolAfter.jpg" style="height: 160px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/MirrorToolBefore.jpg"><img alt="../_images/MirrorToolBefore.jpg" src="../_images/MirrorToolBefore.jpg" style="height: 160px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Mirror Tool</span> is enabled when all of the selected
+models are <a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">Mirrored models</span></a>. You can convert any
+model to a Mirrored model with the <a class="reference internal" href="Actions.html#ug-convert-mirror"><span class="std std-ref">Convert Mirror action</span></a>. The default mirroring plane is oriented with the primary
+selection to mirror its local X (left-to-right) axis as shown here.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/MirrorToolRotated.jpg"><img alt="../_images/MirrorToolRotated.jpg" src="../_images/MirrorToolRotated.jpg" style="height: 160px;" /></a>
+</figure>
+<p>The Mirror Tool has the same interface as the Clip Tool for editing the
+mirroring plane (including in VR); refer to <a class="reference internal" href="#ug-clip-tool"><span class="std std-ref">the Clip Tool
+documentation</span></a> for details. For example, you can rotate the plane
+to mirror vertically instead of horizontally as shown here.</p>
+<p>Translating the mirroring plane results in the primary selection moving to
+compensate. Additionally, all secondary selections are mirrored across the same
+plane, so they will move to the other side of it.</p>
+<p>Note that a Mirrored model that is translated from its original position after
+conversion behaves differently because the mirroring is applied in the Mirrored
+models’ local coordinates.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="revsurf-tool">
+<span id="ug-rev-surf-tool"></span><h3>RevSurf Tool<a class="headerlink" href="#revsurf-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/RevSurfTool.jpg"><img alt="../_images/RevSurfTool.jpg" src="../_images/RevSurfTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">RevSurf Tool</span> is a panel-based tool used to edit the
+revolved profile for one or more <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">RevSurf models</span></a>.
+Attaching the RevSurf Tool displays a <a class="reference internal" href="Panels.html#ug-rev-surf-tool-panel"><span class="std std-ref">RevSurf Tool Panel</span></a> above the primary selection.  Changes to the revolved
+profile in the panel are applied to all selected RevSurf models.</p>
+<p>See the <a class="reference internal" href="Panels.html#ug-rev-surf-tool-panel"><span class="std std-ref">RevSurf Tool Panel documentation</span></a> for
+more information about this tool.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="taper-tool">
+<span id="ug-taper-tool"></span><h3>Taper Tool<a class="headerlink" href="#taper-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TaperTool.jpg"><img alt="../_images/TaperTool.jpg" src="../_images/TaperTool.jpg" style="height: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Taper Tool</span> is a panel-based tool used to edit the
+taper profile or axis for one or more <a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">Tapered models</span></a>. A Tapered model can be created from another model by
+applying the <a class="reference internal" href="Actions.html#ug-convert-taper"><span class="std std-ref">Convert Taper action</span></a>. Attaching the
+Taper Tool displays a <a class="reference internal" href="Panels.html#ug-taper-tool-panel"><span class="std std-ref">Taper Tool Panel</span></a> above the
+primary selection.  Changes to the taper profile or axis in the panel are
+applied to all selected Tapered models.</p>
+<p>See the <a class="reference internal" href="Panels.html#ug-taper-tool-panel"><span class="std std-ref">Taper Tool Panel documentation</span></a> for more
+information about this tool.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="text-tool">
+<span id="ug-text-tool"></span><h3>Text Tool<a class="headerlink" href="#text-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TextTool.jpg"><img alt="../_images/TextTool.jpg" src="../_images/TextTool.jpg" style="width: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Text Tool</span> is a panel-based tool used to edit one or
+more <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">Text models</span></a>.  Attaching the Text Tool
+displays a <a class="reference internal" href="Panels.html#ug-text-tool-panel"><span class="std std-ref">Text Tool Panel</span></a> above the primary
+selection. The panel lets you change the text string, font, and character
+spacing.  Clicking the “Apply” button in the panel applies all changes to all
+selected Text models.</p>
+<p>See the <a class="reference internal" href="Panels.html#ug-text-tool-panel"><span class="std std-ref">Text Tool Panel documentation</span></a> for more
+information about this tool.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="torus-tool">
+<span id="ug-torus-tool"></span><h3>Torus Tool<a class="headerlink" href="#torus-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TorusTool.jpg"><img alt="../_images/TorusTool.jpg" src="../_images/TorusTool.jpg" style="height: 180px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Torus Tool</span> is enabled when all of the selected
+models are <a class="reference internal" href="CreatingModels.html#ug-primitive-models"><span class="std std-ref">Torus models</span></a>. It allows you to change
+the inner and outer diameters of all selected Torus models.</p>
+<p>The Torus Tool has two <span class="newterm">scalers</span>, each of which is a resizable stick
+with an interactive handle at each end. The handles work symmetrically;
+dragging either handle changes the corresponding diameter of the selected Torus
+models. The scaler for the outer diameter is aligned horizontally with the X
+axis, and the scaler for the inner diameter is aligned vertically with the Z
+axis.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TorusToolActive.jpg"><img alt="../_images/TorusToolActive.jpg" src="../_images/TorusToolActive.jpg" style="height: 180px;" /></a>
+</figure>
+<p>The diameter being modified follows the current <a class="reference internal" href="Precision.html#ug-precision-level"><span class="std std-ref">precision level</span></a> setting and also snaps to the current <a class="reference internal" href="Precision.html#ug-targets"><span class="std std-ref">Edge Target
+length</span></a> if the target is active. <a class="reference internal" href="Precision.html#ug-feedback"><span class="std std-ref">Linear feedback</span></a> shows the current size of the diameter during a drag as shown
+here.</p>
+<p>If the inner diameter is increased sufficiently, the outer diameter will be
+increased as well to keep the torus from intersecting itself. Reducing the
+inner diameter during the same drag operation will reduce the outer diameter as
+well up to its previous size.</p>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p><a class="reference internal" href="Interaction.html#ug-grip-dragging"><span class="std std-ref">Grip-dragging</span></a> also works with the scalers. The
+relative orientation of the grip hover guide on the controller (closer to
+horizontal or vertical) chooses the outer or inner diameter scaler.</p>
+</div>
+</section>
+<section id="twist-tool">
+<span id="ug-twist-tool"></span><h3>Twist Tool<a class="headerlink" href="#twist-tool" title="Link to this heading"></a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TwistToolTwisting.jpg"><img alt="../_images/TwistToolTwisting.jpg" src="../_images/TwistToolTwisting.jpg" style="height: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TwistTool.jpg"><img alt="../_images/TwistTool.jpg" src="../_images/TwistTool.jpg" style="height: 200px;" /></a>
+</figure>
+<p>The specialized <span class="newterm">Twist Tool</span> allows you to twist the vertices of a
+model around an axis. It is enabled when all of the selected models are
+<a class="reference internal" href="CreatingModels.html#ug-converted-models"><span class="std std-ref">Twisted models</span></a>. You can convert any model to a
+Twisted model with the <a class="reference internal" href="Actions.html#ug-convert-twist"><span class="std std-ref">Convert Twist action</span></a>.</p>
+<p>The Twist Tool has the same interface as the Bend Tool for editing the twist
+axis direction, axis center, twist angle, and twist offset; refer to <a class="reference internal" href="#ug-bend-tool"><span class="std std-ref">the
+Bend Tool documentation</span></a> for details.</p>
+<p>Twisting a mesh holds the mesh vertices at the base (box end) of the axis in
+place while the mesh vertices at the other end are twisted around the axis by
+the twist angle. All mesh vertices between those extremes are twisted and
+offset proportionally. The right image here shows a Box model being twisted.</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TwistToolHighComplexity.jpg"><img alt="../_images/TwistToolHighComplexity.jpg" src="../_images/TwistToolHighComplexity.jpg" style="width: 200px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TwistToolLowComplexity.jpg"><img alt="../_images/TwistToolLowComplexity.jpg" src="../_images/TwistToolLowComplexity.jpg" style="width: 200px;" /></a>
+</figure>
+<p>A Twisted model is affected by the <a class="reference internal" href="#ug-complexity-tool"><span class="std std-ref">Complexity Tool</span></a>. Increasing the complexity of a Twisted model increases
+the number of slices (and vertices) in the direction of the axis as shown
+here. Also note that changing the complexity of the original model the twist is
+applied to may also affect the twist.</p>
+<p><p class="after-image"></p></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is very easy to create <a class="reference internal" href="CreatingModels.html#ug-model-colors"><span class="std std-ref">invalid models</span></a> with this
+tool, especially when the axis direction is skewed or when the axis center
+is far from the original model.</p>
+</div>
+<div class="admonition-vr-only admonition">
+<p class="admonition-title">VR Only</p>
+<p>Grip dragging works the same way as for the <a class="reference internal" href="#ug-bend-tool"><span class="std std-ref">Bend Tool</span></a>.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Actions.html" class="btn btn-neutral float-left" title="Actions, 3D Icons, and Shelves" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Panels.html" class="btn btn-neutral float-right" title="Panels" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2023 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.8.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
