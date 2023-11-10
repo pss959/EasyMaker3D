@@ -36,6 +36,7 @@ def BuildObject_(env, source):
     defs  = []
     if source in slow_lib_sources:
         flags += env['COMMON_FLAGS'] + [
+            '-Wno-expansion-to-defined', # Needed for CGAL/boost.
             '-Wno-maybe-uninitialized',  # CGAL violates this.
             '-O3',                       # Always use optimized version.
         ]
