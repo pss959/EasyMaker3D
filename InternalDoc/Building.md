@@ -104,7 +104,7 @@ To make things easier (i.e., more consistent with the Linux build), the Mac
 build uses [Homebrew](https://brew.sh/). Once installing it, use the `brew`
 command to install the following dependencies:
 
-    boost cgal gcc glfw3 jsoncpp libjpeg minizip tinyxml2
+    boost cgal freetype2 gcc glfw3 jsoncpp libjpeg minizip scons tinyxml2
 
 You may need to do this:
 
@@ -330,7 +330,8 @@ in the `master` branch.
     them and push them to Github.
 
   - Build on all 3 platforms and upload the resulting release files (zip or
-    DMG) to Google Drive.
+    DMG) to [Google Drive](
+    https://drive.google.com/drive/folders/1Z-ri3U1eGfifelhi-wnCQR6fk42etpde).
 
   - Update the public documentation:
      - Build the documentation with `scons PublicDoc`.
@@ -359,7 +360,9 @@ in the `master` branch.
          
   - For a major or minor release, create a new release branch. For example, if
     the release version is `3.4.0`, create the branch named `Release-3.4` from
-    the current `master` branch. Push the release branch to GitHub.
+    the current `master` branch. Push the release branch to GitHub and add a
+    release to the [Releases](https://github.com/pss959/EasyMaker3D/releases)
+    page.
 
   - Create a tag for the release with
   
