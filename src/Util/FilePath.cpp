@@ -64,6 +64,10 @@ void FilePath::AddExtension(const Str &extension) {
     }
 }
 
+void FilePath::ReplaceExtension(const Str &extension) {
+    replace_extension(extension);
+}
+
 FilePath FilePath::AppendRelative(const FilePath &base_path) const {
     if (IsAbsolute())
         return *this;

@@ -4,6 +4,7 @@
 
 #include "Agents/ActionAgent.h"
 #include "Commands/CommandList.h"
+#include "IO/OFFWriter.h"
 #include "IO/STLWriter.h"
 #include "Items/UnitConversion.h"
 #include "Managers/CommandManager.h"
@@ -121,7 +122,20 @@ bool SessionManager::Export(const FilePath &path, FileFormat format,
         meshes.push_back(TransformMesh(sel_path.GetModel()->GetMesh(), osm));
     }
 
-    return WriteSTLFile(meshes, path, format, conv.GetFactor());
+    if (format == FileFormat::kOFF) {
+        // Collect (per-face) colors.
+        std::vector<Color> colors;
+        for (const auto &sel_path: sel.GetPaths()) {
+            const auto &model = *sel_path.GetModel();
+            Util::AppendVector(
+                std::vector<Color>(model.GetMesh().GetTriangleCount(),
+                                   model.GetColor()), colors);
+        }
+        return WriteOFFFile(meshes, colors, path);
+    }
+    else {
+        return WriteSTLFile(meshes, path, format, conv.GetFactor());
+    }
 }
 
 const Str & SessionManager::GetPreviousSessionName() const {

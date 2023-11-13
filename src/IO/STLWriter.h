@@ -6,7 +6,6 @@
 #include "Enums/FileFormat.h"
 
 class FilePath;
-class Selection;
 struct TriMesh;
 
 /// Writes the given meshes to an STL file in the given format. The conversion

@@ -223,6 +223,7 @@ lib_sources = list(chain(
         'ViewHandler',
     ]),
     PlaceInDir_('IO', [
+        'OFFWriter',
         'STLReader',
         'STLWriter',
     ]),

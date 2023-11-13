@@ -191,7 +191,6 @@ void SessionPanel::ExportSelection_() {
     fp->SetTitle("Enter a file to export to");
     fp->SetInitialPath(GetInitialExportPath_());
     fp->SetTargetType(FilePanel::TargetType::kNewFile);
-    fp->SetExtension(".stl");
     std::vector<FileFormat> formats;
     for (auto &format: Util::EnumValues<FileFormat>()) {
         if (format != FileFormat::kUnknown)
@@ -261,10 +260,12 @@ void SessionPanel::SaveSessionToPath_(const FilePath &path) {
 
 void SessionPanel::ExportToPath_(const FilePath &path, FileFormat format) {
     ASSERT(path);
-    Close("Done");
 
     const UnitConversion &conv = GetSettings().GetExportUnitsConversion();
-    if (! GetContext().session_agent->Export(path, format, conv)) {
+    if (GetContext().session_agent->Export(path, format, conv)) {
+        Close("Done");
+    }
+    else {
         DisplayMessage("Could not export selection to '" +
                        path.ToString() + "'");
     }

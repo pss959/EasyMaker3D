@@ -67,6 +67,11 @@ class FilePath : private std::filesystem::path {
     /// path. If the extension is already there, this does nothing.
     void AddExtension(const Str &extension);
 
+    /// Replaces the current extension in the path with the given one (which
+    /// should start with a dot). If there was no extension, this just adds the
+    /// new extension.
+    void ReplaceExtension(const Str &extension);
+
     /// If this FilePath is relative, this appends it after the given base path
     /// and returns the result. If the base path is a file, this uses its
     /// parent path. If this FilePath is absolute, it is returned untouched.

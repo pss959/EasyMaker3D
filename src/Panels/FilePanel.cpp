@@ -179,7 +179,7 @@ bool FilePanel::Impl_::AcceptPath() {
     // Set the result path. If the TextInputPane has a different path and it is
     // valid, use it. Otherwise, use the current path.
     result_path_ = path_list_->GetCurrent();
-    const FilePath input_path = AddExtension_(input_pane_->GetText());
+    const auto input_path = AddExtension_(input_pane_->GetText());
     if (input_path != result_path_ &&
         GetPathStatus_(input_path) == PathStatus_::kAcceptable)
         result_path_ = input_path;
@@ -225,6 +225,17 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root) {
         auto but = root.FindTypedSubPane<ButtonPane>(name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
+
+    // Respond to format changes by updating the file extension.
+    format_pane_->GetChoiceChanged().AddObserver(
+        this, [&](const Str &){
+            const auto format = file_formats_[format_pane_->GetChoiceIndex()];
+            SetExtension(GetFileFormatExtension(format));
+            // Ensure that current path uses the new extension.
+            const auto path = AddExtension_(input_pane_->GetText());
+            input_pane_->SetInitialText(path.ToString());
+            UpdateFiles_();
+        });
 
     // When the user toggles "Show Hidden Files", update the file list and
     // focused Pane.
@@ -447,8 +458,8 @@ bool FilePanel::Impl_::IsFileButton_(const Pane &pane) const {
 
 FilePath FilePanel::Impl_::AddExtension_(const FilePath &path) const {
     FilePath ext_path = path;
-    if (! extension_.empty() && ext_path.GetExtension() != extension_)
-        ext_path.AddExtension(extension_);
+    if (! extension_.empty())
+        ext_path.ReplaceExtension(extension_);
     return ext_path;
 }
 

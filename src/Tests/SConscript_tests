@@ -135,6 +135,7 @@ test_source_dict = {
     ],
     'IO' : [
         'ReadSTLTest',
+        'WriteOFFTest',
         'WriteSTLTest',
     ],
     'Items' : [
