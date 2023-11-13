@@ -94,6 +94,9 @@ snap_map = {
   'LinearLayout' : [
     'LinearLayout',
   ],
+  'Logo' : [
+    'static/Logo',
+  ],
   'Main' : [
     'BuildVolume',
     'Complex',
@@ -234,7 +237,8 @@ ann_map = {
                   'ScaleToolIcon',
                   'SessionPanelIcon',
                 ]),
-  'WorkArea' : (['WorkArea'], ['WorkAreaAnnotated']),
+  'Logo'     : (['static/Logo'], ['static/LogoSmall']),
+  'WorkArea' : (['WorkArea'],    ['WorkAreaAnnotated']),
 }
 
 def ImageFile(name):

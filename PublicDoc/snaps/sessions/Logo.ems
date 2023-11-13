@@ -1,0 +1,566 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.8.0",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: True,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 2.5 2.5 2.5,
+      mode: "kBaseSymmetric",
+      model_names: ["Box_1"],
+    },
+    CreateTextModelCommand {
+      text: "A",
+      result_name: "Text_1",
+    },
+    ChangeTextCommand {
+      new_text_string: "E",
+      new_font_name: "Verdana-Bold",
+      model_names: ["Text_1"],
+    },
+    CopyCommand {
+      model_names: ["Text_1"],
+    },
+    PasteCommand {
+    },
+    ChangeTextCommand {
+      new_text_string: "M",
+      model_names: ["Text_1_A"],
+    },
+    TranslateCommand {
+      translation: 7 0 0,
+      model_names: ["Text_1_A"],
+    },
+    CopyCommand {
+      model_names: ["Text_1_A"],
+    },
+    PasteCommand {
+    },
+    ChangeTextCommand {
+      new_text_string: "3D",
+      model_names: ["Text_1_B"],
+    },
+    TranslateCommand {
+      translation: 0 0 8,
+      model_names: ["Text_1_B"],
+    },
+    ChangeNameCommand {
+      new_name: "Text_M",
+      model_name: "Text_1_A",
+    },
+    ChangeNameCommand {
+      new_name: "Text_E",
+      model_name: "Text_1",
+    },
+    ChangeNameCommand {
+      new_name: "Text_3D",
+      model_name: "Text_1_B",
+    },
+    TranslateCommand {
+      translation: -11 0 0,
+      model_names: ["Text_E"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Text_E"],
+    },
+    TranslateCommand {
+      translation: 0 0 5,
+      model_names: ["Text_E"],
+    },
+    TranslateCommand {
+      translation: 11 0 0,
+      model_names: ["Text_E"],
+    },
+    TranslateCommand {
+      translation: 0 4 0,
+      model_names: ["Text_E"],
+    },
+    ScaleCommand {
+      ratios: 1.5 1 1.5,
+      mode: "kCenterSymmetric",
+      model_names: ["Text_E"],
+    },
+    ScaleCommand {
+      ratios: 1.5 1 1.5,
+      mode: "kBaseSymmetric",
+      model_names: ["Text_M"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Text_M"],
+    },
+    RotateCommand {
+      rotation: -0 -0 -1 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Text_M"],
+    },
+    TranslateCommand {
+      translation: -2 0 -2.14569e-07,
+      model_names: ["Text_M"],
+    },
+    TranslateCommand {
+      translation: -1.20822e-07 4 -2.41644e-07,
+      model_names: ["Text_M"],
+    },
+    TranslateCommand {
+      translation: 0 9 0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 0 -3,
+      model_names: ["Text_3D"],
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: 10 0 -13,
+        direction: 0 1 0,
+      },
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        position: 10 0 -13,
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: 0 10 -0.319803,
+        direction: 0 1 0,
+      },
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        position: 0 10 -0.319803,
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: 0 10 0,
+        direction: 0 1 0,
+      },
+    },
+    RadialLayoutCommand {
+      center: 0 10 0,
+      normal: 0 1 0,
+      radius: 1,
+      arc: 0 360,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 -1 0,
+      model_names: ["Text_3D"],
+    },
+    RotateCommand {
+      rotation: 0 1 0 45,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0.707107 0 0.707107,
+      model_names: ["Text_3D"],
+    },
+    ChangeColorCommand {
+      new_color: 0.900865 0.785184 0.67175 1,
+      model_names: ["Box_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.602387 0.769058 0.918888 1,
+      model_names: ["Text_E"],
+    },
+    ChangeColorCommand {
+      new_color: 0.930924 0.554255 0.809302 1,
+      model_names: ["Text_M"],
+    },
+    ChangeColorCommand {
+      new_color: 0.677174 0.936038 0.533364 1,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0.212132 0 -0.212132,
+      model_names: ["Text_3D"],
+    },
+    ChangeComplexityCommand {
+      new_complexity: 0.510884,
+      model_names: ["Text_3D"],
+    },
+    ConvertBevelCommand {
+      result_names: ["Beveled_1"],
+      model_names: ["Box_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.265765 0.862825],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.265765 0.862825, 0.459056 0.715737],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.265765 0.862825, 0.459056 0.715737, 0.6255 0.539839],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.265765 0.862825, 0.459056 0.715737, 0.6255 0.539839, 0.791823 0.344453],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.265765 0.862825, 0.459056 0.715737, 0.6255 0.539839, 0.791823 0.344453, 0.91478 0.18779],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.265765 0.862825, 0.459056 0.715737, 0.6255 0.539839, 0.791823 0.344453, 0.91478 0.18779],
+      bevel_scale: 0.33,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.947514 0.801066 0.485533 1,
+      model_names: ["Beveled_1"],
+    },
+    ChangeEdgeTargetCommand {
+      old_target: EdgeTarget {
+      },
+      new_target: EdgeTarget {
+        position0: -2.16991 2 6,
+        position1: 2.16991 2 6,
+      },
+    },
+    LinearLayoutCommand {
+      offset: 4.33983 0 0,
+      model_names: ["Text_M", "Text_3D"],
+    },
+    RotateCommand {
+      rotation: 0 1 0 45,
+      is_in_place: False,
+      is_axis_aligned: True,
+      model_names: ["Text_M"],
+    },
+    RotateCommand {
+      rotation: 0 1 0 30,
+      is_in_place: False,
+      is_axis_aligned: True,
+      model_names: ["Text_M"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: True,
+      model_names: ["Text_3D"],
+    },
+    RotateCommand {
+      rotation: -0 -0 -1 45,
+      is_in_place: False,
+      is_axis_aligned: True,
+      model_names: ["Text_3D"],
+    },
+    LinearLayoutCommand {
+      offset: 4.33983 0 0,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        position: 0 10 0,
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: -10 0 0,
+        direction: 0 1 0,
+      },
+    },
+    TranslateCommand {
+      translation: 7 0 0,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    RadialLayoutCommand {
+      center: -10 0 0,
+      normal: 0 1 0,
+      radius: 1,
+      arc: 0 360,
+      model_names: ["Text_E"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: True,
+      model_names: ["Text_E"],
+    },
+    TranslateCommand {
+      translation: 0 2 0,
+      model_names: ["Text_E"],
+    },
+    TranslateCommand {
+      translation: 0 0 -3.22007,
+      model_names: ["Text_M"],
+    },
+    TranslateCommand {
+      translation: -5 0 0,
+      model_names: ["Text_M"],
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        position: -10 0 0,
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: -5 0 0,
+        direction: 0 1 0,
+      },
+    },
+    TranslateCommand {
+      translation: -6.33983 -2 -1.77993,
+      model_names: ["Text_M"],
+    },
+    RadialLayoutCommand {
+      center: -5 0 0,
+      normal: 0 1 0,
+      radius: 1,
+      arc: 0 360,
+      model_names: ["Text_M"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: True,
+      model_names: ["Text_M"],
+    },
+    TranslateCommand {
+      translation: 0 2 0,
+      model_names: ["Text_M"],
+    },
+    TranslateCommand {
+      translation: 1 0 0,
+      model_names: ["Text_M"],
+    },
+    TranslateCommand {
+      translation: 0 6 0,
+      model_names: ["Text_M", "Text_E"],
+    },
+    RadialLayoutCommand {
+      center: -5 0 0,
+      normal: 0 1 0,
+      radius: 1,
+      arc: 0 360,
+      model_names: ["Text_3D"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: True,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 2 0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 5 -1 -0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: -7 0 0,
+      model_names: ["Text_3D"],
+    },
+    ScaleCommand {
+      ratios: 1.5 1 -1.5,
+      mode: "kAsymmetric",
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: -1 0 0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 0 7,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    TranslateCommand {
+      translation: -0.1 0 0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 0.8 0,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_2",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 1 1 0.25,
+      mode: "kAsymmetric",
+      model_names: ["Box_2"],
+    },
+    ScaleCommand {
+      ratios: 3.75 3.75 1,
+      mode: "kBaseSymmetric",
+      model_names: ["Box_2"],
+    },
+    DeleteCommand {
+      model_names: ["Box_2"],
+    },
+    ScaleCommand {
+      ratios: 1 1 0.8,
+      mode: "kAsymmetric",
+      model_names: ["Beveled_1"],
+    },
+    ScaleCommand {
+      ratios: 1 1 -0.25,
+      mode: "kAsymmetric",
+      model_names: ["Beveled_1"],
+    },
+    ScaleCommand {
+      ratios: 1.5 1.5 1,
+      mode: "kBaseSymmetric",
+      model_names: ["Beveled_1"],
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        position: -5 0 0,
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: 12 0 -6,
+        direction: 0 1 0,
+      },
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        position: 12 0 -6,
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: 2.32831e-09 7.5 3,
+        direction: 2.48353e-09 0 1,
+      },
+    },
+    TranslateCommand {
+      translation: 7 0 0,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 0.699999 0,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 0 3,
+      model_names: ["Beveled_1"],
+    },
+    TranslateCommand {
+      translation: -0.3 0 0,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    TranslateCommand {
+      translation: -0.1 0 0,
+      model_names: ["Text_E", "Text_M", "Text_3D"],
+    },
+    ChangeColorCommand {
+      new_color: 0.949886 0.770883 0.475486 1,
+      model_names: ["Beveled_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.724252 0.477966 0.949301 1,
+      model_names: ["Beveled_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.477287 0.949462 0.511491 1,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 -0.02 0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 -0.02 0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 -0.1 0,
+      model_names: ["Text_3D"],
+    },
+    TranslateCommand {
+      translation: 0 0.2 0,
+      model_names: ["Text_E", "Text_M"],
+    },
+    ChangeColorCommand {
+      new_color: 0.575378 0.903168 0.925686 1,
+      model_names: ["Text_M"],
+    },
+    ChangeColorCommand {
+      new_color: 0.871344 0.939108 0.520697 1,
+      model_names: ["Text_E"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_3",
+      initial_scale: 2,
+    },
+    ChangeNameCommand {
+      new_name: "BG",
+      model_name: "Box_3",
+    },
+    ScaleCommand {
+      ratios: 1 1 0.25,
+      mode: "kAsymmetric",
+      model_names: ["BG"],
+    },
+    ScaleCommand {
+      ratios: 5.5 5.5 1,
+      mode: "kBaseSymmetric",
+      model_names: ["BG"],
+    },
+    TranslateCommand {
+      translation: 0 0 -3,
+      model_names: ["BG"],
+    },
+    TranslateCommand {
+      translation: 0 0 7,
+      model_names: ["BG"],
+    },
+    TranslateCommand {
+      translation: 0 4 0,
+      model_names: ["Text_3D", "Text_M", "Text_E", "Beveled_1"],
+    },
+    TranslateCommand {
+      translation: 0 14 0,
+      model_names: ["Beveled_1", "Text_E", "Text_M", "Text_3D", "BG"],
+    },
+    TranslateCommand {
+      translation: 0 -0.3 0,
+      model_names: ["Text_3D", "Text_M", "Text_E", "Beveled_1"],
+    },
+    TranslateCommand {
+      translation: -0 -14 -2.5,
+      model_names: ["BG", "Beveled_1", "Text_E", "Text_M", "Text_3D"],
+    },
+  ],
+  current_index: 113,
+}

@@ -65,6 +65,13 @@ class ImageAnnotator(object):
                     stroke_fill=self._outline)
     return True
 
+  def Resize(self, w, h):
+    if not self._image:
+      print('*** No image read to resize')
+      return False
+    self._image = self._image.resize((w, h))
+    return True
+
   def WriteImage(self, image_file):
     if not self._image:
       print('*** No image read to write out')
@@ -124,6 +131,13 @@ def ProcessRect(ia, args):
   floats = [float(arg) for arg in args]
   return ia.DrawRectangle(floats[0], floats[1], floats[2], floats[3], floats[4])
 
+# Takes 2 arguments: w, h
+def ProcessResize(ia, args):
+  if len(args) != 2:
+    print(f'*** Invalid resize arguments: {args}')
+    return False
+  return ia.Resize(int(args[0]), int(args[1]))
+
 # Takes 4+ arguments: x y align text...
 def ProcessText(ia, args):
   if len(args) < 4:
@@ -154,6 +168,8 @@ def ProcessCommand(ia, command):
       ok = ProcessRead(ia, args)
     elif cmd == 'rect':
       ok = ProcessRect(ia, args)
+    elif cmd == 'resize':
+      ok = ProcessResize(ia, args)
     elif cmd == 'text':
       ok = ProcessText(ia, args)
     elif cmd == 'write':
@@ -200,6 +216,7 @@ An annotation script may contain any number of lines with one of the following:
   font name size          => Sets the font to use for text.
   outline <color>         => Sets the outline color for text.
   rect line_width x y w h => Draws a rectangle.
+  resize width height     => Resizes the image to the given pixel size.
   text x y align <text>   => Draws text. align is one of (left, center, right).
   write image_file        => Writes the current result to a file.
 
