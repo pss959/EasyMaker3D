@@ -77,7 +77,7 @@ html_static_path     = ['_static']
 html_css_files       = ['css/custom.css']
 html_js_files        = ['js/version_selector.js', 'js/versions.js']
 html_favicon         = 'images/static/favicon.ico'
-# html_logo          = 'images/logo.jpg'
+html_logo            = 'images/static/LogoSmall.jpg'
 html_show_sourcelink = False
 html_theme_options   = {
     'display_version':             False,  # Use version selector instead.

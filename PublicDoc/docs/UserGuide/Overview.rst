@@ -1,7 +1,7 @@
 Overview
 --------
 
-.. incimage:: /images/Logo.jpg 400px right
+.. incimage:: /images/Complex.jpg 400px right
 
 |appname| helps you create models that you can then send to a 3D printer.  It
 is designed to be relatively simple to use, even for someone with little to no

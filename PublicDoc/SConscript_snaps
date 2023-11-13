@@ -96,7 +96,7 @@ snap_map = {
   ],
   'Main' : [
     'BuildVolume',
-    'Logo',
+    'Complex',
     'PrecisionControl',
     'WorkArea',
     'WorkAreaWithSelection',

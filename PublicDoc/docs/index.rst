@@ -3,7 +3,7 @@
 Welcome to |appname|
 ====================
 
-.. incimage:: /images/Logo.jpg 500 right
+.. incimage:: /images/Complex.jpg 500 right
 
 |appname| is a VR-enabled application for creating 3D-printable models.
 "VR-enabled" means that it can be used in VR, but also works in a standard

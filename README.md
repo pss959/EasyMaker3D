@@ -1,6 +1,6 @@
 # EasyMaker3D
 
- ![EasyMaker3D in use](PublicDoc/docs/images/Logo.jpg)
+ ![EasyMaker3D in use](PublicDoc/docs/images/Complex.jpg)
 
 EasyMaker3D is a desktop application for building models for 3D printing. It is
 aimed at users who may not have much experience with creating 3D models. It is
