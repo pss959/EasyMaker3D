@@ -62,6 +62,22 @@ TEST_F(DropdownPaneTest, SetChoices) {
     TEST_ASSERT(dd->SetChoiceFromString("Bad Choice"), "No such choice");
 }
 
+TEST_F(DropdownPaneTest, ReplaceChoices) {
+    auto dd = GetDropdownPane();
+
+    // Start with 3 choices.
+    dd->SetChoices(StrVec{"A", "B", "C"}, 0);
+    EXPECT_EQ(0,   dd->GetChoiceIndex());
+    EXPECT_EQ("A", dd->GetChoice());
+    EXPECT_EQ(3U,  dd->GetMenuPane().GetContentsPane()->GetPanes().size());
+
+    // Replace with 2 choices.
+    dd->SetChoices(StrVec{"D", "E"}, 1);
+    EXPECT_EQ(1,   dd->GetChoiceIndex());
+    EXPECT_EQ("E", dd->GetChoice());
+    EXPECT_EQ(2U,  dd->GetMenuPane().GetContentsPane()->GetPanes().size());
+}
+
 TEST_F(DropdownPaneTest, IsValid) {
     SetParseTypeName("DropdownPane");
     TestInvalid(R"(choices: ["A", "B"])", "No initial choice");

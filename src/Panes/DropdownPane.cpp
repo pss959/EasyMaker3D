@@ -189,6 +189,7 @@ void DropdownPane::UpdateMenuPane_() {
     ASSERT(menu_pane_);
 
     // Clone the menu ButtonPane for each choice.
+    menu_button_panes_.clear();
     const auto &choices = choices_.GetValue();
     for (size_t i = 0; i < choices.size(); ++i) {
         const Str &choice = choices[i];
@@ -209,16 +210,18 @@ void DropdownPane::UpdateMenuPane_() {
     // This has to be done after the Panes are added to the menu Pane so that
     // the Ion text is set up.
     const auto &panes = menu_pane_->GetContentsPane()->GetPanes();
-    ASSERT(! panes.empty());
-    Vector2f area_size(0, 0);
-    for (const auto &pane: panes)
-        area_size[0] = std::max(area_size[0], pane->GetBaseSize()[0]);
-    area_size[0] += menu_pane_->GetScrollBarWidth();
+    if (! panes.empty()) {
+        Vector2f area_size(0, 0);
+        for (const auto &pane: panes)
+            area_size[0] = std::max(area_size[0], pane->GetBaseSize()[0]);
+        area_size[0] += menu_pane_->GetScrollBarWidth();
 
-    // Compute the height of the menu Pane based on the number of choices and
-    // text height. Clamp to a reasonable maximum.
-    area_size[1] = std::min(200.f, panes.size() * panes[0]->GetBaseSize()[1]);
-    menu_pane_->SetScrollAreaSize(area_size);
+        // Compute the height of the menu Pane based on the number of choices
+        // and text height. Clamp to a reasonable maximum.
+        area_size[1] = std::min(200.f,
+                                panes.size() * panes[0]->GetBaseSize()[1]);
+        menu_pane_->SetScrollAreaSize(area_size);
+    }
 
     // Set the layout size of the menu Pane to its base size.
     menu_pane_->SetLayoutSize(menu_pane_->GetBaseSize());
