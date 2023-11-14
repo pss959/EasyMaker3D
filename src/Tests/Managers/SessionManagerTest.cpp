@@ -12,6 +12,7 @@
 #include "Tests/SelectionTestBase.h"
 #include "Tests/TempFile.h"
 #include "Tests/Testing.h"
+#include "Util/Read.h"
 #include "Util/Tuning.h"
 
 /// \ingroup Tests
@@ -166,7 +167,7 @@ CommandList {
     }
 }
 
-TEST_F(SessionManagerTest, Export) {
+TEST_F(SessionManagerTest, ExportSTL) {
     // Need a real selected Model. Change the scale of the Box to test units.
     box0->SetScale(Vector3f(2, 3, 4));
     sm->ChangeModelSelection(BuildSelPath(ModelVec{ root, par0, box0 }), false);
@@ -184,4 +185,44 @@ TEST_F(SessionManagerTest, Export) {
     const auto bounds = ComputeMeshBounds(mesh);
     EXPECT_EQ(Point3f(0, 0, 0),  bounds.GetCenter());
     EXPECT_EQ(Vector3f(4, 6, 8), bounds.GetSize());
+}
+
+TEST_F(SessionManagerTest, ExportOFF) {
+    const Str expected = R"(OFF
+8 12 0
+-2 -3 -4
+-2 -3 4
+-2 3 -4
+-2 3 4
+2 -3 -4
+2 -3 4
+2 3 -4
+2 3 4
+3 0 1 2 255 255 0
+3 1 3 2 255 255 0
+3 2 3 6 255 255 0
+3 3 7 6 255 255 0
+3 4 6 5 255 255 0
+3 7 5 6 255 255 0
+3 0 4 5 255 255 0
+3 1 0 5 255 255 0
+3 1 5 7 255 255 0
+3 1 7 3 255 255 0
+3 0 2 6 255 255 0
+3 0 6 4 255 255 0
+)";
+
+    // Similar to the above test.
+    box0->SetScale(Vector3f(2, 3, 4));
+    box0->SetColor(Color(1, 1, 0));
+    sm->ChangeModelSelection(BuildSelPath(ModelVec{ root, par0, box0 }), false);
+    EXPECT_EQ("Box0", ssm->GetModelNameForExport());
+
+    TempFile tmp("");
+    EXPECT_TRUE(ssm->Export(tmp.GetPath(), FileFormat::kOFF,
+                            *CreateObject<UnitConversion>()));
+
+    Str actual;
+    EXPECT_TRUE(Util::ReadFile(tmp.GetPath(), actual, false));
+    EXPECT_EQ(expected, actual);
 }

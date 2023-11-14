@@ -157,3 +157,10 @@ const Str expected = R"(OFF
                                         });
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
+
+TEST_F(WriteOFFTest, BadPath) {
+    auto box = Model::CreateModel<BoxModel>();
+    EXPECT_FALSE(WriteOFFFile(std::vector<TriMesh>{ box->GetMesh() },
+                              std::vector<Color>(),
+                              "/this/is/a/bad/path.stl"));
+}

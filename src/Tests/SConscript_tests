@@ -76,6 +76,7 @@ test_source_dict = {
     ],
     'Enums' : [
         'ActionTest',
+        'FileFormatTest',
     ],
     'Executors' : [
         'ChangeBendExecutorTest',
