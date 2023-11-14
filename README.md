@@ -2,13 +2,22 @@
 
  ![EasyMaker3D in use](PublicDoc/docs/images/Complex.jpg)
 
+## User Information
+
 EasyMaker3D is a desktop application for building models for 3D printing. It is
 aimed at users who may not have much experience with creating 3D models. It is
 designed to be much easier to learn to use than most modeling applications.
 
-Full user documentation, including installation instructions, a quickstart, and
+The latest version of the application can be downloaded from the [GitHub
+Releases link](https://github.com/pss959/releases) on this page.
+
+<span style="color:green">
+**Full user documentation, including installation instructions, a quickstart, and
 a user guide, can be found on the [EasyMaker3D Github documentation
-site](https://pss959.github.io/EasyMaker3D/).
+site](https://pss959.github.io/EasyMaker3D/).**
+</span>
+
+## Developer Information
 
 Anyone interested in the source code can find more information in the internal
 documentation. This documentation can be created by installing the [`SCons`
