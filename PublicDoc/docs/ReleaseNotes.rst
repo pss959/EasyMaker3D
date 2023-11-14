@@ -14,6 +14,8 @@ Release 1.8.0 (November, 2023)
      lists in panels. Scrolling to change the stage size still works when the
      cursor is over the stage or any model or tool on it.
 
+   - Added OFF file format export.
+
  - Bug Fixes:
 
    - Improved focus management in panels

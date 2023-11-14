@@ -151,17 +151,18 @@ The Session Panel has the following buttons:
     using the :ref:`File Panel <ug-file-panel>`.
   - ``Export Selection``. This lets you export the :ref:`selected model(s)
     <ug-selection>` to a file, using a :ref:`File Panel <ug-file-panel>`. The
-    File Panel has a dropdown that allows you to select the desired format
-    (text or binary STL).
+    File Panel has a dropdown that allows you to select text or binary STL
+    format. (There is an additional OFF format option that may help with
+    visualizing the resulting models with other model viewing programs.)
   - ``Help`` (Question mark icon at top left). Opens the :ref:`Help Panel
     <ug-help-panel>`. Dismissing the Help Panel returns to the Session Panel.
   - ``Settings`` (Gear icon at top right). Brings up the :ref:`Settings Panel
     <ug-settings-panel>`. Dismissing the Settings Panel returns to the Session
     Panel.
 
-The default directories in which to find or save session files and STL files
-are both stored as user settings and can be modified with the :ref:`Settings
-Panel <ug-settings-panel>`.
+The default directories in which to find or save session files and
+imported/exported STL files are both stored as user settings and can be
+modified with the :ref:`Settings Panel <ug-settings-panel>`.
 
 .. _ug-settings-panel:
 .. _ug-unit-conversion:

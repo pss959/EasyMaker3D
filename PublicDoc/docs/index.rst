@@ -5,14 +5,16 @@ Welcome to |appname|
 
 .. incimage:: /images/Complex.jpg 500 right
 
-|appname| is a VR-enabled application for creating 3D-printable models.
-"VR-enabled" means that it can be used in VR, but also works in a standard
-mouse+keyboard configuration. It can also be used in VR without the headset
-on. In that mode, you can use any combination of VR controllers, mouse, and
-keyboard.
+|appname| is a desktop application for creating 3D-printable models. It is
+aimed at users who may not have much experience with 3D modeling and should be
+easier to learn than other modeling programs.  With it, you can create many
+different types of models and export them as STL files that can be sent to a 3D
+printer.
 
-You can create many different types of models and then save them as STL files
-that can be sent to a 3D printer.
+|appname| is VR-enabled, meaning that it can be used in VR, but also works in a
+standard mouse+keyboard configuration. It can even be used with VR controllers
+without the headset on. In that mode, you can use any combination of
+controllers, mouse, and keyboard.
 
 |appname| is available for Windows, Mac, and Linux. The Mac version may or not
 work in VR due to the `lack of official SteamVR support
@@ -23,8 +25,10 @@ work in VR due to the `lack of official SteamVR support
 Installing and Running |appname|
 --------------------------------
 
-The application is available to download from `the download site
-<download_site_>`_ (on Google Drive).
+The application is available to download from `the GitHub release page
+<download_site_>`_.
+
+To install it:
 
  - Windows or Linux: Download the Zip file for your operating system and
    extract the |appname| folder from it. Open the folder and execute the
@@ -65,6 +69,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   self
    VRSetup
    Quickstart
    UserGuide/index

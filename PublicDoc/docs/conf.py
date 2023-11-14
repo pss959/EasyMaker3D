@@ -15,8 +15,7 @@ copyrt    = environ.get('COPYRIGHT', '<Unknown Copyright>')
 release   = version
 
 # External links.
-download_site = (
-    'https://drive.google.com/drive/folders/1Z-ri3U1eGfifelhi-wnCQR6fk42etpde')
+download_site = 'https://github.com/pss959/EasyMaker3D/releases'
 
 # -----------------------------------------------------------------------------
 # Project information
