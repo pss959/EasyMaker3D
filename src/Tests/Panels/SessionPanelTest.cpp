@@ -434,8 +434,9 @@ TEST_F(SessionPanelTest, ExportFail) {
     auto dialog = GetCurrentPanel();
     EXPECT_EQ("DialogPanel", dialog->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, dialog->GetStatus());
+    // Closing the dialog should show the SessionPanel again.
     pi.ClickButtonPane("Button0");
     EXPECT_EQ("OK", GetCloseResult());
     EXPECT_ENUM_EQ(Panel::Status::kUnattached, dialog->GetStatus());
-    EXPECT_ENUM_EQ(Panel::Status::kUnattached, panel->GetStatus());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible,    panel->GetStatus());
 }
