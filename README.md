@@ -11,11 +11,10 @@ designed to be much easier to learn to use than most modeling applications.
 The latest version of the application can be downloaded from the [GitHub
 Releases link](https://github.com/pss959/releases) on this page.
 
-<span style="color:green">
-**Full user documentation, including installation instructions, a quickstart, and
-a user guide, can be found on the [EasyMaker3D Github documentation
-site](https://pss959.github.io/EasyMaker3D/).**
-</span>
+>[!NOTE]
+>Full user documentation, including installation instructions, a quickstart, and
+>a user guide, can be found on the
+>[EasyMaker3D Github documentation site](https://pss959.github.io/EasyMaker3D/).
 
 ## Developer Information
 
