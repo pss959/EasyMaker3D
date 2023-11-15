@@ -359,9 +359,7 @@ in the `master` branch.
          
   - For a major or minor release, create a new release branch. For example, if
     the release version is `3.4.0`, create the branch named `Release-3.4` from
-    the current `master` branch. Push the release branch to GitHub and add a
-    release to the [Releases](https://github.com/pss959/EasyMaker3D/releases)
-    page.
+    the current `master` branch. Push the release branch to GitHub.
 
   - Create a tag for the release with
   
