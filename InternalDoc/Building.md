@@ -186,14 +186,14 @@ directory.
 Note that the `-j8` option passed to `scons` allows 8 parallel jobs to run to
 speed things up; adjust this number for your particular build host.
 
-### Release
+### Release {#ReleaseExample}
 
 To build the release:
 
     scons -j8 --mode=rel Release
 
 This creates a file containing the release (Zip or DMG) in the
-`build\rel\Release\` directory. This is all that is needed when releasing a new
+`build/rel/Release/` directory. This is all that is needed when releasing a new
 version of the application (along with updating the public documentation as
 needed).
 
@@ -329,9 +329,8 @@ in the `master` branch.
   - Make any other necessary changes to `PublicDoc` and `InternalDoc`. Commit
     them and push them to Github.
 
-  - Build on all 3 platforms and upload the resulting release files (zip or
-    DMG) to [Google Drive](
-    https://drive.google.com/drive/folders/1Z-ri3U1eGfifelhi-wnCQR6fk42etpde).
+  - Build the release (see [above](#ReleaseExample)) on all 3 platforms. Test
+    the resulting files to make sure they work.
 
   - Update the public documentation:
      - Build the documentation with `scons PublicDoc`.
@@ -369,3 +368,15 @@ in the `master` branch.
         git tag -f -a vX.Y.Z -m "Version X.Y.Z"
         
     Push the tag to GitHub.
+
+  - Add a release to the
+    [Releases](https://github.com/pss959/EasyMaker3D/releases) GitHub page:
+     - Click on the "Draft a new release" button.
+     - Choose the tag created above.
+     - Set the release title to "Version X.Y.Z".
+     - Upload and attach the release files for the three platforms (zip and
+       DMG):
+         - Click on the area that contains the text "Attach binaries".
+         - Select the files to upload.
+     - Click the "Publish release" button.
+
