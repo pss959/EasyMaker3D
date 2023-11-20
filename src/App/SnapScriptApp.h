@@ -10,11 +10,11 @@
 
 class Selection;
 
-/// The ScriptedApp is derived from Application and adds processing of a
+/// TheSnapScriptApp is derived from Application and adds processing of a
 /// read-in SnapScript that specifies what to do.
 ///
 /// \ingroup App
-class ScriptedApp : public Application {
+class SnapScriptApp : public Application {
   public:
     /// This struct adds some additional options.
     struct Options : public Application::Options {

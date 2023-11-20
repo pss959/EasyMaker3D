@@ -1,4 +1,4 @@
-#include "App/ScriptedApp.h"
+#include "App/SnapScriptApp.h"
 
 #include <deque>
 #include <string>
@@ -40,12 +40,12 @@
 #include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------
-// ScriptedApp::Emitter_ class.
+// SnapScriptApp::Emitter_ class.
 // ----------------------------------------------------------------------------
 
-/// ScriptedApp::Emitter_ is a derived IEmitter class used to create events to
+/// SnapScriptApp::Emitter_ is a derived IEmitter class used to create events to
 /// simulate mouse clicks, mouse drags and key presses.
-class ScriptedApp::Emitter_ : public IEmitter {
+class SnapScriptApp::Emitter_ : public IEmitter {
   public:
     using DIPhase    = SnapScript::DragPInstr::Phase;
     using KModifiers = Util::Flags<Event::ModifierKey>;
@@ -110,10 +110,10 @@ class ScriptedApp::Emitter_ : public IEmitter {
 };
 
 // ----------------------------------------------------------------------------
-// ScriptedApp::Emitter_ functions.
+// SnapScriptApp::Emitter_ functions.
 // ----------------------------------------------------------------------------
 
-void ScriptedApp::Emitter_::AddClick(const Point2f &pos) {
+void SnapScriptApp::Emitter_::AddClick(const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
@@ -131,7 +131,7 @@ void ScriptedApp::Emitter_::AddClick(const Point2f &pos) {
     events_.push_back(event);
 }
 
-void ScriptedApp::Emitter_::AddHoverPoint(const Point2f &pos) {
+void SnapScriptApp::Emitter_::AddHoverPoint(const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
@@ -140,7 +140,7 @@ void ScriptedApp::Emitter_::AddHoverPoint(const Point2f &pos) {
     events_.push_back(event);
 }
 
-void ScriptedApp::Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
+void SnapScriptApp::Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
@@ -159,7 +159,7 @@ void ScriptedApp::Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
     events_.push_back(event);
 }
 
-void ScriptedApp::Emitter_::AddDragPoints(const Point2f &pos0,
+void SnapScriptApp::Emitter_::AddDragPoints(const Point2f &pos0,
                                           const Point2f &pos1, size_t count) {
     AddDragPoint(DIPhase::kStart, pos0);
 
@@ -171,7 +171,7 @@ void ScriptedApp::Emitter_::AddDragPoints(const Point2f &pos0,
     AddDragPoint(DIPhase::kEnd, pos1);
 }
 
-void ScriptedApp::Emitter_::AddKey(const Str &key,
+void SnapScriptApp::Emitter_::AddKey(const Str &key,
                                    const KModifiers &modifiers) {
     Event event;
     event.device    = Event::Device::kKeyboard;
@@ -189,7 +189,7 @@ void ScriptedApp::Emitter_::AddKey(const Str &key,
     events_.push_back(event);
 }
 
-void ScriptedApp::Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
+void SnapScriptApp::Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
                                              const Rotationf &rot) {
     Event event;
     event.device = hand == Hand::kLeft ?
@@ -206,7 +206,7 @@ void ScriptedApp::Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
     events_.push_back(event);
 }
 
-void ScriptedApp::Emitter_::AddHeadsetButton(bool is_press) {
+void SnapScriptApp::Emitter_::AddHeadsetButton(bool is_press) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kHeadset;
@@ -217,7 +217,7 @@ void ScriptedApp::Emitter_::AddHeadsetButton(bool is_press) {
     events_.push_back(event);
 }
 
-void ScriptedApp::Emitter_::EmitEvents(std::vector<Event> &events) {
+void SnapScriptApp::Emitter_::EmitEvents(std::vector<Event> &events) {
     // Emit the first event, if any.
     if (! events_.empty()) {
         const Event &event = events_.front();
@@ -243,10 +243,10 @@ void ScriptedApp::Emitter_::EmitEvents(std::vector<Event> &events) {
 }
 
 // ----------------------------------------------------------------------------
-/// ScriptedApp functions.
+/// SnapScriptApp functions.
 // ----------------------------------------------------------------------------
 
-bool ScriptedApp::Init(const Options &options) {
+bool SnapScriptApp::Init(const Options &options) {
     if (! Application::Init(options))
         return false;
 
@@ -295,7 +295,7 @@ bool ScriptedApp::Init(const Options &options) {
     return true;
 }
 
-bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
+bool SnapScriptApp::ProcessFrame(size_t render_count, bool force_poll) {
     const size_t instr_count = options_.script.GetInstructions().size();
     const bool are_more_instructions = cur_instruction_ < instr_count;
     bool keep_going;
@@ -316,7 +316,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     else if (are_more_instructions) {
         const auto &instr = *options_.script.GetInstructions()[cur_instruction_];
         keep_going = ProcessInstruction_(instr);
-        if (instr.type == SnapScript::Instr::Type::kStop)
+        if (instr.name == "stop")
             cur_instruction_ = instr_count;
         else
             ++cur_instruction_;
@@ -330,151 +330,123 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     return keep_going;
 }
 
-bool ScriptedApp::ProcessInstruction_(const SnapScript::Instr &instr) {
+bool SnapScriptApp::ProcessInstruction_(const SnapScript::Instr &instr) {
     const size_t instr_count = options_.script.GetInstructions().size();
     if (options_.report)
-        std::cout << "  Processing " << Util::EnumToWords(instr.type)
+        std::cout << "  Processing " << instr.name
                   << " (instruction " << (cur_instruction_ + 1)
                   << " of " << instr_count << ") on line "
                   << instr.line_number << "\n";
 
     // Skip snap instructions if disabled.
-    if (options_.nosnap && (instr.type == SnapScript::Instr::Type::kSnap ||
-                            instr.type == SnapScript::Instr::Type::kSnapObj))
+    if (options_.nosnap && (instr.name == "snap" || instr.name == "snapobj"))
         return true;
 
-    switch (instr.type) {
-        using enum SnapScript::Instr::Type;
-
-      case kAction: {
-          const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
-          ASSERTM(GetContext().action_processor->CanApplyAction(ainst.action),
-                  Util::EnumName(ainst.action));
-          GetContext().action_processor->ApplyAction(ainst.action);
-          break;
-      }
-      case kClick: {
-          const auto &cinst = GetTypedInstr_<SnapScript::ClickInstr>(instr);
-          emitter_->AddClick(cinst.pos);
-          break;
-      }
-      case kDrag: {
-          const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
-          emitter_->AddHoverPoint(dinst.pos0);
-          emitter_->AddDragPoints(dinst.pos0, dinst.pos1, dinst.count);
-          break;
-      }
-      case kDragP: {
-          const auto &dinst = GetTypedInstr_<SnapScript::DragPInstr>(instr);
-          emitter_->AddDragPoint(dinst.phase, dinst.pos);
-          break;
-      }
-      case kFocus: {
-          const auto &finst = GetTypedInstr_<SnapScript::FocusInstr>(instr);
-          FocusPane_(finst.pane_name);
-          break;
-      }
-      case kHand: {
-          const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
-          if (! SetHand_(hinst.hand, hinst.controller))
-              return false;
-          break;
-      }
-      case kHandPos: {
-          const auto &hinst = GetTypedInstr_<SnapScript::HandPosInstr>(instr);
-          emitter_->AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
-          break;
-      }
-      case kHeadset: {
-          const auto &hinst = GetTypedInstr_<SnapScript::HeadsetInstr>(instr);
-          emitter_->AddHeadsetButton(hinst.is_on);
-          break;
-      }
-      case kHover: {
-          const auto &hinst = GetTypedInstr_<SnapScript::HoverInstr>(instr);
-          emitter_->AddHoverPoint(hinst.pos);
-          break;
-      }
-      case kKey: {
-          const auto &kinst = GetTypedInstr_<SnapScript::KeyInstr>(instr);
-          emitter_->AddKey(kinst.key_name, kinst.modifiers);
-          break;
-      }
-      case kLoad: {
-          const auto &linst = GetTypedInstr_<SnapScript::LoadInstr>(instr);
-          if (! LoadSession_(linst.file_name))
-              return false;
-          break;
-      }
-      case kMod: {
-          const auto &minst = GetTypedInstr_<SnapScript::ModInstr>(instr);
-          emitter_->SetModifiedMode(minst.is_on);
-          break;
-      }
-      case kSelect: {
-          const auto &sinst = GetTypedInstr_<SnapScript::SelectInstr>(instr);
-          Selection sel;
-          BuildSelection_(sinst.names, sel);
-          GetContext().selection_manager->ChangeSelection(sel);
-          break;
-      }
-      case kSettings: {
-          const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
-          const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
-                              TK::kDataFileExtension);
-          auto &settings_manager = *GetContext().settings_manager;
-          if (! settings_manager.SetPath(path, false)) {
-              std::cerr << "*** Unable to load settings from "
-                        << path.ToString() << ": "
-                        << settings_manager.GetLoadError() << "\n";
-              return false;
-          }
-          break;
-      }
-      case kSnap: {
-          const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
-          if (! TakeSnapshot_(sinst.rect, sinst.file_name))
-              return false;
-          break;
-      }
-      case kSnapObj: {
-          const auto &sinst = GetTypedInstr_<SnapScript::SnapObjInstr>(instr);
-          Range2f rect;
-          if (! GetObjRect_(sinst.object_name, sinst.margin, rect) ||
-              ! TakeSnapshot_(rect, sinst.file_name))
-              return false;
-          break;
-      }
-      case kStage: {
-          const auto &sinst = GetTypedInstr_<SnapScript::StageInstr>(instr);
-          auto &stage = *GetContext().scene_context->stage;
-          stage.SetScaleAndRotation(sinst.scale, sinst.angle);
-          break;
-      }
-      case kStop: {
-          // Handled elsewhere.
-          break;
-      }
-      case kTouch: {
-          const auto &tinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
-          SetTouchMode_(tinst.is_on);
-          break;
-      }
-      case kView: {
-          const auto &vinst = GetTypedInstr_<SnapScript::ViewInstr>(instr);
-          GetContext().scene_context->window_camera->SetOrientation(
-              Rotationf::RotateInto(-Vector3f::AxisZ(), vinst.dir));
-          break;
-      }
-      default:
-        ASSERTM(false, "Unknown instruction type: " +
-                Util::ToString(Util::EnumInt(instr.type)));
+    if (instr.name == "action") {
+        const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
+        ASSERTM(GetContext().action_processor->CanApplyAction(ainst.action),
+                Util::EnumName(ainst.action));
+        GetContext().action_processor->ApplyAction(ainst.action);
+    }
+    else if (instr.name == "click") {
+        const auto &cinst = GetTypedInstr_<SnapScript::ClickInstr>(instr);
+        emitter_->AddClick(cinst.pos);
+    }
+    else if (instr.name == "drag") {
+        const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
+        emitter_->AddHoverPoint(dinst.pos0);
+        emitter_->AddDragPoints(dinst.pos0, dinst.pos1, dinst.count);
+    }
+    else if (instr.name == "dragp") {
+        const auto &dinst = GetTypedInstr_<SnapScript::DragPInstr>(instr);
+        emitter_->AddDragPoint(dinst.phase, dinst.pos);
+    }
+    else if (instr.name == "focus") {
+        const auto &finst = GetTypedInstr_<SnapScript::FocusInstr>(instr);
+        FocusPane_(finst.pane_name);
+    }
+    else if (instr.name == "hand") {
+        const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
+        if (! SetHand_(hinst.hand, hinst.controller))
+            return false;
+    }
+    else if (instr.name == "handpos") {
+        const auto &hinst = GetTypedInstr_<SnapScript::HandPosInstr>(instr);
+        emitter_->AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
+    }
+    else if (instr.name == "headset") {
+        const auto &hinst = GetTypedInstr_<SnapScript::HeadsetInstr>(instr);
+        emitter_->AddHeadsetButton(hinst.is_on);
+    }
+    else if (instr.name == "hover") {
+        const auto &hinst = GetTypedInstr_<SnapScript::HoverInstr>(instr);
+        emitter_->AddHoverPoint(hinst.pos);
+    }
+    else if (instr.name == "key") {
+        const auto &kinst = GetTypedInstr_<SnapScript::KeyInstr>(instr);
+        emitter_->AddKey(kinst.key_name, kinst.modifiers);
+    }
+    else if (instr.name == "load") {
+        const auto &linst = GetTypedInstr_<SnapScript::LoadInstr>(instr);
+        if (! LoadSession_(linst.file_name))
+            return false;
+    }
+    else if (instr.name == "mod") {
+        const auto &minst = GetTypedInstr_<SnapScript::ModInstr>(instr);
+        emitter_->SetModifiedMode(minst.is_on);
+    }
+    else if (instr.name == "select") {
+        const auto &sinst = GetTypedInstr_<SnapScript::SelectInstr>(instr);
+        Selection sel;
+        BuildSelection_(sinst.names, sel);
+        GetContext().selection_manager->ChangeSelection(sel);
+    }
+    else if (instr.name == "settings") {
+        const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
+        const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
+                            TK::kDataFileExtension);
+        auto &settings_manager = *GetContext().settings_manager;
+        if (! settings_manager.SetPath(path, false)) {
+            std::cerr << "*** Unable to load settings from "
+                      << path.ToString() << ": "
+                      << settings_manager.GetLoadError() << "\n";
+            return false;
+        }
+    }
+    else if (instr.name == "snap") {
+        const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
+        if (! TakeSnapshot_(sinst.rect, sinst.file_name))
+            return false;
+    }
+    else if (instr.name == "snapobj") {
+        const auto &sinst = GetTypedInstr_<SnapScript::SnapObjInstr>(instr);
+        Range2f rect;
+        if (! GetObjRect_(sinst.object_name, sinst.margin, rect) ||
+            ! TakeSnapshot_(rect, sinst.file_name))
+            return false;
+    }
+    else if (instr.name == "stage") {
+        const auto &sinst = GetTypedInstr_<SnapScript::StageInstr>(instr);
+        auto &stage = *GetContext().scene_context->stage;
+        stage.SetScaleAndRotation(sinst.scale, sinst.angle);
+    }
+    else if (instr.name == "touch") {
+        const auto &tinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
+        SetTouchMode_(tinst.is_on);
+    }
+    else if (instr.name == "view") {
+        const auto &vinst = GetTypedInstr_<SnapScript::ViewInstr>(instr);
+        GetContext().scene_context->window_camera->SetOrientation(
+            Rotationf::RotateInto(-Vector3f::AxisZ(), vinst.dir));
+    }
+    else {
+        ASSERTM(false, "Unknown instruction type: " + instr.name);
         return false;
     }
     return true;
 }
 
-bool ScriptedApp::LoadSession_(const Str &file_name) {
+bool SnapScriptApp::LoadSession_(const Str &file_name) {
     // Empty file name means start a new session.
     if (file_name.empty()) {
         GetContext().session_manager->NewSession();
@@ -496,7 +468,7 @@ bool ScriptedApp::LoadSession_(const Str &file_name) {
     return true;
 }
 
-bool ScriptedApp::FocusPane_(const Str &pane_name) {
+bool SnapScriptApp::FocusPane_(const Str &pane_name) {
     // Access the current Board.
     auto board = GetContext().board_manager->GetCurrentBoard();
     if (! board) {
@@ -518,7 +490,7 @@ bool ScriptedApp::FocusPane_(const Str &pane_name) {
     return true;
 }
 
-bool ScriptedApp::SetHand_(Hand hand, const Str &controller_type) {
+bool SnapScriptApp::SetHand_(Hand hand, const Str &controller_type) {
     const auto &sc = *GetContext().scene_context;
     auto &controller = hand == Hand::kLeft ?
         *sc.left_controller : *sc.right_controller;
@@ -564,7 +536,7 @@ bool ScriptedApp::SetHand_(Hand hand, const Str &controller_type) {
     return true;
 }
 
-void ScriptedApp::SetTouchMode_(bool is_on) {
+void SnapScriptApp::SetTouchMode_(bool is_on) {
     auto &sc = *GetContext().scene_context;
 
     ForceTouchMode(is_on);
@@ -584,7 +556,7 @@ void ScriptedApp::SetTouchMode_(bool is_on) {
     sc.right_controller->SetTouchMode(is_on);
 }
 
-bool ScriptedApp::TakeSnapshot_(const Range2f &rect, const Str &file_name) {
+bool SnapScriptApp::TakeSnapshot_(const Range2f &rect, const Str &file_name) {
     const auto &minp = rect.GetMinPoint();
     const auto  size = rect.GetSize();
 
@@ -608,7 +580,7 @@ bool ScriptedApp::TakeSnapshot_(const Range2f &rect, const Str &file_name) {
     return true;
 }
 
-bool ScriptedApp::GetObjRect_(const Str &object_name, float margin,
+bool SnapScriptApp::GetObjRect_(const Str &object_name, float margin,
                               Range2f &rect) {
     // Search in the scene for the object.
     const auto &sc = *GetContext().scene_context;
@@ -643,7 +615,7 @@ bool ScriptedApp::GetObjRect_(const Str &object_name, float margin,
     return true;
 }
 
-void ScriptedApp::BuildSelection_(const StrVec &names, Selection &selection) {
+void SnapScriptApp::BuildSelection_(const StrVec &names, Selection &selection) {
     selection.Clear();
     const auto &root_model = GetContext().scene_context->root_model;
     for (const auto &name: names) {

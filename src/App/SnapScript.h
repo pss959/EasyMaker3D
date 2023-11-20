@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 
+#include "App/ScriptBase.h"
 #include "Base/Event.h"
 #include "Enums/Action.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
-#include "Util/FilePath.h"
 #include "Util/Memory.h"
 
 /// The SnapScript class is used by the snapimage application to read and store
@@ -19,38 +19,8 @@
 /// \htmlinclude SnapScript.html
 ///
 /// \ingroup App
-class SnapScript {
+class SnapScript : public ScriptBase {
   public:
-    /// Base Instruction struct.
-    struct Instr {
-        /// Types of instructions.
-        enum class Type {
-            kAction,
-            kClick,
-            kDrag,
-            kDragP,
-            kFocus,
-            kHand,
-            kHandPos,
-            kHeadset,
-            kHover,
-            kKey,
-            kLoad,
-            kMod,
-            kSelect,
-            kSettings,
-            kSnap,
-            kSnapObj,
-            kStage,
-            kStop,
-            kTouch,
-            kView,
-        };
-
-        Type type;
-        int  line_number = 0;
-        virtual ~Instr() {}   // Makes deletion work properly.
-    };
     struct ActionInstr : public Instr {
         Action    action;
     };
@@ -123,7 +93,6 @@ class SnapScript {
         Vector3f  dir;
     };
 
-    DECL_SHARED_PTR(Instr);
     DECL_SHARED_PTR(ActionInstr);
     DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(DragInstr);
@@ -145,23 +114,10 @@ class SnapScript {
     DECL_SHARED_PTR(TouchInstr);
     DECL_SHARED_PTR(ViewInstr);
 
-    /// Reads instructions from the script at the given FilePath. Returns false
-    /// on error.
-    bool ReadScript(const FilePath &path);
-
-    /// Returns the instructions in the script.
-    const std::vector<InstrPtr> & GetInstructions() const {
-        return instructions_;
-    }
+    /// The constructor registers all instruction-processing functions.
+    SnapScript();
 
   private:
-    FilePath              file_path_;
-    size_t                line_number_;
-    std::vector<InstrPtr> instructions_;
-
-    bool ProcessLine_(const Str &line);
-    bool GetInstructionType_(const Str &word, Instr::Type &type);
-
     InstrPtr ProcessAction_(const StrVec &words);
     InstrPtr ProcessClick_(const StrVec &words);
     InstrPtr ProcessDrag_(const StrVec &words);
@@ -182,11 +138,4 @@ class SnapScript {
     InstrPtr ProcessStop_(const StrVec &words);
     InstrPtr ProcessTouch_(const StrVec &words);
     InstrPtr ProcessView_(const StrVec &words);
-
-    bool Error_(const Str &message);
-
-    static bool ParseVector3f_(const StrVec &words, size_t index,  Vector3f &v);
-    static bool ParseFloat_(const Str &s, float &f);
-    static bool ParseFloat01_(const Str &s, float &f);
-    static bool ParseN_(const Str &s, size_t &n);
 };

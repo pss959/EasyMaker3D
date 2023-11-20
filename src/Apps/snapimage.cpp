@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "App/Args.h"
-#include "App/ScriptedApp.h"
+#include "App/SnapScriptApp.h"
 #include "Managers/PanelManager.h"
 #include "Panels/FilePanel.h"
 #include "Util/Assert.h"
@@ -66,7 +66,7 @@ void MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
 
 constinit const char kUsageString[] =
 R"(snapimage: Reads a script with instructions on how to create snapshot images
- for public documentation. See SnapScript.h for script details.
+for public documentation. See SnapScript.h for script details.
     Usage:
       snapimage [--fullscreen] [--klog=<klog_string>]
                 [--nosnap] [--remain] [--report] SCRIPT
@@ -87,7 +87,7 @@ int main(int argc, const char *argv[]) {
 
     Args args(argc, argv, kUsageString);
 
-    ScriptedApp::Options options;
+    SnapScriptApp::Options options;
 
     const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
     if (! options.script.ReadScript(path))
@@ -107,7 +107,7 @@ int main(int argc, const char *argv[]) {
     // Note that this must have the same aspect ratio as fullscreen.
     options.window_size.Set(1024, 552);
 
-    ScriptedApp app;
+    SnapScriptApp app;
     if (! app.Init(options))
         return -1;
 

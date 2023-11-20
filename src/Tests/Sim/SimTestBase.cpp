@@ -3,7 +3,7 @@
 #include <exception>
 #include <iostream>
 
-#include "App/ScriptedApp.h"
+#include "App/SnapScriptApp.h"
 #include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
 #include "Util/FilePath.h"
@@ -37,7 +37,7 @@ void SimTestBase::RunScriptAndExit_(const Str &script_name) {
 }
 
 bool SimTestBase::RunScript_(const Str &file_name) {
-    ScriptedApp::Options options;
+    SnapScriptApp::Options options;
 
     // Hardwire all options.
     options.do_ion_remote      = false;
@@ -58,7 +58,7 @@ bool SimTestBase::RunScript_(const Str &file_name) {
         return false;
 
     // Execute the script. Handle exceptions here for better messages.
-    ScriptedApp app;
+    SnapScriptApp app;
     if (! app.Init(options))
         return false;
     try {
