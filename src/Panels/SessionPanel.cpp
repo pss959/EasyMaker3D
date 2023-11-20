@@ -190,6 +190,7 @@ void SessionPanel::ExportSelection_() {
     fp->Reset();
     fp->SetTitle("Enter a file to export to");
     fp->SetInitialPath(GetInitialExportPath_());
+    fp->SetExtension(".stl");  // Matches default format.
     fp->SetTargetType(FilePanel::TargetType::kNewFile);
     std::vector<FileFormat> formats;
     for (auto &format: Util::EnumValues<FileFormat>()) {
