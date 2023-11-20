@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Panes/KeyPane.h"
 #include "Util/Memory.h"
 

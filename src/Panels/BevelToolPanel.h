@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Math/Bevel.h"
 #include "Panels/ToolPanel.h"
 #include "Util/Memory.h"

@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-
 #include "Commands/ChangeCylinderCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Models/CylinderModel.h"

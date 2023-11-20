@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Panels/FilePanel.h"
 #include "Util/Memory.h"
 

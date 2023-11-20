@@ -1,6 +1,5 @@
 #include <exception>
 #include <iostream>
-#include <string>
 #include <vector>
 
 #include "App/Args.h"

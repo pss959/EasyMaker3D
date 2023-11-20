@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Math/Types.h"
 
 /// An Spin struct defines a spin by some angle around a general 3D axis, which

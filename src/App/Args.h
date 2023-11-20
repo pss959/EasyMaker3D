@@ -3,7 +3,6 @@
 #include <docopt.h>
 
 #include <map>
-#include <string>
 
 /// The Args class wraps DocOpt to manage command-line arguments and provide
 /// some convenience functions.

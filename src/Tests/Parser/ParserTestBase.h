@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"

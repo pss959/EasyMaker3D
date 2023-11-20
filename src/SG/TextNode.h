@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontimage.h>
 #include <ion/text/fontmanager.h>

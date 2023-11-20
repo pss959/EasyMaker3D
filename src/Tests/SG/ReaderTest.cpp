@@ -1,5 +1,4 @@
 #include <sstream>
-#include <string>
 
 #include <ion/gfxutils/printer.h>
 

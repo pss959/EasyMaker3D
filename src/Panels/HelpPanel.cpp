@@ -1,7 +1,5 @@
 #include "Panels/HelpPanel.h"
 
-#include <string>
-
 #include "SG/Search.h"
 #include "Panes/TextPane.h"
 #include "Util/Tuning.h"

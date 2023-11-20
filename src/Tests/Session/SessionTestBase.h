@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
 
 #include "App/Application.h"
 #include "Tests/SceneTestBase.h"

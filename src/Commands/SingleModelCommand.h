@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-
 #include "Commands/Command.h"
 
 /// SingleModelCommand is an abstract base class for command classes that

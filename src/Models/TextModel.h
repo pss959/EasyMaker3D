@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-
 #include "Models/PrimitiveModel.h"
 #include "Util/Memory.h"
 

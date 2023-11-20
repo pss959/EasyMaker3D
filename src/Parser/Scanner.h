@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <istream>
-#include <string>
 #include <vector>
 
 #include "Math/Types.h"

@@ -11,7 +11,6 @@
 #  include <unistd.h>
 #endif
 
-#include <string>
 #include <vector>
 
 #include "Util/String.h"

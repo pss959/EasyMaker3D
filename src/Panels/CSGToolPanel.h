@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Enums/CSGOperation.h"
 #include "Panels/ToolPanel.h"
 #include "Util/Memory.h"

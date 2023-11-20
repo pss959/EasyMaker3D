@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <string>
 
 #include "Base/Event.h"
 #include "Panes/Pane.h"

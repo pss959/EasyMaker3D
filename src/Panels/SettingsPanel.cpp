@@ -1,7 +1,5 @@
 #include "Panels/SettingsPanel.h"
 
-#include <string>
-
 #include "Agents/BoardAgent.h"
 #include "Agents/SettingsAgent.h"
 #include "Items/Settings.h"

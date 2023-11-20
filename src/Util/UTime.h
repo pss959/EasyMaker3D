@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <functional>
 #include <ostream>
-#include <string>
 
 /// \file
 /// This file contains classes and functions helping to deal with time.

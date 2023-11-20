@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-
 #include "Util/Memory.h"
 
 DECL_SHARED_PTR(NameAgent);

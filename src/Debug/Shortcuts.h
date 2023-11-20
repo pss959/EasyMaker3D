@@ -2,8 +2,6 @@
 
 #if ENABLE_DEBUG_FEATURES
 
-#include <string>
-
 #include "Math/Types.h"
 #include "Util/Memory.h"
 

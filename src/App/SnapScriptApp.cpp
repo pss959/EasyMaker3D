@@ -1,7 +1,6 @@
 #include "App/SnapScriptApp.h"
 
 #include <deque>
-#include <string>
 #include <vector>
 
 #include <ion/gfx/image.h>

@@ -1,5 +1,3 @@
-#include <string>
-
 #include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "SG/Torus.h"

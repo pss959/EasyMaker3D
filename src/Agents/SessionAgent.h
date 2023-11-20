@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Enums/FileFormat.h"
 #include "Util/Memory.h"
 

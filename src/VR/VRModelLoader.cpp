@@ -9,7 +9,6 @@
 #endif
 
 #include <cmath>
-#include <string>
 
 #include <ion/base/datacontainer.h>
 #include <ion/gfx/image.h>

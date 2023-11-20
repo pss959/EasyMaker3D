@@ -5,7 +5,6 @@
 ///
 /// \ingroup Utility
 
-#include <string>
 #include <source_location>
 
 #include "Util/ExceptionBase.h"

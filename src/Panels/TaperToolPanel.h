@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Enums/Dim.h"
 #include "Math/Taper.h"
 #include "Panels/ToolPanel.h"

@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <limits>
-#include <string>
 #include <vector>
 
 #include <ion/math/vectorutils.h>

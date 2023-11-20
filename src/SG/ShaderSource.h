@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "SG/Object.h"
 #include "Util/FilePath.h"
 #include "Util/Memory.h"

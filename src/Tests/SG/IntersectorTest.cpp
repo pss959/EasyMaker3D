@@ -1,5 +1,3 @@
-#include <string>
-
 #include "Math/Types.h"
 #include "SG/Intersector.h"
 #include "SG/Node.h"

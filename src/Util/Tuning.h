@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 // Don't want to add a dependency from Util->Math, so just use Ion aliases
 // here.
 #include <ion/math/angle.h>

@@ -1,5 +1,3 @@
-#include <string>
-
 #include "Parser/Parser.h"
 #include "Math/Types.h"
 #include "SG/ColorMap.h"

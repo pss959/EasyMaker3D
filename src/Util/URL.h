@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <string>
 
 /// \file
 /// This file contains utility functions for processing URLs.

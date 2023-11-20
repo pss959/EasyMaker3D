@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Enums/FileFormat.h"
 #include "Panels/Panel.h"
 #include "Util/FilePath.h"

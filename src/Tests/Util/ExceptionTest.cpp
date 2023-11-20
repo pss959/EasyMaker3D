@@ -1,5 +1,3 @@
-#include <string>
-
 #include "Tests/Testing.h"
 #include "Util/ExceptionBase.h"
 #include "Util/FilePath.h"

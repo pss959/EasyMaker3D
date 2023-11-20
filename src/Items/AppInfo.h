@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Items/SessionState.h"
 #include "Parser/Object.h"
 #include "Util/Memory.h"

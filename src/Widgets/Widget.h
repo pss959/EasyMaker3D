@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <string>
 
 #include "Math/Types.h"
 #include "SG/Node.h"

@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <functional>
-#include <string>
 #include <vector>
 
 #include "Math/Point3fMap.h"

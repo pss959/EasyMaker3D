@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <string>
 #include <unordered_map>
 
 #include <ion/gfx/image.h>

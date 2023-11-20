@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Util/FilePath.h"
 namespace Parser { class Object; }
 

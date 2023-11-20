@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <string>
 
 /// \file
 /// This file contains facilities for selectively logging messages to help with

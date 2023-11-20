@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <string>
-
 #include "Commands/ChangeTorusCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Models/TorusModel.h"

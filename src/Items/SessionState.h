@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Parser/Object.h"
 #include "Util/Memory.h"
 

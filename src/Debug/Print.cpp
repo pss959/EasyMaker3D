@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <stack>
-#include <string>
 #include <unordered_set>
 
 #include <ion/math/transformutils.h>

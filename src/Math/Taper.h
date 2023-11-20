@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Enums/Dim.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"

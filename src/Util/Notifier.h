@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
-#include <string>
 
 #include "Util/Assert.h"
 #include "Util/String.h"

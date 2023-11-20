@@ -1,6 +1,5 @@
 #include <cctype>
 #include <iostream>
-#include <string>
 
 #include <ion/base/stringutils.h>
 

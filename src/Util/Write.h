@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include <ion/gfx/image.h>
 
 class FilePath;

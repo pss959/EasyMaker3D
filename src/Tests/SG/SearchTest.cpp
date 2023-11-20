@@ -1,5 +1,4 @@
 #include <sstream>
-#include <string>
 
 #include "Parser/Exception.h"
 #include "SG/Box.h"
