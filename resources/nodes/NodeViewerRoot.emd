@@ -9,10 +9,35 @@ Node "NodeViewerRoot" {
       shapes: [ Ellipsoid { size: 1 1 1 } ],
     },
 
+Node "FakeCursor" {
+  shader_names: ["BaseColor"],
+  blocks: [
+    USE "T_DefaultBaseColorUniforms",
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: .9 .2 .9 .8 }],
+    }
+  ],
+  scale: .01 .01 .01,
+  shapes: [
+    Polygon {
+      points: [
+        0 0,
+        -30 -22,
+        -16 -19,
+        -30 -38
+        -24 -42,
+        -10 -23,
+        -4 -37,
+      ]
+    },
+  ]
+},
+
     # -------------------------  Add the node(s) to be viewed below here.
     #<"nodes/ModelRoot.emd">
     #<"nodes/Widgets/PointTargetWidget.emd">
-    <"nodes/Tools/BendTool.emd">
+    #<"nodes/Tools/BendTool.emd">
     #<"nodes/Tools/ScaleTool.emd">
     #<"nodes/Tools/TwistTool.emd">
     #<"nodes/templates/Controller.emd">

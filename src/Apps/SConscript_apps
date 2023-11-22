@@ -5,7 +5,7 @@ main_app_name = app_dict['APP_NAME']
 # Build the applications. The doc-related apps build only on Linux.
 app_names = [main_app_name, 'nodeviewer', 'printtypes']
 if app_env['PLATFORM'] == 'linux':
-    app_names += ['createcheatsheet', 'snapimage']
+    app_names += ['capturevideo', 'createcheatsheet', 'snapimage']
 
 apps_extra_sources = [
     '../App/Args.cpp',

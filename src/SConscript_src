@@ -83,9 +83,11 @@ lib_sources = list(chain(
 
         # These are used for capturevideo, snapimage, and simulation tests
         # only.
+        'CaptureScript',
+        'CaptureScriptApp',
         'ScriptBase',
-        'SnapScriptApp',
         'SnapScript',
+        'SnapScriptApp',
 
         # Type registration.
         'RegisterCommandTypes',
