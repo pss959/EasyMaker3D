@@ -79,7 +79,7 @@ CaptureScript::InstrPtr CaptureScript::ProcessMoveOver_(const StrVec &words) {
     }
     else {
         minst.reset(new MoveOverInstr);
-        minst->widget_name = words[1];
+        minst->object_name = words[1];
         minst->seconds = seconds;
     }
     return minst;

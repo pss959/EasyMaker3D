@@ -32,7 +32,7 @@ class CaptureScript : public ScriptBase {
         bool    is_on;
     };
     struct MoveOverInstr : public Instr {
-        Str     widget_name;
+        Str     object_name;
         float   seconds;
     };
     struct MoveToInstr : public Instr {

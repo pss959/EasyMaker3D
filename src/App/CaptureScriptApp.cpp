@@ -5,6 +5,8 @@
 #include "Managers/SceneContext.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Math/Intersection.h"
+#include "SG/CoordConv.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
@@ -52,9 +54,7 @@ bool CaptureScriptApp::Init(const Options &options) {
     ASSERT(context.scene_context->scene);
     const auto &scene = *context.scene_context->scene;
     cursor_ = SG::FindNodeInScene(scene, "FakeCursor");
-    auto cam = scene.GetTypedCamera<SG::WindowCamera>();
-    ASSERT(cam);
-    cursor_->TranslateTo(cam->GetCurrentPosition() + Vector3f(0, 0, -1));
+    MoveCursorTo_(GetFrustum(), Point2f::Zero());
 
     return true;
 }
@@ -117,13 +117,11 @@ bool CaptureScriptApp::ProcessInstruction_(const CaptureScript::Instr &instr) {
     }
     else if (instr.name == "moveover") {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveOverInstr>(instr);
-        // XXXX
-        std::cerr << "XXXX INST: " << minst.name << "\n";
+        MoveCursorOver_(minst.object_name);
     }
     else if (instr.name == "moveto") {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveToInstr>(instr);
-        // XXXX
-        std::cerr << "XXXX INST: " << minst.name << "\n";
+        MoveCursorTo_(GetFrustum(), minst.pos);
     }
     else if (instr.name == "wait") {
         const auto &winst = GetTypedInstr_<CaptureScript::WaitInstr>(instr);
@@ -135,4 +133,48 @@ bool CaptureScriptApp::ProcessInstruction_(const CaptureScript::Instr &instr) {
         return false;
     }
     return true;
+}
+
+void CaptureScriptApp::MoveCursorTo_(const Frustum &frustum,
+                                     const Point2f &pos) {
+    // Build a ray through the point using the view frustum.
+    const auto ray = frustum.BuildRay(pos);
+
+    // Intersect the ray with the plane -1 unit away in Z.
+    const Plane plane(frustum.position[2] - 1, Vector3f::AxisZ());
+    float distance;
+    RayPlaneIntersect(ray, plane, distance);
+
+    cursor_->TranslateTo(ray.GetPoint(distance));
+}
+
+void CaptureScriptApp::MoveCursorOver_(const Str &object_name) {
+    const auto &root = GetContext().scene_context->scene->GetRootNode();
+
+    // Find the object in the scene. Note that the name may be compound
+    // ("A/B/C").
+    if (object_name.contains('/')) {
+        std::cerr << "XXXX Compound name '" << object_name << "'\n";
+    }
+    else {
+        std::cerr << "XXXX Simple name '" << object_name << "'\n";
+        auto path = SG::FindNodePathUnderNode(root, object_name);
+        std::cerr << "XXXX   Found path '" << path << "'\n";
+        // Find the center of the object in world coordinates.
+        const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
+        std::cerr << "XXXX   Center = " << center << "\n";
+        // Project the center onto the Frustum to get the point to move to.
+        const Frustum frustum = GetFrustum();
+        MoveCursorTo_(frustum, frustum.ProjectToImageRect(center));
+    }
+}
+
+Frustum CaptureScriptApp::GetFrustum() const {
+    // Get the WindowCamera from the Scene and let it build a Frustum.
+    auto cam =
+        GetContext().scene_context->scene->GetTypedCamera<SG::WindowCamera>();
+    ASSERT(cam);
+    Frustum frustum;
+    cam->BuildFrustum(window_size_, frustum);
+    return frustum;
 }

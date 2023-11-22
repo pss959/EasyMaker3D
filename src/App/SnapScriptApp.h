@@ -8,6 +8,7 @@
 #include "Util/Memory.h"
 
 class Selection;
+DECL_SHARED_PTR(ScriptEmitter);
 
 /// SnapScriptApp is derived from Application and adds processing of a read-in
 /// SnapScript that specifies what to do.
@@ -31,13 +32,12 @@ class SnapScriptApp : public Application {
     using Application::GetContext;
 
   private:
-    class Emitter_;
     DECL_SHARED_PTR(Emitter_);
 
-    Options         options_;            ///< Set in Init().
-    Vector2i        window_size_;        ///< From Options.
-    size_t          cur_instruction_ = 0;
-    Emitter_Ptr     emitter_;  ///< Simulates mouse and key events.
+    Options          options_;            ///< Set in Init().
+    Vector2i         window_size_;        ///< From Options.
+    ScriptEmitterPtr emitter_;            ///< Simulates mouse and key events.
+    size_t           cur_instruction_ = 0;
 
     bool ProcessInstruction_(const SnapScript::Instr &instr);
     bool LoadSession_(const Str &file_name);

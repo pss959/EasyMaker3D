@@ -7,9 +7,8 @@
 #include <ion/image/conversionutils.h>
 #include <ion/math/rangeutils.h>
 
-#include "Base/IEmitter.h"
-
 #include "App/ActionProcessor.h"
+#include "App/ScriptEmitter.h"
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"
 #include "Items/Settings.h"
@@ -30,7 +29,6 @@
 #include "SG/WindowCamera.h"
 #include "Selection/Selection.h"
 #include "Util/Assert.h"
-#include "Util/Delay.h"
 #include "Util/FilePath.h"
 #include "Util/Read.h"
 #include "Util/Tuning.h"
@@ -38,220 +36,13 @@
 #include "Viewers/Renderer.h"
 #include "Widgets/StageWidget.h"
 
-// ----------------------------------------------------------------------------
-// SnapScriptApp::Emitter_ class.
-// ----------------------------------------------------------------------------
-
-/// SnapScriptApp::Emitter_ is a derived IEmitter class used to create events to
-/// simulate mouse clicks, mouse drags and key presses.
-class SnapScriptApp::Emitter_ : public IEmitter {
-  public:
-    using DIPhase    = SnapScript::DragPInstr::Phase;
-    using KModifiers = Util::Flags<Event::ModifierKey>;
-
-    /// Sets modified mode for subsequent clicks and drags. It is off by
-    /// default.
-    void SetModifiedMode(bool is_on) { is_mod_ = is_on; }
-
-    /// Adds a click to emit.
-    void AddClick(const Point2f &pos);
-
-    /// Adds an event to simulate a mouse hover at a given position.
-    void AddHoverPoint(const Point2f &pos);
-
-    /// Adds a point for a single drag phase to emit.
-    void AddDragPoint(DIPhase phase, const Point2f &pos);
-
-    /// Adds points for a drag from \p pos0 to \p pos1 with \p count
-    /// intermediate points to emit.
-    void AddDragPoints(const Point2f &pos0, const Point2f &pos1, size_t count);
-
-    /// Adds a key press/release to simulate.
-    void AddKey(const Str &key, const KModifiers &modifiers);
-
-    /// Adds a controller position.
-    void AddControllerPos(Hand hand, const Point3f &pos, const Rotationf &rot);
-
-    /// Adds a VR headset button press or release.
-    void AddHeadsetButton(bool is_press);
-
-    /// Returns true if there are events left to process.
-    bool HasPendingEvents() const { return ! events_.empty(); }
-
-    virtual void EmitEvents(std::vector<Event> &events) override;
-    virtual void FlushPendingEvents() {}
-
-    /// Default rest position for the left controller.
-    static constexpr Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};
-
-    /// Default rest position for the right controller.
-    static constexpr Point3f kRightControllerPos{.18f, 14.06, 59.5f};
-
-    /// Offset to add to left controller position for event position.
-    static constexpr Vector3f kLeftControllerOffset{0, -.12f, 0};
-
-    /// Offset to add to right controller position for event position.
-    static constexpr Vector3f kRightControllerOffset{0, .12f, 0};
-
-  private:
-    /// Whether modified mode is on.
-    bool               is_mod_ = false;
-
-    /// Events left to emit.
-    std::deque<Event>  events_;
-
-    /// Set to true if the previous event was a button press. This is used to
-    /// detect clicks to handle timeout correctly.
-    bool               prev_was_button_press_ = false;
-
-    /// Set to true while waiting for a click to be processed after a timeout.
-    bool               waited_for_click_ = false;
-};
-
-// ----------------------------------------------------------------------------
-// SnapScriptApp::Emitter_ functions.
-// ----------------------------------------------------------------------------
-
-void SnapScriptApp::Emitter_::AddClick(const Point2f &pos) {
-    Event event;
-    event.is_modified_mode = is_mod_;
-    event.device           = Event::Device::kMouse;
-    event.button           = Event::Button::kMouse1;
-    event.position2D       = pos;
-    event.flags.Set(Event::Flag::kPosition2D);
-
-    // Press.
-    event.flags.Set(Event::Flag::kButtonPress);
-    events_.push_back(event);
-
-    // Release.
-    event.flags.Reset(Event::Flag::kButtonPress);
-    event.flags.Set(Event::Flag::kButtonRelease);
-    events_.push_back(event);
-}
-
-void SnapScriptApp::Emitter_::AddHoverPoint(const Point2f &pos) {
-    Event event;
-    event.is_modified_mode = is_mod_;
-    event.device           = Event::Device::kMouse;
-    event.position2D       = pos;
-    event.flags.Set(Event::Flag::kPosition2D);
-    events_.push_back(event);
-}
-
-void SnapScriptApp::Emitter_::AddDragPoint(DIPhase phase, const Point2f &pos) {
-    Event event;
-    event.is_modified_mode = is_mod_;
-    event.device           = Event::Device::kMouse;
-    event.position2D       = pos;
-    event.flags.Set(Event::Flag::kPosition2D);
-
-    if (phase == DIPhase::kStart) {
-        event.flags.Set(Event::Flag::kButtonPress);
-        event.button = Event::Button::kMouse1;
-    }
-    else if (phase == DIPhase::kEnd) {
-        event.flags.Set(Event::Flag::kButtonRelease);
-        event.button = Event::Button::kMouse1;
-    }
-
-    events_.push_back(event);
-}
-
-void SnapScriptApp::Emitter_::AddDragPoints(const Point2f &pos0,
-                                          const Point2f &pos1, size_t count) {
-    AddDragPoint(DIPhase::kStart, pos0);
-
-    // Add intermediate points, including pos1.
-    const float delta = 1.f / (count + 1);
-    for (size_t i = 0; i <= count; ++i)
-        AddDragPoint(DIPhase::kContinue, Lerp((i + 1) * delta, pos0, pos1));
-
-    AddDragPoint(DIPhase::kEnd, pos1);
-}
-
-void SnapScriptApp::Emitter_::AddKey(const Str &key,
-                                   const KModifiers &modifiers) {
-    Event event;
-    event.device    = Event::Device::kKeyboard;
-    event.key_name  = key;
-    event.modifiers = modifiers;
-    event.key_text  = Event::BuildKeyText(modifiers, key);
-
-    // Press.
-    event.flags.Set(Event::Flag::kKeyPress);
-    events_.push_back(event);
-
-    // Release.
-    event.flags.Reset(Event::Flag::kKeyPress);
-    event.flags.Set(Event::Flag::kKeyRelease);
-    events_.push_back(event);
-}
-
-void SnapScriptApp::Emitter_::AddControllerPos(Hand hand, const Point3f &pos,
-                                             const Rotationf &rot) {
-    Event event;
-    event.device = hand == Hand::kLeft ?
-        Event::Device::kLeftController : Event::Device::kRightController;
-
-    event.flags.Set(Event::Flag::kPosition3D);
-    event.position3D = pos + (hand == Hand::kLeft ?
-                              kLeftControllerPos  + kLeftControllerOffset :
-                              kRightControllerPos + kRightControllerOffset);
-
-    event.flags.Set(Event::Flag::kOrientation);
-    event.orientation = rot;
-
-    events_.push_back(event);
-}
-
-void SnapScriptApp::Emitter_::AddHeadsetButton(bool is_press) {
-    Event event;
-    event.is_modified_mode = is_mod_;
-    event.device           = Event::Device::kHeadset;
-    event.flags.Set(
-        is_press ? Event::Flag::kButtonPress : Event::Flag::kButtonRelease);
-    event.button = Event::Button::kHeadset;
-
-    events_.push_back(event);
-}
-
-void SnapScriptApp::Emitter_::EmitEvents(std::vector<Event> &events) {
-    // Emit the first event, if any.
-    if (! events_.empty()) {
-        const Event &event = events_.front();
-
-        // If this is the end of a click (release just after press), delay
-        // until after the click timeout. Set a flag so the next time will not
-        // delay.
-        if (prev_was_button_press_ &&
-            event.flags.Has(Event::Flag::kButtonRelease)) {
-            if (! waited_for_click_) {
-                Util::DelayThread(TK::kMouseClickTimeout);
-                waited_for_click_ = true;
-                return;
-            }
-            waited_for_click_ = false;
-        }
-
-        prev_was_button_press_ = event.flags.Has(Event::Flag::kButtonPress);
-
-        events.push_back(event);
-        events_.pop_front();
-    }
-}
-
-// ----------------------------------------------------------------------------
-/// SnapScriptApp functions.
-// ----------------------------------------------------------------------------
-
 bool SnapScriptApp::Init(const Options &options) {
     if (! Application::Init(options))
         return false;
 
     options_ = options;
 
-    emitter_.reset(new Emitter_);
+    emitter_.reset(new ScriptEmitter);
     AddEmitter(emitter_);
 
     window_size_ = GetWindowSize();
@@ -275,8 +66,8 @@ bool SnapScriptApp::Init(const Options &options) {
     SetAskBeforeQuitting(false);
 
     // Set the render offsets for the controllers.
-    SetControllerRenderOffsets(-Emitter_::kLeftControllerOffset,
-                               -Emitter_::kRightControllerOffset);
+    SetControllerRenderOffsets(-ScriptEmitter::kLeftControllerOffset,
+                               -ScriptEmitter::kRightControllerOffset);
 
     // Use default settings file so that state is deterministic.
     const FilePath path("PublicDoc/snaps/settings/Settings" +

@@ -113,8 +113,6 @@ SnapScript::InstrPtr SnapScript::ProcessDrag_(const StrVec &words) {
 }
 
 SnapScript::InstrPtr SnapScript::ProcessDragP_(const StrVec &words) {
-    using DIPhase = DragPInstr::Phase;
-
     DragPInstrPtr dinst;
     float x, y;
     if (words.size() != 4U) {
@@ -130,8 +128,7 @@ SnapScript::InstrPtr SnapScript::ProcessDragP_(const StrVec &words) {
     }
     else {
         dinst.reset(new DragPInstr);
-        dinst->phase = words[1] == "start" ? DIPhase::kStart :
-            words[1] == "continue" ? DIPhase::kContinue : DIPhase::kEnd;
+        dinst->phase = words[1];
         dinst->pos.Set(x, y);
     }
     return dinst;

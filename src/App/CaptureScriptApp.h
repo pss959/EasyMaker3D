@@ -35,6 +35,16 @@ class CaptureScriptApp : public Application {
 
     bool ProcessInstruction_(const CaptureScript::Instr &instr);
 
+    /// Moves the fake cursor to the given position in normalized window
+    /// coordinates using the given frustum.
+    void MoveCursorTo_(const Frustum &frustum, const Point2f &pos);
+
+    /// Moves the fake cursor over the center of the named object.
+    void MoveCursorOver_(const Str &object_name);
+
+    /// Returns a Frustum representing the current camera view.
+    Frustum GetFrustum() const;
+
     template <typename T>
     const T & GetTypedInstr_(const CaptureScript::Instr &instr) {
         return static_cast<const T &>(instr);

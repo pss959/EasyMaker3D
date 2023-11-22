@@ -29,8 +29,7 @@ class SnapScript : public ScriptBase {
         size_t    count = 0;
     };
     struct DragPInstr : public Instr {
-        enum class Phase { kStart, kContinue, kEnd };
-        Phase     phase;
+        Str       phase;
         Point2f   pos;
     };
     struct FocusInstr : public Instr {
