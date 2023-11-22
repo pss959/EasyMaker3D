@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <functional>
 
 #include "Base/Event.h"
@@ -236,6 +237,7 @@ class Panel : public SG::Node {
     /// type. Asserts if not found.
     template <typename T>
     std::shared_ptr<T> GetTypedPanel(const Str &name) const {
+        static_assert(std::derived_from<T, Panel> == true);
         auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
         ASSERT(panel);
         return panel;

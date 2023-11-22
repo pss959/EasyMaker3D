@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <unordered_map>
 
 #include "Panels/Panel.h"
@@ -30,6 +31,7 @@ class PanelManager {
     /// type. Asserts if not found.
     template <typename T>
     std::shared_ptr<T> GetTypedPanel(const Str &name) const {
+        static_assert(std::derived_from<T, Panel> == true);
         auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
         ASSERT(panel);
         return panel;

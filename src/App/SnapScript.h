@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "App/ScriptBase.h"
 #include "Base/Event.h"
 #include "Enums/Action.h"
@@ -113,7 +111,8 @@ class SnapScript : public ScriptBase {
     DECL_SHARED_PTR(TouchInstr);
     DECL_SHARED_PTR(ViewInstr);
 
-    /// The constructor registers all instruction-processing functions.
+    /// The constructor registers all instruction-processing functions with the
+    /// base class.
     SnapScript();
 
   private:

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <concepts>
 #include <vector>
 
+#include "SG/Camera.h"
 #include "SG/ColorMap.h"
 #include "SG/Gantry.h"
 #include "SG/IonContext.h"
@@ -35,6 +37,19 @@ class Scene  : public Object {
 
     /// Returns the camera gantry for the scene.
     const GantryPtr & GetGantry() const { return gantry_; }
+
+    /// Convenience that returns a Camera of the derived type from the Scene.
+    /// Returns null if there is no such camera.
+    template <typename T> std::shared_ptr<T> GetTypedCamera() const {
+        static_assert(std::derived_from<T, Camera> == true);
+        std::shared_ptr<T> typed_cam;
+        for (auto &cam: GetGantry()->GetCameras()) {
+            typed_cam = std::dynamic_pointer_cast<T>(cam);
+            if (typed_cam)
+                break;
+        }
+        return typed_cam;
+    }
 
     /// Returns the lights used for lighting the scene.
     const std::vector<PointLightPtr> & GetLights() const { return lights_; }

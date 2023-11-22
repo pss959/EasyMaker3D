@@ -9,8 +9,8 @@
 
 class Selection;
 
-/// TheSnapScriptApp is derived from Application and adds processing of a
-/// read-in SnapScript that specifies what to do.
+/// SnapScriptApp is derived from Application and adds processing of a read-in
+/// SnapScript that specifies what to do.
 ///
 /// \ingroup App
 class SnapScriptApp : public Application {

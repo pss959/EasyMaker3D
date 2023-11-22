@@ -1,10 +1,8 @@
 #include "App/SnapScript.h"
 
-#include <ion/base/stringutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Util/Enum.h"
-#include "Util/Read.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -30,6 +28,7 @@ static Rotationf ComputeHandRotation_(Hand hand, const Vector3f &laser_dir,
 // ----------------------------------------------------------------------------
 // SnapScript functions.
 // ----------------------------------------------------------------------------
+
 SnapScript::SnapScript() {
 #define REG_FUNC_(name, func) \
     RegisterInstrFunc(name, [&](const StrVec &w){ return func(w); });

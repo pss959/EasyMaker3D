@@ -1,11 +1,9 @@
 #pragma once
 
-#include <concepts>
 #include <vector>
 
 #include "Math/Types.h"
 #include "Panes/Pane.h"
-#include "Util/Assert.h"
 #include "Util/Memory.h"
 
 DECL_SHARED_PTR(ContainerPane);

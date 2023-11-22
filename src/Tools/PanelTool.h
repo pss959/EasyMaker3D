@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concepts>
+
 #include "Panels/ToolPanel.h"
 #include "Tools/Tool.h"
 #include "Util/Assert.h"
@@ -33,6 +35,7 @@ class PanelTool : public Tool {
     /// Convenience that returns the attached Panel as the given type. Asserts
     /// if the PanelTool is not currently attached or if the type is wrong.
     template <typename T> T & GetTypedPanel() const {
+        static_assert(std::derived_from<T, Panel> == true);
         ASSERT(panel_);
         ASSERT(Util::IsA<T>(panel_));
         return *std::dynamic_pointer_cast<T>(panel_);

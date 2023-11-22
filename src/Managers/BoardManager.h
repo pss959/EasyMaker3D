@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <vector>
 
 #include "Agents/BoardAgent.h"
@@ -43,6 +44,7 @@ class BoardManager : public BoardAgent {
     /// type. Asserts if not found.
     template <typename T>
     std::shared_ptr<T> GetTypedPanel(const Str &name) const {
+        static_assert(std::derived_from<T, Panel> == true);
         auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
         ASSERT(panel);
         return panel;

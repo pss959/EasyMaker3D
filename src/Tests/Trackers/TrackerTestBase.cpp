@@ -45,12 +45,7 @@ void TrackerTestBase::InitTrackerScene(Tracker &tracker) {
 
 SG::WindowCameraPtr TrackerTestBase::GetWindowCamera() const {
     ASSERT(scene_);
-    SG::WindowCameraPtr wincam;
-    for (auto &cam: scene_->GetGantry()->GetCameras()) {
-        wincam = std::dynamic_pointer_cast<SG::WindowCamera>(cam);
-        if (wincam)
-            break;
-    }
+    auto wincam = scene_->GetTypedCamera<SG::WindowCamera>();
     ASSERT(wincam);
     return wincam;
 }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <concepts>
 #include <functional>
 
 #include "Commands/Command.h"
@@ -71,6 +72,7 @@ class Executor {
     /// Convenience that converts the given Command instance to a derived
     /// Command, asserting that it is of that type.
     template <typename T> static T & GetTypedCommand(Command &command) {
+        static_assert(std::derived_from<T, Command> == true);
         ASSERT(dynamic_cast<T *>(&command));
         return static_cast<T &>(command);
     }
@@ -78,6 +80,7 @@ class Executor {
     /// Convenience that converts the Model at the tail of the given SelPath to
     /// the derived Model type, asserting that it is of that type.
     template <typename T> static T & GetTypedModel(const SelPath &sel_path) {
+        static_assert(std::derived_from<T, Model> == true);
         auto tm = std::dynamic_pointer_cast<T>(sel_path.GetModel());
         ASSERT(tm);
         return *tm;
