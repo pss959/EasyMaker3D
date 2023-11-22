@@ -294,7 +294,7 @@ struct Frustum {
     /// Returns the 2D image rectangle based on the field of view.
     Range2f GetImageRect() const;
 
-    /// Constructs an Ray through the given normalized point on the image
+    /// Constructs a Ray through the given normalized point on the image
     /// rectangle (in the near plane). (0,0) is the lower-left corner of the
     /// rectangle.
     Ray BuildRay(const Point2f &pt) const;
