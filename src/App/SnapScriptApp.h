@@ -1,13 +1,12 @@
 #pragma once
 
-#include "App/ScriptBase.h"
 #include "App/ScriptedApp.h"
 #include "Enums/Hand.h"
 
 class Selection;
 
-/// SnapScriptApp is derived from Application and adds processing of a read-in
-/// SnapScript that specifies what to do.
+/// SnapScriptApp is a derived ScriptedApp that adds processing of a read-in
+/// SnapScript.
 ///
 /// \ingroup App
 class SnapScriptApp : public ScriptedApp {

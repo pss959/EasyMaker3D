@@ -1,11 +1,8 @@
 #include "App/CaptureScriptApp.h"
 
+#include "App/CaptureScript.h"
 #include "App/ScriptEmitter.h"
-#include "Debug/Shortcuts.h"
-#include "Items/Settings.h"
 #include "Managers/SceneContext.h"
-#include "Managers/SessionManager.h"
-#include "Managers/SettingsManager.h"
 #include "Math/Intersection.h"
 #include "SG/CoordConv.h"
 #include "SG/Node.h"
@@ -13,45 +10,13 @@
 #include "SG/Search.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
-#include "Util/Tuning.h"
 
-bool CaptureScriptApp::Init(const Options &options) {
-    if (! Application::Init(options))
+bool CaptureScriptApp::Init(const OptionsPtr &options,
+                            const ScriptBasePtr &script) {
+    if (! ScriptedApp::Init(options, script))
         return false;
-
-    options_ = options;
-
-    emitter_.reset(new ScriptEmitter);
-    AddEmitter(emitter_);
-
-    window_size_ = GetWindowSize();
 
     const auto &context = GetContext();
-
-#if ENABLE_DEBUG_FEATURES
-    // Make sure there is no debug text visible.
-    Debug::DisplayDebugText("");
-#endif
-
-    // Ignore mouse events from GLFWViewer so they do not interfere with the
-    // click and drag events.
-    EnableMouseMotionEvents(false);
-
-    // No need to ask before quitting this app.
-    SetAskBeforeQuitting(false);
-
-    // Use default settings file so that state is deterministic.
-    const FilePath path("PublicDoc/captures/settings/Settings" +
-                        TK::kDataFileExtension);
-    if (! context.settings_manager->SetPath(path, false)) {
-        std::cerr << "*** Unable to load default settings from "
-                  << path.ToString() << ": "
-                  << context.settings_manager->GetLoadError() << "\n";
-        return false;
-    }
-    // Tell the SessionManager to update its previous path.
-    context.session_manager->ChangePreviousPath(
-        context.settings_manager->GetSettings().GetLastSessionPath());
 
     // Find the FakeCursor and position it just in front of the camera.
     ASSERT(context.scene_context);
@@ -63,42 +28,7 @@ bool CaptureScriptApp::Init(const Options &options) {
     return true;
 }
 
-bool CaptureScriptApp::ProcessFrame(size_t render_count, bool force_poll) {
-    const size_t instr_count = options_.script.GetInstructions().size();
-    const bool are_more_instructions = cur_instruction_ < instr_count;
-    bool keep_going = true;
-
-    // Let the base class check for exit. Force it to poll for events if there
-    // are instructions left to process or if the window is supposed to go
-    // away; don't want to wait for an event to come along.
-    if (! Application::ProcessFrame(
-            render_count, are_more_instructions || ! options_.remain)) {
-        keep_going = false;
-    }
-    // Process the next instruction, if any.
-    else if (are_more_instructions) {
-        const auto &instr =
-            *options_.script.GetInstructions()[cur_instruction_];
-        keep_going = ProcessInstruction_(instr);
-        ++cur_instruction_;
-    }
-    else {
-        // No instructions left: stop ignoring mouse events from GLFWViewer and
-        // exit unless the remain flag is set.
-        EnableMouseMotionEvents(true);
-        keep_going = options_.remain;
-    }
-    return keep_going;
-}
-
-bool CaptureScriptApp::ProcessInstruction_(const CaptureScript::Instr &instr) {
-    const size_t instr_count = options_.script.GetInstructions().size();
-    if (options_.report)
-        std::cout << "  Processing " << instr.name
-                  << " (instruction " << (cur_instruction_ + 1)
-                  << " of " << instr_count << ") on line "
-                  << instr.line_number << "\n";
-
+bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     if (instr.name == "click") {
         const auto &cinst = GetTypedInstr_<CaptureScript::ClickInstr>(instr);
         // XXXX
@@ -179,6 +109,6 @@ Frustum CaptureScriptApp::GetFrustum() const {
         GetContext().scene_context->scene->GetTypedCamera<SG::WindowCamera>();
     ASSERT(cam);
     Frustum frustum;
-    cam->BuildFrustum(window_size_, frustum);
+    cam->BuildFrustum(GetWindowSize(), frustum);
     return frustum;
 }

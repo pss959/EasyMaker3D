@@ -3,12 +3,10 @@
 #include <vector>
 
 #include "App/Args.h"
+#include "App/CaptureScript.h"
 #include "App/CaptureScriptApp.h"
-#include "Managers/PanelManager.h"
-#include "Panels/FilePanel.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
-#include "Util/FilePathList.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
 
@@ -44,28 +42,29 @@ int main(int argc, const char *argv[]) {
 
     Args args(argc, argv, kUsageString);
 
-    CaptureScriptApp::Options options;
-
     const FilePath path("PublicDoc/videos/scripts/" + args.GetString("SCRIPT"));
-    if (! options.script.ReadScript(path))
+    std::shared_ptr<CaptureScript> script(new CaptureScript);
+    if (! script->ReadScript(path))
         return -1;
 
     std::cout << "======= Processing Script file " << path.ToString() << "\n";
 
+    std::shared_ptr<CaptureScriptApp::Options> options(
+        new CaptureScriptApp::Options);
     KLogger::SetKeyString(args.GetString("--klog"));
-    options.do_ion_remote      = true;
-    options.enable_vr          = false;
-    options.fullscreen         = args.GetBool("--fullscreen");
-    options.nocapture          = args.GetBool("--nocapture");
-    options.remain             = args.GetBool("--remain");
-    options.report             = args.GetBool("--report");
-    options.show_session_panel = true;
+    options->do_ion_remote      = true;
+    options->enable_vr          = false;
+    options->fullscreen         = args.GetBool("--fullscreen");
+    options->nocapture          = args.GetBool("--nocapture");
+    options->remain             = args.GetBool("--remain");
+    options->report             = args.GetBool("--report");
+    options->show_session_panel = true;
 
     // Note that this must have the same aspect ratio as fullscreen.
-    options.window_size.Set(1024, 552);
+    options->window_size.Set(1024, 552);
 
     CaptureScriptApp app;
-    if (! app.Init(options))
+    if (! app.Init(options, script))
         return -1;
 
     try {

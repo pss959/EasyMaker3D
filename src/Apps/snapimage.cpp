@@ -87,8 +87,6 @@ int main(int argc, const char *argv[]) {
 
     Args args(argc, argv, kUsageString);
 
-    std::shared_ptr<SnapScriptApp::Options> options(new SnapScriptApp::Options);
-
     const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
     std::shared_ptr<SnapScript> script(new SnapScript);
     if (! script->ReadScript(path))
@@ -96,6 +94,7 @@ int main(int argc, const char *argv[]) {
 
     std::cout << "======= Processing Script file " << path.ToString() << "\n";
 
+    std::shared_ptr<SnapScriptApp::Options> options(new SnapScriptApp::Options);
     KLogger::SetKeyString(args.GetString("--klog"));
     options->do_ion_remote      = true;
     options->enable_vr          = true;   // So controllers work properly.

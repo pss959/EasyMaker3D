@@ -1,41 +1,30 @@
 #pragma once
 
-#include "App/Application.h"
-#include "App/CaptureScript.h"
-#include "Math/Types.h"
+#include "App/ScriptedApp.h"
 
-DECL_SHARED_PTR(ScriptEmitter);
 namespace SG { DECL_SHARED_PTR(Node); }
 
-/// CaptureScriptApp is derived from Application and adds processing of a
-/// read-in CaptureScript that specifies what to do.
+/// CaptureScriptApp is a derived ScriptedApp that adds processing of a read-in
+/// CaptureScript.
 ///
 /// \ingroup App
-class CaptureScriptApp : public Application {
+class CaptureScriptApp : public ScriptedApp {
   public:
     /// This struct adds some additional options.
-    struct Options : public Application::Options {
-        CaptureScript script;
+    struct Options : public ScriptedApp::Options {
         bool nocapture = false;  ///< Don't create a capture video.
-        bool remain    = false;  ///< Leave the window up after.
-        bool report    = false;  ///< Report each instruction when executed.
     };
 
-    bool Init(const Options &options);
+    virtual bool Init(const OptionsPtr &options,
+                      const ScriptBasePtr &script) override;
 
-    virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
-
-    // Make this available to applications.
-    using Application::GetContext;
+  protected:
+    virtual bool ProcessInstruction(const ScriptBase::Instr &instr) override;
 
   private:
-    Options          options_;            ///< Set in Init().
-    Vector2i         window_size_;        ///< From Options.
-    ScriptEmitterPtr emitter_;            ///< Simulates mouse and key events.
-    SG::NodePtr      cursor_;             ///< Fake cursor for video.
-    size_t           cur_instruction_ = 0;
+    SG::NodePtr cursor_;  ///< Fake cursor for video.
 
-    bool ProcessInstruction_(const CaptureScript::Instr &instr);
+    const Options & GetOptions_() const;
 
     /// Moves the fake cursor to the given position in normalized window
     /// coordinates using the given frustum.
@@ -46,9 +35,4 @@ class CaptureScriptApp : public Application {
 
     /// Returns a Frustum representing the current camera view.
     Frustum GetFrustum() const;
-
-    template <typename T>
-    const T & GetTypedInstr_(const CaptureScript::Instr &instr) {
-        return static_cast<const T &>(instr);
-    }
 };
