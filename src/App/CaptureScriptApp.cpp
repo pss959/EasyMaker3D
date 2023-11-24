@@ -1,5 +1,6 @@
 #include "App/CaptureScriptApp.h"
 
+#include "App/ScriptEmitter.h"
 #include "Debug/Shortcuts.h"
 #include "Items/Settings.h"
 #include "Managers/SceneContext.h"
@@ -19,6 +20,9 @@ bool CaptureScriptApp::Init(const Options &options) {
         return false;
 
     options_ = options;
+
+    emitter_.reset(new ScriptEmitter);
+    AddEmitter(emitter_);
 
     window_size_ = GetWindowSize();
 

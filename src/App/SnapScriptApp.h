@@ -1,45 +1,27 @@
 #pragma once
 
-#include <vector>
-
-#include "App/Application.h"
-#include "App/SnapScript.h"
-#include "Math/Types.h"
-#include "Util/Memory.h"
+#include "App/ScriptBase.h"
+#include "App/ScriptedApp.h"
+#include "Enums/Hand.h"
 
 class Selection;
-DECL_SHARED_PTR(ScriptEmitter);
 
 /// SnapScriptApp is derived from Application and adds processing of a read-in
 /// SnapScript that specifies what to do.
 ///
 /// \ingroup App
-class SnapScriptApp : public Application {
+class SnapScriptApp : public ScriptedApp {
   public:
     /// This struct adds some additional options.
-    struct Options : public Application::Options {
-        SnapScript script;
-        bool       nosnap = false;  ///< Ignore image snapping instructions.
-        bool       remain = false;  ///< Leave the window up after.
-        bool       report = false;  ///< Report each instruction when executed.
+    struct Options : public ScriptedApp::Options {
+        bool nosnap = false;  ///< Ignore image snapping instructions.
     };
 
-    bool Init(const Options &options);
-
-    virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
-
-    // Make this available to applications.
-    using Application::GetContext;
+  protected:
+    virtual bool ProcessInstruction(const ScriptBase::Instr &instr) override;
 
   private:
-    DECL_SHARED_PTR(Emitter_);
-
-    Options          options_;            ///< Set in Init().
-    Vector2i         window_size_;        ///< From Options.
-    ScriptEmitterPtr emitter_;            ///< Simulates mouse and key events.
-    size_t           cur_instruction_ = 0;
-
-    bool ProcessInstruction_(const SnapScript::Instr &instr);
+    const Options & GetOptions_() const;
     bool LoadSession_(const Str &file_name);
     bool FocusPane_(const Str &pane_name);
     bool SetHand_(Hand hand, const Str &controller_type);
@@ -47,9 +29,4 @@ class SnapScriptApp : public Application {
     bool TakeSnapshot_(const Range2f &rect, const Str &file_name);
     bool GetObjRect_(const Str &object_name, float margin, Range2f &rect);
     void BuildSelection_(const StrVec &names, Selection &selection);
-
-    template <typename T>
-    const T & GetTypedInstr_(const SnapScript::Instr &instr) {
-        return static_cast<const T &>(instr);
-    }
 };

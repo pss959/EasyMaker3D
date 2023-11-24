@@ -87,6 +87,7 @@ lib_sources = list(chain(
         'CaptureScriptApp',
         'ScriptBase',
         'ScriptEmitter',
+        'ScriptedApp',
         'SnapScript',
         'SnapScriptApp',
 

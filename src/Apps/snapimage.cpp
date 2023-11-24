@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "App/Args.h"
+#include "App/SnapScript.h"
 #include "App/SnapScriptApp.h"
 #include "Managers/PanelManager.h"
 #include "Panels/FilePanel.h"
@@ -86,28 +87,29 @@ int main(int argc, const char *argv[]) {
 
     Args args(argc, argv, kUsageString);
 
-    SnapScriptApp::Options options;
+    std::shared_ptr<SnapScriptApp::Options> options(new SnapScriptApp::Options);
 
     const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
-    if (! options.script.ReadScript(path))
+    std::shared_ptr<SnapScript> script(new SnapScript);
+    if (! script->ReadScript(path))
         return -1;
 
     std::cout << "======= Processing Script file " << path.ToString() << "\n";
 
     KLogger::SetKeyString(args.GetString("--klog"));
-    options.do_ion_remote      = true;
-    options.enable_vr          = true;   // So controllers work properly.
-    options.fullscreen         = args.GetBool("--fullscreen");
-    options.nosnap             = args.GetBool("--nosnap");
-    options.remain             = args.GetBool("--remain");
-    options.report             = args.GetBool("--report");
-    options.show_session_panel = false;
+    options->do_ion_remote      = true;
+    options->enable_vr          = true;   // So controllers work properly.
+    options->fullscreen         = args.GetBool("--fullscreen");
+    options->nosnap             = args.GetBool("--nosnap");
+    options->remain             = args.GetBool("--remain");
+    options->report             = args.GetBool("--report");
+    options->show_session_panel = false;
 
     // Note that this must have the same aspect ratio as fullscreen.
-    options.window_size.Set(1024, 552);
+    options->window_size.Set(1024, 552);
 
     SnapScriptApp app;
-    if (! app.Init(options))
+    if (! app.Init(options, script))
         return -1;
 
     // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.

@@ -4,6 +4,7 @@
 #include "App/CaptureScript.h"
 #include "Math/Types.h"
 
+DECL_SHARED_PTR(ScriptEmitter);
 namespace SG { DECL_SHARED_PTR(Node); }
 
 /// CaptureScriptApp is derived from Application and adds processing of a
@@ -28,10 +29,11 @@ class CaptureScriptApp : public Application {
     using Application::GetContext;
 
   private:
-    Options     options_;            ///< Set in Init().
-    Vector2i    window_size_;        ///< From Options.
-    SG::NodePtr cursor_;             ///< Fake cursor for video.
-    size_t      cur_instruction_ = 0;
+    Options          options_;            ///< Set in Init().
+    Vector2i         window_size_;        ///< From Options.
+    ScriptEmitterPtr emitter_;            ///< Simulates mouse and key events.
+    SG::NodePtr      cursor_;             ///< Fake cursor for video.
+    size_t           cur_instruction_ = 0;
 
     bool ProcessInstruction_(const CaptureScript::Instr &instr);
 
