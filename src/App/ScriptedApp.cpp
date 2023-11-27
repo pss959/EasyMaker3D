@@ -88,10 +88,12 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
             ++cur_instruction_;
     }
     else {
-        // No instructions left: stop ignoring mouse events from GLFWViewer and
-        // exit unless the remain flag is set.
+        // No instructions left: let the derived class know, stop ignoring
+        // mouse events from GLFWViewer and exit unless the remain flag is set.
+        InstructionsDone();
         EnableMouseMotionEvents(true);
         keep_going = options_->remain;
+
     }
     return keep_going;
 }

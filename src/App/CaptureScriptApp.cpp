@@ -68,9 +68,9 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
 
     // Add a CursorHandler_ to update the fake cursor when the mouse is moved.
     // Insert it at the beginning so no other handler steals the event.
-    std::shared_ptr<CursorHandler_> handler(
-        new CursorHandler_([&](const Point2f &p){ MoveFakeCursorTo_(p); }));
-    GetContext().event_manager->InsertHandler(handler);
+    handler_.reset(new CursorHandler_(
+                       [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
+    GetContext().event_manager->InsertHandler(handler_);
 
     return true;
 }
@@ -114,6 +114,11 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         return false;
     }
     return true;
+}
+
+void CaptureScriptApp::InstructionsDone() {
+    // Disable the handler so the fake cursor does not move any more.
+    handler_->SetEnabled(false);
 }
 
 void CaptureScriptApp::MoveCursorOver_(const Str &object_name, float seconds) {

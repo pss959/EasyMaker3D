@@ -20,13 +20,15 @@ class CaptureScriptApp : public ScriptedApp {
 
   protected:
     virtual bool ProcessInstruction(const ScriptBase::Instr &instr) override;
+    virtual void InstructionsDone() override;
 
   private:
     // Handler used to update the fake cursor.
-    class CursorHandler_;
+    DECL_SHARED_PTR(CursorHandler_);
 
-    SG::NodePtr cursor_;      ///< Fake cursor for video.
-    Point2f     cursor_pos_;  ///< Current cursor position.
+    CursorHandler_Ptr handler_;     ///< Updates the fake cursor.
+    SG::NodePtr       cursor_;      ///< Fake cursor for video.
+    Point2f           cursor_pos_;  ///< Current cursor position.
 
     const Options & GetOptions_() const;
 

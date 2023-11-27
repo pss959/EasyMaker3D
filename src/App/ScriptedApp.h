@@ -49,6 +49,10 @@ class ScriptedApp : public Application {
     /// instruction, returning false on error.
     virtual bool ProcessInstruction(const ScriptBase::Instr &instr) = 0;
 
+    /// Lets derived classes know when instructions have all been processed.
+    /// The base class defines this to do nothing.
+    virtual void InstructionsDone() {}
+
     /// Convenience that casts a ScriptBase::Instr to the templated type.
     template <typename T>
     const T & GetTypedInstr_(const ScriptBase::Instr &instr) {
