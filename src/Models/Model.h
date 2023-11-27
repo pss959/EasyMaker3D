@@ -137,6 +137,14 @@ class Model : public ClickableWidget, public ITargetable {
     // Placement.
     // ------------------------------------------------------------------------
 
+    /// Sets a (static) flag indicating whether to animate Model placement when
+    /// a new Model is created. The default is false.
+    static void EnablePlacementAnimation(bool b) { animate_placement_ = b; }
+
+    /// Returns a (static) flag indicating whether to animate Model placement
+    /// when a new Model is created. The default is false.
+    static bool IsPlacementAnimationEnabled() { return animate_placement_; }
+
     /// Changes the Model's translation so that its center is at the given
     /// target point, leaving scale and rotation untouched.
     void MoveCenterTo(const Point3f &p);
@@ -352,6 +360,9 @@ class Model : public ClickableWidget, public ITargetable {
     /// should be copied when creating a clone. The AddModelField() function
     /// adds to the vector.
     std::vector<Parser::Field *> model_fields_;
+
+    /// Indicates whether to animate placement of new Models.
+    static bool animate_placement_;
 
     /// This is used to choose and assign pseudo-random colors for Models.
     static std::unique_ptr<ColorSet_> color_set_;

@@ -4,6 +4,8 @@
 #include <functional>
 #include <ranges>
 
+#include <ion/base/stringutils.h>
+
 #include "App/CaptureScript.h"
 #include "App/ScriptEmitter.h"
 #include "Base/Event.h"
@@ -11,6 +13,7 @@
 #include "Managers/EventManager.h"
 #include "Managers/SceneContext.h"
 #include "Math/Intersection.h"
+#include "Math/Linear.h"
 #include "SG/CoordConv.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
@@ -77,9 +80,7 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
 
 bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     if (instr.name == "click") {
-        const auto &cinst = GetTypedInstr_<CaptureScript::ClickInstr>(instr);
-        // XXXX
-        std::cerr << "XXXX INST: " << cinst.name << "\n";
+        GetEmitter().AddClick(cursor_pos_);
     }
     else if (instr.name == "cursor") {
         const auto &cinst = GetTypedInstr_<CaptureScript::CursorInstr>(instr);
@@ -122,36 +123,46 @@ void CaptureScriptApp::InstructionsDone() {
 }
 
 void CaptureScriptApp::MoveCursorOver_(const Str &object_name, float seconds) {
-    const auto &root = GetContext().scene_context->scene->GetRootNode();
+    SG::NodePtr root = GetContext().scene_context->scene->GetRootNode();
+    SG::NodePath path;  // Path from scene root to target object.
 
     // Find the object in the scene. Note that the name may be compound
     // ("A/B/C").
     if (object_name.contains('/')) {
-        std::cerr << "XXXX Compound name '" << object_name << "'\n";
-        // XXXX Do something...
+        const auto parts = ion::base::SplitString(object_name, "/");
+        ASSERT(parts.size() > 1U);
+        for (const auto &part: parts) {
+            auto sub_path = SG::FindNodePathUnderNode(root, part);
+            if (path.empty())
+                path = sub_path;
+            else
+                path = SG::NodePath::Stitch(path, sub_path);
+            root = path.back();
+        }
     }
     else {
-        auto path = SG::FindNodePathUnderNode(root, object_name);
-        // Project the center of the object in world coordinates onto the
-        // Frustum image plane to get the point to move to.
-        const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
-        MoveCursorTo_(GetFrustum().ProjectToImageRect(center), seconds);
+        path = SG::FindNodePathUnderNode(root, object_name);
     }
+
+    // Project the center of the object in world coordinates onto the Frustum
+    // image plane to get the point to move to.
+    const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
+    MoveCursorTo_(GetFrustum().ProjectToImageRect(center), seconds);
 }
 
 void CaptureScriptApp::MoveCursorTo_(const Point2f &pos, float seconds) {
     if (seconds > 0 && GetEmitter().GetDelay() > 0) {
         // Determine the number of events to create over the duration.
         const size_t count = std::roundf(seconds / GetEmitter().GetDelay());
-        std::cerr << "XXXX seconds = " << seconds
-                  << " count = " << count << "\n";
         for (auto i : std::views::iota(0U, count)) {
-            GetEmitter().AddHoverPoint(Lerp(cursor_pos_, pos,
-                                            static_cast<float>(i + 1) / count));
+            const float t = static_cast<float>(i + 1) / count;
+            GetEmitter().AddHoverPoint(BezierInterp(t, cursor_pos_, pos));
         }
     }
-
-    // XXXX
+    else {
+        // No duration or no delay - just one point.
+        GetEmitter().AddHoverPoint(pos);
+    }
 }
 
 void CaptureScriptApp::MoveFakeCursorTo_(const Point2f &pos) {

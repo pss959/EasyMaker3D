@@ -10,7 +10,6 @@
 #include "Place/PointTarget.h"
 #include "Selection/SelPath.h"
 #include "Selection/Selection.h"
-#include "Util/General.h"
 #include "Util/Tuning.h"
 
 ModelExecutorBase::ModelExecutorBase() {
@@ -88,7 +87,7 @@ bool ModelExecutorBase::ShouldAnimateModel_(const Command &command) {
     // Animation occurs only in the main app the first time a command was
     // executed, unless it was read from a file.
     const bool is_first_time = ! command.GetExecData();
-    return Util::app_type == Util::AppType::kMainApp &&
+    return Model::IsPlacementAnimationEnabled() &&
         is_first_time && ! command.IsValidating();
 }
 
@@ -110,8 +109,7 @@ bool ModelExecutorBase::AnimateModel_(const ModelPtr &model,
     const float duration = animation_duration_;
     if (time < duration) {
         // Animation still running.
-        model->SetTranslation(
-            Vector3f(start_pos + (time / duration) * (end_pos - start_pos)));
+        model->TranslateTo(BezierInterp(time / duration, start_pos, end_pos));
         return true;
     }
     else {

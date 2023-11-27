@@ -7,12 +7,15 @@
 #include "Base/IEmitter.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
+#include "Util/UTime.h"
 
 /// ScriptEmitter is a derived IEmitter class used to create events to simulate
 /// mouse clicks, mouse drags and key presses in script-based applications.
 class ScriptEmitter : public IEmitter {
   public:
     using KModifiers = Util::Flags<Event::ModifierKey>;
+
+    ScriptEmitter();
 
     /// Sets a delay between consecutive generated events. The default is 0.
     void SetDelay(float seconds) { delay_ = seconds; }
@@ -69,6 +72,9 @@ class ScriptEmitter : public IEmitter {
   private:
     /// Delay (in seconds) between events to process.
     float              delay_ = 0;
+
+    /// Time of last event (for delay processing).
+    UTime              last_event_time_;
 
     /// Whether modified mode is on.
     bool               is_mod_ = false;

@@ -79,6 +79,7 @@ Model::ColorSet_::ColorSet_() {
 // Model functions.
 // ----------------------------------------------------------------------------
 
+bool                              Model::animate_placement_ = false;
 std::unique_ptr<Model::ColorSet_> Model::color_set_;
 
 Model::Model() : complexity_(TK::kModelComplexity) {

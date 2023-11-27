@@ -13,6 +13,7 @@
 #include "Base/Event.h"
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
+#include "Models/Model.h"
 #include "Util/Assert.h"
 #include "Util/ExceptionBase.h"
 #include "Util/FilePath.h"
@@ -219,6 +220,8 @@ int main(int argc, const char *argv[]) {
 
     SetWorkingDirectory_();
 #endif
+
+    Model::EnablePlacementAnimation(true);
 
     const int height = TK::kWindowHeight;
     const int width  = static_cast<int>(TK::kWindowAspectRatio * height);

@@ -290,4 +290,10 @@ template <typename T> T Lerp(float t, const T &min, const T &max) {
 
 /// Special case of Lerp that interpolates integers, rounding.
 int LerpInt(float t, int min, int max);
+
+/// Bezier (ease-in, ease-out) interpolation of a value of some type based on
+/// the t interpolant in the range (0,1).
+template <typename T> T BezierInterp(float t, const T &min, const T &max) {
+    return Lerp(t * t * (3.0f - 2.0f * t), min, max);
+}
 ///@}

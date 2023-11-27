@@ -5,6 +5,7 @@
 #include "App/Args.h"
 #include "App/CaptureScript.h"
 #include "App/CaptureScriptApp.h"
+#include "Models/Model.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
@@ -62,6 +63,9 @@ int main(int argc, const char *argv[]) {
 
     // Note that this must have the same aspect ratio as fullscreen.
     options->window_size.Set(1024, 552);
+
+    // New Models should be animated when created.
+    Model::EnablePlacementAnimation(true);
 
     CaptureScriptApp app;
     if (! app.Init(options, script))
