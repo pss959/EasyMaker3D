@@ -9,7 +9,6 @@
 #include "Place/PointTarget.h"
 #include "Tests/Executors/ExecutorTestBase.h"
 #include "Tests/Testing.h"
-#include "Tests/UnitTestTypeChanger.h"
 #include "Util/Delay.h"
 #include "Util/Tuning.h"
 
@@ -137,8 +136,8 @@ TEST_F(CreatePrimitiveExecutorTest, CreateTorus) {
 }
 
 TEST_F(CreatePrimitiveExecutorTest, Animate) {
-    // Override disabling of animation except in main app.
-    UnitTestTypeChanger uttc(Util::AppType::kMainApp);
+    // Enable animation.
+    Model::EnablePlacementAnimation(true);
 
     auto cmd = ParseCommand<CreatePrimitiveModelCommand>(
         "CreatePrimitiveModelCommand", R"(type: "kBox", result_name: "Box_0")");
@@ -177,4 +176,7 @@ TEST_F(CreatePrimitiveExecutorTest, Animate) {
     context.animation_manager->ProcessUpdate();
     EXPECT_ENUM_EQ(Model::Status::kPrimary,  model->GetStatus());
     EXPECT_EQ(Vector3f(0, 2, 0),             model->GetTranslation());
+
+    // Restore the default setting.
+    Model::EnablePlacementAnimation(false);
 }

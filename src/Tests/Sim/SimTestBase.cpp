@@ -3,6 +3,7 @@
 #include <exception>
 #include <iostream>
 
+#include "App/SnapScript.h"
 #include "App/SnapScriptApp.h"
 #include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
@@ -37,29 +38,30 @@ void SimTestBase::RunScriptAndExit_(const Str &script_name) {
 }
 
 bool SimTestBase::RunScript_(const Str &file_name) {
-    SnapScriptApp::Options options;
+    std::shared_ptr<SnapScriptApp::Options> options(new SnapScriptApp::Options);
 
     // Hardwire all options.
-    options.do_ion_remote      = false;
-    options.ignore_vr          = true;  // Bypasses real VR system init.
-    options.enable_vr          = true;  // So controllers work properly.
-    options.fullscreen         = false;
-    options.nosnap             = true;
-    options.remain             = false;
-    options.show_session_panel = false;
-    options.window_size.Set(1024, 552);
+    options->do_ion_remote      = false;
+    options->ignore_vr          = true;  // Bypasses real VR system init.
+    options->enable_vr          = true;  // So controllers work properly.
+    options->fullscreen         = false;
+    options->nosnap             = true;
+    options->remain             = false;
+    options->report             = true; // XXXX TEMPORARY
+    options->show_session_panel = false;
+    options->window_size.Set(1024, 552);
 
     // Load the script
     const FilePath path = FilePath::Join(
         FilePath::Join(FilePath::GetTestDataPath(), "Scripts"),
         file_name + ".conf");
-
-    if (! options.script.ReadScript(path))
+    std::shared_ptr<SnapScript> script(new SnapScript);
+    if (! script->ReadScript(path))
         return false;
 
     // Execute the script. Handle exceptions here for better messages.
     SnapScriptApp app;
-    if (! app.Init(options))
+    if (! app.Init(options, script))
         return false;
     try {
         // Copy the context.
