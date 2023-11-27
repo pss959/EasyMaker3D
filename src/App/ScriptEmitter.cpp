@@ -124,6 +124,11 @@ void ScriptEmitter::EmitEvents(std::vector<Event> &events) {
             }
             waited_for_click_ = false;
         }
+        // Otherwise, wait for the standard delay to be reached (if any).
+        else if (delay_ > 0) {
+            // XXXX Need to increment a UTime until the delay is reached.
+            // XXXX
+        }
 
         prev_was_button_press_ = event.flags.Has(Event::Flag::kButtonPress);
 

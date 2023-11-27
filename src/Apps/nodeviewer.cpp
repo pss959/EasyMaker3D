@@ -182,10 +182,10 @@ bool Application_::InitScene() {
     main_handler_->SetPrecisionStore(precision_store_);
     main_handler_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
-    event_manager_->AddHandler(app_handler_);
-    event_manager_->AddHandler(view_handler_);
-    event_manager_->AddHandler(board_handler_);
-    event_manager_->AddHandler(main_handler_);
+    event_manager_->AppendHandler(app_handler_);
+    event_manager_->AppendHandler(view_handler_);
+    event_manager_->AppendHandler(board_handler_);
+    event_manager_->AppendHandler(main_handler_);
 
     SetUpScene_();
     UpdateScene_();

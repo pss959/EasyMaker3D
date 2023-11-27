@@ -695,21 +695,21 @@ void Application::Impl_::InitManagers_() {
     // Add all handlers to the EventManager. Order here is extremely
     // important, since Handlers are passed events in this order.
     // LogHandler has to be first so it can log all events.
-    MGR_(event)->AddHandler(log_handler_);
+    MGR_(event)->AppendHandler(log_handler_);
 #if ENABLE_DEBUG_FEATURES
-    MGR_(event)->AddHandler(drag_rect_handler_);
+    MGR_(event)->AppendHandler(drag_rect_handler_);
 #endif
     // ControllerHandler just updates controller position, so it needs all
     // controller events.
     if (IsVREnabled() || options_.enable_vr)
-        MGR_(event)->AddHandler(controller_handler_);
+        MGR_(event)->AppendHandler(controller_handler_);
     // InspectorHandler traps most events when active.
-    MGR_(event)->AddHandler(inspector_handler_);
+    MGR_(event)->AppendHandler(inspector_handler_);
     // Board Handler needs to process keyboard events before others.
-    MGR_(event)->AddHandler(board_handler_);
-    MGR_(event)->AddHandler(shortcut_handler_);
-    MGR_(event)->AddHandler(view_handler_);
-    MGR_(event)->AddHandler(main_handler_);
+    MGR_(event)->AppendHandler(board_handler_);
+    MGR_(event)->AppendHandler(shortcut_handler_);
+    MGR_(event)->AppendHandler(view_handler_);
+    MGR_(event)->AppendHandler(main_handler_);
 
 #if ENABLE_DEBUG_FEATURES
     Debug::SetLogHandler(log_handler_);

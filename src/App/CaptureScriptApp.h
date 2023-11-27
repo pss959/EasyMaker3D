@@ -22,16 +22,25 @@ class CaptureScriptApp : public ScriptedApp {
     virtual bool ProcessInstruction(const ScriptBase::Instr &instr) override;
 
   private:
-    SG::NodePtr cursor_;  ///< Fake cursor for video.
+    // Handler used to update the fake cursor.
+    class CursorHandler_;
+
+    SG::NodePtr cursor_;      ///< Fake cursor for video.
+    Point2f     cursor_pos_;  ///< Current cursor position.
 
     const Options & GetOptions_() const;
 
-    /// Moves the fake cursor to the given position in normalized window
-    /// coordinates using the given frustum.
-    void MoveCursorTo_(const Frustum &frustum, const Point2f &pos);
+    /// Adds events to move the cursor to be over the center of the named
+    /// object over the given duration in seconds.
+    void MoveCursorOver_(const Str &object_name, float seconds);
 
-    /// Moves the fake cursor over the center of the named object.
-    void MoveCursorOver_(const Str &object_name);
+    /// Adds events to move the cursor to the given position in normalized
+    /// window coordinates over the given duration in seconds.
+    void MoveCursorTo_(const Point2f &pos, float seconds);
+
+    /// Moves the fake cursor to the given position in normalized window
+    /// coordinates.
+    void MoveFakeCursorTo_(const Point2f &pos);
 
     /// Returns a Frustum representing the current camera view.
     Frustum GetFrustum() const;

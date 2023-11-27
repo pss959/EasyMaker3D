@@ -33,7 +33,7 @@ TEST_F(EventManagerTest, HandleEvents) {
     TestHandlerPtr th(new TestHandler);
 
     EventManager em;
-    em.AddHandler(th);
+    em.AppendHandler(th);
 
     EXPECT_EQ(0U, th->last_serial);
 
@@ -84,7 +84,7 @@ TEST_F(EventManagerTest, PendingEvents) {
     TestHandlerPtr th(new TestHandler);
 
     EventManager em;
-    em.AddHandler(th);
+    em.AppendHandler(th);
 
     std::vector<Event> events;
     Event event;

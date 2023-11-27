@@ -14,6 +14,13 @@ class ScriptEmitter : public IEmitter {
   public:
     using KModifiers = Util::Flags<Event::ModifierKey>;
 
+    /// Sets a delay between consecutive generated events. The default is 0.
+    void SetDelay(float seconds) { delay_ = seconds; }
+
+    /// Returns the delay (in seconds) between consecutive generated
+    /// events. The default is 0.
+    float GetDelay() const { return delay_; }
+
     /// Sets modified mode for subsequent clicks and drags. It is off by
     /// default.
     void SetModifiedMode(bool is_on) { is_mod_ = is_on; }
@@ -60,6 +67,9 @@ class ScriptEmitter : public IEmitter {
     static constexpr Vector3f kRightControllerOffset{0, .12f, 0};
 
   private:
+    /// Delay (in seconds) between events to process.
+    float              delay_ = 0;
+
     /// Whether modified mode is on.
     bool               is_mod_ = false;
 

@@ -14,10 +14,20 @@ DECL_SHARED_PTR(Handler);
 /// \ingroup Managers
 class EventManager {
   public:
-    /// Adds an event Handler. Handlers are given the opportunity to process
-    /// events in the order they are added.
-    void AddHandler(const HandlerPtr &handler) {
+    /// \name Adding Handlers.
+    /// The EventManager maintains a list of Handler instances. Handlers are
+    /// given the opportunity to process events in the order they appear in
+    /// this list.
+    ///@{
+
+    /// Adds an event Handler at the end of the list.
+    void AppendHandler(const HandlerPtr &handler) {
         handlers_.push_back(handler);
+    }
+
+    /// Inserts an event Handler at the beginning of the list.
+    void InsertHandler(const HandlerPtr &handler) {
+        handlers_.insert(handlers_.begin(), handler);
     }
 
     /// Clears the current list of Handlers.
