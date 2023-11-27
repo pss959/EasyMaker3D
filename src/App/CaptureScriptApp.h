@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "App/ScriptedApp.h"
 
 namespace SG { DECL_SHARED_PTR(Node); }
@@ -15,20 +17,26 @@ class CaptureScriptApp : public ScriptedApp {
         bool nocapture = false;  ///< Don't create a capture video.
     };
 
+    CaptureScriptApp();
+    virtual ~CaptureScriptApp();
+
     virtual bool Init(const OptionsPtr &options,
                       const ScriptBasePtr &script) override;
 
   protected:
     virtual bool ProcessInstruction(const ScriptBase::Instr &instr) override;
     virtual void InstructionsDone() override;
+    virtual void FrameDone() override;
 
   private:
     // Handler used to update the fake cursor.
     DECL_SHARED_PTR(CursorHandler_);
+    class VideoWriter_;
 
-    CursorHandler_Ptr handler_;     ///< Updates the fake cursor.
-    SG::NodePtr       cursor_;      ///< Fake cursor for video.
-    Point2f           cursor_pos_;  ///< Current cursor position.
+    CursorHandler_Ptr             handler_;       ///< Updates the fake cursor.
+    SG::NodePtr                   cursor_;        ///< Fake cursor for video.
+    Point2f                       cursor_pos_;    ///< Current cursor position.
+    std::unique_ptr<VideoWriter_> video_writer_;  ///< Creates and writes video.
 
     const Options & GetOptions_() const;
 

@@ -27,6 +27,9 @@ class ScriptBase {
     /// on error.
     bool ReadScript(const FilePath &path);
 
+    /// Returns the path to the file the script was read from.
+    const FilePath & GetPath() const { return file_path_; }
+
     /// Returns the instructions in the script.
     const std::vector<InstrPtr> & GetInstructions() const {
         return instructions_;

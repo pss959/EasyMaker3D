@@ -4,6 +4,7 @@
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"
 #include "Items/Settings.h"
+#include "Managers/AnimationManager.h"
 #include "Managers/SceneContext.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
@@ -65,20 +66,22 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     const size_t instr_count = script_->GetInstructions().size();
     const bool are_more_instructions = cur_instruction_ < instr_count;
     bool keep_going;
+    bool processing_done = false;
 
     // Let the base class check for exit. Force it to poll for events if there
     // are instructions left to process or if the window is supposed to go
     // away; don't want to wait for an event to come along.
-    if (! Application::ProcessFrame(
-            render_count, are_more_instructions || ! options_->remain)) {
+    const bool should_poll = are_more_instructions || ! options_->remain;
+    if (! Application::ProcessFrame(render_count, should_poll)) {
         keep_going = false;
     }
-    // If there are events pending, process them before doing any more
-    // instructions.
+
+    // If there are events pending, do not process more instructions before
+    // they are handled.
     else if (emitter_->HasPendingEvents()) {
         keep_going = true;
     }
-    // Process the next instruction, if any.
+
     else if (are_more_instructions) {
         const auto &instr = *script_->GetInstructions()[cur_instruction_];
         keep_going = ProcessInstruction_(instr);
@@ -87,20 +90,35 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
         else
             ++cur_instruction_;
     }
-    else {
-        // No instructions left: let the derived class know, stop ignoring
-        // mouse events from GLFWViewer and exit unless the remain flag is set.
+
+    // There are no pending events and no more instructions. If not currently
+    // animating, processing is done.
+    else if (! GetContext().animation_manager->IsAnimating()) {
+        processing_done = true;
+    }
+
+    // Let the derived class know the frame is done.
+    FrameDone();
+
+    // If processing is done, let the derived class know and stop ignoring
+    // mouse events from GLFWViewer.
+    if (processing_done) {
         InstructionsDone();
         EnableMouseMotionEvents(true);
         keep_going = options_->remain;
-
     }
+
     return keep_going;
 }
 
 const ScriptedApp::Options & ScriptedApp::GetOptions() const {
     ASSERT(options_);
     return *options_;
+}
+
+const ScriptBase & ScriptedApp::GetScript() const {
+    ASSERT(script_);
+    return *script_;
 }
 
 ScriptEmitter & ScriptedApp::GetEmitter() const {

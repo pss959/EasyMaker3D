@@ -5,6 +5,8 @@
 #include <ranges>
 
 #include <ion/base/stringutils.h>
+#include <ion/gfx/image.h>
+#include <ion/image/conversionutils.h>
 
 #include "App/CaptureScript.h"
 #include "App/ScriptEmitter.h"
@@ -20,6 +22,7 @@
 #include "SG/Search.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
+#include "Viewers/Renderer.h"
 
 // ----------------------------------------------------------------------------
 // CaptureScriptApp::CursorHandler_ class.
@@ -49,8 +52,31 @@ class CaptureScriptApp::CursorHandler_ : public Handler {
 };
 
 // ----------------------------------------------------------------------------
+// CaptureScriptApp::VideoWriter_ class.
+// ----------------------------------------------------------------------------
+
+class CaptureScriptApp::VideoWriter_ {
+  public:
+    void AddImage(const ion::gfx::Image &image);
+    bool WriteToFile(const FilePath &path);
+};
+
+void CaptureScriptApp::VideoWriter_::AddImage(const ion::gfx::Image &image) {
+    std::cerr << "XXXX Adding image " << &image << "\n";
+}
+
+bool CaptureScriptApp::VideoWriter_::WriteToFile(const FilePath &path) {
+    std::cerr << "XXXX Writing video to '" << path << "'\n";
+    return true;
+}
+
+// ----------------------------------------------------------------------------
 // CaptureScriptApp functions.
 // ----------------------------------------------------------------------------
+
+CaptureScriptApp::CaptureScriptApp() {}
+
+CaptureScriptApp::~CaptureScriptApp() {}
 
 bool CaptureScriptApp::Init(const OptionsPtr &options,
                             const ScriptBasePtr &script) {
@@ -74,6 +100,9 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     handler_.reset(new CursorHandler_(
                        [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
     GetContext().event_manager->InsertHandler(handler_);
+
+    // Set up a VideoWriter_.
+    video_writer_.reset(new VideoWriter_);
 
     return true;
 }
@@ -120,6 +149,35 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
 void CaptureScriptApp::InstructionsDone() {
     // Disable the handler so the fake cursor does not move any more.
     handler_->SetEnabled(false);
+
+    // Write the resulting video if requested.
+    if (! GetOptions_().nocapture && video_writer_) {
+        const FilePath &script_path = GetScript().GetPath();
+        FilePath video_path("PublicDoc/docs/videos/" +
+                            script_path.GetFileName());
+        video_path.ReplaceExtension(".gif");
+        video_writer_->WriteToFile(video_path);
+    }
+
+    // Remove the VideoWriter_ so this does not happen again in case
+    // InstructionsDone() is called again (if remain flag is set).
+    video_writer_.reset();
+}
+
+void CaptureScriptApp::FrameDone() {
+    if (video_writer_) {
+        const auto image = GetRenderer().ReadImage(
+            Range2i::BuildWithSize(Point2i(0, 0), GetWindowSize()));
+        // Rows of image need to be inverted (GL vs stblib).
+        ion::image::FlipImage(image);
+        video_writer_->AddImage(*image);
+    }
+}
+
+const CaptureScriptApp::Options & CaptureScriptApp::GetOptions_() const {
+    const auto &opts = GetOptions();
+    ASSERT(dynamic_cast<const Options *>(&opts));
+    return static_cast<const Options &>(opts);
 }
 
 void CaptureScriptApp::MoveCursorOver_(const Str &object_name, float seconds) {

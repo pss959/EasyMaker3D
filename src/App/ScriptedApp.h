@@ -41,6 +41,9 @@ class ScriptedApp : public Application {
     /// them.
     const Options & GetOptions() const;
 
+    /// Returns the script. Asserts if Init() was not called to initialize it.
+    const ScriptBase & GetScript() const;
+
     /// Returns the ScriptEmitter. Asserts if Init() was not called to
     /// initialize it.
     ScriptEmitter & GetEmitter() const;
@@ -52,6 +55,10 @@ class ScriptedApp : public Application {
     /// Lets derived classes know when instructions have all been processed.
     /// The base class defines this to do nothing.
     virtual void InstructionsDone() {}
+
+    /// Lets derived classes know when a frame is done.  The base class defines
+    /// this to do nothing.
+    virtual void FrameDone() {}
 
     /// Convenience that casts a ScriptBase::Instr to the templated type.
     template <typename T>
