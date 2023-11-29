@@ -20,6 +20,7 @@
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
+#include "App/VideoWriter.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 #include "Viewers/Renderer.h"
@@ -52,25 +53,6 @@ class CaptureScriptApp::CursorHandler_ : public Handler {
 };
 
 // ----------------------------------------------------------------------------
-// CaptureScriptApp::VideoWriter_ class.
-// ----------------------------------------------------------------------------
-
-class CaptureScriptApp::VideoWriter_ {
-  public:
-    void AddImage(const ion::gfx::Image &image);
-    bool WriteToFile(const FilePath &path);
-};
-
-void CaptureScriptApp::VideoWriter_::AddImage(const ion::gfx::Image &image) {
-    std::cerr << "XXXX Adding image " << &image << "\n";
-}
-
-bool CaptureScriptApp::VideoWriter_::WriteToFile(const FilePath &path) {
-    std::cerr << "XXXX Writing video to '" << path << "'\n";
-    return true;
-}
-
-// ----------------------------------------------------------------------------
 // CaptureScriptApp functions.
 // ----------------------------------------------------------------------------
 
@@ -101,8 +83,10 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
                        [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
     GetContext().event_manager->InsertHandler(handler_);
 
-    // Set up a VideoWriter_.
-    video_writer_.reset(new VideoWriter_);
+    // Set up a VideoWriter if requested.
+    if (! GetOptions_().nocapture)
+        // XXXX FPS constant somewhere...
+        video_writer_.reset(new VideoWriter(GetOptions_().window_size, 30));
 
     return true;
 }
@@ -151,11 +135,11 @@ void CaptureScriptApp::InstructionsDone() {
     handler_->SetEnabled(false);
 
     // Write the resulting video if requested.
-    if (! GetOptions_().nocapture && video_writer_) {
+    if (video_writer_) {
         const FilePath &script_path = GetScript().GetPath();
         FilePath video_path("PublicDoc/docs/videos/" +
                             script_path.GetFileName());
-        video_path.ReplaceExtension(".gif");
+        video_path.ReplaceExtension(".mp4");
         video_writer_->WriteToFile(video_path);
     }
 

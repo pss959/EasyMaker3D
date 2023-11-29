@@ -4,6 +4,7 @@
 
 #include "App/ScriptedApp.h"
 
+class VideoWriter;
 namespace SG { DECL_SHARED_PTR(Node); }
 
 /// CaptureScriptApp is a derived ScriptedApp that adds processing of a read-in
@@ -31,12 +32,11 @@ class CaptureScriptApp : public ScriptedApp {
   private:
     // Handler used to update the fake cursor.
     DECL_SHARED_PTR(CursorHandler_);
-    class VideoWriter_;
 
-    CursorHandler_Ptr             handler_;       ///< Updates the fake cursor.
-    SG::NodePtr                   cursor_;        ///< Fake cursor for video.
-    Point2f                       cursor_pos_;    ///< Current cursor position.
-    std::unique_ptr<VideoWriter_> video_writer_;  ///< Creates and writes video.
+    CursorHandler_Ptr            handler_;       ///< Updates the fake cursor.
+    SG::NodePtr                  cursor_;        ///< Fake cursor for video.
+    Point2f                      cursor_pos_;    ///< Current cursor position.
+    std::unique_ptr<VideoWriter> video_writer_;  ///< Creates and writes video.
 
     const Options & GetOptions_() const;
 

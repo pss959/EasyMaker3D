@@ -90,6 +90,7 @@ lib_sources = list(chain(
         'ScriptedApp',
         'SnapScript',
         'SnapScriptApp',
+        'VideoWriter',
 
         # Type registration.
         'RegisterCommandTypes',
