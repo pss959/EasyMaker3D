@@ -2,8 +2,8 @@
 
 extern "C" {
 #include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
-#include <libavutil/opt.h>
 }
 
 #include <cstring>
@@ -12,81 +12,158 @@ extern "C" {
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 
-VideoWriter::VideoWriter(const Vector2i &resolution, int fps) {
+/// The VideoWriter::Data_ struct stores all the FFMPEG data needed for writing
+/// video files.
+struct VideoWriter::Data_ {
+    AVCodecContext  *codec_context = nullptr;
+    AVFormatContext *out_context   = nullptr;
+    const AVCodec   *codec         = nullptr;
+    AVFrame         *frame         = nullptr;
+    AVPacket        *packet        = nullptr;
+    AVStream        *stream        = nullptr;
+    uint64           cur_frame     = 0;
+};
+
+VideoWriter::VideoWriter(const FilePath &path,
+                         const Vector2i &resolution, int fps) {
+    data_.reset(new Data_);
+    Init_(path, resolution, fps);
+}
+
+VideoWriter::~VideoWriter() {}
+
+void VideoWriter::Init_(const FilePath &path,
+                        const Vector2i &resolution, int fps) {
+    ASSERT(data_);
+
+    const auto real_path = path.ToNativeString();
+    const char *out_file = real_path.c_str();
+
     // Stifle annoying info messages.
     av_log_set_level(AV_LOG_FATAL);
 
-    const auto codec = avcodec_find_encoder_by_name("libx264rgb");
-    if (! codec)
-        Error_("Codec not found");
+    // Open the output context.
+    avformat_alloc_output_context2(&data_->out_context, nullptr,
+                                   "mp4", nullptr);
+    if (! data_->out_context)
+        Error_("Could not allocate output format context");
 
-    context_ = avcodec_alloc_context3(codec);
-    if (! context_)
+    // Find the encoder.
+    data_->codec = avcodec_find_encoder_by_name("libx264rgb");
+    if (! data_->codec)
+        Error_("Codec 'libx264rgb' not found");
+
+    // Allocate a packet for writing data.
+    data_->packet = av_packet_alloc();
+
+    // Create an output stream.
+    data_->stream = avformat_new_stream(data_->out_context, nullptr);
+    if (! data_->stream)
+        Error_("Could not allocate output stream");
+    data_->stream->id = 0;
+
+    // Create a codec context.
+    data_->codec_context = avcodec_alloc_context3(data_->codec);
+    if (! data_->codec_context)
         Error_("Could not allocate video codec context");
+    data_->codec_context->codec_id   = data_->out_context->oformat->video_codec;
+    data_->codec_context->bit_rate   = 6000000;  // Produces good quality.
+    data_->codec_context->width      = resolution[0];
+    data_->codec_context->height     = resolution[1];
+    data_->stream->time_base = { 1, fps};
+    data_->codec_context->time_base  = data_->stream->time_base;
+    // Emit one intra frame every twelve frames at most.
+    data_->codec_context->gop_size   = 12;
+    data_->codec_context->pix_fmt    = AV_PIX_FMT_RGB24;
 
-    packet_ = av_packet_alloc();
-    if (! packet_)
-        Error_("Could not allocate packet");
+    // Open the codec.
+    if (avcodec_open2(data_->codec_context, data_->codec, nullptr) < 0)
+        Error_("Could not open video codec");
 
-    context_->bit_rate     = 400000;
-    context_->width        = resolution[0];
-    context_->height       = resolution[1];
-    context_->time_base    = AVRational{1,   fps};
-    context_->framerate    = AVRational{fps, 1};
-    context_->pix_fmt      = AV_PIX_FMT_RGB24;
-
-    av_opt_set(context_->priv_data, "preset", "slow", 0);
-
-    if (avcodec_open2(context_, codec, nullptr) < 0)
-        Error_("Could not open codec");
-
-    frame_ = av_frame_alloc();
-    if (! frame_)
+    // Allocate a frame.
+    data_->frame = av_frame_alloc();
+    if (! data_->frame)
         Error_("Could not allocate video frame");
+    data_->frame->format = data_->codec_context->pix_fmt;
+    data_->frame->width  = data_->codec_context->width;
+    data_->frame->height = data_->codec_context->height;
+    if (av_frame_get_buffer(data_->frame, 0) < 0)
+        Error_("Could not allocate frame data");
 
-    frame_->format = context_->pix_fmt;
-    frame_->width  = context_->width;
-    frame_->height = context_->height;
+    // Copy the stream parameters to the muxer.
+    if (avcodec_parameters_from_context(data_->stream->codecpar,
+                                        data_->codec_context) < 0)
+        Error_("Could not copy codec parameters to output stream");
 
-    if (av_frame_get_buffer(frame_, 0) < 0)
-        Error_("Could not allocate the video frame data");
+    av_dump_format(data_->out_context, 0, out_file, 1);
+
+    // Open the output file.
+    if (avio_open(&data_->out_context->pb, out_file, AVIO_FLAG_WRITE) < 0)
+        Error_(std::string("Could not open output file: ") + out_file);
+
+    // Write the stream header.
+    if (avformat_write_header(data_->out_context, nullptr) < 0)
+        Error_("Could not write stream header");
 }
 
 void VideoWriter::AddImage(const ion::gfx::Image &image) {
-    if (av_frame_make_writable(frame_) < 0)
+    ASSERT(data_);
+    if (av_frame_make_writable(data_->frame) < 0)
         Error_("Could not make the video frame data writable");
 
-    // "Presentation timestamp".
-    frame_->pts = frame_count_++;
-
     // Copy the image data.
-    ASSERT(image.GetDataSize() == 3U * frame_->width * frame_->height);
-    std::memcpy(&frame_->data[0][0],
+    ASSERT(image.GetDataSize() ==
+           3U * data_->frame->width * data_->frame->height);
+    std::memcpy(&data_->frame->data[0][0],
                 image.GetData()->GetData(), image.GetDataSize());
 
-    EncodeFrame_(false);
+    data_->frame->pts = data_->cur_frame;
+
+    SendFrame_(data_->frame);
+
+    ++data_->cur_frame;
 }
 
+void VideoWriter::WriteToFile() {
+    ASSERT(data_);
 
-void VideoWriter::WriteToFile(const FilePath &path) {
-    EncodeFrame_(true);
-    std::ofstream out(path.ToNativeString(), std::ios::binary);
-    if (! out)
-        Error_("Could not open '" + path.ToString() + "' for writing");
-    out.write(&data_[0], data_.size());
+    // Send a null frame to end the video stream.
+    SendFrame_(nullptr);
+
+    // Write output trailer.
+    av_write_trailer(data_->out_context);
+
+    // Clean up.
+    avcodec_free_context(&data_->codec_context);
+    av_frame_free(&data_->frame);
+    av_packet_free(&data_->packet);
+    avio_closep(&data_->out_context->pb);
+    avformat_free_context(data_->out_context);
+
+    // Make subsequent uses fail.
+    data_.reset();
 }
 
-void VideoWriter::EncodeFrame_(bool end_frame) {
-    if (avcodec_send_frame(context_, end_frame ? nullptr : frame_) < 0)
-        Error_("Error sending a frame for encoding");
+void VideoWriter::SendFrame_(AVFrame *frame) {
+    // Send the frame to the encoder
+    if (avcodec_send_frame(data_->codec_context, frame) < 0)
+        Error_("Error: Could not send frame to output codec");
 
-    while (true) {
-        const auto ret = avcodec_receive_packet(context_, packet_);
+    int ret = 0;
+    while (ret >= 0) {
+        ret = avcodec_receive_packet(data_->codec_context, data_->packet);
         if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
             break;
-        if (ret < 0)
-            Error_("Error during encoding");
-        data_.insert(data_.end(), packet_->data, packet_->data + packet_->size);
-        av_packet_unref(packet_);
+        else if (ret < 0)
+            Error_("Could not receive packet");
+
+        // Rescale output packet timestamp values from codec to stream
+        // timebase.
+        av_packet_rescale_ts(data_->packet, data_->codec_context->time_base,
+                             data_->stream->time_base);
+        data_->packet->stream_index = data_->stream->index;
+
+        if (av_interleaved_write_frame(data_->out_context, data_->packet) < 0)
+            Error_("Could not write packet");
     }
 }

@@ -84,9 +84,15 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     GetContext().event_manager->InsertHandler(handler_);
 
     // Set up a VideoWriter if requested.
-    if (! GetOptions_().nocapture)
-        // XXXX FPS constant somewhere...
-        video_writer_.reset(new VideoWriter(GetOptions_().window_size, 30));
+    if (! GetOptions_().nocapture) {
+        const int kFPS = 30;  // XXXX
+        const FilePath &script_path = GetScript().GetPath();
+        FilePath video_path("PublicDoc/docs/videos/" +
+                            script_path.GetFileName());
+        video_path.ReplaceExtension(".mp4");
+        video_writer_.reset(
+            new VideoWriter(video_path, GetOptions_().window_size, kFPS));
+    }
 
     return true;
 }
@@ -135,13 +141,8 @@ void CaptureScriptApp::InstructionsDone() {
     handler_->SetEnabled(false);
 
     // Write the resulting video if requested.
-    if (video_writer_) {
-        const FilePath &script_path = GetScript().GetPath();
-        FilePath video_path("PublicDoc/docs/videos/" +
-                            script_path.GetFileName());
-        video_path.ReplaceExtension(".mp4");
-        video_writer_->WriteToFile(video_path);
-    }
+    if (video_writer_)
+        video_writer_->WriteToFile();
 
     // Remove the VideoWriter_ so this does not happen again in case
     // InstructionsDone() is called again (if remain flag is set).
