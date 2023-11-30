@@ -105,12 +105,14 @@ if platform == 'linux':
                               exports=['app_dict', 'base_env',
                                        'doc_build_dir']))
     # Public (Sphinx-generated) web documentation. This requires the
-    # 'snapimage' application.
-    snapimage = apps['snapimage'][0]
+    # 'snapimage' and 'capturevideo' applications.
+    snapimage    = apps['snapimage'][0]
+    capturevideo = apps['capturevideo'][0]
     base_env.Alias('PublicDoc',
                    SConscript('PublicDoc/SConscript_doc',
-                              exports=['app_dict', 'doc_build_dir',
-                                       'noimages', 'snapimage']))
+                              exports=['app_dict', 'capturevideo',
+                                       'doc_build_dir', 'noimages',
+                                       'snapimage']))
 
 # -----------------------------------------------------------------------------
 # Building the release as a Zip file.

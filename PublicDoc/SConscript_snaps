@@ -11,12 +11,6 @@ Import('noimages', 'snapimage')
 # Environment.
 # -----------------------------------------------------------------------------
 
-env = Environment()
-
-# -----------------------------------------------------------------------------
-# Environment.
-# -----------------------------------------------------------------------------
-
 env = Environment(
     # Copy the environment variables for the snapimage application.
     ENV = environ.copy(),

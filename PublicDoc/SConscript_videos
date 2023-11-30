@@ -1,0 +1,47 @@
+# -----------------------------------------------------------------------------
+# Generates videos for public documentation using the capturevideo application.
+# -----------------------------------------------------------------------------
+
+from os      import environ
+from os.path import join
+
+Import('capturevideo')
+
+# -----------------------------------------------------------------------------
+# Environment.
+# -----------------------------------------------------------------------------
+
+env = Environment(
+    # Copy the environment variables for the capturevideo application.
+    ENV = environ.copy(),
+)
+
+# -----------------------------------------------------------------------------
+# Snapshot Video generation and annotation.
+# -----------------------------------------------------------------------------
+
+root_dir   = env.Dir('#').abspath   # Work around SCons issue.
+video_dir  = './docs/videos'
+script_dir = './videos/scripts'
+
+# List of capturevideo script files to the videos they generate.
+scripts = ['Doorstop']
+
+def VideoFile(name):
+  return join(video_dir, name + '.mp4')
+
+# Video script processing.
+videos = []
+for script in scripts:
+    script_file = script + '.conf'
+    video = env.Command(VideoFile(script),
+                        [capturevideo, join(script_dir, script_file)],
+                        f'{capturevideo.abspath} {script_file}',
+                        chdir=root_dir)
+    # This prevents capturevideo from running in parallel.
+    env.SideEffect('dummy', video)
+    videos.append(video)
+
+env.Alias('Videos', videos)
+
+Return('videos')

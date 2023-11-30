@@ -7,7 +7,7 @@ from os         import environ, makedirs, walk
 from os.path    import dirname, join, relpath
 from subprocess import Popen, PIPE, run
 
-Import('app_dict', 'doc_build_dir', 'noimages', 'snapimage')
+Import('app_dict', 'capturevideo', 'doc_build_dir', 'noimages', 'snapimage')
 
 # -----------------------------------------------------------------------------
 # Helper functions.
@@ -134,10 +134,11 @@ cs_generator = '#build/opt/Apps/createcheatsheet'
 env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 
 # -----------------------------------------------------------------------------
-# Snapshot Image generation and annotation.
+# Image and video generation and annotation.
 # -----------------------------------------------------------------------------
 
-images = SConscript('SConscript_snaps', exports=['noimages', 'snapimage'])
+images = SConscript('SConscript_snaps',  exports=['noimages', 'snapimage'])
+videos = SConscript('SConscript_videos', exports=['capturevideo'])
 
 # -----------------------------------------------------------------------------
 # Version processing.
