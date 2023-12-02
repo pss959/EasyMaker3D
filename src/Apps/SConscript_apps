@@ -7,7 +7,7 @@ app_names = [main_app_name, 'nodeviewer', 'printtypes']
 if app_env['PLATFORM'] == 'linux':
     app_names += ['capturevideo', 'createcheatsheet', 'snapimage']
     # Extra packages Needed for capturevideo.
-    app_env.AddPackages(Split('libavcodec libavformat libavutil'))
+    app_env.AddPackages(Split('libavcodec libavformat libavutil libswscale'))
 
 apps_extra_sources = [
     '../App/Args.cpp',

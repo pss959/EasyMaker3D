@@ -16,12 +16,6 @@ struct AVFrame;
 /// \ingroup App
 class VideoWriter {
   public:
-    /// This struct stores codec-specific options.
-    struct Codec {
-        std::string extension; ///< Extension used for video files (no dot).
-        std::string encoder;   ///< FFMPEG video encoder.
-    };
-
     /// Exception thrown when anything goes wrong.
     class Exception : public ExceptionBase {
       public:
@@ -31,8 +25,8 @@ class VideoWriter {
     VideoWriter();
     ~VideoWriter();
 
-    /// Returns a Codec struct with codec information.
-    const Codec GetCodec() const { return codec_; }
+    /// Returns the extension to use for the resulting video (with no dot).
+    const Str & GetExtension() const { return extension_; }
 
     /// Initializes the VideoWriter, given the path to the file to write to,
     /// the video resolution, and the number of frames per second.
@@ -48,7 +42,8 @@ class VideoWriter {
     // This struct stores all the FFMPEG data needed for writing video files.
     struct Data_;
 
-    Codec codec_;
+    const Str extension_; ///< Extension used for video files (no dot).
+
     std::unique_ptr<Data_> data_;
 
     /// Initializes FFMPEG for writing video files.

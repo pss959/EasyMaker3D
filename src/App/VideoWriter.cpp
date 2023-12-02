@@ -4,6 +4,8 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
+#include <libavutil/opt.h>
+#include <libswscale/swscale.h>
 }
 
 #include <cstring>
@@ -21,18 +23,17 @@ struct VideoWriter::Data_ {
     AVFrame         *frame         = nullptr;
     AVPacket        *packet        = nullptr;
     AVStream        *stream        = nullptr;
+    SwsContext      *sws_context   = nullptr;
     uint64           cur_frame     = 0;
 };
 
-VideoWriter::VideoWriter() {
-    // Set the codec information.
-    codec_.extension = "mp4";
-    codec_.encoder   = "libx264rgb";
-
-    data_.reset(new Data_);
-}
-
+VideoWriter::VideoWriter() : extension_("webm"), data_(new Data_) {}
 VideoWriter::~VideoWriter() {}
+
+static std::string ErrorToString_(int err) {
+    char buf[1024];
+    return std::string(av_make_error_string(buf, 1024, err));
+};
 
 void VideoWriter::Init(const FilePath &path,
                        const Vector2i &resolution, int fps) {
@@ -46,14 +47,14 @@ void VideoWriter::Init(const FilePath &path,
 
     // Open the output context.
     avformat_alloc_output_context2(&data_->out_context, nullptr,
-                                   codec_.extension.c_str(), nullptr);
+                                   extension_.c_str(), nullptr);
     if (! data_->out_context)
         Error_("Could not allocate output format context");
 
     // Find the encoder.
-    data_->codec = avcodec_find_encoder_by_name(codec_.encoder.c_str());
+    data_->codec = avcodec_find_encoder(AV_CODEC_ID_VP9);
     if (! data_->codec)
-        Error_("Codec '" + codec_.encoder + "' not found");
+        Error_("Codec not found");
 
     // Allocate a packet for writing data.
     data_->packet = av_packet_alloc();
@@ -68,19 +69,32 @@ void VideoWriter::Init(const FilePath &path,
     data_->codec_context = avcodec_alloc_context3(data_->codec);
     if (! data_->codec_context)
         Error_("Could not allocate video codec context");
-    data_->codec_context->codec_id   = data_->out_context->oformat->video_codec;
-    data_->codec_context->bit_rate   = 6000000;  // Produces good quality.
-    data_->codec_context->width      = resolution[0];
-    data_->codec_context->height     = resolution[1];
-    data_->stream->time_base = { 1, fps};
-    data_->codec_context->time_base  = data_->stream->time_base;
+    data_->codec_context->width        = resolution[0];
+    data_->codec_context->height       = resolution[1];
+    data_->stream->time_base           = { 1, fps};
+    data_->codec_context->time_base    = data_->stream->time_base;
+    av_opt_set(data_->codec_context->priv_data, "crf", "31", 0);
+
     // Emit one intra frame every twelve frames at most.
-    data_->codec_context->gop_size   = 12;
-    data_->codec_context->pix_fmt    = AV_PIX_FMT_RGB24;
+    data_->codec_context->gop_size     = 12;
+    data_->codec_context->pix_fmt      = AV_PIX_FMT_YUV420P;
+    data_->codec_context->max_b_frames = 3;
+    data_->codec_context->refs         = 3;
 
     // Open the codec.
-    if (avcodec_open2(data_->codec_context, data_->codec, nullptr) < 0)
-        Error_("Could not open video codec");
+    auto ret = avcodec_open2(data_->codec_context, data_->codec, nullptr);
+    //if (avcodec_open2(data_->codec_context, data_->codec, nullptr) < 0)
+    if (ret < 0)
+        Error_("Could not open video codec " + ErrorToString_(ret));
+
+    // Set up a context for RGB -> YUV conversion.
+    data_->sws_context = sws_getContext(resolution[0], resolution[1],
+                                        AV_PIX_FMT_RGB24,
+                                        resolution[0], resolution[1],
+                                        AV_PIX_FMT_YUV420P,
+                                        0, nullptr, nullptr, nullptr);
+    if (! data_->sws_context)
+        Error_("Could not allocate sws context");
 
     // Allocate a frame.
     data_->frame = av_frame_alloc();
@@ -110,14 +124,19 @@ void VideoWriter::Init(const FilePath &path,
 
 void VideoWriter::AddImage(const ion::gfx::Image &image) {
     ASSERT(data_);
+    ASSERT(image.GetDataSize() ==
+           3U * data_->frame->width * data_->frame->height);
+
     if (av_frame_make_writable(data_->frame) < 0)
         Error_("Could not make the video frame data writable");
 
-    // Copy the image data.
-    ASSERT(image.GetDataSize() ==
-           3U * data_->frame->width * data_->frame->height);
-    std::memcpy(&data_->frame->data[0][0],
-                image.GetData()->GetData(), image.GetDataSize());
+    // Convert RGB24 => YUV420P. Use sws_scale() with identical source and
+    // destination sizes.
+    const uint8_t *slices[1]{
+        reinterpret_cast<const uint8_t *>(image.GetData()->GetData()) };
+    const int strides[1]{ 3 * data_->frame->width };
+    sws_scale(data_->sws_context, slices, strides, 0, data_->frame->height,
+              data_->frame->data, data_->frame->linesize);
 
     data_->frame->pts = data_->cur_frame;
 

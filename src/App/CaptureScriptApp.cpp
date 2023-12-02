@@ -92,10 +92,10 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
         const FilePath &script_path = GetScript().GetPath();
         FilePath video_path("PublicDoc/docs/extra/videos/" +
                             script_path.GetFileName());
-        video_path.ReplaceExtension("." + video_writer_->GetCodec().extension);
+        video_path.ReplaceExtension("." + video_writer_->GetExtension());
 
         // Initialize the VideoWriter.
-        video_writer_->Init(video_path, GetOptions_().window_size, kFPS);
+        video_writer_->Init(video_path, GetWindowSize(), kFPS);
     }
 
     return true;

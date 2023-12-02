@@ -286,7 +286,7 @@ img {
  * -------------------------------------------------------------------------- */
 
 .embedded-video {
-    border:        1px solid #444444;
+    border:        4px solid #4444ee;
     display:       block;
     margin-left:   auto;
     margin-right:  auto;    

@@ -66,6 +66,7 @@ Additionally:
         libavcodec-dev
         libavformat-dev
         libavutil-dev
+        libswscale-dev
 
  - The following Python packages are required to build the public
    documentation:
