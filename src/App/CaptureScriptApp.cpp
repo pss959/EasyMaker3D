@@ -86,12 +86,16 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     // Set up a VideoWriter if requested.
     if (! GetOptions_().nocapture) {
         const int kFPS = 30;  // XXXX
+        video_writer_.reset(new VideoWriter);
+
+        // Set up the output path.
         const FilePath &script_path = GetScript().GetPath();
-        FilePath video_path("PublicDoc/docs/videos/" +
+        FilePath video_path("PublicDoc/docs/extra/videos/" +
                             script_path.GetFileName());
-        video_path.ReplaceExtension(".mp4");
-        video_writer_.reset(
-            new VideoWriter(video_path, GetOptions_().window_size, kFPS));
+        video_path.ReplaceExtension("." + video_writer_->GetCodec().extension);
+
+        // Initialize the VideoWriter.
+        video_writer_->Init(video_path, GetOptions_().window_size, kFPS);
     }
 
     return true;

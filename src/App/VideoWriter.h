@@ -16,16 +16,27 @@ struct AVFrame;
 /// \ingroup App
 class VideoWriter {
   public:
+    /// This struct stores codec-specific options.
+    struct Codec {
+        std::string extension; ///< Extension used for video files (no dot).
+        std::string encoder;   ///< FFMPEG video encoder.
+    };
+
     /// Exception thrown when anything goes wrong.
     class Exception : public ExceptionBase {
       public:
         Exception(const Str &msg) : ExceptionBase(msg) {}
     };
 
-    /// The constructor is passed the path to the file to write to, the video
-    /// resolution, and the number of frames per second.
-    VideoWriter(const FilePath &path, const Vector2i &resolution, int fps);
+    VideoWriter();
     ~VideoWriter();
+
+    /// Returns a Codec struct with codec information.
+    const Codec GetCodec() const { return codec_; }
+
+    /// Initializes the VideoWriter, given the path to the file to write to,
+    /// the video resolution, and the number of frames per second.
+    void Init(const FilePath &path, const Vector2i &resolution, int fps);
 
     /// Adds an image to the video.
     void AddImage(const ion::gfx::Image &image);
@@ -37,6 +48,7 @@ class VideoWriter {
     // This struct stores all the FFMPEG data needed for writing video files.
     struct Data_;
 
+    Codec codec_;
     std::unique_ptr<Data_> data_;
 
     /// Initializes FFMPEG for writing video files.

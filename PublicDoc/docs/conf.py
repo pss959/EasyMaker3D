@@ -35,6 +35,7 @@ extensions = [
     # Official extensions:
     'sphinx.ext.todo',
     'sphinxcontrib.jquery',
+    'sphinxcontrib.video',
 
     # Local extensions:
     'fixreplace',
@@ -73,6 +74,7 @@ fixreplace_dict = {
 
 html_theme           = 'sphinx_rtd_theme'  # Read the Docs.
 html_static_path     = ['_static']
+html_extra_path      = ['extra']
 html_css_files       = ['css/custom.css']
 html_js_files        = ['js/version_selector.js', 'js/versions.js']
 html_favicon         = 'images/static/favicon.ico'

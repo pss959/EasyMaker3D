@@ -21,7 +21,7 @@ env = Environment(
 # -----------------------------------------------------------------------------
 
 root_dir   = env.Dir('#').abspath   # Work around SCons issue.
-video_dir  = './docs/videos'
+video_dir  = './docs/extra/videos'
 script_dir = './videos/scripts'
 
 # List of capturevideo script files to the videos they generate.
@@ -36,7 +36,8 @@ for script in scripts:
     script_file = script + '.conf'
     video = env.Command(VideoFile(script),
                         [capturevideo, join(script_dir, script_file)],
-                        f'{capturevideo.abspath} {script_file}',
+                        [Mkdir(video_dir),
+                         f'{capturevideo.abspath} {script_file}'],
                         chdir=root_dir)
     # This prevents capturevideo from running in parallel.
     env.SideEffect('dummy', video)

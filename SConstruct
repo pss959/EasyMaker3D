@@ -2,7 +2,7 @@
 # Configuration.
 # -----------------------------------------------------------------------------
 
-# This version string has to be in exactly this format for the publishdoc script.
+# This version string has to be in exactly this format.
 version_string = '1.8.0'
 
 app_name = 'EasyMaker3D'

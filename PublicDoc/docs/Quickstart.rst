@@ -22,6 +22,13 @@ model and output it as an STL file.
 
 |block-image|
 
+.. video:: videos/Doorstop2.mp4
+    :alt:    The process of creating the Doorstop example
+    :class:  embedded-video
+    :height: 552
+
+|block-image|
+
 Start the Application
 .....................
 

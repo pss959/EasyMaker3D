@@ -9,6 +9,12 @@ from subprocess import Popen, PIPE, run
 
 Import('app_dict', 'capturevideo', 'doc_build_dir', 'noimages', 'snapimage')
 
+# PublicDoc has dependency errors when using multiple jobs. I have not found
+# any workaround that works, including using SideEffect() for all targets.
+if GetOption('num_jobs') > 1 and 'PublicDoc' in COMMAND_LINE_TARGETS:
+    print('*** PublicDoc will likely fail with more than 1 job - exiting')
+    Exit(1)
+
 # -----------------------------------------------------------------------------
 # Helper functions.
 # -----------------------------------------------------------------------------
@@ -119,19 +125,13 @@ def AddRedirect_(target, source, env):
 env.Append(BUILDERS={ 'AddRedirect' : Builder(action=AddRedirect_) })
 
 # -----------------------------------------------------------------------------
-# Global variables.
-# -----------------------------------------------------------------------------
-
-output_doc_path  = env.Dir('$VERSION_DIR').abspath
-
-# -----------------------------------------------------------------------------
 # Cheat Sheet generation. This goes in the 'PublicDoc/docs' directory so it can
 # be processed like all the other input.
 # -----------------------------------------------------------------------------
 
 cs_output    = 'docs/CheatSheet.rst'
 cs_generator = '#build/opt/Apps/createcheatsheet'
-env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
+cs = env.Command(cs_output, cs_generator, '$SOURCE > $TARGET')
 
 # -----------------------------------------------------------------------------
 # Image and video generation and annotation.
@@ -163,16 +163,22 @@ sphinx_args = ' '.join([
     '-a',    # Write all files.
 ])
 
+# Copy the top-level index.html file into the build directory.
+index = env.Install(target='$OUTPUT_DIR', source='./index.html')
+
 # Run Sphinx to build the doc.
 sources = FindAllSources_('docs')
+output_doc_path = env.Dir('$VERSION_DIR').abspath
 doc = env.Command(f'$VERSION_DIR/index.html',
                   sources + [cs_output] + images,
                   ['echo === Building public doc for version: $VERSION_SUBDIR',
                    f'{sphinx} {sphinx_args} docs {output_doc_path}'],
                   chdir=f'{root_dir}/PublicDoc')
+env.Depends(doc, [cs, index, version_js_file, images, videos])
 
-# Copy the top-level index.html file into the build directory.
-index = env.Install(target='$OUTPUT_DIR', source='./index.html')
+# -----------------------------------------------------------------------------
+# Setting up redirects.
+# -----------------------------------------------------------------------------
 
 # Add URL redirect files to "latest" directory. These commands require the rest
 # of the doc to be built first.
@@ -190,10 +196,10 @@ for rfile in redirect_files:
     to_path   = join(env.subst('$VERSION_SUBDIR'), rfile)
     abs_from_path = join(env.Dir('$OUTPUT_DIR').abspath, from_path)
     abs_to_path   = join(env.Dir('$OUTPUT_DIR').abspath, to_path)
-    redirects.append(env.AddRedirect(target=abs_from_path, source=abs_to_path))
+    redirect = env.AddRedirect(target=abs_from_path, source=abs_to_path)
+    env.Depends(redirect, doc)
+    redirects.append(redirect)
 
-env.Depends(redirects, doc)
-
-public_doc = [doc, redirects, index]
+public_doc = redirects
 
 Return('public_doc')

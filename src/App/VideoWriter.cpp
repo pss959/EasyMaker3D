@@ -24,16 +24,18 @@ struct VideoWriter::Data_ {
     uint64           cur_frame     = 0;
 };
 
-VideoWriter::VideoWriter(const FilePath &path,
-                         const Vector2i &resolution, int fps) {
+VideoWriter::VideoWriter() {
+    // Set the codec information.
+    codec_.extension = "mp4";
+    codec_.encoder   = "libx264rgb";
+
     data_.reset(new Data_);
-    Init_(path, resolution, fps);
 }
 
 VideoWriter::~VideoWriter() {}
 
-void VideoWriter::Init_(const FilePath &path,
-                        const Vector2i &resolution, int fps) {
+void VideoWriter::Init(const FilePath &path,
+                       const Vector2i &resolution, int fps) {
     ASSERT(data_);
 
     const auto real_path = path.ToNativeString();
@@ -44,14 +46,14 @@ void VideoWriter::Init_(const FilePath &path,
 
     // Open the output context.
     avformat_alloc_output_context2(&data_->out_context, nullptr,
-                                   "mp4", nullptr);
+                                   codec_.extension.c_str(), nullptr);
     if (! data_->out_context)
         Error_("Could not allocate output format context");
 
     // Find the encoder.
-    data_->codec = avcodec_find_encoder_by_name("libx264rgb");
+    data_->codec = avcodec_find_encoder_by_name(codec_.encoder.c_str());
     if (! data_->codec)
-        Error_("Codec 'libx264rgb' not found");
+        Error_("Codec '" + codec_.encoder + "' not found");
 
     // Allocate a packet for writing data.
     data_->packet = av_packet_alloc();

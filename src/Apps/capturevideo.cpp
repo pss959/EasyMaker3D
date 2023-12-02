@@ -34,8 +34,8 @@ public documentation.
 
     The script file is loaded from PublicDoc/videos/scripts/<SCRIPT>.
     If specified, a session is loaded from PublicDoc/videos/sessions/<SESSION>.
-    The resulting video file is in "PublicDoc/docs/videos/" and is named the
-       same as the SCRIPT with a ".gif" extension.
+    The resulting video file is in "PublicDoc/docs/extra/videos/" and is named
+    the same as the SCRIPT with a different extension.
 )";
 
 int main(int argc, const char *argv[]) {

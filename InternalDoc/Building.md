@@ -60,11 +60,20 @@ Additionally:
  - The [`Pillow`](https://python-pillow.org/) Python package (`PIL`
    replacement) is required to build the 2D radial menu icon resource files
    (required for the application).
- - The [`Sphinx`](https://www.sphinx-doc.org/),
-   [`sphinx-rtd-theme`](https://sphinx-rtd-theme.readthedocs.io), and
-   [`sphinxcontrib-jquery`](https://pypi.org/project/sphinxcontrib-jquery/)
-   Python packages are required to build the public documentation.
- - The `libboost-dev` package is required to run the unit tests.
+ - The following packages are required to build videos for the public
+   documentation:
+
+        libavcodec-dev
+        libavformat-dev
+        libavutil-dev
+
+ - The following Python packages are required to build the public
+   documentation:
+     - [`Sphinx`](https://www.sphinx-doc.org/)
+     - [`sphinx-rtd-theme`](https://sphinx-rtd-theme.readthedocs.io)
+     - [`sphinxcontrib-jquery`](https://pypi.org/project/sphinxcontrib-jquery/)
+     - [`sphinxcontrib-video`](https://pypi.org/project/sphinxcontrib-video/)
+ - The `libboost-dev` package is required to build and run the unit tests.
 
 ### Windows
 
@@ -143,12 +152,11 @@ The targets consist of three main groups:
 
   - **Applications**, including
     + _$(APP_NAME)_: The main application.
+    + _capturevideo_: Used to create videos for the public documentation.
     + _createcheatsheet_: Creates the Cheat Sheet reStructuredText file used in
       the public documentation.
     + _nodeviewer_: An interactive application that can help view individual
       models for convenience.
-    + _printtypes_: Writes to standard output all known concrete parsable types
-      with their fields. (See [Parser Objects](#Parser::Object).)
     + _printtypes_: Writes to standard output all known concrete parsable types
       with their fields. (See [Parser Objects](#Parser::Object).)
     + _snapimage_: Used to create most images for the public documentation.
@@ -174,6 +182,7 @@ following aliases:
 | **Release**     | Builds the release zip or DMG file (`rel` mode only)  |
 | **RunTests**    | Builds and runs unit tests                            |
 | **Tests**       | Builds unit tests                                     |
+| **Videos**      | Builds all videos for public documentation            |
 
 Note that some targets are defined only in the Linux build. This can be changed
 fairly easily in the `SCons` files if necessary.
@@ -299,6 +308,7 @@ are as follows:
 | `InternalDoc/SConscript_dox`       | Rules to build the internal documentation                |
 | `PublicDoc/SConscript_doc`         | Rules to build the public documentation                  |
 | `PublicDoc/SConscript_snaps`       | Rules to build snapshot images for public documentation  |
+| `PublicDoc/SConscript_videos`      | Rules to build videos for public documentation           |
 | `ionsrc/SConscript_ion`            | Rules to build the `IonLib` library                      |
 | `ionsrc/SConscript_iondoc`         | Rules to build internal documentation for Ion            |
 | `ionsrc/SConscript_iontests`       | Rules to build and run tests for Ion                     |
