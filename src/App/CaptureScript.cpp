@@ -48,6 +48,9 @@ CaptureScript::InstrPtr CaptureScript::ProcessDrag_(const StrVec &words) {
              ! ParseFloat(words[3], seconds)) {
         Error("Invalid dx, dy, or seconds floats for drag instruction");
     }
+    else if (seconds <= 0) {
+        Error("Seconds for drag instruction must be positive");
+    }
     else {
         dinst.reset(new DragInstr);
         dinst->motion.Set(dx, dy);

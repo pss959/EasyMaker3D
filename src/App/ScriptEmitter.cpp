@@ -51,7 +51,7 @@ void ScriptEmitter::AddDragPoint(const Str &phase, const Point2f &pos) {
 }
 
 void ScriptEmitter::AddDragPoints(const Point2f &pos0,
-                                          const Point2f &pos1, size_t count) {
+                                  const Point2f &pos1, size_t count) {
     AddDragPoint("start", pos0);
 
     // Add intermediate points, including pos1.

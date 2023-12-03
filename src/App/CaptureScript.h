@@ -25,8 +25,8 @@ class CaptureScript : public ScriptBase {
         bool    is_on;
     };
     struct DragInstr : public Instr {
-        Point2f motion;
-        float   seconds;
+        Vector2f motion;
+        float    seconds;
     };
     struct ModInstr : public Instr {
         bool    is_on;

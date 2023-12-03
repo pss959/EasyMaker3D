@@ -56,22 +56,25 @@ bool ScriptedApp::Init(const OptionsPtr &options, const ScriptBasePtr &script) {
 }
 
 bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
-    const size_t instr_count = script_->GetInstructions().size();
+    const size_t instr_count         = script_->GetInstructions().size();
+    const bool events_pending        = emitter_->HasPendingEvents();
     const bool are_more_instructions = cur_instruction_ < instr_count;
     bool keep_going;
     bool processing_done = false;
 
     // Let the base class check for exit. Force it to poll for events if there
-    // are instructions left to process or if the window is supposed to go
-    // away; don't want to wait for an event to come along.
-    const bool should_poll = are_more_instructions || ! options_->remain;
+    // are instructions left to process, there are pending emitter events, or
+    // if the window is supposed to go away; don't want to wait for an event to
+    // come along.
+    const bool should_poll =
+        are_more_instructions || events_pending || ! options_->remain;
     if (! Application::ProcessFrame(render_count, should_poll)) {
         keep_going = false;
     }
 
     // If there are events pending, do not process more instructions before
     // they are handled.
-    else if (emitter_->HasPendingEvents()) {
+    else if (events_pending) {
         keep_going = true;
     }
 

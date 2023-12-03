@@ -58,8 +58,9 @@ back wall or use :shortcut:`Ctrl-Z`.
 
 .. incimage:: /images/QuickstartTorus.jpg 220px right
 
-Next you will move the torus a little to the right.  Hit :shortcut:`Space` to
-switch from the specialized torus tool to the general translation tool.
+Next you will move the torus a little to the right.  Click on the icon on the
+top left shelf or hit :shortcut:`Space` to switch from the specialized torus
+tool to the general translation tool.
 
 Drag the handle on the right side of the torus to the right until it has moved
 5 units. You will notice that as you drag the torus, feedback appears to show

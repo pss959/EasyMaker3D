@@ -41,13 +41,17 @@ class CaptureScriptApp : public ScriptedApp {
 
     const Options & GetOptions_() const;
 
+    /// Adds events to drag from the current cursor position by the given
+    /// motion vector over the given duration in seconds.
+    void DragTo_(const Vector2f &motion, float seconds);
+
     /// Adds events to move the cursor to be over the center of the named
     /// object over the given duration in seconds.
-    void MoveCursorOver_(const Str &object_name, float seconds);
+    void MoveOver_(const Str &object_name, float seconds);
 
     /// Adds events to move the cursor to the given position in normalized
     /// window coordinates over the given duration in seconds.
-    void MoveCursorTo_(const Point2f &pos, float seconds);
+    void MoveTo_(const Point2f &pos, float seconds);
 
     /// Moves the fake cursor to the given position in normalized window
     /// coordinates.

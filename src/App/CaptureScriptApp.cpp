@@ -114,8 +114,7 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     }
     else if (instr.name == "drag") {
         const auto &dinst = GetTypedInstr_<CaptureScript::DragInstr>(instr);
-        // XXXX
-        std::cerr << "XXXX INST: " << dinst.name << "\n";
+        DragTo_(dinst.motion, dinst.seconds);
     }
     else if (instr.name == "mod") {
         const auto &minst = GetTypedInstr_<CaptureScript::ModInstr>(instr);
@@ -125,11 +124,11 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     }
     else if (instr.name == "moveover") {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveOverInstr>(instr);
-        MoveCursorOver_(minst.object_name, minst.seconds);
+        MoveOver_(minst.object_name, minst.seconds);
     }
     else if (instr.name == "moveto") {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveToInstr>(instr);
-        MoveCursorTo_(minst.pos, minst.seconds);
+        MoveTo_(minst.pos, minst.seconds);
     }
     else if (instr.name == "wait") {
         const auto &winst = GetTypedInstr_<CaptureScript::WaitInstr>(instr);
@@ -172,7 +171,27 @@ const CaptureScriptApp::Options & CaptureScriptApp::GetOptions_() const {
     return static_cast<const Options &>(opts);
 }
 
-void CaptureScriptApp::MoveCursorOver_(const Str &object_name, float seconds) {
+void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds) {
+    const Point2f end_pos = cursor_pos_ + motion;
+
+    // Determine the number of events to create over the duration.
+    const size_t frames = seconds * GetOptions_().fps;
+    std::vector<Point2f> points;
+    points.reserve(frames);
+    for (auto i : std::views::iota(0U, frames)) {
+        const float t = static_cast<float>(i + 1) / frames;
+        points.push_back(BezierInterp(t, cursor_pos_, end_pos));
+    }
+
+    // Emit the points.
+    auto &emitter = GetEmitter();
+    emitter.AddDragPoint("start", points[0]);
+    for (size_t i = 1; i + 1 < frames; ++i)
+        emitter.AddDragPoint("continue", points[i]);
+    emitter.AddDragPoint("end", points[frames - 1]);
+}
+
+void CaptureScriptApp::MoveOver_(const Str &object_name, float seconds) {
     SG::NodePtr root = GetContext().scene_context->scene->GetRootNode();
     SG::NodePath path;  // Path from scene root to target object.
 
@@ -197,10 +216,10 @@ void CaptureScriptApp::MoveCursorOver_(const Str &object_name, float seconds) {
     // Project the center of the object in world coordinates onto the Frustum
     // image plane to get the point to move to.
     const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
-    MoveCursorTo_(GetFrustum().ProjectToImageRect(center), seconds);
+    MoveTo_(GetFrustum().ProjectToImageRect(center), seconds);
 }
 
-void CaptureScriptApp::MoveCursorTo_(const Point2f &pos, float seconds) {
+void CaptureScriptApp::MoveTo_(const Point2f &pos, float seconds) {
     if (seconds > 0) {
         // Determine the number of events to create over the duration.
         const size_t frames = seconds * GetOptions_().fps;
