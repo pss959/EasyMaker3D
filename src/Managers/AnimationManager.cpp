@@ -5,6 +5,7 @@ void AnimationManager::StartAnimation(const AnimationFunc &func) {
     AnimData_ data;
     data.func        = func;
     data.start_time  = UTime::Now();
+    data.frame_count = 0;
     data.is_finished = false;
     anim_data_.push_back(data);
 }
@@ -14,9 +15,15 @@ void AnimationManager::ProcessUpdate() {
         UTime now = UTime::Now();
 
         for (auto &data: anim_data_) {
-            // Invoke the function and see if it finished.
-            const float time =
+            // Compute the elapsed time using actual time or the frame
+            // increment.
+
+
+            const float time = frame_increment_ > 0 ?
+                ++data.frame_count * frame_increment_ :
                 static_cast<float>(now.SecondsSince(data.start_time));
+
+            // Invoke the function and see if it finished.
             data.is_finished = ! data.func(time);
         }
 

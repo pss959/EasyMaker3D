@@ -4,10 +4,6 @@
 #include "Util/Delay.h"
 #include "Util/Tuning.h"
 
-ScriptEmitter::ScriptEmitter() {
-    last_event_time_ = UTime::Now();
-}
-
 void ScriptEmitter::AddClick(const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
@@ -128,17 +124,10 @@ void ScriptEmitter::EmitEvents(std::vector<Event> &events) {
             }
             waited_for_click_ = false;
         }
-        // Otherwise, do not emit any events unless the delay time (if any) is
-        // reached.
-        else if (delay_ > 0) {
-            if (UTime::Now().SecondsSince(last_event_time_) < delay_)
-                return;
-        }
 
         prev_was_button_press_ = event.flags.Has(Event::Flag::kButtonPress);
 
         events.push_back(event);
         events_.pop_front();
-        last_event_time_ = UTime::Now();
     }
 }

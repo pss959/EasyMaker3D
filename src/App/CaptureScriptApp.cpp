@@ -12,6 +12,7 @@
 #include "App/ScriptEmitter.h"
 #include "Base/Event.h"
 #include "Handlers/Handler.h"
+#include "Managers/AnimationManager.h"
 #include "Managers/EventManager.h"
 #include "Managers/SceneContext.h"
 #include "Math/Intersection.h"
@@ -74,18 +75,16 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     cursor_ = SG::FindNodeInScene(scene, "FakeCursor");
     MoveFakeCursorTo_(Point2f(.5f, .5f));  // In the middle.
 
-    // Set a delay between emitted events.
-    GetEmitter().SetDelay(1.f / 30);
-
     // Add a CursorHandler_ to update the fake cursor when the mouse is moved.
     // Insert it at the beginning so no other handler steals the event.
     handler_.reset(new CursorHandler_(
                        [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
     GetContext().event_manager->InsertHandler(handler_);
 
+    const auto &opts = GetOptions_();
+
     // Set up a VideoWriter if requested.
-    if (! GetOptions_().nocapture) {
-        const int kFPS = 30;  // XXXX
+    if (! opts.nocapture) {
         video_writer_.reset(new VideoWriter);
 
         // Set up the output path.
@@ -95,8 +94,12 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
         video_path.ReplaceExtension("." + video_writer_->GetExtension());
 
         // Initialize the VideoWriter.
-        video_writer_->Init(video_path, GetWindowSize(), kFPS);
+        video_writer_->Init(video_path, GetWindowSize(), opts.fps);
     }
+
+    // Use a constant time increment per frame for animation so the animations
+    // are not subject to inconsistent frame times due to capture.
+    GetContext().animation_manager->SetFrameIncrement(1.f / opts.fps);
 
     return true;
 }
@@ -198,11 +201,11 @@ void CaptureScriptApp::MoveCursorOver_(const Str &object_name, float seconds) {
 }
 
 void CaptureScriptApp::MoveCursorTo_(const Point2f &pos, float seconds) {
-    if (seconds > 0 && GetEmitter().GetDelay() > 0) {
+    if (seconds > 0) {
         // Determine the number of events to create over the duration.
-        const size_t count = std::roundf(seconds / GetEmitter().GetDelay());
-        for (auto i : std::views::iota(0U, count)) {
-            const float t = static_cast<float>(i + 1) / count;
+        const size_t frames = seconds * GetOptions_().fps;
+        for (auto i : std::views::iota(0U, frames)) {
+            const float t = static_cast<float>(i + 1) / frames;
             GetEmitter().AddHoverPoint(BezierInterp(t, cursor_pos_, pos));
         }
     }

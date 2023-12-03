@@ -22,10 +22,11 @@ R"(capturevideo: Play back a session file with delays to create a video for
 public documentation.
 
     Usage:
-      capturevideo [--fullscreen] [--klog=<klog_string>]
+      capturevideo [--fps=<fps>] [--fullscreen] [--klog=<klog_string>]
                    [--nocapture] [--remain] [--report] SCRIPT [SESSION]
 
     Options:
+      --fps=<long>    Frames per second in the resulting video (default 30).
       --fullscreen    Use a full-screen window.
       --nocapture     Do not actually capture the video (useful for testing).
       --klog=<string> String to pass to KLogger::SetKeyString().
@@ -55,6 +56,7 @@ int main(int argc, const char *argv[]) {
     KLogger::SetKeyString(args.GetString("--klog"));
     options->do_ion_remote      = true;
     options->enable_vr          = false;
+    options->fps                = args.GetAsInt("--fps", 30);
     options->fullscreen         = args.GetBool("--fullscreen");
     options->nocapture          = args.GetBool("--nocapture");
     options->remain             = args.GetBool("--remain");

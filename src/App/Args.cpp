@@ -1,6 +1,7 @@
 #include "App/Args.h"
 
 #include "Util/Assert.h"
+#include "Util/String.h"
 #include "Util/Tuning.h"
 
 Args::Args(int argc, const char **argv, const Str &usage) :
@@ -11,18 +12,17 @@ Args::Args(int argc, const char **argv, const Str &usage) :
 
 Str Args::GetString(const Str &name) const {
     const auto &arg = GetArg_(name);
-    if (arg && arg.isString())
-        return arg.asString();
-    else
-        return "";
+    return arg && arg.isString() ? arg.asString() : "";
 }
 
 bool Args::GetBool(const Str &name) const {
     const auto &arg = GetArg_(name);
-    if (arg && arg.isBool())
-        return arg.asBool();
-    else
-        return false;
+    return arg && arg.isBool() ? arg.asBool() : false;
+}
+
+int Args::GetAsInt(const Str &name, int default_value) const {
+    int n;
+    return Util::StringToInteger(GetString(name), n) ? n : default_value;
 }
 
 const docopt::value & Args::GetArg_(const Str &name) const {

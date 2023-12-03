@@ -22,6 +22,11 @@ class Args {
     /// false if there is no such argument.
     bool GetBool(const Str &name) const;
 
+    /// Convenience that returns the string argument with the given name
+    /// converted to an integer if possible. Returns \p default_value if there
+    /// is no such argument or if conversion fails.
+    int GetAsInt(const Str &name, int default_value) const;
+
   private:
     std::map<Str, docopt::value> args_;
 
