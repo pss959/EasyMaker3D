@@ -49,15 +49,8 @@ bool ScriptedApp::Init(const OptionsPtr &options, const ScriptBasePtr &script) {
     // Use default settings file so that state is deterministic.
     const FilePath path("PublicDoc/snaps/settings/Settings" +
                         TK::kDataFileExtension);
-    if (! context.settings_manager->SetPath(path, false)) {
-        std::cerr << "*** Unable to load default settings from "
-                  << path.ToString() << ": "
-                  << context.settings_manager->GetLoadError() << "\n";
+    if (! LoadSettings(path))
         return false;
-    }
-    // Tell the SessionManager to update its previous path.
-    context.session_manager->ChangePreviousPath(
-        context.settings_manager->GetSettings().GetLastSessionPath());
 
     return true;
 }
@@ -84,11 +77,15 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
 
     else if (are_more_instructions) {
         const auto &instr = *script_->GetInstructions()[cur_instruction_];
-        keep_going = ProcessInstruction_(instr);
-        if (instr.name == "stop")
+        if (instr.name == "stop") {
+            keep_going = false;
+            processing_done = true;
             cur_instruction_ = instr_count;
-        else
+        }
+        else {
+            keep_going = ProcessInstruction_(instr);
             ++cur_instruction_;
+        }
     }
 
     // There are no pending events and no more instructions. If not currently
@@ -124,6 +121,23 @@ const ScriptBase & ScriptedApp::GetScript() const {
 ScriptEmitter & ScriptedApp::GetEmitter() const {
     ASSERT(emitter_);
     return *emitter_;
+}
+
+bool ScriptedApp::LoadSettings(const FilePath &path) {
+    const auto &context = GetContext();
+
+    // Set the new path in the SettingsManager.
+    if (! context.settings_manager->SetPath(path, false)) {
+        std::cerr << "*** Unable to load settings from " << path.ToString()
+                  << ": " << context.settings_manager->GetLoadError() << "\n";
+        return false;
+    }
+
+    // Tell the SessionManager to update its previous path.
+    context.session_manager->ChangePreviousPath(
+        context.settings_manager->GetSettings().GetLastSessionPath());
+
+    return true;
 }
 
 bool ScriptedApp::ProcessInstruction_(const ScriptBase::Instr &instr) {

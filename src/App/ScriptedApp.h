@@ -60,6 +60,10 @@ class ScriptedApp : public Application {
     /// this to do nothing.
     virtual void FrameDone() {}
 
+    /// Loads Settings from the given path, updating the SettingsManager and
+    /// SessionManager. Returns false on error.
+    bool LoadSettings(const FilePath &path);
+
     /// Convenience that casts a ScriptBase::Instr to the templated type.
     template <typename T>
     const T & GetTypedInstr_(const ScriptBase::Instr &instr) {

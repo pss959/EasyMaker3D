@@ -9,13 +9,11 @@
 #include "App/SnapScript.h"
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"
-#include "Items/Settings.h"
 #include "Managers/BoardManager.h"
 #include "Managers/PanelManager.h"
 #include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
-#include "Managers/SettingsManager.h"
 #include "Math/Linear.h"
 #include "Models/RootModel.h"
 #include "Panels/Board.h"
@@ -103,13 +101,8 @@ bool SnapScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
         const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
                             TK::kDataFileExtension);
-        auto &settings_manager = *GetContext().settings_manager;
-        if (! settings_manager.SetPath(path, false)) {
-            std::cerr << "*** Unable to load settings from "
-                      << path.ToString() << ": "
-                      << settings_manager.GetLoadError() << "\n";
+        if (! LoadSettings(path))
             return false;
-        }
     }
     else if (instr.name == "snap") {
         const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);

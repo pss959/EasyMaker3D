@@ -20,7 +20,7 @@ bool SettingsManager::SetPath(const FilePath &path, bool save_on_set) {
     save_on_set_ = save_on_set;
 
     load_error_.clear();
-    return path.Exists() ? LoadSettings_(path, load_error_) : true;
+    return path.Exists() ? LoadSettings_(path, load_error_) : false;
 }
 
 void SettingsManager::SetSettings(const Settings &new_settings) {
