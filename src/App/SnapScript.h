@@ -1,7 +1,6 @@
 #pragma once
 
 #include "App/ScriptBase.h"
-#include "Base/Event.h"
 #include "Enums/Action.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
@@ -50,15 +49,8 @@ class SnapScript : public ScriptBase {
     struct HoverInstr : public Instr {
         Point2f   pos;
     };
-    struct KeyInstr : public Instr {
-        Event::Modifiers modifiers;
-        Str              key_name;
-    };
     struct LoadInstr : public Instr {
         Str       file_name;
-    };
-    struct ModInstr : public Instr {
-        bool      is_on;
     };
     struct SelectInstr : public Instr {
         StrVec    names;
@@ -79,9 +71,6 @@ class SnapScript : public ScriptBase {
         float     scale;
         Anglef    angle;
     };
-    struct StopInstr : public Instr {
-        // No data.
-    };
     struct TouchInstr : public Instr {
         bool      is_on;
     };
@@ -98,15 +87,12 @@ class SnapScript : public ScriptBase {
     DECL_SHARED_PTR(HandPosInstr);
     DECL_SHARED_PTR(HeadsetInstr);
     DECL_SHARED_PTR(HoverInstr);
-    DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
-    DECL_SHARED_PTR(ModInstr);
     DECL_SHARED_PTR(SelectInstr);
     DECL_SHARED_PTR(SettingsInstr);
     DECL_SHARED_PTR(SnapInstr);
     DECL_SHARED_PTR(SnapObjInstr);
     DECL_SHARED_PTR(StageInstr);
-    DECL_SHARED_PTR(StopInstr);
     DECL_SHARED_PTR(TouchInstr);
     DECL_SHARED_PTR(ViewInstr);
 
@@ -124,15 +110,12 @@ class SnapScript : public ScriptBase {
     InstrPtr ProcessHandPos_(const StrVec &words);
     InstrPtr ProcessHeadset_(const StrVec &words);
     InstrPtr ProcessHover_(const StrVec &words);
-    InstrPtr ProcessKey_(const StrVec &words);
     InstrPtr ProcessLoad_(const StrVec &words);
-    InstrPtr ProcessMod_(const StrVec &words);
     InstrPtr ProcessSelect_(const StrVec &words);
     InstrPtr ProcessSettings_(const StrVec &words);
     InstrPtr ProcessSnap_(const StrVec &words);
     InstrPtr ProcessSnapObj_(const StrVec &words);
     InstrPtr ProcessStage_(const StrVec &words);
-    InstrPtr ProcessStop_(const StrVec &words);
     InstrPtr ProcessTouch_(const StrVec &words);
     InstrPtr ProcessView_(const StrVec &words);
 };

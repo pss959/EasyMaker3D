@@ -90,7 +90,7 @@ here.
 
 .. incimage:: /images/QuickstartCylinder.jpg 240px right
 
-Drag the top (green) scaler down until the height of the cylinder is 3 units.
+Drag the top (blue) scaler down until the height of the cylinder is 3 units.
 
 |block-image|
 

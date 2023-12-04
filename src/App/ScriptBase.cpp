@@ -7,6 +7,17 @@
 
 #include "Util/Read.h"
 
+ScriptBase::ScriptBase() {
+#define REG_FUNC_(name, func) \
+    RegisterInstrFunc(name, [&](const StrVec &w){ return func(w); });
+
+    REG_FUNC_("key",  ProcessKey_);
+    REG_FUNC_("mod",  ProcessMod_);
+    REG_FUNC_("stop", ProcessStop_);
+
+#undef REG_FUNC_
+}
+
 bool ScriptBase::ReadScript(const FilePath &path) {
     instructions_.clear();
 
@@ -112,4 +123,45 @@ StrVec ScriptBase::GetWords_(const Str &line) {
         }
     }
     return words;
+}
+
+ScriptBase::InstrPtr ScriptBase::ProcessKey_(const StrVec &words) {
+    KeyInstrPtr kinst;
+    if (words.size() != 2U) {
+        Error("Bad syntax for key instruction");
+    }
+    else {
+        // words[1] is the key string
+        kinst.reset(new KeyInstr);
+        Str error;
+        if (! Event::ParseKeyString(words[1], kinst->modifiers,
+                                    kinst->key_name, error)) {
+            Error(error + " in key instruction");
+            kinst.reset();
+        }
+    }
+    return kinst;
+}
+
+ScriptBase::InstrPtr ScriptBase::ProcessMod_(const StrVec &words) {
+    ModInstrPtr minst;
+    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
+        Error("Bad syntax for mod instruction");
+    }
+    else {
+        minst.reset(new ModInstr);
+        minst->is_on = words[1] == "on";
+    }
+    return minst;
+}
+
+ScriptBase::InstrPtr ScriptBase::ProcessStop_(const StrVec &words) {
+    StopInstrPtr sinst;
+    if (words.size() != 1U) {
+        Error("Bad syntax for stop instruction");
+    }
+    else {
+        sinst.reset(new StopInstr);
+    }
+    return sinst;
 }

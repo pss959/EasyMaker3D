@@ -10,10 +10,8 @@ CaptureScript::CaptureScript() {
     REG_FUNC_("click",    ProcessClick_);
     REG_FUNC_("cursor",   ProcessCursor_);
     REG_FUNC_("drag",     ProcessDrag_);
-    REG_FUNC_("mod",      ProcessMod_);
     REG_FUNC_("moveover", ProcessMoveOver_);
     REG_FUNC_("moveto",   ProcessMoveTo_);
-    REG_FUNC_("stop",     ProcessStop_);
     REG_FUNC_("wait",     ProcessWait_);
 
 #undef REG_FUNC_
@@ -70,7 +68,7 @@ CaptureScript::InstrPtr CaptureScript::ProcessDrag_(const StrVec &words) {
     if (words.size() != 4) {
         Error("Bad syntax for drag instruction");
     }
-    else if (! ParseFloat01(words[1], dx) || ! ParseFloat01(words[2], dy) ||
+    else if (! ParseFloat(words[1], dx) || ! ParseFloat(words[2], dy) ||
              ! ParseFloat(words[3], seconds)) {
         Error("Invalid dx, dy, or seconds floats for drag instruction");
     }
@@ -83,18 +81,6 @@ CaptureScript::InstrPtr CaptureScript::ProcessDrag_(const StrVec &words) {
         dinst->seconds = seconds;
     }
     return dinst;
-}
-
-CaptureScript::InstrPtr CaptureScript::ProcessMod_(const StrVec &words) {
-    ModInstrPtr minst;
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
-        Error("Bad syntax for mod instruction");
-    }
-    else {
-        minst.reset(new ModInstr);
-        minst->is_on = words[1] == "on";
-    }
-    return minst;
 }
 
 CaptureScript::InstrPtr CaptureScript::ProcessMoveOver_(const StrVec &words) {
@@ -130,17 +116,6 @@ CaptureScript::InstrPtr CaptureScript::ProcessMoveTo_(const StrVec &words) {
         minst->seconds = seconds;
     }
     return minst;
-}
-
-CaptureScript::InstrPtr CaptureScript::ProcessStop_(const StrVec &words) {
-    StopInstrPtr sinst;
-    if (words.size() != 1U) {
-        Error("Bad syntax for stop instruction");
-    }
-    else {
-        sinst.reset(new StopInstr);
-    }
-    return sinst;
 }
 
 CaptureScript::InstrPtr CaptureScript::ProcessWait_(const StrVec &words) {

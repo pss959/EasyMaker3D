@@ -33,9 +33,6 @@ class CaptureScript : public ScriptBase {
         Vector2f motion;
         float    seconds;
     };
-    struct ModInstr : public Instr {
-        bool    is_on;
-    };
     struct MoveOverInstr : public Instr {
         Str     object_name;
         float   seconds;
@@ -43,9 +40,6 @@ class CaptureScript : public ScriptBase {
     struct MoveToInstr : public Instr {
         Point2f pos;
         float   seconds;
-    };
-    struct StopInstr : public Instr {
-        // No data.
     };
     struct WaitInstr : public Instr {
         float   seconds;
@@ -55,10 +49,8 @@ class CaptureScript : public ScriptBase {
     DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(CursorInstr);
     DECL_SHARED_PTR(DragInstr);
-    DECL_SHARED_PTR(ModInstr);
     DECL_SHARED_PTR(MoveOverInstr);
     DECL_SHARED_PTR(MoveToInstr);
-    DECL_SHARED_PTR(StopInstr);
     DECL_SHARED_PTR(WaitInstr);
 
     /// The constructor registers all instruction-processing functions with the
@@ -70,9 +62,7 @@ class CaptureScript : public ScriptBase {
     InstrPtr ProcessClick_(const StrVec &words);
     InstrPtr ProcessCursor_(const StrVec &words);
     InstrPtr ProcessDrag_(const StrVec &words);
-    InstrPtr ProcessMod_(const StrVec &words);
     InstrPtr ProcessMoveOver_(const StrVec &words);
     InstrPtr ProcessMoveTo_(const StrVec &words);
-    InstrPtr ProcessStop_(const StrVec &words);
     InstrPtr ProcessWait_(const StrVec &words);
 };

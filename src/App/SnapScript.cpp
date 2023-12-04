@@ -42,15 +42,12 @@ SnapScript::SnapScript() {
     REG_FUNC_("handpos",  ProcessHandPos_);
     REG_FUNC_("headset",  ProcessHeadset_);
     REG_FUNC_("hover",    ProcessHover_);
-    REG_FUNC_("key",      ProcessKey_);
     REG_FUNC_("load",     ProcessLoad_);
-    REG_FUNC_("mod",      ProcessMod_);
     REG_FUNC_("select",   ProcessSelect_);
     REG_FUNC_("settings", ProcessSettings_);
     REG_FUNC_("snap",     ProcessSnap_);
     REG_FUNC_("snapobj",  ProcessSnapObj_);
     REG_FUNC_("stage",    ProcessStage_);
-    REG_FUNC_("stop",     ProcessStop_);
     REG_FUNC_("touch",    ProcessTouch_);
     REG_FUNC_("view",     ProcessView_);
 
@@ -225,24 +222,6 @@ SnapScript::InstrPtr SnapScript::ProcessHover_(const StrVec &words) {
     return hinst;
 }
 
-SnapScript::InstrPtr SnapScript::ProcessKey_(const StrVec &words) {
-    KeyInstrPtr kinst;
-    if (words.size() != 2U) {
-        Error("Bad syntax for key instruction");
-    }
-    else {
-        // words[1] is the key string
-        kinst.reset(new KeyInstr);
-        Str error;
-        if (! Event::ParseKeyString(words[1], kinst->modifiers,
-                                    kinst->key_name, error)) {
-            Error(error + " in key instruction");
-            kinst.reset();
-        }
-    }
-    return kinst;
-}
-
 SnapScript::InstrPtr SnapScript::ProcessLoad_(const StrVec &words) {
     LoadInstrPtr linst;
     if (words.size() > 2U) {
@@ -254,18 +233,6 @@ SnapScript::InstrPtr SnapScript::ProcessLoad_(const StrVec &words) {
             linst->file_name = words[1];
     }
     return linst;
-}
-
-SnapScript::InstrPtr SnapScript::ProcessMod_(const StrVec &words) {
-    ModInstrPtr minst;
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
-        Error("Bad syntax for mod instruction");
-    }
-    else {
-        minst.reset(new ModInstr);
-        minst->is_on = words[1] == "on";
-    }
-    return minst;
 }
 
 SnapScript::InstrPtr SnapScript::ProcessSelect_(const StrVec &words) {
@@ -339,17 +306,6 @@ SnapScript::InstrPtr SnapScript::ProcessStage_(const StrVec &words) {
         sinst.reset(new StageInstr);
         sinst->scale = scale;
         sinst->angle = Anglef::FromDegrees(angle);
-    }
-    return sinst;
-}
-
-SnapScript::InstrPtr SnapScript::ProcessStop_(const StrVec &words) {
-    StopInstrPtr sinst;
-    if (words.size() != 1U) {
-        Error("Bad syntax for stop instruction");
-    }
-    else {
-        sinst.reset(new StopInstr);
     }
     return sinst;
 }

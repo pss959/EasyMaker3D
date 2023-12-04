@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 
+#include "Base/Event.h"
 #include "Math/Types.h"
 #include "Util/FilePath.h"
 #include "Util/Memory.h"
@@ -21,7 +22,22 @@ class ScriptBase {
         virtual ~Instr() {}   // Makes deletion work properly.
     };
 
+    /// Instructions common to all derived scripts.
+    struct KeyInstr : public Instr {
+        Event::Modifiers modifiers;
+        Str              key_name;
+    };
+    struct ModInstr : public Instr {
+        bool             is_on;
+    };
+    struct StopInstr : public Instr {
+        // No data.
+    };
+
     DECL_SHARED_PTR(Instr);
+    DECL_SHARED_PTR(KeyInstr);
+    DECL_SHARED_PTR(ModInstr);
+    DECL_SHARED_PTR(StopInstr);
 
     /// Reads instructions from the script at the given FilePath. Returns false
     /// on error.
@@ -37,6 +53,8 @@ class ScriptBase {
 
   protected:
     using InstrFunc = std::function<InstrPtr(const StrVec &)>;
+
+    ScriptBase();
 
     /// Derived classes can call this to register a function to invoke to
     /// process an instruction with the given name. The function is passed the
@@ -72,4 +90,8 @@ class ScriptBase {
 
     /// Returns words from the given line, processing in-line comments.
     static StrVec GetWords_(const Str &line);
+
+    InstrPtr ProcessKey_(const StrVec &words);
+    InstrPtr ProcessMod_(const StrVec &words);
+    InstrPtr ProcessStop_(const StrVec &words);
 };

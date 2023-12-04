@@ -135,11 +135,13 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         const auto &dinst = GetTypedInstr_<CaptureScript::DragInstr>(instr);
         DragTo_(dinst.motion, dinst.seconds);
     }
+    else if (instr.name == "key") {
+        const auto &kinst = GetTypedInstr_<CaptureScript::KeyInstr>(instr);
+        GetEmitter().AddKey(kinst.key_name, kinst.modifiers);
+    }
     else if (instr.name == "mod") {
         const auto &minst = GetTypedInstr_<CaptureScript::ModInstr>(instr);
-        // SetModifiedMode(minst.is_on);
-        // XXXX
-        std::cerr << "XXXX INST: " << minst.name << "\n";
+        GetEmitter().SetModifiedMode(minst.is_on);
     }
     else if (instr.name == "moveover") {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveOverInstr>(instr);

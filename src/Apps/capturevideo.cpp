@@ -22,16 +22,16 @@ R"(capturevideo: Play back a session file with delays to create a video for
 public documentation.
 
     Usage:
-      capturevideo [--fps=<fps>] [--fullscreen] [--klog=<klog_string>]
-                   [--nocapture] [--remain] [--report] SCRIPT [SESSION]
+      capturevideo [--fps=<fps>] [--klog=<klog_string>] [--nocapture] [--remain]
+                   [--report] [--size=<n>] SCRIPT [SESSION]
 
     Options:
       --fps=<long>    Frames per second in the resulting video (default 30).
-      --fullscreen    Use a full-screen window.
       --nocapture     Do not actually capture the video (useful for testing).
       --klog=<string> String to pass to KLogger::SetKeyString().
       --remain        Keep the window alive after script processing.
       --report        Report each instruction of script processing.
+      --size=<n>      Use fractional (1/n) window size for speed when testing.
 
     The script file is loaded from PublicDoc/videos/scripts/<SCRIPT>.
     If specified, a session is loaded from PublicDoc/videos/sessions/<SESSION>.
@@ -57,14 +57,16 @@ int main(int argc, const char *argv[]) {
     options->do_ion_remote      = true;
     options->enable_vr          = false;
     options->fps                = args.GetAsInt("--fps", 30);
-    options->fullscreen         = args.GetBool("--fullscreen");
     options->nocapture          = args.GetBool("--nocapture");
     options->remain             = args.GetBool("--remain");
     options->report             = args.GetBool("--report");
     options->show_session_panel = true;
 
     // Note that this must have the same aspect ratio as fullscreen.
-    options->window_size.Set(1024, 552);
+    int size_n = args.GetAsInt("--size", 1);
+    if (size_n <= 0)
+        size_n = 1;
+    options->window_size.Set(1024 / size_n, 552 / size_n);
 
     // New Models should be animated when created.
     Model::EnablePlacementAnimation(true);
