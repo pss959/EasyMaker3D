@@ -62,6 +62,9 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     bool keep_going;
     bool processing_done = false;
 
+    // Let the derived class know the frame is starting.
+    BeginFrame();
+
     // Let the base class check for exit. Force it to poll for events if there
     // are instructions left to process, there are pending emitter events, or
     // if the window is supposed to go away; don't want to wait for an event to
@@ -98,7 +101,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     }
 
     // Let the derived class know the frame is done.
-    FrameDone();
+    EndFrame();
 
     // If processing is done, let the derived class know and stop ignoring
     // mouse events from GLFWViewer.

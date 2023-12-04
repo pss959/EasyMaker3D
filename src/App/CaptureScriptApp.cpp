@@ -17,10 +17,12 @@
 #include "Managers/SceneContext.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
+#include "Parser/Parser.h"
 #include "SG/CoordConv.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
+#include "SG/TextNode.h"
 #include "App/VideoWriter.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
@@ -68,11 +70,20 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
 
     const auto &context = GetContext();
 
-    // Find the FakeCursor and position it just in front of the camera.
     ASSERT(context.scene_context);
     ASSERT(context.scene_context->scene);
     const auto &scene = *context.scene_context->scene;
-    cursor_ = SG::FindNodeInScene(scene, "FakeCursor");
+    auto room = SG::FindNodeInScene(scene, "Room");
+
+    // Parse the Capture scene data and add it to the Room.
+    Parser::Parser parser;
+    auto capture_root = std::dynamic_pointer_cast<SG::Node>(
+        parser.ParseFile(FilePath::GetResourcePath("nodes", "Capture.emd")));
+    ASSERT(capture_root);
+    room->AddChild(capture_root);
+
+    // Find the FakeCursor and position it just in front of the camera.
+    cursor_ = SG::FindNodeUnderNode(*capture_root, "FakeCursor");
     MoveFakeCursorTo_(Point2f(.5f, .5f));  // In the middle.
 
     // Add a CursorHandler_ to update the fake cursor when the mouse is moved.
@@ -80,6 +91,10 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     handler_.reset(new CursorHandler_(
                        [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
     GetContext().event_manager->InsertHandler(handler_);
+
+    // Find the caption TextNode.
+    caption_ =
+        SG::FindTypedNodeUnderNode<SG::TextNode>(*capture_root, "Caption");
 
     const auto &opts = GetOptions_();
 
@@ -105,7 +120,11 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
 }
 
 bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
-    if (instr.name == "click") {
+    if (instr.name == "caption") {
+        const auto &cinst = GetTypedInstr_<CaptureScript::CaptionInstr>(instr);
+        DisplayCaption_(cinst.text, cinst.pos, cinst.seconds);
+    }
+    else if (instr.name == "click") {
         GetEmitter().AddClick(cursor_pos_);
     }
     else if (instr.name == "cursor") {
@@ -155,7 +174,13 @@ void CaptureScriptApp::InstructionsDone() {
     video_writer_.reset();
 }
 
-void CaptureScriptApp::FrameDone() {
+void CaptureScriptApp::BeginFrame() {
+    // Update the caption if it is visible.
+    if (caption_->IsEnabled())
+        UpdateCaption_();
+}
+
+void CaptureScriptApp::EndFrame() {
     if (video_writer_) {
         const auto image = GetRenderer().ReadImage(
             Range2i::BuildWithSize(Point2i(0, 0), GetWindowSize()));
@@ -169,6 +194,41 @@ const CaptureScriptApp::Options & CaptureScriptApp::GetOptions_() const {
     const auto &opts = GetOptions();
     ASSERT(dynamic_cast<const Options *>(&opts));
     return static_cast<const Options &>(opts);
+}
+
+void CaptureScriptApp::DisplayCaption_(const Str &text, const Point2f &pos,
+                                       float seconds) {
+    caption_->TranslateTo(GetImagePlanePoint_(pos));
+    caption_->SetText(text);
+    caption_->SetEnabled(true);
+    caption_seconds_         = seconds;
+    caption_seconds_elapsed_ = 0;
+    UpdateCaption_();
+}
+
+void CaptureScriptApp::UpdateCaption_() {
+    // Fade-in/out time.
+    const float kFadeTime = .5f;
+
+    float alpha = 1;
+    if (caption_seconds_elapsed_ < kFadeTime) {
+        // Just starting, so fade in.
+        alpha = caption_seconds_elapsed_ / kFadeTime;
+    }
+    else if (caption_seconds_elapsed_ >= caption_seconds_ - kFadeTime) {
+        // Almost done, so fade out.
+        const float seconds_left = caption_seconds_ - caption_seconds_elapsed_;
+        alpha = seconds_left / kFadeTime;
+    }
+    Color c = caption_->GetColor();
+    c[3] = alpha;
+    caption_->SetTextColor(c);
+
+    caption_seconds_elapsed_ += 1. / GetOptions_().fps;
+
+    // Completely done?
+    if (caption_seconds_elapsed_ >= caption_seconds_)
+        caption_->SetEnabled(false);
 }
 
 void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds) {
@@ -235,6 +295,11 @@ void CaptureScriptApp::MoveTo_(const Point2f &pos, float seconds) {
 }
 
 void CaptureScriptApp::MoveFakeCursorTo_(const Point2f &pos) {
+    cursor_->TranslateTo(GetImagePlanePoint_(pos));
+    cursor_pos_ = pos;
+}
+
+Point3f CaptureScriptApp::GetImagePlanePoint_(const Point2f &pos) {
     // Build a ray through the point using the view frustum.
     const Frustum frustum = GetFrustum();
     const auto ray = frustum.BuildRay(pos);
@@ -244,9 +309,7 @@ void CaptureScriptApp::MoveFakeCursorTo_(const Point2f &pos) {
     const Plane plane(frustum.position[2] - 1, Vector3f::AxisZ());
     float distance;
     RayPlaneIntersect(ray, plane, distance);
-    cursor_->TranslateTo(ray.GetPoint(distance));
-
-    cursor_pos_ = pos;
+    return ray.GetPoint(distance);
 }
 
 Frustum CaptureScriptApp::GetFrustum() const {

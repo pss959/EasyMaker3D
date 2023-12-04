@@ -1,0 +1,43 @@
+Node "CaptureRoot" {
+  shader_names: ["BaseColor"],
+  blocks: [
+    UniformBlock {
+      pass_name: "Lighting",
+      uniforms: [ Uniform "uZOffset" { float_val: 0 } ],
+    }
+  ],
+  children: [
+    # Text used to display captions.
+    TextNode "Caption" {
+      disabled_flags: "kTraversal|kIntersectAll",
+      scale:          .04 .04 .04,
+      text:           ".",
+      font_name:      "Verdana-Regular",
+      color:          "#ff66ff",
+      outline_color:  "#000000",
+      outline_width:  .1,
+      layout_options: LayoutOptions {
+        halignment: "kAlignHCenter",
+        valignment: "kAlignVCenter",
+      },
+    },
+
+    # Fake cursor used in videos created with capturevideo. This is normally
+    # disabled.
+    Node "FakeCursor" {
+      disabled_flags: "kTraversal|kIntersectAll",
+      scale: .002 .002 .002,
+      blocks: [
+         UniformBlock {
+           pass_name: "Lighting",
+           uniforms: [ Uniform "uBaseColor" { vec4f_val: .9 .2 .8 .9 }],
+         }
+      ],
+      shapes: [
+        Polygon {
+          points: [ 0 0, -30 -22, -16 -19, -30 -38 -24 -42, -10 -23, -4 -37 ]
+        },
+      ]
+    }
+  ]
+}

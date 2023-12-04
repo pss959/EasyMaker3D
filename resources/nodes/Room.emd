@@ -52,9 +52,5 @@ Node "Room" {
     # The interactive stage has to come last because of transparency in the
     # BuildVolume.
     <"nodes/Stage.emd">,
-
-    # Fake cursor used in videos created with capturevideo. This is normally
-    # disabled.
-    <"nodes/FakeCursor.emd">,
   ]
 }

@@ -56,9 +56,13 @@ class ScriptedApp : public Application {
     /// The base class defines this to do nothing.
     virtual void InstructionsDone() {}
 
-    /// Lets derived classes know when a frame is done.  The base class defines
-    /// this to do nothing.
-    virtual void FrameDone() {}
+    /// Lets derived classes know when a frame is starting. The base class
+    /// defines this to do nothing.
+    virtual void BeginFrame() {}
+
+    /// Lets derived classes know when a frame is ending. The base class
+    /// defines this to do nothing.
+    virtual void EndFrame() {}
 
     /// Loads Settings from the given path, updating the SettingsManager and
     /// SessionManager. Returns false on error.

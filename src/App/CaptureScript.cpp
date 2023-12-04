@@ -1,18 +1,41 @@
 #include "App/CaptureScript.h"
 
+#include "Util/String.h"
+
 CaptureScript::CaptureScript() {
 #define REG_FUNC_(name, func) \
     RegisterInstrFunc(name, [&](const StrVec &w){ return func(w); });
 
+    REG_FUNC_("caption",  ProcessCaption_);
     REG_FUNC_("click",    ProcessClick_);
     REG_FUNC_("cursor",   ProcessCursor_);
     REG_FUNC_("drag",     ProcessDrag_);
     REG_FUNC_("mod",      ProcessMod_);
     REG_FUNC_("moveover", ProcessMoveOver_);
     REG_FUNC_("moveto",   ProcessMoveTo_);
+    REG_FUNC_("stop",     ProcessStop_);
     REG_FUNC_("wait",     ProcessWait_);
 
 #undef REG_FUNC_
+}
+
+CaptureScript::InstrPtr CaptureScript::ProcessCaption_(const StrVec &words) {
+    CaptionInstrPtr cinst;
+    float           x, y, seconds;
+    if (words.size() < 5U) {
+        Error("Bad syntax for caption instruction");
+    }
+    else if (! ParseFloat01(words[1], x) || ! ParseFloat01(words[2], y) ||
+             ! ParseFloat(words[3], seconds)) {
+        Error("Invalid x, y, or seconds floats for caption instruction");
+    }
+    else {
+        cinst.reset(new CaptionInstr);
+        cinst->pos.Set(x, y);
+        cinst->seconds = seconds;
+        cinst->text = Util::JoinStrings(StrVec(words.begin() + 4, words.end()));
+    }
+    return cinst;
 }
 
 CaptureScript::InstrPtr CaptureScript::ProcessClick_(const StrVec &words) {
@@ -104,6 +127,17 @@ CaptureScript::InstrPtr CaptureScript::ProcessMoveTo_(const StrVec &words) {
         minst->seconds = seconds;
     }
     return minst;
+}
+
+CaptureScript::InstrPtr CaptureScript::ProcessStop_(const StrVec &words) {
+    StopInstrPtr sinst;
+    if (words.size() != 1U) {
+        Error("Bad syntax for stop instruction");
+    }
+    else {
+        sinst.reset(new StopInstr);
+    }
+    return sinst;
 }
 
 CaptureScript::InstrPtr CaptureScript::ProcessWait_(const StrVec &words) {

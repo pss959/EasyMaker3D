@@ -15,6 +15,12 @@
     <td>Comments are ignored, including inline comments.</td>
   </tr>
   <tr>
+    <td><b>caption</b></td>
+    <td><i>x y seconds text</i></td>
+    <td>Displays a caption at the given location (center) for the given
+    duration in seconds.
+  </tr>
+  <tr>
     <td><b>click</b></td>
     <td></td>
     <td>Simulates a mouse click at the current cursor position.
@@ -29,7 +35,7 @@
     <td><i>dx dy seconds</i></td>
     <td>Simulates a mouse drag from the current cursor position by
       <i>(dx,dy)</i> in normalized window coordinates over the given duration
-      in <i>seconds</i>.</td>
+      in seconds.</td>
   </tr>
   <tr>
     <td><b>mod</b></td>
@@ -49,12 +55,17 @@
     <td><b>moveto</b></td>
     <td><i>x y seconds</i></td>
     <td>Moves the cursor (without interaction) from the current position to
-      <i>(x,y)</i> in normalized window coordinates over the given duration
-      in <i>seconds</i>.</td>
+      <i>(x,y)</i> in normalized window coordinates over the given duration in
+      seconds.</td>
+  </tr>
+  <tr>
+    <td><b>stop</b></td>
+    <td>Stops processing any more instructions. This can be used for testing to
+      easily stop after a given instruction.</td>
   </tr>
   <tr>
     <td><b>wait</b></td>
     <td><i>seconds</i></td>
-    <td>Does nothing for the given duration in <i>seconds</i>.</td>
+    <td>Does nothing for the given duration in seconds.</td>
   </tr>
 </table>
