@@ -151,8 +151,7 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     }
     else if (instr.name == "wait") {
         const auto &winst = GetTypedInstr_<CaptureScript::WaitInstr>(instr);
-        // XXXX
-        std::cerr << "XXXX INST: " << winst.name << "\n";
+        MoveTo_(cursor_pos_, winst.seconds);
     }
     else {
         ASSERTM(false, "Unknown instruction type: " + instr.name);
@@ -198,6 +197,10 @@ const CaptureScriptApp::Options & CaptureScriptApp::GetOptions_() const {
 
 void CaptureScriptApp::DisplayCaption_(const Str &text, const Point2f &pos,
                                        float seconds) {
+    // Get the number of lines of text and adjust the Y scale to match.
+    const size_t line_count = 1 + std::ranges::count(text, '\n');
+    caption_->SetUniformScale(.04f * line_count);
+
     caption_->TranslateTo(GetImagePlanePoint_(pos));
     caption_->SetText(text);
     caption_->SetEnabled(true);

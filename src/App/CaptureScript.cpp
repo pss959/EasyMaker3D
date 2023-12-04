@@ -33,7 +33,10 @@ CaptureScript::InstrPtr CaptureScript::ProcessCaption_(const StrVec &words) {
         cinst.reset(new CaptionInstr);
         cinst->pos.Set(x, y);
         cinst->seconds = seconds;
-        cinst->text = Util::JoinStrings(StrVec(words.begin() + 4, words.end()));
+        cinst->text =
+            Util::ReplaceString(
+                Util::JoinStrings(StrVec(words.begin() + 4, words.end())),
+                ";", "\n");
     }
     return cinst;
 }
