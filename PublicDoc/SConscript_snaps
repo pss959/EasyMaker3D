@@ -35,6 +35,7 @@ snap_map = {
     'HelpPanel',
     'InfoPanel',
     'RadialMenuPanel',
+    'SessionPanel',
     'SettingsPanel',
   ],
   'AppPanels2' : [
@@ -120,7 +121,7 @@ snap_map = {
     'QuickstartScale',
     'QuickstartSelected',
     'QuickstartTorus',
-    'SessionPanel',
+    'QuickstartSessionPanel',
   ],
   'RadialLayout' : [
     'RadialLayoutArc',
@@ -230,6 +231,7 @@ ann_map = {
                   'NameToolIcon',
                   'ScaleToolIcon',
                   'SessionPanelIcon',
+                  'TranslationToolIcon',
                 ]),
   'Logo'     : (['static/Logo'], ['static/LogoSmall']),
   'WorkArea' : (['WorkArea'],    ['WorkAreaAnnotated']),

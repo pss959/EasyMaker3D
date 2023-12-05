@@ -161,8 +161,6 @@ void VideoWriter::AddImage(const ion::gfx::Image &image) {
 }
 
 void VideoWriter::AddChapterTag(const Str &title) {
-    std::cerr << "XXXX Adding tag '" << title
-              << "' at frame " << data_->cur_frame << "\n";
     data_->chapters.push_back(Chapter_(title, data_->cur_frame));
 }
 
