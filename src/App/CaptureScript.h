@@ -23,6 +23,9 @@ class CaptureScript : public ScriptBase {
         float   seconds;
         Str     text;
     };
+    struct ChapterInstr : public Instr {
+        Str     title;
+    };
     struct ClickInstr : public Instr {
         // No fields.
     };
@@ -46,6 +49,7 @@ class CaptureScript : public ScriptBase {
     };
 
     DECL_SHARED_PTR(CaptionInstr);
+    DECL_SHARED_PTR(ChapterInstr);
     DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(CursorInstr);
     DECL_SHARED_PTR(DragInstr);
@@ -59,6 +63,7 @@ class CaptureScript : public ScriptBase {
 
   private:
     InstrPtr ProcessCaption_(const StrVec &words);
+    InstrPtr ProcessChapter_(const StrVec &words);
     InstrPtr ProcessClick_(const StrVec &words);
     InstrPtr ProcessCursor_(const StrVec &words);
     InstrPtr ProcessDrag_(const StrVec &words);

@@ -124,6 +124,11 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         const auto &cinst = GetTypedInstr_<CaptureScript::CaptionInstr>(instr);
         DisplayCaption_(cinst.text, cinst.pos, cinst.seconds);
     }
+    else if (instr.name == "chapter") {
+        const auto &cinst = GetTypedInstr_<CaptureScript::ChapterInstr>(instr);
+        if (video_writer_)
+            video_writer_->AddChapterTag(cinst.title);
+    }
     else if (instr.name == "click") {
         GetEmitter().AddClick(cursor_pos_);
     }

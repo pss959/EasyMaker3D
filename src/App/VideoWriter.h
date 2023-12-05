@@ -35,10 +35,16 @@ class VideoWriter {
     /// Adds an image to the video.
     void AddImage(const ion::gfx::Image &image);
 
+    /// Adds a chapter tag with the given title at the current frame in the
+    /// video.
+    void AddChapterTag(const Str &title);
+
     /// Writes the resulting video to the path passed to the constructor.
     void WriteToFile();
 
   private:
+    // Struct representing a chapter in the video.
+    struct Chapter_;
     // This struct stores all the FFMPEG data needed for writing video files.
     struct Data_;
 
@@ -51,6 +57,9 @@ class VideoWriter {
 
     /// Sends the given frame. If it is null, this finishes the video stream.
     void SendFrame_(AVFrame *frame);
+
+    /// Stores chapter data in the appropriate place for output.
+    void StoreChapters_();
 
     /// Processes an error, throwing an exception.
     void Error_(const Str &message) { throw Exception(message); }

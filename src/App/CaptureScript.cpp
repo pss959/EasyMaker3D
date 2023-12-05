@@ -7,6 +7,7 @@ CaptureScript::CaptureScript() {
     RegisterInstrFunc(name, [&](const StrVec &w){ return func(w); });
 
     REG_FUNC_("caption",  ProcessCaption_);
+    REG_FUNC_("chapter",  ProcessChapter_);
     REG_FUNC_("click",    ProcessClick_);
     REG_FUNC_("cursor",   ProcessCursor_);
     REG_FUNC_("drag",     ProcessDrag_);
@@ -35,6 +36,19 @@ CaptureScript::InstrPtr CaptureScript::ProcessCaption_(const StrVec &words) {
             Util::ReplaceString(
                 Util::JoinStrings(StrVec(words.begin() + 4, words.end())),
                 ";", "\n");
+    }
+    return cinst;
+}
+
+CaptureScript::InstrPtr CaptureScript::ProcessChapter_(const StrVec &words) {
+    ChapterInstrPtr cinst;
+    if (words.size() < 2U) {
+        Error("Bad syntax for chapter instruction");
+    }
+    else {
+        cinst.reset(new ChapterInstr);
+        cinst->title =
+            Util::JoinStrings(StrVec(words.begin() + 1, words.end()));
     }
     return cinst;
 }

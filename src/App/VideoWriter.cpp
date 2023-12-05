@@ -10,9 +10,19 @@ extern "C" {
 
 #include <cstring>
 #include <fstream>
+#include <ranges>
+#include <vector>
 
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+
+/// The VideoWriter::Chapter_ struct stores a title and frame for a chapter.
+struct VideoWriter::Chapter_ {
+    Str    title;
+    uint64 frame = 0;
+    Chapter_() {}
+    Chapter_(const Str &t, uint64 f) : title(t), frame(f) {}
+};
 
 /// The VideoWriter::Data_ struct stores all the FFMPEG data needed for writing
 /// video files.
@@ -25,6 +35,9 @@ struct VideoWriter::Data_ {
     AVStream        *stream        = nullptr;
     SwsContext      *sws_context   = nullptr;
     uint64           cur_frame     = 0;
+
+    /// Chapter tags.
+    std::vector<VideoWriter::Chapter_> chapters;
 };
 
 VideoWriter::VideoWriter() : extension_("webm"), data_(new Data_) {}
@@ -73,6 +86,8 @@ void VideoWriter::Init(const FilePath &path,
     data_->codec_context->height       = resolution[1];
     data_->stream->time_base           = { 1, fps};
     data_->codec_context->time_base    = data_->stream->time_base;
+
+    // Set a reasonable quality (constant rate factor).
     av_opt_set(data_->codec_context->priv_data, "crf", "31", 0);
 
     // Emit one intra frame every twelve frames at most.
@@ -145,11 +160,21 @@ void VideoWriter::AddImage(const ion::gfx::Image &image) {
     ++data_->cur_frame;
 }
 
+void VideoWriter::AddChapterTag(const Str &title) {
+    std::cerr << "XXXX Adding tag '" << title
+              << "' at frame " << data_->cur_frame << "\n";
+    data_->chapters.push_back(Chapter_(title, data_->cur_frame));
+}
+
 void VideoWriter::WriteToFile() {
     ASSERT(data_);
 
     // Send a null frame to end the video stream.
     SendFrame_(nullptr);
+
+    // Set up the chapters. (Must be done before writing the trailer.)
+    if (! data_->chapters.empty())
+        StoreChapters_();
 
     // Write output trailer.
     av_write_trailer(data_->out_context);
@@ -186,5 +211,37 @@ void VideoWriter::SendFrame_(AVFrame *frame) {
 
         if (av_interleaved_write_frame(data_->out_context, data_->packet) < 0)
             Error_("Could not write packet");
+    }
+}
+
+void VideoWriter::StoreChapters_() {
+    ASSERT(! data_->chapters.empty());
+
+    const size_t count = data_->chapters.size();
+
+    auto oc = data_->out_context;
+    oc->chapters = reinterpret_cast<AVChapter **>(
+        av_realloc_f(oc->chapters, count, sizeof(*oc->chapters)));
+    oc->nb_chapters = count;
+
+    auto convert_frame = [&](uint64 frame){
+        return frame / av_q2d(data_->codec_context->time_base);
+    };
+
+    for (const auto [index, ch]: std::views::enumerate(data_->chapters)) {
+        const uint64 end_frame = static_cast<size_t>(index + 1) < count ?
+            data_->chapters[index + 1].frame : data_->cur_frame;
+
+        AVChapter *avch =
+            reinterpret_cast<AVChapter *>(av_mallocz(sizeof(AVChapter)));
+        avch->id        = index;
+        avch->time_base = data_->stream->time_base;
+        avch->start     = convert_frame(ch.frame);
+        avch->end       = convert_frame(end_frame);
+
+        // Store title in metadata.
+        av_dict_set(&avch->metadata, "title", ch.title.c_str(), 0);
+
+        oc->chapters[index] = avch;
     }
 }
