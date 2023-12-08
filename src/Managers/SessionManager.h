@@ -54,6 +54,10 @@ class SessionManager : public SessionAgent {
     /// if all went well.
     bool SaveSessionWithComments(const FilePath &path, const StrVec &comments);
 
+    /// Sets a flag indicating that Export() should not actually do anything.
+    /// This is used for simulating export when creating videos.
+    void SetFakeExport(bool is_fake) { fake_export_ = is_fake; }
+
     // SessionAgent interface implementation.
     virtual void NewSession() override;
     virtual bool CanSaveSession() const override;
@@ -71,6 +75,7 @@ class SessionManager : public SessionAgent {
     SelectionManagerPtr selection_manager_;
     Str                 previous_session_name_;  ///< From previous run.
     Str                 current_session_name_;   ///< After load or save.
+    bool                fake_export_ = false;
 
     /// This saves the original SessionState. The current state is compared to
     /// this to determine if a change was made, allowing the session to be

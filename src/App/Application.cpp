@@ -130,6 +130,9 @@ class  Application::Impl_ {
                                     const Vector3f &r_offset) {
         controller_handler_->SetRenderOffsets(l_offset, r_offset);
     }
+    void SetLongPressDuration(float seconds) {
+        main_handler_->SetLongPressDuration(seconds);
+    }
 
   private:
     /// Run states for the main loop.
@@ -1583,4 +1586,8 @@ void Application::EnableMouseMotionEvents(bool enable) {
 void Application::SetControllerRenderOffsets(const Vector3f &l_offset,
                                              const Vector3f &r_offset) {
     impl_->SetControllerRenderOffsets(l_offset, r_offset);
+}
+
+void Application::SetLongPressDuration(float seconds) {
+    impl_->SetLongPressDuration(seconds);
 }

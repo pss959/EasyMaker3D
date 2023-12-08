@@ -128,6 +128,11 @@ class Application {
     void SetControllerRenderOffsets(const Vector3f &l_offset,
                                     const Vector3f &r_offset);
 
+    /// Allows derived classes to change the minimum duration in seconds for a
+    /// button press to be considered a long press. The default is
+    /// TK::kLongPressTime.
+    void SetLongPressDuration(float seconds);
+
   private:
     class  Loader_;
     class  Impl_;

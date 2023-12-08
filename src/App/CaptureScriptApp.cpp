@@ -11,12 +11,15 @@
 #include "App/CaptureScript.h"
 #include "App/ScriptEmitter.h"
 #include "Base/Event.h"
+#include "Feedback/TooltipFeedback.h"
 #include "Handlers/Handler.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/EventManager.h"
 #include "Managers/SceneContext.h"
+#include "Managers/SessionManager.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
+#include "Models/Model.h"
 #include "Parser/Parser.h"
 #include "SG/CoordConv.h"
 #include "SG/Node.h"
@@ -90,7 +93,7 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     // Insert it at the beginning so no other handler steals the event.
     handler_.reset(new CursorHandler_(
                        [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
-    GetContext().event_manager->InsertHandler(handler_);
+    context.event_manager->InsertHandler(handler_);
 
     // Find the caption TextNode.
     caption_ =
@@ -100,7 +103,9 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
 
     // Set up a VideoWriter if requested.
     if (! opts.nocapture) {
-        video_writer_.reset(new VideoWriter);
+        const VideoWriter::Format format = opts.format == "mp4" ?
+            VideoWriter::Format::kMP4 : VideoWriter::Format::kWEBM;
+        video_writer_.reset(new VideoWriter(format));
 
         // Set up the output path.
         const FilePath &script_path = GetScript().GetPath();
@@ -112,9 +117,22 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
         video_writer_->Init(video_path, GetWindowSize(), opts.fps);
     }
 
+    // New Models should be animated when created.
+    Model::EnablePlacementAnimation(true);
+
     // Use a constant time increment per frame for animation so the animations
     // are not subject to inconsistent frame times due to capture.
-    GetContext().animation_manager->SetFrameIncrement(1.f / opts.fps);
+    context.animation_manager->SetFrameIncrement(1.f / opts.fps);
+
+    // Set a huge duration (20 seconds) so long presses do not occur. Video
+    // capture is sometimes slow enough to make a press seem very long.
+    SetLongPressDuration(20);
+
+    // Disable tooltips - they can appear if frame grabbing is very slow.
+    TooltipFeedback::SetDelay(0);
+
+    // Fake export from the SessionManager, since the path is likely bogus.
+    context.session_manager->SetFakeExport(true);
 
     return true;
 }
@@ -126,8 +144,14 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     }
     else if (instr.name == "chapter") {
         const auto &cinst = GetTypedInstr_<CaptureScript::ChapterInstr>(instr);
-        if (video_writer_)
+        if (video_writer_) {
+            if (GetOptions_().report) {
+                std::cout << "    Chapter " << video_writer_->GetChapterCount()
+                          << " at " << video_writer_->GetImageCount()
+                          << ": " << cinst.title << "\n";
+            }
             video_writer_->AddChapterTag(cinst.title);
+        }
     }
     else if (instr.name == "click") {
         GetEmitter().AddClick(cursor_pos_);

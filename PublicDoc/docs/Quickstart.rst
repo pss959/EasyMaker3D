@@ -162,9 +162,11 @@ Export the Model for 3D Printing
 
 Exporting is done with the :ref:`Session Panel <ug-session-panel>` that you saw
 when you started the application. Bring the panel up by clicking on the Session
-Panel icon on the Session shelf or with the :shortcut:`Ctrl-s` shortcut. Click
-on the "Export selection" button, which will open a :ref:`File Panel
-<ug-file-panel>` that will let you select a file to export to, as shown here.
+Panel icon on the Session shelf (you may need to move the Name Panel out of the
+way or switch to a different tool) or with the :shortcut:`Ctrl-s`
+shortcut. Click on the "Export selection" button, which will open a :ref:`File
+Panel <ug-file-panel>` that will let you select a file to export to, as shown
+here.
 
 This panel is a fairly standard file browser. The default location for exported
 files is your home directory; this can be changed in the :ref:`Settings Panel

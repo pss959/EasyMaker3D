@@ -113,6 +113,10 @@ Str SessionManager::GetModelNameForExport() const {
 
 bool SessionManager::Export(const FilePath &path, FileFormat format,
                             const UnitConversion &conv) {
+    // This is used in videos when simulating file export.
+    if (fake_export_)
+        return true;
+
     // Collect Model meshes, transforming them into stage coordinates.
     const auto &sel = selection_manager_->GetSelection();
     std::vector<TriMesh> meshes;

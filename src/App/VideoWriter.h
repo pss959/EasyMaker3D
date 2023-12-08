@@ -16,14 +16,24 @@ struct AVFrame;
 /// \ingroup App
 class VideoWriter {
   public:
+    /// Available video formats.
+    enum class Format {
+        kWEBM,
+        kMP4,
+    };
+
     /// Exception thrown when anything goes wrong.
     class Exception : public ExceptionBase {
       public:
         Exception(const Str &msg) : ExceptionBase(msg) {}
     };
 
-    VideoWriter();
+    /// The constructor is passed the video format to use.
+    explicit VideoWriter(Format format);
     ~VideoWriter();
+
+    /// Returns the format passed to the constructor.
+    Format GetFormat() const { return format_; }
 
     /// Returns the extension to use for the resulting video (with no dot).
     const Str & GetExtension() const { return extension_; }
@@ -39,6 +49,12 @@ class VideoWriter {
     /// video.
     void AddChapterTag(const Str &title);
 
+    /// Returns the number of images added.
+    size_t GetImageCount() const;
+
+    /// Returns the current number of chapters.
+    size_t GetChapterCount() const;
+
     /// Writes the resulting video to the path passed to the constructor.
     void WriteToFile();
 
@@ -48,12 +64,13 @@ class VideoWriter {
     // This struct stores all the FFMPEG data needed for writing video files.
     struct Data_;
 
-    const Str extension_; ///< Extension used for video files (no dot).
+    Format format_;     ///< Format passed to the constructor.
+    Str    extension_;  ///< Extension used for video files (no dot).
 
     std::unique_ptr<Data_> data_;
 
-    /// Initializes FFMPEG for writing video files.
-    void Init_(const FilePath &path, const Vector2i &resolution, int fps);
+    /// Initializes the codec context for the format.
+    void InitCodecContext_(const Vector2i &resolution, int fps);
 
     /// Sends the given frame. If it is null, this finishes the video stream.
     void SendFrame_(AVFrame *frame);

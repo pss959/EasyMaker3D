@@ -18,8 +18,9 @@ class CaptureScriptApp : public ScriptedApp {
   public:
     /// This struct adds some additional options.
     struct Options : public ScriptedApp::Options {
-        bool nocapture = false;  ///< Don't create a capture video.
-        int  fps       = 30;     ///< Frames per second (default 30).
+        Str  format    = "webm";  ///< Video format as a string.
+        int  fps       = 30;      ///< Frames per second (default 30).
+        bool nocapture = false;   ///< Don't create a capture video.
     };
 
     CaptureScriptApp();

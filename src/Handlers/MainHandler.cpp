@@ -71,6 +71,7 @@ class MainHandler::Impl_ {
         precision_store_ = precision_store;
     }
     void SetContext(const MainHandler::Context &context);
+    void SetLongPressDuration(float seconds) { long_press_duration_ = seconds; }
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
     }
@@ -110,6 +111,9 @@ class MainHandler::Impl_ {
 
     /// MainHandler::Context storing required data.
     MainHandler::Context context_;
+
+    /// Minimum duration for a long button press.
+    float long_press_duration_ = TK::kLongPressTime;
 
     /// Ordered set of Grippable instances for interaction.
     std::vector<GrippablePtr> grippables_;
@@ -606,7 +610,7 @@ void MainHandler::Impl_::ProcessClick_(Actuator actuator,
     ClickInfo info;
     const auto duration = UTime::Now().SecondsSince(start_time_);
     info.is_modified_mode = is_modified_mode || click_state_.count > 1;
-    info.is_long_press     = duration > TK::kLongPressTime;
+    info.is_long_press    = duration > long_press_duration_;
 
     tracker->FillClickInfo(info);
 
@@ -641,6 +645,10 @@ void MainHandler::SetPrecisionStore(
 
 void MainHandler::SetContext(const Context &context) {
     impl_->SetContext(context);
+}
+
+void MainHandler::SetLongPressDuration(float seconds) {
+    impl_->SetLongPressDuration(seconds);
 }
 
 void MainHandler::SetTouchable(const ITouchablePtr &touchable) {

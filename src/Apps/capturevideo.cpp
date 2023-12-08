@@ -5,7 +5,6 @@
 #include "App/Args.h"
 #include "App/CaptureScript.h"
 #include "App/CaptureScriptApp.h"
-#include "Models/Model.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
@@ -22,10 +21,12 @@ R"(capturevideo: Play back a session file with delays to create a video for
 public documentation.
 
     Usage:
-      capturevideo [--fps=<fps>] [--klog=<klog_string>] [--nocapture] [--remain]
-                   [--report] [--size=<n>] SCRIPT [SESSION]
+      capturevideo [--format=<str>] [--fps=<fps>] [--klog=<klog_string>]
+                   [--nocapture] [--remain] [--report] [--size=<n>]
+                   SCRIPT [SESSION]
 
     Options:
+      --format=<str>  Output video format. Choices: "webm" (default), "mp4".
       --fps=<long>    Frames per second in the resulting video (default 30).
       --nocapture     Do not actually capture the video (useful for testing).
       --klog=<string> String to pass to KLogger::SetKeyString().
@@ -56,6 +57,8 @@ int main(int argc, const char *argv[]) {
     KLogger::SetKeyString(args.GetString("--klog"));
     options->do_ion_remote      = true;
     options->enable_vr          = false;
+    options->format             = args.GetStringChoice("--format",
+                                                       StrVec{ "webm", "mp4" });
     options->fps                = args.GetAsInt("--fps", 30);
     options->nocapture          = args.GetBool("--nocapture");
     options->remain             = args.GetBool("--remain");
@@ -67,9 +70,6 @@ int main(int argc, const char *argv[]) {
     if (size_n <= 0)
         size_n = 1;
     options->window_size.Set(1024 / size_n, 552 / size_n);
-
-    // New Models should be animated when created.
-    Model::EnablePlacementAnimation(true);
 
     CaptureScriptApp app;
     if (! app.Init(options, script))

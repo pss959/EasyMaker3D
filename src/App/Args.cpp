@@ -1,6 +1,7 @@
 #include "App/Args.h"
 
 #include "Util/Assert.h"
+#include "Util/General.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"
 
@@ -13,6 +14,17 @@ Args::Args(int argc, const char **argv, const Str &usage) :
 Str Args::GetString(const Str &name) const {
     const auto &arg = GetArg_(name);
     return arg && arg.isString() ? arg.asString() : "";
+}
+
+Str Args::GetStringChoice(const Str &name, const StrVec &choices) const {
+    ASSERT(! choices.empty());
+    auto str = GetString(name);
+    if (str.empty())
+        str = choices[0];
+    else if (! Util::Contains(choices, str))
+        throw docopt::DocoptArgumentError("Invalid choice for '" + name +
+                                          "' argument: '" + str + "'");
+    return str;
 }
 
 bool Args::GetBool(const Str &name) const {
