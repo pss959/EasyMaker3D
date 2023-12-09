@@ -117,8 +117,8 @@ TEST_F(SettingsManagerTest, LoadFail) {
 
     SettingsManager sm;
 
-    // Nonexistent file does not result in an error.
-    EXPECT_TRUE(sm.SetPath("/no/such/path", false));
+    // Nonexistent file does not result in an error, but does not succeed.
+    EXPECT_FALSE(sm.SetPath("/no/such/path", false));
     EXPECT_TRUE(sm.GetLoadError().empty());
 
     // Parse error.
