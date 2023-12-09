@@ -12,20 +12,7 @@ main_extra_sources = [
     '../App/Args.cpp',
 ]
 
-# Extra sources used for capturevideo.
-video_extra_sources = [
-    '../App/CaptureScript.cpp',
-    '../App/CaptureScriptApp.cpp',
-    '../App/VideoWriter.cpp',
-]
-
-# -----------------------------------------------------------------------------
-# Building sources.
-# -----------------------------------------------------------------------------
-
-# Create shared objects for extra sources.
 main_extra_objects  = app_env.BuildObjects(main_extra_sources)
-video_extra_objects = app_env.BuildObjects(video_extra_sources)
 
 # -----------------------------------------------------------------------------
 # Environments.
@@ -37,7 +24,8 @@ snap_env.Append(LIBS = '$SCRIPT_LIB_NAME')
 
 # Environment for an app that needs snap scripting and video.
 video_env = snap_env.Clone()
-video_env.AddPackages(Split('libavcodec libavformat libavutil libswscale'))
+video_env.Append(LIBS = '$VIDEO_LIB_NAME')
+video_env.AddPackages(video_env['VIDEO_PACKAGES'])
 
 # -----------------------------------------------------------------------------
 # Building applications.
@@ -47,19 +35,18 @@ video_env.AddPackages(Split('libavcodec libavformat libavutil libswscale'))
 apps = {}
 
 # Builds an app and adds it to the apps dictionary.
-def BuildApp_(name, env, extra_objects):
+def BuildApp_(name, env):
     app_object = env.SharedObject(f'{name}.cpp')
-    apps[name] = env.Program(name,
-                             [app_object] + main_extra_objects + extra_objects)
+    apps[name] = env.Program(name, [app_object] + main_extra_objects)
 
 # Build the main applications.
 for name in [main_app_name, 'nodeviewer', 'printtypes']:
-    BuildApp_(name, app_env, [])
+    BuildApp_(name, app_env)
 
 # The doc-related apps build only on Linux. Some require extra libraries.
 if app_env['PLATFORM'] == 'linux':
-    BuildApp_('createcheatsheet', app_env, [])
-    BuildApp_('snapimage',        snap_env, [])
-    BuildApp_('capturevideo', video_env, video_extra_objects)
+    BuildApp_('createcheatsheet', app_env)
+    BuildApp_('snapimage',        snap_env)
+    BuildApp_('capturevideo',     video_env)
 
 Return('apps')

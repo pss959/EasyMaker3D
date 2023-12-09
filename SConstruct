@@ -67,9 +67,8 @@ SConscript('submodules/SConscript_submodules', exports=['base_env'])
 
 # Build the application libraries.
 lib_env = envs['lib']
-app_lib, script_lib = SConscript('src/SConscript_src',
-                                 exports=['app_dict', 'lib_env'],
-                                 variant_dir=build_dir, duplicate=False)
+app_lib = SConscript('src/SConscript_src', exports=['app_dict', 'lib_env'],
+                     variant_dir=build_dir, duplicate=False)
 
 # Build the applications. 'apps' is a dictionary mapping app name to executable.
 app_env = envs['app']

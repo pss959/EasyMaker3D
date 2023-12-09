@@ -55,7 +55,7 @@ class VideoWriter {
     /// Returns the current number of chapters.
     size_t GetChapterCount() const;
 
-    /// Writes the resulting video to the path passed to the constructor.
+    /// Writes the resulting video to the path passed to Init().
     void WriteToFile();
 
   private:

@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Math/ToString.h"
+#include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -25,11 +26,11 @@ std::ostream & operator<<(std::ostream &out, const Duration_ &d) {
 
 }  // anonymous namespace
 
+namespace Debug {
+
 // ----------------------------------------------------------------------------
 // Timer functions.
 // ----------------------------------------------------------------------------
-
-namespace Debug {
 
 Timer::Timer(const Str &name) : name_(name) {
     // Avoid unnecessary allocations.
@@ -69,6 +70,43 @@ void Timer::Report() {
 
 double Timer::GetTotalTime() {
     return UTime::Now().SecondsSince(reset_time_);
+}
+
+// ----------------------------------------------------------------------------
+// StopTimer functions.
+// ----------------------------------------------------------------------------
+
+StopTimer::StopTimer(const Str &name) : name_(name) {
+    Reset();
+}
+
+void StopTimer::Start() {
+    ASSERT(! is_running_);
+    is_running_ = true;
+    start_time_ = UTime::Now();
+}
+
+void StopTimer::Stop() {
+    ASSERT(is_running_);
+    elapsed_time_ += UTime::Now().SecondsSince(start_time_);
+    is_running_ = false;
+}
+
+void StopTimer::Reset() {
+    is_running_   = false;
+    elapsed_time_ = 0;
+}
+
+double StopTimer::GetElapsedTime() {
+    if (is_running_)
+        return elapsed_time_ + UTime::Now().SecondsSince(start_time_);
+    else
+        return elapsed_time_;
+}
+
+void StopTimer::Report() {
+    std::cout << "=== StopTimer '" << name_ << "': elapsed_time = "
+              << Math::ToString(elapsed_time_, .0001) << "\n";
 }
 
 }  // namespace Debug

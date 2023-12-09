@@ -132,10 +132,13 @@ base_env = Environment(
     ION_LIB_NAME    = 'IonLib',
     APP_LIB_NAME    = 'AppLib',
     SCRIPT_LIB_NAME = 'AppScriptLib',
+    VIDEO_LIB_NAME  = 'AppVideoLib',
 
     BUILD_DIR       = f'build/{mode}',
     ION_DIR         = '#/ionsrc',
     SYS_INCLUDE_DIR = '/usr/include',
+
+    VIDEO_PACKAGES  = Split('libavcodec libavformat libavutil libswscale'),
 
     # Running a bash script or external program; overridden on Windows below.
     RUN_BASH    = '',
@@ -551,11 +554,13 @@ test_env.Append(
         '#/$BUILD_DIR/docopt.cpp',
         '#/$BUILD_DIR/googletest'
     ],
-    LIBS = ['$APP_LIB_NAME', '$SCRIPT_LIB_NAME', 'docopt', 'gtest', 'pthread'],
+    LIBS = ['$APP_LIB_NAME', '$VIDEO_LIB_NAME', '$SCRIPT_LIB_NAME',
+            'docopt', 'gtest', 'pthread'],
 
     # Copy all environment variables to simulate user environment.
     ENV = environ,
 )
+test_env.AddPackages(test_env['VIDEO_PACKAGES'])
 AddRpath_(test_env, Dir(test_env.subst('$BUILD_DIR/googletest')).abspath)
 
 # -----------------------------------------------------------------------------

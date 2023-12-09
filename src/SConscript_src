@@ -528,6 +528,13 @@ script_sources = PlaceInDir_('App', [
     'SnapScriptApp',
 ])
 
+# Extra sources used for capturevideo and some timing tests.
+video_sources = PlaceInDir_('App', [
+    'CaptureScript',
+    'CaptureScriptApp',
+    'VideoWriter',
+])
+
 # Source files that are always compiled as optimized due to performance issues.
 slow_lib_sources = [
     'Math/CGALInternal.cpp',
@@ -565,4 +572,7 @@ app_lib = lib_env.SharedLibrary(lib_env['APP_LIB_NAME'], lib_objects)
 script_objects = [BuildObject_(lib_env, source) for source in script_sources]
 script_lib = lib_env.SharedLibrary(lib_env['SCRIPT_LIB_NAME'], script_objects)
 
-Return('app_lib', 'script_lib')
+video_objects = [BuildObject_(lib_env, source) for source in video_sources]
+video_lib = lib_env.SharedLibrary(lib_env['VIDEO_LIB_NAME'], video_objects)
+
+Return('app_lib')

@@ -40,4 +40,36 @@ class Timer {
     std::vector<TimePoint_> timepoints_;
 };
 
+/// The StopTimer class is also a cumulative timer that can be stopped and
+/// started. This is also useful for diagnosing performance issues.
+///
+/// \ingroup Debug
+class StopTimer {
+  public:
+    /// The StopTimer is given a name to output in Report(). It is stopped by
+    /// default.
+    explicit StopTimer(const Str &name);
+
+    /// Starts the timer (when stopped).
+    void Start();
+
+    /// Stops the timer (when running).
+    void Stop();
+
+    /// Stops if necessary and resets elapsed time to 0.
+    void Reset();
+
+    /// Gets the current elapsed time, whether stopped or not.
+    double GetElapsedTime();
+
+    /// Reports on the elapsed time to stdout.
+    void Report();
+
+  private:
+    const Str   name_;
+    bool        is_running_ = false;
+    UTime       start_time_;
+    double      elapsed_time_;
+};
+
 }  // namespace Debug
