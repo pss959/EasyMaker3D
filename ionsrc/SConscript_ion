@@ -15,7 +15,7 @@ zipasset_builder = Builder(
 ion_env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
 
 # Special environment for Mac to compile Objective-C++ files.
-objc_env = Environment(
+objc_env = ion_env.Clone(
     CXX = 'c++',
     CXXFLAGS = [
         '--std=c++20',
@@ -337,9 +337,8 @@ third_party_sources = [
 # Building targets.
 # -----------------------------------------------------------------------------
 
-third_party_objects = [
-    third_party_env.SharedObject(f'third_party/{source}')
-    for source in third_party_sources]
+third_party_objects = third_party_env.BuildObjects([
+    f'third_party/{source}' for source in third_party_sources])
 
 # Concatenate all source files.
 ion_sources = []
@@ -354,11 +353,12 @@ for (subdir, names, headers, sources, assets) in ion_files:
 # ---------------------------------
 # Building library.
 
-objc_objects = [objc_env.SharedObject(src) for src in objc_sources]
+ion_objects  =  ion_env.BuildObjects(ion_sources)
+objc_objects = objc_env.BuildObjects(objc_sources)
 
 ion_lib = ion_env.SharedLibrary(
     ion_env['ION_LIB_NAME'],
-    ion_sources + third_party_objects + objc_objects)
+    ion_objects + third_party_objects + objc_objects)
 
 # ---------------------------------
 # Building tests. This works in 'dbg' mode only!

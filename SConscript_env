@@ -96,6 +96,10 @@ def FindSources_(env, root_dir, patterns):
             sources += [join(root, fn) for fn in fnfilter(filenames, pattern)]
     return sources
 
+# Builds shared objects from all sources using the given environment.
+def BuildObjects_(env, sources):
+    return [env.SharedObject(src) for src in sources]
+
 # -----------------------------------------------------------------------------
 # Platform setup.
 # -----------------------------------------------------------------------------
@@ -124,9 +128,10 @@ base_env = Environment(
     MODE            = mode,
     PLATFORM        = platform,
 
-    # To keep names consistent.
+    # Keep library names consistent.
     ION_LIB_NAME    = 'IonLib',
     APP_LIB_NAME    = 'AppLib',
+    SCRIPT_LIB_NAME = 'AppScriptLib',
 
     BUILD_DIR       = f'build/{mode}',
     ION_DIR         = '#/ionsrc',
@@ -163,8 +168,9 @@ base_env.AddMethod(MakeBrief_, 'MakeBrief')
 # Allow ParseConfig() to be called easily for packages.
 base_env.AddMethod(ParseConfig_, 'AddPackages')
 
-# Allow FindSources_() to be called.
-base_env.AddMethod(FindSources_, 'FindSources')
+# Allow other functions to be called.
+base_env.AddMethod(FindSources_,  'FindSources')
+base_env.AddMethod(BuildObjects_, 'BuildObjects')
 
 # -----------------------------------------------------------------------------
 # Add common platform-specific items to base_env.
@@ -540,11 +546,15 @@ test_env.Append(
         '#submodules/googletest/googletest/include',
         '#submodules/googletest/googlemock/include',
     ],
-    LIBPATH = ['#/$BUILD_DIR/docopt.cpp', '#/$BUILD_DIR/googletest'],
-    LIBS    = ['docopt', 'gtest', 'pthread'],
+    LIBPATH = [
+        '#/$BUILD_DIR',
+        '#/$BUILD_DIR/docopt.cpp',
+        '#/$BUILD_DIR/googletest'
+    ],
+    LIBS = ['$APP_LIB_NAME', '$SCRIPT_LIB_NAME', 'docopt', 'gtest', 'pthread'],
 
     # Copy all environment variables to simulate user environment.
-    ENV     = environ,
+    ENV = environ,
 )
 AddRpath_(test_env, Dir(test_env.subst('$BUILD_DIR/googletest')).abspath)
 

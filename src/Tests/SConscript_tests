@@ -405,7 +405,7 @@ test_source_dict = {
 # Building tests.
 # -----------------------------------------------------------------------------
 
-ion_objects  = [ion_env.SharedObject(source=src) for src in ion_test_sources]
+ion_objects  = ion_env.BuildObjects(ion_test_sources)
 
 test_sources  = main_test_sources + [f'{cat}/{src}.cpp'
                                      for cat, sources in test_source_dict.items()

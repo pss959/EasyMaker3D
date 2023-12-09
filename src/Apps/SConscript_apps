@@ -2,24 +2,64 @@ Import('app_dict', 'app_env')
 
 main_app_name = app_dict['APP_NAME']
 
-# Build the applications. The doc-related apps build only on Linux.
-app_names = [main_app_name, 'nodeviewer', 'printtypes']
-if app_env['PLATFORM'] == 'linux':
-    app_names += ['capturevideo', 'createcheatsheet', 'snapimage']
-    # Extra packages Needed for capturevideo.
-    app_env.AddPackages(Split('libavcodec libavformat libavutil libswscale'))
+# -----------------------------------------------------------------------------
+# Extra source files needed for apps. These are not added to the main library
+# to keep it smaller.
+# -----------------------------------------------------------------------------
 
-apps_extra_sources = [
+# Extra sources used for all apps.
+main_extra_sources = [
     '../App/Args.cpp',
 ]
 
-apps_extra_objects = [app_env.SharedObject(src) for src in apps_extra_sources]
+# Extra sources used for capturevideo.
+video_extra_sources = [
+    '../App/CaptureScript.cpp',
+    '../App/CaptureScriptApp.cpp',
+    '../App/VideoWriter.cpp',
+]
+
+# -----------------------------------------------------------------------------
+# Building sources.
+# -----------------------------------------------------------------------------
+
+# Create shared objects for extra sources.
+main_extra_objects  = app_env.BuildObjects(main_extra_sources)
+video_extra_objects = app_env.BuildObjects(video_extra_sources)
+
+# -----------------------------------------------------------------------------
+# Environments.
+# -----------------------------------------------------------------------------
+
+# Environment for an app that needs snap scripting.
+snap_env = app_env.Clone()
+snap_env.Append(LIBS = '$SCRIPT_LIB_NAME')
+
+# Environment for an app that needs snap scripting and video.
+video_env = snap_env.Clone()
+video_env.AddPackages(Split('libavcodec libavformat libavutil libswscale'))
+
+# -----------------------------------------------------------------------------
+# Building applications.
+# -----------------------------------------------------------------------------
 
 # Return a dictionary mapping app name to executable.
 apps = {}
-for app_name in app_names:
-    app_object = app_env.SharedObject(f'{app_name}.cpp')
-    app = app_env.Program(app_name, [app_object] + apps_extra_objects)
-    apps[app_name] = app
+
+# Builds an app and adds it to the apps dictionary.
+def BuildApp_(name, env, extra_objects):
+    app_object = env.SharedObject(f'{name}.cpp')
+    apps[name] = env.Program(name,
+                             [app_object] + main_extra_objects + extra_objects)
+
+# Build the main applications.
+for name in [main_app_name, 'nodeviewer', 'printtypes']:
+    BuildApp_(name, app_env, [])
+
+# The doc-related apps build only on Linux. Some require extra libraries.
+if app_env['PLATFORM'] == 'linux':
+    BuildApp_('createcheatsheet', app_env, [])
+    BuildApp_('snapimage',        snap_env, [])
+    BuildApp_('capturevideo', video_env, video_extra_objects)
 
 Return('apps')

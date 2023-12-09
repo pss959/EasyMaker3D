@@ -81,17 +81,6 @@ lib_sources = list(chain(
         'SceneLoader',
         'ToolBox',
 
-        # These are used for capturevideo, snapimage, and simulation tests
-        # only.
-        'CaptureScript',
-        'CaptureScriptApp',
-        'ScriptBase',
-        'ScriptEmitter',
-        'ScriptedApp',
-        'SnapScript',
-        'SnapScriptApp',
-        'VideoWriter',
-
         # Type registration.
         'RegisterCommandTypes',
         'RegisterFeedbackTypes',
@@ -530,6 +519,15 @@ lib_sources = list(chain(
     ]),
 ))
 
+# Extra sources needed for snapimage and Sim tests.
+script_sources = PlaceInDir_('App', [
+    'ScriptBase',
+    'ScriptEmitter',
+    'ScriptedApp',
+    'SnapScript',
+    'SnapScriptApp',
+])
+
 # Source files that are always compiled as optimized due to performance issues.
 slow_lib_sources = [
     'Math/CGALInternal.cpp',
@@ -564,4 +562,7 @@ if lib_env['MODE'] != 'rel':
 lib_objects = [BuildObject_(lib_env, source) for source in lib_sources]
 app_lib = lib_env.SharedLibrary(lib_env['APP_LIB_NAME'], lib_objects)
 
-Return('app_lib')
+script_objects = [BuildObject_(lib_env, source) for source in script_sources]
+script_lib = lib_env.SharedLibrary(lib_env['SCRIPT_LIB_NAME'], script_objects)
+
+Return('app_lib', 'script_lib')
