@@ -35,11 +35,11 @@ extensions = [
     # Official extensions:
     'sphinx.ext.todo',
     'sphinxcontrib.jquery',
-    'sphinxcontrib.video',
 
     # Local extensions:
     'fixreplace',
     'incimage',
+    'incvideo',
     'menuicon',
 ]
 

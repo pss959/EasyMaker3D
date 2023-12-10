@@ -4,10 +4,10 @@
 Installing and Running |appname|
 --------------------------------
 
-Open the `the download site <download_site_>`_ (on Google Drive) in a browser
-and download the Zip file for your operating system. Extract all files wherever
-you like; this will create a |appname| folder. In this folder there is a
-|appname| executable that you can click on to run the application.
+Open the `the GitHub release page <download_site_>`_ in a browser and download
+the Zip file for your operating system. Extract all files wherever you like;
+this will create a |appname| folder. In this folder there is a |appname|
+executable that you can click on to run the application.
 
 
 A Simple Doorstop Example (Non-VR)
@@ -22,10 +22,7 @@ model and output it as an STL file.
 
 |block-image|
 
-.. video:: videos/Doorstop.webm
-    :alt:    The process of creating the Doorstop example
-    :class:  embedded-video
-    :height: 512
+.. incvideo:: videos/Doorstop.webm 512px
 
 |block-image|
 

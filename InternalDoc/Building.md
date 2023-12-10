@@ -73,7 +73,6 @@ Additionally:
      - [`Sphinx`](https://www.sphinx-doc.org/)
      - [`sphinx-rtd-theme`](https://sphinx-rtd-theme.readthedocs.io)
      - [`sphinxcontrib-jquery`](https://pypi.org/project/sphinxcontrib-jquery/)
-     - [`sphinxcontrib-video`](https://pypi.org/project/sphinxcontrib-video/)
  - The `libboost-dev` package is required to build and run the unit tests.
 
 ### Windows
