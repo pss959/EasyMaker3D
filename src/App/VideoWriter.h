@@ -55,7 +55,8 @@ class VideoWriter {
     /// Returns the current number of chapters.
     size_t GetChapterCount() const;
 
-    /// Writes the resulting video to the path passed to Init().
+    /// Writes the resulting video to the path passed to Init() and writes a
+    /// WebVTT chapter file to the same path with a ".vtt" extension.
     void WriteToFile();
 
   private:
@@ -77,6 +78,13 @@ class VideoWriter {
 
     /// Stores chapter data in the appropriate place for output.
     void StoreChapters_();
+
+    /// Writes a WebVTT chapter file to the given path. Returns false on
+    /// failure to open the file.
+    bool WriteChapterFile_(const FilePath &path);
+
+    /// Converts a frame index to an output stream timestamp.
+    uint64 FrameToTimestamp_(uint64 frame);
 
     /// Processes an error, throwing an exception.
     void Error_(const Str &message) { throw Exception(message); }

@@ -8,7 +8,9 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
+#include <chrono>
 #include <cstring>
+#include <format>
 #include <fstream>
 #include <ranges>
 #include <vector>
@@ -16,17 +18,24 @@ extern "C" {
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 
-/// The VideoWriter::Chapter_ struct stores a title and frame for a chapter.
+/// The VideoWriter::Chapter_ struct stores a title and starting frame for a
+/// chapter.
 struct VideoWriter::Chapter_ {
     Str    title;
-    uint64 frame = 0;
+    size_t index           = 0;  ///< Index in chapter menu (starts at 1).
+    uint64 start_frame     = 0;  ///< Frame where chapter starts.
+    uint64 end_frame       = 0;  ///< Frame where chapter ends.
+    uint64 start_timestamp = 0;  ///< Timestamp corresponding to #start_frame.
+    uint64 end_timestamp   = 0;  ///< Timestamp corresponding to #end_frame.
     Chapter_() {}
-    Chapter_(const Str &t, uint64 f) : title(t), frame(f) {}
+    Chapter_(const Str &t, uint32 i, uint64 f) :
+        title(t), index(i), start_frame(f) {}
 };
 
 /// The VideoWriter::Data_ struct stores all the FFMPEG data needed for writing
 /// video files.
 struct VideoWriter::Data_ {
+    FilePath         path;
     AVCodecContext  *codec_context = nullptr;
     AVFormatContext *out_context   = nullptr;
     const AVCodec   *codec         = nullptr;
@@ -57,6 +66,7 @@ void VideoWriter::Init(const FilePath &path,
                        const Vector2i &resolution, int fps) {
     ASSERT(data_);
 
+    data_->path = path;
     const auto real_path = path.ToNativeString();
     const char *out_file = real_path.c_str();
 
@@ -167,7 +177,8 @@ void VideoWriter::AddImage(const ion::gfx::Image &image) {
 }
 
 void VideoWriter::AddChapterTag(const Str &title) {
-    data_->chapters.push_back(Chapter_(title, data_->cur_frame));
+    const size_t index = data_->chapters.size() + 1;  // Start at 1.
+    data_->chapters.push_back(Chapter_(title, index, data_->cur_frame));
 }
 
 size_t VideoWriter::GetImageCount() const {
@@ -185,9 +196,15 @@ void VideoWriter::WriteToFile() {
     // Send a null frame to end the video stream.
     SendFrame_(nullptr);
 
-    // Set up the chapters. (Must be done before writing the trailer.)
-    if (! data_->chapters.empty())
+    // Set up the chapters and write the chapter file. (Must be done before
+    // writing the trailer.)
+    if (! data_->chapters.empty()) {
         StoreChapters_();
+        FilePath chapter_path = data_->path;
+        chapter_path.ReplaceExtension(".vtt");
+        if (! WriteChapterFile_(chapter_path))
+            Error_("Unable to write chapter file: " + chapter_path);
+    }
 
     // Write output trailer.
     av_write_trailer(data_->out_context);
@@ -251,12 +268,70 @@ void VideoWriter::SendFrame_(AVFrame *frame) {
 void VideoWriter::StoreChapters_() {
     ASSERT(! data_->chapters.empty());
 
+    // Store end frames.
     const size_t count = data_->chapters.size();
+    for (size_t i = 1; i < count; ++i)
+        data_->chapters[i - 1].end_frame = data_->chapters[i].start_frame;
+    data_->chapters.back().end_frame = data_->cur_frame;
 
+    // Compute start/end timestamps.
+    auto to_timestamp = [&](uint64 frame){
+        return av_rescale_q(frame, data_->codec_context->time_base,
+                            data_->stream->time_base);
+    };
+    for (auto &ch: data_->chapters) {
+        ch.start_timestamp = to_timestamp(ch.start_frame);
+        ch.end_timestamp   = to_timestamp(ch.end_frame);
+    }
+
+    // Store AVChapter instances in the AVFormatContext.
     auto oc = data_->out_context;
     oc->chapters = reinterpret_cast<AVChapter **>(
         av_realloc_f(oc->chapters, count, sizeof(*oc->chapters)));
     oc->nb_chapters = count;
+    for (const auto &ch: data_->chapters) {
+        AVChapter *avch =
+            reinterpret_cast<AVChapter *>(av_mallocz(sizeof(AVChapter)));
+        avch->id        = ch.index;
+        avch->time_base = data_->stream->time_base;
+        avch->start     = ch.start_timestamp;
+        avch->end       = ch.end_timestamp;
+
+        // Store title in metadata.
+        av_dict_set(&avch->metadata, "title", ch.title.c_str(), 0);
+
+        oc->chapters[ch.index - 1] = avch;
+    }
+}
+
+bool VideoWriter::WriteChapterFile_(const FilePath &path) {
+    ASSERT(! data_->chapters.empty());
+
+    std::ofstream out(path.ToNativeString());
+    if (! out)
+        return false;
+
+    out << "WEBVTT\n\n";
+
+    auto format_ts = [&](uint64 ts){
+        // Convert timestamp to seconds.
+        auto seconds = ts * av_q2d(data_->stream->time_base);
+        // Convert to a duration in milliseconds.
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::duration<double>(seconds));
+        // Format as a string.
+        return std::format("{:%T}", ms);
+    };
+
+    for (const auto [index, ch]: std::views::enumerate(data_->chapters)) {
+        out << (index + 1) << "\n"
+            << format_ts(ch.start_timestamp) << " --> "
+            << format_ts(ch.end_timestamp) << "\n"
+            << ch.title << "\n\n";
+    }
+#if XXXX
+    const size_t count = data_->chapters.size();
+        print_time("start_time", chapter->start, &chapter->time_base);
 
     auto convert_frame = [&](uint64 frame){
         return av_rescale_q(frame, data_->codec_context->time_base,
@@ -265,13 +340,13 @@ void VideoWriter::StoreChapters_() {
 
     for (const auto [index, ch]: std::views::enumerate(data_->chapters)) {
         const uint64 end_frame = static_cast<size_t>(index + 1) < count ?
-            data_->chapters[index + 1].frame : data_->cur_frame;
+            data_->chapters[index + 1].start_frame : data_->cur_frame;
 
         AVChapter *avch =
             reinterpret_cast<AVChapter *>(av_mallocz(sizeof(AVChapter)));
         avch->id        = index;
         avch->time_base = data_->stream->time_base;
-        avch->start     = convert_frame(ch.frame);
+        avch->start     = convert_frame(ch.start_frame);
         avch->end       = convert_frame(end_frame);
 
         // Store title in metadata.
@@ -279,4 +354,7 @@ void VideoWriter::StoreChapters_() {
 
         oc->chapters[index] = avch;
     }
+#endif
+
+    return true;
 }
