@@ -41,6 +41,7 @@ extensions = [
     'incimage',
     'incvideo',
     'menuicon',
+    'videobutton',
 ]
 
 # Ignore included files.
@@ -76,7 +77,9 @@ html_theme           = 'sphinx_rtd_theme'  # Read the Docs.
 html_static_path     = ['_static']
 html_extra_path      = ['extra']
 html_css_files       = ['css/custom.css']
-html_js_files        = ['js/version_selector.js', 'js/versions.js']
+html_js_files        = ['js/playvideo.js',
+                        'js/version_selector.js',
+                        'js/versions.js']
 html_favicon         = 'images/static/favicon.ico'
 html_logo            = 'images/static/LogoSmall.jpg'
 html_show_sourcelink = False

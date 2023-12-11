@@ -22,12 +22,14 @@ model and output it as an STL file.
 
 |block-image|
 
-.. incvideo:: videos/Doorstop.webm 512px
+.. incvideo:: Doorstop videos/Doorstop.webm 512px
 
 |block-image|
 
 Start the Application
 .....................
+
+.. videobutton:: Doorstop 0 Watch
 
 .. incimage:: /images/QuickstartSessionPanel.jpg 240px right
 

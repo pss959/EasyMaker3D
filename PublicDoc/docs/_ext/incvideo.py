@@ -6,26 +6,27 @@ from pathlib              import Path
 # IncVideo directive class.
 # -----------------------------------------------------------------------------
 
+# There is no docutils node corresponding to a video, so create one here.
 class VideoNode(nodes.General, nodes.Element):
     pass
 
 class IncVideo(Directive):
     """IncVideo adds an embedded video with a corresponding chapters file.
-    Required arguments: uri height
+    Required arguments: id uri height
+
+    The ID can be used in buttons to play the video at a certain time.
     """
     has_content        = True
-    required_arguments = 2
+    required_arguments = 3
     optional_arguments = 0
 
-    # Set up optional arguments.
-    option_spec = {}
-
     def run(self):
-        (uri, height) = self.arguments
-        return [VideoNode(source=uri, height=height)]
+        (id, uri, height) = self.arguments
+        return [VideoNode(id=id, source=uri, height=height)]
 
 def EnterVideoNode(translator, node):
     # Access node items.
+    id     = node['id']
     height = node['height']
     source = node['source']
 
@@ -33,7 +34,8 @@ def EnterVideoNode(translator, node):
     chapters = Path(source).with_suffix('.vtt')
 
     # Video element.
-    html = f'<video controls="True" class="embedded-video" height={height}>\n'
+    html = ('<video controls="True" class="embedded-video"' +
+            f' id="{id}" height="{height}">\n')
 
     # Source element.
     html += f'<source src="{source}" type="video/webm">\n'
@@ -52,7 +54,7 @@ def ExitVideoNode(translator, node):
 # -----------------------------------------------------------------------------
 
 def setup(app):
-    """Add the VideoNode_ to the Sphinx builder."""
+    """Add the VideoNode to the Sphinx builder."""
     app.add_node(VideoNode, html=(EnterVideoNode, ExitVideoNode))
     app.add_directive("incvideo", IncVideo)
     return {
