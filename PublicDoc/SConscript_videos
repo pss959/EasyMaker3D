@@ -28,16 +28,18 @@ script_dir = './videos/scripts'
 scripts = ['Doorstop']
 
 def VideoFile(name):
-  return join(video_dir, name + '.webm')
+  return join(video_dir, name + '.mp4')
 
 # Video script processing.
 videos = []
 for script in scripts:
-    script_file = script + '.conf'
+    script_file  = script + '.conf'
+    video_format = 'yuvmp4'
     video = env.Command(VideoFile(script),
                         [capturevideo, join(script_dir, script_file)],
                         [Mkdir(video_dir),
-                         f'{capturevideo.abspath} {script_file}'],
+                         f'{capturevideo.abspath} --format={video_format}' +
+                         f' {script_file}'],
                         chdir=root_dir)
     # This prevents capturevideo from running in parallel.
     env.SideEffect('dummy', video)

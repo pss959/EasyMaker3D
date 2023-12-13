@@ -30,15 +30,18 @@ def EnterVideoNode(translator, node):
     height = node['height']
     source = node['source']
 
-    # Get the name of the chapters track WebVTT file.
-    chapters = Path(source).with_suffix('.vtt')
+    # Get the video type and the name of the chapters track WebVTT file from
+    # the source file name.
+    path = Path(source)
+    video_type = path.suffix[1:]  # Remove the '.'.
+    chapters   = path.with_suffix('.vtt')
 
     # Video element.
     html = ('<video controls="True" class="embedded-video"' +
             f' id="{id}" height="{height}">\n')
 
     # Source element.
-    html += f'<source src="{source}" type="video/webm">\n'
+    html += f'<source src="{source}" type="video/{video_type}">\n'
 
     # Chapter track element.
     html += (f'<track src="{chapters}" kind="chapters"' +

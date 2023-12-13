@@ -18,14 +18,20 @@ class VideoWriter {
   public:
     /// Available video formats.
     enum class Format {
+        /// MP4 file containing RGB images. This is the fastest to create (no
+        /// conversion necessary), but most browsers cannot display this.
+        kRGBMP4,
+        /// WEBM file. Most browsers can display this, but conversion is slow.
         kWEBM,
-        kMP4,
+        /// MP4 file containing YUV420p images. This can be handled by most
+        /// browsers, but the conversion is as slow as for kWEBM.
+        kYUVMP4,
     };
 
     /// Exception thrown when anything goes wrong.
     class Exception : public ExceptionBase {
       public:
-        Exception(const Str &msg) : ExceptionBase(msg) {}
+        Exception(const Str &message) : ExceptionBase(message) {}
     };
 
     /// The constructor is passed the video format to use.
@@ -70,8 +76,17 @@ class VideoWriter {
 
     std::unique_ptr<Data_> data_;
 
-    /// Initializes the codec context for the format.
-    void InitCodecContext_(const Vector2i &resolution, int fps);
+    /// \name Initialization and setup functions
+    ///@{
+    void InitOutputContext_();
+    void InitCodec_();
+    void InitPacket_();
+    void InitStream_(int fps);
+    void InitCodecContext_(int width, int height, int fps);
+    void InitConversion_(int width, int height);
+    void AllocFrame_();
+    void InitOutput_(const char *out_file);
+    ///@}
 
     /// Sends the given frame. If it is null, this finishes the video stream.
     void SendFrame_(AVFrame *frame);
@@ -82,9 +97,6 @@ class VideoWriter {
     /// Writes a WebVTT chapter file to the given path. Returns false on
     /// failure to open the file.
     bool WriteChapterFile_(const FilePath &path);
-
-    /// Converts a frame index to an output stream timestamp.
-    uint64 FrameToTimestamp_(uint64 frame);
 
     /// Processes an error, throwing an exception.
     void Error_(const Str &message) { throw Exception(message); }

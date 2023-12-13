@@ -49,6 +49,12 @@ struct VideoWriter::Data_ {
     std::vector<VideoWriter::Chapter_> chapters;
 };
 
+/// Calls a libav function and throws an exception with a useful error message
+/// if it fails.
+#define CHECK_(func)                                                \
+    if (int ret = func; ret < 0) Error_(std::string(#func) + ": " + \
+                                        ErrorToString_(ret))
+
 VideoWriter::VideoWriter(Format format) {
     format_    = format;
     extension_ = format == Format::kWEBM ? "webm" : "mp4";
@@ -68,79 +74,19 @@ void VideoWriter::Init(const FilePath &path,
 
     data_->path = path;
     const auto real_path = path.ToNativeString();
-    const char *out_file = real_path.c_str();
 
     // Stifle annoying info messages.
     av_log_set_level(AV_LOG_FATAL);
 
-    // Open the output context.
-    avformat_alloc_output_context2(&data_->out_context, nullptr,
-                                   extension_.c_str(), nullptr);
-    if (! data_->out_context)
-        Error_("Could not allocate output format context");
-
-    // Find the encoder.
-    if (format_ == Format::kWEBM)
-        data_->codec = avcodec_find_encoder(AV_CODEC_ID_VP9);
-    else
-        data_->codec = avcodec_find_encoder_by_name("libx264rgb");
-    if (! data_->codec)
-        Error_("Codec not found");
-
-    // Allocate a packet for writing data.
-    data_->packet = av_packet_alloc();
-
-    // Create an output stream.
-    data_->stream = avformat_new_stream(data_->out_context, nullptr);
-    if (! data_->stream)
-        Error_("Could not allocate output stream");
-    data_->stream->id         = 0;
-    data_->stream->time_base  = { 1, fps};
-
-    // Create a codec context.
-    InitCodecContext_(resolution, fps);
-    ASSERT(data_->codec_context);
-
-    // Open the codec.
-    auto ret = avcodec_open2(data_->codec_context, data_->codec, nullptr);
-    if (ret < 0)
-        Error_("Could not open video codec: " + ErrorToString_(ret));
-
-    // Set up a context for RGB -> YUV conversion if necessary.
-    if (format_ == Format::kWEBM) {
-        data_->sws_context = sws_getContext(resolution[0], resolution[1],
-                                            AV_PIX_FMT_RGB24,
-                                            resolution[0], resolution[1],
-                                            AV_PIX_FMT_YUV420P,
-                                            0, nullptr, nullptr, nullptr);
-        if (! data_->sws_context)
-            Error_("Could not allocate sws context");
-    }
-
-    // Allocate a frame.
-    data_->frame = av_frame_alloc();
-    if (! data_->frame)
-        Error_("Could not allocate video frame");
-    data_->frame->format = data_->codec_context->pix_fmt;
-    data_->frame->width  = data_->codec_context->width;
-    data_->frame->height = data_->codec_context->height;
-    if (av_frame_get_buffer(data_->frame, 0) < 0)
-        Error_("Could not allocate frame data");
-
-    // Copy the stream parameters to the muxer.
-    if (avcodec_parameters_from_context(data_->stream->codecpar,
-                                        data_->codec_context) < 0)
-        Error_("Could not copy codec parameters to output stream");
-
-    av_dump_format(data_->out_context, 0, out_file, 1);
-
-    // Open the output file.
-    if (avio_open(&data_->out_context->pb, out_file, AVIO_FLAG_WRITE) < 0)
-        Error_(std::string("Could not open output file: ") + out_file);
-
-    // Write the stream header.
-    if (avformat_write_header(data_->out_context, nullptr) < 0)
-        Error_("Could not write stream header");
+    InitOutputContext_();
+    InitCodec_();
+    InitPacket_();
+    InitStream_(fps);
+    InitCodecContext_(resolution[0], resolution[1], fps);
+    if (format_ != Format::kRGBMP4)
+        InitConversion_(resolution[0], resolution[1]);
+    AllocFrame_();
+    InitOutput_(real_path.c_str());
 }
 
 void VideoWriter::AddImage(const ion::gfx::Image &image) {
@@ -153,7 +99,7 @@ void VideoWriter::AddImage(const ion::gfx::Image &image) {
     if (av_frame_make_writable(frame) < 0)
         Error_("Could not make the video frame data writable");
 
-    if (format_ == Format::kMP4) {
+    if (format_ == Format::kRGBMP4) {
         // Copy the RGB image data.
         std::memcpy(&frame->data[0][0],
                     image.GetData()->GetData(), image.GetDataSize());
@@ -207,7 +153,7 @@ void VideoWriter::WriteToFile() {
     }
 
     // Write output trailer.
-    av_write_trailer(data_->out_context);
+    CHECK_(av_write_trailer(data_->out_context));
 
     // Clean up.
     avcodec_free_context(&data_->codec_context);
@@ -220,25 +166,94 @@ void VideoWriter::WriteToFile() {
     data_.reset();
 }
 
-void VideoWriter::InitCodecContext_(const Vector2i &resolution, int fps) {
+void VideoWriter::InitOutputContext_() {
+    avformat_alloc_output_context2(&data_->out_context, nullptr,
+                                   extension_.c_str(), nullptr);
+    if (! data_->out_context)
+        Error_("Could not allocate output format context");
+}
+
+void VideoWriter::InitCodec_() {
+    // Find the encoder.
+    const std::string encoder =
+        format_ == Format::kRGBMP4 ? "libx264rgb" : "libvpx-vp9";
+    data_->codec = avcodec_find_encoder_by_name(encoder.c_str());
+    if (! data_->codec)
+        Error_(std::string("Codec '") + encoder + "' not found");
+}
+
+void VideoWriter::InitPacket_() {
+    // Allocate a packet for writing data.
+    data_->packet = av_packet_alloc();
+}
+
+void VideoWriter::InitStream_(int fps) {
+    // Create an output stream.
+    data_->stream = avformat_new_stream(data_->out_context, nullptr);
+    if (! data_->stream)
+        Error_("Could not allocate output stream");
+    data_->stream->id         = 0;
+    data_->stream->time_base  = { 1, fps};
+}
+
+void VideoWriter::InitCodecContext_(int width, int height, int fps) {
     auto cc = avcodec_alloc_context3(data_->codec);
     if (! cc)
         Error_("Could not allocate video codec context");
 
-    cc->codec_id  = data_->out_context->oformat->video_codec;
     cc->bit_rate  = 400000;
-    cc->width     = resolution[0];
-    cc->height    = resolution[1];
+    cc->width     = width;
+    cc->height    = height;
     cc->time_base = data_->stream->time_base;
 
     // Set a reasonable quality (constant rate factor).
-    av_opt_set(cc->priv_data, "crf", "31", 0);
+    CHECK_(av_opt_set(cc->priv_data, "crf", "31", 0));
 
     // Choose a pixel format for the Format.
-    cc->pix_fmt = format_ == Format::kWEBM ?
-        AV_PIX_FMT_YUV420P : AV_PIX_FMT_RGB24;
+    cc->pix_fmt =
+        format_ == Format::kRGBMP4 ? AV_PIX_FMT_RGB24 : AV_PIX_FMT_YUV420P;
 
     data_->codec_context = cc;
+
+    // Open the codec now that there is a context.
+    CHECK_(avcodec_open2(data_->codec_context, data_->codec, nullptr));
+}
+
+void VideoWriter::InitConversion_(int width, int height) {
+    // Set up a context for RGB -> YUV conversion if necessary.
+    ASSERT(format_ != Format::kRGBMP4);
+
+    data_->sws_context = sws_getContext(width, height, AV_PIX_FMT_RGB24,
+                                        width, height, AV_PIX_FMT_YUV420P,
+                                        SWS_BICUBIC, nullptr, nullptr, nullptr);
+    if (! data_->sws_context)
+        Error_("Could not allocate sws context");
+}
+
+void VideoWriter::AllocFrame_() {
+    data_->frame = av_frame_alloc();
+    if (! data_->frame)
+        Error_("Could not allocate video frame");
+
+    data_->frame->format = data_->codec_context->pix_fmt;
+    data_->frame->width  = data_->codec_context->width;
+    data_->frame->height = data_->codec_context->height;
+
+    CHECK_(av_frame_get_buffer(data_->frame, 0));
+}
+
+void VideoWriter::InitOutput_(const char *out_file) {
+    // Copy the stream parameters to the muxer.
+    CHECK_(avcodec_parameters_from_context(data_->stream->codecpar,
+                                           data_->codec_context));
+
+    av_dump_format(data_->out_context, 0, out_file, 1);
+
+    // Open the output file.
+    CHECK_(avio_open(&data_->out_context->pb, out_file, AVIO_FLAG_WRITE));
+
+    // Write the stream header.
+    CHECK_(avformat_write_header(data_->out_context, nullptr));
 }
 
 void VideoWriter::SendFrame_(AVFrame *frame) {
@@ -298,7 +313,7 @@ void VideoWriter::StoreChapters_() {
         avch->end       = ch.end_timestamp;
 
         // Store title in metadata.
-        av_dict_set(&avch->metadata, "title", ch.title.c_str(), 0);
+        CHECK_(av_dict_set(&avch->metadata, "title", ch.title.c_str(), 0));
 
         oc->chapters[ch.index - 1] = avch;
     }
@@ -329,32 +344,8 @@ bool VideoWriter::WriteChapterFile_(const FilePath &path) {
             << format_ts(ch.end_timestamp) << "\n"
             << ch.title << "\n\n";
     }
-#if XXXX
-    const size_t count = data_->chapters.size();
-        print_time("start_time", chapter->start, &chapter->time_base);
-
-    auto convert_frame = [&](uint64 frame){
-        return av_rescale_q(frame, data_->codec_context->time_base,
-                            data_->stream->time_base);
-    };
-
-    for (const auto [index, ch]: std::views::enumerate(data_->chapters)) {
-        const uint64 end_frame = static_cast<size_t>(index + 1) < count ?
-            data_->chapters[index + 1].start_frame : data_->cur_frame;
-
-        AVChapter *avch =
-            reinterpret_cast<AVChapter *>(av_mallocz(sizeof(AVChapter)));
-        avch->id        = index;
-        avch->time_base = data_->stream->time_base;
-        avch->start     = convert_frame(ch.start_frame);
-        avch->end       = convert_frame(end_frame);
-
-        // Store title in metadata.
-        av_dict_set(&avch->metadata, "title", ch.title.c_str(), 0);
-
-        oc->chapters[index] = avch;
-    }
-#endif
 
     return true;
 }
+
+#undef CHECK_

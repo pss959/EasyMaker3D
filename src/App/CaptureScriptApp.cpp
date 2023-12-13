@@ -103,8 +103,10 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
 
     // Set up a VideoWriter if requested.
     if (! opts.nocapture) {
-        const VideoWriter::Format format = opts.format == "mp4" ?
-            VideoWriter::Format::kMP4 : VideoWriter::Format::kWEBM;
+        const VideoWriter::Format format =
+            opts.format == "rgbmp4" ? VideoWriter::Format::kRGBMP4 :
+            opts.format == "yuvmp4" ? VideoWriter::Format::kYUVMP4 :
+            VideoWriter::Format::kWEBM;
         video_writer_.reset(new VideoWriter(format));
 
         // Set up the output path.

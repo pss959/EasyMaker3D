@@ -26,7 +26,8 @@ public documentation.
                    SCRIPT [SESSION]
 
     Options:
-      --format=<str>  Output video format. Choices: "webm" (default), "mp4".
+      --format=<str>  Output video format. Choices: "webm" (default),
+                        "rgbmp4", "yuvmp4".
       --fps=<long>    Frames per second in the resulting video (default 30).
       --nocapture     Do not actually capture the video (useful for testing).
       --klog=<string> String to pass to KLogger::SetKeyString().
@@ -54,11 +55,11 @@ int main(int argc, const char *argv[]) {
 
     std::shared_ptr<CaptureScriptApp::Options> options(
         new CaptureScriptApp::Options);
+    const StrVec formats{ "webm", "rgbmp4", "yuvmp4" };  // Default is first.
     KLogger::SetKeyString(args.GetString("--klog"));
     options->do_ion_remote      = true;
     options->enable_vr          = false;
-    options->format             = args.GetStringChoice("--format",
-                                                       StrVec{ "webm", "mp4" });
+    options->format             = args.GetStringChoice("--format", formats);
     options->fps                = args.GetAsInt("--fps", 30);
     options->nocapture          = args.GetBool("--nocapture");
     options->remain             = args.GetBool("--remain");

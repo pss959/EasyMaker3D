@@ -22,7 +22,7 @@ model and output it as an STL file.
 
 |block-image|
 
-.. incvideo:: Doorstop videos/Doorstop.webm 512px
+.. incvideo:: Doorstop videos/Doorstop.mp4 512px
 
 |block-image|
 
