@@ -158,15 +158,12 @@ bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
         std::cerr << "*** No node named '" << name << "' found\n";
         return false;
     }
-    std::cerr << "XXXX " << name << " Path = " << path << "\n";
 
     // Compute the world-coordinate bounds of the object.
     Matrix4f ctm = Matrix4f::Identity();
     for (auto &node: path)
         ctm = ctm * node->GetModelMatrix();
     const auto bounds = TransformBounds(path.back()->GetBounds(), ctm);
-    std::cerr << "XXXX " << name << " Bounds = " << bounds << "\n";
-    std::cerr << "XXXX " << name << " Bounds = " << bounds.ToString(true) << "\n";
 
     // Find the projection of each bounds corner point on the image plane to
     // get the extents of the rectangle.
@@ -176,7 +173,6 @@ bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
     const auto &frustum = *GetContext().scene_context->frustum;
     for (const auto &corner: corners)
         rect.ExtendByPoint(frustum.ProjectToImageRect(corner));
-    std::cerr << "XXXX " << name << " rect = " << rect << "\n";
 
     // Add the margin.
     const Vector2f margin_vec(margin, margin);
