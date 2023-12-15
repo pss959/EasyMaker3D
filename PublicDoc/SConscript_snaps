@@ -55,7 +55,15 @@ snap_map = {
     'Vive',
   ],
   'Doorstop' : [
-    'Doorstop',
+    'DoorstopCylinder',
+    'DoorstopExport',
+    'DoorstopFinished',
+    'DoorstopHull',
+    'DoorstopRenamed',
+    'DoorstopScale',
+    'DoorstopSelected',
+    'DoorstopTorus',
+    'DoorstopSessionPanel',
   ],
   'Feedback' : [
     'AngularFeedback',
@@ -112,16 +120,6 @@ snap_map = {
     'PrimitiveSphere',
     'PrimitiveText',
     'PrimitiveTorus',
-  ],
-  'Quickstart' : [
-    'QuickstartCylinder',
-    'QuickstartExport',
-    'QuickstartHull',
-    'QuickstartRenamed',
-    'QuickstartScale',
-    'QuickstartSelected',
-    'QuickstartTorus',
-    'QuickstartSessionPanel',
   ],
   'RadialLayout' : [
     'RadialLayoutArc',

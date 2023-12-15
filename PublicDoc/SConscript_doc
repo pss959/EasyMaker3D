@@ -185,8 +185,8 @@ env.Depends(doc, [cs, index, version_js_file, images, videos])
 redirect_files = [
     'index.html',
     'CheatSheet.html',
-    'Quickstart/index.html',
     'ReleaseNotes.html',
+    'Tutorials/index.html',
     'UserGuide/index.html',
     'VRSetup.html',
 ]

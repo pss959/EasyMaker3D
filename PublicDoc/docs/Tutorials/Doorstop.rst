@@ -1,17 +1,11 @@
 A Simple Doorstop Example (Non-VR)
 ----------------------------------
 
-.. incimage:: /images/Doorstop.jpg 240px right
-
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.
 
-:dnote:`Clicking on any of these images will show an enlarged version.`
-
-|block-image|
-
 .. incvideo:: Doorstop ../videos/Doorstop.mp4 512px center
-   :poster:  ../_images/Doorstop.jpg
+   :poster:  ../_images/DoorstopFinished.jpg
 
 |block-image|
 
@@ -20,7 +14,7 @@ Start the Application
 
 .. videobutton:: Doorstop 0 Watch
 
-.. incimage:: /images/QuickstartSessionPanel.jpg 240px right
+.. incimage:: /images/DoorstopSessionPanel.jpg 240px right
 
 Starting the application should open a maximized window that you can interact
 with using the keyboard and mouse. The first thing you should see is :ref:`this
@@ -60,7 +54,7 @@ to the Translation Tool from the current state:
  - Press :shortcut:`Space`, which also switches between the current specialized
    tool and the current general tool.
 
-.. incimage:: /images/QuickstartTorus.jpg 220px right
+.. incimage:: /images/DoorstopTorus.jpg 220px right
 
 Once the Translation Tool is attached, drag the translation handle on the left
 or right side of the torus to the right until it has moved 5 units. You will
@@ -81,8 +75,8 @@ need them right now.
 
 |block-image|
 
-.. incimage:: /images/QuickstartScale.jpg 240px right
-.. incimage:: /images/ScaleToolIcon.jpg   300px right
+.. incimage:: /images/DoorstopScale.jpg 240px right
+.. incimage:: /images/ScaleToolIcon.jpg 300px right
 
 Next, select the :ref:`Scale Tool <ug-scale-tool>` from the General Tools
 shelf. This will attach a bunch of scaling widgets to the cylinder as shown
@@ -90,7 +84,7 @@ here.
 
 |block-image|
 
-.. incimage:: /images/QuickstartCylinder.jpg 240px right
+.. incimage:: /images/DoorstopCylinder.jpg 240px right
 
 Drag the top (blue) scaler down until the height of the cylinder is 3 units.
 
@@ -99,7 +93,7 @@ Drag the top (blue) scaler down until the height of the cylinder is 3 units.
 Combine the two Models to Create the Doorstop
 .............................................
 
-.. incimage:: /images/QuickstartSelected.jpg 240px right
+.. incimage:: /images/DoorstopSelected.jpg 240px right
 
 The next step is to select both models. Since the cylinder is already selected,
 you just need to add the torus to the selection. You can do that in any of
@@ -114,7 +108,7 @@ these ways:
 
 |block-image|
 
-.. incimage:: /images/QuickstartHull.jpg  240px right
+.. incimage:: /images/DoorstopHull.jpg    240px right
 .. incimage:: /images/CombineHullIcon.jpg 300px right
 
 With both models selected, click on the :ref:`Combine Hull <ug-combine-hull>`
@@ -128,8 +122,8 @@ created from appear as indented children (hidden in the scene).
 Change the Model Name
 .....................
 
-.. incimage:: /images/QuickstartRenamed.jpg 240px right
-.. incimage:: /images/NameToolIcon.jpg      300px right
+.. incimage:: /images/DoorstopRenamed.jpg 240px right
+.. incimage:: /images/NameToolIcon.jpg    300px right
 
 This is not a necessary step, but it will make the next step (exporting)
 easier. With the hull model selected, click on the :ref:`Name Tool
@@ -145,7 +139,7 @@ new name should be shown in the Tree Panel.
 Export the Model for 3D Printing
 ................................
 
-.. incimage:: /images/QuickstartExport.jpg 300px right
+.. incimage:: /images/DoorstopExport.jpg   300px right
 .. incimage:: /images/SessionPanelIcon.jpg 300px right
 
 Exporting is done with the :ref:`Session Panel <ug-session-panel>` that you saw

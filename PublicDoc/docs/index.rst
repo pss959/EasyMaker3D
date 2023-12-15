@@ -24,26 +24,28 @@ work in VR due to the `lack of official SteamVR support
 
 .. admonition:: Note
 
-   |appname| is pretty intuitive once you get to know a few basics.  If you
-   want to dive right in, you can try the :doc:`Quickstart <Quickstart/index>`.
-   Otherwise, take a look at the :doc:`User Guide <UserGuide/index>`
-   first. There is also a compact guide to keyboard shortcuts in the
-   :doc:`Cheat Sheet <CheatSheet>`.
+   |appname| is pretty intuitive once you get to know a few basics. You can try
+   out the :doc:`Tutorials <Tutorials/index>` or take a look at the :doc:`User
+   Guide <UserGuide/index>` first. There is also a compact guide to keyboard
+   shortcuts in the :doc:`Cheat Sheet <CheatSheet>`.
 
 Installing and Running |appname|
 --------------------------------
 
-The application is available to download from `the GitHub release page
-<download_site_>`_.
+  - *Windows or Linux*:
 
-To install it:
+    - Open the `the GitHub release page <download_site_>`_ in a browser.
+    - Download the Zip file for your operating system.
+    - Extract all files wherever you like; this will create a folder called
+      |appname|.
+    - Double-click on the |appname| executable in this folder to run the
+      application.
 
- - Windows or Linux: Download the Zip file for your operating system and
-   extract the |appname| folder from it. Open the folder and execute the
-   |appname| executable file. Note that the application must be run from inside
-   this folder.
+  - *Mac*:
 
- - Mac: Download the DMG file and use it to run or install the application.
+    - Open the `the GitHub release page <download_site_>`_ in a browser.
+    - Download the DMG file.
+    - Double-click or install the DMG file to run the |appname| executable.
 
 .. admonition:: VR Only
 
@@ -71,7 +73,7 @@ Contents
 
    self
    VRSetup
-   Quickstart/index
+   Tutorials/index
    UserGuide/index
    CheatSheet
    ReleaseNotes
