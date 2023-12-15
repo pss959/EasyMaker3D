@@ -15,6 +15,7 @@ CaptureScript::CaptureScript() {
     REG_FUNC_("highlightobj", ProcessHighlightObj_);
     REG_FUNC_("moveover",     ProcessMoveOver_);
     REG_FUNC_("moveto",       ProcessMoveTo_);
+    REG_FUNC_("start",        ProcessStart_);
     REG_FUNC_("tooltips",     ProcessTooltips_);
     REG_FUNC_("wait",         ProcessWait_);
 
@@ -182,6 +183,17 @@ CaptureScript::InstrPtr CaptureScript::ProcessMoveTo_(const StrVec &words) {
         minst->seconds = seconds;
     }
     return minst;
+}
+
+CaptureScript::InstrPtr CaptureScript::ProcessStart_(const StrVec &words) {
+    StartInstrPtr sinst;
+    if (words.size() != 1U) {
+        Error("Bad syntax for start instruction");
+    }
+    else {
+        sinst.reset(new StartInstr);
+    }
+    return sinst;
 }
 
 CaptureScript::InstrPtr CaptureScript::ProcessTooltips_(const StrVec &words) {

@@ -55,6 +55,9 @@ class CaptureScriptApp : public ScriptedApp {
     /// Creates and writes a video to a file.
     std::unique_ptr<VideoWriter> video_writer_;
 
+    /// This is set to true when a start instruction is processed.
+    bool is_capturing_ = false;
+
     FadeData_ caption_fade_data_;    ///< Caption fading/visibility.
     FadeData_ highlight_fade_data_;  ///< Highlight rectangle fading/visibility.
 

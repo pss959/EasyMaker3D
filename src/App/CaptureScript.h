@@ -53,6 +53,9 @@ class CaptureScript : public ScriptBase {
         Point2f pos;
         float   seconds;
     };
+    struct StartInstr : public Instr {
+        // No data.
+    };
     struct TooltipsInstr : public Instr {
         bool    is_on;
     };
@@ -69,6 +72,7 @@ class CaptureScript : public ScriptBase {
     DECL_SHARED_PTR(HighlightObjInstr);
     DECL_SHARED_PTR(MoveOverInstr);
     DECL_SHARED_PTR(MoveToInstr);
+    DECL_SHARED_PTR(StartInstr);
     DECL_SHARED_PTR(TooltipsInstr);
     DECL_SHARED_PTR(WaitInstr);
 
@@ -86,6 +90,7 @@ class CaptureScript : public ScriptBase {
     InstrPtr ProcessHighlightObj_(const StrVec &words);
     InstrPtr ProcessMoveOver_(const StrVec &words);
     InstrPtr ProcessMoveTo_(const StrVec &words);
+    InstrPtr ProcessStart_(const StrVec &words);
     InstrPtr ProcessTooltips_(const StrVec &words);
     InstrPtr ProcessWait_(const StrVec &words);
 };

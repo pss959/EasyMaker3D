@@ -201,6 +201,9 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveToInstr>(instr);
         MoveTo_(minst.pos, minst.seconds);
     }
+    else if (instr.name == "start") {
+        is_capturing_ = true;
+    }
     else if (instr.name == "tooltips") {
         const auto &tinst = GetTypedInstr_<CaptureScript::TooltipsInstr>(instr);
         TooltipFeedback::SetDelay(tinst.is_on ? 1 : 0);
@@ -236,7 +239,7 @@ void CaptureScriptApp::BeginFrame() {
 }
 
 void CaptureScriptApp::EndFrame() {
-    if (video_writer_) {
+    if (video_writer_ && is_capturing_) {
         const auto image = GetRenderer().ReadImage(
             Range2i::BuildWithSize(Point2i(0, 0), GetWindowSize()));
         // Rows of image need to be inverted (GL vs stblib).
