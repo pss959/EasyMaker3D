@@ -321,10 +321,13 @@ static bool HandleShortcut_(const Str &str) {
         ASSERT(command_list_);
         Debug::PrintCommands(*command_list_);
         break;
-      case kPrintDebugSpherePosition:
-        std::cout << "Sphere at "
-                  << scene_context_->debug_sphere->GetTranslation() << "\n";
-        break;
+      case kPrintDebugSpherePosition: {
+          const Point3f pos(scene_context_->debug_sphere->GetTranslation());
+          std::cout << "Sphere at " << pos << " = "
+                    << scene_context_->frustum->ProjectToImageRect(pos)
+                    << " in window\n";
+          break;
+      }
       case kPrintEndNode:
         if (! limit_path_.empty())
             Debug::PrintGraph(*limit_path_.back());

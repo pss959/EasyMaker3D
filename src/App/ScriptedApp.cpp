@@ -1,5 +1,7 @@
 #include "App/ScriptedApp.h"
 
+#include <ion/math/rangeutils.h>
+
 #include "App/ScriptEmitter.h"
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"
@@ -8,6 +10,8 @@
 #include "Managers/SceneContext.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Math/Linear.h"
+#include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
@@ -143,6 +147,43 @@ bool ScriptedApp::LoadSettings(const FilePath &path) {
     context.session_manager->ChangePreviousPath(
         context.settings_manager->GetSettings().GetLastSessionPath());
 
+    return true;
+}
+
+bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
+    // Search in the scene for the node.
+    const auto &sc = *GetContext().scene_context;
+    const auto path = SG::FindNodePathInScene(*sc.scene, name, true);
+    if (path.empty()) {
+        std::cerr << "*** No node named '" << name << "' found\n";
+        return false;
+    }
+    std::cerr << "XXXX " << name << " Path = " << path << "\n";
+
+    // Compute the world-coordinate bounds of the object.
+    Matrix4f ctm = Matrix4f::Identity();
+    for (auto &node: path)
+        ctm = ctm * node->GetModelMatrix();
+    const auto bounds = TransformBounds(path.back()->GetBounds(), ctm);
+    std::cerr << "XXXX " << name << " Bounds = " << bounds << "\n";
+    std::cerr << "XXXX " << name << " Bounds = " << bounds.ToString(true) << "\n";
+
+    // Find the projection of each bounds corner point on the image plane to
+    // get the extents of the rectangle.
+    Point3f corners[8];
+    bounds.GetCorners(corners);
+    rect.MakeEmpty();
+    const auto &frustum = *GetContext().scene_context->frustum;
+    for (const auto &corner: corners)
+        rect.ExtendByPoint(frustum.ProjectToImageRect(corner));
+    std::cerr << "XXXX " << name << " rect = " << rect << "\n";
+
+    // Add the margin.
+    const Vector2f margin_vec(margin, margin);
+    rect.Set(rect.GetMinPoint() - margin_vec, rect.GetMaxPoint() + margin_vec);
+
+    // Clamp to (0,1) in both dimensions.
+    rect = RangeIntersection(rect, Range2f(Point2f(0, 0), Point2f(1, 1)));
     return true;
 }
 

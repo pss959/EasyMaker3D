@@ -136,6 +136,10 @@ class Node : public Object {
     /// Sets the emissive color uniform for the node.
     void SetEmissiveColor(const Color &color);
 
+    /// Returns the current base color uniform for the node. Asserts if there
+    /// is none.
+    Color GetBaseColor() const;
+
     ///@}
 
     /// Returns the state table in the node.

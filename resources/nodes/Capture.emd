@@ -6,6 +6,7 @@ Node "CaptureRoot" {
       uniforms: [ Uniform "uZOffset" { float_val: 0 } ],
     }
   ],
+  # Note: all of these items are disabled by default.
   children: [
     # Text used to display captions.
     TextNode "Caption" {
@@ -22,8 +23,7 @@ Node "CaptureRoot" {
       },
     },
 
-    # Fake cursor used in videos created with capturevideo. This is normally
-    # disabled.
+    # Fake cursor that stands out in videos.
     Node "FakeCursor" {
       disabled_flags: "kTraversal|kIntersectAll",
       scale: .002 .002 .002,
@@ -38,6 +38,18 @@ Node "CaptureRoot" {
           points: [ 0 0, -30 -22, -16 -19, -30 -38 -24 -42, -10 -23, -4 -37 ]
         },
       ]
-    }
+    },
+
+    # Rectangle used for highlights.
+    Node "HighlightRect" {
+      disabled_flags: "kTraversal|kIntersectAll",
+      blocks: [
+        UniformBlock {
+          pass_name: "Lighting",
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: .5 1 .4 .2 }],
+        }
+      ],
+      shapes: [ Rectangle "Rect" {} ],
+    },
   ]
 }

@@ -67,6 +67,14 @@ void UniformBlock::SetSubImageName(const Str &name) {
     ProcessChange(Change::kAppearance, *this);
 }
 
+UniformPtr UniformBlock::FindUniform(const Str &name) const {
+    const auto &uniforms = GetUniforms();
+    const auto match = [&](const auto &u){ return u->GetName() == name; };
+    const auto it = std::find_if(uniforms.begin(), uniforms.end(), match);
+    ASSERT(it != uniforms.end());
+    return *it;
+}
+
 ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
     const IonContextPtr &ion_context,
     const ion::gfx::ShaderInputRegistryPtr &reg) {

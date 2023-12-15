@@ -55,6 +55,9 @@ class UniformBlock : public Object {
     /// Returns the non-texture uniforms in the UniformBlock.
     const std::vector<UniformPtr> & GetUniforms() const { return uniforms_; }
 
+    /// Returns the named Uniform. Asserts if it is not found.
+    UniformPtr FindUniform(const Str &name) const;
+
     /// Creates, stores, and returns the Ion UniformBlock. This is passed the
     /// IonContext and Ion registry to use for creating uniforms.
     ion::gfx::UniformBlockPtr SetUpIon(

@@ -111,6 +111,14 @@ void Node::SetEmissiveColor(const Color &color) {
     ProcessChange(Change::kAppearance, *this);
 }
 
+Color Node::GetBaseColor() const {
+    const auto block = FindUniformBlockForPass_("Lighting");
+    ASSERT(block);
+    const auto uniform = block->FindUniform("uBaseColor");
+    ASSERT(uniform);
+    return Color(uniform->GetVector4f());
+}
+
 void Node::AddShape(const ShapePtr &shape) {
     ASSERT(shape);
     shapes_.Add(shape);

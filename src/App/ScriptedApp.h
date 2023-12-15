@@ -5,6 +5,7 @@
 
 #include "App/Application.h"
 #include "App/ScriptBase.h"
+#include "Math/Types.h"
 #include "Util/Memory.h"
 
 class Selection;
@@ -74,6 +75,11 @@ class ScriptedApp : public Application {
         static_assert(std::derived_from<T, ScriptBase::Instr> == true);
         return static_cast<const T &>(instr);
     }
+
+    /// Sets \p rect to an image-plane rectangle surrounding the named Node
+    /// with the given margin on all sides. Prints an error message and returns
+    /// false if the Node is not found.
+    bool GetNodeRect(const Str &name, float margin, Range2f &rect);
 
   private:
     OptionsPtr       options_;      ///< Derived Options instance.

@@ -1,15 +1,3 @@
-|appname| Quickstart
-====================
-
-Installing and Running |appname|
---------------------------------
-
-Open the `the GitHub release page <download_site_>`_ in a browser and download
-the Zip file for your operating system. Extract all files wherever you like;
-this will create a |appname| folder. In this folder there is a |appname|
-executable that you can click on to run the application.
-
-
 A Simple Doorstop Example (Non-VR)
 ----------------------------------
 
@@ -22,7 +10,8 @@ model and output it as an STL file.
 
 |block-image|
 
-.. incvideo:: Doorstop videos/Doorstop.mp4 512px
+.. incvideo:: Doorstop ../videos/Doorstop.mp4 512px center
+   :poster:  ../_images/Doorstop.jpg
 
 |block-image|
 
@@ -177,11 +166,3 @@ top right of the panel. The resulting STL file can be imported into almost any
 3D printing application.
 
 |block-image|
-
-.. _qs-vr:
-
-.. The Doorstop Example in VR
-.. --------------------------
-
-.. .. todo::
-..   TBD with images

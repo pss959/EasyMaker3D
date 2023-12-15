@@ -39,17 +39,24 @@ class CaptureScriptApp : public ScriptedApp {
     // Handler used to update the fake cursor.
     DECL_SHARED_PTR(CursorHandler_);
 
-    CursorHandler_Ptr            handler_;       ///< Updates the fake cursor.
-    SG::NodePtr                  cursor_;        ///< Fake cursor for video.
-    Point2f                      cursor_pos_;    ///< Current cursor position.
-    SG::TextNodePtr              caption_;       ///< Displays caption text.
-    std::unique_ptr<VideoWriter> video_writer_;  ///< Creates and writes video.
+    /// This struct is used to fade items (such as captions or the highlight
+    /// rectangle) in and out over a duration.
+    struct FadeData_ {
+        float duration = 0;   ///< Fade-in/out duration in seconds.
+        float elapsed  = 0;   ///< Elapsed time in seconds.
+    };
 
-    /// \name Caption fading/visibility.
-    ///@{
-    float caption_seconds_         = 0;
-    float caption_seconds_elapsed_ = 0;
-    ///@}
+    CursorHandler_Ptr    handler_;     ///< Updates the fake cursor.
+    SG::NodePtr          cursor_;      ///< Fake cursor for video.
+    Point2f              cursor_pos_;  ///< Current cursor position.
+    SG::NodePtr          highlight_;   ///< Displays highlight rectangle.
+    SG::TextNodePtr      caption_;     ///< Displays caption text.
+
+    /// Creates and writes a video to a file.
+    std::unique_ptr<VideoWriter> video_writer_;
+
+    FadeData_ caption_fade_data_;    ///< Caption fading/visibility.
+    FadeData_ highlight_fade_data_;  ///< Highlight rectangle fading/visibility.
 
     const Options & GetOptions_() const;
 
@@ -57,9 +64,8 @@ class CaptureScriptApp : public ScriptedApp {
     /// for the given number of seconds.
     void DisplayCaption_(const Str &text, const Point2f &pos, float seconds);
 
-    /// Updates the caption visibility or alpha to fade in/out depending on the
-    /// number of frames left to display.
-    void UpdateCaption_();
+    /// Displays a highlight rectangle for the given number of seconds.
+    void DisplayHighlight_(const Range2f &rect, float seconds);
 
     /// Adds events to drag from the current cursor position by the given
     /// motion vector over the given duration in seconds.
@@ -76,6 +82,16 @@ class CaptureScriptApp : public ScriptedApp {
     /// Moves the fake cursor to the given position in normalized window
     /// coordinates.
     void MoveFakeCursorTo_(const Point2f &pos);
+
+    /// Updates fade-in/out for the caption.
+    void UpdateCaption_();
+
+    /// Updates fade-in/out for the highlight rectangle.
+    void UpdateHighlight_();
+
+    /// Updates fade-in/out for \p node using \p fade_data. Returns the alpha
+    /// to use for the node.
+    float UpdateFade_(SG::Node &node, FadeData_ &fade_data);
 
     /// Returns a 3D point on the image plane in front of the camera for the
     /// given normalized window point.

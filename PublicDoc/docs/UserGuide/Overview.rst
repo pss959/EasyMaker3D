@@ -190,7 +190,8 @@ using the mouse and keyboard exclusively. This is referred to below as
 :newterm:`conventional mode`.
 
 If you do happen to have a VR headset, you can set it up as explained in the
-:ref:`Quickstart <qs-vr>`. There are two ways to use it with the application:
+:doc:`VR Setup guide <../VRSetup>`. There are two ways to use it with the
+application:
 
  - :newterm:`VR mode` refers to using the VR system with the headset on and
    controllers in your hand.

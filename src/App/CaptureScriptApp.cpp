@@ -95,6 +95,10 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
                        [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
     context.event_manager->InsertHandler(handler_);
 
+    // Find the highlight rectangle and position it in front of the camera.
+    highlight_ = SG::FindNodeUnderNode(*capture_root, "HighlightRect");
+    highlight_->TranslateTo(GetImagePlanePoint_(Point2f(.5f, .5f)));
+
     // Find the caption TextNode.
     caption_ =
         SG::FindTypedNodeUnderNode<SG::TextNode>(*capture_root, "Caption");
@@ -130,7 +134,8 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     // capture is sometimes slow enough to make a press seem very long.
     SetLongPressDuration(20);
 
-    // Disable tooltips - they can appear if frame grabbing is very slow.
+    // Disable tooltips by default - they can appear if frame grabbing is very
+    // slow.
     TooltipFeedback::SetDelay(0);
 
     // Fake export from the SessionManager, since the path is likely bogus.
@@ -166,6 +171,20 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         const auto &dinst = GetTypedInstr_<CaptureScript::DragInstr>(instr);
         DragTo_(dinst.motion, dinst.seconds);
     }
+    else if (instr.name == "highlight") {
+        const auto &hinst =
+            GetTypedInstr_<CaptureScript::HighlightInstr>(instr);
+        DisplayHighlight_(hinst.rect, hinst.seconds);
+    }
+    else if (instr.name == "highlightobj") {
+        const auto &hinst =
+            GetTypedInstr_<CaptureScript::HighlightObjInstr>(instr);
+        Range2f rect;
+        if (! GetNodeRect(hinst.object_name, hinst.margin, rect))
+            return false;
+        std::cerr << "XXXX Rect = " << rect << "\n";
+        DisplayHighlight_(rect, hinst.seconds);
+    }
     else if (instr.name == "key") {
         const auto &kinst = GetTypedInstr_<CaptureScript::KeyInstr>(instr);
         GetEmitter().AddKey(kinst.key_name, kinst.modifiers);
@@ -181,6 +200,10 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     else if (instr.name == "moveto") {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveToInstr>(instr);
         MoveTo_(minst.pos, minst.seconds);
+    }
+    else if (instr.name == "tooltips") {
+        const auto &tinst = GetTypedInstr_<CaptureScript::TooltipsInstr>(instr);
+        TooltipFeedback::SetDelay(tinst.is_on ? 1 : 0);
     }
     else if (instr.name == "wait") {
         const auto &winst = GetTypedInstr_<CaptureScript::WaitInstr>(instr);
@@ -207,9 +230,9 @@ void CaptureScriptApp::InstructionsDone() {
 }
 
 void CaptureScriptApp::BeginFrame() {
-    // Update the caption if it is visible.
-    if (caption_->IsEnabled())
-        UpdateCaption_();
+    // Update the caption and highlight rectangle if visible.
+    UpdateCaption_();
+    UpdateHighlight_();
 }
 
 void CaptureScriptApp::EndFrame() {
@@ -237,34 +260,20 @@ void CaptureScriptApp::DisplayCaption_(const Str &text, const Point2f &pos,
     caption_->TranslateTo(GetImagePlanePoint_(pos));
     caption_->SetText(text);
     caption_->SetEnabled(true);
-    caption_seconds_         = seconds;
-    caption_seconds_elapsed_ = 0;
+    caption_fade_data_.duration = seconds;
+    caption_fade_data_.elapsed  = 0;
     UpdateCaption_();
 }
 
-void CaptureScriptApp::UpdateCaption_() {
-    // Fade-in/out time.
-    const float kFadeTime = .5f;
-
-    float alpha = 1;
-    if (caption_seconds_elapsed_ < kFadeTime) {
-        // Just starting, so fade in.
-        alpha = caption_seconds_elapsed_ / kFadeTime;
-    }
-    else if (caption_seconds_elapsed_ >= caption_seconds_ - kFadeTime) {
-        // Almost done, so fade out.
-        const float seconds_left = caption_seconds_ - caption_seconds_elapsed_;
-        alpha = seconds_left / kFadeTime;
-    }
-    Color c = caption_->GetColor();
-    c[3] = alpha;
-    caption_->SetTextColor(c);
-
-    caption_seconds_elapsed_ += 1. / GetOptions_().fps;
-
-    // Completely done?
-    if (caption_seconds_elapsed_ >= caption_seconds_)
-        caption_->SetEnabled(false);
+void CaptureScriptApp::DisplayHighlight_(const Range2f &rect, float seconds) {
+    const auto min = GetImagePlanePoint_(rect.GetMinPoint());
+    const auto max = GetImagePlanePoint_(rect.GetMaxPoint());
+    highlight_->SetScale(max - min);
+    highlight_->TranslateTo(.5f * (min + max));
+    highlight_->SetEnabled(true);
+    highlight_fade_data_.duration = seconds;
+    highlight_fade_data_.elapsed  = 0;
+    UpdateHighlight_();
 }
 
 void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds) {
@@ -333,6 +342,43 @@ void CaptureScriptApp::MoveTo_(const Point2f &pos, float seconds) {
 void CaptureScriptApp::MoveFakeCursorTo_(const Point2f &pos) {
     cursor_->TranslateTo(GetImagePlanePoint_(pos));
     cursor_pos_ = pos;
+}
+
+void CaptureScriptApp::UpdateCaption_() {
+    const float alpha = UpdateFade_(*caption_, caption_fade_data_);
+    Color c = caption_->GetColor();
+    c[3] = alpha;
+    caption_->SetTextColor(c);
+}
+
+void CaptureScriptApp::UpdateHighlight_() {
+    const float alpha = UpdateFade_(*highlight_, highlight_fade_data_);
+    Color c = highlight_->GetBaseColor();
+    c[3] = alpha * .2f;
+    highlight_->SetBaseColor(c);
+}
+
+float CaptureScriptApp::UpdateFade_(SG::Node &node, FadeData_ &fade_data) {
+    // Fade-in/out time.
+    const float kFadeTime = .5f;
+
+    float alpha = 1;
+    if (fade_data.elapsed < kFadeTime) {
+        // Just starting, so fade in.
+        alpha = fade_data.elapsed / kFadeTime;
+    }
+    else if (fade_data.elapsed >= fade_data.duration - kFadeTime) {
+        // Almost done, so fade out.
+        alpha = (fade_data.duration - fade_data.elapsed) / kFadeTime;
+    }
+
+    fade_data.elapsed += 1. / GetOptions_().fps;
+
+    // Completely done?
+    if (fade_data.elapsed >= fade_data.duration)
+        node.SetEnabled(false);
+
+    return alpha;
 }
 
 Point3f CaptureScriptApp::GetImagePlanePoint_(const Point2f &pos) {

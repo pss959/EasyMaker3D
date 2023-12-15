@@ -24,16 +24,6 @@ class SetUpIonTest : public SceneTestBase {
         TestNode() {}
         friend class Parser::Registry;
     };
-
-    /// Returns the named Uniform from the given UniformBlock. Asserts if it is
-    /// not found.
-    SG::UniformPtr FindUniform(const SG::UniformBlock &block, const Str &name) {
-        const auto &uniforms = block.GetUniforms();
-        const auto match = [&](const auto &u){ return u->GetName() == name; };
-        const auto it = std::find_if(uniforms.begin(), uniforms.end(), match);
-        ASSERT(it != uniforms.end());
-        return *it;
-    }
 };
 
 TEST_F(SetUpIonTest, EmptyScene) {
@@ -72,8 +62,8 @@ TEST_F(SetUpIonTest, NodeColors) {
 
     const auto &block = root->GetUniformBlockForPass("Lighting");
     EXPECT_LE(2U, block.GetUniforms().size());
-    auto bc = FindUniform(block, "uBaseColor");
-    auto ec = FindUniform(block, "uEmissiveColor");
+    auto bc = block.FindUniform("uBaseColor");
+    auto ec = block.FindUniform("uEmissiveColor");
     EXPECT_EQ(Vector4f(1, 1, 0, 1), bc->GetVector4f());
     EXPECT_EQ(Vector4f(1, 0, 1, 1), ec->GetVector4f());
 }
@@ -165,7 +155,7 @@ TEST_F(SetUpIonTest, Uniforms) {
     SG::UniformPtr u;
 
 #define TEST_U_(name, type, func, val0, val1)                           \
-    u = FindUniform(*block1, name);                                     \
+    u = block1->FindUniform(*name);                                     \
     EXPECT_EQ(type val0 , u->func());                                   \
     u->SetValue<type>(type val1);                                       \
     EXPECT_EQ(type val1, u->func())

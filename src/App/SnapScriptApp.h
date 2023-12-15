@@ -26,6 +26,5 @@ class SnapScriptApp : public ScriptedApp {
     bool SetHand_(Hand hand, const Str &controller_type);
     void SetTouchMode_(bool is_on);
     bool TakeSnapshot_(const Range2f &rect, const Str &file_name);
-    bool GetObjRect_(const Str &object_name, float margin, Range2f &rect);
     void BuildSelection_(const StrVec &names, Selection &selection);
 };

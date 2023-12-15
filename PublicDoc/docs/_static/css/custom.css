@@ -200,18 +200,22 @@ p:empty {
     margin-left:  1%;
     margin-right: 1%;
 }
+.rst-content .admonition-vr-only > .admonition-title:before {
+    /* Icons are in https://fontawesome.com/v6/search?o=r&m=free */
+    content: "\f06e";       /* Eye */
+}
 
 /* Note admonitions.  Use a custom color and icon, and match other admonition
  * margins */
-.rst-content div.admonition.note {
-    background:   #e2f1e4;
+.rst-content .admonition-note {
+    background:   #c4dec2;
     margin-left:  1%;
     margin-right: 1%;
 }
-.rst-content div.admonition.note > .admonition-title {
-    background: #a9e6b3;
+.rst-content .admonition-note > .admonition-title {
+    background: #53a44a;
 }
-.rst-content div.admonition.note > .admonition-title:before {
+.rst-content .admonition.note > .admonition-title:before {
     /* Icons are in https://fontawesome.com/v6/search?o=r&m=free */
     content: "\f00c";       /* Checkmark */
 }

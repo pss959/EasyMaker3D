@@ -24,8 +24,11 @@ root_dir   = env.Dir('#').abspath   # Work around SCons issue.
 video_dir  = './docs/extra/videos'
 script_dir = './videos/scripts'
 
-# List of capturevideo script files to the videos they generate.
-scripts = ['Doorstop']
+# List of capturevideo script files.
+scripts = [
+    'Doorstop',
+    'WorkArea',
+]
 
 def VideoFile(name):
   return join(video_dir, name + '.mp4')

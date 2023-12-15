@@ -2,7 +2,6 @@
 
 #include <ion/gfx/image.h>
 #include <ion/image/conversionutils.h>
-#include <ion/math/rangeutils.h>
 
 #include "App/ActionProcessor.h"
 #include "App/ScriptEmitter.h"
@@ -14,7 +13,6 @@
 #include "Managers/SceneContext.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
-#include "Math/Linear.h"
 #include "Models/RootModel.h"
 #include "Panels/Board.h"
 #include "Panels/KeyboardPanel.h"
@@ -112,7 +110,7 @@ bool SnapScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     else if (instr.name == "snapobj") {
         const auto &sinst = GetTypedInstr_<SnapScript::SnapObjInstr>(instr);
         Range2f rect;
-        if (! GetObjRect_(sinst.object_name, sinst.margin, rect) ||
+        if (! GetNodeRect(sinst.object_name, sinst.margin, rect) ||
             ! TakeSnapshot_(rect, sinst.file_name))
             return false;
     }
@@ -275,41 +273,6 @@ bool SnapScriptApp::TakeSnapshot_(const Range2f &rect, const Str &file_name) {
         return false;
     }
     std::cout << "    Saved snap image to = '" << path.ToString() << "'\n";
-    return true;
-}
-
-bool SnapScriptApp::GetObjRect_(const Str &object_name, float margin,
-                                Range2f &rect) {
-    // Search in the scene for the object.
-    const auto &sc = *GetContext().scene_context;
-    const auto path = SG::FindNodePathInScene(*sc.scene, object_name, true);
-    if (path.empty()) {
-        std::cerr << "*** No object named '" << object_name
-                  << "' found for snapobj\n";
-        return false;
-    }
-
-    // Compute the world-coordinate bounds of the object.
-    Matrix4f ctm = Matrix4f::Identity();
-    for (auto &node: path)
-        ctm = ctm * node->GetModelMatrix();
-    const auto bounds = TransformBounds(path.back()->GetBounds(), ctm);
-
-    // Find the projection of each bounds corner point on the image plane to
-    // get the extents of the rectangle.
-    Point3f corners[8];
-    bounds.GetCorners(corners);
-    rect.MakeEmpty();
-    const auto &frustum = *GetContext().scene_context->frustum;
-    for (const auto &corner: corners)
-        rect.ExtendByPoint(frustum.ProjectToImageRect(corner));
-
-    // Add the margin.
-    const Vector2f margin_vec(margin, margin);
-    rect.Set(rect.GetMinPoint() - margin_vec, rect.GetMaxPoint() + margin_vec);
-
-    // Clamp to (0,1) in both dimensions.
-    rect = RangeIntersection(rect, Range2f(Point2f(0, 0), Point2f(1, 1)));
     return true;
 }
 

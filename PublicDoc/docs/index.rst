@@ -22,6 +22,14 @@ work in VR due to the `lack of official SteamVR support
 
 |block-image|
 
+.. admonition:: Note
+
+   |appname| is pretty intuitive once you get to know a few basics.  If you
+   want to dive right in, you can try the :doc:`Quickstart <Quickstart/index>`.
+   Otherwise, take a look at the :doc:`User Guide <UserGuide/index>`
+   first. There is also a compact guide to keyboard shortcuts in the
+   :doc:`Cheat Sheet <CheatSheet>`.
+
 Installing and Running |appname|
 --------------------------------
 
@@ -41,14 +49,6 @@ To install it:
 
    Instructions for setting up your VR device for use with |appname| are on
    :doc:`this page <VRSetup>`.
-
-Next Steps
-----------
-
-|appname| is pretty intuitive once you get to know a few things.  If you want
-to dive right in, you can try the :doc:`Quickstart`. Otherwise, take a look at
-the :doc:`User Guide <UserGuide/index>` first. There is also a compact guide to
-keyboard shortcuts in the :doc:`Cheat Sheet <CheatSheet>`.
 
 Problems?
 ---------
@@ -71,7 +71,7 @@ Contents
 
    self
    VRSetup
-   Quickstart
+   Quickstart/index
    UserGuide/index
    CheatSheet
    ReleaseNotes

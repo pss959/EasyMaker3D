@@ -6,14 +6,17 @@ CaptureScript::CaptureScript() {
 #define REG_FUNC_(name, func) \
     RegisterInstrFunc(name, [&](const StrVec &w){ return func(w); });
 
-    REG_FUNC_("caption",  ProcessCaption_);
-    REG_FUNC_("chapter",  ProcessChapter_);
-    REG_FUNC_("click",    ProcessClick_);
-    REG_FUNC_("cursor",   ProcessCursor_);
-    REG_FUNC_("drag",     ProcessDrag_);
-    REG_FUNC_("moveover", ProcessMoveOver_);
-    REG_FUNC_("moveto",   ProcessMoveTo_);
-    REG_FUNC_("wait",     ProcessWait_);
+    REG_FUNC_("caption",      ProcessCaption_);
+    REG_FUNC_("chapter",      ProcessChapter_);
+    REG_FUNC_("click",        ProcessClick_);
+    REG_FUNC_("cursor",       ProcessCursor_);
+    REG_FUNC_("drag",         ProcessDrag_);
+    REG_FUNC_("highlight",    ProcessHighlight_);
+    REG_FUNC_("highlightobj", ProcessHighlightObj_);
+    REG_FUNC_("moveover",     ProcessMoveOver_);
+    REG_FUNC_("moveto",       ProcessMoveTo_);
+    REG_FUNC_("tooltips",     ProcessTooltips_);
+    REG_FUNC_("wait",         ProcessWait_);
 
 #undef REG_FUNC_
 }
@@ -97,6 +100,55 @@ CaptureScript::InstrPtr CaptureScript::ProcessDrag_(const StrVec &words) {
     return dinst;
 }
 
+CaptureScript::InstrPtr CaptureScript::ProcessHighlight_(const StrVec &words) {
+    HighlightInstrPtr hinst;
+    float             left, bottom, width, height, seconds;
+    if (words.size() != 6) {
+        Error("Bad syntax for highlight instruction");
+    }
+    else if (! ParseFloat01(words[1], left) ||
+             ! ParseFloat01(words[2], bottom) ||
+             ! ParseFloat(words[3], width) || ! ParseFloat(words[4], height) ||
+             ! ParseFloat(words[5], seconds)) {
+        Error("Invalid float argument for highlight instruction");
+    }
+    else if (seconds <= 0) {
+        Error("Seconds for highlight instruction must be positive");
+    }
+    else {
+        hinst.reset(new HighlightInstr);
+        hinst->rect = Range2f::BuildWithSize(Point2f(left, bottom),
+                                             Vector2f(width, height));
+        hinst->seconds = seconds;
+    }
+    return hinst;
+}
+
+CaptureScript::InstrPtr CaptureScript::ProcessHighlightObj_(
+    const StrVec &words) {
+    HighlightObjInstrPtr hinst;
+    float seconds, margin = 0;
+    if (words.size() < 3U || words.size() > 4U) {
+        Error("Bad syntax for highlightobj instruction");
+    }
+    else if (! ParseFloat(words[2], seconds)) {
+        Error("Invalid seconds float for highlightobj instruction");
+    }
+    else if (words.size() == 4U && ! ParseFloat(words[3], margin)) {
+        Error("Invalid margin float for highlightobj instruction");
+    }
+    else if (seconds <= 0) {
+        Error("Seconds for highlightobj instruction must be positive");
+    }
+    else {
+        hinst.reset(new HighlightObjInstr);
+        hinst->object_name = words[1];
+        hinst->margin      = margin;
+        hinst->seconds     = seconds;
+    }
+    return hinst;
+}
+
 CaptureScript::InstrPtr CaptureScript::ProcessMoveOver_(const StrVec &words) {
     MoveOverInstrPtr minst;
     float            seconds;
@@ -130,6 +182,18 @@ CaptureScript::InstrPtr CaptureScript::ProcessMoveTo_(const StrVec &words) {
         minst->seconds = seconds;
     }
     return minst;
+}
+
+CaptureScript::InstrPtr CaptureScript::ProcessTooltips_(const StrVec &words) {
+    TooltipsInstrPtr tinst;
+    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
+        Error("Bad syntax for tooltips instruction");
+    }
+    else {
+        tinst.reset(new TooltipsInstr);
+        tinst->is_on = words[1] == "on";
+    }
+    return tinst;
 }
 
 CaptureScript::InstrPtr CaptureScript::ProcessWait_(const StrVec &words) {

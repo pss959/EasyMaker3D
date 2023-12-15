@@ -12,23 +12,38 @@ class VideoNode(nodes.General, nodes.Element):
 
 class IncVideo(Directive):
     """IncVideo adds an embedded video with a corresponding chapters file.
-    Required arguments: id uri height
+    Required arguments: id uri height align
+    Optional arguments: poster
 
-    The ID can be used in buttons to play the video at a certain time.
+    The ID can be used in videobutton to start the video at a certain time.
     """
     has_content        = True
-    required_arguments = 3
-    optional_arguments = 0
+    required_arguments = 4
+    optional_arguments = 1
+
+    # Set up optional arguments.
+    option_spec = {
+        'poster': directives.unchanged,
+    }
 
     def run(self):
-        (id, uri, height) = self.arguments
-        return [VideoNode(id=id, source=uri, height=height)]
+        (id, uri, height, align) = self.arguments
+        poster = self.options.get('poster', None)
+        video_node = VideoNode(id=id, source=uri, height=height, poster=poster)
+        return [self.BuildFigure_(video_node, align)]
+
+    def BuildFigure_(self, video_node, align):
+        figure_node = nodes.figure('', video_node)
+        figure_node['align'] = align
+        figure_node['classes'] = [f'align-{align}']
+        return figure_node
 
 def EnterVideoNode(translator, node):
     # Access node items.
     id     = node['id']
     height = node['height']
     source = node['source']
+    poster = node['poster']
 
     # Get the video type and the name of the chapters track WebVTT file from
     # the source file name.
@@ -37,8 +52,9 @@ def EnterVideoNode(translator, node):
     chapters   = path.with_suffix('.vtt')
 
     # Video element.
+    poster_spec = f' poster="{poster}"' if poster else ''
     html = ('<video controls="True" class="embedded-video"' +
-            f' id="{id}" height="{height}">\n')
+            f' id="{id}" height="{height}"{poster_spec}>\n')
 
     # Source element.
     html += f'<source src="{source}" type="video/{video_type}">\n'
