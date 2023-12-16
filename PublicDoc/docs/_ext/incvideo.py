@@ -1,6 +1,8 @@
 from docutils             import nodes
 from docutils.parsers.rst import Directive, directives
 from pathlib              import Path
+from sphinx               import application
+from sphinx.util.osutil   import relative_uri
 
 # -----------------------------------------------------------------------------
 # IncVideo directive class.
@@ -9,6 +11,8 @@ from pathlib              import Path
 # There is no docutils node corresponding to a video, so create one here.
 class VideoNode(nodes.General, nodes.Element):
     pass
+
+_app = None
 
 class IncVideo(Directive):
     """IncVideo adds an embedded video with a corresponding chapters file.
@@ -27,10 +31,29 @@ class IncVideo(Directive):
     }
 
     def run(self):
+        global _app
         (id, uri, height, align) = self.arguments
+        video_node = VideoNode(id=id, source=uri, height=height, poster=None)
+        ret_nodes = [self.BuildFigure_(video_node, align)]
+
+        # Special processing for poster image to set up the proper relative URI
+        # and a file dependency.
         poster = self.options.get('poster', None)
-        video_node = VideoNode(id=id, source=uri, height=height, poster=poster)
-        return [self.BuildFigure_(video_node, align)]
+        if poster:
+            # Add an image node so Sphinx dependencies are set up correctly.
+            image_node = nodes.image(uri=poster)
+            # There does not appear to be a way to hide an image via docutils,
+            # so add a class and do it in CSS.
+            image_node.set_class('poster-image')
+            ret_nodes.append(image_node)
+
+            # Convert the poster URI to a relative target for the attribute.
+            path = Path(poster)
+            rel_path = path.relative_to(*path.parts[:2])
+            video_node['poster'] = relative_uri(_app.env.docname,
+                                                '_images') / rel_path
+
+        return ret_nodes
 
     def BuildFigure_(self, video_node, align):
         figure_node = nodes.figure('', video_node)
@@ -76,6 +99,8 @@ def setup(app):
     """Add the VideoNode to the Sphinx builder."""
     app.add_node(VideoNode, html=(EnterVideoNode, ExitVideoNode))
     app.add_directive("incvideo", IncVideo)
+    global _app
+    _app = app
     return {
       'version': '0.1',
       'parallel_read_safe':  True,

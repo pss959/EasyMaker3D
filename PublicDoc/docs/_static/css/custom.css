@@ -304,6 +304,11 @@ img {
     left: 90%;
 }
 
+/* Hide the image added to videos to make sure the poster is installed. */
+.poster-image {
+    display: none;
+}
+
 /* -----------------------------------------------------------------------------
  * Cheat Sheet.
  * -------------------------------------------------------------------------- */

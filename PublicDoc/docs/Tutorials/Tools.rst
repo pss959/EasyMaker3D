@@ -1,5 +1,5 @@
-|appname| Tools
----------------
+Tools
+-----
 
 This tour illustrates all of the |appname| tools. For more details, consult the
 :ref:`User Guide <ug-tools>`.
