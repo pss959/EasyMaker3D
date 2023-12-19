@@ -8,7 +8,8 @@ function PlayVideo(video, seconds){
 
 // Find all buttons with class "video-button" and have them play the video with
 // the time set to their "time" attribute.
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function (event) {
+    event.preventDefault();
     buttons = document.getElementsByClassName("video-button");
     for (var i = 0; i < buttons.length; ++i) {
         var id      = buttons[i].dataset.id;

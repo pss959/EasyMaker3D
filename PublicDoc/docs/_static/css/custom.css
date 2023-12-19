@@ -309,6 +309,29 @@ img {
     display: none;
 }
 
+#chapterbar {
+    position: relative;
+    cursor: pointer;
+    background: #000;
+    color: #CCC; 
+    height:40px;
+}
+#chapterbar span {
+    border-left: 1px solid #555;
+    display: block;
+    float: left;
+    height: 28px;
+    overflow: hidden;
+    padding: 6px 3px;
+    line-height: 14px;
+}
+#chapterbar span:hover { 
+    color: #C00;
+}
+#chapterbar span:nth-child(1) {
+    border-left: none;
+}
+
 /* -----------------------------------------------------------------------------
  * Cheat Sheet.
  * -------------------------------------------------------------------------- */

@@ -16,7 +16,7 @@ _app = None
 
 class IncVideo(Directive):
     """IncVideo adds an embedded video with a corresponding chapters file.
-    Required arguments: id uri height align
+    Required arguments: id uri width align
     Optional arguments: poster
 
     The ID can be used in videobutton to start the video at a certain time.
@@ -32,8 +32,8 @@ class IncVideo(Directive):
 
     def run(self):
         global _app
-        (id, uri, height, align) = self.arguments
-        video_node = VideoNode(id=id, source=uri, height=height, poster=None)
+        (id, uri, width, align) = self.arguments
+        video_node = VideoNode(id=id, source=uri, width=width, poster=None)
         ret_nodes = [self.BuildFigure_(video_node, align)]
 
         # Special processing for poster image to set up the proper relative URI
@@ -64,7 +64,7 @@ class IncVideo(Directive):
 def EnterVideoNode(translator, node):
     # Access node items.
     id     = node['id']
-    height = node['height']
+    width  = node['width']
     source = node['source']
     poster = node['poster']
 
@@ -74,22 +74,28 @@ def EnterVideoNode(translator, node):
     video_type = path.suffix[1:]  # Remove the '.'.
     chapters   = path.with_suffix('.vtt')
 
-    # Video element.
+    # Video element. Note that preload="auto" is required to get the duration
+    # metadata to be known in time.
     poster_spec = f' poster="{poster}"' if poster else ''
     html = ('<video controls="True" class="embedded-video"' +
-            f' id="{id}" height="{height}"{poster_spec}>\n')
+            f' id="{id}" width="{width} preload="auto" "{poster_spec}>\n')
 
     # Source element.
     html += f'<source src="{source}" type="video/{video_type}">\n'
 
     # Chapter track element.
     html += (f'<track src="{chapters}" kind="chapters"' +
-             ' srclang="en" label="English">')
+             ' srclang="en" label="English" default>')
 
     translator.body.append(html)
 
 def ExitVideoNode(translator, node):
-    translator.body.append('</video>\n')
+    html = '</video>\n'
+
+    # Add the chapter bar element.
+    html += '<div id="chapterbar"></div>\n'
+
+    translator.body.append(html);
 
 # -----------------------------------------------------------------------------
 # Extension setup.

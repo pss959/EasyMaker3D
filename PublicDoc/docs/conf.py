@@ -79,7 +79,8 @@ html_extra_path      = ['extra']
 html_css_files       = ['css/custom.css']
 html_js_files        = ['js/playvideo.js',
                         'js/version_selector.js',
-                        'js/versions.js']
+                        'js/versions.js',
+                        'js/videochapters.js']
 html_favicon         = 'images/static/favicon.ico'
 html_logo            = 'images/static/LogoSmall.jpg'
 html_show_sourcelink = False
