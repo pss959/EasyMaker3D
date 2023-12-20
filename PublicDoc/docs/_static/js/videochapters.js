@@ -5,74 +5,79 @@
 // NOTE: This assumes there is at most one video per HTML page.
 // -----------------------------------------------------------------------------
 
-var haveMetadata = false;
-var video;
-var chapterBar;
+// Sets up the navigation bar with chapter data.
+function addChapters() {
+    // Don't do this more than once.
+    var chapterBar = document.querySelector("#chapterbar");
+    if (chapterbar && chapterbar.childElementCount > 0)
+        return;
 
-// This is set to onloadedmetadata in the HTML file so that it must be invoked
-// even before DOMContentLoaded is called.
-function metadataLoaded() {
-    haveMetadata = true;
-    if (video) {
-        addChapters();
+    // Cannot do this until video metadata and track data have been loaded.
+    var video = document.querySelector('video');
+    if (! video || video.readyState < 1 || ! video.textTracks.length)
+        return;
+
+    var cues = video.textTracks[0].cues;
+    for (var i=0; i<cues.length; i++) {
+        var cue = cues[i];
+        var span = document.createElement('span');
+        var duration = cue.endTime - cue.startTime;
+        span.innerHTML = cue.text;
+        span.setAttribute('class', 'chapter-span');
+        span.setAttribute('data-start-time', cue.startTime);
+        span.style.width = (100 * duration / video.duration) + '%';
+        span.addEventListener('click', seekToChapterStart);
+        chapterbar.appendChild(span);
     }
+
+    // the above changes the document, so need to access the video again to set
+    // up the listeners.
+    video = document.querySelector('video');
+    video.addEventListener('click',       playOrPause);
+    video.addEventListener('seeked',      updateTime);
+    video.addEventListener('timeupdate',  updateTime);
 }
 
 // Called when video is clicked.
 function playOrPause() {
-    if (video.paused) { video.play(); } else { video.pause(); }
+    var video = document.querySelector('video');
+    if (video.paused)
+        video.play();
+    else
+        video.pause();
 }
 
 // Changes the color in the chapter bar to show the current time.
 function updateTime() {
-    var t = video.currentTime / video.duration * 100;
-    chapterbar.style.background =
-        "linear-gradient(to right, #500 " + t + "%, #000 " + t + "%)";
-}
+    var video      = document.querySelector('video');
+    var chapterBar = document.querySelector("#chapterbar");
 
-function addChapters() {
-    // Don't do this more than once.
-    if (chapterbar.childElementCount > 0)
-        return;
+    // The chapter bar transitions between these colors to show the current
+    // time.
+    var color0 = getComputedStyle(chapterBar).getPropertyValue("--bg-color0");
+    var color1 = getComputedStyle(chapterBar).getPropertyValue("--bg-color1");
 
-    // Cannot do this properly until the video duration is known and
-    // the tracks have been loaded.
-    var cues = video.textTracks[0].cues;
-    var margin = 8;
-    if (video.duration > 0 && cues && cues.length > 0) {
-        for (var i=0; i<cues.length; i++) {
-            var cue = cues[i];
-            var span = document.createElement("span");
-            var duration = cue.endTime - cue.startTime;
-            span.innerHTML = cue.text;
-            span.setAttribute("class", "chapter-span");
-            span.setAttribute("data-start-time", cue.startTime);
-            span.style.width = (100 * duration / video.duration) + "%";
-            span.addEventListener("click", seekToChapterStart);
-            chapterbar.appendChild(span);
-        }
-    }
+    var percent = ' ' + (100 * video.currentTime / video.duration) + '%';
+    chapterbar.style.background = 'linear-gradient(to right, ' +
+        color0 + percent + ', ' + color1 + percent + ')';
 }
 
 function seekToChapterStart() {
-    var video = document.querySelector("video");
-    video.currentTime = this.getAttribute("data-start-time");
-    if (video.paused) { video.play(); }
+    var video = document.querySelector('video');
+    video.currentTime = this.getAttribute('data-start-time');
+    if (video.paused)
+        video.play();
 }
 
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener('DOMContentLoaded', function (event) {
     event.preventDefault();
-    video = document.querySelector("video");
-    var track = document.querySelector("track");
-    chapterBar = document.querySelector("#chapterbar");
-    if (video && track && chapterBar) {
-        video.addEventListener("click",       playOrPause);
-        video.addEventListener("seeked",      updateTime);
-        video.addEventListener("timeupdate",  updateTime);
-        track.addEventListener("load",        addChapters);
-        if (haveMetadata) {
-            addChapters();
-        }
+    // If there is a video on this page with chapter data, add the chapters bar
+    // UI after the video metadata and track data have been loaded.
+    var video = document.querySelector('video');
+    if (video) {
+        var tracks = video.getElementsByTagName('track');
+        if (tracks && tracks.length > 0)
+            tracks[0].addEventListener('load', addChapters);
     }
 });
 

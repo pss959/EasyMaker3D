@@ -303,12 +303,16 @@ img {
 }
 
 #chapterbar {
-    background: #444444;
-    color:      #CCC; 
-    width:      100%;
-    height:     40px;
-    cursor:     pointer;
-    display:    block;
+    /* Background colors split by current time. */
+    --bg-color0:      #713c66;
+    --bg-color1:      #28267a;
+    background-color: var(--bg-color1);
+
+    color:            #CCC; 
+    width:            100%;
+    height:           40px;
+    cursor:           pointer;
+    display:          block;
 }
 
 #chapterbar span {

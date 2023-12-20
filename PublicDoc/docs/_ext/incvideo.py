@@ -44,11 +44,12 @@ def EnterVideoNode(translator, node):
     # Create a div containing the video and chapter bar elements. Note that
     # preload="auto" is required in the video to get the duration metadata to
     # be known in time. And setting onloadedmetadata here ensures that it is
-    # registered before DOMContentLoaded is called.
+    # registered before DOMContentLoaded is called. (Using an event listener in
+    # the JavaScript file DOES NOT ALWAYS WORK!!!
     translator.body.append(
         f'<div class="embedded-video" style="width:{width}">\n' +
-        f'  <video controls="true" id="{id}" preload="auto"' +
-        f' onloadedmetadata="metadataLoaded();" >\n' +
+        f'  <video id="{id}" preload="auto"' +
+        f' onloadedmetadata="addChapters()" >\n' +
         f'    <source src="{source}" type="video/{video_type}">\n' +
         f'    <track src="{chapters}" kind="chapters" default>\n' +
         f'  </video>\n' +
