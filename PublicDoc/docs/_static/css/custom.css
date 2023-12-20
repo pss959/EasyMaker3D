@@ -229,10 +229,6 @@ img {
     border: 1px solid #444444;
 }
 
-.large-centered-image {
-    width: 500px;
-}
-
 /* Captions */
 .caption-left, .caption-center, .caption-right {
     margin-top: 8px;
@@ -290,45 +286,48 @@ img {
  * -------------------------------------------------------------------------- */
 
 .embedded-video {
-    border:        4px solid #4444ee;
-    display:       block;
-    margin-left:   auto;
-    margin-right:  auto;    
-    margin-bottom: 20px;
+    border: 4px solid #4444ee;
+    margin: 20px auto;
+}
+
+.embedded-video video {
+    width:   100%;
+    display: block;
 }
 
 .video-button {
-    border:  1px solid #4444ee;
+    border:   1px solid #4444ee;
     position: relative;
-    top:   -30px;
-    left: 90%;
-}
-
-/* Hide the image added to videos to make sure the poster is installed. */
-.poster-image {
-    display: none;
+    top:      -30px;
+    left:     90%;
 }
 
 #chapterbar {
-    position: relative;
-    cursor: pointer;
-    background: #000;
-    color: #CCC; 
-    height:40px;
+    background: #444444;
+    color:      #CCC; 
+    width:      100%;
+    height:     40px;
+    cursor:     pointer;
+    display:    block;
 }
+
 #chapterbar span {
-    border-left: 1px solid #555;
-    display: block;
-    float: left;
-    height: 28px;
-    overflow: hidden;
-    padding: 6px 3px;
-    line-height: 14px;
+    font-size:       70%;
+    border-left:     1px solid black;
+    display:         inline-flex;
+    float:           left;
+    height:          36px;
+    padding:         2px;
+    text-align:      center;
+    justify-content: center;
+    align-items:     center;
 }
-#chapterbar span:hover { 
-    color: #C00;
+
+#chapter-span: hover { 
+    color: #fefecc;
 }
-#chapterbar span:nth-child(1) {
+
+#chapter-span: nth-child(1) {
     border-left: none;
 }
 

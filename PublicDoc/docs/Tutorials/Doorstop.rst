@@ -4,8 +4,7 @@ A Simple Doorstop Example (Non-VR)
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.
 
-.. incvideo:: Doorstop ../videos/Doorstop.mp4 600px center
-   :poster:  /images/DoorstopFinished.jpg
+.. incvideo:: Doorstop ../videos/Doorstop.mp4 80% center
 
 |block-image|
 

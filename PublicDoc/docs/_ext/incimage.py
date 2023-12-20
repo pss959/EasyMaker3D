@@ -26,14 +26,14 @@ class IncImage(Directive):
     (uri, size, align) = self.arguments
     caption = self.options.get('caption', None)
     block   = 'block' in self.options
-    node_list = [self.BuildFigure_(uri, size, align)]
+    node_list = [self._BuildFigure(uri, size, align)]
     if caption:
-      node_list.append(self.BuildCaption_(caption, align))
+      node_list.append(self._BuildCaption(caption, align))
     if block:
-      node_list.append(self.BuildBlock_())
+      node_list.append(self._BuildBlock())
     return node_list
 
-  def BuildFigure_(self, uri, size, align):
+  def _BuildFigure(self, uri, size, align):
     image_node  = (nodes.image(uri=uri, width=size) if size[0] != '-' else
                    nodes.image(uri=uri, height=size[1:]))
     figure_node = nodes.figure('', image_node)
@@ -41,7 +41,7 @@ class IncImage(Directive):
     figure_node['classes'] = [f'align-{align}']
     return figure_node
 
-  def BuildCaption_(self, caption, align):
+  def _BuildCaption(self, caption, align):
     caption_node = nodes.paragraph()
     # Handle substitutions in the caption text.
     self.state.nested_parse(statemachine.ViewList([caption], 'caption'),
@@ -52,7 +52,7 @@ class IncImage(Directive):
     caption_node['classes'] = [f'caption-{align}']
     return caption_node
 
-  def BuildBlock_(self):
+  def _BuildBlock(self):
     block_node = nodes.paragraph(text=u'\u00a0')  # NBSP
     block_node['classes'] = ['after-image']
     return block_node
