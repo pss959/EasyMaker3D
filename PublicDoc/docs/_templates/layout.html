@@ -1,0 +1,9 @@
+{% extends '!layout.html' %}
+
+{% block document %}
+  {% if 'Tutorials/' in pagename %}
+    {% include 'tutorial-header.html' %}
+  {% endif %}
+  {{ super() }}
+{% endblock %}
+  

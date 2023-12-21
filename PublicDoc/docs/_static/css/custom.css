@@ -1,3 +1,8 @@
+/*
+ * NOTE: Icons in admonitions and buttons are found in:
+ *      https://fontawesome.com/v6/search?o=r&m=free
+ */
+
 /* -----------------------------------------------------------------------------
  * Navigation area colors (left side).
  * -------------------------------------------------------------------------- */
@@ -201,7 +206,6 @@ p:empty {
     margin-right: 1%;
 }
 .rst-content .admonition-vr-only > .admonition-title:before {
-    /* Icons are in https://fontawesome.com/v6/search?o=r&m=free */
     content: "\f06e";       /* Eye */
 }
 
@@ -216,7 +220,6 @@ p:empty {
     background: #53a44a;
 }
 .rst-content .admonition.note > .admonition-title:before {
-    /* Icons are in https://fontawesome.com/v6/search?o=r&m=free */
     content: "\f00c";       /* Checkmark */
 }
 
@@ -282,7 +285,42 @@ img {
 }
 
 /* -----------------------------------------------------------------------------
- * Videos.
+ * Tutorials.
+ * -------------------------------------------------------------------------- */
+
+.tutorial-guide {
+    border:           2px solid black;
+    background-color: #dddddd;
+    margin:           4px auto 20px auto;
+    padding:          2px 12px;
+    width:            60%;
+}
+
+.tutorial-guide p {
+    line-height:      1.1;
+    font-size:        90%;
+}
+
+.video-button, .ug-button {
+    border:  1px solid #4444ee;
+    display: inline-block;
+    width:   28px;
+    height:  28px;
+    text-align: center;
+}
+
+.video-button:before {
+    font-family: "FontAwesome";
+    content:     "\f03d";       /* Video camera */
+}
+
+.ug-button:after {
+    font-family: "FontAwesome";
+    content:     "\f02e";       /* Bookmark */
+}
+
+/* -----------------------------------------------------------------------------
+ * Tutorial videos.
  * -------------------------------------------------------------------------- */
 
 .embedded-video {
@@ -293,13 +331,6 @@ img {
 .embedded-video video {
     width:   100%;
     display: block;
-}
-
-.video-button {
-    border:   1px solid #4444ee;
-    position: relative;
-    top:      -30px;
-    left:     90%;
 }
 
 #chapterbar {

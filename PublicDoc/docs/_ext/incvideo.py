@@ -48,7 +48,7 @@ def EnterVideoNode(translator, node):
     # the JavaScript file DOES NOT ALWAYS WORK!!!
     translator.body.append(
         f'<div class="embedded-video" style="width:{width}">\n' +
-        f'  <video id="{id}" preload="auto"' +
+        f'  <video id="{id}" controls preload="auto"' +
         f' onloadedmetadata="addChapters()" >\n' +
         f'    <source src="{source}" type="video/{video_type}">\n' +
         f'    <track src="{chapters}" kind="chapters" default>\n' +
