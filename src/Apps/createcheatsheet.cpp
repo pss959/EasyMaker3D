@@ -90,7 +90,7 @@ static void WriteAction_(ActionCategory cat, Action action,
     std::cout
         << "   * - " << category_name << "\n"
         << "     - :ref:`" << icon_name << "<ug-" << ref << ">`\n"
-        << "     - .. menuicon:: " << icon_name << "\n"
+        << "     - :menuicon:`" << icon_name << "`\n"
         << "     - " << desc << "\n"
         << "     - " << ks << "\n"
         << "     - " << cs << "\n";

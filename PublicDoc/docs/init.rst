@@ -73,7 +73,7 @@
 .. ----------------------------------------------------------------------------
 .. noneicon: Inserts a the icon for the "None" action.
 
-.. |noneicon| menuicon:: None
+.. |noneicon| replace:: :menuicon:`None`
 
 .. ----------------------------------------------------------------------------
 .. session-extension: Replaced with the session extension.

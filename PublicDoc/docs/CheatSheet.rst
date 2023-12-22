@@ -22,397 +22,397 @@
        | Shortcut
    * - Basics
      - :ref:`Copy<ug-copy>`
-     - .. menuicon:: Copy
+     - :menuicon:`Copy`
      - Copy all selected models to the clipboard
      - :shortcut:`Ctrl-c`
      - 
    * - Basics
      - :ref:`Cut<ug-cut>`
-     - .. menuicon:: Cut
+     - :menuicon:`Cut`
      - Cut all selected models to the clipboard
      - :shortcut:`Ctrl-x`
      - 
    * - Basics
      - :ref:`Delete<ug-delete>`
-     - .. menuicon:: Delete
+     - :menuicon:`Delete`
      - Delete all selected models
      - :shortcut:`Delete`, :shortcut:`Backspace`
      - 
    * - Basics
      - :ref:`Duplicate<ug-duplicate>`
-     - .. menuicon:: Duplicate
+     - :menuicon:`Duplicate`
      - Duplicate all selected models
      - :shortcut:`Ctrl-d`
      - 
    * - Basics
      - :ref:`Paste<ug-paste>`
-     - .. menuicon:: Paste
+     - :menuicon:`Paste`
      - Paste all models from the clipboard
      - :shortcut:`Ctrl-v`
      - 
    * - Basics
      - :ref:`PasteInto<ug-paste-into>`
-     - .. menuicon:: PasteInto
+     - :menuicon:`PasteInto`
      - Paste all models from the clipboard as children of the selected model
      - :shortcut:`Shift-Ctrl-v`
      - 
    * - Basics
      - :ref:`Quit<ug-quit>`
-     - .. menuicon:: Quit
+     - :menuicon:`Quit`
      - Exit the application
      - :shortcut:`Ctrl-q`
      - 
    * - Basics
      - :ref:`Redo<ug-redo>`
-     - .. menuicon:: Redo
+     - :menuicon:`Redo`
      - Redo the last undone command
      - :shortcut:`Shift-Ctrl-z`
      - 
    * - Basics
      - :ref:`Undo<ug-undo>`
-     - .. menuicon:: Undo
+     - :menuicon:`Undo`
      - Undo the last command
      - :shortcut:`Ctrl-z`
      - 
    * - Combination
      - :ref:`CombineCSGDifference<ug-combine-csg-difference>`
-     - .. menuicon:: CombineCSGDifference
+     - :menuicon:`CombineCSGDifference`
      - Create a CSG Difference from selected objects
      - 
      - 
    * - Combination
      - :ref:`CombineCSGIntersection<ug-combine-csg-intersection>`
-     - .. menuicon:: CombineCSGIntersection
+     - :menuicon:`CombineCSGIntersection`
      - Create a CSG Intersection from selected objects
      - 
      - 
    * - Combination
      - :ref:`CombineCSGUnion<ug-combine-csg-union>`
-     - .. menuicon:: CombineCSGUnion
+     - :menuicon:`CombineCSGUnion`
      - Create a CSG Union from selected objects
      - 
      - 
    * - Combination
      - :ref:`CombineHull<ug-combine-hull>`
-     - .. menuicon:: CombineHull
+     - :menuicon:`CombineHull`
      - Create a model that is the convex hull of selected models
      - 
      - 
    * - Conversion
      - :ref:`ConvertBend<ug-convert-bend>`
-     - .. menuicon:: ConvertBend
+     - :menuicon:`ConvertBend`
      - Convert selected models to bent models
      - 
      - 
    * - Conversion
      - :ref:`ConvertBevel<ug-convert-bevel>`
-     - .. menuicon:: ConvertBevel
+     - :menuicon:`ConvertBevel`
      - Convert selected models to beveled models
      - 
      - 
    * - Conversion
      - :ref:`ConvertClip<ug-convert-clip>`
-     - .. menuicon:: ConvertClip
+     - :menuicon:`ConvertClip`
      - Convert selected models to clipped models
      - 
      - 
    * - Conversion
      - :ref:`ConvertMirror<ug-convert-mirror>`
-     - .. menuicon:: ConvertMirror
+     - :menuicon:`ConvertMirror`
      - Convert selected models to mirrored models
      - 
      - 
    * - Conversion
      - :ref:`ConvertTaper<ug-convert-taper>`
-     - .. menuicon:: ConvertTaper
+     - :menuicon:`ConvertTaper`
      - Convert selected models to tapered models
      - 
      - 
    * - Conversion
      - :ref:`ConvertTwist<ug-convert-twist>`
-     - .. menuicon:: ConvertTwist
+     - :menuicon:`ConvertTwist`
      - Convert selected models to twisted models
      - 
      - 
    * - Creation
      - :ref:`CreateBox<ug-create-box>`
-     - .. menuicon:: CreateBox
+     - :menuicon:`CreateBox`
      - Create a primitive Box model
      - 
      - 
    * - Creation
      - :ref:`CreateCylinder<ug-create-cylinder>`
-     - .. menuicon:: CreateCylinder
+     - :menuicon:`CreateCylinder`
      - Create a primitive Cylinder model
      - 
      - 
    * - Creation
      - :ref:`CreateExtruded<ug-create-extruded>`
-     - .. menuicon:: CreateExtruded
+     - :menuicon:`CreateExtruded`
      - Create a model that is a linear extrusion
      - 
      - 
    * - Creation
      - :ref:`CreateImportedModel<ug-create-imported-model>`
-     - .. menuicon:: CreateImportedModel
+     - :menuicon:`CreateImportedModel`
      - Import a model from a file
      - :shortcut:`Ctrl-i`
      - 
    * - Creation
      - :ref:`CreateRevSurf<ug-create-rev-surf>`
-     - .. menuicon:: CreateRevSurf
+     - :menuicon:`CreateRevSurf`
      - Create a model that is a surface of revolution
      - 
      - 
    * - Creation
      - :ref:`CreateSphere<ug-create-sphere>`
-     - .. menuicon:: CreateSphere
+     - :menuicon:`CreateSphere`
      - Create a primitive Sphere model
      - 
      - 
    * - Creation
      - :ref:`CreateText<ug-create-text>`
-     - .. menuicon:: CreateText
+     - :menuicon:`CreateText`
      - Create a 3D Text model
      - 
      - 
    * - Creation
      - :ref:`CreateTorus<ug-create-torus>`
-     - .. menuicon:: CreateTorus
+     - :menuicon:`CreateTorus`
      - Create a primitive Torus model
      - 
      - 
    * - Layout
      - :ref:`LinearLayout<ug-linear-layout>`
-     - .. menuicon:: LinearLayout
+     - :menuicon:`LinearLayout`
      - Lay out the centers of the selected models along a line using the edge target
      - 
      - 
    * - Layout
      - :ref:`MoveToOrigin<ug-move-to-origin>`
-     - .. menuicon:: MoveToOrigin
+     - :menuicon:`MoveToOrigin`
      - Move the primary selection to the origin
      - :shortcut:`=`
      - 
    * - Layout
      - :ref:`RadialLayout<ug-radial-layout>`
-     - .. menuicon:: RadialLayout
+     - :menuicon:`RadialLayout`
      - Lay out selected models along a circular arc
      - 
      - 
    * - Layout
      - :ref:`ToggleAxisAligned<ug-toggle-axis-aligned>`
-     - .. menuicon:: ToggleAxisAligned
+     - :menuicon:`ToggleAxisAligned`
      - TOGGLE: Transform models in local or global coordinates
      - 
      - 
    * - Layout
      - :ref:`ToggleEdgeTarget<ug-toggle-edge-target>`
-     - .. menuicon:: ToggleEdgeTarget
+     - :menuicon:`ToggleEdgeTarget`
      - TOGGLE: Activate or deactivate the edge target
      - :shortcut:`Shift-Ctrl-e`
      - 
    * - Layout
      - :ref:`TogglePointTarget<ug-toggle-point-target>`
-     - .. menuicon:: TogglePointTarget
+     - :menuicon:`TogglePointTarget`
      - TOGGLE: Activate or deactivate the point target
      - :shortcut:`Shift-Ctrl-p`
      - 
    * - Modification
      - :ref:`DecreaseComplexity<ug-decrease-complexity>`
-     - .. menuicon:: DecreaseComplexity
+     - :menuicon:`DecreaseComplexity`
      - Decrease the complexity of the selected models by .05
      - 
      - 
    * - Modification
      - :ref:`IncreaseComplexity<ug-increase-complexity>`
-     - .. menuicon:: IncreaseComplexity
+     - :menuicon:`IncreaseComplexity`
      - Increase the complexity of the selected models by .05
      - :shortcut:`.`
      - 
    * - Modification
      - :ref:`MoveNext<ug-move-next>`
-     - .. menuicon:: MoveNext
+     - :menuicon:`MoveNext`
      - Move the selected model down in the order
      - :shortcut:`Shift-]`
      - 
    * - Modification
      - :ref:`MovePrevious<ug-move-previous>`
-     - .. menuicon:: MovePrevious
+     - :menuicon:`MovePrevious`
      - Move the selected model up in the order
      - :shortcut:`Shift-[`
      - 
    * - None
      - :ref:`None<ug-none>`
-     - .. menuicon:: None
+     - :menuicon:`None`
      - 
      - 
      - 
    * - Precision
      - :ref:`DecreasePrecision<ug-decrease-precision>`
-     - .. menuicon:: DecreasePrecision
+     - :menuicon:`DecreasePrecision`
      - Decrease the current precision
      - :shortcut:`z`
      - :shortcut:`R:Down`, :shortcut:`L:Down`
    * - Precision
      - :ref:`IncreasePrecision<ug-increase-precision>`
-     - .. menuicon:: IncreasePrecision
+     - :menuicon:`IncreasePrecision`
      - Increase the current precision
      - :shortcut:`x`
      - :shortcut:`L:Up`, :shortcut:`R:Up`
    * - Radial Menu
      - :ref:`ToggleLeftRadialMenu<ug-toggle-left-radial-menu>`
-     - .. menuicon:: ToggleLeftRadialMenu
+     - :menuicon:`ToggleLeftRadialMenu`
      - TOGGLE: Show or hide the left radial menu
      - :shortcut:`Ctrl-l`
      - :shortcut:`L:Menu`
    * - Radial Menu
      - :ref:`ToggleRightRadialMenu<ug-toggle-right-radial-menu>`
-     - .. menuicon:: ToggleRightRadialMenu
+     - :menuicon:`ToggleRightRadialMenu`
      - TOGGLE: Show or hide the right radial menu
      - :shortcut:`Ctrl-r`
      - :shortcut:`R:Menu`
    * - Selection
      - :ref:`SelectAll<ug-select-all>`
-     - .. menuicon:: SelectAll
+     - :menuicon:`SelectAll`
      - Select all top-level models
      - :shortcut:`Ctrl-a`
      - 
    * - Selection
      - :ref:`SelectFirstChild<ug-select-first-child>`
-     - .. menuicon:: SelectFirstChild
+     - :menuicon:`SelectFirstChild`
      - Select the first child of the primary selection
      - :shortcut:`Ctrl-Down`
      - 
    * - Selection
      - :ref:`SelectNextSibling<ug-select-next-sibling>`
-     - .. menuicon:: SelectNextSibling
+     - :menuicon:`SelectNextSibling`
      - Select the next sibling of the primary selection
      - :shortcut:`Ctrl-Right`
      - 
    * - Selection
      - :ref:`SelectNone<ug-select-none>`
-     - .. menuicon:: SelectNone
+     - :menuicon:`SelectNone`
      - Deselect all selected models
      - :shortcut:`Shift-Ctrl-a`
      - 
    * - Selection
      - :ref:`SelectParent<ug-select-parent>`
-     - .. menuicon:: SelectParent
+     - :menuicon:`SelectParent`
      - Select the parent of the primary selection
      - :shortcut:`Ctrl-Up`
      - 
    * - Selection
      - :ref:`SelectPreviousSibling<ug-select-previous-sibling>`
-     - .. menuicon:: SelectPreviousSibling
+     - :menuicon:`SelectPreviousSibling`
      - Select the previous sibling of the primary selection
      - :shortcut:`Ctrl-Left`
      - 
    * - Session
      - :ref:`OpenHelpPanel<ug-open-help-panel>`
-     - .. menuicon:: OpenHelpPanel
+     - :menuicon:`OpenHelpPanel`
      - Open the panel to access help
      - :shortcut:`Shift-/`, :shortcut:`F1`
      - 
    * - Session
      - :ref:`OpenInfoPanel<ug-open-info-panel>`
-     - .. menuicon:: OpenInfoPanel
+     - :menuicon:`OpenInfoPanel`
      - Open the panel to show information about selected models
      - :shortcut:`Shift-Ctrl-i`
      - 
    * - Session
      - :ref:`OpenSessionPanel<ug-open-session-panel>`
-     - .. menuicon:: OpenSessionPanel
+     - :menuicon:`OpenSessionPanel`
      - Open the panel to save or open session files
      - :shortcut:`Ctrl-s`
      - 
    * - Session
      - :ref:`OpenSettingsPanel<ug-open-settings-panel>`
-     - .. menuicon:: OpenSettingsPanel
+     - :menuicon:`OpenSettingsPanel`
      - Edit application settings
      - :shortcut:`Ctrl-`
      - 
    * - Specialized
      - :ref:`ToggleSpecializedTool<ug-toggle-specialized-tool>`
-     - .. menuicon:: ToggleSpecializedTool
+     - :menuicon:`ToggleSpecializedTool`
      - TOGGLE: Switch between the current general tool and the specialized tool for the selected models
      - :shortcut:`Space`
      - :shortcut:`L:Center`, :shortcut:`R:Center`
    * - Tool
      - :ref:`ColorTool<ug-color-tool>`
-     - .. menuicon:: ColorTool
+     - :menuicon:`ColorTool`
      - Edit the color of the selected models
      - 
      - 
    * - Tool
      - :ref:`ComplexityTool<ug-complexity-tool>`
-     - .. menuicon:: ComplexityTool
+     - :menuicon:`ComplexityTool`
      - Edit the complexity of the selected models
      - 
      - 
    * - Tool
      - :ref:`NameTool<ug-name-tool>`
-     - .. menuicon:: NameTool
+     - :menuicon:`NameTool`
      - Edit the name of the selected model
      - :shortcut:`Ctrl-n`
      - 
    * - Tool
      - :ref:`RotationTool<ug-rotation-tool>`
-     - .. menuicon:: RotationTool
+     - :menuicon:`RotationTool`
      - Rotate the selected models (Modified-drag for in-place)
      - 
      - 
    * - Tool
      - :ref:`ScaleTool<ug-scale-tool>`
-     - .. menuicon:: ScaleTool
+     - :menuicon:`ScaleTool`
      - Change the size of the selected models (Modified-drag for symmetric)
      - 
      - 
    * - Tool
      - :ref:`SwitchToNextTool<ug-switch-to-next-tool>`
-     - .. menuicon:: SwitchToNextTool
+     - :menuicon:`SwitchToNextTool`
      - Switch to the next general tool
      - :shortcut:`]`
      - :shortcut:`L:Right`, :shortcut:`R:Right`
    * - Tool
      - :ref:`SwitchToPreviousTool<ug-switch-to-previous-tool>`
-     - .. menuicon:: SwitchToPreviousTool
+     - :menuicon:`SwitchToPreviousTool`
      - Switch to the previous general tool
      - :shortcut:`[`
      - :shortcut:`R:Left`, :shortcut:`L:Left`
    * - Tool
      - :ref:`TranslationTool<ug-translation-tool>`
-     - .. menuicon:: TranslationTool
+     - :menuicon:`TranslationTool`
      - Change the position of the selected models
      - 
      - 
    * - Viewing
      - :ref:`HideSelected<ug-hide-selected>`
-     - .. menuicon:: HideSelected
+     - :menuicon:`HideSelected`
      - Hide selected top-level models
      - :shortcut:`Ctrl-h`
      - 
    * - Viewing
      - :ref:`ShowAll<ug-show-all>`
-     - .. menuicon:: ShowAll
+     - :menuicon:`ShowAll`
      - Show all hidden top-level models
      - :shortcut:`Shift-Ctrl-h`
      - 
    * - Viewing
      - :ref:`ToggleBuildVolume<ug-toggle-build-volume>`
-     - .. menuicon:: ToggleBuildVolume
+     - :menuicon:`ToggleBuildVolume`
      - TOGGLE: Show or hide the translucent build volume
      - :shortcut:`Ctrl-b`
      - 
    * - Viewing
      - :ref:`ToggleInspector<ug-toggle-inspector>`
-     - .. menuicon:: ToggleInspector
+     - :menuicon:`ToggleInspector`
      - TOGGLE: Open or close the Inspector for the current primary selection
      - :shortcut:`Ctrl-t`
      - 
    * - Viewing
      - :ref:`ToggleShowEdges<ug-toggle-show-edges>`
-     - .. menuicon:: ToggleShowEdges
+     - :menuicon:`ToggleShowEdges`
      - TOGGLE: Show or hide edges on all models
      - :shortcut:`Ctrl-e`
      - 

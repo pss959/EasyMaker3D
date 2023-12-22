@@ -1,28 +1,29 @@
-from docutils             import nodes
-from docutils.parsers.rst import Directive
+from docutils import nodes
 
 # -----------------------------------------------------------------------------
-# MenuIcon directive class.
+# Implements the menuicon role.
 # -----------------------------------------------------------------------------
 
-class MenuIcon(Directive):
-  """MenuIcon inserts an image representing a menu icon at an appropriate size.
-  Required arguments: icon_name
-  """
-  required_arguments = 1
-
-  def run(self):
-    icon_name  = self.arguments[0]
-    image_node = nodes.image(uri=f'/images/MenuIcons/MI{icon_name}.png',
-                             width='28px')
-    return [image_node]
+def menuicon_role(name, rawtext, text, lineno, inliner,
+                  options=None, content=None):
+    'Inserts an image node representing a menu icon at an appropriate size.'
+    try:
+        if not text:
+            raise ValueError
+    except ValueError:
+        msg = inliner.reporter.error('Missing name for menuicon role')
+        prb = inliner.problematic(rawtext, rawtext, msg)
+        return [prb], [msg]
+    icon_name = text
+    node = nodes.image(uri=f'/images/MenuIcons/MI{icon_name}.png', width='28px')
+    return [node], []
 
 # -----------------------------------------------------------------------------
 # Extension setup.
 # -----------------------------------------------------------------------------
 
 def setup(app):
-  app.add_directive("menuicon", MenuIcon)
+  app.add_role("menuicon", menuicon_role)
   return {
     'version': '0.1',
     'parallel_read_safe': True,
