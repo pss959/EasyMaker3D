@@ -40,11 +40,11 @@ void ScriptEmitter::AddDragPoint(const Str &phase, const Point2f &pos) {
 
     if (phase == "start") {
         event.flags.Set(Event::Flag::kButtonPress);
-        event.button = Event::Button::kMouse1;
+        event.button = drag_button_;
     }
     else if (phase == "end") {
         event.flags.Set(Event::Flag::kButtonRelease);
-        event.button = Event::Button::kMouse1;
+        event.button = drag_button_;
     }
 
     events_.push_back(event);
@@ -131,3 +131,8 @@ void ScriptEmitter::EmitEvents(std::vector<Event> &events) {
         events_.pop_front();
     }
 }
+
+void ScriptEmitter::FlushPendingEvents() {
+    events_.clear();
+}
+

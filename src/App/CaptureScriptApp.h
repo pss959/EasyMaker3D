@@ -52,6 +52,8 @@ class CaptureScriptApp : public ScriptedApp {
     SG::NodePtr          highlight_;   ///< Displays highlight rectangle.
     SG::TextNodePtr      caption_;     ///< Displays caption text.
 
+    bool instructions_done_ = false;
+
     /// Creates and writes a video to a file.
     std::unique_ptr<VideoWriter> video_writer_;
 
@@ -72,7 +74,7 @@ class CaptureScriptApp : public ScriptedApp {
 
     /// Adds events to drag from the current cursor position by the given
     /// motion vector over the given duration in seconds.
-    void DragTo_(const Vector2f &motion, float seconds);
+    void DragTo_(const Vector2f &motion, float seconds, const Str &button);
 
     /// Adds events to move the cursor to be over the center of the named
     /// object over the given duration in seconds.

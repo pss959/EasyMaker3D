@@ -85,7 +85,6 @@ class ScriptedApp : public Application {
     OptionsPtr       options_;      ///< Derived Options instance.
     ScriptBasePtr    script_;       ///< Derived ScriptBase instance.
     ScriptEmitterPtr emitter_;      ///< Used to simulate mouse and key events.
-    size_t           cur_instruction_ = 0;
 
-    bool ProcessInstruction_(const ScriptBase::Instr &instr);
+    size_t cur_instruction_ = 0;
 };

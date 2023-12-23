@@ -149,17 +149,6 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         const auto &cinst = GetTypedInstr_<CaptureScript::CaptionInstr>(instr);
         DisplayCaption_(cinst.text, cinst.pos, cinst.seconds);
     }
-    else if (instr.name == "chapter") {
-        const auto &cinst = GetTypedInstr_<CaptureScript::ChapterInstr>(instr);
-        if (video_writer_) {
-            if (GetOptions_().report) {
-                std::cout << "    Chapter " << video_writer_->GetChapterCount()
-                          << " at " << video_writer_->GetImageCount()
-                          << ": " << cinst.title << "\n";
-            }
-            video_writer_->AddChapterTag(cinst.title);
-        }
-    }
     else if (instr.name == "click") {
         GetEmitter().AddClick(cursor_pos_);
     }
@@ -169,7 +158,7 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     }
     else if (instr.name == "drag") {
         const auto &dinst = GetTypedInstr_<CaptureScript::DragInstr>(instr);
-        DragTo_(dinst.motion, dinst.seconds);
+        DragTo_(dinst.motion, dinst.seconds, dinst.button);
     }
     else if (instr.name == "highlight") {
         const auto &hinst =
@@ -182,7 +171,6 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         Range2f rect;
         if (! GetNodeRect(hinst.object_name, hinst.margin, rect))
             return false;
-        std::cerr << "XXXX Rect = " << rect << "\n";
         DisplayHighlight_(rect, hinst.seconds);
     }
     else if (instr.name == "key") {
@@ -200,6 +188,18 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     else if (instr.name == "moveto") {
         const auto &minst = GetTypedInstr_<CaptureScript::MoveToInstr>(instr);
         MoveTo_(minst.pos, minst.seconds);
+    }
+    else if (instr.name == "section") {
+        const auto &sinst = GetTypedInstr_<CaptureScript::SectionInstr>(instr);
+        if (video_writer_) {
+            if (GetOptions_().report) {
+                std::cout << "    Section " << video_writer_->GetChapterCount()
+                          << " (" << sinst.tag << ") at "
+                          << video_writer_->GetImageCount()
+                          << ": " << sinst.title << "\n";
+            }
+            video_writer_->AddChapterTag(sinst.title);
+        }
     }
     else if (instr.name == "start") {
         is_capturing_ = true;
@@ -230,12 +230,16 @@ void CaptureScriptApp::InstructionsDone() {
     // Remove the VideoWriter_ so this does not happen again in case
     // InstructionsDone() is called again (if remain flag is set).
     video_writer_.reset();
+
+    instructions_done_ = true;
 }
 
 void CaptureScriptApp::BeginFrame() {
     // Update the caption and highlight rectangle if visible.
-    UpdateCaption_();
-    UpdateHighlight_();
+    if (! instructions_done_) {
+        UpdateCaption_();
+        UpdateHighlight_();
+    }
 }
 
 void CaptureScriptApp::EndFrame() {
@@ -279,7 +283,10 @@ void CaptureScriptApp::DisplayHighlight_(const Range2f &rect, float seconds) {
     UpdateHighlight_();
 }
 
-void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds) {
+void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds,
+                               const Str &button) {
+    ASSERT(button == "L" || button == "M" || button == "R");
+
     const Point2f end_pos = cursor_pos_ + motion;
 
     // Determine the number of events to create over the duration.
@@ -293,6 +300,9 @@ void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds) {
 
     // Emit the points.
     auto &emitter = GetEmitter();
+    emitter.SetDragButton(button == "M" ? Event::Button::kMouse2 :
+                          button == "R" ? Event::Button::kMouse3 :
+                          Event::Button::kMouse1);
     emitter.AddDragPoint("start", points[0]);
     for (size_t i = 1; i + 1 < frames; ++i)
         emitter.AddDragPoint("continue", points[i]);
@@ -348,17 +358,21 @@ void CaptureScriptApp::MoveFakeCursorTo_(const Point2f &pos) {
 }
 
 void CaptureScriptApp::UpdateCaption_() {
-    const float alpha = UpdateFade_(*caption_, caption_fade_data_);
-    Color c = caption_->GetColor();
-    c[3] = alpha;
-    caption_->SetTextColor(c);
+    if (caption_fade_data_.elapsed <= caption_fade_data_.duration) {
+        const float alpha = UpdateFade_(*caption_, caption_fade_data_);
+        Color c = caption_->GetColor();
+        c[3] = alpha;
+        caption_->SetTextColor(c);
+    }
 }
 
 void CaptureScriptApp::UpdateHighlight_() {
-    const float alpha = UpdateFade_(*highlight_, highlight_fade_data_);
-    Color c = highlight_->GetBaseColor();
-    c[3] = alpha * .2f;
-    highlight_->SetBaseColor(c);
+    if (highlight_fade_data_.elapsed <= highlight_fade_data_.duration) {
+        const float alpha = UpdateFade_(*highlight_, highlight_fade_data_);
+        Color c = highlight_->GetBaseColor();
+        c[3] = alpha * .2f;
+        highlight_->SetBaseColor(c);
+    }
 }
 
 float CaptureScriptApp::UpdateFade_(SG::Node &node, FadeData_ &fade_data) {

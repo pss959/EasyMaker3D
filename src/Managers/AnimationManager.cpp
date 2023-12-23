@@ -17,8 +17,6 @@ void AnimationManager::ProcessUpdate() {
         for (auto &data: anim_data_) {
             // Compute the elapsed time using actual time or the frame
             // increment.
-
-
             const float time = frame_increment_ > 0 ?
                 ++data.frame_count * frame_increment_ :
                 static_cast<float>(now.SecondsSince(data.start_time));

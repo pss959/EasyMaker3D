@@ -64,7 +64,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     const bool events_pending        = emitter_->HasPendingEvents();
     const bool are_more_instructions = cur_instruction_ < instr_count;
     bool keep_going;
-    bool processing_done = false;
+    bool was_stopped = false;
 
     // Let the derived class know the frame is starting.
     BeginFrame();
@@ -87,13 +87,20 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
 
     else if (are_more_instructions) {
         const auto &instr = *script_->GetInstructions()[cur_instruction_];
+        const size_t instr_count = script_->GetInstructions().size();
+        if (options_->report)
+            std::cout << "  Processing " << instr.name
+                      << " (instruction " << (cur_instruction_ + 1)
+                      << " of " << instr_count << ") on line "
+                      << instr.line_number << "\n";
         if (instr.name == "stop") {
-            keep_going = false;
-            processing_done = true;
+            keep_going  = false;
+            was_stopped = true;
             cur_instruction_ = instr_count;
+            emitter_->FlushPendingEvents();
         }
         else {
-            keep_going = ProcessInstruction_(instr);
+            keep_going = ProcessInstruction(instr);
             ++cur_instruction_;
         }
     }
@@ -101,7 +108,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     // There are no pending events and no more instructions. If not currently
     // animating, processing is done.
     else if (! GetContext().animation_manager->IsAnimating()) {
-        processing_done = true;
+        was_stopped = true;
     }
 
     // Let the derived class know the frame is done.
@@ -109,7 +116,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
 
     // If processing is done, let the derived class know and stop ignoring
     // mouse events from GLFWViewer.
-    if (processing_done) {
+    if (was_stopped) {
         InstructionsDone();
         EnableMouseMotionEvents(true);
         keep_going = options_->remain;
@@ -181,16 +188,4 @@ bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
     // Clamp to (0,1) in both dimensions.
     rect = RangeIntersection(rect, Range2f(Point2f(0, 0), Point2f(1, 1)));
     return true;
-}
-
-bool ScriptedApp::ProcessInstruction_(const ScriptBase::Instr &instr) {
-    const size_t instr_count = script_->GetInstructions().size();
-    if (options_->report)
-        std::cout << "  Processing " << instr.name
-                  << " (instruction " << (cur_instruction_ + 1)
-                  << " of " << instr_count << ") on line "
-                  << instr.line_number << "\n";
-
-    // Let the derived class do most of the work.
-    return ProcessInstruction(instr);
 }

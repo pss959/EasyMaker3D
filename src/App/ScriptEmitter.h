@@ -24,6 +24,9 @@ class ScriptEmitter : public IEmitter {
     /// Adds an event to simulate a mouse hover at a given position.
     void AddHoverPoint(const Point2f &pos);
 
+    /// Sets a mouse button to use for subsequent drags.
+    void SetDragButton(const Event::Button &button) { drag_button_ = button; }
+
     /// Adds a point for a single drag phase to emit. The \p phase parameter
     /// should be "start", "continue", or "end".
     void AddDragPoint(const Str &phase, const Point2f &pos);
@@ -45,7 +48,7 @@ class ScriptEmitter : public IEmitter {
     bool HasPendingEvents() const { return ! events_.empty(); }
 
     virtual void EmitEvents(std::vector<Event> &events) override;
-    virtual void FlushPendingEvents() {}
+    virtual void FlushPendingEvents() override;
 
     /// Default rest position for the left controller.
     static constexpr Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};
@@ -62,6 +65,9 @@ class ScriptEmitter : public IEmitter {
   private:
     /// Whether modified mode is on.
     bool               is_mod_ = false;
+
+    /// Button to use for drag events.
+    Event::Button      drag_button_ = Event::Button::kMouse1;
 
     /// Events left to emit.
     std::deque<Event>  events_;

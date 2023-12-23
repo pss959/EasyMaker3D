@@ -1,8 +1,8 @@
 // Plays the video with the given ID starting at the given time in seconds.
-function PlayVideo(video, seconds){
+function PlayVideo(video, start_time){
     video.play();
     video.pause();
-    video.currentTime = seconds;
+    video.currentTime = start_time;
     video.play();
 }
 
@@ -12,9 +12,10 @@ document.addEventListener('DOMContentLoaded', function (event) {
     event.preventDefault();
     buttons = document.getElementsByClassName("video-button");
     for (var i = 0; i < buttons.length; ++i) {
-        var id      = buttons[i].dataset.id;
-        var seconds = buttons[i].dataset.seconds;
-        buttons[i].setAttribute("onclick",
-                                `javascript:PlayVideo(${id}, ${seconds})`);
+        var id        = buttons[i].dataset.id;
+        var startTime = buttons[i].dataset.startTime;
+        if (id && startTime)
+            buttons[i].setAttribute(
+                "onclick", `javascript:PlayVideo(${id}, ${startTime})`);
     }
 });

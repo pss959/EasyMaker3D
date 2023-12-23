@@ -42,6 +42,7 @@ extensions = [
     'incvideo',
     'menuicon',
     'videobutton',
+    'vidref',
 ]
 
 # Ignore included files.

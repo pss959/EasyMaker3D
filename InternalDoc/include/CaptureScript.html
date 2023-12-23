@@ -22,12 +22,6 @@
     caption over multiple lines.
   </tr>
   <tr>
-    <td><b>chapter</b></td>
-    <td><i>title</i></td>
-    <td>Adds a chapter tag with the given title to the current frame of the
-    video.</td>
-  </tr>
-  <tr>
     <td><b>click</b></td>
     <td></td>
     <td>Simulates a mouse click at the current cursor position.
@@ -39,10 +33,11 @@
   </tr>
   <tr>
     <td><b>drag</b></td>
-    <td><i>dx dy seconds</i></td>
+    <td><i>dx dy seconds</i> [<code>L</code>|<code>M</code>|<code>R</code>]</td>
     <td>Simulates a mouse drag from the current cursor position by
       <i>(dx,dy)</i> in normalized window coordinates over the given duration
-      in seconds.</td>
+      in seconds. An optional argument can specify the left, middle, or right
+      button.</td>
   </tr>
   <tr>
     <td><b>highlight</b></td>
@@ -82,6 +77,12 @@
     <td>Moves the cursor (without interaction) from the current position to
       <i>(x,y)</i> in normalized window coordinates over the given duration in
       seconds.</td>
+  </tr>
+  <tr>
+    <td><b>section</b></td>
+    <td><i>tag title</i></td>
+    <td>Marks the current frame of the video as a section with the given tag
+      and title.</td>
   </tr>
   <tr>
     <td><b>start</b></td>

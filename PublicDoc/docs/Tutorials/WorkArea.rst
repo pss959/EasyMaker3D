@@ -8,4 +8,15 @@ details, consult the :ref:`User Guide <ug-work-area>`.
 
 |block-image|
 
+
+Some Section
+............
+
+:vidref:`WorkArea:SomeSection`
+
 XXXX More here...
+
+Another Section
+...............
+
+:vidref:`WorkArea:AnotherSection`

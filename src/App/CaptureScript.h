@@ -23,9 +23,6 @@ class CaptureScript : public ScriptBase {
         float   seconds;
         Str     text;
     };
-    struct ChapterInstr : public Instr {
-        Str     title;
-    };
     struct ClickInstr : public Instr {
         // No fields.
     };
@@ -35,6 +32,7 @@ class CaptureScript : public ScriptBase {
     struct DragInstr : public Instr {
         Vector2f motion;
         float    seconds;
+        Str      button;
     };
     struct HighlightInstr : public Instr {
         Range2f  rect;
@@ -53,6 +51,10 @@ class CaptureScript : public ScriptBase {
         Point2f pos;
         float   seconds;
     };
+    struct SectionInstr : public Instr {
+        Str     tag;
+        Str     title;
+    };
     struct StartInstr : public Instr {
         // No data.
     };
@@ -64,7 +66,7 @@ class CaptureScript : public ScriptBase {
     };
 
     DECL_SHARED_PTR(CaptionInstr);
-    DECL_SHARED_PTR(ChapterInstr);
+    DECL_SHARED_PTR(SectionInstr);
     DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(CursorInstr);
     DECL_SHARED_PTR(DragInstr);
@@ -82,7 +84,6 @@ class CaptureScript : public ScriptBase {
 
   private:
     InstrPtr ProcessCaption_(const StrVec &words);
-    InstrPtr ProcessChapter_(const StrVec &words);
     InstrPtr ProcessClick_(const StrVec &words);
     InstrPtr ProcessCursor_(const StrVec &words);
     InstrPtr ProcessDrag_(const StrVec &words);
@@ -90,6 +91,7 @@ class CaptureScript : public ScriptBase {
     InstrPtr ProcessHighlightObj_(const StrVec &words);
     InstrPtr ProcessMoveOver_(const StrVec &words);
     InstrPtr ProcessMoveTo_(const StrVec &words);
+    InstrPtr ProcessSection_(const StrVec &words);
     InstrPtr ProcessStart_(const StrVec &words);
     InstrPtr ProcessTooltips_(const StrVec &words);
     InstrPtr ProcessWait_(const StrVec &words);

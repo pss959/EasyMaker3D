@@ -7,7 +7,7 @@ CaptureScript::CaptureScript() {
     RegisterInstrFunc(name, [&](const StrVec &w){ return func(w); });
 
     REG_FUNC_("caption",      ProcessCaption_);
-    REG_FUNC_("chapter",      ProcessChapter_);
+    REG_FUNC_("section",      ProcessSection_);
     REG_FUNC_("click",        ProcessClick_);
     REG_FUNC_("cursor",       ProcessCursor_);
     REG_FUNC_("drag",         ProcessDrag_);
@@ -44,17 +44,18 @@ CaptureScript::InstrPtr CaptureScript::ProcessCaption_(const StrVec &words) {
     return cinst;
 }
 
-CaptureScript::InstrPtr CaptureScript::ProcessChapter_(const StrVec &words) {
-    ChapterInstrPtr cinst;
-    if (words.size() < 2U) {
-        Error("Bad syntax for chapter instruction");
+CaptureScript::InstrPtr CaptureScript::ProcessSection_(const StrVec &words) {
+    SectionInstrPtr sinst;
+    if (words.size() < 3U) {
+        Error("Bad syntax for section instruction");
     }
     else {
-        cinst.reset(new ChapterInstr);
-        cinst->title =
-            Util::JoinStrings(StrVec(words.begin() + 1, words.end()));
+        sinst.reset(new SectionInstr);
+        sinst->tag = words[1];
+        sinst->title =
+            Util::JoinStrings(StrVec(words.begin() + 2, words.end()));
     }
-    return cinst;
+    return sinst;
 }
 
 CaptureScript::InstrPtr CaptureScript::ProcessClick_(const StrVec &words) {
@@ -83,7 +84,7 @@ CaptureScript::InstrPtr CaptureScript::ProcessCursor_(const StrVec &words) {
 CaptureScript::InstrPtr CaptureScript::ProcessDrag_(const StrVec &words) {
     DragInstrPtr dinst;
     float        dx, dy, seconds;
-    if (words.size() != 4) {
+    if (words.size() < 4 || words.size() > 5) {
         Error("Bad syntax for drag instruction");
     }
     else if (! ParseFloat(words[1], dx) || ! ParseFloat(words[2], dy) ||
@@ -93,10 +94,15 @@ CaptureScript::InstrPtr CaptureScript::ProcessDrag_(const StrVec &words) {
     else if (seconds <= 0) {
         Error("Seconds for drag instruction must be positive");
     }
+    else if (words.size() == 5 &&
+             (words[4] != "L" && words[4] != "M" && words[4] != "R")) {
+        Error("Invalid mouse button for drag instruction");
+    }
     else {
         dinst.reset(new DragInstr);
         dinst->motion.Set(dx, dy);
         dinst->seconds = seconds;
+        dinst->button = words.size() == 5 ? words[4] : "L";
     }
     return dinst;
 }

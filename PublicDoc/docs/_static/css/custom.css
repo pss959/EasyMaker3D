@@ -303,20 +303,26 @@ img {
 
 .video-button, .ug-button {
     border:  1px solid #4444ee;
-    display: inline-block;
-    width:   28px;
-    height:  28px;
-    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width:   24px;
+    height:  24px;
+}
+
+.video-button:before, .ug-button:before {
+    font-family: "FontAwesome";
+    font-weight: regular;
+    font-size:   16px;
+    color:       #4444ee;
 }
 
 .video-button:before {
-    font-family: "FontAwesome";
-    content:     "\f03d";       /* Video camera */
+    content: "\f03d";  /* Video camera */
 }
 
-.ug-button:after {
-    font-family: "FontAwesome";
-    content:     "\f02e";       /* Bookmark */
+.ug-button:before {
+    content: "\f02e";  /* Bookmark */
 }
 
 /* -----------------------------------------------------------------------------
