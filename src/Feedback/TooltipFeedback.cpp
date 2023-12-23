@@ -80,14 +80,9 @@ Vector3f TooltipFeedback::Impl_::GetTextSize() const {
 }
 
 void TooltipFeedback::Impl_::Activate() {
-    if (! is_delayed_) {
-        if (delay_ > 0) {
-            delay_id_ = Util::RunDelayed(delay_, [this](){ Show_(true); });
-            is_delayed_ = true;
-        }
-        else {
-            Show_(true);
-        }
+    if (! is_delayed_ && delay_ > 0) {
+        delay_id_ = Util::RunDelayed(delay_, [this](){ Show_(true); });
+        is_delayed_ = true;
     }
 }
 
