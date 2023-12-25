@@ -99,9 +99,11 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     highlight_ = SG::FindNodeUnderNode(*capture_root, "HighlightRect");
     highlight_->TranslateTo(GetImagePlanePoint_(Point2f(.5f, .5f)));
 
-    // Find the caption TextNode.
-    caption_ =
-        SG::FindTypedNodeUnderNode<SG::TextNode>(*capture_root, "Caption");
+    // Find the caption nodes.
+    caption_.node = SG::FindNodeUnderNode(*capture_root,  "Caption");
+    caption_.bg   = SG::FindNodeUnderNode(*caption_.node, "Background");
+    caption_.text = SG::FindTypedNodeUnderNode<SG::TextNode>(*caption_.node,
+                                                             "Text");
 
     const auto &opts = GetOptions_();
 
@@ -260,13 +262,21 @@ const CaptureScriptApp::Options & CaptureScriptApp::GetOptions_() const {
 
 void CaptureScriptApp::DisplayCaption_(const Str &text, const Point2f &pos,
                                        float seconds) {
+    caption_.text->SetText(text);
+
     // Get the number of lines of text and adjust the Y scale to match.
     const size_t line_count = 1 + std::ranges::count(text, '\n');
-    caption_->SetUniformScale(.04f * line_count);
+    caption_.text->SetUniformScale(line_count);
 
-    caption_->TranslateTo(GetImagePlanePoint_(pos));
-    caption_->SetText(text);
-    caption_->SetEnabled(true);
+    // Scale the background to be slightly larger than the text.
+    const float kTextBGFactorX = 1.1f;
+    const float kTextBGFactorY = 2;
+    const auto text_size = line_count * caption_.text->GetTextSize();
+    caption_.bg->SetScale(Vector3f(kTextBGFactorX * text_size[0],
+                                   kTextBGFactorY * text_size[1], 1));
+
+    caption_.node->SetEnabled(true);
+    caption_.pos                = pos;
     caption_fade_data_.duration = seconds;
     caption_fade_data_.elapsed  = 0;
     UpdateCaption_();
@@ -359,10 +369,16 @@ void CaptureScriptApp::MoveFakeCursorTo_(const Point2f &pos) {
 
 void CaptureScriptApp::UpdateCaption_() {
     if (caption_fade_data_.elapsed <= caption_fade_data_.duration) {
-        const float alpha = UpdateFade_(*caption_, caption_fade_data_);
-        Color c = caption_->GetColor();
+        const float alpha = UpdateFade_(*caption_.node, caption_fade_data_);
+        Color c = caption_.text->GetColor();
         c[3] = alpha;
-        caption_->SetTextColor(c);
+        caption_.text->SetTextColor(c);
+        // XXXX Change this to fade bg as well.
+
+        // Set the position and face the camera. Do this every time in case the
+        // view changes.
+        caption_.node->TranslateTo(GetImagePlanePoint_(caption_.pos));
+        caption_.node->SetRotation(GetFrustum().orientation);
     }
 }
 

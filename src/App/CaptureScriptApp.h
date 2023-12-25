@@ -39,6 +39,14 @@ class CaptureScriptApp : public ScriptedApp {
     // Handler used to update the fake cursor.
     DECL_SHARED_PTR(CursorHandler_);
 
+    /// Struct containing information for a caption.
+    struct Caption_ {
+        SG::NodePtr       node;  ///< Root node for caption.
+        SG::NodePtr       bg;    ///< Node with background rectangle.
+        SG::TextNodePtr   text;  ///< TextNode displaying text.
+        Point2f           pos;   ///< Last window position of caption.
+    };
+
     /// This struct is used to fade items (such as captions or the highlight
     /// rectangle) in and out over a duration.
     struct FadeData_ {
@@ -46,11 +54,11 @@ class CaptureScriptApp : public ScriptedApp {
         float elapsed  = 0;   ///< Elapsed time in seconds.
     };
 
-    CursorHandler_Ptr    handler_;     ///< Updates the fake cursor.
-    SG::NodePtr          cursor_;      ///< Fake cursor for video.
-    Point2f              cursor_pos_;  ///< Current cursor position.
-    SG::NodePtr          highlight_;   ///< Displays highlight rectangle.
-    SG::TextNodePtr      caption_;     ///< Displays caption text.
+    CursorHandler_Ptr handler_;       ///< Updates the fake cursor.
+    SG::NodePtr       cursor_;        ///< Fake cursor for video.
+    Point2f           cursor_pos_;    ///< Current cursor position.
+    Caption_          caption_;       ///< Caption information.
+    SG::NodePtr       highlight_;     ///< Displays highlight rectangle.
 
     bool instructions_done_ = false;
 

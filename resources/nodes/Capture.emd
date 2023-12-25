@@ -1,4 +1,8 @@
 Node "CaptureRoot" {
+  CONSTANTS: [
+    HL_COLOR:  "\"#e051ca33\"",  # Color for highlight rectangle.
+    CAP_COLOR: "\"#51afe0ff\"",  # Color for caption text.
+  ],
   shader_names: ["BaseColor"],
   blocks: [
     UniformBlock {
@@ -9,18 +13,32 @@ Node "CaptureRoot" {
   # Note: all of these items are disabled by default.
   children: [
     # Text used to display captions.
-    TextNode "Caption" {
+    Node "Caption" {
       disabled_flags: "kTraversal|kIntersectAll",
       scale:          .04 .04 .04,
-      text:           ".",
-      font_name:      "Verdana-Regular",
-      color:          "#ff66ff",
-      outline_color:  "#000000",
-      outline_width:  .1,
-      layout_options: LayoutOptions {
-        halignment: "kAlignHCenter",
-        valignment: "kAlignVCenter",
-      },
+      children: [
+        Node "Background" {
+          translation: 0 0 -.1,  # Move behind text.
+          blocks: [
+            UniformBlock {
+              pass_name: "Lighting",
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: .9 .9 .9 .5 }],
+            }
+          ],
+          shapes: [Rectangle {}]
+        },
+        TextNode "Text" {
+          text:           ".",
+          font_name:      "Verdana-Regular",
+          color:          $CAP_COLOR,
+          outline_color:  "#888888",
+          outline_width:  .1,
+          layout_options: LayoutOptions {
+            halignment: "kAlignHCenter",
+            valignment: "kAlignVCenter",
+          },
+        }
+      ]
     },
 
     # Fake cursor that stands out in videos.
@@ -46,7 +64,7 @@ Node "CaptureRoot" {
       blocks: [
         UniformBlock {
           pass_name: "Lighting",
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: .5 1 .4 .2 }],
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: $HL_COLOR }],
         }
       ],
       shapes: [ Rectangle "Rect" {} ],
