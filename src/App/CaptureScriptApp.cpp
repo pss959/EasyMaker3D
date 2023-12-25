@@ -198,7 +198,7 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
                           << video_writer_->GetImageCount()
                           << ": " << sinst.title << "\n";
             }
-            video_writer_->AddChapterTag(sinst.title);
+            video_writer_->AddChapter(sinst.tag, sinst.title);
         }
     }
     else if (instr.name == "start") {

@@ -51,9 +51,9 @@ class VideoWriter {
     /// Adds an image to the video.
     void AddImage(const ion::gfx::Image &image);
 
-    /// Adds a chapter tag with the given title at the current frame in the
+    /// Adds a chapter with the given tag and title at the current frame in the
     /// video.
-    void AddChapterTag(const Str &title);
+    void AddChapter(const Str &tag, const Str &title);
 
     /// Returns the number of images added.
     size_t GetImageCount() const;

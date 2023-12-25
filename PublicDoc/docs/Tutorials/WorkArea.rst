@@ -9,16 +9,16 @@ details, consult the :ref:`User Guide <ug-work-area>`.
 |block-image|
 
 
-Some Section
-............
+The Stage
+.........
 
-:vidref:`WorkArea:SomeSection`
+:vidref:`WorkArea:Stage`
+:ugref:`#ug-stage`
 
-XXXX ugref follows:
-
-:ugref:`#ug-work-area`
-
-XXXX Done.
+The stage is the large circular platform on which models are placed. It can be
+rotated and scaled to change the size and orientation of the models.
+:ref:`Modified-clicking <ug-modified-mode>` anywhere on the stage resets it to
+its default size and rotation.
 
 Another Section
 ...............

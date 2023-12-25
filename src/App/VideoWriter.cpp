@@ -21,15 +21,15 @@ extern "C" {
 /// The VideoWriter::Chapter_ struct stores a title and starting frame for a
 /// chapter.
 struct VideoWriter::Chapter_ {
-    Str    title;
-    size_t index           = 0;  ///< Index in chapter menu (starts at 1).
+    Str    tag;                  ///< Unique tag for the chapter.
+    Str    title;                ///< Title text.
     uint64 start_frame     = 0;  ///< Frame where chapter starts.
     uint64 end_frame       = 0;  ///< Frame where chapter ends.
     uint64 start_timestamp = 0;  ///< Timestamp corresponding to #start_frame.
     uint64 end_timestamp   = 0;  ///< Timestamp corresponding to #end_frame.
     Chapter_() {}
-    Chapter_(const Str &t, uint32 i, uint64 f) :
-        title(t), index(i), start_frame(f) {}
+    Chapter_(const Str &tg, const Str &tt, uint64 f) :
+        tag(tg), title(tt), start_frame(f) {}
 };
 
 /// The VideoWriter::Data_ struct stores all the FFMPEG data needed for writing
@@ -122,9 +122,8 @@ void VideoWriter::AddImage(const ion::gfx::Image &image) {
     ++data_->cur_frame;
 }
 
-void VideoWriter::AddChapterTag(const Str &title) {
-    const size_t index = data_->chapters.size() + 1;  // Start at 1.
-    data_->chapters.push_back(Chapter_(title, index, data_->cur_frame));
+void VideoWriter::AddChapter(const Str &tag, const Str &title) {
+    data_->chapters.push_back(Chapter_(tag, title, data_->cur_frame));
 }
 
 size_t VideoWriter::GetImageCount() const {
@@ -304,10 +303,10 @@ void VideoWriter::StoreChapters_() {
     oc->chapters = reinterpret_cast<AVChapter **>(
         av_realloc_f(oc->chapters, count, sizeof(*oc->chapters)));
     oc->nb_chapters = count;
-    for (const auto &ch: data_->chapters) {
+    for (const auto [index, ch]: std::views::enumerate(data_->chapters)) {
         AVChapter *avch =
             reinterpret_cast<AVChapter *>(av_mallocz(sizeof(AVChapter)));
-        avch->id        = ch.index;
+        avch->id        = index + 1;
         avch->time_base = data_->stream->time_base;
         avch->start     = ch.start_timestamp;
         avch->end       = ch.end_timestamp;
@@ -315,7 +314,7 @@ void VideoWriter::StoreChapters_() {
         // Store title in metadata.
         CHECK_(av_dict_set(&avch->metadata, "title", ch.title.c_str(), 0));
 
-        oc->chapters[ch.index - 1] = avch;
+        oc->chapters[index] = avch;
     }
 }
 
@@ -338,8 +337,8 @@ bool VideoWriter::WriteChapterFile_(const FilePath &path) {
         return std::format("{:%T}", ms);
     };
 
-    for (const auto [index, ch]: std::views::enumerate(data_->chapters)) {
-        out << (index + 1) << "\n"
+    for (const auto &ch: data_->chapters) {
+        out << ch.tag << "\n"
             << format_ts(ch.start_timestamp) << " --> "
             << format_ts(ch.end_timestamp) << "\n"
             << ch.title << "\n\n";
