@@ -10,6 +10,7 @@ class VideoButtonNode(nodes.General, nodes.Element):
     at a given time in seconds.
     Required dictionary contents: 'video_id' 'start_time'
     """
+    pass
 
 def EnterVideoButtonNode(translator, node):
     # Access node items.

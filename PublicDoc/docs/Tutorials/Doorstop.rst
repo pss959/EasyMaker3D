@@ -11,8 +11,6 @@ model and output it as an STL file.
 Start the Application
 .....................
 
-.. videobutton:: Doorstop 0 Watch
-
 .. incimage:: /images/DoorstopSessionPanel.jpg 240px right
 
 Starting the application should open a maximized window that you can interact

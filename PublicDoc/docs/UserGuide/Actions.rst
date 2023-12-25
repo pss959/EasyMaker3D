@@ -3,6 +3,8 @@
 Actions, 3D Icons, and Shelves
 ------------------------------
 
+XXXX TEMPORARY :vidref:`WorkArea:SomeSection`
+
 Most of the interaction in |appname| is initiated by clicking on one of the 3D
 icons on the various shelves in the :ref:`work area <ug-work-area>`. (See that
 section in the Overview for the shelf names and locations.)

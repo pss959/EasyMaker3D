@@ -12,8 +12,6 @@ from sphinx.util.osutil   import relative_uri
 class VideoNode(nodes.General, nodes.Element):
     pass
 
-_app = None
-
 class IncVideo(Directive):
     """IncVideo adds an embedded video with a corresponding chapters file.
     Required arguments: id uri width align
@@ -24,7 +22,6 @@ class IncVideo(Directive):
     required_arguments = 4
 
     def run(self):
-        global _app
         (id, uri, width, align) = self.arguments
         return [VideoNode(id=id, source=uri, width=width, align=align)]
 
@@ -68,8 +65,6 @@ def setup(app):
     """Add the VideoNode to the Sphinx builder."""
     app.add_node(VideoNode, html=(EnterVideoNode, ExitVideoNode))
     app.add_directive("incvideo", IncVideo)
-    global _app
-    _app = app
     return {
       'version': '0.1',
       'parallel_read_safe':  True,

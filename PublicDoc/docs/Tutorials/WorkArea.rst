@@ -14,7 +14,11 @@ Some Section
 
 :vidref:`WorkArea:SomeSection`
 
-XXXX More here...
+XXXX ugref follows:
+
+:ugref:`#ug-work-area`
+
+XXXX Done.
 
 Another Section
 ...............

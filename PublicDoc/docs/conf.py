@@ -41,7 +41,7 @@ extensions = [
     'incimage',
     'incvideo',
     'menuicon',
-    'videobutton',
+    'ugref',
     'vidref',
 ]
 
