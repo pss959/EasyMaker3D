@@ -28,7 +28,6 @@ PushButtonWidget "HeightPole" {
       min_value:     -60,
       max_value:      65,
       is_normalized: True,
-      initial_value:  .08,
       scale:         7 3 7,
       hover_scale:   1.1 1.1 1.1,
       tooltip_text: "Drag to change the view height;\nClick to reset.",
