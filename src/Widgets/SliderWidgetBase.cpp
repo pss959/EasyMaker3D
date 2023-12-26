@@ -20,6 +20,12 @@ void SliderWidgetBase<T>::CreationDone() {
 }
 
 template <typename T>
+void SliderWidgetBase<T>::SetInitialValue(const T &value) {
+    initial_value_ = value;
+    SetValue(value);
+}
+
+template <typename T>
 T SliderWidgetBase<T>::GetUnnormalizedValue() const {
     return IsNormalized() ? GetInterpolated() : value_;
 }

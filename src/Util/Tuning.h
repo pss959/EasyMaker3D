@@ -151,6 +151,17 @@ extern const char *   kInfoPanelRegularFont;
 
 ///@}
 
+/// \name Gantry
+///@{
+
+/// Minimum height of the gantry.
+extern const float      kMinGantryHeight;
+
+/// Maximum height of the gantry.
+extern const float      kMaxGantryHeight;
+
+///@}
+
 /// \name Interaction
 ///@{
 

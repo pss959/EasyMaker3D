@@ -46,6 +46,10 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// Returns the value used to initialize the widget.
     const T & GetInitialValue() const { return initial_value_; }
 
+    /// Changes the value used to initialize the widget; also updates the
+    /// current value.
+    void SetInitialValue(const T &value);
+
     /// Returns the current value of the slider, normalized if IsNormalized()
     /// is true.
     const T & GetValue() const { return value_; }

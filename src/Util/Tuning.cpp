@@ -61,6 +61,10 @@ const char *   kInfoPanelErrorFont               = "Verdana-Italic";
 const char *   kInfoPanelHeaderFont              = "Verdana-Regular";
 const char *   kInfoPanelRegularFont             = "DejaVu Sans Mono-Book";
 
+// Gantry
+const float    kMinGantryHeight                  = -10;
+const float    kMaxGantryHeight                  = 100;
+
 // Interaction
 const float    kColorToolGripDragScale           = 10;
 const float    kGripDragScale                    = 80;

@@ -266,6 +266,9 @@ class  Application::Impl_ {
     /// Wires up all interaction that depends on items in the scene.
     void ConnectSceneInteraction_();
 
+    /// Wires up the height slider and pole.
+    void ConnectHeightSlider_();
+
     /// If possible, replaces the controller model for the given hand with one
     /// supplied by the VRContext.
     void ReplaceControllerModel_(Hand hand);
@@ -325,6 +328,9 @@ class  Application::Impl_ {
 
     /// Processes a click on something in the scene.
     void ProcessClick_(const ClickInfo &info);
+
+    /// Moves the gantry based on the given height slider value.
+    void MoveGantry_(float height_slider_val);
 
     /// Initiates animation to reset the stage.
     void StartResetStage_(bool is_modified_mode);
@@ -969,15 +975,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
             StartResetStage_(info.is_modified_mode); });
 
     // Set up the height pole and slider.
-    SC_->height_pole->GetClicked().AddObserver(
-        this, [&](const ClickInfo &info){
-            StartResetHeight_(info.is_modified_mode); });
-    SC_->height_slider->GetClicked().AddObserver(
-        this, [&](const ClickInfo &info){
-            StartResetHeight_(info.is_modified_mode); });
-    SC_->height_slider->GetValueChanged().AddObserver(
-        this, [&](Widget &w, const float &val){
-            SC_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
+    ConnectHeightSlider_();
+
     InitTooltip_(*SC_->height_pole);
     InitTooltip_(*SC_->height_slider);
     // Set up the radial menus.
@@ -990,6 +989,27 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Simulate a change in settings to update everything.
     SettingsChanged_(MGR_(settings)->GetSettings());
+}
+
+void Application::Impl_::ConnectHeightSlider_() {
+    auto reset_slider = [&](const ClickInfo &info){
+        StartResetHeight_(info.is_modified_mode);
+    };
+
+    // Clicking the height pole or slider may reset the slider.
+    SC_->height_pole->GetClicked().AddObserver(this, reset_slider);
+    SC_->height_slider->GetClicked().AddObserver(this, reset_slider);
+
+    // Dragging the height slider changes the gantry height.
+    SC_->height_slider->GetValueChanged().AddObserver(
+        this, [&](Widget &w, const float &val){ MoveGantry_(val); });
+
+    // Set the initial value T for the slider to put the gantry at Y=0.
+    //    Lerp(T, min, max) = 0
+    //       min + T * (max - min) = 0
+    //       T = -min / (max - min)
+    SC_->height_slider->SetInitialValue(
+        -TK::kMinGantryHeight / (TK::kMaxGantryHeight - TK::kMinGantryHeight));
 }
 
 void Application::Impl_::ReplaceControllerModel_(Hand hand) {
@@ -1387,6 +1407,11 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
         KLOG('k', "Click on noninteractive object");
         MGR_(selection)->DeselectAll();
     }
+}
+
+void Application::Impl_::MoveGantry_(float height_slider_val) {
+    SC_->gantry->SetHeight(Lerp(height_slider_val,
+                                TK::kMinGantryHeight, TK::kMaxGantryHeight));
 }
 
 void Application::Impl_::StartResetStage_(bool is_modified_mode) {
