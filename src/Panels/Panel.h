@@ -108,7 +108,8 @@ class Panel : public SG::Node {
     ///@}
 
     /// This is called by a Board to potentially handle an event. The base
-    /// class defines this to handle escape key, navigation, etc..
+    /// class defines this to handle escape key, navigation, etc.. Returns true
+    /// if the event was handled by the Panel.
     virtual bool HandleEvent(const Event &event);
 
     /// Sets the attachment/visibility status.

@@ -201,20 +201,20 @@ void ShortcutHandler::GetShortcutStrings(Action action, Str &keyboard_string,
     }
 }
 
-bool ShortcutHandler::HandleEvent(const Event &event) {
+Handler::HandleCode ShortcutHandler::HandleEvent(const Event &event) {
     // Handle special key presses.
     const Str key_string = event.GetKeyString();
     if (event.flags.Has(Event::Flag::kKeyPress) &&
         ! key_string.empty() && HandleShortcutString_(key_string))
-        return true;
+        return HandleCode::kHandledStop;
 
     // Handle special Controller button presses.
     const Str cb_string = event.GetControllerButtonString();
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         ! cb_string.empty() && HandleShortcutString_(cb_string))
-        return true;
+        return HandleCode::kHandledStop;
 
-    return false;
+    return HandleCode::kNotHandled;
 }
 
 bool ShortcutHandler::HandleShortcutString_(const Str &str) {

@@ -92,7 +92,7 @@ class MainHandler::Impl_ {
     }
     void SetPathFilter(const PathFilter &filter);
     void ProcessUpdate(bool is_modified_mode);
-    bool HandleEvent(const Event &event);
+    Handler::HandleCode HandleEvent(const Event &event);
     void Reset();
 
   private:
@@ -278,7 +278,7 @@ void MainHandler::Impl_::ProcessUpdate(bool is_modified_mode) {
     }
 }
 
-bool MainHandler::Impl_::HandleEvent(const Event &event) {
+Handler::HandleCode MainHandler::Impl_::HandleEvent(const Event &event) {
     ASSERT(context_.scene);
 
     bool handled = false;
@@ -300,7 +300,7 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
         handled = Deactivate_(event) || StartOrContinueDrag_(event);
     }
 
-    return handled;
+    return handled ? HandleCode::kHandledStop : HandleCode::kNotHandled;
 }
 
 void MainHandler::Impl_::Reset() {
@@ -683,7 +683,7 @@ void MainHandler::ProcessUpdate(bool is_modified_mode) {
     impl_->ProcessUpdate(is_modified_mode);
 }
 
-bool MainHandler::HandleEvent(const Event &event) {
+Handler::HandleCode MainHandler::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event);
 }
 

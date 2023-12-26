@@ -11,7 +11,7 @@ class Model;
 class Pane;
 struct Frustum;
 namespace Parser { class Object; }
-namespace SG { class Node; class NodePath; class Scene; }
+namespace SG { class Gantry; class Node; class NodePath; class Scene; }
 
 /// \file
 /// This file contains functions that help diagnose and debug problems.
@@ -95,8 +95,9 @@ void PrintPaneTree(const Pane &root, bool is_brief = true);
 /// printed as well.
 void PrintModels(const Model &root, bool is_full);
 
-/// Prints viewing information for the given Frustum and Stage.
-void PrintViewInfo(const Frustum &frustum, const SG::Node &stage);
+/// Prints viewing information for the given Gantry, Frustum, and Stage.
+void PrintViewInfo(const SG::Gantry &gantry, const Frustum &frustum,
+                   const SG::Node &stage);
 
 ///@}
 

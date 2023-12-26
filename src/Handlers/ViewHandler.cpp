@@ -8,7 +8,7 @@ using ion::math::Anglef;
 using ion::math::Rotationf;
 using ion::math::Vector2f;
 
-bool ViewHandler::HandleEvent(const Event &event) {
+Handler::HandleCode ViewHandler::HandleEvent(const Event &event) {
     bool handled = false;
 
     // Handle kMouse3 buttons to rotate the view.
@@ -50,10 +50,10 @@ bool ViewHandler::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress) &&
         event.GetKeyString() == "Ctrl-.") {
         ResetView();
-        return true;
+        handled = true;
     }
 
-    return handled;
+    return handled ? HandleCode::kHandledStop : HandleCode::kNotHandled;
 }
 
 void ViewHandler::SetRotationCenter(const Point3f &center) {

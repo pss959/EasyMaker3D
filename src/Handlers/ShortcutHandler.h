@@ -52,7 +52,7 @@ class ShortcutHandler : public Handler {
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
-    virtual bool HandleEvent(const Event &event) override;
+    virtual HandleCode HandleEvent(const Event &event) override;
 
   private:
     class Parser_;

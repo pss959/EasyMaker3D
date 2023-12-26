@@ -38,7 +38,7 @@ class ControllerHandler : public Handler {
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
-    virtual bool HandleEvent(const Event &event) override;
+    virtual HandleCode HandleEvent(const Event &event) override;
 
   private:
     ControllerPtr l_controller_;   ///< The left Controller object.

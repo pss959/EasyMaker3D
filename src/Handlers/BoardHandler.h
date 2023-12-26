@@ -22,7 +22,7 @@ class BoardHandler : public Handler {
     /// Clears the current list of Board instances to handle events for.
     void ClearBoards() { boards_.clear(); }
 
-    virtual bool HandleEvent(const Event &event) override;
+    virtual HandleCode HandleEvent(const Event &event) override;
 
     /// Redefines this to return false if there is no Board or it has no active
     /// Panel.

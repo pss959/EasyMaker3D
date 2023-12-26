@@ -15,7 +15,7 @@ class InspectorHandler : public Handler {
     /// disabled, this handler does nothing.
     void SetInspector(const InspectorPtr &inspector);
 
-    virtual bool HandleEvent(const Event &event) override;
+    virtual HandleCode HandleEvent(const Event &event) override;
 
     /// Redefines this to return false if there is no Inspector or it is not
     /// enabled.

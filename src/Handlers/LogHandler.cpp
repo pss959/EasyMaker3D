@@ -10,10 +10,10 @@ LogHandler::LogHandler() {
 LogHandler::~LogHandler() {
 }
 
-bool LogHandler::HandleEvent(const Event &event) {
+Handler::HandleCode LogHandler::HandleEvent(const Event &event) {
     if (IsEnabled() && PassesFilters_(event))
         std::cout << event.ToString() << "\n";
-    return false;
+    return HandleCode::kNotHandled;
 }
 
 bool LogHandler::PassesFilters_(const Event &event) const {

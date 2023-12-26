@@ -39,23 +39,57 @@
 /// fake cursor when a mouse motion event is seen.
 class CaptureScriptApp::CursorHandler_ : public Handler {
   public:
-    using EventFunc = std::function<void(const Point2f &)>;
+    using Func = std::function<void(const Point2f &)>;
 
-    /// The constructor is passed a function to invoke when a mouse event is
-    /// handled.
-    explicit CursorHandler_(const EventFunc &func) : event_func_(func) {
+    /// The constructor is passed a function to invoke when a mouse position
+    /// event is handled.
+    explicit CursorHandler_(const Func &func) : func_(func) {
         ASSERT(func);
     }
 
-    /// Defines this to invoke the function.
-    virtual bool HandleEvent(const Event &event) override {
-        if (event.flags.Has(Event::Flag::kPosition2D))
-            event_func_(event.position2D);
-        return false;  // Let other handlers see the event.
+    /// Defines this to invoke the mouse position function.
+    virtual HandleCode HandleEvent(const Event &event) override {
+        if (event.flags.Has(Event::Flag::kPosition2D)) {
+            func_(event.position2D);
+            // Let other handlers see the event.
+            return HandleCode::kHandledContinue;
+        }
+        return HandleCode::kNotHandled;
     }
 
   private:
-    EventFunc event_func_;
+    Func func_;
+};
+
+// ----------------------------------------------------------------------------
+// CaptureScriptApp::PauseHandler_ class.
+// ----------------------------------------------------------------------------
+
+/// This derived Handler class is used by the CaptureScriptApp to handle pause
+/// and unpause events.
+class CaptureScriptApp::PauseHandler_ : public Handler {
+  public:
+    using Func = std::function<void()>;
+
+    /// The constructor is passed a function to invoke when a pause key event
+    /// is handled.
+    explicit PauseHandler_(const Func &func) : func_(func) {
+        ASSERT(func);
+    }
+
+    /// Defines this to invoke the mouse position function.
+    virtual HandleCode HandleEvent(const Event &event) override {
+        if (event.flags.Has(Event::Flag::kKeyPress) &&
+            event.GetKeyString() == "Pause") {
+            func_();
+            // Let other handlers see the event.
+            return HandleCode::kHandledContinue;
+        }
+        return HandleCode::kNotHandled;
+    }
+
+  private:
+    Func func_;
 };
 
 // ----------------------------------------------------------------------------
@@ -89,11 +123,22 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     cursor_ = SG::FindNodeUnderNode(*capture_root, "FakeCursor");
     MoveFakeCursorTo_(Point2f(.5f, .5f));  // In the middle.
 
-    // Add a CursorHandler_ to update the fake cursor when the mouse is moved.
+    // Add a Handler_ to update the fake cursor when the mouse is moved. Insert
+    // it at the beginning so no other handler steals the event.
+    cursor_handler_.reset(
+        new CursorHandler_([&](const Point2f &p){ MoveFakeCursorTo_(p); }));
+    context.event_manager->InsertHandler(cursor_handler_);
+
+    // Add a Handler_ to allow pausing when the "remain" option is specified.
     // Insert it at the beginning so no other handler steals the event.
-    handler_.reset(new CursorHandler_(
-                       [&](const Point2f &p){ MoveFakeCursorTo_(p); }));
-    context.event_manager->InsertHandler(handler_);
+    if (options->remain) {
+        auto pause_func = [&](){
+            const bool is_paused = PauseOrUnpause();
+            cursor_handler_->SetEnabled(! is_paused);
+        };
+        pause_handler_.reset(new PauseHandler_(pause_func));
+        context.event_manager->InsertHandler(pause_handler_);
+    }
 
     // Find the highlight rectangle and position it in front of the camera.
     highlight_ = SG::FindNodeUnderNode(*capture_root, "HighlightRect");
@@ -222,8 +267,11 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
 }
 
 void CaptureScriptApp::InstructionsDone() {
-    // Disable the handler so the fake cursor does not move any more.
-    handler_->SetEnabled(false);
+    // Disable the handlers so the fake cursor does not move any more (and
+    // there is no reason to pause).
+    cursor_handler_->SetEnabled(false);
+    if (pause_handler_)
+        pause_handler_->SetEnabled(false);
 
     // Write the resulting video if requested.
     if (video_writer_)
@@ -429,10 +477,14 @@ Point3f CaptureScriptApp::GetImagePlanePoint_(const Point2f &pos) {
 
 Frustum CaptureScriptApp::GetFrustum() const {
     // Get the WindowCamera from the Scene and let it build a Frustum.
-    auto cam =
-        GetContext().scene_context->scene->GetTypedCamera<SG::WindowCamera>();
+    const auto &sc = *GetContext().scene_context;
+    auto cam = sc.scene->GetTypedCamera<SG::WindowCamera>();
     ASSERT(cam);
     Frustum frustum;
     cam->BuildFrustum(GetWindowSize(), frustum);
+
+    // Change the height by the gantry position.
+    frustum.position[1] += sc.gantry->GetHeight();
+
     return frustum;
 }

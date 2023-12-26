@@ -60,6 +60,10 @@ bool ScriptedApp::Init(const OptionsPtr &options, const ScriptBasePtr &script) {
 }
 
 bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
+    // If paused, just render, waiting for events.
+    if (is_paused_)
+        return Application::ProcessFrame(render_count, false);
+
     const size_t instr_count         = script_->GetInstructions().size();
     const bool events_pending        = emitter_->HasPendingEvents();
     const bool are_more_instructions = cur_instruction_ < instr_count;
@@ -138,6 +142,20 @@ const ScriptBase & ScriptedApp::GetScript() const {
 ScriptEmitter & ScriptedApp::GetEmitter() const {
     ASSERT(emitter_);
     return *emitter_;
+}
+
+bool ScriptedApp::PauseOrUnpause() {
+    is_paused_ = ! is_paused_;
+    std::cerr << "*** " << (is_paused_ ? "PAUSED" : "UNPAUSED") << "\n";
+    if (is_paused_) {
+        emitter_->SavePendingEvents();
+        EnableMouseMotionEvents(true);
+    }
+    else {
+        emitter_->RestorePendingEvents();
+        EnableMouseMotionEvents(false);
+    }
+    return is_paused_;
 }
 
 bool ScriptedApp::LoadSettings(const FilePath &path) {

@@ -8,7 +8,7 @@
 #include "SG/Node.h"
 #include "Util/Assert.h"
 
-bool DragRectHandler::HandleEvent(const Event &event) {
+Handler::HandleCode DragRectHandler::HandleEvent(const Event &event) {
     ASSERT(rect_);
 
     bool handled = false;
@@ -38,7 +38,7 @@ bool DragRectHandler::HandleEvent(const Event &event) {
             handled = true;
         }
     }
-    return handled;
+    return handled ? HandleCode::kHandledStop : HandleCode::kNotHandled;
 }
 
 bool DragRectHandler::IsDragStart_(const Event &event) {

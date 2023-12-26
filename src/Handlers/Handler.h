@@ -14,9 +14,21 @@ DECL_SHARED_PTR(Handler);
 /// \ingroup Handlers
 class Handler {
   public:
+    /// Return codes from HandleEvent().
+    enum class HandleCode {
+        /// The Handler did not handle the event.
+        kNotHandled,
+        /// The Handler handled the event but other handlers should get a
+        /// chance to process it.
+        kHandledContinue,
+        /// The Handler handled the event and no other handlers should get a
+        /// chance to process it.
+        kHandledStop,
+    };
+
     /// Processes the given Event. Returns true if nobody else should get a
     /// chance to handle the event.
-    virtual bool HandleEvent(const Event &event) = 0;
+    virtual HandleCode HandleEvent(const Event &event) = 0;
 
     /// Enables or disables the handler. This class implements this to set a
     /// flag. Derived classes may add other functionality. Handlers are enabled

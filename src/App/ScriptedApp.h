@@ -57,6 +57,12 @@ class ScriptedApp : public Application {
     /// The base class defines this to do nothing.
     virtual void InstructionsDone() {}
 
+    /// Allows derived classes to pause or resume processing, meaning that
+    /// instructions will not be processed and BeginFrame()/EndFrame() will not
+    /// be called until unpaused. Returns true if the application is now
+    /// paused.
+    bool PauseOrUnpause();
+
     /// Lets derived classes know when a frame is starting. The base class
     /// defines this to do nothing.
     virtual void BeginFrame() {}
@@ -86,5 +92,6 @@ class ScriptedApp : public Application {
     ScriptBasePtr    script_;       ///< Derived ScriptBase instance.
     ScriptEmitterPtr emitter_;      ///< Used to simulate mouse and key events.
 
+    bool   is_paused_       = false;
     size_t cur_instruction_ = 0;
 };

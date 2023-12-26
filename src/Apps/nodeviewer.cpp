@@ -83,8 +83,9 @@ class AppHandler_ : public Handler {
     explicit AppHandler_(const HandlerFunc &func) : func_(func) {
         ASSERT(func);
     }
-    virtual bool HandleEvent(const Event &event) override {
-        return func_(event);
+    virtual HandleCode HandleEvent(const Event &event) override {
+        return func_(event) ?
+            HandleCode::kHandledStop : HandleCode::kNotHandled;
     }
   private:
     HandlerFunc func_;
@@ -251,31 +252,31 @@ bool Application_::HandleEvent_(const Event &event) {
     UpdateIntersectionSphere_(event);
 
     // Handle key presses.
+    bool handled = false;
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const Str key_string = event.GetKeyString();
 #if ENABLE_DEBUG_FEATURES
         if (key_string == "Alt-r") {
             ReloadScene_();
-            return true;
+            handled = true;
         }
         else if (Debug::HandleShortcut(key_string))
-            return true;
+            handled = true;
 #endif
         else if (key_string == "Ctrl-q") {
             should_quit_ = true;
-            return true;
+            handled = true;
         }
         else if (key_string == "Ctrl-v") {
             view_handler_->ResetView();
-            return true;
+            handled = true;
         }
         else if (key_string == "Ctrl-o") {
             IntersectCenterRay_();
-            return true;
+            handled = true;
         }
     }
-
-    return false;
+    return handled;
 }
 
 void Application_::ProcessClick_(const ClickInfo &info) {

@@ -8,7 +8,8 @@
 #include "Math/Linear.h"
 #include "Math/Types.h"
 
-bool ControllerHandler::HandleEvent(const Event &event) {
+Handler::HandleCode ControllerHandler::HandleEvent(const Event &event) {
+    bool handled = false;
     if ((event.device == Event::Device::kLeftController ||
          event.device == Event::Device::kRightController) ) {
 
@@ -18,11 +19,11 @@ bool ControllerHandler::HandleEvent(const Event &event) {
             UpdateController_(event);
 
         if (UpdateRadialMenu_(event))
-            return true;
+            handled = true;
     }
 
     // No need to trap non-menu events - others may be interested.
-    return false;
+    return handled ? HandleCode::kHandledStop : HandleCode::kNotHandled;
 }
 
 void ControllerHandler::UpdateController_(const Event &event) {

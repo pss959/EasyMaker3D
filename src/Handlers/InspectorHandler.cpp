@@ -10,7 +10,7 @@ void InspectorHandler::SetInspector(const InspectorPtr &inspector) {
     inspector_ = inspector;
 }
 
-bool InspectorHandler::HandleEvent(const Event &event) {
+Handler::HandleCode InspectorHandler::HandleEvent(const Event &event) {
     ASSERT(inspector_);
 
     // Any key or button press disables the Inspector.
@@ -38,7 +38,7 @@ bool InspectorHandler::HandleEvent(const Event &event) {
     }
 
     // No other handlers can get events while the Inspector is active.
-    return true;
+    return HandleCode::kHandledStop;
 }
 
 bool InspectorHandler::IsEnabled() const {

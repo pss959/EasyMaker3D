@@ -9,14 +9,15 @@ void BoardHandler::AddBoard(const BoardPtr &board) {
     boards_.push_back(board);
 }
 
-bool BoardHandler::HandleEvent(const Event &event) {
+Handler::HandleCode BoardHandler::HandleEvent(const Event &event) {
     // Check all Boards in order. Let only the first visible Board handle each
     // event.
     if (auto board = GetFirstBoard_()) {
         ASSERT(board->GetCurrentPanel());
-        return board->GetCurrentPanel()->HandleEvent(event);
+        if (board->GetCurrentPanel()->HandleEvent(event))
+            return HandleCode::kHandledStop;
     }
-    return false;
+    return HandleCode::kNotHandled;
 }
 
 bool BoardHandler::IsEnabled() const {

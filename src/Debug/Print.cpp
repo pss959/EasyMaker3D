@@ -19,6 +19,7 @@
 #include "Panes/Pane.h"
 #include "Panes/ScrollingPane.h"
 #include "Parser/Writer.h"
+#include "SG/Gantry.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
@@ -489,8 +490,10 @@ void PrintModels(const Model &root, bool is_full) {
     PrintModelTree_(root, is_full);
 }
 
-void PrintViewInfo(const Frustum &frustum, const SG::Node &stage) {
+void PrintViewInfo(const SG::Gantry &gantry, const Frustum &frustum,
+                   const SG::Node &stage) {
     Surrounder_ surrounder;
+    std::cout << "Gantry: height = " << gantry.GetHeight() << "\n";
     std::cout << "Frustum:\n" << frustum << "\n";
     std::cout << "Proj: " << GetProjectionMatrix(frustum) << "\n";
     std::cout << "View: " << GetViewMatrix(frustum) << "\n";

@@ -63,10 +63,14 @@ bool EventManager::HandleEvents_(std::vector<Event> &events,
 bool EventManager::HandleEvent_(const Event &event) {
     KLOG('e', event.ToString());
     for (auto &handler: handlers_) {
-        if (handler->IsEnabled() && handler->HandleEvent(event)) {
-            KLOG('e', "Event handled by "
-                 << Util::Demangle(typeid(*handler).name()));
-            break;
+        if (handler->IsEnabled()) {
+            const auto code = handler->HandleEvent(event);
+            if (code != Handler::HandleCode::kNotHandled) {
+                KLOG('e', "Event handled by "
+                     << Util::Demangle(typeid(*handler).name()));
+            }
+            if (code == Handler::HandleCode::kHandledStop)
+                break;
         }
 
         // Check for application exit.

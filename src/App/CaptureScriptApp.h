@@ -38,6 +38,8 @@ class CaptureScriptApp : public ScriptedApp {
   private:
     // Handler used to update the fake cursor.
     DECL_SHARED_PTR(CursorHandler_);
+    // Handler used to allow pausing.
+    DECL_SHARED_PTR(PauseHandler_);
 
     /// Struct containing information for a caption.
     struct Caption_ {
@@ -54,11 +56,12 @@ class CaptureScriptApp : public ScriptedApp {
         float elapsed  = 0;   ///< Elapsed time in seconds.
     };
 
-    CursorHandler_Ptr handler_;       ///< Updates the fake cursor.
-    SG::NodePtr       cursor_;        ///< Fake cursor for video.
-    Point2f           cursor_pos_;    ///< Current cursor position.
-    Caption_          caption_;       ///< Caption information.
-    SG::NodePtr       highlight_;     ///< Displays highlight rectangle.
+    CursorHandler_Ptr cursor_handler_;  ///< Updates the fake cursor.
+    PauseHandler_Ptr  pause_handler_;   ///< Handles pausing.
+    SG::NodePtr cursor_;                ///< Fake cursor for video.
+    Point2f     cursor_pos_;            ///< Current cursor position.
+    Caption_    caption_;               ///< Caption information.
+    SG::NodePtr highlight_;             ///< Displays highlight rectangle.
 
     bool instructions_done_ = false;
 

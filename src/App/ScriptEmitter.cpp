@@ -107,6 +107,16 @@ void ScriptEmitter::AddHeadsetButton(bool is_press) {
     events_.push_back(event);
 }
 
+void ScriptEmitter::SavePendingEvents() {
+    saved_pending_events_ = events_;
+    events_.clear();
+}
+
+void ScriptEmitter::RestorePendingEvents() {
+    events_ = saved_pending_events_;
+    saved_pending_events_.clear();
+}
+
 void ScriptEmitter::EmitEvents(std::vector<Event> &events) {
     // Emit the first event, if any.
     if (! events_.empty()) {

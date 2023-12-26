@@ -37,7 +37,7 @@ class LogHandler : public Handler {
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
-    virtual bool HandleEvent(const Event &event) override;
+    virtual HandleCode HandleEvent(const Event &event) override;
 
   private:
     /// Device filters.

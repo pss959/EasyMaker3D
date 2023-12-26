@@ -27,7 +27,7 @@ class DragRectHandler : public Handler {
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
-    virtual bool HandleEvent(const Event &event) override;
+    virtual HandleCode HandleEvent(const Event &event) override;
 
   private:
     SG::NodePtr rect_;                 ///< For graphical feedback.

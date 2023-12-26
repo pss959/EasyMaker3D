@@ -47,6 +47,11 @@ class ScriptEmitter : public IEmitter {
     /// Returns true if there are events left to process.
     bool HasPendingEvents() const { return ! events_.empty(); }
 
+    /// Allows the current pending events to be saved and restored; this is
+    /// used for pausing event processing.
+    void SavePendingEvents();
+    void RestorePendingEvents();
+
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override;
 
@@ -71,6 +76,9 @@ class ScriptEmitter : public IEmitter {
 
     /// Events left to emit.
     std::deque<Event>  events_;
+
+    /// Events saved for pausing.
+    std::deque<Event>  saved_pending_events_;
 
     /// Set to true if the previous event was a button press. This is used to
     /// detect clicks to handle timeout correctly.
