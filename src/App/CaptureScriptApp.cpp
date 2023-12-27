@@ -30,6 +30,7 @@
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 #include "Viewers/Renderer.h"
+#include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------
 // CaptureScriptApp::CursorHandler_ class.
@@ -187,6 +188,15 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
 
     // Fake export from the SessionManager, since the path is likely bogus.
     context.session_manager->SetFakeExport(true);
+
+    // When the height slider is dragged, anything positioned relative to the
+    // camera needs to be updated.
+    context.scene_context->height_slider->GetValueChanged().AddObserver(
+        this, [&](Widget &, const float &val){
+            MoveFakeCursorTo_(cursor_pos_);
+            UpdateCaption_();
+            UpdateHighlight_();
+        });
 
     return true;
 }
@@ -467,9 +477,11 @@ Point3f CaptureScriptApp::GetImagePlanePoint_(const Point2f &pos) {
     const Frustum frustum = GetFrustum();
     const auto ray = frustum.BuildRay(pos);
 
-    // Intersect the ray with the plane -1 unit away in Z and translate the
-    // fake cursor to the resulting point.
-    const Plane plane(frustum.position[2] - 1, Vector3f::AxisZ());
+    // Intersect the ray with the plane 1 unit away along the view direction
+    // and translate the fake cursor to the resulting point.
+    const Vector3f view_dir = frustum.GetViewDirection();
+    const Plane plane(frustum.position + view_dir, view_dir);
+
     float distance;
     RayPlaneIntersect(ray, plane, distance);
     return ray.GetPoint(distance);
@@ -482,9 +494,5 @@ Frustum CaptureScriptApp::GetFrustum() const {
     ASSERT(cam);
     Frustum frustum;
     cam->BuildFrustum(GetWindowSize(), frustum);
-
-    // Change the height by the gantry position.
-    frustum.position[1] += sc.gantry->GetHeight();
-
     return frustum;
 }
