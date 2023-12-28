@@ -155,7 +155,7 @@ TEST_F(SetUpIonTest, Uniforms) {
     SG::UniformPtr u;
 
 #define TEST_U_(name, type, func, val0, val1)                           \
-    u = block1->FindUniform(*name);                                     \
+    u = block1->FindUniform(name);                                      \
     EXPECT_EQ(type val0 , u->func());                                   \
     u->SetValue<type>(type val1);                                       \
     EXPECT_EQ(type val1, u->func())

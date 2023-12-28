@@ -25,7 +25,7 @@ TEST_F(ViewHandlerTest, View) {
     EXPECT_EQ(Point3f(0, 0, -10),    cam->GetPosition());
 
     Event event;
-    EXPECT_FALSE(vh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, vh.HandleEvent(event));
 
     // Event to start rotating the camera.
     event.device = Event::Device::kMouse;
@@ -33,18 +33,18 @@ TEST_F(ViewHandlerTest, View) {
     event.flags.Set(Event::Flag::kPosition2D);
     event.button = Event::Button::kMouse3;
     event.position2D.Set(0, 0);
-    EXPECT_TRUE(vh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, vh.HandleEvent(event));
 
     // Rotate.
     event.flags.Reset(Event::Flag::kButtonPress);
     event.position2D.Set(1, 0);
-    EXPECT_TRUE(vh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, vh.HandleEvent(event));
     EXPECT_ROTS_CLOSE(BuildRotation(0, 1, 0, 57.2958f), cam->GetOrientation());
     EXPECT_PTS_CLOSE(Point3f(8.41471f, 0, 5.40302f),    cam->GetPosition());
 
     // Stop rotating.
     event.flags.Set(Event::Flag::kButtonRelease);
-    EXPECT_TRUE(vh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, vh.HandleEvent(event));
     EXPECT_ROTS_CLOSE(BuildRotation(0, 1, 0, 57.2958f), cam->GetOrientation());
     EXPECT_PTS_CLOSE(Point3f(8.41471f, 0, 5.40302f),    cam->GetPosition());
 
@@ -55,7 +55,7 @@ TEST_F(ViewHandlerTest, View) {
     Str error;
     EXPECT_TRUE(Event::ParseKeyString("Ctrl-.", event.modifiers,
                                       event.key_name, error));
-    EXPECT_TRUE(vh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, vh.HandleEvent(event));
     EXPECT_EQ(Rotationf::Identity(), cam->GetOrientation());
     EXPECT_EQ(Point3f(0, 0, 10),     cam->GetPosition());
 }

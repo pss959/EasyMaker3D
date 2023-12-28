@@ -81,19 +81,19 @@ TEST_F(ShortcutHandlerTest, HandleEvent) {
     // Quit shortcut.
     EXPECT_TRUE(Event::ParseKeyString("Ctrl-q", event.modifiers,
                                       event.key_name, error));
-    EXPECT_TRUE(sh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, sh.HandleEvent(event));
     EXPECT_ENUM_EQ(Action::kQuit, taa->last_action);
 
     // Delete shortcut
     EXPECT_TRUE(Event::ParseKeyString("Backspace", event.modifiers,
                                       event.key_name, error));
-    EXPECT_TRUE(sh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, sh.HandleEvent(event));
     EXPECT_ENUM_EQ(Action::kDelete, taa->last_action);
 
     // Nonexistent shortcut
     EXPECT_TRUE(Event::ParseKeyString("Ctrl-Shift-0", event.modifiers,
                                       event.key_name, error));
-    EXPECT_FALSE(sh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, sh.HandleEvent(event));
     EXPECT_ENUM_EQ(Action::kDelete, taa->last_action);  // No change.
 
     // Controller shortcuts.
@@ -101,11 +101,11 @@ TEST_F(ShortcutHandlerTest, HandleEvent) {
     event.flags.SetAll(false);
     event.flags.Set(Event::Flag::kButtonPress);
     event.button = Event::Button::kDown;
-    EXPECT_TRUE(sh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, sh.HandleEvent(event));
     EXPECT_ENUM_EQ(Action::kDecreasePrecision, taa->last_action);
     event.device = Event::Device::kRightController;
     event.button = Event::Button::kUp;
-    EXPECT_TRUE(sh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, sh.HandleEvent(event));
     EXPECT_ENUM_EQ(Action::kIncreasePrecision, taa->last_action);
 
     // Has no effect.

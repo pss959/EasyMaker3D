@@ -71,7 +71,7 @@ TEST_F(BoardHandlerTest, Boards) {
 
     BoardHandler bh;
     EXPECT_FALSE(bh.IsEnabled());
-    EXPECT_FALSE(bh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, bh.HandleEvent(event));
 
     bh.AddBoard(board0);
     bh.AddBoard(board1);
@@ -83,14 +83,14 @@ TEST_F(BoardHandlerTest, Boards) {
     EXPECT_EQ(0U, panel2->event_count);
 
     // No board is shown => Do not get event.
-    EXPECT_FALSE(bh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, bh.HandleEvent(event));
     EXPECT_EQ(0U, panel0->event_count);
     EXPECT_EQ(0U, panel1->event_count);
     EXPECT_EQ(0U, panel2->event_count);
 
     board1->Show(true);
     EXPECT_TRUE(bh.IsEnabled());
-    EXPECT_TRUE(bh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, bh.HandleEvent(event));
     EXPECT_EQ(0U, panel0->event_count);
     EXPECT_EQ(1U, panel1->event_count);
     EXPECT_EQ(0U, panel2->event_count);
@@ -98,7 +98,7 @@ TEST_F(BoardHandlerTest, Boards) {
     // Show board0 in addition - it should get the event.
     board0->Show(true);
     EXPECT_TRUE(bh.IsEnabled());
-    EXPECT_TRUE(bh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, bh.HandleEvent(event));
     EXPECT_EQ(1U, panel0->event_count);
     EXPECT_EQ(1U, panel1->event_count);
     EXPECT_EQ(0U, panel2->event_count);
@@ -107,7 +107,7 @@ TEST_F(BoardHandlerTest, Boards) {
     board0->Show(false);
     board1->Show(false);
     EXPECT_FALSE(bh.IsEnabled());
-    EXPECT_FALSE(bh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, bh.HandleEvent(event));
     EXPECT_EQ(1U, panel0->event_count);
     EXPECT_EQ(1U, panel1->event_count);
     EXPECT_EQ(0U, panel2->event_count);
@@ -115,7 +115,7 @@ TEST_F(BoardHandlerTest, Boards) {
     // Show board2 - it should get the event.
     board2->Show(true);
     EXPECT_TRUE(bh.IsEnabled());
-    EXPECT_TRUE(bh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, bh.HandleEvent(event));
     EXPECT_EQ(1U, panel0->event_count);
     EXPECT_EQ(1U, panel1->event_count);
     EXPECT_EQ(1U, panel2->event_count);

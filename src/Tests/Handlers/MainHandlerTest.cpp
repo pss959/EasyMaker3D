@@ -147,17 +147,17 @@ TEST_F(MainHandlerTest, Valuator) {
     event.device = Event::Device::kMouse;
     event.flags.Set(Event::Flag::kPosition1D);
     event.position1D = .2f;
-    EXPECT_FALSE(mh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, mh.HandleEvent(event));
 
     // Valuator event not over any IScrollable.
     event.flags.Set(Event::Flag::kPosition2D);
     event.position2D = Point2f(0, 0);
-    EXPECT_FALSE(mh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, mh.HandleEvent(event));
 
     // Test a valuator Event over the TestScrollableWidget.
     EXPECT_EQ(0, widget->last_delta);
     event.position2D = Point2f(.5f, .5f);
-    EXPECT_TRUE(mh.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, mh.HandleEvent(event));
     EXPECT_EQ(.2f, widget->last_delta);
 }
 
@@ -167,12 +167,14 @@ TEST_F(MainHandlerTest, Hover) {
 
     // Move over the Widget to hover it. MainHandler should not mark this event
     // as handled.
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.5f, .5f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(.5f, .5f)));
     EXPECT_TRUE(mh.IsWaiting());
     EXPECT_TRUE(widget->IsHovering());
 
     // Move off of the Widget.
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(0, 0)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(0, 0)));
     EXPECT_TRUE(mh.IsWaiting());
     EXPECT_FALSE(widget->IsHovering());
 }
@@ -195,7 +197,8 @@ TEST_F(MainHandlerTest, Click) {
     EXPECT_EQ(0U, click_count);
     EXPECT_NULL(click_widget);
 
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
     EXPECT_EQ(0U, click_count);  // Not a click until release.
     EXPECT_FALSE(mh.IsWaiting());
 
@@ -204,7 +207,8 @@ TEST_F(MainHandlerTest, Click) {
     Util::DelayThread(kTimeout + .0001f);
     mh.ProcessUpdate(false);
 
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false)));
     EXPECT_EQ(1U, click_count);
     EXPECT_EQ(widget.get(), click_widget);
     EXPECT_TRUE(mh.IsWaiting());
@@ -213,10 +217,12 @@ TEST_F(MainHandlerTest, Click) {
     // still processed.
     click_count  = 0;
     click_widget = nullptr;
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
     EXPECT_EQ(0U, click_count);
     EXPECT_FALSE(mh.IsWaiting());
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false)));
     EXPECT_EQ(0U, click_count);  // Not counted until timeout.
     EXPECT_NULL(click_widget);
     EXPECT_FALSE(mh.IsWaiting());
@@ -228,10 +234,12 @@ TEST_F(MainHandlerTest, Click) {
 
     // Test using a PathFilter to not hit the Widget so there is no click.
     mh.SetPathFilter([](const SG::NodePath &){ return false; });
-    EXPECT_FALSE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetWidgetEvent(true)));
     Util::DelayThread(kTimeout + .0001f);
     mh.ProcessUpdate(false);
-    EXPECT_FALSE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetWidgetEvent(false)));
     EXPECT_EQ(1U, click_count);
     EXPECT_EQ(widget.get(), click_widget);
     EXPECT_TRUE(mh.IsWaiting());
@@ -259,20 +267,24 @@ TEST_F(MainHandlerTest, DoubleClick) {
     EXPECT_FALSE(is_mod_click);
 
     // First click.
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
     EXPECT_EQ(0U, click_count);  // Not a click until release.
     EXPECT_NULL(click_widget);
     EXPECT_FALSE(is_mod_click);
     EXPECT_FALSE(mh.IsWaiting());
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false)));
 
     // Second click.
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
     EXPECT_EQ(0U, click_count);  // Not a click until release.
     EXPECT_NULL(click_widget);
     EXPECT_FALSE(is_mod_click);
     EXPECT_FALSE(mh.IsWaiting());
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false)));
 
     // Wait so the click finishes.
     Util::DelayThread(kTimeout + .0001f);
@@ -308,51 +320,60 @@ TEST_F(MainHandlerTest, Drag) {
     EXPECT_EQ(0U, drag_end_count);
 
     // Mouse press to start drag; not detected as a drag until motion.
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
     EXPECT_EQ(0U, drag_start_count);
     EXPECT_EQ(0U, drag_count);
     EXPECT_EQ(0U, drag_end_count);
 
     // Not enough motion to cause a drag.
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.501f, .5f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(.501f, .5f)));
     EXPECT_FALSE(mh.IsWaiting());
     EXPECT_EQ(0U, drag_start_count);
     EXPECT_EQ(0U, drag_count);
     EXPECT_EQ(0U, drag_end_count);
 
     // Enough motion to cause a drag.
-    EXPECT_TRUE(mh.HandleEvent(GetDragEvent(.6f, .5f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetDragEvent(.6f, .5f)));
     EXPECT_FALSE(mh.IsWaiting());
     EXPECT_EQ(1U, drag_start_count);
     EXPECT_EQ(1U, drag_count);
     EXPECT_EQ(0U, drag_end_count);
 
     // More motion.
-    EXPECT_TRUE(mh.HandleEvent(GetDragEvent(.8f, .5f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetDragEvent(.8f, .5f)));
     EXPECT_FALSE(mh.IsWaiting());
     EXPECT_EQ(1U, drag_start_count);
     EXPECT_EQ(2U, drag_count);
     EXPECT_EQ(0U, drag_end_count);
 
     // Mouse release to end drag.
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false)));
     EXPECT_EQ(1U, drag_start_count);
     EXPECT_EQ(2U, drag_count);
     EXPECT_EQ(1U, drag_end_count);
 
     // No drag can happen on a non-DraggableWidget (PushButtonWidget).
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true, .5f, .8f)));
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.6f, .8f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true, .5f, .8f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(.6f, .8f)));
     EXPECT_EQ(1U, drag_start_count);
     EXPECT_EQ(2U, drag_count);
     EXPECT_EQ(1U, drag_end_count);
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(false, .6f, .8f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false, .6f, .8f)));
 }
 
 TEST_F(MainHandlerTest, Reset) {
     MainHandler mh(false);  // No VR.
     InitHandler(mh);
-    EXPECT_TRUE(mh.HandleEvent(GetWidgetEvent(true)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
     EXPECT_FALSE(mh.IsWaiting());
     mh.Reset();
     EXPECT_TRUE(mh.IsWaiting());
@@ -369,19 +390,23 @@ TEST_F(MainHandlerTest, VR) {
     mh.SetTouchable(tt);
 
     // Repeat the hover test.
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.5f, .5f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(.5f, .5f)));
     EXPECT_TRUE(mh.IsWaiting());
     EXPECT_TRUE(widget->IsHovering());
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(0, 0)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(0, 0)));
     EXPECT_TRUE(mh.IsWaiting());
     EXPECT_FALSE(widget->IsHovering());
 
     // Repeat with a path filter.
     mh.SetPathFilter([](const SG::NodePath &){ return false; });
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(.5f, .5f)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(.5f, .5f)));
     EXPECT_TRUE(mh.IsWaiting());
     EXPECT_FALSE(widget->IsHovering());
-    EXPECT_FALSE(mh.HandleEvent(GetDragEvent(0, 0)));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
+                   mh.HandleEvent(GetDragEvent(0, 0)));
     EXPECT_TRUE(mh.IsWaiting());
     EXPECT_FALSE(widget->IsHovering());
 

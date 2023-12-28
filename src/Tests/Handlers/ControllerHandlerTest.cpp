@@ -43,7 +43,7 @@ TEST_F(ControllerHandlerTest, Events) {
     ch.SetRenderOffsets(Vector3f(0, 2, 0), Vector3f(0, 3, 0));
 
     Event levent, revent;
-    EXPECT_FALSE(ch.HandleEvent(levent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(levent));
     EXPECT_EQ(Vector3f(0, 0, 0),     lc->GetTranslation());
     EXPECT_EQ(Vector3f(0, 0, 0),     rc->GetTranslation());
     EXPECT_EQ(Rotationf::Identity(), lc->GetRotation());
@@ -62,12 +62,12 @@ TEST_F(ControllerHandlerTest, Events) {
     revent.position3D.Set( 1, 0, 0);
     levent.orientation = BuildRotation(0, 0, 0, -10);
     revent.orientation = BuildRotation(0, 0, 0,  10);
-    EXPECT_FALSE(ch.HandleEvent(levent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(levent));
     EXPECT_EQ(Vector3f(-1, 2, 0),          lc->GetTranslation());
     EXPECT_EQ(Vector3f( 0, 0, 0),          rc->GetTranslation());
     EXPECT_EQ(BuildRotation(0, 0, 0, -10), lc->GetRotation());
     EXPECT_EQ(Rotationf::Identity(),       rc->GetRotation());
-    EXPECT_FALSE(ch.HandleEvent(revent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(revent));
     EXPECT_EQ(Vector3f(-1, 2, 0),          lc->GetTranslation());
     EXPECT_EQ(Vector3f( 1, 3, 0),          rc->GetTranslation());
     EXPECT_EQ(BuildRotation(0, 0, 0, -10), lc->GetRotation());
@@ -79,24 +79,24 @@ TEST_F(ControllerHandlerTest, Events) {
     revent.flags.Set(Event::Flag::kPosition2D);
     levent.position2D.Set(-.5f, .5f);
     levent.position2D.Set( .5f, .5f);
-    EXPECT_FALSE(ch.HandleEvent(levent));
-    EXPECT_FALSE(ch.HandleEvent(revent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(levent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(revent));
     lm->SetEnabled(true);
     rm->SetEnabled(true);
-    EXPECT_FALSE(ch.HandleEvent(levent));
-    EXPECT_FALSE(ch.HandleEvent(revent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(levent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(revent));
 
     // No position should clear the highlight.
     levent.flags.Reset(Event::Flag::kPosition2D);
     revent.flags.Reset(Event::Flag::kPosition2D);
-    EXPECT_FALSE(ch.HandleEvent(levent));
-    EXPECT_FALSE(ch.HandleEvent(revent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(levent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled, ch.HandleEvent(revent));
 
     // Trackpad buttom press causes the event to be handled.
     levent.flags.Set(Event::Flag::kButtonPress);
     revent.flags.Set(Event::Flag::kButtonPress);
     levent.button = Event::Button::kUp;
     revent.button = Event::Button::kDown;
-    EXPECT_TRUE(ch.HandleEvent(levent));
-    EXPECT_TRUE(ch.HandleEvent(revent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, ch.HandleEvent(levent));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, ch.HandleEvent(revent));
 }

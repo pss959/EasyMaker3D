@@ -187,11 +187,11 @@ TEST_F(FeedbackTest, TooltipFeedback) {
     tf->Deactivate();
     EXPECT_FALSE(tf->IsEnabled());
 
-    // Activating with no delay.
+    // Cannot activate when delay is 0.
     EXPECT_FALSE(tf->IsEnabled());
     tf->SetDelay(0);
     tf->Activate();
-    EXPECT_TRUE(tf->IsEnabled());
+    EXPECT_FALSE(tf->IsEnabled());
     tf->Deactivate();
     EXPECT_FALSE(tf->IsEnabled());
 }

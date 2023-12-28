@@ -11,12 +11,12 @@ class EventManagerTest : public TestBase {
     /// Derived Handler class for testing.
     class TestHandler : public Handler {
       public:
-        bool   what_to_return = false;
-        size_t last_serial    = 0;
-        size_t reset_count    = 0;
-        float  delay          = 0;
+        HandleCode what_to_return = HandleCode::kNotHandled;
+        size_t     last_serial    = 0;
+        size_t     reset_count    = 0;
+        float      delay          = 0;
 
-        virtual bool HandleEvent(const Event &event) override {
+        virtual HandleCode HandleEvent(const Event &event) override {
             last_serial = event.serial;
             if (delay > 0)
                 Util::DelayThread(delay);
@@ -46,29 +46,29 @@ TEST_F(EventManagerTest, HandleEvents) {
     Event event;
     events.push_back(event);
 
-    th->what_to_return = false;
+    th->what_to_return = Handler::HandleCode::kNotHandled;
     EXPECT_TRUE(em.HandleEvents(events, false, 0));
     EXPECT_EQ(0U, th->last_serial);
 
-    th->what_to_return = true;
+    th->what_to_return = Handler::HandleCode::kHandledStop;
     EXPECT_TRUE(em.HandleEvents(events, false, 0));
     EXPECT_EQ(0U, th->last_serial);
 
     th->SetEnabled(true);
 
-    th->what_to_return = false;
+    th->what_to_return = Handler::HandleCode::kNotHandled;
     EXPECT_TRUE(em.HandleEvents(events, false, 0));
     EXPECT_EQ(2U, th->last_serial);
 
-    th->what_to_return = true;
+    th->what_to_return = Handler::HandleCode::kHandledStop;
     EXPECT_TRUE(em.HandleEvents(events, false, 0));
     EXPECT_EQ(3U, th->last_serial);
 
     // Exit.
-    th->what_to_return = false;
+    th->what_to_return = Handler::HandleCode::kNotHandled;
     events.back().flags.Set(Event::Flag::kExit);
     EXPECT_FALSE(em.HandleEvents(events, false, 0));
-    EXPECT_EQ(4U, th->last_serial);
+    EXPECT_EQ(3U, th->last_serial);
 
     EXPECT_EQ(0U, th->reset_count);
     em.Reset();

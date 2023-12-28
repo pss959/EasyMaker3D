@@ -7,14 +7,14 @@
 #include "App/VideoWriter.h"
 
 /// \ingroup Tests
-class CaptureTimingTest : public SceneTestBase {
+class TimingTest : public SceneTestBase {
   protected:
     void RunTest(VideoWriter::Format format);
   private:
     ion::gfx::ImagePtr BuildImage_(int width, int height, int frame);
 };
 
-void CaptureTimingTest::RunTest(VideoWriter::Format format) {
+void TimingTest::RunTest(VideoWriter::Format format) {
     // Constants affecting the test.
     const int kWidth      = 600;
     const int kHeight     = 400;
@@ -50,8 +50,7 @@ void CaptureTimingTest::RunTest(VideoWriter::Format format) {
     write_timer.Report();
 }
 
-ion::gfx::ImagePtr CaptureTimingTest::BuildImage_(int width, int height,
-                                                  int frame) {
+ion::gfx::ImagePtr TimingTest::BuildImage_(int width, int height, int frame) {
     const size_t data_size = width * height * 3;
     uint8_t      data[data_size];
     for (int y = 0; y < height; y++) {
@@ -69,10 +68,14 @@ ion::gfx::ImagePtr CaptureTimingTest::BuildImage_(int width, int height,
     return image;
 }
 
-TEST_F(CaptureTimingTest, CaptureMP4) {
-    RunTest(VideoWriter::Format::kMP4);
+TEST_F(TimingTest, CaptureRGBMP4) {
+    RunTest(VideoWriter::Format::kRGBMP4);
 }
 
-TEST_F(CaptureTimingTest, CaptureWEBM) {
+TEST_F(TimingTest, CaptureYUVMP4) {
+    RunTest(VideoWriter::Format::kYUVMP4);
+}
+
+TEST_F(TimingTest, CaptureWEBM) {
     RunTest(VideoWriter::Format::kWEBM);
 }

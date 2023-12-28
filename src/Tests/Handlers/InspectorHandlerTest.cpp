@@ -57,13 +57,13 @@ TEST_F(InspectorHandlerTest, Events) {
 
     // The InspectorHandler traps all events while it is active, regardless of
     // whether they affect the Inspector.
-    EXPECT_TRUE(ih.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, ih.HandleEvent(event));
 
     // Valuator event should change scale.
     EXPECT_EQ(1, insp->GetCurrentScale());
     event.flags.Set(Event::Flag::kPosition1D);
     event.position1D = 1;
-    EXPECT_TRUE(ih.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, ih.HandleEvent(event));
     EXPECT_CLOSE(1.06f, insp->GetCurrentScale());
 
     // Mouse motion to change rotation.
@@ -72,19 +72,19 @@ TEST_F(InspectorHandlerTest, Events) {
     event.flags.Reset(Event::Flag::kPosition1D);
     event.flags.Set(Event::Flag::kPosition2D);
     event.position2D.Set(.75f, .5f);  // Motion only to the right.
-    EXPECT_TRUE(ih.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, ih.HandleEvent(event));
     EXPECT_ROTS_CLOSE(BuildRotation(0, 1, 0, -90), insp->GetCurrentRotation());
 
     // Any key or button press should deactivate.
     EXPECT_TRUE(ih.IsEnabled());
     event = Event();
     event.flags.Set(Event::Flag::kButtonPress);
-    EXPECT_TRUE(ih.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, ih.HandleEvent(event));
     EXPECT_FALSE(ih.IsEnabled());
     insp->Activate(node, ControllerPtr());
     EXPECT_TRUE(ih.IsEnabled());
     event = Event();
     event.flags.Set(Event::Flag::kKeyPress);
-    EXPECT_TRUE(ih.HandleEvent(event));
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop, ih.HandleEvent(event));
     EXPECT_FALSE(ih.IsEnabled());
 }

@@ -57,11 +57,17 @@ bool EventManager::HandleEvents_(std::vector<Event> &events,
             break;
         }
     }
+    std::cerr << "XXXX keep_going = " << keep_going << "\n";
     return keep_going;
 }
 
 bool EventManager::HandleEvent_(const Event &event) {
     KLOG('e', event.ToString());
+
+    // Check first for application exit.
+    if (event.flags.Has(Event::Flag::kExit))
+        return true;
+
     for (auto &handler: handlers_) {
         if (handler->IsEnabled()) {
             const auto code = handler->HandleEvent(event);
@@ -73,9 +79,6 @@ bool EventManager::HandleEvent_(const Event &event) {
                 break;
         }
 
-        // Check for application exit.
-        if (event.flags.Has(Event::Flag::kExit))
-            return true;
     }
     return false;
 }
