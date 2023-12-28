@@ -6,6 +6,7 @@
 #include "App/Application.h"
 #include "App/ScriptBase.h"
 #include "Math/Types.h"
+#include "SG/NodePath.h"
 #include "Util/Memory.h"
 
 class Selection;
@@ -83,9 +84,13 @@ class ScriptedApp : public Application {
     }
 
     /// Sets \p rect to an image-plane rectangle surrounding the named Node
-    /// with the given margin on all sides. Prints an error message and returns
-    /// false if the Node is not found.
+    /// with the given margin on all sides. Note that the name can contain
+    /// slashes to disambiguate it along a node path. Prints an error message
+    /// and returns false if the Node is not found.
     bool GetNodeRect(const Str &name, float margin, Range2f &rect);
+
+    /// Resolves a node name to an SG::NodePath.
+    SG::NodePath GetNodePath(const Str &name);
 
   private:
     OptionsPtr       options_;      ///< Derived Options instance.

@@ -1,6 +1,7 @@
 #include "App/ScriptedApp.h"
 
 #include <ion/math/rangeutils.h>
+#include <ion/math/transformutils.h>
 
 #include "App/ScriptEmitter.h"
 #include "Debug/Shortcuts.h"
@@ -10,7 +11,8 @@
 #include "Managers/SceneContext.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
-#include "Math/Linear.h"
+#include "SG/CoordConv.h"
+#include "SG/Scene.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -176,28 +178,26 @@ bool ScriptedApp::LoadSettings(const FilePath &path) {
 }
 
 bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
-    // Search in the scene for the node.
-    const auto &sc = *GetContext().scene_context;
-    const auto path = SG::FindNodePathInScene(*sc.scene, name, true);
+    // Get a path to the node.
+    const auto path = GetNodePath(name);
     if (path.empty()) {
         std::cerr << "*** No node named '" << name << "' found\n";
         return false;
     }
 
-    // Compute the world-coordinate bounds of the object.
-    Matrix4f ctm = Matrix4f::Identity();
-    for (auto &node: path)
-        ctm = ctm * node->GetModelMatrix();
-    const auto bounds = TransformBounds(path.back()->GetBounds(), ctm);
+    // Compute the object-to-world matrix.
+    const Matrix4f ctm = SG::CoordConv(path).GetObjectToRootMatrix();
 
-    // Find the projection of each bounds corner point on the image plane to
-    // get the extents of the rectangle.
+    // For each object-coordinate bounds corner point, transform it to world
+    // coordinates and project it onto the image plane to get the extents of
+    // the rectangle. Note that this gives a much tighter rectangle in many
+    // cases compared to transforming the bounds.
     Point3f corners[8];
-    bounds.GetCorners(corners);
+    path.back()->GetBounds().GetCorners(corners);
     rect.MakeEmpty();
     const auto &frustum = *GetContext().scene_context->frustum;
     for (const auto &corner: corners)
-        rect.ExtendByPoint(frustum.ProjectToImageRect(corner));
+        rect.ExtendByPoint(frustum.ProjectToImageRect(ctm * corner));
 
     // Add the margin.
     const Vector2f margin_vec(margin, margin);
@@ -206,4 +206,30 @@ bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
     // Clamp to (0,1) in both dimensions.
     rect = RangeIntersection(rect, Range2f(Point2f(0, 0), Point2f(1, 1)));
     return true;
+}
+
+SG::NodePath ScriptedApp::GetNodePath(const Str &name) {
+    SG::NodePtr root = GetContext().scene_context->scene->GetRootNode();
+    SG::NodePath path;  // Path from scene root to target object.
+
+    // Find the node in the scene. Note that the name may be compound
+    // ("A/B/C").
+    if (name.contains('/')) {
+        const auto parts = ion::base::SplitString(name, "/");
+        ASSERT(parts.size() > 1U);
+        for (const auto &part: parts) {
+            auto sub_path = SG::FindNodePathUnderNode(root, part, true);
+            if (sub_path.empty())  // Not found.
+                return SG::NodePath();
+            else if (path.empty())
+                path = sub_path;
+            else
+                path = SG::NodePath::Stitch(path, sub_path);
+            root = path.back();
+        }
+    }
+    else {
+        path = SG::FindNodePathUnderNode(root, name, true);
+    }
+    return path;
 }

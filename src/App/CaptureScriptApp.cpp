@@ -141,9 +141,8 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
         context.event_manager->InsertHandler(pause_handler_);
     }
 
-    // Find the highlight rectangle and position it in front of the camera.
+    // Find the highlight node.
     highlight_ = SG::FindNodeUnderNode(*capture_root, "HighlightRect");
-    highlight_->TranslateTo(GetImagePlanePoint_(Point2f(.5f, .5f)));
 
     // Find the caption nodes.
     caption_.node = SG::FindNodeUnderNode(*capture_root,  "Caption");
@@ -341,10 +340,35 @@ void CaptureScriptApp::DisplayCaption_(const Str &text, const Point2f &pos,
 }
 
 void CaptureScriptApp::DisplayHighlight_(const Range2f &rect, float seconds) {
-    const auto min = GetImagePlanePoint_(rect.GetMinPoint());
-    const auto max = GetImagePlanePoint_(rect.GetMaxPoint());
-    highlight_->SetScale(max - min);
-    highlight_->TranslateTo(.5f * (min + max));
+    // The highlight is created as a frame composed of 4 rectangles. The top
+    // and bottom rectangles run the full width and the left/right rectangles
+    // fit between them.
+    auto t = SG::FindNodeUnderNode(*highlight_, "Top");
+    auto b = SG::FindNodeUnderNode(*highlight_, "Bottom");
+    auto l = SG::FindNodeUnderNode(*highlight_, "Left");
+    auto r = SG::FindNodeUnderNode(*highlight_, "Right");
+
+    // The highlight rectangle is in the image plane, so choose a width for
+    // each piece that works.
+    const float kWidth = .01f;
+
+    const auto min    = GetImagePlanePoint_(rect.GetMinPoint());
+    const auto max    = GetImagePlanePoint_(rect.GetMaxPoint());
+    const auto size   = max - min;
+    const auto center = .5f * (min + max);
+    const Vector3f y_off(0, .5f * size[1], 0);
+    const Vector3f x_off(.5f * size[0], 0, 0);
+
+    t->SetScale(Vector3f(size[0] + kWidth, kWidth, 1));
+    b->SetScale(Vector3f(size[0] + kWidth, kWidth, 1));
+    l->SetScale(Vector3f(kWidth, size[1] - kWidth, 1));
+    r->SetScale(Vector3f(kWidth, size[1] - kWidth, 1));
+
+    t->TranslateTo(center + y_off);
+    b->TranslateTo(center - y_off);
+    l->TranslateTo(center - x_off);
+    r->TranslateTo(center + x_off);
+
     highlight_->SetEnabled(true);
     highlight_fade_data_.duration = seconds;
     highlight_fade_data_.elapsed  = 0;
@@ -378,26 +402,8 @@ void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds,
 }
 
 void CaptureScriptApp::MoveOver_(const Str &object_name, float seconds) {
-    SG::NodePtr root = GetContext().scene_context->scene->GetRootNode();
-    SG::NodePath path;  // Path from scene root to target object.
-
-    // Find the object in the scene. Note that the name may be compound
-    // ("A/B/C").
-    if (object_name.contains('/')) {
-        const auto parts = ion::base::SplitString(object_name, "/");
-        ASSERT(parts.size() > 1U);
-        for (const auto &part: parts) {
-            auto sub_path = SG::FindNodePathUnderNode(root, part);
-            if (path.empty())
-                path = sub_path;
-            else
-                path = SG::NodePath::Stitch(path, sub_path);
-            root = path.back();
-        }
-    }
-    else {
-        path = SG::FindNodePathUnderNode(root, object_name);
-    }
+    // Get the path from the scene root to target object.
+    SG::NodePath path = GetNodePath(object_name);
 
     // Project the center of the object in world coordinates onto the Frustum
     // image plane to get the point to move to.
@@ -444,7 +450,7 @@ void CaptureScriptApp::UpdateHighlight_() {
     if (highlight_fade_data_.elapsed <= highlight_fade_data_.duration) {
         const float alpha = UpdateFade_(*highlight_, highlight_fade_data_);
         Color c = highlight_->GetBaseColor();
-        c[3] = alpha * .2f;
+        c[3] = alpha;
         highlight_->SetBaseColor(c);
     }
 }
