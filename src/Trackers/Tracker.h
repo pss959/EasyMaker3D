@@ -124,8 +124,8 @@ class Tracker {
     ///@}
 
     /// Convenience that updates hovering when the current Widget changes.
-    static void UpdateWidgetHovering(const WidgetPtr &old_widget,
-                                     const WidgetPtr &new_widget);
+    void UpdateWidgetHovering(const WidgetPtr &old_widget,
+                              const WidgetPtr &new_widget);
 
     /// Returns a scale factor to apply to motion to determine whether it is
     /// sufficient to start a drag operation. The active Widget is passed in;

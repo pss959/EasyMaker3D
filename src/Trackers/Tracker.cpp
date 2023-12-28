@@ -4,6 +4,7 @@
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
 #include "Util/KLog.h"
 #include "Widgets/ClickableWidget.h"
 
@@ -42,11 +43,13 @@ void Tracker::UpdateWidgetHovering(const WidgetPtr &old_widget,
                                    const WidgetPtr &new_widget) {
     ASSERT(old_widget != new_widget);
     if (old_widget && old_widget->IsHovering()) {
-        KLOG('H', "Stop hovering " << old_widget->GetDesc());
+        KLOG('H', Util::EnumName(actuator_) << " Stop hovering "
+             << old_widget->GetDesc());
         old_widget->StopHovering();
     }
     if (new_widget) {
-        KLOG('H', "Start hovering " << new_widget->GetDesc());
+        KLOG('H', Util::EnumName(actuator_) << " Start hovering "
+             << new_widget->GetDesc());
         new_widget->StartHovering();
     }
 }

@@ -259,12 +259,15 @@ bool GLFWWindowSystem::WasWindowClosed() {
 
 void GLFWWindowSystem::RetrieveEvents(const EventOptions &options,
                                       std::vector<Event> &events) {
+    is_mouse_motion_enabled_ = ! options.ignore_mouse_motion;
+
     if (options.wait_for_events)
         glfwWaitEvents();
     else
         glfwPollEvents();
 
-    is_mouse_motion_enabled_ = ! options.ignore_mouse_motion;
+    if (! pending_events_.empty())
+        std::cerr << "XXXX GLFW Pending " << pending_events_.size() << " events\n";
 
     // Add pending events.
     Util::AppendVector(pending_events_, events);
@@ -402,10 +405,12 @@ void GLFWWindowSystem::ProcessButton_(int button, int action, int mods) {
 }
 
 void GLFWWindowSystem::ProcessCursor_(double xpos, double ypos) {
-    Event event;
-    event.device = Event::Device::kMouse;
-    StoreCursorPos_(xpos, ypos, event);
-    pending_events_.push_back(event);
+    if (is_mouse_motion_enabled_) {
+        Event event;
+        event.device = Event::Device::kMouse;
+        StoreCursorPos_(xpos, ypos, event);
+        pending_events_.push_back(event);
+    }
 }
 
 void GLFWWindowSystem::ProcessScroll_(double xoffset, double yoffset) {
@@ -431,14 +436,11 @@ void GLFWWindowSystem::StoreCurrentCursorPos_(Event &event) {
 }
 
 void GLFWWindowSystem::StoreCursorPos_(double xpos, double ypos, Event &event) {
-    // Do NOT do this if ignoring mouse motion.
-    if (is_mouse_motion_enabled_) {
-        // Normalize the position into the (0,1) range with (0,0) at the
-        // lower-left. GLFW puts (0,0) at the upper-left.
-        const Vector2i size = GetWindowSize();
-        const Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
+    // Normalize the position into the (0,1) range with (0,0) at the
+    // lower-left. GLFW puts (0,0) at the upper-left.
+    const Vector2i size = GetWindowSize();
+    const Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
 
-        event.flags.Set(Event::Flag::kPosition2D);
-        event.position2D = norm_pos;
-    }
+    event.flags.Set(Event::Flag::kPosition2D);
+    event.position2D = norm_pos;
 }
