@@ -32,11 +32,15 @@ def SectionStartTime(video, section):
     # the PublicDoc directory.
     import webvtt
     from datetime import datetime, timedelta
-    for chapter in webvtt.read(f'./docs/extra/videos/{video}.vtt'):
+    file_name = f'./docs/extra/videos/{video}.vtt'
+    for chapter in webvtt.read(file_name):
         if chapter.identifier == section:
             dt = datetime.strptime(chapter.start, '%H:%M:%S.%f')
             td = timedelta(hours=dt.hour, minutes=dt.minute, seconds=dt.second)
             return td.total_seconds()
+    # The chapter tag was not found.
+    raise ValueError('Chapter tag "' + section + '" was not found in "' +
+                     file_name + '"')
 
 # -----------------------------------------------------------------------------
 # Implements the VidRef role.

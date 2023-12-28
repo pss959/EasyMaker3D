@@ -49,7 +49,8 @@
     <td><i>object_name seconds</i> [<i>margin</i>]</td>
     <td>Shows a highlight rectangle around the object named <i>object_name</i>
     with the optional margin (in normalized window coordinate units) around all
-    sides for the given duration in seconds.
+    sides for the given duration in seconds. Note that the name may contain
+    slashes to disambiguate it along a node path.</td>
   </tr>
   <tr>
     <td><b>key</b></td>
@@ -67,9 +68,9 @@
     <td><b>moveover</b></td>
     <td><i>object_name seconds</i></td>
     <td>Moves the cursor from its current position to be over the named object
-      in the scene, taking the given duration in <i>seconds</i> to do so. If
-      more than one object has the given name, slash-separated ancestors can be
-      included. For example, <code>Room/RotationTool/ZAxisRotator</code></td>
+      in the scene, taking the given duration in <i>seconds</i> to do so. Note
+      that the name may contain slashes to disambiguate it along a node
+      path.</td>
   </tr>
   <tr>
     <td><b>moveto</b></td>

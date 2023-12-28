@@ -13,6 +13,7 @@ These tours have video and text that illustrate features of the application.
 
    WorkArea
    Tools
+   TreePanel
 
 Examples
 --------

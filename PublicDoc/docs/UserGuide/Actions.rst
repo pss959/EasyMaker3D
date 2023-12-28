@@ -3,8 +3,6 @@
 Actions, 3D Icons, and Shelves
 ------------------------------
 
-XXXX TEMPORARY :vidref:`WorkArea:SomeSection`
-
 Most of the interaction in |appname| is initiated by clicking on one of the 3D
 icons on the various shelves in the :ref:`work area <ug-work-area>`. (See that
 section in the Overview for the shelf names and locations.)
@@ -45,6 +43,7 @@ the "on" state and regular woodgrain when in the "off" state.
 The following sections detail what each action does in the application, divided
 by category.
 
+.. _ug-basics-shelf:
 .. _ug-copy:
 .. _ug-cut:
 .. _ug-delete:
@@ -116,15 +115,7 @@ avalable via keyboard shortcuts and radial menus.
     changes. This action is also available by clicking on the exit sign in the
     :ref:`work area <ug-work-area>`.
 
-.. _ug-create-box:
-.. _ug-create-cylinder:
-.. _ug-create-extruded:
-.. _ug-create-imported-model:
-.. _ug-create-rev-surf:
-.. _ug-create-sphere:
-.. _ug-create-text:
-.. _ug-create-torus:
-
+.. _ug-combination-shelf:
 .. _ug-combine-csg-difference:
 .. _ug-combine-csg-intersection:
 .. _ug-combine-csg-union:
@@ -172,6 +163,7 @@ specialized tool links describe how to edit the resulting models.
 The CSG actions require at least two models to be selected, but the convex hull
 action can be applied to a single model.
 
+.. _ug-conversion-shelf:
 .. _ug-convert-bend:
 .. _ug-convert-bevel:
 .. _ug-convert-clip:
@@ -240,6 +232,16 @@ process works for all types of converted models, although it doesn't always
 make sense.  (Beveling an already Beveled model probably results in something
 awful.)
 
+.. _ug-creation-shelves:
+.. _ug-create-box:
+.. _ug-create-cylinder:
+.. _ug-create-extruded:
+.. _ug-create-imported-model:
+.. _ug-create-rev-surf:
+.. _ug-create-sphere:
+.. _ug-create-text:
+.. _ug-create-torus:
+
 Creation Actions
 ................
 
@@ -275,6 +277,7 @@ The new model automatically becomes the :ref:`primary selection
 attached to it. Otherwise, the :ref:`current general tool <ug-general-tools>`
 will be attached.
 
+.. _ug-layout-shelf:
 .. _ug-linear-layout:
 .. _ug-move-to-origin:
 .. _ug-radial-layout:
@@ -396,6 +399,7 @@ are available only via :ref:`keyboard shortcuts <ug-keyboard-shortcuts>` or
    The :ref:`Tree Panel <ug-tree-panel>` can be used to view and change the
    current selection, especially within a model hierarchy.
 
+.. _ug-session-shelf:
 .. _ug-open-help-panel:
 .. _ug-open-info-panel:
 .. _ug-open-session-panel:
@@ -422,6 +426,7 @@ which is the bottom shelf on the back wall. From left to right:
     open this guide or the :ref:`Cheat Sheet <cheat-sheet>` in your default
     browser.
 
+.. _ug-specialized-shelf:
 .. _ug-toggle-specialized-tool:
 
 Specialized Action
@@ -504,6 +509,7 @@ type for the icon to be enabled.
    The :shortcut:`Space` shortcut is an easy way to toggle between the current
    general and specialized tools when a specialized tool is available.
 
+.. _ug-general-tool-shelf:
 .. _ug-switch-to-next-tool:
 .. _ug-switch-to-previous-tool:
 .. _ug-tool-actions:
@@ -557,6 +563,7 @@ Tool` actions are available via :ref:`keyboard and controller shortcuts
 <ug-keyboard-shortcuts>` to quickly cycle through the available general tools
 for the current selection.
 
+.. _ug-viewing-shelf:
 .. _ug-hide-selected:
 .. _ug-show-all:
 .. _ug-toggle-build-volume:

@@ -1,7 +1,7 @@
 Node "CaptureRoot" {
   CONSTANTS: [
-    HL_COLOR:  "\"#e051ca33\"",  # Color for highlight rectangle.
-    CAP_COLOR: "\"#51afe0ff\"",  # Color for caption text.
+    HL_COLOR:  "\"#ff66ff\"",  # Color for highlight rectangle.
+    CAP_COLOR: "\"#51afe0\"",  # Color for caption text.
   ],
   shader_names: ["BaseColor"],
   blocks: [
@@ -67,7 +67,13 @@ Node "CaptureRoot" {
           uniforms: [ Uniform "uBaseColor" { vec4f_val: $HL_COLOR }],
         }
       ],
-      shapes: [ Rectangle "Rect" {} ],
+      # 4 rectangles forming a frame.
+      children: [
+        Node "Top"    { shapes: [Rectangle {}] },
+        Node "Bottom" { shapes: [Rectangle {}] },
+        Node "Left"   { shapes: [Rectangle {}] },
+        Node "Right"  { shapes: [Rectangle {}] },
+      ],
     },
   ]
 }
