@@ -57,7 +57,6 @@ bool EventManager::HandleEvents_(std::vector<Event> &events,
             break;
         }
     }
-    std::cerr << "XXXX keep_going = " << keep_going << "\n";
     return keep_going;
 }
 

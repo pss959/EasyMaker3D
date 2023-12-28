@@ -13,7 +13,7 @@ The Stage
 .........
 
 :vidref:`WorkArea:Stage`
-:ugref:`#ug-stage`
+:ugref:`ug-stage`
 
 The stage is the large circular platform on which models are placed. It can be
 rotated and scaled to change the size and orientation of the models.
@@ -24,7 +24,7 @@ Tooltips
 ........
 
 :vidref:`WorkArea:Tooltips`
-:ugref:`#ug-tooltips`
+:ugref:`ug-tooltips`
 
 All 3D icons and most other interative objects show a tooltip when hovered
 
@@ -32,7 +32,7 @@ Changing the View
 .................
 
 :vidref:`WorkArea:Viewing`
-:ugref:`#ug-viewing`
+:ugref:`ug-viewing`
 
 The slider on the pole on the right changes the camera height. Dragging
 anywhere with the right mouse button rotates the camera view.  Clicking on the
@@ -44,7 +44,7 @@ to the height.
 ....................
 
 :vidref:`WorkArea:Shelves`
-:ugref:`#ug-actions`
+:ugref:`ug-actions`
 
 Clicking on any 3D icon performs some action or activates some tool. The 3D
 icons are organized into shelves in the work area:
@@ -70,30 +70,25 @@ icons are organized into shelves in the work area:
   - Icons on the :ref:`Viewing shelf <ug-viewing-shelf>` (top right) deal with
     viewing models.
 
-The Precision Control
-.....................
-
-:vidref:`WorkArea:Precision`
-:ugref:`#ug-precision`
-
-Above the shelves on the back wall is the Precision Control. This shows the
-current precision level for linear and angular operations and allows you to
-change it.
-
 The Tree Panel
 ..............
 
 :vidref:`WorkArea:TreePanel`
-:ugref:`#ug-tree-panel`
+:ugref:`ug-tree-panel`
 
 The panel on the back wall is the :ref:`Tree Panel <ug-tree-panel>`. It shows
 the name of the current session and the model tree. It also allows you to hide
 models and to select them.
 
-The Exit Sign
+Other features
 ..............
 
-:vidref:`WorkArea:Exit`
+:vidref:`WorkArea:Other`
+:ugref:`ug-precision`
+
+Above the shelves on the back wall is the Precision Control. This shows the
+current precision level for linear and angular operations and allows you to
+change it.
 
 The Exit Sign on the back wall exits the application. If you have made changes,
 it asks you to confirm before exiting.

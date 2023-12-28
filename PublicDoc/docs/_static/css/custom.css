@@ -322,7 +322,8 @@ img {
 }
 
 .ug-button:before {
-    content: "\f02e";  /* Bookmark */
+    /* content: "\f02e";  /* Bookmark */
+    content: "\f02d";  /* Book */
 }
 
 /* -----------------------------------------------------------------------------
@@ -354,7 +355,7 @@ img {
 
 #chapterbar span {
     font-size:       70%;
-    border-left:     1px solid black;
+    border-left:     1px solid #888888;
     display:         inline-flex;
     float:           left;
     height:          36px;

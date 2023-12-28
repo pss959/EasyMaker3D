@@ -27,8 +27,7 @@ def ugref_role(name, rawtext, text, lineno, inliner, options={}, content=None):
     # super difficult to figure out.]
     domain  = inliner.document.settings.env.domains['std']
     role_fn = getattr(domain, 'role')('ref')
-    # Remove the leading '#' from the reference in the text.
-    nodes, messages = role_fn('ref', rawtext, text[1:], lineno, inliner)
+    nodes, messages = role_fn('ref', rawtext, text, lineno, inliner)
 
     # Add the ug-ref class to the returned node so it can be found later.
     nodes[0].set_class('ug-ref')
