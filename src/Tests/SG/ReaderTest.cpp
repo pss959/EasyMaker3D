@@ -7,6 +7,8 @@
 #include "Parser/Writer.h"
 #include "SG/Node.h"
 #include "SG/Reader.h"
+#include "SG/VRCamera.h"
+#include "SG/WindowCamera.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/TempFile.h"
 #include "Tests/Testing2.h"
@@ -102,6 +104,12 @@ TEST_F(ReaderTest, AllTypes) {
     // Create Ion data for this scene to test all shapes.
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene.get());
+
+    // Test camera access from the Scene.
+    auto wcam = scene->GetTypedCamera<SG::WindowCamera>();
+    auto vcam = scene->GetTypedCamera<SG::VRCamera>();
+    EXPECT_NOT_NULL(wcam);
+    EXPECT_NOT_NULL(vcam);
 }
 
 TEST_F(ReaderTest, Instances) {

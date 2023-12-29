@@ -94,6 +94,10 @@ bool SessionManager::SaveSessionWithComments(const FilePath &path,
     return true;
 }
 
+// LCOV_EXCL_START [videos only]
+void SessionManager::SetFakeExport(bool is_fake) { fake_export_ = is_fake; }
+// LCOV_EXCL_STOP
+
 void SessionManager::NewSession() {
     ResetSession_();
 }
@@ -114,8 +118,10 @@ Str SessionManager::GetModelNameForExport() const {
 bool SessionManager::Export(const FilePath &path, FileFormat format,
                             const UnitConversion &conv) {
     // This is used in videos when simulating file export.
+    // LCOV_EXCL_START [videos only]
     if (fake_export_)
         return true;
+    // LCOV_EXCL_STOP
 
     // Collect Model meshes, transforming them into stage coordinates.
     const auto &sel = selection_manager_->GetSelection();

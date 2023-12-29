@@ -56,7 +56,7 @@ class SessionManager : public SessionAgent {
 
     /// Sets a flag indicating that Export() should not actually do anything.
     /// This is used for simulating export when creating videos.
-    void SetFakeExport(bool is_fake) { fake_export_ = is_fake; }
+    void SetFakeExport(bool is_fake);
 
     // SessionAgent interface implementation.
     virtual void NewSession() override;

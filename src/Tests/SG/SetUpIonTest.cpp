@@ -60,6 +60,8 @@ TEST_F(SetUpIonTest, NodeColors) {
     root->SetBaseColor(Color(1, 1, 0));
     root->SetEmissiveColor(Color(1, 0, 1));
 
+    EXPECT_EQ(Color(1, 1, 0), root->GetBaseColor());
+
     const auto &block = root->GetUniformBlockForPass("Lighting");
     EXPECT_LE(2U, block.GetUniforms().size());
     auto bc = block.FindUniform("uBaseColor");

@@ -103,3 +103,54 @@ TEST_F(EventManagerTest, PendingEvents) {
     EXPECT_FALSE(em.HasPendingEvents());
     EXPECT_EQ(1U, th->last_serial);
 }
+
+TEST_F(EventManagerTest, HandlerOrder) {
+    TestHandlerPtr th0(new TestHandler);
+    TestHandlerPtr th1(new TestHandler);
+    TestHandlerPtr th2(new TestHandler);
+
+    // Handler order should be th0, th1, th2.
+    EventManager em;
+    em.AppendHandler(th1);
+    em.AppendHandler(th2);
+    em.InsertHandler(th0);
+
+    const float kTimeout = .0001f;
+
+    std::vector<Event> events;
+    Event event;
+    events.push_back(event);
+
+    // No handler should handle this.
+    th0->what_to_return = Handler::HandleCode::kNotHandled;
+    th1->what_to_return = Handler::HandleCode::kNotHandled;
+    th2->what_to_return = Handler::HandleCode::kNotHandled;
+    em.HandleEvents(events, false, kTimeout);
+    EXPECT_EQ(0U, th0->last_serial);
+    EXPECT_EQ(0U, th1->last_serial);
+    EXPECT_EQ(0U, th2->last_serial);
+
+    // Only the first handler (th0) should handle this.
+    th0->what_to_return = Handler::HandleCode::kHandledStop;
+    em.HandleEvents(events, false, kTimeout);
+    EXPECT_EQ(1U, th0->last_serial);
+    EXPECT_EQ(0U, th1->last_serial);
+    EXPECT_EQ(0U, th2->last_serial);
+
+    // Both th0 and th1 should handle this.
+    th0->what_to_return = Handler::HandleCode::kHandledContinue;
+    th1->what_to_return = Handler::HandleCode::kHandledStop;
+    em.HandleEvents(events, false, kTimeout);
+    EXPECT_EQ(2U, th0->last_serial);
+    EXPECT_EQ(2U, th1->last_serial);
+    EXPECT_EQ(0U, th2->last_serial);
+
+    // All three should handle this.
+    th0->what_to_return = Handler::HandleCode::kHandledContinue;
+    th1->what_to_return = Handler::HandleCode::kHandledContinue;
+    th2->what_to_return = Handler::HandleCode::kHandledStop;
+    em.HandleEvents(events, false, kTimeout);
+    EXPECT_EQ(3U, th0->last_serial);
+    EXPECT_EQ(3U, th1->last_serial);
+    EXPECT_EQ(3U, th2->last_serial);
+}

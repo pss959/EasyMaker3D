@@ -245,6 +245,55 @@ TEST_F(MainHandlerTest, Click) {
     EXPECT_TRUE(mh.IsWaiting());
 }
 
+TEST_F(MainHandlerTest, LongPress) {
+    MainHandler mh(false);  // No VR.
+    InitHandler(mh);
+
+    // Set a shorter timeout for the MouseTracker while this is in scope.
+    TimeoutShortener ts;
+
+    size_t  click_count = 0;
+    bool    is_long_press = false;
+    Widget *click_widget = nullptr;
+    auto click_func = [&](const ClickInfo &info){
+        ++click_count;
+        is_long_press = info.is_long_press;
+        click_widget = info.widget;
+    };
+    mh.GetClicked().AddObserver("key", click_func);
+
+    EXPECT_EQ(0U, click_count);
+    EXPECT_FALSE(is_long_press);
+    EXPECT_NULL(click_widget);
+
+    // Long enough for a click but not a long press.
+    // MainHandler so it times out.
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
+    Util::DelayThread(kTimeout + .0001f);
+    mh.ProcessUpdate(false);
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_EQ(1U, click_count);
+    EXPECT_FALSE(is_long_press);
+    EXPECT_EQ(widget.get(), click_widget);
+    EXPECT_TRUE(mh.IsWaiting());
+
+    // Decrease the long press duration and repeat - should be a long press
+    // this time.
+    mh.SetLongPressDuration(.00005f);
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(true)));
+    Util::DelayThread(kTimeout + .0001f);
+    mh.ProcessUpdate(false);
+    EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
+                   mh.HandleEvent(GetWidgetEvent(false)));
+    EXPECT_EQ(2U, click_count);
+    EXPECT_TRUE(is_long_press);
+    EXPECT_EQ(widget.get(), click_widget);
+    EXPECT_TRUE(mh.IsWaiting());
+}
+
 TEST_F(MainHandlerTest, DoubleClick) {
     MainHandler mh(false);  // No VR.
     InitHandler(mh);
