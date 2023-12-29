@@ -432,12 +432,12 @@ void CaptureScriptApp::MoveFakeCursorTo_(const Point2f &pos) {
 }
 
 void CaptureScriptApp::UpdateCaption_() {
+    // Note that this fades just the text, not the background.
     if (caption_fade_data_.elapsed <= caption_fade_data_.duration) {
         const float alpha = UpdateFade_(*caption_.node, caption_fade_data_);
         Color c = caption_.text->GetColor();
         c[3] = alpha;
         caption_.text->SetTextColor(c);
-        // XXXX Change this to fade bg as well.
 
         // Set the position and face the camera. Do this every time in case the
         // view changes.

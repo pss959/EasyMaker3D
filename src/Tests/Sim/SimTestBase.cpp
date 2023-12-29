@@ -47,7 +47,6 @@ bool SimTestBase::RunScript_(const Str &file_name) {
     options->fullscreen         = false;
     options->nosnap             = true;
     options->remain             = false;
-    options->report             = true; // XXXX TEMPORARY
     options->show_session_panel = false;
     options->window_size.Set(1024, 552);
 

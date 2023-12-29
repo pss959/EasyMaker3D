@@ -266,9 +266,6 @@ void GLFWWindowSystem::RetrieveEvents(const EventOptions &options,
     else
         glfwPollEvents();
 
-    if (! pending_events_.empty())
-        std::cerr << "XXXX GLFW Pending " << pending_events_.size() << " events\n";
-
     // Add pending events.
     Util::AppendVector(pending_events_, events);
     pending_events_.clear();
