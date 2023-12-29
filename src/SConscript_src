@@ -521,16 +521,14 @@ lib_sources = list(chain(
 
 # Extra sources needed for snapimage and Sim tests.
 script_sources = PlaceInDir_('App', [
-    'ScriptBase',
+    'Script',
     'ScriptEmitter',
     'ScriptedApp',
-    'SnapScript',
     'SnapScriptApp',
 ])
 
 # Extra sources used for capturevideo and some timing tests.
 video_sources = PlaceInDir_('App', [
-    'CaptureScript',
     'CaptureScriptApp',
     'VideoWriter',
 ])

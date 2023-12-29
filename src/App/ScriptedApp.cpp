@@ -17,7 +17,7 @@
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
 
-bool ScriptedApp::Init(const OptionsPtr &options, const ScriptBasePtr &script) {
+bool ScriptedApp::Init(const OptionsPtr &options, const ScriptPtr &script) {
     ASSERT(options);
     ASSERT(script);
 
@@ -136,7 +136,7 @@ const ScriptedApp::Options & ScriptedApp::GetOptions() const {
     return *options_;
 }
 
-const ScriptBase & ScriptedApp::GetScript() const {
+const Script & ScriptedApp::GetScript() const {
     ASSERT(script_);
     return *script_;
 }
@@ -177,11 +177,12 @@ bool ScriptedApp::LoadSettings(const FilePath &path) {
     return true;
 }
 
-bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
+bool ScriptedApp::GetNodeRect(const Str &path_string, float margin,
+                              Range2f &rect) {
     // Get a path to the node.
-    const auto path = GetNodePath(name);
+    const auto path = GetNodePath(path_string);
     if (path.empty()) {
-        std::cerr << "*** No node named '" << name << "' found\n";
+        std::cerr << "*** No node named '" << path_string << "' found\n";
         return false;
     }
 
@@ -208,14 +209,14 @@ bool ScriptedApp::GetNodeRect(const Str &name, float margin, Range2f &rect) {
     return true;
 }
 
-SG::NodePath ScriptedApp::GetNodePath(const Str &name) {
+SG::NodePath ScriptedApp::GetNodePath(const Str &path_string) {
     SG::NodePtr root = GetContext().scene_context->scene->GetRootNode();
     SG::NodePath path;  // Path from scene root to target object.
 
-    // Find the node in the scene. Note that the name may be compound
+    // Find the node in the scene. Note that the path_string may be compound
     // ("A/B/C").
-    if (name.contains('/')) {
-        const auto parts = ion::base::SplitString(name, "/");
+    if (path_string.contains('/')) {
+        const auto parts = ion::base::SplitString(path_string, "/");
         ASSERT(parts.size() > 1U);
         for (const auto &part: parts) {
             auto sub_path = SG::FindNodePathUnderNode(root, part, true);
@@ -229,7 +230,7 @@ SG::NodePath ScriptedApp::GetNodePath(const Str &name) {
         }
     }
     else {
-        path = SG::FindNodePathUnderNode(root, name, true);
+        path = SG::FindNodePathUnderNode(root, path_string, true);
     }
     return path;
 }

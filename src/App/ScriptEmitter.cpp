@@ -62,12 +62,13 @@ void ScriptEmitter::AddDragPoints(const Point2f &pos0,
     AddDragPoint("end", pos1);
 }
 
-void ScriptEmitter::AddKey(const Str &key, const KModifiers &modifiers) {
+void ScriptEmitter::AddKey(const Str &key_string) {
+    Str error;
+
     Event event;
     event.device    = Event::Device::kKeyboard;
-    event.key_name  = key;
-    event.modifiers = modifiers;
-    event.key_text  = Event::BuildKeyText(modifiers, key);
+    Event::ParseKeyString(key_string, event.modifiers, event.key_name, error);
+    event.key_text  = Event::BuildKeyText(event.modifiers, event.key_name);
 
     // Press.
     event.flags.Set(Event::Flag::kKeyPress);

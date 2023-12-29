@@ -17,7 +17,7 @@ class SnapScriptApp : public ScriptedApp {
     };
 
   protected:
-    virtual bool ProcessInstruction(const ScriptBase::Instr &instr) override;
+    virtual bool ProcessInstruction(const Script::Instr &instr) override;
 
   private:
     const Options & GetOptions_() const;

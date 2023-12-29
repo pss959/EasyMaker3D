@@ -28,7 +28,7 @@
 #include "Viewers/Renderer.h"
 #include "Widgets/StageWidget.h"
 
-bool SnapScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
+bool SnapScriptApp::ProcessInstruction(const Script::Instr &instr) {
     // Skip snap instructions if disabled.
     if (GetOptions_().nosnap &&
         (instr.name == "snap" || instr.name == "snapobj"))
@@ -37,94 +37,99 @@ bool SnapScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
     auto &emitter = GetEmitter();
 
     if (instr.name == "action") {
-        const auto &ainst = GetTypedInstr_<SnapScript::ActionInstr>(instr);
+        const auto &ainst = GetTypedInstr_<Script::ActionInstr>(instr);
         ASSERTM(GetContext().action_processor->CanApplyAction(ainst.action),
                 Util::EnumName(ainst.action));
         GetContext().action_processor->ApplyAction(ainst.action);
     }
+#if XXXX
     else if (instr.name == "click") {
-        const auto &cinst = GetTypedInstr_<SnapScript::ClickInstr>(instr);
-        emitter.AddClick(cinst.pos);
+        //const auto &cinst = GetTypedInstr_<Script::ClickInstr>(instr);
+        // XXXX emitter.AddClick(cinst.pos);
+        // XXXX GetEmitter().AddClick(cursor_pos_);
     }
     else if (instr.name == "drag") {
-        const auto &dinst = GetTypedInstr_<SnapScript::DragInstr>(instr);
+        const auto &dinst = GetTypedInstr_<Script::DragInstr>(instr);
         emitter.AddHoverPoint(dinst.pos0);
         emitter.AddDragPoints(dinst.pos0, dinst.pos1, dinst.count);
     }
     else if (instr.name == "dragp") {
-        const auto &dinst = GetTypedInstr_<SnapScript::DragPInstr>(instr);
+        const auto &dinst = GetTypedInstr_<Script::DragPInstr>(instr);
         emitter.AddDragPoint(dinst.phase, dinst.pos);
     }
+#endif
     else if (instr.name == "focus") {
-        const auto &finst = GetTypedInstr_<SnapScript::FocusInstr>(instr);
+        const auto &finst = GetTypedInstr_<Script::FocusInstr>(instr);
         FocusPane_(finst.pane_name);
     }
     else if (instr.name == "hand") {
-        const auto &hinst = GetTypedInstr_<SnapScript::HandInstr>(instr);
+        const auto &hinst = GetTypedInstr_<Script::HandInstr>(instr);
         if (! SetHand_(hinst.hand, hinst.controller))
             return false;
     }
     else if (instr.name == "handpos") {
-        const auto &hinst = GetTypedInstr_<SnapScript::HandPosInstr>(instr);
+        const auto &hinst = GetTypedInstr_<Script::HandPosInstr>(instr);
         emitter.AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
     }
     else if (instr.name == "headset") {
-        const auto &hinst = GetTypedInstr_<SnapScript::HeadsetInstr>(instr);
+        const auto &hinst = GetTypedInstr_<Script::HeadsetInstr>(instr);
         emitter.AddHeadsetButton(hinst.is_on);
     }
+#if XXXX
     else if (instr.name == "hover") {
-        const auto &hinst = GetTypedInstr_<SnapScript::HoverInstr>(instr);
+        const auto &hinst = GetTypedInstr_<Script::HoverInstr>(instr);
         emitter.AddHoverPoint(hinst.pos);
     }
     else if (instr.name == "key") {
-        const auto &kinst = GetTypedInstr_<SnapScript::KeyInstr>(instr);
-        emitter.AddKey(kinst.key_name, kinst.modifiers);
+        const auto &kinst = GetTypedInstr_<Script::KeyInstr>(instr);
+        emitter.AddKey(kinst.key_string);
     }
+#endif
     else if (instr.name == "load") {
-        const auto &linst = GetTypedInstr_<SnapScript::LoadInstr>(instr);
+        const auto &linst = GetTypedInstr_<Script::LoadInstr>(instr);
         if (! LoadSession_(linst.file_name))
             return false;
     }
     else if (instr.name == "mod") {
-        const auto &minst = GetTypedInstr_<SnapScript::ModInstr>(instr);
+        const auto &minst = GetTypedInstr_<Script::ModInstr>(instr);
         emitter.SetModifiedMode(minst.is_on);
     }
     else if (instr.name == "select") {
-        const auto &sinst = GetTypedInstr_<SnapScript::SelectInstr>(instr);
+        const auto &sinst = GetTypedInstr_<Script::SelectInstr>(instr);
         Selection sel;
         BuildSelection_(sinst.names, sel);
         GetContext().selection_manager->ChangeSelection(sel);
     }
     else if (instr.name == "settings") {
-        const auto &sinst = GetTypedInstr_<SnapScript::SettingsInstr>(instr);
+        const auto &sinst = GetTypedInstr_<Script::SettingsInstr>(instr);
         const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
                             TK::kDataFileExtension);
         if (! LoadSettings(path))
             return false;
     }
     else if (instr.name == "snap") {
-        const auto &sinst = GetTypedInstr_<SnapScript::SnapInstr>(instr);
+        const auto &sinst = GetTypedInstr_<Script::SnapInstr>(instr);
         if (! TakeSnapshot_(sinst.rect, sinst.file_name))
             return false;
     }
     else if (instr.name == "snapobj") {
-        const auto &sinst = GetTypedInstr_<SnapScript::SnapObjInstr>(instr);
+        const auto &sinst = GetTypedInstr_<Script::SnapObjInstr>(instr);
         Range2f rect;
-        if (! GetNodeRect(sinst.object_name, sinst.margin, rect) ||
+        if (! GetNodeRect(sinst.path_string, sinst.margin, rect) ||
             ! TakeSnapshot_(rect, sinst.file_name))
             return false;
     }
     else if (instr.name == "stage") {
-        const auto &sinst = GetTypedInstr_<SnapScript::StageInstr>(instr);
+        const auto &sinst = GetTypedInstr_<Script::StageInstr>(instr);
         auto &stage = *GetContext().scene_context->stage;
         stage.SetScaleAndRotation(sinst.scale, sinst.angle);
     }
     else if (instr.name == "touch") {
-        const auto &tinst = GetTypedInstr_<SnapScript::TouchInstr>(instr);
+        const auto &tinst = GetTypedInstr_<Script::TouchInstr>(instr);
         SetTouchMode_(tinst.is_on);
     }
     else if (instr.name == "view") {
-        const auto &vinst = GetTypedInstr_<SnapScript::ViewInstr>(instr);
+        const auto &vinst = GetTypedInstr_<Script::ViewInstr>(instr);
         GetContext().scene_context->window_camera->SetOrientation(
             Rotationf::RotateInto(-Vector3f::AxisZ(), vinst.dir));
     }

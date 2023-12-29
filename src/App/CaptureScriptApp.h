@@ -11,7 +11,7 @@ DECL_SHARED_PTR(TextNode);
 }
 
 /// CaptureScriptApp is a derived ScriptedApp that adds processing of a read-in
-/// CaptureScript.
+/// Script.
 ///
 /// \ingroup App
 class CaptureScriptApp : public ScriptedApp {
@@ -27,10 +27,10 @@ class CaptureScriptApp : public ScriptedApp {
     virtual ~CaptureScriptApp();
 
     virtual bool Init(const OptionsPtr &options,
-                      const ScriptBasePtr &script) override;
+                      const ScriptPtr &script) override;
 
   protected:
-    virtual bool ProcessInstruction(const ScriptBase::Instr &instr) override;
+    virtual bool ProcessInstruction(const Script::Instr &instr) override;
     virtual void InstructionsDone() override;
     virtual void BeginFrame() override;
     virtual void EndFrame() override;

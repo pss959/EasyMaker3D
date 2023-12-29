@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "App/Args.h"
-#include "App/CaptureScript.h"
 #include "App/CaptureScriptApp.h"
+#include "App/Script.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
@@ -18,7 +18,7 @@
 
 constinit const char kUsageString[] =
 R"(capturevideo: Play back a session file with delays to create a video for
-public documentation.
+public documentation. See Script.h for script details.
 
     Usage:
       capturevideo [--format=<str>] [--fps=<fps>] [--klog=<klog_string>]
@@ -47,7 +47,7 @@ int main(int argc, const char *argv[]) {
     Args args(argc, argv, kUsageString);
 
     const FilePath path("PublicDoc/videos/scripts/" + args.GetString("SCRIPT"));
-    std::shared_ptr<CaptureScript> script(new CaptureScript);
+    std::shared_ptr<Script> script(new Script);
     if (! script->ReadScript(path))
         return -1;
 

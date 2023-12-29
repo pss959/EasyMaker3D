@@ -8,7 +8,7 @@
 #include <ion/gfx/image.h>
 #include <ion/image/conversionutils.h>
 
-#include "App/CaptureScript.h"
+#include "App/Script.h"
 #include "App/ScriptEmitter.h"
 #include "Base/Event.h"
 #include "Feedback/TooltipFeedback.h"
@@ -102,7 +102,7 @@ CaptureScriptApp::CaptureScriptApp() {}
 CaptureScriptApp::~CaptureScriptApp() {}
 
 bool CaptureScriptApp::Init(const OptionsPtr &options,
-                            const ScriptBasePtr &script) {
+                            const ScriptPtr &script) {
     if (! ScriptedApp::Init(options, script))
         return false;
 
@@ -200,53 +200,47 @@ bool CaptureScriptApp::Init(const OptionsPtr &options,
     return true;
 }
 
-bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
+bool CaptureScriptApp::ProcessInstruction(const Script::Instr &instr) {
     if (instr.name == "caption") {
-        const auto &cinst = GetTypedInstr_<CaptureScript::CaptionInstr>(instr);
+        const auto &cinst = GetTypedInstr_<Script::CaptionInstr>(instr);
         DisplayCaption_(cinst.text, cinst.pos, cinst.seconds);
     }
     else if (instr.name == "click") {
         GetEmitter().AddClick(cursor_pos_);
     }
     else if (instr.name == "cursor") {
-        const auto &cinst = GetTypedInstr_<CaptureScript::CursorInstr>(instr);
+        const auto &cinst = GetTypedInstr_<Script::CursorInstr>(instr);
         cursor_->SetEnabled(cinst.is_on);
     }
     else if (instr.name == "drag") {
-        const auto &dinst = GetTypedInstr_<CaptureScript::DragInstr>(instr);
+        const auto &dinst = GetTypedInstr_<Script::DragInstr>(instr);
         DragTo_(dinst.motion, dinst.seconds, dinst.button);
     }
     else if (instr.name == "highlight") {
-        const auto &hinst =
-            GetTypedInstr_<CaptureScript::HighlightInstr>(instr);
-        DisplayHighlight_(hinst.rect, hinst.seconds);
-    }
-    else if (instr.name == "highlightobj") {
-        const auto &hinst =
-            GetTypedInstr_<CaptureScript::HighlightObjInstr>(instr);
+        const auto &hinst = GetTypedInstr_<Script::HighlightInstr>(instr);
         Range2f rect;
-        if (! GetNodeRect(hinst.object_name, hinst.margin, rect))
+        if (! GetNodeRect(hinst.path_string, hinst.margin, rect))
             return false;
         DisplayHighlight_(rect, hinst.seconds);
     }
     else if (instr.name == "key") {
-        const auto &kinst = GetTypedInstr_<CaptureScript::KeyInstr>(instr);
-        GetEmitter().AddKey(kinst.key_name, kinst.modifiers);
+        const auto &kinst = GetTypedInstr_<Script::KeyInstr>(instr);
+        GetEmitter().AddKey(kinst.key_string);
     }
     else if (instr.name == "mod") {
-        const auto &minst = GetTypedInstr_<CaptureScript::ModInstr>(instr);
+        const auto &minst = GetTypedInstr_<Script::ModInstr>(instr);
         GetEmitter().SetModifiedMode(minst.is_on);
     }
     else if (instr.name == "moveover") {
-        const auto &minst = GetTypedInstr_<CaptureScript::MoveOverInstr>(instr);
-        MoveOver_(minst.object_name, minst.seconds);
+        const auto &minst = GetTypedInstr_<Script::MoveOverInstr>(instr);
+        MoveOver_(minst.path_string, minst.seconds);
     }
     else if (instr.name == "moveto") {
-        const auto &minst = GetTypedInstr_<CaptureScript::MoveToInstr>(instr);
+        const auto &minst = GetTypedInstr_<Script::MoveToInstr>(instr);
         MoveTo_(minst.pos, minst.seconds);
     }
     else if (instr.name == "section") {
-        const auto &sinst = GetTypedInstr_<CaptureScript::SectionInstr>(instr);
+        const auto &sinst = GetTypedInstr_<Script::SectionInstr>(instr);
         if (video_writer_) {
             if (GetOptions_().report) {
                 std::cout << "    Section " << video_writer_->GetChapterCount()
@@ -261,11 +255,11 @@ bool CaptureScriptApp::ProcessInstruction(const ScriptBase::Instr &instr) {
         is_capturing_ = true;
     }
     else if (instr.name == "tooltips") {
-        const auto &tinst = GetTypedInstr_<CaptureScript::TooltipsInstr>(instr);
+        const auto &tinst = GetTypedInstr_<Script::TooltipsInstr>(instr);
         TooltipFeedback::SetDelay(tinst.is_on ? 1 : 0);
     }
     else if (instr.name == "wait") {
-        const auto &winst = GetTypedInstr_<CaptureScript::WaitInstr>(instr);
+        const auto &winst = GetTypedInstr_<Script::WaitInstr>(instr);
         MoveTo_(cursor_pos_, winst.seconds);
     }
     else {
@@ -401,9 +395,9 @@ void CaptureScriptApp::DragTo_(const Vector2f &motion, float seconds,
     emitter.AddDragPoint("end", points[frames - 1]);
 }
 
-void CaptureScriptApp::MoveOver_(const Str &object_name, float seconds) {
+void CaptureScriptApp::MoveOver_(const Str &path_string, float seconds) {
     // Get the path from the scene root to target object.
-    SG::NodePath path = GetNodePath(object_name);
+    SG::NodePath path = GetNodePath(path_string);
 
     // Project the center of the object in world coordinates onto the Frustum
     // image plane to get the point to move to.

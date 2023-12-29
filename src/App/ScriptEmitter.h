@@ -36,7 +36,7 @@ class ScriptEmitter : public IEmitter {
     void AddDragPoints(const Point2f &pos0, const Point2f &pos1, size_t count);
 
     /// Adds a key press/release to simulate.
-    void AddKey(const Str &key, const KModifiers &modifiers);
+    void AddKey(const Str &key_string);
 
     /// Adds a controller position.
     void AddControllerPos(Hand hand, const Point3f &pos, const Rotationf &rot);

@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "App/Args.h"
-#include "App/SnapScript.h"
+#include "App/Script.h"
 #include "App/SnapScriptApp.h"
 #include "Managers/PanelManager.h"
 #include "Panels/FilePanel.h"
@@ -66,7 +66,7 @@ void MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
 
 constinit const char kUsageString[] =
 R"(snapimage: Reads a script with instructions on how to create snapshot images
-for public documentation. See SnapScript.h for script details.
+for public documentation. See Script.h for script details.
     Usage:
       snapimage [--fullscreen] [--klog=<klog_string>]
                 [--nosnap] [--remain] [--report] SCRIPT
@@ -88,7 +88,7 @@ int main(int argc, const char *argv[]) {
     Args args(argc, argv, kUsageString);
 
     const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
-    std::shared_ptr<SnapScript> script(new SnapScript);
+    std::shared_ptr<Script> script(new Script);
     if (! script->ReadScript(path))
         return -1;
 

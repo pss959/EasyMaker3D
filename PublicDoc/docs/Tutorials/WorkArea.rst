@@ -8,7 +8,6 @@ details, consult the :ref:`User Guide <ug-work-area>`.
 
 |block-image|
 
-
 The Stage
 .........
 

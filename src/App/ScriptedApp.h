@@ -4,13 +4,13 @@
 #include <vector>
 
 #include "App/Application.h"
-#include "App/ScriptBase.h"
+#include "App/Script.h"
 #include "Math/Types.h"
 #include "SG/NodePath.h"
 #include "Util/Memory.h"
 
 class Selection;
-DECL_SHARED_PTR(ScriptBase);
+DECL_SHARED_PTR(Script);
 DECL_SHARED_PTR(ScriptEmitter);
 
 /// ScriptedApp is an abstract class derived from Application that adds
@@ -28,9 +28,9 @@ class ScriptedApp : public Application {
     DECL_SHARED_PTR(Options);
 
     /// Initializes the ScriptedApp with a (derived) Options instance and a
-    /// (derived) Script instance. Derived classes should call this in addition
-    /// to adding their own code. Returns false if anything goes wrong.
-    virtual bool Init(const OptionsPtr &options, const ScriptBasePtr &script);
+    /// Script instance. Derived classes should call this in addition to adding
+    /// their own code. Returns false if anything goes wrong.
+    virtual bool Init(const OptionsPtr &options, const ScriptPtr &script);
 
     /// Redefines this to add script processing during frames.
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
@@ -44,7 +44,7 @@ class ScriptedApp : public Application {
     const Options & GetOptions() const;
 
     /// Returns the script. Asserts if Init() was not called to initialize it.
-    const ScriptBase & GetScript() const;
+    const Script & GetScript() const;
 
     /// Returns the ScriptEmitter. Asserts if Init() was not called to
     /// initialize it.
@@ -52,7 +52,7 @@ class ScriptedApp : public Application {
 
     /// Derived classes must implement this to process a specific (derived)
     /// instruction, returning false on error.
-    virtual bool ProcessInstruction(const ScriptBase::Instr &instr) = 0;
+    virtual bool ProcessInstruction(const Script::Instr &instr) = 0;
 
     /// Lets derived classes know when instructions have all been processed.
     /// The base class defines this to do nothing.
@@ -76,25 +76,25 @@ class ScriptedApp : public Application {
     /// SessionManager. Returns false on error.
     bool LoadSettings(const FilePath &path);
 
-    /// Convenience that casts a ScriptBase::Instr to the templated type.
+    /// Convenience that casts a Script::Instr to the templated type.
     template <typename T>
-    const T & GetTypedInstr_(const ScriptBase::Instr &instr) {
-        static_assert(std::derived_from<T, ScriptBase::Instr> == true);
+    const T & GetTypedInstr_(const Script::Instr &instr) {
+        static_assert(std::derived_from<T, Script::Instr> == true);
         return static_cast<const T &>(instr);
     }
 
-    /// Sets \p rect to an image-plane rectangle surrounding the named Node
-    /// with the given margin on all sides. Note that the name can contain
-    /// slashes to disambiguate it along a node path. Prints an error message
-    /// and returns false if the Node is not found.
-    bool GetNodeRect(const Str &name, float margin, Range2f &rect);
+    /// Sets \p rect to an image-plane rectangle surrounding the Node
+    /// referenced by the given path string with given margin on all
+    /// sides. Prints an error message and returns false if the Node is not
+    /// found.
+    bool GetNodeRect(const Str &path_string, float margin, Range2f &rect);
 
-    /// Resolves a node name to an SG::NodePath.
-    SG::NodePath GetNodePath(const Str &name);
+    /// Resolves a Node path string to an SG::NodePath.
+    SG::NodePath GetNodePath(const Str &path_string);
 
   private:
     OptionsPtr       options_;      ///< Derived Options instance.
-    ScriptBasePtr    script_;       ///< Derived ScriptBase instance.
+    ScriptPtr        script_;       ///< Script instance.
     ScriptEmitterPtr emitter_;      ///< Used to simulate mouse and key events.
 
     bool   is_paused_       = false;
