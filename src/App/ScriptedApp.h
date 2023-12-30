@@ -9,12 +9,13 @@
 #include "SG/NodePath.h"
 #include "Util/Memory.h"
 
+class Args;
+class FilePath;
 class Selection;
-DECL_SHARED_PTR(Script);
 DECL_SHARED_PTR(ScriptEmitter);
 
-/// ScriptedApp is an abstract class derived from Application that adds
-/// processing of a read-in script that specifies what to do.
+/// ScriptedApp is a derived Application class that adds processing of a
+/// read-in script that specifies what to do.
 ///
 /// \ingroup App
 class ScriptedApp : public Application {
@@ -22,37 +23,30 @@ class ScriptedApp : public Application {
     /// This struct adds some additional options.
     struct Options : public Application::Options {
         virtual ~Options() {}  // Makes this polymorphic.
-        bool remain = false;  ///< Leave the window up after the script is done.
-        bool report = false;  ///< Report each instruction when executed.
+
+        Str  vidformat = "webm";  ///< Video format as a string.
+        bool dryrun    = false;   ///< Do not create images or videos.
+        bool remain    = false;   ///< Keep the window after the script is done.
+        bool report    = false;   ///< Report each instruction when executed.
+        int  fps       = 30;      ///< Frames per second (default 30).
     };
-    DECL_SHARED_PTR(Options);
 
-    /// Initializes the ScriptedApp with a (derived) Options instance and a
-    /// Script instance. Derived classes should call this in addition to adding
-    /// their own code. Returns false if anything goes wrong.
-    virtual bool Init(const OptionsPtr &options, const ScriptPtr &script);
+    /// Initializes Options from command-line arguments.
+    void InitOptions(const Args &args);
 
+    /// Returns the Options.
+    Options & GetOptions() { return options_; }
+
+    /// Processes the Script named by the given FilePath. Returns false if
+    /// anything goes wrong.
+    bool ProcessScript(const FilePath &script_path);
+
+  protected:
     /// Redefines this to add script processing during frames.
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
 
-    // Makes this available to derived applications.
-    using Application::GetContext;
-
-  protected:
-    /// Returns the options. Asserts if Init() was not called to initialize
-    /// them.
-    const Options & GetOptions() const;
-
-    /// Returns the script. Asserts if Init() was not called to initialize it.
-    const Script & GetScript() const;
-
-    /// Returns the ScriptEmitter. Asserts if Init() was not called to
-    /// initialize it.
-    ScriptEmitter & GetEmitter() const;
-
-    /// Derived classes must implement this to process a specific (derived)
-    /// instruction, returning false on error.
-    virtual bool ProcessInstruction(const Script::Instr &instr) = 0;
+    /// Processes one instruction.
+    bool ProcessInstruction(const Script::Instr &instr);
 
     /// Lets derived classes know when instructions have all been processed.
     /// The base class defines this to do nothing.
@@ -93,8 +87,8 @@ class ScriptedApp : public Application {
     SG::NodePath GetNodePath(const Str &path_string);
 
   private:
-    OptionsPtr       options_;      ///< Derived Options instance.
-    ScriptPtr        script_;       ///< Script instance.
+    Options          options_;
+    Script           script_;
     ScriptEmitterPtr emitter_;      ///< Used to simulate mouse and key events.
 
     bool   is_paused_       = false;

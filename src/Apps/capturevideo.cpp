@@ -3,12 +3,9 @@
 #include <vector>
 
 #include "App/Args.h"
-#include "App/CaptureScriptApp.h"
-#include "App/Script.h"
-#include "Util/Assert.h"
+#include "App/ScriptedApp.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
-#include "Util/KLog.h"
 
 /// \file
 /// The capturevideo application is used to create videos for the public
@@ -44,52 +41,21 @@ public documentation. See Script.h for script details.
 int main(int argc, const char *argv[]) {
     Util::app_type = Util::AppType::kInteractive;
 
-    Args args(argc, argv, kUsageString);
+    // Let the ScriptedApp handle common options.
+    ScriptedApp app;
+    const Args args(argc, argv, kUsageString);
+    app.InitOptions(args);
 
-    const FilePath path("PublicDoc/videos/scripts/" + args.GetString("SCRIPT"));
-    std::shared_ptr<Script> script(new Script);
-    if (! script->ReadScript(path))
-        return -1;
-
-    std::cout << "======= Processing Script file " << path.ToString() << "\n";
-
-    std::shared_ptr<CaptureScriptApp::Options> options(
-        new CaptureScriptApp::Options);
+    // Set video-specific ones.
+    auto &options = app.GetOptions();
     const StrVec formats{ "webm", "rgbmp4", "yuvmp4" };  // Default is first.
-    KLogger::SetKeyString(args.GetString("--klog"));
-    options->do_ion_remote      = true;
-    options->enable_vr          = false;
-    options->format             = args.GetStringChoice("--format", formats);
-    options->fps                = args.GetAsInt("--fps", 30);
-    options->nocapture          = args.GetBool("--nocapture");
-    options->remain             = args.GetBool("--remain");
-    options->report             = args.GetBool("--report");
-    options->show_session_panel = true;
+    options.dryrun             = args.GetBool("--nocapture");
+    options.fps                = args.GetAsInt("--fps", 30);
+    options.show_session_panel = true;
+    options.vidformat          = args.GetStringChoice("--format", formats);
 
-    // Note that this must have the same aspect ratio as fullscreen.
-    int size_n = args.GetAsInt("--size", 1);
-    if (size_n <= 0)
-        size_n = 1;
-    options->window_size.Set(1024 / size_n, 552 / size_n);
-
-    CaptureScriptApp app;
-    if (! app.Init(options, script))
-        return -1;
-
-    try {
-        app.MainLoop();
-    }
-    catch (AssertException &ex) {
-        std::cerr << "*** Caught Assertion failure: " << ex.what() << "\n";
-        std::cerr << "*** STACK:\n";
-        for (const auto &s: ex.GetStackTrace())
-            std::cerr << "  " << s << "\n";
-        return -1;
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception: " << ex.what() << "\n";
-        return -1;
-    }
-
-    return 0;
+    // Process the script.
+    const FilePath script_path("PublicDoc/videos/scripts/" +
+                               args.GetString("SCRIPT"));
+    return app.ProcessScript(script_path) ? 0 : -1;
 }

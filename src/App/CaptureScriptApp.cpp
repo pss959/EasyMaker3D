@@ -263,7 +263,7 @@ bool CaptureScriptApp::ProcessInstruction(const Script::Instr &instr) {
         MoveTo_(cursor_pos_, winst.seconds);
     }
     else {
-        ASSERTM(false, "Unknown instruction type: " + instr.name);
+        std::cerr << "--- Ignoring instruction: " + instr.name);
         return false;
     }
     return true;

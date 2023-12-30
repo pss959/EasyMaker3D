@@ -1,15 +1,9 @@
-#include <exception>
 #include <iostream>
-#include <vector>
 
 #include "App/Args.h"
 #include "App/Script.h"
-#include "App/SnapScriptApp.h"
-#include "Managers/PanelManager.h"
-#include "Panels/FilePanel.h"
-#include "Util/Assert.h"
+#include "App/ScriptedApp.h"
 #include "Util/FilePath.h"
-#include "Util/FilePathList.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
 
@@ -18,47 +12,6 @@
 /// documentation. See the usage string for details.
 ///
 /// \ingroup Apps
-
-// ----------------------------------------------------------------------------
-// MockFilePathList_ class.
-// ----------------------------------------------------------------------------
-
-/// Derived FilePathList class that simulates a file system so that
-/// documentation images are consistent and predictable.
-class MockFilePathList_ : public FilePathList {
-    /// Redefines this to simulate files.
-    virtual void GetContents(StrVec &subdirs, StrVec &files,
-                             const Str &extension,
-                             bool include_hidden) const override;
-    virtual bool IsValidDirectory(const FilePath &path) const {
-        const Str fn = path.GetFileName();
-        return fn.starts_with("Dir") || fn == "stl" || fn == "maker";
-    }
-    virtual bool IsExistingFile(const FilePath &path) const {
-        return true;
-    }
-};
-
-void MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
-                                    const Str &extension,
-                                    bool include_hidden) const {
-    const FilePath dir = GetCurrent();
-    // Special case for dummy path used in doc.
-    if (dir.ToString() == "/projects/maker/stl/") {
-        files.push_back("Airplane.stl");
-        files.push_back("Boat.stl");
-        files.push_back("Car.stl");
-    }
-    else {
-        subdirs.push_back("Dir0");
-        subdirs.push_back("Dir1");
-        files.push_back("FileA" + extension);
-        files.push_back("FileB" + extension);
-        files.push_back("FileC" + extension);
-        files.push_back("FileD" + extension);
-        files.push_back("FileE" + extension);
-    }
-}
 
 // ----------------------------------------------------------------------------
 // Mainline.
@@ -83,57 +36,20 @@ for public documentation. See Script.h for script details.
 )";
 
 int main(int argc, const char *argv[]) {
-    Util::app_type = Util::AppType::kInteractive;
+   Util::app_type = Util::AppType::kInteractive;
 
-    Args args(argc, argv, kUsageString);
+    // Let the ScriptedApp handle common options.
+    ScriptedApp app;
+    const Args args(argc, argv, kUsageString);
+    app.InitOptions(args);
 
-    const FilePath path("PublicDoc/snaps/scripts/" + args.GetString("SCRIPT"));
-    std::shared_ptr<Script> script(new Script);
-    if (! script->ReadScript(path))
-        return -1;
+    // Set snap-specific ones.
+    auto &options = app.GetOptions();
+    options.dryrun             = args.GetBool("--nosnap");
+    options.show_session_panel = false;
 
-    std::cout << "======= Processing Script file " << path.ToString() << "\n";
-
-    std::shared_ptr<SnapScriptApp::Options> options(new SnapScriptApp::Options);
-    KLogger::SetKeyString(args.GetString("--klog"));
-    options->do_ion_remote      = true;
-    options->enable_vr          = true;   // So controllers work properly.
-    options->fullscreen         = args.GetBool("--fullscreen");
-    options->nosnap             = args.GetBool("--nosnap");
-    options->remain             = args.GetBool("--remain");
-    options->report             = args.GetBool("--report");
-    options->show_session_panel = false;
-
-    // Note that this must have the same aspect ratio as fullscreen.
-    options->window_size.Set(1024, 552);
-
-    SnapScriptApp app;
-    if (! app.Init(options, script))
-        return -1;
-
-    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
-    const auto set_mock = [&](const Str &panel_name){
-        const auto &panel_mgr = *app.GetContext().panel_manager;
-        auto panel = panel_mgr.GetTypedPanel<FilePanel>(panel_name);
-        panel->SetFilePathList(new MockFilePathList_);
-    };
-    set_mock("FilePanel");
-    set_mock("ImportToolPanel");
-
-    try {
-        app.MainLoop();
-    }
-    catch (AssertException &ex) {
-        std::cerr << "*** Caught Assertion failure: " << ex.what() << "\n";
-        std::cerr << "*** STACK:\n";
-        for (const auto &s: ex.GetStackTrace())
-            std::cerr << "  " << s << "\n";
-        return -1;
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception: " << ex.what() << "\n";
-        return -1;
-    }
-
-    return 0;
+    // Process the script.
+    const FilePath script_path("PublicDoc/snaps/scripts/" +
+                               args.GetString("SCRIPT"));
+    return app.ProcessScript(script_path) ? 0 : -1;
 }

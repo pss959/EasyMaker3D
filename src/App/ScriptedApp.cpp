@@ -3,29 +3,100 @@
 #include <ion/math/rangeutils.h>
 #include <ion/math/transformutils.h>
 
+#include "App/Args.h"
 #include "App/ScriptEmitter.h"
 #include "Debug/Shortcuts.h"
 #include "Items/Controller.h"
 #include "Items/Settings.h"
 #include "Managers/AnimationManager.h"
+#include "Managers/PanelManager.h"
 #include "Managers/SceneContext.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Panels/FilePanel.h"
 #include "SG/CoordConv.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Util/FilePath.h"
+#include "Util/FilePathList.h"
+#include "Util/KLog.h"
 #include "Util/Tuning.h"
 
-bool ScriptedApp::Init(const OptionsPtr &options, const ScriptPtr &script) {
-    ASSERT(options);
-    ASSERT(script);
+namespace {
 
-    if (! Application::Init(*options))
+// ----------------------------------------------------------------------------
+// MockFilePathList_ class.
+// ----------------------------------------------------------------------------
+
+/// Derived FilePathList class that simulates a file system so that
+/// documentation images are consistent and predictable.
+class MockFilePathList_ : public FilePathList {
+    /// Redefines this to simulate files.
+    virtual void GetContents(StrVec &subdirs, StrVec &files,
+                             const Str &extension,
+                             bool include_hidden) const override;
+    virtual bool IsValidDirectory(const FilePath &path) const {
+        const Str fn = path.GetFileName();
+        return fn.starts_with("Dir") || fn == "stl" || fn == "maker";
+    }
+    virtual bool IsExistingFile(const FilePath &path) const {
+        return true;
+    }
+};
+
+void MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
+                                    const Str &extension,
+                                    bool include_hidden) const {
+    const FilePath dir = GetCurrent();
+    // Special case for dummy path used in doc.
+    if (dir.ToString() == "/projects/maker/stl/") {
+        files.push_back("Airplane.stl");
+        files.push_back("Boat.stl");
+        files.push_back("Car.stl");
+    }
+    else {
+        subdirs.push_back("Dir0");
+        subdirs.push_back("Dir1");
+        files.push_back("FileA" + extension);
+        files.push_back("FileB" + extension);
+        files.push_back("FileC" + extension);
+        files.push_back("FileD" + extension);
+        files.push_back("FileE" + extension);
+    }
+}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// ScriptedApp functions.
+// ----------------------------------------------------------------------------
+
+void ScriptedApp::InitOptions(const Args &args) {
+    // KLogging for debugging.
+    KLogger::SetKeyString(args.GetString("--klog"));
+
+    options_.do_ion_remote      = true;
+    options_.enable_vr          = true;   // So controllers work properly.
+    options_.fullscreen         = args.GetBool("--fullscreen");
+    options_.remain             = args.GetBool("--remain");
+    options_.report             = args.GetBool("--report");
+
+    // Window size. Note that this must have the same aspect ratio as
+    // fullscreen.
+    int size_n = args.GetAsInt("--size", 1);
+    if (size_n <= 0)
+        size_n = 1;
+    options_.window_size.Set(1024 / size_n, 552 / size_n);
+}
+
+bool ScriptedApp::ProcessScript(const FilePath &script_path) {
+    // Read the script.
+    if (! script_.ReadScript(script_path))
         return false;
 
-    options_ = options;
-    script_  = script;
+    if (! Application::Init(options_))
+        return false;
 
     emitter_.reset(new ScriptEmitter);
     AddEmitter(emitter_);
@@ -53,10 +124,33 @@ bool ScriptedApp::Init(const OptionsPtr &options, const ScriptPtr &script) {
                                -ScriptEmitter::kRightControllerOffset);
 
     // Use default settings file so that state is deterministic.
-    const FilePath path("PublicDoc/snaps/settings/Settings" +
-                        TK::kDataFileExtension);
+    const FilePath path("PublicDoc/settings/Settings" + TK::kDataFileExtension);
     if (! LoadSettings(path))
         return false;
+
+    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
+    const auto set_mock = [&](const Str &panel_name){
+        const auto &panel_mgr = *GetContext().panel_manager;
+        auto panel = panel_mgr.GetTypedPanel<FilePanel>(panel_name);
+        panel->SetFilePathList(new MockFilePathList_);
+    };
+    set_mock("FilePanel");
+    set_mock("ImportToolPanel");
+
+    try {
+        MainLoop();
+    }
+    catch (AssertException &ex) {
+        std::cerr << "*** Caught Assertion failure: " << ex.what() << "\n";
+        std::cerr << "*** STACK:\n";
+        for (const auto &s: ex.GetStackTrace())
+            std::cerr << "  " << s << "\n";
+        return -1;
+    }
+    catch (std::exception &ex) {
+        std::cerr << "*** Caught exception: " << ex.what() << "\n";
+        return -1;
+    }
 
     return true;
 }
@@ -66,7 +160,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     if (is_paused_)
         return Application::ProcessFrame(render_count, false);
 
-    const size_t instr_count         = script_->GetInstructions().size();
+    const size_t instr_count         = script_.GetInstructions().size();
     const bool events_pending        = emitter_->HasPendingEvents();
     const bool are_more_instructions = cur_instruction_ < instr_count;
     bool keep_going;
@@ -80,7 +174,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     // if the window is supposed to go away; don't want to wait for an event to
     // come along.
     const bool should_poll =
-        are_more_instructions || events_pending || ! options_->remain;
+        are_more_instructions || events_pending || ! options_.remain;
     if (! Application::ProcessFrame(render_count, should_poll)) {
         keep_going = false;
     }
@@ -92,9 +186,9 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     }
 
     else if (are_more_instructions) {
-        const auto &instr = *script_->GetInstructions()[cur_instruction_];
-        const size_t instr_count = script_->GetInstructions().size();
-        if (options_->report)
+        const auto &instr = *script_.GetInstructions()[cur_instruction_];
+        const size_t instr_count = script_.GetInstructions().size();
+        if (options_.report)
             std::cout << "  Processing " << instr.name
                       << " (instruction " << (cur_instruction_ + 1)
                       << " of " << instr_count << ") on line "
@@ -125,25 +219,10 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     if (was_stopped) {
         InstructionsDone();
         EnableMouseMotionEvents(true);
-        keep_going = options_->remain;
+        keep_going = options_.remain;
     }
 
     return keep_going;
-}
-
-const ScriptedApp::Options & ScriptedApp::GetOptions() const {
-    ASSERT(options_);
-    return *options_;
-}
-
-const Script & ScriptedApp::GetScript() const {
-    ASSERT(script_);
-    return *script_;
-}
-
-ScriptEmitter & ScriptedApp::GetEmitter() const {
-    ASSERT(emitter_);
-    return *emitter_;
 }
 
 bool ScriptedApp::PauseOrUnpause() {

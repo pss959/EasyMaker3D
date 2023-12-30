@@ -1,0 +1,203 @@
+<table class="doxtable column2fixed">
+  <tr>
+    <th>Command</th>
+    <th>Arguments</th>
+    <th>Effect</th>
+  </tr>
+  </thead>
+   <tr>
+    <td>[whitespace]</td>
+    <td></td>
+    <td>Blank lines are ignored.</td>
+  </tr>
+  <tr>
+    <td><b>#</b></td>
+    <td>...</td>
+    <td>Comments are ignored, including inline comments.</td>
+  </tr>
+  <tr>
+    <td><b>action</b></td>
+    <td><i>name</i></td>
+    <td>Applies the named action.</td>
+  </tr>
+  <tr>
+    <td><b>caption</b></td>
+    <td><i>x y duration text</i></td>
+    <td>Displays a caption at the given location (center) for the given
+    <a href="#duration"><i>duration</i></a>. A semicolon in the text can be
+    used to split the caption over multiple lines.
+  </tr>
+  <tr>
+    <td><b>click</b></td>
+    <td></td>
+    <td>Simulates a mouse click at the current cursor position.</td>
+  </tr>
+  <tr>
+    <td><b>drag</b></td>
+    <td><i>dx dy duration</i> [<code>L</code>|<code>M</code>|<code>R</code>]</td>
+    <td>Simulates a mouse drag from the current cursor position by
+      <i>(dx,dy)</i> in normalized window coordinates over the given
+      <a href="#duration"><i>duration</i></a>. An optional argument can specify
+      the left, middle, or right button.</td>
+  </tr>
+  <tr>
+    <td><b>focus</b></td>
+    <td><i>pane_name</i></td>
+    <td>Sets the keyboard focus to the named interactive pane in the active
+      board.</td>
+  </tr>
+  <tr>
+    <td><b>hand</b></td>
+    <td><code>L</code>|<code>R</code> <i>type</i></td>
+    <td>Defines a controller model for the given hand. *type* is one of
+      {<code>Oculus_Touch</code>, <code>Vive</code>, or <code>None</code>}.
+  </tr>
+  <tr>
+    <td><b>handpos</b></td>
+    <td><code>L</code>|<code>R</code>
+      <i>posx posy posz<br>laserx lasery laserz<br>guidex guidey guidez</i></td>
+    <td>Moves the controller for the given hand to the given position (relative
+      to the default rest position) and rotates so that the laser pointer and
+      hover guide align with the given vectors. The hover guide direction can
+      be zero if the default is ok.
+  </tr>
+  <tr>
+    <td><b>headset</b></td>
+    <td><code>on</code>|<code>off</code></td>
+    <td>Simulates VR headset on or off.</td>
+  </tr>
+  <tr>
+    <td><b>highlight</b></td>
+    <td><i>path duration</i> [<i>margin</i>]</td>
+    <td>Shows a highlight rectangle around the Node named by
+      <a href="#paths"><i>path</i></a> with the optional margin (in normalized
+      window coordinate units) around all sides for the given
+      <a href="#duration"><i>duration</i></a>.</td>
+  </tr>
+  <tr>
+    <td><b>key</b></td>
+    <td><i>key_string</i></td>
+    <td>Simulates a keyboard key press and release for the given
+      <i>key_string<i>, which is in the same format as for keyboard shortcuts,
+  </tr>
+  <tr>
+    <td><b>load</b></td>
+    <td>[<i>file_name</i>]</td>
+    <td>If a file name is given, loads a session from it. Otherwise, starts a
+      new session. Session files are relative
+      to <code>PublicDoc/snaps/sessions</code>.</td>
+  </tr>
+  <tr>
+    <td><b>moveover</b></td>
+    <td><i>path duration</i></td>
+    <td>Moves the cursor from its current position to be over the Node named by
+      <a href="#paths"><i>path</i></a>, taking the given
+      <a href="#duration"><i>duration</i></a> to do so.</td>
+  </tr>
+  <tr>
+    <td><b>moveto</b></td>
+    <td><i>x y duration</i></td>
+    <td>Moves the cursor (without interaction) from the current position to
+      <i>(x,y)</i> in normalized window coordinates over the given
+      <a href="#duration"><i>duration</i></a>.</td>
+  </tr>
+  <tr>
+    <td><b>section</b></td>
+    <td><i>tag title</i></td>
+    <td>Marks the current frame of the video as a section with the given tag
+      and title.</td>
+  </tr>
+  <tr>
+    <td><b>select</b></td>
+    <td>[<i>name</i>, ...]</td>
+    <td>Selects the named models. If no names are given, deselects all
+      models.</td>
+  </tr>
+  <tr>
+    <td><b>settings</b></td>
+    <td><i>file_name</i></td>
+    <td>Loads settings from the named file. Settings files are relative
+      to <code>PublicDoc/snaps/settings</code>.</td>
+  </tr>
+  <tr>
+    <td><b>snap</b></td>
+    <td><i>x y w h file_name</i></td>
+    <td>Saves a snapshot image of the area of size <i>w</i>X<i>h</i> with
+      (<i>x</i>,<i>y</i>) at the lower left to the named file. All values are
+      in normalized window coordinates. Images are saved
+      in <code>PublicDoc/docs/images</code>. Ignored for videos.</td>
+  </tr>
+  <tr>
+    <td><b>snapobj</b></td>
+    <td><i>path file_name</i> [<i>margin</i>]</td>
+    <td>Saves a snapshot image of the area around the Node named
+    by <a href="#paths"><i>path</i></a> with the optional margin (in normalized
+    window coordinate units) around all sides. Images are saved
+    in <code>PublicDoc/docs/images</code>. Ignored for videos.</td>
+  </tr>
+  <tr>
+    <td><b>stage</b></td>
+    <td><i>scale rot_angle</i></td>
+    <td>Scales and rotates the stage by the given values.</td>
+  </tr>
+  <tr>
+    <td><b>state</b></td>
+    <td><i>setting</i> <code>on</code>|<code>off</code></td>
+    <td>The <i>setting<i> is one of the following:
+          <table class="doxsubtable">
+            <tr>
+              <td><b>cursor</b></td>
+              <td>Shows or hides the fake cursor at the current location.</td>
+            </tr>
+            <tr>
+              <td><b>mod</b></td>
+              <td>Turns modified interaction mode on or off for subsequent
+                click and drag instructions.</td>
+            </tr>
+            <tr>
+              <td><b>tooltips</b></td>
+              <td>Turns tooltips on or off for subsequent hovers.</td>
+            </tr>
+            <tr>
+              <td><b>touch</b></td>
+              <td>Turns panel touch mode on or off.</td>
+            </tr>
+            <tr>
+              <td><b>video</b></td>
+              <td>Starts or stops capturing frames for a video. Ignored for
+              snaps</td>
+            </tr>
+          </table>
+          All settings are <code>off</code> by default.
+    </td>
+  </tr>
+  <tr>
+    <td><b>stop</b></td>
+    <td></td>
+    <td>Stops processing any more instructions. This can be used for testing to
+      easily stop after a given instruction.</td>
+  </tr>
+  <tr>
+    <td><b>view</b></td>
+    <td><i>dirx diry dirz</i></td>
+    <td>Changes the view to look along the given direction.</td>
+  </tr>
+  <tr>
+    <td><b>wait</b></td>
+    <td><i>duration</i></td>
+    <td>Does nothing for the given
+      <a href="#duration"><i>duration</i></a>. Ignored for snaps</td>
+  </tr>
+</table>
+<ul>
+  <li id="duration">
+    A <i>duration</i> is specified in seconds. Note that the duration is used
+    only when creating videos; it is ignored when creating snapshot images.
+  </li>
+  <li id="paths">
+    A <i>path</i> refers to a unique Node in the Scene. If there are multiple
+    Nodes with the same name, multiple Nodes can be specified to form the path,
+    such as <code>RotationTool/Sphere</code>. Note that the Nodes in the path
+    do not need to be contiguous.
+  </li>
+</ul>

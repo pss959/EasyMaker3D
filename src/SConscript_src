@@ -524,12 +524,10 @@ script_sources = PlaceInDir_('App', [
     'Script',
     'ScriptEmitter',
     'ScriptedApp',
-    'SnapScriptApp',
 ])
 
 # Extra sources used for capturevideo and some timing tests.
 video_sources = PlaceInDir_('App', [
-    'CaptureScriptApp',
     'VideoWriter',
 ])
 

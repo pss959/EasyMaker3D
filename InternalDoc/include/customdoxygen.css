@@ -84,6 +84,24 @@
     margin-left: 20px;
 }
 
+/* Explicitly created tables (in included html). */
+.doxtable {
+    margin: auto;
+    width:  90%;
+}
+.doxtable .fit-contents {
+    width:       1px%;
+    white-space: nowrap;
+}
+.doxtable tr:nth-child(even){ background-color: #f2f2f2; }
+.doxtable.column2fixed td:nth-child(2) { white-space: nowrap; }
+.doxsubtable, table.doxsubtable td {
+    border:         none;
+    border-spacing: 0;
+}
+.doxsubtable tr                 { background-color: #eaeaea; }
+.doxsubtable tr:nth-child(even) { background-color: #eaeaea; }
+
 /* Indent all fenced code blocks */
 div.fragment {
     margin-left: 40px;

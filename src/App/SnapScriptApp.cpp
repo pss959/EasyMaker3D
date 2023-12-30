@@ -134,7 +134,7 @@ bool SnapScriptApp::ProcessInstruction(const Script::Instr &instr) {
             Rotationf::RotateInto(-Vector3f::AxisZ(), vinst.dir));
     }
     else {
-        ASSERTM(false, "Unknown instruction type: " + instr.name);
+        std::cerr << "--- Ignoring instruction: " + instr.name);
         return false;
     }
     return true;
