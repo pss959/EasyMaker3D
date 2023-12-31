@@ -18,16 +18,17 @@ R"(capturevideo: Play back a session file with delays to create a video for
 public documentation. See Script.h for script details.
 
     Usage:
-      capturevideo [--format=<str>] [--fps=<fps>] [--klog=<klog_string>]
-                   [--nocapture] [--remain] [--report] [--size=<n>]
-                   SCRIPT [SESSION]
+      capturevideo [--format=<str>] [--fps=<fps>] [--fullscreen]
+                   [--klog=<klog_string>] [--nocapture] [--remain] [--report]
+                   [--size=<n>] SCRIPT [SESSION]
 
     Options:
       --format=<str>  Output video format. Choices: "webm" (default),
                         "rgbmp4", "yuvmp4".
       --fps=<long>    Frames per second in the resulting video (default 30).
-      --nocapture     Do not actually capture the video (useful for testing).
+      --fullscreen    Use a full-screen window.
       --klog=<string> String to pass to KLogger::SetKeyString().
+      --nocapture     Do not actually capture the video (useful for testing).
       --remain        Keep the window alive after script processing.
       --report        Report each instruction of script processing.
       --size=<n>      Use fractional (1/n) window size for speed when testing.

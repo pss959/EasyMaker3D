@@ -29,24 +29,22 @@ class Script {
         int line_number = 0;  ///< Line it appeared on (for messages).
         virtual ~Instr() {}   // Makes deletion work properly.
     };
+    DECL_SHARED_PTR(Instr);
 
     struct ActionInstr : public Instr {
         Action action;
     };
     struct CaptionInstr : public Instr {
         Point2f pos;
-        float   seconds;
+        float   duration;
         Str     text;
     };
     struct ClickInstr : public Instr {
         // No fields.
     };
-    struct CursorInstr : public Instr {
-        bool is_on;
-    };
     struct DragInstr : public Instr {
         Vector2f motion;
-        float    seconds;
+        float    duration;
         // XXXX Some way to allow snap before drag end...
         Str      button;
     };
@@ -62,13 +60,10 @@ class Script {
         Point3f   pos;
         Rotationf rot;
     };
-    struct HeadsetInstr : public Instr {
-        bool      is_on;
-    };
     struct HighlightInstr : public Instr {
         Str   path_string;
         float margin;
-        float seconds;
+        float duration;
     };
     struct KeyInstr : public Instr {
         Str key_string;
@@ -76,16 +71,13 @@ class Script {
     struct LoadInstr : public Instr {
         Str file_name;
     };
-    struct ModInstr : public Instr {
-        bool is_on;
-    };
     struct MoveOverInstr : public Instr {
         Str   path_string;
-        float seconds;
+        float duration;
     };
     struct MoveToInstr : public Instr {
         Point2f pos;
-        float   seconds;
+        float   duration;
     };
     struct SectionInstr : public Instr {
         Str tag;
@@ -110,39 +102,29 @@ class Script {
         float  scale;
         Anglef angle;
     };
-    struct StartInstr : public Instr {
-        // No data.
+    struct StateInstr : public Instr {
+        Str  setting;
+        bool is_on;
     };
     struct StopInstr : public Instr {
         // No data.
-    };
-    struct TooltipsInstr : public Instr {
-        bool is_on;
-    };
-    struct TouchInstr : public Instr {
-        bool is_on;
     };
     struct ViewInstr : public Instr {
         Vector3f dir;
     };
     struct WaitInstr : public Instr {
-        float seconds;
+        float duration;
     };
-
     DECL_SHARED_PTR(ActionInstr);
     DECL_SHARED_PTR(CaptionInstr);
     DECL_SHARED_PTR(ClickInstr);
-    DECL_SHARED_PTR(CursorInstr);
     DECL_SHARED_PTR(DragInstr);
     DECL_SHARED_PTR(FocusInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(HandPosInstr);
-    DECL_SHARED_PTR(HeadsetInstr);
     DECL_SHARED_PTR(HighlightInstr);
-    DECL_SHARED_PTR(Instr);
     DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
-    DECL_SHARED_PTR(ModInstr);
     DECL_SHARED_PTR(MoveOverInstr);
     DECL_SHARED_PTR(MoveToInstr);
     DECL_SHARED_PTR(SectionInstr);
@@ -151,10 +133,8 @@ class Script {
     DECL_SHARED_PTR(SnapInstr);
     DECL_SHARED_PTR(SnapObjInstr);
     DECL_SHARED_PTR(StageInstr);
-    DECL_SHARED_PTR(StartInstr);
+    DECL_SHARED_PTR(StateInstr);
     DECL_SHARED_PTR(StopInstr);
-    DECL_SHARED_PTR(TooltipsInstr);
-    DECL_SHARED_PTR(TouchInstr);
     DECL_SHARED_PTR(ViewInstr);
     DECL_SHARED_PTR(WaitInstr);
 
@@ -205,28 +185,23 @@ class Script {
     InstrPtr ParseAction_(const StrVec &words);
     InstrPtr ParseCaption_(const StrVec &words);
     InstrPtr ParseClick_(const StrVec &words);
-    InstrPtr ParseCursor_(const StrVec &words);
     InstrPtr ParseDrag_(const StrVec &words);
     InstrPtr ParseFocus_(const StrVec &words);
-    InstrPtr ParseHandPos_(const StrVec &words);
     InstrPtr ParseHand_(const StrVec &words);
-    InstrPtr ParseHeadset_(const StrVec &words);
+    InstrPtr ParseHandPos_(const StrVec &words);
     InstrPtr ParseHighlight_(const StrVec &words);
     InstrPtr ParseKey_(const StrVec &words);
     InstrPtr ParseLoad_(const StrVec &words);
-    InstrPtr ParseMod_(const StrVec &words);
     InstrPtr ParseMoveOver_(const StrVec &words);
     InstrPtr ParseMoveTo_(const StrVec &words);
     InstrPtr ParseSection_(const StrVec &words);
     InstrPtr ParseSelect_(const StrVec &words);
     InstrPtr ParseSettings_(const StrVec &words);
-    InstrPtr ParseSnapObj_(const StrVec &words);
     InstrPtr ParseSnap_(const StrVec &words);
+    InstrPtr ParseSnapObj_(const StrVec &words);
     InstrPtr ParseStage_(const StrVec &words);
-    InstrPtr ParseStart_(const StrVec &words);
+    InstrPtr ParseState_(const StrVec &words);
     InstrPtr ParseStop_(const StrVec &words);
-    InstrPtr ParseTooltips_(const StrVec &words);
-    InstrPtr ParseTouch_(const StrVec &words);
     InstrPtr ParseView_(const StrVec &words);
     InstrPtr ParseWait_(const StrVec &words);
 };

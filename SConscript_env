@@ -132,7 +132,6 @@ base_env = Environment(
     ION_LIB_NAME    = 'IonLib',
     APP_LIB_NAME    = 'AppLib',
     SCRIPT_LIB_NAME = 'AppScriptLib',
-    VIDEO_LIB_NAME  = 'AppVideoLib',
 
     BUILD_DIR       = f'build/{mode}',
     ION_DIR         = '#/ionsrc',
@@ -554,7 +553,7 @@ test_env.Append(
         '#/$BUILD_DIR/docopt.cpp',
         '#/$BUILD_DIR/googletest'
     ],
-    LIBS = ['$APP_LIB_NAME', '$VIDEO_LIB_NAME', '$SCRIPT_LIB_NAME',
+    LIBS = ['$APP_LIB_NAME', '$SCRIPT_LIB_NAME',
             'docopt', 'gtest', 'pthread'],
 
     # Copy all environment variables to simulate user environment.

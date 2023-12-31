@@ -18,14 +18,10 @@ main_extra_objects  = app_env.BuildObjects(main_extra_sources)
 # Environments.
 # -----------------------------------------------------------------------------
 
-# Environment for an app that needs snap scripting.
-snap_env = app_env.Clone()
-snap_env.Append(LIBS = '$SCRIPT_LIB_NAME')
-
-# Environment for an app that needs snap scripting and video.
-video_env = snap_env.Clone()
-video_env.Append(LIBS = '$VIDEO_LIB_NAME')
-video_env.AddPackages(video_env['VIDEO_PACKAGES'])
+# Environment for an app that needs scripting.
+script_env = app_env.Clone()
+script_env.Append(LIBS = '$SCRIPT_LIB_NAME')
+script_env.AddPackages(script_env['VIDEO_PACKAGES'])
 
 # -----------------------------------------------------------------------------
 # Building applications.
@@ -46,7 +42,7 @@ for name in [main_app_name, 'nodeviewer', 'printtypes']:
 # The doc-related apps build only on Linux. Some require extra libraries.
 if app_env['PLATFORM'] == 'linux':
     BuildApp_('createcheatsheet', app_env)
-    BuildApp_('snapimage',        snap_env)
-    BuildApp_('capturevideo',     video_env)
+    BuildApp_('snapimage',        script_env)
+    BuildApp_('capturevideo',     script_env)
 
 Return('apps')

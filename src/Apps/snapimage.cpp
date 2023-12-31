@@ -25,7 +25,7 @@ for public documentation. See Script.h for script details.
                 [--nosnap] [--remain] [--report] SCRIPT
 
     Options:
-      --fullscreen    Start with a full-screen window.
+      --fullscreen    Use a full-screen window.
       --klog=<string> String to pass to KLogger::SetKeyString().
       --nosnap        Ignore snap commands (useful for testing).
       --remain        Keep the window alive after script processing.

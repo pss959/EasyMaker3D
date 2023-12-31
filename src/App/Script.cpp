@@ -6,6 +6,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Util/Enum.h"
+#include "Util/General.h"
 #include "Util/Read.h"
 
 // ----------------------------------------------------------------------------
@@ -41,36 +42,33 @@ Script::Script() {
             func_map_[name] = func;
     };
 
-#define REG_FUNC_(name, func) \
-    reg_func(name, [&](const StrVec &w){ return func(w); });
+    // E.g, maps REG_FUNC_(Action) to ProcessAction_(cast to ActionInstr).
+#define REG_FUNC_(name)                                                 \
+    reg_func(Util::ToLowerCase(#name),                                  \
+             [&](const StrVec &w){ return Parse ## name ##_(w); })
 
-    REG_FUNC_("action",    ParseAction_);
-    REG_FUNC_("caption",   ParseCaption_);
-    REG_FUNC_("click",     ParseClick_);
-    REG_FUNC_("cursor",    ParseCursor_);
-    REG_FUNC_("drag",      ParseDrag_);
-    REG_FUNC_("focus",     ParseFocus_);
-    REG_FUNC_("hand",      ParseHand_);
-    REG_FUNC_("handpos",   ParseHandPos_);
-    REG_FUNC_("headset",   ParseHeadset_);
-    REG_FUNC_("highlight", ParseHighlight_);
-    REG_FUNC_("key",       ParseKey_);
-    REG_FUNC_("load",      ParseLoad_);
-    REG_FUNC_("mod",       ParseMod_);
-    REG_FUNC_("moveover",  ParseMoveOver_);
-    REG_FUNC_("moveto",    ParseMoveTo_);
-    REG_FUNC_("section",   ParseSection_);
-    REG_FUNC_("select",    ParseSelect_);
-    REG_FUNC_("settings",  ParseSettings_);
-    REG_FUNC_("snap",      ParseSnap_);
-    REG_FUNC_("snapobj",   ParseSnapObj_);
-    REG_FUNC_("stage",     ParseStage_);
-    REG_FUNC_("start",     ParseStart_);
-    REG_FUNC_("stop",      ParseStop_);
-    REG_FUNC_("tooltips",  ParseTooltips_);
-    REG_FUNC_("touch",     ParseTouch_);
-    REG_FUNC_("view",      ParseView_);
-    REG_FUNC_("wait",      ParseWait_);
+    REG_FUNC_(Action);
+    REG_FUNC_(Caption);
+    REG_FUNC_(Click);
+    REG_FUNC_(Drag);
+    REG_FUNC_(Focus);
+    REG_FUNC_(Hand);
+    REG_FUNC_(HandPos);
+    REG_FUNC_(Highlight);
+    REG_FUNC_(Key);
+    REG_FUNC_(Load);
+    REG_FUNC_(MoveOver);
+    REG_FUNC_(MoveTo);
+    REG_FUNC_(Section);
+    REG_FUNC_(Select);
+    REG_FUNC_(Settings);
+    REG_FUNC_(Snap);
+    REG_FUNC_(SnapObj);
+    REG_FUNC_(Stage);
+    REG_FUNC_(State);
+    REG_FUNC_(Stop);
+    REG_FUNC_(View);
+    REG_FUNC_(Wait);
 
 #undef REG_FUNC_
 }
@@ -196,18 +194,18 @@ Script::InstrPtr Script::ParseAction_(const StrVec &words) {
 
 Script::InstrPtr Script::ParseCaption_(const StrVec &words) {
     CaptionInstrPtr cinst;
-    float           x, y, seconds;
+    float           x, y, duration;
     if (words.size() < 5U) {
         Error_("Bad syntax for caption instruction");
     }
     else if (! ParseFloat01_(words[1], x) || ! ParseFloat01_(words[2], y) ||
-             ! ParseFloat_(words[3], seconds)) {
-        Error_("Invalid x, y, or seconds floats for caption instruction");
+             ! ParseFloat_(words[3], duration)) {
+        Error_("Invalid x, y, or duration floats for caption instruction");
     }
     else {
         cinst.reset(new CaptionInstr);
         cinst->pos.Set(x, y);
-        cinst->seconds = seconds;
+        cinst->duration = duration;
         cinst->text =
             Util::ReplaceString(
                 Util::JoinStrings(StrVec(words.begin() + 4, words.end())),
@@ -227,30 +225,18 @@ Script::InstrPtr Script::ParseClick_(const StrVec &words) {
     return cinst;
 }
 
-Script::InstrPtr Script::ParseCursor_(const StrVec &words) {
-    CursorInstrPtr cinst;
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
-        Error_("Bad syntax for cursor instruction");
-    }
-    else {
-        cinst.reset(new CursorInstr);
-        cinst->is_on = words[1] == "on";
-    }
-    return cinst;
-}
-
 Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
     DragInstrPtr dinst;
-    float        dx, dy, seconds;
+    float        dx, dy, duration;
     if (words.size() < 4 || words.size() > 5) {
         Error_("Bad syntax for drag instruction");
     }
     else if (! ParseFloat_(words[1], dx) || ! ParseFloat_(words[2], dy) ||
-             ! ParseFloat_(words[3], seconds)) {
-        Error_("Invalid dx, dy, or seconds floats for drag instruction");
+             ! ParseFloat_(words[3], duration)) {
+        Error_("Invalid dx, dy, or duration floats for drag instruction");
     }
-    else if (seconds <= 0) {
-        Error_("Seconds for drag instruction must be positive");
+    else if (duration <= 0) {
+        Error_("Duration for drag instruction must be positive");
     }
     else if (words.size() == 5 &&
              (words[4] != "L" && words[4] != "M" && words[4] != "R")) {
@@ -259,7 +245,7 @@ Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
     else {
         dinst.reset(new DragInstr);
         dinst->motion.Set(dx, dy);
-        dinst->seconds = seconds;
+        dinst->duration = duration;
         dinst->button = words.size() == 5 ? words[4] : "L";
     }
     return dinst;
@@ -275,6 +261,28 @@ Script::InstrPtr Script::ParseFocus_(const StrVec &words) {
         finst->pane_name = words[1];
     }
     return finst;
+}
+
+Script::InstrPtr Script::ParseHand_(const StrVec &words) {
+    HandInstrPtr hinst;
+    Vector3f     pos, dir;
+    if (words.size() != 3U) {
+         Error_("Bad syntax for hand instruction");
+    }
+    else if (words[1] != "L" && words[1] != "R") {
+        Error_("Invalid hand (L/R) for hand instruction");
+    }
+    else if (words[2] != "Oculus_Touch" &&
+             words[2] != "Vive" &&
+             words[2] != "None") {
+        Error_("Invalid controller type for hand instruction");
+    }
+    else {
+        hinst.reset(new HandInstr);
+        hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
+        hinst->controller = words[2];
+    }
+    return hinst;
 }
 
 Script::InstrPtr Script::ParseHandPos_(const StrVec &words) {
@@ -306,61 +314,27 @@ Script::InstrPtr Script::ParseHandPos_(const StrVec &words) {
     return hinst;
 }
 
-Script::InstrPtr Script::ParseHand_(const StrVec &words) {
-    HandInstrPtr hinst;
-    Vector3f     pos, dir;
-    if (words.size() != 3U) {
-         Error_("Bad syntax for hand instruction");
-    }
-    else if (words[1] != "L" && words[1] != "R") {
-        Error_("Invalid hand (L/R) for hand instruction");
-    }
-    else if (words[2] != "Oculus_Touch" &&
-             words[2] != "Vive" &&
-             words[2] != "None") {
-        Error_("Invalid controller type for hand instruction");
-    }
-    else {
-        hinst.reset(new HandInstr);
-        hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
-        hinst->controller = words[2];
-    }
-    return hinst;
-}
-
-Script::InstrPtr Script::ParseHeadset_(const StrVec &words) {
-    HeadsetInstrPtr hinst;
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
-        Error_("Bad syntax for headset instruction");
-    }
-    else {
-        hinst.reset(new HeadsetInstr);
-        hinst->is_on = words[1] == "on";
-    }
-    return hinst;
-}
-
 Script::InstrPtr Script::ParseHighlight_(
     const StrVec &words) {
     HighlightInstrPtr hinst;
-    float seconds, margin = 0;
+    float duration, margin = 0;
     if (words.size() < 3U || words.size() > 4U) {
         Error_("Bad syntax for highlight instruction");
     }
-    else if (! ParseFloat_(words[2], seconds)) {
-        Error_("Invalid seconds float for highlight instruction");
+    else if (! ParseFloat_(words[2], duration)) {
+        Error_("Invalid duration float for highlight instruction");
     }
     else if (words.size() == 4U && ! ParseFloat_(words[3], margin)) {
         Error_("Invalid margin float for highlight instruction");
     }
-    else if (seconds <= 0) {
-        Error_("Seconds for highlight instruction must be positive");
+    else if (duration <= 0) {
+        Error_("Duration for highlight instruction must be positive");
     }
     else {
         hinst.reset(new HighlightInstr);
         hinst->path_string = words[1];
         hinst->margin      = margin;
-        hinst->seconds     = seconds;
+        hinst->duration     = duration;
     }
     return hinst;
 }
@@ -398,49 +372,37 @@ Script::InstrPtr Script::ParseLoad_(const StrVec &words) {
     return linst;
 }
 
-Script::InstrPtr Script::ParseMod_(const StrVec &words) {
-    ModInstrPtr minst;
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
-        Error_("Bad syntax for mod instruction");
-    }
-    else {
-        minst.reset(new ModInstr);
-        minst->is_on = words[1] == "on";
-    }
-    return minst;
-}
-
 Script::InstrPtr Script::ParseMoveOver_(const StrVec &words) {
     MoveOverInstrPtr minst;
-    float            seconds;
+    float            duration;
     if (words.size() != 3U) {
         Error_("Bad syntax for moveover instruction");
     }
-    else if (! ParseFloat_(words[2], seconds)) {
-        Error_("Invalid seconds float for moveover instruction");
+    else if (! ParseFloat_(words[2], duration)) {
+        Error_("Invalid duration float for moveover instruction");
     }
     else {
         minst.reset(new MoveOverInstr);
         minst->path_string = words[1];
-        minst->seconds     = seconds;
+        minst->duration     = duration;
     }
     return minst;
 }
 
 Script::InstrPtr Script::ParseMoveTo_(const StrVec &words) {
     MoveToInstrPtr minst;
-    float          x, y, seconds;
+    float          x, y, duration;
     if (words.size() != 4) {
         Error_("Bad syntax for moveto instruction");
     }
     else if (! ParseFloat01_(words[1], x) || ! ParseFloat01_(words[2], y) ||
-             ! ParseFloat_(words[3], seconds)) {
-        Error_("Invalid x, y, or seconds floats for moveto instruction");
+             ! ParseFloat_(words[3], duration)) {
+        Error_("Invalid x, y, or duration floats for moveto instruction");
     }
     else {
         minst.reset(new MoveToInstr);
         minst->pos.Set(x, y);
-        minst->seconds = seconds;
+        minst->duration = duration;
     }
     return minst;
 }
@@ -478,24 +440,6 @@ Script::InstrPtr Script::ParseSettings_(const StrVec &words) {
     return sinst;
 }
 
-Script::InstrPtr Script::ParseSnapObj_(const StrVec &words) {
-    SnapObjInstrPtr sinst;
-    float margin = 0;
-    if (words.size() < 3U || words.size() > 4U) {
-        Error_("Bad syntax for snapobj instruction");
-    }
-    else if (words.size() == 4U && ! ParseFloat_(words[3], margin)) {
-        Error_("Invalid margin float for snapobj instruction");
-    }
-    else {
-        sinst.reset(new SnapObjInstr);
-        sinst->path_string = words[1];
-        sinst->margin      = margin;
-        sinst->file_name   = words[2];
-    }
-    return sinst;
-}
-
 Script::InstrPtr Script::ParseSnap_(const StrVec &words) {
     SnapInstrPtr sinst;
     float x, y, w, h;
@@ -517,6 +461,24 @@ Script::InstrPtr Script::ParseSnap_(const StrVec &words) {
     return sinst;
 }
 
+Script::InstrPtr Script::ParseSnapObj_(const StrVec &words) {
+    SnapObjInstrPtr sinst;
+    float margin = 0;
+    if (words.size() < 3U || words.size() > 4U) {
+        Error_("Bad syntax for snapobj instruction");
+    }
+    else if (words.size() == 4U && ! ParseFloat_(words[3], margin)) {
+        Error_("Invalid margin float for snapobj instruction");
+    }
+    else {
+        sinst.reset(new SnapObjInstr);
+        sinst->path_string = words[1];
+        sinst->margin      = margin;
+        sinst->file_name   = words[2];
+    }
+    return sinst;
+}
+
 Script::InstrPtr Script::ParseStage_(const StrVec &words) {
     StageInstrPtr sinst;
     float scale, angle;
@@ -534,13 +496,24 @@ Script::InstrPtr Script::ParseStage_(const StrVec &words) {
     return sinst;
 }
 
-Script::InstrPtr Script::ParseStart_(const StrVec &words) {
-    StartInstrPtr sinst;
-    if (words.size() != 1U) {
-        Error_("Bad syntax for start instruction");
+Script::InstrPtr Script::ParseState_(const StrVec &words) {
+    StateInstrPtr sinst;
+    const StrVec settings{
+        "cursor", "headset", "mod", "tooltips", "touch", "video",
+    };
+    if (words.size() != 3U) {
+        Error_("Bad syntax for cursor instruction");
+    }
+    else if (! Util::Contains(settings, words[1])) {
+        Error_("Invalid setting for state instruction: " + words[1]);
+    }
+    else if (words[2] != "on" && words[2] != "off") {
+        Error_("Third paramter for state instruction must be 'on' or 'off'");
     }
     else {
-        sinst.reset(new StartInstr);
+        sinst.reset(new StateInstr);
+        sinst->setting = words[1];
+        sinst->is_on   = words[2] == "on";
     }
     return sinst;
 }
@@ -554,30 +527,6 @@ Script::InstrPtr Script::ParseStop_(const StrVec &words) {
         sinst.reset(new StopInstr);
     }
     return sinst;
-}
-
-Script::InstrPtr Script::ParseTooltips_(const StrVec &words) {
-    TooltipsInstrPtr tinst;
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
-        Error_("Bad syntax for tooltips instruction");
-    }
-    else {
-        tinst.reset(new TooltipsInstr);
-        tinst->is_on = words[1] == "on";
-    }
-    return tinst;
-}
-
-Script::InstrPtr Script::ParseTouch_(const StrVec &words) {
-    TouchInstrPtr tinst;
-    if (words.size() != 2U || (words[1] != "on" && words[1] != "off")) {
-        Error_("Bad syntax for touch instruction");
-    }
-    else {
-        tinst.reset(new TouchInstr);
-        tinst->is_on = words[1] == "on";
-    }
-    return tinst;
 }
 
 Script::InstrPtr Script::ParseView_(const StrVec &words) {
@@ -599,16 +548,16 @@ Script::InstrPtr Script::ParseView_(const StrVec &words) {
 
 Script::InstrPtr Script::ParseWait_(const StrVec &words) {
     WaitInstrPtr winst;
-    float        seconds;
+    float        duration;
     if (words.size() != 2U) {
         Error_("Bad syntax for wait instruction");
     }
-    else if (! ParseFloat_(words[1], seconds)) {
-        Error_("Invalid seconds float for wait instruction");
+    else if (! ParseFloat_(words[1], duration)) {
+        Error_("Invalid duration float for wait instruction");
     }
     else {
         winst.reset(new WaitInstr);
-        winst->seconds = seconds;
+        winst->duration = duration;
     }
     return winst;
 }

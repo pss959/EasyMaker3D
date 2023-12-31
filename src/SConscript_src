@@ -524,10 +524,6 @@ script_sources = PlaceInDir_('App', [
     'Script',
     'ScriptEmitter',
     'ScriptedApp',
-])
-
-# Extra sources used for capturevideo and some timing tests.
-video_sources = PlaceInDir_('App', [
     'VideoWriter',
 ])
 
@@ -567,8 +563,5 @@ app_lib = lib_env.SharedLibrary(lib_env['APP_LIB_NAME'], lib_objects)
 
 script_objects = [BuildObject_(lib_env, source) for source in script_sources]
 script_lib = lib_env.SharedLibrary(lib_env['SCRIPT_LIB_NAME'], script_objects)
-
-video_objects = [BuildObject_(lib_env, source) for source in video_sources]
-video_lib = lib_env.SharedLibrary(lib_env['VIDEO_LIB_NAME'], video_objects)
 
 Return('app_lib')
