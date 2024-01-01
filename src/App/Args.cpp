@@ -11,6 +11,10 @@ Args::Args(int argc, const char **argv, const Str &usage) :
                          "Version " + TK::kVersionString)) {
 }
 
+bool Args::HasArg(const Str &name) const {
+    return args_.find(name) != args_.end();
+}
+
 Str Args::GetString(const Str &name) const {
     const auto &arg = GetArg_(name);
     return arg && arg.isString() ? arg.asString() : "";
@@ -38,6 +42,6 @@ int Args::GetAsInt(const Str &name, int default_value) const {
 }
 
 const docopt::value & Args::GetArg_(const Str &name) const {
-    ASSERTM(args_.find(name) != args_.end(), name);
+    ASSERTM(HasArg(name), name);
     return args_.at(name);
 }

@@ -14,6 +14,9 @@ class Args {
     /// with the DocOpt usage string.
     Args(int argc, const char **argv, const Str &usage);
 
+    /// Returns true if the named argument exists.
+    bool HasArg(const Str &name) const;
+
     /// Returns the value of the string argument with the given name. Returns
     /// an empty string if there is no such argument.
     Str GetString(const Str &name) const;

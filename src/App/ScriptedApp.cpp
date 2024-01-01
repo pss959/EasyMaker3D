@@ -349,7 +349,7 @@ void ScriptedApp::InitOptions(const Args &args) {
 
     // Window size. Note that this must have the same aspect ratio as
     // fullscreen.
-    int size_n = args.GetAsInt("--size", 1);
+    int size_n = args.HasArg("--size") ? args.GetAsInt("--size", 1) : 1;
     if (size_n <= 0)
         size_n = 1;
     options_.window_size.Set(1024 / size_n, 552 / size_n);
