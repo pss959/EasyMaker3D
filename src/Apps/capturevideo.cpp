@@ -58,5 +58,5 @@ int main(int argc, const char *argv[]) {
     // Process the script.
     const FilePath script_path("PublicDoc/videos/scripts/" +
                                args.GetString("SCRIPT"));
-    return app.ProcessScript(script_path) ? 0 : -1;
+    return app.ProcessScript(script_path, true) ? 0 : -1;
 }

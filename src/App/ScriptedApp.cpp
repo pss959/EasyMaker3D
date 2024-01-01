@@ -160,7 +160,7 @@ class ScriptedApp::PauseHandler_ : public Handler {
 class ScriptedApp::Video_ {
   public:
     Video_(const FilePath &script_path, const Vector2i &size,
-           const Str &format, const int fps);
+           const Str &format, const int fps, bool do_capture);
 
     /// Enables video capturing.
     void EnableCapturing(bool is_on) { is_capturing_ = is_on; }
@@ -186,14 +186,18 @@ class ScriptedApp::Video_ {
     /// Adds a chapter with the given tag and title at the current frame in the
     /// video.
     void AddChapter(const Str &tag, const Str &title) {
-        video_writer_.AddChapter(tag, title);
+        if (video_writer_)
+            video_writer_->AddChapter(tag, title);
     }
 
     /// Captures a frame using the given renderer and image size.
     void CaptureFrame(IRenderer &renderer, const Vector2i &size);
 
     /// Writes the captured video frames to the file.
-    void WriteToFile() { video_writer_.WriteToFile(); }
+    void WriteToFile() {
+        if (video_writer_)
+            video_writer_->WriteToFile();
+    }
 
   private:
     /// This struct is used to fade items (such as captions or the highlight
@@ -206,7 +210,7 @@ class ScriptedApp::Video_ {
     const int fps_;  ///< Frames per second passed to constructor.
 
     /// Creates and writes a video to a file.
-    VideoWriter video_writer_;
+    std::unique_ptr<VideoWriter> video_writer_;
 
     /// This is set to true when a start instruction is processed.
     bool is_capturing_ = false;
@@ -220,19 +224,21 @@ class ScriptedApp::Video_ {
 };
 
 ScriptedApp::Video_::Video_(const FilePath &script_path, const Vector2i &size,
-                            const Str &format, const int fps) :
-    fps_(fps),
-    video_writer_(format == "rgbmp4" ? VideoWriter::Format::kRGBMP4 :
-                  format == "yuvmp4" ? VideoWriter::Format::kYUVMP4 :
-                  VideoWriter::Format::kWEBM) {
+                            const Str &format, int fps,
+                            bool do_capture) : fps_(fps) {
+    if (do_capture) {
+        const VideoWriter::Format vformat =
+            format == "rgbmp4" ? VideoWriter::Format::kRGBMP4 :
+            format == "yuvmp4" ? VideoWriter::Format::kYUVMP4 :
+            VideoWriter::Format::kWEBM;
+        video_writer_.reset(new VideoWriter(vformat));
 
-    // Set up the output path.
-    FilePath video_path("PublicDoc/docs/extra/videos/" +
-                        script_path.GetFileName());
-    video_path.ReplaceExtension("." + video_writer_.GetExtension());
-
-    // Initialize the VideoWriter.
-    video_writer_.Init(video_path, size, fps);
+        // Set up the output path.
+        FilePath video_path("PublicDoc/docs/extra/videos/" +
+                            script_path.GetFileName());
+        video_path.ReplaceExtension("." + video_writer_->GetExtension());
+        video_writer_->Init(video_path, size, fps);
+    }
 }
 
 void ScriptedApp::Video_::UpdateCaptionFade(const Caption_ &caption) {
@@ -256,13 +262,13 @@ void ScriptedApp::Video_::UpdateHighlightFade(SG::Node &highlight) {
 
 void ScriptedApp::Video_::CaptureFrame(IRenderer &renderer,
                                        const Vector2i &size) {
-    if (is_capturing_) {
+    if (video_writer_ && is_capturing_) {
         const auto image =
             renderer.ReadImage(Range2i::BuildWithSize(Point2i(0, 0), size));
 
         // Rows of image need to be inverted (GL vs stblib).
         ion::image::FlipImage(image);
-        video_writer_.AddImage(*image);
+        video_writer_->AddImage(*image);
     }
 }
 
@@ -349,17 +355,23 @@ void ScriptedApp::InitOptions(const Args &args) {
     options_.window_size.Set(1024 / size_n, 552 / size_n);
 }
 
-bool ScriptedApp::ProcessScript(const FilePath &script_path) {
+bool ScriptedApp::ProcessScript(const FilePath &script_path, bool do_video) {
     // Read the script and initialize the rest.
     if (! script_.ReadScript(script_path) || ! Init_())
         return false;
+
+    // Initialize video if requested.
+    if (do_video)
+        video_.reset(new Video_(script_path, GetWindowSize(),
+                                options_.vidformat, options_.fps,
+                                ! options_.dryrun));
 
     // Run the Application main loop, which calls ProcessFrame().
     try {
         MainLoop();
     }
     catch (AssertException &ex) {
-        std::cerr << "*** Caught Assertion failure: " << ex.what() << "\n";
+        std::cerr << "*** Caught Assertion failure:\n" << ex.what() << "\n";
         std::cerr << "*** STACK:\n";
         for (const auto &s: ex.GetStackTrace())
             std::cerr << "  " << s << "\n";
@@ -563,187 +575,6 @@ bool ScriptedApp::ProcessInstruction_(const Script::Instr &instr) {
     const auto it = func_map_.find(instr.name);
     ASSERTM(it != func_map_.end(), "Bad instruction name: " + instr.name);
     return it->second(instr);
-
-#if XXXX
-    auto &context = GetContext();
-
-    if (instr.name == "action") {
-        const auto &ainst = GetTypedInstr_<Script::ActionInstr>(instr);
-    }
-    else if (instr.name == "caption") {
-        const auto &cinst = GetTypedInstr_<Script::CaptionInstr>(instr);
-    }
-    else if (instr.name == "click") {
-        emitter_.AddClick(cursor_pos_);
-    }
-    else if (instr.name == "drag") {
-        const auto &dinst = GetTypedInstr_<Script::DragInstr>(instr);
-        DragTo_(dinst.motion, dinst.duration, dinst.button);
-    }
-    else if (instr.name == "focus") {
-        const auto &finst = GetTypedInstr_<Script::FocusInstr>(instr);
-        FocusPane_(finst.pane_name);
-    }
-    else if (instr.name == "hand") {
-        const auto &hinst = GetTypedInstr_<Script::HandInstr>(instr);
-        if (! SetHand_(hinst.hand, hinst.controller))
-            return false;
-    }
-    else if (instr.name == "handpos") {
-        const auto &hinst = GetTypedInstr_<Script::HandPosInstr>(instr);
-        emitter.AddControllerPos(hinst.hand, hinst.pos, hinst.rot);
-    }
-    else if (instr.name == "headset") {
-        const auto &hinst = GetTypedInstr_<Script::HeadsetInstr>(instr);
-        emitter.AddHeadsetButton(hinst.is_on);
-    }
-
-
-
-    else if (instr.name == "cursor") {
-        const auto &cinst = GetTypedInstr_<Script::CursorInstr>(instr);
-        cursor_->SetEnabled(cinst.is_on);
-    }
-    else if (instr.name == "highlight") {
-        const auto &hinst = GetTypedInstr_<Script::HighlightInstr>(instr);
-        Range2f rect;
-        if (! GetNodeRect_(hinst.path_string, hinst.margin, rect))
-            return false;
-        DisplayHighlight_(rect, hinst.duration);
-    }
-    else if (instr.name == "key") {
-        const auto &kinst = GetTypedInstr_<Script::KeyInstr>(instr);
-        GetEmitter().AddKey(kinst.key_string);
-    }
-    else if (instr.name == "mod") {
-        const auto &minst = GetTypedInstr_<Script::ModInstr>(instr);
-        GetEmitter().SetModifiedMode(minst.is_on);
-    }
-    else if (instr.name == "moveover") {
-        const auto &minst = GetTypedInstr_<Script::MoveOverInstr>(instr);
-        MoveOver_(minst.path_string, minst.duration);
-    }
-    else if (instr.name == "moveto") {
-        const auto &minst = GetTypedInstr_<Script::MoveToInstr>(instr);
-        MoveTo_(minst.pos, minst.duration);
-    }
-    else if (instr.name == "section") {
-        const auto &sinst = GetTypedInstr_<Script::SectionInstr>(instr);
-        if (video_writer_) {
-            if (GetOptions_().report) {
-                std::cout << "    Section " << video_writer_->GetChapterCount()
-                          << " (" << sinst.tag << ") at "
-                          << video_writer_->GetImageCount()
-                          << ": " << sinst.title << "\n";
-            }
-            video_writer_->AddChapter(sinst.tag, sinst.title);
-        }
-    }
-    else if (instr.name == "start") {
-        is_capturing_ = true;
-    }
-    else if (instr.name == "tooltips") {
-        const auto &tinst = GetTypedInstr_<Script::TooltipsInstr>(instr);
-        TooltipFeedback::SetDelay(tinst.is_on ? 1 : 0);
-    }
-    else if (instr.name == "wait") {
-        const auto &winst = GetTypedInstr_<Script::WaitInstr>(instr);
-        MoveTo_(cursor_pos_, winst.duration);
-    }
-
-    // XXXXXXXXXXXXXXXXXXx
-
-    // Skip snap instructions if disabled.
-    if (GetOptions_().nosnap &&
-        (instr.name == "snap" || instr.name == "snapobj"))
-        return true;
-
-    auto &emitter = GetEmitter();
-
-#if XXXX
-    else if (instr.name == "click") {
-        //const auto &cinst = GetTypedInstr_<Script::ClickInstr>(instr);
-        // XXXX emitter.AddClick(cinst.pos);
-        // XXXX GetEmitter().AddClick(cursor_pos_);
-    }
-    else if (instr.name == "drag") {
-        const auto &dinst = GetTypedInstr_<Script::DragInstr>(instr);
-        emitter.AddHoverPoint(dinst.pos0);
-        emitter.AddDragPoints(dinst.pos0, dinst.pos1, dinst.count);
-    }
-    else if (instr.name == "dragp") {
-        const auto &dinst = GetTypedInstr_<Script::DragPInstr>(instr);
-        emitter.AddDragPoint(dinst.phase, dinst.pos);
-    }
-#endif
-#if XXXX
-    else if (instr.name == "hover") {
-        const auto &hinst = GetTypedInstr_<Script::HoverInstr>(instr);
-        emitter.AddHoverPoint(hinst.pos);
-    }
-    else if (instr.name == "key") {
-        const auto &kinst = GetTypedInstr_<Script::KeyInstr>(instr);
-        emitter.AddKey(kinst.key_string);
-    }
-#endif
-    else if (instr.name == "load") {
-        const auto &linst = GetTypedInstr_<Script::LoadInstr>(instr);
-        if (! LoadSession_(linst.file_name))
-            return false;
-    }
-    else if (instr.name == "mod") {
-        const auto &minst = GetTypedInstr_<Script::ModInstr>(instr);
-        emitter.SetModifiedMode(minst.is_on);
-    }
-    else if (instr.name == "select") {
-        const auto &sinst = GetTypedInstr_<Script::SelectInstr>(instr);
-        Selection sel;
-        BuildSelection_(sinst.names, sel);
-        GetContext().selection_manager->ChangeSelection(sel);
-    }
-    else if (instr.name == "settings") {
-        const auto &sinst = GetTypedInstr_<Script::SettingsInstr>(instr);
-        const FilePath path("PublicDoc/snaps/settings/" + sinst.file_name +
-                            TK::kDataFileExtension);
-        if (! LoadSettings(path))
-            return false;
-    }
-    else if (instr.name == "snap") {
-        const auto &sinst = GetTypedInstr_<Script::SnapInstr>(instr);
-        if (! TakeSnapshot_(sinst.rect, sinst.file_name))
-            return false;
-    }
-    else if (instr.name == "snapobj") {
-        const auto &sinst = GetTypedInstr_<Script::SnapObjInstr>(instr);
-        Range2f rect;
-        if (! GetNodeRect_(sinst.path_string, sinst.margin, rect) ||
-            ! TakeSnapshot_(rect, sinst.file_name))
-            return false;
-    }
-    else if (instr.name == "stage") {
-        const auto &sinst = GetTypedInstr_<Script::StageInstr>(instr);
-        auto &stage = *GetContext().scene_context->stage;
-        stage.SetScaleAndRotation(sinst.scale, sinst.angle);
-    }
-    else if (instr.name == "touch") {
-        const auto &tinst = GetTypedInstr_<Script::TouchInstr>(instr);
-        SetTouchMode_(tinst.is_on);
-    }
-    else if (instr.name == "view") {
-        const auto &vinst = GetTypedInstr_<Script::ViewInstr>(instr);
-        GetContext().scene_context->window_camera->SetOrientation(
-            Rotationf::RotateInto(-Vector3f::AxisZ(), vinst.dir));
-    }
-    else {
-        std::cerr << "--- Ignoring instruction: " + instr.name);
-        return false;
-    }
-    else {
-        std::cerr << "--- Ignoring instruction: " + instr.name);
-        return false;
-    }
-    return true;
-#endif
 }
 
 bool ScriptedApp::ProcessAction_(const Script::ActionInstr &instr) {
@@ -993,13 +824,18 @@ bool ScriptedApp::ProcessSettings_(const Script::SettingsInstr &instr) {
 }
 
 bool ScriptedApp::ProcessSnap_(const Script::SnapInstr &instr) {
-    return TakeSnapshot_(instr.rect, instr.file_name);
+    return options_.dryrun ? true : TakeSnapshot_(instr.rect, instr.file_name);
 }
 
 bool ScriptedApp::ProcessSnapObj_(const Script::SnapObjInstr &instr) {
-    Range2f rect;
-    return GetNodeRect_(instr.path_string, instr.margin, rect) &&
-        TakeSnapshot_(rect, instr.file_name);
+    if (options_.dryrun) {
+        return true;
+    }
+    else {
+        Range2f rect;
+        return GetNodeRect_(instr.path_string, instr.margin, rect) &&
+            TakeSnapshot_(rect, instr.file_name);
+    }
 }
 
 bool ScriptedApp::ProcessStage_(const Script::StageInstr &instr) {
