@@ -499,7 +499,7 @@ Script::InstrPtr Script::ParseStage_(const StrVec &words) {
 Script::InstrPtr Script::ParseState_(const StrVec &words) {
     StateInstrPtr sinst;
     const StrVec settings{
-        "cursor", "headset", "mod", "tooltips", "touch", "video",
+        "animation", "cursor", "headset", "mod", "tooltips", "touch", "video",
     };
     if (words.size() != 3U) {
         Error_("Bad syntax for cursor instruction");

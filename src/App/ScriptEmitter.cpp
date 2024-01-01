@@ -31,18 +31,18 @@ void ScriptEmitter::AddHoverPoint(const Point2f &pos) {
     events_.push_back(event);
 }
 
-void ScriptEmitter::AddDragPoint(const Str &phase, const Point2f &pos) {
+void ScriptEmitter::AddDragPoint(DragPhase phase, const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
     event.position2D       = pos;
     event.flags.Set(Event::Flag::kPosition2D);
 
-    if (phase == "start") {
+    if (phase == DragPhase::kStart) {
         event.flags.Set(Event::Flag::kButtonPress);
         event.button = drag_button_;
     }
-    else if (phase == "end") {
+    else if (phase == DragPhase::kEnd) {
         event.flags.Set(Event::Flag::kButtonRelease);
         event.button = drag_button_;
     }
@@ -52,14 +52,14 @@ void ScriptEmitter::AddDragPoint(const Str &phase, const Point2f &pos) {
 
 void ScriptEmitter::AddDragPoints(const Point2f &pos0,
                                   const Point2f &pos1, size_t count) {
-    AddDragPoint("start", pos0);
+    AddDragPoint(DragPhase::kStart, pos0);
 
     // Add intermediate points, including pos1.
     const float delta = 1.f / (count + 1);
     for (size_t i = 0; i <= count; ++i)
-        AddDragPoint("continue", Lerp((i + 1) * delta, pos0, pos1));
+        AddDragPoint(DragPhase::kContinue, Lerp((i + 1) * delta, pos0, pos1));
 
-    AddDragPoint("end", pos1);
+    AddDragPoint(DragPhase::kEnd, pos1);
 }
 
 void ScriptEmitter::AddKey(const Str &key_string) {

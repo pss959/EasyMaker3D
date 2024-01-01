@@ -12,6 +12,9 @@
 /// mouse clicks, mouse drags and key presses in script-based applications.
 class ScriptEmitter : public IEmitter {
   public:
+    /// Phase of a drag operation.
+    enum class DragPhase { kStart, kContinue, kEnd };
+
     using KModifiers = Util::Flags<Event::ModifierKey>;
 
     /// Sets modified mode for subsequent clicks and drags. It is off by
@@ -27,9 +30,8 @@ class ScriptEmitter : public IEmitter {
     /// Sets a mouse button to use for subsequent drags.
     void SetDragButton(const Event::Button &button) { drag_button_ = button; }
 
-    /// Adds a point for a single drag phase to emit. The \p phase parameter
-    /// should be "start", "continue", or "end".
-    void AddDragPoint(const Str &phase, const Point2f &pos);
+    /// Adds a point for a single drag phase to emit.
+    void AddDragPoint(DragPhase phase, const Point2f &pos);
 
     /// Adds points for a drag from \p pos0 to \p pos1 with \p count
     /// intermediate points to emit.

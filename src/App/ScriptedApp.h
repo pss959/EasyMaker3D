@@ -50,9 +50,53 @@ class ScriptedApp : public Application {
     /// anything goes wrong.
     bool ProcessScript(const FilePath &script_path);
 
-  protected:
     /// Redefines this to add script processing during frames.
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
+
+  private:
+    /// Struct containing information for a caption.
+    struct Caption_ {
+        SG::NodePtr       node;  ///< Root node for caption.
+        SG::NodePtr       bg;    ///< Node with background rectangle.
+        SG::TextNodePtr   text;  ///< TextNode displaying text.
+        Point2f           pos;   ///< Last window position of caption.
+    };
+
+    // Used to fake a file system for panels.
+    class MockFilePathList_;
+
+    // This is used for video-only processing.
+    class Video_;
+
+    using InstrFunc_ = std::function<bool(const Script::Instr &)>;
+    using FuncMap_   = std::map<Str, InstrFunc_>;
+
+    // Handler used to update the fake cursor.
+    DECL_SHARED_PTR(CursorHandler_);
+    // Handler used to allow pausing.
+    DECL_SHARED_PTR(PauseHandler_);
+
+    /// This maps instruction names to functions.
+    FuncMap_         func_map_;
+
+    Options          options_;
+    Script           script_;
+    ScriptEmitterPtr emitter_;      ///< Used to simulate mouse and key events.
+
+    bool   is_paused_       = false;
+    size_t cur_instruction_ = 0;
+
+    CursorHandler_Ptr cursor_handler_;  ///< Updates the fake cursor.
+    PauseHandler_Ptr  pause_handler_;   ///< Handles pausing.
+    SG::NodePtr cursor_;                ///< Fake cursor for video.
+    Point2f     cursor_pos_;            ///< Current cursor position.
+    Caption_    caption_;               ///< Caption information.
+    SG::NodePtr highlight_;             ///< Displays highlight rectangle.
+
+    std::unique_ptr<Video_> video_;  ///< Used only when capturing video.
+
+    /// Initializes everything. Returns false on error.
+    bool Init_();
 
     /// Processes one instruction.
     bool ProcessInstruction_(const Script::Instr &instr);
@@ -83,84 +127,50 @@ class ScriptedApp : public Application {
     bool ProcessWait_(const Script::WaitInstr &instr);
     ///@}
 
-    /// Lets derived classes know when instructions have all been processed.
-    /// The base class defines this to do nothing.
-    virtual void InstructionsDone() {}
+    /// Finishes main instruction processing.
+    void Finish_();
 
-    /// Allows derived classes to pause or resume processing, meaning that
-    /// instructions will not be processed and BeginFrame()/EndFrame() will not
-    /// be called until unpaused. Returns true if the application is now
-    /// paused.
-    bool PauseOrUnpause();
-
-    /// Lets derived classes know when a frame is starting. The base class
-    /// defines this to do nothing.
-    virtual void BeginFrame() {}
-
-    /// Lets derived classes know when a frame is ending. The base class
-    /// defines this to do nothing.
-    virtual void EndFrame() {}
-
-    /// Loads Settings from the given path, updating the SettingsManager and
-    /// SessionManager. Returns false on error.
-    bool LoadSettings(const FilePath &path);
-
-
-    /// Sets \p rect to an image-plane rectangle surrounding the Node
-    /// referenced by the given path string with given margin on all
-    /// sides. Prints an error message and returns false if the Node is not
-    /// found.
-    bool GetNodeRect(const Str &path_string, float margin, Range2f &rect);
-
-    /// Resolves a Node path string to an SG::NodePath.
-    SG::NodePath GetNodePath(const Str &path_string);
-
-  private:
-    /// Struct containing information for a caption.
-    struct Caption_ {
-        SG::NodePtr       node;  ///< Root node for caption.
-        SG::NodePtr       bg;    ///< Node with background rectangle.
-        SG::TextNodePtr   text;  ///< TextNode displaying text.
-        Point2f           pos;   ///< Last window position of caption.
-    };
-
-    // This is used for video-only processing.
-    struct Video_;
-
-    using InstrFunc_ = std::function<bool(const Script::Instr &)>;
-    using FuncMap_   = std::map<Str, InstrFunc_>;
-
-    // Handler used to update the fake cursor.
-    DECL_SHARED_PTR(CursorHandler_);
-    // Handler used to allow pausing.
-    DECL_SHARED_PTR(PauseHandler_);
-
-    /// This maps instruction names to functions.
-    FuncMap_         func_map_;
-
-    Options          options_;
-    Script           script_;
-    ScriptEmitterPtr emitter_;      ///< Used to simulate mouse and key events.
-
-    bool   is_paused_       = false;
-    size_t cur_instruction_ = 0;
-
-    CursorHandler_Ptr cursor_handler_;  ///< Updates the fake cursor.
-    PauseHandler_Ptr  pause_handler_;   ///< Handles pausing.
-    SG::NodePtr cursor_;                ///< Fake cursor for video.
-    Point2f     cursor_pos_;            ///< Current cursor position.
-    Caption_    caption_;               ///< Caption information.
-    SG::NodePtr highlight_;             ///< Displays highlight rectangle.
-
-    std::unique_ptr<Video_> video_;  ///< Used only when capturing video.
-
-    /// Updates the caption position, rotation, and fade if necessary.
-    void UpdateCaption_();
+    /// Returns a Frustum representing the current camera view.
+    Frustum GetFrustum_() const;
 
     /// Returns a 3D point on the image plane in front of the camera for the
     /// given normalized window point.
     Point3f GetImagePlanePoint_(const Point2f &pos);
 
-    /// Returns a Frustum representing the current camera view.
-    Frustum GetFrustum() const;
+    /// Resolves a Node path string to an SG::NodePath.
+    SG::NodePath GetNodePath_(const Str &path_string);
+
+    /// Sets \p rect to an image-plane rectangle surrounding the Node
+    /// referenced by the given path string with given margin on all
+    /// sides. Prints an error message and returns false if the Node is not
+    /// found.
+    bool GetNodeRect_(const Str &path_string, float margin, Range2f &rect);
+
+    /// Loads Settings from the given path, updating the SettingsManager and
+    /// SessionManager. Returns false on error.
+    bool LoadSettings_(const FilePath &path);
+
+    /// Moves the fake cursor to the given position in normalized window
+    /// coordinates.
+    void MoveFakeCursorTo_(const Point2f &pos);
+
+    /// Adds events to move the cursor to the given position in normalized
+    /// window coordinates over the given duration in seconds.
+    void MoveTo_(const Point2f &pos, float duration);
+
+    /// Pauses or resumes processing, meaning that instructions will not be
+    /// processed until unpaused. Returns true if the application is now
+    /// paused. This is provided mostly for pausing video capture to inspect
+    /// the scene and debug issues.
+    bool PauseOrUnpause_();
+
+    /// Turns panel touch mode on or off.
+    void SetTouchMode_(bool is_on);
+
+    /// Takes a snapshot of a rectangular region of the window, saving it to
+    /// the named file in the images directory.
+    bool TakeSnapshot_(const Range2f &rect, const Str &file_name);
+
+    /// Updates the caption position, rotation, and fade if necessary.
+    void UpdateCaption_();
 };
