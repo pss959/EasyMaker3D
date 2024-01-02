@@ -319,6 +319,8 @@ ScriptedApp::ScriptedApp() {
     REG_FUNC_(Caption);
     REG_FUNC_(Click);
     REG_FUNC_(Drag);
+    REG_FUNC_(DragStart);
+    REG_FUNC_(DragEnd);
     REG_FUNC_(Focus);
     REG_FUNC_(Hand);
     REG_FUNC_(HandPos);
@@ -624,24 +626,31 @@ bool ScriptedApp::ProcessDrag_(const Script::DragInstr &instr) {
 
     const Point2f end_pos = cursor_pos_ + instr.motion;
 
-    // Determine the number of events to create over the duration.
-    const size_t frames = instr.duration * options_.fps;
-    std::vector<Point2f> points;
-    points.reserve(frames);
-    for (auto i : std::views::iota(0U, frames)) {
-        const float t = static_cast<float>(i + 1) / frames;
-        points.push_back(BezierInterp(t, cursor_pos_, end_pos));
-    }
-
-    // Emit the points.
     emitter_->SetDragButton(instr.button == "M" ? Event::Button::kMouse2 :
-                           instr.button == "R" ? Event::Button::kMouse3 :
-                           Event::Button::kMouse1);
-    emitter_->AddDragPoint(ScriptEmitter::DragPhase::kStart, points[0]);
-    for (size_t i = 1; i + 1 < frames; ++i)
-        emitter_->AddDragPoint(ScriptEmitter::DragPhase::kContinue, points[i]);
-    emitter_->AddDragPoint(ScriptEmitter::DragPhase::kEnd, points[frames - 1]);
+                            instr.button == "R" ? Event::Button::kMouse3 :
+                            Event::Button::kMouse1);
 
+    // Determine the number of points to create. Longer durations require
+    // more points.
+    const size_t frames = std::max(1.f, instr.duration * options_.fps);
+    emitter_->AddDragPoints(cursor_pos_, end_pos, frames - 1);
+
+    return true;
+}
+
+bool ScriptedApp::ProcessDragStart_(const Script::DragStartInstr &instr) {
+    const Point2f end_pos = cursor_pos_ + instr.motion;
+    if (! emitter_->IsDragging()) {
+        emitter_->SetDragButton(Event::Button::kMouse1);
+        emitter_->AddDragPoint(ScriptEmitter::DragPhase::kStart, cursor_pos_);
+    }
+    emitter_->AddDragPoint(ScriptEmitter::DragPhase::kContinue, end_pos);
+    MoveFakeCursorTo_(end_pos);
+    return true;
+}
+
+bool ScriptedApp::ProcessDragEnd_(const Script::DragEndInstr &instr) {
+    emitter_->AddDragPoint(ScriptEmitter::DragPhase::kEnd, cursor_pos_);
     return true;
 }
 
@@ -826,7 +835,7 @@ bool ScriptedApp::ProcessSelect_(const Script::SelectInstr &instr) {
 }
 
 bool ScriptedApp::ProcessSettings_(const Script::SettingsInstr &instr) {
-    const FilePath path("PublicDoc/snaps/settings/" + instr.file_name +
+    const FilePath path("PublicDoc/settings/" + instr.file_name +
                         TK::kDataFileExtension);
     return LoadSettings_(path);
 }

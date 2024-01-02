@@ -1,6 +1,7 @@
 #include "App/ScriptEmitter.h"
 
 #include "Math/Linear.h"
+#include "Util/Assert.h"
 #include "Util/Delay.h"
 #include "Util/Tuning.h"
 
@@ -39,25 +40,35 @@ void ScriptEmitter::AddDragPoint(DragPhase phase, const Point2f &pos) {
     event.flags.Set(Event::Flag::kPosition2D);
 
     if (phase == DragPhase::kStart) {
+        ASSERT(! is_dragging_);
         event.flags.Set(Event::Flag::kButtonPress);
         event.button = drag_button_;
+        is_dragging_ = true;
     }
     else if (phase == DragPhase::kEnd) {
+        ASSERT(is_dragging_);
         event.flags.Set(Event::Flag::kButtonRelease);
         event.button = drag_button_;
+        is_dragging_ = false;
     }
 
     events_.push_back(event);
 }
 
-void ScriptEmitter::AddDragPoints(const Point2f &pos0,
-                                  const Point2f &pos1, size_t count) {
+void ScriptEmitter::AddDragPoints(const Point2f &pos0, const Point2f &pos1,
+                                  size_t count, bool use_ease) {
+    ASSERT(! is_dragging_);
+
     AddDragPoint(DragPhase::kStart, pos0);
 
     // Add intermediate points, including pos1.
     const float delta = 1.f / (count + 1);
-    for (size_t i = 0; i <= count; ++i)
-        AddDragPoint(DragPhase::kContinue, Lerp((i + 1) * delta, pos0, pos1));
+    for (size_t i = 0; i <= count; ++i) {
+        const float t = (i + 1) * delta;
+        AddDragPoint(DragPhase::kContinue,
+                     use_ease ? BezierInterp(t, pos0, pos1) :
+                     Lerp(t, pos0, pos1));
+    }
 
     AddDragPoint(DragPhase::kEnd, pos1);
 }

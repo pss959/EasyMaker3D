@@ -41,11 +41,18 @@
       the left, middle, or right button.</td>
   </tr>
   <tr>
-    <td><b>dragp</b></td>
-    <td><code>start</code>|<code>continue</code>|<code>end</code>
-      <i>x y</i></td>
-    <td>Simulates one phase of a mouse drag at the given point in normalized
-      window coordinates.</td>
+    <td><b>dragend</b></td>
+    <td></i></td>
+    <td>Completes a mouse drag started by <b>dragstart</b>.</td>
+  </tr>
+  <tr>
+    <td><b>dragstart</b></td>
+    <td><i>dx dy</i></td>
+    <td>Simulates a mouse drag from the current cursor position by
+      <i>(dx,dy)</i> in normalized window coordinates, but does not end the
+      drag until a <b>dragend</b> instruction is processed. If
+      multiple <b>dragstart</b> instructions are issued before
+      a <b>dragend</b>, each successive one continues the drag.</td>
   </tr>
   <tr>
     <td><b>focus</b></td>

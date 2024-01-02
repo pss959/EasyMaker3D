@@ -51,7 +51,8 @@ Script::Script() {
     REG_FUNC_(Caption);
     REG_FUNC_(Click);
     REG_FUNC_(Drag);
-    REG_FUNC_(DragP);
+    REG_FUNC_(DragStart);
+    REG_FUNC_(DragEnd);
     REG_FUNC_(Focus);
     REG_FUNC_(Hand);
     REG_FUNC_(HandPos);
@@ -236,8 +237,8 @@ Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
              ! ParseFloat_(words[3], duration)) {
         Error_("Invalid dx, dy, or duration floats for drag instruction");
     }
-    else if (duration <= 0) {
-        Error_("Duration for drag instruction must be positive");
+    else if (duration < 0) {
+        Error_("Duration for drag instruction must not be negative");
     }
     else if (words.size() == 5 &&
              (words[4] != "L" && words[4] != "M" && words[4] != "R")) {
@@ -252,24 +253,29 @@ Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
     return dinst;
 }
 
-Script::InstrPtr Script::ParseDragP_(const StrVec &words) {
-    DragPInstrPtr dinst;
-    float x, y;
-    if (words.size() != 4U) {
-        Error_("Bad syntax for dragp instruction");
+Script::InstrPtr Script::ParseDragStart_(const StrVec &words) {
+    DragStartInstrPtr dinst;
+    float dx, dy;
+    if (words.size() != 3U) {
+        Error_("Bad syntax for dragstart instruction");
     }
-    else if (words[1] != "start" &&
-             words[1] != "continue" &&
-             words[1] != "end") {
-        Error_("Invalid phase (start/continue/end) for dragp instruction");
-    }
-    else if (! ParseFloat01_(words[2], x) || ! ParseFloat01_(words[3], y)) {
-        Error_("Invalid x or y floats for dragp instruction");
+    else if (! ParseFloat_(words[1], dx) || ! ParseFloat_(words[2], dy)) {
+        Error_("Invalid dx or dy floats for dragstart instruction");
     }
     else {
-        dinst.reset(new DragPInstr);
-        dinst->phase = words[1];
-        dinst->pos.Set(x, y);
+        dinst.reset(new DragStartInstr);
+        dinst->motion.Set(dx, dy);
+    }
+    return dinst;
+}
+
+Script::InstrPtr Script::ParseDragEnd_(const StrVec &words) {
+    DragEndInstrPtr dinst;
+    if (words.size() != 1U) {
+        Error_("Bad syntax for dragend instruction");
+    }
+    else {
+        dinst.reset(new DragEndInstr);
     }
     return dinst;
 }

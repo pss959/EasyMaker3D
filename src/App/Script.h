@@ -47,9 +47,11 @@ class Script {
         float    duration;
         Str      button;
     };
-    struct DragPInstr : public Instr {
-        Str       phase;
-        Point2f   pos;
+    struct DragStartInstr : public Instr {
+        Vector2f motion;
+    };
+    struct DragEndInstr : public Instr {
+        // No data.
     };
     struct FocusInstr : public Instr {
         Str pane_name;
@@ -122,7 +124,8 @@ class Script {
     DECL_SHARED_PTR(CaptionInstr);
     DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(DragInstr);
-    DECL_SHARED_PTR(DragPInstr);
+    DECL_SHARED_PTR(DragStartInstr);
+    DECL_SHARED_PTR(DragEndInstr);
     DECL_SHARED_PTR(FocusInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(HandPosInstr);
@@ -190,7 +193,8 @@ class Script {
     InstrPtr ParseCaption_(const StrVec &words);
     InstrPtr ParseClick_(const StrVec &words);
     InstrPtr ParseDrag_(const StrVec &words);
-    InstrPtr ParseDragP_(const StrVec &words);
+    InstrPtr ParseDragStart_(const StrVec &words);
+    InstrPtr ParseDragEnd_(const StrVec &words);
     InstrPtr ParseFocus_(const StrVec &words);
     InstrPtr ParseHand_(const StrVec &words);
     InstrPtr ParseHandPos_(const StrVec &words);

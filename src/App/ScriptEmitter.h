@@ -33,9 +33,15 @@ class ScriptEmitter : public IEmitter {
     /// Adds a point for a single drag phase to emit.
     void AddDragPoint(DragPhase phase, const Point2f &pos);
 
+    /// Returns true if a drag was started with DragPhase::kStart but not ended
+    /// yet with DragPhase::kEnd.
+    bool IsDragging() const { return is_dragging_; }
+
     /// Adds points for a drag from \p pos0 to \p pos1 with \p count
-    /// intermediate points to emit.
-    void AddDragPoints(const Point2f &pos0, const Point2f &pos1, size_t count);
+    /// intermediate points to emit. If \p use_ease is true, the points are
+    /// interpolated to create an ease-in, ease-out motion.
+    void AddDragPoints(const Point2f &pos0, const Point2f &pos1, size_t count,
+                       bool use_ease = false);
 
     /// Adds a key press/release to simulate.
     void AddKey(const Str &key_string);
@@ -75,6 +81,9 @@ class ScriptEmitter : public IEmitter {
 
     /// Button to use for drag events.
     Event::Button      drag_button_ = Event::Button::kMouse1;
+
+    /// True in the middle of a phased drag.
+    bool               is_dragging_ = false;
 
     /// Events left to emit.
     std::deque<Event>  events_;
