@@ -51,6 +51,7 @@ Script::Script() {
     REG_FUNC_(Caption);
     REG_FUNC_(Click);
     REG_FUNC_(Drag);
+    REG_FUNC_(DragP);
     REG_FUNC_(Focus);
     REG_FUNC_(Hand);
     REG_FUNC_(HandPos);
@@ -247,6 +248,28 @@ Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
         dinst->motion.Set(dx, dy);
         dinst->duration = duration;
         dinst->button = words.size() == 5 ? words[4] : "L";
+    }
+    return dinst;
+}
+
+Script::InstrPtr Script::ParseDragP_(const StrVec &words) {
+    DragPInstrPtr dinst;
+    float x, y;
+    if (words.size() != 4U) {
+        Error_("Bad syntax for dragp instruction");
+    }
+    else if (words[1] != "start" &&
+             words[1] != "continue" &&
+             words[1] != "end") {
+        Error_("Invalid phase (start/continue/end) for dragp instruction");
+    }
+    else if (! ParseFloat01_(words[2], x) || ! ParseFloat01_(words[3], y)) {
+        Error_("Invalid x or y floats for dragp instruction");
+    }
+    else {
+        dinst.reset(new DragPInstr);
+        dinst->phase = words[1];
+        dinst->pos.Set(x, y);
     }
     return dinst;
 }
@@ -499,7 +522,8 @@ Script::InstrPtr Script::ParseStage_(const StrVec &words) {
 Script::InstrPtr Script::ParseState_(const StrVec &words) {
     StateInstrPtr sinst;
     const StrVec settings{
-        "animation", "cursor", "headset", "mod", "tooltips", "touch", "video",
+        "animation", "cursor", "fileexist", "headset",
+        "mod", "tooltips", "touch", "video",
     };
     if (words.size() != 3U) {
         Error_("Bad syntax for cursor instruction");

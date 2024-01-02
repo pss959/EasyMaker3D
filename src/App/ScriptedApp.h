@@ -94,6 +94,8 @@ class ScriptedApp : public Application {
     Caption_    caption_;               ///< Caption information.
     SG::NodePtr highlight_;             ///< Displays highlight rectangle.
 
+    std::unique_ptr<MockFilePathList_> mock_fpl_;  ///< Simulates files.
+
     std::unique_ptr<Video_> video_;  ///< Used only when capturing video.
 
     /// Initializes everything. Returns false on error.

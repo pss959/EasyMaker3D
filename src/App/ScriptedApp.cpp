@@ -58,6 +58,10 @@
 /// Derived FilePathList class that simulates a file system so that
 /// documentation images are consistent and predictable.
 class ScriptedApp::MockFilePathList_ : public FilePathList {
+  public:
+    /// Sets whether subsequent calls to IsExistingFile() return true.
+    void SetFileExists(bool exists) { file_exists_ = exists; }
+
     /// Redefines this to simulate files.
     virtual void GetContents(StrVec &subdirs, StrVec &files,
                              const Str &extension,
@@ -67,8 +71,10 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
         return fn.starts_with("Dir") || fn == "stl" || fn == "maker";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
-        return true;
+        return file_exists_;
     }
+  private:
+    bool file_exists_ = false;
 };
 
 void ScriptedApp::MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
@@ -396,7 +402,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     bool keep_going;
     bool was_stopped = false;
 
-    if (are_more_instructions) {
+    if (are_more_instructions || events_pending) {
         UpdateCaption_();
         if (video_)
             video_->UpdateHighlightFade(*highlight_);
@@ -493,15 +499,16 @@ bool ScriptedApp::Init_() {
         return false;
 
     // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
+    mock_fpl_.reset(new MockFilePathList_);
     const auto set_mock = [&](const Str &panel_name){
         const auto &panel_mgr = *GetContext().panel_manager;
         auto panel = panel_mgr.GetTypedPanel<FilePanel>(panel_name);
-        panel->SetFilePathList(new MockFilePathList_);
+        panel->SetFilePathList(mock_fpl_.get());
     };
     set_mock("FilePanel");
     set_mock("ImportToolPanel");
 
-    // XXXXXXX CLEAN THIS UP!
+    // XXXX CLEAN THIS UP!
 
     ASSERT(context.scene_context);
     ASSERT(context.scene_context->scene);
@@ -509,6 +516,7 @@ bool ScriptedApp::Init_() {
     auto room = SG::FindNodeInScene(scene, "Room");
 
     // Parse the Capture scene data and add it to the Room.
+    // XXXX CHANGE FILE NAME
     Parser::Parser parser;
     auto capture_root = std::dynamic_pointer_cast<SG::Node>(
         parser.ParseFile(FilePath::GetResourcePath("nodes", "Capture.emd")));
@@ -850,6 +858,9 @@ bool ScriptedApp::ProcessState_(const Script::StateInstr &instr) {
     }
     else if (instr.setting == "cursor") {
         cursor_->SetEnabled(instr.is_on);
+    }
+    else if (instr.setting == "fileexist") {
+        mock_fpl_->SetFileExists(instr.is_on);
     }
     else if (instr.setting == "headset") {
         emitter_->AddHeadsetButton(instr.is_on);

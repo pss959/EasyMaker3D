@@ -45,8 +45,11 @@ class Script {
     struct DragInstr : public Instr {
         Vector2f motion;
         float    duration;
-        // XXXX Some way to allow snap before drag end...
         Str      button;
+    };
+    struct DragPInstr : public Instr {
+        Str       phase;
+        Point2f   pos;
     };
     struct FocusInstr : public Instr {
         Str pane_name;
@@ -119,6 +122,7 @@ class Script {
     DECL_SHARED_PTR(CaptionInstr);
     DECL_SHARED_PTR(ClickInstr);
     DECL_SHARED_PTR(DragInstr);
+    DECL_SHARED_PTR(DragPInstr);
     DECL_SHARED_PTR(FocusInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(HandPosInstr);
@@ -177,7 +181,7 @@ class Script {
     bool ParseFloat_(const Str &s, float &f);
     bool ParseFloat01_(const Str &s, float &f);
     bool ParseN_(const Str &s, size_t &n);
-    //@}
+    ///@}
 
     /// \name Instruction parsing.
     /// Each of these parses and returns an instruction of a specific type.
@@ -186,6 +190,7 @@ class Script {
     InstrPtr ParseCaption_(const StrVec &words);
     InstrPtr ParseClick_(const StrVec &words);
     InstrPtr ParseDrag_(const StrVec &words);
+    InstrPtr ParseDragP_(const StrVec &words);
     InstrPtr ParseFocus_(const StrVec &words);
     InstrPtr ParseHand_(const StrVec &words);
     InstrPtr ParseHandPos_(const StrVec &words);
@@ -204,4 +209,5 @@ class Script {
     InstrPtr ParseStop_(const StrVec &words);
     InstrPtr ParseView_(const StrVec &words);
     InstrPtr ParseWait_(const StrVec &words);
+    ///@}
 };
