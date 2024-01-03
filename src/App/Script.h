@@ -77,8 +77,9 @@ class Script {
         Str file_name;
     };
     struct MoveOverInstr : public Instr {
-        Str   path_string;
-        float duration;
+        Str      path_string;
+        float    duration;
+        Vector2f offset;
     };
     struct MoveToInstr : public Instr {
         Point2f pos;

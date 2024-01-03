@@ -1,0 +1,29 @@
+CommandList {
+  app_info: AppInfo {
+    version: "0.0.1",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: True,
+      build_volume_visible: False,
+      axis_aligned: False,
+    },
+  },
+  commands: [
+    CreateRevSurfModelCommand {
+      result_name: "RevSurf_1",
+      initial_scale: 4,
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.402989 0.87653, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.402989 0.87653, 0.5 0.5, 0.351202 0.168748],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+  ],
+  current_index: 3,
+}

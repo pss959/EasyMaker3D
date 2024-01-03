@@ -403,17 +403,22 @@ Script::InstrPtr Script::ParseLoad_(const StrVec &words) {
 
 Script::InstrPtr Script::ParseMoveOver_(const StrVec &words) {
     MoveOverInstrPtr minst;
-    float            duration;
-    if (words.size() != 3U) {
+    float            duration, dx = 0, dy = 0;
+    if (words.size() != 3U && words.size() != 5U) {
         Error_("Bad syntax for moveover instruction");
     }
     else if (! ParseFloat_(words[2], duration)) {
         Error_("Invalid duration float for moveover instruction");
     }
+    else if (words.size() == 5U &&
+             (! ParseFloat_(words[3], dx) || ! ParseFloat_(words[4], dy))) {
+        Error_("Invalid dx or dy floats for moveover instruction");
+    }
     else {
         minst.reset(new MoveOverInstr);
         minst->path_string = words[1];
         minst->duration     = duration;
+        minst->offset.Set(dx, dy);
     }
     return minst;
 }

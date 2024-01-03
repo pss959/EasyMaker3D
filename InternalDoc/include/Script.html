@@ -98,10 +98,13 @@
   </tr>
   <tr>
     <td><b>moveover</b></td>
-    <td><i>path duration</i></td>
+    <td><i>path duration</i> [<i>dx dy</i>]</td>
     <td>Moves the cursor from its current position to be over the Node named by
       <a href="#paths"><i>path</i></a>, taking the given
-      <a href="#duration"><i>duration</i></a> to do so.</td>
+      <a href="#duration"><i>duration</i></a> to do so. If <i>dx</i>
+      and <i>dy</i> are specified (in normalized window coordinate), they are
+      added to the final cursor position, allowing for some positional
+      tweaking.</td>
   </tr>
   <tr>
     <td><b>moveto</b></td>

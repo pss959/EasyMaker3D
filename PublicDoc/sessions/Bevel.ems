@@ -1,0 +1,36 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.7.0",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    ConvertBevelCommand {
+      result_names: ["Beveled_1"],
+      model_names: ["Box_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.535323 0.820092],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+    ChangeBevelCommand {
+      profile_points: [0.535323 0.820092, 0.672153 0.65422],
+      bevel_scale: 1,
+      max_angle: 120,
+      model_names: ["Beveled_1"],
+    },
+  ],
+  current_index: 4,
+}

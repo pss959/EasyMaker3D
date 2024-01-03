@@ -783,7 +783,7 @@ bool ScriptedApp::ProcessLoad_(const Script::LoadInstr &instr) {
             std::cout << "    Started new session\n";
     }
     else {
-        const FilePath path("PublicDoc/snaps/sessions/" + instr.file_name +
+        const FilePath path("PublicDoc/sessions/" + instr.file_name +
                             TK::kSessionFileExtension);
         Str error;
         if (! GetContext().session_manager->LoadSession(path, error)) {
@@ -808,7 +808,8 @@ bool ScriptedApp::ProcessMoveOver_(const Script::MoveOverInstr &instr) {
     // Project the center of the object in world coordinates onto the Frustum
     // image plane to get the point to move to.
     const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
-    MoveTo_(GetFrustum_().ProjectToImageRect(center), instr.duration);
+    MoveTo_(GetFrustum_().ProjectToImageRect(center) + instr.offset,
+            instr.duration);
     return true;
 }
 
