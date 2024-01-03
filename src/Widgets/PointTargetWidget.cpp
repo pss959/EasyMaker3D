@@ -3,10 +3,12 @@
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
+#include "Math/Linear.h"
 #include "SG/CoordConv.h"
 #include "SG/Search.h"
 #include "SG/Tube.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
 #include "Widgets/RadialLayoutWidget.h"
 
 void PointTargetWidget::AddFields() {
@@ -112,12 +114,13 @@ void PointTargetWidget::SetSnapIndicator_(const Dimensionality &snapped_dims) {
     const bool is_on = snapped_dims.GetCount() > 0;
     snap_indicator_->SetEnabled(is_on);
 
-    // Set the color if on.
+    // Set the color if on. Note that user coordinates (+Z up) are used.
     if (is_on) {
         Color color(0, 0, 0);
-        for (int dim = 0; dim < 3; ++dim)
+        for (const auto dim: Util::EnumValues<Dim>()) {
             if (snapped_dims.HasDimension(dim))
-                color[dim] = 1;
+                color[Util::EnumInt(ToUserDim(dim))] = 1;
+        }
         snap_indicator_->SetBaseColor(color);
     }
 }

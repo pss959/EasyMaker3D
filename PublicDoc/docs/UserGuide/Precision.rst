@@ -159,14 +159,13 @@ When modified-dragging the Point Target, the snap indicator sphere will appear
 when any snapping occurs, and is :ref:`color-coded by dimension
 <ug-dimension-colors>`. If snapping occurs in two or three dimensions, the
 color will be the sum of the respective dimensions' colors. In the above left
-image, the Point Target is snapped to the center of the front-right edge of the
-cylinder's bounds. In the center image, the :ref:`precision level
-<ug-precision-level>` has been increased to keep the target from always
-snapping to a bounds edge, and the target is on the center line of the front
-face of the bounds, but is not snapped in the Z (up) dimension.
+image, the Point Target is snapped to the vertical center of the front face of
+the cylinder's bounds but is not snapped in the Z (up) dimension; the sphere is
+therefore yellow (red for X + green for Y). In the center image, the target is
+also snapped to the center of the bounds in Z, so the sphere is white (R+G+B).
 
-Effects
-,,,,,,,
+Target Effects
+,,,,,,,,,,,,,,
 
 When active, the Point Target and Edge Target affect certain drag operations,
 causing them to snap to the target values when specific conditions are met.
@@ -184,10 +183,10 @@ direction as shown here.
 
 .. note::
 
-   When the Point Target is active, creating a new model positions the model at
-   the target's position with the model's Z (up) direction aligned with the
-   target direction. Turn the target off before creating a new model if this is
-   not what you want.
+   When the Point Target is active, a new model that is created is positioned
+   with its bottom center point at the target's position and with the model's Z
+   (up) direction aligned with the target direction. Turn the target off before
+   creating a new model if this is not what you want.
 
 Similarly, when the Edge Target is active, interactions that involve size (such
 as the :ref:`Scale Tool <ug-scale-tool>`) snap to the target's length.

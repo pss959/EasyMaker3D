@@ -152,6 +152,10 @@ class MainHandler::Impl_ {
     /// DragInfo instance used to process drags.
     DragInfo    drag_info_;
 
+    /// Start mouse position for a drag. This is used only to allow the
+    /// difference in positions to be logged.
+    Point2f     drag_start_mouse_pos_;
+
     /// Actuator trackers. There is one stored for each Actuator value except
     /// Actuator::kNone.
     std::vector<TrackerPtr> trackers_;
@@ -431,6 +435,7 @@ bool MainHandler::Impl_::Activate_(const Event event) {
             if (event.device == Event::Device::kMouse) {
                 KLOG('d', "Mouse activation at " << event.position2D
                      << (event.is_modified_mode ? " (MOD)" : ""));
+                drag_start_mouse_pos_= event.position2D;
             }
             ProcessActivation_();
             state_ = State_::kActivated;
@@ -455,7 +460,8 @@ bool MainHandler::Impl_::Deactivate_(const Event &event) {
         KLOG('d', "MainHandler now kWaiting");
         if (event.device == Event::Device::kMouse) {
             KLOG('d', "Mouse deactivation at " << event.position2D
-                     << (event.is_modified_mode ? " (MOD)" : ""));
+                 << " diff " << (event.position2D - drag_start_mouse_pos_)
+                 << (event.is_modified_mode ? " (MOD)" : ""));
         }
         return true;
     }
@@ -598,6 +604,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
     draggable->ContinueDrag(drag_info_);
     if (event.device == Event::Device::kMouse) {
         KLOG('d', "Mouse drag at " << event.position2D
+             << " diff " << (event.position2D - drag_start_mouse_pos_)
              << (event.is_modified_mode ? " (MOD)" : ""));
     }
 }

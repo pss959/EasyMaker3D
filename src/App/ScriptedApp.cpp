@@ -639,11 +639,12 @@ bool ScriptedApp::ProcessDrag_(const Script::DragInstr &instr) {
 }
 
 bool ScriptedApp::ProcessDragStart_(const Script::DragStartInstr &instr) {
-    const Point2f end_pos = cursor_pos_ + instr.motion;
     if (! emitter_->IsDragging()) {
+        drag_start_pos_ = cursor_pos_;
         emitter_->SetDragButton(Event::Button::kMouse1);
         emitter_->AddDragPoint(ScriptEmitter::DragPhase::kStart, cursor_pos_);
     }
+    const Point2f end_pos = drag_start_pos_ + instr.motion;
     emitter_->AddDragPoint(ScriptEmitter::DragPhase::kContinue, end_pos);
     MoveFakeCursorTo_(end_pos);
     return true;

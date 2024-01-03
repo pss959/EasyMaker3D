@@ -84,8 +84,9 @@ class ScriptedApp : public Application {
     Script           script_;
     ScriptEmitterPtr emitter_;      ///< Used to simulate mouse and key events.
 
-    bool   is_paused_       = false;
-    size_t cur_instruction_ = 0;
+    bool    is_paused_       = false;
+    size_t  cur_instruction_ = 0;
+    Point2f drag_start_pos_;
 
     CursorHandler_Ptr cursor_handler_;  ///< Updates the fake cursor.
     PauseHandler_Ptr  pause_handler_;   ///< Handles pausing.

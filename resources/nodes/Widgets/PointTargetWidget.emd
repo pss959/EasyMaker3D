@@ -1,25 +1,35 @@
 PointTargetWidget "PointTargetWidget" {
-  shapes: [
-    Ellipsoid {   # Base sphere.
-      size:             .8 .8 .8,
-      band_count:       20,
-      sector_count:     20,
-    },
-    Cylinder {    # Shaft.
-      translation:      0 2 0,
-      top_radius:       .15,
-      bottom_radius:    .15,
-      height:           4,
-    },
-    Cylinder {    # Top cone.
-      translation:      0 4 0,
-      top_radius:       0,
-      bottom_radius:    .3,
-      height:           1,
-      sector_count:     20,
-    },
-  ],
   children: [
+    Node "Base" {
+      shapes: [
+        Ellipsoid {
+          size:         .8 .8 .8,
+          band_count:   20,
+          sector_count: 20,
+        },
+      ]
+    },
+    Node "Shaft" {
+      translation: 0 2 0,
+      shapes: [
+        Cylinder {
+          top_radius:    .15,
+          bottom_radius: .15,
+          height:        4,
+        },
+      ]
+    },
+    Node "Cone" {
+      translation: 0 4 0,
+      shapes: [
+        Cylinder {
+          top_radius:    0,
+          bottom_radius: .3,
+          height:        1,
+          sector_count:  20,
+        },
+      ]
+    },
     # Radial layout UI.
     Node {
       translation: 0 1 0,

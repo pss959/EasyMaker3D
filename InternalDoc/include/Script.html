@@ -52,7 +52,8 @@
       <i>(dx,dy)</i> in normalized window coordinates, but does not end the
       drag until a <b>dragend</b> instruction is processed. If
       multiple <b>dragstart</b> instructions are issued before
-      a <b>dragend</b>, each successive one continues the drag.</td>
+      a <b>dragend</b>, each successive one continues the drag (relative to the
+      starting position, not the previous <b>dragstart</b> position).</td>
   </tr>
   <tr>
     <td><b>focus</b></td>
