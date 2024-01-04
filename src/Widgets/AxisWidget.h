@@ -40,8 +40,8 @@ class AxisWidget : public CompositeWidget {
     /// by default.
     void SetTranslationEnabled(bool enabled);
 
-    /// Sets the size of the widget to the given radius.
-    void SetSize(float radius);
+    /// Sets the length of the arrow based on the given size.
+    void SetSize(float size_along_axis);
 
     /// Sets the allowable range for the axis translation.
     void SetTranslationRange(const Range2f &range);

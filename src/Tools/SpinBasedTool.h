@@ -61,8 +61,12 @@ class SpinBasedTool : public Tool {
     /// Spin (in stage coordinates) at the start of widget interaction.
     Spin                 start_stage_spin_;
 
-    /// Radius used to set the widget sizes and for feedback placement.
+    /// Radius used to set the widget sizes.
     float                radius_ = 1;
+
+    /// Size along the spin axis direction used to set widget sizes and for
+    /// feedback placement.
+    float                size_along_axis_ = 1;
 
     /// Feedback showing current Spin angle.
     AngularFeedbackPtr   angle_feedback_;
@@ -101,6 +105,11 @@ class SpinBasedTool : public Tool {
     /// Returns true if the two given Spin instances differ enough to execute a
     /// command to change them.
     static bool SpinsDiffer_(const Spin &spin0, const Spin &spin1);
+
+    /// Given a model size, returns the size of the model along the given
+    /// vector (the spin axis).
+    static float GetBoundsSizeAlongVector(const Vector3f &bounds_size,
+                                          const Vector3f &dir);
 
     friend class Parser::Registry;
 };

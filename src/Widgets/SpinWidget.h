@@ -47,8 +47,9 @@ class SpinWidget : public CompositeWidget {
     /// during a drag.
     const Spin & GetSpin() const { return spin_; }
 
-    /// Sets the size of the widget to the given radius.
-    void SetSize(float radius);
+    /// Sets the size of the widget to the given radius and size along the spin
+    /// axis.
+    void SetSize(float radius, float size_along_axis);
 
   protected:
     SpinWidget() {}

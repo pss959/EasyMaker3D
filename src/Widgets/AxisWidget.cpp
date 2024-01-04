@@ -30,12 +30,14 @@ void AxisWidget::SetTranslationEnabled(bool enabled) {
     translator_->SetInteractionEnabled(enabled);
 }
 
-void AxisWidget::SetSize(float radius) {
+void AxisWidget::SetSize(float size_along_axis) {
     ASSERT(! rotator_->IsDragging() && ! translator_->IsDragging());
-    const float kAxisScale = 1.6f;
-    const float size = kAxisScale * radius;
 
-    // Scale the translator shaft and position the arrow end parts.
+    // Scale the translator shaft based on the size in the arrow direction and
+    // position the arrow end parts.
+    const float kAxisExtra = 3;
+    const float size = .5f * size_along_axis + kAxisExtra;
+
     translator_->SetScale(Vector3f(1,  size, 1));
     cone_->SetTranslation(Vector3f(0,  size, 0));
     base_->SetTranslation(Vector3f(0, -size, 0));

@@ -77,14 +77,18 @@ void SpinBasedTool::UpdateGripInfo(GripInfo &info) {
 void SpinBasedTool::Attach() {
     auto model = GetModelAttachedTo();
     ASSERT(model);
-
-    // Update the widget size based on the size of the ConvertedModel.
     const auto model_size = MatchOperandModelAndGetSize(false);
-    radius_ = .5f * ion::math::Length(model_size);
-    spin_widget_->SetSize(radius_);
 
     // Get the Spin from the attached Model in stage coordinates.
     stage_spin_ = GetStageSpinFromModel_();
+
+    // Compute the radius and the size of the model along the spin axis.
+    radius_ = .5f * ion::math::Length(model_size);
+    size_along_axis_ =
+        GetBoundsSizeAlongVector(model_size, stage_spin_.axis);
+
+    // Update the widget size based on the size of the ConvertedModel.
+    spin_widget_->SetSize(radius_, size_along_axis_);
 
     UpdateSpinWidget_();
 }
@@ -276,7 +280,8 @@ void SpinBasedTool::UpdateSpinWidget_() {
 void SpinBasedTool::UpdateAngleFeedback_() {
     // The feedback should be in the plane perpendicular to the Spin axis (in
     // stage coordinates).
-    const Point3f center = stage_spin_.center + radius_ * stage_spin_.axis;
+    const Point3f center =
+        stage_spin_.center + size_along_axis_ * stage_spin_.axis;
     ASSERT(angle_feedback_);
     angle_feedback_->SubtendArc(center, 0, 0, stage_spin_.axis,
                                 CircleArc(Anglef(), stage_spin_.angle));
@@ -302,4 +307,18 @@ bool SpinBasedTool::SpinsDiffer_(const Spin &spin0, const Spin &spin1) {
         ! AreDirectionsClose(spin0.axis,   spin1.axis, angle_tolerance)  ||
         !           AreClose(spin0.angle,  spin1.angle, angle_tolerance) ||
         !           AreClose(spin0.offset, spin1.offset);
+}
+
+float SpinBasedTool::GetBoundsSizeAlongVector(const Vector3f &bounds_size,
+                                              const Vector3f &dir) {
+    Point3f corners[8];
+    Bounds(bounds_size).GetCorners(corners);
+    float min_dist =  std::numeric_limits<float>::max();
+    float max_dist = -std::numeric_limits<float>::max();
+    for (const auto &corner: corners) {
+        const float dist = SignedDistance(corner, dir);
+        min_dist = std::min(min_dist, dist);
+        max_dist = std::max(max_dist, dist);
+    }
+    return max_dist - min_dist;
 }

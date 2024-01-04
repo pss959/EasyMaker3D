@@ -48,13 +48,13 @@ void SpinWidget::SetSpin(const Spin &spin) {
     ring_transform_->TranslateTo(spin.center);
 }
 
-void SpinWidget::SetSize(float radius) {
+void SpinWidget::SetSize(float radius, float size_along_axis) {
     const float kRingScale   = 1.2f;
     const float kStickScale  = 1.95f * kRingScale;
     const float kOffsetScale = 1.1f;
 
     // Scale the AxisWidget.
-    axis_->SetSize(radius);
+    axis_->SetSize(size_along_axis);
 
     // Scale the DiscWidget parts.
     const auto x_stick  = SG::FindNodeUnderNode(*ring_, "XStick");
