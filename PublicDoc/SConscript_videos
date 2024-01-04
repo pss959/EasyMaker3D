@@ -27,6 +27,7 @@ script_dir = './videos/scripts'
 # List of capturevideo script files.
 scripts = [
     'Doorstop',
+    'GeneralTools',
     'WorkArea',
 ]
 

@@ -141,7 +141,8 @@ distinguish its purpose or role, and is used as the default file name for
 :ref:`STL export <ug-export>`.  Model names can be seen in the :ref:`Tree Panel
 <ug-tree-panel>`.
 
-When attached to a model, the Name Tool displays a :ref:`Name Tool Panel
+The Name Tool is available only when a single model is selected. When attached
+to a model, the Name Tool displays a :ref:`Name Tool Panel
 <ug-name-tool-panel>` above the model. This panel has a text input field that
 responds to the mouse and keyboard to edit the name along with an "Apply"
 button that applies the changed name to the model. It will not let you apply an

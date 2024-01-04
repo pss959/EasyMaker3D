@@ -256,8 +256,8 @@ img {
     padding:     0;
 }
 
-/* Special handling for tables: center header text, enable line wrapping, and*/
-/* highlight captions. */
+/* Special handling for tables: center header text, enable line wrapping, and
+ * highlight captions. */
 .wy-table-responsive table th {
     text-align: center;
 }
@@ -273,9 +273,20 @@ img {
     font-weight: bold;
 }
 
-/* Table that has no header; undo color change on thead entries. */
-.noheadertable td {
-    color: #404040;
+/* Table that has no header; indent and undo color change on thead entries. */
+.noheadertable {
+    margin-left: 40px;
+}
+.noheadertable > tr > td {
+    color:            #404040;
+    background-color: green;
+    margin-left:      40px;
+}
+/* Only way I have found to make the noheader header row use the correct
+   background */
+.rst-content table.docutils:not(.field-list).noheadertable
+                               thead tr:nth-child(1) td {
+    background-color: transparent;
 }
 
 /* Container that creates 2 columns. */

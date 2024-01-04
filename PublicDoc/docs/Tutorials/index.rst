@@ -12,7 +12,7 @@ These tours have video and text that illustrate features of the application.
    :maxdepth: 1
 
    WorkArea
-   Tools
+   GeneralTools
    TreePanel
 
 Examples
