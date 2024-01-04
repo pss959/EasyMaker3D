@@ -556,8 +556,11 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
         state_ == State_::kActivated && moved_enough_for_drag_;
 
     if (is_drag_start || state_ == State_::kDragging) {
-        state_ = State_::kDragging;
-        KLOG('d', "MainHandler now kDragging");
+        if (state_ != State_::kDragging) {
+            state_ = State_::kDragging;
+            KLOG('d', "MainHandler now kDragging "
+                 << active_widget_->GetName());
+        }
         ProcessDrag_(event, is_drag_start, event.is_modified_mode);
         return true;
     }

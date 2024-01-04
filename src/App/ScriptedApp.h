@@ -54,6 +54,10 @@ class ScriptedApp : public Application {
     /// Redefines this to add script processing during frames.
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
 
+  protected:
+    /// Redefines this to return the Emitter modified mode state.
+    virtual bool IsInModifiedMode() const override;
+
   private:
     /// Struct containing information for a caption.
     struct Caption_ {

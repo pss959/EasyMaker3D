@@ -21,6 +21,9 @@ class ScriptEmitter : public IEmitter {
     /// default.
     void SetModifiedMode(bool is_on) { is_mod_ = is_on; }
 
+    /// Returns true when in modified mode.
+    bool IsInModifiedMode() const { return is_mod_; }
+
     /// Adds a click to emit.
     void AddClick(const Point2f &pos);
 

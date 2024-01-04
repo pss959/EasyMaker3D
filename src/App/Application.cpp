@@ -107,7 +107,8 @@ class  Application::Impl_ {
 
     LogHandler & GetLogHandler() const { return *log_handler_; }
 
-    bool ProcessFrame(size_t render_count, bool force_poll);
+    bool ProcessFrame(size_t render_count, bool force_poll,
+                      bool is_modified_mode);
 
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
@@ -133,6 +134,7 @@ class  Application::Impl_ {
     void SetLongPressDuration(float seconds) {
         main_handler_->SetLongPressDuration(seconds);
     }
+    bool IsInModifiedMode() const { return glfw_viewer_->IsShiftKeyPressed(); }
 
   private:
     /// Run states for the main loop.
@@ -495,13 +497,12 @@ bool Application::Impl_::Init(const Application::Options &options) {
     return true;
 }
 
-bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
+bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll,
+                                      bool is_modified_mode) {
     ASSERT(run_state_ != RunState_::kQuitting);
 
     KLogger::SetRenderCount(render_count++);
     renderer_->BeginFrame();
-
-    const bool is_modified_mode = glfw_viewer_->IsShiftKeyPressed();
 
     // Update global uniforms in the RootModel.
     UpdateGlobalUniforms_();
@@ -1556,7 +1557,7 @@ void Application::MainLoop() {
 }
 
 bool Application::ProcessFrame(size_t render_count, bool force_poll) {
-    return impl_->ProcessFrame(render_count, force_poll);
+    return impl_->ProcessFrame(render_count, force_poll, IsInModifiedMode());
 }
 
 void Application::ReloadScene() {
@@ -1615,4 +1616,8 @@ void Application::SetControllerRenderOffsets(const Vector3f &l_offset,
 
 void Application::SetLongPressDuration(float seconds) {
     impl_->SetLongPressDuration(seconds);
+}
+
+bool Application::IsInModifiedMode() const {
+    return impl_->IsInModifiedMode();
 }

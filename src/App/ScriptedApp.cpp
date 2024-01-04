@@ -466,6 +466,10 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     return keep_going;
 }
 
+bool ScriptedApp::IsInModifiedMode() const {
+    return emitter_->IsInModifiedMode();
+}
+
 bool ScriptedApp::Init_() {
     if (! Application::Init(options_))
         return false;

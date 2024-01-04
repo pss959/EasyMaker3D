@@ -133,6 +133,10 @@ class Application {
     /// TK::kLongPressTime.
     void SetLongPressDuration(float seconds);
 
+    /// Returns true if the application is in modified input mode. The base
+    /// class defines this to ask the GLFWViewer if the shift key is pressed.
+    virtual bool IsInModifiedMode() const;
+
   private:
     class  Loader_;
     class  Impl_;
