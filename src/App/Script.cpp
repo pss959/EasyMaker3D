@@ -88,10 +88,17 @@ bool Script::ReadScript(const FilePath &path) {
     file_path_   = path;
     line_number_ = 1;
 
-    // Split the input into lines and parse each one.
-    const auto lines = ion::base::SplitStringWithoutSkipping(contents, "\n");
+    // Split the input into lines and trim whitespace from both ends of each.
+    auto lines = ion::base::SplitStringWithoutSkipping(contents, "\n");
+    for (auto &line: lines)
+        line = ion::base::TrimStartAndEndWhitespace(line);
+
+    if (! RemoveComments_(lines))
+        return false;
+
+    // Parse the resulting lines.
     for (const auto &line: lines) {
-        if (! ParseLine_(ion::base::TrimStartAndEndWhitespace(line)))
+        if (! ParseLine_(line))
             return false;
         ++line_number_;
     }
@@ -104,8 +111,50 @@ void Script::Error_(const Str &message) {
 }
 
 // ----------------------------------------------------------------------------
-// Line parsing.
+// Line processing and parsing.
 // ----------------------------------------------------------------------------
+
+bool Script::RemoveComments_(StrVec &lines) {
+    // Removes characters from '#' to EOL.
+    auto remove_pound_comment = [](Str &ln){
+        auto pos = ln.find('#');
+        if (pos != std::string::npos)
+            ln.resize(pos);
+    };
+
+    for (size_t i = 0; i < lines.size(); ++i) {
+        // Use a pointer here because resizing strings invalidates references.
+        auto *line = &lines[i];
+        remove_pound_comment(*line);
+
+        // Next, look for opening "/*" and remove all chars until closing "*/".
+        auto start_pos = line->find("/*");
+        if (start_pos != std::string::npos) {
+            while (true) {
+                auto end_pos = line->find("*/", start_pos);
+                if (end_pos != std::string::npos) {
+                    line->erase(start_pos, end_pos + 2);
+                    break;
+                }
+                else {
+                    // Remove rest of line.
+                    line->erase(start_pos);
+                }
+                if (++i >= lines.size()) {
+                    Error_("Unterminated /* comment");
+                    return false;
+                }
+                line = &lines[i];
+                remove_pound_comment(*line);
+                start_pos = 0;
+            }
+        }
+
+        // Trim again just in case.
+        *line = ion::base::TrimStartAndEndWhitespace(*line);
+    }
+    return true;
+}
 
 bool Script::ParseLine_(const Str &line) {
     // Skip empty lines and comments.
@@ -113,14 +162,6 @@ bool Script::ParseLine_(const Str &line) {
         return true;
 
     StrVec words = ion::base::SplitString(line, " \t");
-
-    // Check for comments.
-    for (size_t i = 0; i < words.size(); ++i) {
-        if (words[i].starts_with("#")) {
-            words.resize(i);
-            break;
-        }
-    }
 
     // Verify that the instruction has a corresponding function.
     const auto it = func_map_.find(words[0]);

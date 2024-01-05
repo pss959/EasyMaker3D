@@ -374,7 +374,7 @@ Application::Impl_::Impl_() : loader_(new SceneLoader) {
 
 Application::Impl_::~Impl_() {
     // Do nothing if Init() failed.
-    if (! SC_->scene)
+    if (! SC_ || ! SC_->scene)
         return;
 
     MGR_(event)->ClearHandlers();

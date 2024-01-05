@@ -1,0 +1,185 @@
+# COmment
+/* COMMENT */
+// COMMENT
+
+
+# Produces a video showing use of all Specialized Tools.
+
+# --------------------------------------------------------------
+
+# Get rid of the SessionPanel.
+key Escape
+
+state video on
+
+# --------------------------------------------------------------
+
+/*
+section Specialized Specialized tools
+caption .5 .15 3 Each specialized tool edits one particular type of model
+wait 3
+
+caption .5 .15 3 If multiple models of that type are selected,;all of them are modified
+wait 3
+
+# --------------------------------------------------------------
+
+section Bend Bend tool
+
+# Load a stretched box.
+state video off
+load PreBend
+select
+state video on
+
+caption .5 .15 3 The Bend Tool lets you bend models along a circular arc
+wait 3
+
+caption .5 .15 3 To bend a model, select it and click;the Convert to Bent icon
+state cursor on
+moveover Box_1 1
+click
+highlight ConvertBendIcon 3
+moveover ConvertBendIcon 1
+click
+wait 2
+
+caption .5 .15 3 Drag the ring to apply the bend
+moveto .5 .182971 1
+drag -.48 0 2
+moveto .5 .182971 1
+drag -.48 0 2
+wait 2
+
+caption .5 .15 3 Drag the arrow shaft to move the bend center
+moveover BendTool/SpinWidget/Shaft 0  0 .06
+state mod on
+drag -.0498047 -.0307971 2
+wait 1
+
+caption .5 .15 3 Drag the arrow cone to rotate the bend axis
+moveover BendTool/SpinWidget/Cone 0
+state mod on
+drag .147461 -.0326087 2
+state mod off
+wait 4
+
+caption .5 .15 3 Drag the offset arrow if you want to apply an offset
+moveover BendTool/OffsetPosition/Offset 1 .01 .06
+drag -.0283203 -.163043 2
+wait 3
+
+state video off
+state cursor off
+action kToggleShowEdges  # Turns off
+load
+
+# --------------------------------------------------------------
+
+section Bevel Bevel tool
+
+# Create a box
+action kCreateBox
+action kToggleShowEdges
+select
+state video on
+
+caption .5 .15 3 The Bevel Tool lets you created beveled or curved edges
+wait 3
+
+caption .5 .15 3 To bevel a model, select it and click;the Convert to Beveled icon
+state cursor on
+moveover Box_1 1
+click
+highlight ConvertBevelIcon 3
+moveover ConvertBevelIcon 1
+click
+wait 2
+
+caption .5 .15 3 Click near a profile line to add a new point
+moveto .439453 .76087 1
+click
+moveto .45 .76 1
+wait 2
+
+caption .5 .15 3 New points can be dragged to change the bevel profile
+moveover BevelToolPanel/MovablePoint_1 1
+drag .0322266 .0289855 2
+wait 2
+
+caption .5 .15 3 Drag near a profile line to add a new point and move it
+moveto .524414 .650362 1
+drag .0292969 .00724638 2
+wait 2
+
+caption .5 .15 3 Drag a point over the green X to delete it
+moveover BevelToolPanel/MovablePoint_2 1
+drag -.0712891 -.0688406 2
+wait 2
+
+caption .5 .15 3 The bottom slider changes the size of the bevel on each edge
+moveover BevelToolPanel/ScaleSlider/Thumb 1
+drag .0234375 0 2
+wait 1
+
+moveover BevelToolPanel/ScaleSlider/Thumb 1
+drag -.0429688 0 2
+wait 2
+
+action kToggleShowEdges
+state cursor off
+state video off
+load
+*/
+
+# --------------------------------------------------------------
+
+section Clip Clip tool
+
+# Load a stretched box.
+state video off
+load PreClip
+select
+state video on
+
+caption .5 .15 3 The Clip Tool lets you clip models along a circular arc
+wait 3
+
+caption .5 .15 3 To clip a model, select it and click;the Convert to Clipped icon
+state cursor on
+moveover Box_1 1
+click
+highlight ConvertClipIcon 3
+moveover ConvertClipIcon 1
+click
+wait 2
+
+caption .5 .15 3 Drag the ring to apply the clip
+moveto .5 .182971 1
+drag -.48 0 2
+moveto .5 .182971 1
+drag -.48 0 2
+wait 2
+
+caption .5 .15 3 Drag the arrow shaft to move the clip center
+moveover ClipTool/SpinWidget/Shaft 0  0 .06
+state mod on
+drag -.0498047 -.0307971 2
+wait 1
+
+caption .5 .15 3 Drag the arrow cone to rotate the clip axis
+moveover ClipTool/SpinWidget/Cone 0
+state mod on
+drag .147461 -.0326087 2
+state mod off
+wait 4
+
+caption .5 .15 3 Drag the offset arrow if you want to apply an offset
+moveover ClipTool/OffsetPosition/Offset 1 .01 .06
+drag -.0283203 -.163043 2
+wait 3
+
+state video off
+state cursor off
+action kToggleShowEdges  # Turns off
+load

@@ -28,6 +28,7 @@ script_dir = './videos/scripts'
 scripts = [
     'Doorstop',
     'GeneralTools',
+    'SpecializedTools',
     'WorkArea',
 ]
 
@@ -37,7 +38,7 @@ def VideoFile(name):
 # Video script processing.
 videos = []
 for script in scripts:
-    script_file  = script + '.conf'
+    script_file  = script + '.econf'
     video_format = 'yuvmp4'
     video = env.Command(VideoFile(script),
                         [capturevideo, join(script_dir, script_file)],

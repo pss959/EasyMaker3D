@@ -244,7 +244,7 @@ anns  = []
 if noimages != True:  # Have to compare with True here.
   # Snapshots.
   for (script, images) in snap_map.items():
-    script_file = script + '.conf'
+    script_file = script + '.econf'
     snap = env.Command([ImageFile(image) for image in images],
                        [snapimage, join(script_dir, script_file)],
                        f'{snapimage.abspath} --fullscreen {script_file}',
@@ -255,7 +255,7 @@ if noimages != True:  # Have to compare with True here.
 
   # Annotations.
   for (script, (input_images, output_images)) in ann_map.items():
-    script_file = script + '.conf'
+    script_file = script + '.econf'
     ann = env.Command([ImageFile(image) for image in output_images],
                       [annotator, join(ann_dir, script_file)] +
                       [ImageFile(image) for image in input_images],

@@ -174,7 +174,10 @@ class Script {
     /// Reports an error.
     void Error_(const Str &message);
 
-    /// Parses one line of the script.
+    /// Removes comments from input lines. Returns false on error.
+    bool RemoveComments_(StrVec &lines);
+
+    /// Parses one line of the script. Returns false on error.
     bool ParseLine_(const Str &line);
 
     /// \name Parsing helpers.
