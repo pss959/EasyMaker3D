@@ -1,5 +1,6 @@
 from docutils             import nodes
 from docutils.parsers.rst import Directive, directives
+from sphinx.errors        import ExtensionError
 
 # -----------------------------------------------------------------------------
 # VideoButtonNode directive class.
@@ -39,8 +40,8 @@ def SectionStartTime(video, section):
             td = timedelta(hours=dt.hour, minutes=dt.minute, seconds=dt.second)
             return td.total_seconds()
     # The chapter tag was not found.
-    raise ValueError('Chapter tag "' + section + '" was not found in "' +
-                     file_name + '"')
+    raise ExtensionError('***Chapter tag "' + section + '" was not found in "' +
+                         file_name + '"', modname="vidref.py")
 
 # -----------------------------------------------------------------------------
 # Implements the VidRef role.
