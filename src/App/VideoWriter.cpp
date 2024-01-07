@@ -150,6 +150,9 @@ void VideoWriter::WriteToFile() {
         if (! WriteChapterFile_(chapter_path))
             Error_("Unable to write chapter file: " + chapter_path);
     }
+    else {
+        std::cout << "+++ INFO: No chapters found in " << data_->path << "\n";
+    }
 
     // Write output trailer.
     CHECK_(av_write_trailer(data_->out_context));
