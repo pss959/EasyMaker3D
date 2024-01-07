@@ -632,11 +632,13 @@ selection to mirror its local X (left-to-right) axis as shown here.
 The Mirror Tool has the same interface as the Clip Tool for editing the
 mirroring plane (including in VR); refer to :ref:`the Clip Tool
 documentation<ug-clip-tool>` for details. For example, you can rotate the plane
-to mirror vertically instead of horizontally as shown here.
+to mirror vertically instead of horizontally as shown here (which is actually
+the same as rotating the Mirrored model).
 
 Translating the mirroring plane results in the primary selection moving to
 compensate. Additionally, all secondary selections are mirrored across the same
-plane, so they will move to the other side of it.
+plane, so they will move to the other side of it (which is actually the same as
+translating all of them).
 
 Note that a Mirrored model that is translated from its original position after
 conversion behaves differently because the mirroring is applied in the Mirrored

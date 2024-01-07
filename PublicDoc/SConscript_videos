@@ -32,15 +32,16 @@ scripts = [
     'WorkArea',
 ]
 
-def VideoFile(name):
-  return join(video_dir, name + '.mp4')
+def VideoFiles(name):
+    return [join(video_dir, name + '.mp4'),
+            join(video_dir, name + '.vtt')]
 
 # Video script processing.
 videos = []
 for script in scripts:
     script_file  = script + '.econf'
     video_format = 'yuvmp4'
-    video = env.Command(VideoFile(script),
+    video = env.Command(VideoFiles(script),
                         [capturevideo, join(script_dir, script_file)],
                         [Mkdir(video_dir),
                          f'{capturevideo.abspath} --format={video_format}' +

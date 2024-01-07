@@ -37,14 +37,6 @@ CommandList {
       result_name: "Difference_1",
       model_names: ["Box_1", "Cylinder_1"],
     },
-    ConvertMirrorCommand {
-      model_names: ["Difference_1"],
-      result_names: ["Mirrored_1"],
-    },
-    ChangeMirrorCommand {
-      model_names: ["Mirrored_1"],
-      plane: 0 1 0 2,
-    },
   ],
-  current_index: 8,
+  current_index: 6,
 }

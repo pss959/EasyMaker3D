@@ -13,7 +13,7 @@ BoxPane "TaperToolPane" {
       border:     $BORDER { width: 2 },
     },
     # Axis radio buttons on the bottom.
-    BoxPane {
+    BoxPane "AxisButtons" {
       TEMPLATES: [
         CLONE "T_TextPane" "T_Label" { resize_flags: "kHeight" },
         SpacerPane "T_Spacer1" { min_size: 20 1 },  # Between axes.
