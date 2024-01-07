@@ -187,23 +187,41 @@ Anglef DiscWidget::ComputeEdgeOnRotationAngle_(const Ray &local_ray) {
     using ion::math::Distance;
     using ion::math::Normalized;
 
-    // Edge-on rotation is handled specially. Intersecting the ray with
-    // the plane for edge-on rotation is not stable or useful, so
-    // intersect with a cylinder around the DiscWidget's axis (Y axis)
+    const Vector3f start_vec = Normalized(Vector3f(start_point_));
+
+    // Edge-on rotation is handled specially, because Intersecting the ray with
+    // the plane perpendicular to the rotation axis (Y axis) is not stable or
+    // useful. Instead, intersect the ray with a cylinder around the Y axis
     // that has a radius based on the original intersection point.
     const float radius = Distance(start_point_, Point3f(0, start_point_[1], 0));
     float distance = 1;
-    // If there is no intersection, leave the current rotation alone.
-    if (! RayCylinderIntersect(local_ray, radius, distance))
-        return RotationAngle(GetRotation());
-    end_point_ = local_ray.GetPoint(distance);
-    end_point_[1] = start_point_[1];  // Keep it in the same plane.
+    if (RayCylinderIntersect(local_ray, radius, distance)) {
+        end_point_ = local_ray.GetPoint(distance);
+        end_point_[1] = start_point_[1];  // Keep it in the same plane.
 
-    // Compute the angle between the vectors from the rotation center
-    // to the start and end points, and rotate proportional to that.
-    const Vector3f start_vec = Normalized(Vector3f(start_point_));
-    const Vector3f   cur_vec = Normalized(Vector3f(end_point_));
-    return SignedAngleBetween_(start_vec, cur_vec);
+        // Compute the angle between the vectors from the rotation center
+        // to the start and end points, and rotate proportional to that.
+        return SignedAngleBetween_(start_vec, Normalized(Vector3f(end_point_)));
+    }
+
+    // If there is no intersection with the cylinder, intersect the ray with
+    // the XY plane (in local coordinates) and find the distance of this point
+    // from the end of the radius along the local X axis. Add this distance in
+    // radians (scaled by the inverse of the radius) to the current angle.
+    else {
+        // Do NOT update end_point_ here, since we need to remember the last
+        // one that was on the cylinder.
+        const Plane local_xy_plane(0, WorldToWidget(Vector3f::AxisZ()));
+        RayPlaneIntersect(local_ray, local_xy_plane, distance);
+        const auto cur_point = local_ray.GetPoint(distance);
+        const auto local_x_dir = Normalized(WorldToWidget(Vector3f::AxisX()));
+
+        float x_dist = SignedDistance(cur_point, local_x_dir);
+        x_dist = x_dist >= 0 ? x_dist - radius : x_dist + radius;
+
+        return SignedAngleBetween_(start_vec, Normalized(Vector3f(end_point_))) +
+            Anglef::FromRadians(x_dist / radius);
+    }
 }
 
 Anglef DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
