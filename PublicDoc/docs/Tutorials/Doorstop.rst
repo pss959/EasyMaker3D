@@ -1,5 +1,5 @@
-A Simple Doorstop Example (Non-VR)
-----------------------------------
+A Simple Doorstop Example
+-------------------------
 
 This example will use |appname| in non-VR mode to create a simple doorstop
 model and output it as an STL file.

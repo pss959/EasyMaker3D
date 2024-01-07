@@ -12,9 +12,15 @@ These tours have video and text that illustrate features of the application.
    :maxdepth: 1
 
    WorkArea
+   CreatingModels
+   BasicEditing
    GeneralTools
    SpecializedTools
+   Precision
+   Layout
    TreePanel
+   OtherFeatures
+   VR
 
 Examples
 --------
