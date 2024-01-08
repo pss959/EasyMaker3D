@@ -424,10 +424,12 @@ lib_env.Append(
         ('TEST_DATA_DIR', QuoteDef_(Dir('#/src/Tests/Data').abspath)),
     ],
     LIBPATH = [
+        '#/$BUILD_DIR/docopt.cpp',
         '#/$BUILD_DIR/ionsrc',
         '$OPENVR_DIR',
     ],
     LIBS = [
+        'docopt',
         'openvr_api',
         '$ION_LIB_NAME',
     ],
@@ -520,8 +522,7 @@ if platform == 'windows':
 app_env = lib_env.Clone()
 
 app_env.Append(
-    LIBPATH = ['#/$BUILD_DIR', '#/$BUILD_DIR/docopt.cpp'],
-    LIBS    = ['docopt'],
+    LIBPATH = ['#/$BUILD_DIR'],
 
     # Resource files and directories to avoid adding to a release.
     RESOURCE_EXCLUSIONS = [
@@ -550,11 +551,9 @@ test_env.Append(
     ],
     LIBPATH = [
         '#/$BUILD_DIR',
-        '#/$BUILD_DIR/docopt.cpp',
         '#/$BUILD_DIR/googletest'
     ],
-    LIBS = ['$APP_LIB_NAME', '$SCRIPT_LIB_NAME',
-            'docopt', 'gtest', 'pthread'],
+    LIBS = ['$APP_LIB_NAME', '$SCRIPT_LIB_NAME', 'gtest', 'pthread'],
 
     # Copy all environment variables to simulate user environment.
     ENV = environ,
