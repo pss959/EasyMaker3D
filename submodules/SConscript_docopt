@@ -8,7 +8,7 @@ env = base_env.Clone()
 
 env.Replace(
     CPPPATH  = ['#submodules/docopt.cpp'],
-    CXXFLAGS = ['-std=c++11'],
+    CXXFLAGS = ['-std=c++11', '-fPIC'],
 )
 
 env.Library('libdocopt', 'docopt.cpp/docopt.cpp')

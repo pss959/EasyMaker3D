@@ -14,11 +14,12 @@ class Args {
     /// with the DocOpt usage string.
     Args(int argc, const char **argv, const Str &usage);
 
-    /// Returns true if the named argument exists.
+    /// Returns true if the named argument exists (whether passed in or not).
     bool HasArg(const Str &name) const;
 
     /// Returns the value of the string argument with the given name. Returns
-    /// an empty string if there is no such argument.
+    /// an empty string if this argument was not passed in. Asserts if the
+    /// argument does not exist.
     Str GetString(const Str &name) const;
 
     /// Returns the value of the string argument with the given name, where the
@@ -28,16 +29,17 @@ class Args {
     Str GetStringChoice(const Str &name, const StrVec &choices) const;
 
     /// Returns the value of the bool argument with the given name. Returns
-    /// false if there is no such argument.
+    /// false if this argument was not passed in. Asserts if the argument does
+    /// not exist.
     bool GetBool(const Str &name) const;
 
     /// Convenience that returns the string argument with the given name
     /// converted to an integer if possible. Returns \p default_value if there
-    /// is no such argument or if conversion fails.
+    /// no such argument was passed in or if conversion fails.
     int GetAsInt(const Str &name, int default_value) const;
 
   private:
-    std::map<Str, docopt::value> args_;
+    docopt::Options args_;
 
     const docopt::value & GetArg_(const Str &name) const;
 };

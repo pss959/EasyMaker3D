@@ -3,18 +3,6 @@ Import('app_dict', 'app_env')
 main_app_name = app_dict['APP_NAME']
 
 # -----------------------------------------------------------------------------
-# Extra source files needed for apps. These are not added to the main library
-# to keep it smaller.
-# -----------------------------------------------------------------------------
-
-# Extra sources used for all apps.
-main_extra_sources = [
-    '../App/Args.cpp',
-]
-
-main_extra_objects  = app_env.BuildObjects(main_extra_sources)
-
-# -----------------------------------------------------------------------------
 # Environments.
 # -----------------------------------------------------------------------------
 
@@ -33,13 +21,13 @@ apps = {}
 # Builds an app and adds it to the apps dictionary.
 def BuildApp_(name, env):
     app_object = env.SharedObject(f'{name}.cpp')
-    apps[name] = env.Program(name, [app_object] + main_extra_objects)
+    apps[name] = env.Program(name, [app_object])
 
 # Build the main applications.
 for name in [main_app_name, 'nodeviewer', 'printtypes']:
     BuildApp_(name, app_env)
 
-# The doc-related apps build only on Linux. Some require extra libraries.
+# The doc-related apps build only on Linux. Some require different libraries.
 if app_env['PLATFORM'] == 'linux':
     BuildApp_('createcheatsheet', app_env)
     BuildApp_('snapimage',        script_env)

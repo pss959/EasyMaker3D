@@ -1,4 +1,5 @@
 ﻿#include "Managers/PanelManager.h"
+#include "Panels/InfoPanel.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing2.h"
 #include "Util/Assert.h"
@@ -40,6 +41,10 @@ TEST_F(PanelManagerTest, GetPanel) {
     EXPECT_NOT_NULL(pm.GetPanel("SettingsPanel"));
     EXPECT_NOT_NULL(pm.GetPanel("TaperToolPanel"));
     EXPECT_NOT_NULL(pm.GetPanel("TextToolPanel"));
+
+    // Check GetTypedPanel() also.
+    EXPECT_NOT_NULL(pm.GetTypedPanel<InfoPanel>("InfoPanel"));
+    TEST_ASSERT(pm.GetTypedPanel<InfoPanel>("HelpPanel"), "panel");
 
     pm.Reset();
     TEST_ASSERT(pm.GetPanel("ActionPanel"), "No panel");

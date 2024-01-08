@@ -30,6 +30,7 @@ ion_test_sources = [
 # source file.
 test_source_dict = {
     'App' : [
+        'ArgsTest',
         'SceneLoaderTest',
         'ToolBoxTest',
     ],
