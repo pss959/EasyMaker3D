@@ -55,6 +55,8 @@ int main(int argc, const char *argv[]) {
     options.show_session_panel = true;
     options.vidformat          = args.GetStringChoice("--format", formats);
 
+    app.InitApp();
+
     // Process the script.
     const FilePath script_path("PublicDoc/videos/scripts/" +
                                args.GetString("SCRIPT"));

@@ -4,4 +4,5 @@
 action kCreateCylinder
 action kComplexityTool
 
-drag 0.443359 0.474638 0.472656 0.474638
+moveover ComplexityTool/Slider 0
+drag .03 0 0

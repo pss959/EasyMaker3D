@@ -46,13 +46,18 @@ class ScriptedApp : public Application {
     /// Returns the Options.
     Options & GetOptions() { return options_; }
 
-    /// Processes the Script named by the given FilePath. The \p do_video flag
-    /// indicates whether video may be captured. Returns false if anything goes
-    /// wrong.
+    /// Initializes the ScriptedApp. Returns false if anything goes wrong.
+    bool InitApp();
+
+    /// Processes the Script. The \p do_video flag indicates whether video may
+    /// be captured. Returns false if anything goes wrong.
     bool ProcessScript(const FilePath &script_path, bool do_video);
 
     /// Redefines this to add script processing during frames.
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;
+
+    // Provide context access for testing.
+    using Application::GetContext;
 
   protected:
     /// Redefines this to return the Emitter modified mode state.

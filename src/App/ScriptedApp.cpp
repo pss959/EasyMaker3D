@@ -363,9 +363,13 @@ void ScriptedApp::InitOptions(const Args &args) {
     options_.window_size.Set(1024 / size_n, 552 / size_n);
 }
 
+bool ScriptedApp::InitApp() {
+    return Init_();
+}
+
 bool ScriptedApp::ProcessScript(const FilePath &script_path, bool do_video) {
     // Read the script and initialize the rest.
-    if (! script_.ReadScript(script_path) || ! Init_())
+    if (! script_.ReadScript(script_path))
         return false;
 
     // Initialize video if requested.

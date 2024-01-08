@@ -3,8 +3,8 @@
 #include <exception>
 #include <iostream>
 
-#include "App/SnapScript.h"
-#include "App/SnapScriptApp.h"
+#include "App/Script.h"
+#include "App/ScriptedApp.h"
 #include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
 #include "Util/FilePath.h"
@@ -21,9 +21,6 @@ void SimTestBase::RunScript(const Str &script_name) {
 }
 
 void SimTestBase::RunScriptAndExit_(const Str &script_name) {
-    // Change the app type temporarily.
-    UnitTestTypeChanger uttc(Util::AppType::kSimTest);
-
     // If the script was executed successfully, let the derived class test the
     // results.
     bool ok = RunScript_(script_name);
@@ -38,46 +35,28 @@ void SimTestBase::RunScriptAndExit_(const Str &script_name) {
 }
 
 bool SimTestBase::RunScript_(const Str &file_name) {
-    std::shared_ptr<SnapScriptApp::Options> options(new SnapScriptApp::Options);
+    ScriptedApp app;
+    auto &options = app.GetOptions();
 
     // Hardwire all options.
-    options->do_ion_remote      = false;
-    options->ignore_vr          = true;  // Bypasses real VR system init.
-    options->enable_vr          = true;  // So controllers work properly.
-    options->fullscreen         = false;
-    options->nosnap             = true;
-    options->remain             = false;
-    options->show_session_panel = false;
-    options->window_size.Set(1024, 552);
+    options.do_ion_remote      = false;
+    options.ignore_vr          = true;  // Bypasses real VR system init.
+    options.enable_vr          = true;  // So controllers work properly.
+    options.fullscreen         = false;
+    options.dryrun             = true;
+    options.remain             = false;
+    options.show_session_panel = false;
+    options.window_size.Set(1024, 552);
 
-    // Load the script
-    const FilePath path = FilePath::Join(
+    app.InitApp();  // Makes the context available.
+
+    // Copy the context.
+    context = app.GetContext();
+
+    // Process the script.
+    const FilePath script_path = FilePath::Join(
         FilePath::Join(FilePath::GetTestDataPath(), "Scripts"),
-        file_name + ".conf");
-    std::shared_ptr<SnapScript> script(new SnapScript);
-    if (! script->ReadScript(path))
-        return false;
+        file_name + ".econf");
 
-    // Execute the script. Handle exceptions here for better messages.
-    SnapScriptApp app;
-    if (! app.Init(options, script))
-        return false;
-    try {
-        // Copy the context.
-        context = app.GetContext();
-        app.MainLoop();
-    }
-    catch (AssertException &ex) {
-        std::cerr << "*** Caught Assertion failure: " << ex.what() << "\n";
-        std::cerr << "*** STACK:\n";
-        for (const auto &s: ex.GetStackTrace())
-            std::cerr << "  " << s << "\n";
-        return false;
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception: " << ex.what() << "\n";
-        return false;
-    }
-
-    return true;
+    return app.ProcessScript(script_path, false);
 }

@@ -48,6 +48,8 @@ int main(int argc, const char *argv[]) {
     options.dryrun             = args.GetBool("--nosnap");
     options.show_session_panel = false;
 
+    app.InitApp();
+
     // Process the script.
     const FilePath script_path("PublicDoc/snaps/scripts/" +
                                args.GetString("SCRIPT"));

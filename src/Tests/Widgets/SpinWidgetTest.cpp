@@ -36,10 +36,10 @@ TEST_F(SpinWidgetTest, SetSize) {
     auto sw = GetSpinWidget();
 
     // The size (radius) is exact in the X and Z directions.
-    sw->SetSize(10);
+    sw->SetSize(10, 8);
     const auto size = sw->GetScaledBounds().GetSize();
 
-    sw->SetSize(20);
+    sw->SetSize(20, 8);
     EXPECT_EQ(2 * size[0], sw->GetScaledBounds().GetSize()[0]);
     EXPECT_EQ(2 * size[2], sw->GetScaledBounds().GetSize()[2]);
 }

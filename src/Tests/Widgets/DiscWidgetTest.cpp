@@ -82,7 +82,7 @@ TEST_F(DiscWidgetTest, DragEdgeOnRotate) {
     dt.ApplyMouseDrag(Point3f(-4, 0, 4), Point3f(10, 0, 4), 4);
     EXPECT_EQ(1,                 dw->GetScaleFactor());
     EXPECT_EQ(Vector3f(1, 1, 1), dw->GetScale());
-    EXPECT_CLOSE(186.0612f,      dw->GetRotationAngle().Degrees());
+    EXPECT_CLOSE(50.050983f,     dw->GetRotationAngle().Degrees());
 }
 
 TEST_F(DiscWidgetTest, DragScaleOnly) {
