@@ -60,7 +60,8 @@ class GLFWViewerTest::TestWindowSystem : public IWindowSystem {
         return init_succeeds;
     }
     virtual void Terminate() override  {}
-    virtual bool CreateMainWindow(const Vector2i &size, const Str &title) {
+    virtual bool CreateMainWindow(const Vector2i &size, const Str &title,
+                                  bool show) {
         win_size = size;
         return true;
     };
@@ -150,7 +151,7 @@ TEST_F(GLFWViewerTest, Init) {
     EXPECT_EQ(Vector2i::Zero(), tws->GetFramebufferSize());
     EXPECT_FALSE(tws->is_fullscreen);
 
-    EXPECT_TRUE(viewer.Init(Vector2i(800, 600), true));
+    EXPECT_TRUE(viewer.Init(Vector2i(800, 600), true, true));
     EXPECT_EQ(Vector2i(800, 600), tws->win_size);
     EXPECT_EQ(Vector2i(600, 100), tws->win_pos);
     EXPECT_EQ(Vector2i(800, 600), tws->GetWindowSize());
@@ -160,7 +161,7 @@ TEST_F(GLFWViewerTest, Init) {
 
 TEST_F(GLFWViewerTest, InitFail) {
     tws->init_succeeds = false;
-    EXPECT_FALSE(viewer.Init(Vector2i(600, 600), false));
+    EXPECT_FALSE(viewer.Init(Vector2i(600, 600), false, true));
 }
 
 TEST_F(GLFWViewerTest, Render) {
@@ -177,7 +178,7 @@ TEST_F(GLFWViewerTest, Render) {
 }
 
 TEST_F(GLFWViewerTest, Camera) {
-    viewer.Init(Vector2i(600, 600), false);  // Square aspect ratio.
+    viewer.Init(Vector2i(600, 600), false, true);  // Square aspect ratio.
     EXPECT_EQ(Vector2i(600, 600), viewer.GetWindowSize());
 
     // Camera->Frustum.

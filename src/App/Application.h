@@ -39,6 +39,7 @@ class Application {
         bool     ignore_vr          = false;
         bool     set_up_touch       = false;
         bool     show_session_panel = true;
+        bool     show_window        = true;
         Str      session_file_name;
     };
 

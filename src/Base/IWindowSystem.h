@@ -39,10 +39,12 @@ class IWindowSystem {
     /// \name Window management
     ///@{
 
-    /// Creates a window instance. Returns false on error. (This should really
-    /// be called "CreateWindow", but apparently the fine folks at Microsoft
-    /// think it's appropriate to use that name for a macro. Really.)
-    virtual bool CreateMainWindow(const Vector2i &size, const Str &title) = 0;
+    /// Creates a window instance. The window will be hidden (useful for
+    /// testing) if \p show is false.  Returns false on error. (This should
+    /// really be called "CreateWindow", but apparently the fine folks at
+    /// Microsoft think it's appropriate to use that name for a macro. Really.)
+    virtual bool CreateMainWindow(const Vector2i &size, const Str &title,
+                                  bool show) = 0;
 
     /// Sets the position of the window.
     virtual void SetWindowPosition(const Vector2i &pos) = 0;

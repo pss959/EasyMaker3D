@@ -21,9 +21,10 @@ GLFWViewer::~GLFWViewer() {
     ws_->Terminate();
 }
 
-bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
+bool GLFWViewer::Init(const Vector2i &size, bool fullscreen, bool show_window) {
     const Str title = TK::kApplicationName + " " + TK::kVersionString;
-    if (! ws_->Init(error_func_) || ! ws_->CreateMainWindow(size, title))
+    if (! ws_->Init(error_func_) ||
+        ! ws_->CreateMainWindow(size, title, show_window))
         return false;
 
     ws_->SetWindowPosition(Vector2i(600, 100));

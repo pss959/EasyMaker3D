@@ -179,13 +179,16 @@ void GLFWWindowSystem::Terminate() {
     glfwTerminate();
 }
 
-bool GLFWWindowSystem::CreateMainWindow(const Vector2i &size,
-                                        const Str &title) {
+bool GLFWWindowSystem::CreateMainWindow(const Vector2i &size, const Str &title,
+                                        bool show) {
     glfwWindowHint(GLFW_OPENGL_PROFILE,         GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,  GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,  3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,  3);
     glfwWindowHint(GLFW_SAMPLES,                16);
+
+    if (! show)
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
                                nullptr, nullptr);

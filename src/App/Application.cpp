@@ -642,7 +642,8 @@ bool Application::Impl_::InitViewers_() {
         std::cerr << "*** " << error << "\n";
     };
     glfw_viewer_.reset(new GLFWViewer(error_func));
-    if (! glfw_viewer_->Init(options_.window_size, options_.fullscreen)) {
+    if (! glfw_viewer_->Init(options_.window_size, options_.fullscreen,
+                             options_.show_window)) {
         glfw_viewer_.reset();
         return false;
     }

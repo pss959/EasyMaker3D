@@ -40,12 +40,13 @@ bool SimTestBase::RunScript_(const Str &file_name) {
 
     // Hardwire all options.
     options.do_ion_remote      = false;
-    options.ignore_vr          = true;  // Bypasses real VR system init.
-    options.enable_vr          = true;  // So controllers work properly.
+    options.ignore_vr          = true;   // Bypasses real VR system init.
+    options.enable_vr          = true;   // So controllers work properly.
     options.fullscreen         = false;
     options.dryrun             = true;
     options.remain             = false;
     options.show_session_panel = false;
+    options.show_window        = false;  // Use hidden window.
     options.window_size.Set(1024, 552);
 
     app.InitApp();  // Makes the context available.

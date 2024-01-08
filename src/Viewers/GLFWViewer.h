@@ -32,9 +32,11 @@ class GLFWViewer : public Viewer, public IEmitter {
     /// actual GLFW graphics.
     void SetWindowSystem(const IWindowSystemPtr &ws) { ws_ = ws; }
 
-    /// Initializes the viewer with the given size and fullscreen flag. Returns
-    /// false if anything fails.
-    bool Init(const Vector2i &size, bool fullscreen);
+    /// Initializes the viewer with the given \p size. The \p fullscreen flag
+    /// indicates whether the window should be resized to full-screen. The \p
+    /// show_window flag indicates whether the window should be visible (can be
+    /// false for tests). Returns false if anything fails.
+    bool Init(const Vector2i &size, bool fullscreen, bool show_window);
 
     /// Sets the WindowCamera to update.
     void SetCamera(const SG::WindowCameraPtr &camera) {
