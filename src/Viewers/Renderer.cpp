@@ -58,6 +58,8 @@ class Renderer::Impl_ {
     ion::gfxutils::FramePtr         frame_;
     bool                            is_remote_enabled_ = false;
 
+    ion::gfx::FramebufferObjectPtr last_resolved_fbo_;
+
     /// Recursive function that updates a Node for rendering the given pass.
     /// This enables or disables the Ion Node based on the Node's flags and
     /// enables or disables Ion UniformBlocks based on their pass selector.
@@ -89,6 +91,7 @@ Renderer::Impl_::Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
 
     ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
     manager->EnableErrorChecking(true);
+    manager->GetTracingStream().StartTracing(); // XXXX
     renderer_.Reset(new ion::gfx::Renderer(manager));
     frame_.Reset(new ion::gfxutils::Frame);
 
@@ -139,6 +142,11 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         pass->Render(*renderer_, data, fb_target);
         renderer_->PopDebugMarker();
     }
+
+    if (fb_target)
+        last_resolved_fbo_ = fb_target->resolved_fbo;
+    else
+        last_resolved_fbo_.Reset();
 }
 
 uint32 Renderer::Impl_::GetResolvedTextureID(const FBTarget &fb_target) {
@@ -149,9 +157,33 @@ uint32 Renderer::Impl_::GetResolvedTextureID(const FBTarget &fb_target) {
 }
 
 ion::gfx::ImagePtr Renderer::Impl_::ReadImage(const Range2i &rect) {
-  ASSERT(renderer_);
-  return renderer_->ReadImage(rect, ion::gfx::Image::Format::kRgb888,
-                              ion::base::AllocatorPtr());
+    // XXX Pass FBTarget into here...
+    ASSERT(renderer_);
+
+    if (last_resolved_fbo_) {
+#if XXXX
+        auto &ca = last_resolved_fbo_->GetColorAttachment(0);
+        const auto id = renderer_->GetResourceGlId(ca.GetTexture().Get());
+        renderer_->GetGraphicsManager()->BindFramebuffer(
+            GL_READ_FRAMEBUFFER, id);
+#endif
+        renderer_->GetGraphicsManager()->BindFramebuffer(
+            GL_READ_FRAMEBUFFER, 5);
+    }
+    else {
+        renderer_->GetGraphicsManager()->BindFramebuffer(
+            GL_READ_FRAMEBUFFER, 0);
+    }
+
+    auto ret = renderer_->ReadImage(rect, ion::gfx::Image::Format::kRgb888,
+                                    ion::base::AllocatorPtr());
+#if XXXX
+    auto &ts = renderer_->GetGraphicsManager()->GetTracingStream();
+    ts.StopTracing();
+    std::cerr << "XXXX ---- TRACE:\n" << ts.String() << "\n";
+#endif
+
+    return ret;
 }
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,

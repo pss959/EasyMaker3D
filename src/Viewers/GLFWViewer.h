@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "Base/FBTarget.h"
 #include "Base/IEmitter.h"
 #include "Base/IWindowSystem.h"
 #include "Math/Types.h"
@@ -75,6 +76,7 @@ class GLFWViewer : public Viewer, public IEmitter {
 
   private:
     ErrorFunc        error_func_;
+    FBTarget         fb_target_;
     IWindowSystemPtr ws_;
 
     /// Stores the camera used to set up the Frustum.

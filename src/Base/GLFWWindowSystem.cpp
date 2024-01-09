@@ -190,6 +190,9 @@ bool GLFWWindowSystem::CreateMainWindow(const Vector2i &size, const Str &title,
     if (! show)
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
+    // XXXX
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
                                nullptr, nullptr);
     if (! window_) {

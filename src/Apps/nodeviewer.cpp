@@ -200,7 +200,7 @@ bool Application_::InitViewer(const Vector2i &window_size) {
         std::cerr << "*** " << error << "\n";
     };
     glfw_viewer_.reset(new GLFWViewer(error_func));
-    if (! glfw_viewer_->Init(window_size, false)) {
+    if (! glfw_viewer_->Init(window_size, false, true)) {
         glfw_viewer_.reset();
         return false;
     }
