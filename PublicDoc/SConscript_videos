@@ -47,8 +47,6 @@ for script in scripts:
                         [Mkdir(video_dir),
                          f'{capturevideo.abspath} {cap_args} {script_file}'],
                         chdir=root_dir)
-    # This prevents capturevideo from running in parallel.
-    # env.SideEffect('dummy', video) # XXXX
     videos.append(video)
 
 env.Alias('Videos', videos)

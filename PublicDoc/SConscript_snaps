@@ -250,8 +250,6 @@ if noimages != True:  # Have to compare with True here.
                            [snapimage, join(script_dir, script_file)],
                            f'{snapimage.abspath} {snap_args} {script_file}',
                            chdir=root_dir)
-        # This prevents snapimage from running in parallel.
-        # env.SideEffect('dummy', snap) # XXXX
         snaps.append(snap)
 
     # Annotations.
