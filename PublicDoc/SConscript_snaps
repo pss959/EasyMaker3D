@@ -28,239 +28,240 @@ annotator  = env.File('#/bin/annotate.py').abspath
 
 # This maps snapimage script files to the images they generate.
 snap_map = {
-  'AppPanels1' : [
-    'ActionPanel',
-    'DialogMessagePanel',
-    'DialogQuestionPanel',
-    'HelpPanel',
-    'InfoPanel',
-    'RadialMenuPanel',
-    'SessionPanel',
-    'SettingsPanel',
-  ],
-  'AppPanels2' : [
-    'FilePanel',
-    'GripPanelBar',
-    'VirtualKeyboardPanel',
-  ],
-  'CSG' : [
-    'CSGDifference',
-    'CSGIntersection',
-    'CSGOperands',
-    'CSGUnion',
-  ],
-  'Controller' : [
-    'OculusTouch',
-    'TouchMode',
-    'Vive',
-  ],
-  'Doorstop' : [
-    'DoorstopCylinder',
-    'DoorstopExport',
-    'DoorstopFinished',
-    'DoorstopHull',
-    'DoorstopRenamed',
-    'DoorstopScale',
-    'DoorstopSelected',
-    'DoorstopTorus',
-    'DoorstopSessionPanel',
-  ],
-  'Feedback' : [
-    'AngularFeedback',
-    'LinearFeedback',
-  ],
-  'GeneralTools' : [
-    'ColorTool',
-    'ComplexityToolHigh',
-    'ComplexityToolLow',
-    'NameTool',
-    'RotationTool',
-    'RotationToolVRSphere',
-    'RotationToolVRX',
-    'RotationToolVRZ',
-    'ScaleTool',
-    'ScaleToolVRUniform',
-    'ScaleToolVRX',
-    'TranslationTool',
-    'TranslationToolVRX',
-    'TranslationToolVRZ',
-  ],
-  'Hull' : [
-    'HullCapsule',
-    'HullDisk',
-    'HullSpheres',
-    'HullTorus',
-  ],
-  'InvalidColors' : [
-    'InvalidColors',
-  ],
-  'LinearLayout' : [
-    'LinearLayout',
-  ],
-  'Logo' : [
-    'static/Logo',
-  ],
-  'Main' : [
-    'BuildVolume',
-    'Complex',
-    'PrecisionControl',
-    'WorkArea',
-    'WorkAreaWithSelection',
-  ],
-  'ModelEdges' : [
-    'ModelEdges',
-    'ModelNoEdges',
-  ],
-  'Primitives' : [
-    'PrimitiveBox',
-    'PrimitiveCylinder',
-    'PrimitiveExtruded',
-    'PrimitiveImported',
-    'PrimitiveRevSurf',
-    'PrimitiveSphere',
-    'PrimitiveText',
-    'PrimitiveTorus',
-  ],
-  'RadialLayout' : [
-    'RadialLayoutArc',
-    'RadialLayoutMultiple',
-    'RadialLayoutRadius',
-    'RadialLayoutSingle',
-  ],
-  'RadialMenu' : [
-    'AttachedRadialMenu',
-    'FixedRadialMenu',
-  ],
-  'Selection' : [
-    'Selection',
-  ],
-  'Shelves' : [
-    'BasicsShelf',
-    'BendToolIcon',
-    'BevelToolIcon',
-    'CSGToolIcon',
-    'ClipToolIcon',
-    'CylinderToolIcon',
-    'ExtrudedToolIcon',
-    'GeneralToolShelf',
-    'ImportToolIcon',
-    'LayoutShelf',
-    'MirrorToolIcon',
-    'ModelCombinationShelf',
-    'ModelConversionShelf',
-    'ModelCreationShelves',
-    'NullIcon',
-    'RevSurfToolIcon',
-    'TaperToolIcon',
-    'TextToolIcon',
-    'TorusToolIcon',
-    'TwistToolIcon',
-    'ViewingShelf',
-  ],
-  'SpecializedTools' : [
-    'BendTool',
-    'BendToolAfter',
-    'BendToolBefore',
-    'BevelTool',
-    'ClipTool',
-    'ClipToolFeedback',
-    'ClipToolActive',
-    'CSGTool',
-    'CylinderTool',
-    'CylinderToolActive',
-    'ExtrudedTool',
-    'MirrorToolBefore',
-    'MirrorToolAfter',
-    'MirrorToolRotated',
-    'RevSurfTool',
-    'TaperTool',
-    'TorusTool',
-    'TorusToolActive',
-    'TextTool',
-    'TwistTool',
-    'TwistToolTwisting',
-    'TwistToolLowComplexity',
-    'TwistToolHighComplexity',
-  ],
-  'Targets' : [
-    'EdgeTarget',
-    'EdgeTargetModSnapped',
-    'EdgeTargetSnapped',
-    'PointTarget',
-    'PointTargetModSnapped',
-    'PointTargetModSnapped2',
-    'PointTargetSnapped',
-  ],
-  'TargetSnap' : [
-    'SnappedToPointTarget',
-  ],
-  'ToolPanels' : [
-    'BevelToolPanel',
-    'BevelToolPanelDelete',
-    'BevelToolPanelGripMidpoint',
-    'BevelToolPanelHover',
-    'BevelToolPanelMaxAngle',
-    'BevelToolPanelScaleLarge',
-    'BevelToolPanelScaleSmall',
-    'BevelToolPanelSnap',
-    'CSGToolPanel',
-    'ExtrudedToolPanel',
-    'ExtrudedToolPanelPolygon',
-    'ImportToolPanel',
-    'RevSurfToolPanel',
-    'RevSurfToolPanelSweep',
-    'TaperToolPanel',
-    'TextToolPanel',
-  ],
-  'TreePanel' : [
-    'TreePanel',
-    'TreePanelSelect',
-    'TreePanelUpDown',
-  ],
+    'AppPanels1' : [
+        'ActionPanel',
+        'DialogMessagePanel',
+        'DialogQuestionPanel',
+        'HelpPanel',
+        'InfoPanel',
+        'RadialMenuPanel',
+        'SessionPanel',
+        'SettingsPanel',
+    ],
+    'AppPanels2' : [
+        'FilePanel',
+        'GripPanelBar',
+        'VirtualKeyboardPanel',
+    ],
+    'CSG' : [
+        'CSGDifference',
+        'CSGIntersection',
+        'CSGOperands',
+        'CSGUnion',
+    ],
+    'Controller' : [
+        'OculusTouch',
+        'TouchMode',
+        'Vive',
+    ],
+    'Doorstop' : [
+        'DoorstopCylinder',
+        'DoorstopExport',
+        'DoorstopFinished',
+        'DoorstopHull',
+        'DoorstopRenamed',
+        'DoorstopScale',
+        'DoorstopSelected',
+        'DoorstopTorus',
+        'DoorstopSessionPanel',
+    ],
+    'Feedback' : [
+        'AngularFeedback',
+        'LinearFeedback',
+    ],
+    'GeneralTools' : [
+        'ColorTool',
+        'ComplexityToolHigh',
+        'ComplexityToolLow',
+        'NameTool',
+        'RotationTool',
+        'RotationToolVRSphere',
+        'RotationToolVRX',
+        'RotationToolVRZ',
+        'ScaleTool',
+        'ScaleToolVRUniform',
+        'ScaleToolVRX',
+        'TranslationTool',
+        'TranslationToolVRX',
+        'TranslationToolVRZ',
+    ],
+    'Hull' : [
+        'HullCapsule',
+        'HullDisk',
+        'HullSpheres',
+        'HullTorus',
+    ],
+    'InvalidColors' : [
+        'InvalidColors',
+    ],
+    'LinearLayout' : [
+        'LinearLayout',
+    ],
+    'Logo' : [
+        'static/Logo',
+    ],
+    'Main' : [
+        'BuildVolume',
+        'Complex',
+        'PrecisionControl',
+        'WorkArea',
+        'WorkAreaWithSelection',
+    ],
+    'ModelEdges' : [
+        'ModelEdges',
+        'ModelNoEdges',
+    ],
+    'Primitives' : [
+        'PrimitiveBox',
+        'PrimitiveCylinder',
+        'PrimitiveExtruded',
+        'PrimitiveImported',
+        'PrimitiveRevSurf',
+        'PrimitiveSphere',
+        'PrimitiveText',
+        'PrimitiveTorus',
+    ],
+    'RadialLayout' : [
+        'RadialLayoutArc',
+        'RadialLayoutMultiple',
+        'RadialLayoutRadius',
+        'RadialLayoutSingle',
+    ],
+    'RadialMenu' : [
+        'AttachedRadialMenu',
+        'FixedRadialMenu',
+    ],
+    'Selection' : [
+        'Selection',
+    ],
+    'Shelves' : [
+        'BasicsShelf',
+        'BendToolIcon',
+        'BevelToolIcon',
+        'CSGToolIcon',
+        'ClipToolIcon',
+        'CylinderToolIcon',
+        'ExtrudedToolIcon',
+        'GeneralToolShelf',
+        'ImportToolIcon',
+        'LayoutShelf',
+        'MirrorToolIcon',
+        'ModelCombinationShelf',
+        'ModelConversionShelf',
+        'ModelCreationShelves',
+        'NullIcon',
+        'RevSurfToolIcon',
+        'TaperToolIcon',
+        'TextToolIcon',
+        'TorusToolIcon',
+        'TwistToolIcon',
+        'ViewingShelf',
+    ],
+    'SpecializedTools' : [
+        'BendTool',
+        'BendToolAfter',
+        'BendToolBefore',
+        'BevelTool',
+        'ClipTool',
+        'ClipToolFeedback',
+        'ClipToolActive',
+        'CSGTool',
+        'CylinderTool',
+        'CylinderToolActive',
+        'ExtrudedTool',
+        'MirrorToolBefore',
+        'MirrorToolAfter',
+        'MirrorToolRotated',
+        'RevSurfTool',
+        'TaperTool',
+        'TorusTool',
+        'TorusToolActive',
+        'TextTool',
+        'TwistTool',
+        'TwistToolTwisting',
+        'TwistToolLowComplexity',
+        'TwistToolHighComplexity',
+    ],
+    'Targets' : [
+        'EdgeTarget',
+        'EdgeTargetModSnapped',
+        'EdgeTargetSnapped',
+        'PointTarget',
+        'PointTargetModSnapped',
+        'PointTargetModSnapped2',
+        'PointTargetSnapped',
+    ],
+    'TargetSnap' : [
+        'SnappedToPointTarget',
+    ],
+    'ToolPanels' : [
+        'BevelToolPanel',
+        'BevelToolPanelDelete',
+        'BevelToolPanelGripMidpoint',
+        'BevelToolPanelHover',
+        'BevelToolPanelMaxAngle',
+        'BevelToolPanelScaleLarge',
+        'BevelToolPanelScaleSmall',
+        'BevelToolPanelSnap',
+        'CSGToolPanel',
+        'ExtrudedToolPanel',
+        'ExtrudedToolPanelPolygon',
+        'ImportToolPanel',
+        'RevSurfToolPanel',
+        'RevSurfToolPanelSweep',
+        'TaperToolPanel',
+        'TextToolPanel',
+    ],
+    'TreePanel' : [
+        'TreePanel',
+        'TreePanelSelect',
+        'TreePanelUpDown',
+    ],
 }
 
 # This maps annotation script files to the images they read and write.
 ann_map = {
-  'Icons'    : (['WorkArea', 'WorkAreaWithSelection'],
-                [
-                  'CombineHullIcon',
-                  'CreateCylinderIcon',
-                  'CreateTorusIcon',
-                  'NameToolIcon',
-                  'ScaleToolIcon',
-                  'SessionPanelIcon',
-                  'TranslationToolIcon',
-                ]),
-  'Logo'     : (['static/Logo'], ['static/LogoSmall']),
-  'WorkArea' : (['WorkArea'],    ['WorkAreaAnnotated']),
+    'Icons'    : (['WorkArea', 'WorkAreaWithSelection'],
+                  [
+                      'CombineHullIcon',
+                      'CreateCylinderIcon',
+                      'CreateTorusIcon',
+                      'NameToolIcon',
+                      'ScaleToolIcon',
+                      'SessionPanelIcon',
+                      'TranslationToolIcon',
+                  ]),
+    'Logo'     : (['static/Logo'], ['static/LogoSmall']),
+    'WorkArea' : (['WorkArea'],    ['WorkAreaAnnotated']),
 }
 
 def ImageFile(name):
-  return join(image_dir, name + '.jpg')
+    return join(image_dir, name + '.jpg')
 
 # Snapshot and annotation script processing.
 snaps = []
 anns  = []
 if noimages != True:  # Have to compare with True here.
-  # Snapshots.
-  for (script, images) in snap_map.items():
-    script_file = script + '.econf'
-    snap = env.Command([ImageFile(image) for image in images],
-                       [snapimage, join(script_dir, script_file)],
-                       f'{snapimage.abspath} --fullscreen {script_file}',
-                       chdir=root_dir)
-    # This prevents snapimage from running in parallel.
-    env.SideEffect('dummy', snap)
-    snaps.append(snap)
+    # Snapshots.
+    snap_args = '--maximize --offscreen'
+    for (script, images) in snap_map.items():
+        script_file = script + '.econf'
+        snap = env.Command([ImageFile(image) for image in images],
+                           [snapimage, join(script_dir, script_file)],
+                           f'{snapimage.abspath} {snap_args} {script_file}',
+                           chdir=root_dir)
+        # This prevents snapimage from running in parallel.
+        # env.SideEffect('dummy', snap) # XXXX
+        snaps.append(snap)
 
-  # Annotations.
-  for (script, (input_images, output_images)) in ann_map.items():
-    script_file = script + '.econf'
-    ann = env.Command([ImageFile(image) for image in output_images],
-                      [annotator, join(ann_dir, script_file)] +
-                      [ImageFile(image) for image in input_images],
-                      f'{annotator} {script_file}', chdir=root_dir)
-    anns.append(ann)
+    # Annotations.
+    for (script, (input_images, output_images)) in ann_map.items():
+        script_file = script + '.econf'
+        ann = env.Command([ImageFile(image) for image in output_images],
+                          [annotator, join(ann_dir, script_file)] +
+                          [ImageFile(image) for image in input_images],
+                          f'{annotator} {script_file}', chdir=root_dir)
+        anns.append(ann)
 
 images = [snaps, anns]
 env.Alias('Images', images)

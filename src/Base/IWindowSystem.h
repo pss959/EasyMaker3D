@@ -49,8 +49,9 @@ class IWindowSystem {
     /// Sets the position of the window.
     virtual void SetWindowPosition(const Point2ui &pos) = 0;
 
-    /// Makes the current window full-screen.
-    virtual void SetFullScreen() = 0;
+    /// Makes the current window fill the screen. (True fullscreen mode is kind
+    // of annoying in that the user cannot resize or move the window.)
+    virtual void Maximize() = 0;
 
     /// Returns the size of the window in pixels.
     virtual Vector2ui GetWindowSize() = 0;

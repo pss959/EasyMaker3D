@@ -23,7 +23,7 @@ GLFWViewer::~GLFWViewer() {
     ws_->Terminate();
 }
 
-bool GLFWViewer::Init(const Vector2ui &size, bool fullscreen, bool offscreen) {
+bool GLFWViewer::Init(const Vector2ui &size, bool maximize, bool offscreen) {
     const Str title = TK::kApplicationName + " " + TK::kVersionString;
     if (! ws_->Init(error_func_) ||
         ! ws_->CreateMainWindow(size, title, offscreen))
@@ -31,8 +31,8 @@ bool GLFWViewer::Init(const Vector2ui &size, bool fullscreen, bool offscreen) {
 
     ws_->SetWindowPosition(Point2ui(600, 100));
 
-    if (fullscreen)
-        ws_->SetFullScreen();
+    if (maximize)
+        ws_->Maximize();
 
     if (offscreen)
         fb_target_.Init("GLFW", ws_->GetFramebufferSize(), 16); // XXXX 16

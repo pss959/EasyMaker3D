@@ -15,7 +15,7 @@ class GLFWWindowSystem : public IWindowSystem {
     virtual bool CreateMainWindow(const Vector2ui &size, const Str &title,
                                   bool offscreen) override;
     virtual void SetWindowPosition(const Point2ui &pos) override;
-    virtual void SetFullScreen() override;
+    virtual void Maximize() override;
     virtual Vector2ui GetWindowSize() override;
     virtual Vector2ui GetFramebufferSize() override;
     virtual void PreRender() override;

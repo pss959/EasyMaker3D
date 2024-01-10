@@ -18,21 +18,21 @@ R"(capturevideo: Play back a session file with delays to create a video for
 public documentation. See Script.h for script details.
 
     Usage:
-      capturevideo [--format=<str>] [--fps=<fps>] [--fullscreen]
-                   [--klog=<klog_string>] [--nocapture] [--offscreen]
+      capturevideo [--format=<str>] [--fps=<fps>] [--klog=<klog_string>]
+                   [--maximize] [--nocapture] [--offscreen]
                    [--remain] [--report] [--size=<n>] SCRIPT [SESSION]
 
     Options:
-      --format=<str>  Output video format. Choices: "webm" (default),
+      --format=<str>   Output video format. Choices: "webm" (default),
                         "rgbmp4", "yuvmp4".
-      --fps=<long>    Frames per second in the resulting video (default 30).
-      --fullscreen    Use a full-screen window.
-      --klog=<string> String to pass to KLogger::SetKeyString().
-      --nocapture     Do not actually capture the video (useful for testing).
-      --offscreen     Use offscreen rendering (no visible window).
-      --remain        Keep the window alive after script processing.
-      --report        Report each instruction of script processing.
-      --size=<n>      Use fractional (1/n) window size for speed when testing.
+      --fps=<long>     Frames per second in the resulting video (default 30).
+      --klog=<string>  String to pass to KLogger::SetKeyString().
+      --maximize       Start with a maximized window.
+      --nocapture      Do not actually capture the video (useful for testing).
+      --offscreen      Use offscreen rendering (no visible window).
+      --remain         Keep the window alive after script processing.
+      --report         Report each instruction of script processing.
+      --size=<n>       Use fractional (1/n) window size for speed when testing.
 
     The script file is loaded from PublicDoc/videos/scripts/<SCRIPT>.
     If specified, a session is loaded from PublicDoc/videos/sessions/<SESSION>.

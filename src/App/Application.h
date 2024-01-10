@@ -34,7 +34,7 @@ class Application {
     struct Options {
         Vector2ui window_size;
         bool      do_ion_remote      = false;
-        bool      fullscreen         = false;
+        bool      maximize           = false;
         bool      enable_vr          = false;
         bool      ignore_vr          = false;
         bool      set_up_touch       = false;
@@ -110,8 +110,8 @@ class Application {
     /// Adds an event IEmitter to the list of emitters.
     void AddEmitter(const IEmitterPtr &emitter);
 
-    /// Returns the current size of the application window, taking the
-    /// fullscreen option into account.
+    /// Returns the current size of the application window, taking the maximize
+    /// option into account.
     Vector2ui GetWindowSize() const;
 
     /// Returns the IRenderer.

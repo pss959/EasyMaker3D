@@ -33,11 +33,11 @@ class GLFWViewer : public Viewer, public IEmitter {
     /// actual GLFW graphics.
     void SetWindowSystem(const IWindowSystemPtr &ws) { ws_ = ws; }
 
-    /// Initializes the viewer with the given \p size. The \p fullscreen flag
-    /// indicates whether the window should be resized to full-screen. The \p
-    /// offscreen flag indicates whether to use offscreen rendering instead of
-    /// a visible window. Returns false if anything fails.
-    bool Init(const Vector2ui &size, bool fullscreen, bool offscreen);
+    /// Initializes the viewer with the given \p size. The \p maximize flag
+    /// indicates whether the window should be maximized to fill the screen.
+    /// The \p offscreen flag indicates whether to use offscreen rendering
+    /// instead of a visible window. Returns false if anything fails.
+    bool Init(const Vector2ui &size, bool maximize, bool offscreen);
 
     /// Sets the WindowCamera to update.
     void SetCamera(const SG::WindowCameraPtr &camera) {
@@ -57,7 +57,7 @@ class GLFWViewer : public Viewer, public IEmitter {
     /// Returns true if either shift key is currenty pressed.
     bool IsShiftKeyPressed() const;
 
-    /// Returns the current size of the window in pixels, taking the fullscreen
+    /// Returns the current size of the window in pixels, taking the maximize
     /// option into account.
     Vector2ui GetWindowSize() const;
 

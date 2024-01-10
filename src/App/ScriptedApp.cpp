@@ -349,15 +349,17 @@ void ScriptedApp::InitOptions(const Args &args) {
     // KLogging for debugging.
     KLogger::SetKeyString(args.GetString("--klog"));
 
-    options_.do_ion_remote = true;
     options_.enable_vr     = true;   // So controllers work properly.
-    options_.fullscreen    = args.GetBool("--fullscreen");
+    options_.maximize      = args.GetBool("--maximize");
     options_.remain        = args.GetBool("--remain");
     options_.report        = args.GetBool("--report");
     options_.offscreen     = args.GetBool("--offscreen");
 
-    // Window size. Note that this must have the same aspect ratio as
-    // fullscreen.
+    // Uncomment this if needed to help with debugging.
+    // options_.do_ion_remote = true;
+
+    // Window size. Note that this must have the same aspect ratio as a
+    // maximized window.
     int size_n = args.HasArg("--size") ? args.GetAsInt("--size", 1) : 1;
     if (size_n <= 0)
         size_n = 1;

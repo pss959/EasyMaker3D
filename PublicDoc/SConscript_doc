@@ -9,12 +9,6 @@ from subprocess import Popen, PIPE, run
 
 Import('app_dict', 'capturevideo', 'doc_build_dir', 'noimages', 'snapimage')
 
-# PublicDoc has dependency errors when using multiple jobs. I have not found
-# any workaround that works, including using SideEffect() for all targets.
-if GetOption('num_jobs') > 1 and 'PublicDoc' in COMMAND_LINE_TARGETS:
-    print('*** PublicDoc will likely fail with more than 1 job - exiting')
-    Exit(1)
-
 # -----------------------------------------------------------------------------
 # Helper functions.
 # -----------------------------------------------------------------------------

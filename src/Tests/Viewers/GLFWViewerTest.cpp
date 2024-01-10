@@ -50,7 +50,7 @@ class GLFWViewerTest::TestWindowSystem : public IWindowSystem {
 
     Vector2ui win_size{ 0, 0 };
     Point2ui  win_pos{ 0, 0 };
-    bool      is_fullscreen = false;
+    bool      is_maximized = false;
     size_t    pre_render_count = 0;
     size_t    post_render_count = 0;
     size_t    flush_count = 0;
@@ -68,7 +68,7 @@ class GLFWViewerTest::TestWindowSystem : public IWindowSystem {
     virtual void SetWindowPosition(const Point2ui &pos) override {
         win_pos = pos;
     }
-    virtual void SetFullScreen() override { is_fullscreen = true; }
+    virtual void Maximize() override { is_maximized = true; }
     virtual Vector2ui GetWindowSize() override { return win_size; }
     virtual Vector2ui GetFramebufferSize() override { return win_size; }
     virtual void PreRender() override { ++pre_render_count; }
@@ -149,14 +149,14 @@ TEST_F(GLFWViewerTest, Init) {
     EXPECT_EQ(Point2ui::Zero(),  tws->win_pos);
     EXPECT_EQ(Vector2ui::Zero(), tws->GetWindowSize());
     EXPECT_EQ(Vector2ui::Zero(), tws->GetFramebufferSize());
-    EXPECT_FALSE(tws->is_fullscreen);
+    EXPECT_FALSE(tws->is_maximized);
 
     EXPECT_TRUE(viewer.Init(Vector2ui(800, 600), true, true));
     EXPECT_EQ(Vector2ui(800, 600), tws->win_size);
     EXPECT_EQ(Point2ui(600, 100),  tws->win_pos);
     EXPECT_EQ(Vector2ui(800, 600), tws->GetWindowSize());
     EXPECT_EQ(Vector2ui(800, 600), tws->GetFramebufferSize());
-    EXPECT_TRUE(tws->is_fullscreen);
+    EXPECT_TRUE(tws->is_maximized);
 }
 
 TEST_F(GLFWViewerTest, InitFail) {

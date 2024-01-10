@@ -21,16 +21,16 @@ constinit const char kUsageString[] =
 R"(snapimage: Reads a script with instructions on how to create snapshot images
 for public documentation. See Script.h for script details.
     Usage:
-      snapimage [--fullscreen] [--klog=<klog_string>]
+      snapimage [--klog=<klog_string>] [--maximize]
                 [--nosnap] [--offscreen] [--remain] [--report] SCRIPT
 
     Options:
-      --fullscreen    Use a full-screen window.
-      --klog=<string> String to pass to KLogger::SetKeyString().
-      --nosnap        Ignore snap commands (useful for testing).
-      --offscreen     Use offscreen rendering (no visible window).
-      --remain        Keep the window alive after script processing.
-      --report        Report each instruction of script processing.
+      --klog=<string>  String to pass to KLogger::SetKeyString().
+      --maximize       Start with a maximized window.
+      --nosnap         Ignore snap commands (useful for testing).
+      --offscreen      Use offscreen rendering (no visible window).
+      --remain         Keep the window alive after script processing.
+      --report         Report each instruction of script processing.
 
     Script files are relative to PublicDoc/snaps/scripts.
     Image files are placed in PublicDoc/docs/images.

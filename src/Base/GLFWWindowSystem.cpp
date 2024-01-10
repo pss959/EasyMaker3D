@@ -219,12 +219,9 @@ void GLFWWindowSystem::SetWindowPosition(const Point2ui &pos) {
     glfwSetWindowPos(window_, pos[0], pos[1]);
 }
 
-void GLFWWindowSystem::SetFullScreen() {
+void GLFWWindowSystem::Maximize() {
     ASSERT(window_);
 
-    // Fullscreen is just a maximized window. This allows the user to
-    // unmaximize it and move it around if they want. True fullscreen mode is
-    // kind of annoying in that respect.
     glfwMaximizeWindow(window_);
 
     // The size of a hidden window apparently does NOT get updated when
