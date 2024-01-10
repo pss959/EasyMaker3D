@@ -159,31 +159,10 @@ uint32 Renderer::Impl_::GetResolvedTextureID(const FBTarget &fb_target) {
 ion::gfx::ImagePtr Renderer::Impl_::ReadImage(const Viewport &rect) {
     // XXX Pass FBTarget into here...
     ASSERT(renderer_);
+    renderer_->BindFramebuffer(last_resolved_fbo_);
 
-    if (last_resolved_fbo_) {
-#if XXXX
-        auto &ca = last_resolved_fbo_->GetColorAttachment(0);
-        const auto id = renderer_->GetResourceGlId(ca.GetTexture().Get());
-        renderer_->GetGraphicsManager()->BindFramebuffer(
-            GL_READ_FRAMEBUFFER, id);
-#endif
-        renderer_->GetGraphicsManager()->BindFramebuffer(
-            GL_READ_FRAMEBUFFER, 5);  // XXXXX 5?
-    }
-    else {
-        renderer_->GetGraphicsManager()->BindFramebuffer(
-            GL_READ_FRAMEBUFFER, 0);
-    }
-
-    auto ret = renderer_->ReadImage(rect, ion::gfx::Image::Format::kRgb888,
-                                    ion::base::AllocatorPtr());
-#if XXXX
-    auto &ts = renderer_->GetGraphicsManager()->GetTracingStream();
-    ts.StopTracing();
-    std::cerr << "XXXX ---- TRACE:\n" << ts.String() << "\n";
-#endif
-
-    return ret;
+    return renderer_->ReadImage(rect, ion::gfx::Image::Format::kRgb888,
+                                ion::base::AllocatorPtr());
 }
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
