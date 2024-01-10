@@ -1,4 +1,5 @@
-Node "CaptureRoot" {
+# Extra objects used in ScriptedApp.
+Node "ScriptingRoot" {
   CONSTANTS: [
     HL_COLOR:  "\"#ff66ff\"",  # Color for highlight rectangle.
     CAP_COLOR: "\"#51afe0\"",  # Color for caption text.

@@ -108,8 +108,17 @@ class ScriptedApp : public Application {
 
     std::unique_ptr<Video_> video_;  ///< Used only when capturing video.
 
+    /// \name Initialization.
+    ///@{
+
     /// Initializes everything. Returns false on error.
     bool Init_();
+
+    void InitControllers_();
+    void InitMockFilePathList_();
+    void InitScene_();
+    void InitHandlers_();
+    ///@}
 
     /// Processes one instruction.
     bool ProcessInstruction_(const Script::Instr &instr);

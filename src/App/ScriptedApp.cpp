@@ -477,6 +477,10 @@ bool ScriptedApp::IsInModifiedMode() const {
     return emitter_->IsInModifiedMode();
 }
 
+// ----------------------------------------------------------------------------
+// Initialization.
+// ----------------------------------------------------------------------------
+
 bool ScriptedApp::Init_() {
     if (! Application::Init(options_))
         return false;
@@ -485,10 +489,18 @@ bool ScriptedApp::Init_() {
     AddEmitter(emitter_);
 
     const auto &context = GetContext();
+    ASSERT(context.scene_context);
+    ASSERT(context.scene_context->scene);
 
-    // Turn off controllers until they are specifically added.
-    context.scene_context->left_controller->SetEnabled(false);
-    context.scene_context->right_controller->SetEnabled(false);
+    // Use default settings file so that state is deterministic.
+    const FilePath path("PublicDoc/settings/Settings" + TK::kDataFileExtension);
+    if (! LoadSettings_(path))
+        return false;
+
+    InitControllers_();
+    InitMockFilePathList_();
+    InitScene_();
+    InitHandlers_();
 
 #if ENABLE_DEBUG_FEATURES
     // Make sure there is no debug text visible.
@@ -501,70 +513,6 @@ bool ScriptedApp::Init_() {
 
     // No need to ask before quitting a scripted app.
     SetAskBeforeQuitting(false);
-
-    // Set render offsets for the controllers.
-    SetControllerRenderOffsets(-ScriptEmitter::kLeftControllerOffset,
-                               -ScriptEmitter::kRightControllerOffset);
-
-    // Use default settings file so that state is deterministic.
-    const FilePath path("PublicDoc/settings/Settings" + TK::kDataFileExtension);
-    if (! LoadSettings_(path))
-        return false;
-
-    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
-    mock_fpl_.reset(new MockFilePathList_);
-    const auto set_mock = [&](const Str &panel_name){
-        const auto &panel_mgr = *GetContext().panel_manager;
-        auto panel = panel_mgr.GetTypedPanel<FilePanel>(panel_name);
-        panel->SetFilePathList(mock_fpl_.get());
-    };
-    set_mock("FilePanel");
-    set_mock("ImportToolPanel");
-
-    // XXXX CLEAN THIS UP!
-
-    ASSERT(context.scene_context);
-    ASSERT(context.scene_context->scene);
-    const auto &scene = *context.scene_context->scene;
-    auto room = SG::FindNodeInScene(scene, "Room");
-
-    // Parse the Capture scene data and add it to the Room.
-    // XXXX CHANGE FILE NAME
-    Parser::Parser parser;
-    auto capture_root = std::dynamic_pointer_cast<SG::Node>(
-        parser.ParseFile(FilePath::GetResourcePath("nodes", "Capture.emd")));
-    ASSERT(capture_root);
-    room->AddChild(capture_root);
-
-    // Find the FakeCursor and position it just in front of the camera.
-    cursor_ = SG::FindNodeUnderNode(*capture_root, "FakeCursor");
-    MoveFakeCursorTo_(Point2f(.5f, .5f));  // In the middle.
-
-    // Add a Handler_ to update the fake cursor when the mouse is moved. Insert
-    // it at the beginning so no other handler steals the event.
-    cursor_handler_.reset(
-        new CursorHandler_([&](const Point2f &p){ MoveFakeCursorTo_(p); }));
-    context.event_manager->InsertHandler(cursor_handler_);
-
-    // Add a Handler_ to allow pausing when the "remain" option is specified.
-    // Insert it at the beginning so no other handler steals the event.
-    if (options_.remain) {
-        auto pause_func = [&](){
-            const bool is_paused = PauseOrUnpause_();
-            cursor_handler_->SetEnabled(! is_paused);
-        };
-        pause_handler_.reset(new PauseHandler_(pause_func));
-        context.event_manager->InsertHandler(pause_handler_);
-    }
-
-    // Find the highlight node.
-    highlight_ = SG::FindNodeUnderNode(*capture_root, "HighlightRect");
-
-    // Find the caption nodes.
-    caption_.node = SG::FindNodeUnderNode(*capture_root,  "Caption");
-    caption_.bg   = SG::FindNodeUnderNode(*caption_.node, "Background");
-    caption_.text = SG::FindTypedNodeUnderNode<SG::TextNode>(*caption_.node,
-                                                            "Text");
 
     // Use a constant time increment per frame for animation so the animations
     // are not subject to inconsistent frame times due to capture.
@@ -581,16 +529,90 @@ bool ScriptedApp::Init_() {
     // Fake export from the SessionManager, since the path is likely bogus.
     context.session_manager->SetFakeExport(true);
 
+    return true;
+}
+
+void ScriptedApp::InitControllers_() {
+    const auto &sc = *GetContext().scene_context;
+
+    // Turn off controllers until they are specifically added.
+    sc.left_controller->SetEnabled(false);
+    sc.right_controller->SetEnabled(false);
+
+    // Set render offsets for the controllers.
+    SetControllerRenderOffsets(-ScriptEmitter::kLeftControllerOffset,
+                               -ScriptEmitter::kRightControllerOffset);
+}
+
+void ScriptedApp::InitMockFilePathList_() {
+    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
+    mock_fpl_.reset(new MockFilePathList_);
+
+    const auto set_mock = [&](const Str &panel_name){
+        const auto &panel_mgr = *GetContext().panel_manager;
+        auto panel = panel_mgr.GetTypedPanel<FilePanel>(panel_name);
+        panel->SetFilePathList(mock_fpl_.get());
+    };
+
+    set_mock("FilePanel");
+    set_mock("ImportToolPanel");
+}
+
+void ScriptedApp::InitScene_() {
+    const auto &sc = *GetContext().scene_context;
+    auto room = SG::FindNodeInScene(*sc.scene, "Room");
+
+    // Parse the Scripting scene data and add it to the Room.
+    Parser::Parser parser;
+    auto scripting_root = std::dynamic_pointer_cast<SG::Node>(
+        parser.ParseFile(FilePath::GetResourcePath("nodes", "Scripting.emd")));
+    ASSERT(scripting_root);
+    room->AddChild(scripting_root);
+
+    // Access the FakeCursor and position it just in front of the camera.
+    cursor_ = SG::FindNodeUnderNode(*scripting_root, "FakeCursor");
+    MoveFakeCursorTo_(Point2f(.5f, .5f));  // In the middle.
+
+    // Access the highlight node.
+    highlight_ = SG::FindNodeUnderNode(*scripting_root, "HighlightRect");
+
+    // Access the caption nodes.
+    caption_.node = SG::FindNodeUnderNode(*scripting_root, "Caption");
+    caption_.bg   = SG::FindNodeUnderNode(*caption_.node,  "Background");
+    caption_.text = SG::FindTypedNodeUnderNode<SG::TextNode>(*caption_.node,
+                                                            "Text");
+
     // When the height slider is dragged, anything positioned relative to the
     // camera needs to be updated.
-    context.scene_context->height_slider->GetValueChanged().AddObserver(
+    sc.height_slider->GetValueChanged().AddObserver(
         this, [&](Widget &, const float &val){
             MoveFakeCursorTo_(cursor_pos_);
             UpdateCaption_();
         });
-
-    return true;
 }
+
+void ScriptedApp::InitHandlers_() {
+    // Add a Handler_ to update the fake cursor when the mouse is moved. Insert
+    // it at the beginning so no other handler steals the event.
+    cursor_handler_.reset(
+        new CursorHandler_([&](const Point2f &p){ MoveFakeCursorTo_(p); }));
+    GetContext().event_manager->InsertHandler(cursor_handler_);
+
+    // Add a Handler_ to allow pausing when the "remain" option is specified.
+    // Insert it at the beginning so no other handler steals the event.
+    if (options_.remain) {
+        auto pause_func = [&](){
+            const bool is_paused = PauseOrUnpause_();
+            cursor_handler_->SetEnabled(! is_paused);
+        };
+        pause_handler_.reset(new PauseHandler_(pause_func));
+        GetContext().event_manager->InsertHandler(pause_handler_);
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Instruction processing.
+// ----------------------------------------------------------------------------
 
 bool ScriptedApp::ProcessInstruction_(const Script::Instr &instr) {
     const auto it = func_map_.find(instr.name);
@@ -922,6 +944,10 @@ bool ScriptedApp::ProcessWait_(const Script::WaitInstr &instr) {
     MoveTo_(cursor_pos_, instr.duration);
     return true;
 }
+
+// ----------------------------------------------------------------------------
+// Other functions.
+// ----------------------------------------------------------------------------
 
 void ScriptedApp::Finish_() {
     // Disable the handlers so the fake cursor does not move any more (and
