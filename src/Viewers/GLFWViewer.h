@@ -35,9 +35,9 @@ class GLFWViewer : public Viewer, public IEmitter {
 
     /// Initializes the viewer with the given \p size. The \p fullscreen flag
     /// indicates whether the window should be resized to full-screen. The \p
-    /// show_window flag indicates whether the window should be visible (can be
-    /// false for tests). Returns false if anything fails.
-    bool Init(const Vector2i &size, bool fullscreen, bool show_window);
+    /// offscreen flag indicates whether to use offscreen rendering instead of
+    /// a visible window. Returns false if anything fails.
+    bool Init(const Vector2ui &size, bool fullscreen, bool offscreen);
 
     /// Sets the WindowCamera to update.
     void SetCamera(const SG::WindowCameraPtr &camera) {
@@ -59,7 +59,7 @@ class GLFWViewer : public Viewer, public IEmitter {
 
     /// Returns the current size of the window in pixels, taking the fullscreen
     /// option into account.
-    Vector2i GetWindowSize() const;
+    Vector2ui GetWindowSize() const;
 
     virtual void Render(const SG::Scene &scene, IRenderer &renderer);
 
@@ -76,7 +76,7 @@ class GLFWViewer : public Viewer, public IEmitter {
 
   private:
     ErrorFunc        error_func_;
-    FBTarget         fb_target_;
+    FBTarget         fb_target_;     ///< Used for offscreen rendering.
     IWindowSystemPtr ws_;
 
     /// Stores the camera used to set up the Frustum.

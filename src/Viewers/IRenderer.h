@@ -50,5 +50,5 @@ class IRenderer {
 
     /// Reads a rectangle of pixels from the GLFWViewer window and returns them
     /// in an Ion Image in kRGB888 format.
-    virtual ion::gfx::ImagePtr ReadImage(const Range2i &rect) = 0;
+    virtual ion::gfx::ImagePtr ReadImage(const Viewport &rect) = 0;
 };

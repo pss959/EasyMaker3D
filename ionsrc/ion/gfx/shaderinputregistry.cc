@@ -114,7 +114,7 @@ class ShaderInputRegistry::StaticGlobalRegistryData {
         "aTexCoords", kBufferObjectElementAttribute, "Texture coordinates."));
 
     global_registry_->Add(UniformSpec(
-        "uViewportSize", kIntVector2Uniform, "Viewport Size."));
+        "uViewportSize", kUnsignedIntVector2Uniform, "Viewport Size."));
     global_registry_->Add(UniformSpec(
         "uProjectionMatrix", kMatrix4x4Uniform, "Projection matrix."));
     global_registry_->Add(UniformSpec("uModelviewMatrix",

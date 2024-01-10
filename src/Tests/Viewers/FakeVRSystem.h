@@ -35,8 +35,8 @@ class FakeVRSystem : public IVRSystem {
         frustum.SetSymmetricFOV(Anglef::FromDegrees(60), 1);
         frustum.pnear       = TK::kVRNearDistance;
         frustum.pfar        = TK::kVRFarDistance;
-        frustum.viewport    = Viewport::BuildWithSize(Point2i(0, 0),
-                                                      Vector2i(400, 400));
+        frustum.viewport    = Viewport::BuildWithSize(Point2ui(0, 0),
+                                                      Vector2ui(400, 400));
         frustum.position    = camera_ ?
             camera_->GetCurrentPosition() : Point3f::Zero();
         frustum.orientation = Rotationf::Identity();

@@ -165,7 +165,7 @@ class ScriptedApp::PauseHandler_ : public Handler {
 
 class ScriptedApp::Video_ {
   public:
-    Video_(const FilePath &script_path, const Vector2i &size,
+    Video_(const FilePath &script_path, const Vector2ui &size,
            const Str &format, const int fps, bool do_capture);
 
     /// Enables video capturing.
@@ -197,7 +197,7 @@ class ScriptedApp::Video_ {
     }
 
     /// Captures a frame using the given renderer and image size.
-    void CaptureFrame(IRenderer &renderer, const Vector2i &size);
+    void CaptureFrame(IRenderer &renderer, const Vector2ui &size);
 
     /// Writes the captured video frames to the file.
     void WriteToFile() {
@@ -229,7 +229,7 @@ class ScriptedApp::Video_ {
     float UpdateFade_(SG::Node &node, FadeData_ &fade_data);
 };
 
-ScriptedApp::Video_::Video_(const FilePath &script_path, const Vector2i &size,
+ScriptedApp::Video_::Video_(const FilePath &script_path, const Vector2ui &size,
                             const Str &format, int fps,
                             bool do_capture) : fps_(fps) {
     if (do_capture) {
@@ -267,10 +267,10 @@ void ScriptedApp::Video_::UpdateHighlightFade(SG::Node &highlight) {
 }
 
 void ScriptedApp::Video_::CaptureFrame(IRenderer &renderer,
-                                       const Vector2i &size) {
+                                       const Vector2ui &size) {
     if (video_writer_ && is_capturing_) {
         const auto image =
-            renderer.ReadImage(Range2i::BuildWithSize(Point2i(0, 0), size));
+            renderer.ReadImage(Viewport::BuildWithSize(Point2ui(0, 0), size));
 
         // Rows of image need to be inverted (GL vs stblib).
         ion::image::FlipImage(image);
@@ -349,11 +349,12 @@ void ScriptedApp::InitOptions(const Args &args) {
     // KLogging for debugging.
     KLogger::SetKeyString(args.GetString("--klog"));
 
-    options_.do_ion_remote      = true;
-    options_.enable_vr          = true;   // So controllers work properly.
-    options_.fullscreen         = args.GetBool("--fullscreen");
-    options_.remain             = args.GetBool("--remain");
-    options_.report             = args.GetBool("--report");
+    options_.do_ion_remote = true;
+    options_.enable_vr     = true;   // So controllers work properly.
+    options_.fullscreen    = args.GetBool("--fullscreen");
+    options_.remain        = args.GetBool("--remain");
+    options_.report        = args.GetBool("--report");
+    options_.offscreen     = args.GetBool("--offscreen");
 
     // Window size. Note that this must have the same aspect ratio as
     // fullscreen.
@@ -1101,7 +1102,7 @@ bool ScriptedApp::TakeSnapshot_(const Range2f &rect, const Str &file_name) {
     const int w = static_cast<int>(size[0] * window_size[0]);
     const int h = static_cast<int>(size[1] * window_size[1]);
 
-    const auto recti = Range2i::BuildWithSize(Point2i(x, y), Vector2i(w, h));
+    const auto recti = Viewport::BuildWithSize(Point2ui(x, y), Vector2ui(w, h));
     const auto image = GetRenderer().ReadImage(recti);
     // Rows of image need to be inverted (GL vs stblib).
     ion::image::FlipImage(image);

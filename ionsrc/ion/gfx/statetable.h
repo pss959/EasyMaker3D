@@ -503,8 +503,8 @@ class ION_API StateTable : public base::Referent {
   // Scissoring state.
 
   /// Sets the scissor box. The default state is all zeroes.
-  void SetScissorBox(const math::Range2i& box);
-  const math::Range2i& GetScissorBox() const { return data_.scissor_box; }
+  void SetScissorBox(const math::Range2ui& box);
+  const math::Range2ui& GetScissorBox() const { return data_.scissor_box; }
 
   //---------------------------------------------------------------------------
   // Stenciling state.
@@ -571,10 +571,10 @@ class ION_API StateTable : public base::Referent {
   // Viewport state.
 
   /// Sets the viewport rectangle. The default state is all zeroes.
-  void SetViewport(const math::Range2i& rect);
+  void SetViewport(const math::Range2ui& rect);
   void SetViewport(int left, int bottom, int width, int height);
   /// Returns the viewport rectangle.
-  const math::Range2i& GetViewport() const { return data_.viewport; }
+  const math::Range2ui& GetViewport() const { return data_.viewport; }
 
   //---------------------------------------------------------------------------
 
@@ -671,7 +671,7 @@ class ION_API StateTable : public base::Referent {
     float min_sample_shading;
 
     /// Scissoring state.
-    math::Range2i scissor_box;
+    math::Range2ui scissor_box;
 
     /// Stenciling state.
     StencilFunction front_stencil_function;
@@ -690,7 +690,7 @@ class ION_API StateTable : public base::Referent {
     uint32 back_stencil_write_mask;
 
     /// Viewport state.
-    math::Range2i viewport;
+    math::Range2ui viewport;
   };
 
   /// Returns a Data instance containing all default settings. This is used to

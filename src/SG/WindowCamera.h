@@ -49,7 +49,7 @@ class WindowCamera : public Camera {
 
     /// Convenience that stores the WindowCamera's view frustum for the given
     /// window size (in pixels) in the given Frustum .
-    void BuildFrustum(const Vector2i window_size, Frustum &frustum) const;
+    void BuildFrustum(const Vector2ui window_size, Frustum &frustum) const;
 
     virtual Point3f GetCurrentPosition() const override { return position_; }
 

@@ -35,10 +35,10 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-using math::Point2i;
+using math::Point2ui;
 using math::Range1f;
-using math::Range2i;
-using math::Vector2i;
+using math::Range2ui;
+using math::Vector2ui;
 using testing::FakeGraphicsManager;
 using testing::FakeGraphicsManagerPtr;
 using testing::FakeGlContext;
@@ -336,10 +336,10 @@ TEST_F(UpdateStateTableTest, ClearFromStateTableValues) {
                        "Clear(GL_DEPTH_BUFFER_BIT)", "ClearDepthf(0.5)",
                        "DepthMask(GL_FALSE)");
   EXPECT_FALSE(st0_->GetDepthWriteMask());
-  ION_TEST_VALUE(
-      SetScissorBox(Range2i::BuildWithSize(Point2i(10, 20), Vector2i(30, 40))),
-      "Scissor(10, 20, 30, 40)");
-  EXPECT_EQ(Range2i::BuildWithSize(Point2i(10, 20), Vector2i(30, 40)),
+  ION_TEST_VALUE(SetScissorBox(Range2ui::BuildWithSize(Point2ui(10, 20),
+                                                       Vector2ui(30, 40))),
+                 "Scissor(10, 20, 30, 40)");
+  EXPECT_EQ(Range2ui::BuildWithSize(Point2ui(10, 20), Vector2ui(30, 40)),
             st0_->GetScissorBox());
 
   // Test multiple clears.
@@ -437,8 +437,8 @@ TEST_F(UpdateStateTableTest, UpdateFromStateTableValues) {
   ION_TEST_VALUE(SetPolygonOffset(.5f, .2f), "PolygonOffset(0.5, 0.2)");
   ION_TEST_VALUE(SetSampleCoverage(1.f, true), "SampleCoverage(1, GL_TRUE)");
   ION_TEST_VALUE(SetSampleCoverage(.6f, true), "SampleCoverage(0.6, GL_TRUE)");
-  ION_TEST_VALUE(SetViewport(Range2i::BuildWithSize(Point2i(50, 60),
-                                                    Vector2i(70, 80))),
+  ION_TEST_VALUE(SetViewport(Range2ui::BuildWithSize(Point2ui(50, 60),
+                                                     Vector2ui(70, 80))),
                  "Viewport(50, 60, 70, 80)");
 
   //
@@ -553,7 +553,7 @@ TEST_F(UpdateStateTableTest, UpdateFromStateTableValuesEnforced) {
   ION_TEST_VALUE(SetSampleCoverage(1.f, true), "SampleCoverage(1, GL_TRUE)");
   ION_TEST_VALUE(SetSampleCoverage(.6f, true), "SampleCoverage(0.6, GL_TRUE)");
   ION_TEST_VALUE(
-      SetViewport(Range2i::BuildWithSize(Point2i(50, 60), Vector2i(70, 80))),
+      SetViewport(Range2ui::BuildWithSize(Point2ui(50, 60), Vector2ui(70, 80))),
       "Viewport(50, 60, 70, 80)");
 
   //
@@ -736,7 +736,7 @@ TEST_F(UpdateStateTableTest, UpdateSettingsInStateTable) {
                  "GetFloatv(GL_SAMPLE_COVERAGE_VALUE;GetIntegerv(GL_SAMPLE_"
                  "COVERAGE_INVERT;");
   ION_TEST_VALUE(
-      SetViewport(Range2i::BuildWithSize(Point2i(50, 60), Vector2i(70, 80))),
+      SetViewport(Range2ui::BuildWithSize(Point2ui(50, 60), Vector2ui(70, 80))),
       "GetIntegerv(GL_VIEWPORT");
 
   ION_TEST_VALUE(SetClearColor(math::Vector4f(.6f, .7f, .8f, .9f)),
@@ -745,7 +745,7 @@ TEST_F(UpdateStateTableTest, UpdateSettingsInStateTable) {
   ION_TEST_VALUE(SetClearStencilValue(123456),
                  "GetIntegerv(GL_STENCIL_CLEAR_VALUE,");
   ION_TEST_VALUE(
-      SetScissorBox(Range2i::BuildWithSize(Point2i(10, 20), Vector2i(30, 40))),
+      SetScissorBox(Range2ui::BuildWithSize(Point2ui(10, 20), Vector2ui(30, 40))),
       "GetIntegerv(GL_SCISSOR_BOX");
   ION_TEST_VALUE(
       SetStencilFunctions(StateTable::kStencilNotEqual, 42, 0xbabebabe,
@@ -769,8 +769,8 @@ TEST_F(UpdateStateTableTest, IgnoreDefaults) {
   st0_->Enable(StateTable::kBlend, true);
   st0_->Enable(StateTable::kCullFace, true);
   st0_->SetDepthRange(Range1f(.1f, .2f));  // Default in st1; should not appear.
-  st0_->SetViewport(
-      Range2i::BuildWithSize(Point2i(40, 60), Vector2i(100, 200)));
+  st0_->SetViewport(Range2ui::BuildWithSize(Point2ui(40, 60),
+                                            Vector2ui(100, 200)));
 
   // Changing to a default StateTable should not cause any calls to OpenGL.
   st1_.Reset(new StateTable);
@@ -836,7 +836,8 @@ TEST_F(UpdateStateTableTest, Restore) {
   sorted_strings.push_back("Enable(GL_POLYGON_OFFSET_FILL)");
   // These are set only in the parent, so they shouldn't result in any calls.
   st0_->SetDepthFunction(StateTable::kDepthEqual);
-  st0_->SetViewport(Range2i::BuildWithSize(Point2i(10, 20), Vector2i(30, 40)));
+  st0_->SetViewport(Range2ui::BuildWithSize(Point2ui(10, 20),
+                                            Vector2ui(30, 40)));
 
   // Do a standard update.
   ResetAndUpdate();

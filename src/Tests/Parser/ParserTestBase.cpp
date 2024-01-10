@@ -62,7 +62,7 @@ void ParserTestBase::Full::AddFields() {
     AddField(v4ui.Init("v4ui", Vector4ui::Zero()));
     AddField(p2f.Init("p2f",   Point2f::Zero()));
     AddField(p3f.Init("p3f",   Point3f::Zero()));
-    AddField(p2i.Init("p2i",   Point2i::Zero()));
+    AddField(p2ui.Init("p2ui", Point2ui::Zero()));
     AddField(c.Init("c"));
     AddField(a.Init("a"));
     AddField(r.Init("r"));
@@ -141,7 +141,7 @@ Str ParserTestBase::GetFullInput() {
           v4ui: 3 2 8 9,
           p2f: 3 -2.5,
           p3f: 3 -2.5 7,
-          p2i: 3 -2,
+          p2ui: 3 2,
           c: "#aabbccdd",
           a: -105,
           r: 0 0 1 -80,

@@ -48,29 +48,29 @@ class GLFWViewerTest::TestWindowSystem : public IWindowSystem {
     /// Set this to true for IsShiftKeyPressed() to return true.
     bool is_shift_pressed = false;
 
-    Vector2i win_size{ 0, 0 };
-    Vector2i win_pos{ 0, 0 };
-    bool     is_fullscreen = false;
-    size_t   pre_render_count = 0;
-    size_t   post_render_count = 0;
-    size_t   flush_count = 0;
+    Vector2ui win_size{ 0, 0 };
+    Point2ui  win_pos{ 0, 0 };
+    bool      is_fullscreen = false;
+    size_t    pre_render_count = 0;
+    size_t    post_render_count = 0;
+    size_t    flush_count = 0;
     EventOptions exp_options;
 
     virtual bool Init(const ErrorFunc &error_func) override {
         return init_succeeds;
     }
     virtual void Terminate() override  {}
-    virtual bool CreateMainWindow(const Vector2i &size, const Str &title,
+    virtual bool CreateMainWindow(const Vector2ui &size, const Str &title,
                                   bool show) {
         win_size = size;
         return true;
     };
-    virtual void SetWindowPosition(const Vector2i &pos) override {
+    virtual void SetWindowPosition(const Point2ui &pos) override {
         win_pos = pos;
     }
     virtual void SetFullScreen() override { is_fullscreen = true; }
-    virtual Vector2i GetWindowSize() override { return win_size; }
-    virtual Vector2i GetFramebufferSize() override { return win_size; }
+    virtual Vector2ui GetWindowSize() override { return win_size; }
+    virtual Vector2ui GetFramebufferSize() override { return win_size; }
     virtual void PreRender() override { ++pre_render_count; }
     virtual void PostRender() override { ++post_render_count; }
     virtual bool WasWindowClosed() override { return simulate_window_close; }
@@ -145,23 +145,23 @@ void GLFWViewerTest::SetCamera() {
 // ----------------------------------------------------------------------------
 
 TEST_F(GLFWViewerTest, Init) {
-    EXPECT_EQ(Vector2i::Zero(), tws->win_size);
-    EXPECT_EQ(Vector2i::Zero(), tws->win_pos);
-    EXPECT_EQ(Vector2i::Zero(), tws->GetWindowSize());
-    EXPECT_EQ(Vector2i::Zero(), tws->GetFramebufferSize());
+    EXPECT_EQ(Vector2ui::Zero(), tws->win_size);
+    EXPECT_EQ(Point2ui::Zero(),  tws->win_pos);
+    EXPECT_EQ(Vector2ui::Zero(), tws->GetWindowSize());
+    EXPECT_EQ(Vector2ui::Zero(), tws->GetFramebufferSize());
     EXPECT_FALSE(tws->is_fullscreen);
 
-    EXPECT_TRUE(viewer.Init(Vector2i(800, 600), true, true));
-    EXPECT_EQ(Vector2i(800, 600), tws->win_size);
-    EXPECT_EQ(Vector2i(600, 100), tws->win_pos);
-    EXPECT_EQ(Vector2i(800, 600), tws->GetWindowSize());
-    EXPECT_EQ(Vector2i(800, 600), tws->GetFramebufferSize());
+    EXPECT_TRUE(viewer.Init(Vector2ui(800, 600), true, true));
+    EXPECT_EQ(Vector2ui(800, 600), tws->win_size);
+    EXPECT_EQ(Point2ui(600, 100),  tws->win_pos);
+    EXPECT_EQ(Vector2ui(800, 600), tws->GetWindowSize());
+    EXPECT_EQ(Vector2ui(800, 600), tws->GetFramebufferSize());
     EXPECT_TRUE(tws->is_fullscreen);
 }
 
 TEST_F(GLFWViewerTest, InitFail) {
     tws->init_succeeds = false;
-    EXPECT_FALSE(viewer.Init(Vector2i(600, 600), false, true));
+    EXPECT_FALSE(viewer.Init(Vector2ui(600, 600), false, true));
 }
 
 TEST_F(GLFWViewerTest, Render) {
@@ -178,8 +178,8 @@ TEST_F(GLFWViewerTest, Render) {
 }
 
 TEST_F(GLFWViewerTest, Camera) {
-    viewer.Init(Vector2i(600, 600), false, true);  // Square aspect ratio.
-    EXPECT_EQ(Vector2i(600, 600), viewer.GetWindowSize());
+    viewer.Init(Vector2ui(600, 600), false, true);  // Square aspect ratio.
+    EXPECT_EQ(Vector2ui(600, 600), viewer.GetWindowSize());
 
     // Camera->Frustum.
     SetCamera();
@@ -187,15 +187,15 @@ TEST_F(GLFWViewerTest, Camera) {
     const auto &fr = *viewer.GetFrustum();
     const Anglef a = Anglef::FromDegrees(22.5f);
     const auto rot = BuildRotation(0, 1, 0, 30);
-    EXPECT_EQ(Vector2i(600, 600), fr.viewport.GetSize());
-    EXPECT_EQ(Point3f(1, 2, 3),   fr.position);
-    EXPECT_EQ(rot,                fr.orientation);
-    EXPECT_EQ(-a,                 fr.fov_left);
-    EXPECT_EQ( a,                 fr.fov_right);
-    EXPECT_EQ(-a,                 fr.fov_down);
-    EXPECT_EQ( a,                 fr.fov_up);
-    EXPECT_EQ(2,                  fr.pnear);
-    EXPECT_EQ(10,                 fr.pfar);
+    EXPECT_EQ(Vector2ui(600, 600), fr.viewport.GetSize());
+    EXPECT_EQ(Point3f(1, 2, 3),    fr.position);
+    EXPECT_EQ(rot,                 fr.orientation);
+    EXPECT_EQ(-a,                  fr.fov_left);
+    EXPECT_EQ( a,                  fr.fov_right);
+    EXPECT_EQ(-a,                  fr.fov_down);
+    EXPECT_EQ( a,                  fr.fov_up);
+    EXPECT_EQ(2,                   fr.pnear);
+    EXPECT_EQ(10,                  fr.pfar);
 }
 
 TEST_F(GLFWViewerTest, Events) {

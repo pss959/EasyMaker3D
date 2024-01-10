@@ -292,10 +292,10 @@ static void UpdateSampleCoverage(
 
 static void UpdateScissorBox(
     StateTable* st0, const StateTable& st1, GraphicsManager* gm) {
-  const math::Range2i& box = st1.GetScissorBox();
+  const math::Range2ui& box = st1.GetScissorBox();
   if (st1.AreSettingsEnforced() || box != st0->GetScissorBox()) {
-    const math::Point2i& min_point = box.GetMinPoint();
-    const math::Vector2i size = box.GetSize();
+    const math::Point2ui& min_point = box.GetMinPoint();
+    const math::Vector2ui size = box.GetSize();
     gm->Scissor(min_point[0], min_point[1], size[0], size[1]);
     st0->SetScissorBox(box);
   }
@@ -381,10 +381,10 @@ static void UpdateStencilWriteMasks(
 
 static void UpdateViewport(
     const StateTable& st0, const StateTable& st1, GraphicsManager* gm) {
-  const math::Range2i& viewport = st1.GetViewport();
+  const math::Range2ui& viewport = st1.GetViewport();
   if (st1.AreSettingsEnforced() || viewport != st0.GetViewport()) {
-    const math::Point2i& min_point = viewport.GetMinPoint();
-    const math::Vector2i size = viewport.GetSize();
+    const math::Point2ui& min_point = viewport.GetMinPoint();
+    const math::Vector2ui size = viewport.GetSize();
     gm->Viewport(min_point[0], min_point[1], size[0], size[1]);
   }
 }
@@ -530,8 +530,8 @@ static void CopyValues(GraphicsManager* gm, StateTable* st) {
     GLint box[4];
     gm->GetIntegerv(GL_SCISSOR_BOX, box);
     st->SetScissorBox(
-        math::Range2i::BuildWithSize(math::Point2i(box[0], box[1]),
-                                     math::Vector2i(box[2], box[3])));
+        math::Range2ui::BuildWithSize(math::Point2ui(box[0], box[1]),
+                                      math::Vector2ui(box[2], box[3])));
   }
   st->SetStencilFunctions(ION_GET_ENUM(StencilFunction, GL_STENCIL_FUNC),
                           GetInt(gm, GL_STENCIL_REF),
@@ -552,9 +552,9 @@ static void CopyValues(GraphicsManager* gm, StateTable* st) {
   {
     GLint viewport[4];
     gm->GetIntegerv(GL_VIEWPORT, viewport);
-    st->SetViewport(
-        math::Range2i::BuildWithSize(math::Point2i(viewport[0], viewport[1]),
-                                     math::Vector2i(viewport[2], viewport[3])));
+    st->SetViewport(math::Range2ui::BuildWithSize(
+                        math::Point2ui(viewport[0], viewport[1]),
+                        math::Vector2ui(viewport[2], viewport[3])));
   }
 }
 
@@ -625,8 +625,8 @@ static void CopySetValues(GraphicsManager* gm, StateTable* st) {
   if (st->IsValueSet(StateTable::kScissorBoxValue)) {
     GLint box[4];
     gm->GetIntegerv(GL_SCISSOR_BOX, box);
-    st->SetScissorBox(math::Range2i::BuildWithSize(
-        math::Point2i(box[0], box[1]), math::Vector2i(box[2], box[3])));
+    st->SetScissorBox(math::Range2ui::BuildWithSize(
+        math::Point2ui(box[0], box[1]), math::Vector2ui(box[2], box[3])));
   }
   if (st->IsValueSet(StateTable::kStencilFunctionsValue)) {
     st->SetStencilFunctions(ION_GET_ENUM(StencilFunction, GL_STENCIL_FUNC),
@@ -655,9 +655,9 @@ static void CopySetValues(GraphicsManager* gm, StateTable* st) {
   if (st->IsValueSet(StateTable::kViewportValue)) {
     GLint viewport[4];
     gm->GetIntegerv(GL_VIEWPORT, viewport);
-    st->SetViewport(
-        math::Range2i::BuildWithSize(math::Point2i(viewport[0], viewport[1]),
-                                     math::Vector2i(viewport[2], viewport[3])));
+    st->SetViewport(math::Range2ui::BuildWithSize(
+                        math::Point2ui(viewport[0], viewport[1]),
+                        math::Vector2ui(viewport[2], viewport[3])));
   }
 }
 #undef ION_GET_ENUM

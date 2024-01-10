@@ -69,9 +69,10 @@ SCAN_VEC_(Vector2ui, 2, ScanUInteger)
 SCAN_VEC_(Vector3ui, 3, ScanUInteger)
 SCAN_VEC_(Vector4ui, 4, ScanUInteger)
 
-SCAN_VEC_(Point2f, 2, ScanFloat)
-SCAN_VEC_(Point3f, 3, ScanFloat)
-SCAN_VEC_(Point2i, 2, ScanInteger)
+SCAN_VEC_(Point2f,  2, ScanFloat)
+SCAN_VEC_(Point3f,  3, ScanFloat)
+
+SCAN_VEC_(Point2ui, 2, ScanUInteger)
 
 #undef SCAN_VEC_
 

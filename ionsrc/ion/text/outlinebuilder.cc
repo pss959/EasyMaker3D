@@ -65,7 +65,7 @@ namespace {
 
 static const char* kVertexShaderSource =
     "#version 330 core\n"
-    "uniform ivec2 uViewportSize;\n"
+    "uniform uvec2 uViewportSize;\n"
     "uniform mat4 uProjectionMatrix;\n"
     "uniform mat4 uModelviewMatrix;\n"
     "in vec3 aVertex;\n"

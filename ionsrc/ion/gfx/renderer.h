@@ -206,7 +206,7 @@ class ION_API Renderer : public base::Referent {
   /// proxy object will be honored in the underlying GL resource.  Changes made
   /// outside the Ion renderer are potentially clobbered.
   ion::gfx::FramebufferObjectPtr CreateExternalFramebufferProxy(
-      const ion::math::Range2i::Size& size,
+      const ion::math::Range2ui::Size& size,
       ion::gfx::Image::Format color_format,
       ion::gfx::Image::Format depth_format,
       int num_samples);
@@ -389,7 +389,7 @@ class ION_API Renderer : public base::Referent {
   /// Returns an image of the specified format that contains the contents of the
   /// hardware framebuffer. The passed range specifies the area to be read. The
   /// Allocator is used when creating the Image.
-  const ImagePtr ReadImage(const math::Range2i& range, Image::Format format,
+  const ImagePtr ReadImage(const math::Range2ui& range, Image::Format format,
                            const base::AllocatorPtr& allocator);
 
   /// In non-production builds, pushes |marker| onto the Renderer's tracing

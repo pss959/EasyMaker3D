@@ -80,10 +80,10 @@ using gfx::UniformBlockPtr;
 using math::Matrix2f;
 using math::Matrix3f;
 using math::Matrix4f;
-using math::Point2i;
+using math::Point2ui;
 using math::Range1f;
 using math::Range1i;
-using math::Range2i;
+using math::Range2ui;
 using math::Vector2f;
 using math::Vector2i;
 using math::Vector2ui;
@@ -1302,7 +1302,7 @@ static const StateTablePtr CreateFullStateTable() {
   st->SetLineWidth(0.4f);
   st->SetPolygonOffset(0.5f, 2.0f);
   st->SetSampleCoverage(0.4f, true);
-  st->SetScissorBox(Range2i(Point2i(10, 20), Point2i(210, 320)));
+  st->SetScissorBox(Range2ui(Point2ui(10, 20), Point2ui(210, 320)));
   st->SetStencilFunctions(
       StateTable::kStencilNever, 10, 0x40404040,
       StateTable::kStencilLess, 5, 0x12345678);
@@ -1312,7 +1312,7 @@ static const StateTablePtr CreateFullStateTable() {
       StateTable::kStencilInvert, StateTable::kStencilReplace);
   st->SetClearStencilValue(152);
   st->SetStencilWriteMasks(0x12345678, 0xbeefface);
-  st->SetViewport(Range2i(Point2i(10, 20), Point2i(210, 320)));
+  st->SetViewport(Range2ui(Point2ui(10, 20), Point2ui(210, 320)));
 
   return st;
 }

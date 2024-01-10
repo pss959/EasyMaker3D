@@ -12,12 +12,12 @@ class GLFWWindowSystem : public IWindowSystem {
   public:
     virtual bool Init(const ErrorFunc &error_func) override;
     virtual void Terminate() override;
-    virtual bool CreateMainWindow(const Vector2i &size, const Str &title,
-                                  bool show) override;
-    virtual void SetWindowPosition(const Vector2i &pos) override;
+    virtual bool CreateMainWindow(const Vector2ui &size, const Str &title,
+                                  bool offscreen) override;
+    virtual void SetWindowPosition(const Point2ui &pos) override;
     virtual void SetFullScreen() override;
-    virtual Vector2i GetWindowSize() override;
-    virtual Vector2i GetFramebufferSize() override;
+    virtual Vector2ui GetWindowSize() override;
+    virtual Vector2ui GetFramebufferSize() override;
     virtual void PreRender() override;
     virtual void PostRender() override;
     virtual bool WasWindowClosed() override;

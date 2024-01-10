@@ -51,8 +51,8 @@ using gfx::Shape;
 using gfx::StateTablePtr;
 using gfx::StateTable;
 using math::Range1i;
-using math::Range2i;
-using math::Point2i;
+using math::Range2ui;
+using math::Point2ui;
 using math::Vector4f;
 
 namespace analytics {
@@ -265,8 +265,8 @@ struct MinifyViewport {
   void operator()(const NodePtr& node) {
     DCHECK(node.Get());
     if (StateTable* state_table = node->GetStateTable().Get()) {
-      static const Range2i kZeroRange(Point2i(0, 0), Point2i(0, 0));
-      static const Range2i kPixelRange(Point2i(0, 0), Point2i(1, 0));
+      static const Range2ui kZeroRange(Point2ui(0, 0), Point2ui(0, 0));
+      static const Range2ui kPixelRange(Point2ui(0, 0), Point2ui(1, 0));
       if (!state_table->GetViewport().IsEmpty()) {
         state_table->SetViewport(kPixelRange);
       }
@@ -377,8 +377,8 @@ static NodePtr GetClearNode(uint32 width, uint32 height,
                             const AllocatorPtr& allocator) {
   NodePtr clear_node(new(allocator) Node);
   StateTablePtr clear_state_table(new(allocator) StateTable(width, height));
-  clear_state_table->SetViewport(Range2i(Point2i(0, 0),
-                                         Point2i(width, height)));
+  clear_state_table->SetViewport(Range2ui(Point2ui(0, 0),
+                                          Point2ui(width, height)));
   clear_state_table->SetClearColor(Vector4f(1.f, 0.f, 0.f, 1.0f));
   clear_state_table->SetClearDepthValue(1.f);
   clear_node->SetStateTable(clear_state_table);
@@ -1031,7 +1031,7 @@ Measurement GpuPerformanceTester::MeasureMinViewportSpeed(
   NodePtr test_scene(InstanceCopy(scene));
   MinifyViewport minviewport_functor;
   ApplyToTree(test_scene, minviewport_functor);
-  static const Range2i kPixelRange(Point2i(0, 0), Point2i(1, 1));
+  static const Range2ui kPixelRange(Point2ui(0, 0), Point2ui(1, 1));
   if (!test_scene->GetStateTable().Get()) {
     test_scene->SetStateTable(
         StateTablePtr(new(scene->GetAllocator()) StateTable));

@@ -44,7 +44,7 @@ UniformBlock {
     Uniform "uTwoSidedLighting" { int_val: 0 },
 
     # Real values will be set for these by the LightingPass object.
-    Uniform "uViewportSize"     { vec2i_val:       0 0 },
+    Uniform "uViewportSize"     { vec2ui_val:      0 0 },
     Uniform "uViewPos"          { vec3f_val:       0 0 0 },
     Uniform "uLightCount"       { int_val:         0 },
     Uniform "uProjectionMatrix" { mat4_val:        $MAT4_0 },

@@ -36,9 +36,9 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
     // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer.GetGraphicsManager();
     if (fb_target) {
-        ASSERT(fb_target->rendered_fbo.Get());
-        ASSERT(fb_target->resolved_fbo.Get());
-        renderer.BindFramebuffer(fb_target->rendered_fbo);
+        ASSERT(fb_target->GetRenderedFBO().Get());
+        ASSERT(fb_target->GetResolvedFBO().Get());
+        renderer.BindFramebuffer(fb_target->GetRenderedFBO());
     }
     else {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
@@ -54,8 +54,9 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
         const uint32 kMask =
             ion::gfx::Renderer::kColorBufferBit |
             ion::gfx::Renderer::kDepthBufferBit;
-        renderer.ResolveMultisampleFramebuffer(fb_target->rendered_fbo,
-                                               fb_target->resolved_fbo, kMask);
+        renderer.ResolveMultisampleFramebuffer(fb_target->GetRenderedFBO(),
+                                               fb_target->GetResolvedFBO(),
+                                               kMask);
     }
 }
 

@@ -39,7 +39,7 @@ MouseTrackerTest::MouseTrackerTest() : mt(Actuator::kMouse) {
 
     // Set up the frustum in the MouseTracker.
     FrustumPtr frustum(new Frustum);
-    GetWindowCamera()->BuildFrustum(Vector2i(100, 100), *frustum);
+    GetWindowCamera()->BuildFrustum(Vector2ui(100, 100), *frustum);
     mt.SetFrustum(frustum);
 
     // Access the GenericWidget pointers.

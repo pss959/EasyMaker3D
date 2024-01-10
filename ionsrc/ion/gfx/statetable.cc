@@ -35,7 +35,7 @@ void StateTable::Reset() {
   data_ = GetDefaultData();
 
   // Update the size-dependent values.
-  const math::Point2i max_point(default_width_, default_height_);
+  const math::Point2ui max_point(default_width_, default_height_);
   data_.scissor_box.SetMaxPoint(max_point);
   data_.viewport.SetMaxPoint(max_point);
 }
@@ -245,7 +245,7 @@ void StateTable::ResetValue(Value value) {
     case kScissorBoxValue:
       data_.scissor_box.SetWithSize(
           default_data.scissor_box.GetMinPoint(),
-          math::Vector2i(default_width_, default_height_));
+          math::Vector2ui(default_width_, default_height_));
       break;
     case kStencilFunctionsValue:
       ION_COPY_VAL(front_stencil_function);
@@ -273,7 +273,7 @@ void StateTable::ResetValue(Value value) {
     case kViewportValue:
       data_.viewport.SetWithSize(
           default_data.viewport.GetMinPoint(),
-          math::Vector2i(default_width_, default_height_));
+          math::Vector2ui(default_width_, default_height_));
       break;
     default:
       DCHECK(false) << "Invalid Value type";
@@ -413,7 +413,7 @@ void StateTable::SetSampleCoverage(float value, bool is_inverted) {
 //---------------------------------------------------------------------------
 // Scissoring state.
 
-void StateTable::SetScissorBox(const math::Range2i& box) {
+void StateTable::SetScissorBox(const math::Range2ui& box) {
   data_.scissor_box = box;
   data_.values_set.set(kScissorBoxValue);
 }
@@ -463,14 +463,14 @@ void StateTable::SetStencilWriteMasks(uint32 front_mask, uint32 back_mask) {
 //---------------------------------------------------------------------------
 // Viewport state.
 
-void StateTable::SetViewport(const math::Range2i& rect) {
+void StateTable::SetViewport(const math::Range2ui& rect) {
   data_.viewport = rect;
   data_.values_set.set(kViewportValue);
 }
 
 void StateTable::SetViewport(int left, int bottom, int width, int height) {
-  SetViewport(math::Range2i::BuildWithSize(math::Point2i(left, bottom),
-                                           math::Vector2i(width, height)));
+  SetViewport(math::Range2ui::BuildWithSize(math::Point2ui(left, bottom),
+                                            math::Vector2ui(width, height)));
 }
 
 //---------------------------------------------------------------------------
@@ -752,7 +752,7 @@ StateTable::Data::Data(bool unused) {
   sample_coverage_value = 1.0f;
   sample_coverage_inverted = false;
   min_sample_shading = 0.0f;
-  scissor_box.Set(math::Point2i::Zero(), math::Point2i::Zero());
+  scissor_box.Set(math::Point2ui::Zero(), math::Point2ui::Zero());
   front_stencil_function = back_stencil_function = kStencilAlways;
   front_stencil_reference_value = back_stencil_reference_value = 0;
   front_stencil_mask = back_stencil_mask = 0xffffffff;
@@ -761,7 +761,7 @@ StateTable::Data::Data(bool unused) {
       back_stencil_depth_fail_op = back_stencil_pass_op = kStencilKeep;
   clear_stencil_value = 0;
   front_stencil_write_mask = back_stencil_write_mask = 0xffffffff;
-  viewport.Set(math::Point2i::Zero(), math::Point2i::Zero());
+  viewport.Set(math::Point2ui::Zero(), math::Point2ui::Zero());
 }
 
 }  // namespace gfx

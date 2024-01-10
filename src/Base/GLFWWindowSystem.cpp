@@ -179,19 +179,16 @@ void GLFWWindowSystem::Terminate() {
     glfwTerminate();
 }
 
-bool GLFWWindowSystem::CreateMainWindow(const Vector2i &size, const Str &title,
-                                        bool show) {
+bool GLFWWindowSystem::CreateMainWindow(const Vector2ui &size, const Str &title,
+                                        bool offscreen) {
     glfwWindowHint(GLFW_OPENGL_PROFILE,         GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,  GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,  3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,  3);
     glfwWindowHint(GLFW_SAMPLES,                16);
 
-    if (! show)
+    if (offscreen)
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-
-    // XXXX
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
                                nullptr, nullptr);
@@ -217,31 +214,40 @@ bool GLFWWindowSystem::CreateMainWindow(const Vector2i &size, const Str &title,
     return true;
 }
 
-void GLFWWindowSystem::SetWindowPosition(const Vector2i &pos) {
+void GLFWWindowSystem::SetWindowPosition(const Point2ui &pos) {
     ASSERT(window_);
     glfwSetWindowPos(window_, pos[0], pos[1]);
 }
 
 void GLFWWindowSystem::SetFullScreen() {
     ASSERT(window_);
+
     // Fullscreen is just a maximized window. This allows the user to
     // unmaximize it and move it around if they want. True fullscreen mode is
     // kind of annoying in that respect.
     glfwMaximizeWindow(window_);
+
+    // The size of a hidden window apparently does NOT get updated when
+    // maximized. Show the window temporarily to update the size and hide
+    // it. No window will appear.
+    if (! glfwGetWindowAttrib(window_, GLFW_VISIBLE)) {
+        glfwShowWindow(window_);
+        glfwHideWindow(window_);
+    }
 }
 
-Vector2i GLFWWindowSystem::GetWindowSize() {
+Vector2ui GLFWWindowSystem::GetWindowSize() {
     ASSERT(window_);
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
-    return Vector2i(width, height);
+    return Vector2ui(width, height);
 }
 
-Vector2i GLFWWindowSystem::GetFramebufferSize() {
+Vector2ui GLFWWindowSystem::GetFramebufferSize() {
     ASSERT(window_);
     int width, height;
     glfwGetFramebufferSize(window_, &width, &height);
-    return Vector2i(width, height);
+    return Vector2ui(width, height);
 }
 
 void GLFWWindowSystem::PreRender() {
@@ -441,7 +447,7 @@ void GLFWWindowSystem::StoreCurrentCursorPos_(Event &event) {
 void GLFWWindowSystem::StoreCursorPos_(double xpos, double ypos, Event &event) {
     // Normalize the position into the (0,1) range with (0,0) at the
     // lower-left. GLFW puts (0,0) at the upper-left.
-    const Vector2i size = GetWindowSize();
+    const Vector2ui size = GetWindowSize();
     const Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
 
     event.flags.Set(Event::Flag::kPosition2D);

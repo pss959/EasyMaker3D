@@ -103,7 +103,7 @@ TEST_F(WritingTest, WriteFull) {
     fp->v4ui = Vector4ui(3, 4, 5, 6);
     fp->p2f  = Point2f(-3.5f, 4);
     fp->p3f  = Point3f(-3.5f, 4, 5);
-    fp->p2i  = Point2i(-3, 4);
+    fp->p2ui = Point2ui(3, 4);
     fp->c    = Color(.2f, 1, .5f, 1);
     fp->a    = Anglef::FromDegrees(-40);
     fp->r    = BuildRotation(1, 0, 0, 30);
@@ -140,7 +140,7 @@ TEST_F(WritingTest, WriteFull) {
         "  v4ui: 3 4 5 6,\n"
         "  p2f: -3.5 4,\n"
         "  p3f: -3.5 4 5,\n"
-        "  p2i: -3 4,\n"
+        "  p2ui: 3 4,\n"
         "  c: 0.2 1 0.5 1,\n"
         "  a: -40,\n"
         "  r: 1 0 0 30,\n"

@@ -130,7 +130,7 @@ class ParserTestBase::Full : public Parser::Object {
     Parser::TField<Vector4ui>     v4ui;
     Parser::TField<Point2f>       p2f;
     Parser::TField<Point3f>       p3f;
-    Parser::TField<Point2i>       p2i;
+    Parser::TField<Point2ui>      p2ui;
     Parser::TField<Color>         c;
     Parser::TField<Anglef>        a;
     Parser::TField<Rotationf>     r;

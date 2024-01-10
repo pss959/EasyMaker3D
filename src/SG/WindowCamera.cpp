@@ -14,9 +14,9 @@ void WindowCamera::AddFields() {
     Camera::AddFields();
 }
 
-void WindowCamera::BuildFrustum(const Vector2i window_size,
+void WindowCamera::BuildFrustum(const Vector2ui window_size,
                                 Frustum &frustum) const {
-    frustum.viewport     = Viewport::BuildWithSize(Point2i(0, 0), window_size);
+    frustum.viewport     = Viewport::BuildWithSize(Point2ui(0, 0), window_size);
     frustum.position     = GetPosition();
     frustum.position[1] += GetHeight();
     frustum.orientation  = GetOrientation();

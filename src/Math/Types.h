@@ -22,10 +22,11 @@ using Matrix3f  = ion::math::Matrix3f;
 using Matrix4f  = ion::math::Matrix4f;
 using Point2f   = ion::math::Point2f;
 using Point2i   = ion::math::Point2i;
+using Point2ui  = ion::math::Point2ui;
 using Point3f   = ion::math::Point3f;
 using Range1f   = ion::math::Range1f;
 using Range2f   = ion::math::Range2f;
-using Range2i   = ion::math::Range2i;
+using Range2ui  = ion::math::Range2ui;
 using Range3f   = ion::math::Range3f;
 using Rotationf = ion::math::Rotationf;
 using Vector2f  = ion::math::Vector2f;
@@ -40,7 +41,7 @@ using Vector4ui = ion::math::Vector4ui;
 
 template <int DIM, typename T> using VectorBase = ion::math::VectorBase<DIM, T>;
 
-using Viewport = ion::math::Range2i;  ///< Used for viewing operations.
+using Viewport = Range2ui;  ///< Used for viewing operations.
 
 /// Type used for any geometry index.
 using GIndex = unsigned int;

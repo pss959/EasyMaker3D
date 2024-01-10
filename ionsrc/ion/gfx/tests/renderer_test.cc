@@ -25,11 +25,11 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-using math::Point2i;
+using math::Point2ui;
 using math::Range1i;
 using math::Range1ui;
-using math::Range2i;
-using math::Vector2i;
+using math::Range2ui;
+using math::Vector2ui;
 using portgfx::GlContextPtr;
 using testing::FakeGraphicsManager;
 using testing::FakeGraphicsManagerPtr;
@@ -151,7 +151,7 @@ TEST_F(RendererTest, UpdateStateFromOpenGL) {
     EXPECT_TRUE(st.IsEnabled(StateTable::kStencilTest));
     EXPECT_EQ(2U, st.GetSetValueCount());
     EXPECT_EQ(StateTable::kDepthGreater, st.GetDepthFunction());
-    EXPECT_EQ(math::Range2i(math::Point2i(2, 10), math::Point2i(122, 442)),
+    EXPECT_EQ(math::Range2ui(math::Point2ui(2, 10), math::Point2ui(122, 442)),
               st.GetViewport());
   }
 
@@ -170,7 +170,7 @@ TEST_F(RendererTest, UpdateStateFromOpenGL) {
     EXPECT_EQ(3U, st.GetSetValueCount());
     EXPECT_EQ(StateTable::kDepthGreater, st.GetDepthFunction());
     EXPECT_EQ(StateTable::kClockwise, st.GetFrontFaceMode());
-    EXPECT_EQ(math::Range2i(math::Point2i(2, 10), math::Point2i(122, 442)),
+    EXPECT_EQ(math::Range2ui(math::Point2ui(2, 10), math::Point2ui(122, 442)),
               st.GetViewport());
   }
 
@@ -253,7 +253,7 @@ TEST_F(RendererTest, UpdateStateFromOpenGL) {
     EXPECT_EQ(0.2f, st.GetPolygonOffsetUnits());
     EXPECT_EQ(0.5f, st.GetSampleCoverageValue());
     EXPECT_TRUE(st.IsSampleCoverageInverted());
-    EXPECT_EQ(math::Range2i(math::Point2i(4, 10), math::Point2i(127, 244)),
+    EXPECT_EQ(math::Range2ui(math::Point2ui(4, 10), math::Point2ui(127, 244)),
               st.GetScissorBox());
     EXPECT_EQ(StateTable::kStencilLessOrEqual, st.GetFrontStencilFunction());
     EXPECT_EQ(100, st.GetFrontStencilReferenceValue());
@@ -274,7 +274,7 @@ TEST_F(RendererTest, UpdateStateFromOpenGL) {
               st.GetBackStencilDepthFailOperation());
     EXPECT_EQ(StateTable::kStencilZero, st.GetBackStencilPassOperation());
     EXPECT_EQ(123, st.GetClearStencilValue());
-    EXPECT_EQ(math::Range2i(math::Point2i(16, 49), math::Point2i(236, 366)),
+    EXPECT_EQ(math::Range2ui(math::Point2ui(16, 49), math::Point2ui(236, 366)),
               st.GetViewport());
   }
 }
@@ -301,7 +301,7 @@ TEST_F(RendererTest, UpdateInvalidStateFromOpenGL) {
     EXPECT_TRUE(st.IsEnabled(StateTable::kStencilTest));
     EXPECT_EQ(2U, st.GetSetValueCount());
     EXPECT_EQ(StateTable::kDepthAlways, st.GetDepthFunction());
-    EXPECT_EQ(math::Range2i(math::Point2i(2, 10), math::Point2i(122, 442)),
+    EXPECT_EQ(math::Range2ui(math::Point2ui(2, 10), math::Point2ui(122, 442)),
               st.GetViewport());
   }
   gm_->EnableInvalidGlEnumState(false);
@@ -330,8 +330,8 @@ TEST_F(RendererTest, UpdateFromStateTable) {
 
   // Create a StateTable with differing values from current state.
   StateTablePtr state_table(new StateTable(kWidth / 2, kHeight / 2));
-  state_table->SetViewport(math::Range2i(
-      math::Point2i(2, 2), math::Point2i(kWidth / 2, kHeight / 2)));
+  state_table->SetViewport(math::Range2ui(
+      math::Point2ui(2, 2), math::Point2ui(kWidth / 2, kHeight / 2)));
   state_table->SetClearColor(math::Vector4f(0.31f, 0.25f, 0.55f, 0.5f));
   state_table->SetClearDepthValue(0.5f);
   state_table->Enable(StateTable::kDepthTest, false);
@@ -369,8 +369,8 @@ TEST_F(RendererTest, ProcessStateTable) {
 
   // Create a StateTable with a few values set.
   StateTablePtr state_table(new StateTable(kWidth / 2, kHeight / 2));
-  state_table->SetViewport(math::Range2i(
-      math::Point2i(2, 2), math::Point2i(kWidth / 2, kHeight / 2)));
+  state_table->SetViewport(math::Range2ui(
+      math::Point2ui(2, 2), math::Point2ui(kWidth / 2, kHeight / 2)));
   state_table->SetClearColor(math::Vector4f(0.31f, 0.25f, 0.55f, 0.5f));
   state_table->SetClearDepthValue(0.5f);
   state_table->Enable(StateTable::kBlend, true);
@@ -603,7 +603,7 @@ TEST_F(RendererTest, BasicGraph) {
     NodePtr root(new Node);
     StateTablePtr state_table(new StateTable(kWidth, kHeight));
     state_table->SetViewport(
-        math::Range2i(math::Point2i(0, 0), math::Point2i(kWidth, kHeight)));
+        math::Range2ui(math::Point2ui(0, 0), math::Point2ui(kWidth, kHeight)));
     state_table->SetClearColor(math::Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
     state_table->SetClearDepthValue(0.f);
     state_table->Enable(StateTable::kDepthTest, true);
@@ -4230,7 +4230,7 @@ TEST_F(RendererTest, ReadImage) {
   base::AllocatorPtr al;
 
   image = renderer->ReadImage(
-      Range2i::BuildWithSize(Point2i(0, 0), Vector2i(50U, 80U)),
+      Range2ui::BuildWithSize(Point2ui(0, 0), Vector2ui(50U, 80U)),
       Image::kRgb565, al);
   EXPECT_TRUE(image->GetData()->GetData() != nullptr);
   EXPECT_EQ(Image::kRgb565, image->GetFormat());
@@ -4238,7 +4238,7 @@ TEST_F(RendererTest, ReadImage) {
   EXPECT_EQ(80U, image->GetHeight());
 
   image = renderer->ReadImage(
-      Range2i::BuildWithSize(Point2i(20, 10), Vector2i(50U, 80U)),
+      Range2ui::BuildWithSize(Point2ui(20, 10), Vector2ui(50U, 80U)),
       Image::kRgba8888, al);
   EXPECT_TRUE(image->GetData()->GetData() != nullptr);
   EXPECT_EQ(Image::kRgba8888, image->GetFormat());
@@ -4249,7 +4249,7 @@ TEST_F(RendererTest, ReadImage) {
   fbo->SetColorAttachment(0U, FramebufferObject::Attachment(Image::kRgba4Byte));
   renderer->BindFramebuffer(fbo);
   image = renderer->ReadImage(
-      Range2i::BuildWithSize(Point2i(0, 0), Vector2i(128U, 128U)),
+      Range2ui::BuildWithSize(Point2ui(0, 0), Vector2ui(128U, 128U)),
       Image::kRgb888, al);
   EXPECT_TRUE(image->GetData()->GetData() != nullptr);
   EXPECT_EQ(Image::kRgb888, image->GetFormat());
@@ -4258,7 +4258,7 @@ TEST_F(RendererTest, ReadImage) {
   renderer->BindFramebuffer(FramebufferObjectPtr());
 
   image = renderer->ReadImage(
-      Range2i::BuildWithSize(Point2i(20, 10), Vector2i(50U, 80U)),
+      Range2ui::BuildWithSize(Point2ui(20, 10), Vector2ui(50U, 80U)),
       Image::kRgba8888, al);
   EXPECT_TRUE(image->GetData()->GetData() != nullptr);
   EXPECT_EQ(Image::kRgba8888, image->GetFormat());
@@ -5336,7 +5336,7 @@ TEST_F(RendererTest, CreateExternalFramebufferProxy) {
                             texid, 0);
   Reset();
   // Create a proxy framebuffer.
-  Range2i::Size size(128, 128);
+  Range2ui::Size size(128, 128);
   Image::Format color_format = Image::kRgba8888;
   Image::Format depth_format = Image::kRenderbufferDepth16;
   FramebufferObjectPtr fbo = renderer->CreateExternalFramebufferProxy(

@@ -50,7 +50,7 @@ class Renderer::Impl_ {
     void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                      const FBTarget *fb_target = nullptr);
     uint32 GetResolvedTextureID(const FBTarget &fb_target);
-    ion::gfx::ImagePtr ReadImage(const Range2i &rect);
+    ion::gfx::ImagePtr ReadImage(const Viewport &rect);
 
   private:
     ion::gfx::RendererPtr           renderer_;
@@ -58,7 +58,7 @@ class Renderer::Impl_ {
     ion::gfxutils::FramePtr         frame_;
     bool                            is_remote_enabled_ = false;
 
-    ion::gfx::FramebufferObjectPtr last_resolved_fbo_;
+    ion::gfx::FramebufferObjectPtr last_resolved_fbo_; // XXXX
 
     /// Recursive function that updates a Node for rendering the given pass.
     /// This enables or disables the Ion Node based on the Node's flags and
@@ -144,19 +144,19 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
     }
 
     if (fb_target)
-        last_resolved_fbo_ = fb_target->resolved_fbo;
+        last_resolved_fbo_ = fb_target->GetResolvedFBO();
     else
         last_resolved_fbo_.Reset();
 }
 
 uint32 Renderer::Impl_::GetResolvedTextureID(const FBTarget &fb_target) {
     ASSERT(renderer_);
-    auto &ca = fb_target.resolved_fbo->GetColorAttachment(0);
+    auto &ca = fb_target.GetResolvedFBO()->GetColorAttachment(0);
     ASSERT(ca.GetTexture().Get());
     return renderer_->GetResourceGlId(ca.GetTexture().Get());
 }
 
-ion::gfx::ImagePtr Renderer::Impl_::ReadImage(const Range2i &rect) {
+ion::gfx::ImagePtr Renderer::Impl_::ReadImage(const Viewport &rect) {
     // XXX Pass FBTarget into here...
     ASSERT(renderer_);
 
@@ -168,7 +168,7 @@ ion::gfx::ImagePtr Renderer::Impl_::ReadImage(const Range2i &rect) {
             GL_READ_FRAMEBUFFER, id);
 #endif
         renderer_->GetGraphicsManager()->BindFramebuffer(
-            GL_READ_FRAMEBUFFER, 5);
+            GL_READ_FRAMEBUFFER, 5);  // XXXXX 5?
     }
     else {
         renderer_->GetGraphicsManager()->BindFramebuffer(
@@ -259,6 +259,6 @@ uint32 Renderer::GetResolvedTextureID(const FBTarget &fb_target) {
     return impl_->GetResolvedTextureID(fb_target);
 }
 
-ion::gfx::ImagePtr Renderer::ReadImage(const Range2i &rect) {
+ion::gfx::ImagePtr Renderer::ReadImage(const Viewport &rect) {
     return impl_->ReadImage(rect);
 }

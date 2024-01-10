@@ -102,7 +102,7 @@ class Application_ {
     explicit Application_(const Args &args);
     ~Application_();
     bool InitScene();
-    bool InitViewer(const Vector2i &window_size);
+    bool InitViewer(const Vector2ui &window_size);
     void MainLoop();
 
   private:
@@ -195,7 +195,7 @@ bool Application_::InitScene() {
     return true;
 }
 
-bool Application_::InitViewer(const Vector2i &window_size) {
+bool Application_::InitViewer(const Vector2ui &window_size) {
     auto error_func = [](const Str &error){
         std::cerr << "*** " << error << "\n";
     };
@@ -549,7 +549,7 @@ int main(int argc, const char** argv)
     {
         Application_ app(args);
         try {
-            if (! app.InitViewer(Vector2i(800, 600)) || ! app.InitScene())
+            if (! app.InitViewer(Vector2ui(800, 600)) || ! app.InitScene())
                 return 1;
             app.MainLoop();
         }

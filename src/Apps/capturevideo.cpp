@@ -19,8 +19,8 @@ public documentation. See Script.h for script details.
 
     Usage:
       capturevideo [--format=<str>] [--fps=<fps>] [--fullscreen]
-                   [--klog=<klog_string>] [--nocapture] [--remain] [--report]
-                   [--size=<n>] SCRIPT [SESSION]
+                   [--klog=<klog_string>] [--nocapture] [--offscreen]
+                   [--remain] [--report] [--size=<n>] SCRIPT [SESSION]
 
     Options:
       --format=<str>  Output video format. Choices: "webm" (default),
@@ -29,6 +29,7 @@ public documentation. See Script.h for script details.
       --fullscreen    Use a full-screen window.
       --klog=<string> String to pass to KLogger::SetKeyString().
       --nocapture     Do not actually capture the video (useful for testing).
+      --offscreen     Use offscreen rendering (no visible window).
       --remain        Keep the window alive after script processing.
       --report        Report each instruction of script processing.
       --size=<n>      Use fractional (1/n) window size for speed when testing.

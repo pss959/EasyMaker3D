@@ -49,7 +49,7 @@ BoardManagerTest::BoardManagerTest() {
     auto cam = CreateObject<SG::WindowCamera>();
     cam->SetPosition(Point3f(0, 0, 40));
     FrustumPtr frustum(new Frustum);
-    cam->BuildFrustum(Vector2i(800, 600), *frustum);
+    cam->BuildFrustum(Vector2ui(800, 600), *frustum);
     bm->SetFrustum(frustum);
 }
 

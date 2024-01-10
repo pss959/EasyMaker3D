@@ -521,52 +521,9 @@ bool VRSystem::Impl_::WereBindingsLoadedSuccessfully_() {
 }
 
 void VRSystem::Impl_::InitEyeRendering_(IRenderer &renderer, Eye_ &eye) {
-    using ion::gfx::FramebufferObject;
-    using ion::gfx::Image;
-    using ion::gfx::ImagePtr;
-    using ion::gfx::Sampler;
-    using ion::gfx::SamplerPtr;
-    using ion::gfx::Texture;
-    using ion::gfx::TexturePtr;
-
     const Str eye_str =
         Str("VR ") + (eye.eye == vr::Eye_Left ? "L" : "R") + " Eye ";
-
-    const auto w = window_size_[0];
-    const auto h = window_size_[1];
-
-    // Rendered FBO with multisampled color and depth/stencil attachments.
-    auto &rendered_fbo = eye.fb_target.rendered_fbo;
-    rendered_fbo.Reset(new FramebufferObject(w, h));
-    rendered_fbo->SetLabel(eye_str + "Rendered FBO");
-    rendered_fbo->SetColorAttachment(
-        0U, FramebufferObject::Attachment::CreateMultisampled(
-            Image::kRgba8888, TK::kVRSampleCount));
-    auto depth_stencil = FramebufferObject::Attachment::CreateMultisampled(
-        Image::kRenderbufferDepth24Stencil8, TK::kVRSampleCount);
-    rendered_fbo->SetDepthAttachment(depth_stencil);
-    rendered_fbo->SetStencilAttachment(depth_stencil);
-
-    // Resolved FBO sampler, image, and texture.
-    SamplerPtr sampler(new Sampler);
-    sampler->SetMinFilter(Sampler::kLinear);
-    sampler->SetMagFilter(Sampler::kLinear);
-    sampler->SetWrapS(Sampler::kClampToEdge);
-    sampler->SetWrapT(Sampler::kClampToEdge);
-    ImagePtr resolved_image(new Image);
-    resolved_image->Set(Image::kRgba8888, w, h, ion::base::DataContainerPtr());
-    TexturePtr resolved_tex(new Texture);
-    resolved_tex->SetLabel(eye_str + "Resolved Texture");
-    resolved_tex->SetSampler(sampler);
-    resolved_tex->SetMaxLevel(0);
-    resolved_tex->SetImage(0U, resolved_image);
-
-    // Resolved FBO.
-    auto &resolved_fbo = eye.fb_target.resolved_fbo;
-    resolved_fbo.Reset(new FramebufferObject(w, h));
-    resolved_fbo->SetLabel(eye_str + "Resolved FBO");
-    resolved_fbo->SetColorAttachment(
-        0U, FramebufferObject::Attachment(resolved_tex));
+    eye.fb_target.Init(eye_str, window_size_, TK::kVRSampleCount);
 }
 
 void VRSystem::Impl_::UpdateEyes_() {
@@ -608,8 +565,8 @@ void VRSystem::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
     frustum.SetFromTangents(left, right, down, up);
     frustum.pnear       = TK::kVRNearDistance;
     frustum.pfar        = TK::kVRFarDistance;
-    frustum.viewport    = Viewport::BuildWithSize(Point2i(0, 0),
-                                                  Vector2i(window_size_));
+    frustum.viewport    = Viewport::BuildWithSize(Point2ui(0, 0),
+                                                  Vector2ui(window_size_));
     frustum.position    = eye.position;
     frustum.orientation = eye.orientation;
 

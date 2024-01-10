@@ -28,7 +28,7 @@ void TimingTest::RunTest(VideoWriter::Format format) {
     VideoWriter vw(format);
 
     TempFile tmp("");
-    vw.Init(tmp.GetPath(), Vector2i(kWidth, kHeight), kFPS);
+    vw.Init(tmp.GetPath(), Vector2ui(kWidth, kHeight), kFPS);
 
     // Add a bunch of images representing frames.
     for (int i = 0; i < kFrameCount; ++i) {

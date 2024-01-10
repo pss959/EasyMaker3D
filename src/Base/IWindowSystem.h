@@ -43,20 +43,20 @@ class IWindowSystem {
     /// testing) if \p show is false.  Returns false on error. (This should
     /// really be called "CreateWindow", but apparently the fine folks at
     /// Microsoft think it's appropriate to use that name for a macro. Really.)
-    virtual bool CreateMainWindow(const Vector2i &size, const Str &title,
+    virtual bool CreateMainWindow(const Vector2ui &size, const Str &title,
                                   bool show) = 0;
 
     /// Sets the position of the window.
-    virtual void SetWindowPosition(const Vector2i &pos) = 0;
+    virtual void SetWindowPosition(const Point2ui &pos) = 0;
 
     /// Makes the current window full-screen.
     virtual void SetFullScreen() = 0;
 
     /// Returns the size of the window in pixels.
-    virtual Vector2i GetWindowSize() = 0;
+    virtual Vector2ui GetWindowSize() = 0;
 
     /// Returns the size of the window's framebuffer in pixels.
-    virtual Vector2i GetFramebufferSize() = 0;
+    virtual Vector2ui GetFramebufferSize() = 0;
 
     ///@}
 

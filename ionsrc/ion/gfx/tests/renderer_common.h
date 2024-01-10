@@ -56,11 +56,11 @@ limitations under the License.
 namespace ion {
 namespace gfx {
 
-using math::Point2i;
+using math::Point2ui;
 using math::Range1i;
 using math::Range1ui;
-using math::Range2i;
-using math::Vector2i;
+using math::Range2ui;
+using math::Vector2ui;
 using portgfx::GlContextPtr;
 using testing::FakeGlContext;
 using testing::FakeGraphicsManager;
@@ -492,7 +492,7 @@ static const NodePtr BuildGraph(Data* data, Options* options, int width,
   // Set up global state.
   StateTablePtr state_table(new StateTable(width, height));
   state_table->SetViewport(
-      math::Range2i(math::Point2i(0, 0), math::Point2i(width, height)));
+      math::Range2ui(math::Point2ui(0, 0), math::Point2ui(width, height)));
   state_table->SetClearColor(math::Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
   state_table->SetClearDepthValue(0.f);
   state_table->Enable(StateTable::kDepthTest, true);

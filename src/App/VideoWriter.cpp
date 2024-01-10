@@ -69,7 +69,7 @@ static std::string ErrorToString_(int err) {
 };
 
 void VideoWriter::Init(const FilePath &path,
-                       const Vector2i &resolution, int fps) {
+                       const Vector2ui &resolution, int fps) {
     ASSERT(data_);
 
     data_->path = path;

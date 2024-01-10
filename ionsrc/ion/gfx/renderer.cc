@@ -1565,7 +1565,7 @@ class Renderer::ResourceBinder : public Allocatable {
   /// hardware framebuffer. The passed range specifies the area to be read. The
   /// passed range specifies the area to be read. The Allocator is used when
   /// creating the Image.
-  const ImagePtr ReadImage(const math::Range2i& range, Image::Format format,
+  const ImagePtr ReadImage(const math::Range2ui& range, Image::Format format,
                            const base::AllocatorPtr& allocator);
 
   /// Sends a uniform value to OpenGL.
@@ -5823,7 +5823,7 @@ const FramebufferObjectPtr Renderer::GetCurrentFramebuffer() const {
 }
 
 FramebufferObjectPtr Renderer::CreateExternalFramebufferProxy(
-    const ion::math::Range2i::Size& size,
+    const ion::math::Range2ui::Size& size,
     ion::gfx::Image::Format color_format,
     ion::gfx::Image::Format depth_format,
     int num_samples) {
@@ -6678,7 +6678,7 @@ void Renderer::UnmapBufferObjectData(const BufferObjectPtr& buffer) {
   }
 }
 
-const ImagePtr Renderer::ReadImage(const math::Range2i& range,
+const ImagePtr Renderer::ReadImage(const math::Range2ui& range,
                                    Image::Format format,
                                    const base::AllocatorPtr& allocator) {
   ResourceBinder* resource_binder = GetOrCreateInternalResourceBinder(__LINE__);
@@ -7337,7 +7337,7 @@ void Renderer::ResourceBinder::ClearNonFramebufferCachedBindings() {
 }
 
 const ImagePtr Renderer::ResourceBinder::ReadImage(
-    const math::Range2i& range, Image::Format format,
+    const math::Range2ui& range, Image::Format format,
     const base::AllocatorPtr& allocator) {
   ImagePtr image(new(allocator) Image());
   const int x = range.GetMinPoint()[0];

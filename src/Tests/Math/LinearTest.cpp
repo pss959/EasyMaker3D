@@ -301,10 +301,10 @@ TEST_F(LinearTest, ToPrintCoords) {
 // ----------------------------------------------------------------------------
 
 TEST_F(LinearTest, GetAspectRatio) {
-    EXPECT_EQ(4.5f, GetAspectRatio(Viewport(Point2i(0, 0),
-                                            Point2i(450, 100))));
-    EXPECT_EQ(.5f,  GetAspectRatio(Viewport(Point2i(100, 200),
-                                            Point2i(400, 800))));
+    EXPECT_EQ(4.5f, GetAspectRatio(Viewport(Point2ui(0, 0),
+                                            Point2ui(450, 100))));
+    EXPECT_EQ(.5f,  GetAspectRatio(Viewport(Point2ui(100, 200),
+                                            Point2ui(400, 800))));
 }
 
 TEST_F(LinearTest, GetProjectionAndViewMatrix) {

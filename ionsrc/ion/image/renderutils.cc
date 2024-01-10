@@ -145,7 +145,7 @@ static const gfx::ShaderInputRegistryPtr BuildRegistry(
 static const gfx::NodePtr BuildNode(
     const gfx::TexturePtr& texture,
     const gfx::CubeMapTexturePtr& cubemap, int face,
-    const math::Vector2i& viewport_size, const base::AllocatorPtr& allocator) {
+    const math::Vector2ui& viewport_size, const base::AllocatorPtr& allocator) {
   gfx::NodePtr node(new(allocator) gfx::Node);
 
   const bool is_cubemap = cubemap.Get();
@@ -155,7 +155,7 @@ static const gfx::NodePtr BuildNode(
   gfx::StateTablePtr state_table(
       new(allocator) gfx::StateTable(viewport_size[0], viewport_size[1]));
   state_table->SetViewport(
-      math::Range2i::BuildWithSize(math::Point2i::Zero(), viewport_size));
+      math::Range2ui::BuildWithSize(math::Point2ui::Zero(), viewport_size));
   node->SetStateTable(state_table);
 
   // Build and add a rectangle Shape.
@@ -190,7 +190,7 @@ static const gfx::NodePtr BuildNode(
 // the Allocator and then returned.
 static const gfx::ImagePtr RenderToImage(
     const gfx::RendererPtr& renderer, const gfx::NodePtr& node,
-    const math::Vector2i& image_size, const base::AllocatorPtr& allocator) {
+    const math::Vector2ui& image_size, const base::AllocatorPtr& allocator) {
   DCHECK(renderer.Get());
   DCHECK(node.Get());
   DCHECK_GT(image_size[0], 0);
@@ -215,7 +215,7 @@ static const gfx::ImagePtr RenderToImage(
 
   // Read the rendered result into an Image.
   gfx::ImagePtr image = renderer->ReadImage(
-      math::Range2i::BuildWithSize(math::Point2i::Zero(), image_size),
+      math::Range2ui::BuildWithSize(math::Point2ui::Zero(), image_size),
       gfx::Image::kRgb888, allocator);
 
   // Bind the default framebuffer to avoid problems.
@@ -229,7 +229,7 @@ static const gfx::ImagePtr RenderToImage(
 static const gfx::ImagePtr RenderTextureOrCubeMapTextureToImage(
     const gfx::TexturePtr& texture,
     const gfx::CubeMapTexturePtr& cubemap, gfx::CubeMapTexture::CubeFace face,
-    const math::Vector2i& size, const gfx::RendererPtr& renderer,
+    const math::Vector2ui& size, const gfx::RendererPtr& renderer,
     const base::AllocatorPtr& allocator) {
   gfx::ImagePtr output_image;
   if ((texture.Get() || cubemap.Get()) &&
@@ -255,7 +255,7 @@ const gfx::ImagePtr RenderTextureImage(
   // Can pass any face - it will be ignored.
   return RenderTextureOrCubeMapTextureToImage(
       texture, gfx::CubeMapTexturePtr(), gfx::CubeMapTexture::kNegativeX,
-      math::Vector2i(width, height), renderer, allocator);
+      math::Vector2ui(width, height), renderer, allocator);
 }
 
 const gfx::ImagePtr RenderCubeMapTextureFaceImage(
@@ -264,7 +264,7 @@ const gfx::ImagePtr RenderCubeMapTextureFaceImage(
     const gfx::RendererPtr& renderer, const base::AllocatorPtr& allocator) {
   return RenderTextureOrCubeMapTextureToImage(
       gfx::TexturePtr(), cubemap, face,
-      math::Vector2i(width, height), renderer, allocator);
+      math::Vector2ui(width, height), renderer, allocator);
 }
 
 }  // namespace image

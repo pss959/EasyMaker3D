@@ -41,7 +41,7 @@ class FakeRenderer : public IRenderer {
         return 0;
     }
 
-    virtual ion::gfx::ImagePtr ReadImage(const Range2i &rect) override {
+    virtual ion::gfx::ImagePtr ReadImage(const Viewport &rect) override {
         return ion::gfx::ImagePtr();
     }
 

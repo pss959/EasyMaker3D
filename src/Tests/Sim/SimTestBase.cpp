@@ -46,7 +46,7 @@ bool SimTestBase::RunScript_(const Str &file_name) {
     options.dryrun             = true;
     options.remain             = false;
     options.show_session_panel = false;
-    options.show_window        = false;  // Use hidden window.
+    options.offscreen          = true;  // Use hidden window.
     options.window_size.Set(1024, 552);
 
     app.InitApp();  // Makes the context available.

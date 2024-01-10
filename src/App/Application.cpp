@@ -121,7 +121,7 @@ class  Application::Impl_ {
     const Context & GetContext() const { return context_; }
     void SetAskBeforeQuitting(bool ask) { ask_before_quitting_ = ask; }
     void AddEmitter(const IEmitterPtr &emitter);
-    Vector2i GetWindowSize() const;
+    Vector2ui GetWindowSize() const;
     IRenderer & GetRenderer() { return *renderer_; }
     void ForceTouchMode(bool is_on) { force_touch_mode_on_ = is_on; }
     void EnableMouseMotionEvents(bool enable) {
@@ -627,7 +627,7 @@ void Application::Impl_::AddEmitter(const IEmitterPtr &emitter) {
     emitters_.push_back(emitter);
 }
 
-Vector2i Application::Impl_::GetWindowSize() const {
+Vector2ui Application::Impl_::GetWindowSize() const {
     return glfw_viewer_->GetWindowSize();
 }
 
@@ -643,7 +643,7 @@ bool Application::Impl_::InitViewers_() {
     };
     glfw_viewer_.reset(new GLFWViewer(error_func));
     if (! glfw_viewer_->Init(options_.window_size, options_.fullscreen,
-                             options_.show_window)) {
+                             options_.offscreen)) {
         glfw_viewer_.reset();
         return false;
     }
@@ -1594,7 +1594,7 @@ void Application::AddEmitter(const IEmitterPtr &emitter) {
     impl_->AddEmitter(emitter);
 }
 
-Vector2i Application::GetWindowSize() const {
+Vector2ui Application::GetWindowSize() const {
     return impl_->GetWindowSize();
 }
 

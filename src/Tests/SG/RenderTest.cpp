@@ -126,16 +126,8 @@ TEST_F(RenderTest, RealScene) {
 }
 
 TEST_F(RenderTest, RealSceneWithFBTarget) {
-    auto create_fbo = [&](ion::gfx::FramebufferObjectPtr &fbo){
-        fbo.Reset(new ion::gfx::FramebufferObject(kWidth, kHeight));
-        fbo->SetColorAttachment(
-            0U, ion::gfx::FramebufferObject::Attachment::CreateMultisampled(
-                ion::gfx::Image::kRgba8888, 4));
-    };
-
     FBTarget fb_target;
-    create_fbo(fb_target.rendered_fbo);
-    create_fbo(fb_target.resolved_fbo);
+    fb_target.Init("RenderTest", Vector2ui(kWidth, kHeight), 4);
 
     SetUpScene("RealScene.emd");
     RenderScene(&fb_target);

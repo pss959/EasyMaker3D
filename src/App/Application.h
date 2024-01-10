@@ -32,15 +32,15 @@ class Application {
   public:
     /// Application options.
     struct Options {
-        Vector2i window_size;
-        bool     do_ion_remote      = false;
-        bool     fullscreen         = false;
-        bool     enable_vr          = false;
-        bool     ignore_vr          = false;
-        bool     set_up_touch       = false;
-        bool     show_session_panel = true;
-        bool     show_window        = true;
-        Str      session_file_name;
+        Vector2ui window_size;
+        bool      do_ion_remote      = false;
+        bool      fullscreen         = false;
+        bool      enable_vr          = false;
+        bool      ignore_vr          = false;
+        bool      set_up_touch       = false;
+        bool      show_session_panel = true;
+        bool      offscreen          = false;
+        Str       session_file_name;
     };
 
     /// Application context with all managers and the SceneContext.
@@ -112,7 +112,7 @@ class Application {
 
     /// Returns the current size of the application window, taking the
     /// fullscreen option into account.
-    Vector2i GetWindowSize() const;
+    Vector2ui GetWindowSize() const;
 
     /// Returns the IRenderer.
     IRenderer & GetRenderer();

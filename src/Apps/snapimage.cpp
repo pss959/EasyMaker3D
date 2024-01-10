@@ -22,12 +22,13 @@ R"(snapimage: Reads a script with instructions on how to create snapshot images
 for public documentation. See Script.h for script details.
     Usage:
       snapimage [--fullscreen] [--klog=<klog_string>]
-                [--nosnap] [--remain] [--report] SCRIPT
+                [--nosnap] [--offscreen] [--remain] [--report] SCRIPT
 
     Options:
       --fullscreen    Use a full-screen window.
       --klog=<string> String to pass to KLogger::SetKeyString().
       --nosnap        Ignore snap commands (useful for testing).
+      --offscreen     Use offscreen rendering (no visible window).
       --remain        Keep the window alive after script processing.
       --report        Report each instruction of script processing.
 

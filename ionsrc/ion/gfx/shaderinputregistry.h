@@ -74,7 +74,7 @@ using ShaderInputRegistryPtr = base::SharedPtr<ShaderInputRegistry>;
 ///
 /// and specs for the following uniforms:
 ///
-///   ivec2 uViewportSize:
+///   uvec2 uViewportSize:
 ///           Replaces the active viewport size (in pixels).
 ///           Default Value: (0,0)
 ///

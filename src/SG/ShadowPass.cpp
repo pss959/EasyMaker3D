@@ -35,9 +35,9 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
     const ion::gfx::NodePtr ion_root = data.root_node->GetIonNode();
     ASSERT(ion_root);
     ASSERT(ion_root->GetStateTable());
-    const Vector2i viewport_size(TK::kDepthMapSize, TK::kDepthMapSize);
+    const Vector2ui viewport_size(TK::kDepthMapSize, TK::kDepthMapSize);
     ion_root->GetStateTable()->SetViewport(
-        Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
+        Viewport::BuildWithSize(Point2ui(0, 0), viewport_size));
 
     auto &block = data.root_node->GetUniformBlockForPass(GetName());
     ASSERT(block.GetIonUniformBlock());
@@ -85,7 +85,7 @@ void ShadowPass::SetShaderUniforms_(RenderData &data, Node &node) {
         mat_func("uModelviewMatrix");
         mat_func("uModelMatrix");
         mat_func("uViewMatrix");
-        const Vector2i viewport_size(TK::kDepthMapSize, TK::kDepthMapSize);
+        const Vector2ui viewport_size(TK::kDepthMapSize, TK::kDepthMapSize);
         ion_block.AddUniform(reg.Create<ion::gfx::Uniform>("uViewportSize",
                                                            viewport_size));
         were_uniforms_created_ = true;

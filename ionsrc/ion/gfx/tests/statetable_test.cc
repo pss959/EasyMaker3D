@@ -122,8 +122,8 @@ static void TestDefaultStateTable(const StateTable& st,
   EXPECT_EQ(0.0f, st.GetPolygonOffsetUnits());
   EXPECT_EQ(1.0f, st.GetSampleCoverageValue());
   EXPECT_FALSE(st.IsSampleCoverageInverted());
-  EXPECT_EQ(math::Range2i(math::Point2i(0, 0),
-                          math::Point2i(default_width, default_height)),
+  EXPECT_EQ(math::Range2ui(math::Point2ui(0, 0),
+                           math::Point2ui(default_width, default_height)),
             st.GetScissorBox());
   EXPECT_EQ(StateTable::kStencilAlways, st.GetFrontStencilFunction());
   EXPECT_EQ(StateTable::kStencilAlways, st.GetBackStencilFunction());
@@ -131,8 +131,8 @@ static void TestDefaultStateTable(const StateTable& st,
   EXPECT_EQ(0, st.GetBackStencilReferenceValue());
   EXPECT_EQ(static_cast<uint32>(-1), st.GetFrontStencilMask());
   EXPECT_EQ(static_cast<uint32>(-1), st.GetBackStencilMask());
-  EXPECT_EQ(math::Range2i(math::Point2i(0, 0),
-                          math::Point2i(default_width, default_height)),
+  EXPECT_EQ(math::Range2ui(math::Point2ui(0, 0),
+                           math::Point2ui(default_width, default_height)),
             st.GetViewport());
   // Settings are not enforced by default.
   EXPECT_FALSE(st.AreSettingsEnforced());
@@ -658,9 +658,9 @@ TEST(StateTable, Values) {
       &StateTable::GetSampleCoverageValue,
       &StateTable::IsSampleCoverageInverted);
 
-  TestValue1<const math::Range2i&>(
+  TestValue1<const math::Range2ui&>(
       *default_st, st.Get(), StateTable::kScissorBoxValue,
-      math::Range2i(math::Point2i(10, 20), math::Point2i(210, 320)),
+      math::Range2ui(math::Point2ui(10, 20), math::Point2ui(210, 320)),
       &StateTable::SetScissorBox, &StateTable::GetScissorBox);
 
   TestValue6<StateTable::StencilFunction, int, uint32,
@@ -703,9 +703,9 @@ TEST(StateTable, Values) {
       &StateTable::GetFrontStencilWriteMask,
       &StateTable::GetBackStencilWriteMask);
 
-  TestValue1<const math::Range2i&>(
+  TestValue1<const math::Range2ui&>(
       *default_st, st.Get(), StateTable::kViewportValue,
-      math::Range2i(math::Point2i(10, 20), math::Point2i(210, 320)),
+      math::Range2ui(math::Point2ui(10, 20), math::Point2ui(210, 320)),
       &StateTable::SetViewport, &StateTable::GetViewport);
 
   // Try to set an invalid value.
@@ -770,11 +770,11 @@ TEST(StateTable, CopyFrom) {
   st0->SetMinSampleShading(.7f);
   st0->SetPolygonOffset(.5f, .2f);
   st0->SetSampleCoverage(.6f, true);
-  st0->SetScissorBox(math::Range2i::BuildWithSize(math::Point2i(10, 20),
-                                                  math::Vector2i(30, 40)));
+  st0->SetScissorBox(math::Range2ui::BuildWithSize(math::Point2ui(10, 20),
+                                                   math::Vector2ui(30, 40)));
   st0->SetClearStencilValue(123456);
-  st0->SetViewport(math::Range2i::BuildWithSize(math::Point2i(50, 60),
-                                                math::Vector2i(70, 80)));
+  st0->SetViewport(math::Range2ui::BuildWithSize(math::Point2ui(50, 60),
+                                                 math::Vector2ui(70, 80)));
   st1->SetViewport(50, 60, 70, 80);
   st1->SetStencilFunctions(StateTable::kStencilNotEqual, 42, 0xbabebabe,
                            StateTable::kStencilLess, 155, 0x87654321);
@@ -886,11 +886,11 @@ TEST(StateTable, MergeValues) {
   st0->SetLineWidth(.4f);
   st0->SetPolygonOffset(.5f, .2f);
   st0->SetSampleCoverage(.6f, true);
-  st0->SetScissorBox(math::Range2i::BuildWithSize(math::Point2i(10, 20),
-                                                  math::Vector2i(30, 40)));
+  st0->SetScissorBox(math::Range2ui::BuildWithSize(math::Point2ui(10, 20),
+                                                   math::Vector2ui(30, 40)));
   st0->SetClearStencilValue(123456);
-  st0->SetViewport(math::Range2i::BuildWithSize(math::Point2i(50, 60),
-                                                math::Vector2i(70, 80)));
+  st0->SetViewport(math::Range2ui::BuildWithSize(math::Point2ui(50, 60),
+                                                 math::Vector2ui(70, 80)));
   st1->SetSampleCoverage(.21f, false);
   st1->SetLineWidth(.111f);
   st1->SetStencilFunctions(StateTable::kStencilNotEqual, 42, 0xbabebabe,

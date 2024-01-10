@@ -166,7 +166,7 @@ TEST_F(ParsingTest, Full) {
     EXPECT_EQ(Vector4ui(3, 2, 8, 9),     fp->v4ui.GetValue());
     EXPECT_EQ(Point2f(3, -2.5f),         fp->p2f.GetValue());
     EXPECT_EQ(Point3f(3, -2.5f, 7),      fp->p3f.GetValue());
-    EXPECT_EQ(Point2i(3, -2),            fp->p2i.GetValue());
+    EXPECT_EQ(Point2ui(3, 2),            fp->p2ui.GetValue());
     EXPECT_EQ(c,                         fp->c.GetValue());
     EXPECT_EQ(a,                         fp->a.GetValue());
     EXPECT_EQ(r,                         fp->r.GetValue());

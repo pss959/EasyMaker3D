@@ -46,7 +46,7 @@ class VideoWriter {
 
     /// Initializes the VideoWriter, given the path to the file to write to,
     /// the video resolution, and the number of frames per second.
-    void Init(const FilePath &path, const Vector2i &resolution, int fps);
+    void Init(const FilePath &path, const Vector2ui &resolution, int fps);
 
     /// Adds an image to the video.
     void AddImage(const ion::gfx::Image &image);
