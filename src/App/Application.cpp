@@ -134,6 +134,7 @@ class  Application::Impl_ {
     void SetLongPressDuration(float seconds) {
         main_handler_->SetLongPressDuration(seconds);
     }
+    void SetTooltipDelay(float seconds);
     bool IsInModifiedMode() const { return glfw_viewer_->IsShiftKeyPressed(); }
 
   private:
@@ -629,6 +630,16 @@ void Application::Impl_::AddEmitter(const IEmitterPtr &emitter) {
 
 Vector2ui Application::Impl_::GetWindowSize() const {
     return glfw_viewer_->GetWindowSize();
+}
+
+void Application::Impl_::SetTooltipDelay(float seconds) {
+    // Setting this should trigger the SettingsChanged_() callback that updates
+    // the TooltipFeedback delay.
+    auto &mgr = *MGR_(settings);
+    const auto &settings = mgr.GetSettings();
+    auto new_settings = Settings::CreateCopy(settings);
+    new_settings->SetTooltipDelay(seconds);
+    mgr.SetSettings(*new_settings);
 }
 
 void Application::Impl_::InitTypes_() {
@@ -1615,8 +1626,14 @@ void Application::SetControllerRenderOffsets(const Vector3f &l_offset,
     impl_->SetControllerRenderOffsets(l_offset, r_offset);
 }
 
+    void SetTooltipDelay(float seconds);
+
 void Application::SetLongPressDuration(float seconds) {
     impl_->SetLongPressDuration(seconds);
+}
+
+void Application::SetTooltipDelay(float seconds) {
+    impl_->SetTooltipDelay(seconds);
 }
 
 bool Application::IsInModifiedMode() const {

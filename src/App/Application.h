@@ -134,6 +134,11 @@ class Application {
     /// TK::kLongPressTime.
     void SetLongPressDuration(float seconds);
 
+    /// Allows derived classes to change the tooltip delay. This updates the
+    /// current settings as well as TooltipFeedback so that the setting is
+    /// persistent.
+    void SetTooltipDelay(float seconds);
+
     /// Returns true if the application is in modified input mode. The base
     /// class defines this to ask the GLFWViewer if the shift key is pressed.
     virtual bool IsInModifiedMode() const;

@@ -524,7 +524,7 @@ bool ScriptedApp::Init_() {
 
     // Disable tooltips by default - they can appear if frame grabbing is very
     // slow.
-    TooltipFeedback::SetDelay(0);
+    SetTooltipDelay(0);
 
     // Fake export from the SessionManager, since the path is likely bogus.
     context.session_manager->SetFakeExport(true);
@@ -913,7 +913,7 @@ bool ScriptedApp::ProcessState_(const Script::StateInstr &instr) {
         emitter_->SetModifiedMode(instr.is_on);
     }
     else if (instr.setting == "tooltips") {
-        TooltipFeedback::SetDelay(instr.is_on ? 1 : 0);
+        SetTooltipDelay(instr.is_on ? 1 : 0);
     }
     else if (instr.setting == "touch") {
         SetTouchMode_(instr.is_on);
