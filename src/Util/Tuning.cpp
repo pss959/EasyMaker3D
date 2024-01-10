@@ -150,6 +150,7 @@ const float    kShadowPassLightFar               = 202;
 const float    kShadowPassLightHalfSize          = 80;
 const float    kShadowPassLightNear              = -20;
 const int      kStageImageSize                   = 1024;
+const int      kNonVRSampleCount                 = 16;
 const int      kVRSampleCount                    = 4;
 
 // Other Geometry

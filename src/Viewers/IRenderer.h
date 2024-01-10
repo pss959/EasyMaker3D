@@ -6,6 +6,7 @@
 #include "Math/Types.h"
 #include "Util/Memory.h"
 
+DECL_SHARED_PTR(FBTarget);
 DECL_SHARED_PTR(IRenderer);
 
 struct FBTarget;
@@ -39,16 +40,21 @@ class IRenderer {
 
     ///@}
 
-    /// Renders the given Scene using the given Frustum. If fb_target is not
-    /// null, it is used instead of the default target.
-    virtual void RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                             const FBTarget *fb_target = nullptr) = 0;
+    /// Sets a framebuffer target for subsequent calls to RenderScene() and as
+    /// a source for ReadImage(). This is null by default, meaning that the
+    /// default framebuffer is the target and source.
+    virtual void SetFBTarget(const FBTargetPtr &fb_target) = 0;
 
-    /// Given an FBTarget, this returns the OpenGL ID of the resolved
-    /// framebuffer texture. Returns 0 on error.
-    virtual uint32 GetResolvedTextureID(const FBTarget &fb_target) = 0;
+    /// Renders the given Scene using the given Frustum.
+    virtual void RenderScene(const SG::Scene &scene,
+                             const Frustum &frustum) = 0;
 
-    /// Reads a rectangle of pixels from the GLFWViewer window and returns them
-    /// in an Ion Image in kRGB888 format.
+    /// Reads a rectangle of pixels from the framebuffer and returns them in an
+    /// Ion Image in kRGB888 format.
     virtual ion::gfx::ImagePtr ReadImage(const Viewport &rect) = 0;
+
+    /// Returns the OpenGL ID of the resolved framebuffer texture from the
+    /// current FBTarget. Returns 0 if there is no current FBTarget or on
+    /// error.
+    virtual uint32 GetResolvedTextureID() = 0;
 };

@@ -32,18 +32,18 @@ class FakeRenderer : public IRenderer {
 
     virtual uint64 GetFrameCount() const override { return frame_count_; }
 
-    virtual void RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                             const FBTarget *fb_target = nullptr) override {
-        ++render_count;
-    }
+    virtual void SetFBTarget(const FBTargetPtr &fb_target) override {}
 
-    virtual uint32 GetResolvedTextureID(const FBTarget &fb_target) override {
-        return 0;
+    virtual void RenderScene(const SG::Scene &scene,
+                             const Frustum &frustum) override {
+        ++render_count;
     }
 
     virtual ion::gfx::ImagePtr ReadImage(const Viewport &rect) override {
         return ion::gfx::ImagePtr();
     }
+
+    virtual uint32 GetResolvedTextureID() override { return 0; }
 
   private:
     uint32 frame_count_ = 0;

@@ -2,13 +2,13 @@
 
 #include <functional>
 
-#include "Base/FBTarget.h"
 #include "Base/IEmitter.h"
 #include "Base/IWindowSystem.h"
 #include "Math/Types.h"
 #include "Util/Memory.h"
 #include "Viewers/Viewer.h"
 
+DECL_SHARED_PTR(FBTarget);
 DECL_SHARED_PTR(Frustum);
 DECL_SHARED_PTR(GLFWViewer);
 DECL_SHARED_PTR(IWindowSystem);
@@ -76,7 +76,7 @@ class GLFWViewer : public Viewer, public IEmitter {
 
   private:
     ErrorFunc        error_func_;
-    FBTarget         fb_target_;     ///< Used for offscreen rendering.
+    FBTargetPtr      fb_target_;     ///< Used for offscreen rendering.
     IWindowSystemPtr ws_;
 
     /// Stores the camera used to set up the Frustum.

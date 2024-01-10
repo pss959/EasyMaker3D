@@ -5,6 +5,7 @@
 #include <ion/gfx/framebufferobject.h>
 
 #include "Base/Event.h"
+#include "Base/FBTarget.h"
 #include "Base/GLFWWindowSystem.h"
 #include "Math/Linear.h"
 #include "SG/WindowCamera.h"
@@ -34,8 +35,11 @@ bool GLFWViewer::Init(const Vector2ui &size, bool maximize, bool offscreen) {
     if (maximize)
         ws_->Maximize();
 
-    if (offscreen)
-        fb_target_.Init("GLFW", ws_->GetFramebufferSize(), 16); // XXXX 16
+    if (offscreen) {
+        fb_target_.reset(new FBTarget);
+        fb_target_->Init("GLFW", ws_->GetFramebufferSize(),
+                         TK::kNonVRSampleCount);
+    }
 
     return true;
 }
@@ -53,8 +57,8 @@ void GLFWViewer::Render(const SG::Scene &scene, IRenderer &renderer) {
     UpdateFrustum_();
 
     ws_->PreRender();
-    renderer.RenderScene(scene, *frustum_,
-                         fb_target_.GetResolvedFBO() ? &fb_target_ : nullptr);
+    renderer.SetFBTarget(fb_target_);
+    renderer.RenderScene(scene, *frustum_);
     ws_->PostRender();
 }
 

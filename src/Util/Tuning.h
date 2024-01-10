@@ -418,6 +418,10 @@ extern const float    kShadowPassLightNear;
 /// Size in pixels of the square image used to show the Stage grid.
 extern const int      kStageImageSize;
 
+/// Number of samples to use for multisampling when rendering into a non-VR
+/// window or offscreen framebuffer.
+extern const int      kNonVRSampleCount;
+
 /// Number of samples to use for VR multisampling to render into framebuffer
 /// objects.
 extern const int      kVRSampleCount;

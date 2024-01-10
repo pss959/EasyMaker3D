@@ -47,18 +47,17 @@ class Renderer::Impl_ {
     void BeginFrame() { frame_->Begin(); }
     void EndFrame()   { frame_->End();   }
     uint64 GetFrameCount() const { return frame_->GetCounter(); }
-    void RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                     const FBTarget *fb_target = nullptr);
-    uint32 GetResolvedTextureID(const FBTarget &fb_target);
+    void SetFBTarget(const FBTargetPtr &fb_target) { fb_target_ = fb_target; }
+    void RenderScene(const SG::Scene &scene, const Frustum &frustum);
     ion::gfx::ImagePtr ReadImage(const Viewport &rect);
+    uint32 GetResolvedTextureID();
 
   private:
+    FBTargetPtr                     fb_target_;
     ion::gfx::RendererPtr           renderer_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
     bool                            is_remote_enabled_ = false;
-
-    ion::gfx::FramebufferObjectPtr last_resolved_fbo_; // XXXX
 
     /// Recursive function that updates a Node for rendering the given pass.
     /// This enables or disables the Ion Node based on the Node's flags and
@@ -91,7 +90,6 @@ Renderer::Impl_::Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
 
     ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
     manager->EnableErrorChecking(true);
-    manager->GetTracingStream().StartTracing(); // XXXX
     renderer_.Reset(new ion::gfx::Renderer(manager));
     frame_.Reset(new ion::gfxutils::Frame);
 
@@ -113,8 +111,8 @@ void Renderer::Impl_::Reset(const SG::Scene &scene) {
 #endif
 }
 
-void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                                  const FBTarget *fb_target) {
+void Renderer::Impl_::RenderScene(const SG::Scene &scene,
+                                  const Frustum &frustum) {
     // Set up a RenderData.
     SG::RenderData data;
     data.viewport    = frustum.viewport;
@@ -139,30 +137,28 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         UpdateNodeForRenderPass_(*pass, *scene.GetRootNode());
         // Render the pass.
         renderer_->PushDebugMarker(pass->GetDesc());
-        pass->Render(*renderer_, data, fb_target);
+        pass->Render(*renderer_, data, fb_target_.get());
         renderer_->PopDebugMarker();
     }
-
-    if (fb_target)
-        last_resolved_fbo_ = fb_target->GetResolvedFBO();
-    else
-        last_resolved_fbo_.Reset();
-}
-
-uint32 Renderer::Impl_::GetResolvedTextureID(const FBTarget &fb_target) {
-    ASSERT(renderer_);
-    auto &ca = fb_target.GetResolvedFBO()->GetColorAttachment(0);
-    ASSERT(ca.GetTexture().Get());
-    return renderer_->GetResourceGlId(ca.GetTexture().Get());
 }
 
 ion::gfx::ImagePtr Renderer::Impl_::ReadImage(const Viewport &rect) {
-    // XXX Pass FBTarget into here...
     ASSERT(renderer_);
-    renderer_->BindFramebuffer(last_resolved_fbo_);
+    renderer_->BindFramebuffer(fb_target_ ? fb_target_->GetResolvedFBO() :
+                               ion::gfx::FramebufferObjectPtr());
 
     return renderer_->ReadImage(rect, ion::gfx::Image::Format::kRgb888,
                                 ion::base::AllocatorPtr());
+}
+
+uint32 Renderer::Impl_::GetResolvedTextureID() {
+    ASSERT(renderer_);
+    if (fb_target_ && fb_target_->IsInitialized()) {
+        auto &ca = fb_target_->GetResolvedFBO()->GetColorAttachment(0);
+        ASSERT(ca.GetTexture().Get());
+        return renderer_->GetResourceGlId(ca.GetTexture().Get());
+    }
+    return 0;
 }
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
@@ -229,15 +225,18 @@ uint64 Renderer::GetFrameCount() const {
     return impl_->GetFrameCount();
 }
 
-void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                           const FBTarget *fb_target) {
-    impl_->RenderScene(scene, frustum, fb_target);
+void Renderer::SetFBTarget(const FBTargetPtr &fb_target) {
+    impl_->SetFBTarget(fb_target);
 }
 
-uint32 Renderer::GetResolvedTextureID(const FBTarget &fb_target) {
-    return impl_->GetResolvedTextureID(fb_target);
+void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum) {
+    impl_->RenderScene(scene, frustum);
 }
 
 ion::gfx::ImagePtr Renderer::ReadImage(const Viewport &rect) {
     return impl_->ReadImage(rect);
+}
+
+uint32 Renderer::GetResolvedTextureID() {
+    return impl_->GetResolvedTextureID();
 }

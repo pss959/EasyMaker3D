@@ -21,10 +21,11 @@ class Renderer : public IRenderer {
     virtual void BeginFrame() override;
     virtual void EndFrame() override;
     virtual uint64 GetFrameCount() const override;
-    virtual void RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                             const FBTarget *fb_target = nullptr) override;
-    virtual uint32 GetResolvedTextureID(const FBTarget &fb_target) override;
+    virtual void SetFBTarget(const FBTargetPtr &fb_target) override;
+    virtual void RenderScene(const SG::Scene &scene,
+                             const Frustum &frustum) override;
     virtual ion::gfx::ImagePtr ReadImage(const Viewport &rect) override;
+    virtual uint32 GetResolvedTextureID() override;
 
   private:
     class Impl_; // This class does most of the work.

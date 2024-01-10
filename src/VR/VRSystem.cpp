@@ -81,7 +81,7 @@ class VRSystem::Impl_ {
         Vector3f      offset;       ///< Difference in position from HMD.
         Point3f       position;     ///< Absolute position.
         Rotationf     orientation;  ///< Absolute orientation.
-        FBTarget      fb_target;    ///< For passing framebuffers to IRenderer.
+        FBTargetPtr   fb_target;    ///< For passing framebuffers to IRenderer.
     };
 
     /// OpenVR action handles and other data per Hand.
@@ -523,7 +523,8 @@ bool VRSystem::Impl_::WereBindingsLoadedSuccessfully_() {
 void VRSystem::Impl_::InitEyeRendering_(IRenderer &renderer, Eye_ &eye) {
     const Str eye_str =
         Str("VR ") + (eye.eye == vr::Eye_Left ? "L" : "R") + " Eye ";
-    eye.fb_target.Init(eye_str, window_size_, TK::kVRSampleCount);
+    eye.fb_target.reset(new FBTarget);
+    eye.fb_target->Init(eye_str, window_size_, TK::kVRSampleCount);
 }
 
 void VRSystem::Impl_::UpdateEyes_() {
@@ -574,10 +575,11 @@ void VRSystem::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
     frustum.position[1] -= head_y_offset_;
 
     // Render.
-    renderer.RenderScene(scene, frustum, &eye.fb_target);
+    renderer.SetFBTarget(eye.fb_target);
+    renderer.RenderScene(scene, frustum);
 
     // Get the resolved framebuffer texture ID.
-    const uint32 id = renderer.GetResolvedTextureID(eye.fb_target);
+    const uint32 id = renderer.GetResolvedTextureID();
     eye.texture.handle = reinterpret_cast<void *>(id);
 
     // Submit the resolved texture to the VR compositor.

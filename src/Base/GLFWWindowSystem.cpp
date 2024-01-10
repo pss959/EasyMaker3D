@@ -14,6 +14,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/String.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Static helper functions.
@@ -185,7 +186,7 @@ bool GLFWWindowSystem::CreateMainWindow(const Vector2ui &size, const Str &title,
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,  GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,  3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,  3);
-    glfwWindowHint(GLFW_SAMPLES,                16);
+    glfwWindowHint(GLFW_SAMPLES,                TK::kNonVRSampleCount);
 
     if (offscreen)
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
