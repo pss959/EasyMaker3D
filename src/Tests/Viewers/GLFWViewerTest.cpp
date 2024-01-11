@@ -2,6 +2,7 @@
 
 #include "Base/Event.h"
 #include "Base/IWindowSystem.h"
+#include "Math/Frustum.h"
 #include "SG/WindowCamera.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing2.h"

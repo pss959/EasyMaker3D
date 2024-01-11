@@ -48,6 +48,8 @@
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Animation.h"
+#include "Math/Frustum.h"
+#include "Math/Plane.h"
 #include "Math/Intersection.h"
 #include "Math/Types.h"
 #include "Models/Model.h"

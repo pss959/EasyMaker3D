@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Util/Memory.h"
 #include "Util/Notifier.h"
 #include "Widgets/DraggableWidget.h"
 
+struct Plane;
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(SphereWidget);

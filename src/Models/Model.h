@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "Math/Color.h"
+#include "Math/TriMesh.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "Util/Memory.h"

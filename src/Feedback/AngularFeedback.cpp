@@ -2,6 +2,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Math/Color.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
 #include "SG/Node.h"

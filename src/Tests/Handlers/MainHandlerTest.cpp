@@ -1,6 +1,7 @@
 #include "Base/Event.h"
 #include "Handlers/MainHandler.h"
 #include "Items/Controller.h"
+#include "Math/Frustum.h"
 #include "Math/Types.h"
 #include "Place/PrecisionStore.h"
 #include "SG/Search.h"

@@ -5,6 +5,8 @@
 
 #include "Math/CGALInternal.h"
 #include "Math/Linear.h"
+#include "Math/Plane.h"
+#include "Math/TriMesh.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 

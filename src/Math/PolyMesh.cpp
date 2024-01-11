@@ -10,6 +10,7 @@
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
 #include "Math/Polygon.h"
+#include "Math/TriMesh.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/String.h"

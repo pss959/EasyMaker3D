@@ -6,6 +6,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Math/Bounds.h"
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
 #include "Math/PolyMesh.h"

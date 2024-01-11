@@ -11,9 +11,10 @@
 #include "SG/NodePath.h"
 #include "Util/Memory.h"
 
-class Args;
-class FilePath;
-class Selection;
+class  Args;
+class  FilePath;
+struct Frustum;
+class  Selection;
 DECL_SHARED_PTR(ScriptEmitter);
 namespace SG {
 DECL_SHARED_PTR(Node);

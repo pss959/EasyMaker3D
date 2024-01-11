@@ -3,6 +3,7 @@
 #include <ranges>
 
 #include "Managers/PanelManager.h"
+#include "Math/Frustum.h"
 #include "Panels/Board.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"

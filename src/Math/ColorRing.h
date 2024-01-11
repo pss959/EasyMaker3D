@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Math/Color.h"
 #include "Math/Types.h"
 
 /// The ColorTool displays a ring that allows the user to select a color for a

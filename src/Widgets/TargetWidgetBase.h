@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Color.h"
 #include "Math/Types.h"
 #include "SG/NodePath.h"
 #include "Util/Memory.h"

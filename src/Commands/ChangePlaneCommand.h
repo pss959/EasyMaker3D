@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Commands/MultiModelCommand.h"
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Util/Memory.h"
 

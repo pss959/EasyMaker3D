@@ -2,12 +2,14 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Math/Bounds.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshValidation.h"
 #include "Math/MeshUtils.h"
 #include "Math/Polygon.h"
 #include "Math/Profile.h"
+#include "Math/TriMesh.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"

@@ -1,4 +1,5 @@
-﻿#include "Math/MeshBuilding.h"
+﻿#include "Math/Bounds.h"
+#include "Math/MeshBuilding.h"
 #include "Math/MeshSlicing.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"

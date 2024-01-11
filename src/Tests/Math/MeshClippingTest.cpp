@@ -1,6 +1,9 @@
-﻿#include "Math/MeshBuilding.h"
+﻿#include "Math/Bounds.h"
+#include "Math/MeshBuilding.h"
 #include "Math/MeshClipping.h"
 #include "Math/MeshUtils.h"
+#include "Math/Plane.h"
+#include "Math/TriMesh.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

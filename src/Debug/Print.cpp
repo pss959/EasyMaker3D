@@ -9,6 +9,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Commands/CommandList.h"
+#include "Math/Frustum.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Math/ToString.h"

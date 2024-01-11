@@ -6,11 +6,11 @@
 #include "Math/Types.h"
 #include "Util/Memory.h"
 
+struct Frustum;
+namespace SG { class Scene; }
+
 DECL_SHARED_PTR(FBTarget);
 DECL_SHARED_PTR(IRenderer);
-
-struct FBTarget;
-namespace SG { class Scene; }
 
 /// IRenderer is an interface for renderer classes used by Viewer classes to
 /// render a scene. It exists to allow tests to use a fake version to avoid

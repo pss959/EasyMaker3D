@@ -2,6 +2,7 @@
 
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "Math/Plane.h"
 
 void MirroredModel::AddFields() {
     AddModelField(plane_normal_.Init("plane_normal", GetDefaultPlaneNormal()));

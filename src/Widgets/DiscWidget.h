@@ -6,6 +6,7 @@
 #include "Util/Memory.h"
 #include "Widgets/DraggableWidget.h"
 
+struct Plane;
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(DiscWidget);

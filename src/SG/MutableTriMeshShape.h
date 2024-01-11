@@ -5,6 +5,7 @@
 #include "SG/TriMeshShape.h"
 #include "Util/Memory.h"
 
+struct ModelMesh;
 namespace Parser { class Registry; }
 
 namespace SG {

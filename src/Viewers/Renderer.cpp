@@ -23,6 +23,7 @@
 #endif
 
 #include "Base/FBTarget.h"
+#include "Math/Frustum.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "SG/PointLight.h"

@@ -2,6 +2,7 @@
 
 #include <stack>
 
+#include <ion/math/angleutils.h>
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 

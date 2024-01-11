@@ -1,6 +1,11 @@
 #pragma once
 
+#include "Math/Bounds.h"
+#include "Math/TriMesh.h"
 #include "Math/Types.h"
+
+struct Plane;
+struct Ray;
 
 /// \file
 /// This file contains functions to aid with intersecting rays with various

@@ -1,5 +1,6 @@
 ﻿#include "Managers/BoardManager.h"
 #include "Managers/PanelManager.h"
+#include "Math/Frustum.h"
 #include "Panels/Board.h"
 #include "Panels/HelpPanel.h"
 #include "SG/Search.h"

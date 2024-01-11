@@ -4,6 +4,8 @@
 
 #include <ion/gfx/node.h>
 
+#include "Math/Bounds.h"
+#include "Math/Color.h"
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Object.h"

@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "Math/Bounds.h"
 #include "Util/Assert.h"
 
 Dimensionality Snap3D::SnapToBounds(const Bounds &bounds, Point3f &p,

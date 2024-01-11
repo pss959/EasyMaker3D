@@ -9,6 +9,7 @@
 
 class FakeFileSystem;
 class FakeFontSystem;
+struct TriMesh;
 
 /// Base test fixture that supplies some useful functions for tests.
 ///

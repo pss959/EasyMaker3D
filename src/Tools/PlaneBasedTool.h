@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Tools/Tool.h"
 

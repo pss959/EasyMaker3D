@@ -4,6 +4,8 @@
 
 #include "Math/Types.h"
 
+struct TriMesh;
+
 /// \name Mesh Validation
 ///
 /// \ingroup Math

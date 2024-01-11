@@ -14,6 +14,7 @@
 
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
+#include "Math/Frustum.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/VRCamera.h"

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <ion/math/angleutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Math/Bevel.h"
@@ -11,6 +12,7 @@
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshBuilder.h"
 #include "Math/PolyMeshMerging.h"
+#include "Math/TriMesh.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 

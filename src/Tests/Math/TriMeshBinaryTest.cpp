@@ -1,4 +1,5 @@
 #include "Math/MeshBuilding.h"
+#include "Math/TriMesh.h"
 #include "Math/Types.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"

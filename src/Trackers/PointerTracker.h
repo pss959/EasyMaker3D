@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Ray.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "SG/NodePath.h"

@@ -5,6 +5,7 @@
 #include "Util/Assert.h"
 #include "Util/Memory.h"
 
+struct Color;
 DECL_SHARED_PTR(Feedback);
 
 /// Feedback is an abstract base class for objects that display graphical and

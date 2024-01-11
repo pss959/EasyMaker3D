@@ -11,6 +11,7 @@
 #include "Handlers/LogHandler.h"
 #include "Items/Controller.h"
 #include "Managers/SceneContext.h"
+#include "Math/Frustum.h"
 #include "Models/RootModel.h"
 #include "Panels/Board.h"
 #include "Panels/Panel.h"

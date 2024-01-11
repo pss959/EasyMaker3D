@@ -1,5 +1,6 @@
 #include "Base/Procedural.h"
 
+#include "Math/Color.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"

@@ -11,6 +11,7 @@
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
 #include "Math/TextUtils.h"
+#include "Math/TriMesh.h"
 #include "Tests/Testing.h"
 #include "Tests/Util/FakeFileSystem.h"
 #include "Tests/Util/FakeFontSystem.h"

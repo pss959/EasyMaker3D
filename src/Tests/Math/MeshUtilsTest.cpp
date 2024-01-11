@@ -1,13 +1,16 @@
 ﻿#include <ion/math/transformutils.h>
 
+#include "Math/Bounds.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshSlicing.h"
 #include "Math/MeshUtils.h"
+#include "Math/Plane.h"
 #include "Math/Profile.h"
 #include "Math/SlicedMesh.h"
 #include "Math/Spin.h"
 #include "Math/Taper.h"
+#include "Math/TriMesh.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

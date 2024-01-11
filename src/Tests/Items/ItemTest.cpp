@@ -9,6 +9,7 @@
 #include "Items/SessionState.h"
 #include "Items/Shelf.h"
 #include "Items/UnitConversion.h"
+#include "Math/Frustum.h"
 #include "Parser/Exception.h"
 #include "SG/Search.h"
 #include "Tests/SceneTestBase.h"

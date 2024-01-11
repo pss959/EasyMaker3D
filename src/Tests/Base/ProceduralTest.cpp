@@ -1,6 +1,7 @@
 #include <ion/gfx/image.h>
 
 #include "Base/Procedural.h"
+#include "Math/Color.h"
 #include "Math/Types.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"

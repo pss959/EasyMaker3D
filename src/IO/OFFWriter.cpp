@@ -3,6 +3,8 @@
 #include <fstream>
 #include <numeric>
 
+#include "Math/Color.h"
+#include "Math/TriMesh.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"

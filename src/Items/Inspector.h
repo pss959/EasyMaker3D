@@ -7,6 +7,7 @@
 #include "Util/Memory.h"
 #include "Widgets/IScrollable.h"
 
+struct Frustum;
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(Controller);

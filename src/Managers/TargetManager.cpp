@@ -10,6 +10,7 @@
 #include "Commands/ChangePointTargetCommand.h"
 #include "Managers/CommandManager.h"
 #include "Math/Linear.h"
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "Place/EdgeTarget.h"

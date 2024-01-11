@@ -1,5 +1,8 @@
 #include "Trackers/PointerTracker.h"
 
+#include <ion/math/angleutils.h>
+#include <ion/math/vectorutils.h>
+
 #include "Place/ClickInfo.h"
 #include "Place/DragInfo.h"
 #include "SG/Intersector.h"

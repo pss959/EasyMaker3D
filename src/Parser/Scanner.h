@@ -4,6 +4,7 @@
 #include <istream>
 #include <vector>
 
+#include "Math/Color.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Util/Assert.h"

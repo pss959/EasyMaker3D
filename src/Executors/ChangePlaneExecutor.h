@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Executors/Executor.h"
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "SG/CoordConv.h"
 #include "Selection/SelPath.h"

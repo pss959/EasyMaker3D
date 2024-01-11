@@ -3,6 +3,8 @@
 #include "Math/Dimensionality.h"
 #include "Math/Types.h"
 
+struct Bounds;
+
 /// The Snap3D class implements snapping of 3D points to fixed values.
 ///
 /// \ingroup Math

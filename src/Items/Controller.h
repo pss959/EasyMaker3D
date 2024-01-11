@@ -6,6 +6,8 @@
 #include "Enums/Hand.h"
 #include "Enums/Trigger.h"
 #include "Items/GripGuide.h"
+#include "Math/Color.h"
+#include "Math/ModelMesh.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Util/Memory.h"

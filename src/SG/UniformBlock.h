@@ -10,6 +10,7 @@
 #include "SG/Uniform.h"
 #include "Util/Memory.h"
 
+struct Color;
 namespace Parser { class Registry; }
 
 namespace SG {

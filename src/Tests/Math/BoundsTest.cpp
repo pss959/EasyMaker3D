@@ -1,3 +1,4 @@
+#include "Math/Bounds.h"
 #include "Math/Types.h"
 #include "Tests/Testing.h"
 

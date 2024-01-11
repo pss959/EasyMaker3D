@@ -5,6 +5,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Items/Border.h"
+#include "Math/Color.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"

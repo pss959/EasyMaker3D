@@ -1,4 +1,9 @@
+#include "Math/Bounds.h"
+#include "Math/Frustum.h"
 #include "Math/Linear.h"
+#include "Math/Plane.h"
+#include "Math/Ray.h"
+#include "Math/Spin.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "Base/Event.h"
+#include "Math/Frustum.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
 

@@ -1,5 +1,6 @@
 #include "Math/CGALInternal.h"
 
+#include "Math/TriMesh.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 

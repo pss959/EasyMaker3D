@@ -6,9 +6,12 @@
 
 #include "Math/Types.h"
 
+struct Bounds;
+struct Plane;
 struct SlicedMesh;
 struct Spin;
 struct Taper;
+struct TriMesh;
 
 /// \file
 /// Mesh Utility functions

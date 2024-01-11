@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "Math/Color.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"

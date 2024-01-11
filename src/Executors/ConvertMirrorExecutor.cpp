@@ -3,6 +3,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Models/MirroredModel.h"
 #include "Util/Assert.h"

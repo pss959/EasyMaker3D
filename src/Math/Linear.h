@@ -3,8 +3,13 @@
 #include <cmath>
 
 #include "Enums/Dim.h"
-#include "Math/Spin.h"
 #include "Math/Types.h"
+
+struct Bounds;
+struct Frustum;
+struct Plane;
+struct Ray;
+struct Spin;
 
 /// \file
 /// This file defines some basic linear algebra functions.

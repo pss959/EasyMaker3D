@@ -10,11 +10,14 @@
 #include <ion/gfxutils/buffertoattributebinder.h>
 #include <ion/math/transformutils.h>
 
+#include "Math/Bounds.h"
 #include "Math/Linear.h"
+#include "Math/Plane.h"
 #include "Math/Point3fMap.h"
 #include "Math/SlicedMesh.h"
 #include "Math/Spin.h"
 #include "Math/Taper.h"
+#include "Math/TriMesh.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/KLog.h"

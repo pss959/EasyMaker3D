@@ -1,5 +1,7 @@
 #include "Items/RadialMenu.h"
 
+#include <ion/math/angleutils.h>
+
 #include "Items/RadialMenuInfo.h"
 #include "Math/Polygon.h"
 #include "Place/ClickInfo.h"

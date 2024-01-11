@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/TriMesh.h"
 #include "Math/Types.h"
 #include "SG/Shape.h"
 #include "Util/Memory.h"

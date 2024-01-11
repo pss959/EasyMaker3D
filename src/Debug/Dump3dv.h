@@ -12,6 +12,8 @@
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
 
+struct TriMesh;
+
 namespace Debug {
 
 /// (Non-release builds only!) The Dump3dv class has several functions for

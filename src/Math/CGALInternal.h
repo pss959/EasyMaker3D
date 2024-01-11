@@ -14,6 +14,8 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Polyhedron_3.h>
 
+struct TriMesh;
+
 // ----------------------------------------------------------------------------
 // CGAL types.
 // ----------------------------------------------------------------------------
@@ -32,8 +34,6 @@ using CVI         = CPolyhedron::Vertex_const_iterator;
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------
-
-struct TriMesh;
 
 /// Builds and returns a CGAL CPolyhedron from a TriMesh.
 CPolyhedron TriMeshToCGALPolyhedron(const TriMesh &mesh);

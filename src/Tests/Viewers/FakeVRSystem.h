@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Frustum.h"
 #include "Math/Types.h"
 #include "SG/VRCamera.h"
 #include "Util/Memory.h"

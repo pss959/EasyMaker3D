@@ -7,6 +7,7 @@
 #include <CGAL/convex_hull_3.h>
 #include <CGAL/minkowski_sum_3.h>
 
+#include "Math/TriMesh.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"

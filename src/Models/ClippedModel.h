@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Models/ConvertedModel.h"
 #include "Util/Memory.h"

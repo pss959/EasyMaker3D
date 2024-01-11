@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Math/Color.h"
 #include "Math/Curves.h"
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Parser/Field.h"

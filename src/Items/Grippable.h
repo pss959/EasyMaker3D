@@ -8,6 +8,7 @@
 #include "Base/Event.h"
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
+#include "Math/Color.h"
 #include "Math/Types.h"
 #include "SG/ColorMap.h"
 #include "SG/Node.h"

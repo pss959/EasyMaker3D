@@ -4,6 +4,8 @@
 
 #include "Math/Types.h"
 
+struct TriMesh;
+
 /// \file
 /// This file defines operations for combining TriMesh instances using CGAL
 ///

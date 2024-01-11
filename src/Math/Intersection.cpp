@@ -3,9 +3,12 @@
 #include <algorithm>
 #include <limits>
 
+#include <ion/math/angleutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
+#include "Math/Plane.h"
+#include "Math/Ray.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------

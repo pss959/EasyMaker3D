@@ -5,6 +5,7 @@
 #include <ranges>
 #include <vector>
 
+#include <ion/math/angleutils.h>
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -14,6 +15,7 @@
 #include "Math/MeshUtils.h"
 #include "Math/Polygon.h"
 #include "Math/Profile.h"
+#include "Math/TriMesh.h"
 #include "Math/Triangulation.h"
 #include "Util/Assert.h"
 #include "Util/General.h"

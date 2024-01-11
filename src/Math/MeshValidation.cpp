@@ -1,6 +1,7 @@
 #include "Math/MeshValidation.h"
 
 #include "Math/CGALInternal.h"
+#include "Math/TriMesh.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
 

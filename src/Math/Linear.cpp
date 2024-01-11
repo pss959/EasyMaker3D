@@ -7,6 +7,11 @@
 
 #include <algorithm>
 
+#include "Math/Bounds.h"
+#include "Math/Frustum.h"
+#include "Math/Plane.h"
+#include "Math/Ray.h"
+#include "Math/Spin.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 

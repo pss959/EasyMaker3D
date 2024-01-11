@@ -2,6 +2,7 @@
 
 #include <ion/base/invalid.h>
 
+#include "Math/Color.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "SG/IonContext.h"

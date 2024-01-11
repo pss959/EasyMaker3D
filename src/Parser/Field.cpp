@@ -1,6 +1,7 @@
 #include "Parser/Field.h"
 
 #include "Math/Curves.h"
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Parser/Object.h"
 

@@ -6,6 +6,7 @@
 #include <ion/base/stringutils.h>
 
 #include "Math/Point3fMap.h"
+#include "Math/TriMesh.h"
 #include "Math/Types.h"
 #include "Util/ExceptionBase.h"
 #include "Util/FilePath.h"

@@ -1,4 +1,6 @@
 #include "Math/MeshBuilding.h"
+#include "Math/ModelMesh.h"
+#include "Math/TriMesh.h"
 #include "SG/Exception.h"
 #include "SG/ImportedShape.h"
 #include "SG/Line.h"

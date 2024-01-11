@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Math/Types.h"
+
 class Polygon;
 class Profile;
+struct TriMesh;
 
 /// \file
 /// This file defines functions for building TriMesh instances.

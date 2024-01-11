@@ -1,5 +1,7 @@
 #include <ion/math/angleutils.h>
 
+#include "Math/Frustum.h"
+#include "Math/Ray.h"
 #include "Math/Types.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"

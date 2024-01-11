@@ -1,3 +1,4 @@
+#include "Math/Plane.h"
 #include "Math/Types.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"

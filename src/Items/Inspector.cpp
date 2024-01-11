@@ -1,6 +1,7 @@
 #include "Items/Inspector.h"
 
 #include "Items/Controller.h"
+#include "Math/Frustum.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"

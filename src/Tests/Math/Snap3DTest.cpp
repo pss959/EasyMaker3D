@@ -1,3 +1,4 @@
+#include "Math/Bounds.h"
 #include "Math/Snap3D.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"

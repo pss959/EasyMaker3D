@@ -2,6 +2,9 @@
 
 #include "Math/Types.h"
 
+struct Plane;
+struct TriMesh;
+
 /// \file
 /// This file defines operations for clipping TriMesh instances using CGAL
 ///

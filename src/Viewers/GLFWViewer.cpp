@@ -7,6 +7,7 @@
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
 #include "Base/GLFWWindowSystem.h"
+#include "Math/Frustum.h"
 #include "Math/Linear.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"

@@ -1,5 +1,6 @@
 #include "SG/WindowCamera.h"
 
+#include "Math/Frustum.h"
 #include "Math/Linear.h"
 
 namespace SG {

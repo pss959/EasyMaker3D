@@ -2,8 +2,11 @@
 
 #include <random>
 
+#include "Math/Bounds.h"
+#include "Math/Color.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "Math/TriMesh.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
 #include "Util/Tuning.h"

@@ -6,6 +6,7 @@
 
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
+#include "Math/Plane.h"
 #include "Util/Tuning.h"
 
 void DiscWidget::AddFields() {

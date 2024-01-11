@@ -3,6 +3,7 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "Math/MeshUtils.h"
+#include "Math/ModelMesh.h"
 #include "Util/Assert.h"
 
 namespace SG {

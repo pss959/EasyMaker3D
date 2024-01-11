@@ -3,6 +3,8 @@
 #include "Math/Types.h"
 #include "Util/String.h"
 
+struct TriMesh;
+
 /// A PolyMesh represents a solid, watertight mesh constructed from polygonal
 /// faces, possibly with holes. It has vertex, face, and edge connectivity
 /// information that allows operations to be performed on it. It is convertible

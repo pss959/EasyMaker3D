@@ -1,6 +1,8 @@
 #include "Parser/ValueWriter.h"
 
+#include "Math/Color.h"
 #include "Math/Curves.h"
+#include "Math/Plane.h"
 #include "Math/Types.h"
 
 namespace Parser {

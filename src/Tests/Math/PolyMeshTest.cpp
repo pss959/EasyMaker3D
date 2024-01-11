@@ -1,7 +1,9 @@
-﻿#include "Math/MeshBuilding.h"
+﻿#include "Math/Bounds.h"
+#include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshMerging.h"
+#include "Math/TriMesh.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

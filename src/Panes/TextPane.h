@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Color.h"
 #include "Panes/LeafPane.h"
 #include "SG/LayoutOptions.h"
 #include "Util/Memory.h"
