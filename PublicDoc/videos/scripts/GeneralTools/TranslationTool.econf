@@ -2,9 +2,8 @@ state animation off
 action kCreateCylinder
 action kSelectAll
 
-state video on
-
 section Translation Translation tool
+state video on
 
 caption .5 .15 3 The Translation Tool lets you move models;in all three dimensions
 

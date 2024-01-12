@@ -2,9 +2,8 @@ state animation off
 action kCreateCylinder
 action kSelectAll
 
-state video on
-
 section Name Name tool
+state video on
 
 caption .5 .15 3 The Name Tool changes the name of the selected model
 

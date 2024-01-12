@@ -1,8 +1,8 @@
 // Plays the video with the given ID starting at the given time in seconds.
-function PlayVideo(video, start_time){
+function PlayVideo(video, startTime){
     video.play();
     video.pause();
-    video.currentTime = start_time;
+    video.currentTime = startTime;
     video.play();
 }
 

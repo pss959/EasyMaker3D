@@ -52,5 +52,5 @@ int main(int argc, const char *argv[]) {
 
     // Process the script.
     return app.ProcessScript("PublicDoc/snaps/scripts",
-                             args.GetString("SCRIPT"), true) ? 0 : -1;
+                             args.GetString("SCRIPT"), false) ? 0 : -1;
 }

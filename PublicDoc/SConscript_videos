@@ -37,8 +37,8 @@ def PlaceWebVtt_(name):
 scripts = [
     # XXXX
     'Doorstop',
-    #'SpecializedTools',
-    #'WorkArea',
+    'SpecializedTools',
+    'WorkArea',
 
     'GeneralTools/ColorTool',
     'GeneralTools/ComplexityTool',
@@ -52,7 +52,7 @@ scripts = [
 # Dictionary of merged videos in merge order. Each entry is the merged name
 # mapped to the individual component videos.
 merges = {
-    'GeneralTools' : [
+    'GeneralTools/GeneralTools' : [
         'GeneralTools/Intro',
         'GeneralTools/TranslationTool',
         'GeneralTools/ScaleTool',

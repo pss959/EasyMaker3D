@@ -2,9 +2,8 @@ state animation off
 action kCreateCylinder
 action kSelectAll
 
-state video on
-
 section Rotation Rotation tool
+state video on
 
 caption .5 .15 3 The Rotation Tool lets you reorient models
 highlight RotationToolIcon 3

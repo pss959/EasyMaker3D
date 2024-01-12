@@ -2,9 +2,8 @@ state animation off
 action kCreateCylinder
 action kSelectAll
 
-state video on
-
 section Scale Scale tool
+state video on
 
 caption .5 .15 3 The Scale Tool lets you resize models
 

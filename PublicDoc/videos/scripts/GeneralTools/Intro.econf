@@ -2,9 +2,8 @@ state animation off
 action kCreateCylinder
 select
 
+section Intro General tools
 state video on
-
-section General General tools
 
 caption .5 .15 3 General tools can be used for all models
 wait 2

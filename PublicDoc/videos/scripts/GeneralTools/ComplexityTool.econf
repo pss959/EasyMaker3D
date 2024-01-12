@@ -2,9 +2,8 @@ state animation off
 action kCreateCylinder
 action kSelectAll
 
-state video on
-
 section Complexity Complexity tool
+state video on
 
 caption .5 .15 3 The Complexity Tool changes the number of triangles;used for models
 highlight ComplexityToolIcon 3

@@ -17,6 +17,9 @@ def EnterVideoButtonNode(translator, node):
     # Access node items.
     video_id   = node['video_id']
     start_time = node['start_time']
+    # Replace '/' characters in IDs with '_' so that JavaScript does not try to
+    # divide strings. :-(
+    video_id = video_id.replace('/', '_')
     html = (f'<button class="video-button" data-id="{video_id}"' +
             f' data-start-time="{start_time}"></button>')
     translator.body.append(html)
@@ -37,7 +40,8 @@ def SectionStartTime(video, section):
     for chapter in webvtt.read(file_name):
         if chapter.identifier == section:
             dt = datetime.strptime(chapter.start, '%H:%M:%S.%f')
-            td = timedelta(hours=dt.hour, minutes=dt.minute, seconds=dt.second)
+            td = timedelta(hours=dt.hour, minutes=dt.minute, seconds=dt.second,
+                           microseconds=dt.microsecond)
             return td.total_seconds()
     # The chapter tag was not found.
     raise ExtensionError('***Chapter tag "' + section + '" was not found in "' +

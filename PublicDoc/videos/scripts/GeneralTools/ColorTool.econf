@@ -2,9 +2,8 @@ state animation off
 action kCreateCylinder
 action kSelectAll
 
-state video on
-
 section Color Color tool
+state video on
 
 caption .5 .15 3 The Color Tool changes the color of models
 
