@@ -1,0 +1,13 @@
+state animation off
+action kCreateCylinder
+select
+
+state video on
+
+section General General tools
+
+caption .5 .15 3 General tools can be used for all models
+wait 2
+
+caption .5 .15 3 If multiple models are selected,;a tool modifies all of them
+wait 3

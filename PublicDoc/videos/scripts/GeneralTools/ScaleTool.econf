@@ -1,0 +1,37 @@
+state animation off
+action kCreateCylinder
+action kSelectAll
+
+state video on
+
+section Scale Scale tool
+
+caption .5 .15 3 The Scale Tool lets you resize models
+
+state cursor on
+highlight ScaleToolIcon 3
+moveover ScaleToolIcon 1
+click
+wait 2
+
+caption .5 .15 3 The red, green, and blue handles scale in one dimension
+moveover ScaleTool/XScaler/MaxSlider 1
+drag .1 0 2
+wait 2
+
+caption .5 .15 3 Hold shift or double-click to scale about the center
+moveover ScaleTool/XScaler/MaxSlider 1
+state mod on
+drag -.04 0 2
+state mod off
+wait 2
+
+caption .5 .15 3 The cylindrical handles scale in two dimensions
+moveover ScaleTool/XZ1Scaler/MaxSlider 1
+drag .1 -.1 2
+wait 2
+
+caption .5 .15 3 The spherical corner handles scale in all three dimensions
+moveover ScaleTool/XYZ4Scaler/MaxSlider 1
+drag .06 .06 2
+wait 2

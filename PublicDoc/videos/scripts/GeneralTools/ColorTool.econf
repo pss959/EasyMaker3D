@@ -1,0 +1,24 @@
+state animation off
+action kCreateCylinder
+action kSelectAll
+
+state video on
+
+section Color Color tool
+
+caption .5 .15 3 The Color Tool changes the color of models
+
+highlight ColorToolIcon 3
+state cursor on
+moveover ColorToolIcon 1
+click
+wait 2
+
+caption .5 .15 3 Click or drag in the ring to change the color
+moveto .485352 .675725 2
+click
+wait 1
+
+moveto .45 .6 1
+drag .03 -.14 2
+wait 3

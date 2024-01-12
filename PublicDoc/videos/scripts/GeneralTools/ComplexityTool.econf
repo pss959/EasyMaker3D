@@ -1,0 +1,28 @@
+state animation off
+action kCreateCylinder
+action kSelectAll
+
+state video on
+
+section Complexity Complexity tool
+
+caption .5 .15 3 The Complexity Tool changes the number of triangles;used for models
+highlight ComplexityToolIcon 3
+state cursor on
+moveover ComplexityToolIcon 1
+click
+wait 2
+
+caption .5 .15 3 The triangles are easier to see with edges displayed
+moveover ToggleShowEdgesIcon 1
+click
+wait 1
+
+caption .5 .15 3 Drag the slider to increase or decrease complexity
+moveover ComplexityTool/Slider 1
+drag .12 0 2
+wait 1
+
+moveover ComplexityTool/Slider 1
+drag -.18 0 2
+wait 3

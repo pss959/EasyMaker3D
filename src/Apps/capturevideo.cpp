@@ -51,15 +51,13 @@ int main(int argc, const char *argv[]) {
     // Set video-specific ones.
     auto &options = app.GetOptions();
     const StrVec formats{ "webm", "rgbmp4", "yuvmp4" };  // Default is first.
-    options.dryrun             = args.GetBool("--nocapture");
-    options.fps                = args.GetAsInt("--fps", 30);
-    options.show_session_panel = true;
-    options.vidformat          = args.GetStringChoice("--format", formats);
+    options.dryrun    = args.GetBool("--nocapture");
+    options.fps       = args.GetAsInt("--fps", 30);
+    options.vidformat = args.GetStringChoice("--format", formats);
 
     app.InitApp();
 
     // Process the script.
-    const FilePath script_path("PublicDoc/videos/scripts/" +
-                               args.GetString("SCRIPT"));
-    return app.ProcessScript(script_path, true) ? 0 : -1;
+    return app.ProcessScript("PublicDoc/videos/scripts",
+                             args.GetString("SCRIPT"), true) ? 0 : -1;
 }

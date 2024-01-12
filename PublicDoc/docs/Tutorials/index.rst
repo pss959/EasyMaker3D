@@ -8,19 +8,29 @@ Tours
 
 These tours have video and text that illustrate features of the application.
 
-.. toctree::
-   :maxdepth: 1
+Getting Started
+...............
 
-   WorkArea
-   CreatingModels
-   BasicEditing
-   GeneralTools
-   SpecializedTools
-   Precision
-   Layout
-   TreePanel
-   OtherFeatures
-   VR
+    .. toctree::
+       :maxdepth: 1
+
+       WorkArea
+       CreatingModels
+       BasicEditing
+       GeneralTools
+       SpecializedTools
+
+More Details
+............
+
+    .. toctree::
+       :maxdepth: 1
+
+       Precision
+       Layout
+       TreePanel
+       OtherFeatures
+       VR
 
 Examples
 --------

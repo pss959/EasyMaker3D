@@ -50,9 +50,12 @@ class ScriptedApp : public Application {
     /// Initializes the ScriptedApp. Returns false if anything goes wrong.
     bool InitApp();
 
-    /// Processes the Script. The \p do_video flag indicates whether video may
-    /// be captured. Returns false if anything goes wrong.
-    bool ProcessScript(const FilePath &script_path, bool do_video);
+    /// Processes the Script, given the path to the directory in which script
+    /// files are found and the relative path to the script from that
+    /// directory. The \p do_video flag indicates whether video may be
+    /// captured. Returns false if anything goes wrong.
+    bool ProcessScript(const FilePath &script_dir, const FilePath &script_path,
+                       bool do_video);
 
     /// Redefines this to add script processing during frames.
     virtual bool ProcessFrame(size_t render_count, bool force_poll) override;

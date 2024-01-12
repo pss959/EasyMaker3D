@@ -45,14 +45,12 @@ int main(int argc, const char *argv[]) {
     app.InitOptions(args);
 
     // Set snap-specific ones.
-    auto &options = app.GetOptions();
-    options.dryrun             = args.GetBool("--nosnap");
-    options.show_session_panel = false;
+    auto &options  = app.GetOptions();
+    options.dryrun = args.GetBool("--nosnap");
 
     app.InitApp();
 
     // Process the script.
-    const FilePath script_path("PublicDoc/snaps/scripts/" +
-                               args.GetString("SCRIPT"));
-    return app.ProcessScript(script_path, false) ? 0 : -1;
+    return app.ProcessScript("PublicDoc/snaps/scripts",
+                             args.GetString("SCRIPT"), true) ? 0 : -1;
 }

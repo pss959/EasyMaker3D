@@ -243,8 +243,8 @@ ScriptedApp::Video_::Video_(const FilePath &script_path, const Vector2ui &size,
         video_writer_.reset(new VideoWriter(vformat));
 
         // Set up the output path.
-        FilePath video_path("PublicDoc/docs/extra/videos/" +
-                            script_path.GetFileName());
+        FilePath video_path = FilePath::Join("PublicDoc/docs/extra/videos/",
+                                             script_path);
         video_path.ReplaceExtension("." + video_writer_->GetExtension());
         video_writer_->Init(video_path, size, fps);
     }
@@ -357,6 +357,7 @@ void ScriptedApp::InitOptions(const Args &args) {
     options_.remain        = args.GetBool("--remain");
     options_.report        = args.GetBool("--report");
     options_.offscreen     = args.GetBool("--offscreen");
+    options_.show_session_panel = false;
 
     // Uncomment this if needed to help with debugging.
     // options_.do_ion_remote = true;
@@ -373,9 +374,10 @@ bool ScriptedApp::InitApp() {
     return Init_();
 }
 
-bool ScriptedApp::ProcessScript(const FilePath &script_path, bool do_video) {
+bool ScriptedApp::ProcessScript(const FilePath &script_dir,
+                                const FilePath &script_path, bool do_video) {
     // Read the script and initialize the rest.
-    if (! script_.ReadScript(script_path))
+    if (! script_.ReadScript(FilePath::Join(script_dir, script_path)))
         return false;
 
     // Initialize video if requested.

@@ -16,37 +16,75 @@ env = Environment(
     ENV = environ.copy(),
 )
 
-# -----------------------------------------------------------------------------
-# Snapshot Video generation and annotation.
-# -----------------------------------------------------------------------------
-
 root_dir   = env.Dir('#').abspath   # Work around SCons issue.
 video_dir  = './docs/extra/videos'
 script_dir = './videos/scripts'
+merge_pgm  = env.File('#/bin/mergevideo.py').abspath
 
-# List of capturevideo script files.
+# Helper functions.
+def PlaceVideoFile_(name):
+    return join(video_dir, name)
+def PlaceVideo_(name):
+    return PlaceVideoFile_(name + '.mp4')
+def PlaceWebVtt_(name):
+    return PlaceVideoFile_(name + '.vtt')
+
+# -----------------------------------------------------------------------------
+# Video generation and annotation.
+# -----------------------------------------------------------------------------
+
+# List of individual capturevideo script files.
 scripts = [
+    # XXXX
     'Doorstop',
-    'GeneralTools',
-    'SpecializedTools',
-    'WorkArea',
+    #'SpecializedTools',
+    #'WorkArea',
+
+    'GeneralTools/ColorTool',
+    'GeneralTools/ComplexityTool',
+    'GeneralTools/Intro',
+    'GeneralTools/NameTool',
+    'GeneralTools/RotationTool',
+    'GeneralTools/ScaleTool',
+    'GeneralTools/TranslationTool',
 ]
 
-def VideoFiles(name):
-    return [join(video_dir, name + '.mp4'),
-            join(video_dir, name + '.vtt')]
+# Dictionary of merged videos in merge order. Each entry is the merged name
+# mapped to the individual component videos.
+merges = {
+    'GeneralTools' : [
+        'GeneralTools/Intro',
+        'GeneralTools/TranslationTool',
+        'GeneralTools/ScaleTool',
+        'GeneralTools/RotationTool',
+        'GeneralTools/ComplexityTool',
+        'GeneralTools/ColorTool',
+        'GeneralTools/NameTool',
+    ],
+}
 
-# Video script processing.
+def VideoFiles(name):
+    return []
+
+# Generate individual video MP4 and WebVTT files.
 videos = []
 for script in scripts:
     script_file  = script + '.econf'
     video_format = 'yuvmp4'
     cap_args = f'--format={video_format} --maximize --offscreen'
-    video = env.Command(VideoFiles(script),
+    video = env.Command([PlaceVideo_(script), PlaceWebVtt_(script)],
                         [capturevideo, join(script_dir, script_file)],
                         [Mkdir(video_dir),
                          f'{capturevideo.abspath} {cap_args} {script_file}'],
                         chdir=root_dir)
+    videos.append(video)
+
+# Generate merged video MP4 and WebVTT files.
+for merged_name, parts in merges.items():
+    video = env.Command([PlaceVideo_(merged_name), PlaceWebVtt_(merged_name)],
+                        [PlaceVideo_(part)  for part in parts] +
+                        [PlaceWebVtt_(part) for part in parts],
+                        f'{merge_pgm} {merged_name} {" ".join(parts)}')
     videos.append(video)
 
 env.Alias('Videos', videos)

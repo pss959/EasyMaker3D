@@ -1,0 +1,48 @@
+state animation off
+action kCreateCylinder
+action kSelectAll
+
+state video on
+
+section Name Name tool
+
+caption .5 .15 3 The Name Tool changes the name of the selected model
+
+highlight NameToolIcon 3
+state cursor on
+moveover NameToolIcon 1
+click
+wait 2
+
+caption .5 .15 3 Click on the text input field to activate it
+moveover NameToolPanel/Input 1
+click
+wait 2
+
+caption .5 .15 3 Use the keyboard to edit the name
+key Ctrl-a
+wait .1
+key Shift-n
+wait .1
+key e
+wait .1
+key w
+wait .1
+key N
+wait .1
+key a
+wait .1
+key m
+wait .1
+key e
+wait .1
+wait 2
+
+caption .5 .15 5 Click Apply to change the model's name
+moveover NameToolPanel/Apply 1
+click
+wait 2
+
+caption .5 .15 2 The new name will appear in the Tree Panel
+highlight TreePanel/ModelRow_0 2 .01
+wait 2

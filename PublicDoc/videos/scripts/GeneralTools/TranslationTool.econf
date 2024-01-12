@@ -1,0 +1,23 @@
+state animation off
+action kCreateCylinder
+action kSelectAll
+
+state video on
+
+section Translation Translation tool
+
+caption .5 .15 3 The Translation Tool lets you move models;in all three dimensions
+
+state cursor on
+highlight TranslationToolIcon 3
+moveover TranslationToolIcon 1
+click
+wait 2
+
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .1 0 2
+wait 2
+
+moveover TranslationTool/Y/YSlider/MaxFace 1
+drag 0 .1 2
+wait 2
