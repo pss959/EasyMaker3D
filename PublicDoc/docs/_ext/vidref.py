@@ -1,42 +1,21 @@
 from docutils             import nodes
 from docutils.parsers.rst import Directive, directives
+from pathlib              import Path
 from sphinx.errors        import ExtensionError
 
-# -----------------------------------------------------------------------------
-# VideoButtonNode directive class.
-# -----------------------------------------------------------------------------
-
-class VideoButtonNode(nodes.General, nodes.Element):
-    """VideoButtonNode inserts a button that plays a particular video starting
-    at a given time in seconds.
-    Required dictionary contents: 'video_id' 'start_time'
-    """
-    pass
-
-def EnterVideoButtonNode(translator, node):
-    # Access node items.
-    video_id   = node['video_id']
-    start_time = node['start_time']
-    # Replace '/' characters in IDs with '_' so that JavaScript does not try to
-    # divide strings. :-(
-    video_id = video_id.replace('/', '_')
-    html = (f'<button class="video-button" data-id="{video_id}"' +
-            f' data-start-time="{start_time}"></button>')
-    translator.body.append(html)
-
-def ExitVideoButtonNode(translator, node):
-    pass
+# This maps video ID to a source file path.
+from incvideo import video_dict
 
 # -----------------------------------------------------------------------------
 # Returns the start time for a section name in a video.
 # -----------------------------------------------------------------------------
 
-def SectionStartTime(video, section):
+def SectionStartTime_(video_path, section):
     # Read the corresponding WebVTT chapter file. Note that this script runs in
     # the PublicDoc directory.
     import webvtt
     from datetime import datetime, timedelta
-    file_name = f'./docs/extra/videos/{video}.vtt'
+    file_name = Path(f'./docs/extra/videos/{video_path}').with_suffix('.vtt')
     for chapter in webvtt.read(file_name):
         if chapter.identifier == section:
             dt = datetime.strptime(chapter.start, '%H:%M:%S.%f')
@@ -45,7 +24,34 @@ def SectionStartTime(video, section):
             return td.total_seconds()
     # The chapter tag was not found.
     raise ExtensionError('***Chapter tag "' + section + '" was not found in "' +
-                         file_name + '"', modname="vidref.py")
+                         str(file_name) + '"', modname="vidref.py")
+
+# -----------------------------------------------------------------------------
+# VideoButtonNode class.
+# -----------------------------------------------------------------------------
+
+class VideoButtonNode(nodes.General, nodes.Element):
+    """VideoButtonNode inserts a button that plays a particular video starting
+    at a given time in seconds.
+    Required dictionary contents: 'video_id' 'section'
+    """
+    pass
+
+def EnterVideoButtonNode(translator, node):
+    # Access node items.
+    video_id = node['video_id']
+    section  = node['section']
+    if not video_id in video_dict:
+        raise ExtensionError('***Video ID "' + video_id + '" was not found',
+                             modname="vidref.py")
+    video_path = video_dict[video_id]
+    start_time = SectionStartTime_(video_path, section)
+    html = (f'<button class="video-button" data-id="{video_id}"' +
+            f' data-start-time="{start_time}"></button>')
+    translator.body.append(html)
+
+def ExitVideoButtonNode(translator, node):
+    pass
 
 # -----------------------------------------------------------------------------
 # Implements the VidRef role.
@@ -64,8 +70,7 @@ def vidref_role(name, rawtext, text, lineno, inliner,
         msg = inliner.reporter.error('Bad syntax for vidref role')
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
-    start_time = SectionStartTime(video, section)
-    node = VideoButtonNode(video_id=video, start_time=start_time)
+    node = VideoButtonNode(video_id=video, section=section)
     return [node], []
 
 # -----------------------------------------------------------------------------

@@ -4,13 +4,21 @@ from pathlib              import Path
 from sphinx               import application
 from sphinx.util.osutil   import relative_uri
 
+# This dictionary mapping video ID to source file is shared with vidref.py so
+# it can figure out where to get the corresponding VTT file.
+video_dict = {}
+
 # -----------------------------------------------------------------------------
-# IncVideo directive class.
+# VideoNode class.
 # -----------------------------------------------------------------------------
 
 # There is no docutils node corresponding to a video, so create one here.
 class VideoNode(nodes.General, nodes.Element):
     pass
+
+# -----------------------------------------------------------------------------
+# IncVideo directive class.
+# -----------------------------------------------------------------------------
 
 class IncVideo(Directive):
     """IncVideo adds an embedded video with a corresponding chapters file.
@@ -23,6 +31,8 @@ class IncVideo(Directive):
 
     def run(self):
         (id, uri, width, align) = self.arguments
+        # Save the mapping from video ID to source file.
+        video_dict[id] = uri
         return [VideoNode(id=id, source=uri, width=width, align=align)]
 
 def EnterVideoNode(translator, node):
