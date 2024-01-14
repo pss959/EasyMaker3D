@@ -413,7 +413,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     const size_t instr_count         = script_.GetInstructions().size();
     const bool events_pending        = emitter_->HasPendingEvents();
     const bool are_more_instructions = cur_instruction_ < instr_count;
-    bool keep_going;
+    bool keep_going = true;
     bool was_stopped = false;
 
     if (are_more_instructions || events_pending) {
@@ -435,7 +435,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     // If there are events pending, do not process more instructions before
     // they are handled.
     else if (events_pending) {
-        keep_going = true;
+        // Do nothing; just keep going.
     }
 
     else if (are_more_instructions) {
@@ -461,6 +461,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     // There are no pending events and no more instructions. If not currently
     // animating, processing is done.
     else if (! GetContext().animation_manager->IsAnimating()) {
+        keep_going  = false;
         was_stopped = true;
     }
 
@@ -469,7 +470,6 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
         video_->CaptureFrame(GetRenderer(), GetWindowSize());
 
     // If processing is done, finish up.
-    // mouse events from GLFWViewer.
     if (was_stopped) {
         Finish_();
         keep_going = options_.remain;
