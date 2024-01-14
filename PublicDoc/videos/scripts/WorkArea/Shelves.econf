@@ -1,0 +1,45 @@
+state animation off
+action kCreateCylinder
+select
+
+section Shelves 3D Icons and shelves
+state video on
+
+caption .5 .15 2 3D Icons are organized into shelves
+wait 3
+
+caption .5 .15 3 Icons on this shelf open session-related panels
+highlight SessionShelf 3 .015
+wait 3
+
+caption .5 .15 3 Icons on this shelf help with model layout
+highlight LayoutShelf 3 .015
+wait 3
+
+caption .5 .15 3 Icons on this shelf perform basic operations;(Undo, Redo, Cut, Paste, etc.)
+highlight BasicsShelf 3 .015
+wait 3
+
+caption .5 .15 3 Icons on these shelves create new models
+highlight CreationShelves 3 0
+wait 3
+
+caption .5 .15 3 Icons on this shelf activate general tools
+highlight GeneralToolShelf 3 0
+wait 3
+
+caption .5 .15 3 Icons on this shelf convert models;for specialized editing
+highlight ConversionShelf 3 0
+wait 3
+
+caption .5 .15 3 Icons on this shelf combine models;to create new models
+highlight CombiningShelf 3 0
+wait 3
+
+caption .5 .15 3 The icon on this shelf toggles between general;and specialized tools
+highlight SpecializedShelf 3 0
+wait 3
+
+caption .5 .15 3 The icons on this shelf perform view-related operations
+highlight ViewingShelf 3 .015
+wait 3

@@ -1,0 +1,25 @@
+state animation off
+action kCreateCylinder
+select
+
+section Viewing Changing the view
+state video on
+
+caption .5 .15 4 Dragging the slider on the pole changes the view height
+highlight HeightSlider 3
+state cursor on
+moveover HeightSlider 1
+drag 0 .05 2
+wait 1
+
+moveto .5 .5 .5
+caption .5 .15 2 Dragging anywhere with the right mouse button;rotates the view
+drag .1 .1 2  R
+wait 1
+
+caption .5 .15 2 Shift-click or double-click the height slider or pole;to reset the view
+moveover HeightSlider 1
+state mod on
+click
+state mod off
+wait 2

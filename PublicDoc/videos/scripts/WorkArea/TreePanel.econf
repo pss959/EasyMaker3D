@@ -1,0 +1,13 @@
+state animation off
+action kCreateCylinder
+select
+
+section TreePanel The Tree Panel
+state video on
+
+caption .5 .15 3 The Tree Panel shows the session name;and model tree
+highlight TreePanel 6 .015
+wait 3
+
+caption .5 .15 3 There is a separate tour just for this panel
+wait 4

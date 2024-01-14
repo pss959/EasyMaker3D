@@ -1,0 +1,13 @@
+state animation off
+action kCreateCylinder
+select
+
+section Tooltips Tooltips
+state video on
+
+caption .5 .15 3 Hover over any 3D icon or interactive widget for a tooltip
+state cursor on
+state tooltips on
+moveover OpenSessionPanelIcon 2
+wait 4
+state tooltips off

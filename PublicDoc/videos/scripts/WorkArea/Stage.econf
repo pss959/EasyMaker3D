@@ -1,0 +1,23 @@
+state animation off
+action kCreateCylinder
+select
+
+section Stage The stage
+state video on
+
+caption .5 .15 3 The circular stage is where models are placed
+wait 3
+
+moveto .5 .1 0
+state cursor on
+caption .5 .15 3 It can be rotated and scaled;to change the model view
+drag .1 0 2
+moveto .5 .1 1
+drag 0 -.05 2
+
+caption .5 .15 2 Shift-click or double-click it to reset it
+moveto .5 .1 .1
+state mod on
+click
+state mod off
+wait 1

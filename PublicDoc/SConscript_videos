@@ -38,37 +38,40 @@ scripts = [
     # XXXX
     'Doorstop',
     'SpecializedTools',
-    'WorkArea',
-
-    'GeneralTools/ColorTool',
-    'GeneralTools/ComplexityTool',
-    'GeneralTools/Intro',
-    'GeneralTools/NameTool',
-    'GeneralTools/RotationTool',
-    'GeneralTools/ScaleTool',
-    'GeneralTools/TranslationTool',
+    # XXXX 'WorkArea',
 ]
 
 # Dictionary of merged videos in merge order. Each entry is the merged name
-# mapped to the individual component videos.
+# (and also the subdirectory name) mapped to the individual component videos in
+# that subdirectory.
 merges = {
-    'GeneralTools/GeneralTools' : [
-        'GeneralTools/Intro',
-        'GeneralTools/TranslationTool',
-        'GeneralTools/ScaleTool',
-        'GeneralTools/RotationTool',
-        'GeneralTools/ComplexityTool',
-        'GeneralTools/ColorTool',
-        'GeneralTools/NameTool',
+    'GeneralTools' : [
+        'Intro',
+        'TranslationTool',
+        'ScaleTool',
+        'RotationTool',
+        'ComplexityTool',
+        'ColorTool',
+        'NameTool',
+    ],
+    'WorkArea' : [
+        'Stage',
+        'Tooltips',
+        'Viewing',
+        'Shelves',
+        'TreePanel',
+        'Other',
     ],
 }
 
-def VideoFiles(name):
-    return []
+# Create a video for each top-level script and each part of merged scripts.
+all_scripts = scripts + [join(merged, part)
+                         for merged, parts in merges.items()
+                         for part in parts]
 
 # Generate individual video MP4 and WebVTT files.
 videos = []
-for script in scripts:
+for script in all_scripts:
     script_file  = script + '.econf'
     video_format = 'yuvmp4'
     cap_args = f'--format={video_format} --maximize --offscreen'
@@ -80,11 +83,14 @@ for script in scripts:
     videos.append(video)
 
 # Generate merged video MP4 and WebVTT files.
-for merged_name, parts in merges.items():
+for merged, parts in merges.items():
+    # The part and merged videos are in the subdirectory named by "merged".
+    merged_name = join(merged, merged)
+    part_names  = [join(merged, part) for part in parts]
     video = env.Command([PlaceVideo_(merged_name), PlaceWebVtt_(merged_name)],
-                        [PlaceVideo_(part)  for part in parts] +
-                        [PlaceWebVtt_(part) for part in parts],
-                        f'{merge_pgm} {merged_name} {" ".join(parts)}')
+                        [PlaceVideo_(pn)  for pn in part_names] +
+                        [PlaceWebVtt_(pn) for pn in part_names],
+                        f'{merge_pgm} {merged_name} {" ".join(part_names)}')
     videos.append(video)
 
 env.Alias('Videos', videos)
