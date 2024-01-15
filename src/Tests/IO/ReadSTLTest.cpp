@@ -84,7 +84,7 @@ TEST_F(ReadSTLTest, BinaryBoxSolid) {
 TEST_F(ReadSTLTest, BinarySpoon) {
     // Validate the spoon used for import in the documentation.
     const TriMesh mesh =
-        LoadFromFile("../../../PublicDoc/snaps/stl/Spoon.stl");
+        LoadFromFile("../../../PublicDoc/stl/Spoon.stl");
     EXPECT_FALSE(ComputeMeshBounds(mesh).IsEmpty());
 }
 

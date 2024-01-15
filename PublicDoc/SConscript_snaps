@@ -22,8 +22,8 @@ env = Environment(
 
 root_dir   = env.Dir('#').abspath   # Work around SCons issue.
 image_dir  = './docs/images'
-script_dir = './snaps/scripts'
-ann_dir    = './snaps/annotations'
+script_dir = './scripts/snaps'
+ann_dir    = './annotations'
 annotator  = env.File('#/bin/annotate.py').abspath
 
 # This maps snapimage script files to the images they generate.

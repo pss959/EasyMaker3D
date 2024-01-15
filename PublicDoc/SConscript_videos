@@ -18,7 +18,7 @@ env = Environment(
 
 root_dir   = env.Dir('#').abspath   # Work around SCons issue.
 video_dir  = './docs/extra/videos'
-script_dir = './videos/scripts'
+script_dir = './scripts/videos'
 merge_pgm  = env.File('#/bin/mergevideo.py').abspath
 
 # Helper functions.

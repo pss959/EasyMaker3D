@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from sys import argv
 
 # Scripts are assumed to be relative to this directory:
-script_dir = 'PublicDoc/snaps/annotations'
+script_dir = 'PublicDoc/annotations'
 
 # Images are assumed to be relative to this directory:
 image_dir = 'PublicDoc/docs/images'

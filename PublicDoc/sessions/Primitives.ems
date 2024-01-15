@@ -44,7 +44,7 @@ CommandList {
       result_name: "Text_1",
     },
     CreateImportedModelCommand {
-      path: "PublicDoc/snaps/stl/Spoon.stl",
+      path: "PublicDoc/stl/Spoon.stl",
       result_name: "Imported_1",
     },
     CreateExtrudedModelCommand {

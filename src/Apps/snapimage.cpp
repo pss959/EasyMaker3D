@@ -32,7 +32,7 @@ for public documentation. See Script.h for script details.
       --remain         Keep the window alive after script processing.
       --report         Report each instruction of script processing.
 
-    Script files are relative to PublicDoc/snaps/scripts.
+    Script files are relative to PublicDoc/scripts/snaps.
     Image files are placed in PublicDoc/docs/images.
 )";
 
@@ -51,6 +51,6 @@ int main(int argc, const char *argv[]) {
     app.InitApp();
 
     // Process the script.
-    return app.ProcessScript("PublicDoc/snaps/scripts",
+    return app.ProcessScript("PublicDoc/scripts/snaps",
                              args.GetString("SCRIPT"), false) ? 0 : -1;
 }

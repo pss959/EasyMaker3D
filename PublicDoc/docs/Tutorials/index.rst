@@ -35,7 +35,7 @@ Advanced Topics
    Features for precise editing (TBD) <TBD>
    Laying out models along lines or circles (TBD) <TBD>
    The Tree Panel (TBD) <TBD>
-   Other usefule features (TBD) <TBD>
+   Other useful features (TBD) <TBD>
    How to edit with VR devices
 
 Examples
