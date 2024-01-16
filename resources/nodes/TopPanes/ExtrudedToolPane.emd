@@ -27,7 +27,7 @@ BoxPane "ExtrudedToolPane" {
       min_size:   320 320,
     },
 
-    BoxPane {
+    BoxPane "PolygonPane" {
       # Text input, slider, and button to reset to regular polygon with N (>=3)
       # sides.
       orientation:  "kHorizontal",

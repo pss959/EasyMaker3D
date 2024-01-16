@@ -25,7 +25,7 @@ BoxPane "TextToolPane" {
       panes: [
         # === Row 0.
         CLONE "T_Label" { text: "Text String" },
-        CLONE "T_TextInputPane" "Text" {},
+        CLONE "T_TextInputPane" "TextInput" {},
         # === Row 1.
         CLONE "T_Label" { text: "Font Name" },
         CLONE "T_DropdownPane" "Font" {},

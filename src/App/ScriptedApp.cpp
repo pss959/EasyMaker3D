@@ -83,9 +83,14 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
 void ScriptedApp::MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
                                                  const Str &extension,
                                                  bool include_hidden) const {
-    const FilePath dir = GetCurrent();
-    // Special case for dummy path used in doc.
-    if (dir.ToString() == "/projects/maker/stl/") {
+    // If the path is a file (has an extension), use the parent directory.
+    FilePath dir = GetCurrent();
+    if (dir.ToString().contains('.'))
+        dir = dir.GetParentDirectory();
+
+    // Special case for dummy paths used in doc.
+    if (dir.ToString() == "/projects/maker/stl" ||
+        dir.ToString() == "/projects/maker/stl/") {
         files.push_back("Airplane.stl");
         files.push_back("Boat.stl");
         files.push_back("Car.stl");

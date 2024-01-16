@@ -8,7 +8,7 @@
 
 void TextToolPanel::InitInterface() {
     auto &root_pane = GetPane();
-    text_pane_    = root_pane->FindTypedSubPane<TextInputPane>("Text");
+    text_pane_    = root_pane->FindTypedSubPane<TextInputPane>("TextInput");
     font_pane_    = root_pane->FindTypedSubPane<DropdownPane>("Font");
     auto spp      = root_pane->FindTypedSubPane<ContainerPane>("Spacing");
     spacing_pane_ = spp->FindTypedSubPane<SliderPane>("Slider");

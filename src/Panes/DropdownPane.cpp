@@ -6,6 +6,7 @@
 #include "Panes/ButtonPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Util/General.h"
+#include "Util/String.h"
 #include "Widgets/PushButtonWidget.h"
 
 void DropdownPane::AddFields() {
@@ -193,7 +194,8 @@ void DropdownPane::UpdateMenuPane_() {
     const auto &choices = choices_.GetValue();
     for (size_t i = 0; i < choices.size(); ++i) {
         const Str &choice = choices[i];
-        auto but = menu_button_pane_->CloneTyped<ButtonPane>(true);
+        const Str &but_name = "Button_" + Util::ToString(i);
+        auto but = menu_button_pane_->CloneTyped<ButtonPane>(true, but_name);
         auto text = but->FindTypedSubPane<TextPane>("ButtonText");
         text->SetText(choice);
         but->GetButton().GetClicked().AddObserver(
