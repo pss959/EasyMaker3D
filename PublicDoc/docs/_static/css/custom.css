@@ -273,14 +273,14 @@ img {
     font-weight: bold;
 }
 
-/* Table that has no header; indent and undo color change on thead entries. */
-.noheadertable {
+/* Table that has no header; indent, turn off wrapping, and undo color change
+   on thead entries. */
+.wy-table-responsive .noheadertable {
     margin-left: 40px;
 }
-.noheadertable > tr > td {
-    color:            #404040;
-    background-color: green;
-    margin-left:      40px;
+.wy-table-responsive .noheadertable td {
+    text-wrap:        nowrap;
+    white-space:      nowrap;
 }
 /* Only way I have found to make the noheader header row use the correct
    background */
@@ -292,7 +292,9 @@ img {
 /* Container that creates 2 columns. */
 .twocolumn {
     column-count:  2;
+    column-gap:    20px;
     margin-bottom: 10px;
+    display:       inline-block;
 }
 
 /* -----------------------------------------------------------------------------
