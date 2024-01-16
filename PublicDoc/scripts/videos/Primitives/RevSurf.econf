@@ -1,0 +1,23 @@
+section RevSurf Surface of revolution (RevSurf) models
+state video on
+
+caption .5 .15 3 This icon on creates a new;surface of revolution (RevSurf) model
+highlight CreateRevSurfIcon 3 0
+wait 3
+
+caption .5 .15 3 A new RevSurf model has a specialized panel tool;to edit the profile
+state cursor on
+state animation on
+moveover CreateRevSurfIcon 1
+click
+wait 3
+
+caption .5 .15 4 There is a separate tutorial for how to edit a profile
+moveover RevSurfToolPanel/MovablePoint_1 1
+drag .04 0 2
+
+caption .5 .15 4 The slider at the bottom changes the sweep angle of the model
+moveover RevSurfToolPanel/SweepAngleSlider/Thumb 1
+drag -.14 0 2
+
+wait 3

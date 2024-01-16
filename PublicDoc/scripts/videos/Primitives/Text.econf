@@ -1,0 +1,49 @@
+section Text Text models
+state video on
+
+caption .5 .15 3 This icon creates a new Text model
+highlight CreateTextIcon 3 .012
+wait 3
+
+caption .5 .15 3 The model is formed by extruding one or more;characters in the Z (up) direction
+state cursor on
+state animation on
+moveover CreateTextIcon 1
+click
+wait 3
+
+caption .5 .15 2 This specialized panel tool is used to edit the text
+wait 2
+
+caption .5 .15 2 Click on the input field and type the new text
+moveover TextToolPanel/TextInput 1
+click
+key Ctrl-a
+wait .1
+key Shift-t
+wait .1
+key e
+wait .1
+key x
+wait .1
+key t
+wait .1
+key !
+
+caption .5 .15 3 Click the Apply button to update the model
+moveover Apply 1
+click
+wait 2
+
+caption .5 .15 4 You can also change the font and character spacing
+moveover TextToolPanel/Font 1
+click
+moveover TextToolPanel/Font/Button_5 1
+click
+
+moveover TextToolPanel/Spacing/Thumb 1
+drag .02 0 1
+moveover Apply 1
+click
+
+wait 3

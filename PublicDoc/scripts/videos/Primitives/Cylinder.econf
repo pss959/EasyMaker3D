@@ -1,0 +1,18 @@
+section Cylinder Cylinder models
+state video on
+
+caption .5 .15 3 A Cylinder has a specialized tool to edit the;top and bottom diameters
+state cursor on
+state animation on
+moveover CreateCylinderIcon 1
+click
+wait 3
+
+caption .5 .15 4 Drag any handle to modify the diameter
+moveover CylinderTool/TopRadiusScaler/MaxSlider 1
+drag -.03 0 2
+
+moveover CylinderTool/BottomRadiusScaler/MaxSlider 1 0 .009
+drag .1 0 2
+
+wait 3

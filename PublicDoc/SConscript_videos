@@ -54,6 +54,15 @@ merges = {
         'ColorTool',
         'NameTool',
     ],
+    'Primitives' : [
+        'Icons',
+        'Cylinder',
+        'Torus',
+        'RevSurf',
+        'Extruded',
+        'Text',
+        'Imported',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',

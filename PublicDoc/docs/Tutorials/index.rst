@@ -10,7 +10,7 @@ Getting Started
    :maxdepth: 1
 
    An introductory tour of the main features of the work area <WorkArea>
-   How to create primitive models (Sphere, Box, etc.) (TBD) <TBD>
+   How to create and edit different types of primitive models <Primitives>
    Selecting models and attaching tools (TBD) <TBD>
    Sessions, command history, and undo/redo (TBD) <TBD>
    Basic non-tool editing operations (TBD) <TBD>
@@ -22,7 +22,7 @@ Some More Details
    :maxdepth: 1
 
    Demonstration of each general tool <GeneralTools>
-   Demonstration of each specialized tool for primitive models (TBD) <TBD>
+   Profile editing (TBD) <TBD>
    Converting models for other specialized editing <SpecializedTools>
    Combining models (TBD) <TBD>
 

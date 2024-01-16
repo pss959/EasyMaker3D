@@ -1,0 +1,31 @@
+section Imported Imported models
+state video on
+
+caption .5 .15 3 This icon lets you import a model from a file in STL format
+highlight CreateImportedModelIcon 3 .012
+wait 3
+
+caption .5 .15 2 Clicking it creates a placeholder tetrahedron;and attaches this panel tool
+state animation on
+state cursor on
+moveover CreateImportedModelIcon 1
+click
+wait 3
+
+caption .5 .15 2 The panel is used to choose the file;to import the model from
+state fileexist on  # Pretend the file exists.
+moveover ImportToolPanel/File_1 1
+wait 1
+click
+wait 1
+state fileexist off
+moveover ImportToolPanel/Accept 1
+
+# Simulate clicking "Accept" by loading a session with a real Imported
+# model. (This is hard to do legitimately with mock file system in place.)
+state cursor off
+load ImportedBoat
+wait 2
+
+caption .5 .15 2 The panel can be reopened to re-import the model;or to change the file
+wait 2

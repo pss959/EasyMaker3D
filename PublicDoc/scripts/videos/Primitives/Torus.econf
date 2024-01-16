@@ -1,0 +1,19 @@
+section Torus Torus models
+state video on
+
+caption .5 .15 3 A Torus has a specialized tool to edit the;inner and outer diameters
+state cursor on
+state animation on
+moveover CreateTorusIcon 1
+click
+wait 3
+
+caption .5 .15 4 Drag either outer diameter handle horizontally to change it
+moveover TorusTool/OuterRadiusScaler/MaxSlider 1
+drag .03 0 2
+
+caption .5 .15 4 Drag either inner diameter handle vertically to change it
+moveover TorusTool/InnerRadiusScaler/MaxSlider 1
+drag 0 .06 2
+
+wait 3

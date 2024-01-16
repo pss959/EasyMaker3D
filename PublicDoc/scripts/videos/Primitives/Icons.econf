@@ -1,0 +1,25 @@
+section Icons Primitive model creation icons
+state video on
+
+caption .5 .15 3 Icons on these shelves create new primitive models
+highlight CreationShelves 3 0
+wait 3
+
+caption .5 .15 3 Clicking on one drops a new model of that type;onto the center of the stage
+state cursor on
+state animation on
+moveover CreateBoxIcon 1
+click
+wait 3
+
+load
+
+caption .5 .15 3 The Box and Sphere models have no specialized data -;the current general tool is attached to a new one
+moveover CreateSphereIcon 1
+click
+wait 3
+
+load
+
+caption .5 .15 2 Each other primitive model has a specialized;tool that is attached
+wait 2
