@@ -3,6 +3,15 @@
 #include "Tests/Testing.h"
 #include "Util/String.h"
 
+TEST(MathToStringTest, ToStr) {
+    EXPECT_EQ("P[1, 3, -2]", ToStr(Point3f(1, 3, -2)));
+    EXPECT_EQ("V[1, 3, -2]", ToStr(Vector3f(1, 3, -2)));
+    EXPECT_EQ("20 deg",      ToStr(Anglef::FromDegrees(20)));
+    EXPECT_EQ("ROT[V[0, 1, 0]: 30 deg]",
+              ToStr(Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
+                                                Anglef::FromDegrees(30))));
+}
+
 TEST(MathToStringTest, ToStringPrecision) {
     const float f = 5.3728f;
     EXPECT_EQ("5",      Math::ToString(f, 1.f));

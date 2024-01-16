@@ -55,9 +55,7 @@ bool SimTestBase::RunScript_(const Str &file_name) {
     context = app.GetContext();
 
     // Process the script.
-    const FilePath script_path = FilePath::Join(
-        FilePath::Join(FilePath::GetTestDataPath(), "Scripts"),
-        file_name + ".econf");
-
-    return app.ProcessScript(script_path, false);
+    const FilePath script_dir =
+        FilePath::Join(FilePath::GetTestDataPath(), "Scripts");
+    return app.ProcessScript(script_dir, file_name + ".econf", false);
 }

@@ -129,6 +129,7 @@ TEST_F(RenderTest, RealScene) {
 TEST_F(RenderTest, RealSceneWithFBTarget) {
     FBTarget fb_target;
     fb_target.Init("RenderTest", Vector2ui(kWidth, kHeight), 4);
+    EXPECT_TRUE(fb_target.IsInitialized());
 
     SetUpScene("RealScene.emd");
     RenderScene(&fb_target);

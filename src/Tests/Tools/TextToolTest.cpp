@@ -49,7 +49,7 @@ TEST_F(TextToolTest, ChangeTextAndFont) {
     CheckNoCommands();
 
     PanelInteractor pi(tool->GetPanel());
-    pi.SetTextInput("Text", "Blah");
+    pi.SetTextInput("TextInput", "Blah");
     pi.ChangeDropdownChoice("Font", "Verdana-Regular");
     CheckNoCommands();
 

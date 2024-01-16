@@ -42,6 +42,7 @@ void Bounds::GetCorners(Point3f corners[8]) const {
     corners[7].Set(max_pt[0], max_pt[1], max_pt[2]);
 }
 
+// LCOV_EXCL_START [debug only]
 Str Bounds::ToString(bool use_min_max) const {
     if (use_min_max)
         return ("B["   + ToStr(GetMinPoint()) +
@@ -50,3 +51,4 @@ Str Bounds::ToString(bool use_min_max) const {
         return ("B[c="  + ToStr(GetCenter())  +
                 " s="   + ToStr(GetSize())    + "]");
 }
+// LCOV_EXCL_STOP

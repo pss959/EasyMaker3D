@@ -50,6 +50,7 @@ bool TriMesh::FromBinaryString(const Str &str) {
     return true;
 }
 
+// LCOV_EXCL_START [debug only]
 Str TriMesh::ToString() const {
     const size_t pc = points.size();
     const size_t tc = GetTriangleCount();
@@ -66,3 +67,4 @@ Str TriMesh::ToString() const {
             i2s(3 * i + 2) + "]\n";
     return s;
 }
+// LCOV_EXCL_STOP

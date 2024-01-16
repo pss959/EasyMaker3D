@@ -86,6 +86,7 @@ Point2f Frustum::ProjectToImageRect(const Point3f &pt) const {
                    .5f + .5f * p[1]);
 }
 
+// LCOV_EXCL_START [debug only]
 Str Frustum::ToString() const {
     return ("FR [vp="  + ToStr(viewport) +
             " p="      + ToStr(position) +
@@ -98,3 +99,4 @@ Str Frustum::ToString() const {
             " f="      + ToStr(pfar) +
             "]");
 }
+// LCOV_EXCL_STOP

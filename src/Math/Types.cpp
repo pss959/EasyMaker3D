@@ -4,6 +4,7 @@
 
 // ToStr() specializations.
 
+// LCOV_EXCL_START [debug only]
 template <> Str ToStr(const float &f) {
     return Math::ToString(f, .001f);
 }
@@ -26,3 +27,4 @@ template <> Str ToStr(const Rotationf &r) {
     r.GetAxisAndAngle(&axis, &angle);
     return "R[" + ToStr(axis) + ", " + ToStr(angle) + "]";
 }
+// LCOV_EXCL_STOP

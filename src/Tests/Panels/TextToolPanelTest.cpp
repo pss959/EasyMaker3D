@@ -42,7 +42,7 @@ TEST_F(TextToolPanelTest, Show) {
 TEST_F(TextToolPanelTest, Change) {
     panel->SetStatus(Panel::Status::kVisible);
 
-    auto input = pi.SetTextInput("Text", "Some Text");
+    auto input = pi.SetTextInput("TextInput", "Some Text");
     auto disp  = FindTypedPane<TextPane>("Display");
     auto msg   = FindTypedPane<TextPane>("Message");
 
@@ -92,7 +92,7 @@ TEST_F(TextToolPanelTest, Change) {
 
     // Change to invalid text.
     const Str bad_text = "¶¡§";  // Invalid characters for FakeFontSystem.
-    input = pi.SetTextInput("Text", bad_text);
+    input = pi.SetTextInput("TextInput", bad_text);
     EXPECT_FALSE(input->IsTextValid());
     EXPECT_EQ(bad_text, input->GetText());
     EXPECT_EQ(bad_text, disp->GetText());
