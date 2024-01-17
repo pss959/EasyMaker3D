@@ -1,0 +1,36 @@
+state cursor on
+state animation off
+action kCreateCylinder
+
+section SwitchingTools Switching tools
+state video on
+
+caption .5 .15 3 If the selected model has a specialized tool,;clicking this icon switches to the current general tool
+highlight ToggleSpecializedToolIcon 2 .01
+
+state cursor on
+state animation on
+moveover ToggleSpecializedToolIcon 1
+click
+wait 1
+moveover ToggleSpecializedToolIcon 1 -.1 0
+wait 1
+
+caption .5 .15 3 Clicking it again switches back to the specialized tool
+moveover ToggleSpecializedToolIcon 1
+click
+wait 2
+
+caption .5 .15 3 The space bar is also a shortcut to switch between them
+wait 3
+
+caption .5 .15 3 You can always click on a general tool icon;to switch to it
+moveover RotationToolIcon 2
+click
+wait 2
+
+caption .5 .15 3 Note that the icon for the current tool is highlighted
+moveover TranslationToolIcon 2
+click
+wait 3
+

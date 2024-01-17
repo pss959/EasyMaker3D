@@ -38,7 +38,6 @@ scripts = [
     # XXXX
     'Doorstop',
     'SpecializedTools',
-    # XXXX 'WorkArea',
 ]
 
 # Dictionary of merged videos in merge order. Each entry is the merged name
@@ -62,6 +61,11 @@ merges = {
         'Extruded',
         'Text',
         'Imported',
+    ],
+    'Selection' : [
+        'NewModels',
+        'SwitchingTools',
+        'Multiple',
     ],
     'WorkArea' : [
         'Stage',

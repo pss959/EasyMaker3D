@@ -1,0 +1,12 @@
+section NewModels New models
+state video on
+
+caption .5 .15 3 When a new model is created, it is selected by default
+state cursor on
+state animation on
+moveover CreateCylinderIcon 1
+click
+wait 2
+
+caption .5 .15 3 The new model has a tool attached to it: a specialized;tool if it has one, otherwise a general tool
+wait 3

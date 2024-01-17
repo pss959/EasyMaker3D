@@ -10,8 +10,8 @@ Getting Started
    :maxdepth: 1
 
    An introductory tour of the main features of the work area <WorkArea>
-   How to create and edit different types of primitive models <Primitives>
-   Selecting models and attaching tools (TBD) <TBD>
+   Creating and editing different types of primitive models <Primitives>
+   Selecting models and attaching tools <Selection>
    Sessions, command history, and undo/redo (TBD) <TBD>
    Basic non-tool editing operations (TBD) <TBD>
 

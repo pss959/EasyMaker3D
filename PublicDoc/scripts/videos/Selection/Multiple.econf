@@ -1,0 +1,44 @@
+state cursor on
+state animation off
+action kCreateCylinder
+action kToggleSpecializedTool
+
+section Multiple Selecting multiple models
+state animation on
+state video on
+
+caption .5 .15 3 More than one model can be selected at a time
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .12 0 1
+
+moveover CreateCylinderIcon 1
+click
+wait 1
+
+caption .5 .15 3 Shift-click or double-click to select;additional models
+moveover Cylinder_1 1
+state mod on
+click
+state mod off
+wait 2
+
+caption .5 .15 3 Secondary selections have a blue wireframe box;attached to them
+wait 3
+
+caption .5 .15 3 Some specialized tools (like the Cylinder tool);can operate on multiple models of the same type
+moveover CylinderTool/TopRadiusScaler/MinSlider 1
+drag .03 0 1
+wait 2
+
+caption .5 .15 3 Most general tools also operate on all selected models
+moveover TranslationToolIcon 2
+click
+moveover TranslationTool/X/XSlider/MinFace 1
+drag -.1 0 1
+wait 3
+
+caption .5 .15 3 Clicking on a wall or the floor deselects all models
+moveto .553 .864 2
+click
+wait 3
+
