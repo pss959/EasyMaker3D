@@ -25,6 +25,8 @@ class ShortcutHandlerTest : public TestBase {
         virtual void ApplyAction(Action action) override {
             last_action = action;
         }
+        virtual void SetModelVisibility(const ModelPtr &model,
+                                        bool is_visible) override {}
     };
     DECL_SHARED_PTR(TestActionAgent);
 

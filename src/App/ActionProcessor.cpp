@@ -546,34 +546,18 @@ void ActionProcessor::Impl_::SetModelVisibility(const ModelPtr &model,
                                                 bool is_visible) {
     auto &root_model = *context_->scene_context->root_model;
 
-    // If model is null, change all top-level Models.
-    if (! model) {
-        const size_t count = root_model.GetChildModelCount();
-        for (size_t i = 0; i < count; ++i) {
-            auto child = root_model.GetChildModel(i);
-            const auto is_now_visible =
-                child->GetStatus() != Model::Status::kHiddenByUser;
-            if (is_visible != is_now_visible)
-                SetModelVisibility(child, is_visible);
-        }
-        return;
-    }
-
-    // Show or hide the Model.
+    // Show or hide the Model. If model is null, this changes all top-level
+    // Models.
     root_model.SetModelVisibility(model, is_visible);
 
-    // Update the SessionState.
+    // Update the hidden models in the SessionState.
     auto &ss = *context_->command_manager->GetSessionState();
-    StrVec hidden_models = ss.GetHiddenModels();
-    auto it = std::find(hidden_models.begin(), hidden_models.end(),
-                        model->GetName());
-    if (is_visible) {
-        ASSERT(it != hidden_models.end());  // Must already be in the list
-        hidden_models.erase(it);
-    }
-    else {
-        ASSERT(it == hidden_models.end());  // Not already in the hidden list.
-        hidden_models.push_back(model->GetName());
+    StrVec hidden_models;
+    const size_t count = root_model.GetChildModelCount();
+    for (size_t i = 0; i < count; ++i) {
+        auto child = root_model.GetChildModel(i);
+        if (child->GetStatus() == Model::Status::kHiddenByUser)
+            hidden_models.push_back(child->GetName());
     }
     ss.SetHiddenModels(hidden_models);
 }

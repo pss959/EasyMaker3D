@@ -42,20 +42,31 @@ void RootModel::ShowEdges(bool show) {
 }
 
 void RootModel::SetModelVisibility(const ModelPtr &model, bool is_visible) {
-    ASSERT(model);
-    ASSERT(model->IsTopLevel());
-    if (is_visible) {
-        ASSERT(model->GetStatus() == Model::Status::kHiddenByUser);
-        KLOG('M', "Showing " << model->GetDesc());
-        model->SetStatus(Model::Status::kUnselected);
+    // If model is null, change all top-level Models.
+    if (! model) {
+        for (size_t i = 0; i < GetChildModelCount(); ++i) {
+            auto child = GetChildModel(i);
+            const auto is_now_visible =
+                child->GetStatus() != Model::Status::kHiddenByUser;
+            if (is_visible != is_now_visible)
+                SetModelVisibility(child, is_visible);
+        }
     }
     else {
-        ASSERT(model->GetStatus() != Model::Status::kHiddenByUser);
-        ASSERT(! model->IsSelected());  // Error to hide a selected Model.
-        KLOG('M', "Hiding " << model->GetDesc());
-        model->SetStatus(Model::Status::kHiddenByUser);
+        ASSERT(model->IsTopLevel());
+        if (is_visible) {
+            ASSERT(model->GetStatus() == Model::Status::kHiddenByUser);
+            KLOG('M', "Showing " << model->GetDesc());
+            model->SetStatus(Model::Status::kUnselected);
+        }
+        else {
+            ASSERT(model->GetStatus() != Model::Status::kHiddenByUser);
+            ASSERT(! model->IsSelected());  // Error to hide a selected Model.
+            KLOG('M', "Hiding " << model->GetDesc());
+            model->SetStatus(Model::Status::kHiddenByUser);
+        }
+        top_level_changed_.Notify();
     }
-    top_level_changed_.Notify();
 }
 
 size_t RootModel::GetHiddenModelCount() {

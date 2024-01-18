@@ -24,6 +24,8 @@ class SessionManagerTest : public SelectionTestBase {
             const SessionState &state) override {}
         virtual bool CanApplyAction(Action action) const { return false; }
         virtual void ApplyAction(Action action) override {}
+        virtual void SetModelVisibility(const ModelPtr &model,
+                                        bool is_visible) override {}
     };
     DECL_SHARED_PTR(TestActionManager);
 

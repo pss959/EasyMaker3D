@@ -38,6 +38,8 @@ class TreePanelTest : public PanelTestBase {
     /// saves the most recent action.
     class TestActionAgent : public ActionAgent {
       public:
+        /// Access to RootModel.
+        RootModelPtr root;
         /// Flags to determine whether move-up and move-down are enabled.
         bool can_move_up   = false;
         bool can_move_down = false;
@@ -56,6 +58,10 @@ class TreePanelTest : public PanelTestBase {
         }
         virtual void ApplyAction(Action action) override {
             last_action = action;
+        }
+        virtual void SetModelVisibility(const ModelPtr &model,
+                                        bool is_visible) override {
+            root->SetModelVisibility(model, is_visible);
         }
     };
     DECL_SHARED_PTR(TestActionAgent);
@@ -119,6 +125,8 @@ TreePanelTest::Hierarchy TreePanelTest::BuildModelHierarchy() {
     hier.root->AddChildModel(hier.hull1);
 
     selection_agent->SetRootModel(hier.root);
+
+    std::dynamic_pointer_cast<TestActionAgent>(action_agent)->root = hier.root;
 
     return hier;
 }

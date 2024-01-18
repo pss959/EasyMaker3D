@@ -139,7 +139,7 @@ TEST_F(RootModelTest, Clone) {
     EXPECT_NE(box1, copy->GetChildModel(1));
 }
 
-TEST_F(RootModelTest, HideAndShow) {
+TEST_F(RootModelTest, SetModelVisibility) {
     auto root = Model::CreateModel<RootModel>();
     auto box0 = Model::CreateModel<BoxModel>();
     auto box1 = Model::CreateModel<BoxModel>();
@@ -153,31 +153,21 @@ TEST_F(RootModelTest, HideAndShow) {
     size_t change_count = 0;
     root->GetTopLevelChanged().AddObserver("key", [&](){ ++change_count; });
 
-    root->HideModel(box0);
+    root->SetModelVisibility(box0, false);
     EXPECT_EQ(1U, change_count);
     EXPECT_EQ(1U, root->GetHiddenModelCount());
     EXPECT_ENUM_EQ(Model::Status::kHiddenByUser, box0->GetStatus());
 
-    root->HideModel(box1);
+    root->SetModelVisibility(box1, false);
     EXPECT_EQ(2U, change_count);
     EXPECT_EQ(2U, root->GetHiddenModelCount());
     EXPECT_ENUM_EQ(Model::Status::kHiddenByUser, box0->GetStatus());
     EXPECT_ENUM_EQ(Model::Status::kHiddenByUser, box1->GetStatus());
 
-    root->ShowModel(box0);
+    root->SetModelVisibility(box0, true);
     EXPECT_EQ(3U, change_count);
     EXPECT_EQ(1U, root->GetHiddenModelCount());
     EXPECT_ENUM_EQ(Model::Status::kUnselected,   box0->GetStatus());
-    EXPECT_ENUM_EQ(Model::Status::kHiddenByUser, box1->GetStatus());
-
-    root->ShowAllModels();
-    EXPECT_EQ(0U, root->GetHiddenModelCount());
-    EXPECT_ENUM_EQ(Model::Status::kUnselected,   box0->GetStatus());
-    EXPECT_ENUM_EQ(Model::Status::kUnselected,   box1->GetStatus());
-
-    root->HideAllModels();
-    EXPECT_EQ(2U, root->GetHiddenModelCount());
-    EXPECT_ENUM_EQ(Model::Status::kHiddenByUser, box0->GetStatus());
     EXPECT_ENUM_EQ(Model::Status::kHiddenByUser, box1->GetStatus());
 }
 
