@@ -160,6 +160,7 @@ class ActionProcessor::Impl_ {
     bool CanApplyAction(Action action) const;
     void ApplyAction(Action action);
     bool GetToggleState(Action action) const { return GetToggleState_(action); }
+    void SetModelVisibility(const ModelPtr &model, bool is_visible);
 
   private:
     ContextPtr            context_;
@@ -512,11 +513,11 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
           const std::vector<ModelPtr> models = GetSelection().GetModels();
           context_->selection_manager->DeselectAll();
           for (const auto &model: models)
-              context_->scene_context->root_model->HideModel(model);
+              SetModelVisibility(model, false);
           break;
       }
       case kShowAll:
-        context_->scene_context->root_model->ShowAllModels();
+        SetModelVisibility(nullptr, true);  // Changes all top-level models.
         break;
 
 #if ! RELEASE_BUILD
@@ -529,6 +530,41 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
       default:
         ASSERTM(false, "Unimplemented action " + Util::EnumName(action));
     }
+}
+
+void ActionProcessor::Impl_::SetModelVisibility(const ModelPtr &model,
+                                                bool is_visible) {
+    // If model is null, change all top-level Models.
+    if (! model) {
+        auto &root_model = *context_->scene_context->root_model;
+        const size_t count = root_model.GetChildModelCount();
+        for (size_t i = 0; i < count; ++i) {
+            auto child = root_model.GetChildModel(i);
+            const auto is_now_visible =
+                child->GetStatus() != Model::Status::kHiddenByUser;
+            if (is_visible != is_now_visible)
+                SetModelVisibility(child, is_visible);
+        }
+        return;
+    }
+
+    // Show or hide the Model.
+    context_->scene_context->root_model->SetModelVisibility(model, is_visible);
+
+    // Update the SessionState.
+    auto &ss = *context_->command_manager->GetSessionState();
+    StrVec hidden_models = ss.GetHiddenModels();
+    auto it = std::find(hidden_models.begin(), hidden_models.end(),
+                        model->GetName());
+    if (is_visible) {
+        ASSERT(it != hidden_models.end());  // Must already be in the list
+        hidden_models.erase(it);
+    }
+    else {
+        ASSERT(it == hidden_models.end());  // Not already in the hidden list.
+        hidden_models.push_back(model->GetName());
+    }
+    ss.SetHiddenModels(hidden_models);
 }
 
 bool ActionProcessor::Impl_::GetToggleState_(Action action) const {
@@ -1160,4 +1196,9 @@ void ActionProcessor::ApplyAction(Action action) {
 
 bool ActionProcessor::GetToggleState(Action action) const {
     return impl_->GetToggleState(action);
+}
+
+void ActionProcessor::SetModelVisibility(const ModelPtr &model,
+                                         bool is_visible) {
+    impl_->SetModelVisibility(model, is_visible);
 }

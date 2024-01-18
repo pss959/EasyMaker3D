@@ -55,20 +55,12 @@ class RootModel : public ParentModel {
     /// \name Model Hiding and Showing.
     ///@{
 
-    /// Hides the given Model, which must be top-level and not hidden.
-    void HideModel(const ModelPtr &model);
-
-    /// Shows the given Model, which must be top-level and hidden.
-    void ShowModel(const ModelPtr &model);
+    /// Shows or hides the given Model, which must be top-level and in the
+    /// opposite visibility state.
+    void SetModelVisibility(const ModelPtr &model, bool is_visible);
 
     /// Returns the current number of hidden top-level Models.
     size_t GetHiddenModelCount();
-
-    /// Hides all top-level Models.
-    void HideAllModels();
-
-    /// Shows all hidden Models.
-    void ShowAllModels();
 
     ///@}
 

@@ -86,6 +86,11 @@ class ActionProcessor : public ActionAgent {
     /// toggle of some sort.
     bool GetToggleState(Action action) const;
 
+    /// Shows or hides the given Model, updating the SessionState as well. If
+    /// \p model is null, this changes all top-level Models.
+    virtual void SetModelVisibility(const ModelPtr &model,
+                                    bool is_visible) override;
+
   private:
     class Impl_;
     std::unique_ptr<Impl_> impl_;

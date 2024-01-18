@@ -5,6 +5,7 @@
 
 class SessionState;
 DECL_SHARED_PTR(ActionAgent);
+DECL_SHARED_PTR(Model);
 
 /// ActionAgent is an abstract interface class for applying actions.
 ///
@@ -22,4 +23,8 @@ class ActionAgent {
 
     /// Applies the given Action. Asserts if the Action cannot be applied.
     virtual void ApplyAction(Action action) = 0;
+
+    /// Shows or hides the given Model. If \p model is null, this changes all
+    /// top-level Models.
+    virtual void SetModelVisibility(const ModelPtr &model, bool is_visible) = 0;
 };

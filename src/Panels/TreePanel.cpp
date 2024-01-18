@@ -431,11 +431,13 @@ void TreePanel::Impl_::InitInterface(Pane &root_pane) {
     auto show = vsp->FindTypedSubPane<ButtonPane>("ShowButton");
     auto hide = vsp->FindTypedSubPane<ButtonPane>("HideButton");
     show->GetButton().GetClicked().AddObserver(
-        this, [&](const ClickInfo &){ root_model_->ShowAllModels(); });
+        this, [&](const ClickInfo &){
+            action_agent_->SetModelVisibility(nullptr, true);
+        });
     hide->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &){
             selection_agent_->DeselectAll();
-            root_model_->HideAllModels();
+            action_agent_->SetModelVisibility(nullptr, false);
         });
     session_vis_switcher_pane_ = vsp;
 

@@ -67,6 +67,10 @@ merges = {
         'SwitchingTools',
         'Multiple',
     ],
+    'Sessions' : [
+        'Commands',
+        'Files',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',

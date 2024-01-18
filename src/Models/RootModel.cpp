@@ -41,22 +41,20 @@ void RootModel::ShowEdges(bool show) {
     }
 }
 
-void RootModel::HideModel(const ModelPtr &model) {
+void RootModel::SetModelVisibility(const ModelPtr &model, bool is_visible) {
     ASSERT(model);
     ASSERT(model->IsTopLevel());
-    ASSERT(model->GetStatus() != Model::Status::kHiddenByUser);
-    ASSERT(! model->IsSelected());  // Error to hide a selected Model.
-    KLOG('M', "Hiding " << model->GetDesc());
-    model->SetStatus(Model::Status::kHiddenByUser);
-    top_level_changed_.Notify();
-}
-
-void RootModel::ShowModel(const ModelPtr &model) {
-    ASSERT(model);
-    ASSERT(model->IsTopLevel());
-    ASSERT(model->GetStatus() == Model::Status::kHiddenByUser);
-    KLOG('M', "Showing " << model->GetDesc());
-    model->SetStatus(Model::Status::kUnselected);
+    if (is_visible) {
+        ASSERT(model->GetStatus() == Model::Status::kHiddenByUser);
+        KLOG('M', "Showing " << model->GetDesc());
+        model->SetStatus(Model::Status::kUnselected);
+    }
+    else {
+        ASSERT(model->GetStatus() != Model::Status::kHiddenByUser);
+        ASSERT(! model->IsSelected());  // Error to hide a selected Model.
+        KLOG('M', "Hiding " << model->GetDesc());
+        model->SetStatus(Model::Status::kHiddenByUser);
+    }
     top_level_changed_.Notify();
 }
 
@@ -67,22 +65,4 @@ size_t RootModel::GetHiddenModelCount() {
         if (GetChildModel(i)->GetStatus() == Model::Status::kHiddenByUser)
             ++hidden_count;
     return hidden_count;
-}
-
-void RootModel::HideAllModels() {
-    const size_t count = GetChildModelCount();
-    for (size_t i = 0; i < count; ++i) {
-        auto child = GetChildModel(i);
-        if (child->GetStatus() != Model::Status::kHiddenByUser)
-            HideModel(child);
-    }
-}
-
-void RootModel::ShowAllModels() {
-    const size_t count = GetChildModelCount();
-    for (size_t i = 0; i < count; ++i) {
-        auto child = GetChildModel(i);
-        if (child->GetStatus() == Model::Status::kHiddenByUser)
-            ShowModel(child);
-    }
 }

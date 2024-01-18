@@ -26,15 +26,17 @@ class SessionState : public Parser::Object {
     bool AreEdgesShown()        const { return edges_shown_;          }
     bool IsBuildVolumeVisible() const { return build_volume_visible_; }
     bool IsAxisAligned()        const { return axis_aligned_;         }
+    StrVec GetHiddenModels()    const { return hidden_models_;        }
     ///@}
 
     /// \name State modification
     ///@{
-    void SetPointTargetVisible(bool b) { point_target_visible_ = b; }
-    void SetEdgeTargetVisible(bool b)  { edge_target_visible_  = b; }
-    void SetEdgesShown(bool b)         { edges_shown_          = b; }
-    void SetBuildVolumeVisible(bool b) { build_volume_visible_ = b; }
-    void SetAxisAligned(bool b)        { axis_aligned_         = b; }
+    void SetPointTargetVisible(bool b)    { point_target_visible_ = b; }
+    void SetEdgeTargetVisible(bool b)     { edge_target_visible_  = b; }
+    void SetEdgesShown(bool b)            { edges_shown_          = b; }
+    void SetBuildVolumeVisible(bool b)    { build_volume_visible_ = b; }
+    void SetAxisAligned(bool b)           { axis_aligned_         = b; }
+    void SetHiddenModels(const StrVec &h) { hidden_models_        = h; }
     ///@}
 
   protected:
@@ -50,6 +52,7 @@ class SessionState : public Parser::Object {
     Parser::TField<bool> edges_shown_;
     Parser::TField<bool> build_volume_visible_;
     Parser::TField<bool> axis_aligned_;
+    Parser::VField<Str>  hidden_models_;
     ///@}
 
     friend class Parser::Registry;
