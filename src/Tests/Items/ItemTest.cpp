@@ -230,17 +230,22 @@ TEST_F(ItemTest, SessionState) {
     EXPECT_FALSE(ss->AreEdgesShown());
     EXPECT_FALSE(ss->IsBuildVolumeVisible());
     EXPECT_FALSE(ss->IsAxisAligned());
+    EXPECT_TRUE(ss->GetHiddenModels().empty());
 
     ss->SetPointTargetVisible(true);
     ss->SetEdgeTargetVisible(true);
     ss->SetEdgesShown(true);
     ss->SetBuildVolumeVisible(true);
     ss->SetAxisAligned(true);
+    ss->SetHiddenModels(StrVec{"Abc", "Defg"});
     EXPECT_TRUE(ss->IsPointTargetVisible());
     EXPECT_TRUE(ss->IsEdgeTargetVisible());
     EXPECT_TRUE(ss->AreEdgesShown());
     EXPECT_TRUE(ss->IsBuildVolumeVisible());
     EXPECT_TRUE(ss->IsAxisAligned());
+    EXPECT_EQ(2U, ss->GetHiddenModels().size());
+    EXPECT_EQ("Abc",  ss->GetHiddenModels()[0]);
+    EXPECT_EQ("Defg", ss->GetHiddenModels()[1]);
 
     ss->SetEdgesShown(false);
     auto copy = CreateObject<SessionState>();
@@ -250,6 +255,7 @@ TEST_F(ItemTest, SessionState) {
     EXPECT_FALSE(copy->AreEdgesShown());
     EXPECT_TRUE(copy->IsBuildVolumeVisible());
     EXPECT_TRUE(copy->IsAxisAligned());
+    EXPECT_EQ(2U, copy->GetHiddenModels().size());
     EXPECT_TRUE(copy->IsSameAs(*ss));
     copy->SetAxisAligned(false);
     EXPECT_FALSE(copy->IsSameAs(*ss));
