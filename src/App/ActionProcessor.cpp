@@ -289,6 +289,16 @@ void ActionProcessor::Impl_::UpdateFromSessionState(const SessionState &state) {
     SetToggleState_(Action::kToggleShowEdges,   state.AreEdgesShown());
     SetToggleState_(Action::kToggleBuildVolume, state.IsBuildVolumeVisible());
     SetToggleState_(Action::kToggleAxisAligned, state.IsAxisAligned());
+
+    // Hide all hidden models.
+    const StrVec &names = state.GetHiddenModels();
+    auto &root_model    = *context_->scene_context->root_model;
+    const size_t count  = root_model.GetChildModelCount();
+    for (size_t i = 0; i < count; ++i) {
+        auto child = root_model.GetChildModel(i);
+        if (Util::Contains(names, child->GetName()))
+            root_model.SetModelVisibility(child, false);
+    }
 }
 
 void ActionProcessor::Impl_::ProcessUpdate() {
@@ -534,9 +544,10 @@ void ActionProcessor::Impl_::ApplyAction(Action action) {
 
 void ActionProcessor::Impl_::SetModelVisibility(const ModelPtr &model,
                                                 bool is_visible) {
+    auto &root_model = *context_->scene_context->root_model;
+
     // If model is null, change all top-level Models.
     if (! model) {
-        auto &root_model = *context_->scene_context->root_model;
         const size_t count = root_model.GetChildModelCount();
         for (size_t i = 0; i < count; ++i) {
             auto child = root_model.GetChildModel(i);
@@ -549,7 +560,7 @@ void ActionProcessor::Impl_::SetModelVisibility(const ModelPtr &model,
     }
 
     // Show or hide the Model.
-    context_->scene_context->root_model->SetModelVisibility(model, is_visible);
+    root_model.SetModelVisibility(model, is_visible);
 
     // Update the SessionState.
     auto &ss = *context_->command_manager->GetSessionState();
