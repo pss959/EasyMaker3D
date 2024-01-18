@@ -647,9 +647,9 @@ Str Script::FixCaptionText_(const StrVec &words) {
     fix_s(";", "\n");
 
     // Replace any special tokens.
-    fix_s("_APPNAME_",            TK::kApplicationName);
-    fix_s("_DATA_EXTENSION__",    TK::kDataFileExtension);
-    fix_s("_SESSION_EXTENSION__", TK::kSessionFileExtension);
+    fix_s("_APPNAME_",           TK::kApplicationName);
+    fix_s("_DATA_EXTENSION_",    TK::kDataFileExtension);
+    fix_s("_SESSION_EXTENSION_", TK::kSessionFileExtension);
 
     return s;
 }

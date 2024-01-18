@@ -575,16 +575,11 @@ TreePanel::Impl_::ExpState_ TreePanel::Impl_::GetExpState_(
 void TreePanel::Impl_::ShowOrHideModel_(ModelRow_ &row, bool show) {
     const SelPath &sel_path = row.GetSelPath();
     const ModelPtr &model = sel_path.GetModel();
-    if (show) {
-        root_model_->ShowModel(model);
-    }
-    else {
-        // Deselect the Model if it is selected.
-        ASSERT(selection_agent_);
-        if (model->IsSelected())
-            selection_agent_->ChangeModelSelection(sel_path, true);
-        root_model_->HideModel(model);
-    }
+    // Deselect the Model if it is selected.
+    ASSERT(selection_agent_);
+    if (! show && model->IsSelected())
+        selection_agent_->ChangeModelSelection(sel_path, true);
+    action_agent_->SetModelVisibility(model, show);
     row.UpdateVisibility();
 }
 

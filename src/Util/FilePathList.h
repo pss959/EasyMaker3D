@@ -45,6 +45,10 @@ class FilePathList {
     /// directory.
     virtual bool IsExistingFile(const FilePath &path) const;
 
+    /// This allows derived classes (such as in ScriptedApp) to modify the
+    /// given path for devious purposes. The base class does nothing.
+    virtual void TweakPath(FilePath &path, bool is_read) {}
+
     /// Dumps current state for help with debugging.
     void Dump();
 

@@ -76,6 +76,15 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
     virtual bool IsExistingFile(const FilePath &path) const {
         return file_exists_;
     }
+    virtual void TweakPath(FilePath &path, bool is_read) override {
+        // If reading from a file, change the path to a real one.
+        if (is_read) {
+            path = Util::ReplaceString(path.ToString(),
+                                       "/projects/maker",
+                                       "PublicDoc/sessions");
+        }
+    }
+
   private:
     bool file_exists_ = false;
 };
@@ -103,6 +112,7 @@ void ScriptedApp::MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
         files.push_back("FileC" + extension);
         files.push_back("FileD" + extension);
         files.push_back("FileE" + extension);
+        files.push_back("Sample" + extension);  // Needed for session tutorial.
     }
 }
 

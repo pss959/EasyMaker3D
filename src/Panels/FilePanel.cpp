@@ -190,6 +190,11 @@ bool FilePanel::Impl_::AcceptPath() {
         file_format_ = file_formats_[format_pane_->GetChoiceIndex()];
     }
 
+    // Allow the FilePathList to modify the result path. (This is used by
+    // ScriptedApp to simulate actions with bogus example paths.)
+    path_list_->TweakPath(result_path_,
+                          target_type_ == TargetType::kExistingFile);
+
     // If creating a new file and the file exists, return false to let the
     // FilePanel ask the user what to do.
     return target_type_ != TargetType::kNewFile ||
