@@ -8,6 +8,7 @@
 #include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/Read.h"
+#include "Util/Tuning.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -249,10 +250,7 @@ Script::InstrPtr Script::ParseCaption_(const StrVec &words) {
         cinst.reset(new CaptionInstr);
         cinst->pos.Set(x, y);
         cinst->duration = duration;
-        cinst->text =
-            Util::ReplaceString(
-                Util::JoinStrings(StrVec(words.begin() + 4, words.end())),
-                ";", "\n");
+        cinst->text = FixCaptionText_(StrVec(words.begin() + 4, words.end()));
     }
     return cinst;
 }
@@ -636,4 +634,22 @@ Script::InstrPtr Script::ParseWait_(const StrVec &words) {
         winst->duration = duration;
     }
     return winst;
+}
+
+Str Script::FixCaptionText_(const StrVec &words) {
+    Str s = Util::JoinStrings(words);
+
+    auto fix_s = [&s](const Str &from, const Str &to){
+        s = Util::ReplaceString(s, from, to);
+    };
+
+    // Semicolon indicates a line break.
+    fix_s(";", "\n");
+
+    // Replace any special tokens.
+    fix_s("_APPNAME_",            TK::kApplicationName);
+    fix_s("_DATA_EXTENSION__",    TK::kDataFileExtension);
+    fix_s("_SESSION_EXTENSION__", TK::kSessionFileExtension);
+
+    return s;
 }

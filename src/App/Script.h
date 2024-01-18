@@ -18,7 +18,7 @@
 /// A script contains any number of lines with one of the following
 /// instructions:
 ///
-/// \htmlinclude Script.html
+/// \htmlinclude[block] Script.html
 ///
 /// \ingroup App
 class Script {
@@ -218,4 +218,7 @@ class Script {
     InstrPtr ParseView_(const StrVec &words);
     InstrPtr ParseWait_(const StrVec &words);
     ///@}
+
+    /// Deals with multi-line and token substitution in captions.
+    static Str FixCaptionText_(const StrVec &words);
 };
