@@ -9,7 +9,7 @@ app_name = 'EasyMaker3D'
 
 app_dict = {
     'APP_NAME'            : app_name,
-    'COPYRIGHT'           : '2021-2023 Paul S. Strauss',
+    'COPYRIGHT'           : '2021-2024 Paul S. Strauss',
     'DATA_EXTENSION'      : '.emd',
     'SESSION_EXTENSION'   : '.ems',
     'VERSION_STRING'      : version_string,
