@@ -274,7 +274,10 @@ img {
 }
 
 /* Table that has no header; indent, turn off wrapping, and undo color change
-   on thead entries. */
+ * on thead entries.
+ *
+ * Note: Using the noheadertable class and adjusting CSS is the only way I
+ * found to have a headerless table in RST. */
 .wy-table-responsive .noheadertable {
     margin-left: 40px;
 }
@@ -282,8 +285,8 @@ img {
     text-wrap:        nowrap;
     white-space:      nowrap;
 }
-/* Only way I have found to make the noheader header row use the correct
-   background */
+/* This is the only way I have found to make the noheader header row use the
+ * correct background */
 .rst-content table.docutils:not(.field-list).noheadertable
                                thead tr:nth-child(1) td {
     background-color: transparent;

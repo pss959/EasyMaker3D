@@ -1,0 +1,64 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.8.0",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
+      hidden_models: [],
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: -8 0 0,
+      model_names: ["Box_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 8 0 0,
+      model_names: ["Cylinder_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kSphere",
+      result_name: "Sphere_1",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: -2 0 0,
+      model_names: ["Sphere_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_2",
+      initial_scale: 2,
+    },
+    TranslateCommand {
+      translation: 1 0 0,
+      model_names: ["Cylinder_2", "Sphere_1"],
+    },
+    TranslateCommand {
+      translation: 0 0 7,
+      model_names: ["Cylinder_2", "Sphere_1"],
+    },
+    CombineHullModelCommand {
+      result_name: "Hull_1",
+      model_names: ["Cylinder_2", "Sphere_1"],
+    },
+    ChangeColorCommand {
+      new_color: 0.759668 0.638201 0.909688 1,
+      model_names: ["Hull_1"],
+    },
+  ],
+  current_index: 11,
+}

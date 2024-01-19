@@ -1,0 +1,20 @@
+load Editing
+select Box_1 Cylinder_1
+action kCopy
+
+section Paste Pasting models
+state video on
+
+caption .5 .15 3 This icon pastes the contents of the;model clipboard into the scene
+highlight PasteIcon 3 .015
+wait 3
+
+caption .5 .15 3 The pasted models are in the same place as the originals
+state cursor on
+moveover PasteIcon 2
+click
+
+moveover TranslationTool/Z/ZSlider/MaxFace 1
+drag -.04 -.04 1
+
+wait 2

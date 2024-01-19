@@ -8,10 +8,6 @@ the :ref:`User Guide <ug-specialized-tools>`.
 
 The specialized tools illustrated in the video are:
 
-..
-   _Note: Adding the noheader class and adjusting CSS is the only way I found
-   to have a headerless table in RST.
-
 .. rst-class:: noheadertable
 
 =========== ================================= =======================

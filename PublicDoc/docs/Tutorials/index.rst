@@ -13,7 +13,7 @@ Getting Started
    Creating and editing different types of primitive models <Primitives>
    Selecting models and attaching tools <Selection>
    Sessions, command history, and undo/redo <Sessions>
-   Basic non-tool editing operations (TBD) <TBD>
+   Basic non-tool editing operations <Editing>
 
 Some More Details
 -----------------
@@ -22,8 +22,8 @@ Some More Details
    :maxdepth: 1
 
    Demonstration of each general tool <GeneralTools>
-   Profile editing (TBD) <TBD>
    Converting models for other specialized editing <SpecializedTools>
+   Profile editing (TBD) <TBD>
    Combining models (TBD) <TBD>
 
 Advanced Topics

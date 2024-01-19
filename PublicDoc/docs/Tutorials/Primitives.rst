@@ -9,10 +9,6 @@ specialized tool is attached to a new model when it is created.
 The different types of models and the specialized tools used to edit them are
 summarized here:
 
-..
-   _Note: Adding the noheader class and adjusting CSS is the only way I found
-   to have a headerless table in RST.
-
 .. container:: twocolumn
 
     .. rst-class:: noheadertable

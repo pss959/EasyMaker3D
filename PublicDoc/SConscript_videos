@@ -44,6 +44,13 @@ scripts = [
 # (and also the subdirectory name) mapped to the individual component videos in
 # that subdirectory.
 merges = {
+    'Editing' : [
+        'Icons',
+        'Delete',
+        'CopyCut',
+        'Paste',
+        'PasteInto',
+    ],
     'GeneralTools' : [
         'Intro',
         'TranslationTool',

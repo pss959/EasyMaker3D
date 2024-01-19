@@ -5,10 +5,6 @@ Sessions and Commands
 
 Topics covered in this tutorial:
 
-..
-   _Note: Adding the noheader class and adjusting CSS is the only way I found
-   to have a headerless table in RST.
-
 .. rst-class:: noheadertable
 
 ====================== =========================== ====================

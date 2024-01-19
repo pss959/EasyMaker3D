@@ -8,10 +8,6 @@ This tour illustrates all of the general tools. For more details, consult the
 
 The general tools illustrated in the video are:
 
-..
-   _Note: Adding the noheader class and adjusting CSS is the only way I found
-   to have a headerless table in RST.
-
 .. rst-class:: noheadertable
 
 ================ ================================== ============================

@@ -1,0 +1,27 @@
+load Editing
+select
+
+section Delete Deleting models
+state video on
+
+caption .5 .15 3 This icon deletes the currently selected model(s)
+highlight DeleteIcon 3 .015
+wait 3
+
+state cursor on
+moveover Box_1 1
+click
+
+moveover Cylinder_1 1
+state mod on
+click
+state mod off
+
+caption .5 .15 3 Deleting does not modify the model clipboard
+moveover DeleteIcon 1
+click
+
+moveover UndoIcon 1
+click
+
+wait 2
