@@ -1,0 +1,37 @@
+action kCreateCylinder
+action kToggleShowEdges # Turns on
+select
+
+section Taper Taper tool
+state video on
+
+caption .5 .15 3 The Taper Tool lets you apply a taper to models
+wait 3
+
+caption .5 .15 3 To taper a model, select it and click;the Convert to Tapered icon
+state cursor on
+moveover Cylinder_1 1
+click
+highlight ConvertTaperIcon 3
+moveover ConvertTaperIcon 1
+click
+wait 2
+
+caption .5 .15 3 There is a separate tutorial about editing profiles -;note that the end points are movable horizontally
+moveto .520508 .628623 .5
+drag .03 .02 .5
+moveover TaperToolPanel/MovablePoint_2 .5
+drag -.04 .005 .5
+moveover TaperToolPanel/MovablePoint_0 .5
+drag .08 -.005 .5
+wait 1
+
+caption .5 .15 3 These radio buttons change the taper direction
+highlight TaperToolPane/AxisButtons 2 .015
+moveover TaperToolPane/AxisButtons/X 1
+click
+moveover TaperToolPane/AxisButtons/Y 1
+click
+moveover TaperToolPane/AxisButtons/Z 1
+click
+wait 3

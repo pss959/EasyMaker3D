@@ -1,0 +1,34 @@
+action kCreateCylinder
+select
+action kToggleShowEdges  # Turns on
+
+section Clip Clip tool
+state video on
+
+caption .5 .15 3 The Clip Tool lets you clip models with a plane
+wait 3
+
+caption .5 .15 3 To clip a model, select it and click;the Convert to Clipped icon
+state cursor on
+moveover Cylinder_1 1
+click
+highlight ConvertClipIcon 3
+moveover ConvertClipIcon 1
+click
+wait 2
+
+caption .5 .15 3 Drag the arrow to rotate the clipping plane
+moveover ClipTool/Rotator/Cone 1
+state mod on
+drag .181641 -.0833333 2
+wait 1
+
+caption .5 .15 3 Drag the rectangle to translate the clipping plane
+moveover ClipTool/PlaneTranslator 1  -.05 .05
+drag .0292969 .0452898 2
+wait 1
+
+caption .5 .15 3 Repeat the conversion to add another clipping plane
+moveover ConvertClipIcon 1
+click
+wait 3

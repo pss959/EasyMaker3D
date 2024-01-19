@@ -1,0 +1,42 @@
+load PreBend  # Has edges shown.
+select
+
+section Bend Bend tool
+state video on
+
+caption .5 .15 3 The Bend Tool lets you bend models along a circular arc
+wait 3
+
+caption .5 .15 3 To bend a model, select it and click;the Convert to Bent icon
+state cursor on
+moveover Box_1 1
+click
+highlight ConvertBendIcon 3
+moveover ConvertBendIcon 1
+click
+wait 2
+
+caption .5 .15 3 Drag the ring to apply the bend
+moveto .5 .182971 1
+drag -.48 0 2
+moveto .5 .182971 1
+drag -.48 0 2
+wait 2
+
+caption .5 .15 3 Drag the arrow shaft to move the bend center
+moveover BendTool/SpinWidget/Shaft 1  0 .06
+state mod on
+drag -.0498047 -.0307971 2
+wait 1
+
+caption .5 .15 3 Drag the arrow cone to rotate the bend axis
+moveover BendTool/SpinWidget/Cone 1
+state mod on
+drag .147461 -.0326087 2
+state mod off
+wait 4
+
+caption .5 .15 3 Drag the offset arrow if you want to apply an offset
+moveover BendTool/OffsetPosition/Offset 1 .01 .06
+drag -.0283203 -.163043 2
+wait 3

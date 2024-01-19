@@ -1,0 +1,37 @@
+action kCreateBox
+action kToggleShowEdges
+select
+
+section Bevel Bevel tool
+state video on
+
+caption .5 .15 3 The Bevel Tool lets you created beveled or curved edges
+wait 3
+
+caption .5 .15 3 To bevel a model, select it and click;the Convert to Beveled icon
+state cursor on
+moveover Box_1 1
+click
+highlight ConvertBevelIcon 3
+moveover ConvertBevelIcon 1
+click
+wait 2
+
+caption .5 .15 3 There is a separate tutorial about editing profiles
+moveto .439453 .76087 .5
+click
+moveto .45 .76 .5
+moveover BevelToolPanel/MovablePoint_1 .5
+drag .0322266 .0289855 .5
+moveto .524414 .650362 .5
+drag .0292969 .00724638 .5
+wait 1
+
+caption .5 .15 3 The bottom slider changes the size of the bevel on each edge
+moveover BevelToolPanel/ScaleSlider/Thumb 1
+drag .0234375 0 2
+wait 1
+
+moveover BevelToolPanel/ScaleSlider/Thumb 1
+drag -.0429688 0 2
+wait 3

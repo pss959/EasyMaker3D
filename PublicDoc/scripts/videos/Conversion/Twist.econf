@@ -1,0 +1,48 @@
+# Load a stretched box with edges on.
+load PreTwist
+select
+
+section Twist Twist tool
+state video on
+
+caption .5 .15 3 The Twist Tool lets you twist models around an axis
+wait 2
+
+caption .5 .15 3 To twist a model, select it and click;the Convert to Twisted icon
+state cursor on
+moveover Box_1 1
+click
+highlight ConvertTwistIcon 3
+moveover ConvertTwistIcon 1
+click
+wait 1
+
+caption .5 .15 3 You can increase the complexity for finer twist detail
+moveover ComplexityToolIcon 1
+click
+moveover ComplexityTool/Slider 1
+drag .18 0 1
+wait 1
+
+caption .5 .15 3 The Twist tool uses the same interface as the Bend tool
+moveover ConvertTwistIcon 1
+click
+wait 1
+
+caption .5 .15 3 Drag the ring to apply the twist
+moveto .498047 .344203 1
+drag .4 0 2
+wait 1
+
+caption .5 .15 6 Changing the twist axis, center, and offset;may be useful in some cases
+state mod on
+moveover TwistTool/SpinWidget/Cone .2
+drag .18 -.04 2
+wait 1
+moveover TwistTool/SpinWidget/Shaft 1  .01 .2
+drag -.02 -.02 2
+wait 1
+moveover TwistTool/OffsetPosition/Offset .2 0 .04
+drag 0 .08 2
+state mod off
+wait 2

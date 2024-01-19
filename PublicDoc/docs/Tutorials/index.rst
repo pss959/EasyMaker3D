@@ -22,7 +22,7 @@ Some More Details
    :maxdepth: 1
 
    Demonstration of each general tool <GeneralTools>
-   Converting models for other specialized editing <SpecializedTools>
+   Converting models for other specialized editing <Conversion>
    Profile editing (TBD) <TBD>
    Combining models (TBD) <TBD>
 
