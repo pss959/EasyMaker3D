@@ -1,0 +1,72 @@
+state cursor on
+
+section Commands Commands and undo/redo
+state video on
+state animation on
+
+caption .5 .15 5 _APPNAME_ treats your work as a series of commands
+moveover CreateSphereIcon .5
+click
+wait 2
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .14 0 1
+moveover CreateBoxIcon .5
+click
+wait 2
+
+caption .5 .15 7 Anything that modifies the scene is stored as a command
+moveover TranslationTool/X/XSlider/MinFace .5 -.005 0
+drag -.14 0 .5
+moveover CreateCylinderIcon .5
+click
+wait 2
+
+moveover ScaleToolIcon .5
+click
+moveover ScaleTool/YScaler/MaxSlider .5
+drag 0 .1 .5
+
+state mod on
+moveover Box_1 .5
+click
+moveover Sphere_1 .5
+click
+state mod off
+moveover CombineHullIcon .5
+click
+moveover TranslationToolIcon .5
+click
+
+caption .5 .15 6 You can undo these commands back to the starting point
+moveover UndoIcon 1
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+
+caption .5 .15 6 And, of course, redo back to any point
+moveover RedoIcon 1
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait 2

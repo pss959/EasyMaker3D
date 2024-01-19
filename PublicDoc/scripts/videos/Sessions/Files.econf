@@ -1,0 +1,89 @@
+state animation off
+
+# Recreate the state from the end of Commands.econf:
+action kCreateSphere
+moveover TranslationTool/X/XSlider/MaxFace 0
+drag .14 0 0
+action kCreateBox
+moveover TranslationTool/X/XSlider/MinFace .5 -.005 0
+drag -.14 0 0
+action kCreateCylinder
+action kScaleTool
+moveover ScaleTool/YScaler/MaxSlider 0
+drag 0 .1 0
+action kSelectAll
+action kCombineHull
+
+section Files Session files
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 5 When you save a session, _APPNAME_ stores all commands;in a file with a _SESSION_EXTENSION_ extension
+moveover OpenSessionPanelIcon .5
+click
+moveover SaveAs .5
+click
+moveover FilePanel/Input .5
+click
+key Shift-s
+wait .1
+key a
+wait .1
+key m
+wait .1
+key p
+wait .1
+key l
+wait .1
+key e
+moveover Accept .5
+click
+
+load Sample # Makes it appear as if the Save-As worked.
+wait 2
+
+caption .5 .15 5 When you load a session file, it executes;all of the commands again, so you can undo/redo them ...
+
+state fileexist on
+moveover OpenSessionPanelIcon .5
+click
+moveover Load .5
+click
+moveover FilePanel/Input .5
+click
+key Shift-s
+wait .1
+key a
+
+wait .1
+key m
+wait .1
+key p
+wait .1
+key l
+wait .1
+key e
+moveover Accept .5
+click
+state fileexist off
+wait 1
+
+caption .5 .15 5 ... as if you were still working in the same session
+moveover UndoIcon 1
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click
+wait .5
+moveover RedoIcon 1
+click
+wait .5
+click
+wait .5
+click
+wait .5
+click

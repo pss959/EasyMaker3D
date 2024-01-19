@@ -1,0 +1,23 @@
+load Sample
+wait 2
+
+section State Session state
+state video on
+state cursor on
+
+caption .5 .15 3 Session files also include some of the session state
+moveover UndoIcon 1
+click
+moveover ToggleShowEdgesIcon 1
+click
+wait 1
+
+caption .5 .15 3 Such as what was undone, what models are hidden;and the state of the point and edge targets
+moveover TreePanel/ModelRow_0/VisSwitcher/HideButton 1
+click
+wait 2
+
+caption .5 .15 3 This state is restored when a session is loaded
+moveover TogglePointTargetIcon 1
+click
+wait 3

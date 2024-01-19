@@ -70,6 +70,7 @@ merges = {
     'Sessions' : [
         'Commands',
         'Files',
+        'State',
     ],
     'WorkArea' : [
         'Stage',
