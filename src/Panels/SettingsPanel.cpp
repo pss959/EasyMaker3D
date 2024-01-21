@@ -86,10 +86,6 @@ void SettingsPanel::InitDirectories_() {
     // Set up directory validation.
     auto validator = [&](const Str &s){
         EnableDefaultAndCurrentButtons_();
-        std::cerr << "XXXX SPV '" << s
-                  << "' returns "
-                  << path_list_->IsValidDirectory(s)
-                  << "\n";
         return path_list_->IsValidDirectory(s);
     };
     session_pane_->SetValidationFunc(validator);
