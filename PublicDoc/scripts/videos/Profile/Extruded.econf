@@ -1,0 +1,9 @@
+# --- Extruded
+
+action kCreateExtruded
+state video on
+caption .5 .15 3 The outline of an Extruded model is a profile
+moveover ExtrudedToolPanel/MovablePoint_2 1
+drag .04 -.01 1
+wait 2
+state video off

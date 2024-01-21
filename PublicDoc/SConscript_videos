@@ -77,6 +77,12 @@ merges = {
         'Text',
         'Imported',
     ],
+    'Profile' : [
+        'Tools',
+        'Adding',
+        'Deleting',
+        'Snapping',
+    ],
     'Selection' : [
         'NewModels',
         'SwitchingTools',

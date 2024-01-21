@@ -21,9 +21,9 @@ Some More Details
 .. toctree::
    :maxdepth: 1
 
-   Demonstration of each general tool <GeneralTools>
+   Demonstration of general tools <GeneralTools>
    Converting models for other specialized editing <Conversion>
-   Profile editing (TBD) <TBD>
+   Profile editing <Profile>
    Combining models (TBD) <TBD>
 
 Advanced Topics

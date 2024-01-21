@@ -1,0 +1,27 @@
+action kCreateRevSurf
+action kToggleShowEdges
+moveto .438477 .778986 0
+drag .0361328 .0253623 0
+moveto .451172 .588768 0
+drag .0341797 -.0416666 0
+
+section Deleting Deleting profile points
+state cursor on
+state video on
+
+caption .5 .15 3 Drag a point over the green X to delete it
+moveover RevSurfToolPanel/MovablePoint_2 1
+drag -.0615234 .00181162 2
+wait 1
+moveover RevSurfToolPanel/MovablePoint_2 1
+drag .0761719 .134058 2
+wait 1
+
+caption .5 .15 3 Note that the blue endpoints of a RevSurf profile;are not movable and cannot be deleted
+moveover RevSurfToolPanel/StartPoint 1
+wait 3
+
+caption .5 .15 3 Also, a RevSurf profile must have at least 3 points,;so this point cannot be deleted
+moveover RevSurfToolPanel/MovablePoint_1 1
+drag -.03 -.01 2
+wait 3

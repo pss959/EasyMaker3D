@@ -1,0 +1,24 @@
+action kCreateRevSurf
+action kToggleShowEdges
+moveover RevSurfToolPanel/MovablePoint_1 0
+drag -.0566406 0.106884 0
+
+section Snapping Snapping profile points
+state cursor on
+state video on
+
+caption .5 .15 3 Points can be snapped by holding the shift key or;double-clicking when dragging
+moveto .410156 .650362 1
+state mod on
+drag .0244141 .0652174 3
+
+caption .5 .15 3 When a point is nearly aligned vertically, horizontally,;or diagonally with neighbor points, it will snap
+moveto .410156 .606884 1
+drag .0898438 .0525362 3
+wait 3
+
+caption .5 .15 3 A snapped point and edge are shown as green;while dragging
+moveover RevSurfToolPanel/MovablePoint_3 1
+drag .0292969 0.0670289 2
+state mod off
+wait 3

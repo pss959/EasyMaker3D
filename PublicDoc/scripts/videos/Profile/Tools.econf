@@ -1,0 +1,11 @@
+action kCreateRevSurf
+action kToggleShowEdges
+
+section Tools Tools using profiles
+state video on
+
+caption .5 .15 3 Four specialized tools allow you to edit a profile:;Bevel, Extruded, RevSurf, and Taper
+wait 3
+
+caption .5 .15 3 Editing is similar for all four, as illustrated;with the RevSurf Tool shown here
+wait 3
