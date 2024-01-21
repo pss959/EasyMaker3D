@@ -1,0 +1,12 @@
+load PreCSG
+select
+
+section Intro Combining models 
+state video on
+
+caption .5 .15 3 More complex models can be created by combining;two or more models
+wait 3
+
+caption .5 .15 3 Icons for combining models are found on this shelf
+highlight CombiningShelf 3 0
+wait 3

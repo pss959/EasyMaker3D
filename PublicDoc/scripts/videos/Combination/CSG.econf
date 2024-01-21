@@ -1,0 +1,20 @@
+load PreCSG
+select
+
+section CSG Constructive Solid Geometry (CSG) 
+state video on
+
+caption .5 .15 3 The other ways to combine models use constructive;solid geometry (CSG)
+wait 3
+
+caption .5 .15 3 CSG requires at least 2 models to be selected
+state cursor on
+moveover Box_1 .5
+click
+state mod on
+moveover Cylinder_1 .5
+click
+moveover Sphere_1 .5
+click
+state mod off
+wait 2

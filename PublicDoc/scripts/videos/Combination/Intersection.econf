@@ -1,0 +1,22 @@
+load PreCSG
+select Box_1 Cylinder_1 Sphere_1
+
+section Intersection CSG Intersection 
+state video on
+
+caption .5 .15 3 This icon combines the selected models using CSG Intersection
+highlight CombineCSGIntersectionIcon 3 0
+wait 2
+
+caption .5 .15 3 Click it to form the intersection of all selected models
+state cursor on
+moveover CombineCSGIntersectionIcon 1
+click
+wait 2
+
+caption .5 .15 3 Note that in this case the intersection is very small
+wait 3
+
+moveover UndoIcon 1
+click
+wait 2

@@ -1,0 +1,45 @@
+load PreCSG
+select
+
+section Hull Convex hull 
+state video on
+
+caption .5 .15 3 The simplest way to combine models is to create a convex hull
+state cursor on
+moveover Box_1 .5
+click
+state mod on
+moveover Cylinder_1 .5
+click
+moveover Sphere_1 .5
+click
+state mod off
+wait 2
+
+caption .5 .15 3 The icon for creating a Hull model is here
+highlight CombineHullIcon 2 0
+wait 2
+
+caption .5 .15 3 Click it to combine all selected models
+moveover CombineHullIcon 1
+click
+wait 2
+
+caption .5 .15 3 You can also create a Hull from a single model
+moveover DeleteIcon .5
+click
+moveover CreateTextIcon .5
+click
+moveover TextToolPanel/TextInput 1
+click
+key o
+wait .1
+key .
+wait .1
+moveover Apply .1
+click
+moveover TranslationToolIcon .1
+click
+moveover CombineHullIcon 1
+click
+wait 3

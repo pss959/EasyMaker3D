@@ -10,10 +10,12 @@ Getting Started
    :maxdepth: 1
 
    An introductory tour of the main features of the work area <WorkArea>
+   Panel overview (TBD) <TBD>
    Creating and editing different types of primitive models <Primitives>
    Selecting models and attaching tools <Selection>
    Sessions, command history, and undo/redo <Sessions>
    Basic non-tool editing operations <Editing>
+   
 
 Some More Details
 -----------------
@@ -24,7 +26,7 @@ Some More Details
    Demonstration of general tools <GeneralTools>
    Converting models for other specialized editing <Conversion>
    Profile editing <Profile>
-   Combining models (TBD) <TBD>
+   Combining models <Combination>
 
 Advanced Topics
 ---------------

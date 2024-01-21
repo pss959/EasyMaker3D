@@ -43,6 +43,15 @@ scripts = [
 # (and also the subdirectory name) mapped to the individual component videos in
 # that subdirectory.
 merges = {
+    'Combination' : [
+        'Intro',
+        'Hull',
+        'CSG',
+        'Union',
+        'Intersection',
+        'Difference',
+        'CSGTool',
+    ],
     'Conversion' : [
         'Intro',
         'Bend',

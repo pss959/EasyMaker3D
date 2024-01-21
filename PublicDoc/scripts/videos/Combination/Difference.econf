@@ -1,0 +1,43 @@
+load PreCSG
+select Box_1 Cylinder_1 Sphere_1
+
+section Difference CSG Difference 
+state video on
+
+caption .5 .15 3 This icon combines the selected models using CSG Difference
+highlight CombineCSGDifferenceIcon 3 0
+wait 2
+
+caption .5 .15 3 Click it and all secondary selections are;subtracted from the primary selection
+state cursor on
+moveover CombineCSGDifferenceIcon 1
+click
+wait 2
+
+# Turn the stage a little.
+moveto .555664 .0688406 .5
+drag -.4 0 .5
+
+caption .5 .15 3 Unlike union and intersection, the selection order;for models matters for difference
+moveover UndoIcon .5
+click
+moveto .555664 .0688406 .5
+state mod on
+click
+state mod off
+click
+moveto .057 .19 .5  # Floor
+click
+moveover Cylinder_1 .5
+click
+state mod on
+moveover Box_1 .5
+click
+moveover Sphere_1 .5
+click
+state mod off
+wait 2
+
+moveover CombineCSGDifferenceIcon 1
+click
+wait 2

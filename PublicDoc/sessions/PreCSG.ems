@@ -1,0 +1,66 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.8.0",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 1 1 2.5,
+      mode: "kBaseSymmetric",
+      model_names: ["Box_1"],
+    },
+    TranslateCommand {
+      translation: -4 0 0,
+      model_names: ["Box_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    ChangeCylinderCommand {
+      is_top_radius: True,
+      new_radius: 0.5,
+      model_names: ["Cylinder_1"],
+    },
+    ChangeCylinderCommand {
+      is_top_radius: False,
+      new_radius: 3,
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand {
+      translation: 0 3 0,
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand {
+      translation: -2 0 0,
+      model_names: ["Cylinder_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kSphere",
+      result_name: "Sphere_1",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 1.5 1.5 1.5,
+      mode: "kBaseSymmetric",
+      model_names: ["Sphere_1"],
+    },
+    TranslateCommand {
+      translation: 2 0 0,
+      model_names: ["Sphere_1", "Box_1", "Cylinder_1"],
+    },
+  ],
+  current_index: 11,
+}
