@@ -2,21 +2,28 @@
 
 #include "Panels/Panel.h"
 #include "Util/FilePath.h"
+#include "Util/Memory.h"
 
+class FilePathList;
+namespace Parser { class Registry; }
 DECL_SHARED_PTR(DropdownPane);
 DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(TextInputPane);
 DECL_SHARED_PTR(FilePanel);
 DECL_SHARED_PTR(SettingsPanel);
 
-namespace Parser { class Registry; }
-
 /// SettingsPanel is a derived Panel class that implements settings management.
 ///
 /// \ingroup Panels
 class SettingsPanel : public Panel {
+  public:
+    /// Sets a FilePathList instance to use for file-system-related queries.
+    /// This can be called to use a mock version to simulate a file system.
+    void SetFilePathList(FilePathList *list);
+
   protected:
-    SettingsPanel() {}
+    SettingsPanel();
+    virtual ~SettingsPanel();
 
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
@@ -44,6 +51,9 @@ class SettingsPanel : public Panel {
     /// This is set to true so that changes to Pane values do not cause the
     /// EnableDefaultAndCurrentButtons_() function to change anything.
     bool ignore_button_updates_ = false;
+
+    /// FilePathList used for file system queries.
+    std::unique_ptr<FilePathList> path_list_;
 
     void InitDirectories_();
     void InitTooltipSlider_();

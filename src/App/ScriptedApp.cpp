@@ -34,6 +34,7 @@
 #include "Panels/Board.h"
 #include "Panels/FilePanel.h"
 #include "Panels/KeyboardPanel.h"
+#include "Panels/SettingsPanel.h"
 #include "Parser/Parser.h"
 #include "SG/CoordConv.h"
 #include "SG/Node.h"
@@ -71,7 +72,8 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
                              bool include_hidden) const override;
     virtual bool IsValidDirectory(const FilePath &path) const {
         const Str fn = path.GetFileName();
-        return fn.starts_with("Dir") || fn == "stl" || fn == "maker";
+        return fn.empty() || fn.starts_with("Dir") ||
+            fn == "stl" || fn == "maker";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
         return file_exists_;
@@ -565,17 +567,17 @@ void ScriptedApp::InitControllers_() {
 }
 
 void ScriptedApp::InitMockFilePathList_() {
-    // Use the MockFilePathList_ for the FilePanel and ImportToolPanel.
+    // Use the MockFilePathList_ for the FilePanel, ImportToolPanel, and
+    // SettingsPanel.
     mock_fpl_.reset(new MockFilePathList_);
 
-    const auto set_mock = [&](const Str &panel_name){
-        const auto &panel_mgr = *GetContext().panel_manager;
-        auto panel = panel_mgr.GetTypedPanel<FilePanel>(panel_name);
-        panel->SetFilePathList(mock_fpl_.get());
-    };
-
-    set_mock("FilePanel");
-    set_mock("ImportToolPanel");
+    const auto &panel_mgr = *GetContext().panel_manager;
+    auto fp = panel_mgr.GetTypedPanel<FilePanel>("FilePanel");
+    auto ip = panel_mgr.GetTypedPanel<FilePanel>("ImportToolPanel");
+    auto sp = panel_mgr.GetTypedPanel<SettingsPanel>("SettingsPanel");
+    fp->SetFilePathList(mock_fpl_.get());
+    ip->SetFilePathList(mock_fpl_.get());
+    sp->SetFilePathList(mock_fpl_.get());
 }
 
 void ScriptedApp::InitScene_() {

@@ -33,7 +33,7 @@ class PanelManager {
     std::shared_ptr<T> GetTypedPanel(const Str &name) const {
         static_assert(std::derived_from<T, Panel> == true);
         auto panel = std::dynamic_pointer_cast<T>(GetPanel(name));
-        ASSERT(panel);
+        ASSERTM(panel, "No typed panel named " + name);
         return panel;
     }
 

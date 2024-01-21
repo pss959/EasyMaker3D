@@ -11,7 +11,21 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
+#include "Util/FilePathList.h"
 #include "Util/General.h"
+
+SettingsPanel::SettingsPanel() : path_list_(new FilePathList) {
+}
+
+SettingsPanel::~SettingsPanel() {
+}
+
+// LCOV_EXCL_START [snaps only]
+void SettingsPanel::SetFilePathList(FilePathList *list) {
+    ASSERT(list);
+    path_list_.reset(list);
+}
+// LCOV_EXCL_STOP
 
 void SettingsPanel::InitInterface() {
     InitDirectories_();
@@ -72,7 +86,11 @@ void SettingsPanel::InitDirectories_() {
     // Set up directory validation.
     auto validator = [&](const Str &s){
         EnableDefaultAndCurrentButtons_();
-        return FilePath(s).IsDirectory();
+        std::cerr << "XXXX SPV '" << s
+                  << "' returns "
+                  << path_list_->IsValidDirectory(s)
+                  << "\n";
+        return path_list_->IsValidDirectory(s);
     };
     session_pane_->SetValidationFunc(validator);
     export_pane_->SetValidationFunc(validator);
