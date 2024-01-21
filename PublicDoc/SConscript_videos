@@ -77,6 +77,12 @@ merges = {
         'ColorTool',
         'NameTool',
     ],
+    'Panels' : [
+        'Intro',
+        'Moving',
+        'Resizing',
+        'Interaction',
+    ],
     'Primitives' : [
         'Icons',
         'Cylinder',

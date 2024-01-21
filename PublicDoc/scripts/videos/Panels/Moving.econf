@@ -1,0 +1,25 @@
+section Moving Moving panels
+state video on
+
+caption .5 .15 3 All application and tool panels can be moved around for;convenience or ease of access
+state cursor on
+moveover OpenSessionPanelIcon 1
+click
+wait 2
+
+caption .5 .15 3 Drag any of the four rectangular handles;on the edges to move a panel
+moveover AppBoard/XYMoveSlider/Right 1
+drag .04 -.03 1
+wait 1
+moveover AppBoard/XYMoveSlider/Top 1
+drag -.06 .04 1
+wait 2
+
+caption .5 .15 3 Drag the bar to move closer and further away;(or left and right)
+moveover AppBoard/XZMoveSlider/Crossbar 1 .04 0
+drag .11 -.07 1
+wait 2
+
+moveover New 1
+click
+wait 1

@@ -1,0 +1,47 @@
+state fileexist on
+action kOpenSettingsPanel
+
+section Interacting Interacting with panels
+state video on
+
+caption .5 .15 2 Panels support typical 2D interaction
+wait 2
+
+caption .5 .15 2 There are push buttons, radio buttons, dropdowns,;sliders, text input, etc.
+state cursor on
+moveover SettingsPanel/TooltipDelay/Slider/Thumb 1
+drag .04 0 1
+moveover SettingsPanel/ExportTo 1
+click
+wait 2
+key Escape
+
+caption .5 .15 2 Clicking any enabled interactive element activates it
+moveover SettingsPanel/SessionDir 1
+click
+
+caption .5 .15 3 Pressing Tab or Shift-Tab moves keyboard focus;on interactive elements
+state cursor off
+wait .5
+key Tab
+wait .5
+key Tab
+wait .5
+key Tab
+wait .5
+key Shift-Tab
+wait .5
+key Shift-Tab
+wait 1
+
+caption .5 .15 3 The Enter key activates the focused element
+wait 1
+key Enter
+wait 3
+
+caption .5 .15 3 The Escape key cancels and dismisses the current panel
+wait 2
+key Escape
+wait 1
+key Escape
+wait 1

@@ -1,0 +1,26 @@
+section Intro Panel Types
+state video on
+
+caption .5 .15 3 _APPNAME_ uses two main types of 2D panels;for some interaction
+wait 3
+
+caption .5 .15 3 Application panels are used for application-wide functions;such as the session panel shown here
+state cursor on
+moveover OpenSessionPanelIcon 1
+click
+wait 2
+
+moveover New .5
+click
+
+caption .5 .15 3 Tool panels implement specialized tools for certain types;of models, such as the Extruded Tool shown here
+moveover CreateExtrudedIcon 1
+click
+wait 2
+
+moveover UndoIcon 1
+click
+
+caption .5 .15 3 There is also the Tree Panel, which has its own tutorial
+highlight TreePanel 3 .015
+wait 3
