@@ -33,6 +33,7 @@ class Script {
 
     struct ActionInstr : public Instr {
         Action action;
+        float  delay;
     };
     struct CaptionInstr : public Instr {
         Point2f pos;

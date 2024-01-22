@@ -223,15 +223,20 @@ bool Script::ParseN_(const Str &s, size_t &n) {
 Script::InstrPtr Script::ParseAction_(const StrVec &words) {
     ActionInstrPtr ainst;
     Action         action;
-    if (words.size() != 2U) {
+    float          delay = 0;
+    if (words.size() < 2U || words.size() > 3U) {
         Error_("Bad syntax for action instruction");
     }
     else if (! Util::EnumFromString(words[1], action)) {
         Error_("Unknown action name for action instruction");
     }
+    else if (words.size() == 3U && ! ParseFloat_(words[2], delay)) {
+        Error_("Invalid delay float for action instruction");
+    }
     else {
         ainst.reset(new ActionInstr);
         ainst->action = action;
+        ainst->delay  = delay;
     }
     return ainst;
 }
@@ -269,7 +274,7 @@ Script::InstrPtr Script::ParseClick_(const StrVec &words) {
 Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
     DragInstrPtr dinst;
     float        dx, dy, duration;
-    if (words.size() < 4 || words.size() > 5) {
+    if (words.size() < 4U || words.size() > 5U) {
         Error_("Bad syntax for drag instruction");
     }
     else if (! ParseFloat_(words[1], dx) || ! ParseFloat_(words[2], dy) ||

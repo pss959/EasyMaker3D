@@ -433,6 +433,8 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     bool keep_going = true;
     bool was_stopped = false;
 
+    ProcessDelayedActions_(render_count);
+
     if (are_more_instructions || events_pending) {
         UpdateCaption_();
         if (video_)
@@ -462,7 +464,8 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
             std::cout << "  Processing " << instr.name
                       << " (instruction " << (cur_instruction_ + 1)
                       << " of " << instr_count << ") on line "
-                      << instr.line_number << "\n";
+                      << instr.line_number << " at frame " << render_count
+                      << "\n";
         if (instr.name == "stop") {
             keep_going  = false;
             was_stopped = true;
@@ -645,7 +648,17 @@ bool ScriptedApp::ProcessInstruction_(const Script::Instr &instr) {
 bool ScriptedApp::ProcessAction_(const Script::ActionInstr &instr) {
     ASSERTM(GetContext().action_processor->CanApplyAction(instr.action),
             Util::EnumName(instr.action));
-    GetContext().action_processor->ApplyAction(instr.action);
+    // Delayed action just gets added to the list to apply later.
+    if (instr.delay > 0) {
+        DelayedAction_ da;
+        da.action        = instr.action;
+        da.delay         = instr.delay;
+        da.trigger_frame = 0;   // Computed later.
+        delayed_actions_.push_back(da);
+    }
+    else {
+        GetContext().action_processor->ApplyAction(instr.action);
+    }
     return true;
 }
 
@@ -987,6 +1000,27 @@ void ScriptedApp::Finish_() {
     video_.reset();
 
     EnableMouseMotionEvents(true);
+}
+
+void ScriptedApp::ProcessDelayedActions_(size_t render_count) {
+    for (auto &da: delayed_actions_) {
+        // Set the trigger frame if not already done.
+        if (da.trigger_frame == 0) {
+            da.trigger_frame =
+                render_count + static_cast<int>(options_.fps * da.delay);
+        }
+        // Trigger if the frame has come.
+        if (da.trigger_frame <= render_count) {
+            if (options_.report)
+                std::cout << "    -- Processing delayed action "
+                          << Util::EnumName(da.action)
+                          << " at frame " << render_count << "\n";
+            GetContext().action_processor->ApplyAction(da.action);
+        }
+    }
+    // Remove triggered actions.
+    std::erase_if(delayed_actions_, [render_count](const DelayedAction_ &da){
+        return da.trigger_frame <= render_count; });
 }
 
 Frustum ScriptedApp::GetFrustum_() const {
