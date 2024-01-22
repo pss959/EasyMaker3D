@@ -1,0 +1,29 @@
+action kCreateCylinder
+action kToggleSpecializedTool
+
+section Changing Changing precision levels
+state video on
+
+caption .5 .15 3 These buttons increase or decrease precision
+highlight PrecisionControl/Buttons 3 .015
+wait 3
+
+caption .5 .15 4 You can use them for more precise interaction
+state cursor on
+moveover PrecisionControl/IncreasePrecision 1
+click
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .2 0 3
+wait 2
+
+caption .5 .15 4 Note that the drag motion is scaled down with higher precision,;which allows for finer control
+moveover TranslationTool/Y/YSlider/MaxFace 1
+drag 0 .2 3
+wait 2
+
+caption .5 .15 3 This is not needed for rotations, though
+moveover RotationToolIcon 1
+click
+moveto .577148 .346014 1
+drag -.063 .02 2
+wait 3

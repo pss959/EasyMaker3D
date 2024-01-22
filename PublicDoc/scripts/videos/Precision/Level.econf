@@ -1,0 +1,36 @@
+action kCreateCylinder
+action kToggleSpecializedTool
+
+section Level Precision levels
+state video on
+
+caption .5 .15 3 There are three levels of precision available;during drag operations
+wait 3
+
+caption .5 .15 3 The precision control on the back wall shows;the current level
+highlight PrecisionControl 3 .015
+wait 3
+
+caption .5 .15 3 The default precision is 1 unit for linear operations;and 15 degrees for angles
+highlight PrecisionControl/Text 3
+wait 3
+
+caption .5 .15 3 This means that translating a model snaps to 1-unit values
+state cursor on
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .2 0 3
+wait 2
+
+caption .5 .15 3 The same is true for scaling and other linear operations
+moveover ScaleToolIcon 1
+click
+moveover ScaleTool/XScaler/MinSlider 1
+drag -.15 0 3
+wait 2
+
+caption .5 .15 3 Rotations snap to 15-degree angles
+moveover RotationToolIcon 1
+click
+moveto .740234 .375 1 # Green ring
+drag -.236328 .0362319 3
+wait 2

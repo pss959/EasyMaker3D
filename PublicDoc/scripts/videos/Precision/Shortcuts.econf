@@ -1,0 +1,19 @@
+action kCreateCylinder
+action kToggleSpecializedTool
+action kIncreasePrecision
+
+section Shortcuts Keyboard shortcuts
+state video on
+
+caption .5 .15 3 The 'z' and 'x' keyboard shortcuts also;decrease and increase precision
+wait 1
+key z
+wait 2
+
+caption .5 .15 6 They even work during drag operations, meaning that;you can start a coarse drag and refine it while dragging
+state cursor on
+moveover TranslationTool/X/XSlider/MaxFace 1
+action kIncreasePrecision 2  # Delay during drag
+action kIncreasePrecision 4  # Delay during drag
+drag .2 0 6
+wait 2

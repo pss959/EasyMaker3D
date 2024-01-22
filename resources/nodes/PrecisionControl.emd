@@ -42,42 +42,46 @@ PrecisionControl "PrecisionControl" {
       outline_width: .001,
     },
 
-    IconWidget "IncreasePrecision" {
-      action:     "kIncreasePrecision",
-      translation: -6 2 0,
-      hover_scale: 1.2 1.2 1,
+    Node "Buttons" {
       children: [
-        CLONE "T_PrecisionBox" {}
-        Node "Lines" {
-          disabled_flags: "kIntersectAll",
-          translation: 0 0 .6 ,
-          blocks: [ CLONE "T_LineColor" {} ],
-          shapes: [
-            CLONE "T_Line" { translation: -.7 0 0 },
-            CLONE "T_Line" {},
-            CLONE "T_Line" { translation:  .7 0 0 },
+        IconWidget "IncreasePrecision" {
+          action:     "kIncreasePrecision",
+          translation: -6 2 0,
+          hover_scale: 1.2 1.2 1,
+          children: [
+            CLONE "T_PrecisionBox" {}
+            Node "Lines" {
+              disabled_flags: "kIntersectAll",
+              translation: 0 0 .6 ,
+              blocks: [ CLONE "T_LineColor" {} ],
+              shapes: [
+                CLONE "T_Line" { translation: -.7 0 0 },
+                CLONE "T_Line" {},
+                CLONE "T_Line" { translation:  .7 0 0 },
+              ]
+            }
           ]
-        }
-      ]
-    },
+        },
 
-    IconWidget "DecreasePrecision" {
-      action:     "kDecreasePrecision",
-      translation: -6 -2 0,
-      hover_scale: 1.2 1.2 1,
-      children: [
-        CLONE "T_PrecisionBox" {}
-        Node "Lines" {
-          disabled_flags: "kIntersectAll",
-          translation: 0 0 .6 ,
-          blocks: [ CLONE "T_LineColor" {} ],
-          shapes: [
-            CLONE "T_Line" { translation: -1 0 0 },
-            CLONE "T_Line" {},
-            CLONE "T_Line" { translation:  1 0 0 },
+        IconWidget "DecreasePrecision" {
+          action:     "kDecreasePrecision",
+          translation: -6 -2 0,
+          hover_scale: 1.2 1.2 1,
+          children: [
+            CLONE "T_PrecisionBox" {}
+            Node "Lines" {
+              disabled_flags: "kIntersectAll",
+              translation: 0 0 .6 ,
+              blocks: [ CLONE "T_LineColor" {} ],
+              shapes: [
+                CLONE "T_Line" { translation: -1 0 0 },
+                CLONE "T_Line" {},
+                CLONE "T_Line" { translation:  1 0 0 },
+              ]
+            }
           ]
-        }
-      ]
+        },
+      ],
     },
   ],
 }

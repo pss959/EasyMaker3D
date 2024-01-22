@@ -83,6 +83,11 @@ merges = {
         'Resizing',
         'Interaction',
     ],
+    'Precision' : [
+        'Level',
+        'Changing',
+        'Shortcuts',
+    ],
     'Primitives' : [
         'Icons',
         'Cylinder',

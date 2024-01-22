@@ -33,7 +33,7 @@ Advanced Topics
 .. toctree::
    :maxdepth: 1
 
-   Features for precise editing (TBD) <TBD>
+   Features for precise editing <Precision>
    Laying out models along lines or circles (TBD) <TBD>
    The Tree Panel (TBD) <TBD>
    Other useful features (TBD) <TBD>
