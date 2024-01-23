@@ -79,8 +79,9 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
         return file_exists_;
     }
     virtual void TweakPath(FilePath &path, bool is_read) override {
-        // If reading from a file, change the path to a real one.
-        if (is_read) {
+        // If reading from a file and not pretending it exists, change the path
+        // to a real one.
+        if (is_read && ! file_exists_) {
             path = Util::ReplaceString(path.ToString(),
                                        "/projects/maker",
                                        "PublicDoc/sessions");
