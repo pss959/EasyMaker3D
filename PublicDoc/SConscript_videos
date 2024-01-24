@@ -113,6 +113,12 @@ merges = {
         'Files',
         'State',
     ],
+    'PointTarget' : [
+        'Intro',
+        'StagePlacement',
+        'ModelPlacement',
+        'BoundsPlacement',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',

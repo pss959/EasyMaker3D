@@ -1,0 +1,15 @@
+section Intro The Point Target
+state video on
+
+caption .5 .15 3 _APPNAME_ provides a Point Target to help with;precise interaction
+wait 3
+
+caption .5 .15 3 This icon turns the Point Target on and off
+highlight TogglePointTargetIcon 3 .01
+wait 3
+
+caption .5 .15 3 The Point Target looks like this
+state cursor on
+moveover TogglePointTargetIcon 1
+click
+wait 2

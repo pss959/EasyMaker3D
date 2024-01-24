@@ -1,0 +1,16 @@
+action kTogglePointTarget
+
+section StagePlacement Placement on the stage
+state video on
+
+caption .5 .15 3 The Point Target can be dragged anywhere on the stage, snapping;based on the current precision level
+state cursor on
+moveover PointTargetWidget/Shaft 1
+drag .136719 -.173913 2
+wait 1
+
+caption .5 .15 3 Any new model will be positioned at the target position;and oriented to the target direction
+state animation on
+moveover CreateCylinderIcon 1
+click
+wait 2

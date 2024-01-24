@@ -26,6 +26,18 @@ Some More Details
    Converting models for other specialized editing <Conversion>
    Profile editing <Profile>
    Combining models <Combination>
+   The Tree Panel (TBD) <TBD>
+
+Features for Precise Editing
+----------------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   Precise editing with tools <Precision>
+   Using the Point Target <PointTarget>
+   Using the Edge Target (TBD) <TBD>
+   Laying out models along lines or circles (TBD) <TBD>
 
 Advanced Topics
 ---------------
@@ -33,9 +45,6 @@ Advanced Topics
 .. toctree::
    :maxdepth: 1
 
-   Features for precise editing <Precision>
-   Laying out models along lines or circles (TBD) <TBD>
-   The Tree Panel (TBD) <TBD>
    Other useful features (TBD) <TBD>
    How to edit with VR devices
 

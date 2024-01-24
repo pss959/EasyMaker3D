@@ -1,0 +1,29 @@
+action kTogglePointTarget
+moveover PointTargetWidget/Shaft 0
+drag .136719 -.173913 0
+action kCreateCylinder
+
+section ModelPlacement Placement on models
+state video on
+
+caption .5 .15 5 The Point Target can also be dragged onto the;surface of any model
+state cursor on
+moveover TranslationToolIcon 1
+click
+moveover TranslationTool/X/XSlider/MinFace 1 -.01 0
+drag -.118164 -.0163044 1
+moveover PointTargetWidget/Shaft 1 0 .02
+drag -.115234 -.0235507 3
+wait 1
+
+caption .5 .15 3 The target position snaps to vertices of the model
+moveover ToggleShowEdgesIcon 1
+click
+moveover PointTargetWidget/Base 1
+drag .00976562 .083 3
+wait 1
+
+caption .5 .15 3 When snapping, the sphere at the end turns white
+moveover PointTargetWidget/Shaft 1
+drag -.0820312 .0181159 3
+wait 2

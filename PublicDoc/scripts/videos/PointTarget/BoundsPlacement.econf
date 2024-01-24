@@ -1,0 +1,36 @@
+action kTogglePointTarget
+action kToggleShowEdges
+moveover PointTargetWidget/Shaft 0
+drag .136719 -.173913 0
+action kCreateCylinder
+moveover TranslationToolIcon 0
+click
+moveover TranslationTool/X/XSlider/MinFace 0 -.01 0
+drag -.118164 -.0163044 0
+moveover PointTargetWidget/Shaft 0 0 .02
+drag -.115234 -.0235507 0
+moveover PointTargetWidget/Base 0
+drag .00976562 .083 0
+moveover PointTargetWidget/Shaft 0
+drag -.0820312 .0181159 0
+
+section BoundsPlacement Placement on model bounds
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 With the shift key pressed, the Point Target position snaps;to the 3D bounds of the model instead of the surface
+moveover PointTargetWidget/Shaft 1
+state mod on
+drag .109375 -.0851449 2
+state mod off
+wait 2
+
+caption .5 .15 3 This feature can be useful for aligning objects
+moveover PointTargetWidget/Base 1
+state mod on
+drag -.0439453 .121377 2
+state mod off
+moveover CreateTorusIcon 1
+click
+wait 2
