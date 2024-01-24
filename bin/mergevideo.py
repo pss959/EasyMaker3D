@@ -14,7 +14,8 @@ Usage:  mergevideo.py OutFile InFile1 InFile2 [...]
   Merges (concatenates) input video files ("InFile1.mp4", "InFile2.mp4", ...)
   to create "OutFile.mp4" and does the same for the WebVTT chapter (.vtt)
   files. All chapter times in the output video and WebVTT files are offset
-  appropriately for the merged video.
+  appropriately for the merged video. This also converts the output video
+  stream using libx264.
 
   Notes:
    - This must be run in the top-level project directory.
@@ -141,9 +142,10 @@ def WriteVideoListFile_(in_files):
 # -----------------------------------------------------------------------------
 
 def ConcatenateFiles_(metadata_file, list_file, out_file):
+    codec_arg = '-codec libx264'
     ffmpeg_cmd = (f'ffmpeg -v error -f concat -safe 0 -i {list_file.name}' +
                   f' -i {metadata_file.name} -map_metadata 1 -c copy -y' +
-                  f' {out_file}.mp4')
+                  f' {codec_arg} {out_file}.mp4')
     output = run(ffmpeg_cmd.split(), capture_output=True, text=True)
     if output.stderr:
         print(f'*** Error running ffmpeg: {output.stderr}')
