@@ -248,6 +248,10 @@ class Model : public ClickableWidget, public ITargetable {
     // ITargetable Interface.
     // ------------------------------------------------------------------------
 
+    /// Redefines this to return true; a Model can have a Target placed on
+    /// bounds instead of the mesh.
+    virtual bool CanTargetBounds() const override { return true; }
+
     /// Redefines this to place the point target on the surface of the Model or
     /// on the bounds if in modified mode. This checks for snapping if close to
     /// a mesh vertex or important bounds point.

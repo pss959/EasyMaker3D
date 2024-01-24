@@ -58,6 +58,7 @@ StageWidget "Stage" {
               }
             },
             Node "TargetParent" {
+              disabled_flags: "kIntersect",  # Interferes with target placement.
               children: [
                 <"nodes/Widgets/PointTargetWidget.emd">,
                 <"nodes/Widgets/EdgeTargetWidget.emd">,

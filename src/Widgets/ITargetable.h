@@ -12,6 +12,10 @@ struct DragInfo;
 /// \ingroup Widgets
 class ITargetable {
   public:
+    /// Returns true if the ITargetable distinguishes between placing Targets
+    /// on the bounds vs. the surface. The default is false.
+    virtual bool CanTargetBounds() const { return false; }
+
     /// Places a PointTarget on the ITargetable according to the pointer drag
     /// information in the given DragInfo. It should set \p position and \p
     /// direction to place the PointTarget (in stage coordinates) and set \p

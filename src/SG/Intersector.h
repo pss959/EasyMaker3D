@@ -19,8 +19,10 @@ class Intersector {
     static Hit IntersectScene(const Scene &scene, const Ray &ray);
 
     /// Intersects the subgraph rooted by the given Node with the given Ray,
-    /// returning a Hit instance.
-    static Hit IntersectGraph(const SG::NodePtr &root, const Ray &ray);
+    /// returning a Hit instance. If \p bounds_only is true, only Node bounds
+    /// are intersected instead of their meshes.
+    static Hit IntersectGraph(const SG::NodePtr &root, const Ray &ray,
+                              bool bounds_only = false);
 
   private:
     class Visitor_;  // Does most of the work.

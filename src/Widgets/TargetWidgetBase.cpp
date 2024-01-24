@@ -1,6 +1,7 @@
 #include "Widgets/TargetWidgetBase.h"
 
 #include "SG/ColorMap.h"
+#include "SG/Intersector.h"
 
 void TargetWidgetBase::CreationDone() {
     DraggableWidget::CreationDone();
@@ -24,12 +25,35 @@ void TargetWidgetBase::StartDrag(const DragInfo &info) {
 void TargetWidgetBase::ContinueDrag(const DragInfo &info) {
     DraggableWidget::ContinueDrag(info);
 
-    // If there is an ITargetable on the path, let the derived class tell it
-    // how to place the target.
-    if (auto targetable = info.hit.path.FindNodeUpwards<ITargetable>()) {
-        PlaceTarget(*targetable, info);
-        NotifyChanged();
+    // If there is an ITargetable on the intersection path, this calls
+    // PlaceTarget() to let the derived class place the target.
+
+    // If modified-dragging, redo the intersection test with the bounds_only
+    // flag set to true. This allows Models in the scene to have their bounds
+    // intersected instead of their meshes.
+    bool target_placed = false;
+    if (info.is_modified_mode && info.trigger == Trigger::kPointer) {
+        auto hit =
+            SG::Intersector::IntersectGraph(info.hit.path[0], info.ray, true);
+        if (auto targetable = hit.path.FindNodeUpwards<ITargetable>()) {
+            if (targetable->CanTargetBounds()) {
+                DragInfo bounds_info = info;
+                bounds_info.hit = hit;
+                PlaceTarget(*targetable, bounds_info);
+                target_placed = true;
+            }
+        }
     }
+
+    // If there was no bounds placement, try with the regular Hit info.
+    if (! target_placed) {
+        if (auto targetable = info.hit.path.FindNodeUpwards<ITargetable>()) {
+            PlaceTarget(*targetable, info);
+            target_placed = true;
+        }
+    }
+    if (target_placed)
+        NotifyChanged();
 }
 
 void TargetWidgetBase::EndDrag() {

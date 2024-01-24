@@ -26,11 +26,18 @@ namespace SG {
 /// every Node before intersecting shapes.
 class Intersector::Visitor_  {
   public:
+    /// Sets a flag indicating that only Node bounds are intersected instead of
+    /// their meshes. This is false by default.
+    void SetBoundsOnly() { bounds_only_ = true; }
+
     /// Intersects the given ray (in world coordinates) with the the scene
-    /// rooted by the given Node.  Returns the resulting Hit.
-    Hit IntersectScene(const Ray &world_ray, const NodePtr &root);
+    /// graph rooted by the given Node. Returns the resulting Hit.
+    Hit IntersectGraph(const Ray &world_ray, const NodePtr &root);
 
   private:
+    /// Flag indicating that only Node bounds should be intersected.
+    bool  bounds_only_ = false;
+
     /// Current shortest parametric distance to a Hit.
     float min_distance_ = std::numeric_limits<float>::max();
 
@@ -66,7 +73,7 @@ class Intersector::Visitor_  {
                           const NodePath &path, const Matrix4f &matrix);
 };
 
-Hit Intersector::Visitor_::IntersectScene(const Ray &world_ray,
+Hit Intersector::Visitor_::IntersectGraph(const Ray &world_ray,
                                           const NodePtr &root) {
     if (root)
         IntersectSubgraph_(world_ray, NodePath(root), Matrix4f::Identity());
@@ -119,10 +126,11 @@ bool Intersector::Visitor_::IntersectNode_(const Ray &world_ray,
     if (! IntersectNodeBounds_(obj_ray, path, distance))
         return false;
 
-    // If the node is using its bounds as an intersection proxy, return the hit
-    // on the bounds. Since this should never be used for exact intersections,
-    // the shape, point, and normal do not really matter.
-    if (node.ShouldUseBoundsProxy()) {
+    // If only bounds are to be intersected, or if the node is using its bounds
+    // as an intersection proxy, return the hit on the bounds. Since this
+    // should never be used for exact intersections, the shape, point, and
+    // normal do not really matter.
+    if (bounds_only_ || node.ShouldUseBoundsProxy()) {
         KLOG('I', Util::Spaces(2 * path.size())
              << " Using bounds proxy for " << node.GetDesc());
         result_hit_.path         = path;
@@ -214,18 +222,21 @@ bool Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
 Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
     Visitor_ visitor;
     KLOG('I', "Intersecting scene with " << ray);
-    const Hit hit = visitor.IntersectScene(ray, scene.GetRootNode());
+    const Hit hit = visitor.IntersectGraph(ray, scene.GetRootNode());
     KLOG('I', "Intersection on " << hit.path.ToString());
     KLOG('i', "Intersection on " << hit.path.ToString());
     return hit;
 }
 
-Hit Intersector::IntersectGraph(const SG::NodePtr &root, const Ray &ray) {
+Hit Intersector::IntersectGraph(const SG::NodePtr &root, const Ray &ray,
+                                bool bounds_only) {
     ASSERT(root);
     Visitor_ visitor;
     KLOG('I', "Intersecting graph rooted by " << root->GetDesc()
-         << " with " << ray);
-    const Hit hit = visitor.IntersectScene(ray, root);
+         << " with " << ray << " bounds_only=" << bounds_only);
+    if (bounds_only)
+        visitor.SetBoundsOnly();
+    const Hit hit = visitor.IntersectGraph(ray, root);
     KLOG('I', "Intersection on " << hit.path.ToString());
     KLOG('i', "Intersection on " << hit.path.ToString());
     return hit;
