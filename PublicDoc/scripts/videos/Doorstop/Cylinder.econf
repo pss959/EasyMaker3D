@@ -1,0 +1,25 @@
+action kCreateTorus
+action kTranslationTool
+moveover TranslationTool/X/XSlider/MaxFace 0
+drag .088 0 0
+moveto .624023 .240942 0  # From translating Torus.
+
+section Cylinder Creating the cylinder
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 Click on the Create Cylinder icon to create a cylinder
+moveover CreateCylinderIcon 1
+click
+wait 2
+
+caption .5 .15 3 Select the Scale Tool
+moveover ScaleToolIcon 1
+click
+wait 1
+
+caption .5 .15 3 Drag the top scaler down until the height is 3 units
+moveover ScaleTool/YScaler/MaxSlider 2
+drag 0 -.04 2
+wait 2

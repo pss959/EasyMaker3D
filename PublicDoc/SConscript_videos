@@ -55,7 +55,14 @@ merges = {
         'Taper',
         'Twist',
     ],
-    # 'Doorstop' : [],  XXXX Need to split this up.
+    'Doorstop' : [
+        'Starting',
+        'Torus',
+        'Cylinder',
+        'Combining',
+        'Name',
+        'Export',
+    ],
     'Editing' : [
         'Icons',
         'Delete',

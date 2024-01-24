@@ -1,0 +1,53 @@
+action kCreateTorus
+action kTranslationTool
+moveover TranslationTool/X/XSlider/MaxFace 0
+drag .088 0 0
+action kCreateCylinder
+action kScaleTool
+moveover ScaleTool/YScaler/MaxSlider 0
+drag 0 -.04 0
+select Cylinder_1 Torus_1
+action kCombineHull
+moveover CombineHullIcon 0
+
+section Name Changing the name
+state video on
+state cursor on
+
+caption .5 .15 3 Select the Name Tool
+moveover NameToolIcon 1
+click
+wait 1
+
+caption .5 .15 3 Click in the text input area to activate it
+moveover NameToolPane/Input/Widget 1
+click
+wait 1
+
+caption .5 .15 3 Press Control-A to select all text and type the new name
+wait 1
+key Ctrl-a
+wait .1
+key Shift-d
+wait .1
+key o
+wait .1
+key o
+wait .1
+key r
+wait .1
+key s
+wait .1
+key t
+wait .1
+key o
+wait .1
+key p
+wait .1
+key Enter
+wait 1
+
+caption .5 .15 3 Click the Apply button
+moveover Apply 1
+click
+wait 2

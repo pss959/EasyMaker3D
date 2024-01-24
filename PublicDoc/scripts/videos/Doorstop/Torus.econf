@@ -1,0 +1,19 @@
+section Torus Creating the torus
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 Click on the Create Torus icon to create a torus
+moveover CreateTorusIcon 1
+click
+wait 2
+
+caption .5 .15 3 Select the Translation Tool
+moveover TranslationToolIcon 1
+click
+wait 2
+
+caption .5 .15 3 Drag the right handle until the torus;moves 5 units to the right
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .088 0 3
+wait 2

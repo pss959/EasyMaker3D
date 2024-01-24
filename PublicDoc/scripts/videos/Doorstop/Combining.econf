@@ -1,0 +1,25 @@
+action kCreateTorus
+action kTranslationTool
+moveover TranslationTool/X/XSlider/MaxFace 0
+drag .088 0 0
+action kCreateCylinder
+action kScaleTool
+moveover ScaleTool/YScaler/MaxSlider 0
+drag 0 -.04 0
+moveto .5 .36413 0  # From scaling Cylinder.
+
+section Combining Combining the models
+state video on
+state cursor on
+
+caption .5 .15 3 Shift-click the torus to also select it
+moveover Torus_1 1
+state mod on
+click
+state mod off
+wait 1
+
+caption .5 .15 3 Click on the Combine Hull icon to combine the models
+moveover CombineHullIcon 2
+click
+wait 2

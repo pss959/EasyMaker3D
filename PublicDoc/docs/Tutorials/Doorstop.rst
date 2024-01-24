@@ -1,10 +1,10 @@
 A Simple Doorstop Example
 -------------------------
 
-This example will use |appname| in non-VR mode to create a simple doorstop
-model and output it as an STL file.
+This example uses |appname| to create a simple doorstop model and output it as
+an STL file.
 
-.. incvideo:: Doorstop ../videos/Doorstop.mp4 80% center
+.. incvideo:: Doorstop ../videos/Doorstop/Doorstop.mp4 80% center
 
 |block-image|
 
@@ -13,6 +13,7 @@ Start the Application
 
 .. incimage:: /images/DoorstopSessionPanel.jpg 240px right
 
+:vidref:`Doorstop:Starting`
 Starting the application should open a maximized window that you can interact
 with using the keyboard and mouse. The first thing you should see is :ref:`this
 panel that lets you interact with sessions <ug-session-panel>`. Click on the
@@ -26,6 +27,7 @@ Create and Position a Torus
 
 .. incimage:: /images/CreateTorusIcon.jpg 300px right
 
+:vidref:`Doorstop:Torus`
 Click on the :ref:`Create Torus icon <ug-create-torus>` icon (3D torus icon on
 the bottom-left shelf) to drop a new torus model into the scene. The torus will
 have some interactive handles attached to it that you can use to change the
@@ -65,6 +67,7 @@ Create a Cylinder and Change Its Size
 
 .. incimage:: /images/CreateCylinderIcon.jpg 300px right
 
+:vidref:`Doorstop:Cylinder`
 Click on the :ref:`Create Cylinder icon <ug-create-cylinder>` icon (3D cylinder
 on the bottom-left shelf) to add a cylinder. Like the torus, the cylinder has
 specialized handles for changing the top and bottom diameters, but you won't
@@ -92,6 +95,7 @@ Combine the two Models to Create the Doorstop
 
 .. incimage:: /images/DoorstopSelected.jpg 240px right
 
+:vidref:`Doorstop:Combining`
 The next step is to select both models. Since the cylinder is already selected,
 you just need to add the torus to the selection. You can do that in any of
 these ways:
@@ -122,6 +126,7 @@ Change the Model Name
 .. incimage:: /images/DoorstopRenamed.jpg 240px right
 .. incimage:: /images/NameToolIcon.jpg    300px right
 
+:vidref:`Doorstop:Name`
 This is not a necessary step, but it will make the next step (exporting)
 easier. With the hull model selected, click on the :ref:`Name Tool
 <ug-name-tool>` icon from the General Tools shelf. This will bring up a 2D
@@ -139,6 +144,7 @@ Export the Model for 3D Printing
 .. incimage:: /images/DoorstopExport.jpg   300px right
 .. incimage:: /images/SessionPanelIcon.jpg 300px right
 
+:vidref:`Doorstop:Export`
 Exporting is done with the :ref:`Session Panel <ug-session-panel>` that you saw
 when you started the application. Bring the panel up by clicking on the Session
 Panel icon on the Session shelf (you may need to move the Name Panel out of the

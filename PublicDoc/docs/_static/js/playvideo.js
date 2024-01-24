@@ -4,6 +4,7 @@
 // after the last iteration of the loop in AddButtonListeners().
 function PlayVideoCB(video, startTime) {
     return function() {
+        video.scrollIntoView();
         video.play();
         video.pause();
         video.currentTime = startTime;
