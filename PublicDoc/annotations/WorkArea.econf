@@ -16,8 +16,7 @@ text 0.203125 0.951691 center Specialized Tool Shelf
 
 rect 2 0.358854 0.814493 0.146354 0.11401
 text 0.43152 0.94  center Precision Control
-# XXXX Fix this for new height slider height
-rect 2 0.8125 0.525362 0.0849609 0.110507
+rect 2 0.819336 0.550725 0.0732422 0.0978261
 text .92 .57 left Height
 text .92 .53 left Slider
 
