@@ -1,0 +1,30 @@
+action kCreateBox
+moveover TranslationTool/X/XSlider/MinFace 0 -.004 0
+drag -.172852 0 0
+
+section NewModels Positioning new models
+state video on
+state animation on
+
+caption .5 .15 3 The Point Target is active only when it is visible
+state cursor on
+moveover TogglePointTargetIcon 1
+click
+moveover PointTargetWidget/Base 1 0 .01
+drag .0917969 0 1
+wait 1
+
+caption .5 .15 3 When active, any new model will be positioned;at the target position
+state animation on
+moveover CreateCylinderIcon 1
+click
+wait 2
+
+caption .5 .15 3 It will also be oriented to the target direction
+moveover PointTargetWidget/Cone 1 0 .016
+state mod on
+drag -.235352 -.0706522 2
+state mod off
+moveover CreateCylinderIcon 1
+click
+wait 2

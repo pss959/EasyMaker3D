@@ -118,6 +118,8 @@ merges = {
         'StagePlacement',
         'ModelPlacement',
         'BoundsPlacement',
+        'NewModels',
+        'Tools',
     ],
     'WorkArea' : [
         'Stage',

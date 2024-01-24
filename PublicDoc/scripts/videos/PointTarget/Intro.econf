@@ -13,3 +13,6 @@ state cursor on
 moveover TogglePointTargetIcon 1
 click
 wait 2
+
+caption .5 .15 3 The ring is used for radial layout, covered in a different tutorial
+wait 3
