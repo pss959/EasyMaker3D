@@ -65,6 +65,14 @@ class RootModel : public ParentModel {
 
     ///@}
 
+    // ------------------------------------------------------------------------
+    // ITargetable Interface.
+    // ------------------------------------------------------------------------
+
+    /// Redefines this to return false; unlike other Models, the RootModel
+    /// should not receive target placement.
+    virtual bool CanTargetBounds() const override { return false; }
+
   protected:
     RootModel() {}
 
