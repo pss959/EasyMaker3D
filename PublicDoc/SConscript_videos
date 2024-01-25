@@ -63,6 +63,12 @@ merges = {
         'Name',
         'Export',
     ],
+    'EdgeTarget' : [
+        'Intro',
+        'ModelPlacement',
+        'BoundsPlacement',
+        'Tools',
+    ],
     'Editing' : [
         'Icons',
         'Delete',
@@ -78,6 +84,10 @@ merges = {
         'ComplexityTool',
         'ColorTool',
         'NameTool',
+    ],
+    'Layout' : [
+        'Linear',
+        'Radial',
     ],
     'Panels' : [
         'Intro',
@@ -121,12 +131,6 @@ merges = {
         'ModelPlacement',
         'BoundsPlacement',
         'NewModels',
-        'Tools',
-    ],
-    'EdgeTarget' : [
-        'Intro',
-        'ModelPlacement',
-        'BoundsPlacement',
         'Tools',
     ],
     'WorkArea' : [

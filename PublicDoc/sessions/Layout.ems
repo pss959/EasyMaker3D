@@ -1,39 +1,88 @@
-CommandList { # 0x5573d399c5d0
-  app_info: AppInfo { # 0x5573d3a56930
-    version: "0.0.1",
-    session_state: SessionState { # 0x5573d3a56ad0
-      point_target_visible: True,
-      edge_target_visible: True,
+CommandList {
+  app_info: AppInfo {
+    version: "1.8.0",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
+      hidden_models: [],
     },
   },
   commands: [
-    CreatePrimitiveModelCommand { # 0x5573d4022150
+    CreatePrimitiveModelCommand {
       type: "kCylinder",
       result_name: "Cylinder_1",
       initial_scale: 2,
     },
-    CreatePrimitiveModelCommand { # 0x5573d39a21f0
-      type: "kBox",
-      result_name: "Box_1",
-      initial_scale: 2,
+    ScaleCommand {
+      ratios: 0.25 1 0.25,
+      mode: "kBaseSymmetric",
+      model_names: ["Cylinder_1"],
     },
-    ChangeEdgeTargetCommand { # 0x5573d68cff10
-      old_target: EdgeTarget { # 0x5573d688a150
-      },
-      new_target: EdgeTarget { # 0x5573d687ac60
-        position0: -6 0 4,
-        position1: -6 4 4,
-      },
+    ScaleCommand {
+      ratios: 1 1.5 1,
+      mode: "kAsymmetric",
+      model_names: ["Cylinder_1"],
     },
-    ChangePointTargetCommand { # 0x5573d69ae2c0
-      old_target: PointTarget { # 0x5573d69ef2b0
-        direction: 0 1 0,
-      },
-      new_target: PointTarget { # 0x5573d69adfd0
-        position: 6 0 4,
-        direction: 0 1 0,
-      },
+    ChangeNameCommand {
+      new_name: "Peg",
+      model_name: "Cylinder_1",
+    },
+    CopyCommand {
+      model_names: ["Peg"],
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    PasteCommand {
+    },
+    TranslateCommand {
+      translation: 0 0 -10,
+      model_names: ["Peg_E", "Peg", "Peg_A", "Peg_B", "Peg_C", "Peg_D"],
+    },
+    TranslateCommand {
+      translation: -4 0 0,
+      model_names: ["Peg"],
+    },
+    TranslateCommand {
+      translation: -2 0 0,
+      model_names: ["Peg_A"],
+    },
+    TranslateCommand {
+      translation: 0 0 3,
+      model_names: ["Peg_B"],
+    },
+    TranslateCommand {
+      translation: 5 0 0,
+      model_names: ["Peg_C"],
+    },
+    TranslateCommand {
+      translation: 2 0 0,
+      model_names: ["Peg_D"],
+    },
+    TranslateCommand {
+      translation: -5 0 0,
+      model_names: ["Peg_E"],
+    },
+    TranslateCommand {
+      translation: 0 0 3,
+      model_names: ["Peg_E"],
+    },
+    TranslateCommand {
+      translation: 11 0 0,
+      model_names: ["Peg_E"],
+    },
+    ChangeColorCommand {
+      new_color: 0.729926 0.918035 0.605744 1,
+      model_names: ["Peg_E"],
     },
   ],
-  current_index: 4,
+  current_index: 20,
 }

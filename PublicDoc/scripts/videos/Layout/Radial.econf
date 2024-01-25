@@ -1,0 +1,72 @@
+load Layout
+select
+
+section Radial Radial layout
+state video on
+state animation on
+
+caption .5 .15 3 The Point Target can also be used to lay models;out along a circular arc with even spacing
+state cursor on
+moveover TogglePointTargetIcon 1
+click
+wait 2
+
+caption .5 .15 3 First, drag the ring on the target to the desired radius
+moveto .511719 .26087 1
+drag .0351562 -.0362319 2
+
+caption .5 .15 3 Select the objects to lay out in order
+moveover Peg .5 0 .02
+click
+state mod on
+moveover Peg_A .5 0 .02
+click
+moveover Peg_B .5 0 .02
+click
+moveover Peg_C .5 0 .02
+click
+moveover Peg_D .5 0 .02
+click
+moveover Peg_E .5 0 .02
+click
+state mod off
+
+caption .5 .15 3 Click this icon to lay out the selected objects
+highlight RadialLayoutIcon 2 .015
+wait 2
+moveover RadialLayoutIcon 1
+click
+wait 1
+
+caption .5 .15 3 To change the starting angle, drag the green spoke
+moveover UndoIcon 1
+click
+moveto .583008 .273551 1
+drag -.0527344 -.0869565 2
+moveover RadialLayoutIcon 1
+click
+wait 1
+
+caption .5 .15 3 To change the arc, drag the red (end) spoke
+moveover UndoIcon 1
+click
+moveto .504883 .251812 1
+drag .0556641 .0615942 2
+moveover RadialLayoutIcon 1
+click
+wait 1
+
+caption .5 .15 4 Drag the radius down to hide the layout widgets
+moveover UndoIcon 1
+click
+moveto .356445 .514493 1
+click
+moveto .553711 .224638 1
+drag -.0439453 .0471014 1
+wait 1
+
+caption .5 .15 3 If one model is selected, clicking the icon moves;that model to the point target
+moveover Peg_C 1
+click
+moveover RadialLayoutIcon 1
+click

@@ -1,0 +1,60 @@
+load Layout
+select
+
+section Linear Linear layout
+state video on
+state animation on
+
+caption .5 .15 3 The Edge Target can also be used to lay models;out along a line with even spacing
+state cursor on
+moveover ToggleEdgeTargetIcon 1
+click
+wait 2
+
+caption .5 .15 6 The layout direction and spacing are;defined by the Edge Target
+moveover CreateBoxIcon 1
+click
+wait 1.4  # Animation
+moveover TranslationToolIcon 1
+click
+moveover TranslationTool/X/XSlider/MaxFace 1 .005 0
+drag -.1 0 1
+
+caption .5 .15 7 You can create a temporary model to set up the target
+moveover ScaleToolIcon 1
+click
+moveover ScaleTool/XScaler/MaxSlider 1
+drag -.0361328 0 1
+moveover EdgeTargetWidget/Edge 1
+drag -.128906 .0471015 1
+moveover DeleteIcon 1
+click
+wait 1
+
+caption .5 .15 3 Click the Edge Target if necessary to flip the direction
+moveover EdgeTargetWidget/Edge 2
+click
+wait 1
+
+caption .5 .15 3 Select the objects to lay out in order
+moveover Peg .5
+click
+state mod on
+moveover Peg_A .5
+click
+moveover Peg_B .5
+click
+moveover Peg_C .5
+click
+moveover Peg_D .5
+click
+moveover Peg_E .5
+click
+state mod off
+
+caption .5 .15 3 Click this icon to lay out the selected objects
+highlight LinearLayoutIcon 2 .015
+wait 2
+moveover LinearLayoutIcon 1
+click
+wait 2
