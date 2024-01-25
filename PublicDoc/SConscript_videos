@@ -123,6 +123,12 @@ merges = {
         'NewModels',
         'Tools',
     ],
+    'EdgeTarget' : [
+        'Intro',
+        'ModelPlacement',
+        'BoundsPlacement',
+        'Tools',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',

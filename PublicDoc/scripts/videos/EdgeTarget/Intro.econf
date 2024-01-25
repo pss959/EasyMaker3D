@@ -1,0 +1,15 @@
+section Intro The Edge Target
+state video on
+
+caption .5 .15 3 The Edge Target helps create precise lengths for models
+wait 3
+
+caption .5 .15 3 This icon turns the Edge Target on and off
+highlight ToggleEdgeTargetIcon 3 .01
+wait 3
+
+caption .5 .15 3 The Edge Target looks like this
+state cursor on
+moveover ToggleEdgeTargetIcon 1
+click
+wait 2

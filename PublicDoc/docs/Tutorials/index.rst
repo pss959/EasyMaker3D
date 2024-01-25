@@ -36,7 +36,7 @@ Features for Precise Editing
 
    Precise editing with tools <Precision>
    Using the Point Target <PointTarget>
-   Using the Edge Target (TBD) <TBD>
+   Using the Edge Target <EdgeTarget>
    Laying out models along lines or circles (TBD) <TBD>
 
 Advanced Topics

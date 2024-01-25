@@ -9,7 +9,7 @@ model in the scene.
 
 When visible, the Point Target is used for the position and orientation of any
 new model that is added. It also serves as a snapping aid when translating or
-rotating a model/
+rotating a model.
 
 The ring on the Point Target is used for Radial Layout, covered in another
 tutorial.

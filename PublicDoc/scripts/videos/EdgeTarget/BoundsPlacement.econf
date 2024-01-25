@@ -1,0 +1,24 @@
+load EdgeTarget   # Edge target is on
+select
+moveover EdgeTargetWidget/End0 0 0 .02
+drag 0 -.0561594 0
+moveto .492188 .175725 0  # Last cursor placement
+
+section ModelPlacement Placement on model bounds
+state video on
+state cursor on
+state animation on
+
+caption .5 .15 3 With the shift key pressed, the Edge Target snaps to;edges of the 3D model bounds instead of the surface
+moveover EdgeTargetWidget/Edge 1
+state mod on
+drag .188477 .202899 2
+state mod off
+wait 1
+
+caption .5 .15 3 This is useful for copying sizes of irregular models
+moveover EdgeTargetWidget/Edge 1
+state mod on
+drag -.0439453 -.13587 2
+state mod off
+wait 2

@@ -1,0 +1,27 @@
+load EdgeTarget   # Edge target is on
+select
+
+section ModelPlacement Placement on models
+state video on
+state cursor on
+state animation on
+
+caption .5 .15 5 The Edge Target snaps to edges of models it is dragged;over and updates its length to match
+moveover ToggleShowEdgesIcon 1
+click
+moveover EdgeTargetWidget/Edge 1
+drag -.124023 0.0289855 2
+wait .5
+moveover EdgeTargetWidget/Edge 0
+drag -.0292969 -.0380435 1
+wait .5
+moveover EdgeTargetWidget/Edge 0
+drag -.00683594 .0652174 1
+wait .5
+drag -.0302734 -.112319 1
+wait .5
+
+caption .5 .15 3 Dragging it over the stage preserves the current length
+moveover EdgeTargetWidget/End0 1 0 .02
+drag .169922 -.0144928 2
+wait 2
