@@ -122,12 +122,18 @@ void SessionPanel::ContinueSession_() {
 }
 
 void SessionPanel::LoadSession_() {
+    // If a session was already loaded, use the same directory. Otherwise, use
+    // the session directory from the settings.
+    const auto &settings = GetSettings();
+    FilePath initial_path = settings.GetLastSessionPath();
+    if (! initial_path)
+        initial_path = settings.GetSessionDirectory();
+
     // Access and set up the FilePanel.
     auto fp = GetTypedPanel<FilePanel>("FilePanel");
-    const auto &settings = GetSettings();
     fp->Reset();
     fp->SetTitle("Select a session file (" + extension_ + ") to load");
-    fp->SetInitialPath(settings.GetSessionDirectory());
+    fp->SetInitialPath(initial_path);
     fp->SetTargetType(FilePanel::TargetType::kExistingFile);
     fp->SetExtension(extension_);
     fp->SetHighlightPath(settings.GetLastSessionPath(), " [CURRENT SESSION]");
