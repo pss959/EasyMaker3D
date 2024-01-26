@@ -1,7 +1,7 @@
 Sessions and Commands
 ---------------------
 
-.. incvideo:: Sessions ../videos/Sessions/Sessions.mp4 80% center
+.. incvideo:: Sessions
 
 Topics covered in this tutorial:
 

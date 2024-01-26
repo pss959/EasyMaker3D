@@ -1,6 +1,7 @@
 The Tree Panel
 --------------
 
-XXXX
+The :ref:`Tree Panel<ug-tree-panel>` on the back wall shows information about
+the current session and provides some interactive features.
 
-.. incvideo:: TreePanel ../videos/TreePanel/TreePanel.mp4 80% center
+.. incvideo:: TreePanel

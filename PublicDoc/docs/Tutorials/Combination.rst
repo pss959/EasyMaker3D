@@ -14,4 +14,4 @@ CSG Intersection :vidref:`Combination:Intersection` :ugref:`ug-combine-csg-inter
 CSG Difference   :vidref:`Combination:Difference`   :ugref:`ug-combine-csg-difference`
 ================ ================================== ====================================
 
-.. incvideo:: Combination ../videos/Combination/Combination.mp4 80% center
+.. incvideo:: Combination

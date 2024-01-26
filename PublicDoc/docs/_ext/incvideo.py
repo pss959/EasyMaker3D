@@ -22,15 +22,27 @@ class VideoNode(nodes.General, nodes.Element):
 
 class IncVideo(Directive):
     """IncVideo adds an embedded video with a corresponding chapters file.
-    Required arguments: id uri width align
+    Required arguments: id
+    Optional arguments: width [default 90%] align [default center]
 
     The ID can be used in videobutton to start the video at a certain time.
     """
     has_content        = True
-    required_arguments = 4
+    required_arguments = 1
+    optional_arguments = 2
+
+    # Set up optional arguments.
+    option_spec = {
+        'width': directives.unchanged,
+        'align': directives.unchanged,
+    }
 
     def run(self):
-        (id, uri, width, align) = self.arguments
+        id    = self.arguments[0]
+        width = self.options.get('width', '90%')
+        align = self.options.get('align', 'center')
+        # Construct the URI from the ID.
+        uri   = f'../videos/{id}/{id}.mp4'
         # Save the mapping from video ID to source file.
         video_dict[id] = uri
         return [VideoNode(id=id, source=uri, width=width, align=align)]

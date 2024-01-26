@@ -1,7 +1,7 @@
 Selecting Models and Attaching Tools
 ------------------------------------
 
-.. incvideo:: Selection ../videos/Selection/Selection.mp4 80% center
+.. incvideo:: Selection
 
 New Models
 ..........

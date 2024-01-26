@@ -13,4 +13,4 @@ For radial layout, the ring on the Point Target can be dragged out to the
 desired radius. Interactive spokes are then exposed to let you change the
 starting and ending angles for the layout.
 
-.. incvideo:: Layout ../videos/Layout/Layout.mp4 80% center
+.. incvideo:: Layout

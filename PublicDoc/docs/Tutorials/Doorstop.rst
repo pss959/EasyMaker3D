@@ -4,7 +4,7 @@ A Simple Doorstop Example
 This example uses |appname| to create a simple doorstop model and output it as
 an STL file.
 
-.. incvideo:: Doorstop ../videos/Doorstop/Doorstop.mp4 80% center
+.. incvideo:: Doorstop
 
 |block-image|
 

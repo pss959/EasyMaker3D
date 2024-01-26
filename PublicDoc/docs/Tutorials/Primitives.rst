@@ -29,7 +29,7 @@ summarized here:
     Imported :vidref:`Primitives:Imported` :ugref:`ug-import-tool`   Import Tool
     ======== ============================= =======================================
 
-.. incvideo:: Primitives ../videos/Primitives/Primitives.mp4 80% center
+.. incvideo:: Primitives
 
 Box and Sphere Models
 .....................

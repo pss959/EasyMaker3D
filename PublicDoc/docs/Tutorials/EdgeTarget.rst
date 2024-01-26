@@ -9,4 +9,4 @@ in the scene.
 
 When visible, the Edge Target serves as a snapping aid when scaling or sizing a model.
 
-.. incvideo:: EdgeTarget ../videos/EdgeTarget/EdgeTarget.mp4 80% center
+.. incvideo:: EdgeTarget

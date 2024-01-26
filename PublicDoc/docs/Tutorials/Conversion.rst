@@ -28,4 +28,4 @@ type. For example, to bend a model, it must first be converted to a Bent model.
 This tour illustrates all of these specialized tools. For more details, consult
 the :ref:`User Guide <ug-specialized-tools>`.
 
-.. incvideo:: Conversion ../videos/Conversion/Conversion.mp4 80% center
+.. incvideo:: Conversion

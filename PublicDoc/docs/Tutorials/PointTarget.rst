@@ -14,4 +14,4 @@ rotating a model.
 The ring on the Point Target is used for Radial Layout, covered in another
 tutorial.
 
-.. incvideo:: PointTarget ../videos/PointTarget/PointTarget.mp4 80% center
+.. incvideo:: PointTarget

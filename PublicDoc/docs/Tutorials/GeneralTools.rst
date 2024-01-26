@@ -4,7 +4,7 @@ General Tools
 This tour illustrates all of the general tools. For more details, consult the
 :ref:`User Guide <ug-general-tools>`.
 
-.. incvideo:: GeneralTools ../videos/GeneralTools/GeneralTools.mp4 80% center
+.. incvideo:: GeneralTools
 
 The general tools illustrated in the video are:
 
