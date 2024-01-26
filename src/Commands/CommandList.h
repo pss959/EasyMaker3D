@@ -78,7 +78,7 @@ class CommandList : public Parser::Object {
     /// Returns true if any changes have been made (including undo or redo)
     // since the last call to ClearChanges().
     bool AreAnyChanges() const {
-        return did_commands_change_ || current_index_ != index_at_clear_;
+        return did_commands_change_ && current_index_ != index_at_clear_;
     }
 
     /// Removes all orphaned Commands (Commands after the current one) from the
