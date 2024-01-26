@@ -344,8 +344,7 @@ class  Application::Impl_ {
     void StartResetHeight_(bool is_modified_mode);
 
     /// Animation callback function to reset the stage.
-    bool ResetStage_(const Vector3f &start_scale,
-                     const Rotationf &start_rot, float time);
+    bool ResetStage_(float start_scale, const Anglef &start_angle, float time);
 
     /// Animation callback function to reset the height and optionally the
     /// view direction.
@@ -1432,10 +1431,10 @@ void Application::Impl_::MoveGantry_(float height_slider_val) {
 void Application::Impl_::StartResetStage_(bool is_modified_mode) {
     // Reset the stage only if modified-clicked.
     if (is_modified_mode) {
-        const Vector3f  scale = SC_->stage->GetScale();
-        const Rotationf rot   = SC_->stage->GetRotation();
+        const auto scale = SC_->stage->GetScale()[0];
+        const auto angle = RotationAngle(SC_->stage->GetRotation());
         MGR_(animation)->StartAnimation(
-            [&, scale, rot](float t){ return ResetStage_(scale, rot, t); });
+            [&, scale, angle](float t){ return ResetStage_(scale, angle, t); });
     }
 }
 
@@ -1448,21 +1447,21 @@ void Application::Impl_::StartResetHeight_(bool is_modified_mode) {
         return ResetHeightAndView_(height, orient, reset_view, t); });
 }
 
-bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
-                                     const Rotationf &start_rot, float time) {
+bool Application::Impl_::ResetStage_(float start_scale,
+                                     const Anglef &start_angle, float time) {
     // Compute how long the animation should last based on the amount that the
     // scale and rotation have to change.
-    const Anglef angle = AbsAngle(RotationAngle(start_rot));
-    const float max_scale = start_scale[GetMaxAbsElementIndex(start_scale)];
+    const float abs_degrees = std::abs(start_angle.Degrees());
     const float duration =
-        std::max(angle.Degrees() / TK::kMaxStageAngleChangePerSecond,
-                 max_scale       / TK::kMaxStageScaleChangePerSecond);
+        std::max(abs_degrees / TK::kMaxStageAngleChangePerSecond,
+                 start_scale / TK::kMaxStageScaleChangePerSecond);
 
     // Interpolate and update the stage's scale and rotation.
     const float t = std::min(1.f, time / duration);
     StageWidget &stage = *SC_->stage;
-    stage.SetScale(Lerp(t, start_scale, Vector3f(1, 1, 1)));
-    stage.SetRotation(Rotationf::Slerp(start_rot, Rotationf::Identity(), t));
+    const auto scale = Lerp(t, start_scale, 1.f);
+    const auto angle = Lerp(t, start_angle, Anglef());
+    stage.SetScaleAndRotation(scale, angle);
 
     // Keep going until finished.
     return t < 1.f;

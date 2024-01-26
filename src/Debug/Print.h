@@ -92,8 +92,8 @@ void PrintPaneTree(const Pane &root, bool is_brief = true);
 
 /// Prints an indented tree of Models and their transforms starting with the
 /// given root. If \p is_full is true, all other Model-specific fields are
-/// printed as well.
-void PrintModels(const Model &root, bool is_full);
+/// printed as well. The \p scene is provided for computing transformations.
+void PrintModels(const SG::Scene &scene, const Model &root, bool is_full);
 
 /// Prints viewing information for the given Gantry, Frustum, and Stage.
 void PrintViewInfo(const SG::Gantry &gantry, const Frustum &frustum,

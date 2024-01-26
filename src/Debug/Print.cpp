@@ -24,6 +24,7 @@
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
+#include "SG/Search.h"
 #include "SG/Shape.h"
 #include "Util/Assert.h"
 #include "Util/Tuning.h"
@@ -152,7 +153,8 @@ static Matrix4f PrintBounds_(const SG::Node &node, const Matrix4f &wsm,
         std::cout << indent << extra << GetDesc_(obj) << "\n"
                   << indent << "    LOC: " <<  bounds << "\n"
                   << indent << "    STG: " << sbounds << "\n"
-                  << indent << "    WLD: " << wbounds << "\n";
+                  << indent << "    WLD: " << wbounds.ToString(false) << "\n"
+                  << indent << "    WLD: " << wbounds.ToString(true)  << "\n";
     };
 
     print_bounds(node, node.GetBounds(), "");
@@ -283,12 +285,20 @@ static void PrintPaneTree_(const Pane &pane, int level, bool is_brief) {
         PrintPaneTree_(dp->GetMenuPane(), level + 1, is_brief);
 }
 
-static void PrintModelTree_(const Model &model, bool is_full) {
+static void PrintModelTree_(const SG::Scene &scene, const Model &model,
+                            bool is_full) {
+    // Compute mesh bounds and bottom center.
+    const auto bounds = ComputeMeshBounds(model.GetCurrentMesh());
+    const SG::CoordConv cc(SG::FindNodePathInScene(scene, model));
+    const auto bottom_center =
+        cc.ObjectToRoot(bounds.GetFaceCenter(Bounds::Face::kBottom));
+
     const int level = model.GetLevel();
     std::cout << Indent_(level) << GetDesc_(model)
               << " " << Util::EnumName(model.GetStatus()) << "\n";
-    std::cout << Indent_(level + 1) << "mesh bounds: "
-              << ComputeMeshBounds(model.GetCurrentMesh()) << "\n";
+    std::cout << Indent_(level + 1) << "mesh bounds: " << bounds << "\n";
+    std::cout << Indent_(level + 1) << "bottom center at: "
+              << bottom_center << "\n";
 
     // Print the complexity.
     const float complex = model.GetComplexity();
@@ -316,7 +326,7 @@ static void PrintModelTree_(const Model &model, bool is_full) {
     // Recurse on ParentModels.
     if (const auto *parent = dynamic_cast<const ParentModel *>(&model)) {
         for (size_t i = 0; i < parent->GetChildModelCount(); ++i)
-            PrintModelTree_(*parent->GetChildModel(i), is_full);
+            PrintModelTree_(scene, *parent->GetChildModel(i), is_full);
     }
 }
 
@@ -486,9 +496,9 @@ void PrintPaneTree(const Pane &root, bool is_brief) {
     PrintPaneTree_(root, 0, is_brief);
 }
 
-void PrintModels(const Model &root, bool is_full) {
+void PrintModels(const SG::Scene &scene, const Model &root, bool is_full) {
     Surrounder_ surrounder;
-    PrintModelTree_(root, is_full);
+    PrintModelTree_(scene, root, is_full);
 }
 
 void PrintViewInfo(const SG::Gantry &gantry, const Frustum &frustum,

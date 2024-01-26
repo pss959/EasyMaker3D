@@ -361,10 +361,12 @@ static bool HandleShortcut_(const Str &str) {
         Debug::PrintMatricesOnPath(limit_path_);
         break;
       case kPrintModels:
-        Debug::PrintModels(*scene_context_->root_model, false);
+        Debug::PrintModels(*scene_context_->scene, *scene_context_->root_model,
+                           false);
         break;
       case kPrintModelsFull:
-        Debug::PrintModels(*scene_context_->root_model, true);
+        Debug::PrintModels(*scene_context_->scene, *scene_context_->root_model,
+                           true);
         break;
       case kPrintSkeleton:
         Debug::PrintNodesAndShapes(root);
