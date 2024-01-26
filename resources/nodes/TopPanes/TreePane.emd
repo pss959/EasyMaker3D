@@ -96,6 +96,8 @@ BoxPane "TreePane" {
         },
         BoxPane "OrderButtons" {
           orientation: "kHorizontal",
+          padding: 0,
+          spacing: 4,
           panes: [
             CLONE "T_ActionButton" "MoveUp" {
               panes: [ $ICON { $ACTION_BUTTON_SIZE, icon_name: "UpIcon" } ]

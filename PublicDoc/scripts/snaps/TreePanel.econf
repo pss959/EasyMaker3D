@@ -4,7 +4,6 @@ load TreePanel
 select Doorstop
 action kToggleShowEdges
 action kMoveToOrigin
-action kUndo
 select Doorstop TallDoorstop
 snapobj TreePanel TreePanel.jpg .01
 

@@ -61,7 +61,7 @@ select Hull_1
 snapobj BasicsShelf BasicsShelf.jpg .01
 
 # Set up to enable everything on the Layout shelf.
-load Layout
+load Layout2
 action kSelectAll
 snapobj LayoutShelf LayoutShelf.jpg .01
 

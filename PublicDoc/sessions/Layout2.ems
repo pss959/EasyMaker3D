@@ -1,0 +1,39 @@
+CommandList { # 0x5573d399c5d0
+  app_info: AppInfo { # 0x5573d3a56930
+    version: "0.0.1",
+    session_state: SessionState { # 0x5573d3a56ad0
+      point_target_visible: True,
+      edge_target_visible: True,
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand { # 0x5573d4022150
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+    },
+    CreatePrimitiveModelCommand { # 0x5573d39a21f0
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    ChangeEdgeTargetCommand { # 0x5573d68cff10
+      old_target: EdgeTarget { # 0x5573d688a150
+      },
+      new_target: EdgeTarget { # 0x5573d687ac60
+        position0: -6 0 4,
+        position1: -6 4 4,
+      },
+    },
+    ChangePointTargetCommand { # 0x5573d69ae2c0
+      old_target: PointTarget { # 0x5573d69ef2b0
+        direction: 0 1 0,
+      },
+      new_target: PointTarget { # 0x5573d69adfd0
+        position: 6 0 4,
+        direction: 0 1 0,
+      },
+    },
+  ],
+  current_index: 4,
+}
