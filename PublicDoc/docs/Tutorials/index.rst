@@ -26,7 +26,7 @@ Some More Details
    Converting models for other specialized editing <Conversion>
    Profile editing <Profile>
    Combining models <Combination>
-   The Tree Panel (TBD) <TBD>
+   The Tree Panel <TreePanel>
 
 Features for Precise Editing
 ----------------------------
@@ -39,14 +39,16 @@ Features for Precise Editing
    Using the Edge Target <EdgeTarget>
    Laying out models along lines or circles <Layout>
 
-Advanced Topics
----------------
+Other Features
+--------------
 
 .. toctree::
    :maxdepth: 1
 
-   Other useful features (TBD) <TBD>
-   How to edit with VR devices
+   Application settings (TBD) <TBD>
+   Viewing aids (TBD) <TBD>
+   Radial menus (TBD) <TBD>
+   Editing with VR devices (TBD) <TBD>
 
 Examples
 --------
@@ -58,3 +60,4 @@ creating and exporting a model with |appname|.
    :maxdepth: 1
 
    Doorstop
+   Chess Rook (TBD) <TBD>

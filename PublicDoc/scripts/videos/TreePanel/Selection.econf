@@ -1,0 +1,46 @@
+load TreePanel2
+moveover TreePanel/ModelRow_6/HideButton 0
+click
+
+section Models Selection
+state video on
+state cursor on
+
+caption .5 .15 3 Clicking on a name selects the model
+moveover TreePanel/ModelRow_0/ModelButton 1 .01 0
+click
+wait 2
+
+caption .5 .15 3 Shift-clicking or double-clicking adds or removes;from the current selection
+moveover TreePanel/ModelRow_5/ModelButton 1 .01 0
+state mod on
+click
+wait 1
+click
+state mod off
+wait 1
+
+caption .5 .15 3 Selecting a hidden model shows it
+moveover TreePanel/ModelRow_6/ModelButton 1 .01 0
+click
+wait 2
+
+caption .5 .15 3 Selecting a child model hides the parent;and shows the child and its siblings
+moveover TreePanel/ModelRow_2/ModelButton 1 .01 0
+click
+wait 2
+
+caption .5 .15 3 Selecting the parent hides the children again
+moveover TreePanel/ModelRow_0/ModelButton 1 .01 0
+click
+wait 2
+
+caption .5 .15 3 You can drag a rectangle to select multiple models
+moveto .671875 .806159 1
+drag .0732422 -.108696 2
+wait 1
+
+caption .5 .15 3 This also works for child models
+moveto .675781 .777174 1
+drag .0107422 -.03 2
+wait 1

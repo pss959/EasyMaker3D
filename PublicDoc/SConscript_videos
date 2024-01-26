@@ -133,6 +133,14 @@ merges = {
         'NewModels',
         'Tools',
     ],
+    'TreePanel' : [
+        'Intro',
+        'Session',
+        'Models',
+        'Colors',
+        'Selection',
+        'Order',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',

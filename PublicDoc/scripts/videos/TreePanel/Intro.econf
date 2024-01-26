@@ -1,0 +1,8 @@
+load TreePanel2
+
+section Intro The Tree Panel
+state video on
+
+caption .5 .15 3 The Tree Panel on the back wall shows information about;the session and provides some interactive features
+highlight TreePanel 3 .015
+wait 3

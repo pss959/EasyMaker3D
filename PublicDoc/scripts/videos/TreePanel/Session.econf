@@ -1,0 +1,42 @@
+load TreePanel2
+select
+
+section Session Session information
+state video on
+
+caption .5 .15 3 The top bar of the Tree Panel shows the name;of the current session (or "<Untitled Session>")
+highlight TreePanel/SessionRow 3 .015
+wait 3
+
+caption .5 .15 3 After the name are symbols showing;changes that were made
+wait 3
+
+caption .5 .15 3 An asterisk (*) indicates at least one change was;made to the scene
+state cursor on
+moveover Sphere_1 1
+click
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .02 0 1
+wait 1
+
+caption .5 .15 3 A plus sign (+) indicates that the list of commands;has changed, including by being undone
+moveover UndoIcon 1
+click
+wait 2
+
+caption .5 .15 3 An exclamation point (!) indicates that the;session state has changed
+moveover ToggleShowEdgesIcon 1
+click
+wait 2
+
+caption .5 .15 3 A session can be saved if any of these symbols appear
+wait 3
+
+caption .5 .15 6 This button hides or shows all top-level models
+highlight TreePanel/SessionRow/HideButton 3 .01
+wait 3
+moveover TreePanel/SessionRow/HideButton 1
+click
+wait 1
+click
+wait 1

@@ -1,0 +1,28 @@
+load TreePanel2
+
+section Models Model trees
+state video on
+
+caption .5 .15 3 Model trees appear in the main area
+highlight TreePanel/Scroller 3 .01
+wait 3
+
+caption .5 .15 7 Any top-level model can be hidden or shown;by clicking its visibility button
+highlight TreePanel/ModelRow_0/HideButton 3 .005
+wait 3
+state cursor on
+moveover TreePanel/ModelRow_0/HideButton 1
+click
+moveover TreePanel/ModelRow_6/HideButton 1
+click
+moveover TreePanel/ModelRow_0/ShowButton 1
+click
+wait 1
+
+caption .5 .15 5 Hierarchical models can be collapsed and expanded
+highlight TreePanel/ModelRow_0/CollapseButton 3 .005
+moveover TreePanel/ModelRow_0/CollapseButton 1
+click
+wait 1
+click
+wait 1

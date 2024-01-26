@@ -1,0 +1,31 @@
+load TreePanel2
+moveover TreePanel/ModelRow_6/HideButton 0
+click
+
+section Models Colors and fonts
+state video on
+
+caption .5 .15 3 Colors and fonts indicate model states
+wait 3
+
+caption .5 .15 3 The primary selection is red and bold
+state cursor on
+moveover Union_1 1
+click
+wait 2
+
+caption .5 .15 3 Secondary selections are blue and bold
+moveover RevSurf_1 1
+state mod on
+click
+state mod off
+wait 2
+
+caption .5 .15 3 Models hidden by you are purple and italic
+highlight TreePanel/ModelRow_6/ModelButton 3 .01
+wait 3
+
+caption .5 .15 3 Models hidden by parents or children are gray and italic
+highlight TreePanel/ModelRow_1/ModelButton 3 .01
+wait 3
+

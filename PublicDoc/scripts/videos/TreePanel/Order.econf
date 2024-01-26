@@ -1,0 +1,29 @@
+load TreePanel2
+select RevSurf_1
+
+section Order Reordering models
+state video on
+state cursor on
+
+caption .5 .15 3 You can change the order of models at;the same level with these buttons
+highlight TreePanel/OrderButtons 3 .005
+wait 3
+
+caption .5 .15 3 The buttons move the primary selection;up or down in the order
+moveover TreePanel/MoveDown 1
+click
+wait 2
+moveover TreePanel/MoveUp 1
+click
+wait 2
+
+caption .5 .15 5 Changing the order in a CSG difference changes the model
+moveover TreePanel/ModelRow_3 1 .01 0
+click
+wait 1
+moveover TreePanel/MoveDown 1
+click
+wait 1
+moveover TreePanel/ModelRow_0 1 .01 0
+click
+wait 1

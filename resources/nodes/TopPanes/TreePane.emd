@@ -94,11 +94,16 @@ BoxPane "TreePane" {
           resize_flags: "kWidth",
           halignment: "kAlignLeft",
         },
-        CLONE "T_ActionButton" "MoveUp" {
-          panes: [ $ICON { $ACTION_BUTTON_SIZE, icon_name: "UpIcon" } ]
-        },
-        CLONE "T_ActionButton" "MoveDown" {
-          panes: [ $ICON { $ACTION_BUTTON_SIZE, icon_name: "DownIcon" } ]
+        BoxPane "OrderButtons" {
+          orientation: "kHorizontal",
+          panes: [
+            CLONE "T_ActionButton" "MoveUp" {
+              panes: [ $ICON { $ACTION_BUTTON_SIZE, icon_name: "UpIcon" } ]
+            },
+            CLONE "T_ActionButton" "MoveDown" {
+              panes: [ $ICON { $ACTION_BUTTON_SIZE, icon_name: "DownIcon" } ]
+            },
+          ]
         },
       ]
     },
