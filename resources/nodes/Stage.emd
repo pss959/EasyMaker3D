@@ -4,7 +4,6 @@ StageWidget "Stage" {
   hover_color:    "#0a0a0a00",
   scale_range:  .4 14,
   plane_offset: .5,
-  translation:  0 -.5 0,   # Puts the top of the stage at Y = 0.
   children: [
     Node "RadiusScaler" {  # Scales everything to the correct radius.
       children: [

@@ -51,16 +51,20 @@ void StageWidget::SetStageRadius(float radius) {
     const float scale = geom_radius / radius;
     radius_scaler_->SetUniformScale(scale);
 
-    // Scale the stage geometry in X and Z to compensate for the change in
-    // scale due to the new radius; the geometry should stay the same
-    // regardless of working radius. (The interactive scale should apply to the
-    // geometry, so it is not factored in here.)
-    Vector3f geom_scale = geom_->GetScale();
-    geom_scale[0] = geom_scale[2] = 1.f / scale;
-    geom_->SetScale(geom_scale);
+    // Scale the stage geometry to compensate for the change in scale due to
+    // the new radius; the geometry should stay the same size regardless of
+    // working radius. (The interactive scale applies also to the geometry, so
+    // it is not factored in here.)
+    const auto geom_scale = 1.f / scale;
+    geom_->SetUniformScale(geom_scale);
 
-    // Adjust the Y scale in the geometry to maintain a constant size.
-    FixGeometryYScale_();
+    // Adjust the Y translation in the geometry to ensure that the top of the
+    // stage is at Y=0. This has to be done only here (when the geometry scale
+    // changes).
+    const auto y_top = geom_scale * geom_->GetBounds().GetMaxPoint()[1];
+    geom_->SetTranslation(Vector3f(0, -y_top, 0));
+    std::cerr << "XXXX OT=" << geom_->GetBounds().GetMaxPoint()[1]
+              << " TR=" << -y_top << "\n";
 
     // Regenerate the grid image.
     ASSERT(grid_image_);
@@ -70,16 +74,11 @@ void StageWidget::SetStageRadius(float radius) {
 void StageWidget::SetScaleAndRotation(float scale, const Anglef &angle) {
     SetUniformScale(scale);
     SetRotationAngle(angle);
-    FixGeometryYScale_();
 }
 
 bool StageWidget::ProcessValuator(float delta) {
     // Let the DiscWidget update the scale.
     DiscWidget::ApplyScaleChange(TK::kStageScrollFactor * delta);
-
-    // Adjust the Y scale in the geometry to maintain a constant size.
-    FixGeometryYScale_();
-
     return true;
 }
 
@@ -97,16 +96,6 @@ void StageWidget::PlaceEdgeTarget(const DragInfo &info, float current_length,
     Vector3f direction;
     GetTargetPlacement_(info, position0, direction);
     position1 = position0 + current_length * direction;
-}
-
-void StageWidget::FixGeometryYScale_() {
-    // Apply the inverse of the scale in Y to the geometry to maintain a
-    // constant size of 1. Note that the scale includes both the StageWidget
-    // scale and the radius scale.
-    const float stage_y_scale = GetScale()[1] * radius_scaler_->GetScale()[1];
-    Vector3f geom_scale = geom_->GetScale();
-    geom_scale[1] = 1.f / stage_y_scale;
-    geom_->SetScale(geom_scale);
 }
 
 void StageWidget::GetTargetPlacement_(const DragInfo &info,

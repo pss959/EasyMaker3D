@@ -51,9 +51,7 @@ class StageWidget : public DiscWidget, public IScrollable, public ITargetable {
     // IScrollable Interface.
     // ------------------------------------------------------------------------
 
-    /// Defines this to update the size of the geometry to keep the stage
-    /// height constant so that the top of the stage is always at Y=0 in world
-    /// coordinates.
+    /// Defines this to update the size of the stage.
     virtual bool ProcessValuator(float delta) override;
 
     // ------------------------------------------------------------------------
@@ -89,10 +87,6 @@ class StageWidget : public DiscWidget, public IScrollable, public ITargetable {
 
     /// SG::ProceduralImage that draws the grid.
     SG::ProceduralImagePtr grid_image_;
-
-    /// Adjusts the Y scale for the Stage geometry to keep it a constant size
-    /// when the Stage radius or scale changes.
-    void FixGeometryYScale_();
 
     /// Helper function for target placement.
     void GetTargetPlacement_(const DragInfo &info,
