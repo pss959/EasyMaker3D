@@ -39,6 +39,9 @@ void StageWidget::CreationDone() {
             std::dynamic_pointer_cast<SG::ProceduralImage>(tex->GetImage());
         ASSERT(grid_image_);
         grid_image_->SetFunction(gen_grid);
+
+        // Set the radius to ensure that the top of the stage is at Y=0.
+        SetStageRadius(1);
     }
 }
 
@@ -63,8 +66,6 @@ void StageWidget::SetStageRadius(float radius) {
     // changes).
     const auto y_top = geom_scale * geom_->GetBounds().GetMaxPoint()[1];
     geom_->SetTranslation(Vector3f(0, -y_top, 0));
-    std::cerr << "XXXX OT=" << geom_->GetBounds().GetMaxPoint()[1]
-              << " TR=" << -y_top << "\n";
 
     // Regenerate the grid image.
     ASSERT(grid_image_);

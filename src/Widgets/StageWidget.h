@@ -77,7 +77,7 @@ class StageWidget : public DiscWidget, public IScrollable, public ITargetable {
 
   private:
     /// Current stage radius.
-    float                  radius_ = 1;
+    float                  radius_ = 0;
 
     /// Node used to scale everything to the correct radius.
     SG::NodePtr            radius_scaler_;
