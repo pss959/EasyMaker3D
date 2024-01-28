@@ -21,8 +21,11 @@ class DragTester {
     /// This initializes the path_to_widget field in all DragInfo instances to
     /// contain just the DraggableWidget. If \p part is specified, it is used
     /// as the hit part in the path in the SG::Hit in all DragInfo instances.
+    /// If \p parent is specified, it is used as a parent of the
+    /// DraggableWidget in the hit path in the DragInfo.
     DragTester(const DraggableWidgetPtr &dw,
-               const SG::NodePtr &part = SG::NodePtr());
+               const SG::NodePtr &part = SG::NodePtr(),
+               const SG::NodePtr &parent = SG::NodePtr());
 
     /// This constructor is passed a CompositeWidget and a vector of sub-widget
     /// names used to find the actual DraggableWidget. All but the last name

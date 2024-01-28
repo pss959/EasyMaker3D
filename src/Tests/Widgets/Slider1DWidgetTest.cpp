@@ -34,6 +34,9 @@ TEST_F(Slider1DWidgetTest, Set) {
     sw->SetRange(-3, 12.5f);
     EXPECT_EQ(-3,    sw->GetMinValue());
     EXPECT_EQ(12.5f, sw->GetMaxValue());
+
+    sw->SetInitialValue(2.8f);
+    EXPECT_EQ(2.8f, sw->GetInitialValue());
 }
 
 TEST_F(Slider1DWidgetTest, Drag) {

@@ -43,6 +43,9 @@ TEST_F(Slider2DWidgetTest, Set) {
     sw->SetRange(Vector2f(-2, -3), Vector2f(-1.5f, 12.5f));
     EXPECT_EQ(Vector2f(-2,    -3),    sw->GetMinValue());
     EXPECT_EQ(Vector2f(-1.5f, 12.5f), sw->GetMaxValue());
+
+    sw->SetInitialValue(Vector2f(2.5f, -1.4f));
+    EXPECT_EQ(Vector2f(2.5f, -1.4f), sw->GetInitialValue());
 }
 
 TEST_F(Slider2DWidgetTest, Drag) {

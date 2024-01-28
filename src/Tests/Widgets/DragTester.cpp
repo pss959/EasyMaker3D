@@ -8,13 +8,17 @@
 #include "Widgets/CompositeWidget.h"
 #include "Widgets/DraggableWidget.h"
 
-DragTester::DragTester(const DraggableWidgetPtr &dw, const SG::NodePtr &part) {
+DragTester::DragTester(const DraggableWidgetPtr &dw, const SG::NodePtr &part,
+                       const SG::NodePtr &parent) {
     Init_(dw);
 
-    base_info_.path_to_widget = SG::NodePath(dw_);
-
-    // Use part for the Hit path if specified.
-    base_info_.hit.path = base_info_.path_to_widget;
+    // Use parent and part for the paths if specified.
+    SG::NodePath path;
+    if (parent)
+        path.push_back(parent);
+    path.push_back(dw_);
+    base_info_.path_to_widget = path;
+    base_info_.hit.path       = path;
     if (part)
         base_info_.hit.path.push_back(part);
 }

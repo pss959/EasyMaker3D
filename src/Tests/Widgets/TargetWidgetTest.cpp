@@ -19,13 +19,24 @@ class TargetWidgetTest : public SceneTestBase {
     /// returning fixed results for testing.
     class TestTargetableWidget : public Widget, public ITargetable {
       public:
-        virtual bool CanTargetBounds() const override { return false; }
+        /// Allows changes to CanTargetBounds().
+        void SetCanTargetBounds(bool b) { can_target_bounds_ = b; }
+        virtual bool CanTargetBounds() const override {
+            return can_target_bounds_;
+        }
         virtual void PlacePointTarget(const DragInfo &info,
                                       Point3f &position, Vector3f &direction,
                                       Dimensionality &snapped_dims) override {
-            position     = Point3f(1, 2, 3);
-            direction    = Vector3f(-1, 0, 0);
-            snapped_dims = Dimensionality("XZ");
+            if (info.is_modified_mode) { // On bounds.
+                position     = Point3f(0, 2, 3);
+                direction    = Vector3f(-1, 0, 0);
+                snapped_dims = Dimensionality("XYZ");
+            }
+            else {  // On surface.
+                position     = Point3f(1, 2, 3);
+                direction    = Vector3f(-1, 0, 0);
+                snapped_dims = Dimensionality("XZ");
+            }
         }
         virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
                                      Point3f &position0,
@@ -38,6 +49,7 @@ class TargetWidgetTest : public SceneTestBase {
         TestTargetableWidget() {}
 
       private:
+        bool can_target_bounds_ = false;
         friend class Parser::Registry;
     };
     DECL_SHARED_PTR(TestTargetableWidget);
@@ -97,13 +109,36 @@ TEST_F(TargetWidgetTest, PointTargetDrag) {
 
     ptw->SetStageToWorldMatrix(Matrix4f::Identity());
 
+    // Do not hit bounds if the Widget does not support it.
     EXPECT_FALSE(ttw->CanTargetBounds());
 
-    DragTester dt(ptw, ttw);
+    // Set up a parent Node above both the PointTargetWidget and the
+    // TestTargetableWidget and add a node with geometry under the
+    // TestTargetableWidget. This makes it so that the bounds of the
+    // TestTargetableWidget can be intersected.
+    auto parent = CreateObject<SG::Node>("Parent");
+    auto box = ParseTypedObject<SG::Node>(
+        R"(Node "Box" { shapes: [ Box {} ] })");
+    EXPECT_NOT_NULL(box);
+    parent->AddChild(ptw);
+    parent->AddChild(ttw);
+    ttw->AddChild(box);
+
+    DragTester dt(ptw, ttw, parent);
     dt.SetRayDirection(-Vector3f::AxisZ());
     dt.ApplyMouseDrag(Point3f(0, 1, 2), Point3f(6, 1.5f, 2));
 
     EXPECT_EQ(Point3f(1, 2, 3),   ptw->GetPointTarget().GetPosition());
+    EXPECT_EQ(Vector3f(-1, 0, 0), ptw->GetPointTarget().GetDirection());
+
+    // Hit bounds. Note that the Ray intersects the Box.
+    ttw->SetCanTargetBounds(true);
+    EXPECT_TRUE(ttw->CanTargetBounds());
+
+    dt.SetIsModifiedMode(true);
+    dt.ApplyMouseDrag(Point3f(1, 0, 0), Point3f(0, 0, 2));
+
+    EXPECT_EQ(Point3f(0, 2, 3),   ptw->GetPointTarget().GetPosition());
     EXPECT_EQ(Vector3f(-1, 0, 0), ptw->GetPointTarget().GetDirection());
 }
 

@@ -38,12 +38,14 @@ class IntersectorTest : public SceneTestBase {
     }
 
     /// Reads a scene from a string and intersects the graph rooted by the named
-    /// Node with the given ray.
-    SG::Hit IntersectGraph(const Str &input, const Str &name, const Ray &ray) {
+    /// Node with the given ray. The \p bounds_only flag is passed to
+    /// SG::Intersector::IntersectGraph().
+    SG::Hit IntersectGraph(const Str &input, const Str &name, const Ray &ray,
+                           bool bounds_only = false) {
         ResetContext();  // Avoid context pollution.
         SG::ScenePtr scene = ReadScene(input, true);
         auto node = SG::FindNodeInScene(*scene, name);
-        return SG::Intersector::IntersectGraph(node, ray);
+        return SG::Intersector::IntersectGraph(node, ray, bounds_only);
     }
 };
 
@@ -77,6 +79,24 @@ TEST_F(IntersectorTest, EmptyScene) {
     EXPECT_FALSE(hit.IsValid());
     EXPECT_TRUE(hit.path.empty());
     EXPECT_NULL(hit.shape);
+}
+
+TEST_F(IntersectorTest, Bounds) {
+    const Str input = ReadDataFile("Shapes.emd");
+
+    // Intersect from front. Sphere is at (-100,0,0) with radius 5. The bounds
+    // surround it.
+    SG::Hit hit = IntersectGraph(input, "Primitives",
+                                 Ray(Point3f(-101, 0, 20), Vector3f(0, 0, -1)),
+                                 true);
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_NULL(hit.shape);
+    EXPECT_NEAR(15.f, hit.distance, kClose);  // Sphere has radius 5.
+    EXPECT_PTS_CLOSE(Point3f(-1, 0, 5),   hit.point);
+    EXPECT_PTS_CLOSE(Point3f(-101, 0, 5), hit.GetWorldPoint());
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1),  hit.normal);
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 1),  hit.GetWorldNormal());
 }
 
 TEST_F(IntersectorTest, Sphere) {
