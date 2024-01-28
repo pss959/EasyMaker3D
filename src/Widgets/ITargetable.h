@@ -13,8 +13,8 @@ struct DragInfo;
 class ITargetable {
   public:
     /// Returns true if the ITargetable distinguishes between placing Targets
-    /// on the bounds vs. the surface. The default is false.
-    virtual bool CanTargetBounds() const { return false; }
+    /// on the bounds vs. the surface.
+    virtual bool CanTargetBounds() const = 0;
 
     /// Places a PointTarget on the ITargetable according to the pointer drag
     /// information in the given DragInfo. It should set \p position and \p

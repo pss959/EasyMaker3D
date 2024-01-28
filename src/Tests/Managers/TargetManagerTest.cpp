@@ -21,6 +21,7 @@ class TargetManagerTest : public SceneTestBase {
     /// Derived Widget class that supports receiving target placement.
     class TestTargetableWidget : public Widget, public ITargetable {
       public:
+        virtual bool CanTargetBounds() const override { return false; }
         virtual void PlacePointTarget(const DragInfo &info,
                                       Point3f &position, Vector3f &direction,
                                       Dimensionality &snapped_dims) override {
@@ -227,9 +228,12 @@ TEST_F(TargetManagerTest, ChangeTargets) {
     EXPECT_EQ(0U, deact_count);
     EXPECT_EQ(0U, cm->GetCommandList()->GetCommandCount());
 
+    // Create a TestTargetableWidget.
+    auto ttw = CreateObject<TestTargetableWidget>();
+    EXPECT_FALSE(ttw->CanTargetBounds());
+
     // Drag the position of the PointTargetWidget using a TestTargetableWidget.
     // This should create and add a ChangePointTargetCommand.
-    auto ttw = CreateObject<TestTargetableWidget>();
     DragTester pdt(ptw, ttw);
     pdt.ApplyMouseDrag(Point3f(0, 0, 0), Point3f(2, 0, 0));
     EXPECT_EQ(1U, act_count);

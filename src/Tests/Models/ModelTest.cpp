@@ -129,6 +129,14 @@ TEST_F(ModelTest, Name) {
 // Placement.
 // ----------------------------------------------------------------------------
 
+TEST_F(ModelTest, Animation) {
+    EXPECT_FALSE(Model::IsPlacementAnimationEnabled());
+    Model::EnablePlacementAnimation(true);
+    EXPECT_TRUE(Model::IsPlacementAnimationEnabled());
+    Model::EnablePlacementAnimation(false);
+    EXPECT_FALSE(Model::IsPlacementAnimationEnabled());
+}
+
 TEST_F(ModelTest, MoveTo) {
     ModelPtr box = Model::CreateModel<BoxModel>();
     Vector3f   scale(1, 2, 3);

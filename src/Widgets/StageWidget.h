@@ -58,6 +58,8 @@ class StageWidget : public DiscWidget, public IScrollable, public ITargetable {
     // ITargetable Interface.
     // ------------------------------------------------------------------------
 
+    virtual bool CanTargetBounds() const override { return false; }
+
     /// Redefines this to place the point target on the Stage, pointing up,
     /// snapping to grid points.
     virtual void PlacePointTarget(const DragInfo &info,

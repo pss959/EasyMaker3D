@@ -63,7 +63,6 @@ TEST_F(SettingsPanelTest, Change) {
     EXPECT_FALSE(pi.IsButtonPaneEnabled("DefaultExportDir"));
     EXPECT_FALSE(pi.IsButtonPaneEnabled("CurrentExportDir"));
 
-
     // Try an invalid build volume size.
     input = pi.SetTextInput("BuildVolumeDepth", "xx");
     EXPECT_FALSE(input->IsTextValid());

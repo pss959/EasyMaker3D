@@ -1,7 +1,10 @@
 #include "Agents/SessionAgent.h"
+#include "Agents/SettingsAgent.h"
 #include "Base/Event.h"
+#include "Items/Settings.h"
 #include "Panels/SessionPanel.h"
 #include "Panes/ButtonPane.h"
+#include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 #include "Tests/Panels/PanelTestBase.h"
 #include "Tests/Testing.h"
@@ -40,6 +43,15 @@ class SessionPanelTest : public PanelTestBase {
     SessionPanelTest() : session_agent(new TestSessionAgent) {
         GetContext().session_agent = session_agent;
         panel = InitPanel<SessionPanel>("SessionPanel");
+    }
+
+    // Allow the path returned by Settings::GetLastSessionPath() to be changed
+    // easily.
+    void SetLastSessionPath(const FilePath &path) {
+        auto sa = GetContext().settings_agent;
+        auto new_settings = Settings::CreateCopy(sa->GetSettings());
+        new_settings->SetLastSessionPath(path);
+        sa->SetSettings(*new_settings);
     }
 };
 
@@ -249,6 +261,9 @@ TEST_F(SessionPanelTest, Continue) {
 TEST_F(SessionPanelTest, Load) {
     auto &agent = *session_agent;
 
+    // Clear the last session path for consistency.
+    SetLastSessionPath("");
+
     panel->SetStatus(Panel::Status::kVisible);
 
     // Force the "really load" Dialog to appear.
@@ -261,6 +276,22 @@ TEST_F(SessionPanelTest, Load) {
     auto file_panel = GetCurrentPanel();
     EXPECT_EQ("FilePanel", file_panel->GetTypeName());
     EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
+
+    // Access the TextInputPane with the current path. It should be just the
+    // session directory from the settings
+    auto input =
+        file_panel->GetPane()->FindTypedSubPane<TextInputPane>("Input");
+    EXPECT_EQ("/d/e/f", input->GetText());
+    pi.ClickButtonPane("Cancel");
+
+    // Repeat with a valid FilePath for the last session.
+    SetLastSessionPath("/d/e/f/blort.ems");
+    pi.ClickButtonPane("Load");
+    EXPECT_ENUM_EQ(Panel::Status::kHidden, panel->GetStatus());
+    file_panel = GetCurrentPanel();
+    EXPECT_EQ("FilePanel", file_panel->GetTypeName());
+    EXPECT_ENUM_EQ(Panel::Status::kVisible, file_panel->GetStatus());
+    EXPECT_EQ("/d/e/f/blort.ems", input->GetText());
 
     // This has to be a valid file for the Accept button to be enabled.
     pi.SetTextInput("Input", GetDataPath("Sessions/Empty.ems").ToString());

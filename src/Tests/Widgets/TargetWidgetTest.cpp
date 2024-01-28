@@ -19,6 +19,7 @@ class TargetWidgetTest : public SceneTestBase {
     /// returning fixed results for testing.
     class TestTargetableWidget : public Widget, public ITargetable {
       public:
+        virtual bool CanTargetBounds() const override { return false; }
         virtual void PlacePointTarget(const DragInfo &info,
                                       Point3f &position, Vector3f &direction,
                                       Dimensionality &snapped_dims) override {
@@ -95,6 +96,8 @@ TEST_F(TargetWidgetTest, PointTargetDrag) {
     auto ptw = GetPointTargetWidget();
 
     ptw->SetStageToWorldMatrix(Matrix4f::Identity());
+
+    EXPECT_FALSE(ttw->CanTargetBounds());
 
     DragTester dt(ptw, ttw);
     dt.SetRayDirection(-Vector3f::AxisZ());

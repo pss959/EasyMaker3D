@@ -49,6 +49,7 @@ TEST_F(StageWidgetTest, Transforms) {
 
 TEST_F(StageWidgetTest, PointTarget) {
     auto sw = GetStageWidget();
+    EXPECT_FALSE(sw->CanTargetBounds());
 
     // Set the radius so that the math is consistent.
     sw->SetStageRadius(20);
