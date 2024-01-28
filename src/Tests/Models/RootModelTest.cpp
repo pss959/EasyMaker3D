@@ -17,6 +17,9 @@ TEST_F(RootModelTest, Default) {
 
     EXPECT_EQ(Model::Status::kUnselected, root->GetStatus());
 
+    // Cannot attach targets to the RootModel bounds.
+    EXPECT_FALSE(root->CanTargetBounds());
+
     // The RootModel creates an empty mesh.
     EXPECT_TRUE(root->GetMesh().points.empty());
     EXPECT_TRUE(root->GetMesh().indices.empty());

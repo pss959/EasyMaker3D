@@ -259,6 +259,8 @@ TEST_F(ModelTest, PlacePointTarget) {
     box->SetUniformScale(8);
     stage->AddChild(box);
 
+    EXPECT_TRUE(box->CanTargetBounds());
+
     // This is required to get the BoxModel to update matrices.
     box->SetStatus(Model::Status::kUnselected);
 
