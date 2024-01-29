@@ -610,17 +610,26 @@ Script::InstrPtr Script::ParseStop_(const StrVec &words) {
 
 Script::InstrPtr Script::ParseView_(const StrVec &words) {
     ViewInstrPtr vinst;
-    Vector3f     dir;
-    if (words.size() != 4U) {
+    Vector3f     pos, dir;
+    if (words.size() != 1U && words.size() != 7U) {
         Error_("Bad syntax for view instruction");
     }
-    else if (! ParseVector3f_(words, 1, dir)) {
-        Error_("Invalid direction floats for view instruction");
+    else if (words.size() == 7U && (
+                 ! ParseVector3f_(words, 1, pos) ||
+                 ! ParseVector3f_(words, 4, dir))) {
+        Error_("Invalid position or direction floats for view instruction");
     }
     else {
-        ion::math::Normalize(&dir);
         vinst.reset(new ViewInstr);
-        vinst->dir = dir;
+        if (words.size() == 1U) {
+            vinst->pos.Set(0, 0, 0);
+            vinst->dir.Set(0, 0, 0);  // Indicates reset.
+        }
+        else {
+            ion::math::Normalize(&dir);
+            vinst->pos = Point3f(pos);
+            vinst->dir = dir;
+        }
     }
     return vinst;
 }

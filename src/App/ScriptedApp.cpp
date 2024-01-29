@@ -615,6 +615,10 @@ void ScriptedApp::InitScene_() {
             MoveFakeCursorTo_(cursor_pos_);
             UpdateCaption_();
         });
+
+    // Save the default camera position.
+    default_camera_pos_ =
+        GetContext().scene_context->window_camera->GetPosition();
 }
 
 void ScriptedApp::InitHandlers_() {
@@ -971,8 +975,17 @@ bool ScriptedApp::ProcessStop_(const Script::StopInstr &instr) {
 }
 
 bool ScriptedApp::ProcessView_(const Script::ViewInstr &instr) {
-    GetContext().scene_context->window_camera->SetOrientation(
-        Rotationf::RotateInto(-Vector3f::AxisZ(), instr.dir));
+    auto &cam = *GetContext().scene_context->window_camera;
+    // A zero-length direction indicates that the view should be reset.
+    if (instr.dir == Vector3f::Zero()) {
+        cam.SetPosition(default_camera_pos_);
+        cam.SetOrientation(Rotationf::Identity());
+    }
+    else {
+        cam.SetPosition(instr.pos);
+        cam.SetOrientation(Rotationf::RotateInto(-Vector3f::AxisZ(),
+                                                 instr.dir));
+    }
     return true;
 }
 

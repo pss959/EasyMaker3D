@@ -91,6 +91,7 @@ Str Frustum::ToString() const {
     return ("FR [vp="  + ToStr(viewport) +
             " p="      + ToStr(position) +
             " o="      + ToStr(orientation) +
+            " dr="     + ToStr(GetViewDirection()) +
             " fov=(l:" + ToStr(fov_left) +
             " r:"      + ToStr(fov_right) +
             " u:"      + ToStr(fov_up) +

@@ -106,6 +106,7 @@ class ScriptedApp : public Application {
     bool    is_paused_       = false;
     size_t  cur_instruction_ = 0;
     Point2f drag_start_pos_;
+    Point3f default_camera_pos_;
 
     CursorHandler_Ptr cursor_handler_;  ///< Updates the fake cursor.
     PauseHandler_Ptr  pause_handler_;   ///< Handles pausing.
