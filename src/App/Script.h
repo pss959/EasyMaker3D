@@ -182,6 +182,13 @@ class Script {
     /// Parses one line of the script. Returns false on error.
     bool ParseLine_(const Str &line);
 
+    /// Parses an include instruction and processes the included file. Returns
+    /// false on error.
+    bool ParseInclude_(const StrVec &words);
+
+    /// Processes the named included file, returning false on error.
+    bool ProcessInclude_(const Str &file, float timescale);
+
     /// \name Parsing helpers.
     /// Each of these parses an item from one or more words, returning false on
     /// parse error.
@@ -220,6 +227,9 @@ class Script {
     InstrPtr ParseView_(const StrVec &words);
     InstrPtr ParseWait_(const StrVec &words);
     ///@}
+
+    /// Scales the duration in the given instruction (if it has one).
+    static void ScaleDuration_(Instr &instr, float scale);
 
     /// Deals with multi-line and token substitution in captions.
     static Str FixCaptionText_(const StrVec &words);

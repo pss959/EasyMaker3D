@@ -164,6 +164,11 @@ bool Script::ParseLine_(const Str &line) {
 
     StrVec words = ion::base::SplitString(line, " \t");
 
+    // Handle "include" specially.
+    if (words[0] == "include") {
+        return ParseInclude_(words);
+    }
+
     // Verify that the instruction has a corresponding function.
     const auto it = func_map_.find(words[0]);
     if (it == func_map_.end()) {
@@ -179,6 +184,42 @@ bool Script::ParseLine_(const Str &line) {
         return true;
     }
     return false;
+}
+
+bool Script::ParseInclude_(const StrVec &words) {
+    float timescale = 1;
+    if (words.size() < 2U || words.size() > 3U) {
+        Error_("Bad syntax for include instruction");
+        return false;
+    }
+    else if (words.size() == 3U && ! ParseFloat_(words[2], timescale)) {
+        Error_("Invalid timescale float for include instruction");
+        return false;
+    }
+    else {
+        return ProcessInclude_(words[1], timescale);
+    }
+    return true;
+}
+
+bool Script::ProcessInclude_(const Str &file, float timescale) {
+    // Access the file relative to the current one.
+    const auto path =
+        FilePath(file).AppendRelative(file_path_.GetParentDirectory());
+
+    Script included_script;
+    if (! included_script.ReadScript(path))
+        return false;
+
+    // Scale durations.
+    if (timescale != 1) {
+        for (auto &instr: included_script.instructions_)
+            ScaleDuration_(*instr, timescale);
+    }
+
+    // Add included instructions.
+    Util::AppendVector(included_script.instructions_, instructions_);
+    return true;
 }
 
 bool Script::ParseVector3f_(const StrVec &words, size_t index, Vector3f &v) {
@@ -648,6 +689,30 @@ Script::InstrPtr Script::ParseWait_(const StrVec &words) {
         winst->duration = duration;
     }
     return winst;
+}
+
+void Script::ScaleDuration_(Instr &instr, float scale) {
+    // Instructions with duration:
+    //   caption, drag, highlight, moveover, moveto, wait
+    if (instr.name == "caption")
+        static_cast<CaptionInstr &>(instr).duration *= scale;
+    else if (instr.name == "drag")
+        static_cast<DragInstr &>(instr).duration *= scale;
+    else if (instr.name == "highlight")
+        static_cast<HighlightInstr &>(instr).duration *= scale;
+    else if (instr.name == "moveover")
+        static_cast<MoveOverInstr &>(instr).duration *= scale;
+    else if (instr.name == "moveto")
+        static_cast<MoveToInstr &>(instr).duration *= scale;
+    else if (instr.name == "wait")
+        static_cast<WaitInstr &>(instr).duration *= scale;
+
+    // Animation is always off when scaling time.
+    else if (instr.name == "state") {
+        auto &sinstr = static_cast<StateInstr &>(instr);
+        if (sinstr.setting == "animation")
+            sinstr.is_on = false;
+    }
 }
 
 Str Script::FixCaptionText_(const StrVec &words) {
