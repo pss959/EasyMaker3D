@@ -30,14 +30,14 @@ function addChapters() {
         return;
 
     var cues = video.textTracks[0].cues;
-    for (var i=0; i<cues.length; i++) {
+    for (var i = 0; i < cues.length; ++i) {
         var cue = cues[i];
         var span = document.createElement('span');
         var duration = cue.endTime - cue.startTime;
         span.innerHTML = cue.text;
         span.setAttribute('class', 'chapter-span');
         span.setAttribute('data-start-time', cue.startTime);
-        span.style.width = (100 * duration / video.duration) + '%';
+        span.style.width = (Math.round(100 * duration / video.duration)) + '%';
         span.addEventListener('click', playChapter);
         chapterbar.appendChild(span);
     }
