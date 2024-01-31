@@ -192,7 +192,9 @@ Anglef RadialLayoutWidget::GetCrossoverAngle_(const Anglef &new_end_angle) {
     // Returns the smaller signed angle between two angles.
     const auto deg_diff = [](const Anglef &from_angle, const Anglef &to_angle){
         float deg = (to_angle - from_angle).Degrees();
-        return deg > 180 ? deg - 360 : deg < -180 ? deg + 360 : deg;
+        deg = deg > 180 ? deg - 360 : deg < -180 ? deg + 360 : deg;
+        // Round to reasonable precision.
+        return RoundToPrecision(deg, .0001f);
     };
 
     // Determine the angle between the start and end spokes previously and now.
