@@ -63,16 +63,15 @@ Anglef MouseTracker::GetMinRayAngleChange() const {
 
 void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
 #if ENABLE_DEBUG_FEATURES  // LCOV_EXCL_START [debug only]
-    if (Util::app_type == Util::AppType::kMainApp && debug_sphere_) {
-        auto &ds = *debug_sphere_;
+    if (debug_sphere_) {
         if (hit.IsValid()) {
-            ds.TranslateTo(hit.GetWorldPoint());
-            ds.SetEnabled(true);
+            debug_sphere_->TranslateTo(hit.GetWorldPoint());
+            debug_sphere_->SetEnabled(true);
             Debug::DisplayDebugText(hit.path.ToString());
         }
         else {
             Debug::DisplayDebugText("");
-            ds.SetEnabled(false);
+            debug_sphere_->SetEnabled(false);
         }
     }
     if (hit.IsValid())
