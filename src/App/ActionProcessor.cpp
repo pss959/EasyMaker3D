@@ -185,6 +185,9 @@ class ActionProcessor::Impl_ {
     /// Returns a tooltip string for an Action that requires context to set up.
     Str  GetUpdatedTooltip_(Action action);
 
+    /// Fixes discrepancies in the SessionState if necessary.
+    void UpdateSessionState_();
+
     /// Updates all is_action_enabled_ flags that can vary.
     void UpdateEnabledFlags_();
 
@@ -302,6 +305,7 @@ void ActionProcessor::Impl_::UpdateFromSessionState(const SessionState &state) {
 }
 
 void ActionProcessor::Impl_::ProcessUpdate() {
+    UpdateSessionState_();  // Fix state issues before enabling.
     UpdateEnabledFlags_();
 }
 
@@ -753,6 +757,18 @@ Str ActionProcessor::Impl_::GetUpdatedTooltip_(Action action) {
         // Everything else will use the help string.
         return "";
     }
+}
+
+void ActionProcessor::Impl_::UpdateSessionState_() {
+    // Undoing changes to targets can cause the SessionState's flags to get out
+    // of sync with reality. Fix that here.
+    auto &ss = *context_->command_manager->GetSessionState();
+    const bool ptv = context_->target_manager->IsPointTargetVisible();
+    if (ss.IsPointTargetVisible() != ptv)
+        ss.SetPointTargetVisible(ptv);
+    const bool etv = context_->target_manager->IsEdgeTargetVisible();
+    if (ss.IsEdgeTargetVisible() != etv)
+        ss.SetEdgeTargetVisible(etv);
 }
 
 void ActionProcessor::Impl_::UpdateEnabledFlags_() {
