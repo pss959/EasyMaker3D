@@ -172,7 +172,7 @@ class ProfilePane::Impl_ {
     }
 
     /// Does the opposite of ToProfile_ in 2 dimensions.
-    static Point2f FromProfile2_(const Point2f &p, float z = 0) {
+    static Point2f FromProfile2_(const Point2f &p) {
         // Convert X and Y from (0,1) to (-.5,.5).
         return Point2f(p[0] - .5f, p[1] - .5f);
     }
