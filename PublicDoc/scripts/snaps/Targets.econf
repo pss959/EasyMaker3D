@@ -26,8 +26,8 @@ action kToggleEdgeTarget
 action kCreateCylinder
 select 
 action kTogglePointTarget
-moveover PointTargetWidget/Shaft 0
-dragstart -.075521 .013
+moveover PointTargetWidget/Base 0
+dragstart -.0712891 .0543478
 snap 0.423828 0.173913 0.194336 0.271739 PointTargetSnapped.jpg
 dragend
 action kTogglePointTarget

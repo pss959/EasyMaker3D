@@ -131,6 +131,18 @@ snap_map = {
         'AttachedRadialMenu',
         'FixedRadialMenu',
     ],
+    'Rook' : [
+        'RookHollowed',
+        'RookPositionedHollower',
+        'RookRevSurf',
+        'RookScaledCutter',
+        'RookScaledHollower',
+        'RookSlotCutters',
+        'RookTarget',
+        'RookUnscaledCutter',
+        'RookUnscaledHollower',
+        'RookWithSlotCutters',
+    ],
     'Selection' : [
         'Selection',
     ],

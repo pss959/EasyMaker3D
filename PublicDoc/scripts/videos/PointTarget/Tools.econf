@@ -30,6 +30,6 @@ click
 wait 1
 
 caption .5 .15 3 It snaps when any of the model's principal axes;is close to the target direction
-moveto .359375 .445652 1  # On green ring
+moveover RotationTool/ZAxisRotator 1 .0751953 .175725  # On green ring
 drag -.141602 .143116 2
 wait 1

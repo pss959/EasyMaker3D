@@ -30,7 +30,7 @@ click
 wait 1
 
 caption .5 .15 3 Drag the ring to apply the twist
-moveto .498047 .344203 1
+moveover TwistTool/SpinWidget/Ring 1 0 -.02
 drag .4 0 2
 wait 1
 

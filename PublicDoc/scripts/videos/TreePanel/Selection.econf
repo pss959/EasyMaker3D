@@ -36,11 +36,11 @@ click
 wait 2
 
 caption .5 .15 3 You can drag a rectangle to select multiple models
-moveto .671875 .806159 1
-drag .0732422 -.108696 2
+moveover TreePanel 2 -.05 .17
+drag .0732422 -.11 2
 wait 1
 
 caption .5 .15 3 This also works for child models
-moveto .675781 .777174 1
+moveover TreePanel 1 -.049 .14
 drag .0107422 -.03 2
 wait 1

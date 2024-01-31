@@ -9,6 +9,10 @@ rect 5 0.146341 0.368333 0.0572233 0.095
 write CreateCylinderIcon.jpg
 
 read WorkArea.jpg
+rect 5 0.09375 0.469203 0.0615234 0.0978261
+write CreateRevSurfIcon.jpg
+
+read WorkArea.jpg
 rect 5 0.242026 0.39 0.043152 0.075
 write CreateTorusIcon.jpg
 

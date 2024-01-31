@@ -3,7 +3,7 @@ state video on
 
 section Starting Starting the session
 state cursor on
-moveto .1 .1 0
+moveto .1 .1 0  # Arbitrary starting point.
 
 caption .5 .15 3 Click on "Start new session" to begin;(or press Escape)
 moveover SessionPane/New/Button 1

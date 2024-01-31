@@ -2,7 +2,6 @@ action kCreateTorus
 action kTranslationTool
 moveover TranslationTool/X/XSlider/MaxFace 0
 drag .088 0 0
-moveto .624023 .240942 0  # From translating Torus.
 
 section Cylinder Creating the cylinder
 state video on

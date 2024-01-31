@@ -17,9 +17,9 @@ click
 wait 2
 
 caption .5 .15 3 Drag the ring to apply the bend
-moveto .5 .182971 1
+moveover BendTool/SpinWidget/Ring 1 0 -.0815
 drag -.48 0 2
-moveto .5 .182971 1
+moveover BendTool/SpinWidget/Ring 1 0 -.0815
 drag -.48 0 2
 wait 2
 

@@ -24,6 +24,6 @@ wait 2
 caption .5 .15 3 This is not needed for rotations, though
 moveover RotationToolIcon 1
 click
-moveto .577148 .346014 1
+moveover RotationTool/ZAxisRotator 1 .0576172 .0235507  # On green ring
 drag -.063 .02 2
 wait 3

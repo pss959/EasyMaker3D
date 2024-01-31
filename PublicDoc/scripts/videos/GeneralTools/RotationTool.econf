@@ -13,14 +13,14 @@ click
 
 wait 2
 caption .5 .15 3 The red, green, and blue rings rotate in one dimension
-moveto .547852 .371377 1  # On green ring.
+moveover RotationTool/ZAxisRotator 1 .0498047 .0724638  # On green ring.
 drag .02 -.04 2
-moveto .489258 .244565 1  # On red ring.
+moveover RotationTool/XAxisRotator 1 .0166016 0.0561594  # On red ring.
 drag .05 .12 2
 
 wait 2
 caption .5 .15 4 The sphere rotates freely
-moveto .495117 .355072 .9
+moveover RotationTool/FreeRotator .5 .005 -.047
 drag .07 -.06 1.5
-moveto .532227 .306159 .1
+moveover RotationTool/FreeRotator .5 .031 0
 drag -.07 -0.03 1.5

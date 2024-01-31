@@ -18,7 +18,7 @@ click
 wait 2
 
 caption .5 .15 3 There is a separate tutorial about editing profiles -;note that the end points are movable horizontally
-moveto .520508 .628623 .5
+moveover Profile .5 .0214844 -.0398551
 drag .03 .02 .5
 moveover TaperToolPanel/MovablePoint_2 .5
 drag -.04 .005 .5

@@ -14,10 +14,10 @@ click
 wait 2
 
 caption .5 .15 3 Click or drag in the ring to change the color
-moveto .485352 .675725 2
+moveover ColorTool 2 -.0146484 .0978261
 click
 wait 1
 
-moveto .45 .6 1
+moveover ColorTool 1 -.0507812 .0199275
 drag .03 -.14 2
 wait 3

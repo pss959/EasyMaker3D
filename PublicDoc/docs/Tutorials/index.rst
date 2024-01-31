@@ -60,4 +60,4 @@ creating and exporting a model with |appname|.
    :maxdepth: 1
 
    Doorstop
-   Chess Rook (TBD) <TBD>
+   Chess Rook <Rook>

@@ -17,9 +17,6 @@ release   = version
 # External links.
 download_site = 'https://github.com/pss959/EasyMaker3D/releases'
 
-# XXXX TEMPORARY warning suppression:
-suppress_warnings = ['toc']
-
 # -----------------------------------------------------------------------------
 # Project information
 # -----------------------------------------------------------------------------

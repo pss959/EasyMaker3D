@@ -8,7 +8,7 @@ select Doorstop TallDoorstop
 snapobj TreePanel TreePanel.jpg .01
 
 # Drag a rectangle.
-moveto 0.660156 0.646739 0
+moveover TreePanel 0 -.0644531 .0126811
 dragstart .09375 .148551
 snapobj TreePanel TreePanelSelect.jpg .01
 dragend

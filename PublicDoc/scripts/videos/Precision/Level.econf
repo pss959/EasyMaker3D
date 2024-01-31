@@ -31,6 +31,6 @@ wait 2
 caption .5 .15 3 Rotations snap to 15-degree angles
 moveover RotationToolIcon 1
 click
-moveto .740234 .375 1 # Green ring
+moveover RotationTool/ZAxisRotator 1 .089 .0742754 # On green ring
 drag -.236328 .0362319 3
 wait 2

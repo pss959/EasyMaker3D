@@ -15,13 +15,13 @@ click
 wait 2
 
 # Turn the stage a little.
-moveto .555664 .0688406 .5
+moveover Stage .5 .0556641 -.173913
 drag -.4 0 .5
 
 caption .5 .15 3 Unlike union and intersection, the selection order;for models matters for difference
 moveover UndoIcon .5
 click
-moveto .555664 .0688406 .5
+moveover Stage .5 .0546875 -.175725
 state mod on
 click
 state mod off

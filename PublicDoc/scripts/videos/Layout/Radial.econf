@@ -12,7 +12,7 @@ click
 wait 2
 
 caption .5 .15 3 First, drag the ring on the target to the desired radius
-moveto .511719 .26087 1
+moveover PointTargetWidget/Ring 1 .01 0
 drag .0351562 -.0362319 2
 
 caption .5 .15 3 Select the objects to lay out in order
@@ -41,7 +41,7 @@ wait 1
 caption .5 .15 3 To change the starting angle, drag the green spoke
 moveover UndoIcon 1
 click
-moveto .583008 .273551 1
+moveover PointTargetWidget/StartSpoke 1
 drag -.0527344 -.0869565 2
 moveover RadialLayoutIcon 1
 click
@@ -50,8 +50,8 @@ wait 1
 caption .5 .15 3 To change the arc, drag the red (end) spoke
 moveover UndoIcon 1
 click
-moveto .504883 .251812 1
-drag .0556641 .0615942 2
+moveover PointTargetWidget/EndSpoke 1 -.128906 .02
+drag .266602 .0416667 2
 moveover RadialLayoutIcon 1
 click
 wait 1
@@ -59,10 +59,10 @@ wait 1
 caption .5 .15 4 Drag the radius down to hide the layout widgets
 moveover UndoIcon 1
 click
-moveto .356445 .514493 1
+moveto .78125 .311594 1  # Floor to deselect
 click
-moveto .553711 .224638 1
-drag -.0439453 .0471014 1
+moveover PointTargetWidget/Ring 1 .0576172 -.0724638
+drag -.0644531 .076087 1
 wait 1
 
 caption .5 .15 3 If one model is selected, clicking the icon moves;that model to the point target

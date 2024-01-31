@@ -6,9 +6,9 @@ state cursor on
 state video on
 
 caption .5 .15 3 Click near a profile line to add a new point
-moveto .438477 .778986 1
+moveover Profile 1 -.06 0.08
 click
-moveto .41 .78 .5
+moveover Profile .5 -.1 .04
 wait 2
 
 caption .5 .15 3 A new point can be dragged to change the profile
@@ -17,6 +17,6 @@ drag .0361328 .0253623 2
 wait 2
 
 caption .5 .15 3 Drag near a profile line to add a new point and;move it in one step
-moveto .451172 .588768 1
+moveover Profile 1 -.0673828 -.103261
 drag .0341797 -.0416666 2
 wait 2

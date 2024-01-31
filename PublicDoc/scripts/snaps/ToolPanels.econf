@@ -50,21 +50,22 @@ load
 action kCreateBox
 action kConvertBevel
 snap 0.356445 0.217391 0.291992 0.744565 BevelToolPanel.jpg
-moveto .49707 .641304 0
+moveover Profile 0 .0185547 -.0452898
 snap 0.356445 0.217391 0.291992 0.744565 BevelToolPanelHover.jpg
 drag 0.035157 0.07971 0
 moveover BevelToolPane/MovablePoint_1 0
-dragstart -.012696 -0.032608
+dragstart .1 0
 snap 0.356445 0.217391 0.291992 0.744565 BevelToolPanelDelete.jpg
 dragend
-# Create 2 points and snap between them.
-moveto .517578  .692029 0
-drag  -.081055  .050725 0
-moveto .500977  .634058 0
-drag   .037109 -.012681 0
-moveto  .490234 .681159 0
+action kUndo
+# Move the first point, create another, and snap between them.
+moveover BevelToolPane/MovablePoint_1 0
+drag -.102539 .0471014 0
+moveover Profile 0 .0302734 -.0543478
+drag .0302734 -.0199276 0
+moveover Profile 0 -.00292969 .0181159
 state mod on
-dragstart -.00169498 .059783
+dragstart -.0078125 .0688406
 snap 0.356445 0.217391 0.291992 0.744565 BevelToolPanelSnap.jpg
 dragend
 state mod off
@@ -72,14 +73,13 @@ action kUndo
 action kUndo
 action kUndo
 action kUndo
-action kUndo
 # There are now only the original 2 points. Add 3 to create a curved bevel.
-moveto .485352 .673913 0
-drag   .039062 .061594 0
-moveto .466797 .789855 0
-drag   .004883 .027174 0
-moveto .551758 .617754 0
-drag   .012695 .010869 0
+moveover Profile 0 .00390625 -.0199276
+drag .039062 .061594 0
+moveover Profile 0 -.015625 .106884
+drag .004883 .027174 0
+moveover Profile 0 .0712891 -.0724638
+drag .012695 .010869 0
 # Scale smaller (.35).
 moveover BevelToolPanel/ScaleSlider/Thumb 0
 drag -.025 0 0
@@ -96,8 +96,8 @@ snap 0.356445 0.217391 0.291992 0.744565 BevelToolPanelMaxAngle.jpg
 # --- VR
 state touch on
 # Create a point.
-moveto .459961 .525362 0
-drag   .074219 .141305 0
+moveover Profile 0
+drag .074219 .141305 0
 hand R Oculus_Touch
 handpos R  0 0 .2  0 1 0  0 0 -1
 snap 0.251953 0.0452899 0.696289 0.86413 BevelToolPanelGripPoint.jpg

@@ -6,7 +6,6 @@ action kCreateCylinder
 action kScaleTool
 moveover ScaleTool/YScaler/MaxSlider 0
 drag 0 -.04 0
-moveto .5 .36413 0  # From scaling Cylinder.
 
 section Combining Combining the models
 state video on

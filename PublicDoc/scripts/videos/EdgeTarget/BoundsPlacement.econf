@@ -2,7 +2,7 @@ load EdgeTarget   # Edge target is on
 select
 moveover EdgeTargetWidget/End0 0 0 .02
 drag 0 -.0561594 0
-moveto .492188 .175725 0  # Last cursor placement
+moveover Stage 0 -.00878906 -.067029
 
 section ModelPlacement Placement on model bounds
 state video on

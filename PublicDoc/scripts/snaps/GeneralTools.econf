@@ -2,7 +2,7 @@ action kCreateCylinder
 
 # ======== Color Tool.
 action kColorTool
-moveto .537109 .663043 0
+moveover ColorTool 0 .0371094 .0815217
 click
 snap 0.375977 0.193841 0.245117 0.574275 ColorTool.jpg
 

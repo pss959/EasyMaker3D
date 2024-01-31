@@ -15,8 +15,7 @@ action kDecreasePrecision
 # Angular with Rotation Tool.
 stage 1 0
 action kRotationTool
-# Rotator rings overlap, so can't use moveover here.
-moveto .525391 .400362 0
+moveover RotationTool/ZAxisRotator 0 .0283203 .103261  # On green ring.
 dragstart -0.028321 0.163044
 snap 0.320312 0.143116 0.429688 0.677536 AngularFeedback.jpg
 dragend

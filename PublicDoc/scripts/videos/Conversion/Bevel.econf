@@ -18,12 +18,11 @@ click
 wait 2
 
 caption .5 .15 3 There is a separate tutorial about editing profiles
-moveto .439453 .76087 .5
+moveover Profile .5 -.0439453 .0688406
 click
-moveto .45 .76 .5
 moveover BevelToolPanel/MovablePoint_1 .5
 drag .0322266 .0289855 .5
-moveto .524414 .650362 .5
+moveover Profile .5 .0429688 -.0434783
 drag .0292969 .00724638 .5
 wait 1
 

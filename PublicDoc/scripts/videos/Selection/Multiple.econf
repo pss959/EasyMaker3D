@@ -38,7 +38,7 @@ drag -.1 0 1
 wait 3
 
 caption .5 .15 3 Clicking on a wall or the floor deselects all models
-moveto .553 .864 2
+moveto .553 .864 2  # Arbitrary point on back wall.
 click
 wait 3
 
