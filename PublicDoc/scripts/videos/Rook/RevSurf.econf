@@ -1,0 +1,64 @@
+# Load the Rook session and undo back to the beginning - this gives a
+# consistent session name for the rest of the video.
+load Rook
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+
+section RevSurf Creating the main shape
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 Click on the Create RevSurf icon to create a;RevSurf (surface of revolution) model
+moveover CreateRevSurfIcon 1
+click
+wait 2
+
+caption .5 .15 3 Edit the RevSurf profile to look like the rook
+moveover MovablePoint_1 .25               # Pt 0
+drag -.0718199 .169078 .25
+moveover Profile .25 -.0878906 .034434    # Pt 1
+drag .0122524 .0785061 .25
+moveover Profile .25 -.0957031 -.0181023  # Pt 2
+drag .00542542 .123668 .25
+moveover Profile .25 -.103516 -.023537    # Pt 3
+drag .0284303 -.0289928 .25
+moveover Profile .25 -.0976562 -.119552   # Pt 4
+drag .0268092 .0520174 .25
+moveover Profile .25 -.0898438 -.121363   # Pt 5
+drag .0217433 .030224 .25
+moveover Profile .25 -.0927734 -.130421   # Pt 6
+drag .0180559 .0241052 .25
+moveover Profile .25 -.0947266 -.12861    # Pt 7
+drag .026776 .00309813 .25
+moveover Profile .25 -.0947266 -.146725   # Pt 8
+drag .0422468 .000443161 .25
+moveover Profile .25 -.0810547 -.157595   # Pt 9
+drag .027224 -.011483 .25
+wait 1

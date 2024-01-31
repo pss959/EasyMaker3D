@@ -1,0 +1,164 @@
+CommandList {
+  app_info: AppInfo {
+    version: "1.8.0",
+    session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
+      hidden_models: [],
+    },
+  },
+  commands: [
+    CreateRevSurfModelCommand {
+      result_name: "RevSurf_1",
+      initial_scale: 4,
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.279325 0.996499, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.17348 0.301962, 0.5 0.5],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.17348 0.301962, 0.201924 0.230482],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.17348 0.301962, 0.201924 0.230482, 0.138727 0.201091],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.17348 0.301962, 0.201924 0.230482, 0.138727 0.201091, 0.270296 0.0674119],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.17348 0.301962, 0.201924 0.230482, 0.138727 0.201091, 0.270296 0.0674119, 0.264383 0],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.171351 0.344658, 0.201924 0.230482, 0.138727 0.201091, 0.270296 0.0674119, 0.264383 0],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.171351 0.344658, 0.189902 0.300287, 0.201924 0.230482, 0.138727 0.201091, 0.270296 0.0674119, 0.264383 0],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.171351 0.344658, 0.189902 0.300287, 0.201924 0.230482, 0.125952 0.171738, 0.270296 0.0674119, 0.264383 0],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.171351 0.344658, 0.189902 0.300287, 0.201924 0.230482, 0.125952 0.171738, 0.20258 0.128836, 0.270296 0.0674119, 0.264383 0],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangeRevSurfCommand {
+      profile_points: [0.185644 1, 0.168931 0.833988, 0.104854 0.812179, 0.171351 0.344658, 0.189902 0.300287, 0.201924 0.230482, 0.172961 0.185601, 0.20258 0.128836, 0.270296 0.0674119, 0.264383 0],
+      sweep_angle: 360,
+      model_names: ["RevSurf_1"],
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: 6 0 -3,
+        direction: 0 1 0,
+      },
+    },
+    ChangePointTargetCommand {
+      old_target: PointTarget {
+        position: 6 0 -3,
+        direction: 0 1 0,
+      },
+      new_target: PointTarget {
+        position: 0 4 0,
+        direction: 0 1 0,
+      },
+    },
+    CreatePrimitiveModelCommand {
+      type: "kCylinder",
+      result_name: "Cylinder_1",
+      initial_scale: 2,
+      target_position: 0 4 0,
+      target_direction: 0 1 0,
+    },
+    ScaleCommand {
+      ratios: 0.25 1 0.25,
+      mode: "kCenterSymmetric",
+      model_names: ["Cylinder_1"],
+    },
+    TranslateCommand {
+      translation: 0 -0.5 0,
+      model_names: ["Cylinder_1"],
+    },
+    CombineCSGModelCommand {
+      operation: "kDifference",
+      result_name: "Difference_1",
+      model_names: ["RevSurf_1", "Cylinder_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+      initial_scale: 2,
+    },
+    ScaleCommand {
+      ratios: 0.05 1 1,
+      mode: "kBaseSymmetric",
+      model_names: ["Box_1"],
+    },
+    CopyCommand {
+      model_names: ["Box_1"],
+    },
+    PasteCommand {
+    },
+    RotateCommand {
+      rotation: 0 1 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Box_1_A"],
+    },
+    TranslateCommand {
+      translation: 0 3.8 0,
+      model_names: ["Box_1", "Box_1_A"],
+    },
+    CombineCSGModelCommand {
+      operation: "kDifference",
+      result_name: "Difference_2",
+      model_names: ["Difference_1", "Box_1", "Box_1_A"],
+    },
+    ChangeNameCommand {
+      new_name: "Rook",
+      model_name: "Difference_2",
+    },
+  ],
+  current_index: 29,
+}

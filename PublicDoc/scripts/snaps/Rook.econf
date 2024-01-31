@@ -1,0 +1,80 @@
+load Rook
+select
+
+
+# Close-up of final product.
+stage 3 -20
+snapobj Rook Rook.jpg .01
+
+# Undo to show positioned boxes for cutting slots.
+action kUndo  # Name change
+action kUndo  # Difference
+select Box_1 Box_1_A
+action kTranslationTool
+stage 2 -20
+snap .397461 .193841 .206055 .619565 RookWithSlotCutters.jpg
+
+# Undo to show slot-cutter boxes with main piece hidden. Have the RotationTool
+# attached to the rotated box.
+action kUndo
+select Difference_1
+action kHideSelected
+select Box_1_A
+action kRotationTool
+snap .380859 .153986 .230469 .427536 RookSlotCutters.jpg
+
+# Undo to leave only 1 cutter with ScaleTool attached.
+action kUndo  # Rotate
+action kUndo  # Paste
+select Box_1
+action kScaleTool
+snap .390625 .144928 .226562 .528986 RookScaledCutter.jpg
+
+# Undo to show unscaled box.
+action kUndo
+select Box_1
+action kScaleTool
+snap .390625 .144928 .226562 .528986 RookUnscaledCutter.jpg
+
+# Undo to show hollowed RevSurf. Change the view so the top is visible.
+action kUndo
+action kShowAll
+select
+view 0 31.488 60 -.0153263 -.194406 -.980801
+snap .422852 .0851449 .172852 .396739 RookHollowed.jpg
+
+# Undo to show the positioned hollowing cylinder.
+view
+action kUndo
+select Cylinder_1
+action kTranslationTool
+snap .428711 .173913 .151367 .646739 RookPositionedHollower.jpg
+
+# Undo to show the scaled (but unpositioned) hollowing cylinder.
+view
+action kUndo
+select
+snap .424805 .166667 .154297 .663043 RookScaledHollower.jpg
+
+# Undo to show the unscaled and unpositioned hollowing cylinder.
+view
+action kUndo
+select
+snap .378906 .148551 .242188 .681159 RookUnscaledHollower.jpg
+
+# Undo to show the Point Target positioned on top of the RevSurf.
+action kUndo
+select
+action kTogglePointTarget
+view 0 22.9245 60 0 0 -1
+snap .416016 .0126812 .170898 .692029 RookTarget.jpg
+
+# Turn off the Point Target and show the RevSurf profile.
+action kTogglePointTarget
+select RevSurf_1
+action kToggleSpecializedTool
+stage 2 0
+snap .319336 .0235507 .337891 .952899 RookRevSurf.jpg
+
+
+

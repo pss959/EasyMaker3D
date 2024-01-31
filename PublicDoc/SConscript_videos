@@ -133,6 +133,12 @@ merges = {
         'NewModels',
         'Tools',
     ],
+    'Rook' : [
+        'RevSurf',
+        'Target',
+        'Cylinder',
+        'Hollow',
+    ],
     'TreePanel' : [
         'Intro',
         'Session',

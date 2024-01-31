@@ -1,0 +1,50 @@
+load Rook
+# Undo back to just after target placement.
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kTogglePointTarget
+select
+stage 1.49701 0
+view 0 23.692 60 0 0 -1
+moveover PointTargetWidget/Base 0
+
+section Cylinder Creating a cylinder to hollow the top
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 With the target placed, add a cylinder
+moveover CreateCylinderIcon 1
+click
+wait 1
+moveover TogglePointTargetIcon 1
+click
+wait 1
+
+caption .5 .15 3 Use the Scale Tool to change the diameter to 1 unit -;hold the shift key for symmetric scaling
+moveover ScaleToolIcon 1
+click
+moveover ScaleTool/XZ1Scaler/MaxSlider 1
+state mod on
+drag -.0517578 .0235507 2
+state mod off
+wait 1
+
+caption .5 .15 3 Translate the cylinder .5 units down -;first change the linear precision to .1
+moveover PrecisionControl/IncreasePrecision 1
+click
+wait 1
+moveover TranslationToolIcon 1
+click
+moveover TranslationTool/Y/YSlider/MaxFace 1 0 .008
+drag 0 -.231884 2
+wait 1

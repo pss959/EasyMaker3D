@@ -1,0 +1,44 @@
+load Rook
+# Undo back to just after last RevSurf edit.
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kTogglePointTarget  # Turns off.
+
+section Target Target setup for hollowing the top
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 The next step is to use a cylinder to hollow out the top,;starting with a better view
+moveto .330078 .469203 1  # Arbitrary point on back wall to deselect
+click
+moveover Stage 1 0 -.1
+drag 0 -.1 1
+moveover HeightSlider 1
+drag 0 .03 1
+wait 1
+
+caption .5 .15 3 This will use the Point Target to help;position the cylinder
+moveover TogglePointTargetIcon 1
+click
+moveover PointTargetWidget/Cone 1 0 .01
+drag .12793 -.201087 1
+wait 1
+
+caption .5 .15 3 Hold shift and drag the Point Target to the top;center of the bounds of the RevSurf
+moveover PointTargetWidget/Base 1
+state mod on
+drag -.131836 .202899 2
+state mod off
+wait 1

@@ -1,0 +1,44 @@
+load Rook
+# Undo back to just after cylinder placement.
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+action kUndo
+stage 1.49701 0
+view 0 23.692 60 0 0 -1
+select Cylinder_1
+action kTranslationTool
+moveover TranslationTool/Y/YSlider/MaxFace 0 0 .008
+
+section Hollow Hollowing out the top
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 Select the RevSurf and then shift-select the cylinder
+moveover RevSurf_1 1
+click
+state mod on
+moveover Cylinder_1 1
+click
+wait 1
+
+caption .5 .15 3 Click the CSG Difference icon to subtract;the cylinder from the RevSurf
+moveover CombineCSGDifferenceIcon 2
+click
+wait 1
+
+caption .5 .15 3 An easy way to check the result is with Inspector mode
+moveover ToggleInspectorIcon 2
+click
+moveto .719727 .730072 2
+moveto .72168  .606884 2
+
+caption .5 .15 3 Click or press any key to exit this mode
+wait 1
+click
+wait 2
