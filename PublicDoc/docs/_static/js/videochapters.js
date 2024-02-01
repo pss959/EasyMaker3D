@@ -30,6 +30,7 @@ function addChapters() {
         return;
 
     var cues = video.textTracks[0].cues;
+    var pct_sum = 0.0;
     for (var i = 0; i < cues.length; ++i) {
         var cue = cues[i];
         var span = document.createElement('span');
@@ -40,6 +41,11 @@ function addChapters() {
         // Truncate (not round) the duration percentage to 2 places to avoid
         // sums exceeding 100%.
         var frac = Math.floor(100 * 100 * duration / video.duration) / 100;
+        pct_sum += frac;
+        // Avoid going over 100 anyway, since these values are approximate.
+        if (pct_sum > 100) {
+            frac -= (pct_sum - 100);
+        }
         span.style.width = frac + '%';
         span.addEventListener('click', playChapter);
         chapterbar.appendChild(span);
