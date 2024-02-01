@@ -67,6 +67,9 @@ class ScriptedApp : public Application {
     /// Redefines this to return the Emitter modified mode state.
     virtual bool IsInModifiedMode() const override;
 
+    /// Redefines this to check the current state of the animation setting.
+    virtual bool IsAnimationEnabled() const override;
+
   private:
     /// Struct containing information for a caption.
     struct Caption_ {

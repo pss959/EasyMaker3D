@@ -45,7 +45,7 @@ static std::function<void(int)> s_signal_handler;
 /// detected.
 class CrashHandler_ {
   public:
-    CrashHandler_(Application &app) : app_(app) {}
+    CrashHandler_(IApplication &app) : app_(app) {}
     void HandleSignal(int signal) {
         std::signal(signal, nullptr);
         HandleCrash_("Received signal " + Util::ToString(signal),
@@ -68,7 +68,7 @@ class CrashHandler_ {
     }
 
   private:
-    Application &app_;
+    IApplication &app_;
 
     /// Handles a crash of any type - the cause and stack trace (if available)
     /// are passed in.

@@ -519,6 +519,11 @@ bool ScriptedApp::IsInModifiedMode() const {
     return emitter_->IsInModifiedMode();
 }
 
+bool ScriptedApp::IsAnimationEnabled() const {
+    // The "animation" setting is used to control this as well.
+    return Model::IsPlacementAnimationEnabled();
+}
+
 // ----------------------------------------------------------------------------
 // Initialization.
 // ----------------------------------------------------------------------------

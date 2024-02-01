@@ -99,7 +99,7 @@
 
 class  Application::Impl_ {
   public:
-    Impl_();
+    explicit Impl_(IApplication &app);
     ~Impl_();
 
     bool Init(const Application::Options &options);
@@ -109,8 +109,7 @@ class  Application::Impl_ {
 
     LogHandler & GetLogHandler() const { return *log_handler_; }
 
-    bool ProcessFrame(size_t render_count, bool force_poll,
-                      bool is_modified_mode);
+    bool ProcessFrame(size_t render_count, bool force_poll);
 
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
@@ -146,6 +145,8 @@ class  Application::Impl_ {
         kQuitRequested,  ///< Processing a request to quit the app.
         kQuitting,       ///< Actually quitting the app.
     };
+
+    IApplication &app_;
 
     /// Saves Options passed to Init().
     Application::Options options_;
@@ -371,7 +372,8 @@ class  Application::Impl_ {
 #define SC_        context_.scene_context
 #define PREC_      context_.precision_store
 
-Application::Impl_::Impl_() : loader_(new SceneLoader) {
+Application::Impl_::Impl_(IApplication &app) : app_(app),
+                                               loader_(new SceneLoader) {
 }
 
 Application::Impl_::~Impl_() {
@@ -499,9 +501,10 @@ bool Application::Impl_::Init(const Application::Options &options) {
     return true;
 }
 
-bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll,
-                                      bool is_modified_mode) {
+bool Application::Impl_::ProcessFrame(size_t render_count, bool force_poll) {
     ASSERT(run_state_ != RunState_::kQuitting);
+
+    const bool is_modified_mode = app_.IsInModifiedMode();
 
     KLogger::SetRenderCount(render_count++);
     renderer_->BeginFrame();
@@ -984,9 +987,13 @@ void Application::Impl_::ConnectSceneInteraction_() {
     }
 
     // Set up the stage.
-    SC_->stage->GetClicked().AddObserver(
-        this, [&](const ClickInfo &info){
-            StartResetStage_(info.is_modified_mode); });
+    auto reset_stage = [&](const ClickInfo &info){
+        if (app_.IsAnimationEnabled())
+            StartResetStage_(info.is_modified_mode);
+        else
+            SC_->stage->SetScaleAndRotation(1, Anglef());
+    };
+    SC_->stage->GetClicked().AddObserver(this, reset_stage);
 
     // Set up the height pole and slider.
     ConnectHeightSlider_();
@@ -1007,7 +1014,16 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
 void Application::Impl_::ConnectHeightSlider_() {
     auto reset_slider = [&](const ClickInfo &info){
-        StartResetHeight_(info.is_modified_mode);
+        if (app_.IsAnimationEnabled()) {
+            StartResetHeight_(info.is_modified_mode);
+        }
+        else {
+            // Immediate reset.
+            auto &hs = *SC_->height_slider;
+            hs.SetValue(hs.GetInitialValue());
+            if (info.is_modified_mode)
+                SC_->window_camera->SetOrientation(Rotationf::Identity());
+        }
     };
 
     // Clicking the height pole or slider may reset the slider.
@@ -1552,7 +1568,7 @@ Rotationf Application::Impl_::ComputeTooltipRotation_() const {
 // Application functions.
 // ----------------------------------------------------------------------------
 
-Application::Application() : impl_(new Impl_) {
+Application::Application() : impl_(new Impl_(*this)) {
 }
 
 Application::~Application() {
@@ -1570,7 +1586,7 @@ void Application::MainLoop() {
 }
 
 bool Application::ProcessFrame(size_t render_count, bool force_poll) {
-    return impl_->ProcessFrame(render_count, force_poll, IsInModifiedMode());
+    return impl_->ProcessFrame(render_count, force_poll);
 }
 
 void Application::ReloadScene() {

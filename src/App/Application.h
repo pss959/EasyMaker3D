@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "App/IApplication.h"
 #include "Util/Memory.h"
 
 class Controller;
@@ -28,7 +29,7 @@ DECL_SHARED_PTR(TargetManager);
 /// The Application class manages the entire application.
 ///
 /// \ingroup App
-class Application {
+class Application : public IApplication {
   public:
     /// Application options.
     struct Options {
@@ -93,11 +94,11 @@ class Application {
 
     /// Tells the SessionManager to save the current session to the given file
     /// with the given crash message and stack trace.
-    void SaveCrashSession(const FilePath &path, const Str &message,
-                          const StrVec &stack);
+    virtual void SaveCrashSession(const FilePath &path, const Str &message,
+                                  const StrVec &stack) override;
 
     /// Shuts down (especially VR which does not like to be crashed out of.
-    void Shutdown();
+    virtual void Shutdown() override;
 
   protected:
     /// Sets a flag indicating whether the application should ask about saving
@@ -139,9 +140,11 @@ class Application {
     /// persistent.
     void SetTooltipDelay(float seconds);
 
-    /// Returns true if the application is in modified input mode. The base
-    /// class defines this to ask the GLFWViewer if the shift key is pressed.
-    virtual bool IsInModifiedMode() const;
+    /// Defines this to ask the GLFWViewer if the shift key is pressed.
+    virtual bool IsInModifiedMode() const override;
+
+    /// Defines this to always return true.
+    virtual bool IsAnimationEnabled() const override { return true; }
 
   private:
     class  Loader_;
