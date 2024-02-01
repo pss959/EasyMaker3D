@@ -96,8 +96,14 @@
     <td><b>include</b></td>
     <td><i>file</i> [<i>timescale</i>]</td>
     <td>Reads instructions from <i>file</i> and adds them. If <i>timescale</i>
-      is provided, all durations in the included script are scaled by it, and
-      animation state is always off.</td>
+      is provided, all durations in the included script are scaled by it. The
+      following differences apply in included scripts:
+      <ul>
+        <li>Animation and video state are always off.</li>
+        <li><b>caption</b>, <b>section</b>, <b>snap</b>, and <b>snapobj</b>
+          instructions are ignored.</li>
+      </ul>
+    </td>
   </tr>
   <tr>
     <td><b>key</b></td>
@@ -219,8 +225,8 @@
   </tr>
   <tr>
     <td><b>view</b></td>
-    <td>[<i>posx posy posz dirx diry dirz</i>]</td>
-    <td>Changes the view to look from the given position along the given
+    <td>[<i>gantry_height dirx diry dirz</i>]</td>
+    <td>Changes the view to the given gantry height, looking along the given
       direction. With no arguments, resets to the default view.</td>
   </tr>
   <tr>

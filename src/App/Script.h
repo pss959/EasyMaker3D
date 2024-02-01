@@ -117,7 +117,7 @@ class Script {
         // No data.
     };
     struct ViewInstr : public Instr {
-        Point3f  pos;
+        float    gantry_height;
         Vector3f dir;
     };
     struct WaitInstr : public Instr {

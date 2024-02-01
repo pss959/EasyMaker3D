@@ -37,6 +37,7 @@
 #include "Panels/SettingsPanel.h"
 #include "Parser/Parser.h"
 #include "SG/CoordConv.h"
+#include "SG/Gantry.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
@@ -616,9 +617,8 @@ void ScriptedApp::InitScene_() {
             UpdateCaption_();
         });
 
-    // Save the default camera position.
-    default_camera_pos_ =
-        GetContext().scene_context->window_camera->GetPosition();
+    // Save the default gantry height.
+    default_gantry_height_ = GetContext().scene_context->gantry->GetHeight();
 }
 
 void ScriptedApp::InitHandlers_() {
@@ -975,14 +975,16 @@ bool ScriptedApp::ProcessStop_(const Script::StopInstr &instr) {
 }
 
 bool ScriptedApp::ProcessView_(const Script::ViewInstr &instr) {
-    auto &cam = *GetContext().scene_context->window_camera;
+    const auto &sc = *GetContext().scene_context;
+    auto &gantry = *sc.gantry;
+    auto &cam    = *sc.window_camera;
     // A zero-length direction indicates that the view should be reset.
     if (instr.dir == Vector3f::Zero()) {
-        cam.SetPosition(default_camera_pos_);
+        gantry.SetHeight(default_gantry_height_);
         cam.SetOrientation(Rotationf::Identity());
     }
     else {
-        cam.SetPosition(instr.pos);
+        gantry.SetHeight(instr.gantry_height);
         cam.SetOrientation(Rotationf::RotateInto(-Vector3f::AxisZ(),
                                                  instr.dir));
     }

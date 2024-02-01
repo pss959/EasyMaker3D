@@ -211,7 +211,23 @@ bool Script::ProcessInclude_(const Str &file, float timescale) {
     if (! included_script.ReadScript(path))
         return false;
 
-    // Scale durations.
+    // Remove instructions that have no effect.
+    auto is_ignored = [](const InstrPtr &instr){
+        // Video and animation state changes.
+        if (instr->name == "state") {
+            auto &sinstr = static_cast<StateInstr &>(*instr);
+            if (sinstr.setting == "animation" || sinstr.setting == "video")
+                return true;
+        }
+        // Ignored instructions.
+        return (instr->name == "caption" ||
+                instr->name == "section" ||
+                instr->name == "snap"    ||
+                instr->name == "snapobj");
+    };
+    std::erase_if(included_script.instructions_, is_ignored);
+
+    // Scale remaining durations.
     if (timescale != 1) {
         for (auto &instr: included_script.instructions_)
             ScaleDuration_(*instr, timescale);
@@ -651,24 +667,26 @@ Script::InstrPtr Script::ParseStop_(const StrVec &words) {
 
 Script::InstrPtr Script::ParseView_(const StrVec &words) {
     ViewInstrPtr vinst;
-    Vector3f     pos, dir;
-    if (words.size() != 1U && words.size() != 7U) {
+    float        gantry_height;
+    Vector3f     dir;
+    if (words.size() != 1U && words.size() != 5U) {
         Error_("Bad syntax for view instruction");
     }
-    else if (words.size() == 7U && (
-                 ! ParseVector3f_(words, 1, pos) ||
-                 ! ParseVector3f_(words, 4, dir))) {
-        Error_("Invalid position or direction floats for view instruction");
+    else if (words.size() == 5U && (
+                 ! ParseFloat_(words[1], gantry_height) ||
+                 ! ParseVector3f_(words, 2, dir))) {
+        Error_(
+            "Invalid gantry height or direction floats for view instruction");
     }
     else {
         vinst.reset(new ViewInstr);
         if (words.size() == 1U) {
-            vinst->pos.Set(0, 0, 0);
+            vinst->gantry_height = 0;
             vinst->dir.Set(0, 0, 0);  // Indicates reset.
         }
         else {
             ion::math::Normalize(&dir);
-            vinst->pos = Point3f(pos);
+            vinst->gantry_height = gantry_height;
             vinst->dir = dir;
         }
     }
@@ -706,13 +724,6 @@ void Script::ScaleDuration_(Instr &instr, float scale) {
         static_cast<MoveToInstr &>(instr).duration *= scale;
     else if (instr.name == "wait")
         static_cast<WaitInstr &>(instr).duration *= scale;
-
-    // Animation is always off when scaling time.
-    else if (instr.name == "state") {
-        auto &sinstr = static_cast<StateInstr &>(instr);
-        if (sinstr.setting == "animation")
-            sinstr.is_on = false;
-    }
 }
 
 Str Script::FixCaptionText_(const StrVec &words) {
