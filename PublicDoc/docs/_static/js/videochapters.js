@@ -37,7 +37,10 @@ function addChapters() {
         span.innerHTML = cue.text;
         span.setAttribute('class', 'chapter-span');
         span.setAttribute('data-start-time', cue.startTime);
-        span.style.width = (Math.round(100 * duration / video.duration)) + '%';
+        // Truncate (not round) the duration percentage to 2 places to avoid
+        // sums exceeding 100%.
+        var frac = Math.floor(100 * 100 * duration / video.duration) / 100;
+        span.style.width = frac + '%';
         span.addEventListener('click', playChapter);
         chapterbar.appendChild(span);
     }
