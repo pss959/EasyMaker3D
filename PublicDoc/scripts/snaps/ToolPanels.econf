@@ -30,10 +30,10 @@ snap 0.367188 0.175725 0.265625 0.762681 ExtrudedToolPanelPolygon.jpg
 # RevSurf Tool Panel.
 load RevSurf
 action kToggleSpecializedTool
-snap 0.352539 0.210145 0.297852 0.773551 RevSurfToolPanel.jpg
+snap 0.354492 0.21558 0.293945 0.748188 RevSurfToolPanel.jpg
 moveover RevSurfToolPanel/SweepAngleSlider/Thumb 0
 drag -.138021 -.00386101 0
-snap 0.352539 0.210145 0.297852 0.773551 RevSurfToolPanelSweep.jpg
+snap 0.354492 0.21558 0.293945 0.748188 RevSurfToolPanelSweep.jpg
 
 # Taper Tool Panel.
 load Taper

@@ -21,7 +21,7 @@ click
 wait 2
 
 caption .5 .15 3 It will also be oriented to the target direction
-moveover PointTargetWidget/Cone 1 0 .016
+moveover PointTargetWidget/Cone 1 0 .01
 state mod on
 drag -.235352 -.0706522 2
 state mod off

@@ -20,4 +20,4 @@ Profile editing is mostly consistent among these tools, with a few differences:
   - The endpoints in the Taper Tool may be moved horizontally, but not
     vertically.
 
-.. incvideo:: Editing
+.. incvideo:: Profile

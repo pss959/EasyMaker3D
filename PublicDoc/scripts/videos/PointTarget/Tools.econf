@@ -17,7 +17,7 @@ moveover TranslationTool/Z/ZSlider/MaxFace .5
 drag -.0214844 -.0706522 2
 wait 1
 
-caption .5 .15 3 While dragging, snapping is highlighted with a color change and a feedback line
+caption .5 .15 3 While dragging, snapping is highlighted with;a color change and a feedback line
 moveover TranslationTool/Z/ZSlider/MaxFace .5
 drag -.03125 -.0960145 2
 wait 1

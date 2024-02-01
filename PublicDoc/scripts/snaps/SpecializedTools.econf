@@ -82,7 +82,7 @@ stage 1 0
 # ======== RevSurf Tool.
 load RevSurf
 action kToggleSpecializedTool
-snap 0.336914 0.182971 0.327148 0.731884 RevSurfTool.jpg
+snap 0.353516 0.219203 0.291992 0.744565 RevSurfTool.jpg
 
 # ======== Taper Tool
 load Taper

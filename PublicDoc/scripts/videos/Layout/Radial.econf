@@ -16,18 +16,18 @@ moveover PointTargetWidget/Ring 1 .01 0
 drag .0351562 -.0362319 2
 
 caption .5 .15 3 Select the objects to lay out in order
-moveover Peg .5 0 .02
+moveover Peg .5 0 .04
 click
 state mod on
-moveover Peg_A .5 0 .02
+moveover Peg_A .5 0 .04
 click
-moveover Peg_B .5 0 .02
+moveover Peg_B .5 0 .04
 click
-moveover Peg_C .5 0 .02
+moveover Peg_C .5 0 .04
 click
-moveover Peg_D .5 0 .02
+moveover Peg_D .5 0 .04
 click
-moveover Peg_E .5 0 .02
+moveover Peg_E .5 0 .04
 click
 state mod off
 
