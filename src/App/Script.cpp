@@ -281,20 +281,15 @@ bool Script::ParseN_(const Str &s, size_t &n) {
 Script::InstrPtr Script::ParseAction_(const StrVec &words) {
     ActionInstrPtr ainst;
     Action         action;
-    float          delay = 0;
-    if (words.size() < 2U || words.size() > 3U) {
+    if (words.size() != 2U) {
         Error_("Bad syntax for action instruction");
     }
     else if (! Util::EnumFromString(words[1], action)) {
         Error_("Unknown action name for action instruction");
     }
-    else if (words.size() == 3U && ! ParseFloat_(words[2], delay)) {
-        Error_("Invalid delay float for action instruction");
-    }
     else {
         ainst.reset(new ActionInstr);
         ainst->action = action;
-        ainst->delay  = delay;
     }
     return ainst;
 }
@@ -357,16 +352,18 @@ Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
 
 Script::InstrPtr Script::ParseDragStart_(const StrVec &words) {
     DragStartInstrPtr dinst;
-    float dx, dy;
-    if (words.size() != 3U) {
+    float dx, dy, duration;
+    if (words.size() != 4U) {
         Error_("Bad syntax for dragstart instruction");
     }
-    else if (! ParseFloat_(words[1], dx) || ! ParseFloat_(words[2], dy)) {
-        Error_("Invalid dx or dy floats for dragstart instruction");
+    else if (! ParseFloat_(words[1], dx) || ! ParseFloat_(words[2], dy) ||
+             ! ParseFloat_(words[3], duration)) {
+        Error_("Invalid dx, dy, or duration floats for dragstart instruction");
     }
     else {
         dinst.reset(new DragStartInstr);
         dinst->motion.Set(dx, dy);
+        dinst->duration = duration;
     }
     return dinst;
 }

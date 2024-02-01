@@ -9,7 +9,7 @@ snapobj TreePanel TreePanel.jpg .01
 
 # Drag a rectangle.
 moveover TreePanel 0 -.0644531 .0126811
-dragstart .09375 .148551
+dragstart .09375 .148551 0
 snapobj TreePanel TreePanelSelect.jpg .01
 dragend
 

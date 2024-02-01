@@ -33,7 +33,6 @@ class Script {
 
     struct ActionInstr : public Instr {
         Action action;
-        float  delay;
     };
     struct CaptionInstr : public Instr {
         Point2f pos;
@@ -50,6 +49,7 @@ class Script {
     };
     struct DragStartInstr : public Instr {
         Vector2f motion;
+        float    duration;
     };
     struct DragEndInstr : public Instr {
         // No data.

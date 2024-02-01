@@ -27,7 +27,7 @@ action kCreateCylinder
 select 
 action kTogglePointTarget
 moveover PointTargetWidget/Base 0
-dragstart -.0712891 .0543478
+dragstart -.0712891 .0543478 0
 snap 0.423828 0.173913 0.194336 0.271739 PointTargetSnapped.jpg
 dragend
 action kTogglePointTarget
@@ -45,7 +45,7 @@ action kCreateBox
 select 
 action kToggleEdgeTarget
 moveover EdgeTargetWidget/Edge 0
-dragstart -.112305 -.0815217
+dragstart -.112305 -.0815217 0
 snap 0.430664 0.175725 0.142578 0.266304 EdgeTargetSnapped.jpg
 dragend
 
@@ -60,7 +60,7 @@ state mod on
 
 # Mod-Drag the edge target to the top of the cylinder bounds.
 moveover EdgeTargetWidget/Edge 0
-dragstart .00195312 .0706522
+dragstart .00195312 .0706522 0
 snap 0.432617 0.177536 0.143555 0.253623 EdgeTargetModSnapped.jpg
 dragend
 
@@ -72,11 +72,11 @@ stage 1 20.1153
 action kToggleEdgeTarget
 action kTogglePointTarget
 moveover PointTargetWidget/Base 0
-dragstart -.0161458 -.0376448
+dragstart -.0161458 -.0376448 0
 snap 0.421875 0.139493 0.208008 0.318841 PointTargetModSnapped.jpg
 dragend
 # Drag to vertical center line of front.
 moveover PointTargetWidget/Base 0
-dragstart -.000520825 -.0337838
+dragstart -.000520825 -.0337838 0
 snap 0.422852 0.152174 0.163086 0.286232 PointTargetModSnapped2.jpg
 dragend

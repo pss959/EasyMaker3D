@@ -5,7 +5,7 @@ action kTogglePointTarget
 
 # Drag the radius to show the feedback and spokes.
 moveover PointTargetWidget/Ring 0 .01 0
-dragstart .11 0
+dragstart .11 0 0
 snap 0.250977 0.0307971 0.522461 0.42029 RadialLayoutRadius.jpg
 dragend
 
@@ -14,8 +14,8 @@ moveover RadialLayoutWidget/StartSpoke/SpokeGeom 0
 drag 0 -.0634058 0
 # Drag the end spoke.
 moveover RadialLayoutWidget/EndSpoke/SpokeGeom 0 .0917969 -.067029
-dragstart -.0732422 -.0362319  # Sets correct direction
-dragstart -.527149 .0359369
+dragstart -.0732422 -.0362319 0  # Sets correct direction
+dragstart -.527149 .0359369 0
 snap 0.250977 0.0307971 0.522461 0.42029 RadialLayoutArc.jpg
 dragend
 

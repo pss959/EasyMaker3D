@@ -41,10 +41,13 @@ class ScriptEmitter : public IEmitter {
     bool IsDragging() const { return is_dragging_; }
 
     /// Adds points for a drag from \p pos0 to \p pos1 with \p count
-    /// intermediate points to emit. If \p use_ease is true, the points are
-    /// interpolated to create an ease-in, ease-out motion.
-    void AddDragPoints(const Point2f &pos0, const Point2f &pos1, size_t count,
-                       bool use_ease = false);
+    /// intermediate points to emit.
+    void AddDragPoints(const Point2f &pos0, const Point2f &pos1, size_t count);
+
+    /// Adds \p count intermediate points to emit for a drag from \p pos0 to \p
+    /// pos1.
+    void AddIntermediateDragPoints(const Point2f &pos0, const Point2f &pos1,
+                                   size_t count);
 
     /// Adds a key press/release to simulate.
     void AddKey(const Str &key_string);

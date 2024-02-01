@@ -1,0 +1,46 @@
+include Cutters.econf 0
+
+section Cutting Cutting the slots
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 Show the rook body and select both boxes
+moveover TreePanel/ModelRow_0/ShowButton 1
+click
+moveover TreePanel/ModelRow_3/ModelButton 1
+click
+moveover TreePanel/ModelRow_4/ModelButton 1
+state mod on
+click
+state mod off
+wait 1
+
+caption .5 .15 3 Translate the boxes up in Z by 3.8 units
+moveover TranslationToolIcon 1
+click
+moveover TranslationTool/Y/YSlider/MaxFace 1 0 .02
+dragstart 0 .28 1
+action kIncreasePrecision
+dragstart 0 .046 1
+dragend
+
+caption .5 .15 3 Subtract the boxes from the rook body
+moveover TreePanel/ModelRow_0/ModelButton 1
+click
+state mod on
+moveover TreePanel/ModelRow_3/ModelButton 1
+click
+moveover TreePanel/ModelRow_4/ModelButton 1
+click
+state mod off
+moveover CombineCSGDifferenceIcon 1
+click
+wait 1
+
+caption .5 .15 3 You can use Inspector mode to check the final model
+moveover ToggleInspectorIcon 2
+click
+moveto .719727 .730072 2
+moveto .72168  .606884 2
+wait 1

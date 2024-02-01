@@ -13,7 +13,10 @@ wait 2
 caption .5 .15 6 They even work during drag operations, meaning that;you can start a coarse drag and refine it while dragging
 state cursor on
 moveover TranslationTool/X/XSlider/MaxFace 1
-action kIncreasePrecision 2  # Delay during drag
-action kIncreasePrecision 4  # Delay during drag
-drag .2 0 6
+dragstart .07 0 2
+action kIncreasePrecision
+dragstart .11 0 2
+action kIncreasePrecision
+dragstart .16 0 2
+dragend
 wait 2

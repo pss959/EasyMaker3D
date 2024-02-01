@@ -450,8 +450,6 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
     bool keep_going = true;
     bool was_stopped = false;
 
-    ProcessDelayedActions_(render_count);
-
     if (are_more_instructions || events_pending) {
         UpdateCaption_();
         if (video_)
@@ -673,17 +671,7 @@ bool ScriptedApp::ProcessInstruction_(const Script::Instr &instr) {
 bool ScriptedApp::ProcessAction_(const Script::ActionInstr &instr) {
     ASSERTM(GetContext().action_processor->CanApplyAction(instr.action),
             Util::EnumName(instr.action));
-    // Delayed action just gets added to the list to apply later.
-    if (instr.delay > 0) {
-        DelayedAction_ da;
-        da.action        = instr.action;
-        da.delay         = instr.delay;
-        da.trigger_frame = 0;   // Computed later.
-        delayed_actions_.push_back(da);
-    }
-    else {
-        GetContext().action_processor->ApplyAction(instr.action);
-    }
+    GetContext().action_processor->ApplyAction(instr.action);
     return true;
 }
 
@@ -738,7 +726,11 @@ bool ScriptedApp::ProcessDragStart_(const Script::DragStartInstr &instr) {
         emitter_->AddDragPoint(ScriptEmitter::DragPhase::kStart, cursor_pos_);
     }
     const Point2f end_pos = drag_start_pos_ + instr.motion;
-    emitter_->AddDragPoint(ScriptEmitter::DragPhase::kContinue, end_pos);
+
+    // Determine the number of points to create. Longer durations require
+    // more points.
+    const size_t frames = std::max(1.f, instr.duration * options_.fps);
+    emitter_->AddIntermediateDragPoints(cursor_pos_, end_pos, frames - 1);
     MoveFakeCursorTo_(end_pos);
     return true;
 }
@@ -1043,27 +1035,6 @@ void ScriptedApp::Finish_() {
     EnableMouseMotionEvents(true);
 }
 
-void ScriptedApp::ProcessDelayedActions_(size_t render_count) {
-    for (auto &da: delayed_actions_) {
-        // Set the trigger frame if not already done.
-        if (da.trigger_frame == 0) {
-            da.trigger_frame =
-                render_count + static_cast<int>(options_.fps * da.delay);
-        }
-        // Trigger if the frame has come.
-        if (da.trigger_frame <= render_count) {
-            if (options_.report)
-                std::cout << "    -- Processing delayed action "
-                          << Util::EnumName(da.action)
-                          << " at frame " << render_count << "\n";
-            GetContext().action_processor->ApplyAction(da.action);
-        }
-    }
-    // Remove triggered actions.
-    std::erase_if(delayed_actions_, [render_count](const DelayedAction_ &da){
-        return da.trigger_frame <= render_count; });
-}
-
 Frustum ScriptedApp::GetFrustum_() const {
     // Get the WindowCamera from the Scene and let it build a Frustum.
     const auto &sc = *GetContext().scene_context;
@@ -1179,7 +1150,6 @@ void ScriptedApp::MoveTo_(const Point2f &pos, float duration) {
         }
     }
     else {
-        // No duration or no delay - just one point.
         emitter_->AddHoverPoint(pos);
     }
 }

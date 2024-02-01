@@ -4,9 +4,9 @@ action kCreateCylinder
 action kTranslationTool
 stage  1 -10
 moveover TranslationTool/X/XSlider/MaxFace 0
-dragstart .165039 0
+dragstart .165039 0 0
 action kIncreasePrecision
-dragstart .166039 0
+dragstart .166039 0 0
 snap 0.47561 0.206667 0.307692 0.438333 LinearFeedback.jpg
 dragend
 action kUndo
@@ -16,6 +16,6 @@ action kDecreasePrecision
 stage 1 0
 action kRotationTool
 moveover RotationTool/ZAxisRotator 0 .0283203 .103261  # On green ring.
-dragstart -0.028321 0.163044
+dragstart -0.028321 0.163044 0
 snap 0.320312 0.143116 0.429688 0.677536 AngularFeedback.jpg
 dragend

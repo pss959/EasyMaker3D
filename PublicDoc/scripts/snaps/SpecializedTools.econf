@@ -32,7 +32,7 @@ action kToggleSpecializedTool
 snap 0.353516 0.106884 0.28418 0.452899 ClipTool.jpg
 # Translate plane up to show feedback.
 moveover ClipTool/PlaneWidget/PlaneTranslator 0
-dragstart 0 0.057
+dragstart 0 0.057 0
 snap 0.357422 0.181159 0.294922 0.400362 ClipToolFeedback.jpg
 dragend
 action kUndo
@@ -40,7 +40,7 @@ action kShowAll
 action kSelectAll
 # Rotate the plane.
 moveover ClipTool/Axis/Cone 0
-dragstart -0.194335 -0.057971
+dragstart -0.194335 -0.057971 0
 snap 0.370117 0.139493 0.306641 0.445652 ClipToolActive.jpg
 dragend
 
@@ -55,7 +55,7 @@ load
 action kCreateCylinder
 snap 0.366211 0.164855 0.276367 0.389493 CylinderTool.jpg
 moveover CylinderTool/TopRadiusScaler/MaxSlider 0
-dragstart 0.0585 0
+dragstart 0.0585 0 0
 snap 0.366211 0.164855 0.276367 0.389493 CylinderToolActive.jpg
 dragend
 
@@ -94,7 +94,7 @@ load Torus
 action kToggleSpecializedTool
 snap 0.359375 0.155797 0.286133 0.40942 TorusTool.jpg
 moveover TorusTool/OuterRadiusScaler/MaxSlider 0 .005 0  # Offset to hit scaler.
-dragstart 0.021484 0
+dragstart 0.021484 0 0
 snap 0.298828 0.141304 0.40625 0.403986 TorusToolActive.jpg
 dragend
 
@@ -110,7 +110,7 @@ stage 1 -10
 snap 0.31543 0.0833333 0.331055 0.608696 TwistTool.jpg
 # Twist angle to show feedback; Need offset to get edge of ring.
 moveover TwistTool/SpinWidget/RingTransform/Ring/Ring 0 0 -.04
-dragstart .392578 0
+dragstart .392578 0 0
 snap 0.322266 0.0742754 0.396484 0.538043 TwistToolTwisting.jpg
 dragend
 snap 0.31543  0.0833333 0.331055 0.608696 TwistToolLowComplexity.jpg

@@ -56,21 +56,21 @@ void ScriptEmitter::AddDragPoint(DragPhase phase, const Point2f &pos) {
 }
 
 void ScriptEmitter::AddDragPoints(const Point2f &pos0, const Point2f &pos1,
-                                  size_t count, bool use_ease) {
+                                  size_t count) {
     ASSERT(! is_dragging_);
-
     AddDragPoint(DragPhase::kStart, pos0);
+    AddIntermediateDragPoints(pos0, pos1, count);
+    AddDragPoint(DragPhase::kEnd, pos1);
+}
 
-    // Add intermediate points, including pos1.
+void ScriptEmitter::AddIntermediateDragPoints(const Point2f &pos0,
+                                              const Point2f &pos1,
+                                              size_t count) {
     const float delta = 1.f / (count + 1);
     for (size_t i = 0; i <= count; ++i) {
         const float t = (i + 1) * delta;
-        AddDragPoint(DragPhase::kContinue,
-                     use_ease ? BezierInterp(t, pos0, pos1) :
-                     Lerp(t, pos0, pos1));
+        AddDragPoint(DragPhase::kContinue, Lerp(t, pos0, pos1));
     }
-
-    AddDragPoint(DragPhase::kEnd, pos1);
 }
 
 void ScriptEmitter::AddKey(const Str &key_string) {

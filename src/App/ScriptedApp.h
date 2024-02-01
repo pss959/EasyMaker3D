@@ -78,12 +78,6 @@ class ScriptedApp : public Application {
         SG::TextNodePtr   text;  ///< TextNode displaying text.
         Point2f           pos;   ///< Last window position of caption.
     };
-    /// Struct representing a delayed action.
-    struct DelayedAction_ {
-        Action action;         ///< Action to apply.
-        float  delay;          ///< Delay (in seconds).
-        size_t trigger_frame;  ///< Frame at which the action is triggered.
-    };
 
     // Used to fake a file system for panels.
     class MockFilePathList_;
@@ -117,8 +111,6 @@ class ScriptedApp : public Application {
     Point2f     cursor_pos_;            ///< Current cursor position.
     Caption_    caption_;               ///< Caption information.
     SG::NodePtr highlight_;             ///< Displays highlight rectangle.
-
-    std::vector<DelayedAction_> delayed_actions_;
 
     std::unique_ptr<MockFilePathList_> mock_fpl_;  ///< Simulates files.
 
@@ -170,9 +162,6 @@ class ScriptedApp : public Application {
 
     /// Finishes main instruction processing.
     void Finish_();
-
-    /// Processes any delayed actions.
-    void ProcessDelayedActions_(size_t render_count);
 
     /// Returns a Frustum representing the current camera view.
     Frustum GetFrustum_() const;

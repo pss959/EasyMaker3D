@@ -138,6 +138,8 @@ merges = {
         'Target',
         'Cylinder',
         'Hollow',
+        'Cutters',
+        'Cutting',
     ],
     'TreePanel' : [
         'Intro',

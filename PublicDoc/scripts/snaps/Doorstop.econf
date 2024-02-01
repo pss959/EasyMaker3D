@@ -11,7 +11,7 @@ action kToggleSpecializedTool
 
 # Drag the torus 5 units in +X.
 moveover TranslationTool/X/XSlider/MaxFace 0
-dragstart .089 0
+dragstart .089 0 0
 snap 0.379925 0.155 0.295497 0.415 DoorstopTorus.jpg
 dragend
 
@@ -20,7 +20,7 @@ action kCreateCylinder
 action kScaleTool
 snap 0.379925 0.155 0.295497 0.415 DoorstopScale.jpg
 moveover ScaleTool/YScaler/MaxSlider 0
-dragstart 0 -0.043479
+dragstart 0 -0.043479 0
 snap 0.405273 0.13587 0.32 0.336957 DoorstopCylinder.jpg
 dragend
 

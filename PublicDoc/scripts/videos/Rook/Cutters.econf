@@ -1,0 +1,53 @@
+include Hollow.econf 0
+
+section Cutters Creating cutters for the slots on top
+state video on
+state animation on
+state cursor on
+
+caption .5 .15 3 The next step is to use thin boxes;to cut slots in the top of the rook
+wait 3
+
+caption .5 .15 3 Reset the view by shift-clicking on the;height slider and also hide the rook
+moveover HeightSlider 1
+state mod on
+click
+state mod off
+wait 1
+moveover TreePanel/ModelRow_0/HideButton 1
+click
+wait 1
+
+caption .5 .15 3 Create a box and attach the Scale Tool to it
+moveover CreateBoxIcon 1
+click
+wait 1
+moveover ScaleToolIcon 1
+click
+
+caption .5 .15 4 Scale the width to .2 units, using the 'z' and 'x';shortcuts to change precision while dragging
+action kDecreasePrecision
+moveover ScaleTool/XScaler/MaxSlider 1
+state mod on
+dragstart -.1 0 1
+action kIncreasePrecision
+dragstart -.22 0 1
+dragend
+state mod off
+wait 1
+
+caption .5 .15 3 Copy and paste the box
+moveover CopyIcon 1
+click
+moveover PasteIcon 1
+click
+wait 1
+
+caption .5 .15 4 Select the Rotation Tool and;rotate the copy 90 degrees
+moveover PrecisionControl/DecreasePrecision 1
+click
+moveover RotationToolIcon 1
+click
+moveover RotationTool/YAxisRotator 1 -.09375 -.0036  # On blue ring
+drag .189453 -.0416667 1
+wait 1

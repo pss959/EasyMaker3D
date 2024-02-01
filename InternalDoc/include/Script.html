@@ -23,10 +23,8 @@
   </tr>
   <tr>
     <td><b>action</b></td>
-    <td><i>name</i> [<i>delay</i>]</td>
-    <td>Applies the named action. If the <i>delay</i> argument is provided, the
-    given delay (in seconds) elapses before the action is applied. (This is
-    useful for changing precision or other state during a drag.)</td>
+    <td><i>name</i></td>
+    <td>Applies the named action.</td>
   </tr>
   <tr>
     <td><b>caption</b></td>
@@ -55,13 +53,14 @@
   </tr>
   <tr>
     <td><b>dragstart</b></td>
-    <td><i>dx dy</i></td>
+    <td><i>dx dy duration</i></td>
     <td>Simulates a mouse drag from the current cursor position by
-      <i>(dx,dy)</i> in normalized window coordinates, but does not end the
-      drag until a <b>dragend</b> instruction is processed. If
-      multiple <b>dragstart</b> instructions are issued before
-      a <b>dragend</b>, each successive one continues the drag (relative to the
-      starting position, not the previous <b>dragstart</b> position).</td>
+      <i>(dx,dy)</i> in normalized window coordinates over the given
+      <a href="#duration"><i>duration</i></a>, but does not end the drag until
+      a <b>dragend</b> instruction is processed. If multiple <b>dragstart</b>
+      instructions are issued before a <b>dragend</b>, each successive one
+      continues the drag (relative to the starting position, not the
+      previous <b>dragstart</b> position).</td>
   </tr>
   <tr>
     <td><b>files</b></td>
@@ -82,8 +81,9 @@
   <tr>
     <td><b>hand</b></td>
     <td><code>L</code>|<code>R</code> <i>type</i></td>
-    <td>Defines a controller model for the given hand. *type* is one of
-      {<code>Oculus_Touch</code>, <code>Vive</code>, or <code>None</code>}.</td>
+    <td>Defines a controller model for the given hand. <i>type</i> is one of
+      {<code>Oculus_Touch</code>, <code>Vive</code>,
+      or <code>None</code>}.</td>
   </tr>
   <tr>
     <td><b>handpos</b></td>
