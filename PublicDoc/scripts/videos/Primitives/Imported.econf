@@ -13,12 +13,12 @@ click
 wait 3
 
 caption .5 .15 2 The panel is used to choose the file;to import the model from
-state fileexist on  # Pretend the file exists.
+files pass  # Pretend the file exists.
 moveover ImportToolPanel/File_1 1
 wait 1
 click
 wait 1
-state fileexist off
+files tweak
 moveover ImportToolPanel/Accept 1
 
 # Simulate clicking "Accept" by loading a session with a real Imported

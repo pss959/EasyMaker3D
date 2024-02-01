@@ -45,7 +45,7 @@ action kUndo
 action kUndo
 
 # Question Dialog Panel. Create a box, then click to load another session.
-state fileexist on  # Allows files to be loadable.
+files pass  # Allows files to be loadable.
 action kCreateBox
 action kOpenSessionPanel
 focus Load    # Load a session.

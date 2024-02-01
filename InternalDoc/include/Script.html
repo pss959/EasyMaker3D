@@ -64,6 +64,16 @@
       starting position, not the previous <b>dragstart</b> position).</td>
   </tr>
   <tr>
+    <td><b>files</b></td>
+    <td><code>tweak</code>|<code>fail</code>|<code>pass</code></td>
+    <td>Determines whether files are considered to exist for reading and
+      writing. The <code>tweak</code> setting uses the actual file system after
+      tweaking the file path; this is the default. The <code>fail</code>
+      setting always returns false, meaning that the file does not
+      exist. The <code>pass</code> setting pretends the file always
+      exists.</td>
+  </tr>
+  <tr>
     <td><b>focus</b></td>
     <td><i>pane_name</i></td>
     <td>Sets the keyboard focus to the named interactive pane in the active
@@ -73,7 +83,7 @@
     <td><b>hand</b></td>
     <td><code>L</code>|<code>R</code> <i>type</i></td>
     <td>Defines a controller model for the given hand. *type* is one of
-      {<code>Oculus_Touch</code>, <code>Vive</code>, or <code>None</code>}.
+      {<code>Oculus_Touch</code>, <code>Vive</code>, or <code>None</code>}.</td>
   </tr>
   <tr>
     <td><b>handpos</b></td>
@@ -82,7 +92,7 @@
     <td>Moves the controller for the given hand to the given position (relative
       to the default rest position) and rotates so that the laser pointer and
       hover guide align with the given vectors. The hover guide direction can
-      be zero if the default is ok.
+      be zero if the default is ok.</td>
   </tr>
   <tr>
     <td><b>highlight</b></td>
@@ -186,10 +196,6 @@
             <tr>
               <td><b>cursor</b></td>
               <td>Shows or hides the fake cursor at the current location.</td>
-            </tr>
-            <tr>
-              <td><b>fileexist</b></td>
-              <td>Sets whether files should be treated as already existing.</td>
             </tr>
             <tr>
               <td><b>headset</b></td>

@@ -47,7 +47,7 @@ class FilePathList {
 
     /// This allows derived classes (such as in ScriptedApp) to modify the
     /// given path for devious purposes. The base class does nothing.
-    virtual void TweakPath(FilePath &path, bool is_read) {}
+    virtual void TweakPath(FilePath &path, bool is_read) const {}
 
     /// Dumps current state for help with debugging.
     void Dump();

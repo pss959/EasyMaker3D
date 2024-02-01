@@ -54,6 +54,7 @@ Script::Script() {
     REG_FUNC_(Drag);
     REG_FUNC_(DragStart);
     REG_FUNC_(DragEnd);
+    REG_FUNC_(Files);
     REG_FUNC_(Focus);
     REG_FUNC_(Hand);
     REG_FUNC_(HandPos);
@@ -379,6 +380,23 @@ Script::InstrPtr Script::ParseDragEnd_(const StrVec &words) {
         dinst.reset(new DragEndInstr);
     }
     return dinst;
+}
+
+Script::InstrPtr Script::ParseFiles_(const StrVec &words) {
+    FilesInstrPtr finst;
+    if (words.size() != 2U) {
+        Error_("Bad syntax for files instruction");
+    }
+    else if (words[1] != "tweak" &&
+             words[1] != "fail" &&
+             words[1] != "pass") {
+        Error_("Invalid setting for files instruction");
+    }
+    else {
+        finst.reset(new FilesInstr);
+        finst->setting = words[1];
+    }
+    return finst;
 }
 
 Script::InstrPtr Script::ParseFocus_(const StrVec &words) {

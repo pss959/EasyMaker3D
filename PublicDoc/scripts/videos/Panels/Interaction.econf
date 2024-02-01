@@ -1,4 +1,4 @@
-state fileexist on
+files pass
 action kOpenSettingsPanel
 
 section Interacting Interacting with panels

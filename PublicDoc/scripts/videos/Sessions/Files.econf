@@ -19,6 +19,7 @@ state video on
 state animation on
 state cursor on
 
+files fail  # So saved file does not exist.
 caption .5 .15 5 When you save a session, _APPNAME_ stores all commands;in a file with a _SESSION_EXTENSION_ extension
 moveover OpenSessionPanelIcon .5
 click
@@ -45,17 +46,34 @@ wait 2
 
 caption .5 .15 5 When you load a session file, it executes;all of the commands again, so you can undo/redo them ...
 
-state fileexist on
+files pass  # So current file looks ok
 moveover OpenSessionPanelIcon .5
 click
 moveover Load .5
 click
-moveover FilePanel/Input .5
+moveover FilePanel/Input .5 .055 0
 click
+key Backspace
+wait .1
+key Backspace
+wait .1
+key Backspace
+wait .1
+key Backspace
+wait .1
+key Backspace
+wait .1
+key Backspace
+wait .1
+key Backspace
+wait .1
+key Backspace
+wait .1
+key Backspace
+wait .1
 key Shift-s
 wait .1
 key a
-
 wait .1
 key m
 wait .1
@@ -65,8 +83,8 @@ key l
 wait .1
 key e
 moveover Accept .5
+files tweak  # So file path is tweaked properly
 click
-state fileexist off
 wait 1
 
 caption .5 .15 5 ... as if you were still working in the same session

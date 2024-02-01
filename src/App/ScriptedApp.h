@@ -144,6 +144,7 @@ class ScriptedApp : public Application {
     bool ProcessDrag_(const Script::DragInstr &instr);
     bool ProcessDragStart_(const Script::DragStartInstr &instr);
     bool ProcessDragEnd_(const Script::DragEndInstr &instr);
+    bool ProcessFiles_(const Script::FilesInstr &instr);
     bool ProcessFocus_(const Script::FocusInstr &instr);
     bool ProcessHand_(const Script::HandInstr &instr);
     bool ProcessHandPos_(const Script::HandPosInstr &instr);

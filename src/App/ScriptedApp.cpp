@@ -64,8 +64,15 @@
 /// documentation images are consistent and predictable.
 class ScriptedApp::MockFilePathList_ : public FilePathList {
   public:
-    /// Sets whether subsequent calls to IsExistingFile() return true.
-    void SetFileExists(bool exists) { file_exists_ = exists; }
+    /// Possible settings for treating file existence.
+    enum class ExistSetting {
+        kTweak,  ///< Uses the file system after TweakPath().
+        kFail,   ///< Always returns false.
+        kPass,   ///< Always returns true.
+    };
+
+    /// Sets how subsequent calls to IsExistingFile() operate.
+    void SetExistSetting(ExistSetting es) { exist_setting_ = es; }
 
     /// Redefines this to simulate files.
     virtual void GetContents(StrVec &subdirs, StrVec &files,
@@ -77,12 +84,19 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
             fn == "stl" || fn == "maker";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
-        return file_exists_;
+        if (exist_setting_ == ExistSetting::kTweak) {
+            FilePath tpath = path;
+            TweakPath(tpath, true);
+            return FilePathList::IsExistingFile(tpath);
+        }
+        else {
+            return exist_setting_ == ExistSetting::kPass;
+        }
     }
-    virtual void TweakPath(FilePath &path, bool is_read) override {
-        // If reading from a file and not pretending it exists, change the path
-        // to a real one.
-        if (is_read && ! file_exists_) {
+    virtual void TweakPath(FilePath &path, bool is_read) const override {
+        // If reading from a file and tweaking is turned on, change the path to
+        // a real one.
+        if (is_read && exist_setting_ == ExistSetting::kTweak) {
             path = Util::ReplaceString(path.ToString(),
                                        "/projects/maker",
                                        "PublicDoc/sessions");
@@ -90,7 +104,7 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
     }
 
   private:
-    bool file_exists_ = false;
+    ExistSetting exist_setting_ = ExistSetting::kTweak;
 };
 
 void ScriptedApp::MockFilePathList_::GetContents(StrVec &subdirs, StrVec &files,
@@ -343,6 +357,7 @@ ScriptedApp::ScriptedApp() {
     REG_FUNC_(Drag);
     REG_FUNC_(DragStart);
     REG_FUNC_(DragEnd);
+    REG_FUNC_(Files);
     REG_FUNC_(Focus);
     REG_FUNC_(Hand);
     REG_FUNC_(HandPos);
@@ -728,6 +743,14 @@ bool ScriptedApp::ProcessDragEnd_(const Script::DragEndInstr &instr) {
     return true;
 }
 
+bool ScriptedApp::ProcessFiles_(const Script::FilesInstr &instr) {
+    mock_fpl_->SetExistSetting(
+        instr.setting == "fail" ? MockFilePathList_::ExistSetting::kFail :
+        instr.setting == "pass" ? MockFilePathList_::ExistSetting::kPass :
+        MockFilePathList_::ExistSetting::kTweak);
+    return true;
+}
+
 bool ScriptedApp::ProcessFocus_(const Script::FocusInstr &instr) {
     // Access the current Board.
     auto board = GetContext().board_manager->GetCurrentBoard();
@@ -942,9 +965,6 @@ bool ScriptedApp::ProcessState_(const Script::StateInstr &instr) {
     }
     else if (instr.setting == "cursor") {
         cursor_->SetEnabled(instr.is_on);
-    }
-    else if (instr.setting == "fileexist") {
-        mock_fpl_->SetFileExists(instr.is_on);
     }
     else if (instr.setting == "headset") {
         emitter_->AddHeadsetButton(instr.is_on);

@@ -7,7 +7,7 @@ snapobj ToolBoard CSGToolPanel.jpg .01
 
 # Import Tool Panel.
 load
-state fileexist on
+files pass
 action kCreateImportedModel
 key Enter  # Select a model
 snapobj ToolBoard ImportToolPanel.jpg .01

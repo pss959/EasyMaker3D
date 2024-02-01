@@ -54,6 +54,9 @@ class Script {
     struct DragEndInstr : public Instr {
         // No data.
     };
+    struct FilesInstr : public Instr {
+        Str setting;
+    };
     struct FocusInstr : public Instr {
         Str pane_name;
     };
@@ -129,6 +132,7 @@ class Script {
     DECL_SHARED_PTR(DragInstr);
     DECL_SHARED_PTR(DragStartInstr);
     DECL_SHARED_PTR(DragEndInstr);
+    DECL_SHARED_PTR(FilesInstr);
     DECL_SHARED_PTR(FocusInstr);
     DECL_SHARED_PTR(HandInstr);
     DECL_SHARED_PTR(HandPosInstr);
@@ -208,6 +212,7 @@ class Script {
     InstrPtr ParseDrag_(const StrVec &words);
     InstrPtr ParseDragStart_(const StrVec &words);
     InstrPtr ParseDragEnd_(const StrVec &words);
+    InstrPtr ParseFiles_(const StrVec &words);
     InstrPtr ParseFocus_(const StrVec &words);
     InstrPtr ParseHand_(const StrVec &words);
     InstrPtr ParseHandPos_(const StrVec &words);
