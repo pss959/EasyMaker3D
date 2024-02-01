@@ -67,10 +67,12 @@ void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
         if (hit.IsValid()) {
             debug_sphere_->TranslateTo(hit.GetWorldPoint());
             debug_sphere_->SetEnabled(true);
-            Debug::DisplayDebugText(hit.path.ToString());
+            if (Util::app_type == Util::AppType::kMainApp)
+                Debug::DisplayDebugText(hit.path.ToString());
         }
         else {
-            Debug::DisplayDebugText("");
+            if (Util::app_type == Util::AppType::kMainApp)
+                Debug::DisplayDebugText("");
             debug_sphere_->SetEnabled(false);
         }
     }
