@@ -40,7 +40,7 @@ snap .390625 .144928 .226562 .528986 RookUnscaledCutter.jpg
 action kUndo
 action kShowAll
 select
-view 0 31.488 60 -.0153263 -.194406 -.980801
+view 17.488 -.0153263 -.194406 -.980801
 snap .422852 .0851449 .172852 .396739 RookHollowed.jpg
 
 # Undo to show the positioned hollowing cylinder.
@@ -66,7 +66,7 @@ snap .378906 .148551 .242188 .681159 RookUnscaledHollower.jpg
 action kUndo
 select
 action kTogglePointTarget
-view 0 22.9245 60 0 0 -1
+view 8.9245 0 0 -1
 snap .416016 .0126812 .170898 .692029 RookTarget.jpg
 
 # Turn off the Point Target and show the RevSurf profile.
