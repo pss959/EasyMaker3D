@@ -1,19 +1,4 @@
-load Rook
-# Undo back to just after last RevSurf edit.
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kTogglePointTarget  # Turns off.
+include RevSurf.econf 0
 
 section Target Target setup for hollowing the top
 state video on
@@ -23,22 +8,30 @@ state cursor on
 caption .5 .15 3 The next step is to use a cylinder to hollow out the top,;starting with a better view
 moveto .330078 .469203 1  # Arbitrary point on back wall to deselect
 click
-moveover Stage 1 0 -.1
-drag 0 -.1 1
+moveover Stage 1 0 -.05
+drag 0 -.127 1
 moveover HeightSlider 1
-drag 0 .03 1
+drag 0 .05 1
 wait 1
 
-caption .5 .15 3 This will use the Point Target to help;position the cylinder
+# Dragging the height slider does not work well when this file is included with
+# a small or zero timescale, so set the view explicitly here.
+view 20.4533 0 0 -1
+
+caption .5 .15 3 Use the right mouse button to tilt the camera
+moveto .615234 .451087 1
+drag 0 .15 2 R
+
+caption .5 .15 3 Activate the Point Target to help;position the cylinder
 moveover TogglePointTargetIcon 1
 click
 moveover PointTargetWidget/Cone 1 0 .01
-drag .12793 -.201087 1
+drag .19043 -.273551 1
 wait 1
 
 caption .5 .15 3 Hold shift and drag the Point Target to the top;center of the bounds of the RevSurf
-moveover PointTargetWidget/Base 1
+moveover PointTargetWidget/Base 1 0 .005
 state mod on
-drag -.131836 .202899 2
+drag -.189453 .266304 2
 state mod off
 wait 1

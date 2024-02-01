@@ -1,35 +1,3 @@
-# Load the Rook session and undo back to the beginning - this gives a
-# consistent session name for the rest of the video.
-load Rook
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-
 section RevSurf Creating the main shape
 state video on
 state animation on

@@ -1,18 +1,4 @@
-load Rook
-# Undo back to just after cylinder placement.
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-action kUndo
-stage 1.49701 0
-view 0 23.692 60 0 0 -1
-select Cylinder_1
-action kTranslationTool
-moveover TranslationTool/Y/YSlider/MaxFace 0 0 .008
+include Cylinder.econf 0
 
 section Hollow Hollowing out the top
 state video on
