@@ -1,0 +1,42 @@
+load Boat
+select
+
+section BuildVolume Displaying the build volume
+state video on
+state animation on
+
+caption .5 .15 3 Clicking this icon shows the;build volume as a translucent box
+highlight ToggleBuildVolumeIcon 3 .005
+wait 3
+
+caption .5 .15 3 This can help  useful to see how models will fit in your 3D printer
+state cursor on
+moveover ToggleBuildVolumeIcon 1
+click
+wait 2
+
+caption .5 .15 3 When the build volume is visible, any model parts lying;outside the volume are displayed in a special error color
+moveover Boat 1
+click
+moveover TranslationTool/X/XSlider/MaxFace 1 .014 0
+drag .17 0 2
+wait 1
+
+caption .5 .15 4 You can set the size of your printer's;build volume in the Settings Panel
+moveover OpenSettingsPanelIcon 1
+click
+moveover SettingsPanel/BuildVolumeWidth 1
+click  # Activate
+key Ctrl-a
+key 3
+key 2
+moveover SettingsPanel/BuildVolumeDepth 1
+click  # Activate
+key Ctrl-a
+key 3
+key 2
+moveover Accept 1
+click
+
+caption .5 .15 3 The grid pattern on the stage updates;based on the build volume size 
+wait 3

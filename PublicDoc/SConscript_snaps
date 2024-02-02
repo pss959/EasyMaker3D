@@ -139,7 +139,6 @@ snap_map = {
         'RookScaledHollower',
         'RookSlotCutters',
         'RookTarget',
-        'RookUnscaledCutter',
         'RookUnscaledHollower',
         'RookWithSlotCutters',
     ],

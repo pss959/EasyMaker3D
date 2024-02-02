@@ -152,7 +152,7 @@ CreateVersionJSFile_(version_js_file, versions)
 
 sphinx      = 'sphinx-build'
 sphinx_args = ' '.join([
-    # XXXX TEMP '-W',    # Treat warnings as errors,
+    '-W',    # Treat warnings as errors,
     '-E',    # Rebuild if anything changes (no environment cache).
     '-a',    # Write all files.
 ])

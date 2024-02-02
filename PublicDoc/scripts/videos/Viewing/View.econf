@@ -1,0 +1,38 @@
+load Boat
+select
+
+section View Changing the view
+state video on
+state animation on
+
+caption .5 .15 3 There are three main ways to change;the view of your models
+wait 3
+
+state cursor on
+moveover Stage 0 0 -.145
+caption .5 .15 5 The stage can be rotated and scaled;to change the model view
+drag .3 0 2
+moveover Stage 1 0 -.145
+drag 0 -.05 2
+wait 1
+
+caption .5 .15 4 Dragging the slider on the pole changes the view height
+highlight HeightSlider 1
+moveover HeightSlider 1
+drag 0 .05 2
+wait 1
+
+caption .5 .15 4 Dragging anywhere with the right mouse button;rotates the view
+moveto .5 .5 .5  # Arbitrary point for view drag.
+drag  .1 .1 2  R
+drag -.2 .2 2  R
+wait 1
+
+caption .5 .15 2 Both the stage and view can be reset;by shift-clicking or double-clicking
+state mod on
+moveover HeightSlider 1 0 -.1
+click
+moveover Stage 1 0 -.145
+click
+state mod off
+wait 1

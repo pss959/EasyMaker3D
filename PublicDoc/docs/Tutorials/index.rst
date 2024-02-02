@@ -45,10 +45,10 @@ Other Features
 .. toctree::
    :maxdepth: 1
 
-   Application settings (TBD) <TBD>
-   Viewing aids (TBD) <TBD>
-   Radial menus (TBD) <TBD>
-   Editing with VR devices (TBD) <TBD>
+   Application settings <Settings>
+   Viewing aids <Viewing>
+   Radial menus <RadialMenus>
+   Editing with VR devices <VR>
 
 Examples
 --------

@@ -1,5 +1,5 @@
-TBD
----
+Editing with VR Devices
+-----------------------
 
 .. XXXX
 

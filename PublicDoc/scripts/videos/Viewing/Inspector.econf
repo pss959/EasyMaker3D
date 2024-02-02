@@ -1,0 +1,25 @@
+load Boat
+select
+
+section Inspector Inspector Mode
+state video on
+state animation on
+
+caption .5 .15 3 This icon turns on Inspector Mode
+highlight ToggleInspectorIcon 3
+wait 1
+
+caption .5 .15 3 Clicking it shows the primary selection;in an up-close way
+state cursor on
+moveover Boat 1
+click
+moveover ToggleInspectorIcon 1
+click
+wait 1
+
+caption .5 .15 4 The model is rotated by mouse motion until any button is;clicked or key is pressed
+moveto .5 .5 1
+moveto .719727 .730072 2
+moveto .72168  .606884 2
+click
+wait 1

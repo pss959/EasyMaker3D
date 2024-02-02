@@ -149,6 +149,12 @@ merges = {
         'Selection',
         'Order',
     ],
+    'Viewing' : [
+        'View',
+        'Edges',
+        'BuildVolume',
+        'Inspector',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',
