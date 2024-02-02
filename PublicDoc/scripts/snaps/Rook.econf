@@ -30,13 +30,8 @@ select Box_1
 action kScaleTool
 snap .390625 .144928 .226562 .528986 RookScaledCutter.jpg
 
-# Undo to show unscaled box.
+# Undo twice to show hollowed RevSurf. Change the view so the top is visible.
 action kUndo
-select Box_1
-action kScaleTool
-snap .390625 .144928 .226562 .528986 RookUnscaledCutter.jpg
-
-# Undo to show hollowed RevSurf. Change the view so the top is visible.
 action kUndo
 action kShowAll
 select

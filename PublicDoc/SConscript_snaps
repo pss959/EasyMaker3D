@@ -235,8 +235,10 @@ snap_map = {
 ann_map = {
     'Icons'    : (['WorkArea', 'WorkAreaWithSelection'],
                   [
+                      'CombineCSGDifferenceIcon',
                       'CombineHullIcon',
                       'CreateCylinderIcon',
+                      'CreateRevSurfIcon',
                       'CreateTorusIcon',
                       'NameToolIcon',
                       'ScaleToolIcon',

@@ -1,5 +1,9 @@
 color #7dffad
 
+read WorkArea.jpg
+rect 5 0.0881801 0.796667 0.0731707 0.116667
+write CombineCSGDifferenceIcon.jpg
+
 read WorkAreaWithSelection.jpg
 rect 5 0.238274 0.771667 0.0469043 0.085
 write CombineHullIcon.jpg
@@ -24,10 +28,10 @@ read WorkAreaWithSelection.jpg
 rect 5 0.238274 0.573333 0.0459662 0.0883334
 write ScaleToolIcon.jpg
 
-read WorkAreaWithSelection.jpg
-rect 5 0.27832 0.574275 0.0429688 0.0797101
-write TranslationToolIcon.jpg
-
 read WorkArea.jpg
 rect 5 0.401501 0.491667 0.0450282 0.075
 write SessionPanelIcon.jpg
+
+read WorkAreaWithSelection.jpg
+rect 5 0.27832 0.574275 0.0429688 0.0797101
+write TranslationToolIcon.jpg
