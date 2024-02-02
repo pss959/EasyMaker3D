@@ -1,8 +1,12 @@
 A Simple Doorstop Example
 -------------------------
 
+.. incimage:: /images/DoorstopFinished.jpg 100px right
+
 This example uses |appname| to create a simple doorstop model and output it as
 an STL file.
+
+|block-image|
 
 .. incvideo:: Doorstop
 

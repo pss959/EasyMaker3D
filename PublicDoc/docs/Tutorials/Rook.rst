@@ -1,9 +1,13 @@
 Chess Rook Example
 ------------------
 
+.. incimage:: /images/Rook.jpg -100px right
+
 This tutorial example uses |appname| to create a model of a rook, using some
 more advanced features. It assumes you are familiar with the basics of the
-application from the :doc:`Doorstop` example and other tutorials.
+application from the :doc:`Doorstop <Doorstop>` example and other tutorials.
+
+|block-image|
 
 .. incvideo:: Rook
 
@@ -101,21 +105,35 @@ Cut the Slots
 .. incimage:: /images/RookSlotCutters.jpg  -200px right
 .. incimage:: /images/RookScaledCutter.jpg -200px right
 
-The last step is to cut slots in the top of the rook using thin boxes. Hide the
-rook body using the :ref:`Tree Panel <ug-tree-panel>`. Create a box by clicking
-on the :ref:`Create Box icon <ug-create-box>`. Use the :ref:`Scale Tool
-<ug-scale-tool>` to scale the width down to .2 units. Again, note that you can
-adjust the precision level to 1 to scale down to 1 unit and then to .1 to
-finish scaling to .2 units. The result is shown in the left image.
+:vidref:`Rook:Cutters` The last step is to cut slots in the top of the rook
+using thin boxes. Hide the rook body using the :ref:`Tree Panel
+<ug-tree-panel>`. Create a box by clicking on the :ref:`Create Box icon
+<ug-create-box>`. Use the :ref:`Scale Tool <ug-scale-tool>` to scale the width
+down to .2 units. Again, note that you can adjust the precision level to 1 to
+scale down to 1 unit and then to .1 to finish scaling to .2 units. The result
+is shown in the left image.
 
 :ref:`Copy <ug-copy>` the box and :ref:`paste <ug-paste>` it. The copy will
-then be selected. Use the :ref:`Rotation Tool <ug-rotation-tool>` to rotate the
-copy 90 degrees around the up axis. The result is shown in the right image.
+become the primary selection. Use the :ref:`Rotation Tool <ug-rotation-tool>`
+to rotate the copy 90 degrees around the up axis. The result is shown in the
+right image.
 
 |block-image|
 
-XXXX MORE TBD
-.............
+.. incimage:: /images/Rook.jpg                -200px right
+.. incimage:: /images/RookWithSlotCutters.jpg -200px right
 
-.. incimage:: /images/Rook.jpg 200px right
-.. incimage:: /images/RookWithSlotCutters.jpg 200px right
+:vidref:`Rook:Cutting` Show the rook body again using the :ref:`Tree Panel
+<ug-tree-panel>`. Select both boxes using :ref:`modified-clicking
+<ug-modified-mode>` them or on their names in the Tree Panel. Attach the
+:ref:`Translation Tool <ug-translation-tool>` and translate them up by 3.8
+units so that they overlap the top of the rook body by .2 units, which is the
+depth of the cuts. It should look like the left image here.
+
+The last step is to subtract the boxes from the rook body. Select the rook body
+first, then add the two boxes to the selection. Click on the :ref:`Combine CSG
+Difference icon <ug-combine-csg-difference>` to perform the subtraction. The
+resulting model should look like the right image here.
+
+You can then export the model in the same manner as in the :doc:`Doorstop
+<Doorstop>` tutorial.
