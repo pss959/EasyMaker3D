@@ -94,40 +94,41 @@ void Settings::SetRadialMenusMode(RadialMenusMode mode) {
 }
 
 void Settings::CopyFrom(const Settings &from) {
-    // Do not allow null objects for settings.
-    auto iu  = import_units_.GetValue();
-    auto eu  = export_units_.GetValue();
-    auto lrm = left_radial_menu_.GetValue();
-    auto rrm = right_radial_menu_.GetValue();
-
     CopyContentsFrom(from, true);
 
-    if (! import_units_.GetValue())
-        import_units_ = iu;
-    if (! export_units_.GetValue())
-        export_units_ = eu;
-    if (! left_radial_menu_.GetValue())
-        left_radial_menu_ = lrm;
-    if (! right_radial_menu_.GetValue())
-        right_radial_menu_ = rrm;
+    // Do not allow null objects for settings.
+    SetToDefaults_();
 }
 
 void Settings::SetToDefaults_() {
     const Str home = FilePath::GetHomeDirPath().ToString();
 
-    // last_session_path_ stays empty.
-    session_directory_ = home;
-    import_directory_  = home;
-    export_directory_  = home;
-    tooltip_delay_     = TK::kTooltipDelay;
-    import_units_      = UnitConversion::CreateWithUnits(
-        UnitConversion::Units::kMillimeters,
-        UnitConversion::Units::kCentimeters);
-    export_units_      = UnitConversion::CreateWithUnits(
-        UnitConversion::Units::kCentimeters,
-        UnitConversion::Units::kMillimeters);
-    build_volume_size_ = TK::kBuildVolumeSize;
-    left_radial_menu_  = Parser::Registry::CreateObject<RadialMenuInfo>();
-    right_radial_menu_ = Parser::Registry::CreateObject<RadialMenuInfo>();
-    radial_menus_mode_ = RadialMenusMode::kIndependent;
+    // Set unset values to default.
+    //    Note that last_session_path_ can remain empty.
+    if (! session_directory_.WasSet())
+        session_directory_ = home;
+    if (! import_directory_.WasSet())
+        import_directory_  = home;
+    if (! export_directory_.WasSet())
+        export_directory_  = home;
+    if (! tooltip_delay_.WasSet())
+        tooltip_delay_     = TK::kTooltipDelay;
+    if (! build_volume_size_.WasSet())
+        build_volume_size_ = TK::kBuildVolumeSize;
+    if (! radial_menus_mode_.WasSet())
+        radial_menus_mode_ = RadialMenusMode::kIndependent;
+
+    // Don't allow null values.
+    if (! import_units_.GetValue())
+        import_units_ = UnitConversion::CreateWithUnits(
+            UnitConversion::Units::kMillimeters,
+            UnitConversion::Units::kCentimeters);
+    if (! export_units_.GetValue())
+        export_units_ = UnitConversion::CreateWithUnits(
+            UnitConversion::Units::kCentimeters,
+            UnitConversion::Units::kMillimeters);
+    if (! left_radial_menu_.GetValue())
+        left_radial_menu_  = Parser::Registry::CreateObject<RadialMenuInfo>();
+    if (! right_radial_menu_.GetValue())
+        right_radial_menu_ = Parser::Registry::CreateObject<RadialMenuInfo>();
 }

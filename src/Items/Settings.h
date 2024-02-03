@@ -131,7 +131,7 @@ class Settings : public Parser::Object {
     Parser::EnumField<RadialMenusMode> radial_menus_mode_;
     ///@}
 
-    /// Sets this instance to all default values.
+    /// Sets any unset values in this instance to default values.
     void SetToDefaults_();
 
     friend class Parser::Registry;
