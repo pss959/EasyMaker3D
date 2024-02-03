@@ -93,6 +93,25 @@ void Settings::SetRadialMenusMode(RadialMenusMode mode) {
     radial_menus_mode_ = mode;
 }
 
+void Settings::CopyFrom(const Settings &from) {
+    // Do not allow null objects for settings.
+    auto iu  = import_units_.GetValue();
+    auto eu  = export_units_.GetValue();
+    auto lrm = left_radial_menu_.GetValue();
+    auto rrm = right_radial_menu_.GetValue();
+
+    CopyContentsFrom(from, true);
+
+    if (! import_units_.GetValue())
+        import_units_ = iu;
+    if (! export_units_.GetValue())
+        export_units_ = eu;
+    if (! left_radial_menu_.GetValue())
+        left_radial_menu_ = lrm;
+    if (! right_radial_menu_.GetValue())
+        right_radial_menu_ = rrm;
+}
+
 void Settings::SetToDefaults_() {
     const Str home = FilePath::GetHomeDirPath().ToString();
 

@@ -99,8 +99,9 @@ class Settings : public Parser::Object {
     void SetRightRadialMenuInfo(const RadialMenuInfo &info);
     void SetRadialMenusMode(RadialMenusMode mode);
 
-    /// Copies values from another instance.
-    void CopyFrom(const Settings &from) { CopyContentsFrom(from, true); }
+    /// Copies values from another instance. Does not copy any null objects,
+    /// such as units or radial menu settings.
+    void CopyFrom(const Settings &from);
 
   protected:
     Settings() {}

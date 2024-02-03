@@ -40,7 +40,12 @@ bool SettingsManager::LoadSettings_(const FilePath &path, Str &error) {
         auto obj = parser.ParseFile(path);
         ASSERT(obj);
         new_settings = std::dynamic_pointer_cast<Settings>(obj);
-        if (! new_settings) {
+        if (new_settings) {
+            // Create a copy of the new settings; this starts with a default
+            // instance, ensuring that all fields have a reasonable value.
+            new_settings = Settings::CreateCopy(*new_settings);
+        }
+        else {
             error = "Got " + obj->GetTypeName() + " instead of Settings\n";
             return false;
         }
