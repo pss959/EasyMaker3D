@@ -70,9 +70,9 @@ class Script {
         Rotationf rot;
     };
     struct HighlightInstr : public Instr {
-        Str   path_string;
-        float margin;
-        float duration;
+        StrVec path_strings;
+        float  margin;
+        float  duration;
     };
     struct KeyInstr : public Instr {
         Str key_string;

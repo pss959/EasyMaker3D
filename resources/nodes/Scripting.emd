@@ -60,7 +60,7 @@ Node "ScriptingRoot" {
       ]
     },
 
-    # Rectangle used for highlights.
+    # Node with a rectangle cloned for each highlight.
     Node "HighlightRect" {
       disabled_flags: "kTraversal|kIntersectAll",
       blocks: [
@@ -77,5 +77,8 @@ Node "ScriptingRoot" {
         Node "Right"  { shapes: [Rectangle {}] },
       ],
     },
+
+    # Node highlights are added to.
+    Node "Highlights" {},
   ]
 }

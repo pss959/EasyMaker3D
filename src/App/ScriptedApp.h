@@ -107,10 +107,13 @@ class ScriptedApp : public Application {
 
     CursorHandler_Ptr cursor_handler_;  ///< Updates the fake cursor.
     PauseHandler_Ptr  pause_handler_;   ///< Handles pausing.
-    SG::NodePtr cursor_;                ///< Fake cursor for video.
-    Point2f     cursor_pos_;            ///< Current cursor position.
-    Caption_    caption_;               ///< Caption information.
-    SG::NodePtr highlight_;             ///< Displays highlight rectangle.
+
+    SG::NodePtr  cursor_;                  ///< Fake cursor for video.
+    Point2f      cursor_pos_;              ///< Current cursor position.
+    Caption_     caption_;                 ///< Caption information.
+    SG::NodePtr  highlight_parent_;        ///< Node to add highlights to.
+    SG::NodePtr  highlight_node_;          ///< Node cloned per highlight.
+    std::vector<SG::NodePtr> highlights_;  ///< Currently-displayed rectangles.
 
     std::unique_ptr<MockFilePathList_> mock_fpl_;  ///< Simulates files.
 
@@ -179,6 +182,10 @@ class ScriptedApp : public Application {
     /// found.
     bool GetNodeRect_(const Str &path_string, float margin, Range2f &rect);
 
+    /// Creates a clone of the highlight node and sets it up for the given
+    /// rectangle.
+    SG::NodePtr CreateHighlight_(const Range2f &rect);
+
     /// Loads Settings from the given path, updating the SettingsManager and
     /// SessionManager. Returns false on error.
     bool LoadSettings_(const FilePath &path);
@@ -206,4 +213,7 @@ class ScriptedApp : public Application {
 
     /// Updates the caption position, rotation, and fade if necessary.
     void UpdateCaption_();
+
+    /// Updates the highlight fade and visibility if necessary.
+    void UpdateHighlights_();
 };

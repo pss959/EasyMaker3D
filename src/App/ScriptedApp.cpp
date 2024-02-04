@@ -222,8 +222,9 @@ class ScriptedApp::Video_ {
     /// Updates fade-in/out for the caption.
     void UpdateCaptionFade(const Caption_ &caption);
 
-    /// Updates fade-in/out for the highlight rectangle.
-    void UpdateHighlightFade(SG::Node &highlight);
+    /// Updates fade-in/out for the highlight rectangles. Returns false if
+    /// highlights have completely faded out.
+    bool UpdateHighlightFade(std::vector<SG::NodePtr> &highlights);
 
     /// Adds a chapter with the given tag and title at the current frame in the
     /// video.
@@ -260,9 +261,8 @@ class ScriptedApp::Video_ {
     FadeData_ caption_fade_data_;    ///< Caption fading/visibility.
     FadeData_ highlight_fade_data_;  ///< Highlight rectangle fading/visibility.
 
-    /// Updates fade-in/out for \p node using \p fade_data. Returns the alpha
-    /// to use for the node.
-    float UpdateFade_(SG::Node &node, FadeData_ &fade_data);
+    /// Updates fade-in/out using \p fade_data. Returns the alpha.
+    float UpdateFade_(FadeData_ &fade_data);
 };
 
 ScriptedApp::Video_::Video_(const FilePath &script_path, const Vector2ui &size,
@@ -286,20 +286,30 @@ ScriptedApp::Video_::Video_(const FilePath &script_path, const Vector2ui &size,
 void ScriptedApp::Video_::UpdateCaptionFade(const Caption_ &caption) {
     // Note that this fades just the text, not the background.
     if (caption_fade_data_.elapsed <= caption_fade_data_.duration) {
-        const float alpha = UpdateFade_(*caption.node, caption_fade_data_);
-        Color c = caption.text->GetColor();
-        c[3] = alpha;
-        caption.text->SetTextColor(c);
+        const float alpha = UpdateFade_(caption_fade_data_);
+        if (alpha <= 0) {
+            caption.node->SetEnabled(false);
+        }
+        else {
+            Color c = caption.text->GetColor();
+            c[3] = alpha;
+            caption.text->SetTextColor(c);
+        }
     }
 }
 
-void ScriptedApp::Video_::UpdateHighlightFade(SG::Node &highlight) {
+bool ScriptedApp::Video_::UpdateHighlightFade(
+    std::vector<SG::NodePtr> &highlights) {
     if (highlight_fade_data_.elapsed <= highlight_fade_data_.duration) {
-        const float alpha = UpdateFade_(highlight, highlight_fade_data_);
-        Color c = highlight.GetBaseColor();
-        c[3] = alpha;
-        highlight.SetBaseColor(c);
+        const float alpha = UpdateFade_(highlight_fade_data_);
+        for (auto hl: highlights) {
+            Color c = hl->GetBaseColor();
+            c[3] = alpha;
+            hl->SetBaseColor(c);
+        }
+        return true;
     }
+    return false;  // Fade has finished.
 }
 
 void ScriptedApp::Video_::CaptureFrame(IRenderer &renderer,
@@ -314,7 +324,7 @@ void ScriptedApp::Video_::CaptureFrame(IRenderer &renderer,
     }
 }
 
-float ScriptedApp::Video_::UpdateFade_(SG::Node &node, FadeData_ &fade_data) {
+float ScriptedApp::Video_::UpdateFade_(FadeData_ &fade_data) {
     // Fade-in/out time.
     const float kFadeTime = .5f;
 
@@ -332,7 +342,7 @@ float ScriptedApp::Video_::UpdateFade_(SG::Node &node, FadeData_ &fade_data) {
 
     // Completely done?
     if (fade_data.elapsed >= fade_data.duration)
-        node.SetEnabled(false);
+        alpha = 0;
 
     return alpha;
 }
@@ -452,8 +462,7 @@ bool ScriptedApp::ProcessFrame(size_t render_count, bool force_poll) {
 
     if (are_more_instructions || events_pending) {
         UpdateCaption_();
-        if (video_)
-            video_->UpdateHighlightFade(*highlight_);
+        UpdateHighlights_();
     }
 
     // Let the base class check for exit. Force it to poll for events if there
@@ -618,8 +627,9 @@ void ScriptedApp::InitScene_() {
     cursor_ = SG::FindNodeUnderNode(*scripting_root, "FakeCursor");
     MoveFakeCursorTo_(Point2f(.5f, .5f));  // In the middle.
 
-    // Access the highlight node.
-    highlight_ = SG::FindNodeUnderNode(*scripting_root, "HighlightRect");
+    // Access the highlight parent and node.
+    highlight_parent_ = SG::FindNodeUnderNode(*scripting_root, "Highlights");
+    highlight_node_   = SG::FindNodeUnderNode(*scripting_root, "HighlightRect");
 
     // Access the caption nodes.
     caption_.node = SG::FindNodeUnderNode(*scripting_root, "Caption");
@@ -822,45 +832,19 @@ bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHighlight_(const Script::HighlightInstr &instr) {
-    Range2f rect;
-    if (! GetNodeRect_(instr.path_string, instr.margin, rect))
-        return false;
-
-    // The highlight is created as a frame composed of 4 rectangles. The top
-    // and bottom rectangles run the full width and the left/right rectangles
-    // fit between them.
-    auto t = SG::FindNodeUnderNode(*highlight_, "Top");
-    auto b = SG::FindNodeUnderNode(*highlight_, "Bottom");
-    auto l = SG::FindNodeUnderNode(*highlight_, "Left");
-    auto r = SG::FindNodeUnderNode(*highlight_, "Right");
-
-    // The highlight rectangle is in the image plane, so choose a width for
-    // each piece that works.
-    const float kWidth = .01f;
-
-    const auto min    = GetImagePlanePoint_(rect.GetMinPoint());
-    const auto max    = GetImagePlanePoint_(rect.GetMaxPoint());
-    const auto size   = max - min;
-    const auto center = .5f * (min + max);
-    const Vector3f y_off(0, .5f * size[1], 0);
-    const Vector3f x_off(.5f * size[0], 0, 0);
-
-    t->SetScale(Vector3f(size[0] + kWidth, kWidth, 1));
-    b->SetScale(Vector3f(size[0] + kWidth, kWidth, 1));
-    l->SetScale(Vector3f(kWidth, size[1] - kWidth, 1));
-    r->SetScale(Vector3f(kWidth, size[1] - kWidth, 1));
-
-    t->TranslateTo(center + y_off);
-    b->TranslateTo(center - y_off);
-    l->TranslateTo(center - x_off);
-    r->TranslateTo(center + x_off);
-
-    highlight_->SetEnabled(true);
+    // Set up rectangles for all nodes to highlight.
+    for (const auto &path: instr.path_strings) {
+        Range2f rect;
+        if (! GetNodeRect_(path, instr.margin, rect))
+            return false;
+        auto highlight = CreateHighlight_(rect);
+        highlights_.push_back(highlight);
+        highlight_parent_->AddChild(highlight);
+    }
     if (video_) {
         video_->InitHighlightFade(instr.duration);
-        video_->UpdateHighlightFade(*highlight_);
+        UpdateHighlights_();
     }
-
     return true;
 }
 
@@ -1118,6 +1102,44 @@ bool ScriptedApp::GetNodeRect_(const Str &path_string, float margin,
     return true;
 }
 
+SG::NodePtr ScriptedApp::CreateHighlight_(const Range2f &rect) {
+    // Clone the highlight node.
+    auto highlight = highlight_node_->CloneTyped<SG::Node>(true);
+
+    // The highlight is created as a frame composed of 4 rectangles. The top
+    // and bottom rectangles run the full width and the left/right rectangles
+    // fit between them.
+    auto t = SG::FindNodeUnderNode(*highlight, "Top");
+    auto b = SG::FindNodeUnderNode(*highlight, "Bottom");
+    auto l = SG::FindNodeUnderNode(*highlight, "Left");
+    auto r = SG::FindNodeUnderNode(*highlight, "Right");
+
+    // The highlight rectangle is in the image plane, so choose a width for
+    // each piece that works.
+    const float kWidth = .01f;
+
+    const auto min    = GetImagePlanePoint_(rect.GetMinPoint());
+    const auto max    = GetImagePlanePoint_(rect.GetMaxPoint());
+    const auto size   = max - min;
+    const auto center = .5f * (min + max);
+    const Vector3f y_off(0, .5f * size[1], 0);
+    const Vector3f x_off(.5f * size[0], 0, 0);
+
+    t->SetScale(Vector3f(size[0] + kWidth, kWidth, 1));
+    b->SetScale(Vector3f(size[0] + kWidth, kWidth, 1));
+    l->SetScale(Vector3f(kWidth, size[1] - kWidth, 1));
+    r->SetScale(Vector3f(kWidth, size[1] - kWidth, 1));
+
+    t->TranslateTo(center + y_off);
+    b->TranslateTo(center - y_off);
+    l->TranslateTo(center - x_off);
+    r->TranslateTo(center + x_off);
+
+    highlight->SetEnabled(true);
+
+    return highlight;
+}
+
 bool ScriptedApp::LoadSettings_(const FilePath &path) {
     const auto &context = GetContext();
 
@@ -1220,4 +1242,9 @@ void ScriptedApp::UpdateCaption_() {
 
     if (video_)
         video_->UpdateCaptionFade(caption_);
+}
+
+void ScriptedApp::UpdateHighlights_() {
+    if (video_ && ! video_->UpdateHighlightFade(highlights_))
+        highlight_parent_->ClearChildren();
 }

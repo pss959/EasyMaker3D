@@ -477,8 +477,9 @@ Script::InstrPtr Script::ParseHighlight_(
     }
     else {
         hinst.reset(new HighlightInstr);
-        hinst->path_string = words[1];
-        hinst->margin      = margin;
+        // Split paths by commas.
+        hinst->path_strings = ion::base::SplitString(words[1], ",");
+        hinst->margin       = margin;
         hinst->duration     = duration;
     }
     return hinst;
