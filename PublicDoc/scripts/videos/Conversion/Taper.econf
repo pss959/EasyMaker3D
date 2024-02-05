@@ -8,7 +8,8 @@ state video on
 caption .5 .15 3 The Taper Tool lets you apply a taper to models
 wait 3
 
-caption .5 .15 3 To taper a model, select it and click;the Convert to Tapered icon
+caption .5 .15 3 To taper a model, select it and click;\
+    the Convert to Tapered icon
 state cursor on
 moveover Cylinder_1 1
 click
@@ -17,7 +18,8 @@ moveover ConvertTaperIcon 1
 click
 wait 2
 
-caption .5 .15 3 There is a separate tutorial about editing profiles -;note that the end points are movable horizontally
+caption .5 .15 3 There is a separate tutorial about editing profiles -;\
+    note that the end points are movable horizontally
 moveover Profile .5 .0214844 -.0398551
 drag .03 .02 .5
 moveover TaperToolPanel/MovablePoint_2 .5

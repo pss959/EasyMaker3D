@@ -8,7 +8,8 @@ caption .5 .15 3 This icon combines the selected models using CSG Difference
 highlight CombineCSGDifferenceIcon 3 0
 wait 2
 
-caption .5 .15 3 Click it and all secondary selections are;subtracted from the primary selection
+caption .5 .15 3 Click it and all secondary selections are;\
+    subtracted from the primary selection
 state cursor on
 moveover CombineCSGDifferenceIcon 1
 click
@@ -18,7 +19,8 @@ wait 2
 moveover Stage .5 .0556641 -.173913
 drag -.4 0 .5
 
-caption .5 .15 3 Unlike union and intersection, the selection order;for models matters for difference
+caption .5 .15 3 Unlike union and intersection, the selection order;\
+    for models matters for difference
 moveover UndoIcon .5
 click
 moveover Stage .5 .0546875 -.175725

@@ -5,8 +5,8 @@ action kSelectAll
 section Translation Translation tool
 state video on
 
-caption .5 .15 3 The Translation Tool lets you move models;in all three dimensions
-
+caption .5 .15 3 The Translation Tool lets you move models;\
+    in all three dimensions
 state cursor on
 highlight TranslationToolIcon 3
 moveover TranslationToolIcon 1

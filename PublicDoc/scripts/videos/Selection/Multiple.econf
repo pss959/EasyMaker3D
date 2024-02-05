@@ -25,7 +25,8 @@ wait 2
 caption .5 .15 3 Secondary selections have a blue wireframe box;attached to them
 wait 3
 
-caption .5 .15 3 Some specialized tools (like the Cylinder tool);can operate on multiple models of the same type
+caption .5 .15 3 Some specialized tools (like the Cylinder tool);\
+    can operate on multiple models of the same type
 moveover CylinderTool/TopRadiusScaler/MinSlider 1
 drag .03 0 1
 wait 2

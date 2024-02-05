@@ -5,7 +5,8 @@ caption .5 .15 3 This icon creates a new Extruded model
 highlight CreateExtrudedIcon 3 .012
 wait 3
 
-caption .5 .15 3 The model is formed by extruding a profile;in the Z (up) direction
+caption .5 .15 3 The model is formed by extruding a profile;\
+    in the Z (up) direction
 state cursor on
 state animation on
 moveover CreateExtrudedIcon 1
@@ -16,7 +17,8 @@ caption .5 .15 3 This specialized panel tool is used to edit the profile
 moveover ExtrudedToolPanel/MovablePoint_2 1
 drag .02 -.05 2
 
-caption .5 .15 4 This part of the panel lets you replace the profile;with a regular polygon with N sides
+caption .5 .15 4 This part of the panel lets you replace the profile;\
+    with a regular polygon with N sides
 highlight ExtrudedToolPanel/PolygonPane 2 .02
 wait 2
 

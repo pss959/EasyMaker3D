@@ -20,7 +20,8 @@ state animation on
 state cursor on
 
 files fail  # So saved file does not exist.
-caption .5 .15 5 When you save a session, _APPNAME_ stores all commands;in a file with a _SESSION_EXTENSION_ extension
+caption .5 .15 5 When you save a session, _APPNAME_ stores all commands;\
+    in a file with a _SESSION_EXTENSION_ extension
 moveover OpenSessionPanelIcon .5
 click
 moveover SaveAs .5
@@ -44,7 +45,8 @@ click
 load Sample # Makes it appear as if the Save-As worked.
 wait 2
 
-caption .5 .15 5 When you load a session file, it executes;all of the commands again, so you can undo/redo them ...
+caption .5 .15 5 When you load a session file, it executes;\
+    all of the commands again, so you can undo/redo them ...
 
 files pass  # So current file looks ok
 moveover OpenSessionPanelIcon .5

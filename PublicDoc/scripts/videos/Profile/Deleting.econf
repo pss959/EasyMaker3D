@@ -17,11 +17,13 @@ moveover RevSurfToolPanel/MovablePoint_2 1
 drag .0927734 .141304 2
 wait 1
 
-caption .5 .15 3 Note that the blue endpoints of a RevSurf profile;are not movable and cannot be deleted
+caption .5 .15 3 Note that the blue endpoints of a RevSurf profile;\
+    are not movable and cannot be deleted
 moveover RevSurfToolPanel/StartPoint 1
 wait 3
 
-caption .5 .15 3 Also, a RevSurf profile must have at least 3 points,;so this point cannot be deleted
+caption .5 .15 3 Also, a RevSurf profile must have at least 3 points,;\
+    so this point cannot be deleted
 moveover RevSurfToolPanel/MovablePoint_1 1
 drag -.03 -.01 2
 wait 3

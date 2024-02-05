@@ -5,10 +5,12 @@ action kCombineCSGDifference
 section CSGTool Specialized CSG tool 
 state video on
 
-caption .5 .15 3 The specialized CSG tool is enabled;when a CSG model is selected
+caption .5 .15 3 The specialized CSG tool is enabled;\
+    when a CSG model is selected
 wait 3
 
-caption .5 .15 3 This tool is a simple panel that lets you;change the CSG operation very easily
+caption .5 .15 3 This tool is a simple panel that lets you;\
+    change the CSG operation very easily
 state cursor on
 moveover CSGToolPanel/Intersection 1
 click

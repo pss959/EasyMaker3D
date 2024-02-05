@@ -8,5 +8,6 @@ moveover CreateCylinderIcon 1
 click
 wait 2
 
-caption .5 .15 3 The new model has a tool attached to it: a specialized;tool if it has one, otherwise a general tool
+caption .5 .15 3 The new model has a tool attached to it: a specialized;\
+    tool if it has one, otherwise a general tool
 wait 3

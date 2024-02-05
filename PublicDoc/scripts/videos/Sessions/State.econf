@@ -12,7 +12,8 @@ moveover ToggleShowEdgesIcon 1
 click
 wait 1
 
-caption .5 .15 3 Such as what was undone, what models are hidden;and the state of the point and edge targets
+caption .5 .15 3 Such as what was undone, what models are hidden;\
+    and the state of the point and edge targets
 moveover TreePanel/ModelRow_0/VisSwitcher/HideButton 1
 click
 wait 2

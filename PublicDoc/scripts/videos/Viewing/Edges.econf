@@ -9,7 +9,8 @@ caption .5 .15 3 Clicking this icon turns the display;of model edges on or off
 highlight ToggleShowEdgesIcon 3
 wait 3
 
-caption .5 .15 3 This can be useful to see how model surfaces;are subdivided into triangles
+caption .5 .15 3 This can be useful to see how model surfaces;\
+    are subdivided into triangles
 state cursor on
 moveover ToggleShowEdgesIcon 1
 click

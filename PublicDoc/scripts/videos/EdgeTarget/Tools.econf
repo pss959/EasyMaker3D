@@ -11,7 +11,8 @@ state video on
 state animation on
 state cursor on
 
-caption .5 .15 7 The Scale Tool snaps to the Edge Target when it is active,;highlighting with a color change
+caption .5 .15 7 The Scale Tool snaps to the Edge Target when it is active,;\
+    highlighting with a color change
 moveover CreateCylinderIcon 1
 click
 wait 1.5  # Animation
@@ -21,7 +22,8 @@ moveover ScaleTool/YScaler/MaxSlider 1
 drag 0 .137681 2.5
 wait 1
 
-caption .5 .15 7 The Edge Target affects other tools that change length,;such as the Cylinder Tool
+caption .5 .15 7 The Edge Target affects other tools that change length,;\
+    such as the Cylinder Tool
 moveover ToggleSpecializedToolIcon 1
 click
 moveover CylinderTool/TopRadiusScaler/MaxSlider 1

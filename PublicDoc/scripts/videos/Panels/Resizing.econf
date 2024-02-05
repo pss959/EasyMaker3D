@@ -1,7 +1,8 @@
 section Resizing Resizing panels
 state video on
 
-caption .5 .15 3 Some panels, such as the Settings Panel shown here,;can be resized to help with interaction
+caption .5 .15 3 Some panels, such as the Settings Panel shown here,;\
+    can be resized to help with interaction
 state cursor on
 moveover OpenSettingsPanelIcon 1
 click
@@ -19,7 +20,8 @@ moveover AppBoard/SizeSlider/BottomLeft .5
 drag -.05 .08 1
 wait 2
 
-caption .5 .15 3 Note that all panels have a minimum size that;cannot be resized past
+caption .5 .15 3 Note that all panels have a minimum size that;\
+    cannot be resized past
 moveover AppBoard/SizeSlider/TopRight .5
 drag -.2 -.2 1
 wait 2

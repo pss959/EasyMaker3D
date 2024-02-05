@@ -6,7 +6,8 @@ state video on
 state cursor on
 state animation on
 
-caption .5 .15 5 The Edge Target snaps to edges of models it is dragged;over and updates its length to match
+caption .5 .15 5 The Edge Target snaps to edges of models it is dragged;\
+    over and updates its length to match
 moveover ToggleShowEdgesIcon 1
 click
 moveover EdgeTargetWidget/Edge 1

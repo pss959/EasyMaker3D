@@ -5,10 +5,12 @@ state video on
 state animation on
 state cursor on
 
-caption .5 .15 3 The next step is to use thin boxes;to cut slots in the top of the rook
+caption .5 .15 3 The next step is to use thin boxes;\
+    to cut slots in the top of the rook
 wait 3
 
-caption .5 .15 3 Reset the view by shift-clicking on the;height slider and also hide the rook
+caption .5 .15 3 Reset the view by shift-clicking on the;\
+    height slider and also hide the rook
 moveover HeightSlider 1
 state mod on
 click
@@ -25,7 +27,8 @@ wait 1
 moveover ScaleToolIcon 1
 click
 
-caption .5 .15 4 Scale the width to .2 units, using the 'z' and 'x';shortcuts to change precision while dragging
+caption .5 .15 4 Scale the width to .2 units, using the 'z' and 'x';\
+    shortcuts to change precision while dragging
 action kDecreasePrecision
 moveover ScaleTool/XScaler/MaxSlider 1
 state mod on
@@ -43,7 +46,8 @@ moveover PasteIcon 1
 click
 wait 1
 
-caption .5 .15 4 Select the Rotation Tool and;rotate the copy 90 degrees
+caption .5 .15 4 Select the Rotation Tool and;\
+    rotate the copy 90 degrees
 moveover PrecisionControl/DecreasePrecision 1
 click
 moveover RotationToolIcon 1

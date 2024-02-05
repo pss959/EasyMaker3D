@@ -1,7 +1,8 @@
 section Torus Torus models
 state video on
 
-caption .5 .15 3 A Torus has a specialized tool to edit the;inner and outer diameters
+caption .5 .15 3 A Torus has a specialized tool to edit the;\
+    inner and outer diameters
 state cursor on
 state animation on
 moveover CreateTorusIcon 1

@@ -7,7 +7,8 @@ state video on
 caption .5 .15 2 Panels support typical 2D interaction
 wait 2
 
-caption .5 .15 2 There are push buttons, radio buttons, dropdowns,;sliders, text input, etc.
+caption .5 .15 2 There are push buttons, radio buttons, dropdowns,;\
+    sliders, text input, etc.
 state cursor on
 moveover SettingsPanel/TooltipDelay/Slider/Thumb 1
 drag .04 0 1
@@ -20,7 +21,8 @@ caption .5 .15 2 Clicking any enabled interactive element activates it
 moveover SettingsPanel/SessionDir 1
 click
 
-caption .5 .15 3 Pressing Tab or Shift-Tab moves keyboard focus;on interactive elements
+caption .5 .15 3 Pressing Tab or Shift-Tab moves keyboard focus;\
+    on interactive elements
 state cursor off
 wait .5
 key Tab

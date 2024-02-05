@@ -5,7 +5,8 @@ action kSelectAll
 section Complexity Complexity tool
 state video on
 
-caption .5 .15 3 The Complexity Tool changes the number of triangles;used for models
+caption .5 .15 3 The Complexity Tool changes the number of;\
+    triangles used for models
 highlight ComplexityToolIcon 3
 state cursor on
 moveover ComplexityToolIcon 1

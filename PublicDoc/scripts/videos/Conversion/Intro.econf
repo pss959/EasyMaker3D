@@ -1,11 +1,14 @@
 section Intro Converting models 
 state video on
 
-caption .5 .15 3 Each specialized tool illustrated here edits;one particular type of model
+caption .5 .15 3 Each specialized tool illustrated here edits;\
+    one particular type of model
 wait 3
 
-caption .5 .15 3 If multiple models of that type are selected,;all of them are modified
+caption .5 .15 3 If multiple models of that type are selected,;\
+    all of them are modified
 wait 3
 
-caption .5 .15 3 Other types of models must first be converted;to apply these tools
+caption .5 .15 3 Other types of models must first be converted;\
+    to apply these tools
 wait 3

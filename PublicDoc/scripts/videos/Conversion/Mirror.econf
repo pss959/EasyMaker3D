@@ -5,10 +5,12 @@ select
 section Mirror Mirror tool
 state video on
 
-caption .5 .15 3 The Mirror Tool lets you mirror asymmetric models;across a plane
+caption .5 .15 3 The Mirror Tool lets you mirror asymmetric;\
+    models across a plane
 wait 3
 
-caption .5 .15 3 To mirror a model, select it and click;the Convert to Mirrored icon
+caption .5 .15 3 To mirror a model, select it and click;\
+    the Convert to Mirrored icon
 state cursor on
 moveover Difference_1 1
 click
@@ -17,7 +19,8 @@ moveover ConvertMirrorIcon 1
 click
 wait 2
 
-caption .5 .15 3 The plane can be moved as with the Clip Tool,;but this just rotates or translates the model
+caption .5 .15 3 The plane can be moved as with the Clip Tool,;\
+    but this just rotates or translates the model
 moveover MirrorTool/Rotator/Cone 1
 state mod on
 drag -.0351562 -.17029 2

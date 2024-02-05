@@ -19,7 +19,8 @@ state video on
 state animation on
 state cursor on
 
-caption .5 .15 3 With the shift key pressed, the Point Target position snaps;to the 3D bounds of the model instead of the surface
+caption .5 .15 3 With the shift key pressed, the Point Target position snaps;\
+    to the 3D bounds of the model instead of the surface
 moveover PointTargetWidget/Shaft 1
 state mod on
 drag .109375 -.0851449 2

@@ -16,7 +16,8 @@ moveover TranslationTool/X/XSlider/MaxFace 1
 drag .2 0 3
 wait 2
 
-caption .5 .15 4 Note that the drag motion is scaled down with higher precision,;which allows for finer control
+caption .5 .15 4 Note that the drag motion is scaled down with,;\
+    higher precision which allows for finer control
 moveover TranslationTool/Y/YSlider/MaxFace 1
 drag 0 .2 3
 wait 2

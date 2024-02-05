@@ -28,7 +28,8 @@ drag  .1 .1 2  R
 drag -.2 .2 2  R
 wait 1
 
-caption .5 .15 2 Both the stage and view can be reset;by shift-clicking or double-clicking
+caption .5 .15 2 Both the stage and view can be reset;\
+    by shift-clicking or double-clicking
 state mod on
 moveover HeightSlider 1 0 -.1
 click

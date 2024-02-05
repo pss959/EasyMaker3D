@@ -7,5 +7,6 @@ caption .5 .15 3 Basic editing icons are found on this shelf
 highlight BasicsShelf 3 .015
 wait 3
 
-caption .5 .15 3 The first two icons are undo and redo,;as covered in the Sessions and Commands tutorial
+caption .5 .15 3 The first two icons are undo and redo,;\
+    as covered in the Sessions and Commands tutorial
 wait 3

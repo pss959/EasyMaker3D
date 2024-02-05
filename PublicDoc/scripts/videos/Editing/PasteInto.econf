@@ -5,11 +5,13 @@ action kCopy
 section PasteInto Pasting models as children
 state video on
 
-caption .5 .15 3 This icon pastes the contents of the model clipboard;as children of the selected model
+caption .5 .15 3 This icon pastes the contents of the model clipboard;\
+    as children of the selected model
 highlight PasteIntoIcon 3 .015
 wait 3
 
-caption .5 .15 3 It is enabled only when the clipboard is not empty;and a model that can have children is selected
+caption .5 .15 3 It is enabled only when the clipboard is not empty;\
+    and a model that can have children is selected
 moveover Hull_1 1
 click
 wait 2
@@ -22,7 +24,8 @@ click
 caption .5 .15 3 In this case, they are added to the Hull model
 wait 3
 
-caption .5 .15 3 The parent Hull is updated when it is selected;and becomes visible
+caption .5 .15 3 The parent Hull is updated when it;\
+    is selected and becomes visible
 moveover TreePanel/ModelRow_2/ModelButton 2
 click
 wait 3

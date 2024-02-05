@@ -7,17 +7,19 @@ section Snapping Snapping profile points
 state cursor on
 state video on
 
-caption .5 .15 3 Points can be snapped by holding the shift key or;double-clicking when dragging
+caption .5 .15 3 Points can be snapped by holding the shift key or;\
+    double-clicking when dragging
 moveover Profile 1 -.0908203 -.0398551
 state mod on
 drag .0244141 .0652174 3
 
-caption .5 .15 3 When a point is nearly aligned vertically, horizontally,;or diagonally with neighbor points, it will snap
+caption .5 .15 3 When a point is nearly aligned vertically, horizontally,;\
+    or diagonally with neighbor points, it will snap
 moveover Profile 1 -.0927734 -.0905797
 drag .0898438 .0525362 3
 wait 3
 
-caption .5 .15 3 A snapped point and edge are shown as green;while dragging
+caption .5 .15 3 A snapped point and edge are shown;as green while dragging
 moveover RevSurfToolPanel/MovablePoint_3 1
 drag .0292969 0.0670289 2
 state mod off

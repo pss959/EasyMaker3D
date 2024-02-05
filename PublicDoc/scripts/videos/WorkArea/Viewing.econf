@@ -17,7 +17,8 @@ caption .5 .15 2 Dragging anywhere with the right mouse button;rotates the view
 drag .1 .1 2  R
 wait 1
 
-caption .5 .15 2 Shift-click or double-click the height slider or pole;to reset the view
+caption .5 .15 2 Shift-click or double-click the height slider or pole;\
+    to reset the view
 moveover HeightSlider 1
 state mod on
 click

@@ -5,7 +5,8 @@ select
 section Other Other features
 state video on
 
-caption .5 .15 3 The Precision Control displays the current precision;and lets you change it
+caption .5 .15 3 The Precision Control displays the current precision;\
+    and lets you change it
 highlight PrecisionControl 3 .015
 wait 3
 

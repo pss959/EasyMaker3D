@@ -5,7 +5,8 @@ caption .5 .15 3 This icon lets you import a model from a file in STL format
 highlight CreateImportedModelIcon 3 .012
 wait 3
 
-caption .5 .15 2 Clicking it creates a placeholder tetrahedron;and attaches this panel tool
+caption .5 .15 2 Clicking it creates a placeholder tetrahedron;\
+    and attaches this panel tool
 state animation on
 state cursor on
 moveover CreateImportedModelIcon 1
@@ -27,5 +28,6 @@ state cursor off
 load ImportedBoat
 wait 2
 
-caption .5 .15 2 The panel can be reopened to re-import the model;or to change the file
+caption .5 .15 2 The panel can be reopened to re-import the model;\
+    or to change the file
 wait 2

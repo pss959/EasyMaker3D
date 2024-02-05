@@ -5,12 +5,14 @@ action kIncreasePrecision
 section Shortcuts Keyboard shortcuts
 state video on
 
-caption .5 .15 3 The 'z' and 'x' keyboard shortcuts also;decrease and increase precision
+caption .5 .15 3 The 'z' and 'x' keyboard shortcuts also;\
+    decrease and increase precision
 wait 1
 key z
 wait 2
 
-caption .5 .15 6 They even work during drag operations, meaning that;you can start a coarse drag and refine it while dragging
+caption .5 .15 6 They even work during drag operations, meaning that;\
+    you can start a coarse drag and refine it while dragging
 state cursor on
 moveover TranslationTool/X/XSlider/MaxFace 1
 dragstart .07 0 2

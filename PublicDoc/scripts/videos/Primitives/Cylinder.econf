@@ -1,7 +1,8 @@
 section Cylinder Cylinder models
 state video on
 
-caption .5 .15 3 A Cylinder has a specialized tool to edit the;top and bottom diameters
+caption .5 .15 3 A Cylinder has a specialized tool to edit the;\
+    top and bottom diameters
 state cursor on
 state animation on
 moveover CreateCylinderIcon 1

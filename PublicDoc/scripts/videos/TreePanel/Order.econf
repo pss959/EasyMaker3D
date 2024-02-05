@@ -5,7 +5,8 @@ section Order Reordering models
 state video on
 state cursor on
 
-caption .5 .15 3 You can change the order of models at;the same level with these buttons
+caption .5 .15 3 You can change the order of models at;\
+    the same level with these buttons
 highlight TreePanel/OrderButtons 3 .005
 wait 3
 

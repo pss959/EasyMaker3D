@@ -4,20 +4,23 @@ select Box_1
 section Tools Snapping with tools
 state video on
 
-caption .5 .15 3 The Translation Tool snaps to the Point Target;when it is active
+caption .5 .15 3 The Translation Tool snaps to the Point Target;\
+    when it is active
 state cursor on
 moveover TogglePointTargetIcon 1
 click
 wait 2
 
-caption .5 .15 6 The minimum, maximum, and center values of the model;bounds are snapped to the target position
+caption .5 .15 6 The minimum, maximum, and center values of the model;\
+    bounds are snapped to the target position
 moveover TranslationTool/Z/ZSlider/MaxFace 1
 drag .0361328 .0235507 2
 moveover TranslationTool/Z/ZSlider/MaxFace .5
 drag -.0214844 -.0706522 2
 wait 1
 
-caption .5 .15 3 While dragging, snapping is highlighted with;a color change and a feedback line
+caption .5 .15 3 While dragging, snapping is highlighted with;\
+    a color change and a feedback line
 moveover TranslationTool/Z/ZSlider/MaxFace .5
 drag -.03125 -.0960145 2
 wait 1
@@ -29,7 +32,8 @@ moveover RotationToolIcon 1
 click
 wait 1
 
-caption .5 .15 3 It snaps when any of the model's principal axes;is close to the target direction
+caption .5 .15 3 It snaps when any of the model's principal axes;\
+    is close to the target direction
 moveover RotationTool/ZAxisRotator 1 .0751953 .175725  # On green ring
 drag -.141602 .143116 2
 wait 1

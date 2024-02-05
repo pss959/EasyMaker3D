@@ -16,7 +16,8 @@ caption .5 .15 3 Icons on this shelf help with model layout
 highlight LayoutShelf 3 .015
 wait 3
 
-caption .5 .15 3 Icons on this shelf perform basic operations;(Undo, Redo, Cut, Paste, etc.)
+caption .5 .15 3 Icons on this shelf perform basic operations;\
+    (Undo, Redo, Cut, Paste, etc.)
 highlight BasicsShelf 3 .015
 wait 3
 
@@ -36,7 +37,8 @@ caption .5 .15 3 Icons on this shelf combine models;to create new models
 highlight CombiningShelf 3 0
 wait 3
 
-caption .5 .15 3 The icon on this shelf toggles between general;and specialized tools
+caption .5 .15 3 The icon on this shelf toggles between general;\
+    and specialized tools
 highlight SpecializedShelf 3 0
 wait 3
 

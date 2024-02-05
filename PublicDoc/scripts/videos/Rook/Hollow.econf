@@ -13,7 +13,8 @@ moveover Cylinder_1 1
 click
 wait 1
 
-caption .5 .15 3 Click the CSG Difference icon to subtract;the cylinder from the RevSurf
+caption .5 .15 3 Click the CSG Difference icon to subtract;\
+    the cylinder from the RevSurf
 moveover CombineCSGDifferenceIcon 2
 click
 wait 1

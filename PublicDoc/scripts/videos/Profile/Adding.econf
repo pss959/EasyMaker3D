@@ -16,7 +16,8 @@ moveover RevSurfToolPanel/MovablePoint_1 1
 drag .0361328 .0253623 2
 wait 2
 
-caption .5 .15 3 Drag near a profile line to add a new point and;move it in one step
+caption .5 .15 3 Drag near a profile line to add a new point;\
+    and move it in one step
 moveover Profile 1 -.0673828 -.103261
 drag .0341797 -.0416666 2
 wait 2

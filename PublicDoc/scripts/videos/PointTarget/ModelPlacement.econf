@@ -6,7 +6,8 @@ action kCreateCylinder
 section ModelPlacement Placement on models
 state video on
 
-caption .5 .15 5 The Point Target can also be dragged onto the;surface of any model
+caption .5 .15 5 The Point Target can also be dragged onto;\
+    the surface of any model
 state cursor on
 moveover TranslationToolIcon 1
 click

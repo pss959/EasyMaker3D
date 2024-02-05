@@ -11,7 +11,8 @@ moveover TreePanel/ModelRow_0/ModelButton 1 .01 0
 click
 wait 2
 
-caption .5 .15 3 Shift-clicking or double-clicking adds or removes;from the current selection
+caption .5 .15 3 Shift-clicking or double-clicking adds or removes;\
+    from the current selection
 moveover TreePanel/ModelRow_5/ModelButton 1 .01 0
 state mod on
 click
@@ -25,7 +26,8 @@ moveover TreePanel/ModelRow_6/ModelButton 1 .01 0
 click
 wait 2
 
-caption .5 .15 3 Selecting a child model hides the parent;and shows the child and its siblings
+caption .5 .15 3 Selecting a child model hides the parent;\
+    and shows the child and its siblings
 moveover TreePanel/ModelRow_2/ModelButton 1 .01 0
 click
 wait 2

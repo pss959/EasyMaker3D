@@ -5,13 +5,15 @@ section Linear Linear layout
 state video on
 state animation on
 
-caption .5 .15 3 The Edge Target can also be used to lay models;out along a line with even spacing
+caption .5 .15 3 The Edge Target can also be used to lay models;\
+    out along a line with even spacing
 state cursor on
 moveover ToggleEdgeTargetIcon 1
 click
 wait 2
 
-caption .5 .15 6 The layout direction and spacing are;defined by the Edge Target
+caption .5 .15 6 The layout direction and spacing are;\
+    defined by the Edge Target
 moveover CreateBoxIcon 1
 click
 wait 1.4  # Animation

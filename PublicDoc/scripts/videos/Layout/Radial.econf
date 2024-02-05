@@ -5,7 +5,8 @@ section Radial Radial layout
 state video on
 state animation on
 
-caption .5 .15 3 The Point Target can also be used to lay models;out along a circular arc with even spacing
+caption .5 .15 3 The Point Target can also be used to lay models;\
+    out along a circular arc with even spacing
 state cursor on
 moveover TogglePointTargetIcon 1
 click
@@ -65,7 +66,8 @@ moveover PointTargetWidget/Ring 1 .0576172 -.0724638
 drag -.0644531 .076087 1
 wait 1
 
-caption .5 .15 3 If one model is selected, clicking the icon moves;that model to the point target
+caption .5 .15 3 If one model is selected, clicking the icon;\
+    moves that model to the point target
 moveover Peg_C 1
 click
 moveover RadialLayoutIcon 1

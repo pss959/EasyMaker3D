@@ -17,7 +17,8 @@ moveover ToggleInspectorIcon 1
 click
 wait 1
 
-caption .5 .15 4 The model is rotated by mouse motion until any button is;clicked or key is pressed
+caption .5 .15 4 The model is rotated by mouse motion until any button is;\
+    clicked or key is pressed
 moveto .5 .5 1
 moveto .719727 .730072 2
 moveto .72168  .606884 2

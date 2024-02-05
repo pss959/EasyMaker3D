@@ -14,7 +14,8 @@ moveover PointTargetWidget/Base 1 0 .01
 drag .0917969 0 1
 wait 1
 
-caption .5 .15 3 When active, any new model will be positioned;at the target position
+caption .5 .15 3 When active, any new model will be positioned;\
+    at the target position
 state animation on
 moveover CreateCylinderIcon 1
 click

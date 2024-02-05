@@ -3,7 +3,8 @@ state video on
 state animation on
 state cursor on
 
-caption .5 .15 3 Click on the Create RevSurf icon to create a;RevSurf (surface of revolution) model
+caption .5 .15 3 Click on the Create RevSurf icon to create a;\
+    RevSurf (surface of revolution) model
 moveover CreateRevSurfIcon 1
 click
 wait 2

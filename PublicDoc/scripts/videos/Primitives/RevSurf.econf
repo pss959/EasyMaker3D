@@ -1,11 +1,13 @@
 section RevSurf Surface of revolution (RevSurf) models
 state video on
 
-caption .5 .15 3 This icon on creates a new;surface of revolution (RevSurf) model
+caption .5 .15 3 This icon on creates a new;\
+    surface of revolution (RevSurf) model
 highlight CreateRevSurfIcon 3 0
 wait 3
 
-caption .5 .15 3 A new RevSurf model has a specialized panel tool;to edit the profile
+caption .5 .15 3 A new RevSurf model has a specialized panel tool;\
+    to edit the profile
 state cursor on
 state animation on
 moveover CreateRevSurfIcon 1

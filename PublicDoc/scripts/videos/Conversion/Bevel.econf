@@ -8,7 +8,8 @@ state video on
 caption .5 .15 3 The Bevel Tool lets you created beveled or curved edges
 wait 3
 
-caption .5 .15 3 To bevel a model, select it and click;the Convert to Beveled icon
+caption .5 .15 3 To bevel a model, select it and click;\
+    the Convert to Beveled icon
 state cursor on
 moveover Box_1 1
 click

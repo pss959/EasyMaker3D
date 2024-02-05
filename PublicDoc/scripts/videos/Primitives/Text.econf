@@ -5,7 +5,8 @@ caption .5 .15 3 This icon creates a new Text model
 highlight CreateTextIcon 3 .012
 wait 3
 
-caption .5 .15 3 The model is formed by extruding one or more;characters in the Z (up) direction
+caption .5 .15 3 The model is formed by extruding one or more;\
+    characters in the Z (up) direction
 state cursor on
 state animation on
 moveover CreateTextIcon 1

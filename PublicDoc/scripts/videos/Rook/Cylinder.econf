@@ -25,14 +25,16 @@ moveover ScaleToolIcon 1
 click
 wait 1
 
-caption .5 .15 3 Use the Scale Tool to change the diameter to 1 unit -;hold the shift key for symmetric scaling
+caption .5 .15 3 Use the Scale Tool to change the diameter to 1 unit -;\
+    hold the shift key for symmetric scaling
 moveover ScaleTool/XZ1Scaler/MaxSlider 1
 state mod on
 drag -.0791016 .0271739 2
 state mod off
 wait 1
 
-caption .5 .15 3 Translate the cylinder .5 units down -;first change the linear precision to .1
+caption .5 .15 3 Translate the cylinder .5 units down -;\
+    first change the linear precision to .1
 moveover PrecisionControl/IncreasePrecision 1
 click
 wait 1

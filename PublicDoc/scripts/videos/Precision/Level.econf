@@ -4,14 +4,16 @@ action kToggleSpecializedTool
 section Level Precision levels
 state video on
 
-caption .5 .15 3 There are three levels of precision available;during drag operations
+caption .5 .15 3 There are three levels of precision available;\
+    during drag operations
 wait 3
 
 caption .5 .15 3 The precision control on the back wall shows;the current level
 highlight PrecisionControl 3 .015
 wait 3
 
-caption .5 .15 3 The default precision is 1 unit for linear operations;and 15 degrees for angles
+caption .5 .15 3 The default precision is 1 unit for linear operations;\
+    and 15 degrees for angles
 highlight PrecisionControl/Text 3
 wait 3
 

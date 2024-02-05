@@ -1,7 +1,8 @@
 section Intro The Point Target
 state video on
 
-caption .5 .15 3 _APPNAME_ provides a Point Target to help with;precise interaction
+caption .5 .15 3 _APPNAME_ provides a Point Target;\
+    to help with precise interaction
 wait 3
 
 caption .5 .15 3 This icon turns the Point Target on and off
@@ -14,5 +15,6 @@ moveover TogglePointTargetIcon 1
 click
 wait 2
 
-caption .5 .15 3 The ring is used for radial layout, covered in a different tutorial
+caption .5 .15 3 The ring is used for radial layout,;\
+    covered in a different tutorial
 wait 3

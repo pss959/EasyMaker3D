@@ -5,7 +5,8 @@ state video on
 state animation on
 state cursor on
 
-caption .5 .15 3 The next step is to use a cylinder to hollow out the top,;starting with a better view
+caption .5 .15 3 The next step is to use a cylinder to hollow out the top,;\
+    starting with a better view
 moveto .330078 .469203 1  # Arbitrary point on back wall to deselect
 click
 moveover Stage 1 0 -.05
@@ -29,7 +30,8 @@ moveover PointTargetWidget/Cone 1 0 .01
 drag .19043 -.273551 1
 wait 1
 
-caption .5 .15 3 Hold shift and drag the Point Target to the top;center of the bounds of the RevSurf
+caption .5 .15 3 Hold shift and drag the Point Target to the top;\
+    center of the bounds of the RevSurf
 moveover PointTargetWidget/Base 1 0 .005
 state mod on
 drag -.189453 .266304 2

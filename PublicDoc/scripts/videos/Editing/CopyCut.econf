@@ -4,7 +4,8 @@ select Box_1 Cylinder_1
 section CopyCut Copying and cutting models
 state video on
 
-caption .5 .15 5 This icon stores copies of the currently selected;model(s) in the model clipboard
+caption .5 .15 5 This icon stores copies of the currently selected;\
+    model(s) in the model clipboard
 highlight CopyIcon 3 .015
 wait 3
 
@@ -13,7 +14,8 @@ moveover CopyIcon 2
 click
 wait 2
 
-caption .5 .15 5 This icon deletes the currently selected model(s);and stores them in the model clipboard
+caption .5 .15 5 This icon deletes the currently selected model(s);\
+    and stores them in the model clipboard
 highlight CutIcon 3 .015
 wait 3
 
