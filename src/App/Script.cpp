@@ -87,8 +87,7 @@ bool Script::ReadScript(const FilePath &path) {
         return false;
     }
 
-    file_path_   = path;
-    line_number_ = 1;
+    file_path_ = path;
 
     // Split the input into lines and trim whitespace from both ends of each.
     auto lines = ion::base::SplitStringWithoutSkipping(contents, "\n");
@@ -99,10 +98,21 @@ bool Script::ReadScript(const FilePath &path) {
         return false;
 
     // Parse the resulting lines.
-    for (const auto &line: lines) {
+    for (line_number_ = 1; line_number_ <= lines.size(); ++line_number_) {
+        Str line = lines[line_number_ - 1];
+        // Deal with continuation lines.
+        while (line.ends_with('\\')) {
+            if (++line_number_ <= lines.size()) {
+                line.resize(line.size() - 1);  // Remove trailing '\'.
+                line += lines[line_number_ - 1];
+            }
+            else {
+                Error_("Continuation line at end of script");
+                return false;
+            }
+        }
         if (! ParseLine_(line))
             return false;
-        ++line_number_;
     }
     return true;
 }
