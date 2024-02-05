@@ -192,7 +192,7 @@ R"(<NAME>: A VR-enabled application for creating models for 3D printing.
     Debug-only Options:
       --klog=<string>  String to pass to KLogger::SetKeyString().
       --maximize       Start with a maximized window.
-      --novr           Simulate non-VR setup when VR is available.
+      --novr           Simulate non-VR setup even when VR is available.
       --remote         Enable Ion remote debugging (but URLs fail to open).
       --touch          Simulate VR setup for testing touch interaction.
 )";
@@ -210,7 +210,7 @@ int main(int argc, const char *argv[]) {
     KLogger::SetKeyString(args.GetString("--klog"));
     options.do_ion_remote     = args.GetBool("--remote");
     options.maximize          = args.GetBool("--maximize");
-    options.ignore_vr         = args.GetBool("--novr");
+    options.connect_vr        = ! args.GetBool("--novr");
     options.session_file_name = args.GetString("--session");
     options.set_up_touch      = args.GetBool("--touch");
 

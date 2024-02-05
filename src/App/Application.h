@@ -36,8 +36,8 @@ class Application : public IApplication {
         Vector2ui window_size;
         bool      do_ion_remote      = false;
         bool      maximize           = false;
-        bool      enable_vr          = false;
-        bool      ignore_vr          = false;
+        bool      display_vr         = false;
+        bool      connect_vr         = false;
         bool      set_up_touch       = false;
         bool      show_session_panel = true;
         bool      offscreen          = false;

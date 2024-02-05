@@ -48,8 +48,6 @@ int main(int argc, const char *argv[]) {
     auto &options  = app.GetOptions();
     options.dryrun = args.GetBool("--nosnap");
 
-    app.InitApp();
-
     // Process the script.
     return app.ProcessScript("PublicDoc/scripts/snaps",
                              args.GetString("SCRIPT"), false) ? 0 : -1;

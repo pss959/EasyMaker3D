@@ -47,9 +47,6 @@ class ScriptedApp : public Application {
     /// Returns the Options.
     Options & GetOptions() { return options_; }
 
-    /// Initializes the ScriptedApp. Returns false if anything goes wrong.
-    bool InitApp();
-
     /// Processes the Script, given the path to the directory in which script
     /// files are found and the relative path to the script from that
     /// directory. The \p do_video flag indicates whether video may be

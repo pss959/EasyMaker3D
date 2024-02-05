@@ -394,7 +394,7 @@ void ScriptedApp::InitOptions(const Args &args) {
     // KLogging for debugging.
     KLogger::SetKeyString(args.GetString("--klog"));
 
-    options_.enable_vr     = true;   // So controllers work properly.
+    options_.display_vr    = true;  // Allow controllers to be shown.
     options_.maximize      = args.GetBool("--maximize");
     options_.remain        = args.GetBool("--remain");
     options_.report        = args.GetBool("--report");
@@ -412,14 +412,14 @@ void ScriptedApp::InitOptions(const Args &args) {
     options_.window_size.Set(1024 / size_n, 552 / size_n);
 }
 
-bool ScriptedApp::InitApp() {
-    return Init_();
-}
-
 bool ScriptedApp::ProcessScript(const FilePath &script_dir,
                                 const FilePath &script_path, bool do_video) {
-    // Read the script and initialize the rest.
+    // Read the script first.
     if (! script_.ReadScript(FilePath::Join(script_dir, script_path)))
+        return false;
+
+    // Initialize the application.
+    if (! Init_())
         return false;
 
     // Initialize video if requested.

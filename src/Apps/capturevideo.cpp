@@ -53,8 +53,6 @@ int main(int argc, const char *argv[]) {
     options.fps       = args.GetAsInt("--fps", 30);
     options.vidformat = args.GetStringChoice("--format", formats);
 
-    app.InitApp();
-
     // Process the script.
     return app.ProcessScript("PublicDoc/scripts/videos",
                              args.GetString("SCRIPT"), true) ? 0 : -1;
