@@ -287,14 +287,12 @@ void ScriptedApp::Video_::UpdateCaptionFade(const Caption_ &caption) {
     // Note that this fades just the text, not the background.
     if (caption_fade_data_.elapsed <= caption_fade_data_.duration) {
         const float alpha = UpdateFade_(caption_fade_data_);
-        if (alpha <= 0) {
-            caption.node->SetEnabled(false);
-        }
-        else {
-            Color c = caption.text->GetColor();
-            c[3] = alpha;
-            caption.text->SetTextColor(c);
-        }
+        Color c = caption.text->GetColor();
+        c[3] = alpha;
+        caption.text->SetTextColor(c);
+    }
+    else {
+        caption.node->SetEnabled(false);  // Fade has finished.
     }
 }
 
