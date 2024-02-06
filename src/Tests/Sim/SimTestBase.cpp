@@ -1,13 +1,14 @@
 #include "Tests/Sim/SimTestBase.h"
 
-#include <exception>
-#include <iostream>
-
 #include "App/Script.h"
 #include "App/ScriptedApp.h"
 #include "Tests/Testing.h"
 #include "Tests/UnitTestTypeChanger.h"
 #include "Util/FilePath.h"
+
+SimTestBase::SimTestBase() : app_(new ScriptedApp) {}
+
+SimTestBase::~SimTestBase() {}
 
 void SimTestBase::RunScript(const Str &script_name) {
     // Change the app type temporarily.
@@ -18,6 +19,10 @@ void SimTestBase::RunScript(const Str &script_name) {
     // calling _exit() is the easiest way to reset everything for each
     // simulation.
     EXPECT_EXIT(RunScriptAndExit_(script_name), testing::ExitedWithCode(0), "");
+}
+
+const Application::Context & SimTestBase::GetContext() {
+    return app_->GetContext();
 }
 
 void SimTestBase::RunScriptAndExit_(const Str &script_name) {
@@ -35,8 +40,7 @@ void SimTestBase::RunScriptAndExit_(const Str &script_name) {
 }
 
 bool SimTestBase::RunScript_(const Str &file_name) {
-    ScriptedApp app;
-    auto &options = app.GetOptions();
+    auto &options = app_->GetOptions();
 
     // Hardwire all options.
     options.do_ion_remote      = false;
@@ -49,13 +53,8 @@ bool SimTestBase::RunScript_(const Str &file_name) {
     options.offscreen          = true;  // Use hidden window.
     options.window_size.Set(1024, 552);
 
-    app.InitApp();  // Makes the context available.
-
-    // Copy the context.
-    context = app.GetContext();
-
     // Process the script.
     const FilePath script_dir =
         FilePath::Join(FilePath::GetTestDataPath(), "Scripts");
-    return app.ProcessScript(script_dir, file_name + ".econf", false);
+    return app_->ProcessScript(script_dir, file_name + ".econf", false);
 }

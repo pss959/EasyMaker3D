@@ -13,7 +13,7 @@ class HoverSimTest_ : public SimTestBase {
         // The ComplexityTool should be active and attached to the
         // CylinderModel.
         const auto tool = SG::FindTypedNodeInScene<Tool>(
-            *context.scene_context->scene, "ComplexityTool");
+            *GetContext().scene_context->scene, "ComplexityTool");
         const auto model = tool->GetModelAttachedTo();
         EXPECT_NOT_NULL(model.get());
         EXPECT_EQ("Cylinder_1", model->GetName());

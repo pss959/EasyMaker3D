@@ -8,7 +8,7 @@ class EmptySimTest_ : public SimTestBase {
   protected:
     virtual void TestResults() override {
         // There shouldn't be any models in the scene.
-        const auto &rm = *context.scene_context->root_model;
+        const auto &rm = *GetContext().scene_context->root_model;
         EXPECT_EQ(0U, rm.GetChildModelCount());
     }
 };
