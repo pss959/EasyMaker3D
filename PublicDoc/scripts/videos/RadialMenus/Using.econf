@@ -1,0 +1,35 @@
+include Setting.econf 0
+
+key Escape  # Closes the RadialMenu Panel
+
+section Using Using radial menus
+state video on
+
+caption .5 .15 3 To use a radial menu, use the Ctrl-l or Ctrl-r;\
+    shortcut to show the menu
+wait 1
+key Ctrl-l
+wait 2
+
+caption .5 .15 4 Unassigned buttons and buttons with actions;\
+    that cannot be applied are disabled
+wait 1
+moveover CreateCylinderIcon 1
+click
+wait 2
+
+caption .5 .15 6 Click on any enabled button to apply its action
+moveover RadialMenus/LeftRadialMenu/Button_2/Icon 1
+wait 1
+click
+wait 1
+moveover TranslationTool/X/XSlider/MaxFace 1
+drag .0859375 0 1
+moveover RadialMenus/LeftRadialMenu/Button_1/Icon 1
+click
+wait 1
+
+caption .5 .15 3 Use the same shortcut to hide the menu
+wait 1
+key Ctrl-l
+wait 2

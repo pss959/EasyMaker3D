@@ -1,0 +1,68 @@
+settings InitialSettings  # Start with empty menus
+
+section Editing Setting up radial menus
+state video on
+state cursor on
+
+caption .5 .15 3 Radial menus are set up via the Settings Panel
+moveover OpenSettingsPanelIcon 1
+click
+wait 2
+
+caption .5 .15 3 Click the Edit Radial Menus button to start
+moveover SettingsPanel/EditRadialMenus 1
+click
+wait 2
+
+caption .5 .15 6 These radio buttons let you choose the number;\
+    of buttons for each menu: 2, 4, or 8
+highlight RadialMenuPanel/LeftControllerPane/CountButtonsPane,\
+          RadialMenuPanel/RightControllerPane/CountButtonsPane 3 .005
+wait 1
+moveover RadialMenuPanel/LeftControllerPane/Count2 1
+click
+wait 1
+moveover RadialMenuPanel/LeftControllerPane/Count4 1
+click
+wait 1
+moveover RadialMenuPanel/LeftControllerPane/Count8 1
+click
+wait 1
+
+caption .5 .15 3 All buttons are assigned the "None" action by default;\
+    Clicking on any menu button displays the Action Panel
+moveover RadialMenuPanel/LeftControllerPane/Button_1/Icon 1
+click
+wait 2
+
+caption .5 .15 4 Click any action and the Accept button;\
+    to assign it to the button
+moveover ActionPanel/Undo 1
+click
+wait 1
+moveover ActionPanel/Accept 1
+click
+wait 1
+
+caption .5 .15 7 Repeat the process to assign other buttons
+moveover RadialMenuPanel/LeftControllerPane/Button_2/Icon 1
+click
+moveover ActionPanel/ScrollBar/Slider/Thumb 1
+drag 0 -.221014 2
+moveover ActionPanel/TranslationTool 1
+click
+moveover ActionPanel/Accept 1
+click
+wait 1
+
+caption .5 .15 3 Click the Accept button to apply the changes.
+moveover RadialMenuPanel/Accept 1
+click
+wait 2
+
+caption .5 .15 3 The menu changes are saved whether Accept or;\
+    Cancel is clicked in the Settings Panel
+moveover SettingsPanel/Cancel 1
+click
+wait 2
+

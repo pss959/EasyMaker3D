@@ -24,7 +24,7 @@ BoxPane "RadialMenuPane" {
     BoxPane "T_ControllerPane" {
       orientation: "kHorizontal",
       panes: [
-        BoxPane {
+        BoxPane "CountButtonsPane" {
           resize_flags: "kWidth",
           spacing:      2,
           panes: [

@@ -1,0 +1,24 @@
+settings InitialSettings  # Start with empty menus
+
+section Intro Radial menus
+state video on
+
+caption .5 .15 3 Radial menus are primarily intended for VR, where they;\
+    provide access to shortcuts without a keyboard
+wait 3
+
+caption .5 .15 3 However, they can also be used with a mouse
+wait 3
+
+caption .5 .75 4 The Ctrl-l and Ctrl-r shortcuts show or hide;\
+    the left and right radial menus
+wait 1
+key Ctrl-l
+wait 1
+key Ctrl-r
+wait 2
+
+caption .5 .75 4 Each button has an icon showing the action;\
+    to be applied - see the Cheat Sheet for details
+wait 4
+

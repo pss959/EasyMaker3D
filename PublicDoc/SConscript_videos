@@ -133,6 +133,11 @@ merges = {
         'NewModels',
         'Tools',
     ],
+    'RadialMenus' : [
+        'Intro',
+        'Setting',
+        'Using',
+    ],
     'Rook' : [
         'RevSurf',
         'Target',
@@ -176,8 +181,9 @@ for script in part_scripts:
     cap_args = f'--format={video_format} --maximize --offscreen'
     video = env.Command([PlaceVideo_(script), PlaceWebVtt_(script)],
                         [capturevideo, join(script_dir, script_file)],
-                        [Mkdir(video_dir),
-                         f'{capturevideo.abspath} {cap_args} {script_file}'],
+                        [f'@echo === Creating part video {script}',
+                         Mkdir(video_dir),
+                         f'@{capturevideo.abspath} {cap_args} {script_file}'],
                         chdir=root_dir)
 
 # Generate merged/converted video MP4 and WebVTT files.
@@ -189,7 +195,8 @@ for merged, parts in merges.items():
     video = env.Command([PlaceVideo_(merged_name), PlaceWebVtt_(merged_name)],
                         [PlaceVideo_(pn)  for pn in part_names] +
                         [PlaceWebVtt_(pn) for pn in part_names],
-                        f'{merge_pgm} {merged_name} {" ".join(part_names)}')
+                        [f'@echo === Creating merged video {merged_name}',
+                         f'@{merge_pgm} {merged_name} {" ".join(part_names)}'])
     videos.append(video)
 
 env.Alias('Videos', videos)
