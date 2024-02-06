@@ -45,7 +45,7 @@ Other Features
 .. toctree::
    :maxdepth: 1
 
-   Application settings <Settings>
+   Application panels <AppPanels>
    Viewing aids <Viewing>
    Radial menus <RadialMenus>
    Editing with VR devices <VR>

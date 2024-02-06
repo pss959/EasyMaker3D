@@ -1,0 +1,30 @@
+settings InitialSettings  # Start with default settings.
+
+section Settings The Settings Panel
+state video on
+
+caption .5 .15 3 This icon opens the Settings Panel
+highlight OpenSettingsPanelIcon 3 .008
+wait 3
+
+caption .5 .15 3 The Settings Panel lets you change application settings;\
+    to customize your experience
+state cursor on
+moveover OpenSettingsPanelIcon 1
+click
+state cursor off
+wait 2
+
+caption .5 .15 4 For example, this slider changes the;\
+    delay before tooltips are revealed
+state cursor on
+moveover SettingsPanel/TooltipDelay/Thumb 1
+drag .0556641 0 2
+state cursor off
+wait 1
+
+caption .5 .15 3 All settings let you reset to the default value;\
+    or back to the current value
+highlight SettingsPanel/CurrentTooltipDelay/Button,\
+          SettingsPanel/DefaultTooltipDelay/Button 3 .005
+wait 4

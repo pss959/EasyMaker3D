@@ -37,6 +37,13 @@ def PlaceWebVtt_(name):
 # (and also the subdirectory name) mapped to the individual component videos in
 # that subdirectory.
 merges = {
+    'AppPanels' : [
+        'Intro',
+        'Session',
+        'Settings',
+        'Info',
+        'Help',
+    ],
     'Combination' : [
         'Intro',
         'Hull',

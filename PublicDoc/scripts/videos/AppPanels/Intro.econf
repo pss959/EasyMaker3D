@@ -1,0 +1,7 @@
+section Intro Application panels
+state video on
+
+caption .5 .15 3 There are four main application panels;\
+    accessible from icons on this shelf
+highlight SessionShelf 3 .015
+wait 3

@@ -1,0 +1,36 @@
+load Editing  # Session with some models.
+select
+
+section Info The Info Panel
+state video on
+
+caption .5 .15 3 This icon opens the Info Panel
+highlight OpenInfoPanelIcon 3 .008
+wait 3
+
+caption .5 .15 7 The Info Panel shows information about selected models
+state cursor on
+moveover Hull_1 1
+click
+moveover Cylinder_1 1
+state mod on
+click
+state mod off
+moveover OpenInfoPanelIcon 1
+click
+wait 1
+moveover InfoPanel/ScrollBar/Thumb 1
+drag 0 -.25 1
+wait 1
+moveover InfoPanel/Done 1
+click
+
+caption .5 .15 5 If targets are visible, their;information is also shown
+moveover TogglePointTargetIcon 1
+click
+moveover OpenInfoPanelIcon 1
+click
+moveover InfoPanel/Done 1
+wait 2
+click
+wait 1

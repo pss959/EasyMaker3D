@@ -1,0 +1,14 @@
+section Help The Help Panel
+state video on
+
+caption .5 .15 3 This icon opens the Help Panel
+highlight OpenHelpPanelIcon 3 .008
+wait 3
+
+caption .5 .15 3 The Help Panel shows information about the;\
+    application and has links to more help
+state cursor on
+moveover OpenHelpPanelIcon 1
+click
+state cursor off
+wait 2

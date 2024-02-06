@@ -1,0 +1,17 @@
+section Session The Session Panel
+state video on
+
+caption .5 .15 3 This icon opens the Session Panel
+highlight OpenSessionPanelIcon 3 .008
+wait 3
+
+caption .5 .15 3 The Session Panel lets you load and save sessions;\
+   and also export models in STL format for printing
+state cursor on
+moveover OpenSessionPanelIcon 1
+click
+wait 2
+
+caption .5 .15 3 It also provides access to the;Help Panel and Settings Panel
+highlight SessionPanel/Help,SessionPanel/Settings 3 .005
+wait 4
