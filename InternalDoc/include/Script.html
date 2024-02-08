@@ -36,8 +36,9 @@
   </tr>
   <tr>
     <td><b>click</b></td>
-    <td></td>
-    <td>Simulates a mouse click at the current cursor position.</td>
+    <td>[<code>Mouse</code>|<code>LPinch</code>|<code>RPinch</code>]</td>
+    <td>Simulates a button click at the current cursor position. If no button
+      is specified, <code>Mouse</code> is assumed.</td>
   </tr>
   <tr>
     <td><b>drag</b></td>
@@ -80,11 +81,24 @@
       board.</td>
   </tr>
   <tr>
-    <td><b>hand</b></td>
+    <td><b>handmodel</b></td>
     <td><code>L</code>|<code>R</code> <i>type</i></td>
     <td>Defines a controller model for the given hand. <i>type</i> is one of
       {<code>Oculus_Touch</code>, <code>Vive</code>,
       or <code>None</code>}.</td>
+  </tr>
+  <tr>
+    <td><b>handmove</b></td>
+    <td><code>L</code>|<code>R</code> <i>dx dy dz duration</i></td>
+    <td>Moves the controller for the given hand by the given distances over the
+      given <a href="#duration"><i>duration</i></a>.</td>
+  </tr>
+  <tr>
+    <td><b>handpoint</b></td>
+    <td><code>L</code>|<code>R</code> <i>path duration</i></td>
+    <td>Rotates the controller for the given hand so it points at the center of
+      the Node named by <a href="#paths"><i>path</i></a>, taking the given
+      <a href="#duration"><i>duration</i></a> to do so.</td>
   </tr>
   <tr>
     <td><b>handpos</b></td>
@@ -94,6 +108,14 @@
       to the default rest position) and rotates so that the laser pointer and
       hover guide align with the given vectors. The hover guide direction can
       be zero if the default is ok.</td>
+  </tr>
+  <tr>
+    <td><b>handturn</b></td>
+    <td><code>L</code>|<code>R</code> <i>xrot yrot zrot duration</i></td>
+    <td>Rotates the controller for the given hand by the given X (around hover
+      guide), Y (around view direction), and Z (around pointer direction)
+      angles in degrees over the
+      given <a href="#duration"><i>duration</i></a>.</td>
   </tr>
   <tr>
     <td><b>highlight</b></td>

@@ -99,18 +99,34 @@ class ScriptedApp : public Application {
 
     bool    is_paused_       = false;
     size_t  cur_instruction_ = 0;
-    Point2f drag_start_pos_;
     float   default_gantry_height_;
 
+    /// \name Handlers
+    ///@{
     CursorHandler_Ptr cursor_handler_;  ///< Updates the fake cursor.
     PauseHandler_Ptr  pause_handler_;   ///< Handles pausing.
+    ///@}
 
-    SG::NodePtr  cursor_;                  ///< Fake cursor for video.
-    Point2f      cursor_pos_;              ///< Current cursor position.
+    /// \name Cursor state
+    ///@{
+    SG::NodePtr  cursor_;          ///< Fake cursor for video.
+    Point2f      cursor_pos_;      ///< Current cursor position.
+    Point2f      drag_start_pos_;  ///< Cursor position at start of drag.
+    ///@}
+
+    /// \name Controller state
+    ///@{
+    Point3f   controller_pos_[2];  ///< Current controller positions.
+    Rotationf controller_rot_[2];  ///< Current controller rotations.
+    ///@}
+
+    /// \name Caption and highlight state
+    ///@{
     Caption_     caption_;                 ///< Caption information.
     SG::NodePtr  highlight_parent_;        ///< Node to add highlights to.
     SG::NodePtr  highlight_node_;          ///< Node cloned per highlight.
     std::vector<SG::NodePtr> highlights_;  ///< Currently-displayed rectangles.
+    ///@}
 
     std::unique_ptr<MockFilePathList_> mock_fpl_;  ///< Simulates files.
 
@@ -141,8 +157,11 @@ class ScriptedApp : public Application {
     bool ProcessDragEnd_(const Script::DragEndInstr &instr);
     bool ProcessFiles_(const Script::FilesInstr &instr);
     bool ProcessFocus_(const Script::FocusInstr &instr);
-    bool ProcessHand_(const Script::HandInstr &instr);
+    bool ProcessHandModel_(const Script::HandModelInstr &instr);
+    bool ProcessHandMove_(const Script::HandMoveInstr &instr);
+    bool ProcessHandPoint_(const Script::HandPointInstr &instr);
     bool ProcessHandPos_(const Script::HandPosInstr &instr);
+    bool ProcessHandTurn_(const Script::HandTurnInstr &instr);
     bool ProcessHighlight_(const Script::HighlightInstr &instr);
     bool ProcessKey_(const Script::KeyInstr &instr);
     bool ProcessLoad_(const Script::LoadInstr &instr);
@@ -213,4 +232,7 @@ class ScriptedApp : public Application {
 
     /// Updates the highlight fade and visibility if necessary.
     void UpdateHighlights_();
+
+    /// Computes the number of frames for an animation based on a duration.
+    size_t GetFrameCount_(float duration) const;
 };

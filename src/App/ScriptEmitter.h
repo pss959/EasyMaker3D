@@ -24,8 +24,12 @@ class ScriptEmitter : public IEmitter {
     /// Returns true when in modified mode.
     bool IsInModifiedMode() const { return is_mod_; }
 
-    /// Adds a click to emit.
-    void AddClick(const Point2f &pos);
+    /// Adds a mouse click to emit.
+    void AddMouseClick(const Point2f &pos);
+
+    /// Adds a controller button click to emit.
+    void AddControllerClick(const Point3f &pos, const Rotationf &rot,
+                            Event::Device device, Event::Button button);
 
     /// Adds an event to simulate a mouse hover at a given position.
     void AddHoverPoint(const Point2f &pos);
@@ -52,8 +56,15 @@ class ScriptEmitter : public IEmitter {
     /// Adds a key press/release to simulate.
     void AddKey(const Str &key_string);
 
-    /// Adds a controller position.
+    /// Adds an event to set a controller position and orientation.
     void AddControllerPos(Hand hand, const Point3f &pos, const Rotationf &rot);
+
+    /// Adds a change in controller position and orientation over \p count
+    /// events.
+    void AddControllerMotion(Hand hand,
+                             const Point3f &pos0, const Point3f &pos1,
+                             const Rotationf &rot0, const Rotationf &rot1,
+                             size_t count);
 
     /// Adds a VR headset button press or release.
     void AddHeadsetButton(bool is_press);
@@ -68,6 +79,10 @@ class ScriptEmitter : public IEmitter {
 
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override;
+
+    /// Returns the position of a controller in world coordinates based on the
+    /// given relative position.
+    static Point3f GetWorldControllerPos(Hand hand, const Point3f &pos);
 
     /// Default rest position for the left controller.
     static constexpr Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};

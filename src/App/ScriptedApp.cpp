@@ -367,8 +367,11 @@ ScriptedApp::ScriptedApp() {
     REG_FUNC_(DragEnd);
     REG_FUNC_(Files);
     REG_FUNC_(Focus);
-    REG_FUNC_(Hand);
+    REG_FUNC_(HandModel);
+    REG_FUNC_(HandMove);
+    REG_FUNC_(HandPoint);
     REG_FUNC_(HandPos);
+    REG_FUNC_(HandTurn);
     REG_FUNC_(Highlight);
     REG_FUNC_(Key);
     REG_FUNC_(Load);
@@ -706,22 +709,26 @@ bool ScriptedApp::ProcessCaption_(const Script::CaptionInstr &instr) {
 }
 
 bool ScriptedApp::ProcessClick_(const Script::ClickInstr &instr) {
-    emitter_->AddClick(cursor_pos_);
+    if (instr.device == Event::Device::kMouse) {
+        emitter_->AddMouseClick(cursor_pos_);
+    }
+    else {
+        const int index = Util::EnumInt(
+            instr.device == Event::Device::kLeftController ?
+            Hand::kLeft : Hand::kRight);
+        emitter_->AddControllerClick(controller_pos_[index],
+                                     controller_rot_[index],
+                                     instr.device, instr.button);
+    }
     return true;
 }
 
 bool ScriptedApp::ProcessDrag_(const Script::DragInstr &instr) {
-    ASSERT(instr.button == "L" || instr.button == "M" || instr.button == "R");
-
     const Point2f end_pos = cursor_pos_ + instr.motion;
 
-    emitter_->SetDragButton(instr.button == "M" ? Event::Button::kMouse2 :
-                            instr.button == "R" ? Event::Button::kMouse3 :
-                            Event::Button::kMouse1);
+    emitter_->SetDragButton(instr.button);
 
-    // Determine the number of points to create. Longer durations require
-    // more points.
-    const size_t frames = std::max(1.f, instr.duration * options_.fps);
+    const size_t frames = GetFrameCount_(instr.duration);
     emitter_->AddDragPoints(cursor_pos_, end_pos, frames - 1);
 
     return true;
@@ -735,9 +742,7 @@ bool ScriptedApp::ProcessDragStart_(const Script::DragStartInstr &instr) {
     }
     const Point2f end_pos = drag_start_pos_ + instr.motion;
 
-    // Determine the number of points to create. Longer durations require
-    // more points.
-    const size_t frames = std::max(1.f, instr.duration * options_.fps);
+    const size_t frames = GetFrameCount_(instr.duration);
     emitter_->AddIntermediateDragPoints(cursor_pos_, end_pos, frames - 1);
     MoveFakeCursorTo_(end_pos);
     return true;
@@ -778,7 +783,7 @@ bool ScriptedApp::ProcessFocus_(const Script::FocusInstr &instr) {
     return true;
 }
 
-bool ScriptedApp::ProcessHand_(const Script::HandInstr &instr) {
+bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
     const auto &sc = *GetContext().scene_context;
     auto &controller = instr.hand == Hand::kLeft ?
         *sc.left_controller : *sc.right_controller;
@@ -824,8 +829,69 @@ bool ScriptedApp::ProcessHand_(const Script::HandInstr &instr) {
     return true;
 }
 
+bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
+    const int index = Util::EnumInt(instr.hand);
+    const size_t frames = GetFrameCount_(instr.duration);
+    const Point3f end_pos = controller_pos_[index] + instr.trans;
+
+    emitter_->AddControllerMotion(
+        instr.hand, controller_pos_[index], end_pos,
+        controller_rot_[index], controller_rot_[index], frames);
+
+    controller_pos_[index] = end_pos;
+
+    return true;
+}
+
+bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
+    const int index = Util::EnumInt(instr.hand);
+    const size_t frames = GetFrameCount_(instr.duration);
+
+    // Get the actual position of the controller in world coordinates.
+    const Point3f &pos = controller_pos_[index];
+    const Point3f world_pos =
+        ScriptEmitter::GetWorldControllerPos(instr.hand, pos);
+
+    // Get the center of the target Node in world coordinates.
+    SG::NodePath path = GetNodePath_(instr.path_string);
+    if (path.empty()) {
+        std::cerr << "*** No node named '" << instr.path_string << "' found\n";
+        return false;
+    }
+    const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
+
+    // Rotate the controller to point at the Node.
+    const auto dir = ion::math::Normalized(center - world_pos);
+    const Rotationf end_rot = Rotationf::RotateInto(-Vector3f::AxisZ(), dir);
+
+    emitter_->AddControllerMotion(instr.hand, pos, pos,
+                                  controller_rot_[index], end_rot, frames);
+
+    controller_rot_[index] = end_rot;
+
+    return true;
+}
+
 bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
     emitter_->AddControllerPos(instr.hand, instr.pos, instr.rot);
+
+    const int index = Util::EnumInt(instr.hand);
+    controller_pos_[index] = instr.pos;
+    controller_rot_[index] = instr.rot;
+    return true;
+}
+
+bool ScriptedApp::ProcessHandTurn_(const Script::HandTurnInstr &instr) {
+    const int index = Util::EnumInt(instr.hand);
+    const size_t frames = GetFrameCount_(instr.duration);
+    const Rotationf end_rot = controller_rot_[index] * instr.rot;
+
+    emitter_->AddControllerMotion(
+        instr.hand, controller_pos_[index], controller_pos_[index],
+        controller_rot_[index], end_rot, frames);
+
+    controller_rot_[index] = end_rot;
+
     return true;
 }
 
@@ -1163,7 +1229,7 @@ void ScriptedApp::MoveFakeCursorTo_(const Point2f &pos) {
 void ScriptedApp::MoveTo_(const Point2f &pos, float duration) {
     if (duration > 0) {
         // Determine the number of events to create over the duration.
-        const size_t frames = duration * options_.fps;
+        const size_t frames = GetFrameCount_(duration);
         for (auto i : std::views::iota(0U, frames)) {
             const float t = static_cast<float>(i + 1) / frames;
             emitter_->AddHoverPoint(BezierInterp(t, cursor_pos_, pos));
@@ -1245,4 +1311,8 @@ void ScriptedApp::UpdateCaption_() {
 void ScriptedApp::UpdateHighlights_() {
     if (video_ && ! video_->UpdateHighlightFade(highlights_))
         highlight_parent_->ClearChildren();
+}
+
+size_t ScriptedApp::GetFrameCount_(float duration) const {
+    return std::max(1.f, duration * options_.fps);
 }

@@ -56,8 +56,11 @@ Script::Script() {
     REG_FUNC_(DragEnd);
     REG_FUNC_(Files);
     REG_FUNC_(Focus);
-    REG_FUNC_(Hand);
+    REG_FUNC_(HandModel);
+    REG_FUNC_(HandMove);
+    REG_FUNC_(HandPoint);
     REG_FUNC_(HandPos);
+    REG_FUNC_(HandTurn);
     REG_FUNC_(Highlight);
     REG_FUNC_(Key);
     REG_FUNC_(Load);
@@ -325,11 +328,27 @@ Script::InstrPtr Script::ParseCaption_(const StrVec &words) {
 
 Script::InstrPtr Script::ParseClick_(const StrVec &words) {
     ClickInstrPtr cinst;
-    if (words.size() != 1U) {
+    if (words.size() != 1U && words.size() != 2U) {
         Error_("Bad syntax for click instruction");
+    }
+    else if (words.size() == 2U &&
+             (words[1] != "Mouse"  &&
+              words[1] != "LPinch" &&
+              words[1] != "RPinch")) {
+        Error_("Invalid button for click instruction");
     }
     else {
         cinst.reset(new ClickInstr);
+        if (words.size() == 1U || words[1] == "Mouse") {
+            cinst->device = Event::Device::kMouse;
+            cinst->button = Event::Button::kMouse1;
+        }
+        else {
+            cinst->device = words[1] == "LPinch" ?
+                Event::Device::kLeftController :
+                Event::Device::kRightController;
+            cinst->button = Event::Button::kPinch;
+        }
     }
     return cinst;
 }
@@ -347,7 +366,7 @@ Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
     else if (duration < 0) {
         Error_("Duration for drag instruction must not be negative");
     }
-    else if (words.size() == 5 &&
+    else if (words.size() == 5U &&
              (words[4] != "L" && words[4] != "M" && words[4] != "R")) {
         Error_("Invalid mouse button for drag instruction");
     }
@@ -355,7 +374,11 @@ Script::InstrPtr Script::ParseDrag_(const StrVec &words) {
         dinst.reset(new DragInstr);
         dinst->motion.Set(dx, dy);
         dinst->duration = duration;
-        dinst->button = words.size() == 5 ? words[4] : "L";
+        dinst->button   = Event::Button::kMouse1;
+        if (words.size() == 5U && words[4] != "L") {
+            dinst->button = words[4] == "M" ? Event::Button::kMouse2 :
+                Event::Button::kMouse3;
+        }
     }
     return dinst;
 }
@@ -418,24 +441,70 @@ Script::InstrPtr Script::ParseFocus_(const StrVec &words) {
     return finst;
 }
 
-Script::InstrPtr Script::ParseHand_(const StrVec &words) {
-    HandInstrPtr hinst;
-    Vector3f     pos, dir;
+Script::InstrPtr Script::ParseHandModel_(const StrVec &words) {
+    HandModelInstrPtr hinst;
+    Vector3f          pos, dir;
     if (words.size() != 3U) {
-         Error_("Bad syntax for hand instruction");
+         Error_("Bad syntax for handmodel instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
-        Error_("Invalid hand (L/R) for hand instruction");
+        Error_("Invalid hand (L/R) for handmodel instruction");
     }
     else if (words[2] != "Oculus_Touch" &&
              words[2] != "Vive" &&
              words[2] != "None") {
-        Error_("Invalid controller type for hand instruction");
+        Error_("Invalid controller type for handmodel instruction");
     }
     else {
-        hinst.reset(new HandInstr);
+        hinst.reset(new HandModelInstr);
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->controller = words[2];
+    }
+    return hinst;
+}
+
+Script::InstrPtr Script::ParseHandMove_(const StrVec &words) {
+    HandMoveInstrPtr hinst;
+    Vector3f         trans;
+    float            duration;
+    if (words.size() != 6U) {
+        Error_("Bad syntax for handmove instruction");
+    }
+    else if (words[1] != "L" && words[1] != "R") {
+        Error_("Invalid hand (L/R) for handmove instruction");
+    }
+    else if (! ParseVector3f_(words, 2, trans)) {
+        Error_("Invalid translation floats for handmove instruction");
+    }
+    else if (! ParseFloat_(words[5], duration)) {
+        Error_("Invalid duration float for handmove instruction");
+    }
+    else {
+        hinst.reset(new HandMoveInstr);
+        hinst->hand     = words[1] == "L" ? Hand::kLeft : Hand::kRight;
+        hinst->trans    = trans;
+        hinst->duration = duration;
+    }
+    return hinst;
+}
+
+Script::InstrPtr Script::ParseHandPoint_(const StrVec &words) {
+    HandPointInstrPtr hinst;
+    float             duration;
+    if (words.size() != 4U) {
+         Error_("Bad syntax for handpoint instruction");
+    }
+    else if (words[1] != "L" && words[1] != "R") {
+        Error_("Invalid hand (L/R) for handpoint instruction");
+    }
+    else if (! ParseFloat_(words[3], duration)) {
+        Error_("Invalid duration float for handpoint instruction");
+    }
+    else {
+        hinst.reset(new HandPointInstr);
+        hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
+        hinst->path_string = words[2];
+        hinst->duration    = duration;
     }
     return hinst;
 }
@@ -465,6 +534,35 @@ Script::InstrPtr Script::ParseHandPos_(const StrVec &words) {
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->pos = Point3f(pos);
         hinst->rot = ComputeHandRotation_(hinst->hand, laser_dir, guide_dir);
+    }
+    return hinst;
+}
+
+Script::InstrPtr Script::ParseHandTurn_(const StrVec &words) {
+    HandTurnInstrPtr hinst;
+    Vector3f         degrees;
+    float            duration;
+    if (words.size() != 6U) {
+        Error_("Bad syntax for handturn instruction");
+    }
+    else if (words[1] != "L" && words[1] != "R") {
+        Error_("Invalid hand (L/R) for handturn instruction");
+    }
+    else if (! ParseVector3f_(words, 2, degrees)) {
+        Error_("Invalid angle floats for handturn instruction");
+    }
+    else if (! ParseFloat_(words[5], duration)) {
+        Error_("Invalid duration float for handturn instruction");
+    }
+    else {
+        Anglef angles[3];
+        for (int i = 0; i < 3; ++i)
+            angles[i] = Anglef::FromDegrees(degrees[i]);
+        hinst.reset(new HandTurnInstr);
+        hinst->hand     = words[1] == "L" ? Hand::kLeft : Hand::kRight;
+        hinst->rot      = Rotationf::FromYawPitchRoll(angles[1], angles[0],
+                                                      angles[2]);
+        hinst->duration = duration;
     }
     return hinst;
 }
@@ -737,13 +835,15 @@ Script::InstrPtr Script::ParseWait_(const StrVec &words) {
 
 void Script::ScaleDuration_(Instr &instr, float scale) {
     // Instructions with duration:
-    //   caption, drag, highlight, moveover, moveto, wait
+    //   caption, drag, highlight, handmove, moveover, moveto, wait
     if (instr.name == "caption")
         static_cast<CaptionInstr &>(instr).duration *= scale;
     else if (instr.name == "drag")
         static_cast<DragInstr &>(instr).duration *= scale;
     else if (instr.name == "highlight")
         static_cast<HighlightInstr &>(instr).duration *= scale;
+    else if (instr.name == "handmove")
+        static_cast<HandMoveInstr &>(instr).duration *= scale;
     else if (instr.name == "moveover")
         static_cast<MoveOverInstr &>(instr).duration *= scale;
     else if (instr.name == "moveto")

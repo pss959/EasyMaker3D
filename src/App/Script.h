@@ -40,12 +40,13 @@ class Script {
         Str     text;
     };
     struct ClickInstr : public Instr {
-        // No fields.
+        Event::Device device;
+        Event::Button button;
     };
     struct DragInstr : public Instr {
-        Vector2f motion;
-        float    duration;
-        Str      button;
+        Vector2f      motion;
+        float         duration;
+        Event::Button button;
     };
     struct DragStartInstr : public Instr {
         Vector2f motion;
@@ -60,14 +61,29 @@ class Script {
     struct FocusInstr : public Instr {
         Str pane_name;
     };
-    struct HandInstr : public Instr {
+    struct HandModelInstr : public Instr {
+        Hand hand;
+        Str  controller;
+    };
+    struct HandMoveInstr : public Instr {
         Hand      hand;
-        Str       controller;
+        Vector3f  trans;
+        float     duration;
+    };
+    struct HandPointInstr : public Instr {
+        Hand  hand;
+        Str   path_string;
+        float duration;
     };
     struct HandPosInstr : public Instr {
         Hand      hand;
         Point3f   pos;
         Rotationf rot;
+    };
+    struct HandTurnInstr : public Instr {
+        Hand      hand;
+        Rotationf rot;
+        float     duration;
     };
     struct HighlightInstr : public Instr {
         StrVec path_strings;
@@ -134,8 +150,11 @@ class Script {
     DECL_SHARED_PTR(DragEndInstr);
     DECL_SHARED_PTR(FilesInstr);
     DECL_SHARED_PTR(FocusInstr);
-    DECL_SHARED_PTR(HandInstr);
+    DECL_SHARED_PTR(HandModelInstr);
+    DECL_SHARED_PTR(HandMoveInstr);
+    DECL_SHARED_PTR(HandPointInstr);
     DECL_SHARED_PTR(HandPosInstr);
+    DECL_SHARED_PTR(HandTurnInstr);
     DECL_SHARED_PTR(HighlightInstr);
     DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
@@ -214,8 +233,11 @@ class Script {
     InstrPtr ParseDragEnd_(const StrVec &words);
     InstrPtr ParseFiles_(const StrVec &words);
     InstrPtr ParseFocus_(const StrVec &words);
-    InstrPtr ParseHand_(const StrVec &words);
+    InstrPtr ParseHandModel_(const StrVec &words);
+    InstrPtr ParseHandMove_(const StrVec &words);
+    InstrPtr ParseHandPoint_(const StrVec &words);
     InstrPtr ParseHandPos_(const StrVec &words);
+    InstrPtr ParseHandTurn_(const StrVec &words);
     InstrPtr ParseHighlight_(const StrVec &words);
     InstrPtr ParseKey_(const StrVec &words);
     InstrPtr ParseLoad_(const StrVec &words);

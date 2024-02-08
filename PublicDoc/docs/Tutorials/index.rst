@@ -3,6 +3,10 @@
 
 :dnote:`Clicking on any image in a tutorial will show an enlarged version.`
 
+These tutorials are arranged roughly in order from introductory to more
+advanced. If you want to try to jump right in, you can check out the
+`Examples`_ at the bottom.
+
 Getting Started
 ---------------
 
@@ -11,10 +15,12 @@ Getting Started
 
    An introductory tour of the main features of the work area <WorkArea>
    Panel overview <Panels>
+   Application panels <AppPanels>
    Creating and editing different types of primitive models <Primitives>
    Selecting models and attaching tools <Selection>
    Sessions, command history, and undo/redo <Sessions>
    Basic non-tool editing operations <Editing>
+   Viewing aids <Viewing>
 
 Some More Details
 -----------------
@@ -27,6 +33,7 @@ Some More Details
    Profile editing <Profile>
    Combining models <Combination>
    The Tree Panel <TreePanel>
+   Radial menus <RadialMenus>
 
 Features for Precise Editing
 ----------------------------
@@ -39,16 +46,13 @@ Features for Precise Editing
    Using the Edge Target <EdgeTarget>
    Laying out models along lines or circles <Layout>
 
-Other Features
---------------
+Using |appname| with VR
+-----------------------
 
 .. toctree::
    :maxdepth: 1
 
-   Application panels <AppPanels>
-   Viewing aids <Viewing>
-   Radial menus <RadialMenus>
-   Editing with VR devices <VR>
+   Introduction to VR interaction <VRIntro>
 
 Examples
 --------

@@ -98,11 +98,11 @@ state touch on
 # Create a point.
 moveover Profile 0
 drag .074219 .141305 0
-hand R Oculus_Touch
+handmodel R Oculus_Touch
 handpos R  0 0 .2  0 1 0  0 0 -1
 snap 0.251953 0.0452899 0.696289 0.86413 BevelToolPanelGripPoint.jpg
 handpos R  0 -.1 .2  0 1 0  0 0 -1
 snap 0.251953 0.00181159 0.697266 0.90942 BevelToolPanelGripMidpoint.jpg
 # Clean up.
-hand R None
+handmodel R None
 state touch off

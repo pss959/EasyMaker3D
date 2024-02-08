@@ -1,5 +1,5 @@
-Editing with VR Devices
------------------------
+Introduction to VR Interaction
+------------------------------
 
 .. XXXX
 

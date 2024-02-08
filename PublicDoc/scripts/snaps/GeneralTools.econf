@@ -30,7 +30,7 @@ action kRotationTool
 snap 0.414062 0.161232 0.171875 0.309783 RotationTool.jpg
 # VR version.
 stage 1 0
-hand R Oculus_Touch
+handmodel R Oculus_Touch
 # Reselect to get the correct controller grip guides.
 select
 action kSelectAll
@@ -43,28 +43,28 @@ snap 0.394531 0.181159 0.448242 0.63587 RotationToolVRZ.jpg
 # No alignment - connect to sphere.
 handpos R  .03 0 0  -1.2 1 -1  -1 -.2 -.4
 snap 0.37793 0.141304 0.478516 0.675725 RotationToolVRSphere.jpg
-hand R None
+handmodel R None
 
 # ======== Scale Tool.
 stage 1.8 -20
 action kScaleTool
 snap 0.360352 0.130435 0.291016 0.460145 ScaleTool.jpg
 # VR version.
-hand R Oculus_Touch
+handmodel R Oculus_Touch
 # Align with X scaler.
 handpos R  .1 -.04 0  0 1 0  0 0 0
 snap 0.359375 0.119565 0.570312 0.469203 ScaleToolVRX.jpg
 # Align with uniform scaler.
 handpos R  0 .02 0   -1 1 0  -1 -1 -1
 snap 0.359375 0.139493 0.517578 0.610507 ScaleToolVRUniform.jpg
-hand R None
+handmodel R None
 
 # ======== Translation Tool.
 stage 1.8 -20
 action kTranslationTool
 snap 0.360352 0.130435 0.291016 0.460145 TranslationTool.jpg
 # VR version.
-hand R Oculus_Touch
+handmodel R Oculus_Touch
 # Align with X slider.
 handpos R  .1 -.04 0  0 1 0  0 0 0
 snap 0.384766 0.148551 0.532227 0.5 TranslationToolVRX.jpg

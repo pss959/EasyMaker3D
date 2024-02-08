@@ -4,13 +4,13 @@
 state touch off
 
 # Left Vive without touch affordance.
-hand L Vive
+handmodel L Vive
 handpos L  .1 -.1 0  .3 .8 -.3  0 0 0
 snap 0.27832 0 0.337891 0.82971 Vive.jpg
-hand L None
+handmodel L None
 
 # Right Oculus Touch without touch affordance.
-hand R Oculus_Touch
+handmodel R Oculus_Touch
 handpos R  -.1 -.04 0  -.3 .8 -.6  0 0 0
 snap 0.37793 0.123188 0.363281 0.699275 OculusTouch.jpg
 

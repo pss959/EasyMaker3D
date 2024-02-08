@@ -5,13 +5,36 @@
 #include "Util/Delay.h"
 #include "Util/Tuning.h"
 
-void ScriptEmitter::AddClick(const Point2f &pos) {
+void ScriptEmitter::AddMouseClick(const Point2f &pos) {
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
     event.button           = Event::Button::kMouse1;
     event.position2D       = pos;
     event.flags.Set(Event::Flag::kPosition2D);
+
+    // Press.
+    event.flags.Set(Event::Flag::kButtonPress);
+    events_.push_back(event);
+
+    // Release.
+    event.flags.Reset(Event::Flag::kButtonPress);
+    event.flags.Set(Event::Flag::kButtonRelease);
+    events_.push_back(event);
+}
+
+void ScriptEmitter::AddControllerClick(const Point3f &pos, const Rotationf &rot,
+                                       Event::Device device,
+                                       Event::Button button) {
+    Event event;
+    event.is_modified_mode = is_mod_;
+    event.device           = device;
+    event.button           = button;
+
+    event.flags.Set(Event::Flag::kPosition3D);
+    event.flags.Set(Event::Flag::kOrientation);
+    event.position3D       = pos;
+    event.orientation      = rot;
 
     // Press.
     event.flags.Set(Event::Flag::kButtonPress);
@@ -98,14 +121,23 @@ void ScriptEmitter::AddControllerPos(Hand hand, const Point3f &pos,
         Event::Device::kLeftController : Event::Device::kRightController;
 
     event.flags.Set(Event::Flag::kPosition3D);
-    event.position3D = pos + (hand == Hand::kLeft ?
-                              kLeftControllerPos  + kLeftControllerOffset :
-                              kRightControllerPos + kRightControllerOffset);
-
     event.flags.Set(Event::Flag::kOrientation);
+    event.position3D  = GetWorldControllerPos(hand, pos);
     event.orientation = rot;
 
     events_.push_back(event);
+}
+
+void ScriptEmitter::AddControllerMotion(
+    Hand hand, const Point3f &pos0, const Point3f &pos1,
+    const Rotationf &rot0, const Rotationf &rot1, size_t count) {
+    ASSERT(count > 0);
+    const float delta = 1.f / count;
+    for (size_t i = 0; i <= count; ++i) {
+        const float t = i * delta;
+        AddControllerPos(hand, Lerp(t, pos0, pos1),
+                         Rotationf::Slerp(rot0, rot1, t));
+    }
 }
 
 void ScriptEmitter::AddHeadsetButton(bool is_press) {
@@ -158,3 +190,8 @@ void ScriptEmitter::FlushPendingEvents() {
     events_.clear();
 }
 
+Point3f ScriptEmitter::GetWorldControllerPos(Hand hand, const Point3f &pos) {
+    return pos + (hand == Hand::kLeft ?
+                  kLeftControllerPos  + kLeftControllerOffset :
+                  kRightControllerPos + kRightControllerOffset);
+}

@@ -12,6 +12,6 @@ snap 0.516886 0.0283333 0.325516 0.525 FixedRadialMenu.jpg
 state touch off
 
 # Turn on right Oculus Touch - should show menu attached to controller.
-hand R Oculus_Touch
+handmodel R Oculus_Touch
 handpos R  0 -.1 0  0 1 0  0 0 0
 snap 0.354492 0.0271739 0.477539 0.561594 AttachedRadialMenu.jpg
