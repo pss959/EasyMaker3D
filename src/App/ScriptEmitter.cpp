@@ -26,6 +26,9 @@ void ScriptEmitter::AddMouseClick(const Point2f &pos) {
 void ScriptEmitter::AddControllerClick(const Point3f &pos, const Rotationf &rot,
                                        Event::Device device,
                                        Event::Button button) {
+    const Hand hand =
+        device == Event::Device::kLeftController ? Hand::kLeft : Hand::kRight;
+
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = device;
@@ -33,7 +36,7 @@ void ScriptEmitter::AddControllerClick(const Point3f &pos, const Rotationf &rot,
 
     event.flags.Set(Event::Flag::kPosition3D);
     event.flags.Set(Event::Flag::kOrientation);
-    event.position3D       = pos;
+    event.position3D       = GetWorldControllerPos(hand, pos);
     event.orientation      = rot;
 
     // Press.

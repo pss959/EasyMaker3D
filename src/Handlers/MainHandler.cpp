@@ -617,6 +617,9 @@ void MainHandler::Impl_::ProcessClick_(Actuator actuator,
     ASSERT(actuator != Actuator::kNone);
     const auto &tracker = GetTracker_(actuator);
 
+    KLOG('h', "MainHandler processing click by "
+         << Util::EnumName(tracker->GetActuator()));
+
     ClickInfo info;
     const auto duration = UTime::Now().SecondsSince(start_time_);
     info.is_modified_mode = is_modified_mode || click_state_.count > 1;
