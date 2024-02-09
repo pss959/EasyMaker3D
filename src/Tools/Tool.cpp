@@ -182,12 +182,10 @@ int Tool::SnapToAxis(Vector3f &dir) {
     return snapped_dim;
 }
 
-Point3f Tool::GetPositionAboveModel(float distance, bool over_front) const {
-    // Get the point at the top front center of the Model in stage coordinates.
+Point3f Tool::GetPositionAboveModel(float distance) const {
+    // Get the point at the top center of the Model in stage coordinates.
     const Bounds stage_bounds = GetStageBounds();
-    Point3f pos = over_front ?
-        stage_bounds.GetFaceCenter(Bounds::Face::kFront) :
-        stage_bounds.GetCenter();
+    Point3f pos = stage_bounds.GetCenter();
     pos[1] = stage_bounds.GetMaxPoint()[1] + distance;
     return pos;
 }

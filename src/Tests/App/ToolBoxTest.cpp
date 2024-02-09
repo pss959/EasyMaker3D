@@ -75,7 +75,8 @@ ToolBoxTest::ToolBoxTest() {
     // Now that the base class has set up the Tool::Context with all managers,
     // create the ToolBox and add all the Tools to it.
     ASSERT(context->target_manager);
-    tool_box.reset(new ToolBox(*context->target_manager));
+    tool_box = Parser::Registry::CreateObject<ToolBox>();
+    tool_box->SetTargetManager(*context->target_manager);
     tool_box->SetParentNode(scene.GetRootNode());
     tool_box->AddTools(tools);
 

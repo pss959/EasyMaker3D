@@ -204,9 +204,8 @@ class Tool : public Grippable {
     int SnapToAxis(Vector3f &dir);
 
     /// Returns a point (in stage coordinates) for the position of the Tool at
-    /// the given distance above the top center (if over_front is false) or top
-    /// front center (if over_front is true) of the attached Model.
-    Point3f GetPositionAboveModel(float distance, bool over_front) const;
+    /// the given distance above the top center of the attached Model.
+    Point3f GetPositionAboveModel(float distance) const;
 
     /// Returns the bounds of the attached Model in stage coordinates.
     Bounds GetStageBounds() const;

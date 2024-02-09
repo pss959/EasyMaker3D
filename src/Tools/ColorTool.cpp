@@ -40,7 +40,7 @@ void ColorTool::Attach() {
 
     // Position the ColorTool above the center of the attached Model.
     const float height = GetScaledBounds().GetSize()[1];
-    TranslateTo(GetPositionAboveModel(.5f * height + 2, false));
+    TranslateTo(GetPositionAboveModel(.5f * height + 2));
 }
 
 void ColorTool::Detach() {

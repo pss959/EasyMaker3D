@@ -31,7 +31,7 @@ void ComplexityTool::Attach() {
 
     // Position the ComplexityTool above the center of the attached Model.
     const float height = GetScaledBounds().GetSize()[1];
-    TranslateTo(GetPositionAboveModel(.5f * height + 2, false));
+    TranslateTo(GetPositionAboveModel(.5f * height + 2));
 
     // Set the slider based on the current complexity.
     const float complexity = GetModelAttachedTo()->GetComplexity();

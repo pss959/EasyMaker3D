@@ -52,6 +52,13 @@ TEST_F(EventTest, IsTrackpadButton) {
     EXPECT_FALSE(Event::IsTrackpadButton(Event::Button::kNone));
 }
 
+TEST_F(EventTest, GetControllerForHand) {
+    EXPECT_ENUM_EQ(Event::Device::kLeftController,
+                   Event::GetControllerForHand(Hand::kLeft));
+    EXPECT_ENUM_EQ(Event::Device::kRightController,
+                   Event::GetControllerForHand(Hand::kRight));
+}
+
 TEST_F(EventTest, GetKeyString) {
     // This also tests Event::BuildKeyString().
 
