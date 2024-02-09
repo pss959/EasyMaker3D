@@ -233,6 +233,9 @@ class ScriptedApp : public Application {
     /// Updates the highlight fade and visibility if necessary.
     void UpdateHighlights_();
 
+    /// Updates grip hovering for both controllers after motion is done.
+    void UpdateGripHover_();
+
     /// Computes the number of frames for an animation based on a duration.
     size_t GetFrameCount_(float duration) const;
 };

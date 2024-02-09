@@ -854,7 +854,7 @@ bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
     }
 
     controller_pos_[index] = end_pos;
-
+    UpdateGripHover_();
     return true;
 }
 
@@ -883,7 +883,7 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
                                   controller_rot_[index], end_rot, frames);
 
     controller_rot_[index] = end_rot;
-
+    UpdateGripHover_();
     return true;
 }
 
@@ -919,7 +919,7 @@ bool ScriptedApp::ProcessHandTurn_(const Script::HandTurnInstr &instr) {
     }
 
     controller_rot_[index] = end_rot;
-
+    UpdateGripHover_();
     return true;
 }
 
@@ -1330,6 +1330,17 @@ void ScriptedApp::UpdateCaption_() {
 void ScriptedApp::UpdateHighlights_() {
     if (video_ && ! video_->UpdateHighlightFade(highlights_))
         highlight_parent_->ClearChildren();
+}
+
+void ScriptedApp::UpdateGripHover_() {
+    // Emit a position/orientation event for each controller so that grip hover
+    // is activated.
+    for (auto hand: Util::EnumValues<Hand>()) {
+        const int  index = Util::EnumInt(hand);
+        const auto &pos  = controller_pos_[index];
+        const auto &rot  = controller_rot_[index];
+        emitter_->AddControllerMotion(hand, pos, pos, rot, rot, 1);
+    }
 }
 
 size_t ScriptedApp::GetFrameCount_(float duration) const {
