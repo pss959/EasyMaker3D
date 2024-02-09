@@ -73,6 +73,15 @@ ModelPtr Tool::GetModelAttachedTo() const {
 void Tool::Update() {
 }
 
+const SG::Node * Tool::GetGrippableNode() const {
+    return GetModelAttachedTo() ? this : nullptr;
+}
+
+void Tool::UpdateGripInfo(GripInfo &info) {
+    info.guide_type = GripGuideType::kNone;
+    info.widget.reset();
+}
+
 Tool::Context & Tool::GetContext() const {
     ASSERT(context_);
     return *context_;

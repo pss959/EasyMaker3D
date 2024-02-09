@@ -115,15 +115,13 @@ class Tool : public Grippable {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
-    virtual const SG::Node * GetGrippableNode() const override {
-        return GetModelAttachedTo() ? this : nullptr;
-    }
+
+    /// Defines this to return this Tool if it is attached to a Model.
+    virtual const SG::Node * GetGrippableNode() const override;
+
     /// The base Tool class defines this to set the Widget in the info to null
     /// and the guide to GripGuideType::kNone.
-    virtual void UpdateGripInfo(GripInfo &info) override {
-        info.guide_type = GripGuideType::kNone;
-        info.widget.reset();
-    }
+    virtual void UpdateGripInfo(GripInfo &info) override;
 
   protected:
     /// Allows derived tool classes to access the Context.

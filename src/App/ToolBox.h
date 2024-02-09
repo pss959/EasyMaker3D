@@ -48,9 +48,9 @@ class ToolBox : public Grippable {
     // Initialization and update.
     // ------------------------------------------------------------------------
 
-    /// The constructor is passed the TargetManager instance so an observer can
-    /// be added to hide active tools while a target is being dragged.
-    explicit ToolBox(TargetManager &target_manager);
+    /// Sets the TargetManager instance so an observer can be added to hide
+    /// active tools while a target is being dragged.
+    void SetTargetManager(TargetManager &target_manager);
 
     /// Sets the parent Node for all active Tools.
     void SetParentNode(const SG::NodePtr &parent_node);
@@ -143,6 +143,9 @@ class ToolBox : public Grippable {
     virtual const SG::Node * GetGrippableNode() const override;
     virtual void             UpdateGripInfo(GripInfo &info) override;
 
+  protected:
+    ToolBox();
+
   private:
     using ToolNameMap_   = std::unordered_map<Str,     ToolPtr>;
     using ActiveToolMap_ = std::unordered_map<Model *, ToolPtr>;
@@ -217,4 +220,6 @@ class ToolBox : public Grippable {
     /// while the target is active so the tool geometry is not detected during
     /// target placement.
     void TargetActivated_(bool is_activation);
+
+    friend class Parser::Registry;
 };

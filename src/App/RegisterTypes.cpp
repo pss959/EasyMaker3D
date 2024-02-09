@@ -1,5 +1,6 @@
 #include "App/RegisterTypes.h"
 
+#include "App/ToolBox.h"
 #include "Parser/Registry.h"
 #include "SG/Init.h"
 
@@ -40,6 +41,9 @@ void RegisterTypes() {
     RegisterTargetTypes_();
     RegisterToolTypes_();
     RegisterWidgetTypes_();
+
+    // Register the ToolBox specially.
+    Parser::Registry::AddType<ToolBox>("ToolBox");
 }
 
 void UnregisterTypes() {

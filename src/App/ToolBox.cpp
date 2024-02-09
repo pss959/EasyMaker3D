@@ -10,8 +10,9 @@
 #include "Util/General.h"
 #include "Util/KLog.h"
 
-ToolBox::ToolBox(TargetManager &target_manager) :
-    passive_tool_store_(new Parser::InstanceStore) {
+ToolBox::ToolBox() : passive_tool_store_(new Parser::InstanceStore) {}
+
+void ToolBox::SetTargetManager(TargetManager &target_manager) {
     // Attach a callback to the TargetManager to turn off active tools while
     // the target is being dragged so the tool geometry does not interfere with
     // target placement.

@@ -711,7 +711,9 @@ void Application::Impl_::InitManagers_() {
     // Managers that depend on others.
     MGR_(board).reset(new BoardManager(MGR_(panel)));
     MGR_(target).reset(new TargetManager(MGR_(command)));
-    tool_box_.reset(new ToolBox(*MGR_(target)));
+    tool_box_ = Parser::Registry::CreateObject<ToolBox>();
+
+    tool_box_->SetTargetManager(*MGR_(target));
 
     // Load settings. This has to be done before initializing other Managers.
     LoadSettings_();
