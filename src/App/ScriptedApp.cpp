@@ -710,46 +710,49 @@ bool ScriptedApp::ProcessCaption_(const Script::CaptionInstr &instr) {
 
 bool ScriptedApp::ProcessClick_(const Script::ClickInstr &instr) {
     if (instr.device == Event::Device::kMouse) {
-        emitter_->AddMouseClick(cursor_pos_);
+        emitter_->AddMouseButton(Event::Button::kMouse1, true,  cursor_pos_);
+        emitter_->AddMouseButton(Event::Button::kMouse1, false, cursor_pos_);
     }
     else {
-        const int index = Util::EnumInt(
-            instr.device == Event::Device::kLeftController ?
-            Hand::kLeft : Hand::kRight);
-        emitter_->AddControllerClick(controller_pos_[index],
-                                     controller_rot_[index],
-                                     instr.device, instr.button);
+        const Hand hand = instr.device == Event::Device::kLeftController ?
+            Hand::kLeft : Hand::kRight;
+        const int index = Util::EnumInt(hand);
+        emitter_->AddControllerButton(hand, instr.button, true,
+                                      controller_pos_[index],
+                                      controller_rot_[index]);
+        emitter_->AddControllerButton(hand, instr.button, false,
+                                      controller_pos_[index],
+                                      controller_rot_[index]);
     }
     return true;
 }
 
 bool ScriptedApp::ProcessDrag_(const Script::DragInstr &instr) {
     const Point2f end_pos = cursor_pos_ + instr.motion;
+    const size_t  frames  = GetFrameCount_(instr.duration);
 
-    emitter_->SetDragButton(instr.button);
-
-    const size_t frames = GetFrameCount_(instr.duration);
-    emitter_->AddDragPoints(cursor_pos_, end_pos, frames - 1);
+    emitter_->AddMouseButton(instr.button, true,  cursor_pos_);
+    emitter_->AddMouseMotion(cursor_pos_, end_pos, frames);
+    emitter_->AddMouseButton(instr.button, false, end_pos);
 
     return true;
 }
 
 bool ScriptedApp::ProcessDragStart_(const Script::DragStartInstr &instr) {
+    // Start drag if necessary.
     if (! emitter_->IsDragging()) {
         drag_start_pos_ = cursor_pos_;
-        emitter_->SetDragButton(Event::Button::kMouse1);
-        emitter_->AddDragPoint(ScriptEmitter::DragPhase::kStart, cursor_pos_);
+        emitter_->AddMouseButton(Event::Button::kMouse1, true, cursor_pos_);
     }
     const Point2f end_pos = drag_start_pos_ + instr.motion;
-
-    const size_t frames = GetFrameCount_(instr.duration);
-    emitter_->AddIntermediateDragPoints(cursor_pos_, end_pos, frames - 1);
+    const size_t  frames  = GetFrameCount_(instr.duration);
+    emitter_->AddMouseMotion(cursor_pos_, end_pos, frames);
     MoveFakeCursorTo_(end_pos);
     return true;
 }
 
 bool ScriptedApp::ProcessDragEnd_(const Script::DragEndInstr &instr) {
-    emitter_->AddDragPoint(ScriptEmitter::DragPhase::kEnd, cursor_pos_);
+    emitter_->AddMouseButton(Event::Button::kMouse1, false, cursor_pos_);
     return true;
 }
 
@@ -830,13 +833,25 @@ bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
-    const int index = Util::EnumInt(instr.hand);
-    const size_t frames = GetFrameCount_(instr.duration);
+    const int     index   = Util::EnumInt(instr.hand);
+    const size_t  frames  = GetFrameCount_(instr.duration);
     const Point3f end_pos = controller_pos_[index] + instr.trans;
+    const auto    &rot    = controller_rot_[index];
 
-    emitter_->AddControllerMotion(
-        instr.hand, controller_pos_[index], end_pos,
-        controller_rot_[index], controller_rot_[index], frames);
+    // Start drag if button was specified.
+    if (instr.button != Event::Button::kNone) {
+        emitter_->AddControllerButton(instr.hand, instr.button, true,
+                                      controller_pos_[index], rot);
+    }
+
+    emitter_->AddControllerMotion(instr.hand, controller_pos_[index], end_pos,
+                                  rot, rot, frames);
+
+    // End drag if button was specified.
+    if (instr.button != Event::Button::kNone) {
+        emitter_->AddControllerButton(instr.hand, instr.button, false,
+                                      end_pos, rot);
+    }
 
     controller_pos_[index] = end_pos;
 
@@ -873,7 +888,8 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
-    emitter_->AddControllerPos(instr.hand, instr.pos, instr.rot);
+    emitter_->AddControllerMotion(instr.hand, instr.pos, instr.pos,
+                                  instr.rot, instr.rot, 1);
 
     const int index = Util::EnumInt(instr.hand);
     controller_pos_[index] = instr.pos;
@@ -882,13 +898,25 @@ bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandTurn_(const Script::HandTurnInstr &instr) {
-    const int index = Util::EnumInt(instr.hand);
-    const size_t frames = GetFrameCount_(instr.duration);
+    const int       index   = Util::EnumInt(instr.hand);
+    const size_t    frames  = GetFrameCount_(instr.duration);
     const Rotationf end_rot = controller_rot_[index] * instr.rot;
+    const auto      &pos    = controller_pos_[index];
 
-    emitter_->AddControllerMotion(
-        instr.hand, controller_pos_[index], controller_pos_[index],
-        controller_rot_[index], end_rot, frames);
+    // Start drag if button was specified.
+    if (instr.button != Event::Button::kNone) {
+        emitter_->AddControllerButton(instr.hand, instr.button, true,
+                                      pos, controller_rot_[index]);
+    }
+
+    emitter_->AddControllerMotion(instr.hand, pos, pos,
+                                  controller_rot_[index], end_rot, frames);
+
+    // End drag if button was specified.
+    if (instr.button != Event::Button::kNone) {
+        emitter_->AddControllerButton(instr.hand, instr.button, false,
+                                      pos, end_rot);
+    }
 
     controller_rot_[index] = end_rot;
 
@@ -1227,17 +1255,8 @@ void ScriptedApp::MoveFakeCursorTo_(const Point2f &pos) {
 }
 
 void ScriptedApp::MoveTo_(const Point2f &pos, float duration) {
-    if (duration > 0) {
-        // Determine the number of events to create over the duration.
-        const size_t frames = GetFrameCount_(duration);
-        for (auto i : std::views::iota(0U, frames)) {
-            const float t = static_cast<float>(i + 1) / frames;
-            emitter_->AddHoverPoint(BezierInterp(t, cursor_pos_, pos));
-        }
-    }
-    else {
-        emitter_->AddHoverPoint(pos);
-    }
+    const size_t frames = GetFrameCount_(duration);
+    emitter_->AddMouseMotion(cursor_pos_, pos, frames);
 }
 
 bool ScriptedApp::PauseOrUnpause_() {
@@ -1314,5 +1333,6 @@ void ScriptedApp::UpdateHighlights_() {
 }
 
 size_t ScriptedApp::GetFrameCount_(float duration) const {
+    // Return at least 1 frame.
     return std::max(1.f, duration * options_.fps);
 }

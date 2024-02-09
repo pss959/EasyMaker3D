@@ -5,97 +5,84 @@
 #include "Util/Delay.h"
 #include "Util/Tuning.h"
 
-void ScriptEmitter::AddMouseClick(const Point2f &pos) {
+void ScriptEmitter::AddMouseButton(Event::Button button, bool is_press,
+                                   const Point2f &pos) {
+    ASSERT(is_dragging_ != is_press);
+    is_dragging_ = is_press;
+
     Event event;
     event.is_modified_mode = is_mod_;
     event.device           = Event::Device::kMouse;
-    event.button           = Event::Button::kMouse1;
+    event.button           = button;
     event.position2D       = pos;
+
+    event.flags.Set(is_press ? Event::Flag::kButtonPress :
+                    Event::Flag::kButtonRelease);
     event.flags.Set(Event::Flag::kPosition2D);
 
-    // Press.
-    event.flags.Set(Event::Flag::kButtonPress);
-    events_.push_back(event);
-
-    // Release.
-    event.flags.Reset(Event::Flag::kButtonPress);
-    event.flags.Set(Event::Flag::kButtonRelease);
     events_.push_back(event);
 }
 
-void ScriptEmitter::AddControllerClick(const Point3f &pos, const Rotationf &rot,
-                                       Event::Device device,
-                                       Event::Button button) {
-    const Hand hand =
-        device == Event::Device::kLeftController ? Hand::kLeft : Hand::kRight;
+void ScriptEmitter::AddControllerButton(Hand hand, Event::Button button,
+                                        bool is_press,
+                                        const Point3f &pos,
+                                        const Rotationf &rot) {
+    ASSERT(is_dragging_ != is_press);
+    is_dragging_ = is_press;
 
     Event event;
     event.is_modified_mode = is_mod_;
-    event.device           = device;
+    event.device           = Event::GetControllerForHand(hand);
     event.button           = button;
-
-    event.flags.Set(Event::Flag::kPosition3D);
-    event.flags.Set(Event::Flag::kOrientation);
     event.position3D       = GetWorldControllerPos(hand, pos);
     event.orientation      = rot;
 
-    // Press.
-    event.flags.Set(Event::Flag::kButtonPress);
-    events_.push_back(event);
+    event.flags.Set(is_press ? Event::Flag::kButtonPress :
+                    Event::Flag::kButtonRelease);
+    event.flags.Set(Event::Flag::kPosition3D);
+    event.flags.Set(Event::Flag::kOrientation);
 
-    // Release.
-    event.flags.Reset(Event::Flag::kButtonPress);
-    event.flags.Set(Event::Flag::kButtonRelease);
     events_.push_back(event);
 }
 
-void ScriptEmitter::AddHoverPoint(const Point2f &pos) {
+void ScriptEmitter::AddMouseMotion(const Point2f &pos0, const Point2f &pos1,
+                                   size_t count) {
+    ASSERT(count >= 1U);
     Event event;
     event.is_modified_mode = is_mod_;
-    event.device           = Event::Device::kMouse;
-    event.position2D       = pos;
-    event.flags.Set(Event::Flag::kPosition2D);
-    events_.push_back(event);
-}
-
-void ScriptEmitter::AddDragPoint(DragPhase phase, const Point2f &pos) {
-    Event event;
-    event.is_modified_mode = is_mod_;
-    event.device           = Event::Device::kMouse;
-    event.position2D       = pos;
+    event.device = Event::Device::kMouse;
     event.flags.Set(Event::Flag::kPosition2D);
 
-    if (phase == DragPhase::kStart) {
-        ASSERT(! is_dragging_);
-        event.flags.Set(Event::Flag::kButtonPress);
-        event.button = drag_button_;
-        is_dragging_ = true;
-    }
-    else if (phase == DragPhase::kEnd) {
-        ASSERT(is_dragging_);
-        event.flags.Set(Event::Flag::kButtonRelease);
-        event.button = drag_button_;
-        is_dragging_ = false;
-    }
-
-    events_.push_back(event);
-}
-
-void ScriptEmitter::AddDragPoints(const Point2f &pos0, const Point2f &pos1,
-                                  size_t count) {
-    ASSERT(! is_dragging_);
-    AddDragPoint(DragPhase::kStart, pos0);
-    AddIntermediateDragPoints(pos0, pos1, count);
-    AddDragPoint(DragPhase::kEnd, pos1);
-}
-
-void ScriptEmitter::AddIntermediateDragPoints(const Point2f &pos0,
-                                              const Point2f &pos1,
-                                              size_t count) {
-    const float delta = 1.f / (count + 1);
-    for (size_t i = 0; i <= count; ++i) {
+    const float delta = 1.f / count;
+    for (size_t i = 0; i < count; ++i) {
         const float t = (i + 1) * delta;
-        AddDragPoint(DragPhase::kContinue, Lerp(t, pos0, pos1));
+        event.position2D = Lerp(t, pos0, pos1);
+        events_.push_back(event);
+    }
+}
+
+void ScriptEmitter::AddControllerMotion(Hand hand,
+                                        const Point3f &pos0,
+                                        const Point3f &pos1,
+                                        const Rotationf &rot0,
+                                        const Rotationf &rot1,
+                                        size_t count) {
+    ASSERT(count >= 1U);
+    Event event;
+    event.is_modified_mode = is_mod_;
+    event.device = Event::GetControllerForHand(hand);
+    event.flags.Set(Event::Flag::kPosition3D);
+    event.flags.Set(Event::Flag::kOrientation);
+
+    const Point3f wpos0 = GetWorldControllerPos(hand, pos0);
+    const Point3f wpos1 = GetWorldControllerPos(hand, pos1);
+
+    const float delta = 1.f / count;
+    for (size_t i = 0; i < count; ++i) {
+        const float t = (i + 1) * delta;
+        event.position3D  = Lerp(t, wpos0, wpos1);
+        event.orientation = Rotationf::Slerp(rot0, rot1, t);
+        events_.push_back(event);
     }
 }
 
@@ -115,32 +102,6 @@ void ScriptEmitter::AddKey(const Str &key_string) {
     event.flags.Reset(Event::Flag::kKeyPress);
     event.flags.Set(Event::Flag::kKeyRelease);
     events_.push_back(event);
-}
-
-void ScriptEmitter::AddControllerPos(Hand hand, const Point3f &pos,
-                                     const Rotationf &rot) {
-    Event event;
-    event.device = hand == Hand::kLeft ?
-        Event::Device::kLeftController : Event::Device::kRightController;
-
-    event.flags.Set(Event::Flag::kPosition3D);
-    event.flags.Set(Event::Flag::kOrientation);
-    event.position3D  = GetWorldControllerPos(hand, pos);
-    event.orientation = rot;
-
-    events_.push_back(event);
-}
-
-void ScriptEmitter::AddControllerMotion(
-    Hand hand, const Point3f &pos0, const Point3f &pos1,
-    const Rotationf &rot0, const Rotationf &rot1, size_t count) {
-    ASSERT(count > 0);
-    const float delta = 1.f / count;
-    for (size_t i = 0; i <= count; ++i) {
-        const float t = i * delta;
-        AddControllerPos(hand, Lerp(t, pos0, pos1),
-                         Rotationf::Slerp(rot0, rot1, t));
-    }
 }
 
 void ScriptEmitter::AddHeadsetButton(bool is_press) {

@@ -707,8 +707,7 @@ void VRSystem::Impl_::AddThumbPosToEvent_(Hand hand, Event &event) {
 
 Event VRSystem::Impl_::CreateEventForHand_(Hand hand) {
     Event event;
-    event.device = hand == Hand::kLeft ?
-        Event::Device::kLeftController : Event::Device::kRightController;
+    event.device = Event::GetControllerForHand(hand);
     return event;
 }
 

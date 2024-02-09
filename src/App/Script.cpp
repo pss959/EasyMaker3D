@@ -467,7 +467,7 @@ Script::InstrPtr Script::ParseHandMove_(const StrVec &words) {
     HandMoveInstrPtr hinst;
     Vector3f         trans;
     float            duration;
-    if (words.size() != 6U) {
+    if (words.size() != 6U && words.size() != 7U) {
         Error_("Bad syntax for handmove instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
@@ -479,11 +479,16 @@ Script::InstrPtr Script::ParseHandMove_(const StrVec &words) {
     else if (! ParseFloat_(words[5], duration)) {
         Error_("Invalid duration float for handmove instruction");
     }
+    else if (words.size() == 7U &&
+             (words[6] != "Pinch" && words[6] != "Grip")) {
+        Error_("Invalid button for handmove instruction");
+    }
     else {
         hinst.reset(new HandMoveInstr);
         hinst->hand     = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->trans    = trans;
         hinst->duration = duration;
+        hinst->button   = GetControllerButton(words, 6);
     }
     return hinst;
 }
@@ -491,7 +496,7 @@ Script::InstrPtr Script::ParseHandMove_(const StrVec &words) {
 Script::InstrPtr Script::ParseHandPoint_(const StrVec &words) {
     HandPointInstrPtr hinst;
     float             duration;
-    if (words.size() != 4U) {
+    if (words.size() != 4U && words.size() != 5U) {
          Error_("Bad syntax for handpoint instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
@@ -500,11 +505,16 @@ Script::InstrPtr Script::ParseHandPoint_(const StrVec &words) {
     else if (! ParseFloat_(words[3], duration)) {
         Error_("Invalid duration float for handpoint instruction");
     }
+    else if (words.size() == 5U &&
+             (words[4] != "Pinch" && words[4] != "Grip")) {
+        Error_("Invalid button for handpoint instruction");
+    }
     else {
         hinst.reset(new HandPointInstr);
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->path_string = words[2];
         hinst->duration    = duration;
+        hinst->button      = GetControllerButton(words, 4);
     }
     return hinst;
 }
@@ -542,7 +552,7 @@ Script::InstrPtr Script::ParseHandTurn_(const StrVec &words) {
     HandTurnInstrPtr hinst;
     Vector3f         degrees;
     float            duration;
-    if (words.size() != 6U) {
+    if (words.size() != 6U && words.size() != 7U) {
         Error_("Bad syntax for handturn instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
@@ -554,6 +564,10 @@ Script::InstrPtr Script::ParseHandTurn_(const StrVec &words) {
     else if (! ParseFloat_(words[5], duration)) {
         Error_("Invalid duration float for handturn instruction");
     }
+    else if (words.size() == 7U &&
+             (words[6] != "Pinch" && words[6] != "Grip")) {
+        Error_("Invalid button for handturn instruction");
+    }
     else {
         Anglef angles[3];
         for (int i = 0; i < 3; ++i)
@@ -563,6 +577,7 @@ Script::InstrPtr Script::ParseHandTurn_(const StrVec &words) {
         hinst->rot      = Rotationf::FromYawPitchRoll(angles[1], angles[0],
                                                       angles[2]);
         hinst->duration = duration;
+        hinst->button   = GetControllerButton(words, 6);
     }
     return hinst;
 }
@@ -868,4 +883,14 @@ Str Script::FixCaptionText_(const StrVec &words) {
     fix_s("_SESSION_EXTENSION_", TK::kSessionFileExtension);
 
     return s;
+}
+
+Event::Button Script::GetControllerButton(const StrVec &words, size_t index) {
+    if (index < words.size()) {
+        if (words[index] == "Pinch")
+            return Event::Button::kPinch;
+        else if (words[index] == "Grip")
+            return Event::Button::kGrip;
+    }
+    return Event::Button::kNone;
 }

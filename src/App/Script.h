@@ -66,14 +66,16 @@ class Script {
         Str  controller;
     };
     struct HandMoveInstr : public Instr {
-        Hand      hand;
-        Vector3f  trans;
-        float     duration;
+        Hand          hand;
+        Vector3f      trans;
+        float         duration;
+        Event::Button button;
     };
     struct HandPointInstr : public Instr {
-        Hand  hand;
-        Str   path_string;
-        float duration;
+        Hand          hand;
+        Str           path_string;
+        float         duration;
+        Event::Button button;
     };
     struct HandPosInstr : public Instr {
         Hand      hand;
@@ -81,9 +83,10 @@ class Script {
         Rotationf rot;
     };
     struct HandTurnInstr : public Instr {
-        Hand      hand;
-        Rotationf rot;
-        float     duration;
+        Hand          hand;
+        Rotationf     rot;
+        float         duration;
+        Event::Button button;
     };
     struct HighlightInstr : public Instr {
         StrVec path_strings;
@@ -260,4 +263,7 @@ class Script {
 
     /// Deals with multi-line and token substitution in captions.
     static Str FixCaptionText_(const StrVec &words);
+
+    /// Returns the button for a controller motion instruction.
+    static Event::Button GetControllerButton(const StrVec &words, size_t index);
 };

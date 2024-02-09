@@ -17,6 +17,11 @@ bool Event::IsTrackpadButton(Button button) {
         button == Event::Button::kDown;
 }
 
+Event::Device Event::GetControllerForHand(Hand hand) {
+    return hand == Hand::kLeft ?
+        Device::kLeftController : Device::kRightController;
+}
+
 Str Event::GetKeyString() const {
     Str s;
     if (device == Device::kKeyboard &&

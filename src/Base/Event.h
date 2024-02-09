@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Enums/Hand.h"
 #include "Math/Types.h"
 #include "Util/Flags.h"
 
@@ -113,6 +114,10 @@ struct Event {
     /// Convenience that returns true if the given Button represents a trackpad
     /// button.
     static bool IsTrackpadButton(Button button);
+
+    /// Convenience function that returns an Event::Device for the controller
+    /// that goes with the given Hand.
+    static Device GetControllerForHand(Hand hand);
 
     /// Convenience function that builds a string representing a key press or
     /// release with all modifiers in the event. (Example: "Shift-Ctrl-a".)

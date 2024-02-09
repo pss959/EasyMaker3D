@@ -12,11 +12,6 @@
 /// mouse clicks, mouse drags and key presses in script-based applications.
 class ScriptEmitter : public IEmitter {
   public:
-    /// Phase of a drag operation.
-    enum class DragPhase { kStart, kContinue, kEnd };
-
-    using KModifiers = Util::Flags<Event::ModifierKey>;
-
     /// Sets modified mode for subsequent clicks and drags. It is off by
     /// default.
     void SetModifiedMode(bool is_on) { is_mod_ = is_on; }
@@ -24,47 +19,30 @@ class ScriptEmitter : public IEmitter {
     /// Returns true when in modified mode.
     bool IsInModifiedMode() const { return is_mod_; }
 
-    /// Adds a mouse click to emit.
-    void AddMouseClick(const Point2f &pos);
+    /// Adds a mouse button press or release.
+    void AddMouseButton(Event::Button button, bool is_press,
+                        const Point2f &pos);
 
-    /// Adds a controller button click to emit.
-    void AddControllerClick(const Point3f &pos, const Rotationf &rot,
-                            Event::Device device, Event::Button button);
+    /// Adds a controller button press or release.
+    void AddControllerButton(Hand hand, Event::Button button, bool is_press,
+                             const Point3f &pos, const Rotationf &rot);
 
-    /// Adds an event to simulate a mouse hover at a given position.
-    void AddHoverPoint(const Point2f &pos);
+    /// Adds mouse motion events between the two positions.
+    void AddMouseMotion(const Point2f &pos0, const Point2f &pos1, size_t count);
 
-    /// Sets a mouse button to use for subsequent drags.
-    void SetDragButton(const Event::Button &button) { drag_button_ = button; }
-
-    /// Adds a point for a single drag phase to emit.
-    void AddDragPoint(DragPhase phase, const Point2f &pos);
-
-    /// Returns true if a drag was started with DragPhase::kStart but not ended
-    /// yet with DragPhase::kEnd.
-    bool IsDragging() const { return is_dragging_; }
-
-    /// Adds points for a drag from \p pos0 to \p pos1 with \p count
-    /// intermediate points to emit.
-    void AddDragPoints(const Point2f &pos0, const Point2f &pos1, size_t count);
-
-    /// Adds \p count intermediate points to emit for a drag from \p pos0 to \p
-    /// pos1.
-    void AddIntermediateDragPoints(const Point2f &pos0, const Point2f &pos1,
-                                   size_t count);
-
-    /// Adds a key press/release to simulate.
-    void AddKey(const Str &key_string);
-
-    /// Adds an event to set a controller position and orientation.
-    void AddControllerPos(Hand hand, const Point3f &pos, const Rotationf &rot);
-
-    /// Adds a change in controller position and orientation over \p count
-    /// events.
+    /// Adds controller motion events between the two positions and
+    /// orientations.
     void AddControllerMotion(Hand hand,
                              const Point3f &pos0, const Point3f &pos1,
                              const Rotationf &rot0, const Rotationf &rot1,
                              size_t count);
+
+    /// Returns true if a drag was started via a button press but not ended
+    /// yet.
+    bool IsDragging() const { return is_dragging_; }
+
+    /// Adds a key press/release to simulate.
+    void AddKey(const Str &key_string);
 
     /// Adds a VR headset button press or release.
     void AddHeadsetButton(bool is_press);
