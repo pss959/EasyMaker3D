@@ -413,6 +413,16 @@ void ScriptedApp::InitOptions(const Args &args) {
     if (size_n <= 0)
         size_n = 1;
     options_.window_size.Set(1024 / size_n, 552 / size_n);
+
+#if ! WORK_AROUND_GLFW_BUG
+    // See the comment in GLFWWindowSystem about maximizing offscreen windows.
+    // This is a safer workaround that does not cause the window manager to
+    // glitch momentarily.
+    if (options_.offscreen && options_.maximize) {
+        options_.window_size.Set(1920 / size_n, 1036 / size_n);
+        options_.maximize = false;
+    }
+#endif
 }
 
 bool ScriptedApp::ProcessScript(const FilePath &script_dir,

@@ -225,13 +225,16 @@ void GLFWWindowSystem::Maximize() {
 
     glfwMaximizeWindow(window_);
 
+#if WORK_AROUND_GLFW_BUG
     // The size of a hidden window apparently does NOT get updated when
-    // maximized. Show the window temporarily to update the size and hide
-    // it. No window will appear.
+    // maximized. To work around this, have to show the window temporarily to
+    // update the size and hide it. No window will appear, but it glitches the
+    // window manager briefly.
     if (! glfwGetWindowAttrib(window_, GLFW_VISIBLE)) {
         glfwShowWindow(window_);
         glfwHideWindow(window_);
     }
+#endif
 }
 
 Vector2ui GLFWWindowSystem::GetWindowSize() {
