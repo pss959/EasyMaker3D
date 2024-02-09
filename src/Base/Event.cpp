@@ -168,6 +168,10 @@ Str Event::ToString() const {
     if (modifiers.HasAny())
         s += " mods=" + modifiers.ToString();
 
+    if (flags.Has(Event::Flag::kPosition2D))
+        s += " p2d=(" + Util::ToString(position2D[0]) + "," +
+            Util::ToString(position2D[1]) + ")";
+
     return s;
 }
 // LCOV_EXCL_STOP
