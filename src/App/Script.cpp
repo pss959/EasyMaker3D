@@ -60,7 +60,6 @@ Script::Script() {
     REG_FUNC_(HandMove);
     REG_FUNC_(HandPoint);
     REG_FUNC_(HandPos);
-    REG_FUNC_(HandTurn);
     REG_FUNC_(Highlight);
     REG_FUNC_(Key);
     REG_FUNC_(Load);
@@ -179,9 +178,8 @@ bool Script::ParseLine_(const Str &line) {
     StrVec words = ion::base::SplitString(line, " \t");
 
     // Handle "include" specially.
-    if (words[0] == "include") {
+    if (words[0] == "include")
         return ParseInclude_(words);
-    }
 
     // Verify that the instruction has a corresponding function.
     const auto it = func_map_.find(words[0]);
@@ -466,29 +464,36 @@ Script::InstrPtr Script::ParseHandModel_(const StrVec &words) {
 Script::InstrPtr Script::ParseHandMove_(const StrVec &words) {
     HandMoveInstrPtr hinst;
     Vector3f         trans;
+    Vector3f         degrees;
     float            duration;
-    if (words.size() != 6U && words.size() != 7U) {
+    if (words.size() != 9U && words.size() != 10U) {
         Error_("Bad syntax for handmove instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
         Error_("Invalid hand (L/R) for handmove instruction");
     }
-    else if (! ParseVector3f_(words, 2, trans)) {
-        Error_("Invalid translation floats for handmove instruction");
+    else if (! ParseVector3f_(words, 2, trans) ||
+             ! ParseVector3f_(words, 5, degrees)) {
+        Error_("Invalid translation or angle floats for handmove instruction");
     }
-    else if (! ParseFloat_(words[5], duration)) {
+    else if (! ParseFloat_(words[8], duration)) {
         Error_("Invalid duration float for handmove instruction");
     }
-    else if (words.size() == 7U &&
-             (words[6] != "Pinch" && words[6] != "Grip")) {
+    else if (words.size() == 10U &&
+             (words[9] != "Pinch" && words[9] != "Grip")) {
         Error_("Invalid button for handmove instruction");
     }
     else {
+        Anglef angles[3];
+        for (int i = 0; i < 3; ++i)
+            angles[i] = Anglef::FromDegrees(degrees[i]);
         hinst.reset(new HandMoveInstr);
         hinst->hand     = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->trans    = trans;
+        hinst->rot      = Rotationf::FromYawPitchRoll(angles[1], angles[0],
+                                                      angles[2]);
         hinst->duration = duration;
-        hinst->button   = GetControllerButton(words, 6);
+        hinst->button   = GetControllerButton(words, 9);
     }
     return hinst;
 }
@@ -544,40 +549,6 @@ Script::InstrPtr Script::ParseHandPos_(const StrVec &words) {
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->pos = Point3f(pos);
         hinst->rot = ComputeHandRotation_(hinst->hand, laser_dir, guide_dir);
-    }
-    return hinst;
-}
-
-Script::InstrPtr Script::ParseHandTurn_(const StrVec &words) {
-    HandTurnInstrPtr hinst;
-    Vector3f         degrees;
-    float            duration;
-    if (words.size() != 6U && words.size() != 7U) {
-        Error_("Bad syntax for handturn instruction");
-    }
-    else if (words[1] != "L" && words[1] != "R") {
-        Error_("Invalid hand (L/R) for handturn instruction");
-    }
-    else if (! ParseVector3f_(words, 2, degrees)) {
-        Error_("Invalid angle floats for handturn instruction");
-    }
-    else if (! ParseFloat_(words[5], duration)) {
-        Error_("Invalid duration float for handturn instruction");
-    }
-    else if (words.size() == 7U &&
-             (words[6] != "Pinch" && words[6] != "Grip")) {
-        Error_("Invalid button for handturn instruction");
-    }
-    else {
-        Anglef angles[3];
-        for (int i = 0; i < 3; ++i)
-            angles[i] = Anglef::FromDegrees(degrees[i]);
-        hinst.reset(new HandTurnInstr);
-        hinst->hand     = words[1] == "L" ? Hand::kLeft : Hand::kRight;
-        hinst->rot      = Rotationf::FromYawPitchRoll(angles[1], angles[0],
-                                                      angles[2]);
-        hinst->duration = duration;
-        hinst->button   = GetControllerButton(words, 6);
     }
     return hinst;
 }

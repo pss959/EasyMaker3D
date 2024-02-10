@@ -161,7 +161,6 @@ class ScriptedApp : public Application {
     bool ProcessHandMove_(const Script::HandMoveInstr &instr);
     bool ProcessHandPoint_(const Script::HandPointInstr &instr);
     bool ProcessHandPos_(const Script::HandPosInstr &instr);
-    bool ProcessHandTurn_(const Script::HandTurnInstr &instr);
     bool ProcessHighlight_(const Script::HighlightInstr &instr);
     bool ProcessKey_(const Script::KeyInstr &instr);
     bool ProcessLoad_(const Script::LoadInstr &instr);

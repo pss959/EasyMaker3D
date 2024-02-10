@@ -68,6 +68,7 @@ class Script {
     struct HandMoveInstr : public Instr {
         Hand          hand;
         Vector3f      trans;
+        Rotationf     rot;
         float         duration;
         Event::Button button;
     };
@@ -81,12 +82,6 @@ class Script {
         Hand      hand;
         Point3f   pos;
         Rotationf rot;
-    };
-    struct HandTurnInstr : public Instr {
-        Hand          hand;
-        Rotationf     rot;
-        float         duration;
-        Event::Button button;
     };
     struct HighlightInstr : public Instr {
         StrVec path_strings;
@@ -157,7 +152,6 @@ class Script {
     DECL_SHARED_PTR(HandMoveInstr);
     DECL_SHARED_PTR(HandPointInstr);
     DECL_SHARED_PTR(HandPosInstr);
-    DECL_SHARED_PTR(HandTurnInstr);
     DECL_SHARED_PTR(HighlightInstr);
     DECL_SHARED_PTR(KeyInstr);
     DECL_SHARED_PTR(LoadInstr);
@@ -240,7 +234,6 @@ class Script {
     InstrPtr ParseHandMove_(const StrVec &words);
     InstrPtr ParseHandPoint_(const StrVec &words);
     InstrPtr ParseHandPos_(const StrVec &words);
-    InstrPtr ParseHandTurn_(const StrVec &words);
     InstrPtr ParseHighlight_(const StrVec &words);
     InstrPtr ParseKey_(const StrVec &words);
     InstrPtr ParseLoad_(const StrVec &words);

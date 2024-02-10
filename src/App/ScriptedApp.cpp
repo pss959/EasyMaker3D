@@ -371,7 +371,6 @@ ScriptedApp::ScriptedApp() {
     REG_FUNC_(HandMove);
     REG_FUNC_(HandPoint);
     REG_FUNC_(HandPos);
-    REG_FUNC_(HandTurn);
     REG_FUNC_(Highlight);
     REG_FUNC_(Key);
     REG_FUNC_(Load);
@@ -843,27 +842,28 @@ bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
-    const int     index   = Util::EnumInt(instr.hand);
-    const size_t  frames  = GetFrameCount_(instr.duration);
-    const Point3f end_pos = controller_pos_[index] + instr.trans;
-    const auto    &rot    = controller_rot_[index];
+    const int    index  = Util::EnumInt(instr.hand);
+    const size_t frames = GetFrameCount_(instr.duration);
+    const auto   &pos0  = controller_pos_[index];
+    const auto   &rot0  = controller_rot_[index];
+    const auto   pos1   = pos0 + instr.trans;
+    const auto   rot1   = rot0 * instr.rot;
 
     // Start drag if button was specified.
-    if (instr.button != Event::Button::kNone) {
+    if (instr.button != Event::Button::kNone)
         emitter_->AddControllerButton(instr.hand, instr.button, true,
-                                      controller_pos_[index], rot);
-    }
+                                      pos0, rot0);
 
-    emitter_->AddControllerMotion(instr.hand, controller_pos_[index], end_pos,
-                                  rot, rot, frames);
+    emitter_->AddControllerMotion(instr.hand,
+                                  pos0, pos1, rot0, rot1, frames);
 
     // End drag if button was specified.
-    if (instr.button != Event::Button::kNone) {
+    if (instr.button != Event::Button::kNone)
         emitter_->AddControllerButton(instr.hand, instr.button, false,
-                                      end_pos, rot);
-    }
+                                      pos1, rot1);
 
-    controller_pos_[index] = end_pos;
+    controller_pos_[index] = pos1;
+    controller_rot_[index] = rot1;
     UpdateGripHover_();
     return true;
 }
@@ -873,8 +873,8 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
     const size_t frames = GetFrameCount_(instr.duration);
 
     // Get the actual position of the controller in world coordinates.
-    const Point3f &pos = controller_pos_[index];
-    const Point3f world_pos =
+    const auto &pos = controller_pos_[index];
+    const auto world_pos =
         ScriptEmitter::GetWorldControllerPos(instr.hand, pos);
 
     // Get the center of the target Node in world coordinates.
@@ -886,13 +886,13 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
     const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
 
     // Rotate the controller to point at the Node.
-    const auto dir = ion::math::Normalized(center - world_pos);
-    const Rotationf end_rot = Rotationf::RotateInto(-Vector3f::AxisZ(), dir);
+    const auto dir  = ion::math::Normalized(center - world_pos);
+    const auto &rot0 = controller_rot_[index];
+    const auto rot1  = Rotationf::RotateInto(-Vector3f::AxisZ(), dir);
 
-    emitter_->AddControllerMotion(instr.hand, pos, pos,
-                                  controller_rot_[index], end_rot, frames);
+    emitter_->AddControllerMotion(instr.hand, pos, pos, rot0, rot1, frames);
 
-    controller_rot_[index] = end_rot;
+    controller_rot_[index] = rot1;
     UpdateGripHover_();
     return true;
 }
@@ -904,32 +904,6 @@ bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
     const int index = Util::EnumInt(instr.hand);
     controller_pos_[index] = instr.pos;
     controller_rot_[index] = instr.rot;
-    return true;
-}
-
-bool ScriptedApp::ProcessHandTurn_(const Script::HandTurnInstr &instr) {
-    const int       index   = Util::EnumInt(instr.hand);
-    const size_t    frames  = GetFrameCount_(instr.duration);
-    const Rotationf end_rot = controller_rot_[index] * instr.rot;
-    const auto      &pos    = controller_pos_[index];
-
-    // Start drag if button was specified.
-    if (instr.button != Event::Button::kNone) {
-        emitter_->AddControllerButton(instr.hand, instr.button, true,
-                                      pos, controller_rot_[index]);
-    }
-
-    emitter_->AddControllerMotion(instr.hand, pos, pos,
-                                  controller_rot_[index], end_rot, frames);
-
-    // End drag if button was specified.
-    if (instr.button != Event::Button::kNone) {
-        emitter_->AddControllerButton(instr.hand, instr.button, false,
-                                      pos, end_rot);
-    }
-
-    controller_rot_[index] = end_rot;
-    UpdateGripHover_();
     return true;
 }
 

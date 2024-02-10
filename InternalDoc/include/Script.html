@@ -89,9 +89,11 @@
   </tr>
   <tr>
     <td><b>handmove</b></td>
-    <td><code>L</code>|<code>R</code> <i>dx dy dz duration</i><br>
+    <td><code>L</code>|<code>R</code> <i>dx dy dz xrot yrot zrot<br>duration</i>
       [<code>Pinch</code>|<code>Grip</code>]</td>
-    <td>Moves the controller for the given hand by the given distances over the
+    <td>Moves the controller for the given hand by the given distances and
+      rotates it by the given X (around hover guide), Y (around view
+      direction), and Z (around pointer direction) angles in degrees over the
       given <a href="#duration"><i>duration</i></a>. If <code>Pinch</code> or
       <code>Grip</code> is specified at the end, the pinch or grip button is
       pressed to create a drag.</td>
