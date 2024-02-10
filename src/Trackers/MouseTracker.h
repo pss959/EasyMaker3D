@@ -19,10 +19,6 @@ class MouseTracker : public PointerTracker {
     /// Sets the SG::Node containing the sphere used to help with debugging.
     void SetDebugSphere(const SG::NodePtr &ds);
 
-    /// Allows the click timeout to be set (mostly to speed up testing).
-    /// Setting this to 0 restores the usual value.
-    static void SetClickTimeout(float seconds);
-
     virtual Event::Device GetDevice() const override;
     virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
     virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;

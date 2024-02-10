@@ -8,6 +8,7 @@ class Controller;
 class FilePath;
 class IRenderer;
 class LogHandler;
+class MainHandler;
 
 DECL_SHARED_PTR(ActionProcessor);
 DECL_SHARED_PTR(AnimationManager);
@@ -87,6 +88,9 @@ class Application : public IApplication {
 
     /// Returns the LogHandler so it can be enabled or disabled.
     LogHandler & GetLogHandler() const;
+
+    /// Returns the MainHandler so it can be modified.
+    MainHandler & GetMainHandler() const;
 
     /// Returns true if virtual reality is active, meaning that a headset is
     /// connected.

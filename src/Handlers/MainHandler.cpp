@@ -72,6 +72,7 @@ class MainHandler::Impl_ {
     }
     void SetContext(const MainHandler::Context &context);
     void SetLongPressDuration(float seconds) { long_press_duration_ = seconds; }
+    void SetClickTimeoutFactor(float factor) { click_timeout_factor_ = factor; }
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
     }
@@ -114,6 +115,9 @@ class MainHandler::Impl_ {
 
     /// Minimum duration for a long button press.
     float long_press_duration_ = TK::kLongPressTime;
+
+    /// Multiplication factor for click timeout.
+    float click_timeout_factor_ = 1;
 
     /// Ordered set of Grippable instances for interaction.
     std::vector<GrippablePtr> grippables_;
@@ -492,12 +496,12 @@ void MainHandler::Impl_::ProcessActivation_() {
         click_state_.count = 1;
     KLOG('h', "MainHandler click count = " << click_state_.count);
 
-    // Set a timeout to distinguish from drags and to detect a double click.
-    const float timeout = cur_tracker_->GetClickTimeout();
-
     start_time_ = UTime::Now();
     click_state_.actuator = actuator;
-    click_state_.alarm.Start(timeout);
+
+    // Set a timeout to distinguish from drags and to detect a double click.
+    click_state_.alarm.Start(click_timeout_factor_ *
+                             cur_tracker_->GetClickTimeout());
 }
 
 void MainHandler::Impl_::ProcessDeactivation_(bool is_modified_mode,
@@ -662,6 +666,10 @@ void MainHandler::SetContext(const Context &context) {
 
 void MainHandler::SetLongPressDuration(float seconds) {
     impl_->SetLongPressDuration(seconds);
+}
+
+void MainHandler::SetClickTimeoutFactor(float factor) {
+    impl_->SetClickTimeoutFactor(factor);
 }
 
 void MainHandler::SetTouchable(const ITouchablePtr &touchable) {

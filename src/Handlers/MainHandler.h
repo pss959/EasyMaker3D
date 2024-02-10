@@ -55,6 +55,10 @@ class MainHandler : public Handler {
     /// considered a long press. The default is TK::kLongPressTime.
     void SetLongPressDuration(float seconds);
 
+    /// Sets the factor to multiply with the click timeout. This allows for
+    /// faster responses for scripting and tests. The default is 1.
+    void SetClickTimeoutFactor(float factor);
+
     /// Adds a Grippable instance that responds to grip-related events to a
     /// list. The order in which instances are added is important: the first
     /// Grippable in the list that returns a non-null Node from

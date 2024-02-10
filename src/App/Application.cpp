@@ -107,7 +107,8 @@ class  Application::Impl_ {
     /// Returns true if VR is enabled (after Init() is called).
     bool IsVREnabled() const { return vr_system_.get(); }
 
-    LogHandler & GetLogHandler() const { return *log_handler_; }
+    LogHandler  & GetLogHandler()  const { return *log_handler_;  }
+    MainHandler & GetMainHandler() const { return *main_handler_; }
 
     bool ProcessFrame(size_t render_count, bool force_poll);
 
@@ -1597,6 +1598,10 @@ void Application::ReloadScene() {
 
 LogHandler & Application::GetLogHandler() const {
     return impl_->GetLogHandler();
+}
+
+MainHandler & Application::GetMainHandler() const {
+    return impl_->GetMainHandler();
 }
 
 bool Application::IsVREnabled() const {

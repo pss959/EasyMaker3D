@@ -11,6 +11,7 @@
 #include "Tests/Trackers/TestTouchable.h"
 #include "Trackers/MouseTracker.h"
 #include "Util/Delay.h"
+#include "Util/Tuning.h"
 #include "Widgets/GenericWidget.h"
 #include "Widgets/IScrollable.h"
 
@@ -34,23 +35,13 @@ class MainHandlerTest : public SceneTestBase {
     };
     DECL_SHARED_PTR(TestScrollableWidget);
 
-    /// Shorter MouseTracker click timeout to speed up tests.
-    static constexpr float kTimeout = .001f;
-
-    /// Sets the MouseTracker click timeout to #kTimeout while an instance of
-    /// this is in scope and restores it to its usual value afterwards.
-    class TimeoutShortener {
-      public:
-        TimeoutShortener()  { MouseTracker::SetClickTimeout(kTimeout); }
-        ~TimeoutShortener() { MouseTracker::SetClickTimeout(0); }
-    };
-
     PrecisionStorePtr       prec;
     TestScrollableWidgetPtr widget;
 
     /// Sets up a MainHandler with a Context and PrecisionStore and accesses
-    /// the GenericWidget.
-    void InitHandler(MainHandler &mh);
+    /// the GenericWidget. If \p use_short_click_timeout is true, it sets a
+    /// short click timeout on the MainHandler.
+    void InitHandler(MainHandler &mh, bool use_short_click_timeout = false);
 
     /// Returns a mouse press or release event. The default \p x and \p y will
     /// hit the GenericWidget.
@@ -58,9 +49,21 @@ class MainHandlerTest : public SceneTestBase {
 
     /// Returns a mouse drag event to the given point.
     Event GetDragEvent(float x, float y);
+
+    /// Delays the thread a little longer than the short MouseTracker click
+    /// timeout.
+    static void DelayAfterShortClick() {
+        Util::DelayThread((kShortTimeoutFactor_ + .0001f) *
+                          TK::kMouseClickTimeout);
+    }
+
+  private:
+    /// Shorter click timeout factor to speed up tests.
+    static constexpr float kShortTimeoutFactor_ = .001f;
 };
 
-void MainHandlerTest::InitHandler(MainHandler &mh) {
+void MainHandlerTest::InitHandler(MainHandler &mh,
+                                  bool use_short_click_timeout) {
     static const Str kContents = R"(
   children: [
     Node {
@@ -106,6 +109,10 @@ void MainHandlerTest::InitHandler(MainHandler &mh) {
     // Create and install a PrecisionStore.
     prec.reset(new PrecisionStore);
     mh.SetPrecisionStore(prec);
+
+    /// Set up a short click timeout if requested.
+    if (use_short_click_timeout)
+        mh.SetClickTimeoutFactor(kShortTimeoutFactor_);
 }
 
 Event MainHandlerTest::GetWidgetEvent(bool is_press, float x, float y) {
@@ -182,10 +189,7 @@ TEST_F(MainHandlerTest, Hover) {
 
 TEST_F(MainHandlerTest, Click) {
     MainHandler mh(false);  // No VR.
-    InitHandler(mh);
-
-    // Set a shorter timeout for the MouseTracker while this is in scope.
-    TimeoutShortener ts;
+    InitHandler(mh, true);
 
     size_t  click_count = 0;
     Widget *click_widget = nullptr;
@@ -205,7 +209,7 @@ TEST_F(MainHandlerTest, Click) {
 
     // Wait long enough for this to be processed as a click and update the
     // MainHandler so it times out.
-    Util::DelayThread(kTimeout + .0001f);
+    DelayAfterShortClick();
     mh.ProcessUpdate(false);
 
     EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
@@ -227,7 +231,7 @@ TEST_F(MainHandlerTest, Click) {
     EXPECT_EQ(0U, click_count);  // Not counted until timeout.
     EXPECT_NULL(click_widget);
     EXPECT_FALSE(mh.IsWaiting());
-    Util::DelayThread(kTimeout + .0001f);
+    DelayAfterShortClick();
     mh.ProcessUpdate(false);
     EXPECT_EQ(1U, click_count);
     EXPECT_EQ(widget.get(), click_widget);
@@ -237,7 +241,7 @@ TEST_F(MainHandlerTest, Click) {
     mh.SetPathFilter([](const SG::NodePath &){ return false; });
     EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
                    mh.HandleEvent(GetWidgetEvent(true)));
-    Util::DelayThread(kTimeout + .0001f);
+    DelayAfterShortClick();
     mh.ProcessUpdate(false);
     EXPECT_ENUM_EQ(Handler::HandleCode::kNotHandled,
                    mh.HandleEvent(GetWidgetEvent(false)));
@@ -248,10 +252,7 @@ TEST_F(MainHandlerTest, Click) {
 
 TEST_F(MainHandlerTest, LongPress) {
     MainHandler mh(false);  // No VR.
-    InitHandler(mh);
-
-    // Set a shorter timeout for the MouseTracker while this is in scope.
-    TimeoutShortener ts;
+    InitHandler(mh, true);
 
     size_t  click_count = 0;
     bool    is_long_press = false;
@@ -271,7 +272,7 @@ TEST_F(MainHandlerTest, LongPress) {
     // MainHandler so it times out.
     EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
                    mh.HandleEvent(GetWidgetEvent(true)));
-    Util::DelayThread(kTimeout + .0001f);
+    DelayAfterShortClick();
     mh.ProcessUpdate(false);
     EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
                    mh.HandleEvent(GetWidgetEvent(false)));
@@ -285,7 +286,7 @@ TEST_F(MainHandlerTest, LongPress) {
     mh.SetLongPressDuration(.00005f);
     EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
                    mh.HandleEvent(GetWidgetEvent(true)));
-    Util::DelayThread(kTimeout + .0001f);
+    DelayAfterShortClick();
     mh.ProcessUpdate(false);
     EXPECT_ENUM_EQ(Handler::HandleCode::kHandledStop,
                    mh.HandleEvent(GetWidgetEvent(false)));
@@ -297,10 +298,7 @@ TEST_F(MainHandlerTest, LongPress) {
 
 TEST_F(MainHandlerTest, DoubleClick) {
     MainHandler mh(false);  // No VR.
-    InitHandler(mh);
-
-    // Set a shorter timeout for the MouseTracker while this is in scope.
-    TimeoutShortener ts;
+    InitHandler(mh, true);
 
     size_t  click_count  = 0;
     Widget *click_widget = nullptr;
@@ -337,7 +335,7 @@ TEST_F(MainHandlerTest, DoubleClick) {
                    mh.HandleEvent(GetWidgetEvent(false)));
 
     // Wait so the click finishes.
-    Util::DelayThread(kTimeout + .0001f);
+    DelayAfterShortClick();
     mh.ProcessUpdate(false);
 
     // Double-click should turn on modified-click mode.

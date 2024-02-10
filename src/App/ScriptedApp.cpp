@@ -13,7 +13,7 @@
 #include "Base/Event.h"
 #include "Debug/Shortcuts.h"
 #include "Feedback/TooltipFeedback.h"
-#include "Handlers/Handler.h"
+#include "Handlers/MainHandler.h"
 #include "Items/Controller.h"
 #include "Items/Settings.h"
 #include "Managers/AnimationManager.h"
@@ -676,6 +676,11 @@ void ScriptedApp::InitHandlers_() {
         pause_handler_.reset(new PauseHandler_(pause_func));
         GetContext().event_manager->InsertHandler(pause_handler_);
     }
+
+    // Use a very short click timeout for all trackers so that scripts don't
+    // wait for potential double-clicks. (All modified-clicks in scripts use
+    // the mod state flag instead of double clicks.)
+    GetMainHandler().SetClickTimeoutFactor(.0001f);
 }
 
 // ----------------------------------------------------------------------------
@@ -732,6 +737,7 @@ bool ScriptedApp::ProcessClick_(const Script::ClickInstr &instr) {
         emitter_->AddControllerButton(hand, instr.button, false,
                                       controller_pos_[index],
                                       controller_rot_[index]);
+        UpdateGripHover_();
     }
     return true;
 }
