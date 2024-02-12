@@ -99,9 +99,9 @@ state touch on
 moveover Profile 0
 drag .074219 .141305 0
 handmodel R Oculus_Touch
-handpos R  0 0 .2  0 1 0  0 0 -1
+handpos R  0 -.02 .2  0 1 0  0 0 -1
 snap 0.251953 0.0452899 0.696289 0.86413 BevelToolPanelGripPoint.jpg
-handpos R  0 -.1 .2  0 1 0  0 0 -1
+handpos R  0 -.22 .2  0 1 0  0 0 -1
 snap 0.251953 0.00181159 0.697266 0.90942 BevelToolPanelGripMidpoint.jpg
 # Clean up.
 handmodel R None

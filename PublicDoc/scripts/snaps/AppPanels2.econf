@@ -13,7 +13,7 @@ key Escape
 action kOpenSettingsPanel
 handmodel R Oculus_Touch
 state touch on
-handpos R  .15 -.15 .1  0 1 0  -.3 0 -1
+handpos R  .15 -.27 .1  0 1 0  -.3 0 -1
 snap 0.266602 0 0.710938 0.827899 GripPanelBar.jpg
 
 # Virtual keyboard. Activate a text input pane to show the

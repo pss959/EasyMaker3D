@@ -28,13 +28,6 @@ class ControllerHandler : public Handler {
         r_radial_menu_ = r_radial_menu;
     }
 
-    /// Allows the rendered controller positions to be offset from the
-    /// positions in input events.
-    void SetRenderOffsets(const Vector3f &l_offset, const Vector3f &r_offset) {
-        l_render_offset_ = l_offset;
-        r_render_offset_ = r_offset;
-    }
-
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
@@ -45,9 +38,6 @@ class ControllerHandler : public Handler {
     ControllerPtr r_controller_;   ///< The right Controller object.
     RadialMenuPtr l_radial_menu_;  ///< The left RadialMenu object.
     RadialMenuPtr r_radial_menu_;  ///< The right RadialMenu object.
-
-    Vector3f      l_render_offset_{0, 0, 0};
-    Vector3f      r_render_offset_{0, 0, 0};
 
     void UpdateController_(const Event &event);
     bool UpdateRadialMenu_(const Event &event);

@@ -371,6 +371,7 @@ ScriptedApp::ScriptedApp() {
     REG_FUNC_(HandMove);
     REG_FUNC_(HandPoint);
     REG_FUNC_(HandPos);
+    REG_FUNC_(HandTouch);
     REG_FUNC_(Highlight);
     REG_FUNC_(Key);
     REG_FUNC_(Load);
@@ -603,9 +604,9 @@ void ScriptedApp::InitControllers_() {
     sc.left_controller->SetEnabled(false);
     sc.right_controller->SetEnabled(false);
 
-    // Set render offsets for the controllers.
-    SetControllerRenderOffsets(-ScriptEmitter::kLeftControllerOffset,
-                               -ScriptEmitter::kRightControllerOffset);
+    // Set the controller touch offsets for the ScriptEmitter.
+    emitter_->SetTouchOffsets(sc.left_controller->GetTouchOffset(),
+                              sc.right_controller->GetTouchOffset());
 }
 
 void ScriptedApp::InitMockFilePathList_() {
@@ -850,7 +851,8 @@ bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
 bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
     const int    index  = Util::EnumInt(instr.hand);
     const size_t frames = GetFrameCount_(instr.duration);
-    const auto   &pos0  = controller_pos_[index];
+    const auto   &pos0  = GetControllerWorldPos_(instr.hand,
+                                                 controller_pos_[index]);
     const auto   &rot0  = controller_rot_[index];
     const auto   pos1   = pos0 + instr.trans;
     const auto   rot1   = rot0 * instr.rot;
@@ -879,20 +881,15 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
     const size_t frames = GetFrameCount_(instr.duration);
 
     // Get the actual position of the controller in world coordinates.
-    const auto &pos = controller_pos_[index];
-    const auto world_pos =
-        ScriptEmitter::GetWorldControllerPos(instr.hand, pos);
+    const auto pos = GetControllerWorldPos_(instr.hand, controller_pos_[index]);
 
     // Get the center of the target Node in world coordinates.
-    SG::NodePath path = GetNodePath_(instr.path_string);
-    if (path.empty()) {
-        std::cerr << "*** No node named '" << instr.path_string << "' found\n";
+    Point3f center;
+    if (! GetNodeWorldCenter_(instr.path_string, center))
         return false;
-    }
-    const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
 
     // Rotate the controller to point at the Node.
-    const auto dir  = ion::math::Normalized(center - world_pos);
+    const auto dir  = ion::math::Normalized(center - pos);
     const auto &rot0 = controller_rot_[index];
     const auto rot1  = Rotationf::RotateInto(-Vector3f::AxisZ(), dir);
 
@@ -904,12 +901,47 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
-    emitter_->AddControllerMotion(instr.hand, instr.pos, instr.pos,
+    // Get the actual position of the controller in world coordinates.
+    const auto pos = GetControllerWorldPos_(instr.hand, instr.pos);
+
+    emitter_->AddControllerMotion(instr.hand, pos, pos,
                                   instr.rot, instr.rot, 1);
 
     const int index = Util::EnumInt(instr.hand);
     controller_pos_[index] = instr.pos;
     controller_rot_[index] = instr.rot;
+    return true;
+}
+
+bool ScriptedApp::ProcessHandTouch_(const Script::HandTouchInstr &instr) {
+    const int index = Util::EnumInt(instr.hand);
+    const size_t frames = GetFrameCount_(instr.duration);
+
+    // Get the center of the target Node in world coordinates.
+    Point3f center;
+    if (! GetNodeWorldCenter_(instr.path_string, center))
+        return false;
+
+    // Get the current position of the controller touch affordance in world
+    // coordinates.
+    const auto &sc = *GetContext().scene_context;
+    auto &controller =
+        instr.hand == Hand::kLeft ? *sc.left_controller : *sc.right_controller;
+    const auto touch_pos = controller.GetTranslation() +
+        controller.GetRotation() * controller.GetTouchOffset();
+
+    // Compute the motion needed to bring the affordance to the target Node.
+    const auto motion = center - touch_pos;
+
+    // Move the controller to touch the center of the Node.
+    const auto &rot  = controller_rot_[index];
+    const auto &pos0 = GetControllerWorldPos_(instr.hand,
+                                              controller_pos_[index]);
+    const auto  pos1 = pos0 + motion;
+    emitter_->AddControllerMotion(instr.hand, pos0, pos1, rot, rot, frames);
+
+    controller_pos_[index] += motion;
+    UpdateGripHover_();
     return true;
 }
 
@@ -958,16 +990,11 @@ bool ScriptedApp::ProcessLoad_(const Script::LoadInstr &instr) {
 }
 
 bool ScriptedApp::ProcessMoveOver_(const Script::MoveOverInstr &instr) {
-    // Get the path from the scene root to target object.
-    SG::NodePath path = GetNodePath_(instr.path_string);
-    if (path.empty()) {
-        std::cerr << "*** No node named '" << instr.path_string << "' found\n";
-        return false;
-    }
-
     // Project the center of the object in world coordinates onto the Frustum
     // image plane to get the point to move to.
-    const auto center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
+    Point3f center;
+    if (! GetNodeWorldCenter_(instr.path_string, center))
+        return false;
     MoveTo_(GetFrustum_().ProjectToImageRect(center) + instr.offset,
             instr.duration);
     return true;
@@ -1184,6 +1211,16 @@ bool ScriptedApp::GetNodeRect_(const Str &path_string, float margin,
     return true;
 }
 
+bool ScriptedApp::GetNodeWorldCenter_(const Str &path_string, Point3f &center) {
+    SG::NodePath path = GetNodePath_(path_string);
+    if (path.empty()) {
+        std::cerr << "*** No node named '" << path_string << "' found\n";
+        return false;
+    }
+    center = SG::CoordConv(path).ObjectToRoot(Point3f::Zero());
+    return true;
+}
+
 SG::NodePtr ScriptedApp::CreateHighlight_(const Range2f &rect) {
     // Clone the highlight node.
     auto highlight = highlight_node_->CloneTyped<SG::Node>(true);
@@ -1280,6 +1317,8 @@ void ScriptedApp::SetTouchMode_(bool is_on) {
     // Set controller state.
     sc.left_controller->SetTouchMode(is_on);
     sc.right_controller->SetTouchMode(is_on);
+
+    emitter_->SetTouchMode(is_on);
 }
 
 bool ScriptedApp::TakeSnapshot_(const Range2f &rect, const Str &file_name) {
@@ -1327,10 +1366,20 @@ void ScriptedApp::UpdateGripHover_() {
     // is activated.
     for (auto hand: Util::EnumValues<Hand>()) {
         const int  index = Util::EnumInt(hand);
-        const auto &pos  = controller_pos_[index];
+        const auto &pos  = GetControllerWorldPos_(hand, controller_pos_[index]);
         const auto &rot  = controller_rot_[index];
         emitter_->AddControllerMotion(hand, pos, pos, rot, rot, 1);
     }
+}
+
+Point3f ScriptedApp::GetControllerWorldPos_(Hand hand,
+                                            const Point3f &pos) const {
+    // Default rest positions for controllers. These values are defined to be
+    // reasonable visible rest positions for snaps and videos.
+    const Vector3f kLeftRestPos{-.18f, 14.18f, 59.5f};
+    const Vector3f kRightRestPos{.18f, 14.18f, 59.5f};
+
+    return pos + (hand == Hand::kLeft ? kLeftRestPos : kRightRestPos);
 }
 
 size_t ScriptedApp::GetFrameCount_(float duration) const {

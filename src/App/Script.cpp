@@ -60,6 +60,7 @@ Script::Script() {
     REG_FUNC_(HandMove);
     REG_FUNC_(HandPoint);
     REG_FUNC_(HandPos);
+    REG_FUNC_(HandTouch);
     REG_FUNC_(Highlight);
     REG_FUNC_(Key);
     REG_FUNC_(Load);
@@ -549,6 +550,27 @@ Script::InstrPtr Script::ParseHandPos_(const StrVec &words) {
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->pos = Point3f(pos);
         hinst->rot = ComputeHandRotation_(hinst->hand, laser_dir, guide_dir);
+    }
+    return hinst;
+}
+
+Script::InstrPtr Script::ParseHandTouch_(const StrVec &words) {
+    HandTouchInstrPtr hinst;
+    float             duration;
+    if (words.size() != 4U) {
+         Error_("Bad syntax for handtouch instruction");
+    }
+    else if (words[1] != "L" && words[1] != "R") {
+        Error_("Invalid hand (L/R) for handtouch instruction");
+    }
+    else if (! ParseFloat_(words[3], duration)) {
+        Error_("Invalid duration float for handtouch instruction");
+    }
+    else {
+        hinst.reset(new HandTouchInstr);
+        hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
+        hinst->path_string = words[2];
+        hinst->duration    = duration;
     }
     return hinst;
 }

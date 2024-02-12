@@ -129,10 +129,6 @@ class  Application::Impl_ {
     void EnableMouseMotionEvents(bool enable) {
         glfw_viewer_->EnableMouseMotionEvents(enable);
     }
-    void SetControllerRenderOffsets(const Vector3f &l_offset,
-                                    const Vector3f &r_offset) {
-        controller_handler_->SetRenderOffsets(l_offset, r_offset);
-    }
     void SetLongPressDuration(float seconds) {
         main_handler_->SetLongPressDuration(seconds);
     }
@@ -1644,13 +1640,6 @@ void Application::ForceTouchMode(bool is_on) {
 void Application::EnableMouseMotionEvents(bool enable) {
     impl_->EnableMouseMotionEvents(enable);
 }
-
-void Application::SetControllerRenderOffsets(const Vector3f &l_offset,
-                                             const Vector3f &r_offset) {
-    impl_->SetControllerRenderOffsets(l_offset, r_offset);
-}
-
-    void SetTooltipDelay(float seconds);
 
 void Application::SetLongPressDuration(float seconds) {
     impl_->SetLongPressDuration(seconds);

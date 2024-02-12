@@ -129,11 +129,6 @@ class Application : public IApplication {
     /// produced by GLFW.
     void EnableMouseMotionEvents(bool enable);
 
-    /// Allows the rendered controller positions to be offset from the
-    /// positions in input events.
-    void SetControllerRenderOffsets(const Vector3f &l_offset,
-                                    const Vector3f &r_offset);
-
     /// Allows derived classes to change the minimum duration in seconds for a
     /// button press to be considered a long press. The default is
     /// TK::kLongPressTime.

@@ -161,6 +161,7 @@ class ScriptedApp : public Application {
     bool ProcessHandMove_(const Script::HandMoveInstr &instr);
     bool ProcessHandPoint_(const Script::HandPointInstr &instr);
     bool ProcessHandPos_(const Script::HandPosInstr &instr);
+    bool ProcessHandTouch_(const Script::HandTouchInstr &instr);
     bool ProcessHighlight_(const Script::HighlightInstr &instr);
     bool ProcessKey_(const Script::KeyInstr &instr);
     bool ProcessLoad_(const Script::LoadInstr &instr);
@@ -196,6 +197,10 @@ class ScriptedApp : public Application {
     /// sides. Prints an error message and returns false if the Node is not
     /// found.
     bool GetNodeRect_(const Str &path_string, float margin, Range2f &rect);
+
+    /// Gets the center of the Node referenced by the given path string in
+    /// world coordinates. Returns false on error.
+    bool GetNodeWorldCenter_(const Str &path_string, Point3f &center);
 
     /// Creates a clone of the highlight node and sets it up for the given
     /// rectangle.
@@ -234,6 +239,10 @@ class ScriptedApp : public Application {
 
     /// Updates grip hovering for both controllers after motion is done.
     void UpdateGripHover_();
+
+    /// Returns the actual position of the controller for the given Hand in
+    /// world coordinates, taking into account the rest position.
+    Point3f GetControllerWorldPos_(Hand hand, const Point3f &pos) const;
 
     /// Computes the number of frames for an animation based on a duration.
     size_t GetFrameCount_(float duration) const;

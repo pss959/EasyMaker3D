@@ -12,12 +12,25 @@
 /// mouse clicks, mouse drags and key presses in script-based applications.
 class ScriptEmitter : public IEmitter {
   public:
+    /// Sets offsets to use for event touch positions.
+    void SetTouchOffsets(const Vector3f &l_offset, const Vector3f &r_offset) {
+        l_touch_offset_ = l_offset;
+        r_touch_offset_ = r_offset;
+    }
+
     /// Sets modified mode for subsequent clicks and drags. It is off by
     /// default.
     void SetModifiedMode(bool is_on) { is_mod_ = is_on; }
 
     /// Returns true when in modified mode.
     bool IsInModifiedMode() const { return is_mod_; }
+
+    /// Sets touch mode for subsequent clicks and controller motion. It is off
+    /// by default.
+    void SetTouchMode(bool is_on) { is_touch_ = is_on; }
+
+    /// Returns true when in touch mode.
+    bool IsInTouchMode() const { return is_touch_; }
 
     /// Adds a mouse button press or release.
     void AddMouseButton(Event::Button button, bool is_press,
@@ -44,6 +57,7 @@ class ScriptEmitter : public IEmitter {
     /// Adds a key press/release to simulate.
     void AddKey(const Str &key_string);
 
+
     /// Adds a VR headset button press or release.
     void AddHeadsetButton(bool is_press);
 
@@ -58,25 +72,17 @@ class ScriptEmitter : public IEmitter {
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override;
 
-    /// Returns the position of a controller in world coordinates based on the
-    /// given relative position.
-    static Point3f GetWorldControllerPos(Hand hand, const Point3f &pos);
-
-    /// Default rest position for the left controller.
-    static constexpr Point3f kLeftControllerPos{-.18f, 14.06, 59.5f};
-
-    /// Default rest position for the right controller.
-    static constexpr Point3f kRightControllerPos{.18f, 14.06, 59.5f};
-
-    /// Offset to add to left controller position for event position.
-    static constexpr Vector3f kLeftControllerOffset{0, -.12f, 0};
-
-    /// Offset to add to right controller position for event position.
-    static constexpr Vector3f kRightControllerOffset{0, .12f, 0};
-
   private:
+    /// Left controller touch position offset for events.
+    Vector3f           l_touch_offset_;
+    /// Right controller touch position offset for events.
+    Vector3f           r_touch_offset_;
+
     /// Whether modified mode is on.
     bool               is_mod_ = false;
+
+    /// Whether touch mode is on.
+    bool               is_touch_ = false;
 
     /// Button to use for drag events.
     Event::Button      drag_button_ = Event::Button::kMouse1;

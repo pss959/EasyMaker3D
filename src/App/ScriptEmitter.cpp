@@ -34,13 +34,15 @@ void ScriptEmitter::AddControllerButton(Hand hand, Event::Button button,
     event.is_modified_mode = is_mod_;
     event.device           = Event::GetControllerForHand(hand);
     event.button           = button;
-    event.position3D       = GetWorldControllerPos(hand, pos);
+    event.position3D       = pos;
     event.orientation      = rot;
 
     event.flags.Set(is_press ? Event::Flag::kButtonPress :
                     Event::Flag::kButtonRelease);
     event.flags.Set(Event::Flag::kPosition3D);
     event.flags.Set(Event::Flag::kOrientation);
+    if (is_touch_)
+        event.flags.Set(Event::Flag::kTouch);
 
     events_.push_back(event);
 }
@@ -61,27 +63,28 @@ void ScriptEmitter::AddMouseMotion(const Point2f &pos0, const Point2f &pos1,
     }
 }
 
-void ScriptEmitter::AddControllerMotion(Hand hand,
-                                        const Point3f &pos0,
-                                        const Point3f &pos1,
-                                        const Rotationf &rot0,
-                                        const Rotationf &rot1,
-                                        size_t count) {
+void ScriptEmitter::AddControllerMotion(
+    Hand hand, const Point3f &pos0, const Point3f &pos1,
+    const Rotationf &rot0, const Rotationf &rot1, size_t count) {
     ASSERT(count >= 1U);
     Event event;
     event.is_modified_mode = is_mod_;
     event.device = Event::GetControllerForHand(hand);
     event.flags.Set(Event::Flag::kPosition3D);
     event.flags.Set(Event::Flag::kOrientation);
-
-    const Point3f wpos0 = GetWorldControllerPos(hand, pos0);
-    const Point3f wpos1 = GetWorldControllerPos(hand, pos1);
+    if (is_touch_)
+        event.flags.Set(Event::Flag::kTouch);
 
     const float delta = 1.f / count;
     for (size_t i = 0; i < count; ++i) {
         const float t = (i + 1) * delta;
-        event.position3D  = Lerp(t, wpos0, wpos1);
+        event.position3D  = Lerp(t, pos0, pos1);
         event.orientation = Rotationf::Slerp(rot0, rot1, t);
+        if (is_touch_) {
+            event.touch_position3D =
+                event.position3D + event.orientation *
+                (hand == Hand::kLeft ? l_touch_offset_ : r_touch_offset_);
+        }
         events_.push_back(event);
     }
 }
@@ -152,10 +155,4 @@ void ScriptEmitter::EmitEvents(std::vector<Event> &events) {
 
 void ScriptEmitter::FlushPendingEvents() {
     events_.clear();
-}
-
-Point3f ScriptEmitter::GetWorldControllerPos(Hand hand, const Point3f &pos) {
-    return pos + (hand == Hand::kLeft ?
-                  kLeftControllerPos  + kLeftControllerOffset :
-                  kRightControllerPos + kRightControllerOffset);
 }
