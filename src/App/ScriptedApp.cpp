@@ -594,6 +594,11 @@ bool ScriptedApp::Init_() {
     // Fake export from the SessionManager, since the path is likely bogus.
     context.session_manager->SetFakeExport(true);
 
+    // Set the default rest rotation for controllers.
+    static const Rotationf kRestRot = Rotationf::RotateInto(Vector3f::AxisY(),
+                                                            Vector3f::AxisZ());
+    controller_rot_[0] = controller_rot_[1] = kRestRot;
+
     return true;
 }
 
@@ -803,9 +808,7 @@ bool ScriptedApp::ProcessFocus_(const Script::FocusInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
-    const auto &sc = *GetContext().scene_context;
-    auto &controller = instr.hand == Hand::kLeft ?
-        *sc.left_controller : *sc.right_controller;
+    auto &controller = GetController(instr.hand);
 
     if (instr.controller == "None") {
         controller.SetEnabled(false);
@@ -840,10 +843,19 @@ bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
     controller.ShowAll(true);
     controller.ShowGripHover(false, Point3f::Zero(), Color::White());
 
+    // Make sure the controller is in the correct position and orientation.
+    const int  index = Util::EnumInt(instr.hand);
+    const auto pos = GetControllerWorldPos_(instr.hand, controller_pos_[index]);
+    const auto rot = controller_rot_[index];
+    emitter_->AddControllerMotion(instr.hand, pos, pos, rot, rot, 1);
+
     // Since at least one controller is in use, turn off the RadialMenu parent
     // in the room, since the menus will be attached to the controllers.
-    const auto parent = SG::FindNodeInScene(*sc.scene, "RadialMenus");
+    const auto parent = SG::FindNodeInScene(*GetContext().scene_context->scene,
+                                            "RadialMenus");
     parent->SetEnabled(false);
+
+    UpdateGripHover_();
 
     return true;
 }
@@ -924,9 +936,7 @@ bool ScriptedApp::ProcessHandTouch_(const Script::HandTouchInstr &instr) {
 
     // Get the current position of the controller touch affordance in world
     // coordinates.
-    const auto &sc = *GetContext().scene_context;
-    auto &controller =
-        instr.hand == Hand::kLeft ? *sc.left_controller : *sc.right_controller;
+    auto &controller = GetController(instr.hand);
     const auto touch_pos = controller.GetTranslation() +
         controller.GetRotation() * controller.GetTouchOffset();
 
@@ -1362,23 +1372,31 @@ void ScriptedApp::UpdateHighlights_() {
 }
 
 void ScriptedApp::UpdateGripHover_() {
-    // Emit a position/orientation event for each controller so that grip hover
-    // is activated.
+    // Emit a position/orientation event for each enabled controller so that
+    // grip hover is activated.
     for (auto hand: Util::EnumValues<Hand>()) {
-        const int  index = Util::EnumInt(hand);
-        const auto &pos  = GetControllerWorldPos_(hand, controller_pos_[index]);
-        const auto &rot  = controller_rot_[index];
-        emitter_->AddControllerMotion(hand, pos, pos, rot, rot, 1);
+        auto &controller = GetController(hand);
+        if (controller.IsEnabled()) {
+            const int  index = Util::EnumInt(hand);
+            const auto &pos  = GetControllerWorldPos_(hand,
+                                                      controller_pos_[index]);
+            const auto &rot  = controller_rot_[index];
+            emitter_->AddControllerMotion(hand, pos, pos, rot, rot, 1);
+        }
     }
+}
+
+Controller & ScriptedApp::GetController(Hand hand) const {
+    auto &sc = *GetContext().scene_context;
+    return hand == Hand::kLeft ? *sc.left_controller : *sc.right_controller;
 }
 
 Point3f ScriptedApp::GetControllerWorldPos_(Hand hand,
                                             const Point3f &pos) const {
     // Default rest positions for controllers. These values are defined to be
-    // reasonable visible rest positions for snaps and videos.
-    const Vector3f kLeftRestPos{-.18f, 14.18f, 59.5f};
-    const Vector3f kRightRestPos{.18f, 14.18f, 59.5f};
-
+    // reasonable for snaps and videos.
+    static const Vector3f  kLeftRestPos(-.28f, 14, 59.5f);
+    static const Vector3f  kRightRestPos(.28f, 14, 59.5f);
     return pos + (hand == Hand::kLeft ? kLeftRestPos : kRightRestPos);
 }
 

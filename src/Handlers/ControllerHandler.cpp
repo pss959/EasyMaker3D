@@ -9,21 +9,24 @@
 #include "Math/Types.h"
 
 Handler::HandleCode ControllerHandler::HandleEvent(const Event &event) {
-    bool handled = false;
+    Handler::HandleCode code = HandleCode::kNotHandled;
+
     if ((event.device == Event::Device::kLeftController ||
          event.device == Event::Device::kRightController) ) {
 
-        // Position and orientation of the Controller.
+        // Position and orientation of the Controller. Let other handlers see
+        // these as well.
         if (event.flags.Has(Event::Flag::kPosition3D) &&
-            event.flags.Has(Event::Flag::kOrientation))
+            event.flags.Has(Event::Flag::kOrientation)) {
             UpdateController_(event);
+            code = HandleCode::kHandledContinue;
+        }
 
+        // Trap menu events.
         if (UpdateRadialMenu_(event))
-            handled = true;
+            code = HandleCode::kHandledStop;
     }
-
-    // No need to trap non-menu events - others may be interested.
-    return handled ? HandleCode::kHandledStop : HandleCode::kNotHandled;
+    return code;
 }
 
 void ControllerHandler::UpdateController_(const Event &event) {

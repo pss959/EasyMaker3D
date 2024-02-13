@@ -12,6 +12,7 @@
 #include "Util/Memory.h"
 
 class  Args;
+class  Controller;
 class  FilePath;
 struct Frustum;
 class  Selection;
@@ -239,6 +240,9 @@ class ScriptedApp : public Application {
 
     /// Updates grip hovering for both controllers after motion is done.
     void UpdateGripHover_();
+
+    /// Returns the Controller for the given Hand.
+    Controller & GetController(Hand hand) const;
 
     /// Returns the actual position of the controller for the given Hand in
     /// world coordinates, taking into account the rest position.
