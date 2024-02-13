@@ -882,7 +882,7 @@ bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
         emitter_->AddControllerButton(instr.hand, instr.button, false,
                                       pos1, rot1);
 
-    controller_pos_[index] = pos1;
+    controller_pos_[index] += instr.trans;
     controller_rot_[index] = rot1;
     UpdateGripHover_();
     return true;
