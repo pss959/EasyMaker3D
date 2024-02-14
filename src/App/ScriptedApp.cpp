@@ -737,12 +737,11 @@ bool ScriptedApp::ProcessClick_(const Script::ClickInstr &instr) {
         const Hand hand = instr.device == Event::Device::kLeftController ?
             Hand::kLeft : Hand::kRight;
         const int index = Util::EnumInt(hand);
+        const auto pos = GetControllerWorldPos_(hand, controller_pos_[index]);
         emitter_->AddControllerButton(hand, instr.button, true,
-                                      controller_pos_[index],
-                                      controller_rot_[index]);
+                                      pos, controller_rot_[index]);
         emitter_->AddControllerButton(hand, instr.button, false,
-                                      controller_pos_[index],
-                                      controller_rot_[index]);
+                                      pos, controller_rot_[index]);
         UpdateGripHover_();
     }
     return true;
