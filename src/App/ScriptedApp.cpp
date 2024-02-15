@@ -594,24 +594,31 @@ bool ScriptedApp::Init_() {
     // Fake export from the SessionManager, since the path is likely bogus.
     context.session_manager->SetFakeExport(true);
 
-    // Set the default rest rotation for controllers.
+    // Set the default rest position and rotation for controllers.
     static const Rotationf kRestRot = Rotationf::RotateInto(Vector3f::AxisY(),
                                                             Vector3f::AxisZ());
-    controller_rot_[0] = controller_rot_[1] = kRestRot;
+    for (auto hand: Util::EnumValues<Hand>()) {
+        const int index = Util::EnumInt(hand);
+        controller_pos_[index] = OffsetControllerRestPosition_(hand,
+                                                               Point3f::Zero());
+        controller_rot_[index] = kRestRot;
+    }
 
     return true;
 }
 
 void ScriptedApp::InitControllers_() {
     const auto &sc = *GetContext().scene_context;
+    auto &lc = *sc.left_controller;
+    auto &rc = *sc.right_controller;
 
     // Turn off controllers until they are specifically added.
-    sc.left_controller->SetEnabled(false);
-    sc.right_controller->SetEnabled(false);
+    lc.SetEnabled(false);
+    rc.SetEnabled(false);
 
-    // Set the controller touch offsets for the ScriptEmitter.
-    emitter_->SetTouchOffsets(sc.left_controller->GetTouchOffset(),
-                              sc.right_controller->GetTouchOffset());
+    // Initialize the controller touch offsets for the ScriptEmitter.
+    emitter_->SetTouchOffset(Hand::kLeft,  lc.GetTouchOffset());
+    emitter_->SetTouchOffset(Hand::kRight, rc.GetTouchOffset());
 }
 
 void ScriptedApp::InitMockFilePathList_() {
@@ -737,11 +744,12 @@ bool ScriptedApp::ProcessClick_(const Script::ClickInstr &instr) {
         const Hand hand = instr.device == Event::Device::kLeftController ?
             Hand::kLeft : Hand::kRight;
         const int index = Util::EnumInt(hand);
-        const auto pos = GetControllerWorldPos_(hand, controller_pos_[index]);
         emitter_->AddControllerButton(hand, instr.button, true,
-                                      pos, controller_rot_[index]);
+                                      controller_pos_[index],
+                                      controller_rot_[index]);
         emitter_->AddControllerButton(hand, instr.button, false,
-                                      pos, controller_rot_[index]);
+                                      controller_pos_[index],
+                                      controller_rot_[index]);
         UpdateGripHover_();
     }
     return true;
@@ -842,10 +850,14 @@ bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
     controller.ShowAll(true);
     controller.ShowGripHover(false, Point3f::Zero(), Color::White());
 
+    // Update the controller touch offset for the ScriptEmitter based on the
+    // new geometry.
+    emitter_->SetTouchOffset(instr.hand, controller.GetTouchOffset());
+
     // Make sure the controller is in the correct position and orientation.
     const int  index = Util::EnumInt(instr.hand);
-    const auto pos = GetControllerWorldPos_(instr.hand, controller_pos_[index]);
-    const auto rot = controller_rot_[index];
+    const auto &pos = controller_pos_[index];
+    const auto &rot = controller_rot_[index];
     emitter_->AddControllerMotion(instr.hand, pos, pos, rot, rot, 1);
 
     // Since at least one controller is in use, turn off the RadialMenu parent
@@ -862,8 +874,7 @@ bool ScriptedApp::ProcessHandModel_(const Script::HandModelInstr &instr) {
 bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
     const int    index  = Util::EnumInt(instr.hand);
     const size_t frames = GetFrameCount_(instr.duration);
-    const auto   &pos0  = GetControllerWorldPos_(instr.hand,
-                                                 controller_pos_[index]);
+    const auto   &pos0  = controller_pos_[index];
     const auto   &rot0  = controller_rot_[index];
     const auto   pos1   = pos0 + instr.trans;
     const auto   rot1   = rot0 * instr.rot;
@@ -881,7 +892,7 @@ bool ScriptedApp::ProcessHandMove_(const Script::HandMoveInstr &instr) {
         emitter_->AddControllerButton(instr.hand, instr.button, false,
                                       pos1, rot1);
 
-    controller_pos_[index] += instr.trans;
+    controller_pos_[index] = pos1;
     controller_rot_[index] = rot1;
     UpdateGripHover_();
     return true;
@@ -891,15 +902,13 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
     const int index = Util::EnumInt(instr.hand);
     const size_t frames = GetFrameCount_(instr.duration);
 
-    // Get the actual position of the controller in world coordinates.
-    const auto pos = GetControllerWorldPos_(instr.hand, controller_pos_[index]);
-
     // Get the center of the target Node in world coordinates.
     Point3f center;
     if (! GetNodeWorldCenter_(instr.path_string, center))
         return false;
 
     // Rotate the controller to point at the Node.
+    const auto &pos = controller_pos_[index];
     const auto dir  = ion::math::Normalized(center - pos);
     const auto &rot0 = controller_rot_[index];
     const auto rot1  = Rotationf::RotateInto(-Vector3f::AxisZ(), dir);
@@ -912,14 +921,14 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
-    // Get the actual position of the controller in world coordinates.
-    const auto pos = GetControllerWorldPos_(instr.hand, instr.pos);
+    // Add the rest position to get the actual controller position.
+    const auto pos = OffsetControllerRestPosition_(instr.hand, instr.pos);
 
     emitter_->AddControllerMotion(instr.hand, pos, pos,
                                   instr.rot, instr.rot, 1);
 
     const int index = Util::EnumInt(instr.hand);
-    controller_pos_[index] = instr.pos;
+    controller_pos_[index] = pos;
     controller_rot_[index] = instr.rot;
     return true;
 }
@@ -944,12 +953,11 @@ bool ScriptedApp::ProcessHandTouch_(const Script::HandTouchInstr &instr) {
 
     // Move the controller to touch the center of the Node.
     const auto &rot  = controller_rot_[index];
-    const auto &pos0 = GetControllerWorldPos_(instr.hand,
-                                              controller_pos_[index]);
+    const auto &pos0 = controller_pos_[index];
     const auto  pos1 = pos0 + motion;
     emitter_->AddControllerMotion(instr.hand, pos0, pos1, rot, rot, frames);
 
-    controller_pos_[index] += motion;
+    controller_pos_[index] = pos1;
     UpdateGripHover_();
     return true;
 }
@@ -1377,8 +1385,7 @@ void ScriptedApp::UpdateGripHover_() {
         auto &controller = GetController(hand);
         if (controller.IsEnabled()) {
             const int  index = Util::EnumInt(hand);
-            const auto &pos  = GetControllerWorldPos_(hand,
-                                                      controller_pos_[index]);
+            const auto &pos  = controller_pos_[index];
             const auto &rot  = controller_rot_[index];
             emitter_->AddControllerMotion(hand, pos, pos, rot, rot, 1);
         }
@@ -1390,8 +1397,8 @@ Controller & ScriptedApp::GetController(Hand hand) const {
     return hand == Hand::kLeft ? *sc.left_controller : *sc.right_controller;
 }
 
-Point3f ScriptedApp::GetControllerWorldPos_(Hand hand,
-                                            const Point3f &pos) const {
+Point3f ScriptedApp::OffsetControllerRestPosition_(Hand hand,
+                                                   const Point3f &pos) const {
     // Default rest positions for controllers. These values are defined to be
     // reasonable for snaps and videos.
     static const Vector3f  kLeftRestPos(-.28f, 14, 59.5f);

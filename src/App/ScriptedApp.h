@@ -115,10 +115,14 @@ class ScriptedApp : public Application {
     Point2f      drag_start_pos_;  ///< Cursor position at start of drag.
     ///@}
 
-    /// \name Controller state
+    /// \name Controller state.
     ///@{
-    Point3f   controller_pos_[2];  ///< Current controller positions.
-    Rotationf controller_rot_[2];  ///< Current controller rotations.
+
+    /// Current controller positions, offset by the initial controller rest
+    /// position.
+    Point3f   controller_pos_[2];
+    /// Current controller rotations.
+    Rotationf controller_rot_[2];
     ///@}
 
     /// \name Caption and highlight state
@@ -245,8 +249,8 @@ class ScriptedApp : public Application {
     Controller & GetController(Hand hand) const;
 
     /// Returns the actual position of the controller for the given Hand in
-    /// world coordinates, taking into account the rest position.
-    Point3f GetControllerWorldPos_(Hand hand, const Point3f &pos) const;
+    /// world coordinates, offsetting \p pos by the rest position.
+    Point3f OffsetControllerRestPosition_(Hand hand, const Point3f &pos) const;
 
     /// Computes the number of frames for an animation based on a duration.
     size_t GetFrameCount_(float duration) const;

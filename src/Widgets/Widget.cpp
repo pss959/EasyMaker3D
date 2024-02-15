@@ -94,9 +94,6 @@ bool Widget::IsTouched(const TouchInfo &info, float &distance) const {
 
     // Test for a touch sphere intersection with the bounds.
     float dist;
-    if (GetName() == "Slider")
-        std::cerr << "XXXX TESTING " << info.position
-                  << " VS. " << bounds.ToString(true) << "\n";
     KLOG('U', "Testing touch on " << GetDesc() << " with bounds " << bounds);
     if (SphereBoundsIntersect(info.position, info.radius, bounds, dist)) {
         KLOG('U', "  Touched at pos " << info.position << " and dist " << dist);

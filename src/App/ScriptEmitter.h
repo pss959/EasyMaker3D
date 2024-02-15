@@ -12,10 +12,12 @@
 /// mouse clicks, mouse drags and key presses in script-based applications.
 class ScriptEmitter : public IEmitter {
   public:
-    /// Sets offsets to use for event touch positions.
-    void SetTouchOffsets(const Vector3f &l_offset, const Vector3f &r_offset) {
-        l_touch_offset_ = l_offset;
-        r_touch_offset_ = r_offset;
+    /// Sets the offset to use for event touch positions for the given Hand.
+    void SetTouchOffset(Hand hand, const Vector3f &offset) {
+        if (hand == Hand::kLeft)
+            l_touch_offset_ = offset;
+        else
+            r_touch_offset_ = offset;
     }
 
     /// Sets modified mode for subsequent clicks and drags. It is off by
