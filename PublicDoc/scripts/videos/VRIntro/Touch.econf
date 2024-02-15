@@ -1,0 +1,29 @@
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+state touch on
+
+section Touch Panel touch mode
+state video on
+
+caption .5 .12 3 When an application or tool panel is;\
+    visible, _APPNAME_ enters panel touch mode
+handpoint L OpenSettingsPanelIcon 1
+click LPinch
+handmove  L 0 -.02 0  60 0 0  2
+wait 1
+
+caption .5 .12 3 In this mode, panels are positioned close;\
+    enough to touch with the touch affordance
+highlight RightController/Touch,LeftController/Touch 3
+wait 3
+
+caption .5 .12 7 Touch any interactive item to activate it
+# Move away from panel so other buttons are not inadvertently touched.
+handmove  R 0 0 .1  0 0 -20 .1
+handtouch R SettingsPanel/TooltipDelay/Thumb 2
+handmove  R .04 0 0  0 0 0 2
+handmove  R .05 0 .1 0 0 0 1
+handtouch R SettingsPanel/Accept 1
+handmove  R 0 0 .05  0 0 0  1
+wait 1

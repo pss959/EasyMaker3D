@@ -1,6 +1,6 @@
 Introduction to VR Interaction
 ------------------------------
 
-.. XXXX
+.. incvideo:: VRIntro
 
-This is a placeholder for material that has not been written yet.
+XXXX Need to write this

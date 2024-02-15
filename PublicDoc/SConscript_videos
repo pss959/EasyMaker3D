@@ -167,6 +167,13 @@ merges = {
         'BuildVolume',
         'Inspector',
     ],
+    'VRIntro' : [
+        'Modes',
+        'Laser',
+        'Grip',
+        'Guides',
+        'Touch',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',

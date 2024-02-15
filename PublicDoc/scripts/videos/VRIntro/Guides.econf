@@ -1,0 +1,32 @@
+action kCreateCylinder
+action kTranslationTool
+
+# Show controllers after attaching to the Model so grip hover works.
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+section Guides Grip hover guides
+state video on
+
+caption .5 .15 3 Each controller has a grip guide that helps;\
+    determine what grip dragging will do
+highlight RightController/GripGuides,LeftController/GripGuides 3 .015
+wait 3
+
+caption .5 .15 3 The direction of the guide usually determines;\
+    which part of a tool it will use
+handmove R  -.1 .2 0  0 88 0  2
+wait 1
+
+caption .5 .15 3 The guide shows a color-coded;connection to the active part
+handmove R  .1 -.2 0  0 -88 0  2
+wait 1
+
+caption .5 .15 4 The guide changes shape for different tools
+handpoint L RotationToolIcon 2
+click LPinch
+handmove  L 0 -.02 0  60 0 0  2
+wait 1
+
+caption .5 .15 3 For example, this guide indicates rotation
+wait 3

@@ -1,0 +1,21 @@
+section Modes VR modes
+state video on
+
+caption .5 .15 3 If you have a supported VR device connected,;\
+    you can use it with _APPNAME_
+wait 3
+
+caption .5 .15 3 In full VR mode (With the headset on), you;\
+    get typical VR viewing and interaction
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+wait 3
+
+caption .5 .15 3 But you can also remove the headset and;\
+    use the VR controllers in hybrid mode
+handmove L 0 .01 -.01  -30 0 0  1
+handmove R 0 .01 -.01  -30 0 0  1
+wait 1
+
+caption .5 .15 3 You can also use the mouse;and keyboard in hybrid mode
+wait 3

@@ -1,0 +1,17 @@
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+section Laser The laser pointer
+state video on
+
+caption .5 .15 3 Each controller has a laser pointer that acts;\
+    like the mouse when used with the pinch button
+handpoint L CreateSphereIcon 2
+click LPinch
+wait 1
+
+caption .5 .15 3 It can be used to click or drag, although;\
+    pinch dragging can be awkward and imprecise
+handpoint R TranslationTool/X/XSlider/MaxFace 1
+handmove  R  -.1 0 0  0 -10 0  2 Pinch
+wait 1

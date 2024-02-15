@@ -54,6 +54,16 @@ Using |appname| with VR
 
    Introduction to VR interaction <VRIntro>
 
+XXXX Topics to add:
+  - Inspector
+  - Radial menus
+  - Touch mode
+  - Virtual keyboard
+  - Up/down for precision
+  - Profile editing
+  - Panel move/resize
+  - Tools
+
 Examples
 --------
 
