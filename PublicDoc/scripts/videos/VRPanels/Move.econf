@@ -1,0 +1,34 @@
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+state touch on
+action kOpenSettingsPanel
+
+section Move Moving and resizing panels
+state video on
+
+caption .5 .12 5 Laser/pinch dragging can be used to move panels
+handpoint L AppBoard/XYMoveSlider/Left 1
+handmove  L 0 0 0  0 20 0 2 Pinch
+handmove  L 0 0 0  80 -20 0 1
+wait 1
+
+caption .5 .12 3 Grip dragging is easier
+handmove R .06 .01 0  0 0 0  3 Grip
+wait 1
+
+caption .5 .12 7 Turn to pull or push the;\
+    panel forward or backward with grip
+handmove R -.02 0 .04  0 0 85  2
+handmove R 0 0 -.08  0 0 0 2 Grip
+wait .5
+handmove R 0 0  .08  0 0 0 2 Grip
+wait 1
+
+caption .5 .12 7 Angle to resize a panel with grip
+handmove R  .02 .02 0  0 0 -85 1
+handmove R -.02 .02 0  0 45 0  1
+handmove R .04 .04 0  0 0 0 2 Grip
+wait .5
+handmove R -.04 -.04 0  0 0 0 2 Grip
+wait 1

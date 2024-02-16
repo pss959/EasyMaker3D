@@ -1,0 +1,28 @@
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+state touch on
+action kOpenSettingsPanel
+
+section VirtualKeyboard Using the Virtual Keyboard
+state video on
+
+caption .5 .12 3 In full VR mode (headset on), text editing;\
+    uses the Virtual Keyboard Panel
+state headset on  # Simulate full VR mode.
+wait 3
+
+handmove  R 0 0 .1  0 0 -20 .1  # Move away from panel first.
+handtouch R SettingsPanel/SessionDir/Widget 2
+handmove  R .3 0 .02  0 0 0 1  # Release touch
+wait 1
+
+caption .5 .88 6 The keyboard works with pinch,;but touch is easier
+handmove  R 0 0 .4  0 0 -20 .1  # Move away from panel first.
+handtouch R KeyboardPanel/Key_v 1
+handmove  R .05 0 .4  0 0 0 1  # Release touch
+handtouch R KeyboardPanel/Key_r 1
+handmove  R .05 0 .4  0 0 0 1  # Release touch
+handtouch R KeyboardPanel/Key_enter 1
+handmove  R .1 0 .4  0 0 0 1  # Release touch
+wait 1

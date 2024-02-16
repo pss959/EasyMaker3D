@@ -81,7 +81,7 @@ class ScriptedApp::MockFilePathList_ : public FilePathList {
     virtual bool IsValidDirectory(const FilePath &path) const {
         const Str fn = path.GetFileName();
         return fn.empty() || fn.starts_with("Dir") ||
-            fn == "stl" || fn == "maker";
+            fn == "stl" || fn == "maker" || fn == "vr";
     }
     virtual bool IsExistingFile(const FilePath &path) const {
         if (exist_setting_ == ExistSetting::kTweak) {

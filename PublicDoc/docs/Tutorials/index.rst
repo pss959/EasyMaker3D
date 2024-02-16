@@ -53,17 +53,9 @@ Using |appname| with VR
    :maxdepth: 1
 
    Basic VR interaction <VRBasics>
+   Using Panels in VR <VRPanels>
 
-VR Topics:
-  - Basic interaction
-     - Modes
-     - Laser pointer + pinch
-     - Grip / guides
-  - Use with Panels
-     - Touch
-     - Translating
-     - Scaling
-     - Virtual keyboard
+Other VR Topics:
   - More details
      - Modified-clicking/dragging
      - Changing precision
