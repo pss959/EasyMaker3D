@@ -18,11 +18,11 @@ handmove  R .3 0 .02  0 0 0 1  # Release touch
 wait 1
 
 caption .5 .88 6 The keyboard works with pinch,;but touch is easier
-handmove  R 0 0 .4  0 0 -20 .1  # Move away from panel first.
+handmove  R 0 0 .4     0 0 -20 .1  # Move away from panel first.
 handtouch R KeyboardPanel/Key_v 1
-handmove  R .05 0 .4  0 0 0 1  # Release touch
+handmove  R .05 .05 .2  0 0 0 1  # Release touch
 handtouch R KeyboardPanel/Key_r 1
-handmove  R .05 0 .4  0 0 0 1  # Release touch
+handmove  R .05 .05 .2  0 0 0 1  # Release touch
 handtouch R KeyboardPanel/Key_enter 1
 handmove  R .1 0 .4  0 0 0 1  # Release touch
 wait 1
