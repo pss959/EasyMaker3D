@@ -125,6 +125,8 @@ void Controller::SetTriggerMode(Trigger trigger, bool is_triggered) {
           case Trigger::kGrip:
             ShowAffordance_(Trigger::kPointer, false);
             ShowAffordance_(Trigger::kTouch,   false);
+            guide_parent_->SetBaseColor(
+                SG::ColorMap::SGetColor("GripGuideActiveColor"));
             is_grip_dragging_ = true;
             break;
           case Trigger::kTouch:
@@ -137,6 +139,8 @@ void Controller::SetTriggerMode(Trigger trigger, bool is_triggered) {
     else {
         pointer_node_->SetBaseColor(
             SG::ColorMap::SGetColor("LaserInactiveColor"));
+        guide_parent_->SetBaseColor(
+            SG::ColorMap::SGetColor("GripGuideInactiveColor"));
         ShowAll(true);
         is_grip_dragging_ = false;
     }
