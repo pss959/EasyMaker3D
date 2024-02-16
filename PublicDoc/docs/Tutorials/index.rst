@@ -52,17 +52,29 @@ Using |appname| with VR
 .. toctree::
    :maxdepth: 1
 
-   Introduction to VR interaction <VRIntro>
+   Basic VR interaction <VRBasics>
 
-XXXX Topics to add:
-  - Inspector
-  - Radial menus
-  - Touch mode
-  - Virtual keyboard
-  - Up/down for precision
-  - Profile editing
-  - Panel move/resize
-  - Tools
+VR Topics:
+  - Basic interaction
+     - Modes
+     - Laser pointer + pinch
+     - Grip / guides
+  - Use with Panels
+     - Touch
+     - Translating
+     - Scaling
+     - Virtual keyboard
+  - More details
+     - Modified-clicking/dragging
+     - Changing precision
+  - Use with Tools
+     - Translating
+     - Scaling
+     - Rotating [also twist/bend]
+     - Profile editing
+  - Other VR features
+     - Inspector
+     - Radial menus
 
 Examples
 --------

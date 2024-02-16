@@ -5,15 +5,23 @@ action kTranslationTool
 handmodel L Oculus_Touch
 handmodel R Oculus_Touch
 
-section Guides Grip hover guides
+section Grip Grip interaction
 state video on
 
-caption .5 .15 3 Each controller has a grip guide that helps;\
-    determine what grip dragging will do
+caption .5 .15 3 The grip buttons provide a more;\
+    natural drag interaction style.
+wait 3
+
+caption .5 .15 3 For example, you can use grip dragging;to translate a model
+handmove  R  .1 0 0  0 -5 0  2 Grip
+wait 1
+
+caption .5 .15 3 Each controller has a grip hover guide;\
+    that shows what grip dragging will do
 highlight RightController/GripGuides,LeftController/GripGuides 3 .015
 wait 3
 
-caption .5 .15 3 The direction of the guide usually determines;\
+caption .5 .15 3 The guide direction usually determines;\
     which part of a tool it will use
 handmove R  -.1 .2 0  0 88 0  2
 wait 1
