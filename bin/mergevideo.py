@@ -142,7 +142,8 @@ def WriteVideoListFile_(in_files):
 # -----------------------------------------------------------------------------
 
 def ConcatenateFiles_(metadata_file, list_file, out_file):
-    codec_arg = '-codec libx264'
+    # Produce an H.264 video of reasonable quality that should play everywhere.
+    codec_arg = '-codec libx264 -preset veryfast -profile main -pix_fmt yuv420p'
     ffmpeg_cmd = (f'ffmpeg -v error -f concat -safe 0 -i {list_file.name}' +
                   f' -i {metadata_file.name} -map_metadata 1 -c copy -y' +
                   f' {codec_arg} {out_file}.mp4')
