@@ -52,18 +52,18 @@ Using |appname| with VR
 .. toctree::
    :maxdepth: 1
 
-   Basic VR interaction <VRBasics>
-   Using Panels in VR <VRPanels>
+   Basic interaction in VR <VRBasics>
+   Interacting with Panels in VR <VRPanels>
+   Interacting with Tools in VR <VRTools>
 
 Other VR Topics:
-  - More details
-     - Modified-clicking/dragging
-     - Changing precision
   - Use with Tools
      - Translating
      - Scaling
      - Rotating [also twist/bend]
      - Profile editing
+     - Changing precision
+     - Other tools (color, etc.)
   - Other VR features
      - Inspector
      - Radial menus

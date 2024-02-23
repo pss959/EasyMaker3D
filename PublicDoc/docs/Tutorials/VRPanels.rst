@@ -1,5 +1,5 @@
-Using Panels in VR
-------------------
+Interacting with Panels in VR
+-----------------------------
 
 .. incvideo:: VRPanels
 

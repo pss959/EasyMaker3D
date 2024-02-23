@@ -1,0 +1,23 @@
+action kCreateCylinder
+action kToggleSpecializedTool
+
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+section Translation Translating models
+state video on
+
+caption .5 .15 5 Translation Grip dragging operates in the;\
+    direction the grip guide is closest to
+handmove R   .1  0   0  0  0 0    1 Grip
+handmove R  -.1 .1 -.1  0 88 0    1  # Align with -Y
+handmove R    0 .1   0  0  0 0    1 Grip
+handpos  R    0 0 0  0 1 0  0 0 0 1  # Revert to rest position
+wait 1
+
+caption .5 .15 7 You can push or pull while grip dragging
+handmove R    0 0 -.2  0 0 88  1  # Align with -Z
+handmove R    0 0  .1  0 0 0   1 Grip
+wait 1
+handmove R    0 0 -.2  0 0 0   1 Grip
+wait 1

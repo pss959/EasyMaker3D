@@ -1,0 +1,29 @@
+action kCreateCylinder
+action kScaleTool
+
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+section Scale Scaling models
+state video on
+
+caption .5 .15 6 Scale grip dragging also uses the guide;\
+    direction, with more options
+handmove R  -.04 0 0  0  0 0    2 Grip  # Scale in X
+handpos  R   .1  0 0  0 0 0  -1 -1 -1  1
+handmove R  .05 .05 .05  0 0 0 2 Grip  # Scale in 3D.
+wait 1
+
+caption .5 .15 6 Pushing and pulling work for scaling, too
+handpos  R   .1 -.2 -.2  0 1 0  -1 0 -1  1
+handmove R  -.05 0 -.05  0 0 0 2 Grip  # Scale in 2D.
+handmove R   .05 0  .05  0 0 0 2 Grip  # Scale in 2D.
+wait 1
+
+caption .5 .15 6 Double-click-drag to scale;symmetrically about the center
+handpos  R  .1 0 -.2  0 1 0  -1 0 0  1
+state mod on
+handmove R  .05 0 0  0 0 0 2 Grip  # Symmetric scale in X.
+handmove R -.05 0 0  0 0 0 2 Grip  # Symmetric scale in X.
+state mod off
+wait 1

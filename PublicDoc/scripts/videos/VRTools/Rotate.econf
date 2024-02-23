@@ -1,0 +1,30 @@
+action kCreateCylinder
+action kRotationTool
+
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+section Rotate Rotating models
+state video on
+
+caption .5 .15 5 Rotation grip dragging uses the guide;\
+    direction to choose the axis
+wait 1
+handmove R -.1 0 .1  0 0 88  1  # Align with -Z
+wait 1
+handpos  R 0 0 0  0 1 0  0 0 0 1  # Revert to rest position
+wait 1
+
+caption .5 .15 6 Turn the controller around;the axis to rotate the model
+handmove R  0 0 0   45 0 0  2 Grip  # Rotate around X 
+wait 1
+handmove R  0 0 0  -45 0 0  2 Grip  # Rotate around X 
+wait 1
+
+caption .5 .15 8 Grip dragging does free rotation;if not aligned with an axis
+wait 1
+handpos  R 0 0 0  0 1 0  -1 -1 -1  1
+wait 2
+handmove R  0 0 0  10  20  30  2 Grip  # Free rotate
+handmove R  0 0 0 -30 -10 -20  2 Grip  # Free rotate
+wait 1

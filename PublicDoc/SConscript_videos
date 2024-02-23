@@ -177,6 +177,12 @@ merges = {
         'Move',
         'VirtualKeyboard',
     ],
+    'VRTools' : [
+        'Intro',
+        'Translation',
+        'Scale',
+        'Rotate',
+    ],
     'WorkArea' : [
         'Stage',
         'Tooltips',

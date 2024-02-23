@@ -1,0 +1,36 @@
+action kCreateCylinder
+
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+section Intro Using tools in VR 
+state video on
+
+caption .5 .15 5 Laser/pinch dragging works just like;\
+    mouse dragging with all tools
+handpoint L CylinderTool/TopRadiusScaler/MinSlider 1
+handmove  L 0 0 0  0  5 0 1.5 Pinch
+handmove  L 0 0 0  0 -5 0 1.5 Pinch
+handmove  L 0 0 0  85 0 0 .5
+wait 1
+
+caption .5 .15 5 Grip dragging is generally easier to control
+handmove R   .1 0 0  0 0 0 2 Grip
+handmove R  -.1 0 0  0 0 0 2 Grip
+wait 1
+
+caption .5 .15 4 The center trackpad/joystick button switches between;\
+    the specialized and general tools (just like the space bar)
+wait 1
+key Space
+wait 1
+key Space
+wait 1
+
+caption .5 .15 5 The up/down trackpad/joystick buttons change;\
+    the current precision level even during a drag
+handmove R   .1 0 0  0 0 0 2 Grip
+action kIncreasePrecision
+handmove R   .1 0 0  0 0 0 2 Grip
+wait 1
+
