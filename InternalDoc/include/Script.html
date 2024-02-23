@@ -89,8 +89,8 @@
   </tr>
   <tr>
     <td><b>handmove</b></td>
-    <td><code>L</code>|<code>R</code> <i>dx dy dz xrot yrot zrot<br>duration</i>
-      [<code>Pinch</code>|<code>Grip</code>]</td>
+    <td><code>L</code>|<code>R</code> <i>dx dy dz xrot yrot zrot
+        <br>duration</i> [<code>Pinch</code>|<code>Grip</code>]</td>
     <td>Moves the controller for the given hand by the given distances and
       rotates it by the given X (around hover guide), Y (around view
       direction), and Z (around pointer direction) angles in degrees over the
@@ -118,11 +118,14 @@
   <tr>
     <td><b>handpos</b></td>
     <td><code>L</code>|<code>R</code>
-      <i>posx posy posz<br>laserx lasery laserz<br>guidex guidey guidez</i></td>
+      <i>posx posy posz<br>laserx lasery laserz<br>
+        guidex guidey guidez</i>  [<i>duration</i>]</td>
     <td>Moves the controller for the given hand to the given position (relative
       to the default rest position) and rotates so that the laser pointer and
-      hover guide align with the given vectors. The hover guide direction can
-      be zero if the default is ok.</td>
+      hover guide align with the given vectors. The laser and hover guide
+      directions can be zero if the default is ok. If
+      <a href="#duration"><i>duration</i></a> is supplied, the motion takes
+      place over it; otherwise, it is instantaneous.</td>
   </tr>
   <tr>
     <td><b>handturn</b></td>

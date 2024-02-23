@@ -18,9 +18,10 @@ namespace {
 
 static Rotationf ComputeHandRotation_(Hand hand, const Vector3f &laser_dir,
                                       const Vector3f &guide_dir) {
-    const Rotationf laser_rot =
-        Rotationf::RotateInto(-Vector3f::AxisZ(), laser_dir);
-    Rotationf guide_rot;
+    Rotationf laser_rot, guide_rot;
+    if (laser_dir != Vector3f::Zero()) {
+        laser_rot = Rotationf::RotateInto(-Vector3f::AxisZ(), laser_dir);
+    }
     if (guide_dir != Vector3f::Zero()) {
         const Vector3f guide_start = laser_rot *
             (hand == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX());
