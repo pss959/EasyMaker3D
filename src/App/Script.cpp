@@ -530,7 +530,8 @@ Script::InstrPtr Script::ParseHandPos_(const StrVec &words) {
     Vector3f        pos;
     Vector3f        laser_dir;
     Vector3f        guide_dir;
-    if (words.size() != 11U) {
+    float           duration = 0;
+    if (words.size() != 11U && words.size() != 12U) {
          Error_("Bad syntax for handpos instruction");
     }
     else if (words[1] != "L" && words[1] != "R") {
@@ -545,11 +546,15 @@ Script::InstrPtr Script::ParseHandPos_(const StrVec &words) {
     else if (! ParseVector3f_(words, 8, guide_dir)) {
         Error_("Invalid guide direction floats for handpos instruction");
     }
+    else if (words.size() == 12U && ! ParseFloat_(words[11], duration)) {
+        Error_("Invalid duration float for handpos instruction");
+    }
     else {
         hinst.reset(new HandPosInstr);
         hinst->hand = words[1] == "L" ? Hand::kLeft : Hand::kRight;
         hinst->pos = Point3f(pos);
         hinst->rot = ComputeHandRotation_(hinst->hand, laser_dir, guide_dir);
+        hinst->duration = duration;
     }
     return hinst;
 }

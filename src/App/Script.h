@@ -82,6 +82,7 @@ class Script {
         Hand      hand;
         Point3f   pos;
         Rotationf rot;
+        float     duration;
     };
     struct HandTouchInstr : public Instr {
         Hand  hand;

@@ -921,14 +921,18 @@ bool ScriptedApp::ProcessHandPoint_(const Script::HandPointInstr &instr) {
 }
 
 bool ScriptedApp::ProcessHandPos_(const Script::HandPosInstr &instr) {
-    // Add the rest position to get the actual controller position.
-    const auto pos = OffsetControllerRestPosition_(instr.hand, instr.pos);
-
-    emitter_->AddControllerMotion(instr.hand, pos, pos,
-                                  instr.rot, instr.rot, 1);
-
     const int index = Util::EnumInt(instr.hand);
-    controller_pos_[index] = pos;
+    const size_t frames = GetFrameCount_(instr.duration);
+
+    // The position in the HandPosInstr is relative to the rest position, so
+    // add the rest position to get the actual controller position.
+    const auto pos1 = OffsetControllerRestPosition_(instr.hand, instr.pos);
+
+    emitter_->AddControllerMotion(instr.hand,
+                                  controller_pos_[index], pos1,
+                                  controller_rot_[index], instr.rot, frames);
+
+    controller_pos_[index] = pos1;
     controller_rot_[index] = instr.rot;
     return true;
 }
