@@ -1,0 +1,32 @@
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+action kCreateCylinder
+
+section RadialMenus Radial menus in VR
+state video on
+
+caption .5 .15 3 Radial menus are very useful;for accessing shortcuts in VR
+wait 3
+
+caption .5 .15 3 Click a controller's menu button to attach;\
+    the radial menu to the controller
+wait 1
+action kToggleRightRadialMenu
+wait 2
+
+caption .5 .15 6 Use the trackpad or joystick;to choose an enabled button
+wait 1
+moveover RightController/RightRadialMenu/Button_0/Icon 1
+moveover RightController/RightRadialMenu/Button_1/Icon 1
+moveover RightController/RightRadialMenu/Button_2/Icon 1
+moveover RightController/RightRadialMenu/Button_3/Icon 1
+wait 1
+
+caption .5 .15 3 Then click to apply the button's action
+wait 1
+click
+wait 2
+
+caption .5 .15 3 See the Radial menus tutorial;for how to set up the menus
+wait 3

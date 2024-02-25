@@ -172,6 +172,10 @@ merges = {
         'Laser',
         'Grip',
     ],
+    'VROther' : [
+        'RadialMenus',
+        'Inspector',
+    ],
     'VRPanels' : [
         'Touch',
         'Move',

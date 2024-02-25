@@ -55,11 +55,7 @@ Using |appname| with VR
    Basic interaction in VR <VRBasics>
    Interacting with Panels in VR <VRPanels>
    Interacting with Tools in VR <VRTools>
-
-Other VR Topics:
-  - Other VR features
-     - Inspector
-     - Radial menus
+   Other VR features <VROther>
 
 Examples
 --------

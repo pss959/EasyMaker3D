@@ -1,0 +1,23 @@
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+load Boat
+select Boat
+
+section Inspector Inspector Mode in VR
+state video on
+
+caption .5 .15 8 If you turn on Inspector Mode with a controller;\
+    the selected model will be attached to it
+handpoint R ToggleInspectorIcon 1
+click RPinch
+wait 1
+handpos  R 0 0 0  0 1 0  0 0 0 2
+wait 1
+handmove R -.1 .1 .06  0 0 -40  2
+wait 1
+
+caption .5 .15 3 Press any button to end the mode
+wait 2
+click RPinch
+wait 1
