@@ -24,7 +24,7 @@ Node "ScriptingRoot" {
           blocks: [
             UniformBlock {
               pass_name: "Lighting",
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: .9 .9 .9 .5 }],
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: .9 .9 .9 .8 }],
             }
           ],
           shapes: [Rectangle {}]
