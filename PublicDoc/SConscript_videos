@@ -182,6 +182,8 @@ merges = {
         'Translation',
         'Scale',
         'Rotate',
+        'Panel',
+        'Other',
     ],
     'WorkArea' : [
         'Stage',

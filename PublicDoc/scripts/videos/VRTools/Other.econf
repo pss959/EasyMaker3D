@@ -1,0 +1,20 @@
+action kCreateCylinder
+action kComplexityTool
+
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+
+section Other Other tools
+state video on
+
+caption .5 .15 4 The Complexity Tool uses the relative position;\
+    of the controller for grip dragging
+wait 1
+handmove R  .2 0 0   0 0 0  2 Grip  # Drag to right
+wait 1
+
+caption .5 .15 4 The same is true for the Color Tool
+action kColorTool
+handpos  R  0 0 0  0 1 0  0 0 -1  1  # Guide along -Z
+handmove R  -.14 -.05 0   0 0 0  2 Grip
+wait 1

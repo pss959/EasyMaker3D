@@ -57,13 +57,6 @@ Using |appname| with VR
    Interacting with Tools in VR <VRTools>
 
 Other VR Topics:
-  - Use with Tools
-     - Translating
-     - Scaling
-     - Rotating [also twist/bend]
-     - Profile editing
-     - Changing precision
-     - Other tools (color, etc.)
   - Other VR features
      - Inspector
      - Radial menus

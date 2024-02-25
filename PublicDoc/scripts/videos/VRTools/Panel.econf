@@ -1,0 +1,35 @@
+action kCreateBox
+action kConvertBevel
+
+handmodel L Oculus_Touch
+handmodel R Oculus_Touch
+state touch on
+
+# Move the panel back and up a little bit to make room for controllers and
+# captions.
+moveover ToolBoard/XZMoveSlider/Crossbar 0 .04 0
+drag 0 .07 0
+moveover ToolBoard/XYMoveSlider/Right 0
+drag 0 .1  0
+
+section Panel Panel-based tools
+state video on
+
+caption .5 .15 3 To grip-drag in a Panel-based tool,;\
+    point the guide toward the panel
+handmove R -.1 0 .1  0 0 90  2  # Align with -Z
+wait 1
+
+caption .5 .15 9 The relative controller position;determines what it will drag
+handmove R  .2 0 -.1  0 0 0  2
+wait 1
+handmove R -.4 -.2 0  0 0 0  2
+wait 1
+handmove R  .1  .3 0  0 0 0  2
+wait 1
+
+caption .5 .15 5 Grip-drag profile points to move them
+handmove R  .1 .04 0  0 0 0  2  Grip
+wait 1
+handmove R   0 .02 0  0 0 0  2  Grip
+wait 1
