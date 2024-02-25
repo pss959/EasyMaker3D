@@ -17,7 +17,7 @@ wait 1
 handmove R -.1 .1 .06  0 0 -40  2
 wait 1
 
-caption .5 .15 3 Press any button to end the mode
+caption .5 .15 3 Press any button to exit the mode
 wait 2
 click RPinch
 wait 1

@@ -20,6 +20,8 @@ Panels are divided into three categories:
   - The :newterm:`Tree Panel` is special; it is always fixed to the back wall
     and has :ref:`its own section in this guide <ug-tree-panel>`.
 
+.. _ug-moving-resizing-panels:
+
 Moving and Resizing Panels
 ..........................
 

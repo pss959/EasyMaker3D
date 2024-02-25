@@ -9,14 +9,16 @@ state video on
 caption .5 .15 3 Radial menus are very useful;for accessing shortcuts in VR
 wait 3
 
-caption .5 .15 3 Click a controller's menu button to attach;\
+caption .5 .15 4 Click a controller's menu button to attach;\
     the radial menu to the controller
+handmove R -.02 0 0  0 5 5  1
 wait 1
 action kToggleRightRadialMenu
 wait 2
 
 caption .5 .15 6 Use the trackpad or joystick;to choose an enabled button
 wait 1
+moveto .9 .5 0  # Avoid moving over other buttons.
 moveover RightController/RightRadialMenu/Button_0/Icon 1
 moveover RightController/RightRadialMenu/Button_1/Icon 1
 moveover RightController/RightRadialMenu/Button_2/Icon 1
