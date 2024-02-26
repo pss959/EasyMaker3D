@@ -1,5 +1,24 @@
 #include "App/VideoWriter.h"
 
+// This all requires several libraries that are not required on non-Linux
+// platforms.
+#if ! VIDEO_ENABLED      // --------------------------------------------------
+
+struct VideoWriter::Data_ {};
+VideoWriter::VideoWriter(Format format) {
+    std::cerr << "*** VideoWriter is not implemented on this platform\n";
+}
+VideoWriter::~VideoWriter() {}
+void VideoWriter::Init(const FilePath &path,
+                       const Vector2ui &resolution, int fps) {}
+void VideoWriter::AddImage(const ion::gfx::Image &image) {}
+void VideoWriter::AddChapter(const Str &tag, const Str &title) {}
+size_t VideoWriter::GetImageCount() const { return 0; }
+size_t VideoWriter::GetChapterCount() const { return 0; }
+void VideoWriter::WriteToFile() {}
+
+#else                    // VIDEO_ENABLED -----------------------------------
+
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -351,3 +370,5 @@ bool VideoWriter::WriteChapterFile_(const FilePath &path) {
 }
 
 #undef CHECK_
+
+#endif                    // VIDEO_ENABLED ----------------------------------

@@ -196,14 +196,15 @@ if platform == 'windows':
             'NOGDI',                # Disables "ERROR" macro.
             'NOMINMAX',
             'PRAGMA_SUPPORTED',
-            'UNICODE=1',
-            'WIN32_LEAN_AND_MEAN=1',
             '_CRT_SECURE_NO_DEPRECATE',
             '_USE_MATH_DEFINES',    # Enables M_PI.
             '_WIN32',
-            ('ION_APIENTRY', 'APIENTRY'),
+            ('ION_APIENTRY',         'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
-            ('OS_WINDOWS', 'OS_WINDOWS'),
+            ('OS_WINDOWS',           'OS_WINDOWS'),
+            ('UNICODE',              '1'),
+            ('VIDEO_ENABLED',        '0'),
+            ('WIN32_LEAN_AND_MEAN',  '1'),
         ],
         # Make sure MSYS2 commands (such as cygpath) are available.
         ENV = { 'PATH' : environ['PATH'], },
@@ -221,7 +222,8 @@ elif platform == 'linux':
     base_env.Append(
         CPPDEFINES = [
             ('ION_APIENTRY',       ''),
-            ('ION_PLATFORM_LINUX', '1')
+            ('ION_PLATFORM_LINUX', '1'),
+            ('VIDEO_ENABLED',      '1'),  # Capture videos for tutorials.
         ],
     )
 
@@ -238,6 +240,7 @@ elif platform == 'mac':
             ('ION_APIENTRY',         ''),
             ('ION_PLATFORM_MAC',     '1'),
             ('ION_PLATFORM_MAC_GCC', '1'),
+            ('VIDEO_ENABLED',        '0'),
             ('__has_feature', 'defined'),  # Mac uses some clang-specific stuff.
         ],
         CPPPATH  = [ '/usr/local/include' ],  # For brew libraries.
@@ -558,7 +561,9 @@ test_env.Append(
     # Copy all environment variables to simulate user environment.
     ENV = environ,
 )
-test_env.AddPackages(test_env['VIDEO_PACKAGES'])
+# Add packages needed for video if enabled (Linux only).
+if platform == 'linux':
+    test_env.AddPackages(test_env['VIDEO_PACKAGES'])
 AddRpath_(test_env, Dir(test_env.subst('$BUILD_DIR/googletest')).abspath)
 
 # -----------------------------------------------------------------------------
