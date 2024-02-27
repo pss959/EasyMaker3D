@@ -4,7 +4,7 @@
 #include <ion/gfx/sampler.h>
 #include <ion/gfx/texture.h>
 
-void FBTarget::Init(const Str &prefix, const Vector2ui &size, uint samples) {
+void FBTarget::Init(const Str &prefix, const Vector2ui &size, size_t samples) {
     using ion::gfx::FramebufferObject;
     using ion::gfx::Image;
     using ion::gfx::ImagePtr;

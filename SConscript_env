@@ -356,14 +356,20 @@ if platform == 'windows':
         CPPDEFINES = [('ION_API', '__declspec(dllexport)')],
         LINKFLAGS  = ['-static'],   # Use static versions when possible.
         LIBS       = ['gdi32', 'imagehlp', 'opengl32', 'user32', 'Ws2_32'],
-        # pkg-config on Windows does not seem to use the correct dependency
-        # order, even with the "--static" flag.  Since LIBS has unique names,
-        # can't add anything twice there, so just add dependency libs this way:
+        # There is a circular dependency between freetype2 and harfbuzz on
+        # Windows, which completely messes up the library list and makes it
+        # impossible to fix with pkg-config.  Also, pkg-config on Windows does
+        # not seem to use the correct dependency order, even with the
+        # "--static" flag.  Since LIBS has unique names, can't add anything
+        # twice there, so just add dependency libs this way:
         _LIBFLAGS  = [
+            '-lharfbuzz',
             '-liconv',
             '-lgraphite2',
             '-lbrotlidec',
             '-lbrotlicommon',
+            '-lgdi32',
+            '-lrpcrt4',
         ],
     )
 else:
