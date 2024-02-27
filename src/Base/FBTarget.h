@@ -14,7 +14,7 @@ class FBTarget {
     /// Sets up the target for offscreen rendering to a framebuffer with the
     /// given size and number of multisampled samples. The \p label_prefix is
     /// used to create labels for the framebuffer objects.
-    void Init(const Str &prefix, const Vector2ui &size, uint samples);
+    void Init(const Str &prefix, const Vector2ui &size, size_t samples);
 
     /// Returns true if the FBTarget was initialized properly.
     bool IsInitialized() const {
