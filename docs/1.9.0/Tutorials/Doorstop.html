@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Simple Doorstop Example &mdash; EasyMaker3D 1.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e064d942" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c4cb232b"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/js/playvideo.js?v=b7de2256"></script>
+        <script src="../_static/js/version_selector.js?v=a351e89a"></script>
+        <script src="../_static/js/versions.js?v=b305d7cc"></script>
+        <script src="../_static/js/videochapters.js?v=c4af33fc"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chess Rook Example" href="Rook.html" />
+    <link rel="prev" title="Other VR Features" href="VROther.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+              <img src="../_static/LogoSmall.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to EasyMaker3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#some-more-details">Some More Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#features-for-precise-editing">Features for Precise Editing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#using-appname-with-vr">Using <span class="appname">EasyMaker3D</span> with VR</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#examples">Examples</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">A Simple Doorstop Example</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#start-the-application">Start the Application</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-and-position-a-torus">Create and Position a Torus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-cylinder-and-change-its-size">Create a Cylinder and Change Its Size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#combine-the-two-models-to-create-the-doorstop">Combine the two Models to Create the Doorstop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#change-the-model-name">Change the Model Name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#export-the-model-for-3d-printing">Export the Model for 3D Printing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Rook.html">Chess Rook</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../UserGuide/index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a></li>
+      <li class="breadcrumb-item active">A Simple Doorstop Example</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="VROther.html" class="btn btn-neutral float-left" title="Other VR Features" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Rook.html" class="btn btn-neutral float-right" title="Chess Rook Example" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+    <div class="tutorial-guide">
+  <p>
+    Each tutorial page contains a video and accompanying text. At the bottom of
+    each video is a bar divided into named sections; clicking on any section
+    plays the video starting at that section.
+  </p>
+  <p>
+    The text contains <button class="video-button"></button> buttons that link
+    to sections of the video and <button class="ug-button"></button> buttons
+    that link to relevant parts of the
+    <a class="reference internal" href="../UserGuide/index.html">User Guide</a>
+    that provide more detailed information about topics.
+  </p>
+</div>
+  
+  
+           <div itemprop="articleBody">
+             
+  <section id="a-simple-doorstop-example">
+<h1>A Simple Doorstop Example<a class="headerlink" href="#a-simple-doorstop-example" title="Link to this heading"></a></h1>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopFinished.jpg"><img alt="../_images/DoorstopFinished.jpg" src="../_images/DoorstopFinished.jpg" style="width: 100px;" /></a>
+</figure>
+<p>This example uses <span class="appname">EasyMaker3D</span> to create a simple doorstop model and output it as
+an STL file.</p>
+<p><p class="after-image"></p></p>
+<div class="embedded-video" style="width:90%">
+  <video id="Doorstop" controls preload="auto" onloadedmetadata="addChapters()" >
+    <source src="../videos/Doorstop/Doorstop.mp4" type="video/mp4">
+    <track src="../videos/Doorstop/Doorstop.vtt" kind="chapters" default>
+  </video>
+  <div id="chapterbar"></div>
+</div>
+<p><p class="after-image"></p></p>
+<section id="start-the-application">
+<h2>Start the Application<a class="headerlink" href="#start-the-application" title="Link to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopSessionPanel.jpg"><img alt="../_images/DoorstopSessionPanel.jpg" src="../_images/DoorstopSessionPanel.jpg" style="width: 240px;" /></a>
+</figure>
+<p><button class="video-button" data-id="Doorstop" data-start-time="0.033"></button>
+Starting the application should open a maximized window that you can interact
+with using the keyboard and mouse. The first thing you should see is <a class="reference internal" href="../UserGuide/Panels.html#ug-session-panel"><span class="std std-ref">this
+panel that lets you interact with sessions</span></a>. Click on the
+<cite>Start new session</cite> button to start a new session (or just hit the
+<span class="shortcut">Escape</span> key).</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="create-and-position-a-torus">
+<h2>Create and Position a Torus<a class="headerlink" href="#create-and-position-a-torus" title="Link to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CreateTorusIcon.jpg"><img alt="../_images/CreateTorusIcon.jpg" src="../_images/CreateTorusIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p><button class="video-button" data-id="Doorstop" data-start-time="3.433"></button>
+Click on the <a class="reference internal" href="../UserGuide/Actions.html#ug-create-torus"><span class="std std-ref">Create Torus icon</span></a> icon (3D torus icon on
+the bottom-left shelf) to drop a new torus model into the scene. The torus will
+have some interactive handles attached to it that you can use to change the
+sizes of the outer and inner diameters. You can leave them at their default
+sizes for this example. If you change them and want to undo your changes, you
+can click on the 3D undo icon on the top shelf on the back wall or use
+<span class="shortcut">Ctrl-Z</span>.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/TranslationToolIcon.jpg"><img alt="../_images/TranslationToolIcon.jpg" src="../_images/TranslationToolIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>Next you will translate (move) the torus a little to the right using the
+<a class="reference internal" href="../UserGuide/Tools.html#ug-translation-tool"><span class="std std-ref">Translation Tool</span></a>. There are several ways to switch
+to the Translation Tool from the current state:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Click on the <a class="reference internal" href="../UserGuide/Tools.html#ug-scale-tool"><span class="std std-ref">Translation Tool icon</span></a> from the General
+Tools shelf (see image).</p></li>
+<li><p>Click on the <a class="reference internal" href="../UserGuide/Actions.html#ug-toggle-specialized-tool"><span class="std std-ref">Toggle Specialized Tool icon</span></a> on the top left shelf. This switches from the
+specialized torus tool to the current general tool, which is the Translation
+Tool by default.</p></li>
+<li><p>Press <span class="shortcut">Space</span>, which also switches between the current specialized
+tool and the current general tool.</p></li>
+</ul>
+</div></blockquote>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopTorus.jpg"><img alt="../_images/DoorstopTorus.jpg" src="../_images/DoorstopTorus.jpg" style="width: 220px;" /></a>
+</figure>
+<p>Once the Translation Tool is attached, drag the translation handle on the left
+or right side of the torus to the right until it has moved 5 units. You will
+notice that as you drag the torus, feedback appears to show you the direction
+and distance you have moved, as shown here.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="create-a-cylinder-and-change-its-size">
+<h2>Create a Cylinder and Change Its Size<a class="headerlink" href="#create-a-cylinder-and-change-its-size" title="Link to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CreateCylinderIcon.jpg"><img alt="../_images/CreateCylinderIcon.jpg" src="../_images/CreateCylinderIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p><button class="video-button" data-id="Doorstop" data-start-time="16.233"></button>
+Click on the <a class="reference internal" href="../UserGuide/Actions.html#ug-create-cylinder"><span class="std std-ref">Create Cylinder icon</span></a> icon (3D cylinder
+on the bottom-left shelf) to add a cylinder. Like the torus, the cylinder has
+specialized handles for changing the top and bottom diameters, but you won’t
+need them right now.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopScale.jpg"><img alt="../_images/DoorstopScale.jpg" src="../_images/DoorstopScale.jpg" style="width: 240px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/ScaleToolIcon.jpg"><img alt="../_images/ScaleToolIcon.jpg" src="../_images/ScaleToolIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>Next, select the <a class="reference internal" href="../UserGuide/Tools.html#ug-scale-tool"><span class="std std-ref">Scale Tool</span></a> from the General Tools
+shelf. This will attach a bunch of scaling widgets to the cylinder as shown
+here.</p>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopCylinder.jpg"><img alt="../_images/DoorstopCylinder.jpg" src="../_images/DoorstopCylinder.jpg" style="width: 240px;" /></a>
+</figure>
+<p>Drag the top (blue) scaler down until the height of the cylinder is 3 units.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="combine-the-two-models-to-create-the-doorstop">
+<h2>Combine the two Models to Create the Doorstop<a class="headerlink" href="#combine-the-two-models-to-create-the-doorstop" title="Link to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopSelected.jpg"><img alt="../_images/DoorstopSelected.jpg" src="../_images/DoorstopSelected.jpg" style="width: 240px;" /></a>
+</figure>
+<p><button class="video-button" data-id="Doorstop" data-start-time="28.033"></button>
+The next step is to select both models. Since the cylinder is already selected,
+you just need to add the torus to the selection. You can do that in any of
+these ways:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Shift-click on the torus model.</p></li>
+<li><p>Double-click on the torus model</p></li>
+<li><p>Shift-click or double-click on the name of the torus (<span class="model">Torus_1</span>) in
+the <a class="reference internal" href="../UserGuide/Panels.html#ug-tree-panel"><span class="std std-ref">Tree Panel</span></a> on the back wall.</p></li>
+<li><p>Drag a rectangle in the Tree Panel that includes both model names.</p></li>
+<li><p>Use the <span class="shortcut">Ctrl-A</span> select-all shortcut.</p></li>
+</ul>
+</div></blockquote>
+<p><p class="after-image"></p></p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopHull.jpg"><img alt="../_images/DoorstopHull.jpg" src="../_images/DoorstopHull.jpg" style="width: 240px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/CombineHullIcon.jpg"><img alt="../_images/CombineHullIcon.jpg" src="../_images/CombineHullIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p>With both models selected, click on the <a class="reference internal" href="../UserGuide/Actions.html#ug-combine-hull"><span class="std std-ref">Combine Hull</span></a>
+icon on the Model Combining shelf. This creates a new model whose surface is a
+convex hull surrounding both selected models. You can see in the Tree Panel
+that the new model is named <span class="model">Hull_1</span> and that the two models it was
+created from appear as indented children (hidden in the scene).</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="change-the-model-name">
+<h2>Change the Model Name<a class="headerlink" href="#change-the-model-name" title="Link to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopRenamed.jpg"><img alt="../_images/DoorstopRenamed.jpg" src="../_images/DoorstopRenamed.jpg" style="width: 240px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/NameToolIcon.jpg"><img alt="../_images/NameToolIcon.jpg" src="../_images/NameToolIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p><button class="video-button" data-id="Doorstop" data-start-time="34.666"></button>
+This is not a necessary step, but it will make the next step (exporting)
+easier. With the hull model selected, click on the <a class="reference internal" href="../UserGuide/Tools.html#ug-name-tool"><span class="std std-ref">Name Tool</span></a> icon from the General Tools shelf. This will bring up a 2D
+panel for editing the model’s name.</p>
+<p>Click in the text input area to activate it, and change the name of the model
+to <span class="model">Doorstop</span>. Click the “Apply” button to change the model name; the
+new name should be shown in the Tree Panel.</p>
+<p><p class="after-image"></p></p>
+</section>
+<section id="export-the-model-for-3d-printing">
+<h2>Export the Model for 3D Printing<a class="headerlink" href="#export-the-model-for-3d-printing" title="Link to this heading"></a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/DoorstopExport.jpg"><img alt="../_images/DoorstopExport.jpg" src="../_images/DoorstopExport.jpg" style="width: 300px;" /></a>
+</figure>
+<figure class="align-right">
+<a class="reference internal image-reference" href="../_images/SessionPanelIcon.jpg"><img alt="../_images/SessionPanelIcon.jpg" src="../_images/SessionPanelIcon.jpg" style="width: 300px;" /></a>
+</figure>
+<p><button class="video-button" data-id="Doorstop" data-start-time="46.766"></button>
+Exporting is done with the <a class="reference internal" href="../UserGuide/Panels.html#ug-session-panel"><span class="std std-ref">Session Panel</span></a> that you saw
+when you started the application. Bring the panel up by clicking on the Session
+Panel icon on the Session shelf (you may need to move the Name Panel out of the
+way or switch to a different tool) or with the <span class="shortcut">Ctrl-s</span>
+shortcut. Click on the “Export selection” button, which will open a <a class="reference internal" href="../UserGuide/Panels.html#ug-file-panel"><span class="std std-ref">File
+Panel</span></a> that will let you select a file to export to, as shown
+here.</p>
+<p>This panel is a fairly standard file browser. The default location for exported
+files is your home directory; this can be changed in the <a class="reference internal" href="../UserGuide/Panels.html#ug-settings-panel"><span class="std std-ref">Settings Panel</span></a>. The default name for the file will be the same as the
+name of the model, which is why renaming the model made sense.</p>
+<p>A model can be exported as either text or binary STL using the dropdown at the
+top right of the panel. The resulting STL file can be imported into almost any
+3D printing application.</p>
+<p><p class="after-image"></p></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="VROther.html" class="btn btn-neutral float-left" title="Other VR Features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Rook.html" class="btn btn-neutral float-right" title="Chess Rook Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2024 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.9.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Converting Models for Specialized Editing &mdash; EasyMaker3D 1.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e064d942" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c4cb232b"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/js/playvideo.js?v=b7de2256"></script>
+        <script src="../_static/js/version_selector.js?v=a351e89a"></script>
+        <script src="../_static/js/versions.js?v=b305d7cc"></script>
+        <script src="../_static/js/videochapters.js?v=c4af33fc"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Editing Profiles" href="Profile.html" />
+    <link rel="prev" title="General Tools" href="GeneralTools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+              <img src="../_static/LogoSmall.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to EasyMaker3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#some-more-details">Some More Details</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="GeneralTools.html">Demonstration of general tools</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Converting models for other specialized editing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Profile.html">Profile editing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Combination.html">Combining models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="TreePanel.html">The Tree Panel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RadialMenus.html">Radial menus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#features-for-precise-editing">Features for Precise Editing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#using-appname-with-vr">Using <span class="appname">EasyMaker3D</span> with VR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../UserGuide/index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a></li>
+      <li class="breadcrumb-item active">Converting Models for Specialized Editing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="GeneralTools.html" class="btn btn-neutral float-left" title="General Tools" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Profile.html" class="btn btn-neutral float-right" title="Editing Profiles" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+    <div class="tutorial-guide">
+  <p>
+    Each tutorial page contains a video and accompanying text. At the bottom of
+    each video is a bar divided into named sections; clicking on any section
+    plays the video starting at that section.
+  </p>
+  <p>
+    The text contains <button class="video-button"></button> buttons that link
+    to sections of the video and <button class="ug-button"></button> buttons
+    that link to relevant parts of the
+    <a class="reference internal" href="../UserGuide/index.html">User Guide</a>
+    that provide more detailed information about topics.
+  </p>
+</div>
+  
+  
+           <div itemprop="articleBody">
+             
+  <section id="converting-models-for-specialized-editing">
+<h1>Converting Models for Specialized Editing<a class="headerlink" href="#converting-models-for-specialized-editing" title="Link to this heading"></a></h1>
+<p>There are several <a class="reference internal" href="../UserGuide/Tools.html#ug-specialized-tools"><span class="std std-ref">specialized tools</span></a> that can be
+used only for specific model types. These are:</p>
+<div class="twocolumn docutils container">
+<table class="noheadertable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Bend Tool</p></td>
+<td><p><button class="video-button" data-id="Conversion" data-start-time="9.266"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-bend-tool"><button class="ug-button"></button></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bevel Tool</p></td>
+<td><p><button class="video-button" data-id="Conversion" data-start-time="42.899"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-bevel-tool"><button class="ug-button"></button></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Clip Tool</p></td>
+<td><p><button class="video-button" data-id="Conversion" data-start-time="64.865"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-clip-tool"><button class="ug-button"></button></a></p></td>
+</tr>
+</tbody>
+</table>
+<table class="noheadertable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Mirror Tool</p></td>
+<td><p><button class="video-button" data-id="Conversion" data-start-time="85.131"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-mirror-tool"><button class="ug-button"></button></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Taper Tool</p></td>
+<td><p><button class="video-button" data-id="Conversion" data-start-time="98.997"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-taper-tool"><button class="ug-button"></button></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Twist Tool</p></td>
+<td><p><button class="video-button" data-id="Conversion" data-start-time="117.663"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-twist-tool"><button class="ug-button"></button></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>To use any of these tools, a model first needs to be converted to a specialized
+type. For example, to bend a model, it must first be converted to a Bent model.</p>
+<p>This tour illustrates all of these specialized tools. For more details, consult
+the <a class="reference internal" href="../UserGuide/Tools.html#ug-specialized-tools"><span class="std std-ref">User Guide</span></a>.</p>
+<div class="embedded-video" style="width:90%">
+  <video id="Conversion" controls preload="auto" onloadedmetadata="addChapters()" >
+    <source src="../videos/Conversion/Conversion.mp4" type="video/mp4">
+    <track src="../videos/Conversion/Conversion.vtt" kind="chapters" default>
+  </video>
+  <div id="chapterbar"></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="GeneralTools.html" class="btn btn-neutral float-left" title="General Tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Profile.html" class="btn btn-neutral float-right" title="Editing Profiles" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2024 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.9.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

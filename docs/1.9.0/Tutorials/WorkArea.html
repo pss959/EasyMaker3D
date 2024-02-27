@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Tour of the Work Area &mdash; EasyMaker3D 1.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e064d942" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c4cb232b"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/js/playvideo.js?v=b7de2256"></script>
+        <script src="../_static/js/version_selector.js?v=a351e89a"></script>
+        <script src="../_static/js/versions.js?v=b305d7cc"></script>
+        <script src="../_static/js/videochapters.js?v=c4af33fc"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Panel Overview" href="Panels.html" />
+    <link rel="prev" title="EasyMaker3D Tutorials" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+              <img src="../_static/LogoSmall.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to EasyMaker3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#getting-started">Getting Started</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">An introductory tour of the main features of the work area</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-stage">The Stage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tooltips">Tooltips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#changing-the-view">Changing the View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-icons-and-shelves">3D Icons and Shelves</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-tree-panel">The Tree Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-features">Other features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Panels.html">Panel overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="AppPanels.html">Application panels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Primitives.html">Creating and editing different types of primitive models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Selection.html">Selecting models and attaching tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Sessions.html">Sessions, command history, and undo/redo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Editing.html">Basic non-tool editing operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Viewing.html">Viewing aids</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#some-more-details">Some More Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#features-for-precise-editing">Features for Precise Editing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#using-appname-with-vr">Using <span class="appname">EasyMaker3D</span> with VR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../UserGuide/index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a></li>
+      <li class="breadcrumb-item active">A Tour of the Work Area</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="index.html" class="btn btn-neutral float-left" title="EasyMaker3D Tutorials" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Panels.html" class="btn btn-neutral float-right" title="Panel Overview" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+    <div class="tutorial-guide">
+  <p>
+    Each tutorial page contains a video and accompanying text. At the bottom of
+    each video is a bar divided into named sections; clicking on any section
+    plays the video starting at that section.
+  </p>
+  <p>
+    The text contains <button class="video-button"></button> buttons that link
+    to sections of the video and <button class="ug-button"></button> buttons
+    that link to relevant parts of the
+    <a class="reference internal" href="../UserGuide/index.html">User Guide</a>
+    that provide more detailed information about topics.
+  </p>
+</div>
+  
+  
+           <div itemprop="articleBody">
+             
+  <section id="a-tour-of-the-work-area">
+<h1>A Tour of the Work Area<a class="headerlink" href="#a-tour-of-the-work-area" title="Link to this heading"></a></h1>
+<p>This tour highlights some features of the <span class="appname">EasyMaker3D</span> work area. For more
+details, consult the <a class="reference internal" href="../UserGuide/Overview.html#ug-work-area"><span class="std std-ref">User Guide</span></a>.</p>
+<div class="embedded-video" style="width:90%">
+  <video id="WorkArea" controls preload="auto" onloadedmetadata="addChapters()" >
+    <source src="../videos/WorkArea/WorkArea.mp4" type="video/mp4">
+    <track src="../videos/WorkArea/WorkArea.vtt" kind="chapters" default>
+  </video>
+  <div id="chapterbar"></div>
+</div>
+<p><p class="after-image"></p></p>
+<section id="the-stage">
+<h2>The Stage<a class="headerlink" href="#the-stage" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="WorkArea" data-start-time="0.0"></button>
+<a class="ug-ref reference internal" href="../UserGuide/Interaction.html#ug-stage"><button class="ug-button"></button></a></p>
+<p>The stage is the large circular platform on which models are placed. It can be
+rotated and scaled to change the size and orientation of the models.
+<a class="reference internal" href="../UserGuide/Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-clicking</span></a> anywhere on the stage resets it to
+its default size and rotation.</p>
+</section>
+<section id="tooltips">
+<h2>Tooltips<a class="headerlink" href="#tooltips" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="WorkArea" data-start-time="9.9"></button>
+<a class="ug-ref reference internal" href="../UserGuide/Interaction.html#ug-tooltips"><button class="ug-button"></button></a></p>
+<p>All 3D icons and most other interative objects show a tooltip when hovered</p>
+</section>
+<section id="changing-the-view">
+<h2>Changing the View<a class="headerlink" href="#changing-the-view" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="WorkArea" data-start-time="16.166"></button>
+<a class="ug-ref reference internal" href="../UserGuide/Interaction.html#ug-viewing"><button class="ug-button"></button></a></p>
+<p>The slider on the pole on the right changes the camera height. Dragging
+anywhere with the right mouse button rotates the camera view.  Clicking on the
+pole or the slider resets the height to the default. <a class="reference internal" href="../UserGuide/Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-clicking</span></a> on the pole or slider resets the view direction in addition
+to the height.</p>
+</section>
+<section id="d-icons-and-shelves">
+<h2>3D Icons and Shelves<a class="headerlink" href="#d-icons-and-shelves" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="WorkArea" data-start-time="27.499"></button>
+<a class="ug-ref reference internal" href="../UserGuide/Actions.html#ug-actions"><button class="ug-button"></button></a></p>
+<p>Clicking on any 3D icon performs some action or activates some tool. The 3D
+icons are organized into shelves in the work area:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-session-shelf"><span class="std std-ref">Session shelf</span></a> (bottom center) open
+interactive panels for performing session-related operations.</p></li>
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-layout-shelf"><span class="std std-ref">Layout shelf</span></a> (middle center) help
+with more precise layout of models.</p></li>
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-basics-shelf"><span class="std std-ref">Basic Operations shelf</span></a> (top center)
+implement undo, redo, etc.</p></li>
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-creation-shelves"><span class="std std-ref">Model Creation shelves</span></a> (bottom
+two shelves on the left) create new models and drop them on the stage.</p></li>
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-general-tool-shelf"><span class="std std-ref">General Tool shelf</span></a> (third from
+bottom on the left) activate a general tool for modifying selected models.</p></li>
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-conversion-shelf"><span class="std std-ref">Conversion shelf</span></a> (third from top
+on the left) convert selected models to a different type for specialized
+editing.</p></li>
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-combination-shelf"><span class="std std-ref">Combination shelf</span></a> (second from
+top on the left) create new models by combining selected models.</p></li>
+<li><p>The single icon on the <a class="reference internal" href="../UserGuide/Actions.html#ug-specialized-shelf"><span class="std std-ref">Specialized shelf</span></a> (top
+on the left) switches between the current general tool and the specialized
+tool for the selected models.</p></li>
+<li><p>Icons on the <a class="reference internal" href="../UserGuide/Actions.html#ug-viewing-shelf"><span class="std std-ref">Viewing shelf</span></a> (top right) deal with
+viewing models.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="the-tree-panel">
+<h2>The Tree Panel<a class="headerlink" href="#the-tree-panel" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="WorkArea" data-start-time="58.532"></button>
+<a class="ug-ref reference internal" href="../UserGuide/Panels.html#ug-tree-panel"><button class="ug-button"></button></a></p>
+<p>The panel on the back wall is the <a class="reference internal" href="../UserGuide/Panels.html#ug-tree-panel"><span class="std std-ref">Tree Panel</span></a>. It shows
+the name of the current session and the model tree. It also allows you to hide
+models and to select them.</p>
+</section>
+<section id="other-features">
+<h2>Other features<a class="headerlink" href="#other-features" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="WorkArea" data-start-time="65.765"></button>
+<a class="ug-ref reference internal" href="../UserGuide/Precision.html#ug-precision"><button class="ug-button"></button></a></p>
+<p>Above the shelves on the back wall is the Precision Control. This shows the
+current precision level for linear and angular operations and allows you to
+change it.</p>
+<p>The Exit Sign on the back wall exits the application. If you have made changes,
+it asks you to confirm before exiting.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="EasyMaker3D Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Panels.html" class="btn btn-neutral float-right" title="Panel Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2024 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.9.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

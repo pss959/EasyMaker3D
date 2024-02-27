@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Selecting Models and Attaching Tools &mdash; EasyMaker3D 1.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e064d942" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c4cb232b"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/js/playvideo.js?v=b7de2256"></script>
+        <script src="../_static/js/version_selector.js?v=a351e89a"></script>
+        <script src="../_static/js/versions.js?v=b305d7cc"></script>
+        <script src="../_static/js/videochapters.js?v=c4af33fc"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sessions and Commands" href="Sessions.html" />
+    <link rel="prev" title="Creating and Editing Primitive Models" href="Primitives.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+              <img src="../_static/LogoSmall.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to EasyMaker3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#getting-started">Getting Started</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="WorkArea.html">An introductory tour of the main features of the work area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Panels.html">Panel overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="AppPanels.html">Application panels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Primitives.html">Creating and editing different types of primitive models</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Selecting models and attaching tools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#new-models">New Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#switching-tools">Switching Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#selecting-multiple-models">Selecting Multiple Models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Sessions.html">Sessions, command history, and undo/redo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Editing.html">Basic non-tool editing operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Viewing.html">Viewing aids</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#some-more-details">Some More Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#features-for-precise-editing">Features for Precise Editing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#using-appname-with-vr">Using <span class="appname">EasyMaker3D</span> with VR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../UserGuide/index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a></li>
+      <li class="breadcrumb-item active">Selecting Models and Attaching Tools</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="Primitives.html" class="btn btn-neutral float-left" title="Creating and Editing Primitive Models" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Sessions.html" class="btn btn-neutral float-right" title="Sessions and Commands" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+    <div class="tutorial-guide">
+  <p>
+    Each tutorial page contains a video and accompanying text. At the bottom of
+    each video is a bar divided into named sections; clicking on any section
+    plays the video starting at that section.
+  </p>
+  <p>
+    The text contains <button class="video-button"></button> buttons that link
+    to sections of the video and <button class="ug-button"></button> buttons
+    that link to relevant parts of the
+    <a class="reference internal" href="../UserGuide/index.html">User Guide</a>
+    that provide more detailed information about topics.
+  </p>
+</div>
+  
+  
+           <div itemprop="articleBody">
+             
+  <section id="selecting-models-and-attaching-tools">
+<h1>Selecting Models and Attaching Tools<a class="headerlink" href="#selecting-models-and-attaching-tools" title="Link to this heading"></a></h1>
+<div class="embedded-video" style="width:90%">
+  <video id="Selection" controls preload="auto" onloadedmetadata="addChapters()" >
+    <source src="../videos/Selection/Selection.mp4" type="video/mp4">
+    <track src="../videos/Selection/Selection.vtt" kind="chapters" default>
+  </video>
+  <div id="chapterbar"></div>
+</div>
+<section id="new-models">
+<h2>New Models<a class="headerlink" href="#new-models" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="Selection" data-start-time="0.0"></button>
+When a new model is created, it is selected by default. The currently-selected
+model always has some sort of tool attached to it. If the model has a
+<a class="reference internal" href="../UserGuide/Tools.html#ug-specialized-tools"><span class="std std-ref">specialized tool</span></a>, that tool is attached when the
+model is created. Otherwise, the current <a class="reference internal" href="../UserGuide/Tools.html#ug-general-tools"><span class="std std-ref">general tool</span></a>
+is attached.</p>
+</section>
+<section id="switching-tools">
+<h2>Switching Tools<a class="headerlink" href="#switching-tools" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="Selection" data-start-time="6.433"></button>
+If the selected model has a specialized tool, you can switch between the
+current general tool and the specialized tool by clicking the icon on the top
+left shelf or with the <span class="shortcut">Space</span> keyboard shortcut.</p>
+<p>You can always switch to any of the general tools by clicking on its 3D icon on
+the <a class="reference internal" href="../UserGuide/Actions.html#ug-general-tool-shelf"><span class="std std-ref">general tools shelf</span></a>. There are also keyboard
+shortcuts for switching general tools. See the <a class="reference internal" href="../CheatSheet.html#cheat-sheet"><span class="std std-ref">Cheat Sheet</span></a>
+for details.</p>
+</section>
+<section id="selecting-multiple-models">
+<h2>Selecting Multiple Models<a class="headerlink" href="#selecting-multiple-models" title="Link to this heading"></a></h2>
+<p><button class="video-button" data-id="Selection" data-start-time="26.666"></button></p>
+<p><a class="reference internal" href="../UserGuide/Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-clicking</span></a> (with the shift key or
+double-clicking allows you to select more than one model at a time. The first
+selected model (primary selection) always has the current tool attached to it,
+and the other selected models (secondary selections) have a passive tool (blue
+box) attached to it to show that they are selected.</p>
+<p>Some general and specialized tools support editing of multiple objects. The
+icon for that editor will be enabled (not dark) when this occurs.</p>
+<p>Clicking in any non-interactive area (walls, floor, etc.) deselects all
+currently-selected models. (Note that the stage is interactive!) There are also
+other keyboard shortcuts for changing the selection. Again, see the <a class="reference internal" href="../CheatSheet.html#cheat-sheet"><span class="std std-ref">Cheat
+Sheet</span></a> for details.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Primitives.html" class="btn btn-neutral float-left" title="Creating and Editing Primitive Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Sessions.html" class="btn btn-neutral float-right" title="Sessions and Commands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2024 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.9.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

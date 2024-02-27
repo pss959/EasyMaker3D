@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creating and Editing Primitive Models &mdash; EasyMaker3D 1.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e064d942" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c4cb232b"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/js/playvideo.js?v=b7de2256"></script>
+        <script src="../_static/js/version_selector.js?v=a351e89a"></script>
+        <script src="../_static/js/versions.js?v=b305d7cc"></script>
+        <script src="../_static/js/videochapters.js?v=c4af33fc"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Selecting Models and Attaching Tools" href="Selection.html" />
+    <link rel="prev" title="Application Panels" href="AppPanels.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #78a5e9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EasyMaker3D
+              <img src="../_static/LogoSmall.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to EasyMaker3D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../VRSetup.html">Setting up <span class="appname">EasyMaker3D</span> for VR</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#getting-started">Getting Started</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="WorkArea.html">An introductory tour of the main features of the work area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Panels.html">Panel overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="AppPanels.html">Application panels</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Creating and editing different types of primitive models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#box-and-sphere-models">Box and Sphere Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cylinder-model">Cylinder Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torus-model">Torus Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#revsurf-model">RevSurf Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extruded-model">Extruded Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text-model">Text Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#imported-model">Imported Model</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Selection.html">Selecting models and attaching tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Sessions.html">Sessions, command history, and undo/redo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Editing.html">Basic non-tool editing operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Viewing.html">Viewing aids</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#some-more-details">Some More Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#features-for-precise-editing">Features for Precise Editing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#using-appname-with-vr">Using <span class="appname">EasyMaker3D</span> with VR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../UserGuide/index.html"><span class="appname">EasyMaker3D</span> User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CheatSheet.html"><span class="appname">EasyMaker3D</span> Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ReleaseNotes.html"><span class="appname">EasyMaker3D</span> Release Notes</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #78a5e9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EasyMaker3D</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="appname">EasyMaker3D</span> Tutorials</a></li>
+      <li class="breadcrumb-item active">Creating and Editing Primitive Models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+        <a href="AppPanels.html" class="btn btn-neutral float-left" title="Application Panels" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Selection.html" class="btn btn-neutral float-right" title="Selecting Models and Attaching Tools" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+  </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+    <div class="tutorial-guide">
+  <p>
+    Each tutorial page contains a video and accompanying text. At the bottom of
+    each video is a bar divided into named sections; clicking on any section
+    plays the video starting at that section.
+  </p>
+  <p>
+    The text contains <button class="video-button"></button> buttons that link
+    to sections of the video and <button class="ug-button"></button> buttons
+    that link to relevant parts of the
+    <a class="reference internal" href="../UserGuide/index.html">User Guide</a>
+    that provide more detailed information about topics.
+  </p>
+</div>
+  
+  
+           <div itemprop="articleBody">
+             
+  <section id="creating-and-editing-primitive-models">
+<h1>Creating and Editing Primitive Models<a class="headerlink" href="#creating-and-editing-primitive-models" title="Link to this heading"></a></h1>
+<p>This tutorial shows how to create and edit each of the primitive model types.
+Most of the primitive model types have specialized editing features that are
+provided by a <a class="reference internal" href="../UserGuide/Tools.html#ug-specialized-tools"><span class="std std-ref">specialized tool</span></a>. The associated
+specialized tool is attached to a new model when it is created.</p>
+<p>The different types of models and the specialized tools used to edit them are
+summarized here:</p>
+<div class="twocolumn docutils container">
+<table class="noheadertable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Box</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="0.0"></button></p></td>
+<td><p>&lt;None&gt;</p></td>
+</tr>
+<tr class="row-even"><td><p>Sphere</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="0.0"></button></p></td>
+<td><p>&lt;None&gt;</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cylinder</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="13.833"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-cylinder-tool"><button class="ug-button"></button></a> Cylinder Tool</p></td>
+</tr>
+<tr class="row-even"><td><p>Torus</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="27.533"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-torus-tool"><button class="ug-button"></button></a>    Torus Tool</p></td>
+</tr>
+</tbody>
+</table>
+<table class="noheadertable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>RevSurf</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="41.266"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-rev-surf-tool"><button class="ug-button"></button></a> RevSurf Tool</p></td>
+</tr>
+<tr class="row-even"><td><p>Extruded</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="58.099"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-extruded-tool"><button class="ug-button"></button></a> Extruded Tool</p></td>
+</tr>
+<tr class="row-odd"><td><p>Text</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="78.165"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-text-tool"><button class="ug-button"></button></a>     Text Tool</p></td>
+</tr>
+<tr class="row-even"><td><p>Imported</p></td>
+<td><p><button class="video-button" data-id="Primitives" data-start-time="102.098"></button></p></td>
+<td><p><a class="ug-ref reference internal" href="../UserGuide/Tools.html#ug-import-tool"><button class="ug-button"></button></a>   Import Tool</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="embedded-video" style="width:90%">
+  <video id="Primitives" controls preload="auto" onloadedmetadata="addChapters()" >
+    <source src="../videos/Primitives/Primitives.mp4" type="video/mp4">
+    <track src="../videos/Primitives/Primitives.vtt" kind="chapters" default>
+  </video>
+  <div id="chapterbar"></div>
+</div>
+<section id="box-and-sphere-models">
+<h2>Box and Sphere Models<a class="headerlink" href="#box-and-sphere-models" title="Link to this heading"></a></h2>
+<p>The Box and Sphere models have no specialized editing features and therefore do
+not have specialized tools. When either of these models is created, the current
+<a class="reference internal" href="../UserGuide/Tools.html#ug-general-tools"><span class="std std-ref">general tool</span></a> is attached.</p>
+</section>
+<section id="cylinder-model">
+<h2>Cylinder Model<a class="headerlink" href="#cylinder-model" title="Link to this heading"></a></h2>
+<p>A Cylinder model has a specialized tool that allows you to change the top and
+bottom diameters independently by dragging handles. This means you can easily
+turn the cylinder into a cone or truncated cone.</p>
+</section>
+<section id="torus-model">
+<h2>Torus Model<a class="headerlink" href="#torus-model" title="Link to this heading"></a></h2>
+<p>A Torus model also has a specialized tool that allows you to change the inner
+and outer diameters independently by dragging handles. Note that if the inner
+diameter is increased to a point where it would cause the hole to disappear,
+the outer radius is automatically increased to prevent this.</p>
+</section>
+<section id="revsurf-model">
+<h2>RevSurf Model<a class="headerlink" href="#revsurf-model" title="Link to this heading"></a></h2>
+<p>A RevSurf (surface of revolution) model is created by rotating a 2D profile
+around the Z (up) axis. The specialized tool allows you to edit the profile and
+to change the sweep (rotation) angle to be less than 360 degrees.</p>
+</section>
+<section id="extruded-model">
+<h2>Extruded Model<a class="headerlink" href="#extruded-model" title="Link to this heading"></a></h2>
+<p>An Extruded model is formed by extruding a closed 2D profile along the Z (up)
+axis. The specialized tool allows you to edit the profile. There is an option
+to set the profile to a regular polygon with a customizable number of sides;
+you can then modify the points of this polygon like any other profile.</p>
+</section>
+<section id="text-model">
+<h2>Text Model<a class="headerlink" href="#text-model" title="Link to this heading"></a></h2>
+<p>A Text model extrudes one or more text characters along the Z (up) axis to
+create 3D text. The specialized tool allows you to edit the text string, the
+font, and the spacing between characters.</p>
+</section>
+<section id="imported-model">
+<h2>Imported Model<a class="headerlink" href="#imported-model" title="Link to this heading"></a></h2>
+<p>An Imported model is created by importing a 3D model in STL format from a file.
+The specialized tool is essentially a file browser that lets you choose or
+change the file to import the model from.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="AppPanels.html" class="btn btn-neutral float-left" title="Application Panels" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Selection.html" class="btn btn-neutral float-right" title="Selecting Models and Attaching Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2024 Paul S. Strauss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions"
+     role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    <span class="current-version-label">Version</span>
+    <span class="current-version-text">
+      1.9.0
+    </span>
+    <span class="fa fa-caret-down"></span>
+  </span>
+
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Select another version:</dt>
+      __VERSION_SELECTOR__
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
