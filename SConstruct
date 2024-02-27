@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 # This version string has to be in exactly this format.
-version_string = '1.8.0'
+version_string = '1.9.0'
 
 app_name = 'EasyMaker3D'
 

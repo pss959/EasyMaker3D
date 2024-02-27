@@ -1,6 +1,33 @@
 |appname| Release Notes
 =======================
 
+Release 1.9.0 (February, 2024)
+------------------------------
+
+ - New Features:
+
+   - Added tutorials with videos.
+
+   - The VR controller grip guide now changes to the active color during a grip
+     drag.
+
+   - The hidden state of models is now saved with session files and is restored
+     properly.
+
+ - Bug Fixes:
+
+   - Modified-dragging of the Point Target on models now snaps properly to the
+     model bounds.
+
+   - Loading a session file now starts in the same directory as the current
+     session.
+
+   - Fixed some placement height issues for models relative to the Stage.
+
+   - Resetting the height slider now uses the correct height.
+
+   - Setting the tooltip delay to 0 now disables tooltips as advertised.
+
 Release 1.8.0 (November, 2023)
 ------------------------------
 

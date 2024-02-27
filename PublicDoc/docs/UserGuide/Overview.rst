@@ -104,9 +104,14 @@ is one), load a different session from a file, or start a brand new session.
 The default location of saved sessions is your home directory; this can be
 customized in the :ref:`Settings Panel <ug-settings-panel>`.
 
-Certain other program state (such as whether :ref:`targets <ug-targets>` and
-:ref:`model edges <ug-toggle-show-edges>` are visible) is saved along with the
-session and will be restored when a session is loaded.
+Certain other program statei s saved along with the session and will be restored
+when a session is loaded:
+
+ - Visibility of :ref:`targets <ug-targets>`.
+ - Visibility of :ref:`model edges <ug-toggle-show-edges>`.
+ - Visibility of the :ref:`build volume <ug-build-volume>`.
+ - Whether the :ref:`axis-aligned toggle <ug-toggle-axis-aligned>` is on.
+ - Visibility of models.
 
 The name of the current session file, if any, is displayed at the top of the
 :ref:`Tree Panel <ug-tree-panel>` (without the "|extension|" extension). The
