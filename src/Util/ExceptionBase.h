@@ -7,7 +7,7 @@ class FilePath;
 
 /// Abstract base class for exceptions that store a message.
 ///
-/// \ingroup Util
+/// \ingroup Utility
 class ExceptionBase : public std::exception {
   public:
     virtual ~ExceptionBase() {}

@@ -32,6 +32,9 @@ mode     = GetOption('mode')
 brief    = GetOption('brief')
 noimages = GetOption('noimages')
 
+# Latest version of Doxygen stored in a custom location.
+doxygen = '/local/inst/doxygen-1.10.0/bin/doxygen'
+
 # -----------------------------------------------------------------------------
 # Environment setup.
 # -----------------------------------------------------------------------------
@@ -40,6 +43,8 @@ noimages = GetOption('noimages')
 envs = SConscript('SConscript_env', exports=['mode'])
 
 base_env = envs['base']
+base_env.Append(DOXYGEN = doxygen)
+
 base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')  # For easy cleanup.
 if brief:
     for env in envs.values():

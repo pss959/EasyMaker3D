@@ -11,7 +11,7 @@ class ContainerPane;
 /// derived ContainerPane classes. Each layout function is supplied
 /// ContainerPane whose sub-Panes are to be laid out.
 ///
-/// \ingroup Pane
+/// \ingroup Panes
 class PaneLayout {
   public:
     /// This struct is used for computing grid sizes. It represents cells in

@@ -8,7 +8,6 @@ Import('app_dict', 'base_env', 'doc_build_dir')
 env = base_env.Clone(
     ABS_BUILD_DIR = Dir(f'#{doc_build_dir}').abspath,
     OUTPUT_DIR    = '$ABS_BUILD_DIR/InternalDoc',
-    DOXYGEN       = '/local/inst/doxygen-1.9.8/bin/doxygen',  # Latest version.
 )
 
 # Set up environment variables for Doxyfile to access.

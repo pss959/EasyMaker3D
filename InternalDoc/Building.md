@@ -75,6 +75,8 @@ Additionally:
      - [`sphinxcontrib-jquery`](https://pypi.org/project/sphinxcontrib-jquery/)
      - [`webvtt-py`](https://pypi.org/project/webvtt-py/)
  - The `libboost-dev` package is required to build and run the unit tests.
+ - The `graphviz` Python package is required to build the internal
+   documentation.
 
 ### Windows
 
@@ -133,7 +135,8 @@ There are four different modes you can specify when building the application:
   - **dbg** (debug) adds debugging information to the executable. It is slower
     and takes longer to build, but is very handy when fixing issues.
   - **cov** (coverage) is used to build and run [unit tests](#UnitTests) with
-    coverage tracking enabled.
+    coverage tracking enabled. (Requires [gcovr](https://gcovr.com/en/stable/)
+    to be installed.)
     
 The `opt` and `dbg` modes include some features that help when developing the
 application. These features are compiled out in `rel` mode.
