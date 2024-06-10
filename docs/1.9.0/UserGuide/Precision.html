@@ -18,10 +18,10 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=c4cb232b"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/js/playvideo.js?v=b7de2256"></script>
-        <script src="../_static/js/version_selector.js?v=a351e89a"></script>
+        <script src="../_static/js/version_selector.js?v=98ab9033"></script>
         <script src="../_static/js/versions.js?v=b305d7cc"></script>
         <script src="../_static/js/videochapters.js?v=c4af33fc"></script>
     <script src="../_static/js/theme.js"></script>
@@ -134,7 +134,8 @@ both linear operations (such as scaling and translation) and angular operations
 <p>Assuming <a class="reference internal" href="Overview.html#ug-units"><span class="std std-ref">centimeter units</span></a>, the linear precision levels are
 then 1cm, 1mm, and .1mm, respectively.</p>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/PrecisionControl.jpg"><img alt="../_images/PrecisionControl.jpg" src="../_images/PrecisionControl.jpg" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/PrecisionControl.jpg"><img alt="../_images/PrecisionControl.jpg" src="../_images/PrecisionControl.jpg" style="width: 200px;" />
+</a>
 </figure>
 <p>Here is how to change the current precision level:</p>
 <blockquote>
@@ -178,10 +179,12 @@ precise dimensions and distances interactively.</p>
 <section id="visual-feedback">
 <span id="ug-feedback"></span><h2>Visual Feedback<a class="headerlink" href="#visual-feedback" title="Link to this heading"></a></h2>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/AngularFeedback.jpg"><img alt="../_images/AngularFeedback.jpg" src="../_images/AngularFeedback.jpg" style="height: 180px;" /></a>
+<a class="reference internal image-reference" href="../_images/AngularFeedback.jpg"><img alt="../_images/AngularFeedback.jpg" src="../_images/AngularFeedback.jpg" style="height: 180px;" />
+</a>
 </figure>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/LinearFeedback.jpg"><img alt="../_images/LinearFeedback.jpg" src="../_images/LinearFeedback.jpg" style="height: 180px;" /></a>
+<a class="reference internal image-reference" href="../_images/LinearFeedback.jpg"><img alt="../_images/LinearFeedback.jpg" src="../_images/LinearFeedback.jpg" style="height: 180px;" />
+</a>
 </figure>
 <p>Most interactive drag operations display some sort of visual feedback.
 Operations that are essentially linear show the current dimension of that
@@ -196,10 +199,12 @@ target color.</p>
 <section id="targets">
 <span id="ug-targets"></span><h2>Targets<a class="headerlink" href="#targets" title="Link to this heading"></a></h2>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/EdgeTarget.jpg"><img alt="../_images/EdgeTarget.jpg" src="../_images/EdgeTarget.jpg" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/EdgeTarget.jpg"><img alt="../_images/EdgeTarget.jpg" src="../_images/EdgeTarget.jpg" style="width: 200px;" />
+</a>
 </figure>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/PointTarget.jpg"><img alt="../_images/PointTarget.jpg" src="../_images/PointTarget.jpg" style="width: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/PointTarget.jpg"><img alt="../_images/PointTarget.jpg" src="../_images/PointTarget.jpg" style="width: 200px;" />
+</a>
 </figure>
 <p>Precise interactive placement can be tedious, so <span class="appname">EasyMaker3D</span> offers extra help
 for some operations using <span class="newterm">targets</span>. A target is a 3D object that you
@@ -228,10 +233,12 @@ a target is obscured by models, you can use the <a class="reference internal" hr
 while the drag is in process. Targets can be placed either on the <a class="reference internal" href="Interaction.html#ug-stage"><span class="std std-ref">stage</span></a> or any model in the scene. When dragging a target on the stage, the
 target will snap to grid locations based on the current <a class="reference internal" href="#ug-precision-level"><span class="std std-ref">precision level</span></a>.</p>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/EdgeTargetSnapped.jpg"><img alt="../_images/EdgeTargetSnapped.jpg" src="../_images/EdgeTargetSnapped.jpg" style="height: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/EdgeTargetSnapped.jpg"><img alt="../_images/EdgeTargetSnapped.jpg" src="../_images/EdgeTargetSnapped.jpg" style="height: 200px;" />
+</a>
 </figure>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/PointTargetSnapped.jpg"><img alt="../_images/PointTargetSnapped.jpg" src="../_images/PointTargetSnapped.jpg" style="height: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/PointTargetSnapped.jpg"><img alt="../_images/PointTargetSnapped.jpg" src="../_images/PointTargetSnapped.jpg" style="height: 200px;" />
+</a>
 </figure>
 <p>The Point Target can be dragged by any part (except the ring). When dragging
 over a model’s surface, the target location will snap to vertices of the
@@ -245,13 +252,16 @@ edges</span></a>.) If the Edge Target is dragged from a model to the
 <p>Clicking on the Edge Target reverses its direction, which can be useful when
 performing <a class="reference internal" href="#ug-layout"><span class="std std-ref">linear layout</span></a>.</p>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/EdgeTargetModSnapped.jpg"><img alt="../_images/EdgeTargetModSnapped.jpg" src="../_images/EdgeTargetModSnapped.jpg" style="height: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/EdgeTargetModSnapped.jpg"><img alt="../_images/EdgeTargetModSnapped.jpg" src="../_images/EdgeTargetModSnapped.jpg" style="height: 200px;" />
+</a>
 </figure>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/PointTargetModSnapped2.jpg"><img alt="../_images/PointTargetModSnapped2.jpg" src="../_images/PointTargetModSnapped2.jpg" style="height: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/PointTargetModSnapped2.jpg"><img alt="../_images/PointTargetModSnapped2.jpg" src="../_images/PointTargetModSnapped2.jpg" style="height: 200px;" />
+</a>
 </figure>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/PointTargetModSnapped.jpg"><img alt="../_images/PointTargetModSnapped.jpg" src="../_images/PointTargetModSnapped.jpg" style="height: 200px;" /></a>
+<a class="reference internal image-reference" href="../_images/PointTargetModSnapped.jpg"><img alt="../_images/PointTargetModSnapped.jpg" src="../_images/PointTargetModSnapped.jpg" style="height: 200px;" />
+</a>
 </figure>
 <p><a class="reference internal" href="Interaction.html#ug-modified-mode"><span class="std std-ref">Modified-dragging</span></a> either target over a model uses the
 rectangular bounds of the model instead of its mesh. The Point Target will snap
@@ -279,7 +289,8 @@ feedback</span></a> change to the active target color.  See the
 documentation for the individual tools for specific details of how they handle
 snapping.</p>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/SnappedToPointTarget.jpg"><img alt="../_images/SnappedToPointTarget.jpg" src="../_images/SnappedToPointTarget.jpg" style="width: 240px;" /></a>
+<a class="reference internal image-reference" href="../_images/SnappedToPointTarget.jpg"><img alt="../_images/SnappedToPointTarget.jpg" src="../_images/SnappedToPointTarget.jpg" style="width: 240px;" />
+</a>
 </figure>
 <p>When the Point Target is active, interactions that involve position (such as
 the <a class="reference internal" href="Tools.html#ug-translation-tool"><span class="std std-ref">Translation Tool</span></a>) or orientation (such as the
@@ -309,10 +320,12 @@ can be used to lay out objects along a line (<span class="newterm">linear layout
 <p>The Point Target can also be used to lay out <a class="reference internal" href="Selection.html#ug-selection"><span class="std std-ref">selected models</span></a> in a circle or along a circular arc. All of the parameters of
 the layout are specified using the features of the target.</p>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/RadialLayoutArc.jpg"><img alt="../_images/RadialLayoutArc.jpg" src="../_images/RadialLayoutArc.jpg" style="height: 140px;" /></a>
+<a class="reference internal image-reference" href="../_images/RadialLayoutArc.jpg"><img alt="../_images/RadialLayoutArc.jpg" src="../_images/RadialLayoutArc.jpg" style="height: 140px;" />
+</a>
 </figure>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/RadialLayoutRadius.jpg"><img alt="../_images/RadialLayoutRadius.jpg" src="../_images/RadialLayoutRadius.jpg" style="height: 140px;" /></a>
+<a class="reference internal image-reference" href="../_images/RadialLayoutRadius.jpg"><img alt="../_images/RadialLayoutRadius.jpg" src="../_images/RadialLayoutRadius.jpg" style="height: 140px;" />
+</a>
 </figure>
 <p>The radius of the circle or arc is specified by dragging the ring around the
 Point Target to the desired size. The radius adheres to the current
@@ -328,10 +341,12 @@ desired direction. As you drag either spoke, color-coded feedback shows the
 spoke angles and the subtended arc angle.  The spoke angles also adhere to the
 current <a class="reference internal" href="#ug-precision-level"><span class="std std-ref">precision level</span></a></p>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/RadialLayoutSingle.jpg"><img alt="../_images/RadialLayoutSingle.jpg" src="../_images/RadialLayoutSingle.jpg" style="height: 140px;" /></a>
+<a class="reference internal image-reference" href="../_images/RadialLayoutSingle.jpg"><img alt="../_images/RadialLayoutSingle.jpg" src="../_images/RadialLayoutSingle.jpg" style="height: 140px;" />
+</a>
 </figure>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/RadialLayoutMultiple.jpg"><img alt="../_images/RadialLayoutMultiple.jpg" src="../_images/RadialLayoutMultiple.jpg" style="height: 140px;" /></a>
+<a class="reference internal image-reference" href="../_images/RadialLayoutMultiple.jpg"><img alt="../_images/RadialLayoutMultiple.jpg" src="../_images/RadialLayoutMultiple.jpg" style="height: 140px;" />
+</a>
 </figure>
 <p>When the radius and spokes are correct, click on the <a class="reference internal" href="Actions.html#ug-radial-layout"><span class="std std-ref">Radial Layout icon</span></a> to lay out the selected models. The primary selection will
 be moved to the point where the green starting spoke intersects the ring, and
@@ -347,7 +362,8 @@ objects.</p>
 <section id="linear-layout">
 <h3>Linear Layout<a class="headerlink" href="#linear-layout" title="Link to this heading"></a></h3>
 <figure class="align-right">
-<a class="reference internal image-reference" href="../_images/LinearLayout.jpg"><img alt="../_images/LinearLayout.jpg" src="../_images/LinearLayout.jpg" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="../_images/LinearLayout.jpg"><img alt="../_images/LinearLayout.jpg" src="../_images/LinearLayout.jpg" style="width: 300px;" />
+</a>
 </figure>
 <p>The Edge Target can be used to lay out two or more models along a line. The
 length and direction of the Edge Target determine the offset between
@@ -413,7 +429,7 @@ pointing in the correct direction.</p></li>
   </span>
 
   <div class="rst-other-versions">
-    <dl>
+    <dl id="rst-version-selector">
       <dt>Select another version:</dt>
       __VERSION_SELECTOR__
     </dl>

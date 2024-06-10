@@ -44,6 +44,8 @@ $("document").ready(function() {
 
     // Replace the marker string in the document with the version selection
     // string.
-    document.body.innerHTML =
-        document.body.innerHTML.replace('__VERSION_SELECTOR__', selections);
+    selector = document.getElementById('rst-version-selector');
+    console.log('XXXX FOUND', selector);
+    selector.innerHTML = selector.innerHTML.replace('__VERSION_SELECTOR__',
+                                                    selections);
 });
