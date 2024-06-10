@@ -141,8 +141,8 @@ videos = SConscript('SConscript_videos', exports=['capturevideo'])
 versions = GetAllVersions_()
 
 # Create the versions.js file. This defines all versions that are shown in the
-# version selector. The custom.js file contains a function that populates the
-# version selector dropdown with all of these versions.
+# version selector. The version_selector.js file contains a function that
+# populates the version selector dropdown with all of these versions.
 version_js_file = env.subst('$VERSION_DIR/_static/js/versions.js')
 CreateVersionJSFile_(version_js_file, versions)
 
