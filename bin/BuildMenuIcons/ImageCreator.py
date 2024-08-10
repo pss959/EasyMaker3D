@@ -119,7 +119,6 @@ class ImageCreator(object):
 
     def Text(self, center, text, color):
         # Set anchor to 'mm': middle/middle.
-        text_size = self._draw.textsize(text, font=self._font)
         self._draw.text(center.Tuple(), text, fill=color, font=self._font,
                         anchor='mm')
 
