@@ -147,6 +147,7 @@ if mode == 'rel':
 # Creating or updating TAGS file for emacs.
 # -----------------------------------------------------------------------------
 
-tags = base_env.Command('TAGS', [], 'etags -R ionsrc/ion/ src/')
+tags = base_env.Command(
+    'TAGS', [], 'find ionsrc/ion src/ -name "*.[hc]*" -print | etags -')
 base_env.AlwaysBuild(tags)
 base_env.Alias("Tags", tags)
