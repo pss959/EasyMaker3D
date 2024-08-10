@@ -1,4 +1,4 @@
-﻿#include "Commands/Command.h"
+#include "Commands/Command.h"
 #include "Commands/CommandList.h"
 #include "Tests/Commands/TestCommand.h"
 #include "Tests/SceneTestBase.h"

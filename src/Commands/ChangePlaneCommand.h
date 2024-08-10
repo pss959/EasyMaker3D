@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/MultiModelCommand.h"
 #include "Math/Plane.h"

@@ -1,4 +1,4 @@
-﻿#include "Math/Snap2D.h"
+#include "Math/Snap2D.h"
 #include "Math/ToString.h"
 #include "Math/Types.h"
 #include "Tests/TestBase.h"

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/CreateModelCommand.h"
 #include "Util/Memory.h"

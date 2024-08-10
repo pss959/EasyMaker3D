@@ -1,4 +1,4 @@
-﻿#include "Math/Point3fMap.h"
+#include "Math/Point3fMap.h"
 #include "Tests/Testing.h"
 
 TEST(Point3fMapTest, Exact) {

@@ -1,4 +1,4 @@
-﻿#include "Models/CylinderModel.h"
+#include "Models/CylinderModel.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 

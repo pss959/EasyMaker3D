@@ -1,4 +1,4 @@
-﻿#include "Panes/TouchWrapperPane.h"
+#include "Panes/TouchWrapperPane.h"
 #include "Place/TouchInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"

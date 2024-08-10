@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/ChangeColorCommand.h"
 #include "SG/Node.h"

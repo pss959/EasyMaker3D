@@ -1,4 +1,4 @@
-﻿#include "Items/UnitConversion.h"
+#include "Items/UnitConversion.h"
 #include "Math/MeshValidation.h"
 #include "Models/ImportedModel.h"
 #include "Tests/Testing.h"

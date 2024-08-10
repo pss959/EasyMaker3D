@@ -1,4 +1,4 @@
-﻿#include <memory>
+#include <memory>
 
 #include "Feedback/Feedback.h"
 #include "Managers/FeedbackManager.h"

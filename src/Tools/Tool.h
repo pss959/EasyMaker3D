@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Items/Grippable.h"
 #include "Math/Types.h"

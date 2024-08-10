@@ -1,4 +1,4 @@
-﻿#include "Managers/TargetManager.h"
+#include "Managers/TargetManager.h"
 
 #include <functional>
 #include <limits>

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Tools/PanelTool.h"
 #include "Util/FilePath.h"

@@ -1,4 +1,4 @@
-﻿#include <ion/math/transformutils.h>
+#include <ion/math/transformutils.h>
 
 #include "Math/TextUtils.h"
 #include "Tests/TestBase.h"

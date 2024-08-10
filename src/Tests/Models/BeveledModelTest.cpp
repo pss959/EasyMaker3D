@@ -1,4 +1,4 @@
-﻿#include "Models/BeveledModel.h"
+#include "Models/BeveledModel.h"
 #include "Models/BoxModel.h"
 #include "Models/TextModel.h"
 #include "Tests/SceneTestBase.h"

@@ -1,4 +1,4 @@
-﻿#include "Math/Linear.h"
+#include "Math/Linear.h"
 #include "Math/MeshValidation.h"
 #include "Math/Spin.h"
 #include "Models/BoxModel.h"

@@ -1,4 +1,4 @@
-﻿#include <ion/math/transformutils.h>
+#include <ion/math/transformutils.h>
 
 #include "Math/Bounds.h"
 #include "Math/Linear.h"

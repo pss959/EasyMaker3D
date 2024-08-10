@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/ChangeRevSurfCommand.h"
 #include "Tools/PanelTool.h"

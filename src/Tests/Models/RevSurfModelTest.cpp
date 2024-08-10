@@ -1,4 +1,4 @@
-﻿#include "Math/Profile.h"
+#include "Math/Profile.h"
 #include "Models/BoxModel.h"
 #include "Models/RevSurfModel.h"
 #include "Tests/SceneTestBase.h"

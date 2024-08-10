@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Spin.h"
 #include "Math/Types.h"

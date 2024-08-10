@@ -1,4 +1,4 @@
-﻿#include "Commands/CommandList.h"
+#include "Commands/CommandList.h"
 #include "Managers/CommandManager.h"
 #include "Tests/Commands/TestCommand.h"
 #include "Tests/TestBaseWithTypes.h"

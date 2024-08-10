@@ -1,4 +1,4 @@
-﻿#include "Managers/NameManager.h"
+#include "Managers/NameManager.h"
 
 #include <algorithm>
 

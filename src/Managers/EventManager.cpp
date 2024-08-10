@@ -1,4 +1,4 @@
-﻿#include "Managers/EventManager.h"
+#include "Managers/EventManager.h"
 
 #include "Base/Event.h"
 #include "Handlers/Handler.h"

@@ -1,4 +1,4 @@
-﻿#include "Managers/AnimationManager.h"
+#include "Managers/AnimationManager.h"
 
 void AnimationManager::StartAnimation(const AnimationFunc &func) {
     // Add the function to the list.

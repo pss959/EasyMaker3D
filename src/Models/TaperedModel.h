@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Taper.h"
 #include "Models/ConvertedModel.h"

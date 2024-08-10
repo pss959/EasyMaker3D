@@ -1,4 +1,4 @@
-﻿#include "Agents/ActionAgent.h"
+#include "Agents/ActionAgent.h"
 #include "Commands/CommandList.h"
 #include "IO/STLReader.h"
 #include "Items/SessionState.h"

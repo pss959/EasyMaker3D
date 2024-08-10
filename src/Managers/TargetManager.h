@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Dimensionality.h"
 #include "Math/Types.h"

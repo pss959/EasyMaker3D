@@ -1,4 +1,4 @@
-﻿#include "Math/Bevel.h"
+#include "Math/Bevel.h"
 #include "Math/Beveler.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"

@@ -1,4 +1,4 @@
-﻿#include "Managers/PanelManager.h"
+#include "Managers/PanelManager.h"
 
 #include "SG/Search.h"
 #include "Util/General.h"

@@ -1,4 +1,4 @@
-﻿#include "Executors/ChangeExtrudedExecutor.h"
+#include "Executors/ChangeExtrudedExecutor.h"
 
 #include <ion/math/transformutils.h>
 

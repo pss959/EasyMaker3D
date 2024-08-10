@@ -1,4 +1,4 @@
-﻿#include "Panes/IconPane.h"
+#include "Panes/IconPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 

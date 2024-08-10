@@ -1,4 +1,4 @@
-﻿#include "Commands/CreateExtrudedModelCommand.h"
+#include "Commands/CreateExtrudedModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/CreateRevSurfModelCommand.h"

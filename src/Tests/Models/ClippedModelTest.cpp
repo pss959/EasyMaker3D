@@ -1,4 +1,4 @@
-﻿#include "Tests/Testing.h"
+#include "Tests/Testing.h"
 #include "Models/BoxModel.h"
 #include "Models/ClippedModel.h"
 #include "Models/CylinderModel.h"

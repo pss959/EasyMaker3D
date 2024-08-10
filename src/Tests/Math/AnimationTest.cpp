@@ -1,4 +1,4 @@
-﻿#include "Math/Animation.h"
+#include "Math/Animation.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

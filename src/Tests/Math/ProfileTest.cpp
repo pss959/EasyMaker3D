@@ -1,4 +1,4 @@
-﻿#include "Math/Profile.h"
+#include "Math/Profile.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing2.h"
 #include "Util/Assert.h"

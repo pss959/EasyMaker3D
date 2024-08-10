@@ -1,4 +1,4 @@
-﻿#include "Panes/CheckboxPane.h"
+#include "Panes/CheckboxPane.h"
 #include "Place/ClickInfo.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"

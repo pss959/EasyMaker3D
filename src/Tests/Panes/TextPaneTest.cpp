@@ -1,4 +1,4 @@
-﻿#include "Panes/TextPane.h"
+#include "Panes/TextPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"

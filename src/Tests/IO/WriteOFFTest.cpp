@@ -1,4 +1,4 @@
-﻿#include <vector>
+#include <vector>
 
 #include "IO/OFFWriter.h"
 #include "Math/MeshUtils.h"

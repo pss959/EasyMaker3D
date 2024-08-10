@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Enums/CSGOperation.h"
 #include "Models/CombinedModel.h"

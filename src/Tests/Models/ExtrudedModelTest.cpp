@@ -1,4 +1,4 @@
-﻿#include "Math/Profile.h"
+#include "Math/Profile.h"
 #include "Models/ExtrudedModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"

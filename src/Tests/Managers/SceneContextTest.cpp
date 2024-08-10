@@ -1,4 +1,4 @@
-﻿#include "Managers/SceneContext.h"
+#include "Managers/SceneContext.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"

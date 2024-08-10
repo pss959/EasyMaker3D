@@ -1,4 +1,4 @@
-﻿#include "Commands/RotateCommand.h"
+#include "Commands/RotateCommand.h"
 #include "Math/Types.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"

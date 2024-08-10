@@ -1,4 +1,4 @@
-﻿#include "Executors/ConvertTwistExecutor.h"
+#include "Executors/ConvertTwistExecutor.h"
 
 #include "Models/TwistedModel.h"
 

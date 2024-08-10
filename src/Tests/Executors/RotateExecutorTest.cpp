@@ -1,4 +1,4 @@
-﻿#include "Commands/RotateCommand.h"
+#include "Commands/RotateCommand.h"
 #include "Executors/RotateExecutor.h"
 #include "Managers/SelectionManager.h"
 #include "Models/BoxModel.h"

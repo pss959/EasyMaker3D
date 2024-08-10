@@ -1,4 +1,4 @@
-﻿#include "Panes/SwitcherPane.h"
+#include "Panes/SwitcherPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"

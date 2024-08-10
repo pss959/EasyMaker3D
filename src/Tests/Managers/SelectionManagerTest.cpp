@@ -1,4 +1,4 @@
-﻿#include "Selection/Selection.h"
+#include "Selection/Selection.h"
 #include "Managers/SelectionManager.h"
 #include "Place/ClickInfo.h"
 #include "Tests/SelectionTestBase.h"

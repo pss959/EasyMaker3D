@@ -1,4 +1,4 @@
-﻿#include "Commands/DeleteCommand.h"
+#include "Commands/DeleteCommand.h"
 #include "Math/Types.h"
 #include "Selection/Selection.h"
 #include "Tests/SelectionTestBase.h"

@@ -1,4 +1,4 @@
-﻿#include "Math/Bounds.h"
+#include "Math/Bounds.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Math/PolyMesh.h"

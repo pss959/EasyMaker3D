@@ -1,4 +1,4 @@
-﻿#include "Items/Settings.h"
+#include "Items/Settings.h"
 #include "Managers/SettingsManager.h"
 #include "Tests/TempFile.h"
 #include "Tests/TestBaseWithTypes.h"

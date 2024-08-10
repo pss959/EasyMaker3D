@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Bevel.h"
 #include "Models/ScaledConvertedModel.h"

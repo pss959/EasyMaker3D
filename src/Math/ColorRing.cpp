@@ -1,4 +1,4 @@
-﻿#include "Math/ColorRing.h"
+#include "Math/ColorRing.h"
 
 #include <ion/math/angleutils.h>
 

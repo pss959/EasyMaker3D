@@ -1,4 +1,4 @@
-﻿#include "Managers/PanelManager.h"
+#include "Managers/PanelManager.h"
 #include "Panels/InfoPanel.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing2.h"

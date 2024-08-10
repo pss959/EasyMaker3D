@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Profile.h"
 #include "Math/Types.h"

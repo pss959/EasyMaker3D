@@ -1,4 +1,4 @@
-﻿#include "Math/Bevel.h"
+#include "Math/Bevel.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

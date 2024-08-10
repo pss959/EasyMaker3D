@@ -1,4 +1,4 @@
-﻿#include "Executors/ConvertClipExecutor.h"
+#include "Executors/ConvertClipExecutor.h"
 
 #include <ion/math/transformutils.h>
 

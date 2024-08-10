@@ -1,4 +1,4 @@
-﻿#include <vector>
+#include <vector>
 
 #include "IO/STLWriter.h"
 #include "Items/UnitConversion.h"

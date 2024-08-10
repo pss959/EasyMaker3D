@@ -1,4 +1,4 @@
-﻿#include "SG/FileMap.h"
+#include "SG/FileMap.h"
 
 #include <functional>
 #include <unordered_map>

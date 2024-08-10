@@ -1,4 +1,4 @@
-﻿#include "Commands/CombineCSGModelCommand.h"
+#include "Commands/CombineCSGModelCommand.h"
 #include "Commands/CombineHullModelCommand.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"

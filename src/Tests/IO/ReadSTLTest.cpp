@@ -1,4 +1,4 @@
-﻿#include "IO/STLReader.h"
+#include "IO/STLReader.h"
 #include "Items/UnitConversion.h"
 #include "Math/Bounds.h"
 #include "Math/Linear.h"

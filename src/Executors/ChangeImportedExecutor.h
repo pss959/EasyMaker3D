@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Executors/Executor.h"
 #include "Models/ImportedModel.h"

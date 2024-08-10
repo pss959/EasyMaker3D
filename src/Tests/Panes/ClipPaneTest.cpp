@@ -1,4 +1,4 @@
-﻿#include "Panes/ClipPane.h"
+#include "Panes/ClipPane.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/SpacerPane.h"
 #include "Place/TouchInfo.h"

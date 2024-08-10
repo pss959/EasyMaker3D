@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/ChangeCylinderCommand.h"
 #include "Feedback/LinearFeedback.h"

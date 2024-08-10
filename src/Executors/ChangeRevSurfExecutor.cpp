@@ -1,4 +1,4 @@
-﻿#include "Executors/ChangeRevSurfExecutor.h"
+#include "Executors/ChangeRevSurfExecutor.h"
 
 #include "Commands/ChangeRevSurfCommand.h"
 #include "Models/RevSurfModel.h"

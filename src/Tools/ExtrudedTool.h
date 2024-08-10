@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/ChangeExtrudedCommand.h"
 #include "Tools/PanelTool.h"

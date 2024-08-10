@@ -1,4 +1,4 @@
-﻿#include "Panes/ButtonPane.h"
+#include "Panes/ButtonPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 #include "Widgets/PushButtonWidget.h"

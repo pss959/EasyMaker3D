@@ -1,4 +1,4 @@
-﻿#include <vector>
+#include <vector>
 
 #include "Tests/Testing.h"
 #include "Managers/ClipboardManager.h"

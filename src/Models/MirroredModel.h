@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/Types.h"
 #include "Models/ConvertedModel.h"

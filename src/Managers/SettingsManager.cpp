@@ -1,4 +1,4 @@
-﻿#include "Managers/SettingsManager.h"
+#include "Managers/SettingsManager.h"
 
 #include <fstream>
 

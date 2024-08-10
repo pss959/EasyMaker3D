@@ -1,4 +1,4 @@
-﻿#include "Executors/ConvertTaperExecutor.h"
+#include "Executors/ConvertTaperExecutor.h"
 
 #include "Models/TaperedModel.h"
 

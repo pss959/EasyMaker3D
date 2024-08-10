@@ -1,4 +1,4 @@
-﻿#include "Executors/ConvertMirrorExecutor.h"
+#include "Executors/ConvertMirrorExecutor.h"
 
 #include <ion/math/transformutils.h>
 

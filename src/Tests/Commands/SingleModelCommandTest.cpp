@@ -1,4 +1,4 @@
-﻿#include "Commands/ChangeNameCommand.h"
+#include "Commands/ChangeNameCommand.h"
 #include "Math/Types.h"
 #include "Selection/Selection.h"
 #include "Tests/SelectionTestBase.h"

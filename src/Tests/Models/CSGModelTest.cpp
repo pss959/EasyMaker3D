@@ -1,4 +1,4 @@
-﻿#include "Models/BoxModel.h"
+#include "Models/BoxModel.h"
 #include "Models/CSGModel.h"
 #include "Tests/Testing.h"
 #include "Tests/SceneTestBase.h"

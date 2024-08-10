@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/Command.h"
 #include "Place/PointTarget.h"

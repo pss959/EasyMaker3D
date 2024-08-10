@@ -1,4 +1,4 @@
-﻿#include "App/ToolBox.h"
+#include "App/ToolBox.h"
 
 #include <vector>
 

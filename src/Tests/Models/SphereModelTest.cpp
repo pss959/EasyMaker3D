@@ -1,4 +1,4 @@
-﻿#include "Models/SphereModel.h"
+#include "Models/SphereModel.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 

@@ -1,4 +1,4 @@
-﻿#include "Base/Event.h"
+#include "Base/Event.h"
 #include "Base/VirtualKeyboard.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/TextInputPane.h"

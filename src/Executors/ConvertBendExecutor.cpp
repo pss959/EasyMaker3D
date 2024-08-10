@@ -1,4 +1,4 @@
-﻿#include "Executors/ConvertBendExecutor.h"
+#include "Executors/ConvertBendExecutor.h"
 
 #include "Models/BentModel.h"
 

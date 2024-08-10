@@ -1,4 +1,4 @@
-﻿#include "Math/Taper.h"
+#include "Math/Taper.h"
 #include "Tests/TestBase.h"
 #include "Tests/Testing.h"
 

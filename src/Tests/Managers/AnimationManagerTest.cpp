@@ -1,4 +1,4 @@
-﻿#include "Managers/AnimationManager.h"
+#include "Managers/AnimationManager.h"
 #include "Tests/Testing.h"
 #include "Util/Delay.h"
 

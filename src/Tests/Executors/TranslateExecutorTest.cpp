@@ -1,4 +1,4 @@
-﻿#include "Commands/TranslateCommand.h"
+#include "Commands/TranslateCommand.h"
 #include "Executors/TranslateExecutor.h"
 #include "Managers/SelectionManager.h"
 #include "Models/BoxModel.h"

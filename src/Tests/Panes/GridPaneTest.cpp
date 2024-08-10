@@ -1,4 +1,4 @@
-﻿#include "Panes/GridPane.h"
+#include "Panes/GridPane.h"
 #include "Panes/SpacerPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"

@@ -1,4 +1,4 @@
-﻿#include "Panes/SpecialKeyPane.h"
+#include "Panes/SpecialKeyPane.h"
 #include "Panes/TextKeyPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"

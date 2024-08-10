@@ -1,4 +1,4 @@
-﻿#include "App/ActionProcessor.h"
+#include "App/ActionProcessor.h"
 
 #include <unordered_set>
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/ChangeTaperCommand.h"
 #include "Math/Profile.h"

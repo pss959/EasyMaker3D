@@ -1,4 +1,4 @@
-﻿#include "Commands/ChangeEdgeTargetCommand.h"
+#include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Commands/CommandList.h"
 #include "Managers/CommandManager.h"

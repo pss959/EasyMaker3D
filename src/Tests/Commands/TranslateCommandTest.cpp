@@ -1,4 +1,4 @@
-﻿#include "Commands/TranslateCommand.h"
+#include "Commands/TranslateCommand.h"
 #include "Math/Types.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"

@@ -1,4 +1,4 @@
-﻿#include "Commands/RadialLayoutCommand.h"
+#include "Commands/RadialLayoutCommand.h"
 #include "Place/PointTarget.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"

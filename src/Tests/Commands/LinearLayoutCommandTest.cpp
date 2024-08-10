@@ -1,4 +1,4 @@
-﻿#include "Commands/LinearLayoutCommand.h"
+#include "Commands/LinearLayoutCommand.h"
 #include "Place/EdgeTarget.h"
 #include "Tests/Commands/CommandTestBase.h"
 #include "Tests/Testing.h"

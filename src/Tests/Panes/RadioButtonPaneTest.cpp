@@ -1,4 +1,4 @@
-﻿#include "Panes/RadioButtonPane.h"
+#include "Panes/RadioButtonPane.h"
 #include "Tests/Panes/PaneTestBase.h"
 #include "Tests/Testing.h"
 

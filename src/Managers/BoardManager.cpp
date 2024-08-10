@@ -1,4 +1,4 @@
-﻿#include "Managers/BoardManager.h"
+#include "Managers/BoardManager.h"
 
 #include <ranges>
 

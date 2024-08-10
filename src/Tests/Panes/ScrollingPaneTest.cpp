@@ -1,4 +1,4 @@
-﻿#include "Base/Event.h"
+#include "Base/Event.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/SpacerPane.h"
 #include "Tests/Panes/PaneTestBase.h"

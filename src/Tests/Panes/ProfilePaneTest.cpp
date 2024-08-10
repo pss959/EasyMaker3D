@@ -1,4 +1,4 @@
-﻿#include <ion/math/vectorutils.h>
+#include <ion/math/vectorutils.h>
 
 #include "Math/Profile.h"
 #include "Panes/ProfilePane.h"

@@ -1,4 +1,4 @@
-﻿#include "Commands/ScaleCommand.h"
+#include "Commands/ScaleCommand.h"
 #include "Executors/ScaleExecutor.h"
 #include "Managers/SelectionManager.h"
 #include "Models/BoxModel.h"

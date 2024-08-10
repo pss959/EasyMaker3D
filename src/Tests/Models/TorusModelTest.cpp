@@ -1,4 +1,4 @@
-﻿#include "Models/TorusModel.h"
+#include "Models/TorusModel.h"
 #include "Tests/SceneTestBase.h"
 #include "Tests/Testing.h"
 #include "Util/Tuning.h"

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Math/SlicedMesh.h"
 #include "Math/Types.h"

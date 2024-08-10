@@ -1,4 +1,4 @@
-﻿#include "Math/Taper.h"
+#include "Math/Taper.h"
 #include "Models/BoxModel.h"
 #include "Models/TaperedModel.h"
 #include "Tests/Testing.h"

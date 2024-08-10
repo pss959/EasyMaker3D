@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Agents/SelectionAgent.h"
 #include "Models/RootModel.h"

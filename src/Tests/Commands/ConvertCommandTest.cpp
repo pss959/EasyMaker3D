@@ -1,4 +1,4 @@
-﻿#include "Commands/ConvertBendCommand.h"
+#include "Commands/ConvertBendCommand.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
 #include "Commands/ConvertMirrorCommand.h"

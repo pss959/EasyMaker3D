@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Commands/ChangeTorusCommand.h"
 #include "Feedback/LinearFeedback.h"

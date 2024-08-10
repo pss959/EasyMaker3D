@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Enums/Dim.h"
 #include "Math/SlicedMesh.h"
