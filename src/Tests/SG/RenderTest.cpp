@@ -1,3 +1,8 @@
+//@@@@
+// SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//@@@@
+
 #include <ion/gfx/tests/fakeglcontext.h>
 #include <ion/gfx/tests/fakegraphicsmanager.h>
 #include <ion/gfx/renderer.h>

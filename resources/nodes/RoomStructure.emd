@@ -1,3 +1,8 @@
+#@@@@
+# SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#@@@@
+
 Node "Structure" {
   translation: 0 $ROOM_HALF_SIZE 0,   # Puts the floor at Y = 0.
   children: [

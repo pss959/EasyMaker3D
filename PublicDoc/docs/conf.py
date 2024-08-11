@@ -1,3 +1,8 @@
+#@@@@
+# SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#@@@@
+
 # -----------------------------------------------------------------------------
 # The SConscript file sets these definitions in environment variables. It would
 # be great if the "project" and "version" variables could be overridden from

@@ -1,3 +1,8 @@
+//@@@@
+// SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//@@@@
+
 #include "Selection/Selection.h"
 #include "Managers/SelectionManager.h"
 #include "Place/ClickInfo.h"

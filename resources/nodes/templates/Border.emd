@@ -1,3 +1,8 @@
+#@@@@
+# SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#@@@@
+
 # This is used to add a 2D border to any Pane or other object. It uses the
 # BaseColor shader.
 Border "T_Border" {

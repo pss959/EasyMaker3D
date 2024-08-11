@@ -1,9 +1,15 @@
+//@@@@
+// SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//@@@@
+
 #include "Tests/TestBase.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <fstream>
 
+#include <ion/base/stringutils.h>
 #include <ion/math/matrixutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -264,4 +270,11 @@ Str TestBase::FixString(const Str &s) {
     Str fs = s;
     fs.erase(std::remove(fs.begin(), fs.end(), lf), fs.end());
     return fs;
+}
+
+Str TestBase::RemoveComments(const Str &s, const Str &start) {
+    auto lines = ion::base::SplitString(s, "\n");
+    std::erase_if(lines,
+                  [&](const Str &line){ return line.starts_with(start); });
+    return ion::base::JoinStrings(lines, "\n") + "\n";
 }

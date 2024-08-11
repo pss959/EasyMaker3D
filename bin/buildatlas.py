@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+#@@@@
+# SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#@@@@
+
 from glob    import glob
 from os      import popen, remove, replace, system
 from os.path import basename, splitext

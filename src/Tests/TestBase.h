@@ -1,3 +1,8 @@
+//@@@@
+// SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//@@@@
+
 #pragma once
 
 #include <memory>
@@ -132,8 +137,13 @@ class TestBase : public ::testing::Test {
     /// Returns a Rotationf from axis components and angle (degree) values.
     static Rotationf BuildRotation(float x, float y, float z, float deg);
 
-    /// Fixes a string by removing line feeds. Needed for Windows.
+    /// Fixes a string by removing line feeds. Needed for Windows. Also strips
+    /// comments (for files with license comments).
     static Str FixString(const Str &s);
+
+    /// Strips comments from a string (to help with files that have license
+    /// comments). Comments start with the \p start string.
+    static Str RemoveComments(const Str &s, const Str &start);
 
   private:
     /// Stores a FakeFileSystem when needed.

@@ -1,3 +1,8 @@
+//@@@@
+// SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//@@@@
+
 #include <sstream>
 
 #include <ion/gfxutils/printer.h>
@@ -42,7 +47,8 @@ class ReaderTest : public SceneTestBase {
         std::ostringstream out;
         Parser::Writer writer(out);
         writer.WriteObject(*scene);
-        return CompareStrings(FixString(expected), FixString(out.str()));
+        return CompareStrings(RemoveComments(FixString(expected), "#"),
+                              FixString(out.str()));
     }
 
     /// Calls BuildAndReadScene(), then prints the resulting Ion graph to a
@@ -93,7 +99,7 @@ TEST_F(ReaderTest, RootNode) {
 }
 
 TEST_F(ReaderTest, Settings) {
-    const Str input = ReadDataFile("Settings.emd");
+    const Str input = RemoveComments(ReadDataFile("Settings.emd"), "#");
     EXPECT_TRUE(ParseStringAndCompare(input, input));
 }
 

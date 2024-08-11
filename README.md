@@ -23,3 +23,9 @@ documentation. This documentation can be created by installing the [`SCons`
 software construction tool](https://www.scons.org/) and running `scons -j8
 InternalDoc` in a terminal shell in the top-level directory. After doing this,
 point your browser at `build/InternalDoc/html/` to view the results.
+
+## License
+
+EasyMaker3D is released under the GNU [Affero General Public
+License](https://www.gnu.org/licenses/#AGPL). See [LICENSE.txt](LICENSE.txt)
+for details.

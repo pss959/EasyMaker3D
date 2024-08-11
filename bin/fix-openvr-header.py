@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+#@@@@
+# SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#@@@@
+
 # -----------------------------------------------------------------------------
 # This script creates a fixed version of the <openvr.h> header file so that the
 # SteamVR client does not crash on Windows (in mingw64). It came from here:

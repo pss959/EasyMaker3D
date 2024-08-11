@@ -1,3 +1,8 @@
+#@@@@
+# SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#@@@@
+
 PushButtonWidget "ExitSign" {
   translation: -42 65 -69.8,
   hover_color: .22 .22 .22 0,  # More obvious hover color.

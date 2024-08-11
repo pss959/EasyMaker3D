@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+#@@@@
+# SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#@@@@
+
 # -----------------------------------------------------------------------------
 # Parses "#include" statements from all files under the src/ directory to
 # discover intra- and inter-module dependencies. Outputs a DOT graph to

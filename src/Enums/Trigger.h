@@ -1,3 +1,8 @@
+//@@@@
+// SPDX-FileCopyrightText:  2021-2024 Paul S. Strauss
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//@@@@
+
 #pragma once
 
 /// The Trigger enum defines different ways a click or drag interaction can be
