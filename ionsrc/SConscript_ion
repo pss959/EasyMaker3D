@@ -366,5 +366,33 @@ ion_lib = ion_env.SharedLibrary(
 SConscript('SConscript_iontests',
            exports=['ion_env', 'ion_lib', 'ion_test_env'])
 
+# ---------------------------------
+# Building demos (for testing).
+
+ion_demo_sources = [
+    'ion/demos/demobase.cc',
+    'ion/demos/demobase_glut.cc',
+    'ion/demos/hud.cc',
+    'ion/demos/viewerdemobase.cc',
+    ion_env.ZipAsset(source='ion/demos/res/iondemohud.iad',
+                     target='ion/demos/res/iondemohud.cc')
+]
+
+for (subdir, names, headers, sources, assets) in ion_files:
+    ion_sources += [f'ion/{subdir}/{name}.cc' for name in names]
+    ion_sources += [f'ion/{subdir}/{source}' for source in sources]
+    for asset in assets:
+        source = f'{src_dir}/ion/{subdir}/{asset}'
+        target = f'ion/{subdir}/{asset}'.replace('.iad', '.cc')
+        ion_sources.append(ion_env.ZipAsset(source=source, target=target))
+
+
+iondraw = ion_env.Program('iondraw',
+                          ion_demo_sources + ['ion/demos/iondraw.cc'],
+                          LIBS=[ion_lib, 'glut'])
+ion_env.Alias('IonDemos', [iondraw])
+
+# ---------------------------------
+
 Return('ion_lib')
 

@@ -23,6 +23,7 @@ limitations under the License.
 
 #include <algorithm>
 #include <cstring>
+#include <locale>
 #include <mutex>  // NOLINT(build/c++11)
 #include <sstream>
 
@@ -462,6 +463,7 @@ static const std::string EmbedAllLocalTags(
 static void SendStatusCode(mg_connection* connection, const std::string& status,
                            const std::string& text) {
   std::stringstream header_stream;
+  header_stream.imbue(std::locale{"C"});  // Prevent commas in numbers!!
   header_stream << "HTTP/1.1 " << status << "\r\n"
                 << "Content-Length: " << text.length() << "\r\n"
                 << "Connection: close\r\n\r\n" << text;
@@ -498,6 +500,7 @@ static bool ParseRangeRequest(const char* range_header,
       *range_start = start;
       *range_end = std::min(-end, content_length);
       std::stringstream range_stream;
+      range_stream.imbue(std::locale{"C"});  // Prevent commas in numbers!!
       range_stream << "Content-Range: bytes " << *range_start << "-"
                    << *range_end << "/" << content_length << "\r\n";
       *range = range_stream.str();
@@ -526,6 +529,7 @@ static void SendFileData(mg_connection* connection,
 
   // Create the headers that describe the file data.
   std::stringstream header_stream;
+  header_stream.imbue(std::locale{"C"});  // Prevent commas in numbers!!
   header_stream << "HTTP/1.1 " << status << "\r\n"
                 << "Content-Type: " << content_type << "\r\n"
                 << "Content-Length: " << data.length() << "\r\n"
@@ -674,6 +678,7 @@ void HttpServer::Pause() {
 void HttpServer::Resume() {
   if (port_) {
     std::stringstream int_to_string;
+    int_to_string.imbue(std::locale{"C"});  // Prevent commas in numbers!!
     int_to_string << port_;
     // Directly passing int_to_string.str() to mongoose does not work on all
     // platforms, but assigning it to a string first does.

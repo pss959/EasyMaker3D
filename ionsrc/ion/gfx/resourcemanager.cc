@@ -661,7 +661,7 @@ static void FillStringsAndVersions(const GraphicsManagerPtr& gm,
   }
 
   if (const char* extensions =
-          reinterpret_cast<const char*>(gm->GetString(GL_EXTENSIONS))) {
+          reinterpret_cast<const char*>(gm->GetStringi(GL_EXTENSIONS, 0))) {
     info->extensions = extensions;
   }
 }

@@ -264,11 +264,11 @@ if mode in ['cov', 'dbg']:
         CXXFLAGS   = ['-g'],
         LINKFLAGS  = ['-g'],
         CPPDEFINES = [
-            ('ION_CHECK_GL_ERRORS',   'true'),
-            ('DEBUG',                 'true'),
-            ('ENABLE_DASSERT',        'true'),
-            ('ENABLE_DEBUG_FEATURES', 'true'),
-            ('ION_DEBUG',             'true'),
+            ('ION_CHECK_GL_ERRORS',   '1'),
+            ('DEBUG',                 '1'),
+            ('ENABLE_DASSERT',        '1'),
+            ('ENABLE_DEBUG_FEATURES', '1'),
+            ('ION_DEBUG',             '1'),
             '_DEBUG',
             # This allows valgrind to work on the debug executables.
             'CGAL_DISABLE_ROUNDING_MATH_CHECK',
@@ -285,8 +285,8 @@ elif mode == 'opt':
         CXXFLAGS   = ['-O3'],
         LINKFLAGS  = ['-O3'],
         CPPDEFINES = [
-            ('ION_CHECK_GL_ERRORS',   'false'),
-            ('ENABLE_DEBUG_FEATURES', 'true'),
+            ('ION_CHECK_GL_ERRORS',   '0'),
+            ('ENABLE_DEBUG_FEATURES', '1'),
         ],
     )
     if platform != 'mac':
@@ -294,7 +294,7 @@ elif mode == 'opt':
 
 elif mode == 'rel':
     base_env.Append(
-        ENABLE_DEBUG_FEATURES = False,
+        ENABLE_DEBUG_FEATURES = '0',
         CXXFLAGS   = [
             '-O3',
             # Works around a GCC bug with some inlined code; see
@@ -303,9 +303,9 @@ elif mode == 'rel':
         ],
         LINKFLAGS  = ['-O3'],
         CPPDEFINES = [
-            ('ION_CHECK_GL_ERRORS',   'false'),
-            ('ENABLE_DEBUG_FEATURES', 'false'),
-            ('RELEASE_BUILD',         'true'),
+            ('ION_CHECK_GL_ERRORS',   '0'),
+            ('ENABLE_DEBUG_FEATURES', '0'),
+            ('RELEASE_BUILD',         '1'),
         ],
     )
 

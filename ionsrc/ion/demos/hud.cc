@@ -65,8 +65,8 @@ static const ion::gfx::NodePtr BuildHudRootNode(int width, int height) {
 
   ion::gfx::StateTablePtr state_table(new ion::gfx::StateTable);
   state_table->SetViewport(
-      ion::math::Range2i::BuildWithSize(ion::math::Point2i(0, 0),
-                                        ion::math::Vector2i(width, height)));
+      ion::math::Range2ui::BuildWithSize(ion::math::Point2ui(0, 0),
+                                         ion::math::Vector2ui(width, height)));
   node->SetStateTable(state_table);
 
   return node;
@@ -382,8 +382,8 @@ void Hud::Resize(int width, int height) {
   if (fps_text_id_ != ion::base::kInvalidIndex)
     text_helper_->Resize(width, height);
   root_->GetStateTable()->SetViewport(
-      ion::math::Range2i::BuildWithSize(ion::math::Point2i(0, 0),
-                                        ion::math::Vector2i(width, height)));
+      ion::math::Range2ui::BuildWithSize(ion::math::Point2ui(0, 0),
+                                         ion::math::Vector2ui(width, height)));
 }
 
 void Hud::Update() {

@@ -54,13 +54,13 @@ limitations under the License.
 using ion::math::Anglef;
 using ion::math::Matrix4f;
 using ion::math::Point2f;
-using ion::math::Point2i;
+using ion::math::Point2ui;
 using ion::math::Point3f;
-using ion::math::Range2i;
+using ion::math::Range2ui;
 using ion::math::RotationMatrixAxisAngleH;
 using ion::math::TranslationMatrix;
 using ion::math::Vector2f;
-using ion::math::Vector2i;
+using ion::math::Vector2ui;
 using ion::math::Vector3f;
 using ion::math::Vector4f;
 
@@ -255,7 +255,7 @@ static ion::gfx::NodePtr BuildGraph(int width, int height) {
   // Set up global state.
   ion::gfx::StateTablePtr state_table(new ion::gfx::StateTable(width, height));
   state_table->SetViewport(
-      Range2i::BuildWithSize(Point2i(0, 0), Vector2i(width, height)));
+      Range2ui::BuildWithSize(Point2ui(0, 0), Vector2ui(width, height)));
   state_table->SetClearColor(Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
   state_table->SetClearDepthValue(1.f);
   state_table->Enable(ion::gfx::StateTable::kDepthTest, true);
@@ -532,7 +532,7 @@ void IonDraw::Resize(int width, int height) {
 
   DCHECK(root_->GetStateTable().Get());
   root_->GetStateTable()->SetViewport(
-      Range2i::BuildWithSize(Point2i(0, 0), Vector2i(width, height)));
+      Range2ui::BuildWithSize(Point2ui(0, 0), Vector2ui(width, height)));
 }
 
 void IonDraw::RenderFrame() {
